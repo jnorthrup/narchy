@@ -94,7 +94,6 @@ public abstract class RealTime extends Time {
         return now() - last;
     }
 
-    @NotNull
     @Override
     public String toString() {
         return String.valueOf(now()); //TODO more descriptive

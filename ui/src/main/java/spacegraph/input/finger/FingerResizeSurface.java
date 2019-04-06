@@ -2,6 +2,7 @@ package spacegraph.input.finger;
 
 import jcog.math.v2;
 import jcog.tree.rtree.rect.RectFloat;
+import org.jetbrains.annotations.Nullable;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.widget.windo.util.DragEdit;
 
@@ -10,18 +11,18 @@ import spacegraph.space2d.widget.windo.util.DragEdit;
  */
 public class FingerResizeSurface extends FingerResize {
 
-    private final Surface resizing;
-    private final DragEdit mode;
+    private final Surface target;
+    @Nullable
+    protected DragEdit mode;
 
-    public FingerResizeSurface(Surface target, DragEdit mode) {
-        super(0);
-        this.mode = mode;
-        this.resizing = target;
+    public FingerResizeSurface(int button, Surface target) {
+        super(button);
+        this.target = target;
     }
 
     /** move most of Windo.drag() logic here
      * @param finger*/
-    @Override @Deprecated public DragEdit mode(Finger finger) {
+    @Nullable @Override @Deprecated public DragEdit mode(Finger finger) {
         return mode;
     }
 
@@ -32,16 +33,16 @@ public class FingerResizeSurface extends FingerResize {
 
     @Override
     protected RectFloat size() {
-        return resizing.bounds;
+        return target.bounds;
     }
 
     @Override
     protected void resize(float x1, float y1, float x2, float y2) {
-        resizing.pos(x1, y1, x2, y2);
+        target.pos(x1, y1, x2, y2);
     }
 
-//    @Override
-//    public Surface touchNext(Surface prev, Surface next) {
-//        return resizing;
-//    }
+    @Override
+    public Surface touchNext(Surface prev, Surface next) {
+        return target;
+    }
 }

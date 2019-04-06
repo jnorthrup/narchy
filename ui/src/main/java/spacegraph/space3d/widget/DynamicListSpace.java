@@ -1,7 +1,7 @@
 package spacegraph.space3d.widget;
 
 import spacegraph.space3d.AbstractSpace;
-import spacegraph.space3d.SpaceGraph3D;
+import spacegraph.space3d.SpaceDisplayGraph3D;
 import spacegraph.space3d.Spatial;
 import spacegraph.space3d.transform.EdgeDirected3D;
 import spacegraph.space3d.transform.Flatten;
@@ -17,12 +17,12 @@ import java.util.function.Consumer;
  */
 public abstract class DynamicListSpace<X> extends AbstractSpace<X> {
 
-    private SpaceGraph3D<X> space;
+    private SpaceDisplayGraph3D<X> space;
     List<Spatial<X>> active = List.of();
 
 
     @Override
-    public void start(SpaceGraph3D<X> space) {
+    public void start(SpaceDisplayGraph3D<X> space) {
         this.space = space;
     }
 
@@ -42,7 +42,7 @@ public abstract class DynamicListSpace<X> extends AbstractSpace<X> {
     }
 
     @Override
-    public void update(SpaceGraph3D<X> s, long dtMS) {
+    public void update(SpaceDisplayGraph3D<X> s, long dtMS) {
 
         synchronized (this) {
             List<? extends Spatial<X>> prev = this.active;
@@ -76,18 +76,18 @@ public abstract class DynamicListSpace<X> extends AbstractSpace<X> {
      * displays in a window with default force-directed options
      */
     @Deprecated
-    public SpaceGraph3D show(int w, int h, boolean flat) {
+    public SpaceDisplayGraph3D show(int w, int h, boolean flat) {
 
 
         AbstractSpace ss = flat ? with(new Flatten(0.25f, 0.25f)) : this;
-        SpaceGraph3D<X> s = new SpaceGraph3D<>(ss);
+        SpaceDisplayGraph3D<X> s = new SpaceDisplayGraph3D<>(ss);
 
         EdgeDirected3D fd = new EdgeDirected3D();
         s.dyn.addBroadConstraint(fd);
         fd.condense.set(fd.condense.get() * 8);
 
 
-        s.camPos(0, 0, 90).display.show(w, h);
+        s.camPos(0, 0, 90).video.show(w, h);
 
         return s;
 

@@ -24,7 +24,6 @@
 package spacegraph.space3d.phys;
 
 import jcog.math.v3;
-import org.jetbrains.annotations.NotNull;
 import spacegraph.space3d.phys.collision.broad.*;
 import spacegraph.space3d.phys.collision.narrow.*;
 import spacegraph.space3d.phys.math.AabbUtil2;
@@ -53,12 +52,12 @@ public abstract class Collisions<X> extends BulletGlobals {
      */
     
 
-    @NotNull
+    
     public final Intersecter intersecter;
-    @NotNull
+    
     private final DispatcherInfo dispatchInfo = new DispatcherInfo();
     
-    @NotNull
+    
     final Broadphase broadphase;
 
     /**

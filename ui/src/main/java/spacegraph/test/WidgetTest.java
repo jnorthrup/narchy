@@ -1,7 +1,6 @@
 package spacegraph.test;
 
 import jcog.tree.rtree.rect.RectFloat;
-import org.jetbrains.annotations.NotNull;
 import spacegraph.SpaceGraph;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.ContainerSurface;
@@ -127,7 +126,6 @@ public class WidgetTest {
         menu = m;
     }
 
-    @NotNull
     private static Map<String, Supplier<Surface>> wiringDemos() {
         return Map.of(
             "Intro", ()->wiringDemo((EditGraph2D g)->{
@@ -191,7 +189,7 @@ public class WidgetTest {
     }
 
     public static void main(String[] args) {
-        SpaceGraph.window(widgetDemo(), 1200, 800);
+        SpaceGraph.surfaceWindow(widgetDemo(), 1200, 800);
     }
 
 

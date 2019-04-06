@@ -13,6 +13,7 @@ import nars.gui.sensor.VectorSensorView;
 import nars.sensor.Bitmap2DSensor;
 import nars.term.atom.Atomic;
 import nars.video.SwingBitmap2D;
+import spacegraph.SpaceGraph;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -22,8 +23,6 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
-
-import static spacegraph.SpaceGraph.window;
 
 /** NARkanoid */
 public class ArkaNAR extends GameX {
@@ -98,7 +97,7 @@ public class ArkaNAR extends GameX {
 
             VectorSensorView vsv = new VectorSensorView(cc, nar);
 //            onFrame(vsv::update);
-            window(vsv.withControls(), 500, 500);
+            SpaceGraph.surfaceWindow(vsv.withControls(), 500, 500);
 
 
         }

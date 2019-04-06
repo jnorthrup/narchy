@@ -1,7 +1,7 @@
 package spacegraph.input.finger;
 
 import jcog.math.v2;
-import spacegraph.video.JoglSpace;
+import spacegraph.video.JoglDisplay;
 
 /** finger move trigger, using screen pixel scale */
 abstract public class FingerMoveWindow extends FingerMove {
@@ -18,15 +18,15 @@ abstract public class FingerMoveWindow extends FingerMove {
     protected volatile int windowStartX, windowStartY;
 
 
-    protected abstract JoglSpace window();
+    protected abstract JoglDisplay window();
 
 
     @Override
-    protected boolean startDrag(Finger f) {
-        JoglSpace w = window();
-        windowStartX = w.display.getX();
-        windowStartY = w.display.getY();
-        return super.startDrag(f);
+    protected boolean ready(Finger f) {
+        JoglDisplay w = window();
+        windowStartX = w.video.getX();
+        windowStartY = w.video.getY();
+        return super.ready(f);
     }
 
     @Override public final v2 pos(Finger finger) {

@@ -82,7 +82,7 @@ public class Launcher {
 
 
         EditGraph2D g = new EditGraph2D<>(1000, 1000);
-        SpaceGraph.window(                 g, 800, 800        );
+        SpaceGraph.surfaceWindow(                 g, 800, 800        );
 
         g.add(m).posRel(0.5f, 0.5f, 0.75f);
 

@@ -96,7 +96,7 @@ public class EditGraph2D<S extends Surface> extends MutableMapContainer<Surface,
 
     public static <X extends Surface> EditGraph2D<X> window(int w, int h) {
         EditGraph2D<X> g = new EditGraph2D<>();
-        SpaceGraph.window(g, w, h);
+        SpaceGraph.surfaceWindow(g, w, h);
         return g;
     }
 
@@ -212,7 +212,7 @@ public class EditGraph2D<S extends Surface> extends MutableMapContainer<Surface,
 
     public final ContainerSurface add(S x, float w, float h) {
         ContainerSurface y = add(x);
-        y.size(w, h);
+        y.resize(w, h);
         return y;
     }
 //
@@ -450,18 +450,18 @@ public class EditGraph2D<S extends Surface> extends MutableMapContainer<Surface,
             }
 
             @Override
-            public final boolean visible() {
+            protected void render(ReSurface r) {
                 if (a().parent == null || b().parent == null) {
                     EditGraph2D graphParent = parentOrSelf(EditGraph2D.class);
                     if (graphParent != null) {
                         EditGraph2D.VisibleLink.this.remove(graphParent);
-                        remove();
                     }
-                    return false;
+                    remove();
                 }
 
-                return super.visible();
+                super.render(r);
             }
+
         }
     }
 

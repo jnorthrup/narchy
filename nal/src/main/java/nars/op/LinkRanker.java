@@ -4,14 +4,14 @@ import jcog.sort.FloatRank;
 import jcog.sort.RankedN;
 import nars.NAR;
 import nars.link.TaskLink;
-import nars.time.part.DurPart;
+import nars.time.part.DurLoop;
 import org.jetbrains.annotations.Nullable;
 
 /** utility service for periodically ranking the
  * active tasklinks by some metric, and applying a procedure
  * based on the aggregate.
  */
-public abstract class LinkRanker<Y> extends DurPart {
+public abstract class LinkRanker<Y> extends DurLoop {
 
     public LinkRanker() {
         super();

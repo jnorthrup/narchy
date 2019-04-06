@@ -3,8 +3,7 @@ package nars;
 import nars.gui.NARui;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import static spacegraph.SpaceGraph.window;
+import spacegraph.SpaceGraph;
 
 /**
  * main UI entry point
@@ -22,7 +21,7 @@ public class GUI {
         logger.info("start SpaceGraph UI");
 
 
-        window(NARui.top(nar), 1024, 800).display.eventClosed.on(nar::reset);
+        SpaceGraph.surfaceWindow(NARui.top(nar), 1024, 800).video.eventClosed.on(nar::reset);
 
         nar.startFPS(10f);
 

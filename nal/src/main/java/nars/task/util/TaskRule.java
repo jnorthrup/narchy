@@ -9,7 +9,6 @@ import nars.term.util.TermException;
 import nars.term.util.transform.AbstractTermTransform;
 import nars.term.util.transform.VariableNormalization;
 import nars.unify.Unify;
-import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -97,7 +96,7 @@ public class TaskRule extends TaskMatch {
         return false;
     }
 
-    @NotNull
+    
     @Override
     public String toString() {
         return id.toString();

@@ -9,7 +9,7 @@ import org.jetbrains.annotations.Nullable;
 import spacegraph.SpaceGraph;
 import spacegraph.input.finger.Finger;
 import spacegraph.space2d.widget.button.CheckBox;
-import spacegraph.video.JoglSpace;
+import spacegraph.video.JoglDisplay;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Supplier;
@@ -25,7 +25,7 @@ public class WindowToggleButton extends CheckBox implements WindowListener {
     private int width = 600;
     private int height = 300;
 
-    private volatile JoglSpace space;
+    private volatile JoglDisplay space;
 
     public WindowToggleButton(String text, Object o) {
         this(text, () -> o);
@@ -64,13 +64,13 @@ public class WindowToggleButton extends CheckBox implements WindowListener {
 
 //                space.pre(s -> {
                 Exe.invokeLater(()->{
-                    GLWindow w = space.display.window;
+                    GLWindow w = space.video.window;
                     
                         w.addWindowListener(this);
                         if (f!=null) {
                             int nx = Math.round(f.posPixel.x - width / 2f);
                             int ny = Math.round(f.posPixel.y - height / 2f);
-                            space.display.setPosition(nx, ny);
+                            space.video.setPosition(nx, ny);
                         }
                     
                         busy.set(false); 
@@ -86,7 +86,7 @@ public class WindowToggleButton extends CheckBox implements WindowListener {
 
                 on(false);
 
-                this.space.display.off();
+                this.space.video.off();
                 this.space = null;
 
             }

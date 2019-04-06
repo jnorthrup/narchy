@@ -9,7 +9,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class ObjectSurfaceTest {
 
     public static void main(String[] args) {
-        SpaceGraph.window(new ObjectSurface(new MyClass(), 3), 1200, 800);
+        SpaceGraph.surfaceWindow(new ObjectSurface(new MyClass(), 3), 1200, 800);
     }
 
     public static class MyClass {

@@ -193,10 +193,10 @@ public class Timeline2D extends Stacking implements WheelAbsorb {
     }
 
     @Override
-    protected void renderChildren(ReSurface r) {
+    protected void renderContent(ReSurface r) {
         _setTime(startNext, endNext);
 
-        super.renderChildren(r);
+        super.renderContent(r);
     }
 
     public Timeline2D setTime(double start, double end) {

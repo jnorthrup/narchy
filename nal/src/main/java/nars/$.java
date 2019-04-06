@@ -34,7 +34,6 @@ import nars.truth.Truth;
 import org.apache.commons.math3.fraction.Fraction;
 import org.eclipse.collections.api.RichIterable;
 import org.eclipse.collections.api.block.function.primitive.CharToObjectFunction;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.roaringbitmap.PeekableIntIterator;
 import org.roaringbitmap.RoaringBitmap;
@@ -211,7 +210,7 @@ public enum $ {
     /**
      * creates from a sublist of a list
      */
-    @NotNull
+    
     public static Term p(List<Term> l, int from, int to) {
         if (from == to)
             return Op.EmptyProduct;
@@ -253,7 +252,7 @@ public enum $ {
     /**
      * warning: generic variable
      */
-    public static Variable v(/*@NotNull*/ Op type, String name) {
+    public static Variable v(/**/ Op type, String name) {
         //special case: interpret normalized variables
         switch (name.length()) {
             case 1:
@@ -317,7 +316,7 @@ public enum $ {
         return INH.the(SETe.the(subj), pred);
     }
 
-    public static <T extends Term> T instprop(@NotNull Term subject, @NotNull Term predicate) {
+    public static <T extends Term> T instprop( Term subject,  Term predicate) {
         return (T) INH.the(SETe.the(subject), SETi.the(predicate));
     }
 
@@ -326,16 +325,16 @@ public enum $ {
     }
 
 
-    @NotNull
-    public static TaskBuilder task(@NotNull String term, byte punct, float freq, float conf) throws Narsese.NarseseException {
+    
+    public static TaskBuilder task( String term, byte punct, float freq, float conf) throws Narsese.NarseseException {
         return task($.$(term), punct, freq, conf);
     }
 
-    public static TaskBuilder task(@NotNull Term term, byte punct, float freq, float conf) {
+    public static TaskBuilder task( Term term, byte punct, float freq, float conf) {
         return task(term, punct, t(freq, conf));
     }
 
-    public static TaskBuilder task(@NotNull Term term, byte punct, Truth truth) {
+    public static TaskBuilder task( Term term, byte punct, Truth truth) {
         return new TaskBuilder(term, punct, truth);
     }
 
@@ -348,11 +347,11 @@ public enum $ {
         return $.p(x);
     }
 
-    public static <X> Term p(@NotNull X[] x, @NotNull Function<X, Term> toTerm) {
+    public static <X> Term p( X[] x,  Function<X, Term> toTerm) {
         return $.p((Term[]) terms(x, toTerm));
     }
 
-    public static <X> Term[] terms(@NotNull X[] map, @NotNull Function<X, Term> toTerm) {
+    public static <X> Term[] terms( X[] map,  Function<X, Term> toTerm) {
         return Stream.of(map).map(toTerm).toArray(Term[]::new);
     }
 
@@ -408,7 +407,7 @@ public enum $ {
     /**
      * normalized variable
      */
-    public static NormalizedVariable v(/*@NotNull*/ Op type, byte id) {
+    public static NormalizedVariable v(/**/ Op type, byte id) {
         return (NormalizedVariable) NormalizedVariable.the(type, id);
     }
 
@@ -648,12 +647,12 @@ public enum $ {
     }
 
 
-    public static @NotNull Term pRecurseIntersect(char prefix, @NotNull Term... t) {
+    public static  Term pRecurseIntersect(char prefix,  Term... t) {
         final int[] index = {0};
         return SECTe.the($.terms(t, x -> Atomic.the(Strings.repeat(String.valueOf(prefix), ++index[0]) + x)));
     }
 
-    public static @NotNull Term pRecurse(boolean innerStart, @NotNull Term... t) {
+    public static  Term pRecurse(boolean innerStart,  Term... t) {
         int j = t.length-1;
         int n = innerStart ? 0 : j -1;
         Term inner = t[n];
@@ -673,9 +672,9 @@ public enum $ {
         return nextInner;
     }
 
-    public static @Nullable Compound inhRecurse(@NotNull Term... t) {
+    public static @Nullable Compound inhRecurse( Term... t) {
         int tl = t.length;
-        @NotNull Term bottom = t[--tl];
+         Term bottom = t[--tl];
         Compound nextInner = $.inh(t[--tl], bottom);
         while (nextInner != null && tl > 0) {
             nextInner = $.inh(t[--tl], nextInner);
@@ -684,7 +683,7 @@ public enum $ {
     }
 
 
-    @NotNull
+    
     public static String unquote(Term s) {
         return Texts.unquote(s.toString());
     }

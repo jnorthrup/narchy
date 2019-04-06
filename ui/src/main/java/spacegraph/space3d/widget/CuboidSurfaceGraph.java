@@ -13,7 +13,7 @@ import spacegraph.space2d.ReSurface;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.SurfaceGraph;
 import spacegraph.space3d.SimpleSpatial;
-import spacegraph.space3d.SpaceGraph3D;
+import spacegraph.space3d.SpaceDisplayGraph3D;
 import spacegraph.space3d.phys.Collidable;
 import spacegraph.space3d.phys.collision.ClosestRay;
 import spacegraph.space3d.phys.math.Transform;
@@ -81,7 +81,7 @@ public class CuboidSurfaceGraph<X> extends SimpleSpatial<X> implements SurfaceGr
     }
 
     @Override
-    public Surface onTouch(Finger finger, Collidable body, ClosestRay r, short[] buttons, SpaceGraph3D space) {
+    public Surface onTouch(Finger finger, Collidable body, ClosestRay r, short[] buttons, SpaceDisplayGraph3D space) {
 
         if (body != null) {
 

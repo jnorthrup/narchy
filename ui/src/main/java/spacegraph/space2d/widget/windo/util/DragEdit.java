@@ -2,9 +2,9 @@ package spacegraph.space2d.widget.windo.util;
 
 import jcog.math.v2;
 import org.jetbrains.annotations.Nullable;
+import spacegraph.input.finger.CursorOverlay;
 import spacegraph.input.finger.Finger;
 import spacegraph.input.finger.FingerRenderer;
-import spacegraph.input.finger.RenderWhileHovering;
 import spacegraph.space2d.container.ContainerSurface;
 
 import java.util.EnumMap;
@@ -21,7 +21,7 @@ public enum DragEdit {
 
 
     static final EnumMap<DragEdit, FingerRenderer> cursor = new EnumMap(DragEdit.class);
-    static final EnumMap<DragEdit, RenderWhileHovering> hover = new EnumMap(DragEdit.class);
+    static final EnumMap<DragEdit, CursorOverlay> hover = new EnumMap(DragEdit.class);
 
     static {
 
@@ -36,10 +36,10 @@ public enum DragEdit {
         //cursor.put(DragEdit.MOVE, new FingerRenderer.PolygonCrosshairs().angle(45)); //TODO something special
 
 
-        cursor.forEach((k,v)-> hover.put(k, new RenderWhileHoveringOnWindow(v)));
+        cursor.forEach((k,v)-> hover.put(k, new CursorOverlayOnWindow(v)));
     }
 
-    @Nullable public static DragEdit edge(v2 p, float margin) {
+    @Nullable public static DragEdit mode(v2 p, float margin) {
         DragEdit m = null;
         if (p.x >= 0.5f - margin / 2f && p.x <= 0.5f + margin / 2) {
             if (p.y <= margin) {
@@ -77,6 +77,8 @@ public enum DragEdit {
                 m = DragEdit.RESIZE_NE;
             }
         }
+        if (m == null && p.scale(1-margin).inUnit())
+            return DragEdit.MOVE;
         return m;
 
     }
@@ -87,12 +89,12 @@ public enum DragEdit {
     }
 
     @Nullable
-    public RenderWhileHovering hover() {
+    public CursorOverlay hover() {
         return hover.get(this);
     }
 
-    private static class RenderWhileHoveringOnWindow extends RenderWhileHovering {
-        public RenderWhileHoveringOnWindow(FingerRenderer v) {
+    private static class CursorOverlayOnWindow extends CursorOverlay {
+        public CursorOverlayOnWindow(FingerRenderer v) {
             super(v);
         }
 

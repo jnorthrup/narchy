@@ -20,6 +20,7 @@ import nars.time.Tense;
 import nars.video.AutoclassifiedBitmap;
 import org.eclipse.collections.api.block.function.primitive.FloatToFloatFunction;
 import org.eclipse.collections.api.block.procedure.primitive.BooleanProcedure;
+import spacegraph.SpaceGraph;
 import spacegraph.space2d.widget.meter.BitmapMatrixView;
 
 import javax.swing.*;
@@ -31,7 +32,6 @@ import static jcog.Util.compose;
 import static nars.$.$$;
 import static nars.Op.INH;
 import static nars.agent.GameTime.fps;
-import static spacegraph.SpaceGraph.window;
 import static spacegraph.space2d.container.grid.Gridding.grid;
 
 /**
@@ -122,7 +122,7 @@ public class FZero extends GameX {
 
         BitmapMatrixView visionView = new BitmapMatrixView(vision);
         onFrame(visionView::updateIfShowing);
-        window(grid(visionView,
+        SpaceGraph.surfaceWindow(grid(visionView,
                 camAE.newChart()
                 //new Bitmap2DConceptsView(c, this).withControls()
         ), 500, 500);
@@ -169,7 +169,7 @@ public class FZero extends GameX {
         int angles = 8;
         DigitizedScalar ang = senseAngle(()->(float)fz.playerAngle, angles, Atomic.the("ang"));
         ang.resolution(r);
-        window(
+        SpaceGraph.surfaceWindow(
                 new VectorSensorView(ang, nar).withControls()
                 /*NARui.beliefIcons(ang.sensors, nar))*/, 400, 400);
 

@@ -27,7 +27,6 @@ import java.util.List;
 import static nars.$.$$;
 import static nars.agent.GameTime.fps;
 import static nars.experiment.mario.level.Level.*;
-import static spacegraph.SpaceGraph.window;
 
 public class NARio extends GameX {
 
@@ -122,7 +121,7 @@ public class NARio extends GameX {
             s.attn.parent(nar(), tileAttnGroup);
 
 
-        SpaceGraph.window(camAE.newChart(), 500, 500);
+        SpaceGraph.surfaceWindow(camAE.newChart(), 500, 500);
 
 //        SpaceGraph.window(new LabeledPane("Tile types",
 //                new Gridding(tileSensors.stream().map(z -> new VectorSensorView(z, nar).withControls()).collect(toList()))), 100, 100);
@@ -408,7 +407,7 @@ public class NARio extends GameX {
             g.resolution(0.1f);
         });*/
 
-        window(NARui.beliefCharts(List.of(X.pos, X.neg, Y.pos, Y.neg), nar), 700, 700);
+        SpaceGraph.surfaceWindow(NARui.beliefCharts(List.of(X.pos, X.neg, Y.pos, Y.neg), nar), 700, 700);
     }
 
     int lastCoins;

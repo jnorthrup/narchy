@@ -7,7 +7,6 @@ import nars.table.BeliefTable;
 import nars.task.util.Answer;
 import nars.term.Term;
 import nars.time.Tense;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
@@ -56,7 +55,7 @@ public class TruthWave {
         truth = new float[ENTRY_SIZE * cap];
     }
 
-    public TruthWave(@NotNull BeliefTable b) {
+    public TruthWave( BeliefTable b) {
         this(b.taskCount());
         set(b, Long.MIN_VALUE, Long.MAX_VALUE);
         //TODO update range
@@ -313,7 +312,7 @@ public class TruthWave {
 
 
 
-    @NotNull
+    
     @Override
     public String toString() {
         return start() + ".." + end() + ": " + Arrays.toString(truth);

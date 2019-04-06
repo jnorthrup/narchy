@@ -1,7 +1,6 @@
 package nars.index.task;
 
 import nars.Task;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -18,25 +17,25 @@ public interface TaskIndex {
      * @return null if no existing task alredy present, non-null of the pre-existing one
      */
     @Nullable
-    Task addIfAbsent(@NotNull Task x);
+    Task addIfAbsent( Task x);
 
-    default  void remove(@NotNull Task tt) {
+    default  void remove( Task tt) {
         tt.delete();
         removeInternal(tt);
     }
 
-    void removeInternal(@NotNull Task tt);
+    void removeInternal( Task tt);
 
     void clear();
 
-    default void remove(@NotNull List<Task> tt) {
+    default void remove( List<Task> tt) {
         int s = tt.size();
         for (Task aTt: tt) {
             this.remove(aTt);
         }
     }
 
-    void forEach(@NotNull Consumer<Task> each);
+    void forEach( Consumer<Task> each);
 
 
 
@@ -45,11 +44,11 @@ public interface TaskIndex {
 
 
 
-    default void addIfAbsent(@NotNull List<Task> toAdd) {
+    default void addIfAbsent( List<Task> toAdd) {
         for (Task aToAdd: toAdd) {
             addIfAbsent(aToAdd);
         }
     }
 
-    boolean contains(@NotNull Task t);
+    boolean contains( Task t);
 }

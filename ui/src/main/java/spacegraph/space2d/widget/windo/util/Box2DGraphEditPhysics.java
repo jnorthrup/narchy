@@ -453,7 +453,7 @@ public class Box2DGraphEditPhysics extends GraphEditPhysics {
                 protected void updateGeometry() {
                     super.updateGeometry();
                     float w = widgetRadius();
-                    linkPanel.size(w, w);
+                    linkPanel.resize(w, w);
                 }
             };
             on(snake::remove);
@@ -485,7 +485,7 @@ public class Box2DGraphEditPhysics extends GraphEditPhysics {
                 ContainerSurface wPort = graph.add(port);
                 wPort.pos(center());
                 float w = widgetRadius() * 4f;
-                wPort.size(w, w);
+                wPort.resize(w, w);
                 graph.addWire(new Wire(a(), port));
                 graph.addWire(new Wire(b(), port));
             }

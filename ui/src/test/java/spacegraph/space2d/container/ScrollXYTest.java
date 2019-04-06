@@ -18,8 +18,6 @@ import spacegraph.video.Draw;
 
 import java.util.Map;
 
-import static spacegraph.SpaceGraph.window;
-
 class ScrollXYTest {
 
 
@@ -64,7 +62,7 @@ class ScrollXYTest {
 //            grid.setScrollBar(true, true, false);
 //            grid.setScrollBar(false, false, true);
 
-            window(grid, 1024, 800);
+            SpaceGraph.surfaceWindow(grid, 1024, 800);
         }
     }
     static class ListTest1 {
@@ -74,7 +72,7 @@ class ScrollXYTest {
 
             GridRenderer<String> builder = (x, y, n) -> new CheckBox(n);
 
-            SpaceGraph.window( ScrollXY.array(builder, list) , 800, 800);
+            SpaceGraph.surfaceWindow( ScrollXY.array(builder, list) , 800, 800);
         }
 
     }

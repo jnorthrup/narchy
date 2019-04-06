@@ -162,7 +162,7 @@ public class ShapeSensor extends NARPart {
     @Override
     protected void starting(NAR nar) {
         super.starting(nar);
-        SpaceGraph.window(new ShapeSensorControl(), 400, 800);
+        SpaceGraph.surfaceWindow(new ShapeSensorControl(), 400, 800);
     }
 
     public static boolean isConvex(List<PointIndex_I32> poly) {

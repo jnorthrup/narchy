@@ -67,9 +67,9 @@ public class XYSlider extends PaintSurface implements Hovered {
     public Surface caption() {
         return new VectorLabel() {
             @Override
-            protected void renderChildren(ReSurface r) {
+            protected void renderContent(ReSurface r) {
                 text(summary());
-                super.renderChildren(r);
+                super.renderContent(r);
             }
 
         };
@@ -99,8 +99,8 @@ public class XYSlider extends PaintSurface implements Hovered {
     final Dragging drag = new SurfaceDragging(this, BUTTON) {
 
         @Override
-        protected boolean startDrag(Finger f) {
-            return pressing = super.startDrag(f);
+        protected boolean ready(Finger f) {
+            return pressing = super.ready(f);
         }
 
         @Override

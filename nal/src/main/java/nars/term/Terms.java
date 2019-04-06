@@ -12,7 +12,6 @@ import nars.term.compound.PatternCompound;
 import org.eclipse.collections.api.LazyIterable;
 import org.eclipse.collections.api.iterator.MutableIntIterator;
 import org.eclipse.collections.impl.map.mutable.primitive.ObjectIntHashMap;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.PrintStream;
@@ -100,7 +99,7 @@ public enum Terms {
         }
     }
 
-    @NotNull
+    
     public static Term[] sorted2(Term[] t) {
         Term a = t[0], b = t[1];
         int ab = a.compareTo(b);

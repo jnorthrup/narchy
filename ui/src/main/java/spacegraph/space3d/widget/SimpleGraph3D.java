@@ -5,7 +5,7 @@ import com.google.common.graph.SuccessorsFunction;
 import jcog.data.graph.MapNodeGraph;
 import jcog.data.list.FasterList;
 import jcog.random.XoRoShiRo128PlusRandom;
-import spacegraph.space3d.SpaceGraph3D;
+import spacegraph.space3d.SpaceDisplayGraph3D;
 import spacegraph.space3d.Spatial;
 import spacegraph.space3d.phys.Body3D;
 import spacegraph.video.Draw;
@@ -67,7 +67,7 @@ public class SimpleGraph3D<X> extends DynamicListSpace<X> {
 
 
     @Override
-    public void start(SpaceGraph3D<X> space) {
+    public void start(SpaceDisplayGraph3D<X> space) {
         
             
         

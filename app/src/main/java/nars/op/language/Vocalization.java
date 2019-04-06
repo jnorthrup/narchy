@@ -6,7 +6,6 @@ import nars.$;
 import nars.NAR;
 import nars.control.NARPart;
 import nars.term.Term;
-import nars.time.part.DurPart;
 import nars.truth.Truth;
 import nars.truth.util.TruthAccumulator;
 import org.eclipse.collections.api.tuple.Pair;
@@ -43,7 +42,7 @@ public class Vocalization extends NARPart {
     @Override
     protected void starting(NAR nar) {
         on(
-                DurPart.on(nar, () -> {
+                nar.onDur(() -> {
                     energy = Math.min(1f, energy + 1f / (this.durationsPerWord));
                     if (energy >= 1f) {
                         energy = 0;

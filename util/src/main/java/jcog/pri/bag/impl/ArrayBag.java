@@ -34,13 +34,6 @@ import static jcog.Util.lerp;
  */
 abstract public class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
 
-    /** commit if sample pop to get a more accurate sampling curve and statistics since removal of one item
-      * affects the size of smaller bags more drastically.  this value sets the max size (smallest bag)
-      * upon which to apply the refinement.
-      */
-    private static final int RECOMMIT_MAX_SIZE = 8;
-    private static final int RECOMMIT_SAMPLES_WAIT = 3;
-
     private final StampedLock lock = new StampedLock();
     private final MySortedListTable table;
 
@@ -95,10 +88,6 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
         return Util.bin(targetIndex * targetIndex, size);
     }
 
-    @Override
-    public @Nullable Y remove(X x) {
-        return table.remove(x);
-    }
 
     @Override
     public void clear() {
@@ -178,7 +167,7 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
 
 
         Y existing = table.map.put(key, incoming);
-        if (existing!=null)
+        if (existing != null)
             throw new WTF();
         //assert (existing == null);
 
@@ -196,7 +185,7 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
         return false;
     }
 
-    private float sortedness() {
+    protected float sortedness() {
         return 1f;
     }
 
@@ -252,7 +241,9 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
             Y y = (Y) l[i];
 
             if (y == null) {
-                sorted = false; i++; continue;
+                sorted = false;
+                i++;
+                continue;
             }
 
             //assert y != null;
@@ -292,7 +283,8 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
 
 
             } else {
-                boolean removed = items2.removeFast(y, i); assert(removed);
+                boolean removed = items2.removeFast(y, i);
+                assert (removed);
                 removeFromMap(y);
                 s--;
 
@@ -332,13 +324,10 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
     @Override
     public void sample(Random rng, Function<? super Y, SampleReaction> each) {
 
-
-
         //while (true) {
         Object[] ii;
         int s;
         int i;
-        int recommitsWait = 1;
 
         while ((s = Math.min((ii = table.items.array()).length, size())) > 0) {
 
@@ -357,13 +346,8 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
                         //explicit removal
                         remove(y, ii, i, true);
 
-                        if (!next.stop && (s > 1 && s - 1 < RECOMMIT_MAX_SIZE)) {
-                            if (--recommitsWait <= 0) {
-                                if (!lock.isWriteLocked()) {
-                                    commit(null);
-                                    recommitsWait = RECOMMIT_SAMPLES_WAIT;
-                                }
-                            }
+                        if (!next.stop && s > 1) {
+                            tryRecommit(rng, s);
                         }
                     }
 
@@ -376,6 +360,25 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
 
         //}
 
+    }
+
+    /**
+     * called periodically after a sample pop's, since the bag will have changed.  the smaller the bag,
+     * the more influence that pop will have had on the statistics that will decide further sampling.
+     * the larger the bag, the less frequently this will be called so there is a balanced tradeoff.
+     */
+    private void tryRecommit(Random rng, int size) {
+        if (size > 0) {
+            if (size==1 || (rngFloat(rng) < 1f / size)) {
+                if (!lock.isWriteLocked()) {
+                    commit(null);
+                }
+            }
+        }
+    }
+
+    private static float rngFloat(@Nullable Random rng) {
+        return rng!=null ? rng.nextFloat() : ThreadLocalRandom.current().nextFloat();
     }
 
     /**
@@ -549,13 +552,34 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
 
         try {
             if (ii[suspectedPosition] == y) {
-                boolean removed = table.items.removeFast(y, suspectedPosition); assert(removed);
+                boolean removed = table.items.removeFast(y, suspectedPosition);
+                assert (removed);
                 removeFromMap(y);
             }
         } finally {
             lock.unlockWrite(l);
         }
 
+    }
+
+    @Override
+    public final @Nullable Y remove(X x) {
+        Y removed;
+        long l = lock.writeLock();
+        try {
+            Y rx = table.map.remove(x);
+            if (rx != null) {
+                boolean removedFromList = table.removeItem(rx);
+                if (!removedFromList)
+                    throw new ConcurrentModificationException("inconsistency while attempting removal: " + x + " -> " + rx);
+            }
+            removed = rx;
+        } finally {
+            lock.unlockWrite(l);
+        }
+        if (removed != null)
+            removed(removed);
+        return removed;
     }
 
 //    @Override
@@ -582,7 +606,7 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
 //        if (map instanceof ConcurrentMap) {
 //            //check map first, and elide acquiring a lock if merge can be performed
 //        } else {
-            //l = lock.readLock();
+        //l = lock.readLock();
 //        }
         l = lock.writeLock();
 
@@ -650,7 +674,7 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
         assert i >= 0;
 
         Y exists = table.map.put(key, incoming);
-        if (exists!=null)
+        if (exists != null)
             throw new WTF(); //assert (exists == null);
     }
 
@@ -749,14 +773,15 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
     @Override
     public Bag<X, Y> commit(Consumer<Y> update) {
 
-        long l = lock.readLock();
+//        long l = lock.readLock();
+        long l = lock.writeLock();
         try {
             if (!isEmpty()) {
-                l = Util.readToWrite(l, lock);
+//                l = Util.readToWrite(l, lock);
                 clean(update);
             }
         } finally {
-            lock.unlock(l);
+            lock.unlockWrite(l);
         }
 
         return this;
@@ -958,23 +983,7 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
         @Nullable
         @Override
         public Y remove(X x) {
-            Y removed;
-            long l = lock.writeLock();
-            try {
-                Y removed1 = map.remove(x);
-                if (removed1 != null) {
-                    boolean removedFromList = removeItem(removed1);
-                    if (!removedFromList)
-                        throw new WTF();
-                }
-                removed = removed1;
-            } finally {
-                lock.unlockWrite(l);
-            }
-            if (removed != null) {
-                removed(removed);
-            }
-            return removed;
+            throw new UnsupportedOperationException();
         }
 
         @Override

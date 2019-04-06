@@ -16,7 +16,6 @@ import org.eclipse.collections.api.tuple.Pair;
 import org.eclipse.collections.api.tuple.Twin;
 import org.eclipse.collections.impl.block.factory.Comparators;
 import org.eclipse.collections.impl.tuple.Tuples;
-import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 
@@ -63,7 +62,6 @@ public class Termducer {
         return toIntsRef(bytes(x), ib).clone();
     }
 
-    @NotNull
     public static BytesRef bytes(Term y) {
         return new BytesRef(IO.termToBytes(y));
     }

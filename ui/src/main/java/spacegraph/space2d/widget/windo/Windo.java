@@ -27,6 +27,9 @@ public class Windo extends MutableUnitContainer {
 
 
     private boolean fixed = false;
+    private FingerResize resize = new FingerResizeSurface(Zoomed.PAN_BUTTON, this);
+    private Dragging move = new FingerMoveSurface(this);
+    private v2 _posGlobal = null;
 
     public Windo() {
         super();
@@ -38,138 +41,93 @@ public class Windo extends MutableUnitContainer {
 
     @Override
     public Surface finger(Finger finger) {
-        posGlobal =
-                //finger.posGlobal(this);
-                finger.posPixel;
 
-        if (finger == null) {
-            dragMode = null;
-            potentialDragMode = null;
-        } else if (dragMode != null && dragMode.isStopped()) {
-            dragMode = null;
-        }
 
+        boolean unDrag = false, canDrag = true;
+
+        Dragging current = this.dragMode;
+        unDrag = (current != null && !current.active());
 
         Surface other = super.finger(finger);
 
-        if (other != null && other != this) {
-            unfinger(finger);
-            return other;
-        } else if (finger == null || !fingeringRelative(finger).inUnit()) {
-
-
-            unfinger(finger);
-            return null;
-        } else {
-
-            if (!fixed())
-                return drag(finger);
-            else
-                return null;
+        if ((other != null && other != this) || fixed()) {
+            unDrag = true;
+            canDrag = false;
         }
 
+        if (unDrag) {
+            if (current != null) {
+                current.stop(finger);
+                this.dragMode = null;
+            }
+            //finger.tryFingering(CursorOverlay.Reset);
+        }
+
+        if (!canDrag)
+            potentialDragMode = null;
+
+        if (canDrag && drag(finger))
+            return this;
+        else
+            return null;
 
     }
 
-    @Nullable
-    private Surface drag(Finger finger) {
+    private boolean drag(Finger finger) {
 
+        _posGlobal = finger.posGlobal();
 
-        DragEdit potentialDragMode = DragEdit.edge(fingeringRelative(finger), resizeBorder);
+        Dragging actualDragMode = null;
+        DragEdit potentialDragMode = DragEdit.mode(finger.posRelative(this), resizeBorder);
 
-
-        if (!fingerable(potentialDragMode))
-            potentialDragMode = null;
-
-        if (potentialDragMode == null) {
-            if (fingerable(MOVE))
-                potentialDragMode = MOVE;
+        if (potentialDragMode != null) {
+            if (fingerable(potentialDragMode)) {
+                potentialDragMode = null;
+            }
         }
-
-
-        this.potentialDragMode = potentialDragMode;
-
-
-        if (finger.pressed(Zoomed.PAN_BUTTON)) {
-            Dragging d =
-                    potentialDragMode != null ? (Dragging) fingering(potentialDragMode) : null;
-
+        if (potentialDragMode != null) {
+            Dragging d = fingering(potentialDragMode);
             if (d != null && finger.tryFingering(d)) {
-                this.dragMode = d;
-                return null;
-            } else {
-                this.dragMode = null;
+                actualDragMode = d;
             }
         }
 
+        this.potentialDragMode = potentialDragMode;
+        this.dragMode = actualDragMode;
+
         if (potentialDragMode != null) {
-            RenderWhileHovering h = potentialDragMode.hover();
-            if (h != null)
-                finger.tryFingering(h);
+            CursorOverlay overlay = potentialDragMode.hover();
+            if (overlay != null)
+                finger.tryFingering(overlay);
         } else {
-            finger.tryFingering(RenderWhileHovering.Reset);
+            finger.tryFingering(CursorOverlay.Reset);
         }
 
-        return null;
+        return dragMode != null;
     }
 
-    public void unfinger(Finger finger) {
-        this.dragMode = null;
-        this.potentialDragMode = null;
-        finger.tryFingering(RenderWhileHovering.Reset);
-    }
-
-
-
-    protected v2 fingeringRelative(Finger finger) {
-        return finger.posRelative(this);
-    }
-
-
-    private Fingering fingering(DragEdit mode) {
-
-        switch (mode) {
-            case MOVE:
-                return fingeringMove();
-
-            default:
-                return fingeringResize(mode);
-        }
-
-    }
-
-    protected FingerResize fingeringResize(DragEdit mode) {
-        return new FingerResizeSurface(this, mode);
-    }
-
-    protected Fingering fingeringMove() {
-        return new FingerMoveSurface(this);
+    @Nullable
+    private Dragging fingering(DragEdit mode) {
+        if (mode == null)
+            return null;
+        else
+            return mode == MOVE ? this.move : this.resize.mode(mode);
     }
 
     /**
      * alllows filtering of certain finger modes
      */
     boolean fingerable(DragEdit d) {
-        return true;
+        return d != null; //HACK
     }
-
-    @Deprecated
-    protected boolean opaque() {
-        return true;
-    }
-
-
-    private transient v2 posGlobal = null;
-
-
 
     protected void postpaint(GL2 gl) {
 
         DragEdit p = potentialDragMode;
-        if (posGlobal!=null && p != null && p != DragEdit.MOVE) {
+        if (p != null && _posGlobal != null) {
 
-            float pmx = posGlobal.x, pmy = posGlobal.y;
-            float W = 0.5f,H = 0.5f;
+            float pmx = _posGlobal.x, pmy = _posGlobal.y;
+            float W = 0.5f, H = 0.5f;
             gl.glPushMatrix();
 
             float resizeBorder = Math.max(W, H) * Windo.resizeBorder;
@@ -226,16 +184,14 @@ public class Windo extends MutableUnitContainer {
 
     @Override
     protected void paintIt(GL2 gl, ReSurface r) {
-        if (opaque()) {
-            //default
-            gl.glColor4f(0.25f, 0.25f, 0.25f, 0.75f);
-            Draw.rect(bounds, gl);
-        }
+        //default opaque bg
+        gl.glColor4f(0.2f, 0.2f, 0.2f, 0.75f);
+        Draw.rect(bounds, gl);
     }
 
     @Override
-    protected void renderChildren(ReSurface r) {
-        super.renderChildren(r);
+    protected void renderContent(ReSurface r) {
+        super.renderContent(r);
         r.on(this::postpaint);
     }
 
@@ -250,12 +206,12 @@ public class Windo extends MutableUnitContainer {
 
     public Windo sizeRel(float pctX, float pctY) {
         EditGraph2D p = parentOrSelf(EditGraph2D.class);
-        return p!=null ? (Windo) size(p.w() * pctX, p.h() * pctY) : null;
+        return p != null ? (Windo) resize(p.w() * pctX, p.h() * pctY) : null;
     }
 
     public Windo posRel(float cx, float cy, float pctX, float pctY) {
         EditGraph2D p = parentOrSelf(EditGraph2D.class);
-        return p!=null ? posRel(p, cx, cy, pctX, pctY) : null;
+        return p != null ? posRel(p, cx, cy, pctX, pctY) : null;
     }
 
     public Windo posRel(Surface s, float cx, float cy, float pctX, float pctY) {
@@ -277,7 +233,9 @@ public class Windo extends MutableUnitContainer {
         return this;
     }
 
-    /** whether this window is not able to move */
+    /**
+     * whether this window is not able to move
+     */
     public final boolean fixed() {
         return fixed;
     }

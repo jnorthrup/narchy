@@ -2,11 +2,10 @@ package spacegraph.space2d.phys;
 
 import com.jogamp.opengl.GL2;
 import jcog.math.v2;
+import spacegraph.SpaceGraph;
 import spacegraph.space2d.ReSurface;
 import spacegraph.space2d.dyn2d.jbox2d.BlobTest4;
 import spacegraph.space2d.phys.dynamics.Dynamics2D;
-
-import static spacegraph.SpaceGraph.window;
 
 class Dynamics2DViewTest {
 
@@ -21,7 +20,7 @@ class Dynamics2DViewTest {
         //new TheoJansenTest().accept(w);
         new BlobTest4().accept(w);
 
-        window(new Dynamics2DView(w) {
+        SpaceGraph.surfaceWindow(new Dynamics2DView(w) {
             @Override
             protected void paint(GL2 gl, ReSurface reSurface) {
                 w.step(0.04f, 4, 1);

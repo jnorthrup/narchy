@@ -22,7 +22,7 @@ import nars.control.op.Remember;
 import nars.task.ITask;
 import nars.task.NALTask;
 import nars.term.Term;
-import nars.time.part.DurPart;
+import nars.time.part.DurLoop;
 import org.eclipse.collections.api.block.function.primitive.ShortToObjectFunction;
 import org.eclipse.collections.api.tuple.primitive.ObjectBooleanPair;
 import org.jetbrains.annotations.Nullable;
@@ -85,7 +85,7 @@ import java.util.function.Consumer;
             //1;
             2;
 
-    private final DurPart updater;
+    private final DurLoop updater;
 
     public Control(NAR nar) {
         this.nar = nar;
@@ -104,7 +104,7 @@ import java.util.function.Consumer;
         nar.eventAddRemove.on(serviceChange);
         refreshServices(); //again to be sure
 
-        updater = DurPart.on(nar, this::update);
+        updater = nar.onDur(this::update);
         updater.durs(updatePeriods);
     }
 

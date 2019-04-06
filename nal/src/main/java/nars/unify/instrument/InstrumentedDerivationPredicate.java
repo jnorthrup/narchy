@@ -4,11 +4,10 @@ import nars.derive.Derivation;
 import nars.term.Term;
 import nars.term.control.AbstractPred;
 import nars.term.control.PREDICATE;
-import org.jetbrains.annotations.NotNull;
 
 abstract public class InstrumentedDerivationPredicate extends AbstractPred<Derivation> {
 
-    protected InstrumentedDerivationPredicate(@NotNull PREDICATE<Derivation> inner) {
+    protected InstrumentedDerivationPredicate( PREDICATE<Derivation> inner) {
         super(inner);
     }
 

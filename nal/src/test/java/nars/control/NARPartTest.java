@@ -3,7 +3,7 @@ package nars.control;
 import jcog.service.Part;
 import nars.NAR;
 import nars.NARS;
-import nars.time.part.DurPart;
+import nars.time.part.DurLoop;
 import org.junit.jupiter.api.Test;
 
 import java.util.Set;
@@ -18,8 +18,8 @@ class NARPartTest {
 
         Set<Part<NAR>> before = n.partStream().collect(toSet());
 
-        DurPart d = DurPart.on(n, () -> {
-            
+        DurLoop d = n.onDur(() -> {
+
         });
 
         n.synch();

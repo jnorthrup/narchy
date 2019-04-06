@@ -2,6 +2,7 @@ package spacegraph.space2d.widget.adapter;
 
 import com.jcraft.jcterm.*;
 import com.jcraft.jsch.JSchException;
+import spacegraph.SpaceGraph;
 import spacegraph.input.finger.Finger;
 import spacegraph.input.key.KeyPressed;
 import spacegraph.input.key.impl.Keyboard;
@@ -19,8 +20,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Map;
 
-import static spacegraph.SpaceGraph.window;
-
 /**
  * Created by me on 11/13/16.
  */
@@ -33,7 +32,7 @@ public class SSHSurface extends MutableUnitContainer implements Terminal, KeyPre
     public static void main(String[] args) throws IOException, JSchException {
 
         SSHSurface s = new SSHSurface();
-        window(new MetaFrame(s), 800, 600);
+        SpaceGraph.surfaceWindow(new MetaFrame(s), 800, 600);
 
         s.start(new JCTermSwingFrame().connect("me", "localhost", 22));
     }

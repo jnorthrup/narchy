@@ -13,10 +13,10 @@
  *******************************************************************************/
 package nars.video;
 
-import nars.NAR;
 import nars.GameX;
-import nars.agent.GameTime;
+import nars.NAR;
 import nars.agent.Game;
+import nars.agent.GameTime;
 import net.propero.rdp.Rdesktop;
 import net.propero.rdp.RdesktopException;
 import net.propero.rdp.RdesktopFrame;

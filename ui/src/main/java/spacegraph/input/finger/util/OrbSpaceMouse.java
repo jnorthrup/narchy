@@ -6,7 +6,7 @@ import com.jogamp.newt.event.MouseEvent;
 import jcog.math.v3;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.input.finger.Finger;
-import spacegraph.space3d.SpaceGraph3D;
+import spacegraph.space3d.SpaceDisplayGraph3D;
 import spacegraph.space3d.Spatial;
 import spacegraph.space3d.phys.Body3D;
 import spacegraph.space3d.phys.Collidable;
@@ -39,12 +39,12 @@ public class OrbSpaceMouse extends SpaceMouse implements KeyListener {
     private final VoronoiSimplexSolver simplexSolver = new VoronoiSimplexSolver();
     private final Finger finger;
 
-    public OrbSpaceMouse(SpaceGraph3D g, Finger finger) {
+    public OrbSpaceMouse(SpaceDisplayGraph3D g, Finger finger) {
 
         super(g);
 
         this.finger = finger;
-        g.display.addKeyListener(this);
+        g.video.addKeyListener(this);
     }
 
     @Override
@@ -188,7 +188,7 @@ public class OrbSpaceMouse extends SpaceMouse implements KeyListener {
 
         if (prevPick != pickedSpatial) {
             if (prevPick != null) {
-                prevPick.onUntouch(space.display);
+                prevPick.onUntouch(space.video);
             }
             this.pickedSpatial = pickedSpatial;
         }
@@ -221,8 +221,8 @@ public class OrbSpaceMouse extends SpaceMouse implements KeyListener {
         vertical.normalize();
 
         float tanfov = (float) Math.tan(0.5f * fov);
-        float ww = space.display.getWidth();
-        float hh = space.display.getHeight();
+        float ww = space.video.getWidth();
+        float hh = space.video.getHeight();
 
         float aspect = hh / ww;
 

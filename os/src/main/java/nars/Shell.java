@@ -189,7 +189,7 @@ public class Shell {
 //                    .build();
 
 
-            SpaceGraph.window(termView = new ConsoleTerminal(term) {
+            SpaceGraph.surfaceWindow(termView = new ConsoleTerminal(term) {
                 @Override
                 public boolean key(KeyEvent e, boolean pressedOrReleased) {
 

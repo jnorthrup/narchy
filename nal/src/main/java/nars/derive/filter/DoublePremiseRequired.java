@@ -5,7 +5,6 @@ import nars.Op;
 import nars.derive.PreDerivation;
 import nars.term.atom.Atomic;
 import nars.term.control.AbstractPred;
-import nars.unify.Unify;
 
 import static nars.Op.*;
 

@@ -5,7 +5,6 @@ import jcog.Util;
 import jcog.WTF;
 import jcog.math.v2;
 import jcog.tree.rtree.HyperRegion;
-import org.jetbrains.annotations.NotNull;
 
 import static jcog.Texts.n4;
 import static jcog.Util.lerp;
@@ -63,7 +62,7 @@ public class RectFloat implements HyperRegion, Comparable<RectFloat> {
         return _X0Y0WH(x0, y0, w, h);
     }
 
-    @NotNull
+    
     private static RectFloat _X0Y0WH(float x0, float y0, float w, float h) {
         return new RectFloat(x0, y0, w, h);
     }
@@ -109,7 +108,7 @@ public class RectFloat implements HyperRegion, Comparable<RectFloat> {
 
 
     public RectFloat size(float ww, float hh) {
-        return orThisIfEqual(XYWH(cx(), cy(), ww, hh));
+        return orThisIfEqual(X0Y0WH(x, y, ww, hh));
     }
 
     @Override

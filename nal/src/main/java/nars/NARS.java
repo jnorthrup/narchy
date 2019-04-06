@@ -1,7 +1,7 @@
 package nars;
 
 import jcog.data.list.FasterList;
-import nars.attention.TaskLinkBag;
+import nars.attention.TaskLinkBagAttention;
 import nars.concept.Concept;
 import nars.concept.util.ConceptAllocator;
 import nars.concept.util.ConceptBuilder;
@@ -17,7 +17,6 @@ import nars.task.util.TaskBuffer;
 import nars.time.Time;
 import nars.time.clock.CycleTime;
 import nars.time.clock.RealTime;
-import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -40,7 +39,7 @@ public class NARS {
         NAR n = new NAR(
             index.get(),
             exec.get(),
-            new TaskLinkBag(),
+            new TaskLinkBagAttention(),
             time,
             in.get(),
             rng,
@@ -70,17 +69,17 @@ public class NARS {
     protected final List<Consumer<NAR>> step = new FasterList<>(8);
 
 
-    public NARS index(@NotNull Memory concepts) {
+    public NARS index( Memory concepts) {
         this.index = () -> concepts;
         return this;
     }
 
-    public NARS time(@NotNull Time time) {
+    public NARS time( Time time) {
         this.time = time;
         return this;
     }
 
-    public NARS exe(@NotNull Exec exe) {
+    public NARS exe( Exec exe) {
         this.exec = () -> exe;
         return this;
     }

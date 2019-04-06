@@ -2,7 +2,6 @@ package jcog.pri.bag.impl.hijack;
 
 import jcog.Util;
 import jcog.memoize.Memoize;
-import org.jetbrains.annotations.NotNull;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
@@ -29,7 +28,6 @@ public class LambdaMemoizer {
         }
     }
 
-    @NotNull
     public static <V> Function<Object[], V> memoize(MemoizeBuilder<V> m, Method method) {
         MethodHandles.Lookup lookup = MethodHandles.lookup();
         try {

@@ -4,6 +4,7 @@ import com.google.common.util.concurrent.RateLimiter;
 import jcog.random.XoRoShiRo128PlusRandom;
 import jcog.signal.wave1d.DigitizedSignal;
 import jcog.signal.wave1d.SignalInput;
+import spacegraph.SpaceGraph;
 import spacegraph.audio.AudioSource;
 import spacegraph.space2d.container.time.SignalView;
 import spacegraph.space2d.widget.button.MapSwitch;
@@ -12,8 +13,6 @@ import spacegraph.space2d.widget.text.LabeledPane;
 import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
-
-import static spacegraph.SpaceGraph.window;
 
 public class SignalViewTest {
     public static void main(String[] args) {
@@ -24,7 +23,7 @@ public class SignalViewTest {
 
 //        i.set(audio,1f / 30f/* + tolerance? */);
 
-        window(new LabeledPane(MapSwitch.the(Map.of(
+        SpaceGraph.surfaceWindow(new LabeledPane(MapSwitch.the(Map.of(
                 "Audio", ()->{
                     i.set(audio, 2f / 30f/* + tolerance? */);
                     audio.start();

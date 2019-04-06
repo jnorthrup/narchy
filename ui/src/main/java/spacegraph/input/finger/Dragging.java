@@ -3,7 +3,7 @@ package spacegraph.input.finger;
 abstract public class Dragging extends Fingering {
 
     public final int button;
-    private boolean stopped = false;
+    private boolean active = false;
 
     public Dragging(int button) {
         super();
@@ -12,17 +12,16 @@ abstract public class Dragging extends Fingering {
 
     @Override
     final public boolean start(Finger f) {
-        if (pressed(f) && startDrag(f)) {
-            stopped = false;
+        if (pressed(f) && ready(f)) {
             if (drag(f)) {
+                active = true;
                 return true;
             }
         }
-        stopped = true;
         return false;
     }
 
-    protected boolean startDrag(Finger f) {
+    protected boolean ready(Finger f) {
         return true;
     }
 
@@ -33,12 +32,11 @@ abstract public class Dragging extends Fingering {
 
     @Override
     public void stop(Finger finger) {
-        super.stop(finger);
-        stopped = true;
+        active = false;
     }
 
-    public final boolean isStopped() {
-        return stopped;
+    public final boolean active() {
+        return active;
     }
 
     @Override
@@ -47,7 +45,7 @@ abstract public class Dragging extends Fingering {
     }
 
     private boolean pressed(Finger f) {
-        return f.pressed(button);
+        return f.pressedNow(button);
     }
 
     /** return false to cancel the operation */

@@ -13,7 +13,7 @@ import nars.gui.NARui;
 import nars.sensor.Bitmap2DSensor;
 import nars.task.util.Answer;
 import nars.time.Tense;
-import nars.time.part.DurPart;
+import nars.time.part.DurLoop;
 import nars.truth.Truth;
 import spacegraph.input.finger.Dragging;
 import spacegraph.input.finger.Finger;
@@ -43,7 +43,7 @@ public class VectorSensorView extends BitmapMatrixView implements BitmapMatrixVi
     private final VectorSensor sensor;
     private final NAR nar;
 
-    private DurPart on;
+    private DurLoop on;
 
     private long start, end;
 
@@ -176,7 +176,7 @@ public class VectorSensorView extends BitmapMatrixView implements BitmapMatrixVi
     @Override
     protected void starting() {
         super.starting();
-        on = DurPart.on(nar, this::accept);
+        on = nar.onDur(this::accept);
     }
 
     @Override
@@ -270,7 +270,7 @@ public class VectorSensorView extends BitmapMatrixView implements BitmapMatrixVi
     public static class CameraSensorViewControls extends Gridding {
 
         private final VectorSensorView view;
-        private DurPart on;
+        private DurLoop on;
 
         /** the procedure to run in the next duration. limits activity to one
          * of these per duration. */
@@ -279,7 +279,7 @@ public class VectorSensorView extends BitmapMatrixView implements BitmapMatrixVi
         @Override
         protected void starting() {
             super.starting();
-            on = DurPart.on(view.nar, this::commit);
+            on = view.nar.onDur(this::commit);
         }
 
         @Override

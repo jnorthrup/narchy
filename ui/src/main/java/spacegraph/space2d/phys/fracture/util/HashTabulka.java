@@ -1,7 +1,6 @@
 package spacegraph.space2d.phys.fracture.util;
 
 import jcog.TODO;
-import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Array;
 import java.util.AbstractSet;
@@ -97,7 +96,7 @@ public class HashTabulka<T> extends AbstractSet<T> implements Set<T> {
      * sa v strukture nenachadzal.
      */
     @Override
-    public boolean remove(@NotNull Object value) {
+    public boolean remove( Object value) {
         int code = value.hashCode() & n;
         Node<T> zaznam = hashtable[code];
         if (zaznam != null) {

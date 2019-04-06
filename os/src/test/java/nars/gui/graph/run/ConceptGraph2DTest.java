@@ -22,7 +22,7 @@ class ConceptGraph2DTest {
             n.attn.decay.set(0.9f);
             n.termVolumeMax.set(14);
 
-            SpaceGraph.window(BagregateConceptGraph2D.get(n), 1200, 800 );
+            SpaceGraph.surfaceWindow(BagregateConceptGraph2D.get(n), 1200, 800 );
 
             n.startFPS(24f);
 
@@ -38,7 +38,7 @@ class ConceptGraph2DTest {
                     .threadSafe(4);
             n.termVolumeMax.set(5);
 
-            SpaceGraph.window(BagregateConceptGraph2D.get(n), 1200, 800 );
+            SpaceGraph.surfaceWindow(BagregateConceptGraph2D.get(n), 1200, 800 );
 
             n.startFPS(4f);
 
@@ -60,7 +60,7 @@ class ConceptGraph2DTest {
 
             Surface g = BagregateConceptGraph2D.get(n);
 
-            SpaceGraph.window( new Windo(g), 1200, 800 );
+            SpaceGraph.surfaceWindow( new Windo(g), 1200, 800 );
 
             n.startFPS(16f);
         }

@@ -12,7 +12,6 @@ import org.eclipse.collections.api.block.function.primitive.ByteFunction0;
 import org.eclipse.collections.api.block.function.primitive.IntObjectToIntFunction;
 import org.eclipse.collections.api.tuple.primitive.ObjectBytePair;
 import org.eclipse.collections.impl.map.mutable.primitive.ObjectByteHashMap;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.AbstractList;
@@ -29,16 +28,15 @@ import static nars.time.Tense.DTERNAL;
  */
 abstract public class FastCompound implements SameSubtermsCompound /* The */ {
 
-    static public final Op[] ov = Op.values();
+    private static final Op[] ov = Op.values();
 
     private static final int MAX_LAYERS = 8;
 
 
     public static class FastCompoundInstancedAtoms extends FastCompound {
-        @NotNull
         private final Term[] atoms;
 
-        public FastCompoundInstancedAtoms(Term[] atoms, byte[] shadow, int structure, int hash, byte volume, boolean normalized) {
+        FastCompoundInstancedAtoms(Term[] atoms, byte[] shadow, int structure, int hash, byte volume, boolean normalized) {
             super(shadow, structure, hash, volume, normalized);
             this.atoms = atoms;
         }
@@ -66,13 +64,13 @@ abstract public class FastCompound implements SameSubtermsCompound /* The */ {
     }
 
 
-    protected final byte[] shadow;
+    private final byte[] shadow;
 
-    final int hash;
-    final byte volume;
+    private final int hash;
+    private final byte volume;
     protected final int structure;
 
-    protected FastCompound(byte[] shadow, int structure, int hash, byte volume, boolean normalized) {
+    FastCompound(byte[] shadow, int structure, int hash, byte volume, boolean normalized) {
         this.shadow = shadow;
         this.hash = hash;
         this.volume = volume;
@@ -201,7 +199,7 @@ abstract public class FastCompound implements SameSubtermsCompound /* The */ {
     /**
      * seeks and returns the offset of the ith subterm
      */
-    public int subtermOffsetAt(int subterm, int at) {
+    private int subtermOffsetAt(int subterm, int at) {
         if (subterm == 0) {
 
             return at + 2;
@@ -219,7 +217,7 @@ abstract public class FastCompound implements SameSubtermsCompound /* The */ {
         return o[0];
     }
 
-    public void subtermOffsets(int at, ByteIntPredicate each) {
+    private void subtermOffsets(int at, ByteIntPredicate each) {
         byte[] shadow = this.shadow;
 
         assert (!ov[shadow[at]].atomic);
@@ -269,7 +267,6 @@ abstract public class FastCompound implements SameSubtermsCompound /* The */ {
         return DTERNAL;
     }
 
-    @NotNull
     @Override
     public String toString() {
         return Compound.toString(this);
@@ -336,7 +333,7 @@ abstract public class FastCompound implements SameSubtermsCompound /* The */ {
         private int offset = 0;
         int _hash = 0;
 
-        public SubtermView(FastCompound terms, int offset) {
+        SubtermView(FastCompound terms, int offset) {
             this.c = terms;
             if (offset != 0)
                 go(offset);

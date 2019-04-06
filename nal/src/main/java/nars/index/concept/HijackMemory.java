@@ -8,7 +8,7 @@ import nars.concept.Concept;
 import nars.concept.PermanentConcept;
 import nars.concept.TaskConcept;
 import nars.term.Term;
-import nars.time.part.DurPart;
+import nars.time.part.DurLoop;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Consumer;
@@ -39,7 +39,7 @@ public class HijackMemory extends Memory {
 
     //    private long now;
 //    private int dur;
-    private DurPart onDur;
+    private DurLoop onDur;
 
 
     public HijackMemory(int capacity, int reprobes) {
@@ -96,7 +96,7 @@ public class HijackMemory extends Memory {
     @Override
     public void start(NAR nar) {
         super.start(nar);
-        onDur = DurPart.on(nar, this::commit);
+        onDur = nar.onDur(this::commit);
         onDur.durs(forgetPeriodDurs);
     }
 

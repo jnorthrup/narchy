@@ -47,7 +47,7 @@ public class Sketch2DBitmap extends PaintSurface implements MenuSupplier {
     public static void main(String[] args) {
 
 
-        SpaceGraph.window(new Sketch2DBitmap(256, 256)
+        SpaceGraph.surfaceWindow(new Sketch2DBitmap(256, 256)
 
                 , 800, 800);
     }

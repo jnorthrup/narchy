@@ -247,29 +247,36 @@ public class Parts<K /* service key */, C /* context */  > {
 
 
     enum ServiceState {
-        Off {
-            @Override
-            public String toString() {
-                return "-";
-            }
-        },
-        OffToOn {
+
+        OffToOn() {
             @Override
             public String toString() {
                 return "-+";
             }
         },
-        On {
+        On() {
             @Override
             public String toString() {
                 return "+";
             }
         },
-        OnToOff {
+        OnToOff() {
             @Override
             public String toString() {
                 return "+-";
             }
+        },
+        Off() {
+            @Override
+            public String toString() {
+                return "-";
+            }
+        }
+        ;
+        public final boolean onOrStarting;
+
+        ServiceState() {
+            this.onOrStarting = this.ordinal() < 2;
         }
     }
 

@@ -22,7 +22,6 @@ public class Atom extends AbstractAtomic implements The {
         super(ATOM, validateAtomID(id));
     }
 
-    @NotNull
     private static String validateAtomID(String id) {
         if (id.isEmpty())
             throw new UnsupportedOperationException("Empty Atom ID");

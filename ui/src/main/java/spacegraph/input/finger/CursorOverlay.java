@@ -2,14 +2,14 @@ package spacegraph.input.finger;
 
 import org.jetbrains.annotations.Nullable;
 
-/** allows hovering events to set cursors */
-public class RenderWhileHovering extends Fingering {
+
+public class CursorOverlay extends Fingering {
 
 
     /** if cursor is null, then returns to default cursor */
     @Nullable private final FingerRenderer cursor;
 
-    public RenderWhileHovering(@Nullable FingerRenderer cursor) {
+    public CursorOverlay(@Nullable FingerRenderer cursor) {
         this.cursor = cursor;
     }
 
@@ -49,7 +49,7 @@ public class RenderWhileHovering extends Fingering {
         return cursor;
     }
 
-    public static final Fingering Reset = new RenderWhileHovering(null) {
+    public static final Fingering Reset = new CursorOverlay(null) {
         @Override
         public boolean update(Finger f) {
             return false;

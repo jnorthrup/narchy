@@ -49,7 +49,7 @@ abstract public class AbstractCachedSurface<X extends Surface> extends UnitConta
     }
 
     /** TODO double buffer to prevent 'tearing' */
-    @Override protected void renderChildren(ReSurface r) {
+    @Override protected void renderContent(ReSurface r) {
         if (cache) {
             if (!invalid.compareAndSet(true, false)) {
                 r.play(render);
@@ -59,7 +59,7 @@ abstract public class AbstractCachedSurface<X extends Surface> extends UnitConta
         } else {
             render.clear();
             invalid.set(false);
-            super.renderChildren(r);
+            super.renderContent(r);
         }
     }
 
@@ -69,8 +69,9 @@ abstract public class AbstractCachedSurface<X extends Surface> extends UnitConta
 
         assert(on == null);
         on = on();
-        invalid.set(true);
         assert(on!=null);
+
+        invalid.set(true);
     }
 
 

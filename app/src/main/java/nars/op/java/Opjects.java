@@ -22,7 +22,7 @@ import nars.term.ProxyTerm;
 import nars.term.Term;
 import nars.term.atom.Atomic;
 import nars.term.functor.LambdaFunctor;
-import nars.time.part.DurPart;
+import nars.time.part.DurLoop;
 import nars.truth.PreciseTruth;
 import nars.util.AtomicOperations;
 import nars.util.Timed;
@@ -96,7 +96,7 @@ public class Opjects extends DefaultTermizer {
     final ByteBuddy bb = new ByteBuddy();
 
     public final FloatRange exeThresh = new FloatRange(0.75f, 0.5f, 1f);
-    private final DurPart on;
+    private final DurLoop on;
 
     /**
      * determines evidence weighting for reporting specific feedback values
@@ -213,7 +213,7 @@ public class Opjects extends DefaultTermizer {
     public Opjects(NAR n) {
         in = (nar = n).newChannel(this);
         update(n);
-        this.on = DurPart.on(n, this::update);
+        this.on = n.onDur(this::update);
     }
 
     /**

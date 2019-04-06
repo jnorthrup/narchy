@@ -1,7 +1,6 @@
 package jcog.memoize;
 
 import jcog.data.map.MRUMap;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Function;
 
@@ -12,7 +11,7 @@ public class LinkedMRUMemoize<X, Y> extends MRUMap<X, Y> implements Memoize<X, Y
 
     public final Function<X, Y> f;
 
-    public LinkedMRUMemoize(@NotNull Function<X, Y> f, int capacity) {
+    public LinkedMRUMemoize( Function<X, Y> f, int capacity) {
         super(capacity);
         this.f = f;
     }

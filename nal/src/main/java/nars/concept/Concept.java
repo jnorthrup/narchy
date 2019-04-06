@@ -30,7 +30,6 @@ import nars.table.TaskTable;
 import nars.table.question.QuestionTable;
 import nars.term.Termed;
 import nars.util.SoftException;
-import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.util.function.Consumer;
@@ -230,7 +229,6 @@ public interface Concept extends Termed, MetaMap {
             this.reason = reason;
         }
 
-        @NotNull
         @Override
         public String getMessage() {
             return "InvalidConceptTerm: " + term + " (" + term.getClass() + "): " + reason;

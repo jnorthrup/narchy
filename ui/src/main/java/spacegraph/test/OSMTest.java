@@ -2,6 +2,7 @@ package spacegraph.test;
 
 import jcog.User;
 import org.xml.sax.SAXException;
+import spacegraph.SpaceGraph;
 import spacegraph.space2d.Surface;
 import spacegraph.util.geo.IRL;
 import spacegraph.util.geo.osm.Osm;
@@ -11,8 +12,6 @@ import spacegraph.video.OsmSurface;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.util.function.Consumer;
-
-import static spacegraph.SpaceGraph.window;
 
 public class OSMTest {
 
@@ -39,7 +38,7 @@ public class OSMTest {
                     System.out.println(n);
             });
 
-            window(new OsmSurface(i).go(o).widget(), 800, 800);
+            SpaceGraph.surfaceWindow(new OsmSurface(i).go(o).widget(), 800, 800);
 
             i.index.stats().print(System.out);
         }
@@ -52,7 +51,7 @@ public class OSMTest {
 //        sg.io.show(800, 800);
 
 //        sg.addAt(new SubOrtho(WidgetTest.widgetDemo()).posWindow(0, 0, 0.3f, 1f));
-        window(osmTest(), 800, 800);
+        SpaceGraph.surfaceWindow(osmTest(), 800, 800);
     }
 
     public static Surface osmTest() {

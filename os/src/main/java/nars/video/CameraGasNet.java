@@ -87,7 +87,7 @@ public class CameraGasNet<P extends Bitmap2D> implements Consumer<NAR> {
 
         agent.onFrame(this);
 
-        SpaceGraph.window(new PaintSurface() {
+        SpaceGraph.surfaceWindow(new PaintSurface() {
             @Override
             protected void paint(GL2 gl, ReSurface reSurface) {
                 int nodes = net.size();

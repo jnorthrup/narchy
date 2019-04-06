@@ -5,7 +5,7 @@ import jcog.math.v2;
 import jcog.tree.rtree.rect.RectFloat;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.widget.windo.util.DragEdit;
-import spacegraph.video.JoglSpace;
+import spacegraph.video.JoglDisplay;
 
 public class FingerResizeWindow extends FingerResize {
 
@@ -14,9 +14,9 @@ public class FingerResizeWindow extends FingerResize {
     private final static int MIN_WIDTH = 32;
     private final static int MIN_HEIGHT = MIN_WIDTH;
 
-    private final JoglSpace space;
+    private final JoglDisplay space;
 
-    public FingerResizeWindow(JoglSpace space, int button) {
+    public FingerResizeWindow(JoglDisplay space, int button) {
         super(button, true);
         this.space = space;
     }
@@ -24,8 +24,8 @@ public class FingerResizeWindow extends FingerResize {
 
     @Override
     public DragEdit mode(Finger finger) {
-        DragEdit edge = DragEdit.edge(
-                Finger.posRelative(finger.posPixel, space.display),
+        DragEdit edge = DragEdit.mode(
+                Finger.normalize(finger.posPixel, space.video),
                 margin);
         return edge;
     }
@@ -38,7 +38,7 @@ public class FingerResizeWindow extends FingerResize {
     @Override
     protected RectFloat size() {
 
-        GLWindow ww = this.space.display.window;
+        GLWindow ww = this.space.video.window;
         return RectFloat.X0Y0WH(ww.getX(), ww.getY(), ww.getWidth(),ww.getHeight());
     }
 
@@ -54,7 +54,7 @@ public class FingerResizeWindow extends FingerResize {
         if (h < MIN_HEIGHT)
             return;
 
-        space.display.setPositionAndSize(Math.round(x1), Math.round(y1), w, h);
+        space.video.setPositionAndSize(Math.round(x1), Math.round(y1), w, h);
     }
 
     @Override

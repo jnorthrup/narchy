@@ -84,8 +84,8 @@ public class Widget extends MutableUnitContainer<Surface> implements KeyPressed 
     }
 
     @Override
-    protected void renderChildren(ReSurface r) {
-        super.renderChildren(r);
+    protected void renderContent(ReSurface r) {
+        super.renderContent(r);
 
         if (focused) {
             //focused indicator

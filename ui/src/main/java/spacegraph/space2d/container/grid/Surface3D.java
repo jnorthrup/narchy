@@ -10,7 +10,7 @@ import spacegraph.space2d.container.Bordering;
 import spacegraph.space2d.container.PaintSurface;
 import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.space3d.AbstractSpace;
-import spacegraph.space3d.SpaceGraph3D;
+import spacegraph.space3d.SpaceDisplayGraph3D;
 import spacegraph.space3d.widget.SimpleGraph3D;
 
 import static spacegraph.space2d.container.Bordering.S;
@@ -19,11 +19,11 @@ import static spacegraph.space2d.container.Bordering.S;
 public class Surface3D extends PaintSurface {
 
     private final AbstractSpace<?> space;
-    private final SpaceGraph3D<Object> sg;
+    private final SpaceDisplayGraph3D<Object> sg;
 
     public Surface3D(AbstractSpace space) {
         this.space = space;
-        this.sg = new SpaceGraph3D<>(space);
+        this.sg = new SpaceDisplayGraph3D<>(space);
     }
 
     @Override
@@ -53,6 +53,6 @@ public class Surface3D extends PaintSurface {
 
         sg.commit(h);
 
-        SpaceGraph.window(new Bordering(new Surface3D(sg)).set(S, new PushButton("K")), 800, 800);
+        SpaceGraph.surfaceWindow(new Bordering(new Surface3D(sg)).set(S, new PushButton("K")), 800, 800);
     }
 }

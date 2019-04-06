@@ -139,7 +139,6 @@ public class TaskCondition implements NARCondition, Predicate<Task>, Consumer<Ta
         return dist;
     }
 
-    @NotNull
     @Override
     public String toString() {
         return term.toString() + ((char) punc) + " %" +

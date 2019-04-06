@@ -156,8 +156,8 @@ public class ConsoleAgent extends GameX {
 
         GameX.runRT((n) -> {
             ConsoleAgent a = new ConsoleAgent(n);
-            SpaceGraph.window(a.R, WIDTH * 100, HEIGHT * 100);
-            SpaceGraph.window(a.W, WIDTH * 100, HEIGHT * 100);
+            SpaceGraph.surfaceWindow(a.R, WIDTH * 100, HEIGHT * 100);
+            SpaceGraph.surfaceWindow(a.W, WIDTH * 100, HEIGHT * 100);
             return a;
         }, fps);
 

@@ -18,7 +18,6 @@ public final class VarQuery extends NormalizedVariable {
     private final static int RANK = Term.opX(VAR_QUERY, 0);
     @Override public int opX() { return RANK;    }
 
-    @NotNull
     @Override
     public final Op op() {
         return VAR_QUERY;

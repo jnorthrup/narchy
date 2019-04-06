@@ -81,8 +81,8 @@ public class Spectrogram extends RingContainer<BitmapMatrixView> implements Bitm
     }
 
     @Override
-    public void renderChildren(ReSurface r) {
-        super.renderChildren(r);
+    public void renderContent(ReSurface r) {
+        super.renderContent(r);
         r.on((gl,sr)->{
             //float W = w(), H = h();
 

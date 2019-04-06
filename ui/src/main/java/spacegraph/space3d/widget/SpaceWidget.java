@@ -5,7 +5,7 @@ import spacegraph.input.finger.Finger;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.space3d.SimpleSpatial;
-import spacegraph.space3d.SpaceGraph3D;
+import spacegraph.space3d.SpaceDisplayGraph3D;
 import spacegraph.space3d.phys.Collidable;
 import spacegraph.space3d.phys.collision.ClosestRay;
 import spacegraph.util.math.Quat4f;
@@ -50,7 +50,7 @@ abstract public class SpaceWidget<T> extends CuboidSurfaceGraph<T> {
     }
 
     @Override
-    public Surface onTouch(Finger finger, Collidable body, ClosestRay hitPoint, short[] buttons, SpaceGraph3D space) {
+    public Surface onTouch(Finger finger, Collidable body, ClosestRay hitPoint, short[] buttons, SpaceDisplayGraph3D space) {
         Surface s = super.onTouch(finger, body, hitPoint, buttons, space);
 
 

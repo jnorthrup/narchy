@@ -129,7 +129,7 @@ class VerletSurfaceTest {
         }
 
         public static void main(String[] args) {
-            SpaceGraph.window(new AttractTest2D(), 1200, 800);
+            SpaceGraph.surfaceWindow(new AttractTest2D(), 1200, 800);
         }
 
     }
@@ -177,7 +177,7 @@ class VerletSurfaceTest {
 
             };
 
-            SpaceGraph.window(v, 1200, 800);
+            SpaceGraph.surfaceWindow(v, 1200, 800);
         }
 
     }
@@ -190,7 +190,7 @@ class VerletSurfaceTest {
 //        }
 
         {
-            size(1200, 1200);
+            resize(1200, 1200);
 //            physics.physics.bounds(bounds);
 
 
@@ -205,7 +205,7 @@ class VerletSurfaceTest {
 
         public static void main(String[] args) {
 
-            SpaceGraph.window(new VerletLinkTest(), 1200, 800);
+            SpaceGraph.surfaceWindow(new VerletLinkTest(), 1200, 800);
         }
 
     }

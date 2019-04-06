@@ -12,7 +12,6 @@ import nars.term.TermedDelegate;
 import nars.truth.Truth;
 import nars.truth.Truthed;
 import nars.util.Timed;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
@@ -39,7 +38,7 @@ import static nars.time.Tense.ETERNAL;
  */
 @Deprecated public class TaskBuilder extends UnitPri implements TermedDelegate, Truthed, Function<NAR, Task> {
 
-    @NotNull
+    
     private Term term;
 
     protected final byte punc;
@@ -72,7 +71,7 @@ import static nars.time.Tense.ETERNAL;
 
 
 
-    public TaskBuilder(Term t, byte punct, float freq, @NotNull NAR nar) throws TaskException {
+    public TaskBuilder(Term t, byte punct, float freq,  NAR nar) throws TaskException {
         this(t, punct, t(freq, nar.confDefault(punct)));
     }
 
@@ -296,7 +295,7 @@ import static nars.time.Tense.ETERNAL;
     /**
      * the evidence should be sorted and de-duplicaed prior to calling this
      */
-    @NotNull
+    
     protected TaskBuilder setEvidence(@Nullable long... evidentialSet) {
 
         if (this.evidence != evidentialSet) {
@@ -309,7 +308,7 @@ import static nars.time.Tense.ETERNAL;
         return punc;
     }
 
-    @NotNull
+    
     public final long[] evidence() {
         return this.evidence;
     }
@@ -359,7 +358,7 @@ import static nars.time.Tense.ETERNAL;
 
 
 
-    @NotNull
+    
     private TaskBuilder setCreationTime(long creationTime) {
 
 
@@ -468,22 +467,22 @@ import static nars.time.Tense.ETERNAL;
     }
 
 
-    @NotNull
-    public final TaskBuilder present(@NotNull Timed timed) {
+    
+    public final TaskBuilder present( Timed timed) {
         return time(timed.time());
     }
 
-    @NotNull
-    public final TaskBuilder time(@NotNull Timed timed, int dt) {
+    
+    public final TaskBuilder time( Timed timed, int dt) {
         return time(timed.time() + dt);
     }
 
-    @NotNull
+    
     public final TaskBuilder time(long when) {
         return TaskBuilder.this.time(when, when, when);
     }
 
-    @NotNull
+    
     public TaskBuilder time(long creationTime, long start, long end) {
         setCreationTime(creationTime);
         setStart(start);
@@ -491,7 +490,7 @@ import static nars.time.Tense.ETERNAL;
         return this;
     }
 
-    @NotNull
+    
     public TaskBuilder time(long creationTime, long occurrenceTime) {
         setCreationTime(creationTime);
         setStart(occurrenceTime);
@@ -515,38 +514,38 @@ import static nars.time.Tense.ETERNAL;
         return this;
     }
 
-    @NotNull
+    
     public final TaskBuilder occurr(long occurrenceTime) {
         setStart(occurrenceTime);
         setEnd(occurrenceTime);
         return this;
     }
 
-    @NotNull
+    
     public TaskBuilder eternal() {
         setStart(ETERNAL);
         setEnd(ETERNAL);
         return this;
     }
 
-    @NotNull
+    
     public final TaskBuilder evidence(long... evi) {
         setEvidence(evi);
         return this;
     }
 
-    public final TaskBuilder evidence(@NotNull Task evidenceToCopy) {
+    public final TaskBuilder evidence( Task evidenceToCopy) {
         return evidence(evidenceToCopy.stamp());
     }
 
     @Override
-    @NotNull public TaskBuilder withPri(float p) {
+     public TaskBuilder withPri(float p) {
         pri(p);
         return this;
     }
 
 
-    public final TaskBuilder pri(@NotNull Prioritized bb) {
+    public final TaskBuilder pri( Prioritized bb) {
         super.pri(bb);
         return this;
     }

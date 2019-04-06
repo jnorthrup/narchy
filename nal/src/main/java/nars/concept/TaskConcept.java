@@ -12,7 +12,6 @@ import nars.table.BeliefTable;
 import nars.table.TaskTable;
 import nars.table.question.QuestionTable;
 import nars.term.Term;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -113,7 +112,7 @@ public class TaskConcept extends NodeConcept  {
     }
 
 
-    public void forEachTask(boolean includeConceptBeliefs, boolean includeConceptQuestions, boolean includeConceptGoals, boolean includeConceptQuests, @NotNull Consumer<Task> each) {
+    public void forEachTask(boolean includeConceptBeliefs, boolean includeConceptQuestions, boolean includeConceptGoals, boolean includeConceptQuests, Consumer<Task> each) {
         if (includeConceptBeliefs && beliefs != null) beliefs.forEachTask(each);
         if (includeConceptQuestions && questions != null) questions.forEachTask(each);
         if (includeConceptGoals && goals != null) goals.forEachTask(each);

@@ -4,7 +4,6 @@ import com.google.common.base.Joiner;
 import com.google.common.math.PairedStatsAccumulator;
 import jcog.data.list.FasterList;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
-import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.util.List;
@@ -65,7 +64,7 @@ public class MultiStatistics<X> implements Consumer<X> {
     public void clear() {
         for (Consumer<X> c : cond) {
 
-            
+
             if (c instanceof BooleanClassifierWithStatistics)
                 ((BooleanClassifierWithStatistics)c).clear();
             else if (c instanceof ScalarStats)
@@ -119,7 +118,7 @@ public class MultiStatistics<X> implements Consumer<X> {
         }
     }
 
-    public MultiStatistics<X> add(@NotNull Iterable<X> ii) {
+    public MultiStatistics<X> add(Iterable<X> ii) {
         ii.forEach(this);
         return this;
     }

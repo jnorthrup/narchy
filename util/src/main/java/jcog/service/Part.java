@@ -45,6 +45,10 @@ public abstract class Part<C> implements Off {
         return state.getOpaque() == Parts.ServiceState.On;
     }
 
+    public final boolean isOnOrStarting() {
+        return state.getOpaque().onOrStarting;
+    }
+
     public final boolean isOff() {
         return state.getOpaque() == Parts.ServiceState.Off;
     }

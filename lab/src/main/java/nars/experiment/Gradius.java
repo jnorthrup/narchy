@@ -12,6 +12,7 @@ import nars.concept.sensor.DigitizedScalar;
 import nars.gui.sensor.VectorSensorView;
 import nars.sensor.Bitmap2DSensor;
 import org.eclipse.collections.api.block.predicate.primitive.BooleanPredicate;
+import spacegraph.SpaceGraph;
 import spacegraph.space2d.container.grid.Gridding;
 
 import java.util.List;
@@ -20,7 +21,6 @@ import static java.util.stream.Collectors.toList;
 import static java4k.gradius4k.Gradius4K.*;
 import static nars.$.$$;
 import static nars.agent.GameTime.fps;
-import static spacegraph.SpaceGraph.window;
 
 /**
  * Created by me on 4/30/17.
@@ -107,7 +107,7 @@ public class Gradius extends GameX {
                     cams.add(c);
                 }
 
-            window(new Gridding(
+            SpaceGraph.surfaceWindow(new Gridding(
                             cams.stream().map(c -> new VectorSensorView(c, this).withControls()).collect(toList())),
                     400, 900);
         }

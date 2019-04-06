@@ -27,7 +27,7 @@
 package spacegraph.space3d.widget;
 
 import jcog.math.v3;
-import spacegraph.space3d.SpaceGraph3D.ExtraGlobals;
+import spacegraph.space3d.SpaceDisplayGraph3D.ExtraGlobals;
 import spacegraph.space3d.phys.Body3D;
 import spacegraph.space3d.phys.Dynamics3D;
 import spacegraph.space3d.phys.constraint.TypedConstraint;

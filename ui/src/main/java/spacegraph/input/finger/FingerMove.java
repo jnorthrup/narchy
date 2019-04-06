@@ -5,7 +5,7 @@ import jcog.math.v2;
 public abstract class FingerMove extends Dragging {
 
     private final float xSpeed, ySpeed;
-    private final v2 start = new v2(), current = new v2();
+    private final v2 start = new v2();
 
     protected FingerMove(int button) {
         this(button, true, true);
@@ -40,14 +40,13 @@ public abstract class FingerMove extends Dragging {
 
         v2 next = pos(f);
         if (next !=null) {
-            if (incremental())
-                start.set(current);
+
 
             float tx = xSpeed != 0 ? (next.x - start.x) * xSpeed : 0;
             float ty = ySpeed != 0 ? (next.y - start.y) * ySpeed : 0;
 
-            current.set(next);
-
+            if (incremental())
+                start.set(next);
 
             move(tx, ty);
             return true;
@@ -57,10 +56,9 @@ public abstract class FingerMove extends Dragging {
     }
 
     @Override
-    protected boolean startDrag(Finger f) {
+    protected boolean ready(Finger f) {
         this.start.set(pos(f));
-        this.current.set(start);
-        return super.startDrag(f);
+        return super.ready(f);
     }
 
 

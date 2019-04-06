@@ -121,9 +121,9 @@ public class PartsTable extends Gridding implements GridModel, GridRenderer {
         }
 
         @Override
-        protected void renderChildren(ReSurface r) {
+        protected void renderContent(ReSurface r) {
             on(part.isOn()); //live update
-            super.renderChildren(r);
+            super.renderContent(r);
         }
 
         @Override

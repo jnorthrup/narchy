@@ -5,7 +5,7 @@ import jcog.event.Off;
 import jcog.exe.Loop;
 import nars.time.Tense;
 import nars.time.clock.RealTime;
-import nars.time.part.DurPart;
+import nars.time.part.DurLoop;
 
 /** model for timing a game */
 abstract public class GameTime {
@@ -92,13 +92,13 @@ abstract public class GameTime {
 
         private transient final float durPeriod;
 
-        public DurPart loop = null;
+        public DurLoop loop = null;
 
         public Durs(float durPeriod) {
             this.durPeriod = durPeriod;
         }
         @Override protected Off install(Game a) {
-            loop = DurPart.on(a.nar(), a::next);
+            loop = a.nar().onDur(a::next);
             loop.durs(durPeriod);
             return loop;
         }
@@ -110,7 +110,7 @@ abstract public class GameTime {
 
         @Override
         public long next(long now) {
-            DurPart l = this.loop;
+            DurLoop l = this.loop;
             return l !=null ?  now + l.durCycles() : now;
         }
     }

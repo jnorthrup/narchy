@@ -1,7 +1,7 @@
 package spacegraph.input.key;
 
 import com.jogamp.newt.event.KeyEvent;
-import spacegraph.video.JoglSpace;
+import spacegraph.video.JoglDisplay;
 
 /**
  * Created by me on 11/20/16.
@@ -9,7 +9,7 @@ import spacegraph.video.JoglSpace;
 class KeyXY extends SpaceKeys {
     private final float speed = 8f;
 
-    KeyXY(JoglSpace g) {
+    KeyXY(JoglDisplay g) {
         super(g);
 
 

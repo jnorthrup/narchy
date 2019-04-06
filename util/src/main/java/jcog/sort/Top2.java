@@ -67,7 +67,6 @@ public class Top2<T> extends AbstractCollection<T> implements Consumer<T> {
     }
 
 
-    @NotNull
     public List<T> toList() {
         if (a != null && b != null) {
             return Lists.newArrayList(a, b);

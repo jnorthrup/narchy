@@ -3,7 +3,6 @@ package nars.index.concept;
 import nars.concept.Concept;
 import nars.term.Term;
 import nars.term.Termed;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
@@ -55,7 +54,7 @@ public class MapMemory extends Memory {
     }
 
     @Override
-    public void set(@NotNull Term src, Concept target) {
+    public void set(/*@NotNull*/ Term src, Concept target) {
         map.merge(src, target, setOrReplaceNonPermanent);
     }
 

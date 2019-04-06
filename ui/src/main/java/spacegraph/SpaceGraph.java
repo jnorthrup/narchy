@@ -5,9 +5,9 @@ import jdk.jshell.tool.JavaShellToolBuilder;
 import spacegraph.space2d.OrthoSurfaceGraph;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.widget.meta.ObjectSurface;
-import spacegraph.space3d.SpaceGraph3D;
+import spacegraph.space3d.SpaceDisplayGraph3D;
 import spacegraph.space3d.Spatial;
-import spacegraph.video.JoglSpace;
+import spacegraph.video.JoglDisplay;
 
 @Skill("Direct_manipulation_interface")
 public class SpaceGraph {
@@ -29,30 +29,25 @@ $ jshell --startup startups/custom-startup
     /**
      * creates window with 2d with single surface layer, maximized to the size of the window
      */
-    public static JoglSpace window(Surface s, int w, int h) {
-        JoglSpace win = new OrthoSurfaceGraph(s);
-        if (w > 0 && h > 0) {
-            win.display.show(w, h);
-        }
-        return win;
+    public static JoglDisplay surfaceWindow(Surface s, int w, int h) {
+        return new OrthoSurfaceGraph(s, w, h);
     }
 
     /**
      * generic window creation entry point
      */
-    public static JoglSpace window(Object o, int w, int h) {
-        if (o instanceof JoglSpace) {
-            JoglSpace s = (JoglSpace) o;
-            s.display.show(w, h);
+    public static JoglDisplay window(Object o, int w, int h) {
+        if (o instanceof JoglDisplay) {
+            JoglDisplay s = (JoglDisplay) o;
+            s.video.show(w, h);
             return s;
         } else if (o instanceof Spatial) {
-            SpaceGraph3D win = new SpaceGraph3D(((Spatial) o));
-            win.display.show(w, h);
+            SpaceDisplayGraph3D win = new SpaceDisplayGraph3D(((Spatial) o));
+            win.video.show(w, h);
             return win;
-        } else if (o instanceof Surface) {
-            return window(((Surface) o), w, h);
         } else {
-            return window(new ObjectSurface<>(o), w, h);
+            Surface s = o instanceof Surface ? ((Surface) o) : new ObjectSurface<>(o);
+            return surfaceWindow(s, w, h);
         }
     }
 

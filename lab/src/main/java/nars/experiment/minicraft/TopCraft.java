@@ -2,8 +2,8 @@ package nars.experiment.minicraft;
 
 import jcog.signal.wave2d.MonoBufImgBitmap2D;
 import nars.$;
-import nars.NAR;
 import nars.GameX;
+import nars.NAR;
 import nars.Narsese;
 import nars.experiment.minicraft.top.InputHandler;
 import nars.experiment.minicraft.top.TopDownMinicraft;
@@ -38,7 +38,7 @@ public class TopCraft extends GameX {
         }, 8, this);
         camAE.alpha.set(0.04f);
         camAE.noise.set(0.02f);
-        SpaceGraph.window(camAE.newChart(), 500, 500);
+        SpaceGraph.surfaceWindow(camAE.newChart(), 500, 500);
         onFrame(()->{ p.updateBitmap(); });
 
 

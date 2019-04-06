@@ -35,12 +35,14 @@ abstract public class ContainerSurface extends Surface {
         return false;
     }
 
-    @Override
     public final void layout() {
-        MUSTLAYOUT.set(this, 1);
+        //MUSTLAYOUT.set(this, 1);
+        MUSTLAYOUT.lazySet(this, 1);
     }
 
-    abstract protected void doLayout(float dtS);
+
+    /** TODO just accept the ReRender instance, not this dtS which it can get as needed */
+    @Deprecated abstract protected void doLayout(float dtS);
 
     @Override
     public void print(PrintStream out, int indent) {
@@ -74,32 +76,39 @@ abstract public class ContainerSurface extends Surface {
 
     @Override
     protected final void render(ReSurface r) {
-        if (!preRender(r)) {
-            showing = false;
+        if (preRender(r)) {
+            show();
+            render(r, MUSTLAYOUT.compareAndSet(this, 1, 0));
         } else {
-            showing = true;
-
-            if (MUSTLAYOUT.compareAndSet(this, 1, 0)) {
-                doLayout(r.dtS());
-            }
-
-            r.on(this::paintIt); //TODO if transparent this doesnt need rendered
-
-            renderChildren(r);
-
+            hide();
         }
-
     }
 
-    protected void renderChildren(ReSurface r) {
+    /* TODO abstract */ protected void render(ReSurface r, boolean layout) {
+        //TODO all of these called methods can be merged into one method that does these in whatever order the impl chooses
+        //
+
+        if (layout)
+            doLayout(r.dtS());
+
+        renderContainer(r);
+
+        renderContent(r);
+    }
+
+    @Deprecated private void renderContainer(ReSurface r) {
+        r.on(this::paintIt); //TODO if transparent ("non-opaque" in Swing terminology) this doesnt need rendered
+    }
+
+    @Deprecated protected void renderContent(ReSurface r) {
+        //TODO forEachWith
         forEach(c -> c.tryRender(r));
     }
 
-
+    /** post-visibility render guard */
     protected boolean preRender(ReSurface r) {
         return true;
     }
-
 
     @Override
     public Surface finger(Finger finger) {

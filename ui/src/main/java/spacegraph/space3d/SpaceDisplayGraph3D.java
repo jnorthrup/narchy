@@ -41,7 +41,7 @@ import spacegraph.space3d.phys.collision.broad.Intersecter;
 import spacegraph.space3d.phys.constraint.BroadConstraint;
 import spacegraph.space3d.widget.DynamicListSpace;
 import spacegraph.video.Draw;
-import spacegraph.video.JoglSpace;
+import spacegraph.video.JoglDisplay;
 import spacegraph.video.Tex;
 
 import java.awt.*;
@@ -57,7 +57,7 @@ import static com.jogamp.opengl.GL2.*;
 /**
  * @author jezek2
  */
-public class SpaceGraph3D<X> extends JoglSpace implements Iterable<Spatial<X>> {
+public class SpaceDisplayGraph3D<X> extends JoglDisplay implements Iterable<Spatial<X>> {
 
     private final boolean simulating = true;
 
@@ -77,7 +77,7 @@ public class SpaceGraph3D<X> extends JoglSpace implements Iterable<Spatial<X>> {
     private final List<AbstractSpace<X>> inputs = new FasterList<>(1);
 
 
-    public SpaceGraph3D<X> camPos(float x, float y, float z) {
+    public SpaceDisplayGraph3D<X> camPos(float x, float y, float z) {
         camPos.set(x, y, z);
         return this;
     }
@@ -89,7 +89,7 @@ public class SpaceGraph3D<X> extends JoglSpace implements Iterable<Spatial<X>> {
 //        inputs.clear();
 //    }
 
-    private SpaceGraph3D() {
+    private SpaceDisplayGraph3D() {
         super();
 
 
@@ -102,20 +102,20 @@ public class SpaceGraph3D<X> extends JoglSpace implements Iterable<Spatial<X>> {
 
         dyn = new Dynamics3D<>(dispatcher, broadphase, this);
 
-        display.onUpdate((dt) -> {
-            update(Math.round(display.dtS * 1000.0));
+        video.onUpdate((dt) -> {
+            update(Math.round(video.dtS * 1000.0));
             return true;
         });
     }
 
-    public SpaceGraph3D(AbstractSpace<X>... cc) {
+    public SpaceDisplayGraph3D(AbstractSpace<X>... cc) {
         this();
 
         for (AbstractSpace c : cc)
             add(c);
     }
 
-    public SpaceGraph3D(Spatial<X>... cc) {
+    public SpaceDisplayGraph3D(Spatial<X>... cc) {
         this();
 
         add(cc);
@@ -125,7 +125,7 @@ public class SpaceGraph3D<X> extends JoglSpace implements Iterable<Spatial<X>> {
     protected void initInput() {
 
 
-        display.addMouseListenerPost(new FPSLook(this));
+        video.addMouseListenerPost(new FPSLook(this));
 //        display.addMouseListenerPost(new OrbSpaceMouse(this, new Finger(3) {
 //            /* TODO */
 //        }));
@@ -176,7 +176,7 @@ public class SpaceGraph3D<X> extends JoglSpace implements Iterable<Spatial<X>> {
 
             dyn.update(
 
-                    Math.max(dtMS / 1000f, 1000000f / display.renderFPS)
+                    Math.max(dtMS / 1000f, 1000000f / video.renderFPS)
                             / 1000000.f, maxSubsteps
 
             );
@@ -189,17 +189,17 @@ public class SpaceGraph3D<X> extends JoglSpace implements Iterable<Spatial<X>> {
 
         int dtMS = Math.max(1, Math.round(1000 * dtS));
 
-        forEach(s -> s.renderAbsolute(display.gl, dtMS));
+        forEach(s -> s.renderAbsolute(video.gl, dtMS));
 
         forEach(s -> s.forEachBody(body -> {
 
-            display.gl.glPushMatrix();
+            video.gl.glPushMatrix();
 
-            Draw.transform(display.gl, body.transform);
+            Draw.transform(video.gl, body.transform);
 
-            s.renderRelative(display.gl, body, dtMS);
+            s.renderRelative(video.gl, body, dtMS);
 
-            display.gl.glPopMatrix();
+            video.gl.glPopMatrix();
 
         }));
 
@@ -223,8 +223,8 @@ public class SpaceGraph3D<X> extends JoglSpace implements Iterable<Spatial<X>> {
             );
             Draw.glu.gluQuadricTexture(quad, true);
         }
-        display.gl.glColor3f(1f, 1f, 1f);
-        display.gl.glMaterialfv(GL.GL_FRONT_AND_BACK, GLLightingFunc.GL_AMBIENT_AND_DIFFUSE,
+        video.gl.glColor3f(1f, 1f, 1f);
+        video.gl.glMaterialfv(GL.GL_FRONT_AND_BACK, GLLightingFunc.GL_AMBIENT_AND_DIFFUSE,
                 //new float[] { 10.0f , 10.0f , 10.0f , 1.0f },
                 new float[]{1.0f, 1.0f, 1.0f, 1.0f},
                 0);
@@ -243,24 +243,24 @@ public class SpaceGraph3D<X> extends JoglSpace implements Iterable<Spatial<X>> {
             }
             g.dispose();
 
-            t.commit(display.gl);  //HACK
+            t.commit(video.gl);  //HACK
             t.set(bi);  //HACK
-            t.commit(display.gl);  //HACK
+            t.commit(video.gl);  //HACK
 
             tHv = t.texture;
         }
-        tHv.enable(display.gl);
-        tHv.bind(display.gl);
+        tHv.enable(video.gl);
+        tHv.bind(video.gl);
 
-        display.gl.glPushMatrix();
+        video.gl.glPushMatrix();
 //        gl.glLoadIdentity();
 //        gl.glTranslatef(camPos.x, camPos.y, camPos.z);
 
 
         Draw.glu.gluSphere(quad, 1000.0f, 9, 9);
-        display.gl.glPopMatrix();
+        video.gl.glPopMatrix();
 
-        tHv.disable(display.gl);    ////TTTTTTTTTTTTTTT
+        tHv.disable(video.gl);    ////TTTTTTTTTTTTTTT
     }
 
     private DynamicListSpace<X> add(Spatial<X>... s) {
@@ -277,7 +277,7 @@ public class SpaceGraph3D<X> extends JoglSpace implements Iterable<Spatial<X>> {
         return l;
     }
 
-    private SpaceGraph3D<X> add(AbstractSpace<X> c) {
+    private SpaceDisplayGraph3D<X> add(AbstractSpace<X> c) {
         if (inputs.add(c))
             c.start(this);
         return this;
@@ -306,7 +306,7 @@ public class SpaceGraph3D<X> extends JoglSpace implements Iterable<Spatial<X>> {
     }
 
     @Deprecated
-    public SpaceGraph3D<X> with(BroadConstraint b) {
+    public SpaceDisplayGraph3D<X> with(BroadConstraint b) {
         dyn.addBroadConstraint(b);
         return this;
     }

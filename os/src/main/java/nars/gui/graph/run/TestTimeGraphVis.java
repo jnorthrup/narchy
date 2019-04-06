@@ -3,7 +3,7 @@ package nars.gui.graph.run;
 import jcog.data.graph.MapNodeGraph;
 import nars.$;
 import nars.time.TimeGraph;
-import spacegraph.space3d.SpaceGraph3D;
+import spacegraph.space3d.SpaceDisplayGraph3D;
 import spacegraph.space3d.widget.SimpleGraph3D;
 import spacegraph.space3d.widget.SpaceWidget;
 
@@ -39,7 +39,7 @@ public class TestTimeGraphVis extends SimpleGraph3D<TimeGraph.Event> {
         TestTimeGraphVis cs = new TestTimeGraphVis();
 
 
-        SpaceGraph3D sg = cs.show(1400, 1000, true);
+        SpaceDisplayGraph3D sg = cs.show(1400, 1000, true);
 
 
 //        sg.addAt(new SubOrtho(grid(

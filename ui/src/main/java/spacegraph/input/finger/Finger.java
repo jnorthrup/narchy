@@ -9,7 +9,7 @@ import org.jetbrains.annotations.Nullable;
 import spacegraph.space2d.ReSurface;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.PaintSurface;
-import spacegraph.space2d.hud.SurfaceHiliteOverlay;
+import spacegraph.space2d.hud.Overlay;
 import spacegraph.space2d.hud.Zoomed;
 import spacegraph.video.JoglWindow;
 
@@ -362,38 +362,35 @@ abstract public class Finger {
     /**
      * visual overlay representation of the Finger; ie. cursor
      */
-    public Surface cursor() {
+    public Surface overlayCursor() {
         return new FingerRendererSurface();
     }
 
-    public Surface zoomBoundsSurface(Zoomed.Camera cam) {
-        return new FingerZoomBoundsSurface(cam);
-    }
 
     private boolean focused() {
         return active.getOpaque();
     }
 
-    public static v2 posRelative(v2 p, JoglWindow win) {
-        v2 y = new v2(p);
+    public static v2 normalize(v2 pPixel, JoglWindow win) {
+        v2 y = new v2(pPixel);
         y.scale(1f / win.getWidth(), 1f / win.getHeight());
         return y;
     }
 
-    public static v2 posRelative(v2 p, RectFloat b) {
+    public static v2 normalize(v2 p, RectFloat b) {
         v2 y = new v2(p);
         y.sub(b.x, b.y);
         y.scale(1f / b.w, 1f / b.h);
         return y;
+    }
+    public v2 posRelative(RectFloat b) {
+        return normalize(posGlobal(), b);
     }
 
     public v2 posRelative(Surface s) {
         return posRelative(s.bounds);
     }
 
-    public v2 posRelative(RectFloat b) {
-        return posRelative(posGlobal(), b);
-    }
 
     public Fingering fingering() {
         return fingering.getOpaque();
@@ -426,23 +423,40 @@ abstract public class Finger {
         }
     }
 
-    private final class FingerZoomBoundsSurface extends SurfaceHiliteOverlay {
+    public static final class TouchOverlay extends Overlay {
 
-        FingerZoomBoundsSurface(Zoomed.Camera cam) {
+        private final Finger f;
+
+        public TouchOverlay(Finger f, Zoomed.Camera cam) {
+//            this(f::touching, cam);
             super(cam);
+            this.f = f;
         }
 
+//        public ZoomBoundsOverlay(Supplier<Surface> touching, Zoomed.Camera cam) {
+//            super(cam);
+//            this.touching = touching;
+//        }
+
         @Override protected boolean enabled() {
-            return focused();
+            return f.focused();
         }
 
         @Override protected Surface target() {
-            Surface s = touching();
+            Surface s = f.touching();
             if (s!=null) {
                 //color HASH
                 //color.setAt()
             }
             return s;
+        }
+
+        @Override
+        protected void paint(Surface t, GL2 gl, ReSurface reSurface) {
+            drawBoundsFrame(t, gl);
+
+            //paintCaption(t, reSurface, gl);
+
         }
     }
 

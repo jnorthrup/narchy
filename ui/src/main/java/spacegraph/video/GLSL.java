@@ -24,7 +24,7 @@ public class GLSL extends PaintSurface {
     private ShaderCode /*vp0, */fp0;
 
     public static void main(String[] args) {
-        SpaceGraph.window(new GLSL().pos(1, 1, 500, 500), 800, 600);
+        SpaceGraph.surfaceWindow(new GLSL().pos(1, 1, 500, 500), 800, 600);
     }
 
     private final boolean updateUniformVars = true;

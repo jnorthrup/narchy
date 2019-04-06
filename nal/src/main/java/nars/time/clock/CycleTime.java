@@ -63,7 +63,6 @@ public class CycleTime extends Time {
         return time + " cyc";
     }
 
-    @NotNull
     @Override
     public String toString() {
         return Long.toString(t);

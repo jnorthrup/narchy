@@ -14,7 +14,6 @@ import nars.term.Term;
 import nars.term.Termed;
 import nars.truth.Truth;
 import org.eclipse.collections.api.block.function.primitive.FloatFloatToObjectFunction;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Iterator;
@@ -176,12 +175,11 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends VectorSensor {
         return r;
     }
 
-    @NotNull
+
     public static Term coord(char prefix, int n, int max) {
         return $.p($.the(prefix), $.p($.radixArray(n, 2, max)));
     }
 
-    @NotNull
     public static Term[] coord(int n, int max, int radix) {
 
 

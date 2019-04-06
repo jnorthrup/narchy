@@ -34,7 +34,7 @@ class ArrayBagTest {
 
     @Test
     void testBudgetMerge() {
-        PriReferenceArrayBag<String, PriReference<String>> a = new PLinkArrayBag<String>(plus, 4);
+        PriReferenceArrayBag<String, PriReference<String>> a = new PLinkArrayBag<>(plus, 4);
         assertEquals(0, a.size());
 
         a.put(new PLink("x", 0.1f));

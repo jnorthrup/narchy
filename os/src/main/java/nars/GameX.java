@@ -35,10 +35,10 @@ import nars.task.util.TaskBuffer;
 import nars.term.Term;
 import nars.term.Termed;
 import nars.time.clock.RealTime;
-import nars.time.part.DurPart;
 import nars.video.SwingBitmap2D;
 import nars.video.WaveletBag;
 import org.jetbrains.annotations.Nullable;
+import spacegraph.SpaceGraph;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.graph.EditGraph2D;
 import spacegraph.space2d.container.grid.Gridding;
@@ -57,7 +57,6 @@ import static java.util.stream.Collectors.toList;
 import static java.util.stream.StreamSupport.stream;
 import static nars.$.$$;
 import static nars.Op.BELIEF;
-import static spacegraph.SpaceGraph.window;
 import static spacegraph.space2d.container.grid.Gridding.grid;
 
 /**
@@ -112,11 +111,11 @@ abstract public class GameX extends Game {
             initPlugins2(n, a);
             //initPlugins3(n, a);
 
-            window(new Gridding(n.plugins(Game.class).map(NARui::agent).collect(toList())), 500, 500);
-            window(NARui.top(n), 800, 500);
-            window(NARui.inputUI(n), 500, 500);//.sizeRel(0.25f, 0.25f);
+            SpaceGraph.surfaceWindow(new Gridding(n.plugins(Game.class).map(NARui::agent).collect(toList())), 500, 500);
+            SpaceGraph.surfaceWindow(NARui.top(n), 800, 500);
+            SpaceGraph.surfaceWindow(NARui.inputUI(n), 500, 500);//.sizeRel(0.25f, 0.25f);
 
-            window(NARui.attentionUI(n), 500, 500);
+            SpaceGraph.surfaceWindow(NARui.attentionUI(n), 500, 500);
 
             Loop loop = n.startFPS(narFPS);
 
@@ -157,7 +156,7 @@ abstract public class GameX extends Game {
             n.start(a);
 
 
-            window(new Gridding(NARui.agent(a), NARui.top(n)), 600, 500);
+            SpaceGraph.surfaceWindow(new Gridding(NARui.agent(a), NARui.top(n)), 600, 500);
 
 
 
@@ -307,7 +306,7 @@ abstract public class GameX extends Game {
 
 //        meta.pri.amp.set(0.5f);
 //        window(NARui.agent(meta), 500, 500);
-        window(NARui.rlbooster(metaBoost), 500, 500);
+        SpaceGraph.surfaceWindow(NARui.rlbooster(metaBoost), 500, 500);
 
 
 //        window(AttentionUI.attentionGraph(n), 600, 600);
@@ -470,7 +469,7 @@ abstract public class GameX extends Game {
             //new ConjClustering(n, GOAL, 4, 16)
         );
 
-        window(grid(conjClusters, c->NARui.clusterView(c, n)), 700, 700);
+        SpaceGraph.surfaceWindow(grid(conjClusters, c->NARui.clusterView(c, n)), 700, 700);
 
 
 
@@ -562,8 +561,12 @@ abstract public class GameX extends Game {
 
 //        n.onCycle(()->haiQChip.next(reward));
         //n.onCycle(
-        DurPart.on(n,
-                new Runnable() {
+        //-((2 * Math.abs(v - 0.5f))-0.5f)*2;
+        //nothing
+        //                case 0: valve.set(0); break;
+        //                case 1: valve.set(0.5); break;
+        //                case 2: valve.set(1); break;
+        n.onDur(new Runnable() {
 
             private float[] sense;
             float dv = 0.1f;

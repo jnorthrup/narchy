@@ -6,7 +6,6 @@ import jcog.data.byt.ProxyBytes;
 import jcog.data.list.FasterList;
 import jcog.sort.SortedArray;
 import org.eclipse.collections.api.tuple.Pair;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
@@ -915,17 +914,14 @@ public class MyRadixTree<X> /* TODO extends ReentrantReadWriteLock */ implements
         throw new UnsupportedOperationException();
     }
 
-    @NotNull
     public SearchResult random(float descendProb, Random rng) {
         return random(root, null, null, descendProb, rng);
     }
 
-    @NotNull
     public SearchResult random(Node subRoot, float descendProb, Random rng) {
         return random(subRoot, root, null, descendProb, rng);
     }
 
-    @NotNull
     public SearchResult random(SearchResult at, float descendProb, Random rng) {
         Node current, parent, parentParent;
 
@@ -935,7 +931,6 @@ public class MyRadixTree<X> /* TODO extends ReentrantReadWriteLock */ implements
         return random(current, parent, parentParent, descendProb, rng);
     }
 
-    @NotNull
     public SearchResult random(Node current, Node parent, Node parentParent, float descendProb, Random rng) {
 
 

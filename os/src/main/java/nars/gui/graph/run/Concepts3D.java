@@ -11,7 +11,7 @@ import nars.gui.graph.DynamicConceptSpace;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.widget.console.ConsoleGUI;
 import spacegraph.space2d.widget.console.TextEdit0;
-import spacegraph.space3d.SpaceGraph3D;
+import spacegraph.space3d.SpaceDisplayGraph3D;
 
 public class Concepts3D extends DynamicConceptSpace {
 
@@ -27,7 +27,7 @@ public class Concepts3D extends DynamicConceptSpace {
     private Concepts3D(NAR nar, Iterable<Concept> concepts, int maxNodes, int maxEdgesPerNodeMax) {
         super(nar, concepts, maxNodes, maxEdgesPerNodeMax);
 
-        SpaceGraph3D sg = show(1400, 1000, false);
+        SpaceDisplayGraph3D sg = show(1400, 1000, false);
 
 
 //        sg.addAt(new SubOrtho(grid(

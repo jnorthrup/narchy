@@ -199,7 +199,7 @@ public class Tex {
     public void stop(Surface x) {
         Zoomed r = (Zoomed) x.root();
         if (r != null) {
-            JoglSpace s = r.space;
+            JoglDisplay s = r.space;
             if (s != null) {
                 if (texture != null) {
                     //TODO if texure is shared, dont?

@@ -22,7 +22,6 @@ import nars.concept.sensor.VectorSensor;
 import nars.control.NARPart;
 import nars.term.Term;
 import nars.term.atom.Atomic;
-import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 
 import java.util.Random;
@@ -268,7 +267,6 @@ public class Game extends NARPart implements NSense, NAct {
         return reward(reward, normalize(rewardFunc, min, max));
     }
 
-    @NotNull
     public FloatSupplier normalize(FloatSupplier rewardFunc, float min, float max) {
         return new FloatClamped(new FloatNormalized(rewardFunc, min, max, true), min, max);
     }

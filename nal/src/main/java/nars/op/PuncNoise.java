@@ -7,12 +7,12 @@ import nars.NAR;
 import nars.link.AtomicTaskLink;
 import nars.link.TaskLink;
 import nars.link.TaskLinkBag;
-import nars.time.part.DurPart;
+import nars.time.part.DurLoop;
 
 import static nars.Task.p;
 
 /** randomly shifts tasklink punctuation */
-public class PuncNoise extends DurPart {
+public class PuncNoise extends DurLoop {
     public final IntRange tasklinksPerDuration = new IntRange(32, 1, 128);
     public final FloatRange strength = new FloatRange(0.5f, 0, 1f);
 

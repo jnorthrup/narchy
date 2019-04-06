@@ -7,9 +7,8 @@ import jcog.test.control.MiniTest;
 import nars.NAR;
 import nars.NARS;
 import nars.Narsese;
-import nars.agent.GameTime;
 import nars.agent.Game;
-import nars.time.part.DurPart;
+import nars.agent.GameTime;
 import nars.truth.Truth;
 import org.eclipse.collections.api.block.predicate.primitive.BooleanBooleanPredicate;
 import org.junit.jupiter.api.Test;
@@ -199,7 +198,7 @@ public class GameTest {
         a.onFrame(()->{
             aFrames.add(nar.time());
         });
-        DurPart.on(nar,()->{
+        nar.onDur(() -> {
             sFrames.add(nar.time());
         }).durs(dursPerService);
         nar.run(50);

@@ -6,7 +6,6 @@ import nars.$;
 import nars.NAR;
 import nars.control.NARPart;
 import nars.term.atom.Atom;
-import org.jetbrains.annotations.NotNull;
 
 /**
  * self managed set of processes which run a NAR
@@ -24,7 +23,7 @@ public class NARLoop extends InstrumentedLoop {
     /**
      * starts paused; thread is not automatically created
      */
-    public NARLoop(@NotNull NAR n) {
+    public NARLoop( NAR n) {
         super();
         nar = n;
         this.service = new NARPart($.inh(NAR_LOOP, n.self()), n) {

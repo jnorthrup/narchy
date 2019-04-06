@@ -8,6 +8,7 @@ import jcog.pri.Forgetting;
 import jcog.pri.PriBuffer;
 import jcog.pri.bag.impl.ArrayBag;
 import jcog.pri.bag.impl.hijack.PriHijackBag;
+import jcog.pri.op.PriMerge;
 import nars.NAR;
 import nars.Op;
 import nars.Param;
@@ -33,7 +34,7 @@ import java.util.stream.Stream;
 
 /** abstract attention economy model.
  *  determines the active attention dynamics */
-public class TaskLinkBag extends NARPart implements Attention {
+public class TaskLinkBagAttention extends NARPart implements Attention {
 
 
 
@@ -67,9 +68,8 @@ public class TaskLinkBag extends NARPart implements Attention {
     };
 
 
-//    public Forgetting forgetting = new Forgetting.AsyncForgetting();
     /** system default deriver pri model
-     *  however, each deriver instance can be configured individually.
+     *  however, each deriver instance can also be configured individually.
      * */
     @Deprecated public DerivePri derivePri =
             //new DirectDerivePri();
@@ -77,29 +77,30 @@ public class TaskLinkBag extends NARPart implements Attention {
             new DefaultPuncWeightedDerivePri();
 
 
+    private PriMerge merge = Param.tasklinkMerge;
+
+
     @Override
     protected void starting(NAR nar) {
         int c = linksMax.intValue();
+
         links = new nars.link.TaskLinkBag(
-                new TaskLinkArrayBag(c)
-                //new TaskLinkHijackBag(c, 5)
+                    new TaskLinkArrayBag(c, merge)
+                    //new TaskLinkHijackBag(c, 5)
         );
 
         links.setCapacity(linksMax.intValue());
 
-
-
-
         on(
                 nar.eventClear.on(links::clear),
-                nar.onCycle(this::onCycle)
+                nar.onDur(this::update)
         );
 
         super.starting(nar);
 
     }
 
-    protected final void onCycle() {
+    protected final void update() {
         links.commit(
             Forgetting.forget(links,  decay.floatValue())
         );
@@ -290,14 +291,15 @@ public class TaskLinkBag extends NARPart implements Attention {
 
     private static class TaskLinkArrayBag extends ArrayBag<TaskLink, TaskLink> {
 
-        public TaskLinkArrayBag(int initialCapacity) {
-            super(Param.tasklinkMerge, initialCapacity, PriBuffer.newMap(false));
+        public TaskLinkArrayBag(int initialCapacity, PriMerge merge) {
+            super(merge, initialCapacity, PriBuffer.newMap(false));
         }
 
         @Override
         protected float merge(TaskLink existing, TaskLink incoming, float incomingPri, @Nullable NumberX overflow) {
             return existing.mergeAndGetDelta(incoming, merge());
         }
+
 //        @Override
 //        protected float sortedness() {
 //            return 0.33f;

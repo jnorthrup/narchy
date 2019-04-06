@@ -46,7 +46,8 @@ abstract public class Surface implements Surfacelike, spacegraph.input.finger.Fi
 
     public volatile RectFloat bounds = RectFloat.Unit;
     public volatile Surfacelike parent;
-    protected volatile boolean visible = true, showing = false;
+    protected volatile boolean visible = true;
+    private volatile boolean showing = false;
 
 //    public volatile int zIndex;
 
@@ -105,9 +106,13 @@ abstract public class Surface implements Surfacelike, spacegraph.input.finger.Fi
     }
 
     public <S extends Surface> S pos(RectFloat next) {
-        BOUNDS.lazySet(this, next);
-//        if (bounds.area() < ScalarValue.EPSILON)
-//            throw new WTF();
+        // if (next.area() < ScalarValue.EPSILON)
+        //      throw new WTF();
+
+        //BOUNDS.set(this, next);
+
+        BOUNDS.accumulateAndGet(this, next,(prev,n)->prev.equals(n) ? prev : n );
+
         return (S) this;
     }
 
@@ -118,11 +123,12 @@ abstract public class Surface implements Surfacelike, spacegraph.input.finger.Fi
         RectFloat last = BOUNDS.getAndSet(this, next);
 //        if (bounds.area() < ScalarValue.EPSILON)
 //            throw new WTF();
-        return !last.equals(next, Spatialization.EPSILONf);
+        return last!=next && !last.equals(next, Spatialization.EPSILONf);
     }
 
     public final Surface pos(float x1, float y1, float x2, float y2) {
-        return pos(RectFloat.XYXY(x1, y1, x2, y2));
+        RectFloat r = RectFloat.XYXY(x1, y1, x2, y2);
+        return pos(r);
     }
 
     public final Surface posXYWH(float cx, float cy, float w, float h) {
@@ -205,18 +211,13 @@ abstract public class Surface implements Surfacelike, spacegraph.input.finger.Fi
 
     public final boolean stop() {
         if (PARENT.getAndSet(this, null) != null) {
-            //synchronized (this) {
-            showing = false;
+            hide();
             stopping();
-            //}
             return true;
         }
         return false;
     }
 
-    public void layout() {
-
-    }
 
     public float w() {
         return bounds.w;
@@ -245,56 +246,44 @@ abstract public class Surface implements Surfacelike, spacegraph.input.finger.Fi
      * prepares the rendering procedures in the rendering context
      */
     public final void tryRender(ReSurface r) {
-        if (!showing) {
-            if (!(showing = (visible() && (!clipBounds || r.isVisible(bounds)))))
-                return;
-        }
+        if (this.showing = visible(r))
+            render(r);
+    }
 
-        render(r);
+    /** test visibility in the current rendering context */
+    public final boolean visible(ReSurface r) {
+        return visible() && (!clipBounds || r.isVisible(bounds));
     }
 
     abstract protected void render(ReSurface r);
 
-
-    public Surface hide() {
+    public final Surface hide() {
         visible = false;
         showing = false;
         return this;
     }
 
-    public Surface show() {
+    public final Surface show() {
         visible = true;
         return this;
     }
 
-    public Surface visible(boolean b) {
+    public final Surface visible(boolean b) {
         return b ? show() : hide();
     }
 
-    public boolean visible() {
-        return parent != null && visible;
+    public final boolean visible() {
+        return visible && parent != null;
     }
 
-    public final boolean visible(ReSurface r) {
-        return visible() && (!clipBounds || r.isVisible(bounds));
+    public final boolean showing() {
+        return showing;
     }
 
     public float radius() {
         return bounds.radius();
     }
 
-
-    public Surface size(float w, float h) {
-        return pos(bounds.size(w, h));
-    }
-
-    public boolean showing() {
-        return showing;
-    }
-
-    public void posxyWH(float x, float y, float w, float h) {
-        pos(RectFloat.X0Y0WH(x, y, w, h));
-    }
 
 
     /**
@@ -317,7 +306,8 @@ abstract public class Surface implements Surfacelike, spacegraph.input.finger.Fi
         if (p instanceof ContainerSurface) {
             return ((ContainerSurface) p).remove();
         }
-        return false;
+        //return false;
+        throw new jcog.TODO();
     }
 
     public boolean reattach(Surface nextParent) {
@@ -338,7 +328,7 @@ abstract public class Surface implements Surfacelike, spacegraph.input.finger.Fi
                     } else {
                         //could not attach to nextParent, reattach to prev
                         if (!prevMutableParent.attachChild(this)) {
-
+                            //recovered
                         }
                     }
 
@@ -360,5 +350,14 @@ abstract public class Surface implements Surfacelike, spacegraph.input.finger.Fi
 
     public v2 pos() {
         return new v2(x(), y());
+    }
+
+
+    public final Surface resize(float w, float h) {
+        return pos(bounds.size(w, h));
+    }
+
+    public final boolean resizeIfChanged(float w, float h) {
+        return posChanged(bounds.size(w, h));
     }
 }

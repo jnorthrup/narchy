@@ -1,25 +1,23 @@
 package jcog.tree.interval;
 
-import org.jetbrains.annotations.NotNull;
-
 /** defines an interval between two comparable values */
 public class Between<K extends Comparable<? super K>> implements Comparable<Between<K>> {
 	
-	@NotNull public final K low, high;
+	 public final K low, high;
 	
-	public Between(@NotNull K low, @NotNull K high){
+	public Between( K low,  K high){
         this.low = low;
         this.high = high;
 	}
 
-	@NotNull
+	
 	final K getHigh() {
 		return high;
 	}
 
 
 
-    @NotNull
+    
 	final K getLow() {
 		return low;
 	}
@@ -31,23 +29,23 @@ public class Between<K extends Comparable<? super K>> implements Comparable<Betw
 
 
 
-    final boolean contains(@NotNull K p){
+    final boolean contains( K p){
 		return low.compareTo(p) <= 0 && high.compareTo(p) > 0;
 	}
 	
 	/**
 	 * Returns true if this Interval wholly contains i.
 	 */
-    final boolean contains(@NotNull Between<K> i){
+    final boolean contains( Between<K> i){
 		return contains(i.low) && contains(i.high);
 	}
 	
-	final boolean overlaps(@NotNull K low, @NotNull K high){
+	final boolean overlaps( K low,  K high){
 		return  this.low.compareTo(high) <= 0 &&
 				this.high.compareTo(low) > 0;
 	}
 	
-	final boolean overlaps(@NotNull Between<K> i){
+	final boolean overlaps( Between<K> i){
 		return overlaps(i.low,i.high);
 	}
 	
@@ -75,7 +73,7 @@ public class Between<K extends Comparable<? super K>> implements Comparable<Betw
 	}
 
 	@Override
-	public int compareTo(@NotNull Between<K> x) {
+	public int compareTo( Between<K> x) {
 		int leftC = low.compareTo(x.low);
 		if (leftC != 0) return leftC;
 		int rightC = high.compareTo(x.high);

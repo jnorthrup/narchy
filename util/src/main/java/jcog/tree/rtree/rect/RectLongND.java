@@ -3,7 +3,6 @@ package jcog.tree.rtree.rect;
 
 import jcog.tree.rtree.HyperRegion;
 import jcog.tree.rtree.point.LongND;
-import org.jetbrains.annotations.NotNull;
 
 import java.io.Serializable;
 import java.util.function.Function;
@@ -181,7 +180,7 @@ public class RectLongND implements HyperRegion, Serializable, Comparable<RectLon
     }
 
     @Override
-    public int compareTo(@NotNull RectLongND o) {
+    public int compareTo(RectLongND o) {
         int a = min.compareTo(o.min);
         if (a != 0) return a;
         int b = max.compareTo(o.max);

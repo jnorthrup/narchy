@@ -4,7 +4,6 @@ import nars.eval.Evaluation;
 import nars.subterm.Subterms;
 import nars.term.Term;
 import nars.term.atom.Bool;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Function;
 
@@ -28,7 +27,6 @@ abstract public class AbstractInlineFunctor1 extends AbstractInlineFunctor {
     }
 
     public static class MyAbstractInlineFunctor1Inline extends AbstractInlineFunctor1 {
-        private @NotNull
         final Function<Term, Term> ff;
 
         public MyAbstractInlineFunctor1Inline(String termAtom, Function<Term, Term> ff) {

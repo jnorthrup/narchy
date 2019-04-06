@@ -7,7 +7,6 @@ import nars.$;
 import nars.NAR;
 import nars.term.Term;
 import nars.truth.Truth;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.Iterator;
 import java.util.List;
@@ -153,7 +152,7 @@ public class DigitizedScalar extends DemultiplexedScalarSensor {
     }
 
 
-    public DigitizedScalar(FloatSupplier input, ScalarEncoder freqer, @NotNull NAR nar, @NotNull Term... states) {
+    public DigitizedScalar(FloatSupplier input, ScalarEncoder freqer, NAR nar, Term... states) {
         super(input, $.func(DigitizedScalar.class.getSimpleName(),
                 SETe.the(states)
                 /*,$.quote(Util.toString(input))*/, $.the(freqer.getClass().getSimpleName())

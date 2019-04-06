@@ -35,13 +35,13 @@ public class FloatRangePort extends FloatPort {
 
 
     @Override
-    protected void renderChildren(ReSurface r) {
+    protected void renderContent(ReSurface r) {
         if (autoUpdate) {
             if (active())
                 LOAD();
         }
 
-        super.renderChildren(r);
+        super.renderContent(r);
     }
 
 

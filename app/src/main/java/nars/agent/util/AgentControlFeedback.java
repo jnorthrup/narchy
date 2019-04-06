@@ -2,7 +2,6 @@ package nars.agent.util;
 
 import nars.NAR;
 import nars.agent.Game;
-import nars.time.part.DurPart;
 import nars.util.TaskSummarizer;
 
 public class AgentControlFeedback {
@@ -10,7 +9,14 @@ public class AgentControlFeedback {
     public AgentControlFeedback(Game a) {
 
         NAR n = a.nar();
-        DurPart.on(n, new Runnable() {
+        /*mean*/
+        //System.out.println("reward: " + Texts.n4(reward) + " : ");
+        //s.print();
+        //TODO ARFF
+        //                s.forEach((punc, num, o, volMean, priMean) ->
+        //                        reward + "," + o.str + " " + ((char) punc) + " x " + num + ", volMean=" + n2(volMean) + " priMean=" + n2(priMean))
+        //                );
+        n.onDur(new Runnable() {
 
             final TaskSummarizer ts = new TaskSummarizer(n);
             static final int snapshotEvery = 8;

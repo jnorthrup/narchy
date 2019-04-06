@@ -24,7 +24,7 @@ abstract public class AbstractSpace<X>  {
         return this;
     }
 
-    public void start(SpaceGraph3D<X> space) {
+    public void start(SpaceDisplayGraph3D<X> space) {
 
     }
 
@@ -59,7 +59,7 @@ abstract public class AbstractSpace<X>  {
 
 
     /** needs to call update(space) for each active item */
-    public void update(SpaceGraph3D<X> s, long dtMS) {
+    public void update(SpaceDisplayGraph3D<X> s, long dtMS) {
 
         List<SpaceTransform<X>> ll = this.transforms;
         for (SpaceTransform<X> aLl : ll) aLl.update(s, dtMS);

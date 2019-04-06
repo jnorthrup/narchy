@@ -6,7 +6,6 @@ import jcog.math.FloatSupplier;
 import jcog.util.ArrayUtils;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.eclipse.collections.api.block.function.primitive.IntToFloatFunction;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
@@ -122,7 +121,7 @@ public class TopN<X> extends SortedArray<X> implements Consumer<X>, FloatFunctio
     }
 
 
-    public final boolean add(@NotNull X e) {
+    public final boolean add(/*@NotNull*/ X e) {
         int r = add(e, this);
         if (r >= 0) {
             commit();

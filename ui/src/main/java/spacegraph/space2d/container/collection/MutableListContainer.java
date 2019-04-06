@@ -64,26 +64,24 @@ public class MutableListContainer extends AbstractMutableContainer {
     /**
      * returns the existing value that was replaced
      */
-    protected Surface set(int index, Surface next) {
-        synchronized (this) {
-            Surfacelike p = this.parent;
-            if (p == null) {
-                return children.set(index, next);
-            } else {
-                if (children.size() - 1 < index)
-                    throw new RuntimeException("index out of bounds");
+    protected synchronized Surface set(int index, Surface next) {
+        Surfacelike p = this.parent;
+        if (p == null) {
+            return children.set(index, next);
+        } else {
+            if (children.size() - 1 < index)
+                throw new RuntimeException("index out of bounds");
 
-                Surface existing = children.set(index, next);
-                if (existing != next) {
-                    if (existing != null)
-                        existing.stop();
+            Surface existing = children.set(index, next);
+            if (existing != next) {
+                if (existing != null)
+                    existing.stop();
 
-                    next.start(this);
+                next.start(this);
 
 
-                }
-                return existing;
             }
+            return existing;
         }
     }
 

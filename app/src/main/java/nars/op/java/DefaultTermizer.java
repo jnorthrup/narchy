@@ -10,7 +10,6 @@ import nars.term.Term;
 import nars.term.Variable;
 import nars.term.atom.Atomic;
 import nars.term.atom.Int;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Method;
@@ -211,7 +210,7 @@ public class DefaultTermizer implements Termizer {
     }
 
 
-    private boolean reportClassInPackage(@NotNull Class oc) {
+    private boolean reportClassInPackage( Class oc) {
         if (classInPackageExclusions.contains(oc)) return false;
 
         if (Term.class.isAssignableFrom(oc)) return false;
@@ -224,8 +223,8 @@ public class DefaultTermizer implements Termizer {
     /**
      * (#arg1, #arg2, ...), #returnVar
      */
-    @NotNull
-    private Term[] getMethodArgVariables(@NotNull Method m) {
+    
+    private Term[] getMethodArgVariables( Method m) {
 
 
         String varPrefix = m.getName() + '_';
@@ -242,7 +241,7 @@ public class DefaultTermizer implements Termizer {
         };
     }
 
-    @NotNull
+    
     private static Term[] getArgVariables(String prefix, int numParams) {
         Term[] x = new Term[numParams];
         for (int i = 0; i < numParams; i++) {
@@ -259,12 +258,12 @@ public class DefaultTermizer implements Termizer {
 
     }
 
-    public static Term termClassInPackage(@NotNull Class c) {
+    public static Term termClassInPackage( Class c) {
         return $.p(termPackage(c.getPackage()), classTerm(c));
     }
 
-    @NotNull
-    public static Term termPackage(@NotNull Package p) {
+    
+    public static Term termPackage( Package p) {
 
 
         String n = p.getName();
@@ -372,8 +371,8 @@ public class DefaultTermizer implements Termizer {
 
     }
 
-//    @NotNull
-//    public static <T extends Term> Map<Atomic,T> mapStaticClassFields(@NotNull Class c, @NotNull Function<Field, T> each) {
+//    
+//    public static <T extends Term> Map<Atomic,T> mapStaticClassFields( Class c,  Function<Field, T> each) {
 //        Field[] ff = c.getFields();
 //        Map<Atomic,T> t = $.newHashMap(ff.length);
 //        for (Field f : ff) {

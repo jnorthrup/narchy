@@ -2,6 +2,7 @@ package spacegraph.space2d.widget.menu;
 
 import jcog.exe.Exe;
 import org.eclipse.collections.api.block.procedure.primitive.ObjectBooleanProcedure;
+import spacegraph.SpaceGraph;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.Splitting;
 import spacegraph.space2d.container.grid.Gridding;
@@ -19,7 +20,6 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 import static java.util.stream.Collectors.toList;
-import static spacegraph.SpaceGraph.window;
 
 public class TabMenu extends Menu {
 
@@ -85,7 +85,7 @@ public class TabMenu extends Menu {
                     content.active(created[0] = cx);
                     split();
                 } else {
-                    window(created[0] = cx, 800, 800);
+                    SpaceGraph.surfaceWindow(created[0] = cx, 800, 800);
                 }
 
 

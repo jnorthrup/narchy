@@ -3,10 +3,11 @@ package spacegraph.input.finger.impl;
 import com.jogamp.newt.event.*;
 import jcog.math.v2;
 import org.jetbrains.annotations.Nullable;
+import spacegraph.input.finger.Fingered;
 import spacegraph.input.finger.Fingering;
 import spacegraph.space2d.OrthoSurfaceGraph;
 import spacegraph.space2d.Surface;
-import spacegraph.video.JoglSpace;
+import spacegraph.video.JoglDisplay;
 import spacegraph.video.JoglWindow;
 
 import java.util.function.Function;
@@ -16,15 +17,15 @@ public class NewtMouseFinger extends MouseFinger implements MouseListener, Windo
 
 
 
-    private final JoglSpace space;
+    private final JoglDisplay space;
 
 
-    public NewtMouseFinger(JoglSpace s) {
+    public NewtMouseFinger(JoglDisplay s) {
         super(MAX_BUTTONS);
         this.space = s;
 
         s.later(()->{
-            JoglWindow win = s.display;
+            JoglWindow win = s.video;
             if (win.window.hasFocus())
                 active.set(true);
 
@@ -35,7 +36,7 @@ public class NewtMouseFinger extends MouseFinger implements MouseListener, Windo
     }
 
     /** called for each layer. returns true if continues down to next layer */
-    public void touch(Surface s) {
+    public void touch(Fingered s) {
 
         Fingering ff = this.fingering.get();
 
@@ -84,7 +85,7 @@ public class NewtMouseFinger extends MouseFinger implements MouseListener, Windo
 
     private boolean update(boolean moved, MouseEvent e, short[] buttonsDown) {
 
-        JoglWindow win = space.display;
+        JoglWindow win = space.video;
 
         if (moved) {
             int pmx = e.getX(), pmy = win.window.getHeight() - e.getY();

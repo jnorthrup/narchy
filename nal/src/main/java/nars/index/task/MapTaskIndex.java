@@ -1,7 +1,6 @@
 package nars.index.task;
 
 import nars.Task;
-import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,7 +17,7 @@ public final class MapTaskIndex implements TaskIndex {
 
     private final static Logger logger = LoggerFactory.getLogger(MapTaskIndex.class);
 
-    @NotNull
+    
     private final Map<Task, Task> tasks;
 
     private MapTaskIndex(boolean concurrent) {
@@ -63,13 +62,13 @@ public final class MapTaskIndex implements TaskIndex {
 
 
     @Override
-    public Task addIfAbsent(@NotNull Task x) {
+    public Task addIfAbsent( Task x) {
         return tasks.putIfAbsent(x,x);
     }
 
 
     @Override
-    public final void removeInternal(@NotNull Task tt) {
+    public final void removeInternal( Task tt) {
         tasks.remove(tt);
     }
 
@@ -79,7 +78,7 @@ public final class MapTaskIndex implements TaskIndex {
     }
 
     @Override
-    public void forEach(@NotNull Consumer<Task> each) {
+    public void forEach( Consumer<Task> each) {
         tasks.forEach((k,v)->each.accept(v));
     }
 }

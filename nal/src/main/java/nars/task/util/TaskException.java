@@ -3,7 +3,6 @@ package nars.task.util;
 import nars.Task;
 import nars.term.Termlike;
 import nars.util.SoftException;
-import org.jetbrains.annotations.NotNull;
 
 /**
  * reports problems when constructing a Task
@@ -20,7 +19,7 @@ public final class TaskException extends SoftException {
             ((Task) t).delete();
     }
 
-    @NotNull
+    
     @Override
     public String getMessage() {
         String m = super.getMessage();

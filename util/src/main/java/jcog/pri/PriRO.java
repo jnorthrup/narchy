@@ -1,7 +1,5 @@
 package jcog.pri;
 
-import org.jetbrains.annotations.NotNull;
-
 /**
  * reverse osmosis read-only budget
  */
@@ -41,7 +39,7 @@ public final class PriRO implements Prioritizable {
      *
      * @return String representation of the value
      */
-    @NotNull
+    
     @Override
     public final String toString() {
         return getBudgetString();

@@ -37,14 +37,14 @@ public class LazySurface extends MutableUnitContainer<Surface> {
     }
 
     @Override
-    protected void renderChildren(ReSurface r) {
+    protected void renderContent(ReSurface r) {
         //invoke on becoming visible
 
         if (state.compareAndSet(0, 1)) {
             build();
         }
 
-        super.renderChildren(r);
+        super.renderContent(r);
     }
 
     private void build() {

@@ -8,24 +8,26 @@ import spacegraph.space2d.container.PaintSurface;
 import spacegraph.util.math.Color4f;
 import spacegraph.video.Draw;
 
-public abstract class SurfaceHiliteOverlay extends PaintSurface {
+public abstract class Overlay extends PaintSurface {
 
     protected final Zoomed.Camera cam;
 
     protected float thick = 3;
     protected final Color4f color = new Color4f(1f, 1f, 1f, 0.5f);
 
-    public SurfaceHiliteOverlay(Zoomed.Camera cam) {
+    public Overlay(Zoomed.Camera cam) {
         this.cam = cam;
         clipBounds = false;
     }
 
-    Surface last = null;
+    @Override
+    protected final void render(ReSurface r) {
+        if (enabled())
+            super.render(r);
+    }
 
     @Override
-    protected void paint(GL2 gl, ReSurface reSurface) {
-        if (!enabled())
-            return;
+    protected final void paint(GL2 gl, ReSurface reSurface) {
 
         Surface t = target();
 
@@ -34,15 +36,15 @@ public abstract class SurfaceHiliteOverlay extends PaintSurface {
                 t = null;
             else {
 
-                paintFrame(t, gl);
-
-                //paintCaption(t, reSurface, gl);
+                paint(t, gl, reSurface);
 
             }
         }
 
-        last = t;
     }
+
+    protected abstract void paint(Surface t, GL2 gl, ReSurface reSurface);
+
 
 //    String caption = null;
 //    float captionFlashtimeS = 0.5f;
@@ -75,7 +77,7 @@ public abstract class SurfaceHiliteOverlay extends PaintSurface {
 //        //}
 //    }
 
-    private void paintFrame(Surface t, GL2 gl) {
+    public void drawBoundsFrame(Surface t, GL2 gl) {
         float tx = t.x(), ty = t.y();
         v2 p = cam.globalToPixel(tx, ty);
         v2 q = cam.globalToPixel(tx + t.w(), ty + t.h());

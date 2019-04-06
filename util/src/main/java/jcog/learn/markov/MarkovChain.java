@@ -3,7 +3,6 @@ package jcog.learn.markov;
 import com.google.common.collect.Streams;
 import jcog.data.list.FasterList;
 import jcog.pri.WLink;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
@@ -59,11 +58,11 @@ public class MarkovChain<T> {
     }
 
 
-    public MarkovChain learn(@NotNull Iterable<T> phrase) {
+    public MarkovChain learn(Iterable<T> phrase) {
         return learn(Streams.stream(phrase));
     }
 
-    public MarkovChain learn(@NotNull Stream<T> phrase) {
+    public MarkovChain learn(Stream<T> phrase) {
         return learn(phrase, 1f);
     }
 

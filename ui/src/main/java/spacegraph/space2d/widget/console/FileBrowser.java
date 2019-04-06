@@ -23,6 +23,6 @@ public class FileBrowser extends ConsoleGUI {
     }
 
     public static void main(String[] args) {
-        SpaceGraph.window(new FileBrowser(50, 15), 500, 500);
+        SpaceGraph.surfaceWindow(new FileBrowser(50, 15), 500, 500);
     }
 }

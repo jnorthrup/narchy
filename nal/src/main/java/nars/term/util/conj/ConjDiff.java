@@ -28,7 +28,6 @@ public class ConjDiff extends Conj {
         return the(include, includeAt, invert, e);
     }
 
-    @NotNull
     private static ConjDiff the(Term include, long includeAt, boolean invert, Conj exclude) {
         if (exclude.eventCount(ETERNAL)>0 && exclude.event.size() > 1) {
             //has both eternal and temporal components;

@@ -37,7 +37,7 @@ public class PathSurface extends PaintSurface {
     }
 
     @Override
-    public boolean visible() {
+    protected void render(ReSurface r) {
         if (invalid) {
             //update bounds
             RectFloat newBounds = path.bounds();
@@ -45,7 +45,7 @@ public class PathSurface extends PaintSurface {
             pos(newBounds);
             invalid = false;
         }
-        return super.visible();
+        super.render(r);
     }
 
     @Override

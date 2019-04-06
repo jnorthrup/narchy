@@ -24,6 +24,7 @@ import nars.sensor.Bitmap2DSensor;
 import nars.sensor.PixelBag;
 import nars.video.AutoclassifiedBitmap;
 import org.eclipse.collections.api.block.procedure.primitive.BooleanProcedure;
+import spacegraph.SpaceGraph;
 import spacegraph.space2d.widget.meta.ObjectSurface;
 import spacegraph.space2d.widget.meter.BitmapMatrixView;
 import spacegraph.space2d.widget.meter.WaveBitmap;
@@ -35,7 +36,6 @@ import java.util.function.Consumer;
 import static jake2.Globals.STAT_FRAGS;
 import static jake2.Globals.cl;
 import static nars.$.$;
-import static spacegraph.SpaceGraph.window;
 import static spacegraph.space2d.container.grid.Gridding.grid;
 
 /**
@@ -168,14 +168,14 @@ public class Jake2Agent extends GameX implements Runnable {
         BitmapMatrixView depthView = new BitmapMatrixView(depthVision.src);
         onFrame(depthView::updateIfShowing);
 
-        window(grid(rgbView, rgbAE.newChart(), depthView ), 500, 500);
+        SpaceGraph.surfaceWindow(grid(rgbView, rgbAE.newChart(), depthView ), 500, 500);
 
         hear = new FreqVectorSensor(new CircularFloatBuffer(8*1024),
                 f->$.inh($.the(f), "hear"), 512,16, nar);
         addSensor(hear);
         WaveBitmap hearView = new WaveBitmap(hear.buf, 300, 64);
         onFrame(hearView::update);
-        window(grid(new VectorSensorView(hear, nar).withControls(),
+        SpaceGraph.surfaceWindow(grid(new VectorSensorView(hear, nar).withControls(),
                 //spectrogram(hear.buf, 0.1f,512, 16),
                 new ObjectSurface(hear), hearView), 400, 400);
 

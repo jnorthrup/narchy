@@ -5,6 +5,11 @@ import java.util.concurrent.TimeUnit;
 /** lighweight one time procedure */
 abstract public class Soon extends AbstractTimedFuture<Object> {
 
+    /** immediately */
+    protected Soon() {
+        this(0);
+    }
+
     protected Soon(int rounds) {
         super(rounds);
     }
@@ -48,7 +53,7 @@ abstract public class Soon extends AbstractTimedFuture<Object> {
         private final Runnable runnable;
 
         Run(Runnable runnable) {
-            super(0 /* immediately */);
+            super();
             this.runnable = runnable;
         }
 

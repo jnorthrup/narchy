@@ -92,7 +92,7 @@ public abstract class RingContainer<X extends Surface> extends EmptyContainer {
     }
 
     @Override
-    protected void renderChildren(ReSurface r) {
+    protected void renderContent(ReSurface r) {
         forEach((z, b)->{
             z.pos(b);
             z.tryRender(r);

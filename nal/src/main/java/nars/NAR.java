@@ -16,8 +16,7 @@ import jcog.math.MutableInteger;
 import jcog.pri.Prioritized;
 import jcog.service.Part;
 import nars.Narsese.NarseseException;
-import nars.attention.TaskLinkBag;
-import nars.bag.leak.TaskLeak;
+import nars.attention.TaskLinkBagAttention;
 import nars.concept.Concept;
 import nars.concept.Operator;
 import nars.concept.PermanentConcept;
@@ -53,7 +52,7 @@ import nars.time.event.AtClear;
 import nars.time.event.AtCycle;
 import nars.time.event.AtTime;
 import nars.time.event.InternalEvent;
-import nars.time.part.DurPart;
+import nars.time.part.DurLoop;
 import nars.truth.PreciseTruth;
 import nars.truth.Truth;
 import nars.util.Timed;
@@ -105,7 +104,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
     public final MemoryExternal memoryExternal = new MemoryExternal(this);
     public final ConceptBuilder conceptBuilder;
     public final Emotion feel;
-    public final TaskLinkBag attn;
+    public final TaskLinkBagAttention attn;
     public final TaskBuffer in;  //perception?
     public final Topic<NAR> eventClear = new ListTopic<>();
     public final Topic<NAR> eventCycle = new ListTopic<>();
@@ -119,7 +118,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
     private final AtomicReference<Term> self = new AtomicReference<>(null);
 
 
-    public NAR(Memory memory, Exec exe, TaskLinkBag attn, Time time, TaskBuffer in, Supplier<Random> rng, ConceptBuilder conceptBuilder) {
+    public NAR(Memory memory, Exec exe, TaskLinkBagAttention attn, Time time, TaskBuffer in, Supplier<Random> rng, ConceptBuilder conceptBuilder) {
         super(exe);
 
         this.random = rng;
@@ -914,16 +913,18 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
 
     /**
      * schedule a task to be executed no sooner than a given NAR time
+     * @return
      */
-    public final void runAt(long whenOrAfter, Runnable then) {
-        runAt(new AtTime(whenOrAfter, then));
+    public final ScheduledTask runAt(long whenOrAfter, Runnable then) {
+        return runAt(new AtTime(whenOrAfter, then));
     }
 
-    public final void runAt(ScheduledTask t) {
+    public final ScheduledTask runAt(ScheduledTask t) {
         if (t.start() <= time())
             exe.execute(t); //immediate
         else
             time.runAt(t);
+        return t;
     }
 
     /**
@@ -1473,7 +1474,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
                 this.partStream()
                         .map((s) -> ((NARPart) s).event()).filter(Objects::nonNull),
                 time.events()
-                        .filter(t -> !(t instanceof DurPart.AtDur)) //HACK (these are included in service's events)
+                        .filter(t -> !(t instanceof DurLoop.AtDur)) //HACK (these should already be included in service's events)
 //            causes.stream(),
         );
     }
@@ -1494,5 +1495,33 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
     }
 
 
+    public final DurLoop onDur(Runnable on) {
+        DurLoop.DurRunnable r = new DurLoop.DurRunnable(on);
+        start(r);
+        return r;
+    }
 
+    public final DurLoop onDur(Consumer<NAR> on) {
+        DurLoop.DurNARConsumer r = new DurLoop.DurNARConsumer(on);
+        start(r);
+        return r;
+    }
+
+    /*
+      public static DurLoop onWhile(NAR nar, Predicate<NAR> r) {
+        return new DurLoop(nar) {
+            @Override
+            protected void run(NAR n, long dt) {
+                if (!r.test(n)) {
+                    off();
+                }
+            }
+
+            @Override
+            public String toString() {
+                return r.toString();
+            }
+        };
+    }
+     */
 }

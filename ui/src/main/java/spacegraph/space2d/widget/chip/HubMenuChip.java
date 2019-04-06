@@ -18,7 +18,7 @@ public class HubMenuChip extends Bordering {
         super(the);
         this.menu = items;
 
-        size(100,100); //temporar
+        resize(100,100); //temporar
     }
 
     @Override

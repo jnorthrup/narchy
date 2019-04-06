@@ -25,7 +25,6 @@ package spacegraph.space3d.phys.util;
 
 import org.eclipse.collections.api.block.predicate.primitive.IntObjectPredicate;
 import org.eclipse.collections.api.block.procedure.primitive.IntObjectProcedure;
-import org.jetbrains.annotations.NotNull;
 
 import java.io.Externalizable;
 import java.io.IOException;
@@ -201,7 +200,7 @@ public final class OArrayList<T> extends AbstractList<T> implements RandomAccess
 	}
 
 	@Override
-	public int indexOf(@NotNull Object o) {
+	public int indexOf(/*@NotNull*/ Object o) {
 		int _size = size;
 		T[] _array = array;
 		for (int i=0; i<_size; i++) {

@@ -97,7 +97,7 @@ import static com.jogamp.opengl.GL.GL_EQUIV;
             timeMS += dtS*1000;
 
             float freq = 8f;
-            float phaseSec = (float) Math.sin(freq * ((double)timeMS) / (2 * Math.PI * 1000));
+            float phaseSec = (float) Math.sin(freq * timeMS / (2 * Math.PI * 1000));
 
             gl.glPushMatrix();
             {

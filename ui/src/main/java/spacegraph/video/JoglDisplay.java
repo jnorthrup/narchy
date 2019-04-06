@@ -26,12 +26,13 @@ import static com.jogamp.opengl.fixedfunc.GLMatrixFunc.GL_MODELVIEW;
 import static com.jogamp.opengl.fixedfunc.GLMatrixFunc.GL_PROJECTION;
 import static jcog.math.v3.v;
 
-abstract public class JoglSpace {
+/** JOGL display implementation */
+abstract public class JoglDisplay {
 
     /**
      * the hardware input/output implementation
      */
-    public final JoglWindow display;
+    public final JoglWindow video;
 
     public final v3 camPos, camFwd, camUp;
     private final float[] mat4f = new float[16];
@@ -49,12 +50,12 @@ abstract public class JoglSpace {
     protected int debug;
 
 
-    public JoglSpace() {
-        display = new MyJoglWindow();
+    public JoglDisplay() {
+        video = new MyJoglWindow();
 
-        display.onUpdate((Animated) (camPos = new AnimVector3f(0, 0, 5, cameraSpeed)));
-        display.onUpdate((Animated) (camFwd = new AnimVector3f(0, 0, -1, cameraRotateSpeed)));
-        display.onUpdate((Animated) (camUp = new AnimVector3f(0, 1, 0, cameraRotateSpeed)));
+        video.onUpdate((Animated) (camPos = new AnimVector3f(0, 0, 5, cameraSpeed)));
+        video.onUpdate((Animated) (camFwd = new AnimVector3f(0, 0, -1, cameraRotateSpeed)));
+        video.onUpdate((Animated) (camUp = new AnimVector3f(0, 1, 0, cameraRotateSpeed)));
 
     }
 
@@ -88,9 +89,9 @@ abstract public class JoglSpace {
 
     protected void initInput() {
 
-        display.addKeyListener(new WindowKeyControls(JoglSpace.this));
+        video.addKeyListener(new WindowKeyControls(JoglDisplay.this));
 
-        display.addKeyListener(new KeyXYZ(JoglSpace.this));
+        video.addKeyListener(new KeyXYZ(JoglDisplay.this));
 
     }
 
@@ -121,7 +122,7 @@ abstract public class JoglSpace {
 
     private void clear() {
         //view.clearMotionBlur(0.5f);
-        display.clearComplete();
+        video.clearComplete();
 
     }
 
@@ -133,16 +134,16 @@ abstract public class JoglSpace {
     private void perspective() {
 
 
-        if (display.gl == null)
+        if (video.gl == null)
             return;
 
-        display.gl.glMatrixMode(GL_PROJECTION);
-        display.gl.glLoadIdentity();
+        video.gl.glMatrixMode(GL_PROJECTION);
+        video.gl.glLoadIdentity();
 
 
-        float aspect = ((float) display.window.getWidth()) / display.window.getHeight();
+        float aspect = ((float) video.window.getWidth()) / video.window.getHeight();
 
-        JoglSpace.this.aspect = aspect;
+        JoglDisplay.this.aspect = aspect;
 
         tanFovV = (float) Math.tan(45 * FloatUtil.PI / 180.0f / 2f);
 
@@ -152,7 +153,7 @@ abstract public class JoglSpace {
         left = -right;
 
 
-        display.gl.glMultMatrixf(FloatUtil.makePerspective(mat4f, 0, true, 45 * FloatUtil.PI / 180.0f, aspect, zNear, zFar), 0);
+        video.gl.glMultMatrixf(FloatUtil.makePerspective(mat4f, 0, true, 45 * FloatUtil.PI / 180.0f, aspect, zNear, zFar), 0);
 
 
         Draw.glu.gluLookAt(camPos.x - camFwd.x, camPos.y - camFwd.y, camPos.z - camFwd.z,
@@ -160,26 +161,26 @@ abstract public class JoglSpace {
                 camUp.x, camUp.y, camUp.z);
 
 
-        display.gl.glMatrixMode(GL_MODELVIEW);
-        display.gl.glLoadIdentity();
+        video.gl.glMatrixMode(GL_MODELVIEW);
+        video.gl.glLoadIdentity();
 
 
     }
 
     public final Off onUpdate(Consumer<JoglWindow> c) {
-        return display.onUpdate(c);
+        return video.onUpdate(c);
     }
 
     public final Off onUpdate(Animated c) {
-        return display.onUpdate(c);
+        return video.onUpdate(c);
     }
 
     public final Off onUpdate(Runnable c) {
-        return display.onUpdate(c);
+        return video.onUpdate(c);
     }
 
     public final GL2 gl() {
-        return display.gl;
+        return video.gl;
     }
 
 
@@ -228,7 +229,7 @@ abstract public class JoglSpace {
 
             initInput();
 
-            JoglSpace.this.init();
+            JoglDisplay.this.init();
 
             flush();
             onUpdate((Consumer) (w -> flush()));
@@ -248,10 +249,10 @@ abstract public class JoglSpace {
 
         @Override
         protected void update() {
-            int w = display.window.getWidth(), h = display.window.getHeight();
+            int w = video.window.getWidth(), h = video.window.getHeight();
 
             rendering.restart(w, h);
-            JoglSpace.this.update(rendering);
+            JoglDisplay.this.update(rendering);
 //            for (Surface/*Root*/ l : layers.children()) {
 //                if (l instanceof Ortho) {
 //                    ((Ortho) l).compile(rendering);

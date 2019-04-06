@@ -3,7 +3,6 @@ package jcog.learn.decision;
 import com.google.common.base.Joiner;
 import jcog.Texts;
 import jcog.data.list.FasterList;
-import org.jetbrains.annotations.NotNull;
 
 import java.io.PrintStream;
 import java.util.List;
@@ -16,7 +15,7 @@ import java.util.List;
     public final List<float[]> rows = new FasterList();
     public final H[] cols;
 
-    public FloatTable(@NotNull H... cols) {
+    public FloatTable( H... cols) {
         this.cols = cols;
     }
 

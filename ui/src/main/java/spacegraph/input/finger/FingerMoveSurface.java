@@ -48,8 +48,8 @@ public class FingerMoveSurface extends FingerMove {
 
     @Override
     public void stop(Finger finger) {
-        before = null;
         super.stop(finger);
+        before = null;
     }
 
     @Override
@@ -64,7 +64,7 @@ public class FingerMoveSurface extends FingerMove {
 //            tx += before.x;
 //            ty += before.y;
 ////        }
-        moving.pos(RectFloat.X0Y0WH(tx + before.x, ty + before.y, before.w, before.h));
+        moving.pos(RectFloat.X0Y0WH(tx + before.x, ty + before.y, moving.w(), moving.h()));
         //moving.pos(RectFloat.XYWH(tx + before.x, ty + before.y, moving.w() + tx, moving.h() + ty));
         //moving.pos(tx + before.x, ty + before.y);
     }

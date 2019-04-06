@@ -15,6 +15,7 @@ import nars.op.java.Opjects;
 import nars.sensor.Bitmap2DSensor;
 import nars.term.Term;
 import nars.term.atom.Atomic;
+import spacegraph.SpaceGraph;
 
 import java.util.Arrays;
 import java.util.Random;
@@ -23,7 +24,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import static nars.$.$$;
 import static nars.experiment.Tetris.TetrisState.*;
-import static spacegraph.SpaceGraph.window;
 
 /**
  * Created by me on 7/28/16.
@@ -130,7 +130,7 @@ public class Tetris extends GameX {
         addSensor(c);
         //pixels.resolution(0.05f);
 
-        window(new VectorSensorView(pixels, this).withControls(), 400, 900);
+        SpaceGraph.surfaceWindow(new VectorSensorView(pixels, this).withControls(), 400, 900);
 
 
         actionsPushButton();

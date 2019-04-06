@@ -24,7 +24,6 @@
 package spacegraph.space3d.phys.collision.broad;
 
 
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.space3d.phys.Body3D;
 import spacegraph.space3d.phys.Collidable;
@@ -55,7 +54,7 @@ public class Broadphasing {
 
 	}
 	
-	Broadphasing(@NotNull Collidable userPtr, short collisionFilterGroup, short collisionFilterMask) {
+	Broadphasing(Collidable userPtr, short collisionFilterGroup, short collisionFilterMask) {
 		this(userPtr, collisionFilterGroup, collisionFilterMask, null);
 	}
 	

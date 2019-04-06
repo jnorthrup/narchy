@@ -2,7 +2,6 @@ package jcog.pri;
 
 import jcog.Util;
 import jcog.math.FloatSupplier;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.function.BiConsumer;
 import java.util.function.Supplier;
@@ -37,7 +36,7 @@ public interface PriReference<X> extends Prioritizable, Supplier<X>, FloatSuppli
     /**
      * double[histogramID][bin]
      */
-    static <X, Y> double[][] histogram(@NotNull Iterable<PriReference<Y>> pp, @NotNull BiConsumer<PriReference<Y>, double[][]> each, @NotNull double[][] d) {
+    static <X, Y> double[][] histogram( Iterable<PriReference<Y>> pp,  BiConsumer<PriReference<Y>, double[][]> each,  double[][] d) {
 
         pp.forEach(y -> each.accept(y, d));
 

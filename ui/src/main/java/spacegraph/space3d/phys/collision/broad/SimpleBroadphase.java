@@ -24,7 +24,6 @@
 package spacegraph.space3d.phys.collision.broad;
 
 import jcog.math.v3;
-import org.jetbrains.annotations.NotNull;
 import spacegraph.space3d.phys.Collidable;
 import spacegraph.space3d.phys.util.OArrayList;
 
@@ -80,7 +79,7 @@ public class SimpleBroadphase extends Broadphase {
     }
 
     @Override
-    public void setAabb(@NotNull Broadphasing proxy, v3 aabbMin, v3 aabbMax, Intersecter intersecter) {
+    public void setAabb( Broadphasing proxy, v3 aabbMin, v3 aabbMax, Intersecter intersecter) {
         SimpleBroadphasing sbp = (SimpleBroadphasing) proxy;
         sbp.min.set(aabbMin);
         sbp.max.set(aabbMax);

@@ -7,19 +7,15 @@ import jcog.math.FloatRange;
 import jcog.math.FloatSupplier;
 import nars.$;
 import nars.NAR;
-import nars.Param;
 import nars.control.NARPart;
 import nars.term.Term;
 import nars.term.atom.Atomic;
-import nars.time.ScheduledTask;
+import nars.time.RecurringTask;
 import org.eclipse.collections.api.tuple.Pair;
 import org.eclipse.collections.impl.tuple.Tuples;
-import org.jetbrains.annotations.NotNull;
-import org.slf4j.Logger;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
-import java.util.function.Predicate;
 
 /**
  * a part that executes a given procedure once every N durations (approximate)
@@ -32,14 +28,12 @@ import java.util.function.Predicate;
  * temporal events.  at any given time it will contain zero or one of this
  * Dur's immutable and re-usable AtDur event.
  */
-abstract public class DurPart extends NARPart {
-
-    private static final Logger logger = Util.logger(DurPart.class);
+abstract public class DurLoop extends NARPart {
 
     /**
      * ideal duration multiple to be called, since time after implementation's procedure finished last
      */
-    public final FloatRange durations = new FloatRange(1f, 0.1f, 100f);
+    public final FloatRange durations = new FloatRange(1, 0.25f, 16f);
 
     private final AtDur at = new AtDur();
 
@@ -48,7 +42,7 @@ abstract public class DurPart extends NARPart {
         return at;
     }
 
-    protected DurPart(NAR n, float durs) {
+    protected DurLoop(NAR n, float durs) {
         super((NAR) null); //dont call through super constructor
         durations.set(durs);
         if (n != null) {
@@ -57,54 +51,25 @@ abstract public class DurPart extends NARPart {
     }
 
 
-    protected DurPart(Term id) {
+    protected DurLoop(Term id) {
         super(id);
     }
 
-    protected DurPart(NAR nar) {
+    protected DurLoop(NAR nar) {
         this(nar, 1f);
     }
 
     /**
      * if using this constructor, a subclass must call nar.on(this) manually
      */
-    protected DurPart() {
+    protected DurLoop() {
         this((NAR) null);
-    }
-
-    /**
-     * simple convenient adapter for Runnable's
-     */
-    public static DurPart on(NAR nar, @NotNull Runnable r) {
-        return new MyDurRunnable(nar, r);
-    }
-
-    public static DurPart on(NAR nar, @NotNull Consumer<NAR> r) {
-        return new MyDurNARConsumer(nar, r);
-    }
-
-    public static DurPart onWhile(NAR nar, Predicate<NAR> r) {
-        return new DurPart(nar) {
-            @Override
-            protected void run(NAR n, long dt) {
-                if (!r.test(n)) {
-                    pause();
-                } else {
-                    resume();
-                }
-            }
-
-            @Override
-            public String toString() {
-                return r.toString();
-            }
-        };
     }
 
     /**
      * creates a duration-cached float range that is automatically destroyed when its parent context is
      */
-    public static FloatRange cache(FloatSupplier o, float min, float max, DurPart parent, @Deprecated NAR nar) {
+    public static FloatRange cache(FloatSupplier o, float min, float max, DurLoop parent, @Deprecated NAR nar) {
         Pair<FloatRange, Off> p = cache(o, min, max, 1, nar);
         parent.on(p.getTwo());
         return p.getOne();
@@ -113,9 +78,10 @@ abstract public class DurPart extends NARPart {
     public static Pair<FloatRange, Off> cache(FloatSupplier o, float min, float max, float durPeriod, NAR n) {
         assert (min < max);
         FloatRange r = new FloatRange((min + max) / 2, min, max);
-        DurPart d = DurPart.on(n, () -> {
+        //r.set(Float.NaN);
+        DurLoop d = n.onDur(() -> {
             float x = o.asFloat();
-            if (x==x) {
+            if (x == x) {
                 r.set(
                         Util.clampSafe(x, min, max)
                 );
@@ -130,12 +96,12 @@ abstract public class DurPart extends NARPart {
     /**
      * set period (in durations)
      */
-    public DurPart durs(float durations) {
+    public DurLoop durs(float durations) {
         this.durations.set(durations);
         return this;
     }
 
-    @Override protected void starting(@NotNull NAR nar) {
+    @Override protected void starting(NAR nar) {
         this.nar = nar;
         at.run();
     }
@@ -152,25 +118,26 @@ abstract public class DurPart extends NARPart {
     abstract protected void run(NAR n, long dt);
 
 
-    abstract public static class RecurringTask extends ScheduledTask {
-
-        volatile long next;
-
-        @Override
-        public long start() {
-            return next;
-        }
-    }
 
     private static final Atomic DUR = Atomic.the("dur");
 
-    private static final class MyDurRunnable extends DurPart {
+//    public static String name(Object r) {
+//        String n;
+//        Class c = r.getClass();
+//        String className = c.getSimpleName();
+//        if (c.isSynthetic())
+//            n = className;
+//        else
+//            n = className + ':' + r;
+//        return n;
+//    }
+
+    public static final class DurRunnable extends DurLoop {
         private final Runnable r;
 
-        MyDurRunnable(NAR nar, @NotNull Runnable r) {
+        public DurRunnable(Runnable r) {
             super();
             this.r = r;
-            nar.start(this);
         }
 
         @Override
@@ -180,18 +147,18 @@ abstract public class DurPart extends NARPart {
 
         @Override
         public String toString() {
-            return getClass().getSimpleName() + ':' + r;
+            return toString(r);
         }
+
     }
 
-    private static final class MyDurNARConsumer extends DurPart {
+    public static final class DurNARConsumer extends DurLoop {
 
         final Consumer<NAR> r;
 
-        MyDurNARConsumer(NAR nar, @NotNull Consumer<NAR> r) {
+        public DurNARConsumer(Consumer<NAR> r) {
             super();
             this.r = r;
-            nar.start(this);
         }
 
         @Override
@@ -202,9 +169,12 @@ abstract public class DurPart extends NARPart {
 
         @Override
         public String toString() {
-            return getClass().getSimpleName() + ':' + r;
+            return toString(r);
         }
+
+
     }
+
 
     public class AtDur extends RecurringTask {
 
@@ -216,19 +186,15 @@ abstract public class DurPart extends NARPart {
         final AtomicBoolean busy = new AtomicBoolean(false);
 
         @Override
-        public Term term() {
-            return $.p(id, $.p(DUR, $.the(durations.floatValue())));
-        }
-
-        @Override
         public void run() {
 
-            if (!busy.compareAndSet(false, true))
+            if (!busy.weakCompareAndSetAcquire(false, true))
                 throw new WTF(); //return false;
+
+            long atStart = nar.time();
 
             try {
 
-                long atStart = nar.time();
 
                 long lastStarted = this.lastStarted;
                 if (lastStarted == Long.MIN_VALUE)
@@ -237,45 +203,33 @@ abstract public class DurPart extends NARPart {
                 this.lastStarted = atStart;
 
                 long delta = atStart - lastStarted;
-                long d = durCycles(); //get prior in case dur changes during execution
 
-                try {
-                    DurPart.this.run(nar, delta);
-                } catch (Throwable t) {
-                    logger.error("{} {}", this, t);
-                }
+//                try {
+                    DurLoop.this.run(nar, delta);
+//                } catch (Throwable t) {
+//                    logger.error("{} {}", this, t);
+//                }
 
-                if (!DurPart.this.isOff()) {
-                    scheduleNext(d, atStart);
-                }
 
             } finally {
-                busy.set(false);
-            }
-        }
-
-        private void scheduleNext(long d, long started) {
-
-            long now = nar.time();
-
-            long idealNext = started + d;
-            if (idealNext <= now) {
-                /** LAG - compute a correctional shift period, so that it attempts to maintain a steady rhythm and re-synch even if a frame is lagged*/
-                long phaseLate = (now - idealNext) % d;
-                //idealNext = now + 1; //immediate
-                idealNext = now + Math.max(1, d - phaseLate);
-
-                if (Param.DEBUG) {
-                    long earliest = started + d;
-                    assert (next >= earliest) : "starting too soon: " + next + " < " + earliest;
-                    long latest = now + d;
-                    assert (next <= latest) : "starting too late: " + next + " > " + earliest;
+                if (DurLoop.this.isOnOrStarting()) {
+                    scheduleNext(durCycles(), atStart, nar);
                 }
+                busy.setRelease(false);
             }
 
-            next = idealNext;
-
-            nar.runAt(at);
         }
+
+
+        @Override
+        public final Term term() {
+            return $.identity(this); //globally unique
+        }
+    }
+
+
+    
+    public static String toString(Object r) {
+        return "AtDur(" + r + ")";
     }
 }

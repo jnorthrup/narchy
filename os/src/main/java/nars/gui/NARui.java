@@ -21,7 +21,7 @@ import nars.Narsese;
 import nars.Task;
 import nars.agent.Game;
 import nars.agent.util.RLBooster;
-import nars.attention.TaskLinkBag;
+import nars.attention.TaskLinkBagAttention;
 import nars.concept.Concept;
 import nars.concept.sensor.Signal;
 import nars.control.NARPart;
@@ -32,12 +32,13 @@ import nars.link.TaskLink;
 import nars.op.stm.ConjClustering;
 import nars.task.util.TaskBuffer;
 import nars.term.Termed;
-import nars.time.part.DurPart;
+import nars.time.part.DurLoop;
 import nars.truth.Truth;
 import nars.util.MemorySnapshot;
 import org.eclipse.collections.api.block.function.primitive.IntToIntFunction;
 import org.eclipse.collections.api.block.procedure.primitive.BooleanProcedure;
 import org.jetbrains.annotations.Nullable;
+import spacegraph.SpaceGraph;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.Bordering;
 import spacegraph.space2d.container.ScrollXY;
@@ -183,7 +184,7 @@ public class NARui {
     }
 
     private static Surface priView(NAR n) {
-        TaskLinkBag cc = n.attn;
+        TaskLinkBagAttention cc = n.attn;
 
         return Splitting.row(
                 new BagView<>(cc.links, n),
@@ -434,7 +435,7 @@ public class NARui {
     }
 
     public static void conceptWindow(Termed t, NAR n) {
-        window(new ConceptSurface(t, n), 500, 500);
+        SpaceGraph.surfaceWindow(new ConceptSurface(t, n), 500, 500);
     }
 
     public static Surface agent(Game a) {
@@ -585,7 +586,7 @@ public class NARui {
                 new MetaFrame(b),
                 new Gridding(
                     new FloatRangePort(
-                        DurPart.cache(b::load, 0, 1, 1, n).getOne(),
+                        DurLoop.cache(b::load, 0, 1, 1, n).getOne(),
                     "load"
                     )
                 )
@@ -597,7 +598,7 @@ public class NARui {
     }
     public static Surface attentionUI(NAR n) {
         final Bordering m = new Bordering();
-        TaskLinkBag attn = n.attn;
+        TaskLinkBagAttention attn = n.attn;
         m.center(new TabMenu(Map.of(
                 "Spectrum", ()->tasklinkSpectrogram(attn.links, 300, n),
                 "Histogram", ()->new BagView(attn.links, n),

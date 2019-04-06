@@ -8,7 +8,7 @@ import org.eclipse.collections.api.block.procedure.primitive.FloatProcedure;
 import org.eclipse.collections.api.map.primitive.MutableShortObjectMap;
 import org.eclipse.collections.impl.map.mutable.primitive.ShortObjectHashMap;
 import org.jetbrains.annotations.Nullable;
-import spacegraph.video.JoglSpace;
+import spacegraph.video.JoglDisplay;
 import spacegraph.video.JoglWindow;
 
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -17,7 +17,7 @@ import java.util.function.Consumer;
 
 public class SpaceKeys extends KeyAdapter implements Consumer<JoglWindow> {
 
-    final JoglSpace space;
+    final JoglDisplay space;
 
     private final ConcurrentLinkedQueue<Consumer<SpaceKeys>> pending = new ConcurrentLinkedQueue<>();
     private final MetalConcurrentQueue<Short> queue = new MetalConcurrentQueue<>(64);
@@ -27,11 +27,11 @@ public class SpaceKeys extends KeyAdapter implements Consumer<JoglWindow> {
     private final MutableShortObjectMap<FloatProcedure> keyReleased = new ShortObjectHashMap<>();
     private final Off on;
 
-    public SpaceKeys(JoglSpace g) {
+    public SpaceKeys(JoglDisplay g) {
         this.space = g;
 
 
-        on = g.display.onUpdate(this);
+        on = g.video.onUpdate(this);
     }
 
     @Override

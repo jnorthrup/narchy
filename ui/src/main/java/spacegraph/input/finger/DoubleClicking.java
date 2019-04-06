@@ -19,7 +19,7 @@ public class DoubleClicking {
     private v2 doubleClickSpot = null;
 
     /** in milliseconds */
-    private final long maxDoubleClickTimeNS = 350 * 1000 * 1000;
+    private final long maxDoubleClickTimeNS = 250 * 1000 * 1000;
 
     /** in milliseconds */
     private long doubleClickTime = Long.MIN_VALUE;

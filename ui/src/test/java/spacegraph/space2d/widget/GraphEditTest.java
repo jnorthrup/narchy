@@ -172,7 +172,7 @@ public class GraphEditTest {
 
         }
         public static void main(String[] args) {
-            SpaceGraph.window(new TinySpeechTest(), 1000, 1000);
+            SpaceGraph.surfaceWindow(new TinySpeechTest(), 1000, 1000);
 
         }
     }
@@ -189,7 +189,7 @@ public class GraphEditTest {
             g.add(new AudioOutPort()).pos(500, 30, 450, 350);
 
 
-            SpaceGraph.window(g, 1000, 1000);
+            SpaceGraph.surfaceWindow(g, 1000, 1000);
 
         }
 

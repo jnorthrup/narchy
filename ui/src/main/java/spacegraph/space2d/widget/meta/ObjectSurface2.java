@@ -25,7 +25,7 @@ public class ObjectSurface2 extends MutableUnitContainer {
 
     public static void main(String[] args) {
         Object x = List.of(new FloatRange(0.6f, 0.0f, 1f), new FasterList().with("x", "y"));
-        SpaceGraph.window(new ObjectSurface2(x), 500, 500);
+        SpaceGraph.surfaceWindow(new ObjectSurface2(x), 500, 500);
     }
 
     static public final CastGraph DefaultBuilder = new CastGraph();

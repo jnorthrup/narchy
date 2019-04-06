@@ -3,8 +3,8 @@ package nars.experiment.minicraft;
 import jcog.Util;
 import jcog.signal.wave2d.MonoBufImgBitmap2D;
 import nars.$;
-import nars.NAR;
 import nars.GameX;
+import nars.NAR;
 import nars.Narsese;
 import nars.experiment.minicraft.side.SideScrollMinicraft;
 import nars.experiment.minicraft.side.awtgraphics.AwtGraphicsHandler;
@@ -50,7 +50,7 @@ public class SideCraft extends GameX {
 
 
         camAE = new AutoclassifiedBitmap("cra", cam.pixels, 8, 8, 32, this);
-        SpaceGraph.window(camAE.newChart(), 500, 500);
+        SpaceGraph.surfaceWindow(camAE.newChart(), 500, 500);
 
 
         pixels = senseCamera("cra", cam);

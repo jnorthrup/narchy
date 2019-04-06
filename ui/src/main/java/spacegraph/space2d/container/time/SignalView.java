@@ -77,7 +77,7 @@ public class SignalView extends Timeline2D {
         }
 
         @Override
-        protected boolean startDrag(Finger f) {
+        protected boolean ready(Finger f) {
             selectStart = sample(f.posGlobal().x);
             return true;
         }
@@ -117,8 +117,8 @@ public class SignalView extends Timeline2D {
     }
 
     @Override
-    protected void renderChildren(ReSurface r) {
-        super.renderChildren(r);
+    protected void renderContent(ReSurface r) {
+        super.renderContent(r);
 
         float sStart = selectStart;
         if (sStart == sStart) {

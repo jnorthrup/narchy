@@ -47,9 +47,9 @@ public class OsmSurface extends PaintSurface {
         }
 
         @Override
-        protected boolean startDrag(Finger f) {
+        protected boolean ready(Finger f) {
             prev.set(0, 0);
-            return super.startDrag(f);
+            return super.ready(f);
         }
 
         @Override
@@ -279,9 +279,9 @@ public class OsmSurface extends PaintSurface {
         }
 
         @Override
-        protected void renderChildren(ReSurface r) {
+        protected void renderContent(ReSurface r) {
             text(text.get());
-            super.renderChildren(r);
+            super.renderContent(r);
         }
 
     }

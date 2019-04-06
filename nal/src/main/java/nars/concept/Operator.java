@@ -8,7 +8,6 @@ import nars.task.NALTask;
 import nars.term.Term;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.function.BiFunction;
 
@@ -90,7 +89,7 @@ public final class Operator extends NodeConcept implements PermanentConcept, Ato
         return Operator.command(LOG_FUNCTOR, when, $.the(content));
     }
 
-    private static Task command(String func, long now, @NotNull Term... args) {
+    private static Task command(String func, long now,  Term... args) {
         return Operator.command($.func(func, args), now);
     }
 

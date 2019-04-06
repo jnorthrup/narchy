@@ -11,7 +11,7 @@ public class NodeGraphRenderer<N, E> implements Graph2D.Graph2DRenderer<N> {
         if (node.id instanceof Node) {
             node.color(0.5f, 0.5f, 0.5f);
 //                node.move((float) Math.random() * 100, (float) Math.random() * 100);
-            node.size(20f, 10f);
+            node.resize(20f, 10f);
 
             Node<N, E> nn = (Node<N, E>) node.id;
             nn.edges(false, true).forEach((e) -> {

@@ -4,7 +4,6 @@ package jcog.pri;
 import jcog.Texts;
 import jcog.Util;
 import org.fusesource.jansi.Ansi;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -53,7 +52,7 @@ public interface Prioritized extends Deleteable {
         return toStringBuilder(null, Texts.n4(b.pri())).toString();
     }
 
-    @NotNull
+    
     static StringBuilder toStringBuilder(@Nullable StringBuilder sb, String priorityString) {
         int c = 1 + priorityString.length();
         if (sb == null)
@@ -65,8 +64,8 @@ public interface Prioritized extends Deleteable {
         return sb.append('$').append(priorityString);
     }
 
-    @NotNull
-    static Ansi.Color budgetSummaryColor(@NotNull Prioritized tv) {
+    
+    static Ansi.Color budgetSummaryColor( Prioritized tv) {
         int s = (int) Math.floor(tv.priElseZero() * 5);
         switch (s) {
             default:

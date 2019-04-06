@@ -139,7 +139,7 @@ public class MIDITaskifier {
 
 
 
-        SpaceGraph.window(NARui.beliefCharts(keys, nar), 900, 900);
+        SpaceGraph.surfaceWindow(NARui.beliefCharts(keys, nar), 900, 900);
 
 
         nar.startFPS(60f);

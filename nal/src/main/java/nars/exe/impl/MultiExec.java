@@ -13,7 +13,7 @@ import nars.task.ITask;
 import nars.task.NALTask;
 import nars.task.ProxyTask;
 import nars.time.clock.RealTime;
-import nars.time.part.DurPart;
+import nars.time.part.DurLoop;
 
 import java.io.IOException;
 import java.util.function.Consumer;
@@ -140,7 +140,7 @@ abstract public class MultiExec extends UniExec {
 
         super.start(n);
 
-        DurPart updater = DurPart.on(n, this::update);
+        DurLoop updater = n.onDur(this::update);
         updater.durs(UPDATE_DURS);
         ons.add(updater);
         //ons.add(n.onCycle(this::update));

@@ -44,7 +44,7 @@ public class TasksView implements Timeline2D.TimelineEvents<Task> {
         Iterable<Task> tasks = ()->n.tasks().filter(x->!x.isEternal()).iterator();
 
         Timeline2D t = timeline(tasks).setTime(0, n.time());
-        SpaceGraph.window(t.withControls(),
+        SpaceGraph.surfaceWindow(t.withControls(),
                 1200, 500);
     }
 

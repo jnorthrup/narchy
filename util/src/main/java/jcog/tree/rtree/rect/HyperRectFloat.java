@@ -25,7 +25,6 @@ import jcog.math.v2;
 import jcog.math.v3;
 import jcog.tree.rtree.HyperRegion;
 import jcog.tree.rtree.point.FloatND;
-import org.jetbrains.annotations.NotNull;
 
 import java.io.Serializable;
 import java.util.Arrays;
@@ -227,7 +226,7 @@ public class HyperRectFloat implements HyperRegion, Serializable, Comparable<Hyp
     }
 
     @Override
-    public int compareTo(@NotNull HyperRectFloat o) {
+    public int compareTo(HyperRectFloat o) {
         int a = min.compareTo(o.min);
         if (a != 0) return a;
         int b = max.compareTo(o.max);

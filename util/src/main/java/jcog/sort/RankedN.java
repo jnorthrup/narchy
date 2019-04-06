@@ -6,7 +6,6 @@ import jcog.math.FloatSupplier;
 import jcog.util.ArrayUtils;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.eclipse.collections.api.block.function.primitive.IntToFloatFunction;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
@@ -38,7 +37,7 @@ public class RankedN<X> extends TopN<X> {
 //        setCapacity(capacity);
 //    }
 
-    public RankedN(X[] buffer, @NotNull FloatFunction<X> ranking) {
+    public RankedN(X[] buffer, FloatFunction<X> ranking) {
         this(buffer, FloatRank.the(ranking));
     }
 

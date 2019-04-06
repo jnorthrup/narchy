@@ -1,12 +1,8 @@
 package spacegraph.space2d.hud;
 
-import com.jogamp.newt.event.WindowEvent;
-import com.jogamp.newt.event.WindowListener;
-import com.jogamp.newt.event.WindowUpdateEvent;
-import com.jogamp.newt.opengl.GLWindow;
+import com.jogamp.opengl.fixedfunc.GLMatrixFunc;
 import jcog.Util;
 import jcog.event.Off;
-import jcog.exe.Exe;
 import jcog.math.v2;
 import jcog.math.v3;
 import jcog.tree.rtree.rect.RectFloat;
@@ -19,7 +15,7 @@ import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.unit.MutableUnitContainer;
 import spacegraph.util.animate.AnimVector3f;
 import spacegraph.util.animate.Animated;
-import spacegraph.video.JoglSpace;
+import spacegraph.video.JoglDisplay;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
@@ -31,7 +27,7 @@ import static java.lang.Math.sin;
  * <p>
  * orthographic widget adapter. something which goes on the "face" of a HUD ("head"s-up-display)
  */
-public class Zoomed<S extends Surface> extends MutableUnitContainer<S> implements /*Deprecated*/ WindowListener, /*Deprecated*/ KeyPressed {
+public class Zoomed<S extends Surface> extends MutableUnitContainer<S> implements /*Deprecated*/ KeyPressed {
 
     public final static short PAN_BUTTON = 0;
 
@@ -50,7 +46,7 @@ public class Zoomed<S extends Surface> extends MutableUnitContainer<S> implement
     /**
      * parent
      */
-    public final JoglSpace space;
+    public final JoglDisplay space;
     @Deprecated
     private final NewtKeyboard keyboard;
     private final Deque<Surface> zoomStack = new ArrayDeque();
@@ -66,9 +62,9 @@ public class Zoomed<S extends Surface> extends MutableUnitContainer<S> implement
         float rate = 0.4f;
 
         @Override
-        protected boolean startDrag(Finger f) {
+        protected boolean ready(Finger f) {
             start.set(f.posPixel);
-            return super.startDrag(f);
+            return super.ready(f);
         }
 
         @Override
@@ -91,15 +87,15 @@ public class Zoomed<S extends Surface> extends MutableUnitContainer<S> implement
         private v3 camStart;
 
         @Override
-        protected JoglSpace window() {
+        protected JoglDisplay window() {
             return space;
         }
 
         @Override
-        protected boolean startDrag(Finger f) {
+        protected boolean ready(Finger f) {
             if (f.fingering() == Fingering.Null) {
                 camStart = new v3(cam);
-                return super.startDrag(f);
+                return super.ready(f);
             } else {
                 return false;
             }
@@ -113,44 +109,26 @@ public class Zoomed<S extends Surface> extends MutableUnitContainer<S> implement
 
     };
 
-    float CORNER_RADIUS = 4;
+//    float CORNER_RADIUS = 4;
     private float camXmin = -1, camXmax = +1;
     private float camYmin = -1, camYmax = +1;
 
-
-//    /** finger position local to this layer/camera */
-//    public final v2 fingerPos = new v2();
-
-    public Zoomed(JoglSpace space, NewtKeyboard keyboard) {
-        super();
+    public Zoomed(JoglDisplay space, NewtKeyboard keyboard, S content) {
+        super(content);
 
         this.space = space;
-
-        this.cam = new Camera();
-
         this.keyboard = keyboard;
 
+        this.cam = new Camera();
     }
 
-
     @Override
-    public void windowResized(WindowEvent e) {
-        GLWindow w = space.display.window;
-        int W = w.getWidth();
-        int H = w.getHeight();
-        if (posChanged(RectFloat.WH(W, H))) {
-
-
-            if (autosize()) {
-                the().pos(bounds);
-                zoomStackReset();
-            }
-            if (autosize()) {
-                unzoom();
-            }
-
-            layout();
+    protected void doLayout(float dtS) {
+        if (autosize()) {
+            zoomStackReset();
+            unzoom();
         }
+        super.doLayout(dtS);
     }
 
     /**
@@ -161,11 +139,11 @@ public class Zoomed<S extends Surface> extends MutableUnitContainer<S> implement
     }
 
     private float camZMax() {
-        return targetDepth(Math.min(space.display.window.getWidth(), space.display.window.getHeight()));
+        return targetDepth(Math.min(space.video.getWidth(), space.video.getHeight()));
     }
 
     @Override
-    public final void renderChildren(ReSurface render) {
+    public final void renderContent(ReSurface render) {
 
         render.on((gl) -> {
 
@@ -184,9 +162,7 @@ public class Zoomed<S extends Surface> extends MutableUnitContainer<S> implement
 
         the().tryRender(render);
 
-        render.on((gl) -> {
-            gl.glPopMatrix();
-        });
+        render.on(GLMatrixFunc::glPopMatrix);
     }
 
     @Override
@@ -258,13 +234,9 @@ public class Zoomed<S extends Surface> extends MutableUnitContainer<S> implement
     @Override
     protected void starting() {
 
-        JoglSpace s = (JoglSpace) root();
+        JoglDisplay s = (JoglDisplay) root();
 
-        s.display.addWindowListener(this);
-
-        s.display.addKeyListener(keyboard);
-
-        windowResized(null);
+        s.video.addKeyListener(keyboard);
 
         animate(cam);
 
@@ -363,39 +335,13 @@ public class Zoomed<S extends Surface> extends MutableUnitContainer<S> implement
     }
 
 
-    @Override
-    public void windowMoved(WindowEvent e) {
-
-    }
-
-    @Override
-    public void windowDestroyNotify(WindowEvent e) {
-        Exe.invokeLater(this::stop);
-    }
-
-    @Override
-    public void windowDestroyed(WindowEvent e) {
-
-    }
-
-    @Override
-    public void windowGainedFocus(WindowEvent e) {
-
-    }
-
-    @Override
-    public void windowLostFocus(WindowEvent e) {
-
-    }
-
-
-    @Override
-    public void windowRepaint(WindowUpdateEvent e) {
-        visible = true;
-    }
 
     public boolean autosize() {
         return true;
+    }
+
+    public Surface overlayZoomBounds(Finger finger) {
+        return new Finger.TouchOverlay(finger, cam);
     }
 
 

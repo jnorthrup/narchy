@@ -100,10 +100,10 @@ public class MetaFrame extends Bordering implements Hovered {
         }
     }
 
-    @Override
-    public boolean showing() {
-        return expanded || super.showing(); //HACK
-    }
+//    @Override
+//    public boolean showing() {
+//        return expanded || super.showing(); //HACK
+//    }
 
     @Override
     public boolean detachChild(Surface s) {

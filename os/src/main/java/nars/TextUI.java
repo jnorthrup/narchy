@@ -30,7 +30,7 @@ import jcog.pri.bag.impl.PLinkArrayBag;
 import jcog.pri.op.PriMerge;
 import nars.control.NARPart;
 import nars.op.language.NARHear;
-import nars.time.part.DurPart;
+import nars.time.part.DurLoop;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
@@ -56,7 +56,7 @@ public class TextUI {
     final Set<TextGUI> sessions = Sets.newConcurrentHashSet();
 
     /** HACK because Lanterna's Component.onRemove doesnt get called reliably */
-    private final Set<DurPart> updaters = Sets.newConcurrentHashSet();
+    private final Set<DurLoop> updaters = Sets.newConcurrentHashSet();
 
     public TextUI(NAR n) {
         this.nar = n;
@@ -277,7 +277,7 @@ public class TextUI {
 
         @Override
         protected void stopping(NAR nar) {
-            updaters.forEach(DurPart::off);
+            updaters.forEach(DurLoop::off);
             updaters.clear();
 
             Collection<Window> w = tui.getWindows();
@@ -361,8 +361,8 @@ public class TextUI {
         }
 
 
-        DurPart newGUIUpdate(Runnable r) {
-            DurPart u = DurPart.on(nar, r);
+        DurLoop newGUIUpdate(Runnable r) {
+            DurLoop u = nar.onDur(r);
             updaters.add(u);
             return u;
 
@@ -419,7 +419,7 @@ public class TextUI {
 
         private class EmotionDashboard extends Panel {
             private final TextBox stats;
-            private final DurPart on;
+            private final DurLoop on;
             private final AtomicBoolean busy = new AtomicBoolean(false);
 
             public EmotionDashboard() {
@@ -476,7 +476,7 @@ public class TextUI {
             protected final AtomicBoolean changed = new AtomicBoolean(false);
             protected final MutableInteger visible = new MutableInteger();
 
-            protected final DurPart update;
+            protected final DurLoop update;
             float priInfluenceRate = 1f;
             private boolean autoupdate = true;
 

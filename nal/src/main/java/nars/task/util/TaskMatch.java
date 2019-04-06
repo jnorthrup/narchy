@@ -8,7 +8,6 @@ import nars.term.Term;
 import nars.term.Variable;
 import nars.term.control.PREDICATE;
 import nars.util.SoftException;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
 import java.util.function.Consumer;
@@ -26,7 +25,7 @@ abstract public class TaskMatch implements Consumer<Task>, Predicate<Task> {
     private PREDICATE<Byte> punctuation;
 
 
-    protected TaskMatch(@NotNull NAR n) {
+    protected TaskMatch(NAR n) {
         this.nar = n;
         this.on = n.onTask(this);
     }
@@ -39,17 +38,14 @@ abstract public class TaskMatch implements Consumer<Task>, Predicate<Task> {
         this.punctuation = punctuation;
     }
 
-    @NotNull
     @Override
     public String toString() {
         return id().toString();
     }
 
-
     public Term id() {
         return $.func(getClass().getSimpleName(),
                 (term), (punctuation)
-
         );
     }
 

@@ -2,7 +2,7 @@ package nars.gui;
 
 import jcog.event.Off;
 import nars.NAR;
-import nars.time.part.DurPart;
+import nars.time.part.DurLoop;
 import spacegraph.space2d.ReSurface;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.widget.meta.AbstractCachedSurface;
@@ -20,7 +20,7 @@ abstract public class DurSurface<S extends Surface> extends AbstractCachedSurfac
     public static final double minUpdateTimeSeconds = 1 / 30.0; /* 30fps */
 
     protected final NAR nar;
-    DurPart on;
+    DurLoop on;
     final long minUpdateTimeNS;
     private boolean autolayout;
 
@@ -35,9 +35,10 @@ abstract public class DurSurface<S extends Surface> extends AbstractCachedSurfac
 
     @Override
     public Off on() {
-        return on = DurPart.on(nar, this::updateIfShowing);
+        return on = nar.onDur(this::updateIfShowing);
     }
 
+    /** sets the update period dur multiplier */
     public DurSurface durs(float durs) {
         on.durs(durs);
         return this;
@@ -50,17 +51,17 @@ abstract public class DurSurface<S extends Surface> extends AbstractCachedSurfac
         return get(x, n, x::updateIfShowing);
     }
 
-    long lastUpdate = Long.MIN_VALUE;
-    public boolean showing() {
-        if (super.showing()) {
-            long now = System.nanoTime();
-            if (lastUpdate < now - minUpdateTimeNS) {
-                lastUpdate = now; //TODO throttle duration to match expected update speed if significantly different
-                update();
-            }
-            return true;
+    long lastUpdate = System.nanoTime();
+
+    @Override
+    protected void renderContent(ReSurface r) {
+        long now = System.nanoTime();
+        if (lastUpdate < now - minUpdateTimeNS) {
+            lastUpdate = now; //TODO throttle duration to match expected update speed if significantly different
+            update();
         }
-        return false;
+
+        super.renderContent(r);
     }
 
     public static DurSurface get(Surface x, NAR n, Consumer<NAR> eachDur) {

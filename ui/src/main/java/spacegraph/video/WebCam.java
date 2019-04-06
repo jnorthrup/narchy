@@ -12,6 +12,7 @@ import jcog.signal.named.RGB;
 import jcog.signal.tensor.TensorTopic;
 import jcog.signal.wave2d.RGBBufImgBitmap2D;
 import jcog.signal.wave2d.RGBToMonoBitmap2D;
+import spacegraph.SpaceGraph;
 import spacegraph.space2d.container.Splitting;
 import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.container.unit.AspectAlign;
@@ -21,8 +22,6 @@ import spacegraph.space2d.widget.meter.BitmapMatrixView;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
-
-import static spacegraph.SpaceGraph.window;
 
 
 /**
@@ -260,10 +259,10 @@ public class WebCam {
 
         Gridding menu = new Gridding();
         menu.add(new PushButton("++").clicked(() -> {
-            window(new ChannelView(wc), 400, 400);
+            SpaceGraph.surfaceWindow(new ChannelView(wc), 400, 400);
         }));
 
-        window(new Splitting(new Gridding(menu, new ObjectSurface(wc)), 0.9f, new WebCamSurface(wc)), 1000, 1000);
+        SpaceGraph.surfaceWindow(new Splitting(new Gridding(menu, new ObjectSurface(wc)), 0.9f, new WebCamSurface(wc)), 1000, 1000);
     }
 
 }

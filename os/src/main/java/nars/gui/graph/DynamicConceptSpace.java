@@ -17,12 +17,12 @@ import nars.gui.concept.ConceptSurface;
 import nars.link.TaskLink;
 import nars.term.Term;
 import nars.term.Termed;
-import nars.time.part.DurPart;
+import nars.time.part.DurLoop;
 import nars.truth.Truth;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.SpaceGraph;
 import spacegraph.space2d.widget.button.PushButton;
-import spacegraph.space3d.SpaceGraph3D;
+import spacegraph.space3d.SpaceDisplayGraph3D;
 import spacegraph.space3d.phys.shape.SphereShape;
 import spacegraph.space3d.widget.DynamicListSpace;
 import spacegraph.space3d.widget.SpaceWidget;
@@ -53,9 +53,9 @@ public class DynamicConceptSpace extends DynamicListSpace<Concept> {
 
     public SpaceWidget.TermVis vis;
 
-    private DurPart onDur;
+    private DurLoop onDur;
     private Offs onClear;
-    private DurPart updater;
+    private DurLoop updater;
 
     public DynamicConceptSpace(NAR nar, @Nullable Iterable<? extends Concept> concepts, int maxNodes, int maxEdgesPerNodeMax) {
         super();
@@ -86,12 +86,12 @@ public class DynamicConceptSpace extends DynamicListSpace<Concept> {
     final AtomicBoolean updated = new AtomicBoolean(false);
 
     @Override
-    public void start(SpaceGraph3D<Concept> space) {
+    public void start(SpaceDisplayGraph3D<Concept> space) {
         synchronized (this) {
             super.start(space);
             init();
-            updater = DurPart.on(nar, nn->{
-               concepts.commit();
+            updater = nar.onDur(nn -> {
+                concepts.commit();
             });
         }
 
@@ -105,7 +105,7 @@ public class DynamicConceptSpace extends DynamicListSpace<Concept> {
             if (onClear != null)
                 onClear.pause();
 
-            onDur = DurPart.on(nar, () -> {
+            onDur = nar.onDur(() -> {
                 if (concepts.commit()) {
                     updated.set(true);
                 }
@@ -150,7 +150,7 @@ public class DynamicConceptSpace extends DynamicListSpace<Concept> {
                     ConceptWidget cw = cc.meta(spaceID, () -> new ConceptWidget(cc) {
                         @Override
                         protected void onClicked(PushButton b) {
-                            SpaceGraph.window(new ConceptSurface(id.term(), nar), 800, 700);
+                            SpaceGraph.surfaceWindow(new ConceptSurface(id.term(), nar), 800, 700);
                         }
                     });
                     if (cw != null) {

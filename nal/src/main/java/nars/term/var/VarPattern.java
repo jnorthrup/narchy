@@ -19,7 +19,6 @@ public class VarPattern extends NormalizedVariable {
     @Override public int opX() { return RANK;    }
 
 
-    @NotNull
     @Override
     public final Op op() {
         return VAR_PATTERN;

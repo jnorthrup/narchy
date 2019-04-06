@@ -131,9 +131,9 @@ public class Cluster2DChip extends Bordering {
     }
 
     @Override
-    protected void renderChildren(ReSurface r) {
+    protected void renderContent(ReSurface r) {
         centroids.set(g.nodeStream());
-        super.renderChildren(r);
+        super.renderContent(r);
     }
 
     @Override

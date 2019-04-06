@@ -14,7 +14,7 @@ import nars.Task;
 import nars.concept.Concept;
 import nars.concept.Operator;
 import nars.term.Term;
-import nars.time.part.DurPart;
+import nars.time.part.DurLoop;
 import nars.truth.Truth;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -49,7 +49,7 @@ public class AtomicOperations implements BiFunction<Task, NAR, Task> {
     final static int ACTIVE_CAPACITY = 16;
     final ArrayBag<Term, PriReference<Term>> active = new PriReferenceArrayBag<>(PriMerge.max, ACTIVE_CAPACITY, PriBuffer.newMap(false));
 
-    private final AtomicReference<DurPart> onCycle = new AtomicReference(null);
+    private final AtomicReference<DurLoop> onCycle = new AtomicReference(null);
 
     public AtomicOperations(@Nullable BiConsumer<Term, Timed> exe, float exeThresh) {
         this(exe, new FloatRange(exeThresh, 0.5f, 1f));
@@ -151,11 +151,11 @@ public class AtomicOperations implements BiFunction<Task, NAR, Task> {
      * operator goes into active probing mode
      */
     protected void enable(NAR n) {
-        DurPart d = onCycle.getOpaque();
+        DurLoop d = onCycle.getOpaque();
         if (d == null) {
             onCycle.updateAndGet((x)->{
                 if (x == null)
-                    return DurPart.on(n, this::update);
+                    return n.onDur(this::update);
                 else
                     return x;
             });

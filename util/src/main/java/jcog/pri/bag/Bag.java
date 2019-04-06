@@ -465,7 +465,8 @@ public abstract class Bag<X, Y> implements Table<X, Y>, Sampler<Y>, jcog.pri.Pre
     @Override
     public int capacity() {
         /** TODO move implementation to an AbstractBag instance that has such a field and implements an abstract method from this class */
-        return CAPACITY.getOpaque(this);
+        //return CAPACITY.getOpaque(this);
+        return capacity;
     }
 
     public float mass() {

@@ -12,6 +12,8 @@ public abstract class FingerResize extends Dragging {
 
     private final v2 posStart = new v2();
 
+    private DragEdit mode = DragEdit.MOVE; //null
+
     FingerResize(int button) {
         this(button, false);
     }
@@ -22,11 +24,11 @@ public abstract class FingerResize extends Dragging {
     }
 
     @Override
-    protected boolean startDrag(Finger f) {
+    protected boolean ready(Finger f) {
         //if (f.pressed(button)) { //HACK prefilter
             this.posStart.set(pos(f));
             this.before = size();
-            return super.startDrag(f);
+            return super.ready(f);
 //        } else {
 //            return false;
 //        }
@@ -157,8 +159,15 @@ public abstract class FingerResize extends Dragging {
 
     @Override
     public void stop(Finger finger) {
-        finger.renderer = finger.rendererDefault;
         super.stop(finger);
+        finger.renderer = finger.rendererDefault;
+        this.mode = null;
     }
 
+    @Nullable public FingerResize mode(DragEdit mode) {
+        if (null == (this.mode = mode))
+            return null;
+        else
+            return this;
+    }
 }

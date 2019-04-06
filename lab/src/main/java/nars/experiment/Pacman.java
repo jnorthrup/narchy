@@ -3,17 +3,16 @@ package nars.experiment;
 import jcog.signal.wave2d.MonoBufImgBitmap2D;
 import jcog.signal.wave2d.ScaledBitmap2D;
 import nars.$;
-import nars.NAR;
 import nars.GameX;
+import nars.NAR;
 import nars.agent.GameTime;
 import nars.experiment.pacman.PacmanGame;
 import nars.gui.sensor.VectorSensorView;
 import nars.sensor.Bitmap2DSensor;
 import nars.term.atom.Atomic;
 import nars.video.SwingBitmap2D;
+import spacegraph.SpaceGraph;
 import spacegraph.space2d.container.grid.Gridding;
-
-import static spacegraph.SpaceGraph.window;
 
 
 public class Pacman extends GameX {
@@ -46,7 +45,7 @@ public class Pacman extends GameX {
             gg.add(v/*.withControls()*/);
             c.resolution(0.1f);
         }
-        window(gg, 900, 300);
+        SpaceGraph.surfaceWindow(gg, 900, 300);
 
         actionTriState($.the("x") /*$.p(id, Atomic.the("x"))*/, (dh) -> {
             switch (dh) {

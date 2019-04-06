@@ -43,7 +43,6 @@ import org.eclipse.collections.impl.list.mutable.primitive.IntArrayList;
 import org.eclipse.collections.impl.map.mutable.primitive.ByteByteHashMap;
 import org.eclipse.collections.impl.set.mutable.primitive.IntHashSet;
 import org.eclipse.collections.impl.tuple.Tuples;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.msgpack.jackson.dataformat.MessagePackFactory;
 import org.slf4j.Logger;
@@ -1926,7 +1925,7 @@ public enum Util {
      * @return The output that is no smaller than each input
      */
 
-    public static <X> X[] sortUniquely(@NotNull X[] arg) {
+    public static <X> X[] sortUniquely( X[] arg) {
         int len = arg.length;
         Arrays.sort(arg);
         for (int i = 0; i < len - 1; i++) {
@@ -2474,7 +2473,7 @@ public enum Util {
      * @param arr The inputs, each in [0, 1]
      * @return The arithmetic average the inputs
      */
-    public static float aveAri(@NotNull float... arr) {
+    public static float aveAri( float... arr) {
         float sum = 0;
         for (float f : arr) {
             sum += f;
@@ -2495,7 +2494,7 @@ public enum Util {
      * @param arr The inputs, each in [0, 1]
      * @return The geometric average the inputs
      */
-    public static float aveGeo(@NotNull float... arr) {
+    public static float aveGeo( float... arr) {
         float product = 1;
         for (float f : arr) {
             if (f == 0) return 0;
@@ -2639,7 +2638,7 @@ public enum Util {
      * according to the Collection's implementation
      */
     @Nullable
-    public static <X> X only(@NotNull Collection<X> next) {
+    public static <X> X only( Collection<X> next) {
         if (next instanceof List)
             return ((List<X>) next).get(0);
         else if (next instanceof MutableSet)

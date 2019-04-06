@@ -13,8 +13,8 @@ public abstract class SurfaceDragging extends Dragging {
     }
 
     @Override
-    protected boolean startDrag(Finger f) {
-        return f.intersects(s.bounds) && super.startDrag(f);
+    protected boolean ready(Finger f) {
+        return f.intersects(s.bounds);
     }
 
     @Override
