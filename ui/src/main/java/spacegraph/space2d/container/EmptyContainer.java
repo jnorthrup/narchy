@@ -6,7 +6,7 @@ import spacegraph.space2d.Surface;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
-abstract public class EmptyContainer extends Container {
+abstract public class EmptyContainer extends ContainerSurface {
 
     @Override
     public int childrenCount() {
@@ -15,6 +15,11 @@ abstract public class EmptyContainer extends Container {
 
     @Override
     public final void forEach(Consumer<Surface> o) {
+
+    }
+
+    @Override
+    protected void doLayout(float dtS) {
 
     }
 

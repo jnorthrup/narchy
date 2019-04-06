@@ -6,7 +6,7 @@ import org.eclipse.collections.api.set.primitive.IntSet;
 import org.eclipse.collections.impl.set.mutable.primitive.IntHashSet;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.Surfacelike;
-import spacegraph.space2d.container.Container;
+import spacegraph.space2d.container.ContainerSurface;
 import spacegraph.space2d.widget.textedit.TextEdit;
 
 import java.util.Collection;
@@ -123,7 +123,7 @@ public class MutableListContainer extends AbstractMutableContainer {
         return children.removeFirstInstance(s);
     }
 
-    public final Container set(Surface... next) {
+    public final ContainerSurface set(Surface... next) {
 
         synchronized (this) {
 
@@ -175,7 +175,7 @@ public class MutableListContainer extends AbstractMutableContainer {
         return this;
     }
 
-    public final Container set(Collection<? extends Surface> next) {
+    public final ContainerSurface set(Collection<? extends Surface> next) {
         //set(next.toArray(Surface.EmptySurfaceArray));
         children.set(next);
 

@@ -153,8 +153,8 @@ public class ScrollXY<S extends ScrollXY.ScrolledXY> extends Bordering {
 
         S m = this.content;
 
-        if (m instanceof Container)
-            ((Container)m).layout();
+        if (m instanceof ContainerSurface)
+            ((ContainerSurface)m).layout();
     }
 
     /**

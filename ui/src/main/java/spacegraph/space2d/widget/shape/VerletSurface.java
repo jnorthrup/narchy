@@ -9,7 +9,7 @@ import org.eclipse.collections.api.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.space2d.ReSurface;
 import spacegraph.space2d.Surface;
-import spacegraph.space2d.container.SimpleSurface;
+import spacegraph.space2d.container.PaintSurface;
 import spacegraph.util.animate.Animated;
 import spacegraph.video.Draw;
 import toxi.geom.QuadtreeIndex;
@@ -25,7 +25,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.eclipse.collections.impl.tuple.Tuples.pair;
 
-public class VerletSurface extends SimpleSurface implements Animated {
+public class VerletSurface extends PaintSurface implements Animated {
 
     private Off update;
 

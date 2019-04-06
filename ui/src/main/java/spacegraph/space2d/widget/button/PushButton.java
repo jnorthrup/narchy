@@ -68,8 +68,10 @@ public class PushButton extends AbstractButton {
 
     public PushButton label(String s) {
         set(
+
+            new BitmapLabel(s)
+            //s.length() < 32 ? new BitmapLabel(s) : new VectorLabel(s)
             //new VectorLabel(s)
-            s.length() < 32 ? new BitmapLabel(s) : new VectorLabel(s)
         );
         return this;
     }

@@ -16,9 +16,4 @@ public interface Fingered {
         return null;
     }
 
-    /** implement for state-changing behavior */
-    default void fingerTouch(Finger finger, boolean touching) {
-        //nothing
-    }
-
 }

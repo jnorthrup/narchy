@@ -16,6 +16,7 @@ import java.awt.image.BufferedImage;
 
 import static jcog.Util.unitizeSafe;
 
+/** TODO refactor as a Container for the Bitmap matrix */
 public class WaveBitmap extends Surface implements BitmapMatrixView.BitmapPainter, MenuSupplier, Timeline2D.TimeRangeAware {
 
     public final FloatRange height = new FloatRange(0.75f, 0.01f, 1f);

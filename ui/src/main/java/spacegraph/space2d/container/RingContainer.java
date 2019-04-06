@@ -10,7 +10,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
-public abstract class RingContainer<X extends Surface> extends Surface {
+public abstract class RingContainer<X extends Surface> extends EmptyContainer {
 
     protected X[] x;
 
@@ -91,10 +91,8 @@ public abstract class RingContainer<X extends Surface> extends Surface {
         this.T.set(t);
     }
 
-
     @Override
-    protected void render(ReSurface r) {
-        super.render(r);
+    protected void renderChildren(ReSurface r) {
         forEach((z, b)->{
             z.pos(b);
             z.tryRender(r);

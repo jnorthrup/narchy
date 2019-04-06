@@ -32,7 +32,7 @@ public class BagregateConceptGraph2D extends ConceptGraph2D {
         return DurSurface.get(
                 new nars.gui.graph.run.BagregateConceptGraph2D(b, n).widget(),
                 n, b::commit)
-                    .layoutAnimated();
+                    .live();
 //        return new nars.gui.graph.run.BagregateConceptGraph2D(b, n) {
 //            private DurService updater;
 //

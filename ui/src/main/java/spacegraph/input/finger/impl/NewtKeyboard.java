@@ -8,7 +8,7 @@ import jcog.sort.TopN;
 import spacegraph.input.finger.Finger;
 import spacegraph.input.key.KeyPressed;
 import spacegraph.space2d.Surface;
-import spacegraph.space2d.container.Container;
+import spacegraph.space2d.container.ContainerSurface;
 import toxi.math.MathUtils;
 
 import java.util.concurrent.atomic.AtomicReference;
@@ -106,7 +106,7 @@ public class NewtKeyboard extends Finger implements KeyListener {
                 return Float.NaN;
             }
         });
-        Container parent = ((Surface)x.parent).parentOrSelf(Container.class);
+        ContainerSurface parent = ((Surface)x.parent).parentOrSelf(ContainerSurface.class);
         parent.whileEach(c -> {
             if (c == x)
                 return true;

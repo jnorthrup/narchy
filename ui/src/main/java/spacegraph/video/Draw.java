@@ -397,12 +397,11 @@ public enum Draw {
     }
 
 
-    /** note: (cx,cy,w,h) */
     public static void rectFrame(float cx, float cy, float wi, float hi, float thick, GL2 gl) {
-        rectFrame(cx-thick/2, cy-thick/2, wi, hi, wi + thick, hi + thick, gl);
+        rectFrame(cx, cy, wi, hi, wi + thick, hi + thick, gl);
     }
     public static void rectCross(float cx, float cy, float wi, float hi, float thick, GL2 gl) {
-        rectCross(cx-thick/2, cy-thick/2, wi, hi, wi + thick, hi + thick, gl);
+        rectCross(cx, cy, wi, hi, wi + thick, hi + thick, gl);
     }
 
     public static void rectFrame(RectFloat bounds, float thick, GL2 gl) {

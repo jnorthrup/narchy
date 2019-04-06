@@ -2,12 +2,12 @@ package spacegraph.space2d.container.unit;
 
 import jcog.tree.rtree.rect.RectFloat;
 import spacegraph.space2d.Surface;
-import spacegraph.space2d.container.Container;
+import spacegraph.space2d.container.ContainerSurface;
 
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
-abstract public class AbstractUnitContainer<S extends Surface> extends Container {
+abstract public class AbstractUnitContainer<S extends Surface> extends ContainerSurface {
 
     public abstract S the();
 
@@ -49,7 +49,7 @@ abstract public class AbstractUnitContainer<S extends Surface> extends Container
     @Override
     public boolean whileEach(Predicate<Surface> o) {
         S content = the();
-        if (content instanceof Container)  return ((Container)content).whileEach(o);
+        if (content instanceof ContainerSurface)  return ((ContainerSurface)content).whileEach(o);
         else return o.test(content);
     }
 

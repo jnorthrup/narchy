@@ -113,6 +113,10 @@ public class Widget extends MutableUnitContainer<Surface> implements KeyPressed 
 
     @Override
     public Surface finger(Finger finger) {
+
+        if (finger.touching()==this)
+            pri(0.8f);
+
         Surface s = super.finger(finger);
         if (s == null) {
 
@@ -123,6 +127,7 @@ public class Widget extends MutableUnitContainer<Surface> implements KeyPressed 
 
             return this;
         }
+
         return s;
     }
 
@@ -143,14 +148,7 @@ public class Widget extends MutableUnitContainer<Surface> implements KeyPressed 
         return r.size(r.w - b, r.h - b);
     }
 
-    @Override
-    public void fingerTouch(Finger finger, boolean touching) {
-        if (touching) {
-            pri(0.5f);
-        } else {
 
-        }
-    }
 
     /** add temperature to this widget, affecting its display and possibly other behavior.  useful for indicating
      *  transient activity */

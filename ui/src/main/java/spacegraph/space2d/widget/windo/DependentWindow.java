@@ -3,7 +3,7 @@ package spacegraph.space2d.widget.windo;
 import jcog.event.Off;
 import jcog.event.Offs;
 import spacegraph.space2d.Surface;
-import spacegraph.space2d.container.Container;
+import spacegraph.space2d.container.ContainerSurface;
 import spacegraph.space2d.container.graph.EditGraph2D;
 
 public class DependentWindow extends Windo {
@@ -28,8 +28,8 @@ public class DependentWindow extends Windo {
             g.physics.remove(this);
 
             //remove any associated links, recursively
-            if (content instanceof Container) {
-                ((Container) content).forEachRecursively(g::removeComponent);
+            if (content instanceof ContainerSurface) {
+                ((ContainerSurface) content).forEachRecursively(g::removeComponent);
             } else {
                 g.removeComponent(content);
             }

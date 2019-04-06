@@ -28,7 +28,7 @@ import nars.term.atom.Int;
 import nars.truth.Truth;
 import spacegraph.SpaceGraph;
 import spacegraph.space2d.ReSurface;
-import spacegraph.space2d.container.SimpleSurface;
+import spacegraph.space2d.container.PaintSurface;
 import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.video.Draw;
 import spacegraph.video.Tex;
@@ -91,7 +91,7 @@ public class ShapeSensor extends NARPart {
             );
         }
     }
-    class ShapeSensorSurface extends SimpleSurface {
+    class ShapeSensorSurface extends PaintSurface {
 
         @Override
         protected void paint(GL2 gl, ReSurface reSurface) {

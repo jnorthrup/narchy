@@ -4,7 +4,7 @@ import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL2;
 import jcog.math.v2;
 import spacegraph.space2d.ReSurface;
-import spacegraph.space2d.container.SimpleSurface;
+import spacegraph.space2d.container.PaintSurface;
 import spacegraph.space2d.phys.callbacks.DebugDraw;
 import spacegraph.space2d.phys.collision.shapes.CircleShape;
 import spacegraph.space2d.phys.collision.shapes.EdgeShape;
@@ -17,7 +17,7 @@ import spacegraph.space2d.phys.dynamics.Fixture;
 import spacegraph.space2d.phys.fracture.PolygonFixture;
 import spacegraph.space2d.phys.particle.ParticleColor;
 
-public class Dynamics2DView extends SimpleSurface {
+public class Dynamics2DView extends PaintSurface {
 
 
     private Dynamics2D world;

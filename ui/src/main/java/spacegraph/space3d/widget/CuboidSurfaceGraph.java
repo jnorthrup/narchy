@@ -13,7 +13,7 @@ import spacegraph.space2d.ReSurface;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.SurfaceGraph;
 import spacegraph.space3d.SimpleSpatial;
-import spacegraph.space3d.SpaceGraphPhys3D;
+import spacegraph.space3d.SpaceGraph3D;
 import spacegraph.space3d.phys.Collidable;
 import spacegraph.space3d.phys.collision.ClosestRay;
 import spacegraph.space3d.phys.math.Transform;
@@ -31,7 +31,7 @@ import static jcog.math.v3.v;
  * https:
  * Serves as a mount for an attached (forward-facing) 2D surface (embeds a surface in 3D space)
  */
-public class Cuboid<X> extends SimpleSpatial<X> implements SurfaceGraph {
+public class CuboidSurfaceGraph<X> extends SimpleSpatial<X> implements SurfaceGraph {
 
     @Nullable
     public volatile Surface front;
@@ -42,16 +42,16 @@ public class Cuboid<X> extends SimpleSpatial<X> implements SurfaceGraph {
     private v3 mousePick;
 
 
-    Cuboid(X x, float w, float h) {
+    CuboidSurfaceGraph(X x, float w, float h) {
         this(x, null, w, h);
     }
 
 
-    private Cuboid(X x, Surface front, float w, float h) {
+    private CuboidSurfaceGraph(X x, Surface front, float w, float h) {
         this(x, front, w, h, (Math.min(w, h) / 2f));
     }
 
-    private Cuboid(X x, Surface front, float w, float h, float d) {
+    private CuboidSurfaceGraph(X x, Surface front, float w, float h, float d) {
         super(x);
 
         scale(w, h, d);
@@ -81,7 +81,7 @@ public class Cuboid<X> extends SimpleSpatial<X> implements SurfaceGraph {
     }
 
     @Override
-    public Surface onTouch(Finger finger, Collidable body, ClosestRay r, short[] buttons, SpaceGraphPhys3D space) {
+    public Surface onTouch(Finger finger, Collidable body, ClosestRay r, short[] buttons, SpaceGraph3D space) {
 
         if (body != null) {
 

@@ -15,7 +15,7 @@ import nars.util.Timed;
 import org.jetbrains.annotations.NotNull;
 import spacegraph.SpaceGraph;
 import spacegraph.space2d.ReSurface;
-import spacegraph.space2d.container.SimpleSurface;
+import spacegraph.space2d.container.PaintSurface;
 import spacegraph.video.Draw;
 
 import java.util.function.Consumer;
@@ -87,7 +87,7 @@ public class CameraGasNet<P extends Bitmap2D> implements Consumer<NAR> {
 
         agent.onFrame(this);
 
-        SpaceGraph.window(new SimpleSurface() {
+        SpaceGraph.window(new PaintSurface() {
             @Override
             protected void paint(GL2 gl, ReSurface reSurface) {
                 int nodes = net.size();

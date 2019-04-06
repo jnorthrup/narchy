@@ -909,4 +909,12 @@ public class v2 implements java.io.Serializable, Cloneable, Tensor {
     public void setNaN() {
         x = y = NaN;
     }
+
+    public float distanceToX(v2 o) {
+        return o.x - x;
+    }
+
+    public float distanceToY(v2 o) {
+        return o.y - y;
+    }
 }

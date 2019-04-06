@@ -8,17 +8,15 @@ import spacegraph.space2d.MenuSupplier;
 import spacegraph.space2d.ReSurface;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.Bordering;
-import spacegraph.space2d.container.Container;
-import spacegraph.space2d.container.collection.MutableListContainer;
-import spacegraph.space2d.hud.HudHover;
-import spacegraph.space2d.hud.ZoomOrtho;
+import spacegraph.space2d.container.ContainerSurface;
+import spacegraph.space2d.hud.Hovered;
 import spacegraph.space2d.widget.text.BitmapLabel;
 import spacegraph.space2d.widget.text.VectorLabel;
 
 /**
  * a dynamic frame for attaching to widgets providing access to context menus, controls, and display
  */
-public class MetaFrame extends Bordering implements HudHover {
+public class MetaFrame extends Bordering implements Hovered {
 
 
     private MetaFrame() {
@@ -70,7 +68,8 @@ public class MetaFrame extends Bordering implements HudHover {
 //    }
 
     boolean expanded = false;
-    SatelliteMetaFrame satellite = null;
+
+    private SatelliteMetaFrame satellite = null;
 
     @Override
     protected boolean preRender(ReSurface r) {
@@ -149,34 +148,34 @@ public class MetaFrame extends Bordering implements HudHover {
 
     }
 
-    /**
-     * titlebar clicked
-     */
-    protected void click() {
-        synchronized (this) {
-
-            boolean e = expanded;
-
-            if (!e) {
-                //TODO unexpand any other MetaFrame popup that may be expanded.  check the root context's singleton map
-
-                undock();
-            } else {
-
-
-                dock();
-
-                //
+//    /**
+//     * titlebar clicked
+//     */
+//    protected void click() {
+//        synchronized (this) {
 //
-//                    SurfaceBase p = parent;
-//                    if (p!=null) {
-//                        ((Container) p).layout();
-//                    }
-
-
-            }
-        }
-    }
+//            boolean e = expanded;
+//
+//            if (!e) {
+//                //TODO unexpand any other MetaFrame popup that may be expanded.  check the root context's singleton map
+//
+//                undock();
+//            } else {
+//
+//
+//                dock();
+//
+//                //
+////
+////                    SurfaceBase p = parent;
+////                    if (p!=null) {
+////                        ((Container) p).layout();
+////                    }
+//
+//
+//            }
+//        }
+//    }
 
     private void dock() {
         synchronized (this) {
@@ -191,7 +190,7 @@ public class MetaFrame extends Bordering implements HudHover {
 
                     satellite = null;
                     
-                    ((Container)parent).layout();
+                    ((ContainerSurface)parent).layout();
                 } else
                     throw new WTF();
             }
@@ -199,27 +198,23 @@ public class MetaFrame extends Bordering implements HudHover {
     }
 
 
-    private void undock() {
-        MutableListContainer hud = hud();
-
-        /*if (hud.isEmpty())*/ {
-
-            Surface content = the();
-            if (content != null) {
-                SatelliteMetaFrame wrapper = new SatelliteMetaFrame(content);
-                hud.add(wrapper);
-                wrapper.pos(hud.bounds.scale(0.8f));
-                expanded = true;
-                satellite = wrapper;
-            }
-
-        }
-
-    }
-
-    private MutableListContainer hud() {
-        return (MutableListContainer) parentOrSelf(ZoomOrtho.class).hud().get(3);
-    }
+//    private void undock() {
+//        MutableListContainer hud = hud();
+//
+//        /*if (hud.isEmpty())*/ {
+//
+//            Surface content = the();
+//            if (content != null) {
+//                SatelliteMetaFrame wrapper = new SatelliteMetaFrame(content);
+//                hud.add(wrapper);
+//                wrapper.pos(hud.bounds.scale(0.8f));
+//                expanded = true;
+//                satellite = wrapper;
+//            }
+//
+//        }
+//
+//    }
 
 
 //        Surface m = grid(
@@ -268,10 +263,10 @@ public class MetaFrame extends Bordering implements HudHover {
             surface.reattach(this);
         }
 
-        @Override
-        protected void click() {
-            MetaFrame.this.dock();
-        }
+//        @Override
+//        protected void click() {
+//            MetaFrame.this.dock();
+//        }
     }
 
 }

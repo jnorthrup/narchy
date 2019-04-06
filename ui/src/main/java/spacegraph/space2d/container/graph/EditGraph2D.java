@@ -18,8 +18,8 @@ import spacegraph.input.finger.Finger;
 import spacegraph.space2d.ReSurface;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.Surfacelike;
-import spacegraph.space2d.container.Container;
-import spacegraph.space2d.container.SimpleSurface;
+import spacegraph.space2d.container.ContainerSurface;
+import spacegraph.space2d.container.PaintSurface;
 import spacegraph.space2d.container.collection.MutableListContainer;
 import spacegraph.space2d.container.collection.MutableMapContainer;
 import spacegraph.space2d.container.grid.Gridding;
@@ -47,7 +47,7 @@ import java.util.function.Function;
  * TODO unify this with Graph2D
  * TODO remove all synchronized(links) with appropriate reliance on its ConcurrentHashMap and any additional per-node/per-edge locking
  */
-public class EditGraph2D<S extends Surface> extends MutableMapContainer<Surface, Container> {
+public class EditGraph2D<S extends Surface> extends MutableMapContainer<Surface, ContainerSurface> {
 
     /**
      * default/ambient link graph
@@ -177,13 +177,13 @@ public class EditGraph2D<S extends Surface> extends MutableMapContainer<Surface,
         });
     }
 
-    public @Nullable Container get(Surface t) {
+    public @Nullable ContainerSurface get(Surface t) {
         return getValue(t);
     }
 
     @Override
-    public Container remove(Object key) {
-        Container w = super.remove(key);
+    public ContainerSurface remove(Object key) {
+        ContainerSurface w = super.remove(key);
         if (w != null) {
             w.stop();
             physics.remove(w);
@@ -196,9 +196,9 @@ public class EditGraph2D<S extends Surface> extends MutableMapContainer<Surface,
     /**
      * uses put() semantics
      */
-    public final Windo add(Surface x, Function<Surface, Container> windowize) {
+    public final Windo add(Surface x, Function<Surface, ContainerSurface> windowize) {
         Windo w = (Windo) computeIfAbsent(x, (xx) -> {
-            Container ww = windowize.apply(xx);
+            ContainerSurface ww = windowize.apply(xx);
             if (ww != null) {
                 if (parent != null) {
                     ww.start(this);
@@ -210,8 +210,8 @@ public class EditGraph2D<S extends Surface> extends MutableMapContainer<Surface,
         return w;
     }
 
-    public final Container add(S x, float w, float h) {
-        Container y = add(x);
+    public final ContainerSurface add(S x, float w, float h) {
+        ContainerSurface y = add(x);
         y.size(w, h);
         return y;
     }
@@ -430,7 +430,7 @@ public class EditGraph2D<S extends Surface> extends MutableMapContainer<Surface,
         }
 
 
-        abstract protected class VisibleLinkSurface extends SimpleSurface {
+        abstract protected class VisibleLinkSurface extends PaintSurface {
 
             abstract protected void paintLink(GL2 gl, ReSurface reSurface);
 
@@ -482,7 +482,7 @@ public class EditGraph2D<S extends Surface> extends MutableMapContainer<Surface,
                     EditGraph2D.this.keySet(), t -> info(t, EditGraph2D.this.get(t)))));
         }
 
-        protected String info(Surface x, Container w) {
+        protected String info(Surface x, ContainerSurface w) {
             return x + "\n  " + (w != null ? w.bounds : "?");
         }
 

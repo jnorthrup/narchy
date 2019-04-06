@@ -10,7 +10,7 @@ import nars.truth.Truth;
 import spacegraph.SpaceGraph;
 import spacegraph.space2d.ReSurface;
 import spacegraph.space2d.Surface;
-import spacegraph.space2d.container.SimpleSurface;
+import spacegraph.space2d.container.PaintSurface;
 import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.video.Draw;
 import spacegraph.video.font.HersheyFont;
@@ -65,7 +65,7 @@ public class TruthLab extends Gridding {
         layout();
     }
 
-    static class TruthTimeline extends SimpleSurface {
+    static class TruthTimeline extends PaintSurface {
 
         float[] labelColor = new float[4];
 

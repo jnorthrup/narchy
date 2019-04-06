@@ -5,17 +5,20 @@ import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL2;
 import com.jogamp.opengl.fixedfunc.GLMatrixFunc;
 import jcog.event.Off;
+import jcog.math.v2;
 import jcog.tree.rtree.rect.RectFloat;
 import org.eclipse.collections.api.tuple.Pair;
 import spacegraph.input.finger.Finger;
+import spacegraph.input.finger.FingerMoveWindow;
+import spacegraph.input.finger.FingerResizeWindow;
+import spacegraph.input.finger.Fingering;
 import spacegraph.input.finger.impl.NewtKeyboard;
 import spacegraph.input.finger.impl.NewtMouseFinger;
 import spacegraph.space2d.container.Bordering;
 import spacegraph.space2d.container.EmptySurface;
 import spacegraph.space2d.container.Stacking;
 import spacegraph.space2d.container.grid.Gridding;
-import spacegraph.space2d.hud.Ortho;
-import spacegraph.space2d.hud.ZoomOrtho;
+import spacegraph.space2d.hud.Zoomed;
 import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.util.animate.Animated;
 import spacegraph.video.JoglSpace;
@@ -27,7 +30,7 @@ import java.util.function.BiConsumer;
 import static com.jogamp.opengl.fixedfunc.GLMatrixFunc.GL_PROJECTION;
 import static org.eclipse.collections.impl.tuple.Tuples.pair;
 
-public class SpaceGraphFlat extends JoglSpace implements SurfaceGraph {
+public class OrthoSurfaceGraph extends JoglSpace implements SurfaceGraph {
 
 
 //    private final Ortho<MutableListContainer> hud;
@@ -35,7 +38,63 @@ public class SpaceGraphFlat extends JoglSpace implements SurfaceGraph {
 
     private final Finger finger;
     private final NewtKeyboard keyboard;
+    private final static short MOVE_WINDOW_BUTTON = 1;
 
+    private final Fingering windowResize = new FingerResizeWindow(this, MOVE_WINDOW_BUTTON) {
+
+
+        private final v2 windowStart = new v2();
+
+        @Override
+        public boolean escapes() {
+            return false;
+        }
+
+        @Override
+        protected boolean startDrag(Finger f) {
+            windowStart.set(display.getX(), display.getY());
+            //System.out.println("window start=" + windowStart);
+            return super.startDrag(f);
+        }
+
+        @Override
+        protected v2 pos(Finger finger) {
+            return finger.posScreen.clone();
+        }
+
+
+    };
+
+    private final Fingering windowMove = new FingerMoveWindow(MOVE_WINDOW_BUTTON) {
+
+
+        private final v2 windowStart = new v2();
+
+        @Override
+        protected JoglSpace window() {
+            return OrthoSurfaceGraph.this;
+        }
+
+        @Override
+        public boolean escapes() {
+            return false;
+        }
+
+        @Override
+        protected boolean startDrag(Finger f) {
+            windowStart.set(display.getX(), display.getY());
+            //System.out.println("window start=" + windowStart);
+            return super.startDrag(f);
+        }
+
+        @Override
+        public void move(float dx, float dy) {
+            display.setPosition(
+                    Math.round(windowStartX + dx),
+                    Math.round(windowStartY - dy));
+        }
+
+    };
 
     public final Stacking layers = new Stacking() {
 
@@ -48,6 +107,16 @@ public class SpaceGraphFlat extends JoglSpace implements SurfaceGraph {
             rr.x2 = _w; rr.y2 = _h;
         };
 
+        @Override
+        public Surface finger(Finger finger) {
+            if (finger.tryFingering(windowMove))
+                return this;
+            else if (finger.tryFingering(windowResize))
+                return this;
+            else
+                return super.finger(finger);
+        }
+
         @Override protected void renderChildren(ReSurface r) {
             _w = display.getWidth(); _h = display.getHeight();
             forEach(c -> {
@@ -57,7 +126,9 @@ public class SpaceGraphFlat extends JoglSpace implements SurfaceGraph {
         }
     };
 
-    public SpaceGraphFlat(Surface _content) {
+
+
+    public OrthoSurfaceGraph(Surface _content) {
         super();
 
         layers.showing = true; layers.clipBounds = false; //HACK
@@ -77,7 +148,7 @@ public class SpaceGraphFlat extends JoglSpace implements SurfaceGraph {
             display.window.setPointerVisible(false); //HACK
             layers.start(this);
 
-            Ortho content = new ZoomOrtho(this, keyboard); content.set(_content);
+            Zoomed content = new Zoomed(this, keyboard); content.set(_content);
             layers.add(content);
 
             layers.add(finger.zoomBoundsSurface(content.cam));

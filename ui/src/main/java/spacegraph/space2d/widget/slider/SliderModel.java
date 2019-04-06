@@ -10,13 +10,13 @@ import spacegraph.input.finger.Dragging;
 import spacegraph.input.finger.Finger;
 import spacegraph.space2d.ReSurface;
 import spacegraph.space2d.Surface;
-import spacegraph.space2d.container.SimpleSurface;
+import spacegraph.space2d.container.PaintSurface;
 import spacegraph.video.Draw;
 
 /**
  * abstract 1D slider/scrollbar
  */
-public class SliderModel extends SimpleSurface {
+public class SliderModel extends PaintSurface {
 
 
     /**

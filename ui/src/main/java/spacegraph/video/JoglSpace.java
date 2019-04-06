@@ -4,6 +4,7 @@ import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL2;
 import com.jogamp.opengl.GLAutoDrawable;
 import com.jogamp.opengl.math.FloatUtil;
+import jcog.data.list.MetalConcurrentQueue;
 import jcog.event.Off;
 import jcog.math.v3;
 import spacegraph.input.key.KeyXYZ;
@@ -12,8 +13,6 @@ import spacegraph.space2d.ReSurface;
 import spacegraph.util.animate.AnimVector3f;
 import spacegraph.util.animate.Animated;
 
-import java.util.Queue;
-import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.function.Consumer;
 
 import static com.jogamp.opengl.GL.*;
@@ -41,7 +40,7 @@ abstract public class JoglSpace {
 
 
 
-    protected final Queue<Runnable> pending = new ConcurrentLinkedQueue();
+    private final MetalConcurrentQueue<Runnable> pending = new MetalConcurrentQueue<>(1024);
 
     public float top, bottom, left, right, aspect, tanFovV;
 
@@ -62,10 +61,7 @@ abstract public class JoglSpace {
     public void later(Runnable r) { pending.add(r); }
 
     private void flush() {
-        pending.removeIf((x) -> {
-            x.run();
-            return true;
-        });
+        pending.clear(Runnable::run);
     }
 
     protected void initDepth(GL2 gl) {

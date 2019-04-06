@@ -5,7 +5,7 @@ import org.jetbrains.annotations.Nullable;
 import spacegraph.input.finger.Finger;
 import spacegraph.input.finger.FingerRenderer;
 import spacegraph.input.finger.RenderWhileHovering;
-import spacegraph.space2d.container.Container;
+import spacegraph.space2d.container.ContainerSurface;
 
 import java.util.EnumMap;
 
@@ -98,7 +98,7 @@ public enum DragEdit {
 
         @Override
         public boolean update(Finger f) {
-            return f.touching() instanceof Container;
+            return f.touching() instanceof ContainerSurface;
         }
     }
 }

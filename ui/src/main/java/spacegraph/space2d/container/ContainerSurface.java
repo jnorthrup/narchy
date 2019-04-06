@@ -15,12 +15,13 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 /**
- * Created by me on 7/20/16.
+ * branch node.  layout is an asynchronous lazy update.
+ * TODO illustrate the various update loops and their interactions
  */
-abstract public class Container extends Surface {
+abstract public class ContainerSurface extends Surface {
 
-    final static MetalAtomicIntegerFieldUpdater<Container> MUSTLAYOUT =
-            new MetalAtomicIntegerFieldUpdater<>(Container.class, "mustLayout");
+    final static MetalAtomicIntegerFieldUpdater<ContainerSurface> MUSTLAYOUT =
+            new MetalAtomicIntegerFieldUpdater<>(ContainerSurface.class, "mustLayout");
 
     private final int mustLayout = 0;
 
@@ -71,7 +72,7 @@ abstract public class Container extends Surface {
     }
 
     @Override
-    protected void render(ReSurface r) {
+    protected final void render(ReSurface r) {
         if (!preRender(r)) {
             showing = false;
         } else {
@@ -148,8 +149,8 @@ abstract public class Container extends Surface {
         o.accept(this);
 
         forEach(z -> {
-            if (z instanceof Container)
-                ((Container) z).forEachRecursively(o);
+            if (z instanceof ContainerSurface)
+                ((ContainerSurface) z).forEachRecursively(o);
             else
                 o.accept(z);
         });

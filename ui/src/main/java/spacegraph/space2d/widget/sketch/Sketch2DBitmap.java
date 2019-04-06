@@ -10,7 +10,7 @@ import spacegraph.input.finger.Finger;
 import spacegraph.space2d.MenuSupplier;
 import spacegraph.space2d.ReSurface;
 import spacegraph.space2d.Surface;
-import spacegraph.space2d.container.SimpleSurface;
+import spacegraph.space2d.container.PaintSurface;
 import spacegraph.space2d.widget.button.ButtonSet;
 import spacegraph.space2d.widget.button.ColorToggle;
 import spacegraph.space2d.widget.slider.XYSlider;
@@ -25,7 +25,7 @@ import static spacegraph.space2d.container.grid.Gridding.grid;
 /**
  * see: http://perfectionkills.com/exploring-canvas-drawing-techniques/
  */
-public class Sketch2DBitmap extends SimpleSurface implements MenuSupplier {
+public class Sketch2DBitmap extends PaintSurface implements MenuSupplier {
 
     public final int[] pix;
     private final Tex bmp = new Tex();

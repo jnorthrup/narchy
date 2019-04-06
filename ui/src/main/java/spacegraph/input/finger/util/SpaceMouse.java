@@ -1,16 +1,16 @@
 package spacegraph.input.finger.util;
 
 import com.jogamp.newt.event.MouseAdapter;
-import spacegraph.space3d.SpaceGraphPhys3D;
+import spacegraph.space3d.SpaceGraph3D;
 
 /**
  * 3D camera control
  */
 abstract class SpaceMouse extends MouseAdapter {
 
-    final SpaceGraphPhys3D space;
+    final SpaceGraph3D space;
 
-    SpaceMouse(SpaceGraphPhys3D g) {
+    SpaceMouse(SpaceGraph3D g) {
         this.space = g;
     }
 }

@@ -9,7 +9,7 @@ import jcog.data.set.ArrayHashSet;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.space2d.ReSurface;
 import spacegraph.space2d.Surface;
-import spacegraph.space2d.container.Container;
+import spacegraph.space2d.container.ContainerSurface;
 import spacegraph.space2d.container.Splitting;
 import spacegraph.space2d.container.collection.MutableMapContainer;
 import spacegraph.space2d.container.grid.Gridding;
@@ -260,7 +260,7 @@ public class Graph2D<X> extends MutableMapContainer<X, NodeVis<X>> {
     @Override
     protected void stopping() {
         //synchronized (nodeCache) {
-            nodeCache.values().forEach(Container::stop);
+            nodeCache.values().forEach(ContainerSurface::stop);
             nodeCache.clear();
             edgePool.delete();
         super.stopping();

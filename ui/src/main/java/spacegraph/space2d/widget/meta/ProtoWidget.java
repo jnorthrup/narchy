@@ -9,6 +9,7 @@ import jcog.signal.tensor.ArrayTensor;
 import jcog.signal.tensor.TensorChain;
 import jcog.signal.wave1d.HaarWaveletTensor;
 import org.eclipse.collections.api.tuple.Pair;
+import spacegraph.space2d.SafeSurface;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.Bordering;
 import spacegraph.space2d.container.grid.Gridding;
@@ -258,7 +259,7 @@ public class ProtoWidget extends Bordering {
         return new PushButton(label,
             () -> {
                 parentOrSelf(WizardFrame.class).replace(ProtoWidget.this,
-                    safe(replacement)
+                    SafeSurface.safe(replacement)
                 );
             });
     }

@@ -57,8 +57,7 @@ import static com.jogamp.opengl.GL2.*;
 /**
  * @author jezek2
  */
-
-public class SpaceGraphPhys3D<X> extends JoglSpace implements Iterable<Spatial<X>> {
+public class SpaceGraph3D<X> extends JoglSpace implements Iterable<Spatial<X>> {
 
     private final boolean simulating = true;
 
@@ -78,7 +77,7 @@ public class SpaceGraphPhys3D<X> extends JoglSpace implements Iterable<Spatial<X
     private final List<AbstractSpace<X>> inputs = new FasterList<>(1);
 
 
-    public SpaceGraphPhys3D<X> camPos(float x, float y, float z) {
+    public SpaceGraph3D<X> camPos(float x, float y, float z) {
         camPos.set(x, y, z);
         return this;
     }
@@ -90,7 +89,7 @@ public class SpaceGraphPhys3D<X> extends JoglSpace implements Iterable<Spatial<X
 //        inputs.clear();
 //    }
 
-    private SpaceGraphPhys3D() {
+    private SpaceGraph3D() {
         super();
 
 
@@ -109,14 +108,14 @@ public class SpaceGraphPhys3D<X> extends JoglSpace implements Iterable<Spatial<X
         });
     }
 
-    public SpaceGraphPhys3D(AbstractSpace<X>... cc) {
+    public SpaceGraph3D(AbstractSpace<X>... cc) {
         this();
 
         for (AbstractSpace c : cc)
             add(c);
     }
 
-    public SpaceGraphPhys3D(Spatial<X>... cc) {
+    public SpaceGraph3D(Spatial<X>... cc) {
         this();
 
         add(cc);
@@ -278,7 +277,7 @@ public class SpaceGraphPhys3D<X> extends JoglSpace implements Iterable<Spatial<X
         return l;
     }
 
-    private SpaceGraphPhys3D<X> add(AbstractSpace<X> c) {
+    private SpaceGraph3D<X> add(AbstractSpace<X> c) {
         if (inputs.add(c))
             c.start(this);
         return this;
@@ -307,7 +306,7 @@ public class SpaceGraphPhys3D<X> extends JoglSpace implements Iterable<Spatial<X
     }
 
     @Deprecated
-    public SpaceGraphPhys3D<X> with(BroadConstraint b) {
+    public SpaceGraph3D<X> with(BroadConstraint b) {
         dyn.addBroadConstraint(b);
         return this;
     }

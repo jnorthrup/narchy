@@ -1,10 +1,10 @@
 package spacegraph.space2d.container.collection;
 
 import spacegraph.space2d.Surface;
-import spacegraph.space2d.container.Container;
+import spacegraph.space2d.container.ContainerSurface;
 import spacegraph.space2d.widget.textedit.TextEdit;
 
-public abstract class AbstractMutableContainer extends Container {
+public abstract class AbstractMutableContainer extends ContainerSurface {
 
     @Override
     protected void starting() {

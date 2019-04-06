@@ -2,10 +2,10 @@ package spacegraph;
 
 import jcog.Skill;
 import jdk.jshell.tool.JavaShellToolBuilder;
-import spacegraph.space2d.SpaceGraphFlat;
+import spacegraph.space2d.OrthoSurfaceGraph;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.widget.meta.ObjectSurface;
-import spacegraph.space3d.SpaceGraphPhys3D;
+import spacegraph.space3d.SpaceGraph3D;
 import spacegraph.space3d.Spatial;
 import spacegraph.video.JoglSpace;
 
@@ -30,7 +30,7 @@ $ jshell --startup startups/custom-startup
      * creates window with 2d with single surface layer, maximized to the size of the window
      */
     public static JoglSpace window(Surface s, int w, int h) {
-        JoglSpace win = new SpaceGraphFlat(s);
+        JoglSpace win = new OrthoSurfaceGraph(s);
         if (w > 0 && h > 0) {
             win.display.show(w, h);
         }
@@ -46,7 +46,7 @@ $ jshell --startup startups/custom-startup
             s.display.show(w, h);
             return s;
         } else if (o instanceof Spatial) {
-            SpaceGraphPhys3D win = new SpaceGraphPhys3D(((Spatial) o));
+            SpaceGraph3D win = new SpaceGraph3D(((Spatial) o));
             win.display.show(w, h);
             return win;
         } else if (o instanceof Surface) {

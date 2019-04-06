@@ -4,7 +4,7 @@ import jcog.tree.rtree.rect.RectFloat;
 import org.jetbrains.annotations.NotNull;
 import spacegraph.SpaceGraph;
 import spacegraph.space2d.Surface;
-import spacegraph.space2d.container.Container;
+import spacegraph.space2d.container.ContainerSurface;
 import spacegraph.space2d.container.Splitting;
 import spacegraph.space2d.container.graph.EditGraph2D;
 import spacegraph.space2d.container.grid.Gridding;
@@ -40,7 +40,7 @@ import static spacegraph.space2d.container.grid.Gridding.*;
 
 public class WidgetTest {
 
-    public static Container widgetDemo() {
+    public static ContainerSurface widgetDemo() {
         //return new TabMenu(menu);
         return new ListMenu(menu, new GridMenuView());
     }
@@ -140,11 +140,11 @@ public class WidgetTest {
                     /** switched signal */
 
                     NoiseVectorChip A = new NoiseVectorChip();
-                    Container a = g.add(A).pos(RectFloat.Unit.transform(500, 250, 250));
+                    ContainerSurface a = g.add(A).pos(RectFloat.Unit.transform(500, 250, 250));
 
 
                     Port B = LabeledPort.generic();
-                    Container b = g.add(B).pos(RectFloat.XYWH(+1, 0, 0.25f, 0.25f).scale(500));
+                    ContainerSurface b = g.add(B).pos(RectFloat.XYWH(+1, 0, 0.25f, 0.25f).scale(500));
 
                     TogglePort AB = new TogglePort();
                     g.add(AB).pos(RectFloat.XYWH(0, 0, 0.25f, 0.25f).scale(500));

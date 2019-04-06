@@ -1,5 +1,6 @@
 package spacegraph.space2d.container;
 
+import spacegraph.space2d.ReSurface;
 import spacegraph.space2d.Surface;
 
 public final class EmptySurface extends Surface {
@@ -8,10 +9,18 @@ public final class EmptySurface extends Surface {
         visible = false;
     }
 
-
     @Override
-    public Surface visible(boolean b) {
-        return this; 
+    protected void render(ReSurface r) {
+
     }
 
+    @Override
+    public boolean visible() {
+        return false;
+    }
+
+    @Override
+    public boolean showing() {
+        return false;
+    }
 }

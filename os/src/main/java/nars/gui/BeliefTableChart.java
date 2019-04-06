@@ -16,7 +16,7 @@ import spacegraph.space2d.Labeled;
 import spacegraph.space2d.MenuSupplier;
 import spacegraph.space2d.ReSurface;
 import spacegraph.space2d.Surface;
-import spacegraph.space2d.container.SimpleSurface;
+import spacegraph.space2d.container.PaintSurface;
 import spacegraph.space2d.container.Splitting;
 import spacegraph.space2d.container.Stacking;
 import spacegraph.space2d.widget.button.PushButton;
@@ -124,7 +124,7 @@ public class BeliefTableChart extends DurSurface<Stacking> implements Labeled, M
         void colorize(GL2 gl, float f, float c);
     }
 
-    class TruthGrid extends SimpleSurface {
+    class TruthGrid extends PaintSurface {
 
         private final TruthWave projected, tasks;
         private final boolean beliefOrGoal;

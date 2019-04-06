@@ -56,6 +56,13 @@ public class MutableRectFloat<X> extends v2 {
         setXYWH(r.x, r.y, r.w, r.h);
     }
 
+    public final boolean setIfChanged(MutableRectFloat r, float epsilon) {
+        if (equals(r, epsilon))
+            return false;
+        set(r);
+        return true;
+    }
+
     public final void set(RectFloat r) {
         setX0Y0WH(r.x, r.y, r.w, r.h);
     }

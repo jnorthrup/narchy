@@ -5,7 +5,7 @@ import jcog.data.graph.Node;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.Surfacelike;
 import spacegraph.space2d.container.Bordering;
-import spacegraph.space2d.container.Container;
+import spacegraph.space2d.container.ContainerSurface;
 import spacegraph.space2d.container.graph.Graph2D;
 import spacegraph.space2d.container.graph.NodeGraphRenderer;
 import spacegraph.space2d.container.layout.ForceDirected2D;
@@ -50,8 +50,8 @@ public class Inspector extends Bordering {
             graph.addEdgeIfNodesExist(pp, "->", s);
         }
 
-        if (s instanceof Container) {
-            ((Container)s).forEach(x -> {
+        if (s instanceof ContainerSurface) {
+            ((ContainerSurface)s).forEach(x -> {
                 include(x, depth-1);
                 graph.addEdgeIfNodesExist(s, "->", x);
             });

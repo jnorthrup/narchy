@@ -8,7 +8,7 @@ import com.jogamp.opengl.util.glsl.ShaderProgram;
 import com.jogamp.opengl.util.glsl.ShaderState;
 import spacegraph.SpaceGraph;
 import spacegraph.space2d.ReSurface;
-import spacegraph.space2d.container.SimpleSurface;
+import spacegraph.space2d.container.PaintSurface;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -18,7 +18,7 @@ import java.io.InputStreamReader;
 import static com.jogamp.opengl.GL2ES2.GL_FRAGMENT_SHADER;
 
 /** TODO */
-public class GLSL extends SimpleSurface {
+public class GLSL extends PaintSurface {
 
     private ShaderState st;
     private ShaderCode /*vp0, */fp0;

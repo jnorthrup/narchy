@@ -5,12 +5,11 @@ import jcog.WTF;
 import jcog.math.v2;
 import jcog.tree.rtree.Spatialization;
 import jcog.tree.rtree.rect.RectFloat;
-import spacegraph.space2d.container.Container;
+import spacegraph.space2d.container.ContainerSurface;
 import spacegraph.space2d.container.EmptySurface;
 import spacegraph.space2d.container.collection.AbstractMutableContainer;
 import spacegraph.space2d.container.unit.AspectAlign;
 import spacegraph.space2d.container.unit.MutableUnitContainer;
-import spacegraph.space2d.widget.meta.ErrorPanel;
 import spacegraph.space2d.widget.meta.WeakSurface;
 import spacegraph.space2d.widget.text.VectorLabel;
 import spacegraph.util.MutableRectFloat;
@@ -53,20 +52,6 @@ abstract public class Surface implements Surfacelike, spacegraph.input.finger.Fi
 
     public Surface() {
 
-    }
-
-    public static Surface safe(Supplier<Surface> s) {
-        Surface r;
-        try {
-            r = s.get();
-        } catch (Throwable e) {
-            r = new ErrorPanel(e, s);
-        }
-
-        if (r == null)
-            r = new ErrorPanel(new NullPointerException(), s);
-
-        return r;
     }
 
     public final float cx() {
@@ -268,9 +253,7 @@ abstract public class Surface implements Surfacelike, spacegraph.input.finger.Fi
         render(r);
     }
 
-    protected void render(ReSurface r) {
-
-    }
+    abstract protected void render(ReSurface r);
 
 
     public Surface hide() {
@@ -331,8 +314,8 @@ abstract public class Surface implements Surfacelike, spacegraph.input.finger.Fi
         if (p instanceof WeakSurface) {
             return ((WeakSurface) p).remove();
         }
-        if (p instanceof Container) {
-            return ((Container) p).remove();
+        if (p instanceof ContainerSurface) {
+            return ((ContainerSurface) p).remove();
         }
         return false;
     }

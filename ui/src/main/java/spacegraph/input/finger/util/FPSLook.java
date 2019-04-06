@@ -2,7 +2,7 @@ package spacegraph.input.finger.util;
 
 import com.jogamp.newt.event.MouseEvent;
 import jcog.math.v3;
-import spacegraph.space3d.SpaceGraphPhys3D;
+import spacegraph.space3d.SpaceGraph3D;
 
 import static com.jogamp.opengl.math.FloatUtil.sin;
 import static java.lang.Math.cos;
@@ -18,7 +18,7 @@ public class FPSLook extends SpaceMouse {
     private float h = (float) Math.PI;
     private float v;
 
-    public FPSLook(SpaceGraphPhys3D g) {
+    public FPSLook(SpaceGraph3D g) {
         super(g);
     }
 

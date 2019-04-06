@@ -105,7 +105,7 @@ abstract public class DurSurface<S extends Surface> extends AbstractCachedSurfac
         return get(narConsumer, n, (Consumer<NAR>)narConsumer);
     }
 
-    public DurSurface layoutAnimated() {
+    public DurSurface live() {
         //if caching, during pre-render step if not invalid, then only call .layout()
         autolayout = true;
         return this;

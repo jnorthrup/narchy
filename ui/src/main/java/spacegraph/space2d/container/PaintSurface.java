@@ -4,7 +4,8 @@ import com.jogamp.opengl.GL2;
 import spacegraph.space2d.ReSurface;
 import spacegraph.space2d.Surface;
 
-abstract public class SimpleSurface extends Surface {
+/** leaf node */
+abstract public class PaintSurface extends Surface {
 
     @Override
     protected void render(ReSurface r) {
@@ -12,5 +13,6 @@ abstract public class SimpleSurface extends Surface {
     }
 
     abstract protected void paint(GL2 gl, ReSurface reSurface);
+
 
 }

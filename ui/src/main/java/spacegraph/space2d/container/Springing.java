@@ -16,7 +16,7 @@ import java.util.function.Predicate;
  *
  * TODO
  */
-public class Springing extends Container {
+public class Springing extends ContainerSurface {
 
     // The last set size
     float _ow, _oh;

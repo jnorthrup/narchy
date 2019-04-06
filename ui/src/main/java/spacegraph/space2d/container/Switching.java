@@ -10,7 +10,7 @@ import java.util.function.Supplier;
 /**
  * TODO extend UnitContainer
  */
-public class Switching extends Container {
+public class Switching extends ContainerSurface {
 
     private int switched = -1;
     private Surface current;

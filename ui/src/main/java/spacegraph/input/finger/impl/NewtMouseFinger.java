@@ -4,9 +4,9 @@ import com.jogamp.newt.event.*;
 import jcog.math.v2;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.input.finger.Fingering;
-import spacegraph.space2d.SpaceGraphFlat;
+import spacegraph.space2d.OrthoSurfaceGraph;
 import spacegraph.space2d.Surface;
-import spacegraph.space2d.hud.Ortho;
+import spacegraph.space2d.hud.Zoomed;
 import spacegraph.video.JoglSpace;
 import spacegraph.video.JoglWindow;
 
@@ -25,7 +25,7 @@ public class NewtMouseFinger extends MouseFinger implements MouseListener, Windo
         s.later(()->{
             JoglWindow win = s.display;
             if (win.window.hasFocus())
-                focused.set(true);
+                active.set(true);
 
             win.addMouseListenerPre(this);
             win.addWindowListener(this);
@@ -40,17 +40,20 @@ public class NewtMouseFinger extends MouseFinger implements MouseListener, Windo
 
         if (touchNext == null) {
 
-            if (s instanceof Ortho) {
+            if (s instanceof Zoomed) {
+                //TODO may need to be a stack
+
                 //ENTER ORTHO
-                _ortho = (Ortho)s; //HACK
-                _posGlobal.setNaN(); //invalidate, will be lazily computed
+                _screenToGlobal = ((Zoomed) s).cam::screenToGlobal;
+                _posGlobal.set(_screenToGlobal.apply(posPixel));
+
             }
 
             Surface next = touchNext = (ff == Fingering.Null || ff.escapes()) ? s.finger(this) : touching.get();
 
-            if (s instanceof Ortho) {
+            if (s instanceof Zoomed) {
                 //EXIT ORTHO
-                _ortho = null; //HACK
+                _screenToGlobal = null; //HACK
             }
 
             return next == null;
@@ -61,25 +64,15 @@ public class NewtMouseFinger extends MouseFinger implements MouseListener, Windo
 
     @Override
     public v2 posGlobal(Surface c) {
-
-        Ortho co = this._ortho;
-        Ortho o = co !=null ? co : (c instanceof Ortho ? ((Ortho)c) : c.parentOrSelf(Ortho.class));
-        if (o!=null) {
-            if (_posGlobal.isNaN())
-                _posGlobal.set(posGlobal(posPixel, o));
-            return _posGlobal;
-        } else
-            return posPixel;//.clone(); //WTF?
-    }
-
-    private static v2 posGlobal(v2 x, Ortho o) {
-        return o.cam.screenToWorld(x);
+        //Function<v2,v2> z = this._screenToGlobal;
+        //Function<v2,v2> z = _z !=null ? _z : (c instanceof Zoomed ? ((Zoomed)c) : c.parentOrSelf(Zoomed.class));
+         return _posGlobal;
     }
 
     @Override protected void doUpdate() {
         touchNext = null;
 
-        ((SpaceGraphFlat) this.space).layers.whileEachReverse(this::touch);
+        ((OrthoSurfaceGraph) this.space).layers.whileEachReverse(this::touch);
 
         Surface touchNext = this.touchNext;
 
@@ -125,7 +118,7 @@ public class NewtMouseFinger extends MouseFinger implements MouseListener, Windo
 
     @Override
     public void mouseEntered(@Nullable MouseEvent e) {
-        if (focused.compareAndSet(false, true)) {
+        if (active.compareAndSet(false, true)) {
             enter();
             if (e != null)
                 update(false, e);
@@ -134,7 +127,7 @@ public class NewtMouseFinger extends MouseFinger implements MouseListener, Windo
 
     @Override
     public void mouseExited(MouseEvent e) {
-        if (focused.compareAndSet(true, false)) {
+        if (active.compareAndSet(true, false)) {
             update(false, null);
             exit();
         }
@@ -209,7 +202,7 @@ public class NewtMouseFinger extends MouseFinger implements MouseListener, Windo
 
     @Override
     public void windowGainedFocus(WindowEvent e) {
-        if (focused.compareAndSet(false, true)) {
+        if (active.compareAndSet(false, true)) {
             enter();
             update(false, null);
         }
@@ -217,7 +210,7 @@ public class NewtMouseFinger extends MouseFinger implements MouseListener, Windo
 
     @Override
     public void windowLostFocus(WindowEvent e) {
-        if (focused.compareAndSet(true, false)) {
+        if (active.compareAndSet(true, false)) {
             update(false, null);
             exit();
         }

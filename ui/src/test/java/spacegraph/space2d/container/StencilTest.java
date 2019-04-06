@@ -6,7 +6,7 @@ import spacegraph.space2d.ReSurface;
 import spacegraph.video.Draw;
 
 /** https://gist.github.com/daltonks/4c2d1c5e6fd5017ea9f0 */
-public class StencilTest extends SimpleSurface {
+public class StencilTest extends PaintSurface {
 
     public static void main(String[] args) {
         SpaceGraph.window(new StencilTest(), 800, 800);

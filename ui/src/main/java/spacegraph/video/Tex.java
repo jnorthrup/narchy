@@ -14,7 +14,7 @@ import org.jetbrains.annotations.Nullable;
 import spacegraph.space2d.ReSurface;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.unit.AspectAlign;
-import spacegraph.space2d.hud.Ortho;
+import spacegraph.space2d.hud.Zoomed;
 
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBuffer;
@@ -197,7 +197,7 @@ public class Tex {
     }
 
     public void stop(Surface x) {
-        Ortho r = (Ortho) x.root();
+        Zoomed r = (Zoomed) x.root();
         if (r != null) {
             JoglSpace s = r.space;
             if (s != null) {

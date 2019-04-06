@@ -6,7 +6,7 @@ import jcog.data.list.FasterList;
 import jcog.math.FloatAveragedWindow;
 import jcog.math.v2;
 import jcog.tree.rtree.rect.RectFloat;
-import spacegraph.space2d.hud.Ortho;
+import spacegraph.space2d.hud.Zoomed;
 
 import java.util.List;
 import java.util.function.BiConsumer;
@@ -92,7 +92,7 @@ public class ReSurface {
         return restart(pw, ph);
     }
 
-    public ReSurface set(Ortho.Camera cam, v2 scale) {
+    public ReSurface set(Zoomed.Camera cam, v2 scale) {
         return set(cam.x, cam.y, scale.x, scale.y);
     }
 

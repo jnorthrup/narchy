@@ -1,5 +1,6 @@
 package spacegraph.space2d.widget.menu;
 
+import jcog.exe.Exe;
 import org.eclipse.collections.api.block.procedure.primitive.ObjectBooleanProcedure;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.Splitting;
@@ -9,8 +10,8 @@ import spacegraph.space2d.widget.button.CheckBox;
 import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.space2d.widget.button.ToggleButton;
 import spacegraph.space2d.widget.menu.view.GridMenuView;
+import spacegraph.space2d.widget.meta.LazySurface;
 import spacegraph.space2d.widget.meta.MetaHover;
-import spacegraph.space2d.widget.text.VectorLabel;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -60,19 +61,14 @@ public class TabMenu extends Menu {
     void toggle(ToggleButton button, Supplier<Surface> creator, boolean onOrOff, Surface[] created, boolean inside) {
         Surface cx;
         if (onOrOff) {
-            try {
-                cx = creator.get();
-            } catch (Throwable t) {
-                String msg = t.getMessage();
-                if (msg == null)
-                    msg = t.toString();
-                cx = new VectorLabel(msg);
-            }
+
+            cx = new LazySurface(creator);
+
             cx = wrapper.apply(cx);
+            assert(cx!=null);
         } else {
             cx = null;
         }
-        if (cx==null) cx = new VectorLabel("null");
 
         //wrap/decorate
 
@@ -118,13 +114,15 @@ public class TabMenu extends Menu {
     public Surface toggle(Function<String, ToggleButton> buttonBuilder, String label, Supplier<Surface> creator) {
         final Surface[] created = {null};
         ObjectBooleanProcedure<ToggleButton> toggleInside = (button, onOrOff) -> {
-            toggle(button, creator, onOrOff, created, true);
+            Exe.invokeLater(()->{
+                toggle(button, creator, onOrOff, created, true);
+            });
         };
 
         Runnable spawnOutside = () -> {
-            //Exe.invokeLater(()->{
-            toggle(null, creator, true, created, false);
-            //});
+            Exe.invokeLater(()->{
+                toggle(null, creator, true, created, false);
+            });
         };
 
         ToggleButton bb = buttonBuilder.apply(label).on(toggleInside);

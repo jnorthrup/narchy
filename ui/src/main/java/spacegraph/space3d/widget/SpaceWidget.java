@@ -5,7 +5,7 @@ import spacegraph.input.finger.Finger;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.space3d.SimpleSpatial;
-import spacegraph.space3d.SpaceGraphPhys3D;
+import spacegraph.space3d.SpaceGraph3D;
 import spacegraph.space3d.phys.Collidable;
 import spacegraph.space3d.phys.collision.ClosestRay;
 import spacegraph.util.math.Quat4f;
@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.function.Consumer;
 
 /** a spatial holding a Surface, implementing an interface between 3d and 2d UI dynamics */
-abstract public class SpaceWidget<T> extends Cuboid<T> {
+abstract public class SpaceWidget<T> extends CuboidSurfaceGraph<T> {
 
     private boolean touched = false;
 
@@ -50,7 +50,7 @@ abstract public class SpaceWidget<T> extends Cuboid<T> {
     }
 
     @Override
-    public Surface onTouch(Finger finger, Collidable body, ClosestRay hitPoint, short[] buttons, SpaceGraphPhys3D space) {
+    public Surface onTouch(Finger finger, Collidable body, ClosestRay hitPoint, short[] buttons, SpaceGraph3D space) {
         Surface s = super.onTouch(finger, body, hitPoint, buttons, space);
 
 

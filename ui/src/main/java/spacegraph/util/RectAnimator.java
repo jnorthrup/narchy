@@ -1,7 +1,7 @@
 package spacegraph.util;
 
 import jcog.Util;
-import jcog.tree.rtree.rect.RectFloat;
+import jcog.tree.rtree.Spatialization;
 import org.eclipse.collections.api.tuple.primitive.ObjectFloatPair;
 import spacegraph.util.animate.Animator;
 
@@ -11,12 +11,10 @@ import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
 
 abstract public class RectAnimator implements Animator<MutableRectFloat> {
 
-    /** time units until the next movement is finished (in seconds) */
-    protected volatile float ttl = Float.NaN;
+    /** an estimate; for determining the speed */
+    protected float duration;
 
-    /** for determining the total intended animation time */
-    protected float length;
-
+    /** https://en.wikipedia.org/wiki/Exponential_decay */
     public static class ExponentialRectAnimator extends RectAnimator {
 
         public ExponentialRectAnimator(MutableRectFloat animated) {
@@ -26,12 +24,12 @@ abstract public class RectAnimator implements Animator<MutableRectFloat> {
         @Override
         protected void animate(MutableRectFloat from, MutableRectFloat to, float dt) {
 
-            float r = (float) Math.exp(-dt/length); //TODO verify
-            from.x = Util.lerpSafe(r, to.x, from.x);
-            from.y = Util.lerpSafe(r, to.y, from.y);
+            float r = (float) Math.exp(-dt * duration  /* ? */); //TODO verify
+            from.x = Util.lerpSafe(r, from.x, to.x);
+            from.y = Util.lerpSafe(r, from.y, to.y);
             from.size(
-                    Util.lerpSafe(r, to.w, from.w),
-                    Util.lerpSafe(r, to.h, from.h)
+                    Util.lerpSafe(r, from.w, to.w),
+                    Util.lerpSafe(r, from.h, to.h)
             );
 
         }
@@ -43,8 +41,8 @@ abstract public class RectAnimator implements Animator<MutableRectFloat> {
 
 
 
-    public RectAnimator(MutableRectFloat toAnimate) {
-        this.rect = toAnimate;
+    public RectAnimator(MutableRectFloat r) {
+        target.set(this.rect = r);
     }
 
     @Override
@@ -52,37 +50,35 @@ abstract public class RectAnimator implements Animator<MutableRectFloat> {
         return rect;
     }
 
-
     @Override public final boolean animate(float dt/*..*/) {
 
 
         ObjectFloatPair<MutableRectFloat> n = next.getAndSet(null);
         if (n!=null) {
-            target.set(n.getOne());
-            this.length = this.ttl = n.getTwo();
-        }
-
-        float t = this.ttl;
-        if (t==t) {
-
-
-            boolean finished = t <= 0;
-
-            if (finished) {
-                //finished
-                this.ttl = Float.NaN;
-                rect.set(target);
-            } else {
-                //continue
-                if (dt > t) {
-                    dt = t;
-                    this.ttl = 0;
-                } else {
-                    this.ttl = t - dt;
-                }
-                animate(rect, target, dt);
+            if (target.setIfChanged(n.getOne(), Spatialization.EPSILONf)) {
+                this.duration = n.getTwo();
             }
         }
+
+//        float t = this.timeUntilCanSleep;
+//        if (t==t) {
+
+//            //continue
+//            if (dt > t) {
+//                dt = t;
+//                this.timeUntilCanSleep = 0;
+//            } else {
+//                this.timeUntilCanSleep = t - dt;
+//            }
+        if (this.duration==duration) { //active?
+            animate(rect, target, dt);
+            if (rect.equals(target, Spatialization.EPSILONf)) {
+                rect.set(target);
+                this.duration = Float.NaN;
+            }
+        }
+
+//        }
 
         return true;
     }
@@ -97,8 +93,5 @@ abstract public class RectAnimator implements Animator<MutableRectFloat> {
         this.next.set(pair(target, ttl));
     }
 
-    public void set(RectFloat target, float ttl) {
-        set(new MutableRectFloat(target), ttl);
-    }
 
 }

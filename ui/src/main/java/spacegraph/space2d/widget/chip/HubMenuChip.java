@@ -3,7 +3,7 @@ package spacegraph.space2d.widget.chip;
 import jcog.exe.Exe;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.Bordering;
-import spacegraph.space2d.container.Container;
+import spacegraph.space2d.container.ContainerSurface;
 import spacegraph.space2d.container.graph.EditGraph2D;
 import spacegraph.space2d.widget.port.Wire;
 
@@ -28,7 +28,7 @@ public class HubMenuChip extends Bordering {
         EditGraph2D g = parentOrSelf(EditGraph2D.class); //TODO generic Spawnable interface
         menu.forEach((name, i)->{
             ExpandingChip ii = new ExpandingChip(name, i);
-            Container iii = g.add(ii).posRel(bounds, 1, 1, 0.1f, 0.1f); //TODO radial layout
+            ContainerSurface iii = g.add(ii).posRel(bounds, 1, 1, 0.1f, 0.1f); //TODO radial layout
 
             Exe.invokeLater(()->{
                 g.addWire(new Wire(HubMenuChip.this, ii));

@@ -7,10 +7,10 @@ import org.jetbrains.annotations.Nullable;
 import spacegraph.input.finger.*;
 import spacegraph.space2d.ReSurface;
 import spacegraph.space2d.Surface;
-import spacegraph.space2d.container.Container;
+import spacegraph.space2d.container.ContainerSurface;
 import spacegraph.space2d.container.graph.EditGraph2D;
 import spacegraph.space2d.container.unit.MutableUnitContainer;
-import spacegraph.space2d.hud.ZoomOrtho;
+import spacegraph.space2d.hud.Zoomed;
 import spacegraph.space2d.widget.windo.util.DragEdit;
 import spacegraph.video.Draw;
 
@@ -38,7 +38,9 @@ public class Windo extends MutableUnitContainer {
 
     @Override
     public Surface finger(Finger finger) {
-
+        posGlobal =
+                //finger.posGlobal(this);
+                finger.posPixel;
 
         if (finger == null) {
             dragMode = null;
@@ -48,11 +50,7 @@ public class Windo extends MutableUnitContainer {
         }
 
 
-        Surface other = null;
-        if (/*dragMode==null && */finger != null) {
-            other = super.finger(finger);
-        }
-
+        Surface other = super.finger(finger);
 
         if (other != null && other != this) {
             unfinger(finger);
@@ -92,7 +90,7 @@ public class Windo extends MutableUnitContainer {
         this.potentialDragMode = potentialDragMode;
 
 
-        if (finger.pressing(ZoomOrtho.PAN_BUTTON)) {
+        if (finger.pressing(Zoomed.PAN_BUTTON)) {
             Dragging d =
                     potentialDragMode != null ? (Dragging) fingering(potentialDragMode) : null;
 
@@ -163,18 +161,7 @@ public class Windo extends MutableUnitContainer {
 
     private transient v2 posGlobal = null;
 
-    @Override
-    public void fingerTouch(Finger finger, boolean touching) {
-//        Ortho root = (Ortho) root();
-//        if (root == null)
-//            return;
 
-//        v2 mousePos = root.fingerPos;
-//        float pmx = mousePos.x, pmy = mousePos.y;
-
-        posGlobal = //finger.posGlobal(this);
-                    finger.posPixel;
-    }
 
     protected void postpaint(GL2 gl) {
 
@@ -257,7 +244,7 @@ public class Windo extends MutableUnitContainer {
      * position relative to parent
      * 0  .. (0.5,0.5) center ... +1
      */
-    public final Container posRel(float cx, float cy, float pct) {
+    public final ContainerSurface posRel(float cx, float cy, float pct) {
         return posRel(cx, cy, pct, pct);
     }
 

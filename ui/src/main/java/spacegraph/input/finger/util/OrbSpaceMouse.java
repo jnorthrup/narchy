@@ -6,7 +6,7 @@ import com.jogamp.newt.event.MouseEvent;
 import jcog.math.v3;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.input.finger.Finger;
-import spacegraph.space3d.SpaceGraphPhys3D;
+import spacegraph.space3d.SpaceGraph3D;
 import spacegraph.space3d.Spatial;
 import spacegraph.space3d.phys.Body3D;
 import spacegraph.space3d.phys.Collidable;
@@ -39,7 +39,7 @@ public class OrbSpaceMouse extends SpaceMouse implements KeyListener {
     private final VoronoiSimplexSolver simplexSolver = new VoronoiSimplexSolver();
     private final Finger finger;
 
-    public OrbSpaceMouse(SpaceGraphPhys3D g, Finger finger) {
+    public OrbSpaceMouse(SpaceGraph3D g, Finger finger) {
 
         super(g);
 

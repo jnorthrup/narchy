@@ -13,8 +13,8 @@ import org.jetbrains.annotations.Nullable;
 import spacegraph.space2d.ReSurface;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.Bordering;
-import spacegraph.space2d.container.Container;
-import spacegraph.space2d.container.SimpleSurface;
+import spacegraph.space2d.container.ContainerSurface;
+import spacegraph.space2d.container.PaintSurface;
 import spacegraph.space2d.container.graph.EditGraph2D;
 import spacegraph.space2d.container.graph.Link;
 import spacegraph.space2d.phys.collision.AABB;
@@ -265,7 +265,7 @@ public class Box2DGraphEditPhysics extends GraphEditPhysics {
         physics.invoke(o);
     }
 
-    private PhySurface phy(Container x) {
+    private PhySurface phy(ContainerSurface x) {
         return w.get(x);
     }
 
@@ -286,7 +286,7 @@ public class Box2DGraphEditPhysics extends GraphEditPhysics {
             return null;
         }
 
-        protected <C extends Container> Body2D body(Surface x, Class<? extends C> sooper) {
+        protected <C extends ContainerSurface> Body2D body(Surface x, Class<? extends C> sooper) {
             C z = x.parentOrSelf(sooper);
             if (z == null)
                 return null;
@@ -421,7 +421,7 @@ public class Box2DGraphEditPhysics extends GraphEditPhysics {
     class SnakeLink extends Box2DLink {
 
         private final Snake snake;
-        private final Container linkPanel;
+        private final ContainerSurface linkPanel;
 
         SnakeLink(Wire wire) {
             super(wire);
@@ -482,7 +482,7 @@ public class Box2DGraphEditPhysics extends GraphEditPhysics {
             synchronized (this) {
                 remove();
 
-                Container wPort = graph.add(port);
+                ContainerSurface wPort = graph.add(port);
                 wPort.pos(center());
                 float w = widgetRadius() * 4f;
                 wPort.size(w, w);
@@ -968,7 +968,7 @@ public class Box2DGraphEditPhysics extends GraphEditPhysics {
 //
 //    }
 
-    private class Dyn2DRenderer extends SimpleSurface {
+    private class Dyn2DRenderer extends PaintSurface {
         final boolean drawJoints, drawBodies, drawParticles;
 
         Dyn2DRenderer(boolean drawJoints, boolean drawBodies, boolean drawParticles) {

@@ -8,13 +8,14 @@ import jcog.tree.rtree.rect.RectFloat;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.space2d.ReSurface;
 import spacegraph.space2d.Surface;
-import spacegraph.space2d.container.SimpleSurface;
-import spacegraph.space2d.hud.Ortho;
+import spacegraph.space2d.container.PaintSurface;
 import spacegraph.space2d.hud.SurfaceHiliteOverlay;
+import spacegraph.space2d.hud.Zoomed;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Predicate;
 
 /**
@@ -54,12 +55,14 @@ abstract public class Finger {
      */
     public final AtomicReference<Surface> touching = new AtomicReference<>();
 
-    protected final AtomicBoolean focused = new AtomicBoolean(false);
+    /** ex: true when finger enters the window, false when it leaves */
+    protected final AtomicBoolean active = new AtomicBoolean(false);
 
     /** caches current ortho while traversing it */
-    @Nullable @Deprecated
-    protected transient Ortho _ortho;
-    protected final v2 _posGlobal = new v2();
+    @Deprecated protected transient Function<v2, v2> _screenToGlobal;
+    //@Deprecated protected transient Function<v2, v2> _screenToGlobalRect;
+
+    @Deprecated protected final v2 _posGlobal = new v2();
 
 
     protected Finger(int buttons) {
@@ -126,14 +129,14 @@ abstract public class Finger {
      * call when finger exits the window / screen, the window becomes unfingerable, etc..
      */
     public void exit() {
-        focused.set(false);
+        active.set(false);
     }
 
     /**
      * call when finger enters the window
      */
     public void enter() {
-        focused.set(true);
+        active.set(true);
     }
 
     /** commit all buttons */
@@ -188,11 +191,11 @@ abstract public class Finger {
     protected Surface touching(Surface next) {
         Surface prev = touching.getAndSet(next);
         if (prev!=next) {
-            if (prev!=null)
-                prev.fingerTouch(this, false);
-
-            if (next!=null)
-                next.fingerTouch(this, true);
+//            if (prev!=null)
+//                prev.fingerTouch(this, false);
+//
+//            if (next!=null)
+//                next.fingerTouch(this, true);
         }
         return prev;
     }
@@ -225,7 +228,7 @@ abstract public class Finger {
      */
     public boolean off(Surface fingered) {
         if (touching.compareAndSet(fingered, null)) {
-            fingered.fingerTouch(this, false);
+//            fingered.fingerTouch(this, false);
             return true;
         }
         return false;
@@ -322,7 +325,9 @@ abstract public class Finger {
         return false;
     }
 
+    /** warning: the vector instance returned by this and other methods are mutable.  so they may need to be cloned when accessed to record the state across time. */
     abstract public v2 posGlobal(Surface c);
+
     //{
 //        Ortho co = this._ortho;
 //        Ortho o = co !=null ? co : (c instanceof Ortho ? ((Ortho)c) : c.parent(Ortho.class));
@@ -378,12 +383,12 @@ abstract public class Finger {
         return new FingerRendererSurface();
     }
 
-    public Surface zoomBoundsSurface(Ortho.Camera cam) {
+    public Surface zoomBoundsSurface(Zoomed.Camera cam) {
         return new FingerZoomBoundsSurface(cam);
     }
 
     private boolean focused() {
-        return focused.getOpaque();
+        return active.getOpaque();
     }
 
     private static v2 posRelative(v2 p, Surface s) {
@@ -403,13 +408,7 @@ abstract public class Finger {
     }
 
 
-    /**
-     * HACK marker interface for surfaces which absorb wheel motion, to prevent other system handling from it (ex: camera zoom)
-     */
-    public interface WheelAbsorb {
-    }
-
-    private final class FingerRendererSurface extends SimpleSurface {
+    private final class FingerRendererSurface extends PaintSurface {
         {
             clipBounds = false;
         }
@@ -428,12 +427,12 @@ abstract public class Finger {
             }
         }
     }
+
     private final class FingerZoomBoundsSurface extends SurfaceHiliteOverlay {
 
-        FingerZoomBoundsSurface(Ortho.Camera cam) {
+        FingerZoomBoundsSurface(Zoomed.Camera cam) {
             super(cam);
         }
-
 
         @Override protected boolean enabled() {
             return focused();
