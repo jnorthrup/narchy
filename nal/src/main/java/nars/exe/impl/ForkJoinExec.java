@@ -2,7 +2,7 @@ package nars.exe.impl;
 
 import jcog.data.list.FasterList;
 import nars.NAR;
-import nars.control.Causable;
+import nars.control.How;
 
 import java.util.Map;
 import java.util.concurrent.ForkJoinPool;
@@ -80,12 +80,12 @@ public class ForkJoinExec extends MultiExec implements Thread.UncaughtExceptionH
         int throttle = 6 * concurrency();
 
         FasterList<Runnable> batch = new FasterList();
-        nar.control.active.forEach(can -> {
+        nar.control.how.forEach(can -> {
 
             if (can.sleeping())
                 return; //HACK
 
-            Causable.Causation t = can.timing();
+            How.Causation t = can.timing();
             float pri = can.pri();
 
             for (int i = 0; i < Math.max(1, pri * throttle); i++) {

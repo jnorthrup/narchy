@@ -13,7 +13,7 @@ import nars.NAR;
 import nars.Task;
 import nars.concept.Concept;
 import nars.concept.PermanentConcept;
-import nars.control.Causable;
+import nars.control.How;
 import nars.control.channel.CauseChannel;
 import nars.link.TaskLink;
 import nars.subterm.Subterms;
@@ -38,7 +38,7 @@ import static nars.time.Tense.ETERNAL;
  *
  * @param S serial target type
  */
-public class Abbreviation/*<S extends Term>*/ extends Causable {
+public class Abbreviation/*<S extends Term>*/ extends How {
 
 
     /**

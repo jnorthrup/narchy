@@ -6,6 +6,7 @@ import jcog.math.FloatRange;
 import jcog.math.IntRange;
 import jcog.pri.Forgetting;
 import jcog.pri.PriBuffer;
+import jcog.pri.bag.Sampler;
 import jcog.pri.bag.impl.ArrayBag;
 import jcog.pri.bag.impl.hijack.PriHijackBag;
 import jcog.pri.op.PriMerge;
@@ -13,10 +14,8 @@ import nars.NAR;
 import nars.Op;
 import nars.Param;
 import nars.Task;
-import nars.attention.derive.DefaultPuncWeightedDerivePri;
 import nars.concept.Concept;
 import nars.concept.TaskConcept;
-import nars.control.NARPart;
 import nars.derive.Derivation;
 import nars.link.AtomicTaskLink;
 import nars.link.TaskLink;
@@ -28,15 +27,13 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
 import java.util.Random;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-/** abstract attention economy model.
- *  determines the active attention dynamics */
-public class TaskLinkBagAttention extends NARPart implements Attention {
-
-
+/** essentially a wrapper for a TaskLink bag for use as a self-contained attention set */
+public class TaskLinks implements Sampler<TaskLink> {
 
     /**
      * short target memory, TODO abstract and remove, for other forms of attention that dont involve TaskLinks or anything like them
@@ -68,51 +65,46 @@ public class TaskLinkBagAttention extends NARPart implements Attention {
     };
 
 
-    /** system default deriver pri model
-     *  however, each deriver instance can also be configured individually.
-     * */
-    @Deprecated public DerivePri derivePri =
-            //new DirectDerivePri();
-            //new DefaultDerivePri();
-            new DefaultPuncWeightedDerivePri();
-
 
     private PriMerge merge = Param.tasklinkMerge;
 
 
-    @Override
-    protected void starting(NAR nar) {
+    public TaskLinks(/*TODO bag as parameter */) {
         int c = linksMax.intValue();
 
         links = new nars.link.TaskLinkBag(
-                    new TaskLinkArrayBag(c, merge)
-                    //new TaskLinkHijackBag(c, 5)
+                new TaskLinkArrayBag(c, merge)
+                //new TaskLinkHijackBag(c, 5)
         );
 
         links.setCapacity(linksMax.intValue());
-
-        on(
-                nar.eventClear.on(links::clear),
-                nar.onDur(this::update)
-        );
-
-        super.starting(nar);
-
     }
 
-    protected final void update() {
-        links.commit(
-            Forgetting.forget(links,  decay.floatValue())
-        );
-    }
 
+    /** prevents multiple threads from commiting the bag at once */
+    private final AtomicBoolean busy = new AtomicBoolean(false);
+
+    /** updates */
+    public final void commit() {
+        if (busy.compareAndSet(false,true)) {
+            try {
+                links.commit(
+                        Forgetting.forget(links, decay.floatValue())
+                );
+            } finally {
+                busy.set(false);
+            }
+        }
+    }
 
     @Override
-    public void sample(Random rng, Function<? super TaskLink, SampleReaction> each) {
+    public void sample(Random rng, Function<? super TaskLink, Sampler.SampleReaction> each) {
         links.sample(rng, each);
     }
 
-    /** resolves and possibly sub-links a link target */
+    /** resolves and possibly sub-links a link target
+     * TODO abstract this as one possible strategy
+     * */
     @Nullable public Term term(TaskLink link, Task task, Derivation d) {
 
         Term t = link.to();
@@ -281,11 +273,16 @@ public class TaskLinkBagAttention extends NARPart implements Attention {
                 .flatMap(x -> Stream.of(x.from(), x.to()))
                 .distinct();
     }
-    @Deprecated public Stream<Concept> concepts() {
+
+    public Stream<Concept> concepts(NAR n) {
         return terms()
-            .map(nar::concept)
+            .map(n::concept)
             .filter(Objects::nonNull)
         ;
+    }
+
+    public void clear() {
+        links.clear();
     }
 
 

@@ -4,7 +4,7 @@ import jcog.Util;
 import nars.NAR;
 import nars.Task;
 import nars.attention.DerivePri;
-import nars.control.Causable;
+import nars.control.How;
 import nars.control.Cause;
 import nars.derive.premise.DeriverRules;
 import nars.derive.premise.PremiseDeriverCompiler;
@@ -27,7 +27,7 @@ import java.util.stream.Stream;
  * this is essentially a Function<Premise, Stream<DerivedTask>> but
  * the current level of code complexity makes this non-obvious
  */
-abstract public class Deriver extends Causable {
+abstract public class Deriver extends How {
 
     /**
      * determines the temporal focus of (TODO tasklink and ) belief resolution to be matched during premise formation

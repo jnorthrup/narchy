@@ -13,7 +13,7 @@ import nars.NAR;
 import nars.Op;
 import nars.Task;
 import nars.concept.Concept;
-import nars.control.Causable;
+import nars.control.How;
 import nars.link.TaskLink;
 import nars.term.Term;
 import nars.time.When;
@@ -32,7 +32,7 @@ import static nars.Op.*;
  * interface for controlled draining of a bag
  * "leaky bucket" model
  */
-public abstract class TaskLeak extends Causable {
+public abstract class TaskLeak extends How {
 
 
 

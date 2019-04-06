@@ -6,7 +6,7 @@ import nars.$;
 import nars.NAR;
 import nars.Op;
 import nars.Task;
-import nars.control.Causable;
+import nars.control.How;
 import nars.control.channel.CauseChannel;
 import nars.control.op.Remember;
 import nars.link.TaskLink;
@@ -25,7 +25,7 @@ import static nars.Op.BELIEF;
 /** improved imperience impl which samples directly from taskbag and summarizes
  * snapshots of belief table aggregates, rather than individual tasks
  */
-public class Inperience2 extends Causable {
+public class Inperience2 extends How {
 
     public final FloatRange priFactor = new FloatRange(0.5f, 0, 2f);
 

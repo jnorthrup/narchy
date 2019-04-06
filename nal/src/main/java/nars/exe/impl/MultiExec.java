@@ -53,7 +53,7 @@ abstract public class MultiExec extends UniExec {
     @Deprecated @Override
     public void print(Appendable out) {
         try {
-            Joiner.on('\n').appendTo(out, nar.control.active);
+            Joiner.on('\n').appendTo(out, nar.control.how);
         } catch (IOException e) {
             e.printStackTrace();
         }

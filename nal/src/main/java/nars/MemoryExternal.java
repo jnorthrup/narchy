@@ -94,16 +94,16 @@ import static nars.Op.ATOM;
  * ```
  */
 public class MemoryExternal {
-
-
-    final static Atomic stdin = Atomic.the("stdin");
-    final static Atomic stdout = Atomic.the("stdout");
+    private final Logger logger = LoggerFactory.getLogger(MemoryExternal.class);
+    private final Multimap<String, BytesToTasks> readFormats = Multimaps.newListMultimap(new ConcurrentHashMap<>(), FasterList::new);
+    private final Multimap<String, TasksToBytes> writeFormats = Multimaps.newListMultimap(new ConcurrentHashMap<>(), FasterList::new);
+    private final List<MemoryResolver> resolvers = new CopyOnWriteArrayList();
 
 
     /**
      * text
      */
-    static final TasksToBytes Tasks_To_Text = new TasksToBytes("nal") {
+    private static final TasksToBytes Tasks_To_Text = new TasksToBytes("nal") {
         @Override
         public void accept(Stream<Task> tt, OutputStream out) {
             tt.forEach(t -> {
@@ -120,7 +120,7 @@ public class MemoryExternal {
     /**
      * binary, uncompressed
      */
-    static final TasksToBytes Tasks_To_Binary = new TasksToBytes("nalb") {
+    private static final TasksToBytes Tasks_To_Binary = new TasksToBytes("nalb") {
         @Override
         public void accept(Stream<Task> tt, OutputStream out) {
             tt.forEach(t -> {
@@ -137,7 +137,7 @@ public class MemoryExternal {
      * bzip2 compressed
      * note: doesnt write the BZ 2 byte header which is standard identifying prefix for bzip2 files
      */
-    static final TasksToBytes Tasks_To_BinaryZipped = new TasksToBytes("nalz") {
+    private static final TasksToBytes Tasks_To_BinaryZipped = new TasksToBytes("nalz") {
         @Override
         public void accept(Stream<Task> tt, OutputStream out) {
             try (OutputStream o = new BZip2OutputStream(out)) {
@@ -154,11 +154,8 @@ public class MemoryExternal {
             }
         }
     };
-    final Logger logger = LoggerFactory.getLogger(MemoryExternal.class);
-    final Multimap<String, BytesToTasks> readFormats = Multimaps.newListMultimap(new ConcurrentHashMap<>(), FasterList::new);
-    final Multimap<String, TasksToBytes> writeFormats = Multimaps.newListMultimap(new ConcurrentHashMap<>(), FasterList::new);
-    final List<MemoryResolver> resolvers = new CopyOnWriteArrayList();
-    final MemoryResolver StdIOResolver = new MemoryResolver() {
+
+    private final MemoryResolver StdIOResolver = new MemoryResolver() {
 
         @Override
         public Stream<Supplier<Stream<Task>>> readers(Term x, MemoryExternal m) {
@@ -177,7 +174,7 @@ public class MemoryExternal {
             return null;
         }
     };
-    final MemoryResolver URIResolver = new MemoryResolver() {
+    private final MemoryResolver URIResolver = new MemoryResolver() {
 
         final List<Term> ROOTS = List.of(
                 Atomic.the("file:///"),
@@ -265,7 +262,7 @@ public class MemoryExternal {
      * bzip2 compressed
      * note: doesnt write the 'BZ' 2 byte header which is standard identifying prefix for bzip2 files
      */
-    final BytesToTasks BinaryZipped_To_Tasks = new BytesToTasks("nalz") {
+    private final BytesToTasks BinaryZipped_To_Tasks = new BytesToTasks("nalz") {
 
 
         @Override
@@ -299,7 +296,7 @@ public class MemoryExternal {
         }
     };
 
-    public MemoryExternal() {
+    MemoryExternal() {
         resolvers.add(URIResolver);
         resolvers.add(StdIOResolver);
         on(Tasks_To_Text);
@@ -308,13 +305,13 @@ public class MemoryExternal {
         on(BinaryZipped_To_Tasks);
     }
 
-    public MemoryExternal(NAR nar) {
+    MemoryExternal(NAR nar) {
         this();
         add(nar);
     }
 
     @Nullable
-    static String extension(URI u) {
+    private static String extension(URI u) {
 
 
         String path = u.getPath();
@@ -325,12 +322,12 @@ public class MemoryExternal {
         return path.substring(afterPeriod + 1);
     }
 
-    static Term uriToTerm(URI x) {
+    private static Term uriToTerm(URI x) {
         return $.quote(x.toString());
     }
 
     @Nullable
-    static Stream<URI> termToURIs(Term x) {
+    private static Stream<URI> termToURIs(Term x) {
         if (x.op() == ATOM) {
             String s = $.unquote(x);
             try {
@@ -345,7 +342,7 @@ public class MemoryExternal {
         return null;
     }
 
-    static Stream<Task> read(InputStream in, Collection<BytesToTasks> readFormats) throws IOException {
+    private static Stream<Task> read(InputStream in, Collection<BytesToTasks> readFormats) throws IOException {
         if (readFormats.size() == 1) {
             return readFormats.iterator().next().apply(in);
         } else {
@@ -382,11 +379,11 @@ public class MemoryExternal {
             writeFormats.put(e, f);
     }
 
-    public Stream<Supplier<Stream<Task>>> readers(Term x) {
+    private Stream<Supplier<Stream<Task>>> readers(Term x) {
         return resolvers.stream().flatMap(r -> r.readers(x, MemoryExternal.this)).filter(Objects::nonNull);
     }
 
-    public Stream<Consumer<Stream<Task>>> writers(Term x) {
+    private Stream<Consumer<Stream<Task>>> writers(Term x) {
         return resolvers.stream().flatMap(r -> r.writers(x, MemoryExternal.this)).filter(Objects::nonNull);
     }
 
@@ -458,7 +455,7 @@ public class MemoryExternal {
     private static class NARResolver implements MemoryResolver {
         private final NAR nar;
 
-        public NARResolver(NAR n) {
+        NARResolver(NAR n) {
             this.nar = n;
         }
 
@@ -485,7 +482,7 @@ public class MemoryExternal {
     abstract public static class BytesToTasks implements Function<InputStream, Stream<Task>> {
         private final String[] extensions;
 
-        public BytesToTasks(String... extension) {
+        protected BytesToTasks(String... extension) {
             this.extensions = extension;
         }
     }
@@ -493,10 +490,13 @@ public class MemoryExternal {
     abstract public static class TasksToBytes implements BiConsumer<Stream<Task>, OutputStream> {
         private final String[] extensions;
 
-        public TasksToBytes(String... extension) {
+        TasksToBytes(String... extension) {
             this.extensions = extension;
         }
     }
+
+    private final static Atomic stdin = Atomic.the("stdin");
+    private final static Atomic stdout = Atomic.the("stdout");
 
     /*
     TODO lucene user resolver:

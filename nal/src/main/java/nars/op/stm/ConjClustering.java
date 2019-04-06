@@ -13,7 +13,7 @@ import nars.NAR;
 import nars.Param;
 import nars.Task;
 import nars.bag.BagClustering;
-import nars.control.Causable;
+import nars.control.How;
 import nars.control.CauseMerge;
 import nars.control.channel.CauseChannel;
 import nars.task.NALTask;
@@ -38,7 +38,7 @@ import java.util.function.Predicate;
 import static nars.truth.func.TruthFunctions.c2wSafe;
 import static nars.truth.func.TruthFunctions.confCompose;
 
-public class ConjClustering extends Causable {
+public class ConjClustering extends How {
 
     public final BagClustering<Task> data;
     //final CentroidConjoiner conjoiner = new CentroidConjoiner();
@@ -231,7 +231,7 @@ public class ConjClustering extends Causable {
                     lastLearn = now;
                 }
             } finally {
-                busy.lazySet(false);
+                busy.set(false);
             }
         }
     }

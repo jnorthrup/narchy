@@ -21,7 +21,7 @@ import nars.Narsese;
 import nars.Task;
 import nars.agent.Game;
 import nars.agent.util.RLBooster;
-import nars.attention.TaskLinkBagAttention;
+import nars.attention.TaskLinks;
 import nars.concept.Concept;
 import nars.concept.sensor.Signal;
 import nars.control.NARPart;
@@ -184,7 +184,7 @@ public class NARui {
     }
 
     private static Surface priView(NAR n) {
-        TaskLinkBagAttention cc = n.attn;
+        TaskLinks cc = n.attn;
 
         return Splitting.row(
                 new BagView<>(cc.links, n),
@@ -598,7 +598,7 @@ public class NARui {
     }
     public static Surface attentionUI(NAR n) {
         final Bordering m = new Bordering();
-        TaskLinkBagAttention attn = n.attn;
+        TaskLinks attn = n.attn;
         m.center(new TabMenu(Map.of(
                 "Spectrum", ()->tasklinkSpectrogram(attn.links, 300, n),
                 "Histogram", ()->new BagView(attn.links, n),

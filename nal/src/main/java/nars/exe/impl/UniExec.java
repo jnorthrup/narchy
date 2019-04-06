@@ -57,7 +57,7 @@ public class UniExec extends Exec {
         nar.time.schedule(this::executeNow);
 
         /* flat 1 work unit per each. returns immediately after first iteration */
-        nar.control.active.forEach(x -> x.next(nar, () -> false ));
+        nar.control.how.forEach(x -> x.next(nar, () -> false ));
     }
 
 }

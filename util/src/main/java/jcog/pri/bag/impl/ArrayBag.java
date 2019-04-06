@@ -901,8 +901,8 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
     }
 
     @Override
-    public float pri(Y key) {
-        return key.pri();
+    public float pri(Y value) {
+        return value.pri();
     }
 
 

@@ -204,4 +204,41 @@
             <scope>compile</scope>
         </dependency>
     </dependencies>
+    <build>
+        <plugins>
+                        <plugin>
+                            <groupId>org.pitest</groupId>
+                            <artifactId>pitest-maven</artifactId>
+                            <version>1.4.7</version>
+                            <dependencies>
+                                <dependency>
+                                    <groupId>org.pitest</groupId>
+                                    <artifactId>pitest-junit5-plugin</artifactId>
+                                    <version>0.8</version>
+                                </dependency>
+                            </dependencies>
+                            <configuration>
+
+                                <withHistory>false</withHistory>
+                                <exportLineCoverage>true</exportLineCoverage>
+
+                                <skipFailingTests>true</skipFailingTests>
+                                <outputFormats>html</outputFormats>
+                                <testPlugin>junit5</testPlugin>
+                                <jvmArgs>-Xmx64m</jvmArgs>
+                                <targetClasses>
+                                    <param>jcog.pri.**</param>
+                                    <!--                        <param>jcog.pri*</param>-->
+                                    <!--                        <param>nars*</param>-->
+                                </targetClasses>
+                                <targetTests>
+                                    <param>jcog.pri.*</param>
+                                </targetTests>
+                                <verbose>false</verbose>
+                                <threads>6</threads>
+                            </configuration>
+                        </plugin>
+
+        </plugins>
+    </build>
 </project>

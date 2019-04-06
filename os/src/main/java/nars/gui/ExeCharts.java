@@ -11,7 +11,7 @@ import jcog.math.IntRange;
 import jcog.math.MutableEnum;
 import jcog.tree.rtree.rect.RectFloat;
 import nars.NAR;
-import nars.control.Causable;
+import nars.control.How;
 import nars.control.MetaGoal;
 import nars.exe.Exec;
 import nars.exe.NARLoop;
@@ -138,10 +138,10 @@ public class ExeCharts {
     }
 
     static class CausableWidget extends Widget {
-        private final Causable c;
+        private final How c;
         private final AbstractLabel label;
 
-        CausableWidget(Causable c) {
+        CausableWidget(How c) {
             this.c = c;
             label = new VectorLabel(new Can(c.id.toString()).id);
             set(label);
@@ -150,22 +150,22 @@ public class ExeCharts {
 
     }
 
-    enum CauseProfileMode implements FloatFunction<Causable> {
+    enum CauseProfileMode implements FloatFunction<How> {
         Pri() {
             @Override
-            public float floatValueOf(Causable w) {
+            public float floatValueOf(How w) {
                 return w.pri();
             }
         },
         Value() {
             @Override
-            public float floatValueOf(Causable w) {
+            public float floatValueOf(How w) {
                 return w.value;
             }
         },
         ValueRate() {
             @Override
-            public float floatValueOf(Causable w) {
+            public float floatValueOf(How w) {
                 return w.valueRate;
             }
         },
@@ -189,7 +189,7 @@ public class ExeCharts {
     }
 
     static Surface causeProfiler(NAR nar) {
-        FastCoWList<Causable> cc = nar.control.active;
+        FastCoWList<How> cc = nar.control.how;
         int history = 128;
         Plot2D pp = new Plot2D(history,
                 //Plot2D.BarLanes
@@ -200,7 +200,7 @@ public class ExeCharts {
         final MutableEnum<CauseProfileMode> mode = new MutableEnum<>(CauseProfileMode.Pri);
 
         for (int i = 0, ccLength = cc.size(); i < ccLength; i++) {
-            Causable c = cc.get(i);
+            How c = cc.get(i);
             String label = c.toString();
             //pp[i] = new Plot2D(history, Plot2D.Line).addAt(label,
             pp.add(label, ()-> mode.get().floatValueOf(c));
@@ -220,9 +220,9 @@ public class ExeCharts {
 
     public static Surface focusPanel(NAR nar) {
 
-        Graph2D<Causable> s = new Graph2D<Causable>()
+        Graph2D<How> s = new Graph2D<How>()
                 .render((node, g) -> {
-                    Causable c = node.id;
+                    How c = node.id;
 
                     final float epsilon = 0.01f;
                     float p = Math.max(Math.max(epsilon, c.pri()), epsilon);
@@ -252,7 +252,7 @@ public class ExeCharts {
 //                                )
 //                                , )),
                 nar, () -> {
-                    s.set(nar.control.active);
+                    s.set(nar.control.how);
                 });
     }
 

@@ -15,6 +15,14 @@ import java.util.function.BooleanSupplier;
 import static nars.time.Tense.TIMELESS;
 
 /**
+ *
+ * instances of How represent a "mental strategy", ie. a mode of thinking/perceiving/acting,
+ * which the system can learn to deliberately apply to system activity.
+ *
+ * see: https://cogsci.indiana.edu/pub/parallel-terraced-scan.pdf
+ *
+ *
+ *
  * instruments the runtime resource consumption of its iteratable procedure.
  * this determines a dynamically adjusted strength parameter
  * that the implementation can use to modulate its resource needs.
@@ -26,9 +34,17 @@ import static nars.time.Tense.TIMELESS;
  * records runtime instrumentation, profiling, and other telemetry for a particular Causable
  * both per individual threads, and collectively
  */
-abstract public class Causable extends NARPart {
+abstract public class How extends NARPart {
 
-//    private static final Logger logger = LoggerFactory.getLogger(Causable.class);
+    /**
+     * returns iterations actually completed
+     * returns 0 if no work was done, although the time taken will still be recorded
+     * if returns -1, then it signals there is no work availble
+     * and time will not be recorded. further a scheduler can assume
+     * this will remain true for the remainder of the cycle, so it can be
+     * removed from the eligible execution list for the current cycle.
+     */
+    public abstract void next(NAR n, BooleanSupplier kontinue);
 
     /**
      * TODO varHandle
@@ -48,22 +64,22 @@ abstract public class Causable extends NARPart {
     private volatile boolean sleeping;
 
     @Deprecated
-    protected Causable(NAR nar) {
+    protected How(NAR nar) {
         this(nar, null);
     }
 
-    protected Causable() {
+    protected How() {
         this((Term) null);
     }
 
     /**
      * if using this constructor, make sure to call 'nar.on(this);' in the callee
      */
-    protected Causable(Term id) {
+    protected How(Term id) {
         this(null, id);
     }
 
-    private Causable(NAR nar, Term id) {
+    private How(NAR nar, Term id) {
         super(id);
         this.pri = new PriNode(id!=null ? id : this);
         this.nar = nar;
@@ -121,15 +137,7 @@ abstract public class Causable extends NARPart {
         return sleeping;
     }
 
-    /**
-     * returns iterations actually completed
-     * returns 0 if no work was done, although the time taken will still be recorded
-     * if returns -1, then it signals there is no work availble
-     * and time will not be recorded. further a scheduler can assume
-     * this will remain true for the remainder of the cycle, so it can be
-     * removed from the eligible execution list for the current cycle.
-     */
-    public abstract void next(NAR n, BooleanSupplier kontinue);
+
 
     /**
      * returns a system estimated instantaneous-sampled value of invoking this. between 0..1.0
@@ -184,7 +192,7 @@ abstract public class Causable extends NARPart {
      */
     public final class Causation {
 
-        public final Causable can = Causable.this;
+        public final How can = How.this;
         /**
          * allocated time for execution;
          * may be negative when excessive time consumed
@@ -195,12 +203,12 @@ abstract public class Causable extends NARPart {
 //
 //            }
         public void use(long t) {
-            Causable.this.use(t);
+            How.this.use(t);
             time -= t;
         }
 
         public float pri() {
-            return Causable.this.pri.priElseZero();
+            return How.this.pri.priElseZero();
         }
 
         public void add(long t, long min, long max) {

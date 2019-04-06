@@ -12,7 +12,6 @@ import jcog.learn.AgentBuilder;
 import jcog.learn.Agenterator;
 import jcog.math.FloatSupplier;
 import jcog.pri.PriBuffer;
-import jcog.service.Part;
 import nars.NAR;
 import nars.Param;
 import nars.Task;
@@ -24,7 +23,6 @@ import nars.task.NALTask;
 import nars.term.Term;
 import nars.time.part.DurLoop;
 import org.eclipse.collections.api.block.function.primitive.ShortToObjectFunction;
-import org.eclipse.collections.api.tuple.primitive.ObjectBooleanPair;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
@@ -69,8 +67,6 @@ import java.util.function.Consumer;
     private final NodeGraph.MutableNode<PriNode,Object> rootNode = graph.addNode(root);
 
 
-    /** ready queue. updated as necessary */
-    public final FastCoWList<Causable> active = new FastCoWList(Causable[]::new);
 
 
     private final NAR nar;
@@ -82,27 +78,15 @@ import java.util.function.Consumer;
     @Deprecated private final float explorationRate = 0.05f;
 
     private float updatePeriods =
-            //1;
-            2;
+            1;
+            //2;
 
     private final DurLoop updater;
 
     public Control(NAR nar) {
         this.nar = nar;
 
-        Consumer<ObjectBooleanPair<Part<NAR>>> serviceChange = (xb) -> {
-            Part<NAR> s = xb.getOne();
-            if (s instanceof Causable) {
-                Causable c = (Causable) s;
-                if (xb.getTwo())
-                    add(c);
-                else
-                    remove(c);
-            }
-        };
-        refreshServices();
-        nar.eventAddRemove.on(serviceChange);
-        refreshServices(); //again to be sure
+
 
         updater = nar.onDur(this::update);
         updater.durs(updatePeriods);
@@ -158,7 +142,7 @@ import java.util.function.Consumer;
 
     private void schedule() {
 
-        FastCoWList<Causable> cpu = active;
+        FastCoWList<How> cpu = how;
         int n = cpu.size();
         if (n == 0)
             return;
@@ -284,7 +268,7 @@ import java.util.function.Consumer;
         return p;
     }
 
-    private class TaskChannel extends CauseChannel<ITask> {
+    private final class TaskChannel extends CauseChannel<ITask> {
 
         private final short ci;
         final short[] uniqueCause;
@@ -352,23 +336,14 @@ import java.util.function.Consumer;
     }
 
 
-    private boolean remove(Causable s) {
-        return active.removeIf(x->x==s);
+    private boolean remove(How s) {
+        return how.removeIf(x->x==s);
     }
 
-    private void add(Causable s) {
-        //InstrumentedCausable r = can.computeIfAbsent(s, InstrumentedCausable::new);
-        Term sid = s.id;
-        if (active.containsInstance(s))
-            throw new RuntimeException("causable " + s + " already present");
-        if (active.OR(x->sid.equals(x.id)))
-            throw new RuntimeException("causable " + s + " name collision");
 
-        active.add(s);
-    }
 
-    private void refreshServices() {
-        nar.plugins().filter(x -> x instanceof Causable).forEach(x -> add((Causable) x));
+    private void indexExistingParts() {
+        nar.plugins().filter(x -> x instanceof How).forEach(x -> add((How) x));
     }
 
     /** creates a base agent that can be used to interface with external controller
@@ -406,7 +381,7 @@ import java.util.function.Consumer;
             //TODO other data
         }
 
-        for (Causable c : active) {
+        for (How c : how) {
             b.in(() -> {
                 PriNode cp = c.pri;
                 return Util.unitize(cp.priElseZero());

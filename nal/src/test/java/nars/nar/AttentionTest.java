@@ -5,6 +5,8 @@
 package nars.nar;
 
 
+import nars.NAR;
+import nars.NARS;
 import org.junit.jupiter.api.Test;
 
 class AttentionTest {
@@ -15,6 +17,7 @@ class AttentionTest {
      *      and also sharing cpu time (in some proportion).
      */
     @Test void testCompartmentalization1() {
+        NAR n = NARS.tmp();
 
     }
 
