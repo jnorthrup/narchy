@@ -38,7 +38,7 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
     private final MySortedListTable table;
 
 
-    private transient ArrayHistogram hist = null;
+    private final ArrayHistogram hist = new ArrayHistogram(0, 1, 0);
 
 
     ArrayBag(PriMerge merge, Map<X, Y> map) {
@@ -229,13 +229,15 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
         int c = capacity();
         int histRange = s;
         int bins = histogramBins();
-        ArrayHistogram hist = ArrayBag.this.hist;
-        if (hist == null) {
-            if (bins > 0)
-                hist = new ArrayHistogram(0, histRange - 1, bins);
+        ArrayHistogram hist;
+        if (bins > 0) {
+            hist = this.hist;
+            hist.clear(0, histRange - 1, bins);
         } else {
-            hist = hist.clear(0, histRange - 1, bins);
+            hist = null; //disabled
         }
+
+
 //        float q = Float.NaN;
         for (int i = 0; i < s; ) {
             Y y = (Y) l[i];
@@ -283,8 +285,7 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
 
 
             } else {
-                boolean removed = items2.removeFast(y, i);
-                assert (removed);
+                boolean removed = items2.removeFast(y, i); assert (removed);
                 removeFromMap(y);
                 s--;
 
@@ -300,10 +301,8 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
             s--;
         }
 
-        if (hist != null) {
-            ArrayBag.this.hist = hist;
-            massSet(hist.mass = m);
-        }
+        massSet(m);
+        this.hist.mass(m);
 
         return s;
     }
@@ -390,14 +389,12 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
             return 0;
         else {
             ArrayHistogram h = ArrayBag.this.hist;
-            if (h == null || h.mass < ScalarValue.EPSILON * size)
-                return rng.nextInt(size);
-            else {
-                int index = (int) h.sample(rng);
-                if (index >= size)
-                    index = size - 1;
-                return index;
-            }
+
+            int index = (int) h.sample(rng);
+            if (index >= size)
+                index = size - 1; //HACK
+            return index;
+
             //return sampleNextLinear(rng, size);
             //return sampleNextBiLinear(rng, size);
         }

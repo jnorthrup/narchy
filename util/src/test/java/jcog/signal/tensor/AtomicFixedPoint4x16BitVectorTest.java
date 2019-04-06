@@ -5,15 +5,15 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /** TODO multithread tests */
-class AtomicQuad16VectorTest {
+class AtomicFixedPoint4x16BitVectorTest {
 
     @Test void testFloatShort() {
 
-        assertEquals(0, AtomicQuad16Vector.toShort(0));
-        assertEquals(Short.MAX_VALUE*2+1, AtomicQuad16Vector.toShort(1));
-        assertEquals(16, Integer.bitCount(AtomicQuad16Vector.toShort(1)), "use all 16 bits");
+        assertEquals(0, AtomicFixedPoint4x16bitVector.toShort(0));
+        assertEquals(Short.MAX_VALUE*2+1, AtomicFixedPoint4x16bitVector.toShort(1));
+        assertEquals(16, Integer.bitCount(AtomicFixedPoint4x16bitVector.toShort(1)), "use all 16 bits");
 
-        assertEquals(0, AtomicQuad16Vector.toFloat(0), Float.MIN_NORMAL);
+        assertEquals(0, AtomicFixedPoint4x16bitVector.toFloat(0), Float.MIN_NORMAL);
 
     }
 
@@ -21,7 +21,7 @@ class AtomicQuad16VectorTest {
     void test1() {
 
 
-        AtomicQuad16Vector x = new AtomicQuad16Vector();
+        AtomicFixedPoint4x16bitVector x = new AtomicFixedPoint4x16bitVector();
         assertEquals("0,0,0,0", x.toString());
         assertEquals(0, x.getAt(0));
 

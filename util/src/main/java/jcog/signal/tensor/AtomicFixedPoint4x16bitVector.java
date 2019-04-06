@@ -13,8 +13,9 @@ import static jcog.Texts.n4;
  *             .getAndSet(a, (cap - 1) & --s, null)
  *             VarHandleBytes
  * TODO test
+ * TODO make an array version of this using common static methods
  */
-public class AtomicQuad16Vector implements WritableTensor {
+public class AtomicFixedPoint4x16bitVector implements WritableTensor {
 
 
 
@@ -22,8 +23,8 @@ public class AtomicQuad16Vector implements WritableTensor {
 
     //TODO atomic addAt methods
     static final int[] QUAD_16_SHAPE = new int[] { 4 };
-    private static final AtomicLongFieldUpdater<AtomicQuad16Vector> X =
-            AtomicLongFieldUpdater.newUpdater(AtomicQuad16Vector.class, "x");
+    private static final AtomicLongFieldUpdater<AtomicFixedPoint4x16bitVector> X =
+            AtomicLongFieldUpdater.newUpdater(AtomicFixedPoint4x16bitVector.class, "x");
     private volatile long x;
 
     /**
@@ -53,24 +54,6 @@ public class AtomicQuad16Vector implements WritableTensor {
         return s;
     }
 
-    /**
-     * produces a mask which will set one specific quad (via c) by AND'd it with the field
-     *  Merge bits from two values according to a mask
-     *
-     * unsigned int a;    // value to merge in non-masked bits
-     * unsigned int b;    // value to merge in masked bits
-     * unsigned int mask; // 1 where bits from b should be selected; 0 where from a.
-     * unsigned int r;    // result of (a & ~mask) | (b & mask) goes here
-     *
-     * r = a ^ ((a ^ b) & mask);
-     *
-     * This shaves one operation from the obvious way of combining two sets of bits according to a bit mask. If the mask is a constant, then there may be no advantage.
-     */
-//    static long setFloatMask(long a, int c) {
-//        //return ~0L & ~(((long) toShort(v)) << (c * 16));
-//        long b = (((long) toShort(v)) << (c * 16));
-//        return a ^ ((a^b) & (Integer.MAX_VALUE << (c*16)));
-//    }
 
     public static float toFloat(long s) {
         return s / SHORT_TO_FLOAT_SCALE;
@@ -119,24 +102,10 @@ public class AtomicQuad16Vector implements WritableTensor {
     public void setAt(int linearCell, float newValue) {
         int shift = linearCell * 16;
         long mask = ~((((long)('\uffff'))) << shift);
-        long B = ((long)toShort(newValue))<<shift;
-//        X.accumulateAndGet(this, B,
-//                (long x, long b) -> (x & mask) | b
-//        );
-
-//        long prev;
-//        long next;
-//        do {
-//            prev = this.get(obj);
-//            next = accumulatorFunction.applyAsLong(prev, x);
-//        } while(!this.compareAndSet(obj, prev, next));
-//
-//        return next;
-        long x;
-        long y;
+        long b = ((long)toShort(newValue))<<shift;
+        long x, y;
         do {
-            x = X.get(this);
-            y = (x & mask) | B;
+            y = ((x = X.get(this)) & mask) | b;
         } while(x!=y && !X.compareAndSet(this, x, y));
     }
 

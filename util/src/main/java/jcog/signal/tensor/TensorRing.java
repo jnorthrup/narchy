@@ -21,7 +21,7 @@ public class TensorRing extends AbstractShapedTensor implements WritableTensor {
 
     public TensorRing(int width, int history, boolean atomic) {
         this(atomic ?
-                new AtomicFloatArray(width*history) :
+                new AtomicFloatVector(width*history) :
                 new ArrayTensor(width*history),
                 width, history);
     }

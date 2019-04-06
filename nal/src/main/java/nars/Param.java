@@ -190,8 +190,8 @@ public abstract class Param extends Parts<Term,NAR> {
 
     /** should be monotonically increasing at most */
     public static final PriMerge tasklinkMerge =
-            PriMerge.or;
-            //PriMerge.plus;
+            //PriMerge.or;
+            PriMerge.plus;
             //PriMerge.max;
 
     /**

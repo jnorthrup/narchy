@@ -860,7 +860,7 @@ public enum Util {
 
     public static int bin(float x, int bins) {
 //        assertFinite(x);
-        assert(bins > 0);
+        //assert(bins > 0);
         return Util.clampSafe((int)(x * bins), 0, bins-1);
         //return (int) Math.floor(x * bins);
         //return (int) (x  * bins);

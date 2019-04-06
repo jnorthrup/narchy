@@ -10,11 +10,20 @@ import static java.lang.Float.floatToIntBits;
 import static java.lang.Float.intBitsToFloat;
 
 /** stores 32-bit float values in AtomicIntegerArray */
-public class AtomicFloatArray extends AbstractVector implements WritableTensor {
+public class AtomicFloatVector extends AbstractVector implements WritableTensor {
+
+    public static final AtomicFloatVector Empty = new AtomicFloatVector(0);
+
     private final AtomicIntegerArray data;
 
-    public AtomicFloatArray(int length) {
+    public AtomicFloatVector(int length) {
+        this(length, 0);
+    }
+
+    /** the initial data will be zero */
+    public AtomicFloatVector(int length, float initialValue) {
         this.data = new AtomicIntegerArray(length);
+        fill(initialValue);
     }
 
     @Override
@@ -36,6 +45,8 @@ public class AtomicFloatArray extends AbstractVector implements WritableTensor {
         if (Math.abs(x) < Float.MIN_NORMAL)
             return 0; //no effect
 
+        AtomicIntegerArray data = this.data;
+
         float nextFloat;
         int prev, next;
         do {
@@ -48,6 +59,7 @@ public class AtomicFloatArray extends AbstractVector implements WritableTensor {
     @Override public final float merge(int linearCell, float arg, FloatFloatToFloatFunction x, boolean returnValueOrDelta) {
         int prevI, nextI;
         float prev, next;
+        AtomicIntegerArray data = this.data;
 
         do {
             prevI = data.getAcquire(linearCell);
@@ -68,6 +80,7 @@ public class AtomicFloatArray extends AbstractVector implements WritableTensor {
     public void fill(float x) {
         int xx = floatToIntBits(x);
         int v = volume();
+        AtomicIntegerArray data = this.data;
         for (int i = 0; i < v; i++)
             data.set(i, xx);
     }

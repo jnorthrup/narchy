@@ -1,7 +1,7 @@
 package nars.link;
 
 import jcog.TODO;
-import jcog.signal.tensor.AtomicQuad16Vector;
+import jcog.signal.tensor.AtomicFixedPoint4x16bitVector;
 import jcog.signal.tensor.WritableTensor;
 import jcog.util.FloatFloatToFloatFunction;
 import nars.term.Term;
@@ -12,7 +12,7 @@ import static nars.time.Tense.ETERNAL;
 public final class AtomicTaskLink extends AbstractTaskLink {
 
     private final WritableTensor punc =
-            new AtomicQuad16Vector();
+            new AtomicFixedPoint4x16bitVector();
             //new AtomicFloatArray(4);
 
     AtomicTaskLink(Term source, Term target) {

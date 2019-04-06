@@ -21,7 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class NAL8Test extends NALTest {
 
-    public static final int cycles = 350;
+    public static final int cycles = 850;
 
     @BeforeEach
     void setTolerance() {
@@ -375,7 +375,7 @@ public class NAL8Test extends NALTest {
     void testInhibition() {
 
 
-        test.termVolMax(4).confMin(0.75f)
+        test.termVolMax(4).confMin(0.5f)
                 .goal("reward")
                 .believe("(good ==> reward)", 1, 0.9f)
                 .believe("(--bad ==> reward)", 1, 0.9f)

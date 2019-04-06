@@ -2,52 +2,57 @@ package jcog.signal.wave1d;
 
 import jcog.Util;
 import jcog.data.atomic.AtomicFloatFieldUpdater;
-import jcog.signal.tensor.AtomicFloatArray;
+import jcog.pri.Pri;
+import jcog.signal.tensor.AtomicFloatVector;
+import jcog.signal.tensor.WritableTensor;
 
 import java.util.Random;
 
 /** dead-simple fixed range continuous histogram with fixed # and size of bins. supports PDF sampling */
-public class ArrayHistogram extends AtomicFloatArray /*AtomicDoubleArrayTensor*/  /* ArrayTensor */{
+public class ArrayHistogram  /*AtomicDoubleArrayTensor*/  /* ArrayTensor */{
 
     private final static AtomicFloatFieldUpdater<ArrayHistogram> MASS =
             new AtomicFloatFieldUpdater(ArrayHistogram.class, "mass");
 
-    public volatile float rangeMin;
-    public volatile float rangeMax;
-    private volatile float rangeDelta;
+    private WritableTensor data = AtomicFloatVector.Empty;
 
-    //TODO use field updater
-    public volatile float mass = 0;
+    private float rangeMin;
+    private float rangeMax;
+    private float rangeDelta;
 
+    private int mass;
 
     public ArrayHistogram(float min, float max, int bins) {
-        super(bins);
+        clear(min, max, bins);
+        resize(bins);
         range(min, max);
+        mass(0);
+    }
+
+    private void resize(int bins) {
+        if (bins == 0)
+            data = AtomicFloatVector.Empty;
+        else
+            data =
+                new AtomicFloatVector(bins);
+                //AtomicFixedPoint4x16bitVector.get(bins);
     }
 
     private void range(float min, float max) {
-        if (Util.equals(max, min)) {
-            min -= Float.MIN_NORMAL;
-            max += Float.MIN_NORMAL;
-        }
         this.rangeMin = min;
         this.rangeMax = max;
         this.rangeDelta = (rangeMax - rangeMin);
     }
 
-    public ArrayHistogram clear(float min, float max, int bins) {
-        if (bins() != bins)
-            return new ArrayHistogram(min, max, bins);
-        else {
-            range(min, max);
-            clear();
-            return this;
+    /** note: mass is not affected in this call. you may need to call that separately */
+    public void clear(float min, float max, int bins) {
+        if (bins() != bins) {
+            //elides subsequent data fill, the new array will be set to zero
+            resize(bins);
+        } else {
+            data.fill(0);
         }
-    }
-
-    public void clear() {
-        mass = 0;
-        fill(0);
+        range(min, max);
     }
 
     public void add(float value, float weight) {
@@ -55,23 +60,30 @@ public class ArrayHistogram extends AtomicFloatArray /*AtomicDoubleArrayTensor*/
         MASS.add(this, weight);
     }
 
-    public void addWithoutSettingMass(float value, float weight) {
+    public final void addWithoutSettingMass(float value, float weight) {
         int bin = Util.bin((value-rangeMin)/rangeDelta, bins());
-        addAt(weight, bin);
+        data.addAt(weight, bin);
     }
 
     /** TODO use the rng to generate one 64-bit or one 32-bit integer and use half of its bits for each random value needed */
     public float sample(/*FloatSupplier uniformRng*/ Random rng) {
 
-
-        int n = bins();
-
-        float mass = MASS.getOpaque(this);
         float rangeDelta = this.rangeDelta;
-        float rangeMin = this.rangeMin;
-        if (mass < Float.MIN_NORMAL || rangeDelta < Float.MIN_NORMAL) {
-            return rng.nextFloat()*n; //flat, choose random
+
+        float mass = 0;
+        boolean flat = false;
+        if (rangeDelta < Pri.EPSILON)
+            flat = true;
+        else {
+            mass = mass();
+            flat = (mass <= Pri.EPSILON);
         }
+
+        WritableTensor data = this.data;
+
+        int bins = data.volume();
+        if (flat)
+            return rng.nextFloat() * bins; //flat, choose random
 
 
         float f0 = rng.nextFloat();
@@ -83,13 +95,13 @@ public class ArrayHistogram extends AtomicFloatArray /*AtomicDoubleArrayTensor*/
         int i;
         float ii;
         if (direction) {
-            for (i = n - 1; (i >= 0); ) //downward
-                if ((f -= getAt(i--)) < 0)
+            for (i = bins - 1; (i >= 0); ) //downward
+                if ((f -= data.getAt(i--)) < 0)
                     break;
             ii = i + 0.5f;
         } else {
-            for (i = 0; i < n; ) //upward
-                if ((f -= getAt(i++)) < 0)
+            for (i = 0; i < bins;) //upward
+                if ((f -= data.getAt(i++)) < 0)
                     break;
             ii = i - 0.5f;
         }
@@ -99,11 +111,21 @@ public class ArrayHistogram extends AtomicFloatArray /*AtomicDoubleArrayTensor*/
         //TODO sub-bin interpolate?
         //randomize within the bin's proximity, naively assuming a normal PDF
         //TODO use the relative density of the adjacent bin
-        return Util.unitizeSafe( iii/(n-1) ) * rangeDelta + rangeMin;
+        return Util.unitizeSafe( iii/(bins-1) ) * rangeDelta + rangeMin;
     }
 
     public final int bins() {
-        return volume();
+        return data.volume();
+    }
+
+    /** mass setter */
+    public final ArrayHistogram mass(float m) {
+        MASS.set(this, m);
+        return this;
+    }
+
+    public final float mass() {
+        return MASS.getOpaque(this);
     }
 
 }

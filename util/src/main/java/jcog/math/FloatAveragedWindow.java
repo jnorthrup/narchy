@@ -3,7 +3,7 @@ package jcog.math;
 import com.google.common.util.concurrent.AtomicDouble;
 import jcog.TODO;
 import jcog.signal.Tensor;
-import jcog.signal.tensor.AtomicFloatArray;
+import jcog.signal.tensor.AtomicFloatVector;
 import jcog.signal.tensor.TensorRing;
 import org.eclipse.collections.api.block.function.primitive.FloatToFloatFunction;
 
@@ -93,7 +93,7 @@ public class FloatAveragedWindow implements FloatSupplier, FloatToFloatFunction 
     }
 
     public FloatAveragedWindow(int windowSize, FloatRange alpha) {
-        this.window = new TensorRing(new AtomicFloatArray(windowSize), 1, windowSize);
+        this.window = new TensorRing(new AtomicFloatVector(windowSize), 1, windowSize);
         this.alpha = alpha;
         window.fillAll(Float.NaN);
     }
