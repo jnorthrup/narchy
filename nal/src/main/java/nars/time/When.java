@@ -26,6 +26,7 @@ public class When extends TimeRange {
         this(when, when, nar);
     }
 
+
     public static When eternal(NAR n) {
         return new When(Tense.ETERNAL, Tense.ETERNAL, n);
     }

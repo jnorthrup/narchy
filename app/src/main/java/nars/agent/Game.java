@@ -83,6 +83,19 @@ public class Game extends NARPart implements NSense, NAct {
             //Cycles.Biphasic;
             Cycles.Interleaved;
 
+
+    @Deprecated public Game(String id, NAR n) {
+        this(id, n.in);
+    }
+
+    @Deprecated public Game(Term id, GameTime time, NAR n) {
+        this(id, time, n.in);
+    }
+
+    @Deprecated public Game(String id, GameTime time, NAR n) {
+        this(id, time, n.in);
+    }
+
     public Game(String id, What w) {
         this(id, GameTime.durs(1), w);
     }

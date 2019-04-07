@@ -40,7 +40,7 @@ public class ConceptGraph2D extends Graph2D<Term> {
 
 //    public final Controls controls = new Controls();
 
-    public ConceptGraph2D(Iterable<? extends Termed> source, NAR n) {
+    public ConceptGraph2D(Iterable<? extends Termed> source, Iterable<TaskLink> links, NAR n) {
         super();
 
         this.nar = n;
@@ -73,7 +73,7 @@ public class ConceptGraph2D extends Graph2D<Term> {
                         Graph2D.InvalidateEdges,
                         //                      new TermlinkVis(n),
                         new SubtermVis(n),
-                        new TasklinkVis(n),
+                        new TasklinkVis(links),
                         new StatementVis(n)
                 );
     }
@@ -190,11 +190,11 @@ public class ConceptGraph2D extends Graph2D<Term> {
         public final AtomicBoolean question = new AtomicBoolean(true);
         public final AtomicBoolean quest = new AtomicBoolean(true);
 
-        final NAR n;
+        final Iterable<TaskLink> links;
 
 
-        private TasklinkVis(NAR n) {
-            this.n = n;
+        private TasklinkVis(Iterable<TaskLink> links) {
+            this.links = links;
         }
 
         @Override
@@ -208,9 +208,7 @@ public class ConceptGraph2D extends Graph2D<Term> {
                 return;
 
 
-            n.attn.links.forEach(l ->
-                    add(edit, belief, goal, question, quest, l)
-            );
+            links.forEach(l -> add(edit, belief, goal, question, quest, l));
 
 
         }

@@ -152,7 +152,7 @@ public class DigitizedScalar extends DemultiplexedScalarSensor {
     }
 
 
-    public DigitizedScalar(FloatSupplier input, ScalarEncoder freqer, NAR nar, Term... states) {
+    public DigitizedScalar(FloatSupplier input, ScalarEncoder freqer, NAR n, Term... states) {
         super(input, $.func(DigitizedScalar.class.getSimpleName(),
                 SETe.the(states)
                 /*,$.quote(Util.toString(input))*/, $.the(freqer.getClass().getSimpleName())
@@ -160,9 +160,9 @@ public class DigitizedScalar extends DemultiplexedScalarSensor {
             /** special truther that emphasizes the on concepts more than the off, since more will be off than on usually */
             (prev, next) -> next==next ? $.t(Util.unitize(next),
                 //nar.confDefault(BELIEF) * ((1-1f/states.length) * next) + (1f/states.length)
-                    nar.confDefault(BELIEF)
+                    n.confDefault(BELIEF)
             ) : null,
-            nar
+            n
         );
 
 
@@ -176,7 +176,7 @@ public class DigitizedScalar extends DemultiplexedScalarSensor {
             final int ii = i++;
             Signal sc = new Signal(s, in.id,
                 () -> freqer.truth(asFloat(), ii, states.length),
-                nar);
+                n);
             sensors.add(sc);
         }
 

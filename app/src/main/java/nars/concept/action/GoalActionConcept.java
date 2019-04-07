@@ -13,7 +13,7 @@ public class GoalActionConcept extends AbstractGoalActionConcept {
 
     private final MotorFunction motor;
 
-    public GoalActionConcept(Term term, NAR n, MotorFunction motor) {
+    public GoalActionConcept(Term term, MotorFunction motor, NAR n) {
         super(term, n);
 
         this.motor = motor;
@@ -21,8 +21,6 @@ public class GoalActionConcept extends AbstractGoalActionConcept {
 
     @Override
     public void update(Game g) {
-
-        long prev = g.prev, now = g.now, next = g.next;
 
         //long agentDur = now - prev;
 //        long dur = agentDur;
@@ -44,9 +42,7 @@ public class GoalActionConcept extends AbstractGoalActionConcept {
         //long s = now - agentDur/2, e = now + agentDur/2;
         //long s = now - dur/2, e = now + dur/2;
 
-        long feedbackShift =
-                0;
-                //n.dur();
+
 
         super.update(g);
 
@@ -57,7 +53,7 @@ public class GoalActionConcept extends AbstractGoalActionConcept {
                 goal
         );
 
-        feedback(fb, prev + feedbackShift, now + feedbackShift, cause, g.nar());
+        feedback(fb, cause, g);
     }
 
 

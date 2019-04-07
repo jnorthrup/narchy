@@ -8,7 +8,6 @@ import jcog.data.graph.NodeGraph;
 import jcog.data.graph.path.FromTo;
 import jcog.data.graph.search.Search;
 import jcog.data.list.FasterList;
-import jcog.pri.Prioritizable;
 import jcog.sort.SortedArray;
 import jcog.util.ArrayUtils;
 import jcog.util.HashCachedPair;
@@ -21,6 +20,7 @@ import nars.bag.leak.TaskLeak;
 import nars.concept.Concept;
 import nars.concept.TaskConcept;
 import nars.control.channel.CauseChannel;
+import nars.task.ITask;
 import nars.task.NALTask;
 import nars.term.Term;
 import nars.term.Termed;
@@ -56,7 +56,7 @@ public class Impiler {
 
     public static class ImpilerSolver extends TaskLeak {
 
-        private final CauseChannel<Prioritizable> in;
+        private final CauseChannel<ITask> in;
 
         public ImpilerSolver(int capacity, float ratePerDuration, NAR n) {
             super(capacity, n);
@@ -74,19 +74,19 @@ public class Impiler {
             if (c != null) {
                 ImplNode i = c.meta(IMPILER_NODE);
                 if (i != null) {
-                    solve(next, c, i);
+                    solve(next, c, i, what);
                     return 1;
                 }
             }
             return 0;
         }
 
-        protected void solve(Task t, TaskConcept c, ImplNode i) {
+        protected void solve(Task t, TaskConcept c, ImplNode i, What w) {
             //System.out.println(t + "\t" + i);
             ImplSource s = new ImplSource(nar, t, c).scan(i.out);
             if (!s.result.isEmpty()) {
                 s.result.forEach(z -> System.err.println(this + "\t:" + z));
-                in.input(s.result);
+                this.in.acceptAll(s.result, w);
             }
 
             //new ImplTarget(c).scan(i.out);

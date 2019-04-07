@@ -22,6 +22,7 @@ import nars.Task;
 import nars.agent.Game;
 import nars.agent.util.RLBooster;
 import nars.attention.TaskLinks;
+import nars.attention.What;
 import nars.concept.Concept;
 import nars.concept.sensor.Signal;
 import nars.control.NARPart;
@@ -161,13 +162,11 @@ public class NARui {
                 ///causePanel(n),
                 "grp", () -> BagregateConceptGraph2D.get(n),
                 "svc", () -> new PartsTable(n),
-                "pri", () -> priView(n),
                 "cpt", () -> new ConceptBrowser(n)
         );
         HashMap<String, Supplier<Surface>> mm = new HashMap<>()
         {{
             putAll(m);
-            put("inp", () -> taskBufferView(n.in, n));
             put("snp", () -> memoryView(n));
             put("tsk", () -> taskView(n));
 //            put("mem", () -> ScrollGrid.list(
@@ -183,46 +182,46 @@ public class NARui {
         return mm;
     }
 
-    private static Surface priView(NAR n) {
-        TaskLinks cc = n.attn;
-
-        return Splitting.row(
-                new BagView<>(cc.links, n),
-                0.2f,
-                new Gridding(
-                     new ObjectSurface(
-//                        new XYSlider(
-//                                cc.activationRate
-                                cc.decay
-                                //.subRange(1/1000f, 1/2f)
-                        ) {
-//                            @Override
-//                            public String summaryX(float x) {
-//                                return "forget=" + n4(x);
-//                            }
+//    private static Surface priView(NAR n) {
+//        TaskLinks cc = n.attn;
 //
-//                            @Override
-//                            public String summaryY(float y) {
-//                                return "activate=" + n4(y);
+//        return Splitting.row(
+//                new BagView<>(cc.links, n),
+//                0.2f,
+//                new Gridding(
+//                     new ObjectSurface(
+////                        new XYSlider(
+////                                cc.activationRate
+//                                cc.decay
+//                                //.subRange(1/1000f, 1/2f)
+//                        ) {
+////                            @Override
+////                            public String summaryX(float x) {
+////                                return "forget=" + n4(x);
+////                            }
+////
+////                            @Override
+////                            public String summaryY(float y) {
+////                                return "activate=" + n4(y);
+////                            }
+//                        },
+//
+//                        new PushButton("Print", () -> {
+//                            Appendable a = null;
+//                            try {
+//                                a = TextEdit.out().append(
+//                                        Joiner.on('\n').join(cc.links)
+//                                );
+//                                window(a, 800, 500);
+//                            } catch (IOException e) {
+//                                e.printStackTrace();
 //                            }
-                        },
-
-                        new PushButton("Print", () -> {
-                            Appendable a = null;
-                            try {
-                                a = TextEdit.out().append(
-                                        Joiner.on('\n').join(cc.links)
-                                );
-                                window(a, 800, 500);
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
-                        }),
-                        new PushButton("Clear", () -> cc.links.clear())
-                )
-        );
-
-    }
+//                        }),
+//                        new PushButton("Clear", () -> cc.links.clear())
+//                )
+//        );
+//
+//    }
 
     public static Surface MemEdit(NAR nar) {
         return new Gridding(
@@ -596,14 +595,30 @@ public class NARui {
     public static Surface tasklinkSpectrogram(Table<?, TaskLink> b, int history, NAR n) {
         return tasklinkSpectrogram(n, b, history, b.capacity());
     }
+
     public static Surface attentionUI(NAR n) {
+        //TODO watch for added and removed What's for live update
+
+        Map<String,Supplier<Surface>> global = new HashMap();
+        global.put("Attention", ()-> AttentionUI.attentionGraph(n));
+
+
+        Map<String,Supplier<Surface>> attentions = new HashMap();
+        n.what.forEach((v)->{
+           attentions.put(v.id.toString(), ()->attentionUI((What)v));
+        });
+        return new Splitting(new TabMenu(global), 0.25f, new TabMenu(attentions)).horizontal(true).resizeable();
+    }
+
+    public static Surface attentionUI(What w) {
         final Bordering m = new Bordering();
-        TaskLinks attn = n.attn;
+        NAR n = w.nar;
+        TaskLinks attn = ((What.TaskLinkWhat)w).links;
         m.center(new TabMenu(Map.of(
+                "Input", () -> taskBufferView(w.in, n),
                 "Spectrum", ()->tasklinkSpectrogram(attn.links, 300, n),
                 "Histogram", ()->new BagView(attn.links, n),
-                "Concepts", ()->BagregateConceptGraph2D.get(attn, n),
-                "Attention", ()-> AttentionUI.attentionGraph(n)
+                "Concepts", ()->BagregateConceptGraph2D.get(attn, n)
         )));
         m.south(new ObjectSurface(attn));
         m.west(new Gridding(
@@ -619,9 +634,9 @@ public class NARui {
             new PushButton("List").clicked(()->attn.links.bag.print()) //TODO better
 
         ));
-        m.east(new Gridding(
-                //TODO interactive filter widgets
-        ));
+//        m.east(new Gridding(
+//                //TODO interactive filter widgets
+//        ));
 
         return m;
     }
@@ -894,8 +909,4 @@ public class NARui {
 
     }
 
-    public static Surface inputUI(NAR n) {
-        //TODO metrics: input rate, etc
-        return taskBufferView(n.in, n);
-    }
 }

@@ -9,12 +9,14 @@ import jcog.math.FloatRange;
 import nars.NAR;
 import nars.Op;
 import nars.Task;
+import nars.attention.What;
+import nars.control.NARPart;
 import nars.control.channel.CauseChannel;
+import nars.task.ITask;
 import nars.task.signal.SignalTask;
 import nars.term.Term;
 import nars.term.Termed;
 import nars.time.Tense;
-import nars.time.part.DurLoop;
 import nars.truth.PreciseTruth;
 import nars.truth.Truth;
 import org.eclipse.collections.api.block.function.primitive.LongToFloatFunction;
@@ -34,42 +36,49 @@ import static nars.truth.func.TruthFunctions.c2w;
  *      --time width (duty cycle %)
  *      --confidence fade factor
  */
-public class BeliefPredict {
+public class BeliefPredict extends NARPart {
 
     public final FloatRange conf = new FloatRange(0.5f, 0, 1f);
     public final FloatRange confFadeFactor = new FloatRange(0.9f, 0, 1f);
 
-    final DurLoop on;
     //final List<ITask> currentPredictions = new FasterList<>();
-    private final CauseChannel predict;
+    private final CauseChannel<ITask> predict;
     private final LivePredictor predictor;
-    private final NAR nar;
+
 
     /** in cycles (not durs) */
     private final int sampleDur;
     private final Termed[] predicted;
+
+    /** where the generated beliefs will be input */
+    private final What target;
+
+
     int projections = 0;
     private final List<Task> predictions = new FasterList();
+
 
     /** if the past and present set of monitored concepts are equal, then iterative projections
      * into the future are possible to compute each cycle.
      */
-    public BeliefPredict(Iterable<Termed> concepts, int history, int sampleDur, int extraProjections, Predictor m, NAR nar) {
-        this(concepts, history, sampleDur, concepts, m, nar);
+    public BeliefPredict(Iterable<Termed> concepts, int history, int sampleDur, int extraProjections, Predictor m, What target) {
+        this(concepts, history, sampleDur, concepts, m, target);
         this.projections = extraProjections;
     }
 
-    public BeliefPredict(Iterable<Termed> inConcepts, int history, int sampleDur, Iterable<Termed> outConcepts, Predictor m, NAR nar) {
+    public BeliefPredict(Iterable<Termed> inConcepts, int history, int sampleDur, Iterable<Termed> outConcepts, Predictor m, What target) {
         this(Iterables.toArray(inConcepts, Termed.class),
                 history, sampleDur,
-                Iterables.toArray(outConcepts, Termed.class), m, nar);
+                Iterables.toArray(outConcepts, Termed.class), m, target);
     }
 
-    public BeliefPredict(Termed[] pastSampling, int history, int sampleDur, Termed[] presentSampling, Predictor m, NAR nar) {
+    public BeliefPredict(Termed[] pastSampling, int history, int sampleDur, Termed[] presentSampling, Predictor m, What target) {
+        super(target.nar);
 
-        this.nar = nar;
         this.sampleDur = sampleDur;
         this.predicted = presentSampling;
+
+        this.target = target;
 
         predictor = new LivePredictor(m, new LivePredictor.DenseShiftFramer(
             map(c -> freqSupplier(c, nar), LongToFloatFunction[]::new, pastSampling),
@@ -80,7 +89,13 @@ public class BeliefPredict {
 
         this.predict = nar.newChannel(this);
 
-        this.on = nar.onDur(this::predict);
+
+    }
+
+    @Override
+    protected void starting(NAR nar) {
+        super.starting(nar);
+        on(nar.onDur(this::predict));
     }
 
     protected void predict() {
@@ -145,9 +160,7 @@ public class BeliefPredict {
 
             predictions.add(p);
 
-            predict.input(
-                    p
-            );
+            predict.accept(p, target);
         }
     }
 

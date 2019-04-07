@@ -5,11 +5,12 @@ import com.google.common.collect.Iterators;
 import jcog.Util;
 import jcog.data.atomic.AtomicFloat;
 import jcog.math.Range;
-import jcog.pri.Prioritizable;
 import nars.*;
-import nars.control.channel.ConsumerX;
+import nars.attention.What;
+import nars.control.channel.CauseChannel;
 import nars.index.concept.Memory;
 import nars.subterm.Subterms;
+import nars.task.ITask;
 import nars.task.NALTask;
 import nars.term.Compound;
 import nars.term.Term;
@@ -85,7 +86,8 @@ public class PrologCore extends PrologAgent implements Consumer<Task> {
 
 
     private final long timeoutMS = 50;
-    private final ConsumerX<Prioritizable> in;
+    private final CauseChannel<ITask> in;
+    private What what;
 
 
     /*final ObjectBooleanHashMap<Term> beliefs = new ObjectBooleanHashMap() {
@@ -115,6 +117,7 @@ public class PrologCore extends PrologAgent implements Consumer<Task> {
 
         this.in = n.newChannel(this);
         this.nar = n;
+        this.what = nar.in; //TODO be parameter
 
 
         n.eventTask.on(this);
@@ -234,7 +237,7 @@ public class PrologCore extends PrologAgent implements Consumer<Task> {
 
             if (y != null) {
                 logger.info("answer {}\t{}", question, y);
-                in.acceptAll(y);
+                in.accept(y, what);
             }
 
         } catch (Exception e) {
@@ -262,7 +265,9 @@ public class PrologCore extends PrologAgent implements Consumer<Task> {
 
 
     private static Term nterm(alice.tuprolog.Term t) {
-        if (t instanceof alice.tuprolog.Term) {
+        if (t instanceof Var) {
+            return $.varDep(((Var) t).name());
+        } else {
             Struct s = (Struct) t;
             if (s.subs() > 0) {
                 switch (s.name()) {
@@ -309,13 +314,12 @@ public class PrologCore extends PrologAgent implements Consumer<Task> {
 
                 return $.the(unwrapAtom(n));
             }
-        } else if (t instanceof Var) {
-            return $.varDep(((Var) t).name());
 
-        } else {
 
-            throw new RuntimeException(t + " untranslated");
         }
+//        else {
+//            throw new RuntimeException(t + " untranslated");
+//        }
     }
 
 

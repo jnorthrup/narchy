@@ -128,7 +128,7 @@ public class ConjClustering extends How {
         this.filter = filter;
 
         this.now = lastLearn = nar.time();
-        update();
+        //update();
 
         nar.start(this);
     }

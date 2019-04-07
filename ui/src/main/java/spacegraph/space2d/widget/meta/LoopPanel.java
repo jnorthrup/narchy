@@ -9,6 +9,8 @@ import spacegraph.space2d.widget.button.CheckBox;
 import spacegraph.space2d.widget.meter.Plot2D;
 import spacegraph.space2d.widget.slider.IntSpinner;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 /**
  * control and view statistics of a loop
  */
@@ -60,17 +62,17 @@ public class LoopPanel extends Gridding {
 //                        })
 //                        ),
                                 new CheckBox("On").on(true).on((o)->{
-                                    synchronized(loop) {
+                                    //synchronized(loop) {
                                         if (o) {
                                             pause = false;
                                             loop.setFPS(fps.intValue());
-                                            update();
+                                            update(); //HACK shouldnt be needed
                                         } else {
                                             pause = true;
                                             loop.stop();
-                                            update();
+                                            update();  //HACK maybe necessary
                                         }
-                                    }
+                                    //}
                                 }
                                 //)
                         ),
@@ -78,11 +80,11 @@ public class LoopPanel extends Gridding {
                         cycleTimePlot,
                         heapPlot
                 );
-        update();
     }
 
+    final AtomicBoolean busy = new AtomicBoolean(false); //HACK
     public void update() {
-        synchronized (loop) {
+        if (busy.compareAndSet(false, true)) {
             if (!pause) {
                 int f = fps.intValue();
                 int g = Math.round(loop.getFPS());
@@ -106,6 +108,8 @@ public class LoopPanel extends Gridding {
 
             }
 
+            busy.set(false);
         }
+
     }
 }

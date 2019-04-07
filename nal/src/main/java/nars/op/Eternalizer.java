@@ -24,7 +24,6 @@ public class Eternalizer extends LinkRanker<Task> {
     public final FloatRange priFactor = new FloatRange(0.5f, 0, 1);
     public final FloatRange noise = new FloatRange(0.1f, 0, 1);
     private final CauseChannel<ITask> in;
-    private When when;
 
     private static final int cap = 16; //TODO IntRange
 
@@ -62,7 +61,7 @@ public class Eternalizer extends LinkRanker<Task> {
     }
 
     @Override
-    protected Task apply(TaskLink x) {
+    protected Task apply(TaskLink x, When when) {
         Term xs = x.from();
         if (filter(xs.op()) && filter(xs.term())) {
             Task t = x.get(punc(), when, (tt)->!tt.isEternal());

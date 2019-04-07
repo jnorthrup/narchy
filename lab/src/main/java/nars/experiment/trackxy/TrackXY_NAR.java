@@ -216,7 +216,7 @@ public class TrackXY_NAR extends GameX {
 //        n.beliefConfDefault.setAt(0.5f);
 //        n.goalConfDefault.setAt(0.5f);
 
-        n.attn.links.capacity(1024);
+//        n.attn.links.capacity(1024);
 
         n.goalPriDefault.set(0.5f);
         n.beliefPriDefault.set(0.1f);
@@ -325,7 +325,6 @@ public class TrackXY_NAR extends GameX {
 
                 g.add(NARui.agent(a)).posRel(0.5f, 0.5f, 0.4f, 0.3f);
                 g.add(NARui.top(n)).posRel(0.5f, 0.5f, 0.2f, 0.1f);
-                g.add(NARui.taskBufferView(n.in, n)).sizeRel(0.25f, 0.25f);
                 g.add(NARui.attentionUI(n)).sizeRel(0.25f, 0.25f);
 
 

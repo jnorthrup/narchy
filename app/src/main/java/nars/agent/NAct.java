@@ -38,7 +38,7 @@ public interface NAct {
     default NAR nar() {
         return what().nar;
     }
-    
+
     What what();
 
 
@@ -95,7 +95,7 @@ public interface NAct {
     @Nullable
     default GoalActionConcept actionTriStateContinuous(Term s, IntPredicate i) {
 
-        GoalActionConcept m = new GoalActionConcept(s, nar(), (b, d) -> {
+        GoalActionConcept m = new GoalActionConcept(s, (b, d) -> {
 
 
             int ii;
@@ -135,7 +135,7 @@ public interface NAct {
             }
 
             return $.t(f, nar().confDefault(BELIEF));
-        });
+        }, nar());
 
 
         return addAction(m);
@@ -143,7 +143,7 @@ public interface NAct {
 
     @Nullable
     default AgentAction actionTriStatePWM(Term s, IntConsumer i) {
-        AgentAction m = new GoalActionConcept(s, nar(), (b, d) -> {
+        AgentAction m = new GoalActionConcept(s, (b, d) -> {
 
 
             int ii;
@@ -188,7 +188,7 @@ public interface NAct {
                     )
 
                     ;
-        });
+        }, nar());
         return addAction(m);
     }
 
@@ -464,7 +464,7 @@ public interface NAct {
 
 
     default GoalActionConcept action(Term s, GoalActionConcept.MotorFunction update) {
-        return addAction(new GoalActionConcept(s, nar(), update));
+        return addAction(new GoalActionConcept(s, update, nar()));
     }
 
 
@@ -511,7 +511,7 @@ public interface NAct {
                 )
         );
 
-        return addAction(new GoalActionConcept(s, nar(), motor));
+        return addAction(new GoalActionConcept(s, motor, nar()));
     }
 
 

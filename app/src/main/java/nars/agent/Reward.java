@@ -4,7 +4,6 @@ import com.google.common.collect.Iterables;
 import jcog.Util;
 import jcog.data.graph.MapNodeGraph;
 import jcog.math.FloatRange;
-import jcog.pri.Prioritizable;
 import nars.$;
 import nars.NAR;
 import nars.Task;
@@ -15,6 +14,7 @@ import nars.concept.sensor.GameLoop;
 import nars.control.channel.CauseChannel;
 import nars.op.mental.Inperience;
 import nars.table.eternal.DefaultOnlyEternalTable;
+import nars.task.ITask;
 import nars.task.NALTask;
 import nars.term.Term;
 import nars.term.Termed;
@@ -35,25 +35,25 @@ public abstract class Reward implements GameLoop, TermedDelegate, Iterable<Conce
 
     //public final FloatRange motivation = new FloatRange(1f, 0, 1f);
 
-    protected final Game agent;
+    protected final Game game;
 
     protected transient volatile float rewardBelief = Float.NaN;
 
-    protected final CauseChannel<Prioritizable> in;
+    protected final CauseChannel<ITask> in;
 
     final static boolean goalUnstamped = false;
 
     final PriNode attn;
 
-    public Reward(Game a) {
+    public Reward(Game g) {
     //TODO
     //public Reward(NAgent a, FloatSupplier r, float confFactor) {
-        this.agent = a;
+        this.game = g;
 
         this.attn = new PriNode(this);
-        attn.parent(a.nar(), a.attnReward);
+        attn.parent(g.nar(), g.attnReward);
 
-        in = a.nar().newChannel(this);
+        in = g.nar().newChannel(this);
 
     }
 
@@ -76,7 +76,7 @@ public abstract class Reward implements GameLoop, TermedDelegate, Iterable<Conce
     /** scalar value representing the reward state (0..1.0) */
     protected abstract float rewardFreq(boolean beliefOrGoal);
 
-    public final NAR nar() { return agent.nar(); }
+    public final NAR nar() { return game.nar(); }
 
     public final void update(Game g) {
         rewardBelief = rewardFreq(true);
@@ -109,17 +109,25 @@ public abstract class Reward implements GameLoop, TermedDelegate, Iterable<Conce
         Task t = NALTask.the(goal.unneg(), GOAL, truth, nar().time(), ETERNAL, ETERNAL, stamp);
 
         Term at = term().equals(goal) ? $.func(Inperience.want, goal) : $.func(Inperience.want, this.term(), goal);
-        //HACK
-        PriNode a = new AttnBranch(at, List.of(t)) {
-            @Override
-            public void update(MapNodeGraph<PriNode,Object> g) {
-                super.update(g);
-                t.pri(pri());
-                in.input(t);
-            }
 
-        };
+        PriNode a = new MyAttnBranch(at, t);
         a.parent(nar(), attn);
     }
 
+    private final class MyAttnBranch extends AttnBranch {
+        private final Task t;
+
+        public MyAttnBranch(Term at, Task t) {
+            super(at, List.of(t));
+            this.t = t;
+        }
+
+        @Override
+        public void update(MapNodeGraph<PriNode,Object> g) {
+            super.update(g);
+            t.pri(pri());
+            in.accept(t, game.what());
+        }
+
+    }
 }

@@ -34,6 +34,11 @@ abstract public class CauseChannel<X extends Prioritizable>  {
         x.forEach(this::preAccept);
         target.acceptAll(x);
     }
+    public final void acceptAll(X[] xx, ConsumerX<? super X> target) {
+        for (X x : xx)
+            preAccept(x);
+        target.acceptAll(xx);
+    }
 
 
     //TODO other input() methods (Stream, Iterable, etc)

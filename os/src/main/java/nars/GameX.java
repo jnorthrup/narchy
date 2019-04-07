@@ -12,7 +12,6 @@ import jcog.signal.wave2d.MonoBufImgBitmap2D;
 import jcog.signal.wave2d.ScaledBitmap2D;
 import nars.agent.Game;
 import nars.agent.GameTime;
-import nars.agent.MetaAgent;
 import nars.agent.util.RLBooster;
 import nars.concept.Concept;
 import nars.control.MetaGoal;
@@ -101,11 +100,11 @@ abstract public class GameX extends Game {
     public static NAR runRT(Function<NAR, Game> init, int threads, float narFPS, float durFPS) {
         NAR n = baseNAR(durFPS, threads);
 
-        n.run(() -> {
+        Game a = init.apply(n);
 
-            Game a = init.apply(n);
-
+        n.runLater(() -> {
             n.start(a);
+
 
             initPlugins(n);
             initPlugins2(n, a);
@@ -113,16 +112,16 @@ abstract public class GameX extends Game {
 
             SpaceGraph.surfaceWindow(new Gridding(n.plugins(Game.class).map(NARui::agent).collect(toList())), 500, 500);
             SpaceGraph.surfaceWindow(NARui.top(n), 800, 500);
-            SpaceGraph.surfaceWindow(NARui.inputUI(n), 500, 500);//.sizeRel(0.25f, 0.25f);
 
             SpaceGraph.surfaceWindow(NARui.attentionUI(n), 500, 500);
 
-            Loop loop = n.startFPS(narFPS);
 
             //System.gc();
         });
 
-        n.synch();
+        //n.synch();
+
+        Loop loop = n.startFPS(narFPS);
 
         return n;
     }
@@ -300,13 +299,13 @@ abstract public class GameX extends Game {
     }
     static void initPlugins3(NAR n, Game a) {
 
-        MetaAgent meta = new MetaAgent(n, 16);
-        RLBooster metaBoost = new RLBooster(meta, (i,o)->new HaiQae(i, 10,o),
-                8, 2,false);
-
-//        meta.pri.amp.set(0.5f);
-//        window(NARui.agent(meta), 500, 500);
-        SpaceGraph.surfaceWindow(NARui.rlbooster(metaBoost), 500, 500);
+//        MetaAgent meta = new MetaAgent(n, 16);
+//        RLBooster metaBoost = new RLBooster(meta, (i,o)->new HaiQae(i, 10,o),
+//                8, 2,false);
+//
+////        meta.pri.amp.set(0.5f);
+////        window(NARui.agent(meta), 500, 500);
+//        SpaceGraph.surfaceWindow(NARui.rlbooster(metaBoost), 500, 500);
 
 
 //        window(AttentionUI.attentionGraph(n), 600, 600);
@@ -373,7 +372,7 @@ abstract public class GameX extends Game {
         n.termVolumeMax.set(32);
 
 
-        n.attn.linksMax.set(1024);
+        //n.attn.linksMax.set(1024);
 
 
         n.beliefPriDefault.set(0.01f);

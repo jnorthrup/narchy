@@ -13,13 +13,14 @@ import spacegraph.space2d.widget.console.ConsoleGUI;
 import spacegraph.space2d.widget.console.TextEdit0;
 import spacegraph.space3d.SpaceDisplayGraph3D;
 
+/** TODO get working again */
 public class Concepts3D extends DynamicConceptSpace {
 
 //    private final AtomicBoolean reloadReady = new AtomicBoolean(false);
 //    private final TextEdit inputbox;
 
     private Concepts3D(NAR nar, int visibleNodes, int maxEdgesPerNodeMax) {
-        this(nar, () -> nar.attn.concepts().iterator(),
+        this(nar, () -> nar.in.concepts().iterator(),
                 visibleNodes, maxEdgesPerNodeMax);
 
     }

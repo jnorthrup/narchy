@@ -5,7 +5,6 @@ import nars.NAR;
 import nars.Param;
 import nars.Task;
 import nars.agent.Game;
-import nars.attention.What;
 import nars.concept.action.curiosity.Curiosity;
 import nars.concept.action.curiosity.CuriosityTask;
 import nars.control.channel.CauseChannel;
@@ -65,25 +64,22 @@ public class AbstractGoalActionConcept extends AgentAction {
 
     final short cause;
 
-    protected AbstractGoalActionConcept(Term term, What w) {
-        this(term, new RTreeBeliefTable(), w);
+    protected AbstractGoalActionConcept(Term term, NAR n) {
+        this(term, new RTreeBeliefTable(), n);
     }
 
-    protected AbstractGoalActionConcept(Term term, BeliefTable mutableGoals, What w) {
-        super(term, new SensorBeliefTables(term, true, w),
+    protected AbstractGoalActionConcept(Term term, BeliefTable mutableGoals, NAR n) {
+        super(term, new SensorBeliefTables(term, true),
                 new BeliefTables(),
-                w);
+                n);
 
-        cause = w.nar.newCause(term).id;
+        cause = n.newCause(term).id;
 
         /** make sure to add curiosity table first in the list, as a filter */
         BeliefTables GOALS = ((BeliefTables) goals());
         GOALS.add(curiosityTable =
                 new CuriosityBeliefTable(term));
         GOALS.add(mutableGoals);
-
-
-
     }
 
     protected CauseChannel<ITask> channel(NAR n) {
@@ -319,8 +315,8 @@ public class AbstractGoalActionConcept extends AgentAction {
         return curiosity;
     }
 
-    protected void feedback(@Nullable Truth f, long last, long now, short cause, NAR nar) {
-        ((SensorBeliefTables) beliefs()).add(f, last, now, attn::pri, cause, nar);
+    protected void feedback(@Nullable Truth f, short cause, Game g) {
+        ((SensorBeliefTables) beliefs()).add(f, g.prev, g.now, attn::pri, cause, g.what());
     }
 
 

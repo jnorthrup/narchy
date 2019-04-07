@@ -279,13 +279,12 @@ public class ExeCharts {
      */
     static class NARLoopPanel extends LoopPanel {
 
-        private final NAR nar;
         final IntRange durMS = new IntRange(1, 1, 1000);
         private final RealTime time;
 
         NARLoopPanel(NARLoop loop) {
             super(loop);
-            this.nar = loop.nar();
+            NAR nar = loop.nar();
             durMS.set(nar.dur());
             if (nar.time instanceof RealTime) {
                 time = ((RealTime) nar.time);
@@ -304,10 +303,12 @@ public class ExeCharts {
         public void update() {
 
             super.update();
+
             if (loop.isRunning()) {
 
-                if (nar.time instanceof RealTime) {
-                    double actualMS = ((RealTime) nar.time).durSeconds() * 1000.0;
+                NAR n = ((NARLoop) loop).nar();
+                if (n.time instanceof RealTime) {
+                    double actualMS = ((RealTime) n.time).durSeconds() * 1000.0;
                     if (!Util.equals(durMS.doubleValue(), actualMS, 0.1)) {
                         durMS.set(actualMS); //external change singificant
                     }

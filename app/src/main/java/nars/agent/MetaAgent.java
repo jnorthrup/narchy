@@ -5,6 +5,7 @@ import jcog.math.FloatFirstOrderDifference;
 import jcog.math.FloatRange;
 import nars.$;
 import nars.NAR;
+import nars.attention.What;
 import nars.concept.action.GoalActionConcept;
 import nars.term.atom.Atomic;
 
@@ -43,11 +44,12 @@ public class MetaAgent extends Game {
 
 
 
-    public MetaAgent(NAR n, float fps) {
-        super(n.self() /* HACK */, GameTime.fps(fps),  n);
+    public MetaAgent(What w, float fps) {
+        super( $.p(w.nar.self(), w.term()), GameTime.fps(fps),  w.nar);
 
 //        forgetAction = actionUnipolar($.inh(id, forget), (FloatConsumer) n.attn.forgetRate::set);
-        actionDial($.inh(id, $.p(forget, $.the(1))), $.inh(id, $.p(forget, $.the(-1))), n.attn.decay, 40);
+        actionDial($.inh(id, $.p(forget, $.the(1))), $.inh(id, $.p(forget, $.the(-1))),
+                ((What.TaskLinkWhat)w).links.decay, 40);
 
 //        float priFactorMin = 0.1f, priFactorMax = 4f;
 //        beliefPriAction = actionUnipolar($.inh(id, beliefPri), n.beliefPriDefault.subRange(
@@ -56,6 +58,8 @@ public class MetaAgent extends Game {
 //        goalPriAction = actionUnipolar($.inh(id, goalPri), n.goalPriDefault.subRange(
 //                Math.max(n.goalPriDefault.floatValue() /* current value */ * priFactorMin, ScalarValue.EPSILON),
 //                n.goalPriDefault.floatValue() /* current value */ * priFactorMax)::setProportionally);
+
+        NAR n = w.nar;
 
         int initialDur = n.dur();
         FloatRange durRange = new FloatRange(initialDur, initialDur/4, initialDur*4) {

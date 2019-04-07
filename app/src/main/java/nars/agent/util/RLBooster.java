@@ -5,14 +5,15 @@ import jcog.data.list.FasterList;
 import jcog.func.IntIntToObjectFunction;
 import jcog.learn.Agent;
 import jcog.math.FloatRange;
-import jcog.pri.Prioritizable;
 import jcog.signal.tensor.TensorRing;
 import nars.$;
 import nars.NAR;
 import nars.Task;
 import nars.agent.Game;
+import nars.attention.What;
 import nars.concept.action.AgentAction;
-import nars.control.channel.ConsumerX;
+import nars.control.channel.CauseChannel;
+import nars.task.ITask;
 import nars.task.signal.SignalTask;
 import nars.term.Term;
 import nars.truth.Truth;
@@ -20,7 +21,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
-import java.util.function.Consumer;
 
 import static nars.Op.GOAL;
 
@@ -28,7 +28,7 @@ import static nars.Op.GOAL;
  * NAgent Reinforcement Learning Algorithm Accelerator
  * TODO use AgentBuilder
  */
-public class RLBooster implements Consumer<NAR> {
+public class RLBooster  {
 
     public static final Logger logger = LoggerFactory.getLogger(RLBooster.class);
 
@@ -38,7 +38,7 @@ public class RLBooster implements Consumer<NAR> {
     final float[] input;
     final int inD, outD;
     final AgentAction[] actions;
-    private final ConsumerX<Prioritizable> in;
+    private final CauseChannel<ITask> in;
     private final List<Term> inputs;
     private final int actionDiscretization;
     private final TensorRing history;
@@ -55,43 +55,43 @@ public class RLBooster implements Consumer<NAR> {
     }
 
     /**
-     * @param env
+     * @param g
      * @param agent
      * @param nothingAction        reserve 0 for nothing
      */
-    public RLBooster(Game env, IntIntToObjectFunction<Agent> agent, int history, int actionDiscetization, boolean nothingAction) {
+    public RLBooster(Game g, IntIntToObjectFunction<Agent> agent, int history, int actionDiscetization, boolean nothingAction) {
 
         this.actionDiscretization = actionDiscetization;
 
-        this.env = env;
+        this.env = g;
 
 
-        conf.set(Util.lerp(0f, 2 * env.nar().confMin.floatValue(), env.nar().confDefault(GOAL)));
+        conf.set(Util.lerp(0f, 2 * g.nar().confMin.floatValue(), g.nar().confDefault(GOAL)));
 
         List<Term> ii = $.newArrayList();
 
-        env.sensors.forEach(s -> s.components().forEach(t -> ii.add(t.term())));
-        if (env.rewards.size() > 1)
-            env.rewards.forEach(s -> s.forEach(t -> ii.add(t.term()))); //use individual rewards as sensors if > 1 reward
+        g.sensors.forEach(s -> s.components().forEach(t -> ii.add(t.term())));
+        if (g.rewards.size() > 1)
+            g.rewards.forEach(s -> s.forEach(t -> ii.add(t.term()))); //use individual rewards as sensors if > 1 reward
 
         this.inputs = ii;
         this.inD = ii.size();
 
         input = new float[inD];
 
-        this.actions = env.actions().array();
+        this.actions = g.actions().array();
         this.outD = (nothingAction ? 1 : 0) /* nothing */ + actions.length * actionDiscretization /* pos/neg for each action */;
 
-        logger.info("{} {} in={}x{} out={}", agent, env, inD, history, outD);
+        logger.info("{} {} in={}x{} out={}", agent, g, inD, history, outD);
         assert(inD > 0);
         assert(outD > 0);
 
-        in = env.nar().newChannel(this);
+        in = g.nar().newChannel(this);
 
         this.history = new TensorRing(inD, history);
         this.agent = agent.apply(inD * history, outD);
 
-        env.onFrame(this);
+        g.onFrame(()->accept(g.what()));
     }
 
     public int actions() {
@@ -131,8 +131,8 @@ public class RLBooster implements Consumer<NAR> {
         return feedback;
     }
 
-    @Override
-    public void accept(NAR ignored) {
+
+    public void accept(What w) {
         NAR nar = env.nar();
 
         double reward = (env.happinessMean() - 0.5)*2 /* polarize */;
@@ -180,7 +180,7 @@ public class RLBooster implements Consumer<NAR> {
                 e.add(tt);
             }
         }
-        in.acceptAll(e);
+        in.acceptAll(e, w);
     }
 
 

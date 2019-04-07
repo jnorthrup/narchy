@@ -2,7 +2,6 @@ package nars.concept.action;
 
 import jcog.TODO;
 import jcog.Util;
-import jcog.pri.Prioritizable;
 import nars.$;
 import nars.NAR;
 import nars.agent.Game;
@@ -32,7 +31,7 @@ public class BiPolarAction extends AbstractSensor {
     private final FloatToFloatFunction motor;
 
     public final PriNode attn;
-    private final CauseChannel<Prioritizable> cause;
+    private final CauseChannel<ITask> cause;
 
 
     /** model for computing the net result from the current truth inputs */
@@ -51,24 +50,24 @@ public class BiPolarAction extends AbstractSensor {
 //                , model, motor, nar);
 //    }
 
-    public BiPolarAction(BooleanToObjectFunction<Term> id, Polarization model, FloatToFloatFunction motor, NAR nar) {
-        this(id.valueOf(true), id.valueOf(false), model, motor, nar);
+    public BiPolarAction(BooleanToObjectFunction<Term> id, Polarization model, FloatToFloatFunction motor, NAR n) {
+        this(id.valueOf(true), id.valueOf(false), model, motor, n);
     }
 
     //TODO BooleanObjectFunction<Term> target namer
-    public BiPolarAction(Term pos, Term neg, Polarization model, FloatToFloatFunction motor, NAR nar) {
-        super(PROD.the(pos, neg), nar);
+    public BiPolarAction(Term pos, Term neg, Polarization model, FloatToFloatFunction motor, NAR n) {
+        super(PROD.the(pos, neg), n);
 
-        this.cause = nar.newChannel(id);
+        this.cause = n.newChannel(id);
         this.attn = new AttnBranch(id, List.of(pos, neg));
 
-        this.pos = new AbstractGoalActionConcept(pos, nar) {
+        this.pos = new AbstractGoalActionConcept(pos, n) {
             @Override
             protected CauseChannel<ITask> channel(NAR n) {
                 return BiPolarAction.this.cause;
             }
         };
-        this.neg = new AbstractGoalActionConcept(neg, nar);
+        this.neg = new AbstractGoalActionConcept(neg, n);
 
 
 //                //TemplateTermLinker.of(neg),
@@ -95,7 +94,7 @@ public class BiPolarAction extends AbstractSensor {
             n = neg.actionTruth();
 
 
-        long prev = g.prev, now = g.now, next = g.next;
+        final long prev = g.prev, now = g.now;
         float x = model.update(p, n, prev, now);
 
         //System.out.println(p + " vs " + n + " -> " + x);
@@ -171,8 +170,8 @@ public class BiPolarAction extends AbstractSensor {
         }
 
         short cid = cause.id;
-        pos.feedback(Pb, prev, now, cid, nar);
-        neg.feedback(Nb, prev, now, cid, nar);
+        pos.feedback(Pb, cid, g);
+        neg.feedback(Nb, cid, g);
 
     }
 

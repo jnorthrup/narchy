@@ -4,6 +4,7 @@ import jcog.math.IntRange;
 import jcog.pri.bag.util.Bagregate;
 import nars.NAR;
 import nars.attention.TaskLinks;
+import nars.attention.What;
 import nars.gui.DurSurface;
 import nars.term.Term;
 import spacegraph.space2d.Surface;
@@ -23,14 +24,14 @@ public class BagregateConceptGraph2D extends ConceptGraph2D {
     };
 
     public static Surface get(NAR n) {
-        return get(n.attn, n);
+        return get( ((What.TaskLinkWhat)n.in).links, n);
     }
 
-    public static Surface get(TaskLinks attn, NAR n) {
-        Bagregate<Term> b = new Bagregate<Term>(() -> attn.terms().iterator(), 256);
+    public static Surface get(TaskLinks links, NAR n) {
+        Bagregate<Term> b = new Bagregate<Term>(() -> links.terms().iterator(), 256);
 
         return DurSurface.get(
-                new nars.gui.graph.run.BagregateConceptGraph2D(b, n).widget(),
+                new nars.gui.graph.run.BagregateConceptGraph2D(b, links, n).widget(),
                 n, b::commit)
                     .live();
 //        return new nars.gui.graph.run.BagregateConceptGraph2D(b, n) {
@@ -54,8 +55,8 @@ public class BagregateConceptGraph2D extends ConceptGraph2D {
 //        };
     }
 
-    private BagregateConceptGraph2D(Bagregate<? extends Term> bag, NAR n) {
-        super(bag.iterable(), n);
+    private BagregateConceptGraph2D(Bagregate<? extends Term> bag, TaskLinks links, NAR n) {
+        super(bag.iterable(), links.links, n);
         this.bag = bag;
     }
 

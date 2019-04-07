@@ -6,6 +6,7 @@ import nars.NAR;
 import nars.attention.What;
 import nars.control.How;
 import nars.link.TaskLink;
+import nars.time.When;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.BooleanSupplier;
@@ -16,9 +17,10 @@ import java.util.function.BooleanSupplier;
  */
 public abstract class LinkRanker<Y> extends How {
 
-    public LinkRanker() {
-        super();
-    }
+//    public LinkRanker() {
+//        super();
+//    }
+
     public LinkRanker(NAR n) {
         super(n);
     }
@@ -31,8 +33,9 @@ public abstract class LinkRanker<Y> extends How {
 
         //when = When.sinceAgo(nar.dur(), nar);
 
+        When when = When.now(nar);
         w.forEach(x -> {
-            Y y = apply(x);
+            Y y = apply(x, when);
             if (y!=null)
                 best.add(y);
         });
@@ -45,7 +48,7 @@ public abstract class LinkRanker<Y> extends How {
     protected abstract Y[] newArray(int size);
 
     /** here a prefilter can be implemented by returning null */
-    @Nullable abstract protected Y apply(TaskLink x);
+    @Nullable abstract protected Y apply(TaskLink x, When when);
 
     abstract public FloatRank<Y> score();
 

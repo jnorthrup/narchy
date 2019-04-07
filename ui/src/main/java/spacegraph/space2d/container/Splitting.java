@@ -57,16 +57,17 @@ public class Splitting<X extends Surface, Y extends Surface> extends MutableArra
         return row(x, 0.5f, y);
     }
 
-    public final void horizontal(boolean h) {
-        vertical(!h);
+    public final Splitting<X, Y> horizontal(boolean h) {
+        return vertical(!h);
     }
 
-    public void vertical(boolean v) {
+    public Splitting<X, Y> vertical(boolean v) {
         boolean w = this.vertical;
         if (w!=v) {
             this.vertical = v;
             layout();
         }
+        return this;
     }
 
     public Splitting<X,Y> vertical() {

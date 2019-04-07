@@ -66,7 +66,7 @@ public class InterNARTest {
 
         beforeConnect.accept(a, b);
 
-        InterNAR ai = new InterNAR(a, 0, false) {
+        InterNAR ai = new InterNAR(0, false, a.in) {
             @Override
             protected void starting(NAR nar) {
                 super.starting(nar);
@@ -74,7 +74,7 @@ public class InterNARTest {
             }
 
         };
-        InterNAR bi = new InterNAR(b, 0, false) {
+        InterNAR bi = new InterNAR(0, false, b.in) {
 
             @Override
             protected void starting(NAR nar) {

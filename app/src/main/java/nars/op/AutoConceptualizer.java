@@ -2,15 +2,16 @@ package nars.op;
 
 import com.google.common.collect.Iterables;
 import jcog.learn.Autoencoder;
-import jcog.pri.Prioritizable;
 import jcog.util.ArrayUtils;
 import nars.$;
 import nars.NAR;
 import nars.agent.Game;
+import nars.attention.What;
 import nars.concept.Concept;
 import nars.concept.sensor.AbstractSensor;
-import nars.control.channel.ConsumerX;
+import nars.control.channel.CauseChannel;
 import nars.table.BeliefTable;
+import nars.task.ITask;
 import nars.task.signal.SignalTask;
 import nars.term.Term;
 import nars.term.Termed;
@@ -31,21 +32,21 @@ public class AutoConceptualizer extends AbstractSensor {
 
     public final Autoencoder ae;
 
-    private final List<? extends Concept> in;
+    private final List<? extends Concept> concepts;
 
     private final boolean beliefOrGoal;
     private final float[] x;
-    private final ConsumerX<Prioritizable> out;
+    private final CauseChannel<ITask> in;
     float learningRate = 0.05f;
     float noiseLevel = 0.0002f;
 
-    public AutoConceptualizer(List<? extends Concept> in, boolean beliefOrGoal, int features, NAR n) {
+    public AutoConceptualizer(List<? extends Concept> concepts, boolean beliefOrGoal, int features, NAR n) {
         super(n);
-        this.in = in;
+        this.concepts = concepts;
         this.beliefOrGoal = beliefOrGoal;
-        this.ae = new Autoencoder(in.size(), features, n.random());
-        this.x = new float[in.size()];
-        this.out = n.newChannel(this);
+        this.ae = new Autoencoder(concepts.size(), features, n.random());
+        this.x = new float[concepts.size()];
+        this.in = n.newChannel(this);
     }
 
     @Override
@@ -58,23 +59,21 @@ public class AutoConceptualizer extends AbstractSensor {
 
     @Override
     public Iterable<Termed> components() {
-        return Iterables.transform(in, Termed::term);
+        return Iterables.transform(concepts, Termed::term);
     }
 
     @Override
     public void update(Game g) {
-        update(nar);
-    }
 
-    protected void update(NAR n) {
-        if (in == null)
+        if (concepts == null)
             return;
 
+        NAR n = g.nar;
         long now = n.time();
         float[] x = this.x;
-        int inputs = in.size();
+        int inputs = concepts.size();
         for (int i = 0, inSize = inputs; i < inSize; i++) {
-            Concept xx = in.get(i);
+            Concept xx = concepts.get(i);
             Truth t = ((BeliefTable) xx.table(beliefOrGoal ? BELIEF : GOAL)).truth(now, n);
             float f;
             if (t == null) {
@@ -97,6 +96,8 @@ public class AutoConceptualizer extends AbstractSensor {
 
         float thresh = n.freqResolution.floatValue();
 
+        What w = g.what();
+
         int[] order = new int[inputs];
         for (int i = 0; i < outputs; i++) {
             b[i] = 1; 
@@ -107,14 +108,15 @@ public class AutoConceptualizer extends AbstractSensor {
                     thresh);
             if (feature != null) {
                 
-                onFeature(feature);
+                onFeature(feature, w);
             }
             b[i] = 0; 
         }
     }
 
-    protected void onFeature(Term feature) {
-        out.acceptAll(new SignalTask(feature, BELIEF, $.t(1f, 0.9f), nar.time(), nar.time() - nar.dur()/2, nar.time() + nar.dur()/2, nar.evidence()));
+    protected void onFeature(Term feature, What w) {
+        SignalTask t = new SignalTask(feature, BELIEF, $.t(1f, 0.9f), nar.time(), nar.time() - nar.dur() / 2, nar.time() + nar.dur() / 2, nar.evidence());
+        in.accept(t, w);
     }
 
     private Term conj(int[] order, float[] a, int maxArity, float threshold) {
@@ -139,7 +141,7 @@ public class AutoConceptualizer extends AbstractSensor {
             if (Math.abs(aa - 0.5f) < threshold)
                 break; 
 
-            x.add(in.get(oi).term().negIf(aa < finalMean));
+            x.add(concepts.get(oi).term().negIf(aa < finalMean));
             j++;
         }
 

@@ -75,7 +75,7 @@ public class MIDITaskifier {
 
 
 
-            GoalActionConcept c = new GoalActionConcept(keyTerm, nar, (b, d) -> {
+            GoalActionConcept c = new GoalActionConcept(keyTerm, (b, d) -> {
 
 
 
@@ -88,7 +88,7 @@ public class MIDITaskifier {
                     return $.t(0, nar.confDefault(BELIEF));
                 else
                     return null;
-            });
+            }, nar);
             nar.add(c);
 
 

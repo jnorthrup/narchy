@@ -35,24 +35,20 @@ public class SensorBeliefTables extends BeliefTables {
 
     @Deprecated public FloatRange res;
 
-    /** the context this provides sensory input into */
-    final What what;
-
     /**
      * permanent tasklink "generator" anchored in eternity when inseted to the concept on new tasks, but clones currently-timed tasklinks for propagation
      */
     public final AtomicTaskLink tasklink;
 
-    public SensorBeliefTables(Term c, boolean beliefOrGoal, What what) {
+    public SensorBeliefTables(Term c, boolean beliefOrGoal) {
         this(c, beliefOrGoal,
                 //TODO impl time series with concurrent ring buffer from gluegen
                 //new ConcurrentSkiplistTaskSeries<>(Param.SIGNAL_BELIEF_TABLE_SERIES_SIZE)
-                new RingBufferTaskSeries<>(  Param.SIGNAL_BELIEF_TABLE_SERIES_SIZE), what);
+                new RingBufferTaskSeries<>(  Param.SIGNAL_BELIEF_TABLE_SERIES_SIZE));
     }
 
-    SensorBeliefTables(Term term, boolean beliefOrGoal, AbstractTaskSeries<Task> s, What what) {
+    SensorBeliefTables(Term term, boolean beliefOrGoal, AbstractTaskSeries<Task> s) {
         super(new SeriesBeliefTable<>(term, beliefOrGoal, s));
-        this.what = what;
 
         this.series = tableFirst(SeriesBeliefTable.class); assert(series!=null);
 
@@ -88,7 +84,9 @@ public class SensorBeliefTables extends BeliefTables {
 
 
 
-    public void add(Truth value, long start, long end, FloatSupplier pri, short cause, NAR n) {
+    public void add(Truth value, long start, long end, FloatSupplier pri, short cause, What w) {
+        NAR n = w.nar;
+
         if (value!=null) {
             value = value.dither(
                     Math.max(n.freqResolution.asFloat(), res.asFloat()),
@@ -104,7 +102,7 @@ public class SensorBeliefTables extends BeliefTables {
         if (x!=null) {
             series.clean(this, n);
             x.cause(new short[] { cause });
-            remember(x, pri, n);
+            remember(x, pri, w);
         } else {
             this.prev = null;
         }
@@ -221,7 +219,7 @@ public class SensorBeliefTables extends BeliefTables {
 
 
     /** link and emit */
-    private void remember(Task next, FloatSupplier pri, NAR n) {
+    private void remember(Task next, FloatSupplier pri, What w) {
         //if (y==prev)
 
         Task prev = this.prev;
@@ -230,7 +228,7 @@ public class SensorBeliefTables extends BeliefTables {
         if (next == null)
             return; //?
 
-        float surprise = Param.surprise(prev, next, pri, n);
+        float surprise = Param.surprise(prev, next, pri, w.nar);
         if (surprise!=surprise)
             return;
 
@@ -242,10 +240,10 @@ public class SensorBeliefTables extends BeliefTables {
 //        delta += tasklink.priMax(QUESTION, p/4);
 //        delta += tasklink.priMax(QUEST, p/4);
 
-        ((What.TaskLinkWhat)what).links.link(tasklink);
+        ((What.TaskLinkWhat)w).links.link(tasklink);
 
         //if (prev!=next)
-            n.eventTask.emit(next);
+            w.nar.eventTask.emit(next);
 
     }
 

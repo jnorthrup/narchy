@@ -5,7 +5,6 @@ import jcog.Util;
 import jcog.func.TriConsumer;
 import jcog.math.FloatRange;
 import jcog.net.UDPeer;
-import jcog.pri.Prioritizable;
 import nars.attention.What;
 import nars.bag.leak.TaskLeak;
 import nars.control.NARPart;
@@ -13,6 +12,7 @@ import nars.control.channel.CauseChannel;
 import nars.io.IO;
 import nars.io.TaskIO;
 import nars.task.ActiveQuestionTask;
+import nars.task.ITask;
 import nars.time.clock.RealTime;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -33,11 +33,10 @@ public class InterNAR extends NARPart implements TriConsumer<NAR, ActiveQuestion
     public static final Logger logger = LoggerFactory.getLogger(InterNAR.class);
     private final int port;
     private final boolean discover; //TODO AtomicBoolean for GUI control etc
-    private final NAR nar;
 
     static final int outCapacity = 128; //TODO abstract
 
-    protected final CauseChannel<Prioritizable> recv;
+    private final CauseChannel<ITask> recv;
     private final TaskLeak send;
 
 
@@ -46,27 +45,38 @@ public class InterNAR extends NARPart implements TriConsumer<NAR, ActiveQuestion
 
     public final FloatRange incomingPriMult = new FloatRange(1f, 0, 2f);
 
-    /**
-     * @param nar
-     * @param port
-     * @throws SocketException
-     * @throws UnknownHostException
-     */
-    public InterNAR(NAR nar, int port) {
-        this(nar, port, true);
-    }
-    public InterNAR(NAR nar) {
-        this(nar, 0);
-    }
+    final What what;
 
     /**
-     * @param nar
      * @param port
-     * @param discover
+     * @param nar
      * @throws SocketException
      * @throws UnknownHostException
      */
-    public InterNAR(NAR nar, int port, boolean discover) {
+    public InterNAR(int port, What w) {
+        this(port, true, w);
+    }
+
+    public InterNAR(What w) {
+        this(0, w);
+    }
+
+    @Deprecated public InterNAR(NAR n) {
+        this(n.in);
+    }
+
+
+    /**
+     * @param port
+     * @param discover
+     * @param nar
+     * @throws SocketException
+     * @throws UnknownHostException
+     */
+    public InterNAR(int port, boolean discover, What w) {
+        super();
+
+        NAR nar = w.nar;
         UDPeer p;
         try {
             p = new UDPeer(port, discover);
@@ -75,7 +85,8 @@ public class InterNAR extends NARPart implements TriConsumer<NAR, ActiveQuestion
         }
         this.peer = p;
 
-        this.nar = nar;         assert(nar.time instanceof RealTime.MS );
+        this.what = w;
+        /*this.nar = nar;       should be set in start()  */assert(nar.time instanceof RealTime.MS );
         this.port = port;
         this.discover = discover;
 
@@ -185,7 +196,7 @@ public class InterNAR extends NARPart implements TriConsumer<NAR, ActiveQuestion
             if (logger.isDebugEnabled())
                 logger.debug("recv {} from {}", x, m.from);
 
-            recv.input(x);
+            recv.accept(x, what);
         } catch (Exception e) {
             logger.warn("recv {} from {}: {}", m, m.from, e.getMessage());
             return;

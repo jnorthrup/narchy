@@ -19,7 +19,7 @@ class ConceptGraph2DTest {
             NAR n = NARS
                     //.tmp(4);
                     .threadSafe(4);
-            n.attn.decay.set(0.9f);
+//            n.attn.decay.set(0.9f);
             n.termVolumeMax.set(14);
 
             SpaceGraph.surfaceWindow(BagregateConceptGraph2D.get(n), 1200, 800 );
