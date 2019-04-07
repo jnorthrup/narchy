@@ -9,6 +9,7 @@ import jcog.util.FloatConsumer;
 import nars.$;
 import nars.NAR;
 import nars.agent.util.UnipolarMotor;
+import nars.attention.What;
 import nars.concept.action.AgentAction;
 import nars.concept.action.GoalActionConcept;
 import nars.term.Term;
@@ -34,7 +35,11 @@ public interface NAct {
     Term NEG = Int.the(-1); //$.the("\"-\"");
 
 
-    NAR nar();
+    default NAR nar() {
+        return what().nar;
+    }
+    
+    What what();
 
 
     /**

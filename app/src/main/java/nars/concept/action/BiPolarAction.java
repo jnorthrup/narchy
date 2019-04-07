@@ -10,6 +10,7 @@ import nars.attention.AttnBranch;
 import nars.attention.PriNode;
 import nars.concept.sensor.AbstractSensor;
 import nars.control.channel.CauseChannel;
+import nars.task.ITask;
 import nars.term.Term;
 import nars.term.Termed;
 import nars.truth.PreciseTruth;
@@ -63,7 +64,7 @@ public class BiPolarAction extends AbstractSensor {
 
         this.pos = new AbstractGoalActionConcept(pos, nar) {
             @Override
-            protected CauseChannel<Prioritizable> channel(NAR n) {
+            protected CauseChannel<ITask> channel(NAR n) {
                 return BiPolarAction.this.cause;
             }
         };

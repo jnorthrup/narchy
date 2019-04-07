@@ -157,9 +157,9 @@ public abstract class AbstractTask implements ITask, Prioritizable {
     /** execute the given tasks */
     public final static class TasksIterable extends AbstractTask {
 
-        private final Iterable<? extends Prioritizable> tasks;
+        private final Iterable<? extends ITask> tasks;
 
-        public TasksIterable(Iterable<? extends Prioritizable> x) {
+        public TasksIterable(Iterable<? extends ITask> x) {
             this.tasks = x;
         }
 

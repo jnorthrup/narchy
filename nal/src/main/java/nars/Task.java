@@ -7,6 +7,7 @@ import jcog.pri.UnitPrioritizable;
 import jcog.pri.op.PriMerge;
 import jcog.pri.op.PriReturn;
 import jcog.tree.rtree.HyperRegion;
+import nars.attention.What;
 import nars.control.CauseMerge;
 import nars.control.op.Perceive;
 import nars.subterm.Subterms;
@@ -106,8 +107,8 @@ public interface Task extends Truthed, Stamp, TermedDelegate, ITask, TaskRegion,
     }
 
     /** with most common defaults */
-    static float merge(Task pp, Task tt) {
-        return merge(pp, tt, PriMerge.max, CauseMerge.Append, PriReturn.Post, true);
+    static void merge(Task pp, Task tt) {
+        merge(pp, tt, PriMerge.max, CauseMerge.Append, PriReturn.Void, true);
     }
 
     static float merge(Task e, Task i, PriMerge pMerge, CauseMerge cMerge, PriReturn returning, boolean updateCreationTime) {
@@ -995,9 +996,13 @@ public interface Task extends Truthed, Stamp, TermedDelegate, ITask, TaskRegion,
 
     /** default implementation involves the complete perception process */
     default ITask next(NAR n) {
-        return Perceive.perceive(this, n);
+        throw new UnsupportedOperationException();
     }
 
+    @Override
+    default ITask next(What w) {
+        return Perceive.perceive(this, w);
+    }
 
     /**
      * TODO cause should be merged if possible when merging tasks in belief table or otherwise

@@ -62,7 +62,7 @@ public class BatchDeriver extends Deriver {
             Task task = tasklink.get(when);
             if (task != null) {
                 for (int i = 0; i < tlAttempts; i++) {
-                    Term term = ((What.TaskLinksWhat)what).links.term(tasklink, task, d);
+                    Term term = ((What.TaskLinkWhat)what).links.term(tasklink, task, d);
                     if (term != null)
                         target.add(new Premise(task, term));
                 }

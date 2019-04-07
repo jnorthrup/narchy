@@ -3,10 +3,10 @@ package nars.control.op;
 import jcog.WTF;
 import jcog.data.list.FasterList;
 import jcog.pri.Prioritizable;
-import jcog.pri.op.PriReturn;
 import nars.NAR;
 import nars.Param;
 import nars.Task;
+import nars.attention.What;
 import nars.concept.Concept;
 import nars.concept.TaskConcept;
 import nars.op.stm.ConjClustering;
@@ -116,20 +116,26 @@ public class Remember extends AbstractTask {
     @Override
     public ITask next(NAR n) {
 
-        commit(input, store, n);
+        throw new UnsupportedOperationException();
+    }
 
+    @Override
+    public ITask next(What w) {
+        commit(input, store, w);
         return null;
     }
 
-    private void commit(ITask input, NAR n) {
+    private void commit(ITask input, What w) {
         if (input instanceof Task)
-            commit((Task) input, false, n);
+            commit((Task) input, false, w);
         else
-            ITask.run(input, n); //inline
+            ITask.run(input, w); //inline
     }
 
     /** TODO check that image dont double link/activate for their product terms */
-    private void commit(Task input, boolean store, NAR n) {
+    private void commit(Task input, boolean store, What w) {
+
+        NAR n = nar;
 
         TaskConcept c = null;
 
@@ -177,26 +183,26 @@ public class Remember extends AbstractTask {
                 return;
             }
             c = (TaskConcept) cc;
-            if (c == null)
-                return;
         }
 
         if (store) {
-            insert(c, n);
+            insert(c, w);
         }
         if (!store || commitProxyOrigin) {
-            link(rawInput, c, n);
+            link(rawInput, c, w);
         }
     }
 
 
-    private void link(Task t, TaskConcept c, NAR n) {
+    private void link(Task t, TaskConcept c, What w) {
 
-        if (link)
-            n.attn.link(t, c, n);
+        if (link) {
+            //n.attn.link(t, c, n);
+            ((What.TaskLinkWhat)w).links.link(t, c, w.nar);
+        }
 
         if (notify)
-            TaskEvent.emit(t, n);
+            w.emit(t);
 
     }
 
@@ -204,16 +210,18 @@ public class Remember extends AbstractTask {
     /**
      * attempt to insert into the concept's belief table
      */
-    private void insert(TaskConcept c, NAR n) {
+    private void insert(TaskConcept c, What w) {
+
+        NAR n = w.nar;
 
         c.add(this, n);
 
         if (remembered != null && !remembered.isEmpty()) {
             remembered.forEachWith((ITask r, NAR nn) -> {
                 if (r.equals(this.input)) //HACK
-                    link((Task) r, c, nn); //root
+                    link((Task) r, c, w); //root
                 else
-                    commit(r, nn); //sub
+                    commit(r, w); //sub
             }, n);
             remembered = null;
         }
@@ -273,7 +281,8 @@ public class Remember extends AbstractTask {
                 dPri = next.priElseZero() - prev.priElseZero();
 
                 if (prev instanceof NALTask)
-                    Task.merge(prev, next, PriReturn.Overflow);
+                    Task.merge(prev, next);
+
 
             } else {
                 dPri = 0; //TODO?

@@ -65,8 +65,8 @@ public class Signal extends TaskConcept implements GameLoop, FloatFunction<Term>
 
     private Signal(Term term, short cause, byte punc, FloatSupplier signal, TermLinker linker, NAR n) {
         super(term,
-                punc == BELIEF ? new SensorBeliefTables(term, true) : n.conceptBuilder.newTable(term, true),
-                punc == GOAL ? new SensorBeliefTables(term, false) : n.conceptBuilder.newTable(term, false),
+                punc == BELIEF ? new SensorBeliefTables(term, true, what) : n.conceptBuilder.newTable(term, true),
+                punc == GOAL ? new SensorBeliefTables(term, false, what) : n.conceptBuilder.newTable(term, false),
                 linker,
                 n.conceptBuilder);
 

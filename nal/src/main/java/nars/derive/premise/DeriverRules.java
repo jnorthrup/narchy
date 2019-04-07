@@ -23,7 +23,7 @@ public class DeriverRules {
     /**
      * the causes that this is responsible for, ie. those that may be caused by this
      */
-    /*@Stable*/ public final Why[] whies;
+    /*@Stable*/ public final Why[] why;
 
     /**
      * repertoire
@@ -39,19 +39,17 @@ public class DeriverRules {
         return Util.toShort(d.canCollector.toArray());
     }
 
-    public DeriverRules(PREDICATE<Derivation> what, DeriveAction[] actions, DeriverPlanner planner) {
+    DeriverRules(PREDICATE<Derivation> what, DeriveAction[] actions, DeriverPlanner planner) {
 
         this.what = what;
 
         assert (actions.length > 0);
         this.could = actions;
 
-        this.whies = Stream.of(actions).flatMap(b -> Stream.of(b.why)).toArray(Why[]::new);
+        this.why = Stream.of(actions).flatMap(b -> Stream.of(b.why)).toArray(Why[]::new);
 
         this.planner = planner;
     }
-
-
 
     /**
      * choice id to branch id mapping
@@ -60,7 +58,6 @@ public class DeriverRules {
         could[branch].run.test(d);
         return d.use(Param.TTL_BRANCH);
     }
-
 
     public void run(Derivation d, short[] can) {
 
@@ -138,7 +135,7 @@ public class DeriverRules {
      * the conclusions that in which this deriver can result
      */
     public Why[] causes() {
-        return whies;
+        return why;
     }
 
     public void printRecursive() {

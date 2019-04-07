@@ -225,7 +225,7 @@ public class TaskLinks implements Sampler<TaskLink> {
         return t;
     }
 
-    void link(Term s, Term u, byte punc, float p) {
+    private void link(Term s, Term u, byte punc, float p) {
         Op o = s.op();
         if (o.taskable) {
             linkSafe(s, u, punc, p);
@@ -241,6 +241,7 @@ public class TaskLinks implements Sampler<TaskLink> {
     public void link(TaskLink x) {
         links.putAsync(x);
     }
+
     public void link(TaskLink... xx) {
         for (TaskLink x : xx)
             link(x);
@@ -276,14 +277,14 @@ public class TaskLinks implements Sampler<TaskLink> {
                 .distinct();
     }
 
-    public Stream<Concept> concepts(NAR n) {
+    public final Stream<Concept> concepts(NAR n) {
         return terms()
             .map(n::concept)
             .filter(Objects::nonNull)
         ;
     }
 
-    public void clear() {
+    public final void clear() {
         links.clear();
     }
 

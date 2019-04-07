@@ -4,14 +4,17 @@ import jcog.TODO;
 import jcog.pri.Prioritizable;
 import jcog.pri.bag.Sampler;
 import nars.NAR;
+import nars.Task;
 import nars.attention.derive.DefaultPuncWeightedDerivePri;
+import nars.concept.Concept;
 import nars.control.NARPart;
 import nars.control.channel.ConsumerX;
-import nars.exe.Exec;
+import nars.control.op.TaskEvent;
 import nars.link.TaskLink;
 import nars.task.ITask;
 import nars.task.util.PriBuffer;
 import nars.term.Term;
+import nars.term.atom.Int;
 
 import java.io.Externalizable;
 import java.io.IOException;
@@ -20,6 +23,7 @@ import java.io.ObjectOutput;
 import java.util.Iterator;
 import java.util.Random;
 import java.util.function.Function;
+import java.util.stream.Stream;
 
 /**
  *  What?  an attention context described in terms of a prioritized distribution over a subset of Memory.
@@ -62,6 +66,9 @@ import java.util.function.Function;
   */
 abstract public class What extends NARPart implements Prioritizable, Sampler<TaskLink>, Iterable<TaskLink>, Externalizable, ConsumerX<ITask> {
 
+    /** term id for the default What a NAR is constructed with */
+    public static Term Default = Int.the(0);
+
     public final PriNode pri;
 
     /** input bag */
@@ -75,20 +82,16 @@ abstract public class What extends NARPart implements Prioritizable, Sampler<Tas
             //new DefaultDerivePri();
             new DefaultPuncWeightedDerivePri();
 
+    final ConsumerX<ITask> out = x -> ITask.run(x, What.this);
+
     protected What(Term id) {
         this(id, new PriBuffer.DirectPriBuffer());
     }
 
-    protected What(Term id, PriBuffer in) {
+    protected What(Term id, PriBuffer<ITask> in) {
         super(id);
         this.pri = new PriNode(this);
         this.in = in;
-
-        Exec target = nar.exe;
-        if (!in.async(target)) {
-            nar.onCycle(this::perceive);
-//                DurService.on(this, p)
-        }
     }
 
     @Override
@@ -104,12 +107,20 @@ abstract public class What extends NARPart implements Prioritizable, Sampler<Tas
     /** perceive the next batch of input, for synchronously (cycle/duration/realtime/etc)
      *  triggered input buffers */
     private void perceive() {
-        in.commit(nar.time(), nar.exe);
+        in.commit(nar.time(), out);
     }
 
     @Override
     protected void starting(NAR nar) {
         super.starting(nar);
+
+
+        if (!in.async(out)) {
+            on(nar.onCycle(this::perceive));
+//                DurService.on(this, p)
+        }
+
+
 
         on(
                 nar.eventClear.on(this::clear),
@@ -118,7 +129,7 @@ abstract public class What extends NARPart implements Prioritizable, Sampler<Tas
 
     }
 
-    /** called periodically, ex: per duration, for maintenance like gradual forgetting and merging new input.
+    /** called periodically, ex: per duration, for maintenance such as gradual forgetting and merging new input.
      *  only one thread will be in this method at a time guarded by an atomic guard */
     abstract protected void commit();
 
@@ -130,15 +141,20 @@ abstract public class What extends NARPart implements Prioritizable, Sampler<Tas
         return sample(nar.random());
     }
 
+    public abstract Stream<Concept> concepts();
+
+    public void emit(Task t) {
+        TaskEvent.emit(t, nar);
+    }
+
     /** implements attention with a TaskLinks graph */
-    public static class TaskLinksWhat extends What {
+    public static class TaskLinkWhat extends What {
 
         public final TaskLinks links = new TaskLinks();
 
-        protected TaskLinksWhat(Term id, PriBuffer in) {
+        public TaskLinkWhat(Term id, PriBuffer<ITask> in) {
             super(id, in);
         }
-
 
         @Override
         protected void commit() {
@@ -148,6 +164,11 @@ abstract public class What extends NARPart implements Prioritizable, Sampler<Tas
         @Override
         protected void clear() {
             links.clear();
+        }
+
+        @Override
+        public Stream<Concept> concepts() {
+            return links.concepts(nar);
         }
 
         @Override

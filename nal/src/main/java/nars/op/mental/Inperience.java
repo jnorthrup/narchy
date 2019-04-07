@@ -378,7 +378,7 @@ abstract public class Inperience extends TaskLeakTransform {
 
             //System.out.println(y);
 
-            input(y);
+            in.accept(y, what);
             return 1;
         }
 

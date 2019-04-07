@@ -1,11 +1,11 @@
 package nars.concept.action;
 
-import jcog.pri.Prioritizable;
 import nars.$;
 import nars.NAR;
 import nars.Param;
 import nars.Task;
 import nars.agent.Game;
+import nars.attention.What;
 import nars.concept.action.curiosity.Curiosity;
 import nars.concept.action.curiosity.CuriosityTask;
 import nars.control.channel.CauseChannel;
@@ -15,6 +15,7 @@ import nars.table.BeliefTables;
 import nars.table.dynamic.SensorBeliefTables;
 import nars.table.dynamic.SeriesBeliefTable;
 import nars.table.temporal.RTreeBeliefTable;
+import nars.task.ITask;
 import nars.task.signal.SignalTask;
 import nars.task.util.Answer;
 import nars.task.util.series.RingBufferTaskSeries;
@@ -64,18 +65,16 @@ public class AbstractGoalActionConcept extends AgentAction {
 
     final short cause;
 
-    public AbstractGoalActionConcept(Term term, NAR n) {
-        this(term,
-                new RTreeBeliefTable(),
-                n);
+    protected AbstractGoalActionConcept(Term term, What w) {
+        this(term, new RTreeBeliefTable(), w);
     }
 
-    protected AbstractGoalActionConcept(Term term, BeliefTable mutableGoals, NAR n) {
-        super(term, new SensorBeliefTables(term, true),
+    protected AbstractGoalActionConcept(Term term, BeliefTable mutableGoals, What w) {
+        super(term, new SensorBeliefTables(term, true, w),
                 new BeliefTables(),
-                n);
+                w);
 
-        cause = n.newCause(term).id;
+        cause = w.nar.newCause(term).id;
 
         /** make sure to add curiosity table first in the list, as a filter */
         BeliefTables GOALS = ((BeliefTables) goals());
@@ -87,7 +86,7 @@ public class AbstractGoalActionConcept extends AgentAction {
 
     }
 
-    protected CauseChannel<Prioritizable> channel(NAR n) {
+    protected CauseChannel<ITask> channel(NAR n) {
         return n.newChannel(this);
     }
 

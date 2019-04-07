@@ -3,6 +3,14 @@ package jcog.pri.op;
 /** selects the type of (float) value returned by a merge operation */
 public enum PriReturn {
 
+    /** NOP */
+    Void {
+        @Override
+        public float apply(float incoming, float pBefore, float pAfter) {
+            return Float.NaN;
+        }
+    },
+
     /** the value before the update */
     Pre {
         @Override
@@ -41,8 +49,6 @@ public enum PriReturn {
             return incoming - (pAfter - pBefore);
         }
     };
-
-    public static final PriReturn Void = Post; //close to NOP
 
     /** pBefore will not be NaN but pAfter might. */
     abstract public float apply(float incoming, float pBefore, float pAfter);

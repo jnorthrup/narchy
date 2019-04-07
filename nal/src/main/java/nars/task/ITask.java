@@ -3,6 +3,7 @@ package nars.task;
 import jcog.data.list.FasterList;
 import jcog.pri.Prioritizable;
 import nars.NAR;
+import nars.attention.What;
 
 /**
  * generic abstract task used for commands and other processes
@@ -25,17 +26,18 @@ import nars.NAR;
  */
 public interface ITask extends Prioritizable {
 
+    default ITask next(What w) {
+        return next(w.nar);
+    }
+
     /**
      * process the next stage; returns null if finished
      */
-    ITask next(NAR n);
+    @Deprecated ITask next(NAR n);
+
 
     byte punc();
 
-    static void run(Iterable<ITask> t, NAR nar) {
-        for (ITask tt: t)
-            run(tt, nar);
-    }
 
     static void run(FasterList<ITask> t, NAR nar) {
         t.forEachWith(ITask::run, nar);
@@ -43,11 +45,20 @@ public interface ITask extends Prioritizable {
 
     /**
      * continues executing the chain of returned tasks until the end
+     * TODO rewrite as ForkJoin recursive task
      */
-    static void run(ITask t, NAR nar) {
+    @Deprecated static void run(ITask t, NAR nar) {
         ITask x = t;
         do {
             x = x.next(nar);
+        } while (x != null);
+    }
+
+    /** TODO rewrite as ForkJoin recursive task */
+    static void run(ITask t, What w) {
+        ITask x = t;
+        do {
+            x = x.next(w);
         } while (x != null);
     }
 

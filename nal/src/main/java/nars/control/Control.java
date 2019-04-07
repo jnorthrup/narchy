@@ -12,6 +12,7 @@ import jcog.learn.Agent;
 import jcog.learn.AgentBuilder;
 import jcog.learn.Agenterator;
 import jcog.math.FloatSupplier;
+import jcog.pri.PriMap;
 import nars.NAR;
 import nars.Param;
 import nars.Task;

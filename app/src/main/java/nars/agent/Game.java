@@ -13,6 +13,7 @@ import jcog.util.ArrayUtils;
 import nars.$;
 import nars.NAR;
 import nars.attention.PriNode;
+import nars.attention.What;
 import nars.concept.action.AgentAction;
 import nars.concept.action.curiosity.Curiosity;
 import nars.concept.action.curiosity.DefaultCuriosity;
@@ -71,6 +72,7 @@ public class Game extends NARPart implements NSense, NAct {
 
     public final PriNode attnReward, attnAction, attnSensor;
     private final PriNode pri;
+    private final What what;
 
     public volatile long prev = ETERNAL;
     public volatile long now = ETERNAL;
@@ -81,17 +83,19 @@ public class Game extends NARPart implements NSense, NAct {
             //Cycles.Biphasic;
             Cycles.Interleaved;
 
-    public Game(String id, NAR nar) {
-        this(id, GameTime.durs(1), nar);
+    public Game(String id, What w) {
+        this(id, GameTime.durs(1), w);
     }
 
-    public Game(String id, GameTime time, NAR nar) {
-        this(id.isEmpty() ? null : Atomic.the(id), time, nar);
+    public Game(String id, GameTime time, What w) {
+        this(id.isEmpty() ? null : Atomic.the(id), time, w);
     }
 
-    public Game(Term id, GameTime time, NAR nar) {
+    public Game(Term id, GameTime time, What w) {
         super(id);
-        this.nar = nar;
+
+        this.what = w;
+        this.nar = w.nar;
 
         this.time = time;
 
@@ -113,6 +117,10 @@ public class Game extends NARPart implements NSense, NAct {
         nar.start(this);
     }
 
+    @Override
+    public final What what() {
+        return what;
+    }
 
     /**
      * dexterity = sum(evidence(action))

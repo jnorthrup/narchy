@@ -12,8 +12,7 @@ import nars.task.util.TaskException;
 import nars.term.Term;
 
 import static jcog.Util.assertFinite;
-import static jcog.pri.op.PriReturn.Delta;
-import static jcog.pri.op.PriReturn.Post;
+import static jcog.pri.op.PriReturn.*;
 import static nars.Task.i;
 
 public abstract class AbstractTaskLink implements TaskLink {
@@ -167,19 +166,31 @@ public abstract class AbstractTaskLink implements TaskLink {
             invalidate();
     }
 
-    //    @Override
-//    public /* HACK */ float mergeAndGetDelta(TaskLink incoming, PriMerge merge) {
-//        if (incoming instanceof AtomicTaskLink) {
-//            float delta = 0;
-//            for (byte i = 0; i < 4; i++) {
-//                float p = incoming.priIndex(i);
-//                delta += merge(i, p, merge, Delta);
-//            }
-//            return delta / 4;
-//        } else {
-//            throw new TODO();
-//        }
-//    }
+    @Override
+    public float merge(TaskLink incoming, PriMerge merge, PriReturn returning) {
+
+
+        if (incoming instanceof AtomicTaskLink) {
+            switch (returning) {
+                case Overflow:
+                    float o = 0;
+                    for (byte i = 0; i < 4; i++)
+                        o += merge(i, incoming.priIndex(i), merge, Overflow);
+                    return o/4;
+                case Delta:
+                    float delta = 0;
+                    for (byte i = 0; i < 4; i++)
+                        delta += merge(i, incoming.priIndex(i), merge, Delta);
+                    return delta/4;
+                case Void:
+                    for (byte i = 0; i < 4; i++)
+                        merge(i, incoming.priIndex(i), merge, Void);
+                    return Float.NaN;
+            }
+        }
+
+        throw new TODO();
+    }
 
     private void mergeComponent(byte punc, float pri, PriMerge merge) {
         mergeComponent(punc, pri, merge, PriReturn.Void);

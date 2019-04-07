@@ -1,7 +1,7 @@
 package nars;
 
 import jcog.data.list.FasterList;
-import nars.attention.TaskLinks;
+import nars.attention.What;
 import nars.concept.Concept;
 import nars.concept.util.ConceptAllocator;
 import nars.concept.util.ConceptBuilder;
@@ -39,9 +39,8 @@ public class NARS {
         NAR n = new NAR(
             index.get(),
             exec.get(),
-            new TaskLinks(),
+            new What.TaskLinkWhat(What.Default, in.get()),
             time,
-            in.get(),
             rng,
             conceptBuilder.get()
         );
@@ -133,8 +132,8 @@ public class NARS {
 
                 n.termVolumeMax.set(20);
 
-                n.attn.linksMax.set(128);
-                n.attn.decay.set(0.03f);
+                ((What.TaskLinkWhat)n.in).links.linksMax.set(128);
+                ((What.TaskLinkWhat)n.in).links.decay.set(0.03f);
 
                 n.beliefPriDefault.set(0.1f);
                 n.goalPriDefault.set(0.1f);

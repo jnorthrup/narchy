@@ -6,6 +6,7 @@ import jcog.lab.Opti;
 import jcog.lab.Optilive;
 import nars.NAR;
 import nars.NARS;
+import nars.Param;
 import nars.nal.nal1.NAL1Test;
 import nars.nal.nal3.NAL3Test;
 import nars.nal.nal5.NAL5Test;
@@ -44,40 +45,40 @@ class NARTestOptimize {
                 n.random();
                 return n;
             })
-                .var("attnCapacity", 4, 128, 8,
-                        (NAR n, int i) -> n.attn.links.setCapacity(i))
+//                .var("attnCapacity", 4, 128, 8,
+//                        (NAR n, int i) -> n.attn.links.setCapacity(i))
 
-//                .var("ttlMax", 1 * Param.TTL_MIN, 8 * Param.TTL_MIN, 3,
-//                        (NAR n, int i) -> n.deriveBranchTTL.setAt(i))
+                .var("ttlMax", 1 * Param.TTL_MIN, 8 * Param.TTL_MIN, 3,
+                        (NAR n, int i) -> n.deriveBranchTTL.set(i))
 //                .var("linkFanOut", 1, 16, 1,
 //                        (NAR n, int f) -> Param.LinkFanoutMax = f)
 //                .var("conceptActivation", ScalarValue.EPSILONsqrt, 1f, 0.1f,
 //                        (NAR n, float f) -> n.attn.activationRate.set(f))
 //                .var("linkActivation", 0, 1f, 0.1f,
-//                        (NAR n, float f) -> n.taskLinkActivation.setAt(f))
+//                        (NAR n, float f) -> n.taskLinkActivation.set(f))
 //                .var("forgetRate", ScalarValue.EPSILONsqrt, 1f, 0.1f,
-//                        (NAR n, float f) -> ((AbstractConceptIndex)n.concepts).forgetRate.setAt(f))
+//                        (NAR n, float f) -> ((AbstractConceptIndex)n.concepts).forgetRate.set(f))
 //                .var("linkForgetRate", ScalarValue.EPSILONsqrt, 1f, 0.1f,
-//                        (NAR n, float f) -> ((Forgetting.AsyncForgetting)(n.attn.forgetting)).tasklinkForgetRate.setAt(f))
+//                        (NAR n, float f) -> ((Forgetting.AsyncForgetting)(n.attn.forgetting)).tasklinkForgetRate.set(f))
 //
 //                .var("beliefPriDefault", ScalarValue.EPSILONsqrt, 1f, 0.1f,
-//                        (NAR n, float f) -> n.beliefPriDefault.setAt(f))
+//                        (NAR n, float f) -> n.beliefPriDefault.set(f))
 //                .var("questionPriDefault", ScalarValue.EPSILONsqrt, 1f, 0.1f,
 //                        (NAR n, float f) -> {
-//                            n.questionPriDefault.setAt(f);
-//                            n.questPriDefault.setAt(f);
+//                            n.questionPriDefault.set(f);
+//                            n.questPriDefault.set(f);
 //                        })
 //                .var("goalPriDefault", 0, 1f, 0.1f,
-//                        (NAR n, float f) -> n.goalPriDefault.setAt(f))
+//                        (NAR n, float f) -> n.goalPriDefault.set(f))
 
 //                .var("derivationComplexityExponent", 1f, 3f, 0.5f,
 //                        (NAR n, float f) -> Deriver.derivers(n).forEach(x ->
 //                                ((DefaultDerivePri)(n.attn.deriving)).
-//                                        relGrowthExponent.setAt(f)))
+//                                        relGrowthExponent.set(f)))
 //                .var("derivationScale", 0.5f, 2f, 0.1f,
 //                        (NAR n, float f) -> Deriver.derivers(n).forEach(x ->
 //                                ((DefaultDeriverBudgeting)(((BatchDeriver)x).budgeting)).
-//                                        scale.setAt(f)))
+//                                        scale.set(f)))
             ;
 
 

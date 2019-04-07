@@ -9,6 +9,7 @@ import jcog.sort.FloatRank;
 import nars.NAR;
 import nars.Param;
 import nars.Task;
+import nars.attention.What;
 import nars.control.op.Remember;
 import nars.link.AtomicTaskLink;
 import nars.table.BeliefTables;
@@ -34,20 +35,24 @@ public class SensorBeliefTables extends BeliefTables {
 
     @Deprecated public FloatRange res;
 
+    /** the context this provides sensory input into */
+    final What what;
+
     /**
      * permanent tasklink "generator" anchored in eternity when inseted to the concept on new tasks, but clones currently-timed tasklinks for propagation
      */
     public final AtomicTaskLink tasklink;
 
-    public SensorBeliefTables(Term c, boolean beliefOrGoal) {
+    public SensorBeliefTables(Term c, boolean beliefOrGoal, What what) {
         this(c, beliefOrGoal,
                 //TODO impl time series with concurrent ring buffer from gluegen
                 //new ConcurrentSkiplistTaskSeries<>(Param.SIGNAL_BELIEF_TABLE_SERIES_SIZE)
-                new RingBufferTaskSeries<>(  Param.SIGNAL_BELIEF_TABLE_SERIES_SIZE));
+                new RingBufferTaskSeries<>(  Param.SIGNAL_BELIEF_TABLE_SERIES_SIZE), what);
     }
 
-    SensorBeliefTables(Term term, boolean beliefOrGoal, AbstractTaskSeries<Task> s) {
+    SensorBeliefTables(Term term, boolean beliefOrGoal, AbstractTaskSeries<Task> s, What what) {
         super(new SeriesBeliefTable<>(term, beliefOrGoal, s));
+        this.what = what;
 
         this.series = tableFirst(SeriesBeliefTable.class); assert(series!=null);
 
@@ -237,7 +242,7 @@ public class SensorBeliefTables extends BeliefTables {
 //        delta += tasklink.priMax(QUESTION, p/4);
 //        delta += tasklink.priMax(QUEST, p/4);
 
-        n.attn.link(tasklink);
+        ((What.TaskLinkWhat)what).links.link(tasklink);
 
         //if (prev!=next)
             n.eventTask.emit(next);

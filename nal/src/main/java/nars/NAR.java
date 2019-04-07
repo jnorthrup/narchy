@@ -223,7 +223,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
             } else {
                 boolean removed = how.remove(h); assert(removed);
             }
-        } else if (p instanceof What) {
+        } if (p instanceof What) {
             What w = (What) p;
             if (change.getTwo()) {
                 What inserted = what.put(w);
@@ -551,12 +551,12 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
     public Task input(float pri, Term term, byte punc, long start, long end, float freq, float conf) throws TaskException {
 
         PreciseTruth tr = Truth.theDithered(freq, c2w(conf), this);
-        @Nullable Task z = Task.tryTask(term, punc, tr, (c, truth) -> {
+        Task z = Task.tryTask(term, punc, tr, (c, truth) -> {
             Task y = NALTask.the(c, punc, truth, time(), start, end, evidence());
-            y.pri(pri);
             return y;
         }, false);
 
+        z.pri(pri);
         input(z);
 
         return z;

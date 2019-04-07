@@ -5,6 +5,7 @@ import jcog.Skill;
 import nars.NAR;
 import nars.attention.What;
 import nars.control.channel.CauseChannel;
+import nars.task.ITask;
 
 import java.util.function.BooleanSupplier;
 
@@ -15,7 +16,7 @@ import java.util.function.BooleanSupplier;
 @Skill({"Queing_theory","Feedback"})
 abstract public class TaskLeakTransform extends TaskLeak  {
 
-    protected final CauseChannel in;
+    protected final CauseChannel<ITask> in;
 
     protected TaskLeakTransform(NAR nar, byte... puncs) {
         super(nar, puncs);

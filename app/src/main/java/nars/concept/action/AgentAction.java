@@ -4,6 +4,7 @@ import jcog.math.FloatRange;
 import nars.NAR;
 import nars.Task;
 import nars.attention.AttnBranch;
+import nars.attention.What;
 import nars.concept.PermanentConcept;
 import nars.concept.TaskConcept;
 import nars.concept.action.curiosity.CuriosityTask;
@@ -26,26 +27,26 @@ public abstract class AgentAction extends TaskConcept implements GameLoop, Perma
 
     public final AttnBranch attn;
 
-    protected AgentAction(Term term, TermLinker linker, NAR n) {
+    protected AgentAction(Term term, TermLinker linker, What w) {
         this(term,
-                new SensorBeliefTables(term, true),
+                new SensorBeliefTables(term, true, w),
 
                 //n.conceptBuilder.newTable(target, false),
                 new RTreeBeliefTable(),
 
                 linker,
-                n);
+                w);
     }
 
-    protected AgentAction(Term term, BeliefTable beliefs, BeliefTable goals, NAR n) {
-        this(term, beliefs, goals, n.conceptBuilder.termlinker(term), n);
+    protected AgentAction(Term term, BeliefTable beliefs, BeliefTable goals, What w) {
+        this(term, beliefs, goals, w.nar.conceptBuilder.termlinker(term), w);
     }
 
-    protected AgentAction(Term term, BeliefTable beliefs, BeliefTable goals, TermLinker l, NAR n) {
-        super(term, beliefs, goals, l, n.conceptBuilder);
+    protected AgentAction(Term term, BeliefTable beliefs, BeliefTable goals, TermLinker l, What w) {
+        super(term, beliefs, goals, l, w.nar.conceptBuilder);
 
         this.attn = new AttnBranch(term, List.of(term));
-        ((SensorBeliefTables) beliefs()).resolution(FloatRange.unit(n.freqResolution));
+        ((SensorBeliefTables) beliefs()).resolution(FloatRange.unit(w.nar.freqResolution));
     }
 
 

@@ -6,6 +6,7 @@ import nars.$;
 import nars.NAR;
 import nars.Param;
 import nars.Task;
+import nars.attention.What;
 import nars.concept.Concept;
 import nars.concept.Operator;
 import nars.eval.Evaluation;
@@ -32,15 +33,16 @@ public enum Perceive { ;
 
     static final Logger logger = LoggerFactory.getLogger(Perceive.class);
 
-    public static ITask perceive(Task task, NAR n) {
+    public static ITask perceive(Task task, What w) {
 
+        NAR n = w.nar;
         n.feel.perceivedTaskStart.increment();
 
         Term x = task.term();
         if (Evaluation.canEval(x)) {
-            return task(new TaskEvaluation(task, n).result);
+            return task(new TaskEvaluation(task, w).result);
         } else {
-            return Perceive.perceive(task, x, n);
+            return Perceive.perceive(task, x, w);
         }
     }
 
@@ -72,17 +74,14 @@ public enum Perceive { ;
     }
 
     /** returns true if the task is acceptable */
-    private static ITask perceive(Task input, Term y, NAR n) {
+    private static ITask perceive(Task x, Term y, What w) {
 
-        if (y == Bool.Null) {
-            //logger.debug("nonsense {}", input);
-            return null;
-        }
+        assert(!(y instanceof Bool));
 
         Task t;
-        Term it = input.term();
+        Term it = x.term();
         if (!it.equals(y)) {
-            byte punc = input.punc();
+            byte punc = x.punc();
             if (y.op()==BOOL) {
                 if (punc == QUESTION/* || punc == QUEST*/) {
                     //conver to an answering belief/goal now that the absolute truth has been determined
@@ -90,16 +89,16 @@ public enum Perceive { ;
 
                     byte answerPunc;
                     if (punc == QUESTION) answerPunc = BELIEF;
-                    else answerPunc = GOAL;
+                    else { answerPunc = GOAL; assert(punc==QUEST); } //HACK
 
                     if (it.hasXternal())
                         it = Retemporalize.retemporalizeXTERNALToDTERNAL.apply(it);
 
-                    t = Task.clone(input,
+                    t = Task.clone(x,
                             it,
-                            $.t(y==True ? 1 : 0, n.confDefault(answerPunc)),
+                            $.t(y==True ? 1 : 0, w.nar.confDefault(answerPunc)),
                             answerPunc,
-                            input.start(), input.end());
+                            x.start(), x.end());
 
                     if (t == null)
                         throw new WTF();
@@ -109,15 +108,15 @@ public enum Perceive { ;
                 }
             } else {
 
-                return rememberTransformed(input, y, punc);
+                return rememberTransformed(x, y, punc);
 
             }
 
         } else {
-            t = input;
+            t = x;
         }
 
-        return perceived(t, n);
+        return perceived(t, w.nar);
     }
 
     private static ITask rememberTransformed(Task input, Term y, byte punc) {
@@ -142,18 +141,18 @@ public enum Perceive { ;
 
     static final class TaskEvaluation extends Evaluation implements Predicate<Term> {
 
-        private final NAR nar;
+        private final What what;
         private final Task t;
         private int tried = 0;
         private FasterList<ITask> result = null;
 
-        TaskEvaluation(Task t,NAR nar) {
+        TaskEvaluation(Task t,What w) {
             super();
 
             this.t = t;
-            this.nar = nar;
+            this.what = w;
 
-            evalTry(t.term(), nar.evaluator);
+            evalTry(t.term(), w.nar.evaluator);
         }
 
         @Override
@@ -164,7 +163,7 @@ public enum Perceive { ;
                 return true; //continue TODO maybe limit these
 
 
-            ITask next = Perceive.perceive(t, y, nar);
+            ITask next = Perceive.perceive(t, y, what);
             if (next != null) {
                 if (result==null)
                     result = new FasterList<>(1);
