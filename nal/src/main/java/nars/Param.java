@@ -273,6 +273,8 @@ public abstract class Param extends Parts<Term,NAR> {
 
     public static final int UNIFY_COMMON_VAR_MAX = 8;
 
+    @Deprecated public final FloatRange questionForgetRate = new FloatRange(0.5f, 0, 1);
+
     protected Param(Exec exe) {
         super(exe);
     }

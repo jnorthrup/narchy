@@ -6,8 +6,8 @@ import nars.$;
 import nars.NAR;
 import nars.Param;
 import nars.Task;
+import nars.attention.What;
 import nars.bag.leak.TaskLeakTransform;
-import nars.control.CauseMerge;
 import nars.task.signal.SignalTask;
 import nars.term.Compound;
 import nars.term.Functor;
@@ -288,9 +288,9 @@ abstract public class Inperience extends TaskLeakTransform {
     final static int MIN_REIFICATION_OVERHEAD = 2 + 1 /* 1 extra to be safe */;
 
     @Override
-    public void next(NAR nar, BooleanSupplier kontinue) {
-        volMaxPre = (volMaxPost = nar.termVolumeMax.intValue()) - MIN_REIFICATION_OVERHEAD;
-        super.next(nar, kontinue);
+    public void next(What w, BooleanSupplier kontinue) {
+        volMaxPre = (volMaxPost = w.nar.termVolumeMax.intValue()) - MIN_REIFICATION_OVERHEAD;
+        super.next(w, kontinue);
     }
 
     @Override
@@ -321,7 +321,7 @@ abstract public class Inperience extends TaskLeakTransform {
 
 
     @Override
-    protected float leak(Task x) {
+    protected float leak(Task x, What what) {
 
         Term c;
         try {
@@ -368,7 +368,8 @@ abstract public class Inperience extends TaskLeakTransform {
             );
         });
         if (y!=null) {
-            y.priCauseMerge(x, CauseMerge.Append);
+
+            Task.merge(y, x);
 
             if (Param.DEBUG)
                 y.log("Inperience");

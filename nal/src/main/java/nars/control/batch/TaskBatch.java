@@ -1,12 +1,15 @@
 package nars.control.batch;
 
-import jcog.pri.PriBuffer;
+import jcog.pri.PriMap;
 import jcog.pri.op.PriMerge;
 
 /**
  *bounded-explosive semi-weighted task batching
  *     double buffer of task merge bags
- * recyclable; ideally thread-local */
+ * recyclable; ideally thread-local
+ *
+ * EXPERIMENTAL NOT TESTED
+ * */
 public final class TaskBatch {
 
     /** double buffered, page flipping strategy */
@@ -32,7 +35,7 @@ public final class TaskBatch {
         queue[run].put(x, merge);
     }
 
-    static class TaskQueue extends PriBuffer<BatchableTask> {
+    static class TaskQueue extends PriMap<BatchableTask> {
 
         TaskQueue() {
             super(PriMerge.plus);

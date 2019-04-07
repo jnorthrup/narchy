@@ -3,8 +3,8 @@ package nars.bag.leak;
 import jcog.Paper;
 import jcog.Skill;
 import nars.NAR;
+import nars.attention.What;
 import nars.control.channel.CauseChannel;
-import nars.task.ITask;
 
 import java.util.function.BooleanSupplier;
 
@@ -29,14 +29,10 @@ abstract public class TaskLeakTransform extends TaskLeak  {
 
 
     @Override
-    public void next(NAR nar, BooleanSupplier kontinue) {
+    public void next(What w, BooleanSupplier kontinue) {
         if (in == null) return; //HACK
-        super.next(nar, kontinue);
+        super.next(w, kontinue);
         //in.commit();
-    }
-
-    protected final void input(ITask x) {
-        in.input(x);
     }
 
     @Override public float value() {

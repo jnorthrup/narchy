@@ -1,25 +1,47 @@
 package nars.control.channel;
 
 import jcog.pri.Prioritizable;
-import nars.control.Cause;
+import nars.control.Why;
 
 /**
  * metered and mixable extension of Cause base class
  */
-abstract public class CauseChannel<X extends Prioritizable> extends ConsumerX<X> {
+abstract public class CauseChannel<X extends Prioritizable>  {
 
-    public final Cause cause;
+    public final Why why;
     public final short id;
 
-    public CauseChannel(Cause cause) {
-        this.cause = cause;
-        this.id = cause.id;
+    public CauseChannel(Why why) {
+        this.why = why;
+        this.id = why.id;
     }
 
     @Override
     public String toString() {
-        return cause.name + "<-" + super.toString();
+        return why.name + "<-" + super.toString();
     }
+
+    public float value() {
+        return why.value();
+    }
+
+    public final void accept(X x, ConsumerX<? super X> target) {
+        preAccept(x);
+        target.accept(x);
+    }
+
+    public final void acceptAll(Iterable<? extends X> x, ConsumerX<? super X> target) {
+        x.forEach(this::preAccept);
+        target.acceptAll(x);
+    }
+
+
+    //TODO other input() methods (Stream, Iterable, etc)
+
+    protected abstract void preAccept(X x);
+
+
+}
 
 //    public BufferedCauseChannel<X> buffered() {
 //        return buffered(8*1024);
@@ -32,8 +54,3 @@ abstract public class CauseChannel<X extends Prioritizable> extends ConsumerX<X>
 //    public ThreadBufferedCauseChannel<X> threadBuffered() {
 //        return new ThreadBufferedCauseChannel<>(this);
 //    }
-
-    public float value() {
-        return cause.value();
-    }
-}

@@ -3,6 +3,8 @@ package jcog.pri;
 import com.google.common.base.Function;
 import jcog.Texts;
 import jcog.Util;
+import jcog.pri.op.PriMerge;
+import jcog.pri.op.PriReturn;
 
 /**
  * Mutable Prioritized
@@ -14,6 +16,22 @@ public interface Prioritizable extends Prioritized, ScalarValue {
         if (this != p)
             pri(p.pri());
         return this;
+    }
+
+    default void priMax(float p) {
+        priMax(p, PriReturn.Post);
+    }
+
+    default void priMin(float p) {
+        priMin(p, PriReturn.Post);
+    }
+
+    default float priMax(float p, PriReturn mode) {
+        return PriMerge.max.merge(this, p, mode);
+    }
+
+    default float priMin(float p, PriReturn mode) {
+        return PriMerge.min.merge(this, p, mode);
     }
 
     default float take(Prioritizable source, float p, boolean amountOrFraction, boolean copyOrMove) {

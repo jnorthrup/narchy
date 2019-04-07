@@ -1,6 +1,7 @@
 package nars.link;
 
 import jcog.TODO;
+import jcog.pri.op.PriReturn;
 import jcog.signal.tensor.AtomicFixedPoint4x16bitVector;
 import jcog.signal.tensor.WritableTensor;
 import jcog.util.FloatFloatToFloatFunction;
@@ -34,8 +35,9 @@ public final class AtomicTaskLink extends AbstractTaskLink {
         return punc.sumValues();
     }
 
-    @Override protected float merge(int ith, float pri, FloatFloatToFloatFunction componentMerge, boolean valueOrDelta) {
-        return punc.merge(ith, pri, componentMerge, valueOrDelta);
+    @Override
+    protected float merge(int ith, float pri, FloatFloatToFloatFunction componentMerge, PriReturn returning) {
+        return punc.merge(ith, pri, componentMerge, returning);
     }
 
     @Override

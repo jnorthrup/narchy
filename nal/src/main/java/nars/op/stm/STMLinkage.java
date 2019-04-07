@@ -4,6 +4,7 @@ import jcog.data.list.MetalConcurrentQueue;
 import jcog.math.FloatRange;
 import nars.NAR;
 import nars.Task;
+import nars.attention.What;
 import nars.concept.Concept;
 import nars.control.NARPart;
 import nars.link.TaskLink;
@@ -78,7 +79,7 @@ public class STMLinkage extends NARPart {
     }
 
     static void link(Concept target, Task task, float factor, NAR nar) {
-        nar.attn.link(TaskLink.tasklink(task.term(), target.term(), task.punc(),task.priElseZero() * factor));
+        ((What.TaskLinksWhat)nar.in).links.link(TaskLink.tasklink(task.term(), target.term(), task.punc(),task.priElseZero() * factor));
     }
 
 

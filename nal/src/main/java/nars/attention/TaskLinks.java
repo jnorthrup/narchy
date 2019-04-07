@@ -5,11 +5,12 @@ import jcog.data.list.FasterList;
 import jcog.math.FloatRange;
 import jcog.math.IntRange;
 import jcog.pri.Forgetting;
-import jcog.pri.PriBuffer;
+import jcog.pri.PriMap;
 import jcog.pri.bag.Sampler;
 import jcog.pri.bag.impl.ArrayBag;
 import jcog.pri.bag.impl.hijack.PriHijackBag;
 import jcog.pri.op.PriMerge;
+import jcog.pri.op.PriReturn;
 import nars.NAR;
 import nars.Op;
 import nars.Param;
@@ -25,6 +26,7 @@ import nars.term.Termed;
 import nars.term.atom.Atom;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Iterator;
 import java.util.Objects;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -109,9 +111,6 @@ public class TaskLinks implements Sampler<TaskLink> {
 
         Term t = link.to();
 
-        NAR nar = d.nar;
-        Random rng = d.random;
-        final Term s = link.from();
         byte punc = task.punc();
 
 
@@ -126,6 +125,9 @@ public class TaskLinks implements Sampler<TaskLink> {
         Concept ct;
         if (t.op().conceptualizable) {
 
+            NAR nar = d.nar;
+//        Random rng = d.random;
+
 
 //            boolean self = s.equals(t);
 
@@ -135,7 +137,7 @@ public class TaskLinks implements Sampler<TaskLink> {
                 TermLinker linker = ct.linker();
                 if (linker != TermLinker.NullLinker && !((FasterList) linker).isEmpty())
                     //grow-ahead: s -> t -> u
-                    u = linker.sample(rng);
+                    u = linker.sample(d.random);
                 else {
                     //loopback
                     if (t instanceof Atom) {
@@ -188,7 +190,7 @@ public class TaskLinks implements Sampler<TaskLink> {
 //                        inflation < 1 ? Util.lerp(inflation, link.take(punc, want*inflation), want) : want;
 
                 float pAmp = p * amp.floatValue();
-
+                final Term s = link.from();
 
                 //CHAIN pattern
                 link(s, u, punc, pAmp); //forward (hop)
@@ -285,19 +287,22 @@ public class TaskLinks implements Sampler<TaskLink> {
         links.clear();
     }
 
+    public final Iterator<TaskLink> iterator() {
+        return links.iterator();
+    }
+
 
     private static class TaskLinkArrayBag extends ArrayBag<TaskLink, TaskLink> {
 
         public TaskLinkArrayBag(int initialCapacity, PriMerge merge) {
-            super(merge, initialCapacity, PriBuffer.newMap(false));
+            super(merge, initialCapacity, PriMap.newMap(false));
         }
 
         @Override
-        protected float merge(TaskLink existing, TaskLink incoming, float incomingPri, @Nullable NumberX overflow) {
-            return existing.mergeAndGetDelta(incoming, merge());
+        protected float merge(TaskLink existing, TaskLink incoming, float incomingPri) {
+            return existing.merge(incoming, merge(), PriReturn.Overflow);
         }
-
-//        @Override
+        //        @Override
 //        protected float sortedness() {
 //            return 0.33f;
 //        }
@@ -322,7 +327,7 @@ public class TaskLinks implements Sampler<TaskLink> {
 
         @Override
         protected TaskLink merge(TaskLink existing, TaskLink incoming, NumberX overflowing) {
-            float o = existing.mergeAndGetDelta(incoming, merge());
+            float o = existing.merge(incoming, merge(), PriReturn.Overflow);
             if (overflowing!=null)
                 overflowing.add(o);
             return existing;

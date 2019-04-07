@@ -35,6 +35,9 @@ import static java.util.stream.Collectors.toSet;
 import static nars.Op.ATOM;
 
 /**
+ *
+ * TODO implement with custom What impl
+ *
  * high-level trans-personal memory interface
  * <p>
  * ```

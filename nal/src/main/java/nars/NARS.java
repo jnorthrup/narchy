@@ -13,7 +13,7 @@ import nars.exe.impl.UniExec;
 import nars.index.concept.Memory;
 import nars.index.concept.SimpleMemory;
 import nars.op.stm.STMLinkage;
-import nars.task.util.TaskBuffer;
+import nars.task.util.PriBuffer;
 import nars.time.Time;
 import nars.time.clock.CycleTime;
 import nars.time.clock.RealTime;
@@ -56,7 +56,7 @@ public class NARS {
 
     protected Supplier<Exec> exec;
 
-    protected Supplier<TaskBuffer> in;
+    protected Supplier<PriBuffer> in;
 
     protected Supplier<Random> rng;
 
@@ -102,7 +102,7 @@ public class NARS {
             );
     }
 
-    public NARS input(TaskBuffer in) {
+    public NARS input(PriBuffer in) {
         this.in = ()->in;
         return this;
     }
@@ -164,7 +164,7 @@ public class NARS {
         in =   ()->
             //new TaskBuffer.BagTaskBuffer(256, 5f)
             //new TaskBuffer.MapTaskBuffer(64)
-            new TaskBuffer.DirectTaskBuffer()
+            new PriBuffer.DirectPriBuffer()
         ;
 
         rng = ThreadLocalRandom::current;

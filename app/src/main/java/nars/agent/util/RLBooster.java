@@ -5,6 +5,7 @@ import jcog.data.list.FasterList;
 import jcog.func.IntIntToObjectFunction;
 import jcog.learn.Agent;
 import jcog.math.FloatRange;
+import jcog.pri.Prioritizable;
 import jcog.signal.tensor.TensorRing;
 import nars.$;
 import nars.NAR;
@@ -12,7 +13,6 @@ import nars.Task;
 import nars.agent.Game;
 import nars.concept.action.AgentAction;
 import nars.control.channel.ConsumerX;
-import nars.task.ITask;
 import nars.task.signal.SignalTask;
 import nars.term.Term;
 import nars.truth.Truth;
@@ -38,7 +38,7 @@ public class RLBooster implements Consumer<NAR> {
     final float[] input;
     final int inD, outD;
     final AgentAction[] actions;
-    private final ConsumerX<ITask> in;
+    private final ConsumerX<Prioritizable> in;
     private final List<Term> inputs;
     private final int actionDiscretization;
     private final TensorRing history;
@@ -180,7 +180,7 @@ public class RLBooster implements Consumer<NAR> {
                 e.add(tt);
             }
         }
-        in.input(e);
+        in.acceptAll(e);
     }
 
 

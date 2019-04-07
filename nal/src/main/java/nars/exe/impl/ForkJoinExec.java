@@ -2,6 +2,7 @@ package nars.exe.impl;
 
 import jcog.data.list.FasterList;
 import nars.NAR;
+import nars.attention.What;
 import nars.control.How;
 
 import java.util.Map;
@@ -77,24 +78,35 @@ public class ForkJoinExec extends MultiExec implements Thread.UncaughtExceptionH
      */
     private void play() {
         //HACK
-        int throttle = 6 * concurrency();
+        @Deprecated int throttle = 6 * concurrency();
+        @Deprecated float ms = 0.35f;
+        @Deprecated long durationNS = Math.round(1_000_000.0 * ms);
 
         FasterList<Runnable> batch = new FasterList();
-        nar.control.how.forEach(can -> {
+        for (What w : nar.what) {
+            for (How h : nar.how) {
 
-            if (can.sleeping())
-                return; //HACK
+                if (h.inactive())
+                    return; //HACK
 
-            How.Causation t = can.timing();
-            float pri = can.pri();
+                boolean single = h.singleton();
+                if (!single || h.busy.compareAndSet(false, true)) {
+                    try {
+                        How.Causation t = h.timing();
+                        float pri = h.pri();
 
-            for (int i = 0; i < Math.max(1, pri * throttle); i++) {
-                float ms = 0.35f;
-                long durationNS = Math.round(1_000_000.0 * ms);
-//                    System.out.println(pri);
-                batch.add(() -> t.runFor(durationNS));
+                        for (int i = 0; i < Math.max(1, pri * throttle); i++) {
+                            //                    System.out.println(pri);
+                            batch.add(() -> t.runFor(w, durationNS));
+                        }
+
+                    } finally {
+                        if (single)
+                            h.busy.set(false);
+                    }
+                }
             }
-        });
+        }
         batch.shuffleThis();
         batch.forEach(pool::execute);
 

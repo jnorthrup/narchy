@@ -6,6 +6,7 @@ import jcog.sort.RankedN;
 import nars.NAR;
 import nars.Op;
 import nars.Task;
+import nars.attention.What;
 import nars.control.channel.CauseChannel;
 import nars.link.TaskLink;
 import nars.task.ITask;
@@ -32,6 +33,11 @@ public class Eternalizer extends LinkRanker<Task> {
         in = nar.newChannel(this);
     }
 
+    @Override
+    public float value() {
+        return in.value();
+    }
+
     public boolean filter(Op op) {
         switch (op) {
             case IMPL:
@@ -46,10 +52,7 @@ public class Eternalizer extends LinkRanker<Task> {
         return t.hasAny(Op.ATOM); //prevent variable-only compounds
     }
 
-    @Override
-    protected void beforeRun(NAR n, long dt) {
-        when = When.sinceAgo(durCycles(), nar);
-    }
+
 
     /** TODO weight according to punct components */
     protected byte punc() {
@@ -92,13 +95,13 @@ public class Eternalizer extends LinkRanker<Task> {
     }
 
     @Override
-    protected void run(RankedN<Task> best, NAR n, long dt) {
+    protected void run(RankedN<Task> best, What w) {
         best.forEach(t->{
             Task u = Task.eternalized(t, eviFactor.floatValue(), nar.confMin.floatValue(), nar);
             if (u!=null) {
                 u.priMult(priFactor.floatValue());
                 //System.out.println(u);
-                in.input(u);
+                in.accept(u, w);
             }
         });
     }

@@ -2,6 +2,7 @@ package nars.exe.impl;
 
 import jcog.event.Offs;
 import nars.NAR;
+import nars.control.How;
 import nars.exe.Exec;
 
 /**
@@ -56,8 +57,12 @@ public class UniExec extends Exec {
     protected void onCycle(NAR nar) {
         nar.time.schedule(this::executeNow);
 
-        /* flat 1 work unit per each. returns immediately after first iteration */
-        nar.control.how.forEach(x -> x.next(nar, () -> false ));
+        /*
+        simplest possible implementation: flat 1 work unit per each what
+        */
+        for (How h : nar.how) {
+            nar.what.forEach(w -> h.next(w, ()->false));
+        }
     }
 
 }

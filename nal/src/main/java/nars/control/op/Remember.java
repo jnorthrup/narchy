@@ -2,12 +2,13 @@ package nars.control.op;
 
 import jcog.WTF;
 import jcog.data.list.FasterList;
+import jcog.pri.Prioritizable;
+import jcog.pri.op.PriReturn;
 import nars.NAR;
 import nars.Param;
 import nars.Task;
 import nars.concept.Concept;
 import nars.concept.TaskConcept;
-import nars.control.CauseMerge;
 import nars.op.stm.ConjClustering;
 import nars.task.*;
 import nars.task.proxy.SpecialTermTask;
@@ -28,12 +29,11 @@ public class Remember extends AbstractTask {
     /**
      * root input
      */
-    @Deprecated
-    public Task input;
+    @Deprecated public Task input;
 
     private FasterList<ITask> remembered = null;
 
-    public final boolean store, link, notify;
+    private final boolean store, link, notify;
     public boolean done = false;
 
     public final NAR nar;
@@ -196,7 +196,7 @@ public class Remember extends AbstractTask {
             n.attn.link(t, c, n);
 
         if (notify)
-            new TaskEvent(t).next(n);
+            TaskEvent.emit(t, n);
 
     }
 
@@ -273,7 +273,8 @@ public class Remember extends AbstractTask {
                 dPri = next.priElseZero() - prev.priElseZero();
 
                 if (prev instanceof NALTask)
-                    ((NALTask) prev).priCauseMerge(next, CauseMerge.AppendUnique);
+                    Task.merge(prev, next, PriReturn.Overflow);
+
             } else {
                 dPri = 0; //TODO?
             }
@@ -344,7 +345,7 @@ public class Remember extends AbstractTask {
 
 
 
-    private static boolean add(ITask x, FasterList f) {
+    private static boolean add(Prioritizable x, FasterList f) {
         if (x != null) {
             if (!f.containsInstance(x)) {
                 f.add(x);

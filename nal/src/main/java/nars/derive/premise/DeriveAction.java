@@ -1,7 +1,7 @@
 package nars.derive.premise;
 
 import jcog.pri.ScalarValue;
-import nars.control.Cause;
+import nars.control.Why;
 import nars.derive.Derivation;
 import nars.derive.op.Truthify;
 import nars.term.control.AND;
@@ -9,18 +9,18 @@ import nars.term.control.PREDICATE;
 
 final class DeriveAction  /*implements ThrottledAction<Derivation>*/ {
 
-    public final Cause cause;
+    public final Why why;
     private final Truthify truth;
     public final PREDICATE<Derivation> run;
 
-    private DeriveAction(PREDICATE<Derivation> procedure, PremiseRuleProto.RuleCause cause, Truthify t) {
+    private DeriveAction(PREDICATE<Derivation> procedure, PremiseRuleProto.RuleWhy cause, Truthify t) {
         this.run = procedure;
-        this.cause = cause;
+        this.why = cause;
         this.truth = t;
     }
 
 
-    static DeriveAction action(PremiseRuleProto.RuleCause cause, PREDICATE<Derivation> POST) {
+    static DeriveAction action(PremiseRuleProto.RuleWhy cause, PREDICATE<Derivation> POST) {
 
         Truthify t = (Truthify) AND.first((AND<Derivation>)POST, x -> x instanceof Truthify);
         if (t == null)
@@ -50,11 +50,11 @@ final class DeriveAction  /*implements ThrottledAction<Derivation>*/ {
         if (punc == 0)
             return 0f; //disabled or not applicable to the premise
 
-        float puncFactor = d.deriver.preAmp(punc);
+        float puncFactor = d.preAmp(punc);
         if (puncFactor <= ScalarValue.EPSILON)
             return 0f; //entirely disabled by deriver
 
-        float causeValue = cause.amp();
+        float causeValue = why.amp();
 
         return causeValue * puncFactor;
     }

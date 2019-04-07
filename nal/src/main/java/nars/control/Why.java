@@ -1,6 +1,7 @@
 package nars.control;
 
 import jcog.Paper;
+import jcog.Skill;
 import jcog.Util;
 import jcog.pri.ScalarValue;
 import nars.$;
@@ -14,37 +15,57 @@ import java.util.stream.IntStream;
 import static java.util.stream.Collectors.toList;
 
 /**
- * represents a causal influence and tracks its
- * positive and negative gain (separately).  this is thread safe
- * so multiple threads can safely affect the accumulators. it must be commited
+ * represents a registered causal influence for analyzing its
+ * positive and negative influence in system activity via
+ * 'causal traces' attached to Tasks.
+ * <p>
+ * multiple threads can safely affect the accumulators. it must be commited
  * periodically (by a single thread, ostensibly) to apply the accumulated values
  * and calculate the values
+ * <p>
  * as reported by the value() function which represents the effective
  * positive/negative balance that has been accumulated. a decay function
  * applies forgetting, and this is applied at commit time by separate
  * positive and negative decay rates.  the value is clamped to a range
  * (ex: 0..+1) so it doesn't explode.
- *
+ * <p>
  * https://cogsci.indiana.edu/pub/parallel-terraced-scan.pdf
  */
 @Paper
-public class Cause extends InternalEvent implements Comparable<Cause> {
+@Skill("Credit_assignment")
+public class Why extends InternalEvent implements Comparable<Why> {
 
+    /**
+     * internally assigned id
+     */
+    public final short id;
+    public final Term name;
+    /**
+     * the value measured contributed by its effect on each MetaGoal.
+     * the index corresponds to the ordinal of MetaGoal enum entries.
+     * these values are used in determining the scalar 'value' field on each update.
+     * <p>
+     * TODO allow redefinition at runtime
+     */
+    public Traffic[] credit;
     /**
      * current scalar utility estimate for this cause's support of the current MetaGoal's.
      * may be positive or negative, and is in relation to other cause's values
      */
     private volatile float value = 0;
 
-    /**
-     * the value measured contributed by its effect on each MetaGoal.
-     * the index corresponds to the ordinal of MetaGoal enum entries.
-     * these values are used in determining the scalar 'value' field on each update.
-     *
-     * TODO allow redefinition at runtime
-     */
-    public Traffic[] credit;
+    protected Why(short id) {
+        this(id, null);
+    }
 
+    public Why(short id, @Nullable Object name) {
+        this.id = id;
+        this.name = $.identity(name != null ? name : this);
+        credit = new Traffic[MetaGoal.values().length];
+        for (int i = 0; i < credit.length; i++) {
+            credit[i] = new Traffic();
+        }
+    }
 
     public float value() {
         return value;
@@ -72,30 +93,9 @@ public class Cause extends InternalEvent implements Comparable<Cause> {
         value = nextValue;
     }
 
-
-    /**
-     * internally assigned id
-     */
-    public final short id;
-
-    public final Object name;
-
-    protected Cause(short id) {
-        this(id, null);
-    }
-
-    public Cause(short id, @Nullable Object name) {
-        this.id = id;
-        this.name = name != null ? name : this;
-        credit = new Traffic[MetaGoal.values().length];
-        for (int i = 0; i < credit.length; i++) {
-            credit[i] = new Traffic();
-        }
-    }
-
     @Override
     public Term term() {
-        return $.identity(name);
+        return name;
     }
 
     @Override
@@ -110,11 +110,11 @@ public class Cause extends InternalEvent implements Comparable<Cause> {
 
     @Override
     public boolean equals(Object obj) {
-        return this == obj || id == ((Cause) obj).id;
+        return this == obj || id == ((Why) obj).id;
     }
 
     @Override
-    public int compareTo(Cause o) {
+    public int compareTo(Why o) {
         return Short.compare(id, o.id);
     }
 
@@ -133,13 +133,12 @@ public class Cause extends InternalEvent implements Comparable<Cause> {
 
     public void print(PrintStream out) {
         out.println(this + "\t" +
-                IntStream.range(0, credit.length).mapToObj(x->
-                    MetaGoal.values()[x] + "=" + credit[x]
+                IntStream.range(0, credit.length).mapToObj(x ->
+                        MetaGoal.values()[x] + "=" + credit[x]
                 ).collect(toList())
         );
 
     }
-
 
 
 }

@@ -31,7 +31,7 @@ import nars.op.mental.Inperience2;
 import nars.op.stm.ConjClustering;
 import nars.sensor.Bitmap2DSensor;
 import nars.sensor.PixelBag;
-import nars.task.util.TaskBuffer;
+import nars.task.util.PriBuffer;
 import nars.term.Term;
 import nars.term.Termed;
 import nars.time.clock.RealTime;
@@ -198,7 +198,7 @@ abstract public class GameX extends Game {
         NAR n = new NARS()
 
                 .input(
-                        new TaskBuffer.BagTaskBuffer(512, 25)
+                        new PriBuffer.BagTaskBuffer(512, 25)
                 )
 //                .attention(() -> new ActiveConcepts(1024))
                 .exe(
@@ -529,7 +529,7 @@ abstract public class GameX extends Game {
 //        //TODO
 //    }
     /** https://www.controlglobal.com/blogs/controltalkblog/how-to-avoid-a-common-pid-tuning-mistake-tips/ */
-    static void inputInjectionPID(TaskBuffer b, NAR n) {
+    static void inputInjectionPID(PriBuffer b, NAR n) {
         //perception injection control
 //        MiniPID pid = new MiniPID(0.01, 0.01, 0.002);
 //        pid.outLimit(-1, +1);
@@ -538,7 +538,7 @@ abstract public class GameX extends Game {
 
         //pid.setOutRampRate(0.5);
 
-        FloatRange valve = ((TaskBuffer.BagTaskBuffer) b).valve;
+        FloatRange valve = ((PriBuffer.BagTaskBuffer) b).valve;
         //DurService.on(n,
 //        n.onCycle(
 //        ()->{
@@ -582,7 +582,7 @@ abstract public class GameX extends Game {
                 haiQChip.rewardSum.addAndGet(reward);
                 haiQChip.next();
 
-                float x = ((TaskBuffer.BagTaskBuffer) b).valve.floatValue();
+                float x = ((PriBuffer.BagTaskBuffer) b).valve.floatValue();
                 sense = history.set(new float[]{
                         x, v, 0.5f + 0.5f * Util.tanhFast((float) -Math.log(dv))
                 }).snapshot(sense);

@@ -25,7 +25,7 @@ import java.util.function.Consumer;
  *  TODO use non-UnitPri entries and then allow this to determine a global amplitude factor via adaptive dynamic range compression of priority
  *  TODO abstract to different impl
  * */
-public class PriBuffer<Y> {
+public class PriMap<Y> {
 
 
     /** pending Y activation collation */
@@ -35,12 +35,12 @@ public class PriBuffer<Y> {
 
     public PriMerge merge;
 
-    public PriBuffer(PriMerge merge) {
+    public PriMap(PriMerge merge) {
         this(merge, newMap());
     }
 
 
-    public PriBuffer(PriMerge merge, Map<Y, Prioritizable> items) {
+    public PriMap(PriMerge merge, Map<Y, Prioritizable> items) {
         this.items = items;
         merge(merge);
     }
@@ -112,9 +112,9 @@ public class PriBuffer<Y> {
         return x;
     }
 
-    protected void merge(Prioritizable existing, Y incoming, float pri, PriMerge merge, OverflowDistributor<Y> overflow) {
+    protected void merge(Prioritizable existing, Y incomingKey, float pri, PriMerge merge, OverflowDistributor<Y> overflow) {
         if (overflow!=null) {
-            overflow.merge(incoming, existing, pri, merge);
+            overflow.merge(incomingKey, existing, pri, merge);
         } else {
             merge.merge(existing, pri);
         }

@@ -30,7 +30,7 @@ import nars.gui.concept.ConceptSurface;
 import nars.gui.graph.run.BagregateConceptGraph2D;
 import nars.link.TaskLink;
 import nars.op.stm.ConjClustering;
-import nars.task.util.TaskBuffer;
+import nars.task.util.PriBuffer;
 import nars.term.Termed;
 import nars.time.part.DurLoop;
 import nars.truth.Truth;
@@ -578,7 +578,7 @@ public class NARui {
         }).live();
     }
 
-    public static Surface taskBufferView(TaskBuffer b, NAR n) {
+    public static Surface taskBufferView(PriBuffer b, NAR n) {
         Plot2D plot = new Plot2D(256, Plot2D.Line).add("load", b::load, 0, 1);
         DurSurface plotSurface = DurSurface.get(plot, n, plot::commit);
         return new Gridding(

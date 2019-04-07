@@ -2,6 +2,7 @@ package nars.concept.action;
 
 import jcog.TODO;
 import jcog.Util;
+import jcog.pri.Prioritizable;
 import nars.$;
 import nars.NAR;
 import nars.agent.Game;
@@ -9,7 +10,6 @@ import nars.attention.AttnBranch;
 import nars.attention.PriNode;
 import nars.concept.sensor.AbstractSensor;
 import nars.control.channel.CauseChannel;
-import nars.task.ITask;
 import nars.term.Term;
 import nars.term.Termed;
 import nars.truth.PreciseTruth;
@@ -31,7 +31,7 @@ public class BiPolarAction extends AbstractSensor {
     private final FloatToFloatFunction motor;
 
     public final PriNode attn;
-    private final CauseChannel<ITask> cause;
+    private final CauseChannel<Prioritizable> cause;
 
 
     /** model for computing the net result from the current truth inputs */
@@ -63,7 +63,7 @@ public class BiPolarAction extends AbstractSensor {
 
         this.pos = new AbstractGoalActionConcept(pos, nar) {
             @Override
-            protected CauseChannel<ITask> channel(NAR n) {
+            protected CauseChannel<Prioritizable> channel(NAR n) {
                 return BiPolarAction.this.cause;
             }
         };

@@ -2,7 +2,7 @@ package nars.link;
 
 import jcog.TODO;
 import jcog.pri.OverflowDistributor;
-import jcog.pri.PriBuffer;
+import jcog.pri.PriMap;
 import jcog.pri.Prioritizable;
 import jcog.pri.bag.Bag;
 import jcog.pri.bag.impl.BufferedBag;
@@ -29,7 +29,7 @@ public class TaskLinkBag extends BufferedBag.SimpleBufferedBag<TaskLink, TaskLin
     }
 
 
-    private static class TaskLinkBuffer extends PriBuffer<TaskLink> {
+    private static class TaskLinkBuffer extends PriMap<TaskLink> {
 
         public TaskLinkBuffer(PriMerge merge) {
             super(merge);
@@ -38,7 +38,7 @@ public class TaskLinkBag extends BufferedBag.SimpleBufferedBag<TaskLink, TaskLin
         @Override
         protected void merge(Prioritizable existing, TaskLink incoming, float pri, PriMerge merge, OverflowDistributor<
                 TaskLink> overflow) {
-            ((TaskLink) existing).mergeAndGetDelta(incoming, merge);
+            ((TaskLink) existing).merge(incoming, merge);
         }
     }
 

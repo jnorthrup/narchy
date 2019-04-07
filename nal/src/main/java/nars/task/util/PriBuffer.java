@@ -1,81 +1,49 @@
 package nars.task.util;
 
 import jcog.TODO;
-import jcog.data.NumberX;
 import jcog.math.FloatRange;
 import jcog.math.IntRange;
 import jcog.pri.OverflowDistributor;
-import jcog.pri.PriBuffer;
+import jcog.pri.PriMap;
 import jcog.pri.Prioritizable;
-import jcog.pri.ScalarValue;
 import jcog.pri.bag.Bag;
 import jcog.pri.bag.impl.BufferedBag;
 import jcog.pri.bag.impl.PriArrayBag;
 import jcog.pri.op.PriMerge;
+import jcog.pri.op.PriReturn;
 import nars.Param;
 import nars.Task;
 import nars.control.CauseMerge;
 import nars.control.channel.ConsumerX;
 import nars.exe.Exec;
-import nars.task.ITask;
-import nars.task.NALTask;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.Iterator;
 import java.util.Map;
 import java.util.function.Consumer;
 
-import static nars.Op.*;
-
 /**
  * regulates a flow of supplied tasks to a target consumer
+ * TODO some of this can be moved to util/
  */
-abstract public class TaskBuffer implements Consumer<ITask> {
+abstract public class PriBuffer<T extends Prioritizable> implements Consumer<T> {
 
 
     public final IntRange capacity = new IntRange(0, 0, 4 * 1024);
-
-    public static float merge(ITask pp, ITask tt) {
-        if (pp == tt)
-            return 0;
-
-        Task ttt = (Task) tt;
-
-        if (pp instanceof NALTask) {
-            NALTask ppp = (NALTask) pp;
-            ppp.priCauseMerge(ttt, CauseMerge.AppendUnique);
-
-            long inCreation = ttt.creation();
-            if (inCreation > ppp.creation)
-                ppp.creation = inCreation;
-
-        } else
-            pp.priMax(tt.pri()); //just without cause update
-
-        if (pp instanceof Task) { //HACK
-            Task ppp = (Task) pp;
-            if (ppp.isCyclic() && !ttt.isCyclic())
-                ppp.setCyclic(false);
-        }
-
-        return 0; //TODO calculate
-
-    }
 
     /**
      * returns
      * true if the implementation will manage async target suppliying,
      * false if it needs periodic flushing
      */
-    abstract public boolean async(ConsumerX<ITask> target);
+    abstract public boolean async(ConsumerX<T> target);
 
     /**
      * returns the input task, or the existing task if a pending duplicate was present
      */
-    public abstract <T extends ITask> T put(T x);
+    public abstract T put(T x);
 
     //public abstract void commit(long now, Consumer<ITask> target);
-    public abstract void commit(long now, ConsumerX<ITask> target);
+    public abstract void commit(long now, ConsumerX<? super T> target);
 
     public abstract void clear();
 
@@ -95,7 +63,7 @@ abstract public class TaskBuffer implements Consumer<ITask> {
     //final AtomicLong in = new AtomicLong(), out = new AtomicLong(), drop = new AtomicLong(), merge = new AtomicLong();
 
     @Override
-    public final void accept(ITask task) {
+    public final void accept(T task) {
         put(task);
     }
 
@@ -104,15 +72,15 @@ abstract public class TaskBuffer implements Consumer<ITask> {
     /**
      * pass-thru, no buffering
      */
-    public static class DirectTaskBuffer extends TaskBuffer {
+    public static class DirectPriBuffer<T extends Prioritizable> extends PriBuffer<T> {
 
-        private Consumer<ITask> each = null;
+        private Consumer<T> each = null;
 
-        public DirectTaskBuffer() {
+        public DirectPriBuffer() {
         }
 
         @Override
-        public <T extends ITask> T put(T x) {
+        public T put(T x) {
             each.accept(x);
             if (x.isDeleted())
                 return null;
@@ -121,13 +89,13 @@ abstract public class TaskBuffer implements Consumer<ITask> {
         }
 
         @Override
-        public boolean async(ConsumerX<ITask> target) {
+        public boolean async(ConsumerX<T> target) {
             each = target;
             return true;
         }
 
         @Override
-        public void commit(long now, ConsumerX<ITask> target) {
+        public void commit(long now, ConsumerX<? super T> target) {
 
         }
 
@@ -156,7 +124,7 @@ abstract public class TaskBuffer implements Consumer<ITask> {
      * towards more refined truth (more selectivity in task generation with regard to relatively
      * stable set of concepts they would add to)
      */
-    public static abstract class AdaptiveTaskBuffer extends TaskBuffer {
+    public static abstract class AdaptiveTaskBuffer extends PriBuffer {
 
     }
 
@@ -165,12 +133,13 @@ abstract public class TaskBuffer implements Consumer<ITask> {
      * does not obey adviced capacity
      * TODO find old implementation and re-implement this
      */
-    public static class MapTaskBuffer extends TaskBuffer {
-        private final Map<ITask, ITask> tasks;
+    public static class MapTaskBuffer extends PriBuffer<Task> {
+
+        private final Map<Task, Task> tasks;
 
         public MapTaskBuffer(int initialCapacity) {
             capacity.set(initialCapacity);
-            tasks = PriBuffer.newMap(true);
+            tasks = PriMap.newMap(true);
         }
 
         @Override
@@ -189,11 +158,11 @@ abstract public class TaskBuffer implements Consumer<ITask> {
         }
 
         @Override
-        public final <T extends ITask> T put(T n) {
-            ITask p = tasks.putIfAbsent(n, n);
+        public final Task put(Task n) {
+            Task p = tasks.putIfAbsent(n, n);
             if (p != null) {
-                merge(p, n);
-                return (T) p;
+                Task.merge(p, n);
+                return p;
             } else
                 return n;
         }
@@ -202,8 +171,8 @@ abstract public class TaskBuffer implements Consumer<ITask> {
          * TODO time-sensitive
          */
         @Override
-        public void commit(long now, ConsumerX<ITask> target) {
-            Iterator<ITask> ii = tasks.values().iterator();
+        public void commit(long now, ConsumerX<? super Task> target) {
+            Iterator<Task> ii = tasks.values().iterator();
             while (ii.hasNext()) {
                 target.accept(ii.next());
                 ii.remove();
@@ -211,7 +180,7 @@ abstract public class TaskBuffer implements Consumer<ITask> {
         }
 
         @Override
-        public boolean async(ConsumerX<ITask> target) {
+        public boolean async(ConsumerX<Task> target) {
             return false;
         }
     }
@@ -223,19 +192,20 @@ abstract public class TaskBuffer implements Consumer<ITask> {
      * allowing multiple inputting threads to fill the bag, potentially deduplicating each's results,
      * while other thread(s) drain it in prioritized order as input to NAR.
      */
-    public static class BagTaskBuffer extends TaskBuffer {
+    public static class BagTaskBuffer extends PriBuffer<Task> {
 
         /**
          * temporary buffer before input so they can be merged in case of duplicates
          */
-        public final Bag<ITask, ITask> tasks;
+        public final Bag<Task, Task> tasks;
 
         {
             final PriMerge merge = Param.tasklinkMerge;
-            tasks = new BufferedBag.SimpleBufferedBag<>(new PriArrayBag<>(merge, 0) {
-                @Override
-                protected float merge(ITask existing, ITask incoming, float incomingPri, @Nullable NumberX overflow) {
-                    return TaskBuffer.merge(existing, incoming);
+            tasks = new BufferedBag.SimpleBufferedBag<Task,Task>(new PriArrayBag<>(merge, 0) {
+
+                /** merge in the pre-buffer */
+                @Override protected float merge(Task existing, Task incoming, float incomingPri) {
+                    return Task.merge(existing, incoming, merge, CauseMerge.Append, PriReturn.Overflow, true);
                 }
 
                 @Override
@@ -243,10 +213,10 @@ abstract public class TaskBuffer implements Consumer<ITask> {
                             return 0; /* since sampling is not used */
                         }
                     },
-                    new PriBuffer<>(merge) {
-                        @Override
-                        protected void merge(Prioritizable existing, ITask incoming, float pri, PriMerge merge, OverflowDistributor<ITask> overflow) {
-                            TaskBuffer.merge((ITask) existing, incoming);
+                    new PriMap<Task>(merge) {
+                        /** merge in the post-buffer */
+                        @Override protected void merge(Prioritizable existing, Task incoming, float pri, PriMerge merge, OverflowDistributor<Task> overflow) {
+                            Task.merge((Task)existing, incoming, merge, CauseMerge.Append, PriReturn.Post, true);
                         }
                     }
             );
@@ -298,18 +268,17 @@ abstract public class TaskBuffer implements Consumer<ITask> {
         }
 
         @Override
-        public final boolean async(ConsumerX<ITask> target) {
+        public final boolean async(ConsumerX<Task> target) {
             return false;
         }
 
         @Override
-        public <T extends ITask> T put(T x) {
-            return (T) tasks.put(x);
+        public Task put(Task x) {
+            return tasks.put(x);
         }
 
         @Override
-        public void commit(long now, ConsumerX<ITask> target) {
-
+        public void commit(long now, ConsumerX<? super Task> target) {
 
             if (prev == Long.MIN_VALUE)
                 prev = now - 1;
@@ -318,7 +287,7 @@ abstract public class TaskBuffer implements Consumer<ITask> {
 
             prev = now;
 
-            Bag<ITask, ITask> b = this.tasks;
+            Bag<Task, Task> b = this.tasks;
 
             b.setCapacity(capacity.intValue());
             b.commit(null);
@@ -331,7 +300,7 @@ abstract public class TaskBuffer implements Consumer<ITask> {
 
                     int c = target.concurrency();
                     if (c <= 1) {
-                        b.pop(null, n, target::input);
+                        b.pop(null, n, target::accept);
                     } else {
                         int remain = n;
                         int nEach = (int) Math.ceil(((float) remain) / c);
@@ -369,83 +338,83 @@ abstract public class TaskBuffer implements Consumer<ITask> {
     }
 
 
-    public static class BagPuncTasksBuffer extends TaskBuffer {
-
-        public final TaskBuffer belief, goal, question, quest;
-        private final TaskBuffer[] ALL;
-
-        public BagPuncTasksBuffer(int capacity, float rate) {
-            belief = new BagTaskBuffer(capacity, rate);
-            goal = new BagTaskBuffer(capacity, rate);
-            question = new BagTaskBuffer(capacity, rate);
-            quest = new BagTaskBuffer(capacity, rate);
-
-            ALL = new TaskBuffer[]{belief, goal, question, quest};
-
-            this.capacity.set(capacity);
-        }
-
-        @Override
-        public boolean async(ConsumerX<ITask> target) {
-            return false;
-        }
-
-        @Override
-        public float priMin() {
-            float q = question.priMin();
-            if (q < ScalarValue.EPSILON) return 0;
-            float qq = quest.priMin();
-            if (qq < ScalarValue.EPSILON) return 0;
-            float b = belief.priMin();
-            if (b < ScalarValue.EPSILON) return 0;
-            float g = goal.priMin();
-            if (g < ScalarValue.EPSILON) return 0;
-            return Math.min(Math.min(Math.min(b, g), q), qq);
-        }
-
-        private TaskBuffer buffer(byte punc) {
-            switch (punc) {
-                case BELIEF:
-                    return belief;
-                case GOAL:
-                    return goal;
-                case QUESTION:
-                    return question;
-                case QUEST:
-                    return quest;
-                default:
-                    return null;
-            }
-        }
-
-        @Override
-        public void clear() {
-            for (TaskBuffer x : ALL)
-                x.clear();
-        }
-
-        @Override
-        public <T extends ITask> T put(T x) {
-            return buffer(x.punc()).put(x);
-        }
-
-        @Override
-        public void commit(long now, ConsumerX<ITask> target) {
-            //TODO parallelize option
-
-            int c = Math.max(1, capacity.intValue() / ALL.length);
-            for (TaskBuffer x : ALL) {
-                x.capacity.set(c);
-                x.commit(now, target);
-            }
-        }
-
-        @Override
-        public int size() {
-            int s = 0;
-            for (TaskBuffer x : ALL)
-                s += x.size();
-            return s;
-        }
-    }
+//    public static class BagPuncTasksBuffer extends TaskBuffer {
+//
+//        public final TaskBuffer belief, goal, question, quest;
+//        private final TaskBuffer[] ALL;
+//
+//        public BagPuncTasksBuffer(int capacity, float rate) {
+//            belief = new BagTaskBuffer(capacity, rate);
+//            goal = new BagTaskBuffer(capacity, rate);
+//            question = new BagTaskBuffer(capacity, rate);
+//            quest = new BagTaskBuffer(capacity, rate);
+//
+//            ALL = new TaskBuffer[]{belief, goal, question, quest};
+//
+//            this.capacity.set(capacity);
+//        }
+//
+//        @Override
+//        public boolean async(ConsumerX<Prioritizable> target) {
+//            return false;
+//        }
+//
+//        @Override
+//        public float priMin() {
+//            float q = question.priMin();
+//            if (q < ScalarValue.EPSILON) return 0;
+//            float qq = quest.priMin();
+//            if (qq < ScalarValue.EPSILON) return 0;
+//            float b = belief.priMin();
+//            if (b < ScalarValue.EPSILON) return 0;
+//            float g = goal.priMin();
+//            if (g < ScalarValue.EPSILON) return 0;
+//            return Math.min(Math.min(Math.min(b, g), q), qq);
+//        }
+//
+//        private TaskBuffer buffer(byte punc) {
+//            switch (punc) {
+//                case BELIEF:
+//                    return belief;
+//                case GOAL:
+//                    return goal;
+//                case QUESTION:
+//                    return question;
+//                case QUEST:
+//                    return quest;
+//                default:
+//                    return null;
+//            }
+//        }
+//
+//        @Override
+//        public void clear() {
+//            for (TaskBuffer x : ALL)
+//                x.clear();
+//        }
+//
+//        @Override
+//        public <T extends ITask> T put(T x) {
+//            return buffer(x.punc()).put(x);
+//        }
+//
+//        @Override
+//        public void commit(long now, ConsumerX<Prioritizable> target) {
+//            //TODO parallelize option
+//
+//            int c = Math.max(1, capacity.intValue() / ALL.length);
+//            for (TaskBuffer x : ALL) {
+//                x.capacity.set(c);
+//                x.commit(now, target);
+//            }
+//        }
+//
+//        @Override
+//        public int size() {
+//            int s = 0;
+//            for (TaskBuffer x : ALL)
+//                s += x.size();
+//            return s;
+//        }
+//    }
 }

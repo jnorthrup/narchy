@@ -71,7 +71,7 @@ public abstract class AgentAction extends TaskConcept implements GameLoop, Perma
             super.value(t, n);
 
             if (t.isGoal()) {
-                MetaGoal.Action.learn(t.cause(), t.priElseZero(), n.control.causes);
+                MetaGoal.Action.learn(t.cause(), t.priElseZero(), n.control.why);
             }
         }
     }

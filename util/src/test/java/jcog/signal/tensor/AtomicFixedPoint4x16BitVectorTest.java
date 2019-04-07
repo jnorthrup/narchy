@@ -37,16 +37,16 @@ class AtomicFixedPoint4x16BitVectorTest {
         assertEquals(1+0.5+0.25+.125, x.sumValues(), 0.001f);
 
         //multiply arg 3 by 0.5
-        x.mergeAndGet(3, 0.5f,  (v, a) -> v * a); assertEquals("1,0.5,0.25,0.0625", x.toString());
+        x.merge(3, 0.5f,  (v, a) -> v * a); assertEquals("1,0.5,0.25,0.0625", x.toString());
         //multiply arg 2 by 0.5
-        x.mergeAndGet(2, 0.5f,  (v, a) -> v * a); assertEquals("1,0.5,0.125,0.0625", x.toString());
+        x.merge(2, 0.5f,  (v, a) -> v * a); assertEquals("1,0.5,0.125,0.0625", x.toString());
         //multiply arg 1 by 0.5
-        x.mergeAndGet(1, 0.5f,  (v, a) -> v * a); assertEquals("1,0.25,0.125,0.0625", x.toString());
+        x.merge(1, 0.5f,  (v, a) -> v * a); assertEquals("1,0.25,0.125,0.0625", x.toString());
         //multiply arg 0 by 0.5
-        x.mergeAndGet(0, 0.5f,  (v, a) -> v * a); assertEquals("0.5,0.25,0.125,0.0625", x.toString());
+        x.merge(0, 0.5f,  (v, a) -> v * a); assertEquals("0.5,0.25,0.125,0.0625", x.toString());
 
         //no change TODO test write elide
-        x.mergeAndGet(0, 1, (v, a) -> v * a);
+        x.merge(0, 1, (v, a) -> v * a);
 
         x.fill(0.33f); assertEquals("0.33,0.33,0.33,0.33", x.toString());
 

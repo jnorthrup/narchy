@@ -83,14 +83,6 @@ public interface ScalarValue extends Prioritized {
 //        return (p==p) ? p : 0;
 //    }
 
-    default float priMax(float _max) {
-        //pri(Math.max(priElseZero(this), max));
-        return pri((x, max) -> Math.max(max, (x!=x) ? 0 : x), _max);
-    }
-
-    default float priMin(float _min) {
-        return pri((x, min) -> Math.min(min, (x!=x) ? 0 : x), _min);
-    }
 
 
     FloatFloatToFloatFunction priAddUpdateFunction = (x, y) -> {

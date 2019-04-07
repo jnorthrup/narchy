@@ -4,6 +4,7 @@ import nars.NAR;
 import nars.NARS;
 import nars.Param;
 import nars.Task;
+import nars.attention.What;
 import nars.bag.leak.TaskLeak;
 import nars.exe.impl.WorkerExec;
 import nars.op.language.util.IRC;
@@ -357,7 +358,7 @@ public class IRCAgent extends IRC {
 
 
         @Override
-        protected float leak(Task next) {
+        protected float leak(Task next, What what) {
             boolean cmd = next.isCommand();
             if (cmd || (trace && !next.isDeleted())) {
                 String s = (!cmd) ? next.toString() : next.term().toString();

@@ -14,13 +14,13 @@ import georegression.geometry.UtilPolygons2D_I32;
 import georegression.struct.point.Point2D_I32;
 import georegression.struct.shapes.Polygon2D_I32;
 import georegression.struct.shapes.Rectangle2D_I32;
+import jcog.pri.Prioritizable;
 import jcog.signal.wave2d.Bitmap2D;
 import nars.$;
 import nars.NAR;
 import nars.agent.Game;
 import nars.control.NARPart;
 import nars.control.channel.ConsumerX;
-import nars.task.ITask;
 import nars.task.NALTask;
 import nars.task.signal.SignalTask;
 import nars.term.Term;
@@ -54,7 +54,7 @@ import static nars.time.Tense.ETERNAL;
 public class ShapeSensor extends NARPart {
 
     private final Bitmap2D input;
-    private final ConsumerX<ITask> in;
+    private final ConsumerX<Prioritizable> in;
     private final Term id;
 
 
@@ -352,10 +352,10 @@ public class ShapeSensor extends NARPart {
             return ab <= 0 ? $.p(a, b) : $.p(b, a);
         }
 
-        public void input(Consumer<ITask> t, long last, NAR n) {
+        public void input(Consumer<Prioritizable> t, long last, NAR n) {
             long now = n.time();
             for (Term x : image) {
-                ITask xx = new SignalTask($.inh(x,id), BELIEF, $.t(1f, n.confDefault(BELIEF)),
+                Prioritizable xx = new SignalTask($.inh(x,id), BELIEF, $.t(1f, n.confDefault(BELIEF)),
                         last, now, n.time.nextStamp()).priSet(n.priDefault(BELIEF));
                 t.accept(xx);
             }

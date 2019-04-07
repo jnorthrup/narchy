@@ -2,13 +2,13 @@ package nars.concept.sensor;
 
 import com.google.common.collect.Iterables;
 import jcog.math.FloatSupplier;
+import jcog.pri.Prioritizable;
 import nars.$;
 import nars.NAR;
 import nars.agent.Game;
 import nars.attention.AttnBranch;
 import nars.concept.Concept;
 import nars.control.channel.CauseChannel;
-import nars.task.ITask;
 import nars.term.Termed;
 import nars.truth.Truth;
 import org.eclipse.collections.api.block.function.primitive.FloatFloatToObjectFunction;
@@ -21,7 +21,7 @@ import static nars.Op.BELIEF;
 abstract public class VectorSensor extends AbstractSensor implements Iterable<Signal> {
 
 
-    public final CauseChannel<ITask> in;
+    public final CauseChannel<Prioritizable> in;
 
     public final AttnBranch attn;
 
@@ -43,7 +43,7 @@ abstract public class VectorSensor extends AbstractSensor implements Iterable<Si
         this.in = newChannel(nar);
     }
 
-    protected CauseChannel<ITask> newChannel(NAR nar) {
+    protected CauseChannel<Prioritizable> newChannel(NAR nar) {
         return nar.newChannel(id != null ? id : this);
     }
 

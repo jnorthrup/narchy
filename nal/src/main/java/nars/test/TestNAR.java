@@ -254,7 +254,7 @@ public class TestNAR {
 
     public TestNAR input(ITask... s) {
         finished = false;
-        for (ITask x: s) {
+        for (ITask x : s) {
             if (x.pri() == 0 || x.isDeleted())
                 throw new RuntimeException("input task has zero or deleted priority");
             nar.input(x);

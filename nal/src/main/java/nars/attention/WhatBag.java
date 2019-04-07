@@ -1,23 +1,23 @@
 package nars.attention;
 
-import jcog.pri.PriBuffer;
+import jcog.pri.PriMap;
 import jcog.pri.bag.impl.ArrayBag;
 import jcog.pri.op.PriMerge;
 import nars.term.Term;
 
 /** bag composing a weighted set of Attention's that can be reprioritized and sampled */
-public class AttentionBag extends ArrayBag<Term, Attention> {
-    public AttentionBag() {
-        super(PriMerge.replace, 64, PriBuffer.newMap(false));
+public class WhatBag extends ArrayBag<Term, What> {
+    public WhatBag() {
+        super(PriMerge.replace, 64, PriMap.newMap(false));
     }
 
     @Override
-    public float pri(Attention value) {
+    public float pri(What value) {
         return value.pri();
     }
 
     @Override
-    public Term key(Attention value) {
+    public Term key(What value) {
         return value.id;
     }
 }

@@ -2,6 +2,7 @@ package nars.op;
 
 import com.google.common.collect.Iterables;
 import jcog.learn.Autoencoder;
+import jcog.pri.Prioritizable;
 import jcog.util.ArrayUtils;
 import nars.$;
 import nars.NAR;
@@ -10,7 +11,6 @@ import nars.concept.Concept;
 import nars.concept.sensor.AbstractSensor;
 import nars.control.channel.ConsumerX;
 import nars.table.BeliefTable;
-import nars.task.ITask;
 import nars.task.signal.SignalTask;
 import nars.term.Term;
 import nars.term.Termed;
@@ -35,7 +35,7 @@ public class AutoConceptualizer extends AbstractSensor {
 
     private final boolean beliefOrGoal;
     private final float[] x;
-    private final ConsumerX<ITask> out;
+    private final ConsumerX<Prioritizable> out;
     float learningRate = 0.05f;
     float noiseLevel = 0.0002f;
 
@@ -114,7 +114,7 @@ public class AutoConceptualizer extends AbstractSensor {
     }
 
     protected void onFeature(Term feature) {
-        out.input(new SignalTask(feature, BELIEF, $.t(1f, 0.9f), nar.time(), nar.time() - nar.dur()/2, nar.time() + nar.dur()/2, nar.evidence()));
+        out.acceptAll(new SignalTask(feature, BELIEF, $.t(1f, 0.9f), nar.time(), nar.time() - nar.dur()/2, nar.time() + nar.dur()/2, nar.evidence()));
     }
 
     private Term conj(int[] order, float[] a, int maxArity, float threshold) {

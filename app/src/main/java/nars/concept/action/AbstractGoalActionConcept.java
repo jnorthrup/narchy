@@ -1,5 +1,6 @@
 package nars.concept.action;
 
+import jcog.pri.Prioritizable;
 import nars.$;
 import nars.NAR;
 import nars.Param;
@@ -14,7 +15,6 @@ import nars.table.BeliefTables;
 import nars.table.dynamic.SensorBeliefTables;
 import nars.table.dynamic.SeriesBeliefTable;
 import nars.table.temporal.RTreeBeliefTable;
-import nars.task.ITask;
 import nars.task.signal.SignalTask;
 import nars.task.util.Answer;
 import nars.task.util.series.RingBufferTaskSeries;
@@ -87,7 +87,7 @@ public class AbstractGoalActionConcept extends AgentAction {
 
     }
 
-    protected CauseChannel<ITask> channel(NAR n) {
+    protected CauseChannel<Prioritizable> channel(NAR n) {
         return n.newChannel(this);
     }
 

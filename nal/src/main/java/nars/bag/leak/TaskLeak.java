@@ -2,7 +2,7 @@ package nars.bag.leak;
 
 import jcog.event.Off;
 import jcog.pri.PLink;
-import jcog.pri.PriBuffer;
+import jcog.pri.PriMap;
 import jcog.pri.PriReference;
 import jcog.pri.bag.Bag;
 import jcog.pri.bag.Sampler;
@@ -12,6 +12,7 @@ import jcog.pri.op.PriMerge;
 import nars.NAR;
 import nars.Op;
 import nars.Task;
+import nars.attention.What;
 import nars.concept.Concept;
 import nars.control.How;
 import nars.link.TaskLink;
@@ -57,8 +58,8 @@ public abstract class TaskLeak extends How {
         this(
                 new BufferSource(
                         new BufferedBag.SimpleBufferedBag<>(
-                                new PriReferenceArrayBag<>(merge, capacity, PriBuffer.newMap(false)),
-                                new PriBuffer<>(merge))
+                                new PriReferenceArrayBag<>(merge, capacity, PriMap.newMap(false)),
+                                new PriMap<>(merge))
                 )
                 , n, puncs
         );
@@ -99,7 +100,7 @@ public abstract class TaskLeak extends How {
     /**
      * returns how much of the input was consumed; 0 means nothing, 1 means 100%
      */
-    abstract protected float leak(Task next);
+    abstract protected float leak(Task next, What what);
 
     @Override
     protected void starting(NAR nar) {
@@ -113,9 +114,9 @@ public abstract class TaskLeak extends How {
     }
 
     @Override
-    public void next(NAR nar, BooleanSupplier kontinue) {
-        volMax = nar.termVolumeMax.intValue();
-        source.next(this::leak, kontinue, nar);
+    public void next(What w, BooleanSupplier kontinue) {
+        volMax = w.nar.termVolumeMax.intValue();
+        source.next((next) -> leak(next, w), kontinue, w);
     }
 
     public void clear() {
@@ -131,7 +132,7 @@ public abstract class TaskLeak extends How {
 
         @Nullable abstract public Off starting(TaskLeak t, NAR n);
 
-        public abstract void next(Consumer<Task> each, BooleanSupplier kontinue, NAR nar);
+        public abstract void next(Consumer<Task> each, BooleanSupplier kontinue, What w);
 
         public Off start(TaskLeak t, NAR nar) {
             this.pri = t::priFiltered; //not t::pri
@@ -169,9 +170,9 @@ public abstract class TaskLeak extends How {
         }
 
         @Override
-        public void next(Consumer<Task> each, BooleanSupplier kontinue, NAR nar) {
+        public void next(Consumer<Task> each, BooleanSupplier kontinue, What w) {
             if (!bag.commit(bagUpdateFn).isEmpty()) {
-                bag.sample(nar.random(), (PriReference<Task> v) -> {
+                bag.sample(w.nar.random(), (PriReference<Task> v) -> {
                     Task t = v.get();
                     if (t.isDeleted())
                         return Sampler.SampleReaction.Remove;
@@ -215,11 +216,11 @@ public abstract class TaskLeak extends How {
         }
 
         @Override
-        public void next(Consumer<Task> each, BooleanSupplier kontinue, NAR nar) {
+        public void next(Consumer<Task> each, BooleanSupplier kontinue, What w) {
 
             when = focus();
 
-            nar.attn.sample(rng, (Predicate<? super TaskLink>)(c)->{
+            w.sample(rng, (Predicate<? super TaskLink>)(c)->{
 
                 if (c == null) return false; //TODO can this even happen
 

@@ -63,7 +63,7 @@ public class HijackQuestionTable extends PriHijackBag<Task, Task> implements Que
                 r.forget(x);
         }
 
-        commit(forget(r.nar.attn.decay.floatValue() /* estimate */));
+        commit(forget(r.nar.questionForgetRate.floatValue() /* estimate */));
 
         //TODO track displaced questions
     }

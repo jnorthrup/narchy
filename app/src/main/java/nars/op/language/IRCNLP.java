@@ -2,6 +2,7 @@
 package nars.op.language;
 
 import nars.*;
+import nars.attention.What;
 import nars.bag.leak.TaskLeak;
 import nars.derive.Derivers;
 import nars.derive.impl.BatchDeriver;
@@ -100,7 +101,7 @@ public class IRCNLP extends IRC {
         }
 
         @Override
-        protected float leak(Task next) {
+        protected float leak(Task next, What what) {
             boolean cmd = next.isCommand();
             if (cmd || (trace && !next.isDeleted())) {
                 String s = (!cmd) ? next.toString() : next.term().toString();

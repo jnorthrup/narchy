@@ -1,5 +1,6 @@
 package jcog.signal.tensor;
 
+import jcog.pri.op.PriReturn;
 import jcog.util.FloatFloatToFloatFunction;
 
 import java.util.concurrent.atomic.AtomicIntegerArray;
@@ -56,7 +57,7 @@ public class AtomicFloatVector extends AbstractVector implements WritableTensor 
         return nextFloat;
     }
 
-    @Override public final float merge(int linearCell, float arg, FloatFloatToFloatFunction x, boolean returnValueOrDelta) {
+    @Override public final float merge(int linearCell, float arg, FloatFloatToFloatFunction x, PriReturn returning) {
         int prevI, nextI;
         float prev, next;
         AtomicIntegerArray data = this.data;
@@ -68,7 +69,7 @@ public class AtomicFloatVector extends AbstractVector implements WritableTensor 
             nextI = floatToIntBits(next);
         } while(prevI!=nextI && data.compareAndExchangeRelease(linearCell, prevI, nextI)!=prevI);
 
-        return returnValueOrDelta ? next : (next-prev);
+        return returning.apply(Float.NaN, prev, next);
     }
 
     @Override

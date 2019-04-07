@@ -59,7 +59,7 @@ public enum MetaGoal {
      * learn that the given effects have a given value
      * note: requires that the FasterList's internal array is correct Cause[] type for direct un-casting access
      */
-    public void learn(short[] cause, float strength, FasterList<Cause> causes) {
+    public void learn(short[] cause, float strength, FasterList<Why> whies) {
 
         if (Math.abs(strength) < Float.MIN_NORMAL)
             return;
@@ -73,7 +73,7 @@ public enum MetaGoal {
                 //strength;
 
         int ordinal = ordinal();
-        Cause[] cc = causes.array();
+        Why[] cc = whies.array();
         for (short c : cause) {
             MetaGoal.learn(cc[c].credit, ordinal, s);
         }
@@ -92,7 +92,7 @@ public enum MetaGoal {
     /**
      * estimate the priority factor determined by the current value of priority-affecting causes
      */
-    public static float privaluate(FasterList<Cause> values, short[] effect) {
+    public static float privaluate(FasterList<Why> values, short[] effect) {
 
         int effects = effect.length;
         if (effects == 0) return 0;
@@ -100,7 +100,7 @@ public enum MetaGoal {
         float value = 0;
         Object[] vv = values.array();
         for (short c : effect)
-            value += ((Cause) vv[c]).value();
+            value += ((Why) vv[c]).value();
 
 
         return value / effects;
@@ -174,14 +174,14 @@ public enum MetaGoal {
 //        return b;
 //    }
 
-    public static class Report extends ObjectDoubleHashMap<ObjectBytePair<Cause>> {
+    public static class Report extends ObjectDoubleHashMap<ObjectBytePair<Why>> {
 
-        public TreeBasedTable<Cause, MetaGoal, Double> table() {
-            TreeBasedTable<Cause, MetaGoal, Double> tt = TreeBasedTable.create();
+        public TreeBasedTable<Why, MetaGoal, Double> table() {
+            TreeBasedTable<Why, MetaGoal, Double> tt = TreeBasedTable.create();
             MetaGoal[] mv = MetaGoal.values();
             synchronized (this) {
                 forEachKeyValue((k, v) -> {
-                    Cause c = k.getOne();
+                    Why c = k.getOne();
                     MetaGoal m = mv[k.getTwo()];
                     tt.put(c, m, v);
                 });
@@ -196,7 +196,7 @@ public enum MetaGoal {
             return this;
         }
 
-        public Report add(Iterable<Cause> cc) {
+        public Report add(Iterable<Why> cc) {
 
             cc.forEach(c -> {
 
@@ -229,7 +229,7 @@ public enum MetaGoal {
         short[] tc = t.cause();
         StringBuilder sb = new StringBuilder();
         for (short s : tc) {
-            Cause c = nar.control.causes.get(s);
+            Why c = nar.control.why.get(s);
             sb.append(c).append('\n');
         }
         return sb.toString().trim();

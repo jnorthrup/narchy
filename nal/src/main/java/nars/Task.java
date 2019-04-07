@@ -4,7 +4,10 @@ import jcog.TODO;
 import jcog.Util;
 import jcog.data.list.FasterList;
 import jcog.pri.UnitPrioritizable;
+import jcog.pri.op.PriMerge;
+import jcog.pri.op.PriReturn;
 import jcog.tree.rtree.HyperRegion;
+import nars.control.CauseMerge;
 import nars.control.op.Perceive;
 import nars.subterm.Subterms;
 import nars.task.DerivedTask;
@@ -100,6 +103,41 @@ public interface Task extends Truthed, Stamp, TermedDelegate, ITask, TaskRegion,
 
     public static Task negIf(Task answer, boolean negate) {
         return negate ? Task.negated(answer) : answer;
+    }
+
+    /** with most common defaults */
+    static float merge(Task pp, Task tt) {
+        return merge(pp, tt, PriMerge.max, CauseMerge.Append, PriReturn.Post, true);
+    }
+
+    static float merge(Task e, Task i, PriMerge pMerge, CauseMerge cMerge, PriReturn returning, boolean updateCreationTime) {
+
+        if (e == i)
+            return 0;
+
+        float overflow = pMerge.merge(e, i.pri(), returning);
+
+        if (i != e) {
+            if (e instanceof NALTask) {
+            //((NALTask) pp).merge(incoming, true, cMerge);
+
+
+                ((NALTask)e).causeMerge(i.cause(), cMerge);
+
+                if (updateCreationTime) {
+                    long inCreation = i.creation();
+                    if (inCreation > e.creation())
+                        e.setCreation(inCreation);
+                }
+            }
+        }
+
+        if (e.isCyclic() && !i.isCyclic())
+            e.setCyclic(false);
+
+
+        return overflow;
+
     }
 
     @Override

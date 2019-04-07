@@ -10,13 +10,13 @@ import jcog.data.map.CustomConcurrentHashMap;
 import jcog.math.FloatRange;
 import jcog.memoize.CaffeineMemoize;
 import jcog.memoize.Memoize;
+import jcog.pri.Prioritizable;
 import jcog.util.ArrayUtils;
 import nars.*;
 import nars.concept.Concept;
 import nars.concept.Operator;
 import nars.control.channel.ConsumerX;
 import nars.subterm.Subterms;
-import nars.task.ITask;
 import nars.task.NALTask;
 import nars.term.ProxyTerm;
 import nars.term.Term;
@@ -163,7 +163,7 @@ public class Opjects extends DefaultTermizer {
      */
 
 
-    protected final ConsumerX<ITask> in;
+    protected final ConsumerX<Prioritizable> in;
 
     private final Memoize<Pair<Pair<Class, Term>, List<Class<?>>>, MethodHandle> methodCache =
             CaffeineMemoize.build(
@@ -297,7 +297,7 @@ public class Opjects extends DefaultTermizer {
 
 
             if (feedback == null)
-                in.input(value);
+                in.acceptAll(value);
             else
                 in.input(feedback, value);
 

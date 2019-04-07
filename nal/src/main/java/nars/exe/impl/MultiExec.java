@@ -6,6 +6,7 @@ import jcog.Util;
 import jcog.data.list.FasterList;
 import jcog.exe.Exe;
 import jcog.math.FloatAveragedWindow;
+import jcog.pri.Prioritizable;
 import nars.NAR;
 import nars.exe.Exec;
 import nars.task.AbstractTask;
@@ -53,7 +54,7 @@ abstract public class MultiExec extends UniExec {
     @Deprecated @Override
     public void print(Appendable out) {
         try {
-            Joiner.on('\n').appendTo(out, nar.control.how);
+            Joiner.on('\n').appendTo(out, nar.how);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -62,7 +63,7 @@ abstract public class MultiExec extends UniExec {
     @Override
     public final void input(Object x) {
         if (x instanceof NALTask || x instanceof ProxyTask)
-            input((ITask) x);
+            input((Prioritizable) x);
         else
             execute(x);
     }
@@ -120,7 +121,7 @@ abstract public class MultiExec extends UniExec {
             threadIdleTimePerCycle = cycleIdealNS - workTargetNS;
 
             if (nar.random().nextFloat() < queueLatencyMeasurementProbability) {
-                input(new QueueLatencyMeasurement(nanoTime()));
+                accept(new QueueLatencyMeasurement(nanoTime()));
             }
         }
 

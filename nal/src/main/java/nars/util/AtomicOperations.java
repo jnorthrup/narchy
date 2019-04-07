@@ -3,7 +3,7 @@ package nars.util;
 import jcog.data.list.FasterList;
 import jcog.math.FloatRange;
 import jcog.pri.PLink;
-import jcog.pri.PriBuffer;
+import jcog.pri.PriMap;
 import jcog.pri.PriReference;
 import jcog.pri.bag.impl.ArrayBag;
 import jcog.pri.bag.impl.PriReferenceArrayBag;
@@ -47,7 +47,7 @@ public class AtomicOperations implements BiFunction<Task, NAR, Task> {
     final BiConsumer<Term, Timed> exe;
 
     final static int ACTIVE_CAPACITY = 16;
-    final ArrayBag<Term, PriReference<Term>> active = new PriReferenceArrayBag<>(PriMerge.max, ACTIVE_CAPACITY, PriBuffer.newMap(false));
+    final ArrayBag<Term, PriReference<Term>> active = new PriReferenceArrayBag<>(PriMerge.max, ACTIVE_CAPACITY, PriMap.newMap(false));
 
     private final AtomicReference<DurLoop> onCycle = new AtomicReference(null);
 

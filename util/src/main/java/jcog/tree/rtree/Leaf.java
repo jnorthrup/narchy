@@ -79,7 +79,7 @@ public class Leaf<X> extends AbstractNode<X> {
 
     @Override
     public Iterator<X> iterateValues() {
-        return ArrayIterator.get(data, size);
+        return ArrayIterator.iterateN(data, size);
     }
 
     @Override

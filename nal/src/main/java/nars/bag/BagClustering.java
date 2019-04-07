@@ -3,7 +3,7 @@ package nars.bag;
 import jcog.data.list.FasterList;
 import jcog.learn.gng.NeuralGasNet;
 import jcog.learn.gng.impl.Centroid;
-import jcog.pri.PriBuffer;
+import jcog.pri.PriMap;
 import jcog.pri.VLink;
 import jcog.pri.bag.Bag;
 import jcog.pri.bag.impl.BufferedBag;
@@ -69,8 +69,8 @@ public class BagClustering<X> {
 
 
         this.bag = new BufferedBag.SimpleBufferedBag<>(
-                new PriReferenceArrayBag<>(merge, initialCap, PriBuffer.newMap(false)),
-                new PriBuffer<>(merge));
+                new PriReferenceArrayBag<>(merge, initialCap, PriMap.newMap(false)),
+                new PriMap<>(merge));
 
     }
 

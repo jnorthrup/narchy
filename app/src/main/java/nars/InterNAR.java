@@ -5,13 +5,14 @@ import jcog.Util;
 import jcog.func.TriConsumer;
 import jcog.math.FloatRange;
 import jcog.net.UDPeer;
+import jcog.pri.Prioritizable;
+import nars.attention.What;
 import nars.bag.leak.TaskLeak;
 import nars.control.NARPart;
 import nars.control.channel.CauseChannel;
 import nars.io.IO;
 import nars.io.TaskIO;
 import nars.task.ActiveQuestionTask;
-import nars.task.ITask;
 import nars.time.clock.RealTime;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -36,7 +37,7 @@ public class InterNAR extends NARPart implements TriConsumer<NAR, ActiveQuestion
 
     static final int outCapacity = 128; //TODO abstract
 
-    protected final CauseChannel<ITask> recv;
+    protected final CauseChannel<Prioritizable> recv;
     private final TaskLeak send;
 
 
@@ -94,7 +95,7 @@ public class InterNAR extends NARPart implements TriConsumer<NAR, ActiveQuestion
             }
 
             @Override
-            protected float leak(Task next) {
+            protected float leak(Task next, What what) {
                 return InterNAR.this.send(next);
             }
         };

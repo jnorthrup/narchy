@@ -9,7 +9,7 @@ import nars.NAR;
 import nars.NARS;
 import org.junit.jupiter.api.Test;
 
-class AttentionTest {
+class WhatTest {
 
     /** fundamental test that demonstrates the proof of concept:
      *      a NAR with N separate, isolated attentions,

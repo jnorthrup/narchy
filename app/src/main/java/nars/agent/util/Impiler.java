@@ -8,6 +8,7 @@ import jcog.data.graph.NodeGraph;
 import jcog.data.graph.path.FromTo;
 import jcog.data.graph.search.Search;
 import jcog.data.list.FasterList;
+import jcog.pri.Prioritizable;
 import jcog.sort.SortedArray;
 import jcog.util.ArrayUtils;
 import jcog.util.HashCachedPair;
@@ -15,11 +16,11 @@ import nars.$;
 import nars.NAR;
 import nars.Param;
 import nars.Task;
+import nars.attention.What;
 import nars.bag.leak.TaskLeak;
 import nars.concept.Concept;
 import nars.concept.TaskConcept;
 import nars.control.channel.CauseChannel;
-import nars.task.ITask;
 import nars.task.NALTask;
 import nars.term.Term;
 import nars.term.Termed;
@@ -55,7 +56,7 @@ public class Impiler {
 
     public static class ImpilerSolver extends TaskLeak {
 
-        private final CauseChannel<ITask> in;
+        private final CauseChannel<Prioritizable> in;
 
         public ImpilerSolver(int capacity, float ratePerDuration, NAR n) {
             super(capacity, n);
@@ -68,7 +69,7 @@ public class Impiler {
         }
 
         @Override
-        protected float leak(Task next) {
+        protected float leak(Task next, What what) {
             TaskConcept c = (TaskConcept) nar.conceptualizeDynamic(next.term());
             if (c != null) {
                 ImplNode i = c.meta(IMPILER_NODE);
@@ -108,7 +109,7 @@ public class Impiler {
         }
 
         @Override
-        protected float leak(Task next) {
+        protected float leak(Task next, What what) {
             return deduce(next.term());
 
         }
@@ -312,7 +313,7 @@ public class Impiler {
         }
 
         @Override
-        protected float leak(Task next) {
+        protected float leak(Task next, What what) {
             TaskConcept c = (TaskConcept) nar.conceptualizeDynamic(next.term());
             if (c == null)
                 return 0;

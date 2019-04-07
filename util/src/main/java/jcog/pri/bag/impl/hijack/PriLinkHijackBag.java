@@ -6,6 +6,7 @@ import jcog.pri.Prioritized;
 import jcog.pri.ScalarValue;
 import jcog.pri.bag.impl.HijackBag;
 import jcog.pri.op.PriMerge;
+import jcog.pri.op.PriReturn;
 
 
 public class PriLinkHijackBag<X,Y extends PriReference<? extends X>> extends HijackBag<X, Y> {
@@ -38,7 +39,7 @@ public class PriLinkHijackBag<X,Y extends PriReference<? extends X>> extends Hij
 
     @Override
     protected Y merge(Y existing, Y incoming, NumberX overflowing) {
-        float overflow = merge.merge(existing, ((Prioritized) incoming).pri(), PriMerge.MergeResult.Overflow);
+        float overflow = merge.merge(existing, ((Prioritized) incoming).pri(), PriReturn.Overflow);
         if (overflow > ScalarValue.EPSILON) {
             if (overflowing != null) overflowing.add(overflow);
         }

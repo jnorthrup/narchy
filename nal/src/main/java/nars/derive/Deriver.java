@@ -3,9 +3,9 @@ package nars.derive;
 import jcog.Util;
 import nars.NAR;
 import nars.Task;
-import nars.attention.DerivePri;
+import nars.attention.What;
 import nars.control.How;
-import nars.control.Cause;
+import nars.control.Why;
 import nars.derive.premise.DeriverRules;
 import nars.derive.premise.PremiseDeriverCompiler;
 import nars.derive.premise.PremiseDeriverRuleSet;
@@ -38,8 +38,6 @@ abstract public class Deriver extends How {
 
     public final DeriverRules rules;
 
-    public DerivePri pri;
-
     protected Deriver(Set<PremiseRuleProto> rules, NAR nar) {
         this(PremiseDeriverCompiler.the(rules), nar);
         if (rules.isEmpty())
@@ -50,13 +48,9 @@ abstract public class Deriver extends How {
         this(rules, rules.nar);
     }
 
-    protected Deriver(DeriverRules rules, NAR nar) {
-        this(rules, nar.attn.derivePri, nar);
-    }
 
-    protected Deriver(DeriverRules rules, DerivePri pri, NAR nar) {
+    protected Deriver(DeriverRules rules, NAR nar) {
         super();
-        this.pri = pri;
         this.rules = rules;
 //        this.source = source;
         this.timing =
@@ -76,10 +70,10 @@ abstract public class Deriver extends How {
 
 
     @Override
-    public final void next(NAR n, final BooleanSupplier kontinue) {
+    public final void next(What w, final BooleanSupplier kontinue) {
 
 
-        derive(Derivation.derivation.get().next(this, n), kontinue);
+        derive(Derivation.derivation.get().next(this, w), kontinue);
 
     }
 
@@ -89,12 +83,6 @@ abstract public class Deriver extends How {
 
 
 
-    /**
-     * punctuation equalizer: value factor for the conclusion punctuation type [0..1.0]
-     */
-    public final float preAmp(byte concPunc) {
-        return pri.preAmp(concPunc);
-    }
 
 
     /**
@@ -113,7 +101,7 @@ abstract public class Deriver extends How {
     @Override
     public float value() {
         //TODO cache this between cycles
-        float v = Util.sum(Cause::value, rules.causes());
+        float v = Util.sum(Why::value, rules.causes());
         //System.out.println(this + " " + v);
         return v;
     }

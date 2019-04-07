@@ -33,6 +33,9 @@ public enum PriMerge implements BiConsumer<Prioritizable, Prioritized> {
     or {
         @Override public float merge(float e, float i) {  return Util.or(e, i); }
     },
+    min {
+        @Override public float merge(float e, float i) {  return e <= i ? e : i; }
+    },
     max {
         @Override public float merge(float e, float i) {  return e >= i ? e : i; }
     },
@@ -61,29 +64,14 @@ public enum PriMerge implements BiConsumer<Prioritizable, Prioritized> {
         merge(existing, incoming.pri());
     }
 
-    public enum MergeResult {
-
-        /** any resultng overflow priority which was not absorbed by the target, >=0 */
-        Overflow,
-
-        /** the value before the update */
-        Before,
-
-        /** the value after the update */
-        After,
-
-        /** delta = after - before */
-        Delta
-    }
-
     public final void merge(Prioritizable existing, float incoming) {
-        merge(existing, incoming, MergeResult.After);
+        merge(existing, incoming, PriReturn.Post);
     }
 
     /**
      * merge 'incoming' budget (scaled by incomingScale) into 'existing'
      */
-    public final float merge(Prioritizable existing, float incoming, MergeResult mode) {
+    public final float merge(Prioritizable existing, float incoming, PriReturn mode) {
 
         if (incoming!=incoming && ignoreDeletedIncoming())
             return 0;
@@ -106,31 +94,7 @@ public enum PriMerge implements BiConsumer<Prioritizable, Prioritized> {
 
         float pBefore = _pBefore[0];
 
-        switch(mode) {
-            case Before:
-                return pBefore;
-
-            case After:
-                return pAfter;
-
-            case Delta:
-                return pAfter - pBefore;
-
-            case Overflow:
-                float z;
-                if (pAfter != pAfter) {
-                    z = (incoming != incoming) ? 0 : incoming; //deleted
-                } else {
-                    z = incoming - (pAfter - pBefore);
-                }
-
-                assert(z==z);
-
-                return z;
-
-            default:
-                throw new UnsupportedOperationException();
-        }
+        return mode.apply(incoming, pBefore, pAfter);
     }
 
     protected boolean ignoreDeletedIncoming() {

@@ -2,6 +2,7 @@ package nars.derive.impl;
 
 import jcog.math.IntRange;
 import nars.Task;
+import nars.attention.What;
 import nars.derive.Derivation;
 import nars.derive.Deriver;
 import nars.derive.Premise;
@@ -31,11 +32,11 @@ public class BatchDeriver extends Deriver {
 
         Collection<Premise> premises = d.premiseBuffer;
 
-        When w = When.now(nar);
+        When when = When.now(nar);
 
         do {
 
-            hypothesize(w, premises, d);
+            hypothesize(when, premises, d);
 
             if (!premises.isEmpty()) {
                 for (Premise p : premises)
@@ -51,16 +52,17 @@ public class BatchDeriver extends Deriver {
     /**
      * forms premises
      */
-    private void hypothesize(When w, Collection<Premise> target, Derivation d) {
+    private void hypothesize(When when, Collection<Premise> target, Derivation d) {
 
         int tlAttempts = termlinksPerTaskLink.intValue(); assert(tlAttempts > 0);
 
-        nar.attn.links.sample(d.random, tasklinksPerIteration.intValue(), tasklink->{
+        What what = d.what;
+        what.sample(d.random, tasklinksPerIteration.intValue(), tasklink->{
 
-            Task task = tasklink.get(w);
+            Task task = tasklink.get(when);
             if (task != null) {
                 for (int i = 0; i < tlAttempts; i++) {
-                    Term term = d.nar.attn.term(tasklink, task, d);
+                    Term term = ((What.TaskLinksWhat)what).links.term(tasklink, task, d);
                     if (term != null)
                         target.add(new Premise(task, term));
                 }

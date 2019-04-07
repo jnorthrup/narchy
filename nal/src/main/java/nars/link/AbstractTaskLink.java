@@ -4,6 +4,7 @@ import jcog.TODO;
 import jcog.Util;
 import jcog.pri.ScalarValue;
 import jcog.pri.op.PriMerge;
+import jcog.pri.op.PriReturn;
 import jcog.util.FloatFloatToFloatFunction;
 import nars.Op;
 import nars.Param;
@@ -11,6 +12,8 @@ import nars.task.util.TaskException;
 import nars.term.Term;
 
 import static jcog.Util.assertFinite;
+import static jcog.pri.op.PriReturn.Delta;
+import static jcog.pri.op.PriReturn.Post;
 import static nars.Task.i;
 
 public abstract class AbstractTaskLink implements TaskLink {
@@ -121,7 +124,7 @@ public abstract class AbstractTaskLink implements TaskLink {
     }
 
     public final TaskLink priMerge(byte punc, float pri) {
-        mergeComponent(punc, pri, Param.tasklinkMerge, true);
+        mergeComponent(punc, pri, Param.tasklinkMerge);
         return this;
     }
 
@@ -131,11 +134,11 @@ public abstract class AbstractTaskLink implements TaskLink {
     }
 
     protected float priMergeGetValue(byte punc, float pri, PriMerge merge) {
-        return mergeComponent(punc, pri, merge, true);
+        return mergeComponent(punc, pri, merge, Post);
     }
 
     public final float priMergeGetDelta(byte punc, float pri, PriMerge merge) {
-        return mergeComponent(punc, pri, merge, false);
+        return mergeComponent(punc, pri, merge, Delta);
     }
 
 
@@ -148,45 +151,54 @@ public abstract class AbstractTaskLink implements TaskLink {
 
     protected abstract float priSum();
 
-    protected abstract float merge(int ith, float pri, FloatFloatToFloatFunction componentMerge, boolean valueOrDelta);
+    protected abstract float merge(int ith, float pri, FloatFloatToFloatFunction componentMerge, PriReturn returning);
 
     protected abstract void fill(float pri);
 
     public float getAndSetPriPunc(byte index, float next) {
-        return merge(index, next, PriMerge.replace, true);
+        return merge(index, next, PriMerge.replace, Post);
     }
 
     @Override abstract public String toString();
 
     private void priSet(byte index, float next) {
-        float before = merge(index, next, PriMerge.replace, true);
+        float before = merge(index, next, PriMerge.replace, Post);
         if (Math.abs(before-next) >= Float.MIN_NORMAL)
             invalidate();
     }
 
-    @Override
-    public /* HACK */ float mergeAndGetDelta(TaskLink incoming, PriMerge merge) {
-        if (incoming instanceof AtomicTaskLink) {
-            float delta = 0;
-            for (byte i = 0; i < 4; i++) {
-                float p = incoming.priIndex(i);
-                delta += merge(i, p, merge, false);
-            }
-            return delta / 4;
-        } else {
-            throw new TODO();
-        }
+    //    @Override
+//    public /* HACK */ float mergeAndGetDelta(TaskLink incoming, PriMerge merge) {
+//        if (incoming instanceof AtomicTaskLink) {
+//            float delta = 0;
+//            for (byte i = 0; i < 4; i++) {
+//                float p = incoming.priIndex(i);
+//                delta += merge(i, p, merge, Delta);
+//            }
+//            return delta / 4;
+//        } else {
+//            throw new TODO();
+//        }
+//    }
+
+    private void mergeComponent(byte punc, float pri, PriMerge merge) {
+        mergeComponent(punc, pri, merge, PriReturn.Void);
     }
 
-    private float mergeComponent(byte punc, float pri, PriMerge merge, boolean valueOrDelta) {
-        return merge(i(punc), pri, merge, valueOrDelta);
+    private float mergeComponent(byte punc, float pri, PriMerge merge, PriReturn returning) {
+        return merge(i(punc), pri, merge, returning);
     }
 
-    private float merge(int ith, float pri, PriMerge merge, boolean valueOrDelta) {
+    private float merge(int ith, float pri, PriMerge merge, PriReturn returning) {
         assertFinite(pri);
-        float y = merge(ith, pri, merge::mergeUnitize, valueOrDelta);
-        if (valueOrDelta || y != 0)
+        float y = merge(ith, pri, merge::mergeUnitize, returning);
+
+        if (returning == PriReturn.Delta && y == 0) {
+            //no need to invalidate
+        } else {
             invalidate();
+        }
+
         return y;
     }
 
@@ -209,7 +221,7 @@ public abstract class AbstractTaskLink implements TaskLink {
             FloatFloatToFloatFunction mult = PriMerge.and::mergeUnitize;
             boolean changed = false;
             for (int i = 0; i < 4; i++) {
-                float d = merge(i, X, mult, false);
+                float d = merge(i, X, mult, Delta);
                 changed |= d!=0;
             }
             if (changed)

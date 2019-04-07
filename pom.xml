@@ -13,6 +13,10 @@
     <name>narchy</name>
     <url>http://github.com/automenta/narchy</url>
 
+    <prerequisites>
+        <maven>3.6</maven>
+    </prerequisites>
+
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
@@ -53,6 +57,7 @@
                     </argLine>
                 </configuration>
             </plugin>
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>

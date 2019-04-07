@@ -15,7 +15,8 @@ class PartsTest {
 
     private Parts<Object,Object> s;
 
-    @BeforeEach void init() {
+    @BeforeEach
+    void init() {
         Exe.single();
         s = new Parts("theContext");
         assertEquals(MoreExecutors.directExecutor(), s.executor); //ensure single-threaded set

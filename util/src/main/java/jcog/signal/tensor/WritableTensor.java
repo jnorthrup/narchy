@@ -1,6 +1,7 @@
 package jcog.signal.tensor;
 
 import jcog.TODO;
+import jcog.pri.op.PriReturn;
 import jcog.signal.Tensor;
 import jcog.util.FloatFloatToFloatFunction;
 
@@ -31,22 +32,18 @@ public interface WritableTensor extends Tensor {
         throw new TODO();
     }
 
-    default /* final */ float mergeAndGet(int linearCell, float arg, FloatFloatToFloatFunction x) {
-        return merge(linearCell, arg, x, true);
+    default /* final */ float merge(int linearCell, float arg, FloatFloatToFloatFunction x) {
+        return merge(linearCell, arg, x, PriReturn.Post);
     }
 
-    default /* final */ float mergeAndGetDelta(int linearCell, float arg, FloatFloatToFloatFunction x) {
-        return merge(linearCell, arg, x, false);
-    }
-
-    default float merge(int linearCell, float arg, FloatFloatToFloatFunction x, boolean returnValueOrDelta) {
+    default float merge(int linearCell, float arg, FloatFloatToFloatFunction x, PriReturn returning) {
         float prev = getAt(linearCell);
 
         float next = x.apply(prev, arg);
 
         setAt(linearCell, next);
 
-        return returnValueOrDelta ? next : (next-prev);
+        return returning.apply(Float.NaN, prev, next);
     }
 
     default void fill(float x) {

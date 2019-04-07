@@ -11,6 +11,7 @@ import jcog.pri.op.PriMerge;
 import nars.$;
 import nars.NAR;
 import nars.Task;
+import nars.attention.What;
 import nars.concept.Concept;
 import nars.concept.PermanentConcept;
 import nars.control.How;
@@ -51,7 +52,7 @@ public class Abbreviation/*<S extends Term>*/ extends How {
     /**
      * generated abbreviation belief's confidence
      */
-    public final Number abbreviationConfidence;
+    private final Number abbreviationConfidence;
     /**
      * accepted volume range, inclusive
      */
@@ -65,7 +66,7 @@ public class Abbreviation/*<S extends Term>*/ extends How {
      */
     private final Bag<Term, PLink<Term>> pending;
     private final String termPrefix;
-    private final CauseChannel<ITask> input;
+    private final CauseChannel<ITask> in;
 
 
     public Abbreviation(String termPrefix, int volMin, int volMax, NAR nar) {
@@ -106,7 +107,7 @@ public class Abbreviation/*<S extends Term>*/ extends How {
 //        };
 
 
-        this.input = nar.newChannel(this);
+        this.in = nar.newChannel(this);
 
         this.termPrefix = termPrefix;
         this.abbreviationConfidence =
@@ -118,15 +119,15 @@ public class Abbreviation/*<S extends Term>*/ extends How {
         nar.start(this);
     }
 
-    private void abbreviateNext() {
-        pending.pop(null, 1, this::abbreviateNext);
+    private void abbreviateNext(What w) {
+        pending.pop(null, 1, t -> abbreviateNext(t, w));
     }
 
-    private void abbreviateNext(PLink<Term> p) {
-        abbreviateNext(p.get(), p.priElseZero());
+    private void abbreviateNext(PLink<Term> p, What w) {
+        abbreviateNext(p.get(), p.priElseZero(), w);
     }
 
-    private void abbreviateNext(Term t, float pri) {
+    private void abbreviateNext(Term t, float pri, What w) {
 
         stm.forget(1f, nar.random());
         stm.add(t);
@@ -143,7 +144,7 @@ public class Abbreviation/*<S extends Term>*/ extends How {
                 return; //already abbreviated
             }
             Term abbreviation;
-            if ((abbreviation = abbreviate(pri, abbreviable, super.nar)) != null) {
+            if ((abbreviation = abbreviate(pri, abbreviable, w)) != null) {
                 abbreviable.meta(Abbreviation.class.getName(), abbreviation);
             }
 
@@ -184,7 +185,7 @@ public class Abbreviation/*<S extends Term>*/ extends How {
     }
 
 
-    protected String nextSerialTerm() {
+    private String nextSerialTerm() {
 
         return termPrefix + Integer.toString(currentTermSerial.incrementAndGet(), 36);
 
@@ -192,11 +193,11 @@ public class Abbreviation/*<S extends Term>*/ extends How {
     }
 
 
-    protected Term abbreviate(float pri, Concept abbrConcept, NAR nar) {
+    private Term abbreviate(float pri, Concept abbrConcept, What w) {
 
         Term abbreviated = abbrConcept.term();
 
-        if (abbrConcept != null && !(abbrConcept instanceof AliasConcept) && !(abbrConcept instanceof PermanentConcept)) {
+        if (!(abbrConcept instanceof AliasConcept) && !(abbrConcept instanceof PermanentConcept)) {
 
 
             Term aliasTerm = Atomic.the(nextSerialTerm());
@@ -229,7 +230,7 @@ public class Abbreviation/*<S extends Term>*/ extends How {
 
             if (abbreviationTask != null) {
 
-                input.input(abbreviationTask);
+                in.accept(abbreviationTask, w);
 
                 onAbbreviated(abbreviated, aliasTerm);
 
@@ -248,16 +249,16 @@ public class Abbreviation/*<S extends Term>*/ extends How {
 
 
     @Nullable
-    protected Term newRelation(Term abbreviated, Term id) {
+    private Term newRelation(Term abbreviated, Term id) {
         return $.sim(abbreviated, id);
     }
 
 
     @Override
-    public void next(NAR n, BooleanSupplier kontinue) {
+    public void next(What w, BooleanSupplier kontinue) {
         do {
 
-            TaskLink a = nar.attn.sample(n.random());
+            TaskLink a = w.sample();
             if (a == null)
                 break;
 
@@ -266,7 +267,7 @@ public class Abbreviation/*<S extends Term>*/ extends How {
                 tryEncode(at, a.priElseZero());
             }
 
-            abbreviateNext();
+            abbreviateNext(w);
 
 
         } while (kontinue.getAsBoolean());
@@ -274,6 +275,6 @@ public class Abbreviation/*<S extends Term>*/ extends How {
 
     @Override
     public float value() {
-        return input.value();
+        return in.value();
     }
 }

@@ -142,7 +142,7 @@ public abstract class AbstractTask implements ITask, Prioritizable {
 
             //sort by type, emulating loop unrolling by batching the set of tasks by their type.
             if (anyOrder && x.length > 2) {
-                Arrays.sort(x, Comparators.byIntFunction((ITask z)->z.getClass().hashCode()));
+                Arrays.sort(x, Comparators.byIntFunction((Prioritizable z)->z.getClass().hashCode()));
             }
         }
 
@@ -157,9 +157,9 @@ public abstract class AbstractTask implements ITask, Prioritizable {
     /** execute the given tasks */
     public final static class TasksIterable extends AbstractTask {
 
-        private final Iterable<? extends ITask> tasks;
+        private final Iterable<? extends Prioritizable> tasks;
 
-        public TasksIterable(Iterable<? extends ITask> x) {
+        public TasksIterable(Iterable<? extends Prioritizable> x) {
             this.tasks = x;
         }
 

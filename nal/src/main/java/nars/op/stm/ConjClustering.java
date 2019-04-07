@@ -12,10 +12,12 @@ import jcog.util.ArrayUtils;
 import nars.NAR;
 import nars.Param;
 import nars.Task;
+import nars.attention.What;
 import nars.bag.BagClustering;
-import nars.control.How;
 import nars.control.CauseMerge;
+import nars.control.How;
 import nars.control.channel.CauseChannel;
+import nars.task.ITask;
 import nars.task.NALTask;
 import nars.task.UnevaluatedTask;
 import nars.task.util.TaskException;
@@ -41,9 +43,8 @@ import static nars.truth.func.TruthFunctions.confCompose;
 public class ConjClustering extends How {
 
     public final BagClustering<Task> data;
-    //final CentroidConjoiner conjoiner = new CentroidConjoiner();
     private final BagClustering.Dimensionalize<Task> model;
-    private final CauseChannel in;
+    private final CauseChannel<ITask> in;
     private final byte punc;
 
     public final FloatRange termVolumeMaxPct = new FloatRange(0.75f, 0, 1f);
@@ -68,6 +69,8 @@ public class ConjClustering extends How {
     private int learningIterations = 1;
     private int minDurationsPerLearning = 1;
 
+
+    public final FloatRange forgetRate = new FloatRange(0.5f, 0, 1);
 
     public ConjClustering(NAR nar, byte punc, int centroids, int capacity) {
         this(nar, punc, (t) -> true, centroids, capacity);
@@ -125,7 +128,7 @@ public class ConjClustering extends How {
         this.filter = filter;
 
         this.now = lastLearn = nar.time();
-        update(nar);
+        update();
 
         nar.start(this);
     }
@@ -164,9 +167,9 @@ public class ConjClustering extends How {
 
 
     @Override
-    public /*synchronized*/ void next(NAR nar, BooleanSupplier kontinue /* max tasks generated per centroid, >=1 */) {
+    public /*synchronized*/ void next(What w, BooleanSupplier kontinue /* max tasks generated per centroid, >=1 */) {
 
-        update(nar);
+        update();
 
         //round-robin visit each centroid one task at a time.  dont finish a centroid completely and then test kontinue, it is unfair
         FasterList<TaskList> centroids = new FasterList<>(this.data.net.centroidCount());
@@ -184,33 +187,34 @@ public class ConjClustering extends How {
         if (cc == 0)
             return;
         if (cc > 1)
-            centroids.shuffleThis(nar.random());
+            centroids.shuffleThis(w.nar.random());
 
+        FasterList<Task> o = new FasterList();
         CentroidConjoiner conjoiner = new CentroidConjoiner();
         do {
 
-            Iterator<TaskList> ii = centroids.iterator();
-            while (ii.hasNext()) {
-                FasterList<Task> l = ii.next();
-                if (conjoiner.conjoinCentroid(l, tasksPerIterationPerCentroid, nar) == 0 || l.size()<=1)
-                    ii.remove();
+            Iterator<TaskList> iii = centroids.iterator();
+            while (iii.hasNext()) {
+                FasterList<Task> i = iii.next();
+                if (conjoiner.conjoinCentroid(i, tasksPerIterationPerCentroid, o, w.nar) == 0 || i.size()<=1)
+                    iii.remove();
 
                  if (!kontinue.getAsBoolean())
                      return;
             }
 
         } while (!centroids.isEmpty());
+        in.acceptAll(o, w);
 
     }
 
-    private void update(NAR nar) {
+    private void update() {
         long now = nar.time();
         long lastNow = this.now;
         if (this.nar==null || lastNow < now) {
             //parameters must be set even if data is empty due to continued use in the filter
             //but at most once per cycle or duration
             this.now = now;
-            this.nar = nar;
             this.dur = nar.dur();
             this.stampLenMax =
                     //Param.STAMP_CAPACITY / 2; //for minimum of 2 tasks in each conjunction
@@ -237,7 +241,7 @@ public class ConjClustering extends How {
     }
 
     protected float forgetRate() {
-        return nar.attn.decay.floatValue();
+        return forgetRate.asFloat();
         //return 1f;
         //return 0.9f;
         //return 0.75f;
@@ -269,8 +273,8 @@ public class ConjClustering extends How {
 
         final MetalLongSet actualStamp = new MetalLongSet(Param.STAMP_CAPACITY * 2);
 
-        private int conjoinCentroid(FasterList<Task> items, int limit, NAR nar) {
-            int s = items.size();
+        private int conjoinCentroid(FasterList<Task> in, int limit, FasterList<Task> out, NAR nar) {
+            int s = in.size();
             if (s == 0)
                 return 0;
 
@@ -286,7 +290,7 @@ public class ConjClustering extends How {
 
 //            System.out.println(items.size());
 
-            ListIterator<Task> i = ArrayUtils.cycle(items);
+            ListIterator<Task> i = ArrayUtils.cycle(in);
             int volEstimate = 1;
             float freq = 1, conf = 1;
             long start = Long.MAX_VALUE;
@@ -302,11 +306,11 @@ public class ConjClustering extends How {
                     if (!active)
                         break;
 
-                    s = items.size();
+                    s = in.size();
 
                     int ts = tried.size();
                     if (ts > 0) {
-                        items.addAll(tried);
+                        in.addAll(tried);
                         tried.clear();
                     }
                     if (s + ts <= 1)
@@ -367,7 +371,7 @@ public class ConjClustering extends How {
 
                         if (trying.size() > 1) {
 
-                            if (items.isEmpty() || (conf <= confMinThresh) || (volEstimate  >= volMax) || (trying.size() >= Param.STAMP_CAPACITY)) {
+                            if (in.isEmpty() || (conf <= confMinThresh) || (volEstimate  >= volMax) || (trying.size() >= Param.STAMP_CAPACITY)) {
                                 Task[] x = trying.toArray(Task.EmptyArray);
                                 trying.clear();
 
@@ -389,7 +393,7 @@ public class ConjClustering extends How {
                                             data.remove(aa);
                                     }
 
-                                    in.input(y);
+                                    out.add(y);
 
                                     if (++count >= limit)
                                         break main;
@@ -408,7 +412,7 @@ public class ConjClustering extends How {
             }
 
             if (!tried.isEmpty()) {
-                items.addAll(tried);
+                in.addAll(tried);
                 tried.clear();
             }
 

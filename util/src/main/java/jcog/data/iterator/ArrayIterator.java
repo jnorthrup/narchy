@@ -75,7 +75,7 @@ public class ArrayIterator<E> implements Iterator<E>, Iterable<E> {
         if (e == null)
             return emptyIterator();
         else
-            return ArrayIterator.get(e, e.length);
+            return ArrayIterator.iterateN(e, e.length);
     }
 
     public static <E> Iterable<E> iterable(E... e) {
@@ -86,16 +86,16 @@ public class ArrayIterator<E> implements Iterator<E>, Iterable<E> {
                 case 1:
                     return List.of(e);
                 default:
-                    return (Iterable) ArrayIterator.get(e, e.length);
+                    return (Iterable) ArrayIterator.iterateN(e, e.length);
             }
         }
     }
 
-    public static <E> Iterator<E> get(E[] e, int from, int to) {
+    public static <E> Iterator<E> iterateN(E[] e, int from, int to) {
         throw new TODO();
     }
 
-    public static <E> Iterator<E> get(E[] e, int size) {
+    public static <E> Iterator<E> iterateN(E[] e, int size) {
         switch (size) {
             case 0:
                 return emptyIterator();
@@ -108,11 +108,11 @@ public class ArrayIterator<E> implements Iterator<E>, Iterable<E> {
         }
     }
 
-    public static <E> Iterator<E> getNonNull(E[] e) {
-        return getNonNull(e, e.length);
+    public static <E> Iterator<E> iterateNonNull(E[] e) {
+        return iterateNonNullN(e, e.length);
     }
 
-    public static <E> Iterator<E> getNonNull(E[] e, int size) {
+    public static <E> Iterator<E> iterateNonNullN(E[] e, int size) {
         switch (size) {
             case 0:
                 return emptyIterator();

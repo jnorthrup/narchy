@@ -469,7 +469,7 @@ public class Branch<X> extends AbstractNode<X> {
 
     @Override
     public Iterator<?> iterateLocal() {
-        return ArrayIterator.get(data, size);
+        return ArrayIterator.iterateN(data, size);
     }
 
     @Override

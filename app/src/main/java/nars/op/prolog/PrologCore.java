@@ -5,11 +5,11 @@ import com.google.common.collect.Iterators;
 import jcog.Util;
 import jcog.data.atomic.AtomicFloat;
 import jcog.math.Range;
+import jcog.pri.Prioritizable;
 import nars.*;
 import nars.control.channel.ConsumerX;
 import nars.index.concept.Memory;
 import nars.subterm.Subterms;
-import nars.task.ITask;
 import nars.task.NALTask;
 import nars.term.Compound;
 import nars.term.Term;
@@ -85,7 +85,7 @@ public class PrologCore extends PrologAgent implements Consumer<Task> {
 
 
     private final long timeoutMS = 50;
-    private final ConsumerX<ITask> in;
+    private final ConsumerX<Prioritizable> in;
 
 
     /*final ObjectBooleanHashMap<Term> beliefs = new ObjectBooleanHashMap() {
@@ -234,7 +234,7 @@ public class PrologCore extends PrologAgent implements Consumer<Task> {
 
             if (y != null) {
                 logger.info("answer {}\t{}", question, y);
-                in.input(y);
+                in.acceptAll(y);
             }
 
         } catch (Exception e) {

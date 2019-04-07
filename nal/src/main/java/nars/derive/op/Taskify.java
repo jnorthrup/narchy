@@ -8,6 +8,7 @@ import nars.derive.Derivation;
 import nars.derive.premise.PremiseRuleProto;
 import nars.task.DebugDerivedTask;
 import nars.task.DerivedTask;
+import nars.task.ITask;
 import nars.term.ProxyTerm;
 import nars.term.Term;
 import nars.term.atom.Atomic;
@@ -175,7 +176,7 @@ public class Taskify extends ProxyTerm {
         }
 
 
-        float priority = d.deriver.pri.pri(t, d);
+        float priority = d.what.derivePri.pri(t, d);
 
         if (priority != priority) {
             d.nar.feel.deriveFailPrioritize.increment();
@@ -192,7 +193,7 @@ public class Taskify extends ProxyTerm {
 
 
         int cost;
-        Task u = d.add(t);
+        ITask u = d.add(t);
         if (u != t) {
 
             d.nar.feel.deriveFailDerivationDuplicate.increment();
@@ -216,16 +217,16 @@ public class Taskify extends ProxyTerm {
      * destination of any derived tasks; also may be used to communicate backpressure
      * from the recipient.
      */
-    public final PremiseRuleProto.RuleCause channel;
+    public final PremiseRuleProto.RuleWhy channel;
 
     private static final Atomic TASKIFY = Atomic.the("Taskify");
 
 
-    public Taskify(Termify termify, PremiseRuleProto.RuleCause channel) {
+    public Taskify(Termify termify, PremiseRuleProto.RuleWhy channel) {
         this($.funcFast(TASKIFY, termify, $.the(channel.id)), termify, channel);
     }
 
-    protected Taskify(Term id, Termify termify, PremiseRuleProto.RuleCause channel) {
+    protected Taskify(Term id, Termify termify, PremiseRuleProto.RuleWhy channel) {
         super(id);
         this.termify = termify;
         this.channel = channel;

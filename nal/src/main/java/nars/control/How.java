@@ -4,6 +4,7 @@ import jcog.TODO;
 import jcog.Util;
 import nars.NAR;
 import nars.attention.PriNode;
+import nars.attention.What;
 import nars.exe.Exec;
 import nars.term.Term;
 import nars.time.event.InternalEvent;
@@ -16,12 +17,16 @@ import static nars.time.Tense.TIMELESS;
 
 /**
  *
- * instances of How represent a "mental strategy", ie. a mode of thinking/perceiving/acting,
- * which the system can learn to deliberately apply to system activity.
+ * instances of How represent a "mental strategy" of thought.
+ * a mode of thinking/perceiving/acting,
+ * which the system can learn to
+ * deliberately apply.
+ *
+ * a How also implies the existence for a particular reason Why it Should.
+ * so there is functional interaction between How's and Why's
+ * and their combined role in thinking What-ever.
  *
  * see: https://cogsci.indiana.edu/pub/parallel-terraced-scan.pdf
- *
- *
  *
  * instruments the runtime resource consumption of its iteratable procedure.
  * this determines a dynamically adjusted strength parameter
@@ -36,15 +41,8 @@ import static nars.time.Tense.TIMELESS;
  */
 abstract public class How extends NARPart {
 
-    /**
-     * returns iterations actually completed
-     * returns 0 if no work was done, although the time taken will still be recorded
-     * if returns -1, then it signals there is no work availble
-     * and time will not be recorded. further a scheduler can assume
-     * this will remain true for the remainder of the cycle, so it can be
-     * removed from the eligible execution list for the current cycle.
-     */
-    public abstract void next(NAR n, BooleanSupplier kontinue);
+
+    public abstract void next(What w, BooleanSupplier kontinue);
 
     /**
      * TODO varHandle
@@ -118,13 +116,13 @@ abstract public class How extends NARPart {
 //        sleepUntil(nar.time()+1);
 //    }
 
-    public boolean sleeping(NAR nar) {
+    public boolean inactive(NAR nar) {
         if (sleepUntil == TIMELESS)
             return false;
-        return sleeping(nar.time());
+        return inactive(nar.time());
     }
 
-    boolean sleeping(long now) {
+    boolean inactive(long now) {
         if (sleepUntil < now) {
             sleepUntil = TIMELESS;
             return sleeping = true;
@@ -133,7 +131,7 @@ abstract public class How extends NARPart {
         }
     }
 
-    public boolean sleeping() {
+    public boolean inactive() {
         return sleeping;
     }
 
@@ -224,7 +222,7 @@ abstract public class How extends NARPart {
             throw new TODO();
         }
 
-        public final void runFor(long durationNS) {
+        public final void runFor(What w, long durationNS) {
 //TODO
 //            if (singleton)
 //                c.busy.set(false);
@@ -232,7 +230,7 @@ abstract public class How extends NARPart {
             long start = System.nanoTime();
             long deadline = start + durationNS;
             try {
-                can.next(nar, () -> System.nanoTime() < deadline);
+                can.next(w, () -> System.nanoTime() < deadline);
             } catch (Throwable t) {
                 Exec.logger.error("{} {}", can, t);
             } finally {

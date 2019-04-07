@@ -4,7 +4,7 @@ import jcog.Util;
 import jcog.data.bit.MetalBitSet;
 import jcog.decide.MutableRoulette;
 import nars.Param;
-import nars.control.Cause;
+import nars.control.Why;
 import nars.derive.Derivation;
 import nars.term.control.PREDICATE;
 import nars.unify.Unify;
@@ -23,7 +23,7 @@ public class DeriverRules {
     /**
      * the causes that this is responsible for, ie. those that may be caused by this
      */
-    /*@Stable*/ public final Cause[] causes;
+    /*@Stable*/ public final Why[] whies;
 
     /**
      * repertoire
@@ -46,7 +46,7 @@ public class DeriverRules {
         assert (actions.length > 0);
         this.could = actions;
 
-        this.causes = Stream.of(actions).flatMap(b -> Stream.of(b.cause)).toArray(Cause[]::new);
+        this.whies = Stream.of(actions).flatMap(b -> Stream.of(b.why)).toArray(Why[]::new);
 
         this.planner = planner;
     }
@@ -137,8 +137,8 @@ public class DeriverRules {
     /**
      * the conclusions that in which this deriver can result
      */
-    public Cause[] causes() {
-        return causes;
+    public Why[] causes() {
+        return whies;
     }
 
     public void printRecursive() {

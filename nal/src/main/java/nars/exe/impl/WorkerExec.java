@@ -116,7 +116,7 @@ public class WorkerExec extends ThreadedExec {
                 How c = next.can;
 
                 boolean played = false;
-                if (sTime <= subCycleMinNS / 2 || c.sleeping()) {
+                if (sTime <= subCycleMinNS / 2 || c.inactive()) {
 
                 } else {
 
@@ -127,7 +127,7 @@ public class WorkerExec extends ThreadedExec {
 
                         long useNS = Util.clampSafe(sTime / rescheduleCycles, subCycleMinNS, subCycleMaxNS);
 
-                        next.runFor(useNS);
+                        next.runFor(nar.what.sample(nar.random()), useNS);
 
                         played = true;
                         after = nanoTime();
@@ -156,7 +156,7 @@ public class WorkerExec extends ThreadedExec {
         private boolean prioritize(long workTimeNS) {
 
             /** always refresh */
-            play = nar.control.how.toArray(play, How::timing);
+            play = nar.how.toArray(play, How::timing);
             if ((n = play.length) <= 0)
                 return false;
 

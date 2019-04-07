@@ -4,6 +4,7 @@ import jcog.data.graph.path.FromTo;
 import jcog.decide.Roulette;
 import jcog.pri.UnitPrioritizable;
 import jcog.pri.op.PriMerge;
+import jcog.pri.op.PriReturn;
 import nars.NAR;
 import nars.Param;
 import nars.Task;
@@ -189,7 +190,11 @@ public interface TaskLink extends UnitPrioritizable, FromTo<Term, TaskLink> {
 
     void delete(byte punc);
 
-    float mergeAndGetDelta(TaskLink incoming, PriMerge merge);
+    default /* final */ void merge(TaskLink incoming, PriMerge merge) {
+        merge(incoming, merge, PriReturn.Void);
+    }
+
+    float merge(TaskLink incoming, PriMerge merge, PriReturn returning);
 
     float take(byte punc, float howMuch);
 

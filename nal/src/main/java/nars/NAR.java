@@ -18,18 +18,17 @@ import jcog.pri.Prioritized;
 import jcog.pri.bag.Bag;
 import jcog.service.Part;
 import nars.Narsese.NarseseException;
-import nars.attention.Attention;
-import nars.attention.AttentionBag;
-import nars.attention.TaskLinks;
+import nars.attention.What;
+import nars.attention.WhatBag;
 import nars.concept.Concept;
 import nars.concept.Operator;
 import nars.concept.PermanentConcept;
 import nars.concept.TaskConcept;
 import nars.concept.util.ConceptBuilder;
-import nars.control.How;
-import nars.control.Cause;
 import nars.control.Control;
+import nars.control.How;
 import nars.control.NARPart;
+import nars.control.Why;
 import nars.control.channel.CauseChannel;
 import nars.eval.Evaluator;
 import nars.eval.Facts;
@@ -41,7 +40,6 @@ import nars.subterm.Subterms;
 import nars.table.BeliefTable;
 import nars.task.ITask;
 import nars.task.NALTask;
-import nars.task.util.TaskBuffer;
 import nars.task.util.TaskException;
 import nars.task.util.TaskTopic;
 import nars.term.Compound;
@@ -107,20 +105,20 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
     public final NARLoop loop;
     public final Time time;
     public final Memory memory;
-    public final MemoryExternal memoryExternal = new MemoryExternal(this);
+    @Deprecated public final MemoryExternal memoryExternal = new MemoryExternal(this);
     public final ConceptBuilder conceptBuilder;
     public final Emotion feel;
-    public final TaskLinks attn;
+
 
     /** core/default attention */
-    public final Attention in;
+    public final What in;
+
+    /** index of active attentions */
+    public final Bag<Term, What> what = new WhatBag();
 
     /** set of causables which can be caused.  "how" things can be done.
      * a ready queue. thread-safe and consistency maintained automatically from Parts additions/removals */
     public final FastCoWList<How> how = new FastCoWList(How[]::new);
-
-    /** index of active attentions */
-    public final Bag<Term,Attention> what = new AttentionBag();
 
     public final Topic<NAR> eventClear = new ListTopic<>();
     public final Topic<NAR> eventCycle = new ListTopic<>();
@@ -143,7 +141,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
      * @param rng
      * @param conceptBuilder
      */
-    public NAR(Memory memory, Exec exe, Attention attn, Time time, Supplier<Random> rng, ConceptBuilder conceptBuilder) {
+    public NAR(Memory memory, Exec exe, What attn, Time time, Supplier<Random> rng, ConceptBuilder conceptBuilder) {
         super(exe);
 
         eventAddRemove.on(this::indexPartChange);
@@ -156,17 +154,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
 
         named(Param.randomSelf());
 
-        this.attn = attn;
 
-        //TODO extract to a method which can be used to change .in at runtime
-        this.in = in;
-        Exec target = exe;
-        if (!in.async(target)) {
-            Consumer<NAR> p = nn -> in.commit(nn.time(), target);
-            //if (cycleOrDur)
-            onCycle(p);
-//                DurService.on(this, p)
-        }
 
         this.exe = exe;
 
@@ -175,7 +163,8 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
 
         this.feel = new Emotion(this);
 
-        start(this.attn);
+        this.in = attn; //TODO extract to a method which can be used to change .in at runtime
+        start(this.in);
 
         this.control = new Control(this);
 
@@ -185,30 +174,6 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
         this.loop = new NARLoop(this);
 
         exe.start(this);
-    }
-
-    /** updates indexes when a part is added or removed
-     *  @param change a change event emitted by Parts
-     * */
-    private void indexPartChange(ObjectBooleanPair<Part<NAR>> change) {
-        Part<NAR> p = change.getOne();
-        if (p instanceof How) {
-            How h = (How) p;
-            if (change.getTwo()) {
-                how.add(h);
-            } else {
-                boolean removed = how.remove(h); assert(removed);
-            }
-        } else if (p instanceof Attention) {
-            Attention w = (Attention) p;
-            if (change.getTwo()) {
-                Attention inserted = what.put(w);
-                //TODO handle rejection, eviction etc
-            } else {
-                @Nullable Attention removed = what.remove(w.id);
-                assert(removed == p);
-            }
-        }
     }
 
     static void outputEvent(Appendable out, String previou, String chan, Object v) throws IOException {
@@ -244,6 +209,30 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
         }
 
         out.append(v.toString()).append('\n');
+    }
+
+    /** updates indexes when a part is added or removed
+     *  @param change a change event emitted by Parts
+     * */
+    private void indexPartChange(ObjectBooleanPair<Part<NAR>> change) {
+        Part<NAR> p = change.getOne();
+        if (p instanceof How) {
+            How h = (How) p;
+            if (change.getTwo()) {
+                how.add(h);
+            } else {
+                boolean removed = how.remove(h); assert(removed);
+            }
+        } else if (p instanceof What) {
+            What w = (What) p;
+            if (change.getTwo()) {
+                What inserted = what.put(w);
+                //TODO handle rejection, eviction etc
+            } else {
+                @Nullable What removed = what.remove(w.id);
+                assert(removed == p);
+            }
+        }
     }
 
     /**
@@ -631,24 +620,12 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
 
     @Override
     public final void input(ITask t) {
-        in.put(t);
-        //exe.input(t);
+        in.accept(t);
     }
 
     @Override
     public final void input(ITask... t) {
-        for (ITask x : t)
-            in.put(x);
-//        switch (t.length) {
-//            case 0:
-//                break;
-//            case 1:
-//                input(t[0]);
-//                break;
-//            default:
-//                in.input((Iterator) new ArrayIterator<>(t));
-//                break;
-//        }
+        in.acceptAll(t);
     }
 
     @Override
@@ -1097,13 +1074,11 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
      * if this is an Iterable<Task> , it can be more efficient to use the inputTasks method to bypass certain non-NALTask conditions
      */
     @Deprecated public void input(Iterable<? extends ITask> tasks) {
-        //exe.input(tasks);
-        tasks.forEach(in::put);
+        in.acceptAll(tasks);
     }
 
     @Deprecated public final void input(Stream<? extends ITask> tasks) {
-        //exe.input(tasks.filter(Objects::nonNull));
-        tasks.forEach(in::put);
+        in.acceptAll(tasks);
     }
 
     @Override
@@ -1395,7 +1370,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
         return new long[]{time.nextStamp()};
     }
 
-    public Cause newCause(Object name) {
+    public Why newCause(Object name) {
         return control.newCause(name);
     }
 
@@ -1406,7 +1381,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
         return control.newChannel(id);
     }
 
-    public <C extends Cause> C newCause(ShortToObjectFunction<C> idToChannel) {
+    public <C extends Why> C newCause(ShortToObjectFunction<C> idToChannel) {
         return control.newCause(idToChannel);
     }
 

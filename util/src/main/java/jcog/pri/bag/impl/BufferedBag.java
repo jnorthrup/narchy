@@ -1,7 +1,7 @@
 package jcog.pri.bag.impl;
 
 import jcog.data.NumberX;
-import jcog.pri.PriBuffer;
+import jcog.pri.PriMap;
 import jcog.pri.Prioritizable;
 import jcog.pri.Prioritized;
 import jcog.pri.bag.Bag;
@@ -21,9 +21,9 @@ abstract public class BufferedBag<X, B, Y extends Prioritizable> extends ProxyBa
     /**
      * pre-bag accumulating buffer
      */
-    public final PriBuffer<B> pre;
+    public final PriMap<B> pre;
 
-    public BufferedBag(Bag<X, Y> bag, PriBuffer<B> pre) {
+    public BufferedBag(Bag<X, Y> bag, PriMap<B> pre) {
         super(bag);
         this.pre = pre;
         merge(bag.merge()); //by default.  changing this later will set pre and bag's merges
@@ -105,8 +105,8 @@ abstract public class BufferedBag<X, B, Y extends Prioritizable> extends ProxyBa
 
     public static class SimpleBufferedBag<X, Y extends Prioritizable> extends BufferedBag<X, Y, Y> {
 
-        public SimpleBufferedBag(Bag<X, Y> activates, PriBuffer<Y> conceptPriBuffer) {
-            super(activates, conceptPriBuffer);
+        public SimpleBufferedBag(Bag<X, Y> activates, PriMap<Y> conceptPriMap) {
+            super(activates, conceptPriMap);
         }
 
         @Override

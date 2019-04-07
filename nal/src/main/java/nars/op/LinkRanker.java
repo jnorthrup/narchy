@@ -3,15 +3,18 @@ package nars.op;
 import jcog.sort.FloatRank;
 import jcog.sort.RankedN;
 import nars.NAR;
+import nars.attention.What;
+import nars.control.How;
 import nars.link.TaskLink;
-import nars.time.part.DurLoop;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.function.BooleanSupplier;
 
 /** utility service for periodically ranking the
  * active tasklinks by some metric, and applying a procedure
  * based on the aggregate.
  */
-public abstract class LinkRanker<Y> extends DurLoop {
+public abstract class LinkRanker<Y> extends How {
 
     public LinkRanker() {
         super();
@@ -21,25 +24,23 @@ public abstract class LinkRanker<Y> extends DurLoop {
     }
 
     @Override
-    protected final void run(NAR n, long dt) {
+    public void next(What w, BooleanSupplier kontinue) {
 
-        beforeRun(n, dt);
 
         RankedN<Y> best = new RankedN<>(newArray(cap()), score()); //TODO option for threadLocal
 
-        n.attn.links.forEach(x -> {
+        //when = When.sinceAgo(nar.dur(), nar);
+
+        w.forEach(x -> {
             Y y = apply(x);
             if (y!=null)
                 best.add(y);
         });
 
-        run(best, n, dt);
+        run(best, w);
 
     }
 
-    protected void beforeRun(NAR n, long dt) {
-
-    }
 
     protected abstract Y[] newArray(int size);
 
@@ -50,6 +51,6 @@ public abstract class LinkRanker<Y> extends DurLoop {
 
     abstract public int cap();
 
-    abstract protected void run(RankedN<Y> best, NAR n, long dt);
+    abstract protected void run(RankedN<Y> best, What w);
 
 }

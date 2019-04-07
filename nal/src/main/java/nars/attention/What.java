@@ -6,31 +6,47 @@ import jcog.pri.bag.Sampler;
 import nars.NAR;
 import nars.attention.derive.DefaultPuncWeightedDerivePri;
 import nars.control.NARPart;
+import nars.control.channel.ConsumerX;
+import nars.exe.Exec;
 import nars.link.TaskLink;
-import nars.task.util.TaskBuffer;
+import nars.task.ITask;
+import nars.task.util.PriBuffer;
 import nars.term.Term;
 
 import java.io.Externalizable;
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
+import java.util.Iterator;
 import java.util.Random;
 import java.util.function.Function;
 
 /**
- *  an attention prioritizes the components a specific aspect of experience.
+ *  What?  an attention context described in terms of a prioritized distribution over a subset of Memory.
+ *  a semi-self-contained context-specific memory.
  *
- *  what these sets of consist of, their priority,
- *  how these change, and can *be* changed with time.
  *
- *  they are meant to be helpful constructs to be created by developers, both at design and runtime,
+ *  designed to be useful constructs for users, both at design and runtime,
  *  and at the same time accessible to any learned metaprogramming desire formed by the system itself.
  *
- *  these form semi-self-contained memories, with an input buffer for receiving
- *  input specific to it.  attentions will receive some share of the mental burden in proportion
+ *  attentions will receive some share of the mental burden in proportion
  *  to their relative prioritization.  this priority distribution of WHATs (consisting of priorities themselves)
  *  can form a product with the priority distribution of HOWs determining the overall
  *  runtime dynamics of a system.
+ *
+ *  the need for such bags can be illustrated in a chemistry analogy.  a NAR memory, undifferentiated, is like a
+ *  reaction vessel (Memory) into which everything gets dumped.  YET the chemicals (Tasks) in this process are
+ *  so reactive (combinatorically explosive) that only a small amount (> 1) of a few different chemical
+ *  types (Operators) is needed to completely fill the vessel with garbage.
+ *
+ *  instead what we want is a laboratory with plenty of compartmentalized reaction vessels where chemicals (Tasks)
+ *  can carefully be mixed in controlled ways to form reaction graphs determining the transfer of products
+ *  from one to another, including the timing, quantities, backpressure and overflow conditions,
+ *  filtration (selection queries), etc.
+ *
+ *  differentiated organs in biological systems function similarly in the above chemical analogy.
+ *
+ *
  *
  *  attentions are meant to be serializable, snapshottable, restoreable, live edited,
  *  filtered, cloned, etc.  they are like directories and their contents (ex: TaskLinks) are like files.
@@ -44,14 +60,14 @@ import java.util.function.Function;
  *  through a minimal API.  thus Attention's are referred to by a Term so that operations upon them may
  *  be conceptualized and self-executed.
   */
-abstract public class Attention extends NARPart implements Prioritizable, Sampler<TaskLink>, Externalizable {
+abstract public class What extends NARPart implements Prioritizable, Sampler<TaskLink>, Iterable<TaskLink>, Externalizable, ConsumerX<ITask> {
 
     public final PriNode pri;
 
     /** input bag */
-    public final TaskBuffer in;
+    public final PriBuffer<ITask> in;
 
-    /** default deriver pri model
+    /** advised deriver pri model
      *      however, each deriver instance can also be configured individually and dynamically.
      * */
     public DerivePri derivePri =
@@ -59,10 +75,36 @@ abstract public class Attention extends NARPart implements Prioritizable, Sample
             //new DefaultDerivePri();
             new DefaultPuncWeightedDerivePri();
 
-    protected Attention(Term id, TaskBuffer in) {
+    protected What(Term id) {
+        this(id, new PriBuffer.DirectPriBuffer());
+    }
+
+    protected What(Term id, PriBuffer in) {
         super(id);
         this.pri = new PriNode(this);
         this.in = in;
+
+        Exec target = nar.exe;
+        if (!in.async(target)) {
+            nar.onCycle(this::perceive);
+//                DurService.on(this, p)
+        }
+    }
+
+    @Override
+    public float pri() {
+        return pri.asFloat();
+    }
+
+    @Override
+    public float pri(float p) {
+        return pri.pri(p);
+    }
+
+    /** perceive the next batch of input, for synchronously (cycle/duration/realtime/etc)
+     *  triggered input buffers */
+    private void perceive() {
+        in.commit(nar.time(), nar.exe);
     }
 
     @Override
@@ -84,14 +126,19 @@ abstract public class Attention extends NARPart implements Prioritizable, Sample
      *  how exactly can be decided by the implementation. */
     abstract protected void clear();
 
+    public final TaskLink sample() {
+        return sample(nar.random());
+    }
+
     /** implements attention with a TaskLinks graph */
-    public static class TaskLinksAttention extends Attention {
+    public static class TaskLinksWhat extends What {
 
-        final TaskLinks links = new TaskLinks();
+        public final TaskLinks links = new TaskLinks();
 
-        protected TaskLinksAttention(Term id, TaskBuffer in) {
+        protected TaskLinksWhat(Term id, PriBuffer in) {
             super(id, in);
         }
+
 
         @Override
         protected void commit() {
@@ -104,18 +151,34 @@ abstract public class Attention extends NARPart implements Prioritizable, Sample
         }
 
         @Override
-        public void sample(Random rng, Function<? super TaskLink, SampleReaction> each) {
+        public final Iterator<TaskLink> iterator() {
+            return links.iterator();
+        }
+
+        @Override
+        public final void sample(Random rng, Function<? super TaskLink, SampleReaction> each) {
             links.sample(rng, each);
         }
 
         @Override
-        public void writeExternal(ObjectOutput objectOutput) throws IOException {
+        public final void writeExternal(ObjectOutput objectOutput) throws IOException {
             throw new TODO();
         }
 
         @Override
-        public void readExternal(ObjectInput objectInput) throws IOException, ClassNotFoundException {
+        public final void readExternal(ObjectInput objectInput) throws IOException, ClassNotFoundException {
             throw new TODO();
         }
     }
+
+    @Override
+    @Deprecated public final void accept(ITask x) {
+        in.accept(x);
+    }
+
+    @Deprecated public final ITask put(ITask x) {
+        return in.put(x);
+    }
+
+
 }

@@ -51,7 +51,7 @@ public interface ITask extends Prioritizable {
         } while (x != null);
     }
 
-    static void error(ITask t, ITask x, Throwable ee, NAR nar) {
+    static void error(Prioritizable t, Prioritizable x, Throwable ee, NAR nar) {
         if (t == x)
             nar.logger.error("{} {}", x, ee);
         else

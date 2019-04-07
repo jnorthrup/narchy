@@ -11,12 +11,14 @@ import nars.NAR;
 import nars.Op;
 import nars.Param;
 import nars.Task;
+import nars.attention.What;
 import nars.control.CauseMerge;
 import nars.derive.op.Occurrify;
 import nars.eval.Evaluation;
 import nars.op.Subst;
 import nars.op.UniSubst;
 import nars.subterm.Subterms;
+import nars.task.ITask;
 import nars.term.Compound;
 import nars.term.Functor;
 import nars.term.Term;
@@ -80,6 +82,9 @@ public class Derivation extends PreDerivation {
     public final AnonWithVarShift anon;
 
     public final UniSubst uniSubst = new UniSubst(this);
+
+    /** current context */
+    public transient What what = null;
 
     protected final Functor polarizeTask = new AbstractInlineFunctor1("polarizeTask") {
         @Override
@@ -479,7 +484,7 @@ public class Derivation extends PreDerivation {
         setTTL(ttl);
 
 
-        deriver.pri.premise(this);
+        what.derivePri.premise(this);
 
 //        try {
         deriver.rules.run(this, can);
@@ -501,34 +506,37 @@ public class Derivation extends PreDerivation {
 
 
 
-    public Derivation next(Deriver deri, NAR nar) {
+    public Derivation next(Deriver d, What w) {
+        next(d, w.nar);
+        this.what = w;
+        return this;
+    }
+
+    private void next(Deriver d, NAR n) {
         NAR pnar = this.nar;
 
-        if (pnar != nar) {
-            init(nar);
+        if (pnar != n) {
+            init(n);
             time = TIMELESS;
         }
 
-        long now = Tense.dither(nar.time(), nar);
+        long now = Tense.dither(n.time(), n);
         if (now != this.time) {
             this.time = now;
 
-            this.dur = nar.dur();
-            this.ditherDT = nar.dtDither();
+            this.dur = n.dur();
+            this.ditherDT = n.dtDither();
 
             uniSubst.u.dtTolerance = unifyPremise.dtTolerance = this.dtTolerance =
                     //Math.round(Param.UNIFY_DT_TOLERANCE_DUR_FACTOR * dur);
-                    nar.dtDither();
+                    n.dtDither();
 
-            this.eviMin = c2wSafe(this.confMin = nar.confMin.floatValue());
+            this.eviMin = c2wSafe(this.confMin = n.confMin.floatValue());
 
-            this.termVolMax = nar.termVolumeMax.intValue();
+            this.termVolMax = n.termVolumeMax.intValue();
         }
 
-
-        this.deriver = deri;
-
-        return this;
+        this.deriver = d;
     }
 
     @Nullable
@@ -622,8 +630,8 @@ public class Derivation extends PreDerivation {
             return y;
     }
 
-    public final Task add(Task t) {
-        return nar.in.put(t);
+    public final ITask add(Task t) {
+        return what.put(t);
     }
 
     public boolean concTruthEviMul(float ratio, boolean eternalize) {
@@ -635,6 +643,12 @@ public class Derivation extends PreDerivation {
 
     private boolean concTruthEvi(double e) {
         return e >= eviMin && (this.concTruth = PreciseTruth.byEvi(concTruth.freq(), e)) != null;
+    }
+    /**
+     * punctuation equalizer: value factor for the conclusion punctuation type [0..1.0]
+     */
+    public final float preAmp(byte concPunc) {
+        return what.derivePri.preAmp(concPunc);
     }
 
 //    public float parentEvi() {

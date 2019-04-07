@@ -2,6 +2,7 @@ package nars.exe;
 
 import jcog.Util;
 import jcog.data.list.FasterList;
+import jcog.pri.Prioritizable;
 import jcog.pri.bag.Sampler;
 import jcog.pri.bag.impl.ArrayBag;
 import jcog.pri.bag.impl.BufferedBag;
@@ -18,7 +19,7 @@ import java.util.function.Consumer;
 /**
  * manages low level task scheduling and execution
  */
-abstract public class Exec extends ConsumerX<ITask> implements Executor {
+abstract public class Exec implements Executor, ConsumerX<ITask> {
 
     public static final Logger logger = Util.logger(Exec.class);
 
@@ -37,7 +38,7 @@ abstract public class Exec extends ConsumerX<ITask> implements Executor {
      * immediately execute a Task
      */
     @Override
-    public final void input(ITask x) {
+    public final void accept(ITask x) {
         ITask t = x;
         try {
             ITask.run(t, nar);
@@ -45,7 +46,8 @@ abstract public class Exec extends ConsumerX<ITask> implements Executor {
             taskError(t, x, ee, nar);
         }
     }
-    private static void taskError(ITask t, ITask x, Throwable ee, NAR nar) {
+
+    private static void taskError(Prioritizable t, Prioritizable x, Throwable ee, NAR nar) {
         //TODO: if(RELEASE)
 //        if (t == x)
 //            nar.logger.error("{} {}", x, ee);
@@ -99,8 +101,8 @@ abstract public class Exec extends ConsumerX<ITask> implements Executor {
      * inline, synchronous
      */
     protected final void executeNow(Object t) {
-        if (t instanceof ITask)
-            input((ITask) t);
+        if (t instanceof Prioritizable)
+            input((Prioritizable) t);
         else {
             try {
                 if (t instanceof Runnable) {
@@ -141,7 +143,7 @@ abstract public class Exec extends ConsumerX<ITask> implements Executor {
 
 
     /** asynchronously drain N elements from a bag as input */
-    public void input(Sampler<nars.task.ITask> taskSampler, int max) {
+    public void input(Sampler<? extends ITask> taskSampler, int max) {
         Sampler b;
         if  (taskSampler instanceof BufferedBag)
             b = ((BufferedBag) taskSampler).bag;

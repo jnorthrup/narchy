@@ -2,9 +2,7 @@ package nars.task;
 
 import jcog.data.list.FasterList;
 import jcog.data.map.CompactArrayMap;
-import jcog.pri.Prioritized;
 import jcog.pri.UnitPri;
-import jcog.pri.op.PriMerge;
 import nars.Param;
 import nars.Task;
 import nars.control.CauseMerge;
@@ -84,30 +82,13 @@ public abstract class NALTask extends UnitPri implements Task {
     }
 
     /**
-     * combine cause: should be called in all Task bags and belief tables on merge
-     */
-    public Task priCauseMerge(Task incoming, CauseMerge merge) {
-        if (incoming == this) return this;
-
-        /*(incoming.isInput() ? PriMerge.replace : Param.taskEquivalentMerge).*/
-        PriMerge.max.merge(this, ((Prioritized) incoming).pri(), PriMerge.MergeResult.Overflow);
-
-        return causeMerge(incoming.cause(), merge);
-    }
-
-//    @Override
-//    public boolean delete() {
-//        return super.delete();
-//    }
-
-    /**
      * set the cause[]
      */
     public NALTask cause(short[] ignored) {
         return this;
     }
 
-    public Task causeMerge(short[] c, CauseMerge merge) {
+    public void causeMerge(short[] c, CauseMerge merge) {
 
         int causeCap = Param.causeCapacity.intValue();
 
@@ -119,7 +100,6 @@ public abstract class NALTask extends UnitPri implements Task {
                 this.cause(nextCause);
         //}
 
-        return this;
     }
 
     @Nullable

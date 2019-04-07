@@ -6,6 +6,7 @@ import nars.$;
 import nars.NAR;
 import nars.Op;
 import nars.Task;
+import nars.attention.What;
 import nars.control.How;
 import nars.control.channel.CauseChannel;
 import nars.control.op.Remember;
@@ -37,8 +38,8 @@ public class Inperience2 extends How {
     }
 
     @Override
-    public void next(NAR n, BooleanSupplier kontinue) {
-
+    public void next(What w, BooleanSupplier kontinue) {
+        NAR n = w.nar;
         long now = n.time();
         int dur = n.dur();
         double window = 2.0;
@@ -52,7 +53,7 @@ public class Inperience2 extends How {
         int volMaxPre = (int) Math.max(1, Math.ceil(volMax * 0.5f));
         float beliefConf = n.confDefault(BELIEF);
         Random rng = n.random();
-        n.attn.links.sample(rng, (TaskLink tl) -> {
+        w.sample(rng, (TaskLink tl) -> {
 
             Task t = tl.get(when);
             if (t != null && t.term().volume() <= volMaxPre) {
@@ -74,7 +75,7 @@ public class Inperience2 extends How {
 
                 if (u != null) {
                     Task.deductComplexification(t, u, priFactor.floatValue(),true);
-                    in.input(u);
+                    w.accept(u);
                 }
             }
 

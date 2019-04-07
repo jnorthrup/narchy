@@ -3,6 +3,7 @@ package nars.op;
 import jcog.math.FloatRange;
 import nars.NAR;
 import nars.Task;
+import nars.attention.What;
 import nars.bag.leak.TaskLeakTransform;
 import nars.task.UnevaluatedTask;
 import nars.term.Term;
@@ -26,7 +27,7 @@ public abstract class Introduction extends TaskLeakTransform {
     protected abstract Term newTerm(Task x);
 
     @Override
-    protected float leak(Task xx) {
+    protected float leak(Task xx, What what) {
 
         Term y = newTerm(xx);
 
@@ -39,7 +40,7 @@ public abstract class Introduction extends TaskLeakTransform {
                 if (yy != null) {
                     Task.deductComplexification(xx, yy, priFactor.floatValue(), true);
 
-                    input(yy);
+                    in.accept(yy, what);
                     return 1;
                 }
             }

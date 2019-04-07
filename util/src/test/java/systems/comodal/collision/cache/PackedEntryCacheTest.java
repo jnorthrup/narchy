@@ -2,7 +2,7 @@ package systems.comodal.collision.cache;
 
 import org.junit.jupiter.api.BeforeEach;
 
-public final class PackedEntryCacheTest extends BaseEntryCacheTest {
+final class PackedEntryCacheTest extends BaseEntryCacheTest {
 
   @BeforeEach
   public void before() {

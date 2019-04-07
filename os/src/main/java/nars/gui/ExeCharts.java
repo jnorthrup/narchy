@@ -51,13 +51,13 @@ public class ExeCharts {
 
     private static Surface metaGoalPlot(NAR nar) {
 
-        int s = nar.control.causes.size();
+        int s = nar.control.why.size();
 
         FloatRange gain = new FloatRange(1f, 0f, 5f);
 
         BitmapMatrixView bmp = new BitmapMatrixView(i ->
                 Util.tanhFast(
-                    gain.floatValue() * nar.control.causes.get(i).value()
+                    gain.floatValue() * nar.control.why.get(i).value()
                 ),
                 s, Draw::colorBipolar);
 
@@ -189,7 +189,7 @@ public class ExeCharts {
     }
 
     static Surface causeProfiler(NAR nar) {
-        FastCoWList<How> cc = nar.control.how;
+        FastCoWList<How> cc = nar.how;
         int history = 128;
         Plot2D pp = new Plot2D(history,
                 //Plot2D.BarLanes
@@ -252,7 +252,7 @@ public class ExeCharts {
 //                                )
 //                                , )),
                 nar, () -> {
-                    s.set(nar.control.how);
+                    s.set(nar.how);
                 });
     }
 

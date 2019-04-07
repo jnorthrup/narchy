@@ -12,6 +12,7 @@ import jcog.pri.ScalarValue;
 import jcog.pri.bag.Bag;
 import jcog.pri.bag.Sampler;
 import jcog.pri.op.PriMerge;
+import jcog.pri.op.PriReturn;
 import jcog.signal.wave1d.ArrayHistogram;
 import jcog.sort.SortedArray;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
@@ -691,7 +692,7 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
 
         try {
 
-            over = merge(existing, incoming, incomingPri, overflow);
+            over = merge(existing, incoming, incomingPri);
 
             float priAfter = existing.pri();
             if (priAfter != priAfter) {
@@ -735,8 +736,8 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
         return result;
     }
 
-    protected float merge(Y existing, Y incoming, float incomingPri, @Nullable NumberX overflow) {
-        return merge().merge(existing, incomingPri, PriMerge.MergeResult.Overflow);
+    protected float merge(Y existing, Y incoming, float incomingPri) {
+        return merge().merge(existing, incomingPri, PriReturn.Overflow);
     }
 
     /**

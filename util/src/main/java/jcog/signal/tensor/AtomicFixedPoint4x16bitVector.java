@@ -1,5 +1,6 @@
 package jcog.signal.tensor;
 
+import jcog.pri.op.PriReturn;
 import jcog.util.FloatFloatToFloatFunction;
 
 import java.util.concurrent.atomic.AtomicLongFieldUpdater;
@@ -55,11 +56,11 @@ public class AtomicFixedPoint4x16bitVector implements WritableTensor {
     }
 
 
-    public static float toFloat(long s) {
+    static float toFloat(long s) {
         return s / SHORT_TO_FLOAT_SCALE;
     }
 
-    public static int toShort(float f) {
+    static int toShort(float f) {
         return ((int) (f * SHORT_TO_FLOAT_SCALE));
     }
 
@@ -72,7 +73,7 @@ public class AtomicFixedPoint4x16bitVector implements WritableTensor {
         return n4(getAt(i));
     }
 
-    @Override public final float merge(int c, float arg, FloatFloatToFloatFunction F, boolean returnValueOrDelta) {
+    @Override public final float merge(int c, float arg, FloatFloatToFloatFunction F, PriReturn returning) {
         int shift = c * 16;
         long mask = ~((((long)('\uffff'))) << shift);
         long _x, _y;
@@ -88,14 +89,17 @@ public class AtomicFixedPoint4x16bitVector implements WritableTensor {
             y = F.apply(x, arg);
 
             int yi = toShort(y);
-            if (xi == yi)
-                return returnValueOrDelta ? x : 0; //no change
+            if (xi == yi) {
+                //no change
+                y = x;
+                break;
+            }
 
             _y = (_x & mask) | (((long)yi) << shift);
 
         } while(!X.compareAndSet(this, _x, _y));
 
-        return returnValueOrDelta ? y : (y - x);
+        return returning.apply(Float.NaN, x, y);
     }
 
     @Override

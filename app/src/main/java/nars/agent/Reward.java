@@ -4,6 +4,7 @@ import com.google.common.collect.Iterables;
 import jcog.Util;
 import jcog.data.graph.MapNodeGraph;
 import jcog.math.FloatRange;
+import jcog.pri.Prioritizable;
 import nars.$;
 import nars.NAR;
 import nars.Task;
@@ -14,7 +15,6 @@ import nars.concept.sensor.GameLoop;
 import nars.control.channel.CauseChannel;
 import nars.op.mental.Inperience;
 import nars.table.eternal.DefaultOnlyEternalTable;
-import nars.task.ITask;
 import nars.task.NALTask;
 import nars.term.Term;
 import nars.term.Termed;
@@ -39,7 +39,7 @@ public abstract class Reward implements GameLoop, TermedDelegate, Iterable<Conce
 
     protected transient volatile float rewardBelief = Float.NaN;
 
-    protected final CauseChannel<ITask> in;
+    protected final CauseChannel<Prioritizable> in;
 
     final static boolean goalUnstamped = false;
 

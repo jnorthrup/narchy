@@ -305,7 +305,7 @@ public final class TemplateTermLinker extends FasterList<Term> implements TermLi
 //
 //        NAR nar = d.nar;
 ////        AbstractConceptIndex koncepts = (AbstractConceptIndex) nar.concepts;
-////        PriBuffer<Concept> linking = ((BufferedBag<Term,Concept,?>) koncepts.active).buffer; //HACK
+////        PriMap<Concept> linking = ((BufferedBag<Term,Concept,?>) koncepts.active).buffer; //HACK
 //
 ////        float conceptActivationEach =
 ////                //(activationRate * conceptSrc.priElseZero()) / Util.clamp(concepts, 1, n); //TODO correct # of concepts fired in this batch

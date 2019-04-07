@@ -1,6 +1,7 @@
 package nars.control;
 
 import jcog.Skill;
+import jcog.TODO;
 import jcog.Util;
 import jcog.data.graph.MapNodeGraph;
 import jcog.data.graph.NodeGraph;
@@ -11,7 +12,6 @@ import jcog.learn.Agent;
 import jcog.learn.AgentBuilder;
 import jcog.learn.Agenterator;
 import jcog.math.FloatSupplier;
-import jcog.pri.PriBuffer;
 import nars.NAR;
 import nars.Param;
 import nars.Task;
@@ -48,19 +48,28 @@ import java.util.function.Consumer;
 @Skill("Multi-armed_bandit") public final class Control {
 
     /**
+     * a table of numerically (16-bit ID), individually registered reasons
+     * why any mental activity could have happened.  for use in forming causal
+     * traces
+     *
      * raw cause id (short int) -> cause table
+     *
      */
-    public final FasterList<Cause> causes = new FasterList<>(512) {
+    public final FasterList<Why> why = new FasterList<>(512) {
         @Override
-        protected Cause[] newArray(int newCapacity) {
-            return new Cause[newCapacity];
+        protected Why[] newArray(int newCapacity) {
+
+            if (newCapacity >= Short.MAX_VALUE)
+                throw new TODO("all possible 16-bit cause ID's consumed");
+
+            return new Why[newCapacity];
         }
     };
 
 
-    /** hierarchical priority distribution digraph (TODO ensure acyclic) */
+    /** hierarchical priority distribution DAG (TODO ensure acyclic) */
     public final MapNodeGraph<PriNode,Object> graph = new MapNodeGraph<>(
-            PriBuffer.newMap(false)
+            PriMap.newMap(false)
             //new ConcurrentFastIteratingHashMap<>(new Node[0])
     );
     private final PriNode root = new PriNode.ConstPriNode("root", ()->1);
@@ -104,17 +113,17 @@ import java.util.function.Consumer;
 
     protected void value() {
 
-        int cc = causes.size();
+        int cc = why.size();
         if (cc == 0)
             return;
 
-        Cause[] ccc = causes.array();
+        Why[] ccc = why.array();
 
         float[] want = nar.feel.want;
 
         for (int i = 0; i < cc; i++) {
 
-            Cause ci = ccc[i];
+            Why ci = ccc[i];
 
             ci.commit();
 
@@ -126,24 +135,24 @@ import java.util.function.Consumer;
             ccc[i].setValue(v);
         }
 
-        @Nullable Consumer<Cause[]> g = this.governor;
+        @Nullable Consumer<Why[]> g = this.governor;
         if (g!=null)
             g.accept(ccc);
     }
 
     /** implements value/pri feedback */
-    @Nullable private Consumer<Cause[]> governor = null;
+    @Nullable private Consumer<Why[]> governor = null;
 
     /** sets the governor to be used in next value/pri feedback iteration */
-    public Control governor(Consumer<Cause[]> governor) {
+    public Control governor(Consumer<Why[]> governor) {
         this.governor = governor;
         return this;
     }
 
     private void schedule() {
 
-        FastCoWList<How> cpu = how;
-        int n = cpu.size();
+        FastCoWList<How> how = nar.how;
+        int n = how.size();
         if (n == 0)
             return;
 
@@ -152,9 +161,9 @@ import java.util.function.Consumer;
         long now = nar.time();
 
 
-        cpu.forEach(c -> {
+        how.forEach(c -> {
 
-            boolean sleeping = c.sleeping(now);
+            boolean sleeping = c.inactive(now);
             if (sleeping)
                 return;
 
@@ -184,8 +193,8 @@ import java.util.function.Consumer;
         if (Float.isFinite(valRange) && Math.abs(valRange) > Float.MIN_NORMAL) {
             float exploreMargin = explorationRate * valRange;
 
-            cpu.forEach(c -> {
-                if (c.sleeping()) {
+            how.forEach(c -> {
+                if (c.inactive()) {
                     c.pri(0);
                 } else {
                     float vNorm = Util.normalize(c.valueRate, valMin[0] - exploreMargin, valMax[0]);
@@ -196,7 +205,7 @@ import java.util.function.Consumer;
         } else {
             //FLAT
             float pFlat = 1f / n;
-            cpu.forEach(s -> s.pri(pFlat));
+            how.forEach(s -> s.pri(pFlat));
         }
 
     }
@@ -224,7 +233,7 @@ import java.util.function.Consumer;
     }
 
     public float value(short[] effect) {
-        return MetaGoal.privaluate(causes, effect);
+        return MetaGoal.privaluate(why, effect);
     }
 
 
@@ -241,8 +250,8 @@ import java.util.function.Consumer;
     }
 
 
-    public Cause newCause(Object name) {
-        return newCause((id) -> new Cause(id, name));
+    public Why newCause(Object name) {
+        return newCause((id) -> new Why(id, name));
     }
 
     /**
@@ -252,11 +261,11 @@ import java.util.function.Consumer;
         return new TaskChannel(newCause(id));
     }
 
-    public <C extends Cause> C newCause(ShortToObjectFunction<C> idToChannel) {
-        synchronized (causes) {
-            short next = (short) (causes.size());
+    public <C extends Why> C newCause(ShortToObjectFunction<C> idToChannel) {
+        synchronized (why) {
+            short next = (short) (why.size());
             C c = idToChannel.valueOf(next);
-            causes.add(c);
+            why.add(c);
             return c;
         }
     }
@@ -268,24 +277,18 @@ import java.util.function.Consumer;
         return p;
     }
 
-    private final class TaskChannel extends CauseChannel<ITask> {
+    final class TaskChannel extends CauseChannel<ITask> {
 
         private final short ci;
         final short[] uniqueCause;
 
-        TaskChannel(Cause cause) {
-            super(cause);
-            this.ci = cause.id;
+        TaskChannel(Why why) {
+            super(why);
+            this.ci = why.id;
             uniqueCause = new short[]{ci};
         }
 
-        @Override
-        public void input(ITask x) {
-            if (process(x))
-                nar.in.put(x);
-        }
-
-        protected boolean process(Object x) {
+        @Override protected void preAccept(ITask x) {
             if (x instanceof NALTask) {
                 NALTask t = (NALTask) x;
                 short[] currentCause = t.cause();
@@ -311,11 +314,9 @@ import java.util.function.Consumer;
                         break;
                 }
             } else if (x instanceof Remember) {
-                return process(((Remember) x).input);
-            } else
-                return x != null;
+                preAccept(((Remember) x).input);
+            }
 
-            return true;
         }
 
         private short[] append(short[] currentCause, int tcl) {
@@ -335,16 +336,6 @@ import java.util.function.Consumer;
 
     }
 
-
-    private boolean remove(How s) {
-        return how.removeIf(x->x==s);
-    }
-
-
-
-    private void indexExistingParts() {
-        nar.plugins().filter(x -> x instanceof How).forEach(x -> add((How) x));
-    }
 
     /** creates a base agent that can be used to interface with external controller
      *  it will be consistent as long as the NAR architecture remains the same.
@@ -367,7 +358,7 @@ import java.util.function.Consumer;
             });
         }
 
-        for (Cause c : causes) {
+        for (Why c : why) {
 
             b.in(() -> {
                 float ca = c.amp();
@@ -381,7 +372,7 @@ import java.util.function.Consumer;
             //TODO other data
         }
 
-        for (How c : how) {
+        for (How c : nar.how) {
             b.in(() -> {
                 PriNode cp = c.pri;
                 return Util.unitize(cp.priElseZero());

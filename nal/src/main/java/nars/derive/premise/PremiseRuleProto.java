@@ -2,7 +2,7 @@ package nars.derive.premise;
 
 import nars.$;
 import nars.NAR;
-import nars.control.Cause;
+import nars.control.Why;
 import nars.derive.Derivation;
 import nars.derive.op.Premisify;
 import nars.derive.op.Taskify;
@@ -32,7 +32,7 @@ public class PremiseRuleProto extends PremiseRuleSource {
     PremiseRuleProto(PremiseRuleSource raw, NAR nar) {
         super(raw);
 
-        RuleCause cause = nar.newCause(s -> new RuleCause(this, s));
+        RuleWhy cause = nar.newCause(s -> new RuleWhy(this, s));
 
         Taskify taskify = new Taskify(termify, cause);
 
@@ -68,13 +68,13 @@ public class PremiseRuleProto extends PremiseRuleSource {
      * derivation inputs are batched for input by another method
      * holds the deriver id also that it can be applied at the end of a derivation.
      */
-    public static final class RuleCause extends Cause {
+    public static final class RuleWhy extends Why {
 
         public final PremiseRuleSource rule;
         public final String ruleString;
         public final Term term;
 
-        RuleCause(PremiseRuleSource rule, short id) {
+        RuleWhy(PremiseRuleSource rule, short id) {
             super(id);
             this.rule = rule;
             this.ruleString = rule.source;
