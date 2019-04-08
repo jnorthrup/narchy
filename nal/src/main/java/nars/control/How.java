@@ -71,7 +71,7 @@ abstract public class How extends NARPart {
 
     protected How(Term id, NAR nar) {
         super(id);
-        this.pri = new PriNode(id);
+        this.pri = new PriNode(this.id);
         this.busy = //new Semaphore(singleton() ?  1 : Runtime.getRuntime().availableProcessors());
                 singleton() ? new AtomicBoolean(false) : null;
         if (nar != null)
@@ -216,10 +216,6 @@ abstract public class How extends NARPart {
         }
 
         public final void runFor(What w, long durationNS) {
-//TODO
-//            if (singleton)
-//                c.busy.set(false);
-
             long start = System.nanoTime();
             long deadline = start + durationNS;
             try {

@@ -1,6 +1,5 @@
 package nars.concept.action;
 
-import jcog.TODO;
 import jcog.Util;
 import nars.$;
 import nars.NAR;
@@ -77,7 +76,6 @@ public class BiPolarAction extends AbstractSensor {
         this.model = model;
         this.motor = motor;
 
-        throw new TODO("fixme");
     }
 
 

@@ -31,7 +31,6 @@ import nars.truth.dynamic.TaskList;
 import org.eclipse.collections.api.tuple.primitive.ObjectBooleanPair;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -172,14 +171,15 @@ public class ConjClustering extends How {
 
         int dur = w.dur();
 
-        long now1 = nar.time();
-        long lastNow = this.now;
-        if (lastNow < now1) {
-            _update(now1);
-        }
 
         if (busy.compareAndSet(false, true)) {
             try {
+                long now1 = nar.time();
+                long lastNow = this.now;
+                if (lastNow < now1) {
+                    _update(now1);
+                }
+
                 if (now1 - lastLearn >= minDurationsPerLearning*dur) {
                     data.learn(forgetRate(), learningIterations);
                     lastLearn = now1;
@@ -210,20 +210,20 @@ public class ConjClustering extends How {
         CentroidConjoiner conjoiner = new CentroidConjoiner(tasksPerIterationPerCentroid, w.nar);
         do {
 
-            Iterator<TaskList> iii = centroids.iterator();
-            while (iii.hasNext()) {
-                FasterList<Task> i = iii.next();
-                if (conjoiner.conjoinCentroid(i) == 0 || i.size()<=1)
-                    iii.remove();
+            centroids.removeIf(i -> conjoiner.conjoinCentroid(i) == 0 || i.size() <= 1);
 
-            }
-            if (!kontinue.getAsBoolean()) break;
-
-        } while (!centroids.isEmpty());
+        } while (!centroids.isEmpty() && kontinue.getAsBoolean());
 
 
         in.acceptAll(conjoiner.out, w);
 
+    }
+
+    @Override
+    public boolean singleton() {
+        //TODO make NeuralGasNet synchronization free then this will be good to set false
+        return true;
+        //return false;
     }
 
     private void _update(long now) {

@@ -30,7 +30,9 @@ public class TensorChain extends TensorSerial {
             }
             shape[0] += xs[0];
         }
-        return new TensorChain(shape, t);
+        TensorChain tt = new TensorChain(shape, t);
+        tt.update();
+        return tt;
     }
 
     @Override

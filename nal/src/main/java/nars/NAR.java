@@ -694,7 +694,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
         return add(key, true, p);
     }
 
-    public final NARPart add(@Nullable Term key, boolean start, Class<? extends NARPart> p) {
+    public final NARPart add(Term key, boolean start, Class<? extends NARPart> p) {
         NARPart pp = null;
         if (key!=null)
             pp = (NARPart) parts.get(key);
@@ -703,7 +703,9 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
             //HACK
             //TODO make sure this is atomic
             pp = build(p).get();
-            if (parts.get(key==null ? NARPart.id(null, pp) : key)==pp) {
+            if (key == null)
+                key = pp.id;
+            if (parts.get(key)==pp) {
                 return pp; //already added in its constructor HACK
             }
         } else {
@@ -714,10 +716,11 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
             }
         }
 
-        if (key!=null ? start(key, pp) : start(pp))
-            return pp;
-        else
-            throw new WTF();
+        if (start) {
+            boolean ok = start(key, pp);
+            assert(ok);
+        }
+        return pp;
     }
 
 
@@ -994,11 +997,9 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
         return runAt(new WhenTimeIs(whenOrAfter, then));
     }
 
+    /** send to the queue even if the time has occurred */
     public final ScheduledTask runAt(ScheduledTask t) {
-        if (t.start() <= time())
-            exe.execute(t); //immediate
-        else
-            time.runAt(t);
+        time.runAt(t);
         return t;
     }
 
@@ -1007,7 +1008,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
      * after the end of the current frame before the next frame.
      */
     public final void runLater(Runnable t) {
-        runAt(time() + 1, t);
+        runAt(time(), t);
     }
 
     /**

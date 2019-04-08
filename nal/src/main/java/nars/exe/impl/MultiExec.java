@@ -20,7 +20,7 @@ import java.util.function.Consumer;
 
 import static java.lang.System.nanoTime;
 
-abstract public class MultiExec extends UniExec {
+abstract public class MultiExec extends Exec {
 
     protected static final float inputQueueSizeSafetyThreshold =
             0.99f;
@@ -67,7 +67,7 @@ abstract public class MultiExec extends UniExec {
             execute(x);
     }
 
-    @Override protected void onCycle(NAR nar) {
+    @Override protected void cycle(NAR nar) {
         nar.time.schedule(this::execute);
     }
 
@@ -128,11 +128,6 @@ abstract public class MultiExec extends UniExec {
     @Override
     public void start(NAR n) {
 
-        if (concurrencyMax() > Runtime.getRuntime().availableProcessors() / 2) {
-            /** absorb system-wide tasks rather than using the default ForkJoin commonPool */
-            Exe.setExecutor(this);
-        }
-
         if (!(n.time instanceof RealTime))
             throw new UnsupportedOperationException("non-realtime clock not supported");
 
@@ -141,8 +136,8 @@ abstract public class MultiExec extends UniExec {
         DurLoop updater = n.onDur(this::update);
         updater.durs(UPDATE_DURS);
         ons.add(updater);
-        //ons.add(n.onCycle(this::update));
 
+        //ons.add(n.onCycle(this::update));
     }
 
 

@@ -80,13 +80,33 @@ abstract public class What extends NARPart implements Prioritizable, Sampler<Tas
             new DefaultDerivePri();
             //new DefaultPuncWeightedDerivePri();
 
-    final ConsumerX<ITask> out = x -> ITask.run(x, What.this);
+    final ConsumerX<ITask> out = new ConsumerX<>() {
+        @Override
+        public int concurrency() {
+            return nar.exe.concurrency();
+        }
+
+        @Override
+        public void accept(ITask x) {
+            ITask.run(x, What.this);
+        }
+    };
 
 
     protected What(Term id, PriBuffer<ITask> in) {
         super(id);
         this.pri = new PriNode(this.id);
         this.in = in;
+    }
+
+    @Override
+    public final int concurrency() {
+        return nar.exe.concurrency();
+    }
+
+    @Override
+    public String toString() {
+        return pri.toBudgetString() + " " + id;
     }
 
     @Override

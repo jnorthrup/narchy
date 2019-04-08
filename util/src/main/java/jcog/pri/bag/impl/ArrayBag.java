@@ -349,6 +349,9 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
                         if (!next.stop && s > 1) {
                             tryRecommit(rng, s);
                         }
+                    } else {
+                        if (rng==null)
+                            throw new WTF("this will continue to spin on 0th item"); //HACK
                     }
 
                     if (next.stop)
@@ -385,10 +388,10 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
      * size > 0
      */
     private int sampleNext(@Nullable Random rng, int size) {
-        assert (size > 0);
-        if (size == 1 || rng == null)
+        if (rng == null || size == 1)
             return 0;
         else {
+            assert (size > 0);
             ArrayHistogram h = ArrayBag.this.hist;
 
             int index = (int) h.sample(rng);

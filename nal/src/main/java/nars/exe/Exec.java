@@ -2,6 +2,7 @@ package nars.exe;
 
 import jcog.Log;
 import jcog.data.list.FasterList;
+import jcog.event.Offs;
 import jcog.pri.Prioritizable;
 import jcog.pri.bag.Sampler;
 import jcog.pri.bag.impl.ArrayBag;
@@ -25,6 +26,7 @@ abstract public class Exec implements Executor, ConsumerX<ITask> {
 
     protected NAR nar;
     private final int concurrencyMax;
+    protected Offs ons = null;
 
     protected Exec(int concurrencyMax) {
         this.concurrencyMax = concurrencyMax; //TODO this will be a value like Runtime.getRuntime().availableProcessors() when concurrency can be adjusted dynamically
@@ -118,10 +120,21 @@ abstract public class Exec implements Executor, ConsumerX<ITask> {
 
     public void start(NAR nar) {
         this.nar = nar;
+
+        assert(ons == null);
+
+        ons = new Offs();
+        ons.add(nar.onCycle(this::cycle));
     }
 
+    abstract protected void cycle(NAR nar);
 
     public void stop() {
+        if (ons != null) {
+            ons.off();
+            ons = null;
+        }
+
         this.nar = null;
     }
 

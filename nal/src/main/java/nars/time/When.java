@@ -23,7 +23,7 @@ public class When<X> extends TimeRange {
     public When(long start, long end, int dur, X x) {
         super(start, end);
 
-        if (dur <= 0)
+        if (dur < 0)
             throw new WTF();
 
         this.dur = dur;

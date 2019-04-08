@@ -9,7 +9,6 @@ import jcog.pri.bag.Sampler;
 import jcog.pri.bag.impl.BufferedBag;
 import jcog.pri.bag.impl.PriReferenceArrayBag;
 import jcog.pri.op.PriMerge;
-import nars.$;
 import nars.NAR;
 import nars.Op;
 import nars.Task;
@@ -67,7 +66,7 @@ public abstract class TaskLeak extends How {
     }
 
     TaskLeak(TaskSource src, @Nullable NAR n, byte... puncs) {
-        super($.uuid());
+        super(null);
 
         this.puncs = puncs;
 
@@ -75,6 +74,11 @@ public abstract class TaskLeak extends How {
 
         if (n!=null)
             n.start(this);
+    }
+
+    @Override
+    public boolean singleton() {
+        return false;
     }
 
     /**

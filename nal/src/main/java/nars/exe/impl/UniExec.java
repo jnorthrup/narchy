@@ -1,6 +1,5 @@
 package nars.exe.impl;
 
-import jcog.event.Offs;
 import nars.NAR;
 import nars.control.How;
 import nars.exe.Exec;
@@ -11,16 +10,11 @@ import nars.exe.Exec;
  */
 public class UniExec extends Exec {
 
-    static final int inputQueueCapacityPerThread = 256;
-
-
-    Offs ons = null;
-
     public UniExec() {
         this(1);
     }
 
-    public UniExec(int concurrencyMax) {
+    protected UniExec(int concurrencyMax) {
         super(concurrencyMax);
     }
 
@@ -34,30 +28,7 @@ public class UniExec extends Exec {
         return 1;
     }
 
-    @Override
-    public void start(NAR n) {
-        super.start(n);
-
-        assert(ons == null);
-
-        ons = new Offs();
-        ons.add(n.onCycle(this::onCycle));
-
-    }
-
-
-    @Override
-    public void stop() {
-        if (ons != null) {
-            ons.off();
-            ons = null;
-        }
-
-        super.stop();
-    }
-
-
-    protected void onCycle(NAR nar) {
+    protected void cycle(NAR nar) {
         nar.time.schedule(this::executeNow);
 
         /*
@@ -72,4 +43,11 @@ public class UniExec extends Exec {
         }
     }
 
+    /** forces concurrent() even for 1-thread execution */
+    public static class Concurrent extends UniExec {
+        @Override
+        public boolean concurrent() {
+            return true;
+        }
+    }
 }

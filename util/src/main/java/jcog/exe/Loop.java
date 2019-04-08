@@ -1,5 +1,6 @@
 package jcog.exe;
 
+import jcog.Log;
 import jcog.exe.realtime.FixedRateTimedFuture;
 import org.slf4j.Logger;
 
@@ -8,25 +9,18 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static jcog.Texts.n2;
-import static org.slf4j.LoggerFactory.getLogger;
 
-/**
- * Created by me on 10/20/16.
- * <p>
- * the Runnable.run method is actually the iteration which will
- * be repeatedly called.
- * Do not call it externally.
- */
+
 abstract public class Loop extends FixedRateTimedFuture {
 
-    protected final Logger logger;
+    private static final Logger logger = Log.logger(Loop.class);
 
 
 
     /**
      * busy lock
      */
-    protected final AtomicBoolean executing = new AtomicBoolean(false);
+    protected final AtomicBoolean busy = new AtomicBoolean(false);
 
 
     public static Loop of(Runnable iteration) {
@@ -69,7 +63,6 @@ abstract public class Loop extends FixedRateTimedFuture {
      */
     public Loop(AtomicInteger periodMS) {
         super();
-        logger = getLogger(getClass());
 
         int p = periodMS.get();
 
@@ -80,7 +73,12 @@ abstract public class Loop extends FixedRateTimedFuture {
     }
 
     public boolean isRunning() {
-        return periodMS.getOpaque() >= 0;
+        return periodMS() >= 0;
+    }
+
+    @Override
+    protected final boolean isReady() {
+        return !busy.getOpaque();
     }
 
     public final Loop setFPS(float fps) {
@@ -89,13 +87,10 @@ abstract public class Loop extends FixedRateTimedFuture {
     }
 
     public final void ready() {
-        executing.set(false);
+        busy.set(false);
     }
 
-    @Override
-    protected final boolean isReady() {
-        return !executing.getOpaque();
-    }
+
 
     static int fpsToMS(float fps) {
         return Math.max(1, Math.round(1000 / fps));
@@ -106,27 +101,14 @@ abstract public class Loop extends FixedRateTimedFuture {
         int prevPeriodMS;
         if ((prevPeriodMS = periodMS.getAndSet(nextPeriodMS)) != nextPeriodMS) {
             if (prevPeriodMS < 0 && nextPeriodMS >= 0) {
-                logger.info("start {}fps (each {}ms)", n2(1000f/nextPeriodMS), nextPeriodMS);
 
-                synchronized (periodMS) {
-
-                    starting();
-
-                }
-
-                Exe.timer().scheduleAtFixedRate(this, nextPeriodMS, TimeUnit.MILLISECONDS);
+                _start(nextPeriodMS);
 
             } else if (/*prevPeriodMS >= 0 && */nextPeriodMS < 0) {
 
-                logger.info("stop");
+                _stop();
 
-                cancel(false);
-
-                synchronized (periodMS) {
-
-                    stopping();
-                }
-            } else if (prevPeriodMS >= 0) {
+            } else /*if (prevPeriodMS >= 0)*/ {
 
                 //logger.info("continue {}fps (each {}ms)", n2(1000f/nextPeriodMS), nextPeriodMS);
 
@@ -136,6 +118,27 @@ abstract public class Loop extends FixedRateTimedFuture {
             return true;
         }
         return false;
+    }
+
+    public void _start(int nextPeriodMS) {
+        logger.debug("start {} {} fps", this, n2(1000f/nextPeriodMS));
+
+        synchronized (periodMS) {
+            starting();
+        }
+
+        Exe.timer().scheduleAtFixedRate(this, nextPeriodMS, TimeUnit.MILLISECONDS);
+    }
+
+    public void _stop() {
+        logger.debug("stop {}", this);
+
+        cancel(false);
+
+        synchronized (periodMS) {
+
+            stopping();
+        }
     }
 
 
@@ -159,7 +162,8 @@ abstract public class Loop extends FixedRateTimedFuture {
 
     protected void thrown(Throwable e) {
         //stop();
-        logger.error(" {}", e);
+        logger.error("{} {}", this, e);
+        e.printStackTrace(); //TEMPORARY
         //throw new RuntimeException(e);
     }
 
@@ -167,7 +171,7 @@ abstract public class Loop extends FixedRateTimedFuture {
     @Override
     public final void run() {
 
-        if (!executing.compareAndSet(false, true))
+        if (!busy.compareAndSet(false, true))
             return;
 
         beforeNext();
@@ -205,7 +209,7 @@ abstract public class Loop extends FixedRateTimedFuture {
 
 
     public float getFPS() {
-        int pms = periodMS.getOpaque();
+        int pms = periodMS();
         if (pms > 0 /* isRunning() */) {
             return 1000f / pms;
         } else {
@@ -214,8 +218,12 @@ abstract public class Loop extends FixedRateTimedFuture {
     }
 
     public long periodNS() {
-        int m = periodMS.getOpaque();
+        int m = periodMS();
         return m >= 0  ? m * 1_000_000L : -1;
+    }
+
+    public int periodMS() {
+        return periodMS.getOpaque();
     }
 
 }

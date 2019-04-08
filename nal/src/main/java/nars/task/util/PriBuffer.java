@@ -324,14 +324,14 @@ abstract public class PriBuffer<T extends Prioritizable> implements Consumer<T> 
                 if (n > 0) {
                     //TODO target.input(tasks, n, target.concurrency());
 
-                    int c = target.concurrency();
+                    int c = (target instanceof Exec /* hack */) ? target.concurrency() : 1;
                     if (c <= 1) {
                         b.pop(null, n, target::accept);
                     } else {
                         int remain = n;
                         int nEach = (int) Math.ceil(((float) remain) / c);
                         for (int i = 0; i < c && remain > 0; i++) {
-                            ((Exec) target).input(b, Math.min(remain, nEach));
+                            ((Exec)target).input(b, Math.min(remain, nEach));
                             remain -= nEach;
                         }
                     }

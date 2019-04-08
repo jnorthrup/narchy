@@ -14,7 +14,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class ForkJoinExec extends MultiExec implements Thread.UncaughtExceptionHandler {
 
-    private ForkJoinPool pool = ForkJoinPool.commonPool(); //intermediate state
+    private ForkJoinPool pool;
 
     public ForkJoinExec(int concurrency) {
         super(concurrency);
@@ -71,13 +71,18 @@ public class ForkJoinExec extends MultiExec implements Thread.UncaughtExceptionH
     }
 
 
+    @Override
+    public final int concurrency() {
+        return concurrencyMax();
+    }
+
     /**
      * inject play tasks
      */
     private void play() {
         //HACK
         @Deprecated int throttle = 2 * concurrency();
-        @Deprecated float ms = 0.35f;
+        @Deprecated float ms = 0.25f;
         @Deprecated long durationNS = Math.round(1_000_000.0 * ms);
 
         FasterList<Runnable> batch = new FasterList();

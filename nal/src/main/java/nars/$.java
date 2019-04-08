@@ -856,9 +856,14 @@ public enum $ {
 
         if (x instanceof Term)
             return ((Term)x);
-        else if (x instanceof Termed)
-            return ((Termed)x).term();
-        else if (x instanceof String)
+        else if (x instanceof Termed) {
+            Term u = ((Termed) x).term();
+            if (u != null)
+                return u;
+            //else: probably still in the constructor before x.term() has been set, continue:
+        }
+
+        if (x instanceof String)
             return Atomic.the((String)x);
         else
             return $.p($.quote(x.getClass().getName()), $.the(System.identityHashCode(x)));

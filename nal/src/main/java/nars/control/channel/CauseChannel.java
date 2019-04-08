@@ -45,7 +45,7 @@ abstract public class CauseChannel<X extends Prioritizable>  {
                     accept(((List<X>) xx).get(0), target);
                     return;
                 } else {
-                    accept((X)(xx.iterator().next()), target);
+                    accept(xx.iterator().next(), target);
                 }
                 break;
             }

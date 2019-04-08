@@ -469,7 +469,7 @@ abstract public class GameX extends Game {
 
 
         List<ConjClustering> conjClusters = List.of(
-            new ConjClustering(n, BELIEF, 32, 256)
+            new ConjClustering(n, BELIEF, 32, 64)
             //new ConjClustering(n, GOAL, 4, 16)
         );
 
