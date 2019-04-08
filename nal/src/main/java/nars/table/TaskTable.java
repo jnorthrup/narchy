@@ -90,8 +90,8 @@ public interface TaskTable {
                 .task(true, forceProject, false) : null;
     }
 
-    @Nullable default /* final */ Task match(When w, @Nullable Term template, Predicate<Task> filter) {
-        return match(w.start, w.end, template, filter, w.dur, w.nar); }
+    @Nullable default /* final */ Task match(When<NAR> w, @Nullable Term template, Predicate<Task> filter) {
+        return match(w.start, w.end, template, filter, w.dur, w.x); }
 
     @Nullable default /* final */ Task match(long start, long end, Term template, int dur, NAR nar) {
         return match(start, end, template, null, dur, nar); }
@@ -103,7 +103,7 @@ public interface TaskTable {
         return match(start, end, true, template, filter, dur, n);
     }
 
-    default Task sample(When when, @Nullable Term template, @Nullable Predicate<Task> filter) {
+    default Task sample(When<NAR> when, @Nullable Term template, @Nullable Predicate<Task> filter) {
 
         if (isEmpty())
             return null;
@@ -112,7 +112,7 @@ public interface TaskTable {
 
         Answer answer = Answer.relevant(isBeliefOrGoal,
                 isBeliefOrGoal ? Answer.BELIEF_SAMPLE_CAPACITY : Answer.QUESTION_SAMPLE_CAPACITY,
-                when.start, when.end, template, filter, when.nar);
+                when.start, when.end, template, filter, when.x);
 
         return answer.match(this).tasks.getRoulette(answer.random());
     }

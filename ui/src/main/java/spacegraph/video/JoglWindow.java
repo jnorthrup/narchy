@@ -473,9 +473,14 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
 
                                 update();
 
-                                d.flushGLRunnables();
-                                updateWindow();
-                                d.display();
+                                try {
+                                    d.flushGLRunnables();
+                                    updateWindow();
+                                    d.display();
+                                } catch (GLException e) {
+                                    stop();
+                                    return false;
+                                }
 
                             }
                         }

@@ -6,7 +6,6 @@ import jcog.data.set.ArrayHashSet;
 import jcog.data.set.MetalLongSet;
 import jcog.math.Longerval;
 import jcog.pri.ScalarValue;
-import jcog.random.SplitMix64Random;
 import nars.NAR;
 import nars.Op;
 import nars.Param;
@@ -68,8 +67,11 @@ public class Derivation extends PreDerivation {
     private final static int ANON_INITIAL_CAPACITY = 16;
 
 
-    final UnifyPremise unifyPremise = new UnifyPremise(); {
-        unifyPremise.commonVariables = false; //disable common variables for the query variables matched in premise formation; since the task target is not transformed like the belief target is.
+    final UnifyPremise unifyPremise = new UnifyPremise();
+    private long timePrev = Long.MIN_VALUE;
+
+    {
+        unifyPremise.commonVariables = Param.PREMISE_UNIFY_COMMON_VARIABLES;
     }
     public final Collection<Premise> premiseBuffer =
             new ArrayHashSet();
@@ -133,7 +135,7 @@ public class Derivation extends PreDerivation {
         }
     };
 
-    public NAR nar;
+    private NAR nar;
 
 
     /**
@@ -174,10 +176,6 @@ public class Derivation extends PreDerivation {
      */
     @Deprecated public Predicate<Derivation> forEachMatch;
 
-    /**
-     * current NAR time, set at beginning of derivation
-     */
-    public transient long time = ETERNAL;
     public transient float confMin;
     public transient double eviMin;
     public transient int termVolMax;
@@ -231,7 +229,6 @@ public class Derivation extends PreDerivation {
 
     public transient Task _task, _belief;
 
-    public transient int dur;
 
 
     /**
@@ -244,27 +241,10 @@ public class Derivation extends PreDerivation {
                 , null, Param.UnificationStackMax
         );
 
-        this.random = new SplitMix64Random.SplitMix64RandomFull();
         this.anon = new AnonWithVarShift(ANON_INITIAL_CAPACITY, Op.VAR_DEP.bit | Op.VAR_QUERY.bit);
     }
 
     public DerivationTransform transform;
-
-
-    private void init(NAR nar) {
-
-        this.reset();
-
-        this.nar = nar;
-
-        //this.random = nar.random();
-        this.random.setSeed(nar.random().nextLong());
-
-        this.unifyPremise.random(this.random);
-        this.transform = new DerivationTransform();
-        //this.random.setSeed(nar.random().nextLong());
-
-    }
 
 
     /**
@@ -293,7 +273,7 @@ public class Derivation extends PreDerivation {
                 this.beliefTruthTask =
                         taskEternal ?
                                 beliefTruthBelief :
-                                nextBelief.truth(taskStart, taskEnd, dur);
+                                nextBelief.truth(taskStart, taskEnd, dur());
 
                 if (Param.ETERNALIZE_BELIEF_PROJECTED_IN_DERIVATION
                         && !taskEternal
@@ -505,26 +485,24 @@ public class Derivation extends PreDerivation {
     }
 
 
-
+    /** update some cached values that will be used for one or more derivation iterations */
     public Derivation next(Deriver d, What w) {
-        next(d, w.nar);
         this.what = w;
-        return this;
-    }
+        //if (this.what!=w) { .. }
 
-    private void next(Deriver d, NAR n) {
-        NAR pnar = this.nar;
+        NAR p = this.nar(), n = w.nar;
+        if (p != n) {
 
-        if (pnar != n) {
-            init(n);
-            time = TIMELESS;
+            this.reset();
+            this.nar = n;
+            this.random = n.random();
+            this.unifyPremise.random(this.random);
+            this.transform = new DerivationTransform();
         }
 
         long now = Tense.dither(n.time(), n);
-        if (now != this.time) {
-            this.time = now;
-
-            this.dur = n.dur();
+        if (now != this.timePrev) {
+            this.timePrev = now;
             this.ditherDT = n.dtDither();
 
             uniSubst.u.dtTolerance = unifyPremise.dtTolerance = this.dtTolerance =
@@ -537,7 +515,10 @@ public class Derivation extends PreDerivation {
         }
 
         this.deriver = d;
+        return this;
     }
+
+
 
     @Nullable
     public long[] evidenceSingle() {
@@ -584,9 +565,8 @@ public class Derivation extends PreDerivation {
 
     public Derivation reset() {
         anon.clear();
-        time = ETERNAL;
         premiseBuffer.clear();
-
+        timePrev = Long.MIN_VALUE;
         retransform.clear();
         occ.clear();
         _task = _belief = null;
@@ -598,9 +578,9 @@ public class Derivation extends PreDerivation {
         canCollector.clear();
         ttl = 0;
         taskUniques = 0;
-        time = TIMELESS;
         temporal = temporalTerms = false;
         taskBeliefTimeIntersects[0] = taskBeliefTimeIntersects[1] = TIMELESS;
+        nar = null;
 
         clear();
 
@@ -671,6 +651,21 @@ public class Derivation extends PreDerivation {
     @Override
     public final TermTransform transform() {
         return this.transform;
+    }
+
+    /**
+     * current NAR time, set at beginning of derivation
+     */
+    public final long time() {
+        return nar().time();
+    }
+
+    public final int dur() {
+        return what.dur();
+    }
+
+    public NAR nar() {
+        return nar;
     }
 
     public final class DerivationTransform extends UnifyTransform {

@@ -67,7 +67,7 @@ public abstract class RealTime extends Time {
     }
 
     @Override
-    public final void cycle(NAR n) {
+    public final void next(NAR n) {
         this.dur = nextDur;
         this.last = T.getAndSet(this, realtime());
     }

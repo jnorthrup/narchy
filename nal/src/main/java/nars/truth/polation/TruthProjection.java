@@ -15,6 +15,7 @@ import nars.task.Tasked;
 import nars.task.util.TaskRegion;
 import nars.term.Term;
 import nars.term.util.Intermpolate;
+import nars.term.util.TermException;
 import nars.time.Tense;
 import nars.truth.Stamp;
 import nars.truth.Truth;
@@ -26,6 +27,7 @@ import java.util.Random;
 import java.util.function.Consumer;
 import java.util.function.IntPredicate;
 
+import static nars.term.atom.Bool.Null;
 import static nars.term.util.Intermpolate.dtDiff;
 import static nars.time.Tense.ETERNAL;
 
@@ -386,9 +388,20 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
 
                         final double e1Evi = rootComponent.evi;
 
-                        //if there isnt more evidence for the primarily sought target, then just use those components
-                        Term ab = Intermpolate.intermpolate(a,
-                                b, (float) (e1Evi / (e1Evi + e2Evi)), nar);
+                        Term ab;
+                        try {
+                            //if there isnt more evidence for the primarily sought target, then just use those components
+                            ab = Intermpolate.intermpolate(a,
+                                    b, (float) (e1Evi / (e1Evi + e2Evi)), nar);
+                        } catch (TermException e) {
+                            //HACK TODO avoid needing to throw exception
+                            if (Param.DEBUG) {
+                                throw new RuntimeException(e);
+                            } else {
+                                //ignore.  it may be a contradictory combination of events.
+                                ab = Null;
+                            }
+                        }
 
                         if (Task.validTaskTerm(ab)) {
 

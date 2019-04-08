@@ -1,6 +1,6 @@
 package nars.exe;
 
-import jcog.Util;
+import jcog.Log;
 import jcog.data.list.FasterList;
 import jcog.pri.Prioritizable;
 import jcog.pri.bag.Sampler;
@@ -21,7 +21,7 @@ import java.util.function.Consumer;
  */
 abstract public class Exec implements Executor, ConsumerX<ITask> {
 
-    public static final Logger logger = Util.logger(Exec.class);
+    public static final Logger logger = Log.logger(Exec.class);
 
     protected NAR nar;
     private final int concurrencyMax;
@@ -30,9 +30,7 @@ abstract public class Exec implements Executor, ConsumerX<ITask> {
         this.concurrencyMax = concurrencyMax; //TODO this will be a value like Runtime.getRuntime().availableProcessors() when concurrency can be adjusted dynamically
     }
 
-    public void input(Object t) {
-        executeNow(t);
-    }
+    abstract public void input(Object t);
 
     /**
      * immediately execute a Task
@@ -101,8 +99,8 @@ abstract public class Exec implements Executor, ConsumerX<ITask> {
      * inline, synchronous
      */
     protected final void executeNow(Object t) {
-        if (t instanceof Prioritizable)
-            input((Prioritizable) t);
+        if (t instanceof ITask)
+            accept((ITask) t);
         else {
             try {
                 if (t instanceof Runnable) {
@@ -124,8 +122,7 @@ abstract public class Exec implements Executor, ConsumerX<ITask> {
 
 
     public void stop() {
-
-        //this.nar = null;
+        this.nar = null;
     }
 
 

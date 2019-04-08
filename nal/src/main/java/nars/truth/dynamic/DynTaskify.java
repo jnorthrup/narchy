@@ -13,7 +13,7 @@ import nars.concept.TaskConcept;
 import nars.table.BeliefTable;
 import nars.task.util.Answer;
 import nars.term.Term;
-import nars.time.When;
+import nars.time.event.WhenTimeIs;
 import nars.truth.Stamp;
 
 import java.util.Random;
@@ -51,7 +51,7 @@ public class DynTaskify extends TaskList {
         this.beliefOrGoal = beliefOrGoal;
 
         Term template = a.term();
-        assert (template.op() != NEG);
+        assert(template.op() != NEG);
 
         this.model = model;
 
@@ -75,8 +75,6 @@ public class DynTaskify extends TaskList {
         if (!so.taskable)
             return false;
 
-
-
         NAR nar = answer.nar;
 
         Term st;
@@ -96,11 +94,10 @@ public class DynTaskify extends TaskList {
 
 
         BeliefTable table = (BeliefTable) subConcept.table(beliefOrGoal ? BELIEF : GOAL);
-        Task bt = //forceProjection ?
+        Task bt =
                 //table.answer(subStart, subEnd, subTerm, filter, nar);
                 //table.match(subStart, subEnd, subTerm, filter, dur, nar);
-                table.sample(new When(subStart, subEnd, nar), subTerm, filter);
-
+                table.sample(WhenTimeIs.range(subStart, subEnd, this.answer), subTerm, filter);
 
         if (bt == null || !model.acceptComponent(template(), bt.term(), bt))
             return false;

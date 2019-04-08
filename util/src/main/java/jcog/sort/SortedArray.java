@@ -753,12 +753,16 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
         int s = (n == -1) ? s0 : Math.min(s0, n);
         if (s > 0) {
             X[] ii = items;
-            for (int i = 0; i < s; i++)
-                if (!action.test(
-                        //(X) ITEM.getOpaque(ii,i)
-                        ii[i]
-                ))
-                    return false;
+            for (int i = 0; i < s; i++) {
+                X iii = ii[i];
+                if (iii!=null) {
+                    if (!action.test(
+                            //(X) ITEM.getOpaque(ii,i)
+                            iii
+                    ))
+                        return false;
+                }
+            }
         }
         return true;
     }

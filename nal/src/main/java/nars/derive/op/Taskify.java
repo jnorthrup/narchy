@@ -133,7 +133,7 @@ public class Taskify extends ProxyTerm {
         if (punc == BELIEF || punc == GOAL) {
 
             //dither truth
-            tru = d.concTruth.dither(d.nar.freqResolution.floatValue(), d.nar.confResolution.floatValue(), d.eviMin, neg);
+            tru = d.concTruth.dither(d.nar().freqResolution.floatValue(), d.nar().confResolution.floatValue(), d.eviMin, neg);
             if (tru == null)
                 return spam(d, Param.TTL_DERIVE_TASK_UNPRIORITIZABLE);
 
@@ -157,9 +157,9 @@ public class Taskify extends ProxyTerm {
         }
 
 
-        if (same(x, punc, tru, S, E, d._task, d.nar) ||
-                (d._belief != null && same(x, punc, tru, S, E, d._belief, d.nar))) {
-            d.nar.feel.deriveFailParentDuplicate.increment();
+        if (same(x, punc, tru, S, E, d._task, d.nar()) ||
+                (d._belief != null && same(x, punc, tru, S, E, d._belief, d.nar()))) {
+            d.nar().feel.deriveFailParentDuplicate.increment();
             return spam(d, Param.TTL_DERIVE_TASK_SAME);
         }
 
@@ -171,7 +171,7 @@ public class Taskify extends ProxyTerm {
         );
 
         if (t == null) {
-            d.nar.feel.deriveFailTaskify.increment();
+            d.nar().feel.deriveFailTaskify.increment();
             return spam(d, Param.TTL_DERIVE_TASK_FAIL);
         }
 
@@ -179,7 +179,7 @@ public class Taskify extends ProxyTerm {
         float priority = d.what.derivePri.pri(t, d);
 
         if (priority != priority) {
-            d.nar.feel.deriveFailPrioritize.increment();
+            d.nar().feel.deriveFailPrioritize.increment();
             return spam(d, Param.TTL_DERIVE_TASK_UNPRIORITIZABLE);
         }
 
@@ -196,7 +196,7 @@ public class Taskify extends ProxyTerm {
         ITask u = d.add(t);
         if (u != t) {
 
-            d.nar.feel.deriveFailDerivationDuplicate.increment();
+            d.nar().feel.deriveFailDerivationDuplicate.increment();
             cost = Param.TTL_DERIVE_TASK_REPEAT;
 
         } else {
@@ -204,7 +204,7 @@ public class Taskify extends ProxyTerm {
             if (Param.DEBUG)
                 t.log(channel.ruleString);
 
-            d.nar.feel.deriveTask.increment();
+            d.nar().feel.deriveTask.increment();
             cost = Param.TTL_DERIVE_TASK_SUCCESS;
 
         }

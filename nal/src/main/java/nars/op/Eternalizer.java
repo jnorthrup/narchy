@@ -3,14 +3,16 @@ package nars.op;
 import jcog.math.FloatRange;
 import jcog.sort.FloatRank;
 import jcog.sort.RankedN;
-import nars.*;
+import nars.$;
+import nars.NAR;
+import nars.Op;
+import nars.Task;
 import nars.attention.What;
 import nars.control.channel.CauseChannel;
 import nars.link.TaskLink;
 import nars.table.BeliefTable;
 import nars.task.ITask;
 import nars.term.Term;
-import nars.term.util.TermException;
 import nars.time.When;
 
 import java.util.Random;
@@ -30,8 +32,8 @@ public class Eternalizer extends LinkRanker<Task> {
     public Eternalizer(NAR nar) {
         super($.p($.the(Eternalizer.class.getSimpleName()), $.uuid()));
         in = nar.newChannel(this);
-        nar.start(this);
     }
+
 
     @Override
     public float value() {
@@ -97,18 +99,18 @@ public class Eternalizer extends LinkRanker<Task> {
     @Override
     protected void run(RankedN<Task> best, What w) {
         best.forEach(t->{
-            try {
+//            try {
                 Task u = Task.eternalized(t, eviFactor.floatValue(), nar.confMin.floatValue(), nar);
                 if (u != null) {
                     u.priMult(priFactor.floatValue());
                     //System.out.println(u);
                     in.accept(u, w);
                 }
-            } catch (TermException e) {
-                if (Param.DEBUG)
-                    e.printStackTrace();
-                //ex: nars.term.util.TermException: TermException: invalid conjunction factorization {null, dt=-2147483648, args=[(((--,left)&|right) &&+44 (--,rotate)), ((--,left)&|(--,right))]}
-            }
+//            } catch (TermException e) {
+//                if (Param.DEBUG)
+//                    e.printStackTrace();
+//                //ex: nars.term.util.TermException: TermException: invalid conjunction factorization {null, dt=-2147483648, args=[(((--,left)&|right) &&+44 (--,rotate)), ((--,left)&|(--,right))]}
+//            }
         });
     }
 

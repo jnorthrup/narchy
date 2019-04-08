@@ -4,13 +4,12 @@ import jcog.tree.rtree.HyperRegion;
 
 public class TimeConfRange extends TimeRange {
 
-    float cMin = 0, cMax = 1;
+    public final float cMin, cMax;
 
-    public TimeRange set(long s, long e, float cMin, float cMax) {
-        set(s, e);
+    public TimeConfRange(long s, long e, float cMin, float cMax) {
+        super(s, e);
         this.cMin = cMin;
         this.cMax = cMax;
-        return this;
     }
 
     @Override
@@ -18,7 +17,6 @@ public class TimeConfRange extends TimeRange {
         TaskRegion t = (TaskRegion)x;
         return t.intersects(start, end) && t.intersectsConf(cMin, cMax);
     }
-
 
     @Override
     public boolean contains(HyperRegion x) {

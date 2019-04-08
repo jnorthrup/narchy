@@ -284,7 +284,7 @@ public class ExeCharts {
 
         NARLoopPanel(NARLoop loop) {
             super(loop);
-            NAR nar = loop.nar();
+            NAR nar = loop.nar;
             durMS.set(nar.dur());
             if (nar.time instanceof RealTime) {
                 time = ((RealTime) nar.time);
@@ -306,7 +306,7 @@ public class ExeCharts {
 
             if (loop.isRunning()) {
 
-                NAR n = ((NARLoop) loop).nar();
+                NAR n = ((NARLoop) loop).nar;
                 if (n.time instanceof RealTime) {
                     double actualMS = ((RealTime) n.time).durSeconds() * 1000.0;
                     if (!Util.equals(durMS.doubleValue(), actualMS, 0.1)) {

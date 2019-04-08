@@ -7,17 +7,17 @@ import nars.term.Term;
 
 import java.util.function.Consumer;
 
-abstract public class NAREvent extends InternalEvent {
+class WhenPeriodic extends WhenInternal {
 
     protected final Consumer<NAR> run;
     protected final Term id;
 
-    public NAREvent(Term id, Consumer<NAR> x) {
+    WhenPeriodic(Term id, Consumer<NAR> x) {
         this.run = x;
         this.id = id;
     }
 
-    public NAREvent(Consumer<NAR> x) {
+    WhenPeriodic(Consumer<NAR> x) {
         this.run = x;
 
         Object y;

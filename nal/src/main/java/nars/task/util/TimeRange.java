@@ -13,11 +13,7 @@ public class TimeRange implements HyperRegion, LongInterval {
 
     public static final TimeRange ETERNAL = new TimeRange(Tense.ETERNAL, Tense.ETERNAL);
 
-    public long start = Tense.ETERNAL, end = Tense.ETERNAL;
-
-    public TimeRange() {
-
-    }
+    final public long start, end;
 
     public TimeRange(long[] t) {
         this(t[0], t[1]);
@@ -29,15 +25,15 @@ public class TimeRange implements HyperRegion, LongInterval {
     }
 
     public TimeRange(long s, long e) {
-        set(s, e);
-    }
-
-    public TimeRange set(long s, long e) {
         if (e == Tense.TIMELESS)
             throw new WTF();
+        if (s==TIMELESS)
+            throw new WTF();
+        if (s > e)
+            throw new WTF();
+
         this.start = s;
         this.end = e;
-        return this;
     }
 
     @Override

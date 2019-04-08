@@ -13,15 +13,15 @@ import static java.util.stream.Collectors.toList;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class InternalEventTest {
+class WhenInternalTest {
 
     @Test void test1() {
         NAR n = NARS.tmp();
 
-        List<? extends InternalEvent> aList = n.at().collect(toList());
+        List<? extends WhenInternal> aList = n.when().collect(toList());
         assertEquals(new HashSet(aList).size(), aList.size(), ()->"duplicate events found");
 
-        Map<Term, List<InternalEvent>> a = n.atMap();
+        Map<Term, List<WhenInternal>> a = n.atMap();
 
         assertTrue(a.size() > 1);
 

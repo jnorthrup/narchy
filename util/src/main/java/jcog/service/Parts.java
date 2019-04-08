@@ -14,8 +14,8 @@
 package jcog.service;
 
 import com.google.common.util.concurrent.MoreExecutors;
+import jcog.Log;
 import jcog.TODO;
-import jcog.Util;
 import jcog.WTF;
 import jcog.event.ListTopic;
 import jcog.event.Topic;
@@ -62,18 +62,23 @@ import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
  */
 public class Parts<K /* service key */, C /* context */> {
 
+
+    private final C id;
+    protected final ConcurrentMap<K, Part<C>> parts;
     public final Topic<ObjectBooleanPair<Part<C>>> eventAddRemove = new ListTopic<>();
     public final Executor executor;
-    public final Logger logger;
-    protected final ConcurrentMap<K, Part<C>> parts;
-    private final C id;
+    protected static final Logger logger = Log.logger(Parts.class);
 
-    protected Parts() {
-        this(ForkJoinPool.commonPool());
+    public Parts() {
+        this(null, null);
     }
 
-    protected Parts(Executor executor) {
-        this(null, executor);
+    public Parts(boolean concurrent) {
+        this((Executor)null);
+    }
+
+    public Parts(@Nullable Executor executor) {
+        this(null, executor );
     }
 
     /**
@@ -84,22 +89,20 @@ public class Parts<K /* service key */, C /* context */> {
      * @throws IllegalArgumentException if not all services are {@linkplain ServiceState#NEW new} or if there
      *                                  are any duplicate services.
      */
-    private Parts(@Nullable C id, Executor executor) {
+    public Parts(@Nullable C id, @Nullable Executor executor) {
         if (id == null)
             id = (C) this; //attempts cast
 
         this.id = id;
-        this.logger = Util.logger(id.toString());
-        this.executor = executor;
+
+        this.executor = executor!=null ? executor :
+                (Exe.concurrent() ? ForkJoinPool.commonPool() : MoreExecutors.directExecutor());
+
         this.parts = new ConcurrentHashMap<>();
     }
 
     public Parts(@Nullable C id) {
-        this(id,
-                Exe.concurrent() ? Exe.executor() : MoreExecutors.directExecutor()
-                //MoreExecutors.directExecutor()
-                /*ForkJoinPool.commonPool()*/
-        );
+        this(id, null);
     }
 
 
@@ -139,13 +142,16 @@ public class Parts<K /* service key */, C /* context */> {
         return set(k, part(k), false);
     }
 
-    public boolean stop(Part<C> p) {
+    public final boolean stop(Part<C> p) {
         //HACK TODO improve
         K k = key(p);
-        if (k == null)
-            return false;
+        return stop(k);
+    }
 
-        return set(k, part(k), false);
+    public final boolean remove(Part<C> p) {
+        //HACK TODO improve
+        K k = key(p);
+        return remove(k);
     }
 
     /**
@@ -190,6 +196,9 @@ public class Parts<K /* service key */, C /* context */> {
         parts.keySet().forEach(this::stop);
         return this;
     }
+    /*@Override*/ public void delete() {
+        parts.keySet().forEach(this::remove);
+    }
 
     public final Stream<Part<C>> partStream() {
         return parts.values().stream();
@@ -221,26 +230,28 @@ public class Parts<K /* service key */, C /* context */> {
             logger.error("{} {} {}", what, this, e);
     }
 
-    private boolean _stop(Part<C> part, @Nullable Runnable afterOff) {
+    private boolean _stop(Part<C> x, @Nullable Runnable afterOff) {
 
 
-        Exe.invokeLater(() -> {
+        executor.execute(() -> {
             try {
 
-                if (!part.state.compareAndSet(ServiceState.On, ServiceState.OnToOff))
+                if (!x.state.compareAndSet(ServiceState.On, ServiceState.OnToOff))
                     return;
 
-                boolean nowOff = part.state.compareAndSet(Parts.ServiceState.OnToOff, Parts.ServiceState.Off);
+                x.stop(id);
+
+                boolean nowOff = x.state.compareAndSet(Parts.ServiceState.OnToOff, Parts.ServiceState.Off);
                 assert(nowOff);
 
                 if (afterOff != null)
                     afterOff.run();
 
-                eventAddRemove.emit(pair(part, false)/*, executor*/);
+                eventAddRemove.emit(pair(x, false)/*, executor*/);
 
             } catch (Throwable e) {
-                part.state.set(Parts.ServiceState.Off);
-                error(part, e, "stop");
+                x.state.set(Parts.ServiceState.Off);
+                error(x, e, "stop");
             }
         });
         return true;
@@ -287,7 +298,7 @@ public class Parts<K /* service key */, C /* context */> {
     }
 
     private boolean tryStart(@Nullable Part<C> x) {
-        Exe.invokeLater(() -> {
+        executor.execute(() -> {
             try {
                 if (x.state.compareAndSet(ServiceState.Off, ServiceState.OffToOn)) {
 

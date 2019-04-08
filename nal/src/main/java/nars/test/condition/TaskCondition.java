@@ -11,7 +11,6 @@ import nars.term.Term;
 import nars.truth.Truth;
 import nars.truth.Truthed;
 import org.eclipse.collections.api.block.predicate.primitive.LongLongPredicate;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
@@ -49,11 +48,7 @@ public class TaskCondition implements NARCondition, Predicate<Task>, Consumer<Ta
     /*float tenseCost = 0.35f;
     float temporalityCost = 0.75f;*/
 
-
-
     final static int maxSimilars = 2;
-
-
 
     public final List<Task> matched = $.newArrayList(1);
 

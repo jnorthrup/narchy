@@ -1,12 +1,12 @@
 package nars.link;
 
 import jcog.TODO;
-import jcog.pri.OverflowDistributor;
 import jcog.pri.PriMap;
 import jcog.pri.Prioritizable;
 import jcog.pri.bag.Bag;
 import jcog.pri.bag.impl.BufferedBag;
 import jcog.pri.op.PriMerge;
+import jcog.pri.op.PriReturn;
 import nars.Param;
 import nars.concept.Concept;
 import nars.term.Term;
@@ -36,9 +36,8 @@ public class TaskLinkBag extends BufferedBag.SimpleBufferedBag<TaskLink, TaskLin
         }
 
         @Override
-        protected void merge(Prioritizable existing, TaskLink incoming, float pri, PriMerge merge, OverflowDistributor<
-                TaskLink> overflow) {
-            ((TaskLink) existing).merge(incoming, merge);
+        protected float merge(Prioritizable existing, TaskLink incoming, float pri, PriMerge merge) {
+            return ((TaskLink) existing).merge(incoming, merge, PriReturn.Delta);
         }
     }
 

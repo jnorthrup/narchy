@@ -5,14 +5,12 @@ import nars.term.Term;
 
 import java.util.function.Consumer;
 
-public class AtCycle extends NAREvent {
+public class WhenClear extends WhenPeriodic {
 
-    public AtCycle(Consumer<NAR> x) {
+    public WhenClear(Consumer<NAR> x) {
         super(x);
     }
-    public AtCycle(Term id, Consumer<NAR> x) {
+    public WhenClear(Consumer<NAR> x, Term id) {
         super(id, x);
     }
-
-
 }

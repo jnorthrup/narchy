@@ -30,6 +30,7 @@ class PartsTest {
         s.add("x", new DummyPart(sb));
         s.start("y", new DummyPart(sb));
         assertEquals(2, s.size());
+        s.print(System.out);
         assertEquals(1, s.partStream().filter(Part::isOn).count());
         assertEquals(1, s.partStream().filter(Part::isOff).count());
 
@@ -66,10 +67,7 @@ class PartsTest {
             this.sb = sb;
         }
 
-        @Override
-        public void off() {
 
-        }
 
         @Override
         protected void start(Object x) {

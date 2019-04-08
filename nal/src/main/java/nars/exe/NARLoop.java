@@ -12,49 +12,68 @@ import nars.term.atom.Atom;
  * self managed set of processes which run a NAR
  * as a loop at a certain frequency.
  */
-public class NARLoop extends InstrumentedLoop {
+abstract public class NARLoop extends InstrumentedLoop {
 
     private static final Atom NAR_LOOP = $.the(NARLoop.class);
 
-    private final NAR nar;
+    public final NAR nar;
 
     public final FloatRange throttle = new FloatRange(1f, 0f, 1f);
-    private final NARPart service;
+
+    private final NARPart part;
 
     /**
      * starts paused; thread is not automatically created
      */
-    public NARLoop( NAR n) {
+    NARLoop(NAR n) {
         super();
         nar = n;
-        this.service = new NARPart((Term)$.inh(NAR_LOOP, n.self())) {
+        this.part = new NARPart((Term)$.inh(NAR_LOOP, n.self())) {
 
         };
-        n.start(service);
+        n.start(part);
     }
 
-//    @Override
-//    protected boolean async() {
-//        return true;
-//    }
+    public static NARLoop build(NAR nar) {
+        return nar.exe.concurrent() ? new NARLoopAsync(nar) : new NARLoopSync(nar);
+    }
 
-    @Override
-    public final boolean next() {
 
-        nar.time.cycle(nar);
+    final static class NARLoopSync extends NARLoop {
 
-//        if (nar.exe.concurrent()) {
-//            nar.eventCycle.emitAsync(nar, nar.exe, this::ready);
-//        } else {
+        NARLoopSync(NAR n) {
+            super(n);
+        }
+
+        @Override
+        public final boolean next() {
+            nar.time.next(nar);
             nar.eventCycle.emit(nar);
-//            ready();
-//        }
-
-        return true;
+            return true;
+        }
     }
 
-    public NAR nar() {
-        return nar;
+    final static class NARLoopAsync extends NARLoop {
+
+        NARLoopAsync(NAR n) {
+            super(n);
+        }
+
+        @Override
+        protected boolean async() {
+            return true;
+        }
+
+        @Override
+        public final boolean next() {
+
+            nar.time.next(nar);
+
+            nar.eventCycle.emitAsync(nar, nar.exe, this::ready);
+
+
+            return true;
+        }
     }
 
 }

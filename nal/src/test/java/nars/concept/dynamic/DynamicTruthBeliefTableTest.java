@@ -3,6 +3,7 @@ package nars.concept.dynamic;
 import nars.*;
 import nars.link.AtomicTaskLink;
 import nars.time.When;
+import nars.time.event.WhenTimeIs;
 import org.junit.jupiter.api.Test;
 
 import java.util.HashSet;
@@ -27,7 +28,7 @@ class DynamicTruthBeliefTableTest {
         n.run(1);
         AtomicTaskLink tl = new AtomicTaskLink($$("(x && y)"), Op.EmptyProduct, ETERNAL, BELIEF,  1f);
         Set<Task> tasks = new HashSet();
-        When w = When.eternal(n);
+        When w = WhenTimeIs.eternal(n);
         for (int i = 0; i < 10; i++)
             tasks.add(tl.get(w));
         assertTrue(tasks.toString().contains("(x&&y). %0.0;.25%]"));
@@ -42,7 +43,7 @@ class DynamicTruthBeliefTableTest {
         n.run(1);
         AtomicTaskLink tl = new AtomicTaskLink($$("(x && y)"), Op.EmptyProduct, ETERNAL, BELIEF, 1f);
         Set<Task> tasks = new HashSet();
-        When w = new When(1, n);
+        When w = new When(1, 2, 1, n);
         for (int i = 0; i < 100; i++)
             tasks.add(tl.get(w));
         assertTrue( tasks.toString().contains("(x &&+1 y). 1 %1.0;.81%]"), ()->tasks.toString());

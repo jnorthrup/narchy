@@ -26,6 +26,7 @@ import static nars.truth.func.TruthFunctions.w2cSafe;
  */
 public abstract class Param extends Parts<Term,NAR> {
 
+
     static {
         Op.terms =
                 //HeapTermBuilder.the;
@@ -62,6 +63,8 @@ public abstract class Param extends Parts<Term,NAR> {
     public static final boolean DT_DITHER_LOGARITHMICALLY = false;
 
     public static final boolean PREMISE_FOCUS_TIME_DITHER = true;
+    /** disable common variables for the query variables matched in premise formation; since the task target is not transformed like the belief target is.*/
+    public static final boolean PREMISE_UNIFY_COMMON_VARIABLES = true;
 
 
     /** return <= 0 to disable */
@@ -323,7 +326,7 @@ public abstract class Param extends Parts<Term,NAR> {
     public static final int TermutatorSearchTTL = 4;
     public static final int TermUnifyForkMax = 2;
     public final IntRange deriveBranchTTL = new IntRange(8 * TTL_MIN, TTL_MIN, 64 * TTL_MIN );
-    public final IntRange matchTTL = new IntRange(12, 1, 32);
+    public final IntRange matchTTL = new IntRange(6, 1, 32);
 
     public static final int TTL_CONJ_BEFORE_AFTER = 4; //HACK this is a TTL supply, not a COST
 

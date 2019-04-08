@@ -43,7 +43,7 @@ public enum DerivationFunctors {
             if (s instanceof InlineFunctor)
                 add(m, s);
 
-        NAR nar = d.nar;
+        NAR nar = d.nar();
 
 
         Functor[] derivationFunctors = new Functor[]{

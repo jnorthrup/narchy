@@ -2,6 +2,7 @@ package nars.time.part;
 
 import nars.NAR;
 import nars.control.NARPart;
+import nars.time.event.WhenCycle;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
@@ -19,20 +20,23 @@ abstract public class CycLoop extends NARPart implements Consumer<NAR> {
 
     @Override
     protected void starting(NAR nar) {
-        on(nar.onCycle(this));
+        whenOff(nar.onCycle(this));
     }
 
     @Override
     public void accept(NAR nar) {
-        if (busy.weakCompareAndSetAcquire(false, true)) {
+        if (busy.compareAndSet(false, true)) {
             try {
                 run(nar);
             } finally {
-                busy.setRelease(false);
+                busy.set(false);
             }
         }
     }
 
     abstract protected void run(NAR timeAware);
 
+    public String toString(Object r) {
+        return WhenCycle.class.getSimpleName() + "(" + r + ")";
+    }
 }

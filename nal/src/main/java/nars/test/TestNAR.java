@@ -85,10 +85,10 @@ public class TestNAR {
     }
 
     public static class TestNARResult implements Serializable {
-        public final boolean success;
+        final boolean success;
         public final boolean error;
 
-        public TestNARResult(boolean success, boolean error) {
+        TestNARResult(boolean success, boolean error) {
             this.success = success;
             this.error = error;
         }
@@ -97,11 +97,16 @@ public class TestNAR {
     }
 
     public void run(long finalCycle) {
-        TestNARResult result = _run(finalCycle);
-        assertTrue(result.success);
+        //NDC.push(this.toString());
+//        try {
+            TestNARResult result = _run(finalCycle);
+            assertTrue(result.success);
+//        } finally {
+//            NDC.pop();
+//        }
     }
 
-    public TestNARResult _run(long finalCycle) {
+    private TestNARResult _run(long finalCycle) {
 
 
         score = 0; //Float.NEGATIVE_INFINITY;
@@ -139,35 +144,32 @@ public class TestNAR {
 
         long startTime = nar.time();
 
-        boolean success, error;
+
+        boolean error;
         try {
             runUntil(finalCycle);
-            success = true; error = false;
+            error = false;
         } catch (Throwable t) {
             logger.error("{} {}", this, t);
             t.printStackTrace();
-            success = false; error = true;
+            error = true;
         }
 
-        for (NARCondition t: succeedsIfAll) {
-            if (!t.isTrue()) {
-                success = false;
-                break;
+        boolean success = !error;
+        if (success) {
+            for (NARCondition t : succeedsIfAll) {
+                if (!t.isTrue()) {
+                    success = false;
+                    break;
+                }
             }
         }
-        for (NARCondition t: failsIfAny) {
-            if (t.isTrue()) {
-
-                if (!quiet) {
-                    logger.warn("mustNot: {}", t);
-                    t.log(logger);
-                    ((TaskCondition) t).matched.forEach(shouldntHave ->
-                            logger.warn("Must not:\n{}\n{}", shouldntHave.proof(), MetaGoal.proof(shouldntHave,nar))
-                    );
+        if (success) {
+            for (NARCondition t : failsIfAny) {
+                if (t.isTrue()) {
+                    success = false;
+                    break;
                 }
-
-
-                success = false;
             }
         }
 
@@ -189,29 +191,43 @@ public class TestNAR {
 //                ;
 
 
-        if (!quiet && reportStats) {
-            String pattern = "{}\n\t{} {} {}IN \ninputs";
-            Object[] args = {id, endTime};
-
-            logger.info(pattern, args);
-
-        }
-
         if (!quiet) {
-            succeedsIfAll.forEach(c ->
-                    c.log(logger)
-            );
+            if (reportStats) {
+                logger.info("{}\n\t{} {} {}IN \ninputs", id, endTime);
+            }
+
+            for (NARCondition t : failsIfAny) {
+                if (t.isTrue()) {
+
+                    if (!quiet) {
+                        t.log(logger);
+
+                        //TODO move this to TaskCondition for negative-specific cases
+                        ((TaskCondition) t).matched.forEach(shouldntHave ->
+                                logger.warn("shouldNot: \t{}\n{}", shouldntHave.proof(), MetaGoal.proof(shouldntHave, nar))
+                        );
+                    }
+
+                }
+            }
+
+            if (!quiet) {
+                succeedsIfAll.forEach(t -> {
+                    if (!t.isTrue())
+                        logger.warn("should: {}", t);
+                });
 
 
-            if (trace != null)
-                logger.trace("{}", trace.getBuffer());
+                if (trace != null)
+                    logger.trace("{}", trace.getBuffer());
+            }
+
+            if (reportStats) {
+                nar.feel.print(System.out);
+                nar.stats(System.out);
+            }
         }
 
-
-        if (!quiet && reportStats) {
-            nar.feel.print(System.out);
-            nar.stats(System.out);
-        }
 
 
         return success ? new TestNARResult(true, false) : new TestNARResult(false, error);
@@ -626,6 +642,7 @@ public class TestNAR {
     }
 
     public void test(/* for use with JUnit */) {
+        nar.synch();
         run(0);
     }
 

@@ -146,7 +146,7 @@ public abstract class Time implements Serializable {
 
     }
 
-    abstract public void cycle(NAR n);
+    abstract public void next(NAR n);
 
 
     /**
@@ -173,5 +173,6 @@ public abstract class Time implements Serializable {
     public long toCycles(Quantity q) {
         throw new UnsupportedOperationException("Only in RealTime implementations");
     }
+
 
 }

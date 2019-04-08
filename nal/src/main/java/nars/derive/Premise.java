@@ -184,7 +184,7 @@ public class Premise implements Comparable<Premise> {
 
     private @Nullable Task match(Derivation d, Term beliefTerm, boolean beliefConceptCanAnswerTaskConcept) {
 
-        NAR n = d.nar;
+        NAR n = d.nar();
 
         Concept beliefConcept = beliefTerm.op().taskable ?
                 n.conceptualizeDynamic(beliefTerm)
@@ -266,7 +266,7 @@ public class Premise implements Comparable<Premise> {
                     beliefFilter() :
                     null;
 
-        return bb.matching(focus[0], focus[1], beliefTerm, beliefFilter, d.dur, d.nar)
+        return bb.matching(focus[0], focus[1], beliefTerm, beliefFilter, d.dur(), d.nar())
                     .task(true, false, true);
     }
 
@@ -283,14 +283,14 @@ public class Premise implements Comparable<Premise> {
             te = task.end();
         }
         Task match = answerTable.matching(ts, te, beliefTerm,
-                null, d.dur, d.nar)
+                null, d.dur(), d.nar())
                 .task(true, false, false);
 
 
         if (match != null) {
             //assert (task.isQuest() || match.punc() == BELIEF) : "quest answered with a belief but should be a goal";
 
-            return task.onAnswered(match, d.nar);
+            return task.onAnswered(match, d.nar());
 
         }
 
@@ -367,7 +367,7 @@ public class Premise implements Comparable<Premise> {
 
         FastCounter result;
 
-        Emotion e = d.nar.feel;
+        Emotion e = d.nar().feel;
 
         if (match(d, matchTTL)) {
 

@@ -5,7 +5,7 @@ import nars.term.Term;
 import nars.term.atom.Atomic;
 
 /** internal, system event */
-abstract public class InternalEvent {
+abstract public class WhenInternal {
 
     abstract public Term term();
 

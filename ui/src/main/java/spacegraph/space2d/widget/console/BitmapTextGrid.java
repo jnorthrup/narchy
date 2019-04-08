@@ -3,7 +3,7 @@ package spacegraph.space2d.widget.console;
 import com.googlecode.lanterna.TextCharacter;
 import com.googlecode.lanterna.terminal.virtual.VirtualTerminal;
 import com.jogamp.opengl.GL2;
-import jcog.Util;
+import jcog.Log;
 import jcog.tree.rtree.rect.RectFloat;
 import org.slf4j.Logger;
 import spacegraph.space2d.ReSurface;
@@ -27,7 +27,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public abstract class BitmapTextGrid extends AbstractConsoleSurface {
 
-    private static final Logger logger = Util.logger(BitmapTextGrid.class);
+    private static final Logger logger = Log.logger(BitmapTextGrid.class);
 
 
     private final Tex tex = new Tex().mipmap(true);

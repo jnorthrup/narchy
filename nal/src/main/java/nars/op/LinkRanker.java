@@ -2,12 +2,12 @@ package nars.op;
 
 import jcog.sort.FloatRank;
 import jcog.sort.RankedN;
-import nars.NAR;
 import nars.attention.What;
 import nars.control.How;
 import nars.link.TaskLink;
 import nars.term.Term;
 import nars.time.When;
+import nars.time.event.WhenTimeIs;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.BooleanSupplier;
@@ -34,7 +34,7 @@ public abstract class LinkRanker<Y> extends How {
 
         //when = When.sinceAgo(nar.dur(), nar);
 
-        When when = When.now(nar);
+        When when = WhenTimeIs.now(w);
         w.forEach(x -> {
             Y y = apply(x, when);
             if (y!=null)

@@ -1,5 +1,6 @@
 package nars;
 
+import jcog.Log;
 import jcog.data.list.FasterList;
 import nars.attention.What;
 import nars.concept.Concept;
@@ -18,6 +19,7 @@ import nars.term.Term;
 import nars.time.Time;
 import nars.time.clock.CycleTime;
 import nars.time.clock.RealTime;
+import org.slf4j.Logger;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -132,15 +134,15 @@ public class NARS {
 
             then((n)->{
 
-                n.termVolumeMax.set(20);
+                n.termVolumeMax.set(22);
 
                 ((What.TaskLinkWhat)n.in).links.linksMax.set(128);
                 ((What.TaskLinkWhat)n.in).links.decay.set(0.03f);
 
-                n.beliefPriDefault.set(0.1f);
-                n.goalPriDefault.set(0.1f);
-                n.questionPriDefault.set(0.02f);
-                n.questPriDefault.set(0.02f);
+                n.beliefPriDefault.set(0.01f);
+                n.goalPriDefault.set(0.01f);
+                n.questionPriDefault.set(0.002f);
+                n.questPriDefault.set(0.002f);
 
 
             });
@@ -154,7 +156,7 @@ public class NARS {
     public NARS() {
 
         index = () ->
-                new SimpleMemory(32 * 1024)
+                new SimpleMemory(8 * 1024)
                 //new TemporaryConceptIndex()
         ;
 
@@ -164,7 +166,7 @@ public class NARS {
 
         what = w -> new What.TaskLinkWhat(w,
                        new PriBuffer.DirectPriBuffer()
-                       //new TaskBuffer.BagTaskBuffer(256, 5f)
+                       //new PriBuffer.BagTaskBuffer(256, 4f)
                        //new TaskBuffer.MapTaskBuffer(64)
         );
 
@@ -275,14 +277,14 @@ public class NARS {
             } catch (FileNotFoundException ignored) {
                 
             } catch (IOException e) {
-                n.logger.error("input: {} {}", s, e);
+                logger.error("input: {} {}", s, e);
             }
 
             Runnable save = () -> {
                 try {
                     n.outputBinary(f, false);
                 } catch (IOException e) {
-                    n.logger.error("output: {} {}", s, e);
+                    logger.error("output: {} {}", s, e);
                 }
             };
             Runtime.getRuntime().addShutdownHook(new Thread(save));
@@ -298,5 +300,6 @@ public class NARS {
     }
 
 
+    static final Logger logger = Log.logger(NARS.class);
 
 }

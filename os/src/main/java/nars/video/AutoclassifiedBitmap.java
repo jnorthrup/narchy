@@ -151,7 +151,7 @@ public class AutoclassifiedBitmap extends VectorSensor {
                 b.width(), b.height(),
                 sw, sh, metabits, states, agent);
 
-        confResolution.set(nar.confResolution.floatValue());
+        confResolution.set(agent.nar.confResolution.floatValue());
         this.src = b;
     }
 

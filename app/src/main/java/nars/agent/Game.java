@@ -54,7 +54,7 @@ public class Game implements NSense, NAct {
 
     private final Topic<NAR> eventFrame = new ListTopic();
 
-    private static final Logger logger = Util.logger(Game.class);
+    private static final Logger logger = Log.logger(Game.class);
 
     public final GameTime time;
 
@@ -221,7 +221,6 @@ public class Game implements NSense, NAct {
      */
     //@Override
     protected void starting(NAR nar) {
-
         nar.control.add(pri);
         attnAction.parent(nar, this.pri, nar.goalPriDefaultNode);
         attnSensor.parent(nar, this.pri, nar.beliefPriDefaultNode);
@@ -229,7 +228,7 @@ public class Game implements NSense, NAct {
 
         sensors.forEach(s -> nar.start((NARPart)s));
 
-        this.time.start(this);
+        time.start(this);
     }
 
 
@@ -244,7 +243,6 @@ public class Game implements NSense, NAct {
         nar.control.remove(attnAction);
         nar.control.remove(attnSensor);
         nar.control.remove(attnReward);
-
 
     }
 

@@ -1,9 +1,11 @@
 package nars.task;
 
+import jcog.Log;
 import jcog.data.list.FasterList;
 import jcog.pri.Prioritizable;
 import nars.NAR;
 import nars.attention.What;
+import org.slf4j.Logger;
 
 /**
  * generic abstract task used for commands and other processes
@@ -64,10 +66,11 @@ public interface ITask extends Prioritizable {
 
     static void error(Prioritizable t, Prioritizable x, Throwable ee, NAR nar) {
         if (t == x)
-            nar.logger.error("{} {}", x, ee);
+            ITask.logger.error("{} {}", x, ee);
         else
-            nar.logger.error("{}->{} {}", t, x, ee);
+            ITask.logger.error("{}->{} {}", t, x, ee);
     }
 
+    static final Logger logger = Log.logger(ITask.class);
 
 }

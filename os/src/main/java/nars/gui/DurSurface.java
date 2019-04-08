@@ -34,8 +34,8 @@ abstract public class DurSurface<S extends Surface> extends AbstractCachedSurfac
     }
 
     @Override
-    public Off on() {
-        return on = nar.onDur(this::updateIfShowing);
+    public Off whenOff() {
+        return ((on = nar.onDur(this::updateIfShowing))::delete);
     }
 
     /** sets the update period dur multiplier */

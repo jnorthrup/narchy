@@ -52,7 +52,7 @@ public class TaskLinks implements Sampler<TaskLink> {
      *  0 = deducts all propagated priority from source tasklink (full resistance)
      *  1 = deducts no propagated priority (superconductive)
      **/
-    public final FloatRange sustain = new FloatRange(1f,  0, 1f );
+    public final FloatRange sustain = new FloatRange(0.5f,  0, 1f );
 
 
 
@@ -125,7 +125,7 @@ public class TaskLinks implements Sampler<TaskLink> {
         Concept ct;
         if (t.op().conceptualizable) {
 
-            NAR nar = d.nar;
+            NAR nar = d.nar();
 //        Random rng = d.random;
 
 
@@ -153,7 +153,7 @@ public class TaskLinks implements Sampler<TaskLink> {
                                     x -> !link.equals(x);
                             //x -> !link.equals(x) && !link.other(tt).equals(s);
 
-                            u = links.atomTangent(ct, punc, filter, d.time,
+                            u = links.atomTangent(ct, punc, filter, d.time(),
                                     Param.REMEMBER_REPEAT_THRESH_DURS /* repurposed */, d.random);
 //                        if (u!=null && u.equals(s)) {
 ////                            u = links.atomTangent(ct, ((TaskLink x)->!link.equals(x)), d.time, 1, d.random);//TEMPORARY

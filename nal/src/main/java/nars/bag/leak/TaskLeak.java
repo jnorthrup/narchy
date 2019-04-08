@@ -107,11 +107,11 @@ public abstract class TaskLeak extends How {
     protected void starting(NAR nar) {
         super.starting(nar);
 
-        on(nar.eventClear.on(this::clear));
+        whenOff(nar.eventClear.on(this::clear));
 
         Off off = source.start(this, nar);
         if (off!=null)
-            on(off);
+            whenOff(off);
     }
 
     @Override
@@ -219,7 +219,7 @@ public abstract class TaskLeak extends How {
         @Override
         public void next(Consumer<Task> each, BooleanSupplier kontinue, What w) {
 
-            when = focus();
+            when = focus(w.dur());
 
             w.sample(rng, (Predicate<? super TaskLink>)(c)->{
 
@@ -239,9 +239,8 @@ public abstract class TaskLeak extends How {
         }
 
         /** TODO abstract */
-        protected When focus() {
+        protected When focus(int dur) {
             long now = nar.time();
-            int dur = nar.dur();
             return new When(now - dur, now + dur, dur, nar);
         }
 

@@ -123,7 +123,7 @@ public class InterNAR extends NARPart implements TriConsumer<NAR, ActiveQuestion
     @Override
     protected void starting(NAR nar) {
 
-        on(peer.receive.on(this::receive));
+        whenOff(peer.receive.on(this::receive));
 
         //HACK temporary:
         nar.addOp1("ping", (term, nn)->{

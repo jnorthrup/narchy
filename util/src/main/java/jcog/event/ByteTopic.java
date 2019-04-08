@@ -98,10 +98,10 @@ public class ByteTopic<X> {
 
         @Override
         public void start(Consumer<X> o) {
-            super.start(o);
             synchronized (ByteTopic.this.active) { //HACK TODO use atomic
                 active.set(c, true);
             }
+            super.start(o);
         }
 
         @Override

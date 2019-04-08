@@ -160,7 +160,7 @@ public class AtomicOperations implements BiFunction<Task, NAR, Task> {
                     return x;
             });
         } else {
-            d.resume();
+            n.start(d);
         }
     }
 

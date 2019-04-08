@@ -15,7 +15,7 @@ public class DerivedTask extends GenericNALTask {
     
 
     public DerivedTask(Term tc, byte punct, @Nullable Truth truth, long start, long end, Derivation d) {
-        super(tc, punct, truth, d.time, start, end, d.concSingle ? d.evidenceSingle() : d.evidenceDouble());
+        super(tc, punct, truth, d.time(), start, end, d.concSingle ? d.evidenceSingle() : d.evidenceDouble());
     }
 
     @Override

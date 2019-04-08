@@ -54,8 +54,8 @@ public class ConjClustering extends How {
     int tasksPerIterationPerCentroid = 1;
 
     private final Predicate<Task> filter;
-    private long now;
-    private int dur;
+    private volatile long now;
+
     private float confMin;
     private int volMax;
 
@@ -138,7 +138,7 @@ public class ConjClustering extends How {
         super.starting(nar);
 
 
-        on(nar.onTask(t -> {
+        whenOff(nar.onTask(t -> {
             if (!t.isEternal()
                     && !t.hasVars() //<-- TODO requires multi-normalization (shifting offsets)
                     && (stampLenMax == Integer.MAX_VALUE || (t.stamp().length <= stampLenMax))
@@ -170,7 +170,24 @@ public class ConjClustering extends How {
     @Override
     public /*synchronized*/ void next(What w, BooleanSupplier kontinue /* max tasks generated per centroid, >=1 */) {
 
-        update();
+        int dur = w.dur();
+
+        long now1 = nar.time();
+        long lastNow = this.now;
+        if (lastNow < now1) {
+            _update(now1);
+        }
+
+        if (busy.compareAndSet(false, true)) {
+            try {
+                if (now1 - lastLearn >= minDurationsPerLearning*dur) {
+                    data.learn(forgetRate(), learningIterations);
+                    lastLearn = now1;
+                }
+            } finally {
+                busy.set(false);
+            }
+        }
 
         //round-robin visit each centroid one task at a time.  dont finish a centroid completely and then test kontinue, it is unfair
         FasterList<TaskList> centroids = new FasterList<>(this.data.net.centroidCount());
@@ -209,30 +226,10 @@ public class ConjClustering extends How {
 
     }
 
-    private void update() {
-        long now = nar.time();
-        long lastNow = this.now;
-        if (lastNow < now) {
-            _update(now);
-        }
-
-        if (busy.compareAndSet(false, true)) {
-            try {
-                if (now - lastLearn >= minDurationsPerLearning*dur) {
-                    data.learn(forgetRate(), learningIterations);
-                    lastLearn = now;
-                }
-            } finally {
-                busy.set(false);
-            }
-        }
-    }
-
     private void _update(long now) {
         //parameters must be set even if data is empty due to continued use in the filter
         //but at most once per cycle or duration
         this.now = now;
-        this.dur = nar.dur();
         this.stampLenMax =
                 Param.STAMP_CAPACITY / 2; //for minimum of 2 tasks in each conjunction
         //Param.STAMP_CAPACITY - 1;

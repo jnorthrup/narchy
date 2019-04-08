@@ -3,6 +3,7 @@ package nars.task;
 import jcog.data.list.FasterList;
 import jcog.data.map.CompactArrayMap;
 import jcog.pri.UnitPri;
+import nars.NAR;
 import nars.Param;
 import nars.Task;
 import nars.control.CauseMerge;
@@ -28,12 +29,12 @@ public abstract class NALTask extends UnitPri implements Task {
 
     private volatile boolean cyclic;
 
-    public static NALTask the(Term c, byte punct, Truth tr, When when) {
-        return the(c, punct, tr, when.nar.time(), when.start, when.end, when.newStamp());
+    public static NALTask the(Term c, byte punct, Truth tr, When<NAR> when) {
+        return the(c, punct, tr, when.x.time(), when.start, when.end, new long[]{when.x.time.nextStamp()});
     }
 
-    public static NALTask the(Term c, byte punct, Truth tr, When when, long[] evidence) {
-        return the(c, punct, tr, when.nar.time(), when.start, when.end, evidence);
+    public static NALTask the(Term c, byte punct, Truth tr, When<NAR> when, long[] evidence) {
+        return the(c, punct, tr, when.x.time(), when.start, when.end, evidence);
     }
 
     public static NALTask the(Term c, byte punct, Truth tr, long creation, long start, long end, long[] evidence) {

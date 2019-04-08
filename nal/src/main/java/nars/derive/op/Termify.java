@@ -42,7 +42,7 @@ public final class Termify extends ProxyTerm {
 
         d.concOcc = null;
 
-        NAR nar = d.nar;
+        NAR nar = d.nar();
         nar.feel.deriveTermify.increment();
 
         if (!Taskify.valid(x, (byte) 0 /* dont consider punc consequences until after temporalization */)) {

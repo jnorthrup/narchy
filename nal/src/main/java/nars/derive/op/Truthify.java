@@ -125,7 +125,7 @@ public class Truthify extends AbstractPred<Derivation> {
                 if ((t = f.apply(
                         d.taskTruth,
                         beliefTruth,
-                        d.nar, d.confMin
+                        d.nar(), d.confMin
                 )) == null)
                     return false;
 

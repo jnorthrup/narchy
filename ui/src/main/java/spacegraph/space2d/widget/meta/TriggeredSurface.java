@@ -25,7 +25,7 @@ public class TriggeredSurface<X extends Surface> extends AbstractCachedSurface<X
     }
 
     @Override
-    public Off on() {
+    public Off whenOff() {
         return trigger.apply(this::update);
     }
 

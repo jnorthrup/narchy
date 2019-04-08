@@ -6,7 +6,7 @@ import jcog.Util;
 import jcog.pri.ScalarValue;
 import nars.$;
 import nars.term.Term;
-import nars.time.event.InternalEvent;
+import nars.time.event.WhenInternal;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.PrintStream;
@@ -33,7 +33,7 @@ import static java.util.stream.Collectors.toList;
  */
 @Paper
 @Skill("Credit_assignment")
-public class Why extends InternalEvent implements Comparable<Why> {
+public class Why extends WhenInternal implements Comparable<Why> {
 
     /**
      * internally assigned id

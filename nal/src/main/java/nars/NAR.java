@@ -39,7 +39,6 @@ import nars.subterm.Subterms;
 import nars.table.BeliefTable;
 import nars.task.ITask;
 import nars.task.NALTask;
-import nars.task.util.PriBuffer;
 import nars.task.util.TaskException;
 import nars.task.util.TaskTopic;
 import nars.term.Compound;
@@ -51,10 +50,10 @@ import nars.term.atom.Atomic;
 import nars.time.ScheduledTask;
 import nars.time.Tense;
 import nars.time.Time;
-import nars.time.event.AtClear;
-import nars.time.event.AtCycle;
-import nars.time.event.AtTime;
-import nars.time.event.InternalEvent;
+import nars.time.event.WhenClear;
+import nars.time.event.WhenCycle;
+import nars.time.event.WhenTimeIs;
+import nars.time.event.WhenInternal;
 import nars.time.part.DurLoop;
 import nars.truth.PreciseTruth;
 import nars.truth.Truth;
@@ -154,25 +153,27 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
         (this.time = time).reset();
 
         this.memory = memory;
+        this.exe = exe;
 
         this.control = new Control(this);
 
         this.whatBuilder = whatBuilder;
         become(Param.randomSelf());
 
-        this.exe = exe;
 
         this.conceptBuilder = conceptBuilder;
         memory.start(this);
 
         onCycle(this.feel = new Emotion(this));
 
-
         Builtin.init(this);
 
-        this.loop = new NARLoop(this);
-
         exe.start(this);
+
+        this.loop = NARLoop.build(this);
+
+        synch();
+
     }
 
     static void outputEvent(Appendable out, String previou, String chan, Object v) throws IOException {
@@ -332,6 +333,19 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
 
     }
 
+    /** deallocate as completely as possible */
+    public void delete() {
+        synchronized (exe) {
+
+            synch();
+
+            stop();
+            //clear();
+
+            super.delete();
+        }
+    }
+
     /**
      * the clear event is a signal indicating that any active memory or processes
      * which would interfere with attention should be stopped and emptied.
@@ -365,7 +379,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
             if (!Objects.equals(prev = self.getAndSet(nextSelf), nextSelf)) {
                 What prevWhat = this.in;
                 if (prevWhat !=null)
-                    prevWhat.pause();
+                    stop(prevWhat);
 
                 if (nextSelf!=null) {
                     start(this.in = builder.apply(nextSelf));
@@ -651,6 +665,12 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
     }
 
 
+    @Nullable
+    @Override
+    public final Term key(Part<NAR> p) {
+        return ((NARPart)p).id;
+    }
+
     public final boolean start(NARPart p) {
         return start(p.id, p);
     }
@@ -659,12 +679,22 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
         return add(p.id, p);
     }
 
+    public final NARPart add(Class<? extends NARPart> p) {
+        return add(null, p);
+    }
 
     public final NARPart start(Class<? extends NARPart> p) {
         return start(null, p);
     }
 
+    public final NARPart add(@Nullable Term key, Class<? extends NARPart> p) {
+        return add(key, false, p);
+    }
     public final NARPart start(@Nullable Term key, Class<? extends NARPart> p) {
+        return add(key, true, p);
+    }
+
+    public final NARPart add(@Nullable Term key, boolean start, Class<? extends NARPart> p) {
         NARPart pp = null;
         if (key!=null)
             pp = (NARPart) parts.get(key);
@@ -961,7 +991,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
      * @return
      */
     public final ScheduledTask runAt(long whenOrAfter, Runnable then) {
-        return runAt(new AtTime(whenOrAfter, then));
+        return runAt(new WhenTimeIs(whenOrAfter, then));
     }
 
     public final ScheduledTask runAt(ScheduledTask t) {
@@ -1073,8 +1103,6 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
     public final Off onCycleWeak(Consumer<NAR> each) {
         return eventCycle.onWeak(each);
     }
-
-
 
     public final DurLoop onDur(Runnable on) {
         DurLoop.DurRunnable r = new DurLoop.DurRunnable(on);
@@ -1545,15 +1573,15 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
     /**
      * stream of all (explicitly and inferrable) internal events
      */
-    public Stream<? extends InternalEvent> at() {
+    public Stream<? extends WhenInternal> when() {
         return Streams.concat(
                 //TODO Streams.stream(eventTask).map(t -> ), // -> AtTask events
-                Streams.stream(eventCycle).map(AtCycle::new),
-                Streams.stream(eventClear).map(AtClear::new),
+                Streams.stream(eventCycle).map(WhenCycle::new),
+                Streams.stream(eventClear).map(WhenClear::new),
                 this.partStream()
                         .map((s) -> ((NARPart) s).event()).filter(Objects::nonNull),
                 time.events()
-                        .filter(t -> !(t instanceof DurLoop.AtDur)) //HACK (these should already be included in service's events)
+                        .filter(t -> !(t instanceof DurLoop.WhenDur)) //HACK (these should already be included in service's events)
 //            causes.stream(),
         );
     }
@@ -1561,8 +1589,8 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
     /**
      * map of internal events organized by category
      */
-    public final Map<Term, List<InternalEvent>> atMap() {
-        return at().collect(Collectors.groupingBy(InternalEvent::category));
+    public final Map<Term, List<WhenInternal>> atMap() {
+        return when().collect(Collectors.groupingBy(WhenInternal::category));
     }
 
     /**
@@ -1588,4 +1616,6 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
 
         return w;
     }
+
+
 }

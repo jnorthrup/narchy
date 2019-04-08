@@ -4,6 +4,7 @@ import nars.Op;
 import nars.term.Term;
 import nars.term.Termlike;
 import nars.util.SoftException;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
 
@@ -14,14 +15,9 @@ import static nars.time.Tense.DTERNAL;
  */
 public final class TermException extends SoftException {
 
-
-    private final Op op;
+    private final byte op;
     private final int dt;
-
     private final Term[] args;
-
-    private final String reason;
-
 
     public TermException(String reason) {
         this(reason, null, Op.EmptyTermArray);
@@ -40,16 +36,19 @@ public final class TermException extends SoftException {
     }
 
     public TermException(String reason, Op op, int dt, Term... args) {
-        this.op = op;
+        super(reason);
+        this.op = op!=null ? op.id : -1;
         this.dt = dt;
         this.args = args;
-        this.reason = reason;
     }
+
+    @Nullable
+    public Op op() { return (op!=-1 ? Op.ops[op] : null); }
 
     @Override
     public String getMessage() {
-        return getClass().getSimpleName() + ": " + reason + " {" +
-                op +
+        return super.getMessage() + " {" +
+                op() +
                 ", dt=" + dt +
                 ", args=" + Arrays.toString(args) +
                 '}';

@@ -1,9 +1,9 @@
 package nars.task.util;
 
 import jcog.TODO;
+import jcog.WTF;
 import jcog.math.FloatRange;
 import jcog.math.IntRange;
-import jcog.pri.OverflowDistributor;
 import jcog.pri.PriMap;
 import jcog.pri.Prioritizable;
 import jcog.pri.bag.Bag;
@@ -29,7 +29,7 @@ import java.util.function.Consumer;
 abstract public class PriBuffer<T extends Prioritizable> implements Consumer<T> {
 
 
-    public final IntRange capacity = new IntRange(0, 0, 4 * 1024);
+
 
     /**
      * returns
@@ -53,11 +53,13 @@ abstract public class PriBuffer<T extends Prioritizable> implements Consumer<T> 
      */
     abstract public int size();
 
+    abstract public int capacity();
+
     /**
-     * calculate or estimate current capacity, as a value between 0 and 100% [0..1.0]
+     * estimate current utilization: size/capacity (as a value between 0 and 100%)
      */
     public final float load() {
-        return size() / capacity.floatValue();
+        return ((float)size()) / capacity();
     }
 
     //TODO
@@ -80,8 +82,12 @@ abstract public class PriBuffer<T extends Prioritizable> implements Consumer<T> 
         public DirectPriBuffer() {
         }
 
+
         @Override
         public T put(T x) {
+            if (each == null)
+                throw new WTF(); //TEMPORARY
+
             each.accept(x);
             if (x.isDeleted())
                 return null;
@@ -111,23 +117,28 @@ abstract public class PriBuffer<T extends Prioritizable> implements Consumer<T> 
         }
 
         @Override
+        public final int capacity() {
+            return 1;
+        }
+
+        @Override
         public float priMin() {
             return 0;
         }
     }
 
-    /**
-     * TODO
-     * when the concept index churn rate is low, use the Map to conceptualize quickly
-     * when the concept index churn rate is high, use the Bag with controlled throughput rate
-     * acting as the original NoveltyBag did in OpenNARS
-     * using this the system can shift energy towards exploration (more conceptualization) OR
-     * towards more refined truth (more selectivity in task generation with regard to relatively
-     * stable set of concepts they would add to)
-     */
-    public static abstract class AdaptiveTaskBuffer extends PriBuffer {
-
-    }
+//    /**
+//     * TODO
+//     * when the concept index churn rate is low, use the Map to conceptualize quickly
+//     * when the concept index churn rate is high, use the Bag with controlled throughput rate
+//     * acting as the original NoveltyBag did in OpenNARS
+//     * using this the system can shift energy towards exploration (more conceptualization) OR
+//     * towards more refined truth (more selectivity in task generation with regard to relatively
+//     * stable set of concepts they would add to)
+//     */
+//    public static abstract class AdaptiveTaskBuffer extends PriBuffer {
+//
+//    }
 
     /**
      * buffers in a Map<> for de-duplication prior to a commit that flushes them as input to NAR
@@ -138,9 +149,13 @@ abstract public class PriBuffer<T extends Prioritizable> implements Consumer<T> 
 
         private final Map<Task, Task> tasks;
 
-        public MapTaskBuffer(int initialCapacity) {
-            capacity.set(initialCapacity);
+        public MapTaskBuffer() {
             tasks = PriMap.newMap(true);
+        }
+
+        @Override
+        public int capacity() {
+            return Integer.MAX_VALUE;
         }
 
         @Override
@@ -195,10 +210,17 @@ abstract public class PriBuffer<T extends Prioritizable> implements Consumer<T> 
      */
     public static class BagTaskBuffer extends PriBuffer<ITask> {
 
+        public final IntRange capacity = new IntRange(0, 0, 4 * 1024);
+
         /**
          * temporary buffer before input so they can be merged in case of duplicates
          */
         public final Bag<ITask, ITask> tasks;
+
+        @Override
+        public int capacity() {
+            return capacity.intValue();
+        }
 
         {
             final PriMerge merge = Param.tasklinkMerge;
@@ -219,8 +241,8 @@ abstract public class PriBuffer<T extends Prioritizable> implements Consumer<T> 
                          * merge in the post-buffer
                          */
                         @Override
-                        protected void merge(Prioritizable existing, ITask incoming, float pri, PriMerge merge, OverflowDistributor<ITask> overflow) {
-                            Task.merge((ITask) existing, incoming, merge, CauseMerge.Append, PriReturn.Void, true);
+                        protected float merge(Prioritizable existing, ITask incoming, float pri, PriMerge merge) {
+                            return Task.merge((ITask) existing, incoming, merge, CauseMerge.Append, PriReturn.Delta, true);
                         }
                     }
             );

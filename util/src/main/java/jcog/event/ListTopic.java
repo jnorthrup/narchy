@@ -24,21 +24,21 @@ public class ListTopic<V> extends jcog.data.list.FastCoWList<Consumer<V>> implem
 
     @Override
     public void emit(V x) {
-        final Consumer[] cc = this.array();
-
-        for (Consumer c: cc)
-            c.accept(x);
+        forEachWith(Consumer::accept, x);
+//        final Consumer[] cc = this.array();
+//        for (Consumer c: cc)
+//            c.accept(x);
     }
 
 
 
     @Override
     public void emitAsync(V x, Executor executorService) {
-        final Consumer[] cc = this.array();
-        if (cc != null) {
-            for (Consumer c: cc)
-                executorService.execute(() -> c.accept(x));
-        }
+//        final Consumer[] cc = this.array();
+//
+//            for (Consumer c: cc)
+//                executorService.execute(() -> c.accept(x));
+        forEachWith((c,X)->executorService.execute(() -> c.accept(X)), x);
     }
 
     @Override

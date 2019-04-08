@@ -121,7 +121,7 @@ public interface Topic<X> extends Iterable<Consumer<X>> {
     }
 
     default Off on(Runnable o) {
-        return on(new ConsumerAdapter<>(o));
+        return on(new ConsumerAdapter(o));
     }
 
     default Off onWeak(Consumer<X> o) {
@@ -130,7 +130,7 @@ public interface Topic<X> extends Iterable<Consumer<X>> {
     }
 
     default Off onWeak(Runnable o) {
-        return onWeak(new ConsumerAdapter<>(o));
+        return onWeak(new ConsumerAdapter(o));
     }
 
 

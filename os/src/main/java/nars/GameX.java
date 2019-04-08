@@ -123,7 +123,7 @@ abstract public class GameX extends Game {
             //System.gc();
         });
 
-        //n.synch();
+        n.synch();
 
         Loop loop = n.startFPS(gameFPS);
 
@@ -459,7 +459,7 @@ abstract public class GameX extends Game {
 
         //new StatementLinker(n);
         //new PuncNoise(n);
-        n.start(Eternalizer.class); //new Eternalizer(n);
+        n.add(Eternalizer.class); //new Eternalizer(n);
 
 //        new STMLinkage(n, 1);
 

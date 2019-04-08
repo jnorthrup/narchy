@@ -4,6 +4,8 @@ import jcog.Paper;
 import jcog.data.map.NonBlockingHashMap;
 import jcog.exe.Exe;
 import jcog.pri.op.PriMerge;
+import jcog.pri.op.PriReturn;
+import jcog.util.FloatConsumer;
 import org.eclipse.collections.api.block.function.primitive.ObjectFloatToObjectFunction;
 import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 import org.jetbrains.annotations.Nullable;
@@ -92,11 +94,11 @@ public class PriMap<Y> {
         return items.isEmpty(); /* && termlink.isEmpty();*/
     }
 
-    public final Y put(Y x, float pri, PriMerge merge) {
-        return putRaw(x, pri, merge, null);
-    }
-
-    private Y putRaw(Y x, float pri, PriMerge merge, @Nullable OverflowDistributor<Y> overflow) {
+    public final Y put(Y x, float pri, PriMerge merge, @Nullable FloatConsumer pressurizable) {
+//        return putRaw(x, pri, merge, null);
+//    }
+//
+//    private Y putRaw(Y x, float pri, PriMerge merge, @Nullable OverflowDistributor<Y> overflow) {
         if (pri != pri)
             return null;
 
@@ -106,18 +108,22 @@ public class PriMap<Y> {
         );
 
         if (y != x) {
-            merge(y, x, pri, merge, overflow);
+            float delta = merge(y, x, pri, merge);
+            if (pressurizable!=null && Math.abs(delta) > Float.MIN_NORMAL)
+                pressurizable.accept(delta);
+
             return (Y) y;
         }
         return x;
     }
 
-    protected void merge(Prioritizable existing, Y incomingKey, float pri, PriMerge merge, OverflowDistributor<Y> overflow) {
-        if (overflow!=null) {
-            overflow.merge(incomingKey, existing, pri, merge);
-        } else {
-            merge.merge(existing, pri);
-        }
+    /** return the delta of the priority */
+    protected float merge(Prioritizable existing, Y incomingKey, float pri, PriMerge merge) {
+//    protected void merge(Prioritizable existing, Y incomingKey, float pri, PriMerge merge, OverflowDistributor<Y> overflow) {
+//        if (overflow!=null) {
+//            overflow.merge(incomingKey, existing, pri, merge);
+//        } else
+            return merge.merge(existing, pri, PriReturn.Delta);
     }
 
 
@@ -152,7 +158,7 @@ public class PriMap<Y> {
 //    }
 
     public final <Z extends Prioritizable> void put(Z x, PriMerge merge) {
-        put((Y)x, x.pri(), merge);
+        put((Y)x, x.pri(), merge, null);
     }
 
     public void clear() {

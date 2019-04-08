@@ -7,7 +7,7 @@ import nars.attention.PriNode;
 import nars.attention.What;
 import nars.exe.Exec;
 import nars.term.Term;
-import nars.time.event.InternalEvent;
+import nars.time.event.WhenInternal;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
@@ -122,9 +122,11 @@ abstract public class How extends NARPart {
         }
     }
 
-    public boolean inactive() {
+    @Deprecated public boolean inactive() {
         return sleeping;
     }
+
+
 
 
 
@@ -152,16 +154,16 @@ abstract public class How extends NARPart {
 
 
     @Deprecated
-    public InternalEvent event() {
+    public WhenInternal event() {
         return myCause;
     }
     public Causation timing() {
         return new Causation();
     }
 
-    private final InternalEvent myCause = new AtCause(id);
+    private final WhenInternal myCause = new AtCause(id);
 
-    static private class AtCause extends InternalEvent {
+    static private class AtCause extends WhenInternal {
 
         private final Term id;
 
@@ -221,7 +223,6 @@ abstract public class How extends NARPart {
             long start = System.nanoTime();
             long deadline = start + durationNS;
             try {
-                if (w.nar == null) w.nar = nar; //HACK HACK HACK
                 can.next(w, () -> System.nanoTime() < deadline);
             } catch (Throwable t) {
                 Exec.logger.error("{} {}", can, t);

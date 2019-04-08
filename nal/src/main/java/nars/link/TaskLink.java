@@ -83,17 +83,17 @@ public interface TaskLink extends UnitPrioritizable, FromTo<Term, TaskLink> {
         return priPunc(rng);
     }
 
-    @Nullable default /* final */Task get(When when) {
-        return get(punc(when.nar.random()), when, null);
+    @Nullable default /* final */Task get(When<NAR> when) {
+        return get(punc(when.x.random()), when, null);
     }
 
-    @Nullable default Task get(byte punc, When when, Predicate<Task> filter) {
+    @Nullable default Task get(byte punc, When<NAR> when, Predicate<Task> filter) {
         if (punc == 0)
             return null; //flat-lined tasklink
 
         Term x = from();
 
-        NAR n = when.nar;
+        NAR n = when.x;
 
         boolean beliefOrGoal = punc == BELIEF || punc == GOAL;
         Concept c =

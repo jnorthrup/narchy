@@ -226,7 +226,7 @@ public class NARui {
                 MemSave(nar),
                 new PushButton("Prune Beliefs", () -> {
                     nar.runLater(() -> {
-                        nar.logger.info("Belief prune start");
+                        //nar.logger.info("Belief prune start");
 //                        final long scaleFactor = 1_000_000;
                         //Histogram i = new Histogram(1<<20, 5);
                         Quantiler q = new Quantiler(128 * 1024);
@@ -258,7 +258,7 @@ public class NARui {
                                 e.printStackTrace();
                             }
                         });
-                        nar.logger.info("Belief prune finish: {} tasks removed", removed[0]);
+                        //nar.logger.info("Belief prune finish: {} tasks removed", removed[0]);
                     });
                 })
 

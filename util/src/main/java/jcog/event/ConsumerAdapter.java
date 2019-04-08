@@ -6,7 +6,7 @@ public final class ConsumerAdapter<X> implements Consumer<X> {
 
     public final Runnable r;
 
-    public ConsumerAdapter(Runnable o) {
+    ConsumerAdapter(Runnable o) {
         this.r = o;
     }
 
@@ -21,7 +21,7 @@ public final class ConsumerAdapter<X> implements Consumer<X> {
     }
 
     @Override
-    public void accept(X x) {
+    public void accept(Object x) {
         r.run();
     }
 }

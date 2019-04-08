@@ -6,7 +6,6 @@ import jcog.Util;
 import jcog.data.list.FasterList;
 import jcog.exe.Exe;
 import jcog.math.FloatAveragedWindow;
-import jcog.pri.Prioritizable;
 import nars.NAR;
 import nars.exe.Exec;
 import nars.task.AbstractTask;
@@ -63,7 +62,7 @@ abstract public class MultiExec extends UniExec {
     @Override
     public final void input(Object x) {
         if (x instanceof NALTask || x instanceof ProxyTask)
-            input((Prioritizable) x);
+            accept((ITask) x);
         else
             execute(x);
     }
@@ -92,8 +91,6 @@ abstract public class MultiExec extends UniExec {
         long last = this.lastCycle;
         this.lastCycle = now;
         updateTiming(now - last);
-
-
     }
 
 

@@ -1,11 +1,12 @@
 package nars.attention;
 
 import jcog.TODO;
+import jcog.math.IntRange;
 import jcog.pri.Prioritizable;
 import jcog.pri.bag.Sampler;
 import nars.NAR;
 import nars.Task;
-import nars.attention.derive.DefaultPuncWeightedDerivePri;
+import nars.attention.derive.DefaultDerivePri;
 import nars.concept.Concept;
 import nars.control.NARPart;
 import nars.control.channel.ConsumerX;
@@ -76,14 +77,11 @@ abstract public class What extends NARPart implements Prioritizable, Sampler<Tas
      * */
     public DerivePri derivePri =
             //new DirectDerivePri();
-            //new DefaultDerivePri();
-            new DefaultPuncWeightedDerivePri();
+            new DefaultDerivePri();
+            //new DefaultPuncWeightedDerivePri();
 
     final ConsumerX<ITask> out = x -> ITask.run(x, What.this);
 
-    protected What(Term id) {
-        this(id, new PriBuffer.DirectPriBuffer());
-    }
 
     protected What(Term id, PriBuffer<ITask> in) {
         super(id);
@@ -113,13 +111,13 @@ abstract public class What extends NARPart implements Prioritizable, Sampler<Tas
 
 
         if (!in.async(out)) {
-            on(nar.onCycle(this::perceive));
+            whenOff(nar.onCycle(this::perceive));
 //                DurService.on(this, p)
         }
 
 
 
-        on(
+        whenOff(
                 nar.eventClear.on(this::clear),
                 nar.onDur(this::commit)
         );
@@ -144,8 +142,68 @@ abstract public class What extends NARPart implements Prioritizable, Sampler<Tas
         TaskEvent.emit(t, nar);
     }
 
+    /** cycles duration window */
+    public abstract int dur();
+
+    /* TODO other temporal focus parameters */
+
+
+    /** proxies to another What */
+    public static class ProxyWhat extends What {
+
+        public final What what;
+
+        public ProxyWhat(What what) {
+            super(what.id, what.in);
+            this.what = what;
+        }
+
+        @Override
+        public int dur() {
+            return what.dur();
+        }
+
+        @Override
+        protected void commit() {
+            what.commit();
+        }
+
+        @Override
+        public void clear() {
+            what.clear();
+        }
+
+        @Override
+        public Stream<Concept> concepts() {
+            return what.concepts();
+        }
+
+        @Override
+        public void writeExternal(ObjectOutput objectOutput) throws IOException {
+            what.writeExternal(objectOutput);
+        }
+
+        @Override
+        public void readExternal(ObjectInput objectInput) throws IOException, ClassNotFoundException {
+            what.readExternal(objectInput);
+        }
+
+        @Override
+        public Iterator<TaskLink> iterator() {
+            return what.iterator();
+        }
+
+        @Override
+        public void sample(Random rng, Function<? super TaskLink, SampleReaction> each) {
+            what.sample(rng, each);
+        }
+    }
+
     /** implements attention with a TaskLinks graph */
     public static class TaskLinkWhat extends What {
+
+        /** in NAR time cycle units */
+        public final IntRange dur = new IntRange(1, 1, 1000);
 
         public final TaskLinks links = new TaskLinks();
 
@@ -154,7 +212,21 @@ abstract public class What extends NARPart implements Prioritizable, Sampler<Tas
         }
 
         @Override
+        protected void starting(NAR nar) {
+
+            dur.set(nar.dur()); //initializes value
+
+            super.starting(nar);
+        }
+
+        @Override
+        public int dur() {
+            return dur.intValue();
+        }
+
+        @Override
         protected void commit() {
+
             links.commit();
         }
 
@@ -191,7 +263,7 @@ abstract public class What extends NARPart implements Prioritizable, Sampler<Tas
 
     @Override
     @Deprecated public final void accept(ITask x) {
-        in.accept(x);
+        in.put(x);
     }
 
     @Deprecated public final ITask put(ITask x) {

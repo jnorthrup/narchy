@@ -14,9 +14,12 @@ import nars.term.atom.Atomic;
 import nars.time.RecurringTask;
 import org.eclipse.collections.api.tuple.Pair;
 import org.eclipse.collections.impl.tuple.Tuples;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
+
+import static nars.time.Tense.TIMELESS;
 
 /**
  * a part that executes a given procedure once every N durations (approximate)
@@ -36,18 +39,18 @@ abstract public class DurLoop extends NARPart {
      */
     public final FloatRange durations = new FloatRange(1, 0.25f, 16f);
 
-    private final AtDur at = new AtDur();
+    private final WhenDur at = new WhenDur();
 
     @Override
-    public final AtDur event() {
+    public final WhenDur event() {
         return at;
     }
 
-    protected DurLoop(NAR n, float durs) {
+    protected DurLoop(@Nullable NAR n, float durs) {
         super((NAR) null); //dont call through super constructor
         durations.set(durs);
         if (n != null) {
-            (this.nar = n).start(this);
+            n.start(this);
         }
     }
 
@@ -62,7 +65,7 @@ abstract public class DurLoop extends NARPart {
      */
     public static FloatRange cache(FloatSupplier o, float min, float max, DurLoop parent, @Deprecated NAR nar) {
         Pair<FloatRange, Off> p = cache(o, min, max, 1, nar);
-        parent.on(p.getTwo());
+        parent.whenOff(p.getTwo());
         return p.getOne();
     }
 
@@ -92,11 +95,10 @@ abstract public class DurLoop extends NARPart {
         return this;
     }
 
-    @Override protected void starting(NAR nar) {
-        this.nar = nar;
+    @Override protected final void starting(NAR nar) {
+        //intial trigger
         at.run();
     }
-
 
 
     public long durCycles() {
@@ -171,7 +173,7 @@ abstract public class DurLoop extends NARPart {
     }
 
 
-    public class AtDur extends RecurringTask {
+    public class WhenDur extends RecurringTask {
 
         /**
          * when the last cycle ended
@@ -183,13 +185,17 @@ abstract public class DurLoop extends NARPart {
         @Override
         public void run() {
 
-            if (!busy.weakCompareAndSetAcquire(false, true))
+            if (!busy.compareAndSet(false, true))
                 throw new WTF(); //return false;
 
-            long atStart = nar.time();
-
+            long atStart = TIMELESS;
             try {
 
+                NAR nar = DurLoop.this.nar;
+                if (nar == null || !isOn())
+                    return; //cancelled between previous iteration and this iteration
+
+                atStart = nar.time();
 
                 long lastStarted = this.lastStarted;
                 if (lastStarted == Long.MIN_VALUE)
@@ -210,7 +216,7 @@ abstract public class DurLoop extends NARPart {
                 if (DurLoop.this.isOnOrStarting()) {
                     scheduleNext(durCycles(), atStart, nar);
                 }
-                busy.setRelease(false);
+                busy.set(false);
             }
 
         }
@@ -225,6 +231,6 @@ abstract public class DurLoop extends NARPart {
 
     
     public static String toString(Object r) {
-        return "AtDur(" + r + ")";
+        return WhenDur.class.getSimpleName() + "(" + r + ")";
     }
 }

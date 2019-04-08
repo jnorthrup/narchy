@@ -1,15 +1,16 @@
 package nars.control;
 
-import jcog.Util;
+import jcog.Log;
 import jcog.WTF;
 import jcog.event.Off;
+import jcog.event.OffOn;
 import jcog.event.Offs;
 import jcog.service.Part;
 import nars.$;
 import nars.NAR;
 import nars.term.Term;
 import nars.term.Termed;
-import nars.time.event.InternalEvent;
+import nars.time.event.WhenInternal;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
@@ -19,14 +20,14 @@ import org.slf4j.Logger;
  *
  *
  * */
-abstract public class NARPart extends Part<NAR> implements Termed {
+abstract public class NARPart extends Part<NAR> implements Termed, OffOn {
 
-    private static final Logger logger = Util.logger(NARPart.class);
+    private static final Logger logger = Log.logger(NARPart.class);
 
     public final Term id;
 
     /** TODO encapsulate */
-    private final Offs ons = new Offs();
+    private final Offs whenOff = new Offs();
 
     public NAR nar;
 
@@ -53,44 +54,52 @@ abstract public class NARPart extends Part<NAR> implements Termed {
     }
 
     /** optional event occurrence information.  null if not applicable. */
-    @Nullable public InternalEvent event() {
+    @Nullable public WhenInternal event() {
         return null;
     }
 
     /** register a future deactivation 'off' of an instance which has been switched 'on'. */
-    @Deprecated protected final void on(Off... x) {
+    @Deprecated protected final void whenOff(Off... x) {
         for (Off xx : x)
-            ons.add(xx);
+            whenOff.add(xx);
     }
 
 
-    public final void pause() {
-        NAR n = nar;
-        if (n != null) {
-            boolean ok = n.stop(id);
-            assert(ok);
-        } else {
-            throw new NullPointerException();
-        }
-    }
+//    public final void pause() {
+//        NAR n = nar;
+//        if (n != null) {
+//            boolean ok = n.stop(id);
+//            assert(ok);
+//        } else {
+//            throw new NullPointerException();
+//        }
+//    }
 
-    /** stops and removes this part */
+    /** disables this part but does not remove it */
     public void off() {
         NAR n = nar;
-        if (n != null) {
-            boolean ok = n.remove(id); assert(ok);
+        if (n!=null) {
+            boolean ok = n.stop(id);
+            //assert (ok);
         }
     }
 
-    public final void resume() {
-        boolean ok = nar.start(id); assert(ok);
+    /** resume */
+    public void on() {
+        nar.start(id);
     }
 
+    public boolean delete() {
+        boolean ok = nar.remove(id); assert(ok);
+        return true;
+    }
 
     @Override
     protected final void start(NAR nar) {
 
-        logger.info("start {}", this);
+        assert(this.nar == null);
+
+        logger.debug("start {}", this);
 
         if (!(this.nar == null || this.nar == nar))
             throw new WTF("NAR mismatch");
@@ -104,12 +113,23 @@ abstract public class NARPart extends Part<NAR> implements Termed {
 
     @Override
     protected final void stop(NAR nar) {
+        try {
 
-        this.ons.off();
+            stopping(nar);
 
-        stopping(nar);
+        } finally {
 
-        logger.info("stop {}", this);
+            try {
+
+                this.whenOff.off();
+
+            } finally {
+
+                logger.debug("stop {}", this);
+                this.nar = null;
+
+            }
+        }
     }
 
 
@@ -141,17 +161,5 @@ abstract public class NARPart extends Part<NAR> implements Termed {
     public Term term() {
         return id;
     }
-
-
-
-
-    //    public Term instanceID() {
-//        return instanceID;
-//    }
-//
-//    @Override
-//    public final Term term() {
-//        return id;
-//    }
 
 }

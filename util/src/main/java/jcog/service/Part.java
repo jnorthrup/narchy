@@ -1,7 +1,6 @@
 package jcog.service;
 
 import jcog.Paper;
-import jcog.event.Off;
 
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -37,7 +36,7 @@ import java.util.concurrent.atomic.AtomicReference;
  *
  */
 @Paper
-public abstract class Part<C> implements Off {
+public abstract class Part<C>  {
 
     final AtomicReference<Parts.ServiceState> state = new AtomicReference<>(Parts.ServiceState.Off);
 
@@ -53,24 +52,20 @@ public abstract class Part<C> implements Off {
         return state.getOpaque() == Parts.ServiceState.Off;
     }
 
-    protected Part() {
-        super();
-    }
 
-//    @Override
-//    public String toString() {
-//        String nameString = getClass().getName();
-//
-//        if (nameString.startsWith("jcog.") || nameString.startsWith("nars.")) //HACK
-//            nameString = getClass().getSimpleName();
-//
-//        return nameString + ':' + super.toString();
-//    }
+    @Override
+    public String toString() {
+        String nameString = getClass().getName();
+
+        if (nameString.startsWith("jcog.") || nameString.startsWith("nars.")) //HACK
+            nameString = getClass().getSimpleName();
+
+        return nameString + ':' + super.toString();
+    }
 
     abstract protected void start(C x);
 
     abstract protected void stop(C x);
-
 
     public Parts.ServiceState state() {
         return state.getOpaque();

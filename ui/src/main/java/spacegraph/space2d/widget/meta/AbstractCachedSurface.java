@@ -25,7 +25,7 @@ abstract public class AbstractCachedSurface<X extends Surface> extends UnitConta
         super(the);
     }
 
-    abstract public Off on();
+    abstract public Off whenOff();
 
     abstract protected void update();
 
@@ -68,7 +68,7 @@ abstract public class AbstractCachedSurface<X extends Surface> extends UnitConta
         super.starting();
 
         assert(on == null);
-        on = on();
+        on = whenOff();
         assert(on!=null);
 
         invalid.set(true);

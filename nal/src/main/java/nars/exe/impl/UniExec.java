@@ -24,7 +24,10 @@ public class UniExec extends Exec {
         super(concurrencyMax);
     }
 
-
+    @Override
+    public void input(Object t) {
+        executeNow(t);
+    }
 
     @Override
     public int concurrency() {
@@ -35,7 +38,7 @@ public class UniExec extends Exec {
     public void start(NAR n) {
         super.start(n);
 
-
+        assert(ons == null);
 
         ons = new Offs();
         ons.add(n.onCycle(this::onCycle));
@@ -61,7 +64,11 @@ public class UniExec extends Exec {
         simplest possible implementation: flat 1 work unit per each what
         */
         for (How h : nar.how) {
-            nar.what.forEachActive(w -> h.next(w, ()->false));
+            if (h.isOn())
+                nar.what.forEachActive(w -> {
+                    if (w.isOn())
+                        h.next(w, ()->false);
+                });
         }
     }
 

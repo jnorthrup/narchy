@@ -75,15 +75,11 @@ public abstract class NALTest {
 
     @AfterEach
     public void end() {
-
-        test.nar.synch();
-
-        test.test();
-
-        test.nar.stop();
-
-//        test = null;
-
+        try {
+            test.test();
+        } finally {
+            test.nar.delete();
+        }
     }
 
 
