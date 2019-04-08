@@ -2,6 +2,7 @@ package nars.op.stm;
 
 import jcog.data.list.MetalConcurrentQueue;
 import jcog.math.FloatRange;
+import nars.$;
 import nars.NAR;
 import nars.Task;
 import nars.attention.What;
@@ -31,7 +32,7 @@ public class STMLinkage extends NARPart {
     private final MetalConcurrentQueue<Pair<Task, Concept>> stm;
 
     public STMLinkage(NAR nar, int capacity) {
-        super();
+        super($.uuid(STMLinkage.class.getSimpleName()));
 
         stm = //Util.blockingQueue(capacity + 1 );
                 new MetalConcurrentQueue<>(capacity);

@@ -46,24 +46,22 @@ public class ListTopic<V> extends jcog.data.list.FastCoWList<Consumer<V>> implem
         final Consumer[] cc = this.array();
         if (cc != null) {
             int n = cc.length;
-            switch (n) {
-                case 0:
-                    return;
-                default:
-                    CountDownLatch l = new CountDownLatch(n);
+            if (n != 0) {
+                CountDownLatch l = new CountDownLatch(n);
 
-                    for (Consumer c: cc) {
-                        executorService.execute(() -> {
-                            try {
-                                c.accept(x);
-                            } finally {
-                                l.countDown();
-                            }
+                for (Consumer c : cc) {
+                    executorService.execute(() -> {
+                        try {
+                            c.accept(x);
+                        } finally {
+                            l.countDown();
+                        }
 
-                        });
-                    }
-                    l.await();
-                    break;
+                    });
+                }
+                l.await();
+            } else {
+                return;
             }
         }
     }
@@ -97,14 +95,14 @@ public class ListTopic<V> extends jcog.data.list.FastCoWList<Consumer<V>> implem
     }
 
     @Override
-    public void enable(Consumer<V> o) {
-        assert (o != null);
+    public void start(Consumer<V> o) {
+        //assert (o != null);
         add(o);
     }
 
     @Override
-    public void disable(Consumer<V> o) {
-        assert (o != null);
+    public void stop(Consumer<V> o) {
+        //assert (o != null);
         remove(o);
     }
 

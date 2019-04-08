@@ -43,31 +43,30 @@ import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
  * CONTRAINER / OBJENOME
  * A collection or container of 'parts'.
  * Smart Dependency Injection (DI) container with:
- * 
+ * <p>
  * autowiring
  * type resolution assisted by CastGraph, with diverse of builtin transformers
- * 
+ * <p>
  * hints from commandline args, env variables, or constructor string:
- * 
+ * <p>
  * "parts={<key>:<value>,[<key>:<value>] }"
  * key = interface name | variable name
  * value = JSON-parseable java constant
- * 
+ * <p>
  * the hints keys and values are fuzzy matchable, with levenshtein dist as a decider in case of ambiguity
- * 
+ * <p>
  * note: such syntax should be parseable both in JSON and NAL
  *
  * @param K service key
  * @param C service context
- *
  */
-public class Parts<K /* service key */, C /* context */  > {
+public class Parts<K /* service key */, C /* context */> {
 
-    private final C id;
     public final Topic<ObjectBooleanPair<Part<C>>> eventAddRemove = new ListTopic<>();
     public final Executor executor;
     public final Logger logger;
     protected final ConcurrentMap<K, Part<C>> parts;
+    private final C id;
 
     protected Parts() {
         this(ForkJoinPool.commonPool());
@@ -87,7 +86,7 @@ public class Parts<K /* service key */, C /* context */  > {
      */
     private Parts(@Nullable C id, Executor executor) {
         if (id == null)
-            id = (C)this; //attempts cast
+            id = (C) this; //attempts cast
 
         this.id = id;
         this.logger = Util.logger(id.toString());
@@ -104,7 +103,9 @@ public class Parts<K /* service key */, C /* context */  > {
     }
 
 
-    /** restart an already added part */
+    /**
+     * restart an already added part
+     */
     public final boolean start(K key) {
         tryStart(part(key));
         return false;
@@ -116,42 +117,48 @@ public class Parts<K /* service key */, C /* context */  > {
     }
 
 
-
-
-    /** add and starts it */
+    /**
+     * add and starts it
+     */
     public final boolean start(K key, Part<C> instance) {
         return set(key, instance, true);
     }
 
-    /** tries to add the new instance, replacing any existing one, but doesnt start */
+    /**
+     * tries to add the new instance, replacing any existing one, but doesnt start
+     */
     public final boolean add(K key, Part<C> instance) {
         return set(key, instance, false);
     }
 
     public final boolean remove(K k) {
-        return set(k, (Part)null, false);
+        return set(k, (Part) null, false);
     }
 
     public boolean stop(K k) {
         return set(k, part(k), false);
     }
+
     public boolean stop(Part<C> p) {
         //HACK TODO improve
         K k = key(p);
-        if (k==null)
+        if (k == null)
             return false;
 
         return set(k, part(k), false);
     }
 
-    /** reverse lookup by instance */
-    @Nullable public K key(Part<C> p) {
+    /**
+     * reverse lookup by instance.  this default impl is an exhaustive search.  improve in subclasses
+     */
+    @Nullable
+    public K key(Part<C> p) {
         //HACK TODO improve
         Map.Entry<K, Part<C>> e = partEntrySet().stream().filter(z -> z.getValue() == p).findFirst().get();
-        if (e!=null) {
-            return e.getKey();
-        } else
-            return null;
+        //if (e!=null) {
+        return e.getKey();
+//        } else
+//            return null;
     }
 
 
@@ -176,7 +183,9 @@ public class Parts<K /* service key */, C /* context */  > {
     }
 
 
-    /** stops all parts (but does not remove them) */
+    /**
+     * stops all parts (but does not remove them)
+     */
     public Parts<K, C> stopAll() {
         parts.keySet().forEach(this::stop);
         return this;
@@ -194,14 +203,15 @@ public class Parts<K /* service key */, C /* context */  > {
         return parts.size();
     }
 
-    /** TODO construct a table, using TableSaw of the following schema, and pretty print the table instance:
-     *      K key
-     *      state
-     *      Part value
-     *      Class valueClass
-     * */
+    /**
+     * TODO construct a table, using TableSaw of the following schema, and pretty print the table instance:
+     * K key
+     * state
+     * Part value
+     * Class valueClass
+     */
     public void print(PrintStream out) {
-        parts.forEach((k, s) -> out.println(s.state() + "\t" + k + "\t" + s + "\t" + s.getClass() ));
+        parts.forEach((k, s) -> out.println(s.state() + "\t" + k + "\t" + s + "\t" + s.getClass()));
     }
 
     private void error(@Nullable Part part, Throwable e, String what) {
@@ -213,20 +223,20 @@ public class Parts<K /* service key */, C /* context */  > {
 
     private boolean _stop(Part<C> part, @Nullable Runnable afterOff) {
 
-        if (!part.state.compareAndSet(ServiceState.On, ServiceState.OnToOff))
-            return false;
 
-        executor.execute(() -> {
+        Exe.invokeLater(() -> {
             try {
 
-                boolean toggledOff = part.state.compareAndSet(Parts.ServiceState.OnToOff, Parts.ServiceState.Off);
-                if (!toggledOff)
-                    throw new WTF();
+                if (!part.state.compareAndSet(ServiceState.On, ServiceState.OnToOff))
+                    return;
+
+                boolean nowOff = part.state.compareAndSet(Parts.ServiceState.OnToOff, Parts.ServiceState.Off);
+                assert(nowOff);
 
                 if (afterOff != null)
                     afterOff.run();
 
-                eventAddRemove.emitAsync(pair(part, false), executor);
+                eventAddRemove.emit(pair(part, false)/*, executor*/);
 
             } catch (Throwable e) {
                 part.state.set(Parts.ServiceState.Off);
@@ -245,6 +255,70 @@ public class Parts<K /* service key */, C /* context */  > {
 //        set(key, part, !part.isOn());
 //    }
 
+    /**
+     * returns true if a state change could be attempted; not whether it was actually successful (since it is invoked async)
+     */
+    private boolean set(K key, @Nullable Part<C> x, boolean start) {
+
+        if (x == null && start)
+            throw new WTF();
+
+        Part<C> removed = x != null ? parts.put(key, x) : parts.remove(key);
+
+        if (x != removed) {
+            //something removed
+            if (removed != null) {
+                _stop(removed, start ? () -> tryStart(x) : null);
+
+                return true;
+
+            } else {
+                return !start || tryStart(x);
+            }
+
+        } else {
+            if (start) {
+                return tryStart(x);
+            } else if (x != null) {
+                return _stop(x, null);
+            } else
+                return false;
+        }
+    }
+
+    private boolean tryStart(@Nullable Part<C> x) {
+        Exe.invokeLater(() -> {
+            try {
+                if (x.state.compareAndSet(ServiceState.Off, ServiceState.OffToOn)) {
+
+                    x.start(id);
+
+                    boolean nowOn = x.state.compareAndSet(ServiceState.OffToOn, ServiceState.On);
+                    assert(nowOn);
+
+                    eventAddRemove.emit(pair(x, true)/*, executor*/);
+
+                }
+            } catch (Throwable e) {
+                x.state.set(ServiceState.Off);
+                error(x, e, "start");
+            }
+        });
+        return true;
+    }
+
+    public final <X extends Part<C>> Supplier<X> build(Class<X> klass) {
+        return build(null, klass);
+    }
+
+    public <X extends Part<C>> Supplier<X> build(@Nullable K key, Class<X> klass) {
+        if (!(klass.isInterface() || Modifier.isAbstract(klass.getModifiers()))) {
+            //concrete class, attempt constructor injection
+            return new PartResolveByConstructorInjection(key, klass);
+        } else {
+            return new PartResolveByClass(key, klass);
+        }
+    }
 
     enum ServiceState {
 
@@ -271,78 +345,11 @@ public class Parts<K /* service key */, C /* context */  > {
             public String toString() {
                 return "-";
             }
-        }
-        ;
+        };
         public final boolean onOrStarting;
 
         ServiceState() {
             this.onOrStarting = this.ordinal() < 2;
-        }
-    }
-
-    /** returns true if a state change could be attempted; not whether it was actually successful (since it is invoked async) */
-    private boolean set(K key, @Nullable Part<C> x, boolean start) {
-
-        if (x == null && start)
-            throw new WTF();
-
-        Part<C> removed = x != null ? parts.put(key, x) : parts.remove(key);
-
-        if (x != removed) {
-            if (removed != null) {
-
-                _stop(removed, start ? () -> tryStart(x) : null);
-
-                return true;
-
-            } else {
-                return !start || tryStart(x);
-            }
-
-        } else {
-            if (start && x.isOff()) {
-                return tryStart(x);
-            } else if (!start && x!=null && x.isOn()) {
-                return _stop(x,null);
-            } else
-                return false;
-        }
-    }
-
-    private boolean tryStart(@Nullable Part<C> x) {
-        if (x.state.compareAndSet(ServiceState.Off, ServiceState.OffToOn)) {
-            executor.execute(() -> {
-                try {
-
-                    x.start(id);
-
-                    boolean toggledOn = x.state.compareAndSet(ServiceState.OffToOn, ServiceState.On);
-                    if (!toggledOn)
-                        throw new WTF();
-
-                    eventAddRemove.emitAsync(pair(x, true), executor);
-
-                } catch (Throwable e) {
-                    x.state.set(ServiceState.Off);
-                    error(x, e, "start");
-                }
-            });
-            return true;
-        }
-        return false;
-    }
-
-
-    public final <X extends Part<C>> Supplier<X> build(Class<X> klass) {
-        return build(null, klass);
-    }
-
-    public <X extends Part<C>> Supplier<X> build(@Nullable K key, Class<X> klass) {
-        if (!(klass.isInterface() || Modifier.isAbstract(klass.getModifiers()))) {
-            //concrete class, attempt constructor injection
-            return new PartResolveByConstructorInjection(key, klass);
-        } else {
-            return new PartResolveByClass(key, klass);
         }
     }
 
@@ -392,14 +399,14 @@ public class Parts<K /* service key */, C /* context */  > {
 
             //try no-arg constructors
             if (args == null) {
-                int noArgConstructor = ArrayUtils.indexOf(constructors, c->c.getParameterTypes().length == 0);
-                if (noArgConstructor!=-1) {
+                int noArgConstructor = ArrayUtils.indexOf(constructors, c -> c.getParameterTypes().length == 0);
+                if (noArgConstructor != -1) {
                     constructor = noArgConstructor;
                     args = ArrayUtils.EMPTY_OBJECT_ARRAY;
                 }
             }
 
-            if (args!=null) {
+            if (args != null) {
                 try {
                     Constructor cc = constructors[constructor];
                     if (cc.trySetAccessible())

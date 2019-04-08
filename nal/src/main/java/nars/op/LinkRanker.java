@@ -6,6 +6,7 @@ import nars.NAR;
 import nars.attention.What;
 import nars.control.How;
 import nars.link.TaskLink;
+import nars.term.Term;
 import nars.time.When;
 import org.jetbrains.annotations.Nullable;
 
@@ -21,8 +22,8 @@ public abstract class LinkRanker<Y> extends How {
 //        super();
 //    }
 
-    public LinkRanker(NAR n) {
-        super(n);
+    public LinkRanker(Term id) {
+        super(id);
     }
 
     @Override
@@ -40,7 +41,8 @@ public abstract class LinkRanker<Y> extends How {
                 best.add(y);
         });
 
-        run(best, w);
+        if (!best.isEmpty())
+            run(best, w);
 
     }
 

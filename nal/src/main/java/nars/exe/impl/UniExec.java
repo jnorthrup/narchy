@@ -46,7 +46,7 @@ public class UniExec extends Exec {
     @Override
     public void stop() {
         if (ons != null) {
-            ons.pause();
+            ons.off();
             ons = null;
         }
 
@@ -61,7 +61,7 @@ public class UniExec extends Exec {
         simplest possible implementation: flat 1 work unit per each what
         */
         for (How h : nar.how) {
-            nar.what.forEach(w -> h.next(w, ()->false));
+            nar.what.forEachActive(w -> h.next(w, ()->false));
         }
     }
 

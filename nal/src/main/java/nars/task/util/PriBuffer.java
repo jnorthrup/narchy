@@ -16,6 +16,7 @@ import nars.Task;
 import nars.control.CauseMerge;
 import nars.control.channel.ConsumerX;
 import nars.exe.Exec;
+import nars.task.ITask;
 
 import java.util.Iterator;
 import java.util.Map;
@@ -192,19 +193,19 @@ abstract public class PriBuffer<T extends Prioritizable> implements Consumer<T> 
      * allowing multiple inputting threads to fill the bag, potentially deduplicating each's results,
      * while other thread(s) drain it in prioritized order as input to NAR.
      */
-    public static class BagTaskBuffer extends PriBuffer<Task> {
+    public static class BagTaskBuffer extends PriBuffer<ITask> {
 
         /**
          * temporary buffer before input so they can be merged in case of duplicates
          */
-        public final Bag<Task, Task> tasks;
+        public final Bag<ITask, ITask> tasks;
 
         {
             final PriMerge merge = Param.tasklinkMerge;
-            tasks = new BufferedBag.SimpleBufferedBag<Task,Task>(new PriArrayBag<>(merge, 0) {
+            tasks = new BufferedBag.SimpleBufferedBag<ITask,ITask>(new PriArrayBag<>(merge, 0) {
 
                 /** merge in the pre-buffer */
-                @Override protected float merge(Task existing, Task incoming, float incomingPri) {
+                @Override protected float merge(ITask existing, ITask incoming, float incomingPri) {
                     return Task.merge(existing, incoming, merge, CauseMerge.Append, PriReturn.Overflow, true);
                 }
 
@@ -213,10 +214,13 @@ abstract public class PriBuffer<T extends Prioritizable> implements Consumer<T> 
                             return 0; /* since sampling is not used */
                         }
                     },
-                    new PriMap<Task>(merge) {
-                        /** merge in the post-buffer */
-                        @Override protected void merge(Prioritizable existing, Task incoming, float pri, PriMerge merge, OverflowDistributor<Task> overflow) {
-                            Task.merge((Task)existing, incoming, merge, CauseMerge.Append, PriReturn.Post, true);
+                    new PriMap<>(merge) {
+                        /**
+                         * merge in the post-buffer
+                         */
+                        @Override
+                        protected void merge(Prioritizable existing, ITask incoming, float pri, PriMerge merge, OverflowDistributor<ITask> overflow) {
+                            Task.merge((ITask) existing, incoming, merge, CauseMerge.Append, PriReturn.Void, true);
                         }
                     }
             );
@@ -268,17 +272,17 @@ abstract public class PriBuffer<T extends Prioritizable> implements Consumer<T> 
         }
 
         @Override
-        public final boolean async(ConsumerX<Task> target) {
+        public final boolean async(ConsumerX<ITask> target) {
             return false;
         }
 
         @Override
-        public Task put(Task x) {
+        public ITask put(ITask x) {
             return tasks.put(x);
         }
 
         @Override
-        public void commit(long now, ConsumerX<? super Task> target) {
+        public void commit(long now, ConsumerX<? super ITask> target) {
 
             if (prev == Long.MIN_VALUE)
                 prev = now - 1;
@@ -287,7 +291,7 @@ abstract public class PriBuffer<T extends Prioritizable> implements Consumer<T> 
 
             prev = now;
 
-            Bag<Task, Task> b = this.tasks;
+            Bag<ITask, ITask> b = this.tasks;
 
             b.setCapacity(capacity.intValue());
             b.commit(null);

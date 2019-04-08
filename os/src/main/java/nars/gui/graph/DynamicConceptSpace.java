@@ -103,7 +103,7 @@ public class DynamicConceptSpace extends DynamicListSpace<Concept> {
             if (onDur != null)
                 onDur.off();
             if (onClear != null)
-                onClear.pause();
+                onClear.off();
 
             onDur = nar.onDur(() -> {
                 if (concepts.commit()) {
@@ -126,7 +126,7 @@ public class DynamicConceptSpace extends DynamicListSpace<Concept> {
         synchronized (this) {
             onDur.off();
             onDur = null;
-            onClear.pause();
+            onClear.off();
             onClear = null;
             updater.off();
             updater = null;

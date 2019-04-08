@@ -270,7 +270,10 @@ class NarseseExtendedTest extends NarseseTest {
                 
                 "(--,(b-->a))",
                 term("--a:b").toString() );
-        assertEquals( "((--,b)-->a)", term("a:--b").toString() );
+        assertEquals(
+                //"((--,b)-->a)",
+                "(--,(b-->a))",
+                term("a:--b").toString() );
         assertEquals(
                 
                 "(--,((--,b)-->a))",

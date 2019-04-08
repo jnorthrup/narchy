@@ -934,8 +934,9 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
         return x != null ? priElse(x, -1) : 0;
     }
 
-    public Iterator<Y> iterator() {
-        return table.iterator();
+    public final Iterator<Y> iterator() {
+        //return table.iterator();
+        return stream().iterator(); //has null and deletion filtering
     }
 
     public final boolean isSorted() {

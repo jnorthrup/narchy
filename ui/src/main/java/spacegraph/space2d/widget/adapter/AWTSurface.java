@@ -109,7 +109,7 @@ public class AWTSurface extends Widget implements KeyPressed {
 
     @Override
     protected void stopping() {
-        ons.pause();
+        ons.off();
         ons = null;
         super.stopping();
     }

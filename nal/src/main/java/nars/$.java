@@ -12,10 +12,8 @@ import nars.subterm.AnonSubterms;
 import nars.subterm.Subterms;
 import nars.subterm.TermList;
 import nars.task.TaskBuilder;
-import nars.term.Compound;
-import nars.term.Term;
-import nars.term.Terms;
 import nars.term.Variable;
+import nars.term.*;
 import nars.term.anon.AnonID;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
@@ -858,11 +856,22 @@ public enum $ {
 
         if (x instanceof Term)
             return ((Term)x);
+        else if (x instanceof Termed)
+            return ((Termed)x).term();
         else if (x instanceof String)
             return Atomic.the((String)x);
+        else
+            return $.p($.quote(x.getClass().getName()), $.the(System.identityHashCode(x)));
 
-        return $.p($.quote(x.getClass().getName()), $.the(System.identityHashCode(x)));
+    }
 
+    public static Atom uuid() {
+        return uuid(null);
+    }
+
+    public static Atom uuid(@Nullable String prefix) {
+        String u = Util.uuid64();
+        return (Atom) $.quote(prefix!=null ? prefix + u : u);
     }
 
 

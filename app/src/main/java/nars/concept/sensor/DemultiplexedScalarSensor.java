@@ -18,7 +18,7 @@ abstract public class DemultiplexedScalarSensor extends VectorSensor implements 
     public final Term term;
 
     protected DemultiplexedScalarSensor(FloatSupplier input, Term root, FloatFloatToObjectFunction<Truth> truther, NAR n) {
-        super(n);
+        super(root, n);
         this.term = root;
         this.truther = truther;
         this.input = input;

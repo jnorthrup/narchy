@@ -10,6 +10,7 @@ import nars.control.MetaGoal;
 
 import java.io.PrintStream;
 import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 import static jcog.Texts.n4;
 
@@ -21,7 +22,7 @@ import static jcog.Texts.n4;
  *
  * TODO cycleCounter, durCounter etc
  */
-public class Emotion implements Meter {
+public class Emotion implements Meter, Consumer<NAR> {
 
     /**
      * priority rate of Task processing attempted
@@ -86,9 +87,6 @@ public class Emotion implements Meter {
     public Emotion(NAR n) {
         super();
         this.nar = n;
-        //nar.onCycle((Runnable)this::commit);
-        nar.onDur((Runnable) this::commit);
-
     }
 
     /**
@@ -125,7 +123,7 @@ public class Emotion implements Meter {
     /**
      * new frame started
      */
-    public void commit() {
+    @Override public void accept(NAR nar) {
         busyVol.reset(0);
         busyVolPriWeighted.reset(0);
     }

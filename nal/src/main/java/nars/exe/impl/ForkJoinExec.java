@@ -78,7 +78,7 @@ public class ForkJoinExec extends MultiExec implements Thread.UncaughtExceptionH
      */
     private void play() {
         //HACK
-        @Deprecated int throttle = 6 * concurrency();
+        @Deprecated int throttle = 2 * concurrency();
         @Deprecated float ms = 0.35f;
         @Deprecated long durationNS = Math.round(1_000_000.0 * ms);
 

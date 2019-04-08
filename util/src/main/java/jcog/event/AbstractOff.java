@@ -1,7 +1,7 @@
 package jcog.event;
 
 
-
+import jcog.TODO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -13,7 +13,7 @@ import java.util.function.Consumer;
  */
 abstract public class AbstractOff<V> implements Off {
 
-    public final Consumer<Consumer<V>> disconnector;
+    protected final Consumer<Consumer<V>> disconnector;
 
     protected AbstractOff() {
         this.disconnector = null;
@@ -24,10 +24,17 @@ abstract public class AbstractOff<V> implements Off {
     }
 
     protected AbstractOff(Topic<V> t) {
-        this(t::disable);
+        this(t::stop);
     }
 
-    abstract public void pause();
+    public static <X> Off weak(Topic<X> x, Consumer<X> y) {
+        if (y.getClass().isSynthetic())
+            throw new TODO("this may be a lambda or some abstract class that gets a reference to it defeating the purpose of this weak registrant");
+
+        return new AbstractOff.Weak<>(x, y);
+    }
+
+    abstract public void off();
 
     public static class Strong<V> extends AbstractOff<V> {
 
@@ -36,11 +43,11 @@ abstract public class AbstractOff<V> implements Off {
         Strong(Topic<V> t, Consumer<V> o) {
             super(t);
             reaction = o;
-            t.enable(o);
+            t.start(o);
         }
 
         @Override
-        public void pause() {
+        public void off() {
             disconnector.accept(reaction);
         }
 
@@ -49,12 +56,6 @@ abstract public class AbstractOff<V> implements Off {
             return "On:" + disconnector + "->" + reaction;
         }
     }
-
-
-
-
-
-
 
 
     public static class Weak<V> extends AbstractOff<V> implements Consumer<V> {
@@ -67,7 +68,7 @@ abstract public class AbstractOff<V> implements Off {
         Weak(Topic<V> t, Consumer<V> o) {
             super(t);
             reaction = new WeakReference<>(o);
-            t.enable(this);
+            t.start(this);
         }
 
         @Override
@@ -78,22 +79,18 @@ abstract public class AbstractOff<V> implements Off {
                     c.accept(v);
                 } catch (Throwable any) {
                     logger.error(" {}", any);
-                    pause();
+                    off();
                 }
             } else {
-                
-                pause();
+
+                off();
             }
         }
 
         @Override
-        public void pause() {
+        public void off() {
             disconnector.accept(this);
         }
-
-
-
-
 
 
     }

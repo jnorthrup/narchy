@@ -8,7 +8,6 @@ import jcog.data.map.ConcurrentFastIteratingHashSet;
 import jcog.event.ListTopic;
 import jcog.event.Off;
 import jcog.event.Topic;
-import jcog.exe.Exe;
 import jcog.exe.InstrumentedLoop;
 import jcog.util.ArrayUtils;
 import spacegraph.UI;
@@ -25,6 +24,9 @@ import static com.jogamp.opengl.GL.GL_DEPTH_BUFFER_BIT;
 
 public abstract class JoglWindow implements GLEventListener, WindowListener {
 
+    static {
+        //NewtFactory.setUseEDT(false);
+    }
 
 //    static final Executor renderThread = Executors.newSingleThreadExecutor();
 
@@ -57,7 +59,7 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
     /**
      * factor to decrease FPS of unfocused windows
      */
-    public float renderFPSUnfocusedRate = 0.5f;
+    private float renderFPSUnfocusedRate = 0.5f;
     private long lastRenderNS = System.nanoTime();
     private volatile int nx, ny, nw, nh;
 
@@ -133,7 +135,8 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
     public void off() {
         GLWindow w = this.window;
         if (w != null)
-            Exe.invokeLater(w::destroy);
+            w.destroy();
+            //Exe.invokeLater(w::destroy);
     }
 
     abstract protected void init(GL2 gl);
@@ -249,7 +252,9 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
 
         //when called from a main thread, unless this is executed as queued then the main thread can exit before the GL threads activate and this race condition results in a dead, empty window.
         //solution is to queue this to the global timer which starts the self-invoking loop
-        Exe.invokeLater(()-> {
+
+        //GLWorkerThread.invokeLater(()-> {
+        //Exe.invokeLater(()-> {
 
             GLWindow W = this.window;
             if (x != Integer.MIN_VALUE) {
@@ -264,7 +269,7 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
             W.setTitle(title); //needs lock
             W.setVisible(true); //needs lock
 
-        });
+        //});
 
     }
 

@@ -50,7 +50,7 @@ abstract public class TaskMatch implements Consumer<Task>, Predicate<Task> {
     }
 
     public void off() {
-        this.on.pause();
+        this.on.off();
     }
 
     @Override

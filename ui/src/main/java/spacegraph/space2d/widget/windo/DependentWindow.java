@@ -39,7 +39,7 @@ public class DependentWindow extends Windo {
 
     @Override
     protected void stopping() {
-        on.pause();
+        on.off();
         on = null;
         super.stopping();
     }

@@ -114,7 +114,7 @@ public class AffinityExecutor implements Executor {
         Runnable t = ((AffinityThread)thread).run;
         if (t instanceof Off) {
 
-            ((Off) t).pause();
+            ((Off) t).off();
 
         }
 

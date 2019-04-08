@@ -61,26 +61,17 @@ abstract public class How extends NARPart {
     private volatile long sleepUntil = TIMELESS;
     private volatile boolean sleeping;
 
-    @Deprecated
-    protected How(NAR nar) {
-        this(nar, null);
-    }
-
-    protected How() {
-        this((Term) null);
-    }
 
     /**
      * if using this constructor, make sure to call 'nar.on(this);' in the callee
      */
     protected How(Term id) {
-        this(null, id);
+        this(id, null);
     }
 
-    private How(NAR nar, Term id) {
+    protected How(Term id, NAR nar) {
         super(id);
-        this.pri = new PriNode(id!=null ? id : this);
-        this.nar = nar;
+        this.pri = new PriNode(id);
         this.busy = //new Semaphore(singleton() ?  1 : Runtime.getRuntime().availableProcessors());
                 singleton() ? new AtomicBoolean(false) : null;
         if (nar != null)
@@ -230,6 +221,7 @@ abstract public class How extends NARPart {
             long start = System.nanoTime();
             long deadline = start + durationNS;
             try {
+                if (w.nar == null) w.nar = nar; //HACK HACK HACK
                 can.next(w, () -> System.nanoTime() < deadline);
             } catch (Throwable t) {
                 Exec.logger.error("{} {}", can, t);

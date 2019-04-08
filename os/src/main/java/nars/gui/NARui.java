@@ -1,6 +1,5 @@
 package nars.gui;
 
-import com.google.common.base.Joiner;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.AtomicDouble;
@@ -69,7 +68,6 @@ import spacegraph.space2d.widget.port.FloatRangePort;
 import spacegraph.space2d.widget.text.AbstractLabel;
 import spacegraph.space2d.widget.text.LabeledPane;
 import spacegraph.space2d.widget.text.VectorLabel;
-import spacegraph.space2d.widget.textedit.TextEdit;
 import spacegraph.video.Draw;
 
 import java.io.File;
@@ -90,7 +88,6 @@ import static java.util.stream.Collectors.toList;
 import static nars.$.$$;
 import static nars.Op.*;
 import static nars.truth.func.TruthFunctions.w2cSafe;
-import static spacegraph.SpaceGraph.window;
 import static spacegraph.space2d.container.grid.Gridding.VERTICAL;
 import static spacegraph.space2d.container.grid.Gridding.grid;
 
@@ -353,7 +350,7 @@ public class NARui {
                     off = n.onTask(printer, punc);
                 } else {
                     assert (off != null);
-                    off.pause();
+                    off.off();
                     off = null;
                 }
             }

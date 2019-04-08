@@ -13,6 +13,7 @@ import jcog.signal.wave2d.ScaledBitmap2D;
 import nars.agent.Game;
 import nars.agent.GameTime;
 import nars.agent.util.RLBooster;
+import nars.attention.What;
 import nars.concept.Concept;
 import nars.control.MetaGoal;
 import nars.derive.Derivers;
@@ -97,17 +98,20 @@ abstract public class GameX extends Game {
         return runRT(init, -1, clockFPS*2, clockFPS);
     }
 
-    public static NAR runRT(Function<NAR, Game> init, int threads, float narFPS, float durFPS) {
-        NAR n = baseNAR(durFPS, threads);
+    public static NAR runRT(Function<NAR, Game> init, int threads, float narFPS, float gameFPS) {
+        NAR n = baseNAR(narFPS, threads);
+
 
         Game a = init.apply(n);
 
         n.runLater(() -> {
-            n.start(a);
+//            n.start(a);
+            //a.pause(); //HACK
 
 
             initPlugins(n);
             initPlugins2(n, a);
+
             //initPlugins3(n, a);
 
             SpaceGraph.surfaceWindow(new Gridding(n.plugins(Game.class).map(NARui::agent).collect(toList())), 500, 500);
@@ -115,13 +119,14 @@ abstract public class GameX extends Game {
 
             SpaceGraph.surfaceWindow(NARui.attentionUI(n), 500, 500);
 
-
+            //a.resume();
             //System.gc();
         });
 
         //n.synch();
 
-        Loop loop = n.startFPS(narFPS);
+        Loop loop = n.startFPS(gameFPS);
+
 
         return n;
     }
@@ -152,7 +157,7 @@ abstract public class GameX extends Game {
 
             a.curiosity.enable.set(false);
 
-            n.start(a);
+//            n.start(a);
 
 
             SpaceGraph.surfaceWindow(new Gridding(NARui.agent(a), NARui.top(n)), 600, 500);
@@ -196,8 +201,8 @@ abstract public class GameX extends Game {
 
         NAR n = new NARS()
 
-                .input(
-                        new PriBuffer.BagTaskBuffer(512, 25)
+                .what(
+                        (w)-> new What.TaskLinkWhat(w, new PriBuffer.BagTaskBuffer(512, 25))
                 )
 //                .attention(() -> new ActiveConcepts(1024))
                 .exe(

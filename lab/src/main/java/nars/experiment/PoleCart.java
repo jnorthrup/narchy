@@ -55,25 +55,25 @@ public class PoleCart extends GameX {
 
 
 
-    public static class RL {
-        public static void main(String[] args) {
-            runRL(n -> {
-
-                try {
-                    PoleCart p = new PoleCart($.the("rl"), n);
-
-                    p.tau.set(0.004f);
-
-                    return p;
-                } catch (Exception e) {
-
-                    e.printStackTrace();
-                    return null;
-                }
-            }, fps, fps);
-
-        }
-    }
+//    public static class RL {
+//        public static void main(String[] args) {
+//            runRL(n -> {
+//
+//                try {
+//                    PoleCart p = new PoleCart($.the("rl"), n);
+//
+//                    p.tau.set(0.004f);
+//
+//                    return p;
+//                } catch (Exception e) {
+//
+//                    e.printStackTrace();
+//                    return null;
+//                }
+//            }, fps, fps);
+//
+//        }
+//    }
 
     private final JPanel panel;
 

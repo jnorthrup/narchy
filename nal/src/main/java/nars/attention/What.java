@@ -14,7 +14,6 @@ import nars.link.TaskLink;
 import nars.task.ITask;
 import nars.task.util.PriBuffer;
 import nars.term.Term;
-import nars.term.atom.Int;
 
 import java.io.Externalizable;
 import java.io.IOException;
@@ -66,8 +65,6 @@ import java.util.stream.Stream;
   */
 abstract public class What extends NARPart implements Prioritizable, Sampler<TaskLink>, Iterable<TaskLink>, Externalizable, ConsumerX<ITask> {
 
-    /** term id for the default What a NAR is constructed with */
-    public static Term Default = Int.the(0);
 
     public final PriNode pri;
 
@@ -90,7 +87,7 @@ abstract public class What extends NARPart implements Prioritizable, Sampler<Tas
 
     protected What(Term id, PriBuffer<ITask> in) {
         super(id);
-        this.pri = new PriNode(this);
+        this.pri = new PriNode(this.id);
         this.in = in;
     }
 

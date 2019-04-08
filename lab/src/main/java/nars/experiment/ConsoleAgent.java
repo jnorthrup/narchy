@@ -196,7 +196,7 @@ public class ConsoleAgent extends GameX {
             this.charMatrix = new Signal[w][h][alphabet.length];
 
 
-            PriNode charAttn = new PriNode(this);
+            PriNode charAttn = new PriNode(id);
             charAttn.parent(nar(), attnSensor);
 
             for (int x = 0; x < w; x++) {

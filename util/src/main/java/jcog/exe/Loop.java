@@ -158,7 +158,7 @@ abstract public class Loop extends FixedRateTimedFuture {
     }
 
     protected void thrown(Throwable e) {
-        stop();
+        //stop();
         logger.error(" {}", e);
         //throw new RuntimeException(e);
     }

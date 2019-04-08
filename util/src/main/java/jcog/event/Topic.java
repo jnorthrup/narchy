@@ -17,9 +17,9 @@ import java.util.stream.Stream;
  */
 public interface Topic<X> extends Iterable<Consumer<X>> {
 
-    void enable(Consumer<X> o);
+    void start(Consumer<X> o);
 
-    void disable(Consumer<X> o);
+    void stop(Consumer<X> o);
 
     void clear();
 
@@ -35,9 +35,9 @@ public interface Topic<X> extends Iterable<Consumer<X>> {
     /**
      * warning this could grow large TODO use a soft cache
      */
-    Map<Class, Field[]> fieldCache = new ConcurrentHashMap();
+    Map<Class<?>, Field[]> fieldCache = new ConcurrentHashMap<>();
 
-    static void each(Class c, Consumer<Field /* fieldName*/> f) {
+    static void each(Class<?> c, Consumer<Field /* fieldName*/> f) {
         /** TODO cache the fields because reflection may be slow */
 
 
@@ -54,7 +54,7 @@ public interface Topic<X> extends Iterable<Consumer<X>> {
      * registers to all public Topic fields in an object
      * BiConsumer<String  fieldName, Object  value >
      */
-    static Offs all(Object obj, BiConsumer<String, Object> f, Predicate<String> includeKey) {
+    static <X> Offs all(X obj, BiConsumer<String, X> f, Predicate<String> includeKey) {
 
         Offs s = new Offs();
 
@@ -64,7 +64,7 @@ public interface Topic<X> extends Iterable<Consumer<X>> {
                 return;
 
             try {
-                Topic t = ((Topic) field.get(obj));
+                Topic<X> t = ((Topic<X>) field.get(obj));
 
 
                 s.add(
@@ -74,7 +74,8 @@ public interface Topic<X> extends Iterable<Consumer<X>> {
                         )));
 
             } catch (IllegalAccessException e) {
-                f.accept(fieldName, e);
+                //f.accept(fieldName, e);
+                throw new RuntimeException(e);
             }
 
         });
@@ -111,6 +112,10 @@ public interface Topic<X> extends Iterable<Consumer<X>> {
         });
     }
 
+    default Off on(Consumer<X> o, boolean strong) {
+        return strong ? on(o) : onWeak(o);
+    }
+
     default Off on(Consumer<X> o) {
         return new AbstractOff.Strong<>(this, o);
     }
@@ -120,7 +125,8 @@ public interface Topic<X> extends Iterable<Consumer<X>> {
     }
 
     default Off onWeak(Consumer<X> o) {
-        return new AbstractOff.Weak<>(this, o);
+        return AbstractOff.weak(this, o);
+        ///return new AbstractOff.Weak<>(this, o);
     }
 
     default Off onWeak(Runnable o) {

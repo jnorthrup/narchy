@@ -15,7 +15,6 @@ import jcog.exe.Cycled;
 import jcog.func.TriConsumer;
 import jcog.math.MutableInteger;
 import jcog.pri.Prioritized;
-import jcog.pri.bag.Bag;
 import jcog.service.Part;
 import nars.Narsese.NarseseException;
 import nars.attention.What;
@@ -40,6 +39,7 @@ import nars.subterm.Subterms;
 import nars.table.BeliefTable;
 import nars.task.ITask;
 import nars.task.NALTask;
+import nars.task.util.PriBuffer;
 import nars.task.util.TaskException;
 import nars.task.util.TaskTopic;
 import nars.term.Compound;
@@ -111,10 +111,13 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
 
 
     /** core/default attention */
-    public final What in;
+    public What in;
 
     /** index of active attentions */
-    public final Bag<Term, What> what = new WhatBag();
+    public final WhatBag what = new WhatBag();
+
+    /** default what builder */
+    public final Function<Term,What> whatBuilder;
 
     /** set of causables which can be caused.  "how" things can be done.
      * a ready queue. thread-safe and consistency maintained automatically from Parts additions/removals */
@@ -141,7 +144,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
      * @param rng
      * @param conceptBuilder
      */
-    public NAR(Memory memory, Exec exe, What attn, Time time, Supplier<Random> rng, ConceptBuilder conceptBuilder) {
+    public NAR(Memory memory, Exec exe, Function<Term,What> whatBuilder, Time time, Supplier<Random> rng, ConceptBuilder conceptBuilder) {
         super(exe);
 
         eventAddRemove.on(this::indexPartChange);
@@ -152,21 +155,17 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
 
         this.memory = memory;
 
-        named(Param.randomSelf());
+        this.control = new Control(this);
 
-
+        this.whatBuilder = whatBuilder;
+        become(Param.randomSelf());
 
         this.exe = exe;
 
         this.conceptBuilder = conceptBuilder;
         memory.start(this);
 
-        this.feel = new Emotion(this);
-
-        this.in = attn; //TODO extract to a method which can be used to change .in at runtime
-        start(this.in);
-
-        this.control = new Control(this);
+        onCycle(this.feel = new Emotion(this));
 
 
         Builtin.init(this);
@@ -344,18 +343,36 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
 
             eventClear.emit(this);
 
-            logger.info("cleared");
+            logger.info("clear");
         }
     }
 
-    public final NAR named(String self) {
-        return named(Atomic.the(self));
+    public final NAR become(String self) {
+        return become(self, whatBuilder);
     }
 
-    public final NAR named(Term nextSelf) {
-        this.self.updateAndGet((prevSelf) -> {
-            return nextSelf;
-        });
+    public final NAR become(Term self) {
+        return become(self, whatBuilder);
+    }
+
+    public final NAR become(String self, Function<Term, What> builder) {
+        return become(Atomic.atom(self), builder);
+    }
+
+    public final NAR become(Term nextSelf, Function<Term, What> builder) {
+        synchronized (self) { //HACK
+            Term prev;
+            if (!Objects.equals(prev = self.getAndSet(nextSelf), nextSelf)) {
+                What prevWhat = this.in;
+                if (prevWhat !=null)
+                    prevWhat.pause();
+
+                if (nextSelf!=null) {
+                    start(this.in = builder.apply(nextSelf));
+                } else
+                    this.in = null; //HACK
+            }
+        }
         return this;
     }
 
@@ -635,11 +652,11 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
 
 
     public final boolean start(NARPart p) {
-        return start(NARPart.id(null, p), p);
+        return start(p.id, p);
     }
 
     public final boolean add(NARPart p) {
-        return add(NARPart.id(null, p), p);
+        return add(p.id, p);
     }
 
 
@@ -1057,6 +1074,38 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
         return eventCycle.onWeak(each);
     }
 
+
+
+    public final DurLoop onDur(Runnable on) {
+        DurLoop.DurRunnable r = new DurLoop.DurRunnable(on);
+        start(r);
+        return r;
+    }
+
+    public final DurLoop onDur(Consumer<NAR> on) {
+        DurLoop.DurNARConsumer r = new DurLoop.DurNARConsumer(on);
+        start(r);
+        return r;
+    }
+
+    /*
+      public static DurLoop onWhile(NAR nar, Predicate<NAR> r) {
+        return new DurLoop(nar) {
+            @Override
+            protected void run(NAR n, long dt) {
+                if (!r.test(n)) {
+                    off();
+                }
+            }
+
+            @Override
+            public String toString() {
+                return r.toString();
+            }
+        };
+    }
+     */
+
     public final Off onTask(Consumer<Task> listener) {
         return eventTask.on(listener);
     }
@@ -1064,6 +1113,10 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
     public final Off onTask(Consumer<Task> listener, byte... punctuations) {
         return eventTask.on(listener, punctuations);
     }
+//TODO
+//    public final Off onTaskWeak(Consumer<Task> listener, byte... punctuations) {
+//        return eventTask.onWeak(listener, punctuations);
+//    }
 
     public NAR trace() {
         trace(System.out);
@@ -1521,33 +1574,18 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
     }
 
 
-    public final DurLoop onDur(Runnable on) {
-        DurLoop.DurRunnable r = new DurLoop.DurRunnable(on);
-        start(r);
-        return r;
-    }
+    /** TODO persistent cache */
+    public What the(Term id, boolean createIfMissing) {
+        What w = what.get(id);
+        if (w == null && createIfMissing) {
+            w = what.put( this.whatBuilder.apply(id) );
 
-    public final DurLoop onDur(Consumer<NAR> on) {
-        DurLoop.DurNARConsumer r = new DurLoop.DurNARConsumer(on);
-        start(r);
-        return r;
-    }
+            assert(w!=null);
+        }
 
-    /*
-      public static DurLoop onWhile(NAR nar, Predicate<NAR> r) {
-        return new DurLoop(nar) {
-            @Override
-            protected void run(NAR n, long dt) {
-                if (!r.test(n)) {
-                    off();
-                }
-            }
+        if (!w.isOn())
+            start(w);
 
-            @Override
-            public String toString() {
-                return r.toString();
-            }
-        };
+        return w;
     }
-     */
 }

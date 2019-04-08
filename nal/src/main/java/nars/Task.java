@@ -106,86 +106,42 @@ public interface Task extends Truthed, Stamp, TermedDelegate, ITask, TaskRegion,
         return negate ? Task.negated(answer) : answer;
     }
 
-    /** with most common defaults */
-    static void merge(Task pp, Task tt) {
+    /**
+     * with most common defaults
+     */
+    static void merge(ITask pp, ITask tt) {
         merge(pp, tt, PriMerge.max, CauseMerge.Append, PriReturn.Void, true);
     }
 
-    static float merge(Task e, Task i, PriMerge pMerge, CauseMerge cMerge, PriReturn returning, boolean updateCreationTime) {
+    static float merge(ITask e, ITask i, PriMerge merge, CauseMerge cMerge, PriReturn returning, boolean updateCreationTime) {
 
         if (e == i)
             return 0;
 
-        float overflow = pMerge.merge(e, i.pri(), returning);
+        float y = merge.merge(e, i.pri(), returning);
 
-        if (i != e) {
+        if (i != e && i instanceof Task) {
+            Task ii = (Task) i; //HACK
+
             if (e instanceof NALTask) {
-            //((NALTask) pp).merge(incoming, true, cMerge);
+                NALTask ee = (NALTask) e;
+                ee.causeMerge(ii.cause(), cMerge);
+            }
 
-
-                ((NALTask)e).causeMerge(i.cause(), cMerge);
-
+            if (e instanceof Task) {
+                Task ee = (Task) e;
                 if (updateCreationTime) {
-                    long inCreation = i.creation();
-                    if (inCreation > e.creation())
-                        e.setCreation(inCreation);
+                    long inCreation = ii.creation();
+                    if (inCreation > ee.creation())
+                        ee.setCreation(inCreation);
                 }
+
+                if (ee.isCyclic() && !ii.isCyclic())
+                    ee.setCyclic(false);
             }
         }
 
-        if (e.isCyclic() && !i.isCyclic())
-            e.setCyclic(false);
-
-
-        return overflow;
-
-    }
-
-    @Override
-    default <X extends HyperRegion> Function<X, HyperRegion> mbrBuilder() {
-        long s = start(), e = end();
-        float tf = freq(), tc = conf();
-        return y ->
-                TasksRegion.mbr((TaskRegion)y, s, e, tf, tc);
-//        {
-//
-//            if (y instanceof Task) {
-//
-//                Task ty = (Task) y;
-//                float ef = ty.freq(), ec = ty.conf();
-//                long es = ty.start(), ee = ty.end();
-//
-//                float f0, f1;
-//                if (tf <= ef) {
-//                    f0 = tf;
-//                    f1 = ef;
-//                } else {
-//                    f0 = ef;
-//                    f1 = tf;
-//                }
-//                float c0;
-//                float c1;
-//                if (tc <= ec) {
-//                    c0 = tc;
-//                    c1 = ec;
-//                } else {
-//                    c0 = ec;
-//                    c1 = tc;
-//                }
-//                return new TasksRegion(Math.min(s, es), Math.max(e, ee),
-//                        f0, f1, c0, c1
-//                );
-//
-//            } else {
-//                return TaskRegion.mbr((TaskRegion)y, this);
-//            }
-//
-//        };
-    }
-
-    @Override
-    default TaskRegion mbr(HyperRegion y) {
-        return TaskRegion.mbr((TaskRegion)y, (Task)this);
+        return y;
     }
 
     /**
@@ -215,7 +171,6 @@ public interface Task extends Truthed, Stamp, TermedDelegate, ITask, TaskRegion,
         return h;
     }
 
-
     static void proof(/*@NotNull*/Task task, int indent, /*@NotNull*/StringBuilder sb) {
 
 
@@ -240,12 +195,6 @@ public interface Task extends Truthed, Stamp, TermedDelegate, ITask, TaskRegion,
         }
     }
 
-//    static StableBloomFilter<Task> newBloomFilter(int cap, Random rng) {
-//        return new StableBloomFilter<>(
-//                cap, 1, 0.0005f, rng,
-//                new BytesHashProvider<>(IO::taskToBytes));
-//    }
-
     static boolean validTaskTerm(@Nullable Term t) {
         return validTaskTerm(t, (byte) 0, true);
     }
@@ -265,7 +214,7 @@ public interface Task extends Truthed, Stamp, TermedDelegate, ITask, TaskRegion,
 
 //                @Nullable Term n = t.normalize();
 //                if (!n.equals(t))
-                    return fail(t, "task target not a normalized Compound", safe);
+                return fail(t, "task target not a normalized Compound", safe);
             }
         }
 
@@ -293,6 +242,12 @@ public interface Task extends Truthed, Stamp, TermedDelegate, ITask, TaskRegion,
 
         return !(t instanceof Compound) || validTaskCompound((Compound) t, safe);
     }
+
+//    static StableBloomFilter<Task> newBloomFilter(int cap, Random rng) {
+//        return new StableBloomFilter<>(
+//                cap, 1, 0.0005f, rng,
+//                new BytesHashProvider<>(IO::taskToBytes));
+//    }
 
     /**
      * call this directly instead of taskContentValid if the level, volume, and normalization have already been tested.
@@ -503,7 +458,6 @@ public interface Task extends Truthed, Stamp, TermedDelegate, ITask, TaskRegion,
         return Task.validTaskTerm(t/*.the()*/, punc, safe) ? pair(t, negated) : null;
     }
 
-
     /**
      * start!=ETERNAL
      */
@@ -539,6 +493,59 @@ public interface Task extends Truthed, Stamp, TermedDelegate, ITask, TaskRegion,
         }
 
         return new SpecialTruthAndOccurrenceTask(t, start, end, false, tt);
+    }
+
+    /**
+     * creates negated proxy of a task
+     */
+    static Task negated(@Nullable Task t) {
+        if (t instanceof SpecialNegatedTermTask)
+            return ((SpecialNegatedTermTask) t).task;
+        else
+            return new SpecialNegatedTermTask(t);
+    }
+
+    /**
+     * leave n null to avoid dithering
+     */
+    static Task eternalized(Task x, float eviFactor, float eviMin, @Nullable NAR n) {
+        boolean isEternal = x.isEternal();
+        boolean hasTruth = x.isBeliefOrGoal();
+        if (isEternal) {
+            if (eviFactor != 1)
+                throw new TODO();
+            if (hasTruth) {
+                if (x.evi() < eviMin)
+                    return null;
+            }
+            return x;
+        }
+
+        Truth tt;
+
+        if (hasTruth) {
+            tt = x.truth().eternalized(eviFactor, eviMin, n);
+            if (tt == null)
+                return null;
+        } else {
+            tt = null;
+        }
+
+        byte punc = x.punc();
+
+        Task y = Task.clone(x, x.term(),
+                tt,
+                punc,
+                /* TODO current time, from NAR */
+                (c, t) ->
+                        new UnevaluatedTask(c, punc, t,
+                                x.creation(), ETERNAL, ETERNAL,
+                                x.stamp()
+                        )
+        );
+        if (y != null && x.isCyclic())
+            y.setCyclic(true); //inherit cyclic
+        return y;
     }
 
 //    @Deprecated
@@ -581,64 +588,6 @@ public interface Task extends Truthed, Stamp, TermedDelegate, ITask, TaskRegion,
 //        return new SpecialTruthAndOccurrenceTask(t, start, end, negated, tt);
 //    }
 
-
-    /**
-     * creates negated proxy of a task
-     */
-    static Task negated(@Nullable Task t) {
-        if (t instanceof SpecialNegatedTermTask)
-            return ((SpecialNegatedTermTask) t).task;
-        else
-            return new SpecialNegatedTermTask(t);
-    }
-
-//    static Task eternalized(Task tx) {
-//        return eternalized(tx, 1);
-//    }
-
-    /**
-     * leave n null to avoid dithering
-     */
-    static Task eternalized(Task x, float eviFactor, float eviMin, @Nullable NAR n) {
-        boolean isEternal = x.isEternal();
-        boolean hasTruth = x.isBeliefOrGoal();
-        if (isEternal) {
-            if (eviFactor != 1)
-                throw new TODO();
-            if (hasTruth) {
-                if (x.evi() < eviMin)
-                    return null;
-            }
-            return x;
-        }
-
-        Truth tt;
-
-        if (hasTruth) {
-            tt = x.truth().eternalized(eviFactor, eviMin, n);
-            if (tt == null)
-                return null;
-        } else {
-            tt = null;
-        }
-
-        byte punc = x.punc();
-
-        Task y = Task.clone(x, x.term(),
-                tt,
-                punc,
-                /* TODO current time, from NAR */
-                (c, t) ->
-                        new UnevaluatedTask(c, punc, t,
-                                x.creation(), ETERNAL, ETERNAL,
-                                x.stamp()
-                        )
-        );
-        if (y!=null && x.isCyclic())
-            y.setCyclic(true); //inherit cyclic
-        return y;
-    }
-
     static Term normalize(Term x) {
         x = x.normalize();
 
@@ -648,6 +597,10 @@ public interface Task extends Truthed, Stamp, TermedDelegate, ITask, TaskRegion,
 
         return x;
     }
+
+//    static Task eternalized(Task tx) {
+//        return eternalized(tx, 1);
+//    }
 
     static byte i(byte p) {
         switch (p) {
@@ -680,6 +633,53 @@ public interface Task extends Truthed, Stamp, TermedDelegate, ITask, TaskRegion,
     }
 
     @Override
+    default <X extends HyperRegion> Function<X, HyperRegion> mbrBuilder() {
+        long s = start(), e = end();
+        float tf = freq(), tc = conf();
+        return y ->
+                TasksRegion.mbr((TaskRegion) y, s, e, tf, tc);
+//        {
+//
+//            if (y instanceof Task) {
+//
+//                Task ty = (Task) y;
+//                float ef = ty.freq(), ec = ty.conf();
+//                long es = ty.start(), ee = ty.end();
+//
+//                float f0, f1;
+//                if (tf <= ef) {
+//                    f0 = tf;
+//                    f1 = ef;
+//                } else {
+//                    f0 = ef;
+//                    f1 = tf;
+//                }
+//                float c0;
+//                float c1;
+//                if (tc <= ec) {
+//                    c0 = tc;
+//                    c1 = ec;
+//                } else {
+//                    c0 = ec;
+//                    c1 = tc;
+//                }
+//                return new TasksRegion(Math.min(s, es), Math.max(e, ee),
+//                        f0, f1, c0, c1
+//                );
+//
+//            } else {
+//                return TaskRegion.mbr((TaskRegion)y, this);
+//            }
+//
+//        };
+    }
+
+    @Override
+    default TaskRegion mbr(HyperRegion y) {
+        return TaskRegion.mbr((TaskRegion) y, (Task) this);
+    }
+
+    @Override
     default float conf() {
         return truth().conf(); //direct from truth, avoids evidence calculation if DiscreteTruth
     }
@@ -693,18 +693,22 @@ public interface Task extends Truthed, Stamp, TermedDelegate, ITask, TaskRegion,
     default float freqMin() {
         return freqMean();
     }
+
     @Override
     default float freqMax() {
         return freqMean();
     }
 
-    @Override default float confMean() {
+    @Override
+    default float confMean() {
         return conf();
     }
+
     @Override
     default float confMin() {
         return confMean();
     }
+
     @Override
     default float confMax() {
         return confMean();
@@ -994,7 +998,9 @@ public interface Task extends Truthed, Stamp, TermedDelegate, ITask, TaskRegion,
         return t == null ? Float.NaN : t.expectation();
     }
 
-    /** default implementation involves the complete perception process */
+    /**
+     * default implementation involves the complete perception process
+     */
     default ITask next(NAR n) {
         throw new UnsupportedOperationException();
     }

@@ -58,7 +58,7 @@ public abstract class WebServer implements HttpModel {
         Offs o = ws.getAttachment();
         if (o != null) {
             ws.setAttachment(null);
-            o.pause();
+            o.off();
         }
     }
 }

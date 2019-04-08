@@ -28,7 +28,7 @@ public class FastCoWList<X> /*extends AbstractList<X>*/ /*implements List<X>*/ i
     private final IntFunction<X[]> arrayBuilder;
 
     
-    public final AtomicReference<X[]> copy = new AtomicReference(null);
+    public final AtomicReference<X[]> copy = new AtomicReference(ArrayUtils.EMPTY_OBJECT_ARRAY);
 
 
     public FastCoWList(IntFunction<X[]> arrayBuilder) {

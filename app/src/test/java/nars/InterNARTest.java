@@ -50,8 +50,8 @@ public class InterNARTest {
         int preCycles = 1;
         int postCycles = 64;
 
-        NAR a = NARS.realtime(NAR_FPS).withNAL(1, 1).get().named("a");
-        NAR b = NARS.realtime(NAR_FPS).withNAL(1, 1).get().named("b");
+        NAR a = NARS.realtime(NAR_FPS).withNAL(1, 1).get().become("a", new NARS().what /* HACK */);
+        NAR b = NARS.realtime(NAR_FPS).withNAL(1, 1).get().become("b", new NARS().what /* HACK */);
 
         a.termVolumeMax.set(volMax);
         b.termVolumeMax.set(volMax);

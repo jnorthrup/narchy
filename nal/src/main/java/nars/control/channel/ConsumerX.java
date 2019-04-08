@@ -14,11 +14,24 @@ import java.util.stream.Stream;
 @FunctionalInterface public interface ConsumerX<X extends Prioritizable> extends Consumer<X> {
 
     default void acceptAll(Iterable<? extends X> xx) {
-        acceptAll(xx.iterator());
+        if (xx instanceof Collection)
+            acceptAll((Collection)xx);
+        else
+            acceptAll(xx.iterator());
     }
 
     default void acceptAll(Collection<? extends X> xx) {
-        acceptAll((Iterable)xx);
+        switch (xx.size()) {
+            case 0: return;
+            case 1: {
+                if (xx instanceof List) {
+                    accept(((List<X>) xx).get(0));
+                    return;
+                }
+                break;
+            }
+        }
+        acceptAll(xx.iterator());
     }
 
     default void acceptAll(Iterator<? extends X> xx) {

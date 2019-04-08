@@ -9,6 +9,7 @@ import jcog.math.LongInterval;
 import jcog.pri.Prioritizable;
 import jcog.pri.Prioritized;
 import jcog.util.ArrayUtils;
+import nars.$;
 import nars.NAR;
 import nars.Param;
 import nars.Task;
@@ -77,7 +78,7 @@ public class ConjClustering extends How {
     }
 
     public ConjClustering(NAR nar, byte punc, Predicate<Task> filter, int centroids, int capacity) {
-        super();
+        super($.uuid());
 
         this.in = nar.newChannel(this);
 
@@ -127,8 +128,6 @@ public class ConjClustering extends How {
         this.punc = punc;
         this.filter = filter;
 
-        this.now = lastLearn = nar.time();
-        //update();
 
         nar.start(this);
     }
@@ -150,6 +149,8 @@ public class ConjClustering extends How {
 
             }
         }, punc));
+
+        _update(nar.time());
 
     }
 
@@ -189,43 +190,30 @@ public class ConjClustering extends How {
         if (cc > 1)
             centroids.shuffleThis(w.nar.random());
 
-        FasterList<Task> o = new FasterList();
-        CentroidConjoiner conjoiner = new CentroidConjoiner();
+        CentroidConjoiner conjoiner = new CentroidConjoiner(tasksPerIterationPerCentroid, w.nar);
         do {
 
             Iterator<TaskList> iii = centroids.iterator();
             while (iii.hasNext()) {
                 FasterList<Task> i = iii.next();
-                if (conjoiner.conjoinCentroid(i, tasksPerIterationPerCentroid, o, w.nar) == 0 || i.size()<=1)
+                if (conjoiner.conjoinCentroid(i) == 0 || i.size()<=1)
                     iii.remove();
 
-                 if (!kontinue.getAsBoolean())
-                     return;
             }
+            if (!kontinue.getAsBoolean()) break;
 
         } while (!centroids.isEmpty());
-        in.acceptAll(o, w);
+
+
+        in.acceptAll(conjoiner.out, w);
 
     }
 
     private void update() {
         long now = nar.time();
         long lastNow = this.now;
-        if (this.nar==null || lastNow < now) {
-            //parameters must be set even if data is empty due to continued use in the filter
-            //but at most once per cycle or duration
-            this.now = now;
-            this.dur = nar.dur();
-            this.stampLenMax =
-                    //Param.STAMP_CAPACITY / 2; //for minimum of 2 tasks in each conjunction
-                    //Param.STAMP_CAPACITY - 1;
-                    Integer.MAX_VALUE;
-            this.confMin = nar.confMin.floatValue();
-            this.inputTermVolMax = Math.round(Math.max(1f,
-                    (this.volMax = nar.termVolumeMax.intValue()) * termVolumeMaxPct.floatValue()) +
-                    -2 /* for the super-CONJ itself and another term of at least volume 1 */
-            );
-
+        if (lastNow < now) {
+            _update(now);
         }
 
         if (busy.compareAndSet(false, true)) {
@@ -238,6 +226,22 @@ public class ConjClustering extends How {
                 busy.set(false);
             }
         }
+    }
+
+    private void _update(long now) {
+        //parameters must be set even if data is empty due to continued use in the filter
+        //but at most once per cycle or duration
+        this.now = now;
+        this.dur = nar.dur();
+        this.stampLenMax =
+                Param.STAMP_CAPACITY / 2; //for minimum of 2 tasks in each conjunction
+        //Param.STAMP_CAPACITY - 1;
+        //Integer.MAX_VALUE;
+        this.confMin = nar.confMin.floatValue();
+        this.inputTermVolMax = Math.round(Math.max(1f,
+                (this.volMax = nar.termVolumeMax.intValue()) * termVolumeMaxPct.floatValue()) +
+                -2 /* for the super-CONJ itself and another term of at least volume 1 */
+        );
     }
 
     protected float forgetRate() {
@@ -273,7 +277,17 @@ public class ConjClustering extends How {
 
         final MetalLongSet actualStamp = new MetalLongSet(Param.STAMP_CAPACITY * 2);
 
-        private int conjoinCentroid(FasterList<Task> in, int limit, FasterList<Task> out, NAR nar) {
+        /** generated tasks */
+        final FasterList<Task> out = new FasterList();
+        private final int tasksGeneratedPerCentroidIterationMax;
+        private final NAR nar;
+
+        CentroidConjoiner(int tasksGeneratedPerCentroidIterationMax, NAR nar) {
+            this.tasksGeneratedPerCentroidIterationMax = tasksGeneratedPerCentroidIterationMax;
+            this.nar = nar;
+        }
+
+        private int conjoinCentroid(FasterList<Task> in) {
             int s = in.size();
             if (s == 0)
                 return 0;
@@ -395,7 +409,7 @@ public class ConjClustering extends How {
 
                                     out.add(y);
 
-                                    if (++count >= limit)
+                                    if (++count >= tasksGeneratedPerCentroidIterationMax)
                                         break main;
 
                                 } else {

@@ -14,6 +14,7 @@ import nars.index.concept.Memory;
 import nars.index.concept.SimpleMemory;
 import nars.op.stm.STMLinkage;
 import nars.task.util.PriBuffer;
+import nars.term.Term;
 import nars.time.Time;
 import nars.time.clock.CycleTime;
 import nars.time.clock.RealTime;
@@ -25,6 +26,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.function.ToIntFunction;
 
@@ -39,7 +41,7 @@ public class NARS {
         NAR n = new NAR(
             index.get(),
             exec.get(),
-            new What.TaskLinkWhat(What.Default, in.get()),
+                what,
             time,
             rng,
             conceptBuilder.get()
@@ -55,7 +57,7 @@ public class NARS {
 
     protected Supplier<Exec> exec;
 
-    protected Supplier<PriBuffer> in;
+    protected Function<Term,What> what;
 
     protected Supplier<Random> rng;
 
@@ -101,8 +103,8 @@ public class NARS {
             );
     }
 
-    public NARS input(PriBuffer in) {
-        this.in = ()->in;
+    public NARS what(Function<Term,What> what) {
+        this.what = what;
         return this;
     }
 
@@ -160,11 +162,11 @@ public class NARS {
 
         exec = () -> new UniExec();
 
-        in =   ()->
-            //new TaskBuffer.BagTaskBuffer(256, 5f)
-            //new TaskBuffer.MapTaskBuffer(64)
-            new PriBuffer.DirectPriBuffer()
-        ;
+        what = w -> new What.TaskLinkWhat(w,
+                       new PriBuffer.DirectPriBuffer()
+                       //new TaskBuffer.BagTaskBuffer(256, 5f)
+                       //new TaskBuffer.MapTaskBuffer(64)
+        );
 
         rng = ThreadLocalRandom::current;
 

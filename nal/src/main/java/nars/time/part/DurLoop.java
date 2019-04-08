@@ -9,6 +9,7 @@ import nars.$;
 import nars.NAR;
 import nars.control.NARPart;
 import nars.term.Term;
+import nars.term.Termed;
 import nars.term.atom.Atomic;
 import nars.time.RecurringTask;
 import org.eclipse.collections.api.tuple.Pair;
@@ -55,16 +56,6 @@ abstract public class DurLoop extends NARPart {
         super(id);
     }
 
-    protected DurLoop(NAR nar) {
-        this(nar, 1f);
-    }
-
-    /**
-     * if using this constructor, a subclass must call nar.on(this) manually
-     */
-    protected DurLoop() {
-        this((NAR) null);
-    }
 
     /**
      * creates a duration-cached float range that is automatically destroyed when its parent context is
@@ -132,11 +123,15 @@ abstract public class DurLoop extends NARPart {
 //        return n;
 //    }
 
+    static Term term(Object x) {
+        return x instanceof Termed ? ((Termed)x).term() : $.identity(x);
+    }
+
     public static final class DurRunnable extends DurLoop {
         private final Runnable r;
 
         public DurRunnable(Runnable r) {
-            super();
+            super(term(r));
             this.r = r;
         }
 
@@ -157,7 +152,7 @@ abstract public class DurLoop extends NARPart {
         final Consumer<NAR> r;
 
         public DurNARConsumer(Consumer<NAR> r) {
-            super();
+            super(term(r));
             this.r = r;
         }
 

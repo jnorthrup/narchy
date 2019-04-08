@@ -248,7 +248,7 @@ public class Statement {
 
         Term t = B.theCompound(op, dt, subject, predicate);
 
-        if (Param.DEBUG) {
+        //if (Param.DEBUG) {
         //test image normalization
         if (op==INH) {
             //TODO accept TermBuilder b as parameter
@@ -257,7 +257,7 @@ public class Statement {
                 return tt;
             }
         }
-        }
+        //}
 
         return t.negIf(negate);
     }

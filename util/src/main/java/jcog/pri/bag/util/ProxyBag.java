@@ -66,6 +66,11 @@ public class ProxyBag<X,Y> extends Bag<X,Y> {
     }
 
     @Override
+    public Iterator<Y> iterator() {
+        return bag.iterator();
+    }
+
+    @Override
     public Spliterator<Y> spliterator() {
         return bag.spliterator();
     }
@@ -131,10 +136,6 @@ public class ProxyBag<X,Y> extends Bag<X,Y> {
         bag.depressurize(toRemove);
     }
 
-    @Override
-    public Iterator<Y> iterator() {
-        return bag.iterator();
-    }
 
     @Override
     public float priMax() {

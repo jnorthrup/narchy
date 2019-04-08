@@ -110,7 +110,7 @@ public class NARHear extends Loop {
 
     protected void onReset(Timed n) {
         stop();
-        onReset.pause();
+        onReset.off();
     }
 
 

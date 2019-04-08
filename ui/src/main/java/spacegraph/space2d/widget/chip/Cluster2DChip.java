@@ -138,7 +138,7 @@ public class Cluster2DChip extends Bordering {
 
     @Override
     protected void stopping() {
-        update.pause();
+        update.off();
         super.stopping();
     }
 

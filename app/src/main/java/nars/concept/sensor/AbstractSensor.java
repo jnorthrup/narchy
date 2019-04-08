@@ -14,10 +14,11 @@ abstract public class AbstractSensor extends NARPart implements GameLoop {
     }
 
     protected AbstractSensor(Term id, NAR n) {
-        super(id, n);
+        super(id);
 
         //defaults
         res = FloatRange.unit( n.freqResolution );
+
     }
 
     public <S extends AbstractSensor> S resolution(float v) {

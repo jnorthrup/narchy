@@ -206,7 +206,7 @@ public class WorkerExec extends ThreadedExec {
         }
 
         @Override
-        public void pause() {
+        public void off() {
             if (alive.compareAndSet(true,false)) {
                 //execute remaining tasks in callee's thread
                 schedule.removeIf(x -> {

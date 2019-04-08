@@ -76,20 +76,21 @@ public enum Perceive { ;
     /** returns true if the task is acceptable */
     private static ITask perceive(Task x, Term y, What w) {
 
-        assert(!(y instanceof Bool));
 
         Task t;
         Term it = x.term();
         if (!it.equals(y)) {
             byte punc = x.punc();
             if (y.op()==BOOL) {
-                if (punc == QUESTION/* || punc == QUEST*/) {
+                if (punc == QUESTION || punc == QUEST) {
                     //conver to an answering belief/goal now that the absolute truth has been determined
                     //TODO decide if this makes sense for QUEST
 
                     byte answerPunc;
                     if (punc == QUESTION) answerPunc = BELIEF;
-                    else { answerPunc = GOAL; assert(punc==QUEST); } //HACK
+                    else if (punc == QUEST) { answerPunc = GOAL;  }
+                    else
+                        throw new UnsupportedOperationException();
 
                     if (it.hasXternal())
                         it = Retemporalize.retemporalizeXTERNALToDTERNAL.apply(it);
@@ -104,7 +105,8 @@ public enum Perceive { ;
                         throw new WTF();
 
                 } else {
-                    return null; //???
+                    //throw new WTF();
+                    return null;
                 }
             } else {
 
@@ -161,7 +163,6 @@ public enum Perceive { ;
 
             if (y == Bool.Null)
                 return true; //continue TODO maybe limit these
-
 
             ITask next = Perceive.perceive(t, y, what);
             if (next != null) {

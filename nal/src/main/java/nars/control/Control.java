@@ -21,7 +21,6 @@ import nars.control.channel.CauseChannel;
 import nars.control.op.Remember;
 import nars.task.ITask;
 import nars.task.NALTask;
-import nars.term.Term;
 import nars.time.part.DurLoop;
 import org.eclipse.collections.api.block.function.primitive.ShortToObjectFunction;
 import org.jetbrains.annotations.Nullable;
@@ -269,13 +268,6 @@ import java.util.function.Consumer;
             why.add(c);
             return c;
         }
-    }
-
-    /** registers a new pri node */
-    public PriNode newPri(Term id) {
-        PriNode p = new PriNode(id);
-        add(p);
-        return p;
     }
 
     final class TaskChannel extends CauseChannel<ITask> {

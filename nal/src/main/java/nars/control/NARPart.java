@@ -35,25 +35,27 @@ abstract public class NARPart extends Part<NAR> implements Termed {
     }
 
     protected NARPart(NAR nar) {
-        this(null, nar);
-    }
+        this((Term)null);
 
-    protected NARPart(Term id, NAR nar) {
-        this(id);
-
-        if (nar != null)
-            (this.nar = nar).start(this);
+        if (nar!=null)
+            nar.start(this);
     }
 
     protected NARPart(@Nullable Term id) {
         this.id = id != null ? id : $.identity(this);
     }
 
-    public static Term id(@Nullable Term key, NARPart s) {
-        if (s.singleton())
-            return s.id;
-        else
-            return key == null ? $.identity(s) : $.p(key, $.identity(s));
+    public static Term id(@Nullable Term id, NARPart x) {
+        if (id == null) {
+            return ((Termed) x).term();
+        }
+
+        if (x.singleton()) {
+            if (x.id!=null)
+                return x.id;
+        }
+
+        return $.p(id, $.identity(x));
     }
 
     /** optional event occurrence information.  null if not applicable. */
@@ -71,7 +73,8 @@ abstract public class NARPart extends Part<NAR> implements Termed {
     public final void pause() {
         NAR n = nar;
         if (n != null) {
-            boolean ok = n.stop(id); assert(ok);
+            boolean ok = n.stop(id);
+            assert(ok);
         } else {
             throw new NullPointerException();
         }
@@ -93,7 +96,7 @@ abstract public class NARPart extends Part<NAR> implements Termed {
     @Override
     protected final void start(NAR nar) {
 
-        logger.debug("start {}", this);
+        logger.info("start {}", this);
 
         if (!(this.nar == null || this.nar == nar))
             throw new WTF("NAR mismatch");
@@ -108,11 +111,11 @@ abstract public class NARPart extends Part<NAR> implements Termed {
     @Override
     protected final void stop(NAR nar) {
 
-        this.ons.pause();
+        this.ons.off();
 
         stopping(nar);
 
-        logger.debug("stop {}", this);
+        logger.info("stop {}", this);
     }
 
 

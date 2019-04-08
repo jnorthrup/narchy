@@ -5,6 +5,7 @@ import jcog.math.FloatRange;
 import nars.$;
 import nars.NAR;
 import nars.control.NARPart;
+import nars.term.Term;
 import nars.term.atom.Atom;
 
 /**
@@ -26,7 +27,7 @@ public class NARLoop extends InstrumentedLoop {
     public NARLoop( NAR n) {
         super();
         nar = n;
-        this.service = new NARPart($.inh(NAR_LOOP, n.self()), n) {
+        this.service = new NARPart((Term)$.inh(NAR_LOOP, n.self())) {
 
         };
         n.start(service);

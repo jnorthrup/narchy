@@ -24,7 +24,12 @@ import static nars.Op.*;
 
 /**
  * Question task which accepts a callback to be invoked on answers
+ *
  * The question actively listens for unifiable task events, until deleted
+ *
+ * TODO register/unregister a NARPart internally for the duration of the task's lifecycle.  a weakref back to the task
+ * can tell it when the NARPart should be off.
+ *
  * TODO abstract the matcher into:
  * --exact (.equals)
  * --unify
@@ -38,7 +43,7 @@ public class ActiveQuestionTask extends NALTask.NALTaskX implements Consumer<Tas
 
     private final BiConsumer<? super ActiveQuestionTask /* Q */, Task /* A */> eachAnswer;
 
-    final Bag<nars.Task, PriReference<Task>> answers;
+    final Bag<Task, PriReference<Task>> answers;
     private Off onTask;
 
     final Predicate<Term> test;
@@ -134,19 +139,14 @@ public class ActiveQuestionTask extends NALTask.NALTaskX implements Consumer<Tas
     }
 
     private void off() {
-        if (this.onTask != null) {
-            this.onTask.pause();
+        //if (this.onTask != null) {
+            this.onTask.off();
             this.onTask = null;
-        }
+        //}
     }
 
-    @Deprecated private Bag<nars.Task, PriReference<Task>> newBag(int history) {
-        return new PLinkArrayBag<>(PriMerge.max, history) {
-            @Override
-            public void onAdd(PriReference<Task> t) {
-                eachAnswer.accept(ActiveQuestionTask.this, t.get());
-            }
-        };
+    @Deprecated private Bag<Task, PriReference<Task>> newBag(int history) {
+        return new AnswerBag(history);
     }
 
 
@@ -162,4 +162,14 @@ public class ActiveQuestionTask extends NALTask.NALTaskX implements Consumer<Tas
         return answer;
     }
 
+    private final class AnswerBag extends PLinkArrayBag<Task> {
+        AnswerBag(int history) {
+            super(PriMerge.max, history);
+        }
+
+        @Override
+        public void onAdd(PriReference<Task> t) {
+            eachAnswer.accept(ActiveQuestionTask.this, t.get());
+        }
+    }
 }

@@ -79,7 +79,7 @@ class NAL3GoalTest {
                 .input(goalTask)
                 .input(beliefTask)
                 .mustGoal(GoalDecompositionTest.cycles, YY, f, c)
-                .run(16);
+                .run(64);
 
     }
 

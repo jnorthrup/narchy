@@ -122,25 +122,25 @@ public class MetaAgent extends Game {
 //        });
 
         if (allowPause) {
-            //TODO agent enable
-            GoalActionConcept enableAction = actionPushButton($.inh(a.id, enable), (e) -> {
-                //enableAction = n.actionToggle($.func(enable, n.id), (e)->{
-                //TODO integrate and threshold, pause for limited time
-                if (!e) {
-                    if (disableCountDown++ >= disableThreshold) {
-                        a.pause();
-                        NAR n = a.nar();
-                        n.runAt(n.time() + disablePeriod * n.dur(), () -> {
-                            //re-enable
-                            a.resume();
-                            disableCountDown = 0;
-                        });
-                    }
-                } else {
-                    a.resume();
-                    disableCountDown = 0;
-                }
-            });
+//            //TODO agent enable
+//            GoalActionConcept enableAction = actionPushButton($.inh(a.id, enable), (e) -> {
+//                //enableAction = n.actionToggle($.func(enable, n.id), (e)->{
+//                //TODO integrate and threshold, pause for limited time
+//                if (!e) {
+//                    if (disableCountDown++ >= disableThreshold) {
+//                        //a.off();
+//                        NAR n = a.nar();
+//                        n.runAt(n.time() + disablePeriod * n.dur(), () -> {
+//                            //re-enable
+//                            //a.time.resume();
+//                            disableCountDown = 0;
+//                        });
+//                    }
+//                } else {
+//                    //a.resume();
+//                    disableCountDown = 0;
+//                }
+//            });
         }
 
 

@@ -12,11 +12,13 @@ import nars.concept.sensor.Signal;
 import nars.concept.sensor.VectorSensor;
 import nars.term.Term;
 import nars.term.Termed;
+import nars.term.atom.Int;
 import nars.truth.Truth;
 import org.eclipse.collections.api.block.function.primitive.FloatFloatToObjectFunction;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Iterator;
+import java.util.Map;
 
 import static nars.Op.BELIEF;
 
@@ -40,7 +42,11 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends VectorSensor {
     }
 
     public Bitmap2DSensor(@Nullable IntIntToObjectFunction<nars.term.Term> pixelTerm, P src, NAR n) {
-        super(n);
+        super(pixelTerm.apply(0,1)
+                    .replace(Map.of(
+                        Int.the(0), $.varDep(1),
+                        Int.the(1), $.varDep(2))
+        ), n);
         this.width = src.width();
         this.height = src.height();
         this.concepts = new Bitmap2DConcepts<>(src, pixelTerm, res, n);

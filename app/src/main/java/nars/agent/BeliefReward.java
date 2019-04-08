@@ -18,7 +18,7 @@ public class BeliefReward extends Reward {
     boolean negate;
 
     public BeliefReward(Term id, Game a) {
-        super(a);
+        super(id, a);
         this.id = id;
         negate = id.op()==NEG;
         concept = newConcept();

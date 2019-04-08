@@ -9,6 +9,7 @@ import nars.attention.AttnBranch;
 import nars.concept.Concept;
 import nars.control.channel.CauseChannel;
 import nars.task.ITask;
+import nars.term.Term;
 import nars.term.Termed;
 import nars.truth.Truth;
 import org.eclipse.collections.api.block.function.primitive.FloatFloatToObjectFunction;
@@ -35,10 +36,14 @@ abstract public class VectorSensor extends AbstractSensor implements Iterable<Si
 //        this(input, id, (prev, next) -> next==next ? $.t(Util.unitize(next), nar.confDefault(BELIEF)) : null, nar);
 //    }
 
-    protected VectorSensor(NAR n) {
-        super(n);
 
-        attn = new AttnBranch(this, this);
+    protected VectorSensor(NAR n) {
+        this(null, n);
+    }
+    protected VectorSensor(Term rootID, NAR n) {
+        super(rootID, n);
+
+        attn = new AttnBranch(rootID, this);
 
         this.in = newChannelIn(n);
     }

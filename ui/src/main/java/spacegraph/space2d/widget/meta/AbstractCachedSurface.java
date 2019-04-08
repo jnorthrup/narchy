@@ -78,7 +78,7 @@ abstract public class AbstractCachedSurface<X extends Surface> extends UnitConta
     @Override
     protected void stopping() {
         assert(on!=null);
-        on.pause();
+        on.off();
         on = null;
         super.stopping();
     }

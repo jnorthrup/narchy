@@ -1,6 +1,7 @@
 package nars.derive;
 
 import jcog.Util;
+import nars.$;
 import nars.NAR;
 import nars.Task;
 import nars.attention.What;
@@ -50,7 +51,7 @@ abstract public class Deriver extends How {
 
 
     protected Deriver(DeriverRules rules, NAR nar) {
-        super();
+        super($.uuid());
         this.rules = rules;
 //        this.source = source;
         this.timing =

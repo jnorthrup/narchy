@@ -2,7 +2,6 @@ package jcog.test.control;
 
 import nars.NAR;
 import nars.agent.Game;
-import nars.agent.GameTime;
 import org.apache.commons.math3.stat.descriptive.SummaryStatistics;
 
 import static nars.$.the;
@@ -13,7 +12,7 @@ abstract public class MiniTest extends Game {
     public final SummaryStatistics dex = new SummaryStatistics();
 
     public MiniTest(NAR n) {
-        super(MiniTest.class.getSimpleName(), GameTime.durs(1), n.in);
+        super(MiniTest.class.getSimpleName(), n);
         //statPrint = n.emotion.printer(System.out);
 
         reward(the("reward"), () -> {
@@ -29,8 +28,6 @@ abstract public class MiniTest extends Game {
             return yy;
         });
 
-
-        n.start(this);
     }
 
 

@@ -45,15 +45,15 @@ public abstract class Reward implements GameLoop, TermedDelegate, Iterable<Conce
 
     final PriNode attn;
 
-    public Reward(Game g) {
+    public Reward(Term id, Game g) {
     //TODO
     //public Reward(NAgent a, FloatSupplier r, float confFactor) {
         this.game = g;
 
-        this.attn = new PriNode(this);
+        this.attn = new PriNode(id);
         attn.parent(g.nar(), g.attnReward);
 
-        in = g.nar().newChannel(this);
+        in = g.nar().newChannel(id);
 
     }
 

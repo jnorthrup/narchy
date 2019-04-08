@@ -159,7 +159,7 @@ public class AutoclassifiedBitmap extends VectorSensor {
      * metabits must consistently return an array of the same size, since now the size of this autoencoder is locked to its dimension
      */
     public AutoclassifiedBitmap(@Nullable Term root, IntIntToFloatFunction pixIn, int pw, int ph, int sw, int sh, MetaBits metabits, int features, Game agent) {
-        super(agent.nar());
+        super(root, agent.nar());
 
         NAR nar = agent.nar();
 
@@ -211,7 +211,7 @@ public class AutoclassifiedBitmap extends VectorSensor {
         logger.info("{} pixels in={},{} ({}) x {},{} x features={} : encoded={}", this, pw, ph, (pw * ph), nw, nh, features, signals.size());
         agent.addSensor(this);
 
-
+        nar.start(this);
     }
 
     public AutoclassifiedBitmap setResolution(FloatRange res) {

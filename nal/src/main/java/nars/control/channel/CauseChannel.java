@@ -3,6 +3,9 @@ package nars.control.channel;
 import jcog.pri.Prioritizable;
 import nars.control.Why;
 
+import java.util.Collection;
+import java.util.List;
+
 /**
  * metered and mixable extension of Cause base class
  */
@@ -30,10 +33,28 @@ abstract public class CauseChannel<X extends Prioritizable>  {
         target.accept(x);
     }
 
-    public final void acceptAll(Iterable<? extends X> x, ConsumerX<? super X> target) {
-        x.forEach(this::preAccept);
-        target.acceptAll(x);
+    public final void acceptAll(Iterable<? extends X> xx, ConsumerX<? super X> target) {
+        xx.forEach(this::preAccept);
+        target.acceptAll(xx);
     }
+    public final void acceptAll(Collection<? extends X> xx, ConsumerX<? super X> target) {
+        switch (xx.size()) {
+            case 0: return;
+            case 1: {
+                if (xx instanceof List) {
+                    accept(((List<X>) xx).get(0), target);
+                    return;
+                } else {
+                    accept((X)(xx.iterator().next()), target);
+                }
+                break;
+            }
+        }
+
+        xx.forEach(this::preAccept);
+        target.acceptAll(xx);
+    }
+
     public final void acceptAll(X[] xx, ConsumerX<? super X> target) {
         for (X x : xx)
             preAccept(x);

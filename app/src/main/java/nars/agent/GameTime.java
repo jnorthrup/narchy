@@ -24,7 +24,7 @@ abstract public class GameTime {
     public void stop() {
         synchronized (this) {
             if (on != null) {
-                on.pause();
+                on.off();
                 on = null;
             }
         }
@@ -48,13 +48,13 @@ abstract public class GameTime {
         private transient final float initialFPS;
 
         public final Loop loop;
-        private Game agent = null;
+        private Game g = null;
 
         public FPS(float fps) {
             this.initialFPS = fps;
             loop = new Loop(-1) {
                 @Override public boolean next() {
-                    agent.next();
+                    g.next();
                     return true;
                 }
             };
@@ -62,7 +62,7 @@ abstract public class GameTime {
 
         @Override
         public int dur() {
-            RealTime t = (RealTime) agent.nar().time;
+            RealTime t = (RealTime) g.nar().time;
             double unitsPerSec = 1/t.secondsPerUnit();
             double secondsPerFrame = 1/loop.getFPS();
             double unitsPerFrame = unitsPerSec * secondsPerFrame;
@@ -71,7 +71,7 @@ abstract public class GameTime {
 
         @Override
         public long next(long now) {
-            RealTime t = (RealTime) agent.nar().time;
+            RealTime t = (RealTime) g.nar().time;
             return now + Math.round(t.secondsToUnits(loop.periodMS.getOpaque()*0.001));
         }
 
@@ -79,7 +79,7 @@ abstract public class GameTime {
             if (!(a.nar().time instanceof RealTime))
                 throw new UnsupportedOperationException("realtime clock required");
 
-            agent = a;
+            g = a;
 
             loop.setFPS(initialFPS);
 

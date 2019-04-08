@@ -22,6 +22,7 @@ import nars.concept.sensor.Signal;
 import nars.concept.sensor.VectorSensor;
 import nars.control.NARPart;
 import nars.term.Term;
+import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
 import org.slf4j.Logger;
 
@@ -49,7 +50,7 @@ import static nars.truth.func.TruthFunctions.w2cSafe;
  *
  */
 @Paper @Skill({"Game_studies", "Game_theory"})
-public class Game extends NARPart implements NSense, NAct {
+public class Game implements NSense, NAct {
 
     private final Topic<NAR> eventFrame = new ListTopic();
 
@@ -60,10 +61,10 @@ public class Game extends NARPart implements NSense, NAct {
     private final AtomicBoolean busy = new AtomicBoolean(false);
     public final AtomicBoolean trace = new AtomicBoolean(false);
 
+    private final static Atom ACTION = Atomic.atom("action"), SENSOR = Atomic.atom("sensor"), REWARD = Atomic.atom("reward");
+
     public final FastCoWList<GameLoop> sensors = new FastCoWList<>(GameLoop[]::new);
-
     public final FastCoWList<AgentAction> actions = new FastCoWList<>(AgentAction[]::new);
-
     public final FastCoWList<Reward> rewards = new FastCoWList<>(Reward[]::new);
 
     public final AtomicInteger iteration = new AtomicInteger(0);
@@ -73,6 +74,8 @@ public class Game extends NARPart implements NSense, NAct {
     public final PriNode attnReward, attnAction, attnSensor;
     private final PriNode pri;
     private final What what;
+    public final NAR nar;
+    public final Term id;
 
     public volatile long prev = ETERNAL;
     public volatile long now = ETERNAL;
@@ -85,49 +88,32 @@ public class Game extends NARPart implements NSense, NAct {
 
 
     @Deprecated public Game(String id, NAR n) {
-        this(id, n.in);
-    }
-
-    @Deprecated public Game(Term id, GameTime time, NAR n) {
-        this(id, time, n.in);
+        this(id, GameTime.durs(1), n);
     }
 
     @Deprecated public Game(String id, GameTime time, NAR n) {
-        this(id, time, n.in);
+        this(Atomic.atom(id), time, n);
     }
 
-    public Game(String id, What w) {
-        this(id, GameTime.durs(1), w);
+    @Deprecated public Game(Term id, GameTime time, NAR nar) {
+        this(id, time, nar.the(id,true));
     }
 
-    public Game(String id, GameTime time, What w) {
-        this(id.isEmpty() ? null : Atomic.the(id), time, w);
-    }
 
     public Game(Term id, GameTime time, What w) {
-        super(id);
 
+        this.id = id;
         this.what = w;
         this.nar = w.nar;
 
         this.time = time;
 
-        this.pri = nar.control.newPri(id);
-        this.attnAction = new PriNode($.func("action", id))
-                .parent(nar, this.pri, nar.goalPriDefaultNode);
-        this.attnSensor = new PriNode($.func("sensor", id))
-                .parent(nar, this.pri, nar.beliefPriDefaultNode);
-        this.attnReward = new PriNode($.func("reward", id))
-                .parent(nar, this.pri, nar.goalPriDefaultNode /* TODO avg */);
-        /*             float pb = nar.priDefault(BELIEF), pg = nar.priDefault(GOAL);
-            //TODO adjustable balance
-            attnSensor.factor.set(pb);
-            attnAction.factor.set(pg);
-            attnReward.factor.set((pb + pg));
-        */
+        this.pri = new PriNode(id);
+        this.attnAction = new PriNode($.func(ACTION, id));
+        this.attnSensor = new PriNode($.func(SENSOR, id));
+        this.attnReward = new PriNode($.func(REWARD, id));
 
-        //nar.runLater(()-> nar.on(this));
-        nar.start(this);
+        starting(w.nar);
     }
 
     @Override
@@ -233,25 +219,33 @@ public class Game extends NARPart implements NSense, NAct {
      * registers sensor, action, and reward concepts with the NAR
      * TODO call this in the constructor
      */
-    @Override
+    //@Override
     protected void starting(NAR nar) {
 
-        super.starting(nar);
+        nar.control.add(pri);
+        attnAction.parent(nar, this.pri, nar.goalPriDefaultNode);
+        attnSensor.parent(nar, this.pri, nar.beliefPriDefaultNode);
+        attnReward.parent(nar, this.pri, nar.goalPriDefaultNode /* TODO avg */);
+
+        sensors.forEach(s -> nar.start((NARPart)s));
 
         this.time.start(this);
     }
 
 
-    @Override
+    //@Override
     protected void stopping(NAR nar) {
 
-        if (time != null) {
-            time.stop();
-        } else {
-            throw new WTF(this + " stopped twice");
-        }
+        time.stop();
 
-        super.stopping(nar);
+        sensors.forEach(s -> nar.stop((NARPart)s));
+
+        nar.control.remove(pri);
+        nar.control.remove(attnAction);
+        nar.control.remove(attnSensor);
+        nar.control.remove(attnReward);
+
+
     }
 
 
@@ -357,14 +351,8 @@ public class Game extends NARPart implements NSense, NAct {
         Interleaved() {
             @Override
             public void next(Game a, int iteration, long prev, long now) {
-
                 a.sense();
-
-//                a.reinforce(prev, now, next);
-
-                //long adjustedPrev = Math.max(prev, now - (next-now)); //prevent stretching and evaluating too far in the past
                 a.act();
-
                 a.frame();
             }
 
@@ -386,7 +374,6 @@ public class Game extends NARPart implements NSense, NAct {
                         break;
                     case 1:
                         //ACT
-//                        a.reinforce(prev, now, next);
                         a.act();
                         a.frame();
                         break;
@@ -404,10 +391,8 @@ public class Game extends NARPart implements NSense, NAct {
         if (!busy.compareAndSet(false, true))
             return;
 
-        try {
 
-            if (!isOn())
-                return; //can this happen?
+        try {
 
             long now = nar.time();
             long prev = this.now;

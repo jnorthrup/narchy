@@ -8,6 +8,7 @@ import nars.Narsese;
 import nars.term.Term;
 import nars.test.NALTest;
 import nars.time.Tense;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -22,6 +23,10 @@ import static nars.Op.GOAL;
 public class NAL8SequenceTest extends NALTest {
 
     public static final int cycles = 850;
+
+    @BeforeEach void init() {
+        test.termVolMax(26);
+    }
 
     @Test
     void testSubSequence2_end() {

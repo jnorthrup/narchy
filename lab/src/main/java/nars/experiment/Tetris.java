@@ -129,6 +129,7 @@ public class Tetris extends GameX {
                 grid, n);
         addSensor(c);
         //pixels.resolution(0.05f);
+        n.start(c);
 
         SpaceGraph.surfaceWindow(new VectorSensorView(pixels, this).withControls(), 400, 900);
 

@@ -78,7 +78,7 @@ public class DialogTask extends NARPart {
 
     @Override
     protected void stopping(NAR nar) {
-        ons.pause();
+        ons.off();
         ons = null;
     }
 

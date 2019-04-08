@@ -45,7 +45,7 @@ public class Animating<X extends Surface> extends UnitContainer<X> implements An
 
     @Override
     protected void stopping() {
-        animate.pause();
+        animate.off();
         animate = null;
         waiting = 0;
         super.stopping();

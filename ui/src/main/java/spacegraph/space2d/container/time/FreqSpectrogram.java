@@ -33,7 +33,7 @@ class FreqSpectrogram extends Spectrogram {
 
     @Override
     protected void stopping() {
-        off.pause();
+        off.off();
         off = null;
         super.stopping();
     }
