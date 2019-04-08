@@ -1,5 +1,10 @@
 package jcog;
 
+import ch.qos.logback.classic.LoggerContext;
+import ch.qos.logback.classic.PatternLayout;
+import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.core.ConsoleAppender;
+import ch.qos.logback.core.encoder.LayoutWrappingEncoder;
 import com.conversantmedia.util.concurrent.DisruptorBlockingQueue;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -79,6 +84,44 @@ import static java.util.stream.Collectors.toList;
  */
 public enum Util {
     ;
+
+
+    static {
+        LoggerContext c = (LoggerContext) LoggerFactory.getILoggerFactory();
+        ch.qos.logback.classic.Logger rootLogger = c.getLogger(ch.qos.logback.classic.Logger.ROOT_LOGGER_NAME);
+        c.reset();
+
+//
+        ConsoleAppender<ILoggingEvent> ca = new ConsoleAppender<ILoggingEvent>();
+        ca.setContext(c);
+        ca.setWithJansi(true);
+
+
+        ca.setName("*");
+        LayoutWrappingEncoder<ILoggingEvent> encoder = new LayoutWrappingEncoder<ILoggingEvent>();
+        encoder.setContext(c);
+
+
+        PatternLayout layout = new PatternLayout();
+        //layout.setPattern("%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n");
+        layout.setPattern(
+                "%highlight(%.-1level) %logger - %msg%n"
+                //"%highlight(%.-1level) %logger{36} - %msg [%thread]%n"
+        );
+
+        layout.setContext(c);
+        layout.start();
+        encoder.setLayout(layout);
+
+        ca.setImmediateFlush(false);
+        ca.setLayout(layout);
+        ca.setEncoder(encoder);
+        ca.start();
+
+        rootLogger.addAppender(ca);
+
+        ca.start();
+    }
 
     public static final Unsafe unsafe;
     public static float sqrtMIN_NORMAL = (float)Math.sqrt(Float.MIN_NORMAL);

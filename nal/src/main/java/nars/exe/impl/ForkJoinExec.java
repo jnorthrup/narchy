@@ -1,6 +1,7 @@
 package nars.exe.impl;
 
 import jcog.data.list.FasterList;
+import jcog.exe.Exe;
 import nars.NAR;
 import nars.attention.What;
 import nars.control.How;
@@ -30,11 +31,19 @@ public class ForkJoinExec extends MultiExec implements Thread.UncaughtExceptionH
         pool = new ForkJoinPool(
                 proc,
                 ForkJoinPool.defaultForkJoinWorkerThreadFactory,
+//                (p)->{
+//                    ForkJoinWorkerThread t = new ForkJoinWorkerThread(p) {
+//                        {
+//                            setName();
+//                        }
+//                    };
+//                    return t;
+//                },
                 this,
                 true, proc, proc + 1, 0,
-                null, 10000L, TimeUnit.MILLISECONDS);
+                null, 1L, TimeUnit.MILLISECONDS);
 
-        //Exe.setExecutor(pool);
+        Exe.setExecutor(pool);
 
 //        ForkJoinPool prevPool = this.pool;
 //        prevPool.awaitQuiescence(1, TimeUnit.SECONDS);

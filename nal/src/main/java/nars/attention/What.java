@@ -132,7 +132,7 @@ abstract public class What extends NARPart implements Prioritizable, Sampler<Tas
 
     /** explicitly return the attention to a completely or otherwise reasonably quiescent state.
      *  how exactly can be decided by the implementation. */
-    abstract protected void clear();
+    abstract public void clear();
 
     public final TaskLink sample() {
         return sample(nar.random());
@@ -159,7 +159,7 @@ abstract public class What extends NARPart implements Prioritizable, Sampler<Tas
         }
 
         @Override
-        protected void clear() {
+        public void clear() {
             links.clear();
         }
 

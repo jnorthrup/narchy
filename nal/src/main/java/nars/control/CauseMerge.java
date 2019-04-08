@@ -142,7 +142,7 @@ public enum CauseMerge {
     }
 
     public final short[] merge(int causeCapacity, TaskRegion... x) {
-        short[] a = x[0].cause();
+        short[] a = x[0].why();
         short[] y;
         switch (x.length) {
             case 0:
@@ -151,11 +151,11 @@ public enum CauseMerge {
                 y = a;
                 break;
             case 2:
-                y = merge(a, x[1].cause(), causeCapacity);
+                y = merge(a, x[1].why(), causeCapacity);
                 break;
             default:
                 y = merge(causeCapacity,
-                        Util.map(TaskRegion::cause, short[][]::new,
+                        Util.map(TaskRegion::why, short[][]::new,
                                 ArrayUtils.removeNulls(x, TaskRegion[]::new)));
                 break;
         }

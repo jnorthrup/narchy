@@ -37,8 +37,8 @@ public class CameraSensorTest {
         short[] cause = new short[] { c.in.id };
         n.onTask(t -> {
            if (t.term().equals(aPixel)) {
-               if (t.cause().length <= 1) //ignore revisions
-                 assertArrayEquals(cause, t.cause());
+               if (t.why().length <= 1) //ignore revisions
+                 assertArrayEquals(cause, t.why());
                causesDetected[0]++;
            }
         });

@@ -107,7 +107,7 @@ public class TaskConcept extends NodeConcept  {
         byte punc = t.punc();
         if (punc == BELIEF || punc == GOAL) {
             (punc == BELIEF ? MetaGoal.Believe : MetaGoal.Desire)
-                    .learn(t.cause(), t.priElseZero(), n.control.why);
+                    .learn(t.why(), t.priElseZero(), n.control.why);
         }
     }
 

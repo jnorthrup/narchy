@@ -100,7 +100,7 @@ public interface TaskRegion extends HyperRegion, Tasked, LongInterval {
         return TruthFunctions.expectation(freqMean(), confMin());
     }
 
-    default short[] cause() {
+    default short[] why() {
         return ArrayUtils.EMPTY_SHORT_ARRAY;
     }
 

@@ -78,18 +78,19 @@ public class OrthoSurfaceGraph extends JoglDisplay implements SurfaceGraph {
         @Override
         public Surface finger(Finger finger) {
 
+            //check windowResize first since it is a more exclusive condition than windowMove
+            if (finger.tryFingering(windowResize)) {
+                //..
+                return this;
+            }
+            if (finger.tryFingering(windowMove)) {
+                //..
+                return this;
+            }
+
             Surface s = super.finger(finger);
 
-            if (s == null) {
-                //check windowResize first since it is a more exclusive condition than windowMove
-                if (finger.tryFingering(windowResize)) {
-                    //..
-                    return this;
-                } else if (finger.tryFingering(windowMove)) {
-                    //..
-                    return this;
-                }
-            }
+
 
             return s;
         }

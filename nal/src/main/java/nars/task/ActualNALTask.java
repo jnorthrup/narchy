@@ -22,7 +22,7 @@ abstract public class ActualNALTask extends NALTask {
     }
 
     @Override
-    public short[] cause() {
+    public short[] why() {
         return cause;
     }
 

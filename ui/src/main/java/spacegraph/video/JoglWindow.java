@@ -25,7 +25,10 @@ import static com.jogamp.opengl.GL.GL_DEPTH_BUFFER_BIT;
 public abstract class JoglWindow implements GLEventListener, WindowListener {
 
     static {
-        //NewtFactory.setUseEDT(false);
+////        synchronized(JoglWindow.class) {
+////            NEWTJNILibLoader.loadNEWT();
+////        }
+//        NewtFactory.setUseEDT(false);
     }
 
 //    static final Executor renderThread = Executors.newSingleThreadExecutor();

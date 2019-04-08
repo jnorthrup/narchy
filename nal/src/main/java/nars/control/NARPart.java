@@ -46,16 +46,10 @@ abstract public class NARPart extends Part<NAR> implements Termed {
     }
 
     public static Term id(@Nullable Term id, NARPart x) {
-        if (id == null) {
+        if (id == null)
             return ((Termed) x).term();
-        }
-
-        if (x.singleton()) {
-            if (x.id!=null)
-                return x.id;
-        }
-
-        return $.p(id, $.identity(x));
+        else
+            return x.singleton() ? (x.id) : $.p(id, $.identity(x));
     }
 
     /** optional event occurrence information.  null if not applicable. */

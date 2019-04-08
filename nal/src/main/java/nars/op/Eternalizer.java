@@ -3,15 +3,14 @@ package nars.op;
 import jcog.math.FloatRange;
 import jcog.sort.FloatRank;
 import jcog.sort.RankedN;
-import nars.$;
-import nars.NAR;
-import nars.Op;
-import nars.Task;
+import nars.*;
 import nars.attention.What;
 import nars.control.channel.CauseChannel;
 import nars.link.TaskLink;
+import nars.table.BeliefTable;
 import nars.task.ITask;
 import nars.term.Term;
+import nars.term.util.TermException;
 import nars.time.When;
 
 import java.util.Random;
@@ -23,7 +22,7 @@ public class Eternalizer extends LinkRanker<Task> {
 
     public final FloatRange eviFactor = new FloatRange(1f, 0, 1);
     public final FloatRange priFactor = new FloatRange(0.5f, 0, 1);
-    public final FloatRange noise = new FloatRange(0.1f, 0, 1);
+    public final FloatRange noise = new FloatRange(0f, 0, 1);
     private final CauseChannel<ITask> in;
 
     private static final int cap = 16; //TODO IntRange
@@ -83,7 +82,7 @@ public class Eternalizer extends LinkRanker<Task> {
     public FloatRank<Task> score() {
         Random rng = nar.random();
         return (t,min)->{
-            float base = (float) ((t.conf()) * ((1/(1f+Math.sqrt(t.complexity())))));
+            float base = (float) (BeliefTable.eternalTaskValueWithOriginality(t) * ((1/(1f+Math.sqrt(t.complexity())))));
                     //* (t.originality()) //polarity()
             float noise = this.noise.floatValue();
             return base + (noise > 0 ? noise * ((rng.nextFloat()-0.5f)*2) : 0);
@@ -98,11 +97,17 @@ public class Eternalizer extends LinkRanker<Task> {
     @Override
     protected void run(RankedN<Task> best, What w) {
         best.forEach(t->{
-            Task u = Task.eternalized(t, eviFactor.floatValue(), nar.confMin.floatValue(), nar);
-            if (u!=null) {
-                u.priMult(priFactor.floatValue());
-                //System.out.println(u);
-                in.accept(u, w);
+            try {
+                Task u = Task.eternalized(t, eviFactor.floatValue(), nar.confMin.floatValue(), nar);
+                if (u != null) {
+                    u.priMult(priFactor.floatValue());
+                    //System.out.println(u);
+                    in.accept(u, w);
+                }
+            } catch (TermException e) {
+                if (Param.DEBUG)
+                    e.printStackTrace();
+                //ex: nars.term.util.TermException: TermException: invalid conjunction factorization {null, dt=-2147483648, args=[(((--,left)&|right) &&+44 (--,rotate)), ((--,left)&|(--,right))]}
             }
         });
     }

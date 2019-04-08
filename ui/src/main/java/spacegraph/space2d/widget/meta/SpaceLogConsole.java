@@ -1,9 +1,9 @@
 package spacegraph.space2d.widget.meta;
 
+import ch.qos.logback.classic.Level;
 import com.googlecode.lanterna.TextColor;
 import com.googlecode.lanterna.graphics.SimpleTheme;
 import org.jetbrains.annotations.Nullable;
-import org.slf4j.event.Level;
 import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.widget.console.ConsoleGUI;
 import spacegraph.space2d.widget.console.TextEdit0;

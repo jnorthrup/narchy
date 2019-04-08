@@ -29,8 +29,9 @@ public abstract class BitmapTextGrid extends AbstractConsoleSurface {
 
     private static final Logger logger = Util.logger(BitmapTextGrid.class);
 
+
     private final Tex tex = new Tex().mipmap(true);
-    final AtomicBoolean invalid = new AtomicBoolean(true);
+    final AtomicBoolean invalid = new AtomicBoolean(false);
     private BufferedImage backbuffer = null;
     private Font font;
     private Graphics2D backbufferGraphics;
@@ -48,28 +49,37 @@ public abstract class BitmapTextGrid extends AbstractConsoleSurface {
     private float alpha = 1f;
     private boolean fillTextBackground = false;
 
-    private static final Font defaultFont;
+    private static Font defaultFont;
     static {
-        Font f;
-        try (InputStream in = BitmapTextGrid.class.getClassLoader()
-                .getResourceAsStream("font/CourierPrimeCode.ttf")) {
 
-            ByteArrayInputStream in2 = new ByteArrayInputStream(in.readAllBytes()); //cache completely
+    }
+    private static Font defaultFont() {
+        if (defaultFont == null) {
+            synchronized (BitmapTextGrid.class) {
+                if (defaultFont == null) {
+                    Font f;
+                    try (InputStream in = BitmapTextGrid.class.getClassLoader()
+                            .getResourceAsStream("font/CourierPrimeCode.ttf")) {
 
-            f = Font.createFont(Font.TRUETYPE_FONT, in2);
+                        ByteArrayInputStream in2 = new ByteArrayInputStream(in.readAllBytes()); //cache completely
 
-        } catch (Exception e) {
+                        f = Font.createFont(Font.TRUETYPE_FONT, in2);
 
-            f = new Font("monospace", 0, 1);
+                    } catch (Exception e) {
 
+                        f = new Font("monospace", 0, 1);
+
+                    }
+                    defaultFont = f;
+                    logger.info("bitmap font={}", f);
+                }
+            }
         }
-        logger.info("bitmap font={}", f);
-
-        defaultFont = f;
+        return defaultFont;
     }
 
     protected BitmapTextGrid() {
-        font(defaultFont);
+        font(defaultFont());
         fontSize(DEFAULT_FONT_SCALE);
     }
 

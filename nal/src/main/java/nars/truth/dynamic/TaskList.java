@@ -74,9 +74,9 @@ public class TaskList extends FasterList<Task> implements TaskRegion {
 
     @Override
     @Nullable
-    public short[] cause() {
+    public short[] why() {
         return CauseMerge.AppendUnique.merge(Param.causeCapacity.intValue(),
-                Util.map(0, size(), short[][]::new, x -> get(x).cause()));
+                Util.map(0, size(), short[][]::new, x -> get(x).why()));
     }
 
     @Override
@@ -117,7 +117,7 @@ public class TaskList extends FasterList<Task> implements TaskRegion {
         if(dyn==null)
             return null;
 
-        dyn.cause( cause() );
+        dyn.cause( why() );
 
         dyn.pri(
                 reapply(TaskList::pri, Param.DerivationPri)

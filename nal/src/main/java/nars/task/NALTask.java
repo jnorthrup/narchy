@@ -94,9 +94,9 @@ public abstract class NALTask extends UnitPri implements Task {
 
         //synchronized (this) {
             //HACK
-            short[] prevCause = cause();
+            short[] prevCause = why();
             short[] nextCause = merge.merge(prevCause, c, causeCap);
-            if (prevCause == this.cause())
+            if (prevCause == this.why())
                 this.cause(nextCause);
         //}
 

@@ -125,7 +125,7 @@ public interface Task extends Truthed, Stamp, TermedDelegate, ITask, TaskRegion,
 
             if (e instanceof NALTask) {
                 NALTask ee = (NALTask) e;
-                ee.causeMerge(ii.cause(), cMerge);
+                ee.causeMerge(ii.why(), cMerge);
             }
 
             if (e instanceof Task) {
@@ -243,12 +243,6 @@ public interface Task extends Truthed, Stamp, TermedDelegate, ITask, TaskRegion,
         return !(t instanceof Compound) || validTaskCompound((Compound) t, safe);
     }
 
-//    static StableBloomFilter<Task> newBloomFilter(int cap, Random rng) {
-//        return new StableBloomFilter<>(
-//                cap, 1, 0.0005f, rng,
-//                new BytesHashProvider<>(IO::taskToBytes));
-//    }
-
     /**
      * call this directly instead of taskContentValid if the level, volume, and normalization have already been tested.
      * these can all be tested prenormalization, because normalization will not affect the result
@@ -256,6 +250,12 @@ public interface Task extends Truthed, Stamp, TermedDelegate, ITask, TaskRegion,
     static boolean validTaskCompound(Compound x, boolean safe) {
         return validIndep(x, safe);
     }
+
+//    static StableBloomFilter<Task> newBloomFilter(int cap, Random rng) {
+//        return new StableBloomFilter<>(
+//                cap, 1, 0.0005f, rng,
+//                new BytesHashProvider<>(IO::taskToBytes));
+//    }
 
     private static boolean validIndep(Term x, boolean safe) {
         /* A statement sentence is not allowed to have a independent variable as subj or pred"); */
@@ -407,7 +407,7 @@ public interface Task extends Truthed, Stamp, TermedDelegate, ITask, TaskRegion,
         y.pri(xp);
 
         if (y instanceof NALTask)
-            ((NALTask) y).cause(x.cause()/*.clone()*/);
+            ((NALTask) y).cause(x.why()/*.clone()*/);
 
 //        if (x.target().equals(y.target()) && x.isCyclic())
 //            y.setCyclic(true);
@@ -548,6 +548,16 @@ public interface Task extends Truthed, Stamp, TermedDelegate, ITask, TaskRegion,
         return y;
     }
 
+    static Term normalize(Term x) {
+        x = x.normalize();
+
+        if (x instanceof Compound && !validTaskCompound((Compound) x, true)) {
+            x = VariableTransform.indepToDepVar(x).normalize();
+        }
+
+        return x;
+    }
+
 //    @Deprecated
 //    @Nullable
 //    static Task project(Task t, long start, long end, boolean ditherTruth, boolean negated, float eviMin, NAR n) {
@@ -588,20 +598,6 @@ public interface Task extends Truthed, Stamp, TermedDelegate, ITask, TaskRegion,
 //        return new SpecialTruthAndOccurrenceTask(t, start, end, negated, tt);
 //    }
 
-    static Term normalize(Term x) {
-        x = x.normalize();
-
-        if (x instanceof Compound && !validTaskCompound((Compound) x, true)) {
-            x = VariableTransform.indepToDepVar(x).normalize();
-        }
-
-        return x;
-    }
-
-//    static Task eternalized(Task tx) {
-//        return eternalized(tx, 1);
-//    }
-
     static byte i(byte p) {
         switch (p) {
             case BELIEF:
@@ -617,6 +613,10 @@ public interface Task extends Truthed, Stamp, TermedDelegate, ITask, TaskRegion,
         }
     }
 
+//    static Task eternalized(Task tx) {
+//        return eternalized(tx, 1);
+//    }
+
     static byte p(int index) {
         switch (index) {
             case 0:
@@ -631,6 +631,9 @@ public interface Task extends Truthed, Stamp, TermedDelegate, ITask, TaskRegion,
                 return -1;
         }
     }
+
+    /** Causal trace */
+    short[] why();
 
     @Override
     default <X extends HyperRegion> Function<X, HyperRegion> mbrBuilder() {
@@ -1010,10 +1013,7 @@ public interface Task extends Truthed, Stamp, TermedDelegate, ITask, TaskRegion,
         return Perceive.perceive(this, w);
     }
 
-    /**
-     * TODO cause should be merged if possible when merging tasks in belief table or otherwise
-     */
-    short[] cause();
+
 
 
 //    /**

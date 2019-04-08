@@ -229,7 +229,7 @@ import java.util.function.Consumer;
     }
 
     public final float amp(Task task) {
-        return amp(task.cause());
+        return amp(task.why());
     }
 
     public float value(short[] effect) {
@@ -284,13 +284,12 @@ import java.util.function.Consumer;
         @Override protected void preAccept(ITask x) {
             if (x instanceof NALTask) {
                 NALTask t = (NALTask) x;
-                short[] currentCause = t.cause();
+                short[] currentCause = t.why();
                 int tcl = currentCause.length;
                 switch (tcl) {
                     case 0:
                         //shared one-element cause
-                        //assert (uniqueCause[0] == ci);
-                        t.cause(uniqueCause);
+                        t.cause(uniqueCause); //assert (uniqueCause[0] == ci);
                         break;
                     case 1:
                         if (currentCause == uniqueCause) {
@@ -307,7 +306,7 @@ import java.util.function.Consumer;
                         break;
                 }
             } else if (x instanceof Remember) {
-                preAccept(((Remember) x).input);
+                preAccept(((Remember) x).input); //HACK
             }
 
         }

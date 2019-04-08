@@ -1,7 +1,7 @@
 package spacegraph.util;
 
+import ch.qos.logback.classic.Level;
 import org.jetbrains.annotations.Nullable;
-import org.slf4j.event.Level;
 
 import java.util.function.Supplier;
 

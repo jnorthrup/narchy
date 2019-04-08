@@ -476,7 +476,7 @@ public class Derivation extends PreDerivation {
                 CauseMerge.limit(
                         _belief != null ?
                                 CauseMerge.Append.merge(causeCap - 1 /* for channel to be appended */, _task, _belief) :
-                                _task.cause(), causeCap - 1);
+                                _task.why(), causeCap - 1);
         if (parentCause.length >= causeCap)
             throw new WTF();
 

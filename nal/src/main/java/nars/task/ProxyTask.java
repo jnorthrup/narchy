@@ -91,8 +91,8 @@ public class ProxyTask extends UnitPri implements Task {
     }
 
     @Override
-    public short[] cause() {
-        return task.cause();
+    public short[] why() {
+        return task.why();
     }
 
 

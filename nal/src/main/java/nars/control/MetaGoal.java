@@ -226,7 +226,7 @@ public enum MetaGoal {
     }
 
     public static String proof(Task t, NAR nar) {
-        short[] tc = t.cause();
+        short[] tc = t.why();
         StringBuilder sb = new StringBuilder();
         for (short s : tc) {
             Why c = nar.control.why.get(s);

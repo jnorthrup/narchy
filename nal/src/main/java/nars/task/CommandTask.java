@@ -48,7 +48,7 @@ public class CommandTask implements Task {
     }
 
     @Override
-    public final short[] cause() {
+    public final short[] why() {
         return ArrayUtils.EMPTY_SHORT_ARRAY;
     }
 

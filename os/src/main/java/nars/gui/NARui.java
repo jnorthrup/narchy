@@ -619,9 +619,7 @@ public class NARui {
         )));
         m.south(new ObjectSurface(attn));
         m.west(new Gridding(
-
-
-            new PushButton("Clear").clicked(n::clear),
+            new PushButton("Clear").clicked(w::clear), //TODO n::clear "Clear All"
             Submitter.text("Load", t->{
                 throw new TODO();
             }),
