@@ -694,9 +694,7 @@ public interface Task extends Truthed, Stamp, TermedDelegate, ITask, TaskRegion,
     }
 
     @Override
-    default float freqMin() {
-        return freqMean();
-    }
+    default float freqMin() { return freqMean(); }
 
     @Override
     default float freqMax() {

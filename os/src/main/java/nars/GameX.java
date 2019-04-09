@@ -136,7 +136,7 @@ abstract public class GameX extends Game {
      * agent builder should name each agent instance uniquely
      * ex: new PoleCart($.p(Atomic.the(PoleCart.class.getSimpleName()), n.self()), n);
      */
-    public static NAR runRTNet(Function<NAR, Game> a, int threads, float narFPS, float durFPS, float netFPS) {
+    @Deprecated public static NAR runRTNet(Function<NAR, Game> a, int threads, float narFPS, float durFPS, float netFPS) {
         return runRT((n) -> {
 
             Game aa = a.apply(n);

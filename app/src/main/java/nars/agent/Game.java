@@ -37,7 +37,6 @@ import java.util.function.Consumer;
 
 import static nars.$.$$;
 import static nars.time.Tense.ETERNAL;
-import static nars.truth.func.TruthFunctions.w2cSafe;
 
 /**
  * an integration of sensor concepts and motor functions
@@ -125,20 +124,13 @@ public class Game implements NSense, NAct {
     }
 
     /**
-     * dexterity = sum(evidence(action))
+     * dexterity = mean(conf(action))
      * evidence/confidence in action decisions, current measurement
      */
-    public double dexteritySum() {
-        int n = actions.size();
-        if (n == 0)
-            return 0;
-        else
-            return actions.sumBy(AgentAction::dexterity);
-    }
-
-    public double dexterityMean() {
+    public double dexterity() {
         int a = actions.size();
-        return a > 0 ? w2cSafe(dexteritySum() / a) : 0;
+        double result = a == 0 ? 0 : actions.sumBy(AgentAction::dexterity);
+        return a > 0 ? result / a : 0;
     }
 
 
@@ -163,7 +155,7 @@ public class Game implements NSense, NAct {
      * professional satori
      */
     public final double proficiency() {
-        double x = happinessMean() * dexterityMean();
+        double x = happinessMean() * dexterity();
         if (x!=x)
             x = 0; //NaN > 0
         return x;
@@ -215,7 +207,7 @@ public class Game implements NSense, NAct {
 
 
         return id +
-                " dex=" + /*n4*/(dexterityMean()) +
+                " dex=" + /*n4*/(dexterity()) +
                 " hapy=" + /*n4*/(happinessMean()) +
 
                 /*" var=" + n4(varPct(nar)) + */ '\t' + nar.memory.summary() + ' ' +

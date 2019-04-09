@@ -28,6 +28,7 @@ import java.util.function.Predicate;
 
 import static nars.time.Tense.ETERNAL;
 import static nars.time.Tense.TIMELESS;
+import static nars.truth.func.TruthFunctions.w2cSafe;
 import static org.eclipse.collections.impl.tuple.Tuples.pair;
 
 
@@ -97,7 +98,7 @@ public class AbstractGoalActionConcept extends AgentAction {
     @Override
     public double dexterity() {
         Truth t = actionDex;
-        return t != null ? t.evi() : 0;
+        return t != null ? w2cSafe(t.evi()) : 0;
     }
 
 

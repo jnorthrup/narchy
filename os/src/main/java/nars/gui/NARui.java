@@ -443,7 +443,7 @@ public class NARui {
 
                 "dex", () -> new TriggeredSurface<>(
                         new Plot2D(512, Plot2D.Line)
-                                .add("Dex+0", a::dexterityMean),
+                                .add("Dex+0", a::dexterity),
                             a::onFrame, Plot2D::commit),
 
 //                        .addAt("Dex+2", () -> a.dexterity(a.now() + 2 * a.nar().dur()))

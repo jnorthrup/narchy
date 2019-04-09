@@ -63,7 +63,7 @@ public class GameTest {
         n.onCycle(()->{
             float reward = a.happinessMean();
             if (reward!=reward) reward = 0;
-            double dex = a.dexteritySum();
+            double dex = a.dexterity();
             float x = 0;
             try {
                 Truth t = n.goalTruth("x", n.time());

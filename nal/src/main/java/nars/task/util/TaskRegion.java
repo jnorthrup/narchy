@@ -3,9 +3,9 @@ package nars.task.util;
 import jcog.math.LongInterval;
 import jcog.tree.rtree.HyperRegion;
 import jcog.util.ArrayUtils;
-import nars.Param;
 import nars.Task;
 import nars.task.Tasked;
+import nars.truth.Truth;
 import nars.truth.func.TruthFunctions;
 
 import java.util.function.Consumer;
@@ -33,7 +33,6 @@ public interface TaskRegion extends HyperRegion, Tasked, LongInterval {
      * proportional value of splitting a node by conf
      */
     float CONF_COST = 0.125f;
-    static final float HALF_EPSILON = Param.TRUTH_EPSILON / 2;
 
 
     static Consumer<TaskRegion> asTask(Consumer<? super Task> each) {
@@ -126,9 +125,9 @@ public interface TaskRegion extends HyperRegion, Tasked, LongInterval {
             case 0:
                 return 1 + (end() - start());
             case 1:
-                return HALF_EPSILON + (freqMax() - freqMin());
+                return 1 + (freqMax() - freqMin());
             case 2:
-                return HALF_EPSILON + (confMax() - confMin());
+                return 1 + (confMax() - confMin());
             default:
                 throw new UnsupportedOperationException();
         }
@@ -153,10 +152,10 @@ public interface TaskRegion extends HyperRegion, Tasked, LongInterval {
 
         TaskRegion t = (TaskRegion) x;
         if (t.intersects(start, end())) {
-            return freqMin() <= t.freqMax()+HALF_EPSILON &&
-                   freqMax() >= t.freqMin()-HALF_EPSILON &&
-                   confMin() <= t.confMax()+HALF_EPSILON &&
-                   confMax() >= t.confMin()-HALF_EPSILON;
+            return freqMinI() <= t.freqMaxI() &&
+                   freqMaxI() >= t.freqMinI() &&
+                   confMinI() <= t.confMaxI() &&
+                   confMaxI() >= t.confMinI();
         }
         return false;
     }
@@ -166,10 +165,10 @@ public interface TaskRegion extends HyperRegion, Tasked, LongInterval {
         if (x == this) return true;
         TaskRegion t = (TaskRegion) x;
         if (LongInterval.super.contains(((LongInterval)t))) {
-            return freqMin() <= t.freqMin()+HALF_EPSILON &&
-                    freqMax() >= t.freqMax()-HALF_EPSILON &&
-                    confMin() <= t.confMin()+HALF_EPSILON &&
-                    confMax() >= t.confMax()-HALF_EPSILON;
+            return freqMinI() <= t.freqMinI() &&
+                    freqMaxI() >= t.freqMaxI() &&
+                    confMinI() <= t.confMinI() &&
+                    confMaxI() >= t.confMaxI();
         }
         return false;
     }
@@ -177,14 +176,6 @@ public interface TaskRegion extends HyperRegion, Tasked, LongInterval {
     default double coord(int dimension, boolean maxOrMin) {
         //return coordF(dimension, maxOrMin);
         throw new UnsupportedOperationException();
-    }
-
-    default boolean intersectsConf(float cMin, float cMax) {
-        return (cMin <= confMax() && cMax >= confMin());
-    }
-
-    default boolean containsConf(float cMin, float cMax) {
-        return (confMin() <= cMin && confMax() >= cMax);
     }
 
     default float freqMean() {
@@ -198,5 +189,23 @@ public interface TaskRegion extends HyperRegion, Tasked, LongInterval {
     float freqMax();
     float confMin();
     float confMax();
+
+    default int i(boolean freqOrConf, boolean maxOrMin) {
+        float v = freqOrConf ? (maxOrMin ? freqMax() : freqMin()) : (maxOrMin ? confMax() : confMin());
+        return Truth.truthToInt(v);
+    }
+
+    default int freqMinI() {
+        return i(true, false);
+    }
+    default int freqMaxI() {
+        return i(true, true);
+    }
+    default int confMinI() {
+        return i(false, false);
+    }
+    default int confMaxI() {
+        return i(false, true);
+    }
 
 }

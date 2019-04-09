@@ -15,6 +15,11 @@ import static java.lang.Math.min;
 
 public final class TasksRegion extends Longerval implements TaskRegion {
 
+
+    @Nullable @Override public final Task task() {
+        return null;
+    }
+
     /** discrete truth encoded extrema.  for fast and reliable comparison.
      *
      * uses the system-wide minimum Truth epsilon and encodes a freq,conf pairs in one 32-bit int.
@@ -37,6 +42,23 @@ public final class TasksRegion extends Longerval implements TaskRegion {
             b = Truth.truthToInt(Math.max(freqMin, freqMax), Math.max(confMin, confMax));
         }
     }
+
+    @Override public final float freqMin() { return Truth.freq(a); }
+    @Override public final float freqMax() {
+        return Truth.freq(b);
+    }
+    @Override public final float confMin() {
+        return Truth.conf(a);
+    }
+    @Override public final float confMax() {
+        return Truth.conf(b);
+    }
+
+
+    @Override public final int confMinI() { return Truth.confI(a); }
+    @Override public final int confMaxI() { return Truth.confI(b); }
+    @Override public final int freqMinI() { return Truth.freqI(a); }
+    @Override public final int freqMaxI() { return Truth.freqI(b); }
 
     public static TasksRegion mbr(TaskRegion r, long xs, long xe, float ef, float ec) {
         assert(xs!=ETERNAL && xs!=TIMELESS);
@@ -99,24 +121,5 @@ public final class TasksRegion extends Longerval implements TaskRegion {
 
 
 
-    @Override public final float freqMin() {
-        return Truth.freq(a);
-    }
-
-    @Override public final float freqMax() {
-        return Truth.freq(b);
-    }
-
-    @Override public final float confMin() {
-        return Truth.conf(a);
-    }
-
-    @Override public final float confMax() {
-        return Truth.conf(b);
-    }
-
-    @Nullable @Override public final Task task() {
-        return null;
-    }
 
 }

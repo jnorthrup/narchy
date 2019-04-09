@@ -277,16 +277,19 @@ public abstract class Param extends Parts<Term,NAR> {
     }
 
 
-    public static enum Testing { ;
+    public enum Testing { ;
 
         /**
          * for NALTest's: extends the time all unit tests are allowed to run for.
          * normally be kept to 1 but for debugging this may be increased to find what tests need more time
          */
-        public static final float TEST_TIME_MULTIPLIER = 2f;
+        public static final float TEST_TIME_MULTIPLIER = 3f;
     }
 
-    public static enum Deriver { ;
+    public final IntRange deriveBranchTTL = new IntRange(8 * Deriver.TTL_MIN, Deriver.TTL_MIN, 64 * Deriver.TTL_MIN );
+    public final IntRange matchTTL = new IntRange(6, 1, 32);
+
+    public enum Deriver { ;
 
         /** may cause unwanted "sticky" event conflation. may only be safe when the punctuation of the task in which the event contained is the same */
         public static final boolean TIMEGRAPH_ABSORB_CONTAINED_EVENT = false;
@@ -355,9 +358,6 @@ public abstract class Param extends Parts<Term,NAR> {
         //return new FocusingLinearTruthPolation(start, end, dur);
     }
 
-
-    public final IntRange deriveBranchTTL = new IntRange(8 * Deriver.TTL_MIN, Deriver.TTL_MIN, 64 * Deriver.TTL_MIN );
-    public final IntRange matchTTL = new IntRange(6, 1, 32);
 
 
     //public static final int TTL_MUTATE_COMPONENT = 0;

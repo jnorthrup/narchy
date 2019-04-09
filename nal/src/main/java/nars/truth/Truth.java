@@ -79,6 +79,10 @@ public interface Truth extends Truthed {
         return (freqHash << 16) | confHash;
     }
 
+    public static int truthToInt(float x) {
+        return Util.floatToInt(x, hashDiscretenessEpsilon);
+    }
+
     public static int truthToInt(float freq, float conf) {
         return truthToInt(freq, conf, hashDiscretenessEpsilon);
     }
@@ -121,11 +125,19 @@ public interface Truth extends Truthed {
     }
 
     static float freq(int h) {
-        return Util.intToFloat((h >> 16) /* & 0xffff*/, hashDiscretenessEpsilon);
+        return Util.intToFloat(freqI(h) /* & 0xffff*/, hashDiscretenessEpsilon);
+    }
+
+    static int freqI(int h) {
+        return h >> 16;
     }
 
     static float conf(int h) {
-        return Util.intToFloat(h & 0xffff, hashDiscretenessEpsilon);
+        return Util.intToFloat(confI(h), hashDiscretenessEpsilon);
+    }
+
+    static int confI(int h) {
+        return h & 0xffff;
     }
 
     /**

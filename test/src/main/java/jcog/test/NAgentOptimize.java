@@ -97,7 +97,7 @@ public class NAgentOptimize {
                     final double[] rewardSum = {0}, dexSum = { 0 };
                     t.onFrame(()-> {
                         rewardSum[0] += t.happinessMean();
-                        dexSum[0] += t.dexteritySum();
+                        dexSum[0] += t.dexterity();
                     });
                     try {
                         t.nar().run(experimentCycles);

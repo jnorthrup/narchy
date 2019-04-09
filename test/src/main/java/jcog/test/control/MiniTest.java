@@ -23,7 +23,7 @@ abstract public class MiniTest extends Game {
             float yy = myReward();
 
             rewardSum += yy;
-            dex.addValue(dexteritySum());
+            dex.addValue(dexterity());
 
             return yy;
         });

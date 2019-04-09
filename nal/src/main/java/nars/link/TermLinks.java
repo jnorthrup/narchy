@@ -22,12 +22,13 @@ public final class TermLinks {
     @Nullable
     private volatile TaskLink[] links;
 
-    public TermLinks(long now, int minUpdateCycles) {
+    private TermLinks(long now, int minUpdateCycles) {
         this.updated = now - minUpdateCycles;
     }
 
     /** caches an AtomLinks instance in the Concept's meta table, attached by a SoftReference */
-    @Nullable public static Term tangent(TaskLinkBag bag, Concept src, byte punc, Predicate<TaskLink> filter, boolean in, boolean out, long now, int minUpdateCycles, Random rng) {
+    @Nullable
+    static Term tangent(TaskLinkBag bag, Concept src, byte punc, Predicate<TaskLink> filter, boolean in, boolean out, long now, int minUpdateCycles, Random rng) {
 
 //        System.out.println(src);
 
