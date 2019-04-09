@@ -128,7 +128,7 @@ public class ConceptGraph2D extends Graph2D<Term> {
 
     @Override
     protected void stopping() {
-        on.off();
+        on.close();
         on = null;
         super.stopping();
     }

@@ -108,8 +108,8 @@ public class InterNARTest {
         Util.sleepMS(INTERACT_TIME);
 
 
-        a.pause();
-        b.pause();
+        a.stop();
+        b.stop();
 
         System.out.println("disconnecting..");
 

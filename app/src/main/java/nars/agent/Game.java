@@ -40,7 +40,7 @@ import static nars.time.Tense.ETERNAL;
 
 /**
  * an integration of sensor concepts and motor functions
- * forming a sensori-motor loop.
+ * interfacing with an environment forming a sensori-motor loop.
  *
  * these include all forms of problems including
  *   optimization
@@ -52,7 +52,7 @@ import static nars.time.Tense.ETERNAL;
  *
  */
 @Paper @Skill({"Game_studies", "Game_theory"})
-public class Game implements NSense, NAct {
+public class Game extends NARPart implements NSense, NAct {
 
     private final Topic<NAR> eventFrame = new ListTopic();
 
@@ -75,8 +75,9 @@ public class Game implements NSense, NAct {
 
     public final PriNode attnReward, attnAction, attnSensor;
     private final PriNode pri;
-    private final What what;
-    public final NAR nar;
+
+    private final What experience;
+
     public final Term id;
 
     public volatile long prev = ETERNAL;
@@ -98,29 +99,41 @@ public class Game implements NSense, NAct {
     }
 
     @Deprecated public Game(Term id, GameTime time, NAR nar) {
-        this(id, time, nar.the(id,true));
+        this(time, nar.the(id,true));
     }
 
 
-    public Game(Term id, GameTime time, What w) {
+    static final Atom ENVIRONMENT = Atomic.atom("env");
 
-        this.id = id;
-        this.what = w;
-        this.nar = w.nar;
+    static Term env(Term x) {
+        return $.func(ENVIRONMENT, x);
+    }
+
+
+    public Game(GameTime time, What experience) {
+
+//        this.nar = experience.nar;
+
+        this.id = env(experience.id);
+
+        this.experience = experience;
 
         this.time = time;
 
-        this.pri = new PriNode(id);
+        this.pri = new PriNode(this.id);
         this.attnAction = new PriNode($.func(ACTION, id));
         this.attnSensor = new PriNode($.func(SENSOR, id));
         this.attnReward = new PriNode($.func(REWARD, id));
 
-        starting(w.nar);
+        add(time.clock(this));
+
+        //experience.add(this);
+        experience.nar.start(this);
     }
 
     @Override
     public final What what() {
-        return what;
+        return experience;
     }
 
     /**
@@ -225,14 +238,12 @@ public class Game implements NSense, NAct {
         attnSensor.parent(nar, this.pri, nar.beliefPriDefault);
         attnReward.parent(nar, this.pri, nar.goalPriDefault /* TODO avg */);
 
-        time.start(this);
+
     }
 
 
     //@Override
     protected void stopping(NAR nar) {
-
-        time.stop();
 
         sensors.forEach(s -> nar.stop((NARPart)s));
 

@@ -209,7 +209,7 @@ public class PatrickTests extends NALTest {
         n.inputAt(124, "  B:b. :|:    --A:a. :|:    --C:c. :|:");
 
         n.run(224);
-        n.clear();
+        //n.clear();
 
         n.input("       $0.9 (?x ==>   C:c)?");
 

@@ -46,7 +46,9 @@ public final class VLink<X> extends PLinkHashCached<X> {
         X tt = get();
         if ((tt instanceof Prioritized) && ((Prioritized) tt).isDeleted())
             delete();
-        else if (f!=null)
+        else {
+            //if (f!=null)
             f.accept(this);
+        }
     }
 }

@@ -44,7 +44,7 @@ public class STMLinkage extends NARPart {
 
     @Override
     protected void starting(NAR nar) {
-        whenOff(
+        whenDeleted(
             nar.onTask(this::accept, BELIEF, GOAL),
             nar.eventClear.on((Runnable)stm::clear)
         );

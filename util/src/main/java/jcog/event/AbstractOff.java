@@ -34,7 +34,7 @@ abstract public class AbstractOff<V> implements Off {
         return new AbstractOff.Weak<>(x, y);
     }
 
-    abstract public void off();
+    abstract public void close();
 
     public static class Strong<V> extends AbstractOff<V> {
 
@@ -47,7 +47,7 @@ abstract public class AbstractOff<V> implements Off {
         }
 
         @Override
-        public void off() {
+        public void close() {
             disconnector.accept(reaction);
         }
 
@@ -79,16 +79,16 @@ abstract public class AbstractOff<V> implements Off {
                     c.accept(v);
                 } catch (Throwable any) {
                     logger.error(" {}", any);
-                    off();
+                    close();
                 }
             } else {
 
-                off();
+                close();
             }
         }
 
         @Override
-        public void off() {
+        public void close() {
             disconnector.accept(this);
         }
 

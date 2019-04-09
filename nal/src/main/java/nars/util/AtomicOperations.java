@@ -171,7 +171,7 @@ public class AtomicOperations implements BiFunction<Task, NAR, Task> {
         if (onCycle.getOpaque() != null) {
             onCycle.getAndUpdate((x)->{
                 if (x != null)
-                    x.off();
+                    x.close();
                 return null;
             });
         }

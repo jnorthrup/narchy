@@ -6,7 +6,7 @@ import jcog.Texts;
 import jcog.Util;
 import jcog.data.map.CustomConcurrentHashMap;
 import jcog.event.Off;
-import jcog.event.Offs;
+import jcog.event.RunThese;
 import jcog.exe.Exe;
 import jcog.net.http.HttpServer;
 import jcog.net.http.WebSocketConnection;
@@ -80,7 +80,7 @@ abstract public class NARWeb extends WebServer {
         }
     }
 
-    static class NARConnection extends Offs {
+    static class NARConnection extends RunThese {
         public final NAR nar;
 
         public NARConnection(NAR n, Off... ons) {

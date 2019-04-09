@@ -1,6 +1,6 @@
 package spacegraph;
 
-import jcog.event.Offs;
+import jcog.event.RunThese;
 import jcog.net.http.HttpConnection;
 import jcog.net.http.HttpModel;
 import org.java_websocket.WebSocket;
@@ -55,10 +55,10 @@ public abstract class WebServer implements HttpModel {
 
     @Override
     public void wssClose(WebSocket ws, int code, String reason, boolean remote) {
-        Offs o = ws.getAttachment();
+        RunThese o = ws.getAttachment();
         if (o != null) {
             ws.setAttachment(null);
-            o.off();
+            o.close();
         }
     }
 }

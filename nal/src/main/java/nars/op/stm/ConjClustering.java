@@ -137,7 +137,7 @@ public class ConjClustering extends How {
         super.starting(nar);
 
 
-        whenOff(nar.onTask(t -> {
+        whenDeleted(nar.onTask(t -> {
             if (!t.isEternal()
                     && !t.hasVars() //<-- TODO requires multi-normalization (shifting offsets)
                     && (stampLenMax == Integer.MAX_VALUE || (t.stamp().length <= stampLenMax))

@@ -74,7 +74,7 @@ public class VerletSurface extends PaintSurface implements Animated {
 
     @Override
     protected void stopping() {
-        update.off();
+        update.close();
         update = null;
     }
 

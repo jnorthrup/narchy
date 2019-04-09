@@ -54,7 +54,7 @@ public class ByteTopic<X> {
             if (allowDynamic) {
                 throw new TODO();//TODO synch-free version of this using atomic ops
             } else {
-                Offs o = new Offs(channelsRegistered.length);
+                RunThese o = new RunThese(channelsRegistered.length);
                 for (byte c : channelsRegistered)
                     o.add(_on(each, c, true));
                 return o;

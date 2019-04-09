@@ -34,7 +34,7 @@ public class WebcamChip extends Bordering {
 
     @Override
     protected void stopping() {
-        on.off();
+        on.close();
         on = null;
         super.stopping();
     }

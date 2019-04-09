@@ -34,7 +34,7 @@ abstract public class ConceptView extends MutableUnitContainer {
 
     @Override
     protected void stopping() {
-        on.off();
+        on.close();
         on = null;
         super.stopping();
     }

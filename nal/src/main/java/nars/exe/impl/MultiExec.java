@@ -46,6 +46,10 @@ abstract public class MultiExec extends Exec {
 
     MultiExec(int concurrencyMax  /* TODO adjustable dynamically */) {
         super(concurrencyMax);
+
+        DurLoop updater = new DurLoop.DurRunnable(this::update);
+        updater.durs(UPDATE_DURS);
+        add(updater);
     }
 
 
@@ -125,18 +129,12 @@ abstract public class MultiExec extends Exec {
 
 
     @Override
-    public void start(NAR n) {
+    public void starting(NAR n) {
 
         if (!(n.time instanceof RealTime))
             throw new UnsupportedOperationException("non-realtime clock not supported");
 
-        super.start(n);
-
-        DurLoop updater = n.onDur(this::update);
-        updater.durs(UPDATE_DURS);
-        ons.add(updater);
-
-        //ons.add(n.onCycle(this::update));
+        super.starting(n);
     }
 
 

@@ -181,7 +181,7 @@ public class VectorSensorView extends BitmapMatrixView implements BitmapMatrixVi
 
     @Override
     protected void stopping() {
-        on.off();
+        on.close();
         this.on = null;
         super.stopping();
     }
@@ -284,7 +284,7 @@ public class VectorSensorView extends BitmapMatrixView implements BitmapMatrixVi
 
         @Override
         protected void stopping() {
-            on.off();
+            on.close();
             on = null;
             super.stopping();
         }

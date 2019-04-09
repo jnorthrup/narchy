@@ -65,7 +65,7 @@ abstract public class DurLoop extends NARPart {
      */
     public static FloatRange cache(FloatSupplier o, float min, float max, DurLoop parent, @Deprecated NAR nar) {
         Pair<FloatRange, Off> p = cache(o, min, max, 1, nar);
-        parent.whenOff(p.getTwo());
+        parent.whenDeleted(p.getTwo());
         return p.getOne();
     }
 
@@ -97,7 +97,7 @@ abstract public class DurLoop extends NARPart {
 
     @Override protected final void starting(NAR nar) {
         //intial trigger
-        at.run();
+        nar.runLater(at);
     }
 
 
@@ -213,9 +213,11 @@ abstract public class DurLoop extends NARPart {
 
 
             } finally {
-                if (DurLoop.this.isOnOrStarting()) {
+                //TODO catch Exception, option for auto-stop on exception
+
+                if (DurLoop.this.isOn())
                     scheduleNext(durCycles(), atStart, nar);
-                }
+
                 busy.set(false);
             }
 

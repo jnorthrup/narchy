@@ -28,7 +28,7 @@ public interface Topic<X> extends Iterable<Consumer<X>> {
     }
 
 
-    static Offs all(Object obj, BiConsumer<String /* fieldName*/, Object /* value */> f) {
+    static RunThese all(Object obj, BiConsumer<String /* fieldName*/, Object /* value */> f) {
         return all(obj, f, (key) -> true);
     }
 
@@ -54,9 +54,9 @@ public interface Topic<X> extends Iterable<Consumer<X>> {
      * registers to all public Topic fields in an object
      * BiConsumer<String  fieldName, Object  value >
      */
-    static <X> Offs all(X obj, BiConsumer<String, X> f, Predicate<String> includeKey) {
+    static <X> RunThese all(X obj, BiConsumer<String, X> f, Predicate<String> includeKey) {
 
-        Offs s = new Offs();
+        RunThese s = new RunThese();
 
         each(obj.getClass(), (field) -> {
             String fieldName = field.getName();

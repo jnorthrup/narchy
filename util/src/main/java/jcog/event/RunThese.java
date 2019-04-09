@@ -7,30 +7,37 @@ import java.util.Collection;
 /**
  * essentially holds a list of registrations but forms an activity context
  * from the dynamics of its event reactivity
+ *
+ * a thread-safe shutdown hook.  could just as easily be: CopyOnWriteArrayList<Runnable>
  */
-public class Offs extends jcog.data.list.FastCoWList<Off> implements Off {
+public class RunThese extends jcog.data.list.FastCoWList<Runnable> implements Runnable, Off  {
 
-    Offs(int capacity) {
-        super(capacity, Off[]::new);
+    RunThese(int capacity) {
+        super(capacity, Runnable[]::new);
     }
 
-    Offs() {
+    RunThese() {
         this(1);
     }
 
-    public Offs(Off... r) {
+    public RunThese(Runnable... r) {
         this(r.length);
-        for (Off o : r)
+        for (Runnable o : r)
             add(o);
     }
 
-    public final void add(Runnable r) {
-        add((Off)(r::run));
+    @Deprecated
+    public final boolean add(Off o) {
+        return add((Runnable)o::close);
     }
 
-    public final void off() {
+    @Deprecated public final void close() {
+        run();
+    }
+
+    @Override public final void run() {
         super.removeIf(o -> {
-            o.off();
+            o.run();
             return true;
         });
     }
@@ -46,12 +53,12 @@ public class Offs extends jcog.data.list.FastCoWList<Off> implements Off {
     }
 
     @Override
-    public Off remove(int index) {
+    public Runnable remove(int index) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public boolean removeIf(Predicate<? super Off> predicate) {
+    public boolean removeIf(Predicate<? super Runnable> predicate) {
         throw new UnsupportedOperationException();
     }
 
@@ -61,7 +68,7 @@ public class Offs extends jcog.data.list.FastCoWList<Off> implements Off {
     }
 
     @Override
-    public boolean removeFirstInstance(Off off) {
+    public boolean removeFirstInstance(Runnable Runnable) {
         throw new UnsupportedOperationException();
     }
 

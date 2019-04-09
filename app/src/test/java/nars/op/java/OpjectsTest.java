@@ -184,7 +184,7 @@ public class OpjectsTest {
 
         int N = 2;
 
-        n.clear();
+
 
         int loops = 0, trainingRounds = 4;
         while (x.v != 2) {

@@ -1,8 +1,9 @@
 package nars.agent;
 
-import jcog.TODO;
 import jcog.event.Off;
 import jcog.exe.Loop;
+import nars.NAR;
+import nars.control.NARPart;
 import nars.time.Tense;
 import nars.time.clock.RealTime;
 import nars.time.part.DurLoop;
@@ -12,23 +13,8 @@ abstract public class GameTime {
 
     private volatile Off on = null;
 
-    abstract protected Off install(Game a);
+    abstract protected NARPart clock(Game a);
 
-    public void start(Game a) {
-        synchronized (this) {
-            assert(on == null);
-            on = install(a);
-        }
-    }
-
-    public void stop() {
-        synchronized (this) {
-            if (on != null) {
-                on.off();
-                on = null;
-            }
-        }
-    }
 
     /** estimated cycles per frame. not necessarily equal to the NAR's dur() */
     public abstract int dur();
@@ -75,15 +61,25 @@ abstract public class GameTime {
             return now + Math.round(t.secondsToUnits(loop.periodMS.getOpaque()*0.001));
         }
 
-        @Override protected Off install(Game a) {
-            if (!(a.nar().time instanceof RealTime))
-                throw new UnsupportedOperationException("realtime clock required");
+        @Override protected NARPart clock(Game g) {
+//            if (!(g.nar().time instanceof RealTime))
+//                throw new UnsupportedOperationException("realtime clock required");
 
-            g = a;
+            this.g = g;
 
-            loop.setFPS(initialFPS);
+            return new NARSubLoop();
+        }
 
-            return loop::stop;
+        private class NARSubLoop extends NARPart {
+            @Override
+            protected void starting(NAR nar) {
+                loop.setFPS(initialFPS);
+            }
+
+            @Override
+            protected void stopping(NAR nar) {
+                loop.stop();
+            }
         }
     }
 
@@ -97,7 +93,7 @@ abstract public class GameTime {
         public Durs(float durPeriod) {
             this.durPeriod = durPeriod;
         }
-        @Override protected Off install(Game a) {
+        @Override protected DurLoop clock(Game a) {
             loop = a.nar().onDur(a::next);
             loop.durs(durPeriod);
             return loop;
@@ -114,36 +110,36 @@ abstract public class GameTime {
             return l !=null ?  now + l.durCycles() : now;
         }
     }
-    /** measured in # of cycles */
-    public static class Cycs extends GameTime {
-
-        private final transient float cyclePeriod;
-
-        public Off loop = null;
-
-        public Cycs (float cyclePeriod) {
-            if (cyclePeriod !=1)
-                throw new TODO();
-            this.cyclePeriod = cyclePeriod;
-        }
-        @Override protected Off install(Game a) {
-            //loop = DurService.on(a.nar(), a::next);
-            //loop.durs(initialCycs);
-            loop = a.nar().eventCycle.on(a::next);
-            return loop;
-        }
-
-        @Override
-        public int dur() {
-            throw new TODO();
-        }
-
-        @Override
-        public long next(long now) {
-            return Math.round(now + ((double)cyclePeriod));
-        }
-    }
+//    /** measured in # of cycles */
+//    public static class Cycs extends GameTime {
+//
+//        private final transient float cyclePeriod;
+//
+//        public Off loop = null;
+//
+//        public Cycs (float cyclePeriod) {
+//            if (cyclePeriod !=1)
+//                throw new TODO();
+//            this.cyclePeriod = cyclePeriod;
+//        }
+//        @Override protected Off install(Game a) {
+//            //loop = DurService.on(a.nar(), a::next);
+//            //loop.durs(initialCycs);
+//            loop = a.nar().onCycle(a::next);
+//            return loop;
+//        }
+//
+//        @Override
+//        public int dur() {
+//            throw new TODO();
+//        }
+//
+//        @Override
+//        public long next(long now) {
+//            return Math.round(now + ((double)cyclePeriod));
+//        }
+//    }
     public static FPS fps(float fps) { return new FPS(fps); }
     public static Durs durs(float durs) { return new Durs(durs); }
-    public static Cycs cycles(float cycles) { return new Cycs(cycles); }
+//    public static Cycs cycles(float cycles) { return new Cycs(cycles); }
 }

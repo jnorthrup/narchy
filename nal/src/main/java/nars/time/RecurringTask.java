@@ -30,6 +30,10 @@ abstract public class RecurringTask extends ScheduledTask {
             }
         }
 
+        runAt(idealNext, nar);
+    }
+
+    private void runAt(long idealNext, NAR nar) {
         nextStart = idealNext;
 
         nar.runAt(this);

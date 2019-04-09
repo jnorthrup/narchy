@@ -1,7 +1,7 @@
 package spacegraph.space2d.widget.port;
 
 import jcog.Util;
-import jcog.event.Offs;
+import jcog.event.RunThese;
 import spacegraph.space2d.Surface;
 
 import java.lang.reflect.Array;
@@ -18,7 +18,7 @@ public class Wire {
 
     public final Surface a, b;
 
-    public final Offs offs = new Offs();
+    public final RunThese offs = new RunThese();
 
     public Wire(Surface a, Surface b) {
         assert(a!=b);
@@ -127,7 +127,7 @@ public class Wire {
     }
 
     public final void remove() {
-        offs.off();
+        offs.close();
     }
 
     /** override in subclasses to implement behavior to be executed after wire connection has been established in the graph. */

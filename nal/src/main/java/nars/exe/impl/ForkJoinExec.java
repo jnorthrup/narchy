@@ -14,6 +14,8 @@ import java.util.concurrent.TimeUnit;
  */
 public class ForkJoinExec extends MultiExec implements Thread.UncaughtExceptionHandler {
 
+//    private static final int SYNCH_ITERATION_MS = 50;
+
     private ForkJoinPool pool;
 
     public ForkJoinExec(int concurrency) {
@@ -46,7 +48,16 @@ public class ForkJoinExec extends MultiExec implements Thread.UncaughtExceptionH
         logger.info("synch {}", this);
         int i = 0;
         while (pool.getQueuedTaskCount() > 0) {
+//            if (Thread.currentThread() instanceof ForkJoinWorkerThread) {
+//                try {
+//                    ((ForkJoinWorkerThread)Thread.currentThread()).join(SYNCH_ITERATION_MS);
+//                } catch (InterruptedException e) {
+//                    Util.pauseSpin(i++);
+//                }
+//            }
             Util.pauseSpin(i++);
+            //Thread.yield();
+
         }
 //        if (!pool.isQuiescent()) {
 //            do {
@@ -56,12 +67,15 @@ public class ForkJoinExec extends MultiExec implements Thread.UncaughtExceptionH
 //        }
     }
 
-    @Override
-    public void stop() {
-        //pool.shutdownNow(); //<- if restart, the pool can be ready. so dont necessarily delete it now
-        super.stop();
-    }
 
+    @Override
+    public boolean delete() {
+        if (super.delete()) {
+            pool.shutdownNow();
+            return true;
+        }
+        return false;
+    }
 
     @Override
     protected void update() {

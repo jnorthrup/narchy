@@ -36,6 +36,7 @@ import java.util.AbstractSet;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
@@ -70,6 +71,11 @@ public class ConcurrentFastIteratingHashSet<T> extends AbstractSet<T> {
     public void forEach(Consumer<? super T> action) {
         map.forEachValue(action);
     }
+
+    public <Z> void forEachWith(Z z, BiConsumer<? super T,Z> action) {
+        map.forEachValueWith(z, action);
+    }
+
 
     @Override
     public Iterator<T> iterator() {

@@ -1,7 +1,7 @@
 package spacegraph.space2d.widget.windo;
 
 import jcog.event.Off;
-import jcog.event.Offs;
+import jcog.event.RunThese;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.ContainerSurface;
 import spacegraph.space2d.container.graph.EditGraph2D;
@@ -24,7 +24,7 @@ public class DependentWindow extends Windo {
 
         EditGraph2D g = parentOrSelf(EditGraph2D.class);
 
-        this.on = new Offs(()->{
+        this.on = new RunThese(()->{
             g.physics.remove(this);
 
             //remove any associated links, recursively
@@ -39,7 +39,7 @@ public class DependentWindow extends Windo {
 
     @Override
     protected void stopping() {
-        on.off();
+        on.close();
         on = null;
         super.stopping();
     }

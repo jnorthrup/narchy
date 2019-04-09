@@ -2,7 +2,7 @@ package nars.gui.graph;
 
 import jcog.Util;
 import jcog.data.list.FasterList;
-import jcog.event.Offs;
+import jcog.event.RunThese;
 import jcog.math.FloatRange;
 import jcog.math.MutableEnum;
 import jcog.pri.PriReference;
@@ -54,7 +54,7 @@ public class DynamicConceptSpace extends DynamicListSpace<Concept> {
     public SpaceWidget.TermVis vis;
 
     private DurLoop onDur;
-    private Offs onClear;
+    private RunThese onClear;
     private DurLoop updater;
 
     public DynamicConceptSpace(NAR nar, @Nullable Iterable<? extends Concept> concepts, int maxNodes, int maxEdgesPerNodeMax) {
@@ -101,9 +101,9 @@ public class DynamicConceptSpace extends DynamicListSpace<Concept> {
     public void init() {
         synchronized (this) {
             if (onDur != null)
-                onDur.off();
+                onDur.close();
             if (onClear != null)
-                onClear.off();
+                onClear.close();
 
             onDur = nar.onDur(() -> {
                 if (concepts.commit()) {
@@ -111,24 +111,26 @@ public class DynamicConceptSpace extends DynamicListSpace<Concept> {
                 }
 
             }).durs(1);
-            this.onClear = new Offs(nar.eventClear.on(() -> {
+
+            (this.onClear = new RunThese()).add(nar.eventClear.on(() -> {
                 synchronized (this) {
                     next.write().clear();
                     next.commit();
                     concepts.clear();
                 }
             }));
+
         }
     }
 
     @Override
     public void stop() {
         synchronized (this) {
-            onDur.off();
+            onDur.close();
             onDur = null;
-            onClear.off();
+            onClear.close();
             onClear = null;
-            updater.off();
+            updater.close();
             updater = null;
             super.stop();
         }

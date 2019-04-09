@@ -349,7 +349,7 @@ public class NARui {
                     off = n.onTask(printer, punc);
                 } else {
                     assert (off != null);
-                    off.off();
+                    off.close();
                     off = null;
                 }
             }

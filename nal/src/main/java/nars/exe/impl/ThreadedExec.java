@@ -156,9 +156,9 @@ abstract public class ThreadedExec extends MultiExec {
 
 
     @Override
-    public void start(NAR n) {
+    public void starting(NAR n) {
 
-        super.start(n);
+        super.starting(n);
 
         int initialThreads = 1;
         exe.execute(loop(), initialThreads, affinity);
@@ -171,16 +171,19 @@ abstract public class ThreadedExec extends MultiExec {
 
 
     @Override
-    public void stop() {
+    public boolean delete() {
+        if (super.delete()) {
 
-        if (Exe.executor() == this) //HACK
-            Exe.setExecutor(ForkJoinPool.commonPool()); //TODO use the actual executor replaced by the start() call instead of assuming FJP
+            if (Exe.executor() == this) //HACK
+                Exe.setExecutor(ForkJoinPool.commonPool()); //TODO use the actual executor replaced by the start() call instead of assuming FJP
 
-        exe.shutdownNow();
+            exe.shutdownNow();
 
-        flush();
+            flush();
 
-        super.stop();
+            return true;
+        }
+        return false;
     }
 
 

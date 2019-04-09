@@ -134,6 +134,12 @@ public class ConcurrentFastIteratingHashMap<X, Y> extends AbstractMap<X, Y>  {
                 action.accept(y);
         }
     }
+    public final <Z> void forEachValueWith(Z z, BiConsumer<? super Y, Z> action) {
+        for (Y y : valueArray()) {
+            if (y !=null)
+                action.accept(y, z);
+        }
+    }
 
     @Override
     public Y compute(X key, BiFunction<? super X, ? super Y, ? extends Y> remappingFunction) {

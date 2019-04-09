@@ -15,6 +15,8 @@ import nars.link.TaskLink;
 import nars.task.ITask;
 import nars.task.util.PriBuffer;
 import nars.term.Term;
+import nars.time.part.CycLoop;
+import nars.time.part.DurLoop;
 
 import java.io.Externalizable;
 import java.io.IOException;
@@ -97,6 +99,18 @@ abstract public class What extends NARPart implements Prioritizable, Sampler<Tas
         super(id);
         this.pri = new PriNode(this.id);
         this.in = in;
+        if (!in.async(out)) {
+            add(CycLoop.the(this::perceive));
+//                DurService.on(this, p)
+        }
+
+//        add(
+//                nar.eventClear.on(this::clear)
+//        );
+        add(
+            new DurLoop.DurRunnable(this::commit)
+        );
+
     }
 
     @Override
@@ -121,28 +135,10 @@ abstract public class What extends NARPart implements Prioritizable, Sampler<Tas
 
     /** perceive the next batch of input, for synchronously (cycle/duration/realtime/etc)
      *  triggered input buffers */
-    private void perceive() {
-        in.commit(nar.time(), this, nar);
+    private void perceive(NAR n) {
+        in.commit(nar.time(), this, n);
     }
 
-    @Override
-    protected void starting(NAR nar) {
-        super.starting(nar);
-
-
-        if (!in.async(out)) {
-            whenOff(nar.onCycle(this::perceive));
-//                DurService.on(this, p)
-        }
-
-
-
-        whenOff(
-                nar.eventClear.on(this::clear),
-                nar.onDur(this::commit)
-        );
-
-    }
 
     /** called periodically, ex: per duration, for maintenance such as gradual forgetting and merging new input.
      *  only one thread will be in this method at a time guarded by an atomic guard */

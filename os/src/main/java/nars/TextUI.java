@@ -112,7 +112,7 @@ public class TextUI {
             super.starting(nar);
             thread = new Thread(this);
             thread.setUncaughtExceptionHandler((t, e) -> {
-                off();
+                close();
             });
             thread.start();
         }
@@ -139,7 +139,7 @@ public class TextUI {
 
                         @Override
                         public void onClose() {
-                            off();
+                            close();
                         }
 
                         @Override
@@ -152,7 +152,7 @@ public class TextUI {
                 screen.startScreen();
             } catch (IOException e) {
                 logger.warn("{} {}", this, e.getMessage());
-                off();
+                close();
                 return;
             }
 
@@ -277,7 +277,7 @@ public class TextUI {
 
         @Override
         protected void stopping(NAR nar) {
-            updaters.forEach(DurLoop::off);
+            updaters.forEach(DurLoop::close);
             updaters.clear();
 
             Collection<Window> w = tui.getWindows();
@@ -439,7 +439,7 @@ public class TextUI {
 
             @Override
             public synchronized void onRemoved(Container container) {
-                on.off();
+                on.close();
                 updaters.remove(on);
                 super.onRemoved(container);
                 removeAllComponents();
@@ -530,7 +530,7 @@ public class TextUI {
 
             @Override
             public synchronized void onRemoved(Container container) {
-                update.off();
+                update.close();
                 updaters.remove(update);
                 super.onRemoved(container);
                 clearItems();
@@ -562,7 +562,7 @@ public class TextUI {
 
             @Override
             public synchronized void onRemoved(Container container) {
-                onTask.off();
+                onTask.close();
                 updaters.remove(onTask);
                 super.onRemoved(container);
                 clearItems();

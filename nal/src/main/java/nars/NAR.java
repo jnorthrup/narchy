@@ -53,6 +53,7 @@ import nars.time.event.WhenClear;
 import nars.time.event.WhenCycle;
 import nars.time.event.WhenInternal;
 import nars.time.event.WhenTimeIs;
+import nars.time.part.CycLoop;
 import nars.time.part.DurLoop;
 import nars.truth.PreciseTruth;
 import nars.truth.Truth;
@@ -153,13 +154,14 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
 
         this.memory = memory;
         this.exe = exe;
+        start(exe);
 
         this.control = new Control(this);
 
         this.whatBuilder = whatBuilder;
         become(Param.randomSelf());
 
-        exe.start(this);
+
 
         this.conceptBuilder = conceptBuilder;
         memory.start(this);
@@ -307,7 +309,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
      * will remain attached but enabled parts will have been deactivated and
      * reactivated, a signal for them to empty their state (if necessary).
      */
-    public void reset() {
+    @Deprecated public void reset() {
 
         synchronized (exe) {
 
@@ -320,7 +322,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
             time.clear(this);
             time.reset();
 
-            exe.start(this);
+            start(exe);
 
             if (running)
                 loop.setFPS(fps);
@@ -334,10 +336,12 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
     public void delete() {
         synchronized (exe) {
 
-            synch();
-
             stop();
+
             //clear();
+            memory.clear();
+
+            exe.delete();
 
             super.delete();
         }
@@ -349,13 +353,15 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
      * <p>
      * this does not indicate the NAR has stopped or reset itself.
      */
-    public void clear() {
-        synchronized (exe) {
+    @Deprecated public void clear() {
+//        synchronized (exe) {
+//
+//            eventClear.emit(this);
+//
+//            logger.info("clear");
+//        }
+        //TODO clear per individual What's only ?
 
-            eventClear.emit(this);
-
-            logger.info("clear");
-        }
     }
 
     public final NAR become(String self) {
@@ -837,10 +843,11 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
 
         synchronized (exe) {
 
-            pause();
+            loop.stop();
 
-            exe.stop();
+            synch();
 
+            stop(exe);
         }
 
         return this;
@@ -1090,17 +1097,16 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
     public final Off onCycle(Consumer<NAR> each) {
         return eventCycle.on(each);
     }
-
     public final Off onCycle(Runnable each) {
         return onCycle((ignored) -> each.run());
     }
 
-    /**
-     * avoid using lambdas with this, instead use an interface implementation of the class that is expected to be garbage collected
-     */
-    public final Off onCycleWeak(Consumer<NAR> each) {
-        return eventCycle.onWeak(each);
-    }
+//    /**
+//     * avoid using lambdas with this, instead use an interface implementation of the class that is expected to be garbage collected
+//     */
+//    public final Off onCycleWeak(Consumer<NAR> each) {
+//        return eventCycle.onWeak(each);
+//    }
 
     public final DurLoop onDur(Runnable on) {
         DurLoop.DurRunnable r = new DurLoop.DurRunnable(on);
@@ -1489,13 +1495,6 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
         return this;
     }
 
-    public final boolean pause() {
-        if (loop.stop()) {
-            synch();
-            return true;
-        }
-        return false;
-    }
 
     /**
      * conceptualize a target if dynamic truth is possible; otherwise return concept if exists

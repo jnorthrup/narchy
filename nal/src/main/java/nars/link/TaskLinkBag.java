@@ -31,7 +31,7 @@ public class TaskLinkBag extends BufferedBag.SimpleBufferedBag<TaskLink, TaskLin
 
     private static class TaskLinkBuffer extends PriMap<TaskLink> {
 
-        public TaskLinkBuffer(PriMerge merge) {
+        TaskLinkBuffer(PriMerge merge) {
             super(merge);
         }
 
