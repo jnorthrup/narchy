@@ -150,6 +150,7 @@ public class Zoomed<S extends Surface> extends MutableUnitContainer<S> implement
             float zoom = (float) (sin(Math.PI / 2 - focusAngle / 2) / (cam.z * sin(focusAngle / 2)));
             float s = zoom * Math.min(w(), h());
 
+            System.out.println(scale);
             render.set(cam, scale.set(s, s));
 
             gl.glPushMatrix();

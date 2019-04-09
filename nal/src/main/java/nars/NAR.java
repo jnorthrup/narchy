@@ -5,7 +5,6 @@ import com.google.common.collect.Streams;
 import com.google.common.primitives.Longs;
 import jcog.Texts;
 import jcog.Util;
-import jcog.WTF;
 import jcog.data.byt.DynBytes;
 import jcog.data.list.FastCoWList;
 import jcog.event.ListTopic;
@@ -160,6 +159,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
         this.whatBuilder = whatBuilder;
         become(Param.randomSelf());
 
+        exe.start(this);
 
         this.conceptBuilder = conceptBuilder;
         memory.start(this);
@@ -168,11 +168,8 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
 
         Builtin.init(this);
 
-        exe.start(this);
 
         this.loop = NARLoop.build(this);
-
-        synch();
 
     }
 
@@ -307,7 +304,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
 
     /**
      * Reset the system with an empty memory and reset clock.  Event handlers
-     * will remain attached but enabled plugins will have been deactivated and
+     * will remain attached but enabled parts will have been deactivated and
      * reactivated, a signal for them to empty their state (if necessary).
      */
     public void reset() {
@@ -1468,10 +1465,6 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
     }
 
 
-    public Stream<Part<NAR>> plugins() {
-        return this.partStream();
-    }
-
     public void conceptualize(Term term, Consumer<Concept> with) {
 
 
@@ -1597,8 +1590,8 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
     /**
      * stream of all registered services
      */
-    public final <X> Stream<X> plugins(Class<? extends X> nAgentClass) {
-        return plugins().filter(x -> nAgentClass.isAssignableFrom(x.getClass()))
+    public final <X> Stream<X> parts(Class<? extends X> nAgentClass) {
+        return this.partStream().filter(x -> nAgentClass.isAssignableFrom(x.getClass()))
                 .map(x -> (X) x);
     }
 

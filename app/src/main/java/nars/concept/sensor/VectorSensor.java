@@ -43,7 +43,7 @@ abstract public class VectorSensor extends AbstractSensor implements Iterable<Si
     protected VectorSensor(Term rootID, NAR n) {
         super(rootID, n);
 
-        attn = new AttnBranch(rootID, this);
+        attn = new AttnBranch(this.id, this);
 
         this.in = newChannelIn(n);
     }

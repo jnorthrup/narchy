@@ -309,6 +309,7 @@ public interface NSense {
         pn.neg.attn.parent(nar, pn.attn);
 
         onFrame(x -> pn.update(a));
+        nar.start(pn); //HACK until BipolarAction imjplemetns Action
         return pn;
     }
 

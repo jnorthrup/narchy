@@ -4,7 +4,7 @@ import com.jogamp.opengl.GL2;
 import jcog.data.graph.Node;
 import jcog.data.graph.path.FromTo;
 import jcog.tree.rtree.rect.RectFloat;
-import org.eclipse.collections.api.block.procedure.primitive.IntObjectProcedure;
+import org.eclipse.collections.api.block.procedure.primitive.FloatObjectProcedure;
 import spacegraph.input.finger.Finger;
 import spacegraph.space2d.ReSurface;
 import spacegraph.space2d.Surface;
@@ -44,7 +44,7 @@ public class Port<X> extends Widget implements Wiring.Wireable {
 //     */
 //    private final Consumer obeyHow = null;
 
-    private IntObjectProcedure<Port<X>> updater = null;
+    private FloatObjectProcedure<Port<X>> updater = null;
 
     private transient Node<spacegraph.space2d.Surface, Wire> node;
 
@@ -112,7 +112,7 @@ public class Port<X> extends Widget implements Wiring.Wireable {
         return this;
     }
 
-    public Port<X> update(@Nullable IntObjectProcedure<Port<X>> update) {
+    public Port<X> update(@Nullable FloatObjectProcedure<Port<X>> update) {
         this.updater = update;
         return this;
     }
@@ -231,9 +231,9 @@ public class Port<X> extends Widget implements Wiring.Wireable {
     @Override
     public boolean preRender(ReSurface r) {
         if (super.preRender(r)) {
-            IntObjectProcedure<Port<X>> u = this.updater;
+            FloatObjectProcedure<Port<X>> u = this.updater;
             if (u != null)
-                u.value(r.dtMS(), this);
+                u.value(r.dtS(), this);
 
             return true;
         }
@@ -261,7 +261,7 @@ public class Port<X> extends Widget implements Wiring.Wireable {
         else
             this.node = EditGraph2D.staticLinks.addNode(this); //HACK
 
-        IntObjectProcedure<Port<X>> u = this.updater;
+        FloatObjectProcedure<Port<X>> u = this.updater;
         if (u != null)
             u.value(0, this);
 

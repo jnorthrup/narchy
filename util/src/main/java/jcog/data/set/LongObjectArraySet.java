@@ -15,9 +15,10 @@ import java.util.Arrays;
 import java.util.NoSuchElementException;
 
 
-/** a set of (long,object) pairs as 2 array lists
- *  TODO sort and binary search lookup
- * */
+/**
+ * a set of (long,object) pairs as 2 array lists
+ * TODO sort and binary search lookup
+ */
 public class LongObjectArraySet<X> extends FasterList<X> {
 
     protected long[] when;
@@ -39,20 +40,20 @@ public class LongObjectArraySet<X> extends FasterList<X> {
 
         long[] when = this.when;
 
-        int left = 0, right = size-1;
+        int left = 0, right = size - 1;
         for (int i = left, j = i; i < right; j = ++i) {
             X xi = get(i + 1);
 
-            long li = when[i+1];
+            long li = when[i + 1];
             while (li < when[j]) {
                 setFast(j + 1, get(j));
-                when[j +1] = when[j];
+                when[j + 1] = when[j];
                 if (j-- == left)
                     break;
             }
 
-                setFast(j + 1, xi);
-                when[j + 1] = li;
+            setFast(j + 1, xi);
+            when[j + 1] = li;
 
 
         }
@@ -63,7 +64,7 @@ public class LongObjectArraySet<X> extends FasterList<X> {
     public String toString() {
         //HACK this could be better
         final int[] i = {0};
-        return Joiner.on(',').join(Iterables.transform(this, n-> when[i[0]++] + ":" + n));
+        return Joiner.on(',').join(Iterables.transform(this, n -> when[i[0]++] + ":" + n));
     }
 
     /**
@@ -79,7 +80,9 @@ public class LongObjectArraySet<X> extends FasterList<X> {
         throw new UnsupportedOperationException();
     }
 
-    /** returns true if duplicate found; returns */
+    /**
+     * returns true if duplicate found; returns
+     */
     public boolean add(long w, X t) {
 
         //quick check for existing
@@ -115,17 +118,33 @@ public class LongObjectArraySet<X> extends FasterList<X> {
         return removeIf((when, what) -> at == when && what.equals(t));
     }
 
-    /** removes the ith tuple */
+    /**
+     * removes the ith tuple
+     */
     public void removeThe(int i) {
         removeWhen(i, size());
 
         super.removeFast(i);
     }
+
     private void removeWhen(int i, int s) {
         if (i < s - 1)
             System.arraycopy(when, i + 1, when, i, s - i - 1);
     }
 
+
+    public boolean removeIf(long theLong, LongObjectPredicate<X> iff) {
+        int s = size();
+        MetalBitSet m = MetalBitSet.bits(s);
+        for (int i = 0; i < s; i++) {
+            long w = when[i];
+            if (w == theLong) {
+                if (iff.accept(w, get(i)))
+                    m.set(i);
+            }
+        }
+        return removeAll(m, s);
+    }
 
     public boolean removeIf(LongObjectPredicate<X> iff) {
         int s = size();
@@ -144,30 +163,31 @@ public class LongObjectArraySet<X> extends FasterList<X> {
                 if (iff.accept(when[i], get(i)))
                     m.set(i);
             }
-            int toRemove = m.cardinality();
-            int firstRemoved = m.first(true);
-            switch (toRemove) {
-                case 0:
-                    return false;
-                case 1:
-                    removeThe(firstRemoved);
-                    return true;
-                default:
-
-                    for (int i = firstRemoved; i < s;  /* TODO iterate bitset better */) {
-                        if (m.get(i)) {
-                            removeThe(i);
-                            s--;
-                        } else {
-                            i++;
-                        }
-                    }
-                    return true;
-            }
+            return removeAll(m, s);
         }
 
     }
 
+    public boolean removeAll(MetalBitSet m, int s) {
+        int toRemove = m.cardinality();
+        if (toRemove == 0)
+            return false;
+
+        int firstRemoved = m.first(true);
+        if (toRemove == 1) {
+            removeThe(firstRemoved);
+        } else {
+            for (int i = firstRemoved; i < s;  /* TODO iterate bitset better */) {
+                if (m.get(i)) {
+                    removeThe(i);
+                    s--;
+                } else {
+                    i++;
+                }
+            }
+        }
+        return true;
+    }
 
     @Override
     public void reverse() {
@@ -206,7 +226,8 @@ public class LongObjectArraySet<X> extends FasterList<X> {
     public LongIterator longIterator() {
         int s = size();
         switch (s) {
-            case 0:  return ImmutableEmptyLongIterator.INSTANCE;
+            case 0:
+                return ImmutableEmptyLongIterator.INSTANCE;
             //case 1:  //TODO return LongIterator
             default:
                 return new InternalLongIterator(when, s);
@@ -220,11 +241,11 @@ public class LongObjectArraySet<X> extends FasterList<X> {
     static final class InternalLongIterator implements MutableLongIterator {
 
         private final long[] data;
+        private final int size;
         /**
          * Index of element to be returned by subsequent call to next.
          */
         private int index;
-        private final int size;
 
         public InternalLongIterator(long[] data, int size) {
             this.data = data;

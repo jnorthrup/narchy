@@ -1,6 +1,9 @@
 package nars.agent;
 
-import jcog.*;
+import jcog.Log;
+import jcog.Paper;
+import jcog.Skill;
+import jcog.TODO;
 import jcog.data.list.FastCoWList;
 import jcog.event.ListTopic;
 import jcog.event.Off;
@@ -20,6 +23,7 @@ import nars.concept.action.curiosity.DefaultCuriosity;
 import nars.concept.sensor.GameLoop;
 import nars.concept.sensor.Signal;
 import nars.concept.sensor.VectorSensor;
+import nars.control.How;
 import nars.control.NARPart;
 import nars.term.Term;
 import nars.term.atom.Atom;
@@ -178,13 +182,17 @@ public class Game implements NSense, NAct {
 
     @Override
     public final <S extends GameLoop> S addSensor(S s) {
+        if (s instanceof How) {
+            nar.start(((How)s));
+        }
+
         //TODO check for existing
         sensors.add(s);
         addAttention(attnSensor, s);
         return s;
     }
 
-    protected void addAttention(PriNode target, Object s) {
+    private void addAttention(PriNode target, Object s) {
         if (s instanceof VectorSensor) {
             ((VectorSensor) s).attn.parent(nar, target);
         } else if (s instanceof Signal) {
@@ -226,7 +234,7 @@ public class Game implements NSense, NAct {
         attnSensor.parent(nar, this.pri, nar.beliefPriDefaultNode);
         attnReward.parent(nar, this.pri, nar.goalPriDefaultNode /* TODO avg */);
 
-        sensors.forEach(s -> nar.start((NARPart)s));
+
 
         time.start(this);
     }

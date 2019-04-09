@@ -41,7 +41,6 @@ public class ReSurface {
     transient float w, h;
 
 
-
     public final void on(Consumer<GL2> renderable) {
         on((gl, rr)->renderable.accept(gl));
     }
@@ -87,6 +86,7 @@ public class ReSurface {
 
     public ReSurface restart(float pw, float ph, float dtS, float fps) {
         this.frameDT = dtS;
+        //this.frameDTms = Math.max(1, Math.round(1000 * frameDT));
         this.frameDTideal = (float) (1.0/Math.max(1.0E-9,fps));
         this.load.next( Math.max(0, dtS - frameDTideal) / frameDTideal );
         return restart(pw, ph);
@@ -141,15 +141,11 @@ public class ReSurface {
         return scaleX + "x" + scaleY + ' ' + main.size() + " renderables";
     }
 
-    public void play(List<BiConsumer<GL2, ReSurface>> render) {
-        main.addAll(render);
+    public final void play(FasterList<BiConsumer<GL2, ReSurface>> render) {
+        main.addAllFaster(render);
     }
 
-    /** ms since last update */
-    @Deprecated public int dtMS() {
-        //return Math.max(1,Math.round(1000/ frameDT));
-        return Math.max(1, Math.round(1000 * frameDT));
-    }
+
 
     /** seconds since last update */
     public float dtS() {

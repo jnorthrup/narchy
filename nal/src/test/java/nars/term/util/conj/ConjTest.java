@@ -1830,9 +1830,9 @@ public class ConjTest {
         assertTrue(c.eventCount(ETERNAL) == 0);
         assertTrue(c.eventOccurrences() == 2);
         c.factor();
+        assertEq("((a &&+1 b)&&x)", c.term());
         assertTrue(c.eventCount(ETERNAL) == 1);
         assertTrue(c.eventOccurrences() == 3);
-        assertEq("((a &&+1 b)&&x)", c.term());
         assertEquals(1, c.shift());
     }
 

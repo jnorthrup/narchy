@@ -6,7 +6,6 @@ import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL2;
 import com.jogamp.opengl.fixedfunc.GLMatrixFunc;
 import jcog.event.Off;
-import jcog.exe.Exe;
 import org.eclipse.collections.api.tuple.Pair;
 import spacegraph.input.finger.Finger;
 import spacegraph.input.finger.FingerMoveWindow;
@@ -75,6 +74,16 @@ public class OrthoSurfaceGraph extends JoglDisplay implements SurfaceGraph {
             rr.y2 = h();
         };
 
+
+        @Override
+        public void doLayout(float dtS) {
+            GLWindow w = video.window;
+            int W = w.getWidth();
+            int H = w.getHeight();
+            resize(W, H);
+            super.doLayout(dtS);
+        }
+
         @Override
         public Surface finger(Finger finger) {
 
@@ -127,20 +136,16 @@ public class OrthoSurfaceGraph extends JoglDisplay implements SurfaceGraph {
 
             @Override
             public void windowResized(WindowEvent e) {
-                Exe.invokeLater(OrthoSurfaceGraph.this::resize);
+                resize();
             }
 
             @Override
             public void windowDestroyNotify(WindowEvent e) {
-                Exe.invokeLater(layers::stop);
+                layers.stop();
             }
         });
 
         layers.start(this);
-
-        if (pw > 0 && ph > 0) {
-            video.show(pw, ph);
-        }
 
 
         Zoomed z = new Zoomed(this, keyboard, content);
@@ -149,6 +154,10 @@ public class OrthoSurfaceGraph extends JoglDisplay implements SurfaceGraph {
 
         layers.add(z.overlayZoomBounds(finger));
         layers.add(finger.overlayCursor());
+
+        if (pw > 0 && ph > 0) {
+            video.show(pw, ph);
+        }
 
 
 //        //addOverlay(this.keyboard.keyFocusSurface(cam));
@@ -165,10 +174,7 @@ public class OrthoSurfaceGraph extends JoglDisplay implements SurfaceGraph {
 //        layers.pos(bounds);
 
 
-        GLWindow w = video.window;
-        int W = w.getWidth();
-        int H = w.getHeight();
-        layers.resize(W, H);
+        layers.layout();
 
 
     }

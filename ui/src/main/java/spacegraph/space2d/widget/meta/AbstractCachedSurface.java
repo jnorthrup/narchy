@@ -7,7 +7,6 @@ import spacegraph.space2d.ReSurface;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.unit.UnitContainer;
 
-import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.BiConsumer;
 
@@ -16,7 +15,7 @@ abstract public class AbstractCachedSurface<X extends Surface> extends UnitConta
     private Off on;
 
     final AtomicBoolean invalid = new AtomicBoolean(false);
-    final List<BiConsumer<GL2, ReSurface>> render = new FasterList();
+    final FasterList<BiConsumer<GL2, ReSurface>> render = new FasterList();
 
     /** set to false to disable the caching */
     protected boolean cache = true;

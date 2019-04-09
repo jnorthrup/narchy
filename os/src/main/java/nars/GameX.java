@@ -101,23 +101,24 @@ abstract public class GameX extends Game {
     public static NAR runRT(Function<NAR, Game> init, int threads, float narFPS, float gameFPS) {
         NAR n = baseNAR(narFPS, threads);
 
-
         Game a = init.apply(n);
 
-        n.runLater(() -> {
-//            n.start(a);
-            //a.pause(); //HACK
 
+        n.runLater(() -> {
 
             initPlugins(n);
             initPlugins2(n, a);
-
             //initPlugins3(n, a);
 
-            SpaceGraph.surfaceWindow(new Gridding(n.plugins(Game.class).map(NARui::agent).collect(toList())), 500, 500);
-            SpaceGraph.surfaceWindow(NARui.top(n), 800, 500);
+//            n.runLater(()->{
+                SpaceGraph.surfaceWindow(
+                        //new Gridding(n.parts(Game.class).map(NARui::agent).collect(toList())),
+                        NARui.agent(a),
+                        500, 500);
+                SpaceGraph.surfaceWindow(NARui.top(n), 800, 500);
 
-            SpaceGraph.surfaceWindow(NARui.attentionUI(n), 500, 500);
+                SpaceGraph.surfaceWindow(NARui.attentionUI(n), 500, 500);
+//            });
 
             //a.resume();
             //System.gc();
@@ -150,12 +151,13 @@ abstract public class GameX extends Game {
     public static NAR runRL(Function<NAR, Game> init, float narFPS, float clockFPS) {
         NAR n = baseNAR(clockFPS, 1);
 
+        Game a = init.apply(n);
+        a.curiosity.enable.set(false);
 
-        n.run(() -> {
+        n.runLater(() -> {
 
-            Game a = init.apply(n);
 
-            a.curiosity.enable.set(false);
+
 
 //            n.start(a);
 

@@ -89,7 +89,7 @@ public class MetaAgent extends Game {
         senseNumberDifference($.inh(id, $$("deriveTask")), n.feel.deriveTask::get);
 
 
-        n.plugins(Game.class).forEach(a -> {
+        n.parts(Game.class).forEach(a -> {
             if(MetaAgent.this!=a)
                 add(a, false);
         });

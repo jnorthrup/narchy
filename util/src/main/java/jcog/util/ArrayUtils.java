@@ -23,6 +23,7 @@ import jcog.data.bit.MetalBitSet;
 import jcog.random.Rand;
 import org.eclipse.collections.api.block.function.primitive.*;
 import org.eclipse.collections.api.block.procedure.primitive.IntIntProcedure;
+import org.eclipse.collections.api.tuple.primitive.LongObjectPair;
 
 import java.lang.reflect.Array;
 import java.net.URL;
@@ -135,6 +136,8 @@ public enum ArrayUtils {
     public static final double[][] EMPTY_DOUBLE_DOUBLE = new double[0][0];
     public static final Consumer[] EMPTY_CONSUMER_ARRAY = new Consumer[0];
     public static final URL[] EMPTY_URL_ARRAY = new URL[0];
+    public static final LongObjectPair[] EMPTY_LONGOBJECT_PAIR_ARRAY = new LongObjectPair[0];
+
     private static final int SMALL = 7;
     private static final int MEDIUM = 40;
 

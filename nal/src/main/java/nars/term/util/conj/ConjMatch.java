@@ -2,14 +2,13 @@ package nars.term.util.conj;
 
 import jcog.Util;
 import jcog.data.list.FasterList;
+import jcog.util.ArrayUtils;
 import nars.derive.Derivation;
 import nars.op.UniSubst;
 import nars.subterm.Subterms;
 import nars.term.Term;
 import nars.term.atom.Bool;
 import nars.term.util.Image;
-import org.eclipse.collections.api.RichIterable;
-import org.eclipse.collections.api.list.MutableList;
 import org.eclipse.collections.api.set.ImmutableSet;
 import org.eclipse.collections.api.tuple.primitive.LongObjectPair;
 import org.eclipse.collections.impl.factory.Sets;
@@ -69,37 +68,42 @@ public class ConjMatch {
             if (yRange[0] == yRange[1]) {
                 //PARALLEL EVENT
                 //find what time in 'x' contains the most events from y, if any
-                LongObjectHashMap<List<Term>> found = new LongObjectHashMap<>();
+                LongObjectHashMap<List<Term>> found = null;
                 ImmutableSet<Term> yTerms = Sets.immutable.withAll(y); //the terms
                 for (int i = 0; i < n; i++) {
                     Term xi = x.get(i);
                     if (yTerms.contains(xi)) {
-                        found.getIfAbsentPut(x.when(i), ()->new FasterList(1)).add(xi);
+                        if (found == null)
+                            found = new LongObjectHashMap<>();
+                        found.getIfAbsentPut(x.when(i), ()->new FasterList<>(1)).add(xi);
                     }
                 }
+                if (found==null)
+                    return Null;
+
                 int nFound = found.size();
                 LongObjectPair<List<Term>> b;
                 switch (nFound) {
-                    case 0: return Null;
+                    //case 0: return Null;
                     case 1:
                         b = found.keyValuesView().getOnly();
                         break;
                     default:
+
                         int mostMatched = found.maxBy(List::size).size();
-                        RichIterable<LongObjectPair<List<Term>>> best = found.keyValuesView().select(xx -> xx.getTwo().size() == mostMatched);
-                        if (best.size() > 1) {
-                            MutableList<LongObjectPair<List<Term>>> bb = best.toList();
-                            b = bb.get(d.random.nextInt(mostMatched));
-                        } else {
-                            b = best.getOnly();
-                        }
+
+                        LongObjectPair<List<Term>>[] best = found.keyValuesView().select(xx -> xx.getTwo().size() == mostMatched).toArray(ArrayUtils.EMPTY_LONGOBJECT_PAIR_ARRAY);
+
+                        int numMatched = best.length;
+                        b = best[numMatched > 1 ? d.random.nextInt(numMatched) : 0];
+
                         break;
 
                 }
 
                 long bWhen = b.getOne();
                 matchedTime[0] = matchedTime[1] = bWhen;
-                boolean rem = x.removeIf((when,what)-> (when == bWhen && yTerms.contains(what)));
+                boolean rem = x.removeIf(bWhen, (when,what)-> (yTerms.contains(what)));
                 assert(rem);
 
             } else {

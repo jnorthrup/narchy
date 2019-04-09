@@ -65,7 +65,7 @@ abstract public class Deriver extends How {
     }
 
     public static Stream<Deriver> derivers(NAR n) {
-        return n.plugins().filter(Deriver.class::isInstance).map(Deriver.class::cast);
+        return n.partStream().filter(Deriver.class::isInstance).map(Deriver.class::cast);
     }
 
 

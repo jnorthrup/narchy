@@ -8,6 +8,7 @@ import jcog.data.map.ConcurrentFastIteratingHashSet;
 import jcog.event.ListTopic;
 import jcog.event.Off;
 import jcog.event.Topic;
+import jcog.exe.Exe;
 import jcog.exe.InstrumentedLoop;
 import jcog.util.ArrayUtils;
 import spacegraph.UI;
@@ -257,7 +258,7 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
         //solution is to queue this to the global timer which starts the self-invoking loop
 
         //GLWorkerThread.invokeLater(()-> {
-        //Exe.invokeLater(()-> {
+        Exe.invokeLater(()-> {
 
             GLWindow W = this.window;
             if (x != Integer.MIN_VALUE) {
@@ -272,7 +273,7 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
             W.setTitle(title); //needs lock
             W.setVisible(true); //needs lock
 
-        //});
+        });
 
     }
 

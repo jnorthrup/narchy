@@ -678,6 +678,15 @@ public class FasterList<X> extends FastList<X> {
         addFast(x, x.length);
     }
 
+    public final void addAllFaster(FasterList<X> source) {
+        int s = source.size();
+        if (s > 0) {
+            this.ensureCapacityForAdditional(s);
+            System.arraycopy(source.array(), 0, this.items, this.size, s);
+            this.size += s;
+        }
+    }
+
     public final void addFast(X[] x, int n) {
         //if (n > 0) {
         X[] items = this.items;

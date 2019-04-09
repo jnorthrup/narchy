@@ -6,7 +6,6 @@ import jcog.math.v2;
 import jcog.tree.rtree.Spatialization;
 import jcog.tree.rtree.rect.RectFloat;
 import spacegraph.space2d.container.ContainerSurface;
-import spacegraph.space2d.container.EmptySurface;
 import spacegraph.space2d.container.collection.AbstractMutableContainer;
 import spacegraph.space2d.container.unit.AspectAlign;
 import spacegraph.space2d.container.unit.MutableUnitContainer;
@@ -291,10 +290,11 @@ abstract public class Surface implements Surfacelike, spacegraph.input.finger.Fi
      * TODO common remove(x) interface
      */
     public boolean remove() {
+
         Surfacelike p = this.parent;
 
         if (p instanceof MutableUnitContainer) {
-            ((MutableUnitContainer) p).set(new EmptySurface());
+            ((MutableUnitContainer) p).set(null);
             return true;
         }
         if (p instanceof AbstractMutableContainer) {
@@ -306,6 +306,8 @@ abstract public class Surface implements Surfacelike, spacegraph.input.finger.Fi
         if (p instanceof ContainerSurface) {
             return ((ContainerSurface) p).remove();
         }
+
+        stop();
         //return false;
         throw new jcog.TODO();
     }

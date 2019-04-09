@@ -75,7 +75,6 @@ public class BiPolarAction extends AbstractSensor {
 
         this.model = model;
         this.motor = motor;
-
     }
 
 

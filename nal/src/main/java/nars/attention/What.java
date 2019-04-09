@@ -6,7 +6,7 @@ import jcog.pri.Prioritizable;
 import jcog.pri.bag.Sampler;
 import nars.NAR;
 import nars.Task;
-import nars.attention.derive.DefaultDerivePri;
+import nars.attention.derive.DefaultPuncWeightedDerivePri;
 import nars.concept.Concept;
 import nars.control.NARPart;
 import nars.control.channel.ConsumerX;
@@ -66,7 +66,6 @@ import java.util.stream.Stream;
   */
 abstract public class What extends NARPart implements Prioritizable, Sampler<TaskLink>, Iterable<TaskLink>, Externalizable, ConsumerX<ITask> {
 
-
     public final PriNode pri;
 
     /** input bag */
@@ -77,13 +76,14 @@ abstract public class What extends NARPart implements Prioritizable, Sampler<Tas
      * */
     public DerivePri derivePri =
             //new DirectDerivePri();
-            new DefaultDerivePri();
-            //new DefaultPuncWeightedDerivePri();
+            //new DefaultDerivePri();
+            new DefaultPuncWeightedDerivePri();
 
     final ConsumerX<ITask> out = new ConsumerX<>() {
+
         @Override
         public int concurrency() {
-            return nar.exe.concurrency();
+            return What.this.concurrency();
         }
 
         @Override

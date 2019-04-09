@@ -140,7 +140,7 @@ public class NARui {
 
     public static HashMap<String, Supplier<Surface>> pluginsMenu(NAR n) {
         HashMap<String,Supplier<Surface>> m = new HashMap<>();
-        n.plugins().forEach(s -> {
+        n.partStream().forEach(s -> {
             m.put( ((NARPart)s).id.toString(), ()-> new ObjectSurface(s));
         });
         return m;

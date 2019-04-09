@@ -23,7 +23,7 @@ import java.util.stream.Stream;
  */
 public class FastCoWList<X> /*extends AbstractList<X>*/ /*implements List<X>*/ implements Iterable<X>, UnaryOperator<X[]> {
 
-    final FasterList<X> list;
+    private final FasterList<X> list;
 
     private final IntFunction<X[]> arrayBuilder;
 
@@ -130,10 +130,20 @@ public class FastCoWList<X> /*extends AbstractList<X>*/ /*implements List<X>*/ i
     }
 
     public void set(Collection<? extends X> newContent) {
-        synchronized (list) {
-            list.clear();
-            list.addAll(newContent);
-            commit();
+        if (newContent.isEmpty())
+            clear();
+        else {
+            synchronized (list) {
+//            if (size() < minIdentityCompareThresh) {
+//                if(list.equalsIdentically(newContent))
+//            }
+                list.clear();
+                if (newContent instanceof FasterList)
+                    list.addAllFaster((FasterList<X>) newContent);
+                else
+                    list.addAll(newContent);
+                commit();
+            }
         }
     }
 
@@ -158,11 +168,11 @@ public class FastCoWList<X> /*extends AbstractList<X>*/ /*implements List<X>*/ i
 
     public void reverseForEach(Procedure<X> c) {
         X[] copy = array();
-        if (copy != null) {
+//        if (copy != null) {
             for (int i = copy.length-1; i >= 0; i--) {
                 c.accept(copy[i]);
             }
-        }
+//        }
     }
 
     public final X[] array() {
@@ -178,7 +188,7 @@ public class FastCoWList<X> /*extends AbstractList<X>*/ /*implements List<X>*/ i
             if (!haveNext)
                 next = apply(prev);
 
-            if (copy.weakCompareAndSetVolatile(prev, next))
+            if (copy.compareAndSet(prev, next))
                 return next;
 
             haveNext = prev == (prev = copy.get());
@@ -252,7 +262,7 @@ public class FastCoWList<X> /*extends AbstractList<X>*/ /*implements List<X>*/ i
     }
 
     //@Override
-    public boolean removeAll(Collection<?> collection) {
+    public boolean removeAll(Collection<?> source) {
         throw new TODO();
     }
 
@@ -308,13 +318,16 @@ public class FastCoWList<X> /*extends AbstractList<X>*/ /*implements List<X>*/ i
      * directly setAt
      */
     public void set(X[] newValues) {
-
-        copy.updateAndGet((p)->{
-            synchronized(list) {
-                list.setArray(newValues);
-                return newValues;
-            }
-        });
+        if (newValues.length == 0)
+             clear();
+        else {
+            copy.accumulateAndGet(newValues, (p, v) -> {
+                synchronized(list) {
+                    list.setArray(v);
+                }
+                return v;
+            });
+        }
 //        synchronized (list) {
 //            if (newValues.length == 0) {
 //                clear();
