@@ -122,7 +122,7 @@ abstract public class What extends NARPart implements Prioritizable, Sampler<Tas
     /** perceive the next batch of input, for synchronously (cycle/duration/realtime/etc)
      *  triggered input buffers */
     private void perceive() {
-        in.commit(nar.time(), out);
+        in.commit(nar.time(), this, nar);
     }
 
     @Override

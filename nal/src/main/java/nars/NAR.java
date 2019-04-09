@@ -664,7 +664,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
 
     @Nullable
     @Override
-    public final Term key(Part<NAR> p) {
+    public final Term term(Part<NAR> p) {
         return ((NARPart)p).id;
     }
 

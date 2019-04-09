@@ -95,7 +95,7 @@ public class MetaFrame extends Bordering implements Hovered {
             //r.overlay(this::paintLater);
             return true;
         } else {
-            clipBounds = true;
+//            clipBounds = true;
             return super.preRender(r);
         }
     }
@@ -106,26 +106,15 @@ public class MetaFrame extends Bordering implements Hovered {
 //    }
 
     @Override
+    public boolean attachChild(Surface s) {
+        return setAt(C, s)!=s;
+    }
+    @Override
     public boolean detachChild(Surface s) {
-        synchronized (this) {
-            if (get(0) == s) {
-                setAt(0, null, false);
-                return true;
-            }
-        }
-        return false;
+        return setAt(C, null) != null;
     }
 
-    @Override
-    public boolean attachChild(Surface s) {
-        synchronized (this) {
-            if (get(0) == null) {
-                setAt(0, s, false);
-                return true;
-            }
-        }
-        return false;
-    }
+
 
     @Override
     protected void starting() {

@@ -144,13 +144,13 @@ public class Parts<K /* service key */, C /* context */> {
 
     public final boolean stop(Part<C> p) {
         //HACK TODO improve
-        K k = key(p);
+        K k = term(p);
         return stop(k);
     }
 
     public final boolean remove(Part<C> p) {
         //HACK TODO improve
-        K k = key(p);
+        K k = term(p);
         return remove(k);
     }
 
@@ -158,7 +158,7 @@ public class Parts<K /* service key */, C /* context */> {
      * reverse lookup by instance.  this default impl is an exhaustive search.  improve in subclasses
      */
     @Nullable
-    public K key(Part<C> p) {
+    public K term(Part<C> p) {
         //HACK TODO improve
         Map.Entry<K, Part<C>> e = partEntrySet().stream().filter(z -> z.getValue() == p).findFirst().get();
         //if (e!=null) {

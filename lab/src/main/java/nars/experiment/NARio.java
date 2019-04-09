@@ -17,9 +17,11 @@ import nars.experiment.mario.Scene;
 import nars.experiment.mario.level.Level;
 import nars.experiment.mario.sprites.Mario;
 import nars.gui.NARui;
+import nars.gui.sensor.VectorSensorView;
 import nars.sensor.PixelBag;
 import nars.video.AutoclassifiedBitmap;
 import spacegraph.SpaceGraph;
+import spacegraph.space2d.container.grid.Gridding;
 
 import javax.swing.*;
 import java.util.List;
@@ -27,6 +29,7 @@ import java.util.List;
 import static nars.$.$$;
 import static nars.agent.GameTime.fps;
 import static nars.experiment.mario.level.Level.*;
+import static spacegraph.SpaceGraph.window;
 
 public class NARio extends GameX {
 
@@ -149,13 +152,13 @@ public class NARio extends GameX {
         });
 
 
-        //initButton();
-        initBipolar();
+        initButton();
+        //initBipolar();
 
 
         DigitizedScalar vx = senseNumberDifferenceBi($$("vx"), 8, () -> theMario != null ? theMario.x : 0).resolution(0.02f);
         DigitizedScalar vy = senseNumberDifferenceBi($$("vy"), 8, () -> theMario != null ? theMario.y : 0).resolution(0.02f);
-//        window(new Gridding(new VectorSensorView(vx, nar), new VectorSensorView(vy, nar)), 800, 800);
+        window(new Gridding(new VectorSensorView(vx, nar), new VectorSensorView(vy, nar)), 800, 800);
 
 
         Reward right = rewardNormalized("goRight", -1, +1, () -> {

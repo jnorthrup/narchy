@@ -528,7 +528,7 @@ public abstract class Param extends Parts<Term,NAR> {
                 //0.5f;
                 //1;
                 //1.618f; //phi
-                //2; //nyquist
+                //2; //nyquist / horizon
                 4;
                 //dur;
                 //8;

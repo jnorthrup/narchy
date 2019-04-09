@@ -195,9 +195,21 @@ public class AutoBuilder<X, Y> {
                     for (Map.Entry<Class, TriFunction> e : annotation.entrySet()) {
                         java.lang.annotation.Annotation fe = f.getAnnotation(e.getKey());
                         if (fe!=null) {
-                            fVal = e.getValue().apply(f, fVal, fe);
-                            if (fVal == null)
-                                break;
+                            Object v = e.getValue().apply(f, fVal, fe);
+                            if (v != null) {
+                                Object vv;
+                                try {
+                                    //HACK
+                                    vv = build((X) v);
+                                } catch (ClassCastException ce) {
+                                    //continue
+                                    vv = v;
+                                }
+                                if (vv!=null) {
+                                    fVal = vv;
+                                    break;
+                                }
+                            }
                         }
                     }
                 }
@@ -244,7 +256,17 @@ public class AutoBuilder<X, Y> {
         return seen.add(x);
     }
 
-    public <C extends X> AutoBuilder<X, Y> on(Class<C> c, BiFunction<C, Object, Y> each) {
+    /** TODO */
+    enum RelationType {
+        Root,
+        Field,
+        Dereference,
+        ListElement,
+        MapElement
+        //..
+    }
+
+    public <C extends X> AutoBuilder<X, Y> on(Class<C> c, BiFunction<C, /*RelationType*/Object, Y> each) {
         onClass.put(c, (BiFunction<? super X, Object, Y>) each);
         return this;
     }

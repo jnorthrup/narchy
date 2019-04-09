@@ -8,6 +8,7 @@ import jcog.pri.bag.Sampler;
 import jcog.pri.bag.impl.ArrayBag;
 import jcog.pri.bag.impl.BufferedBag;
 import nars.NAR;
+import nars.attention.What;
 import nars.control.channel.ConsumerX;
 import nars.task.ITask;
 import org.slf4j.Logger;
@@ -153,14 +154,14 @@ abstract public class Exec implements Executor, ConsumerX<ITask> {
 
 
     /** asynchronously drain N elements from a bag as input */
-    public void input(Sampler<? extends ITask> taskSampler, int max) {
+    public void input(Sampler<? extends ITask> taskSampler, What target, int max) {
         Sampler b;
         if  (taskSampler instanceof BufferedBag)
             b = ((BufferedBag) taskSampler).bag;
         else
             b = taskSampler;
 
-        input(nn -> {
+        execute(() -> {
 
             FasterList batch = Exec.tmpTasks.get();
 
@@ -176,7 +177,7 @@ abstract public class Exec implements Executor, ConsumerX<ITask> {
 //                    if (batch.size() > 2)
 //                        batch.sortThis(Task.sloppySorter);
 
-                    ITask.run(batch, nn);
+                    ITask.run(batch, target);
                 } finally {
                     batch.clear();
                 }

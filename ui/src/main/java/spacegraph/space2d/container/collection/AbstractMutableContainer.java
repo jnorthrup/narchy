@@ -4,7 +4,7 @@ import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.ContainerSurface;
 import spacegraph.space2d.widget.textedit.TextEdit;
 
-public abstract class AbstractMutableContainer extends ContainerSurface {
+public abstract class AbstractMutableContainer<S extends Surface> extends ContainerSurface {
 
     @Override
     protected void starting() {
@@ -22,16 +22,16 @@ public abstract class AbstractMutableContainer extends ContainerSurface {
 //    }
 
 
-    public boolean attachChild(Surface s) {
+    public boolean attachChild(S s) {
         return false;  //by default dont support external addAt
     }
 
-    public boolean detachChild(Surface s) {
+    public boolean detachChild(S s) {
         return false; //by default dont support external removal
     }
 
 
-    public final boolean remove(Surface s) {
+    public final boolean remove(S s) {
         return detachChild(s) && s.stop();
     }
 

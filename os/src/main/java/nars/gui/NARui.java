@@ -149,15 +149,14 @@ public class NARui {
     public static HashMap<String, Supplier<Surface>> menu(NAR n) {
         Map<String, Supplier<Surface>> m = Map.of(
                 //"shl", () -> new ConsoleTerminal(new TextUI(n).session(10f)),
-                "nar", () -> new ObjectSurface<>(n, 1),
-                "on", () -> new ObjectSurface(n.atMap(), 2),
+                "nar", () -> new ObjectSurface<>(n, 2),
+                "on", () -> new ObjectSurface(n.atMap().entrySet(), 2),
                 "exe", () -> ExeCharts.exePanel(n),
                 "val", () -> ExeCharts.valuePanel(n),
                 "mem", () -> MemEdit(n),
                 "can", () -> ExeCharts.causeProfiler(n),
                 //ExeCharts.focusPanel(n),
                 ///causePanel(n),
-                "grp", () -> BagregateConceptGraph2D.get(n),
                 "svc", () -> new PartsTable(n),
                 "cpt", () -> new ConceptBrowser(n)
         );
@@ -577,16 +576,20 @@ public class NARui {
     public static Surface taskBufferView(PriBuffer b, NAR n) {
         Plot2D plot = new Plot2D(256, Plot2D.Line).add("load", b::load, 0, 1);
         DurSurface plotSurface = DurSurface.get(plot, n, plot::commit);
-        return new Gridding(
+        Gridding g = new Gridding(
                 plotSurface,
                 new MetaFrame(b),
                 new Gridding(
-                    new FloatRangePort(
-                        DurLoop.cache(b::load, 0, 1, 1, n).getOne(),
-                    "load"
-                    )
+                        new FloatRangePort(
+                                DurLoop.cache(b::load, 0, 1, 1, n).getOne(),
+                                "load"
+                        )
                 )
         );
+        if (b instanceof PriBuffer.BagTaskBuffer)
+            g.add(new BagView(((PriBuffer.BagTaskBuffer)b).tasks, n));
+
+        return g;
     }
 
     public static Surface tasklinkSpectrogram(Table<?, TaskLink> b, int history, NAR n) {

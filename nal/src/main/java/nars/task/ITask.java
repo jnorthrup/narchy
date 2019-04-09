@@ -44,6 +44,9 @@ public interface ITask extends Prioritizable {
     static void run(FasterList<ITask> t, NAR nar) {
         t.forEachWith(ITask::run, nar);
     }
+    static void run(FasterList<ITask> t, What w) {
+        t.forEachWith(ITask::run, w);
+    }
 
     /**
      * continues executing the chain of returned tasks until the end

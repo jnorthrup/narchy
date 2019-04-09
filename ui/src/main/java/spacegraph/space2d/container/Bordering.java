@@ -87,13 +87,13 @@ public class Bordering<S extends Surface> extends MutableArrayContainer<S> {
         float H = h();
         float w2, h2;
 
-        boolean aspectEqual = false;
-        if (aspectEqual) {
-            w2 = h2 = Math.min(W, H) / 2;
-        } else {
+//        boolean aspectEqual = false;
+//        if (aspectEqual) {
+//            w2 = h2 = Math.min(W, H) / 2;
+//        } else {
             w2 = W / 2;
             h2 = H / 2;
-        }
+//        }
 
 
 

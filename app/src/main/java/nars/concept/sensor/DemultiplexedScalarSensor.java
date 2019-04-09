@@ -25,8 +25,7 @@ abstract public class DemultiplexedScalarSensor extends VectorSensor implements 
     }
 
     @Override public void update(Game g) {
-        if (input!=null)
-            value.set(input.asFloat());
+        value.set(input.asFloat());
         super.update(g);
     }
 

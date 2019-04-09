@@ -329,8 +329,16 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
         tasks.forEach(this::add);
         return this;
     }
+    private TruthProjection addTasks(Iterable<? extends Task> tasks) {
+        tasks.forEach(this::add);
+        return this;
+    }
 
     public final TruthProjection add(Collection<? extends Tasked> tasks) {
+        ensureCapacity(tasks.size());
+        return add((Iterable) tasks);
+    }
+    public final TruthProjection addTasks(Collection<? extends Task> tasks) {
         ensureCapacity(tasks.size());
         return add((Iterable) tasks);
     }
@@ -339,6 +347,7 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
         add(tt.task());
         return this;
     }
+
 
     float intermpolateAndCull(NAR nar) {
 
@@ -451,11 +460,11 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
         forEach(t -> System.out.println(t.task.proof()));
     }
 
-    public long start() {
+    public final long start() {
         return start;
     }
 
-    public long end() {
+    public final long end() {
         return end;
     }
 

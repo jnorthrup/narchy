@@ -11,11 +11,12 @@ import jcog.pri.bag.impl.BufferedBag;
 import jcog.pri.bag.impl.PriArrayBag;
 import jcog.pri.op.PriMerge;
 import jcog.pri.op.PriReturn;
+import nars.NAR;
 import nars.Param;
 import nars.Task;
+import nars.attention.What;
 import nars.control.CauseMerge;
 import nars.control.channel.ConsumerX;
-import nars.exe.Exec;
 import nars.task.ITask;
 
 import java.util.Iterator;
@@ -44,7 +45,7 @@ abstract public class PriBuffer<T extends Prioritizable> implements Consumer<T> 
     public abstract T put(T x);
 
     //public abstract void commit(long now, Consumer<ITask> target);
-    public abstract void commit(long now, ConsumerX<? super T> target);
+    public abstract void commit(long now, ConsumerX<? super T> target, NAR n);
 
     public abstract void clear();
 
@@ -102,7 +103,7 @@ abstract public class PriBuffer<T extends Prioritizable> implements Consumer<T> 
         }
 
         @Override
-        public void commit(long now, ConsumerX<? super T> target) {
+        public void commit(long now, ConsumerX<? super T> target, NAR n) {
 
         }
 
@@ -187,7 +188,7 @@ abstract public class PriBuffer<T extends Prioritizable> implements Consumer<T> 
          * TODO time-sensitive
          */
         @Override
-        public void commit(long now, ConsumerX<? super Task> target) {
+        public void commit(long now, ConsumerX<? super Task> target, NAR n) {
             Iterator<Task> ii = tasks.values().iterator();
             while (ii.hasNext()) {
                 target.accept(ii.next());
@@ -304,7 +305,7 @@ abstract public class PriBuffer<T extends Prioritizable> implements Consumer<T> 
         }
 
         @Override
-        public void commit(long now, ConsumerX<? super ITask> target) {
+        public void commit(long now, ConsumerX<? super ITask> target, NAR nar) {
 
             if (prev == Long.MIN_VALUE)
                 prev = now - 1;
@@ -324,14 +325,14 @@ abstract public class PriBuffer<T extends Prioritizable> implements Consumer<T> 
                 if (n > 0) {
                     //TODO target.input(tasks, n, target.concurrency());
 
-                    int c = (target instanceof Exec /* hack */) ? target.concurrency() : 1;
+                    int c = target.concurrency();
                     if (c <= 1) {
                         b.pop(null, n, target::accept);
                     } else {
                         int remain = n;
                         int nEach = (int) Math.ceil(((float) remain) / c);
                         for (int i = 0; i < c && remain > 0; i++) {
-                            ((Exec)target).input(b, Math.min(remain, nEach));
+                            nar.exe.input(b, (What)target, Math.min(remain, nEach));
                             remain -= nEach;
                         }
                     }

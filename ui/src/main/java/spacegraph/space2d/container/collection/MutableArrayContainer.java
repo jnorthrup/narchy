@@ -9,7 +9,7 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 /** TODO support resizing */
-public class MutableArrayContainer<S extends Surface> extends AbstractMutableContainer {
+public class MutableArrayContainer<S extends Surface> extends AbstractMutableContainer<S> {
 
     /** TODO varhandle */
     protected final AtomicReferenceArray<S> children;
@@ -37,40 +37,45 @@ public class MutableArrayContainer<S extends Surface> extends AbstractMutableCon
     }
 
 
+
+
     /** put semantics */
     public final S setAt(int index, S s) {
         return setAt(index, s, true);
     }
 
     /** returns the removed element */
-    public S setAt(int index, S ss, boolean startAndStop) {
-        return children.getAndAccumulate(index, ss, (r, s) -> {
-            if (r != s) {
-                if (startAndStop) {
-                    if (r != null) {
-                        r.stop();
-                    }
+    public S setAt(int index, S ss, boolean restart) {
+        return restart ?
+            children.getAndAccumulate(index, ss, this::updateRestart) :
+            children.getAndSet(index, ss);
+    }
 
-                    if (s != null) {
-                        Surfacelike sParent = s.parent;
-                        assert (sParent == null || sParent == this);
+
+    private <S extends Surface> S updateRestart(S r, S s) {
+        if (r != s) {
+                if (r != null) {
+                    r.stop();
+                }
+
+                if (s != null) {
+                    Surfacelike sParent = s.parent;
+                    assert (sParent == null || sParent == this);
 
 
 //                        synchronized (this) {
-                            if (sParent == null && this.parent != null) {
-                                s.start(this);
-                            }
-                            //otherwise it is started, or this isnt started
+                    if (sParent == null && this.parent != null) {
+                        s.start(this);
+                    }
+                    //otherwise it is started, or this isnt started
 //                        }
 
-                    }
                 }
 
-                layout();
-            }
 
-            return s;
-        });
+        }
+
+        return s;
     }
 
     @Override

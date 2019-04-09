@@ -23,7 +23,6 @@ import nars.concept.action.curiosity.DefaultCuriosity;
 import nars.concept.sensor.GameLoop;
 import nars.concept.sensor.Signal;
 import nars.concept.sensor.VectorSensor;
-import nars.control.How;
 import nars.control.NARPart;
 import nars.term.Term;
 import nars.term.atom.Atom;
@@ -182,8 +181,8 @@ public class Game implements NSense, NAct {
 
     @Override
     public final <S extends GameLoop> S addSensor(S s) {
-        if (s instanceof How) {
-            nar.start(((How)s));
+        if (s instanceof NARPart) {
+            nar.start(((NARPart)s));
         }
 
         //TODO check for existing
@@ -230,11 +229,9 @@ public class Game implements NSense, NAct {
     //@Override
     protected void starting(NAR nar) {
         nar.control.add(pri);
-        attnAction.parent(nar, this.pri, nar.goalPriDefaultNode);
-        attnSensor.parent(nar, this.pri, nar.beliefPriDefaultNode);
-        attnReward.parent(nar, this.pri, nar.goalPriDefaultNode /* TODO avg */);
-
-
+        attnAction.parent(nar, this.pri, nar.goalPriDefault);
+        attnSensor.parent(nar, this.pri, nar.beliefPriDefault);
+        attnReward.parent(nar, this.pri, nar.goalPriDefault /* TODO avg */);
 
         time.start(this);
     }
