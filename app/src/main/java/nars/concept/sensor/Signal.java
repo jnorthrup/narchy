@@ -16,7 +16,6 @@ import nars.term.Termed;
 import nars.truth.Truth;
 import org.eclipse.collections.api.block.function.primitive.FloatFloatToObjectFunction;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.function.Function;
@@ -106,7 +105,6 @@ public class Signal extends TaskConcept implements GameLoop, FloatFunction<Term>
         return currentValue;
     }
 
-    @Nullable
     public void update(FloatFloatToObjectFunction<Truth> truther, FloatSupplier pri, short cause, Game g) {
 
         float prevValue = currentValue;

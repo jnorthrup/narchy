@@ -117,7 +117,7 @@ public class Unifiable extends AbstractPred<PreDerivation> {
         if (x == null)
             return false; //ex: seeking a negation but wasnt negated
         Term y = ypInT != null ? d.taskTerm.subPath(ypInT) : d.beliefTerm.subPath(ypInB);
-        if (Param.DEBUG) {
+        if (Param.test.DEBUG) {
             if (y == Bool.Null) {
                 throw new WTF((ypInT != null ? d.taskTerm : d.beliefTerm) + " does not resolve "
                         + Arrays.toString((ypInT != null ? ypInT : ypInB)) + " in " + d.taskTerm);

@@ -70,7 +70,7 @@ public final class Termify extends ProxyTerm {
 
         Term y = Occurrify.occurrify(x, truth, time, d);
         if (y!=null) {
-            if (Param.DEBUG_ENSURE_DITHERED_DT)
+            if (Param.test.DEBUG_ENSURE_DITHERED_DT)
                 assertDithered(y, d.ditherDT);
         }
 

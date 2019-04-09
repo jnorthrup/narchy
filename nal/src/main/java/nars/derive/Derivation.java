@@ -71,7 +71,7 @@ public class Derivation extends PreDerivation {
     private long timePrev = Long.MIN_VALUE;
 
     {
-        unifyPremise.commonVariables = Param.PREMISE_UNIFY_COMMON_VARIABLES;
+        unifyPremise.commonVariables = Param.premise.PREMISE_UNIFY_COMMON_VARIABLES;
     }
     public final Collection<Premise> premiseBuffer =
             new ArrayHashSet();
@@ -238,7 +238,7 @@ public class Derivation extends PreDerivation {
         super(
                 null
                 //VAR_PATTERN
-                , null, Param.UnificationStackMax
+                , null, Param.unify.UNIFICATION_STACK_CAPACITY
         );
 
         this.anon = new AnonWithVarShift(ANON_INITIAL_CAPACITY, Op.VAR_DEP.bit | Op.VAR_QUERY.bit);
@@ -281,7 +281,7 @@ public class Derivation extends PreDerivation {
                         && (beliefTruthTask == null || !beliefTruthTask.equals(beliefTruthBelief))) {
                     this.beliefTruthTask = Truth.stronger(
                             beliefTruthTask,
-                            beliefTruthBelief.eternalized(1, Param.TRUTH_EVI_MIN, null /* dont dither */)
+                            beliefTruthBelief.eternalized(1, Param.truth.TRUTH_EVI_MIN, null /* dont dither */)
                     );
                 }
             }
@@ -303,7 +303,7 @@ public class Derivation extends PreDerivation {
                             anon.put(this._beliefTerm = nextBeliefTerm); //unshifted, since the target may be structural
         }
 
-        if (Param.DEBUG) {
+        if (Param.test.DEBUG) {
             if ((beliefTerm instanceof Bool) || ((beliefTerm instanceof Compound && _beliefTerm instanceof Compound) && (beliefTerm.op() != _beliefTerm.op())))
                 throw new WTF(_beliefTerm + " could not be anon, result: " + beliefTerm);
 

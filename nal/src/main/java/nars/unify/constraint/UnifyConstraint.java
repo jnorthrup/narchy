@@ -103,7 +103,7 @@ public abstract class UnifyConstraint<U extends Unify> extends AbstractPred<U> {
                     UnifyConstraint<?>[] d = cc.toArray(new UnifyConstraint[ccn]);
                     Arrays.sort(d, PREDICATE.sortByCostIncreasing);
 
-                    if (Param.DEBUG_EXTRA) {
+                    if (Param.test.DEBUG_EXTRA) {
                         final Term target = d[0].x;
                         for (int i = 1; i < d.length; i++)
                             assert (d[i].x.equals(target));

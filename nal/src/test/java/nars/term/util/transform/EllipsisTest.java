@@ -75,7 +75,7 @@ public class EllipsisTest {
 
                 //System.out.println(seed + ": " + x + " unify " + y + " => " + r);
 
-                Unify f = new Unify(VAR_PATTERN, new XorShift128PlusRandom(1 + seed), Param.UnificationStackMax) {
+                Unify f = new Unify(VAR_PATTERN, new XorShift128PlusRandom(1 + seed), Param.unify.UNIFICATION_STACK_CAPACITY) {
 
                     @Override
                     public void tryMatch() {
@@ -414,7 +414,7 @@ public class EllipsisTest {
 
 
             Random rng = new XorShift128PlusRandom(seed);
-            Unify f = new Unify(VAR_PATTERN, rng, Param.UnificationStackMax, 128) {
+            Unify f = new Unify(VAR_PATTERN, rng, Param.unify.UNIFICATION_STACK_CAPACITY, 128) {
                 @Override
                 public void tryMatch() {
                     results.add(xy.toString());

@@ -417,7 +417,7 @@ public interface Task extends Truthed, Stamp, TermedDelegate, ITask, TaskRegion,
 
     @Nullable
     static <T extends Task> T tryTask(Term t, byte punc, Truth tr, BiFunction<Term, Truth, T> withResult) {
-        return tryTask(t, punc, tr, withResult, !Param.DEBUG_EXTRA);
+        return tryTask(t, punc, tr, withResult, !Param.test.DEBUG_EXTRA);
     }
 
     @Nullable
@@ -482,7 +482,7 @@ public interface Task extends Truthed, Stamp, TermedDelegate, ITask, TaskRegion,
 
             if (tt.evi() > t.evi()) {
                 double inflationPct = (tt.evi() - t.evi()) / (t.evi());
-                if (Param.DEBUG || inflationPct >= Param.PROJECTION_EVIDENCE_INFLATION_PCT_TOLERANCE) {
+                if (Param.test.DEBUG || inflationPct >= Param.PROJECTION_EVIDENCE_INFLATION_PCT_TOLERANCE) {
                     throw new Truth.TruthException("inflation, %=", inflationPct);
                 } /* else {
                     //allow
@@ -917,7 +917,7 @@ public interface Task extends Truthed, Stamp, TermedDelegate, ITask, TaskRegion,
 
             double eve = TruthIntegration.eviAvg(this, targetStart, targetEnd, dur);
 
-            if (eve > Param.TRUTH_EVI_MIN) {
+            if (eve > Param.truth.TRUTH_EVI_MIN) {
                 return PreciseTruth.byEvi(
                         freq() /* TODO interpolate frequency wave */,
                         eve);

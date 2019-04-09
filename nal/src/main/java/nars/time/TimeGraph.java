@@ -184,7 +184,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
                             if (as == ETERNAL)
                                 continue;
 
-                            if (Param.Deriver.TIMEGRAPH_ABSORB_CONTAINED_EVENT) {
+                            if (Param.derive.TIMEGRAPH_ABSORB_CONTAINED_EVENT) {
                                 if (af.containsOrEquals(start, end)) {
                                     //add = false;
                                     //break; //dont affect the stored graph, but return the smaller interval that was input
@@ -198,14 +198,14 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 
 
                             if (add && af.containedIn(start, end)) {
-                                if (Param.Deriver.TIMEGRAPH_ABSORB_CONTAINED_EVENT) {
+                                if (Param.derive.TIMEGRAPH_ABSORB_CONTAINED_EVENT) {
                                     //absorb existing
                                     removeNode(f);
                                     ff.remove();
                                     nte--;
                                 }
                             } else {
-                                if (start != ETERNAL && Param.Deriver.TIMEGRAPH_MERGE_INTERSECTING_EVENTS) {
+                                if (start != ETERNAL && Param.derive.TIMEGRAPH_MERGE_INTERSECTING_EVENTS) {
                                     long[] merged;
                                     if ((merged = af.unionIfIntersects(start, end)) != null) {
 

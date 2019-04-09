@@ -79,7 +79,7 @@ public class DynTaskify extends TaskList {
 
         Term st;
         if (!subTerm.isNormalized()) {
-            if (Param.DEBUG) {
+            if (Param.test.DEBUG) {
                 throw new TODO("unnormalize the result for inclusion in the super-compound");
                 //st = subTerm.normalize();
             }

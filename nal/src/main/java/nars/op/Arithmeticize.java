@@ -105,7 +105,7 @@ public class Arithmeticize {
 
     @Deprecated
     public static Term apply(Term x, boolean eternal, Random random) {
-        return apply(x, null, Param.COMPOUND_VOLUME_MAX, eternal, random);
+        return apply(x, null, Param.term.COMPOUND_VOLUME_MAX, eternal, random);
     }
 
 

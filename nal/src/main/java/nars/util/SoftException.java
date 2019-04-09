@@ -26,7 +26,7 @@ public class SoftException extends RuntimeException {
 
     @Override
     public final synchronized Throwable fillInStackTrace() {
-        if (!Param.DEBUG)
+        if (!Param.test.DEBUG)
             return this; 
         else {
             

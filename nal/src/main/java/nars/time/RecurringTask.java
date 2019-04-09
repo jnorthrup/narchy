@@ -22,7 +22,7 @@ abstract public class RecurringTask extends ScheduledTask {
             //idealNext = now + 1; //immediate
             idealNext = now + Math.max(1, durCycles - phaseLate);
 
-            if (Param.DEBUG) {
+            if (Param.test.DEBUG) {
                 long earliest = started + durCycles;
                 assert (nextStart >= earliest) : "starting too soon: " + nextStart + " < " + earliest;
                 long latest = now + durCycles;

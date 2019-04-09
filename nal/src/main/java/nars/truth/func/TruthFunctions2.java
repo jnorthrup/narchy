@@ -335,7 +335,7 @@ public enum TruthFunctions2 {
         if (cxy >= minConf) {
 
             float fxy = XY.freq();
-            float fx = Math.max(Util.sqr(Param.TRUTH_EPSILON), X.freq()); //prevent division by zero
+            float fx = Math.max(Util.sqr(Param.truth.TRUTH_EPSILON), X.freq()); //prevent division by zero
             float fy = fxy / fx;
 
             float cFactor = 1;

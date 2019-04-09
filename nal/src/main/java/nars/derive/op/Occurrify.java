@@ -201,7 +201,7 @@ public class Occurrify extends TimeGraph {
         if (!Taskify.valid(c2, d.concPunc)) {
             boolean fail;
 
-            if (Param.INVALID_DERIVATION_TRY_QUESTION && d.concPunc == BELIEF || d.concPunc == GOAL) {
+            if (Param.derive.DERIVATION_FORM_QUESTION_FROM_AMBIGUOUS_BELIEF_OR_GOAL && d.concPunc == BELIEF || d.concPunc == GOAL) {
                 //as a last resort, try forming a question from the remains
                 byte qPunc = d.concPunc == BELIEF ? QUESTION : QUEST;
                 if (!Taskify.valid(c2, qPunc)) {
@@ -237,7 +237,7 @@ public class Occurrify extends TimeGraph {
             x = Retemporalize.retemporalizeXTERNALToDTERNAL.apply(x);
             if (!Taskify.valid(x, d.concPunc)) {
                 d.nar().feel.deriveFailTemporal.increment();
-                Taskify.spam(d, Param.Deriver.TTL_DERIVE_TASK_FAIL);
+                Taskify.spam(d, Param.derive.TTL_DERIVE_TASK_FAIL);
                 return null;
             }
         }
@@ -299,7 +299,7 @@ public class Occurrify extends TimeGraph {
 
     @Override
     public long eventOcc(long when) {
-        if (Param.Deriver.TIMEGRAPH_DITHER_EVENTS_INTERNALLY)
+        if (Param.derive.TIMEGRAPH_DITHER_EVENTS_INTERNALLY)
             return Tense.dither(when, d.ditherDT);
         else
             return when;
@@ -490,13 +490,13 @@ public class Occurrify extends TimeGraph {
 
         int v = y.volume();
         return v <= d.termVolMax && super.validPotentialSolution(y) &&
-               v >= Param.Deriver.TIMEGRAPH_IGNORE_DEGENERATE_SOLUTIONS_FACTOR * patternVolume
+               v >= Param.derive.TIMEGRAPH_IGNORE_DEGENERATE_SOLUTIONS_FACTOR * patternVolume
                ;
     }
 
     private ArrayHashSet<Event> solutions(Term pattern) {
 
-        ttl = Param.Deriver.TIMEGRAPH_ITERATIONS;
+        ttl = Param.derive.TIMEGRAPH_ITERATIONS;
         patternVolume = pattern.volume();
         patternOp = pattern.op();
 
@@ -1321,7 +1321,7 @@ public class Occurrify extends TimeGraph {
             if (offset != DTERNAL)
                 return pair(x, new long[]{srcStart + offset, srcEnd + offset});
 
-            if (Param.DEBUG)
+            if (Param.test.DEBUG)
                 throw new WTF();
 
             return null;

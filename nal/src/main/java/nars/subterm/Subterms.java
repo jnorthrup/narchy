@@ -1292,7 +1292,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
             if (k == null || k == Bool.Null) {
                 return null;
             } else if (k.op()==FRAG) {
-                if (Param.DEBUG)
+                if (Param.test.DEBUG)
                     throw new TODO("recursive EllipsisMatch unsupported");
                 else
                     return null;

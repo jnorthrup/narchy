@@ -31,7 +31,7 @@ class TermutatorTest {
     private final int TTL = 256;
 
     private final Unify unifier = new Unify(Op.VAR_PATTERN, new XorShift128PlusRandom(1),
-            Param.UnificationStackMax, TTL) {
+            Param.unify.UNIFICATION_STACK_CAPACITY, TTL) {
         @Override public void tryMatch() {
             stop();
         }

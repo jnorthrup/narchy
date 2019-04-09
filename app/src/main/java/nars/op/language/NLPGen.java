@@ -76,7 +76,7 @@ public class NLPGen {
 
                         final String[] result = {null};
 
-                        Unify u = new Unify(VAR_PATTERN, terminal.random(), Param.UnificationStackMax, terminal.deriveBranchTTL.intValue()) {
+                        Unify u = new Unify(VAR_PATTERN, terminal.random(), Param.unify.UNIFICATION_STACK_CAPACITY, terminal.deriveBranchTTL.intValue()) {
 
                             @Override
                             public void tryMatch() {

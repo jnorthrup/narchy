@@ -90,7 +90,7 @@ abstract public class Deriver extends How {
      * unifier TTL used for matching in premise formation
      */
     protected int matchTTL() {
-        return nar.matchTTL.intValue();
+        return nar.premiseUnifyTTL.intValue();
     }
 
 

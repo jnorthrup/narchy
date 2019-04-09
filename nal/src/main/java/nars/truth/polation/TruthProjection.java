@@ -80,7 +80,6 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
     }
 
 
-    @Nullable
     protected boolean update(TaskComponent tc, boolean force) {
         double e = tc.evi;
         if (force || (e!=e)) {
@@ -99,7 +98,7 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
         } else {
             e = TruthIntegration.evi(task, start, end, dur);
         }
-        return e < Param.TRUTH_EVI_MIN ? Double.NaN : e;
+        return e < Param.truth.TRUTH_EVI_MIN ? Double.NaN : e;
     }
 
 
@@ -110,8 +109,6 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
      */
     @Nullable
     public final MetalLongSet commit(boolean tCrop, int minResults, boolean needStamp) {
-
-
         int s = size();
         if (s < minResults) {
             return null;
@@ -122,6 +119,7 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
             return needStamp ? e : null;
         }
     }
+
     public int active() {
         return count(TaskComponent::valid);
     }
@@ -131,17 +129,17 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
             invalidate();
 
         int s = size();
-        if (s > 0) {
-            int count = 0;
-            for (int i = 0; i < s; i++) {
-                if (update(get(i), force))
-                    count++;
-            }
-            if (count > 0)
-                sortByEvidence();
-            return count;
+        if (s <= 0)
+            return 0;
+
+        int count = 0;
+        for (int i = 0; i < s; i++) {
+            if (update(get(i), force))
+                count++;
         }
-        return 0;
+        if (count > 0)
+            sortByEvidence();
+        return count;
     }
 
  @Nullable private MetalLongSet filterCyclicN(int minComponents, boolean tCrop, boolean needStamp) {
@@ -162,10 +160,7 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
             }
             if (activeRemain == 1) {
                 //throw new WTF();
-                if (e == null && needStamp)
-                    return Stamp.toMutableSet(firstValid().task);
-                else
-                    return e;
+                return ((e == null) && needStamp) ? Stamp.toMutableSet(firstValid().task) : e;
             }
 
             if (e == null)
@@ -404,7 +399,7 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
                                     b, (float) (e1Evi / (e1Evi + e2Evi)), nar);
                         } catch (TermException e) {
                             //HACK TODO avoid needing to throw exception
-                            if (Param.DEBUG) {
+                            if (Param.test.DEBUG) {
                                 throw new RuntimeException(e);
                             } else {
                                 //ignore.  it may be a contradictory combination of events.
@@ -452,7 +447,7 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
 
     @Nullable
     public final Truth truth() {
-        return truth(Param.TRUTH_EVI_MIN, false, false, null);
+        return truth(Param.truth.TRUTH_EVI_MIN, false, false, null);
     }
 
 

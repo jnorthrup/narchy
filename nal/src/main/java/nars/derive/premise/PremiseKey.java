@@ -18,7 +18,7 @@ class PremiseKey extends ByteKeyExternalWithParameter<Unify> {
         super(d);
 
         /* TODO move dithering option to parameter */
-        if (Param.PREMISE_KEY_DITHER && ditherDT > 0) {
+        if (Param.premise.PREMISE_KEY_DITHER && ditherDT > 0) {
             TermIO.DeferredTemporalTermIO io = new TermIO.DeferredTemporalTermIO();
             io.write(d.taskTerm, key);
             io.write(d.beliefTerm, key);

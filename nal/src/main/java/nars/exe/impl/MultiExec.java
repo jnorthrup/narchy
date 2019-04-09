@@ -4,7 +4,6 @@ import com.google.common.base.Joiner;
 import jcog.Texts;
 import jcog.Util;
 import jcog.data.list.FasterList;
-import jcog.exe.Exe;
 import jcog.math.FloatAveragedWindow;
 import nars.NAR;
 import nars.exe.Exec;

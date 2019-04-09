@@ -102,7 +102,7 @@ public class NAgentOptimize {
                     try {
                         t.nar().run(experimentCycles);
                     } catch (Throwable ee) {
-                        if (Param.DEBUG)
+                        if (Param.test.DEBUG)
                             ee.printStackTrace();
                         return Float.NEGATIVE_INFINITY;
                     }

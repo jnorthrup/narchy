@@ -25,8 +25,8 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 
 import static nars.Op.*;
-import static nars.Param.Deriver.DERIVE_FILTER_SIMILAR_TO_PARENTS;
-import static nars.Param.Deriver.TermUnifyForkMax;
+import static nars.Param.derive.DERIVE_FILTER_SIMILAR_TO_PARENTS;
+import static nars.Param.derive.TermUnifyForkMax;
 import static nars.time.Tense.ETERNAL;
 
 public class Taskify extends ProxyTerm {
@@ -117,7 +117,7 @@ public class Taskify extends ProxyTerm {
             xo = x.op();
         }
         if (!xo.taskable)
-            return spam(d, Param.Deriver.TTL_DERIVE_TASK_FAIL);
+            return spam(d, Param.derive.TTL_DERIVE_TASK_FAIL);
 
 
 //        if (xo == INH && Param.DERIVE_AUTO_IMAGE_NORMALIZE && !d.concSingle) {
@@ -135,7 +135,7 @@ public class Taskify extends ProxyTerm {
             //dither truth
             tru = d.concTruth.dither(d.nar().freqResolution.floatValue(), d.nar().confResolution.floatValue(), d.eviMin, neg);
             if (tru == null)
-                return spam(d, Param.Deriver.TTL_DERIVE_TASK_UNPRIORITIZABLE);
+                return spam(d, Param.derive.TTL_DERIVE_TASK_UNPRIORITIZABLE);
 
         } else {
             tru = null; //questions and quests
@@ -160,19 +160,19 @@ public class Taskify extends ProxyTerm {
         if (same(x, punc, tru, S, E, d._task, d.nar()) ||
                 (d._belief != null && same(x, punc, tru, S, E, d._belief, d.nar()))) {
             d.nar().feel.deriveFailParentDuplicate.increment();
-            return spam(d, Param.Deriver.TTL_DERIVE_TASK_SAME);
+            return spam(d, Param.derive.TTL_DERIVE_TASK_SAME);
         }
 
 
         DerivedTask t = Task.tryTask(x, punc, tru, (C, tr) ->
-                Param.DEBUG ?
+                Param.test.DEBUG ?
                         new DebugDerivedTask(C, punc, tr, S, E, d) :
                         new DerivedTask(C, punc, tr, S, E, d)
         );
 
         if (t == null) {
             d.nar().feel.deriveFailTaskify.increment();
-            return spam(d, Param.Deriver.TTL_DERIVE_TASK_FAIL);
+            return spam(d, Param.derive.TTL_DERIVE_TASK_FAIL);
         }
 
 
@@ -180,7 +180,7 @@ public class Taskify extends ProxyTerm {
 
         if (priority != priority) {
             d.nar().feel.deriveFailPrioritize.increment();
-            return spam(d, Param.Deriver.TTL_DERIVE_TASK_UNPRIORITIZABLE);
+            return spam(d, Param.derive.TTL_DERIVE_TASK_UNPRIORITIZABLE);
         }
 
         //these must be applied before possible merge on input to derivedTask bag
@@ -197,15 +197,15 @@ public class Taskify extends ProxyTerm {
         if (u != t) {
 
             d.nar().feel.deriveFailDerivationDuplicate.increment();
-            cost = Param.Deriver.TTL_DERIVE_TASK_REPEAT;
+            cost = Param.derive.TTL_DERIVE_TASK_REPEAT;
 
         } else {
 
-            if (Param.DEBUG)
+            if (Param.test.DEBUG)
                 t.log(channel.ruleString);
 
             d.nar().feel.deriveTask.increment();
-            cost = Param.Deriver.TTL_DERIVE_TASK_SUCCESS;
+            cost = Param.derive.TTL_DERIVE_TASK_SUCCESS;
 
         }
         return d.use(cost);

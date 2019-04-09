@@ -70,7 +70,7 @@ public class DiscreteTruth implements Truth {
                     ||
             ((that instanceof DiscreteTruth) ?
                     (hash == ((DiscreteTruth)that).hash) :
-                    equalTruth((Truth) that, Param.TRUTH_EPSILON));
+                    equalTruth((Truth) that, Param.truth.TRUTH_EPSILON));
     }
 
     @Override

@@ -94,7 +94,7 @@ public interface Variable extends Atomic {
 //            else
 //                return x.unify(y, u);
 
-            if (u.varDepth < Param.UNIFY_VAR_RECURSION_DEPTH_LIMIT) {
+            if (u.varDepth < Param.unify.UNIFY_VAR_RECURSION_DEPTH_LIMIT) {
                 u.varDepth++;
                 boolean result = x.unify(y, u);
                 u.varDepth--;

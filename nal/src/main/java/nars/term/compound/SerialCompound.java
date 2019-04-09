@@ -37,7 +37,7 @@ public class SerialCompound extends DynBytes implements SameSubtermsCompound, Th
         for (Term x: subterms)
             v += x.volume();
 
-        if (v > Param.COMPOUND_VOLUME_MAX)
+        if (v > Param.term.COMPOUND_VOLUME_MAX)
             throw new TermException("complexity overflow");
 
         this.volume = (byte) v;

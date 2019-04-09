@@ -3,7 +3,6 @@ package jcog.sort;
 import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 import java.util.function.Consumer;

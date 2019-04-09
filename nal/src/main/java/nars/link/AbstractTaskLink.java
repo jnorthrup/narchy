@@ -12,6 +12,7 @@ import nars.task.util.TaskException;
 import nars.term.Term;
 
 import static jcog.Util.assertFinite;
+import static jcog.pri.op.PriReturn.Void;
 import static jcog.pri.op.PriReturn.*;
 import static nars.Task.i;
 
@@ -40,7 +41,7 @@ public abstract class AbstractTaskLink implements TaskLink {
             throw new TaskException(source, "source term not taskable");
         if (!so.conceptualizable)
             throw new TaskException(source, "source term not conceptualizable");
-        if (Param.DEBUG) {
+        if (Param.test.DEBUG) {
             if (!source.isNormalized())
                 throw new TaskException(source, "source term not normalized");
         }

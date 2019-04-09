@@ -3,7 +3,7 @@ package nars.time;
 import jcog.data.iterator.ArrayIterator;
 import jcog.data.list.MetalConcurrentQueue;
 import nars.NAR;
-import nars.Param;
+import nars.exe.Exec;
 
 import javax.measure.Quantity;
 import java.io.Serializable;
@@ -46,9 +46,9 @@ public abstract class Time implements Serializable {
 
     final AtomicLong scheduledNext = new AtomicLong(Long.MIN_VALUE);
 
-    final MetalConcurrentQueue<ScheduledTask> incoming = new MetalConcurrentQueue<>(Param.TIME_QUEUE_CAPACITY);
+    final MetalConcurrentQueue<ScheduledTask> incoming = new MetalConcurrentQueue<>(Exec.TIME_QUEUE_CAPACITY);
 
-    final PriorityQueue<ScheduledTask> scheduled = new PriorityQueue<>(Param.TIME_QUEUE_CAPACITY /* estimate capacity */);
+    final PriorityQueue<ScheduledTask> scheduled = new PriorityQueue<>(Exec.TIME_QUEUE_CAPACITY /* estimate capacity */);
 
     /**
      * busy mutex

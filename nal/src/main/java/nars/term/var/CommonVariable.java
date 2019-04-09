@@ -82,7 +82,7 @@ public final class CommonVariable extends UnnormalizedVariable {
     /** vars must be sorted */
     private CommonVariable(/*@NotNull*/ Op type, AnonSubterms vars) {
         super(type, key(type, vars));
-        if (Param.DEBUG) {
+        if (Param.test.DEBUG) {
             for (Term t : vars)
                 if (!t.the()) throw new WTF();
         }
@@ -91,12 +91,12 @@ public final class CommonVariable extends UnnormalizedVariable {
     }
 
     public static Term parse(Object... cv) {
-        if (cv.length < 2 || cv.length > Param.UNIFY_COMMON_VAR_MAX)
+        if (cv.length < 2 || cv.length > Param.unify.UNIFY_COMMON_VAR_MAX)
             return Null;
 
         SortedSet<Variable> s = new TreeSet();
         for (Object o : cv) s.add((Variable) o);
-        if (s.size() < 2 || s.size() > Param.UNIFY_COMMON_VAR_MAX)
+        if (s.size() < 2 || s.size() > Param.unify.UNIFY_COMMON_VAR_MAX)
             return Null;
 
         return new CommonVariable(s.first().op(), new AnonSubterms(s.toArray(Op.EmptyTermArray)));

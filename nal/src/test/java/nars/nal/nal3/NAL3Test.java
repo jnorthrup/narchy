@@ -111,9 +111,9 @@ public class NAL3Test extends NALTest {
 
         float confThresh = 0.15f;
         if (freq > 0)
-            test.mustNotOutput(cycles, known, BELIEF, 0, freq - Param.TRUTH_EPSILON, confThresh, 1, ETERNAL);
+            test.mustNotOutput(cycles, known, BELIEF, 0, freq - Param.truth.TRUTH_EPSILON, confThresh, 1, ETERNAL);
         if (freq < 1)
-            test.mustNotOutput(cycles, known, BELIEF, freq + Param.TRUTH_EPSILON, 1, confThresh, 1, ETERNAL);
+            test.mustNotOutput(cycles, known, BELIEF, freq + Param.truth.TRUTH_EPSILON, 1, confThresh, 1, ETERNAL);
         return test;
     }
 

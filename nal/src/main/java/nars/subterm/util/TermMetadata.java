@@ -53,7 +53,7 @@ abstract public class TermMetadata implements Termlike {
                 (this.varIndep = (byte) s.varIndep);
 
         this.complexity = (short) ((this.volume = s.vol) - varTot);
-        if (this.volume > Param.COMPOUND_VOLUME_MAX)
+        if (this.volume > Param.term.COMPOUND_VOLUME_MAX)
             throw new TermException("complexity overflow");
 
         this.hash = s.hash;

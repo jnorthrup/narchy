@@ -1,7 +1,6 @@
 package nars.term.util.conj;
 
 import nars.term.Term;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import static nars.time.Tense.ETERNAL;

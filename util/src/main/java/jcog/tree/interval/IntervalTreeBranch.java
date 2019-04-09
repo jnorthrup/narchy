@@ -12,7 +12,6 @@ import java.util.function.Consumer;
 public class IntervalTreeBranch<K extends Comparable<? super K>, V> implements
         IntervalTreeNode<K, V> {
 
-    @Nullable
     private IntervalTreeNode<K, V> left, right;
     private Between<K> key;
 
@@ -56,22 +55,22 @@ public class IntervalTreeBranch<K extends Comparable<? super K>, V> implements
     }
 
     @Override
-    public boolean contains(@NotNull K point) {
+    public boolean contains(K point) {
         return key.contains(point);
     }
 
     @Override
-    public boolean contains(@NotNull Between<K> interval) {
+    public boolean contains(Between<K> interval) {
         return key.contains(interval);
     }
 
     @Override
-    public boolean overlaps(@NotNull K low, @NotNull K high) {
+    public boolean overlaps(K low, K high) {
         return key.overlaps(low, high);
     }
 
     @Override
-    public boolean overlaps(@NotNull Between<K> interval) {
+    public boolean overlaps(Between<K> interval) {
         return key.overlaps(interval);
     }
 
@@ -95,7 +94,7 @@ public class IntervalTreeBranch<K extends Comparable<? super K>, V> implements
 
     @NotNull
     @Override
-    public IntervalTreeNode<K, V> put(@NotNull Between<K> key, V value) {
+    public IntervalTreeNode<K, V> put(Between<K> key, V value) {
         if (right == null) {
             if (left.getLow().compareTo(key.getLow()) < 0) {
                 right = left;
@@ -250,7 +249,7 @@ public class IntervalTreeBranch<K extends Comparable<? super K>, V> implements
     }
 
     @Override
-    public boolean containedBy(@NotNull Between<K> interval) {
+    public boolean containedBy(Between<K> interval) {
         return interval.contains(key);
     }
 

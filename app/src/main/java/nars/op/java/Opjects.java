@@ -318,7 +318,7 @@ public class Opjects extends DefaultTermizer {
 //                            uninvokeEvi
 //                    ), nar);
                     NALTask.the(nt, BELIEF, PreciseTruth.byEvi(invokeFreq, invokeEvi), start, start, end, nar.evidence());
-            if (Param.DEBUG) feedback.log("Invoked");
+            if (Param.test.DEBUG) feedback.log("Invoked");
             feedback.priMax(beliefPri);
             return feedback;
         }
@@ -342,7 +342,7 @@ public class Opjects extends DefaultTermizer {
 //                    nar);
                     NALTask.the(nt, BELIEF, PreciseTruth.byEvi(freq, beliefEvi), start, start, end, nar.evidence());
 
-            if (Param.DEBUG) value.log("Invoke Result");
+            if (Param.test.DEBUG) value.log("Invoke Result");
 
             value.priMax(beliefPri);
             return value;
@@ -558,7 +558,7 @@ public class Opjects extends DefaultTermizer {
         @Override
         protected Task exePrefilter(Task x) {
 
-            if (!x.isCommand() && x.freq() <= 0.5f + Param.TRUTH_EPSILON)
+            if (!x.isCommand() && x.freq() <= 0.5f + Param.truth.TRUTH_EPSILON)
                 return null;
 
             if (runCache.apply(x.term()) == null)

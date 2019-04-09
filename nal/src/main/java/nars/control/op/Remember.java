@@ -62,7 +62,7 @@ public class Remember extends AbstractTask {
 
         if (x.isBeliefOrGoal() && x.conf() < n.confMin.floatValue()) {
             if (!(x instanceof ProxyTask)) {
-                if (Param.DEBUG)
+                if (Param.test.DEBUG)
                     throw new TaskException(x, "insufficient evidence for non-input Task");
                 else
                     return null;
@@ -70,17 +70,17 @@ public class Remember extends AbstractTask {
         }
 
 
-        if (Param.DEBUG_ENSURE_DITHERED_TRUTH) {
+        if (Param.test.DEBUG_ENSURE_DITHERED_TRUTH) {
             Truth.assertDithered(x.truth(), n);
         }
 
-        if (Param.DEBUG_ENSURE_DITHERED_DT || Param.DEBUG_ENSURE_DITHERED_OCCURRENCE) {
+        if (Param.test.DEBUG_ENSURE_DITHERED_DT || Param.test.DEBUG_ENSURE_DITHERED_OCCURRENCE) {
             int d = n.dtDither();
             if (d > 1) {
-                if (Param.DEBUG_ENSURE_DITHERED_DT) {
+                if (Param.test.DEBUG_ENSURE_DITHERED_DT) {
                     Tense.assertDithered(xTerm, d);
                 }
-                if (Param.DEBUG_ENSURE_DITHERED_OCCURRENCE) {
+                if (Param.test.DEBUG_ENSURE_DITHERED_OCCURRENCE) {
                     Tense.assertDithered(x, d);
                 }
             }
@@ -178,7 +178,7 @@ public class Remember extends AbstractTask {
             Concept cc = n.conceptualize(input);
             if (!(cc instanceof TaskConcept)) {
                 //may be an atomic functor term, not sure
-                if (Param.DEBUG)
+                if (Param.test.DEBUG)
                     throw new WTF();
                 return;
             }
@@ -321,12 +321,12 @@ public class Remember extends AbstractTask {
         if (next == remembered && next.isInput())
             return true;
 
-        if (dCreationDurs > Param.Belief.REMEMBER_REPEAT_THRESH_DURS) {
+        if (dCreationDurs > Param.belief.REMEMBER_REPEAT_THRESH_DURS) {
             prev.setCreation(next.creation());
             return true;
         }
 
-        return dPri > Param.Belief.REMEMBER_REPEAT_PRI_THRESHOLD;
+        return dPri > Param.belief.REMEMBER_REPEAT_PRI_THRESHOLD;
 
     }
 

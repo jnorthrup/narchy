@@ -44,7 +44,7 @@ public class SensorBeliefTables extends BeliefTables {
         this(c, beliefOrGoal,
                 //TODO impl time series with concurrent ring buffer from gluegen
                 //new ConcurrentSkiplistTaskSeries<>(Param.SIGNAL_BELIEF_TABLE_SERIES_SIZE)
-                new RingBufferTaskSeries<>(  Param.Belief.SIGNAL_BELIEF_TABLE_SERIES_SIZE));
+                new RingBufferTaskSeries<>(  Param.belief.signal.SIGNAL_BELIEF_TABLE_SERIES_SIZE));
     }
 
     SensorBeliefTables(Term term, boolean beliefOrGoal, AbstractTaskSeries<Task> s) {
@@ -64,7 +64,7 @@ public class SensorBeliefTables extends BeliefTables {
     @Override
     public final void remember(Remember r) {
 
-        if (Param.Belief.SIGNAL_TABLE_FILTER_NON_SIGNAL_TEMPORAL_TASKS) {
+        if (Param.belief.signal.SIGNAL_TABLE_FILTER_NON_SIGNAL_TEMPORAL_TASKS) {
             Task x = r.input;
             if (!(x instanceof SeriesTask)) { //shouldnt happen anyway
                 if (!x.isEternal() && !x.isInput() /* explicit overrides from user */) {

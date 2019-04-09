@@ -117,7 +117,7 @@ public class ActiveQuestionTask extends NALTask.NALTaskX implements Consumer<Tas
         boolean match;
 
         public MySubUnify(Random r, int ttl) {
-            super(null, r, Param.UnificationStackMax, ttl);
+            super(null, r, Param.unify.UNIFICATION_STACK_CAPACITY, ttl);
         }
 
         @Override

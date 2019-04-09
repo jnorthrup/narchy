@@ -129,7 +129,7 @@ public interface TermIO {
 
                     int siz = in.readByte();
 
-                    assert (siz < Param.SUBTERMS_MAX);
+                    assert (siz < Param.term.SUBTERMS_MAX);
 
                     Term[] s = new Term[siz];
                     for (int i = 0; i < siz; i++) {

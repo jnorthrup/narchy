@@ -124,7 +124,7 @@ public class TaskList extends FasterList<Task> implements TaskRegion {
                         // * dyn.originality() //HACK
         );
 
-        if (Param.DEBUG_EXTRA)
+        if (Param.test.DEBUG_EXTRA)
             dyn.log("Dynamic");
 
         return dyn;

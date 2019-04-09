@@ -30,7 +30,7 @@ public class SubUnify extends Unify {
     }
 
     public SubUnify(Random rng, int varBits) {
-        super(varBits, rng, Param.UnificationStackMax);
+        super(varBits, rng, Param.unify.UNIFICATION_STACK_CAPACITY);
     }
 
     @Override

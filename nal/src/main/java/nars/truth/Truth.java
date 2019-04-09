@@ -50,7 +50,7 @@ public interface Truth extends Truthed {
      * truth component resolution corresponding to Param.TRUTH_EPSILON
      */
     short hashDiscretenessEpsilon = (short)
-            (Math.round(1f / (Param.TRUTH_EPSILON)));
+            (Math.round(1f / (Param.truth.TRUTH_EPSILON)));
 
     /**
      * The hash code of a TruthValue, perfectly condensed,
@@ -75,7 +75,7 @@ public interface Truth extends Truthed {
             throw new TruthException("invalid conf", conf);
 
         int freqHash = Util.floatToInt(freq, discreteness);
-        int confHash = Util.floatToInt(Math.min(Param.TRUTH_CONF_MAX, conf), discreteness);
+        int confHash = Util.floatToInt(Math.min(Param.truth.TRUTH_CONF_MAX, conf), discreteness);
         return (freqHash << 16) | confHash;
     }
 
@@ -305,7 +305,7 @@ public interface Truth extends Truthed {
 
 
     default Truth dither(float freqRes, float confRes) {
-        if (freqRes < Param.TRUTH_EPSILON && confRes < Param.TRUTH_EPSILON)
+        if (freqRes < Param.truth.TRUTH_EPSILON && confRes < Param.truth.TRUTH_EPSILON)
             return this;
 
         float f = freq();
@@ -323,7 +323,7 @@ public interface Truth extends Truthed {
         if (e < eviMin)
             return null;
 
-        if (!negate && freqRes < Param.TRUTH_EPSILON && confRes < Param.TRUTH_EPSILON)
+        if (!negate && freqRes < Param.truth.TRUTH_EPSILON && confRes < Param.truth.TRUTH_EPSILON)
             return this;
 
         float f = freq();

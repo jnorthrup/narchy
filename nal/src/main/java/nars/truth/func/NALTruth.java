@@ -456,7 +456,7 @@ public enum NALTruth implements TruthFunc {
 
 
     final public @Nullable Truth apply(@Nullable Truth task, @Nullable Truth belief, NAR m) {
-        return apply(task, belief, m, Param.TRUTH_EPSILON);
+        return apply(task, belief, m, Param.truth.TRUTH_EPSILON);
     }
 }
 //    IntersectionSym() {

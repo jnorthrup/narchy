@@ -140,7 +140,7 @@ abstract public class MapSubst implements Subst {
 
     public static TermTransform replace(Term from, Term to) {
 
-        if (Param.DEBUG && from == to)
+        if (Param.test.DEBUG && from == to)
             throw new WTF("pointless substitution");
 
         if (from instanceof Atomic) {

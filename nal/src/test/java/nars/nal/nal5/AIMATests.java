@@ -45,7 +45,7 @@ class AIMATests {
                 "B");
 
         try {
-            assertBelief(n, true, "Q", (int) (Param.Testing.TEST_TIME_MULTIPLIER * 3500));
+            assertBelief(n, true, "Q", (int) (Param.test.TIME_MULTIPLIER * 3500));
         } finally {
             terms.keyValuesView().toSortedListBy(x -> -x.getTwo()).forEach(t -> {
                 System.out.println(t);

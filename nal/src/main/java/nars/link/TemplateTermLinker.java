@@ -73,7 +73,7 @@ public final class TemplateTermLinker extends FasterList<Term> implements TermLi
 
         if (term.subs() > 0) {
 
-            if (Param.DEBUG_EXTRA) {
+            if (Param.test.DEBUG_EXTRA) {
                 if (!term.equals(term.concept()))
                     throw new RuntimeException("templates only should be generated for rooted terms:\n\t" + term + "\n\t" + term.concept());
             }

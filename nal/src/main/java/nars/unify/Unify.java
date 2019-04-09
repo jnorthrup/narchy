@@ -166,7 +166,7 @@ public abstract class Unify extends Versioning<Term> {
 
             tryMatch();
 
-            return use(Param.Deriver.TTL_MUTATE);
+            return use(Param.derive.TTL_MUTATE);
         }
 
     }
@@ -478,12 +478,12 @@ public abstract class Unify extends Versioning<Term> {
         }
 
         void constrain(UnifyConstraint c) {
-            if (Param.DEBUG) { assert(value==null && constraint == null); }
+            if (Param.test.DEBUG) { assert(value==null && constraint == null); }
             constraint = c;
         }
 
         void unconstrain() {
-            if (Param.DEBUG) {  assert(constraint != null && value==null); }
+            if (Param.test.DEBUG) {  assert(constraint != null && value==null); }
             constraint = null;
         }
     }

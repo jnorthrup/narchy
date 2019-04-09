@@ -2,7 +2,6 @@ package nars.term.var;
 
 import nars.Op;
 import nars.term.Term;
-import org.jetbrains.annotations.NotNull;
 
 import static nars.Op.VAR_QUERY;
 

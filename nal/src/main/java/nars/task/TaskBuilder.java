@@ -138,7 +138,7 @@ import static nars.time.Tense.ETERNAL;
         if (cntt == null)
             throw new TaskException(t, "Failed normalization");
 
-        if (!Task.validTaskTerm(cntt, punc, !isInput() && !Param.DEBUG))
+        if (!Task.validTaskTerm(cntt, punc, !isInput() && !Param.test.DEBUG))
             throw new TaskException(cntt, "Invalid content");
 
         if (cntt != t) {
@@ -154,7 +154,7 @@ import static nars.time.Tense.ETERNAL;
                     setTruth(t(1, n.confDefault(punc)));
                 } else {
 
-                    float confLimit = 1f - Param.TRUTH_EPSILON;
+                    float confLimit = 1f - Param.truth.TRUTH_EPSILON;
                     if (!isInput() && conf() > confLimit) {
                         
                         setTruth(t(freq(), confLimit));

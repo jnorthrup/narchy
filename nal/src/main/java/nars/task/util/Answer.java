@@ -408,9 +408,9 @@ public final class Answer {
 
         TruthProjection tp = truthpolation(taskList());
         if (tp != null) {
-            assert (!ditherTruth); assert (eviMin() <= Param.TRUTH_EVI_MIN);
+            assert (!ditherTruth); assert (eviMin() <= Param.truth.TRUTH_EVI_MIN);
 
-            return tp.truth(Param.TRUTH_EVI_MIN, false, false /* give the value at specified range, no matter how sparse */, nar);
+            return tp.truth(Param.truth.TRUTH_EVI_MIN, false, false /* give the value at specified range, no matter how sparse */, nar);
         }
 
         return null;

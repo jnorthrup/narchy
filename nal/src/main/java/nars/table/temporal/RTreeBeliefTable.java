@@ -123,7 +123,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 
             float conf =
                     //(((float) r.coord(2, false)) + ((float) r.coord(2, true))) / 2;
-                    Math.max(Param.TRUTH_EPSILON, r.confMin());
+                    Math.max(Param.truth.TRUTH_EPSILON, r.confMin());
 
             y = y * (1 - conf);
             if (y < min)
@@ -512,7 +512,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
                 if (Arrays.equals(ee.stamp(), ii.stamp())) {
                     if (ee.term().equals(ii.term())) {
                         Truth et = ee.truth(), it = ii.truth();
-                        if (Util.equals(et.freq(), it.freq(), Param.TRUTH_EPSILON)) {
+                        if (Util.equals(et.freq(), it.freq(), Param.truth.TRUTH_EPSILON)) {
                             float ete = et.conf(), ite = it.conf();
                             if (ete >= ite && ee.contains((LongInterval)ii)) {
                                 m = ee;

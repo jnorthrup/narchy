@@ -24,6 +24,7 @@ import java.util.function.Consumer;
 abstract public class Exec implements Executor, ConsumerX<ITask> {
 
     public static final Logger logger = Log.logger(Exec.class);
+    public final static int TIME_QUEUE_CAPACITY = 2 * 1024;
 
     protected NAR nar;
     private final int concurrencyMax;

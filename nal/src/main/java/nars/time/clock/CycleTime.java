@@ -2,7 +2,6 @@ package nars.time.clock;
 
 import nars.NAR;
 import nars.time.Time;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.atomic.AtomicLong;
 

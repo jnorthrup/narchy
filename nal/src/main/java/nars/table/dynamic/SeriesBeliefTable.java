@@ -80,7 +80,7 @@ public class SeriesBeliefTable<T extends Task> extends DynamicTaskTable {
     }
 
     public void clean(List<BeliefTable> tables, NAR n) {
-        if (!Param.Belief.SIGNAL_TABLE_FILTER_NON_SIGNAL_TEMPORAL_TASKS)
+        if (!Param.belief.signal.SIGNAL_TABLE_FILTER_NON_SIGNAL_TEMPORAL_TASKS)
             return;
 
         long sStart = series.start(), sEnd;

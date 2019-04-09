@@ -210,7 +210,7 @@ public class Statement {
 
         boolean negate = false;
         if (op == INH || op == SIM) {
-            if (Param.INH_SIM_CLOSED_BOOLEAN_DUALITY_MOBIUS_PARADIGM) {
+            if (Param.term.INH_SIM_CLOSED_BOOLEAN_DUALITY_MOBIUS_PARADIGM) {
                 //EXPERIMENTAL support for negated inheritance subterms
                 boolean sn = subject.op() == NEG;
                 boolean pn = predicate.op() == NEG;

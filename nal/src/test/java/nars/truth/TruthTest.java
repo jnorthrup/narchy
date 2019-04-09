@@ -13,7 +13,7 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import static nars.$.t;
-import static nars.Param.TRUTH_EPSILON;
+import static nars.Param.truth.TRUTH_EPSILON;
 import static nars.truth.func.TruthFunctions.w2c;
 import static nars.truth.func.TruthFunctions.w2cSafe;
 import static org.junit.jupiter.api.Assertions.*;
@@ -49,8 +49,8 @@ class TruthTest {
     @Test
     void testPreciseTruthEquality() {
 
-        float insignificant = Param.TRUTH_EPSILON / 5f;
-        float significant = Param.TRUTH_EPSILON;
+        float insignificant = Param.truth.TRUTH_EPSILON / 5f;
+        float significant = Param.truth.TRUTH_EPSILON;
 
         assertEquals(t(0.5f, 0.5f),
                 t(0.5f, 0.5f));
@@ -74,7 +74,7 @@ class TruthTest {
         Truth aCopy = new DiscreteTruth(1.0f, 0.9f);
         assertEquals(a, aCopy);
 
-        float ff = 1.0f - Param.TRUTH_EPSILON / 2.5f;
+        float ff = 1.0f - Param.truth.TRUTH_EPSILON / 2.5f;
         assertTrue(1 == Util.round(ff, TRUTH_EPSILON));
         Truth aEqualWithinThresh = new DiscreteTruth(
                 ff /* slightly less than half */,
@@ -82,7 +82,7 @@ class TruthTest {
         assertEquals(a, aEqualWithinThresh);
         assertEquals(a.hashCode(), aEqualWithinThresh.hashCode());
 
-        Truth aNotWithinThresh = new DiscreteTruth(1.0f - Param.TRUTH_EPSILON * 1.0f, 0.9f);
+        Truth aNotWithinThresh = new DiscreteTruth(1.0f - Param.truth.TRUTH_EPSILON * 1.0f, 0.9f);
         assertNotEquals(a, aNotWithinThresh);
         assertNotEquals(a.hashCode(), aNotWithinThresh.hashCode());
 
@@ -92,11 +92,11 @@ class TruthTest {
     void testConfEquality() {
         Truth a = new DiscreteTruth(1.0f, 0.5f);
 
-        Truth aEqualWithinThresh = new DiscreteTruth(1.0f, 0.5f - Param.TRUTH_EPSILON / 2.1f /* slightly less than half the epsilon */);
+        Truth aEqualWithinThresh = new DiscreteTruth(1.0f, 0.5f - Param.truth.TRUTH_EPSILON / 2.1f /* slightly less than half the epsilon */);
         assertEquals(a, aEqualWithinThresh);
         assertEquals(a.hashCode(), aEqualWithinThresh.hashCode());
 
-        Truth aNotWithinThresh = new DiscreteTruth(1.0f, 0.5f - Param.TRUTH_EPSILON * 1.0f);
+        Truth aNotWithinThresh = new DiscreteTruth(1.0f, 0.5f - Param.truth.TRUTH_EPSILON * 1.0f);
         assertNotEquals(a, aNotWithinThresh);
         assertNotEquals(a.hashCode(), aNotWithinThresh.hashCode());
     }
@@ -123,7 +123,7 @@ class TruthTest {
     void testTruthHashUnhash() {
         XorShift128PlusRandom rng = new XorShift128PlusRandom(2);
         for (int i = 0; i < 1000; i++)
-            hashUnhash(rng.nextFloat(), rng.nextFloat() * (1f - Param.TRUTH_EPSILON * 2));
+            hashUnhash(rng.nextFloat(), rng.nextFloat() * (1f - Param.truth.TRUTH_EPSILON * 2));
     }
 
     private static void hashUnhash(float f, float c) {

@@ -51,8 +51,8 @@ import nars.time.Tense;
 import nars.time.Time;
 import nars.time.event.WhenClear;
 import nars.time.event.WhenCycle;
-import nars.time.event.WhenTimeIs;
 import nars.time.event.WhenInternal;
+import nars.time.event.WhenTimeIs;
 import nars.time.part.DurLoop;
 import nars.truth.PreciseTruth;
 import nars.truth.Truth;
@@ -255,7 +255,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
         HashBag clazz = new HashBag();
         HashBag rootOp = new HashBag();
 
-        Histogram volume = new Histogram(1, Param.COMPOUND_VOLUME_MAX, 3);
+        Histogram volume = new Histogram(1, term.COMPOUND_VOLUME_MAX, 3);
 
 
         SortedMap<String, Object> x = new TreeMap();
@@ -1258,7 +1258,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
                     oo.write(b);
                     wrote.increment();
                 } catch (IOException e) {
-                    if (Param.DEBUG)
+                    if (test.DEBUG)
                         throw new RuntimeException(e);
                     else
                         logger.warn("{}", e);
