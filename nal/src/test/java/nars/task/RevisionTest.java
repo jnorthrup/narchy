@@ -191,7 +191,7 @@ public class RevisionTest {
     }
 
     private static TaskBuilder t(float freq, float conf, long occ) throws Narsese.NarseseException {
-        return new TaskBuilder("a:b", BELIEF, $.t(freq, conf)).time(0, occ);
+        return new TaskBuilder("a:b", BELIEF, $.t(freq, conf)).time( 0, occ, occ);
     }
 
     static TaskBuilder t(float freq, float conf, long start, long end) throws Narsese.NarseseException {

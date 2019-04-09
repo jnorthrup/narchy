@@ -26,7 +26,7 @@ public class GenericNALTask extends ActualNALTask {
     protected GenericNALTask(Term term, byte punc, @Nullable Truth truth, long creation, long start, long end, long[] stamp) throws TaskException {
         super(term, punc, truth, creation, start, end, stamp);
 
-        if (start!=ETERNAL && end-start > Param.TASK_RANGE_LIMIT)
+        if (start!=ETERNAL && end-start > Param.Belief.TASK_RANGE_LIMIT)
             throw new TaskException(term, "excessive range: " + (end-start));
 
         if (!term.op().taskable)

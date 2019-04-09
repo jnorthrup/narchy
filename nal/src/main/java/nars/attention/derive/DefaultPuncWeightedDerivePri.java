@@ -32,8 +32,8 @@ public class DefaultPuncWeightedDerivePri extends DefaultDerivePri {
     /** repurposes nar's default punctuation priorities (for input) as the derivation punctuation weighting */
     public void cache(NAR nar) {
 
-        float beliefPri = nar.beliefPriDefault.floatValue();
-        float goalPri = nar.goalPriDefault.floatValue();
+        float beliefPri = nar.beliefPriDefault.asFloat();
+        float goalPri = nar.goalPriDefault.asFloat();
         float questionPri = nar.questionPriDefault.floatValue();
         float questPri = nar.questPriDefault.floatValue();
 

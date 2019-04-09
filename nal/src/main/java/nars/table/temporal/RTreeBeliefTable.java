@@ -3,6 +3,7 @@ package nars.table.temporal;
 import jcog.Util;
 import jcog.WTF;
 import jcog.data.list.FasterList;
+import jcog.math.LongInterval;
 import jcog.sort.FloatRank;
 import jcog.sort.Top;
 import jcog.tree.rtree.*;
@@ -353,7 +354,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
                 return true;
             } else {
 
-                //treeRW.remove(W); //TEMPORARY
+              //  treeRW.remove(W); //TEMPORARY
 
 //            Spatialization model = ((RTree) treeRW).model;
 //            HyperRegion ww = model.bounds(W);
@@ -512,11 +513,10 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
                     if (ee.term().equals(ii.term())) {
                         Truth et = ee.truth(), it = ii.truth();
                         if (Util.equals(et.freq(), it.freq(), Param.TRUTH_EPSILON)) {
-                            double ete = et.conf();
-                            double ite = it.conf();
-                            if (ete >= ite && ee.contains(ii.start(), ii.end())) {
+                            float ete = et.conf(), ite = it.conf();
+                            if (ete >= ite && ee.contains((LongInterval)ii)) {
                                 m = ee;
-                            } else if (ite >= ete && ii.contains(ee.start(), ee.end())) {
+                            } else if (ite >= ete && ii.contains((LongInterval)ee)) {
                                 m = ii;
                             }
                         }

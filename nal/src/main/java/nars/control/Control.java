@@ -11,6 +11,7 @@ import jcog.func.IntIntToObjectFunction;
 import jcog.learn.Agent;
 import jcog.learn.AgentBuilder;
 import jcog.learn.Agenterator;
+import jcog.math.FloatRange;
 import jcog.math.FloatSupplier;
 import jcog.pri.PriMap;
 import nars.NAR;
@@ -72,7 +73,7 @@ import java.util.function.Consumer;
             PriMap.newMap(false)
             //new ConcurrentFastIteratingHashMap<>(new Node[0])
     );
-    private final PriNode root = new PriNode.ConstPriNode("root", ()->1);
+    private final PriNode root = new PriNode.ConstPriNode("root", 1);
     private final NodeGraph.MutableNode<PriNode,Object> rootNode = graph.addNode(root);
 
 
@@ -84,7 +85,7 @@ import java.util.function.Consumer;
      * proportion of time spent in forced curiosity
      * TODO move to its own control filter which ensures minimum fair priority among the causables
      */
-    @Deprecated private final float explorationRate = 0.05f;
+    @Deprecated public final FloatRange explorationRate = new FloatRange(0.05f, 0, 1);
 
     private float updatePeriods =
             1;
@@ -191,7 +192,7 @@ import java.util.function.Consumer;
 
         float valRange = valMax[0] - valMin[0];
         if (Float.isFinite(valRange) && Math.abs(valRange) > Float.MIN_NORMAL) {
-            float exploreMargin = explorationRate * valRange;
+            float exploreMargin = explorationRate.floatValue() * valRange;
 
             how.forEach(c -> {
                 if (c.inactive()) {

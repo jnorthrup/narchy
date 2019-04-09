@@ -3,6 +3,7 @@ package spacegraph.space2d.widget.meta;
 import com.jogamp.opengl.GL2;
 import jcog.TODO;
 import jcog.data.list.FasterList;
+import jcog.util.Essence;
 import jcog.math.FloatRange;
 import jcog.math.IntRange;
 import jcog.math.MutableEnum;
@@ -117,6 +118,9 @@ public class ObjectSurface<X> extends MutableUnitContainer {
     }
 
     private void initDefaults() {
+        builder.annotation(Essence.class, (x, xv, e) -> {
+           return xv; //forward
+        });
         builder.on(Map.Entry.class, (Map.Entry x, Object relation) ->
                 new VectorLabel(x.toString())
         );

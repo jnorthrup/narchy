@@ -10,6 +10,7 @@ import jcog.data.graph.path.FromTo;
 import jcog.data.graph.search.Search;
 import jcog.data.list.FasterList;
 import jcog.data.set.ArrayHashSet;
+import jcog.math.LongInterval;
 import jcog.math.Longerval;
 import jcog.util.ArrayUtils;
 import nars.Op;
@@ -183,7 +184,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
                             if (as == ETERNAL)
                                 continue;
 
-                            if (Param.TIMEGRAPH_ABSORB_CONTAINED_EVENT) {
+                            if (Param.Deriver.TIMEGRAPH_ABSORB_CONTAINED_EVENT) {
                                 if (af.containsOrEquals(start, end)) {
                                     //add = false;
                                     //break; //dont affect the stored graph, but return the smaller interval that was input
@@ -197,14 +198,14 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 
 
                             if (add && af.containedIn(start, end)) {
-                                if (Param.TIMEGRAPH_ABSORB_CONTAINED_EVENT) {
+                                if (Param.Deriver.TIMEGRAPH_ABSORB_CONTAINED_EVENT) {
                                     //absorb existing
                                     removeNode(f);
                                     ff.remove();
                                     nte--;
                                 }
                             } else {
-                                if (start != ETERNAL && Param.TIMEGRAPH_MERGE_INTERSECTING_EVENTS) {
+                                if (start != ETERNAL && Param.Deriver.TIMEGRAPH_MERGE_INTERSECTING_EVENTS) {
                                     long[] merged;
                                     if ((merged = af.unionIfIntersects(start, end)) != null) {
 
@@ -1450,12 +1451,10 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 //            return (start <= cs && end() >= ce);
 //        }
 
-        @Nullable long[] unionIfIntersects(long start, long end) {
+        private @Nullable long[] unionIfIntersects(long start, long end) {
             long thisStart = this.start;
-
             long thisEnd = end();
-
-            return Longerval.intersects(start, end, thisStart, thisEnd) ?
+            return LongInterval.intersects(start, end, thisStart, thisEnd) ?
                     Longerval.unionArray(start, end, thisStart, thisEnd) :
                     null;
         }

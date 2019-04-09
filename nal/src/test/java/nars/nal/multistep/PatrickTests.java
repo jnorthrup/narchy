@@ -198,7 +198,7 @@ public class PatrickTests extends NALTest {
          */
 
         NAR n = NARS.tmp();
-        n.beliefPriDefault.set(0.01f);
+        n.beliefPriDefault.pri(0.01f);
         n.termVolumeMax.set(16);
 
 
@@ -241,7 +241,7 @@ public class PatrickTests extends NALTest {
 
 
         n.termVolumeMax.set(60);
-        n.beliefPriDefault.set(0.05f);
+        n.beliefPriDefault.pri(0.05f);
         n.questionPriDefault.set(0.9f);
 
         n.input("<#x --> P>. %0.0;0.25%");

@@ -483,8 +483,8 @@ public class User {
                         } else if (o instanceof Longerval) {
                             
                             Longerval l = (Longerval)o;
-                            double[] min = { l.a, NEGATIVE_INFINITY, NEGATIVE_INFINITY, NEGATIVE_INFINITY };
-                            double[] max = { l.b, POSITIVE_INFINITY, POSITIVE_INFINITY, POSITIVE_INFINITY };
+                            double[] min = { l.start, NEGATIVE_INFINITY, NEGATIVE_INFINITY, NEGATIVE_INFINITY };
+                            double[] max = { l.end, POSITIVE_INFINITY, POSITIVE_INFINITY, POSITIVE_INFINITY };
                             d.add(new DoubleRange(BOUNDS, min, max));
                         }
 

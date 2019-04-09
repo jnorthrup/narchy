@@ -679,6 +679,7 @@ public interface Task extends Truthed, Stamp, TermedDelegate, ITask, TaskRegion,
 
     @Override
     default TaskRegion mbr(HyperRegion y) {
+        if (this == y) return this;
         return TaskRegion.mbr((TaskRegion) y, (Task) this);
     }
 

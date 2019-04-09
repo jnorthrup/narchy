@@ -3,7 +3,7 @@ package nars.table.dynamic;
 import jcog.Util;
 import jcog.math.FloatRange;
 import jcog.math.FloatSupplier;
-import jcog.math.Longerval;
+import jcog.math.LongInterval;
 import jcog.pri.op.PriMerge;
 import jcog.sort.FloatRank;
 import nars.NAR;
@@ -44,7 +44,7 @@ public class SensorBeliefTables extends BeliefTables {
         this(c, beliefOrGoal,
                 //TODO impl time series with concurrent ring buffer from gluegen
                 //new ConcurrentSkiplistTaskSeries<>(Param.SIGNAL_BELIEF_TABLE_SERIES_SIZE)
-                new RingBufferTaskSeries<>(  Param.SIGNAL_BELIEF_TABLE_SERIES_SIZE));
+                new RingBufferTaskSeries<>(  Param.Belief.SIGNAL_BELIEF_TABLE_SERIES_SIZE));
     }
 
     SensorBeliefTables(Term term, boolean beliefOrGoal, AbstractTaskSeries<Task> s) {
@@ -64,7 +64,7 @@ public class SensorBeliefTables extends BeliefTables {
     @Override
     public final void remember(Remember r) {
 
-        if (Param.SIGNAL_TABLE_FILTER_NON_SIGNAL_TEMPORAL_TASKS) {
+        if (Param.Belief.SIGNAL_TABLE_FILTER_NON_SIGNAL_TEMPORAL_TASKS) {
             Task x = r.input;
             if (!(x instanceof SeriesTask)) { //shouldnt happen anyway
                 if (!x.isEternal() && !x.isInput() /* explicit overrides from user */) {
@@ -228,7 +228,7 @@ public class SensorBeliefTables extends BeliefTables {
         if (next == null)
             return; //?
 
-        float surprise = Param.surprise(prev, next, pri, w.nar);
+        float surprise = Param.signalSurprise(prev, next, pri, w.nar);
         if (surprise!=surprise)
             return;
 
@@ -269,7 +269,7 @@ public class SensorBeliefTables extends BeliefTables {
                         if (v == v && v > min) {
                             long ts = t.start();
                             long te = t.end();
-                            long l = Longerval.intersectLength(ts, te, ss, se);
+                            long l = LongInterval.intersectLength(ts, te, ss, se);
                             if (l > 0) {
                                 //discount the rank in proportion to how much of the task overlaps with the series
                                 double range = (te-ts)+1;

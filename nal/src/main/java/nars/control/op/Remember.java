@@ -321,12 +321,12 @@ public class Remember extends AbstractTask {
         if (next == remembered && next.isInput())
             return true;
 
-        if (dCreationDurs > Param.REMEMBER_REPEAT_THRESH_DURS) {
+        if (dCreationDurs > Param.Belief.REMEMBER_REPEAT_THRESH_DURS) {
             prev.setCreation(next.creation());
             return true;
         }
 
-        return dPri > Param.REMEMBER_REPEAT_PRI_THRESHOLD;
+        return dPri > Param.Belief.REMEMBER_REPEAT_PRI_THRESHOLD;
 
     }
 

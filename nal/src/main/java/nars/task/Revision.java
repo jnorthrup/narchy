@@ -80,7 +80,7 @@ public enum Revision {;
         assert(p.size()>=2);
 
         double eviMin =
-                Param.REVISION_MIN_EVI_FILTER ? c2wSafe(nar.confMin.floatValue()) : Param.TRUTH_EVI_MIN;
+                Param.Belief.REVISION_MIN_EVI_FILTER ? c2wSafe(nar.confMin.floatValue()) : Param.TRUTH_EVI_MIN;
                 //;
 
         Truth truth = p.truth(eviMin, dither, true, nar);

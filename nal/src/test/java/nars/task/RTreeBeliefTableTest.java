@@ -51,9 +51,8 @@ class RTreeBeliefTableTest {
 
         n.time.dur(dur);
 
-        Term term = $.p("x");
 
-        TaskConcept c = (TaskConcept) n.conceptualize(term);
+        TaskConcept c = (TaskConcept) n.conceptualize(TaskRegionTest.x);
         @NotNull BeliefTables cb = (BeliefTables) (true ? c.beliefs() : c.goals());
 
         cb.tableFirst(EternalTable.class).setTaskCapacity(0);
@@ -66,7 +65,7 @@ class RTreeBeliefTableTest {
         while ((time = n.time()) < end) {
             float f = func.valueOf(time);
             System.out.print(time + "=" + f + '\t');
-            n.input($.task(term, BELIEF, f, 0.9f).time(time).withPri(0.5f).apply(n));
+            n.input($.task(TaskRegionTest.x, BELIEF, f, 0.9f).time(time).withPri(0.5f).apply(n));
             n.run(period);
             c.beliefs().print();
             System.out.println();
@@ -99,7 +98,7 @@ class RTreeBeliefTableTest {
         for (long i = start; i < end; i++) {
             float actual = func.valueOf(i);
 
-            Truth actualTruth = n.beliefTruth(term, i);
+            Truth actualTruth = n.beliefTruth(TaskRegionTest.x, i);
             float approx, err;
             if (actualTruth != null) {
                 approx = actualTruth.freq();

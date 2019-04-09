@@ -1,7 +1,7 @@
 package nars.truth.polation;
 
 
-import jcog.math.Longerval;
+import jcog.math.LongInterval;
 import nars.Task;
 import nars.truth.util.EvidenceEvaluator;
 
@@ -66,7 +66,7 @@ public class TruthIntegration {
 
             //return eviInteg(t, dur, qStart, qEnd);
             //return (qEnd - qStart) * t.evi(); //fast, assumes task evi is uniform between the end-points:
-         } else if (Longerval.intersects(tStart, tEnd, qStart, qEnd)) {
+         } else if (LongInterval.intersects(tStart, tEnd, qStart, qEnd)) {
 
             if (qStart <= tStart && qEnd >= tEnd) {
                 //question contains task

@@ -6,6 +6,7 @@ import nars.*;
 import nars.table.BeliefTables;
 import nars.table.dynamic.DynamicTruthTable;
 import nars.term.Term;
+import nars.time.Tense;
 import nars.truth.Truth;
 import nars.truth.dynamic.DynamicStatementTruth;
 import org.junit.jupiter.api.Test;
@@ -234,15 +235,8 @@ class DynamicImplTest extends AbstractDynamicTaskTest {
         //Term pttp = $$("((x &&+1 y) ==>+1 a)");
     }
 
-    static String dts(int dt) {
-        if (dt == DTERNAL)
-            return "ETE";
-        else
-            return String.valueOf(dt);
-    }
-
     private static void testImpl(int mode, int outer, int inner, String x, String y, String xy, Term pt_p, boolean truthIntersectOrUnion) throws Narsese.NarseseException {
-        String cccase = dts(inner) + '\t' + dts(outer) + "\t\t" + x + '\t' + y + '\t' + xy;
+        String cccase = Tense.dtStr(inner) + '\t' + Tense.dtStr(outer) + "\t\t" + x + '\t' + y + '\t' + xy;
         System.out.println(cccase);
 
         for (float xf : new float[] { 1, 0 }) {

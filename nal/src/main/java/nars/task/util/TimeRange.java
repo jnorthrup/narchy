@@ -2,7 +2,6 @@ package nars.task.util;
 
 import jcog.WTF;
 import jcog.math.LongInterval;
-import jcog.math.Longerval;
 import jcog.tree.rtree.HyperRegion;
 import nars.time.Tense;
 
@@ -43,16 +42,15 @@ public class TimeRange implements HyperRegion, LongInterval {
             return true;
 
         LongInterval t = (LongInterval)x;
-        return Longerval.intersects(s, end, t.start(), t.end());
+        return LongInterval.intersects(s, end, t.start(), t.end());
     }
 
 
     @Override
     public boolean contains(HyperRegion x) {
-        long s = this.start;
-        if (s == Tense.ETERNAL)
-            return true;
-        return ((LongInterval)x).containedBy(s, end);
+        //return ((LongInterval)x).containedBy(start, end);
+        LongInterval t = ((LongInterval) x);
+        return contains(t.start(), t.end());
     }
 
     @Override
@@ -85,8 +83,6 @@ public class TimeRange implements HyperRegion, LongInterval {
     public final long minTimeTo(LongInterval b) {
         return minTimeTo(b.start(), b.end());
     }
-    public final long meanTimeTo(LongInterval b) {
-        return meanTimeTo(b.start(), b.end());
-    }
+
 
 }

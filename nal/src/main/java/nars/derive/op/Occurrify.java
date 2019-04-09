@@ -237,7 +237,7 @@ public class Occurrify extends TimeGraph {
             x = Retemporalize.retemporalizeXTERNALToDTERNAL.apply(x);
             if (!Taskify.valid(x, d.concPunc)) {
                 d.nar().feel.deriveFailTemporal.increment();
-                Taskify.spam(d, Param.TTL_DERIVE_TASK_FAIL);
+                Taskify.spam(d, Param.Deriver.TTL_DERIVE_TASK_FAIL);
                 return null;
             }
         }
@@ -299,7 +299,7 @@ public class Occurrify extends TimeGraph {
 
     @Override
     public long eventOcc(long when) {
-        if (Param.TIMEGRAPH_DITHER_EVENTS_INTERNALLY)
+        if (Param.Deriver.TIMEGRAPH_DITHER_EVENTS_INTERNALLY)
             return Tense.dither(when, d.ditherDT);
         else
             return when;
@@ -490,13 +490,13 @@ public class Occurrify extends TimeGraph {
 
         int v = y.volume();
         return v <= d.termVolMax && super.validPotentialSolution(y) &&
-               v >= Param.TIMEGRAPH_IGNORE_DEGENERATE_SOLUTIONS_FACTOR * patternVolume
+               v >= Param.Deriver.TIMEGRAPH_IGNORE_DEGENERATE_SOLUTIONS_FACTOR * patternVolume
                ;
     }
 
     private ArrayHashSet<Event> solutions(Term pattern) {
 
-        ttl = Param.TIMEGRAPH_ITERATIONS;
+        ttl = Param.Deriver.TIMEGRAPH_ITERATIONS;
         patternVolume = pattern.volume();
         patternOp = pattern.op();
 

@@ -10,7 +10,7 @@ import jcog.lab.util.ExperimentRun;
 import jcog.lab.var.FloatVar;
 import jcog.math.FloatRange;
 import jcog.math.IntRange;
-import jcog.math.Range;
+import jcog.util.Range;
 import jcog.table.DataTable;
 import org.eclipse.collections.api.block.function.primitive.BooleanFunction;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;

@@ -187,13 +187,13 @@ import static nars.time.Tense.ETERNAL;
 
         if (creation() == ETERNAL) {
             long now = n.time();
-            long oc = start();
-            if (oc != ETERNAL)
-                oc += now;
+//            long oc = start();
+//            if (oc != ETERNAL)
+//                oc += now;
 
             this.creation = now;
-            setStart(oc);
-            setEnd(oc);
+//            setStart(oc);
+//            setEnd(oc);
         }
 
 
@@ -378,22 +378,13 @@ import static nars.time.Tense.ETERNAL;
      * TODO for external use in TaskBuilder instances only
      */
     private void setStart(long o) {
-
-
-
-        if (o != start) {
-
-            this.start = o;
-        }
+        this.start = o;
     }
 
     /**
      * TODO for external use in TaskBuilder instances only
      */
     private void setEnd(long o) {
-
-
-
         if (o != end) {
             if (start == ETERNAL && o != ETERNAL)
                 throw new RuntimeException("can not setAt end time for eternal task");
@@ -479,10 +470,15 @@ import static nars.time.Tense.ETERNAL;
 
     
     public final TaskBuilder time(long when) {
-        return TaskBuilder.this.time(when, when, when);
+        setStart(when); setEnd(when);
+        return this;
     }
 
-    
+    public final TaskBuilder time(long start, long end) {
+        setStart(start); setEnd(end);
+        return this;
+    }
+
     public TaskBuilder time(long creationTime, long start, long end) {
         setCreationTime(creationTime);
         setStart(start);
@@ -490,29 +486,6 @@ import static nars.time.Tense.ETERNAL;
         return this;
     }
 
-    
-    public TaskBuilder time(long creationTime, long occurrenceTime) {
-        setCreationTime(creationTime);
-        setStart(occurrenceTime);
-
-        long endTime = occurrenceTime;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        setEnd(endTime);
-        return this;
-    }
 
     
     public final TaskBuilder occurr(long occurrenceTime) {

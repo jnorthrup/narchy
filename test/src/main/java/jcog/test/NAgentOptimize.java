@@ -37,7 +37,7 @@ public class NAgentOptimize {
 
             /* defaults TODO "learn" these from the experiments and reapply them in future experiments */
             n.termVolumeMax.set(4);
-            n.goalPriDefault.set(0.6f);
+            n.goalPriDefault.pri(0.6f);
 
             return n;
         });
@@ -64,7 +64,7 @@ public class NAgentOptimize {
                             n.questPriDefault.set(f);
                         })
                 .var("goalPriDefault", 0, 1f, 0.1f,
-                        (NAR n, float f) -> n.goalPriDefault.set(f))
+                        (NAR n, float f) -> n.goalPriDefault.pri(f))
 
 //                .var("derivationComplexityExponent", 1f, 3f, 0.5f,
 //                        (NAR n, float f) -> Deriver.derivers(n).forEach(x ->

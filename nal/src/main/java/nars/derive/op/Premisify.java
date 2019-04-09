@@ -21,8 +21,8 @@ import java.util.Set;
 import java.util.function.BiFunction;
 
 import static nars.$.$$;
-import static nars.Param.TermUnifyForkMax;
-import static nars.Param.TermutatorSearchTTL;
+import static nars.Param.Deriver.TermUnifyForkMax;
+import static nars.Param.Deriver.TermutatorSearchTTL;
 
 /**
  * Created by me on 5/26/16.

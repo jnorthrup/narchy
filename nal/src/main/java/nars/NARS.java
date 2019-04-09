@@ -139,8 +139,8 @@ public class NARS {
                 ((What.TaskLinkWhat)n.in).links.linksMax.set(128);
                 ((What.TaskLinkWhat)n.in).links.decay.set(0.01f);
 
-                n.beliefPriDefault.set(0.01f);
-                n.goalPriDefault.set(0.01f);
+                n.beliefPriDefault.pri(0.01f);
+                n.goalPriDefault.pri(0.01f);
                 n.questionPriDefault.set(0.002f);
                 n.questPriDefault.set(0.002f);
 

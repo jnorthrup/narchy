@@ -2,7 +2,7 @@ package nars.table.dynamic;
 
 import jcog.Util;
 import jcog.data.list.FasterList;
-import jcog.math.Longerval;
+import jcog.math.LongInterval;
 import nars.NAR;
 import nars.Param;
 import nars.Task;
@@ -80,7 +80,7 @@ public class SeriesBeliefTable<T extends Task> extends DynamicTaskTable {
     }
 
     public void clean(List<BeliefTable> tables, NAR n) {
-        if (!Param.SIGNAL_TABLE_FILTER_NON_SIGNAL_TEMPORAL_TASKS)
+        if (!Param.Belief.SIGNAL_TABLE_FILTER_NON_SIGNAL_TEMPORAL_TASKS)
             return;
 
         long sStart = series.start(), sEnd;
@@ -110,7 +110,7 @@ public class SeriesBeliefTable<T extends Task> extends DynamicTaskTable {
 //            if (seriesStart != TIMELESS && seriesEnd != TIMELESS /* allow prediction 'suffix' */) {
             long tEnd = t.end();
             if (seriesEnd >= tEnd) {
-                if (Longerval.intersectLength(tStart, tEnd, seriesStart, seriesEnd) != -1) {
+                if (LongInterval.intersectLength(tStart, tEnd, seriesStart, seriesEnd) != -1) {
                     //TODO actually absorb (transfer) the non-series task priority in proportion to the amount predicted, gradually until complete absorption
                     return !series.isEmpty(t);
                 }

@@ -39,8 +39,8 @@ public class NARchy extends NARS {
 
         nar.dtDither.set(20);
 
-        nar.beliefPriDefault.set(0.5f);
-        nar.goalPriDefault.set(0.75f);
+        nar.beliefPriDefault.pri(0.5f);
+        nar.goalPriDefault.pri(0.75f);
         nar.questionPriDefault.set(0.35f);
         nar.questPriDefault.set(0.35f);
 

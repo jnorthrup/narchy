@@ -312,6 +312,30 @@ public enum Tense {
         }
     }
 
+    public static String dtStr(int dt) {
+        if (dt == DTERNAL)
+            return "ETE";
+        else
+            return String.valueOf(dt);
+    }
+
+    public static String tStr(long t) {
+        if (t == ETERNAL)
+            return "ETE";
+        else if (t == TIMELESS)
+            return "TIMELESS";
+        else
+            return String.valueOf(t);
+    }
+    public static String tStr(long s, long e) {
+        if (s == ETERNAL)
+            return "ETE";
+        else if (s == TIMELESS)
+            return "TIMELESS";
+        else
+            return String.valueOf(s) + ".." + String.valueOf(e);
+    }
+
 
 //    public static long[] intersection(TaskRegion[] t) {
 //        //HACK

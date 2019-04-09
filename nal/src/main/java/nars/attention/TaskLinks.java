@@ -154,7 +154,7 @@ public class TaskLinks implements Sampler<TaskLink> {
                             //x -> !link.equals(x) && !link.other(tt).equals(s);
 
                             u = links.atomTangent(ct, punc, filter, d.time(),
-                                    Param.REMEMBER_REPEAT_THRESH_DURS /* repurposed */, d.random);
+                                    Param.Belief.REMEMBER_REPEAT_THRESH_DURS /* repurposed */, d.random);
 //                        if (u!=null && u.equals(s)) {
 ////                            u = links.atomTangent(ct, ((TaskLink x)->!link.equals(x)), d.time, 1, d.random);//TEMPORARY
 //                            throw new WTF();

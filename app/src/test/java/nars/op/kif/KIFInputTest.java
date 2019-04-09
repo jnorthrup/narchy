@@ -145,7 +145,7 @@ class KIFInputTest {
         NAR n = NARS.tmp();
         //NARchy.core();
 
-        n.beliefPriDefault.set(0.05f);
+        n.beliefPriDefault.pri(0.05f);
 
         n.input("load(\"file:///tmp/sumo/merge.nalz\");");
 //        n.input("load(\"file:///tmp/sumo/Mid-level-ontology.kif.nalz\");");

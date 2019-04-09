@@ -1,4 +1,4 @@
-package jcog.math;
+package jcog.util;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -12,4 +12,6 @@ public @interface Range {
     double max() default Double.NaN;
     double step() default Double.NaN;
     String unit() default "";
+
+
 }

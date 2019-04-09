@@ -79,6 +79,10 @@ public interface Truth extends Truthed {
         return (freqHash << 16) | confHash;
     }
 
+    public static int truthToInt(float freq, float conf) {
+        return truthToInt(freq, conf, hashDiscretenessEpsilon);
+    }
+
     static float polarity(float freq) {
         return Math.abs(freq - 0.5f) * 2f;
     }
@@ -138,8 +142,8 @@ public interface Truth extends Truthed {
                 .append(Op.VALUE_SEPARATOR)
                 .append(Texts.n(conf, decimals))
                 .append(Op.TRUTH_VALUE_MARK);
-
     }
+
 
 
     @Nullable static <T extends Truthed> T stronger(@Nullable T a, @Nullable T b) {

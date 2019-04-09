@@ -6,6 +6,7 @@ import jcog.pri.ScalarValue;
 import jcog.pri.op.PriMerge;
 import jcog.service.Parts;
 import jcog.util.FloatFloatToFloatFunction;
+import jcog.util.Range;
 import nars.attention.PriNode;
 import nars.exe.Exec;
 import nars.term.Term;
@@ -53,10 +54,6 @@ public abstract class Param extends Parts<Term,NAR> {
             ;
 
 
-    public static final boolean SIGNAL_TABLE_FILTER_NON_SIGNAL_TEMPORAL_TASKS = true;
-
-
-
     public static final boolean SHUFFLE_TERMUTES = false;
 
 
@@ -72,13 +69,6 @@ public abstract class Param extends Parts<Term,NAR> {
             0;
             //0.75f;
 
-    /** true will filter sub-confMin revision results.  false will not, allowing sub-confMin
-     * results to reside in the belief table (perhaps combinable with something else that would
-     * eventually raise to above-confMin).  generally, false should be more accurate with a tradeoff
-     * for overhead due to increased belief table churn.
-     */
-    public static final boolean REVISION_MIN_EVI_FILTER = false;
-
 
     public static final boolean REVISION_ALLOW_OVERLAP_IF_DISJOINT_TIME = false;
 
@@ -86,8 +76,6 @@ public abstract class Param extends Parts<Term,NAR> {
     public static final boolean DYNAMIC_TRUTH_STAMP_OVERLAP_FILTER = true;
 
     protected static final boolean DYNAMIC_CONCEPT_TRANSIENT = false;
-
-    public static final boolean DYNAMIC_TRUTH_TASK_STORE = true;
 
 
     /**
@@ -105,9 +93,42 @@ public abstract class Param extends Parts<Term,NAR> {
 //    public static final int TERM_BYTE_KEY_CACHED_BELOW_VOLUME = 8;
     //public static final int SUBTERM_BYTE_KEY_CACHED_BELOW_VOLUME = 10; //TODO
 
-    public static final int SIGNAL_BELIEF_TABLE_SERIES_SIZE = 512;
 
+    public enum Belief { ;
 
+        public static final boolean SIGNAL_TABLE_FILTER_NON_SIGNAL_TEMPORAL_TASKS = true;
+        /** true will filter sub-confMin revision results.  false will not, allowing sub-confMin
+         * results to reside in the belief table (perhaps combinable with something else that would
+         * eventually raise to above-confMin).  generally, false should be more accurate with a tradeoff
+         * for overhead due to increased belief table churn.
+         */
+        public static final boolean REVISION_MIN_EVI_FILTER = false;
+        public static final boolean DYNAMIC_TRUTH_TASK_STORE = true;
+        public static final int SIGNAL_BELIEF_TABLE_SERIES_SIZE = 512;
+        /** perceptible priority increase that warrants automatic reactivation.
+         * used during Remember's merge repeat suppression filter */
+        public static final float REMEMBER_REPEAT_PRI_THRESHOLD = ScalarValue.EPSILONcoarse;
+        /**
+         * maximum time (in durations) that a signal task can stretch the same value
+         * until a new task (with new evidence) is created (seamlessly continuing it afterward)
+         *
+         * TODO make this a per-sensor implementation cdecision
+         */
+        public final static float SIGNAL_STRETCH_LIMIT_DURS = 8;
+        /** maximum time between signal updates to stretch an equivalently-truthed data point across.
+         * stretches perception across some amount of lag
+         * */
+        public final static float SIGNAL_LATCH_LIMIT_DURS =
+                //0.5f;
+                1f;
+        /** memory reconsolidation period - time period for a memory to be refreshed as new
+         *  useful as a novelty threshold:
+         *          >=0, higher values decrease the rate at which repeated tasks can be reactivated */
+        public static int REMEMBER_REPEAT_THRESH_DURS = 1;
+        /** maximum span of a Task, in cycles.
+         *  beyond a certain length, evidence integration precision suffers accuracy diminishes and may become infinite */
+        public static long TASK_RANGE_LIMIT = (1L << 61) /* estimate */;
+    }
 
 
     /** applies certain reductions to INH and SIM terms when one or both of their immediate subterms
@@ -177,10 +198,6 @@ public abstract class Param extends Parts<Term,NAR> {
     public static final boolean INVALID_DERIVATION_TRY_QUESTION = true;
 
 
-    public static final boolean FILTER_SIMILAR_DERIVATIONS = true;
-    public static final boolean DEBUG_SIMILAR_DERIVATIONS = false;
-
-
     /**
      * use this for advanced error checking, at the expense of lower performance.
      * it is enabled for unit tests automatically regardless of the value here.
@@ -190,6 +207,7 @@ public abstract class Param extends Parts<Term,NAR> {
     public static boolean DEBUG_ENSURE_DITHERED_TRUTH = false;
     public static boolean DEBUG_ENSURE_DITHERED_OCCURRENCE = false;
     public static boolean DEBUG_ENSURE_DITHERED_DT = false;
+    public static final boolean DEBUG_SIMILAR_DERIVATIONS = false;
 
     /** should be monotonically increasing at most */
     public static final PriMerge tasklinkMerge =
@@ -213,62 +231,12 @@ public abstract class Param extends Parts<Term,NAR> {
         //Util::and;
 
 
-
-    /** perceptible priority increase that warrants automatic reactivation.
-     * used during Remember's merge repeat suppression filter */
-    public static final float REMEMBER_REPEAT_PRI_THRESHOLD = ScalarValue.EPSILONcoarse;
-
-    /** memory reconsolidation period - time period for a memory to be refreshed as new
-     *  useful as a novelty threshold:
-     *          >=0, higher values decrease the rate at which repeated tasks can be reactivated */
-    public static int REMEMBER_REPEAT_THRESH_DURS = 1;
-
-
-    /**
-     * maximum time (in durations) that a signal task can stretch the same value
-     * until a new task (with new evidence) is created (seamlessly continuing it afterward)
-     *
-     * TODO make this a per-sensor implementation cdecision
-     */
-    public final static float SIGNAL_STRETCH_LIMIT_DURS = 8;
-
-
-
-    /** maximum span of a Task, in cycles.
-     *  beyond a certain length, evidence integration precision suffers accuracy diminishes and may become infinite */
-    public static long TASK_RANGE_LIMIT = (1L << 61) /* estimate */;
-
-
-
-
-    /** maximum time between signal updates to stretch an equivalently-truthed data point across.
-     * stretches perception across some amount of lag
-     * */
-    public final static float SIGNAL_LATCH_LIMIT_DURS =
-            //0.5f;
-            1f;
-            //1.5f;
+    //1.5f;
             //2f;
 
 //    /** 0..1.0: how much to reduce a signal which hasnt changed (in proportion to change significance) */
 //    public static final float SIGNAL_UNSURPRISING_FACTOR = 0.1f;
 
-
-    /** may cause unwanted "sticky" event conflation. may only be safe when the punctuation of the task in which the event contained is the same */
-    public static final boolean TIMEGRAPH_ABSORB_CONTAINED_EVENT = false;
-
-    /** if false, keeps intersecting timegraph events separate.
-     *  if true, it merges them to one event. may cause unwanted "sticky" event conflation
-     *  may only be safe when the punctuation of the task in which the event contained is the same
-     * */
-    public static final boolean TIMEGRAPH_MERGE_INTERSECTING_EVENTS = false;
-
-    /** whether timegraph should not return solutions with volume significantly less than the input's.
-     *  set 0 to disable the filter */
-    public static final float TIMEGRAPH_IGNORE_DEGENERATE_SOLUTIONS_FACTOR = 0.1f;
-
-    /** whether to dither events as they are represented internally.  output events are dithered for the NAR regardless. */
-    public static final boolean TIMEGRAPH_DITHER_EVENTS_INTERNALLY = false;
 
     /** max variable unification recursion depth as a naive cyclic filter */
     public static final int UNIFY_VAR_RECURSION_DEPTH_LIMIT = 4;
@@ -278,12 +246,9 @@ public abstract class Param extends Parts<Term,NAR> {
 
     @Deprecated public final FloatRange questionForgetRate = new FloatRange(0.5f, 0, 1);
 
-    protected Param(Exec exe) {
-        super(exe);
-    }
 
     /** priority of sensor task, with respect to how significantly it changed from a previous value */
-    public static float surprise(Task prev, Task next, FloatSupplier pri, NAR n) {
+    public static float signalSurprise(Task prev, Task next, FloatSupplier pri, NAR n) {
 
         float p = pri.asFloat();
         if (p != p)
@@ -294,7 +259,7 @@ public abstract class Param extends Parts<Term,NAR> {
         boolean stretched = !NEW && prev==next;
 
         boolean latched = !NEW && !stretched &&
-                Math.abs(next.start() - prev.end()) < SIGNAL_LATCH_LIMIT_DURS * n.dur();
+                Math.abs(next.start() - prev.end()) < Param.Belief.SIGNAL_LATCH_LIMIT_DURS * n.dur();
 
         //decrease priority by similarity to previous truth
         if (prev!=null && (stretched || latched)) {
@@ -311,6 +276,77 @@ public abstract class Param extends Parts<Term,NAR> {
         return p;
     }
 
+
+    public static enum Testing { ;
+
+        /**
+         * for NALTest's: extends the time all unit tests are allowed to run for.
+         * normally be kept to 1 but for debugging this may be increased to find what tests need more time
+         */
+        public static final float TEST_TIME_MULTIPLIER = 2f;
+    }
+
+    public static enum Deriver { ;
+
+        /** may cause unwanted "sticky" event conflation. may only be safe when the punctuation of the task in which the event contained is the same */
+        public static final boolean TIMEGRAPH_ABSORB_CONTAINED_EVENT = false;
+        /** if false, keeps intersecting timegraph events separate.
+         *  if true, it merges them to one event. may cause unwanted "sticky" event conflation
+         *  may only be safe when the punctuation of the task in which the event contained is the same
+         * */
+        public static final boolean TIMEGRAPH_MERGE_INTERSECTING_EVENTS = false;
+        /** whether timegraph should not return solutions with volume significantly less than the input's.
+         *  set 0 to disable the filter */
+        public static final float TIMEGRAPH_IGNORE_DEGENERATE_SOLUTIONS_FACTOR = 0.1f;
+        /** whether to dither events as they are represented internally.  output events are dithered for the NAR regardless. */
+        public static final boolean TIMEGRAPH_DITHER_EVENTS_INTERNALLY = false;
+        /**
+         * TTL = 'time to live'
+         */
+        public static final int TermutatorSearchTTL = 4;
+        public static final int TermUnifyForkMax = 2;
+        public static final int TTL_CONJ_BEFORE_AFTER = 4; //HACK this is a TTL supply, not a COST
+        @Range(min = 1, max = 32)
+        public static final int TIMEGRAPH_ITERATIONS = 2;
+        @Range(min = 0, max = 64)
+        public static final int TTL_BRANCH = 1;
+        /**
+         * cost of executing a termute permutation
+         */
+        @Range(min = 0, max = 64)
+        public static final int TTL_MUTATE = 1;
+        /**
+         * cost of a successful task derivation
+         */
+        @Range(min = 0, max = 64)
+        public static final int TTL_DERIVE_TASK_SUCCESS = 5;
+        /**
+         * estimate
+         */
+        @Deprecated
+        public static final int TTL_MIN =
+                (2) +
+                        (TTL_BRANCH * 1) + TTL_DERIVE_TASK_SUCCESS;
+        /**
+         * cost of a repeat (of another within the premise's batch) task derivation
+         */
+        @Range(min = 0, max = 64)
+        public static final int TTL_DERIVE_TASK_REPEAT = 3;
+        /**
+         * cost of a task derived, but too similar to one of its parents
+         */
+        @Range(min = 0, max = 64)
+        public static final int TTL_DERIVE_TASK_SAME = 2;
+        /**
+         * cost of a failed/aborted task derivation
+         */
+        @Range(min = 0, max = 64)
+        public static final int TTL_DERIVE_TASK_FAIL = 1;
+        @Range(min = 0, max = 64)
+        public static final int TTL_DERIVE_TASK_UNPRIORITIZABLE = TTL_DERIVE_TASK_FAIL;
+        public static final boolean DERIVE_FILTER_SIMILAR_TO_PARENTS = true;
+    }
+
     /**
      * provides an instance of the default truthpolation implementation
      */
@@ -320,74 +356,11 @@ public abstract class Param extends Parts<Term,NAR> {
     }
 
 
-    /**
-     * TTL = 'time to live'
-     */
-    public static final int TermutatorSearchTTL = 4;
-    public static final int TermUnifyForkMax = 2;
-    public final IntRange deriveBranchTTL = new IntRange(8 * TTL_MIN, TTL_MIN, 64 * TTL_MIN );
+    public final IntRange deriveBranchTTL = new IntRange(8 * Deriver.TTL_MIN, Deriver.TTL_MIN, 64 * Deriver.TTL_MIN );
     public final IntRange matchTTL = new IntRange(6, 1, 32);
 
-    public static final int TTL_CONJ_BEFORE_AFTER = 4; //HACK this is a TTL supply, not a COST
 
-
-    /**
-     * for NALTest's: extends the time all unit tests are allowed to run for.
-     * normally be kept to 1 but for debugging this may be increased to find what tests need more time
-     */
-    public static final float TEST_TIME_MULTIPLIER = 2f;
-
-
-    @Range(min = 1, max = 32)
-    public static final int TIMEGRAPH_ITERATIONS = 2;
-
-
-    @Range(min = 0, max = 64)
-    public static final int TTL_BRANCH = 1;
-
-
-    /**
-     * cost of executing a termute permutation
-     */
-    @Range(min = 0, max = 64)
-    public static final int TTL_MUTATE = 1;
     //public static final int TTL_MUTATE_COMPONENT = 0;
-
-    /**
-     * cost of a successful task derivation
-     */
-    @Range(min = 0, max = 64)
-    public static final int TTL_DERIVE_TASK_SUCCESS = 5;
-
-    /**
-     * cost of a repeat (of another within the premise's batch) task derivation
-     */
-    @Range(min = 0, max = 64)
-    public static final int TTL_DERIVE_TASK_REPEAT = 3;
-
-
-    /**
-     * cost of a task derived, but too similar to one of its parents
-     */
-    @Range(min = 0, max = 64)
-    public static final int TTL_DERIVE_TASK_SAME = 2;
-
-    /**
-     * cost of a failed/aborted task derivation
-     */
-    @Range(min = 0, max = 64)
-    public static final int TTL_DERIVE_TASK_FAIL = 1;
-    @Range(min = 0, max = 64)
-    public static final int TTL_DERIVE_TASK_UNPRIORITIZABLE = TTL_DERIVE_TASK_FAIL;
-
-
-    /**
-     * estimate
-     */
-    @Deprecated
-    public static final int TTL_MIN =
-            (2) +
-                    (Param.TTL_BRANCH * 1) + Param.TTL_DERIVE_TASK_SUCCESS;
 
 
     /**
@@ -627,19 +600,11 @@ public abstract class Param extends Parts<Term,NAR> {
 
 
     /**
-     * Default priority of input judgment
-     */
-    @Deprecated public final FloatRange beliefPriDefault = new FloatRange(0.5f, ScalarValue.EPSILON, 1f);
-
-    /**
      * Default priority of input question
      */
     @Deprecated public final FloatRange questionPriDefault = new FloatRange(0.5f, ScalarValue.EPSILON, 1f);
 
-    /**
-     * Default priority of input judgment
-     */
-    @Deprecated public final FloatRange goalPriDefault = new FloatRange(0.5f, ScalarValue.EPSILON, 1f);
+
 
     /**
      * Default priority of input question
@@ -650,7 +615,10 @@ public abstract class Param extends Parts<Term,NAR> {
     public float priDefault(byte punctuation) {
         switch (punctuation) {
             case BELIEF:
-                return beliefPriDefault.floatValue();
+                return beliefPriDefault.asFloat();
+
+            case GOAL:
+                return goalPriDefault.asFloat();
 
             case QUEST:
                 return questPriDefault.floatValue();
@@ -658,8 +626,6 @@ public abstract class Param extends Parts<Term,NAR> {
             case QUESTION:
                 return questionPriDefault.floatValue();
 
-            case GOAL:
-                return goalPriDefault.floatValue();
 
             case COMMAND:
                 return 1;
@@ -668,10 +634,15 @@ public abstract class Param extends Parts<Term,NAR> {
     }
 
 
+
     public final FloatRange beliefConfDefault = new FloatRange(0.9f, Param.TRUTH_EPSILON, 1f - Param.TRUTH_EPSILON);
     public final FloatRange goalConfDefault = new FloatRange(0.9f, Param.TRUTH_EPSILON, 1f - Param.TRUTH_EPSILON);
 
-    public final PriNode beliefPriDefaultNode = new PriNode.ConstPriNode("beliefPriDefault", beliefPriDefault);
-    public final PriNode goalPriDefaultNode = new PriNode.ConstPriNode("goalPriDefault", goalPriDefault);
+    public final PriNode beliefPriDefault = new PriNode.ConstPriNode("beliefPriDefault", 0.5f);
+    public final PriNode goalPriDefault = new PriNode.ConstPriNode("goalPriDefault", 0.5f);
+
+    protected Param(Exec exe) {
+        super(exe);
+    }
 
 }

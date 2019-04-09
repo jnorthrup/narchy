@@ -1,6 +1,6 @@
 package nars.task.util;
 
-import jcog.math.Longerval;
+import jcog.math.LongInterval;
 import nars.time.Tense;
 import org.eclipse.collections.api.block.predicate.primitive.LongLongPredicate;
 import org.jetbrains.annotations.Nullable;
@@ -20,7 +20,7 @@ public final class TimeRangeFilter extends TimeRange implements LongLongPredicat
         Intersects {
             @Override
             public boolean accept(long s, long e, long start, long end) {
-                return Longerval.intersects(s, e, start, end);
+                return LongInterval.intersects(s, e, start, end);
             }
         },
         Contains {

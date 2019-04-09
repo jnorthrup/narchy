@@ -2,7 +2,7 @@ package spacegraph.space2d.container.time;
 
 import com.jogamp.opengl.GL2;
 import jcog.Util;
-import jcog.math.Longerval;
+import jcog.math.LongInterval;
 import jcog.tree.rtree.Spatialization;
 import spacegraph.input.finger.WheelAbsorb;
 import spacegraph.space2d.ReSurface;
@@ -249,7 +249,7 @@ public class Timeline2D extends Stacking implements WheelAbsorb {
 
         default boolean intersects(X x, long start, long end) {
             long[] r = range(x);
-            return Longerval.intersects(r[0], r[1], start, end);
+            return LongInterval.intersects(r[0], r[1], start, end);
         }
 
         default int compareStart(X x, X y) {
@@ -271,7 +271,7 @@ public class Timeline2D extends Stacking implements WheelAbsorb {
         default long intersectLength(X x, X y) {
             long[] rx = range(x);
             long[] ry = range(y);
-            return Longerval.intersectLength(rx[0], rx[1], ry[0], ry[1]);
+            return LongInterval.intersectLength(rx[0], rx[1], ry[0], ry[1]);
         }
 
         default int compareDurThenStart(X x, X y) {
@@ -334,7 +334,7 @@ public class Timeline2D extends Stacking implements WheelAbsorb {
 
         @Override
         public boolean intersects(SimpleEvent simpleEvent, long start, long end) {
-            return Longerval.intersects(simpleEvent.start, simpleEvent.end, start, end);
+            return LongInterval.intersects(simpleEvent.start, simpleEvent.end, start, end);
         }
 
         @Override
@@ -370,7 +370,7 @@ public class Timeline2D extends Stacking implements WheelAbsorb {
 
         @Override
         public boolean intersects(SimpleEvent simpleEvent, long start, long end) {
-            return Longerval.intersects(simpleEvent.start, simpleEvent.end, start, end);
+            return LongInterval.intersects(simpleEvent.start, simpleEvent.end, start, end);
         }
 
         @Override

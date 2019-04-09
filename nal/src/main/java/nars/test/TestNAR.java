@@ -397,7 +397,7 @@ public class TestNAR {
 
     private TestNAR mustEmit(ByteTopic<Tasked>[] c, long cyclesAhead, String sentenceTerm, byte punc, float freqMin, float freqMax, float confMin, float confMax, LongLongPredicate time, boolean must) throws Narsese.NarseseException {
         long now = time();
-        cyclesAhead = Math.round(cyclesAhead * Param.TEST_TIME_MULTIPLIER);
+        cyclesAhead = Math.round(cyclesAhead * Param.Testing.TEST_TIME_MULTIPLIER);
         return mustEmit(c, now, now + cyclesAhead, sentenceTerm, punc, freqMin, freqMax, confMin, confMax, time, must);
     }
 

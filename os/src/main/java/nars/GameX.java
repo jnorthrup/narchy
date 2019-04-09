@@ -382,8 +382,8 @@ abstract public class GameX extends Game {
         //n.attn.linksMax.set(1024);
 
 
-        n.beliefPriDefault.set(0.01f);
-        n.goalPriDefault.set(0.06f);
+        n.beliefPriDefault.pri(0.01f);
+        n.goalPriDefault.pri(0.06f);
         n.questionPriDefault.set(0.005f);
         n.questPriDefault.set(0.005f);
 

@@ -1,63 +1,69 @@
 package nars.task.util;
 
 import jcog.TODO;
-import jcog.Util;
+import jcog.Texts;
+import jcog.math.Longerval;
+import nars.Op;
 import nars.Task;
+import nars.time.Tense;
+import nars.truth.Truth;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Arrays;
+import static java.lang.Math.max;
+import static java.lang.Math.min;
 
-/**
- * dimensions:
- * 0: long time start..end
- * 1: float freq min..max
- * 2: float conf min..max
- */
-public final class TasksRegion implements TaskRegion {
 
-    private final long start, end;
-    private final float freqMin, freqMax;
-    private final float confMin, confMax;
+public final class TasksRegion extends Longerval implements TaskRegion {
 
-    protected TasksRegion(long start, long end, float freqMin, float freqMax, float confMin, float confMax) {
-        this.start = start;
-        this.end = end;
-        
+    /** discrete truth encoded extrema.  for fast and reliable comparison.
+     *
+     * uses the system-wide minimum Truth epsilon and encodes a freq,conf pairs in one 32-bit int.
+     *
+     * a and b are the corners
+     */
+    private final int a, b;
+
+    public TasksRegion(long start, long end, float freqMin, float freqMax, float confMin, float confMax) {
+        super(start, end);
+
 //        if (Util.equals(freqMin, freqMax, e)) {
 //            float mid = (freqMin + freqMax)/2;
 //            this.freqMin = mid - e; this.freqMax = mid + e;
 //        } else {
-            this.freqMin = freqMin; this.freqMax = freqMax;
-//        }
-
-//        if (Util.equals(confMin, confMax, e)) {
-//            float mid = (confMin + confMax)/2;
-//            this.confMin = mid - e; this.confMax = mid + e;
-//        } else {
-            this.confMin = confMin; this.confMax = confMax;
-//        }
+        if (freqMin == freqMax && confMin == confMax) {
+            a = b = Truth.truthToInt(freqMin, confMin);
+        } else {
+            a = Truth.truthToInt(Math.min(freqMin, freqMax), Math.min(confMin, confMax));
+            b = Truth.truthToInt(Math.max(freqMin, freqMax), Math.max(confMin, confMax));
+        }
     }
 
     public static TasksRegion mbr(TaskRegion r, long xs, long xe, float ef, float ec) {
-        if (r instanceof Task) {
-            Task tr = (Task)r;
-            float trf = tr.freq(), trc = tr.conf();
-            return new TasksRegion(
-                    Math.min(r.start(), xs), Math.max(r.end(), xe),
-                    Math.min(trf, ef),
-                    Math.max(trf, ef),
-                    Math.min(trc, ec),
-                    Math.max(trc, ec)
+        assert(xs!=ETERNAL && xs!=TIMELESS);
+
+        long rs = r.start();
+        assert(rs!=ETERNAL && rs!=TIMELESS);
+
+        long re = r.end();
+
+        long s = min(rs, xs), e = max(re, xe);
+//        if (r instanceof Task) {
+//            Task tr = (Task) r;
+//            float trf = tr.freq(), trc = tr.conf();
+//            return new TasksRegion(s, e,
+//                    min(trf, ef),
+//                    max(trf, ef),
+//                    min(trc, ec),
+//                    max(trc, ec)
+//            );
+//        } else {
+            return new TasksRegion(s, e,
+                    min(r.freqMin(), ef),
+                    max(r.freqMax(), ef),
+                    min(r.confMin(), ec),
+                    max(r.confMax(), ec)
             );
-        } else {
-            return new TasksRegion(
-                    Math.min(r.start(), xs), Math.max(r.end(), xe),
-                    Math.min(r.freqMin(), ef),
-                    Math.max(r.freqMax(), ef),
-                    Math.min(r.confMin(), ec),
-                    Math.max(r.confMax(), ec)
-            );
-        }
+//        }
     }
 
     @Override
@@ -69,44 +75,47 @@ public final class TasksRegion implements TaskRegion {
     public boolean equals(Object obj) {
         if (this == obj) return true;
         if (!(obj instanceof TasksRegion)) return false;
-        TasksRegion r = (TasksRegion)obj;
-        return start==r.start() && end==r.end() &&
-                Util.equals(freqMin, r.freqMin) && Util.equals(freqMax, r.freqMax) &&
-                Util.equals(confMin, r.confMin) && Util.equals(confMax, r.confMax);
+        TasksRegion r = (TasksRegion) obj;
+        return start == r.start && end == r.end && a == r.a && b == r.b;
     }
 
-    @Override
-    public final long start() {
-        return start;
+    @Override public String toString() {
+
+        int decimals = 3;
+        return new StringBuilder(64)
+                .append('@')
+                .append(Tense.tStr(start, end))
+                .append('[')
+                .append(Texts.n(freqMin(), decimals))
+                .append("..")
+                .append(Texts.n(freqMax(), decimals))
+                .append(Op.VALUE_SEPARATOR)
+                .append(Texts.n(confMin(), decimals))
+                .append("..")
+                .append(Texts.n(confMax(), decimals))
+                .append(Op.TRUTH_VALUE_MARK).append(']')
+                .toString();
     }
 
-    @Override
-    public final long end() {
-        return end;
+
+
+    @Override public final float freqMin() {
+        return Truth.freq(a);
     }
 
-    @Override
-    public String toString() {
-        return Arrays.toString(new double[]{start, end, freqMin, freqMax, confMin, confMax});
+    @Override public final float freqMax() {
+        return Truth.freq(b);
     }
 
-    @Override
-    public final float freqMin() {
-        return freqMin;
-    }
-    public final float freqMax() {
-        return freqMax;
-    }
-    public final float confMin() {
-        return confMin;
-    }
-    @Override
-    public float confMax() {
-        return confMax;
+    @Override public final float confMin() {
+        return Truth.conf(a);
     }
 
-    @Override
-    public @Nullable Task task() {
+    @Override public final float confMax() {
+        return Truth.conf(b);
+    }
+
+    @Nullable @Override public final Task task() {
         return null;
     }
 

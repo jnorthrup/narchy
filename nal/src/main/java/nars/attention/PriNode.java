@@ -3,9 +3,10 @@ package nars.attention;
 import jcog.data.graph.MapNodeGraph;
 import jcog.data.graph.Node;
 import jcog.data.graph.NodeGraph;
+import jcog.util.Essence;
 import jcog.math.FloatRange;
-import jcog.math.FloatSupplier;
 import jcog.pri.PLink;
+import jcog.pri.ScalarValue;
 import nars.$;
 import nars.NAR;
 import nars.term.Term;
@@ -98,9 +99,15 @@ public class PriNode extends PLink<Term> {
     }
 
     public static class ConstPriNode extends PriNode {
-        private final FloatSupplier f;
 
-        public ConstPriNode(Object id, FloatSupplier f) {
+        @Essence
+        public final FloatRange f;
+
+        public ConstPriNode(Object id, float initialValue) {
+            this(id, new FloatRange(initialValue, ScalarValue.EPSILON, 1f));
+        }
+
+        public ConstPriNode(Object id, FloatRange f) {
             super(id);
             this.f = f;
         }
@@ -112,7 +119,7 @@ public class PriNode extends PLink<Term> {
 
         @Override
         public void update(MapNodeGraph<PriNode, Object> graph) {
-            this.amp.set(f.asFloat());
+            this.amp.set(f.floatValue());
             super.update(graph);
         }
     }

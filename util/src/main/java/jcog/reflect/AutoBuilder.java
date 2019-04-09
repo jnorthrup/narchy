@@ -5,6 +5,7 @@ import com.google.common.collect.Sets;
 import jcog.TODO;
 import jcog.data.bit.AtomicMetalBitSet;
 import jcog.data.list.FasterList;
+import jcog.func.TriFunction;
 import jcog.math.MutableInteger;
 import jcog.sort.FloatRank;
 import jcog.sort.RankedN;
@@ -13,6 +14,7 @@ import org.eclipse.collections.api.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiFunction;
@@ -27,6 +29,8 @@ import static org.eclipse.collections.impl.tuple.Tuples.pair;
  * from materialization abstractions
  */
 public class AutoBuilder<X, Y> {
+
+
 
     /** essentially a decomposition of a subject into its components,
      *  include a descriptive relations to each */
@@ -81,6 +85,7 @@ public class AutoBuilder<X, Y> {
         //TODO
     }
 
+    public final Map<Class, TriFunction/*<Field, Object, Object, Object>*/> annotation = new ConcurrentHashMap();
     public final Map<Class, BiFunction<? super X, Object /* relation */, Y>> onClass = new ConcurrentHashMap<>();
     public final Map<Predicate, Function<X, Y>> onCondition = new ConcurrentHashMap<>();
     final AutoBuilding<X, Y> building;
@@ -173,15 +178,32 @@ public class AutoBuilder<X, Y> {
         seen.clear();
     }
 
+    public <Annotation, FieldValue> void annotation(Class<? extends Annotation> essenceClass, TriFunction<Field, FieldValue, Annotation, Object> o) {
+        annotation.put(essenceClass, o);
+    }
+
     private <C> void collectFields(C c, X x, Y parentRepr, Collection<Pair<X, Iterable<Y>>> target, int depth) {
 
         Class cc = x.getClass();
         Reflect.on(cc).fields(true, false, false).forEach((s, ff) -> {
-            Field f = ff.get();
+
+
             try {
-                Object xf = f.get(x);
-                if (xf != null && xf != x) {
-                    X z = (X) xf;
+                Field f = ff.get();
+                Object fVal = f.get(x);
+                if(Modifier.isPublic(f.getModifiers())) {
+                    for (Map.Entry<Class, TriFunction> e : annotation.entrySet()) {
+                        java.lang.annotation.Annotation fe = f.getAnnotation(e.getKey());
+                        if (fe!=null) {
+                            fVal = e.getValue().apply(f, fVal, fe);
+                            if (fVal == null)
+                                break;
+                        }
+                    }
+                }
+
+                if (fVal != null && fVal != x) {
+                    X z = (X) fVal;
                     Y w = build(c, parentRepr, f, z, depth);
                     if (w != null)
                         target.add(pair(z, List.of(w)));

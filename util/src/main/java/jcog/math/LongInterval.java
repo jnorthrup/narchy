@@ -1,5 +1,10 @@
 package jcog.math;
 
+import jcog.WTF;
+
+import static java.lang.Math.max;
+import static java.lang.Math.min;
+
 /** pair of 64-bit signed long integers representing an interval.
  *  a special 'ETERNAL' value represents (-infinity,+infinity)
  *
@@ -9,7 +14,54 @@ public interface LongInterval {
     
     long ETERNAL = Long.MIN_VALUE;
     long TIMELESS = Long.MAX_VALUE;
-    
+
+
+
+    /**
+     * returns -1 if no intersection; 0 = adjacent, > 0 = non-zero interval in common
+     */
+    static long intersectLength(long x1, long y1, long x2, long y2) {
+        if (x1 == ETERNAL || x1 == TIMELESS || x2 == ETERNAL || x2 == TIMELESS)
+            throw new WTF();
+        long a = max(x1, x2);
+        long b = min(y1, y2);
+        return a <= b ? b - a : -1;
+    }
+
+    /**
+     * true if [as..ae] intersects [bs..be]
+     */
+    static boolean intersects(long as, long ae, long bs, long be) {
+        assert (as != TIMELESS && bs != TIMELESS);
+        return intersectsSafe(as, ae, bs, be);
+    }
+
+    static boolean intersectsSafe(long as, long ae, long bs, long be) {
+        return (as == ETERNAL) || (bs == ETERNAL) || (max(as, bs) <= min(ae, be));
+    }
+
+
+
+    //		return internew Longerval(x1, x2).intersection(y1, y2);
+//	}
+    public static Longerval union(long x1, long x2, long y1, long y2) {
+        assert (x1 != TIMELESS && x1 != ETERNAL && y1 != TIMELESS && y1 != ETERNAL);
+        return new Longerval(x1, x2).union(y1, y2);
+    }
+
+    static long unionLength(long x1, long x2, long y1, long y2) {
+        return max(x2, y2) - min(x1, y1);
+    }
+
+    /**
+     * returns -1 if no intersection; 0 = adjacent, > 0 = non-zero interval in common
+     */
+    static int intersectLength(int x1, int x2, int y1, int y2) {
+        int a = max(x1, x2);
+        int b = min(y1, y2);
+        return a <= b ? b - a : -1;
+    }
+
     long start();
 
     long end();
@@ -206,7 +258,7 @@ public interface LongInterval {
             return 0;
 
         long e = end();
-        if (Longerval.intersects(a, b, s, e)) {
+        if (intersects(a, b, s, e)) {
             return 0; 
         } else {
             long sa = Math.abs(s - a);
@@ -231,7 +283,7 @@ public interface LongInterval {
             return 0;
 
         long e = x.end();
-        if (Longerval.intersectsSafe(a, b, s, e)) {
+        if (intersectsSafe(a, b, s, e)) {
             return 0;
         } else {
             long sa = Math.abs(s - a);
@@ -246,6 +298,7 @@ public interface LongInterval {
     }
 
     default long meanTimeTo(long x) {
+        if (x == ETERNAL) return 0;
         long start = start();
         if (start == ETERNAL) return 0;
         long end = end();
@@ -258,16 +311,9 @@ public interface LongInterval {
         }
     }
 
-    default long meanTimeTo(long s, long e) {
-        long ms = meanTimeTo(s);
-        if (s == e)
-            return ms;
-        else {
-            return (ms + meanTimeTo(e))/2;
-        }
-    }
 
     default long maxTimeTo(long x) {
+
         long start = start();
         if (start == ETERNAL) return 0;
         long end = end();
@@ -280,31 +326,37 @@ public interface LongInterval {
         }
     }
 
-    default boolean intersects(long rangeStart, long rangeEnd) {
-        if (rangeStart == ETERNAL)
+    default boolean intersects(LongInterval i) {
+        return this == i || intersects(i.start(), i.end());
+    }
+
+    default boolean intersects(long s, long e) {
+        assert(s!=TIMELESS);
+        if (s == ETERNAL)
             return true;
         long start = start();
-        return (start == ETERNAL) || (rangeEnd >= start && rangeStart <= end());
+        return (start == ETERNAL) || (e >= start && s <= end());
     }
 
-    default boolean contains(long rangeStart, long rangeEnd) {
+    default boolean contains(long s, long e) {
+        assert(s!=TIMELESS);
         long start = start();
-        boolean isEternal = start == ETERNAL;
-        //only contains if both are eternal
-        if (rangeStart != ETERNAL) {
-            return isEternal || (rangeStart >= start && rangeEnd <= end());
-        } else {
-            return isEternal;
-        }
+        if (start == ETERNAL)
+            return s==ETERNAL; //eternal contains itself
+        else
+            return s!=ETERNAL && (s >= start && e <= end());
     }
-
-    default boolean containedBy(long start, long end) {
-        if (start == ETERNAL) return true;
-        long xStart = this.start();
-        if (xStart == ETERNAL) return false;
-        return xStart >= start && this.end() <= end;
+    /** eternal contains itself */
+    default boolean contains(LongInterval b) {
+        if (this == b) return true;
+        long as = start();
+        if (as == ETERNAL)
+            return true;
+        long bs = b.start();
+        if (bs == ETERNAL)
+            return false;
+        else
+            return (bs >= as && b.end() <= end());
     }
-
-
 
 }

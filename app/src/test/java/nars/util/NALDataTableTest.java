@@ -23,7 +23,7 @@ public class NALDataTableTest {
 
     @Test
     public void validatePredictionXOR() throws Exception {
-        n.beliefPriDefault.set(0.02f);
+        n.beliefPriDefault.pri(0.02f);
         n.questionPriDefault.set(0.5f);
         n.termVolumeMax.set(16);
         n.log();
