@@ -24,7 +24,7 @@ public class BagregateConceptGraph2D extends ConceptGraph2D {
     };
 
     public static Surface get(NAR n) {
-        return get( ((What.TaskLinkWhat)n.in).links, n);
+        return get( ((What.TaskLinkWhat) n.what()).links, n);
     }
 
     public static Surface get(TaskLinks links, NAR n) {

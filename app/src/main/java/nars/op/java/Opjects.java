@@ -298,7 +298,7 @@ public class Opjects extends DefaultTermizer {
 
 
 
-            What what = nar.in; //HACK TODO be parameter
+            What what = nar.what(); //HACK TODO be parameter
             if (feedback == null)
                 in.accept(value, what);
             else
@@ -551,7 +551,7 @@ public class Opjects extends DefaultTermizer {
         }
 
         @Override
-        protected void disable() {
+        protected void disable(NAR n) {
             probing.remove(this);
         }
 

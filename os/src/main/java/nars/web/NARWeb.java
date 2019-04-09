@@ -204,7 +204,7 @@ abstract public class NARWeb extends WebServer {
 
             assert (path.charAt(0) == '/');
             path = path.substring(1);
-            n.become(path, null /* TODO */);
+
 
             n.log(); //temporary
 

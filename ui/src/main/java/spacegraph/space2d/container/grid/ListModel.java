@@ -37,7 +37,7 @@ abstract public class ListModel<X> implements GridModel<X> {
     }
 
     @Override
-    public synchronized void start(DynGrid<X> x) {
+    public void start(DynGrid<X> x) {
         if (surface!=null)
             throw new TODO("support multiple observers");
         this.surface = x;

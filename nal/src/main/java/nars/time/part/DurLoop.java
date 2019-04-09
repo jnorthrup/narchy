@@ -215,8 +215,10 @@ abstract public class DurLoop extends NARPart {
             } finally {
                 //TODO catch Exception, option for auto-stop on exception
 
-                if (DurLoop.this.isOn())
-                    scheduleNext(durCycles(), atStart, nar);
+                NAR n = DurLoop.this.nar;
+                if (n!=null && DurLoop.this.isOn()) {
+                    scheduleNext(durCycles(), atStart, n);
+                }
 
                 busy.set(false);
             }

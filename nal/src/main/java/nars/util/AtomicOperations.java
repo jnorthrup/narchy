@@ -114,7 +114,7 @@ public class AtomicOperations implements BiFunction<Task, NAR, Task> {
         }
 
         if (s == 0)
-            disable();
+            disable(n);
     }
 
     @Override
@@ -166,14 +166,18 @@ public class AtomicOperations implements BiFunction<Task, NAR, Task> {
 
     /**
      * operator leaves active probing mode
+     * @param n
      */
-    protected void disable() {
-        if (onCycle.getOpaque() != null) {
-            onCycle.getAndUpdate((x)->{
-                if (x != null)
-                    x.close();
-                return null;
-            });
+    protected void disable(NAR n) {
+        DurLoop d;
+        if ((d = onCycle.getOpaque()) != null) {
+            n.stop(d);
+
+//            onCycle.getAndUpdate((x)->{
+//                if (x != null)
+//                    x.close();
+//                return null;
+//            });
         }
     }
 

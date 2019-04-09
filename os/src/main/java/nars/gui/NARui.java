@@ -14,6 +14,8 @@ import jcog.exe.Exe;
 import jcog.learn.ql.HaiQae;
 import jcog.math.Quantiler;
 import jcog.pri.VLink;
+import jcog.service.Part;
+import jcog.service.Parts;
 import nars.AttentionUI;
 import nars.NAR;
 import nars.Narsese;
@@ -24,7 +26,6 @@ import nars.attention.TaskLinks;
 import nars.attention.What;
 import nars.concept.Concept;
 import nars.concept.sensor.Signal;
-import nars.control.NARPart;
 import nars.gui.concept.ConceptColorIcon;
 import nars.gui.concept.ConceptSurface;
 import nars.gui.graph.run.BagregateConceptGraph2D;
@@ -44,6 +45,7 @@ import spacegraph.space2d.container.Bordering;
 import spacegraph.space2d.container.ScrollXY;
 import spacegraph.space2d.container.Splitting;
 import spacegraph.space2d.container.Stacking;
+import spacegraph.space2d.container.graph.Graph2D;
 import spacegraph.space2d.container.graph.NodeVis;
 import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.container.grid.KeyValueGrid;
@@ -55,17 +57,12 @@ import spacegraph.space2d.widget.button.Submitter;
 import spacegraph.space2d.widget.console.TextEdit0;
 import spacegraph.space2d.widget.menu.Menu;
 import spacegraph.space2d.widget.menu.TabMenu;
-import spacegraph.space2d.widget.menu.view.GridMenuView;
 import spacegraph.space2d.widget.meta.MetaFrame;
 import spacegraph.space2d.widget.meta.ObjectSurface;
 import spacegraph.space2d.widget.meta.PartsTable;
 import spacegraph.space2d.widget.meta.TriggeredSurface;
-import spacegraph.space2d.widget.meter.PaintUpdateMatrixView;
-import spacegraph.space2d.widget.meter.Plot2D;
-import spacegraph.space2d.widget.meter.ScatterPlot2D;
-import spacegraph.space2d.widget.meter.Spectrogram;
+import spacegraph.space2d.widget.meter.*;
 import spacegraph.space2d.widget.port.FloatRangePort;
-import spacegraph.space2d.widget.text.AbstractLabel;
 import spacegraph.space2d.widget.text.LabeledPane;
 import spacegraph.space2d.widget.text.VectorLabel;
 import spacegraph.video.Draw;
@@ -109,15 +106,6 @@ public class NARui {
         })));
     }
 
-
-    public static AbstractLabel label(Object x) {
-        return label(x.toString());
-    }
-
-    public static AbstractLabel label(String text) {
-        return new VectorLabel(text);
-    }
-
     /**
      * ordering: first is underneath, last is above
      */
@@ -128,20 +116,20 @@ public class NARui {
 
     public static Surface top(NAR n) {
         return new Bordering(
-                new Splitting(
-                    new TabMenu(menu(n) /* , new WallMenuView() */ ),
-                    0.5f,
-                    new TabMenu(pluginsMenu(n), new GridMenuView().aspect(2))
-                ).resizeable()
+                //new Splitting(
+                    new TabMenu(menu(n) /* , new WallMenuView() */ )
+//                    0.5f,
+//                    new TabMenu(parts(n), new GridMenuView().aspect(2))
+//                ).resizeable()
             ).north(ExeCharts.runPanel(n))
             //.south(new OmniBox(new NarseseJShellModel(n))) //+50mb heap
             ;
     }
 
-    public static HashMap<String, Supplier<Surface>> pluginsMenu(NAR n) {
+    public static HashMap<String, Supplier<Surface>> parts(Parts p) {
         HashMap<String,Supplier<Surface>> m = new HashMap<>();
-        n.partStream().forEach(s -> {
-            m.put( ((NARPart)s).id.toString(), ()-> new ObjectSurface(s));
+        p.partStream().forEach(s -> {
+            m.put( ((Part)s).toString(), ()-> new ObjectSurface(s));
         });
         return m;
     }
@@ -149,7 +137,7 @@ public class NARui {
     public static HashMap<String, Supplier<Surface>> menu(NAR n) {
         Map<String, Supplier<Surface>> m = Map.of(
                 //"shl", () -> new ConsoleTerminal(new TextUI(n).session(10f)),
-                "nar", () -> new ObjectSurface<>(n, 2),
+                "nar", () -> new ObjectSurface<>(n, 1),
                 "on", () -> new ObjectSurface(n.atMap().entrySet(), 2),
                 "exe", () -> ExeCharts.exePanel(n),
                 "val", () -> ExeCharts.valuePanel(n),
@@ -597,6 +585,10 @@ public class NARui {
     }
 
     public static Surface attentionUI(NAR n) {
+        return new BagView(n.what, n);
+    }
+
+    public static Surface attentionUI_0(NAR n) {
         //TODO watch for added and removed What's for live update
 
         Map<String,Supplier<Surface>> global = new HashMap();
@@ -607,7 +599,9 @@ public class NARui {
         n.what.forEach((v)->{
            attentions.put(v.id.toString(), ()->attentionUI((What)v));
         });
-        return new Splitting(new TabMenu(global), 0.25f, new TabMenu(attentions)).horizontal(true).resizeable();
+        TabMenu atMenu = new TabMenu(attentions);
+
+        return new Splitting(new TabMenu(global), 0.25f, atMenu).horizontal(true).resizeable();
     }
 
     public static Surface attentionUI(What w) {

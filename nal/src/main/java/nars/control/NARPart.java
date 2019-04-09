@@ -94,26 +94,26 @@ abstract public class NARPart extends Part<NAR> implements Termed, OffOn {
 //        }
 //    }
 
-    /**
-     * disables this part but does not remove it
-     */
-    public void close() {
-        NAR n = nar;
-        if (n != null) {
-            boolean ok = n.stop(id);
-            //assert (ok);
-        }
+
+    public final void close() {
+        delete();
     }
 
     /**
      * resume
      */
-    public void on() {
-        nar.start(id);
+    public final void on() {
+        nar.start(this);
     }
 
     public boolean delete() {
-        assert (isOff() && nar == null);
+        NAR n = this.nar;
+        if (n !=null)
+            stopping(this.nar);
+
+        //assert (isOff()); // && nar == null);
+
+        //assert(nar.remove(this);
 
         children.forEach(NARPart::delete);
         children.clear();
@@ -121,6 +121,7 @@ abstract public class NARPart extends Part<NAR> implements Termed, OffOn {
         //boolean ok = nar.remove(id); assert(ok);
 
         whenDeleted.close();
+        this.nar = null;
         return true;
     }
 

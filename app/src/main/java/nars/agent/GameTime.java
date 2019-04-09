@@ -90,11 +90,12 @@ abstract public class GameTime {
 
         public DurLoop loop = null;
 
-        public Durs(float durPeriod) {
+        Durs(float durPeriod) {
             this.durPeriod = durPeriod;
         }
+
         @Override protected DurLoop clock(Game a) {
-            loop = a.nar().onDur(a::next);
+            loop = new DurLoop.DurRunnable(a::next);
             loop.durs(durPeriod);
             return loop;
         }

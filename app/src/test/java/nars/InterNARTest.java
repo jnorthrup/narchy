@@ -50,8 +50,8 @@ public class InterNARTest {
         int preCycles = 1;
         int postCycles = 64;
 
-        NAR a = NARS.realtime(NAR_FPS).withNAL(1, 1).get().become("a", new NARS().what /* HACK */);
-        NAR b = NARS.realtime(NAR_FPS).withNAL(1, 1).get().become("b", new NARS().what /* HACK */);
+        NAR a = NARS.realtime(NAR_FPS).withNAL(1, 1).get();
+        NAR b = NARS.realtime(NAR_FPS).withNAL(1, 1).get();
 
         a.termVolumeMax.set(volMax);
         b.termVolumeMax.set(volMax);
@@ -66,7 +66,7 @@ public class InterNARTest {
 
         beforeConnect.accept(a, b);
 
-        InterNAR ai = new InterNAR(0, false, a.in) {
+        InterNAR ai = new InterNAR(0, false, a.what()) {
             @Override
             protected void starting(NAR nar) {
                 super.starting(nar);
@@ -74,7 +74,7 @@ public class InterNARTest {
             }
 
         };
-        InterNAR bi = new InterNAR(0, false, b.in) {
+        InterNAR bi = new InterNAR(0, false, b.what()) {
 
             @Override
             protected void starting(NAR nar) {

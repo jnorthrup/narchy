@@ -117,7 +117,7 @@ public class PrologCore extends PrologAgent implements Consumer<Task> {
 
         this.in = n.newChannel(this);
         this.nar = n;
-        this.what = nar.in; //TODO be parameter
+        this.what = nar.what(); //TODO be parameter
 
 
         n.eventTask.on(this);

@@ -62,7 +62,7 @@ public class InterNAR extends NARPart implements TriConsumer<NAR, ActiveQuestion
     }
 
     @Deprecated public InterNAR(NAR n) {
-        this(n.in);
+        this(n.what());
     }
 
 

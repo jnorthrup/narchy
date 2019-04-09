@@ -80,7 +80,7 @@ public class STMLinkage extends NARPart {
     }
 
     static void link(Concept target, Task task, float factor, NAR nar) {
-        ((What.TaskLinkWhat)nar.in).links.link(TaskLink.tasklink(task.term(), target.term(), task.punc(),task.priElseZero() * factor));
+        ((What.TaskLinkWhat) nar.what()).links.link(TaskLink.tasklink(task.term(), target.term(), task.punc(),task.priElseZero() * factor));
     }
 
 

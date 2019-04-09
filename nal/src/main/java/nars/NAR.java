@@ -3,6 +3,7 @@ package nars;
 
 import com.google.common.collect.Streams;
 import com.google.common.primitives.Longs;
+import jcog.Log;
 import jcog.Texts;
 import jcog.Util;
 import jcog.data.byt.DynBytes;
@@ -53,12 +54,12 @@ import nars.time.event.WhenClear;
 import nars.time.event.WhenCycle;
 import nars.time.event.WhenInternal;
 import nars.time.event.WhenTimeIs;
-import nars.time.part.CycLoop;
 import nars.time.part.DurLoop;
 import nars.truth.PreciseTruth;
 import nars.truth.Truth;
 import nars.util.Timed;
 import org.HdrHistogram.Histogram;
+import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.eclipse.collections.api.block.function.primitive.ShortToObjectFunction;
 import org.eclipse.collections.api.tuple.Pair;
 import org.eclipse.collections.api.tuple.Twin;
@@ -66,12 +67,12 @@ import org.eclipse.collections.api.tuple.primitive.ObjectBooleanPair;
 import org.eclipse.collections.impl.bag.mutable.HashBag;
 import org.fusesource.jansi.Ansi;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
 
 import java.io.*;
 import java.net.URL;
 import java.util.Set;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -108,12 +109,10 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
     public final ConceptBuilder conceptBuilder;
     public final Emotion feel;
 
-
-    /** core/default attention */
-    public What in;
+    static final Logger logger = Log.logger(NAR.class);
 
     /** index of active attentions */
-    public final WhatBag what = new WhatBag();
+    public final WhatBag what = new WhatBag(Param.WHATS_CAPACITY);
 
     /** default what builder */
     public final Function<Term,What> whatBuilder;
@@ -128,11 +127,11 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
     public final Control control;
     public final Evaluator evaluator = new Evaluator(this::axioms);
     protected final Supplier<Random> random;
-    /**
-     * atomic for thread-safe schizophrenia
-     */
-    private final AtomicReference<Term> self = new AtomicReference<>(null);
 
+    /** id of this NAR's self; ie. its name */
+    final Term self;
+
+    final InheritableThreadLocal<What> active = new InheritableThreadLocal<>();
 
     /**
      *
@@ -159,7 +158,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
         this.control = new Control(this);
 
         this.whatBuilder = whatBuilder;
-        become(Param.randomSelf());
+        self = Param.randomSelf();
 
 
 
@@ -335,6 +334,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
     /** deallocate as completely as possible */
     public void delete() {
         synchronized (exe) {
+            logger.info("delete");
 
             stop();
 
@@ -354,44 +354,40 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
      * this does not indicate the NAR has stopped or reset itself.
      */
     @Deprecated public void clear() {
-//        synchronized (exe) {
-//
-//            eventClear.emit(this);
-//
-//            logger.info("clear");
-//        }
-        //TODO clear per individual What's only ?
+        synchronized (exe) {
 
-    }
+            logger.info("clear");
+            eventClear.emit(this);
 
-    public final NAR become(String self) {
-        return become(self, whatBuilder);
-    }
-
-    public final NAR become(Term self) {
-        return become(self, whatBuilder);
-    }
-
-    public final NAR become(String self, Function<Term, What> builder) {
-        return become(Atomic.atom(self), builder);
-    }
-
-    public final NAR become(Term nextSelf, Function<Term, What> builder) {
-        synchronized (self) { //HACK
-            Term prev;
-            if (!Objects.equals(prev = self.getAndSet(nextSelf), nextSelf)) {
-                What prevWhat = this.in;
-                if (prevWhat !=null)
-                    stop(prevWhat);
-
-                if (nextSelf!=null) {
-                    start(this.in = builder.apply(nextSelf));
-                } else
-                    this.in = null; //HACK
-            }
         }
-        return this;
+
     }
+
+
+//    public final NAR become(Term self) {
+//        return become(self, whatBuilder);
+//    }
+
+//    public final NAR become(String self, Function<Term, What> builder) {
+//        return become(Atomic.atom(self), builder);
+//    }
+//
+//    public final NAR become(Term nextSelf, Function<Term, What> builder) {
+//        synchronized (self) { //HACK
+//            Term prev;
+//            if (!Objects.equals(prev = self.getAndSet(nextSelf), nextSelf)) {
+//                What prevWhat = this.getIn();
+//                if (prevWhat !=null)
+//                    stop(prevWhat);
+//
+//                if (nextSelf!=null) {
+//                    start(this.in = builder.apply(nextSelf));
+//                } else
+//                    this.in = null; //HACK
+//            }
+//        }
+//        return this;
+//    }
 
     /**
      * parses one and only task
@@ -654,12 +650,12 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
 
     @Override
     public final void input(ITask t) {
-        in.accept(t);
+        what().accept(t);
     }
 
     @Override
     public final void input(ITask... t) {
-        in.acceptAll(t);
+        what().acceptAll(t);
     }
 
     @Override
@@ -1159,11 +1155,11 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
      * if this is an Iterable<Task> , it can be more efficient to use the inputTasks method to bypass certain non-NALTask conditions
      */
     @Deprecated public void input(Iterable<? extends ITask> tasks) {
-        in.acceptAll(tasks);
+        what().acceptAll(tasks);
     }
 
     @Deprecated public final void input(Stream<? extends ITask> tasks) {
-        in.acceptAll(tasks);
+        what().acceptAll(tasks);
     }
 
     @Override
@@ -1348,7 +1344,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
      * The id/name of the reasoner
      */
     public final Term self() {
-        return self.get();
+        return self;
     }
 
     /**
@@ -1596,19 +1592,46 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
 
 
     /** TODO persistent cache */
-    public What the(Term id, boolean createIfMissing) {
+    public What the(Term id, boolean createAndStartIfMissing) {
         What w = what.get(id);
-        if (w == null && createIfMissing) {
+        if (w == null && createAndStartIfMissing) {
             w = what.put( this.whatBuilder.apply(id) );
-
-            assert(w!=null);
-        }
-
-        if (!w.isOn())
             start(w);
-
+        }
         return w;
     }
 
+
+
+
+    /** thread-local attention */
+    public final What what() {
+        What w = active.get();
+        if (w == null) {
+            fork(w = the($.identity(Thread.currentThread()), true), null);
+        }
+        return w;
+    }
+
+    /**
+     * this allows forking the curent 'what' context, while also applying an optional reprioritization to
+     * the previous context (if any).  the reprioritization function can also delete the previous context
+     * by returning NaN */
+    public final What fork(What next, @Nullable FloatFunction<What> reprioritizeCurrent) {
+        What prev = active.get();
+     if (next == prev)
+     return next;
+        if (reprioritizeCurrent!=null && prev!=null) {
+            float prevPriNext = reprioritizeCurrent.floatValueOf(prev);
+            if (prevPriNext!=prevPriNext) {
+                //NaN to discard
+                what.remove(prev.id);
+            } else {
+                prev.pri(prevPriNext);
+            }
+        }
+        active.set(next);
+        return next;
+    }
 
 }

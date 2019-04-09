@@ -67,7 +67,7 @@ public class Parts<K /* service key */, C /* context */> {
     protected final ConcurrentMap<K, Part<C>> parts;
     public final Topic<ObjectBooleanPair<Part<C>>> eventAddRemove = new ListTopic<>();
     public final Executor executor;
-    protected static final Logger logger = Log.logger(Parts.class);
+    private static final Logger logger = Log.logger(Parts.class);
 
     public Parts() {
         this(null, null);
@@ -230,24 +230,27 @@ public class Parts<K /* service key */, C /* context */> {
             logger.error("{} {} {}", what, this, e);
     }
 
+
     private boolean _stop(Part<C> x, @Nullable Runnable afterOff) {
 
 
         executor.execute(() -> {
             try {
 
-                if (!x.state.compareAndSet(ServiceState.On, ServiceState.OnToOff))
-                    return;
+                if (x.state.compareAndSet(ServiceState.On, ServiceState.OnToOff)) {
 
-                x.stop(id);
 
-                boolean nowOff = x.state.compareAndSet(Parts.ServiceState.OnToOff, Parts.ServiceState.Off);
-                assert(nowOff);
+                    x.stop(id);
 
-                if (afterOff != null)
+                    boolean nowOff = x.state.compareAndSet(Parts.ServiceState.OnToOff, Parts.ServiceState.Off);
+                    assert (nowOff);
+
+                    eventAddRemove.emit(pair(x, false)/*, executor*/);
+                }
+
+                if (afterOff != null && x.isOff()) {
                     afterOff.run();
-
-                eventAddRemove.emit(pair(x, false)/*, executor*/);
+                }
 
             } catch (Throwable e) {
                 x.state.set(Parts.ServiceState.Off);
@@ -296,6 +299,7 @@ public class Parts<K /* service key */, C /* context */> {
                 return false;
         }
     }
+
 
     private boolean tryStart(@Nullable Part<C> x) {
         executor.execute(() -> {

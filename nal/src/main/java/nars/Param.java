@@ -126,6 +126,9 @@ public abstract class Param extends Parts<Term,NAR> {
     /** should be enough to account for an expected evidence integration error rate */
     public static final float PROJECTION_EVIDENCE_INFLATION_PCT_TOLERANCE = 0.1f;
     protected static final boolean DYNAMIC_CONCEPT_TRANSIENT = false;
+
+    public static final int WHATS_CAPACITY = 128;
+
     public static boolean ETERNALIZE_BELIEF_PROJECTED_IN_DERIVATION = false;
     public static boolean STRONG_COMPOSITION = false;
 
@@ -545,7 +548,7 @@ public abstract class Param extends Parts<Term,NAR> {
         public static final boolean TIMEGRAPH_MERGE_INTERSECTING_EVENTS = false;
         /** whether timegraph should not return solutions with volume significantly less than the input's.
          *  set 0 to disable the filter */
-        public static final float TIMEGRAPH_IGNORE_DEGENERATE_SOLUTIONS_FACTOR = 0.1f;
+        public static final float TIMEGRAPH_IGNORE_DEGENERATE_SOLUTIONS_FACTOR = 0f;
         /** whether to dither events as they are represented internally.  output events are dithered for the NAR regardless. */
         public static final boolean TIMEGRAPH_DITHER_EVENTS_INTERNALLY = false;
         /**

@@ -104,31 +104,31 @@ abstract public class GameX extends Game {
         Game a = init.apply(n);
 
 
-        n.runLater(() -> {
+        //n.runLater(() -> {
 
-            initPlugins(n);
-            initPlugins2(n, a);
-            //initPlugins3(n, a);
-
-//            n.runLater(()->{
-                SpaceGraph.surfaceWindow(
-                        //new Gridding(n.parts(Game.class).map(NARui::agent).collect(toList())),
-                        NARui.agent(a),
-                        500, 500);
-                SpaceGraph.surfaceWindow(NARui.top(n), 800, 500);
-
-                SpaceGraph.surfaceWindow(NARui.attentionUI(n), 500, 500);
-//            });
 
             //a.resume();
             //System.gc();
-        });
+        //});
 
         n.synch();
 
         Loop loop = n.startFPS(gameFPS);
 
 
+        initPlugins(n);
+        initPlugins2(n, a);
+        //initPlugins3(n, a);
+
+//            n.runLater(()->{
+        SpaceGraph.surfaceWindow(
+                //new Gridding(n.parts(Game.class).map(NARui::agent).collect(toList())),
+                NARui.agent(a),
+                500, 500);
+        SpaceGraph.surfaceWindow(NARui.top(n), 800, 500);
+
+        SpaceGraph.surfaceWindow(NARui.attentionUI(n), 500, 500);
+//            });
         return n;
     }
 

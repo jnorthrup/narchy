@@ -5,6 +5,7 @@ import nars.NAR;
 import nars.Param;
 import nars.Task;
 import nars.agent.Game;
+import nars.attention.What;
 import nars.concept.action.curiosity.Curiosity;
 import nars.concept.action.curiosity.CuriosityTask;
 import nars.control.channel.CauseChannel;
@@ -220,7 +221,7 @@ public class AbstractGoalActionConcept extends AgentAction {
         int narDur = n.dur();
         int agentDur = g.time.dur();
 
-        int limit = Answer.BELIEF_MATCH_CAPACITY * 2;
+        int limit = Answer.BELIEF_MATCH_CAPACITY * 2; //high sensitivity
 
         if (prev == TIMELESS)
             prev = now - n.dur(); //HACK
@@ -228,14 +229,15 @@ public class AbstractGoalActionConcept extends AgentAction {
         Pair<Truth, long[]> bt = truth(true, limit, prev, now, agentDur, narDur, n);
         this.beliefTruth = bt != null ? bt.getOne() : null;
 
-        this.actionTruth = actionTruth(limit, prev, now, agentDur, narDur, n);
+        this.actionTruth = actionTruth(limit, prev, now, agentDur, narDur, g.what());
 
     }
 
-    private Truth actionTruth(int limit, long prev, long now, int agentDur, int narDur, NAR n) {
+    private Truth actionTruth(int limit, long prev, long now, int agentDur, int narDur, What w) {
 
         int curiDur = narDur;
 
+        NAR n = w.nar;
         Truth actionTruth;
         Pair<Truth, long[]> gt = truth(false, limit, prev, now, agentDur, narDur, n);
 
@@ -278,7 +280,7 @@ public class AbstractGoalActionConcept extends AgentAction {
                     //curiStart = Tense.dither(curiStart, dither);
                     //curiEnd = Tense.dither(curiEnd, dither);
 
-                    n.input(
+                    w.accept(
                             curiosity(actionCuri /*goal*/, curiStart, curiEnd, n)
                     );
                 }

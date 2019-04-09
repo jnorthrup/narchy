@@ -20,7 +20,7 @@ public class Concepts3D extends DynamicConceptSpace {
 //    private final TextEdit inputbox;
 
     private Concepts3D(NAR nar, int visibleNodes, int maxEdgesPerNodeMax) {
-        this(nar, () -> nar.in.concepts().iterator(),
+        this(nar, () -> nar.what().concepts().iterator(),
                 visibleNodes, maxEdgesPerNodeMax);
 
     }
