@@ -23,7 +23,7 @@ import java.util.stream.Stream;
  */
 public class FastCoWList<X> /*extends AbstractList<X>*/ /*implements List<X>*/ implements Iterable<X>, UnaryOperator<X[]> {
 
-    private final FasterList<X> list;
+    public final FasterList<X> list;
 
     private final IntFunction<X[]> arrayBuilder;
 

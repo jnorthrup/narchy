@@ -1,6 +1,5 @@
 package spacegraph.space2d.hud;
 
-import com.jogamp.opengl.fixedfunc.GLMatrixFunc;
 import jcog.Util;
 import jcog.event.Off;
 import jcog.math.v2;
@@ -150,8 +149,8 @@ public class Zoomed<S extends Surface> extends MutableUnitContainer<S> implement
             float zoom = (float) (sin(Math.PI / 2 - focusAngle / 2) / (cam.z * sin(focusAngle / 2)));
             float s = zoom * Math.min(w(), h());
 
-            System.out.println(scale);
-            render.set(cam, scale.set(s, s));
+            render.set(cam, scale.set(s,s));
+            render.push(cam, scale.set(s, s));
 
             gl.glPushMatrix();
 
@@ -163,7 +162,11 @@ public class Zoomed<S extends Surface> extends MutableUnitContainer<S> implement
 
         the().tryRender(render);
 
-        render.on(GLMatrixFunc::glPopMatrix);
+        render.on((gl)->{
+            gl.glPopMatrix();
+
+            render.pop();
+        });
     }
 
     @Override
@@ -201,7 +204,6 @@ public class Zoomed<S extends Surface> extends MutableUnitContainer<S> implement
                 } else if (finger.tryFingering(contentPan)) {
                     zoomStackReset();
                 }
-
                 //}
             }
 
@@ -278,7 +280,6 @@ public class Zoomed<S extends Surface> extends MutableUnitContainer<S> implement
 
     private void zoomNext(Finger finger, Surface x) {
 
-        //TODO fix
         synchronized (zoomStack) {
 
             int s = zoomStack.size();
@@ -433,30 +434,25 @@ public class Zoomed<S extends Surface> extends MutableUnitContainer<S> implement
 //            return t.lengthSquared();
 //        }
 
-        public v2 globalToPixel(float wx, float wy) {
-            return new v2(
-                    ((wx - cam.x) * scale.x) + w() / 2,
-                    ((wy - cam.y) * scale.y) + h() / 2
-            );
-        }
-//    public RectFloat globalToPixel(RectFloat b) {
-//        v2 ul = globalToPixel(new v2(b.left(), b.bottom()));
-//        v2 br = globalToPixel(new v2(b.right(), b.top()));
-//        return RectFloat.XYXY(ul, br);
-//    }
-//    public final v2 globalToPixel(v2 xy) {
-//        return globalToPixel(xy.x, xy.y);
-//    }
 
         public final v2 pixelToGlobal(v2 xy) {
             return pixelToGlobal(xy.x, xy.y);
         }
 
-        public v2 pixelToGlobal(float x, float y) {
+        public v2 globalToPixel(float gx, float gy) {
             return new v2(
-                    ((x - w() / 2) / scale.x + cam.x),
-                    ((y - h() / 2) / scale.y + cam.y)
+                    ((gx - cam.x) * scale.x) + w() / 2,
+                    ((gy - cam.y) * scale.y) + h() / 2
             );
+        }
+
+        public v2 pixelToGlobal(float px, float py) {
+            v2 g = new v2(
+                    ((px - w() / 2) / scale.x + cam.x),
+                    ((py - h() / 2) / scale.y + cam.y)
+            );
+
+            return g;
         }
 
         /**

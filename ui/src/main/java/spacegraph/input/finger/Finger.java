@@ -24,57 +24,63 @@ import java.util.function.Predicate;
  * possible intersection with a surface and/or its sub-surfaces.
  * <p>
  * tracks state changes and signals widgets of these
- *
+ * <p>
  * TODO differentiate this between subclasses which touch only one surface at a time, and those which can touch several (multi-select)
  */
 abstract public class Finger {
 
 
-    private final int buttons;
-
-    /** drag threshold (in screen pixels) */
-    private final float dragThresholdPx = 5f;
-
     public final v2 posPixel = new v2(), posScreen = new v2();
-
+    public final AtomicMetalBitSet prevButtonDown = new AtomicMetalBitSet();
+    /**
+     * widget above which this finger currently hovers
+     */
+    public final AtomicReference<Surface> touching = new AtomicReference<>();
+    /**
+     * a exclusive locking/latching state which may be requested by a surface
+     */
+    protected final AtomicReference<Fingering> fingering = new AtomicReference<>(Fingering.Null);
+    /**
+     * ex: true when finger enters the window, false when it leaves
+     */
+    protected final AtomicBoolean active = new AtomicBoolean(false);
+    protected final v2 _posGlobal = new v2();
     /**
      * last local and global positions on press (downstroke).
      * TODO is it helpful to also track upstroke position?
      */
     final v2[] pressPosPixel;
-
-    private final AtomicMetalBitSet buttonDown = new AtomicMetalBitSet();
-    public final AtomicMetalBitSet prevButtonDown = new AtomicMetalBitSet();
-
+    final FingerRenderer rendererDefault =
+            FingerRenderer.rendererCrossHairs1;
+    private final int buttons;
     /**
-     * a exclusive locking/latching state which may be requested by a surface
+     * drag threshold (in screen pixels)
      */
-    protected final AtomicReference<Fingering> fingering = new AtomicReference<>(Fingering.Null);
-
-    /**
-     * widget above which this finger currently hovers
-     */
-    public final AtomicReference<Surface> touching = new AtomicReference<>();
-
-    /** ex: true when finger enters the window, false when it leaves */
-    protected final AtomicBoolean active = new AtomicBoolean(false);
-
-    /** caches current ortho while traversing it */
-    @Deprecated protected transient Function<v2, v2> pixelToGlobal = x -> x;
+    private final float dragThresholdPx = 5f;
     //@Deprecated protected transient Function<v2, v2> _screenToGlobalRect;
+    private final AtomicMetalBitSet buttonDown = new AtomicMetalBitSet();
+    private final AtomicFloat[] rotation = new AtomicFloat[3];
+    /**
+     * caches current ortho while traversing it
+     */
+    @Deprecated
+    protected transient Function<v2, v2> pixelToGlobal = x -> x;
+    volatile FingerRenderer renderer = rendererDefault;
 
-    protected final v2 _posGlobal = new v2();
-
+    {
+        rotation[0] = new AtomicFloat();
+        rotation[1] = new AtomicFloat();
+        rotation[2] = new AtomicFloat();
+    }
 
     protected Finger(int buttons) {
-        assert(buttons<32);
+        assert (buttons < 32);
         this.buttons = buttons;
         pressPosPixel = new v2[this.buttons];
         for (int i = 0; i < this.buttons; i++) {
             pressPosPixel[i] = new v2(Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY);
         }
     }
-
 
     public static Predicate<Finger> clicked(Surface what, int button, Runnable clicked) {
         return clicked(what, button, clicked, null, null, null);
@@ -102,8 +108,8 @@ abstract public class Finger {
                     if (clicked != null)
                         clicked.accept(f);
 
-                } else if (f.pressed(button) ) {
-                    if (armed!=null)
+                } else if (f.pressed(button)) {
+                    if (armed != null)
                         armed.run();
 
                 } else {
@@ -121,10 +127,23 @@ abstract public class Finger {
         };
     }
 
+    public static v2 normalize(v2 pPixel, JoglWindow win) {
+        v2 y = new v2(pPixel);
+        y.sub(win.getX(), win.getY());
+        y.scale(1f / win.getWidth(), 1f / win.getHeight());
+        return y;
+    }
+
+    public static v2 normalize(v2 p, RectFloat b) {
+        v2 y = new v2(p);
+        y.sub(b.x, b.y);
+        y.scale(1f / b.w, 1f / b.h);
+        return y;
+    }
+
     public Surface touching() {
         return touching.getOpaque();
     }
-
 
     /**
      * call when finger exits the window / screen, the window becomes unfingerable, etc..
@@ -140,16 +159,33 @@ abstract public class Finger {
         active.set(true);
     }
 
-    /** commit all buttons */
+    /**
+     * commit all buttons
+     */
     private void commitButtons() {
         prevButtonDown.copyFrom(buttonDown);
     }
 
-    /** commit one button */
+
+    //final static v2 OOB = new v2(Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY);
+
+//    public v2 relativePos(v2 screen, Surface x) {
+//
+//        Ortho root = ortho; //(Ortho) x.root();
+//        if (root!=null)
+//            return relative(root.cam.screenToWorld(screen), x);
+//        else
+//            return OOB;
+//
+//
+//    }
+
+    /**
+     * commit one button
+     */
     private void commitButton(int button) {
         prevButtonDown.set(button, buttonDown.get(button));
     }
-
 
     public String buttonSummary() {
         return prevButtonDown.toBitString() + " -> " + buttonDown.toBitString();
@@ -182,13 +218,13 @@ abstract public class Finger {
 //        System.out.println(buttonSummary());
     }
 
-    /** call once per frame */
+    /**
+     * call once per frame
+     */
     protected final void clearRotation() {
         for (AtomicFloat r : rotation)
             r.getAndZero();
     }
-
-
 
     private boolean _dragging(int button) {
         v2 g = pressPosPixel[button];
@@ -199,20 +235,6 @@ abstract public class Finger {
         return pressed(button) && _dragging(button);
     }
 
-
-
-    //final static v2 OOB = new v2(Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY);
-
-//    public v2 relativePos(v2 screen, Surface x) {
-//
-//        Ortho root = ortho; //(Ortho) x.root();
-//        if (root!=null)
-//            return relative(root.cam.screenToWorld(screen), x);
-//        else
-//            return OOB;
-//
-//
-//    }
     /**
      * allows a fingered object to push the finger off it
      */
@@ -232,7 +254,6 @@ abstract public class Finger {
         return buttonDown.get(button);
     }
 
-
     private boolean wasPressed(int button) {
         return prevButtonDown.get(button);
     }
@@ -241,6 +262,16 @@ abstract public class Finger {
         return !wasPressed(button);
     }
 
+    //{
+//        Ortho co = this._ortho;
+//        Ortho o = co !=null ? co : (c instanceof Ortho ? ((Ortho)c) : c.parent(Ortho.class));
+//        if (o!=null)
+//            return posGlobal(posPixel, o);
+//        else
+//            return posPixel;//.clone();
+    //    return posGlobal;
+    //}
+
     private boolean releasedNow(int button) {
         return !pressed(button) && wasPressed(button);
     }
@@ -248,7 +279,7 @@ abstract public class Finger {
     public boolean pressedNow(int button) {
         return pressed(button) && !wasPressed(button);
     }
-    
+
     /**
      * additionally tests for no dragging while pressed
      */
@@ -261,7 +292,7 @@ abstract public class Finger {
 //        System.out.println(pressing(i) + "<-" + wasPressed(i));
 
         if (releasedNow(button) && !_dragging(button)) {
-            if (c==null || c.bounds.contains(posGlobal())) {
+            if (c == null || c.bounds.contains(posGlobal())) {
                 commitButton(button); //absorb the event
                 return true;
             }
@@ -269,7 +300,6 @@ abstract public class Finger {
 
         return false;
     }
-
 
     /**
      * acquire an exclusive fingering state
@@ -282,25 +312,31 @@ abstract public class Finger {
 
             //System.out.println(cf + " -> " + f + " try");
 
+
+            //System.out.println(cf + " -> " + f + " start");
+
+            //if (this.fingering.compareAndSet(prev, next)) {
+
+            //System.out.println(cf + " -> " + f + " acquire");
+
+            prev.stop(this);
+
             if (next.start(this)) {
 
-                //System.out.println(cf + " -> " + f + " start");
+                fingering.set(next);
 
-                if (this.fingering.compareAndSet(prev, next)) {
+                @Nullable FingerRenderer r = next.renderer(this);
+                renderer = (r != null) ? r : rendererDefault;
 
-                    //System.out.println(cf + " -> " + f + " acquire");
+                return true;
 
-                    prev.stop(this);
-
-                    @Nullable FingerRenderer r = next.renderer(this);
-                    renderer = (r != null) ? r : rendererDefault;
-
-                    return true;
-
-                } else {
-                    next.stop(this);
-                    renderer = rendererDefault;
-                }
+//                } else {
+//                    next.stop(this);
+//                    renderer = rendererDefault;
+//                }
+            } else {
+                fingering.set(Fingering.Null);
+                renderer = rendererDefault;
             }
         }
 
@@ -308,26 +344,10 @@ abstract public class Finger {
         return false;
     }
 
-    /** warning: the vector instance returned by this and other methods are mutable.  so they may need to be cloned when accessed to record the state across time. */
+    /**
+     * warning: the vector instance returned by this and other methods are mutable.  so they may need to be cloned when accessed to record the state across time.
+     */
     abstract public v2 posGlobal();
-
-    //{
-//        Ortho co = this._ortho;
-//        Ortho o = co !=null ? co : (c instanceof Ortho ? ((Ortho)c) : c.parent(Ortho.class));
-//        if (o!=null)
-//            return posGlobal(posPixel, o);
-//        else
-//            return posPixel;//.clone();
-    //    return posGlobal;
-    //}
-
-    private final AtomicFloat[] rotation = new AtomicFloat[3];
-
-    {
-        rotation[0] = new AtomicFloat();
-        rotation[1] = new AtomicFloat();
-        rotation[2] = new AtomicFloat();
-    }
 
     protected void rotationAdd(float[] next) {
         for (int i = 0; i < next.length; i++) {
@@ -336,28 +356,24 @@ abstract public class Finger {
                 this.rotation[i].set(r);
         }
     }
+
     public final float rotationX(boolean take) {
         return rotation(0, take);
     }
+    //FingerRenderer.polygon1;
+
     public final float rotationY(boolean take) {
         return rotation(1, take);
     }
+
     public final float rotationZ(boolean take) {
         return rotation(2, take);
     }
-
 
     protected float rotation(int which, boolean take) {
         AtomicFloat r = rotation[which];
         return take ? r.getAndSet(0) : r.get();
     }
-
-
-    final FingerRenderer rendererDefault =
-            FingerRenderer.rendererCrossHairs1;
-            //FingerRenderer.polygon1;
-
-    volatile FingerRenderer renderer = rendererDefault;
 
     /**
      * visual overlay representation of the Finger; ie. cursor
@@ -366,23 +382,10 @@ abstract public class Finger {
         return new FingerRendererSurface();
     }
 
-
     private boolean focused() {
         return active.getOpaque();
     }
 
-    public static v2 normalize(v2 pPixel, JoglWindow win) {
-        v2 y = new v2(pPixel);
-        y.scale(1f / win.getWidth(), 1f / win.getHeight());
-        return y;
-    }
-
-    public static v2 normalize(v2 p, RectFloat b) {
-        v2 y = new v2(p);
-        y.sub(b.x, b.y);
-        y.scale(1f / b.w, 1f / b.h);
-        return y;
-    }
     public v2 posRelative(RectFloat b) {
         return normalize(posGlobal(), b);
     }
@@ -402,6 +405,44 @@ abstract public class Finger {
         //return posRelative(bounds).inUnit();
     }
 
+    public static final class TouchOverlay extends Overlay {
+
+        private final Finger f;
+
+        public TouchOverlay(Finger f, Zoomed.Camera cam) {
+//            this(f::touching, cam);
+            super(cam);
+            this.f = f;
+        }
+
+//        public ZoomBoundsOverlay(Supplier<Surface> touching, Zoomed.Camera cam) {
+//            super(cam);
+//            this.touching = touching;
+//        }
+
+        @Override
+        protected boolean enabled() {
+            return f.focused();
+        }
+
+        @Override
+        protected Surface target() {
+            Surface s = f.touching();
+            if (s != null) {
+                //color HASH
+                //color.setAt()
+            }
+            return s;
+        }
+
+        @Override
+        protected void paint(Surface t, GL2 gl, ReSurface reSurface) {
+            drawBoundsFrame(t, gl);
+
+            //paintCaption(t, reSurface, gl);
+
+        }
+    }
 
     private final class FingerRendererSurface extends PaintSurface {
         {
@@ -420,43 +461,6 @@ abstract public class Finger {
 //                            Finger.this, surfaceRender.dtMS, gl);
 //                }
             }
-        }
-    }
-
-    public static final class TouchOverlay extends Overlay {
-
-        private final Finger f;
-
-        public TouchOverlay(Finger f, Zoomed.Camera cam) {
-//            this(f::touching, cam);
-            super(cam);
-            this.f = f;
-        }
-
-//        public ZoomBoundsOverlay(Supplier<Surface> touching, Zoomed.Camera cam) {
-//            super(cam);
-//            this.touching = touching;
-//        }
-
-        @Override protected boolean enabled() {
-            return f.focused();
-        }
-
-        @Override protected Surface target() {
-            Surface s = f.touching();
-            if (s!=null) {
-                //color HASH
-                //color.setAt()
-            }
-            return s;
-        }
-
-        @Override
-        protected void paint(Surface t, GL2 gl, ReSurface reSurface) {
-            drawBoundsFrame(t, gl);
-
-            //paintCaption(t, reSurface, gl);
-
         }
     }
 

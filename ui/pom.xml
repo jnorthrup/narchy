@@ -115,6 +115,11 @@
       <artifactId>webcam-capture</artifactId>
       <version>0.3.12</version>
       <scope>compile</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>org.slf4j</groupId>
+          <artifactId>slf4j-api</artifactId>
+        </exclusion></exclusions>
     </dependency>
   </dependencies>
 </project>

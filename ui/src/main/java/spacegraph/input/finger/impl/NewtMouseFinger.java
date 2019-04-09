@@ -88,7 +88,8 @@ public class NewtMouseFinger extends MouseFinger implements MouseListener, Windo
         JoglWindow win = space.video;
 
         if (moved) {
-            int pmx = e.getX(), pmy = win.window.getHeight() - e.getY();
+
+            int pmx = e.getX(), pmy = win.getHeight() - e.getY();
 
             posPixel.set(pmx, pmy);
 

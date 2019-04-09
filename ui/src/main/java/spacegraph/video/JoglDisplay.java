@@ -43,7 +43,12 @@ abstract public class JoglDisplay {
 
     private final MetalConcurrentQueue<Runnable> pending = new MetalConcurrentQueue<>(1024);
 
-    public float top, bottom, left, right, aspect, tanFovV;
+    public float top;
+    public float bottom;
+    private float left;
+    private float right;
+    private float aspect;
+    private float tanFovV;
 
     public float zNear = 0.5f, zFar = 1200;
 
@@ -65,7 +70,7 @@ abstract public class JoglDisplay {
         pending.clear(Runnable::run);
     }
 
-    protected void initDepth(GL2 gl) {
+    private void initDepth(GL2 gl) {
         gl.glEnable(GL_DEPTH_TEST);
         gl.glDepthFunc(GL_LEQUAL);
 
@@ -141,7 +146,7 @@ abstract public class JoglDisplay {
         video.gl.glLoadIdentity();
 
 
-        float aspect = ((float) video.window.getWidth()) / video.window.getHeight();
+        float aspect = ((float) video.getWidth()) / video.getHeight();
 
         JoglDisplay.this.aspect = aspect;
 
@@ -187,7 +192,7 @@ abstract public class JoglDisplay {
 
     private class MyJoglWindow extends JoglWindow {
 
-        public MyJoglWindow() {
+        MyJoglWindow() {
             super();
         }
 
@@ -249,9 +254,9 @@ abstract public class JoglDisplay {
 
         @Override
         protected void update() {
-            int w = video.window.getWidth(), h = video.window.getHeight();
+//            int w = video.window.getWidth(), h = video.window.getHeight();
 
-            rendering.restart(w, h);
+            rendering.restart(getWidth(), getHeight());
             JoglDisplay.this.update(rendering);
 //            for (Surface/*Root*/ l : layers.children()) {
 //                if (l instanceof Ortho) {

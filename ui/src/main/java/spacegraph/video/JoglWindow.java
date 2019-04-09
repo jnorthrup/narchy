@@ -125,7 +125,7 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
 //                w.setVisible(true);
 
             if (nw != getWidth() || nh != getHeight()) {
-                w.setSize(nw, nh);
+                w.setSurfaceSize(nw, nh);
             }
 
             int nx = this.nx, ny = this.ny;

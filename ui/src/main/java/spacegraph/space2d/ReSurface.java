@@ -13,14 +13,11 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 /** surface rendering context */
-public class ReSurface {
+public class ReSurface extends SurfaceCamera {
 
 
-    private final FasterList<BiConsumer<GL2, ReSurface>>
-            main = new FasterList<>();
+    private final FasterList<BiConsumer<GL2, ReSurface>> main = new FasterList<>();
 
-    /** viewable pixel resolution */
-    public float pw, ph;
 
     /** time since last frame (seconds) */
     private float frameDT;
@@ -31,14 +28,11 @@ public class ReSurface {
     /** load metric as a temporal level-of-detail (QoS criteria)
      *    (0 = perfectly on-time, >= 1  stalled ) */
     @Paper
-    public FloatAveragedWindow load = new FloatAveragedWindow(8, 0.5f);
+    public FloatAveragedWindow load = new FloatAveragedWindow(3, 0.5f);
 
 
     public long restartNS;
 
-    public float scaleX, scaleY;
-    public float x1, x2, y1, y2;
-    transient float w, h;
 
 
     public final void on(Consumer<GL2> renderable) {
@@ -76,11 +70,12 @@ public class ReSurface {
 
         }, gl);
     }
-
+        /** ortho restart */
     public ReSurface restart(float pw, float ph) {
         this.pw = pw;
         this.ph = ph;
         this.restartNS = System.nanoTime();
+        set(pw/2, ph/2, 1, 1);
         return this;
     }
 
@@ -89,7 +84,8 @@ public class ReSurface {
         //this.frameDTms = Math.max(1, Math.round(1000 * frameDT));
         this.frameDTideal = (float) (1.0/Math.max(1.0E-9,fps));
         this.load.next( Math.max(0, dtS - frameDTideal) / frameDTideal );
-        return restart(pw, ph);
+        //return restart(pw, ph);
+        return this;
     }
 
     public ReSurface set(Zoomed.Camera cam, v2 scale) {
@@ -111,29 +107,35 @@ public class ReSurface {
         return this;
     }
 
-    public RectFloat visible() {
-        return RectFloat.XYXY(x1, y1, x2, y2);
-    }
+//    public RectFloat visible() {
+//        return RectFloat.XYXY(x1, y1, x2, y2);
+//    }
     public RectFloat pixelVisible() {
         return RectFloat.XYXY(0, 0, pw, ph);
     }
 
     public final boolean isVisible(RectFloat r) {
-//        if (r.w < pixelScaleX)
+//        if (r.w < 1/scaleX)
 //            return false;
-//        if (r.h < pixelScaleY)
+//        if (r.h < 1/scaleY)
 //            return false;
+//        return true;
         boolean v = r.intersectsX1Y1X2Y2(x1, y1, x2, y2);
-        return v;
+        //return v;
+        float minVisibilityPixelPct = 0.5f;
+        return v && visP(r, minVisibilityPixelPct) > 0;
     }
 
-    public float visPMin(RectFloat bounds) {
-        return Math.min(bounds.w * scaleX, bounds.h * scaleY);
-    }
+    public final float visP(RectFloat bounds, float minPixelsToBeVisible) {
+        //return (bounds.w * scaleX >= minPixelsToBeVisible) && (bounds.h * scaleY >= minPixelsToBeVisible);
+        float p = bounds.w/w * pw;
+        if (p < minPixelsToBeVisible)
+            return 0;
+        float q = bounds.h/h * ph;
+        if (q < minPixelsToBeVisible)
+            return 0;
 
-
-    public final boolean visP(RectFloat bounds, int minPixelsToBeVisible) {
-        return (bounds.w * scaleX >= minPixelsToBeVisible) && (bounds.h * scaleY >= minPixelsToBeVisible);
+        return Math.min(p, q);
     }
 
     @Override
@@ -154,6 +156,18 @@ public class ReSurface {
 
     public float load() {
         return load.asFloat();
+    }
+
+
+    final FasterList<SurfaceCamera> stack = new FasterList();
+
+    public void push(Zoomed.Camera cam, v2 set) {
+        stack.add(clone());
+        set(cam, set);
+    }
+
+    public void pop() {
+        set(stack.removeLast());
     }
 
 

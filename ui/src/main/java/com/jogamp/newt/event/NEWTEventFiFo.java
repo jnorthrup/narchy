@@ -1,0 +1,39 @@
+package com.jogamp.newt.event;
+
+import jcog.data.list.MetalConcurrentQueue;
+
+/** enhanced NWTEventFiFo implementation using un-synchronized MetalConcurrentQueue.
+ * for smoother input control */
+public class NEWTEventFiFo
+{
+    final static int CAPACITY = 128;
+    private final MetalConcurrentQueue<NEWTEvent> events = new MetalConcurrentQueue<>(CAPACITY)/*<NEWTEvent>*/;
+
+    /** Add NEWTEvent to tail */
+    public void put(final NEWTEvent event) {
+        events.add(event);
+
+        //notifyAll();
+    }
+
+    /** Remove NEWTEvent from head */
+    public NEWTEvent get() {
+//        if (0 == events.size()) {
+//            return null;
+//        }
+//
+//        return (NEWTEvent) events.removeFirst();
+        return events.poll();
+    }
+
+    /** Get NEWTEvents in queue */
+    public int size() {
+        return events.size();
+    }
+
+    /** Clear all NEWTEvents from queue */
+    public void clear() {
+        events.clear();
+    }
+
+}

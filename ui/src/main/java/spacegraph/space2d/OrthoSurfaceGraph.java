@@ -1,7 +1,6 @@
 package spacegraph.space2d;
 
 import com.jogamp.newt.event.WindowEvent;
-import com.jogamp.newt.opengl.GLWindow;
 import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL2;
 import com.jogamp.opengl.fixedfunc.GLMatrixFunc;
@@ -21,6 +20,7 @@ import spacegraph.space2d.hud.Zoomed;
 import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.util.animate.Animated;
 import spacegraph.video.JoglDisplay;
+import spacegraph.video.JoglWindow;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -32,15 +32,20 @@ import static org.eclipse.collections.impl.tuple.Tuples.pair;
 public class OrthoSurfaceGraph extends JoglDisplay implements SurfaceGraph {
 
 
-    private final static short MOVE_WINDOW_BUTTON = 1;
-    private final static short RESIZE_WINDOW_BUTTON = MOVE_WINDOW_BUTTON;
+    private final static short MOVE_AND_RESIZE_BUTTON = 1;
+
     //    private final Ortho<MutableListContainer> hud;
     private final Map<String, Pair<Object, Runnable>> singletons = new ConcurrentHashMap();
     private final Finger finger;
     private final NewtKeyboard keyboard;
-    private final Fingering windowResize = new FingerResizeWindow(this, RESIZE_WINDOW_BUTTON);
+    private final Fingering windowResize = new FingerResizeWindow(this, MOVE_AND_RESIZE_BUTTON) {
+        @Override
+        public Surface touchNext(Surface prev, Surface next) {
+            return layers;
+        }
+    };
 
-    private final Fingering windowMove = new FingerMoveWindow(MOVE_WINDOW_BUTTON) {
+    private final Fingering windowMove = new FingerMoveWindow(MOVE_AND_RESIZE_BUTTON) {
 
         @Override
         protected JoglDisplay window() {
@@ -57,8 +62,7 @@ public class OrthoSurfaceGraph extends JoglDisplay implements SurfaceGraph {
 
         @Override
         public Surface touchNext(Surface prev, Surface next) {
-            //return prev; //dont change
-            return null;
+            return layers;
         }
     };
 
@@ -77,7 +81,7 @@ public class OrthoSurfaceGraph extends JoglDisplay implements SurfaceGraph {
 
         @Override
         public void doLayout(float dtS) {
-            GLWindow w = video.window;
+            JoglWindow w = video;
             int W = w.getWidth();
             int H = w.getHeight();
             resize(W, H);
@@ -88,20 +92,12 @@ public class OrthoSurfaceGraph extends JoglDisplay implements SurfaceGraph {
         public Surface finger(Finger finger) {
 
             //check windowResize first since it is a more exclusive condition than windowMove
-            if (finger.tryFingering(windowResize)) {
-                //..
-                return this;
-            }
-            if (finger.tryFingering(windowMove)) {
-                //..
-                return this;
+            if (finger.pressed(MOVE_AND_RESIZE_BUTTON)) {
+                if (/*finger.tryFingering(windowResize) || */finger.tryFingering(windowMove))
+                    return null;
             }
 
-            Surface s = super.finger(finger);
-
-
-
-            return s;
+            return super.finger(finger);
         }
 
         @Override
@@ -189,7 +185,7 @@ public class OrthoSurfaceGraph extends JoglDisplay implements SurfaceGraph {
 
         GL2 g = video.gl;
 
-        int w = video.window.getWidth(), h = video.window.getHeight();
+        int w = video.getWidth(), h = video.getHeight();
         rendering.restart(w, h, dtS, video.renderFPS);
 
         g.glDisable(GL.GL_DEPTH_TEST);
@@ -214,10 +210,10 @@ public class OrthoSurfaceGraph extends JoglDisplay implements SurfaceGraph {
 
     @Override
     public Object the(String key) {
-        synchronized (singletons) {
+        //synchronized (singletons) {
             Pair<Object, Runnable> x = singletons.get(key);
             return x == null ? null : x.getOne();
-        }
+        //}
     }
 
     public Off animate(Animated c) {

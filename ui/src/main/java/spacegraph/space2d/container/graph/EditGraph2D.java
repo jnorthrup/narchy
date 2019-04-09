@@ -20,7 +20,7 @@ import spacegraph.space2d.Surface;
 import spacegraph.space2d.Surfacelike;
 import spacegraph.space2d.container.ContainerSurface;
 import spacegraph.space2d.container.PaintSurface;
-import spacegraph.space2d.container.collection.MutableListContainer;
+import spacegraph.space2d.container.Stacking;
 import spacegraph.space2d.container.collection.MutableMapContainer;
 import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.container.unit.Animating;
@@ -41,6 +41,7 @@ import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Predicate;
 
 /**
  * wall which organizes its sub-surfaces according to 2D phys dynamics
@@ -74,7 +75,7 @@ public class EditGraph2D<S extends Surface> extends MutableMapContainer<Surface,
      * for links and other supporting geometry that is self-managed
      * TODO encapsulate so its private
      */
-    public final MutableListContainer raw = new MutableListContainer();
+    public final Stacking raw = new Stacking();
     private final DoubleClicking doubleClicking;
     private Off loop;
 
@@ -82,6 +83,7 @@ public class EditGraph2D<S extends Surface> extends MutableMapContainer<Surface,
         super();
         physics.start(this);
         doubleClicking = new DoubleClicking(0, this::doubleClick, this);
+        clipBounds = false;
     }
 
     public EditGraph2D(float w, float h) {
@@ -270,15 +272,21 @@ public class EditGraph2D<S extends Surface> extends MutableMapContainer<Surface,
     }
 
     @Override
-    public void forEach(Consumer<Surface> each) {
-        each.accept(physics.below);
-        each.accept(raw);
-        super.forEach(each);
-        each.accept(physics.above);
+    public final void forEach(Consumer<Surface> each) {
+        whileEach((x)->true);
     }
 
+    @Override
+    public boolean whileEach(Predicate<Surface> o) {
+        return o.test(physics.below) && o.test(raw) && super.whileEach(o) && o.test(physics.above);
+    }
 
-//    @Override
+    @Override
+    public boolean whileEachReverse(Predicate<Surface> o) {
+        return o.test(physics.above) && super.whileEach(o) && o.test(raw) && o.test(physics.below);
+    }
+
+    //    @Override
 //    public boolean tangible() {
 //        return true;
 //    }
@@ -304,7 +312,7 @@ public class EditGraph2D<S extends Surface> extends MutableMapContainer<Surface,
 
         Surface s = super.finger(finger);
 
-        if (s == null || s == raw || s == this) {
+        if (s == raw || s == this) {
             if (doubleClicking.update(finger))
                 return this;
         } else {

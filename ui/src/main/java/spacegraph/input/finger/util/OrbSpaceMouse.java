@@ -4,7 +4,6 @@ import com.jogamp.newt.event.KeyEvent;
 import com.jogamp.newt.event.KeyListener;
 import com.jogamp.newt.event.MouseEvent;
 import jcog.math.v3;
-import org.jetbrains.annotations.Nullable;
 import spacegraph.input.finger.Finger;
 import spacegraph.space3d.SpaceDisplayGraph3D;
 import spacegraph.space3d.Spatial;
@@ -197,7 +196,6 @@ public class OrbSpaceMouse extends SpaceMouse implements KeyListener {
 
     }
 
-    @Nullable
     private ClosestRay mousePick(int x, int y) {
 
 

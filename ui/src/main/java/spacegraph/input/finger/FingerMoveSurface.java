@@ -54,7 +54,7 @@ public class FingerMoveSurface extends FingerMove {
 
     @Override
     public v2 pos(Finger finger) {
-        return finger.posGlobal();
+        return finger.posGlobal().clone();
     }
 
     @Override

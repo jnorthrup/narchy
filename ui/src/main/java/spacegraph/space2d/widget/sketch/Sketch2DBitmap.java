@@ -62,30 +62,31 @@ public class Sketch2DBitmap extends PaintSurface implements MenuSupplier {
     @Override
     public Surface finger(Finger finger) {
 
-        v2 hitPoint = finger.posRelative(this);
-        if (hitPoint.inUnit() && finger.pressed(0)) {
+        if (finger.pressed(0)) {
+            v2 hitPoint = finger.posRelative(this);
+            if (hitPoint.inUnit()) {
 
-            int ax = Math.round(hitPoint.x * pw);
+                int ax = Math.round(hitPoint.x * pw);
 
-            int ay = Math.round((1f - hitPoint.y) * ph);
+                int ay = Math.round((1f - hitPoint.y) * ph);
 
 
-            float w = this.brushWidth * this.brushWidth;
-            float a = brushAlpha * brushAlpha * 10;
-            for (int i = 0; i < a; i++) {
-                int px = (int) (ax + rng.nextGaussian() * w);
-                if (px >= 0 && px < pw) {
-                    int py = (int) (ay + rng.nextGaussian() * w);
-                    if (py >= 0 && py < ph) {
-
-                        mix(pix, py * pw + px);
+                float w = this.brushWidth * this.brushWidth;
+                float a = brushAlpha * brushAlpha * 10;
+                for (int i = 0; i < a; i++) {
+                    int px = (int) (ax + rng.nextGaussian() * w);
+                    if (px >= 0 && px < pw) {
+                        int py = (int) (ay + rng.nextGaussian() * w);
+                        if (py >= 0 && py < ph) {
+                            mix(pix, py * pw + px);
+                        }
                     }
                 }
+
+
+                update();
+                return this;
             }
-
-
-            update();
-            return this;
         }
 
         return null;

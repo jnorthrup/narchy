@@ -90,7 +90,9 @@ public class SliderModel extends PaintSurface {
     }
 
     private void setPoint(Finger f) {
-        setPoint(ui.p(f.posRelative(this)));
+        v2 rel = f.posRelative(this);
+//        System.out.println(rel);
+        setPoint(ui.p(rel));
     }
 
     private void setPoint(float pNext) {
@@ -102,7 +104,7 @@ public class SliderModel extends PaintSurface {
 
         this.p = pNext;
 
-        onChanged();
+        _onChanged();
     }
 
     protected void onChanged() {
@@ -169,7 +171,7 @@ public class SliderModel extends PaintSurface {
      */
     private static float pTarget(float x, float knob) {
 
-        return Util.clamp(pTarget(x) - knob / 2, 0, 1 - knob);
+        return knob > 0 ? Util.clamp(pTarget(x) - knob / 2, 0, 1 - knob) : x;
     }
 
 

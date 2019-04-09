@@ -2,6 +2,7 @@ package spacegraph.space2d.container.collection;
 
 import jcog.Util;
 import jcog.data.list.FastCoWList;
+import jcog.util.ArrayUtils;
 import org.eclipse.collections.api.set.primitive.IntSet;
 import org.eclipse.collections.impl.set.mutable.primitive.IntHashSet;
 import spacegraph.space2d.Surface;
@@ -14,10 +15,10 @@ import java.util.function.Consumer;
 import java.util.function.IntFunction;
 import java.util.function.Predicate;
 
-public class MutableListContainer extends AbstractMutableContainer {
+abstract public class MutableListContainer extends AbstractMutableContainer {
 
 
-    private final static Surface[] EMPTY_SURFACE_ARRAY = new Surface[0];
+    private final static Surface[] EMPTY_SURFACE_ARRAY = Surface.EmptySurfaceArray;
     private static final IntFunction<Surface[]> NEW_SURFACE_ARRAY = (i) -> i == 0 ? EMPTY_SURFACE_ARRAY : new Surface[i];
     private final FastCoWList<Surface> children;
 
@@ -64,24 +65,26 @@ public class MutableListContainer extends AbstractMutableContainer {
     /**
      * returns the existing value that was replaced
      */
-    protected synchronized Surface set(int index, Surface next) {
-        Surfacelike p = this.parent;
-        if (p == null) {
-            return children.set(index, next);
-        } else {
-            if (children.size() - 1 < index)
-                throw new RuntimeException("index out of bounds");
+    protected Surface set(int index, Surface next) {
+        synchronized (children.list) {
+            Surfacelike p = this.parent;
+            if (p == null) {
+                return children.set(index, next);
+            } else {
+                if (children.size() - 1 < index)
+                    throw new RuntimeException("index out of bounds");
 
-            Surface existing = children.set(index, next);
-            if (existing != next) {
-                if (existing != null)
-                    existing.stop();
+                Surface existing = children.set(index, next);
+                if (existing != next) {
+                    if (existing != null)
+                        existing.stop();
 
-                next.start(this);
+                    next.start(this);
 
 
+                }
+                return existing;
             }
-            return existing;
         }
     }
 
@@ -89,7 +92,7 @@ public class MutableListContainer extends AbstractMutableContainer {
 
         if (s.length == 0) return;
 
-        synchronized (this) {
+        synchronized (children.list) {
             for (Surface x : s) {
                 if (x != null) {
                     _add(x);
@@ -120,54 +123,63 @@ public class MutableListContainer extends AbstractMutableContainer {
     @Override public boolean detachChild(Surface s) {
         return children.removeFirstInstance(s);
     }
+    protected boolean detachChild(int i) {
+        children.remove(i);
+        return true;
+    }
 
     public final ContainerSurface set(Surface... next) {
+        if (next.length == 0) {
+            clear();
+        } else {
 
-        synchronized (this) {
+            synchronized (children.list) {
 
-            if (parent == null) {
-                children.set(next);
-                return this;
-            } else {
-
-                int numExisting = size();
-                if (numExisting == 0) {
-
-
-                    addAll(next);
-
-                } else if (next.length == 0) {
-
-                    clear();
-
+                if (parent == null) {
+                    children.set(next);
+                    return this;
                 } else {
 
+                    int numExisting = size();
+                    if (numExisting == 0) {
 
-                    Surface[] ee = children.array();
-                    if (ee!=next) {
-                        IntSet pi = Util.intSet(x -> x.id, ee);
-                        IntSet ni = Util.intSet(x -> x.id, next);
-                        IntHashSet unchanged = new IntHashSet().withAll(pi.select(ni::contains));
+
+                        addAll(next);
+
+                    } else {
+
+
+                        Surface[] ee = children.array();
+                        if (!ArrayUtils.equalsIdentity(ee, next)) {
+                            IntSet pi = Util.intSet(x -> x.id, ee);
+                            IntSet ni = Util.intSet(x -> x.id, next);
+                            IntHashSet unchanged = new IntHashSet(ee.length + next.length).withAll(pi.select(ni::contains));
 
 //                    Sets.SetView unchanged = Sets.intersection(
 //                            Set.of(cc), Set.of(next)
 //                    );
-                        if (unchanged.isEmpty()) unchanged = null;
+                            if (unchanged.isEmpty()) unchanged = null;
 
-                        for (Surface existing : ee) {
-                            if (unchanged == null || !unchanged.contains(existing.id))
-                                remove(existing);
+                            int ei = 0;
+                            for (Surface e : ee) {
+                                if (unchanged == null || !unchanged.contains(e.id)) {
+                                    e.stop();
+                                    detachChild(ei);
+                                }
+
+                                ei++;
+                            }
+
+                            for (Surface n : next) {
+                                if (unchanged == null || !unchanged.contains(n.id))
+                                    add(n);
+                            }
                         }
 
-                        for (Surface n : next) {
-                            if (unchanged == null || !unchanged.contains(n.id))
-                                add(n);
-                        }
                     }
-
                 }
-            }
 
+            }
         }
 
         return this;
@@ -207,7 +219,7 @@ public class MutableListContainer extends AbstractMutableContainer {
     }
 
     public TextEdit clear() {
-        synchronized (this) {
+        synchronized (children.list) {
             if (parent == null) {
                 children.clear();
             } else {
@@ -222,7 +234,5 @@ public class MutableListContainer extends AbstractMutableContainer {
 
 
     @Override
-    protected void doLayout(float dtS) {
-        //forEach(x -> x.layout());
-    }
+    abstract protected void doLayout(float dtS);
 }

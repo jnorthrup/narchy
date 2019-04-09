@@ -18,6 +18,7 @@ abstract public class Dragging extends Fingering {
                 return true;
             }
         }
+        active = false;
         return false;
     }
 
@@ -45,7 +46,7 @@ abstract public class Dragging extends Fingering {
     }
 
     private boolean pressed(Finger f) {
-        return f.pressedNow(button);
+        return f.pressed(button);
     }
 
     /** return false to cancel the operation */

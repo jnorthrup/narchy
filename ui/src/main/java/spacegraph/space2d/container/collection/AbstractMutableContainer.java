@@ -8,10 +8,11 @@ public abstract class AbstractMutableContainer extends ContainerSurface {
 
     @Override
     protected void starting() {
+
         //synchronized (this) {
             forEach(c -> c.start(this));
         //}
-        //layout();
+        layout();
     }
 
 

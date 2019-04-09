@@ -46,6 +46,10 @@ public abstract class FingerResize extends Dragging {
         DragEdit m = mode(finger);
         if (m!=null) {
             switch (m) {
+
+                case MOVE:
+                    return false;
+
                 case RESIZE_S: {
                     float pmy = before.top();
                     float bh = before.h;

@@ -12,7 +12,7 @@ import java.util.Arrays;
 public class BitmapLabel extends AbstractLabel {
 
     private final BitmapTextGrid view;
-    static final int minPixelsToBeVisible = 7;
+    static final float minPixelsToBeVisible = 7;
 
     private volatile RectFloat textBounds;
 
@@ -74,7 +74,7 @@ public class BitmapLabel extends AbstractLabel {
 
     @Override
     protected boolean preRender(ReSurface r) {
-        return r.visP(bounds, minPixelsToBeVisible);
+        return r.visP(bounds, minPixelsToBeVisible) > 0;
     }
 
     protected void layoutText() {

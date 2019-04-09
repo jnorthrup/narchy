@@ -65,10 +65,9 @@ public class VectorLabel extends AbstractLabel {
 
     @Override
     protected final boolean preRender(ReSurface r) {
-        float p = r.visPMin(bounds);
-        if (p < 7) {
+        float p = r.visP(bounds, 7);
+        if (p < 7)
             return false;
-        }
 
         textThickness = Math.min(3, 0.5f + (p / 70f));
 
