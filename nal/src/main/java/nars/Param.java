@@ -188,7 +188,7 @@ public abstract class Param extends Parts<Term,NAR> {
             , 0, 1);
     @Deprecated public final FloatRange questionForgetRate = new FloatRange(0.5f, 0, 1);
     public final IntRange premiseUnifyTTL = new IntRange(16, 1, 32);
-    public final IntRange deriveBranchTTL = new IntRange(8 * derive.TTL_MIN, derive.TTL_MIN, 64 * derive.TTL_MIN );
+    public final IntRange deriveBranchTTL = new IntRange(4 * derive.TTL_MIN, derive.TTL_MIN, 64 * derive.TTL_MIN );
     /**
      * how many cycles above which to dither dt and occurrence time
      * TODO move this to Time class and cache the cycle value rather than dynamically computing it
@@ -522,7 +522,7 @@ public abstract class Param extends Parts<Term,NAR> {
          * for NALTest's: extends the time all unit tests are allowed to run for.
          * normally be kept to 1 but for debugging this may be increased to find what tests need more time
          */
-        public static final float TIME_MULTIPLIER = 3f;
+        public static final float TIME_MULTIPLIER = 2f;
         /**
          * how precise unit test results must match expected values to pass
          */
@@ -607,8 +607,8 @@ public abstract class Param extends Parts<Term,NAR> {
 
         /** max variable unification recursion depth as a naive cyclic filter */
         public static final int UNIFY_VAR_RECURSION_DEPTH_LIMIT = 4;
-        public static final int UNIFY_COMMON_VAR_MAX = 8;
-        public final static int UNIFICATION_STACK_CAPACITY = 128;
+        public static final int UNIFY_COMMON_VAR_MAX = 6;
+        public final static int UNIFICATION_STACK_CAPACITY = 64;
     }
 
 }

@@ -7,7 +7,6 @@ import jcog.Log;
 import jcog.Texts;
 import jcog.Util;
 import jcog.data.byt.DynBytes;
-import jcog.data.list.FastCoWList;
 import jcog.event.ListTopic;
 import jcog.event.Off;
 import jcog.event.Topic;
@@ -17,8 +16,8 @@ import jcog.math.MutableInteger;
 import jcog.pri.Prioritized;
 import jcog.service.Part;
 import nars.Narsese.NarseseException;
-import nars.attention.What;
 import nars.attention.AntistaticBag;
+import nars.attention.What;
 import nars.concept.Concept;
 import nars.concept.Operator;
 import nars.concept.PermanentConcept;
@@ -73,6 +72,7 @@ import java.io.*;
 import java.net.URL;
 import java.util.Set;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -1487,13 +1487,20 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
     }
 
 
+    private final AtomicBoolean synching = new AtomicBoolean(false);
     /**
      * invokes any pending tasks without advancing the clock
      */
     public final NAR synch() {
-        synchronized (exe) {
-            time.synch(this);
-            exe.synch();
+        if (synching.compareAndSet(false, true)) {
+            try {
+                synchronized (exe) {
+                    time.synch(this);
+                    exe.synch();
+                }
+            } finally {
+                synching.set(false);
+            }
         }
         return this;
     }

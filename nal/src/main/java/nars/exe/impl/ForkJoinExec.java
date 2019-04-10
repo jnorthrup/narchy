@@ -12,7 +12,7 @@ import java.util.concurrent.*;
  */
 public class ForkJoinExec extends MultiExec implements Thread.UncaughtExceptionHandler {
 
-    private static final int SYNCH_ITERATION_MS = 50;
+    private static final int SYNCH_ITERATION_MS = 20;
 
     private ForkJoinPool pool;
 
@@ -20,31 +20,46 @@ public class ForkJoinExec extends MultiExec implements Thread.UncaughtExceptionH
         super(concurrency);
 
         //public ForkJoinPool(int parallelism, ForkJoinPool.ForkJoinWorkerThreadFactory factory, UncaughtExceptionHandler handler, boolean asyncMode, int corePoolSize, int maximumPoolSize, int minimumRunnable, Predicate<? super ForkJoinPool> saturate, long keepAliveTime, TimeUnit unit) {
-        //int proc = Runtime.getRuntime().availableProcessors();
-        int proc = concurrency;
-        pool = new ForkJoinPool(
-                proc,
-                //orkJoinPool.defaultForkJoinWorkerThreadFactory,
-                (p)->{
-                    ForkJoinWorkerThread t = new ForkJoinWorkerThread(p) {
-                        {
-                        }
-                    };
-                    return t;
-                },
-                this,
-                true, 0, proc*2, 1,
-                null, 60L, TimeUnit.SECONDS);
-        //Exe.setExecutor(pool);
+//        int proc = concurrency;
+//        pool = new ForkJoinPool(
+//                proc,
+//                //orkJoinPool.defaultForkJoinWorkerThreadFactory,
+//                (p)->{
+//                    ForkJoinWorkerThread t = new ForkJoinWorkerThread(p) {
+//
+//                    };
+//                    return t;
+//                },
+//                this,
+//                true, 0, proc, 1,
+//                null, 60L, TimeUnit.SECONDS);
+
+        pool = ForkJoinPool.commonPool();
+
+//        if (concurrency >= Runtime.getRuntime().availableProcessors()/2) //HACK TODO make parameter
+//            Exe.setExecutor(pool); //set this as the global executor
+
     }
 
 
     @Override
     public void synch() {
+        logger.info("synch");
+
+        int iter = 0;
+//        Log.enter("synch");
         while (!pool.isQuiescent()) {
-            logger.info("synch {}", this);
-            pool.awaitQuiescence(SYNCH_ITERATION_MS, TimeUnit.MILLISECONDS);
+            logger.info("await quiescence {}", ++iter);
+            Thread t;
+            if ((t = Thread.currentThread()) instanceof ForkJoinWorkerThread) {
+                ForkJoinTask.helpQuiesce();
+            } else {
+                pool.awaitQuiescence(SYNCH_ITERATION_MS, TimeUnit.MILLISECONDS);
+            }
         }
+        if (iter > 0)
+            logger.info("synch ready");
+//        Log.exit();
     }
 
 
@@ -63,7 +78,7 @@ public class ForkJoinExec extends MultiExec implements Thread.UncaughtExceptionH
 
         play();
 
-        logger.info(summary());
+        //logger.info(summary());
     }
 
 
@@ -88,6 +103,7 @@ public class ForkJoinExec extends MultiExec implements Thread.UncaughtExceptionH
         float load =
                 0f; //TODO ...pool.getQueuedTaskCount()
 
+        final int perN = 2;
         @Deprecated int n = Math.round(rate * nar.loop.throttle.floatValue() * (1-load) * concurrency());
         if (n == 0)
             return;
@@ -97,39 +113,56 @@ public class ForkJoinExec extends MultiExec implements Thread.UncaughtExceptionH
 
         Random rng = ThreadLocalRandom.current();
 
-        while (n > 0) {
+
+
+        nar.what.commit(null);
+        nar.how.commit(null);
+
+        for (int i = 0; i < n; i++ ) {
 
             What w = nar.what.sample(rng); if (!w.isOn()) continue; //HACK embed in sample
 
-            for (int i = 0; i < n; i++ ) {
+            for (int j = 0; j < perN; j++ ) {
 
                 How h = nar.how.sample(rng); if (!h.isOn()) continue; //HACK embed in sample
 
                 float pri = (float) Math.sqrt(Util.and(w.pri(), h.pri())); //sqrt in attempt to compensate for the bag sampling's priority bias
                 long dur = Util.lerp(pri, durationMinNS, durationMaxNS);
 
-                boolean single = h.singleton();
-
-                pool.invoke(ForkJoinTask.adapt(() -> {
-                    if (!single || h.busy.compareAndSet(false, true)) {
-                        try {
-
-                            h.runFor(w, dur);
-
-                        } finally {
-                            if (single)
-                                h.busy.set(false);
-                        }
-                    }
-                }));
+                pool.execute(new PlayTask(w, h, dur));
             }
         }
 
 
-
-
 //        if (ThreadLocalRandom.current().nextFloat() < 0.01f)
 //            System.out.println(pool);
+    }
+
+    final static class PlayTask extends RecursiveAction {
+        final What w;
+        final How h;
+        final long dur;
+
+        PlayTask(What w, How h, long dur) {
+            this.w = w;
+            this.h = h;
+            this.dur = dur;
+        }
+
+        @Override
+        protected void compute() {
+            boolean single = h.singleton();
+            if (!single || h.busy.compareAndSet(false, true)) {
+                try {
+
+                    h.runFor(w, dur);
+
+                } finally {
+                    if (single)
+                        h.busy.set(false);
+                }
+            }
+        }
     }
 
     //    @Override

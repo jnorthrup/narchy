@@ -24,17 +24,20 @@ class AIMATests {
     void testAIMAExample(double truthRes) throws Narsese.NarseseException {
         final NAR n = NARS.tmp(6);
 
-        n.termVolumeMax.set(6);
+        n.termVolumeMax.set(5);
         n.freqResolution.set((float) truthRes);
-//        n.confMin.set(0.05f);
+        n.confMin.set(0.05f);
 //        n.attn.decay.set(0.1f);
-//        n.confResolution.set(0.1f);
+        n.confResolution.set(0.1f);
+
+//        n.questPriDefault.set(0.8f);
+//        n.log();
 
         ObjectIntHashMap<Term> terms = new ObjectIntHashMap();
         n.onTask(t -> {
             terms.addToValue(t.term(), 1);
         });
-//        Param.DEBUG = true; n.log();
+
         n.believe(
                 "(P ==> Q)",
                 "((L && M) ==> P)",
@@ -44,8 +47,10 @@ class AIMATests {
                 "A",
                 "B");
 
+        n.question($$("Q"));
+
         try {
-            assertBelief(n, true, "Q", (int) (Param.test.TIME_MULTIPLIER * 3500));
+            assertBelief(n, true, "Q", (int) (Param.test.TIME_MULTIPLIER * 1500));
         } finally {
             terms.keyValuesView().toSortedListBy(x -> -x.getTwo()).forEach(t -> {
                 System.out.println(t);
