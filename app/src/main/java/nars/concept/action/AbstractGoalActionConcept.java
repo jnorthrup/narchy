@@ -24,7 +24,6 @@ import nars.truth.Truth;
 import org.eclipse.collections.api.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.List;
 import java.util.function.Predicate;
 
 import static nars.time.Tense.ETERNAL;
@@ -123,7 +122,7 @@ public class AbstractGoalActionConcept extends AgentAction {
 
     public org.eclipse.collections.api.tuple.Pair<Truth, long[]> truth(boolean beliefsOrGoals, int componentsMax, long prev, long now, int gameDur, NAR n) {
         Truth next = null;
-        List<BeliefTable> tables = ((BeliefTables) (beliefsOrGoals ? beliefs() : goals()));
+        BeliefTable tables = (beliefsOrGoals ? beliefs() : goals());
 
         long ss = TIMELESS, ee = TIMELESS;
 
@@ -180,7 +179,7 @@ public class AbstractGoalActionConcept extends AgentAction {
 
                 a.clear(tries).time(s, e);
 
-                for (BeliefTable table : tables) {
+                for (BeliefTable table : (BeliefTables)tables) {
                     if (table!=curiosityTable) {
                         a.ttl = tries;
                         a.match(table);

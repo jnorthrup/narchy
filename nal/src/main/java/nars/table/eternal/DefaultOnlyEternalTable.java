@@ -4,12 +4,9 @@ import nars.$;
 import nars.Task;
 import nars.attention.What;
 import nars.concept.Concept;
-import nars.table.BeliefTable;
 import nars.table.BeliefTables;
 import nars.task.EternalTask;
 import nars.truth.Truth;
-
-import java.util.List;
 
 import static nars.Op.BELIEF;
 
@@ -20,7 +17,7 @@ public class DefaultOnlyEternalTable extends EternalTable {
     public DefaultOnlyEternalTable(Concept c, Truth t, What w) {
         super(1);
 
-        List<BeliefTable> tables = ((BeliefTables) c.beliefs());
+        BeliefTables tables = (BeliefTables) c.beliefs();
         assert(!tables.isEmpty()): "other tables should precede this in BeliefTables chain";
 
         tables.add(this);

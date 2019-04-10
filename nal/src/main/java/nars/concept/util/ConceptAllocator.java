@@ -80,7 +80,14 @@ public final class ConceptAllocator implements Consumer<Concept> {
     }
 
 
-    private void setTaskCapacity(TaskConcept c, BeliefTable t, boolean beliefOrGoal) {
+    private void setTaskCapacity(TaskConcept c, BeliefTable x, boolean beliefOrGoal) {
+        if (x instanceof BeliefTables)
+            ((BeliefTables)x).forEachWith((xx, C) -> _setTaskCapacity(C, xx, false), c);
+        else
+            _setTaskCapacity(c, x, false);
+    }
+
+    private void _setTaskCapacity(TaskConcept c, BeliefTable t, boolean beliefOrGoal) {
         if (t instanceof EternalTable) {
             t.setTaskCapacity(beliefCap(c, beliefOrGoal, true));
         } else if (t instanceof TaskTable) {
@@ -89,12 +96,8 @@ public final class ConceptAllocator implements Consumer<Concept> {
     }
 
     private void apply(TaskConcept c) {
-        BeliefTable cb = c.beliefs();
-        if (cb instanceof BeliefTables)
-            ((BeliefTables)cb).forEach(t -> setTaskCapacity(c, t, true));
-        BeliefTable cg = c.goals();
-        if (cg instanceof BeliefTables)
-            ((BeliefTables)cg).forEach(t -> setTaskCapacity(c, t, false));
+        setTaskCapacity(c, c.beliefs(),true);
+        setTaskCapacity(c, c.goals(),false);
         c.questions().setTaskCapacity(questionCap(c, true));
         c.quests().setTaskCapacity(questionCap(c, false));
     }

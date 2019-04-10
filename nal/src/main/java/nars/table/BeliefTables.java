@@ -31,10 +31,15 @@ public class BeliefTables extends FasterList<BeliefTable> implements BeliefTable
     }
 
     @Override
+    protected Object[] newArray(int newCapacity) {
+        return new BeliefTable[newCapacity];
+    }
+
+    @Override
     public void match(Answer a) {
         int triesEach = a.ttl;
         BeliefTable[] z = this.items;
-        int thisSize = Math.min(size(), items.length);
+        int thisSize = Math.min(size(), z.length);
         for (int i = 0; i < thisSize; i++) {
 
             //TODO better TTL distribution system
@@ -135,38 +140,6 @@ public class BeliefTables extends FasterList<BeliefTable> implements BeliefTable
     }
 
 
-    public static final BeliefTables Empty = new BeliefTables() {
-
-        @Override
-        public void remember(Remember r) {
-
-        }
-
-//        @Override
-//        public boolean add(Supplier<BeliefTable> t) {
-//            return false;
-//        }
-
-        @Override
-        public boolean add(BeliefTable beliefTable) {
-            return false;
-        }
-
-        @Override
-        public void match(Answer a) {
-
-        }
-
-        @Override
-        public int taskCount() {
-            return 0;
-        }
-
-        @Override
-        public boolean isEmpty() {
-            return true;
-        }
-    };
 //    @Override
 //    public Task sample(long start, long end, Term template, NAR nar) {
 //        Task ete = eternal.sample(start, end, template, nar);

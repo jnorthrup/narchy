@@ -5,6 +5,7 @@ import nars.concept.Concept;
 import nars.concept.NodeConcept;
 import nars.link.TemplateTermLinker;
 import nars.link.TermLinker;
+import nars.table.BeliefTable;
 import nars.table.BeliefTables;
 import nars.table.eternal.EternalTable;
 import nars.table.question.HijackQuestionTable;
@@ -50,7 +51,7 @@ public class DefaultConceptBuilder extends ConceptBuilder {
 
 
     @Override
-    public BeliefTables newTable(Term c, boolean beliefOrGoal) {
+    public BeliefTable newTable(Term c, boolean beliefOrGoal) {
         if (c.op().beliefable && !c.hasAny(Op.VAR_QUERY) && (beliefOrGoal || !c.hasAny(Op.IMPL))) {
             return new BeliefTables(
                 //(Supplier)()->
@@ -59,7 +60,7 @@ public class DefaultConceptBuilder extends ConceptBuilder {
                         newTemporalTable(c, beliefOrGoal)
             );
         } else {
-            return BeliefTables.Empty;
+            return BeliefTable.Empty;
         }
     }
 
