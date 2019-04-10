@@ -941,6 +941,12 @@ public class FasterList<X> extends FastList<X> {
         }
     }
 
+    /** returns this to an unallocated state */
+    public void delete() {
+        size = 0;
+        items = null;
+    }
+
     /**
      * modified from MutableIterator
      */

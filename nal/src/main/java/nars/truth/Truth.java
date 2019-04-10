@@ -239,11 +239,11 @@ public interface Truth extends Truthed {
 
     @Nullable
     static PreciseTruth theDithered(float f, double e, NAR nar) {
-        if (e < c2wSafe(nar.confMin.floatValue()))
+        if (e < nar.confMin.asEvi())
             return null;
 
         //keep evidence difference
-        return PreciseTruth.byFreqConfEvi(
+        return PreciseTruth.byConfEvi(
                 Truth.freq(f, nar.freqResolution.floatValue()),
                 Truth.w2cDithered((float)e, nar.confResolution.floatValue()),
                 e);
@@ -291,7 +291,7 @@ public interface Truth extends Truthed {
      * the negated (1 - freq) of this truth value
      */
     default Truth neg() {
-        return PreciseTruth.byConf(1f - freq(), conf());
+        return PreciseTruth.byEvi(1f - freq(), evi());
     }
 
     default boolean equalTruth(@Nullable Truth x, float fTol, float cTol) {
@@ -330,7 +330,7 @@ public interface Truth extends Truthed {
         if (Util.equals(f,ff) && Util.equals(c,cc))
             return this;
         else
-            return PreciseTruth.byFreqConfEvi(ff, cc, evi() /* extra precision */);
+            return PreciseTruth.byConfEvi(ff, cc, evi() /* extra precision */);
     }
 
     @Nullable default Truth dither(float freqRes, float confRes, double eviMin, boolean negate) {
@@ -348,7 +348,7 @@ public interface Truth extends Truthed {
         if (Util.equals(f,ff) && Util.equals(c0,cc))
             return this;
         else
-            return PreciseTruth.byFreqConfEvi(ff, cc, e /* extra precision */);
+            return PreciseTruth.byConfEvi(ff, cc, e /* extra precision */);
     }
 
 

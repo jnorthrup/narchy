@@ -3,6 +3,7 @@ package nars.truth;
 import nars.truth.func.TruthFunctions;
 import org.jetbrains.annotations.Nullable;
 
+import static nars.truth.func.TruthFunctions.c2wSafe;
 import static nars.truth.func.TruthFunctions.w2cSafe;
 
 /** indicates an implementation has, or is associated with a specific TruthValue */
@@ -60,12 +61,17 @@ public interface Truthed  {
         return truth().freq();
     }
 
+    /** the implementation must implement either evi() or conf() */
     default float conf() {
         return w2cSafe(evi());
     }
-    /** weight of evidence ( confidence converted to weight, 'c2w()' )  */
+
+    /** weight of evidence ( confidence converted to weight, 'c2w()' )
+     * the implementation must implement either evi() or conf()
+     * */
     default double evi() {
-        return truth().evi(); 
+        return c2wSafe((double)conf());
+        //return truth().evi();
     }
 
 

@@ -129,7 +129,7 @@ public class FZero extends GameX {
 
         AgentAction F = initUnipolarLinear(5f);
 
-        initPushButtonTank();
+
 
 
 
@@ -138,8 +138,9 @@ public class FZero extends GameX {
 //                NARui.beliefCharts(actions, nar)), 400, 400);
 
 
+        //initPushButtonTank();
         //initLeftRightPushButtonMutex();
-        //initTankContinuous();
+        initTankContinuous();
         //initToggleLeftRight();
 
         BiPolarAction A =
@@ -360,8 +361,8 @@ public class FZero extends GameX {
         final float[] left = new float[1];
         final float[] right = new float[1];
 
-        actionUnipolar($.inh("left", id), (x) -> {
-            float power = (x - 0.5f) * 2f * powerScale;
+        actionHemipolar($.inh("left", id), (x) -> {
+            float power = x * powerScale;
             left[0] = power;
             float dp = power - right[0];
             fz.playerAngle += dp * rotSpeed / 2;
@@ -369,8 +370,8 @@ public class FZero extends GameX {
             return x;
         }).resolution(res);
 
-        actionUnipolar($.inh("right", id), (x) -> {
-            float power = (x - 0.5f) * 2f * powerScale;
+        actionHemipolar($.inh("right", id), (x) -> {
+            float power = x * powerScale;
             right[0] = power;
             float dp = power - left[0];
             fz.playerAngle += -dp * rotSpeed / 2;

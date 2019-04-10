@@ -24,9 +24,9 @@ public final class PreciseTruth extends DiscreteTruth {
 
 
     @Nullable
-    public static PreciseTruth byConf(float freq, float /* double? */ conf) {
-        float e = c2wSafe(conf);
-        return byFreqConfEvi(freq, conf, e);
+    public static PreciseTruth byConf(float freq, double /* double? */ conf) {
+        double e = c2wSafe(conf);
+        return byConfEvi(freq, conf, e);
     }
 
     public static PreciseTruth byEvi(double freq, double evi) {
@@ -34,11 +34,11 @@ public final class PreciseTruth extends DiscreteTruth {
     }
 
     public static PreciseTruth byEvi(float freq, double evi) {
-        return byFreqConfEvi(freq, w2cSafeDouble(evi), evi);
+        return byConfEvi(freq, w2cSafeDouble(evi), evi);
     }
 
     /** use with caution, if you are calculating a precise evi and a dithered conf, they should correspond */
-    protected static PreciseTruth byFreqConfEvi(float freq, double conf, double evi) {
+    protected static PreciseTruth byConfEvi(float freq, double conf, double evi) {
 
         if (evi < Param.truth.TRUTH_EVI_MIN)
             return null;

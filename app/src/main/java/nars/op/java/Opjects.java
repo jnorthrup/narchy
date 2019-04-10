@@ -56,7 +56,7 @@ import java.util.function.Predicate;
 
 import static jcog.data.map.CustomConcurrentHashMap.*;
 import static nars.Op.*;
-import static nars.truth.func.TruthFunctions.c2w;
+import static nars.truth.func.TruthFunctions.c2wSafe;
 import static org.eclipse.collections.impl.tuple.Tuples.pair;
 
 
@@ -221,8 +221,8 @@ public class Opjects extends DefaultTermizer {
      * called every duration to update all the operators in one batch, so they dont register events individually
      */
     protected void update(NAR nar) {
-        float cMin = c2w(nar.confMin.floatValue());
-        float cMax = c2w(nar.confDefault(BELIEF));
+        float cMin = (float) c2wSafe(nar.confMin.asEvi());
+        float cMax = c2wSafe(nar.confDefault(BELIEF));
         beliefEvi = Util.lerp(beliefEviFactor, cMin, cMax);
         doubtEvi = Util.lerp(doubtEviFactor, cMin, cMax);
         invokeEvi = Util.lerp(invokeEviFactor, cMin, cMax);

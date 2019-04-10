@@ -16,7 +16,6 @@ import java.awt.font.FontRenderContext;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
@@ -41,7 +40,7 @@ public abstract class BitmapTextGrid extends AbstractConsoleSurface {
     private final boolean quality = true;
 
     /** pixel scale of each rendered character bitmap */
-    static final int DEFAULT_FONT_SCALE = 32;
+    static final int DEFAULT_FONT_SCALE = 64;
 
     protected int cursorCol, cursorRow;
     protected int fontWidth, fontHeight;
@@ -49,21 +48,23 @@ public abstract class BitmapTextGrid extends AbstractConsoleSurface {
     private float alpha = 1f;
     private boolean fillTextBackground = false;
 
-    private static Font defaultFont;
-    static {
+    private static volatile Font defaultFont;
 
-    }
     private static Font defaultFont() {
         if (defaultFont == null) {
             synchronized (BitmapTextGrid.class) {
                 if (defaultFont == null) {
                     Font f;
                     try (InputStream in = BitmapTextGrid.class.getClassLoader()
-                            .getResourceAsStream("font/CourierPrimeCode.ttf")) {
+                            .getResourceAsStream(
+                                    "font/CourierPrimeCode.ttf"
+                                    //"font/ObliviousFont.ttf"
+                                    //"font/plasmati.ttf"
+                            )) {
 
-                        ByteArrayInputStream in2 = new ByteArrayInputStream(in.readAllBytes()); //cache completely
+                        //in = new ByteArrayInputStream(in.readAllBytes()); //cache completely?
 
-                        f = Font.createFont(Font.TRUETYPE_FONT, in2);
+                        f = Font.createFont(Font.TRUETYPE_FONT, in);
 
                     } catch (Exception e) {
 
@@ -106,8 +107,8 @@ public abstract class BitmapTextGrid extends AbstractConsoleSurface {
                     RenderingHints.VALUE_TEXT_ANTIALIAS_ON
             );
             backbufferGraphics.setRenderingHint(RenderingHints.KEY_ALPHA_INTERPOLATION,
-                    //RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY
-                    RenderingHints.VALUE_ALPHA_INTERPOLATION_DEFAULT
+                    RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY
+                    //RenderingHints.VALUE_ALPHA_INTERPOLATION_DEFAULT
                     //RenderingHints.VALUE_ALPHA_INTERPOLATION_SPEED
             );
         } else {
@@ -144,9 +145,6 @@ public abstract class BitmapTextGrid extends AbstractConsoleSurface {
 
         backbufferGraphics.setFont(font);
 
-
-
-
         return true;
     }
 
@@ -171,11 +169,16 @@ public abstract class BitmapTextGrid extends AbstractConsoleSurface {
     @Override
     protected final void paintIt(GL2 gl, ReSurface r) {
         if (invalid.compareAndSet(true, false)) {
-            if (ensureBufferSize()) {
-                renderText();
-                if (!tex.set(backbuffer)) {
-                    invalid.set(true); //try again
+            try {
+                if (ensureBufferSize()) {
+                    renderText();
+                    if (!tex.set(backbuffer)) {
+                        invalid.set(true); //try again
+                    }
                 }
+            } catch (Throwable t) {
+                t.printStackTrace(); //HACK
+                invalid.set(true);
             }
         }
         tex.paint(gl, textBounds(), alpha);
@@ -206,16 +209,16 @@ public abstract class BitmapTextGrid extends AbstractConsoleSurface {
         return font(this.font.deriveFont(s));
     }
 
-    public synchronized BitmapTextGrid font(Font f) {
+    public BitmapTextGrid font(Font f) {
 
         if (!f.equals(this.font)) {
-            this.font = f;
 
             FontRenderContext ctx = this.getFontRenderContext();
-            Rectangle2D b = font.getStringBounds("X", ctx);
+            Rectangle2D b = f.getStringBounds("X", ctx);
             this.fontWidth = (int) Math.ceil((float) b.getWidth());
             this.fontHeight = (int) Math.ceil((float) b.getHeight());
             //TODO b.getCenterY()
+            this.font = f;
 
             if (backbufferGraphics != null)
                 backbufferGraphics.setFont(font);

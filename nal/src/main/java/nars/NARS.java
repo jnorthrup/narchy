@@ -24,7 +24,6 @@ import org.slf4j.Logger;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.List;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Consumer;
@@ -48,8 +47,7 @@ public class NARS {
             rng,
             conceptBuilder.get()
         );
-        step.forEach(x -> x.accept(n));
-        n.synch();
+        step.forEachWith(Consumer::accept, n);
         return n;
     }
 
@@ -69,7 +67,7 @@ public class NARS {
     /**
      * applied in sequence as final step before returning the NAR
      */
-    protected final List<Consumer<NAR>> step = new FasterList<>(8);
+    protected final FasterList<Consumer<NAR>> step = new FasterList<>(8);
 
 
     public NARS index( Memory concepts) {

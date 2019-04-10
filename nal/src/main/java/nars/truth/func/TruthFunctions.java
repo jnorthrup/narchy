@@ -318,6 +318,9 @@ public final class TruthFunctions {
     public static float c2wSafe(float c) {
         return c2wSafe(c, Param.HORIZON);
     }
+    public static double c2wSafe(double c) {
+        return c2wSafe(c, Param.HORIZON);
+    }
 
 
     /**
@@ -328,6 +331,9 @@ public final class TruthFunctions {
      * @return The corresponding weight of evidence, a non-negative real number
      */
     public static float c2wSafe(float c, float horizon) {
+        return horizon * c / (1 - c);
+    }
+    public static double c2wSafe(double c, float horizon) {
         return horizon * c / (1 - c);
     }
 

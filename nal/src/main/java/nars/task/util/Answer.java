@@ -380,7 +380,7 @@ public final class Answer {
     }
 
     public double eviMin() {
-        return ditherTruth ? c2wSafe(nar.confMin.floatValue()) : Double.MIN_NORMAL;
+        return ditherTruth ? nar.confMin.asEvi() : Param.truth.TRUTH_EVI_MIN;
     }
 
     /**

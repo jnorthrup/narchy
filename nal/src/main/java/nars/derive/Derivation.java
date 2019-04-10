@@ -509,7 +509,8 @@ public class Derivation extends PreDerivation {
                     //Math.round(Param.UNIFY_DT_TOLERANCE_DUR_FACTOR * dur);
                     n.dtDither();
 
-            this.eviMin = c2wSafe(this.confMin = n.confMin.floatValue());
+            this.confMin = n.confMin.floatValue();
+            this.eviMin = n.confMin.asEvi();
 
             this.termVolMax = n.termVolumeMax.intValue();
         }

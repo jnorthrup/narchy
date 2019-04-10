@@ -19,11 +19,11 @@ import nars.term.util.transform.Conceptualization;
 import nars.term.util.transform.Retemporalize;
 import nars.truth.polation.LinearTruthProjection;
 import nars.truth.polation.TruthProjection;
+import nars.truth.util.ConfRange;
 
 import static java.lang.Float.NaN;
 import static nars.Op.*;
 import static nars.truth.func.TruthFunctions.c2wSafe;
-import static nars.truth.func.TruthFunctions.w2cSafe;
 
 /**
  * NAR Parameters
@@ -144,7 +144,8 @@ public abstract class Param extends Parts<Term,NAR> {
         public static final double TRUTH_EVI_MIN =
                             //c2wSafe(TRUTH_EPSILON);
                             //ScalarValue.EPSILON;
-                            Double.MIN_NORMAL;
+                            Float.MIN_NORMAL;
+                            //Double.MIN_NORMAL;
     }
 
 
@@ -201,7 +202,7 @@ public abstract class Param extends Parts<Term,NAR> {
     /**
      * truth confidence threshold necessary to form tasks
      */
-    public final FloatRange confMin = new FloatRange(truth.TRUTH_EPSILON, w2cSafe(truth.TRUTH_EVI_MIN), truth.TRUTH_CONF_MAX);
+    public final ConfRange confMin = new ConfRange();
     /**
      * global truth frequency resolution by which reasoning is dithered
      */

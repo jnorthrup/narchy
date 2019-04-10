@@ -218,7 +218,7 @@ public class Premise implements Comparable<Premise> {
             } else {
                 Task answered = tryAnswer(beliefTerm, answerTable, d);
                 if (answered!=null) {
-                    if (answered.conf() >= d.confMin) {
+                    if (answered.evi() >= d.eviMin) {
 
 //                        d.addAt(answered); //TODO determine if inputting here is really only useful if revised or dynamic
 

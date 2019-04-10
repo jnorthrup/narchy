@@ -33,11 +33,14 @@ public class BeliefTables extends FasterList<BeliefTable> implements BeliefTable
     @Override
     public void match(Answer a) {
         int triesEach = a.ttl;
-        for (int i = 0, thisSize = this.size(); i < thisSize; i++) {
-            BeliefTable t = this.get(i);
+        BeliefTable[] z = this.items;
+        int thisSize = Math.min(size(), items.length);
+        for (int i = 0; i < thisSize; i++) {
 
             //TODO better TTL distribution system
             a.ttl = triesEach; //restore for next
+
+            BeliefTable t = z[i];
 
             t.match(a);
 
@@ -90,8 +93,7 @@ public class BeliefTables extends FasterList<BeliefTable> implements BeliefTable
     }
 
     public final void delete() {
-        clear();
-        //super.clear();
+        super.delete();
         size = 0;
         items = null;
     }

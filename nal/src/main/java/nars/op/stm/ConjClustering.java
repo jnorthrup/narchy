@@ -432,7 +432,7 @@ public class ConjClustering extends How {
 
         private Task conjoin(Task[] x, float freq, float conf, long start) {
 
-            float e = c2wSafe(conf);
+            double e = c2wSafe((double)conf);
 //            if (e != e)
 //                throw new WTF();
 
