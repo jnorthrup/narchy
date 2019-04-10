@@ -7,11 +7,11 @@ import jcog.math.v3;
 import jcog.tree.rtree.rect.RectFloat;
 import spacegraph.input.finger.*;
 import spacegraph.input.finger.impl.NewtKeyboard;
-import spacegraph.input.finger.impl.NewtMouseFinger;
 import spacegraph.input.key.KeyPressed;
 import spacegraph.space2d.ReSurface;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.unit.MutableUnitContainer;
+import spacegraph.util.SurfaceTransform;
 import spacegraph.util.animate.AnimVector3f;
 import spacegraph.util.animate.Animated;
 import spacegraph.video.JoglDisplay;
@@ -57,8 +57,8 @@ public class Zoomed<S extends Surface> extends MutableUnitContainer<S> implement
     private final Fingering zoomDrag = new Dragging(ZOOM_BUTTON) {
 
         final v2 start = new v2();
-        float maxIterationChange = 0.25f;
-        float rate = 0.4f;
+        final float maxIterationChange = 0.25f;
+        final float rate = 0.4f;
 
         @Override
         protected boolean ready(Finger f) {
@@ -155,13 +155,12 @@ public class Zoomed<S extends Surface> extends MutableUnitContainer<S> implement
             float zoom = (float) (sin(Math.PI / 2 - focusAngle / 2) / (cam.z * sin(focusAngle / 2)));
             float s = zoom * Math.min(w(), h());
 
-            render.set(cam, scale.set(s,s));
             render.push(cam, scale.set(s, s));
 
             gl.glPushMatrix();
 
-            gl.glScalef(scale.x, scale.y, 1);
-            gl.glTranslatef((w() / 2) / scale.x - cam.x, (h() / 2) / scale.y - cam.y, 0);
+            gl.glScalef(s, s, 1);
+            gl.glTranslatef((w() / 2) / s - cam.x, (h() / 2) / s - cam.y, 0);
 
 
         });
@@ -177,46 +176,37 @@ public class Zoomed<S extends Surface> extends MutableUnitContainer<S> implement
 
     @Override
     public Surface finger(Finger finger) {
-
-
-        //TODO may need to be a stack
-
-
-        ((NewtMouseFinger) finger).setTransform(cam::pixelToGlobal); //ENTER ORTHO
-
-        try {
-
-            Surface innerTouched = super.finger(finger);
+        return finger.push(cam, (f)->{
+            Surface innerTouched = super.finger(f);
 
             if (!(innerTouched instanceof WheelAbsorb)) {
                 //wheel zoom: absorb remaining rotationY
-                float dy = finger.rotationY(true);
+                float dy = f.rotationY(true);
                 if (dy != 0) {
-                    zoomDeltaTo(finger, dy * wheelZoomRate);
+                    //zoomDeltaTo(f, dy * wheelZoomRate);
+                    zoomDelta(dy * wheelZoomRate);
                     zoomStackReset();
                 }
             }
 
 
-            if (innerTouched != null && finger.clickedNow(2 /*right button*/)) {
+            if (innerTouched != null && f.clickedNow(2 /*right button*/)) {
                 /** click-zoom */
-                zoomNext(finger, innerTouched);
+                zoomNext(f, innerTouched);
             }
 
 
             if (innerTouched == null) {
-                if (finger.tryFingering(zoomDrag)) {
+                if (f.tryFingering(zoomDrag)) {
                     zoomStackReset();
-                } else if (finger.tryFingering(contentPan)) {
+                } else if (f.tryFingering(contentPan)) {
                     zoomStackReset();
                 }
                 //}
             }
 
             return innerTouched;
-        } finally {
-            ((NewtMouseFinger) finger).setTransform(x -> x); //EXIT ORTHO
-        }
+        });
     }
 
     private void zoomStackReset() {
@@ -259,6 +249,8 @@ public class Zoomed<S extends Surface> extends MutableUnitContainer<S> implement
 
 
     /**
+     * TODO this is not working right
+     *
      * delta in (-1..+1)
      * POSITIVE = ?
      * NEGATIVE = ?
@@ -352,7 +344,7 @@ public class Zoomed<S extends Surface> extends MutableUnitContainer<S> implement
         return new Finger.TouchOverlay(finger, cam);
     }
 
-    public class Camera extends AnimVector3f {
+    public class Camera extends AnimVector3f implements SurfaceTransform {
 
         /**
          * TODO atomic
@@ -425,15 +417,15 @@ public class Zoomed<S extends Surface> extends MutableUnitContainer<S> implement
 
         public v2 globalToPixel(float gx, float gy) {
             return new v2(
-                    ((gx - cam.x) * scale.x) + w() / 2,
-                    ((gy - cam.y) * scale.y) + h() / 2
+                    ((gx - cam.x) * scale.x) + (w() / 2),
+                    ((gy - cam.y) * scale.y) + (h() / 2)
             );
         }
 
         public v2 pixelToGlobal(float px, float py) {
             v2 g = new v2(
-                    ((px - w() / 2) / scale.x + cam.x),
-                    ((py - h() / 2) / scale.y + cam.y)
+                    ((px - (w() / 2)) / scale.x + cam.x),
+                    ((py - (h() / 2)) / scale.y + cam.y)
             );
 
             //System.out.println("px=" + px + "," + py + "\tcam=" + cam + "\tscale=" + scale + "\t" + g);
@@ -447,6 +439,18 @@ public class Zoomed<S extends Surface> extends MutableUnitContainer<S> implement
         public void complete() {
             setDirect(target.x, target.y, target.z);
         }
+
+        public RectFloat globalToPixel(float x1, float y1, float x2, float y2) {
+            v2 p = cam.globalToPixel(x1, y1);
+            v2 q = cam.globalToPixel(x2, y2);
+            return RectFloat.XYXY(p.x, p.y, q.x, q.y);
+        }
+
+        public RectFloat globalToPixel(RectFloat t) {
+            float tx = t.x, ty = t.y;
+            return globalToPixel(tx, ty, tx + t.w, ty+t.h);
+        }
+
 //
 //    public final RectFloat globalToPixel(Surface t) {
 //        return globalToPixel(t.bounds);

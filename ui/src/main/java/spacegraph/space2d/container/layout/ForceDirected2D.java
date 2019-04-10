@@ -179,8 +179,10 @@ public class ForceDirected2D<X> extends DynamicLayout2D<X> {
 //        br *= br;
 
 
-
-        v2 delta = aCenter.clone().subbed(b.cx(), b.cy());
+        v2 v2 = aCenter.clone();
+        v2.x -= b.cx();
+        v2.y -= b.cy();
+        v2 delta = v2;
         float len = delta.normalize();
         if (len <= Spatialization.EPSILONf) {
             //coincident, apply random vector

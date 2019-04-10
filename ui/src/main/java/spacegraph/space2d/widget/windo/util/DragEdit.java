@@ -77,7 +77,7 @@ public enum DragEdit {
                 m = DragEdit.RESIZE_NE;
             }
         }
-        if (m == null && p.scale(1-margin).inUnit())
+        if (m == null && p.inUnit(1-margin))
             return DragEdit.MOVE;
         return m;
 

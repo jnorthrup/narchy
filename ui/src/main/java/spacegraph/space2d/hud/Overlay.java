@@ -1,7 +1,7 @@
 package spacegraph.space2d.hud;
 
 import com.jogamp.opengl.GL2;
-import jcog.math.v2;
+import jcog.tree.rtree.rect.RectFloat;
 import spacegraph.space2d.ReSurface;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.PaintSurface;
@@ -78,19 +78,14 @@ public abstract class Overlay extends PaintSurface {
 //    }
 
     public void drawBoundsFrame(Surface t, GL2 gl) {
-        float tx = t.x(), ty = t.y();
-        v2 p = cam.globalToPixel(tx, ty);
-        v2 q = cam.globalToPixel(tx + t.w(), ty + t.h());
+        RectFloat pq = cam.globalToPixel(t.bounds);
+        if (pq.w > Float.MIN_NORMAL && pq.h > Float.MIN_NORMAL) {
+            color.apply(gl);
+            gl.glLineWidth(thick);
+            Draw.rectStroke(pq.x, pq.y, pq.w, pq.h, gl);
+        }
 
-        color.apply(gl);
-
-        //TODO margin
-        //                float px = p.x - thick;
-        //                float py = p.y - thick;
-        gl.glLineWidth(thick);
-        Draw.rectStroke(p.x, p.y, q.x+thick-p.x, q.y+thick-p.y, gl);
         //Draw.rectFrame((p.x + q.x) / 2, (p.y + q.y) / 2, q.x - p.x, q.y - p.y, thick, gl);
-
     }
 
 

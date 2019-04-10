@@ -19,8 +19,7 @@ public class Buffer {
 
     public Buffer(String bufferName, String value) {
         this.bufferName = bufferName;
-        clear();
-        insert(value);
+        text(value);
     }
 
     public boolean isEmpty() {
@@ -177,13 +176,6 @@ public class Buffer {
 //        }
 //        return lines.get(currentCursor.getRow() - 1);
 //    }
-
-    public void set(String text) {
-        synchronized (this) {
-            clear();
-            insert(text);
-        }
-    }
 
 
 
@@ -392,4 +384,10 @@ public class Buffer {
     }
 
 
+    public void text(String text) {
+        synchronized (this) {
+            clear();
+            insert(text);
+        }
+    }
 }

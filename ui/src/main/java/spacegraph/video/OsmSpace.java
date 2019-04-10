@@ -123,7 +123,7 @@ public enum OsmSpace  { ;
         public void pan(float tx, float ty, RectFloat bounds) {
             float s = -1f  / viewScale;
             //center.setAt(dragStart.x - tx*s, dragStart.y - ty*s);
-            center.add(tx*s, ty*s);
+            center.added(tx*s, ty*s);
         }
 
         @Override

@@ -1,8 +1,10 @@
 package spacegraph.input.finger;
 
 import com.jogamp.opengl.GL2;
+import jcog.TODO;
 import jcog.data.atomic.AtomicFloat;
 import jcog.data.bit.AtomicMetalBitSet;
+import jcog.data.list.FasterList;
 import jcog.math.v2;
 import jcog.tree.rtree.rect.RectFloat;
 import org.jetbrains.annotations.Nullable;
@@ -11,6 +13,7 @@ import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.PaintSurface;
 import spacegraph.space2d.hud.Overlay;
 import spacegraph.space2d.hud.Zoomed;
+import spacegraph.util.SurfaceTransform;
 import spacegraph.video.JoglWindow;
 
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -52,6 +55,7 @@ abstract public class Finger {
     final v2[] pressPosPixel;
     final FingerRenderer rendererDefault =
             FingerRenderer.rendererCrossHairs1;
+    final FasterList<SurfaceTransform> transforms = new FasterList();
     private final int buttons;
     /**
      * drag threshold (in screen pixels)
@@ -166,8 +170,6 @@ abstract public class Finger {
         prevButtonDown.copyFrom(buttonDown);
     }
 
-
-
     /**
      * commit one button
      */
@@ -242,14 +244,6 @@ abstract public class Finger {
         return buttonDown.get(button);
     }
 
-    private boolean wasPressed(int button) {
-        return prevButtonDown.get(button);
-    }
-
-    public boolean wasReleased(int button) {
-        return !wasPressed(button);
-    }
-
     //{
 //        Ortho co = this._ortho;
 //        Ortho o = co !=null ? co : (c instanceof Ortho ? ((Ortho)c) : c.parent(Ortho.class));
@@ -259,6 +253,14 @@ abstract public class Finger {
 //            return posPixel;//.clone();
     //    return posGlobal;
     //}
+
+    private boolean wasPressed(int button) {
+        return prevButtonDown.get(button);
+    }
+
+    public boolean wasReleased(int button) {
+        return !wasPressed(button);
+    }
 
     private boolean releasedNow(int button) {
         return !pressed(button) && wasPressed(button);
@@ -280,7 +282,7 @@ abstract public class Finger {
 //        System.out.println(pressing(i) + "<-" + wasPressed(i));
 
         if (releasedNow(button) && !_dragging(button)) {
-            if (c == null || c.bounds.contains(posGlobal())) {
+            if (c == null || intersects(c.bounds)) {
                 commitButton(button); //absorb the event
                 return true;
             }
@@ -336,6 +338,7 @@ abstract public class Finger {
      * warning: the vector instance returned by this and other methods are mutable.  so they may need to be cloned when accessed to record the state across time.
      */
     abstract public v2 posGlobal();
+    //FingerRenderer.polygon1;
 
     protected void rotationAdd(float[] next) {
         for (int i = 0; i < next.length; i++) {
@@ -348,7 +351,6 @@ abstract public class Finger {
     public final float rotationX(boolean take) {
         return rotation(0, take);
     }
-    //FingerRenderer.polygon1;
 
     public final float rotationY(boolean take) {
         return rotation(1, take);
@@ -374,12 +376,17 @@ abstract public class Finger {
         return active.getOpaque();
     }
 
-    public v2 posRelative(RectFloat b) {
-        return normalize(posGlobal(), b);
+    public final v2 posRelative(Surface s) {
+        return posRelative(s.bounds);
     }
 
-    public v2 posRelative(Surface s) {
-        return posRelative(s.bounds);
+    public v2 posRelative(RectFloat b) {
+        //return normalize(posGlobal(), b);
+        RectFloat r = globalToPixel(b);
+        //return r.unitize(posPixel);
+        return new v2(
+        (posPixel.x - r.x)/r.w, (posPixel.y - r.y)/r.h
+        );
     }
 
 
@@ -389,8 +396,38 @@ abstract public class Finger {
 
     public boolean intersects(RectFloat bounds) {
         //System.out.println(bounds + " contains " + posGlobal() + " ? " + bounds.contains(posGlobal()));
-        return bounds.contains(posGlobal());
+        return globalToPixel(bounds).contains(posPixel);
         //return posRelative(bounds).inUnit();
+    }
+
+    public RectFloat globalToPixel(RectFloat bounds) {
+        int n = transforms.size();
+        switch (n) {
+            case 0:
+                return bounds;
+            case 1:
+                return ((Zoomed.Camera) transforms.getLast()).globalToPixel(bounds);
+            default:
+                throw new TODO();
+        }
+    }
+
+
+    public void push(SurfaceTransform t) {
+        transforms.add(t);
+    }
+
+    public final <S extends Surface> S push(SurfaceTransform t, Function<Finger, S> fingering) {
+        push(t);
+        try {
+            return fingering.apply(this);
+        } finally {
+            pop();
+        }
+    }
+
+    public SurfaceTransform pop() {
+        return transforms.removeLast();
     }
 
     public static final class TouchOverlay extends Overlay {

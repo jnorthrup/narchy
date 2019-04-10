@@ -328,7 +328,7 @@ public class ParticleSystem {
                             particleDef.position.y = p.y;
                             p.subbed(groupDef.position);
                             v2.crossToOutUnsafe(groupDef.angularVelocity, p, particleDef.velocity);
-                            particleDef.velocity.addLocal(groupDef.linearVelocity);
+                            particleDef.velocity.added(groupDef.linearVelocity);
                             createParticle(particleDef);
                         }
                     }

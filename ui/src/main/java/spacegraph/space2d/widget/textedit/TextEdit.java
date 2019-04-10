@@ -105,9 +105,7 @@ public class TextEdit extends ScrollXY<TextEditModel>  {
     }
 
     public TextEdit text(String text) {
-        if (!text().isEmpty()) //HACK
-            clear();
-        insert(text);
+        buffer().text(text);
         return this;
     }
 

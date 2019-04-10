@@ -133,6 +133,11 @@ public class v2 implements java.io.Serializable, Cloneable, Tensor {
         return x >= 0 && x <= 1f && y >= 0 && y <= 1f;
     }
 
+    public boolean inUnit(float scale) {
+        float xx = x * scale, yy = y * scale;
+        return (xx >= 0 && xx <= 1f && yy >= 0 && yy <= 1f);
+    }
+
 //    public float minDimension() {
 //        return Math.min(x, y);
 //    }
@@ -214,26 +219,12 @@ public class v2 implements java.io.Serializable, Cloneable, Tensor {
     }
 
     /**
-     * Add another vector to this one and returns result - alters this vector.
-     */
-    public final v2 addLocal(v2 v) {
-        return addLocal(v.x, v.y);
-    }
-
-    /**
-     * Subtract another vector from this one and return result - alters this vector.
-     */
-    public final v2 addLocal(float x, float y) {
-        this.x += x;
-        this.y += y;
-        return this;
-    }
-
-    /**
      * Subtract another vector from this one and return result - alters this vector.
      */
     public final v2 subLocal(v2 v) {
-        return addLocal(-v.x, -v.y);
+        float x1 = -v.x;
+        float y1 = -v.y;
+        return added(x1, y1);
     }
 
     /**
@@ -283,18 +274,6 @@ public class v2 implements java.io.Serializable, Cloneable, Tensor {
 
 
     /**
-     * Sets the value of this tuple to the vector sum of tuples t1 and t2.
-     *
-     * @param t1 the first tuple
-     * @param t2 the second tuple
-     */
-    public final void add(v2 t1, v2 t2) {
-        this.x = t1.x + t2.x;
-        this.y = t1.y + t2.y;
-    }
-
-
-    /**
      * Sets the value of this tuple to the vector sum of itself and tuple t1.
      *
      * @param t1 the other tuple
@@ -309,18 +288,6 @@ public class v2 implements java.io.Serializable, Cloneable, Tensor {
         return this;
     }
 
-    /**
-     * Sets the value of this tuple to the vector difference of
-     * tuple t1 and t2 (this = t1 - t2).
-     *
-     * @param t1 the first tuple
-     * @param t2 the second tuple
-     */
-    public final v2 sub(v2 t1, v2 t2) {
-        this.x = t1.x - t2.x;
-        this.y = t1.y - t2.y;
-        return this;
-    }
 
 
     /**
@@ -330,17 +297,14 @@ public class v2 implements java.io.Serializable, Cloneable, Tensor {
      * @param t1 the other tuple
      */
     public final v2 subbed(v2 t1) {
-        return subbed(t1.x, t1.y);
-    }
-
-    public v2 subbed(float x, float y) {
-        this.x -= x;
-        this.y -= y;
+        this.x -= t1.x;
+        this.y -= t1.y;
         return this;
     }
 
     public final void sub(float dx, float dy) {
-        set(this.x - dx, this.y - dy);
+        this.x -= dx;
+        this.y -= dy;
     }
 
     public static float cross(final v2 a, final v2 b) {
@@ -439,19 +403,17 @@ public class v2 implements java.io.Serializable, Cloneable, Tensor {
      * @param s the scalar value
      */
     public v2 scale(float s) {
-        this.x *= s;
-        this.y *= s;
-        return this;
+        return scale(s, s);
     }
-
-    /**
-     * multiplies each component
-     */
-    public final v2 scale(v2 z) {
-        this.x *= z.x;
-        this.y *= z.y;
-        return this;
-    }
+//
+//    /**
+//     * multiplies each component
+//     */
+//    public final v2 scale(v2 z) {
+//        this.x *= z.x;
+//        this.y *= z.y;
+//        return this;
+//    }
 
     public final v2 scale(float sx, float sy) {
         this.x *= sx;
@@ -729,10 +691,6 @@ public class v2 implements java.io.Serializable, Cloneable, Tensor {
         return normalize(1f);
     }
 
-    public final v2 normalized(float scale) {
-        normalize(scale);
-        return this;
-    }
 
     public final float normalize(float scale) {
         float sqrNorm = (this.x * this.x + this.y * this.y);
@@ -790,9 +748,6 @@ public class v2 implements java.io.Serializable, Cloneable, Tensor {
         this.y = y;
     }
 
-    public void add(float dx, float dy) {
-        set(x + dx, y + dy);
-    }
 
     public float distanceSq(v2 v) {
         if (v == this) return 0;
@@ -883,7 +838,7 @@ public class v2 implements java.io.Serializable, Cloneable, Tensor {
             if (lenSq < rate * rate) {
                 set(nx, ny); //finished
             } else {
-                this.addLocal(new v2(dx, dy).scale((float) (rate / Math.sqrt(lenSq))));
+                added(new v2(dx, dy).scale((float) (rate / Math.sqrt(lenSq))));
             }
 
         }
@@ -917,4 +872,6 @@ public class v2 implements java.io.Serializable, Cloneable, Tensor {
     public float distanceToY(v2 o) {
         return o.y - y;
     }
+
+
 }

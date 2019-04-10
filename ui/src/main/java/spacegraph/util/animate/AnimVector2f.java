@@ -78,21 +78,14 @@ public class AnimVector2f extends v2 implements Animated {
         return this;
     }
 
-    @Override
-    public void add(float x, float y) {
-        set(target.x + x, target.y + y);
-    }
+//
+//    @Override
+//    public void add(float x, float y) {
+//        set(target.x + x, target.y + y);
+//    }
 
 
 
 
-    /**
-     * Computes the dot product of the this vector and vector v1.
-     *
-     * @param v1 the other vector
-     */
-    private float dot(v2 v1) {
-        return (this.x * v1.x + this.y * v1.y);
-    }
 
 }

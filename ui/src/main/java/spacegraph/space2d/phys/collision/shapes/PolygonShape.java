@@ -542,7 +542,7 @@ public class PolygonShape extends Shape {
 
 
             e1.set(p1).added(p2).added(p3).scale(triangleArea * inv3);
-            out.addLocal(e1);
+            out.added(e1);
         }
 
 
@@ -566,7 +566,7 @@ public class PolygonShape extends Shape {
         s.setZero();
 
         for (int i = 0; i < vertices; ++i) {
-            s.addLocal(vertex[i]);
+            s.added(vertex[i]);
         }
         s.scale(1.0f / vertices);
 

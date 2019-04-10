@@ -255,7 +255,7 @@ public class Distance {
                     pA.set(m_v1.wA).scale(m_v1.a);
                     case3.set(m_v2.wA).scale(m_v2.a);
                     case33.set(m_v3.wA).scale(m_v3.a);
-                    pA.addLocal(case3).addLocal(case33);
+                    pA.added(case3).added(case33);
                     pB.set(pA);
                     
                     
@@ -763,14 +763,13 @@ public class Distance {
                 normal.set(output.pointB).subbed(output.pointA);
                 normal.normalize();
                 temp.set(normal).scale(rA);
-                output.pointA.addLocal(temp);
+                output.pointA.added(temp);
                 temp.set(normal).scale(rB);
                 output.pointB.subLocal(temp);
             } else {
-                
-                
-                
-                output.pointA.addLocal(output.pointB).scale(.5f);
+
+
+                output.pointA.added(output.pointB).scale(.5f);
                 output.pointB.set(output.pointA);
                 output.distance = 0.0f;
             }
