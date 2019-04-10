@@ -37,7 +37,7 @@ public class Tetris extends GameX {
 
     private final Bitmap2D grid;
 
-    private final boolean opjects = false;
+    private final boolean opjects = true;
 
     private final boolean canFall = false;
 
@@ -67,7 +67,7 @@ public class Tetris extends GameX {
      */
     public Tetris(Term id, NAR n, int width, int height, int timePerFall) {
         super(id,
-                GameTime.fps(24f),
+                GameTime.fps(FPS),
                 //FrameTrigger.durs(1),
                 n);
 
@@ -173,7 +173,7 @@ public class Tetris extends GameX {
 //            });
 
             return new Tetris(n, Tetris.tetris_width, Tetris.tetris_height);
-        },  FPS);
+        },  FPS*2);
 
 //        int instances = 2;
 //        for (int i = 0; i < instances; i++)

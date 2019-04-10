@@ -24,10 +24,6 @@ public class TriggeredSurface<X extends Surface> extends AbstractCachedSurface<X
         this.update = update;
     }
 
-    @Override
-    public Off whenOff() {
-        return trigger.apply(this::update);
-    }
 
     protected final void update() {
         update.accept(the);

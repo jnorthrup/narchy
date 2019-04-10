@@ -13,18 +13,20 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public class CheckBox extends ToggleButton {
 
-    private String text;
+    private String text = "";
     public final AbstractLabel label;
 
     public CheckBox(String text) {
-        this.text = text;
+        this(text, false);
+    }
 
+    public CheckBox(String text, boolean enable) {
         set(label =
                 //new VectorLabel("")
                 new BitmapLabel("")
         );
-
-        on(false);
+        setText(text);
+        set(enable);
     }
 
     public CheckBox(String text, Runnable r) {
@@ -47,8 +49,7 @@ public class CheckBox extends ToggleButton {
     }
 
     public CheckBox(String text, AtomicBoolean b) {
-        this(text);
-        on(b.get());
+        this(text, b.get());
         on((button, value) -> b.set(value));
     }
 
@@ -64,8 +65,8 @@ public class CheckBox extends ToggleButton {
 
     @Override
     public ToggleButton on(boolean on) {
-        label.text(label(text, on));
-        super.on(on);
+        if (set(on))
+            label.text(label(text, on));
         return this;
     }
 
@@ -76,8 +77,7 @@ public class CheckBox extends ToggleButton {
 
     public void setText(String s) {
         if (!this.text.equals(s)) {
-            this.text = s;
-            label.text(label(s, on()));
+            label.text(label(this.text = s, on()));
         }
     }
 

@@ -299,9 +299,11 @@ public class Opjects extends DefaultTermizer {
 
 
             What what = nar.what(); //HACK TODO be parameter
-            if (feedback == null)
+            if (feedback == null && value!=null)
                 in.accept(value, what);
-            else
+            else if (value==null && feedback != null)
+                in.accept(feedback, what);
+            else if (value!=null && feedback!=null)
                 in.acceptAll(new ITask[] { feedback, value }, what);
 
 

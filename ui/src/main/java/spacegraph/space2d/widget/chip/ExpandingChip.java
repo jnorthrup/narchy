@@ -28,10 +28,10 @@ public class ExpandingChip extends MutableUnitContainer {
         button.on((state)->{
             synchronized (ExpandingChip.this) {
                 if (state) {
-                    button.remove();
+                    button.delete();
                     set(new Bordering(builder.apply(this)).set(S, button));
                 } else {
-                    button.remove();
+                    button.delete();
                     set(button);
                 }
             }

@@ -116,7 +116,6 @@ public class AnimVector3f extends v3 implements Animated {
 
         float px = this.x;
         if (px != px) {
-            
             super.set(target);
         } else {
             curve.interp(dt, this);

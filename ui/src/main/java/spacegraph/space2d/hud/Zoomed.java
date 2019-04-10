@@ -119,6 +119,12 @@ public class Zoomed<S extends Surface> extends MutableUnitContainer<S> implement
         this.keyboard = keyboard;
 
         this.cam = new Camera();
+//            @Override
+//            protected void onMotion() {
+//                super.onMotion();
+//                layout();
+//            }
+//        };
     }
 
     @Override
@@ -346,26 +352,6 @@ public class Zoomed<S extends Surface> extends MutableUnitContainer<S> implement
         return new Finger.TouchOverlay(finger, cam);
     }
 
-
-//    /**
-//     * called each frame regardless of mouse activity
-//     * TODO split this into 2 methods.  one picks the current touchable
-//     * and the other method invokes button changes on the result of the first.
-//     * this will allow rapid button changes to propagate directly to
-//     * the picked surface even in-between pick updates which are invoked
-//     * during the update loop.
-//     */
-//    protected Surface finger() {
-//        /** layer specific, separate from Finger */
-//        float pmx = finger.posPixel.x, pmy = finger.posPixel.y;
-//        float wmx = +cam.x + (-0.5f * w() + pmx) / scale.x;
-//        float wmy = +cam.y + (-0.5f * h() + pmy) / scale.y;
-//        fingerPos.setAt(wmx, wmy);
-//
-//        return finger.touching();
-//    }
-
-
     public class Camera extends AnimVector3f {
 
         /**
@@ -396,8 +382,6 @@ public class Zoomed<S extends Surface> extends MutableUnitContainer<S> implement
         }
 
         protected void update() {
-            if (!Zoomed.this.visible())
-                return;
 
             //System.out.println(z);
             float W = bounds.w;
@@ -412,7 +396,7 @@ public class Zoomed<S extends Surface> extends MutableUnitContainer<S> implement
         }
 
         @Override
-        public void setDirect(float x, float y, float z) {
+        public final void setDirect(float x, float y, float z) {
             super.setDirect(camX(x), camY(y), camZ(z));
         }
 
@@ -452,8 +436,10 @@ public class Zoomed<S extends Surface> extends MutableUnitContainer<S> implement
                     ((py - h() / 2) / scale.y + cam.y)
             );
 
+            //System.out.println("px=" + px + "," + py + "\tcam=" + cam + "\tscale=" + scale + "\t" + g);
             return g;
         }
+
 
         /**
          * immediately get to where its going

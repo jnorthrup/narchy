@@ -2,7 +2,6 @@ package spacegraph.space2d.widget.button;
 
 import jcog.data.iterator.ArrayIterator;
 import jcog.data.set.ArrayHashSet;
-import jcog.exe.Exe;
 import org.eclipse.collections.api.block.procedure.primitive.ObjectBooleanProcedure;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.space2d.container.grid.Gridding;
@@ -46,7 +45,7 @@ public class ButtonSet<T extends ToggleButton> extends Gridding {
             b.on((bb,e) -> {
                 if (e) {
                     if (mode == Mode.Multi) {
-                        
+
                     } else if (mode == Mode.One) {
                         this.buttons.forEach(cc -> {
                             if (cc != bb)
@@ -63,9 +62,9 @@ public class ButtonSet<T extends ToggleButton> extends Gridding {
 
                     if (this.buttons.AND(cc -> cc==bb || !cc.on())) {
                         //no other buttons are toggled, so re-toggle this one
-                        Exe.invoke(()->{ //HACK
+                        //Exe.invoke(()->{ //HACK
                            bb.on(true);
-                        });
+                        //});
                         return;
                     }
 

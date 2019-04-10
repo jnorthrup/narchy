@@ -58,6 +58,7 @@ import static java.util.stream.Collectors.toList;
 import static java.util.stream.StreamSupport.stream;
 import static nars.$.$$;
 import static nars.Op.BELIEF;
+import static nars.Op.GOAL;
 import static spacegraph.space2d.container.grid.Gridding.grid;
 
 /**
@@ -464,7 +465,8 @@ abstract public class GameX extends Game {
 
         //new StatementLinker(n);
         //new PuncNoise(n);
-        n.add(Eternalizer.class); //new Eternalizer(n);
+        //n.add(Eternalizer.class);
+        n.add(new Eternalizer(n));
 
 //        new STMLinkage(n, 1);
 
@@ -474,8 +476,8 @@ abstract public class GameX extends Game {
 
 
         List<ConjClustering> conjClusters = List.of(
-            new ConjClustering(n, BELIEF, 32, 256)
-            //new ConjClustering(n, GOAL, 4, 16)
+            new ConjClustering(n, BELIEF, 32, 256),
+            new ConjClustering(n, GOAL, 4, 16)
         );
 
         SpaceGraph.surfaceWindow(grid(conjClusters, c->NARui.clusterView(c, n)), 700, 700);

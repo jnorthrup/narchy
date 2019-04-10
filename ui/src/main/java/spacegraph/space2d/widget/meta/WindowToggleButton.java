@@ -47,7 +47,7 @@ public class WindowToggleButton extends CheckBox implements WindowListener {
 
     @Override
     protected void onClick() {
-        onClick((Finger)null);
+        onClick(null);
     }
 
     @Override

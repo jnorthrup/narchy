@@ -179,7 +179,7 @@ abstract public class Surface implements Surfacelike, spacegraph.input.finger.Fi
 
         if (p != parent) {
             if (p != null) {  //throw new WTF();
-                remove();
+                delete();
                 parent = PARENT.getAndSet(this, parent);
                 if (parent!=null) throw new WTF();
             }
@@ -289,9 +289,11 @@ abstract public class Surface implements Surfacelike, spacegraph.input.finger.Fi
      * detach from parent, if possible
      * TODO common remove(x) interface
      */
-    public boolean remove() {
+    public boolean delete() {
 
-        Surfacelike p = this.parent;
+        Surfacelike p = PARENT.getAndSet(this, null);
+        if (p == null)
+            return false;
 
         if (p instanceof MutableUnitContainer) {
             ((MutableUnitContainer) p).set(null);
@@ -301,15 +303,18 @@ abstract public class Surface implements Surfacelike, spacegraph.input.finger.Fi
             return ((AbstractMutableContainer) p).remove(this);
         }
         if (p instanceof WeakSurface) {
-            return ((WeakSurface) p).remove();
+            return ((WeakSurface) p).delete();
         }
         if (p instanceof ContainerSurface) {
-            return ((ContainerSurface) p).remove();
+            return ((ContainerSurface) p).delete();
         }
 
         stop();
-        //return false;
-        throw new jcog.TODO();
+
+        if (this instanceof ContainerSurface) {
+            ((ContainerSurface)this).forEach(Surface::delete);
+        }
+        return true;
     }
 
     public boolean reattach(Surface nextParent) {

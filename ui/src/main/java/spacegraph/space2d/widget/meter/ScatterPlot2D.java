@@ -138,7 +138,7 @@ public class ScatterPlot2D<X> extends Graph2D<X> {
                             w,h
                     ));
 
-                    node.move(w/2, h/2); //HACK wtf why is this necessary
+                    //node.move(w/2, h/2); //HACK wtf why is this necessary
 
                     node.pri = model.pri(id);
 

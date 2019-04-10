@@ -47,20 +47,27 @@ public class ToggleButton extends AbstractButton {
     private static final Logger logger = LoggerFactory.getLogger(ToggleButton.class);
 
     public ToggleButton on(boolean on) {
+        set(on);
+        return this;
+    }
+
+    public boolean set(boolean on) {
         if (this.on.compareAndSet(!on, on)) {
             if (action != null) {
                 //Exe.invoke(()->{
 
                 try {
                     action.value(this, on);
+                    return true;
                 } catch (Throwable t) {
+                    this.on.set(!on);
                     logger.error("{}", t);
                 }
 
                 //});
             }
         }
-        return this;
+        return false;
     }
 
     public final boolean on() {
@@ -84,10 +91,7 @@ public class ToggleButton extends AbstractButton {
 
     @Override
     protected void onClick() {
-        toggle();
-    }
-
-    private void toggle() {
         on(!on());
     }
+
 }

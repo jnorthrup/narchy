@@ -227,7 +227,7 @@ public class RectFloat implements HyperRegion, Comparable<RectFloat> {
     }
 
     public final boolean equals(RectFloat o, float epsilon) {
-        return equals(o.x, o.y, o.w, o.h, epsilon);
+        return o!=null && equals(o.x, o.y, o.w, o.h, epsilon);
     }
 
     public boolean equals(float xx, float yy, float ww, float hh, float epsilon) {

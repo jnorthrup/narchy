@@ -19,7 +19,7 @@ abstract public class Link {
     }
 
     public Link on(Surface hostage) {
-        return on(hostage::remove);
+        return on(hostage::delete);
     }
 
     public final void remove(EditGraph2D g) {

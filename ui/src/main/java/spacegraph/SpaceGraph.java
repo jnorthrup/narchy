@@ -29,7 +29,7 @@ $ jshell --startup startups/custom-startup
     /**
      * creates window with 2d with single surface layer, maximized to the size of the window
      */
-    public static JoglDisplay surfaceWindow(Surface s, int w, int h) {
+    public static OrthoSurfaceGraph surfaceWindow(Surface s, int w, int h) {
         return new OrthoSurfaceGraph(s, w, h);
     }
 

@@ -4,12 +4,14 @@ import nars.NAR;
 import nars.NARS;
 import nars.op.rdfowl.NQuadsRDF;
 import nars.test.impl.DeductiveMeshTest;
-import spacegraph.SpaceGraph;
+import spacegraph.space2d.OrthoSurfaceGraph;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.widget.windo.Windo;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+
+import static spacegraph.SpaceGraph.surfaceWindow;
 
 class ConceptGraph2DTest {
 
@@ -22,7 +24,11 @@ class ConceptGraph2DTest {
 //            n.attn.decay.set(0.9f);
             n.termVolumeMax.set(14);
 
-            SpaceGraph.surfaceWindow(BagregateConceptGraph2D.get(n), 1200, 800 );
+            Surface g = BagregateConceptGraph2D.get(n);
+            OrthoSurfaceGraph wg = surfaceWindow(g, 1200, 800);
+
+            wg.dev();
+
 
             n.startFPS(24f);
 
@@ -38,7 +44,7 @@ class ConceptGraph2DTest {
                     .threadSafe(4);
             n.termVolumeMax.set(5);
 
-            SpaceGraph.surfaceWindow(BagregateConceptGraph2D.get(n), 1200, 800 );
+            surfaceWindow(BagregateConceptGraph2D.get(n), 1200, 800 );
 
             n.startFPS(4f);
 
@@ -60,7 +66,7 @@ class ConceptGraph2DTest {
 
             Surface g = BagregateConceptGraph2D.get(n);
 
-            SpaceGraph.surfaceWindow( new Windo(g), 1200, 800 );
+            surfaceWindow( new Windo(g), 1200, 800 );
 
             n.startFPS(16f);
         }

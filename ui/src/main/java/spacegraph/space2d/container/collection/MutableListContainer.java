@@ -18,8 +18,7 @@ import java.util.function.Predicate;
 abstract public class MutableListContainer extends AbstractMutableContainer {
 
 
-    private final static Surface[] EMPTY_SURFACE_ARRAY = Surface.EmptySurfaceArray;
-    private static final IntFunction<Surface[]> NEW_SURFACE_ARRAY = (i) -> i == 0 ? EMPTY_SURFACE_ARRAY : new Surface[i];
+    private static final IntFunction<Surface[]> NEW_SURFACE_ARRAY = (i) -> i == 0 ? Surface.EmptySurfaceArray : new Surface[i];
     private final FastCoWList<Surface> children;
 
     public MutableListContainer(Surface... children) {

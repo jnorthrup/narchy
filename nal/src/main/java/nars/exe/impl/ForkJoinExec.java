@@ -20,21 +20,24 @@ public class ForkJoinExec extends MultiExec implements Thread.UncaughtExceptionH
         super(concurrency);
 
         //public ForkJoinPool(int parallelism, ForkJoinPool.ForkJoinWorkerThreadFactory factory, UncaughtExceptionHandler handler, boolean asyncMode, int corePoolSize, int maximumPoolSize, int minimumRunnable, Predicate<? super ForkJoinPool> saturate, long keepAliveTime, TimeUnit unit) {
-//        int proc = concurrency;
-//        pool = new ForkJoinPool(
-//                proc,
-//                //orkJoinPool.defaultForkJoinWorkerThreadFactory,
-//                (p)->{
-//                    ForkJoinWorkerThread t = new ForkJoinWorkerThread(p) {
-//
-//                    };
-//                    return t;
-//                },
-//                this,
-//                true, 0, proc, 1,
-//                null, 60L, TimeUnit.SECONDS);
+        pool = new ForkJoinPool(
+                concurrency,
+                //orkJoinPool.defaultForkJoinWorkerThreadFactory,
+                (p)->{
+                    ForkJoinWorkerThread t = new ForkJoinWorkerThread(p) {
 
-        pool = ForkJoinPool.commonPool();
+                    };
+                    return t;
+                },
+                this,
+                true, 0, concurrency, 1,
+                null, 60L, TimeUnit.SECONDS) {
+            {
+                //this.pollSubmission()
+            }
+        };
+
+//        pool = ForkJoinPool.commonPool();
 
 //        if (concurrency >= Runtime.getRuntime().availableProcessors()/2) //HACK TODO make parameter
 //            Exe.setExecutor(pool); //set this as the global executor

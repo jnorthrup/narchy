@@ -159,6 +159,20 @@ abstract public class ContainerSurface extends Surface {
 
     public abstract boolean whileEachReverse(Predicate<Surface> o);
 
+    /** default implementation */
+    public <X extends Surface> X first(Class<? extends X> zoomedClass) {
+        final Surface[] found = new Surface[]{null};
+        whileEach(s -> {
+            if (zoomedClass.isInstance(s)) {
+                found[0] = s;
+                return false;
+            }
+            return true; //keep going
+        });
+        return (X) found[0];
+    }
+
+
 
 //    public final void forEachReverse(Consumer<Surface> each) {
 //        whileEachReverse((s) -> {

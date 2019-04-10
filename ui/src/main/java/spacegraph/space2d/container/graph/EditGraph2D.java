@@ -144,16 +144,7 @@ public class EditGraph2D<S extends Surface> extends MutableMapContainer<Surface,
     }
 
     public Windo addWeak(Surface x) {
-        return add(x, xx -> new DependentWindow(new WeakSurface(xx) {
-            @Override
-            protected void delete() {
-                super.delete();
-
-                DependentWindow w = parentOrSelf(DependentWindow.class);
-                if (w != null)
-                    w.remove();
-            }
-        }));
+        return add(x, xx -> new DependentWindow(new MyWeakSurface(xx)));
     }
 
     public void removeComponent(Surface s) {
@@ -464,7 +455,7 @@ public class EditGraph2D<S extends Surface> extends MutableMapContainer<Surface,
                     if (graphParent != null) {
                         EditGraph2D.VisibleLink.this.remove(graphParent);
                     }
-                    remove();
+                    delete();
                 }
 
                 super.render(r);
@@ -494,6 +485,23 @@ public class EditGraph2D<S extends Surface> extends MutableMapContainer<Surface,
             return x + "\n  " + (w != null ? w.bounds : "?");
         }
 
+    }
+
+    private class MyWeakSurface extends WeakSurface {
+        public MyWeakSurface(Surface xx) {
+            super(xx);
+        }
+
+        @Override
+        public boolean delete() {
+            if (super.delete()) {
+                DependentWindow w = parentOrSelf(DependentWindow.class);
+                if (w != null)
+                    w.delete();
+                return true;
+            }
+            return false;
+        }
     }
 }
 

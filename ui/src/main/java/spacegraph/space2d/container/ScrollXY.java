@@ -48,7 +48,7 @@ public class ScrollXY<S extends ScrollXY.ScrolledXY> extends Bordering {
     //private volatile v2 viewDefault = new v2(0,0);
     protected volatile v2 viewMax = new v2(1,1);
 
-    private final boolean autoHideScrollForSingleColumnOrRow = true;
+    private final boolean autoHideScroll = true;
 
 
     public <X> ScrollXY(GridModel<X> grid, GridRenderer<X> renderer) {
@@ -220,36 +220,26 @@ public class ScrollXY<S extends ScrollXY.ScrolledXY> extends Bordering {
 
     public/*synchronized*/ ScrollXY scroll(float x, float y, float w, float h) {
 
-        float x1, x2, y1, y2;
+        float x1, x2;
+        x1 = x;
+        x2 = x+w;
+        setScrollBar(true, (!autoHideScroll || w > viewMax.x), true);
 
+        float y1, y2;
+        y1 = y;
+        y2 = y1 + h;
+        setScrollBar(false, (!autoHideScroll || h > viewMax.y), true);
 
-        if (w <= 1 && autoHideScrollForSingleColumnOrRow) {
-            x1 = x;
-            x2 = x+1;
-            setScrollBar(true, false, true);
-        } else {
-            x1 = x;
-            x2 = x1 + w;
-            setScrollBar(true, true, true);
-        }
-
-        if (h <= 1 && autoHideScrollForSingleColumnOrRow) {
-            y1 = y;
-            y2 = y+1;
-            setScrollBar(false, false, true);
-        } else {
-            y1 = y;
-            y2 = y1 + h;
-            setScrollBar(false, true, true);
-        }
-
-        viewMax(new v2(x2-x1, y2-y1)); //HACK
+//        viewMax(new v2(x2-x1, y2-y1)); //HACK
 
         scale.visible(scrollX.visible()||scrollY.visible());
 
-        this.view = RectFloat.X0Y0WH(x1, y1, x2-x1, y2-y1);
-        layoutModel();
-        layout();
+        RectFloat nextView = RectFloat.X0Y0WH(x1, y1, x2 - x1, y2 - y1);
+        if (!nextView.equals(view)) {
+            this.view = nextView;
+            layoutModel();
+            layout();
+        }
 
         return this;
     }
@@ -271,7 +261,7 @@ public class ScrollXY<S extends ScrollXY.ScrolledXY> extends Bordering {
     }
 
 
-    public static <X> ScrollXY<DynGrid<X>> array(GridRenderer<X> builder, X... list) {
+    public static <X> ScrollXY<DynGrid<X>> array(GridRenderer<X> builder, X...list) {
         return new ScrollXY<>(ListModel.of(list), builder);
     }
 

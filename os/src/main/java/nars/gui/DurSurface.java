@@ -1,6 +1,5 @@
 package nars.gui;
 
-import jcog.event.Off;
 import nars.NAR;
 import nars.time.part.DurLoop;
 import spacegraph.space2d.ReSurface;
@@ -20,7 +19,7 @@ abstract public class DurSurface<S extends Surface> extends AbstractCachedSurfac
     public static final double minUpdateTimeSeconds = 1 / 30.0; /* 30fps */
 
     protected final NAR nar;
-    DurLoop on;
+    DurLoop dur;
     final long minUpdateTimeNS;
     private boolean autolayout;
 
@@ -34,14 +33,33 @@ abstract public class DurSurface<S extends Surface> extends AbstractCachedSurfac
     }
 
     @Override
-    public Off whenOff() {
-        return ((on = nar.onDur(this::updateIfShowing))::delete);
+    protected void starting() {
+        if (dur ==null)
+            dur = nar.onDur(this::updateIfShowing);
+        else
+            nar.start(dur);
+
+        super.starting();
+    }
+
+    @Override
+    protected void stopping() {
+        if (dur !=null)
+            nar.stop(dur);
+
+        super.stopping();
+    }
+
+    @Override
+    public boolean delete() {
+        dur.delete();
+        dur = null;
+        return super.delete();
     }
 
     /** sets the update period dur multiplier */
     public DurSurface durs(float durs) {
-        on.durs(durs);
-        return this;
+        throw new jcog.TODO();
     }
 
     public static DurSurface get(Surface x, NAR n, Runnable eachDur) {
@@ -102,11 +120,11 @@ abstract public class DurSurface<S extends Surface> extends AbstractCachedSurfac
 //            }
 //        };
 //    }
-    public static DurSurface get(Surface narConsumer, NAR n) {
+    public static  <S extends Surface> DurSurface<S> get(S narConsumer, NAR n) {
         return get(narConsumer, n, (Consumer<NAR>)narConsumer);
     }
 
-    public DurSurface live() {
+    public DurSurface<S> live() {
         //if caching, during pre-render step if not invalid, then only call .layout()
         autolayout = true;
         return this;

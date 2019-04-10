@@ -174,7 +174,7 @@ public class MetaFrame extends Bordering implements Hovered {
                 if (satellite.the().reattach(this)) {
                     expanded = false;
 
-                    if (!satellite.remove())
+                    if (!satellite.delete())
                         throw new WTF();
 
                     satellite = null;

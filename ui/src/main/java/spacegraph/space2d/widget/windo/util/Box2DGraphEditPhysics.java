@@ -444,7 +444,7 @@ public class Box2DGraphEditPhysics extends GraphEditPhysics {
 
             linkPanel = graph.add(l);
             linkPanel.pos(center());
-            on(linkPanel::remove);
+            on(linkPanel::delete);
 
             int segments = 7;
 

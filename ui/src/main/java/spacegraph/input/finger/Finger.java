@@ -167,18 +167,6 @@ abstract public class Finger {
     }
 
 
-    //final static v2 OOB = new v2(Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY);
-
-//    public v2 relativePos(v2 screen, Surface x) {
-//
-//        Ortho root = ortho; //(Ortho) x.root();
-//        if (root!=null)
-//            return relative(root.cam.screenToWorld(screen), x);
-//        else
-//            return OOB;
-//
-//
-//    }
 
     /**
      * commit one button

@@ -86,7 +86,7 @@ public class Wiring extends Dragging {
     public final void stop(Finger finger) {
 
         if (pathVis != null) {
-            pathVis.remove();
+            pathVis.delete();
             pathVis = null;
         }
 

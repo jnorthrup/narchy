@@ -1,6 +1,5 @@
 package spacegraph.space2d.widget.menu;
 
-import jcog.exe.Exe;
 import org.eclipse.collections.api.block.procedure.primitive.ObjectBooleanProcedure;
 import spacegraph.SpaceGraph;
 import spacegraph.space2d.Surface;
@@ -114,15 +113,15 @@ public class TabMenu extends Menu {
     public Surface toggle(Function<String, ToggleButton> buttonBuilder, String label, Supplier<Surface> creator) {
         final Surface[] created = {null};
         ObjectBooleanProcedure<ToggleButton> toggleInside = (button, onOrOff) -> {
-            Exe.invokeLater(()->{
+            //Exe.invokeLater(()->{
                 toggle(button, creator, onOrOff, created, true);
-            });
+            //});
         };
 
         Runnable spawnOutside = () -> {
-            Exe.invokeLater(()->{
+            //Exe.invokeLater(()->{
                 toggle(null, creator, true, created, false);
-            });
+           // });
         };
 
         ToggleButton bb = buttonBuilder.apply(label).on(toggleInside);

@@ -16,8 +16,10 @@ import spacegraph.space2d.container.Bordering;
 import spacegraph.space2d.container.EmptySurface;
 import spacegraph.space2d.container.Stacking;
 import spacegraph.space2d.container.grid.Gridding;
+import spacegraph.space2d.container.unit.Animating;
 import spacegraph.space2d.hud.Zoomed;
 import spacegraph.space2d.widget.button.PushButton;
+import spacegraph.space2d.widget.textedit.TextEdit;
 import spacegraph.util.animate.Animated;
 import spacegraph.video.JoglDisplay;
 import spacegraph.video.JoglWindow;
@@ -28,6 +30,7 @@ import java.util.function.BiConsumer;
 
 import static com.jogamp.opengl.fixedfunc.GLMatrixFunc.GL_PROJECTION;
 import static org.eclipse.collections.impl.tuple.Tuples.pair;
+import static spacegraph.SpaceGraph.surfaceWindow;
 
 public class OrthoSurfaceGraph extends JoglDisplay implements SurfaceGraph {
 
@@ -36,7 +39,7 @@ public class OrthoSurfaceGraph extends JoglDisplay implements SurfaceGraph {
 
     //    private final Ortho<MutableListContainer> hud;
     private final Map<String, Pair<Object, Runnable>> singletons = new ConcurrentHashMap();
-    private final Finger finger;
+    public final Finger finger;
     private final NewtKeyboard keyboard;
     private final Fingering windowResize = new FingerResizeWindow(this, MOVE_AND_RESIZE_BUTTON) {
         @Override
@@ -256,6 +259,28 @@ public class OrthoSurfaceGraph extends JoglDisplay implements SurfaceGraph {
     @Override
     public final SurfaceGraph root() {
         return this;
+    }
+
+    /** spawns a developer windonw
+     * @return*/
+    public OrthoSurfaceGraph dev(/** boolean hover mode (undecorated), other options */ ) {
+        Gridding g = new Gridding();
+
+        TextEdit fingerInfo = new TextEdit(40, 8);
+
+        g.add(fingerInfo);
+
+        return surfaceWindow(new Animating<>(g, ()->{
+            Surface t = finger.touching();
+            fingerInfo.text(
+                "buttn: " + finger.buttonSummary() + '\n' +
+                "posPx: " + finger.posPixel + '\n' +
+                //"posGl: " + finger.posGlobal(layers.first(Zoomed.class)) + '\n' +
+                "touch: " + t + '\n' +
+                "posRl: " + (t!=null ? finger.posRelative(t.bounds) : "?") + '\n' +
+                ""
+            );
+        }, 0.1f),500,300);
     }
 
     class Menu extends Bordering {
