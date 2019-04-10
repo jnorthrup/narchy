@@ -1,20 +1,23 @@
 package nars.table.eternal;
 
-import nars.NAR;
+import nars.$;
 import nars.Task;
+import nars.attention.What;
 import nars.concept.Concept;
 import nars.table.BeliefTable;
 import nars.table.BeliefTables;
-import nars.time.Tense;
+import nars.task.EternalTask;
 import nars.truth.Truth;
 
 import java.util.List;
+
+import static nars.Op.BELIEF;
 
 /** provides an overriding eternal default answer only if the Answer has found no other options in other tables.
  *  should be added only to the end of BeliefTables */
 public class DefaultOnlyEternalTable extends EternalTable {
 
-    public DefaultOnlyEternalTable(Concept c, Truth t, NAR nar) {
+    public DefaultOnlyEternalTable(Concept c, Truth t, What w) {
         super(1);
 
         List<BeliefTable> tables = ((BeliefTables) c.beliefs());
@@ -23,7 +26,8 @@ public class DefaultOnlyEternalTable extends EternalTable {
         tables.add(this);
 
         //TODO just direct insert
-        Task belief = nar.believe(c.term(), Tense.Eternal, t.freq(), t.conf());
+        Task belief = new EternalTask(c.term(), BELIEF, $.t(t.freq(), t.conf()), w.nar);
+        w.in.put(belief);
 //        assert(!belief.isDeleted());
 //        assert(!isEmpty());
     }

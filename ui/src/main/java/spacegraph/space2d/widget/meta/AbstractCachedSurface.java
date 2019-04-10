@@ -41,7 +41,6 @@ abstract public class AbstractCachedSurface<X extends Surface> extends UnitConta
         }
     }
 
-
     public AbstractCachedSurface<X> cache(boolean cache) {
         this.cache = cache;
         return this;
@@ -64,22 +63,23 @@ abstract public class AbstractCachedSurface<X extends Surface> extends UnitConta
 
     @Override
     protected void starting() {
-        super.starting();
-
         assert(on == null);
         on = whenOff();
         assert(on!=null);
 
         invalid.set(true);
+
+        super.starting();
     }
 
 
     @Override
     protected void stopping() {
+        super.stopping();
+
         assert(on!=null);
         on.close();
         on = null;
-        super.stopping();
     }
 
 

@@ -34,8 +34,7 @@ import java.io.DataOutput;
 import java.io.IOException;
 
 import static jcog.WTF.WTF;
-import static nars.truth.func.TruthFunctions.c2wSafe;
-import static nars.truth.func.TruthFunctions.w2cSafe;
+import static nars.truth.func.TruthFunctions.*;
 
 
 /**
@@ -74,16 +73,31 @@ public interface Truth extends Truthed {
         if (!Float.isFinite(conf) || conf < 0)
             throw new TruthException("invalid conf", conf);
 
-        int freqHash = Util.floatToInt(freq, discreteness);
-        int confHash = Util.floatToInt(Math.min(Param.truth.TRUTH_CONF_MAX, conf), discreteness);
+        int freqHash = Util.toInt(freq, discreteness);
+        int confHash = Util.toInt(Math.min(Param.truth.TRUTH_CONF_MAX, conf), discreteness);
+        return (freqHash << 16) | confHash;
+    }
+    static int truthToInt(double freq, double conf, short discreteness) {
+
+        if (!Double.isFinite(freq) || freq < 0 || freq > 1)
+            throw new TruthException("invalid freq", freq);
+
+        if (!Double.isFinite(conf) || conf < 0)
+            throw new TruthException("invalid conf", conf);
+
+        int freqHash = (int) Util.toInt(freq, discreteness);
+        int confHash = (int) Util.toInt(Math.min(Param.truth.TRUTH_CONF_MAX, conf), discreteness);
         return (freqHash << 16) | confHash;
     }
 
     public static int truthToInt(float x) {
-        return Util.floatToInt(x, hashDiscretenessEpsilon);
+        return Util.toInt(x, hashDiscretenessEpsilon);
     }
 
     public static int truthToInt(float freq, float conf) {
+        return truthToInt(freq, conf, hashDiscretenessEpsilon);
+    }
+    public static int truthToInt(double freq, double conf) {
         return truthToInt(freq, conf, hashDiscretenessEpsilon);
     }
 
@@ -125,7 +139,7 @@ public interface Truth extends Truthed {
     }
 
     static float freq(int h) {
-        return Util.intToFloat(freqI(h) /* & 0xffff*/, hashDiscretenessEpsilon);
+        return Util.toFloat(freqI(h) /* & 0xffff*/, hashDiscretenessEpsilon);
     }
 
     static int freqI(int h) {
@@ -133,7 +147,7 @@ public interface Truth extends Truthed {
     }
 
     static float conf(int h) {
-        return Util.intToFloat(confI(h), hashDiscretenessEpsilon);
+        return Util.toFloat(confI(h), hashDiscretenessEpsilon);
     }
 
     static int confI(int h) {
@@ -204,22 +218,23 @@ public interface Truth extends Truthed {
         return Util.unitizeSafe(Util.round(f, epsilon));
     }
 
-    static float conf(float c, float epsilon) {
-        if (!Float.isFinite(c))
+    static float conf(double c, float epsilon) {
+        if (!Double.isFinite(c))
             throw new TruthException("non-finite conf", c);
 //        assert (c >= Param.TRUTH_EPSILON) : "invalid conf: " + c;
         return confSafe(c, epsilon);
     }
 
-    static float confSafe(float c, float epsilon) {
+    static float confSafe(double c, float epsilon) {
         if (epsilon <= Float.MIN_NORMAL)
-            return c;
+            return (float)c;
+        else {
+            return Util.clampSafe(
 
-        return Util.clamp(
+                    (float) Util.roundSafe(c, epsilon),
 
-                Util.round(c, epsilon),
-
-                0, 1f - epsilon);
+                    0, 1f - epsilon);
+        }
     }
 
     @Nullable
@@ -236,7 +251,7 @@ public interface Truth extends Truthed {
     }
 
     static float w2cDithered(double evi, float confRes) {
-        return confSafe(w2cSafe(evi), confRes);
+        return confSafe(w2cSafeDouble(evi), confRes);
     }
 
     static void write(Truth t, DataOutput out) throws IOException {
@@ -328,7 +343,7 @@ public interface Truth extends Truthed {
 
         float f = freq();
         float ff = freq(negate ? 1-f : f, freqRes);
-        float c0 = w2cSafe(e);
+        double c0 = w2cSafeDouble(e);
         float cc = conf(c0, confRes);
         if (Util.equals(f,ff) && Util.equals(c0,cc))
             return this;

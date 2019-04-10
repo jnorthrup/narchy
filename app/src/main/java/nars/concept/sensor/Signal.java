@@ -117,6 +117,7 @@ public class Signal extends TaskConcept implements GameLoop, FloatFunction<Term>
                 nextValue == nextValue ? truther.value(prevValue, nextValue) : null,
                 start, end,
                 pri, cause,
+                g.dur(),
                 g.what());
     }
 

@@ -27,8 +27,8 @@ class TruthTest {
         float precision = 1f / discrete;
 
         for (float x = 0.19f; x < 0.31f; x += 0.01f / 2) {
-            int i = Util.floatToInt(x, discrete);
-            float y = Util.intToFloat(i, discrete);
+            int i = Util.toInt(x, discrete);
+            float y = Util.toFloat(i, discrete);
             System.out.println(x + " -> " + i + " -> " + y + ", d=" + (Math.abs(y - x)));
             assertTrue(
                     Util.equals(

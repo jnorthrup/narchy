@@ -353,7 +353,7 @@ abstract public class Inperience extends TaskLeakTransform {
             long now = nar.time();
             if (start == ETERNAL) {
                 //start = end = ETERNAL;
-                int dur = nar.dur();
+                int dur = what.dur();
                 start = now - dur/2;
                 end   = now + dur/2;
             } else {

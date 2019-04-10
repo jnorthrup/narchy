@@ -12,6 +12,7 @@ import jcog.signal.wave2d.MonoBufImgBitmap2D;
 import jcog.signal.wave2d.ScaledBitmap2D;
 import nars.agent.Game;
 import nars.agent.GameTime;
+import nars.agent.MetaAgent;
 import nars.agent.util.RLBooster;
 import nars.attention.What;
 import nars.concept.Concept;
@@ -94,15 +95,14 @@ abstract public class GameX extends Game {
         super(id, gameTime, nar);
     }
 
-    public static NAR runRT(Function<NAR, Game> init, float clockFPS) {
-        return runRT(init, -1, clockFPS*2, clockFPS);
+    public static NAR runRT(Function<NAR, Game> init, float narFPS) {
+        return runRT(init, -1, narFPS);
     }
 
-    public static NAR runRT(Function<NAR, Game> init, int threads, float narFPS, float gameFPS) {
+    public static NAR runRT(Function<NAR, Game> init, int threads, float narFPS) {
         NAR n = baseNAR(narFPS, threads);
 
-        Game a = init.apply(n);
-
+        Game g = init.apply(n);
 
         //n.runLater(() -> {
 
@@ -113,17 +113,17 @@ abstract public class GameX extends Game {
 
         n.synch();
 
-        Loop loop = n.startFPS(gameFPS);
+        Loop loop = n.startFPS(narFPS);
 
 
-        initPlugins(n);
-        initPlugins2(n, a);
-        //initPlugins3(n, a);
+        initPlugins(n, g);
+        initPlugins2(n, g);
+        initPlugins3(n, g);
 
 //            n.runLater(()->{
         SpaceGraph.surfaceWindow(
                 //new Gridding(n.parts(Game.class).map(NARui::agent).collect(toList())),
-                NARui.agent(a),
+                NARui.agent(g),
                 500, 500);
         SpaceGraph.surfaceWindow(NARui.top(n), 800, 500);
 
@@ -136,7 +136,7 @@ abstract public class GameX extends Game {
      * agent builder should name each agent instance uniquely
      * ex: new PoleCart($.p(Atomic.the(PoleCart.class.getSimpleName()), n.self()), n);
      */
-    @Deprecated public static NAR runRTNet(Function<NAR, Game> a, int threads, float narFPS, float durFPS, float netFPS) {
+    @Deprecated public static NAR runRTNet(Function<NAR, Game> a, int threads, float narFPS, float netFPS) {
         return runRT((n) -> {
 
             Game aa = a.apply(n);
@@ -145,7 +145,7 @@ abstract public class GameX extends Game {
 
             return aa;
 
-        }, threads, narFPS, durFPS);
+        }, threads, narFPS);
     }
 
     public static NAR runRL(Function<NAR, Game> init, float narFPS, float clockFPS) {
@@ -306,7 +306,7 @@ abstract public class GameX extends Game {
     }
     static void initPlugins3(NAR n, Game a) {
 
-//        MetaAgent meta = new MetaAgent(n, 16);
+        MetaAgent meta = new MetaAgent(16f, a);
 //        RLBooster metaBoost = new RLBooster(meta, (i,o)->new HaiQae(i, 10,o),
 //                8, 2,false);
 //
@@ -421,7 +421,7 @@ abstract public class GameX extends Game {
         //n.emotion.want(MetaGoal.Answer, 0f);
     }
 
-    public static void initPlugins(NAR n) {
+    public static void initPlugins(NAR n, Game g) {
 
 
 //        BatchDeriver bd = new BatchDeriver(Derivers.nal(n, 1, 8,
@@ -439,7 +439,7 @@ abstract public class GameX extends Game {
 
         BatchDeriver bd6_act = new BatchDeriver(Derivers.nal(n, 6, 8,
                 "motivation.nal"));
-        bd6_act.timing = new ActionTiming(n);
+        bd6_act.timing = new ActionTiming(g.what());
 
         BatchDeriver bd1 = new BatchDeriver(Derivers.nal(n, 1, 1)
         );

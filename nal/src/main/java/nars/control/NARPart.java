@@ -128,13 +128,12 @@ abstract public class NARPart extends Part<NAR> implements Termed, OffOn {
     @Override
     protected final void start(NAR nar) {
 
-        if (this.nar != null)
-            throw new WTF("already started?");
-
-        logger.debug("start {}", this);
+        NAR prevNar = this.nar;
 
         if (!(this.nar == null || this.nar == nar))
             throw new WTF("NAR mismatch");
+
+        logger.debug("start {}", this);
 
         this.nar = nar;
 

@@ -116,10 +116,9 @@ public class CaffeineMemory extends Memory implements CacheLoader<Term, Concept>
     public void start(NAR nar) {
         super.start(nar);
 
-        cleanup =
-                null;
-                //DurService.on(nar, concepts::cleanUp);
+        cleanup = nar.onDur(concepts::cleanUp);
     }
+
 
 
 

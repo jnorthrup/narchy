@@ -98,8 +98,9 @@ public class Game extends NARPart implements NSense, NAct {
         this(Atomic.atom(id), time, n);
     }
 
-    @Deprecated public Game(Term id, GameTime time, NAR nar) {
+    public Game(Term id, GameTime time, NAR nar) {
         this(time, nar.the(id,true));
+        nar.start(this);
     }
 
 
@@ -111,10 +112,10 @@ public class Game extends NARPart implements NSense, NAct {
 
 
     public Game(GameTime time, What experience) {
-
+        super(env(experience.id));
 //        this.nar = experience.nar;
 
-        this.id = env(experience.id);
+        this.id = experience.id;
 
         this.experience = experience;
 
@@ -128,7 +129,6 @@ public class Game extends NARPart implements NSense, NAct {
         add(time.clock(this));
 
         //experience.add(this);
-        experience.nar.start(this);
     }
 
     @Override
@@ -330,6 +330,10 @@ public class Game extends NARPart implements NSense, NAct {
         rewards.add(r);
         addAttention(attnReward, r);
         return r;
+    }
+
+    public final int dur() {
+        return what().dur();
     }
 
     public interface NAgentCycle {

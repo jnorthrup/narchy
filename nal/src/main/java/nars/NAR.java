@@ -764,8 +764,8 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
         return op;
     }
 
-    @Override
-    public final int dur() {
+    /** the default time constant of the system */
+    @Override public final int dur() {
         return time.dur();
     }
 
@@ -1608,7 +1608,9 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
     public final What what() {
         What w = active.get();
         if (w == null) {
-            fork(w = the($.identity(Thread.currentThread()), true), null);
+            Term id = $.identity($.uuid());
+            logger.info("new {} {}", id, Thread.currentThread());
+            fork(w = the(id, true), null);
         }
         return w;
     }
@@ -1621,6 +1623,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
         What prev = active.get();
      if (next == prev)
      return next;
+     //float delta = 0;
         if (reprioritizeCurrent!=null && prev!=null) {
             float prevPriNext = reprioritizeCurrent.floatValueOf(prev);
             if (prevPriNext!=prevPriNext) {
@@ -1630,6 +1633,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
                 prev.pri(prevPriNext);
             }
         }
+        logger.info("fork {} {} <- {}" /* (+{})"*/, Thread.currentThread(), next, prev/*, delta*/);
         active.set(next);
         return next;
     }

@@ -36,7 +36,7 @@ public class Gradius extends GameX {
 
     public static void main(String[] args) {
 
-        GameX.runRT(Gradius::new, 25f);
+        GameX.runRT(Gradius::new, 40f);
 
     }
 

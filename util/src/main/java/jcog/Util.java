@@ -742,6 +742,10 @@ public enum Util {
     public static double round(double value, double epsilon) {
         assertFinite(epsilon);
         assertFinite(value);
+        return roundSafe(value, epsilon);
+    }
+
+    public static double roundSafe(double value, double epsilon) {
         if (epsilon <= Double.MIN_NORMAL) return value;
         return Math.round(value / epsilon) * epsilon;
     }
@@ -760,12 +764,15 @@ public enum Util {
     }
 
 
-    public static int floatToInt(float f, int discretness) {
-
+    public static int toInt(float f, int discretness) {
         return Math.round(f * discretness);
     }
 
-    public static float intToFloat(int i, int discretness) {
+    public static long toInt(double f, int discretness) {
+        return Math.round(f * discretness);
+    }
+
+    public static float toFloat(int i, int discretness) {
         return ((float) i) / discretness;
     }
 

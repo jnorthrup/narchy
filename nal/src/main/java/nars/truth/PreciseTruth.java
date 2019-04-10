@@ -3,8 +3,7 @@ package nars.truth;
 import nars.Param;
 import org.jetbrains.annotations.Nullable;
 
-import static nars.truth.func.TruthFunctions.c2wSafe;
-import static nars.truth.func.TruthFunctions.w2cSafe;
+import static nars.truth.func.TruthFunctions.*;
 
 /**
  * extends DiscreteTruth's raw hash representation with
@@ -35,11 +34,11 @@ public final class PreciseTruth extends DiscreteTruth {
     }
 
     public static PreciseTruth byEvi(float freq, double evi) {
-        return byFreqConfEvi(freq, w2cSafe(evi), evi);
+        return byFreqConfEvi(freq, w2cSafeDouble(evi), evi);
     }
 
     /** use with caution, if you are calculating a precise evi and a dithered conf, they should correspond */
-    protected static PreciseTruth byFreqConfEvi(float freq, float conf, double evi) {
+    protected static PreciseTruth byFreqConfEvi(float freq, double conf, double evi) {
 
         if (evi < Param.truth.TRUTH_EVI_MIN)
             return null;
@@ -50,13 +49,14 @@ public final class PreciseTruth extends DiscreteTruth {
             evi = Param.truth.TRUTH_EVI_MAX;
         }
 
+        if (evi < Param.truth.TRUTH_EVI_MIN || !Double.isFinite(evi))
+            throw new TruthException("non-positive evi", evi);
+
         return new PreciseTruth(freq, conf, evi);
     }
 
-    private PreciseTruth(float freq, float conf, double evi) {
+    private PreciseTruth(float freq, double conf, double evi) {
         super(freq, conf);
-        if (evi < Param.truth.TRUTH_EVI_MIN || !Double.isFinite(evi))
-            throw new TruthException("non-positive evi", evi);
         this.e = evi;
         this.f = freq;
     }

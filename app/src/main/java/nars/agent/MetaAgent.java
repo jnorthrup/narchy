@@ -1,5 +1,6 @@
 package nars.agent;
 
+import jcog.TODO;
 import jcog.Util;
 import jcog.math.FloatFirstOrderDifference;
 import jcog.math.FloatRange;
@@ -7,6 +8,7 @@ import nars.$;
 import nars.NAR;
 import nars.attention.What;
 import nars.concept.action.GoalActionConcept;
+import nars.term.Term;
 import nars.term.atom.Atomic;
 
 import static nars.$.$$;
@@ -44,12 +46,39 @@ public class MetaAgent extends Game {
 
 
 
-    public MetaAgent(What w, float fps) {
-        super( $.p(w.nar.self(), w.term()), GameTime.fps(fps),  w.nar);
+    public MetaAgent(NAR n) {
+        super(env(n.self()), GameTime.durs(1), n);
+        throw new TODO();
 
+//        n.parts(Game.class).forEach(a -> {
+//            if(MetaAgent.this!=a)
+//                add(a, false);
+//        });
+    }
+
+    /** assumes games are from the same NAR */
+    public MetaAgent(float fps, Game... w) {
+        super( $.uuid() /* HACK */, GameTime.fps(fps),  w[0].nar);
+
+        NAR n = this.nar = w[0].nar;
+
+        senseNumberDifference($.inh(n.self(), $$("busy")), n.feel.busyVol::asFloat);
+        senseNumberDifference($.inh(n.self(), $$("deriveTask")), n.feel.deriveTask::get);
+
+        for (Game ww : w)
+            add(ww, false);
+    }
+
+    private void add(Game a, boolean allowPause) {
+
+        What w = a.what();
+
+        Term aid = w.id;
 //        forgetAction = actionUnipolar($.inh(id, forget), (FloatConsumer) n.attn.forgetRate::set);
-        actionDial($.inh(id, $.p(forget, $.the(1))), $.inh(id, $.p(forget, $.the(-1))),
+        actionDial($.inh(aid, $.p(forget, $.the(1))), $.inh(aid, $.p(forget, $.the(-1))),
                 ((What.TaskLinkWhat)w).links.decay, 40);
+
+
 
 //        float priFactorMin = 0.1f, priFactorMax = 4f;
 //        beliefPriAction = actionUnipolar($.inh(id, beliefPri), n.beliefPriDefault.subRange(
@@ -59,13 +88,11 @@ public class MetaAgent extends Game {
 //                Math.max(n.goalPriDefault.floatValue() /* current value */ * priFactorMin, ScalarValue.EPSILON),
 //                n.goalPriDefault.floatValue() /* current value */ * priFactorMax)::setProportionally);
 
-        NAR n = w.nar;
-
-        int initialDur = n.dur();
+        int initialDur = a.what().dur();
         FloatRange durRange = new FloatRange(initialDur, initialDur/4, initialDur*4) {
             @Override
             public float get() {
-                super.set(nar.time.dur());
+                super.set(((What.TaskLinkWhat)w).dur);
                 return super.get();
             }
 
@@ -74,28 +101,16 @@ public class MetaAgent extends Game {
                 super.set(value);
                 value = super.get();
                 int nextDur = Math.round(value);
-                nar.time.dur(nextDur);
+                ((What.TaskLinkWhat)w).dur.set(nextDur);
                 //assert(nar.dur()==nextDur);
             }
         };
-        actionDial($.inh(id, $.p(duration, $.the(1))), $.inh(id, $.p(duration, $.the(-1))), durRange, 5);
+        actionDial($.inh(aid, $.p(duration, $.the(1))), $.inh(aid, $.p(duration, $.the(-1))), durRange, 5);
 //        this.dur = actionUnipolar($.inh(id, duration), (x) -> {
 //            n.time.dur(Util.lerp(x * x, n.dtDither(), initialDur * 2));
 //            return x;
 //        });
 
-
-        senseNumberDifference($.inh(id, $$("busy")), n.feel.busyVol::asFloat);
-        senseNumberDifference($.inh(id, $$("deriveTask")), n.feel.deriveTask::get);
-
-
-        n.parts(Game.class).forEach(a -> {
-            if(MetaAgent.this!=a)
-                add(a, false);
-        });
-    }
-
-    private void add(Game a, boolean allowPause) {
 
         Reward r = rewardNormalized($.inh(a.id, happy), -Float.MIN_NORMAL, +Float.MIN_NORMAL,
             new FloatFirstOrderDifference(nar::time, ((((() -> {
@@ -167,7 +182,7 @@ public class MetaAgent extends Game {
     static float curiosity(Game agent, long start, float c) {
 
         float min;
-        float durs = (float) (((double) (agent.nar().time() - start)) / agent.nar().dur());
+        float durs = (float) (((double) (agent.nar().time() - start)) / agent.dur());
         if (durs < curiStartupDurs)
             min = curiMinYoung;
         else

@@ -194,7 +194,7 @@ public class IRCNLP extends IRC {
         n.termVolumeMax.set(32);
 
         BatchDeriver d = new BatchDeriver(Derivers.nal(n, 1, 8));
-        d.timing = new ActionTiming(n);
+//        d.timing = new ActionTiming(n);
 
         ConjClustering conjClusterBinput = new ConjClustering(n, BELIEF,
                 Task::isInput,

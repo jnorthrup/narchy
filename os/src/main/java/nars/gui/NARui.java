@@ -57,10 +57,7 @@ import spacegraph.space2d.widget.button.Submitter;
 import spacegraph.space2d.widget.console.TextEdit0;
 import spacegraph.space2d.widget.menu.Menu;
 import spacegraph.space2d.widget.menu.TabMenu;
-import spacegraph.space2d.widget.meta.MetaFrame;
-import spacegraph.space2d.widget.meta.ObjectSurface;
-import spacegraph.space2d.widget.meta.PartsTable;
-import spacegraph.space2d.widget.meta.TriggeredSurface;
+import spacegraph.space2d.widget.meta.*;
 import spacegraph.space2d.widget.meter.*;
 import spacegraph.space2d.widget.port.FloatRangePort;
 import spacegraph.space2d.widget.text.LabeledPane;
@@ -584,11 +581,12 @@ public class NARui {
         return tasklinkSpectrogram(n, b, history, b.capacity());
     }
 
-    public static Surface attentionUI(NAR n) {
+    public static Surface attentionUI_2(NAR n) {
+        //TODO
         return new BagView(n.what, n);
     }
 
-    public static Surface attentionUI_0(NAR n) {
+    public static Surface attentionUI(NAR n) {
         //TODO watch for added and removed What's for live update
 
         Map<String,Supplier<Surface>> global = new HashMap();
@@ -600,7 +598,6 @@ public class NARui {
            attentions.put(v.id.toString(), ()->attentionUI((What)v));
         });
         TabMenu atMenu = new TabMenu(attentions);
-
         return new Splitting(new TabMenu(global), 0.25f, atMenu).horizontal(true).resizeable();
     }
 

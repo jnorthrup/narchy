@@ -4,6 +4,7 @@ package nars.derive.timing;
 import jcog.math.FloatRange;
 import nars.NAR;
 import nars.Task;
+import nars.attention.What;
 import nars.term.Term;
 
 import java.util.Random;
@@ -11,20 +12,21 @@ import java.util.function.BiFunction;
 
 public class ActionTiming implements BiFunction<Task, Term, long[]> {
 
-    private final NAR nar;
+    private final What what;
     public final FloatRange horizonDurs = new FloatRange(8, 0, 32);
     //public final FloatRange widthDurs = new FloatRange(2, 0, 8);
 
-    public ActionTiming(NAR n) {
-        this.nar = n;
+    public ActionTiming(What w) {
+        this.what = w;
     }
-
-    @Override
+        @Override
     public long[] apply(Task task, Term term) {
 
-        long now = nar.time();
-        int dur = nar.dur();
-        Random rng = nar.random();
+        int dur = what.dur();
+
+        NAR n = what.nar;
+        long now = n.time();
+        Random rng = n.random();
         long start, end;
         long taskStart = task.start();
         if (taskStart <= now - dur) {

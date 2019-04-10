@@ -48,7 +48,7 @@ public class PoleCart extends GameX {
                     instances > 1 ?
                             $.p(Atomic.the(PoleCart.class.getSimpleName()), n.self()) :
                             $.the(PoleCart.class.getSimpleName()), n),
-                    threadsEach, fps, fps, 8);
+                    threadsEach, fps, 8);
     }
 
 

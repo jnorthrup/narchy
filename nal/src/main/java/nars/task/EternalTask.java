@@ -1,10 +1,15 @@
 package nars.task;
 
+import nars.NAR;
 import nars.term.Term;
 import nars.truth.Truth;
 import org.jetbrains.annotations.Nullable;
 
 public class EternalTask extends ActualNALTask {
+
+    public EternalTask(Term term, byte punc, @Nullable Truth truth, NAR n) {
+        this(term, punc, truth, n.time(), n.evidence());
+    }
 
     public EternalTask(Term term, byte punc, @Nullable Truth truth, long creation, long[] stamp) {
         super(term, punc, truth, creation, ETERNAL, ETERNAL, stamp);

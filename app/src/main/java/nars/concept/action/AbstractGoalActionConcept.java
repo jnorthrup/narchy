@@ -29,7 +29,7 @@ import java.util.function.Predicate;
 
 import static nars.time.Tense.ETERNAL;
 import static nars.time.Tense.TIMELESS;
-import static nars.truth.func.TruthFunctions.w2cSafe;
+import static nars.truth.func.TruthFunctions.w2cSafeDouble;
 import static org.eclipse.collections.impl.tuple.Tuples.pair;
 
 
@@ -99,7 +99,7 @@ public class AbstractGoalActionConcept extends AgentAction {
     @Override
     public double dexterity() {
         Truth t = actionDex;
-        return t != null ? w2cSafe(t.evi()) : 0;
+        return t != null ? w2cSafeDouble(t.evi()) : 0;
     }
 
 
@@ -121,7 +121,7 @@ public class AbstractGoalActionConcept extends AgentAction {
 //        return truth(beliefsOrGoals, componentsMax, prev, now, n.dur(), n);
 //    }
 
-    public org.eclipse.collections.api.tuple.Pair<Truth, long[]> truth(boolean beliefsOrGoals, int componentsMax, long prev, long now, int agentDur, int narDur, NAR n) {
+    public org.eclipse.collections.api.tuple.Pair<Truth, long[]> truth(boolean beliefsOrGoals, int componentsMax, long prev, long now, int gameDur, NAR n) {
         Truth next = null;
         List<BeliefTable> tables = ((BeliefTables) (beliefsOrGoals ? beliefs() : goals()));
 
@@ -132,7 +132,7 @@ public class AbstractGoalActionConcept extends AgentAction {
 
             int organicDur =
                     //Tense.occToDT(e-s);
-                    narDur;
+                    gameDur;
 
             int limit = componentsMax, tries = limit*2;
             Answer a = Answer.relevant(true, limit, ETERNAL, ETERNAL, term, withoutCuriosity, n).dur(organicDur);
@@ -143,16 +143,16 @@ public class AbstractGoalActionConcept extends AgentAction {
                 switch (iter) {
                     case 0:
                         //duration-precision window
-                        s = now - narDur / 2;
-                        e = now + narDur / 2;
+                        s = now - gameDur / 2;
+                        e = now + gameDur / 2;
                         //s = now - Math.max(narDur, agentDur);
                         //e = now;
                         //e = now;
                         break;
                     case 1:
                     default:
-                        s = now - narDur;
-                        e = now + narDur;
+                        s = now - gameDur;
+                        e = now + gameDur;
                         //s = now - Math.max(narDur, agentDur)*2;
                         //e = now;
                         //e = now;
@@ -218,28 +218,27 @@ public class AbstractGoalActionConcept extends AgentAction {
         updateCuriosity(g.curiosity);
 
         NAR n = g.nar();
-        int narDur = n.dur();
-        int agentDur = g.time.dur();
+        int gameDur = g.time.dur();
 
         int limit = Answer.BELIEF_MATCH_CAPACITY * 2; //high sensitivity
 
         if (prev == TIMELESS)
             prev = now - n.dur(); //HACK
 
-        Pair<Truth, long[]> bt = truth(true, limit, prev, now, agentDur, narDur, n);
+        Pair<Truth, long[]> bt = truth(true, limit, prev, now, gameDur, n);
         this.beliefTruth = bt != null ? bt.getOne() : null;
 
-        this.actionTruth = actionTruth(limit, prev, now, agentDur, narDur, g.what());
+        this.actionTruth = actionTruth(limit, prev, now, gameDur, g.what());
 
     }
 
-    private Truth actionTruth(int limit, long prev, long now, int agentDur, int narDur, What w) {
+    private Truth actionTruth(int limit, long prev, long now, int gameDur, What w) {
 
-        int curiDur = narDur;
+        int curiDur = gameDur;
 
         NAR n = w.nar;
         Truth actionTruth;
-        Pair<Truth, long[]> gt = truth(false, limit, prev, now, agentDur, narDur, n);
+        Pair<Truth, long[]> gt = truth(false, limit, prev, now, gameDur, n);
 
         Truth nextActionDex = gt == null ? null : gt.getOne();
         actionDex = nextActionDex;
@@ -319,7 +318,7 @@ public class AbstractGoalActionConcept extends AgentAction {
     }
 
     protected void feedback(@Nullable Truth f, short cause, Game g) {
-        ((SensorBeliefTables) beliefs()).add(f, g.prev, g.now, attn::pri, cause, g.what());
+        ((SensorBeliefTables) beliefs()).add(f, g.prev, g.now, attn::pri, cause, g.dur(), g.what());
     }
 
 

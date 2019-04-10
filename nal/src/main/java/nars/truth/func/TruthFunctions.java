@@ -365,8 +365,13 @@ public final class TruthFunctions {
     public static float w2cSafe(float w) {
         return w2cSafe(w, Param.HORIZON);
     }
+
     public static float w2cSafe(double w) {
-        return (float) w2cSafe(w, Param.HORIZON);
+        return (float) w2cSafeDouble(w);
+    }
+    /** high precision */
+    public static double w2cSafeDouble(double w) {
+        return w2cSafe(w, Param.HORIZON);
     }
 
 
@@ -383,7 +388,7 @@ public final class TruthFunctions {
     }
 
     public static double eternalize(double evi) {
-        return w2cSafe(evi);
+        return w2cSafeDouble(evi);
     }
 }
 

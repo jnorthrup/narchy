@@ -84,7 +84,7 @@ public class SensorBeliefTables extends BeliefTables {
 
 
 
-    public void add(Truth value, long start, long end, FloatSupplier pri, short cause, What w) {
+    public void add(Truth value, long start, long end, FloatSupplier pri, short cause, int dur,What w) {
         NAR n = w.nar;
 
         if (value!=null) {
@@ -97,6 +97,7 @@ public class SensorBeliefTables extends BeliefTables {
         SeriesTask x = add(value,
                 start, end,
                 series.term, series.punc(),
+                dur,
                 n);
 
         if (x!=null) {
@@ -110,15 +111,13 @@ public class SensorBeliefTables extends BeliefTables {
 
 //    long[] eviShared = null;
 
-    private SeriesTask add(@Nullable Truth next, long nextStart, long nextEnd, Term term, byte punc, NAR nar) {
+    private SeriesTask add(@Nullable Truth next, long nextStart, long nextEnd, Term term, byte punc, int dur, NAR nar) {
 
         SeriesTask nextT = null, last = series.series.last();
         if (last != null) {
             long lastStart = last.start(), lastEnd = last.end();
             if (lastEnd > nextStart)
                 return null; //too soon, does this happen?
-
-            int dur = nar.dur();
 
             long gapCycles = (nextStart - lastEnd);
             if (gapCycles <= series.series.latchDurs() * dur) {
@@ -181,8 +180,6 @@ public class SensorBeliefTables extends BeliefTables {
     }
 
     static private void stretch(SeriesTask t, long e) {
-//        if (e - t.start() > 9*nar.dur())
-//            throw new WTF();
         t.setEnd(e);
     }
 
