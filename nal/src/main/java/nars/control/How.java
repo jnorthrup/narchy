@@ -92,8 +92,9 @@ abstract public class How extends NARPart implements Prioritizable {
     }
 
 
-    /** by default, causable are singleton */
-    @Override public boolean singleton() {
+    /** by default, causable are singleton.
+     * */
+    @Deprecated @Override public boolean singleton() {
         return true;
     }
 

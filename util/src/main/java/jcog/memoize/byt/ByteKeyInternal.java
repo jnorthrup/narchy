@@ -2,8 +2,9 @@ package jcog.memoize.byt;
 
 import jcog.Texts;
 import jcog.pri.PriProxy;
+import jcog.pri.UnitPri;
 
-public final class ByteKeyInternal<Y> extends ByteKey implements PriProxy<ByteKey,Y> {
+public final class ByteKeyInternal<Y> extends UnitPri implements ByteKey, PriProxy<ByteKey,Y> {
 
     final Y result;
 
@@ -25,8 +26,8 @@ public final class ByteKeyInternal<Y> extends ByteKey implements PriProxy<ByteKe
     }
 
     @Override
-    public boolean xEquals(Object y, int kHash) {
-        return hash == kHash && equalsBytes((ByteKey)y);
+    public final boolean equals(Object obj) {
+        return ByteKey.equals(this, (ByteKey) obj);
     }
 
     @Override

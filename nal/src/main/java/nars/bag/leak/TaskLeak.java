@@ -76,10 +76,10 @@ public abstract class TaskLeak extends How {
             n.start(this);
     }
 
-    @Override
-    public boolean singleton() {
-        return false;
-    }
+//    @Override
+//    public boolean singleton() {
+//        return false;
+//    }
 
     /**
      * an adjusted priority of the task for its insertion to the leak bag

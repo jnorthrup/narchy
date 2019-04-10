@@ -5,6 +5,7 @@ import jcog.memoize.byt.ByteHijackMemoize;
 import nars.concept.Concept;
 import nars.derive.Derivation;
 import nars.derive.PreDerivation;
+import nars.term.util.builder.InterningTermBuilder;
 
 import java.util.function.Function;
 
@@ -24,12 +25,22 @@ import static jcog.memoize.Memoizers.DEFAULT_HIJACK_REPROBES;
         public CentralMemoizer() {
             whats = Memoizers.the.memoizeByte(this + "_what",
                     Memoizers.DEFAULT_MEMOIZE_CAPACITY*2,
-                    d-> DeriverRules.what(d.x));
+                    bd-> DeriverRules.what(bd.x));
         }
 
         @Override
         public short[] apply(PreDerivation d) {
-            return whats.apply(new PremiseKey(d));
+            if (intern(d)) {
+                return whats.apply(new PremiseKey(d));
+            } else {
+                return DeriverRules.what(d);
+            }
+        }
+
+        /** decides what is interned */
+        protected boolean intern(PreDerivation d) {
+            //return true;
+            return d.taskTerm.volume() + d.beliefTerm.volume() <= InterningTermBuilder.volMaxDefault;
         }
 
     }

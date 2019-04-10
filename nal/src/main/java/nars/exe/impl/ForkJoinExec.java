@@ -50,8 +50,7 @@ public class ForkJoinExec extends MultiExec implements Thread.UncaughtExceptionH
 //        Log.enter("synch");
         while (!pool.isQuiescent()) {
             logger.info("await quiescence {}", ++iter);
-            Thread t;
-            if ((t = Thread.currentThread()) instanceof ForkJoinWorkerThread) {
+            if ((Thread.currentThread()) instanceof ForkJoinWorkerThread) {
                 ForkJoinTask.helpQuiesce();
             } else {
                 pool.awaitQuiescence(SYNCH_ITERATION_MS, TimeUnit.MILLISECONDS);
@@ -96,20 +95,28 @@ public class ForkJoinExec extends MultiExec implements Thread.UncaughtExceptionH
     }
     /**
      * inject play tasks
+     *
+     * TODO better strategy:
+     * compute a matrix of WxH
+     * sample from the bags to or just directly calculate the elements of this matrix using a budgeting formula
+     * then partition the matrix into >= P segments, which are chosen in order to maximize the
+     * utilization of singleton W or H contexts by scheduling batching along, if any,
+     * non-singleton transposed dimensions.
      */
     private void play() {
 
-        float rate = 8; //HACK
-        float load =
-                0f; //TODO ...pool.getQueuedTaskCount()
+        //logger.info("{}", pool);
 
-        final int perN = 2;
+        float mix = 0.1f; //work to play ratio?
+        float rate = 2; //HACK
+        float load =
+                Math.min(1, (mix * (float)pool.getQueuedTaskCount()) / concurrency());
+                //0f; //TODO ...pool.getQueuedTaskCount()
+
         @Deprecated int n = Math.round(rate * nar.loop.throttle.floatValue() * (1-load) * concurrency());
         if (n == 0)
             return;
 
-        long durationMinNS = TimeUnit.MICROSECONDS.toNanos(200);
-        long durationMaxNS = TimeUnit.MICROSECONDS.toNanos(1000);
 
         Random rng = ThreadLocalRandom.current();
 
@@ -118,18 +125,18 @@ public class ForkJoinExec extends MultiExec implements Thread.UncaughtExceptionH
         nar.what.commit(null);
         nar.how.commit(null);
 
-        for (int i = 0; i < n; i++ ) {
+        final int perN = nar.how.size();
 
-            What w = nar.what.sample(rng); if (!w.isOn()) continue; //HACK embed in sample
+        for (int j = 0; j < perN; j++ ) {
 
-            for (int j = 0; j < perN; j++ ) {
+            How h = nar.how.sample(rng); if (!h.isOn()) continue; //HACK embed in sample
 
-                How h = nar.how.sample(rng); if (!h.isOn()) continue; //HACK embed in sample
+            for (int i = 0; i < n; i++ ) {
 
-                float pri = (float) Math.sqrt(Util.and(w.pri(), h.pri())); //sqrt in attempt to compensate for the bag sampling's priority bias
-                long dur = Util.lerp(pri, durationMinNS, durationMaxNS);
+                What w = nar.what.sample(rng); if (!w.isOn()) continue; //HACK embed in sample
 
-                pool.execute(new PlayTask(w, h, dur));
+                PlayTask pt = new PlayTask(w, h);
+                pt.fork();
             }
         }
 
@@ -139,14 +146,17 @@ public class ForkJoinExec extends MultiExec implements Thread.UncaughtExceptionH
     }
 
     final static class PlayTask extends RecursiveAction {
+
+        static final long durationMinNS = TimeUnit.MICROSECONDS.toNanos(200);
+        static final long durationMaxNS = TimeUnit.MICROSECONDS.toNanos(1000);
+
+
         final What w;
         final How h;
-        final long dur;
 
-        PlayTask(What w, How h, long dur) {
+        PlayTask(What w, How h) {
             this.w = w;
             this.h = h;
-            this.dur = dur;
         }
 
         @Override
@@ -154,7 +164,8 @@ public class ForkJoinExec extends MultiExec implements Thread.UncaughtExceptionH
             boolean single = h.singleton();
             if (!single || h.busy.compareAndSet(false, true)) {
                 try {
-
+                    float pri = (float) Math.sqrt(Util.and(w.pri(), h.pri())); //sqrt in attempt to compensate for the bag sampling's priority bias
+                    long dur = Util.lerp(pri, durationMinNS, durationMaxNS);
                     h.runFor(w, dur);
 
                 } finally {

@@ -4,7 +4,7 @@ import jcog.data.byt.DynBytes;
 
 import static jcog.data.byt.RecycledDynBytes.tmpKey;
 
-public class ByteKeyExternal extends ByteKey {
+public class ByteKeyExternal implements ByteKey {
 
     public final DynBytes key;
 
@@ -32,6 +32,11 @@ public class ByteKeyExternal extends ByteKey {
     @Override
     public int hashCode() {
         return hash;
+    }
+
+    @Override
+    public final boolean equals(Object obj) {
+        return ByteKey.equals(this, (ByteKey) obj);
     }
 
     public <Y> ByteKeyInternal<Y> internal(Y y, float pri) {
