@@ -2,7 +2,6 @@ package nars.gui;
 
 import com.jogamp.opengl.GL2;
 import jcog.Util;
-import jcog.data.list.FastCoWList;
 import jcog.data.list.MetalConcurrentQueue;
 import jcog.event.Off;
 import jcog.exe.Can;
@@ -11,6 +10,7 @@ import jcog.math.IntRange;
 import jcog.math.MutableEnum;
 import jcog.tree.rtree.rect.RectFloat;
 import nars.NAR;
+import nars.attention.AntistaticBag;
 import nars.control.How;
 import nars.control.MetaGoal;
 import nars.exe.Exec;
@@ -189,7 +189,7 @@ public class ExeCharts {
     }
 
     static Surface causeProfiler(NAR nar) {
-        FastCoWList<How> cc = nar.how;
+        AntistaticBag<How> cc = nar.how;
         int history = 128;
         Plot2D pp = new Plot2D(history,
                 //Plot2D.BarLanes
@@ -199,8 +199,7 @@ public class ExeCharts {
 
         final MutableEnum<CauseProfileMode> mode = new MutableEnum<>(CauseProfileMode.Pri);
 
-        for (int i = 0, ccLength = cc.size(); i < ccLength; i++) {
-            How c = cc.get(i);
+        for (How c : cc) {
             String label = c.toString();
             //pp[i] = new Plot2D(history, Plot2D.Line).addAt(label,
             pp.add(label, ()-> mode.get().floatValueOf(c));

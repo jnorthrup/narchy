@@ -5,7 +5,6 @@ import jcog.TODO;
 import jcog.Util;
 import jcog.data.graph.MapNodeGraph;
 import jcog.data.graph.NodeGraph;
-import jcog.data.list.FastCoWList;
 import jcog.data.list.FasterList;
 import jcog.func.IntIntToObjectFunction;
 import jcog.learn.Agent;
@@ -17,6 +16,7 @@ import jcog.pri.PriMap;
 import nars.NAR;
 import nars.Param;
 import nars.Task;
+import nars.attention.AntistaticBag;
 import nars.attention.PriNode;
 import nars.control.channel.CauseChannel;
 import nars.control.op.Remember;
@@ -152,7 +152,7 @@ import java.util.function.Consumer;
 
     private void schedule() {
 
-        FastCoWList<How> how = nar.how;
+        AntistaticBag<How> how = nar.how;
         int n = how.size();
         if (n == 0)
             return;

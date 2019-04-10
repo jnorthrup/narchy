@@ -294,14 +294,6 @@ public abstract class Bag<X, Y> implements Table<X, Y>, Sampler<Y>, jcog.pri.Pre
 
 
 
-    public float pri(Object key, float ifMissing) {
-        Y x = get(key);
-        if (x == null)
-            return ifMissing;
-        else {
-            return priElse(x, ifMissing);
-        }
-    }
 
     /**
      * true if an item is not deleted

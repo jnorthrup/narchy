@@ -127,7 +127,7 @@ public class WorkerExec extends ThreadedExec {
 
                         long useNS = Util.clampSafe(sTime / rescheduleCycles, subCycleMinNS, subCycleMaxNS);
 
-                        next.runFor(nar.what.sample(nar.random()), useNS);
+                        c.runFor(nar.what.sample(nar.random()), useNS);
 
                         played = true;
                         after = nanoTime();

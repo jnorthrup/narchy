@@ -1,20 +1,18 @@
 package nars.exe.impl;
 
 import jcog.Util;
-import jcog.data.list.FasterList;
 import nars.attention.What;
 import nars.control.How;
 
-import java.util.Map;
-import java.util.concurrent.ForkJoinPool;
-import java.util.concurrent.TimeUnit;
+import java.util.Random;
+import java.util.concurrent.*;
 
 /**
  * TODO not finished
  */
 public class ForkJoinExec extends MultiExec implements Thread.UncaughtExceptionHandler {
 
-//    private static final int SYNCH_ITERATION_MS = 50;
+    private static final int SYNCH_ITERATION_MS = 50;
 
     private ForkJoinPool pool;
 
@@ -26,45 +24,27 @@ public class ForkJoinExec extends MultiExec implements Thread.UncaughtExceptionH
         int proc = concurrency;
         pool = new ForkJoinPool(
                 proc,
-                ForkJoinPool.defaultForkJoinWorkerThreadFactory,
-//                (p)->{
-//                    ForkJoinWorkerThread t = new ForkJoinWorkerThread(p) {
-//                        {
-//                            setName();
-//                        }
-//                    };
-//                    return t;
-//                },
+                //orkJoinPool.defaultForkJoinWorkerThreadFactory,
+                (p)->{
+                    ForkJoinWorkerThread t = new ForkJoinWorkerThread(p) {
+                        {
+                        }
+                    };
+                    return t;
+                },
                 this,
-                true, proc, proc, 0,
-                null, 100L, TimeUnit.MILLISECONDS);
+                true, 0, proc*2, 1,
+                null, 60L, TimeUnit.SECONDS);
         //Exe.setExecutor(pool);
     }
 
 
     @Override
     public void synch() {
-
-        logger.info("synch {}", this);
-        int i = 0;
-        while (pool.getQueuedTaskCount() > 0) {
-//            if (Thread.currentThread() instanceof ForkJoinWorkerThread) {
-//                try {
-//                    ((ForkJoinWorkerThread)Thread.currentThread()).join(SYNCH_ITERATION_MS);
-//                } catch (InterruptedException e) {
-//                    Util.pauseSpin(i++);
-//                }
-//            }
-            Util.pauseSpin(i++);
-            //Thread.yield();
-
+        while (!pool.isQuiescent()) {
+            logger.info("synch {}", this);
+            pool.awaitQuiescence(SYNCH_ITERATION_MS, TimeUnit.MILLISECONDS);
         }
-//        if (!pool.isQuiescent()) {
-//            do {
-//                logger.info("synch {} waiting for quiescence {}", this, summary());
-//            } while (pool.awaitQuiescence(5, TimeUnit.SECONDS));
-//        logger.info("synch {}", this);
-//        }
     }
 
 
@@ -82,54 +62,71 @@ public class ForkJoinExec extends MultiExec implements Thread.UncaughtExceptionH
         super.update();
 
         play();
+
+        logger.info(summary());
     }
 
 
     @Override
     public final int concurrency() {
-        return concurrencyMax();
+        return pool.getParallelism();
     }
 
+    class Play extends RecursiveAction {
+
+        @Override
+        protected void compute() {
+
+        }
+    }
     /**
      * inject play tasks
      */
     private void play() {
-        //HACK
-        @Deprecated int throttle = 2 * concurrency();
-        @Deprecated float ms = 0.25f;
-        @Deprecated long durationNS = Math.round(1_000_000.0 * ms);
 
-        FasterList<Runnable> batch = new FasterList();
-        for (What w : nar.what) {
+        float rate = 8; //HACK
+        float load =
+                0f; //TODO ...pool.getQueuedTaskCount()
 
-            if (!w.isOn())
-                continue;
+        @Deprecated int n = Math.round(rate * nar.loop.throttle.floatValue() * (1-load) * concurrency());
+        if (n == 0)
+            return;
 
-            for (How h : nar.how) {
+        long durationMinNS = TimeUnit.MICROSECONDS.toNanos(200);
+        long durationMaxNS = TimeUnit.MICROSECONDS.toNanos(1000);
 
-                if (!h.isOn())
-                    continue;
+        Random rng = ThreadLocalRandom.current();
+
+        while (n > 0) {
+
+            What w = nar.what.sample(rng); if (!w.isOn()) continue; //HACK embed in sample
+
+            for (int i = 0; i < n; i++ ) {
+
+                How h = nar.how.sample(rng); if (!h.isOn()) continue; //HACK embed in sample
+
+                float pri = (float) Math.sqrt(Util.and(w.pri(), h.pri())); //sqrt in attempt to compensate for the bag sampling's priority bias
+                long dur = Util.lerp(pri, durationMinNS, durationMaxNS);
 
                 boolean single = h.singleton();
-                if (!single || h.busy.compareAndSet(false, true)) {
-                    try {
-                        How.Causation t = h.timing();
-                        float pri = h.pri();
 
-                        for (int i = 0; i < Math.max(1, pri * throttle); i++) {
-                            //                    System.out.println(pri);
-                            batch.add(() -> t.runFor(w, durationNS));
+                pool.invoke(ForkJoinTask.adapt(() -> {
+                    if (!single || h.busy.compareAndSet(false, true)) {
+                        try {
+
+                            h.runFor(w, dur);
+
+                        } finally {
+                            if (single)
+                                h.busy.set(false);
                         }
-
-                    } finally {
-                        if (single)
-                            h.busy.set(false);
                     }
-                }
+                }));
             }
         }
-        batch.shuffleThis();
-        batch.forEach(pool::execute);
+
+
+
 
 //        if (ThreadLocalRandom.current().nextFloat() < 0.01f)
 //            System.out.println(pool);
@@ -142,12 +139,13 @@ public class ForkJoinExec extends MultiExec implements Thread.UncaughtExceptionH
 //    }
 
     protected String summary() {
-        return Map.of(
-                "pool", pool.toString(),
-                "time", nar.time(),
-                "pool threads", pool.getActiveThreadCount(),
-                "pool tasks pending", pool.getQueuedTaskCount()
-        ).toString();
+        return pool.toString();
+//        return Map.of(
+//                "pool", pool.toString(),
+//                "time", nar.time(),
+//                "pool threads", pool.getActiveThreadCount(),
+//                "pool tasks pending", pool.getQueuedTaskCount()
+//        ).toString();
     }
 
     @Override

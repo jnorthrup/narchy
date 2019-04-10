@@ -8,7 +8,6 @@ import jcog.math.FloatSupplier;
 import jcog.util.FloatConsumer;
 import nars.$;
 import nars.NAR;
-import nars.Param;
 import nars.agent.util.UnipolarMotor;
 import nars.attention.What;
 import nars.concept.action.AgentAction;
@@ -484,8 +483,13 @@ public interface NAct {
         return actionUnipolar(s, (raw)->{
             if (raw==raw) {
 
-                    float feedback = update.valueOf(raw > 0.5f + Param.truth.TRUTH_EVI_MIN ? (raw - 0.5f) * 2 : 0);
+                if (raw > 0.5f) {
+                    float feedback = update.valueOf((raw - 0.5f) * 2);
                     return 0.5f + feedback / 2;
+                } else {
+                    float feedback = update.valueOf( 0);
+                    return 0; //override
+                }
 
             }
             return Float.NaN;

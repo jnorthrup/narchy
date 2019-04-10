@@ -111,9 +111,6 @@ abstract public class GameX extends Game {
             //System.gc();
         //});
 
-        n.synch();
-
-        Loop loop = n.startFPS(narFPS);
 
 
         initPlugins(n, g);
@@ -128,7 +125,11 @@ abstract public class GameX extends Game {
         SpaceGraph.surfaceWindow(NARui.top(n), 800, 500);
 
         SpaceGraph.surfaceWindow(NARui.attentionUI(n), 500, 500);
-//            });
+
+        n.synch();
+
+        Loop loop = n.startFPS(narFPS);
+
         return n;
     }
 
@@ -307,6 +308,8 @@ abstract public class GameX extends Game {
     static void initPlugins3(NAR n, Game a) {
 
         MetaAgent meta = new MetaAgent(16f, a);
+        //meta.what().pri(0.5f);
+
 //        RLBooster metaBoost = new RLBooster(meta, (i,o)->new HaiQae(i, 10,o),
 //                8, 2,false);
 //

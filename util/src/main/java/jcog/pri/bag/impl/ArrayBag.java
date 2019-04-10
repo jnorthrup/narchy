@@ -344,11 +344,12 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
 
                     if (next.remove) {
                         //explicit removal
-                        remove(y, ii, i, true);
+                        y.delete();
+                        remove(y, ii, i, false);
 
-                        if (!next.stop && s > 1) {
+                        if (!next.stop)
                             tryRecommit(rng, s);
-                        }
+
                     } else {
                         if (rng==null)
                             throw new WTF("this will continue to spin on 0th item"); //HACK
@@ -905,7 +906,7 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
     }
 
     @Override
-    public float pri(Y value) {
+    public final float pri(Y value) {
         return value.pri();
     }
 

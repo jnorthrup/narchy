@@ -132,6 +132,11 @@ public interface ScalarValue extends Prioritized {
         pri(0);
         return p;
     }
+    default float priGetAndSet(float next) {
+        float p = pri();
+        pri(next);
+        return p;
+    }
     default float priGetAndDelete() {
         float p = pri();
         delete();

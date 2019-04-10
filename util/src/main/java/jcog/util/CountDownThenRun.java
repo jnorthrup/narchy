@@ -3,7 +3,9 @@ package jcog.util;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
-/** usage: call reset().. then call your runnables/consumers with run(...) */
+/** usage: call reset().. then call your runnables/consumers with run(...)
+ * TODO this is probably the same as CountedCompleter
+ * */
 public class CountDownThenRun extends AtomicInteger {
 
     private volatile Runnable onFinish = null;

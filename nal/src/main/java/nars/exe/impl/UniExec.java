@@ -36,7 +36,7 @@ public class UniExec extends Exec {
         */
         for (How h : nar.how) {
             if (h.isOn())
-                nar.what.forEachActive(w -> {
+                nar.what.forEach(w -> {
                     if (w.isOn())
                         h.next(w, ()->false);
                 });

@@ -18,7 +18,7 @@ import jcog.pri.Prioritized;
 import jcog.service.Part;
 import nars.Narsese.NarseseException;
 import nars.attention.What;
-import nars.attention.WhatBag;
+import nars.attention.AntistaticBag;
 import nars.concept.Concept;
 import nars.concept.Operator;
 import nars.concept.PermanentConcept;
@@ -111,15 +111,22 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
 
     static final Logger logger = Log.logger(NAR.class);
 
-    /** index of active attentions */
-    public final WhatBag what = new WhatBag(Param.WHATS_CAPACITY);
-
-    /** default what builder */
     public final Function<Term,What> whatBuilder;
 
-    /** set of causables which can be caused.  "how" things can be done.
-     * a ready queue. thread-safe and consistency maintained automatically from Parts additions/removals */
-    public final FastCoWList<How> how = new FastCoWList(How[]::new);
+    public final AntistaticBag<What> what = new AntistaticBag<>(Param.WHATS_CAPACITY) {
+        @Override
+        public Term key(What w) {
+            return w.id;
+        }
+
+    };
+    public final AntistaticBag<How> how = new AntistaticBag<>(Param.HOWS_CAPACITY) {
+        @Override
+        public Term key(How h) {
+            return h.id;
+        }
+    };
+
 
     public final Topic<NAR> eventClear = new ListTopic<>();
     public final Topic<NAR> eventCycle = new ListTopic<>();
@@ -217,9 +224,9 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
         if (p instanceof How) {
             How h = (How) p;
             if (change.getTwo()) {
-                how.add(h);
+                how.put(h);
             } else {
-                boolean removed = how.remove(h); assert(removed);
+                boolean removed = how.remove(h.id)!=null; assert(removed);
             }
         } if (p instanceof What) {
             What w = (What) p;

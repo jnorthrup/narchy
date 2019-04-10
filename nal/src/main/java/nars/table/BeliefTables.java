@@ -25,13 +25,15 @@ public class BeliefTables extends FasterList<BeliefTable> implements BeliefTable
     }
 
     /** this is very important: the result of this may not necessarily correspond with testing size=0.
-     * isEmpty() means something different in dynamic task table cases */
+     * isEmpty() means something different in dynamic task table cases.
+     * TODO if any of the tables are dynamic then this can be cached and cause isEmpty() to always return false
+     * */
     @Override public boolean isEmpty() {
         return allSatisfy(TaskTable::isEmpty);
     }
 
     @Override
-    protected Object[] newArray(int newCapacity) {
+    protected BeliefTable[] newArray(int newCapacity) {
         return newCapacity > 0 ? new BeliefTable[newCapacity] : BeliefTable.EmptyArray;
     }
 

@@ -26,7 +26,8 @@ public class MetaAgent extends Game {
 
             enable = Atomic.the("enable"),
             duration = Atomic.the("dur"),
-            happy = Atomic.the("happy")
+            happy = Atomic.the("happy"),
+            dex = Atomic.the("dex")
             ;
 
 
@@ -69,11 +70,13 @@ public class MetaAgent extends Game {
             add(ww, false);
     }
 
-    private void add(Game a, boolean allowPause) {
+    private void add(Game g, boolean allowPause) {
 
-        What w = a.what();
+        What w = g.what();
 
         Term aid = w.id;
+        //this.what().accept(new EternalTask($.inh(aid,this.id), BELIEF, $.t(1f, 0.9f), nar));
+
 //        forgetAction = actionUnipolar($.inh(id, forget), (FloatConsumer) n.attn.forgetRate::set);
         actionDial($.inh(aid, $.p(forget, $.the(1))), $.inh(aid, $.p(forget, $.the(-1))),
                 ((What.TaskLinkWhat)w).links.decay, 40);
@@ -88,7 +91,13 @@ public class MetaAgent extends Game {
 //                Math.max(n.goalPriDefault.floatValue() /* current value */ * priFactorMin, ScalarValue.EPSILON),
 //                n.goalPriDefault.floatValue() /* current value */ * priFactorMax)::setProportionally);
 
-        int initialDur = a.what().dur();
+
+        actionHemipolar($.inh(aid, PRI), (v)->{
+            nar.what.pri(g.what(), v);
+            return v;
+        });
+
+        int initialDur = g.what().dur();
         FloatRange durRange = new FloatRange(initialDur, initialDur/4, initialDur*4) {
             @Override
             public float get() {
@@ -111,18 +120,21 @@ public class MetaAgent extends Game {
 //            return x;
 //        });
 
+        Reward h = rewardNormalized($.inh(aid, happy), -Float.MIN_NORMAL, +Float.MIN_NORMAL,
+            new FloatFirstOrderDifference(nar::time, (() -> {
+                return g.happinessMean();
+        })));
 
-        Reward r = rewardNormalized($.inh(a.id, happy), -Float.MIN_NORMAL, +Float.MIN_NORMAL,
-            new FloatFirstOrderDifference(nar::time, ((((() -> {
-//            float h = a.happinessMean();
-//            float p = a.proficiency();
-//            float hp = Util.or(h, p);
-            //System.out.println(h + " " + p + " -> " + hp);
-//            return hp;
-            float d = (float) a.dexterity();
-            return d;
-        }))))));
-        //reward($.inh(a.id, happy), a::happiness);
+
+        Reward d = rewardNormalized($.inh(aid, dex), 0, 1,
+                ()->{
+////            float p = a.proficiency();
+////            float hp = Util.or(h, p);
+//            //System.out.println(h + " " + p + " -> " + hp);
+////            return hp;
+            return (float) g.dexterity();
+        });
+
 
         //TODO other Emotion sensors
 

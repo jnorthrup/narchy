@@ -2,6 +2,7 @@ package nars.control;
 
 import jcog.TODO;
 import jcog.Util;
+import jcog.pri.Prioritizable;
 import nars.NAR;
 import nars.attention.PriNode;
 import nars.attention.What;
@@ -39,7 +40,7 @@ import static nars.time.Tense.TIMELESS;
  * records runtime instrumentation, profiling, and other telemetry for a particular Causable
  * both per individual threads, and collectively
  */
-abstract public class How extends NARPart {
+abstract public class How extends NARPart implements Prioritizable {
 
 
     public abstract void next(What w, BooleanSupplier kontinue);
@@ -135,9 +136,6 @@ abstract public class How extends NARPart {
      */
     public abstract float value();
 
-    public final void pri(float p) {
-        pri.pri(p);
-    }
 
     private void use(long t) {
         used.addAndGet(t);
@@ -147,8 +145,12 @@ abstract public class How extends NARPart {
         return used.getAndSet(0);
     }
 
-    public final float pri() {
+    @Override public final float pri() {
         return pri.pri();
+    }
+
+    public final float pri(float p) {
+        pri.pri(p); return p;
     }
 
 
@@ -157,7 +159,8 @@ abstract public class How extends NARPart {
     public WhenInternal event() {
         return myCause;
     }
-    public Causation timing() {
+
+    @Deprecated public Causation timing() {
         return new Causation();
     }
 
@@ -181,7 +184,7 @@ abstract public class How extends NARPart {
      * thread-local view
      * instance of a cause invocation
      */
-    public final class Causation {
+    @Deprecated public final class Causation {
 
         public final How can = How.this;
         /**
@@ -215,19 +218,19 @@ abstract public class How extends NARPart {
             throw new TODO();
         }
 
-        public final void runFor(What w, long durationNS) {
-            long start = System.nanoTime();
-            long deadline = start + durationNS;
-            try {
-                can.next(w, () -> System.nanoTime() < deadline);
-            } catch (Throwable t) {
-                Exec.logger.error("{} {}", can, t);
-            } finally {
-                long end = System.nanoTime();
-                use(end - start);
-            }
+
+    }
+    public final void runFor(What w, long durationNS) {
+        long start = System.nanoTime();
+        long deadline = start + durationNS;
+        try {
+            next(w, () -> System.nanoTime() < deadline);
+        } catch (Throwable t) {
+            Exec.logger.error("{} {}", this, t);
+        } finally {
+            long end = System.nanoTime();
+            use(end - start);
         }
     }
-
 
 }

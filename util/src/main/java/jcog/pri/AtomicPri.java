@@ -46,6 +46,11 @@ public abstract class AtomicPri implements ScalarValue {
         return PRI.getAndSetZero(this);
     }
     @Override
+    public float priGetAndSet(float x) {
+        return PRI.getAndSet(this, x);
+    }
+
+    @Override
     public float priGetAndDelete() {
         return PRI.getAndSetNaN(this);
     }

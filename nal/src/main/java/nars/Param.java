@@ -128,6 +128,7 @@ public abstract class Param extends Parts<Term,NAR> {
     protected static final boolean DYNAMIC_CONCEPT_TRANSIENT = false;
 
     public static final int WHATS_CAPACITY = 128;
+    public static final int HOWS_CAPACITY = 128;
 
     public static boolean ETERNALIZE_BELIEF_PROJECTED_IN_DERIVATION = false;
     public static boolean STRONG_COMPOSITION = false;
