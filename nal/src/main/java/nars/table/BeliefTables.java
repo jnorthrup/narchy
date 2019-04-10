@@ -32,14 +32,17 @@ public class BeliefTables extends FasterList<BeliefTable> implements BeliefTable
 
     @Override
     protected Object[] newArray(int newCapacity) {
-        return new BeliefTable[newCapacity];
+        return newCapacity > 0 ? new BeliefTable[newCapacity] : BeliefTable.EmptyArray;
     }
 
     @Override
     public void match(Answer a) {
         int triesEach = a.ttl;
         BeliefTable[] z = this.items;
-        int thisSize = Math.min(size(), z.length);
+        if (z == null)
+            return; //?wtf
+
+        int thisSize = Math.min(size, z.length);
         for (int i = 0; i < thisSize; i++) {
 
             //TODO better TTL distribution system

@@ -22,6 +22,7 @@ import java.util.function.Predicate;
 public interface BeliefTable extends TaskTable {
 
     BeliefTable Empty = new EmptyBeliefTable();
+    BeliefTable[] EmptyArray = new BeliefTable[0];
 
     static double eternalTaskValue(Task eternal) {
         return eternal.evi();

@@ -34,9 +34,8 @@ public class FasterList<X> extends FastList<X> {
     }
 
     public FasterList(int initialCapacity) {
-        this.items = initialCapacity <= 0 ? (X[]) ArrayUtils.EMPTY_OBJECT_ARRAY : (X[]) newArray(initialCapacity);
+        this.items = (X[]) newArray(initialCapacity);
     }
-
 
     public FasterList(Iterable<X> copy) {
         this(copy, 0);
@@ -550,7 +549,7 @@ public class FasterList<X> extends FastList<X> {
     }
 
     protected Object[] newArray(int newCapacity) {
-        return new Object[newCapacity];
+        return newCapacity <= 0 ? (X[]) ArrayUtils.EMPTY_OBJECT_ARRAY : new Object[newCapacity];
     }
 
     public final boolean addIfNotNull(@Nullable Supplier<X> x) {
@@ -944,7 +943,7 @@ public class FasterList<X> extends FastList<X> {
     /** returns this to an unallocated state */
     public void delete() {
         size = 0;
-        items = null;
+        items = (X[]) newArray(0);
     }
 
     /**

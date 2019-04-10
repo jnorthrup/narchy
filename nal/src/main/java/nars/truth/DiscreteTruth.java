@@ -42,8 +42,7 @@ public class DiscreteTruth implements Truth {
 
     @Override
     public Truth neg() {
-        return PreciseTruth.byEvi(
-                1f - freq(), evi());
+        return PreciseTruth.byEvi(1 - freq(), evi());
     }
 
     @Override

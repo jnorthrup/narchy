@@ -265,11 +265,10 @@ public interface Truth extends Truthed {
         return PreciseTruth.byConf(f, c);
     }
 
-    @Override
-    float freq();
+    @Override float freq();
+    @Override float conf();
+    @Override double evi();
 
-    @Override
-    double evi();
 
     @Nullable
     @Override
