@@ -15,8 +15,6 @@ import nars.time.event.WhenInternal;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
-import java.lang.ref.WeakReference;
-
 /**
  *
  */
@@ -107,6 +105,9 @@ abstract public class NARPart extends Part<NAR> implements Termed, OffOn {
     }
 
     public boolean delete() {
+
+        logger.info("delete {}", this);
+
         NAR n = this.nar;
         if (n !=null)
             stopping(this.nar);
@@ -133,7 +134,7 @@ abstract public class NARPart extends Part<NAR> implements Termed, OffOn {
         if (!(this.nar == null || this.nar == nar))
             throw new WTF("NAR mismatch");
 
-        logger.debug("start {}", this);
+        logger.info("start {}", this);
 
         this.nar = nar;
 
@@ -147,6 +148,8 @@ abstract public class NARPart extends Part<NAR> implements Termed, OffOn {
 
     @Override
     protected final void stop(NAR nar) {
+        logger.info("stop {}", this);
+
         try {
             this.children.forEachWith(nar, (x,n)->n.stop(x));
 
@@ -154,7 +157,6 @@ abstract public class NARPart extends Part<NAR> implements Termed, OffOn {
 
         } finally {
 
-            logger.debug("stop {}", this);
             this.nar = null;
 
         }
@@ -205,10 +207,11 @@ abstract public class NARPart extends Part<NAR> implements Termed, OffOn {
     }
 
     public void add(NARPart dependency) {
-        assert (isOff());
+        if (!isOff())
+            throw new UnsupportedOperationException(this + " is not in OFF state");
+
         if (children.add(dependency)) {
-            //if (isOnOrStarting())
-            //nar.start(dependency);
+            //..
         }
     }
 
@@ -233,15 +236,24 @@ abstract public class NARPart extends Part<NAR> implements Termed, OffOn {
 
         nn.stop(this);
 
-        WeakReference<NAR> wnar = new WeakReference(nn);
-        return () -> {
-            NAR n = wnar.get();
-            if (n != null) {
-                n.start(this);
-                wnar.clear();
-            }
-        };
+        return ()->nn.start(this);
+        //return new SelfDestructAfterRunningOnlyOnce(nn);
     }
 
 
+//    private final class SelfDestructAfterRunningOnlyOnce extends WeakReference<NAR> implements Runnable {
+//
+//        public SelfDestructAfterRunningOnlyOnce(NAR nar) {
+//            super(nar);
+//        }
+//
+//        @Override
+//        public void run() {
+//            NAR n = get();
+//            if (n != null) {
+//                clear();
+//                n.start(NARPart.this);
+//            }
+//        }
+//    }
 }

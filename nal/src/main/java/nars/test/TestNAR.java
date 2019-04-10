@@ -32,8 +32,6 @@ import static org.junit.jupiter.api.Assertions.fail;
  */
 public class TestNAR {
 
-    static {  Param.class.toString();     } //force Param's static initialization first
-
     private static final Logger logger = LoggerFactory.getLogger(TestNAR.class);
     public final NAR nar;
     /**

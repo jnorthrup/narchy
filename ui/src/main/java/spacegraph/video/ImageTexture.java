@@ -40,7 +40,8 @@ public class ImageTexture extends Tex {
             Caffeine.newBuilder().softValues().executor(MoreExecutors.directExecutor()).
                     removalListener((RemovalListener<Pair<GLContext, String>, TextureData>)
                             (c, t, cause) -> {
-                                t.destroy();
+                                if (t!=null)
+                                    t.destroy();
                             })
                     .build(cu -> {
                         try {

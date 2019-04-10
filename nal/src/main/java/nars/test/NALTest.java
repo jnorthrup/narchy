@@ -1,5 +1,6 @@
 package nars.test;
 
+import ch.qos.logback.classic.Level;
 import jcog.exe.Exe;
 import nars.NAR;
 import nars.NARS;
@@ -7,6 +8,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.parallel.Execution;
 import org.opentest4j.AssertionFailedError;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.AccessibleObject;
@@ -22,6 +24,9 @@ public abstract class NALTest {
     public TestNAR test;
 
     protected static final org.slf4j.Logger logger = LoggerFactory.getLogger(NALTest.class);
+    static {
+        ((ch.qos.logback.classic.Logger)LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME)).setLevel(Level.WARN);
+    }
 
     protected NALTest() {
 
