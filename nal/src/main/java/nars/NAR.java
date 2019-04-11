@@ -1018,7 +1018,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
      * after the end of the current frame before the next frame.
      */
     public final void runLater(Runnable t) {
-        runAt(time(), t);
+        time.runAt(new WhenTimeIs(time(), t));
     }
 
     /**

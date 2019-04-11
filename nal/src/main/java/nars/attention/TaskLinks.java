@@ -12,7 +12,6 @@ import jcog.pri.bag.impl.hijack.PriHijackBag;
 import jcog.pri.op.PriMerge;
 import jcog.pri.op.PriReturn;
 import nars.NAR;
-import nars.Op;
 import nars.Param;
 import nars.Task;
 import nars.concept.Concept;
@@ -226,10 +225,7 @@ public class TaskLinks implements Sampler<TaskLink> {
     }
 
     private void link(Term s, Term u, byte punc, float p) {
-        Op o = s.op();
-        if (o.taskable) {
-            link(new AtomicTaskLink(s, u, punc, p));
-        }
+        link(new AtomicTaskLink(s, u, punc, p));
     }
 
     public void link(TaskLink x) {

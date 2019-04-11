@@ -46,7 +46,7 @@ abstract public class Dragging extends Fingering {
 
     @Override
     public final boolean updateGlobal(Finger finger) {
-        return true;
+        return pressed(finger);
     }
 
     @Override
