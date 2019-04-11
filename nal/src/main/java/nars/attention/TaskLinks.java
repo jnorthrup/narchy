@@ -228,14 +228,8 @@ public class TaskLinks implements Sampler<TaskLink> {
     private void link(Term s, Term u, byte punc, float p) {
         Op o = s.op();
         if (o.taskable) {
-            linkSafe(s, u, punc, p);
+            link(new AtomicTaskLink(s, u, punc, p));
         }
-    }
-
-    private TaskLink linkSafe(Term src, Term tgt, byte punc, float pri) {
-        TaskLink t = TaskLink.tasklink(src, tgt, punc, pri);
-        link(t);
-        return t;
     }
 
     public void link(TaskLink x) {

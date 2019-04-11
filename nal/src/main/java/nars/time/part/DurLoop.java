@@ -9,12 +9,10 @@ import nars.$;
 import nars.NAR;
 import nars.control.NARPart;
 import nars.term.Term;
-import nars.term.Termed;
 import nars.term.atom.Atomic;
 import nars.time.RecurringTask;
 import org.eclipse.collections.api.tuple.Pair;
 import org.eclipse.collections.impl.tuple.Tuples;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
@@ -46,13 +44,13 @@ abstract public class DurLoop extends NARPart {
         return at;
     }
 
-    protected DurLoop(@Nullable NAR n, float durs) {
-        super((NAR) null); //dont call through super constructor
-        durations.set(durs);
-        if (n != null) {
-            n.start(this);
-        }
-    }
+//    protected DurLoop(@Nullable NAR n, float durs) {
+//        super((NAR) null); //dont call through super constructor
+//        durations.set(durs);
+//        if (n != null) {
+//            n.start(this);
+//        }
+//    }
 
 
     protected DurLoop(Term id) {
@@ -125,26 +123,19 @@ abstract public class DurLoop extends NARPart {
 //        return n;
 //    }
 
-    static Term term(Object x) {
-        return x instanceof Termed ? ((Termed)x).term() : $.identity(x);
-    }
+
 
     public static final class DurRunnable extends DurLoop {
         private final Runnable r;
 
         public DurRunnable(Runnable r) {
-            super(term(r));
+            super($.identity(r));
             this.r = r;
         }
 
         @Override
         protected void run(NAR n, long dt) {
             r.run();
-        }
-
-        @Override
-        public String toString() {
-            return toString(r);
         }
 
     }
@@ -154,7 +145,7 @@ abstract public class DurLoop extends NARPart {
         final Consumer<NAR> r;
 
         public DurNARConsumer(Consumer<NAR> r) {
-            super(term(r));
+            super($.identity(r));
             this.r = r;
         }
 
@@ -163,11 +154,6 @@ abstract public class DurLoop extends NARPart {
             r.accept(n);
         }
 
-
-        @Override
-        public String toString() {
-            return toString(r);
-        }
 
 
     }

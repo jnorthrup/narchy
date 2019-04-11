@@ -53,6 +53,15 @@ abstract public class MultiExec extends Exec {
     }
 
 
+    @Override
+    public void starting(NAR n) {
+
+        if (!(n.time instanceof RealTime))
+            throw new UnsupportedOperationException("non-realtime clock not supported");
+
+        super.starting(n);
+    }
+
     @Deprecated @Override
     public void print(Appendable out) {
         try {
@@ -70,7 +79,7 @@ abstract public class MultiExec extends Exec {
             execute(x);
     }
 
-    @Override protected void cycle(NAR nar) {
+    @Override protected final void cycle(NAR nar) {
         nar.time.schedule(this::execute);
     }
 
@@ -128,14 +137,7 @@ abstract public class MultiExec extends Exec {
     }
 
 
-    @Override
-    public void starting(NAR n) {
 
-        if (!(n.time instanceof RealTime))
-            throw new UnsupportedOperationException("non-realtime clock not supported");
-
-        super.starting(n);
-    }
 
 
 

@@ -466,7 +466,7 @@ abstract public class GameX extends Game {
         //new StatementLinker(n);
         //new PuncNoise(n);
         //n.add(Eternalizer.class);
-        n.add(new Eternalizer(n));
+        n.start(new Eternalizer(n));
 
 //        new STMLinkage(n, 1);
 
@@ -479,6 +479,7 @@ abstract public class GameX extends Game {
             new ConjClustering(n, BELIEF, 32, 256)
             //new ConjClustering(n, GOAL, 4, 16)
         );
+        conjClusters.forEach(c -> n.start(c));
 
         SpaceGraph.surfaceWindow(grid(conjClusters, c->NARui.clusterView(c, n)), 700, 700);
 

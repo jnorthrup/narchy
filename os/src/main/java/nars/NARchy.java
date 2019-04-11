@@ -44,12 +44,12 @@ public class NARchy extends NARS {
         nar.questionPriDefault.set(0.35f);
         nar.questPriDefault.set(0.35f);
 
-        ConjClustering conjClusterB = new ConjClustering(nar, BELIEF,
+        nar.start(new ConjClustering(nar, BELIEF,
                 t -> t.isInput()
-                , 16, 64);
-        ConjClustering conjClusterBnonInput = new ConjClustering(nar, BELIEF,
+                , 16, 64));
+        nar.start(new ConjClustering(nar, BELIEF,
                 t -> !t.isInput()
-                , 16, 64);
+                , 16, 64));
 
         new BatchDeriver(Derivers.nal(nar, 1, 8, "motivation.nal"));
 

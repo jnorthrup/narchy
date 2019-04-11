@@ -111,10 +111,10 @@ abstract public class What extends NARPart implements Prioritizable, Sampler<Tas
         return nar.exe.concurrency();
     }
 
-    @Override
-    public String toString() {
-        return pri.toBudgetString() + " " + id;
-    }
+//    @Override
+//    public String toString() {
+//        return pri.toBudgetString() + " " + id;
+//    }
 
     @Override
     public float pri() {

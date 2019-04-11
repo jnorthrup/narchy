@@ -200,6 +200,7 @@ public class IRCNLP extends IRC {
                 Task::isInput,
                 //t->true,
                 32, 256);
+        n.start(conjClusterBinput);
 
         /*@NotNull Default n = new Default(new Default.DefaultTermIndex(4096),
             new RealTime.DS(true),

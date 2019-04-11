@@ -100,18 +100,17 @@ import static org.fusesource.jansi.Ansi.ansi;
 public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled, Timed {
 
     static final String VERSION = "NARchy v?.?";
+    static final Logger logger = Log.logger(NAR.class);
     private static final Set<String> loggedEvents = java.util.Set.of("eventTask");
     public final Exec exe;
     public final NARLoop loop;
     public final Time time;
     public final Memory memory;
-    @Deprecated public final MemoryExternal memoryExternal = new MemoryExternal(this);
+    @Deprecated
+    public final MemoryExternal memoryExternal = new MemoryExternal(this);
     public final ConceptBuilder conceptBuilder;
     public final Emotion feel;
-
-    static final Logger logger = Log.logger(NAR.class);
-
-    public final Function<Term,What> whatBuilder;
+    public final Function<Term, What> whatBuilder;
 
     public final AntistaticBag<What> what = new AntistaticBag<>(Param.WHATS_CAPACITY) {
         @Override
@@ -135,21 +134,23 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
     public final Evaluator evaluator = new Evaluator(this::axioms);
     protected final Supplier<Random> random;
 
-    /** id of this NAR's self; ie. its name */
+    /**
+     * id of this NAR's self; ie. its name
+     */
     final Term self;
 
     final InheritableThreadLocal<What> active = new InheritableThreadLocal<>();
+    //private final AtomicBoolean synching = new AtomicBoolean(false);
 
     /**
-     *
      * @param memory
      * @param exe
-     * @param attn  core attention.  others may be added/removed dynamically as parts
+     * @param attn           core attention.  others may be added/removed dynamically as parts
      * @param time
      * @param rng
      * @param conceptBuilder
      */
-    public NAR(Memory memory, Exec exe, Function<Term,What> whatBuilder, Time time, Supplier<Random> rng, ConceptBuilder conceptBuilder) {
+    public NAR(Memory memory, Exec exe, Function<Term, What> whatBuilder, Time time, Supplier<Random> rng, ConceptBuilder conceptBuilder) {
         super(exe);
 
         eventAddRemove.on(this::indexPartChange);
@@ -160,13 +161,11 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
 
         this.memory = memory;
         this.exe = exe;
-        start(exe);
 
         this.control = new Control(this);
 
         this.whatBuilder = whatBuilder;
         self = Param.randomSelf();
-
 
 
         this.conceptBuilder = conceptBuilder;
@@ -178,7 +177,9 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
 
 
         this.loop = NARLoop.build(this);
+        start(exe);
 
+        synch();
     }
 
     static void outputEvent(Appendable out, String previou, String chan, Object v) throws IOException {
@@ -216,9 +217,11 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
         out.append(v.toString()).append('\n');
     }
 
-    /** updates indexes when a part is added or removed
-     *  @param change a change event emitted by Parts
-     * */
+    /**
+     * updates indexes when a part is added or removed
+     *
+     * @param change a change event emitted by Parts
+     */
     private void indexPartChange(ObjectBooleanPair<Part<NAR>> change) {
         Part<NAR> p = change.getOne();
         if (p instanceof How) {
@@ -226,16 +229,18 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
             if (change.getTwo()) {
                 how.put(h);
             } else {
-                boolean removed = how.remove(h.id)!=null; assert(removed);
+                boolean removed = how.remove(h.id) != null;
+                assert (removed);
             }
-        } if (p instanceof What) {
+        }
+        if (p instanceof What) {
             What w = (What) p;
             if (change.getTwo()) {
                 What inserted = what.put(w);
                 //TODO handle rejection, eviction etc
             } else {
                 @Nullable What removed = what.remove(w.id);
-                assert(removed == p);
+                assert (removed == p);
             }
         }
     }
@@ -315,7 +320,8 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
      * will remain attached but enabled parts will have been deactivated and
      * reactivated, a signal for them to empty their state (if necessary).
      */
-    @Deprecated public void reset() {
+    @Deprecated
+    public void reset() {
 
         synchronized (exe) {
 
@@ -338,7 +344,9 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
 
     }
 
-    /** deallocate as completely as possible */
+    /**
+     * deallocate as completely as possible
+     */
     public void delete() {
         synchronized (exe) {
             logger.info("delete");
@@ -352,22 +360,6 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
 
             super.delete();
         }
-    }
-
-    /**
-     * the clear event is a signal indicating that any active memory or processes
-     * which would interfere with attention should be stopped and emptied.
-     * <p>
-     * this does not indicate the NAR has stopped or reset itself.
-     */
-    @Deprecated public void clear() {
-        synchronized (exe) {
-
-            logger.info("clear");
-            eventClear.emit(this);
-
-        }
-
     }
 
 
@@ -395,6 +387,23 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
 //        }
 //        return this;
 //    }
+
+    /**
+     * the clear event is a signal indicating that any active memory or processes
+     * which would interfere with attention should be stopped and emptied.
+     * <p>
+     * this does not indicate the NAR has stopped or reset itself.
+     */
+    @Deprecated
+    public void clear() {
+        synchronized (exe) {
+
+            logger.info("clear");
+            eventClear.emit(this);
+
+        }
+
+    }
 
     /**
      * parses one and only task
@@ -606,13 +615,6 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
         return que(term, questionOrQuest, ETERNAL);
     }
 
-    /**
-     * ¿qué?  que-stion or que-st
-     */
-    public Task que(Term term, byte punc, long when) {
-        return que(term, punc, when, when);
-    }
-
 //    public NAR logWhen(Appendable out) {
 //
 //        if (past && present && future)
@@ -629,6 +631,13 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
 //            return false;
 //        });
 //    }
+
+    /**
+     * ¿qué?  que-stion or que-st
+     */
+    public Task que(Term term, byte punc, long when) {
+        return que(term, punc, when, when);
+    }
 
     public Task que(Term term, byte punc, long start, long end) {
         assert ((punc == QUESTION) || (punc == QUEST));
@@ -670,11 +679,10 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
         input(task);
     }
 
-
     @Nullable
     @Override
     public final Term term(Part<NAR> p) {
-        return ((NARPart)p).id;
+        return ((NARPart) p).id;
     }
 
     public final boolean start(NARPart p) {
@@ -696,13 +704,14 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
     public final NARPart add(@Nullable Term key, Class<? extends NARPart> p) {
         return add(key, false, p);
     }
+
     public final NARPart start(@Nullable Term key, Class<? extends NARPart> p) {
         return add(key, true, p);
     }
 
     public final NARPart add(Term key, boolean start, Class<? extends NARPart> p) {
         NARPart pp = null;
-        if (key!=null)
+        if (key != null)
             pp = (NARPart) parts.get(key);
 
         if (pp == null) {
@@ -711,12 +720,12 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
             pp = build(p).get();
             if (key == null)
                 key = pp.id;
-            if (parts.get(key)==pp) {
+            if (parts.get(key) == pp) {
                 return pp; //already added in its constructor HACK
             }
         } else {
             if (p.isAssignableFrom(pp.getClass()))
-                return (NARPart)pp; //ok
+                return (NARPart) pp; //ok
             else {
                 stop(key);
             }
@@ -724,12 +733,10 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
 
         if (start) {
             boolean ok = start(key, pp);
-            assert(ok);
+            assert (ok);
         }
         return pp;
     }
-
-
 
     /**
      * simplified wrapper for use cases where only the arguments of an operation task, and not the task itself matter
@@ -761,7 +768,6 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
         });
     }
 
-
     /**
      * registers an operator
      */
@@ -771,8 +777,11 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
         return op;
     }
 
-    /** the default time constant of the system */
-    @Override public final int dur() {
+    /**
+     * the default time constant of the system
+     */
+    @Override
+    public final int dur() {
         return time.dur();
     }
 
@@ -825,14 +834,14 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
         return truth(concept, BELIEF, start, end);
     }
 
+    /* Print all statically known events (discovered via reflection)
+     *  for this reasoner to a stream
+     * */
+
     @Nullable
     public final Truth goalTruth(Termed concept, long when) {
         return truth(concept, GOAL, when);
     }
-
-    /* Print all statically known events (discovered via reflection)
-     *  for this reasoner to a stream
-     * */
 
     @Nullable
     public final Truth goalTruth(Termed concept, long start, long end) {
@@ -998,13 +1007,16 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
 
     /**
      * schedule a task to be executed no sooner than a given NAR time
+     *
      * @return
      */
     public final ScheduledTask runAt(long whenOrAfter, Runnable then) {
         return runAt(new WhenTimeIs(whenOrAfter, then));
     }
 
-    /** send to the queue even if the time has occurred */
+    /**
+     * send to the queue even if the time has occurred
+     */
     public final ScheduledTask runAt(ScheduledTask t) {
         time.runAt(t);
         return t;
@@ -1100,9 +1112,6 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
     public final Off onCycle(Consumer<NAR> each) {
         return eventCycle.on(each);
     }
-    public final Off onCycle(Runnable each) {
-        return onCycle((ignored) -> each.run());
-    }
 
 //    /**
 //     * avoid using lambdas with this, instead use an interface implementation of the class that is expected to be garbage collected
@@ -1111,14 +1120,12 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
 //        return eventCycle.onWeak(each);
 //    }
 
-    public final DurLoop onDur(Runnable on) {
-        DurLoop.DurRunnable r = new DurLoop.DurRunnable(on);
-        start(r);
-        return r;
+    public final Off onCycle(Runnable each) {
+        return onCycle((ignored) -> each.run());
     }
 
-    public final DurLoop onDur(Consumer<NAR> on) {
-        DurLoop.DurNARConsumer r = new DurLoop.DurNARConsumer(on);
+    public final DurLoop onDur(Runnable on) {
+        DurLoop.DurRunnable r = new DurLoop.DurRunnable(on);
         start(r);
         return r;
     }
@@ -1141,17 +1148,23 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
     }
      */
 
-    public final Off onTask(Consumer<Task> listener) {
-        return eventTask.on(listener);
+    public final DurLoop onDur(Consumer<NAR> on) {
+        DurLoop.DurNARConsumer r = new DurLoop.DurNARConsumer(on);
+        start(r);
+        return r;
     }
 
-    public final Off onTask(Consumer<Task> listener, byte... punctuations) {
-        return eventTask.on(listener, punctuations);
+    public final Off onTask(Consumer<Task> listener) {
+        return eventTask.on(listener);
     }
 //TODO
 //    public final Off onTaskWeak(Consumer<Task> listener, byte... punctuations) {
 //        return eventTask.onWeak(listener, punctuations);
 //    }
+
+    public final Off onTask(Consumer<Task> listener, byte... punctuations) {
+        return eventTask.on(listener, punctuations);
+    }
 
     public NAR trace() {
         trace(System.out);
@@ -1161,11 +1174,13 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
     /**
      * if this is an Iterable<Task> , it can be more efficient to use the inputTasks method to bypass certain non-NALTask conditions
      */
-    @Deprecated public void input(Iterable<? extends ITask> tasks) {
+    @Deprecated
+    public void input(Iterable<? extends ITask> tasks) {
         what().acceptAll(tasks);
     }
 
-    @Deprecated public final void input(Stream<? extends ITask> tasks) {
+    @Deprecated
+    public final void input(Stream<? extends ITask> tasks) {
         what().acceptAll(tasks);
     }
 
@@ -1374,7 +1389,6 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
         return belief(c, time());
     }
 
-
     @Nullable
     public final Task answer(Term c, byte punc, long when) {
         return answer(c, punc, when, when);
@@ -1450,7 +1464,6 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
         return control.value(effect);
     }
 
-
     /**
      * creates a new evidence stamp (1-element array)
      */
@@ -1473,7 +1486,6 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
         return control.newCause(idToChannel);
     }
 
-
     public void conceptualize(Term term, Consumer<Concept> with) {
 
 
@@ -1486,25 +1498,22 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
 
     }
 
-
-    private final AtomicBoolean synching = new AtomicBoolean(false);
     /**
      * invokes any pending tasks without advancing the clock
      */
     public final NAR synch() {
-        if (synching.compareAndSet(false, true)) {
-            try {
-                synchronized (exe) {
+        //if (synching.compareAndSet(false, true)) {
+            synchronized (exe) {
+//                try {
                     time.synch(this);
                     exe.synch();
-                }
-            } finally {
-                synching.set(false);
+//                } finally {
+//                    synching.set(false);
+//                }
             }
-        }
+        //}
         return this;
     }
-
 
     /**
      * conceptualize a target if dynamic truth is possible; otherwise return concept if exists
@@ -1605,25 +1614,27 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
     }
 
 
-    /** TODO persistent cache */
+    /**
+     * TODO persistent cache
+     */
     public What the(Term id, boolean createAndStartIfMissing) {
         What w = what.get(id);
         if (w == null && createAndStartIfMissing) {
-            w = what.put( this.whatBuilder.apply(id) );
+            w = what.put(this.whatBuilder.apply(id));
             start(w);
         }
         return w;
     }
 
 
-
-
-    /** thread-local attention */
+    /**
+     * thread-local attention
+     */
     public final What what() {
         What w = active.get();
         if (w == null) {
             Term id = $.identity($.uuid());
-            logger.info("new {} {}", id, Thread.currentThread());
+            ;
             fork(w = the(id, true), null);
         }
         return w;
@@ -1632,15 +1643,16 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
     /**
      * this allows forking the curent 'what' context, while also applying an optional reprioritization to
      * the previous context (if any).  the reprioritization function can also delete the previous context
-     * by returning NaN */
+     * by returning NaN
+     */
     public final What fork(What next, @Nullable FloatFunction<What> reprioritizeCurrent) {
         What prev = active.get();
-     if (next == prev)
-     return next;
-     //float delta = 0;
-        if (reprioritizeCurrent!=null && prev!=null) {
+        if (next == prev)
+            return next;
+        //float delta = 0;
+        if (reprioritizeCurrent != null && prev != null) {
             float prevPriNext = reprioritizeCurrent.floatValueOf(prev);
-            if (prevPriNext!=prevPriNext) {
+            if (prevPriNext != prevPriNext) {
                 //NaN to discard
                 what.remove(prev.id);
             } else {

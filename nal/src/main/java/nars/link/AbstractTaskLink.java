@@ -271,6 +271,33 @@ public abstract class AbstractTaskLink implements TaskLink {
 //            return y;
     }
 
-
+//    /** holds value for one punctuation only */
+//    public static class SimpleTaskLink extends AbstractTaskLink {
+//
+//        @Override
+//        protected float priSum() {
+//            return 0;
+//        }
+//
+//        @Override
+//        protected float merge(int ith, float pri, FloatFloatToFloatFunction componentMerge, PriReturn returning) {
+//            return 0;
+//        }
+//
+//        @Override
+//        protected void fill(float pri) {
+//
+//        }
+//
+//        @Override
+//        public String toString() {
+//            return null;
+//        }
+//
+//        @Override
+//        public float priIndex(byte index) {
+//            return 0;
+//        }
+//    }
 
 }

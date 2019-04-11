@@ -1,13 +1,11 @@
 package nars.link;
 
-import jcog.TODO;
+import jcog.pri.op.PriMerge;
 import jcog.pri.op.PriReturn;
 import jcog.signal.tensor.AtomicFixedPoint4x16bitVector;
 import jcog.signal.tensor.WritableTensor;
 import jcog.util.FloatFloatToFloatFunction;
 import nars.term.Term;
-
-import static nars.time.Tense.ETERNAL;
 
 
 public final class AtomicTaskLink extends AbstractTaskLink {
@@ -23,12 +21,16 @@ public final class AtomicTaskLink extends AbstractTaskLink {
     public AtomicTaskLink(Term self) {
         super(self);
     }
+    public AtomicTaskLink(Term self, byte punc, float puncPri) {
+        super(self);
+        if (puncPri > Float.MIN_NORMAL)
+            priMerge(punc, puncPri, PriMerge.replace);
+    }
 
-    public AtomicTaskLink(Term source, Term target, long when, byte punc, float pri) {
+    public AtomicTaskLink(Term source, Term target, byte punc, float puncPri) {
         this(source, target);
-        if (when != ETERNAL) throw new TODO("non-eternal tasklink not supported yet");
-        if (pri > Float.MIN_NORMAL)
-            priMerge(punc, pri);
+        if (puncPri > Float.MIN_NORMAL)
+            priMerge(punc, puncPri, PriMerge.replace);
     }
 
     @Override protected float priSum() {

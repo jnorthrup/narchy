@@ -8,7 +8,7 @@ import nars.Task;
 import nars.attention.What;
 import nars.concept.Concept;
 import nars.control.NARPart;
-import nars.link.TaskLink;
+import nars.link.AtomicTaskLink;
 import org.eclipse.collections.api.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
 
@@ -80,7 +80,7 @@ public class STMLinkage extends NARPart {
     }
 
     static void link(Concept target, Task task, float factor, NAR nar) {
-        ((What.TaskLinkWhat) nar.what()).links.link(TaskLink.tasklink(task.term(), target.term(), task.punc(),task.priElseZero() * factor));
+        ((What.TaskLinkWhat) nar.what()).links.link(new AtomicTaskLink(task.term(), target.term(), task.punc(), task.priElseZero() * factor));
     }
 
 

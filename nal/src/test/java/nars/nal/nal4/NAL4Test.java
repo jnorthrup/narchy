@@ -17,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class NAL4Test extends NALTest {
 
 
-    private static final int cycles = 550;
+    private static final int cycles = 250;
 
     @Override
     protected NAR nar() {
@@ -157,8 +157,8 @@ public class NAL4Test extends NALTest {
                 .termVolMax(9)
                 .believe("(neutralization --> (acid,base))")
                 .believe("((acid,base) --> reaction)")
-                .mustBelieve(cycles *12, "((neutralization,\\,base) --> (reaction,/,base))", 1.0f, 0.81f)
-                .mustBelieve(cycles *12, "((neutralization,acid,\\) --> (reaction,acid,/))", 1.0f, 0.81f)
+                .mustBelieve(cycles, "((neutralization,\\,base) --> (reaction,/,base))", 1.0f, 0.81f)
+                .mustBelieve(cycles, "((neutralization,acid,\\) --> (reaction,acid,/))", 1.0f, 0.81f)
         ;
     }
 

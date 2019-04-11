@@ -70,7 +70,7 @@ public class Abbreviation/*<S extends Term>*/ extends How {
 
 
     public Abbreviation(String termPrefix, int volMin, int volMax, NAR nar) {
-        super($.uuid());
+        super();
 
         pending = new PriArrayBag(PriMerge.plus, 32);
 

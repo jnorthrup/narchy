@@ -10,8 +10,6 @@ import spacegraph.space2d.Surface;
 import spacegraph.video.JoglDisplay;
 import spacegraph.video.JoglWindow;
 
-import java.util.function.Function;
-
 /** ordinary desktop/laptop computer mouse, as perceived through jogamp NEWT's native interface */
 public class NewtMouseFinger extends MouseFinger implements MouseListener, WindowListener {
 
@@ -41,20 +39,14 @@ public class NewtMouseFinger extends MouseFinger implements MouseListener, Windo
         Fingering ff = this.fingering.get();
 
         if (ff == Fingering.Null || ff.escapes()) {
+            _posGlobal.set(posPixel); //HACK
             Surface touchNext = s.finger(this);
             touching.accumulateAndGet(touchNext, ff::touchNext);
         }
 
     }
 
-    public void setTransform(Function<v2, v2> transform) {
-        pixelToGlobal = transform;
-        updatePos();
-    }
 
-    private void updatePos() {
-        _posGlobal.set(pixelToGlobal.apply(posPixel));
-    }
 
     /** global position of the cursor center */
     @Override public v2 posGlobal() {
@@ -70,7 +62,7 @@ public class NewtMouseFinger extends MouseFinger implements MouseListener, Windo
         Fingering ff = this.fingering.get();
 
         if (ff != Fingering.Null) {
-            if (!ff.update(this)) {
+            if (!ff.updateGlobal(this)) {
                 ff.stop(this);
                 fingering.set(Fingering.Null);
             }

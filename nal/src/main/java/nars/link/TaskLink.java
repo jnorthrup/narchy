@@ -32,10 +32,6 @@ public interface TaskLink extends UnitPrioritizable, FromTo<Term, TaskLink> {
 
     TaskLink[] EmptyTaskLinkArray = new TaskLink[0];
 
-    static TaskLink tasklink(Term src, Term tgt, byte punc, float pri) {
-        return new AtomicTaskLink(src, tgt).priMerge(punc, pri);
-    }
-
     default /* final */ float priPunc(byte punc) { return priIndex(Task.i(punc)); }
 
     /** index will be either 0, 1, 2, or 3 */

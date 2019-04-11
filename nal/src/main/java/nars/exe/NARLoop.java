@@ -2,11 +2,7 @@ package nars.exe;
 
 import jcog.exe.InstrumentedLoop;
 import jcog.math.FloatRange;
-import nars.$;
 import nars.NAR;
-import nars.control.NARPart;
-import nars.term.Term;
-import nars.term.atom.Atom;
 
 /**
  * self managed set of processes which run a NAR
@@ -14,13 +10,11 @@ import nars.term.atom.Atom;
  */
 abstract public class NARLoop extends InstrumentedLoop {
 
-    private static final Atom NAR_LOOP = $.the(NARLoop.class);
 
     public final NAR nar;
 
     public final FloatRange throttle = new FloatRange(1f, 0f, 1f);
 
-    private final NARPart part;
 
     /**
      * starts paused; thread is not automatically created
@@ -28,10 +22,7 @@ abstract public class NARLoop extends InstrumentedLoop {
     NARLoop(NAR n) {
         super();
         nar = n;
-        this.part = new NARPart((Term)$.inh(NAR_LOOP, n.self())) {
 
-        };
-        n.start(part);
     }
 
     public static NARLoop build(NAR nar) {

@@ -20,6 +20,7 @@ class ConjClusteringTest {
         NAR n = NARS.shell();
         int ccap = 4;
         ConjClustering c = new ConjClustering(n, BELIEF, Task::isInput, 4, ccap);
+        n.start(c);
 
 
         for (int i = 0; i < ccap; i++)
@@ -38,6 +39,7 @@ class ConjClusteringTest {
         NAR n = NARS.shell();
         int ccap = 4;
         ConjClustering c = new ConjClustering(n, BELIEF, Task::isInput, 4, ccap);
+        n.start(c);
 
         n.log();
         for (int i = 0; i < ccap; i++)
@@ -63,6 +65,7 @@ class ConjClusteringTest {
 
         int ccap = 8;
         ConjClustering c = new ConjClustering(n, BELIEF, (t) -> t.isInput(), 2, ccap);
+        n.start(c);
 
         n.inputAt(1, "$1.0 x. |");
         n.inputAt(2, "$1.0 y. |");

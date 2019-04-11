@@ -98,7 +98,7 @@ public abstract class Time implements Serializable {
     public void schedule(Consumer<ScheduledTask> each) {
 
 
-        if (!scheduling.compareAndExchangeAcquire(false, true)) {
+        if (!scheduling.compareAndSet(false, true)) {
 
             try {
                 long now = now();
@@ -139,7 +139,7 @@ public abstract class Time implements Serializable {
 
 
             } finally {
-                scheduling.setRelease(false);
+                scheduling.set(false);
             }
         }
 

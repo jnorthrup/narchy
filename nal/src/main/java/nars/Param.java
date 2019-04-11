@@ -522,7 +522,7 @@ public abstract class Param extends Parts<Term,NAR> {
          * for NALTest's: extends the time all unit tests are allowed to run for.
          * normally be kept to 1 but for debugging this may be increased to find what tests need more time
          */
-        public static final float TIME_MULTIPLIER = 2f;
+        public static final float TIME_MULTIPLIER = 3f;
         /**
          * how precise unit test results must match expected values to pass
          */

@@ -20,6 +20,9 @@ abstract public class MouseFinger extends Finger {
 
     protected void update() {
 
+        if (!active.get())
+            return;
+
         if (!updating.compareAndSet(false, true)) {
             /* busy */
             logger.warn("{} event update already in-progress", this);

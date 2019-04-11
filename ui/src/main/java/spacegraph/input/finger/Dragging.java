@@ -40,16 +40,20 @@ abstract public class Dragging extends Fingering {
         return active;
     }
 
-    @Override
-    public final boolean update(Finger finger) {
-        return pressed(finger) && drag(finger);
-    }
-
     private boolean pressed(Finger f) {
         return f.pressed(button);
     }
 
-    /** return false to cancel the operation */
+    @Override
+    public final boolean updateGlobal(Finger finger) {
+        return true;
+    }
+
+    @Override
+    public boolean updateLocal(Finger finger) {
+        return pressed(finger) && drag(finger);
+    }
+
     abstract protected boolean drag(Finger f);
 
 }

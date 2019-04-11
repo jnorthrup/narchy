@@ -88,15 +88,13 @@ public class ArkaNAR extends GameX {
 
             Bitmap2DSensor<ScaledBitmap2D> cc = senseCamera(id /*$.the("cam")*/, new ScaledBitmap2D(
                     new SwingBitmap2D(noid)
-
                     , visW, visH
-
-
             )/*.blur()*/);
             //cc.resolution(0.05f);
 
+
             VectorSensorView vsv = new VectorSensorView(cc, this);
-//            onFrame(vsv::update);
+            onFrame(vsv::update);
             SpaceGraph.surfaceWindow(vsv.withControls(), 500, 500);
 
 

@@ -45,7 +45,7 @@ public class ThermostatTest {
         float exeThresh = 0.51f;
 
 
-        new ConjClustering(n, BELIEF, (t) -> true, 2, 8);
+        n.start(new ConjClustering(n, BELIEF, (t) -> true, 2, 8));
 
 
         boolean[] training = new boolean[]{true};

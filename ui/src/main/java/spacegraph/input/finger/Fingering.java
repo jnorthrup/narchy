@@ -15,8 +15,13 @@ abstract public class Fingering {
     /** return true to allow begin */
     protected abstract boolean start(Finger f);
 
-    /** return false to finish */
-    public abstract boolean update(Finger f);
+    /** return false to finish; called from outside the finger scan */
+    @Deprecated public abstract boolean updateGlobal(Finger f);
+
+    /** return false to finish; called from inside the finger scan */
+    public boolean updateLocal(Finger finger) {
+        return true;
+    }
 
     public void stop(Finger finger) {
 
@@ -42,7 +47,8 @@ abstract public class Fingering {
         return false;
     }
 
-    public static final Fingering Null = new Fingering() {
+    //TODO just use 'null'
+    @Deprecated public static final Fingering Null = new Fingering() {
 
         @Override
         public String toString() {
@@ -55,7 +61,7 @@ abstract public class Fingering {
         }
 
         @Override
-        public boolean update(Finger f) {
+        public boolean updateGlobal(Finger f) {
             return true;
         }
 
@@ -76,4 +82,6 @@ abstract public class Fingering {
     public Surface touchNext(Surface prev, Surface next) {
         return next;
     }
+
+
 }

@@ -264,10 +264,6 @@ public class Parts<K /* service key */, C /* context */> {
         return parts.keySet();
     }
 
-//    public final void toggle(K key) {
-//        Part<C> part = part(key);
-//        set(key, part, !part.isOn());
-//    }
 
     /**
      * returns true if a state change could be attempted; not whether it was actually successful (since it is invoked async)
@@ -335,7 +331,7 @@ public class Parts<K /* service key */, C /* context */> {
         }
     }
 
-    enum ServiceState {
+    public enum ServiceState {
 
         OffToOn() {
             @Override

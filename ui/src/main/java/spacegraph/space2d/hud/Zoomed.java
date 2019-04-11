@@ -71,9 +71,11 @@ public class Zoomed<S extends Surface> extends MutableUnitContainer<S> implement
 
             v2 current = f.posPixel;
 
-            float d = start.distanceToY(current) + start.distanceToX(current);
+            float dy = start.distanceToY(current);
+            float dx = start.distanceToX(current);
+            float d = (float) Math.sqrt(dy*dy + dx*dx);
 
-            zoomDelta(Util.clamp((float) Math.pow(d * rate, 1), -maxIterationChange, +maxIterationChange));
+            zoomDelta(f.posGlobal(), Util.clamp((float) Math.pow(d * rate, 1), -maxIterationChange, +maxIterationChange));
 
             start.set(current); //incremental
 
@@ -183,8 +185,8 @@ public class Zoomed<S extends Surface> extends MutableUnitContainer<S> implement
                 //wheel zoom: absorb remaining rotationY
                 float dy = f.rotationY(true);
                 if (dy != 0) {
-                    //zoomDeltaTo(f, dy * wheelZoomRate);
-                    zoomDelta(dy * wheelZoomRate);
+                    zoomDelta(f.posGlobal(), dy * wheelZoomRate);
+                    //zoomDelta(dy * wheelZoomRate);
                     zoomStackReset();
                 }
             }
@@ -248,32 +250,12 @@ public class Zoomed<S extends Surface> extends MutableUnitContainer<S> implement
     }
 
 
-    /**
-     * TODO this is not working right
-     *
-     * delta in (-1..+1)
-     * POSITIVE = ?
-     * NEGATIVE = ?
-     */
-    public void zoomDeltaTo(Finger finger, float deltaPct) {
+
+
+    public void zoomDelta(v2 target, float deltaPct) {
         if (Math.abs(deltaPct) < Float.MIN_NORMAL)
             return; //no effect
-
-        v2 xy = finger.posGlobal(); /*cam.screenToGlobal(deltaPct < 0 ?
-                        finger.posPixel
-                        :
-                        //TODO fix this zoom-out calculation
-                        //finger.posPixel
-                        new v2(finger.posPixel.x, finger.posPixel.y)
-                //new v2(w()-finger.posPixel.x, h()-finger.posPixel.y)
-        )*/
-        cam.set(xy.x, xy.y, cam.z * (1f + deltaPct));
-    }
-
-    public void zoomDelta(float deltaPct) {
-        if (Math.abs(deltaPct) < Float.MIN_NORMAL)
-            return; //no effect
-        cam.set(cam.x, cam.y, cam.z * (1f + deltaPct));
+        cam.set(target.x, target.y, cam.z * (1f + deltaPct));
     }
 
     private void zoomNext(Finger finger, Surface x) {

@@ -70,4 +70,8 @@ public abstract class Part<C>  {
     public Parts.ServiceState state() {
         return state.getOpaque();
     }
+
+    protected void _state(Parts.ServiceState forced) {
+        this.state.set(forced);
+    }
 }

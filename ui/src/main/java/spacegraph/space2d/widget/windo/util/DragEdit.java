@@ -99,7 +99,7 @@ public enum DragEdit {
         }
 
         @Override
-        public boolean update(Finger f) {
+        public boolean updateGlobal(Finger f) {
             return f.touching() instanceof ContainerSurface;
         }
     }

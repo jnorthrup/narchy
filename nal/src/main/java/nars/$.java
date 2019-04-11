@@ -866,7 +866,7 @@ public enum $ {
         if (x instanceof String)
             return Atomic.the((String)x);
         else
-            return $.p($.quote(x.getClass().getName()), $.the(System.identityHashCode(x)));
+            return $.p($.quote(x.getClass().getName()), $.intRadix(System.identityHashCode(x),36));
 
     }
 

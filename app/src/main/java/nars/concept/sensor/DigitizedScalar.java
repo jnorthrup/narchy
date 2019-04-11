@@ -144,14 +144,6 @@ public class DigitizedScalar extends DemultiplexedScalarSensor {
         return f;
     }
 
-
-
-    @Override
-    public String toString() {
-        return id.toString();
-    }
-
-
     public DigitizedScalar(FloatSupplier input, ScalarEncoder freqer, NAR nar, Term... states) {
         super(input, $.func(DigitizedScalar.class.getSimpleName(),
                 SETe.the(states)

@@ -62,6 +62,9 @@ abstract public class How extends NARPart implements Prioritizable {
     private volatile long sleepUntil = TIMELESS;
     private volatile boolean sleeping;
 
+    protected How() {
+        this(null, null);
+    }
 
     /**
      * if using this constructor, make sure to call 'nar.on(this);' in the callee

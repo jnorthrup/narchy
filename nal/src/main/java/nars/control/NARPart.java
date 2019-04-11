@@ -7,6 +7,7 @@ import jcog.event.Off;
 import jcog.event.OffOn;
 import jcog.event.RunThese;
 import jcog.service.Part;
+import jcog.service.Parts;
 import nars.$;
 import nars.NAR;
 import nars.term.Term;
@@ -30,7 +31,7 @@ abstract public class NARPart extends Part<NAR> implements Termed, OffOn {
      */
     @Deprecated
     private final RunThese whenDeleted = new RunThese();
-    private final ConcurrentFastIteratingHashSet<NARPart> children = new ConcurrentFastIteratingHashSet<>(NARPart.EmptyArray);
+    private final ConcurrentFastIteratingHashSet<NARPart> local = new ConcurrentFastIteratingHashSet<>(NARPart.EmptyArray);
     public NAR nar;
 
     protected NARPart() {
@@ -106,61 +107,81 @@ abstract public class NARPart extends Part<NAR> implements Termed, OffOn {
 
     public boolean delete() {
 
-        logger.info("delete {}", this);
+        logger.info("delete {}", term());
+
+
+        local.removeIf((p)->{p.delete(); return true; });
+        whenDeleted.close();
 
         NAR n = this.nar;
-        if (n !=null)
-            stopping(this.nar);
+        if (n !=null) {
+            n.stop(this);
+        } else {
+            //experimental hard stop
+            try {
+                stopping(null);
+            } catch (Throwable t) {
+                logger.error("stop {} {}", term(), t);
+            }
+        }
 
-        //assert (isOff()); // && nar == null);
-
-        //assert(nar.remove(this);
-
-        children.forEach(NARPart::delete);
-        children.clear();
-
-        //boolean ok = nar.remove(id); assert(ok);
-
-        whenDeleted.close();
         this.nar = null;
         return true;
+    }
+
+
+    protected final void startIn(NARPart container) {
+        synchronized (this) {
+            _state(Parts.ServiceState.OffToOn);
+            logger.info("start {} -> {} {}", container.term(), term(), getClass().getName());
+            starting(this.nar = container.nar);
+            startLocal();
+            _state(Parts.ServiceState.On);
+        }
+    }
+
+    protected final void stopIn(NARPart container) {
+        synchronized (this) {
+            _state(Parts.ServiceState.OnToOff);
+            logger.info(" stop {} -> {} {}", container.term(), term(), getClass().getName());
+            stopLocal();
+            stopping(this.nar);
+            this.nar = null;
+            _state(Parts.ServiceState.Off);
+        }
     }
 
     @Override
     protected final void start(NAR nar) {
 
         NAR prevNar = this.nar;
-
-        if (!(this.nar == null || this.nar == nar))
+        if (!(prevNar == null || prevNar == nar))
             throw new WTF("NAR mismatch");
 
-        logger.info("start {}", this);
+        logger.info("start {}", term());
 
-        this.nar = nar;
+        starting(this.nar = nar);
 
-        starting(nar);
-
-        this.children.forEachWith(nar, (x,n)->{
-            n.start(x);
-        });
+        startLocal();
     }
 
+    private void startLocal() {
+        this.local.forEach(c->c.startIn(this));
+    }
+
+    private void stopLocal() {
+        this.local.forEach(c->c.stopIn(this));
+    }
 
     @Override
     protected final void stop(NAR nar) {
-        logger.info("stop {}", this);
+        logger.info("stop {}", term());
 
-        try {
-            this.children.forEachWith(nar, (x,n)->n.stop(x));
+        stopLocal();
 
-            stopping(nar);
+        stopping(nar);
 
-        } finally {
-
-            this.nar = null;
-
-        }
-
+        this.nar = null;
     }
 
 
@@ -194,37 +215,49 @@ abstract public class NARPart extends Part<NAR> implements Termed, OffOn {
         return id;
     }
 
-    /**
-     * TODO make sure this is atomic with some kind of on/off counter
-     */
-    public final void addAll(NARPart... dd) {
-        for (NARPart dependency : dd)
-            add(dependency);
+
+    public final void addAll(NARPart... local) {
+        for (NARPart d : local)
+            add(d);
     }
 
-    protected final void add(Off offable) {
-        whenDeleted.add(offable);
+    protected final void add(Off component) {
+        if (component instanceof NARPart)
+            add((NARPart)component);
+        else
+            whenDeleted.add(component);
     }
 
-    public void add(NARPart dependency) {
+
+    public final void removeAll(NARPart... dd) {
+        for (NARPart d : dd)
+            remove(d);
+    }
+
+    public final void add(NARPart local) {
         if (!isOff())
             throw new UnsupportedOperationException(this + " is not in OFF state");
 
-        if (children.add(dependency)) {
+        if (this.local.add(local)) {
             //..
-        }
+        } else
+            throw new UnsupportedOperationException("duplicate local");
     }
 
-    public final void removeAll(NARPart... dd) {
-        for (NARPart dependency : dd)
-            remove(dependency);
+
+    public final boolean remove(NARPart local) {
+        if (this.local.remove(local)) {
+            local.stop(nar);
+            return true;
+        } else
+            throw new UnsupportedOperationException("unknown local: " + local + " in " + this);          //return false;
     }
 
-    public void remove(NARPart dependency) {
-        if (children.remove(dependency)) {
-            nar.stop(dependency);
-        }
+    @Override
+    public final String toString() {
+        return id.toString();
     }
+
 
     /**
      * pause, returns a one-use resume ticket

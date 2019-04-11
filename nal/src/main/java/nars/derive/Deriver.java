@@ -51,7 +51,7 @@ abstract public class Deriver extends How {
 
 
     protected Deriver(DeriverRules rules, NAR nar) {
-        super($.uuid());
+        super();
         this.rules = rules;
 //        this.source = source;
         this.timing =

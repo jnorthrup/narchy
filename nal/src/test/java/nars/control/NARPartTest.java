@@ -4,12 +4,14 @@ import jcog.Util;
 import jcog.service.Part;
 import nars.NAR;
 import nars.NARS;
+import nars.term.Term;
 import nars.time.part.DurLoop;
 import org.junit.jupiter.api.Test;
 
 import java.util.Set;
 
 import static java.util.stream.Collectors.toSet;
+import static nars.$.$$;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -43,5 +45,21 @@ class NARPartTest {
         assertEquals(before.size()+1, during.size());
 
         //assertEquals(before, after);
+    }
+
+    @Test void testComponent() {
+        NAR n = NARS.shell();
+        n.start(new NARPart(){
+            {
+                add(new NARPart((Term)$$("dependent")) {
+                    @Override
+                    protected void starting(NAR nar) {
+                        super.starting(nar);
+                        System.out.println("started");
+                    }
+                });
+            }
+        });
+        n.synch();
     }
 }

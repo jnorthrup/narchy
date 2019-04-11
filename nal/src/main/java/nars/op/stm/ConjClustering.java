@@ -9,7 +9,6 @@ import jcog.math.LongInterval;
 import jcog.pri.Prioritizable;
 import jcog.pri.Prioritized;
 import jcog.util.ArrayUtils;
-import nars.$;
 import nars.NAR;
 import nars.Param;
 import nars.Task;
@@ -61,7 +60,7 @@ public class ConjClustering extends How {
     private final boolean popConjoinedTasks = false;
     static final boolean priCopyOrMove = true;
 
-    final AtomicBoolean busy = new AtomicBoolean(false);
+    private final AtomicBoolean busy = new AtomicBoolean(false);
     private int inputTermVolMax, stampLenMax;
 
     private volatile long lastLearn;
@@ -77,12 +76,12 @@ public class ConjClustering extends How {
     }
 
     public ConjClustering(NAR nar, byte punc, Predicate<Task> filter, int centroids, int capacity) {
-        super($.uuid());
+        super();
 
         this.in = nar.newChannel(this);
 
+        /** TODO make this a constructor parameter */
         this.model = new BagClustering.Dimensionalize<>(4) {
-
 
 
             @Override
@@ -128,7 +127,6 @@ public class ConjClustering extends How {
         this.filter = filter;
 
 
-        nar.start(this);
     }
 
     @Override

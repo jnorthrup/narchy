@@ -1,18 +1,13 @@
 package nars.op;
 
-import jcog.Util;
 import jcog.pri.PLink;
 import jcog.pri.bag.impl.PLinkArrayBag;
 import jcog.pri.bag.impl.PriReferenceArrayBag;
 import jcog.pri.op.PriMerge;
 import nars.$;
 import nars.NAR;
-import nars.NARS;
-import nars.Narsese;
 import nars.control.NARPart;
 import nars.op.java.Opjects;
-import nars.op.mental.Abbreviation;
-import nars.op.stm.ConjClustering;
 import org.apache.commons.vfs2.FileChangeEvent;
 import org.apache.commons.vfs2.FileListener;
 import org.apache.commons.vfs2.FileSystemException;
@@ -23,8 +18,6 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.URL;
-
-import static nars.Op.BELIEF;
 
 /**
  * provides support for watching particular file or directory for live changes, notified by the filesystem asynchronously
@@ -186,28 +179,28 @@ public class FileContext extends NARPart {
 //        });
 //    }
 
-    public static void main(String[] args) throws IOException, Narsese.NarseseException {
-        NAR n = NARS.tmp(6);
-        n.log();
-
-        new ConjClustering(n, BELIEF, 4, 16);
-        new Abbreviation("z", 5, 10, n);
-
-        n.termVolumeMax.set(40);
-        //FileSys a = new FileSys(Paths.get("/var/log"), n);
-        FileContext b = new FileContext("/boot", n);
-        //FileSys c = new FileSys(Paths.get("/tmp"), n);
-        //FileSys c = new FileSys("/home/me/n/docs/nal/sumo", n);
-
-        n.input("$1.0 (add($cpu,$file) ==> ({$file}-->$cpu)).");
-        n.input("$1.0 (add(#cpu,file($directory,$filename)) ==> ({$filename}-->$directory)).");
-
-        n.startFPS(8f);
-
-        while (true) {
-            Util.sleepMS(100);
-        }
-    }
+//    public static void main(String[] args) throws IOException, Narsese.NarseseException {
+//        NAR n = NARS.tmp(6);
+//        n.log();
+//
+//        new ConjClustering(n, BELIEF, 4, 16);
+//        new Abbreviation("z", 5, 10, n);
+//
+//        n.termVolumeMax.set(40);
+//        //FileSys a = new FileSys(Paths.get("/var/log"), n);
+//        FileContext b = new FileContext("/boot", n);
+//        //FileSys c = new FileSys(Paths.get("/tmp"), n);
+//        //FileSys c = new FileSys("/home/me/n/docs/nal/sumo", n);
+//
+//        n.input("$1.0 (add($cpu,$file) ==> ({$file}-->$cpu)).");
+//        n.input("$1.0 (add(#cpu,file($directory,$filename)) ==> ({$filename}-->$directory)).");
+//
+//        n.startFPS(8f);
+//
+//        while (true) {
+//            Util.sleepMS(100);
+//        }
+//    }
 
 
 //    static Term theComponent(Path file) {

@@ -22,6 +22,8 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
+import static spacegraph.input.finger.Fingering.Null;
+
 /**
  * gestural generalization of mouse cursor's (or touchpad's, etc)
  * possible intersection with a surface and/or its sub-surfaces.
@@ -42,7 +44,7 @@ abstract public class Finger {
     /**
      * a exclusive locking/latching state which may be requested by a surface
      */
-    protected final AtomicReference<Fingering> fingering = new AtomicReference<>(Fingering.Null);
+    protected final AtomicReference<Fingering> fingering = new AtomicReference<>(Null);
     /**
      * ex: true when finger enters the window, false when it leaves
      */
@@ -64,11 +66,7 @@ abstract public class Finger {
     //@Deprecated protected transient Function<v2, v2> _screenToGlobalRect;
     private final AtomicMetalBitSet buttonDown = new AtomicMetalBitSet();
     private final AtomicFloat[] rotation = new AtomicFloat[3];
-    /**
-     * caches current ortho while traversing it
-     */
-    @Deprecated
-    protected transient Function<v2, v2> pixelToGlobal = x -> x;
+
     volatile FingerRenderer renderer = rendererDefault;
 
     {
@@ -298,18 +296,18 @@ abstract public class Finger {
 
         Fingering prev = this.fingering.get();
 
+        if (prev == next) {
+            if (!prev.updateLocal( this)) {
+                prev.stop(this);
+                fingeringClear();
+                prev = Null;
+            }
+        }
+
         if (prev != next && prev.defer(this)) {
 
-            //System.out.println(cf + " -> " + f + " try");
-
-
-            //System.out.println(cf + " -> " + f + " start");
-
-            //if (this.fingering.compareAndSet(prev, next)) {
-
-            //System.out.println(cf + " -> " + f + " acquire");
-
             prev.stop(this);
+            fingeringClear();
 
             if (next.start(this)) {
 
@@ -319,19 +317,17 @@ abstract public class Finger {
                 renderer = (r != null) ? r : rendererDefault;
 
                 return true;
-
-//                } else {
-//                    next.stop(this);
-//                    renderer = rendererDefault;
-//                }
-            } else {
-                fingering.set(Fingering.Null);
-                renderer = rendererDefault;
             }
         }
 
 
+
         return false;
+    }
+
+    private void fingeringClear() {
+        fingering.set(Null);
+        renderer = rendererDefault;
     }
 
     /**
@@ -382,11 +378,13 @@ abstract public class Finger {
 
     public v2 posRelative(RectFloat b) {
         //return normalize(posGlobal(), b);
-        RectFloat r = globalToPixel(b);
-        //return r.unitize(posPixel);
-        return new v2(
-        (posPixel.x - r.x)/r.w, (posPixel.y - r.y)/r.h
-        );
+//        RectFloat r = globalToPixel(b);
+//        return new v2(
+//        (posPixel.x - r.x)/r.w, (posPixel.y - r.y)/r.h
+//        );
+
+        v2 g = posGlobal();
+        return new v2((g.x - b.x)/b.w, (g.y - b.y)/b.h);
     }
 
 
@@ -413,21 +411,23 @@ abstract public class Finger {
     }
 
 
-    public void push(SurfaceTransform t) {
-        transforms.add(t);
-    }
-
     public final <S extends Surface> S push(SurfaceTransform t, Function<Finger, S> fingering) {
-        push(t);
+        v2 p = _posGlobal.clone();
+        transforms.add(t);
         try {
-            return fingering.apply(this);
-        } finally {
-            pop();
-        }
-    }
 
-    public SurfaceTransform pop() {
-        return transforms.removeLast();
+
+            _posGlobal.set(((Zoomed.Camera)t).pixelToGlobal(_posGlobal.x, _posGlobal.y));
+            //System.out.println(p + " " + _posGlobal);
+
+            S result = fingering.apply(this);
+
+            return result;
+
+        } finally {
+            _posGlobal.set(p);
+            transforms.removeLast();
+        }
     }
 
     public static final class TouchOverlay extends Overlay {
