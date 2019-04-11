@@ -257,7 +257,7 @@ public class TaskLinks implements Sampler<TaskLink> {
             return false;
 
 
-        link(new AtomicTaskLink(c.term()).priMerge(task.punc(), pri));
+        link(new AtomicTaskLink(c.term(), task.punc(), pri));
 
 
         ((TaskConcept) c).value(task, n);

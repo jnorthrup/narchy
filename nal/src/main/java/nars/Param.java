@@ -187,7 +187,7 @@ public abstract class Param extends Parts<Term,NAR> {
             1f
             , 0, 1);
     @Deprecated public final FloatRange questionForgetRate = new FloatRange(0.5f, 0, 1);
-    public final IntRange premiseUnifyTTL = new IntRange(16, 1, 32);
+    public final IntRange premiseUnifyTTL = new IntRange(4, 1, 32);
     public final IntRange deriveBranchTTL = new IntRange(4 * derive.TTL_MIN, derive.TTL_MIN, 64 * derive.TTL_MIN );
     /**
      * how many cycles above which to dither dt and occurrence time
@@ -522,7 +522,7 @@ public abstract class Param extends Parts<Term,NAR> {
          * for NALTest's: extends the time all unit tests are allowed to run for.
          * normally be kept to 1 but for debugging this may be increased to find what tests need more time
          */
-        public static final float TIME_MULTIPLIER = 3f;
+        public static final float TIME_MULTIPLIER = 2f;
         /**
          * how precise unit test results must match expected values to pass
          */

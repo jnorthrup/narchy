@@ -2,7 +2,6 @@ package nars.op.stm;
 
 import jcog.data.list.MetalConcurrentQueue;
 import jcog.math.FloatRange;
-import nars.$;
 import nars.NAR;
 import nars.Task;
 import nars.attention.What;
@@ -21,6 +20,8 @@ import static org.eclipse.collections.impl.tuple.Tuples.pair;
  * Short-target Memory Belief Event Induction.
  * Creates links between sequences of perceived events
  * Empties task buffer when plugin is (re)started.
+ *
+ * TODO make this 'What'-local
  */
 public class STMLinkage extends NARPart {
 
@@ -32,7 +33,7 @@ public class STMLinkage extends NARPart {
     private final MetalConcurrentQueue<Pair<Task, Concept>> stm;
 
     public STMLinkage(NAR nar, int capacity) {
-        super($.uuid(STMLinkage.class.getSimpleName()));
+        super();
 
         stm = //Util.blockingQueue(capacity + 1 );
                 new MetalConcurrentQueue<>(capacity);

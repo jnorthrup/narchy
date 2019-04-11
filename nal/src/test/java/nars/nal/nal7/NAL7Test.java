@@ -22,7 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class NAL7Test extends NALTest {
 
     public static final float CONF_TOLERANCE_FOR_PROJECTIONS = 2f; //200%
-    private final static int cycles = 200;
+    private final static int cycles = 400;
 
     @BeforeEach
     void setTolerance() {
@@ -38,7 +38,7 @@ public class NAL7Test extends NALTest {
     void induction_on_events_neg2() {
 
         test
-                .input("x:before. |")
+                .inputAt(0, "x:before. |")
                 .inputAt(1, "(--,x:after). |")
                 .mustBelieve(cycles, "(x:before ==>+1 x:after)", 0.00f, 0.45f /*abductionConf*/, 0)
                 .mustBelieve(cycles, "((--,x:after) ==>-1 x:before)", 1.00f, 0.45f /*inductionConf*/, 1)
@@ -430,8 +430,8 @@ public class NAL7Test extends NALTest {
         test.termVolMax(11);
         test
 
+                .inputAt(0, "open(John,door). :|:")
                 .inputAt(4, "enter(John,room). :|:")
-                .input("open(John,door). :|:")
                 .mustBelieve(cycles, "( enter(John, room) ==>-4 open(John, door) )",
                         1.00f, 0.45f, 4);
     }
@@ -455,8 +455,8 @@ public class NAL7Test extends NALTest {
         test.termVolMax(11);
 
         test
-                .input("<(John,door) --> open>. :|:")
-                .inputAt(4, "<(John,room) --> enter>. :|:")
+                .inputAt(0, "<(John,door) --> open>. |")
+                .inputAt(4, "<(John,room) --> enter>. |")
                 .mustBelieve(cycles, "(((John, door) --> open) ==>+4 ((John, room) --> enter))",
                         1.00f, 0.45f, 0);
 
@@ -895,7 +895,7 @@ public class NAL7Test extends NALTest {
     void testDecomposeConjunctionEmbeddedInnerCommute() {
 
         test
-                .input("((&|,a,b,c) &&+1 z). :|:")
+                .input("((&|,a,b,c) &&+1 z). |")
                 .mustBelieve(cycles, "(a &&+1 z)", 1f, 0.73f, 0)
                 .mustBelieve(cycles, "(b &&+1 z)", 1f, 0.73f, 0)
                 .mustBelieve(cycles, "(c &&+1 z)", 1f, 0.73f, 0);
@@ -993,7 +993,6 @@ public class NAL7Test extends NALTest {
     void testIntersectionTemporalFar() {
 
         test
-                .dur(1)
                 .inputAt(0, "(x --> a). :|:")
                 .inputAt(3, "(y --> a). :|:")
                 .mustNotOutput(cycles, "((x&y)-->a)", BELIEF,

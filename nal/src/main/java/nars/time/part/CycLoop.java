@@ -27,7 +27,7 @@ abstract public class CycLoop extends NARPart implements Consumer<NAR> {
         super(id);
     }
 
-    static final Atom CYC = Atomic.atom("cyc");
+    static final Atom onCycle = Atomic.atom("onCycle");
 
     public static CycLoop the(Consumer<NAR> each) {
         return new LambdaCycLoop(each);
@@ -43,8 +43,8 @@ abstract public class CycLoop extends NARPart implements Consumer<NAR> {
     protected void stopping(NAR nar) {
         @Nullable Off o = off;
         if (o!=null) {
-            o.close();
             this.off = null;
+            o.close();
         }
     }
 
@@ -61,15 +61,12 @@ abstract public class CycLoop extends NARPart implements Consumer<NAR> {
 
     abstract protected void run(NAR n);
 
-    public String toString(Object r) {
-        return WhenCycle.class.getSimpleName() + "(" + r + ")";
-    }
 
     private static final class LambdaCycLoop extends CycLoop {
         private final Consumer<NAR> each;
 
         public LambdaCycLoop(Consumer<NAR> each) {
-            super($.p(CycLoop.CYC, $.the(each.hashCode()) /* $.identity(each) */));
+            super($.func(CycLoop.onCycle, $.identity(each)));
             this.each = each;
         }
 

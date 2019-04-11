@@ -21,12 +21,13 @@ import static org.junit.jupiter.api.parallel.ExecutionMode.CONCURRENT;
 @Execution(CONCURRENT)
 public abstract class NALTest {
 
-    public TestNAR test;
 
     protected static final org.slf4j.Logger logger = LoggerFactory.getLogger(NALTest.class);
     static {
         ((ch.qos.logback.classic.Logger)LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME)).setLevel(Level.WARN);
     }
+
+    public TestNAR test;
 
     protected NALTest() {
 

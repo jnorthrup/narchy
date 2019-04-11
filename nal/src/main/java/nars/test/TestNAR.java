@@ -212,7 +212,7 @@ public class TestNAR {
             if (!quiet) {
                 succeedsIfAll.forEach(t -> {
                     if (!t.isTrue())
-                        logger.warn("should: {}", t);
+                        t.log(logger);
                 });
 
 

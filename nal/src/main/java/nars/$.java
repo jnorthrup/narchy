@@ -99,13 +99,13 @@ public enum $ {
             throw new RuntimeException(e);
         }
     }
-    public static Atomic quote(Object text) {
+    public static Atom quote(Object text) {
         String s = text.toString();
 
         if (s.isEmpty())
             return emptyQuote;
         else
-            return Atomic.the(Texts.quote(s));
+            return (Atom) Atomic.the(Texts.quote(s));
     }
 
 
@@ -454,7 +454,7 @@ public enum $ {
      * gets the atomic target of an integer, with specific radix (up to 36)
      */
     public static Atom intRadix(int i, int radix) {
-        return (Atom) $.quote(Integer.toString(i, radix));
+        return $.quote(Integer.toString(i, radix));
     }
 
 

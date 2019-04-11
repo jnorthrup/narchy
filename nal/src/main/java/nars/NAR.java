@@ -7,6 +7,7 @@ import jcog.Log;
 import jcog.Texts;
 import jcog.Util;
 import jcog.data.byt.DynBytes;
+import jcog.data.list.FasterList;
 import jcog.event.ListTopic;
 import jcog.event.Off;
 import jcog.event.Topic;
@@ -72,7 +73,6 @@ import java.io.*;
 import java.net.URL;
 import java.util.Set;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -937,19 +937,6 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
         return loop;
     }
 
-    /**
-     * executes task. if executor is concurrent it will be async, otherwise it will be executed synch (current thread)
-     */
-    public final void run(Consumer<NAR> t) {
-        exe.input(t);
-    }
-
-    /**
-     * executes task. if executor is concurrent it will be async, otherwise it will be executed synch (current thread)
-     */
-    public final void run(Runnable t) {
-        exe.execute(t);
-    }
 
     public NAR input(String... ss) throws NarseseException {
         for (String s : ss)
@@ -972,7 +959,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
         assert (tt.length > 0);
 
         runAt(time, () -> {
-            List<Task> yy = $.newArrayList(tt.length);
+            List<Task> yy = new FasterList(tt.length);
             for (String s : tt) {
                 try {
                     yy.addAll(Narsese.tasks(s, this));
@@ -1010,15 +997,19 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
      *
      * @return
      */
-    public final ScheduledTask runAt(long whenOrAfter, Runnable then) {
-        return runAt(new WhenTimeIs(whenOrAfter, then));
+    @Nullable public final ScheduledTask runAt(long whenOrAfter, Runnable t) {
+        if (time() >= whenOrAfter) {
+            exe.execute(t); //immediate
+            return null;
+        } else
+            return runAt(new WhenTimeIs(whenOrAfter, t));
     }
 
-    /**
-     * send to the queue even if the time has occurred
-     */
     public final ScheduledTask runAt(ScheduledTask t) {
-        time.runAt(t);
+        if (time() >= t.start())
+            exe.execute(t); //immediate
+        else
+            time.runAt(t);
         return t;
     }
 

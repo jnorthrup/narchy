@@ -370,7 +370,12 @@ public interface Atomic extends Term {
      */
     private static boolean quoteable(CharSequence t, int len) {
 
-        if ((t.charAt(0) == '\"') && (t.charAt(len - 1) == '\"'))
+        char t0 = t.charAt(0);
+        
+        if (Character.isDigit(t0))
+            return true;
+
+        if ((t0 == '\"') && (t.charAt(len - 1) == '\"'))
             return false;
 
         for (int i = 0; i < len; i++) {
