@@ -68,7 +68,7 @@ public class AutoclassifiedBitmap extends VectorSensor {
     private final int sw, sh;
     private final int nw, nh;
     private final int pw, ph;
-    private final Game agent;
+    private final Game game;
     private final boolean reconstruct = true;
     private final Term[] feature;
 
@@ -87,9 +87,9 @@ public class AutoclassifiedBitmap extends VectorSensor {
 
                 new BitmapMatrixView(pixRecon),
 
-                new VectorSensorView(this, nar).withControls()) {
+                new VectorSensorView(this, game).withControls()) {
             {
-                agent.onFrame(() -> forEach(x -> {
+                game.onFrame(() -> forEach(x -> {
                     if (x instanceof BitmapMatrixView)
                         ((BitmapMatrixView) x).updateIfShowing();
                 }));
@@ -129,44 +129,44 @@ public class AutoclassifiedBitmap extends VectorSensor {
         }
      */
 
-    public AutoclassifiedBitmap(String root, float[][] pixIn, int sw, int sh, int states, Game agent) {
-        this(root, pixIn, sw, sh, NoMetaBits, states, agent);
+    public AutoclassifiedBitmap(String root, float[][] pixIn, int sw, int sh, int states, Game game) {
+        this(root, pixIn, sw, sh, NoMetaBits, states, game);
     }
 
-    public AutoclassifiedBitmap(String root, float[][] pixIn, int sw, int sh, MetaBits metabits, int states, Game agent) {
-        this($$(root), pixIn, sw, sh, metabits, states, agent);
+    public AutoclassifiedBitmap(String root, float[][] pixIn, int sw, int sh, MetaBits metabits, int states, Game game) {
+        this($$(root), pixIn, sw, sh, metabits, states, game);
     }
 
-    public AutoclassifiedBitmap(Term root, float[][] pixIn, int sw, int sh, MetaBits metabits, int states, Game agent) {
+    public AutoclassifiedBitmap(Term root, float[][] pixIn, int sw, int sh, MetaBits metabits, int states, Game game) {
         this(root, (x, y) -> pixIn[x][y],
                 pixIn.length, pixIn[0].length,
-                sw, sh, metabits, states, agent);
+                sw, sh, metabits, states, game);
     }
-    public AutoclassifiedBitmap(Term root, Bitmap2D b, int sw, int sh, int states, Game agent) {
-        this(root, b, sw, sh, NoMetaBits, states, agent);
+    public AutoclassifiedBitmap(Term root, Bitmap2D b, int sw, int sh, int states, Game game) {
+        this(root, b, sw, sh, NoMetaBits, states, game);
     }
 
-    public AutoclassifiedBitmap(Term root, Bitmap2D b, int sw, int sh, MetaBits metabits, int states, Game agent) {
+    public AutoclassifiedBitmap(Term root, Bitmap2D b, int sw, int sh, MetaBits metabits, int states, Game game) {
         this(root, b::brightness,
                 b.width(), b.height(),
-                sw, sh, metabits, states, agent);
+                sw, sh, metabits, states, game);
 
-        confResolution.set(agent.nar.confResolution.floatValue());
+        confResolution.set(game.nar.confResolution.floatValue());
         this.src = b;
     }
 
     /**
      * metabits must consistently return an array of the same size, since now the size of this autoencoder is locked to its dimension
      */
-    public AutoclassifiedBitmap(@Nullable Term root, IntIntToFloatFunction pixIn, int pw, int ph, int sw, int sh, MetaBits metabits, int features, Game agent) {
-        super(root, agent.nar());
+    public AutoclassifiedBitmap(@Nullable Term root, IntIntToFloatFunction pixIn, int pw, int ph, int sw, int sh, MetaBits metabits, int features, Game game) {
+        super(root, game.nar());
 
-        NAR nar = agent.nar();
+        NAR nar = game.nar();
 
-        ae = new Autoencoder(sw * sh + metabits.get(0, 0).length, features, agent.random());
+        ae = new Autoencoder(sw * sh + metabits.get(0, 0).length, features, game.random());
 
         this.metabits = metabits;
-        this.agent = agent;
+        this.game = game;
 
         this.pixIn = pixIn;
         this.sw = sw;
@@ -209,7 +209,7 @@ public class AutoclassifiedBitmap extends VectorSensor {
         }
 
         logger.info("{} pixels in={},{} ({}) x {},{} x features={} : encoded={}", this, pw, ph, (pw * ph), nw, nh, features, signals.size());
-        agent.addSensor(this);
+        game.addSensor(this);
 
         nar.start(this);
     }

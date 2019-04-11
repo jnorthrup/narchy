@@ -175,7 +175,7 @@ public class Jake2Agent extends GameX implements Runnable {
         addSensor(hear);
         WaveBitmap hearView = new WaveBitmap(hear.buf, 300, 64);
         onFrame(hearView::update);
-        SpaceGraph.surfaceWindow(grid(new VectorSensorView(hear, nar).withControls(),
+        SpaceGraph.surfaceWindow(grid(new VectorSensorView(hear, this).withControls(),
                 //spectrogram(hear.buf, 0.1f,512, 16),
                 new ObjectSurface(hear), hearView), 400, 400);
 

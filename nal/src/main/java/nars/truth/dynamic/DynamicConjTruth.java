@@ -2,6 +2,7 @@ package nars.truth.dynamic;
 
 import jcog.data.list.FasterList;
 import jcog.util.ArrayUtils;
+import jcog.util.ObjectLongLongPredicate;
 import nars.NAR;
 import nars.Op;
 import nars.Task;
@@ -25,7 +26,7 @@ public class DynamicConjTruth {
     public static final AbstractDynamicTruth ConjIntersection = new AbstractSectTruth(false) {
 
         @Override
-        public Term reconstruct(Term superterm, List<Task> components, NAR nar, long start, long end) {
+        public Term reconstruct(Compound superterm, List<Task> components, NAR nar, long start, long end) {
 
             long range;
             if (start!=ETERNAL) {
@@ -60,7 +61,7 @@ public class DynamicConjTruth {
         }
 
         @Override
-        public boolean evalComponents(Term conj, long start, long end, ObjectLongLongPredicate<Term> each) {
+        public boolean evalComponents(Compound conj, long start, long end, ObjectLongLongPredicate<Term> each) {
 
             //try to evaluate the eternal component of factored sequence independently
             //but this can dilute its truth too much if the sequence is sparse. better to evaluate it
@@ -71,7 +72,7 @@ public class DynamicConjTruth {
                 // this is more efficient than sequence distribution,
                 // and avoids the evidence overlap problem
                 Term eternal = Conj.seqEternal(conj);
-                Term temporal = Conj.seqTemporal(conj);
+                Compound temporal = Conj.seqTemporal(conj);
                 if (each.accept(eternal, start, end + temporal.eventRange())) {
                     //now concentrate on the temporal component:
                     conj = temporal;
@@ -87,35 +88,46 @@ public class DynamicConjTruth {
 
             if (xternal || dternal) {
                 Subterms ss = conj.subterms();
-                if (xternal && containsCoNegations((Compound) conj)) {
-                    int n = ss.subs();
-                    int subRange = Tense.occToDT((end-start) / (n));
-                    if (subRange >= 1) {
-                        //HACK randomly assign each component to a partitioned sub-ranges
-
-                        int[] order = new int[n];
-                        for (int i = 0; i < n; i++) order[i] = i;
-                        ArrayUtils.shuffle(order, ThreadLocalRandom.current());
-
-                        int o = 0;
-                        for (Term x : ss) {
-                            int offset = order[o++] * subRange;
-                            long subStart = start + offset;
-                            long subEnd = subStart + subRange;
-                            if (!each.accept(x, subStart, subEnd))
-                                return false;
+                if (xternal) {
+                    boolean coneg = false;
+                    if (ss.hasAny(Op.NEG)) {
+                        //quick test
+                        if (ss.subs()==2) {
+                            coneg = ss.sub(0).equalsNeg(ss.sub(1));
+                        } else {
+                            coneg = ((Compound)conj).dt(DTERNAL).volume() < conj.volume(); //collapses will result in reduced volume
                         }
-                        return true;
-                    } else {
-                        //TODO try to determine some interval relative to the first found task which could separate start..end to allow differentiation
+                    }
+                    if (coneg) {
+                        int n = ss.subs();
+                        int subRange = Tense.occToDT((end - start) / (n));
+                        if (subRange >= 1) {
+                            //HACK randomly assign each component to a partitioned sub-ranges
+
+                            int[] order = new int[n];
+                            for (int i = 0; i < n; i++) order[i] = i;
+                            ArrayUtils.shuffle(order, ThreadLocalRandom.current());
+
+                            int o = 0;
+                            for (Term x : ss) {
+                                int offset = order[o++] * subRange;
+                                long subStart = start + offset;
+                                long subEnd = subStart + subRange;
+                                if (!each.accept(x, subStart, subEnd))
+                                    return false;
+                            }
+                            return true;
+                        } else {
+                            //TODO try to determine some interval relative to the first found task which could separate start..end to allow differentiation
+                        }
                     }
                 }
 
                 //propagate start,end to each subterm.  allowing them to match freely inside
-                for (Term x : ss) {
+                for (Term x : ss)
                     if (!each.accept(x, start, end))
                         return false;
-                }
+
                 return true;
             } else {
 
@@ -140,18 +152,6 @@ public class DynamicConjTruth {
 
 
     };
-    static private boolean containsCoNegations(Compound conjXternal) {
-        Subterms ss = conjXternal.subterms();
-        if (ss.hasAny(Op.NEG)) {
-            //quick test
-            if (ss.subs()==2) {
-                return ss.sub(0).equalsNeg(ss.sub(1));
-            } else {
-                return conjXternal.dt(DTERNAL).volume()<conjXternal.volume(); //collapses will result in reduced volume
-            }
-        }
-        return false;
-    }
 }
 //                if (dternal || xternal || parallel) {
 //

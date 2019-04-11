@@ -15,7 +15,6 @@ import nars.link.TaskLink;
 import nars.task.ITask;
 import nars.task.util.PriBuffer;
 import nars.term.Term;
-import nars.time.part.CycLoop;
 import nars.time.part.DurLoop;
 
 import java.io.Externalizable;
@@ -100,17 +99,11 @@ abstract public class What extends NARPart implements Prioritizable, Sampler<Tas
         this.pri = new PriNode(this.id);
         this.in = in;
         if (!in.async(out)) {
-            add(CycLoop.the(this::perceive));
-//                DurService.on(this, p)
+            //add(CycLoop.the(this::perceive));
+            add(new DurLoop.DurNARConsumer(this::perceive));
         }
 
-//        add(
-//                nar.eventClear.on(this::clear)
-//        );
-        add(
-            new DurLoop.DurRunnable(this::commit)
-        );
-
+        add(new DurLoop.DurRunnable(this::commit));
     }
 
     @Override
@@ -136,7 +129,7 @@ abstract public class What extends NARPart implements Prioritizable, Sampler<Tas
     /** perceive the next batch of input, for synchronously (cycle/duration/realtime/etc)
      *  triggered input buffers */
     private void perceive(NAR n) {
-        in.commit(nar.time(), this, n);
+        in.commit(nar.time(), out, n);
     }
 
 

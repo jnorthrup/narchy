@@ -5,6 +5,7 @@ import jcog.data.list.FasterList;
 import nars.*;
 import nars.table.BeliefTables;
 import nars.table.dynamic.DynamicTruthTable;
+import nars.term.Compound;
 import nars.term.Term;
 import nars.time.Tense;
 import nars.truth.Truth;
@@ -358,7 +359,7 @@ class DynamicImplTest extends AbstractDynamicTaskTest {
 
         {
 
-            Term xyz = $("((x && (y &&+2 z))=|>a)");
+            Compound xyz = $("((x && (y &&+2 z))=|>a)");
             assertEquals(
                     //"[((x&&y) ==>+2 a) @ 0, ((x&&z)=|>a) @ 0]",
                     "[(x==>a) @ 0..0, (y ==>+2 a) @ 0..0, (z=|>a) @ 0..0]",

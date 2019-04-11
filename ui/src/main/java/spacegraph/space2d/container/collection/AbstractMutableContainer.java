@@ -6,14 +6,7 @@ import spacegraph.space2d.widget.textedit.TextEdit;
 
 public abstract class AbstractMutableContainer<S extends Surface> extends ContainerSurface {
 
-    @Override
-    protected void starting() {
 
-        //synchronized (this) {
-            forEach(c -> c.start(this));
-        //}
-        layout();
-    }
 
 
 //    @Override

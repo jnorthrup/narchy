@@ -3,11 +3,14 @@ package nars.gui.sensor;
 import jcog.TODO;
 import jcog.Util;
 import jcog.math.FloatRange;
+import jcog.math.FloatSupplier;
 import jcog.random.SplitMix64Random;
 import nars.NAR;
 import nars.Param;
 import nars.agent.Game;
+import nars.attention.What;
 import nars.concept.TaskConcept;
+import nars.concept.sensor.Signal;
 import nars.concept.sensor.VectorSensor;
 import nars.gui.NARui;
 import nars.sensor.Bitmap2DSensor;
@@ -42,6 +45,7 @@ public class VectorSensorView extends BitmapMatrixView implements BitmapMatrixVi
 
     private final VectorSensor sensor;
     private final NAR nar;
+    private final FloatSupplier baseDur;
 
     private DurLoop on;
 
@@ -73,18 +77,23 @@ public class VectorSensorView extends BitmapMatrixView implements BitmapMatrixVi
     private Answer answer = null;
 
     public VectorSensorView(Bitmap2DSensor sensor, Game a) {
-        super(sensor.width, sensor.height);
-        this.sensor = sensor;
-        this.nar = a.nar();
-
-        this.concept = sensor.concepts.matrix;
+        this(sensor, a.what());
     }
 
     public VectorSensorView(VectorSensor v, NAR n) {
-        this(v, (int)Math.ceil(idealStride(v)), (int)Math.ceil(v.size()/idealStride(v)), n);
+        this(v, n::dur, n);
     }
-    public VectorSensorView(VectorSensor v, int w, int h, NAR n) {
+    public VectorSensorView(VectorSensor v, Game g) {
+        this(v, g::dur, g.nar());
+    }
+
+    public VectorSensorView(VectorSensor v, FloatSupplier baseDur, NAR n) {
+        this(v, (int)Math.ceil(idealStride(v)), (int)Math.ceil(v.size()/idealStride(v)), baseDur, n);
+    }
+
+    public VectorSensorView(VectorSensor v, int w, int h, FloatSupplier baseDur, NAR n) {
         super(w, h);
+        this.baseDur = baseDur;
         this.sensor = v;
         this.nar = n;
 
@@ -98,17 +107,32 @@ public class VectorSensorView extends BitmapMatrixView implements BitmapMatrixVi
                 y++;
             }
         }
+
+    }
+
+    public VectorSensorView(VectorSensor sensor, Signal[][] matrix, int width, int height, FloatSupplier baseDur, NAR n) {
+        super(width, height);
+        this.baseDur = baseDur;
+        this.sensor = sensor;
+        this.concept = matrix;
+        this.nar = n;
     }
 
     public static float idealStride(VectorSensor v) {
         return (float) Math.ceil(sqrt(v.size()));
     }
 
+
+    public VectorSensorView(Bitmap2DSensor sensor, What w) {
+        this(sensor, w::dur, w.nar);
+    }
+
     public VectorSensorView(Bitmap2DSensor sensor, NAR n) {
-        super(sensor.width, sensor.height);
-        this.sensor = sensor;
-        this.nar = n;
-        this.concept = sensor.concepts.matrix;
+        this(sensor, n::dur, n);
+    }
+
+    public VectorSensorView(Bitmap2DSensor sensor, FloatSupplier baseDur, NAR n) {
+        this(sensor, sensor.concepts.matrix, sensor.width, sensor.height, baseDur, n);
     }
 
     public void onConceptTouch(Consumer<TaskConcept > c) {
@@ -190,10 +214,10 @@ public class VectorSensorView extends BitmapMatrixView implements BitmapMatrixVi
 
         if (showing()) {
 
-            int narDur = n.dur();
-            long now = Math.round(n.time() + (narDur * timeShift.floatValue()));
+            float baseDur = this.baseDur.asFloat();
+            long now = Math.round(n.time() + (baseDur * timeShift.floatValue()));
 
-            double windowRadius = this.window.floatValue() * narDur / 2;
+            double windowRadius = this.window.floatValue() * baseDur / 2;
 
             this.start = Math.round(now - windowRadius);
             this.end = Math.round(now + windowRadius);
@@ -203,7 +227,7 @@ public class VectorSensorView extends BitmapMatrixView implements BitmapMatrixVi
                 this.answer = Answer
                         .relevant(true, truthPrecision, start, end, null, null, nar);
 
-            this.answer.time(start, end).dur(Math.round(narDur * truthDur.floatValue()));
+            this.answer.time(start, end).dur(Math.round(baseDur * truthDur.floatValue()));
         }
 
 

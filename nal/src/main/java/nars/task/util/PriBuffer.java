@@ -326,7 +326,7 @@ abstract public class PriBuffer<T extends Prioritizable> implements Consumer<T> 
                     //TODO target.input(tasks, n, target.concurrency());
 
                     int c = target.concurrency();
-                    if (c <= 1) {
+                    if (c <= 1 || !(target instanceof What)) {
                         b.pop(null, n, target::accept);
                     } else {
                         int remain = n;

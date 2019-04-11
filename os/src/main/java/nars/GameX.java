@@ -427,6 +427,7 @@ abstract public class GameX extends Game {
 
     public static void initPlugins(NAR n, Game g) {
 
+        n.onDur(MetaGoal::value);
 
 //        BatchDeriver bd = new BatchDeriver(Derivers.nal(n, 1, 8,
 //                "motivation.nal"
@@ -706,7 +707,7 @@ abstract public class GameX extends Game {
 
 
     public static class HaiQChip extends Gridding {
-        private HaiQae q;
+        private final HaiQae q;
         private Plot2D plot;
         private AtomicDouble rewardSum;
 

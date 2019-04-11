@@ -583,13 +583,13 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
         }
     }
 
-    public static Term seqTemporal(Term seq) {
+    public static Compound seqTemporal(Term seq) {
         assert (seq.op() == CONJ && seq.dt() == DTERNAL);
         return seqTemporal(seq.subterms());
     }
 
-    private static Term seqTemporal(Subterms s) {
-        Term t = s.subFirst(isTemporalComponent);
+    private static Compound seqTemporal(Subterms s) {
+        Compound t = (Compound) s.subFirst(isTemporalComponent);
         assert (Conj.isSeq(t));
         return t;
     }

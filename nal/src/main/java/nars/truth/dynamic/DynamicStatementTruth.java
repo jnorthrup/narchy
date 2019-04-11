@@ -3,11 +3,13 @@ package nars.truth.dynamic;
 import jcog.Util;
 import jcog.WTF;
 import jcog.data.list.FasterList;
+import jcog.util.ObjectLongLongPredicate;
 import nars.NAR;
 import nars.Op;
 import nars.Task;
 import nars.subterm.Subterms;
 import nars.task.util.TaskRegion;
+import nars.term.Compound;
 import nars.term.Term;
 import nars.term.util.Image;
 import nars.term.util.conj.ConjBuilder;
@@ -69,8 +71,8 @@ public class DynamicStatementTruth {
     /**
      * statement common component
      */
-    private static Term stmtCommon(boolean subjOrPred, Term superterm) {
-        return subjOrPred ? superterm.sub(1) : superterm.sub(0);
+    private static Term stmtCommon(boolean subjOrPred, Compound superterm) {
+        return (subjOrPred ? superterm.sub(1) : superterm.sub(0));
     }
 
     @Nullable
@@ -107,7 +109,7 @@ public class DynamicStatementTruth {
         return tt;
     }
 
-    private static boolean decomposeImplConj(Term superterm, long start, long end, AbstractDynamicTruth.ObjectLongLongPredicate<Term> each, Term common, Term decomposed, boolean subjOrPred, boolean negateComponents) {
+    private static boolean decomposeImplConj(Compound superterm, long start, long end, ObjectLongLongPredicate<Term> each, Term common, Compound decomposed, boolean subjOrPred, boolean negateComponents) {
 
         int superDT = superterm.dt();
         int decRange = decomposed.eventRange();
@@ -143,16 +145,16 @@ public class DynamicStatementTruth {
         }
 
         @Override
-        public boolean acceptComponent(Term superTerm, Term componentTerm, Task componentTask) {
+        public boolean acceptComponent(Compound superTerm, Term componentTerm, Task componentTask) {
             return componentTask.op() == superTerm.op();
         }
 
         @Override
-        public Term reconstruct(Term superterm, List<Task> components, NAR nar, long start, long end) {
+        public Term reconstruct(Compound superterm, List<Task> components, NAR nar, long start, long end) {
             return reconstruct(superterm, components, subjOrPred, unionOrIntersection);
         }
 
-        protected static Term reconstruct(Term superterm, List<Task> components, boolean subjOrPred, boolean union) {
+        protected static Term reconstruct(Compound superterm, List<Task> components, boolean subjOrPred, boolean union) {
             Term superSect = superterm.sub(subjOrPred ? 0 : 1);
             Op op = superterm.op();
             if (union) {
@@ -255,7 +257,8 @@ public class DynamicStatementTruth {
 
             Term common = superterm.sub(subjOrPred ? 1 : 0);
 
-            if (union || (subjOrPred && false)) {
+            //TODO check
+            if (union || (!subjOrPred)) {
                 if (op == CONJ || op == IMPL /* but not Sect's */)
                     sect = sect.neg();
             }
@@ -264,14 +267,14 @@ public class DynamicStatementTruth {
         }
 
         @Override
-        public boolean evalComponents(Term superterm, long start, long end, ObjectLongLongPredicate<Term> each) {
+        public boolean evalComponents(Compound superterm, long start, long end, ObjectLongLongPredicate<Term> each) {
 
 
 
             Term decomposed = stmtCommon(!subjOrPred, superterm);
             if (!decomposed.op().isAny(Op.Sect)) {
                 //try Image normalizing
-                superterm = Image.imageNormalize(superterm);
+                superterm = (Compound) Image.imageNormalize(superterm);
                 decomposed = stmtCommon(!subjOrPred, superterm);
             }
 
@@ -315,9 +318,9 @@ public class DynamicStatementTruth {
 
     public static final AbstractDynamicTruth ImplPred = new AbstractInhImplSectTruth(false, false) {
         @Override
-        public boolean evalComponents(Term superterm, long start, long end, ObjectLongLongPredicate<Term> each) {
+        public boolean evalComponents(Compound superterm, long start, long end, ObjectLongLongPredicate<Term> each) {
             Term common = stmtCommon(subjOrPred, superterm);
-            Term decomposed = stmtCommon(!subjOrPred, superterm);
+            Compound decomposed = (Compound) stmtCommon(!subjOrPred, superterm);
             return decomposeImplConj(superterm, start, end, each, common, decomposed, false, false);
         }
     };
@@ -356,13 +359,13 @@ public class DynamicStatementTruth {
         }
 
         @Override
-        public boolean evalComponents(Term superterm, long start, long end, ObjectLongLongPredicate<Term> each) {
+        public boolean evalComponents(Compound superterm, long start, long end, ObjectLongLongPredicate<Term> each) {
             Subterms ss = superterm.subterms();
-            return decomposeImplConj(superterm, start, end, each, ss.sub(1), ss.sub(0), true, false /* reconstruct as-is; union only applies to the truth calculation */);
+            return decomposeImplConj(superterm, start, end, each, ss.sub(1), (Compound) ss.sub(0), true, false /* reconstruct as-is; union only applies to the truth calculation */);
         }
 
         @Override
-        public Term reconstruct(Term superterm, List<Task> components, NAR nar, long start, long end) {
+        public Term reconstruct(Compound superterm, List<Task> components, NAR nar, long start, long end) {
             return reconstruct(superterm, components, true, false /* reconstruct as-is; union only applies to the truth calculation */);
         }
     }
@@ -374,15 +377,15 @@ public class DynamicStatementTruth {
         }
 
         @Override
-        public boolean evalComponents(Term superterm, long start, long end, ObjectLongLongPredicate<Term> each) {
+        public boolean evalComponents(Compound superterm, long start, long end, ObjectLongLongPredicate<Term> each) {
             Subterms ss = superterm.subterms();
             Term subj = ss.sub(0);
             assert(subj.op()==NEG);
-            return decomposeImplConj(superterm, start, end, each, ss.sub(1), subj.unneg(), true, true);
+            return decomposeImplConj(superterm, start, end, each, ss.sub(1), (Compound)(subj.unneg()), true, true);
         }
 
         @Override
-        public Term reconstruct(Term superterm, List<Task> components, NAR nar, long start, long end) {
+        public Term reconstruct(Compound superterm, List<Task> components, NAR nar, long start, long end) {
             return reconstruct(superterm, components, true, true);
         }
     }

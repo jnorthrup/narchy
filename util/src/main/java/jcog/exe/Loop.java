@@ -174,8 +174,8 @@ abstract public class Loop extends FixedRateTimedFuture {
         if (!busy.compareAndSet(false, true))
             return;
 
-        beforeNext();
         try {
+            beforeNext();
             if (!next()) {
                 stop();
             }

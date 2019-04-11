@@ -171,7 +171,7 @@ public class FZero extends GameX {
         DigitizedScalar ang = senseAngle(()->(float)fz.playerAngle, angles, Atomic.the("ang"));
         ang.resolution(r);
         SpaceGraph.surfaceWindow(
-                new VectorSensorView(ang, nar).withControls()
+                new VectorSensorView(ang, this).withControls()
                 /*NARui.beliefIcons(ang.sensors, nar))*/, 400, 400);
 
 //        nar.goal($.sim($.func("ang", id, $.varDep(1)),$.func("ang", id, $.varDep(2)).neg()), Tense.ETERNAL);

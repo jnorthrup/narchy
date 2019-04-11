@@ -1,10 +1,10 @@
 package spacegraph.space2d.container.unit;
 
 import spacegraph.space2d.Surface;
-import spacegraph.space2d.container.EmptySurface;
 
 import java.util.concurrent.atomic.AtomicReference;
 
+/** TODO make more bulletproof w/ locking. this is not complete */
 public class MutableUnitContainer<S extends Surface> extends AbstractUnitContainer<S> {
 
     private final AtomicReference<Surface> the = new AtomicReference<Surface>();
@@ -18,11 +18,8 @@ public class MutableUnitContainer<S extends Surface> extends AbstractUnitContain
         set(the);
     }
 
-    public final MutableUnitContainer set(S _next) {
-        Surface next = _next;
-        if (next == null) {
-            next = new EmptySurface(); //HACK TODO just use null if that works
-        }
+    public final MutableUnitContainer<S> set(S next) {
+
         Surface prev = this.the.getAndSet(next);
         if (prev == next)
             return this; //same instance
@@ -30,11 +27,13 @@ public class MutableUnitContainer<S extends Surface> extends AbstractUnitContain
         if (prev !=null)
             prev.stop();
 
-        if (parent!=null) {
-            next.start(this);
-        }
+        if (next!=null) {
+            if (parent != null) {
+                next.start(this);
+            }
 
-        layout();
+            layout();
+        }
 
         return this;
     }

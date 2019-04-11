@@ -43,7 +43,10 @@ public class RDP extends Game {
     public static void main(String[] args) {
         GameX.runRT((n)->{
             try {
-                return new RDP(n, "localhost", 3389) {
+                return new RDP(n,
+                        //"localhost"
+                        "10.0.0.249"
+                        , 3389) {
 
 
                 };

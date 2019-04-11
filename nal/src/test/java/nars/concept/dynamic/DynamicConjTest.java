@@ -358,7 +358,7 @@ class DynamicConjTest {
         }
 
         {
-            Term xyz = $("(x && (y &&+2 z))");
+            Compound xyz = $("(x && (y &&+2 z))");
             assertEquals(
                     "[x @ 0..2, y @ 0..0, z @ 2..2]",
                     //"[(x&&y) @ 0..0, (x&&z) @ 2..2]",
@@ -410,7 +410,7 @@ class DynamicConjTest {
         assertEq("((y &&+2 z)&&x)", t.term());
     }
 
-    static List<String> components(AbstractDynamicTruth model, Term xyz, long s, long e) {
+    static List<String> components(AbstractDynamicTruth model, Compound xyz, long s, long e) {
         List<String> components = new FasterList();
         model.evalComponents(xyz,s, e,
                 (what,whenStart,whenEnd)->{
@@ -419,7 +419,7 @@ class DynamicConjTest {
         return components;
     }
 
-    private static List<String> conjDynComponents(Term xyz, long s, long e) {
+    private static List<String> conjDynComponents(Compound xyz, long s, long e) {
         return components(ConjIntersection, xyz, s, e);
     }
 

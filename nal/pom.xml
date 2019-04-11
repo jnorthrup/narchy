@@ -57,6 +57,18 @@
       <scope>test</scope>
     </dependency>
     <dependency>
+      <groupId>org.openjdk.jmh</groupId>
+      <artifactId>jmh-core</artifactId>
+      <version>1.21</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.openjdk.jmh</groupId>
+      <artifactId>jmh-generator-reflection</artifactId>
+      <version>1.21</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>org.pitest</groupId>
       <artifactId>pitest-junit5-plugin</artifactId>
       <version>0.8</version>

@@ -25,7 +25,6 @@ abstract public class ContainerSurface extends Surface {
 
     private final int mustLayout = 0;
 
-
     @Override
     public final boolean start(Surfacelike parent) {
         if (super.start(parent)) {
@@ -36,8 +35,10 @@ abstract public class ContainerSurface extends Surface {
     }
 
     public final void layout() {
-        //MUSTLAYOUT.set(this, 1);
-        MUSTLAYOUT.lazySet(this, 1);
+
+
+        MUSTLAYOUT.set(this, 1);
+        //MUSTLAYOUT.lazySet(this, 1);
     }
 
 
@@ -88,8 +89,10 @@ abstract public class ContainerSurface extends Surface {
         //TODO all of these called methods can be merged into one method that does these in whatever order the impl chooses
         //
 
-        if (layout)
+        if (layout) {
+            forEach(c -> c.start(this));
             doLayout(r.dtS());
+        }
 
         renderContainer(r);
 

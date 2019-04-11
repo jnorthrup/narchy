@@ -164,7 +164,7 @@ public class NARS {
 
         what = w -> new What.TaskLinkWhat(w,
                        new PriBuffer.DirectPriBuffer()
-                       //new PriBuffer.BagTaskBuffer(256, 4f)
+                       //new PriBuffer.BagTaskBuffer(128, 8f)
                        //new TaskBuffer.MapTaskBuffer(64)
         );
 

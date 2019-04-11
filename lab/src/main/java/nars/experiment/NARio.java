@@ -158,7 +158,7 @@ public class NARio extends GameX {
 
         DigitizedScalar vx = senseNumberDifferenceBi($$("vx"), 8, () -> theMario != null ? theMario.x : 0).resolution(0.02f);
         DigitizedScalar vy = senseNumberDifferenceBi($$("vy"), 8, () -> theMario != null ? theMario.y : 0).resolution(0.02f);
-        window(new Gridding(new VectorSensorView(vx, nar), new VectorSensorView(vy, nar)), 800, 800);
+        window(new Gridding(new VectorSensorView(vx, this), new VectorSensorView(vy, this)), 800, 800);
 
 
         Reward right = rewardNormalized("goRight", -1, +1, () -> {

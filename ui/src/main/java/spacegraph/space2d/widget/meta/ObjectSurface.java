@@ -1,7 +1,5 @@
 package spacegraph.space2d.widget.meta;
 
-import com.jogamp.opengl.GL2;
-import jcog.TODO;
 import jcog.data.list.FasterList;
 import jcog.math.FloatRange;
 import jcog.math.IntRange;
@@ -11,7 +9,6 @@ import org.eclipse.collections.api.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.space2d.ReSurface;
 import spacegraph.space2d.Surface;
-import spacegraph.space2d.container.Splitting;
 import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.container.unit.MutableUnitContainer;
 import spacegraph.space2d.widget.button.CheckBox;
@@ -19,10 +16,8 @@ import spacegraph.space2d.widget.button.EnumSwitch;
 import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.space2d.widget.port.FloatRangePort;
 import spacegraph.space2d.widget.slider.IntSlider;
-import spacegraph.space2d.widget.text.AbstractLabel;
 import spacegraph.space2d.widget.text.LabeledPane;
 import spacegraph.space2d.widget.text.VectorLabel;
-import spacegraph.video.Draw;
 
 import java.lang.reflect.Field;
 import java.util.Collection;
@@ -232,53 +227,53 @@ public class ObjectSurface<X> extends MutableUnitContainer {
 //
 
 
-    public static class ObjectMetaFrame extends MetaFrame {
-        public final Object instance;
-        public final Surface surface;
-        private final int instanceHash;
-        private final Object context;
-
-        public ObjectMetaFrame(Object instance, Surface surface, Object context) {
-            super(surface);
-            if (instance instanceof Surface)
-                throw new TODO();
-            this.context = context;
-            this.instance = instance;
-            this.instanceHash = instance.hashCode();
-            this.surface = surface;
-        }
-
-
-        @Override
-        protected void paintIt(GL2 gl, ReSurface r) {
-            super.paintIt(gl, r);
-            Draw.colorHash(gl, instanceHash, 0.25f);
-            Draw.rect(bounds, gl);
-        }
-
-        @Override
-        @Nullable
-        protected Surface label() {
-            String s;
-            if (context instanceof Field) {
-                s = ((Field) context).getName();
-            } else {
-                s = context != null ? context.toString() : (instance != null ? instance.toString() : null);
-            }
-
-            Surface provided = super.label();
-            if (s == null) {
-                return provided;
-            } else {
-                AbstractLabel l = new VectorLabel(s);
-                if (provided == null) return l;
-                else return Splitting.row(l, 0.3f, provided);
-            }
-        }
-
-
-        //TODO other inferred features
-    }
+//    public static class ObjectMetaFrame extends MetaFrame {
+//        public final Object instance;
+//        public final Surface surface;
+//        private final int instanceHash;
+//        private final Object context;
+//
+//        public ObjectMetaFrame(Object instance, Surface surface, Object context) {
+//            super(surface);
+//            if (instance instanceof Surface)
+//                throw new TODO();
+//            this.context = context;
+//            this.instance = instance;
+//            this.instanceHash = instance.hashCode();
+//            this.surface = surface;
+//        }
+//
+//
+//        @Override
+//        protected void paintIt(GL2 gl, ReSurface r) {
+//            super.paintIt(gl, r);
+//            Draw.colorHash(gl, instanceHash, 0.25f);
+//            Draw.rect(bounds, gl);
+//        }
+//
+//        @Override
+//        @Nullable
+//        protected Surface label() {
+//            String s;
+//            if (context instanceof Field) {
+//                s = ((Field) context).getName();
+//            } else {
+//                s = context != null ? context.toString() : (instance != null ? instance.toString() : null);
+//            }
+//
+//            Surface provided = super.label();
+//            if (s == null) {
+//                return provided;
+//            } else {
+//                AbstractLabel l = new VectorLabel(s);
+//                if (provided == null) return l;
+//                else return Splitting.row(l, 0.3f, provided);
+//            }
+//        }
+//
+//
+//        //TODO other inferred features
+//    }
 
 
     private static class MyIntSlider extends IntSlider {

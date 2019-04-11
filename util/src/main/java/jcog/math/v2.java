@@ -421,7 +421,7 @@ public class v2 implements java.io.Serializable, Cloneable, Tensor {
         return this;
     }
 
-    public final v2 scaled(float sx, float sy, v2 target) {
+    public final v2 scaleInto(float sx, float sy, v2 target) {
         target.set(x * sx, y * sy);
         return target;
     }

@@ -110,7 +110,7 @@ abstract public class Surface implements Surfacelike, spacegraph.input.finger.Fi
 
         //BOUNDS.set(this, next);
 
-        BOUNDS.accumulateAndGet(this, next,(prev,n)->prev.equals(n) ? prev : n );
+        BOUNDS.accumulateAndGet(this, next, (prev, n) -> prev.equals(n) ? prev : n);
 
         return (S) this;
     }
@@ -122,7 +122,7 @@ abstract public class Surface implements Surfacelike, spacegraph.input.finger.Fi
         RectFloat last = BOUNDS.getAndSet(this, next);
 //        if (bounds.area() < ScalarValue.EPSILON)
 //            throw new WTF();
-        return last!=next && !last.equals(next, Spatialization.EPSILONf);
+        return last != next && !last.equals(next, Spatialization.EPSILONf);
     }
 
     public final Surface pos(float x1, float y1, float x2, float y2) {
@@ -174,23 +174,22 @@ abstract public class Surface implements Surfacelike, spacegraph.input.finger.Fi
     }
 
     public boolean start(Surfacelike parent) {
-        assert (parent != null);
         Surfacelike p = PARENT.getAndSet(this, parent);
+        if (p == parent)
+            return false; //no change
 
-        if (p != parent) {
-            if (p != null) {  //throw new WTF();
-                delete();
-                parent = PARENT.getAndSet(this, parent);
-                if (parent!=null) throw new WTF();
-            }
+        assert (parent != null);
 
-            //synchronized (this) {
-            starting();
-            //}
-            return true;
+        if (p != null) {  //throw new WTF();
+            delete();
+            parent = PARENT.getAndSet(this, parent);
+            if (parent != null) throw new WTF();
         }
 
-        return false;
+        //synchronized (this) {
+        starting();
+        //}
+        return true;
     }
 
     /**
@@ -249,7 +248,9 @@ abstract public class Surface implements Surfacelike, spacegraph.input.finger.Fi
             render(r);
     }
 
-    /** test visibility in the current rendering context */
+    /**
+     * test visibility in the current rendering context
+     */
     public final boolean visible(ReSurface r) {
         return visible() && (!clipBounds || r.isVisible(bounds));
     }
@@ -284,7 +285,6 @@ abstract public class Surface implements Surfacelike, spacegraph.input.finger.Fi
     }
 
 
-
     /**
      * detach from parent, if possible
      * TODO common remove(x) interface
@@ -312,7 +312,7 @@ abstract public class Surface implements Surfacelike, spacegraph.input.finger.Fi
         stop();
 
         if (this instanceof ContainerSurface) {
-            ((ContainerSurface)this).forEach(Surface::delete);
+            ((ContainerSurface) this).forEach(Surface::delete);
         }
         return true;
     }

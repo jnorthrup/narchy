@@ -79,6 +79,47 @@ public enum MetaGoal {
         }
     }
 
+    /** default linear adder */
+    @Deprecated static public void value(NAR n) {
+
+        FasterList<Why> why = n.control.why;
+        int cc = why.size();
+        if (cc == 0)
+            return;
+
+        Why[] ccc = why.array();
+
+        float[] want = n.feel.want;
+
+        for (int i = 0; i < cc; i++) {
+
+            Why ci = ccc[i];
+
+            ci.commit();
+
+            float v = 0;
+            Traffic[] cg = ci.credit;
+            for (int j = 0; j < want.length; j++) {
+                v += want[j] * cg[j].current;
+            }
+            ccc[i].setValue(v);
+        }
+
+//        @Nullable Consumer<Why[]> g = this.governor;
+//        if (g!=null)
+//            g.accept(ccc);
+    }
+//    /** implements value/pri feedback */
+//    @Nullable private Consumer<Why[]> governor = null;
+//
+//    /** sets the governor to be used in next value/pri feedback iteration */
+//    public Control governor(Consumer<Why[]> governor) {
+//        this.governor = governor;
+//        return this;
+//    }
+
+
+
     /**
      * contributes the value to a particular goal in a cause's goal vector
      */

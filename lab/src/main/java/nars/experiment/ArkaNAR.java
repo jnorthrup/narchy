@@ -56,7 +56,7 @@ public class ArkaNAR extends GameX {
 
             return new ArkaNAR(n, cam, numeric);
 
-        }, 20);
+        }, 40);
 
 
     }
@@ -95,7 +95,7 @@ public class ArkaNAR extends GameX {
             )/*.blur()*/);
             //cc.resolution(0.05f);
 
-            VectorSensorView vsv = new VectorSensorView(cc, nar);
+            VectorSensorView vsv = new VectorSensorView(cc, this);
 //            onFrame(vsv::update);
             SpaceGraph.surfaceWindow(vsv.withControls(), 500, 500);
 

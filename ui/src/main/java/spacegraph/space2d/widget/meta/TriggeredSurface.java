@@ -12,7 +12,7 @@ public class TriggeredSurface<X extends Surface> extends AbstractCachedSurface<X
 
     private final Function<Runnable, Off> trigger;
     private final Consumer<X> update;
-    private final transient Off on = null;
+    private transient Off on = null;
 
     public TriggeredSurface(X surface, Function<Runnable,Off> trigger, Runnable update) {
         this(surface, trigger, (x)->update.run());
@@ -24,6 +24,18 @@ public class TriggeredSurface<X extends Surface> extends AbstractCachedSurface<X
         this.update = update;
     }
 
+    @Override
+    protected void starting() {
+        super.starting();
+        this.on = trigger.apply(this::update);
+    }
+
+    @Override
+    protected void stopping() {
+        on.close();
+        on = null;
+        super.stopping();
+    }
 
     protected final void update() {
         update.accept(the);
