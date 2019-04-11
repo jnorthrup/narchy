@@ -16,26 +16,34 @@ public class ForkJoinExec extends MultiExec implements Thread.UncaughtExceptionH
 
     private ForkJoinPool pool;
 
+    public ForkJoinExec() {
+        this(Runtime.getRuntime().availableProcessors());
+    }
     public ForkJoinExec(int concurrency) {
         super(concurrency);
 
-        //public ForkJoinPool(int parallelism, ForkJoinPool.ForkJoinWorkerThreadFactory factory, UncaughtExceptionHandler handler, boolean asyncMode, int corePoolSize, int maximumPoolSize, int minimumRunnable, Predicate<? super ForkJoinPool> saturate, long keepAliveTime, TimeUnit unit) {
-        pool = new ForkJoinPool(
-                concurrency,
-                //orkJoinPool.defaultForkJoinWorkerThreadFactory,
-                (p)->{
-                    ForkJoinWorkerThread t = new ForkJoinWorkerThread(p) {
+        if (concurrency >= Runtime.getRuntime().availableProcessors())
+            pool = ForkJoinPool.commonPool();
+        else {
+            //public ForkJoinPool(int parallelism, ForkJoinPool.ForkJoinWorkerThreadFactory factory, UncaughtExceptionHandler handler, boolean asyncMode, int corePoolSize, int maximumPoolSize, int minimumRunnable, Predicate<? super ForkJoinPool> saturate, long keepAliveTime, TimeUnit unit) {
 
-                    };
-                    return t;
-                },
-                this,
-                true, 0, concurrency, 1,
-                null, 60L, TimeUnit.SECONDS) {
-            {
-                //this.pollSubmission()
-            }
-        };
+            pool = new ForkJoinPool(
+                    concurrency,
+                    ForkJoinPool.defaultForkJoinWorkerThreadFactory,
+//                    (p) -> {
+//                        ForkJoinWorkerThread t = new ForkJoinWorkerThread(p) {
+//
+//                        };
+//                        return t;
+//                    },
+                    this,
+                    true, 0, concurrency, 1,
+                    null, 60L, TimeUnit.SECONDS) {
+                {
+                    //this.pollSubmission()
+                }
+            };
+        }
 
 //        pool = ForkJoinPool.commonPool();
 

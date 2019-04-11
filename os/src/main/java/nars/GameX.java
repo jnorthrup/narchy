@@ -58,7 +58,6 @@ import static java.util.stream.Collectors.toList;
 import static java.util.stream.StreamSupport.stream;
 import static nars.$.$$;
 import static nars.Op.BELIEF;
-import static nars.Op.GOAL;
 import static spacegraph.space2d.container.grid.Gridding.grid;
 
 /**
@@ -216,7 +215,7 @@ abstract public class GameX extends Game {
 //                        threads,
 //                        false/* affinity */)
 
-                new ForkJoinExec(threads)
+                new ForkJoinExec()
 
 //                new SuperExec(
 //                    new Valuator.DefaultValuator(0.9f), threads <= 0 ? Util.concurrencyExcept(1) : threads
@@ -477,8 +476,8 @@ abstract public class GameX extends Game {
 
 
         List<ConjClustering> conjClusters = List.of(
-            new ConjClustering(n, BELIEF, 32, 256),
-            new ConjClustering(n, GOAL, 4, 16)
+            new ConjClustering(n, BELIEF, 32, 256)
+            //new ConjClustering(n, GOAL, 4, 16)
         );
 
         SpaceGraph.surfaceWindow(grid(conjClusters, c->NARui.clusterView(c, n)), 700, 700);
