@@ -24,8 +24,11 @@ public class WeakSurface extends AbstractUnitContainer {
 
     @Override
     public boolean delete() {
-        the.clear();
-        return super.delete();
+        if (super.delete()) {
+            the.clear();
+            return true;
+        }
+        return false;
     }
 
     @Override

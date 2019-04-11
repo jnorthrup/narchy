@@ -22,13 +22,14 @@ import static spacegraph.space2d.widget.windo.util.DragEdit.MOVE;
 public class Windo extends MutableUnitContainer {
 
     private final static float resizeBorder = 0.1f;
+    public static final short DRAG_BUTTON = Zoomed.PAN_BUTTON;
     public Dragging dragMode = null;
     public DragEdit potentialDragMode = null;
 
 
     private boolean fixed = false;
-    private FingerResize resize = new FingerResizeSurface(Zoomed.PAN_BUTTON, this);
-    private Dragging move = new FingerMoveSurface(this);
+    private final FingerResize resize = new FingerResizeSurface(this, DRAG_BUTTON);
+    private final Dragging move = new FingerMoveSurface(this, DRAG_BUTTON);
     private v2 _posGlobal = null;
 
     public Windo() {
@@ -43,14 +44,14 @@ public class Windo extends MutableUnitContainer {
     public Surface finger(Finger finger) {
 
 
-        boolean unDrag = false, canDrag = true;
+        boolean unDrag = false, canDrag = finger.pressed(DRAG_BUTTON);
 
         Dragging current = this.dragMode;
         unDrag = (current != null && !current.active());
 
         Surface other = super.finger(finger);
 
-        if ((other != null && other != this) || fixed()) {
+        if ((other != null && other!=this.the() && other != this) || fixed()) {
             unDrag = true;
             canDrag = false;
         }
@@ -69,7 +70,7 @@ public class Windo extends MutableUnitContainer {
         if (canDrag && drag(finger))
             return this;
         else
-            return null;
+            return other;
 
     }
 
@@ -80,11 +81,6 @@ public class Windo extends MutableUnitContainer {
         Dragging actualDragMode = null;
         DragEdit potentialDragMode = DragEdit.mode(finger.posRelative(this), resizeBorder);
 
-        if (potentialDragMode != null) {
-            if (fingerable(potentialDragMode)) {
-                potentialDragMode = null;
-            }
-        }
         if (potentialDragMode != null) {
             Dragging d = fingering(potentialDragMode);
             if (d != null && finger.tryFingering(d)) {

@@ -82,14 +82,6 @@ public class OrthoSurfaceGraph extends JoglDisplay implements SurfaceGraph {
         };
 
 
-        @Override
-        public void doLayout(float dtS) {
-            JoglWindow w = video;
-            int W = w.getWidth();
-            int H = w.getHeight();
-            resize(W, H);
-            super.doLayout(dtS);
-        }
 
         @Override
         public Surface finger(Finger finger) {
@@ -135,12 +127,16 @@ public class OrthoSurfaceGraph extends JoglDisplay implements SurfaceGraph {
 
             @Override
             public void windowResized(WindowEvent e) {
-                resize();
+                JoglWindow w = video;
+                int W = w.getWidth();
+                int H = w.getHeight();
+                layers.resize(W, H);
             }
 
             @Override
             public void windowDestroyNotify(WindowEvent e) {
                 layers.stop();
+                layers.delete();
             }
         });
 
@@ -274,6 +270,7 @@ public class OrthoSurfaceGraph extends JoglDisplay implements SurfaceGraph {
             Surface t = finger.touching();
             fingerInfo.text(
                 "buttn: " + finger.buttonSummary() + '\n' +
+                "state: " +  finger.fingering() + '\n' +
                 "posPx: " + finger.posPixel + '\n' +
                 //"posGl: " + finger.posGlobal(layers.first(Zoomed.class)) + '\n' +
                 "touch: " + t + '\n' +

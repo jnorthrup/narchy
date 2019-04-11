@@ -94,10 +94,7 @@ public class ArkaNAR extends GameX {
 
 
             VectorSensorView vsv = new VectorSensorView(cc, this);
-            onFrame(vsv::update);
             SpaceGraph.surfaceWindow(vsv.withControls(), 500, 500);
-
-
         }
 
 

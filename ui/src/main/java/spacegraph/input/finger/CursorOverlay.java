@@ -16,11 +16,7 @@ public class CursorOverlay extends Fingering {
     @Override
     protected boolean start(Finger f) {
         FingerRenderer cc = cursor;
-        if (cc !=null) {
-            f.renderer = cc;
-        } else {
-            f.renderer = f.rendererDefault;
-        }
+        f.renderer = cc != null ? cc : f.rendererDefault;
         return true;
     }
 

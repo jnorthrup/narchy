@@ -40,7 +40,7 @@ abstract public class Finger {
     /**
      * widget above which this finger currently hovers
      */
-    public final AtomicReference<Surface> touching = new AtomicReference<>();
+    protected final AtomicReference<Surface> touching = new AtomicReference<>();
     /**
      * a exclusive locking/latching state which may be requested by a surface
      */
@@ -164,7 +164,7 @@ abstract public class Finger {
     /**
      * commit all buttons
      */
-    private void commitButtons() {
+    protected void commitButtons() {
         prevButtonDown.copyFrom(buttonDown);
     }
 
@@ -185,21 +185,21 @@ abstract public class Finger {
      * event handler.  this could mean that there is either mouse
      * motion or button status has changed.
      */
-    public void update(short[] nextButtonDown) {
+    public void update(@Nullable short[] nextButtonDown) {
 
-        commitButtons();
+        if (nextButtonDown!=null) {
+            for (short b : nextButtonDown) {
 
-        for (short b : nextButtonDown) {
+                boolean pressed = (b > 0);
 
-            boolean pressed = (b > 0);
+                if (!pressed) b = (short) -b;
+                b--;
 
-            if (!pressed) b = (short) -b;
-            b--;
+                buttonDown.set(b, pressed);
 
-            buttonDown.set(b, pressed);
-
-            if (pressed && !wasPressed(b)) {
-                pressPosPixel[b].set(posPixel);
+                if (pressed && !wasPressed(b)) {
+                    pressPosPixel[b].set(posPixel);
+                }
             }
         }
 
@@ -296,12 +296,16 @@ abstract public class Finger {
 
         Fingering prev = this.fingering.get();
 
-        if (prev == next) {
+
+        if (prev != Null) {
             if (!prev.updateLocal( this)) {
                 prev.stop(this);
                 fingeringClear();
                 prev = Null;
+            } else {
+                return true; //continue
             }
+
         }
 
         if (prev != next && prev.defer(this)) {
@@ -394,8 +398,8 @@ abstract public class Finger {
 
     public boolean intersects(RectFloat bounds) {
         //System.out.println(bounds + " contains " + posGlobal() + " ? " + bounds.contains(posGlobal()));
-        return globalToPixel(bounds).contains(posPixel);
-        //return posRelative(bounds).inUnit();
+        //return globalToPixel(bounds).contains(posPixel);
+        return posRelative(bounds).inUnit();
     }
 
     public RectFloat globalToPixel(RectFloat bounds) {

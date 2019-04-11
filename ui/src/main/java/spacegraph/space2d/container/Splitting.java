@@ -6,8 +6,8 @@ import jcog.tree.rtree.Spatialization;
 import org.eclipse.collections.api.block.procedure.primitive.BooleanProcedure;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.input.finger.Finger;
-import spacegraph.input.finger.FingerMoveSurface;
 import spacegraph.input.finger.FingerRenderer;
+import spacegraph.input.finger.SurfaceDragging;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.collection.MutableArrayContainer;
 import spacegraph.space2d.widget.Widget;
@@ -19,12 +19,11 @@ import spacegraph.space2d.widget.button.PushButton;
  */
 public class Splitting<X extends Surface, Y extends Surface> extends MutableArrayContainer {
 
+    private static final float resizeMargin = 0.0125f;
     private float split = Float.NaN;
     private boolean vertical;
-
     //TODO float marginPct = ...;
     private float minSplit = 0, maxSplit = 1;
-    private static final float resizeMargin = 0.0125f;
 
     public Splitting() {
         this(null, 0.5f, true, null);
@@ -32,7 +31,7 @@ public class Splitting<X extends Surface, Y extends Surface> extends MutableArra
 
     @Deprecated
     public Splitting(X top, float split, Y bottom) {
-        this(top, split, true, bottom );
+        this(top, split, true, bottom);
     }
 
     public Splitting(X top, float split, boolean vertical, Y bottom) {
@@ -42,14 +41,14 @@ public class Splitting<X extends Surface, Y extends Surface> extends MutableArra
     }
 
     public static Splitting<?, ?> column(Surface top, float v, Surface bottom) {
-        return new Splitting<>(bottom,1-v, true, top /* semantically reversed */ );
+        return new Splitting<>(bottom, 1 - v, true, top /* semantically reversed */);
     }
 
     public static Splitting<?, ?> column(Surface top, Surface bottom) {
         return column(top, 0.5f, bottom);
     }
 
-    public static Splitting<?,?> row(Surface left, float v, Surface right) {
+    public static Splitting<?, ?> row(Surface left, float v, Surface right) {
         return new Splitting<>(left, v, false, right);
     }
 
@@ -63,26 +62,26 @@ public class Splitting<X extends Surface, Y extends Surface> extends MutableArra
 
     public Splitting<X, Y> vertical(boolean v) {
         boolean w = this.vertical;
-        if (w!=v) {
+        if (w != v) {
             this.vertical = v;
             layout();
         }
         return this;
     }
 
-    public Splitting<X,Y> vertical() {
+    public Splitting<X, Y> vertical() {
         vertical = true;
         layout();
         return this;
     }
 
-    Splitting<X,Y> horizontal() {
+    Splitting<X, Y> horizontal() {
         vertical = false;
         layout();
         return this;
     }
 
-    public Splitting<X,Y> split(float split) {
+    public Splitting<X, Y> split(float split) {
         float s = this.split;
         if (!Util.equals(s, Spatialization.EPSILON)) {
             this.split = split;
@@ -91,13 +90,15 @@ public class Splitting<X extends Surface, Y extends Surface> extends MutableArra
         return this;
     }
 
-    public Splitting<X,Y> set(X top, float split, Y bottom) {
+    public Splitting<X, Y> set(X top, float split, Y bottom) {
         split(split);
-        T(top); B(bottom);
+        T(top);
+        B(bottom);
         return this;
     }
 
-    @Nullable public Surface resizer() {
+    @Nullable
+    public Surface resizer() {
         return get(2);
     }
 
@@ -119,8 +120,8 @@ public class Splitting<X extends Surface, Y extends Surface> extends MutableArra
 
                 b.pos(X, Y, X + w, Ysplit);
 
-                if (r !=null) {
-                    r.pos(X, Ysplit - resizeMargin/2*h, X+w, Ysplit + resizeMargin/2*h);
+                if (r != null) {
+                    r.pos(X, Ysplit - resizeMargin / 2 * h, X + w, Ysplit + resizeMargin / 2 * h);
                     r.show();
                 }
             } else {
@@ -130,8 +131,8 @@ public class Splitting<X extends Surface, Y extends Surface> extends MutableArra
 
                 b.pos(Xsplit, Y, X + w, Y + h);
 
-                if (r !=null) {
-                    r.pos(Xsplit - resizeMargin/2*w, Y, Xsplit + resizeMargin/2*w, Y+h);
+                if (r != null) {
+                    r.pos(Xsplit - resizeMargin / 2 * w, Y, Xsplit + resizeMargin / 2 * w, Y + h);
                     r.show();
                 }
             }
@@ -142,18 +143,17 @@ public class Splitting<X extends Surface, Y extends Surface> extends MutableArra
             a.show();
             b.hide();
             a.pos(bounds);
-            if (r!=null)  r.hide();
+            if (r != null) r.hide();
         } else if (b != null /*&& b.visible()*/) {
             a.hide();
             b.show();
             b.pos(bounds);
-            if (r!=null)  r.hide();
+            if (r != null) r.hide();
         } else {
             a.hide();
             b.hide();
-            if (r!=null)  r.hide();
+            if (r != null) r.hide();
         }
-
 
 
     }
@@ -215,39 +215,35 @@ public class Splitting<X extends Surface, Y extends Surface> extends MutableArra
         return this;
     }
 
-    /** TODO button to toggle horiz/vert/auto and swap */
+    /**
+     * TODO button to toggle horiz/vert/auto and swap
+     */
     private class Resizer extends Widget {
-        {
-            color.set(0.1f,  0.1f, 0.1f, 0.5f);
-        }
+        final SurfaceDragging drag = new SurfaceDragging(this, 0) {
 
-        final FingerMoveSurface drag = new FingerMoveSurface(this) {
-//            @Override
-//            public boolean escapes() {
-//                return false;
-//            }
             @Override
-            public @Nullable FingerRenderer renderer(Finger finger) {
+            public FingerRenderer renderer(Finger finger) {
                 return vertical ? FingerRenderer.rendererResizeNS : FingerRenderer.rendererResizeEW;
             }
+
+
             @Override
             public boolean drag(Finger f) {
-                if (super.drag(f)) {
+
                     focus();
                     v2 b = f.posRelative(Splitting.this);
                     float pct = vertical ? b.y : b.x;
                     float p = Util.clamp(pct, minSplit, maxSplit);
                     split(p);
                     return true;
-                }
-                return false;
+
             }
 
-            @Override
-            public void move(float tx, float ty) {
-                //dont actually move
-            }
         };
+
+        {
+            color.set(0.1f, 0.1f, 0.1f, 0.5f);
+        }
 
         @Override
         public Surface finger(Finger finger) {
@@ -260,17 +256,17 @@ public class Splitting<X extends Surface, Y extends Surface> extends MutableArra
         final Surface hv = new CheckBox("*").on(vertical).on((BooleanProcedure)
                 (Splitting.this::vertical));
 
-        final PushButton swap = new PushButton("<->").clicked(()->{
+        final PushButton swap = new PushButton("<->").clicked(() -> {
             //synchronized (Splitting.this) {
-                X a = Splitting.this.L();
-                if (a!=null) {
-                    Y b = Splitting.this.R();
-                    if (b != null) {
-                        if (children.compareAndSet(0, a, b)) {
-                            children.set(1, a);
-                        }
+            X a = Splitting.this.L();
+            if (a != null) {
+                Y b = Splitting.this.R();
+                if (b != null) {
+                    if (children.compareAndSet(0, a, b)) {
+                        children.set(1, a);
                     }
                 }
+            }
 
         });
 
@@ -281,9 +277,15 @@ public class Splitting<X extends Surface, Y extends Surface> extends MutableArra
         @Override
         protected void doLayout(float dtS) {
             if (vertical) {
-                north(null); south(null); east(hv); west(swap);
+                north(null);
+                south(null);
+                east(hv);
+                west(swap);
             } else {
-                east(null); west(null); north(hv); south(swap);
+                east(null);
+                west(null);
+                north(hv);
+                south(swap);
             }
 
             super.doLayout(dtS);

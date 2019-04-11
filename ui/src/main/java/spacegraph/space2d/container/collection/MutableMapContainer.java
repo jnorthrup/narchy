@@ -9,7 +9,7 @@ import java.util.Collection;
 import java.util.Objects;
 import java.util.function.*;
 
-public class MutableMapContainer<K, V> extends AbstractMutableContainer {
+public class MutableMapContainer<K, V> extends AbstractMutableContainer<Surface> {
 
     /**
      * "cells" of the container; maintain the mapping between the indexed keys and their "materialized" representations or projections

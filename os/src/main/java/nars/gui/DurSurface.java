@@ -44,16 +44,17 @@ abstract public class DurSurface<S extends Surface> extends AbstractCachedSurfac
 
     @Override
     protected void stopping() {
-        if (dur !=null)
-            nar.stop(dur);
+        if (dur !=null) {
+            dur.delete();
+            dur = null;
+        }
 
         super.stopping();
     }
 
     @Override
     public boolean delete() {
-        dur.delete();
-        dur = null;
+        assert(dur == null);
         return super.delete();
     }
 

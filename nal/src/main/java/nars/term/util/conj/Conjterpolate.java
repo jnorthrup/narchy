@@ -7,7 +7,6 @@ import jcog.data.set.ArrayUnenforcedSet;
 import nars.NAR;
 import nars.term.Compound;
 import nars.term.Term;
-import nars.term.atom.Bool;
 import nars.term.util.Intermpolate;
 import nars.time.Tense;
 import org.eclipse.collections.api.set.MutableSet;
@@ -92,10 +91,11 @@ public class Conjterpolate extends Conj {
                 LongObjectPair<Term> a0 = aa.get(0), b0 = bb.get(0);
                 Term a0t = a0.getTwo(), b0t = b0.getTwo();
                 if (a0t instanceof Compound && b0t instanceof Compound) {
-                    if (na == 1 && nb == 1 && nabOriginal > 1 && a0t.equalsRoot(b0t)) {
+                    if (na == 1 && nb == 1 && nabOriginal > 1) {
                         //special case: only one event remains, with the same root target
                         Term ab = Intermpolate.intermpolate((Compound)a0t, (Compound)b0t, aProp, nar);
-                        if (!(ab instanceof Bool)) {
+
+                        if (ab.op().eventable) {
                             long when = Intermpolate.chooseDT(
                                     Tense.occToDT(a0.getOne()),
                                     Tense.occToDT(b0.getOne()), aProp, nar);
@@ -103,8 +103,6 @@ public class Conjterpolate extends Conj {
                             return;
                         }
                     }
-                } else {
-                    assert(a0t.equals(b0t));
                 }
 
                 //add common events

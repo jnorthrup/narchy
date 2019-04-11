@@ -18,8 +18,11 @@ public class FingerMoveSurface extends FingerMove {
     @Nullable
     private RectFloat before;
 
-    public FingerMoveSurface(Surface moving) {
-        this(moving, 0 /* LEFT BUTTON */, true, true);
+    @Deprecated public FingerMoveSurface(Surface moving) {
+        this(moving, 0 /* LEFT BUTTON */);
+    }
+    public FingerMoveSurface(Surface moving, int button) {
+        this(moving, button /* LEFT BUTTON */, true, true);
     }
 
     private FingerMoveSurface(Surface moving, int button, boolean xAxis, boolean yAxis) {
@@ -53,8 +56,8 @@ public class FingerMoveSurface extends FingerMove {
     }
 
     @Override
-    public v2 pos(Finger finger) {
-        return finger.posGlobal().clone();
+    public final v2 pos(Finger finger) {
+        return finger.posGlobal();
     }
 
     @Override

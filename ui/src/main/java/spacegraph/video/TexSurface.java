@@ -18,7 +18,6 @@ public class TexSurface extends PaintSurface {
         this.tex = tex;
     }
 
-
     @Override
     protected void paint(GL2 gl, ReSurface reSurface) {
         tex.paint(gl, bounds);

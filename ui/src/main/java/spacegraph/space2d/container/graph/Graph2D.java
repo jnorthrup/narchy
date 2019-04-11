@@ -7,6 +7,7 @@ import jcog.data.map.MRUMap;
 import jcog.data.pool.MetalPool;
 import jcog.data.set.ArrayHashSet;
 import org.jetbrains.annotations.Nullable;
+import spacegraph.input.finger.Finger;
 import spacegraph.space2d.ReSurface;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.ContainerSurface;
@@ -45,14 +46,6 @@ public class Graph2D<X> extends MutableMapContainer<X, NodeVis<X>> {
 
     private List<Graph2DRenderer<X>> renderers = List.of();
 
-//    private final DequePool<NodeVis<X>> nodePool = new DequePool<>() {
-//        @Override
-//        public NodeVis<X> create() {
-//            NodeVis<X> v = new NodeVis<>();
-//            v.start(Graph2D.this);
-//            return v;
-//        }
-//    };
     private final MetalPool<EdgeVis<X>> edgePool = new MetalPool<>() {
         @Override
         public EdgeVis<X> create() {
@@ -66,12 +59,29 @@ public class Graph2D<X> extends MutableMapContainer<X, NodeVis<X>> {
         }
     };
 
+    @Override
+    public boolean delete() {
+        if (super.delete()) {
+            edgePool.delete();
+            nodeCache.clear();
+            //TODO anything else?
+            return true;
+        }
+        return false;
+    }
+
     final MRUMap<X, NodeVis<X>> nodeCache = new MRUMap<>(8 * 1024) {
         @Override
         protected void onEvict(Map.Entry<X, NodeVis<X>> entry) {
             NodeVis<X> s = entry.getValue();
             if (s.id == null)
                 s.stop();
+        }
+
+        @Override
+        public void clear() {
+            forEachValue(v -> v.delete());
+            super.clear();
         }
     }; //TODO set capacity good
 

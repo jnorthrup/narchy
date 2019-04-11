@@ -9,7 +9,6 @@ import spacegraph.space2d.container.ContainerSurface;
 import spacegraph.space2d.container.collection.AbstractMutableContainer;
 import spacegraph.space2d.container.unit.AspectAlign;
 import spacegraph.space2d.container.unit.MutableUnitContainer;
-import spacegraph.space2d.widget.meta.WeakSurface;
 import spacegraph.space2d.widget.text.VectorLabel;
 import spacegraph.util.MutableRectFloat;
 
@@ -291,22 +290,16 @@ abstract public class Surface implements Surfacelike, spacegraph.input.finger.Fi
      */
     public boolean delete() {
 
-        Surfacelike p = PARENT.getAndSet(this, null);
-        if (p == null)
-            return false;
 
-        if (p instanceof MutableUnitContainer) {
-            ((MutableUnitContainer) p).set(null);
-            return true;
-        }
-        if (p instanceof AbstractMutableContainer) {
-            return ((AbstractMutableContainer) p).remove(this);
-        }
-        if (p instanceof WeakSurface) {
-            return ((WeakSurface) p).delete();
-        }
-        if (p instanceof ContainerSurface) {
-            return ((ContainerSurface) p).delete();
+        Surfacelike p = this.parent;
+        if (p!=null) {
+
+            if (p instanceof MutableUnitContainer) {
+                ((MutableUnitContainer) p).set(null);
+            }
+            if (p instanceof AbstractMutableContainer) {
+                ((AbstractMutableContainer) p).remove(this);
+            }
         }
 
         stop();
@@ -314,7 +307,11 @@ abstract public class Surface implements Surfacelike, spacegraph.input.finger.Fi
         if (this instanceof ContainerSurface) {
             ((ContainerSurface) this).forEach(Surface::delete);
         }
-        return true;
+
+        if (p!=null) {
+            return PARENT.getAndSet(this, null) != null;
+        }
+        return false;
     }
 
     public boolean reattach(Surface nextParent) {

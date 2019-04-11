@@ -15,7 +15,7 @@ public class FingerResizeSurface extends FingerResize {
     @Nullable
     protected DragEdit mode;
 
-    public FingerResizeSurface(int button, Surface target) {
+    public FingerResizeSurface(Surface target, int button) {
         super(button);
         this.target = target;
     }

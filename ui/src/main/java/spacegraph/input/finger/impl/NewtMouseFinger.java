@@ -36,14 +36,21 @@ public class NewtMouseFinger extends MouseFinger implements MouseListener, Windo
     /** called for each layer. returns true if continues down to next layer */
     public void touch(Fingered s) {
 
-        Fingering ff = this.fingering.get();
+        _posGlobal.set(posPixel); //HACK
 
+        Fingering ff = this.fingering.get();
         if (ff == Fingering.Null || ff.escapes()) {
-            _posGlobal.set(posPixel); //HACK
             Surface touchNext = s.finger(this);
             touching.accumulateAndGet(touchNext, ff::touchNext);
         }
+        if (ff != Fingering.Null) {
+            if (!ff.updateGlobal(this)) {
+                ff.stop(this);
+                fingering.set(Fingering.Null);
+            }
+        }
 
+        commitButtons();
     }
 
 
@@ -59,14 +66,7 @@ public class NewtMouseFinger extends MouseFinger implements MouseListener, Windo
 
         touch(((OrthoSurfaceGraph) this.space).layers);
 
-        Fingering ff = this.fingering.get();
 
-        if (ff != Fingering.Null) {
-            if (!ff.updateGlobal(this)) {
-                ff.stop(this);
-                fingering.set(Fingering.Null);
-            }
-        }
 
         clearRotation();
     }
@@ -75,7 +75,7 @@ public class NewtMouseFinger extends MouseFinger implements MouseListener, Windo
         return update(moved, e, null);
     }
 
-    private boolean update(boolean moved, MouseEvent e, short[] buttonsDown) {
+    private boolean update(boolean moved, MouseEvent e, @Nullable short[] buttonsDown) {
 
         JoglWindow win = space.video;
 
@@ -88,9 +88,7 @@ public class NewtMouseFinger extends MouseFinger implements MouseListener, Windo
             posScreen.set(win.getX() + pmx, win.getScreenH() - (win.getY() + e.getY()));
         }
 
-        if (buttonsDown != null) {
-            update(buttonsDown);
-        }
+        update(buttonsDown);
 
         return e != null;
     }

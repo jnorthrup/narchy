@@ -190,7 +190,7 @@ public class WidgetTest {
     }
 
     public static void main(String[] args) {
-        SpaceGraph.surfaceWindow(widgetDemo(), 1200, 800);
+        SpaceGraph.surfaceWindow(widgetDemo(), 1200, 800).dev();
     }
 
 
