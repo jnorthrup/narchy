@@ -10,15 +10,61 @@ import nars.time.ScheduledTask;
 import nars.time.Tense;
 import nars.time.When;
 
+import java.util.function.Consumer;
 import java.util.function.IntSupplier;
 
-public final class WhenTimeIs extends ScheduledTask {
-    private final long whenOrAfter;
-    private final Runnable then;
+abstract public class WhenTimeIs extends ScheduledTask {
 
-    public WhenTimeIs(long whenOrAfter, Runnable then) {
+    public final long whenOrAfter;
+
+    public static WhenTimeIs then(long whenOrAfter, Object then) {
+        if (then instanceof Runnable)
+            return new WhenTimeIs_Run(whenOrAfter, (Runnable)then);
+        else
+            return new WhenTimeIs_Consume(whenOrAfter, (Consumer)then);
+    }
+
+    private static final class WhenTimeIs_Consume extends WhenTimeIs {
+        private final Consumer<NAR> then;
+
+        private WhenTimeIs_Consume(long whenOrAfter, Consumer<NAR> then) {
+            super(whenOrAfter);
+            this.then = then;
+        }
+
+        @Override
+        public void accept(NAR nar) {
+            then.accept(nar);
+        }
+
+        @Override
+        protected Object _id() {
+            return then;
+        }
+    }
+
+    private static final class WhenTimeIs_Run extends WhenTimeIs {
+        private final Runnable then;
+
+        private WhenTimeIs_Run(long whenOrAfter, Runnable then) {
+            super(whenOrAfter);
+            this.then = then;
+        }
+
+
+        @Override
+        public void accept(NAR nar) {
+            then.run();
+        }
+
+        @Override
+        protected Object _id() {
+            return then;
+        }
+    }
+
+    public WhenTimeIs(long whenOrAfter) {
         this.whenOrAfter = whenOrAfter;
-        this.then = then;
     }
 
     public static When<NAR> range(long subStart, long subEnd, NAR n) {
@@ -68,12 +114,11 @@ public final class WhenTimeIs extends ScheduledTask {
     }
 
     @Override
-    public void run() {
-        then.run();
+    public Term term() {
+        return $.p($.identity(_id()), $.the(whenOrAfter));
     }
 
-    @Override
-    public Term term() {
-        return $.p($.identity(then), $.the(whenOrAfter));
-    }
+    protected abstract Object _id();
+
+
 }

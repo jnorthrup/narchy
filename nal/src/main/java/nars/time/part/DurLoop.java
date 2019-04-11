@@ -169,17 +169,16 @@ abstract public class DurLoop extends NARPart {
         final AtomicBoolean busy = new AtomicBoolean(false);
 
         @Override
-        public void run() {
-
+        public void accept(NAR nar) {
             if (!busy.compareAndSet(false, true))
                 throw new WTF(); //return false;
 
             long atStart = TIMELESS;
             try {
-
-                NAR nar = DurLoop.this.nar;
                 if (nar == null || !isOn())
                     return; //cancelled between previous iteration and this iteration
+
+                assert(nar == DurLoop.this.nar);
 
                 atStart = nar.time();
 

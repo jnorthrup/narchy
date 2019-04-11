@@ -22,14 +22,14 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class NAL7Test extends NALTest {
 
     public static final float CONF_TOLERANCE_FOR_PROJECTIONS = 2f; //200%
-    private final static int cycles = 800;
+    private final static int cycles = 150;
 
     @BeforeEach
     void setTolerance() {
         test.confTolerance(CONF_TOLERANCE_FOR_PROJECTIONS);
         test.termVolMax(12);
         test.confMin(0.3f);
-        test.nar.freqResolution.set(0.1f);
+        test.nar.freqResolution.set(0.05f);
         test.nar.confResolution.set(0.02f);
     }
 
@@ -705,7 +705,17 @@ public class NAL7Test extends NALTest {
         ;
 
     }
+    @Test
+    void variable_elimination_on_temporal_statements_simpler() {
 
+        test
+                .termVolMax(11)
+                .inputAt(0, "((y,#1) &| (x,#1)). |")
+                .inputAt(1, "((($1,#2) &| (x,#2)) =|> (x,$1)).")
+                .mustBelieve(cycles, "(x,y)",
+                        1.0f, 0.81f, 0);
+
+    }
     @Test
     void variable_elimination_on_temporal_statements() {
 

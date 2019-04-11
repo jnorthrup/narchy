@@ -194,7 +194,7 @@ public class TrackXY_NAR extends GameX {
     public static void main(String[] args) {
 
         NARS nb = new NARS.DefaultNAR(0, true)
-                .exe(new UniExec.Concurrent())
+                .exe(new UniExec())
                 //.time(new RealTime.MS().dur(durMS))
                 .time(new CycleTime().dur(dur))
                 .index(

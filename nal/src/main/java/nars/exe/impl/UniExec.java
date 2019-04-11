@@ -19,13 +19,18 @@ public class UniExec extends Exec {
     }
 
     @Override
-    public void input(Object t) {
+    public final void input(Object t) {
         executeNow(t);
     }
 
     @Override
-    public int concurrency() {
+    public final int concurrency() {
         return 1;
+    }
+
+    @Override
+    public final boolean concurrent() {
+        return false;
     }
 
     protected void cycle(NAR nar) {
@@ -43,11 +48,4 @@ public class UniExec extends Exec {
         }
     }
 
-    /** forces concurrent() even for 1-thread execution */
-    public static class Concurrent extends UniExec {
-        @Override
-        public boolean concurrent() {
-            return true;
-        }
-    }
 }

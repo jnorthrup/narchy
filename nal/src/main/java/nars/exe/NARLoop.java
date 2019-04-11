@@ -10,11 +10,9 @@ import nars.NAR;
  */
 abstract public class NARLoop extends InstrumentedLoop {
 
-
     public final NAR nar;
 
     public final FloatRange throttle = new FloatRange(1f, 0f, 1f);
-
 
     /**
      * starts paused; thread is not automatically created
@@ -22,19 +20,16 @@ abstract public class NARLoop extends InstrumentedLoop {
     NARLoop(NAR n) {
         super();
         nar = n;
-
     }
 
-    public static NARLoop build(NAR nar) {
+    public static NARLoop the(NAR nar) {
         return nar.exe.concurrent() ? new NARLoopAsync(nar) : new NARLoopSync(nar);
     }
 
 
-    final static class NARLoopSync extends NARLoop {
+    private final static class NARLoopSync extends NARLoop {
 
-        NARLoopSync(NAR n) {
-            super(n);
-        }
+        NARLoopSync(NAR n) { super(n); }
 
         @Override
         public final boolean next() {
@@ -44,7 +39,7 @@ abstract public class NARLoop extends InstrumentedLoop {
         }
     }
 
-    final static class NARLoopAsync extends NARLoop {
+    private final static class NARLoopAsync extends NARLoop {
 
         NARLoopAsync(NAR n) {
             super(n);
@@ -57,12 +52,8 @@ abstract public class NARLoop extends InstrumentedLoop {
 
         @Override
         public final boolean next() {
-
             nar.time.next(nar);
-
             nar.eventCycle.emitAsync(nar, nar.exe, this::ready);
-
-
             return true;
         }
     }

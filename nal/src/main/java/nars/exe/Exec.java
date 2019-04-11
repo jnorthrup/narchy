@@ -35,18 +35,7 @@ abstract public class Exec extends NARPart implements Executor, ConsumerX<ITask>
 
     abstract public void input(Object t);
 
-    /**
-     * immediately execute a Task
-     */
-    @Override
-    public final void accept(ITask x) {
-        ITask t = x;
-        try {
-            ITask.run(t, nar);
-        } catch (Throwable ee) {
-            taskError(t, x, ee, nar);
-        }
-    }
+
 
     private static void taskError(Prioritizable t, Prioritizable x, Throwable ee, NAR nar) {
         //TODO: if(RELEASE)
@@ -98,30 +87,47 @@ abstract public class Exec extends NARPart implements Executor, ConsumerX<ITask>
         return concurrencyMax;
     }
 
+    protected final void executeNow(Consumer<NAR> t) {
+        try {
+            t.accept(nar);
+        } catch (Throwable e) {
+            logger.error("{} {}", t, e);
+        }
+    }
+    protected final void executeNow(Runnable t) {
+        try {
+            t.run();
+        } catch (Throwable e) {
+            logger.error("{} {}", t, e);
+        }
+    }
+
+    /**
+     * immediately execute a Task
+     */
+    @Override
+    public final void accept(ITask x) {
+        ITask t = x;
+        try {
+            ITask.run(t, nar);
+        } catch (Throwable e) {
+            logger.error("{} {}", t, e);
+        }
+    }
+
     /**
      * inline, synchronous
      */
     protected final void executeNow(Object t) {
         if (t instanceof ITask)
             accept((ITask) t);
-        else {
-            try {
-                if (t instanceof Runnable) {
-                    ((Runnable) t).run();
-                } else {
-                    ((Consumer) t).accept(nar);
-                }
-            } catch (Throwable e) {
-                logger.error("{} {}", t, /*Param.DEBUG ?*/ e /*: e.getMessage()*/);
-            }
-        }
+        else if (t instanceof Consumer)
+            executeNow((Consumer)t);
+        else
+            executeNow((Runnable) t);
     }
 
-
-
     abstract protected void cycle(NAR nar);
-
-
 
     public void print(Appendable out) {
         try {

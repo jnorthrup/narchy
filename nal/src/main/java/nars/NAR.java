@@ -1,11 +1,13 @@
 package nars;
 
 
+import com.google.common.base.Joiner;
 import com.google.common.collect.Streams;
 import com.google.common.primitives.Longs;
 import jcog.Log;
 import jcog.Texts;
 import jcog.Util;
+import jcog.WTF;
 import jcog.data.byt.DynBytes;
 import jcog.data.list.FasterList;
 import jcog.event.ListTopic;
@@ -39,6 +41,7 @@ import nars.subterm.Subterms;
 import nars.table.BeliefTable;
 import nars.task.ITask;
 import nars.task.NALTask;
+import nars.task.proxy.SpecialOccurrenceTask;
 import nars.task.util.TaskException;
 import nars.task.util.TaskTopic;
 import nars.term.Compound;
@@ -176,7 +179,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
         Builtin.init(this);
 
 
-        this.loop = NARLoop.build(this);
+        this.loop = NARLoop.the(this);
         start(exe);
 
         synch();
@@ -957,24 +960,29 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
     public NAR inputAt(long time, String... tt) {
 
         assert (tt.length > 0);
-
-        runAt(time, () -> {
-            List<Task> yy = new FasterList(tt.length);
-            for (String s : tt) {
-                try {
-                    yy.addAll(Narsese.tasks(s, this));
-                } catch (NarseseException e) {
-                    logger.error("{} for: {}", e, s);
-                    e.printStackTrace();
-                }
+        FasterList<Task> yy = new FasterList(tt.length);
+        for (String s : tt) {
+            try {
+                yy.addAll(Narsese.tasks(s, this));
+            } catch (NarseseException e) {
+                logger.error("{} for: {}", e, s);
+                e.printStackTrace();
             }
+        }
 
+        int size = yy.size();
+        if (size <= 0)
+            throw new WTF/*NarseseException*/("no tasks parsed from input: " + Joiner.on("\n").join(tt).toString());
 
-            int size = yy.size();
-            if (size > 0)
-                input(yy.toArray(new Task[size]));
-
+//            assert(yy.allSatisfyWith((y,t)->y.start()==t, time));
+        yy.replaceAll(t -> {
+            if (!t.isEternal() && t.start() != time) {
+                return new SpecialOccurrenceTask(t, time, time + (t.range() - 1));
+            } else
+                return t;
         });
+
+        runAt(time, (nn) -> nn.input(yy.toArray(new Task[size])));
 
         return this;
     }
@@ -985,11 +993,18 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
     public void inputAt(long when, ITask... x) {
         long now = time();
         if (when <= now) {
-
             input(x);
         } else {
-            runAt(when, () -> input(x));
+            runAt(when, (nn) -> nn.input(x));
         }
+    }
+
+    @Nullable
+    public final void runAt(long whenOrAfter, Consumer<NAR> t) {
+        if (time() >= whenOrAfter)
+            exe.input(t); //immediate
+        else
+            runAt(WhenTimeIs.then(whenOrAfter, t));
     }
 
     /**
@@ -997,28 +1012,41 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
      *
      * @return
      */
-    @Nullable public final ScheduledTask runAt(long whenOrAfter, Runnable t) {
-        if (time() >= whenOrAfter) {
+    @Nullable
+    public final void runAt(long whenOrAfter, Runnable t) {
+        if (time() >= whenOrAfter)
             exe.execute(t); //immediate
-            return null;
-        } else
-            return runAt(new WhenTimeIs(whenOrAfter, t));
+        else
+            runAt(WhenTimeIs.then(whenOrAfter, t));
+    }
+
+    @Nullable
+    public final void runAt(long whenOrAfter, ScheduledTask t) {
+        if (time() >= whenOrAfter)
+            exe.input(t); //immediate
+        else
+            runAt(t);
     }
 
     public final ScheduledTask runAt(ScheduledTask t) {
         if (time() >= t.start())
-            exe.execute(t); //immediate
+            exe.input(t); //immediate
         else
             time.runAt(t);
         return t;
+    }
+
+
+    public final void runLater(Runnable t) {
+        runLater(WhenTimeIs.then(time(), t));
     }
 
     /**
      * adds a task to the queue of task which will be executed in batch
      * after the end of the current frame before the next frame.
      */
-    public final void runLater(Runnable t) {
-        time.runAt(new WhenTimeIs(time(), t));
+    public final void runLater(ScheduledTask t) {
+        time.runAt(t);
     }
 
     /**
@@ -1494,14 +1522,14 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
      */
     public final NAR synch() {
         //if (synching.compareAndSet(false, true)) {
-            synchronized (exe) {
+        synchronized (exe) {
 //                try {
-                    time.synch(this);
-                    exe.synch();
+            time.synch(this);
+            exe.synch();
 //                } finally {
 //                    synching.set(false);
 //                }
-            }
+        }
         //}
         return this;
     }

@@ -97,7 +97,6 @@ public abstract class Time implements Serializable {
      */
     public void schedule(Consumer<ScheduledTask> each) {
 
-
         if (!scheduling.compareAndSet(false, true)) {
 
             try {
@@ -153,7 +152,7 @@ public abstract class Time implements Serializable {
      * flushes the pending work queued for the current time
      */
     public final void synch(NAR n) {
-        schedule(n.exe::execute);
+        schedule(x -> x.accept(n));
     }
 
 

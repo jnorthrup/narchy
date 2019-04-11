@@ -865,8 +865,14 @@ public enum $ {
 
         if (x instanceof String)
             return Atomic.the((String)x);
-        else
-            return $.p($.quote(x.getClass().getName()), $.intRadix(System.identityHashCode(x),36));
+        else {
+            Class<?> c = x.getClass();
+            Term idHash = $.intRadix(System.identityHashCode(x), 36);
+            if (!c.isSynthetic())
+                return $.p($.quote(c.getName()), idHash);
+            else
+                return $.p($.quote(c.getSimpleName()), idHash);
+        }
 
     }
 
