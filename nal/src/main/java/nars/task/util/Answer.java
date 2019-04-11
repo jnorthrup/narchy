@@ -23,7 +23,6 @@ import java.util.function.Predicate;
 
 import static nars.Op.*;
 import static nars.time.Tense.ETERNAL;
-import static nars.truth.func.TruthFunctions.c2wSafe;
 
 /**
  * heuristic task ranking for matching of evidence-aware truth values may be computed in various ways.
@@ -442,18 +441,18 @@ public final class Answer {
     }
 
 
+    /** produces a modifiable copy of the tasks ranked here */
     @Nullable
-    public TaskList taskList() {
+    private TaskList taskList() {
+        RankedN<Task> tasks = this.tasks;
         int t = tasks.size();
-        if (t == 0)
-            return null;
-        else return new TaskList(tasks, tasks.size()); //copy because it can be modified
+        return t == 0 ? null : new TaskList(tasks, t);
     }
 
     /**
      * this does not filter cyclic; do that separately
      */
-    private TruthProjection truthpolation(TaskList tt) {
+    private TruthProjection truthpolation(@Nullable TaskList tt) {
 
         if (tt == null)
             return null;
@@ -494,6 +493,7 @@ public final class Answer {
             s = tt.start();
             e = tt.end();
         }
+
         TruthProjection tp = nar.projection(s, e, dur);
         tp.ensureCapacity(tt.size());
         tt.forEach(tp::add);

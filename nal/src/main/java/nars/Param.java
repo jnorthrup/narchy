@@ -145,8 +145,8 @@ public abstract class Param extends Parts<Term,NAR> {
         public static final double TRUTH_EVI_MIN =
                             //c2wSafe(TRUTH_EPSILON);
                             //ScalarValue.EPSILON;
-                            Float.MIN_NORMAL;
-                            //Double.MIN_NORMAL;
+                            //Float.MIN_NORMAL;
+                            Double.MIN_NORMAL;
     }
 
 

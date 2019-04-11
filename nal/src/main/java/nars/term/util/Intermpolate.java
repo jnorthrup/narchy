@@ -21,19 +21,10 @@ import static nars.time.Tense.XTERNAL;
  */
 public enum Intermpolate {;
 
+    private static Term intermpolate(/*@NotNull*/ Compound a,  /*@NotNull*/ Compound b, float aProp, float curDepth, NAR nar) {
 
-    private static Term intermpolate(Term a, Term b, float aProp, float curDepth, NAR nar) {
         if (a.equals(b))
             return a;
-        else {
-            if (a instanceof Compound && b instanceof Compound) {
-                return intermpolate((Compound)a, (Compound)b, aProp, curDepth, nar);
-            }
-            return Null;
-        }
-    }
-
-    private static Term intermpolate(/*@NotNull*/ Compound a,  /*@NotNull*/ Compound b, float aProp, float curDepth, NAR nar) {
 
         if (!a.equalsRoot(b))
             return Null;
@@ -68,15 +59,16 @@ public enum Intermpolate {;
             boolean change = false;
             for (int i = 0; i < len; i++) {
                 Term ai = aa.sub(i), bi = bb.sub(i);
-                Term y = intermpolate(ai, bi, aProp, curDepth / 2f, nar);
-                if (y == Null)
-                    return Null;
+                if (ai.equals(bi)) {
 
-                if (!ai.equals(bi)) {
+                } else {
 
-                    if (y == Null)
+                    if (!(ai instanceof Compound) || !(bi instanceof Compound))
                         return Null;
 
+                    Term y = intermpolate((Compound) ai, (Compound) bi, aProp, curDepth / 2f, nar);
+                    if (y == Null)
+                        return Null;
                     if (!ai.equals(y)) {
                         change = true;
                         ai = y;
@@ -152,7 +144,7 @@ public enum Intermpolate {;
         }
     }
 
-    public static Term intermpolate(/*@NotNull*/ Term a, /*@NotNull*/ Term b, float aProp, NAR nar) {
+    public static Term intermpolate(/*@NotNull*/ Compound a, /*@NotNull*/ Compound b, float aProp, NAR nar) {
         return intermpolate(a, b, aProp, 0, nar);
     }
 
@@ -167,14 +159,17 @@ public enum Intermpolate {;
      * XTERNAL matches anything
      */
     public static float dtDiff(Term a, Term b) {
-        return dtDiff(a, b, 1);
+        if (a instanceof Compound && b instanceof Compound)
+            return dtDiff(a, b, 0);
+        else
+            return a.equals(b) ? 0 : Float.POSITIVE_INFINITY;
     }
 
     private static float dtDiff(Term a, Term b, int depth) {
         if (a.equals(b))
             return 0f;
 
-        if (!a.equalsRoot(b))
+        if (!(a instanceof Compound) && !(b instanceof Compound) || !a.equalsRoot(b))
             return Float.POSITIVE_INFINITY;
 
 //        Op ao = a.op(), bo = b.op();

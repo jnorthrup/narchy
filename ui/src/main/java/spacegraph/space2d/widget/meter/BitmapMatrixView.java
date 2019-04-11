@@ -17,6 +17,7 @@ import spacegraph.video.TexSurface;
 
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Supplier;
 
 import static java.awt.image.BufferedImage.TYPE_INT_ARGB;
@@ -209,17 +210,29 @@ public class BitmapMatrixView extends TexSurface {
 
     }
 
-    public boolean update() {
-        if (buf == null) {
-            if (w == 0 || h == 0) return false;
+    private final AtomicBoolean busy = new AtomicBoolean();
 
-            this.buf = new BufferedImage(w, h, alpha() ? TYPE_INT_ARGB : TYPE_INT_RGB);
-            this.pix = ((DataBufferInt) buf.getRaster().getDataBuffer()).getData();
+    public boolean update() {
+
+        if (!busy.compareAndSet(false, true))
+            return false;
+
+        try {
+            if (buf == null) {
+                if (w == 0 || h == 0) return false;
+
+                this.buf = new BufferedImage(w, h, alpha() ? TYPE_INT_ARGB : TYPE_INT_RGB);
+                this.pix = ((DataBufferInt) buf.getRaster().getDataBuffer()).getData();
+            }
+
+            view.color(buf, pix);
+
+            return tex.set(buf);
+
+        } finally {
+            busy.set(false);
         }
 
-        view.color(buf, pix);
-
-        return tex.set(buf);
     }
 
     public boolean alpha() {

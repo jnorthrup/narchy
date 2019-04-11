@@ -208,12 +208,26 @@ public class ForkJoinExec extends MultiExec implements Thread.UncaughtExceptionH
 //        if (Thread.currentThread() instanceof ForkJoinWorkerThread) //TODO more robust test, in case multiple pools involved then we probably need to differentiate between local and remotes
 //            executeNow(x);
 //        else {
-            pool.execute(() -> executeNow(x));
+            pool.execute(x instanceof Runnable ? ((Runnable)x) : new MyRunnable(x));
 //        }
     }
 
     @Override
     public void uncaughtException(Thread thread, Throwable throwable) {
         throwable.printStackTrace(); //TODO
+    }
+
+
+    private final class MyRunnable implements Runnable {
+        private final Object x;
+
+        MyRunnable(Object x) {
+            this.x = x;
+        }
+
+        @Override
+        public void run() {
+            ForkJoinExec.this.executeNow(x);
+        }
     }
 }

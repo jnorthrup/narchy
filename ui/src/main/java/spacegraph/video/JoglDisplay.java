@@ -188,6 +188,9 @@ abstract public class JoglDisplay {
         return video.gl;
     }
 
+    public void delete() {
+        video.off();
+    }
 
 
     private class MyJoglWindow extends JoglWindow {

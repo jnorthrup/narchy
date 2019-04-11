@@ -287,15 +287,15 @@ public class IntermpolationTest {
         NAR nar = NARS.shell();
         nar.time.dur(8);
 
-        Term a0 = $$("(b ==>+6 c)");
-        Term b0 = $$("(b ==>+10 c)");
+        Compound a0 = $$("(b ==>+6 c)");
+        Compound b0 = $$("(b ==>+10 c)");
 
         Term c0 = Intermpolate.intermpolate(a0, b0, 0.5f, nar);
         assertEquals("(b ==>+8 c)", c0.toString());
 
 
-        Term a = $$("(a, (b ==>+6 c))");
-        Term b = $$("(a, (b ==>+10 c))");
+        Compound a = $$("(a, (b ==>+6 c))");
+        Compound b = $$("(a, (b ==>+10 c))");
 
         Term c = Intermpolate.intermpolate(a, b, 0.5f, nar);
         assertEquals("(a,(b ==>+8 c))", c.toString());

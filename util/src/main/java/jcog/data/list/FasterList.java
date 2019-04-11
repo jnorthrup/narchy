@@ -552,11 +552,10 @@ public class FasterList<X> extends FastList<X> {
         return newCapacity <= 0 ? (X[]) ArrayUtils.EMPTY_OBJECT_ARRAY : new Object[newCapacity];
     }
 
-    public final boolean addIfNotNull(@Nullable Supplier<X> x) {
+    public final boolean addIfNotNull(Supplier<X> x) {
         return addIfNotNull(x.get());
     }
-
-    private final boolean addIfNotNull(@Nullable X x) {
+    public final boolean addIfNotNull(@Nullable X x) {
         return x != null && add(x);
     }
 
@@ -826,24 +825,24 @@ public class FasterList<X> extends FastList<X> {
     public boolean removeIf(org.eclipse.collections.api.block.predicate.Predicate<? super X> predicate) {
         int nowFilled = 0;
         int s0 = this.size;
-        if (s0 == 0) return false;
+        if (s0 == 0)
+            return false;
         X[] xx = this.items;
         for (int i = 0; i < s0; i++) {
             X x = xx[i];
             if (!predicate.accept(x)) {
-
                 if (nowFilled != i) {
                     xx[nowFilled] = x;
                 }
                 nowFilled++;
             }
         }
+
         if (nowFilled < s0) {
-            Arrays.fill(items, nowFilled, s0, null);
-            this.size = nowFilled;
+            Arrays.fill(items, this.size = nowFilled, s0, null);
             return true;
-        } else
-            return false;
+        }
+        return false;
     }
 
     public boolean removeInstance(X x) {

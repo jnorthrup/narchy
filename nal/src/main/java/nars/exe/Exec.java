@@ -107,6 +107,10 @@ abstract public class Exec extends NARPart implements Executor, ConsumerX<ITask>
      */
     @Override
     public final void accept(ITask x) {
+        executeNow(x, nar);
+    }
+
+    static public void executeNow(ITask x, NAR nar) {
         ITask t = x;
         try {
             ITask.run(t, nar);

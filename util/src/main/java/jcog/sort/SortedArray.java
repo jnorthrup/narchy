@@ -9,7 +9,6 @@ import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
-import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.function.ToIntFunction;
@@ -60,7 +59,7 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
     /** when scanning for identity equality */
     public static final int BINARY_SEARCH_THRESHOLD_SCAN = 16;
 
-    protected static final AtomicIntegerFieldUpdater<SortedArray> SIZE =
+    protected static final MetalAtomicIntegerFieldUpdater<SortedArray> SIZE =
             new MetalAtomicIntegerFieldUpdater(SortedArray.class, "size");
     private static final float GROWTH_RATE = 1.25f;
     public /*volatile*/ X[] items = (X[]) ArrayUtils.EMPTY_OBJECT_ARRAY;
@@ -486,7 +485,8 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
         int s = this.size;
         Object[] l = this.items;
 
-        if (capacity() <= s) {
+        int c = capacity();
+        if (c <= s) {
             if (grows()) {
                 l = resize(grow(s));
             } else {
@@ -733,8 +733,10 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
 
     public final void forEach(Consumer<? super X> action) {
         int s = size;
-        for (int i = 0; i < s; i++)
+        X[] items = this.items;
+        for (int i = 0; i < Math.min(items.length, s); i++) {
             action.accept(items[i]);
+        }
     }
 
 //    public final void forEach(int n, Consumer<? super X> action) {

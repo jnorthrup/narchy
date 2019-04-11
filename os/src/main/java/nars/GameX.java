@@ -17,6 +17,7 @@ import nars.agent.util.RLBooster;
 import nars.attention.What;
 import nars.concept.Concept;
 import nars.control.MetaGoal;
+import nars.control.NARPart;
 import nars.derive.Derivers;
 import nars.derive.impl.BatchDeriver;
 import nars.derive.premise.PremiseDeriverRuleSet;
@@ -40,6 +41,7 @@ import nars.video.SwingBitmap2D;
 import nars.video.WaveletBag;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.SpaceGraph;
+import spacegraph.space2d.OrthoSurfaceGraph;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.graph.EditGraph2D;
 import spacegraph.space2d.container.grid.Gridding;
@@ -117,14 +119,11 @@ abstract public class GameX extends Game {
         initPlugins2(n, g);
         initPlugins3(n, g);
 
-//            n.runLater(()->{
-        SpaceGraph.surfaceWindow(
-                //new Gridding(n.parts(Game.class).map(NARui::agent).collect(toList())),
-                NARui.agent(g),
-                500, 500);
-        SpaceGraph.surfaceWindow(NARui.top(n), 800, 500);
+        //new Gridding(n.parts(Game.class).map(NARui::agent).collect(toList())),
 
-        SpaceGraph.surfaceWindow(NARui.attentionUI(n), 500, 500);
+        n.start(new SpaceGraphPart(()->NARui.agent(g), 500, 500));
+        n.start(new SpaceGraphPart(()->NARui.attentionUI(n), 600, 600));
+        n.start(new SpaceGraphPart(()->NARui.top(n), 700, 700));
 
         n.synch();
 
@@ -767,5 +766,27 @@ abstract public class GameX extends Game {
     }
 
 
+    private static class SpaceGraphPart extends NARPart {
+        private final Supplier<Surface> surface;
+        private final int w, h;
+        private OrthoSurfaceGraph win;
+
+        public SpaceGraphPart(Supplier<Surface> surface, int w, int h) {
+            this.w = w;
+            this.h = h;
+            this.surface = surface;
+        }
+
+        @Override
+        protected void starting(NAR nar) {
+            win = SpaceGraph.surfaceWindow(surface.get(), w, h);
+        }
+
+        @Override
+        protected void stopping(NAR nar) {
+            win.delete();
+            win = null;
+        }
+    }
 }
 

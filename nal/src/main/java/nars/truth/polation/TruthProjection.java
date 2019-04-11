@@ -13,6 +13,7 @@ import nars.Param;
 import nars.Task;
 import nars.task.Tasked;
 import nars.task.util.TaskRegion;
+import nars.term.Compound;
 import nars.term.Term;
 import nars.term.util.Intermpolate;
 import nars.term.util.TermException;
@@ -70,6 +71,8 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
     }
 
     public boolean add(Task t) {
+        if (t == null)
+            throw new NullPointerException();
         return add(new TaskComponent(t));
     }
 
@@ -395,8 +398,7 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
                         Term ab;
                         try {
                             //if there isnt more evidence for the primarily sought target, then just use those components
-                            ab = Intermpolate.intermpolate(a,
-                                    b, (float) (e1Evi / (e1Evi + e2Evi)), nar);
+                            ab = Intermpolate.intermpolate((Compound)a, (Compound)b, (float) (e1Evi / (e1Evi + e2Evi)), nar);
                         } catch (TermException e) {
                             //HACK TODO avoid needing to throw exception
                             if (Param.test.DEBUG) {

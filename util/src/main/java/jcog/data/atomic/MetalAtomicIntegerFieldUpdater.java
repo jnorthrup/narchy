@@ -100,13 +100,11 @@ public final class MetalAtomicIntegerFieldUpdater<T> extends AtomicIntegerFieldU
     }
 
     public final int getAndSet(T obj, int newValue) {
-
         return U.getAndSetInt(obj, this.offset, newValue);
     }
 
     public final int getAndAdd(T obj, int delta) {
-
-        return U.getAndAddInt(obj, this.offset, delta);
+        return delta == 0 ? get(obj) : U.getAndAddInt(obj, this.offset, delta);
     }
 
     public final int getAndIncrement(T obj) {

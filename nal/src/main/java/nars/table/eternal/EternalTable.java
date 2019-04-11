@@ -15,6 +15,7 @@ import nars.task.NALTask;
 import nars.task.ProxyTask;
 import nars.task.Revision;
 import nars.task.util.Answer;
+import nars.term.Compound;
 import nars.term.Term;
 import nars.term.util.Intermpolate;
 import nars.truth.Stamp;
@@ -309,13 +310,10 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
             if (yt != null) {
 
                 float _aProp = (float) (ie / (ie + x.evi()));
-                if (inputTerm.equals(xTerm)) {
-                    nt = inputTerm;
-                } else {
-
+                if (inputTerm instanceof Compound) {
                     nt =
                             Intermpolate.intermpolate(
-                                    inputTerm, xTerm,
+                                    (Compound)inputTerm, (Compound)xTerm,
                                     _aProp,
                                     nar
                             );
@@ -324,6 +322,8 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
                         continue;
                     if (!nt.concept().equals(inputTerm.concept()))
                         continue;
+                } else {
+                    nt = inputTerm;
                 }
 
                 yt = yt.dither(nar);

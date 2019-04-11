@@ -372,8 +372,8 @@ public class RevisionTest {
     @Test
     void testSequenceIntermpolation1() throws Narsese.NarseseException {
 
-        Term a = $.$("(((--,(dx-->noid)) &&+4 ((--,(by-->noid))&|(happy-->noid))) &&+11 (bx-->noid))");
-        Term b = $.$("(((bx-->noid) &&+7 (--,(dx-->noid))) &&+4 ((--,(by-->noid))&|(happy-->noid)))");
+        Compound a = $.$("(((--,(dx-->noid)) &&+4 ((--,(by-->noid))&|(happy-->noid))) &&+11 (bx-->noid))");
+        Compound b = $.$("(((bx-->noid) &&+7 (--,(dx-->noid))) &&+4 ((--,(by-->noid))&|(happy-->noid)))");
         Term ar = a.root();
         Term br = b.root();
         assertEquals(ar, br);
@@ -448,7 +448,7 @@ public class RevisionTest {
         assertEquals(expected, permuteIntermpolations(a, b).toString());
     }
 
-    protected static Set<Term> permuteIntermpolations(Term a, Term b) {
+    protected static Set<Term> permuteIntermpolations(Compound a, Compound b) {
 
         {
             float ab = Intermpolate.dtDiff(a, b);
