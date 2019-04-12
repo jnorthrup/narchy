@@ -99,6 +99,7 @@ public class Opjects extends DefaultTermizer {
     public final FloatRange exeThresh = new FloatRange(0.75f, 0.5f, 1f);
     private final DurLoop on;
 
+
     /**
      * determines evidence weighting for reporting specific feedback values
      */
@@ -165,6 +166,7 @@ public class Opjects extends DefaultTermizer {
 
 
     protected final CauseChannel<ITask> in;
+    private final What what;
 
     private final Memoize<Pair<Pair<Class, Term>, List<Class<?>>>, MethodHandle> methodCache =
             CaffeineMemoize.build(
@@ -213,6 +215,7 @@ public class Opjects extends DefaultTermizer {
 
     public Opjects(NAR n) {
         in = (nar = n).newChannel(this);
+        this.what = n.what();
         update(n);
         this.on = n.onDur(this::update);
     }
@@ -296,9 +299,6 @@ public class Opjects extends DefaultTermizer {
                 feedback = null;
             }
 
-
-
-            What what = nar.what(); //HACK TODO be parameter
             if (feedback == null && value!=null)
                 in.accept(value, what);
             else if (value==null && feedback != null)

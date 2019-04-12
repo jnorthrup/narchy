@@ -23,7 +23,7 @@ import nars.derive.premise.PremiseDeriverRuleSet;
 import nars.derive.timing.ActionTiming;
 import nars.exe.impl.ForkJoinExec;
 import nars.gui.NARui;
-import nars.index.concept.RadixTreeMemory;
+import nars.index.concept.CaffeineMemory;
 import nars.op.Arithmeticize;
 import nars.op.AutoencodedBitmap;
 import nars.op.Eternalizer;
@@ -238,14 +238,14 @@ abstract public class GameX extends Game {
                 .time(clock)
                 .index(
 
-                        new RadixTreeMemory(64*1024)
+                        //new RadixTreeMemory(64*1024)
 
-                        //CaffeineIndex.soft()
+                        //CaffeineMemory.soft()
 
-//                        new CaffeineMemory(
-//                            //    16*1024
-//                                64 * 1024
-//                        )
+                        new CaffeineMemory(
+                            //    16*1024
+                                64 * 1024
+                        )
                                  //, c -> (int) Math.ceil(c.term().voluplexity()))
 
 //                        new HijackConceptIndex(
@@ -306,7 +306,7 @@ abstract public class GameX extends Game {
     static void initPlugins3(NAR n, Game a) {
 
         MetaAgent meta = new MetaAgent(16f, a);
-        meta.what().pri(0.5f);
+        meta.what().pri(0.25f);
 
 //        RLBooster metaBoost = new RLBooster(meta, (i,o)->new HaiQae(i, 10,o),
 //                8, 2,false);

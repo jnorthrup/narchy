@@ -1640,6 +1640,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
         What w = what.get(id);
         if (w == null && createAndStartIfMissing) {
             w = what.put(this.whatBuilder.apply(id));
+            w.pri(0.5f);
             start(w);
         }
         return w;
