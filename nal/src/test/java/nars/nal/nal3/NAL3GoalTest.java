@@ -149,15 +149,28 @@ class NAL3GoalTest {
     void intersectionGoalDecomposition() {
 
         new TestNAR(NARS.tmp(3))
+                .termVolMax(6)
                 .input("((X|Y) --> Z)!")
                 .input("(X --> Z).")
-                .mustGoal(GoalDecompositionTest.cycles, "(Y --> Z)", 1, 0.81f)
-                .run(16);
-//        new TestNAR(NARS.tmp(3))
-//                .input("((X&Y) --> Z)!")
-//                .input("(X --> Z).")
-//                .mustGoal(GoalDecompositionTest.cycles, "(Y --> Z)", 1, 0.81f)
-//                .run(16);
+                .mustGoal(GoalDecompositionTest.cycles, "(Y --> Z)", 1, 0.81f) //via structural decomposition of intersection, at least
+                .run(0);
+
+    }
+    @Test
+    void intersectionGoalDecomposition2() {
+
+        new TestNAR(NARS.tmp(3))
+                .termVolMax(6)
+                .input("((X&Y) --> Z)!")
+                .input("(X --> Z).")
+                .mustGoal(GoalDecompositionTest.cycles, "(Y --> Z)", 1, 0.45f /*0.81f*/) //via structural decomposition of union, at least
+                .run(0);
+
+    }
+
+    @Test
+    void intersectionGoalDecomposition3() {
+
 //        new TestNAR(NARS.tmp(3))
 //                .input("((X&Y) --> Z)!")
 //                .input("--(X --> Z).")
@@ -253,11 +266,19 @@ class NAL3GoalTest {
             ;
         }
 
+//        @Test
+//        void testIntersectionConditionalDecomposeGoalNeg() {
+//            test
+//                    .input("--((a|b)-->g)!")
+//                    .input("--(a-->g).")
+//                    .mustGoal(cycles, "(b-->g)", 0f, 0.81f);
+//        }
+
         @Test
         void testIntersectionConditionalDecomposeGoalNeg() {
             test
                     .input("--((a|b)-->g)!")
-                    .input("--(a-->g).")
+                    .input("(a-->g).")
                     .mustGoal(cycles, "(b-->g)", 0f, 0.81f);
         }
 

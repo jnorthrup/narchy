@@ -10,9 +10,12 @@
 
 
 
-//union decompose
-(M --> S), X, is(S,"|"), subOf(S,X)   |-       --(M --> X), (Belief:StructuralDeductionN,Goal:StructuralDeductionN)
-(S --> M), X, is(S,"&"), subOf(S,X)   |-       --(X --> M), (Belief:StructuralDeductionN,Goal:StructuralDeductionN)
+
+//  union of opposites (coincidentia oppositorum)
+//    necessary as its own rule if neqRCom is used to exclude common subterms in the composition rules (above)
+    ((&,X,Y,A..*) --> M), ((&,--X,Z,A..*) --> M), neqRCom(Y,Z), neqRoot(Y,Z) |- ((&,Y,Z,A..*) --> M), (Belief:Union)
+    (M --> (|,X,Y,A..*)), (M --> (|,--X,Z,A..*)), neqRCom(Y,Z), neqRoot(Y,Z) |- (M --> (|,Y,Z,A..*)), (Belief:Union)
+
 
 ////     //difference --(S==P)! (asymmetric: DecomposePositive... )
 //     ((S ~ P) --> M), (S --> M) |- --(P --> M), (Goal:DecomposePP,Time:Intersect)

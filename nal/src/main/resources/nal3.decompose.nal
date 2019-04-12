@@ -1,13 +1,15 @@
-//NAL3 single premise decompose
-    (M --> S), X, is(S,"&"), subOf(S,X)   |-        (M --> without(S,X)),   (Belief:StructuralDeduction,Goal:StructuralDeduction)
-    (M --> S), X, is(S,"&"), subOf(S,--X)   |-      (M --> without(S,--X)), (Belief:StructuralDeduction,Goal:StructuralDeduction)
+//NAL3 single premise intersection decompose
+    (M --> S), X, is(S,"&"), subOfPosOrNeg(S,X)   |-   (M --> withoutPosOrNeg(S,X)),   (Belief:StructuralDeduction,Goal:StructuralDeduction)
         //(M --> S), X, is(S,"&"), subOf(S,X)   |-          (M --> X), (Belief:StructuralDeduction,Goal:StructuralDeduction)
         //(M --> S), X, is(S,"&"), subOf(S,--X)   |-      --(M --> X), (Belief:StructuralDeduction,Goal:StructuralDeduction)
 
-    (S --> M), X, is(S,"|"), subOf(S,X)   |-       (without(S,X)-->M), (Belief:StructuralDeduction,Goal:StructuralDeduction)
-    (S --> M), X, is(S,"|"), subOf(S,--X)   |-     (without(S,--X)-->M), (Belief:StructuralDeduction,Goal:StructuralDeduction)
+    (S --> M), X, is(S,"|"), subOfPosOrNeg(S,X)   |-   (withoutPosOrNeg(S,X)-->M), (Belief:StructuralDeduction,Goal:StructuralDeduction)
         //(S --> M), X, is(S,"|"), subOf(S,X)   |-         (X --> M), (Belief:StructuralDeduction,Goal:StructuralDeduction)
         //(S --> M), X, is(S,"|"), subOf(S,--X)   |-     --(X --> M), (Belief:StructuralDeduction,Goal:StructuralDeduction)
+
+//NAL3 single premise union decompose
+    (M --> S), X, is(S,"|"), subOfPosOrNeg(S,X)   |-    (M --> withoutPosOrNeg(S,X)), (Belief:StructuralDeductionWeak,Goal:StructuralDeductionWeak)
+    (S --> M), X, is(S,"&"), subOfPosOrNeg(S,X)   |-    (withoutPosOrNeg(S,X) --> M), (Belief:StructuralDeductionWeak,Goal:StructuralDeductionWeak)
 
 
 //        (M --> S), X, is(S,"&"), subOf(S,X)   |-    --(M --> X), (Belief:StructuralDeductionN,Goal:StructuralDeductionN)

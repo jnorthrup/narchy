@@ -18,10 +18,6 @@
          (M --> P), (M --> S), task("?@"), neqRCom(S,P), neqRoot(S,P), notSetsOrDifferentSets(S,P) |- (M --> interSect(P,polarizeRandom(S), "&"))
 
 
-//  union of opposites (coincidentia oppositorum)
-//    necessary as its own rule if neqRCom is used to exclude common subterms in the composition rules (above)
-    ((&,X,Y,A..*) --> M), ((&,--X,Z,A..*) --> M), neqRCom(Y,Z), neqRoot(Y,Z) |- ((&,Y,Z,A..*) --> M), (Belief:Union)
-    (M --> (|,X,Y,A..*)), (M --> (|,--X,Z,A..*)), neqRCom(Y,Z), neqRoot(Y,Z) |- (M --> (|,Y,Z,A..*)), (Belief:Union)
 
 //intersection question formation
 //    (W --> S), (W --> B), task("?@"), is(S,"|"), neqRCom(S,B) |- (W --> (S | B)), (Time:Intersect)
@@ -40,8 +36,8 @@
         //((A,B) --> M), ((X,Y) --> M), is(A,"+"), is(B,"+"), is(X,"+"), is(Y,"+") |- ((union(A,X),union(B,Y)) --> M), (Belief:Union)
 
 //decompose sect for a question/quest involving one component
-    (A --> X), (S --> X), task("?@"), isSect(S), subOfPosOrNeg(S,A) |- (withoutPosOrNeg(S,A) --> X)
-    (X --> A), (X --> S), task("?@"), isSect(S), subOfPosOrNeg(S,A) |- (X --> withoutPosOrNeg(S,A))
+    (A --> X), (S --> X), task("?@"), is(S,{"|","&"}), subOfPosOrNeg(S,A) |- (withoutPosOrNeg(S,A) --> X)
+    (X --> A), (X --> S), task("?@"), is(S,{"|","&"}), subOfPosOrNeg(S,A) |- (X --> withoutPosOrNeg(S,A))
 
 
 //union/intersection belief/goal to diff question/quest

@@ -14,8 +14,8 @@
         //B, (A ==> C), --is(A,"--"),--is(A,"#"),--is(C,"#"), --is(B,"==>") |- --unisubst(C,A,B), (Goal:PreWeakN, Time:TaskPlusBeliefDT)
 
        //questions
-          B, (A ==> C), task("?@"), --is(A,"--"), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- unisubst((A ==> C),A,B,novel), (Punctuation:Question)
-          B, (A ==> C), task("?@"), --is(A,"--"), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- unisubst(C,A,B)
+          B, (A ==> C), task("?@"), --is(A,{"--","#"}), --is(C,"#"), --is(B,"==>") |- unisubst((A ==> C),A,B,novel), (Punctuation:Question)
+          B, (A ==> C), task("?@"), --is(A,{"--","#"}), --is(C,"#"), --is(B,"==>") |- unisubst(C,A,B)
 
 
 

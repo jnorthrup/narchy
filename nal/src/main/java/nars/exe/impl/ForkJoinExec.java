@@ -30,12 +30,7 @@ public class ForkJoinExec extends MultiExec implements Thread.UncaughtExceptionH
             pool = new ForkJoinPool(
                     concurrency,
                     ForkJoinPool.defaultForkJoinWorkerThreadFactory,
-//                    (p) -> {
-//                        ForkJoinWorkerThread t = new ForkJoinWorkerThread(p) {
-//
-//                        };
-//                        return t;
-//                    },
+//                    (p) -> {             return new ForkJoinWorkerThread(p) { };         },
                     this,
                     true, 0, concurrency, 1,
                     null, 60L, TimeUnit.SECONDS) {
@@ -97,13 +92,7 @@ public class ForkJoinExec extends MultiExec implements Thread.UncaughtExceptionH
         return pool.getParallelism();
     }
 
-    class Play extends RecursiveAction {
 
-        @Override
-        protected void compute() {
-
-        }
-    }
     /**
      * inject play tasks
      *

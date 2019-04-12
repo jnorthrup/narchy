@@ -145,13 +145,6 @@ public class PremiseRuleSource extends ProxyTerm {
             Variable XX = X instanceof Variable ? (Variable) X : null;
             Variable YY = Y instanceof Variable ? (Variable) Y : null;
 
-
-        /*} else {
-            throw new RuntimeException("invalid arguments");*/
-            /*args = null;
-            arg1 = arg2 = null;*/
-
-
             switch (pred) {
 
 
@@ -280,19 +273,22 @@ public class PremiseRuleSource extends ProxyTerm {
 
 
                 case "is": {
-                    match(X, new TermMatcher.Is(Op.the($.unquote(Y))), !negated);
+                    int struct;
+                    if (Y.op()==SETe) {
+                        struct = 0;
+                        for (Term yy : Y.subterms()) {
+                            struct |= Op.the($.unquote(yy)).bit;
+                        }
+                    } else {
+                        struct = Op.the($.unquote(Y)).bit;
+                    }
+                    match(X, new TermMatcher.Is(struct), !negated);
                     if (negated)
                         negationApplied = true;
                     break;
                 }
                 case "isVar": {
                     match(X, new TermMatcher.Is(Op.Variable), !negated);
-                    if (negated)
-                        negationApplied = true;
-                    break;
-                }
-                /*@Deprecated */case "isSect": { //TODO: is(X,{"&","|"})
-                    match(X, new TermMatcher.Is(Op.Sect), !negated);
                     if (negated)
                         negationApplied = true;
                     break;

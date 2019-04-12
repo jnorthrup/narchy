@@ -138,12 +138,12 @@ public class FZero extends GameX {
 
 
         //initPushButtonTank();
-        //initLeftRightPushButtonMutex();
-        initTankContinuous();
+        initLeftRightPushButtonMutex();
+//        initTankContinuous();
         //initToggleLeftRight();
 
-        BiPolarAction A =
-            initBipolarRotateRelative(false, 0.25f);
+//        BiPolarAction A =
+//            initBipolarRotateRelative(false, 0.75f);
                 //initBipolarRotateRelative(true, 1f);
                 //initBipolarRotateAbsolute(true);
                 //initBipolarRotateDirect(false, 0.9f);
