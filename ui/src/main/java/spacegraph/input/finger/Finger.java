@@ -292,16 +292,17 @@ abstract public class Finger {
 
         Fingering prev = this.fingering.get();
 
-
-        if (prev!=next) {
-            if (prev != Null) {
-                if (!prev.updateLocal(this)) {
-                    prev.stop(this);
-                    fingering.set(Null);
-                    renderer = rendererDefault;
-                    prev = Null;
-                }
+        if (prev != Null) {
+            if (!prev.updateLocal(this)) {
+                prev.stop(this);
+                fingering.set(Null);
+                renderer = rendererDefault;
+                prev = Null;
             }
+        }
+        
+        if (prev!=next) {
+
 
             if (prev.defer(this)) {
 

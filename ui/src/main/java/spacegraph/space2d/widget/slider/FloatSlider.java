@@ -61,10 +61,10 @@ public class FloatSlider extends Widget {
     private FloatSlider(FloatSliderModel m) {
         super();
 
-        set(new Stacking(
+        set(new Scale(new Stacking(
             slider = m,
-                new Scale(label, 0.85f)
-        ));
+            label
+        ), 0.85f));
     }
 
     public FloatSlider text(String label) {

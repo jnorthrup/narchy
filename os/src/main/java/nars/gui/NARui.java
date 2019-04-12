@@ -561,7 +561,7 @@ public class NARui {
 
             s.set(c.data.bag); //Iterable Concat the Centroids as dynamic VLink's
 
-        });//.live();
+        }).live();
     }
 
     public static Surface taskBufferView(PriBuffer b, NAR n) {
