@@ -60,12 +60,12 @@ import java.util.Random;
     /**
      * Defines positive X axis
      */
-    public static final ReadonlyVec2D X_AXIS = new Vec2D(1, 0);
+    private static final ReadonlyVec2D X_AXIS = new Vec2D(1, 0);
 
     /**
      * Defines positive Y axis
      */
-    public static final ReadonlyVec2D Y_AXIS = new Vec2D(0, 1);
+    static final ReadonlyVec2D Y_AXIS = new Vec2D(0, 1);
 
     /** Defines the zero vector. */
     public static final ReadonlyVec2D ZERO = new Vec2D();
@@ -146,7 +146,7 @@ import java.util.Random;
      * @param rnd
      * @return a new random normalized unit vector.
      */
-    public static Vec2D randomVector(Random rnd) {
+    private static Vec2D randomVector(Random rnd) {
         Vec2D v = new Vec2D(rnd.nextFloat() * 2 - 1, rnd.nextFloat() * 2 - 1);
         return v.normalize();
     }
@@ -597,7 +597,7 @@ import java.util.Random;
         return new Vec2D(s.interpolate(x, v.x(), f), s.interpolate(y, v.y(), f));
     }
 
-    public final Vec2D interpolateTo(Vec2D v, float f) {
+    final Vec2D interpolateTo(Vec2D v, float f) {
         return new Vec2D(x + (v.x - x) * f, y + (v.y - y) * f);
     }
 
@@ -613,7 +613,7 @@ import java.util.Random;
      * @param f interpolation factor (should be in the range 0..1)
      * @return itself, result overrides current vector
      */
-    public final Vec2D interpolateToSelf(ReadonlyVec2D v, float f) {
+    final Vec2D interpolateToSelf(ReadonlyVec2D v, float f) {
         x += (v.x() - x) * f;
         y += (v.y() - y) * f;
         return this;
@@ -711,7 +711,7 @@ import java.util.Random;
      * @param jy maximum y jitter
      * @return itself
      */
-    public final Vec2D jitter(float jx, float jy) {
+    private final Vec2D jitter(float jx, float jy) {
         x += MathUtils.normalizedRandom() * jx;
         y += MathUtils.normalizedRandom() * jy;
         return this;
@@ -721,7 +721,7 @@ import java.util.Random;
         return j > 0 ? jitter(rnd, j, j) : this;
     }
 
-    public final Vec2D jitter(Random rnd, float jx, float jy) {
+    private final Vec2D jitter(Random rnd, float jx, float jy) {
         x += MathUtils.normalizedRandom(rnd) * jx;
         y += MathUtils.normalizedRandom(rnd) * jy;
         return this;
@@ -823,14 +823,14 @@ import java.util.Random;
         return this;
     }
 
-    public final Vec2D perpendicular() {
+    final Vec2D perpendicular() {
         float t = x;
         x = -y;
         y = t;
         return this;
     }
 
-    public final float positiveHeading() {
+    final float positiveHeading() {
         double dist = Math.sqrt(x * x + y * y);
         if (y >= 0) {
             return (float) Math.acos(x / dist);
@@ -839,7 +839,7 @@ import java.util.Random;
         }
     }
 
-    public final Vec2D reciprocal() {
+    final Vec2D reciprocal() {
         x = 1f / x;
         y = 1f / y;
         return this;
@@ -864,7 +864,7 @@ import java.util.Random;
         return this;
     }
 
-    public Vec2D roundTo(float prec) {
+    private Vec2D roundTo(float prec) {
         x = MathUtils.roundTo(x, prec);
         y = MathUtils.roundTo(y, prec);
         return this;
@@ -1004,7 +1004,7 @@ import java.util.Random;
      *
      * @return itself
      */
-    public final Vec2D signum() {
+    private final Vec2D signum() {
         x = (x < 0 ? -1 : x == 0 ? 0 : 1);
         y = (y < 0 ? -1 : y == 0 ? 0 : 1);
         return this;
@@ -1104,14 +1104,14 @@ import java.util.Random;
         };
     }
 
-    public final Vec2D toCartesian() {
+    private final Vec2D toCartesian() {
         float xx = (float) (x * Math.cos(y));
         y = (float) (x * Math.sin(y));
         x = xx;
         return this;
     }
 
-    public final Vec2D toPolar() {
+    private final Vec2D toPolar() {
         float r = (float) Math.sqrt(x * x + y * y);
         y = (float) Math.atan2(y, x);
         x = r;

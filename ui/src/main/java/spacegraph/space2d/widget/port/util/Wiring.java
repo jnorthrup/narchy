@@ -49,7 +49,7 @@ public class Wiring extends Dragging {
 
     @Override
     protected boolean ready(Finger f) {
-        if (super.ready(f)) {
+        if (f.pressedNow(button) && super.ready(f)) {
             if (this.start instanceof Wireable)
                 ((Wireable) start).onWireOut(this, true);
             return true;
@@ -74,17 +74,22 @@ public class Wiring extends Dragging {
         }
 
         pathVis.add(f.posGlobal(), 64);
+        //System.out.println(pathVis.visible() + " " + pathVis.bounds + " " + pathVis.parent + " " + pathVis.path.size());
 
         return true;
     }
 
-    private final EditGraph2D graph() {
+    private EditGraph2D graph() {
         return start.parentOrSelf(EditGraph2D.class);
     }
 
     @Override
     public final void stop(Finger finger) {
 
+        if (start instanceof Port)
+            ((Port)start).beingWiredOut = null;
+        if (end instanceof Port)
+            ((Port)end).beingWiredIn = null;
         if (pathVis != null) {
             pathVis.delete();
             pathVis = null;
@@ -101,20 +106,13 @@ public class Wiring extends Dragging {
                 if (this.end instanceof Wireable)
                     ((Wireable) end).onWireIn(this, false);
 
-                return;
             }
-
         }
-
-
-
-        return;
 
     }
 
-    protected final boolean tryWire() {
-        EditGraph2D g = graph();
-        return tryWire((Port)start, (Port)end, g);
+    private boolean tryWire() {
+        return tryWire((Port)start, (Port)end, graph());
     }
 
     static boolean tryWire(Port start, Port end, EditGraph2D g) {

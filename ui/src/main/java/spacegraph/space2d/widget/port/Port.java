@@ -25,8 +25,8 @@ import java.util.function.Supplier;
  */
 public class Port<X> extends Widget implements Wiring.Wireable {
 
-    private transient volatile Wiring beingWiredOut = null;
-    private transient volatile Wiring beingWiredIn = null;
+    public transient volatile Wiring beingWiredOut = null;
+    public transient volatile Wiring beingWiredIn = null;
     private boolean enabled = true;
 
     /**
@@ -183,14 +183,11 @@ public class Port<X> extends Widget implements Wiring.Wireable {
 
         Surface x = super.finger(finger);
         if (x == null || x == this) {
-            if (finger.pressedNow(WIRING_BUTTON)) {
-                if (finger.tryFingering(new Wiring(WIRING_BUTTON, this)))
-                    return this;
-
-            } else {
-                return null;
-            }
+            if (finger.tryFingering(new Wiring(WIRING_BUTTON, this)))
+                return this;
         }
+
+        beingWiredIn = beingWiredOut = null;
 
         return x;
 

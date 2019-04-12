@@ -76,54 +76,40 @@ public class EditGraph2D<S extends Surface> extends MutableMapContainer<Surface,
      * TODO encapsulate so its private
      */
     public final Stacking raw = new Stacking();
-    private final DoubleClicking doubleClicking;
+    private final DoubleClicking doubleClicking = new DoubleClicking(0, this::doubleClick, this);
     private Off loop;
 
     public EditGraph2D() {
         super();
-        doubleClicking = new DoubleClicking(0, this::doubleClick, this);
-        clipBounds = false;
+        clipBounds = false; //TODO only if fencing
     }
-
-
-    public EditGraph2D(float w, float h) {
-        this(RectFloat.X0Y0WH(0, 0, w, h));
-    }
-
-    public EditGraph2D(RectFloat bounds) {
-        this();
-        pos(bounds);
-    }
-
 
     public static <X extends Surface> EditGraph2D<X> window(int w, int h) {
         EditGraph2D<X> g = new EditGraph2D<>();
-        SpaceGraph.surfaceWindow(g, w, h);
+        SpaceGraph.surfaceWindow(g, w, h).dev();
         return g;
     }
 
     @Override
     protected void starting() {
 
-        super.starting();
-
         physics.start(this);
 
         loop = root().animate(((float dt) -> {
             this.physics.update(EditGraph2D.this, dt);
-            return parent != null;
+            return true;
         }));
 
-        layout();
+        super.starting();
     }
 
     @Override
     protected final void stopping() {
+        super.stopping();
+
         loop.close(); loop = null;
 
         physics.stop();
-
-        super.stopping();
     }
 
 
@@ -292,22 +278,12 @@ public class EditGraph2D<S extends Surface> extends MutableMapContainer<Surface,
     }
 
 
-//    @Override
-//    public boolean whileEach(Predicate<Surface> o) {
-//        return super.whileEach(o);
-//    }
-//
-//    @Override
-//    public boolean whileEachReverse(Predicate<Surface> o) {
-//        return super.whileEachReverse(o);
-//    }
-
     @Override
     public final Surface finger(Finger finger) {
 
         Surface s = super.finger(finger);
 
-        if (s == raw || s == this) {
+        if (s == null) {
             if (doubleClicking.update(finger))
                 return this;
         } else {

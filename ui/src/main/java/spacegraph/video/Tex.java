@@ -220,6 +220,12 @@ public class Tex {
         }
     }
 
+    public void delete(GL2 gl) {
+        texture.destroy(gl);
+        profile = null;
+        src = null;
+    }
+
 
     @Deprecated
     private static class MyTexSurface extends TexSurface {

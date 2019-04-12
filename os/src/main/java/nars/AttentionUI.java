@@ -44,7 +44,7 @@ public class AttentionUI {
 
     public static Surface whatMixer(NAR n) {
         WhatMixer w = new WhatMixer(n);
-        return DurSurface.get(w, n, w::commit).live();
+        return DurSurface.get(w, n, w::commit);
     }
 
     public static Surface attentionGraph(NAR n) {

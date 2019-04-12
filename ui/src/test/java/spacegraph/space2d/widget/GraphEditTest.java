@@ -181,7 +181,8 @@ public class GraphEditTest {
 
     public static class StringSynthTest {
         public static void main(String[] args) {
-            EditGraph2D<Surface> g = new EditGraph2D<>(1000, 1000);
+            EditGraph2D<Surface> g = new EditGraph2D<>();
+            SpaceGraph.surfaceWindow(g, 1000, 1000);
 
 
             RectFloat r2 = RectFloat.XYXY((float) 0, (float) 0, (float) 250, (float) 250);
@@ -194,7 +195,6 @@ public class GraphEditTest {
             ((Surface) g.add(new AudioOutPort())).pos(r);
 
 
-            SpaceGraph.surfaceWindow(g, 1000, 1000);
 
         }
 

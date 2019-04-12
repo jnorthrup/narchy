@@ -13,7 +13,7 @@ import spacegraph.util.Path2D;
  */
 public class PathSurface extends PaintSurface {
 
-    private final Path2D path;
+    public final Path2D path;
 
     float lineWidth = 8;
     float r = 0.5f, g = 0.5f, b = 0.5f, a = 1f;

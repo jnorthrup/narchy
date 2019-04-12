@@ -22,7 +22,7 @@ public class Widget extends MutableUnitContainer<Surface> implements KeyPressed 
 
     public static final float marginPctDefault = 0.04f;
 
-    private static final float border = 0.05f;
+
 
     /** the fundamental current 'color' of the widget. not necessarily to match or conflict
      * with what it actually displays but instead to provide a distinctive color for widgets
@@ -114,9 +114,6 @@ public class Widget extends MutableUnitContainer<Surface> implements KeyPressed 
     @Override
     public Surface finger(Finger finger) {
 
-//        if (finger.touching()==this)
-//            pri(0.8f);
-
         Surface s = super.finger(finger);
         if (s == null) {
 
@@ -145,18 +142,6 @@ public class Widget extends MutableUnitContainer<Surface> implements KeyPressed 
         pri = Math.max(pri, p);
     }
 
-    @Override
-    protected RectFloat innerBounds() {
-        RectFloat r = bounds;
-        float b;
-        if (r.w >= r.h) {
-            b = border * r.h;
-        } else {
-            b = border * r.w;
-        }
-        b *= 2;
-        return r.size(r.w - b, r.h - b);
-    }
 
 
 

@@ -5,10 +5,10 @@ import com.jogamp.opengl.GL2;
 import com.jogamp.opengl.GL2ES3;
 import com.jogamp.opengl.util.texture.Texture;
 import spacegraph.space2d.widget.textedit.buffer.BufferChar;
+import spacegraph.video.Tex;
 
-public class CharView extends TextEditRenderable  {
+@Deprecated public class CharView extends TextEditRenderable  {
   private final BufferChar bufferChar;
-  private Texture texture;
 
   CharView(BufferChar bufferChar) {
     this.bufferChar = bufferChar;
@@ -19,10 +19,10 @@ public class CharView extends TextEditRenderable  {
   }
 
   @Override
-  protected void innerDraw(GL2 gl) {
-    if (texture == null) {
-       texture = TextureProvider.the.getTexture(gl, String.valueOf(bufferChar.getChar()));
-    }
+  @Deprecated protected void innerDraw(GL2 gl) {
+
+    Tex tt = TextureProvider.the.getTexture(gl, String.valueOf(bufferChar.getChar()));
+    Texture texture = tt.texture;
     texture.enable(gl);
     texture.bind(gl);
     gl.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MAG_FILTER, GL.GL_LINEAR);
@@ -42,6 +42,7 @@ public class CharView extends TextEditRenderable  {
     gl.glEnd();
 
     texture.disable(gl);
+    tt.delete(gl);
   }
 
 

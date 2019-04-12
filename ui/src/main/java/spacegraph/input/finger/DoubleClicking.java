@@ -46,7 +46,6 @@ public class DoubleClicking {
         count.set(0);
     }
 
-
     final AtomicInteger count = new AtomicInteger();
 
     public boolean update(Finger finger) {
