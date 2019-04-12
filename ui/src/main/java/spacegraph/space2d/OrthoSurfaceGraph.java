@@ -262,7 +262,7 @@ public class OrthoSurfaceGraph extends JoglDisplay implements SurfaceGraph {
     public OrthoSurfaceGraph dev(/** boolean hover mode (undecorated), other options */ ) {
         Gridding g = new Gridding();
 
-        TextEdit fingerInfo = new TextEdit(40, 8);
+        TextEdit fingerInfo = new TextEdit(60, 12);
 
         g.add(fingerInfo);
 
@@ -280,7 +280,7 @@ public class OrthoSurfaceGraph extends JoglDisplay implements SurfaceGraph {
         }, 0.1f),500,300);
     }
 
-    class Menu extends Bordering {
+    static class Menu extends Bordering {
 
         //TODO different modes, etc
         public Menu() {

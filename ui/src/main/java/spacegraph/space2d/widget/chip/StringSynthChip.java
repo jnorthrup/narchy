@@ -23,9 +23,7 @@ public class StringSynthChip extends Bordering {
     //                e.click(()->{
 //                    Synth
 //                })
-    final TypedPort<ObjectIntPair<float[]>> output = new TypedPort(ObjectIntPair.class, (Consumer<ObjectIntPair<float[]>>) (ObjectIntPair<float[]> mixTarget) -> {
-        h.next(mixTarget.getOne());
-    });
+    final TypedPort<ObjectIntPair<float[]>> output = new TypedPort(ObjectIntPair.class, (Consumer<ObjectIntPair<float[]>>) (ObjectIntPair<float[]> mixTarget) -> h.next(mixTarget.getOne()));
 
     final FloatPort pitch = new FloatPort();
     final BoolPort pluck = new BoolPort ();

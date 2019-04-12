@@ -3,6 +3,7 @@ package nars.term.control;
 import jcog.Util;
 import jcog.WTF;
 import nars.$;
+import nars.term.Compound;
 import nars.term.Term;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.jetbrains.annotations.Nullable;
@@ -138,7 +139,7 @@ abstract public class AND<X> extends AbstractPred<X> {
                 if (needsFlat || !(cond instanceof PREDICATE[])) {
                     cond = stream(cond).flatMap(
                             x -> x instanceof AND ?
-                                    x.subStream() :
+                                    ((Compound)x).subStream() :
                                     Stream.of(x))
                     .toArray(PREDICATE[]::new);
                 }

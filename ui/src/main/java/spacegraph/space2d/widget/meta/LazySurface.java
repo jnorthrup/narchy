@@ -58,10 +58,4 @@ public class LazySurface extends MutableUnitContainer<Surface> {
         });
     }
 
-    @Override
-    protected void starting() {
-        super.starting();
-
-
-    }
 }

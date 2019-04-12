@@ -13,7 +13,6 @@ import jcog.signal.wave2d.ScaledBitmap2D;
 import nars.agent.Game;
 import nars.agent.GameTime;
 import nars.agent.MetaAgent;
-import nars.agent.util.RLBooster;
 import nars.attention.What;
 import nars.concept.Concept;
 import nars.control.MetaGoal;
@@ -148,37 +147,37 @@ abstract public class GameX extends Game {
         }, threads, narFPS);
     }
 
-    public static NAR runRL(Function<NAR, Game> init, float narFPS, float clockFPS) {
-        NAR n = baseNAR(clockFPS, 1);
-
-        Game a = init.apply(n);
-        a.curiosity.enable.set(false);
-
-        n.runLater(() -> {
-
-
-
-
-//            n.start(a);
-
-
-            SpaceGraph.surfaceWindow(new Gridding(NARui.agent(a), NARui.top(n)), 600, 500);
-
-
-
-
-            new RLBooster(a,
-                    //DQN2::new,
-                    HaiQae::new,
-                    //HaiQ::new,
-                    true
-            );
-        });
-
-        Loop loop = n.startFPS(narFPS);
-
-        return n;
-    }
+//    public static NAR runRL(Function<NAR, Game> init, float narFPS, float clockFPS) {
+//        NAR n = baseNAR(clockFPS, 1);
+//
+//        Game a = init.apply(n);
+//        a.curiosity.enable.set(false);
+//
+//        n.runLater(() -> {
+//
+//
+//
+//
+////            n.start(a);
+//
+//
+//            SpaceGraph.surfaceWindow(new Gridding(NARui.agent(a), NARui.top(n)), 600, 500);
+//
+//
+//
+//
+//            new RLBooster(a,
+//                    //DQN2::new,
+//                    HaiQae::new,
+//                    //HaiQ::new,
+//                    true
+//            );
+//        });
+//
+//        Loop loop = n.startFPS(narFPS);
+//
+//        return n;
+//    }
 
     static NAR baseNAR(float durFPS, int _threads) {
     /*

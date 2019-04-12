@@ -110,7 +110,7 @@ public class AudioSource implements DigitizedSignal {
             if (line != null) {
                 line.close();
                 line = null;
-                logger.info("stopped {} {} {}", this, dataLineInfo);
+                logger.info("stopped {} {}", this, dataLineInfo);
             }
         }
     }

@@ -48,7 +48,6 @@ abstract class ISO {
     private static final int PROTOCOL_VERSION = 0x03;
     private static final int EOT = 0x80;
     private static int g_packetno;
-    private final HexDump dump;
     Socket rdpsock;
     private DataInputStream in;
     private DataOutputStream out;
@@ -57,7 +56,7 @@ abstract class ISO {
      * Construct ISO object, initialises hex dump
      */
     ISO() {
-        dump = new HexDump();
+
     }
 
     /*

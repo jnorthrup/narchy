@@ -40,9 +40,7 @@ public class IRL {
     }
 
 
-    final Memoize<RectFloat, Osm> reqCache = CaffeineMemoize.build(bounds -> {
-        return load(bounds.left(), bounds.bottom(), bounds.right(), bounds.top());
-    }, 1024, false);
+    final Memoize<RectFloat, Osm> reqCache = CaffeineMemoize.build(bounds -> load(bounds.left(), bounds.bottom(), bounds.right(), bounds.top()), 1024, false);
 
 
     /**
@@ -68,32 +66,27 @@ public class IRL {
         URL u = Osm.url("https://api.openstreetmap.org", lonMin, latMin, lonMax, latMax);
         osm.id = u.toExternalForm();
 
-        Exe.invokeLater(() -> {
-
-            user.get(u.toString(), () -> {
-                try {
-                    logger.info("Downloading {}", u);
-                    return u.openStream().readAllBytes();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    return null;
-                }
-            }, (data) -> {
-                try {
-                    logger.info("Loading {} ({} bytes)", u, data.length);
-                    osm.load(new ByteArrayInputStream(data));
-                    osm.ways.forEachValue(w -> {
-                       index.add(w);
-                    });
-                    osm.ready = true;
+        Exe.invokeLater(() -> user.get(u.toString(), () -> {
+            try {
+                logger.info("Downloading {}", u);
+                return u.openStream().readAllBytes();
+            } catch (IOException e) {
+                e.printStackTrace();
+                return null;
+            }
+        }, (data) -> {
+            try {
+                logger.info("Loading {} ({} bytes)", u, data.length);
+                osm.load(new ByteArrayInputStream(data));
+                osm.ways.forEachValue(index::add);
+                osm.ready = true;
 //                    osm.nodes.forEachValue(n->{
 //                        index.addAt(n);
 //                    });
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            });
-        });
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }));
 
         return osm;
     }

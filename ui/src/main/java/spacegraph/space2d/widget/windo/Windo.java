@@ -83,8 +83,11 @@ public class Windo extends MutableUnitContainer {
 
         if (potentialDragMode != null) {
             Dragging d = fingering(potentialDragMode);
-            if (d != null && finger.tryFingering(d)) {
-                actualDragMode = d;
+            if (d!=null) {
+                if (d == resize) resize.mode(potentialDragMode);
+                if (finger.tryFingering(d)) {
+                    actualDragMode = d;
+                }
             }
         }
 
@@ -96,7 +99,7 @@ public class Windo extends MutableUnitContainer {
             if (overlay != null)
                 finger.tryFingering(overlay);
         } else {
-            finger.tryFingering(CursorOverlay.Reset);
+            //finger.tryFingering(CursorOverlay.Reset);
         }
 
         return dragMode != null;

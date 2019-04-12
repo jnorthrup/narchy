@@ -37,7 +37,6 @@ import spacegraph.space2d.widget.windo.Windo;
 import spacegraph.video.Draw;
 
 import java.util.List;
-import java.util.function.Consumer;
 import java.util.function.ObjLongConsumer;
 
 import static spacegraph.space2d.container.Bordering.E;
@@ -90,9 +89,7 @@ public class Box2DGraphEditPhysics extends GraphEditPhysics {
 
                 prw = nrw;
                 prh = nrh;
-                body.updateFixtures((f) -> {
-                    f.setShape(shape.setAsBox(nrw / 2 / scaling, nrh / 2 / scaling));
-                });
+                body.updateFixtures((f) -> f.setShape(shape.setAsBox(nrw / 2 / scaling, nrh / 2 / scaling)));
                 resized = true;
             }
 
@@ -437,9 +434,7 @@ public class Box2DGraphEditPhysics extends GraphEditPhysics {
             Bordering l = new Bordering<>(
                     new PushButton("X").clicked((@Nullable Runnable) this::remove)
             );
-            l.set(E, new PushButton("Tap").clicked(() -> {
-                splice(new CopyPort());
-            })); //as in wire-tap, aka splice
+            l.set(E, new PushButton("Tap").clicked(() -> splice(new CopyPort()))); //as in wire-tap, aka splice
             l.set(S, new PushButton("Split"));
 
             linkPanel = graph.add(l);
@@ -1040,10 +1035,10 @@ public class Box2DGraphEditPhysics extends GraphEditPhysics {
             //        if (body.data() instanceof PhyWindow.WallBody) {
             //            return;
             //        }
-            if (body instanceof Consumer) {
-                ((Consumer) body).accept(gl);
-                return;
-            }
+//            if (body instanceof Consumer) {
+//                ((Consumer) body).accept(gl);
+//                return;
+//            }
 
 
             boolean awake = body.isAwake();

@@ -22,15 +22,12 @@ public class Spectrogram extends RingContainer<BitmapMatrixView> implements Bitm
     /** N item axis capacity ("bins", "states", "frequencies", etc..) */
     public final IntRange N = new IntRange(0, 0, 512);
 
-    private int n;
 
     public IntToIntFunction _color;
 
     static final ToIntFunction HASHCODE = (Object x) ->
             Draw.colorHSB(Math.abs(x.hashCode() % 1000) / 1000.0f, 0.5f, 0.5f);
-    static final IntToIntFunction BLACK = (i) -> {
-        return 0;
-    };
+    static final IntToIntFunction BLACK = (i) -> 0;
 
     public Spectrogram(boolean leftOrDown, int T, int N) {
         super(new BitmapMatrixView[T]);
@@ -42,11 +39,11 @@ public class Spectrogram extends RingContainer<BitmapMatrixView> implements Bitm
     @Override
     public synchronized void next(Consumer<BitmapMatrixView> setter) {
         int n = this.N.intValue();
-        this.n = n;
         super.next(setter);
     }
 
     @Override protected void reallocate(BitmapMatrixView[] x) {
+        int n = this.N.getAsInt();
         // {
         //        //|| xy[0]==null  (xy[0].w * xy[0].h) != n
         //    }
@@ -82,11 +79,12 @@ public class Spectrogram extends RingContainer<BitmapMatrixView> implements Bitm
 
     @Override
     public void renderContent(ReSurface r) {
-        super.renderContent(r);
+
         r.on((gl,sr)->{
             //float W = w(), H = h();
 
             forEach((BitmapMatrixView z, RectFloat b)->{
+                z.pos(b);
                 if (!z.tex.ready()) {
                     z.tex.commit(gl);
                     z.show();
@@ -99,7 +97,7 @@ public class Spectrogram extends RingContainer<BitmapMatrixView> implements Bitm
 
     public void next(IntToIntFunction color) {
         this._color = color;
-        next((BitmapMatrixView b)->b.update());
+        next(BitmapMatrixView::update);
     }
 //    public void next(Tensor data, FloatToIntFunction color) {
 //        this._color = color;

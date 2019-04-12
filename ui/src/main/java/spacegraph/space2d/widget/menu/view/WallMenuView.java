@@ -1,5 +1,6 @@
 package spacegraph.space2d.widget.menu.view;
 
+import jcog.tree.rtree.rect.RectFloat;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.ContainerSurface;
 import spacegraph.space2d.container.graph.EditGraph2D;
@@ -33,12 +34,15 @@ public class WallMenuView extends Menu.MenuView {
     @Override
     public void active(Surface surface) {
         ContainerSurface w = wall.add(surface);
-        w.pos(10, 10, 400, 300); //TODO
+        //TODO
+        RectFloat r = RectFloat.XYXY((float) 10, (float) 10, (float) 400, (float) 300);
+        w.pos(r);
     }
 
     @Override
     public boolean inactive(Surface surface) {
-        return wall.remove((Object)(((Surface)surface.parent).parent /* HACK */) )!=null;
+        /* HACK */
+        return wall.remove(((Surface)surface.parent).parent)!=null;
     }
 
     @Override

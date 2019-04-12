@@ -163,7 +163,7 @@ public class Secure {
     private static void processSrvInfo(RdpPacket_Localised mcs_data) {
         Options.server_rdp_version = mcs_data.getLittleEndian16(); 
         
-        logger.debug(("Server RDP version is " + Options.server_rdp_version));
+        logger.debug("Server RDP version {}", Options.server_rdp_version);
         if (1 == Options.server_rdp_version)
             Options.use_rdp5 = false;
     }
@@ -368,7 +368,7 @@ public class Secure {
         buffer.setLittleEndian32(0); 
 
         if (Options.use_rdp5 && (channels.num_channels() > 0)) {
-            logger.debug(("num_channels is " + channels.num_channels()));
+            logger.debug("num_channels {}",channels.num_channels());
             buffer.setLittleEndian16(SEC_TAG_CLI_CHANNELS); 
             
             buffer.setLittleEndian16(channels.num_channels() * 12 + 8); 
@@ -378,8 +378,7 @@ public class Secure {
             
             
             for (int i = 0; i < channels.num_channels(); i++) {
-                logger.debug(("Requesting channel " + channels.channel(i)
-                        .name()));
+                logger.debug("Requesting channel {}", channels.channel(i).name());
                 buffer.out_uint8p(channels.channel(i).name(), 8); 
                 
                 

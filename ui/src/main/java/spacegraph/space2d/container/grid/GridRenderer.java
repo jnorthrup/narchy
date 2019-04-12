@@ -16,7 +16,7 @@ public interface GridRenderer<X> {
     }
 
     static <X> GridRenderer<X> valueCached(Function<X, Surface> builder, int capacity) {
-        return new GridRenderer<X>() {
+        return new GridRenderer<>() {
 
 //                final HijackMemoize<X,Surface> cache = new HijackMemoize<X,Surface>((x->{
 //                    throw new UnsupportedOperationException();
@@ -29,7 +29,7 @@ public interface GridRenderer<X> {
 //                    }
 //                };
 
-            final MRUMap<X,Surface> cache = new MRUMap<X,Surface>(capacity) {
+            final MRUMap<X, Surface> cache = new MRUMap<X, Surface>(capacity) {
                 @Override
                 protected void onEvict(Map.Entry<X, Surface> entry) {
                     entry.getValue().stop();

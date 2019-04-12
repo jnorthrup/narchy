@@ -194,8 +194,10 @@ class VerletSurfaceTest {
 //            physics.physics.bounds(bounds);
 
 
-            Surface a = add(new PushButton("x")).pos(100, 100, 200, 200);
-            Surface b = add(new PushButton("y")).pos(300, 300, 400, 400);
+            RectFloat r1 = RectFloat.XYXY((float) 100, (float) 100, (float) 200, (float) 200);
+            Surface a = ((Surface) add(new PushButton("x"))).pos(r1);
+            RectFloat r = RectFloat.XYXY((float) 300, (float) 300, (float) 400, (float) 400);
+            Surface b = ((Surface) add(new PushButton("y"))).pos(r);
 
 
 

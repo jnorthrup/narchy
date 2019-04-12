@@ -131,8 +131,11 @@ public class RdpApplet extends Applet {
     @Override
     public void stop() {
         rThread = null;
+
         try {
-            notifyAll();
+            synchronized(this) {
+                notifyAll();
+            }
         } catch (Throwable e) {
             System.out.println("Stop-notifyAll");
         }

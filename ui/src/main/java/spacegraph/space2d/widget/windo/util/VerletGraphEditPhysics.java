@@ -134,11 +134,9 @@ public class VerletGraphEditPhysics extends GraphEditPhysics {
                     mid, false, VerletSurface.VerletSurfaceBinding.Center, graph);
 
 
-            bind(graph.add(new PushButton(".."), ff ->
-                            new Windo(ff)).resize(5, 5),
+            bind(graph.add(new PushButton(".."), Windo::new).resize(5, 5),
                     chain.getOne().get(1), false, VerletSurface.VerletSurfaceBinding.Center, graph);
-            bind(graph.add(new PushButton(".."), ff ->
-                            new Windo(ff)).resize(5, 5),
+            bind(graph.add(new PushButton(".."), Windo::new).resize(5, 5),
                     chain.getOne().get(chainLen - 2), false, VerletSurface.VerletSurfaceBinding.Center, graph);
 
             /** link rendering */

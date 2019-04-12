@@ -3,7 +3,6 @@ package nars.task.util;
 import jcog.data.map.ConcurrentFastIteratingHashSet;
 import jcog.data.set.ArrayHashSet;
 import jcog.event.Off;
-import jcog.event.RunThese;
 import jcog.util.ArrayUtils;
 import nars.NAR;
 import nars.Op;
@@ -23,7 +22,6 @@ public class DialogTask extends NARPart {
 
     final ConcurrentFastIteratingHashSet<Task> tasks = new ConcurrentFastIteratingHashSet<>(Task.EmptyArray);
     private final Deriver deriver;
-    private RunThese ons;
     private final Off monitor;
     private final NAR nar;
     final Set<Term> unifyWith = new ArrayHashSet();
@@ -74,17 +72,7 @@ public class DialogTask extends NARPart {
         add(monitor);
     }
 
-    @Override
-    protected void starting(NAR nar) {
-        //ons = new RunThese(deriver, monitor);
 
-    }
-
-    @Override
-    protected void stopping(NAR nar) {
-        ons.close();
-        ons = null;
-    }
 
 //    protected void onTask(Collection<Task> x) {
 //        x.removeIf(t -> !this.onTask(t));

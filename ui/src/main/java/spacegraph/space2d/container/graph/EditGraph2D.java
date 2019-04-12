@@ -81,10 +81,10 @@ public class EditGraph2D<S extends Surface> extends MutableMapContainer<Surface,
 
     public EditGraph2D() {
         super();
-        physics.start(this);
         doubleClicking = new DoubleClicking(0, this::doubleClick, this);
         clipBounds = false;
     }
+
 
     public EditGraph2D(float w, float h) {
         this(RectFloat.X0Y0WH(0, 0, w, h));
@@ -107,21 +107,22 @@ public class EditGraph2D<S extends Surface> extends MutableMapContainer<Surface,
 
         super.starting();
 
-        raw.start(this);
+        physics.start(this);
 
         loop = root().animate(((float dt) -> {
             this.physics.update(EditGraph2D.this, dt);
             return parent != null;
         }));
 
-//        layout();
+        layout();
     }
 
     @Override
     protected final void stopping() {
-        loop.close();
-        raw.stop();
+        loop.close(); loop = null;
+
         physics.stop();
+
         super.stopping();
     }
 
@@ -264,7 +265,10 @@ public class EditGraph2D<S extends Surface> extends MutableMapContainer<Surface,
 
     @Override
     public final void forEach(Consumer<Surface> each) {
-        whileEach((x)->true);
+        whileEach((x)->{
+            each.accept(x);
+            return true;
+        });
     }
 
     @Override
@@ -487,7 +491,7 @@ public class EditGraph2D<S extends Surface> extends MutableMapContainer<Surface,
 
     }
 
-    private class MyWeakSurface extends WeakSurface {
+    private static class MyWeakSurface extends WeakSurface {
         public MyWeakSurface(Surface xx) {
             super(xx);
         }

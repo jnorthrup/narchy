@@ -232,9 +232,6 @@ public class Distance {
 
         void getWitnessPoints(v2 pA, v2 pB) {
             switch (m_count) {
-                case 0:
-                    assert (false);
-                    break;
 
                 case 1:
                     pA.set(m_v1.wA);
@@ -260,6 +257,7 @@ public class Distance {
                     
                     
                     break;
+                case 0:
 
                 default:
                     assert (false);
@@ -270,9 +268,6 @@ public class Distance {
         
         float getMetric() {
             switch (m_count) {
-                case 0:
-                    assert (false);
-                    return 0.0f;
 
                 case 1:
                     return 0.0f;
@@ -285,6 +280,7 @@ public class Distance {
                     case33.set(m_v3.w).subbed(m_v1.w);
                     
                     return v2.cross(case3, case33);
+                case 0:
 
                 default:
                     assert (false);

@@ -67,7 +67,8 @@ public class ImageTexture extends Tex {
                     });
 
     static {
-        synchronized (fa_prefix) {
+        //synchronized (ImageTexture.class) {
+        {
             MutableMap<String, byte[]> fontAwesomeIcons = new UnifiedMap(1024);
 //            final int bufferSize = 512 * 1024;
             ClassLoader classLoader = ImageTexture.class.getClassLoader();

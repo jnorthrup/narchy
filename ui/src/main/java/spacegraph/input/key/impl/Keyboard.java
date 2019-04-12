@@ -218,7 +218,10 @@ public enum Keyboard { ;
             case com.jogamp.newt.event.KeyEvent.VK_QUOTEDBL      : return java.awt.event.KeyEvent.VK_QUOTEDBL;
             case com.jogamp.newt.event.KeyEvent.VK_NUMBER_SIGN   : return java.awt.event.KeyEvent.VK_NUMBER_SIGN;
             case com.jogamp.newt.event.KeyEvent.VK_DOLLAR        : return java.awt.event.KeyEvent.VK_DOLLAR;
-            case com.jogamp.newt.event.KeyEvent.VK_PERCENT       : return defAwtKeyCode;
+            case com.jogamp.newt.event.KeyEvent.VK_PERCENT       :
+            case com.jogamp.newt.event.KeyEvent.VK_PIPE          :
+            case com.jogamp.newt.event.KeyEvent.VK_QUESTIONMARK  :
+                return defAwtKeyCode;
             case com.jogamp.newt.event.KeyEvent.VK_AMPERSAND     : return java.awt.event.KeyEvent.VK_AMPERSAND;
             case com.jogamp.newt.event.KeyEvent.VK_QUOTE         : return java.awt.event.KeyEvent.VK_QUOTE;
             case com.jogamp.newt.event.KeyEvent.VK_LEFT_PARENTHESIS : return java.awt.event.KeyEvent.VK_LEFT_PARENTHESIS;
@@ -244,7 +247,6 @@ public enum Keyboard { ;
             case com.jogamp.newt.event.KeyEvent.VK_LESS          : return java.awt.event.KeyEvent.VK_LESS;
             case com.jogamp.newt.event.KeyEvent.VK_EQUALS        : return java.awt.event.KeyEvent.VK_EQUALS;
             case com.jogamp.newt.event.KeyEvent.VK_GREATER       : return java.awt.event.KeyEvent.VK_GREATER;
-            case com.jogamp.newt.event.KeyEvent.VK_QUESTIONMARK  : return defAwtKeyCode;
             case com.jogamp.newt.event.KeyEvent.VK_AT            : return java.awt.event.KeyEvent.VK_AT;
             case com.jogamp.newt.event.KeyEvent.VK_A             : return java.awt.event.KeyEvent.VK_A;
             case com.jogamp.newt.event.KeyEvent.VK_B             : return java.awt.event.KeyEvent.VK_B;
@@ -303,7 +305,6 @@ public enum Keyboard { ;
             case com.jogamp.newt.event.KeyEvent.VK_F23           : return java.awt.event.KeyEvent.VK_F23;
             case com.jogamp.newt.event.KeyEvent.VK_F24           : return java.awt.event.KeyEvent.VK_F24;
             case com.jogamp.newt.event.KeyEvent.VK_LEFT_BRACE    : return java.awt.event.KeyEvent.VK_BRACELEFT;
-            case com.jogamp.newt.event.KeyEvent.VK_PIPE          : return defAwtKeyCode;
             case com.jogamp.newt.event.KeyEvent.VK_RIGHT_BRACE   : return java.awt.event.KeyEvent.VK_BRACERIGHT;
             case com.jogamp.newt.event.KeyEvent.VK_TILDE         : return java.awt.event.KeyEvent.VK_DEAD_TILDE;
             case com.jogamp.newt.event.KeyEvent.VK_DELETE        : return java.awt.event.KeyEvent.VK_DELETE;

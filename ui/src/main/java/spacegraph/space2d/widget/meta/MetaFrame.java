@@ -245,7 +245,7 @@ public class MetaFrame extends Bordering implements Hovered {
     }
 
 
-    private class SatelliteMetaFrame extends MetaFrame {
+    private static class SatelliteMetaFrame extends MetaFrame {
 
         public SatelliteMetaFrame(Surface surface) {
             super(null);

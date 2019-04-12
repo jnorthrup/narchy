@@ -330,19 +330,19 @@ public final class MathUtils {
         return (int) Math.pow(2, (int) (Math.log(x) / LOG2));
     }
 
-    /**
-     * Computes the Greatest Common Devisor of integers p and q.
-     * 
-     * @param p
-     * @param q
-     * @return gcd
-     */
-    public static int gcd(int p, int q) {
-        if (q == 0) {
-            return p;
-        }
-        return gcd(q, p % q);
-    }
+//    /**
+//     * Computes the Greatest Common Devisor of integers p and q.
+//     *
+//     * @param p
+//     * @param q
+//     * @return gcd
+//     */
+//    public static int gcd(int p, int q) {
+//        if (q == 0) {
+//            return p;
+//        }
+//        return gcd(q, p % q);
+//    }
 
     /**
      * Creates a single normalized impulse signal with its peak at t=1/k. The
@@ -376,9 +376,9 @@ public final class MathUtils {
         return (float) (h * Math.exp(1.0f - h));
     }
 
-    public static int lcm(int p, int q) {
-        return abs(p * q) / gcd(p, q);
-    }
+//    public static int lcm(int p, int q) {
+//        return abs(p * q) / gcd(p, q);
+//    }
 
     public static double lerp(double a, double b, double t) {
         return a + (b - a) * t;
@@ -551,11 +551,11 @@ public final class MathUtils {
     }
 
     public static int random(Random rnd, int max) {
-        return (int) (rnd.nextDouble() * max);
+        return rnd.nextInt((int) max);
     }
 
     public static int random(Random rnd, int min, int max) {
-        return (int) (rnd.nextDouble() * (max - min)) + min;
+        return rnd.nextInt((int) (max - min)) + min;
     }
 
     public static boolean randomChance(double chance) {

@@ -261,7 +261,6 @@ public class Rdesktop {
 
         
 
-        RDPClientChooser Chooser = new RDPClientChooser();
 
         if (RDPClientChooser.RunNativeRDPClient(args)) {
             if (!Common.underApplet)

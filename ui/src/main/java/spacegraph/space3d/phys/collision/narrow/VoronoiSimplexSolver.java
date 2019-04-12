@@ -106,10 +106,7 @@ public class VoronoiSimplexSolver extends SimplexSolverInterface {
 
 			switch (numVertices())
 			{
-			case 0:
-					cachedValidClosest = false;
-					break;
-			case 1:
+                case 1:
                 cachedP1.set(simplexPointsP[0]);
                 cachedP2.set(simplexPointsQ[0]);
                 cachedV.sub(cachedP1, cachedP2); 
@@ -258,7 +255,8 @@ public class VoronoiSimplexSolver extends SimplexSolverInterface {
 
 				
 				break;
-				default:
+                case 0:
+                default:
 				cachedValidClosest = false;
 			}
 		}

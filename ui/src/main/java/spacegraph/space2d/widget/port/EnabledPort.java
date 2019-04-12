@@ -12,9 +12,7 @@ public class EnabledPort extends Gridding {
 
     public EnabledPort(Port p) {
         enable.on(true);
-        put(0, enable.on((x)->{
-            enable(x);
-        }));
+        put(0, enable.on(this::enable));
     }
 
     protected void enable(boolean b) {

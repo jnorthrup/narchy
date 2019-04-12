@@ -61,12 +61,10 @@ public class ProtoWidget extends Bordering {
         add("Mouse", TODO, "Input");
         add("Gamepad", TODO, "Input");
 
-        add("WebCam", () -> new WebcamChip(), "Video");
+        add("WebCam", WebcamChip::new, "Video");
         add("Microphone", AudioCaptureChip::new, "Audio");
 
-        add("java", ()->new ReplChip((cmd,done)->{
-            done.accept("TODO");
-        }), "Value"); //java expression evaluation
+        add("java", ()->new ReplChip((cmd,done)-> done.accept("TODO")), "Value"); //java expression evaluation
         add("shell", ()->new ReplChip((cmd,done)->{
             try {
                 Process proc = new ProcessBuilder().command(cmd.split(" "))
@@ -112,9 +110,7 @@ public class ProtoWidget extends Bordering {
         add("ShapeDetect", TODO, "Video");
 
         add("split", TODO, "Math");
-        add("concat", ()-> new BiFunctionChip<>(Tensor.class, Tensor.class, Tensor.class, (Tensor a, Tensor b) -> {
-            return TensorChain.get(a, b);
-        }), "Math");
+        add("concat", ()-> new BiFunctionChip<>(Tensor.class, Tensor.class, Tensor.class, (Tensor a, Tensor b) -> TensorChain.get(a, b)), "Math");
         add("OneHotBit", ()-> new BiFunctionChip<>(Integer.class, Integer.class, Tensor.class, (Integer signal, Integer range) -> {
             //TODO optimize with a special Tensor impl
             if (signal >= 0 && signal < range) {
@@ -125,9 +121,7 @@ public class ProtoWidget extends Bordering {
                 return null;
             }
         }), "Math");
-        add("HaarWavelet", ()->new FunctionChip<>(Tensor.class, HaarWaveletTensor.class, (Tensor t)->{
-            return new HaarWaveletTensor(t, 64);
-        }).buffered(), "Math");
+        add("HaarWavelet", ()->new FunctionChip<>(Tensor.class, HaarWaveletTensor.class, (Tensor t)-> new HaarWaveletTensor(t, 64)).buffered(), "Math");
 
 //        add("SlidingDFT", ()->new AccumulatorChip<>(Tensor.class, SlidingDFTTensor.class, (Tensor t)->{
 //            return new SlidingDFTTensor( 64, true).;
@@ -145,8 +139,8 @@ public class ProtoWidget extends Bordering {
         add("Text", LabeledPort::generic, "Meter");
         add("Plot", PlotChip::new, "Meter"); //Line, Bar plots
         add("Wave", PlotChip::new, "Meter"); //waveform view
-        add("Spectrogram", ()->new SpectrogramChip(), "Meter"); //frequency domain view
-        add("MatrixView", ()-> new MatrixViewChip(), "Meter");
+        add("Spectrogram", SpectrogramChip::new, "Meter"); //frequency domain view
+        add("MatrixView", MatrixViewChip::new, "Meter");
         add("Cluster2D", Cluster2DChip::new, "Meter");
         add("Histogram", TODO, "Meter"); //accepts scalar and an integer # of bins
         add("Count", TODO, "Meter"); //count of items passed through
@@ -257,11 +251,9 @@ public class ProtoWidget extends Bordering {
 
     private PushButton becoming(String label, Supplier<Surface> replacement) {
         return new PushButton(label,
-            () -> {
-                parentOrSelf(WizardFrame.class).replace(ProtoWidget.this,
-                    SafeSurface.safe(replacement)
-                );
-            });
+            () -> parentOrSelf(WizardFrame.class).replace(ProtoWidget.this,
+                SafeSurface.safe(replacement)
+            ));
     }
 
 }

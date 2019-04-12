@@ -35,11 +35,6 @@ public class TensorChain extends TensorSerial {
         return tt;
     }
 
-    @Override
-    public float getAt(int linearCell) {
-        throw new UnsupportedOperationException("TODO similar to the other get");
-    }
-
 
     //wtf?
 //    @Override

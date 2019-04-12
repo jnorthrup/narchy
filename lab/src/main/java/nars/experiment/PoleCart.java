@@ -48,7 +48,7 @@ public class PoleCart extends GameX {
                     instances > 1 ?
                             $.p(Atomic.the(PoleCart.class.getSimpleName()), n.self()) :
                             $.the(PoleCart.class.getSimpleName()), n),
-                    threadsEach, fps, 8);
+                    threadsEach, fps*2, 8);
     }
 
 
@@ -97,7 +97,7 @@ public class PoleCart extends GameX {
     static final double forceMag =
             //100.;
             200;
-    public final FloatRange tau = new FloatRange(0.013f, 0.001f, 0.02f);
+    public final FloatRange tau = new FloatRange(0.007f, 0.001f, 0.02f);
     //0.01;
     //0.005;
     //0.0025f;
@@ -119,7 +119,6 @@ public class PoleCart extends GameX {
     double action;
 
     public PoleCart(Term id, NAR nar) {
-
         super(id, fps(fps), nar);
 
 

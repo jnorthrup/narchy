@@ -87,9 +87,7 @@ public class Encoder implements Constants {
     public static byte[] appendCRC(byte[] input) {
         byte[] output = new byte[input.length + 1];
         byte crc8 = CRCGen.crc_8_ccitt(input, input.length);
-        for (int i = 0; i < input.length; i++) {
-            output[i] = input[i];
-        }
+        System.arraycopy(input, 0, output, 0, input.length);
         output[input.length] = crc8;
 
         return output;
@@ -160,13 +158,9 @@ public class Encoder implements Constants {
 
         //encode inputBytes1 and 2 in sequence
         byte[] partialResult = encodeDuration(inputBytes1);
-        for (int k = 0; k < kSamplesPerDuration; k++) {
-            results[k] = partialResult[k];
-        }
+        System.arraycopy(partialResult, 0, results, 0, kSamplesPerDuration);
         partialResult = encodeDuration(inputBytes2);
-        for (int k = 0; k < kSamplesPerDuration; k++) {
-            results[k + kSamplesPerDuration] = partialResult[k];
-        }
+        System.arraycopy(partialResult, 0, results, 4410, kSamplesPerDuration);
 
         return results;
     }

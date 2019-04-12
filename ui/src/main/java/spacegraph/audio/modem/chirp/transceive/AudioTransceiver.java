@@ -515,7 +515,7 @@ public class AudioTransceiver {
             // Iterate the Frequencies.
             for (int i = 0; i < this.freqs.length; i++) {
                 // Fetch the Frequency.
-                final Double lFrequency = this.freqs[i];
+                final double lFrequency = this.freqs[i];
                 // Calculate the Delta.
                 final double lDelta = Math.abs(pPitch - lFrequency);
                 // Is the Delta smaller than the current distance?

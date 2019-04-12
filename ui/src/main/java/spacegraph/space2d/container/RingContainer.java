@@ -22,6 +22,12 @@ public abstract class RingContainer<X extends Surface> extends EmptyContainer {
         x = initArray;
         coords = new float[initArray.length * 4];
         t(initArray.length);
+        layout();
+    }
+
+    @Override
+    public int childrenCount() {
+        return 1;
     }
 
     /** TODO abstract, and other visualization options (z-curve, etc) */
@@ -51,6 +57,17 @@ public abstract class RingContainer<X extends Surface> extends EmptyContainer {
             reallocate(x);
 
 
+
+        this.t = t;
+        setter.accept(x[y%t]);
+    }
+
+    @Override
+    protected void doLayout(float dtS) {
+
+        int y = this.y.getOpaque();
+        float[] c = coords;
+
         float W = w(), H = h(), left = left(), right = right(), top = top(), bottom = bottom();
         float di = (horizOrVert ? W : H)/t;
         int j = 0;
@@ -68,11 +85,6 @@ public abstract class RingContainer<X extends Surface> extends EmptyContainer {
                 //xyi.posSpectro(left,  top + iy, right, top + iy + di);
             }
         }
-
-        this.t = t;
-
-
-        setter.accept(x[y%t]);
     }
 
     public void forEach(BiConsumer<X, RectFloat> each) {

@@ -180,9 +180,7 @@ public class AudioUtils {
         //For some reason line.write seems to affect the data
         //to avoid the side effect, we copy it
         byte[] dataCopy = new byte[data.length];
-        for(int i=0; i < data.length; i++){
-            dataCopy[i] = data[i];
-        }
+        System.arraycopy(data, 0, dataCopy, 0, data.length);
 
         SourceDataLine line = null;
         try {
@@ -283,24 +281,24 @@ public class AudioUtils {
             return;
         }
 
-        for (int i = 0; i < mInfos.length; i++) {
-            System.out.println("Mixer Info: " + mInfos[i]);
-            Mixer mixer = AudioSystem.getMixer(mInfos[i]);
+        for (Mixer.Info mInfo : mInfos) {
+            System.out.println("Mixer Info: " + mInfo);
+            Mixer mixer = AudioSystem.getMixer(mInfo);
             Line.Info[] lines = mixer.getSourceLineInfo();
-            for (int j = 0; j < lines.length; j++) {
-                System.out.println("\tSource: " + lines[j]);
+            for (Line.Info info : lines) {
+                System.out.println("\tSource: " + info);
             }
             lines = mixer.getTargetLineInfo();
-            for (int j = 0; j < lines.length; j++) {
-                System.out.println("\tTarget: " + lines[j]);
+            for (Line.Info line : lines) {
+                System.out.println("\tTarget: " + line);
             }
         }
     }
 
     public static void displayAudioFileTypes() {
         AudioFileFormat.Type[] types = AudioSystem.getAudioFileTypes();
-        for (int i = 0; i < types.length; i++) {
-            System.out.println("Audio File Type:" + types[i]);
+        for (AudioFileFormat.Type type : types) {
+            System.out.println("Audio File Type:" + type);
         }
     }
 

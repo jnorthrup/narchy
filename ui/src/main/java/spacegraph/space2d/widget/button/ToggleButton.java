@@ -61,7 +61,7 @@ public class ToggleButton extends AbstractButton {
                     return true;
                 } catch (Throwable t) {
                     this.on.set(!on);
-                    logger.error("{}", t);
+                    logger.error("{} {}", this, t);
                 }
 
                 //});

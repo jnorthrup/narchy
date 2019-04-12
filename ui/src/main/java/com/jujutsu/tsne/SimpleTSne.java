@@ -134,7 +134,7 @@ public class SimpleTSne implements TSne {
                     0
 
             )));
-            logger.debug("iteration {}: error={}", error);
+            logger.debug("error={}", error);
         }
 
         return Y;

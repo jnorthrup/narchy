@@ -87,9 +87,7 @@ public class OsmSurface extends PaintSurface {
                 renderTouchedIndexBounds(gl);
             }
 
-            hilight.forEach(each -> {
-                renderBounds(gl, each);
-            });
+            hilight.forEach(each -> renderBounds(gl, each));
 
         }
 
@@ -110,9 +108,7 @@ public class OsmSurface extends PaintSurface {
 
         gl.glLineWidth(2);
 
-        index.index.root().streamNodesRecursively().forEach(n -> {
-            renderBounds(gl, n.bounds());
-        });
+        index.index.root().streamNodesRecursively().forEach(n -> renderBounds(gl, n.bounds()));
     }
 
     private void renderBounds(GL2 gl, HyperRegion b) {
@@ -174,8 +170,8 @@ public class OsmSurface extends PaintSurface {
 //                                new float[] { },
 //                                new float[] { }
 //                        );
-                        o.ways.forEach(w -> r.addWay(w));
-                        o.nodes.values().forEach(n -> r.addNode(n));
+                        o.ways.forEach(r::addWay);
+                        o.nodes.values().forEach(r::addNode);
 //                        //index.index.forEach(e -> {//whileEachIntersecting(viewBounds,e->{
 //                            if (e instanceof OsmWay)
 //                                r.addWay((OsmWay)e);
@@ -271,7 +267,7 @@ public class OsmSurface extends PaintSurface {
         );
     }
 
-    private class AnimLabel extends VectorLabel {
+    private static class AnimLabel extends VectorLabel {
         final Supplier<String> text;
 
         public AnimLabel(Supplier<String> text) {

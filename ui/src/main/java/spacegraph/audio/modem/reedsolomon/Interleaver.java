@@ -42,8 +42,7 @@ public class Interleaver {
                 result[k++] = items[j];
             }
         }
-        for (int i = 0; i < result.length; i++)
-            items[i] = result[i];
+        System.arraycopy(result, 0, items, 0, result.length);
     }
 
     public static void deinterleave(byte[] items) {
@@ -55,7 +54,6 @@ public class Interleaver {
                 result[j] = items[k++];
             }
         }
-        for (int i = 0; i < result.length; i++)
-            items[i] = result[i];
+        System.arraycopy(result, 0, items, 0, result.length);
     }
 }

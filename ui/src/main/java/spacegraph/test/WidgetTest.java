@@ -39,6 +39,9 @@ import static spacegraph.space2d.container.grid.Gridding.*;
 
 public class WidgetTest {
 
+    public static void main(String[] args) {
+        SpaceGraph.surfaceWindow(widgetDemo(), 1200, 800).dev();
+    }
 
     public static ContainerSurface widgetDemo() {
         //return new TabMenu(menu);
@@ -95,7 +98,7 @@ public class WidgetTest {
                         })
                 ),
 
-                "Wizard", () -> new ProtoWidget(),
+                "Wizard", ProtoWidget::new,
                 "Label", () -> grid(
                         new VectorLabel("vector"),
                         new BitmapLabel("bitmap")
@@ -103,27 +106,27 @@ public class WidgetTest {
                 "TextEdit", () ->
                         new TextEdit("Edit this\n...").focus(), //new TextEdit0(new DummyConsole())
                 "Graph2D", () -> new TabMenu(Map.of(
-                        "Simple", () -> Graph2DTest.newSimpleGraph(),
-                        "UJMP", () -> Graph2DTest.newUjmpGraph(),
-                        "Types", () -> Graph2DTest.newTypeGraph()
+                        "Simple", Graph2DTest::newSimpleGraph,
+                        "UJMP", Graph2DTest::newUjmpGraph,
+                        "Types", Graph2DTest::newTypeGraph
                 )),
 
                 "Wiring", () ->  new TabMenu(wiringDemos()),
 
-                "Geo", () -> OSMTest.osmTest()
+                "Geo", OSMTest::osmTest
         );
 
         m = new HashMap<>(m); //escape arg limitation of Map.of()
         m.put("Sketch", () -> new MetaFrame(new Sketch2DBitmap(256, 256)));
-        m.put("Speak", () -> new SpeakChip());
+        m.put("Speak", SpeakChip::new);
         m.put("Resplit", () -> new Splitting(
             new Splitting<>(iconButton(), 0.618f, true,  iconButton()).resizeable(),
             0.618f,
             new Splitting<>(iconButton(), 0.618f, false, iconButton()).resizeable()
             ).resizeable()
         );
-        m.put("Timeline", ()->Timeline2DTest.timeline2dTest());
-        m.put("Tsne", ()-> TsneTest.testTsneModel());
+        m.put("Timeline", Timeline2DTest::timeline2dTest);
+        m.put("Tsne", TsneTest::testTsneModel);
         menu = m;
     }
 
@@ -189,9 +192,6 @@ public class WidgetTest {
 
     }
 
-    public static void main(String[] args) {
-        SpaceGraph.surfaceWindow(widgetDemo(), 1200, 800).dev();
-    }
 
 
 //    private static class DummyConsole extends TextEdit0.TextEditUI implements Runnable {

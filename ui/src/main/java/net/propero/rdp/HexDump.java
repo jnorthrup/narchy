@@ -31,14 +31,7 @@
 package net.propero.rdp;
 
 
-class HexDump {
-
-    /**
-     * Construct a HexDump object, sets logging level to Debug
-     */
-    public HexDump() {
-
-    }
+enum HexDump { ;
 
     /**
      * Encode data as hex and output as debug messages along with supplied

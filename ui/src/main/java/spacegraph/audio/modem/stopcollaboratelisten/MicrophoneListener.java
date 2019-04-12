@@ -63,7 +63,7 @@ public class MicrophoneListener implements Runnable {
         }
     }
 
-    private void listen(TargetDataLine line, byte[] data) throws IOException {
+    private void listen(TargetDataLine line, byte[] data) {
         int numBytesRead;
         line.start();
         while(running){

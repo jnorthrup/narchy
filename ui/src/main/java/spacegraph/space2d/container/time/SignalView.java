@@ -43,9 +43,7 @@ public class SignalView extends Timeline2D {
 //        WaveView w = new WaveView(in, 500, 250);
 //        add(w);
 
-        addEvents(new SimpleTimelineEvents(), (nv)->{
-            nv.set(new PushButton(nv.id.toString()));
-        });
+        addEvents(new SimpleTimelineEvents(), (nv)-> nv.set(new PushButton(nv.id.toString())));
 
 //        this.in.wave.on(raw->{
 //            w.updateLive();

@@ -25,7 +25,7 @@ public abstract class DynamicLayout2D<X> implements Graph2D.Graph2DUpdater<X> {
     };
 
     protected MutableRectFloat<X> newContainer() {
-        return new MutableRectFloat<X>();
+        return new MutableRectFloat<>();
     }
 
     @Override

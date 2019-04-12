@@ -60,7 +60,7 @@ public class ForceDirected2D<X> extends DynamicLayout2D<X> {
         assert (AUTOSCALE == AUTOSCALE);
 
 
-        maxRepelDist = (float) ((2 * gRad)); //estimate
+        maxRepelDist = (2 * gRad); //estimate
 
         equilibriumDistFactor = nodeSpacing.floatValue();
 

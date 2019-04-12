@@ -135,14 +135,13 @@ public class ClipChannel extends VChannel implements ClipInterface,
                 handle_clip_format_announce(data, length);
                 return;
             case CLIPRDR_FORMAT_ACK:
+            case 7:
                 break;
             case CLIPRDR_DATA_REQUEST:
                 handle_data_request(data);
                 break;
             case CLIPRDR_DATA_RESPONSE:
                 handle_data_response(data, length);
-                break;
-            case 7:
                 break;
             default:
                 

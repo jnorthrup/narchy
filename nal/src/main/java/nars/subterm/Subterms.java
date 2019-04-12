@@ -592,9 +592,6 @@ public interface Subterms extends Termlike, Iterable<Term> {
         return impossibleSubStructure(target.structure()) || impossibleSubVolume(target.volume());
     }
 
-    default boolean impossibleSubVolume(int otherTermVolume) {
-        return otherTermVolume > volume() - subs();
-    }
 
 //    /**
 //     * if it's larger than this target it can not be equal to this.

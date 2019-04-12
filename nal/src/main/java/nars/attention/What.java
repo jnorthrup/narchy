@@ -15,7 +15,7 @@ import nars.link.TaskLink;
 import nars.task.ITask;
 import nars.task.util.PriBuffer;
 import nars.term.Term;
-import nars.time.part.DurLoop;
+import nars.time.part.CycLoop;
 
 import java.io.Externalizable;
 import java.io.IOException;
@@ -99,11 +99,12 @@ abstract public class What extends NARPart implements Prioritizable, Sampler<Tas
         this.pri = new PriNode(this.id);
         this.in = in;
         if (!in.async(out)) {
-            //add(CycLoop.the(this::perceive));
-            add(new DurLoop.DurNARConsumer(this::perceive));
+            add(CycLoop.the(this::perceive));
+            //add(new DurLoop.DurNARConsumer(this::perceive));
         }
 
-        add(new DurLoop.DurRunnable(this::commit));
+        add(CycLoop.the(this::commit));
+        //add(new DurLoop.DurRunnable(this::commit));
     }
 
     @Override
@@ -135,7 +136,7 @@ abstract public class What extends NARPart implements Prioritizable, Sampler<Tas
 
     /** called periodically, ex: per duration, for maintenance such as gradual forgetting and merging new input.
      *  only one thread will be in this method at a time guarded by an atomic guard */
-    abstract protected void commit();
+    abstract protected void commit(NAR nar);
 
     /** explicitly return the attention to a completely or otherwise reasonably quiescent state.
      *  how exactly can be decided by the implementation. */
@@ -173,8 +174,8 @@ abstract public class What extends NARPart implements Prioritizable, Sampler<Tas
         }
 
         @Override
-        protected void commit() {
-            what.commit();
+        protected void commit(NAR nar) {
+            what.commit(nar);
         }
 
         @Override
@@ -234,7 +235,7 @@ abstract public class What extends NARPart implements Prioritizable, Sampler<Tas
         }
 
         @Override
-        protected void commit() {
+        protected void commit(NAR nar) {
 
             links.commit();
         }

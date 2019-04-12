@@ -45,15 +45,15 @@ public class WorldManifold {
      */
     public final v2[] points;
 
-    /**
-     * A negative value indicates overlap, in meters.
-     */
-    private final float[] separations;
+//    /**
+//     * A negative value indicates overlap, in meters.
+//     */
+//    private final float[] separations;
 
     public WorldManifold() {
         normal = new v2();
         points = new v2[Settings.maxManifoldPoints];
-        separations = new float[Settings.maxManifoldPoints];
+//        separations = new float[Settings.maxManifoldPoints];
         for (int i = 0; i < Settings.maxManifoldPoints; i++) {
             points[i] = new v2();
         }
@@ -96,7 +96,7 @@ public class WorldManifold {
 
                 points[0].x = (cAx + cBx) * .5f;
                 points[0].y = (cAy + cBy) * .5f;
-                separations[0] = (cBx - cAx) * normal.x + (cBy - cAy) * normal.y;
+//                separations[0] = (cBx - cAx) * normal.x + (cBy - cAy) * normal.y;
             }
             break;
             case FACE_A: {
@@ -134,7 +134,7 @@ public class WorldManifold {
 
                     points[i].x = (cAx + cBx) * .5f;
                     points[i].y = (cAy + cBy) * .5f;
-                    separations[i] = (cBx - cAx) * normal.x + (cBy - cAy) * normal.y;
+//                    separations[i] = (cBx - cAx) * normal.x + (cBy - cAy) * normal.y;
                 }
             }
             break;
@@ -186,7 +186,7 @@ public class WorldManifold {
                     final float cAy = -normal.y * radiusA + clipPoint.y;
 
                     points[i].set( (cAx + cBx) * .5f, (cAy + cBy) * .5f);
-                    separations[i] = (cAx - cBx) * normal.x + (cAy - cBy) * normal.y;
+//                    separations[i] = (cAx - cBx) * normal.x + (cAy - cBy) * normal.y;
                 }
                 
                 normal.x = -normal.x;

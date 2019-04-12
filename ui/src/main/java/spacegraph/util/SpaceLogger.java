@@ -26,7 +26,7 @@ public interface SpaceLogger {
         log(key, duration, Level.DEBUG, message);
     }
     default void debug(@Nullable Object key, float duration /* seconds */, Object x) {
-        log(key, duration, Level.DEBUG, ()->x.toString());
+        log(key, duration, Level.DEBUG, x::toString);
     }
     default void debug(@Nullable Object key, float duration /* seconds */, String message) {
         log(key, duration, Level.DEBUG, ()->message);

@@ -200,28 +200,14 @@ class BaseFrameBufferObjectRendererExecutor {
         int tError = inGL.glCheckFramebufferStatus(GL_FRAMEBUFFER);
         switch (tError) {
             case GL_FRAMEBUFFER_COMPLETE:
-                
-                break;
-            case GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT:
-                
-                break;
-            case GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT:
-                
-                break;
-            case GL_FRAMEBUFFER_INCOMPLETE_DIMENSIONS:
-                
-                break;
-            case GL_FRAMEBUFFER_INCOMPLETE_FORMATS:
-                
-                break;
-            case GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER:
-                
-                break;
-            case GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER:
-                
-                break;
             case GL_FRAMEBUFFER_UNSUPPORTED:
-                
+            case GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER:
+            case GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER:
+            case GL_FRAMEBUFFER_INCOMPLETE_FORMATS:
+            case GL_FRAMEBUFFER_INCOMPLETE_DIMENSIONS:
+            case GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT:
+            case GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT:
+
                 break;
             default:
                 

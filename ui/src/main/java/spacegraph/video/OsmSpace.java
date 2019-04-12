@@ -789,8 +789,7 @@ public enum OsmSpace  { ;
 
             GLU.gluTessBeginPolygon(tobj, null);
             GLU.gluTessBeginContour(tobj);
-            for (int i = 0, nnSize = coord.length; i < nnSize; i++) {
-                float[] ci = coord[i];
+            for (float[] ci : coord) {
                 GLU.gluTessVertex(tobj, Util.toDouble(ci), 0, ci);
             }
             GLU.gluTessEndContour(tobj);

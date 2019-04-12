@@ -43,9 +43,7 @@ public class NoiseVectorChip extends Splitting {
 
         updater = Loop.of(this::next);
         R( new Gridding(
-                LabeledPane.the("fps", new FloatSlider(1f, 0, 120).on((f)->{
-                    updater.setFPS(f);
-                })),
+                LabeledPane.the("fps", new FloatSlider(1f, 0, 120).on((f)-> updater.setFPS(f))),
 
                 LabeledPane.the("size", new IntSlider(size)),
 

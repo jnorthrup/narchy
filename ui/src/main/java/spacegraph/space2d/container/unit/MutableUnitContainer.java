@@ -7,7 +7,7 @@ import java.util.concurrent.atomic.AtomicReference;
 /** TODO make more bulletproof w/ locking. this is not complete */
 public class MutableUnitContainer<S extends Surface> extends AbstractUnitContainer<S> {
 
-    private final AtomicReference<Surface> the = new AtomicReference<Surface>();
+    private final AtomicReference<Surface> the = new AtomicReference<>();
 
     public MutableUnitContainer() {
         this(null);

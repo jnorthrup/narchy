@@ -252,13 +252,12 @@ public abstract class UGen extends Auvent {
                     bufOut[i] = context.getZeroBuf();
                 }
                 break;
-            case RETAIN:
-                break;
             case NULL:
                 for (int i = 0; i < outs; i++) {
                     bufOut[i] = null;
                 }
                 break;
+            case RETAIN:
             default:
                 break;
         }
@@ -276,11 +275,9 @@ public abstract class UGen extends Auvent {
                     bufOut[i] = context.getCleanBuf();
                 }
                 break;
-            case NULL:
-                Arrays.fill(bufOut, 0, outs, null);
-                break;
             case RETAIN:
                 break;
+            case NULL:
             default:
                 Arrays.fill(bufOut, 0, outs, null);
                 break;

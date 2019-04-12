@@ -88,7 +88,6 @@ public class OrbSpaceMouse extends SpaceMouse implements KeyListener {
                 }
                 break;
             case MouseEvent.BUTTON2:
-                break;
             case MouseEvent.BUTTON3:
                 break;
         }

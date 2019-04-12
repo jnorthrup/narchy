@@ -39,17 +39,17 @@ package spacegraph.audio.modem.stopcollaboratelisten;
     public static byte[] concatenate(byte[][] input) {
         //sum the lengths of the columns
         int totalLength = 0;
-        for (int i = 0; i < input.length; i++) {
-            totalLength += input[i].length;
+        for (byte[] value : input) {
+            totalLength += value.length;
         }
         //create the result array
         byte[] result = new byte[totalLength];
 
         //populate the result array
         int currentIndex = 0;
-        for (int i = 0; i < input.length; i++) {
-            for (int j = 0; j < input[i].length; j++) {
-                result[currentIndex++] = input[i][j];
+        for (byte[] bytes : input) {
+            for (int j = 0; j < bytes.length; j++) {
+                result[currentIndex++] = bytes[j];
             }
         }
         return result;

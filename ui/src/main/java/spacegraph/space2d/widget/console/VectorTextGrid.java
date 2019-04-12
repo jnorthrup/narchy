@@ -42,11 +42,6 @@ import java.awt.*;
 
 
     @Override
-    protected void doLayout(float dtS) {
-
-    }
-
-    @Override
     protected void paintIt(GL2 gl, ReSurface r) {
         Draw.bounds(bounds, gl, this::doPaint);
     }

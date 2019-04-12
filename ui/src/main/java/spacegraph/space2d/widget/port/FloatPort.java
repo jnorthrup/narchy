@@ -13,9 +13,7 @@ public class FloatPort extends TypedPort<Float> implements FloatSupplier {
 
     public FloatPort() {
         super(Float.class);
-        on((Float s)->{
-            curValue.set(s);
-        });
+        on(curValue::set);
     }
 
     /** retransmit */

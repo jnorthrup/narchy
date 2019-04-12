@@ -39,10 +39,10 @@ public class NewtMouseFinger extends MouseFinger implements MouseListener, Windo
         _posGlobal.set(posPixel); //HACK
 
         Fingering ff = this.fingering.get();
-        if (ff == Fingering.Null || ff.escapes()) {
-            Surface touchNext = s.finger(this);
-            touching.accumulateAndGet(touchNext, ff::touchNext);
-        }
+
+        Surface touchNext = s.finger(this);
+        touching.accumulateAndGet(touchNext, ff::touchNext);
+
         if (ff != Fingering.Null) {
             if (!ff.updateGlobal(this)) {
                 ff.stop(this);

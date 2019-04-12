@@ -145,8 +145,8 @@ public abstract class Param extends Parts<Term,NAR> {
         public static final double TRUTH_EVI_MIN =
                             //c2wSafe(TRUTH_EPSILON);
                             //ScalarValue.EPSILON;
-                            //Float.MIN_NORMAL;
-                            Double.MIN_NORMAL;
+                            Float.MIN_NORMAL;
+                            //Double.MIN_NORMAL;
     }
 
 
@@ -188,7 +188,7 @@ public abstract class Param extends Parts<Term,NAR> {
             , 0, 1);
     @Deprecated public final FloatRange questionForgetRate = new FloatRange(0.5f, 0, 1);
     public final IntRange premiseUnifyTTL = new IntRange(16, 1, 32);
-    public final IntRange deriveBranchTTL = new IntRange(8 * derive.TTL_MIN, derive.TTL_MIN, 64 * derive.TTL_MIN );
+    public final IntRange deriveBranchTTL = new IntRange(6 * derive.TTL_MIN, derive.TTL_MIN, 64 * derive.TTL_MIN );
     /**
      * how many cycles above which to dither dt and occurrence time
      * TODO move this to Time class and cache the cycle value rather than dynamically computing it
@@ -313,8 +313,8 @@ public abstract class Param extends Parts<Term,NAR> {
                 //0.5f;
                 //1;
                 //1.618f; //phi
-                //2; //nyquist / horizon
-                4;
+                2; //nyquist / horizon
+                //4;
                 //dur;
                 //8;
                 //64;
@@ -522,7 +522,7 @@ public abstract class Param extends Parts<Term,NAR> {
          * for NALTest's: extends the time all unit tests are allowed to run for.
          * normally be kept to 1 but for debugging this may be increased to find what tests need more time
          */
-        public static final float TIME_MULTIPLIER = 3f;
+        public static final float TIME_MULTIPLIER = 2f;
         /**
          * how precise unit test results must match expected values to pass
          */

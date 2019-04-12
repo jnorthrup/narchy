@@ -164,8 +164,8 @@ import static spacegraph.space2d.phys.dynamics.BodyType.STATIC;
  */
 class Island {
 
-    public static final v2[] VELOCITIES = new v2[0];
-    public static final v2[] POSITIONS = new v2[0];
+    public static final Velocity[] VELOCITIES = new Velocity[0];
+    public static final Position[] POSITIONS = new Position[0];
     private ContactListener m_listener;
 
     public Body2D[] bodies;
@@ -215,7 +215,7 @@ class Island {
 
 
         if (velocities == null || m_bodyCapacity > velocities.length) {
-            final v2[] old = velocities == null ? VELOCITIES : velocities;
+            final Velocity[] old = velocities == null ? VELOCITIES : velocities;
             velocities = new Velocity[m_bodyCapacity];
             System.arraycopy(old, 0, velocities, 0, old.length);
             for (int i = old.length; i < velocities.length; i++) {

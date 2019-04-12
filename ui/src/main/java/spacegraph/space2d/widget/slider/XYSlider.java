@@ -138,9 +138,7 @@ public class XYSlider extends PaintSurface implements Hovered {
     private void updated() {
         FloatFloatProcedure c = change;
         if (c != null) {
-            Exe.invokeLater(() -> {
-                c.value(knob.x, knob.y);
-            });
+            Exe.invokeLater(() -> c.value(knob.x, knob.y));
         }
     }
 

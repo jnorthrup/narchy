@@ -6,8 +6,6 @@ package spacegraph.space2d.widget.port;
 public class CopyPort<X> extends Port<X> {
     public CopyPort() {
         super();
-        on((from,what)->{
-           out((Port)from.other(CopyPort.this),what);
-        });
+        on((from,what)-> out((Port)from.other(CopyPort.this),what));
     }
 }

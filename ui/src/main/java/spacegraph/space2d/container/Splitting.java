@@ -3,6 +3,7 @@ package spacegraph.space2d.container;
 import jcog.Util;
 import jcog.math.v2;
 import jcog.tree.rtree.Spatialization;
+import jcog.tree.rtree.rect.RectFloat;
 import org.eclipse.collections.api.block.procedure.primitive.BooleanProcedure;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.input.finger.Finger;
@@ -116,23 +117,29 @@ public class Splitting<X extends Surface, Y extends Surface> extends MutableArra
 
                 float Ysplit = Y + split * h;
 
-                a.pos(X, Ysplit, X + w, Y + h);
+                RectFloat r3 = RectFloat.XYXY(X, Ysplit, X + w, Y + h);
+                a.pos(r3);
 
-                b.pos(X, Y, X + w, Ysplit);
+                RectFloat r2 = RectFloat.XYXY(X, Y, X + w, Ysplit);
+                b.pos(r2);
 
                 if (r != null) {
-                    r.pos(X, Ysplit - resizeMargin / 2 * h, X + w, Ysplit + resizeMargin / 2 * h);
+                    RectFloat r1 = RectFloat.XYXY(X, Ysplit - resizeMargin / 2 * h, X + w, Ysplit + resizeMargin / 2 * h);
+                    r.pos(r1);
                     r.show();
                 }
             } else {
                 float Xsplit = X + split * w;
 
-                a.pos(X, Y, Xsplit, Y + h);
+                RectFloat r3 = RectFloat.XYXY(X, Y, Xsplit, Y + h);
+                a.pos(r3);
 
-                b.pos(Xsplit, Y, X + w, Y + h);
+                RectFloat r2 = RectFloat.XYXY(Xsplit, Y, X + w, Y + h);
+                b.pos(r2);
 
                 if (r != null) {
-                    r.pos(Xsplit - resizeMargin / 2 * w, Y, Xsplit + resizeMargin / 2 * w, Y + h);
+                    RectFloat r1 = RectFloat.XYXY(Xsplit - resizeMargin / 2 * w, Y, Xsplit + resizeMargin / 2 * w, Y + h);
+                    r.pos(r1);
                     r.show();
                 }
             }

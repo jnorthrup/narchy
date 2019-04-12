@@ -49,13 +49,6 @@ public class AutoConceptualizer extends AbstractSensor {
         this.in = n.newChannel(this);
     }
 
-    @Override
-    protected void starting(NAR nar) {
-//        on(
-//            DurPart.on(nar, this::update)
-//        );
-    }
-
 
     @Override
     public Iterable<Termed> components() {
@@ -64,9 +57,6 @@ public class AutoConceptualizer extends AbstractSensor {
 
     @Override
     public void update(Game g) {
-
-        if (concepts == null)
-            return;
 
         NAR n = g.nar;
         long now = n.time();

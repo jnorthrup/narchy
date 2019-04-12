@@ -48,7 +48,6 @@ public class FZero extends GameX {
     float rotSpeed = 0.15f;
     static float fps = 25f;
 
-
     public static void main(String[] args) {
         GameX.runRT(n -> {
 //            n.onTask(tt->{

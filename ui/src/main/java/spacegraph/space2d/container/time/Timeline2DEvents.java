@@ -1,6 +1,7 @@
 package spacegraph.space2d.container.time;
 
 import jcog.data.list.FasterList;
+import jcog.tree.rtree.rect.RectFloat;
 import org.roaringbitmap.PeekableIntIterator;
 import org.roaringbitmap.RoaringBitmap;
 import spacegraph.space2d.container.graph.Graph2D;
@@ -115,7 +116,8 @@ public class Timeline2DEvents<E> extends Graph2D<E> implements Timeline2D.TimeRa
                     }
 
                     jj.show();
-                    jj.pos(x(left), Y + laneHeight * i, x(right), Y + laneHeight * (i + 1));
+                    RectFloat r = RectFloat.XYXY(x(left), Y + laneHeight * i, x(right), Y + laneHeight * (i + 1));
+                    jj.pos(r);
                 }
             }
         }

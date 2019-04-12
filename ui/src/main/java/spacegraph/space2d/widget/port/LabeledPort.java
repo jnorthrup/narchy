@@ -17,10 +17,8 @@ public class LabeledPort<X> extends Port<X> {
         this.toString = toString;
         set(l);
 
-        on((w,x)->{
-            update(w, x);
-            //out((Port)w.other(LabeledPort.this), x); //rebroadcast
-        });
+        //out((Port)w.other(LabeledPort.this), x); //rebroadcast
+        on((In<X>) this::update);
     }
 
     protected AbstractLabel update(Wire w, X x) {

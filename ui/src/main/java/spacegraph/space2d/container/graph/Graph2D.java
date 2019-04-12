@@ -7,7 +7,6 @@ import jcog.data.map.MRUMap;
 import jcog.data.pool.MetalPool;
 import jcog.data.set.ArrayHashSet;
 import org.jetbrains.annotations.Nullable;
-import spacegraph.input.finger.Finger;
 import spacegraph.space2d.ReSurface;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.ContainerSurface;
@@ -80,7 +79,7 @@ public class Graph2D<X> extends MutableMapContainer<X, NodeVis<X>> {
 
         @Override
         public void clear() {
-            forEachValue(v -> v.delete());
+            forEachValue(Surface::delete);
             super.clear();
         }
     }; //TODO set capacity good
@@ -429,8 +428,6 @@ public class Graph2D<X> extends MutableMapContainer<X, NodeVis<X>> {
     /**
      * invalidates all edges by setting their dirty flag
      */
-    protected static Graph2DRenderer InvalidateEdges = (n, g) -> {
-        n.invalidateEdges();
-    };
+    protected static Graph2DRenderer InvalidateEdges = (n, g) -> n.invalidateEdges();
 
 }

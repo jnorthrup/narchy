@@ -54,7 +54,6 @@ public class PartsTable extends Gridding implements GridModel, GridRenderer {
     private void update() {
         synchronized (this) {
             partEntries.clear();
-            partEntries.clear();
             partEntries.addAll(context.partEntrySet());
         }
 //        grid.refresh();

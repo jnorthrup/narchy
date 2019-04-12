@@ -322,14 +322,9 @@ public final class EmulatorVT100 extends TerminalEmulator {
                                 case 1: 
                                     enter_bold_mode();
                                     continue;
-                                case 2: 
-                                    break;
                                 case 4: 
                                     enter_underline_mode();
                                     continue;
-                                case 5: 
-                                case 8: 
-                                    break;
                                 case 7: 
                                     enter_reverse_mode();
                                     continue;
@@ -357,6 +352,9 @@ public final class EmulatorVT100 extends TerminalEmulator {
                                     if (tmp != null)
                                         bg = tmp;
                                     break;
+                                case 5:
+                                case 8:
+                                case 2:
                                 default:
                                     break;
                             }

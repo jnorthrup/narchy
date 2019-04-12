@@ -3,6 +3,7 @@ package spacegraph.space3d.widget;
 import com.google.common.graph.Graph;
 import com.google.common.graph.SuccessorsFunction;
 import jcog.data.graph.MapNodeGraph;
+import jcog.data.graph.Node;
 import jcog.data.list.FasterList;
 import jcog.random.XoRoShiRo128PlusRandom;
 import spacegraph.space3d.SpaceDisplayGraph3D;
@@ -132,7 +133,7 @@ public class SimpleGraph3D<X> extends DynamicListSpace<X> {
 
     public SimpleGraph3D<X> commit(MapNodeGraph<X,Object> g) {
         return commit(
-                g.nodes().stream().map(x -> x.id()).collect(Collectors.toList()),
+                g.nodes().stream().map(Node::id).collect(Collectors.toList()),
                 x-> StreamSupport.stream(g.node(x).edges(false, true).spliterator(), false).map(zz -> zz.to().id())
                         .collect(Collectors.toList()));
     }

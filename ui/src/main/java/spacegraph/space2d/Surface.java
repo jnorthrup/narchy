@@ -124,11 +124,6 @@ abstract public class Surface implements Surfacelike, spacegraph.input.finger.Fi
         return last != next && !last.equals(next, Spatialization.EPSILONf);
     }
 
-    public final Surface pos(float x1, float y1, float x2, float y2) {
-        RectFloat r = RectFloat.XYXY(x1, y1, x2, y2);
-        return pos(r);
-    }
-
     public final Surface posXYWH(float cx, float cy, float w, float h) {
         return pos(RectFloat.XYWH(cx, cy, w, h));
     }

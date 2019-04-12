@@ -4,6 +4,7 @@ import nars.NAR;
 import nars.time.part.DurLoop;
 import spacegraph.space2d.ReSurface;
 import spacegraph.space2d.Surface;
+import spacegraph.space2d.container.ContainerSurface;
 import spacegraph.space2d.widget.meta.AbstractCachedSurface;
 import spacegraph.space2d.widget.meter.BitmapMatrixView;
 
@@ -78,6 +79,10 @@ abstract public class DurSurface<S extends Surface> extends AbstractCachedSurfac
         if (lastUpdate < now - minUpdateTimeNS) {
             lastUpdate = now; //TODO throttle duration to match expected update speed if significantly different
             update();
+        }
+        S x = the();
+        if (x instanceof ContainerSurface&& (((ContainerSurface) x).layoutPending())) {
+            invalidate();
         }
 
         super.renderContent(r);

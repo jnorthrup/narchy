@@ -44,9 +44,7 @@ public class HexDump {
         if (lineIndex != 16) {
             int count = (16 - lineIndex) * 3;
             count++;
-            for (int i = 0; i < count; i++) {
-                result.append(' ');
-            }
+            result.append(" ".repeat(Math.max(0, count)));
 
             for (int i = 0; i < lineIndex; i++) {
                 if (line[i] > ' ' && line[i] < '~') {

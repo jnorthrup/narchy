@@ -66,8 +66,8 @@ public class ScrollXY<S extends ScrollXY.ScrolledXY> extends Bordering {
         super();
 
         this.scale = new XYSlider();
-        this.scrollX = new FloatProportionalSlider("X", ()->0, ()->view.w/viewMax.x, ()->viewMax.x - view.w, true);
-        this.scrollY = new FloatProportionalSlider("Y", ()->0, ()->view.h/viewMax.y, ()->viewMax.y - view.h, false);
+        this.scrollX = new FloatProportionalSlider("X", () -> 0, () -> view.w / viewMax.x, () -> viewMax.x - view.w, true);
+        this.scrollY = new FloatProportionalSlider("Y", () -> 0, () -> view.h / viewMax.y, () -> viewMax.y - view.h, false);
 
         set(E,scrollY);
         set(S,scrollX);
@@ -76,9 +76,7 @@ public class ScrollXY<S extends ScrollXY.ScrolledXY> extends Bordering {
         scrollX.on((sx, x) -> scroll(x, view.y, view.w, view.h));
         scrollY.on((sy, y) -> scroll(view.x, y, view.w, view.h));
         scale.set(1,1);
-        scale.on((w, h)->{
-            scroll(view.x, view.y, lerp(w, viewMin.x, viewMax.x), lerp(h, viewMin.y, viewMax.y));
-        });
+        scale.on((w, h)-> scroll(view.x, view.y, lerp(w, viewMin.x, viewMax.x), lerp(h, viewMin.y, viewMax.y)));
 
 
     }
@@ -279,7 +277,7 @@ public class ScrollXY<S extends ScrollXY.ScrolledXY> extends Bordering {
         return s;
     }
 
-    private class FloatProportionalSlider extends FloatSlider {
+    private static class FloatProportionalSlider extends FloatSlider {
 
         /** proportional knob width */
         private final FloatSupplier knob;

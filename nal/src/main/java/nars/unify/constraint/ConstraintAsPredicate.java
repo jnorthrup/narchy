@@ -27,11 +27,6 @@ public abstract class ConstraintAsPredicate<U extends Unify, C extends UnifyCons
 
     /** TODO generify further to U extends Unify */
 
-    @Override
-    public boolean reduceIn(FasterList<PREDICATE<U>> p) {
-        return false;
-    }
-
 
     @Override
     public float cost() {

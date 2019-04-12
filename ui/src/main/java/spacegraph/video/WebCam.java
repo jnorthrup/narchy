@@ -258,9 +258,7 @@ public class WebCam {
         WebCam wc = the();
 
         Gridding menu = new Gridding();
-        menu.add(new PushButton("++").clicked(() -> {
-            SpaceGraph.surfaceWindow(new ChannelView(wc), 400, 400);
-        }));
+        menu.add(new PushButton("++").clicked(() -> SpaceGraph.surfaceWindow(new ChannelView(wc), 400, 400)));
 
         SpaceGraph.surfaceWindow(new Splitting(new Gridding(menu, new ObjectSurface(wc)), 0.9f, new WebCamSurface(wc)), 1000, 1000);
     }

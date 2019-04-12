@@ -131,9 +131,10 @@ public class GraphEditTest {
                 e.resize(16, 3);
                 Port p = new Port();
                 e.on(p::out);
-                g.add(
+                RectFloat r = RectFloat.XYXY((float) 0, (float) 0, (float) 250, (float) 250);
+                ((Surface) g.add(
                         new Bordering(e).set(Bordering.E, p, 0.1f)
-                ).pos(0, 0, 250, 250);
+                )).pos(r);
             }
 
             {
@@ -158,7 +159,8 @@ public class GraphEditTest {
                         //pending.setAt(true);
                     }
                 });
-                g.add(
+                RectFloat r = RectFloat.XYXY((float) 300, (float) 0, (float) 850, (float) 550);
+                ((Surface) g.add(
                         new Bordering(wave)
                                 .set(Bordering.W, p, 0.1f)
                                 .set(Bordering.S, new Gridding(
@@ -166,7 +168,7 @@ public class GraphEditTest {
                                             Audio.the().play(new SamplePlayer(new SoundSample(buffer.data, TinySpeech.SAMPLE_FREQUENCY)));
                                         })
                                 ), 0.1f)
-                ).pos(300, 0, 850, 550);
+                )).pos(r);
             }
 
 
@@ -182,11 +184,14 @@ public class GraphEditTest {
             EditGraph2D<Surface> g = new EditGraph2D<>(1000, 1000);
 
 
-            g.add(new StringSynthChip()).pos(0, 0, 250, 250);
+            RectFloat r2 = RectFloat.XYXY((float) 0, (float) 0, (float) 250, (float) 250);
+            ((Surface) g.add(new StringSynthChip())).pos(r2);
 
-            g.add(new WaveViewChip()).pos(300, 0, 850, 550);
+            RectFloat r1 = RectFloat.XYXY((float) 300, (float) 0, (float) 850, (float) 550);
+            ((Surface) g.add(new WaveViewChip())).pos(r1);
 
-            g.add(new AudioOutPort()).pos(500, 30, 450, 350);
+            RectFloat r = RectFloat.XYXY((float) 500, (float) 30, (float) 450, (float) 350);
+            ((Surface) g.add(new AudioOutPort())).pos(r);
 
 
             SpaceGraph.surfaceWindow(g, 1000, 1000);

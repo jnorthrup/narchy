@@ -20,7 +20,7 @@ public final class TextureProvider {
     private final int FONT_BITMAP_HEIGHT = FONT_SIZE;
 
     private final LoadingCache<String, Tex> textureCache = CacheBuilder.newBuilder().maximumSize(10000)
-            .build(new CacheLoader<String, Tex>() {
+            .build(new CacheLoader<>() {
                 @Override
                 public Tex load(String c) {
                     //return AWTTextureIO.newTexture(gl.getGLProfile(), getTexture(c, FONT_SIZE), true);
@@ -31,18 +31,12 @@ public final class TextureProvider {
 
 
 
-    @Deprecated private static TextureProvider INSTANCE = null;
-
-    public static TextureProvider getInstance() {
-        if (INSTANCE == null) {
-            synchronized (TextureProvider.class) {
-                if (INSTANCE == null) {
-                    INSTANCE = new TextureProvider();
-                }
-            }
-        }
-        return INSTANCE;
+    @Deprecated public static final TextureProvider the;
+    static {
+        the = new TextureProvider();
     }
+
+
 
     private final Font font;
 

@@ -341,7 +341,7 @@ public class TrackXY_NAR extends GameX {
                     Agenterator aa = n.control.agent(
                             () -> dexThrough.valueOf((float) (a.dexterity() + 0.01f * a.happinessMean())),
                             (i, o) -> new HaiQae(i, 32, o));
-                    HaiQChip haiQChip = new HaiQChip((HaiQae) aa.agent);
+                    HaiQChip haiQChip = new HaiQChip((HaiQae) aa.agent) ;
                     g.add(haiQChip).posRel(0.5f, 0.5f, 0.2f, 0.2f);
 
 

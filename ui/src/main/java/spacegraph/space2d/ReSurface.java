@@ -64,11 +64,7 @@ public class ReSurface extends SurfaceCamera {
 //        float ss = (float) Math.pow(2, Math.random() + 1);
 //        gl.glScalef(ss, ss, 1);
         //gl.glTranslatef((w()/2)/scale.x - cam.x, (h()/2)/scale.y - cam.y, 0);
-        main.forEachWith((rr,ggl) -> {
-
-            rr.accept(ggl, this);
-
-        }, gl);
+        main.forEachWith((rr,ggl) -> rr.accept(ggl, this), gl);
     }
         /** ortho restart */
     public ReSurface restart(float pw, float ph) {

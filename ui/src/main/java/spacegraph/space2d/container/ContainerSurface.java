@@ -85,7 +85,7 @@ abstract public class ContainerSurface extends Surface {
         }
     }
 
-    /* TODO abstract */ protected void render(ReSurface r, boolean layout) {
+    /* TODO abstract */ protected final void render(ReSurface r, boolean layout) {
         //TODO all of these called methods can be merged into one method that does these in whatever order the impl chooses
         //
 
@@ -139,6 +139,12 @@ abstract public class ContainerSurface extends Surface {
 
 
     @Override
+    protected void starting() {
+        forEach(s -> s.start(this));
+        layout();
+    }
+
+    @Override
     protected void stopping() {
         forEach(Surface::stop);
     }
@@ -175,6 +181,9 @@ abstract public class ContainerSurface extends Surface {
         return (X) found[0];
     }
 
+    public boolean layoutPending() {
+        return this.mustLayout>0;
+    }
 
 
 //    public final void forEachReverse(Consumer<Surface> each) {

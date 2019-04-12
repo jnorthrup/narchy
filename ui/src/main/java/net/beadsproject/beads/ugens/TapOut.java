@@ -216,12 +216,8 @@ public class TapOut extends UGen {
     private TapOut setMode(InterpolationType mode) {
         switch (mode) {
             case NO_INTERP:
-                this.mode = mode;
-                break;
-            case LINEAR:
-                this.mode = mode;
-                break;
             case ALLPASS:
+            case LINEAR:
                 this.mode = mode;
                 break;
         }

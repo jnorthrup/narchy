@@ -60,7 +60,7 @@ public abstract class RdesktopCanvas extends Canvas {
     private static final int TEXT2_IMPLICIT_X = 0x20;
     private final int width;
     private final int height;
-    private final RasterOp rop;
+
     public KeyCode keys;
     private KeyCode_FileBased fbKeys;
     public String sKeys;
@@ -90,7 +90,7 @@ public abstract class RdesktopCanvas extends Canvas {
      * @param height Desired height of canvas
      */
     RdesktopCanvas(int width, int height) {
-        rop = new RasterOp();
+        
         this.width = width;
         this.height = height;
         this.right = width - 1; 

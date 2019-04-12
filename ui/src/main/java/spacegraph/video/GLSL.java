@@ -6,6 +6,7 @@ import com.jogamp.opengl.GL2ES3;
 import com.jogamp.opengl.util.glsl.ShaderCode;
 import com.jogamp.opengl.util.glsl.ShaderProgram;
 import com.jogamp.opengl.util.glsl.ShaderState;
+import jcog.tree.rtree.rect.RectFloat;
 import spacegraph.SpaceGraph;
 import spacegraph.space2d.ReSurface;
 import spacegraph.space2d.container.PaintSurface;
@@ -24,7 +25,8 @@ public class GLSL extends PaintSurface {
     private ShaderCode /*vp0, */fp0;
 
     public static void main(String[] args) {
-        SpaceGraph.surfaceWindow(new GLSL().pos(1, 1, 500, 500), 800, 600);
+        RectFloat r = RectFloat.XYXY((float) 1, (float) 1, (float) 500, (float) 500);
+        SpaceGraph.surfaceWindow(new GLSL().pos(r), 800, 600);
     }
 
     private final boolean updateUniformVars = true;

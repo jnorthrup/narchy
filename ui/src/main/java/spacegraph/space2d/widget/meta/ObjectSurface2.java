@@ -35,8 +35,8 @@ public class ObjectSurface2 extends MutableUnitContainer {
     }
     {
         build(List.class, (List<Object> x) -> new Gridding(x.stream().map(this::build).toArray(Surface[]::new)));
-        build(String.class, (String x) -> new VectorLabel(x));
-        build(FloatRange.class, (FloatRange x) -> new FloatRangePort(x));
+        build(String.class, VectorLabel::new);
+        build(FloatRange.class, FloatRangePort::new);
         build(FloatRange.class, (FloatRange x) -> new VectorLabel(x.toString()));
         build(AnyOf.class, (AnyOf x) -> new TextEdit(x.toString()));
     }

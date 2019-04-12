@@ -146,47 +146,6 @@ public class Color3f extends v3 {
         return new Color(r, g, b);
     }
 
-    /**
-     * Returns a string that contains the values of this v3.
-     * The form is (x,y,z).
-     *
-     * @return the String representation
-     */
-    public String toString() {
-        return "(" + this.x + ", " + this.y + ", " + this.z + ')';
-    }
-
-    /**
-     * Sets the value of this tuple to the specified xyz coordinates.
-     *
-     * @param x the x coordinate
-     * @param y the y coordinate
-     * @param z the z coordinate
-     */
-    public void set(float x, float y, float z) {
-
-
-        this.x = (x);
-        this.y = (y);
-        this.z = (z);
-
-    }
-
-    /**
-     * assumes z=0
-     */
-    public void set(float x, float y) {
-        set(x, y, this.z);
-    }
-
-
-    public void add(float dx, float dy) {
-        add(dx, dy, 0);
-    }
-
-    public void add(float dx, float dy, float dz) {
-        set(this.x + dx, this.y + dy, this.z + dz);
-    }
 
 
 }

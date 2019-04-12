@@ -44,6 +44,10 @@ abstract public class AbstractCachedSurface<X extends Surface> extends UnitConta
         return this;
     }
 
+    public final void invalidate() {
+        invalid.set(true);
+    }
+
     /** TODO double buffer to prevent 'tearing' */
     @Override protected void renderContent(ReSurface r) {
         if (cache) {

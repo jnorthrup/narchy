@@ -167,9 +167,7 @@ public class SpaceDisplayGraph3D<X> extends JoglDisplay implements Iterable<Spat
             return true;
         });
 
-        inputs.forEach((anIi) -> {
-            anIi.update(this, dtMS);
-        });
+        inputs.forEach((anIi) -> anIi.update(this, dtMS));
 
 
         if (simulating) {

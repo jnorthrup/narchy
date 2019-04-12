@@ -79,10 +79,6 @@ public class CachedUnitCompound extends UnitCompound implements The {
         return 1<<op;
     }
 
-    @Override
-    public boolean impossibleSubVolume(int otherTermVolume) {
-        return otherTermVolume > volume-1;
-    }
 
     @Override
     public int varPattern() {

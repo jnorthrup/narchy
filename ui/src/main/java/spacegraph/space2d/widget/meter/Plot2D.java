@@ -21,15 +21,9 @@ import java.util.function.Function;
 import static java.lang.Float.NaN;
 
 public class Plot2D extends Widget {
-    public static final PlotVis Line = (List<Series> series, float minValue, float maxValue, GL2 gl) -> {
-        plotLine(series, gl, minValue, maxValue, false, false);
-    };
-    public static final PlotVis LineLanes = (List<Series> series, float minValue, float maxValue, GL2 gl) -> {
-        plotLine(series, gl, minValue, maxValue, true, false);
-    };
-    public static final PlotVis BarLanes = (List<Series> series, float minValue, float maxValue, GL2 gl) -> {
-        plotLine(series, gl, minValue, maxValue, true, true);
-    };
+    public static final PlotVis Line = (List<Series> series, float minValue, float maxValue, GL2 gl) -> plotLine(series, gl, minValue, maxValue, false, false);
+    public static final PlotVis LineLanes = (List<Series> series, float minValue, float maxValue, GL2 gl) -> plotLine(series, gl, minValue, maxValue, true, false);
+    public static final PlotVis BarLanes = (List<Series> series, float minValue, float maxValue, GL2 gl) -> plotLine(series, gl, minValue, maxValue, true, true);
     public final List<Series> series;
     private final int maxHistory;
     private final PlotVis vis;

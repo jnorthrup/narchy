@@ -3,6 +3,7 @@ package spacegraph.space2d.container.grid;
 import com.google.common.collect.Iterables;
 import jcog.Util;
 import jcog.data.list.FasterList;
+import jcog.tree.rtree.rect.RectFloat;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.Splitting;
 import spacegraph.space2d.container.collection.MutableListContainer;
@@ -189,7 +190,8 @@ public class Gridding extends MutableListContainer {
                 Surface c = children[layoutIndex(i++)];
 
                 float x1 = px * W;
-                c.pos(X+x1, Y+y1, X+x1+dxc*W, Y+y1+dyc*H);
+                RectFloat r = RectFloat.XYXY(X+x1, Y+y1, X+x1+dxc*W, Y+y1+dyc*H);
+                c.pos(r);
 
                 px += dx;
 
@@ -232,7 +234,7 @@ public class Gridding extends MutableListContainer {
     }
 
     private static Surface[] array(Collection<? extends Surface> content) {
-        return content.toArray(new Surface[0]);
+        return content.toArray(Surface.EmptySurfaceArray);
     }
 
     public static Gridding row(Surface... content) {

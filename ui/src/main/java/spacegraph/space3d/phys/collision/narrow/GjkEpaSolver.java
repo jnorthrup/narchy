@@ -435,8 +435,7 @@ public class GjkEpaSolver {
                     return (true);
                 
 				case 3:
-					return (true);
-				
+
 				case 4:
 					return (true);
 			}

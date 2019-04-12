@@ -227,11 +227,7 @@ abstract public class Finger {
      * allows a fingered object to push the finger off it
      */
     public boolean off(Surface fingered) {
-        if (touching.compareAndSet(fingered, null)) {
-//            fingered.fingerTouch(this, false);
-            return true;
-        }
-        return false;
+        return touching.compareAndSet(fingered, null);
     }
 
     public boolean released(int button) {
@@ -300,20 +296,18 @@ abstract public class Finger {
         if (prev != Null) {
             if (!prev.updateLocal( this)) {
                 prev.stop(this);
-                fingeringClear();
+                fingering.set(Null);
+                renderer = rendererDefault;
                 prev = Null;
-            } else {
-                return true; //continue
             }
-
         }
 
         if (prev != next && prev.defer(this)) {
 
-            prev.stop(this);
-            fingeringClear();
 
             if (next.start(this)) {
+
+                prev.stop(this);
 
                 fingering.set(next);
 
@@ -327,11 +321,6 @@ abstract public class Finger {
 
 
         return false;
-    }
-
-    private void fingeringClear() {
-        fingering.set(Null);
-        renderer = rendererDefault;
     }
 
     /**

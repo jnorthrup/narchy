@@ -21,7 +21,7 @@ public class CharView extends TextEditRenderable  {
   @Override
   protected void innerDraw(GL2 gl) {
     if (texture == null) {
-       texture = TextureProvider.getInstance().getTexture(gl, String.valueOf(bufferChar.getChar()));
+       texture = TextureProvider.the.getTexture(gl, String.valueOf(bufferChar.getChar()));
     }
     texture.enable(gl);
     texture.bind(gl);

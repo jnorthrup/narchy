@@ -92,9 +92,10 @@ public class BU_Simplex1to4 extends PolyhedralConvexShape {
 		
 
 		switch (numVertices) {
-			case 0: return 0;
-			case 1: return 0;
-			case 2: return 1;
+			case 0:
+            case 1:
+                return 0;
+            case 2: return 1;
 			case 3: return 3;
 			case 4: return 6;
 		}
@@ -163,10 +164,11 @@ public class BU_Simplex1to4 extends PolyhedralConvexShape {
 	@Override
 	public int getNumPlanes() {
 		switch (numVertices) {
-			case 0: return 0;
-			case 1: return 0;
-			case 2: return 0;
-			case 3: return 2;
+			case 0:
+            case 2:
+            case 1:
+                return 0;
+            case 3: return 2;
 			case 4: return 4;
 		}
 		return 0;

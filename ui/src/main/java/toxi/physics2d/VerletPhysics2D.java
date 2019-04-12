@@ -313,9 +313,7 @@ public class VerletPhysics2D {
     protected void preUpdate(float subDT) {
 
         //local behaviors
-        particles.removeIf((t)->{
-            return !t.preUpdate(VerletPhysics2D.this, subDT);
-        });
+        particles.removeIf((t)-> !t.preUpdate(VerletPhysics2D.this, subDT));
 
         //global behaviors
         behaviors.forEachWith(ParticleBehavior2D::applyGlobal, this);

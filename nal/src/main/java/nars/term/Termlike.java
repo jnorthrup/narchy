@@ -10,8 +10,6 @@ import org.jetbrains.annotations.Nullable;
 import java.util.function.BiPredicate;
 import java.util.function.Predicate;
 import java.util.function.ToIntFunction;
-import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
 import static nars.Op.*;
 
@@ -258,24 +256,6 @@ public interface Termlike {
 //    }
 
 
-    /**
-     * stream of each subterm
-     */
-    default Stream<Term> subStream() {
-        int subs = subs();
-        switch (subs) {
-            case 0:
-                return Stream.empty();
-            case 1:
-                return Stream.of(sub(0));
-            case 2:
-                return Stream.of(sub(0), sub(1));
-            case 3:
-                return Stream.of(sub(0), sub(1), sub(2));
-            default:
-                return IntStream.range(0, subs).mapToObj(this::sub);
-        }
-    }
 
 
     default int vars() {
