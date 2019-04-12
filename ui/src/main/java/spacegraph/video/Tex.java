@@ -8,7 +8,6 @@ import com.jogamp.opengl.GLProfile;
 import com.jogamp.opengl.util.texture.Texture;
 import com.jogamp.opengl.util.texture.TextureData;
 import com.jogamp.opengl.util.texture.TextureIO;
-import jcog.TODO;
 import jcog.tree.rtree.rect.RectFloat;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.space2d.ReSurface;
@@ -20,6 +19,7 @@ import java.awt.image.BufferedImage;
 import java.awt.image.DataBuffer;
 import java.awt.image.DataBufferByte;
 import java.awt.image.DataBufferInt;
+import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -94,71 +94,81 @@ public class Tex {
     }
 
     public boolean set(BufferedImage iimage) {
-//        if (/*iimage == null || */profile == null)
-//            return false;
+
         if (!ready())
             return false;
 
-        if (data == null) {
-            DataBuffer b = iimage.getRaster().getDataBuffer();
-            int W = iimage.getWidth(), H = iimage.getHeight();
-            if (b instanceof DataBufferInt)
-                _set(((DataBufferInt) b).getData(), W, H, iimage.getColorModel().hasAlpha());
-            else if (b instanceof DataBufferByte) {
-                _set(((DataBufferByte) b).getData(), W, H);
-            } else
-                throw new TODO();
-        }
+        DataBuffer b = iimage.getRaster().getDataBuffer();
+//        if (b instanceof DataBufferInt)
+        Object o = b instanceof DataBufferInt ? ((DataBufferInt) b).getData() : ((DataBufferByte)b).getData();
+
+        int W = iimage.getWidth(), H = iimage.getHeight();
+        _set(o, W, H, iimage.getColorModel().hasAlpha());
+//        else if (b instanceof DataBufferByte) {
+//            _set(((DataBufferByte) b).getData(), W, H);
+//        } else
+//            throw new TODO();
+
 
         updated.set(true);
         return true;
     }
 
-    private void _set(byte[] iimage, int width, int height) {
+//    public void set(int[] iimage, int width, int height) {
+//        if (!ready())
+//            return;
+//
+//        if (data == null) {
+//            _set(iimage, width, height, true);
+//        }
+//
+//        updated.set(true);
+//    }
 
-        this.src = iimage;
+//    private void _set(byte[] iimage, int width, int height) {
+//
+//        this.src = iimage;
+//
+//        ByteBuffer buffer = ByteBuffer.wrap(iimage);
+//
+//
+//    }
 
-        ByteBuffer buffer = ByteBuffer.wrap(iimage);
-        data = new TextureData(profile, GL_RGB,
-                width, height,
-                0 /* border */,
-                GL_RGB,
-                GL_UNSIGNED_BYTE,
-                mipmap,
-                false,
-                false,
-                buffer, null
-        );
+    private void _set(Object iimage, int width, int height, boolean alpha) {
 
-    }
+        if (src!=iimage) {
 
-    public void set(int[] iimage, int width, int height) {
-        if (!ready())
-            return;
+            this.src = iimage;
 
-        if (data == null) {
-            _set(iimage, width, height, true);
+            Buffer buffer = iimage instanceof int[] ? IntBuffer.wrap((int[])iimage) : ByteBuffer.wrap((byte[])iimage);
+            if (this.data != null) {
+                data.setBuffer(buffer);
+            } else {
+
+                if (iimage instanceof int[]) {
+                    data = new TextureData(profile, alpha ? GL_RGBA : GL_RGB,
+                            width, height,
+                            0 /* border */,
+                            GL_BGRA, GL_UNSIGNED_INT_8_8_8_8_REV,
+                            mipmap,
+                            false,
+                            false,
+                            buffer, null
+                    );
+                } else {
+                    data = new TextureData(profile, GL_RGB,
+                            width, height,
+                            0 /* border */,
+                            GL_RGB,
+                            GL_UNSIGNED_BYTE,
+                            mipmap,
+                            false,
+                            false,
+                            buffer, null
+                    );
+                }
+            }
         }
-
-        updated.set(true);
-    }
-
-    private void _set(int[] iimage, int width, int height, boolean alpha) {
-
-
-        this.src = iimage;
-        //TODO if iimage is the same instance
-
-        IntBuffer buffer = IntBuffer.wrap(iimage);
-        data = new TextureData(profile, alpha ? GL_RGBA : GL_RGB,
-                width, height,
-                0 /* border */,
-                GL_BGRA, GL_UNSIGNED_INT_8_8_8_8_REV,
-                mipmap,
-                false,
-                false,
-                buffer, null
-        );
 
     }
 

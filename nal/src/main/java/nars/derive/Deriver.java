@@ -1,7 +1,6 @@
 package nars.derive;
 
 import jcog.Util;
-import nars.$;
 import nars.NAR;
 import nars.Task;
 import nars.attention.What;

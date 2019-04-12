@@ -203,7 +203,7 @@ abstract public class GameX extends Game {
         NAR n = new NARS()
 
                 .what(
-                        (w)-> new What.TaskLinkWhat(w, new PriBuffer.BagTaskBuffer(512, 25))
+                        (w)-> new What.TaskLinkWhat(w, new PriBuffer.BagTaskBuffer(1024, 25))
                 )
 //                .attention(() -> new ActiveConcepts(1024))
                 .exe(

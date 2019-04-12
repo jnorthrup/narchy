@@ -5,7 +5,6 @@ package spacegraph.audio.modem.stopcollaboratelisten; /**
  */
 
 import javax.sound.sampled.TargetDataLine;
-import java.io.IOException;
 
 /**
  * This thread puts bytes from the microphone into the StreamDecoder's buffer.

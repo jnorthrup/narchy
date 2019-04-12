@@ -109,10 +109,15 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
     }
 
     private void updateWindow() {
+        GLWindow w = window;
+        if (w==null)
+            return;
+
+
         if (!updateWindow.compareAndSet(true, false))
             return;
 
-        GLWindow w = window;
+
 
         int nw = this.nw, nh = this.nh;
 

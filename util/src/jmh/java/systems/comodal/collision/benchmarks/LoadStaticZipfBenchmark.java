@@ -4,7 +4,6 @@ import com.github.benmanes.caffeine.cache.LoadingCache;
 import org.cache2k.Cache;
 import org.cache2k.Cache2kBuilder;
 import org.cache2k.integration.CacheLoader;
-import org.openjdk.jmh.annotations.*;
 import systems.comodal.collision.cache.CollisionBuilder;
 import systems.comodal.collision.cache.CollisionCache;
 

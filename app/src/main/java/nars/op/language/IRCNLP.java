@@ -6,7 +6,6 @@ import nars.attention.What;
 import nars.bag.leak.TaskLeak;
 import nars.derive.Derivers;
 import nars.derive.impl.BatchDeriver;
-import nars.derive.timing.ActionTiming;
 import nars.exe.impl.UniExec;
 import nars.op.language.util.IRC;
 import nars.op.stm.ConjClustering;

@@ -6,7 +6,6 @@ import nars.nal.nal1.NAL1Test;
 import nars.nal.nal6.NAL6Test;
 import nars.term.util.builder.HeapTermBuilder;
 import nars.term.util.builder.InterningTermBuilder;
-import org.openjdk.jmh.annotations.*;
 
 import static nars.perf.NARBenchmarks.runTests;
 

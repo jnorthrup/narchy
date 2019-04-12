@@ -1,9 +1,7 @@
 package nars.unify.constraint;
 
-import jcog.data.list.FasterList;
 import nars.term.Term;
 import nars.term.control.AbstractPred;
-import nars.term.control.PREDICATE;
 import nars.unify.Unify;
 
 import java.util.function.BiFunction;

@@ -1,7 +1,5 @@
 package systems.comodal.collision.benchmarks;
 
-import org.openjdk.jmh.annotations.*;
-
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.stream.IntStream;

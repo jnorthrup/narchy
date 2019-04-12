@@ -78,11 +78,13 @@ abstract public class DurSurface<S extends Surface> extends AbstractCachedSurfac
         long now = System.nanoTime();
         if (lastUpdate < now - minUpdateTimeNS) {
             lastUpdate = now; //TODO throttle duration to match expected update speed if significantly different
+
+            S x = the();
+            if (x instanceof ContainerSurface && (((ContainerSurface) x).layoutPending())) {
+                invalidate();
+            }
+
             update();
-        }
-        S x = the();
-        if (x instanceof ContainerSurface&& (((ContainerSurface) x).layoutPending())) {
-            invalidate();
         }
 
         super.renderContent(r);

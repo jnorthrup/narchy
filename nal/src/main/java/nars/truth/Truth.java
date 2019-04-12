@@ -34,7 +34,7 @@ import java.io.DataOutput;
 import java.io.IOException;
 
 import static jcog.WTF.WTF;
-import static nars.truth.func.TruthFunctions.*;
+import static nars.truth.func.TruthFunctions.w2cSafeDouble;
 
 
 /**

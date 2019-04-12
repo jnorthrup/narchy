@@ -4,7 +4,6 @@ import com.github.benmanes.caffeine.cache.Cache;
 import jcog.io.BinTxt;
 import jcog.memoize.HijackMemoize;
 import org.cache2k.Cache2kBuilder;
-import org.openjdk.jmh.annotations.*;
 import systems.comodal.collision.cache.CollisionCache;
 
 import java.util.concurrent.TimeUnit;
