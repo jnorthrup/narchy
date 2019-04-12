@@ -156,9 +156,9 @@ public class NARio extends GameX {
         //initBipolar();
 
 
-        DigitizedScalar vx = senseNumberDifferenceBi($$("vx"), 8, () -> theMario != null ? theMario.x : 0).resolution(0.02f);
-        DigitizedScalar vy = senseNumberDifferenceBi($$("vy"), 8, () -> theMario != null ? theMario.y : 0).resolution(0.02f);
-        window(new Gridding(new VectorSensorView(vx, this), new VectorSensorView(vy, this)), 800, 800);
+        DigitizedScalar vx = senseNumberDifferenceTri($$("vx"), 8, () -> theMario != null ? theMario.x : 0).resolution(0.02f);
+        DigitizedScalar vy = senseNumberDifferenceTri($$("vy"), 8, () -> theMario != null ? theMario.y : 0).resolution(0.02f);
+        window(new Gridding(new VectorSensorView(vx, this), new VectorSensorView(vy, this)), 100, 50);
 
 
         Reward right = rewardNormalized("goRight", -1, +1, () -> {
@@ -177,7 +177,7 @@ public class NARio extends GameX {
 
             return reward;
         });
-        //right.setDefault($.t(0, 0.8f));
+        right.setDefault($.t(0, 0.8f));
 
         Reward getCoins = rewardNormalized("getCoins", -1, +1, () -> {
             int coins = Mario.coins;
@@ -190,7 +190,7 @@ public class NARio extends GameX {
             lastCoins = coins;
             return Math.max(0, reward);
         });
-        // getCoins.setDefault($.t(0, 0.8f));
+         getCoins.setDefault($.t(0, 0.8f));
 
         Reward alive = rewardNormalized("alive", -1, +1, () -> {
 //            if (dead)
@@ -212,7 +212,7 @@ public class NARio extends GameX {
 //            }
             return t;
         });
-//        //alive.setDefault($.t(1, 0.5f));
+        alive.setDefault($.t(1, 0.5f));
 
     }
 

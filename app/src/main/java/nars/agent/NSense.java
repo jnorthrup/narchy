@@ -17,6 +17,7 @@ import nars.concept.sensor.SelectorSensor;
 import nars.concept.sensor.Signal;
 import nars.term.Term;
 import nars.term.atom.Atomic;
+import nars.term.atom.Int;
 import org.apache.commons.math3.util.MathUtils;
 import org.eclipse.collections.api.block.function.primitive.BooleanToObjectFunction;
 import org.eclipse.collections.api.block.function.primitive.FloatToFloatFunction;
@@ -33,9 +34,9 @@ import static nars.agent.NAct.PLUS;
  */
 public interface NSense {
 
-    Atomic LOW = Atomic.the("low");
-    Atomic MID = Atomic.the("mid");
-    Atomic HIH = Atomic.the("hih");
+    Atomic LOW = Int.the(-1); //Atomic.the("low");
+    Atomic MID = Int.the(0); //Atomic.the("mid");
+    Atomic HIH = Int.the(+1); //Atomic.the("hih");
 
 
     static Term switchTerm(String a, String b) throws Narsese.NarseseException {
@@ -192,6 +193,9 @@ public interface NSense {
     default DigitizedScalar senseNumberDifferenceBi(Term id, float clampRange, FloatSupplier v) {
         return senseNumberBi(id, difference(v, clampRange));
     }
+    default DigitizedScalar senseNumberDifferenceTri(Term id, float clampRange, FloatSupplier v) {
+        return senseNumberTri(id, difference(v, clampRange));
+    }
 
     default FloatNormalized difference(FloatSupplier v) {
         return new FloatNormalized(
@@ -270,7 +274,7 @@ public interface NSense {
     }
 
     default DigitizedScalar senseNumberBi(Term id, FloatSupplier v) {
-        return senseNumber(v, DigitizedScalar.FuzzyNeedle, p(id, LOW), p(id, HIH));
+        return senseNumber(v, DigitizedScalar.Fluid /*FuzzyNeedle*/, p(id, LOW), p(id, HIH));
     }
 
     default DigitizedScalar senseNumberTri(Term id, FloatSupplier v) {
