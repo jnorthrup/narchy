@@ -16,7 +16,6 @@ public abstract class RingContainer<X extends Surface> extends EmptyContainer {
 
     /** T time axis capacity (history) */
     private final IntRange T = new IntRange(1, 1, 512);
-    private int t;
 
     public RingContainer(X[] initArray) {
         x = initArray;
@@ -48,18 +47,15 @@ public abstract class RingContainer<X extends Surface> extends EmptyContainer {
         int y = this.y.getAndIncrement();
 
         X[] x = this.x;
-        float[] c = this.coords;
         if (x == null || x.length!=t) { //TODO if history changes
             x = this.x = Arrays.copyOf(x, t);
-            c = this.coords = new float[t * 4];
+            this.coords = new float[t * 4];
             reallocate(x);
         } else if (x[0]==null)
             reallocate(x);
 
-
-
-        this.t = t;
         setter.accept(x[y%t]);
+        layout();
     }
 
     @Override
@@ -67,14 +63,15 @@ public abstract class RingContainer<X extends Surface> extends EmptyContainer {
 
         int y = this.y.getOpaque();
         float[] c = coords;
+        int t = T.intValue();
 
         float W = w(), H = h(), left = left(), right = right(), top = top(), bottom = bottom();
         float di = (horizOrVert ? W : H)/t;
         int j = 0;
         for (int i = 0; i < t; i++) {
-            int ii = Math.abs(i - y) % t;
+            int ii = i;
 //            Surface xyi = xy[i];
-            ii = (t - 1) - ii; //t-.. : for y-orientation HACK
+//            ii = (t - 1) - ii; //t-.. : for y-orientation HACK
             if (horizOrVert) {
                 float ix = ii * di;
                 c[j++] = left + ix; c[j++] = top; c[j++] = left + ix + di; c[j++] = bottom;
@@ -90,11 +87,15 @@ public abstract class RingContainer<X extends Surface> extends EmptyContainer {
     public void forEach(BiConsumer<X, RectFloat> each) {
         int j = 0;
         float[] c = this.coords;
-        for (X x : this.x) {
-            if (x!=null)
+        X[] xes = this.x;
+        int t = T.intValue();
+        int y = this.y.intValue();
+        for (int i = 0, xesLength = xes.length; i < xesLength; i++) {
+            X x = xes[(i + y)% t];
+            if (x != null)
                 each.accept(x, RectFloat.XYXY(c[j++], c[j++], c[j++], c[j++]));
             else
-                j+=4;
+                j += 4;
         }
     }
 

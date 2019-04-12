@@ -67,6 +67,7 @@ import spacegraph.space2d.widget.meter.Spectrogram;
 import spacegraph.space2d.widget.port.FloatRangePort;
 import spacegraph.space2d.widget.text.LabeledPane;
 import spacegraph.space2d.widget.text.VectorLabel;
+import spacegraph.space2d.widget.textedit.TextEdit;
 import spacegraph.video.Draw;
 
 import java.io.File;
@@ -211,8 +212,8 @@ public class NARui {
 
     public static Surface MemEdit(NAR nar) {
         return new Gridding(
-                MemLoad(nar),
-                MemSave(nar),
+                memLoad(nar),
+                memSave(nar),
                 new PushButton("Prune Beliefs", () -> {
                     nar.runLater(() -> {
                         //nar.logger.info("Belief prune start");
@@ -255,12 +256,12 @@ public class NARui {
 
     }
 
-    public static Surface MemLoad(NAR nar) {
+    public static Surface memLoad(NAR nar) {
         return new VectorLabel("Load: TODO");
     }
 
-    public static Surface MemSave(NAR nar) {
-        TextEdit0 path = new TextEdit0(20, 1);
+    public static Surface memSave(NAR nar) {
+        TextEdit path = new TextEdit(20, 1);
         try {
             path.text(Files.createTempFile(nar.self().toString(), "" + System.currentTimeMillis()).toAbsolutePath().toString());
         } catch (IOException e) {
@@ -596,6 +597,7 @@ public class NARui {
 
         Map<String,Supplier<Surface>> global = new HashMap();
         global.put("Attention", ()-> AttentionUI.attentionGraph(n));
+        global.put("What", ()-> AttentionUI.whatMixer(n));
 
 
         Map<String,Supplier<Surface>> attentions = new HashMap();

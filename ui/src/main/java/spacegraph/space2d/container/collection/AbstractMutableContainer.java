@@ -2,7 +2,6 @@ package spacegraph.space2d.container.collection;
 
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.ContainerSurface;
-import spacegraph.space2d.widget.textedit.TextEdit;
 
 public abstract class AbstractMutableContainer<S extends Surface> extends ContainerSurface {
 
@@ -35,5 +34,5 @@ public abstract class AbstractMutableContainer<S extends Surface> extends Contai
     abstract public void add(Surface... s);
 
 
-    protected abstract TextEdit clear();
+    protected abstract AbstractMutableContainer<S> clear();
 }

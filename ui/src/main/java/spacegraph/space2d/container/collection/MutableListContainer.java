@@ -8,14 +8,13 @@ import org.eclipse.collections.impl.set.mutable.primitive.IntHashSet;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.Surfacelike;
 import spacegraph.space2d.container.ContainerSurface;
-import spacegraph.space2d.widget.textedit.TextEdit;
 
 import java.util.Collection;
 import java.util.function.Consumer;
 import java.util.function.IntFunction;
 import java.util.function.Predicate;
 
-abstract public class MutableListContainer extends AbstractMutableContainer {
+abstract public class MutableListContainer extends AbstractMutableContainer<Surface> {
 
 
     private static final IntFunction<Surface[]> NEW_SURFACE_ARRAY = (i) -> i == 0 ? Surface.EmptySurfaceArray : new Surface[i];
@@ -187,16 +186,12 @@ abstract public class MutableListContainer extends AbstractMutableContainer {
     public final ContainerSurface set(Collection<? extends Surface> next) {
         //set(next.toArray(Surface.EmptySurfaceArray));
         children.set(next);
-
         return this;
     }
 
     @Override
     public void forEach(Consumer<Surface> o) {
-        children.forEachWith((c, oo) -> {
-            if (c != null)
-                oo.accept(c);
-        }, o);
+        children.forEachNonNull(o);
     }
 
     @Override
@@ -217,7 +212,7 @@ abstract public class MutableListContainer extends AbstractMutableContainer {
         return children.isEmpty();
     }
 
-    public TextEdit clear() {
+    public MutableListContainer clear() {
         synchronized (children.list) {
             if (parent == null) {
                 children.clear();

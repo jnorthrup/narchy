@@ -154,7 +154,7 @@ public class Game extends NARPart implements NSense, NAct {
      * happiness metric applied to all reward concepts
      */
     @Paper
-    public final float happinessMean() {
+    public final float happiness() {
         return (float) rewards.meanBy(rr -> {
             float r = rr.happiness();
             return r != r ? 0f : r;
@@ -178,7 +178,7 @@ public class Game extends NARPart implements NSense, NAct {
      * professional satori
      */
     public final double proficiency() {
-        double x = happinessMean() * dexterity();
+        double x = happiness() * dexterity();
         if (x!=x)
             x = 0; //NaN > 0
         return x;
@@ -231,7 +231,7 @@ public class Game extends NARPart implements NSense, NAct {
 
         return id +
                 " dex=" + /*n4*/(dexterity()) +
-                " hapy=" + /*n4*/(happinessMean()) +
+                " hapy=" + /*n4*/(happiness()) +
 
                 /*" var=" + n4(varPct(nar)) + */ '\t' + nar.memory.summary() + ' ' +
                 nar.feel.summary();

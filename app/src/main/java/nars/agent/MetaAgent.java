@@ -2,7 +2,6 @@ package nars.agent;
 
 import jcog.TODO;
 import jcog.Util;
-import jcog.math.FloatFirstOrderDifference;
 import jcog.math.FloatRange;
 import nars.$;
 import nars.NAR;
@@ -12,6 +11,7 @@ import nars.term.Term;
 import nars.term.atom.Atomic;
 
 import static nars.$.$$;
+import static nars.Op.SETe;
 
 /**
  * supraself agent metavisor
@@ -59,7 +59,9 @@ public class MetaAgent extends Game {
 
     /** assumes games are from the same NAR */
     public MetaAgent(float fps, Game... w) {
-        super( $.uuid() /* HACK */, GameTime.fps(fps),  w[0].nar);
+        super( $.func(Atomic.the("meta"),
+                SETe.the(Util.map(p->p.what().term(), new Term[w.length], w))),
+                GameTime.fps(fps),  w[0].nar);
 
         NAR n = this.nar = w[0].nar;
 
@@ -74,11 +76,11 @@ public class MetaAgent extends Game {
 
         What w = g.what();
 
-        Term aid = w.id;
+        Term gid = w.id;
         //this.what().accept(new EternalTask($.inh(aid,this.id), BELIEF, $.t(1f, 0.9f), nar));
 
 //        forgetAction = actionUnipolar($.inh(id, forget), (FloatConsumer) n.attn.forgetRate::set);
-        actionDial($.inh(aid, $.p(forget, $.the(1))), $.inh(aid, $.p(forget, $.the(-1))),
+        actionDial($.inh(gid, $.p(forget, $.the(1))), $.inh(gid, $.p(forget, $.the(-1))),
                 ((What.TaskLinkWhat)w).links.decay, 40);
 
 
@@ -92,12 +94,23 @@ public class MetaAgent extends Game {
 //                n.goalPriDefault.floatValue() /* current value */ * priFactorMax)::setProportionally);
 
 
-        actionHemipolar($.inh(aid, PRI), (v)->{
-            nar.what.pri(g.what(), v);
-            return v;
-        });
+//        actionHemipolar($.inh(aid, PRI), (v)->{
+//            nar.what.pri(g.what(), v);
+//            return v;
+//        });
 
-        int initialDur = g.what().dur();
+        float priMin = 0.1f, priMax = 1;
+        actionDial($.inh(gid, $.p(PRI, $.the(1))), $.inh(gid, $.p(PRI, $.the(-1))),
+                w::pri, w::pri, priMin, 1, 10);
+
+        actionDial($.inh(gid, $.p(curiosity, $.the(1))), $.inh(gid, $.p(curiosity, $.the(-1))),
+                g.curiosity.rate, 10);
+
+//        GoalActionConcept curiosityAction = actionUnipolar($.inh(a.id, curiosity), (c) -> {
+//            a.curiosity.rate.set(curiosity(a, start, c));
+//        });
+
+        int initialDur = w.dur();
         FloatRange durRange = new FloatRange(initialDur, initialDur/4, initialDur*4) {
             @Override
             public float get() {
@@ -114,19 +127,19 @@ public class MetaAgent extends Game {
                 //assert(nar.dur()==nextDur);
             }
         };
-        actionDial($.inh(aid, $.p(duration, $.the(1))), $.inh(aid, $.p(duration, $.the(-1))), durRange, 5);
+        actionDial($.inh(gid, $.p(duration, $.the(1))), $.inh(gid, $.p(duration, $.the(-1))), durRange, 5);
 //        this.dur = actionUnipolar($.inh(id, duration), (x) -> {
 //            n.time.dur(Util.lerp(x * x, n.dtDither(), initialDur * 2));
 //            return x;
 //        });
 
-        Reward h = rewardNormalized($.inh(aid, happy), -Float.MIN_NORMAL, +Float.MIN_NORMAL,
-            new FloatFirstOrderDifference(nar::time, (() -> {
-                return g.happinessMean();
-        })));
+        Reward h = rewardNormalized($.inh(gid, happy), 0, 1, ()-> {
+            //new FloatFirstOrderDifference(nar::time, (() -> {
+                return g.happiness();
+        });
 
 
-        Reward d = rewardNormalized($.inh(aid, dex), 0, 1,
+        Reward d = rewardNormalized($.inh(gid, dex), 0, 1,
                 ()->{
 ////            float p = a.proficiency();
 ////            float hp = Util.or(h, p);
@@ -144,9 +157,7 @@ public class MetaAgent extends Game {
 //        GoalActionConcept agentPri = actionUnipolar(agentPriTerm, (FloatConsumer)a.attn.factor::set);
 //
 //
-//        GoalActionConcept curiosityAction = actionUnipolar($.inh(a.id, curiosity), (c) -> {
-//            a.curiosity.rate.set(curiosity(a, start, c));
-//        });
+
 
         if (allowPause) {
 //            //TODO agent enable

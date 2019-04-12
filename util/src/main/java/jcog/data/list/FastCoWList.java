@@ -154,6 +154,13 @@ public class FastCoWList<X> /*extends AbstractList<X>*/ /*implements List<X>*/ i
             c.accept(x);
     }
 
+    public void forEachNonNull(Consumer<? super X> c) {
+        for (X x : array()) {
+            if (x!=null)
+                c.accept(x);
+        }
+    }
+
     public <Y> void forEachWith(Procedure2<? super X, ? super Y> c, Y y) {
         for (X x : array())
             c.accept(x, y);
@@ -415,4 +422,10 @@ public class FastCoWList<X> /*extends AbstractList<X>*/ /*implements List<X>*/ i
 
     }
 
+    public void clear(Consumer<? super X> each) {
+        removeIf((x)->{
+            each.accept(x);
+            return true;
+        });
+    }
 }

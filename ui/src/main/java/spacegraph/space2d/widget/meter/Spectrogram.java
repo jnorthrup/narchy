@@ -10,7 +10,6 @@ import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.widget.text.VectorLabel;
 import spacegraph.video.Draw;
 
-import java.util.function.Consumer;
 import java.util.function.ToIntFunction;
 
 /** displays something resembling a "spectrogram" to represent the changing contents of a bag
@@ -36,11 +35,6 @@ public class Spectrogram extends RingContainer<BitmapMatrixView> implements Bitm
         this.N.set(N);
     }
 
-    @Override
-    public synchronized void next(Consumer<BitmapMatrixView> setter) {
-        int n = this.N.intValue();
-        super.next(setter);
-    }
 
     @Override protected void reallocate(BitmapMatrixView[] x) {
         int n = this.N.getAsInt();
@@ -84,11 +78,11 @@ public class Spectrogram extends RingContainer<BitmapMatrixView> implements Bitm
             //float W = w(), H = h();
 
             forEach((BitmapMatrixView z, RectFloat b)->{
-                z.pos(b);
                 if (!z.tex.ready()) {
                     z.tex.commit(gl);
                     z.show();
                 }
+                z.pos(b);
                 z.tex.paint(gl, b);
             });
 

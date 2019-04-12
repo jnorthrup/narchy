@@ -306,7 +306,7 @@ abstract public class GameX extends Game {
     static void initPlugins3(NAR n, Game a) {
 
         MetaAgent meta = new MetaAgent(16f, a);
-        //meta.what().pri(0.5f);
+        meta.what().pri(0.5f);
 
 //        RLBooster metaBoost = new RLBooster(meta, (i,o)->new HaiQae(i, 10,o),
 //                8, 2,false);

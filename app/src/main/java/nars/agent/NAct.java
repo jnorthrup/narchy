@@ -293,16 +293,20 @@ public interface NAct {
         throw new TODO();
     }
 
+    default GoalActionConcept[] actionDial(Term down, Term up, FloatRange x, int steps) {
+        return actionDial(down, up, x::get, x::set, x.min, x.max, steps);
+    }
+
     /** discrete rotary dial:
      *    a pair of up/down buttons for discretely incrementing and decrementing a value within a given range
      */
-    default GoalActionConcept[] actionDial(Term down, Term up, FloatRange x, int steps) {
-        float delta = 1f/steps * (x.max - x.min);
+    default GoalActionConcept[] actionDial(Term down, Term up, FloatSupplier x, FloatConsumer y, float min, float max, int steps) {
+        float delta = 1f/steps * (max - min);
         return actionStep(down,up, (c)->{
-            float before = x.get();
-            float next = Util.clamp(before + c * delta, x.min, x.max);
-            x.set(next);
-            float actualNext = x.get();
+            float before = x.asFloat();
+            float next = Util.clamp(before + c * delta, min, max);
+            y.accept(next);
+            float actualNext = x.asFloat();
             /** a significant change */
             return !Util.equals(before, actualNext, delta / 4);
         });

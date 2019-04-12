@@ -103,7 +103,7 @@ public class RectFloat implements HyperRegion, Comparable<RectFloat> {
     }
     public RectFloat pos(float x, float y, float epsilon) {
         return Util.equals(this.x, x, epsilon) && Util.equals(this.y, y, epsilon) ? this :
-                X0Y0WH(x , y, x + w, y + h);
+                X0Y0WH(x , y, w, h);
     }
 
 

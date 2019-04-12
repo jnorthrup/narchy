@@ -34,7 +34,7 @@ import java.util.function.Consumer;
     }
 
     public void pri(X x, float p) {
-        if (invalid.get() || !Util.equals(x.priGetAndSet(p), p)) {
+        if (!Util.equals(x.priGetAndSet(p), p) || invalid.get()) {
             invalid.set(true);
         }
     }

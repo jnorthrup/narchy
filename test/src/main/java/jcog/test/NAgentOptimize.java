@@ -96,7 +96,7 @@ public class NAgentOptimize {
                 jcog.lab.Optimize.repeat((Game t) -> {
                     final double[] rewardSum = {0}, dexSum = { 0 };
                     t.onFrame(()-> {
-                        rewardSum[0] += t.happinessMean();
+                        rewardSum[0] += t.happiness();
                         dexSum[0] += t.dexterity();
                     });
                     try {

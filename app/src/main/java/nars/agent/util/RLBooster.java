@@ -135,7 +135,7 @@ public class RLBooster  {
     public void accept(What w) {
         NAR nar = env.nar();
 
-        double reward = (env.happinessMean() - 0.5)*2 /* polarize */;
+        double reward = (env.happiness() - 0.5)*2 /* polarize */;
         lastReward = reward;
 
 //        long start = env.last; //now() - dur/2;

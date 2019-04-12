@@ -50,7 +50,7 @@ public class Bordering<S extends Surface> extends MutableArrayContainer<S> {
      */
     protected Bordering borderSize(float size) {
         borderNorth = borderSouth = borderEast = borderWest = size;
-        layout(); 
+        layout();
         return this;
     }
 
@@ -75,7 +75,7 @@ public class Bordering<S extends Surface> extends MutableArrayContainer<S> {
             default:
                 throw new UnsupportedOperationException();
         }
-        layout(); 
+        layout();
         return this;
     }
 
@@ -92,25 +92,24 @@ public class Bordering<S extends Surface> extends MutableArrayContainer<S> {
 //        if (aspectEqual) {
 //            w2 = h2 = Math.min(W, H) / 2;
 //        } else {
-            w2 = W / 2;
-            h2 = H / 2;
+        w2 = W / 2;
+        h2 = H / 2;
 //        }
 
 
 
 
         float borderWest, borderEast, borderNorth, borderSouth;
-        int l = length;
         boolean se = get(Bordering.SE) != null;
         boolean ne = get(Bordering.NE) != null;
         boolean sw = get(Bordering.SW) != null;
         boolean nw = get(Bordering.NW) != null;
-        borderWest = autocollapse && !(l > Bordering.W && get(Bordering.W) != null || sw || nw) ? 0 : this.borderWest;
-        borderEast = autocollapse && !(l > Bordering.E && get(Bordering.E) != null || se || ne) ? 0 : this.borderEast;
-        borderNorth = autocollapse && !(l > Bordering.N && get(Bordering.N) != null || ne || nw) ? 0 : this.borderNorth;
-        borderSouth = autocollapse && !(l > Bordering.S && get(Bordering.S) != null || se || sw) ? 0 : this.borderSouth;
+        borderWest = autocollapse && !(sw || nw || get(Bordering.W) != null) ? 0 : this.borderWest;
+        borderEast = autocollapse && !(se || ne || get(Bordering.E) != null) ? 0 : this.borderEast;
+        borderNorth = autocollapse && !(ne || nw || get(Bordering.N) != null) ? 0 : this.borderNorth;
+        borderSouth = autocollapse && !(se || sw || get(Bordering.S) != null) ? 0 : this.borderSouth;
 
-        for (int i = 0, childrenLength = l; i < childrenLength; i++) {
+        for (int i = 0, childrenLength = 9; i < childrenLength; i++) {
 
             S c = get(i);
 

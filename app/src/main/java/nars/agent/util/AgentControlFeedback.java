@@ -25,7 +25,7 @@ public class AgentControlFeedback {
 
             @Override
             public void run() {
-                rewardSum += a.happinessMean();
+                rewardSum += a.happiness();
                 if (dur++ % snapshotEvery == 0) {
                     update(ts.snapshot(), rewardSum/snapshotEvery);
                     rewardSum = 0;
