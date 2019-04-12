@@ -23,7 +23,7 @@ import nars.derive.premise.PremiseDeriverRuleSet;
 import nars.derive.timing.ActionTiming;
 import nars.exe.impl.ForkJoinExec;
 import nars.gui.NARui;
-import nars.index.concept.CaffeineMemory;
+import nars.index.concept.RadixTreeMemory;
 import nars.op.Arithmeticize;
 import nars.op.AutoencodedBitmap;
 import nars.op.Eternalizer;
@@ -213,7 +213,7 @@ abstract public class GameX extends Game {
 //                        threads,
 //                        false/* affinity */)
 
-                new ForkJoinExec(5)
+                new ForkJoinExec()
 
 //                new SuperExec(
 //                    new Valuator.DefaultValuator(0.9f), threads <= 0 ? Util.concurrencyExcept(1) : threads
@@ -238,14 +238,14 @@ abstract public class GameX extends Game {
                 .time(clock)
                 .index(
 
-                        //new RadixTreeMemory(64*1024)
+                        new RadixTreeMemory(64*1024)
 
                         //CaffeineIndex.soft()
 
-                        new CaffeineMemory(
-                            //    16*1024
-                                64 * 1024
-                        )
+//                        new CaffeineMemory(
+//                            //    16*1024
+//                                64 * 1024
+//                        )
                                  //, c -> (int) Math.ceil(c.term().voluplexity()))
 
 //                        new HijackConceptIndex(

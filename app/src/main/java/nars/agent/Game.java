@@ -151,6 +151,7 @@ public class Game extends NARPart implements NSense, NAct {
     /**
      *
      * avg reward satisfaction, current measurement
+     * happiness metric applied to all reward concepts
      */
     @Paper
     public final float happinessMean() {
@@ -158,6 +159,15 @@ public class Game extends NARPart implements NSense, NAct {
             float r = rr.happiness();
             return r != r ? 0f : r;
         });
+    }
+
+    /** happiness metric applied to all sensor concepts */
+    @Paper public final float happinessSensorsMean() {
+        throw new TODO();
+    }
+    /** happiness metric applied to all action concepts */
+    @Paper public final float happinessActionsMean() {
+        throw new TODO();
     }
 
     //TODO weighted happiness function

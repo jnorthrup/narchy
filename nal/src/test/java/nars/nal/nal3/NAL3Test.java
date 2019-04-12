@@ -16,12 +16,13 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 import static nars.$.$$;
 import static nars.Op.BELIEF;
+import static nars.Op.QUESTION;
 import static nars.time.Tense.ETERNAL;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class NAL3Test extends NALTest {
 
-    static final int cycles = 200;
+    static final int cycles = 300;
 
     @Override
     protected NAR nar() {
@@ -350,5 +351,15 @@ public class NAL3Test extends NALTest {
 
         ;
     }
+
+
+    @Test
+    void questionDecomposition1() {
+        test
+                .ask("(swan --> bird)")
+                .believe("((swan|swimmer) --> bird)")
+                .mustOutput(cycles, "(swimmer --> bird)", QUESTION);
+    }
+
 }
 

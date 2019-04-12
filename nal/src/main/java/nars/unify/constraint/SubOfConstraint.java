@@ -3,7 +3,6 @@ package nars.unify.constraint;
 import nars.subterm.util.SubtermCondition;
 import nars.term.Term;
 import nars.term.Variable;
-import org.jetbrains.annotations.Nullable;
 
 public class SubOfConstraint extends RelationConstraint {
     private final boolean forward;
@@ -25,7 +24,7 @@ public class SubOfConstraint extends RelationConstraint {
     }
 
     @Override
-    protected @Nullable RelationConstraint newMirror(Variable newX, Variable newY) {
+    protected RelationConstraint newMirror(Variable newX, Variable newY) {
         return new SubOfConstraint(newX, newY, true, containment, polarityCompare);
     }
 

@@ -39,10 +39,10 @@
 
 //Set Decomposition
 
-    (C --> X), Y, is(X,"{"),subPosOrNeg(X,Y),subsMin(X,2) |- (C --> withoutPosOrNeg(X,Y)), (Belief:StructuralDeduction, Goal:StructuralDeduction)
-    (C --> X), Y, is(X,"["),subPosOrNeg(X,Y),subsMin(X,2) |- (C --> withoutPosOrNeg(X,Y)), (Belief:StructuralDeduction, Goal:StructuralDeduction)
-    (X --> C), Y, is(X,"{"),subPosOrNeg(X,Y),subsMin(X,2) |- (withoutPosOrNeg(X,Y) --> C), (Belief:StructuralDeduction, Goal:StructuralDeduction)
-    (X --> C), Y, is(X,"["),subPosOrNeg(X,Y),subsMin(X,2) |- (withoutPosOrNeg(X,Y) --> C), (Belief:StructuralDeduction, Goal:StructuralDeduction)
+    (C --> X), Y, is(X,"{"),subOfPosOrNeg(X,Y),subsMin(X,2) |- (C --> withoutPosOrNeg(X,Y)), (Belief:StructuralDeduction, Goal:StructuralDeduction)
+    (C --> X), Y, is(X,"["),subOfPosOrNeg(X,Y),subsMin(X,2) |- (C --> withoutPosOrNeg(X,Y)), (Belief:StructuralDeduction, Goal:StructuralDeduction)
+    (X --> C), Y, is(X,"{"),subOfPosOrNeg(X,Y),subsMin(X,2) |- (withoutPosOrNeg(X,Y) --> C), (Belief:StructuralDeduction, Goal:StructuralDeduction)
+    (X --> C), Y, is(X,"["),subOfPosOrNeg(X,Y),subsMin(X,2) |- (withoutPosOrNeg(X,Y) --> C), (Belief:StructuralDeduction, Goal:StructuralDeduction)
 
 //Set-in-Conjunction Decomposition
     //TODO

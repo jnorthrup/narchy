@@ -27,7 +27,8 @@ public class NAL6DecomposeTest extends NALTest {
     @Override
     protected NAR nar() {
         NAR n = NARS.tmp(6);
-        n.confMin.set(0.01f);
+        n.termVolumeMax.set(10);
+        n.confMin.set(0.1f);
         return n;
     }
 
@@ -244,12 +245,21 @@ public class NAL6DecomposeTest extends NALTest {
     void compound_decomposition_two_premises1() {
 
         TestNAR tester = test;
+        tester.termVolMax(12);
         tester.believe("(bird:robin ==> --(animal:robin && (robin-->[flying])))", 1.0f, 0.9f);
         tester.believe("          (bird:robin ==> (robin-->[flying]))");
         tester.mustBelieve(cycles, "--(bird:robin ==> animal:robin)", 1.00f, 0.81f);
 
     }
+    @Test
+    void compound_decomposition_two_premises1_simpler() {
 
+        TestNAR tester = test;
+        tester.believe("(b ==> --(a && r))", 1.0f, 0.9f);
+        tester.believe("          (b ==> r)");
+        tester.mustBelieve(cycles, "--(b ==> a)", 1.00f, 0.81f);
+
+    }
     @Test
     void disjunction_decompose_two_premises3() {
         TestNAR tester = test;
@@ -260,6 +270,7 @@ public class NAL6DecomposeTest extends NALTest {
     @Test
     void disjunction_impl_decompose_two_premises3() {
         TestNAR tester = test;
+        tester.termVolMax(13);
         tester.believe("(((robin --> [flying]) || (robin --> swimmer)) ==> x)");
         tester.believe("((robin --> swimmer) ==> x)", 0.0f, 0.9f);
         tester.mustBelieve(cycles, "((robin --> [flying]) ==> x)", 1.00f, 0.81f);
@@ -267,6 +278,7 @@ public class NAL6DecomposeTest extends NALTest {
     @Test
     void disjunction_impl_decompose_two_premises_neg() {
         TestNAR tester = test;
+        tester.termVolMax(13);
         tester.believe("(((robin --> [flying]) || (robin --> swimmer)) ==> --x)");
         tester.believe("((robin --> swimmer) ==> --x)", 0.0f, 0.9f);
         tester.mustBelieve(cycles, "((robin --> [flying]) ==> --x)", 1.00f, 0.81f);

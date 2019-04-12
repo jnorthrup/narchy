@@ -3,7 +3,6 @@ package nars.op;
 import jcog.math.FloatRange;
 import jcog.sort.FloatRank;
 import jcog.sort.RankedN;
-import nars.$;
 import nars.NAR;
 import nars.Op;
 import nars.Task;
@@ -30,7 +29,7 @@ public class Eternalizer extends LinkRanker<Task> {
     private static final int cap = 16; //TODO IntRange
 
     public Eternalizer(NAR nar) {
-        super($.p($.the(Eternalizer.class.getSimpleName()), $.uuid()));
+        super();
         in = nar.newChannel(this);
     }
 

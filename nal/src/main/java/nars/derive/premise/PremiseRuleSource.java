@@ -207,7 +207,7 @@ public class PremiseRuleSource extends ProxyTerm {
                     break;
                 }
 
-                case "subPosOrNeg":
+                case "subOfPosOrNeg":
                     //TODO handle negation
                     neq(constraints, XX, YY);
                     constraints.add(new SubOfConstraint(XX, YY, Subterm, 0));
@@ -291,6 +291,13 @@ public class PremiseRuleSource extends ProxyTerm {
                         negationApplied = true;
                     break;
                 }
+                /*@Deprecated */case "isSect": { //TODO: is(X,{"&","|"})
+                    match(X, new TermMatcher.Is(Op.Sect), !negated);
+                    if (negated)
+                        negationApplied = true;
+                    break;
+                }
+
                 case "hasVar": {
                     match(X, new TermMatcher.Has(Op.Variable, true, 2), !negated);
                     if (negated)

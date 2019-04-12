@@ -39,6 +39,10 @@
         //((A,B) --> M), ((X,Y) --> M), is(A,"+"), is(B,"+"), is(X,"+"), is(Y,"+") |- ((intersect(A,X),intersect(B,Y)) --> M), (Belief:Intersection)
         //((A,B) --> M), ((X,Y) --> M), is(A,"+"), is(B,"+"), is(X,"+"), is(Y,"+") |- ((union(A,X),union(B,Y)) --> M), (Belief:Union)
 
+//decompose sect for a question/quest involving one component
+    (A --> X), (S --> X), task("?@"), isSect(S), subOfPosOrNeg(S,A) |- (withoutPosOrNeg(S,A) --> X)
+    (X --> A), (X --> S), task("?@"), isSect(S), subOfPosOrNeg(S,A) |- (X --> withoutPosOrNeg(S,A))
+
 
 //union/intersection belief/goal to diff question/quest
     (W --> (A&B)), A, --isVar(W) |- (W --> (A-B)), (Punctuation:Ask)

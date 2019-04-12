@@ -65,7 +65,7 @@ public abstract class TaskLeak extends How {
         );
     }
 
-    TaskLeak(TaskSource src, @Nullable NAR n, byte... puncs) {
+    TaskLeak(TaskSource src, @Deprecated @Nullable NAR n, byte... puncs) {
         super();
 
         this.puncs = puncs;

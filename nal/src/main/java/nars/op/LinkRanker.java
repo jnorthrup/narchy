@@ -5,7 +5,6 @@ import jcog.sort.RankedN;
 import nars.attention.What;
 import nars.control.How;
 import nars.link.TaskLink;
-import nars.term.Term;
 import nars.time.When;
 import nars.time.event.WhenTimeIs;
 import org.jetbrains.annotations.Nullable;
@@ -22,8 +21,8 @@ public abstract class LinkRanker<Y> extends How {
 //        super();
 //    }
 
-    public LinkRanker(Term id) {
-        super(id);
+    public LinkRanker() {
+        super();
     }
 
     @Override

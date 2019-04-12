@@ -33,8 +33,9 @@ public class Inperience2 extends How {
     private final CauseChannel<ITask> in;
 
     public Inperience2(NAR n) {
-        super($.uuid(Inperience2.class.getSimpleName()), n);
+        super();
         this.in = n.newChannel(id);
+        n.start(this);
     }
 
     @Override
