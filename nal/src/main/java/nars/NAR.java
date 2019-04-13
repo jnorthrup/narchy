@@ -1301,7 +1301,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
                     oo.write(b);
                     wrote.increment();
                 } catch (IOException e) {
-                    if (test.DEBUG)
+                    if (Param.DEBUG)
                         throw new RuntimeException(e);
                     else
                         logger.warn("{}", e);

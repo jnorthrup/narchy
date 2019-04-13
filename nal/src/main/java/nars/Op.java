@@ -62,7 +62,7 @@ public enum Op {
                     return u.unneg();
 
                 case FRAG:
-                    if (Param.test.DEBUG)
+                    if (Param.DEBUG)
                         throw new TermException("fragment can not be negated", u);
                     return Null;
 

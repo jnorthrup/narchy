@@ -327,7 +327,7 @@ abstract public class Inperience extends TaskLeakTransform {
         try {
             c = reify(x).normalize();
         } catch (Throwable t) {
-            if (Param.test.DEBUG)
+            if (Param.DEBUG)
                 logger.error("{} failed Task reification: {} : {}", this, x, t);
             return 0;
         }
@@ -371,7 +371,7 @@ abstract public class Inperience extends TaskLeakTransform {
 
             Task.merge(y, x);
 
-            if (Param.test.DEBUG)
+            if (Param.DEBUG)
                 y.log("Inperience");
 
             y.priSet(x.priElseZero() * priFactor.floatValue());

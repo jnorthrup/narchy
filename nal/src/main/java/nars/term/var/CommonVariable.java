@@ -82,7 +82,7 @@ public final class CommonVariable extends UnnormalizedVariable {
     /** vars must be sorted */
     private CommonVariable(/*@NotNull*/ Op type, AnonSubterms vars) {
         super(type, key(type, vars));
-        if (Param.test.DEBUG) {
+        if (Param.DEBUG) {
             for (Term t : vars)
                 if (!t.the()) throw new WTF();
         }

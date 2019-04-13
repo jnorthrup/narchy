@@ -138,7 +138,7 @@ import static nars.time.Tense.ETERNAL;
         if (cntt == null)
             throw new TaskException(t, "Failed normalization");
 
-        if (!Task.validTaskTerm(cntt, punc, !isInput() && !Param.test.DEBUG))
+        if (!Task.validTaskTerm(cntt, punc, !isInput() && !Param.DEBUG))
             throw new TaskException(cntt, "Invalid content");
 
         if (cntt != t) {

@@ -145,7 +145,7 @@ public class AttentionUI {
             public void commit() {
                 float nextPri = p.pri();
                 //System.out.println(p + " "+ nextPri);
-                slider.setValue(nextPri);
+                set(nextPri);
             }
         }
     }

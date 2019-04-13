@@ -302,7 +302,7 @@ public class Derivation extends PreDerivation {
                             anon.put(this._beliefTerm = nextBeliefTerm); //unshifted, since the target may be structural
         }
 
-        if (Param.test.DEBUG) {
+        if (Param.DEBUG) {
             if ((beliefTerm instanceof Bool) || ((beliefTerm instanceof Compound && _beliefTerm instanceof Compound) && (beliefTerm.op() != _beliefTerm.op())))
                 throw new WTF(_beliefTerm + " could not be anon, result: " + beliefTerm);
 

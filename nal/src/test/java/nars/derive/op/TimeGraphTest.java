@@ -380,6 +380,35 @@ class TimeGraphTest {
 
 
     }
+    @Test
+    void testImplicationPartiallyEternal() {
+        TimeGraph C = newTimeGraph(1);
+        C.know($$("x"), ETERNAL);
+        C.know($$("y"), 0);
+        assertSolved("(x ==>+- y)", C, "(x==>y)");
+    }
+
+    @Test
+    void testImplicationPartiallyEternalReverse() {
+        TimeGraph C = newTimeGraph(1);
+        C.know($$("x"), ETERNAL);
+        C.know($$("y"), 0);
+        assertSolved("(y ==>+- x)", C, "(y==>x)");
+    }
+    @Test
+    void testImplicationPartiallyEternal_Conj() {
+        TimeGraph C = newTimeGraph(1);
+        C.know($$("x"), 0);
+        C.know($$("(y&&z)"), 1);
+        assertSolved("(x ==>+- z)", C, "(x ==>+1 z)");
+    }
+    @Test
+    void testImplicationPartiallyEternal_Conj_b() {
+        TimeGraph C = newTimeGraph(1);
+        C.know($$("x"), 0);
+        C.know($$("(y&&z)"), 1);
+        assertSolved("(y &&+- z)", C, "(y&&z)@1", "(y&|z)@1");
+    }
 
     private class ExpectSolutions extends ConcurrentSkipListSet<String> implements Predicate<TimeGraph.Event> {
 

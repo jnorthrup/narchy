@@ -401,7 +401,7 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
                             ab = Intermpolate.intermpolate((Compound)a, (Compound)b, (float) (e1Evi / (e1Evi + e2Evi)), nar);
                         } catch (TermException e) {
                             //HACK TODO avoid needing to throw exception
-                            if (Param.test.DEBUG) {
+                            if (Param.DEBUG) {
                                 throw new RuntimeException(e);
                             } else {
                                 //ignore.  it may be a contradictory combination of events.

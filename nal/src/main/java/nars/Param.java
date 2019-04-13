@@ -132,6 +132,11 @@ public abstract class Param extends Parts<Term,NAR> {
 
     public static boolean ETERNALIZE_BELIEF_PROJECTED_IN_DERIVATION = false;
     public static boolean STRONG_COMPOSITION = false;
+    /**
+     * use this for advanced error checking, at the expense of lower performance.
+     * it is enabled for unit tests automatically regardless of the value here.
+     */
+    public static boolean DEBUG;
 
 
     public enum truth { ;
@@ -527,11 +532,6 @@ public abstract class Param extends Parts<Term,NAR> {
          * how precise unit test results must match expected values to pass
          */
         public static final float TRUTH_ERROR_TOLERANCE = truth.TRUTH_EPSILON * 2;
-        /**
-         * use this for advanced error checking, at the expense of lower performance.
-         * it is enabled for unit tests automatically regardless of the value here.
-         */
-        public static boolean DEBUG;
         public static boolean DEBUG_EXTRA = false;
         //public static final int TTL_MUTATE_COMPONENT = 0;
         public static boolean DEBUG_ENSURE_DITHERED_TRUTH = false;
@@ -560,7 +560,7 @@ public abstract class Param extends Parts<Term,NAR> {
         public static final int TermUnifyForkMax = 2;
 
 
-        public static final int TTL_UNISUBST_MAX = 4;
+        public static final int TTL_UNISUBST_MAX = 3;
         public static final int TTL_CONJ_BEFORE_AFTER = TTL_UNISUBST_MAX;
 
 

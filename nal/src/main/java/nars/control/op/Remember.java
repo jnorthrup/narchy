@@ -62,7 +62,7 @@ public class Remember extends AbstractTask {
 
         if (x.isBeliefOrGoal() && x.conf() < n.confMin.floatValue()) {
             if (!(x instanceof ProxyTask)) {
-                if (Param.test.DEBUG)
+                if (Param.DEBUG)
                     throw new TaskException(x, "insufficient evidence for non-input Task");
                 else
                     return null;
@@ -178,7 +178,7 @@ public class Remember extends AbstractTask {
             Concept cc = n.conceptualize(input);
             if (!(cc instanceof TaskConcept)) {
                 //may be an atomic functor term, not sure
-                if (Param.test.DEBUG)
+                if (Param.DEBUG)
                     throw new WTF();
                 return;
             }

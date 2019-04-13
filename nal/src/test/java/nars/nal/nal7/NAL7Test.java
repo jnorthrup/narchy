@@ -22,7 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class NAL7Test extends NALTest {
 
     public static final float CONF_TOLERANCE_FOR_PROJECTIONS = 2f; //200%
-    private final static int cycles = 450;
+    private final static int cycles = 750;
 
     @BeforeEach
     void setTolerance() {
@@ -819,18 +819,20 @@ public class NAL7Test extends NALTest {
     void testConjInductionEternalTemporal() {
         test
                 .input("a:x.")
-                .input("a:y. :|:")
-                .mustBelieve(cycles, "(a:x &| a:y)", 1f, 0.81f, 0);
+                .input("a:y. |")
+                .mustBelieve(cycles,
+                        //"(a:x &| a:y)",
+                        "(a:x && a:y)",
+                        1f, 0.81f, 0);
 
 
     }
 
-    @Disabled
     @Test
     void testImplInductionEternalTemporal() {
         test
                 .input("a:x.")
-                .input("a:y. :|:")
+                .input("a:y. |")
                 .mustBelieve(cycles, "(a:x ==> a:y)", 1f, 0.45f, 0)
                 .mustNotOutput(cycles, "(a:x =|> a:y)", BELIEF, 0f, 1, 0f, 1, (t) -> true);
     }

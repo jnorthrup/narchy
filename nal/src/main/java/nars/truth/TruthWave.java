@@ -83,7 +83,7 @@ public class TruthWave {
         b.forEachTask(minT, maxT, x -> {
             int ss = size[0];
             if (ss >= s) {
-                if (Param.test.DEBUG)
+                if (Param.DEBUG)
                     throw new WTF("truthwave capacity exceeded");
                 return;
             }

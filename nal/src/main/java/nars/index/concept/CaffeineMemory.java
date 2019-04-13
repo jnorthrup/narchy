@@ -127,7 +127,7 @@ public class CaffeineMemory extends Memory implements CacheLoader<Term, Concept>
         
         String s = concepts.estimatedSize() + " concepts, ";
 
-        if (Param.test.DEBUG)
+        if (Param.DEBUG)
             s += ' ' + concepts.stats().toString();
 
         return s;

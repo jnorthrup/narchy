@@ -111,6 +111,7 @@ public class FloatSlider extends Widget {
 
     public void set(float value) {
         slider.setValue(value);
+        updateText();
     }
 
     public final FloatSlider on(ObjectFloatProcedure<SliderModel> c) {

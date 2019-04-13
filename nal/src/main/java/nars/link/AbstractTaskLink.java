@@ -41,7 +41,7 @@ public abstract class AbstractTaskLink implements TaskLink {
             throw new TaskException(source, "source term not taskable");
         if (!so.conceptualizable)
             throw new TaskException(source, "source term not conceptualizable");
-        if (Param.test.DEBUG) {
+        if (Param.DEBUG) {
             if (!source.isNormalized())
                 throw new TaskException(source, "source term not normalized");
         }

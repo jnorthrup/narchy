@@ -165,7 +165,7 @@ public class Taskify extends ProxyTerm {
 
 
         DerivedTask t = Task.tryTask(x, punc, tru, (C, tr) ->
-                Param.test.DEBUG ?
+                Param.DEBUG ?
                         new DebugDerivedTask(C, punc, tr, S, E, d) :
                         new DerivedTask(C, punc, tr, S, E, d)
         );
@@ -201,7 +201,7 @@ public class Taskify extends ProxyTerm {
 
         } else {
 
-            if (Param.test.DEBUG)
+            if (Param.DEBUG)
                 t.log(channel.ruleString);
 
             d.nar().feel.deriveTask.increment();

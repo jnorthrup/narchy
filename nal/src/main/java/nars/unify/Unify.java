@@ -480,12 +480,12 @@ public abstract class Unify extends Versioning<Term> {
         }
 
         void constrain(UnifyConstraint c) {
-            if (Param.test.DEBUG) { assert(value==null && constraint == null); }
+            if (Param.DEBUG) { assert(value==null && constraint == null); }
             constraint = c;
         }
 
         void unconstrain() {
-            if (Param.test.DEBUG) {  assert(constraint != null && value==null); }
+            if (Param.DEBUG) {  assert(constraint != null && value==null); }
             constraint = null;
         }
     }

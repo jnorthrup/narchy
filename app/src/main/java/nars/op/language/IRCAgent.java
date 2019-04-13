@@ -365,7 +365,7 @@ public class IRCAgent extends IRC {
                 Runnable r = IRCAgent.this.send(channels, s);
                 if (r!=null) {
                     nar.runLater(r);
-                    if (Param.test.DEBUG && !next.isCommand())
+                    if (Param.DEBUG && !next.isCommand())
                         logger.info("{}\n{}", next, next.proof());
                 } else {
                     

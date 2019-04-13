@@ -1321,7 +1321,7 @@ public class Occurrify extends TimeGraph {
             if (offset != DTERNAL)
                 return pair(x, new long[]{srcStart + offset, srcEnd + offset});
 
-            if (Param.test.DEBUG)
+            if (Param.DEBUG)
                 throw new WTF();
 
             return null;

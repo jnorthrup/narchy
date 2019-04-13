@@ -482,7 +482,7 @@ public interface Task extends Truthed, Stamp, TermedDelegate, ITask, TaskRegion,
 
             if (tt.evi() > t.evi()) {
                 double inflationPct = (tt.evi() - t.evi()) / (t.evi());
-                if (Param.test.DEBUG || inflationPct >= Param.PROJECTION_EVIDENCE_INFLATION_PCT_TOLERANCE) {
+                if (Param.DEBUG || inflationPct >= Param.PROJECTION_EVIDENCE_INFLATION_PCT_TOLERANCE) {
                     throw new Truth.TruthException("inflation, %=", inflationPct);
                 } /* else {
                     //allow

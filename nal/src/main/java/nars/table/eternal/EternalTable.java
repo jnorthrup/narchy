@@ -359,7 +359,7 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
                 revised.cause(CauseMerge.AppendUnique.merge(Param.causeCapacity.intValue(), input, finalOldBelief));
 
 
-                if (Param.test.DEBUG)
+                if (Param.DEBUG)
                     revised.log("Insertion Revision");
 
 

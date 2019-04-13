@@ -123,7 +123,7 @@ public class DynTaskify extends TaskList {
         Compound template = (Compound) a.term();
         Term term1 = model.reconstruct(template, this, nar, s, e);
         if (term1 == null || !term1.unneg().op().taskable) { //quick tests
-            if (Param.test.DEBUG)
+            if (Param.DEBUG)
                 throw new WTF("could not reconstruct: " + template + ' ' + this);
             return null;
         }
@@ -201,7 +201,7 @@ public class DynTaskify extends TaskList {
 
         Term st;
         if (!subTerm.isNormalized()) {
-            if (Param.test.DEBUG) {
+            if (Param.DEBUG) {
                 throw new TODO("unnormalize the result for inclusion in the super-compound");
                 //st = subTerm.normalize();
             }

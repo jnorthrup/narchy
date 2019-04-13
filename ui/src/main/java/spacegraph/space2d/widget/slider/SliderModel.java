@@ -122,7 +122,7 @@ public class SliderModel extends PaintSurface {
     }
 
 
-    public final void setValue(float v) {
+    final void setValue(float v) {
         if (v == v) {
             setPoint(p(v));
         } else {

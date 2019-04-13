@@ -1329,7 +1329,7 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
     }
 
     private static boolean todoOrFalse() {
-        if (Param.test.DEBUG)
+        if (Param.DEBUG)
             throw new TODO();
         else
             return false;

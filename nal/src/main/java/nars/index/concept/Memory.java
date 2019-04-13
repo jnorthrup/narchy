@@ -92,26 +92,26 @@ public abstract class Memory {
 
         Term xt = _x.term();
         if (!xt.op().conceptualizable) {
-            if (Param.test.DEBUG)
+            if (Param.DEBUG)
                 throw new TermException("not conceptualizable", xt);
             else
                 return null;
         }
 
-        if (Param.test.DEBUG) { if (!xt.the()) throw new TermException("not immutable", xt); }
+        if (Param.DEBUG) { if (!xt.the()) throw new TermException("not immutable", xt); }
 
         if (!xt.isNormalized()) //pre-test
             throw new TermException("concept term not normalized",xt);
 
         Term x = xt.concept();
         if (!x.op().conceptualizable) {
-            if (Param.test.DEBUG)
+            if (Param.DEBUG)
                 throw new TermException("not conceptualizable", xt);
             else
                 return null;
         }
 
-        if (Param.test.DEBUG) { if (!x.the()) throw new TermException("not immutable", x); }
+        if (Param.DEBUG) { if (!x.the()) throw new TermException("not immutable", x); }
 
         return (Concept) get(x, createIfMissing);
     }
