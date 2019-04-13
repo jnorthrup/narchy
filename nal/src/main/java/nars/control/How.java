@@ -170,6 +170,21 @@ abstract public class How extends NARPart implements Prioritizable {
 
     private final WhenInternal myCause = new AtCause(id);
 
+//    /**
+//     * 0..+1
+//     */
+//    public float amp() {
+//        return Math.max(Float.MIN_NORMAL, gain() / 2f);
+//    }
+//
+//    /**
+//     * 0..+2
+//     */
+//    private float gain() {
+//        float v = this.valueRate;
+//        return v == v ? Util.tanhFast(v) + 1f : 0;
+//    }
+
     static private class AtCause extends WhenInternal {
 
         private final Term id;

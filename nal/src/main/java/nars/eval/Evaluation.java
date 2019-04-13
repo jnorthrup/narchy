@@ -122,7 +122,7 @@ public class Evaluation {
     /**
      * simple complexity heuristic: sorting first by volume naively ensures innermost functors evaluated first
      */
-    static private final Comparator<Term> byVolume = Comparator.comparingInt(Term::volume).thenComparing(Term::vars);
+    static private final Comparator<Term> byVolume = Comparator.comparingInt(Term::volume).thenComparingInt(Term::vars);
 
     private boolean eval(Evaluator e, final Term x, @Nullable List<Term> clauses) {
 

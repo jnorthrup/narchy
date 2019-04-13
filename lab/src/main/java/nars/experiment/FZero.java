@@ -45,7 +45,7 @@ public class FZero extends GameX {
     public Bitmap2DSensor c;
 
     float fwdSpeed = 7;
-    float rotSpeed = 0.15f;
+    float rotSpeed = 0.25f;
     static float fps = 25f;
 
     public static void main(String[] args) {
@@ -128,10 +128,6 @@ public class FZero extends GameX {
 
         AgentAction F = initUnipolarLinear(5f);
 
-
-
-
-
 //        window(new Gridding(
 //                //new CameraSensorView(c, this).withControls(),
 //                NARui.beliefCharts(actions, nar)), 400, 400);
@@ -139,8 +135,8 @@ public class FZero extends GameX {
 
         //initPushButtonTank();
         initLeftRightPushButtonMutex();
-//        initTankContinuous();
-        //initToggleLeftRight();
+        //initTankContinuous();
+
 
 //        BiPolarAction A =
 //            initBipolarRotateRelative(false, 0.75f);
@@ -360,7 +356,7 @@ public class FZero extends GameX {
         final float[] left = new float[1];
         final float[] right = new float[1];
 
-        actionHemipolar($.inh("left", id), (x) -> {
+        actionUnipolar($.inh("left", id), (x) -> {
             float power = x * powerScale;
             left[0] = power;
             float dp = power - right[0];
@@ -369,7 +365,7 @@ public class FZero extends GameX {
             return x;
         }).resolution(res);
 
-        actionHemipolar($.inh("right", id), (x) -> {
+        actionUnipolar($.inh("right", id), (x) -> {
             float power = x * powerScale;
             right[0] = power;
             float dp = power - left[0];
@@ -449,21 +445,23 @@ public class FZero extends GameX {
 //        final float[] _a = {0};
 //        final MiniPID fwdFilter = new MiniPID(0.5f, 0.3, 0.2f);
 
-        return actionUnipolar($.inh($$("fwd"),id) /* $.func("vel", id, $.the("move"))*/, true, (x) -> Float.NaN /*0.5f*/, (a0) -> {
+        return actionHemipolar($.inh($$("fwd"),id) /* $.func("vel", id, $.the("move"))*/, (a0) -> {
+        //return actionUnipolar($.inh($$("fwd"),id) /* $.func("vel", id, $.the("move"))*/, true, (x) -> Float.NaN /*0.5f*/, (a0) -> {
             float a =
                     //_a[0] = (float) fwdFilter.out(_a[0], a0);
                     a0;
 
-            float thresh = nar.freqResolution.floatValue()*2;
-            if (a > 0.5f + thresh) {
-                float thrust = /*+=*/ (2 * (a - 0.5f)) * (fwdFactor * fwdSpeed);
+            //float thresh = nar.freqResolution.floatValue()*2;
+//            if (a > 0.5f + thresh) {
+                //float thrust = /*+=*/ (2 * (a - 0.5f)) * (fwdFactor * fwdSpeed);
+                float thrust = fwdFactor * fwdSpeed;
                 fz.vehicleMetrics[0][6] = thrust;
-            } else if (a < 0.5f - thresh)
-                fz.vehicleMetrics[0][6] *= Util.unitize(Math.max(0.5f, (1f - (0.5f - a) * 2f)));
-            else
-                return Float.NaN;
-
-            return a0;
+//            } else if (a < 0.5f - thresh)
+//                fz.vehicleMetrics[0][6] *= Util.unitize(Math.max(0.5f, (1f - (0.5f - a) * 2f)));
+//            else
+//                return Float.NaN;
+//
+//            return a0;
         }).resolution(0.1f);
     }
 

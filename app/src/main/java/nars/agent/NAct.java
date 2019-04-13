@@ -8,6 +8,7 @@ import jcog.math.FloatSupplier;
 import jcog.util.FloatConsumer;
 import nars.$;
 import nars.NAR;
+import nars.Param;
 import nars.agent.util.UnipolarMotor;
 import nars.attention.What;
 import nars.concept.action.AgentAction;
@@ -479,17 +480,22 @@ public interface NAct {
         });
     }
 
+    default GoalActionConcept actionHemipolar(Term s, FloatConsumer update) {
+        return actionHemipolar(s, (x)->{ update.accept(x); return x; } );
+    }
+
     /** maps the action range 0..1.0 to the 0.5..1.0 positive half of the frequency range.
      *  goal values <= 0.5 are squashed to zero.
      *  TODO make a negative polarity option
      */
     default GoalActionConcept actionHemipolar(Term s, FloatToFloatFunction update) {
+        float epsilon = Param.truth.TRUTH_EPSILON/2;
         return actionUnipolar(s, (raw)->{
             if (raw==raw) {
 
-                if (raw > 0.5f) {
+                if (raw > 0.5f + epsilon) {
                     float feedback = update.valueOf((raw - 0.5f) * 2);
-                    return 0.5f + feedback / 2;
+                    return feedback > (0.5f + epsilon) ? 0.5f + feedback / 2 : 0;
                 } else {
                     float feedback = update.valueOf( 0);
                     return 0; //override

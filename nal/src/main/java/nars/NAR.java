@@ -1524,7 +1524,6 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
         //if (synching.compareAndSet(false, true)) {
         synchronized (exe) {
 //                try {
-            time.synch(this);
             exe.synch();
 //                } finally {
 //                    synching.set(false);

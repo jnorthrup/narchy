@@ -134,14 +134,12 @@ public class NARS {
 
                 n.termVolumeMax.set(22);
 
-                ((What.TaskLinkWhat) n.what()).links.linksMax.set(96);
-                ((What.TaskLinkWhat) n.what()).links.decay.set(0.03f);
+                ((What.TaskLinkWhat) n.what()).links.decay.set(0.1f);
 
                 n.beliefPriDefault.pri(0.1f);
                 n.goalPriDefault.pri(0.1f);
-                n.questionPriDefault.set(0.02f);
-                n.questPriDefault.set(0.02f);
-
+                n.questionPriDefault.set(0.01f);
+                n.questPriDefault.set(0.01f);
 
             });
         }
@@ -154,7 +152,7 @@ public class NARS {
     public NARS() {
 
         index = () ->
-                new SimpleMemory(8 * 1024)
+                new SimpleMemory(16 * 1024)
                 //new TemporaryConceptIndex()
         ;
 
@@ -162,10 +160,10 @@ public class NARS {
 
         exec = () -> new UniExec();
 
-        what = w -> new What.TaskLinkWhat(w,
+        what = w -> new What.TaskLinkWhat(w, 64,
                        new PriBuffer.DirectPriBuffer()
                        //new PriBuffer.BagTaskBuffer(128, 8f)
-                       //new TaskBuffer.MapTaskBuffer(64)
+                       //new PriBuffer.MapTaskBuffer()
         );
 
         rng = ThreadLocalRandom::current;

@@ -274,11 +274,11 @@ public interface NSense {
     }
 
     default DigitizedScalar senseNumberBi(Term id, FloatSupplier v) {
-        return senseNumber(v, DigitizedScalar.Fluid /*FuzzyNeedle*/, p(id, LOW), p(id, HIH));
+        return senseNumber(v, DigitizedScalar.FuzzyNeedle, inh(id, LOW), inh(id, HIH));
     }
 
     default DigitizedScalar senseNumberTri(Term id, FloatSupplier v) {
-        return senseNumber(v, DigitizedScalar.FuzzyNeedle, p(id, LOW), p(id, MID), p(id, HIH));
+        return senseNumber(v, DigitizedScalar.FuzzyNeedle, inh(id, LOW), inh(id, MID), inh(id, HIH));
     }
 
 

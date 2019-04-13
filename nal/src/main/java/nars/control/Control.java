@@ -200,7 +200,7 @@ import java.util.Arrays;
 
 
     /** attaches a priority node to the priority graph
-     * @return*/
+     */
     public NodeGraph.MutableNode<PriNode, Object> add(PriNode p) {
         NodeGraph.MutableNode<PriNode, Object> a = graph.addNode(p);
         graph.addEdgeByNode(rootNode, "pri", a);

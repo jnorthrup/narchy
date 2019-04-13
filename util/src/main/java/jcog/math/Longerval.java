@@ -14,7 +14,9 @@ import static java.lang.Math.min;
  */
 public class Longerval implements LongInterval, Comparable<Longerval> {
 
-    final static Comparator<Longerval> comparator = Comparators.byLongFunction((Longerval l) -> l.start).thenComparing((Longerval l) -> l.end);
+    final static Comparator<Longerval> comparator = Comparators
+            .byLongFunction((Longerval l) -> l.start)
+            .thenComparingLong((l) -> l.end);
 
     private static final Longerval Eternal = new Longerval(ETERNAL, ETERNAL);
 

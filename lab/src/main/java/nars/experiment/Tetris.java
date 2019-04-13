@@ -15,7 +15,6 @@ import nars.op.java.Opjects;
 import nars.sensor.Bitmap2DSensor;
 import nars.term.Term;
 import nars.term.atom.Atomic;
-import spacegraph.SpaceGraph;
 
 import java.util.Arrays;
 import java.util.Random;
@@ -24,6 +23,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import static nars.$.$$;
 import static nars.experiment.Tetris.TetrisState.*;
+import static spacegraph.SpaceGraph.surfaceWindow;
 
 /**
  * Created by me on 7/28/16.
@@ -71,17 +71,6 @@ public class Tetris extends GameX {
                 //FrameTrigger.durs(1),
                 n);
 
-
-        //if a pixel is on, pixels above it should be off
-        reward(new BeliefReward($$("(&|,tetris(#x,#yBelow),--tetris(#x,#yAbove),cmp(#yBelow,#yAbove,1))"), this));
-
-        //pixels on same row should be the same color TODO
-        //reward(new BeliefReward($$("--xor(tetris(#x1,#y), tetris(#x2,#y))"), this));
-
-//        //pixels left or right from each other should both be on
-//        reward(new BeliefReward($$("(&|,tetris(#x1,#y),tetris(#x2,#y),addAt(#x1,1,#x2))"), this));
-
-
         state = opjects ?
                 actionsReflect() :
                 new TetrisState(width, height, timePerFall);
@@ -90,6 +79,12 @@ public class Tetris extends GameX {
 
         state.timePerFall = Math.round(this.timePerFall.floatValue());
 
+        grid = new AbstractBitmap2D(state.width, state.height) {
+            @Override
+            public float brightness(int x, int y) {
+                return state.seen[y * w + x] > 0 ? 1f : 0f;
+            }
+        };
 
         rewardNormalized("score", 0 /* ignore decrease */, 1,
                 state::score
@@ -111,27 +106,17 @@ public class Tetris extends GameX {
             return r > 0 ? ((float) filled) / (r * state.width) : 0;
         });
 
-        grid = new AbstractBitmap2D(state.width, state.height) {
-            @Override
-            public float brightness(int x, int y) {
-                return state.seen[y * w + x] > 0 ? 1f : 0f;
-            }
-        };
 
         //                .mode((p,v)->{
         //                    float c = n.confDefault(BELIEF);
         //                    return $.t(v, p!=v || v > 0.5f ? c : c/2);
         //                })
-        final Term GRID = id; //Atomic.the("grid");
-        Bitmap2DSensor<Bitmap2D> c = pixels = new Bitmap2DSensor<>(
-                (x, y) -> $.inh($.p(x, y), GRID),
+
+        addSensor(pixels = new Bitmap2DSensor<>(
+                (x, y) -> $.inh($.p(x, y), id),
                 //(x, y) -> $.p(GRID,$.the(x), $.the(y)),
-                grid, n);
-        addSensor(c);
+                grid, n));
         //pixels.resolution(0.05f);
-
-        SpaceGraph.surfaceWindow(new VectorSensorView(pixels, this).withControls(), 400, 900);
-
 
         actionsPushButton();
         //actionsToggle();
@@ -143,6 +128,17 @@ public class Tetris extends GameX {
             state.timePerFall = Math.round(this.timePerFall.floatValue());
             state.next();
         });
+
+        surfaceWindow(new VectorSensorView(pixels, this).withControls(), 400, 900);
+
+        //if a pixel is on, pixels above it should be off
+        reward(new BeliefReward($$("(&|,tetris(#x,#yBelow),--tetris(#x,#yAbove),cmp(#yBelow,#yAbove,1))"), this));
+
+        //pixels on same row should be the same color TODO
+        //reward(new BeliefReward($$("--xor(tetris(#x1,#y), tetris(#x2,#y))"), this));
+
+//        //pixels left or right from each other should both be on
+//        reward(new BeliefReward($$("(&|,tetris(#x1,#y),tetris(#x2,#y),addAt(#x1,1,#x2))"), this));
 
     }
 

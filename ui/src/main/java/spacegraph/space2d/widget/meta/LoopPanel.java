@@ -31,8 +31,8 @@ public class LoopPanel extends Gridding {
         if (loop instanceof InstrumentedLoop) {
             InstrumentedLoop iloop = (InstrumentedLoop) loop;
             cycleTimePlot = new Plot2D(128, Plot2D.Line)
-                    .add("cycleTime", iloop.cycleTime::getMean)
-                    .add("dutyTime", iloop.dutyTime::getMean)
+                    .add("cycleTime", iloop.cycleTime::asFloat)
+                    .add("dutyTime", iloop.dutyTime::asFloat)
             ;
         } else {
             cycleTimePlot = null; 

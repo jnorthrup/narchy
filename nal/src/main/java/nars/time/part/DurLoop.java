@@ -95,6 +95,7 @@ abstract public class DurLoop extends NARPart {
 
     @Override protected final void starting(NAR nar) {
         //intial trigger
+        at.nextStart = nar.time();
         nar.runLater(at);
     }
 

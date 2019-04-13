@@ -6,6 +6,7 @@ import jcog.exe.Loop;
 import jcog.func.IntIntToObjectFunction;
 import jcog.learn.ql.HaiQae;
 import jcog.math.FloatRange;
+import jcog.pri.ScalarValue;
 import jcog.signal.tensor.TensorRing;
 import jcog.signal.wave2d.Bitmap2D;
 import jcog.signal.wave2d.MonoBufImgBitmap2D;
@@ -203,7 +204,9 @@ abstract public class GameX extends Game {
         NAR n = new NARS()
 
                 .what(
-                        (w)-> new What.TaskLinkWhat(w, new PriBuffer.BagTaskBuffer(1024, 25))
+                        (w)-> new What.TaskLinkWhat(w,
+                                512,
+                                new PriBuffer.BagTaskBuffer(256, 25))
                 )
 //                .attention(() -> new ActiveConcepts(1024))
                 .exe(
@@ -213,7 +216,8 @@ abstract public class GameX extends Game {
 //                        threads,
 //                        false/* affinity */)
 
-                new ForkJoinExec()
+                //new ForkJoinExec()
+                new ForkJoinExec(Math.max(1, Runtime.getRuntime().availableProcessors()-1))
 
 //                new SuperExec(
 //                    new Valuator.DefaultValuator(0.9f), threads <= 0 ? Util.concurrencyExcept(1) : threads
@@ -263,7 +267,9 @@ abstract public class GameX extends Game {
                 .get();
 
 
+
         config(n);
+
         return n;
     }
 
@@ -293,15 +299,6 @@ abstract public class GameX extends Game {
 //        );
 //        senseReward.timing = new ActionTiming(n);
 
-//        a.nar().control.governor((cc)->{
-//           final Random rng = n.random();
-//           for (Cause c : cc) {
-//               if (c==null) continue;
-//               float v = c.value();
-//               c.setValue(v + rng.nextFloat()*0.1f);
-//
-//           }
-//        });
     }
     static void initPlugins3(NAR n, Game a) {
 
@@ -424,7 +421,22 @@ abstract public class GameX extends Game {
 
     public static void initPlugins(NAR n, Game g) {
 
-        n.onDur(MetaGoal::value);
+//        Consumer<Why[]> governor = (cc) -> {
+////           final Random rng = n.random();
+//           for (Why c : cc) {
+//               if (c==null) continue;
+//               float v = c.amp();
+//               c.pri(v + rng.nextFloat()*0.1f);
+//           }
+//        };
+        n.onDur((nn) -> {
+            MetaGoal.value(nn);
+            nn.how.forEach(h -> {
+                float v = h.valueRate;
+                if (v!=v) v = 0;
+                h.pri(Math.max(ScalarValue.EPSILON, v));
+            }); //governor
+        });
 
 //        BatchDeriver bd = new BatchDeriver(Derivers.nal(n, 1, 8,
 //                "motivation.nal"
@@ -436,35 +448,34 @@ abstract public class GameX extends Game {
 //        bd.tasklinksPerIteration.set(8);
 
 
-        BatchDeriver bd6_actWhen = new BatchDeriver(Derivers.nal(n, 6, 8,
-                "motivation.nal"));
+            BatchDeriver bd6_actWhen = new BatchDeriver(Derivers.nal(n, 6, 8,
+                    "motivation.nal"));
 
-        BatchDeriver bd6_act = new BatchDeriver(Derivers.nal(n, 6, 8,
-                "motivation.nal"));
-        bd6_act.timing = new ActionTiming(g.what());
+            BatchDeriver bd6_act = new BatchDeriver(Derivers.nal(n, 6, 8,
+                    "motivation.nal"));
+            bd6_act.timing = new ActionTiming(g.what());
 
-        BatchDeriver bd1 = new BatchDeriver(Derivers.nal(n, 1, 1)
-        );
-        BatchDeriver bd2_4 = new BatchDeriver(Derivers.nal(n, 2, 4)
-        );
+            BatchDeriver bd1 = new BatchDeriver(Derivers.nal(n, 1, 1)
+            );
+            BatchDeriver bd2_4 = new BatchDeriver(Derivers.nal(n, 2, 4)
+            );
 
-        BatchDeriver bdExtra = new BatchDeriver(Derivers.files(n,
-                "nal4.sect.nal",
-                "relation_introduction.nal", "motivation.nal"));
+            BatchDeriver bdExtra = new BatchDeriver(Derivers.files(n,
+                    "nal4.sect.nal",
+                    "relation_introduction.nal", "motivation.nal"));
 
 
 //        inputInjectionPID(injection, n);
 
-        //bd2.timing = new ActionTiming(n);
+            //bd2.timing = new ActionTiming(n);
 //        bd.tasklinksPerIteration.set(8);
-        //bd.timing = bd.timing; //default
+            //bd.timing = bd.timing; //default
 
 
-
-        //new StatementLinker(n);
-        //new PuncNoise(n);
-        //n.add(Eternalizer.class);
-        n.start(new Eternalizer(n));
+            //new StatementLinker(n);
+            //new PuncNoise(n);
+            //n.add(Eternalizer.class);
+            n.start(new Eternalizer(n));
 
 //        new STMLinkage(n, 1);
 
@@ -473,14 +484,13 @@ abstract public class GameX extends Game {
 //                32, 128);
 
 
-        List<ConjClustering> conjClusters = List.of(
-            new ConjClustering(n, BELIEF, 32, 256)
-            //new ConjClustering(n, GOAL, 4, 16)
-        );
-        conjClusters.forEach(c -> n.start(c));
+            List<ConjClustering> conjClusters = List.of(
+                    new ConjClustering(n, BELIEF, 32, 256)
+                    //new ConjClustering(n, GOAL, 4, 16)
+            );
+            conjClusters.forEach(c -> n.start(c));
 
-        SpaceGraph.surfaceWindow(grid(conjClusters, c->NARui.clusterView(c, n)), 700, 700);
-
+            SpaceGraph.surfaceWindow(grid(conjClusters, c -> NARui.clusterView(c, n)), 700, 700);
 
 
 //        ConjClustering conjClusterBderived = new ConjClustering(n, BELIEF,
@@ -494,23 +504,22 @@ abstract public class GameX extends Game {
 //
 //        }
 
-        //ConjClustering conjClusterBany = new ConjClustering(n, BELIEF, (t -> true), 2, 32);
+            //ConjClustering conjClusterBany = new ConjClustering(n, BELIEF, (t -> true), 2, 32);
 
 //        ConjClustering conjClusterGany = new ConjClustering(n, GOAL, (t -> !(t instanceof CuriosityTask) ),
 //                8, 96);
 
-        Introduction arith = new Arithmeticize.ArithmeticIntroduction(n,64);
-        //Introduction factorizer = new Factorize.FactorIntroduction( n, 16);
+            Introduction arith = new Arithmeticize.ArithmeticIntroduction(n, 64);
+            //Introduction factorizer = new Factorize.FactorIntroduction( n, 16);
 
 
-        new Inperience2(n);
-        //new Inperience.Believe(8, n);
-        //new Inperience.Want(8, n);
+            new Inperience2(n);
+            //new Inperience.Believe(8, n);
+            //new Inperience.Want(8, n);
 //        new Inperience.Wonder(8, n);
 //        new Inperience.Plan(8, n);
 
-        //new Abbreviation("z", 5, 9, n);
-
+            //new Abbreviation("z", 5, 9, n);
 
 
 //        try {
@@ -533,7 +542,7 @@ abstract public class GameX extends Game {
 //        Impiler.ImpilerDeduction d = new Impiler.ImpilerDeduction(8, 8, n);
 
 
-    }
+        };
 
 //    static void inputInjectionQ(NAR n) {
 //        //TODO
@@ -765,7 +774,7 @@ abstract public class GameX extends Game {
     }
 
 
-    private static class SpaceGraphPart extends NARPart {
+    protected static class SpaceGraphPart extends NARPart {
         private final Supplier<Surface> surface;
         private final int w, h;
         private OrthoSurfaceGraph win;

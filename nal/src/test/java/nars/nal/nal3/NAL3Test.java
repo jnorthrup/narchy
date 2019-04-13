@@ -94,7 +94,7 @@ public class NAL3Test extends NALTest {
 //        test.mustNotOutput(cycles, "<--b --> x>", BELIEF, 0, 1, 0, 1, ETERNAL);
 
         //test neqRCom
-        test.mustNotOutput(cycles, "(b --> (a-b))", BELIEF, 0, 1, 0, 1, ETERNAL);
+        //test.mustNotOutput(cycles, "(b --> (a-b))", BELIEF, 0, 1, 0, 1, ETERNAL);
     }
 
     private TestNAR testDecomposeNegDiff(float freq, String known, String composed, String unknown) {

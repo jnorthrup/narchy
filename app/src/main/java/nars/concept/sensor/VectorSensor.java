@@ -55,9 +55,7 @@ abstract public class VectorSensor extends AbstractSensor implements Iterable<Si
     /**
      * best to override
      */
-    public int size() {
-        return Iterables.size(this);
-    }
+    abstract public int size();// {return Iterables.size(this);}
 
 
     @Override

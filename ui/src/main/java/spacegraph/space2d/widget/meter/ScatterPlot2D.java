@@ -13,6 +13,8 @@ import spacegraph.util.RectAnimator;
 /** 2d scatter ("bubble") plot */
 public class ScatterPlot2D<X> extends Graph2D<X> {
 
+    /** controls camera speed */
+    private final float extentUpdatePeriodS = 0.5f;
     private final float minVisPct = 0.01f;
 
 //    private float marginPctW = 0.01f, marginPctH = 0.1f;
@@ -85,8 +87,6 @@ public class ScatterPlot2D<X> extends Graph2D<X> {
     final ScatterPlotModel<X> model;
 
 
-    /** controls camera speed */
-    private final float extentUpdatePeriodS = 0.5f;
 
     final RectAnimator extent =
             new RectAnimator.ExponentialRectAnimator(new MutableRectFloat());

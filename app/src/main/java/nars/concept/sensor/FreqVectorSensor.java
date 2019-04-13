@@ -27,6 +27,7 @@ public class FreqVectorSensor extends VectorSensor {
 
     float[] freqValue;
     float[] componentValue;
+    private float[] inBuf = null;
 
     public final FloatRange center, bandwidth;
     private float intensity;
@@ -55,7 +56,12 @@ public class FreqVectorSensor extends VectorSensor {
         sampleWindow = fftSize * 2; //TODO calibrate for DFT size
     }
 
-    private float[] inBuf = null;
+
+
+    @Override
+    public int size() {
+        return component.length;
+    }
 
     @Override
     public void update(Game g) {

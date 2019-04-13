@@ -5,7 +5,7 @@ import nars.Param;
 
 abstract public class RecurringTask extends ScheduledTask {
 
-    private volatile long nextStart = Long.MIN_VALUE;
+    public volatile long nextStart = Long.MIN_VALUE;
 
     @Override
     public long start() {

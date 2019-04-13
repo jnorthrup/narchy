@@ -4,17 +4,16 @@ import jcog.Util;
 import jcog.data.list.FasterList;
 import nars.attention.What;
 import nars.control.How;
-import org.eclipse.collections.api.list.MutableList;
 import org.eclipse.collections.api.tuple.Pair;
-import org.eclipse.collections.api.tuple.primitive.ObjectLongPair;
-import org.eclipse.collections.impl.map.mutable.primitive.ObjectLongHashMap;
+import org.eclipse.collections.api.tuple.primitive.ObjectFloatPair;
+import org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples;
 
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.*;
 
-import static java.lang.Integer.min;
 import static org.eclipse.collections.impl.tuple.Tuples.pair;
 
 /**
@@ -23,10 +22,9 @@ import static org.eclipse.collections.impl.tuple.Tuples.pair;
 public class ForkJoinExec extends MultiExec implements Thread.UncaughtExceptionHandler {
 
     private static final int SYNCH_ITERATION_MS = 20;
-    static final long durationMinNS = TimeUnit.MICROSECONDS.toNanos(200);
-    static final long durationMaxNS = TimeUnit.MICROSECONDS.toNanos(1000);
 
     private ForkJoinPool pool;
+    volatile private List<PlayBatch> active = new FasterList();
 
     public ForkJoinExec() {
         this(Runtime.getRuntime().availableProcessors());
@@ -39,20 +37,25 @@ public class ForkJoinExec extends MultiExec implements Thread.UncaughtExceptionH
         else {
             //public ForkJoinPool(int parallelism, ForkJoinPool.ForkJoinWorkerThreadFactory factory, UncaughtExceptionHandler handler, boolean asyncMode, int corePoolSize, int maximumPoolSize, int minimumRunnable, Predicate<? super ForkJoinPool> saturate, long keepAliveTime, TimeUnit unit) {
 
+            int extra = 0;
+
+            boolean asyncMode =
+                    //false;
+                    true;
+
             pool = new ForkJoinPool(
                     concurrency,
                     ForkJoinPool.defaultForkJoinWorkerThreadFactory,
 //                    (p) -> {             return new ForkJoinWorkerThread(p) { };         },
                     this,
-                    true, 0, concurrency, 1,
-                    null, 60L, TimeUnit.SECONDS) {
-                {
-                    //this.pollSubmission()
-                }
-            };
+                    asyncMode, 0, concurrency + extra, 1,
+                    null, 60L, TimeUnit.SECONDS);
+//            {
+//                {
+//                    //this.pollSubmission()
+//                }
+//            };
         }
-
-//        pool = ForkJoinPool.commonPool();
 
 //        if (concurrency >= Runtime.getRuntime().availableProcessors()/2) //HACK TODO make parameter
 //            Exe.setExecutor(pool); //set this as the global executor
@@ -116,104 +119,131 @@ public class ForkJoinExec extends MultiExec implements Thread.UncaughtExceptionH
      * non-singleton transposed dimensions.
      */
     private void play() {
-
-        //logger.info("{}", pool);
-
-        float mix = 0.1f; //work to play ratio?
-        float rate = 3; //HACK
-        float load =
-                Math.min(1, (mix * (pool.getQueuedSubmissionCount() /*+ pool.getQueuedTaskCount()*/)) / concurrency());
-        //0f; //TODO ...pool.getQueuedTaskCount()
-
-        @Deprecated int n = Math.round(rate * nar.loop.throttle.floatValue() * (1-load) * concurrency());
-        if (n == 0)
+        long idealCycleNS = nar.loop.periodNS();
+        if (idealCycleNS <= 0)
             return;
 
+        double efficiency = Math.min(1, idealCycleNS / Math.max(1, (1.0E9 * nar.loop.cycleTime.asDouble())));
 
         Random rng = ThreadLocalRandom.current();
 
+//        nar.what.commit(null);
+//        nar.how.commit(null);
 
+        //ObjectFloatHashMap<Pair<How,What>> play = new ObjectFloatHashMap<>(nar.how.size() * nar.what.size());
+        FasterList<ObjectFloatPair<Pair<How,What>>> play = new FasterList(nar.how.size() * nar.what.size());
 
-        nar.what.commit(null);
-        nar.how.commit(null);
+        double priTotal = 0;
+        for (How h : nar.how) {
+            if (!h.isOn()) continue;
 
-        ObjectLongHashMap<Pair<How,What>> play = new ObjectLongHashMap(32);
+            float hPri = h.pri();
 
-        final int perN = nar.how.size();
+            for (What w : nar.what) {
+                if (!w.isOn()) continue;
 
-        for (int j = 0; j < perN; j++ ) {
+            //for (int i = 0; i < n; i++ ) {
 
-            How h = nar.how.sample(rng); if (!h.isOn()) continue; //HACK embed in sample
-
-            for (int i = 0; i < n; i++ ) {
-
-                What w = nar.what.sample(rng); if (!w.isOn()) continue; //HACK embed in sample
+                //What w = nar.what.sample(rng); if (!w.isOn()) continue; //HACK embed in sample
 
                 //PlayTask pt = new PlayTask(w, h);
                 //pt.fork();
 
-                play.addToValue(pair(h,w), dur(w.pri(), h.pri()));
+                float wh = Util.and(w.pri(), hPri);
+                //play.addToValue(pair(h,w), wh);
+                play.add(PrimitiveTuples.pair(pair(h,w),wh));
+                priTotal += wh;
             }
         }
-
-        MutableList<ObjectLongPair<Pair<How, What>>> l = play.keyValuesView().toSortedList(Comparator.comparingLong(x ->
-                ((long)System.identityHashCode(x.getOne().getOne())) << 32 | System.identityHashCode(x.getTwo())
-        ));
-
-        if (l.isEmpty())
+        if (play.isEmpty())
             return;
 
-        int ll = l.size();
-        int para = pool.getParallelism();
-        int nPerThread = Math.max(1, ll / para);
-        List<ForkJoinTask> t = new FasterList(para);
+
+        //MutableList<ObjectFloatPair<Pair<How, What>>> l = play.keyValuesView().toSortedList(hwSort);
+
+        int threads = pool.getParallelism();
+
+        int granularity = 2;
+        int tasks = threads * granularity;
+
+
+        double playTimeNS = updater.durCycles() * idealCycleNS * efficiency * nar.loop.throttle.floatValue();
+        double nsPerPri = playTimeNS / priTotal;
+        double priPerTask = priTotal / tasks;
+
+        int ll = play.size();
+        FasterList<PlayBatch> next = new FasterList(tasks);
+        double priCurrentThread;
         for (int i = 0; i < ll; ) {
-            int start = i, end = min(ll, i + nPerThread);
-            t.add(new PlayBatch(l.subList(start, end).toArray(EMPTY_LONG_PAIR_ARRAY)));
-            i += nPerThread;
+            int j = i;
+            priCurrentThread = 0;
+            do {
+                float p = play.get(j++).getTwo();
+                priCurrentThread += p;
+            } while (priCurrentThread < priPerTask && j < ll);
+            ObjectFloatPair<Pair<How, What>>[] a = play.subList(i, j).toArray(EmptyLongFloatArray);
+            Arrays.sort(a, hwSort);
+            next.add(new PlayBatch(a, nsPerPri));
+            i = j;
         }
-        t.forEach(ForkJoinTask::fork);
+
+        next.shuffleThis(rng);
+
+        active.forEach(PlayBatch::stop);
+        this.active = next;
+        next.forEach(pool::execute);
+
 
 
 //        if (ThreadLocalRandom.current().nextFloat() < 0.01f)
 //            System.out.println(pool);
     }
 
-    static final ObjectLongPair[] EMPTY_LONG_PAIR_ARRAY = new ObjectLongPair[0];
+//    static final Comparator<ObjectFloatPair<Pair<How, What>>> hwSort = Comparator.comparingLong(x ->
+//        ((long) System.identityHashCode(x.getOne().getOne())) << 32 | System.identityHashCode(x.getTwo())
+//    );
+    static final Comparator<ObjectFloatPair<Pair<How, What>>> hwSort =
+        Comparator.<ObjectFloatPair<Pair<How, What>>>comparingInt(x -> System.identityHashCode(x.getOne().getOne()))
+                .thenComparingDouble(pairObjectFloatPair -> -pairObjectFloatPair.getTwo());
 
 
-    final static class PlayTask extends RecursiveAction {
-
-        final What w;
-        final How h;
-
-        PlayTask(What w, How h) {
-            this.w = w;
-            this.h = h;
-        }
-
-        @Override
-        protected void compute() {
-            boolean single = h.singleton();
-            if (!single || h.busy.compareAndSet(false, true)) {
-                try {
-                    long dur = dur(w.pri(), h.pri());
-                    h.runFor(w, dur);
-
-                } finally {
-                    if (single)
-                        h.busy.set(false);
-                }
-            }
-        }
+    static final ObjectFloatPair[] EmptyLongFloatArray = new ObjectFloatPair[0];
 
 
-    }
+//    final static class PlayTask extends RecursiveAction {
+//
+//        final What w;
+//        final How h;
+//
+//        PlayTask(What w, How h) {
+//            this.w = w;
+//            this.h = h;
+//        }
+//
+//        @Override
+//        protected void compute() {
+//            boolean single = h.singleton();
+//            if (!single || h.busy.compareAndSet(false, true)) {
+//                try {
+//                    long dur = dur(w.pri(), h.pri());
+//                    h.runFor(w, dur);
+//
+//                } finally {
+//                    if (single)
+//                        h.busy.set(false);
+//                }
+//            }
+//        }
+//        static final long durationMinNS = TimeUnit.MICROSECONDS.toNanos(200);
+//        static final long durationMaxNS = TimeUnit.MICROSECONDS.toNanos(1000);
+//
+//        static long dur(float whatPri, float howPri) {
+//            float pri = (float) Math.sqrt(Util.and(whatPri, howPri)); //sqrt in attempt to compensate for the bag sampling's priority bias
+//            return Util.lerp(pri, durationMinNS, durationMaxNS);
+//        }
+//
+//    }
 
-    static long dur(float whatPri, float howPri) {
-        float pri = (float) Math.sqrt(Util.and(whatPri, howPri)); //sqrt in attempt to compensate for the bag sampling's priority bias
-        return Util.lerp(pri, durationMinNS, durationMaxNS);
-    }
 
     //    @Override
 //    protected void update() {
@@ -260,25 +290,86 @@ public class ForkJoinExec extends MultiExec implements Thread.UncaughtExceptionH
     }
 
     private static class PlayBatch extends RecursiveAction {
-        private final ObjectLongPair[] a;
+        private final ObjectFloatPair[] a;
+        private final double nsPerPri;
+        volatile boolean running = true;
 
-        public PlayBatch(ObjectLongPair[] a) {
+        int loops = 2;
+
+        public PlayBatch(ObjectFloatPair[] a, double nsPerPri) {
             this.a = a;
+            this.nsPerPri = nsPerPri;
+        }
+
+        public void stop() {
+            running = false;
+            tryUnfork();
         }
 
         @Override
         protected void compute() {
 
-            ForkJoinPool pool = ForkJoinTask.getPool();
+            //ForkJoinPool pool = ForkJoinTask.getPool();
 
-            for (ObjectLongPair<Pair<How, What>> aa : a) {
+            int remain = a.length;
+            do {
+                How cur = null;
+                boolean single = false;
+                for (int i = 0, aLength = a.length; i < aLength; i++) {
+                    if (!running)
+                        break;
 
-                aa.getOne().getOne().runFor(aa.getOne().getTwo(), aa.getTwo());
+                    ObjectFloatPair<Pair<How, What>> aa = a[i];
+                    if (aa == null)
+                        continue;
 
-//                if (pool.getQueuedSubmissionCount() > pool.getParallelism()) {
-//                    ForkJoinTask.helpQuiesce();
+                    How next = aa.getOne().getOne();
+                    if (cur != next) {
+                        if (cur != null && single) {
+                            if (single) {
+                                cur.busy.set(false);
+                                single = false;
+                            }
+                        }
+
+                        single = next.singleton();
+                        if (single && !next.busy.compareAndSet(false, true)) {
+                            //TODO skip ahead the same nexts
+                            //while (i < aLength && )
+
+                            single = false;
+                            continue;
+                        }
+                        cur = next;
+                    }
+
+                    long dur = Math.round(nsPerPri * aa.getTwo());
+
+                    cur.runFor(aa.getOne().getTwo(), dur);
+
+                    a[i] = null;
+                    remain--;
+
+                }
+                if (single) {
+                    cur.busy.set(false);
+                }
+
+
+//                {
+//                    //check for any work
+//                    ForkJoinTask<?> work = ForkJoinTask.pollSubmission();
+//                    if (work!=null) {
+//                        try {
+//                            work.get();
+//                        } catch (InterruptedException | ExecutionException e) {
+//                            e.printStackTrace();
+//                        }
+//                    }
 //                }
-            }
+
+            } while (remain > 0 && --loops > 0);
+
         }
 
     }

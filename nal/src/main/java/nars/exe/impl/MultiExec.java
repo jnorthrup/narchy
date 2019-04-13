@@ -27,7 +27,8 @@ abstract public class MultiExec extends Exec {
 
     private static final float UPDATE_DURS =
             1;
-            //2; //<- untested
+    protected final DurLoop.DurRunnable updater;
+    //2; //<- untested
 
     protected long threadWorkTimePerCycle, threadIdleTimePerCycle;
 
@@ -47,7 +48,7 @@ abstract public class MultiExec extends Exec {
     MultiExec(int concurrencyMax  /* TODO adjustable dynamically */) {
         super(concurrencyMax);
 
-        DurLoop updater = new DurLoop.DurRunnable(this::update);
+        updater = new DurLoop.DurRunnable(this::update);
         updater.durs(UPDATE_DURS);
         add(updater);
     }

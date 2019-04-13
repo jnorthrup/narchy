@@ -17,12 +17,17 @@ public class SelectorSensor extends VectorSensor {
     public SelectorSensor(IntSupplier value, int[] values, IntFunction<Term> termizer, NAR n) {
         super(n);
         assert(values.length > 1);
-        choices = new FasterList<>(values.length);
         this.cause = n.newCause(id).id;
+        choices = new FasterList<>(values.length);
         for (int e : values) {
             choices.add(new Signal(termizer.apply(e), cause, () -> value.getAsInt() == e ? 1f : 0f, n));
         }
 
+    }
+
+    @Override
+    public int size() {
+        return choices.size();
     }
 
     @Override

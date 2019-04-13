@@ -130,7 +130,7 @@ abstract public class What extends NARPart implements Prioritizable, Sampler<Tas
     /** perceive the next batch of input, for synchronously (cycle/duration/realtime/etc)
      *  triggered input buffers */
     private void perceive(NAR n) {
-        in.commit(nar.time(), out, n);
+        in.commit(out, n);
     }
 
 
@@ -217,8 +217,9 @@ abstract public class What extends NARPart implements Prioritizable, Sampler<Tas
 
         public final TaskLinks links = new TaskLinks();
 
-        public TaskLinkWhat(Term id, PriBuffer<ITask> in) {
+        public TaskLinkWhat(Term id, int capacity, PriBuffer<ITask> in) {
             super(id, in);
+            links.linksMax.set(capacity);
         }
 
         @Override

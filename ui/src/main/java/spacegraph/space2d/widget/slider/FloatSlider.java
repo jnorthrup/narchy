@@ -121,6 +121,7 @@ public class FloatSlider extends Widget {
                 //chain
                 ((NumberX)input).set(x);
                 c0.value(each,x);
+                updateText();
             };
         }
         slider.on(c);
@@ -144,8 +145,9 @@ public class FloatSlider extends Widget {
             FloatSlider p = parentOrSelf(FloatSlider.class);
             if (p!=null) {
                 FloatSupplier input = p.input; 
-                if (input != null)
+                if (input != null) {
                     setValue(input.asFloat());
+                }
             }
         }
 

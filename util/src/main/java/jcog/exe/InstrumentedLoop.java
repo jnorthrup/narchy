@@ -1,6 +1,6 @@
 package jcog.exe;
 
-import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
+import jcog.math.FloatAveragedWindow;
 
 import java.util.SortedMap;
 
@@ -9,15 +9,16 @@ abstract public class InstrumentedLoop extends Loop {
 
 
 
-    protected final int windowLength = 4;
+    protected final int windowLength = 8;
 
     /**
      * in seconds
      */
-    public final DescriptiveStatistics dutyTime = new DescriptiveStatistics(windowLength);
-    public final DescriptiveStatistics cycleTime = new DescriptiveStatistics(windowLength);
+    public final FloatAveragedWindow dutyTime = new FloatAveragedWindow(windowLength, 0.5f);
+    public final FloatAveragedWindow cycleTime =
+            new FloatAveragedWindow(windowLength, 1f/windowLength /* == non-exponential mean? */);
 
-    private long cycleTimeNS = 0;
+    public long cycleTimeNS = 0;
     private double cycleTimeS = 0;
 
     protected volatile long last;
@@ -36,19 +37,19 @@ abstract public class InstrumentedLoop extends Loop {
 
         cycleTimeNS = afterIteration - lastIteration;
         cycleTimeS = cycleTimeNS / 1.0E9;
-        this.cycleTime.addValue(cycleTimeS);
+        this.cycleTime.next((float) cycleTimeS);
 
         long dutyTimeNS = afterIteration - beforeIteration;
         double dutyTimeS = (dutyTimeNS) / 1.0E9;
-        this.dutyTime.addValue(dutyTimeS);
+        this.dutyTime.next((float) dutyTimeS);
     }
 
 
     public void stats(String prefix, SortedMap<String, Object> x) {
-        x.put(prefix + " cycle time mean", cycleTime.getMean()); 
-        x.put(prefix + " cycle time vary", cycleTime.getVariance()); 
-        x.put(prefix + " duty time mean", dutyTime.getMean());
-        x.put(prefix + " duty time vary", dutyTime.getVariance());
+        x.put(prefix + " cycle time mean", cycleTime.asFloat());
+        //x.put(prefix + " cycle time vary", cycleTime.getVariance());
+        x.put(prefix + " duty time mean", dutyTime.asFloat());
+        //x.put(prefix + " duty time vary", dutyTime.getVariance());
     }
 
     @Override
@@ -59,7 +60,7 @@ abstract public class InstrumentedLoop extends Loop {
 
     @Override
     protected void stopping() {
-        cycleTime.clear();
-        dutyTime.clear();
+//        cycleTime.clear();
+//        dutyTime.clear();
     }
 }

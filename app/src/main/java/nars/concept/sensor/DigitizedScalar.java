@@ -1,12 +1,12 @@
 package nars.concept.sensor;
 
-import jcog.Util;
 import jcog.data.list.FasterList;
 import jcog.math.FloatSupplier;
 import nars.$;
 import nars.NAR;
 import nars.term.Term;
 import nars.truth.Truth;
+import org.apache.commons.math3.exception.OutOfRangeException;
 
 import java.util.Iterator;
 import java.util.List;
@@ -133,11 +133,16 @@ public class DigitizedScalar extends DemultiplexedScalarSensor {
         return b / (dv);
     };
 
+    @Override
+    public final int size() {
+        return sensors.size();
+    }
+
     /**
      * returns snapshot of the belief state of the concepts
      */
     public Truth[] belief(long when, NAR n) {
-        int s = sensors.size();
+        int s = size();
         Truth[] f = new Truth[s];
         for (int i = 0; i < s; i++)
             f[i] = n.beliefTruth(sensors.get(i), when);
@@ -149,11 +154,11 @@ public class DigitizedScalar extends DemultiplexedScalarSensor {
                 SETe.the(states)
                 /*,$.quote(Util.toString(input))*/, $.the(freqer.getClass().getSimpleName())
                     ),
-            /** special truther that emphasizes the on concepts more than the off, since more will be off than on usually */
-            (prev, next) -> next==next ? $.t(Util.unitize(next),
-                //nar.confDefault(BELIEF) * ((1-1f/states.length) * next) + (1f/states.length)
-                    nar.confDefault(BELIEF)
-            ) : null,
+            (prev, next) -> {
+                if (next < 0 || next > 1)
+                    throw new OutOfRangeException(next, 0, 1);
+                return next == next ? $.t(next, nar.confDefault(BELIEF)) : null;
+            },
             nar
         );
 

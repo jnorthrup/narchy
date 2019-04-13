@@ -102,7 +102,7 @@ public enum MetaGoal {
             for (int j = 0; j < want.length; j++) {
                 v += want[j] * cg[j].current;
             }
-            ccc[i].setValue(v);
+            ci.setValue(v);
         }
 
 //        @Nullable Consumer<Why[]> g = this.governor;
@@ -110,15 +110,13 @@ public enum MetaGoal {
 //            g.accept(ccc);
     }
 //    /** implements value/pri feedback */
-//    @Nullable private Consumer<Why[]> governor = null;
-//
+//    @Nullable
+//    private Consumer<Why[]> governor = null;
 //    /** sets the governor to be used in next value/pri feedback iteration */
-//    public Control governor(Consumer<Why[]> governor) {
+//    public MetaGoal governor(Consumer<Why[]> governor) {
 //        this.governor = governor;
-//        return this;
+//        return MetaGoal;
 //    }
-
-
 
     /**
      * contributes the value to a particular goal in a cause's goal vector

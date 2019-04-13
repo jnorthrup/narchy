@@ -42,6 +42,10 @@ public class FilteredScalar extends DemultiplexedScalarSensor {
         this.components = List.of(filter);
     }
 
+    @Override
+    public int size() {
+        return components.size();
+    }
 
     @Override
     public Iterator<Signal> iterator() {

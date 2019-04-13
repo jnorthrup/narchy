@@ -45,7 +45,7 @@ abstract public class PriBuffer<T extends Prioritizable> implements Consumer<T> 
     public abstract T put(T x);
 
     //public abstract void commit(long now, Consumer<ITask> target);
-    public abstract void commit(long now, ConsumerX<? super T> target, NAR n);
+    public abstract void commit(ConsumerX<? super T> target, NAR n);
 
     public abstract void clear();
 
@@ -103,7 +103,7 @@ abstract public class PriBuffer<T extends Prioritizable> implements Consumer<T> 
         }
 
         @Override
-        public void commit(long now, ConsumerX<? super T> target, NAR n) {
+        public void commit(ConsumerX<? super T> target, NAR n) {
 
         }
 
@@ -146,9 +146,9 @@ abstract public class PriBuffer<T extends Prioritizable> implements Consumer<T> 
      * does not obey adviced capacity
      * TODO find old implementation and re-implement this
      */
-    public static class MapTaskBuffer extends PriBuffer<Task> {
+    public static class MapTaskBuffer<X extends Task> extends PriBuffer<X> {
 
-        private final Map<Task, Task> tasks;
+        private final Map<X, X> tasks;
 
         public MapTaskBuffer() {
             tasks = PriMap.newMap(true);
@@ -175,8 +175,8 @@ abstract public class PriBuffer<T extends Prioritizable> implements Consumer<T> 
         }
 
         @Override
-        public final Task put(Task n) {
-            Task p = tasks.putIfAbsent(n, n);
+        public final X put(X n) {
+            X p = tasks.putIfAbsent(n, n);
             if (p != null) {
                 Task.merge(p, n);
                 return p;
@@ -188,16 +188,17 @@ abstract public class PriBuffer<T extends Prioritizable> implements Consumer<T> 
          * TODO time-sensitive
          */
         @Override
-        public void commit(long now, ConsumerX<? super Task> target, NAR n) {
-            Iterator<Task> ii = tasks.values().iterator();
+        public void commit(ConsumerX<? super X> target, NAR n) {
+            Iterator<X> ii = tasks.values().iterator();
             while (ii.hasNext()) {
-                target.accept(ii.next());
+                X r = ii.next();
                 ii.remove();
+                target.accept(r);
             }
         }
 
         @Override
-        public boolean async(ConsumerX<Task> target) {
+        public boolean async(ConsumerX<X> target) {
             return false;
         }
     }
@@ -225,18 +226,21 @@ abstract public class PriBuffer<T extends Prioritizable> implements Consumer<T> 
 
         {
             final PriMerge merge = Param.tasklinkMerge;
-            tasks = new BufferedBag.SimpleBufferedBag<ITask,ITask>(new PriArrayBag<>(merge, 0) {
+            tasks = new BufferedBag.SimpleBufferedBag<>(new PriArrayBag<>(merge, 0) {
 
-                /** merge in the pre-buffer */
-                @Override protected float merge(ITask existing, ITask incoming, float incomingPri) {
+                /**
+                 * merge in the pre-buffer
+                 */
+                @Override
+                protected float merge(ITask existing, ITask incoming, float incomingPri) {
                     return Task.merge(existing, incoming, merge, CauseMerge.Append, PriReturn.Overflow, true);
                 }
 
                 @Override
-                        protected int histogramBins() {
-                            return 0; /* since sampling is not used */
-                        }
-                    },
+                protected int histogramBins() {
+                    return 0; /* since sampling is not used */
+                }
+            },
                     new PriMap<>(merge) {
                         /**
                          * merge in the post-buffer
@@ -305,8 +309,9 @@ abstract public class PriBuffer<T extends Prioritizable> implements Consumer<T> 
         }
 
         @Override
-        public void commit(long now, ConsumerX<? super ITask> target, NAR nar) {
+        public void commit(ConsumerX<? super ITask> target, NAR nar) {
 
+            long now = nar.time();
             if (prev == Long.MIN_VALUE)
                 prev = now - 1;
 

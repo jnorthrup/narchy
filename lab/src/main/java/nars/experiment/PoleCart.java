@@ -1,17 +1,20 @@
 package nars.experiment;
 
+import com.google.common.collect.Streams;
 import jcog.Util;
+import jcog.exe.Exe;
 import jcog.math.FloatNormalized;
 import jcog.math.FloatRange;
-import jcog.math.FloatSupplier;
 import nars.$;
 import nars.GameX;
 import nars.NAR;
 import nars.agent.Reward;
 import nars.concept.action.BiPolarAction;
 import nars.concept.sensor.DigitizedScalar;
+import nars.gui.NARui;
 import nars.term.Term;
 import nars.term.atom.Atomic;
+import spacegraph.SpaceGraph;
 
 import javax.swing.*;
 import java.awt.*;
@@ -19,6 +22,7 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import static java.util.stream.Collectors.toList;
 import static nars.agent.GameTime.fps;
 
 /**
@@ -27,6 +31,7 @@ import static nars.agent.GameTime.fps;
  * https:
  * <p>
  * see also: https:
+ * https://github.com/tensorflow/tfjs-examples/blob/master/cart-pole/cart_pole.js
  */
 public class PoleCart extends GameX {
 
@@ -95,9 +100,13 @@ public class PoleCart extends GameX {
     static final double poleLength = 1f;
     static final double gravity = 9.8;
     static final double forceMag =
+            10;
             //100.;
-            200;
-    public final FloatRange tau = new FloatRange(0.007f, 0.001f, 0.02f);
+            //200;
+    public final FloatRange tau = new FloatRange(
+            //0.007f, 0.001f, 0.02f
+                    0.02f, 0.001f, 0.02f
+            );
     //0.01;
     //0.005;
     //0.0025f;
@@ -106,7 +115,7 @@ public class PoleCart extends GameX {
             0.01f;
     static final double totalMass = cartMass + poleMass;
     static final double halfPole = 0.5 * poleLength;
-    static final double poleMassLength = halfPole * poleMass;
+    static final double poleMassLength = poleLength * poleMass;
     static final double fourthirds = 4. / 3.;
 
 
@@ -116,7 +125,7 @@ public class PoleCart extends GameX {
     DigitizedScalar angVel;
 
 
-    double action;
+    volatile double action, actionLeft, actionRight;
 
     public PoleCart(Term id, NAR nar) {
         super(id, fps(fps), nar);
@@ -137,23 +146,12 @@ public class PoleCart extends GameX {
          */
 
 
-        this.x = senseNumberBi($.inh("x", id),
-                new FloatNormalized(() -> (float) pos, posMin, posMax));
+        this.x = senseNumberBi($.inh("x", id),() -> ((float) (pos - posMin)/(posMax-posMin)));
         this.xVel = senseNumberBi($.inh("dx", id),
                 new FloatNormalized(() -> (float) posDot)
         );
 
 
-        FloatSupplier angXval = () -> (float) (0.5f + 0.5f * (Math.sin(angle)));
-        FloatSupplier angYval = () -> (float) (0.5f + 0.5f * (Math.cos(angle)));
-
-//
-//        angX = senseNumber(a->$.inst(Int.the(a),$.the("angX")), angXval, 2, DigitizedScalar.FuzzyNeedle);
-//
-//
-//
-//        angY = senseNumber(a->$.inst(Int.the(a), $.the("angY")), angYval, 2, DigitizedScalar.FuzzyNeedle);
-//
 //        angX.resolution(0.02f);
 //        angY.resolution(0.02f);
         this.angX = senseNumberBi($.inh("angX",id),
@@ -163,7 +161,6 @@ public class PoleCart extends GameX {
 
 
         this.angVel = senseNumberBi($.inh("angVel",id),
-
                 new FloatNormalized(() -> (float) angleDot)
         );
 
@@ -172,9 +169,7 @@ public class PoleCart extends GameX {
         initUnipolar();
 
 
-//        SpaceGraph.window(NARui.beliefCharts(512,
-//                sensors,
-//                nar), 900, 900);
+
 
 
         this.panel = new JPanel(new BorderLayout()) {
@@ -187,6 +182,7 @@ public class PoleCart extends GameX {
 
             @Override
             public void update(Graphics g) {
+                action = -actionLeft + actionRight;
                 Dimension d = panel.getSize();
                 Color cartColor = Color.ORANGE;
                 Color trackColor = Color.GRAY;
@@ -269,12 +265,14 @@ public class PoleCart extends GameX {
                     manualOverride = !manualOverride;
                     System.out.println("manualOverride=" + manualOverride);
                 }
-                if (e.getKeyCode() == KeyEvent.VK_LEFT)
-                    action = -1;
-                else if (e.getKeyCode() == KeyEvent.VK_RIGHT)
-                    action = 1;
-                else if (e.getKeyChar() == ' ') {
-                    action = 0;
+                if (e.getKeyCode() == KeyEvent.VK_LEFT) {
+                    actionLeft = +1;
+                    actionRight = 0;
+                } else if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
+                    actionRight = +1;
+                    actionLeft = 0;
+                } else if (e.getKeyChar() == ' ') {
+                    actionLeft = actionRight = 0;
 
                 }
             }
@@ -298,6 +296,11 @@ public class PoleCart extends GameX {
 //        );
 //        window(NARui.beliefCharts(nar, x, xVel, angVel, angX, angY), 700, 700);
 
+        Exe.invokeLater(()->
+            SpaceGraph.window(NARui.beliefCharts(sensors.stream()
+                    .flatMap(s-> Streams.stream(s.components()))
+                    .collect(toList()), nar), 900, 900)
+        );
     }
 
     public void initBipolar() {
@@ -306,30 +309,28 @@ public class PoleCart extends GameX {
             float a =
                     x * SPEED;
                     //(x * x * x) * SPEED;
-            this.action = a;
+            this.actionLeft = a < 0 ? -a : 0;
+            this.actionRight = a > 0 ? a : 0;
             return x;
         });
     }
 
     public void initUnipolar() {
-        actionUnipolar($.inh(("L"),id), (a) -> {
+        actionHemipolar(
+            //$.funcImg("mx", id, $.the(-1))
+            $.inh("L", id), (a) -> {
             if (!manualOverride) {
-                synchronized (PoleCart.this) {
-                    action = Util.clampBi((float) (action + a));
-                    //action = Util.clampBi((float) (action + a * a));
-                }
+                actionLeft = a; //Util.clampBi((float) (action + a));
+                //action = Util.clampBi((float) (action + a * a));
             }
-            return a;
         });
-        actionUnipolar($.inh(("R"),id), (a) -> {
+        actionHemipolar(
+            //$.funcImg("mx", id, $.the(+1))
+            $.inh("R", id), (a) -> {
             if (!manualOverride) {
-
-                synchronized (PoleCart.this) {
-                    action = Util.clampBi((float) (action - a));
-                    //action = Util.clampBi((float) (action - a * a));
-                }
+                actionRight = a;//Util.clampBi((float) (action - a));
+                //action = Util.clampBi((float) (action - a * a));
             }
-            return a;
         });
     }
 

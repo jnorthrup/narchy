@@ -7,6 +7,7 @@ import jcog.signal.wave2d.ScaledBitmap2D;
 import nars.$;
 import nars.GameX;
 import nars.NAR;
+import nars.agent.GameTime;
 import nars.agent.Reward;
 import nars.concept.sensor.AbstractSensor;
 import nars.gui.sensor.VectorSensorView;
@@ -29,6 +30,7 @@ public class ArkaNAR extends GameX {
 
     static boolean numeric = true;
     static boolean cam = true;
+    static float fps = 25f;
 
     public final FloatRange ballSpeed = new FloatRange(1.75f, 0.04f, 6f);
 
@@ -67,7 +69,7 @@ public class ArkaNAR extends GameX {
     }
 
     public ArkaNAR(NAR nar, boolean cam, boolean numeric) {
-        super("noid", nar);
+        super("noid", GameTime.fps(fps), nar);
 
 
         noid = new Arkanoid();

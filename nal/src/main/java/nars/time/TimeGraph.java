@@ -1706,7 +1706,10 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
             return id;
         }
 
-        private final static Comparator<Event> cmp = Comparator.comparing((Event e) -> e.id).thenComparing(Event::start).thenComparing(Event::end);
+        private final static Comparator<Event> cmp = Comparator
+                .comparing((Event e) -> e.id)
+                .thenComparingLong(Event::start)
+                .thenComparingLong(Event::end);
 
         @Override
         public int compareTo(LongObjectPair<Term> e) {

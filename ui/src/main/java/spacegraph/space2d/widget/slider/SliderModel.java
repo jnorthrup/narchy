@@ -107,13 +107,13 @@ public class SliderModel extends PaintSurface {
         _onChanged();
     }
 
-    protected void onChanged() {
-        if (change != null) {
-            //TODO if async
-            //Exe.invoke(this::_onChanged);
-            _onChanged();
-        }
-    }
+//    protected void onChanged() {
+//        if (change != null) {
+//            //TODO if async
+//            //Exe.invoke(this::_onChanged);
+//            _onChanged();
+//        }
+//    }
 
     private void _onChanged() {
         ObjectFloatProcedure<SliderModel> c = this.change;

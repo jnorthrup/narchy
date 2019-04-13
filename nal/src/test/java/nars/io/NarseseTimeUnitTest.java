@@ -138,6 +138,8 @@ class NarseseTimeUnitTest {
         StringBuilder sb = new StringBuilder();
         n.log(sb);
         n.input("(a &&+1day b)! +5m..+2h %1.0;0.90%");
+        n.run(1);
+
         assertTrue(sb.toString().contains("(a &&+86400000 b)! "));
         assertTrue(sb.toString().contains("%1.0;.90%"));
 
