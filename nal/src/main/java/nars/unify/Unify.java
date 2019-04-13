@@ -116,7 +116,9 @@ public abstract class Unify extends Versioning<Term> {
      * spend an amount of TTL; returns whether it is still live
      */
     public final boolean use(int cost) {
-        ttl = Math.max(0, ttl - cost);
+        //assert(cost >= 0); //TEMPORARY
+        if (cost > 0)
+            ttl = Math.max(0, ttl - cost);
         return live();
     }
 
@@ -166,7 +168,7 @@ public abstract class Unify extends Versioning<Term> {
 
             tryMatch();
 
-            return use(Param.derive.TTL_MUTATE);
+            return use(Param.derive.TTL_COST_MUTATE);
         }
 
     }

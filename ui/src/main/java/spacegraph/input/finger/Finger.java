@@ -62,7 +62,7 @@ abstract public class Finger {
     /**
      * drag threshold (in screen pixels)
      */
-    private final float dragThresholdPx = 5f;
+    private final float dragThresholdPx = 3f;
     //@Deprecated protected transient Function<v2, v2> _screenToGlobalRect;
     private final AtomicMetalBitSet buttonDown = new AtomicMetalBitSet();
     private final AtomicFloat[] rotation = new AtomicFloat[3];
@@ -256,7 +256,7 @@ abstract public class Finger {
         return !wasPressed(button);
     }
 
-    private boolean releasedNow(int button) {
+    public boolean releasedNow(int button) {
         return !pressed(button) && wasPressed(button);
     }
 
@@ -300,7 +300,7 @@ abstract public class Finger {
                 prev = Null;
             }
         }
-        
+
         if (prev!=next) {
 
 

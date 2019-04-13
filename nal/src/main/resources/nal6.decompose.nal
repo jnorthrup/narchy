@@ -12,20 +12,23 @@
       C, X, eventOfPN(C,X), task("?@"), hasBelief()    |-   conjWithoutPN(C,X)
     C, X, eventOfPN(C,X)                  |-   conjWithoutPN(C,X), (Goal:StructuralDeduction)
 
-    //not right:
-      //D, X, eventOfPN(C,X), conjParallel(D), --isVar(X)  |- --conjWithoutPN(D,X), (Belief:StructuralDeductionN, Goal:StructuralDeductionN)
+    //impl conj/disj pred belief and question free structural implication decomposition
+    (A ==> C), X, eventOfPN(C,X), --isVar(A)   |-   (A ==> conjWithoutPN(C,  X)), (Belief:StructuralDeduction)
+    //(A ==> C), X, eventOfPN(C,X), --isVar(A)   |-   polarizeTask((A ==> conjWithoutPN(C,  X))), (Belief:StructuralDeductionDepolarized)
 
-    //free structural implication belief and question decomposition
-    (A ==> C), X, eventOfPN(C,X), --isVar(A)   |-   polarizeTask((A ==> conjWithoutPN(C,  X))), (Belief:StructuralDeductionDepolarized)
-      //(A ==> C), X, eventOfPN(C,X), --isVar(A),--isVar(X)   |- --(A ==> conjWithoutPN(C,  X)), (Belief:StructuralDeductionN)
-    (--D ==> A), X, eventOfPN(C,X), --isVar(A)   |- polarizeTask((--conjWithoutPN(D,  --X) ==> A)), (Belief:StructuralReductionDepolarized)
-    //(C ==> A), X, eventOfPN(C,X), --isVar(A),--isVar(X)   |- (conjWithoutPN(C,  X) ==> A), (Belief:StructuralReduction)
-        (C ==> A), X, eventOfPN(C,X), task("?"), --isVar(A)   |- (conjWithoutPN(C,  X) ==> A), (Punctuation:Question)
-      //(--C ==> A), X, eventOfPN(C,X), --isVar(A),--isVar(X)   |- (--conjWithoutPN(C,  X) ==> A), (Belief:StructuralReduction)
-          (--C ==> A), X, eventOfPN(C,X), task("?"), --isVar(A)   |- (--conjWithoutPN(C,  X) ==> A), (Punctuation:Question)
 
-    //(A ==> C), X, eventOfPN(C,X), --isVar(A),--isVar(X)   |- (A ==> conjWithoutPN(C,  X)), (Belief:StructuralReduction)
          (A ==> C), X, eventOfPN(C,X), task("?"), --isVar(A)   |- (A ==> conjWithoutPN(C,  X)), (Punctuation:Question)
+
+    //impl conj subj belief and question free structural implication decomposition
+    //(  C ==> A), X, eventOfPN(C,X), --isVar(A)   |- polarizeTask((  conjWithoutPN(C,    X) ==> A)), (Belief:StructuralReductionDepolarized)
+
+        (C ==> A), X, eventOfPN(C,X), task("?"), --isVar(A)   |- (conjWithoutPN(C,  X) ==> A), (Punctuation:Question)
+
+    //impl disj subj belief and question free structural implication decomposition
+    //(--D ==> A), X, eventOfPN(D,X), --isVar(A)   |- polarizeTask((--conjWithoutPN(D,  --X) ==> A)), (Belief:StructuralReductionDepolarized)
+
+        (--D ==> A), X, eventOfPN(D,X), task("?"), --isVar(A)   |- (--conjWithoutPN(D,  --X) ==> A), (Punctuation:Question)
+
 
 
 
@@ -118,15 +121,17 @@
 
     //changed from above NP -> PP, etc
     (  S ==> M), (C ==> M), eventOf(C,S)                    |-   (  conjWithout(C,   S) ==> M), (Belief:DecomposePP)
-        (  S ==> M), (C ==> M), eventOf(C,S)                |-   (  conjWithout(C,   S) ==> M), (Belief:DecomposeNN)
+        (  S ==> M), (C ==> M), eventOf(C,S)                |- --(  conjWithout(C,   S) ==> M), (Belief:DecomposeNN)
       (  S ==> M), (--D ==> M), eventOfNeg(D,S)             |- --(--conjWithout(D, --S) ==> M), (Belief:DecomposePN)
-          (  S ==> M), (--D ==> M), eventOfNeg(D,S)         |- --(--conjWithout(D, --S) ==> M), (Belief:DecomposeNP)
+          (  S ==> M), (--D ==> M), eventOfNeg(D,S)         |-   (--conjWithout(D, --S) ==> M), (Belief:DecomposeNP)
 
 
     (M ==> S), (M ==> C), eventOf(C,S)                        |- --(M ==> conjWithout(C,   S)), (Belief:DecomposePN)
+     (M ==> S), (M ==> C), eventOf(C,S)                        |-  (M ==> conjWithout(C,   S)), (Belief:DecomposeNP)
     (M ==> S), (M ==> C), eventOfNeg(C,S), has(C,"--")        |- --(M ==> conjWithout(C, --S)), (Belief:DecomposeNN)
-        (M ==> S), (M ==> D), eventOfNeg(D,S), has(D,"--")    |-   (M ==> conjWithout(D, --S)), (Belief:DecomposeNP)
-        (M ==> S), (M ==> D), eventOf(D,S)                    |-   (M ==> conjWithout(D,   S)), (Belief:DecomposePP)
+     (M ==> S), (M ==> C), eventOfNeg(C,S), has(C,"--")        |-  (M ==> conjWithout(C, --S)), (Belief:DecomposePP)
+        //(M ==> S), (M ==> D), eventOfNeg(D,S), has(D,"--")    |-   (M ==> conjWithout(D, --S)), (Belief:DecomposeNP)
+        //(M ==> S), (M ==> D), eventOf(D,S)                    |-   (M ==> conjWithout(D,   S)), (Belief:DecomposePP)
 
 
 

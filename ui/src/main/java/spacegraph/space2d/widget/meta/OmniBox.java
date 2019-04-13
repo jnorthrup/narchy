@@ -1,6 +1,5 @@
 package spacegraph.space2d.widget.meta;
 
-import com.googlecode.lanterna.TerminalPosition;
 import jcog.User;
 import jcog.data.list.FasterList;
 import org.apache.lucene.document.Document;
@@ -10,9 +9,9 @@ import spacegraph.space2d.container.collection.MutableListContainer;
 import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.widget.Widget;
 import spacegraph.space2d.widget.button.PushButton;
-import spacegraph.space2d.widget.console.TextEdit0;
 import spacegraph.space2d.widget.text.LabeledPane;
 import spacegraph.space2d.widget.text.VectorLabel;
+import spacegraph.space2d.widget.textedit.TextEdit;
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
@@ -23,7 +22,7 @@ import java.util.function.Predicate;
  */
 public class OmniBox extends Widget {
 
-    private final TextEdit0.TextEditUI edit;
+    private final TextEdit edit;
 
 
     private final Gridding results;
@@ -80,41 +79,45 @@ public class OmniBox extends Widget {
 
 
 
-        edit = new TextEdit0.TextEditUI() {
+        edit = new TextEdit(40, 1) {
 
-            @Override
-            protected void onKeyCtrlEnter() {
-                String t = text();
-                model.onTextChangeControlEnter(t, results);
-                clear();
-            }
-
-            @Override
-            protected void cursorChange(String next, TerminalPosition cp) {
-                if (cp.getRow() == 0) {
-                    model.onTextChange(next, cp.getColumn(), results);
-                } else {
-                    results.clear();
-                }
-            }
-
-            @Override
-            protected void textChange(String next) {
-                super.textChange(next);
-                TerminalPosition cp = getCursorPosition();
-                cursorChange(next, cp);
-            }
+//            @Override
+//            public TextEdit onKey(Consumer<KeyEvent> e) {
+//                return super.onKey(e);
+//            }
+//
+//            @Override
+//            protected void onKeyCtrlEnter() {
+//                String t = text();
+//                model.onTextChangeControlEnter(t, results);
+//                clear();
+//            }
+//
+//            @Override
+//            protected void cursorChange(String next, TerminalPosition cp) {
+//                if (cp.getRow() == 0) {
+//                    model.onTextChange(next, cp.getColumn(), results);
+//                } else {
+//                    results.clear();
+//                }
+//            }
+//
+//            @Override
+//            protected void textChange(String next) {
+//                super.textChange(next);
+//                TerminalPosition cp = getCursorPosition();
+//                cursorChange(next, cp);
+//            }
 
         };
 
 
-        TextEdit0 te = new TextEdit0(edit);
-        te.resize(40, 1);
+//        TextEdit0 te = new TextEdit0(edit);
+//        te.resize(40, 1);
 
-        content.add(te);
+        content.add(edit);
         set(content);
 
-        
     }
 
     @FunctionalInterface public interface Model {

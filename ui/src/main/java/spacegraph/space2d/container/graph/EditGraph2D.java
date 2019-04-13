@@ -76,6 +76,7 @@ public class EditGraph2D<S extends Surface> extends MutableMapContainer<Surface,
      * TODO encapsulate so its private
      */
     public final Stacking raw = new Stacking();
+
     private final DoubleClicking doubleClicking = new DoubleClicking(0, this::doubleClick, this);
     private Off loop;
 

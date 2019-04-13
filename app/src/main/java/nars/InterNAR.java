@@ -1,6 +1,5 @@
 package nars;
 
-import jcog.Texts;
 import jcog.Util;
 import jcog.func.TriConsumer;
 import jcog.math.FloatRange;
@@ -46,6 +45,8 @@ public class InterNAR extends NARPart implements TriConsumer<NAR, ActiveQuestion
     public final FloatRange incomingPriMult = new FloatRange(1f, 0, 2f);
 
     final What what;
+
+    private float peerFPS = 1;
 
     /**
      * @param port
@@ -115,44 +116,55 @@ public class InterNAR extends NARPart implements TriConsumer<NAR, ActiveQuestion
         this.recv = nar.newChannel(this);
 
 
+        add(send);
+        add(peer.receive.on(this::receive));
 
         nar.start(this);
 
     }
 
+    public InterNAR fps(float fps) {
+        peerFPS = fps;
+        if (peer.isRunning())
+            peer.setFPS(fps);
+        return this;
+    }
+
     @Override
     protected void starting(NAR nar) {
-
-        whenDeleted(peer.receive.on(this::receive));
-
-        //HACK temporary:
-        nar.addOp1("ping", (term, nn)->{
-            try {
-                String s = Texts.unquote(term.toString());
-                String[] addressPort = s.split(":");
-                String address = addressPort[0];
-                int pport = Texts.i(addressPort[1]);
-
-                InetSocketAddress a = new InetSocketAddress(address, pport);
-                logger.info("ping {}", a);
-                ping(a);
-            } catch (Throwable tt) {
-                logger.error("ping {}", tt);
-            }
-        });
-
-        nar.start(send);
-
-
+        peer.setFPS(peerFPS);
     }
 
     @Override
     protected void stopping(NAR nar) {
-
-        nar.stop(send);
-
         peer.stop();
     }
+
+
+    //    @Override
+//    protected void starting(NAR nar) {
+//
+//
+//        //HACK temporary:
+//        nar.addOp1("ping", (term, nn)->{
+//            try {
+//                String s = Texts.unquote(term.toString());
+//                String[] addressPort = s.split(":");
+//                String address = addressPort[0];
+//                int pport = Texts.i(addressPort[1]);
+//
+//                InetSocketAddress a = new InetSocketAddress(address, pport);
+//                logger.info("ping {}", a);
+//                ping(a);
+//            } catch (Throwable tt) {
+//                logger.error("ping {}", tt);
+//            }
+//        });
+//
+//
+//
+//    }
+
 
 
 
@@ -239,14 +251,6 @@ public class InterNAR extends NARPart implements TriConsumer<NAR, ActiveQuestion
 
     }
 
-    public void runFPS(float fps) {
-        //nar.runLater(()->{
-            if (peer!=null)
-                peer.setFPS(fps);
-            else
-                logger.error("did not start InterNARS TODO"); //HACK
-        //});
-    }
 
     public InetSocketAddress addr() {
         return peer.addr;

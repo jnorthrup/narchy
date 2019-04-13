@@ -310,59 +310,8 @@ public class NAL5Test extends NALTest {
         tester.mustBelieve(cycles, "(robin --> [flying])", 1.00f, 0.81f);
     }
 
-    @Test
-    void impl_disjunction_subj_decompose_one_premise() {
-        test
-                .termVolMax(8)
-                .believe("((a || b) ==> x)")
-                .mustBelieve(cycles, "(a ==> x)", 1f, 0.81f)
-                .mustBelieve(cycles, "(b ==> x)", 1f, 0.81f)
-        ;
-    }
-
-    @Test
-    void impl_disjunction_pred_decompose_one_premise() {
-        test
-                .believe("(x ==> (a || b))")
-                .mustBelieve(cycles, "(x ==> a)", 1f, 0.81f)
-                .mustBelieve(cycles, "(x ==> b)", 1f, 0.81f)
-        ;
-    }
-
-    @Disabled
-    @Test
-    void disjunction_decompose_one_premise() {
-        test
-                .believe("(||, a, b)")
-                .mustBelieve(cycles, "a", 1f, 0.40f)
-                .mustBelieve(cycles, "b", 1f, 0.40f)
-        ;
-    }
-
-    @Disabled
-    @Test
-    void disjunction_decompose_one_premise_pos_neg() {
-        test
-                .believe("(||, a, --b)")
-                .mustBelieve(cycles, "a", 1f, 0.40f)
-                .mustBelieve(cycles, "b", 0f, 0.40f)
-        ;
-    }
 
 
-    /**
-     * not sure this one makes logical sense
-     */
-    @Disabled
-    @Test
-    void compound_composition_one_premises() {
-
-        TestNAR tester = test;
-        tester.believe("(robin --> [flying])");
-        tester.ask("(||,(robin --> [flying]),(robin --> swimmer))");
-
-        tester.mustBelieve(cycles, " ((robin --> swimmer) || (robin --> [flying]))", 1.00f, 0.81f);
-    }
 
 
     @Test

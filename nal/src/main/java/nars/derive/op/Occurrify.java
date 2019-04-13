@@ -237,7 +237,7 @@ public class Occurrify extends TimeGraph {
             x = Retemporalize.retemporalizeXTERNALToDTERNAL.apply(x);
             if (!Taskify.valid(x, d.concPunc)) {
                 d.nar().feel.deriveFailTemporal.increment();
-                Taskify.spam(d, Param.derive.TTL_DERIVE_TASK_FAIL);
+                Taskify.spam(d, Param.derive.TTL_COST_DERIVE_TASK_FAIL);
                 return null;
             }
         }

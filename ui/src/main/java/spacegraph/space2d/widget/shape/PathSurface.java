@@ -42,7 +42,7 @@ public class PathSurface extends PaintSurface {
             //update bounds
             RectFloat newBounds = path.bounds();
             //System.out.println(path + " " + newBounds);
-            pos(newBounds);
+//            pos(newBounds);
             invalid = false;
         }
         super.render(r);

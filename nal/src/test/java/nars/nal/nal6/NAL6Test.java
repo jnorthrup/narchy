@@ -15,7 +15,7 @@ import static nars.time.Tense.ETERNAL;
 
 public class NAL6Test extends NALTest {
 
-    private static final int cycles = 900;
+    private static final int cycles = 1500;
 
     @BeforeEach
     void setup() {
@@ -424,8 +424,9 @@ public class NAL6Test extends NALTest {
                 .believe("(&&,open(#y,#x),(#x --> lock),<#y --> key>)")
                 .believe("({lock1} --> lock)")
                 .mustBelieve(cycles, "((#1-->key) && open(#1,{lock1}))", 1.00f,
+                        0.81f
                         //0.66f
-                        0.43f
+                        //0.43f
                 );
     }
 
@@ -867,6 +868,7 @@ public class NAL6Test extends NALTest {
     @Test
     void strong_unification_dep_indep_post() {
         test.termVolMax(7)
+                .logDebug()
                 .believe("(#x --> z)")
                 .believe("(($x --> y) ==> ($x --> z))")
                 .mustBelieve(cycles, "(#x-->y)", 1f, 0.45f);

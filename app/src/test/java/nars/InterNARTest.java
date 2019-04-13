@@ -8,7 +8,9 @@ import org.junit.jupiter.params.provider.ValueSource;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.BiConsumer;
 
+import static java.util.stream.Collectors.toList;
 import static nars.$.$$;
+import static nars.Op.BELIEF;
 import static nars.Op.QUESTION;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -20,30 +22,31 @@ public class InterNARTest {
     @ParameterizedTest
     @ValueSource(ints={1,0})
     public void testDiscoverDoesntSelfConnect(int pingSelf) {
-        NAR a = NARS.realtime(1f).get();
-        InterNAR x = new InterNAR(a);
-        a.synch();
-        x.runFPS(8f);
+        NAR n = NARS.realtime(1f).get();
+        InterNAR x = new InterNAR(n);
+        x.fps(8f);
+
+        n.synch();
         if (pingSelf==1) {
             x.ping(x.addr());
         }
         for (int i = 0; i < 8; i++) {
             assertFalse(x.peer.them.contains(x.peer.me));
-            assertFalse(x.peer.connected());
+            assertFalse(x.peer.connected(),()->x.peer.them.stream().collect(toList()).toString());
             Util.sleepMS(100);
         }
-        a.stop();
+
+        n.delete();
     }
 
-    static synchronized void testAB(BiConsumer<NAR, NAR> beforeConnect, BiConsumer<NAR, NAR> afterConnect) {
+    static void testAB(BiConsumer<NAR, NAR> beforeConnect, BiConsumer<NAR, NAR> afterConnect) {
 
-        final int MAX_CONNECT_INTERVALS = 10;
+        final int MAX_CONNECT_INTERVALS = 100;
         final int CONNECT_INTERVAL_MS = 30;
-
 
         final float NET_FPS = 10f;
         final float NAR_FPS = NET_FPS * 2;
-        final int INTERACT_TIME = 700;
+        final int INTERACT_TIME = 1500;
 
         int volMax = 8;
 
@@ -56,32 +59,22 @@ public class InterNARTest {
         a.termVolumeMax.set(volMax);
         b.termVolumeMax.set(volMax);
 
-
         for (int i = 0; i < preCycles; i++) {
             a.run(1);
             b.run(1);
         }
-        a.synch();
-        b.synch();
 
         beforeConnect.accept(a, b);
 
-        InterNAR ai = new InterNAR(0, false, a.what()) {
-            @Override
-            protected void starting(NAR nar) {
-                super.starting(nar);
-                runFPS(NET_FPS);
-            }
+        InterNAR ai = new InterNAR(0, false, a.what());
+        InterNAR bi = new InterNAR(0, false, b.what());
 
-        };
-        InterNAR bi = new InterNAR(0, false, b.what()) {
+        ai.fps(NET_FPS);
+        bi.fps(NET_FPS);
 
-            @Override
-            protected void starting(NAR nar) {
-                super.starting(nar);
-                runFPS(NET_FPS);
-            }
-        };
+        a.synch();
+        b.synch();
+
         assertTrue(ai.id != bi.id);
         assertTrue(!ai.addr().equals(bi.addr()));
         assertTrue(!ai.peer.name().equals(bi.peer.name()));
@@ -102,14 +95,9 @@ public class InterNARTest {
         afterConnect.accept(a, b);
 
 
-        a.startFPS(NAR_FPS);
-        b.startFPS(NAR_FPS);
 
         Util.sleepMS(INTERACT_TIME);
 
-
-        a.stop();
-        b.stop();
 
         System.out.println("disconnecting..");
 
@@ -120,8 +108,8 @@ public class InterNARTest {
         }
 
 
-        a.stop();
-        b.stop();
+        a.delete();
+        b.delete();
 
     }
 
@@ -171,10 +159,9 @@ public class InterNARTest {
         testAB((a, b) -> {
 
             b.onTask(bt -> {
-
-                if (bt.isBelief() && bt.toString().contains("(a-->d)"))
+                if (bt.isBelief() && bt.term().toString().contains("(a-->d)"))
                     recv.set(true);
-            });
+            }, BELIEF);
 
         }, (a, b) -> {
 
@@ -184,7 +171,7 @@ public class InterNARTest {
             b.believe($$("(a --> b)"));
             b.believe($$("(c --> d)"));
             try {
-                b.input(("$1.0 (a --> d)?"));
+                b.input(("$0.5 (a --> d)?"));
             } catch (Narsese.NarseseException e) {
                 e.printStackTrace();
             }

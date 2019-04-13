@@ -176,12 +176,12 @@ public class Path2D extends FloatArrayList {
     }
 
     public RectFloat bounds() {
+        float[] a = array();
         int n = points();
-        if (n < 2)
-            return RectFloat.Zero;
+        if (n <= 2)
+            return RectFloat.XYWH(a[0], a[1], 1, 1);
 
         float x1 = Float.POSITIVE_INFINITY, y1 = Float.POSITIVE_INFINITY, x2 = Float.NEGATIVE_INFINITY, y2 = Float.NEGATIVE_INFINITY;
-        float[] a = array();
         for (int i = 0; i < n; ) {
             float x = a[i++], y = a[i++];
             if (x < x1) x1 = x;

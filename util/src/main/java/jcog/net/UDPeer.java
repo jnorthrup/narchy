@@ -219,6 +219,8 @@ public class UDPeer extends UDP {
 
     }
 
+
+
     static class Discoverability implements Serializable {
         public int id;
         public InetSocketAddress addr;
@@ -510,8 +512,8 @@ public class UDPeer extends UDP {
             return;
             //throw new UnsupportedOperationException("dont ping self");
 
-        if (logger.isDebugEnabled())
-            logger.debug("{} {} send ping to {}", name(), addr, to);
+        //if (logger.isDebugEnabled())
+            logger.info("{} {} ping {}", name(), addr, to);
         send(ping(), to);
     }
 
@@ -526,8 +528,8 @@ public class UDPeer extends UDP {
         long sent = m.dataLong(0);
         long latencyMS = now - sent;
 
-        if (logger.isDebugEnabled())
-            logger.debug("{} recv pong {} from {} ({})", name(), m, connected, Texts.timeStr(1E6 * latencyMS));
+        //if (logger.isDebugEnabled())
+            logger.info("{} pong {} from {} ({})", name(), m, connected, Texts.timeStr(1E6 * latencyMS));
 
         if (connected != null) {
             connected.onPing(latencyMS);
@@ -548,8 +550,8 @@ public class UDPeer extends UDP {
                                 Ints.toByteArray(ping.id()) 
                         ));
 
-        if (logger.isDebugEnabled())
-            logger.debug("send pong {} {} to {}", addr, m, from);
+        //if (logger.isDebugEnabled())
+            logger.info("{} pong {} to {}", addr, m, from);
 
         seen(m, 1f);
         send(m, from);

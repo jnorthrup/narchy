@@ -10,6 +10,7 @@ import nars.term.var.ellipsis.Ellipsis;
 import nars.unify.Unify;
 
 import static nars.Op.NEG;
+import static nars.Op.VAR_PATTERN;
 
 /**
  * similar to a plain atom, but applies altered operating semantics according to the specific
@@ -68,7 +69,8 @@ public interface Variable extends Atomic {
 //                        return CommonVariable.unify((Variable) x, (Variable) y, u);
 //                    else if (yOp.id < xOp.id && u.varReverse(yOp))
 //                        return u.putXY((Variable) y, x);
-                    if (yOp == xOp)
+//                    if (yOp == xOp)
+                    if (xOp!=VAR_PATTERN && yOp!=VAR_PATTERN)
                         return CommonVariable.unify((Variable) x, (Variable) y, u);
                     else {
                         if (yOp.id < xOp.id && u.varReverse(yOp))

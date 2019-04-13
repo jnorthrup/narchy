@@ -1,12 +1,15 @@
 package nars.op;
 
+import jcog.Util;
 import nars.$;
 import nars.Op;
+import nars.Param;
 import nars.derive.Derivation;
 import nars.eval.Evaluation;
 import nars.subterm.Subterms;
 import nars.term.Functor;
 import nars.term.Term;
+import nars.term.Variable;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
 import nars.term.functor.InlineFunctor;
@@ -114,9 +117,21 @@ public class UniSubst extends Functor implements InlineFunctor {
 
         Term y = a.sub(2);
 
+        return apply(c, x, y, var, strict);
 
-        if (x.equals(y)) {
+    }
+
+    private Term apply(Term c, Term x, Term y, int var, boolean strict) {
+        if (x.equals(y))
             return strict ? Null : c;
+
+
+        Term ix = imageNormalize(x);
+        Term iy = imageNormalize(y);
+        if (ix!=x || iy!=y) {
+            if (ix.equals(iy))
+                return strict ? Null : c; //test for equality again
+            x = ix; y = iy;
         }
 
         Term output;
@@ -124,21 +139,41 @@ public class UniSubst extends Functor implements InlineFunctor {
         boolean tryUnify = (x.hasAny(var) || y.hasAny(var));
 
         if (tryUnify) {
-            int subTTL = Math.max(parent.ttl, 0);
-            if (subTTL == 0)
-                return Null;
 
-            u.setTTL(subTTL);
-
-            output = u.unifySubst(imageNormalize(x), imageNormalize(y), c, var, strict);
-
-            parent.use( subTTL - u.ttl);
+            //prefilters:
+            boolean xv = x instanceof Variable, yv = y instanceof Variable;
+            Term cc;
+            if (xv && !yv) {
+                //result can be determined by substitution
+                cc = c.replace(x, y);
+            } else if (yv && !xv) {
+                //result can be determined by substitution
+                cc = c.replace(y, x);
+            } else if (!xv && !yv && x.op()!=y.op()) {
+                return Null; //impossible TODO check if this is always the case, and whether Terms.possiblyUnifiable(x, y) hel
+            } else {
+                cc = unify(c, x, y, var, strict);
+            }
+            return (cc == null || (strict && c.equals(cc))) ? Null : cc;
 
         } else {
-            output = null;
+            return Null;
         }
+    }
 
-        return (output == null || (strict && c.equals(output))) ? Null : output;
+    private Term unify(Term c, Term x, Term y, int var, boolean strict) {
+        Term output;//attempt unify
+        int subTTL = Util.clamp(parent.ttl, 0, Param.derive.TTL_UNISUBST_MAX);
+        if (subTTL == 0)
+            return Null;
+
+        u.setTTL(subTTL);
+
+        output = u.unifySubst(x, y, c, var, strict);
+
+        parent.use( subTTL - u.ttl);
+
+        return output;
     }
 
 //    public boolean transformed() {

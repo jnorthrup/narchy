@@ -140,7 +140,7 @@ abstract public class GameX extends Game {
 
             Game aa = a.apply(n);
 
-            new InterNAR(n).runFPS(netFPS);
+            new InterNAR(n).fps(netFPS);
 
             return aa;
 

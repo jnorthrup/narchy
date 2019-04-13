@@ -101,10 +101,10 @@ public class MetaAgent extends Game {
 
         float priMin = 0.1f, priMax = 1;
         actionDial($.inh(gid, $.p(PRI, $.the(1))), $.inh(gid, $.p(PRI, $.the(-1))),
-                w::pri, w::pri, priMin, 1, 10);
+                w::pri, w::pri, priMin, 1, 6);
 
         actionDial($.inh(gid, $.p(curiosity, $.the(1))), $.inh(gid, $.p(curiosity, $.the(-1))),
-                g.curiosity.rate, 10);
+                g.curiosity.rate, 6);
 
 //        GoalActionConcept curiosityAction = actionUnipolar($.inh(a.id, curiosity), (c) -> {
 //            a.curiosity.rate.set(curiosity(a, start, c));
@@ -122,7 +122,7 @@ public class MetaAgent extends Game {
             public void set(float value) {
                 super.set(value);
                 value = super.get();
-                int nextDur = Math.round(value);
+                int nextDur = Math.max(1, Math.round(value));
                 ((What.TaskLinkWhat)w).dur.set(nextDur);
                 //assert(nar.dur()==nextDur);
             }

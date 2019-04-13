@@ -558,49 +558,56 @@ public abstract class Param extends Parts<Term,NAR> {
          */
         public static final int TermutatorSearchTTL = 4;
         public static final int TermUnifyForkMax = 2;
-        public static final int TTL_CONJ_BEFORE_AFTER = 4; //HACK this is a TTL supply, not a COST
+
+
+        public static final int TTL_UNISUBST_MAX = 4;
+        public static final int TTL_CONJ_BEFORE_AFTER = TTL_UNISUBST_MAX;
+
+
         @Range(min = 1, max = 32)
         public static final int TIMEGRAPH_ITERATIONS = 2;
+
         @Range(min = 0, max = 64)
-        public static final int TTL_BRANCH = 1;
+        public static final int TTL_COST_BRANCH = 1;
         /**
          * cost of executing a termute permutation
          */
         @Range(min = 0, max = 64)
-        public static final int TTL_MUTATE = 1;
+        public static final int TTL_COST_MUTATE = 1;
         /**
          * cost of a successful task derivation
          */
         @Range(min = 0, max = 64)
-        public static final int TTL_DERIVE_TASK_SUCCESS = 5;
+        public static final int TTL_COST_DERIVE_TASK_SUCCESS = 5;
         /**
          * estimate
          */
         @Deprecated
         public static final int TTL_MIN =
                 (2) +
-                        (TTL_BRANCH * 1) + TTL_DERIVE_TASK_SUCCESS;
+                        (TTL_COST_BRANCH * 1) + TTL_COST_DERIVE_TASK_SUCCESS;
         /**
          * cost of a repeat (of another within the premise's batch) task derivation
          */
         @Range(min = 0, max = 64)
-        public static final int TTL_DERIVE_TASK_REPEAT = 3;
+        public static final int TTL_COST_DERIVE_TASK_REPEAT = 3;
         /**
          * cost of a task derived, but too similar to one of its parents
          */
         @Range(min = 0, max = 64)
-        public static final int TTL_DERIVE_TASK_SAME = 2;
+        public static final int TTL_COST_DERIVE_TASK_SAME = 2;
         /**
          * cost of a failed/aborted task derivation
          */
         @Range(min = 0, max = 64)
-        public static final int TTL_DERIVE_TASK_FAIL = 1;
+        public static final int TTL_COST_DERIVE_TASK_FAIL = 1;
         @Range(min = 0, max = 64)
-        public static final int TTL_DERIVE_TASK_UNPRIORITIZABLE = TTL_DERIVE_TASK_FAIL;
+        public static final int TTL_COST_DERIVE_TASK_UNPRIORITIZABLE = TTL_COST_DERIVE_TASK_FAIL;
         public static final boolean DERIVE_FILTER_SIMILAR_TO_PARENTS = true;
 
         /** attempt to create a question/quest task from an invalid belief/goal (probably due to missing or unsolved temporal information */
         public static final boolean DERIVATION_FORM_QUESTION_FROM_AMBIGUOUS_BELIEF_OR_GOAL = false;
+
     }
 
     public enum unify { ;

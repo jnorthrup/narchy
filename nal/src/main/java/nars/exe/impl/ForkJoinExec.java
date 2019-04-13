@@ -1,11 +1,21 @@
 package nars.exe.impl;
 
 import jcog.Util;
+import jcog.data.list.FasterList;
 import nars.attention.What;
 import nars.control.How;
+import org.eclipse.collections.api.list.MutableList;
+import org.eclipse.collections.api.tuple.Pair;
+import org.eclipse.collections.api.tuple.primitive.ObjectLongPair;
+import org.eclipse.collections.impl.map.mutable.primitive.ObjectLongHashMap;
 
+import java.util.Comparator;
+import java.util.List;
 import java.util.Random;
 import java.util.concurrent.*;
+
+import static java.lang.Integer.min;
+import static org.eclipse.collections.impl.tuple.Tuples.pair;
 
 /**
  * TODO not finished
@@ -13,6 +23,8 @@ import java.util.concurrent.*;
 public class ForkJoinExec extends MultiExec implements Thread.UncaughtExceptionHandler {
 
     private static final int SYNCH_ITERATION_MS = 20;
+    static final long durationMinNS = TimeUnit.MICROSECONDS.toNanos(200);
+    static final long durationMaxNS = TimeUnit.MICROSECONDS.toNanos(1000);
 
     private ForkJoinPool pool;
 
@@ -108,10 +120,10 @@ public class ForkJoinExec extends MultiExec implements Thread.UncaughtExceptionH
         //logger.info("{}", pool);
 
         float mix = 0.1f; //work to play ratio?
-        float rate = 2; //HACK
+        float rate = 3; //HACK
         float load =
-                Math.min(1, (mix * (float)pool.getQueuedTaskCount()) / concurrency());
-                //0f; //TODO ...pool.getQueuedTaskCount()
+                Math.min(1, (mix * (pool.getQueuedSubmissionCount() /*+ pool.getQueuedTaskCount()*/)) / concurrency());
+        //0f; //TODO ...pool.getQueuedTaskCount()
 
         @Deprecated int n = Math.round(rate * nar.loop.throttle.floatValue() * (1-load) * concurrency());
         if (n == 0)
@@ -125,6 +137,8 @@ public class ForkJoinExec extends MultiExec implements Thread.UncaughtExceptionH
         nar.what.commit(null);
         nar.how.commit(null);
 
+        ObjectLongHashMap<Pair<How,What>> play = new ObjectLongHashMap(32);
+
         final int perN = nar.how.size();
 
         for (int j = 0; j < perN; j++ ) {
@@ -135,21 +149,40 @@ public class ForkJoinExec extends MultiExec implements Thread.UncaughtExceptionH
 
                 What w = nar.what.sample(rng); if (!w.isOn()) continue; //HACK embed in sample
 
-                PlayTask pt = new PlayTask(w, h);
-                pt.fork();
+                //PlayTask pt = new PlayTask(w, h);
+                //pt.fork();
+
+                play.addToValue(pair(h,w), dur(w.pri(), h.pri()));
             }
         }
+
+        MutableList<ObjectLongPair<Pair<How, What>>> l = play.keyValuesView().toSortedList(Comparator.comparingLong(x ->
+                ((long)System.identityHashCode(x.getOne().getOne())) << 32 | System.identityHashCode(x.getTwo())
+        ));
+
+        if (l.isEmpty())
+            return;
+
+        int ll = l.size();
+        int para = pool.getParallelism();
+        int nPerThread = Math.max(1, ll / para);
+        List<ForkJoinTask> t = new FasterList(para);
+        for (int i = 0; i < ll; ) {
+            int start = i, end = min(ll, i + nPerThread);
+            t.add(new PlayBatch(l.subList(start, end).toArray(EMPTY_LONG_PAIR_ARRAY)));
+            i += nPerThread;
+        }
+        t.forEach(ForkJoinTask::fork);
 
 
 //        if (ThreadLocalRandom.current().nextFloat() < 0.01f)
 //            System.out.println(pool);
     }
 
+    static final ObjectLongPair[] EMPTY_LONG_PAIR_ARRAY = new ObjectLongPair[0];
+
+
     final static class PlayTask extends RecursiveAction {
-
-        static final long durationMinNS = TimeUnit.MICROSECONDS.toNanos(200);
-        static final long durationMaxNS = TimeUnit.MICROSECONDS.toNanos(1000);
-
 
         final What w;
         final How h;
@@ -164,8 +197,7 @@ public class ForkJoinExec extends MultiExec implements Thread.UncaughtExceptionH
             boolean single = h.singleton();
             if (!single || h.busy.compareAndSet(false, true)) {
                 try {
-                    float pri = (float) Math.sqrt(Util.and(w.pri(), h.pri())); //sqrt in attempt to compensate for the bag sampling's priority bias
-                    long dur = Util.lerp(pri, durationMinNS, durationMaxNS);
+                    long dur = dur(w.pri(), h.pri());
                     h.runFor(w, dur);
 
                 } finally {
@@ -174,6 +206,13 @@ public class ForkJoinExec extends MultiExec implements Thread.UncaughtExceptionH
                 }
             }
         }
+
+
+    }
+
+    static long dur(float whatPri, float howPri) {
+        float pri = (float) Math.sqrt(Util.and(whatPri, howPri)); //sqrt in attempt to compensate for the bag sampling's priority bias
+        return Util.lerp(pri, durationMinNS, durationMaxNS);
     }
 
     //    @Override
@@ -197,7 +236,7 @@ public class ForkJoinExec extends MultiExec implements Thread.UncaughtExceptionH
 //        if (Thread.currentThread() instanceof ForkJoinWorkerThread) //TODO more robust test, in case multiple pools involved then we probably need to differentiate between local and remotes
 //            executeNow(x);
 //        else {
-            pool.execute(x instanceof Runnable ? ((Runnable)x) : new MyRunnable(x));
+        pool.execute(x instanceof Runnable ? ((Runnable)x) : new MyRunnable(x));
 //        }
     }
 
@@ -218,5 +257,29 @@ public class ForkJoinExec extends MultiExec implements Thread.UncaughtExceptionH
         public void run() {
             ForkJoinExec.this.executeNow(x);
         }
+    }
+
+    private static class PlayBatch extends RecursiveAction {
+        private final ObjectLongPair[] a;
+
+        public PlayBatch(ObjectLongPair[] a) {
+            this.a = a;
+        }
+
+        @Override
+        protected void compute() {
+
+            ForkJoinPool pool = ForkJoinTask.getPool();
+
+            for (ObjectLongPair<Pair<How, What>> aa : a) {
+
+                aa.getOne().getOne().runFor(aa.getOne().getTwo(), aa.getTwo());
+
+//                if (pool.getQueuedSubmissionCount() > pool.getParallelism()) {
+//                    ForkJoinTask.helpQuiesce();
+//                }
+            }
+        }
+
     }
 }

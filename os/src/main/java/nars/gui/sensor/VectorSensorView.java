@@ -146,10 +146,9 @@ public class VectorSensorView extends BitmapMatrixView implements BitmapMatrixVi
 
             updateTouchedConcept(finger);
 
-            if (finger.clickedNow(OPEN_CONCEPT_BUTTON, this)) {
-                TaskConcept c = this.touchConcept;
-                if (c != null)
-                    NARui.conceptWindow(c, nar);
+            TaskConcept c = this.touchConcept;
+            if (c!=null && finger.releasedNow(OPEN_CONCEPT_BUTTON) && !finger.dragging(OPEN_CONCEPT_BUTTON)) {
+                NARui.conceptWindow(c, nar);
             } else {
                 finger.tryFingering(affect);
             }

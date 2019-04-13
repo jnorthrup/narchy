@@ -56,7 +56,7 @@ public class DeriverRules {
      */
     private boolean test(Derivation d, int branch) {
         could[branch].run.test(d);
-        return d.use(Param.derive.TTL_BRANCH);
+        return d.use(Param.derive.TTL_COST_BRANCH);
     }
 
     public void run(Derivation d, short[] can) {
