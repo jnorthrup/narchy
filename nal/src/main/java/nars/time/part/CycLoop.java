@@ -18,15 +18,15 @@ import java.util.function.Consumer;
  */
 abstract public class CycLoop extends NARPart implements Consumer<NAR> {
 
-    protected final AtomicBoolean busy = new AtomicBoolean(false);
+    private final AtomicBoolean busy = new AtomicBoolean(false);
 
     private Off off = null;
 
-    protected CycLoop(Term id) {
+    CycLoop(Term id) {
         super(id);
     }
 
-    static final Atom onCycle = Atomic.atom("onCycle");
+    private static final Atom onCycle = Atomic.atom("onCycle");
 
     public static CycLoop the(Consumer<NAR> each) {
         return new LambdaCycLoop(each);
@@ -64,7 +64,7 @@ abstract public class CycLoop extends NARPart implements Consumer<NAR> {
     private static final class LambdaCycLoop extends CycLoop {
         private final Consumer<NAR> each;
 
-        public LambdaCycLoop(Consumer<NAR> each) {
+        LambdaCycLoop(Consumer<NAR> each) {
             super($.func(CycLoop.onCycle, $.identity(each)));
             this.each = each;
         }

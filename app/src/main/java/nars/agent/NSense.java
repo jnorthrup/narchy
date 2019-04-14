@@ -302,18 +302,21 @@ public interface NSense {
                 new BiPolarAction.DefaultPolarization(fair),
                 motor, nar());
 
-        Game a = (Game) this;
+        Game g = (Game) this;
 //        a.addAction(pn.pos);
 //        a.addAction(pn.neg);
 
-        NAR nar = a.nar();
-        pn.attn.parent(nar, a.attnAction);
+        NAR nar = g.nar();
 
+        //HACK until BipolarAction imjplemetns Action
+        nar.start(pn);
+        g.actions.add(pn.pos);
+        g.actions.add(pn.neg);
+        g.onFrame(aa->pn.update(g));
+        pn.attn.parent(nar, g.attnAction);
         pn.pos.attn.parent(nar, pn.attn);
         pn.neg.attn.parent(nar, pn.attn);
 
-        onFrame(x -> pn.update(a));
-        nar.start(pn); //HACK until BipolarAction imjplemetns Action
         return pn;
     }
 

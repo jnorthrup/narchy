@@ -169,7 +169,7 @@ public class Box2DGraphEditPhysics extends GraphEditPhysics {
         }));
     }
 
-    public static class PhyWindo extends PhySurface<Windo> {
+    public static final class PhyWindo extends PhySurface<Windo> {
 
         private PhyWindo(Windo surface, Body2D body) {
             super(surface, body);

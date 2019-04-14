@@ -31,7 +31,7 @@ public class VerletGraphEditPhysics extends GraphEditPhysics {
         new ConcurrentFastIteratingHashMap<>(new PhySurface[0]);
 
 
-    public static class PhySurface {
+    public static final class PhySurface {
 
         public final Surface surface;
         public final Vec2D center;

@@ -11,6 +11,7 @@ import nars.term.atom.Atomic;
 import nars.term.control.AbstractPred;
 import nars.term.control.PREDICATE;
 import nars.unify.Unify;
+import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
@@ -117,7 +118,7 @@ public abstract class UnifyConstraint<U extends Unify> extends AbstractPred<U> {
 
         @Override
         public float cost() {
-            return Util.sum((AbstractPred<U> u) -> u.cost(), cache);
+            return Util.sum((FloatFunction<AbstractPred<U>>) PREDICATE::cost, cache);
         }
 
         @Override

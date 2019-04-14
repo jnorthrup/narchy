@@ -33,6 +33,8 @@ package spacegraph.space3d.phys.math;
 
 import spacegraph.space3d.phys.BulletStats;
 
+import java.util.Objects;
+
 /**
  * A node in the Profile Hierarchy Tree.
  * 
@@ -67,7 +69,7 @@ class CProfileNode {
 		
 		CProfileNode child = this.child;
 		while (child != null) {
-			if (child.name == name) {
+			if (Objects.equals(child.name, name)) {
 				return child;
 			}
 			child = child.sibling;

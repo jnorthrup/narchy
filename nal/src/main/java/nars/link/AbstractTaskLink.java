@@ -20,7 +20,8 @@ public abstract class AbstractTaskLink implements TaskLink {
     /**
      * source,target as a 2-ary subterm
      */
-    final Term from, to;
+    private final Term from;
+    private final Term to;
     private final int hash;
     /**
      * cached; NaN means invalidated

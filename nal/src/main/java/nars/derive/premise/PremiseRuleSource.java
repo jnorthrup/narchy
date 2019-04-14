@@ -62,7 +62,7 @@ import static nars.term.control.PREDICATE.sortByCostIncreasing;
  */
 public class PremiseRuleSource extends ProxyTerm {
 
-    private static final Pattern ruleImpl = Pattern.compile("\\|\\-");
+    private static final Pattern ruleImpl = Pattern.compile("\\|-");
     public final String source;
     final Truthify truthify;
 
@@ -681,7 +681,7 @@ public class PremiseRuleSource extends ProxyTerm {
 //        int ts = t.structure() & (~Op.VAR_PATTERN.bit);
 //        pre.addAt(new TermMatchPred<>(new TermMatch.Is(to),  rr));
 //        pre.addAt(new TermMatchPred<>(new TermMatch.Has(ts, false /* all */, t.complexity()), rr));
-        pre.add(new TermMatch<>(TermMatcher.IsHas.get(t, depth), rr, depth));
+        pre.add(new TermMatch<>(TermMatcher.get(t, depth), rr, depth));
 
         int n = t.subs();
         if (!to.commutative || n == 1) {

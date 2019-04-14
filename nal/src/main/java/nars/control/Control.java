@@ -232,7 +232,7 @@ import java.util.Arrays;
         }
     }
 
-    final class TaskChannel extends CauseChannel<ITask> {
+    static final class TaskChannel extends CauseChannel<ITask> {
 
         private final short ci;
         final short[] uniqueCause;

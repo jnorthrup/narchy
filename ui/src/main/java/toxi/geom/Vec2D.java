@@ -711,7 +711,7 @@ import java.util.Random;
      * @param jy maximum y jitter
      * @return itself
      */
-    private final Vec2D jitter(float jx, float jy) {
+    private Vec2D jitter(float jx, float jy) {
         x += MathUtils.normalizedRandom() * jx;
         y += MathUtils.normalizedRandom() * jy;
         return this;
@@ -721,7 +721,7 @@ import java.util.Random;
         return j > 0 ? jitter(rnd, j, j) : this;
     }
 
-    private final Vec2D jitter(Random rnd, float jx, float jy) {
+    private Vec2D jitter(Random rnd, float jx, float jy) {
         x += MathUtils.normalizedRandom(rnd) * jx;
         y += MathUtils.normalizedRandom(rnd) * jy;
         return this;
@@ -1004,7 +1004,7 @@ import java.util.Random;
      *
      * @return itself
      */
-    private final Vec2D signum() {
+    private Vec2D signum() {
         x = (x < 0 ? -1 : x == 0 ? 0 : 1);
         y = (y < 0 ? -1 : y == 0 ? 0 : 1);
         return this;
@@ -1104,14 +1104,14 @@ import java.util.Random;
         };
     }
 
-    private final Vec2D toCartesian() {
+    private Vec2D toCartesian() {
         float xx = (float) (x * Math.cos(y));
         y = (float) (x * Math.sin(y));
         x = xx;
         return this;
     }
 
-    private final Vec2D toPolar() {
+    private Vec2D toPolar() {
         float r = (float) Math.sqrt(x * x + y * y);
         y = (float) Math.atan2(y, x);
         x = r;

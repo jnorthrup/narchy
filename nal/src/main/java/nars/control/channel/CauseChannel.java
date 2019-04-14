@@ -11,10 +11,10 @@ import java.util.List;
  */
 abstract public class CauseChannel<X extends Prioritizable>  {
 
-    public final Why why;
+    private final Why why;
     public final short id;
 
-    public CauseChannel(Why why) {
+    protected CauseChannel(Why why) {
         this.why = why;
         this.id = why.id;
     }

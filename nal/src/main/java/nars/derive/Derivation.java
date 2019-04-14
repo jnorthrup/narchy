@@ -87,7 +87,7 @@ public class Derivation extends PreDerivation {
     /** current context */
     public transient What what = null;
 
-    protected final Functor polarizeTask = new AbstractInlineFunctor1("polarizeTask") {
+    final Functor polarizeTask = new AbstractInlineFunctor1("polarizeTask") {
         @Override
         protected Term apply1(Term arg) {
             Truth t = Derivation.this.taskTruth;
@@ -104,7 +104,7 @@ public class Derivation extends PreDerivation {
         }
     };
 
-    protected final Functor polarizeBelief = new AbstractInlineFunctor1("polarizeBelief") {
+    final Functor polarizeBelief = new AbstractInlineFunctor1("polarizeBelief") {
         @Override
         protected Term apply1(Term arg) {
             Truth t = Derivation.this.beliefTruthBelief;
@@ -115,7 +115,7 @@ public class Derivation extends PreDerivation {
     };
 
     @Deprecated
-    protected final Functor polarizeFunc = new AbstractInlineFunctor2("polarize") {
+    final Functor polarizeFunc = new AbstractInlineFunctor2("polarize") {
         @Override
         protected Term apply(Term subterm, Term whichTask) {
             if (subterm instanceof Bool)
@@ -233,7 +233,7 @@ public class Derivation extends PreDerivation {
     /**
      * if using this, must setAt: nar, index, random, DerivationBudgeting
      */
-    public Derivation() {
+    private Derivation() {
         super(
                 null
                 //VAR_PATTERN
@@ -357,7 +357,7 @@ public class Derivation extends PreDerivation {
         return nextTask;
     }
 
-    protected float pri(Task t) {
+    private float pri(Task t) {
         float p = t.priElseZero();
         return
                 p;
@@ -563,7 +563,7 @@ public class Derivation extends PreDerivation {
      * include any .clear() for data structures in case of emergency we can continue to assume they will be clear on next run()
      */
 
-    public Derivation reset() {
+    private Derivation reset() {
         anon.clear();
         premiseBuffer.clear();
         timePrev = Long.MIN_VALUE;

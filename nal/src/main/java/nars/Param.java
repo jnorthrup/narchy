@@ -160,11 +160,11 @@ public abstract class Param extends Parts<Term,NAR> {
 
 
     /** how the subjective perception of objective truth changes through time */
-    public enum projection { ;
+    public enum projection {
     }
 
     /** task evidence  */
-    public enum evidence { ;
+    public enum evidence {
     }
 
     static {

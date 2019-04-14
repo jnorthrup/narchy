@@ -191,7 +191,7 @@ public class TestNAR {
 
         if (!quiet) {
             if (reportStats) {
-                logger.info("{}\n\t{} {} {}IN \ninputs", id, endTime);
+                logger.info("{}\n\t{}IN \ninputs", id, endTime);
             }
 
             for (NARCondition t : failsIfAny) {

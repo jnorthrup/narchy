@@ -95,7 +95,7 @@ public class DynamicConjTruth {
                         if (ss.subs()==2) {
                             coneg = ss.sub(0).equalsNeg(ss.sub(1));
                         } else {
-                            coneg = ((Compound)conj).dt(DTERNAL).volume() < conj.volume(); //collapses will result in reduced volume
+                            coneg = conj.dt(DTERNAL).volume() < conj.volume(); //collapses will result in reduced volume
                         }
                     }
                     if (coneg) {

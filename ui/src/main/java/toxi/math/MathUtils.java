@@ -550,13 +550,6 @@ public final class MathUtils {
         return rnd.nextFloat() * (max - min) + min;
     }
 
-    public static int random(Random rnd, int max) {
-        return rnd.nextInt((int) max);
-    }
-
-    public static int random(Random rnd, int min, int max) {
-        return rnd.nextInt((int) (max - min)) + min;
-    }
 
     public static boolean randomChance(double chance) {
         return RND.nextDouble() < chance;

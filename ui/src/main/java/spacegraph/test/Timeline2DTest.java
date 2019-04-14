@@ -66,7 +66,7 @@ public class Timeline2DTest {
         int sampleRate = 100;
         Timeline2DSequence s = new Timeline2DSequence(sampleRate, 32);
         for (int i = 0; i < 32; i++) {
-            float noise[] = new float[s.buffer.width];
+            float[] noise = new float[s.buffer.width];
             for (int j = 0; j < noise.length; j++)
                 noise[j] = ((float) Math.random() - 0.5f)*2;
             s.buffer.set(noise);

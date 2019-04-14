@@ -131,24 +131,27 @@ abstract public class NARPart extends Part<NAR> implements Termed, OffOn {
 
 
     protected final void startIn(NARPart container) {
+        logger.info("start {} -> {} {}", container.term(), term(), getClass().getName());
+        this.nar = container.nar;
         synchronized (this) {
             _state(Parts.ServiceState.OffToOn);
-            logger.info("start {} -> {} {}", container.term(), term(), getClass().getName());
-            starting(this.nar = container.nar);
+            starting(nar);
             startLocal();
             _state(Parts.ServiceState.On);
         }
     }
 
     protected final void stopIn(NARPart container) {
+        logger.info(" stop {} -> {} {}", container.term(), term(), getClass().getName());
+
         synchronized (this) {
             _state(Parts.ServiceState.OnToOff);
-            logger.info(" stop {} -> {} {}", container.term(), term(), getClass().getName());
             stopLocal();
             stopping(container.nar);
-            this.nar = null;
             _state(Parts.ServiceState.Off);
         }
+        this.nar = null;
+
     }
 
     @Override

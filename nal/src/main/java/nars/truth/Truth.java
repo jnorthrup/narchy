@@ -90,14 +90,14 @@ public interface Truth extends Truthed {
         return (freqHash << 16) | confHash;
     }
 
-    public static int truthToInt(float x) {
+    static int truthToInt(float x) {
         return Util.toInt(x, hashDiscretenessEpsilon);
     }
 
-    public static int truthToInt(float freq, float conf) {
+    static int truthToInt(float freq, float conf) {
         return truthToInt(freq, conf, hashDiscretenessEpsilon);
     }
-    public static int truthToInt(double freq, double conf) {
+    static int truthToInt(double freq, double conf) {
         return truthToInt(freq, conf, hashDiscretenessEpsilon);
     }
 

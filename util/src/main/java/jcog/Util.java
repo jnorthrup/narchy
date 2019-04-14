@@ -154,9 +154,9 @@ public enum Util {
     }
 
     public static int hash(byte[] bytes, int from, int to) {
+        return Long.hashCode(_hashFn.hashBytes(bytes, from, to - from));
+        //return hashFNV(bytes, from, to);
         //return hashBytes(bytes, from, to);
-        return hashFNV(bytes, from, to);
-        //return Long.hashCode(_hashFn.hashBytes(bytes, from, to - from));
     }
 
     public static int hash(byte[] bytes) {

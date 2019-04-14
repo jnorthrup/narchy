@@ -11,6 +11,6 @@ public class BoolPort extends TypedPort<Boolean> {
 
     public BoolPort(BooleanProcedure b) {
         this();
-        on(B-> b.value(B));
+        on(b::value);
     }
 }

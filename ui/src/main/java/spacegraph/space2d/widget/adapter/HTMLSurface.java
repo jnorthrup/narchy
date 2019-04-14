@@ -10,7 +10,7 @@ import javax.swing.text.html.HTMLFrameHyperlinkEvent;
 import java.awt.*;
 import java.io.IOException;
 
-public class HTMLSurface extends AWTSurface {
+public final class HTMLSurface extends AWTSurface {
 
     public static void main(String[] args) {
         //SpaceGraph.wall(800, 800).put(

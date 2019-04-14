@@ -115,7 +115,7 @@ abstract public class Bool extends AbstractAtomic implements The {
 
     private final String label;
 
-    protected Bool(String label, byte code) {
+    private Bool(String label, byte code) {
         super(new byte[] { BOOL.id, code } );
         this.label = label;
     }

@@ -116,7 +116,7 @@ public final class TruthFunctions {
      *
      * stronger than analogy
      */
-    static final Truth resemblance(final Truth  v1, final Truth  v2, float minConf) {
+    static Truth resemblance(final Truth  v1, final Truth  v2, float minConf) {
         final float f1 = v1.freq();
         final float f2 = v2.freq();
         final float c = and(confCompose(v1.conf(), v2.conf()), or(f1, f2));

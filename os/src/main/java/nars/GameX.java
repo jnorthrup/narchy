@@ -216,8 +216,8 @@ abstract public class GameX extends Game {
 //                        threads,
 //                        false/* affinity */)
 
-                //new ForkJoinExec()
-                new ForkJoinExec(Math.max(1, Runtime.getRuntime().availableProcessors()-1))
+                new ForkJoinExec()
+                //new ForkJoinExec(Math.max(1, Runtime.getRuntime().availableProcessors()-1))
 
 //                new SuperExec(
 //                    new Valuator.DefaultValuator(0.9f), threads <= 0 ? Util.concurrencyExcept(1) : threads

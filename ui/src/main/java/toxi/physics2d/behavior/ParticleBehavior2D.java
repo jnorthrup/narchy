@@ -59,7 +59,7 @@ import java.util.function.Consumer;
         if (p != null && supportsSpatialIndex()) {
             applyWithIndex(p.index);
         } else {
-            p.particles.forEach(this::accept);
+            p.particles.forEach(this);
         }
     }
 

@@ -336,7 +336,7 @@ public class JCTermSwingFrame extends JFrame implements ActionListener, Runnable
                 jschsession.getSession().setConfig("compression.s2c", "zlib@openssh.com,zlib,none");
                 jschsession.getSession().setConfig("compression.c2s", "zlib@openssh.com,zlib,none");
                 jschsession.getSession().setConfig("compression_level",
-                        new Integer(compression).toString());
+                        Integer.valueOf(compression).toString());
             }
             try {
                 jschsession.getSession().rekey();
@@ -467,7 +467,7 @@ public class JCTermSwingFrame extends JFrame implements ActionListener, Runnable
                         .showInputDialog(
                                 this,
                                 "Compression level(0-9)\n0 means no compression.\n1 means fast.\n9 means slow, but best.",
-                                new Integer(compression).toString());
+                                Integer.valueOf(compression).toString());
                 try {
                     if (foo != null) {
                         compression = Integer.parseInt(foo);

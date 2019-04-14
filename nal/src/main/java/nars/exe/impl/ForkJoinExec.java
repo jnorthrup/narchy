@@ -40,8 +40,8 @@ public class ForkJoinExec extends MultiExec implements Thread.UncaughtExceptionH
             int extra = 0;
 
             boolean asyncMode =
-                    //false;
-                    true;
+                    false;
+                    //true;
 
             pool = new ForkJoinPool(
                     concurrency,

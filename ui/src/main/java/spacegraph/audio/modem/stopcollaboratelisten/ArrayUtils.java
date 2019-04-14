@@ -48,8 +48,8 @@ package spacegraph.audio.modem.stopcollaboratelisten;
         //populate the result array
         int currentIndex = 0;
         for (byte[] bytes : input) {
-            for (int j = 0; j < bytes.length; j++) {
-                result[currentIndex++] = bytes[j];
+            for (byte aByte : bytes) {
+                result[currentIndex++] = aByte;
             }
         }
         return result;

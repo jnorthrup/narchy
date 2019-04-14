@@ -375,7 +375,7 @@ public class DynamicStatementTruth {
     }
 
     /** ||, truth = intersection */
-    private static class ImplSubjDisj extends AbstractInhImplSectTruth {
+    private static final class ImplSubjDisj extends AbstractInhImplSectTruth {
         private ImplSubjDisj() {
             super(false, true);
         }

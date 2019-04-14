@@ -14,7 +14,7 @@ abstract public class AbstractSectTruth extends AbstractDynamicTruth {
      */
     final boolean unionOrIntersection;
 
-    protected AbstractSectTruth(boolean unionOrIntersection) {
+    AbstractSectTruth(boolean unionOrIntersection) {
         this.unionOrIntersection = unionOrIntersection;
     }
 

@@ -13,7 +13,7 @@ import static nars.Op.*;
 public class Atom extends AbstractAtomic implements The {
 
 
-    public Atom(byte[] b) {
+    private Atom(byte[] b) {
         super(b);
     }
 

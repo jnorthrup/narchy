@@ -18,6 +18,7 @@ import nars.NAR;
 import nars.attention.PriNode;
 import nars.attention.What;
 import nars.concept.action.AgentAction;
+import nars.concept.action.BiPolarAction;
 import nars.concept.action.curiosity.Curiosity;
 import nars.concept.action.curiosity.DefaultCuriosity;
 import nars.concept.sensor.GameLoop;
@@ -215,6 +216,8 @@ public class Game extends NARPart implements NSense, NAct {
             ((Reward) s).attn.parent(nar, target);
         } else if (s instanceof AgentAction) {
             ((AgentAction) s).attn.parent(nar, target);
+        } else if (s instanceof BiPolarAction) {
+            ((BiPolarAction) s).attn.parent(nar, target);
         } else if (s instanceof PriNode)
             ((PriNode) s).parent(nar, target);
         else

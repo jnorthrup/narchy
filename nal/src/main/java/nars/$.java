@@ -882,7 +882,7 @@ public enum $ {
 
     public static Atom uuid(@Nullable String prefix) {
         String u = Util.uuid64();
-        return (Atom) $.quote(prefix!=null ? prefix + u : u);
+        return $.quote(prefix!=null ? prefix + u : u);
     }
 
 

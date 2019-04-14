@@ -91,7 +91,7 @@ public class AttractionBehavior2D<V extends Vec2D> implements ParticleBehavior2D
 
     @Override
     public void applyWithIndex(SpatialIndex<VerletParticle2D> spaceHash) {
-        spaceHash.itemsWithinRadius(attractor, radius, this::accept);
+        spaceHash.itemsWithinRadius(attractor, radius, this);
     }
 
     public void configure(float timeStep) {

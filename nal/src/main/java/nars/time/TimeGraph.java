@@ -588,7 +588,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
         Term a = _a;//.eventLast();
         Term b = _b;//.eventFirst();
 
-        Collection<Event> ab = null;
+        FasterList<Event> ab = null;
 
         Collection<Event> aa = byTerm.get(a);
         if (!aa.isEmpty())
@@ -614,10 +614,10 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
         assert (s > 0);
 
         if (s > 1) {
-            ((FasterList) ab).shuffleThis(random());
+            ab.shuffleThis(random());
 
             //then sort the Absolute events to be tried first
-            ((FasterList<Event>) ab).sortThisByBoolean(e -> !(e instanceof Absolute));
+            ab.sortThisByBoolean(e -> !(e instanceof Absolute));
         }
 
         return bfsPush(ab, new CrossTimeSolver() {
@@ -1083,7 +1083,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
             if (toTry != null) {
                 if (toTry.size() > 1)
                     toTry.shuffleThis(random());
-                return toTry.allSatisfy(z -> each.test(z));
+                return toTry.allSatisfy(each::test);
             }
 
         }

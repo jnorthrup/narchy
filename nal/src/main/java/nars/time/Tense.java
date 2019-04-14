@@ -333,7 +333,7 @@ public enum Tense {
         else if (s == TIMELESS)
             return "TIMELESS";
         else
-            return String.valueOf(s) + ".." + String.valueOf(e);
+            return s + ".." + e;
     }
 
 

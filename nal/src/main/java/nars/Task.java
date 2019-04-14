@@ -92,7 +92,7 @@ public interface Task extends Truthed, Stamp, TermedDelegate, ITask, TaskRegion,
         return a.term().equals(b.term());
     }
 
-    public static void deductComplexification(Task xx, Task yy, float factor, boolean copyOrMove) {
+    static void deductComplexification(Task xx, Task yy, float factor, boolean copyOrMove) {
         //discount pri by increase in target complexity
         float xc = xx.voluplexity(), yc = yy.voluplexity();
         float priSharePct =
@@ -101,7 +101,7 @@ public interface Task extends Truthed, Stamp, TermedDelegate, ITask, TaskRegion,
         yy.take(xx, priSharePct * factor, false, copyOrMove);
     }
 
-    public static Task negIf(Task answer, boolean negate) {
+    static Task negIf(Task answer, boolean negate) {
         return negate ? Task.negated(answer) : answer;
     }
 
@@ -173,8 +173,7 @@ public interface Task extends Truthed, Stamp, TermedDelegate, ITask, TaskRegion,
     static void proof(/*@NotNull*/Task task, int indent, /*@NotNull*/StringBuilder sb) {
 
 
-        for (int i = 0; i < indent; i++)
-            sb.append("  ");
+        sb.append("  ".repeat(Math.max(0, indent)));
         task.appendTo(sb, true);
         sb.append("\n  ");
 
@@ -236,7 +235,7 @@ public interface Task extends Truthed, Stamp, TermedDelegate, ITask, TaskRegion,
         }
 
 
-        if ((punc == Op.GOAL || punc == Op.QUEST) && !!t.hasAny(IMPL))
+        if ((punc == Op.GOAL || punc == Op.QUEST) && t.hasAny(IMPL))
             return fail(t, "Goal/Quest task target may not be Implication", safe);
 
         return !(t instanceof Compound) || validTaskCompound((Compound) t, safe);
@@ -679,7 +678,7 @@ public interface Task extends Truthed, Stamp, TermedDelegate, ITask, TaskRegion,
     @Override
     default TaskRegion mbr(HyperRegion y) {
         if (this == y) return this;
-        return TaskRegion.mbr((TaskRegion) y, (Task) this);
+        return TaskRegion.mbr((TaskRegion) y, this);
     }
 
     @Override

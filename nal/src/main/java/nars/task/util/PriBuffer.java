@@ -332,7 +332,7 @@ abstract public class PriBuffer<T extends Prioritizable> implements Consumer<T> 
 
                     int c = target.concurrency();
                     if (c <= 1 || !(target instanceof What)) {
-                        b.pop(null, n, target::accept);
+                        b.pop(null, n, target);
                     } else {
                         int remain = n;
                         int nEach = (int) Math.ceil(((float) remain) / c);

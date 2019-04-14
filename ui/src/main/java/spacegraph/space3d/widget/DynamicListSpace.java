@@ -38,7 +38,7 @@ public abstract class DynamicListSpace<X> extends AbstractSpace<X> {
 
     @Override
     public void forEach(Consumer<? super Spatial<X>> each) {
-        active.forEach(each::accept);
+        active.forEach(each);
     }
 
     @Override

@@ -214,6 +214,6 @@ abstract public class DurLoop extends NARPart {
 
     
     public static String toString(Object r) {
-        return WhenDur.class.getSimpleName() + "(" + r + ")";
+        return WhenDur.class.getSimpleName() + '(' + r + ')';
     }
 }

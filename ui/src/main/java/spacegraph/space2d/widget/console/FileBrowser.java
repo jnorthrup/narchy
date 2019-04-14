@@ -4,7 +4,7 @@ import com.googlecode.lanterna.gui2.BasicWindow;
 import com.googlecode.lanterna.gui2.dialogs.FileDialogBuilder;
 import spacegraph.SpaceGraph;
 
-public class FileBrowser extends ConsoleGUI {
+public final class FileBrowser extends ConsoleGUI {
 
     private FileBrowser(int cols, int rows) {
         super(cols, rows);

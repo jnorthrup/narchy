@@ -74,6 +74,6 @@ public interface ITask extends Prioritizable {
             ITask.logger.error("{}->{} {}", t, x, ee);
     }
 
-    static final Logger logger = Log.logger(ITask.class);
+    Logger logger = Log.logger(ITask.class);
 
 }

@@ -35,11 +35,11 @@ import java.util.stream.Stream;
     }
 
     default void acceptAll(Iterator<? extends X> xx) {
-        xx.forEachRemaining(this::accept);
+        xx.forEachRemaining(this);
     }
 
     default void acceptAll(Stream<? extends X> x) {
-        x.forEach(this::accept);
+        x.forEach(this);
     }
 
     default void acceptAll(List<? extends X> x) {

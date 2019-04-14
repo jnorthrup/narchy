@@ -41,7 +41,7 @@ import spacegraph.space2d.phys.common.Transform;
  *
  * @author Daniel
  */
-public class ChainShape extends Shape {
+public final class ChainShape extends Shape {
 
     public v2[] m_vertices;
     public int m_count;

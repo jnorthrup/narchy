@@ -98,7 +98,7 @@ public class LongOpt  {
         
         if ((has_arg != NO_ARGUMENT) && (has_arg != REQUIRED_ARGUMENT)
                 && (has_arg != OPTIONAL_ARGUMENT)) {
-            Object[] msgArgs = {new Integer(has_arg).toString()};
+            Object[] msgArgs = {Integer.valueOf(has_arg).toString()};
             throw new IllegalArgumentException(MessageFormat.format(
                     _messages.getString("getopt.invalidValue"), msgArgs));
         }

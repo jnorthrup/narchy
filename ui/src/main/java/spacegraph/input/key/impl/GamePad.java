@@ -22,7 +22,7 @@ import java.util.function.Function;
  * <p>
  * http:
  */
-public class GamePad implements Function<String, GamePad.GameInputEvent>, Runnable {
+public final class GamePad implements Function<String, GamePad.GameInputEvent>, Runnable {
 
     private final Logger logger;
     private final String device;

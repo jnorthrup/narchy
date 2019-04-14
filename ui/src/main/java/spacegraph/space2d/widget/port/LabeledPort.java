@@ -5,7 +5,7 @@ import spacegraph.space2d.widget.text.VectorLabel;
 
 import java.util.function.Function;
 
-public class LabeledPort<X> extends Port<X> {
+public final class LabeledPort<X> extends Port<X> {
     private final AbstractLabel l = new VectorLabel("?");
     private final Function<X, String> toString;
 

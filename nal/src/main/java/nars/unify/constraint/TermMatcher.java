@@ -150,7 +150,7 @@ abstract public class TermMatcher {
         private final boolean anyOrAll;
         private final int volMin;
         private final Term param;
-        private float cost;
+        private final float cost;
 
         public Has(Op op, boolean anyOrAll) {
             this(op.bit, anyOrAll, 0);

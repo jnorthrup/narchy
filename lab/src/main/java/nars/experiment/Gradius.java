@@ -11,6 +11,8 @@ import nars.agent.Reward;
 import nars.concept.sensor.DigitizedScalar;
 import nars.gui.sensor.VectorSensorView;
 import nars.sensor.Bitmap2DSensor;
+import nars.term.Term;
+import nars.term.atom.Atomic;
 import org.eclipse.collections.api.block.predicate.primitive.BooleanPredicate;
 import spacegraph.SpaceGraph;
 import spacegraph.space2d.container.grid.Gridding;
@@ -127,7 +129,7 @@ public class Gradius extends GameX {
         ).resolution(gpsRes);
 
 
-        actionToggle($$("fire"), b -> g.keys[VK_SHOOT] = b);
+        actionToggle($.inh($$("fire"), id), b -> g.keys[VK_SHOOT] = b);
 
         if (canPause) {
             actionToggle($$("pause"),
@@ -146,7 +148,7 @@ public class Gradius extends GameX {
             else
                 return Float.NaN; //return +1;
         });
-        alive.setDefault($.t(1, nar.beliefConfDefault.floatValue()*2f/3));
+        alive.setDefault($.t(1, nar.beliefConfDefault.floatValue()/4f));
 
         Reward destroy = rewardNormalized("destroy",0, 1, ()->{
 
@@ -161,7 +163,7 @@ public class Gradius extends GameX {
             //return Util.unitize(r);
             return r!=0 ? Util.unitize(r) : Float.NaN;
        });
-       destroy.setDefault($.t(0, nar.beliefConfDefault.floatValue()*2f/3));
+       destroy.setDefault($.t(0, nar.beliefConfDefault.floatValue()/4f));
 
 
     }
@@ -170,12 +172,18 @@ public class Gradius extends GameX {
 
     void initToggle() {
         //TODO boundary feedback
-        actionPushButtonMutex($$("left"), $$("right"),
+        Atomic X = $.the("x");
+        Atomic Y = $.the("y");
+        Term left =  $.func(X, id, $.the(-1));
+        Term right = $.func(X, id, $.the(+1));
+        Term up =    $.func(Y, id, $.the(+1));
+        Term down =  $.func(Y, id, $.the(-1));
+        actionPushButtonMutex(left, right,
                 (BooleanPredicate) b -> g.keys[VK_LEFT] = b,
                 (BooleanPredicate) b -> g.keys[VK_RIGHT] = b);
-        actionPushButtonMutex($$("up"), $$("down"),
-                (BooleanPredicate) b -> g.keys[VK_UP] = b,
-                (BooleanPredicate) b -> g.keys[VK_DOWN] = b);
+        actionPushButtonMutex(down, up,
+                (BooleanPredicate) b -> g.keys[VK_DOWN] = b,
+                (BooleanPredicate) b -> g.keys[VK_UP] = b);
     }
 
     void initBipolar() {

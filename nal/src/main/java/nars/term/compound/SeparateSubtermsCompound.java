@@ -15,6 +15,7 @@ import java.util.function.BiConsumer;
 import java.util.function.BiPredicate;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 import static nars.time.Tense.XTERNAL;
 
@@ -85,6 +86,7 @@ public abstract class SeparateSubtermsCompound implements Compound {
     public final Term sub(int i, Term ifOutOfBounds) {
         return subterms().sub(i, ifOutOfBounds);
     }
+
     @Override
     public final boolean subIs(int i, Op o) {
         return subterms().subIs(i, o);
@@ -103,6 +105,11 @@ public abstract class SeparateSubtermsCompound implements Compound {
     @Override
     public Iterator<Term> iterator() {
         return subterms().iterator();
+    }
+
+    @Override
+    public Stream<Term> subStream() {
+        return subterms().subStream();
     }
 
     @Override

@@ -5,7 +5,7 @@ import org.jetbrains.annotations.Nullable;
 
 import static nars.time.Tense.ETERNAL;
 
-public class ConjDiff extends Conj {
+public final class ConjDiff extends Conj {
     private final Conj exc;
     private final boolean invert;
     private final long[] excludeEvents;

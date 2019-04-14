@@ -76,10 +76,11 @@ public class AudioSource implements DigitizedSignal {
     }
 
     public final AudioSource start() {
+        logger.info("start {} {}", this, dataLineInfo);
+
         synchronized (this) {
             try {
 
-                logger.info("start {} {}", this, dataLineInfo);
 
                 line = (TargetDataLine) AudioSystem.getLine(dataLineInfo);
 
@@ -106,11 +107,12 @@ public class AudioSource implements DigitizedSignal {
     }
 
     public void stop() {
+        logger.info("stopped {} {}", this, dataLineInfo);
+
         synchronized (this) {
             if (line != null) {
                 line.close();
                 line = null;
-                logger.info("stopped {} {}", this, dataLineInfo);
             }
         }
     }

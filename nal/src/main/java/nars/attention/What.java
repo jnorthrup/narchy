@@ -262,12 +262,12 @@ abstract public class What extends NARPart implements Prioritizable, Sampler<Tas
         }
 
         @Override
-        public final void writeExternal(ObjectOutput objectOutput) throws IOException {
+        public final void writeExternal(ObjectOutput objectOutput) {
             throw new TODO();
         }
 
         @Override
-        public final void readExternal(ObjectInput objectInput) throws IOException, ClassNotFoundException {
+        public final void readExternal(ObjectInput objectInput) {
             throw new TODO();
         }
     }
