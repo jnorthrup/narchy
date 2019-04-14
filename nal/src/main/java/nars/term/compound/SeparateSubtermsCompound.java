@@ -124,8 +124,8 @@ public abstract class SeparateSubtermsCompound implements Compound {
         subterms().forEach(action, start, stop);
     }
     @Override
-    public final void forEachWith(ObjectIntProcedure<Term> t) {
-        subterms().forEachWith(t);
+    public final void forEachI(ObjectIntProcedure<Term> t) {
+        subterms().forEachI(t);
     }
 
     @Override

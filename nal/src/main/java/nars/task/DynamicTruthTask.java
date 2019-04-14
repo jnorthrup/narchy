@@ -12,8 +12,7 @@ import nars.util.Timed;
 import org.eclipse.collections.api.tuple.primitive.ObjectBooleanPair;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Random;
-import java.util.function.Function;
+import java.util.function.Supplier;
 
 import static nars.Op.*;
 
@@ -26,10 +25,10 @@ public class DynamicTruthTask extends UnevaluatedTask /*NALTask*/ {
     }
 
     @Nullable
-    public static NALTask task(Term content, Truth t, Function<Random, long[]> stamp, boolean beliefOrGoal, long start, long end, NAR nar) {
-        if (content.op() == NEG) {
+    public static NALTask task(Term content, Truth t, Supplier<long[]> stamp, boolean beliefOrGoal, long start, long end, NAR nar) {
+        boolean neg = content.op() == NEG;
+        if (neg) {
             content = content.unneg();
-            t = t.neg();
         }
 
         ObjectBooleanPair<Term> r = Task.tryContent(
@@ -38,9 +37,9 @@ public class DynamicTruthTask extends UnevaluatedTask /*NALTask*/ {
 
         return r!=null ? new DynamicTruthTask(
                 r.getOne(), beliefOrGoal,
-                t.negIf(r.getTwo()),
+                t.negIf(neg ^ r.getTwo()),
                 nar, start, end,
-                stamp.apply(nar.random())) : null;
+                stamp.get()) : null;
     }
 
     @Override

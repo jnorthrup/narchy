@@ -811,14 +811,9 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
     }
 
     private void store(K key, V value, int hash, Segment seg) {
-        Node r;
         Node[] tab = seg.getTableForAdd(this);
         int i = hash & (tab.length - 1);
-        r = factory.newNode(hash, key, value, this, tab[i]);
-
-
-        storeNode(tab, i, r, seg);
-
+        storeNode(tab, i, factory.newNode(hash, key, value, this, tab[i]), seg);
     }
 
     /**

@@ -125,6 +125,9 @@ public abstract class Param extends Parts<Term,NAR> {
     public static final boolean DYNAMIC_TRUTH_TASK_TIME_DITHERING = false;
     /** should be enough to account for an expected evidence integration error rate */
     public static final float PROJECTION_EVIDENCE_INFLATION_PCT_TOLERANCE = 0.1f;
+
+    public static final int DYN_TASK_MATCH_MODE = 1;
+
     protected static final boolean DYNAMIC_CONCEPT_TRANSIENT = false;
 
     public static final int WHATS_CAPACITY = 128;
@@ -150,8 +153,8 @@ public abstract class Param extends Parts<Term,NAR> {
         public static final double TRUTH_EVI_MIN =
                             //c2wSafe(TRUTH_EPSILON);
                             //ScalarValue.EPSILON;
-                            Float.MIN_NORMAL;
-                            //Double.MIN_NORMAL;
+                            //Float.MIN_NORMAL;
+                            Double.MIN_NORMAL;
     }
 
 

@@ -62,10 +62,10 @@ public interface TermIO {
     class DefaultTermIO implements TermIO {
 
         /** lower 5 bits (bits 0..4) = base op */
-        public static final byte OP_MASK = (0b00011111);
+        static final byte OP_MASK = (0b00011111);
         /** upper control flags for the op byte */
-        protected static final byte TEMPORAL_BIT_0 = 1 << 5;
-        protected static final byte TEMPORAL_BIT_1 = 1 << 6;
+        static final byte TEMPORAL_BIT_0 = 1 << 5;
+        static final byte TEMPORAL_BIT_1 = 1 << 6;
 
         //static { assert(TEMPORAL_BIT_0 == OP_MASK + 1); }
         static { assert(Op.values().length < OP_MASK); }
@@ -172,24 +172,19 @@ public interface TermIO {
 
         public void writeCompoundPrefix(Op o, int dt, ByteArrayDataOutput out) {
 
-            boolean temporal = o.temporal && dt != DTERNAL;
-
-            if (!temporal) {
-                out.writeByte(o.id);
-            } else {
-                byte opByte = o.id;
-                boolean dtSpecial = false;
+            byte opByte = o.id;
+            boolean dtSpecial = false;
+            if (dt != DTERNAL && o.temporal) {
                 switch (dt) {
                     case DTERNAL: /* nothing */ break;
                     case XTERNAL: opByte |= TEMPORAL_BIT_0; break;
                     case 0: opByte |= TEMPORAL_BIT_0 | TEMPORAL_BIT_1; break;
                     default: opByte |= TEMPORAL_BIT_0 | TEMPORAL_BIT_1; dtSpecial = true; break;
                 }
-                out.writeByte(opByte);
-                if (dtSpecial)
-                    writeDT(dt, out);
             }
-
+            out.writeByte(opByte);
+            if (dtSpecial)
+                writeDT(dt, out);
         }
 
         protected void writeDT(int dt, ByteArrayDataOutput out) {
@@ -233,10 +228,8 @@ public interface TermIO {
                     write(termPos(s), out);
                 }
             } else {
-                int n = tt.subs();
-                out.writeByte(n);
-                for (int i = 0; i < n; i++)
-                    write(tt.sub(i), out);
+                out.writeByte(tt.subs());
+                tt.forEachWith(this::write, out);
             }
         }
     }
@@ -245,8 +238,7 @@ public interface TermIO {
      * destructive
      */
     class DeferredTemporalTermIO extends DefaultTermIO {
-        @Nullable
-        public IntArrayList dts = null;
+        @Nullable IntArrayList dts = null;
 
         @Override
         protected void writeDT(int dt, ByteArrayDataOutput out) {
@@ -260,28 +252,29 @@ public interface TermIO {
          * canonical heuristic
          */
         public void writeDTs(int dtDither, ByteArrayDataOutput out) {
-            if (dts == null)
+            IntArrayList d = this.dts;
+            if (d == null)
                 return;
-            int n = dts.size();
+            int n = d.size();
             if (n == 1) {
                 //only one: canonicalize to either 0 or +/- dtDither
-                int x = dts.get(0);
-                dts.set(0, ditherUniform(dtDither, x));
+                int x = d.get(0);
+                d.set(0, ditherUniform(dtDither, x));
             } else {
                 boolean same = true;
                 for (int i = 0; i < n - 1; i++) {
-                    int a = dts.get(i);
-                    int b = dts.get(i + 1);
+                    int a = d.get(i);
+                    int b = d.get(i + 1);
                     if (a != b) {
                         same = false;
                         break;
                     }
                 }
                 if (same) {
-                    int x = dts.get(0);
+                    int x = d.get(0);
                         int y = ditherUniform(dtDither, x);
                         for (int i = 0; i < n; i++) {
-                            dts.set(i, y);
+                            d.set(i, y);
                         }
 
                 } else {
@@ -291,10 +284,10 @@ public interface TermIO {
             }
 
             for (int i = 0; i < n; i++)
-                super.writeDT(dts.get(i), out);
+                super.writeDT(d.get(i), out);
         }
 
-        public static int ditherUniform(int dtDither, int x) {
+        static int ditherUniform(int dtDither, int x) {
             int y = Tense.dither(x, dtDither);
             if (y != 0)
                 y = y > 0 ? dtDither : -dtDither; //destroying most of the the temporal data in canonicalization

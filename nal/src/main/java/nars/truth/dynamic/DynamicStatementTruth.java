@@ -117,7 +117,11 @@ public class DynamicStatementTruth {
 
             int innerDT;
             if (superDT == DTERNAL || superDT == XTERNAL) {
-                innerDT = s != ETERNAL ? 0 : DTERNAL;
+                Term cu = common.unneg();
+                if (cu.equalsPosOrNeg(what) || cu.containsPosOrNeg(what))
+                    innerDT = XTERNAL; //force XTERNAL since 0 or DTERNAL will collapse
+                else
+                    innerDT = s != ETERNAL ? 0 : DTERNAL;
             } else {
                 if (s == start && e - s >= decRange)
                     innerDT = DTERNAL; //eternal component
@@ -145,7 +149,7 @@ public class DynamicStatementTruth {
         }
 
         @Override
-        public boolean acceptComponent(Compound superTerm, Term componentTerm, Task componentTask) {
+        public boolean acceptComponent(Compound superTerm, Task componentTask) {
             return componentTask.op() == superTerm.op();
         }
 

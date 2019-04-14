@@ -30,7 +30,6 @@ import nars.The;
 import nars.io.TermAppender;
 import nars.subterm.Subterms;
 import nars.term.anon.Anon;
-import nars.term.atom.Bool;
 import nars.term.compound.UnitCompound;
 import nars.term.util.TermException;
 import nars.term.util.builder.TermBuilder;
@@ -587,8 +586,8 @@ public interface Compound extends Term, IPair, Subterms {
                                 //combine the component with the eternal factor
                                 Term distributed = CONJ.the(w, what, factor);
 
-                                if (distributed instanceof Bool)
-                                    throw new TermException("invalid conjunction factorization", this);
+                                if (distributed.op()!=CONJ)
+                                    throw new TermException("invalid conjunction factorization", Compound.this);
 
 //                                    assert (!(distributed instanceof Bool));
                                 return each.accept(when, distributed);
@@ -637,21 +636,21 @@ public interface Compound extends Term, IPair, Subterms {
                 fwd = true;
             }
 
-            int s = ee.subs();
-            for (int i = 0; i < s; i++) {
-                Term ei = ee.sub(fwd ? i : (s - 1) - i);
+            int s = ee.subs() - 1;
+            for (int i = 0; i <= s; i++) {
+                Term ei = ee.sub(fwd ? i : s - i);
                 if (!ei.eventsWhile(each, t, decomposeConjParallel, decomposeConjDTernal, decomposeXternal))
                     return false;
 
-                if (changeDT && i < s - 1)
+                if (changeDT && i < s)
                     t += dt + ei.eventRange();
             }
 
 
             return true;
+        } else {
+            return each.accept(offset, this);
         }
-
-        return each.accept(offset, this);
     }
 
 

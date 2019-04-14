@@ -187,11 +187,16 @@ public interface Termlike {
     default /* final */boolean containsRecursively(Term t, Predicate<Term> inSubtermsOf) {
         return !impossibleSubTerm(t) && containsRecursively(t, false, inSubtermsOf);
     }
+
+    default boolean containsPosOrNeg(Term x) {
+        return contains(x) || containsNeg(x);
+    }
+
     default boolean containsNeg(Term x) {
         if (x.op() == NEG)
             return contains(x.unneg());
         else {
-            return !(this instanceof TermMetadata && !(!impossibleSubTerm(x) && hasAny(NEG)))
+            return !(this instanceof TermMetadata && !(hasAny(NEG) && !impossibleSubTerm(x)))
                     &&
                     contains(x.neg());
         }

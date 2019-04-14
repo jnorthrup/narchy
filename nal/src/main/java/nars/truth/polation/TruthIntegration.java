@@ -43,21 +43,23 @@ public class TruthIntegration {
         } else {
             //range question
             long tStart = t.start();
+            double evi = t.evi();
             if (tStart == ETERNAL) {
                 //eternal task
                 long range = (qEnd - qStart + 1);
-                return t.evi() * range;
+                return evi * range;
             } else {
                 //temporal task
-                return eviIntegrate(t, qStart, qEnd, dur, tStart);
+                long tEnd = t.end();
+                return eviIntegrate(
+                        EvidenceEvaluator.of(tStart, tEnd, evi, dur),
+                        qStart, qEnd, tStart, tEnd);
             }
         }
     }
 
-    protected static double eviIntegrate(Task t, long qStart, long qEnd, int dur, long tStart) {
-        long tEnd = t.end();
+    private static double eviIntegrate(EvidenceEvaluator ee, long qStart, long qEnd, long tStart, long tEnd) {
 
-        EvidenceEvaluator ee = EvidenceEvaluator.of(t, dur);
 
         if (tStart <= qStart && tEnd >= qEnd) {
 

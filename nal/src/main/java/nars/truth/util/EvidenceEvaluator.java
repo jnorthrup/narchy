@@ -81,7 +81,7 @@ public abstract class EvidenceEvaluator implements LongToDoubleFunction /* time 
     }
 
     static final class TemporalSpanEvidenceEvaluator extends TemporalPointEvidenceEvaluator {
-        final long e;
+        public final long e;
 
         public TemporalSpanEvidenceEvaluator(long s, long e, double evi, int dur) {
             super(s, evi, dur);
@@ -125,13 +125,16 @@ public abstract class EvidenceEvaluator implements LongToDoubleFunction /* time 
         if (s == ETERNAL)
             return new EternalEvidenceEvaluator(ee);
         else {
-            long e = t.end();
-            return s == e ?
-                    new TemporalPointEvidenceEvaluator(s, ee, dur) :
-                    new TemporalSpanEvidenceEvaluator(s, e, ee, dur);
+            return of(s, t.end(), ee, dur);
         }
     }
 
+
+    public static EvidenceEvaluator of(long s, long e, double evi, int dur) {
+        return s == e ?
+                new TemporalPointEvidenceEvaluator(s, evi, dur) :
+                new TemporalSpanEvidenceEvaluator(s, e, evi, dur);
+    }
 
 
 }

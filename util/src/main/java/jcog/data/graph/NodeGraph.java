@@ -168,16 +168,12 @@ public abstract class NodeGraph<N, E> /* TODO merge with guava Graph: implements
 
         @Override
         public Iterable<FromTo<Node<N, E>, E>> edges(boolean in, boolean out) {
-            if (out && !in) return this.out;
-            else if (!out && in) return this.in;
-            else {
-                boolean ie = this.in.isEmpty();
-                boolean oe = this.out.isEmpty();
-                if (ie && oe) return List.of();
-                if (ie) return this.out;
-                if (oe) return this.in;
-                return Iterables.concat(this.out, this.in);
-            }
+            boolean ie = !in || this.in.isEmpty();
+            boolean oe = !out || this.out.isEmpty();
+            if (ie && oe) return List.of();
+            else if (ie) return this.out;
+            else if (oe) return this.in;
+            else return Iterables.concat(this.out, this.in);
         }
 
         final int ins() {

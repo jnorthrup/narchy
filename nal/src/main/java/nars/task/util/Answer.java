@@ -46,7 +46,7 @@ public final class Answer {
     public final RankedN<Task> tasks;
     public TimeRangeFilter time;
     public final Predicate<Task> filter;
-    private final FloatRank<Task> rank;
+
     public boolean ditherTruth = false;
 
     /**
@@ -72,7 +72,7 @@ public final class Answer {
     private Answer(FloatRank<Task> rank, @Nullable Predicate<Task> filter, int capacity, NAR nar) {
         this.nar = nar;
         this.tasks = //TopN.pooled(topTasks, capacity, this.rank = rank.filter(filter));
-                new RankedN<>(new Task[capacity], this.rank = rank.filter(filter));
+                new RankedN<>(new Task[capacity], rank.filter(filter));
         this.filter = filter;
     }
 
@@ -159,10 +159,6 @@ public final class Answer {
         }
     }
 
-    public FloatRank<Task> rank() {
-        return rank;
-    }
-
 
     /**
      * for belief or goals (not questions / quests
@@ -174,7 +170,7 @@ public final class Answer {
         return new Answer(r, filter, capacity, nar)
                 .time(start, end)
                 .template(template)
-                .clear(Math.round(Param.ANSWER_COMPLETENESS * capacity));
+                .clear((int) Math.ceil(Param.ANSWER_COMPLETENESS * capacity));
     }
 
 
@@ -436,7 +432,7 @@ public final class Answer {
             else
                 return only; //as-is
         } else {
-            return tp.list().merge(tp.term, tt, tp::stamper, beliefOrGoal, tp.start(), tp.end(), nar);
+            return tp.list().merge(tp.term, tt, tp.stamper(nar::random), beliefOrGoal, tp.start(), tp.end(), nar);
         }
     }
 

@@ -27,6 +27,7 @@ import java.util.Collection;
 import java.util.Random;
 import java.util.function.Consumer;
 import java.util.function.IntPredicate;
+import java.util.function.Supplier;
 
 import static nars.term.atom.Bool.Null;
 import static nars.term.util.Intermpolate.dtDiff;
@@ -515,15 +516,15 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
         forEach(TaskComponent::invalidate);
     }
 
-    public long[] stamper(Random rng) {
+    public Supplier<long[]> stamper(Supplier<Random> rng) {
         @Nullable MetalLongSet s = Stamp.toMutableSet(
                 Param.STAMP_CAPACITY,
                 i -> get(i).task.stamp(),
                 size()); //calculate stamp after filtering and after intermpolation filtering
         if (s.size() > Param.STAMP_CAPACITY) {
-            return Stamp.sample(Param.STAMP_CAPACITY, s, rng);
+            return ()->Stamp.sample(Param.STAMP_CAPACITY, s, rng.get());
         } else {
-            return s.toSortedArray();
+            return s::toSortedArray;
         }
     }
 

@@ -17,8 +17,7 @@ import nars.truth.Truth;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
-import java.util.Random;
-import java.util.function.Function;
+import java.util.function.Supplier;
 
 /**
  * A List of Task's which can be used for various purposes, including dynamic truth and evidence calculations (as utility methods)
@@ -111,7 +110,7 @@ public class TaskList extends FasterList<Task> implements TaskRegion {
     }
 
 
-    public final Task merge(Term content, Truth t, Function<Random,long[]> stamp, boolean beliefOrGoal, long start, long end, NAR nar) {
+    public final Task merge(Term content, Truth t, Supplier<long[]> stamp, boolean beliefOrGoal, long start, long end, NAR nar) {
 
         NALTask dyn = DynamicTruthTask.task(content, t, stamp, beliefOrGoal, start, end, nar);
         if(dyn==null)

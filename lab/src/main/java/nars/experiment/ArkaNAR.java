@@ -28,7 +28,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 /** NARkanoid */
 public class ArkaNAR extends GameX {
 
-    static boolean numeric = true;
+    static boolean numeric = false;
     static boolean cam = true;
     static float fps = 25f;
 

@@ -670,23 +670,19 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
 
     @Deprecated
     static Term diffAll(Term include, Term exclude) {
-//        if (exclude.op() != CONJ)
-//            return without(include, exclude, false);
-//
 
         boolean eSeq = Conj.isSeq(exclude);
         Subterms ii = include.subterms();
         if (!eSeq && !Conj.isSeq(include)) {
 
             Subterms es = exclude.subterms();
-            Subterms is = ii;
-            MetalBitSet iei = is.subsTrue(i -> !es.contains(i));
+            MetalBitSet iei = ii.subsTrue(i -> !es.contains(i));
             int in = iei.cardinality();
             if (in < include.subs()) {
                 if (in == 1)
-                    return is.sub(iei.first(true));
+                    return ii.sub(iei.first(true));
                 else
-                    return terms.conj(include.dt(), is.subsIncluding(iei));
+                    return terms.conj(include.dt(), ii.subsIncluding(iei));
             } else {
                 return include; //no change
             }

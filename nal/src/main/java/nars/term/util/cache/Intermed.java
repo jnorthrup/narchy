@@ -16,7 +16,7 @@ public enum Intermed  { ;
         public final byte op;
         public final int dt;
 
-        public InternedCompoundByComponents(Op o, int dt) {
+        InternedCompoundByComponents(Op o, int dt) {
             super();
             this.op = o.id; this.dt = dt;
             TermIO.the.writeCompoundPrefix(o, dt, key);

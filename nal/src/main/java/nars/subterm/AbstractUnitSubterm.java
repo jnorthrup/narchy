@@ -75,8 +75,8 @@ abstract class AbstractUnitSubterm implements Subterms {
     }
 
     @Override
-    public final void forEachWith(ObjectIntProcedure<Term> t) {
-        t.accept(sub(), 0);
+    public final void forEachI(ObjectIntProcedure<Term> t) {
+        t.value(sub(), 0);
     }
 
     @Override

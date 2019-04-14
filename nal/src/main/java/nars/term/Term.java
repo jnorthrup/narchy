@@ -642,6 +642,10 @@ public interface Term extends Termlike, Termed, Comparable<Term> {
 
     boolean equalsRoot(Term x);
 
+    default boolean equalsPosOrNeg(Term t) {
+        return equals(t) || equalsNeg(t);
+    }
+
     default boolean equalsNeg(Term t) {
         if (this == t) {
             return false;

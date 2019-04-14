@@ -147,23 +147,20 @@ public enum Util {
     }
 
 
+    static final LongHashFunction _hashFn = LongHashFunction.xx();
+
     public static int hash(long[] longs) {
         return Long.hashCode(_hashFn.hashLongs(longs));
     }
 
-    static final LongHashFunction _hashFn = LongHashFunction.xx();
-
     public static int hash(byte[] bytes, int from, int to) {
         //return hashBytes(bytes, from, to);
-        //return hashFNV(bytes, from, to);
-        long hash = _hashFn.hashBytes(bytes, from, to - from);
-        return Long.hashCode(hash);
+        return hashFNV(bytes, from, to);
+        //return Long.hashCode(_hashFn.hashBytes(bytes, from, to - from));
     }
-    public static int hash(byte[] bytes) {
-        //return hash(bytes, 0, bytes.length);
-        long hash = _hashFn.hashBytes(bytes);
-        return Long.hashCode(hash);
 
+    public static int hash(byte[] bytes) {
+        return hash(bytes, 0, bytes.length);
     }
 
 
@@ -194,14 +191,6 @@ public enum Util {
         return h;
     }
 
-
-//    public static long hash64(byte[] bytes) {
-//        return hash64(bytes, 0, bytes.length);
-//    }
-//
-//    public static long hash64(byte[] bytes, int from, int to) {
-//        return Util.hashELF(bytes, 1, from, to);
-//    }
 
     public static void assertNotNull(Object test, String varName) {
         if (test == null) {

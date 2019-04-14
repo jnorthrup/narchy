@@ -1,7 +1,6 @@
 package nars.truth.dynamic;
 
 import jcog.Paper;
-import jcog.TODO;
 import jcog.Util;
 import jcog.WTF;
 import jcog.data.set.MetalLongSet;
@@ -16,6 +15,7 @@ import nars.table.BeliefTable;
 import nars.task.util.Answer;
 import nars.term.Compound;
 import nars.term.Term;
+import nars.term.util.TermException;
 import nars.time.Tense;
 import nars.time.event.WhenTimeIs;
 import nars.truth.Stamp;
@@ -23,6 +23,7 @@ import nars.truth.Truth;
 
 import java.util.Random;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 import static nars.Op.*;
 import static nars.time.Tense.XTERNAL;
@@ -137,10 +138,10 @@ public class DynTaskify extends TaskList {
             long ss = s + shift, ee = e + shift;
             if (xStart != ss || x.end() != ee) {
                 Task tt = Task.project(x, ss, ee,
-                        0, /* use no evidence threshold while accumulating sub-evidence */
+                        Param.truth.TRUTH_EVI_MIN, //minimal truth threshold for accumulating evidence
                         false,
                         Param.DYNAMIC_TRUTH_TASK_TIME_DITHERING,
-                        a.nar);
+                        nar);
                 if (tt == null)
                     return null;
                 setFast(i, tt);
@@ -159,20 +160,19 @@ public class DynTaskify extends TaskList {
         boolean internalOrExternal = !a.ditherTruth;
         if (!internalOrExternal) {
             //dither and limit truth
-            t = t.dither(a.nar);
+            t = t.dither(nar);
             if (t == null)
                 return null;
 
             //dither time
             if (s!= LongInterval.ETERNAL) {
-                int dtDither = a.nar.dtDither();
+                int dtDither = nar.dtDither();
                 s = Tense.dither(s, dtDither);
                 e = Tense.dither(e, dtDither);
             }
         }
 
-        Task y = merge(term1, t, this::stamp, beliefOrGoal, s, e, nar);
-        return y;
+        return merge(term1, t, ()->stamp(nar::random), beliefOrGoal, s, e, nar);
     }
 
 
@@ -194,41 +194,37 @@ public class DynTaskify extends TaskList {
             subTerm = subTerm.unneg();
             so = subTerm.op();
         }
-        if (!so.taskable)
+        if (!so.taskable || !subTerm.isNormalized()) {
+            if (Param.DEBUG)
+                throw new TermException("unnormalized subterm in supposed dynamic super-compound", subTerm);
             return false;
+        }
 
         NAR nar = answer.nar;
-
-        Term st;
-        if (!subTerm.isNormalized()) {
-            if (Param.DEBUG) {
-                throw new TODO("unnormalize the result for inclusion in the super-compound");
-                //st = subTerm.normalize();
-            }
-            //HACK
-            return false;
-
-        } else
-            st = subTerm;
-        Concept subConcept = nar.conceptualizeDynamic(st);
+        Concept subConcept = nar.conceptualizeDynamic(subTerm);
         if (!(subConcept instanceof TaskConcept))
             return false;
 
 
         BeliefTable table = (BeliefTable) subConcept.table(beliefOrGoal ? BELIEF : GOAL);
-        Task bt =
-                //table.answer(subStart, subEnd, subTerm, filter, nar);
-                //table.match(subStart, subEnd, subTerm, filter, dur, nar);
-                table.sample(WhenTimeIs.range(subStart, subEnd, this.answer), subTerm, filter);
+        Task bt;
+        switch (Param.DYN_TASK_MATCH_MODE) {
+            case 0:
+                bt = table.matchExact(subStart, subEnd, subTerm, filter, dur, nar);
+                break;
+            case 1:
+                bt = table.match(subStart, subEnd, subTerm, filter, dur, nar);
+                break;
+            case 2:
+                bt = table.sample(WhenTimeIs.range(subStart, subEnd, answer), subTerm, filter);
+                break;
+            default:
+                throw new UnsupportedOperationException();
+        }
 
-        if (bt == null || !model.acceptComponent((Compound) template(), bt.term(), bt))
-            return false;
-
-        /* project to a specific time, and apply negation if necessary */
-        //bt = Task.project(bt, subStart, subEnd, negated, forceProjection, false, nar);
-        bt = negated ? Task.negated(bt) : bt;
-
-        return bt != null && add(bt);
+        return bt != null &&
+               model.acceptComponent((Compound) template(), bt) &&
+               add(negated ? Task.negated(bt) : bt);
     }
 
 
@@ -237,7 +233,6 @@ public class DynTaskify extends TaskList {
     public boolean add(Task x) {
 
         super.add(x);
-
 
         if (evi == null) {
             switch (size) {
@@ -310,7 +305,7 @@ public class DynTaskify extends TaskList {
 
 
 
-    public long[] stamp(Random rng) {
+    public long[] stamp(Supplier<Random> rng) {
         if (evi == null) {
 
             switch(size) {
@@ -319,13 +314,13 @@ public class DynTaskify extends TaskList {
                 case 2:
                     //lazy calculated stamp
                     long[] a = get(0).stamp(), b = get(1).stamp();
-                    return Stamp.sample(Param.STAMP_CAPACITY, Stamp.toSet(a.length + b.length, a, b), rng);
+                    return Stamp.sample(Param.STAMP_CAPACITY, Stamp.toSet(a.length + b.length, a, b), rng.get());
                 case 0:
                 default:
                     throw new UnsupportedOperationException();
             }
         } else {
-            return Stamp.sample(Param.STAMP_CAPACITY, this.evi, rng);
+            return Stamp.sample(Param.STAMP_CAPACITY, this.evi, rng.get());
         }
     }
 

@@ -260,7 +260,7 @@ public enum TermAppender { ;
         w.append(Op.COMPOUND_TERM_OPENER);
 
 
-        argsProduct.forEachWith((t, n) -> {
+        argsProduct.forEachI((t, n) -> {
             try {
                 if (n != 0)
                     w.append(Op.ARGUMENT_SEPARATOR);

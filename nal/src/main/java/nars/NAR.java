@@ -1543,26 +1543,27 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
             return x;
 
         Term ct = concept.term();
+        if (ct instanceof Compound) {
+            if (ct.volume() > termVolumeMax.intValue())
+                return null; //too complex to analyze for dynamic
 
-        if (ct.volume() > termVolumeMax.intValue())
-            return null; //too complex to analyze for dynamic
+            if (ConceptBuilder.dynamicModel((Compound) ct) != null) { //HACK
+                //try conceptualizing the dynamic
 
-        if (ct instanceof Compound && ConceptBuilder.dynamicModel((Compound) ct) != null) {
-            //try conceptualizing the dynamic
+                if (Param.DYNAMIC_CONCEPT_TRANSIENT) {
 
-            if (Param.DYNAMIC_CONCEPT_TRANSIENT) {
+                    //create temporary dynamic concept
+                    Concept c = conceptBuilder.construct(ct);
+                    if (c != null)
+                        c.delete(this); //flyweight start deleted and unallocated (in-capacit-ated) since it isnt actually in memory
 
-                //create temporary dynamic concept
-                Concept c = conceptBuilder.construct(ct);
-                if (c != null)
-                    c.delete(this); //flyweight start deleted and unallocated (in-capacit-ated) since it isnt actually in memory
+                    return c;
+                } else {
+                    //permanent dynamic concept
+                    return conceptualize(concept);
+                }
 
-                return c;
-            } else {
-                //permanent dynamic concept
-                return conceptualize(concept);
             }
-
         }
 
         return null;

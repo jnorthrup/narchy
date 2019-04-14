@@ -35,7 +35,7 @@ abstract public class AbstractDynamicTruth {
     /**
      * allow filtering of resolved Tasks
      */
-    public boolean acceptComponent(Compound superTerm, Term componentTerm, Task componentTask) {
+    public boolean acceptComponent(Compound superTerm, Task componentTask) {
         return true;
     }
 

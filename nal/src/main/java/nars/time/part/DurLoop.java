@@ -17,8 +17,6 @@ import org.eclipse.collections.impl.tuple.Tuples;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 
-import static nars.time.Tense.TIMELESS;
-
 /**
  * a part that executes a given procedure once every N durations (approximate)
  * N is an adjustable duration factor (float, so fractional values are ok)
@@ -171,17 +169,16 @@ abstract public class DurLoop extends NARPart {
 
         @Override
         public void accept(NAR nar) {
+
+            if (nar == null || !isOn())
+                return; //cancelled between previous iteration and this iteration
+            assert(nar == DurLoop.this.nar);
+
             if (!busy.compareAndSet(false, true))
                 throw new WTF(); //return false;
 
-            long atStart = TIMELESS;
+            long atStart = nar.time();
             try {
-                if (nar == null || !isOn())
-                    return; //cancelled between previous iteration and this iteration
-
-                assert(nar == DurLoop.this.nar);
-
-                atStart = nar.time();
 
                 long lastStarted = this.lastStarted;
                 if (lastStarted == Long.MIN_VALUE)
@@ -191,19 +188,15 @@ abstract public class DurLoop extends NARPart {
 
                 long delta = atStart - lastStarted;
 
-//                try {
-                    DurLoop.this.run(nar, delta);
-//                } catch (Throwable t) {
-//                    logger.error("{} {}", this, t);
-//                }
-
+                DurLoop.this.run(nar, delta);
 
             } finally {
                 //TODO catch Exception, option for auto-stop on exception
 
                 NAR n = DurLoop.this.nar;
                 if (n!=null && DurLoop.this.isOn()) {
-                    scheduleNext(durCycles(), atStart, n);
+                    this.nextStart = scheduleNext(durCycles(), atStart, nar.time());
+                    nar.runAt(this);
                 }
 
                 busy.set(false);

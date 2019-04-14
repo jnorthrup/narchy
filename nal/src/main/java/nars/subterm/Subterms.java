@@ -154,10 +154,10 @@ public interface Subterms extends Termlike, Iterable<Term> {
 //        return null;
 //    }
 
-    default void forEachWith(ObjectIntProcedure<Term> t) {
+    default void forEachI(ObjectIntProcedure<Term> t) {
         int s = subs();
         for (int i = 0; i < s; i++)
-            t.accept(sub(i), i);
+            t.value(sub(i), i);
     }
 
     default <X> void forEachWith(BiConsumer<Term, X> t, X argConst) {
@@ -931,10 +931,10 @@ public interface Subterms extends Termlike, Iterable<Term> {
     default MetalBitSet subsTrue(Predicate<Term> match) {
         int n = subs();
         MetalBitSet m = MetalBitSet.bits(n);
-        forEachWith((x,i)->{
-            if (match.test(x))
+        for (int i = 0; i < n; i++) {
+            if (match.test(sub(i)))
                 m.set(i);
-        });
+        }
         return m;
     }
 

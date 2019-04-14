@@ -212,9 +212,11 @@ class DynamicConjTest {
         Task ay = n.belief($$("a:y"));
         assertTrue(ay.freq() < 0.5f);
 
-        Task bb = n.belief(n.conceptualize($("(&&, a:x, a:y, a:z)")), n.time());
-        Truth now2 = bb.truth();
-        assertTrue(now2.freq() < 0.4f);
+        for (int i = 0; i < 4; i++) {
+            Task y = n.belief(n.conceptualize($("(&&, a:x, a:y, a:z)")), n.time());
+            Truth yt = y.truth();
+            assertTrue(yt.freq() < 0.4f, () -> y.proof());
+        }
 
     }
 

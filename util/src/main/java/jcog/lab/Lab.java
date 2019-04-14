@@ -396,7 +396,7 @@ public class Lab<X> {
     public Lab<X> var(String key, Function<X, Integer> get, ObjectIntProcedure<X> apply) {
         return var(key, Float.NaN, Float.NaN, Float.NaN, (x) -> get.apply(x).floatValue() /* HACK */, (X x, float v) -> {
             int i = Math.round(v);
-            apply.accept(x, i);
+            apply.value(x, i);
             return i;
         });
     }
@@ -406,7 +406,7 @@ public class Lab<X> {
             (x) -> get!=null ? get.apply(x).floatValue() : null /* HACK */,
             (X x, float v) -> {
                 int i = Math.round(v);
-                apply.accept(x, i);
+                apply.value(x, i);
                 return i;
         });
     }
