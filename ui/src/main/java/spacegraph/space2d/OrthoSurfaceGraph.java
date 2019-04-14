@@ -1,7 +1,6 @@
 package spacegraph.space2d;
 
 import com.jogamp.newt.event.WindowEvent;
-import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL2;
 import com.jogamp.opengl.fixedfunc.GLMatrixFunc;
 import jcog.event.Off;
@@ -114,14 +113,8 @@ public class OrthoSurfaceGraph extends JoglDisplay implements SurfaceGraph {
     public OrthoSurfaceGraph(Surface content, int pw, int ph) {
         super();
 
-
-        layers.clipBounds = false; //HACK
-
-        finger = new NewtMouseFinger(this);
-
-        keyboard = new NewtKeyboard(/*TODO this */);
-
-        video.window.setPointerVisible(false);
+        if (pw > 0 && ph > 0)
+            video.show(pw, ph);
 
         video.window.addWindowListener(new com.jogamp.newt.event.WindowAdapter() {
 
@@ -135,24 +128,24 @@ public class OrthoSurfaceGraph extends JoglDisplay implements SurfaceGraph {
 
             @Override
             public void windowDestroyNotify(WindowEvent e) {
-                layers.stop();
                 layers.delete();
             }
         });
+
+        video.window.setPointerVisible(false);
+
+        finger = new NewtMouseFinger(this);
+
+        keyboard = new NewtKeyboard(/*TODO this */);
 
         layers.start(this);
 
 
         Zoomed z = new Zoomed(this, keyboard, content);
-
         layers.add(z);
-
         layers.add(z.overlayZoomBounds(finger));
         layers.add(finger.overlayCursor());
 
-        if (pw > 0 && ph > 0) {
-            video.show(pw, ph);
-        }
 
 
 //        //addOverlay(this.keyboard.keyFocusSurface(cam));
@@ -164,30 +157,22 @@ public class OrthoSurfaceGraph extends JoglDisplay implements SurfaceGraph {
 
     }
 
-    protected void resize() {
-//        RectFloat bounds = RectFloat.X0Y0WH(0, 0, display.getWidth(), display.getHeight());
-//        layers.pos(bounds);
-
-
-        layers.layout();
-
-
+    @Override
+    protected void updateCamera(float dtS) {
+        //null
     }
 
     @Override
     protected void renderOrthos(float dtS) {
 
         int n = layers.size();
-        if (n <= 0) {
+        if (n <= 0)
             return;
-        }
 
         GL2 g = video.gl;
 
         int w = video.getWidth(), h = video.getHeight();
         rendering.restart(w, h, dtS, video.renderFPS);
-
-        g.glDisable(GL.GL_DEPTH_TEST);
 
         g.glViewport(0, 0, w, h);
         g.glMatrixMode(GL_PROJECTION);
@@ -198,8 +183,9 @@ public class OrthoSurfaceGraph extends JoglDisplay implements SurfaceGraph {
 
         rendering.render(g);
         rendering.clear();
-
-        g.glEnable(GL.GL_DEPTH_TEST);
+//        g.glDisable(GL.GL_DEPTH_TEST);
+//
+//        g.glEnable(GL.GL_DEPTH_TEST);
     }
 
     @Override
@@ -277,7 +263,7 @@ public class OrthoSurfaceGraph extends JoglDisplay implements SurfaceGraph {
                 "posRl: " + (t!=null ? finger.posRelative(t.bounds) : "?") + '\n' +
                 ""
             );
-        }, 0.1f),500,300);
+        }, 0.25f),500,300);
     }
 
     static class Menu extends Bordering {

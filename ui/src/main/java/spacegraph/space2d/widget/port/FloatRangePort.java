@@ -47,15 +47,15 @@ public class FloatRangePort extends FloatPort {
 
 
     private void LOAD() {
-        synchronized (f) {
+        //synchronized (f) {
             out(f.floatValue());
-        }
+        //}
     }
 
     public void SET(Float s) {
-        synchronized(f) {
+        //synchronized(f) {
             f.set(s);
-        }
+        //}
     }
 
     @Override

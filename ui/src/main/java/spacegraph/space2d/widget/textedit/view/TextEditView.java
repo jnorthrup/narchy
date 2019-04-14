@@ -86,11 +86,9 @@ public class TextEditView implements BufferListener {
 
     @Override
     public void removeLine(BufferLine bufferLine) {
-        synchronized (lines) {
-            if (lines.removeIf(lineView -> lineView.getBufferLine() == bufferLine))
+        lines.removeIf(lineView -> lineView.getBufferLine() == bufferLine);
                 updateY();
         }
-    }
 
     @Override
     public void moveChar(BufferLine fromLine, BufferLine toLine, BufferChar c) {

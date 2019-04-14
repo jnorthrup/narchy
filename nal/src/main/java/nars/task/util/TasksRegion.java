@@ -2,6 +2,7 @@ package nars.task.util;
 
 import jcog.TODO;
 import jcog.Texts;
+import jcog.Util;
 import jcog.math.Longerval;
 import nars.Op;
 import nars.Task;
@@ -60,32 +61,27 @@ public final class TasksRegion extends Longerval implements TaskRegion {
     @Override public final int freqMinI() { return Truth.freqI(a); }
     @Override public final int freqMaxI() { return Truth.freqI(b); }
 
-    public static TasksRegion mbr(TaskRegion r, long xs, long xe, float ef, float ec) {
-        assert(xs!=ETERNAL && xs!=TIMELESS);
+    public static TasksRegion mbr(TaskRegion x, long xs, long xe, float ef, float ec) {
 
-        long rs = r.start();
-        assert(rs!=ETERNAL && rs!=TIMELESS);
+        long rs = x.start();
 
-        long re = r.end();
+        assert(xs!=ETERNAL && xs!=TIMELESS && rs!=ETERNAL && rs!=TIMELESS);
+
+        long re = x.end();
 
         long s = min(rs, xs), e = max(re, xe);
-//        if (r instanceof Task) {
-//            Task tr = (Task) r;
-//            float trf = tr.freq(), trc = tr.conf();
-//            return new TasksRegion(s, e,
-//                    min(trf, ef),
-//                    max(trf, ef),
-//                    min(trc, ec),
-//                    max(trc, ec)
-//            );
-//        } else {
-            return new TasksRegion(s, e,
-                    min(r.freqMin(), ef),
-                    max(r.freqMax(), ef),
-                    min(r.confMin(), ec),
-                    max(r.confMax(), ec)
-            );
-//        }
+
+        TasksRegion y = new TasksRegion(s, e,
+                min(x.freqMin(), ef),
+                max(x.freqMax(), ef),
+                min(x.confMin(), ec),
+                max(x.confMax(), ec)
+        );
+
+        if (x instanceof TasksRegion)
+            return Util.maybeEqual((TasksRegion)x, y);
+        else
+            return y;
     }
 
     @Override

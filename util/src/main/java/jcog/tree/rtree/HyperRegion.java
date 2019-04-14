@@ -46,8 +46,8 @@ public interface HyperRegion {
     }
 
 
-    static HyperRegion mbr(Spatialization model, Object[] rect) {
-        return mbr((Function<Object, HyperRegion>) model::bounds, rect, (short) rect.length);
+    static <X> HyperRegion mbr(Spatialization<X> model, X[] rect) {
+        return mbr(model::bounds, rect, (short) rect.length);
     }
 
     static <X> HyperRegion mbr(Function<X, HyperRegion> builder, X[] rect) {
@@ -57,25 +57,33 @@ public interface HyperRegion {
     static <X> HyperRegion mbr(Function<X, HyperRegion> builder, X[] rect, short size) {
         assert (size > 0);
         HyperRegion bounds = builder.apply(rect[0]);
-        for (int k = 1; k < size; k++)
-            bounds = bounds.mbr(builder.apply(rect[k]));
-        return bounds;
-    }
-
-
-    default HyperRegion mbr(HyperRegion[] rect) {
-        return HyperRegion.MBR(rect);
-    }
-
-    static HyperRegion MBR(HyperRegion[] rect) {
-        HyperRegion bounds = rect[0];
-        for (int k = 1; k < rect.length; k++) {
-            HyperRegion r = rect[k];
-            bounds = bounds.mbr(r);
+        for (int k = 1; k < size; k++) {
+            X t = rect[k];
+            if (t == null)
+                break; //null terminator
+            bounds = bounds.mbr(builder.apply(t));
         }
         return bounds;
     }
 
+
+    default HyperRegion mbr(HyperRegion[] h) {
+        HyperRegion b = h[0];
+        for (int k = 1; k < h.length; k++)
+            b = b.mbr(h[k]);
+        return b;
+    }
+
+    static HyperRegion mbr(Node[] h) {
+        HyperRegion b = h[0].bounds();
+        for (int k = 1; k < h.length; k++) {
+            Node hk = h[k];
+            if (hk == null)
+                break; //null terminator
+            b = b.mbr(hk.bounds());
+        }
+        return b;
+    }
 
     /**
      * Get number of dimensions used in creating the HyperRect

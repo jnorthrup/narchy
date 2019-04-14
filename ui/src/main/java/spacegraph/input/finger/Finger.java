@@ -293,7 +293,7 @@ abstract public class Finger {
         Fingering prev = this.fingering.get();
 
         if (prev != Null) {
-            if (!prev.updateLocal(this)) {
+            if (!prev.update(this)) {
                 prev.stop(this);
                 fingering.set(Null);
                 renderer = rendererDefault;

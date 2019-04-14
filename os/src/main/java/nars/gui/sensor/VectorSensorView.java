@@ -41,7 +41,7 @@ import static java.lang.Math.sqrt;
 public class VectorSensorView extends BitmapMatrixView implements BitmapMatrixView.ViewFunction2D {
 
     private static final int AFFECT_CONCEPT_BUTTON = 0;
-    private static final int OPEN_CONCEPT_BUTTON = 1; 
+    private static final int OPEN_CONCEPT_BUTTON = 2;
 
     private final VectorSensor sensor;
     private final NAR nar;

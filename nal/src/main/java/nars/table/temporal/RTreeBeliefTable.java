@@ -483,8 +483,8 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
         }
 
         @Override
-        public final HyperRegion bounds(TaskRegion taskRegion) {
-            return taskRegion;
+        public final TaskRegion bounds(TaskRegion taskRegion) {
+           return taskRegion;
         }
 
         @Override

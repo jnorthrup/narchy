@@ -29,7 +29,8 @@ public class ListMenu extends Menu {
     }
 
     private void view(Supplier<Surface> value) {
-        wrap.R(value.get());
+        Surface v = value.get();
+        wrap.R(v);
     }
 
 }

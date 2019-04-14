@@ -51,7 +51,10 @@ public class LazySurface extends MutableUnitContainer<Surface> {
         Exe.invokeLater(()->{
             //TODO profile option
             Surface next = SafeSurface.safe(async);
+            //RectFloat b = the().bounds;
+
             set(next);
+
             state.set(2);
             //TODO if possible try to reattach the view to the parent of this, eliminating this intermediary
             //((Container)p).replace

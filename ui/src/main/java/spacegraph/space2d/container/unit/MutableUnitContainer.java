@@ -25,7 +25,7 @@ public class MutableUnitContainer<S extends Surface> extends AbstractUnitContain
             return this; //same instance
 
         if (prev !=null)
-            prev.stop();
+            prev.delete();
 
         if (next!=null) {
             if (parent != null) {

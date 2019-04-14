@@ -6,7 +6,6 @@ import jcog.util.ArrayUtils;
 import org.eclipse.collections.api.set.primitive.IntSet;
 import org.eclipse.collections.impl.set.mutable.primitive.IntHashSet;
 import spacegraph.space2d.Surface;
-import spacegraph.space2d.Surfacelike;
 import spacegraph.space2d.container.ContainerSurface;
 
 import java.util.Collection;
@@ -60,31 +59,29 @@ abstract public class MutableListContainer extends AbstractMutableContainer<Surf
 //            return null;
 //    }
 
-    /**
-     * returns the existing value that was replaced
-     */
-    protected Surface set(int index, Surface next) {
-        synchronized (children.list) {
-            Surfacelike p = this.parent;
-            if (p == null) {
-                return children.set(index, next);
-            } else {
-                if (children.size() - 1 < index)
-                    throw new RuntimeException("index out of bounds");
-
-                Surface existing = children.set(index, next);
-                if (existing != next) {
-                    if (existing != null)
-                        existing.stop();
-
-                    next.start(this);
-
-
-                }
-                return existing;
-            }
-        }
-    }
+//    /**
+//     * returns the existing value that was replaced
+//     */
+//    protected Surface set(int index, Surface next) {
+//        synchronized (children.list) {
+//            Surfacelike p = this.parent;
+//            if (p == null) {
+//                return children.set(index, next);
+//            } else {
+//                if (children.size() - 1 < index)
+//                    throw new RuntimeException("index out of bounds");
+//
+//                Surface existing = children.set(index, next);
+//                if (existing != next) {
+//                    if (existing != null)
+//                        existing.delete();
+//
+//                    next.start(this);
+//                }
+//                return existing;
+//            }
+//        }
+//    }
 
     public void add(Surface... s) {
 

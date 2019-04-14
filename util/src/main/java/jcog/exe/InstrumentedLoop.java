@@ -18,8 +18,11 @@ abstract public class InstrumentedLoop extends Loop {
     public final FloatAveragedWindow cycleTime =
             new FloatAveragedWindow(windowLength, 1f/windowLength /* == non-exponential mean? */);
 
+    /** the current cycle time delta (nanoseconds) */
     public long cycleTimeNS = 0;
-    private double cycleTimeS = 0;
+
+    /** the current cycle time delta (seconds) */
+    public double cycleTimeS = 0;
 
     protected volatile long last;
     protected long beforeIteration;

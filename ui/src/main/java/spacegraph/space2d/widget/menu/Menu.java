@@ -32,17 +32,16 @@ abstract public class Menu extends MutableUnitContainer {
 
     public Menu(Map<String, Supplier<Surface>> menu, MenuView view) {
         super();
-
         this.options = menu;
         this.content = view;
     }
 
-    public Menu setWrapper(Function<Surface,Surface> wrapper) {
-        synchronized (this) {
-            this.wrapper = wrapper;
-            return this;
-        }
-    }
+//    public Menu setWrapper(Function<Surface,Surface> wrapper) {
+//        synchronized (this) {
+//            this.wrapper = wrapper;
+//            return this;
+//        }
+//    }
 
 
 }

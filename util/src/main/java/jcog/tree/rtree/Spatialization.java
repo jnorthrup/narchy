@@ -66,8 +66,15 @@ public class Spatialization<X> {
     /** one-way merge for containment test.
      * container and content will not be the same instance.
      * default implementation simply tests for equality */
-    public boolean mergeContain(X container, X content) {
+    boolean mergeContain(X container, X content) {
         return container.equals(content);
+    }
+
+    public HyperRegion mbr(X[] data) {
+       return HyperRegion.mbr(this, data);
+    }
+    public HyperRegion mbr(Node<X>[] data) {
+        return HyperRegion.mbr(data);
     }
 
 

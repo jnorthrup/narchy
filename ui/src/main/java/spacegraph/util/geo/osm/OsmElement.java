@@ -26,7 +26,7 @@ abstract public class OsmElement implements HyperRegion {
 
     @Override
     public boolean equals(Object obj) {
-        return this==obj || ((OsmElement)obj).id == id;
+        return this==obj || (obj instanceof OsmElement && ((OsmElement)obj).id == id);
     }
 
     @Override

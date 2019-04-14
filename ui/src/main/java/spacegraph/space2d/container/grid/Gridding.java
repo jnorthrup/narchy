@@ -190,8 +190,7 @@ public class Gridding extends MutableListContainer {
                 Surface c = children[layoutIndex(i++)];
 
                 float x1 = px * W;
-                RectFloat r = RectFloat.XYXY(X+x1, Y+y1, X+x1+dxc*W, Y+y1+dyc*H);
-                c.pos(r);
+                c.pos(RectFloat.X0Y0WH(X+x1, Y+y1, dxc*W, dyc*H));
 
                 px += dx;
 

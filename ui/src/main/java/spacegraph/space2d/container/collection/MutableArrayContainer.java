@@ -9,7 +9,7 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 /** TODO support resizing */
-public class MutableArrayContainer<S extends Surface> extends AbstractMutableContainer<S> {
+abstract public class MutableArrayContainer<S extends Surface> extends AbstractMutableContainer<S> {
 
     /** TODO varhandle */
     protected final AtomicReferenceArray<S> children;
@@ -41,13 +41,13 @@ public class MutableArrayContainer<S extends Surface> extends AbstractMutableCon
 
     /** put semantics */
     public final S setAt(int index, S s) {
-        if (s != setAt(index, s, true))
+        if (s != setAt(index, s, true)) {
             layout();
-        return s;
+        } return s;
     }
 
     /** returns the removed element */
-    public S setAt(int index, S ss, boolean restart) {
+    private S setAt(int index, S ss, boolean restart) {
         return restart ?
             children.getAndAccumulate(index, ss, this::updateRestart) :
             children.getAndSet(index, ss);
@@ -57,7 +57,8 @@ public class MutableArrayContainer<S extends Surface> extends AbstractMutableCon
     private <S extends Surface> S updateRestart(S r, S s) {
         if (r != s) {
                 if (r != null) {
-                    r.stop();
+                    //r.stop();
+                    r.delete();
                 }
 
                 if (s != null) {
@@ -89,13 +90,10 @@ public class MutableArrayContainer<S extends Surface> extends AbstractMutableCon
 
 
     @Override
-    protected void doLayout(float dtS) {
-    }
-
-    @Override
     protected int childrenCount() {
         int count = 0;
-        for (int i = 0; i < length; i++) {
+        int l = this.length;
+        for (int i = 0; i < l; i++) {
             if (children.getOpaque(i)!=null)
                 count++;
         }

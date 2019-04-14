@@ -132,7 +132,7 @@ abstract public class JoglDisplay {
     }
 
 
-    private void updateCamera(float dtS) {
+    protected void updateCamera(float dtS) {
         perspective();
     }
 

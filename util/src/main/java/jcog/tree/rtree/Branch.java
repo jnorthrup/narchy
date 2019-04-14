@@ -22,6 +22,7 @@ package jcog.tree.rtree;
 
 
 import com.google.common.base.Joiner;
+import jcog.Util;
 import jcog.data.iterator.ArrayIterator;
 import jcog.tree.rtree.util.CounterNode;
 import jcog.tree.rtree.util.Stats;
@@ -43,13 +44,7 @@ public class Branch<X> extends AbstractNode<X> {
 
     public final Node<X>[] data;
 
-//    public Branch(int cap) {
-//        this.bounds = null;
-//        this.size = 0;
-//        this.data = new Node[cap];
-//    }
-
-    protected Branch(int cap, Node... data) {
+    protected Branch(int cap, Node<X>... data) {
         assert (cap >= 2);
         this.data = data.length == cap ? data : Arrays.copyOf(data, cap); //TODO assert all data are unique; cache hash?
         this.size = (short) data.length;
@@ -75,7 +70,7 @@ public class Branch<X> extends AbstractNode<X> {
     }
 
     @Override
-    public Object get(int i) {
+    public final Node<X> get(int i) {
         return data[i];
     }
 
@@ -85,13 +80,14 @@ public class Branch<X> extends AbstractNode<X> {
      * @param n node to be added (can be leaf or branch)
      * @return position of the added node
      */
-    int addChild(final Node<X> n) {
+    private int addChild(final Node<X> n) {
+        short size = this.size;
         if (size < data.length) {
-            data[size++] = n;
-
-            HyperRegion nr = n.bounds();
-            bounds = bounds != null ? bounds.mbr(nr) : nr;
-            return size - 1;
+            data[this.size++] = n;
+            HyperRegion nb = n.bounds();
+            //this.bounds = this.bounds != null ? this.bounds.mbr(nb) : nb;
+            this.bounds = this.bounds.mbr(nb);
+            return this.size - 1;
         } else {
             throw new RuntimeException("Too many children");
         }
@@ -133,13 +129,8 @@ public class Branch<X> extends AbstractNode<X> {
                 if (di == null) {
                     //merge occurred
                     if (ciBefore != ci.bounds()) {
-                        //grow HACK
-                        HyperRegion b = i == 0 ? ciBefore : data[0].bounds();
-                        for (int k = 1; k < s; k++)
-                            b = b.mbr(i == k ? ciBefore : data[k].bounds());
-                        bounds = b;
+                        updateBounds();
                     }
-//                    updateBounds();
                     return null; //duplicate found
                 }
 
@@ -196,7 +187,7 @@ public class Branch<X> extends AbstractNode<X> {
     }
 
     private void grow(int i) {
-        grow(data[i]);
+        grow(data[i].bounds());
     }
 
     @Override
@@ -250,6 +241,7 @@ public class Branch<X> extends AbstractNode<X> {
 //                                    }
 //                                }
 
+                            bounds = Util.maybeEqual(bounds, model.mbr(data));
                                 updateBounds();
                                 return this;
 //                            }
@@ -269,12 +261,13 @@ public class Branch<X> extends AbstractNode<X> {
     }
 
     private void updateBounds() {
-        Node<X>[] dd = this.data;
-        HyperRegion region = dd[0].bounds();
-        for (int j = 1; j < size; j++)
-            region = region.mbr(dd[j].bounds());
-        if (bounds == null || !bounds.equals(region))
-            this.bounds = region;
+//        Node<X>[] dd = this.data;
+//        HyperRegion region = dd[0].bounds();
+//        for (int j = 1; j < size; j++)
+//            region = region.mbr(dd[j].bounds());
+//        if (bounds == null || !bounds.equals(region))
+//            this.bounds = region;
+        bounds = Util.maybeEqual(bounds, HyperRegion.mbr(data));
     }
 
     @Override
@@ -295,7 +288,7 @@ public class Branch<X> extends AbstractNode<X> {
                 region = i == 0 ? cc[0].bounds() : region.mbr(cc[i].bounds());
             }
             if (found) {
-                this.bounds = region;
+                this.bounds = Util.maybeEqual(bounds, region);
             }
         }
         return this;
@@ -347,34 +340,38 @@ public class Branch<X> extends AbstractNode<X> {
 
     @Override
     public void forEach(Consumer<? super X> consumer) {
-        short s = this.size;
-        if (s > 0) {
-            Node<X>[] cc = this.data;
-            for (int i = 0; i < s; i++) {
-                Node<X> x = cc[i];
-                if (x != null)
-                    x.forEach(consumer);
-            }
+        for (Node<X> x : data) {
+            if (x == null)
+                break; //null terminator
+            x.forEach(consumer);
         }
     }
 
     @Override
     public final void forEachLocal(Consumer c) {
-        for (Node x : data) {
-            if (x != null)
-                c.accept(x);
-            else
-                break; //null-terminator reached
+        forEach(c);
+//        for (Node x : data) {
+//            if (x != null)
+//                c.accept(x);
+//            else
+//                break; //null-terminator reached
+//        }
+    }
+    @Override
+    public boolean OR(Predicate<X> p) {
+        for (Node<X> x : data) {
+            if (x == null) break; //null terminator
+            if (x.OR(p))
+                return true;
         }
+        return false;
     }
 
     @Override
     public boolean AND(Predicate<X> p) {
-        Node<X>[] c = this.data;
-        short s = this.size;
-        for (int i = 0; i < s; i++) {
-            Node<X> x = c[i];
-            if (x != null && !x.AND(p))
+        for (Node<X> x : data) {
+            if (x == null) break; //null terminator
+            if (!x.AND(p))
                 return false;
         }
         return true;
@@ -398,17 +395,7 @@ public class Branch<X> extends AbstractNode<X> {
         return false;
     }
 
-    @Override
-    public boolean OR(Predicate<X> p) {
-        Node<X>[] c = this.data;
-        int s = size;
-        for (int i = 0; i < s; i++) {
-            Node<X> x = c[i];
-            if (x != null && x.OR(p))
-                return true;
-        }
-        return false;
-    }
+
 
     @Override
     public boolean containing(final HyperRegion rect, final Predicate<X> t, Spatialization<X> model) {
@@ -500,7 +487,7 @@ public class Branch<X> extends AbstractNode<X> {
     private static final Comparator NullCompactingComparator = new Comparator() {
         @Override
         public int compare(Object o1, Object o2) {
-            if (o1 == null && o2 == null || o1 == o2) {
+            if (o1 == o2) {
                 return 0;
             }
             if (o1 == null) {

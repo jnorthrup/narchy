@@ -25,6 +25,15 @@ import static com.jogamp.opengl.GL.GL_DEPTH_BUFFER_BIT;
 
 public abstract class JoglWindow implements GLEventListener, WindowListener {
 
+    private static final Collection<JoglWindow> windows = new ConcurrentFastIteratingHashSet<>(new JoglWindow[0]);
+
+//    static final Executor renderThread = Executors.newSingleThreadExecutor();
+
+//    static {
+//        Threading.disableSingleThreading();
+//    }
+    private static GLCapabilitiesImmutable config = null;
+
     static {
 ////        synchronized(JoglWindow.class) {
 ////            NEWTJNILibLoader.loadNEWT();
@@ -32,15 +41,7 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
 //        NewtFactory.setUseEDT(false);
     }
 
-//    static final Executor renderThread = Executors.newSingleThreadExecutor();
-
-//    static {
-//        Threading.disableSingleThreading();
-//    }
-
-    private static final Collection<JoglWindow> windows = new ConcurrentFastIteratingHashSet<>(new JoglWindow[0]);
-    private static GLCapabilitiesImmutable config = null;
-//    private static final Logger logger = LoggerFactory.getLogger(JoglWindow.class);
+    //    private static final Logger logger = LoggerFactory.getLogger(JoglWindow.class);
     //    /**
 //     * update loop
 //     */
@@ -110,14 +111,11 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
 
     private void updateWindow() {
         GLWindow w = window;
-        if (w==null)
+        if (w == null)
             return;
-
 
         if (!updateWindow.compareAndSet(true, false))
             return;
-
-
 
         int nw = this.nw, nh = this.nh;
 
@@ -145,7 +143,7 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
         GLWindow w = this.window;
         if (w != null)
             w.destroy();
-            //Exe.invokeLater(w::destroy);
+        //Exe.invokeLater(w::destroy);
     }
 
     abstract protected void init(GL2 gl);
@@ -263,7 +261,7 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
         //solution is to queue this to the global timer which starts the self-invoking loop
 
         //GLWorkerThread.invokeLater(()-> {
-        Exe.invokeLater(()-> {
+        Exe.invokeLater(() -> {
 
             GLWindow W = this.window;
             if (x != Integer.MIN_VALUE) {
@@ -397,13 +395,17 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
         return onUpdate.on((JoglWindow s) -> c.run());
     }
 
-    /** x-pixel coordinate of window left edge */
+    /**
+     * x-pixel coordinate of window left edge
+     */
     public int getX() {
         return window.getX();
     }
 
-    /** y-pixel coordinate of window top edge.
-     *  note: this is the reverse direction of the generally-expected cartesian upward-pointing y-axis */
+    /**
+     * y-pixel coordinate of window top edge.
+     * note: this is the reverse direction of the generally-expected cartesian upward-pointing y-axis
+     */
     public int getY() {
         return window.getY();
     }
@@ -439,10 +441,9 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
     }
 
     /* from: Jake2's */
-    class GameAnimatorControl extends AnimatorBase {
+    private final class GameAnimatorControl extends AnimatorBase {
 
         final InstrumentedLoop loop;
-
 
         GameAnimatorControl() {
             super();
@@ -450,59 +451,9 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
             setIgnoreExceptions(false);
             setPrintExceptions(true);
 
-
-            this.loop = new InstrumentedLoop() {
-
-                @Override
-                public String toString() {
-                    return JoglWindow.this + ".render";
-                }
-
-                @Override
-                public boolean next() {
-
-                    if (window == null) {
-                        return false;
-                    }
-
-                    if (window.isVisible()) {
-
-                        if (!drawables.isEmpty()) {
-
-                            GLAutoDrawable d = drawables.get(0);
-                            if (d != null) {
-
-                                long cycleTimeNS = renderer.loop.periodNS();
-                                dtS = (float) (cycleTimeNS / 1.0E9);
-
-                                onUpdate.emit(JoglWindow.this);
-
-                                update();
-
-                                try {
-                                    d.flushGLRunnables();
-                                    updateWindow();
-                                    d.display();
-                                } catch (GLException e) {
-                                    stop();
-                                    return false;
-                                }
-
-                            }
-                        }
-
-                    } else {
-                        stop();
-                    }
-
-
-                    return true;
-                }
-            };
-
+            this.loop = new DisplayLoop();
 
             //loop.setFPS(1);  //HACK initially trigger slowly
-
         }
 
         @Override
@@ -515,10 +466,8 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
             return false;
         }
 
-
         @Override
         public final boolean stop() {
-
             pause();
             return true;
         }
@@ -526,9 +475,7 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
 
         @Override
         public final boolean pause() {
-
             loop.stop();
-
             return true;
         }
 
@@ -552,7 +499,52 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
             return !loop.isRunning();
         }
 
+        private final class DisplayLoop extends InstrumentedLoop {
 
+            @Override
+            public String toString() {
+                return JoglWindow.this + ".render";
+            }
+
+            @Override
+            public boolean next() {
+
+                if (window == null)
+                    return false;
+
+                if (!window.isVisible())
+                    return false;
+
+                if (drawables.isEmpty())
+                    return true;
+
+                GLAutoDrawable d = drawables.get(0);
+                if (d != null) {
+
+                    dtS = (float) renderer.loop.cycleTimeS;
+
+
+
+                    onUpdate.emit(JoglWindow.this);
+
+                    update();
+
+                    updateWindow();
+
+                    try {
+                        d.flushGLRunnables();
+                        d.display();
+                    } catch (GLException e) {
+                        e.printStackTrace();
+                        stop();
+                        return false;
+                    }
+
+                }
+
+                return true;
+            }
+        }
     }
 
 

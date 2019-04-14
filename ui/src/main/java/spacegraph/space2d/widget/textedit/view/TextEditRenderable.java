@@ -21,9 +21,10 @@ public abstract class TextEditRenderable {
         v3 scale = this.scale;
         if (scale!=null)
             gl.glScalef(scale.x, scale.y, scale.z);
-        
+
         gl.glColor4f(color.x, color.y, color.z, color.w);
         innerDraw(gl);
+
         gl.glPopMatrix();
     }
 

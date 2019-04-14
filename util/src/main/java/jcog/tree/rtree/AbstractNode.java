@@ -1,35 +1,19 @@
 package jcog.tree.rtree;
 
+import jcog.Util;
+
 abstract public class AbstractNode<V> implements Node<V> {
 
-    public short size;
-    public HyperRegion bounds;
+    public volatile short size;
+    public volatile HyperRegion bounds;
 
-    protected final void  grow(HyperRegion tb) {
-        HyperRegion bounds = this.bounds;
-        this.bounds = bounds != null ? bounds.mbr(tb) : tb;
-    }
-
-    protected final void grow(Node node) {
-        grow(node.bounds());
+    protected final void grow(HyperRegion b) {
+        HyperRegion x = this.bounds;
+        this.bounds = x != null ? Util.maybeEqual(x, x.mbr(b)) : b;
     }
 
     @Override
-    public final  HyperRegion bounds() {
-
-//        //TEMPORARY
-//        if (this instanceof Branch) {
-//            HyperRegion actualBounds = null;
-//            Iterator<Node<V>> ii = this.streamNodes().iterator();
-//            while (ii.hasNext()) {
-//                HyperRegion iib = ii.next().bounds();
-//                if (actualBounds == null) actualBounds = iib;
-//                else actualBounds = actualBounds.mbr(iib);
-//            }
-//            if (!Objects.equals(actualBounds, bounds))
-//                throw new WTF();
-//        }
-
+    public final HyperRegion bounds() {
         return bounds;
     }
 

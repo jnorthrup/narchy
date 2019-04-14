@@ -15,11 +15,8 @@ abstract public class Fingering {
     /** return true to allow begin */
     protected abstract boolean start(Finger f);
 
-    /** return false to finish; called from outside the finger scan */
-    @Deprecated public abstract boolean updateGlobal(Finger f);
-
     /** return false to finish; called from inside the finger scan */
-    public boolean updateLocal(Finger finger) {
+    public boolean update(Finger finger) {
         return true;
     }
 
@@ -57,11 +54,6 @@ abstract public class Fingering {
 
         @Override
         protected boolean start(Finger f) {
-            return true;
-        }
-
-        @Override
-        public boolean updateGlobal(Finger f) {
             return true;
         }
 

@@ -1,14 +1,12 @@
 package spacegraph.space2d;
 
 import jcog.Texts;
-import jcog.WTF;
 import jcog.math.v2;
 import jcog.tree.rtree.Spatialization;
 import jcog.tree.rtree.rect.RectFloat;
 import spacegraph.space2d.container.ContainerSurface;
 import spacegraph.space2d.container.collection.AbstractMutableContainer;
 import spacegraph.space2d.container.unit.AspectAlign;
-import spacegraph.space2d.container.unit.MutableUnitContainer;
 import spacegraph.space2d.widget.text.VectorLabel;
 import spacegraph.util.MutableRectFloat;
 
@@ -107,9 +105,9 @@ abstract public class Surface implements Surfacelike, spacegraph.input.finger.Fi
         // if (next.area() < ScalarValue.EPSILON)
         //      throw new WTF();
 
-        //BOUNDS.set(this, next);
+        BOUNDS.set(this, next);
 
-        BOUNDS.accumulateAndGet(this, next, (prev, n) -> prev.equals(n) ? prev : n);
+        //BOUNDS.accumulateAndGet(this, next, (prev, n) -> prev.equals(n) ? prev : n);
 
         return (S) this;
     }
@@ -168,17 +166,20 @@ abstract public class Surface implements Surfacelike, spacegraph.input.finger.Fi
     }
 
     public boolean start(Surfacelike parent) {
+        assert (parent != null);
+
         Surfacelike p = PARENT.getAndSet(this, parent);
         if (p == parent)
             return false; //no change
 
-        assert (parent != null);
+        assert(p == null);
 
-        if (p != null) {  //throw new WTF();
-            delete();
-            parent = PARENT.getAndSet(this, parent);
-            if (parent != null) throw new WTF();
-        }
+
+        //if (p != null) {  throw new WTF(); }
+//            //delete();
+//            parent = PARENT.getAndSet(this, parent);
+//            if (parent != null) throw new WTF();
+//        }
 
         //synchronized (this) {
         starting();
@@ -286,26 +287,25 @@ abstract public class Surface implements Surfacelike, spacegraph.input.finger.Fi
     public boolean delete() {
 
 
-        Surfacelike p = this.parent;
+        Surfacelike p = PARENT.getAndSet(this, null);
         if (p!=null) {
 
-            if (p instanceof MutableUnitContainer) {
-                ((MutableUnitContainer) p).set(null);
-            }
+//            if (p instanceof MutableUnitContainer) {
+//                ((MutableUnitContainer) p).set(null);
+//            }
             if (p instanceof AbstractMutableContainer) {
                 ((AbstractMutableContainer) p).remove(this);
             }
+
+            stop();
+
+            if (this instanceof ContainerSurface) {
+                ((ContainerSurface) this).forEach(Surface::delete);
+            }
+
+            return true;
         }
 
-        stop();
-
-        if (this instanceof ContainerSurface) {
-            ((ContainerSurface) this).forEach(Surface::delete);
-        }
-
-        if (p!=null) {
-            return PARENT.getAndSet(this, null) != null;
-        }
         return false;
     }
 

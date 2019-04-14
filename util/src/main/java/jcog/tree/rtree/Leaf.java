@@ -47,8 +47,8 @@ public class Leaf<X> extends AbstractNode<X> {
         this((X[]) new Object[mMax]);
     }
 
-    public Leaf(X[] arrayInit) {
-        this.data = arrayInit;
+    public Leaf(X[] emptyArray) {
+        this.data = emptyArray;
         this.size = 0;
         this.bounds = null;
     }
@@ -56,7 +56,7 @@ public class Leaf<X> extends AbstractNode<X> {
     public Leaf(Spatialization<X> model, X[] sortedMbr, int from, int to) {
         this.data = Arrays.copyOfRange(sortedMbr, from, to);
         this.size = (short) data.length;
-        this.bounds = HyperRegion.mbr(model, data);
+        this.bounds = model.mbr(data);
     }
 
     @Override
@@ -136,14 +136,16 @@ public class Leaf<X> extends AbstractNode<X> {
 
                             data[i] = xy;
 
-                            HyperRegion xtb = model.bounds(xy);
-                            //if (!bounds.contains(xtb)) {
-                                //grow HACK
-                                HyperRegion b = i == 0 ? xtb : model.bounds(data[0]);
-                                for (int k = 1; k < s; k++)
-                                    b = b.mbr(i == k ? xtb : model.bounds(data[k]));
-                                bounds = b;
-                            //}
+                            bounds = Util.maybeEqual(bounds, HyperRegion.mbr(model, data));
+
+//                            HyperRegion xtb = model.bounds(xy);
+//                            if (!bounds.contains(xtb)) {
+////                                //TODO use grow()
+//                            HyperRegion b = i == 0 ? xtb : model.bounds(data[0]);
+//                            for (int k = 1; k < s; k++)
+//                                b = b.mbr(i == k ? xtb : model.bounds(data[k]));
+//                            bounds = b;
+////                            }
                         }
                         return null;
                     }
@@ -154,8 +156,8 @@ public class Leaf<X> extends AbstractNode<X> {
 
             if (size < data.length) {
 
-                grow(B);
                 data[this.size++] = x;
+                grow(B);
 
                 return this;
             } else {
@@ -218,8 +220,7 @@ public class Leaf<X> extends AbstractNode<X> {
         X[] data = this.data;
         int i;
         for (i = 0; i < size; i++) {
-            X d = data[i];
-            if (x.equals(d))
+            if (x.equals(data[i]))
                 break;
         }
         if (i == size)
@@ -238,7 +239,7 @@ public class Leaf<X> extends AbstractNode<X> {
         removed[0] = true;
 
         if (this.size > 0) {
-            bounds = HyperRegion.mbr(model.bounds, data, this.size);
+            bounds = Util.maybeEqual(bounds, HyperRegion.mbr(model.bounds, data, this.size));
             return this;
         } else {
             bounds = null;

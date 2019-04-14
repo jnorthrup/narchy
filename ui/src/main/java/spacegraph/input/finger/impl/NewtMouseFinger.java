@@ -43,13 +43,6 @@ public class NewtMouseFinger extends MouseFinger implements MouseListener, Windo
         Surface touchNext = s.finger(this);
         touching.accumulateAndGet(touchNext, ff::touchNext);
 
-        if (ff != Fingering.Null) {
-            if (!ff.updateGlobal(this)) {
-                ff.stop(this);
-                fingering.set(Fingering.Null);
-            }
-        }
-
         commitButtons();
     }
 

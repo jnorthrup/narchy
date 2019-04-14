@@ -27,6 +27,11 @@ abstract public class Dragging extends Fingering {
     }
 
     @Override
+    public boolean defer(Finger finger) {
+        return !finger.pressed(button);
+    }
+
+    @Override
     public boolean escapes() {
         return true;
     }
@@ -48,12 +53,7 @@ abstract public class Dragging extends Fingering {
     }
 
     @Override
-    public final boolean updateGlobal(Finger finger) {
-        return pressed(finger);
-    }
-
-    @Override
-    public boolean updateLocal(Finger finger) {
+    public boolean update(Finger finger) {
         return pressed(finger) && drag(finger);
     }
 

@@ -21,11 +21,6 @@ public class CursorOverlay extends Fingering {
     }
 
     @Override
-    public boolean updateGlobal(Finger f) {
-        return true;
-    }
-
-    @Override
     public void stop(Finger f) {
         f.renderer = f.rendererDefault;
     }
@@ -46,9 +41,6 @@ public class CursorOverlay extends Fingering {
     }
 
     public static final Fingering Reset = new CursorOverlay(null) {
-        @Override
-        public boolean updateGlobal(Finger f) {
-            return false;
-        }
+
     };
 }

@@ -3,9 +3,7 @@ package spacegraph.space2d.widget.windo.util;
 import jcog.math.v2;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.input.finger.CursorOverlay;
-import spacegraph.input.finger.Finger;
 import spacegraph.input.finger.FingerRenderer;
-import spacegraph.space2d.container.ContainerSurface;
 
 import java.util.EnumMap;
 
@@ -36,7 +34,7 @@ public enum DragEdit {
         //cursor.put(DragEdit.MOVE, new FingerRenderer.PolygonCrosshairs().angle(45)); //TODO something special
 
 
-        cursor.forEach((k,v)-> hover.put(k, new CursorOverlayOnWindow(v)));
+        cursor.forEach((k,v)-> hover.put(k, new CursorOverlay(v)));
     }
 
     @Nullable public static DragEdit mode(v2 p, float margin) {
@@ -93,14 +91,5 @@ public enum DragEdit {
         return hover.get(this);
     }
 
-    private static class CursorOverlayOnWindow extends CursorOverlay {
-        public CursorOverlayOnWindow(FingerRenderer v) {
-            super(v);
-        }
 
-        @Override
-        public boolean updateGlobal(Finger f) {
-            return f.touching() instanceof ContainerSurface;
-        }
-    }
 }

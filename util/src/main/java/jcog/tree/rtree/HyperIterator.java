@@ -90,13 +90,7 @@ public class HyperIterator<X>  {
     private void push(Object x) {
         //inline 1-arity branches for optimization
         while (x instanceof Node && (((Node)x).size() == 1)) {
-            Object next = ((Node) x).get(0);
-//            if (next instanceof Branch)
-                x = next; //this might indicate a problem in the tree structure that could have been flattened automatically
-//            else {
-//                //leaf node or item
-//                break;
-//            }
+            x = ((Node) x).get(0);
         }
 
 //        //dont filter root node (traversed while plan is null)

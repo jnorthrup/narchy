@@ -49,7 +49,6 @@ import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
 /**
  * NAL Task to be processed, consists of a Sentence, stamp, time, and budget.
  */
-@SuppressWarnings("ALL")
 public interface Task extends Truthed, Stamp, TermedDelegate, ITask, TaskRegion, UnitPrioritizable {
 
 

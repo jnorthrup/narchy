@@ -39,8 +39,8 @@ public class Bordering<S extends Surface> extends MutableArrayContainer<S> {
         set(center);
     }
 
-    public Bordering set(S center) {
-        set(0, center);
+    public Bordering<S> set(S center) {
+        set(C, center);
         return this;
     }
 
@@ -48,7 +48,7 @@ public class Bordering<S extends Surface> extends MutableArrayContainer<S> {
      * sets all edge sizes to a value
      * TODO layout only if changed
      */
-    protected Bordering borderSize(float size) {
+    protected Bordering<S> borderSize(float size) {
         borderNorth = borderSouth = borderEast = borderWest = size;
         layout();
         return this;

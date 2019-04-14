@@ -282,7 +282,7 @@ public class BitmapMatrixView extends TexSurface {
         }
     }
 
-    public BitmapMatrixView cellTouch(boolean cellTouch) {
+    BitmapMatrixView cellTouch(boolean cellTouch) {
         this.cellTouch = cellTouch;
         return this;
     }

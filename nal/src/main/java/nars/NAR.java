@@ -1639,8 +1639,9 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
         What w = what.get(id);
         if (w == null && createAndStartIfMissing) {
             w = what.put(this.whatBuilder.apply(id));
-            w.pri(0.5f);
             start(w);
+            w.pri(0.5f);
+            w.nar = this; //HACK
         }
         return w;
     }
@@ -1653,7 +1654,6 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
         What w = active.get();
         if (w == null) {
             Term id = $.identity($.uuid());
-            ;
             fork(w = the(id, true), null);
         }
         return w;

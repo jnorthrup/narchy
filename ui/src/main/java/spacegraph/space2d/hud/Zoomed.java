@@ -199,9 +199,10 @@ public class Zoomed<S extends Surface> extends MutableUnitContainer<S> implement
 
 
             if (innerTouched == null) {
-                if (f.tryFingering(zoomDrag)) {
+                /*if (f.tryFingering(zoomDrag)) {
                     zoomStackReset();
-                } else if (f.tryFingering(contentPan)) {
+                } else */
+                if (f.tryFingering(contentPan)) {
                     zoomStackReset();
                 }
                 //}

@@ -2755,4 +2755,8 @@ public enum Util {
 
         return strong ? lock.writeLock() : lock.tryWriteLock();
     }
+
+    public static <X,Y extends X,Z extends X> X maybeEqual(Y current, Z next) {
+        return Objects.equals(current, next) ? current : next;
+    }
 }

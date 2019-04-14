@@ -135,9 +135,6 @@ public interface Node<X> extends Nodelike<X> {
     boolean containing(HyperRegion rect, Predicate<X> t, Spatialization<X> model);
 
 
-
-
-
     /**
      * Recurses over index collecting stats
      *
