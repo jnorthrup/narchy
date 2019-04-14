@@ -216,7 +216,9 @@ public class Leaf<X> extends AbstractNode<X> {
     public Node<X> remove(final X x, HyperRegion xBounds, Spatialization<X> model, boolean[] removed) {
 
         final int size = this.size;
-        assert (size > 0); //        if (size == 0)            return this;
+        if (size > 1 && !bounds().contains(xBounds))
+            return this; //not found
+
         X[] data = this.data;
         int i;
         for (i = 0; i < size; i++) {
@@ -239,7 +241,7 @@ public class Leaf<X> extends AbstractNode<X> {
         removed[0] = true;
 
         if (this.size > 0) {
-            bounds = Util.maybeEqual(bounds, HyperRegion.mbr(model.bounds, data, this.size));
+            bounds = Util.maybeEqual(bounds, model.mbr(data));
             return this;
         } else {
             bounds = null;

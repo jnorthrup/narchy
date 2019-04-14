@@ -48,7 +48,7 @@ public class Branch<X> extends AbstractNode<X> {
         assert (cap >= 2);
         this.data = data.length == cap ? data : Arrays.copyOf(data, cap); //TODO assert all data are unique; cache hash?
         this.size = (short) data.length;
-        this.bounds = HyperRegion.mbr(Node::bounds, data);
+        this.bounds = HyperRegion.mbr(data);
     }
 
     @Override
@@ -193,34 +193,32 @@ public class Branch<X> extends AbstractNode<X> {
     @Override
     public Node<X> remove(final X x, HyperRegion xBounds, Spatialization<X> model, boolean[] removed) {
 
-        //assert (!removed[0]);
+        if (size > 1 && !bounds().contains(xBounds))
+            return this; //not here
 
         for (int i = 0; i < size; i++) {
             Node<X> y = data[i];
-//            HyperRegion cBeforeBounds = cBefore.bounds();
-            if (y.bounds().contains(xBounds)) {
+            @Nullable Node<X> cAfter = y.remove(x, xBounds, model, removed);
 
-                @Nullable Node<X> cAfter = y.remove(x, xBounds, model, removed);
+            if (removed[0]) {
 
-                if (removed[0]) {
+                data[i] = cAfter;
 
-                    data[i] = cAfter;
-
-                    if (cAfter == null) {
-                        if (i < --size)
-                            Arrays.sort(data, NullCompactingComparator);
-                    }
+                if (cAfter == null) {
+                    if (i < --size)
+                        Arrays.sort(data, NullCompactingComparator);
+                }
 
 
-                    switch (size) {
-                        case 0:
-                            bounds = null;
-                            return null;
-                        case 1:
-                            bounds = null;
-                            return data[0]; //reduce to only leaf
-                        default: {
-                            //TODO possibly rebalance
+                switch (size) {
+                    case 0:
+                        bounds = null;
+                        return null;
+                    case 1:
+                        bounds = null;
+                        return data[0]; //reduce to only leaf
+                    default: {
+                        //TODO possibly rebalance
 
 //                                if (Util.and((Node z) -> z instanceof Leaf, data)) {
 //                                    int values = Util.sum((ToIntFunction<Node>) Node::size, data);
@@ -241,18 +239,17 @@ public class Branch<X> extends AbstractNode<X> {
 //                                    }
 //                                }
 
-                            bounds = Util.maybeEqual(bounds, model.mbr(data));
-                                updateBounds();
-                                return this;
+                        bounds = Util.maybeEqual(bounds, HyperRegion.mbr(data));
+                            updateBounds();
+                            return this;
 //                            }
-
-                        }
 
                     }
 
-                } else {
-                    assert (cAfter == y);
                 }
+
+            } else {
+                assert (cAfter == y);
             }
         }
 

@@ -145,17 +145,32 @@ public interface TaskRegion extends HyperRegion, Tasked, LongInterval {
     }
 
     @Override
-    default /* final */ boolean intersects(HyperRegion x) {
-        if (x == this) return true;
+    default /* final */ boolean intersects(HyperRegion _y) {
+        if (_y == this) return true;
         long start = start();
         if (start == ETERNAL) return true;
 
-        TaskRegion t = (TaskRegion) x;
-        if (t.intersects(start, end())) {
-            return freqMinI() <= t.freqMaxI() &&
-                   freqMaxI() >= t.freqMinI() &&
-                   confMinI() <= t.confMaxI() &&
-                   confMaxI() >= t.confMinI();
+        TaskRegion y = (TaskRegion) _y;
+        if (y.intersects(start, end())) {
+
+            int xfa = freqMinI(), yfb = y.freqMaxI();
+            if (xfa <= yfb) {
+                int xca = confMinI(), ycb = y.confMaxI();
+                if (xca <= ycb) {
+
+                    boolean xt = this instanceof Task, yt = _y instanceof Task;
+                    if (xt && yt)
+                        return true;
+
+                    int xfb = xt ? xfa : freqMaxI();
+                    int yfa = yt ? yfb : y.freqMinI();
+                    if (xfb >= yfa) {
+                        int xcb = xt ? xca : confMaxI();
+                        int yca = yt ? ycb : y.confMinI();
+                        return xcb >= yca;
+                    }
+                }
+            }
         }
         return false;
     }

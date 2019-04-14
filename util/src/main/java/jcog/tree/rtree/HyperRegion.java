@@ -47,24 +47,10 @@ public interface HyperRegion {
 
 
     static <X> HyperRegion mbr(Spatialization<X> model, X[] rect) {
-        return mbr(model::bounds, rect, (short) rect.length);
+        //return mbr(model::bounds, rect, (short) rect.length);
+        return model.mbr(rect);
     }
 
-    static <X> HyperRegion mbr(Function<X, HyperRegion> builder, X[] rect) {
-        return mbr(builder, rect, (short) rect.length);
-    }
-
-    static <X> HyperRegion mbr(Function<X, HyperRegion> builder, X[] rect, short size) {
-        assert (size > 0);
-        HyperRegion bounds = builder.apply(rect[0]);
-        for (int k = 1; k < size; k++) {
-            X t = rect[k];
-            if (t == null)
-                break; //null terminator
-            bounds = bounds.mbr(builder.apply(t));
-        }
-        return bounds;
-    }
 
 
     default HyperRegion mbr(HyperRegion[] h) {

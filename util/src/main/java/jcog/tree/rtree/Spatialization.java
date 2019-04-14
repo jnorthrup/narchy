@@ -71,11 +71,19 @@ public class Spatialization<X> {
     }
 
     public HyperRegion mbr(X[] data) {
-       return HyperRegion.mbr(this, data);
+       //return HyperRegion.mbr(this, data);
+        HyperRegion bounds = bounds(data[0]);
+        for (int k = 1; k < data.length; k++) {
+            X t = data[k];
+            if (t == null)
+                break; //null terminator
+            bounds = bounds.mbr(bounds(t));
+        }
+        return bounds;
     }
-    public HyperRegion mbr(Node<X>[] data) {
-        return HyperRegion.mbr(data);
-    }
+//    public HyperRegion mbr(Node<X>[] data) {
+//        return HyperRegion.mbr(data);
+//    }
 
 
     /**

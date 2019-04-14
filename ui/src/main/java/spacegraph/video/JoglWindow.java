@@ -245,8 +245,8 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
         //render((int) Math.min(Integer.MAX_VALUE, Math.round(renderDtNS / 1_000_000.0)));
         render((float) (renderDtNS / 1.0E9));
 
-        gl.glFlush();
-        //gl.glFinish();
+        //gl.glFlush();
+        gl.glFinish();
     }
 
 

@@ -220,7 +220,7 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
         }
 
         if (this.time(bs, be)) {
-            int sss = refocus(tCrop, true);
+            int sss = refocus(tCrop, false);
             assert(sss >= minComponents);
         }
 
@@ -302,7 +302,8 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
     }
 
     private TaskComponent firstValid() {
-        return get(firstValidIndex());
+        int i = firstValidIndex();
+        return i!=-1 ? get(i) : null;
     }
 
     protected int firstValidIndex() {

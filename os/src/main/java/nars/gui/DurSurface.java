@@ -53,12 +53,6 @@ abstract public class DurSurface<S extends Surface> extends AbstractCachedSurfac
         super.stopping();
     }
 
-    @Override
-    public boolean delete() {
-        assert(dur == null);
-        return super.delete();
-    }
-
     /** sets the update period dur multiplier */
     public DurSurface durs(float durs) {
         throw new jcog.TODO();
