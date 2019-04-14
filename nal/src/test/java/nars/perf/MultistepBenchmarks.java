@@ -4,6 +4,7 @@ import nars.NAR;
 import nars.NARS;
 import nars.test.impl.DeductiveMeshTest;
 import org.junit.jupiter.api.Disabled;
+import org.openjdk.jmh.annotations.*;
 import org.openjdk.jmh.runner.RunnerException;
 
 import static nars.perf.NARBenchmarks.perf;

@@ -188,7 +188,7 @@ public class RingBufferTaskSeries<T extends Task> extends AbstractTaskSeries<T> 
 
                 int vv = center + r;
                 T v = vv < size ? q.peek(head, vv) : null;
-                if (v!=null && (!exactRange || v.intersects(minT, maxT))) {
+                if (v!=null && (!exactRange || v.intersectsRaw(minT, maxT))) {
                     if (!whle.test(v))
                         return false;
                 } else {
@@ -200,7 +200,7 @@ public class RingBufferTaskSeries<T extends Task> extends AbstractTaskSeries<T> 
 
                 int uu = center - r; //if (uu < 0) uu += cap; //HACK prevent negative value
                 T u = uu >= 0 ? q.peek(head, uu) : null;
-                if (u!=null && (!exactRange || u.intersects(minT, maxT))) {
+                if (u!=null && (!exactRange || u.intersectsRaw(minT, maxT))) {
                     if (!whle.test(u))
                         return false;
                 } else {

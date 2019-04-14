@@ -120,7 +120,7 @@ public class ConcurrentSkiplistTaskSeries<T extends SeriesBeliefTable.SeriesTask
 
         while (ii.hasNext()) {
             T xx = ii.next();
-            if (exactRange && !xx.intersects(minT, maxT))
+            if (exactRange && !xx.intersectsRaw(minT, maxT))
                 continue;
             if (!x.test(xx))
                 return false;

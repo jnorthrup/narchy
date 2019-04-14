@@ -68,7 +68,7 @@ public class TruthIntegration {
 
             //return eviInteg(t, dur, qStart, qEnd);
             //return (qEnd - qStart) * t.evi(); //fast, assumes task evi is uniform between the end-points:
-         } else if (LongInterval.intersects(tStart, tEnd, qStart, qEnd)) {
+         } else if (LongInterval.intersectsRaw(tStart, tEnd, qStart, qEnd)) {
 
             if (qStart <= tStart && qEnd >= tEnd) {
                 //question contains task

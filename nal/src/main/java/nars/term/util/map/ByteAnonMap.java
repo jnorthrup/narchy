@@ -34,7 +34,7 @@ public class ByteAnonMap {
     /** put: returns in range 1..Byte.MAX_VALUE (does not issue 0) */
     public final byte intern(Term x) {
         byte b = termToId.getIfAbsentPutWithKey(x, idToTerm::addAndGetSizeAsByte);
-        assert (b >= 0);
+        //assert (b >= 0);
         return b;
     }
 
@@ -74,7 +74,7 @@ public class ByteAnonMap {
             Term x = idToTerm.get(i);
             Term y = m.apply(x);
             if (x!=y) {
-                idToTerm.set(i, y);
+                idToTerm.setFast(i, y);
                 changed = true;
             }
         }

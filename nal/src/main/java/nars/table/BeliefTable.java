@@ -10,7 +10,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.PrintStream;
 import java.util.Arrays;
-import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 /**
@@ -31,13 +30,6 @@ public interface BeliefTable extends TaskTable {
     static double eternalTaskValueWithOriginality(Task eternal) {
         return eternalTaskValue(eternal) * eternal.originality();
     }
-
-    /**
-     * minT and maxT inclusive
-     * TODO add Predicate<> form of this for early exit
-     */
-    void forEachTask(long minT, long maxT, Consumer<? super Task> x);
-
 
 
     default Truth truth(long when, NAR nar) {

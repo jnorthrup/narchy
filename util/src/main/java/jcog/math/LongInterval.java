@@ -37,9 +37,12 @@ public interface LongInterval {
     }
 
     static boolean intersectsSafe(long as, long ae, long bs, long be) {
-        return (as == ETERNAL) || (bs == ETERNAL) || (max(as, bs) <= min(ae, be));
+        return (as == ETERNAL) || (bs == ETERNAL) || intersectsRaw(as, ae, bs, be);
     }
 
+    static boolean intersectsRaw(long as, long ae, long bs, long be) {
+        return max(as, bs) <= min(ae, be);
+    }
 
 
     //		return internew Longerval(x1, x2).intersection(y1, y2);
@@ -338,25 +341,33 @@ public interface LongInterval {
         return (start == ETERNAL) || (e >= start && s <= end());
     }
 
+    default boolean intersectsRaw(long s, long e) {
+        return (e >= start() && s <= end());
+    }
+
     default boolean contains(long s, long e) {
         assert(s!=TIMELESS);
+        return containsSafe(s, e);
+    }
+
+    default boolean containsSafe(long s, long e) {
         long start = start();
         if (start == ETERNAL)
             return s==ETERNAL; //eternal contains itself
         else
             return s!=ETERNAL && (s >= start && e <= end());
     }
+
     /** eternal contains itself */
     default boolean contains(LongInterval b) {
         if (this == b) return true;
         long as = start();
         if (as == ETERNAL)
             return true;
-        long bs = b.start();
-        if (bs == ETERNAL)
-            return false;
-        else
-            return (bs >= as && b.end() <= end());
+        else {
+            long bs = b.start();
+            return bs != ETERNAL && bs >= as && b.end() <= end();
+        }
     }
 
 }

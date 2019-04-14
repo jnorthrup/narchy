@@ -31,7 +31,7 @@ import static nars.time.Tense.ETERNAL;
 
 public class Taskify extends ProxyTerm {
 
-    public final Termify termify;
+    final Termify termify;
 
 
     public final boolean test(Termutifcation u, Derivation d) {
@@ -226,7 +226,7 @@ public class Taskify extends ProxyTerm {
         this($.funcFast(TASKIFY, termify, $.the(channel.id)), termify, channel);
     }
 
-    protected Taskify(Term id, Termify termify, PremiseRuleProto.RuleWhy channel) {
+    private Taskify(Term id, Termify termify, PremiseRuleProto.RuleWhy channel) {
         super(id);
         this.termify = termify;
         this.channel = channel;
@@ -242,7 +242,7 @@ public class Taskify extends ProxyTerm {
 
     }
 
-    protected static boolean spam(Derivation d, int cost) {
+    static boolean spam(Derivation d, int cost) {
         d.use(cost);
         return true;
     }
@@ -256,7 +256,7 @@ public class Taskify extends ProxyTerm {
 
             if (parent.punc() == punc) {
                 if (parent.term().equals(derived.term())) { //TODO test for dtDiff
-                    if (parent.contains(start, end)) {
+                    if (parent.containsSafe(start, end)) {
 
                         if ((punc == QUESTION || punc == QUEST) || (
                                 Util.equals(parent.freq(), truth.freq(), n.freqResolution.floatValue()) &&

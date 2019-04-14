@@ -3,6 +3,7 @@ package nars.table;
 import nars.NAR;
 import nars.Task;
 import nars.control.op.Remember;
+import nars.table.eternal.EternalTable;
 import nars.table.question.QuestionTable;
 import nars.task.util.Answer;
 import nars.term.Term;
@@ -13,6 +14,7 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
+import static jcog.math.LongInterval.TIMELESS;
 import static nars.time.Tense.ETERNAL;
 
 /**
@@ -46,11 +48,12 @@ public interface TaskTable {
      * TODO add 'intersects or contains' option
      */
     default void forEachTask(long minT, long maxT, Consumer<? super Task> x) {
-        if (minT == ETERNAL) {
+        if (minT == ETERNAL || (this instanceof EternalTable)) {
             forEachTask(x);
         } else {
+            assert(minT!=TIMELESS);
             forEachTask(t -> {
-                if (t.intersects(minT, maxT))
+                if (t.intersectsRaw(minT, maxT))
                     x.accept(t);
             });
         }

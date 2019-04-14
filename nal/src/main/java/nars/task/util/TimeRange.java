@@ -33,7 +33,7 @@ public class TimeRange extends Longerval implements HyperRegion {
             return true;
 
         LongInterval t = (LongInterval)x;
-        return LongInterval.intersects(s, end, t.start(), t.end());
+        return LongInterval.intersectsSafe(s, end, t.start(), t.end());
     }
 
 
@@ -41,7 +41,7 @@ public class TimeRange extends Longerval implements HyperRegion {
     public boolean contains(HyperRegion x) {
         //return ((LongInterval)x).containedBy(start, end);
         LongInterval t = ((LongInterval) x);
-        return contains(t.start(), t.end());
+        return containsSafe(t.start(), t.end());
     }
 
     @Override

@@ -22,10 +22,12 @@ package nars.truth;
 
 import com.google.common.collect.Lists;
 import it.unimi.dsi.fastutil.longs.LongArrayList;
+import jcog.TODO;
 import jcog.Util;
 import jcog.WTF;
 import jcog.data.set.MetalLongSet;
 import jcog.io.BinTxt;
+import jcog.math.LongInterval;
 import jcog.util.ArrayUtils;
 import nars.Op;
 import nars.Param;
@@ -63,10 +65,12 @@ public interface Stamp {
 
     /** applies a fair, random-removal merge of input stamps */
     static long[] merge(long[] a, long[] b, Random rng, float aToB, int capacity) {
-        if (a.length == 0) return b;
-        if (b.length == 0) return a;
-        if (Arrays.equals(a, b))
+        if (Arrays.equals(a, b) || b.length == 0) {
+            if (a.length > capacity)
+                throw new TODO();
             return a;
+        }
+        if (a.length == 0) return b;
 
         int abLength = a.length + b.length;
         if (abLength <= capacity) {
@@ -401,10 +405,18 @@ public interface Stamp {
      */
     static boolean overlapsAny(/*@NotNull*/ long[] a, /*@NotNull*/ long[] b) {
 
-        if (a.length == 0 || b.length == 0)
+        int A = a.length;
+        int B = b.length;
+        if (A == 0 || B == 0)
             return false;
 
-        if (a.length > b.length) {
+        if (A == 1 && B == 1)
+            return a[0]==b[0];
+
+        if (!LongInterval.intersectsRaw(a[0], a[A -1], b[0], b[B -1]))
+            return false; //intervals are completely disjoint
+
+        if (A > B) {
             //swap to get the larger stamp in the inner loop
             long[] _a = a;
             a = b;

@@ -251,10 +251,6 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
     }
 
 
-    @Override
-    public void forEachTask(long minT, long maxT, Consumer<? super Task> x) {
-        forEachTask(x);
-    }
 
     @Override
     public final void remember(Remember r) {

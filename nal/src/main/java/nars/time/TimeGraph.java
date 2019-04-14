@@ -1465,7 +1465,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
         private @Nullable long[] unionIfIntersects(long start, long end) {
             long thisStart = this.start;
             long thisEnd = end();
-            return LongInterval.intersects(start, end, thisStart, thisEnd) ?
+            return LongInterval.intersectsSafe(start, end, thisStart, thisEnd) ?
                     Longerval.unionArray(start, end, thisStart, thisEnd) :
                     null;
         }

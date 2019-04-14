@@ -44,7 +44,7 @@ public class ActiveQuestionTask extends NALTask.NALTaskX implements Consumer<Tas
     private final BiConsumer<? super ActiveQuestionTask /* Q */, Task /* A */> eachAnswer;
 
     final Bag<Task, PriReference<Task>> answers;
-    private Off onTask;
+    private volatile Off onTask;
 
     final Predicate<Term> test;
 
@@ -132,17 +132,13 @@ public class ActiveQuestionTask extends NALTask.NALTaskX implements Consumer<Tas
     @Override
     public boolean delete() {
         if (super.delete()) {
-            off();
+            if (this.onTask != null) {
+                this.onTask.close();
+                this.onTask = null;
+            }
             return true;
         }
         return false;
-    }
-
-    private void off() {
-        //if (this.onTask != null) {
-            this.onTask.close();
-            this.onTask = null;
-        //}
     }
 
     @Deprecated private Bag<Task, PriReference<Task>> newBag(int history) {

@@ -41,16 +41,21 @@ public class CachedAnon extends Anon {
     }
 
     @Override
-    protected Term applyPosCompound(Compound x) {
+    protected final Term applyPosCompound(Compound x) {
         if (!cache(x,putOrGet))
             return super.applyPosCompound(x);
+        else
+            return applyPosCompoundCached(x);
+    }
 
-        return putOrGet ? putCache.computeIfAbsent(x, xx -> {
-            Term y = super.applyPosCompound(xx);
-            if (y instanceof Compound && cache((Compound) y, false))
-                getCache.put((Compound) y, xx);
-            return y;
-        })
+    private Term applyPosCompoundCached(Compound x) {
+        return putOrGet ?
+            putCache.computeIfAbsent(x, xx -> {
+                Term y = super.applyPosCompound(xx);
+                if (y instanceof Compound && cache((Compound) y, false))
+                    getCache.put((Compound) y, xx);
+                return y;
+            })
             :
             getCache.computeIfAbsent(x, xx -> super.applyPosCompound(xx));
     }

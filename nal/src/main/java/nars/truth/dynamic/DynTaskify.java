@@ -48,8 +48,8 @@ public class DynTaskify extends TaskList {
     public final Task result;
     private MetalLongSet evi = null;
 
-    final boolean beliefOrGoal;
-    final Predicate<Task> filter;
+    private final boolean beliefOrGoal;
+    private final Predicate<Task> filter;
 
 
     public DynTaskify(AbstractDynamicTruth model, boolean beliefOrGoal, Answer a) {
@@ -254,8 +254,7 @@ public class DynTaskify extends TaskList {
     }
 
     private boolean doesntOverlap(Task t) {
-        return size ==0 ||
-                doesntOverlap(t.stamp());
+        return size ==0 || doesntOverlap(t.stamp());
     }
 
     private boolean doesntOverlap(long[] stamp) {
@@ -339,7 +338,7 @@ public class DynTaskify extends TaskList {
     }
 
     /** excludes ETERNALs */
-    public long earliest() {
+    private long earliest() {
         return minValue(t -> {
             long ts = t.start();
             return ts != LongInterval.ETERNAL ? ts : LongInterval.TIMELESS;
