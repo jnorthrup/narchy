@@ -2,6 +2,7 @@ package nars.task.util;
 
 import jcog.TODO;
 import jcog.WTF;
+import jcog.data.list.FasterList;
 import jcog.math.FloatRange;
 import jcog.math.IntRange;
 import jcog.pri.PriMap;
@@ -14,10 +15,10 @@ import jcog.pri.op.PriReturn;
 import nars.NAR;
 import nars.Param;
 import nars.Task;
-import nars.attention.What;
 import nars.control.CauseMerge;
 import nars.control.channel.ConsumerX;
 import nars.task.ITask;
+import org.eclipse.collections.api.block.procedure.Procedure;
 
 import java.util.Iterator;
 import java.util.Map;
@@ -45,7 +46,7 @@ abstract public class PriBuffer<T extends Prioritizable> implements Consumer<T> 
     public abstract T put(T x);
 
     //public abstract void commit(long now, Consumer<ITask> target);
-    public abstract void commit(ConsumerX<? super T> target, NAR n);
+    public abstract void commit(ConsumerX<T> target, NAR n);
 
     public abstract void clear();
 
@@ -103,7 +104,7 @@ abstract public class PriBuffer<T extends Prioritizable> implements Consumer<T> 
         }
 
         @Override
-        public void commit(ConsumerX<? super T> target, NAR n) {
+        public void commit(ConsumerX<T> target, NAR n) {
 
         }
 
@@ -188,7 +189,7 @@ abstract public class PriBuffer<T extends Prioritizable> implements Consumer<T> 
          * TODO time-sensitive
          */
         @Override
-        public void commit(ConsumerX<? super X> target, NAR n) {
+        public void commit(ConsumerX<X> target, NAR n) {
             Iterator<X> ii = tasks.values().iterator();
             while (ii.hasNext()) {
                 X r = ii.next();
@@ -309,7 +310,7 @@ abstract public class PriBuffer<T extends Prioritizable> implements Consumer<T> 
         }
 
         @Override
-        public void commit(ConsumerX<? super ITask> target, NAR nar) {
+        public void commit(ConsumerX<ITask> target, NAR nar) {
 
             long now = nar.time();
             if (prev == Long.MIN_VALUE)
@@ -331,14 +332,23 @@ abstract public class PriBuffer<T extends Prioritizable> implements Consumer<T> 
                     //TODO target.input(tasks, n, target.concurrency());
 
                     int c = target.concurrency();
-                    if (c <= 1 || !(target instanceof What)) {
+                    if (c <= 1) {
+                        //one at a time
                         b.pop(null, n, target);
                     } else {
+                        //batch
                         int remain = n;
                         int nEach = (int) Math.ceil(((float) remain) / c);
+
+                        Procedure<ITask> targetBatch = target::accept;
+                        Consumer<FasterList<ITask>> targetBatched = (batch) -> {
+                            batch.forEach(targetBatch);
+                        };
+
                         for (int i = 0; i < c && remain > 0; i++) {
-                            nar.exe.input(b, (What)target, Math.min(remain, nEach));
-                            remain -= nEach;
+                            int asked = Math.min(remain, nEach);
+                            remain -= asked;
+                            target.input(b, target, asked, nar.exe, targetBatched);
                         }
                     }
 

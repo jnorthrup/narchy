@@ -431,57 +431,58 @@ public class ConjClustering extends How {
         private Task conjoin(Task[] x, float freq, float conf, long start) {
 
             double e = c2wSafe((double)conf);
-//            if (e != e)
-//                throw new WTF();
+            if (e < Param.truth.TRUTH_EVI_MIN)
+                return null;
 
-            if (e > 0) {
-                final Truth t = Truth.theDithered(freq, e, nar);
-                if (t != null) {
+            final Truth t = Truth.theDithered(freq, e, nar);
+            if (t != null) {
 
-                    Term cj = ConjLazy.sequence(x);
-                    if (cj.volume() > 1) {
+                Term cj = ConjLazy.sequence(x);
+                if (cj.volume() > 1) {
 
-                        Term tt = Task.normalize(cj);
+                    Term tt = Task.normalize(cj);
 
-                        ObjectBooleanPair<Term> cp = Task.tryContent(tt, punc, true);
-                        if (cp != null) {
+                    ObjectBooleanPair<Term> cp = Task.tryContent(tt, punc, true);
+                    if (cp != null) {
 
-                            long range = Util.min(LongInterval::range, x) - 1;
-                            long tEnd = start + range;
-                            NALTask y = new STMClusterTask(cp, t,
-                                    start, tEnd,
-                                    Stamp.sample(Param.STAMP_CAPACITY, actualStamp, nar.random()), punc, now);
-                            y.cause(CauseMerge.AppendUnique.merge(Param.causeCapacity.intValue(), x));
-
+                        long range = Util.min(LongInterval::range, x) - 1;
+                        long tEnd = start + range;
+                        NALTask y = new STMClusterTask(cp, t,
+                                start, tEnd,
+                                Stamp.sample(Param.STAMP_CAPACITY, actualStamp, nar.random()), punc, now);
+                        y.cause(CauseMerge.AppendUnique.merge(Param.causeCapacity.intValue(), x));
 
 
-                            int xVolMax = Util.max(TermedDelegate::volume, x);
-                            float cmplFactor =
-                                    ((float)xVolMax) / y.volume();
+                        budget(y, x);
+
+                        return y;
+
+                    }
+                }
+            }
+
+
+            return null;
+        }
+    }
+
+    private void budget(NALTask y, Task[] x) {
+        int xVolMax = Util.max(TermedDelegate::volume, x);
+        float cmplFactor =
+                ((float)xVolMax) / y.volume();
 
 //                                float freqFactor =
 //                                        t.freq();
 //                                float confFactor =
 //                                        (conf / (conf + confMax));
 
-                            float p = Util.max(Task::priElseZero, x) * cmplFactor;
+        float p = Util.max(Task::priElseZero, x) * cmplFactor;
 
-                            y.pri(
-                                Prioritizable.fund(p, priCopyOrMove,
-                                x)
-                            );
+        y.pri(
+            Prioritizable.fund(p, priCopyOrMove,
+            x)
+        );
 
-                            return y;
-
-                        }
-                    }
-                }
-
-
-            }
-
-
-            return null;
-        }
+        assert(!y.isDeleted());
     }
 }

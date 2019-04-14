@@ -343,12 +343,16 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
                     SampleReaction next = each.apply(y);
 
                     if (next.remove) {
+
                         //explicit removal
-                        y.delete();
-                        remove(y, ii, i, false);
+                        boolean d = deleteOnPop();
+                        if (d)
+                            y.delete();
+
+                        remove(y, ii, i, !d);
 
                         if (!next.stop)
-                            tryRecommit(rng, s);
+                            tryRecommit(rng, s-1);
 
                     } else {
                         if (rng==null)
@@ -364,6 +368,11 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
 
         //}
 
+    }
+
+    /** whether to delete immediately on pop, even if it cant be immediately removed from the bag during sampling */
+    protected boolean deleteOnPop() {
+        return false;
     }
 
     /**

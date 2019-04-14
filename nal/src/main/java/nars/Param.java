@@ -63,11 +63,14 @@ public abstract class Param extends Parts<Term,NAR> {
 //    public static final boolean ALLOW_UNDITHERED_DT_IF_DITHERED_FAILS = false;
     public static final int TASK_EVAL_FORK_ATTEMPT_LIMIT = TASK_EVAL_FORK_LIMIT*2;
     /** >= 1  - maximum # of Answer attempts per Answer capacity.  so 2 means 2 tasks are tried for each Answer task slot in its capacity */
-    public static final float ANSWER_COMPLETENESS = 1f;
+    public static final float ANSWER_COMPLETENESS =
+            1f;
+            //2f;
+            //0.5f;
+
     public static final boolean DEBUG_SIMILAR_DERIVATIONS = false;
     /** should be monotonically increasing at most */
-    public static final PriMerge tasklinkMerge =
-            PriMerge.or;
+    public static final PriMerge tasklinkMerge = PriMerge.or;
 
 //    public static final boolean ETERNALIZE_BELIEF_PROJECTED_FOR_GOAL_DERIVATION = false;
     /**
@@ -127,6 +130,9 @@ public abstract class Param extends Parts<Term,NAR> {
     public static final float PROJECTION_EVIDENCE_INFLATION_PCT_TOLERANCE = 0.1f;
 
     public static final int DYN_TASK_MATCH_MODE = 1;
+
+    /** if false, will use pri=ScalarValue.EPSILON */
+    public static final boolean DELETE_PROXY_TASK_TO_DELETED_TASK = false;
 
     protected static final boolean DYNAMIC_CONCEPT_TRANSIENT = false;
 

@@ -1,11 +1,17 @@
 package nars.control.channel;
 
 import jcog.data.iterator.ArrayIterator;
+import jcog.data.list.FasterList;
 import jcog.pri.Prioritizable;
+import jcog.pri.bag.Sampler;
+import jcog.pri.bag.impl.ArrayBag;
+import jcog.pri.bag.impl.BufferedBag;
+import nars.exe.Exec;
 
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.Executor;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
@@ -61,6 +67,45 @@ import java.util.stream.Stream;
     /** override for multithreading hints */
     default int concurrency() {
         return 1;
+    }
+
+    static final ThreadLocal<FasterList> drainBuffer = ThreadLocal.withInitial(FasterList::new);
+
+//    void input(Bag<ITask, ITask> b, What target, int min);
+    /** asynchronously drain N elements from a bag as input */
+    default void input(Sampler<? extends X> taskSampler, ConsumerX<? super X> target, int max, Executor exe, Consumer<FasterList<X>> runner) {
+        Sampler b;
+        if  (taskSampler instanceof BufferedBag)
+            b = ((BufferedBag) taskSampler).bag;
+        else
+            b = taskSampler;
+
+        exe.execute(() -> {
+
+            FasterList batch = Exec.drainBuffer.get();
+
+            if (b instanceof ArrayBag) {
+                boolean blocking = true;
+                ((ArrayBag) b).popBatch(max, blocking, batch::add);
+            } else {
+                b.pop(null, max, batch::add); //per item.. may be slow
+            }
+
+            if (!batch.isEmpty()) {
+
+                try {
+
+//                    if (batch.size() > 2)
+//                        batch.sortThis(Task.sloppySorter);
+
+                    runner.accept(batch);
+
+                } finally {
+                    batch.clear();
+                }
+            }
+        });
+
     }
 
 }

@@ -55,15 +55,15 @@ public class HyperIterator<X>  {
 
     }
 
-    public HyperIterator(Spatialization<X> model, X[] x, FloatFunction<? super HyperRegion> rank) {
+    public HyperIterator(Spatialization/*<X>*/ model, X[] x, FloatFunction<? super HyperRegion> rank) {
         this.plan = new RankedN(x, (FloatFunction) r -> rank.floatValueOf(
                 r instanceof HyperRegion ? ((HyperRegion) r) :
                         (r instanceof Node ? ((Node) r).bounds() :
-                                model.bounds((X) r))
+                                model.bounds(r))
         ));
     }
 
-    public void start(Node<X> start) {
+    private void start(Node<X> start) {
         plan.add(start);
     }
 

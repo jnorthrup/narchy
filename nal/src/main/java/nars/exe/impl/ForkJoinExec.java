@@ -168,7 +168,7 @@ public class ForkJoinExec extends MultiExec implements Thread.UncaughtExceptionH
 
 
         double playTimeNS = updater.durCycles() * idealCycleNS * efficiency * nar.loop.throttle.floatValue();
-        double nsPerPri = playTimeNS / priTotal;
+        double nsPerPri = priTotal > Double.MIN_VALUE ? playTimeNS / priTotal : 0;
         double priPerTask = priTotal / tasks;
 
         int ll = play.size();
@@ -296,6 +296,7 @@ public class ForkJoinExec extends MultiExec implements Thread.UncaughtExceptionH
 
         int loops = 2;
 
+        /** even if nsPerPri == 0, one iteration should execute */
         public PlayBatch(ObjectFloatPair[] a, double nsPerPri) {
             this.a = a;
             this.nsPerPri = nsPerPri;

@@ -3,11 +3,7 @@ package nars.exe;
 import jcog.Log;
 import jcog.data.list.FasterList;
 import jcog.pri.Prioritizable;
-import jcog.pri.bag.Sampler;
-import jcog.pri.bag.impl.ArrayBag;
-import jcog.pri.bag.impl.BufferedBag;
 import nars.NAR;
-import nars.attention.What;
 import nars.control.NARPart;
 import nars.control.channel.ConsumerX;
 import nars.task.ITask;
@@ -143,41 +139,8 @@ abstract public class Exec extends NARPart implements Executor, ConsumerX<ITask>
 
     }
 
-    private static final ThreadLocal<FasterList<ITask>> tmpTasks = ThreadLocal.withInitial(FasterList::new);
 
 
-    /** asynchronously drain N elements from a bag as input */
-    public void input(Sampler<? extends ITask> taskSampler, What target, int max) {
-        Sampler b;
-        if  (taskSampler instanceof BufferedBag)
-            b = ((BufferedBag) taskSampler).bag;
-        else
-            b = taskSampler;
-
-        execute(() -> {
-
-            FasterList batch = Exec.tmpTasks.get();
-
-            if (b instanceof ArrayBag) {
-                boolean blocking = true;
-                ((ArrayBag) b).popBatch(max, blocking, batch::add);
-            } else {
-                b.pop(null, max, batch::add); //per item.. may be slow
-            }
-
-            if (!batch.isEmpty()) {
-                try {
-//                    if (batch.size() > 2)
-//                        batch.sortThis(Task.sloppySorter);
-
-                    ITask.run(batch, target);
-                } finally {
-                    batch.clear();
-                }
-            }
-        });
-
-    }
 
 
     public void synch() {

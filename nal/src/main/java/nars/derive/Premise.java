@@ -371,8 +371,6 @@ public class Premise implements Comparable<Premise> {
 
         if (match(d, matchTTL)) {
 
-
-
             short[] can = d.deriver.what(d);
 
             if (can.length > 0) {

@@ -63,6 +63,9 @@ public class BatchDeriver extends Deriver {
 
             Task task = tasklink.get(when);
             if (task != null) {
+                if (task.isDeleted())
+                    return;
+
                 for (int i = 0; i < tlAttempts; i++) {
                     Term term = ((What.TaskLinkWhat)what).links.term(tasklink, task, d);
                     if (term != null)

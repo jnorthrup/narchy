@@ -227,7 +227,7 @@ public class TopN<X> extends SortedArray<X> implements Consumer<X>, FloatFunctio
     /**
      * 0 < thresh <= 1
      */
-    private final boolean isFull(float thresh) {
+    private boolean isFull(float thresh) {
         return (size() >= capacity() * thresh);
     }
 
@@ -293,26 +293,19 @@ public class TopN<X> extends SortedArray<X> implements Consumer<X>, FloatFunctio
         return Arrays.copyOf(items, size());
     }
 
-    @Nullable
-    public X[] toArrayOrNullIfEmpty() {
-        int s = size();
-        return s > 0 ? Arrays.copyOf(items, s) : null;
-    }
 
     @Nullable
     public X[] toArrayIfSameSizeOrRecycleIfAtCapacity(@Nullable X[] x) {
         int s = size();
-        int xl = x != null ? x.length : 0;
         if (s == 0)
             return null;
-        else if (xl == s) {
+
+        int xl = x != null ? x.length : 0;
+        if (xl == s) {
             System.arraycopy(items, 0, x, 0, s);
             return x;
         } else {
-            if (items.length == s)
-                return items;
-            else
-                return Arrays.copyOf(items, s);
+            return items.length == s ? items : Arrays.copyOf(items, s);
         }
     }
 }

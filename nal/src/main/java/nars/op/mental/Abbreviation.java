@@ -6,7 +6,7 @@ import jcog.data.atomic.AtomicFloat;
 import jcog.math.MutableIntRange;
 import jcog.pri.PLink;
 import jcog.pri.bag.Bag;
-import jcog.pri.bag.impl.PriArrayBag;
+import jcog.pri.bag.impl.PriReferenceArrayBag;
 import jcog.pri.op.PriMerge;
 import nars.$;
 import nars.NAR;
@@ -72,7 +72,7 @@ public class Abbreviation/*<S extends Term>*/ extends How {
     public Abbreviation(String termPrefix, int volMin, int volMax, NAR nar) {
         super();
 
-        pending = new PriArrayBag(PriMerge.plus, 32);
+        pending = new PriReferenceArrayBag(PriMerge.plus, 32);
 
         stmSize = 512;
 

@@ -30,4 +30,9 @@ public class PriReferenceArrayBag<X,Y extends PriReference<X>> extends ArrayBag<
         forEach((Consumer) l::add);
         return l;
     }
+
+    /** should be safe since an actual item is wrapped in a priReference */
+    @Override protected boolean deleteOnPop() {
+        return true;
+    }
 }

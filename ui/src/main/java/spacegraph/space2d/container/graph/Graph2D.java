@@ -268,12 +268,12 @@ public class Graph2D<X> extends MutableMapContainer<X, NodeVis<X>> {
 
     @Override
     protected void stopping() {
-        //synchronized (nodeCache) {
-            nodeCache.values().forEach(ContainerSurface::stop);
+        synchronized (nodeCache) {
+            nodeCache.values().forEach(ContainerSurface::delete);
             nodeCache.clear();
             edgePool.delete();
+        }
         super.stopping();
-        //}
     }
 
     private void updateNodes(Iterable<X> nodes, boolean addOrReplace) {

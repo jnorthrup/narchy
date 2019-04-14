@@ -46,7 +46,7 @@ public class RankedN<X> extends TopN<X> {
         rank(ranking);
     }
 
-    public float rankCached(int index) {
+    private float rankCached(int index) {
         return value[index];
     }
 
