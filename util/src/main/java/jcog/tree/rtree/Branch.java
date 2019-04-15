@@ -58,14 +58,18 @@ public class Branch<X> extends AbstractNode<X> {
         if (!this.bounds.contains(b))
             return false;
 
-        int s = size;
-        if (s > 0) {
-            Node<X>[] c = this.data;
-            for (int i = 0; i < s; i++) {
-                if (c[i].contains(x, b, model))
+//        int s = size;
+//        if (s > 0) {
+//            Node<X>[] c = this.data;
+            for (Node c : data) {
+//            for (int i = 0; i < s; i++) {
+                if (c == null)
+                    break; //null-terminator
+                if (c.contains(x, b, model))
                     return true;
+
             }
-        }
+//        }
 
         return false;
     }
@@ -118,6 +122,7 @@ public class Branch<X> extends AbstractNode<X> {
         if (model.mergeCanStretch() ? bounds.intersects(B) : bounds.contains(B)) {
 
             short s = this.size;
+            boolean merged = false, mergeBoundUpdate = false;
             for (int i = 0; i < s; i++) {
                 Node<X> ci = data[i];
 
@@ -126,36 +131,37 @@ public class Branch<X> extends AbstractNode<X> {
                 Node<X> di = ci.add(x, false, model, null);
 
                 if (di == null) {
-                    //merge occurred
-                    if (!ciBefore.equals(ci.bounds())) {
-                        updateBounds();
-                    }
-                    return null; //duplicate found
-                }
-
-                if (ci!=di) {
-                    data[i] = di; //merge
-                    if (!ciBefore.equals(di.bounds()))
-                        updateBounds();
-                    return null;
+                    merged = true;
+                    mergeBoundUpdate = !ciBefore.equals(ci.bounds());
+                    break;
+                }  else if (ci!=di) {
+                    data[i] = di;
+                    merged = true;
+                    mergeBoundUpdate = !ciBefore.equals(di.bounds());
+                    break;
                 }
             }
-            if (!addOrMerge)
-                return this;
+
+            if (merged) {
+                if (mergeBoundUpdate)
+                    updateBounds();
+                return null;
+            }
+
+
         }
 
-        if (added == null)
+        if (!addOrMerge)
             return this;
 
-        assert (!added[0]);
-
+        //assert (!added[0]);
 
         if (size < data.length) {
 
 
             Node<X> l = model.newLeaf().add(x, addOrMerge, model, added);
             grow(addChild(l));
-            assert (added[0]);
+            //assert (added[0]);
 
             return this;
 
@@ -168,7 +174,7 @@ public class Branch<X> extends AbstractNode<X> {
             if (nextBest == null) {
                 if (!before.equals(data[bestLeaf].bounds()))
                     updateBounds();
-                assert(!added[0]);
+                //assert(!added[0]);
                 return null; /*merged*/
             } else {
 
@@ -181,7 +187,8 @@ public class Branch<X> extends AbstractNode<X> {
                     data[bestLeaf] = nextBest;
                 }
 
-                assert(added[0]); updateBounds();
+                //assert(added[0]);
+                updateBounds();
                 return this;
             }
 

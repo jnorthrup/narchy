@@ -96,7 +96,7 @@
         <dependency>
             <groupId>tec.uom</groupId>
             <artifactId>uom-se</artifactId>
-            <version>1.0.9</version>
+            <version>1.0.10</version>
             <scope>compile</scope>
         </dependency>
         <dependency>

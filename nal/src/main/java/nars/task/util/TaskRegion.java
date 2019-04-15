@@ -189,8 +189,13 @@ public interface TaskRegion extends HyperRegion, Tasked, LongInterval {
     }
 
     default double coord(int dimension, boolean maxOrMin) {
-        //return coordF(dimension, maxOrMin);
-        throw new UnsupportedOperationException();
+        switch (dimension) {
+            case 0: return !maxOrMin ? start() : end();
+            case 1: return !maxOrMin ? freqMinI() : freqMaxI();
+            case 2: return !maxOrMin ? confMinI() : confMaxI();
+            default:
+                return Double.NaN;
+        }
     }
 
     default double center(int dimension) {

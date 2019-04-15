@@ -1,12 +1,13 @@
 package nars.table.temporal;
 
+import jcog.Util;
 import jcog.WTF;
 import jcog.data.list.FasterList;
 import jcog.math.LongInterval;
 import jcog.sort.FloatRank;
 import jcog.sort.Top;
 import jcog.tree.rtree.*;
-import jcog.tree.rtree.split.QuadraticSplitLeaf;
+import jcog.tree.rtree.split.LinearSplitLeaf;
 import nars.NAR;
 import nars.Param;
 import nars.Task;
@@ -41,13 +42,13 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
                     1.0f;
             //2f;
 
-    private static final int MAX_TASKS_PER_LEAF = 3;
+    private static final int MAX_TASKS_PER_LEAF = 4;
 
     /** TODO tune */
     private static final Split SPLIT =
+              new LinearSplitLeaf();
+//              new QuadraticSplitLeaf();
 //            new AxialSplitLeaf();  //AXIAL SPLIT IS PROBABLY BAD FOR THIS UNLESS A LEAF ENDS UP BEING SPLIT IN A CERTAIN WAY
-//              new LinearSplitLeaf();
-              new QuadraticSplitLeaf();
 
 
     protected int capacity;
@@ -506,6 +507,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
                 if (Arrays.equals(ee.stamp(), ii.stamp())) {
                     if (ee.term().equals(ii.term())) {
                         Truth et = ee.truth(), it = ii.truth();
+
                         if (et.equals(it)) {
                             if (ee.containsRaw((LongInterval)ii)) {
                                 m = ee;
@@ -514,7 +516,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
                             }
                         }
 
-                        //this produces inconsistent results because conf bounds change:
+                        //does this produce inconsistent results because conf bounds change?
 
 //                        if (Util.equals(et.freq(), it.freq(), Param.truth.TRUTH_EPSILON)) {
 //                            float ete = et.conf(), ite = it.conf();

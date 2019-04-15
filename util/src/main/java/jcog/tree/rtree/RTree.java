@@ -107,13 +107,13 @@ public class RTree<T> implements Space<T> {
 
         if (added[0]) {
 
-            assert(nextRoot!=null);
+            //assert(nextRoot!=null);
             this.root = nextRoot;
+            //this.root = nextRoot!=null ? nextRoot : model.newLeaf();
             SIZE.getAndIncrement(this);
 
-            //this.root = nextRoot!=null ? nextRoot : model.newLeaf();
 
-//            //TEMPORARY
+            //TEMPORARY
 //            if (Iterators.size(iterator())!=size()) {
 //                boolean[] added2 = new boolean[1];
 //                Node<T> nextRoot2 = root.add(t, true, model, added2);
@@ -187,18 +187,6 @@ public class RTree<T> implements Space<T> {
     public final int size() {
         return SIZE.getOpaque(this);
     }
-
-
-//    public final HyperIterator<T> iterate(HyperRegion bounds, BoundsMatch mode) {
-//        return iterate(bounds, mode, null);
-//    }
-//
-//    public final HyperIterator<T> iterate(HyperRegion bounds, BoundsMatch mode, byte[] gradient) {
-//        if (isEmpty())
-//            return HyperIterator.Empty;
-//        else
-//            return new HyperIterator(model, root, bounds, mode, gradient);
-//    }
 
 
     @Override
