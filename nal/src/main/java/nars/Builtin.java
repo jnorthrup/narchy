@@ -113,7 +113,7 @@ public class Builtin {
             new AbstractInlineFunctor2("conjWithout") {
                 @Override
                 protected Term apply(Term conj, Term event) {
-                    Term x = Conj.diff(conj, event);
+                    Term x = Conj.diffAll(conj, event);
                     return conj.equals(x) ? Null : x;
                 }
             },
@@ -446,7 +446,7 @@ public class Builtin {
         nar.add(new AbstractInlineFunctor2("conjWithoutPN") {
             @Override
             protected Term apply(Term conj, Term event) {
-                Term x = Conj.diff(conj, event, true);
+                Term x = Conj.diffAll(conj, event, true);
                 if (conj.equals(x))
                     return Null;
                 return x;

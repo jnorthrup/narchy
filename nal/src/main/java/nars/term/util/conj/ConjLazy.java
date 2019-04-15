@@ -128,7 +128,7 @@ public class ConjLazy extends LongObjectArraySet<Term> implements ConjBuilder {
     }
 
     public static ConjLazy events(Term conj) {
-        return events(conj, 0);
+        return events(conj, conj.dt()==DTERNAL ? ETERNAL : 0);
     }
 
     private static ConjLazy events(Term conj, long occOffset) {

@@ -29,7 +29,7 @@ public class NAL7Test extends NALTest {
         test.confTolerance(CONF_TOLERANCE_FOR_PROJECTIONS);
         test.termVolMax(12);
         test.confMin(0.3f);
-        test.nar.freqResolution.set(0.05f);
+        test.nar.freqResolution.set(0.04f);
         test.nar.confResolution.set(0.02f);
     }
 
@@ -230,6 +230,7 @@ public class NAL7Test extends NALTest {
 
                 .inputAt(1, "(happy &&+4120 (i &&+1232 (--,i))). |")
                 .mustBelieve(cycles, "(happy &&+4120 i)", 1f, 0.81f, 1)
+                .mustBelieve(cycles, "(happy &&+5352 --i)", 1f, 0.81f, 1)
                 .mustNotOutput(cycles, "(happy &&+5352 (--,i))", BELIEF, -1231)
                 .mustNotOutput(cycles, "(happy &&+4120 i)", BELIEF, 1233)
                 .mustNotOutput(cycles, "(i&&happy)", BELIEF, 1)

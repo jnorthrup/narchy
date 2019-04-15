@@ -2,7 +2,7 @@ package nars.test.condition;
 
 
 import jcog.Texts;
-import nars.$;
+import jcog.data.list.FasterList;
 import nars.NAR;
 import nars.Op;
 import nars.Task;
@@ -36,23 +36,23 @@ public class TaskCondition implements NARCondition, Predicate<Task>, Consumer<Ta
     public static final boolean feedback = false;
     private final LongLongPredicate time;
 
-    boolean succeeded;
+    private boolean succeeded;
 
 
-    public final float freqMin;
-    public final float freqMax;
+    private final float freqMin;
+    private final float freqMax;
     public final float confMin;
-    public final float confMax;
-    public long creationStart, creationEnd; 
+    private final float confMax;
+    private long creationStart, creationEnd;
 
     /*float tenseCost = 0.35f;
     float temporalityCost = 0.75f;*/
 
-    final static int maxSimilars = 2;
+    private final static int maxSimilars = 2;
 
-    public final List<Task> matched = $.newArrayList(1);
+    public final List<Task> matched = new FasterList(0);
 
-    protected final TreeMap<Float, Task> similar = new TreeMap();
+    @Deprecated protected final TreeMap<Float, Task> similar = new TreeMap();
 
 
     public TaskCondition(NAR n, long creationStart, long creationEnd, Term term, byte punc, float freqMin, float freqMax, float confMin, float confMax, LongLongPredicate time) throws RuntimeException {
@@ -94,7 +94,7 @@ public class TaskCondition implements NARCondition, Predicate<Task>, Consumer<Ta
 
     }
 
-    static String rangeStringN2(float min, float max) {
+    private static String rangeStringN2(float min, float max) {
         return '(' + Texts.n2(min) + ',' + Texts.n2(max) + ')';
     }
 
@@ -102,7 +102,7 @@ public class TaskCondition implements NARCondition, Predicate<Task>, Consumer<Ta
      * a heuristic for measuring the difference between terms
      * in range of 0..100%, 0 meaning equal
      */
-    static float termDistance(Term a, Term b, float ifLessThan) {
+    private static float termDistance(Term a, Term b, float ifLessThan) {
         if (a.equals(b)) return 0;
 
         float dist = 0;
@@ -179,13 +179,13 @@ public class TaskCondition implements NARCondition, Predicate<Task>, Consumer<Ta
     }
 
 
-    final boolean creationTimeMatches() {
+    private final boolean creationTimeMatches() {
         long now = nar.time();
         return (((creationStart == -1) || (now >= creationStart)) &&
                 ((creationEnd == -1) || (now <= creationEnd)));
     }
 
-    protected boolean occurrenceTimeMatches(Task t) {
+    private boolean occurrenceTimeMatches(Task t) {
         return time.accept(t.start(), t.end());
     }
 
@@ -194,6 +194,7 @@ public class TaskCondition implements NARCondition, Predicate<Task>, Consumer<Ta
 
         if (matches(t)) {
             matched.add(t);
+
             succeeded = true;
 
 
@@ -204,7 +205,7 @@ public class TaskCondition implements NARCondition, Predicate<Task>, Consumer<Ta
         }
     }
 
-    public void recordSimilar(Task task) {
+    private void recordSimilar(Task task) {
 
         final TreeMap<Float, Task> similar = this.similar;
 
@@ -242,12 +243,11 @@ public class TaskCondition implements NARCondition, Predicate<Task>, Consumer<Ta
         if (difference >= worstDiff)
             return;
 
-
-        this.similar.put(difference, task);
-
-
-        if (similar.size() > maxSimilars) {
-            similar.remove(similar.lastEntry().getKey());
+        difference += 0.0001f * ((float)task.hashCode()) / (Integer.MAX_VALUE*2); //HACK differentiate by hashcode
+        if (similar.put(difference, task)==null) {
+            if (similar.size() > maxSimilars) {
+                similar.remove(similar.lastEntry().getKey());
+            }
         }
 
     }

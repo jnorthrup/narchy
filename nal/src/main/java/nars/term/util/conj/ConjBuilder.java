@@ -48,6 +48,7 @@ public interface ConjBuilder {
 
     int eventOccurrences();
 
+    default boolean remove(LongObjectPair<Term> e) { return remove(e.getOne(), e.getTwo()); }
     boolean remove(long at, Term t);
     boolean removeAll(Term term);
 

@@ -745,7 +745,7 @@ public class ConjTest {
 
         assertConjDiff("(x && y)", "x", "y", false);
 
-        assertConjDiff("--x", "x", "false", false);
+        assertConjDiff("--x", "x", "(--,x)", false);
         assertConjDiff("x", "--x", "x", false);
         assertConjDiff("--x", "x", "true", true);
         assertConjDiff("--x", "--x", "true", false);
@@ -760,30 +760,30 @@ public class ConjTest {
     }
 
     private static void assertConjDiff(String inc, String exc, String expect, boolean excludeNeg) {
-        assertEq(expect, Conj.diff($$(inc), $$(exc), excludeNeg));
+        assertEq(expect, Conj.diffOne($$(inc), $$(exc), excludeNeg));
     }
 
     @Test
     void testConjWithoutAllParallel() {
-        assertEquals("(a&&b)", Conj.diff(
+        assertEquals("(a&&b)", Conj.diffAll(
                 $$("(&&,a,b,c)"),
                 $$("(&&,c,d,e)")).toString());
 
-        assertEq("(--,(a&&b))", Conj.diff(
+        assertEq("(--,(a&&b))", Conj.diffAll(
                 $$("--(&&,a,b,c)"),
                 $$("(&&,c,d,e)")));
 
-        assertEq("(a&|b)", Conj.diff(
+        assertEq("(a&|b)", Conj.diffAll(
                 $$("(&|,a,b,c)"),
                 $$("(&|,c,d,e)")));
 
 
-        assertEq("(a&&b)",
-                Conj.diff(
-                        $$("(&&,a,b,c)"),
-                        $$("(&|,c,d,e)")));
+//        assertEq("(a&&b)",
+//                Conj.diffAll(
+//                        $$("(&&,a,b,c)"),
+//                        $$("(&|,c,d,e)")));
 
-        assertEq("(a&&b)", Conj.diff(
+        assertEq("(a&&b)", Conj.diffAll(
                 $$("(&&,a,b,--c)"),
                 $$("(&&,--c,d,e)")));
     }
@@ -791,10 +791,10 @@ public class ConjTest {
 
     @Test
     void testConjWithoutAllParallel2() {
-        assertEq("a", Conj.diff($$("(&&,a,b,c)"), $$("(b&&c)")));
-        assertEq("b", Conj.diff($$("(&&,a,b,c)"), $$("(a&&c)")));
-        assertEq("(b&&c)", Conj.diff($$("(&&,a,b,c)"), $$("a")));
-        assertEq("(a&&c)", Conj.diff($$("(&&,a,b,c)"), $$("b")));
+        assertEq("a", Conj.diffAll($$("(&&,a,b,c)"), $$("(b&&c)")));
+        assertEq("b", Conj.diffAll($$("(&&,a,b,c)"), $$("(a&&c)")));
+        assertEq("(b&&c)", Conj.diffAll($$("(&&,a,b,c)"), $$("a")));
+        assertEq("(a&&c)", Conj.diffAll($$("(&&,a,b,c)"), $$("b")));
 
 
     }
@@ -822,20 +822,20 @@ public class ConjTest {
 
     @Test
     void testConjWithoutAllParallel3() {
-        assertEq("(f &&+1 g)", Conj.diff(
+        assertEq("(f &&+1 g)", Conj.diffAll(
                 $$("((&|,c,f) &&+1 g)"),
                 $$("(&|,c,d,e)")));
     }
 
     @Test
     void testConjWithoutAllSequence() {
-        assertEq("z", Conj.diff(
-                $$("((x &&+1 y) &&+1 z)"),
-                $$("(&&,x,y)")));
-
-        assertEq("(y &&+1 z)", Conj.diff(
+        assertEq("(y &&+1 z)", Conj.diffAll(
                 $$("((x &&+1 y) &&+1 z)"),
                 $$("(x &&+2 y)")));
+
+        assertEq("z", Conj.diffAll(
+                $$("((x &&+1 y) &&+1 z)"),
+                $$("(&&,x,y)")));
     }
 
     @Test
@@ -854,7 +854,7 @@ public class ConjTest {
                 //"(&|,b,c,x)",
                 y.toString());
 
-        assertEquals("y", Conj.diff(x, y).toString());
+        assertEquals("y", Conj.diffOne(x, y).toString());
 
         //ConjCommutive.the(DTERNAL, $$("(a&|b)"), $$("(b&|c)"));
 
@@ -1649,8 +1649,8 @@ public class ConjTest {
 
 
         {
-            assertTrue(xc.removeEventsByTerm($$("x"), true, false));
-            assertEq("((--,x)&&(--,y))", xc.term());
+//            assertTrue(xc.removeEventsByTerm($$("x"), true, false));
+//            assertEq("((--,x)&&(--,y))", xc.term());
         }
 
         Term xn = x.neg();

@@ -765,7 +765,7 @@ public class NAL8Test extends NALTest {
         test
                 .inputAt(0, "(--a ==>+1 b). |")
                 .inputAt(1, "b! |")
-                .mustGoal(5, "a", 0f, 0.81f, (t) -> t >= 0);
+                .mustGoal(cycles, "a", 0f, 0.81f, (t) -> t >= 0);
 
     }
 
@@ -775,8 +775,8 @@ public class NAL8Test extends NALTest {
         test
                 .inputAt(3, "(a &&+3 --b). |")
                 .inputAt(6, "--b! |")
-                .mustGoal(16, "a", 1f, 0.5f, t -> t >= 6)
-                .mustNotOutput(16, "a", GOAL, ETERNAL);
+                .mustGoal(cycles, "a", 1f, 0.5f, t -> t >= 6)
+                .mustNotOutput(cycles, "a", GOAL, ETERNAL);
     }
 
     @Test

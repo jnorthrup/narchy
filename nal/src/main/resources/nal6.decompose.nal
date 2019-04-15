@@ -8,9 +8,9 @@
         C, X, eventOfNeg(C,X), has(C,"--")    |-   negateEvents(conjWithout(C,--X)), (Belief:DeductionWeakPP)
 
     //free structural Conjunction/Disjunction decomposition
-    C, X, eventOfPN(C,X)                  |-   conjWithoutPN(C,X), (Belief:StructuralDeduction)
-      C, X, eventOfPN(C,X), task("?@"), hasBelief()    |-   conjWithoutPN(C,X)
-    C, X, eventOfPN(C,X)                  |-   conjWithoutPN(C,X), (Goal:StructuralDeduction)
+    C, X, eventOfPN(C,X)                              |-   conjWithoutPN(C,X), (Belief:StructuralDeduction)
+      C, X, eventOfPN(C,X), task("?@"), hasBelief()   |-   conjWithoutPN(C,X)
+    C, X, eventOfPN(C,X)                              |-   conjWithoutPN(C,X), (Goal:StructuralDeduction)
 
     //impl conj/disj pred belief and question free structural implication decomposition
     (A ==> C), X, eventOfPN(C,X), --isVar(A)   |-   (A ==> conjWithoutPN(C,  X)), (Belief:StructuralDeduction)

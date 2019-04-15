@@ -1,22 +1,28 @@
 package nars.term.util.conj;
 
+import nars.term.Term;
 import org.junit.jupiter.api.Test;
+
+import java.util.Set;
+import java.util.TreeSet;
 
 import static jcog.math.LongInterval.ETERNAL;
 import static nars.$.$$;
 import static nars.term.atom.Bool.False;
 import static nars.term.util.TermTest.assertEq;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class ConjDiffTest {
 
     @Test
-    void testConjDiff_Eliminate() {
+    void testConjDiff_EliminateSeq() {
 
         assertEq("c", ConjDiff.the(
                 $$("(b &&+5 c)"), 5, $$("(a &&+5 b)"), 0).term());
         assertEq("c", ConjDiff.the(
                 $$("(--b &&+5 c)"), 5, $$("(a &&+5 --b)"), 0).term());
     }
+
 
     @Test
     void testConjDiff_Eliminate_invert() {
@@ -69,6 +75,38 @@ class ConjDiffTest {
 
         assertEq("(y &&+5 (c&|y))", ConjDiff.the(
                 $$("(y && (b &&+5 c))"), 5, $$("(x && (a &&+5 b))"), 0).term());
+    }
+
+    @Test void testConjWithoutPN_EliminateOnlyOneAtAtime_Seq() {
+        Term x = $$("x"), y = $$("y");
+        Term xy = $$("((x &&+4120 y) &&+1232 --y)");
+
+        String both = "[(x &&+5352 (--,y)), (x &&+4120 y)]";
+        assertConjDiffPN(xy, y, both); //2 compound results
+        assertConjDiffPN(xy, y.neg(), both); //2 compound results
+        assertConjDiffPN(xy, x, "[(y &&+1232 (--,y))]"); //1 compound result
+    }
+
+    @Test void testConjWithoutPN_EliminateOnlyOneAtAtime_Seq_with_inner_Comm() {
+        Term xy = $$("((x &&+4120 (y&&z)) &&+1232 --y)");
+        assertConjDiffPN(xy, $$("(y&|z)"), "[(x &&+5352 (--,y))]");
+        assertConjDiffPN(xy, $$("(y&|z)").neg(), "[(x &&+5352 (--,y))]");
+        assertConjDiffPN(xy, $$("(y&&z)"), "[]"); //TODO unify
+    }
+
+    @Test void testConjWithoutPN_EliminateOnlyOneAtAtime_Comm2() {
+        Term x = $$("x"), y = $$("y");
+        Term xy = $$("(x && y)");
+        assertConjDiffPN(xy, y, "[x]");
+        assertConjDiffPN(xy, y.neg(), "[x]");
+        assertConjDiffPN(xy, x, "[y]");
+    }
+
+    static private void assertConjDiffPN(Term xy, Term r, String s) {
+        Set<Term> results = new TreeSet();
+        for (int i = 0; i < 16; i++)
+            results.add(ConjDiff.diffOne(xy, r, true));
+        assertEquals(s, results.toString());
     }
 
 }

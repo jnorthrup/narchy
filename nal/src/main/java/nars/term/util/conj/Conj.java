@@ -38,6 +38,7 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
@@ -46,6 +47,7 @@ import static nars.Op.*;
 import static nars.term.Terms.sorted;
 import static nars.term.atom.Bool.*;
 import static nars.time.Tense.*;
+import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
 
 /**
  * representation of conjoined (eternal, parallel, or sequential) events specified in one or more conjunctions,
@@ -275,9 +277,28 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
                 candidates.add(what);
             return true;
         }, 0, decomposeDternal, decomposeParallel, true);
+
         if (candidates.isEmpty())
             return Null;
-        return candidates.get(random);
+        else
+            return candidates.get(random);
+    }
+
+    /** TODO make a verison of this which iterates from a Conj instance */
+    public static List<LongObjectPair<Term>> match(Term conj, boolean decomposeDternal, boolean decomposeParallel, LongObjectPredicate<Term> valid) {
+
+        FasterList<LongObjectPair<Term>> candidates = new FasterList();
+
+        conj.eventsWhile((when, what) -> {
+            if (valid.accept(when, what))
+                candidates.add(pair(when,what));
+            return true;
+        }, 0, decomposeDternal, decomposeParallel, true);
+
+        if (candidates.isEmpty())
+            return List.of();
+        else
+            return candidates;
     }
 
 //    /**
@@ -598,66 +619,89 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
         return s.sub(eternalComponents.next(false, 0, s.subs()));
     }
 
-    public static Term diff(Term include, Term exclude) {
-        return diff(include, exclude, false);
+    public static Term diffOne(Term include, Term exclude) {
+        return diffOne(include, exclude, false);
     }
 
-    /**
-     * include may be a conjunction or a negation of a conjunction. the result will be polarized accordingly
-     */
-    public static Term diff(Term include, Term exclude, @Deprecated boolean excludeNeg) {
+    public static Term diffAll(Term include, Term exclude) {
+        return diffAll(include, exclude, false);
+    }
 
-        Op io = include.op();
+    public static Term diffAll(Term include, Term exclude, boolean excludeNeg) {
 
-
-        Op eo = exclude.op();
-        boolean eitherNeg = io == NEG || eo == NEG;
-        if (excludeNeg && eitherNeg) {
-            if (include.unneg().equals(exclude.unneg()))
-                return True;
-        } else {
-            if (include.equals(exclude))
-                return True;
+        if (include.op()==NEG) {
+            Term y = diffAll(include.unneg(), exclude);
+            return y==True ? True : y.neg();
         }
-        if (io == NEG) {
-            //negated conjunction
-            return diff(include.unneg(), exclude, excludeNeg).neg(); //TODO better
-        }
+//        boolean eSeq = Conj.isSeq(exclude);
+//        Subterms ii = include.subterms();
+//        if (!eSeq && !Conj.isSeq(include)) {
+//
+//            Subterms es = exclude.subterms();
+//            MetalBitSet iei = ii.subsTrue(i -> !es.contains(i));
+//            int in = iei.cardinality();
+//            if (in < include.subs()) {
+//                if (in == 1)
+//                    return ii.sub(iei.first(true));
+//                else
+//                    return terms.conj(include.dt(), ii.subsIncluding(iei));
+//            } else {
+//                return include; //no change
+//            }
+//
+//        } else {
+//
+//
+//            ConjBuilder x = Conj.fromLazy(include);
+//            boolean[] removedSomething = new boolean[]{false};
+//
+//            long offset = exclude.dt() == DTERNAL && !Conj.isSeq(exclude) ? ETERNAL : 0;
+//
+//            exclude.eventsWhile((when, what) -> {
+//                removedSomething[0] |= when == ETERNAL ? x.removeAll(what) : x.remove(when, what);
+//                return true;
+//            }, offset, true, true, false);
+//
+//            return removedSomething[0] ? x.term() : include;
+//
+//
+//        }
 
-        if (io != CONJ)
-            return include;
+        if (exclude.op()==CONJ || Conj.isSeq(include)) {
+//            Conj xx = Conj.from(include);
+//            if (xx.removeEventsByTerm(exclude, true, excludeNeg)) {
+//                return xx.term();
+//            } else {
+//                return include;
+//            }
 
-        if (!excludeNeg && eo == CONJ) {
-            return diffAll(include, exclude); //HACK
-        }
+            ConjBuilder x =
+                    //Conj.from(include);
+                    Conj.fromLazy(include);
 
-        if (include.impossibleSubTerm(excludeNeg ? exclude.unneg() : exclude))
-            return include;
+            boolean[] removedSomething = new boolean[]{false};
 
+            long offset = exclude.dt() == DTERNAL && !Conj.isSeq(exclude) ? ETERNAL : 0;
 
-        int dt = include.dt();
+            exclude.eventsWhile((when, what) -> {
+                removedSomething[0] |= when == ETERNAL ? x.removeAll(what) : x.remove(when, what);
+                //removedSomething[0] |= x.remove(when, what);
+                return true;
+            }, offset, true, true, false);
 
-        if (Conj.isSeq(include)) {
-
-            Conj xx = Conj.from(include);
-            if (xx.removeEventsByTerm(exclude, true, excludeNeg)) {
-                return xx.term();
-            } else {
-                return include;
-            }
-
+            return removedSomething[0] ? x.term() : include;
         } else {
             Subterms s = include.subterms();
             //try positive first
             Term[] ss = s.subsExcluding(exclude);
-            if (ss != null) {
+            if (ss != null) { int dt = include.dt();
                 return ss.length > 1 ? terms.conj(dt, ss) : ss[0];
             } else {
                 //try negative next
                 if (excludeNeg) {
                     ss = s.subsExcluding(exclude.neg());
                     if (ss != null) {
-                        return terms.conj(dt, ss);
+                        return terms.conj(include.dt(), ss);
                     }
                 }
 
@@ -665,46 +709,124 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
             }
 
         }
-
     }
 
-    @Deprecated
-    static Term diffAll(Term include, Term exclude) {
+    @Deprecated public static Term diffOne(Term include, Term exclude, @Deprecated boolean excludeNeg) {
+        return diffOne(include, exclude, excludeNeg, ThreadLocalRandom.current());
+    }
 
-        boolean eSeq = Conj.isSeq(exclude);
-        Subterms ii = include.subterms();
-        if (!eSeq && !Conj.isSeq(include)) {
+    /**
+     * include may be a conjunction or a negation of a conjunction. the result will be polarized accordingly
+     */
+    public static Term diffOne(Term include, Term exclude, @Deprecated boolean excludeNeg, Random rng) {
 
-            Subterms es = exclude.subterms();
-            MetalBitSet iei = ii.subsTrue(i -> !es.contains(i));
-            int in = iei.cardinality();
-            if (in < include.subs()) {
-                if (in == 1)
-                    return ii.sub(iei.first(true));
+
+        final Op io = include.op();
+        if (io == NEG) {
+            //negated conjunction
+            Term iu = include.unneg();
+            if (iu.op()==CONJ) {
+                Term r = diffOne(iu, exclude, excludeNeg, rng); //TODO better
+                if (r==True)
+                    return True;
                 else
-                    return terms.conj(include.dt(), ii.subsIncluding(iei));
-            } else {
-                return include; //no change
+                    return r.neg();
             }
-
-        } else {
-
-
-            ConjBuilder x = Conj.fromLazy(include);
-            boolean[] removedSomething = new boolean[]{false};
-
-            long offset = exclude.dt() == DTERNAL && !Conj.isSeq(exclude) ? ETERNAL : 0;
-
-            exclude.eventsWhile((when, what) -> {
-                removedSomething[0] |= when == ETERNAL ? x.removeAll(what) : x.remove(when, what);
-                return true;
-            }, offset, true, true, false);
-
-            return removedSomething[0] ? x.term() : include;
-
-
         }
+
+        final Op eo = exclude.op();
+
+        boolean eitherNeg = io == NEG || eo == NEG;
+
+        if (excludeNeg && eitherNeg) {
+            if (include.unneg().equals(exclude.unneg()))
+                return True;
+        } else {
+            if (include.equals(exclude))
+                return True;
+        }
+        if (io != CONJ)
+            return include;
+
+
+//        if (!excludeNeg && eo == CONJ)
+//            return diffAll(include, exclude); //HACK
+
+        if (include.impossibleSubTerm(excludeNeg ? exclude.unneg() : exclude))
+            return include;
+
+
+
+
+//        if (Conj.isSeq(include)) {
+
+
+        boolean decomposeDternal = eo!=CONJ && exclude.dt()!=DTERNAL;
+        boolean decomposeParallel = eo!=CONJ && exclude.dt()!=0;
+        List<LongObjectPair<Term>> ee = Conj.match(include, decomposeDternal, decomposeParallel,
+                !excludeNeg ?
+                    (when, what) -> what.equals(exclude)
+                    :
+                    (when, what) -> what.equalsPosOrNeg(exclude)
+        );
+        LongObjectPair<Term> e;
+        switch (ee.size()) {
+            case 0: return include; //nothing removed
+            case 1: e = ee.get(0); break;
+            default: {
+                e = ((FasterList<LongObjectPair<Term>>)ee).get(rng);
+                break;
+            }
+        }
+        return Conj.remove(include, e);
+
+
+
+//        } else { int dt = include.dt();
+//            Subterms s = include.subterms();
+//            //try positive first
+//            Term[] ss = s.subsExcluding(exclude);
+//            if (ss != null) {
+//                return ss.length > 1 ? terms.conj(dt, ss) : ss[0];
+//            } else {
+//                //try negative next
+//                if (excludeNeg) {
+//                    ss = s.subsExcluding(exclude.neg());
+//                    if (ss != null) {
+//                        return terms.conj(dt, ss);
+//                    }
+//                }
+//
+//                return include; //not found
+//            }
+//
+//        }
+
     }
+
+    public static Term remove(Term include, LongObjectPair<Term> e) {
+        int idt = include.dt();
+        if (dtSpecial(idt) && e.getTwo().op()!=CONJ) {
+            //fast commutive remove
+            @Nullable Term[] ss = include.subterms().subsExcluding(e.getTwo());
+            if (ss == null)
+                return Null; //WTF?
+
+            if (ss.length > 1)
+                return CONJ.the(idt, ss);
+            else
+                return ss[0];
+        } else {
+            //slow sequence remove
+            Conj f = Conj.from(include);
+            if (f.remove(e))
+                return f.term();
+            else
+                return Null; //WTF?
+        }
+
+    }
+
 
     private static int indexOfZeroTerminated(byte[] b, byte val) {
         for (int i = 0; i < b.length; i++) {
@@ -906,7 +1028,7 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
 
 
             if (!isSeq(conjUnneg)) {
-                Term newConj = Conj.diff(conjUnneg, incoming, false);
+                Term newConj = Conj.diffAll(conjUnneg, incoming);
                 if (newConj.equals(conjUnneg))
                     return True; //no change
 
@@ -1756,10 +1878,17 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
 
     @Override
     public boolean remove(long at, Term t) {
-        byte i = get(t);
-        if (i == Byte.MIN_VALUE)
-            return false;
-        return remove(at, i);
+        if (t.op()!=CONJ) {
+            byte i = get(t);
+            if (i == Byte.MIN_VALUE)
+                return false;
+            return remove(at, i);
+        } else {
+            return t.eventsWhile((when,what)->{
+                assert(!t.equals(what)); //prevent infinite recursion, hopefully this cant happen
+                return remove(when, what); //fails on error
+            }, at, true, true, false);
+        }
     }
 
     private boolean remove(long at, byte... what) {

@@ -428,12 +428,19 @@ public class Occurrify extends TimeGraph {
 ////            nextPos.remove(b);
 ////        }
 //    };
-    final BiConsumer<Term, Compound> getPosNeg = (sub, sup) -> {
+    final BiConsumer<Term, Compound> needPosNeg = (sub, sup) -> {
         Op so = sup != null ? sup.op() : null;
         if (so!=NEG && (so == null || so == IMPL || so == CONJ))
             ((sub.op() == NEG) ? nextNeg : nextPos).add(sub.unneg());
         if (so==NEG && sub.op()==IMPL)
             nextNeg.add(sub.sub(1)); //negate predicate (virtual)
+    };
+    final BiConsumer<Term, Compound> canPosNeg = (sub, sup) -> {
+        Op so = sup != null ? sup.op() : null;
+        if (so!=NEG && (so == null || so == IMPL || so == CONJ))
+            ((sub.op() == NEG) ? nextNeg : nextPos).remove(sub.unneg());
+        if (so==NEG && sub.op()==IMPL)
+            nextNeg.remove(sub.sub(1)); //negate predicate (virtual)
     };
 
     private void setAutoNeg(Term pattern, Term taskTerm, Term beliefTerm) {
@@ -451,16 +458,19 @@ public class Occurrify extends TimeGraph {
 //            //beliefTerm.recurseTerms(negRequire);
 //        }
 
-        pattern.recurseTerms(getPosNeg);
+        pattern.recurseTerms(needPosNeg);
 
-        taskTerm.recurseTerms(getPosNeg);
+        taskTerm.recurseTerms(canPosNeg);
 
         if (!beliefTerm.equals(taskTerm))
-            beliefTerm.recurseTerms(getPosNeg);
+            beliefTerm.recurseTerms(canPosNeg);
 
-        if (!nextPos.isEmpty() || !nextNeg.isEmpty()) {
-            //nextPos.symmetricDifferenceInto(nextNeg, autoNeg /* should be clear */);
-            nextPos.intersectInto(nextNeg, autoNeg /* should be clear */);
+        boolean npe = nextPos.isEmpty();
+        boolean nne = nextNeg.isEmpty();
+        if (!npe || !nne) {
+
+            nextPos.symmetricDifferenceInto(nextNeg, autoNeg /* should be clear */);
+
             nextPos.clear();
             nextNeg.clear();
         }
