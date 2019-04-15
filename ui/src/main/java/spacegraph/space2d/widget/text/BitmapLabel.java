@@ -74,7 +74,8 @@ public class BitmapLabel extends AbstractLabel {
 
     @Override
     protected boolean preRender(ReSurface r) {
-        return r.visP(bounds, minPixelsToBeVisible) > 0;
+        //return r.visP(bounds, minPixelsToBeVisible) > 0; //HACK TODO
+        return true;
     }
 
     protected void layoutText() {
@@ -114,7 +115,6 @@ public class BitmapLabel extends AbstractLabel {
 
         @Override
         public void doLayout(float dtS) {
-
         }
 
 

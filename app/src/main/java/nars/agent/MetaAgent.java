@@ -7,6 +7,7 @@ import nars.$;
 import nars.NAR;
 import nars.attention.What;
 import nars.concept.action.GoalActionConcept;
+import nars.task.util.PriBuffer;
 import nars.term.Term;
 import nars.term.atom.Atomic;
 
@@ -25,6 +26,7 @@ public class MetaAgent extends Game {
             goalPri = Atomic.the("goalPri"),
 
             enable = Atomic.the("enable"),
+            input = Atomic.the("input"),
             duration = Atomic.the("dur"),
             happy = Atomic.the("happy"),
             dex = Atomic.the("dex")
@@ -65,8 +67,8 @@ public class MetaAgent extends Game {
 
         NAR n = this.nar = w[0].nar;
 
-        senseNumberDifference($.inh(n.self(), $$("busy")), n.feel.busyVol::asFloat);
-        senseNumberDifference($.inh(n.self(), $$("deriveTask")), n.feel.deriveTask::get);
+        senseNumberDifference($.inh(n.self(), $$("busy")), n.emotion.busyVol::asFloat);
+        senseNumberDifference($.inh(n.self(), $$("deriveTask")), n.emotion.deriveTask::get);
 
         for (Game ww : w)
             add(ww, false);
@@ -80,7 +82,7 @@ public class MetaAgent extends Game {
         //this.what().accept(new EternalTask($.inh(aid,this.id), BELIEF, $.t(1f, 0.9f), nar));
 
 //        forgetAction = actionUnipolar($.inh(id, forget), (FloatConsumer) n.attn.forgetRate::set);
-        actionDial($.inh(gid, $.p(forget, $.the(1))), $.inh(gid, $.p(forget, $.the(-1))),
+        actionDial($.inh(gid, $.p(forget, $.the(-1))), $.inh(gid, $.p(forget, $.the(+1))),
                 ((What.TaskLinkWhat)w).links.decay, 40);
 
 
@@ -100,10 +102,10 @@ public class MetaAgent extends Game {
 //        });
 
         float priMin = 0.1f, priMax = 1;
-        actionDial($.inh(gid, $.p(PRI, $.the(1))), $.inh(gid, $.p(PRI, $.the(-1))),
+        actionDial($.inh(gid, $.p(PRI, $.the(-1))), $.inh(gid, $.p(PRI, $.the(+1))),
                 w::pri, w::pri, priMin, 1, 6);
 
-        actionDial($.inh(gid, $.p(curiosity, $.the(1))), $.inh(gid, $.p(curiosity, $.the(-1))),
+        actionDial($.inh(gid, $.p(curiosity, $.the(-1))), $.inh(gid, $.p(curiosity, $.the(+1))),
                 g.curiosity.rate, 6);
 
 //        GoalActionConcept curiosityAction = actionUnipolar($.inh(a.id, curiosity), (c) -> {
@@ -127,7 +129,13 @@ public class MetaAgent extends Game {
                 //assert(nar.dur()==nextDur);
             }
         };
-        actionDial($.inh(gid, $.p(duration, $.the(1))), $.inh(gid, $.p(duration, $.the(-1))), durRange, 5);
+        actionDial($.inh(gid, $.p(duration, $.the(-1))), $.inh(gid, $.p(duration, $.the(+1))), durRange, 5);
+
+        if (w.in instanceof PriBuffer.BagTaskBuffer) {
+            actionDial($.inh(gid, $.p(input, $.the(-1))), $.inh(gid, $.p(input, $.the(+1))),
+                    ((PriBuffer.BagTaskBuffer)(w.in)).valve, 8);
+        }
+
 //        this.dur = actionUnipolar($.inh(id, duration), (x) -> {
 //            n.time.dur(Util.lerp(x * x, n.dtDither(), initialDur * 2));
 //            return x;

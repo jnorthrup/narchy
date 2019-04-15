@@ -17,49 +17,84 @@ import static jcog.math.v3.v;
  */
 public class ForceDirected3D implements spacegraph.space3d.phys.constraint.BroadConstraint {
 
+    public final FloatRange expand = new FloatRange(1f, 0, 32f);
+    public final FloatRange condense = new FloatRange(1f, 0, 3f);
     private final int iterations;
     private final boolean center = true;
-
-    public final FloatRange expand = new FloatRange(14f, 0, 32f);
-    public final FloatRange condense = new FloatRange(0.05f, 0, 3f);
-
-
-
-    /** speed at which center correction is applied */
-    private final float centerSpeed = 0.02f;
+    /**
+     * speed at which center correction is applied
+     */
+    private final float centerSpeed = 0.1f;
 
     private final v3 boundsMin;
     private final v3 boundsMax;
     private final float maxRepelDist;
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     ForceDirected3D() {
-        float r = 800;
+        float r = 100;
         boundsMin = v(-r, -r, -r);
         boundsMax = v(+r, +r, +r);
-        maxRepelDist = r*2;
+        maxRepelDist = r * 2;
         iterations = 1;
     }
 
+    static void attract(Collidable x, Collidable y, float speed, float idealDist) {
+        SimpleSpatial xp = ((SimpleSpatial) x.data());
+        SimpleSpatial yp = ((SimpleSpatial) y.data());
+
+        v3 delta = v();
+        delta.sub(yp.transform(), xp.transform());
+
+        float lenSq = delta.lengthSquared();
+        if (!Float.isFinite(lenSq))
+            return;
+
+        if (lenSq < idealDist * idealDist)
+            return;
+
+
+        delta.normalize();
+
+
+        float len = (float) Math.sqrt(lenSq);
+        delta.scaled(Math.min(len, len * speed));
+
+        ((Body3D) x).velAdd(delta);
+
+        delta.scaled(-1);
+        ((Body3D) y).velAdd(delta);
+
+    }
+
+    private static void repel(Collidable x, Collidable y, float speed, float maxDist) {
+        SimpleSpatial xp = ((SimpleSpatial) x.data());
+        if (xp == null)
+            return;
+        SimpleSpatial yp = ((SimpleSpatial) y.data());
+        if (yp == null)
+            return;
+
+
+        v3 delta = v();
+        delta.sub(xp.transform(), yp.transform());
+
+        float len = delta.normalize();
+        len -= (xp.radius() + yp.radius());
+        if (len < Float.MIN_NORMAL)
+            len = 0;
+        else if (len >= maxDist)
+            return;
+
+        float s = speed / (1 + (len * len));
+
+        v3 v = v(delta.x * s, delta.y * s, delta.z * s);
+        ((Body3D) x).velAdd(v);
+
+        v.negated();
+        ((Body3D) y).velAdd(v);
+
+    }
 
     @Override
     public void solve(Broadphase b, List<Collidable> objects, float timeStep) {
@@ -76,16 +111,12 @@ public class ForceDirected3D implements spacegraph.space3d.phys.constraint.Broad
                     x.stabilize(boundsMin, boundsMax);
             });
 
-            
-            
-            
-            
-            int clusters = (int) Math.ceil(/*Math.log*/(((float)n) / 32));
+
+            int clusters = (int) Math.ceil(/*Math.log*/(((float) n) / 32));
             if (clusters % 2 == 0)
-                clusters++; 
+                clusters++;
 
             b.forEach((int) Math.ceil((float) n / clusters), objects, this::batch);
-            
 
 
             if (center) {
@@ -123,66 +154,6 @@ public class ForceDirected3D implements spacegraph.space3d.phys.constraint.Broad
             }
 
         }
-    }
-
-    static void attract(Collidable x, Collidable y, float speed, float idealDist) {
-        SimpleSpatial xp = ((SimpleSpatial) x.data());
-        SimpleSpatial yp = ((SimpleSpatial) y.data());
-
-        v3 delta = v();
-        delta.sub(yp.transform(), xp.transform());
-
-        float lenSq = delta.lengthSquared();
-        if (!Float.isFinite(lenSq))
-            return;
-
-        if (lenSq < idealDist*idealDist)
-            return;
-
-
-        delta.normalize();
-
-        
-        
-
-        
-        float len = (float) Math.sqrt(lenSq);
-        delta.scaled( Math.min(len, len*  speed ) );
-
-        ((Body3D) x).velAdd(delta);
-        
-        delta.scaled(-1 );
-        ((Body3D) y).velAdd(delta);
-
-    }
-
-    private static void repel(Collidable x, Collidable y, float speed, float maxDist) {
-        SimpleSpatial xp = ((SimpleSpatial) x.data());
-        if (xp == null)
-            return;
-        SimpleSpatial yp = ((SimpleSpatial) y.data());
-        if (yp == null)
-            return;
-
-
-        v3 delta = v();
-        delta.sub(xp.transform(), yp.transform());
-
-        float len = delta.normalize();
-        len -= (xp.radius() + yp.radius());
-        if (len < 0)
-            len = 0;
-        else if (len >= maxDist)
-            return;
-
-        float s = speed / ( 1 + ( len*len ));
-
-        v3 v = v(delta.x * s, delta.y * s, delta.z * s );
-        ((Body3D) x).velAdd(v);
-
-        v.negated();
-        ((Body3D) y).velAdd(v);
-
     }
 
 

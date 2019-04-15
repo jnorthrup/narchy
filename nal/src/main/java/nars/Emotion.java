@@ -29,9 +29,10 @@ public class Emotion implements Meter, Consumer<NAR> {
      */
 
 
-//    public final Counter conceptCreate = new FastCounter("concept create");
+    /** TODO */
+    //public final FastCounter conceptCreate = new FastCounter("concept create");
 //    public final Counter conceptCreateFail = new FastCounter("concept create fail");
-//    public final Counter conceptDelete = new FastCounter("concept delete");
+    public final FastCounter conceptDelete = new FastCounter("concept delete");
 
 
     /** perception attempted */
@@ -42,6 +43,11 @@ public class Emotion implements Meter, Consumer<NAR> {
 
     //public final Counter taskActivation_x100 = new FastCounter("task activation pri sum x100");
     public final FastCounter premiseFire = new FastCounter("premise fire");
+
+
+    /** increment of cycles that a dur loop lags in its scheduling.
+     * an indicator of general system lag, especially in real-time operation */
+    public final FastCounter durLoopLag = new FastCounter("DurLoop lag cycles");
 
 
     /**
@@ -69,7 +75,7 @@ public class Emotion implements Meter, Consumer<NAR> {
      */
     public final float[] want = new float[MetaGoal.values().length];
 
-    static final int history = 4;
+    static final int history = 2;
     public final FloatAveragedWindow
             busyVol = new FloatAveragedWindow(history, 0.5f,0f),
             busyVolPriWeighted = new FloatAveragedWindow(history, 0.5f, 0)

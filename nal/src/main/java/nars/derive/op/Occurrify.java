@@ -138,7 +138,7 @@ public class Occurrify extends TimeGraph {
 
             timing = time.occurrence(d, xx);
             if (timing == null) {
-                d.nar().feel.deriveFailTemporal.increment();
+                d.nar().emotion.deriveFailTemporal.increment();
                 ///*temporary:*/ time.solve(d, c1);
                 return null;
             }
@@ -217,7 +217,7 @@ public class Occurrify extends TimeGraph {
 
             if (fail) {
                 Term c1e = x;
-                d.nar().feel.deriveFailTemporal.increment(/*() ->
+                d.nar().emotion.deriveFailTemporal.increment(/*() ->
                     rule + "\n\t" + d + "\n\t -> " + c1e + "\t->\t" + c2
             */);
                 return null;
@@ -236,7 +236,7 @@ public class Occurrify extends TimeGraph {
             //HACK this is for deficiencies in the temporal solver that can be fixed
             x = Retemporalize.retemporalizeXTERNALToDTERNAL.apply(x);
             if (!Taskify.valid(x, d.concPunc)) {
-                d.nar().feel.deriveFailTemporal.increment();
+                d.nar().emotion.deriveFailTemporal.increment();
                 Taskify.spam(d, Param.derive.TTL_COST_DERIVE_TASK_FAIL);
                 return null;
             }

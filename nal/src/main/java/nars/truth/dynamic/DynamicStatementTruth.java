@@ -158,7 +158,7 @@ public class DynamicStatementTruth {
             return reconstruct(superterm, components, subjOrPred, unionOrIntersection);
         }
 
-        protected static Term reconstruct(Compound superterm, List<Task> components, boolean subjOrPred, boolean union) {
+        static Term reconstruct(Compound superterm, List<Task> components, boolean subjOrPred, boolean union) {
             Term superSect = superterm.sub(subjOrPred ? 0 : 1);
             Op op = superterm.op();
             if (union) {

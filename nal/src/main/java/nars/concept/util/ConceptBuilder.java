@@ -34,8 +34,6 @@ import static nars.Op.*;
  */
 public abstract class ConceptBuilder implements BiFunction<Term, Concept, Concept> {
 
-//    private final Map<Term, Conceptor> conceptors = new ConcurrentHashMap<>();
-
     public abstract QuestionTable questionTable(Term term, boolean questionOrQuest);
 
     public abstract BeliefTable newTable(Term t, boolean beliefOrGoal);
@@ -299,52 +297,52 @@ public abstract class ConceptBuilder implements BiFunction<Term, Concept, Concep
      * called after constructing a new concept, or after a permanent concept has been installed
      */
     public void start(Concept c) {
-        ((NodeConcept)c).meta.clear(); //HACK remove deleted state
+        ((NodeConcept)c).meta.clear(); //HACK remove any deleted state
     }
 
     abstract public TermLinker termlinker(Term term);
 
-    /**
-     * passes through terms without creating any concept anything
-     */
-    public static final ConceptBuilder NullConceptBuilder = new ConceptBuilder() {
-
+//    /**
+//     * passes through terms without creating any concept anything
+//     */
+//    public static final ConceptBuilder NullConceptBuilder = new ConceptBuilder() {
+//
+////        @Override
+////        public void on(Conceptor c) {
+////            throw new UnsupportedOperationException();
+////        }
+//
 //        @Override
-//        public void on(Conceptor c) {
+//        public Concept nodeConcept(Term t) {
 //            throw new UnsupportedOperationException();
 //        }
-
-        @Override
-        public Concept nodeConcept(Term t) {
-            throw new UnsupportedOperationException();
-        }
-
-
-        @Override
-        public TermLinker termlinker(Term term) {
-            return TermLinker.NullLinker;
-        }
-
-        @Override
-        public TemporalBeliefTable newTemporalTable(Term c, boolean beliefOrGoal) {
-            return null;
-        }
-
-        @Override
-        public BeliefTable newTable(Term t, boolean beliefOrGoal) {
-            return BeliefTable.Empty;
-        }
-
-        @Override
-        public EternalTable newEternalTable(Term c) {
-            return null;
-        }
-
-        @Override
-        public QuestionTable questionTable(Term term, boolean questionOrQuest) {
-            return QuestionTable.Empty;
-        }
-
-    };
+//
+//
+//        @Override
+//        public TermLinker termlinker(Term term) {
+//            return TermLinker.NullLinker;
+//        }
+//
+//        @Override
+//        public TemporalBeliefTable newTemporalTable(Term c, boolean beliefOrGoal) {
+//            return null;
+//        }
+//
+//        @Override
+//        public BeliefTable newTable(Term t, boolean beliefOrGoal) {
+//            return BeliefTable.Empty;
+//        }
+//
+//        @Override
+//        public EternalTable newEternalTable(Term c) {
+//            return null;
+//        }
+//
+//        @Override
+//        public QuestionTable questionTable(Term term, boolean questionOrQuest) {
+//            return QuestionTable.Empty;
+//        }
+//
+//    };
 
 }

@@ -5,9 +5,7 @@ import jcog.Util;
 import jcog.exe.Loop;
 import jcog.func.IntIntToObjectFunction;
 import jcog.learn.ql.HaiQae;
-import jcog.math.FloatRange;
 import jcog.pri.ScalarValue;
-import jcog.signal.tensor.TensorRing;
 import jcog.signal.wave2d.Bitmap2D;
 import jcog.signal.wave2d.MonoBufImgBitmap2D;
 import jcog.signal.wave2d.ScaledBitmap2D;
@@ -41,14 +39,12 @@ import nars.video.SwingBitmap2D;
 import nars.video.WaveletBag;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.SpaceGraph;
-import spacegraph.space2d.OrthoSurfaceGraph;
 import spacegraph.space2d.Surface;
-import spacegraph.space2d.container.graph.EditGraph2D;
 import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.widget.meta.ObjectSurface;
 import spacegraph.space2d.widget.meter.PaintUpdateMatrixView;
 import spacegraph.space2d.widget.meter.Plot2D;
-import spacegraph.space2d.widget.text.LabeledPane;
+import spacegraph.video.OrthoSurfaceGraph;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -206,7 +202,7 @@ abstract public class GameX extends Game {
                 .what(
                         (w)-> new What.TaskLinkWhat(w,
                                 512,
-                                new PriBuffer.BagTaskBuffer(512, 64))
+                                new PriBuffer.BagTaskBuffer(1024, 0.25f))
                 )
 //                .attention(() -> new ActiveConcepts(1024))
                 .exe(
@@ -216,8 +212,8 @@ abstract public class GameX extends Game {
 //                        threads,
 //                        false/* affinity */)
 
-                //new ForkJoinExec()
-                new ForkJoinExec(Math.max(1, Runtime.getRuntime().availableProcessors()-1))
+                new ForkJoinExec()
+                //new ForkJoinExec(Math.max(1, Runtime.getRuntime().availableProcessors()-1))
 
 //                new SuperExec(
 //                    new Valuator.DefaultValuator(0.9f), threads <= 0 ? Util.concurrencyExcept(1) : threads
@@ -390,10 +386,10 @@ abstract public class GameX extends Game {
 
         //n.emotion.want(MetaGoal.PerceiveCmplx, -0.01f); //<- dont set negative unless sure there is some positive otherwise nothing happens
 
-        n.feel.want(MetaGoal.Believe, 0.01f);
-        n.feel.want(MetaGoal.Desire, 0.6f);
+        n.emotion.want(MetaGoal.Believe, 0.01f);
+        n.emotion.want(MetaGoal.Desire, 0.6f);
 
-        n.feel.want(MetaGoal.Action, +1f);
+        n.emotion.want(MetaGoal.Action, +1f);
 
 
 //
@@ -547,105 +543,106 @@ abstract public class GameX extends Game {
 //    static void inputInjectionQ(NAR n) {
 //        //TODO
 //    }
-    /** https://www.controlglobal.com/blogs/controltalkblog/how-to-avoid-a-common-pid-tuning-mistake-tips/ */
-    static void inputInjectionPID(PriBuffer b, NAR n) {
-        //perception injection control
-//        MiniPID pid = new MiniPID(0.01, 0.01, 0.002);
-//        pid.outLimit(-1, +1);
-//        pid.setSetpointRange(+1);
-//        pid.f(100);
 
-        //pid.setOutRampRate(0.5);
-
-        FloatRange valve = ((PriBuffer.BagTaskBuffer) b).valve;
-        //DurService.on(n,
-//        n.onCycle(
-//        ()->{
-//            double vol = b.volume();
-//            double nextV = pid.out(vol,0.5);
-////                System.out.println(nextV);
-//            valve.set(Util.unitize(nextV ));
-//        });
-
-        EditGraph2D<Surface> g = EditGraph2D.window(800, 800);
-        g.add(NARui.taskBufferView(b, n)).sizeRel(0.75f,0.25f);
-        //g.add(new PIDChip(pid)).sizeRel(0.2f,0.2f);
-
-        TensorRing history = new TensorRing(3, 8);
-        HaiQae q = new HaiQae(history.volume(), 32,5);
-
-        HaiQChip haiQChip = new HaiQChip(q);
-
-        g.add(LabeledPane.the("Q", haiQChip)).sizeRel(0.2f, 0.2f);
-
-//        n.onCycle(()->haiQChip.next(reward));
-        //n.onCycle(
-        //-((2 * Math.abs(v - 0.5f))-0.5f)*2;
-        //nothing
-        //                case 0: valve.set(0); break;
-        //                case 1: valve.set(0.5); break;
-        //                case 2: valve.set(1); break;
-        n.onDur(new Runnable() {
-
-            private float[] sense;
-            float dv = 0.1f;
-
-            @Override
-            public void run() {
-
-                float v = b.load();
-                float reward =
-                        //-((2 * Math.abs(v - 0.5f))-0.5f)*2;
-                        (float) (Math.log(n.feel.busyVol.asFloat())/5f);
-
-                haiQChip.rewardSum.addAndGet(reward);
-                haiQChip.next();
-
-                float x = ((PriBuffer.BagTaskBuffer) b).valve.floatValue();
-                sense = history.set(new float[]{
-                        x, v, 0.5f + 0.5f * Util.tanhFast((float) -Math.log(dv))
-                }).snapshot(sense);
-
-
-                int decision = q.act(reward, sense);
-                float w = x;
-                switch (decision) {
-                    case 0: //nothing
-                        break;
-                    case 1:
-                        w = Math.max(0, x - dv);
-                        break;
-                    case 2:
-                        w = Math.min(1, x + dv);
-                        break;
-                    case 3:
-                        dv = Math.max(0.001f, dv - dv*dv);
-                        break;
-                    case 4:
-                        dv = Math.min(0.2f, dv + dv*dv);
-                        break;
-//                case 0: valve.set(0); break;
-//                case 1: valve.set(0.5); break;
-//                case 2: valve.set(1); break;
-                }
-                valve.set(w);
-            }
-        });
-
-        //Loop.of(() -> {
-
-            //int a = q.act(new float[] { (((float) Math.random()) - 0.5f) * 2, in);
-            //outs.out(a);
-//            int n = outs.size();
-//            for (int i = 0; i < n; i++) {
-//                outs.out(i, (i == a));
+//    /** https://www.controlglobal.com/blogs/controltalkblog/how-to-avoid-a-common-pid-tuning-mistake-tips/ */
+//    static void inputInjectionPID(PriBuffer b, NAR n) {
+//        //perception injection control
+////        MiniPID pid = new MiniPID(0.01, 0.01, 0.002);
+////        pid.outLimit(-1, +1);
+////        pid.setSetpointRange(+1);
+////        pid.f(100);
+//
+//        //pid.setOutRampRate(0.5);
+//
+//        FloatRange valve = ((PriBuffer.BagTaskBuffer) b).valve;
+//        //DurService.on(n,
+////        n.onCycle(
+////        ()->{
+////            double vol = b.volume();
+////            double nextV = pid.out(vol,0.5);
+//////                System.out.println(nextV);
+////            valve.set(Util.unitize(nextV ));
+////        });
+//
+//        EditGraph2D<Surface> g = EditGraph2D.window(800, 800);
+//        g.add(NARui.taskBufferView(b, n)).sizeRel(0.75f,0.25f);
+//        //g.add(new PIDChip(pid)).sizeRel(0.2f,0.2f);
+//
+//        TensorRing history = new TensorRing(3, 8);
+//        HaiQae q = new HaiQae(history.volume(), 32,5);
+//
+//        HaiQChip haiQChip = new HaiQChip(q);
+//
+//        g.add(LabeledPane.the("Q", haiQChip)).sizeRel(0.2f, 0.2f);
+//
+////        n.onCycle(()->haiQChip.next(reward));
+//        //n.onCycle(
+//        //-((2 * Math.abs(v - 0.5f))-0.5f)*2;
+//        //nothing
+//        //                case 0: valve.set(0); break;
+//        //                case 1: valve.set(0.5); break;
+//        //                case 2: valve.set(1); break;
+//        n.onDur(new Runnable() {
+//
+//            private float[] sense;
+//            float dv = 0.1f;
+//
+//            @Override
+//            public void run() {
+//
+//                float v = b.load();
+//                float reward =
+//                        //-((2 * Math.abs(v - 0.5f))-0.5f)*2;
+//                        (float) (Math.log(n.feel.busyVol.asFloat())/5f);
+//
+//                haiQChip.rewardSum.addAndGet(reward);
+//                haiQChip.next();
+//
+//                float x = ((PriBuffer.BagTaskBuffer) b).valve.floatValue();
+//                sense = history.set(new float[]{
+//                        x, v, 0.5f + 0.5f * Util.tanhFast((float) -Math.log(dv))
+//                }).snapshot(sense);
+//
+//
+//                int decision = q.act(reward, sense);
+//                float w = x;
+//                switch (decision) {
+//                    case 0: //nothing
+//                        break;
+//                    case 1:
+//                        w = Math.max(0, x - dv);
+//                        break;
+//                    case 2:
+//                        w = Math.min(1, x + dv);
+//                        break;
+//                    case 3:
+//                        dv = Math.max(0.001f, dv - dv*dv);
+//                        break;
+//                    case 4:
+//                        dv = Math.min(0.2f, dv + dv*dv);
+//                        break;
+////                case 0: valve.set(0); break;
+////                case 1: valve.set(0.5); break;
+////                case 2: valve.set(1); break;
+//                }
+//                valve.set(w);
 //            }
-        //}).setFPS(25);
-
-//        SwitchChip outDemultiplexer = new SwitchChip (4);
-//        p.addAt(outDemultiplexer).pos(450, 450, 510, 510);
-
-    }
+//        });
+//
+//        //Loop.of(() -> {
+//
+//            //int a = q.act(new float[] { (((float) Math.random()) - 0.5f) * 2, in);
+//            //outs.out(a);
+////            int n = outs.size();
+////            for (int i = 0; i < n; i++) {
+////                outs.out(i, (i == a));
+////            }
+//        //}).setFPS(25);
+//
+////        SwitchChip outDemultiplexer = new SwitchChip (4);
+////        p.addAt(outDemultiplexer).pos(450, 450, 510, 510);
+//
+//    }
 
 
     /**

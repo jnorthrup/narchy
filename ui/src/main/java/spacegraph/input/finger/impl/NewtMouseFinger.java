@@ -5,7 +5,6 @@ import jcog.math.v2;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.input.finger.Fingered;
 import spacegraph.input.finger.Fingering;
-import spacegraph.space2d.OrthoSurfaceGraph;
 import spacegraph.space2d.Surface;
 import spacegraph.video.JoglDisplay;
 import spacegraph.video.JoglWindow;
@@ -16,13 +15,15 @@ public class NewtMouseFinger extends MouseFinger implements MouseListener, Windo
 
 
     private final JoglDisplay space;
+    private final Fingered root;
 
 
-    public NewtMouseFinger(JoglDisplay s) {
+    public NewtMouseFinger(JoglDisplay s, Fingered root) {
         super(MAX_BUTTONS);
         this.space = s;
+        this.root = root;
 
-        s.later(()->{
+        //Exe.invokeLater(()->{
             JoglWindow win = s.video;
             if (win.window.hasFocus())
                 active.set(true);
@@ -30,7 +31,7 @@ public class NewtMouseFinger extends MouseFinger implements MouseListener, Windo
             win.addMouseListenerPre(this);
             win.addWindowListener(this);
             win.onUpdate((Runnable) this::update);
-        });
+        //});
     }
 
     /** called for each layer. returns true if continues down to next layer */
@@ -57,9 +58,7 @@ public class NewtMouseFinger extends MouseFinger implements MouseListener, Windo
 
     @Override protected void doUpdate() {
 
-        touch(((OrthoSurfaceGraph) this.space).layers);
-
-
+        touch(root);
 
         clearRotation();
     }

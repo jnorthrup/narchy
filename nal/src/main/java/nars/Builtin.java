@@ -501,9 +501,9 @@ public class Builtin {
                 switch (what.toString()) {
                     case "sys":
                         return $.p(
-                                $.quote(nar.feel.summary()),
+                                $.quote(nar.emotion.summary()),
                                 $.quote(nar.memory.summary()),
-                                $.quote(nar.feel.summary()),
+                                $.quote(nar.emotion.summary()),
                                 $.quote(nar.exe.toString())
                         );
                 }

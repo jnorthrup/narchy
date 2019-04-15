@@ -57,7 +57,7 @@ public class TruthAccumulator extends AtomicReference<double[]> {
         add(f, e);
     }
 
-    public void add(double f, double e) {
+    private void add(double f, double e) {
         double fe = f * e;
 
         getAndUpdate(fc->{

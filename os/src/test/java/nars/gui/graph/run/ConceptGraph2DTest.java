@@ -4,7 +4,7 @@ import nars.NAR;
 import nars.NARS;
 import nars.op.rdfowl.NQuadsRDF;
 import nars.test.impl.DeductiveMeshTest;
-import spacegraph.space2d.OrthoSurfaceGraph;
+import spacegraph.video.OrthoSurfaceGraph;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.widget.windo.Windo;
 

@@ -112,7 +112,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
     @Deprecated
     public final MemoryExternal memoryExternal = new MemoryExternal(this);
     public final ConceptBuilder conceptBuilder;
-    public final Emotion feel;
+    public final Emotion emotion;
     public final Function<Term, What> whatBuilder;
 
     public final AntistaticBag<What> what = new AntistaticBag<>(Param.WHATS_CAPACITY) {
@@ -174,7 +174,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
         this.conceptBuilder = conceptBuilder;
         memory.start(this);
 
-        onCycle(this.feel = new Emotion(this));
+        onCycle(this.emotion = new Emotion(this));
 
         Builtin.init(this);
 
@@ -312,7 +312,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
 
         Util.toMap(clazz, "concept class", x::put);
 
-        feel.commit(x::put);
+        emotion.commit(x::put);
 
         return x;
 

@@ -13,7 +13,6 @@ import spacegraph.video.Tex;
 
 import java.awt.*;
 import java.awt.font.FontRenderContext;
-import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
 import java.io.IOException;
@@ -172,13 +171,15 @@ public abstract class BitmapTextGrid extends AbstractConsoleSurface {
             try {
                 if (ensureBufferSize()) {
                     renderText();
+                    tex.profile = gl.getGLProfile(); //HACK
                     if (!tex.set(backbuffer)) {
-                        invalid.set(true); //try again
+                        //invalid.set(true); //try again later
+//                        return;
                     }
                 }
             } catch (Throwable t) {
                 t.printStackTrace(); //HACK
-                invalid.set(true);
+                //invalid.set(true);
             }
         }
         tex.paint(gl, textBounds(), alpha);
@@ -213,12 +214,17 @@ public abstract class BitmapTextGrid extends AbstractConsoleSurface {
 
         if (!f.equals(this.font)) {
 
-            FontRenderContext ctx = this.getFontRenderContext();
-            Rectangle2D b = f.getStringBounds("X", ctx);
-            this.fontWidth = (int) Math.ceil((float) b.getWidth());
-            this.fontHeight = (int) Math.ceil((float) b.getHeight());
-            //TODO b.getCenterY()
             this.font = f;
+
+            //TODO do this once per font
+//            FontRenderContext ctx = this.getFontRenderContext();
+//            Rectangle2D b = f.getStringBounds("X", ctx);
+//            this.fontWidth = (int) Math.ceil((float) b.getWidth());
+//            this.fontHeight = (int) Math.ceil((float) b.getHeight());
+            this.fontWidth = (int) Math.ceil(font.getSize()/1.5f);
+            this.fontHeight = font.getSize();
+
+
 
             if (backbufferGraphics != null)
                 backbufferGraphics.setFont(font);

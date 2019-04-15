@@ -89,7 +89,7 @@ public enum MetaGoal {
 
         Why[] ccc = why.array();
 
-        float[] want = n.feel.want;
+        float[] want = n.emotion.want;
 
         for (int i = 0; i < cc; i++) {
 

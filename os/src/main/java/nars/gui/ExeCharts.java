@@ -71,7 +71,7 @@ public class ExeCharts {
         float min = -1f;
         float max = +1f;
 
-        float[] want = n.feel.want;
+        float[] want = n.emotion.want;
         Gridding g = grid( IntStream.range(0, want.length).mapToObj(
                         w -> new FloatSlider(want[w], min, max) {
 
@@ -110,7 +110,7 @@ public class ExeCharts {
         DurSurface d = DurSurface.get(g, n, new Consumer<NAR>() {
 
             final Off c = n.onCycle((nn) -> {
-                busyBuffer.offer(nn.feel.busyVol.asFloat());
+                busyBuffer.offer(nn.emotion.busyVol.asFloat());
                 Exec nexe = n.exe;
                 if (nexe instanceof ThreadedExec)
                     queueSize.offer((float)((ThreadedExec) nexe).queueSize());

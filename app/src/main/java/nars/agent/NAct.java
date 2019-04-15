@@ -348,7 +348,7 @@ public interface NAct {
      */
     default GoalActionConcept[] actionPushButtonMutex(Term l, Term r, BooleanPredicate L, BooleanPredicate R, FloatSupplier thresh, QFunction Q) {
 
-
+        assert(!l.equals(r));
 
         float[] lr = new float[]{0f, 0f};
 

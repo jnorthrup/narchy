@@ -110,24 +110,29 @@ public class ReSurface extends SurfaceCamera {
         return RectFloat.XYXY(0, 0, pw, ph);
     }
 
-    public final boolean isVisible(RectFloat r) {
+    public final boolean visibleByCamera(RectFloat r) {
 //        if (r.w < 1/scaleX)
 //            return false;
 //        if (r.h < 1/scaleY)
 //            return false;
 //        return true;
         boolean v = r.intersectsX1Y1X2Y2(x1, y1, x2, y2);
-        //return v;
+        return v;
+    }
+    public final boolean visibleByPixels(RectFloat r) {
         float minVisibilityPixelPct = 0.5f;
-        return v && visP(r, minVisibilityPixelPct) > 0;
+        boolean v = visP(r, minVisibilityPixelPct) > 0;
+        return v;
     }
 
     public final float visP(RectFloat bounds, float minPixelsToBeVisible) {
         //return (bounds.w * scaleX >= minPixelsToBeVisible) && (bounds.h * scaleY >= minPixelsToBeVisible);
-        float p = bounds.w/w * pw;
+
+//        System.out.println(scaleX + " " + w + " " + pw);
+        float p = bounds.w * scaleX;
         if (p < minPixelsToBeVisible)
             return 0;
-        float q = bounds.h/h * ph;
+        float q = bounds.h * scaleY;
         if (q < minPixelsToBeVisible)
             return 0;
 
@@ -157,9 +162,10 @@ public class ReSurface extends SurfaceCamera {
 
     final FasterList<SurfaceCamera> stack = new FasterList();
 
-    public void push(Zoomed.Camera cam, v2 set) {
-        stack.add(clone());
-        set(cam, set);
+    public void push(Zoomed.Camera cam, v2 scale) {
+        SurfaceCamera prev = clone();
+        stack.add(prev);
+        set(cam, scale.scaleClone(prev.scaleX, prev.scaleY));
     }
 
     public void pop() {

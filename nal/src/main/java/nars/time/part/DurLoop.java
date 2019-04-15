@@ -170,9 +170,9 @@ abstract public class DurLoop extends NARPart {
         @Override
         public void accept(NAR nar) {
 
-            if (nar == null || !isOn())
+            if (!isOn())
                 return; //cancelled between previous iteration and this iteration
-            assert(nar == DurLoop.this.nar);
+            //assert(nar == DurLoop.this.nar);
 
             if (!busy.compareAndSet(false, true))
                 throw new WTF(); //return false;
@@ -193,15 +193,50 @@ abstract public class DurLoop extends NARPart {
             } finally {
                 //TODO catch Exception, option for auto-stop on exception
 
-                NAR n = DurLoop.this.nar;
-                if (n!=null && DurLoop.this.isOn()) {
-                    this.nextStart = scheduleNext(durCycles(), atStart, nar.time());
+                if (DurLoop.this.isOn()) {
+                    this.nextStart = scheduleNext(durCycles(), atStart);
                     nar.runAt(this);
                 }
 
                 busy.set(false);
             }
 
+        }
+        long scheduleNext(long durCycles, long started) {
+
+            long now = nar.time();
+
+            final long idealNext = started + durCycles;
+            long lag = now - idealNext;
+            if (lag > 0) {
+                /** LAG - compute a correctional shift period, so that it attempts to maintain a steady rhythm and re-synch even if a frame is lagged*/
+
+                nar.emotion.durLoopLag.increment(lag);
+
+//            if (Param.DEBUG) {
+//                long earliest = started + durCycles;
+//                assert (nextStart >= earliest) : "starting too soon: " + nextStart + " < " + earliest;
+//                long latest = now + durCycles;
+//                assert (nextStart <= latest) : "starting too late: " + nextStart + " > " + earliest;
+//            }
+
+                //async immediate:
+                return now;
+
+                //balanced
+//                long phaseLate = (now - idealNext) % durCycles;
+//                long delayToAlign = durCycles - phaseLate;
+//                if (delayToAlign < durCycles/2) {
+//                    return now + delayToAlign;
+//                } else
+//                    return now;
+
+                //skip to keep aligned with phase:
+                //long phaseLate = (now - idealNext) % durCycles;
+                //return now + Math.max(1, durCycles - phaseLate);
+
+            } else
+                return idealNext;
         }
 
 

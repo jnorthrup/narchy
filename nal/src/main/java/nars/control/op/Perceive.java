@@ -36,7 +36,7 @@ public enum Perceive { ;
     public static ITask perceive(Task task, What w) {
 
         NAR n = w.nar;
-        n.feel.perceivedTaskStart.increment();
+        n.emotion.perceivedTaskStart.increment();
 
         Term x = task.term();
         if (Evaluation.canEval(x)) {

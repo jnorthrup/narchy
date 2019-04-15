@@ -58,10 +58,10 @@ public interface TruthFunc {
     boolean single();
 
     abstract class ProxyTruthFunc implements TruthFunc {
-        protected final TruthFunc o;
+        final TruthFunc o;
         private final boolean allowOverlap, single;
 
-        protected ProxyTruthFunc(TruthFunc o) {
+        ProxyTruthFunc(TruthFunc o) {
 
             this.o = o;
             this.allowOverlap = o.allowOverlap();
@@ -81,7 +81,7 @@ public interface TruthFunc {
     /** swaps the task truth and belief truth */
     final class SwappedTruth extends ProxyTruthFunc {
 
-        public SwappedTruth(TruthFunc o) {
+        SwappedTruth(TruthFunc o) {
             super(o);
         }
 
@@ -103,7 +103,7 @@ public interface TruthFunc {
     /** ____N , although more accurately it would be called: 'NP' */
     final class NegatedTaskTruth extends ProxyTruthFunc {
 
-        public NegatedTaskTruth(TruthFunc o) {
+        NegatedTaskTruth(TruthFunc o) {
             super(o);
         }
 
@@ -118,7 +118,7 @@ public interface TruthFunc {
 
     final class NegatedBeliefTruth extends ProxyTruthFunc {
 
-        public NegatedBeliefTruth(TruthFunc o) {
+        NegatedBeliefTruth(TruthFunc o) {
             super(o);
         }
 
@@ -142,7 +142,7 @@ public interface TruthFunc {
      */
     final class DepolarizedTruth extends ProxyTruthFunc {
 
-        public DepolarizedTruth(TruthFunc o) {
+        DepolarizedTruth(TruthFunc o) {
             super(o);
         }
 
@@ -180,7 +180,7 @@ public interface TruthFunc {
     /** negates both task and belief frequency */
     final class NegatedTruths extends ProxyTruthFunc {
 
-        public NegatedTruths(TruthFunc o) {
+        NegatedTruths(TruthFunc o) {
             super(o);
         }
 

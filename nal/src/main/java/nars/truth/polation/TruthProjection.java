@@ -43,7 +43,8 @@ import static nars.time.Tense.ETERNAL;
 @Skill({"Interpolation", "Extrapolation"})
 abstract public class TruthProjection extends FasterList<TruthProjection.TaskComponent> {
 
-    public long start, end;
+    long start;
+    long end;
     int dur;
 
     /**
@@ -84,7 +85,7 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
     }
 
 
-    protected boolean update(TaskComponent tc, boolean force) {
+    private boolean update(TaskComponent tc, boolean force) {
         double e = tc.evi;
         if (force || (e!=e)) {
             tc.evi = e = evi(tc.task);
@@ -93,7 +94,7 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
     }
 
 
-    protected double evi(Task task) {
+    private double evi(Task task) {
         double e;
         if (start == ETERNAL) {
             if (!task.isEternal())
@@ -124,7 +125,7 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
         }
     }
 
-    public int active() {
+    int active() {
         return count(TaskComponent::valid);
     }
 
@@ -283,7 +284,7 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
 //    }
 
 
-    public double eviSum(IntPredicate each) {
+    private double eviSum(IntPredicate each) {
         double e = 0;
         int n = size();
         for (int i = 0; i < n; i++) {
@@ -307,10 +308,10 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
         return i!=-1 ? get(i) : null;
     }
 
-    protected int firstValidIndex() {
+    private int firstValidIndex() {
         return indexOf(TaskComponent::valid);
     }
-    protected int firstValidIndex(int after) {
+    private int firstValidIndex(int after) {
         return indexOf(after, TaskComponent::valid);
     }
 
@@ -343,7 +344,7 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
         return add((Iterable) tasks);
     }
 
-    public final TruthProjection add(Tasked tt) {
+    private TruthProjection add(Tasked tt) {
         add(tt.task());
         return this;
     }
@@ -578,7 +579,7 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
             return task;
         }
 
-        public void invalidate() {
+        void invalidate() {
             evi = Double.NaN;
         }
     }

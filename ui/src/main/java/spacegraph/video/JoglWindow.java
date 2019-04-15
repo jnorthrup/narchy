@@ -34,18 +34,7 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
 //    }
     private static GLCapabilitiesImmutable config = null;
 
-    static {
-////        synchronized(JoglWindow.class) {
-////            NEWTJNILibLoader.loadNEWT();
-////        }
-//        NewtFactory.setUseEDT(false);
-    }
 
-    //    private static final Logger logger = LoggerFactory.getLogger(JoglWindow.class);
-    //    /**
-//     * update loop
-//     */
-//    private final InstrumentedLoop updater;
     public final GLWindow window;
     public final Topic<JoglWindow> eventClosed = new ListTopic<>();
     final Topic<JoglWindow> onUpdate = new ListTopic<>();
@@ -95,7 +84,8 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
 
 
                 //GLProfile.getGL2GL3()
-                GLProfile.getDefault()
+                GLProfile.getMaximum(true)
+                //GLProfile.getDefault()
                 //GLProfile.get(new String[] { GLProfile.GL2ES2 }, true)
                 //GLProfile.getMinimum(true)
 

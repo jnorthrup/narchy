@@ -1,5 +1,6 @@
 package nars.truth;
 
+import jcog.Skill;
 import nars.truth.func.TruthFunctions;
 import org.jetbrains.annotations.Nullable;
 
@@ -58,13 +59,14 @@ public interface Truthed  {
         return truth().freq();
     }
 
+    /** a dual (reversible) asymptotic normalization of evi(), see: HORIZON */
     default float conf() {
         //return w2cSafe(evi());
         return truth().conf();
     }
 
     /** weight of evidence ( confidence converted to weight, 'c2w()' ) */
-    default double evi() {
+    @Skill({"Epistemology", "Evidence_law"}) default double evi() {
         //return c2wSafe((double)conf());
         return truth().evi();
     }
@@ -73,6 +75,5 @@ public interface Truthed  {
     default double eviEternalized() {
         return TruthFunctions.eternalize(evi());
     }
-
 
 }

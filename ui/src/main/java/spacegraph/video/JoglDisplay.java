@@ -4,12 +4,10 @@ import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL2;
 import com.jogamp.opengl.GLAutoDrawable;
 import com.jogamp.opengl.math.FloatUtil;
-import jcog.data.list.MetalConcurrentQueue;
 import jcog.event.Off;
 import jcog.math.v3;
 import spacegraph.input.key.KeyXYZ;
 import spacegraph.input.key.WindowKeyControls;
-import spacegraph.space2d.ReSurface;
 import spacegraph.util.animate.AnimVector3f;
 import spacegraph.util.animate.Animated;
 
@@ -39,10 +37,6 @@ abstract public class JoglDisplay {
 
     private final float cameraSpeed = 100f, cameraRotateSpeed = cameraSpeed;
 
-
-
-    private final MetalConcurrentQueue<Runnable> pending = new MetalConcurrentQueue<>(1024);
-
     public float top;
     public float bottom;
     private float left;
@@ -54,7 +48,6 @@ abstract public class JoglDisplay {
 
     protected int debug;
 
-
     public JoglDisplay() {
         video = new MyJoglWindow();
 
@@ -64,11 +57,6 @@ abstract public class JoglDisplay {
 
     }
 
-    public void later(Runnable r) { pending.add(r); }
-
-    private void flush() {
-        pending.clear(Runnable::run);
-    }
 
     private void initDepth(GL2 gl) {
         gl.glEnable(GL_DEPTH_TEST);
@@ -83,12 +71,9 @@ abstract public class JoglDisplay {
         gl.glEnable(GL_BLEND);
         gl.glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE);
         gl.glBlendEquationSeparate(GL_FUNC_ADD, GL_MAX);
-
-
     }
 
     protected void initLighting(GL2 gl) {
-
 
     }
 
@@ -116,8 +101,6 @@ abstract public class JoglDisplay {
     }
 
 
-    /* render context */
-    public final ReSurface rendering = new ReSurface();
 
 
     protected void renderOrthos(float dtS) {
@@ -239,8 +222,6 @@ abstract public class JoglDisplay {
 
             JoglDisplay.this.init();
 
-            flush();
-            onUpdate((Consumer) (w -> flush()));
         }
 
         @Override
@@ -257,15 +238,9 @@ abstract public class JoglDisplay {
 
         @Override
         protected void update() {
-//            int w = video.window.getWidth(), h = video.window.getHeight();
 
-            rendering.restart(getWidth(), getHeight());
-            JoglDisplay.this.update(rendering);
-//            for (Surface/*Root*/ l : layers.children()) {
-//                if (l instanceof Ortho) {
-//                    ((Ortho) l).compile(rendering);
-//                }
-//            }
+            JoglDisplay.this.update();
+
         }
 
         @Override
@@ -280,9 +255,11 @@ abstract public class JoglDisplay {
 
     }
 
-    protected void update(ReSurface rendering) {
+    protected void update() {
+
 
     }
+
 
     /** for misc init tasks */
     protected void init() {

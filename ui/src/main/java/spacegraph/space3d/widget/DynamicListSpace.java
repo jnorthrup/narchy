@@ -41,10 +41,11 @@ public abstract class DynamicListSpace<X> extends AbstractSpace<X> {
         active.forEach(each);
     }
 
+
     @Override
     public void update(SpaceDisplayGraph3D<X> s, long dtMS) {
 
-        synchronized (this) {
+        //synchronized (this) {
             List<? extends Spatial<X>> prev = this.active;
 
             prev.forEach(Active::deactivate);
@@ -63,7 +64,7 @@ public abstract class DynamicListSpace<X> extends AbstractSpace<X> {
             active.forEach(x -> x.update(s.dyn));
 
             super.update(s, dtMS);
-        }
+        //}
 
 
 

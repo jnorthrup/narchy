@@ -7,7 +7,7 @@ import spacegraph.space2d.Surface;
 import spacegraph.util.geo.IRL;
 import spacegraph.util.geo.osm.Osm;
 import spacegraph.util.geo.osm.OsmElement;
-import spacegraph.video.OsmSurface;
+import spacegraph.space2d.widget.OsmSurface;
 
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;

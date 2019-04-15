@@ -22,7 +22,7 @@ public class TruthIntegration {
         return evi(t, 0);
     }
 
-    public static double evi(Task t, int dur) {
+    private static double evi(Task t, int dur) {
         return evi(t, t.start(), t.end(), dur);
     }
 

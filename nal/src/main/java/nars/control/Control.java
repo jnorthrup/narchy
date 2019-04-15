@@ -308,7 +308,7 @@ import java.util.Arrays;
                     case 3: w = +0.5f; break;
                     case 4: w = +1; break;
                 }
-                nar.feel.want(m, w);
+                nar.emotion.want(m, w);
             });
         }
 

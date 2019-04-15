@@ -247,7 +247,11 @@ abstract public class Surface implements Surfacelike, spacegraph.input.finger.Fi
      * test visibility in the current rendering context
      */
     public final boolean visible(ReSurface r) {
-        return visible() && (!clipBounds || r.isVisible(bounds));
+        RectFloat b = this.bounds;
+        return visible() &&
+               b.w > Float.MIN_NORMAL && b.h > Float.MIN_NORMAL &&
+               (!clipBounds || r.visibleByCamera(b)) &&
+               r.visibleByPixels(b);
     }
 
     abstract protected void render(ReSurface r);

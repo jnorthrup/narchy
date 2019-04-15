@@ -221,7 +221,7 @@ public class TestNAR {
             }
 
             if (reportStats) {
-                nar.feel.print(System.out);
+                nar.emotion.print(System.out);
                 nar.stats(System.out);
             }
         }

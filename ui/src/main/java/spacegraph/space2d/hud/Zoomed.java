@@ -155,14 +155,24 @@ public class Zoomed<S extends Surface> extends MutableUnitContainer<S> implement
         render.on((gl) -> {
 
             float zoom = (float) (sin(Math.PI / 2 - focusAngle / 2) / (cam.z * sin(focusAngle / 2)));
-            float s = zoom * Math.min(w(), h());
+            float H = h();
+            float W = w();
+            float s = zoom * Math.min(W, H);
 
-            render.push(cam, scale.set(s, s));
+            v2 ss = scale.set(s, s);
+
+            if (parent instanceof Surface) {
+                Surface ps = (Surface) this.parent;
+                ss.scale(W /ps.w(), H /ps.h());
+            }
+
+
+            render.push(cam, ss);
 
             gl.glPushMatrix();
 
             gl.glScalef(s, s, 1);
-            gl.glTranslatef((w() / 2) / s - cam.x, (h() / 2) / s - cam.y, 0);
+            gl.glTranslatef((W / 2) / s - cam.x, (H / 2) / s - cam.y, 0);
 
 
         });

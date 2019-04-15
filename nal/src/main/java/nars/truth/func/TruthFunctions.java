@@ -162,7 +162,7 @@ public final class TruthFunctions {
      * @return Truth value of the conclusion
      */
     @Nullable
-    public static Truth comparison(Truth a, boolean negA, Truth b, float minConf) {
+    private static Truth comparison(Truth a, boolean negA, Truth b, float minConf) {
         float f1 = a.freq();
         if (negA) f1 = 1 - f1;
 
@@ -242,7 +242,7 @@ public final class TruthFunctions {
         return (c < minConf) ? null : $.t(and(negIf(x.freq(),negX), negIf(y.freq(),negY)), c);
     }
 
-    static float negIf(float f, boolean neg) {
+    private static float negIf(float f, boolean neg) {
         return neg ? (1-f) : f;
     }
 

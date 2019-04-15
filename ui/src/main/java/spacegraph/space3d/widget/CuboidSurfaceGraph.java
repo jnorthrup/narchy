@@ -181,18 +181,6 @@ public class CuboidSurfaceGraph<X> extends SimpleSpatial<X> implements SurfaceGr
         }
     }
 
-
-    @Override
-    public void the(String key, @Nullable Object added, @Nullable Runnable onRemove) {
-
-    }
-
-    @Override
-    public Object the(String key) {
-
-        return null;
-    }
-
     @Override
     public Off onUpdate(Consumer<JoglWindow> c) {
         throw new TODO();

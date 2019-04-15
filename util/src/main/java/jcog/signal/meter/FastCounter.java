@@ -2,6 +2,7 @@ package jcog.signal.meter;
 
 import java.util.concurrent.atomic.AtomicLong;
 
+/** could also be LongAdder .. */
 public class FastCounter extends AtomicLong {
 
     private final String name;
@@ -22,6 +23,5 @@ public class FastCounter extends AtomicLong {
     public void increment(long amount) {
         addAndGet(amount);
     }
-
 
 }

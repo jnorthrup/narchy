@@ -218,22 +218,22 @@ public interface Truth extends Truthed {
         return Util.unitizeSafe(Util.round(f, epsilon));
     }
 
-    static float conf(double c, float epsilon) {
+    static double conf(double c, float epsilon) {
         if (!Double.isFinite(c))
             throw new TruthException("non-finite conf", c);
 //        assert (c >= Param.TRUTH_EPSILON) : "invalid conf: " + c;
         return confSafe(c, epsilon);
     }
 
-    static float confSafe(double c, float epsilon) {
-        if (epsilon <= Float.MIN_NORMAL)
-            return (float)c;
+    static double confSafe(double c, float epsilon) {
+        if (epsilon <= Double.MIN_NORMAL)
+            return c;
         else {
             return Util.clampSafe(
 
-                    (float) Util.roundSafe(c, epsilon),
+                    Util.roundSafe(c, epsilon),
 
-                    0, 1f - epsilon);
+                    0, 1.0 - epsilon);
         }
     }
 
@@ -250,7 +250,7 @@ public interface Truth extends Truthed {
 
     }
 
-    static float w2cDithered(double evi, float confRes) {
+    static double w2cDithered(double evi, float confRes) {
         return confSafe(w2cSafeDouble(evi), confRes);
     }
 
@@ -325,7 +325,7 @@ public interface Truth extends Truthed {
         float f = freq();
         float ff = freq(f, freqRes);
         float c = conf();
-        float cc = conf(c, confRes);
+        double cc = confSafe(c, confRes);
         if (Util.equals(f,ff) && Util.equals(c,cc))
             return this;
         else
@@ -343,7 +343,7 @@ public interface Truth extends Truthed {
         float f = freq();
         float ff = freq(negate ? 1-f : f, freqRes);
         double c0 = w2cSafeDouble(e);
-        float cc = conf(c0, confRes);
+        double cc = conf(c0, confRes);
         if (Util.equals(f,ff) && Util.equals(c0,cc))
             return this;
         else

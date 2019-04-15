@@ -237,7 +237,7 @@ public class Game extends NARPart implements NSense, NAct {
                 " hapy=" + /*n4*/(happiness()) +
 
                 /*" var=" + n4(varPct(nar)) + */ '\t' + nar.memory.summary() + ' ' +
-                nar.feel.summary();
+                nar.emotion.summary();
     }
 
     /**

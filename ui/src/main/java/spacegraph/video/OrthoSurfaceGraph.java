@@ -1,16 +1,18 @@
-package spacegraph.space2d;
+package spacegraph.video;
 
 import com.jogamp.newt.event.WindowEvent;
 import com.jogamp.opengl.GL2;
 import com.jogamp.opengl.fixedfunc.GLMatrixFunc;
 import jcog.event.Off;
-import org.eclipse.collections.api.tuple.Pair;
 import spacegraph.input.finger.Finger;
 import spacegraph.input.finger.FingerMoveWindow;
 import spacegraph.input.finger.FingerResizeWindow;
 import spacegraph.input.finger.Fingering;
 import spacegraph.input.finger.impl.NewtKeyboard;
 import spacegraph.input.finger.impl.NewtMouseFinger;
+import spacegraph.space2d.ReSurface;
+import spacegraph.space2d.Surface;
+import spacegraph.space2d.SurfaceGraph;
 import spacegraph.space2d.container.Bordering;
 import spacegraph.space2d.container.EmptySurface;
 import spacegraph.space2d.container.Stacking;
@@ -20,15 +22,10 @@ import spacegraph.space2d.hud.Zoomed;
 import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.space2d.widget.textedit.TextEdit;
 import spacegraph.util.animate.Animated;
-import spacegraph.video.JoglDisplay;
-import spacegraph.video.JoglWindow;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiConsumer;
 
 import static com.jogamp.opengl.fixedfunc.GLMatrixFunc.GL_PROJECTION;
-import static org.eclipse.collections.impl.tuple.Tuples.pair;
 import static spacegraph.SpaceGraph.surfaceWindow;
 
 public class OrthoSurfaceGraph extends JoglDisplay implements SurfaceGraph {
@@ -36,10 +33,14 @@ public class OrthoSurfaceGraph extends JoglDisplay implements SurfaceGraph {
 
     private final static short MOVE_AND_RESIZE_BUTTON = 1;
 
-    //    private final Ortho<MutableListContainer> hud;
-    private final Map<String, Pair<Object, Runnable>> singletons = new ConcurrentHashMap();
+
+    /* render context */
+    public final ReSurface rendering = new ReSurface();
+
     public final Finger finger;
     private final NewtKeyboard keyboard;
+
+
     private final Fingering windowResize = new FingerResizeWindow(this, MOVE_AND_RESIZE_BUTTON) {
         @Override
         public Surface touchNext(Surface prev, Surface next) {
@@ -68,7 +69,7 @@ public class OrthoSurfaceGraph extends JoglDisplay implements SurfaceGraph {
         }
     };
 
-    public final Stacking layers = new Stacking() {
+    private final Stacking layers = new Stacking() {
 
         private transient int _w, _h;
 
@@ -79,8 +80,6 @@ public class OrthoSurfaceGraph extends JoglDisplay implements SurfaceGraph {
             rr.x2 = w();
             rr.y2 = h();
         };
-
-
 
         @Override
         public Surface finger(Finger finger) {
@@ -134,7 +133,7 @@ public class OrthoSurfaceGraph extends JoglDisplay implements SurfaceGraph {
 
         video.window.setPointerVisible(false);
 
-        finger = new NewtMouseFinger(this);
+        finger = new NewtMouseFinger(this, layers);
 
         keyboard = new NewtKeyboard(/*TODO this */);
 
@@ -189,17 +188,12 @@ public class OrthoSurfaceGraph extends JoglDisplay implements SurfaceGraph {
     }
 
     @Override
-    protected void update(ReSurface rendering) {
+    protected void update() {
+        rendering.restart(video.getWidth(), video.getHeight());
         layers.tryRender(rendering);
     }
 
-    @Override
-    public Object the(String key) {
-        //synchronized (singletons) {
-            Pair<Object, Runnable> x = singletons.get(key);
-            return x == null ? null : x.getOne();
-        //}
-    }
+
 
     public Off animate(Animated c) {
         return onUpdate(c);
@@ -208,29 +202,6 @@ public class OrthoSurfaceGraph extends JoglDisplay implements SurfaceGraph {
     private Off animate(Runnable c) {
         return onUpdate(c);
     }
-
-    @Override
-    public void the(String key, Object added, Runnable onRemove) {
-        synchronized (singletons) {
-
-            Pair<Object, Runnable> removed = null;
-            if (added == null) {
-                assert (onRemove == null);
-                removed = singletons.remove(key);
-            } else {
-                removed = singletons.put(key, pair(added, onRemove));
-            }
-
-            if (removed != null) {
-                if (removed.getOne() == added) {
-
-                } else {
-                    removed.getTwo().run();
-                }
-            }
-        }
-    }
-
 
     @Override
     public boolean keyFocus(Surface s) {
@@ -292,5 +263,6 @@ public class OrthoSurfaceGraph extends JoglDisplay implements SurfaceGraph {
         }
 
     }
+
 
 }

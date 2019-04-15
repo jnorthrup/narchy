@@ -407,7 +407,7 @@ public enum NALTruth implements TruthFunc {
 
     ;
 
-    static final ImmutableMap<Term, TruthFunc> funcs;
+    private static final ImmutableMap<Term, TruthFunc> funcs;
 
     static {
         MutableMap<Term, TruthFunc> h = new UnifiedMap<>(NALTruth.values().length);
@@ -415,8 +415,8 @@ public enum NALTruth implements TruthFunc {
         funcs = h.toImmutable();
     }
 
-    public final boolean single;
-    public final boolean overlap;
+    private final boolean single;
+    private final boolean overlap;
     NALTruth() {
         Field f = Reflect.on(getClass()).field(name()).get();
         this.single = f.isAnnotationPresent(SinglePremise.class);

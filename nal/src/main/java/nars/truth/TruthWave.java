@@ -23,7 +23,7 @@ import java.util.Arrays;
  */
 public class TruthWave {
 
-    static final int precision = 8;
+    private static final int precision = 8;
 
     private static final int ENTRY_SIZE = 4;
 
@@ -46,7 +46,7 @@ public class TruthWave {
         clear();
     }
 
-    public void clear() {
+    private void clear() {
         size = 0;
         start = end = Tense.ETERNAL;
     }
@@ -189,11 +189,11 @@ public class TruthWave {
         return size == 0;
     }
 
-    public long start() {
+    private long start() {
         return start;
     }
 
-    public long end() {
+    private long end() {
         return end;
     }
 
@@ -233,7 +233,7 @@ public class TruthWave {
         }
     }
 
-    public final int capacity() {
+    private int capacity() {
         return truth.length / ENTRY_SIZE;
     }
 

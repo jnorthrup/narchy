@@ -53,14 +53,14 @@ public abstract class EvidenceEvaluator implements LongToDoubleFunction /* time 
     }
 
     private static class TemporalPointEvidenceEvaluator extends EvidenceEvaluator {
-        public final long s;
-        public final int dur;
+        final long s;
+        final int dur;
         /**
          * max evidence during defined range
          */
         private final double evi;
 
-        protected TemporalPointEvidenceEvaluator(long w, double evi, int dur) {
+        TemporalPointEvidenceEvaluator(long w, double evi, int dur) {
             this.dur = dur;
             this.s = w;
             assert (w != LongInterval.ETERNAL);
@@ -74,16 +74,16 @@ public abstract class EvidenceEvaluator implements LongToDoubleFunction /* time 
                     evi : ((dur > 0) ? Param.evi(evi, dt, dur) : 0 /* none */);
         }
 
-        protected long dt(long when) {
+        long dt(long when) {
             return Math.abs(when - s);
         }
 
     }
 
     static final class TemporalSpanEvidenceEvaluator extends TemporalPointEvidenceEvaluator {
-        public final long e;
+        final long e;
 
-        public TemporalSpanEvidenceEvaluator(long s, long e, double evi, int dur) {
+        TemporalSpanEvidenceEvaluator(long s, long e, double evi, int dur) {
             super(s, evi, dur);
             this.e = e;
         }

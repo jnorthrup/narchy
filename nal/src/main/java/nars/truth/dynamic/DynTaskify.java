@@ -43,7 +43,7 @@ public class DynTaskify extends TaskList {
 
     private final AbstractDynamicTruth model;
 
-    public final Answer answer;
+    private final Answer answer;
     private final int dur;
     public final Task result;
     private MetalLongSet evi = null;
@@ -304,7 +304,7 @@ public class DynTaskify extends TaskList {
 
 
 
-    public long[] stamp(Supplier<Random> rng) {
+    private long[] stamp(Supplier<Random> rng) {
         if (evi == null) {
 
             switch(size) {
@@ -333,7 +333,7 @@ public class DynTaskify extends TaskList {
         return false;
     }
 
-    public final Term template() {
+    private Term template() {
         return answer.term();
     }
 

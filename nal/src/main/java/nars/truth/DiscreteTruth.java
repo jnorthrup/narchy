@@ -21,7 +21,7 @@ public class DiscreteTruth implements Truth {
     public DiscreteTruth(float f, float c) {
         this(Truth.truthToInt(f, c));
     }
-    public DiscreteTruth(double f, double c) {
+    DiscreteTruth(double f, double c) {
         this(Truth.truthToInt(f, c));
     }
 
@@ -36,7 +36,7 @@ public class DiscreteTruth implements Truth {
         );
     }
 
-    protected DiscreteTruth(int hash) {
+    DiscreteTruth(int hash) {
         this.hash = hash;
     }
 

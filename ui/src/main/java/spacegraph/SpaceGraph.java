@@ -2,7 +2,7 @@ package spacegraph;
 
 import jcog.Skill;
 import jdk.jshell.tool.JavaShellToolBuilder;
-import spacegraph.space2d.OrthoSurfaceGraph;
+import spacegraph.video.OrthoSurfaceGraph;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.widget.meta.ObjectSurface;
 import spacegraph.space3d.SpaceDisplayGraph3D;

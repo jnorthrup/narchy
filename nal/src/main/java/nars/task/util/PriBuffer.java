@@ -216,6 +216,15 @@ abstract public class PriBuffer<T extends Prioritizable> implements Consumer<T> 
         public final IntRange capacity = new IntRange(0, 0, 4 * 1024);
 
         /**
+         * perceptual valve
+         * dilation factor
+         * input rate
+         * tasks per cycle
+         */
+        public final FloatRange valve = new FloatRange(0.5f, 0, 1);
+
+        private transient long prev = Long.MIN_VALUE;
+        /**
          * temporary buffer before input so they can be merged in case of duplicates
          */
         public final Bag<ITask, ITask> tasks;
@@ -263,14 +272,7 @@ abstract public class PriBuffer<T extends Prioritizable> implements Consumer<T> 
 //                };
 
         //new HijackBag...
-        /**
-         * perceptual valve
-         * dilation factor
-         * input rate
-         * tasks per cycle
-         */
-        public final FloatRange valve = new FloatRange(1, 0, 512);
-        private transient long prev = Long.MIN_VALUE;
+
 
         /**
          * @capacity size of buffer for tasks that have been input (and are being de-duplicated) but not yet input.
@@ -363,7 +365,7 @@ abstract public class PriBuffer<T extends Prioritizable> implements Consumer<T> 
          * TODO abstract
          */
         protected int batchSize(long dt) {
-            return 1 /* iff dt==0 */ + (int) Math.ceil(dt * valve.floatValue());
+            return Math.max(1, (int) Math.ceil(dt * capacity() * valve.floatValue()));
 
             //rateControl.apply(tasks.size(), tasks.capacity());
 

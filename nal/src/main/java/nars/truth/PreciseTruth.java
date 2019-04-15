@@ -19,8 +19,8 @@ import static nars.truth.func.TruthFunctions.*;
  */
 public final class PreciseTruth extends DiscreteTruth {
 
-    final float f;
-    final double e;
+    private final float f;
+    private final double e;
 
 
     @Nullable
@@ -38,7 +38,7 @@ public final class PreciseTruth extends DiscreteTruth {
     }
 
     /** use with caution, if you are calculating a precise evi and a dithered conf, they should correspond */
-    protected static PreciseTruth byConfEvi(float freq, double conf, double evi) {
+    static PreciseTruth byConfEvi(float freq, double conf, double evi) {
 
         if (evi < Param.truth.TRUTH_EVI_MIN)
             return null;

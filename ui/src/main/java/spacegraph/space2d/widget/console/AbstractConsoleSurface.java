@@ -16,6 +16,11 @@ public abstract class AbstractConsoleSurface extends EmptyContainer {
         return false;
     }
 
+    @Override
+    public final int childrenCount() {
+        return 1; //HACK prevent hiding of empty containers
+    }
+
     abstract public void invalidate();
 
 

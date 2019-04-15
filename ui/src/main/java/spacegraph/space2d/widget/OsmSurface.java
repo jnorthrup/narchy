@@ -1,4 +1,4 @@
-package spacegraph.video;
+package spacegraph.space2d.widget;
 
 import com.jogamp.opengl.GL2;
 import com.jogamp.opengl.GLContext;
@@ -18,6 +18,8 @@ import spacegraph.util.geo.IRL;
 import spacegraph.util.geo.osm.Osm;
 import spacegraph.util.geo.osm.OsmElement;
 import spacegraph.util.geo.osm.OsmWay;
+import spacegraph.video.Draw;
+import spacegraph.video.OsmSpace;
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;

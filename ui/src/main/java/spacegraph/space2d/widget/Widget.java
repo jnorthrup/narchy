@@ -2,6 +2,7 @@ package spacegraph.space2d.widget;
 
 import com.jogamp.newt.event.KeyEvent;
 import com.jogamp.opengl.GL2;
+import jcog.Skill;
 import jcog.Util;
 import jcog.tree.rtree.rect.RectFloat;
 import spacegraph.input.finger.Finger;
@@ -15,8 +16,10 @@ import spacegraph.util.math.Color4f;
 import spacegraph.video.Draw;
 
 /**
- * Base class for GUI widgets, similarly designed to JComponent
+ * Base class for GUI widgets, loosely analogous to Swing's JComponent as an abstract hierarchy root
+ * https://en.wikipedia.org/wiki/Template:GUI_widgets
  */
+@Skill({"Widget_(GUI)", "Template:GUI_widgets"})
 public class Widget extends MutableUnitContainer<Surface> implements KeyPressed {
 
 

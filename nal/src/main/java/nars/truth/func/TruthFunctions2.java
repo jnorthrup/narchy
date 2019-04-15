@@ -12,7 +12,7 @@ import static nars.$.t;
 import static nars.truth.func.TruthFunctions.confCompose;
 import static nars.truth.func.TruthFunctions.w2cSafe;
 
-public enum TruthFunctions2 {
+enum TruthFunctions2 {
     ;
 
 //    /**
