@@ -45,14 +45,10 @@ import java.util.stream.Stream;
  */
 public class RTree<T> implements Space<T> {
 
-    private static final MetalAtomicIntegerFieldUpdater SIZE = new MetalAtomicIntegerFieldUpdater(RTree.class, "_size");
+    private static final MetalAtomicIntegerFieldUpdater<RTree> SIZE = new MetalAtomicIntegerFieldUpdater(RTree.class, "_size");
 
-    private Node<T> root;
+    private volatile Node<T> root;
 
-    /**
-     * size counter
-     * volatile for concurrent implementations
-     */
     private volatile int _size;
 
     public final Spatialization<T> model;
@@ -76,7 +72,7 @@ public class RTree<T> implements Space<T> {
     }
 
     @Override
-    public Iterator<T> iterator() {
+    public final Iterator<T> iterator() {
         return root.iterateValues();
     }
 
@@ -105,18 +101,29 @@ public class RTree<T> implements Space<T> {
     @Override
     public boolean add(/*@NotNull*/ final T t) {
 
-
         boolean[] added = new boolean[1];
 
         Node<T> nextRoot = root.add(t, true, model, added);
 
         if (added[0]) {
 
-            this.root = nextRoot!=null ? nextRoot : model.newLeaf();
-
+            assert(nextRoot!=null);
+            this.root = nextRoot;
             SIZE.getAndIncrement(this);
+
+            //this.root = nextRoot!=null ? nextRoot : model.newLeaf();
+
+//            //TEMPORARY
+//            if (Iterators.size(iterator())!=size()) {
+//                boolean[] added2 = new boolean[1];
+//                Node<T> nextRoot2 = root.add(t, true, model, added2);
+//                throw new WTF("inconsistent");
+//            }
+
+
             return true;
         }
+
 
         return false;
     }
@@ -138,9 +145,10 @@ public class RTree<T> implements Space<T> {
         @Nullable Node<T> nextRoot = root.remove(x, bx, model, removed);
         if (removed[0]) {
 
+            SIZE.getAndDecrement(this);
+
             root = nextRoot!=null ? nextRoot : model.newLeaf();
 
-            SIZE.getAndDecrement(this);
             return true;
         }
         return false;
@@ -148,9 +156,9 @@ public class RTree<T> implements Space<T> {
 
     @Override
     public boolean replace(final T told, final T tnew) {
+
         if (told == tnew) {
             return true;
-
         }
 
         if (model.bounds(told).equals(model.bounds(tnew))) {
@@ -176,7 +184,7 @@ public class RTree<T> implements Space<T> {
      * @return number of data entries stored in the RTree
      */
     @Override
-    public int size() {
+    public final int size() {
         return SIZE.getOpaque(this);
     }
 

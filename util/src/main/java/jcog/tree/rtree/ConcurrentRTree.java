@@ -157,9 +157,7 @@ public class ConcurrentRTree<X> extends LambdaStampedLock implements Space<X> {
     }
 
     public final void readOptimistic(Consumer<Space<X>> x) {
-        readOptimistic(() -> {
-            x.accept(tree);
-        });
+        readOptimistic(() -> x.accept(tree));
     }
 
     @Override

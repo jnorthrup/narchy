@@ -1,6 +1,5 @@
 package nars.table.temporal;
 
-import jcog.Util;
 import jcog.WTF;
 import jcog.data.list.FasterList;
 import jcog.math.LongInterval;
@@ -44,16 +43,11 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 
     private static final int MAX_TASKS_PER_LEAF = 3;
 
+    /** TODO tune */
     private static final Split SPLIT =
-//            new AxialSplitLeaf() {  //AXIAL SPLIT IS PROBABLY BAD FOR THIS UNLESS A LEAF ENDS UP BEING SPLIT IN A CERTAIN WAY
-//                /* TODO tune */
-//            };
-//              new LinearSplitLeaf() {
-//                /* TODO tune */
-//              };
-              new QuadraticSplitLeaf() {
-                /* TODO tune */
-              };
+//            new AxialSplitLeaf();  //AXIAL SPLIT IS PROBABLY BAD FOR THIS UNLESS A LEAF ENDS UP BEING SPLIT IN A CERTAIN WAY
+//              new LinearSplitLeaf();
+              new QuadraticSplitLeaf();
 
 
     protected int capacity;
@@ -512,22 +506,35 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
                 if (Arrays.equals(ee.stamp(), ii.stamp())) {
                     if (ee.term().equals(ii.term())) {
                         Truth et = ee.truth(), it = ii.truth();
-                        if (Util.equals(et.freq(), it.freq(), Param.truth.TRUTH_EPSILON)) {
-                            float ete = et.conf(), ite = it.conf();
-                            if (ete >= ite && ee.contains((LongInterval)ii)) {
+                        if (et.equals(it)) {
+                            if (ee.containsRaw((LongInterval)ii)) {
                                 m = ee;
-                            } else if (ite >= ete && ii.contains((LongInterval)ee)) {
+                            } else if (ii.containsRaw((LongInterval)ee)) {
                                 m = ii;
                             }
                         }
+
+                        //this produces inconsistent results because conf bounds change:
+
+//                        if (Util.equals(et.freq(), it.freq(), Param.truth.TRUTH_EPSILON)) {
+//                            float ete = et.conf(), ite = it.conf();
+//                            if (ete >= ite && ee.containsRaw((LongInterval)ii)) {
+//                                m = ee;
+//                            } else if (ite >= ete && ii.containsRaw((LongInterval)ee)) {
+//                                m = ii;
+//                            }
+//                        }
                     }
                 }
             }
 
-            if (m!=null)
-                merged.set(m);
+            merged.set(m);
 
             return m;
+        }
+
+        public boolean mergeCanStretch() {
+            return true;
         }
 
     }

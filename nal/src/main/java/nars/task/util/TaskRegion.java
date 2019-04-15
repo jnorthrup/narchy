@@ -193,6 +193,16 @@ public interface TaskRegion extends HyperRegion, Tasked, LongInterval {
         throw new UnsupportedOperationException();
     }
 
+    default double center(int dimension) {
+        switch (dimension) {
+            case 0: return mid();
+            case 1: return (freqMinI() + freqMaxI())/2.0;
+            case 2: return (confMinI() + confMaxI())/2.0;
+            default:
+                return Double.NaN;
+        }
+    }
+
     default float freqMean() {
         return (freqMin() + freqMax()) / 2;
     }

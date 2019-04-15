@@ -27,17 +27,17 @@ import jcog.tree.rtree.*;
  * <p>
  * Created by jcairns on 5/5/15.
  */
-public class LinearSplitLeaf<T> implements Split<T> {
+public class LinearSplitLeaf<X> implements Split<X> {
 
     @Override
-    public Node<T> split(T t, Leaf<T> leaf, Spatialization<T> m) {
+    public Node<X> split(X x, Leaf<X> leaf, Spatialization<X> m) {
 
 
 
         final int MIN = 0;
         final int MAX = 1;
         final int NRANGE = 2;
-        T[] data = leaf.data;
+        X[] data = leaf.data;
         final int nD = m.bounds(data[0]).dim();
         final int[][][] r = new int[nD][NRANGE][NRANGE];
 
@@ -45,21 +45,25 @@ public class LinearSplitLeaf<T> implements Split<T> {
 
         short size = leaf.size;
         for (int d = 0; d < nD; d++) {
-            int[][] rd = r[d];
+            final int[][] rd = r[d];
+            int[] iiMin = rd[MIN];
+            double daa = m.bounds(data[iiMin[MIN]]).coord(d, false);
+            double dba = m.bounds(data[iiMin[MAX]]).coord(d, false);
+            int[] iiMax = rd[MAX];
+            double dab = m.bounds(data[iiMax[MIN]]).coord(d, true);
+            double dbb = m.bounds(data[iiMax[MAX]]).coord(d, true);
+
             for (int j = 1; j < size; j++) {
-                int[][] ii = rd;
 
                 HyperRegion rj = m.bounds(data[j]);
 
                 double rjMin = rj.coord(d, false);
-                int[] iiMin = ii[MIN];
-                if (m.bounds(data[iiMin[MIN]]).coord(d, false) > rjMin) iiMin[MIN] = j;
-                if (m.bounds(data[iiMin[MAX]]).coord(d, false) < rjMin) iiMin[MAX] = j;
+                if (daa > rjMin) iiMin[MIN] = j;
+                if (dba < rjMin) iiMin[MAX] = j;
 
                 double rjMax = rj.coord(d, true);
-                int[] iiMax = ii[MAX];
-                if (m.bounds(data[iiMax[MIN]]).coord(d, true) > rjMax) iiMax[MIN] = j;
-                if (m.bounds(data[iiMax[MAX]]).coord(d, true) < rjMax) iiMax[MAX] = j;
+                if (dab > rjMax) iiMax[MIN] = j;
+                if (dbb < rjMax) iiMax[MAX] = j;
             }
 
 
@@ -74,37 +78,23 @@ public class LinearSplitLeaf<T> implements Split<T> {
             ) / width;
         }
 
-        int r1Ext = -1, r2Ext = -1;
+        int r1Max = -1, r2Max = -1;
         double sepMax = Double.NEGATIVE_INFINITY;
         for (int d = 0; d < nD; d++) {
             if (sepMax < separation[d]) {
                 sepMax = separation[d];
-                r1Ext = r[d][MAX][MIN];
-                r2Ext = r[d][MIN][MAX];
+                r1Max = r[d][MAX][MIN];
+                r2Max = r[d][MIN][MAX];
             }
         }
 
-        if (r1Ext == r2Ext) {
-            r1Ext = 0;
-            r2Ext = size - 1;
+        if (r1Max == r2Max) {
+            r1Max = 0;
+            r2Max = size - 1;
         }
 
-        final Leaf<T> l1Node = m.newLeaf();
-        boolean[] dummy = new boolean[1];
-        l1Node.add(data[r1Ext], true, m, dummy);
+        return newBranch(x, leaf, m, size, r1Max, r2Max, data);
 
-        final Leaf<T> l2Node = m.newLeaf();
-        dummy[0] = false;
-        l2Node.add(data[r2Ext], true, m, dummy);
-
-        for (int i = 0; i < size; i++) {
-            if ((i != r1Ext) && (i != r2Ext))
-                leaf.transfer(l1Node, l2Node, data[i], m);
-        }
-
-        leaf.transfer(l1Node, l2Node, t, m);
-
-        return m.newBranch(l1Node, l2Node);
     }
 
 

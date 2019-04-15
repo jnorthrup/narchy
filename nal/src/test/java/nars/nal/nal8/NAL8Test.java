@@ -375,7 +375,7 @@ public class NAL8Test extends NALTest {
     void testInhibition() {
 
 
-        test.termVolMax(4).confMin(0.5f)
+        test.termVolMax(4).confMin(0.75f)
                 .goal("reward")
                 .believe("(good ==> reward)", 1, 0.9f)
                 .believe("(--bad ==> reward)", 1, 0.9f)
@@ -386,9 +386,8 @@ public class NAL8Test extends NALTest {
 
     @Test
     void testInhibitionInverse() {
-        test.nar.termVolumeMax.set(5);
 
-        test
+        test.termVolMax(5).confMin(0.75f)
                 .goal("--reward")
                 .believe("(good ==> reward)", 1, 0.9f)
                 .believe("(bad ==> reward)", 0, 0.9f)

@@ -16,8 +16,8 @@ public class Spatialization<X> {
             //Float.MIN_NORMAL; //E-38
     public static final float EPSILONf = (float)EPSILON;
 
-    public final Split<X> split;
-    public final Function<X, HyperRegion> bounds;
+    private final Split<X> split;
+    private final Function<X, HyperRegion> bounds;
     public final short max;       
 
 
@@ -39,7 +39,7 @@ public class Spatialization<X> {
     }
 
     public Branch<X> newBranch(Leaf<X> a, Leaf<X> b) {
-        return new Branch<>(max, a, b);
+        return new Branch<>(max, new Node[] { a, b });
     }
 
     public Node<X> split(X x, Leaf<X> leaf) {
@@ -74,13 +74,18 @@ public class Spatialization<X> {
        //return HyperRegion.mbr(this, data);
         HyperRegion bounds = bounds(data[0]);
         for (int k = 1; k < data.length; k++) {
-            X t = data[k];
-            if (t == null)
+            X kk = data[k];
+            if (kk == null)
                 break; //null terminator
-            bounds = bounds.mbr(bounds(t));
+            bounds = bounds.mbr(bounds(kk));
         }
         return bounds;
     }
+
+    public boolean mergeCanStretch() {
+        return false;
+    }
+
 //    public HyperRegion mbr(Node<X>[] data) {
 //        return HyperRegion.mbr(data);
 //    }

@@ -22,6 +22,7 @@ package jcog.tree.rtree;
 
 
 import com.google.common.base.Joiner;
+import com.google.common.collect.Iterators;
 import jcog.Util;
 import jcog.data.iterator.ArrayIterator;
 import jcog.tree.rtree.util.CounterNode;
@@ -44,8 +45,8 @@ public class Branch<X> extends AbstractNode<X> {
 
     public final Node<X>[] data;
 
-    protected Branch(int cap, Node<X>... data) {
-        assert (cap >= 2);
+    protected Branch(int cap, Node<X>[] data) {
+        //assert (cap >= 2);
         this.data = data.length == cap ? data : Arrays.copyOf(data, cap); //TODO assert all data are unique; cache hash?
         this.size = (short) data.length;
         this.bounds = HyperRegion.mbr(data);
@@ -59,7 +60,7 @@ public class Branch<X> extends AbstractNode<X> {
 
         int s = size;
         if (s > 0) {
-            Node[] c = this.data;
+            Node<X>[] c = this.data;
             for (int i = 0; i < s; i++) {
                 if (c[i].contains(x, b, model))
                     return true;
@@ -82,15 +83,13 @@ public class Branch<X> extends AbstractNode<X> {
      */
     private int addChild(final Node<X> n) {
         short size = this.size;
-        if (size < data.length) {
-            data[this.size++] = n;
-            HyperRegion nb = n.bounds();
-            //this.bounds = this.bounds != null ? this.bounds.mbr(nb) : nb;
-            this.bounds = this.bounds.mbr(nb);
-            return this.size - 1;
-        } else {
-            throw new RuntimeException("Too many children");
-        }
+        //if (size < data.length) {
+            data[this.size] = n;
+            this.bounds = Util.maybeEqual(this.bounds, this.bounds.mbr(n.bounds()));
+            return (this.size++) - 1;
+//        } else {
+//            throw new RuntimeException("Too many children");
+//        }
     }
 
 
@@ -112,23 +111,23 @@ public class Branch<X> extends AbstractNode<X> {
     @Override
     public Node<X> add(final X x, boolean addOrMerge, Spatialization<X> model, boolean[] added) {
 
-        final HyperRegion tRect = model.bounds(x);
+        final HyperRegion B = model.bounds(x);
 
-        Node[] data = this.data;
+        Node<X>[] data = this.data;
 
-        if (bounds.intersects /*contains if simple equals*/(tRect)) {
+        if (model.mergeCanStretch() ? bounds.intersects(B) : bounds.contains(B)) {
 
             short s = this.size;
             for (int i = 0; i < s; i++) {
-                Node ci = data[i];
+                Node<X> ci = data[i];
 
                 HyperRegion ciBefore = ci.bounds();
 
-                Node di = ci.add(x, false, model, null);
+                Node<X> di = ci.add(x, false, model, null);
 
                 if (di == null) {
                     //merge occurred
-                    if (ciBefore != ci.bounds()) {
+                    if (!ciBefore.equals(ci.bounds())) {
                         updateBounds();
                     }
                     return null; //duplicate found
@@ -136,7 +135,7 @@ public class Branch<X> extends AbstractNode<X> {
 
                 if (ci!=di) {
                     data[i] = di; //merge
-                    if (ciBefore != di.bounds())
+                    if (!ciBefore.equals(di.bounds()))
                         updateBounds();
                     return null;
                 }
@@ -154,31 +153,35 @@ public class Branch<X> extends AbstractNode<X> {
         if (size < data.length) {
 
 
-            grow(addChild(model.newLeaf().add(x, addOrMerge, model, added)));
+            Node<X> l = model.newLeaf().add(x, addOrMerge, model, added);
+            grow(addChild(l));
             assert (added[0]);
 
             return this;
 
         } else {
 
-            final int bestLeaf = chooseLeaf(tRect);
+            final int bestLeaf = chooseLeaf(B);
 
-            Node nextBest = data[bestLeaf].add(x, true, model, added);
+            HyperRegion before = data[bestLeaf].bounds();
+            Node<X> nextBest = data[bestLeaf].add(x, true, model, added);
             if (nextBest == null) {
-                updateBounds();
+                if (!before.equals(data[bestLeaf].bounds()))
+                    updateBounds();
+                assert(!added[0]);
                 return null; /*merged*/
             } else {
 
                 //inline
                 if (size < data.length && nextBest.size() == 2 && !nextBest.isLeaf()) {
-                    Node[] bc = ((Branch<X>) nextBest).data;
+                    Node<X>[] bc = ((Branch<X>) nextBest).data;
                     data[bestLeaf] = bc[0];
                     data[size++] = bc[1];
                 } else {
                     data[bestLeaf] = nextBest;
                 }
 
-                updateBounds();
+                assert(added[0]); updateBounds();
                 return this;
             }
 
@@ -274,7 +277,7 @@ public class Branch<X> extends AbstractNode<X> {
         if (s > 0 && oldBounds.intersects(bounds)) {
             boolean found = false;
 
-            Node[] cc = this.data;
+            Node<X>[] cc = this.data;
             HyperRegion region = null;
 
             for (int i = 0; i < s; i++) {
@@ -439,25 +442,33 @@ public class Branch<X> extends AbstractNode<X> {
 
     @Override
     public Stream<Node<X>> streamNodes() {
-        return ArrayIterator.streamNonNull(data, size);
+        return ArrayIterator
+                //.streamNonNull(data, size)
+                .stream(data,size)
+                ;
     }
 
     @Override
     public Stream<X> streamValues() {
-        //TODO optimize
-        return streamNodes().flatMap(
-                x -> x != null ? ((Node) x).streamValues() : Stream.empty()
+        return streamNodes().flatMap(Node::streamValues
+                //x -> x != null ?
+                        //((Node) x).streamValues()
+        //: Stream.empty()
         );
     }
 
+    @Override
+    public Iterator<X> iterateValues() {
+        return Iterators.concat(Iterators.transform(iterateLocal(), Node::iterateValues));
+    }
 
     @Override
-    public Iterator<?> iterateLocal() {
+    public Iterator<Node<X>> iterateLocal() {
         return ArrayIterator.iterateN(data, size);
     }
 
     @Override
-    public Stream<?> streamLocal() {
+    public Stream<Node<X>> streamLocal() {
         return streamNodes();
     }
 
@@ -481,23 +492,20 @@ public class Branch<X> extends AbstractNode<X> {
     }
 
 
-    private static final Comparator NullCompactingComparator = new Comparator() {
-        @Override
-        public int compare(Object o1, Object o2) {
-            if (o1 == o2) {
-                return 0;
-            }
-            if (o1 == null) {
-                return 1;
-            }
-            if (o2 == null) {
-                return -1;
-            }
-            return Integer.compare(
-                    System.identityHashCode(o1),
-                    System.identityHashCode(o2)
-            );
+    private static final Comparator NullCompactingComparator = (o1, o2) -> {
+        if (o1 == o2) {
+            return 0;
         }
+        if (o1 == null) {
+            return 1;
+        }
+        if (o2 == null) {
+            return -1;
+        }
+        return Integer.compare(
+                System.identityHashCode(o1),
+                System.identityHashCode(o2)
+        );
     };
 
 }

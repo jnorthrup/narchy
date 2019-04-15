@@ -17,7 +17,7 @@ public class HyperIterator<X>  {
     /**
      * next available item
      */
-    X next;
+    private X next;
 
 
 //    @Nullable
@@ -26,7 +26,7 @@ public class HyperIterator<X>  {
     /**
      * at each level, the plan is slowly popped from the end growing to the beginning (sorted in reverse)
      */
-    final RankedN<Object> plan;
+    private final RankedN<Object> plan;
 
     public static <X> void iterate(ConcurrentRTree<X> tree, Supplier<FloatFunction<X>> rank, Predicate<X> whle) {
 
@@ -56,11 +56,22 @@ public class HyperIterator<X>  {
     }
 
     public HyperIterator(Spatialization/*<X>*/ model, X[] x, FloatFunction<? super HyperRegion> rank) {
-        this.plan = new RankedN(x, (FloatFunction) r -> rank.floatValueOf(
-                r instanceof HyperRegion ? ((HyperRegion) r) :
-                        (r instanceof Node ? ((Node) r).bounds() :
-                                model.bounds(r))
-        ));
+        this.plan = new RankedN(x, (FloatFunction) r -> {
+            HyperRegion y =
+                    r instanceof HyperRegion ?
+                        ((HyperRegion) r)
+                        :
+                        (r instanceof Node ?
+                            ((Node) r).bounds()
+                            :
+                            model.bounds(r)
+                        );
+
+            if (y == null)
+                return Float.NaN; //HACK
+            else
+                return rank.floatValueOf(y);
+        });
     }
 
     private void start(Node<X> start) {
@@ -77,7 +88,14 @@ public class HyperIterator<X>  {
         Object z;
         while ((z = plan.pop()) != null) {
             if (z instanceof Node) {
-                ((Node) z).forEachLocal(this::push);
+
+                //((Node) z).forEachLocal(this::push);
+
+                Node nz = (Node) z;
+                int s = nz.size();
+                for (int i = 0; i < s; i++)
+                    push(nz.get(i));
+
             } else {
                 return (X) z;
             }
@@ -100,12 +118,12 @@ public class HyperIterator<X>  {
         plan.add(x);
     }
 
-    /**
-     * surveys the contents of the node, producing a new 'stack frame' for navigation
-     */
-    private void expand(Node<X> at) {
-        at.forEachLocal(this::push);
-    }
+//    /**
+//     * surveys the contents of the node, producing a new 'stack frame' for navigation
+//     */
+//    private void expand(Node<X> at) {
+//        at.forEachLocal(this::push);
+//    }
 
 
     public boolean hasNext() {

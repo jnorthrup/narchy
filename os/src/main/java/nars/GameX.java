@@ -206,7 +206,7 @@ abstract public class GameX extends Game {
                 .what(
                         (w)-> new What.TaskLinkWhat(w,
                                 512,
-                                new PriBuffer.BagTaskBuffer(256, 25))
+                                new PriBuffer.BagTaskBuffer(512, 64))
                 )
 //                .attention(() -> new ActiveConcepts(1024))
                 .exe(
@@ -216,8 +216,8 @@ abstract public class GameX extends Game {
 //                        threads,
 //                        false/* affinity */)
 
-                new ForkJoinExec()
-                //new ForkJoinExec(Math.max(1, Runtime.getRuntime().availableProcessors()-1))
+                //new ForkJoinExec()
+                new ForkJoinExec(Math.max(1, Runtime.getRuntime().availableProcessors()-1))
 
 //                new SuperExec(
 //                    new Valuator.DefaultValuator(0.9f), threads <= 0 ? Util.concurrencyExcept(1) : threads

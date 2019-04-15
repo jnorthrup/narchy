@@ -370,4 +370,8 @@ public interface LongInterval {
         }
     }
 
+    default boolean containsRaw(LongInterval b) {
+        return this == b || (b.start() >= start() && b.end() <= end());
+    }
+
 }

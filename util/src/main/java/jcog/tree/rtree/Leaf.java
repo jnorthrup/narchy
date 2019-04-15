@@ -43,7 +43,7 @@ public class Leaf<X> extends AbstractNode<X> {
     public final X[] data;
 
 
-    protected Leaf(int mMax) {
+    Leaf(int mMax) {
         this((X[]) new Object[mMax]);
     }
 
@@ -68,12 +68,12 @@ public class Leaf<X> extends AbstractNode<X> {
     }
 
     @Override
-    public Iterator iterateNodes() {
+    public Iterator<Node<X>> iterateNodes() {
         return Collections.emptyIterator();
     }
 
     @Override
-    public Stream streamNodes() {
+    public Stream<Node<X>> streamNodes() {
         return Stream.empty();
     }
 
@@ -88,12 +88,12 @@ public class Leaf<X> extends AbstractNode<X> {
     }
 
     @Override
-    public Stream<?> streamLocal() {
+    public Stream<X> streamLocal() {
         return streamValues();
     }
 
     @Override
-    public Iterator<?> iterateLocal() {
+    public Iterator<X> iterateLocal() {
         return iterateValues();
     }
 
@@ -122,21 +122,26 @@ public class Leaf<X> extends AbstractNode<X> {
 
         final HyperRegion B = model.bounds(x);
 
-        if (addOrMerge) {
-            boolean mightContain = size > 0 && (/* TODO model.mergeEqualOnly() ? bounds.contains(tb) : */ bounds.intersects(B));
-            if (mightContain) {
-                for (int i = 0, s = size; i < s; i++) {
-                    X y = data[i];
-                    if (y == x)
-                        return null; //identical instance found
+        boolean mightContain = size > 0 && (/* TODO model.mergeEqualOnly() ? bounds.contains(tb) : */
+                model.mergeCanStretch() ? bounds.intersects(B) : bounds.contains(B));
 
-                    X xy = model.merge(y, x);
-                    if (xy != null) {
-                        if (xy != y) {
+        if (mightContain) {
+            for (int i = 0, s = size; i < s; i++) {
+                X y = data[i];
+                if (y == x)
+                    return null; //identical instance found
 
-                            data[i] = xy;
 
-                            bounds = Util.maybeEqual(bounds, HyperRegion.mbr(model, data));
+                X xy = model.merge(y, x);
+                if (xy != null) {
+                    if (xy != y) {
+
+
+                        data[i] = xy;
+
+                        HyperRegion yb = model.bounds(y);
+                        if (!yb.equals(model.bounds(xy)))
+                            bounds = Util.maybeEqual(bounds, HyperRegion.mbr(model, data)); //recompute
 
 //                            HyperRegion xtb = model.bounds(xy);
 //                            if (!bounds.contains(xtb)) {
@@ -146,11 +151,13 @@ public class Leaf<X> extends AbstractNode<X> {
 //                                b = b.mbr(i == k ? xtb : model.bounds(data[k]));
 //                            bounds = b;
 ////                            }
-                        }
-                        return null;
                     }
+                    return null;
                 }
             }
+        }
+
+        if (addOrMerge) {
 
             added[0] = true;
 
@@ -165,7 +172,8 @@ public class Leaf<X> extends AbstractNode<X> {
             }
 
         } else {
-            return contains(x, B, model) ? null : this;
+            //return contains(x, B, model) ? null : this;
+            return this;
         }
     }
 
@@ -227,27 +235,27 @@ public class Leaf<X> extends AbstractNode<X> {
         }
         if (i == size)
             return this; //not found
+        else {
+            final int j = i + 1;
+            if (j < size) {
+                final int nRemaining = size - j;
+                System.arraycopy(data, j, data, i, nRemaining);
+                Arrays.fill(data, size - 1, size, null);
+            } else {
+                Arrays.fill(data, i, size, null);
+            }
 
-        final int j = i + 1;
-        if (j < size) {
-            final int nRemaining = size - j;
-            System.arraycopy(data, j, data, i, nRemaining);
-            Arrays.fill(data, size - 1, size, null);
-        } else {
-            Arrays.fill(data, i, size, null);
+            this.size--;
+            removed[0] = true;
+
+            if (this.size > 0) {
+                bounds = Util.maybeEqual(bounds, model.mbr(data));
+                return this;
+            } else {
+                bounds = null;
+                return null;
+            }
         }
-
-        this.size--;
-        removed[0] = true;
-
-        if (this.size > 0) {
-            bounds = Util.maybeEqual(bounds, model.mbr(data));
-            return this;
-        } else {
-            bounds = null;
-            return null;
-        }
-
     }
 
     @Override
@@ -290,11 +298,11 @@ public class Leaf<X> extends AbstractNode<X> {
     public boolean containing(HyperRegion rect, Predicate<X> t, Spatialization<X> model) {
         short s = this.size;
         if (s > 0 && rect.intersects(bounds)) {
-            boolean containsAll = s > 1 && rect.contains(bounds);
+            boolean fullyContained = s > 1 && rect.contains(bounds);
             X[] data = this.data;
             for (int i = 0; i < s; i++) {
                 X d = data[i];
-                if (/*d != null && */(containsAll || rect.contains(model.bounds(d))) && !t.test(d))
+                if (/*d != null && */(fullyContained || rect.contains(model.bounds(d))) && !t.test(d))
                     return false;
             }
         }
