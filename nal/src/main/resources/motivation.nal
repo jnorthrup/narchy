@@ -21,7 +21,7 @@
     //G, B, task("!") |-         (?1 && --G), (Punctuation:Question)
 
     //should what with goal/non-goal
-      G, B, task("!"), neq(G,B), --is(B,"?"), hasBelief() |-    (&&,polarizeTask(G),polarizeBelief(B)), (Punctuation:Quest)
+    G, B, task("!"), neq(G,B), --is(B,"?"), hasBelief() |-    (&&,polarizeTask(G),polarizeBelief(B)), (Punctuation:Quest)
 
     //bifurcate plan
     G, B, task("@"), neq(G,B), --is(B,"?"), hasBelief()   |-    (&&,polarizeRandom(G),polarizeBelief(B)), (Punctuation:Quest)
@@ -105,20 +105,22 @@
     //(X ==> Y), Z, task("?")       |- ((X &&   Z) ==> Y), (Punctuation:Question)
     //(X ==> Y), Z, task("?")       |- ((X && --Z) ==> Y), (Punctuation:Question)
 
-
-
 //quest to 'how' impl question
-    //B, X, task("@"), --is(B,"==>"), hasBelief() |- (polarizeRandom(B) ==> X), (Punctuation:Question)
-    B, X, task("@"), --is(B,"==>"), hasBelief() |- (polarizeBelief(X) ==> B), (Punctuation:Question)
+   B, X, task("@"), --is(B,"==>"), hasBelief() |- (polarizeBelief(X) ==> B), (Punctuation:Question)
+     //B, X, task("@"), --is(B,"==>"), hasBelief() |- (polarizeRandom(B) ==> X), (Punctuation:Question)
 
-//what else? impl question
+//goal sub-condition preference compare
+   (X-->A), (Y-->A), neqRoot(X,Y), --isVar(X), --isVar(Y), --isVar(A), task("!") |- (((polarizeTask(X) && Y) ~ (polarizeTask(X) && --Y)) --> A), (Punctuation:Quest)
+   (X-->A), (Y-->A), neqRoot(X,Y), --isVar(X), --isVar(Y), --isVar(A), task("!") |- (((polarizeTask(X) && --Y) ~ (polarizeTask(X) && Y)) --> A), (Punctuation:Quest)
+   (A-->X), (A-->Y), neqRoot(X,Y), --isVar(X), --isVar(Y), --isVar(A), task("!") |- (A --> ((polarizeTask(X) && Y) - (polarizeTask(X) && --Y))), (Punctuation:Quest)
+   (A-->X), (A-->Y), neqRoot(X,Y), --isVar(X), --isVar(Y), --isVar(A), task("!") |- (A --> ((polarizeTask(X) && --Y) - (polarizeTask(X) && Y))), (Punctuation:Quest)
+
+//similarity goal comparator TODO bifurcate a similarity to determine which half is more desirable
+   //(X<->A), (Y<->A), ...
+
+//what else? impl question <- spammy
     //(A ==> Y), (B ==> Y), task("?") |- (?1 ==> Y), (Punctuation:Question)
     //(X ==> A), (X ==> B), task("?") |- (X ==> ?1), (Punctuation:Question)
-
-//goal sub-condition preference
-    (X-->A), (Y-->A), neqRoot(X,Y), task("@") |- (((polarizeTask(X) && Y) ~ (polarizeTask(X) && --Y)) --> A), (Punctuation:Quest)
-    (X-->A), (Y-->A), neqRoot(X,Y), task("@") |- (((polarizeTask(X) && --Y) ~ (polarizeTask(X) && Y)) --> A), (Punctuation:Quest)
-        //TODO intensional variant ^
 
     //changing goal context
     //G, Y, task("!") |-         ((G && ?1) ==> (G && ?2)), (Punctuation:Question)

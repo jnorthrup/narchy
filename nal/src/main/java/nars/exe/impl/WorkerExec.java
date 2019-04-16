@@ -47,8 +47,8 @@ public class WorkerExec extends ThreadedExec {
 
     @Override
     protected void update() {
-        nar.how.commit();
-        nar.what.commit();
+        nar.how.commit(null);
+        nar.what.commit(null);
         super.update();
     }
 
