@@ -10,6 +10,7 @@ import nars.NAR;
 import nars.exe.Exec;
 
 import java.util.concurrent.ForkJoinPool;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import static java.lang.System.nanoTime;
@@ -42,9 +43,6 @@ abstract public class ThreadedExec extends MultiExec {
 
         this.exe = new AffinityExecutor(maxThreads);
         this.affinity = affinity;
-
-
-
 
     }
 
@@ -123,9 +121,10 @@ abstract public class ThreadedExec extends MultiExec {
         int available;
         boolean kontinue = true;
         long workStart = Long.MIN_VALUE;
+        Consumer execNow = this::executeNow;
         while (kontinue && (available = in.size()) > 0) {
 
-            //do {
+            do {
 
             if (workStart == Long.MIN_VALUE)
                 workStart = nanoTime();
@@ -138,12 +137,12 @@ abstract public class ThreadedExec extends MultiExec {
 
             int got = in.remove(buffer, batchSize);
             if (got > 0) {
-                execute(buffer, 1, ThreadedExec.this::executeNow);
+                execute(buffer, 1, execNow);
                 kontinue = !queueSafe();
             } else
                 kontinue = false;
 
-            //} while (!queueSafe());
+            } while (!queueSafe());
 
         }
         if (workStart!=Long.MIN_VALUE) {

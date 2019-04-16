@@ -102,6 +102,7 @@ public class Game extends NARPart implements NSense, NAct, Timed {
 
     public Game(Term id, GameTime time, NAR nar) {
         this(time, nar.the(id,true));
+        this.nar = nar;
         nar.start(this);
     }
 

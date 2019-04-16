@@ -1,7 +1,6 @@
 package nars.exe;
 
 import jcog.Log;
-import jcog.data.list.FasterList;
 import jcog.pri.Prioritizable;
 import nars.NAR;
 import nars.control.NARPart;
@@ -30,8 +29,6 @@ abstract public class Exec extends NARPart implements Executor, ConsumerX<ITask>
     }
 
     abstract public void input(Object t);
-
-
 
     private static void taskError(Prioritizable t, Prioritizable x, Throwable ee, NAR nar) {
         //TODO: if(RELEASE)
@@ -90,7 +87,7 @@ abstract public class Exec extends NARPart implements Executor, ConsumerX<ITask>
             logger.error("{} {}", t, e);
         }
     }
-    protected final void executeNow(Runnable t) {
+    private final void executeNow(Runnable t) {
         try {
             t.run();
         } catch (Throwable e) {
@@ -106,7 +103,7 @@ abstract public class Exec extends NARPart implements Executor, ConsumerX<ITask>
         executeNow(x, nar);
     }
 
-    static public void executeNow(ITask x, NAR nar) {
+    private static void executeNow(ITask x, NAR nar) {
         ITask t = x;
         try {
             ITask.run(t, nar);
@@ -138,9 +135,6 @@ abstract public class Exec extends NARPart implements Executor, ConsumerX<ITask>
         }
 
     }
-
-
-
 
 
     public void synch() {

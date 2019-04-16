@@ -57,6 +57,7 @@ public abstract class Reward implements GameLoop, TermedDelegate, Iterable<Conce
 
     }
 
+
     @Override
     public Iterable<Termed> components() {
         return Iterables.transform(this, x-> x); //HACK

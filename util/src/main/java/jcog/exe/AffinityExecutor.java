@@ -55,6 +55,10 @@ public class AffinityExecutor implements Executor {
         return maxThreads - running.availablePermits();
     }
 
+    public int running() {
+        return threads.size();
+    }
+
 
     protected final class AffinityThread extends Thread {
 

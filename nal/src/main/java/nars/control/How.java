@@ -1,7 +1,5 @@
 package nars.control;
 
-import jcog.TODO;
-import jcog.Util;
 import jcog.pri.Prioritizable;
 import nars.NAR;
 import nars.attention.PriNode;
@@ -167,10 +165,6 @@ abstract public class How extends NARPart implements Prioritizable {
         return myCause;
     }
 
-    @Deprecated public Causation timing() {
-        return new Causation();
-    }
-
     private final WhenInternal myCause = new AtCause(id);
 
 //    /**
@@ -202,46 +196,7 @@ abstract public class How extends NARPart implements Prioritizable {
         }
     }
 
-    /**
-     * thread-local view
-     * instance of a cause invocation
-     */
-    @Deprecated public final class Causation {
 
-        public final How can = How.this;
-        /**
-         * allocated time for execution;
-         * may be negative when excessive time consumed
-         */
-        public long time = 0;
-
-        //            public long addAt(long t) {
-//
-//            }
-        public void use(long t) {
-            How.this.use(t);
-            time -= t;
-        }
-
-        public float pri() {
-            return How.this.pri.priElseZero();
-        }
-
-        public void add(long t, long min, long max) {
-            time = Util.clampSafe((time + t), min, max);
-        }
-
-
-        public void runUntilMS(long msTime) {
-            throw new TODO();
-        }
-
-        public void runUntilNS(long nanoTime) {
-            throw new TODO();
-        }
-
-
-    }
     public final void runFor(What w, long durationNS) {
         long start = System.nanoTime();
         long deadline = start + durationNS;

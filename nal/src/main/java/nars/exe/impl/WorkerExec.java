@@ -2,32 +2,37 @@ package nars.exe.impl;
 
 import jcog.Util;
 import jcog.data.list.FasterList;
-import jcog.random.SplitMix64Random;
-import jcog.util.ArrayUtils;
+import jcog.exe.Exe;
+import jcog.random.XoRoShiRo128PlusRandom;
+import nars.attention.AntistaticBag;
+import nars.attention.What;
 import nars.control.How;
 
+import java.util.Random;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Supplier;
 
 import static java.lang.System.nanoTime;
-import static nars.time.Tense.ETERNAL;
 
 public class WorkerExec extends ThreadedExec {
 
-    /** value of 1 means it shares 1/N of the current work. >1 means it will take on more proportionally more-than-fair share of work, which might reduce jitter at expense of responsive */
+    private static final long subCycleMinNS = 150_000;
+    double granularity = 2;
+
+    /**
+     * value of 1 means it shares 1/N of the current work. >1 means it will take on more proportionally more-than-fair share of work, which might reduce jitter at expense of responsive
+     */
     float workResponsibility =
             //1f;
-            2f;
-
+            1.5f;
+            //2f;
     //randomize the rescheduling so that the workers tend to be out of phase with each other's next rescheduling
-    int rescheduleDithersMin = 16-2, rescheduleDithersMax = 16+2;
-
+    int rescheduleDithersMin = 64 - 2, rescheduleDithersMax = 64 + 2;
     /**
      * process sub-timeslice divisor
      * TODO auto-calculate
      */
-    double granularity = 4;
-    private static final long subCycleMinNS = 150_000;
+
     private long subCycleMaxNS;
 
     public WorkerExec(int threads) {
@@ -36,6 +41,15 @@ public class WorkerExec extends ThreadedExec {
 
     public WorkerExec(int threads, boolean affinity) {
         super(threads, affinity);
+
+        Exe.setExecutor(this);
+    }
+
+    @Override
+    protected void update() {
+        nar.how.commit();
+        nar.what.commit();
+        super.update();
     }
 
     @Override
@@ -43,30 +57,24 @@ public class WorkerExec extends ThreadedExec {
         return WorkPlayLoop::new;
     }
 
-    private final class WorkPlayLoop implements Worker {
+    @Override
+    public void synch() {
+        if (this.exe.running() == 0) {
+            in.clear(this::executeNow); //initialize
+        }
+    }
+
+    private final class WorkPlayLoop implements ThreadedExec.Worker {
 
 
+        final Random rng;
         private final FasterList schedule = new FasterList(inputQueueCapacityPerThread);
-
-        How.Causation[] play = new How.Causation[0];
-
         private final AtomicBoolean alive = new AtomicBoolean(true);
-
-        final SplitMix64Random rng;
-
         int i = 0;
-        long prioLast = ETERNAL;
-
-        private long rescheduleCycles;
-        boolean reprioritize = true;
-
-
-//        private final BooleanSupplier deadlineFn = this::deadline;
-        private int n;
 
         WorkPlayLoop() {
 
-            rng = new SplitMix64Random((31L * System.identityHashCode(this)) + nanoTime());
+            rng = new XoRoShiRo128PlusRandom((31L * System.identityHashCode(this)) + nanoTime());
         }
 
         @Override
@@ -78,10 +86,7 @@ public class WorkerExec extends ThreadedExec {
                 sleep();
 
             } while (alive.get());
-
-
         }
-
 
 
         private void play(long playTime) {
@@ -90,6 +95,8 @@ public class WorkerExec extends ThreadedExec {
             long until = start + playTime, after = start /* assigned for safety */;
 
             int skip = 0;
+            AntistaticBag<How> H = nar.how;
+            AntistaticBag<What> W = nar.what;
 
             do {
                 if (!queueSafe()) {
@@ -98,46 +105,37 @@ public class WorkerExec extends ThreadedExec {
                 }
 
                 long now = nar.time();
-                if (reprioritize || now > prioLast + rescheduleCycles) {
-                    if (!prioritize(threadWorkTimePerCycle))
-                        return;
 
-                    reprioritize = false;
-                    prioLast = now;
-                }
+                subCycleMaxNS = (long) ((threadWorkTimePerCycle) / granularity);
 
-                int playable = play.length; if (playable == 0) return;
+                int Hn = H.size();
+                if (Hn == 0) return;
+                if (i + 1 >= Hn) i = 0;
+                else i++;
+                How h = H.get(i);
+                if (!h.isOn()) continue; //HACK
 
-                if (i + 1 >= playable) i = 0; else i++;
-                How.Causation next = play[i];
+                //if (j + 1 >= Wn) j = 0; else j++;
+                int Wn = W.size();
+                if (Wn == 0) return;
+                What w = nar.what.sample(rng);
+                //What w = W.get(j);
+                if (!w.isOn()) continue; //HACK
 
-                long sTime = next.time;
+                boolean singleton = h.singleton();
+                if (!singleton || h.busy.compareAndSet(false, true)) {
 
-                How c = next.can;
+                    long before = nanoTime();
 
-                boolean played = false;
-                if (sTime <= subCycleMinNS / 2 || c.inactive()) {
-
-                } else {
-
-                    boolean singleton = c.singleton();
-                    if (!singleton || c.busy.compareAndSet(false, true)) {
-
-                        long before = nanoTime();
-
-                        long useNS = Util.clampSafe(sTime / rescheduleCycles, subCycleMinNS, subCycleMaxNS);
-
-                        c.runFor(nar.what.sample(nar.random()), useNS);
-
-                        played = true;
-                        after = nanoTime();
-                        next.use(after - before);
+                    long useNS = Util.lerp(h.pri() * w.pri(), subCycleMinNS, subCycleMaxNS);
+                    try {
+                        h.runFor(w, useNS);
+                    } finally {
+                        if (singleton)
+                            h.busy.set(false);
                     }
-                }
 
-                if (!played && ++skip == n) {
-                    reprioritize = true;
-                    //break; //go to work early
+                    after = nanoTime();
                 }
 
             } while (until > after);
@@ -149,56 +147,8 @@ public class WorkerExec extends ThreadedExec {
 
         }
 
-        /**
-         * @param workTimeNS expected worktime nanoseconds per cycle
-         * @return
-         */
-        private boolean prioritize(long workTimeNS) {
-
-            /** always refresh */
-            play = nar.how.toArray(play, How::timing);
-            if ((n = play.length) <= 0)
-                return false;
-
-//                /** expected time will be equal to or less than the max due to various overheads on resource constraints */
-//                double expectedWorkTimeNS = (((double)workTimeNS) * expectedWorkTimeFactor); //TODO meter and predict
-
-            //TODO abstract
-            int dither = nar.dtDither();
-            rescheduleCycles =
-                    //nar.dur(); //update current dur
-                    Util.lerp(nar.random().nextFloat(), rescheduleDithersMin * dither, rescheduleDithersMax * dither);
-
-            subCycleMaxNS = (long) ((workTimeNS) / granularity);
-
-
-
-            if (play.length > 2)
-                ArrayUtils.shuffle(play, rng); //each worker gets unique order
-
-
-            //schedule
-            //TODO Util.max((TimedLink.MyTimedLink m) -> m.time, play);
-//            long existingTime = Util.sum((TimedLink.MyTimedLink x) -> Math.max(0, x.time), play);
-//            long remainingTime = workTimeNS - existingTime;
-            long minTime = -Util.max((How.Causation x) -> -x.time, play);
-            long shift = minTime < 0 ? 1 - minTime : 0;
-//            System.out.println(subCycleMinNS + " " + subCycleMaxNS /* actualCycleNS */);
-            for (How.Causation m : play) {
-                double t = workTimeNS * m.pri();
-                m.add(Math.max(subCycleMinNS, (long) (shift + t * rescheduleCycles)),
-                        -workTimeNS * rescheduleCycles, +workTimeNS * rescheduleCycles);
-            }
-//                }
-            return true;
-        }
-
-//        private boolean deadline() {
-//            return nanoTime() < deadline;
-//        }
-
         void sleep() {
-            long i = (long) (WorkerExec.this.threadIdleTimePerCycle * (((float)concurrency())/exe.maxThreads));
+            long i = (long) (WorkerExec.this.threadIdleTimePerCycle * (((float) concurrency()) / exe.maxThreads));
             if (i > 0) {
                 Util.sleepNS(NapTimeNS);
                 //Util.sleepNSwhile(i, NapTimeNS, () -> queueSafe());
@@ -207,10 +157,10 @@ public class WorkerExec extends ThreadedExec {
 
         @Override
         public void close() {
-            if (alive.compareAndSet(true,false)) {
+            if (alive.compareAndSet(true, false)) {
                 //execute remaining tasks in callee's thread
                 schedule.removeIf(x -> {
-                    if (x!=null)
+                    if (x != null)
                         executeNow(x);
                     return true;
                 });

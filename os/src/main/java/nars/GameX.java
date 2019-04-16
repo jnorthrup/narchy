@@ -21,7 +21,7 @@ import nars.derive.Derivers;
 import nars.derive.impl.BatchDeriver;
 import nars.derive.premise.PremiseDeriverRuleSet;
 import nars.derive.timing.ActionTiming;
-import nars.exe.impl.ForkJoinExec;
+import nars.exe.impl.WorkerExec;
 import nars.gui.NARui;
 import nars.index.concept.CaffeineMemory;
 import nars.op.Arithmeticize;
@@ -209,12 +209,13 @@ abstract public class GameX extends Game {
                 .exe(
                         //new UniExec()
 
-//                new WorkerExec(
-//                        threads,
-//                        false/* affinity */)
+                new WorkerExec(
+                        threads,
+                        false/* affinity */)
 
-                        //new ForkJoinExec()
-                        new ForkJoinExec(Math.max(1, Runtime.getRuntime().availableProcessors() - 1))
+                //new ForkJoinExec()
+
+                //new ForkJoinExec(Math.max(1, Runtime.getRuntime().availableProcessors() - 1))
 
 //                new SuperExec(
 //                    new Valuator.DefaultValuator(0.9f), threads <= 0 ? Util.concurrencyExcept(1) : threads
