@@ -118,6 +118,6 @@ public class Synthiano extends Widget {
 
 
     public static void main(String[] args) {
-        SpaceGraph.surfaceWindow(new Synthiano(), 500, 500);
+        SpaceGraph.window(new Synthiano(), 500, 500);
     }
 }

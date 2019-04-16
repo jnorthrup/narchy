@@ -38,7 +38,7 @@ public class TopCraft extends GameX {
         }, 8, this);
         camAE.alpha.set(0.04f);
         camAE.noise.set(0.02f);
-        SpaceGraph.surfaceWindow(camAE.newChart(), 500, 500);
+        SpaceGraph.window(camAE.newChart(), 500, 500);
         onFrame(()->{ p.updateBitmap(); });
 
 

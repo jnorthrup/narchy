@@ -180,7 +180,7 @@ public class CPG {
 
 
 
-        SpaceGraph.surfaceWindow(
+        SpaceGraph.window(
                 new Gridding(p),
                 800 , 800);
     }

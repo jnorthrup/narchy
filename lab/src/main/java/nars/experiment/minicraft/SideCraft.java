@@ -50,7 +50,7 @@ public class SideCraft extends GameX {
 
 
         camAE = new AutoclassifiedBitmap("cra", cam.pixels, 8, 8, 32, this);
-        SpaceGraph.surfaceWindow(camAE.newChart(), 500, 500);
+        SpaceGraph.window(camAE.newChart(), 500, 500);
 
 
         pixels = senseCamera("cra", cam);

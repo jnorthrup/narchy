@@ -35,7 +35,7 @@ public enum Graph2DTest {;
             Graph2D<Node<Object, Object>> sg = newSimpleGraph();
 
 
-            SpaceGraph.surfaceWindow(sg, 800, 800);
+            SpaceGraph.window(sg, 800, 800);
         }
 
     }
@@ -43,7 +43,7 @@ public enum Graph2DTest {;
 
     public static class Ujmp1 {
         public static void main(String[] args) {
-            SpaceGraph.surfaceWindow(newUjmpGraph(), 800, 800);
+            SpaceGraph.window(newUjmpGraph(), 800, 800);
         }
 
     }

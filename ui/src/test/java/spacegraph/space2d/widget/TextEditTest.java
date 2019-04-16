@@ -14,7 +14,7 @@ public class TextEditTest {
     public static void main(String[] args) {
         ScrollXY x = new TextEdit("xyz")
                 .scroll(40, 12);
-        SpaceGraph.surfaceWindow(x, 800, 800);
+        SpaceGraph.window(x, 800, 800);
     }
 
 //    static class BasicMin {

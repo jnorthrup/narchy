@@ -174,10 +174,10 @@ public class AWTSurface extends Widget implements KeyPressed {
     }
 
     @Override
-    public Surface finger(Finger finger) {
-        Surface s = super.finger(finger);
+    public Surface finger(Finger f) {
+        Surface s = super.finger(f);
         if (s == this) {
-            awtFinger(finger);
+            awtFinger(f);
         }
         return s;
     }

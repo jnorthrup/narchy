@@ -20,7 +20,7 @@ class Dynamics2DViewTest {
         //new TheoJansenTest().accept(w);
         new BlobTest4().accept(w);
 
-        SpaceGraph.surfaceWindow(new Dynamics2DView(w) {
+        SpaceGraph.window(new Dynamics2DView(w) {
             @Override
             protected void paint(GL2 gl, ReSurface reSurface) {
                 w.step(0.04f, 4, 1);

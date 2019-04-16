@@ -500,7 +500,7 @@ abstract public class GameX extends Game {
         );
         conjClusters.forEach(c -> n.start(c));
 
-        SpaceGraph.surfaceWindow(grid(conjClusters, c -> NARui.clusterView(c, n)), 700, 700);
+        SpaceGraph.window(grid(conjClusters, c -> NARui.clusterView(c, n)), 700, 700);
 
 
 //        ConjClustering conjClusterBderived = new ConjClustering(n, BELIEF,
@@ -798,7 +798,7 @@ abstract public class GameX extends Game {
 
         @Override
         protected void starting(NAR nar) {
-            win = SpaceGraph.surfaceWindow(surface.get(), w, h);
+            win = SpaceGraph.window(surface.get(), w, h);
         }
 
         @Override

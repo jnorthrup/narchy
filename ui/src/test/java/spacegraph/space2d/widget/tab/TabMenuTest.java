@@ -10,7 +10,7 @@ import java.util.Map;
 class TabMenuTest {
     public static class TestDefault {
         public static void main(String[] args) {
-            SpaceGraph.surfaceWindow(new TabMenu(Map.of(
+            SpaceGraph.window(new TabMenu(Map.of(
                                 "a", () -> new Sketch2DBitmap(40, 40),
                                 "b", () -> new PushButton("x"))), 800, 800);
         }

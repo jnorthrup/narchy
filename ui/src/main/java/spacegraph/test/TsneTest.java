@@ -115,7 +115,7 @@ public class TsneTest {
         };
 
         {
-            SpaceGraph.surfaceWindow(plot, 800, 800);
+            SpaceGraph.window(plot, 800, 800);
         }
 
 //        Util.sleepMS(10000);

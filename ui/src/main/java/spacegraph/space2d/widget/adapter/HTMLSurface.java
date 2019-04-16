@@ -14,7 +14,7 @@ public final class HTMLSurface extends AWTSurface {
 
     public static void main(String[] args) {
         //SpaceGraph.wall(800, 800).put(
-        SpaceGraph.surfaceWindow(
+        SpaceGraph.window(
             new Gridding(new HTMLSurface(
                     //"http://java.com"
                     "http://w3c.org"

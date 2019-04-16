@@ -32,7 +32,7 @@ public class SSHSurface extends MutableUnitContainer implements Terminal, KeyPre
     public static void main(String[] args) throws IOException, JSchException {
 
         SSHSurface s = new SSHSurface();
-        SpaceGraph.surfaceWindow(new MetaFrame(s), 800, 600);
+        SpaceGraph.window(new MetaFrame(s), 800, 600);
 
         s.start(new JCTermSwingFrame().connect("me", "localhost", 22));
     }

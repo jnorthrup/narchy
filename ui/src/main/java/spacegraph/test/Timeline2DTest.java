@@ -21,7 +21,7 @@ public class Timeline2DTest {
 
     public static void main(String[] args) {
         Surface t = timeline2dTest();
-        SpaceGraph.surfaceWindow(t, 800, 600);
+        SpaceGraph.window(t, 800, 600);
     }
 
     protected static Surface timeline2dTest() {

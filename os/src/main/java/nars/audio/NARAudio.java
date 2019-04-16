@@ -43,7 +43,7 @@ public class NARAudio extends WaveIn {
         WaveBitmap hearView = new WaveBitmap(hearBuf, 300, 64);
         h.onFrame(hearView::update);
 
-        SpaceGraph.surfaceWindow(grid(new VectorSensorView(hear, nar).withControls(),
+        SpaceGraph.window(grid(new VectorSensorView(hear, nar).withControls(),
                 //spectrogram(hear.buf, 0.1f,512, 16),
                 new ObjectSurface(hear), hearView), 400, 400);
 
@@ -64,7 +64,7 @@ public class NARAudio extends WaveIn {
 
         NARAudio na = new NARAudio(n, i, 30f);
 
-        SpaceGraph.surfaceWindow(new SignalView(i).withControls(), 800, 800);
+        SpaceGraph.window(new SignalView(i).withControls(), 800, 800);
 
         n.startFPS(15f);
 

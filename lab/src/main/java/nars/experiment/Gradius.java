@@ -109,7 +109,7 @@ public class Gradius extends GameX {
                     cams.add(c);
                 }
 
-            SpaceGraph.surfaceWindow(new Gridding(
+            SpaceGraph.window(new Gridding(
                             cams.stream().map(c -> new VectorSensorView(c, this).withControls()).collect(toList())),
                     400, 900);
         }

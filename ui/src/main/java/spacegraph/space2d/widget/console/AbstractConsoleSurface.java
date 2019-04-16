@@ -7,10 +7,11 @@ public abstract class AbstractConsoleSurface extends EmptyContainer {
     public int cols;
 
     public boolean resize(int cols, int rows) {
+//        System.out.println("resize: " + cols + "," + rows);
         if (this.cols!=cols || this.rows!=rows) {
             this.cols = cols;
             this.rows = rows;
-            invalidate();
+            //invalidate();
             return true;
         }
         return false;

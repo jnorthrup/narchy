@@ -1,6 +1,5 @@
 package nars.table.temporal;
 
-import jcog.Util;
 import jcog.WTF;
 import jcog.data.list.FasterList;
 import jcog.math.LongInterval;
@@ -37,16 +36,18 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 
     private static final float PRESENT_AND_FUTURE_BOOST_BELIEF =
             1.0f;
-            //1.5f;
+    //1.5f;
     private static final float PRESENT_AND_FUTURE_BOOST_GOAL =
-                    1.0f;
-            //2f;
+            1.0f;
+    //2f;
 
     private static final int MAX_TASKS_PER_LEAF = 3;
 
-    /** TODO tune */
+    /**
+     * TODO tune
+     */
     private static final Split SPLIT =
-              new LinearSplitLeaf();
+            new LinearSplitLeaf();
 //              new QuadraticSplitLeaf();
 //            new AxialSplitLeaf();  //AXIAL SPLIT IS PROBABLY BAD FOR THIS UNLESS A LEAF ENDS UP BEING SPLIT IN A CERTAIN WAY
 
@@ -56,16 +57,6 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 
     public RTreeBeliefTable() {
         super(new RTree<>(RTreeBeliefModel.the));
-    }
-
-    @Override
-    public final boolean isEmpty() {
-        return super.isEmpty();
-    }
-
-    @Override
-    public final int taskCount() {
-        return size();
     }
 
     /**
@@ -111,7 +102,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 
             float y =
                     //(float)Math.log(1+r.meanTimeTo(now));
-                    (1+r.maxTimeTo(now))/dur;
+                    (1 + r.maxTimeTo(now)) / dur;
 
             if (y < min)
                 return Float.NaN;
@@ -124,7 +115,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
             if (y < min)
                 return Float.NaN;
 
-            if (pastDiscount!=1 && r.end() < now)
+            if (pastDiscount != 1 && r.end() < now)
                 y *= pastDiscount;
 
             return (float) y;
@@ -148,8 +139,103 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
         };
     }
 
+    /**
+     * returns true if at least one net task has been removed from the table.
+     */
+    /*@NotNull*/
+    private static boolean compress(Space<TaskRegion> tree, FloatFunction<Task> taskStrength, FloatRank<TaskRegion> leafRegionWeakness, Remember remember, NAR nar) {
 
+        Top<Leaf<TaskRegion>> mergeableLeaf = new Top<>((L, min1) ->
+                leafRegionWeakness.rank((TaskRegion) L.bounds(), min1));
 
+        Top<Task> weakest = new Top<>((t, min) -> -taskStrength.floatValueOf(t));
+
+        return !findEvictable(tree, tree.root(), /*closest, */weakest, mergeableLeaf)
+                ||
+                mergeOrDelete(tree, weakest, mergeableLeaf, taskStrength, remember, nar);
+    }
+
+    private static boolean mergeOrDelete(Space<TaskRegion> treeRW,
+                                         Top<Task> weakest,
+                                         Top<Leaf<TaskRegion>> mergeableLeaf,
+                                         FloatFunction<Task> taskStrength,
+                                         Remember r,
+                                         NAR nar) {
+
+        Task W = weakest.the;
+
+        float valueEvictWeakest = -taskStrength.floatValueOf(W);
+
+        double valueMergeLeaf = NEGATIVE_INFINITY;
+        Pair<Task, TruthProjection> AB;
+        if (!mergeableLeaf.isEmpty()) {
+            Leaf<TaskRegion> ab = mergeableLeaf.get();
+            AB = Revision.merge(nar, true, Arrays.copyOf(ab.data, ab.size)); //HACK type adaptation
+            if (AB != null) {
+                valueMergeLeaf = (float) (
+                        +taskStrength.floatValueOf(AB.getOne())
+                                - AB.getTwo().sumOfFloat(t -> {
+                            if (!t.valid())
+                                return 0; //a task not included in revision
+                            else
+                                return taskStrength.floatValueOf(t.task());
+                        })
+                );
+            }
+        } else {
+            AB = null;
+        }
+
+        if (valueMergeLeaf > valueEvictWeakest) {
+            //merge leaf
+            Task m = AB.getOne();
+            TruthProjection merge = AB.getTwo();
+            TemporalBeliefTable.budget(merge, m);
+            merge.forEachTask(treeRW::remove);
+            if (treeRW.add(m)) {
+                r.remember(m);
+            } //else: possibly already contained the merger?
+            return true;
+        } else {
+            //evict weakest
+            if (treeRW.remove(W)) {
+                r.forget(W);
+                return true;
+            } else {
+
+                //  treeRW.remove(W); //TEMPORARY
+
+//            Spatialization model = ((RTree) treeRW).model;
+//            HyperRegion ww = model.bounds(W);
+//            List<Node<TaskRegion>> containingNodes = treeRW.root().streamNodesRecursively().filter((Node n) -> {
+//                return n.contains(W, ww, model);
+//            }).sorted(Comparators.byFloatFunction( w -> (float)w.bounds().cost())).collect(toList());
+//            if (!containingNodes.isEmpty()) {
+//
+//                HyperRegion tb = treeRW.root().bounds();
+//                System.out.println("tree bounds=" + tb);
+//                for (Node n : containingNodes) {
+//                    System.out.println("\t" + n + " bounds contained: " + tb.contains(n.bounds()));
+//                }
+//                treeRW.remove(W);
+//            }
+                throw new
+                        WTF();
+                //UnsupportedOperationException();
+            }
+        }
+
+    }
+
+    @Override
+    public final boolean isEmpty() {
+        return super.isEmpty();
+    }
+
+    @Override
+    public final int taskCount() {
+        return size();
+    }
 
     @Override
     @Deprecated
@@ -173,7 +259,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 
         HyperIterator.iterate(this,
                 a::temporalDistanceFn,
-                x -> a.tryAccept((Task)x)
+                x -> a.tryAccept((Task) x)
         );
     }
 
@@ -224,9 +310,9 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
         });
 
         Task existing = RTreeBeliefModel.merged.get();
-        if (existing != null && existing!=input) {
-           r.merge(existing);
-           onReject(input);
+        if (existing != null && existing != input) {
+            r.merge(existing);
+            onReject(input);
         } else {
             if (!input.isDeleted()) {
                 r.remember(input);
@@ -274,10 +360,12 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
         return true;
     }
 
-    /** decides the value of keeping a task, used in compression decision */
+    /**
+     * decides the value of keeping a task, used in compression decision
+     */
     protected FloatRank<Task> taskStrength(boolean beliefOrGoal, long now, int narDur, int tableDur) {
         //return FloatRank.the(t->t.evi(now, dur));
-        return Answer.temporalTaskStrength(now-narDur/2, now+narDur/2, tableDur);
+        return Answer.temporalTaskStrength(now - narDur / 2, now + narDur / 2, tableDur);
 
 //        return Answer.taskStrengthWithFutureBoost(now, now - dur,
 //                beliefOrGoal ? PRESENT_AND_FUTURE_BOOST_BELIEF : PRESENT_AND_FUTURE_BOOST_GOAL,
@@ -286,101 +374,13 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
     }
 
     /**
-     * returns true if at least one net task has been removed from the table.
-     */
-    /*@NotNull*/
-    private static boolean compress(Space<TaskRegion> tree, FloatFunction<Task> taskStrength, FloatRank<TaskRegion> leafRegionWeakness, Remember remember, NAR nar) {
-
-        Top<Leaf<TaskRegion>> mergeableLeaf = new Top<>((L, min1) ->
-                leafRegionWeakness.rank((TaskRegion) L.bounds(), min1));
-
-        Top<Task> weakest = new Top<>((t, min) -> -taskStrength.floatValueOf(t));
-
-        return !findEvictable(tree, tree.root(), /*closest, */weakest, mergeableLeaf)
-               ||
-               mergeOrDelete(tree, weakest, mergeableLeaf, taskStrength, remember, nar);
-    }
-
-    private static boolean mergeOrDelete(Space<TaskRegion> treeRW,
-                                         Top<Task> weakest,
-                                         Top<Leaf<TaskRegion>> mergeableLeaf,
-                                         FloatFunction<Task> taskStrength,
-                                         Remember r,
-                                         NAR nar) {
-
-        Task W = weakest.the;
-
-        float valueEvictWeakest = -taskStrength.floatValueOf(W);
-
-        double valueMergeLeaf = NEGATIVE_INFINITY;
-        Pair<Task, TruthProjection> AB;
-        if (!mergeableLeaf.isEmpty()) {
-            Leaf<TaskRegion> ab = mergeableLeaf.get();
-            AB = Revision.merge(nar, true, Arrays.copyOf(ab.data, ab.size)); //HACK type adaptation
-            if (AB!=null) {
-                valueMergeLeaf = (float) (
-                        +taskStrength.floatValueOf(AB.getOne())
-                        -AB.getTwo().sumOfFloat(t -> {
-                            if (!t.valid())
-                                return 0; //a task not included in revision
-                            else
-                                return taskStrength.floatValueOf(t.task());
-                        })
-                );
-            }
-        } else {
-            AB = null;
-        }
-
-        if (valueMergeLeaf > valueEvictWeakest) {
-            //merge leaf
-            Task m = AB.getOne();
-            TruthProjection merge = AB.getTwo();
-            TemporalBeliefTable.budget(merge, m);
-            merge.forEachTask(treeRW::remove);
-            if (treeRW.add(m)) {
-                r.remember(m);
-            } //else: possibly already contained the merger?
-            return true;
-        } else {
-            //evict weakest
-            if (treeRW.remove(W)) {
-                r.forget(W);
-                return true;
-            } else {
-
-              //  treeRW.remove(W); //TEMPORARY
-
-//            Spatialization model = ((RTree) treeRW).model;
-//            HyperRegion ww = model.bounds(W);
-//            List<Node<TaskRegion>> containingNodes = treeRW.root().streamNodesRecursively().filter((Node n) -> {
-//                return n.contains(W, ww, model);
-//            }).sorted(Comparators.byFloatFunction( w -> (float)w.bounds().cost())).collect(toList());
-//            if (!containingNodes.isEmpty()) {
-//
-//                HyperRegion tb = treeRW.root().bounds();
-//                System.out.println("tree bounds=" + tb);
-//                for (Node n : containingNodes) {
-//                    System.out.println("\t" + n + " bounds contained: " + tb.contains(n.bounds()));
-//                }
-//                treeRW.remove(W);
-//            }
-                throw new
-                        WTF();
-                //UnsupportedOperationException();
-            }
-        }
-
-    }
-
-
-    /**
      * this is the range as a radius then further subdivided
      * to represent half inside the super-duration, half outside the super-duration
      */
-    @Override public long tableDur() {
+    @Override
+    public long tableDur() {
         TaskRegion root = bounds();
-        return root == null ? 0 : 1 + root.range()/2;
+        return root == null ? 0 : 1 + root.range() / 2;
     }
 
 
@@ -471,6 +471,11 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
     private static final class RTreeBeliefModel extends Spatialization<TaskRegion> {
 
         static final Spatialization<TaskRegion> the = new RTreeBeliefModel();
+        /**
+         * HACK store merge notifications
+         */
+        @Deprecated
+        final static ThreadLocal<Task> merged = new ThreadLocal();
 
         private RTreeBeliefModel() {
             super((t -> t), RTreeBeliefTable.SPLIT,
@@ -479,19 +484,13 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 
         @Override
         public final TaskRegion bounds(TaskRegion taskRegion) {
-           return taskRegion;
+            return taskRegion;
         }
 
         @Override
         public Leaf<TaskRegion> newLeaf(int capacity) {
             return new Leaf<>(new TaskRegion[capacity]);
         }
-
-        /**
-         * HACK store merge notifications
-         */
-        @Deprecated
-        final static ThreadLocal<Task> merged = new ThreadLocal();
 
         @Nullable
         @Override
@@ -505,18 +504,19 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
                 m = ee;
             else {
                 if (Arrays.equals(ee.stamp(), ii.stamp())) {
-                    if (ee.term().equals(ii.term())) {
-                        Truth et = ee.truth(), it = ii.truth();
+                    Truth et = ee.truth(), it = ii.truth();
 
-                        if (et.equals(it)) {
-                            if (ee.containsRaw((LongInterval)ii)) {
+                    if (et.equals(it)) {
+                        if (ee.term().equals(ii.term())) {
+                            if (ee.containsRaw((LongInterval) ii)) {
                                 m = ee;
-                            } else if (ii.containsRaw((LongInterval)ee)) {
+                            } else if (ii.containsRaw((LongInterval) ee)) {
                                 m = ii;
                             }
                         }
+                    }
 
-                        //does this produce inconsistent results because conf bounds change?
+                    //does this produce inconsistent results because conf bounds change?
 
 //                        if (Util.equals(et.freq(), it.freq(), Param.truth.TRUTH_EPSILON)) {
 //                            float ete = et.conf(), ite = it.conf();
@@ -526,7 +526,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 //                                m = ii;
 //                            }
 //                        }
-                    }
+
                 }
             }
 

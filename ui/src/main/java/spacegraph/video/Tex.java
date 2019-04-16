@@ -13,7 +13,6 @@ import org.jetbrains.annotations.Nullable;
 import spacegraph.space2d.ReSurface;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.unit.AspectAlign;
-import spacegraph.space2d.hud.Zoomed;
 
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBuffer;
@@ -41,7 +40,7 @@ public class Tex {
     boolean inverted = false;
     private boolean mipmap = false;
     private TextureData data;
-    private Object src;
+    private volatile Object src;
 //    @Deprecated private GL2 gl;
 
     public static TexSurface view(BufferedImage b) {
@@ -76,8 +75,7 @@ public class Tex {
      */
     @Nullable
     public Texture commit(GL2 gl) {
-        if (profile == null)
-            profile = gl.getGLProfile();
+        ready(gl);
 
         if (data != null) {
             if (texture == null) {
@@ -93,22 +91,37 @@ public class Tex {
         return texture;
     }
 
-    public boolean set(BufferedImage iimage) {
+    private void ready(GL2 gl) {
+        if (profile == null)
+            profile = gl.getGLProfile();
+        else
+            assert(profile == gl.getGLProfile());
+    }
+
+    public boolean set(BufferedImage i, GL2 gl) {
+       ready(gl);
+       if (set(i)) {
+           commit(gl);
+           return true;
+       }
+       return false;
+    }
+
+    public boolean set(BufferedImage i) {
 
         if (!ready())
             return false;
 
-        DataBuffer b = iimage.getRaster().getDataBuffer();
+        DataBuffer b = i.getRaster().getDataBuffer();
 //        if (b instanceof DataBufferInt)
         Object o = b instanceof DataBufferInt ? ((DataBufferInt) b).getData() : ((DataBufferByte)b).getData();
 
-        int W = iimage.getWidth(), H = iimage.getHeight();
-        _set(o, W, H, iimage.getColorModel().hasAlpha());
+        int W = i.getWidth(), H = i.getHeight();
+        _set(o, W, H, i.getColorModel().hasAlpha());
 //        else if (b instanceof DataBufferByte) {
 //            _set(((DataBufferByte) b).getData(), W, H);
 //        } else
 //            throw new TODO();
-
 
         updated.set(true);
         return true;
@@ -134,18 +147,27 @@ public class Tex {
 //
 //    }
 
-    private void _set(Object iimage, int width, int height, boolean alpha) {
+    private void _set(Object x, int width, int height, boolean alpha) {
 
-        if (src!=iimage) {
+        if (src == x)
+            return;
 
-            this.src = iimage;
+        synchronized (this) {
 
-            Buffer buffer = iimage instanceof int[] ? IntBuffer.wrap((int[])iimage) : ByteBuffer.wrap((byte[])iimage);
+            this.src = x;
+
+            Buffer buffer = x instanceof int[] ? IntBuffer.wrap((int[]) x) : ByteBuffer.wrap((byte[]) x);
             if (this.data != null) {
+                data.setWidth(width);
+                data.setHeight(height);
                 data.setBuffer(buffer);
             } else {
 
-                if (iimage instanceof int[]) {
+                TextureData dataBefore = this.data;
+                if (dataBefore != null)
+                    dataBefore.destroy();
+
+                if (x instanceof int[]) {
                     data = new TextureData(profile, alpha ? GL_RGBA : GL_RGB,
                             width, height,
                             0 /* border */,
@@ -168,8 +190,8 @@ public class Tex {
                     );
                 }
             }
-        }
 
+        }
     }
 
     public TexSurface view() {
@@ -207,21 +229,22 @@ public class Tex {
     }
 
     public void stop(Surface x) {
-        Zoomed r = (Zoomed) x.root();
-        if (r != null) {
-            JoglDisplay s = r.space;
-            if (s != null) {
-                if (texture != null) {
-                    //TODO if texure is shared, dont?
-                    this.texture.destroy(s.gl());
-                    this.texture = null;
-                }
-            }
-        }
+//        Zoomed r = (Zoomed) x.root();
+//        if (r != null) {
+//            JoglDisplay s = r.space;
+//            if (s != null) {
+//                if (texture != null) {
+//                    //TODO if texure is shared, dont?
+//                    this.texture.destroy(s.gl());
+//                    this.texture = null;
+//                }
+//            }
+//        }
     }
 
     public void delete(GL2 gl) {
         texture.destroy(gl);
+        texture = null;
         profile = null;
         src = null;
     }

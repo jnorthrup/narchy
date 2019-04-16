@@ -20,9 +20,9 @@ import static jcog.memoize.Memoizers.DEFAULT_HIJACK_REPROBES;
 
     final class CentralMemoizer implements DeriverPlanner {
 
-        public final ByteHijackMemoize<PremiseKey, short[]> whats;
+        final ByteHijackMemoize<PremiseKey, short[]> whats;
 
-        public CentralMemoizer() {
+        CentralMemoizer() {
             whats = Memoizers.the.memoizeByte(this + "_what",
                     Memoizers.DEFAULT_MEMOIZE_CAPACITY*2,
                     bd-> DeriverRules.what(bd.x));
@@ -37,10 +37,10 @@ import static jcog.memoize.Memoizers.DEFAULT_HIJACK_REPROBES;
             }
         }
 
-        /** decides what is interned */
+        /** decides what premises can be interned */
         protected boolean intern(PreDerivation d) {
             //return true;
-            return d.taskTerm.volume() + d.beliefTerm.volume() <= InterningTermBuilder.volMaxDefault;
+            return d.taskTerm.volume() + d.beliefTerm.volume() <= 2 * InterningTermBuilder.volMaxDefault;
         }
 
     }

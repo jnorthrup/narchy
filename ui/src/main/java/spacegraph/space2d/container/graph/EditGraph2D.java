@@ -13,8 +13,8 @@ import jcog.reflect.AutoBuilder;
 import jcog.tree.rtree.rect.RectFloat;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.SpaceGraph;
-import spacegraph.input.finger.state.DoubleClicking;
 import spacegraph.input.finger.Finger;
+import spacegraph.input.finger.state.DoubleClicking;
 import spacegraph.space2d.ReSurface;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.Surfacelike;
@@ -87,7 +87,7 @@ public class EditGraph2D<S extends Surface> extends MutableMapContainer<Surface,
 
     public static <X extends Surface> EditGraph2D<X> window(int w, int h) {
         EditGraph2D<X> g = new EditGraph2D<>();
-        SpaceGraph.surfaceWindow(g, w, h).dev();
+        SpaceGraph.window(g, w, h).dev();
         return g;
     }
 

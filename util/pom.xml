@@ -114,7 +114,7 @@
         <dependency>
             <groupId>org.roaringbitmap</groupId>
             <artifactId>RoaringBitmap</artifactId>
-            <version>0.8.0</version>
+            <version>0.8.1</version>
             <scope>compile</scope>
             <exclusions>
                 <exclusion>

@@ -47,7 +47,7 @@ public class Sketch2DBitmap extends PaintSurface implements MenuSupplier {
     public static void main(String[] args) {
 
 
-        SpaceGraph.surfaceWindow(new Sketch2DBitmap(256, 256)
+        SpaceGraph.window(new Sketch2DBitmap(256, 256)
 
                 , 800, 800);
     }
@@ -107,7 +107,7 @@ public class Sketch2DBitmap extends PaintSurface implements MenuSupplier {
     protected void paint(GL2 gl, ReSurface reSurface) {
         if (gl == null) {
 
-            bmp.profile = gl.getGLProfile();
+            //bmp.profile = gl.getGLProfile();
             update();
         }
 

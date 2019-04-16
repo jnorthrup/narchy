@@ -168,9 +168,17 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
                 return ((e == null) && needStamp) ? Stamp.toMutableSet(firstValid().task) : e;
             }
 
-            if (e == null)
+            if (e == null) {
+                //optimized special case
+                if (activeRemain == 2 && !needStamp) {
+                    if (!Stamp.overlaps(get(0).task, get(1).task))
+                        break;
+                    else {
+                        //TODO prevent unnecessary MetalLongSet creation
+                    }
+                }
                 e = new MetalLongSet(Param.STAMP_CAPACITY); //first iteration
-            else
+            } else
                 e.clear(); //2nd iteration, or after
 
 
@@ -478,31 +486,36 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
      */
     private int refocus(boolean tCrop, boolean all) {
         if (tCrop || start == ETERNAL) {
-            long[] union;
+            final long u0, u1;
             if ((all ? size() : active()) > 1) {
-                union = Tense.union(Iterables.transform(this,
+                long[] union = Tense.union(Iterables.transform(this,
                         all ?
                                 ((TaskComponent x) -> x.task) :
                                 ((TaskComponent x) -> x.valid() ? x.task : null)));
+                u0 = union[0]; u1 = union[1];
             } else {
                 TruthProjection.TaskComponent only = all ? getFirst() : firstValid();
-                union = new long[]{only.task.start(), only.task.end()};
+                u0 = only.task.start(); u1 = only.task.end();
             }
 
             boolean changed = false;
-            if (union[0] != ETERNAL) {
+            if (u0 != ETERNAL) {
                 if (start == ETERNAL) {
                     //override eternal range with the entire calculated union
-                    start = union[0]; end = union[1]; changed = true;
+                    start = u0; this.end = u1; changed = true;
                 } else {
-                    if (start < union[0] && union[0] < end) {
-                        start = union[0];
+                    if (start < u0 && u0 < this.end) {
+                        start = u0;
                         changed = true;
                     }
-                    if (end > union[1] && union[1] > start) {
-                        end = union[1];
+                    if (this.end > u1 && u1 > start) {
+                        this.end = u1;
                         changed = true;
                     }
+                }
+            } else {
+                if (start!=ETERNAL) {
+                    start = end = ETERNAL; changed = true;
                 }
             }
 

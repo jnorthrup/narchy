@@ -53,6 +53,6 @@ public class Surface3D extends PaintSurface {
 
         sg.commit(h);
 
-        SpaceGraph.surfaceWindow(new Bordering(new Surface3D(sg)).set(S, new PushButton("K")), 800, 800);
+        SpaceGraph.window(new Bordering(new Surface3D(sg)).set(S, new PushButton("K")), 800, 800);
     }
 }

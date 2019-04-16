@@ -8,6 +8,6 @@ class MetaFrameTest {
 
     public static void main(String[] args) {
 
-        SpaceGraph.surfaceWindow(new Scale(new MetaFrame(new PushButton("x")), 0.5f), 800, 800);
+        SpaceGraph.window(new Scale(new MetaFrame(new PushButton("x")), 0.5f), 800, 800);
     }
 }

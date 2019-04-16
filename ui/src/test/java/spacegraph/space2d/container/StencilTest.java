@@ -9,7 +9,7 @@ import spacegraph.video.Draw;
 public class StencilTest extends PaintSurface {
 
     public static void main(String[] args) {
-        SpaceGraph.surfaceWindow(new StencilTest(), 800, 800);
+        SpaceGraph.window(new StencilTest(), 800, 800);
     }
 
 

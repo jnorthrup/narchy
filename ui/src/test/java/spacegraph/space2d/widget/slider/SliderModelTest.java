@@ -7,7 +7,7 @@ import static spacegraph.space2d.container.grid.Gridding.*;
 class SliderModelTest {
     public static void main(String[] args) {
 
-        SpaceGraph.surfaceWindow(
+        SpaceGraph.window(
                 grid(
                         new XYSlider(), new XYSlider(), new XYSlider(),
                         column(

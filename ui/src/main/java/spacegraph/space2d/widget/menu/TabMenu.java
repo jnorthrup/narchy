@@ -83,7 +83,7 @@ public class TabMenu extends Menu {
                     content.active(created[0] = cx);
                     split();
                 } else {
-                    SpaceGraph.surfaceWindow(created[0] = cx, 800, 800);
+                    SpaceGraph.window(created[0] = cx, 800, 800);
                 }
 
 

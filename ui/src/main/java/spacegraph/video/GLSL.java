@@ -26,7 +26,7 @@ public class GLSL extends PaintSurface {
 
     public static void main(String[] args) {
         RectFloat r = RectFloat.XYXY((float) 1, (float) 1, (float) 500, (float) 500);
-        SpaceGraph.surfaceWindow(new GLSL().pos(r), 800, 600);
+        SpaceGraph.window(new GLSL().pos(r), 800, 600);
     }
 
     private final boolean updateUniformVars = true;

@@ -125,15 +125,9 @@ public abstract class NALTask extends UnitPri implements Task {
     }
 
     @Override
-    public abstract long start();
-
-    @Override
     public void setCreation(long nextCreation) {
         creation = nextCreation;
     }
-
-    @Override
-    public abstract long end();
 
 
     @Override

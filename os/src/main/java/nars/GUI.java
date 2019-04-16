@@ -21,7 +21,7 @@ public class GUI {
         logger.info("start SpaceGraph UI");
 
 
-        SpaceGraph.surfaceWindow(NARui.top(nar), 1024, 800).video.eventClosed.on(nar::reset);
+        SpaceGraph.window(NARui.top(nar), 1024, 800).video.eventClosed.on(nar::reset);
 
         nar.startFPS(10f);
 

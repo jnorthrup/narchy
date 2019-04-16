@@ -23,7 +23,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import static nars.$.$$;
 import static nars.experiment.Tetris.TetrisState.*;
-import static spacegraph.SpaceGraph.surfaceWindow;
+import static spacegraph.SpaceGraph.window;
 
 /**
  * Created by me on 7/28/16.
@@ -129,7 +129,7 @@ public class Tetris extends GameX {
             state.next();
         });
 
-        surfaceWindow(new VectorSensorView(pixels, this).withControls(), 400, 900);
+        window(new VectorSensorView(pixels, this).withControls(), 400, 900);
 
         //if a pixel is on, pixels above it should be off
         reward(new BeliefReward($$("(&|,tetris(#x,#yBelow),--tetris(#x,#yAbove),cmp(#yBelow,#yAbove,1))"), this));

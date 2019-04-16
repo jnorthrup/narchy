@@ -96,18 +96,13 @@ public class TensorRing extends AbstractShapedTensor implements WritableTensor {
         }
     }
 
-    protected float getAtDirect(int d) {
+    private float getAtDirect(int d) {
         return buffer.getAt(d);
     }
 
-    public int target() {
+    public final int target() {
         return target.getOpaque();
     }
-
-    public void target(int nextTarget) {
-        target.set(nextTarget);
-    }
-
 
     @Override
     public void setAt(int linearCell, float newValue) {

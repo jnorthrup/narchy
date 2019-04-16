@@ -111,7 +111,7 @@ public class BagLab {
         );
 
 
-        SpaceGraph.surfaceWindow(
+        SpaceGraph.window(
                 bagLab.surface(), 1200, 800);
 
         long delayMS = 30;

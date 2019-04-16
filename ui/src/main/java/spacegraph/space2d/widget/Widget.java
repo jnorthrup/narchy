@@ -94,13 +94,12 @@ public class Widget extends MutableUnitContainer<Surface> implements KeyPressed 
             //focused indicator
             r.on((gl)->{
                 if (focused) {
-                    float t = this.pri;
-                    RectFloat b = this.bounds;
+                    float p = this.pri;
                     //float th = Math.min(b.w, b.h) * (0.1f + 0.1f * t);
-                    float th = 3 + t;
-                    gl.glColor4f(0.5f + 0.5f * t, 0.55f, 0.35f, 0.75f);
+                    float th = 3 + p;
+                    gl.glColor4f(0.5f + 0.5f * p, 0.55f, 0.35f, 0.75f);
                     //Draw.rectFrame(b, th, gl);
-                    Draw.rectStroke(b, th, gl);
+                    Draw.rectStroke(bounds, th, gl);
                 }
             });
         }
@@ -117,16 +116,19 @@ public class Widget extends MutableUnitContainer<Surface> implements KeyPressed 
 
 
     @Override
-    public Surface finger(Finger finger) {
+    public Surface finger(Finger f) {
 
-        Surface s = super.finger(finger);
+        Surface s = super.finger(f);
         if (s == null) {
 
-            if (tangible() && finger.intersects(bounds)) {
-                priAtleast(0.5f);
+            if (tangible() && f.intersects(bounds)) {
 
-                if (!focused && finger.pressedNow(0) || finger.pressedNow(2))
+                if (!focused && (f.pressedNow(0) || f.pressedNow(2))) {
                     focus();
+                    priAtleast(0.75f);
+                } else {
+                    priAtleast(0.5f);
+                }
 
                 return this;
             } else {
@@ -178,9 +180,9 @@ public class Widget extends MutableUnitContainer<Surface> implements KeyPressed 
                     //TODO
                     // focus traversal
                     break;
-                case KeyEvent.VK_PRINTSCREEN:
-                    System.out.println(this); //TODO debugging
-                    return true;
+//                case KeyEvent.VK_PRINTSCREEN:
+//                    System.out.println(this); //TODO debugging
+//                    return true;
             }
         }
         return false;

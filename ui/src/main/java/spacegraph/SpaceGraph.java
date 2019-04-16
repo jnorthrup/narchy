@@ -2,12 +2,12 @@ package spacegraph;
 
 import jcog.Skill;
 import jdk.jshell.tool.JavaShellToolBuilder;
-import spacegraph.video.OrthoSurfaceGraph;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.widget.meta.ObjectSurface;
 import spacegraph.space3d.SpaceDisplayGraph3D;
 import spacegraph.space3d.Spatial;
 import spacegraph.video.JoglDisplay;
+import spacegraph.video.OrthoSurfaceGraph;
 
 @Skill("Direct_manipulation_interface")
 public class SpaceGraph {
@@ -29,7 +29,7 @@ $ jshell --startup startups/custom-startup
     /**
      * creates window with 2d with single surface layer, maximized to the size of the window
      */
-    public static OrthoSurfaceGraph surfaceWindow(Surface s, int w, int h) {
+    public static OrthoSurfaceGraph window(Surface s, int w, int h) {
         return new OrthoSurfaceGraph(s, w, h);
     }
 
@@ -45,49 +45,12 @@ $ jshell --startup startups/custom-startup
             SpaceDisplayGraph3D win = new SpaceDisplayGraph3D(((Spatial) o));
             win.video.show(w, h);
             return win;
+        } else if (o instanceof Surface) {
+            return window((Surface) o, w, h);
         } else {
-            Surface s = o instanceof Surface ? ((Surface) o) : new ObjectSurface<>(o);
-            return surfaceWindow(s, w, h);
+            return window(new ObjectSurface<>(o), w, h);
         }
     }
 
 
-//    /** creates window with new 2d physics "wall" containing the provided widgets */
-//    @Deprecated public static GraphEdit wall(int width, int height) {
-//        GraphEdit s = new GraphEdit();
-//        s.pos(-1, -1, 1, 1);
-//
-//
-//        ZoomOrtho ortho = new ZoomOrtho(s) {
-//
-//
-//            @Override
-//            public boolean autoresize() {
-//                return false;
-//            }
-//
-//            @Override
-//            public void log(@Nullable Object key, float duration, Level level, Supplier<String> message) {
-//
-//
-//            }
-//
-////            @Override
-////            protected boolean tangible() {
-////                return true;
-////            }
-//        };
-//
-//        Exe.invokeLater(()->{
-//            SpaceGraphFlat g = new SpaceGraphFlat(ortho);
-//            g.show(width, height);
-//            Exe.invokeLater(()->{
-//                ortho.zoom(s);
-//            });
-//        });
-//
-//
-//
-//        return s;
-//    }
 }

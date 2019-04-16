@@ -22,10 +22,10 @@ public class KeyboardChip extends Widget implements KeyPressed {
     }
 
     @Override
-    public Surface finger(Finger finger) {
+    public Surface finger(Finger f) {
         //TODO request focus
     focus();
-        return super.finger(finger);
+        return super.finger(f);
     }
 
     @Override

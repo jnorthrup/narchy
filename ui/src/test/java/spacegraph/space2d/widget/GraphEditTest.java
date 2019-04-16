@@ -174,7 +174,7 @@ public class GraphEditTest {
 
         }
         public static void main(String[] args) {
-            SpaceGraph.surfaceWindow(new TinySpeechTest(), 1000, 1000);
+            SpaceGraph.window(new TinySpeechTest(), 1000, 1000);
 
         }
     }
@@ -182,7 +182,7 @@ public class GraphEditTest {
     public static class StringSynthTest {
         public static void main(String[] args) {
             EditGraph2D<Surface> g = new EditGraph2D<>();
-            SpaceGraph.surfaceWindow(g, 1000, 1000);
+            SpaceGraph.window(g, 1000, 1000);
 
 
             RectFloat r2 = RectFloat.XYXY((float) 0, (float) 0, (float) 250, (float) 250);

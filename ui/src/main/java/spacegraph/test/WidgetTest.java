@@ -40,7 +40,7 @@ import static spacegraph.space2d.container.grid.Gridding.*;
 public class WidgetTest {
 
     public static void main(String[] args) {
-        SpaceGraph.surfaceWindow(widgetDemo(), 1200, 800).dev();
+        SpaceGraph.window(widgetDemo(), 1200, 800).dev();
     }
 
     public static ContainerSurface widgetDemo() {

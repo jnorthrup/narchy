@@ -49,10 +49,6 @@ public class BitmapLabel extends AbstractLabel {
             super.text(next);
 
             view.invalidate();
-
-            layout();
-
-
         }
         return this;
     }
@@ -102,7 +98,7 @@ public class BitmapLabel extends AbstractLabel {
 
     private class MyBitmapTextGrid extends BitmapTextGrid {
 
-        public MyBitmapTextGrid() {
+        MyBitmapTextGrid() {
             cursorCol = cursorRow = -1; //hidden
             setFillTextBackground(false);
         }
@@ -111,12 +107,6 @@ public class BitmapLabel extends AbstractLabel {
         protected RectFloat textBounds() {
             return textBounds;
         }
-
-
-        @Override
-        public void doLayout(float dtS) {
-        }
-
 
         @Override
         protected boolean renderText() {

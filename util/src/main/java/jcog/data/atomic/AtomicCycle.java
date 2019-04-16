@@ -2,16 +2,19 @@ package jcog.data.atomic;
 
 import org.eclipse.collections.api.block.procedure.primitive.IntProcedure;
 
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.IntUnaryOperator;
 
 abstract public class AtomicCycle  {
 
-    final AtomicInteger i = new AtomicInteger();
+    final static MetalAtomicIntegerFieldUpdater<AtomicCycle> I =
+            new MetalAtomicIntegerFieldUpdater(AtomicCycle.class, "i");
+
+    /** TODO use VarHandle */
+    private volatile int i;
 
     @Override
     public String toString() {
-        return i.toString();
+        return Integer.toString(I.get(this));
     }
 
     /** inclusive */
@@ -58,22 +61,22 @@ abstract public class AtomicCycle  {
         set(low());
     }
 
-    public int get() {
-        return i.get();
+    public final int get() {
+        return I.get(this);
     }
 
-    public int getOpaque() {
-        return i.getOpaque();
+    public final int getOpaque() {
+        return I.getOpaque(this);
     }
 
     public void set(int x) {
         valid(x);
-        i.set(x);
+        I.set(this, x);
     }
 
     public int getAndSet(int x) {
         valid(x);
-        return i.getAndSet(x);
+        return I.getAndSet(this, x);
     }
 
     protected void valid(int x) {
@@ -82,10 +85,10 @@ abstract public class AtomicCycle  {
     }
 
     public int getAndIncrement() {
-        return i.getAndUpdate(spin);
+        return I.getAndUpdate(this, spin);
     }
     public int incrementAndGet() {
-        return i.updateAndGet(spin);
+        return I.updateAndGet(this, spin);
     }
 
     private final IntUnaryOperator spin = x -> ++x >= high() ? low() : x;
@@ -93,15 +96,15 @@ abstract public class AtomicCycle  {
 
     /** procedure receives the index of the next target */
     public int incrementAndGet(IntProcedure r) {
-        return i.updateAndGet(spinAfter(r));
+        return I.updateAndGet(this, spinAfter(r));
     }
 
     /** procedure receives the index of the next target */
     public int getAndIncrement(IntProcedure r) {
-        return i.getAndUpdate(spinAfter(r));
+        return I.getAndUpdate(this, spinAfter(r));
     }
 
-    protected IntUnaryOperator spinAfter(IntProcedure r) {
+    private IntUnaryOperator spinAfter(IntProcedure r) {
         return x -> {
             r.value(x++);
             return x >= high() ? low() : x;

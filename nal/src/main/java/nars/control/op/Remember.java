@@ -334,7 +334,7 @@ public class Remember extends AbstractTask {
      * returns which task, if any, to remember on merge
      */
     @Nullable
-    protected static Task rememberMerged(Task prev, Task next) {
+    private static Task rememberMerged(Task prev, Task next) {
 
         if (next instanceof DynamicTruthTask)
             return null;

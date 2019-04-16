@@ -5,11 +5,11 @@ import com.jogamp.opengl.GL2;
 import com.jogamp.opengl.fixedfunc.GLMatrixFunc;
 import jcog.event.Off;
 import spacegraph.input.finger.Finger;
-import spacegraph.input.finger.state.FingerMoveWindow;
-import spacegraph.input.finger.state.FingerResizeWindow;
 import spacegraph.input.finger.Fingering;
 import spacegraph.input.finger.impl.NewtKeyboard;
 import spacegraph.input.finger.impl.NewtMouseFinger;
+import spacegraph.input.finger.state.FingerMoveWindow;
+import spacegraph.input.finger.state.FingerResizeWindow;
 import spacegraph.space2d.ReSurface;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.SurfaceGraph;
@@ -20,13 +20,13 @@ import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.container.unit.Animating;
 import spacegraph.space2d.hud.Zoomed;
 import spacegraph.space2d.widget.button.PushButton;
-import spacegraph.space2d.widget.textedit.TextEdit;
+import spacegraph.space2d.widget.text.BitmapLabel;
 import spacegraph.util.animate.Animated;
 
 import java.util.function.BiConsumer;
 
 import static com.jogamp.opengl.fixedfunc.GLMatrixFunc.GL_PROJECTION;
-import static spacegraph.SpaceGraph.surfaceWindow;
+import static spacegraph.SpaceGraph.window;
 
 public class OrthoSurfaceGraph extends JoglDisplay implements SurfaceGraph {
 
@@ -219,11 +219,11 @@ public class OrthoSurfaceGraph extends JoglDisplay implements SurfaceGraph {
     public OrthoSurfaceGraph dev(/** boolean hover mode (undecorated), other options */ ) {
         Gridding g = new Gridding();
 
-        TextEdit fingerInfo = new TextEdit(60, 12);
+        BitmapLabel fingerInfo = new BitmapLabel();
 
         g.add(fingerInfo);
 
-        return surfaceWindow(new Animating<>(g, ()->{
+        return window(new Animating<>(g, ()->{
             Surface t = finger.touching();
             fingerInfo.text(
                 "buttn: " + finger.buttonSummary() + '\n' +

@@ -6,8 +6,6 @@ import nars.io.TermIO;
 import nars.subterm.Subterms;
 import nars.term.Term;
 
-import static jcog.data.byt.RecycledDynBytes.tmpKey;
-
 /** interned terms and subterms implementations */
 public enum Intermed  { ;
 
@@ -89,7 +87,7 @@ public enum Intermed  { ;
         public final Subterms subs;
     
         public SubtermsKey(Subterms s) {
-            super(tmpKey());
+            super();
             TermIO.the.writeSubterms(this.subs = s, key);
             commit();
         }

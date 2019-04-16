@@ -19,7 +19,7 @@ public class ByteKeyExternal implements ByteKey {
         this.key = key;
     }
 
-    protected void commit() {
+    protected final void commit() {
         //TODO optional compression
 
         hash = key.hashCode();
@@ -30,7 +30,7 @@ public class ByteKeyExternal implements ByteKey {
     }
 
     @Override
-    public int hashCode() {
+    public final int hashCode() {
         return hash;
     }
 

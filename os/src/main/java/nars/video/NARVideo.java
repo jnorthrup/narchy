@@ -43,7 +43,7 @@ public class NARVideo extends NARPart {
             cam.open(true);
             c = new WebCam(cam);
             surface = new WebCam.WebCamSurface(c);
-            surfaceWindow = SpaceGraph.surfaceWindow(surface, 800, 600);
+            surfaceWindow = SpaceGraph.window(surface, 800, 600);
 
         }
 

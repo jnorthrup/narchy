@@ -62,7 +62,7 @@ class ScrollXYTest {
 //            grid.setScrollBar(true, true, false);
 //            grid.setScrollBar(false, false, true);
 
-            SpaceGraph.surfaceWindow(grid, 1024, 800);
+            SpaceGraph.window(grid, 1024, 800);
         }
     }
     static class ListTest1 {
@@ -72,7 +72,7 @@ class ScrollXYTest {
 
             GridRenderer<String> builder = (x, y, n) -> new CheckBox(n);
 
-            SpaceGraph.surfaceWindow( ScrollXY.array(builder, list) , 800, 800);
+            SpaceGraph.window( ScrollXY.array(builder, list) , 800, 800);
         }
 
     }

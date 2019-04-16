@@ -179,11 +179,11 @@ public class Port<X> extends Widget implements Wiring.Wireable {
 
 
     @Override
-    public Surface finger(Finger finger) {
+    public Surface finger(Finger f) {
 
-        Surface x = super.finger(finger);
+        Surface x = super.finger(f);
         if (x == null || x == this) {
-            if (finger.test(new Wiring(WIRING_BUTTON, this)))
+            if (f.test(new Wiring(WIRING_BUTTON, this)))
                 return this;
         }
 

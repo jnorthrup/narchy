@@ -210,7 +210,7 @@ public class TruthLab extends Gridding {
         
         NAR n = new NARS().get();
 
-        SpaceGraph.surfaceWindow(
+        SpaceGraph.window(
                 new TruthLab(n, $("(x)"), $("(y)"),
                         $("((x) && (y))"),
                         $("((x) &&+0 (y))"),

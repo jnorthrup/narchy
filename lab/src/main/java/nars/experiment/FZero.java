@@ -121,7 +121,7 @@ public class FZero extends GameX {
 
         BitmapMatrixView visionView = new BitmapMatrixView(vision);
         onFrame(visionView::updateIfShowing);
-        SpaceGraph.surfaceWindow(grid(visionView,
+        SpaceGraph.window(grid(visionView,
                 camAE.newChart()
                 //new Bitmap2DConceptsView(c, this).withControls()
         ), 500, 500);
@@ -165,7 +165,7 @@ public class FZero extends GameX {
         int angles = 8;
         DigitizedScalar ang = senseAngle(()->(float)fz.playerAngle, angles, Atomic.the("ang"));
         ang.resolution(r);
-        SpaceGraph.surfaceWindow(
+        SpaceGraph.window(
                 new VectorSensorView(ang, this).withControls()
                 /*NARui.beliefIcons(ang.sensors, nar))*/, 400, 400);
 

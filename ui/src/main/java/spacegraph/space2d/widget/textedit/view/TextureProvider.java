@@ -19,7 +19,7 @@ public final class TextureProvider {
     private final int FONT_BITMAP_WIDTH = 48;
     private final int FONT_BITMAP_HEIGHT = FONT_SIZE;
 
-    private final LoadingCache<String, BufferedImage> glyphCache = CacheBuilder.newBuilder().maximumSize(10000)
+    private final LoadingCache<String, BufferedImage> glyphCache = CacheBuilder.newBuilder().maximumSize(2048)
             .build(new CacheLoader<>() {
                 @Override
                 public BufferedImage load(String c) {
@@ -47,7 +47,7 @@ public final class TextureProvider {
         }
     }
 
-    public Tex getTexture(GL2 gl, String c) {
+    Tex getTexture(GL2 gl, String c) {
 
             BufferedImage charTex = glyphCache.getUnchecked(c);
             Tex tt = new Tex();

@@ -23,7 +23,7 @@ public class SignalViewTest {
 
 //        i.set(audio,1f / 30f/* + tolerance? */);
 
-        SpaceGraph.surfaceWindow(new LabeledPane(MapSwitch.the(Map.of(
+        SpaceGraph.window(new LabeledPane(MapSwitch.the(Map.of(
                 "Audio", ()->{
                     i.set(audio, 2f / 30f/* + tolerance? */);
                     audio.start();

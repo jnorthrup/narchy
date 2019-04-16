@@ -216,7 +216,7 @@ public class ConsoleTerminal extends Widget implements Appendable, KeyPressed {
 
             }
 
-            return !invalid.get();
+            return !invalidBmp.get();
         }
 
         void redraw(int column, int row) {

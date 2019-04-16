@@ -421,7 +421,7 @@ public class NARui {
     }
 
     public static void conceptWindow(Termed t, NAR n) {
-        SpaceGraph.surfaceWindow(new ConceptSurface(t, n), 500, 500);
+        SpaceGraph.window(new ConceptSurface(t, n), 500, 500);
     }
 
     public static Surface agent(Game a) {

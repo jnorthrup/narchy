@@ -152,7 +152,7 @@ public class DynamicConceptSpace extends DynamicListSpace<Concept> {
                     ConceptWidget cw = cc.meta(spaceID, () -> new ConceptWidget(cc) {
                         @Override
                         protected void onClicked(PushButton b) {
-                            SpaceGraph.surfaceWindow(new ConceptSurface(id.term(), nar), 800, 700);
+                            SpaceGraph.window(new ConceptSurface(id.term(), nar), 800, 700);
                         }
                     });
                     if (cw != null) {

@@ -168,14 +168,14 @@ public class Jake2Agent extends GameX implements Runnable {
         BitmapMatrixView depthView = new BitmapMatrixView(depthVision.src);
         onFrame(depthView::updateIfShowing);
 
-        SpaceGraph.surfaceWindow(grid(rgbView, rgbAE.newChart(), depthView ), 500, 500);
+        SpaceGraph.window(grid(rgbView, rgbAE.newChart(), depthView ), 500, 500);
 
         hear = new FreqVectorSensor(new CircularFloatBuffer(8*1024),
                 f->$.inh($.the(f), "hear"), 512,16, nar);
         addSensor(hear);
         WaveBitmap hearView = new WaveBitmap(hear.buf, 300, 64);
         onFrame(hearView::update);
-        SpaceGraph.surfaceWindow(grid(new VectorSensorView(hear, this).withControls(),
+        SpaceGraph.window(grid(new VectorSensorView(hear, this).withControls(),
                 //spectrogram(hear.buf, 0.1f,512, 16),
                 new ObjectSurface(hear), hearView), 400, 400);
 

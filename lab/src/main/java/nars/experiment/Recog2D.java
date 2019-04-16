@@ -117,7 +117,7 @@ public class Recog2D extends GameX {
                 System.out.println(t.proof());
             }
         }, GOAL);
-        SpaceGraph.surfaceWindow(conceptTraining(outs, nar), 800, 600);
+        SpaceGraph.window(conceptTraining(outs, nar), 800, 600);
 
 
     }

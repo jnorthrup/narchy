@@ -124,7 +124,7 @@ public class NARio extends GameX {
             s.attn.parent(nar(), tileAttnGroup);
 
 
-        SpaceGraph.surfaceWindow(camAE.newChart(), 500, 500);
+        SpaceGraph.window(camAE.newChart(), 500, 500);
 
 //        SpaceGraph.window(new LabeledPane("Tile types",
 //                new Gridding(tileSensors.stream().map(z -> new VectorSensorView(z, nar).withControls()).collect(toList()))), 100, 100);
@@ -410,7 +410,7 @@ public class NARio extends GameX {
             g.resolution(0.1f);
         });*/
 
-        SpaceGraph.surfaceWindow(NARui.beliefCharts(List.of(X.pos, X.neg, Y.pos, Y.neg), nar), 700, 700);
+        SpaceGraph.window(NARui.beliefCharts(List.of(X.pos, X.neg, Y.pos, Y.neg), nar), 700, 700);
     }
 
     int lastCoins;

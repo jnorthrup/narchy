@@ -45,7 +45,7 @@ public class Pacman extends GameX {
             gg.add(v/*.withControls()*/);
             c.resolution(0.1f);
         }
-        SpaceGraph.surfaceWindow(gg, 900, 300);
+        SpaceGraph.window(gg, 900, 300);
 
         actionTriState($.the("x") /*$.p(id, Atomic.the("x"))*/, (dh) -> {
             switch (dh) {

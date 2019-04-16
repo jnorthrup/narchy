@@ -25,7 +25,7 @@ public class TextGraph extends Graph2D { //extends Graph2D {
 
     public static void main(String[] args)  {
 
-        SpaceGraph.surfaceWindow(new MetaFrame(new ClassReloadingSurface<>(TextGraph.class)), 800, 800);
+        SpaceGraph.window(new MetaFrame(new ClassReloadingSurface<>(TextGraph.class)), 800, 800);
 
 //        Loop.of(c::reload).setFPS(0.25f);
 

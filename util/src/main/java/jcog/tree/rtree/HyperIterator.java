@@ -2,7 +2,6 @@ package jcog.tree.rtree;
 
 import jcog.sort.RankedN;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Predicate;
 import java.util.function.Supplier;
@@ -26,7 +25,7 @@ public class HyperIterator<X>  {
     /**
      * at each level, the plan is slowly popped from the end growing to the beginning (sorted in reverse)
      */
-    private final RankedN<Object> plan;
+    private final RankedN plan;
 
     public static <X> void iterate(ConcurrentRTree<X> tree, Supplier<FloatFunction<X>> rank, Predicate<X> whle) {
 
@@ -55,7 +54,7 @@ public class HyperIterator<X>  {
 
     }
 
-    public HyperIterator(Spatialization/*<X>*/ model, X[] x, FloatFunction<? super HyperRegion> rank) {
+    public HyperIterator(Spatialization/*<X>*/ model, Object/*X*/[] x, FloatFunction/*<? super HyperRegion>*/ rank) {
         this.plan = new RankedN(x, (FloatFunction) r -> {
             HyperRegion y =
                     r instanceof HyperRegion ?
@@ -79,33 +78,7 @@ public class HyperIterator<X>  {
     }
 
 
-    /**
-     * finds the next item given the current item and
-     */
-    @Nullable
-    private X find() {
-
-        Object z;
-        while ((z = plan.pop()) != null) {
-            if (z instanceof Node) {
-
-                //((Node) z).forEachLocal(this::push);
-
-                Node nz = (Node) z;
-                int s = nz.size();
-                for (int i = 0; i < s; i++)
-                    push(nz.get(i));
-
-            } else {
-                return (X) z;
-            }
-        }
-
-        return null;
-    }
-
-
-    private void push(Object x) {
+    private Object inline(Object x) {
         //inline 1-arity branches for optimization
         while (x instanceof Node && (((Node)x).size() == 1)) {
             x = ((Node) x).get(0);
@@ -113,9 +86,9 @@ public class HyperIterator<X>  {
 
 //        //dont filter root node (traversed while plan is null)
 //        if ((x instanceof Node) && nodeFilter != null && !plan.isEmpty() && !nodeFilter.tryVisit((Node)x))
-//            return;
+//            return null;
 
-        plan.add(x);
+        return x;
     }
 
 //    /**
@@ -126,8 +99,20 @@ public class HyperIterator<X>  {
 //    }
 
 
-    public boolean hasNext() {
-        return (this.next = find()) != null;
+    public final boolean hasNext() {
+
+        Object z;
+        while ((z = plan.pop()) != null) {
+            if (z instanceof Node) {
+                Node nz = (Node) z;
+                int s = nz.size();
+                for (int i = 0; i < s; i++)
+                    plan.add(inline(nz.get(i)));
+            } else
+                break;
+        }
+
+        return (this.next = (X) z) != null;
     }
 
     public final X next() {
