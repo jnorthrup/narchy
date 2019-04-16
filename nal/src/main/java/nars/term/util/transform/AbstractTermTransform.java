@@ -23,11 +23,12 @@ import static nars.time.Tense.XTERNAL;
 public interface AbstractTermTransform extends TermTransform, nars.term.util.builder.TermConstructor {
 
     /** global default transform procedure: can decide semi-optimal transform implementation */
-    static Term transform(Term x, TermTransform transform) {
+    static Term transform(Term x, TermTransform transform, int volMax) {
         if (x instanceof Compound && Param.TERMIFY_TRANSFORM_LAZY) {
             return ((AbstractTermTransform)transform).applyCompoundLazy((Compound)x,
                     //HeapTermBuilder.the
-                    Op.terms
+                    Op.terms,
+                    volMax
             );
         } else {
             return transform.apply(x);
@@ -190,12 +191,12 @@ public interface AbstractTermTransform extends TermTransform, nars.term.util.bui
     }
 
     default Term applyCompoundLazy(Compound x) {
-        return applyCompoundLazy(x, Op.terms);
+        return applyCompoundLazy(x, Op.terms, Param.term.COMPOUND_VOLUME_MAX);
     }
 
-    default Term applyCompoundLazy(Compound x, TermBuilder b) {
+    default Term applyCompoundLazy(Compound x, TermBuilder b, int volMax) {
         LazyCompound l = applyLazy(x);
-        return l == null ? Null : l.get(b);
+        return l == null ? Null : l.get(b, volMax);
     }
 
 

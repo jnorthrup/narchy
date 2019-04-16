@@ -5,6 +5,7 @@ import jcog.WTF;
 import jcog.data.byt.DynBytes;
 import jcog.util.ArrayUtils;
 import nars.Op;
+import nars.Param;
 import nars.subterm.Subterms;
 import nars.term.Compound;
 import nars.term.Term;
@@ -44,6 +45,7 @@ public class LazyCompound {
      *  because that will just cause the same value to be assumed when it should not be.
      * */
     private boolean constantPropagate = true;
+    private int volRemain;
 
     public LazyCompound() {
 
@@ -54,11 +56,10 @@ public class LazyCompound {
         return sub.updateMap(m);
     }
 
-    public final LazyCompound compoundStart(Op o) {
+    final LazyCompound compoundStart(Op o) {
         compoundStart(o, DTERNAL);
         return this;
     }
-
 
     /**
      * append compound
@@ -172,22 +173,29 @@ public class LazyCompound {
         );
     }
 
+    public Term get(TermBuilder b) {
+        return get(b, Param.term.COMPOUND_VOLUME_MAX);
+    }
     /**
      * run the construction process
      */
-    public Term get(TermBuilder b) {
+    public Term get(TermBuilder b, int volMax) {
 
+        this.volRemain = volMax;
         DynBytes c = code;
 //        if (code == null)
 //            return Null; //nothing
 //        else {
 //            if (sub != null)
 //                sub.readonly(); //optional
-            return getNext(b, c.arrayDirect(), new int[]{0, c.len});
+        return getNext(b, c.arrayDirect(), new int[]{0, c.len});
 //        }
     }
 
     private Term getNext(TermBuilder b, byte[] ii, int[] range) {
+        if (volRemain <= 0)
+            return Null;
+
         int from;
         byte ctl = ii[(from = range[0]++)];
         //System.out.println("ctl=" + ctl + " @ " + from);
@@ -198,8 +206,6 @@ public class LazyCompound {
             if (op == NEG)
                 next = getNext(b, ii, range).neg();
             else {
-
-
                 if (op.atomic)
                     throw new WTF(); //alignment error or something
 
@@ -226,15 +232,11 @@ public class LazyCompound {
                         return Null;
                     else {
 
-//                        for (Term x : s) if (x == null) throw new NullPointerException();
-
                         if (op==INH && evalInline() && s[1] instanceof InlineFunctor && s[0].op()==PROD) {
 
-                            Term z = ((InlineFunctor)s[1]).applyInline(s[0].subterms());
-                            if (z == null)
+                            next = ((InlineFunctor)s[1]).applyInline(s[0].subterms());
+                            if (next == null)
                                 return Null;
-
-                            next = z;
 
                             //TODO determine if constantPropagate does not need disabled (specially marked "deterministic" functors)
                             constantPropagate = false; //HACK
@@ -243,9 +245,7 @@ public class LazyCompound {
 
                         } else {
 
-                            next = op.the(b, dt, s);
-
-                            //assert (next != null);
+                            next = op.the(b, dt, s); //assert (next != null);
 
                             if (next != Null && constantPropagate)
                                 replaceAhead(ii, range, from, next);
@@ -259,18 +259,18 @@ public class LazyCompound {
                 }
             }
 
-
         } else {
             next = next(ctl);
+
             //skip zero padding suffix
-            while (range[0] < range[1] && code.at(range[0]) == 0) {
-                ++range[0];
-            }
+            int r0 = range[0], r1 = range[1];
+            while (r0 < r1 && code.at(r0) == 0) { ++r0; }
+            range[0] = r0;
+
+            volRemain -= next.volume(); //only deduct for concrete atoms
         }
 
         return next;
-
-
     }
 
     protected boolean evalInline() {
@@ -323,29 +323,35 @@ public class LazyCompound {
             Term y;
             if ((y = getNext(b, ii, range)) == Null)
                 return null;
-            if (y == null)
-                throw new NullPointerException(); //WTF
+
+            //if (y == null) throw new NullPointerException(); //WTF
 
             if (y.op()==FRAG) { //if (y instanceof EllipsisMatch) {
-                //expand
                 int en = y.subs();
                 n += en - 1;
-                if (t == null)
-                    t = (n == 0) ? EmptyTermArray : new Term[n];
-                else if (t.length != n) {
-                    t = Arrays.copyOf(t, n);
-                }
-                if (en > 0) {
-                    for (Term e : y.subterms()) {
-                        if (e == null || e == Null)
-                            throw new NullPointerException();
-                        t[i++] = e; //TODO recursively process?
-                    }
-                }
+                t = getNextFrag(t, i, y, n, en);
+                i += en;
             } else {
                 if (t == null)
                     t = new Term[n];
                 t[i++] = y;
+            }
+        }
+        return t;
+    }
+
+    /** expand a fragment */
+    private Term[] getNextFrag(Term[] t, int i, Term y, byte n, int en) {
+        if (t == null)
+            t = (n == 0) ? EmptyTermArray : new Term[n];
+        else if (t.length != n) {
+            t = (n == 0) ? EmptyTermArray : Arrays.copyOf(t, n);
+        }
+        if (en > 0) {
+            for (Term e : y.subterms()) {
+//                        if (e == null || e == Null)
+//                            throw new NullPointerException();
+                t[i++] = e; //TODO recursively process?
             }
         }
         return t;

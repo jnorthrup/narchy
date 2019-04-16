@@ -154,10 +154,6 @@ public class TensorRing extends AbstractShapedTensor implements WritableTensor {
         return target.incrementAndGet();
     }
 
-    /** procedure receives the index of the next target */
-    public int targetSpin(IntProcedure r) {
-        return target.incrementAndGet(r);
-    }
 
 
     public final float[] snapshot() {

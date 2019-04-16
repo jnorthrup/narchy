@@ -5,6 +5,7 @@ import jcog.data.set.ArrayHashRing;
 import jcog.memoize.QuickMemoize;
 import jcog.util.HashCachedPair;
 import nars.$;
+import nars.Param;
 import nars.derive.Derivation;
 import nars.term.Term;
 import nars.term.atom.Atomic;
@@ -19,6 +20,7 @@ import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 
 import java.util.Set;
 import java.util.function.BiFunction;
+import java.util.function.Predicate;
 
 import static nars.$.$$;
 import static nars.Param.derive.TermUnifyForkMax;
@@ -85,39 +87,23 @@ public class Premisify extends AbstractPred<Derivation> {
         if (!unify(d, fwd, false))
             return;
 
-        //final int[] forksRemain = {forkMax};
-        final Set<Term> tried = new UnifiedSet(forkLimit+1, 1f);
-        final int[] finalTTL = new int[] { -1 };
+        MatchFork mf = d.matchFork;
+        d.forEachMatch = mf;
 
-        d.forEachMatch = (dd) -> {
-            //assert(finalTTL[0]==-1);
-            Term y = AbstractTermTransform.transform(taskify.termify.pattern, dd.transform);
+        try {
 
-            if (!(y instanceof Bool) && y.unneg().op().taskable) {
+            mf.reset(taskify, forkLimit);
 
-                if (tried.add(y)) {
-                    taskify.test(y, dd);
+            boolean unified = unify(d, !fwd, true);
 
-                    if (tried.size() >= forkLimit) {
-                        finalTTL[0] = dd.stop(); //<- what really breaks; bool return val ignored
-                        return false;
-                    }
-                }
-            }
+            if (mf.ttlIfStoppedDuetoExcessiveForks !=-1)
+                d.ttl = mf.ttlIfStoppedDuetoExcessiveForks;
 
-
-            return true;
-        };
-
-
-        boolean unified = unify(d, !fwd, true);
-
-        if (finalTTL[0] >= 0)
-            d.ttl = finalTTL[0]; //HACK
-
-        d.forEachMatch = null;
-
+        } finally {
+            d.forEachMatch = null;
+        }
     }
+
     protected boolean unify(Derivation d, boolean dir, boolean finish) {
         return d.unify(dir ? taskPat : beliefPat, dir ? d.taskTerm : d.beliefTerm, finish);
     }
@@ -202,4 +188,45 @@ public class Premisify extends AbstractPred<Derivation> {
         }
     }
 
+    public static class MatchFork implements Predicate<Derivation> {
+
+        private int forkLimit = -1;
+        final Set<Term> tried = new UnifiedSet();
+        private Taskify taskify;
+        @Deprecated private int ttlIfStoppedDuetoExcessiveForks;
+
+        public MatchFork() {
+        }
+
+        public void reset(Taskify taskify, int forkLimit) {
+            this.taskify = taskify;
+            this.forkLimit = forkLimit;
+            this.ttlIfStoppedDuetoExcessiveForks = -1;
+            tried.clear();
+        }
+
+        @Override
+        public boolean test(Derivation dd) {
+            //assert(finalTTL[0]==-1);
+            Term y = AbstractTermTransform.transform(taskify.termify.pattern, dd.transform,
+                    1 + (int)Math.ceil(Param.derive.TERMIFY_TERM_VOLMAX_FACTOR * dd.termVolMax)
+            );
+
+            if (!(y instanceof Bool) && y.unneg().op().taskable) {
+
+                if (tried.add(y)) {
+
+                    taskify.test(y, dd);
+
+                    if (tried.size() >= forkLimit) {
+                        ttlIfStoppedDuetoExcessiveForks = dd.stop();
+//                        ttl = dd.stop(); //<- what really breaks; bool return val ignored
+                        return false;
+                    }
+                }
+            }
+
+            return dd.live();
+        }
+    }
 }

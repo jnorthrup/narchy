@@ -17,22 +17,20 @@ import static java.lang.System.nanoTime;
 public class WorkerExec extends ThreadedExec {
 
     private static final long subCycleMinNS = 150_000;
-    double granularity = 2;
+    double granularity = 3;
 
     /**
      * value of 1 means it shares 1/N of the current work. >1 means it will take on more proportionally more-than-fair share of work, which might reduce jitter at expense of responsive
      */
     float workResponsibility =
             //1f;
-            1.5f;
-            //2f;
-    //randomize the rescheduling so that the workers tend to be out of phase with each other's next rescheduling
-    int rescheduleDithersMin = 64 - 2, rescheduleDithersMax = 64 + 2;
+            //1.5f;
+            2f;
+
     /**
      * process sub-timeslice divisor
      * TODO auto-calculate
      */
-
     private long subCycleMaxNS;
 
     public WorkerExec(int threads) {

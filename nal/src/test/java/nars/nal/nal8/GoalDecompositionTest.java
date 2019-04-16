@@ -13,7 +13,7 @@ import static nars.Op.GOAL;
  */
 public class GoalDecompositionTest extends NALTest {
 
-    public static final int cycles = 250;
+    public static final int cycles = 500;
 
 
     @BeforeEach

@@ -16,6 +16,7 @@ import nars.task.ITask;
 import nars.task.util.PriBuffer;
 import nars.term.Term;
 import nars.time.part.CycLoop;
+import nars.time.part.DurLoop;
 import nars.util.Timed;
 
 import java.io.Externalizable;
@@ -104,8 +105,8 @@ abstract public class What extends NARPart implements Prioritizable, Sampler<Tas
             //add(new DurLoop.DurNARConsumer(this::perceive));
         }
 
-        add(CycLoop.the(this::commit));
-        //add(new DurLoop.DurRunnable(this::commit));
+        //add(CycLoop.the(this::commit));
+        add(new DurLoop.DurNARConsumer(this::commit));
     }
 
     @Override

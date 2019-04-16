@@ -1,12 +1,10 @@
 package jcog.data.atomic;
 
-import org.eclipse.collections.api.block.procedure.primitive.IntProcedure;
-
 import java.util.function.IntUnaryOperator;
 
-abstract public class AtomicCycle  {
+abstract public class AtomicCycle implements IntUnaryOperator {
 
-    final static MetalAtomicIntegerFieldUpdater<AtomicCycle> I =
+    private final static MetalAtomicIntegerFieldUpdater<AtomicCycle> I =
             new MetalAtomicIntegerFieldUpdater(AtomicCycle.class, "i");
 
     /** TODO use VarHandle */
@@ -79,37 +77,23 @@ abstract public class AtomicCycle  {
         return I.getAndSet(this, x);
     }
 
-    protected void valid(int x) {
+    private void valid(int x) {
         if (x < low() || x > high())
             throw new ArrayIndexOutOfBoundsException();
     }
 
-    public int getAndIncrement() {
-        return I.getAndUpdate(this, spin);
+    public final int getAndIncrement() {
+        return I.getAndUpdate(this, this);
     }
-    public int incrementAndGet() {
-        return I.updateAndGet(this, spin);
-    }
-
-    private final IntUnaryOperator spin = x -> ++x >= high() ? low() : x;
-
-
-    /** procedure receives the index of the next target */
-    public int incrementAndGet(IntProcedure r) {
-        return I.updateAndGet(this, spinAfter(r));
+    public final int incrementAndGet() {
+        return I.updateAndGet(this, this);
     }
 
-    /** procedure receives the index of the next target */
-    public int getAndIncrement(IntProcedure r) {
-        return I.getAndUpdate(this, spinAfter(r));
+    /** spinner */
+    @Override public final int applyAsInt(int x) {
+        return ++x >= high() ? low() : x;
     }
 
-    private IntUnaryOperator spinAfter(IntProcedure r) {
-        return x -> {
-            r.value(x++);
-            return x >= high() ? low() : x;
-        };
-    }
 
 // TODO
 //    public <X> int getAndIncrementWith(ObjectFloatProcedure r, X x) {
