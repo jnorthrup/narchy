@@ -216,4 +216,20 @@ public class FloatAveragedWindow implements FloatSupplier, FloatToFloatFunction 
         return current.get();
     }
 
+
+    public double mean() {
+        return window.sumValues() / window.volume();
+    }
+
+    /** @standard deviation */
+    public double stddev(){
+        throw new TODO();
+//        float mean = mean();
+//        float sum = 0;
+//        for(int i = 0; i < values.length; i++){
+//            sum += (values[i] - mean) * (values[i] - mean);
+//        }
+//
+//        return (float)Math.sqrt(sum / values.length);
+    }
 }

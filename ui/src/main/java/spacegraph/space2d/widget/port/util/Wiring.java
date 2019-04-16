@@ -1,6 +1,6 @@
 package spacegraph.space2d.widget.port.util;
 
-import spacegraph.input.finger.Dragging;
+import spacegraph.input.finger.state.Dragging;
 import spacegraph.input.finger.Finger;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.graph.EditGraph2D;

@@ -3,8 +3,7 @@ package spacegraph.input.finger;
 import org.jetbrains.annotations.Nullable;
 
 
-public class CursorOverlay extends Fingering {
-
+@Deprecated public class CursorOverlay extends Fingering {
 
     /** if cursor is null, then returns to default cursor */
     @Nullable private final FingerRenderer cursor;

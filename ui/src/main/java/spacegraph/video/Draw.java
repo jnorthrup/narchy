@@ -957,6 +957,11 @@ public enum Draw {
         Draw.rect(bounds.x, bounds.y, bounds.w, bounds.h, gl);
     }
 
+    public static void rectStroke(RectFloat bounds, float thickPixels, GL2 gl) {
+        gl.glLineWidth(thickPixels);
+        rectStroke(bounds, gl);
+    }
+
     public static void rectStroke(RectFloat bounds, GL2 gl) {
         Draw.rectStroke(bounds.x, bounds.y, bounds.w, bounds.h, gl);
     }

@@ -119,7 +119,7 @@ public class CuboidSurfaceGraph<X> extends SimpleSpatial<X> implements SurfaceGr
                       //      localPoint.x / shape.x() + 0.5f, localPoint.y / shape.y() + 0.5f
                     //);
 
-                    ((NewtMouseFinger)this.finger).touch(front);
+                    ((NewtMouseFinger)this.finger).finger((f)->front); //TODO check
 
                     finger.update(buttons);
 

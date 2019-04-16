@@ -183,7 +183,7 @@ public class Port<X> extends Widget implements Wiring.Wireable {
 
         Surface x = super.finger(finger);
         if (x == null || x == this) {
-            if (finger.tryFingering(new Wiring(WIRING_BUTTON, this)))
+            if (finger.test(new Wiring(WIRING_BUTTON, this)))
                 return this;
         }
 

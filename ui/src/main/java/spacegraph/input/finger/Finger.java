@@ -18,7 +18,6 @@ import spacegraph.video.JoglWindow;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
@@ -32,7 +31,7 @@ import static spacegraph.input.finger.Fingering.Null;
  * <p>
  * TODO differentiate this between subclasses which touch only one surface at a time, and those which can touch several (multi-select)
  */
-abstract public class Finger {
+abstract public class Finger implements Predicate<Fingering> {
 
 
     public final v2 posPixel = new v2(), posScreen = new v2();
@@ -54,20 +53,22 @@ abstract public class Finger {
      * last local and global positions on press (downstroke).
      * TODO is it helpful to also track upstroke position?
      */
-    final v2[] pressPosPixel;
-    final FingerRenderer rendererDefault =
+    public final v2[] pressPosPixel;
+    public final FingerRenderer rendererDefault =
             FingerRenderer.rendererCrossHairs1;
     final FasterList<SurfaceTransform> transforms = new FasterList();
     private final int buttons;
+
     /**
      * drag threshold (in screen pixels)
      */
-    private final float dragThresholdPx = 3f;
+    private final float dragThresholdPx = 5f;
+
     //@Deprecated protected transient Function<v2, v2> _screenToGlobalRect;
     private final AtomicMetalBitSet buttonDown = new AtomicMetalBitSet();
     private final AtomicFloat[] rotation = new AtomicFloat[3];
 
-    volatile FingerRenderer renderer = rendererDefault;
+    public volatile FingerRenderer renderer = rendererDefault;
 
     {
         rotation[0] = new AtomicFloat();
@@ -84,50 +85,6 @@ abstract public class Finger {
         }
     }
 
-    public static Predicate<Finger> clicked(Surface what, int button, Runnable clicked) {
-        return clicked(what, button, clicked, null, null, null);
-    }
-
-    private static Predicate<Finger> clicked(Surface what, int button, Runnable clicked, Runnable armed, Runnable hover, Runnable becameIdle) {
-        return clicked(what, button, (f) -> clicked.run(), armed, hover, becameIdle);
-    }
-
-    public static Predicate<Finger> clicked(Surface what, int button, Consumer<Finger> clicked, Runnable armed, Runnable hover, Runnable becameIdle) {
-
-        if (becameIdle != null)
-            becameIdle.run();
-
-        final AtomicBoolean idle = new AtomicBoolean(false);
-
-        return f -> {
-
-            if (f != null /*&& (what = f.touching()) != null*/) {
-
-                idle.set(false);
-
-                if (f.clickedNow(button, what)) {
-
-                    if (clicked != null)
-                        clicked.accept(f);
-
-                } else if (f.pressed(button)) {
-                    if (armed != null)
-                        armed.run();
-
-                } else {
-                    if (hover != null)
-                        hover.run();
-                }
-
-            } else {
-                if (idle.compareAndSet(false, true)) {
-                    if (becameIdle != null)
-                        becameIdle.run();
-                }
-            }
-            return false;
-        };
-    }
 
     public static v2 normalize(v2 pPixel, JoglWindow win) {
         v2 y = new v2(pPixel);
@@ -238,16 +195,6 @@ abstract public class Finger {
         return buttonDown.get(button);
     }
 
-    //{
-//        Ortho co = this._ortho;
-//        Ortho o = co !=null ? co : (c instanceof Ortho ? ((Ortho)c) : c.parent(Ortho.class));
-//        if (o!=null)
-//            return posGlobal(posPixel, o);
-//        else
-//            return posPixel;//.clone();
-    //    return posGlobal;
-    //}
-
     private boolean wasPressed(int button) {
         return prevButtonDown.get(button);
     }
@@ -288,7 +235,7 @@ abstract public class Finger {
     /**
      * acquire an exclusive fingering state
      */
-    public final boolean tryFingering(Fingering next) {
+    @Override public final boolean test(Fingering next) {
 
         Fingering prev = this.fingering.get();
 
@@ -500,4 +447,10 @@ abstract public class Finger {
 //            return true;
 //        }
 //    };
+
+    /**
+     * marker interface for surfaces which absorb wheel motion, to prevent other system handling from it (ex: camera zoom)
+     */
+    public static interface ScrollWheelConsumer {
+    }
 }

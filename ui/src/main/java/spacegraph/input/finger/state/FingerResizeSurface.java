@@ -1,8 +1,9 @@
-package spacegraph.input.finger;
+package spacegraph.input.finger.state;
 
 import jcog.math.v2;
 import jcog.tree.rtree.rect.RectFloat;
 import org.jetbrains.annotations.Nullable;
+import spacegraph.input.finger.Finger;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.widget.windo.util.DragEdit;
 

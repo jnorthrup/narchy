@@ -8,7 +8,7 @@ import jcog.tree.rtree.HyperRegion;
 import jcog.tree.rtree.rect.HyperRectFloat;
 import jcog.tree.rtree.rect.RectFloat;
 import spacegraph.input.finger.Finger;
-import spacegraph.input.finger.FingerMove;
+import spacegraph.input.finger.state.FingerMove;
 import spacegraph.space2d.ReSurface;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.PaintSurface;
@@ -224,7 +224,7 @@ public class OsmSurface extends PaintSurface {
 
         hilight.clear();
 
-        if (finger.tryFingering(pan)) {
+        if (finger.test(pan)) {
             return this;
         } else {
             v2 pos = finger.posGlobal(); //posPixel;

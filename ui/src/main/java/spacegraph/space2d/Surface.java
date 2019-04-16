@@ -4,6 +4,7 @@ import jcog.Texts;
 import jcog.math.v2;
 import jcog.tree.rtree.Spatialization;
 import jcog.tree.rtree.rect.RectFloat;
+import spacegraph.input.finger.Finger;
 import spacegraph.space2d.container.ContainerSurface;
 import spacegraph.space2d.container.collection.AbstractMutableContainer;
 import spacegraph.space2d.container.unit.AspectAlign;
@@ -20,7 +21,7 @@ import java.util.function.Supplier;
  * planar subspace.
  * (fractal) 2D Surface embedded relative to a parent 2D surface or 3D space
  */
-abstract public class Surface implements Surfacelike, spacegraph.input.finger.Fingered {
+abstract public class Surface implements Surfacelike {
 
 
     public static final Surface[] EmptySurfaceArray = new Surface[0];
@@ -49,6 +50,10 @@ abstract public class Surface implements Surfacelike, spacegraph.input.finger.Fi
 
     public Surface() {
 
+    }
+
+    public Surface finger(Finger finger) {
+        return null;
     }
 
     public final float cx() {

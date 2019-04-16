@@ -7,6 +7,8 @@ import jcog.math.v3;
 import jcog.tree.rtree.rect.RectFloat;
 import spacegraph.input.finger.*;
 import spacegraph.input.finger.impl.NewtKeyboard;
+import spacegraph.input.finger.state.Dragging;
+import spacegraph.input.finger.state.FingerMoveWindow;
 import spacegraph.input.key.KeyPressed;
 import spacegraph.space2d.ReSurface;
 import spacegraph.space2d.Surface;
@@ -191,7 +193,7 @@ public class Zoomed<S extends Surface> extends MutableUnitContainer<S> implement
         return finger.push(cam, (f)->{
             Surface innerTouched = super.finger(f);
 
-            if (!(innerTouched instanceof WheelAbsorb)) {
+            if (!(innerTouched instanceof Finger.ScrollWheelConsumer)) {
                 //wheel zoom: absorb remaining rotationY
                 float dy = f.rotationY(true);
                 if (dy != 0) {
@@ -212,7 +214,7 @@ public class Zoomed<S extends Surface> extends MutableUnitContainer<S> implement
                 /*if (f.tryFingering(zoomDrag)) {
                     zoomStackReset();
                 } else */
-                if (f.tryFingering(contentPan)) {
+                if (f.test(contentPan)) {
                     zoomStackReset();
                 }
                 //}

@@ -1,5 +1,6 @@
-package spacegraph.input.finger;
+package spacegraph.input.finger.state;
 
+import spacegraph.input.finger.Finger;
 import spacegraph.space2d.Surface;
 
 /** dragging initiated within the bounds of a surface */

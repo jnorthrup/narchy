@@ -96,9 +96,11 @@ public class Widget extends MutableUnitContainer<Surface> implements KeyPressed 
                 if (focused) {
                     float t = this.pri;
                     RectFloat b = this.bounds;
-                    float th = Math.min(b.w, b.h) * (0.1f + 0.1f * t);
-                    gl.glColor4f(0.5f + 0.5f * t, 0.25f, 0.15f, 0.5f);
-                    Draw.rectFrame(b, th, gl);
+                    //float th = Math.min(b.w, b.h) * (0.1f + 0.1f * t);
+                    float th = 3 + t;
+                    gl.glColor4f(0.5f + 0.5f * t, 0.55f, 0.35f, 0.75f);
+                    //Draw.rectFrame(b, th, gl);
+                    Draw.rectStroke(b, th, gl);
                 }
             });
         }

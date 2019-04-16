@@ -4,9 +4,9 @@ import jcog.Util;
 import jcog.math.v2;
 import jcog.pri.ScalarValue;
 import jcog.signal.wave1d.SignalInput;
-import spacegraph.input.finger.Dragging;
+import spacegraph.input.finger.state.Dragging;
 import spacegraph.input.finger.Finger;
-import spacegraph.input.finger.FingerMove;
+import spacegraph.input.finger.state.FingerMove;
 import spacegraph.input.finger.Fingering;
 import spacegraph.space2d.ReSurface;
 import spacegraph.space2d.Surface;
@@ -104,10 +104,10 @@ public class SignalView extends Timeline2D {
             }
         }
 
-        if (finger.tryFingering(pan)) {
+        if (finger.test(pan)) {
             return this;
         }
-        if (finger.tryFingering(select)) {
+        if (finger.test(select)) {
             return this;
         }
 

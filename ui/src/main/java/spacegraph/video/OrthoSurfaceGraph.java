@@ -5,8 +5,8 @@ import com.jogamp.opengl.GL2;
 import com.jogamp.opengl.fixedfunc.GLMatrixFunc;
 import jcog.event.Off;
 import spacegraph.input.finger.Finger;
-import spacegraph.input.finger.FingerMoveWindow;
-import spacegraph.input.finger.FingerResizeWindow;
+import spacegraph.input.finger.state.FingerMoveWindow;
+import spacegraph.input.finger.state.FingerResizeWindow;
 import spacegraph.input.finger.Fingering;
 import spacegraph.input.finger.impl.NewtKeyboard;
 import spacegraph.input.finger.impl.NewtMouseFinger;
@@ -86,7 +86,7 @@ public class OrthoSurfaceGraph extends JoglDisplay implements SurfaceGraph {
 
             //check windowResize first since it is a more exclusive condition than windowMove
             if (finger.pressed(MOVE_AND_RESIZE_BUTTON)) {
-                if (/*finger.tryFingering(windowResize) || */finger.tryFingering(windowMove))
+                if (/*finger.tryFingering(windowResize) || */finger.test(windowMove))
                     return null;
             }
 
@@ -133,7 +133,7 @@ public class OrthoSurfaceGraph extends JoglDisplay implements SurfaceGraph {
 
         video.window.setPointerVisible(false);
 
-        finger = new NewtMouseFinger(this, layers);
+        finger = new NewtMouseFinger(this, layers::finger);
 
         keyboard = new NewtKeyboard(/*TODO this */);
 

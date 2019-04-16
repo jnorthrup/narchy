@@ -1,4 +1,7 @@
-package spacegraph.input.finger;
+package spacegraph.input.finger.state;
+
+import spacegraph.input.finger.Finger;
+import spacegraph.input.finger.Fingering;
 
 abstract public class Dragging extends Fingering {
 

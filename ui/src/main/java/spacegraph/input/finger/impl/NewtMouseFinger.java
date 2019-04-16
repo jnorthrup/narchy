@@ -3,11 +3,13 @@ package spacegraph.input.finger.impl;
 import com.jogamp.newt.event.*;
 import jcog.math.v2;
 import org.jetbrains.annotations.Nullable;
-import spacegraph.input.finger.Fingered;
+import spacegraph.input.finger.Finger;
 import spacegraph.input.finger.Fingering;
 import spacegraph.space2d.Surface;
 import spacegraph.video.JoglDisplay;
 import spacegraph.video.JoglWindow;
+
+import java.util.function.Function;
 
 /** ordinary desktop/laptop computer mouse, as perceived through jogamp NEWT's native interface */
 public class NewtMouseFinger extends MouseFinger implements MouseListener, WindowListener {
@@ -15,10 +17,10 @@ public class NewtMouseFinger extends MouseFinger implements MouseListener, Windo
 
 
     private final JoglDisplay space;
-    private final Fingered root;
+    private final Function<Finger,Surface> root;
 
 
-    public NewtMouseFinger(JoglDisplay s, Fingered root) {
+    public NewtMouseFinger(JoglDisplay s, Function<Finger,Surface> root) {
         super(MAX_BUTTONS);
         this.space = s;
         this.root = root;
@@ -35,13 +37,13 @@ public class NewtMouseFinger extends MouseFinger implements MouseListener, Windo
     }
 
     /** called for each layer. returns true if continues down to next layer */
-    public void touch(Fingered s) {
+    public void finger(Function<Finger,Surface> s) {
 
         _posGlobal.set(posPixel); //HACK
 
         Fingering ff = this.fingering.get();
 
-        Surface touchNext = s.finger(this);
+        Surface touchNext = s.apply(this);
         touching.accumulateAndGet(touchNext, ff::touchNext);
 
         commitButtons();
@@ -58,7 +60,7 @@ public class NewtMouseFinger extends MouseFinger implements MouseListener, Windo
 
     @Override protected void doUpdate() {
 
-        touch(root);
+        finger(root);
 
         clearRotation();
     }

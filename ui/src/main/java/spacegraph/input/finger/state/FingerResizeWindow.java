@@ -1,7 +1,8 @@
-package spacegraph.input.finger;
+package spacegraph.input.finger.state;
 
 import jcog.math.v2;
 import jcog.tree.rtree.rect.RectFloat;
+import spacegraph.input.finger.Finger;
 import spacegraph.space2d.widget.windo.util.DragEdit;
 import spacegraph.video.JoglDisplay;
 import spacegraph.video.JoglWindow;

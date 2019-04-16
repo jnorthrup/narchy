@@ -8,9 +8,9 @@ import jcog.pri.ScalarValue;
 import jcog.tree.rtree.Spatialization;
 import jcog.tree.rtree.rect.RectFloat;
 import org.eclipse.collections.api.block.procedure.primitive.FloatFloatProcedure;
-import spacegraph.input.finger.Dragging;
+import spacegraph.input.finger.state.Dragging;
 import spacegraph.input.finger.Finger;
-import spacegraph.input.finger.SurfaceDragging;
+import spacegraph.input.finger.state.SurfaceDragging;
 import spacegraph.space2d.ReSurface;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.PaintSurface;
@@ -128,7 +128,7 @@ public class XYSlider extends PaintSurface implements Hovered {
 
     @Override
     public Surface finger(Finger f) {
-        if (f.tryFingering(drag)) {
+        if (f.test(drag)) {
             return this;
         }
         return null;

@@ -4,7 +4,7 @@ import com.jogamp.opengl.GL2;
 import jcog.Util;
 import jcog.math.LongInterval;
 import jcog.tree.rtree.Spatialization;
-import spacegraph.input.finger.WheelAbsorb;
+import spacegraph.input.finger.Finger;
 import spacegraph.space2d.ReSurface;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.Bordering;
@@ -22,7 +22,7 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 /** view for one or more TimeRangeAware implementing surfaces that display aspects of a time-varying signal */
-public class Timeline2D extends Stacking implements WheelAbsorb {
+public class Timeline2D extends Stacking implements Finger.ScrollWheelConsumer {
 
     /**
      * viewable range

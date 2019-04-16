@@ -13,7 +13,7 @@ import jcog.reflect.AutoBuilder;
 import jcog.tree.rtree.rect.RectFloat;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.SpaceGraph;
-import spacegraph.input.finger.DoubleClicking;
+import spacegraph.input.finger.state.DoubleClicking;
 import spacegraph.input.finger.Finger;
 import spacegraph.space2d.ReSurface;
 import spacegraph.space2d.Surface;

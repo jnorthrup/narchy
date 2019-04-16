@@ -110,10 +110,10 @@
      //B, X, task("@"), --is(B,"==>"), hasBelief() |- (polarizeRandom(B) ==> X), (Punctuation:Question)
 
 //goal sub-condition preference compare
-   (X-->A), (Y-->A), neqRoot(X,Y), --isVar(X), --isVar(Y), --isVar(A), task("!") |- (((polarizeTask(X) && Y) ~ (polarizeTask(X) && --Y)) --> A), (Punctuation:Quest)
-   (X-->A), (Y-->A), neqRoot(X,Y), --isVar(X), --isVar(Y), --isVar(A), task("!") |- (((polarizeTask(X) && --Y) ~ (polarizeTask(X) && Y)) --> A), (Punctuation:Quest)
-   (A-->X), (A-->Y), neqRoot(X,Y), --isVar(X), --isVar(Y), --isVar(A), task("!") |- (A --> ((polarizeTask(X) && Y) - (polarizeTask(X) && --Y))), (Punctuation:Quest)
-   (A-->X), (A-->Y), neqRoot(X,Y), --isVar(X), --isVar(Y), --isVar(A), task("!") |- (A --> ((polarizeTask(X) && --Y) - (polarizeTask(X) && Y))), (Punctuation:Quest)
+//   (X-->A), (Y-->A), neqRoot(X,Y), --isVar(X), --isVar(Y), --isVar(A), task("!") |- (((polarizeTask(X) && Y) ~ (polarizeTask(X) && --Y)) --> A), (Punctuation:Quest)
+//   (X-->A), (Y-->A), neqRoot(X,Y), --isVar(X), --isVar(Y), --isVar(A), task("!") |- (((polarizeTask(X) && --Y) ~ (polarizeTask(X) && Y)) --> A), (Punctuation:Quest)
+//   (A-->X), (A-->Y), neqRoot(X,Y), --isVar(X), --isVar(Y), --isVar(A), task("!") |- (A --> ((polarizeTask(X) && Y) - (polarizeTask(X) && --Y))), (Punctuation:Quest)
+//   (A-->X), (A-->Y), neqRoot(X,Y), --isVar(X), --isVar(Y), --isVar(A), task("!") |- (A --> ((polarizeTask(X) && --Y) - (polarizeTask(X) && Y))), (Punctuation:Quest)
 
 //similarity goal comparator TODO bifurcate a similarity to determine which half is more desirable
    //(X<->A), (Y<->A), ...

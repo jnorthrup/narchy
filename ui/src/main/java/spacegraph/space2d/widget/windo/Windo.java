@@ -5,6 +5,10 @@ import jcog.math.v2;
 import jcog.tree.rtree.rect.RectFloat;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.input.finger.*;
+import spacegraph.input.finger.state.Dragging;
+import spacegraph.input.finger.state.FingerMoveSurface;
+import spacegraph.input.finger.state.FingerResize;
+import spacegraph.input.finger.state.FingerResizeSurface;
 import spacegraph.space2d.ReSurface;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.ContainerSurface;
@@ -85,7 +89,7 @@ public class Windo extends MutableUnitContainer {
             Dragging d = fingering(potentialDragMode);
             if (d!=null) {
                 if (d == resize) resize.mode(potentialDragMode);
-                if (finger.tryFingering(d)) {
+                if (finger.test(d)) {
                     actualDragMode = d;
                 }
             }
@@ -97,7 +101,7 @@ public class Windo extends MutableUnitContainer {
         if (potentialDragMode != null) {
             CursorOverlay overlay = potentialDragMode.hover();
             if (overlay != null)
-                finger.tryFingering(overlay);
+                finger.test(overlay);
         } else {
             //finger.tryFingering(CursorOverlay.Reset);
         }

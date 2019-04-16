@@ -1,6 +1,7 @@
-package spacegraph.input.finger;
+package spacegraph.input.finger.state;
 
 import jcog.math.v2;
+import spacegraph.input.finger.Finger;
 import spacegraph.video.JoglDisplay;
 
 /** finger move trigger, using screen pixel scale */

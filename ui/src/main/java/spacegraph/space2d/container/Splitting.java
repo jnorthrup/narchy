@@ -8,7 +8,7 @@ import org.eclipse.collections.api.block.procedure.primitive.BooleanProcedure;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.input.finger.Finger;
 import spacegraph.input.finger.FingerRenderer;
-import spacegraph.input.finger.SurfaceDragging;
+import spacegraph.input.finger.state.SurfaceDragging;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.collection.MutableArrayContainer;
 import spacegraph.space2d.widget.Widget;
@@ -254,7 +254,7 @@ public class Splitting<X extends Surface, Y extends Surface> extends MutableArra
 
         @Override
         public Surface finger(Finger finger) {
-            return finger.tryFingering(drag) ? this : this /*null*/;
+            return finger.test(drag) ? this : this /*null*/;
         }
     }
 

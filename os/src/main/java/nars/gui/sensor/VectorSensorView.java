@@ -18,7 +18,7 @@ import nars.task.util.Answer;
 import nars.time.Tense;
 import nars.time.part.DurLoop;
 import nars.truth.Truth;
-import spacegraph.input.finger.Dragging;
+import spacegraph.input.finger.state.Dragging;
 import spacegraph.input.finger.Finger;
 import spacegraph.space2d.container.Splitting;
 import spacegraph.space2d.container.grid.Gridding;
@@ -150,7 +150,7 @@ public class VectorSensorView extends BitmapMatrixView implements BitmapMatrixVi
             if (c!=null && finger.releasedNow(OPEN_CONCEPT_BUTTON) && !finger.dragging(OPEN_CONCEPT_BUTTON)) {
                 NARui.conceptWindow(c, nar);
             } else {
-                finger.tryFingering(affect);
+                finger.test(affect);
             }
             return true;
         }

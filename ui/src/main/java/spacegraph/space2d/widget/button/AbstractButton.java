@@ -1,12 +1,12 @@
 package spacegraph.space2d.widget.button;
 
 import com.jogamp.newt.event.KeyEvent;
+import spacegraph.input.finger.state.Clicking;
 import spacegraph.input.finger.Finger;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.widget.Widget;
 
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.function.Predicate;
 
 import static java.awt.event.KeyEvent.VK_ENTER;
 import static java.awt.event.KeyEvent.VK_SPACE;
@@ -19,11 +19,10 @@ public abstract class AbstractButton extends Widget {
 
     final static int CLICK_BUTTON = 0;
 
-    private final Predicate<Finger> pressable = Finger.clicked(this, CLICK_BUTTON, (f) -> {
+    final Clicking click = new Clicking(CLICK_BUTTON,this, (f) -> {
         dz = 0;
         onClick(f);
     }, () -> dz = 0.5f, () -> dz = 0f, () -> dz = 0f);
-
 
     private final AtomicBoolean enabled = new AtomicBoolean(true);
 
@@ -39,7 +38,7 @@ public abstract class AbstractButton extends Widget {
     public Surface finger(Finger finger) {
         Surface f = super.finger(finger);
         if (f == this) {
-            if (pressable.test(finger))
+            if (enabled() && finger.test(click))
                 return this;
 
             if (finger.dragging(CLICK_BUTTON) || finger.dragging(1 /* HACK */) || finger.dragging(0 /* HACK */)) {
