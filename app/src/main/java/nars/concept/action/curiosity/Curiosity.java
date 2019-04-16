@@ -30,7 +30,7 @@ public class Curiosity {
     public final FasterList<CuriosityMode> curiosity = new FasterList<>(8); //new FastCoWList(8, CuriosityMode[]::new);
 
     private final IntToFloatFunction pri = i -> curiosity.get(i).priElseZero();
-    public final Game agent;
+    public final Game game;
 
     public final AtomicBoolean goal = new AtomicBoolean(true);
 
@@ -74,7 +74,7 @@ public class Curiosity {
 
     public Curiosity(Game a, float initialRate) {
 
-        this.agent = a;
+        this.game = a;
 
         this.rate.set(initialRate);
 
@@ -107,7 +107,7 @@ public class Curiosity {
             if (cc == 0)
                 select =null;
             else
-                select = new MutableRoulette(cc, pri, agent.nar().random());
+                select = new MutableRoulette(cc, pri, game.nar().random());
         } else {
             select.reweigh(pri);
         }
@@ -117,7 +117,7 @@ public class Curiosity {
      * acction concept per frame
      */
     @Nullable public final Truth curiosity(AbstractGoalActionConcept concept) {
-        return (select != null && enable.getOpaque() && agent.random().nextFloat() < rate.floatValue()) ?
+        return (select != null && enable.getOpaque() && game.random().nextFloat() < rate.floatValue()) ?
                 curiosity.get(select.next()).get(concept, this) : null;
     }
 

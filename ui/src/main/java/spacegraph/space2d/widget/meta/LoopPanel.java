@@ -61,7 +61,7 @@ public class LoopPanel extends Gridding {
 //                            }
 //                        })
 //                        ),
-                                new CheckBox("On").on(true).on((o)->{
+                                new CheckBox("On").on(loop.isRunning()).on((o)->{
                                     //synchronized(loop) {
                                         if (o) {
                                             pause = false;

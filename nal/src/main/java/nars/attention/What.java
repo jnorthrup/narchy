@@ -16,6 +16,7 @@ import nars.task.ITask;
 import nars.task.util.PriBuffer;
 import nars.term.Term;
 import nars.time.part.CycLoop;
+import nars.util.Timed;
 
 import java.io.Externalizable;
 import java.io.IOException;
@@ -65,7 +66,7 @@ import java.util.stream.Stream;
  *  through a minimal API.  thus Attention's are referred to by a Term so that operations upon them may
  *  be conceptualized and self-executed.
   */
-abstract public class What extends NARPart implements Prioritizable, Sampler<TaskLink>, Iterable<TaskLink>, Externalizable, ConsumerX<ITask> {
+abstract public class What extends NARPart implements Prioritizable, Sampler<TaskLink>, Iterable<TaskLink>, Externalizable, ConsumerX<ITask>, Timed {
 
     public final PriNode pri;
 
@@ -157,6 +158,15 @@ abstract public class What extends NARPart implements Prioritizable, Sampler<Tas
 
     /* TODO other temporal focus parameters */
 
+    @Override
+    public final long time() {
+        return nar.time();
+    }
+
+    @Override
+    public final Random random() {
+        return nar.random();
+    }
 
     /** proxies to another What */
     public static class ProxyWhat extends What {

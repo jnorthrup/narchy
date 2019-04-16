@@ -2,7 +2,7 @@ package nars.concept.action.curiosity;
 
 import jcog.Util;
 import nars.$;
-import nars.NAR;
+import nars.agent.Game;
 import nars.concept.action.AbstractGoalActionConcept;
 import nars.truth.Truth;
 import org.jetbrains.annotations.Nullable;
@@ -42,10 +42,10 @@ final class RandomPhasorCuriosity extends CuriosityMode {
     @Override
     public @Nullable Truth get(AbstractGoalActionConcept action, Curiosity curiosity) {
 
-        NAR n = curiosity.agent.nar();
+        Game g = curiosity.game;
 
-        RandomPhasor pCuri = phasor.computeIfAbsent(action, (a) -> new RandomPhasor(n.time(), n.random()));
+        RandomPhasor pCuri = phasor.computeIfAbsent(action, (a) -> new RandomPhasor(g.time(), g.random()));
 
-        return $.t(pCuri.update(n.time(), n.dur(), n.random()), curiosity.conf.floatValue());
+        return $.t(pCuri.update(g.time(), g.dur(), g.random()), curiosity.conf.floatValue());
     }
 }

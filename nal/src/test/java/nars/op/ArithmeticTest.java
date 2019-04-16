@@ -28,7 +28,6 @@ class ArithmeticTest {
     @Test
     void testAddSolve() throws Narsese.NarseseException {
 
-        n.log();
         n.believe("(add(1,$x,3)==>its($x))");
         n.run(2);
         //TODO

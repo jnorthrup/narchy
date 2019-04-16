@@ -172,7 +172,7 @@ abstract public class Surface implements Surfacelike, spacegraph.input.finger.Fi
         if (p == parent)
             return false; //no change
 
-        assert(p == null);
+        assert(p == null || p == parent);
 
 
         //if (p != null) {  throw new WTF(); }

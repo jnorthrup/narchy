@@ -28,6 +28,7 @@ import nars.control.NARPart;
 import nars.term.Term;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
+import nars.util.Timed;
 import org.slf4j.Logger;
 
 import java.util.Random;
@@ -53,7 +54,7 @@ import static nars.time.Tense.ETERNAL;
  *
  */
 @Paper @Skill({"Game_studies", "Game_theory"})
-public class Game extends NARPart implements NSense, NAct {
+public class Game extends NARPart implements NSense, NAct, Timed {
 
     private final Topic<NAR> eventFrame = new ListTopic();
 
@@ -227,6 +228,11 @@ public class Game extends NARPart implements NSense, NAct {
     public Random random() {
         NAR n = this.nar;
         return n != null ? n.random() : ThreadLocalRandom.current();
+    }
+
+    @Override
+    public long time() {
+        return nar.time();
     }
 
     public String summary() {

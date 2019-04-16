@@ -134,6 +134,8 @@ public abstract class Param extends Parts<Term,NAR> {
     /** if false, will use pri=ScalarValue.EPSILON */
     public static final boolean DELETE_PROXY_TASK_TO_DELETED_TASK = false;
 
+    public static final boolean FORK_JOIN_EXEC_ASYNC_MODE = false;
+
     protected static final boolean DYNAMIC_CONCEPT_TRANSIENT = false;
 
     public static final int WHATS_CAPACITY = 128;
@@ -202,7 +204,7 @@ public abstract class Param extends Parts<Term,NAR> {
             , 0, 1);
     @Deprecated public final FloatRange questionForgetRate = new FloatRange(0.5f, 0, 1);
     public final IntRange premiseUnifyTTL = new IntRange(16, 1, 32);
-    public final IntRange deriveBranchTTL = new IntRange(32 * derive.TTL_MIN, derive.TTL_MIN, 64 * derive.TTL_MIN );
+    public final IntRange deriveBranchTTL = new IntRange(16 * derive.TTL_MIN, derive.TTL_MIN, 64 * derive.TTL_MIN );
     /**
      * how many cycles above which to dither dt and occurrence time
      * TODO move this to Time class and cache the cycle value rather than dynamically computing it
@@ -327,8 +329,8 @@ public abstract class Param extends Parts<Term,NAR> {
                 //0.5f;
                 //1;
                 //1.618f; //phi
-                2; //nyquist / horizon
-                //4;
+                //2; //nyquist / horizon
+                4;
                 //dur;
                 //8;
                 //64;

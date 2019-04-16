@@ -1,32 +1,30 @@
 package nars.derive.timing;
 
 
+import jcog.func.TriFunction;
 import jcog.math.FloatRange;
-import nars.NAR;
 import nars.Task;
 import nars.attention.What;
 import nars.term.Term;
 
 import java.util.Random;
-import java.util.function.BiFunction;
 
-public class ActionTiming implements BiFunction<Task, Term, long[]> {
+public class ActionTiming implements TriFunction<What, Task, Term, long[]> {
 
-    private final What what;
     public final FloatRange horizonDurs = new FloatRange(8, 0, 32);
     //public final FloatRange widthDurs = new FloatRange(2, 0, 8);
 
-    public ActionTiming(What w) {
-        this.what = w;
+    public ActionTiming() {
+
     }
-        @Override
-    public long[] apply(Task task, Term term) {
+
+    @Override
+    public long[] apply(What what, Task task, Term term) {
 
         int dur = what.dur();
 
-        NAR n = what.nar;
-        long now = n.time();
-        Random rng = n.random();
+        long now = what.time();
+        Random rng = what.random();
         long start, end;
         long taskStart = task.start();
         if (taskStart <= now - dur) {

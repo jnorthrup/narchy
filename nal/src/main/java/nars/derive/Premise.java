@@ -298,7 +298,7 @@ public class Premise implements Comparable<Premise> {
     }
 
     private long[] timeFocus(Term beliefTerm, Derivation d) {
-        long[] l = d.deriver.timing.apply(task, beliefTerm);
+        long[] l = d.deriver.timing.apply(d.what, task, beliefTerm);
         if (Param.premise.PREMISE_FOCUS_TIME_DITHER && l[0]!=ETERNAL) {
             Tense.dither(l, d.ditherDT);
         }

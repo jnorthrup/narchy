@@ -2,6 +2,7 @@ package nars.exe.impl;
 
 import jcog.Util;
 import jcog.data.list.FasterList;
+import nars.Param;
 import nars.attention.What;
 import nars.control.How;
 import org.eclipse.collections.api.tuple.Pair;
@@ -22,6 +23,7 @@ import static org.eclipse.collections.impl.tuple.Tuples.pair;
 public class ForkJoinExec extends MultiExec implements Thread.UncaughtExceptionHandler {
 
     private static final int SYNCH_ITERATION_MS = 20;
+    int granularity = 3;
 
     private ForkJoinPool pool;
     volatile private List<PlayBatch> active = new FasterList();
@@ -39,9 +41,7 @@ public class ForkJoinExec extends MultiExec implements Thread.UncaughtExceptionH
 
             int extra = 0;
 
-            boolean asyncMode =
-                    false;
-                    //true;
+            boolean asyncMode = Param.FORK_JOIN_EXEC_ASYNC_MODE;
 
             pool = new ForkJoinPool(
                     concurrency,
@@ -163,7 +163,7 @@ public class ForkJoinExec extends MultiExec implements Thread.UncaughtExceptionH
 
         int threads = pool.getParallelism();
 
-        int granularity = 2;
+
         int tasks = threads * granularity;
 
 

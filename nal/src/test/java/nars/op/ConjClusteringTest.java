@@ -41,7 +41,6 @@ class ConjClusteringTest {
         ConjClustering c = new ConjClustering(n, BELIEF, Task::isInput, 4, ccap);
         n.start(c);
 
-        n.log();
         for (int i = 0; i < ccap; i++)
             n.believe($.the("x" + i).neg(), Tense.Present);
         n.run(1);

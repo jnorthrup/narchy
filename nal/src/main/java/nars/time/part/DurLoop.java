@@ -1,7 +1,6 @@
 package nars.time.part;
 
 import jcog.Util;
-import jcog.WTF;
 import jcog.event.Off;
 import jcog.math.FloatRange;
 import jcog.math.FloatSupplier;
@@ -175,7 +174,7 @@ abstract public class DurLoop extends NARPart {
             //assert(nar == DurLoop.this.nar);
 
             if (!busy.compareAndSet(false, true))
-                throw new WTF(); //return false;
+                return;
 
             long atStart = nar.time();
             try {

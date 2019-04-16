@@ -15,6 +15,7 @@ import nars.truth.Truth;
 import nars.truth.dynamic.TaskList;
 import nars.truth.polation.TruthIntegration;
 import nars.truth.polation.TruthProjection;
+import nars.util.Timed;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.jetbrains.annotations.Nullable;
 
@@ -28,7 +29,7 @@ import static nars.time.Tense.ETERNAL;
  * heuristic task ranking for matching of evidence-aware truth values may be computed in various ways.
  * designed to be reusable
  */
-public final class Answer {
+public final class Answer implements Timed {
 
     public final static int BELIEF_MATCH_CAPACITY =
             //Param.STAMP_CAPACITY - 1;
@@ -572,8 +573,18 @@ public final class Answer {
         return ttl > 0;
     }
 
+    @Override
+    public final int dur() {
+        return dur;
+    }
+
     public final Random random() {
         return nar.random();
+    }
+
+    @Override
+    public final long time() {
+        return nar.time();
     }
 
     public Answer time(long start, long end) {

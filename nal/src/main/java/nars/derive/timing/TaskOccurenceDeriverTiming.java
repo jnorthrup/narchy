@@ -1,15 +1,15 @@
 package nars.derive.timing;
 
+import jcog.func.TriFunction;
 import nars.Task;
+import nars.attention.What;
 import nars.term.Term;
 
-import java.util.function.BiFunction;
-
 /** simply matches the task time exactly. */
-public class TaskOccurenceDeriverTiming implements BiFunction<Task, Term, long[]> {
+public class TaskOccurenceDeriverTiming implements TriFunction<What, Task, Term, long[]> {
 
     @Override
-    public long[] apply(Task task, Term term) {
+    public long[] apply(What what, Task task, Term term) {
         return new long[] { task.start(), task.end() };
     }
 }

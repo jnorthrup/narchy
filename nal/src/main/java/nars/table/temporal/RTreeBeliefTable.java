@@ -42,7 +42,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
                     1.0f;
             //2f;
 
-    private static final int MAX_TASKS_PER_LEAF = 4;
+    private static final int MAX_TASKS_PER_LEAF = 3;
 
     /** TODO tune */
     private static final Split SPLIT =

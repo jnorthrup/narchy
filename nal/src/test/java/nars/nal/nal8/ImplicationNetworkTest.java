@@ -35,11 +35,10 @@ class ImplicationNetworkTest {
 
 
 
-        n.log();
         n.believe(IMPL.the(a, b));
         n.believe(IMPL.the(b, c));
         n.believe(a);
-        n.run(100);
+        n.run(cycles);
 
         BeliefTable aBeliefs = n.concept(a).beliefs();
         Truth aBelief = aBeliefs.truth(ETERNAL, n);
@@ -81,7 +80,7 @@ class ImplicationNetworkTest {
         n.believe(IMPL.the(a, b));
         n.believe(IMPL.the(b, c));
         n.want(a);
-        n.run(100);
+        n.run(cycles);
 
         BeliefTable aGoals = n.concept(a).goals();
         Truth aGoal = aGoals.truth(ETERNAL, n);
@@ -123,7 +122,7 @@ class ImplicationNetworkTest {
         n.believe(IMPL.the(a, b));
         n.believe(IMPL.the(b, c));
         n.believe(a.neg());
-        n.run(100);
+        n.run(cycles);
 
         BeliefTable aBeliefs = n.concept(a).beliefs();
 
@@ -143,7 +142,7 @@ class ImplicationNetworkTest {
 
         n.believe(IMPL.the(a.neg(), b));
         n.believe(a.neg());
-        n.run(100);
+        n.run(cycles);
 
         BeliefTable aa = n.concept(a).beliefs();
         BeliefTable bb = n.concept(b).beliefs();
@@ -159,6 +158,7 @@ class ImplicationNetworkTest {
                 bBelief.toString());
 
     }
+    int cycles = 1000;
     @Test
     void testEternal_A_NegBelief_NegToBC() {
 
@@ -170,7 +170,7 @@ class ImplicationNetworkTest {
         n.believe(IMPL.the(a.neg(), b));
         n.believe(IMPL.the(b, c));
         n.believe(a.neg());
-        n.run(800);
+        n.run(cycles);
 
         BeliefTable aa = n.concept(a).beliefs();
         BeliefTable bb = n.concept(b).beliefs();
@@ -198,7 +198,7 @@ class ImplicationNetworkTest {
         n.believe(IMPL.the(a.neg(), b).neg());
         n.believe(IMPL.the(b.neg(), c));
         n.believe(a.neg());
-        n.run(100);
+        n.run(cycles);
 
         BeliefTable aBeliefs = n.concept(a).beliefs();
         aBeliefs.print();

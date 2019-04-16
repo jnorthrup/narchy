@@ -61,7 +61,6 @@ class STRIPSTest {
     void testBanana1() throws Narsese.NarseseException {
         NAR n = new NARS().tmp();
         n.termVolumeMax.set(36);
-        n.log();
         n.input(
                 /*
                 A monkey is at location A in a lab. There is a box in location C. The monkey wants the bananas that are hanging from the ceiling in location B, but it needs to move the box and climb onto it in order to reach them.

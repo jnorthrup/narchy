@@ -41,19 +41,19 @@ public class Inperience2 extends How {
     @Override
     public void next(What w, BooleanSupplier kontinue) {
         NAR n = w.nar;
-        long now = n.time();
-        int dur = n.dur();
+        long now = w.time();
+        int dur = w.dur();
         double window = 2.0;
 
         //int dither = n.dtDither();
         long start = /*Tense.dither*/((long)Math.floor(now - window * dur/2));//, dither);
         long end = /*Tense.dither*/((long)Math.ceil(now + window * dur/2));//, dither);
-        When when = new When(start, end, dur, n);
+        When when = new When(start, end, dur, nar);
 
         int volMax = n.termVolumeMax.intValue();
         int volMaxPre = (int) Math.max(1, Math.ceil(volMax * 0.5f));
         float beliefConf = n.confDefault(BELIEF);
-        Random rng = n.random();
+        Random rng = w.random();
         w.sample(rng, (TaskLink tl) -> {
 
             Task t = tl.get(when);

@@ -1,6 +1,7 @@
 package nars.derive;
 
 import jcog.Util;
+import jcog.func.TriFunction;
 import nars.NAR;
 import nars.Task;
 import nars.attention.What;
@@ -14,7 +15,6 @@ import nars.derive.timing.NonEternalTaskOccurenceOrPresentDeriverTiming;
 import nars.term.Term;
 
 import java.util.Set;
-import java.util.function.BiFunction;
 import java.util.function.BooleanSupplier;
 import java.util.stream.Stream;
 
@@ -34,7 +34,7 @@ abstract public class Deriver extends How {
      * input: premise Task, premise belief target
      * output: long[2] time interval
      **/
-    public BiFunction<Task, Term, long[]> timing;
+    public TriFunction<What, Task, Term, long[]> timing;
 
     public final DeriverRules rules;
 
@@ -57,7 +57,7 @@ abstract public class Deriver extends How {
                 //new TaskOrPresentTiming(nar);
                 //new AdHocDeriverTiming(nar);
                 //new TaskOccurenceDeriverTiming();
-                new NonEternalTaskOccurenceOrPresentDeriverTiming(nar);
+                new NonEternalTaskOccurenceOrPresentDeriverTiming();
 
 
         nar.start(this);

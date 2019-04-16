@@ -95,13 +95,13 @@ abstract public class MutableListContainer extends AbstractMutableContainer<Surf
             }
             //children.commit();
 
-            if (parent!=null) {
-                for (Surface x : s) {
-                    if (x != null) {
-                        x.start(this);
-                    }
-                }
-            } //else: wait until attached
+//            if (parent!=null) {
+//                for (Surface x : s) {
+//                    if (x != null) {
+//                        x.start(this);
+//                    }
+//                }
+//            } //else: wait until attached
         }
 
         layout();

@@ -153,7 +153,7 @@ public class TrackXY_NAR extends GameX {
 
             if (trainer.getOpaque()) {
                 long now = nar.time();
-                int durMS = nar.dur();
+                int durMS = dur();
                 if (track.ty < track.cy) {
                     nar().want(0.1f, $.the("down"), now, now + durMS, 1f, 0.02f);
                 } else if (track.ty > track.cy) {
