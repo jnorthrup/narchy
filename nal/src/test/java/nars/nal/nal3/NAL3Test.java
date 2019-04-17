@@ -22,7 +22,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class NAL3Test extends NALTest {
 
-    static final int cycles = 1200;
+    static final int cycles = 150;
 
     @Override
     protected NAR nar() {
@@ -30,7 +30,6 @@ public class NAL3Test extends NALTest {
         n.termVolumeMax.set(7);
         return n;
     }
-
 
     @Test
     void compound_composition_two_premises() {
@@ -47,10 +46,11 @@ public class NAL3Test extends NALTest {
     void compound_composition_two_premises2() {
 
         TestNAR tester = test;
-        tester.believe("<sport --> competition>", 0.9f, 0.9f);
-        tester.believe("<chess --> competition>", 0.8f, 0.9f);
-        tester.mustBelieve(cycles, "<(|,chess,sport) --> competition>", 0.72f, 0.81f);
-        tester.mustBelieve(cycles, "<(&,chess,sport) --> competition>", 0.98f, 0.81f);
+        tester.termVolMax(5);
+        tester.believe("(sport --> competition)", 0.9f, 0.9f);
+        tester.believe("(chess --> competition)", 0.8f, 0.9f);
+        tester.mustBelieve(cycles, "((chess | sport) --> competition)", 0.72f, 0.81f);
+        tester.mustBelieve(cycles, "((chess & sport) --> competition)", 0.98f, 0.81f);
 
     }
 
@@ -58,6 +58,7 @@ public class NAL3Test extends NALTest {
     void compound_decomposition_two_premises() {
 
         TestNAR tester = test;
+        tester.termVolMax(5);
         tester.believe("<robin --> (bird | swimmer)>", 1.0f, 0.9f);
         tester.believe("<robin --> swimmer>", 0.0f, 0.9f);
         tester.mustBelieve(cycles, "<robin --> bird>", 1.0f, 0.81f);
@@ -74,7 +75,7 @@ public class NAL3Test extends NALTest {
 
         TestNAR test = testDecomposeNegDiff(freq, known, composed, unknown);
 
-        test.mustNotOutput(cycles, "<robin --> --swimmer>", BELIEF, 0, 1, 0, 1, ETERNAL);
+        //test.mustNotOutput(cycles, "<robin --> --swimmer>", BELIEF, 0, 1, 0, 1, ETERNAL);
 
         //test neqRCom
         test.mustNotOutput(cycles, "((mammal-swimmer)-->swimmer)", BELIEF, 0, 1, 0, 1, ETERNAL);
@@ -99,6 +100,7 @@ public class NAL3Test extends NALTest {
 
     private TestNAR testDecomposeNegDiff(float freq, String known, String composed, String unknown) {
         test
+            .termVolMax(6)
             .believe(known, freq, 0.9f)
             .believe(composed, 0.0f, 0.9f)
         ;
@@ -194,18 +196,20 @@ public class NAL3Test extends NALTest {
     }
 
     @Test
-    void testArity1_Decomposition_IntersectExt2() {
+    void testArity1_Decomposition_Union() {
         test
+                .termVolMax(5)
                 .believe("(b-->a)", 0.25f, 0.9f)
                 .believe("((b&c)-->a)", 0.25f, 0.9f)
                 .mustBelieve(cycles, "(c-->a)", 0.19f, 0.15f, ETERNAL);
     }
 
     @Test
-    void testArity1_Decomposition_IntersectInt() {
+    void testArity1_Decomposition_Union2() {
 
 
         test
+                .termVolMax(5)
                 .believe("(a-->b)", 0.25f, 0.9f)
                 .believe("(a-->(b|c))", 0.25f, 0.9f)
                 .mustBelieve(cycles, "(a-->c)", 0.19f, 0.15f, ETERNAL);

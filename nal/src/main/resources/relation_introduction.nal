@@ -25,3 +25,16 @@
      (  (X-->A) && --(B-->X)), X        |- (polarize((  (X-->A) && --(B-->X)), task)<->X), (Belief:StructuralDeductionDepolarized)
      (--(X-->A) &&   (B-->X)), X        |- (polarize((--(X-->A) &&   (B-->X)), task)<->X), (Belief:StructuralDeductionDepolarized)
      (--(X-->A) && --(B-->X)), X        |- (polarize((--(X-->A) && --(B-->X)), task)<->X), (Belief:StructuralDeductionDepolarized)
+
+
+//NAL Specification Table 11.9 - Product Equivalences
+//TODO n-ary
+((A,B)-->(X,Y)), ((A,B)-->(X,Y))            |- ((A --> X) && (B --> Y)), (Belief:StructuralDeduction, Goal:StructuralDeduction)
+ ((A,B)-->(X,Y)), ((A,B)-->(X,Y))            |- (--(A --> X) && --(B --> Y)), (Belief:StructuralDeductionN, Goal:StructuralDeductionN)
+((A,B)<->(X,Y)), ((A,B)<->(X,Y))            |- ((A <-> X) && (B <-> Y)), (Belief:StructuralDeduction, Goal:StructuralDeduction)
+ ((A,B)<->(X,Y)), ((A,B)<->(X,Y))            |- (--(A <-> X) && --(B <-> Y)), (Belief:StructuralDeductionN, Goal:StructuralDeductionN)
+
+ ((A,B,C)-->(X,Y,Z)), ((A,B,C)-->(X,Y,Z))    |- (&&, (A --> X), (B --> Y), (C --> Z)), (Belief:StructuralDeduction, Goal:StructuralDeduction)
+  ((A,B,C)-->(X,Y,Z)), ((A,B,C)-->(X,Y,Z))    |- (&&, --(A --> X), --(B --> Y), --(C --> Z)), (Belief:StructuralDeductionN, Goal:StructuralDeductionN)
+ ((A,B,C)<->(X,Y,Z)), ((A,B,C)<->(X,Y,Z))    |- (&&, (A <-> X), (B <-> Y), (C <-> Z)), (Belief:StructuralDeduction, Goal:StructuralDeduction)
+  ((A,B,C)<->(X,Y,Z)), ((A,B,C)<->(X,Y,Z))    |- (&&, --(A <-> X), --(B <-> Y), --(C <-> Z)), (Belief:StructuralDeductionN, Goal:StructuralDeductionN)

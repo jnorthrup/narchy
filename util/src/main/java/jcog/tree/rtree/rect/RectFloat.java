@@ -329,7 +329,7 @@ public class RectFloat implements HyperRegion, Comparable<RectFloat> {
         float ww = this.w, hh = this.h;
         float nw = ww * pctW;
         float nh = hh * pctH;
-        return orThisIfEqual(X0Y0WH( x + cx * ww, y + cy * hh, nw, nh));
+        return orThisIfEqual(X0Y0WH( x + cx , y + cy , nw, nh));
     }
 
     public v2 midPoint(RectFloat o) {

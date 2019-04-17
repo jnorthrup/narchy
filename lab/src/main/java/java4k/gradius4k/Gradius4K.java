@@ -36,7 +36,7 @@ public class Gradius4K extends GamePanel {
 
     
     public boolean[] keys = new boolean[32768];
-    public long updateMS = 40;
+    public long updateMS = 20;
     public BufferedImage image;
     public static final int VK_LEFT = 0x25;
     public static final int VK_RIGHT = 0x27;

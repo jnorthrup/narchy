@@ -1,6 +1,6 @@
 package spacegraph.test;
 
-import jcog.tree.rtree.rect.RectFloat;
+import jcog.exe.Exe;
 import spacegraph.SpaceGraph;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.ContainerSurface;
@@ -39,15 +39,6 @@ import java.util.function.Supplier;
 import static spacegraph.space2d.container.grid.Gridding.*;
 
 public class WidgetTest {
-
-    public static void main(String[] args) {
-        SpaceGraph.window(widgetDemo(), 1200, 800).dev();
-    }
-
-    public static ContainerSurface widgetDemo() {
-        //return new TabMenu(menu);
-        return new ListMenu(menu, new GridMenuView());
-    }
 
     static final Map<String, Supplier<Surface>> menu;
 
@@ -112,7 +103,7 @@ public class WidgetTest {
                         "Types", Graph2DTest::newTypeGraph
                 )),
 
-                "Wiring", () ->  new TabMenu(wiringDemos()),
+                "Wiring", () -> new TabMenu(wiringDemos()),
 
                 "Geo", OSMTest::osmTest
         );
@@ -121,36 +112,47 @@ public class WidgetTest {
         m.put("Sketch", () -> new MetaFrame(new Sketch2DBitmap(256, 256)));
         m.put("Speak", SpeakChip::new);
         m.put("Resplit", () -> new Splitting(
-            new Splitting<>(iconButton(), 0.618f, true,  iconButton()).resizeable(),
-            0.618f,
-            new Splitting<>(iconButton(), 0.618f, false, iconButton()).resizeable()
-            ).resizeable()
+                        new Splitting<>(iconButton(), 0.618f, true, iconButton()).resizeable(),
+                        0.618f,
+                        new Splitting<>(iconButton(), 0.618f, false, iconButton()).resizeable()
+                ).resizeable()
         );
         m.put("Timeline", Timeline2DTest::timeline2dTest);
         m.put("Tsne", TsneTest::testTsneModel);
         menu = m;
     }
 
+    public static void main(String[] args) {
+        SpaceGraph.window(widgetDemo(), 1200, 800).dev();
+    }
+
+    public static ContainerSurface widgetDemo() {
+        //return new TabMenu(menu);
+        return new ListMenu(menu, new GridMenuView());
+    }
+
     private static Map<String, Supplier<Surface>> wiringDemos() {
         return Map.of(
-            "Intro", ()->wiringDemo((EditGraph2D g)->{
+                "Empty", () -> wiringDemo((g) -> {
+                }),
+                "Intro", () -> wiringDemo((EditGraph2D g) -> {
                     g.add(WidgetTest.widgetDemo()).posRel(1, 1, 0.5f, 0.25f);
                     for (int i = 1; i < 3; i++)
-                        g.add(new WizardFrame(new ProtoWidget())).posRel(0.5f, 0.5f, 0.45f/i, 0.35f/i);
+                        g.add(new WizardFrame(new ProtoWidget())).posRel(0.5f, 0.5f, 0.45f / i, 0.35f / i);
                 }),
                 //"", ()-> wiringDemo((g)->{})
-                "Basic", ()-> wiringDemo((g)->{
+                "Basic", () -> wiringDemo((g) -> {
                     /** switched signal */
 
                     NoiseVectorChip A = new NoiseVectorChip();
-                    ContainerSurface a = g.add(A).pos(RectFloat.Unit.transform(500, 250, 250));
+                    ContainerSurface a = g.add(A).sizeRel(0.25f, 0.25f);
 
 
                     Port B = LabeledPort.generic();
-                    ContainerSurface b = g.add(B).pos(RectFloat.XYWH(+1, 0, 0.25f, 0.25f).scale(500));
+                    ContainerSurface b = g.add(B).sizeRel(0.25f, 0.25f);
 
                     TogglePort AB = new TogglePort();
-                    g.add(AB).pos(RectFloat.XYWH(0, 0, 0.25f, 0.25f).scale(500));
+                    g.add(AB).sizeRel(0.25f, 0.25f);
 
 //                    Loop.of(() -> {
 //                        A.out(Texts.n4(Math.random()));
@@ -165,7 +167,10 @@ public class WidgetTest {
             @Override
             protected void starting() {
                 super.starting();
-                physics.invokeLater(()->o.accept(this)); //() -> {
+                pos(((Surface)parent).bounds); //HACK
+                Exe.invokeLater(()->{
+                    physics.invokeLater(() -> o.accept(this)); //() -> {
+                });
             }
         };
         return g;
@@ -174,25 +179,38 @@ public class WidgetTest {
     private static Surface iconButton() {
         String s;
         switch (ThreadLocalRandom.current().nextInt(6)) {
-            case 0: s = "code"; break;
-            case 1: s = "trash"; break;
-            case 2: s = "wrench"; break;
-            case 3: s = "fighter-jet"; break;
-            case 4: s = "exclamation-triangle"; break;
-            case 5: s = "shopping-cart"; break;
+            case 0:
+                s = "code";
+                break;
+            case 1:
+                s = "trash";
+                break;
+            case 2:
+                s = "wrench";
+                break;
+            case 3:
+                s = "fighter-jet";
+                break;
+            case 4:
+                s = "exclamation-triangle";
+                break;
+            case 5:
+                s = "shopping-cart";
+                break;
 //            case 6: s = "dna"; break;
-            default: s = null; break;
+            default:
+                s = null;
+                break;
         }
         return PushButton.awesome(s);
 
 
-                //            switch (ThreadLocalRandom.current().nextInt(6)) {
+        //            switch (ThreadLocalRandom.current().nextInt(6)) {
 //                case 0-> "code";
 //                default -> null;
 //            });
 
     }
-
 
 
 //    private static class DummyConsole extends TextEdit0.TextEditUI implements Runnable {

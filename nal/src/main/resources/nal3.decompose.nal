@@ -1,16 +1,20 @@
 //NAL3 single premise intersection decompose
-    (M --> S), X, is(S,"&"), subOfPosOrNeg(S,X)   |-   (M --> withoutPosOrNeg(S,X)),   (Belief:StructuralDeduction,Goal:StructuralDeduction)
+    (M --> I), X, is(I,"&"), subOfPosOrNeg(I,X)   |-   (M --> withoutPosOrNeg(I,X)),   (Belief:StructuralDeduction,Goal:StructuralDeduction)
         //(M --> S), X, is(S,"&"), subOf(S,X)   |-          (M --> X), (Belief:StructuralDeduction,Goal:StructuralDeduction)
         //(M --> S), X, is(S,"&"), subOf(S,--X)   |-      --(M --> X), (Belief:StructuralDeduction,Goal:StructuralDeduction)
 
-    (S --> M), X, is(S,"|"), subOfPosOrNeg(S,X)   |-   (withoutPosOrNeg(S,X)-->M), (Belief:StructuralDeduction,Goal:StructuralDeduction)
+    (I --> M), X, is(I,"|"), subOfPosOrNeg(I,X)   |-   (withoutPosOrNeg(I,X)-->M), (Belief:StructuralDeduction,Goal:StructuralDeduction)
         //(S --> M), X, is(S,"|"), subOf(S,X)   |-         (X --> M), (Belief:StructuralDeduction,Goal:StructuralDeduction)
         //(S --> M), X, is(S,"|"), subOf(S,--X)   |-     --(X --> M), (Belief:StructuralDeduction,Goal:StructuralDeduction)
 
 //NAL3 single premise union decompose
-    (M --> S), X, is(S,"|"), subOfPosOrNeg(S,X)   |-    (M --> withoutPosOrNeg(S,X)), (Belief:StructuralDeductionWeak,Goal:StructuralDeductionWeak)
-    (S --> M), X, is(S,"&"), subOfPosOrNeg(S,X)   |-    (withoutPosOrNeg(S,X) --> M), (Belief:StructuralDeductionWeak,Goal:StructuralDeductionWeak)
+    (M --> U), X, is(U,"|"), subOfPosOrNeg(U,X)   |-    (M --> withoutPosOrNeg(U,X)), (Belief:StructuralDeductionWeak,Goal:StructuralDeductionWeak)
+    (U --> M), X, is(U,"&"), subOfPosOrNeg(U,X)   |-    (withoutPosOrNeg(U,X) --> M), (Belief:StructuralDeductionWeak,Goal:StructuralDeductionWeak)
 
+
+//decompose sect for a question/quest involving one component
+    (A --> X), (S --> X), task("?@"), is(S,{"|","&"}), subOfPosOrNeg(S,A) |- (withoutPosOrNeg(S,A) --> X)
+    (X --> A), (X --> S), task("?@"), is(S,{"|","&"}), subOfPosOrNeg(S,A) |- (X --> withoutPosOrNeg(S,A))
 
 //        (M --> S), X, is(S,"&"), subOf(S,X)   |-    --(M --> X), (Belief:StructuralDeductionN,Goal:StructuralDeductionN)
 //        (M --> S), X, is(S,"&"), subOf(S,--X)   |-    (M --> X), (Belief:StructuralDeductionN,Goal:StructuralDeductionN)
@@ -43,8 +47,8 @@
 
 //(M --> S), (M --> (&,S,A_1..n)) |- (M --> (&,A_1..n)), (Truth:DecomposePositiveNegativeNegative) = --PN
      (M --> X), (M --> S), is(S,"&"), subOf(S,X)   |- --(M --> without(S,X)), (Belief:DecomposePN)
-          //experimental unify
-          (M --> X), (N --> S), is(S,"&"), subOf(S,X), has(N,"#"),neq(M,N)   |- --unisubst((N --> without(S,X)), N, M), (Belief:DecomposePN)
+//          //experimental unify
+//          (M --> X), (N --> S), is(S,"&"), subOf(S,X), has(N,"#"),neq(M,N)   |- --unisubst((N --> without(S,X)), N, M), (Belief:DecomposePN)
 
        (M --> X), (M --> S), is(S,"&"), subOf(S,--X) |- --(M --> without(S,--X)), (Belief:DecomposeNN)
         //TODO
@@ -52,8 +56,8 @@
 
 //(S --> M), ((|,S,A_1..n) --> M) |- ((|,A_1..n) --> M), (Truth:DecomposePositiveNegativeNegative) = --PN
      (X --> M), (S --> M), is(S,"|"), subOf(S,X)   |-   --(without(S,X) --> M), (Belief:DecomposePN)
-           //experimental unify
-           (X --> M), (S --> N), is(S,"|"), subOf(S,X), has(N,"#"),neq(M,N)   |- --unisubst((without(S,X) --> N), N, M), (Belief:DecomposePN)
+//           //experimental unify
+//           (X --> M), (S --> N), is(S,"|"), subOf(S,X), has(N,"#"),neq(M,N)   |- --unisubst((without(S,X) --> N), N, M), (Belief:DecomposePN)
 
        (X --> M), (S --> M), is(S,"|"), subOf(S,--X) |- --(without(S,--X) --> M), (Belief:DecomposeNN)
         //TODO

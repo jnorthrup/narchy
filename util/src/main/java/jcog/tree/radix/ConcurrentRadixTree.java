@@ -16,7 +16,7 @@ public class ConcurrentRadixTree<X> extends MyRadixTree<X> {
     /**
      * essentially a version number which increments each acquired write lock, to know if the tree has changed
      */
-    final static AtomicInteger writes = new AtomicInteger();
+    final AtomicInteger writes = new AtomicInteger();
 
     public ConcurrentRadixTree() {
         this(false);

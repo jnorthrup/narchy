@@ -35,13 +35,14 @@
         //((A,B) --> M), ((X,Y) --> M), is(A,"+"), is(B,"+"), is(X,"+"), is(Y,"+") |- ((intersect(A,X),intersect(B,Y)) --> M), (Belief:Intersection)
         //((A,B) --> M), ((X,Y) --> M), is(A,"+"), is(B,"+"), is(X,"+"), is(Y,"+") |- ((union(A,X),union(B,Y)) --> M), (Belief:Union)
 
-//decompose sect for a question/quest involving one component
-    (A --> X), (S --> X), task("?@"), is(S,{"|","&"}), subOfPosOrNeg(S,A) |- (withoutPosOrNeg(S,A) --> X)
-    (X --> A), (X --> S), task("?@"), is(S,{"|","&"}), subOfPosOrNeg(S,A) |- (X --> withoutPosOrNeg(S,A))
-
 
 //union/intersection belief/goal to diff question/quest
     (W --> (A&B)), A, --isVar(W) |- (W --> (A-B)), (Punctuation:Ask)
      (W --> (A|B)), A, --isVar(W) |- (W --> (A-B)), (Punctuation:Ask)
     ((A|B) --> W), A, --isVar(W) |- ((A~B) --> W), (Punctuation:Ask)
      ((A&B) --> W), A, --isVar(W) |- ((A~B) --> W), (Punctuation:Ask)
+
+
+//NAL Specification Table 11.11
+//(M-->(X-Y)), M  |- --(M-->Y), (Belief:Identity, Goal:Identity)
+//((X~Y)-->M), M  |- --(Y-->M), (Belief:Identity, Goal:Identity)
