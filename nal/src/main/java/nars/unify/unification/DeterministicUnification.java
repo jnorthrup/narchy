@@ -1,6 +1,5 @@
 package nars.unify.unification;
 
-import nars.Param;
 import nars.term.Term;
 import nars.term.util.transform.AbstractTermTransform;
 import nars.unify.Unification;
@@ -39,9 +38,7 @@ abstract public class DeterministicUnification implements Unification {
     }
 
     public final Term transform(Term x) {
-        return AbstractTermTransform.transform(x, transform(),
-            Param.term.COMPOUND_VOLUME_MAX //TODO
-        );
+        return AbstractTermTransform.transform(x, transform());
     }
 
     protected Unify.UnifyTransform.LambdaUnifyTransform transform() {

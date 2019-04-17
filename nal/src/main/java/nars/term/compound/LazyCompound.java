@@ -32,11 +32,11 @@ import static nars.time.Tense.DTERNAL;
  */
 public class LazyCompound {
     private final static int INITIAL_CODE_SIZE = 16;
+    private final static int INITIAL_ANON_SIZE = 8;
 
     ByteAnonMap sub = null;
     final DynBytes code = new DynBytes(INITIAL_CODE_SIZE);
 
-    private final static int INITIAL_ANON_SIZE = 8;
     private boolean changed;
 
 
@@ -45,10 +45,16 @@ public class LazyCompound {
      *  because that will just cause the same value to be assumed when it should not be.
      * */
     private boolean constantPropagate = true;
-    protected int volRemain;
+    int volRemain;
 
     public LazyCompound() {
 
+    }
+    public void clear() {
+        if (sub!=null) sub.clear();
+        code.clear();
+        changed = false;
+        constantPropagate = true;
     }
 
     public boolean updateMap(Function<Term, Term> m) {
@@ -278,13 +284,13 @@ public class LazyCompound {
 
         } else {
             next = next(ctl);
+            volRemain -= next.volume();
 
             //skip zero padding suffix
             int r0 = range[0], r1 = range[1];
             while (r0 < r1 && code.at(r0) == 0) { ++r0; }
             range[0] = r0;
 
-            volRemain -= next.volume();
         }
 
         return next;
@@ -322,8 +328,7 @@ public class LazyCompound {
 
     private Term next(byte ctl) {
         Term n = sub.interned((byte) (ctl - MAX_CONTROL_CODES));
-        if (n == null)
-            throw new NullPointerException();
+        //assert(n!=null); //        if (n == null)        throw new NullPointerException();
         return n;
     }
 
@@ -366,8 +371,7 @@ public class LazyCompound {
         }
         if (en > 0) {
             for (Term e : y.subterms()) {
-//                        if (e == null || e == Null)
-//                            throw new NullPointerException();
+                // if (e == null || e == Null) throw new NullPointerException();
                 t[i++] = e; //TODO recursively process?
             }
         }
@@ -392,6 +396,10 @@ public class LazyCompound {
 
     public LazyCompound subsEnd() {
         return this;
+    }
+
+    public boolean isEmpty() {
+        return code.len==0 && (sub==null || sub.isEmpty());
     }
 
 //    /**

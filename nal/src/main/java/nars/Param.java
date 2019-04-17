@@ -204,7 +204,7 @@ public abstract class Param extends Parts<Term,NAR> {
             , 0, 1);
     @Deprecated public final FloatRange questionForgetRate = new FloatRange(0.5f, 0, 1);
     public final IntRange premiseUnifyTTL = new IntRange(16, 1, 32);
-    public final IntRange deriveBranchTTL = new IntRange(4 * derive.TTL_MIN, derive.TTL_MIN, 64 * derive.TTL_MIN );
+    public final IntRange deriveBranchTTL = new IntRange(8 * derive.TTL_MIN, derive.TTL_MIN, 64 * derive.TTL_MIN );
     /**
      * how many cycles above which to dither dt and occurrence time
      * TODO move this to Time class and cache the cycle value rather than dynamically computing it
@@ -538,7 +538,7 @@ public abstract class Param extends Parts<Term,NAR> {
          * for NALTest's: extends the time all unit tests are allowed to run for.
          * normally be kept to 1 but for debugging this may be increased to find what tests need more time
          */
-        public static final float TIME_MULTIPLIER = 2.5f;
+        public static final float TIME_MULTIPLIER = 3f;
         /**
          * how precise unit test results must match expected values to pass
          */
@@ -620,11 +620,10 @@ public abstract class Param extends Parts<Term,NAR> {
         public static final boolean DERIVATION_FORM_QUESTION_FROM_AMBIGUOUS_BELIEF_OR_GOAL = false;
 
 
-        /** to buffer any second-layer functors, or anything else.. */
-        @Deprecated public static final int TERMIFY_TERM_VOLMAX_BASE = 4;
 
+        public static final int TERMIFY_VOLMAX_SCRATCH_BASE = 2;
         /** should be as close to 1 as possible */
-        public static final float TERMIFY_TERM_VOLMAX_FACTOR = 2f;
+        public static final float TERMIFY_TERM_VOLMAX_SCRATCH_FACTOR = 2f;
     }
 
     public enum unify { ;

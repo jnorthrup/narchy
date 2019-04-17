@@ -22,10 +22,14 @@ import static nars.time.Tense.XTERNAL;
  */
 public interface AbstractTermTransform extends TermTransform, nars.term.util.builder.TermConstructor {
 
+    static Term transform(Term x, TermTransform transform) {
+        return transform(new LazyCompound(), x, transform, Param.term.COMPOUND_VOLUME_MAX);
+    }
+
     /** global default transform procedure: can decide semi-optimal transform implementation */
-    static Term transform(Term x, TermTransform transform, int volMax) {
+    static Term transform(LazyCompound l, Term x, TermTransform transform, int volMax) {
         if (x instanceof Compound && Param.TERMIFY_TRANSFORM_LAZY) {
-            return ((AbstractTermTransform)transform).applyCompoundLazy((Compound)x,
+            return ((AbstractTermTransform)transform).applyCompoundLazy(l, (Compound)x,
                     //HeapTermBuilder.the
                     Op.terms,
                     volMax
@@ -182,20 +186,16 @@ public interface AbstractTermTransform extends TermTransform, nars.term.util.bui
 
     }
 
-    default LazyCompound applyLazy(Compound x) {
-        return applyLazy(new LazyCompound(), x);
-    }
-
     default LazyCompound applyLazy(LazyCompound l, Compound x) {
         return !transformCompound(x, l) ? null : l;
     }
 
     default Term applyCompoundLazy(Compound x) {
-        return applyCompoundLazy(x, Op.terms, Param.term.COMPOUND_VOLUME_MAX);
+        return applyCompoundLazy(new LazyCompound(), x, Op.terms, Param.term.COMPOUND_VOLUME_MAX);
     }
 
-    default Term applyCompoundLazy(Compound x, TermBuilder b, int volMax) {
-        LazyCompound l = applyLazy(x);
+    default Term applyCompoundLazy(LazyCompound l, Compound x, TermBuilder b, int volMax) {
+        l = applyLazy(l, x);
         return l == null ? Null : l.get(b, volMax);
     }
 

@@ -10,6 +10,7 @@ import nars.NAR;
 import nars.Op;
 import nars.Param;
 import nars.subterm.Subterms;
+import nars.term.Compound;
 import nars.term.Functor;
 import nars.term.Term;
 import nars.term.Termlike;
@@ -98,11 +99,11 @@ public class Evaluation {
     private boolean recurse(Evaluator e, Term y) {
         Term z = y.replace(subst);
         //recurse
-        return z == y || eval(e, z);  //CUT
+        return z == y || (z instanceof Compound && eval(e, (Compound)z));  //CUT
     }
 
 
-    private boolean eval(Evaluator e, final Term x) {
+    private boolean eval(Evaluator e, final Compound x) {
         ArrayHashSet<Term> c = e.clauses(x, this);
         return eval(e, x, c != null ? c.list : null);
     }
@@ -110,7 +111,7 @@ public class Evaluation {
     /**
      * fails fast if no known functors apply
      */
-    public boolean evalTry(Term x, Evaluator e) {
+    public boolean evalTry(Compound x, Evaluator e) {
         ArrayHashSet<Term> c = e.clauses(x, this);
         if ((c == null || c.isEmpty()) && (termutator == null || termutator.isEmpty())) {
             each.test(x);
@@ -124,7 +125,7 @@ public class Evaluation {
      */
     static private final Comparator<Term> byVolume = Comparator.comparingInt(Term::volume).thenComparingInt(Term::vars);
 
-    private boolean eval(Evaluator e, final Term x, @Nullable List<Term> clauses) {
+    private boolean eval(Evaluator e, final Compound x, @Nullable List<Term> clauses) {
 
         Term y = x;
 
@@ -209,16 +210,18 @@ public class Evaluation {
                         if (z != null) {
                             y = y.replace(a, z); //TODO replace only the first?
 
-                            if (!y.op().conceptualizable)
+                            if (!(y instanceof Compound && y.op().conceptualizable))
                                 break main;
+
                         }
 
 
                         if (substing) {
                             y = y.replace(subst);
 
-                            if (!y.op().conceptualizable)
+                            if (!(y instanceof Compound && y.op().conceptualizable))
                                 break main;
+
                         }
 
                         if (clauses == null || clauses.isEmpty())
@@ -263,8 +266,7 @@ public class Evaluation {
             return each.test(bool(x, (Bool) y)); //Terminal Result
 
         //if termutators, collect all results. otherwise 'cur' is the only result to return
-        int ts = termutators();
-        if (ts > 0)
+        if (termutators() > 0)
             return termute(e, y);
         else
             return each.test(y); //Transformed Result (possibly same)
@@ -461,7 +463,7 @@ public class Evaluation {
     }
 
     public static boolean canEval(Termlike x) {
-        return x.hasAll(Op.FuncBits);
+        return x instanceof Compound && x.hasAll(Op.FuncBits);
     }
 
 

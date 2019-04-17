@@ -10,6 +10,7 @@ import nars.derive.Derivation;
 import nars.term.Term;
 import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
+import nars.term.compound.LazyCompound;
 import nars.term.control.AbstractPred;
 import nars.term.control.PREDICATE;
 import nars.term.util.transform.AbstractTermTransform;
@@ -185,7 +186,7 @@ public class Premisify extends AbstractPred<Derivation> {
         }
     }
 
-    public static final class MatchFork implements Predicate<Derivation> {
+    public static final class MatchFork extends LazyCompound implements Predicate<Derivation> {
 
         private int forkLimit = -1;
         final Set<Term> tried = new UnifiedSet();
@@ -198,13 +199,20 @@ public class Premisify extends AbstractPred<Derivation> {
             this.taskify = taskify;
             this.forkLimit = forkLimit;
             tried.clear();
+            clear();
         }
 
         @Override
         public boolean test(Derivation dd) {
             //assert(finalTTL[0]==-1);
-            Term y = AbstractTermTransform.transform(taskify.termify.pattern, dd.transform,
-                    Param.derive.TERMIFY_TERM_VOLMAX_BASE + (int)Math.ceil(Param.derive.TERMIFY_TERM_VOLMAX_FACTOR * dd.termVolMax)
+
+            Term x = taskify.termify.pattern;
+            Term y = AbstractTermTransform.transform(this, x,
+                    dd.transform,
+                    x.volume() +
+                            Param.derive.TERMIFY_VOLMAX_SCRATCH_BASE +
+                            (int)Math.ceil(Param.derive.TERMIFY_TERM_VOLMAX_SCRATCH_FACTOR * dd.termVolMax
+                    )
             );
 
             if (!(y instanceof Bool) && y.unneg().op().taskable) {
@@ -221,5 +229,7 @@ public class Premisify extends AbstractPred<Derivation> {
 
             return true;
         }
+
+
     }
 }

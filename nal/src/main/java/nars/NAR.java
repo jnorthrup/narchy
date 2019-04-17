@@ -134,7 +134,11 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
     public final Topic<NAR> eventCycle = new ListTopic<>();
     public final TaskTopic eventTask = new TaskTopic();
     public final Control control;
-    public final Evaluator evaluator = new Evaluator(this::axioms);
+
+    public final ThreadLocal<Evaluator> evaluator = ThreadLocal.withInitial(() ->
+        new Evaluator(this::axioms)
+    );
+
     protected final Supplier<Random> random;
 
     /**

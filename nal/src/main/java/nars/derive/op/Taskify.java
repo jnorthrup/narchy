@@ -56,9 +56,7 @@ public class Taskify extends ProxyTerm {
 //            int start = d.size();
         d.transform.xy = xy::xy;
         d.retransform.clear();
-        Term y = AbstractTermTransform.transform(termify.pattern, d.transform,
-                d.termVolMax //TODO maybe increase some amount to allow for functor evaluation that might collapse
-        );
+        Term y = AbstractTermTransform.transform(termify.pattern, d.transform);
 //      d.revert(start);
         d.transform.xy = null;
         return test(y, d);

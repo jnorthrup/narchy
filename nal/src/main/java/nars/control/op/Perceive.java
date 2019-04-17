@@ -12,6 +12,7 @@ import nars.concept.Operator;
 import nars.eval.Evaluation;
 import nars.task.AbstractTask;
 import nars.task.ITask;
+import nars.term.Compound;
 import nars.term.Functor;
 import nars.term.Term;
 import nars.term.atom.Bool;
@@ -33,16 +34,16 @@ public enum Perceive { ;
 
     static final Logger logger = LoggerFactory.getLogger(Perceive.class);
 
-    public static ITask perceive(Task task, What w) {
+    public static ITask perceive(Task t, What w) {
 
         NAR n = w.nar;
         n.emotion.perceivedTaskStart.increment();
 
-        Term x = task.term();
+        Term x = t.term();
         if (Evaluation.canEval(x)) {
-            return task(new TaskEvaluation(task, w).result);
+            return task(new TaskEvaluation(t, w).result);
         } else {
-            return Perceive.perceive(task, x, w);
+            return Perceive.perceive(t, x, w);
         }
     }
 
@@ -148,13 +149,13 @@ public enum Perceive { ;
         private int tried = 0;
         private FasterList<ITask> result = null;
 
-        TaskEvaluation(Task t,What w) {
+        TaskEvaluation(Task t, What w) {
             super();
 
             this.t = t;
             this.what = w;
 
-            evalTry(t.term(), w.nar.evaluator);
+            evalTry((Compound)(t.term()), w.nar.evaluator.get());
         }
 
         @Override

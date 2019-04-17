@@ -5,6 +5,7 @@ import jcog.data.set.ArrayHashSet;
 import nars.$;
 import nars.NAR;
 import nars.Narsese;
+import nars.term.Compound;
 import nars.term.Functor;
 import nars.term.Term;
 import nars.term.atom.Atom;
@@ -199,7 +200,7 @@ public class FactualEvaluator extends Evaluator {
     }
 
     @Override
-    public @Nullable ArrayHashSet<Term> clauses(Term x, Evaluation e) {
+    public @Nullable ArrayHashSet<Term> clauses(Compound x, Evaluation e) {
 
 
         /** actually should be a set but duplicates should not normally be encountered */

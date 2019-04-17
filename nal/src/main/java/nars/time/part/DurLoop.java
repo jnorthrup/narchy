@@ -192,7 +192,8 @@ abstract public class DurLoop extends NARPart {
             } finally {
                 //TODO catch Exception, option for auto-stop on exception
 
-                if (DurLoop.this.isOn()) {
+                @Deprecated NAR nnar = DurLoop.this.nar; //prevent NPE in durCycles()
+                if (nnar!=null && DurLoop.this.isOn()) {
                     this.nextStart = scheduleNext(durCycles(), atStart);
                     nar.runAt(this);
                 }

@@ -53,7 +53,7 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, B
     }
 
     public static boolean isFunc(Term x) {
-        if (x.op() == INH && x.hasAll(Op.FuncBits)) {
+        if (x instanceof Compound && x.op() == INH && x.hasAll(Op.FuncBits)) {
             Subterms xx = x.subterms();
             return xx.subIs(0, PROD) && xx.subIs(1, ATOM);
         }
@@ -66,10 +66,7 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, B
 
     @Nullable public static Term[] funcArgsArray(Term x, int requireN) {
         Subterms a = Operator.args(x);
-        if (a.subs()==requireN)
-            return a.arrayShared();
-        else
-            return null;
+        return a.subs() == requireN ? a.arrayShared() : null;
     }
 
     @Override
@@ -87,7 +84,7 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, B
         return term.opX();
     }
 
-    public static Atom fName(String termAtom) {
+    protected static Atom fName(String termAtom) {
         return atomOrNull(Atomic.the(termAtom));
     }
 
@@ -169,11 +166,9 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, B
     }
 
     public static <X extends Term> LambdaFunctor f1Const(String termAtom, Function<X, Term> ff) {
-        return f1(fName(termAtom), (Term x) -> {
-            if (x == null || x.hasVars())
-                return null;
-            return ff.apply((X) x);
-        });
+        return f1(fName(termAtom), (Term x) ->
+                ((x == null) || x.hasVars()) ? null : ff.apply((X) x)
+        );
     }
 
 
