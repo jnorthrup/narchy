@@ -2,40 +2,63 @@ package spacegraph.space2d.widget.windo.util;
 
 import jcog.math.v2;
 import org.jetbrains.annotations.Nullable;
-import spacegraph.input.finger.CursorOverlay;
 import spacegraph.input.finger.FingerRenderer;
 
-import java.util.EnumMap;
-
 public enum DragEdit {
-    MOVE,
-    RESIZE_N, RESIZE_E, RESIZE_S, RESIZE_W,
-    RESIZE_NW,
-    RESIZE_SW,
-    RESIZE_NE,
-    RESIZE_SE,
+    MOVE {
+        @Override
+        public FingerRenderer cursor() {
+            //cursor.put(DragEdit.MOVE, new FingerRenderer.PolygonCrosshairs().angle(45)); //TODO something special
+            return null;
+        }
+    },
+    RESIZE_N {
+        @Override
+        public FingerRenderer cursor() {
+            return new FingerRenderer.PolygonWithArrow(90);
+        }
+    }, RESIZE_E {
+        @Override
+        public FingerRenderer cursor() {
+            return new FingerRenderer.PolygonWithArrow(0);
+        }
+    }, RESIZE_S {
+        @Override
+        public FingerRenderer cursor() {
+            return new FingerRenderer.PolygonWithArrow(-90);
+        }
+    }, RESIZE_W {
+        @Override
+        public FingerRenderer cursor() {
+            return new FingerRenderer.PolygonWithArrow(180);
+        }
+    },
+    RESIZE_NW {
+        @Override
+        public FingerRenderer cursor() {
+            return new FingerRenderer.PolygonWithArrow(45+90);
+        }
+    },
+    RESIZE_SW {
+        @Override
+        public FingerRenderer cursor() {
+            return new FingerRenderer.PolygonWithArrow(45+180);
+        }
+    },
+    RESIZE_NE {
+        @Override
+        public FingerRenderer cursor() {
+            return new FingerRenderer.PolygonWithArrow(45f);
+        }
+    },
+    RESIZE_SE {
+        @Override
+        public FingerRenderer cursor() {
+            return new FingerRenderer.PolygonWithArrow(-45);
+        }
+    },
     ;
 
-
-
-    static final EnumMap<DragEdit, FingerRenderer> cursor = new EnumMap(DragEdit.class);
-    static final EnumMap<DragEdit, CursorOverlay> hover = new EnumMap(DragEdit.class);
-
-    static {
-
-        cursor.put(DragEdit.RESIZE_NE, new FingerRenderer.PolygonWithArrow(45f));
-        cursor.put(DragEdit.RESIZE_SW, new FingerRenderer.PolygonWithArrow(45+180));
-        cursor.put(DragEdit.RESIZE_SE, new FingerRenderer.PolygonWithArrow(-45));
-        cursor.put(DragEdit.RESIZE_NW, new FingerRenderer.PolygonWithArrow(45+90));
-        cursor.put(DragEdit.RESIZE_N, new FingerRenderer.PolygonWithArrow(90));
-        cursor.put(DragEdit.RESIZE_S, new FingerRenderer.PolygonWithArrow(-90));
-        cursor.put(DragEdit.RESIZE_E, new FingerRenderer.PolygonWithArrow(0));
-        cursor.put(DragEdit.RESIZE_W, new FingerRenderer.PolygonWithArrow(180));
-        //cursor.put(DragEdit.MOVE, new FingerRenderer.PolygonCrosshairs().angle(45)); //TODO something special
-
-
-        cursor.forEach((k,v)-> hover.put(k, new CursorOverlay(v)));
-    }
 
     @Nullable public static DragEdit mode(v2 p, float margin) {
         DragEdit m = null;
@@ -81,15 +104,5 @@ public enum DragEdit {
 
     }
 
-    @Nullable
-    public FingerRenderer cursor() {
-        return cursor.get(this);
-    }
-
-    @Nullable
-    public CursorOverlay hover() {
-        return hover.get(this);
-    }
-
-
+    abstract public FingerRenderer cursor();
 }

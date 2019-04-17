@@ -4,25 +4,42 @@ import jcog.data.byt.DynBytes;
 import nars.Op;
 import nars.term.Term;
 import nars.term.atom.Atomic;
+import nars.term.util.builder.TermBuilder;
 import nars.term.util.transform.AbstractTermTransform;
 import org.junit.jupiter.api.Test;
 
 import static nars.$.$$;
+import static nars.term.atom.Bool.Null;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class LazyCompoundTest {
 
     private static final Term A = $$("a"), B = $$("b"), C = $$("c");
 
+    private static class MyLazyCompound extends LazyCompound {
+        @Override
+        public Term get(TermBuilder b, int volMax) {
+
+            Term t = super.get(b, volMax);
+            /* if (Param.DEBUG) */ {
+                int volExpected = volMax - volRemain;
+                int volActual = t.volume();
+                assert (t == Null || volActual == volExpected) : "incorrect volume calculation: actually " + volActual + " but measured " + volExpected;
+            }
+
+            return t;
+        }
+    }
+
     @Test
     void testSimple() {
-        assertEquals("(a,b)", new LazyCompound()
+        assertEquals("(a,b)", new MyLazyCompound()
                 .compound(Op.PROD, A, B).get().toString());
     }
     @Test
     void testNeg() {
-        LazyCompound l0 = new LazyCompound().compound(Op.PROD, A, B, B);
-        LazyCompound l1 = new LazyCompound().compound(Op.PROD, A, B, B.neg());
+        LazyCompound l0 = new MyLazyCompound().compound(Op.PROD, A, B, B);
+        LazyCompound l1 = new MyLazyCompound().compound(Op.PROD, A, B, B.neg());
 
         DynBytes code = l1.code;
         DynBytes code1 = l0.code;
@@ -31,15 +48,15 @@ class LazyCompoundTest {
         assertEquals(l0.sub.termToId, l1.sub.termToId);
 
         assertEquals("(a,b,(--,b))", l1.get().toString());
-        assertEquals("((--,a),(--,b))", new LazyCompound()
+        assertEquals("((--,a),(--,b))", new MyLazyCompound()
                 .compound(Op.PROD, A.neg(), B.neg()).get().toString());
     }
     @Test
     void testTemporal() {
-        assertEquals("(a==>b)", new LazyCompound()
+        assertEquals("(a==>b)", new MyLazyCompound()
                 .compound(Op.IMPL, A, B).get().toString());
 
-        assertEquals("(a ==>+1 b)", new LazyCompound()
+        assertEquals("(a ==>+1 b)", new MyLazyCompound()
                 .compound(Op.IMPL, 1, A, B).get().toString());
     }
 
@@ -69,7 +86,7 @@ class LazyCompoundTest {
 
     @Test
     void testCompoundInCompound() {
-        assertEquals("(a,{b,c})", new LazyCompound()
+        assertEquals("(a,{b,c})", new MyLazyCompound()
                 .compoundStart(Op.PROD).subsStart((byte)2).append(A)
                     .compoundStart(Op.SETe).subsStart((byte)2).subs(B, C)
                         .get().toString());

@@ -20,7 +20,7 @@ abstract public class UnifySubst extends Unify {
         super(varType, rng, Param.unify.UNIFICATION_STACK_CAPACITY);
     }
 
-    public UnifySubst(Op varType, Random rng) {
+    UnifySubst(Op varType, Random rng) {
         super(varType, rng, Param.unify.UNIFICATION_STACK_CAPACITY);
     }
 
@@ -38,7 +38,7 @@ abstract public class UnifySubst extends Unify {
      *  the 'input'  target is what transformation will be attempted upon.
      *  ot may be the same as X or Y, or something completely different.
      */
-    public boolean transform(Term input, Term x, Term y, int ttl) {
+    public final boolean transform(Term input, Term x, Term y, int ttl) {
         setTTL(ttl);
 
         this.input = input;
@@ -48,13 +48,9 @@ abstract public class UnifySubst extends Unify {
 
 
     @Override
-    public void tryMatch() {
+    public final boolean tryMatch() {
         Term aa = apply(input);
-        if (aa.op().conceptualizable) {
-            if (!each(aa)) {
-                stop();
-            }
-        }
+        return aa.op().conceptualizable && each(aa);
     }
 
 

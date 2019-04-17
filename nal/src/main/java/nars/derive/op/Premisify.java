@@ -96,9 +96,6 @@ public class Premisify extends AbstractPred<Derivation> {
 
             boolean unified = unify(d, !fwd, true);
 
-            if (mf.ttlIfStoppedDuetoExcessiveForks !=-1)
-                d.ttl = mf.ttlIfStoppedDuetoExcessiveForks;
-
         } finally {
             d.forEachMatch = null;
         }
@@ -188,12 +185,11 @@ public class Premisify extends AbstractPred<Derivation> {
         }
     }
 
-    public static class MatchFork implements Predicate<Derivation> {
+    public static final class MatchFork implements Predicate<Derivation> {
 
         private int forkLimit = -1;
         final Set<Term> tried = new UnifiedSet();
         private Taskify taskify;
-        @Deprecated private int ttlIfStoppedDuetoExcessiveForks;
 
         public MatchFork() {
         }
@@ -201,7 +197,6 @@ public class Premisify extends AbstractPred<Derivation> {
         public void reset(Taskify taskify, int forkLimit) {
             this.taskify = taskify;
             this.forkLimit = forkLimit;
-            this.ttlIfStoppedDuetoExcessiveForks = -1;
             tried.clear();
         }
 
@@ -209,7 +204,7 @@ public class Premisify extends AbstractPred<Derivation> {
         public boolean test(Derivation dd) {
             //assert(finalTTL[0]==-1);
             Term y = AbstractTermTransform.transform(taskify.termify.pattern, dd.transform,
-                    1 + (int)Math.ceil(Param.derive.TERMIFY_TERM_VOLMAX_FACTOR * dd.termVolMax)
+                    Param.derive.TERMIFY_TERM_VOLMAX_BASE + (int)Math.ceil(Param.derive.TERMIFY_TERM_VOLMAX_FACTOR * dd.termVolMax)
             );
 
             if (!(y instanceof Bool) && y.unneg().op().taskable) {
@@ -219,14 +214,12 @@ public class Premisify extends AbstractPred<Derivation> {
                     taskify.test(y, dd);
 
                     if (tried.size() >= forkLimit) {
-                        ttlIfStoppedDuetoExcessiveForks = dd.stop();
-//                        ttl = dd.stop(); //<- what really breaks; bool return val ignored
                         return false;
                     }
                 }
             }
 
-            return dd.live();
+            return true;
         }
     }
 }

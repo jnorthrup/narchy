@@ -109,7 +109,7 @@ public class UnifyTest {
             }
 
             @Override
-            public void tryMatch() {
+            public boolean tryMatch() {
 
                 if (shouldSub) {
                     final int[] matched = {0};
@@ -135,6 +135,7 @@ public class UnifyTest {
 
                 }
 
+                return true;
             }
         };
 
@@ -895,7 +896,7 @@ public class UnifyTest {
         Unify f = new Unify(Op.VAR_QUERY, new XorShift128PlusRandom(1), Param.unify.UNIFICATION_STACK_CAPACITY, 128) {
 
             @Override
-            public void tryMatch() {
+            public boolean tryMatch() {
 
                 assertTrue(matches);
 
@@ -909,6 +910,7 @@ public class UnifyTest {
                         "(a-->b) (?1-->b) -?>",
                         a + " " + b + " -?>"  /*+ " remaining power"*/);
 
+                return true;
             }
         };
 

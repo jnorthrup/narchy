@@ -21,7 +21,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-import static spacegraph.input.finger.Fingering.Null;
+import static spacegraph.input.finger.Fingering.Default;
 
 /**
  * gestural generalization of mouse cursor's (or touchpad's, etc)
@@ -37,26 +37,25 @@ abstract public class Finger implements Predicate<Fingering> {
     public final v2 posPixel = new v2(), posScreen = new v2();
     public final AtomicMetalBitSet prevButtonDown = new AtomicMetalBitSet();
     /**
+     * last local and global positions on press (downstroke).
+     * TODO is it helpful to also track upstroke position?
+     */
+    public final v2[] pressPosPixel;
+    /**
      * widget above which this finger currently hovers
      */
     protected final AtomicReference<Surface> touching = new AtomicReference<>();
     /**
      * a exclusive locking/latching state which may be requested by a surface
      */
-    protected final AtomicReference<Fingering> fingering = new AtomicReference<>(Null);
+    protected final AtomicReference<Fingering> fingering = new AtomicReference<>(Default);
     /**
      * ex: true when finger enters the window, false when it leaves
      */
     protected final AtomicBoolean active = new AtomicBoolean(false);
     protected final v2 _posGlobal = new v2();
-    /**
-     * last local and global positions on press (downstroke).
-     * TODO is it helpful to also track upstroke position?
-     */
-    public final v2[] pressPosPixel;
-    public final FingerRenderer rendererDefault =
-            FingerRenderer.rendererCrossHairs1;
     final FasterList<SurfaceTransform> transforms = new FasterList();
+
     private final int buttons;
 
     /**
@@ -67,8 +66,6 @@ abstract public class Finger implements Predicate<Fingering> {
     //@Deprecated protected transient Function<v2, v2> _screenToGlobalRect;
     private final AtomicMetalBitSet buttonDown = new AtomicMetalBitSet();
     private final AtomicFloat[] rotation = new AtomicFloat[3];
-
-    public volatile FingerRenderer renderer = rendererDefault;
 
     {
         rotation[0] = new AtomicFloat();
@@ -144,7 +141,7 @@ abstract public class Finger implements Predicate<Fingering> {
      */
     public void update(@Nullable short[] nextButtonDown) {
 
-        if (nextButtonDown!=null) {
+        if (nextButtonDown != null) {
             for (short b : nextButtonDown) {
 
                 boolean pressed = (b > 0);
@@ -235,24 +232,22 @@ abstract public class Finger implements Predicate<Fingering> {
     /**
      * acquire an exclusive fingering state
      */
-    @Override public final boolean test(Fingering next) {
+    @Override
+    public final boolean test(Fingering next) {
 
         Fingering prev = this.fingering.get();
 
-        if (prev != Null) {
+        if (prev != Default) {
             if (!prev.update(this)) {
                 prev.stop(this);
-                fingering.set(Null);
-                renderer = rendererDefault;
-                prev = Null;
+                fingering.set(Default);
+                prev = Default;
             }
         }
 
-        if (prev!=next) {
-
+        if (prev != next) {
 
             if (prev.defer(this)) {
-
 
                 if (next.start(this)) {
 
@@ -260,15 +255,10 @@ abstract public class Finger implements Predicate<Fingering> {
 
                     fingering.set(next);
 
-                    @Nullable FingerRenderer r = next.renderer(this);
-                    renderer = (r != null) ? r : rendererDefault;
-
                     return true;
                 }
             }
         }
-
-
 
         return false;
     }
@@ -277,7 +267,6 @@ abstract public class Finger implements Predicate<Fingering> {
      * warning: the vector instance returned by this and other methods are mutable.  so they may need to be cloned when accessed to record the state across time.
      */
     abstract public v2 posGlobal();
-    //FingerRenderer.polygon1;
 
     protected void rotationAdd(float[] next) {
         for (int i = 0; i < next.length; i++) {
@@ -304,12 +293,12 @@ abstract public class Finger implements Predicate<Fingering> {
         return take ? r.getAndSet(0) : r.get();
     }
 
-    /**
-     * visual overlay representation of the Finger; ie. cursor
-     */
-    public Surface overlayCursor() {
-        return new FingerRendererSurface();
-    }
+//    /**
+//     * visual overlay representation of the Finger; ie. cursor
+//     */
+//    public Surface overlayCursor() {
+//        return new FingerRendererSurface();
+//    }
 
     private boolean focused() {
         return active.getOpaque();
@@ -327,7 +316,7 @@ abstract public class Finger implements Predicate<Fingering> {
 //        );
 
         v2 g = posGlobal();
-        return new v2((g.x - b.x)/b.w, (g.y - b.y)/b.h);
+        return new v2((g.x - b.x) / b.w, (g.y - b.y) / b.h);
     }
 
 
@@ -360,7 +349,7 @@ abstract public class Finger implements Predicate<Fingering> {
         try {
 
 
-            _posGlobal.set(((Zoomed.Camera)t).pixelToGlobal(_posGlobal.x, _posGlobal.y));
+            _posGlobal.set(((Zoomed.Camera) t).pixelToGlobal(_posGlobal.x, _posGlobal.y));
             //System.out.println(p + " " + _posGlobal);
 
             S result = fingering.apply(this);
@@ -371,6 +360,12 @@ abstract public class Finger implements Predicate<Fingering> {
             _posGlobal.set(p);
             transforms.removeLast();
         }
+    }
+
+    /**
+     * marker interface for surfaces which absorb wheel motion, to prevent other system handling from it (ex: camera zoom)
+     */
+    public static interface ScrollWheelConsumer {
     }
 
     public static final class TouchOverlay extends Overlay {
@@ -412,26 +407,6 @@ abstract public class Finger implements Predicate<Fingering> {
         }
     }
 
-    private final class FingerRendererSurface extends PaintSurface {
-        {
-            clipBounds = false;
-        }
-
-        @Override
-        protected void paint(GL2 gl, ReSurface reSurface) {
-            if (focused()) {
-                renderer.paint(posPixel, Finger.this, reSurface.dtS(), gl);
-
-                //for debugging:
-//                if (ortho!=null) {
-//                    renderer.paint(
-//                        ortho.cam.worldToScreen(ortho.cam.screenToWorld(posPixel)),
-//                            Finger.this, surfaceRender.dtMS, gl);
-//                }
-            }
-        }
-    }
-
 // /**
 //     * dummy intermediate placeholder state
 //     */
@@ -448,9 +423,41 @@ abstract public class Finger implements Predicate<Fingering> {
 //        }
 //    };
 
-    /**
-     * marker interface for surfaces which absorb wheel motion, to prevent other system handling from it (ex: camera zoom)
-     */
-    public static interface ScrollWheelConsumer {
+    public static final class CursorOverlay extends PaintSurface {
+
+        private final Finger f;
+        FingerRenderer defaultRenderer = FingerRenderer.rendererCrossHairs1;
+
+        {
+            clipBounds = false;
+        }
+
+        public CursorOverlay(Finger f) {
+            this.f = f;
+        }
+
+        @Override
+        protected void paint(GL2 gl, ReSurface renderer) {
+            if (f.focused()) {
+
+                FingerRenderer r = defaultRenderer;
+                Fingering ff = f.fingering();
+                if (ff != Default) {
+                    @Nullable FingerRenderer specialRenderer = ff.cursor();
+                    if (specialRenderer != null)
+                        r = specialRenderer;
+                }
+
+                r.paint(f.posPixel, f, renderer.dtS(), gl);
+
+                //for debugging:
+//                if (ortho!=null) {
+//                    renderer.paint(
+//                        ortho.cam.worldToScreen(ortho.cam.screenToWorld(posPixel)),
+//                            Finger.this, surfaceRender.dtMS, gl);
+//                }
+            }
+
+        }
     }
 }

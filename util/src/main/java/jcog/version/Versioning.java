@@ -125,16 +125,6 @@ public class Versioning<X> {
         return false; //capacity exceeded
     }
 
-    /**
-     * returns remaining TTL
-     * callees should have something to do with the returned TTL value, otherwise it may indicate a stop() is zero'ing via mistakenly lost ttl
-     */
-    @Deprecated public int stop() {
-        int t = this.ttl;
-        ttl = 0;
-        return t;
-    }
-
 
     /**
      * whether the unifier should continue: if TTL is non-zero.

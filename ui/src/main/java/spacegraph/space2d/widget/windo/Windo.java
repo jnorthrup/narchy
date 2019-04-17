@@ -4,7 +4,6 @@ import com.jogamp.opengl.GL2;
 import jcog.math.v2;
 import jcog.tree.rtree.rect.RectFloat;
 import org.jetbrains.annotations.Nullable;
-import spacegraph.input.finger.CursorOverlay;
 import spacegraph.input.finger.Finger;
 import spacegraph.input.finger.state.Dragging;
 import spacegraph.input.finger.state.FingerMoveSurface;
@@ -98,14 +97,6 @@ public class Windo extends MutableUnitContainer {
 
         this.potentialDragMode = potentialDragMode;
         this.dragMode = actualDragMode;
-
-        if (potentialDragMode != null) {
-            CursorOverlay overlay = potentialDragMode.hover();
-            if (overlay != null)
-                finger.test(overlay);
-        } else {
-            //finger.tryFingering(CursorOverlay.Reset);
-        }
 
         return dragMode != null;
     }

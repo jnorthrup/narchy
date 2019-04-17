@@ -43,7 +43,7 @@ public class ActiveQuestionTask extends NALTask.NALTaskX implements Consumer<Tas
 
     private final BiConsumer<? super ActiveQuestionTask /* Q */, Task /* A */> eachAnswer;
 
-    final Bag<Task, PriReference<Task>> answers;
+    private final Bag<Task, PriReference<Task>> answers;
     private volatile Off onTask;
 
     final Predicate<Term> test;
@@ -116,15 +116,14 @@ public class ActiveQuestionTask extends NALTask.NALTaskX implements Consumer<Tas
 
         boolean match;
 
-        public MySubUnify(Random r, int ttl) {
+        MySubUnify(Random r, int ttl) {
             super(null, r, Param.unify.UNIFICATION_STACK_CAPACITY, ttl);
         }
 
         @Override
-        public void tryMatch() {
-            
+        public boolean tryMatch() {
             this.match = true;
-            stop(); 
+            return false; //done
         }
 
     }
@@ -153,7 +152,7 @@ public class ActiveQuestionTask extends NALTask.NALTaskX implements Consumer<Tas
         return x;
     }
 
-    protected Task onAnswer(Task answer) {
+    private Task onAnswer(Task answer) {
         answers.putAsync(new PLink<>(answer, answer.priElseZero()));
         return answer;
     }

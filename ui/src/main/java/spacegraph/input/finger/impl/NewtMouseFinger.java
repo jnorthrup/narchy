@@ -25,15 +25,15 @@ public class NewtMouseFinger extends MouseFinger implements MouseListener, Windo
         this.space = s;
         this.root = root;
 
-        //Exe.invokeLater(()->{
-            JoglWindow win = s.video;
-            if (win.window.hasFocus())
-                active.set(true);
+        JoglWindow win = s.video;
+        win.addMouseListenerPre(this);
+        win.addWindowListener(this);
+        if (win.window.hasFocus())
+            active.set(true);
 
-            win.addMouseListenerPre(this);
-            win.addWindowListener(this);
-            win.onUpdate((Runnable) this::update);
-        //});
+        win.onUpdate((Runnable) this::update);
+
+
     }
 
     /** called for each layer. returns true if continues down to next layer */

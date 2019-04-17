@@ -79,7 +79,7 @@ public class NLPGen {
                         Unify u = new Unify(VAR_PATTERN, terminal.random(), Param.unify.UNIFICATION_STACK_CAPACITY, terminal.deriveBranchTTL.intValue()) {
 
                             @Override
-                            public void tryMatch() {
+                            public boolean tryMatch() {
 
 
                                 final String[] r = {natural};
@@ -92,6 +92,7 @@ public class NLPGen {
                                 });
 
                                 result[0] = r[0];
+                                return false;
                             }
                         };
 

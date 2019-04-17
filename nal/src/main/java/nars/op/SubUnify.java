@@ -22,7 +22,6 @@ public class SubUnify extends Unify {
 
     @Nullable
     protected Term result;
-    private boolean live = true;
 
 
     public SubUnify(Random rng) {
@@ -35,21 +34,15 @@ public class SubUnify extends Unify {
 
     @Override
     public Versioning clear() {
-        live = true;
         return super.clear();
-    }
-
-    @Override
-    public void setTTL(int ttl) {
-        live = (ttl > 0);
-        super.setTTL(ttl);
     }
 
     /**
      * terminate after the first match
+     * @return
      */
     @Override
-    protected final void tryMatch() {
+    protected final boolean tryMatch() {
 
         if (transformed != null) {
             Term result = apply(transformed);
@@ -58,19 +51,10 @@ public class SubUnify extends Unify {
                 use(1);
                 this.result = result;
 
-                stop();
+                return false; //done
             }
         }
-    }
-
-    @Override public int stop() {
-        this.live = false;
-        return ttl;
-    }
-
-    @Override
-    public boolean live() {
-        return live && super.live();
+        return true; //kontinue
     }
 
 

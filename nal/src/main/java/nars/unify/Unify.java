@@ -152,7 +152,7 @@ public abstract class Unify extends Versioning<Term> {
      *
      * @return whether to continue on any subsequent matches
      */
-    protected abstract void tryMatch();
+    protected abstract boolean tryMatch();
 
 
     public final boolean tryMutate(Termutator[] chain, int next) {
@@ -166,9 +166,9 @@ public abstract class Unify extends Versioning<Term> {
 
         } else {
 
-            tryMatch();
+            boolean kontinue = tryMatch();
 
-            return use(Param.derive.TTL_COST_MUTATE);
+            return use(Param.derive.TTL_COST_MUTATE) && kontinue;
         }
 
     }
@@ -505,8 +505,8 @@ public abstract class Unify extends Versioning<Term> {
         }
 
         @Override
-        protected void tryMatch() {
-
+        protected boolean tryMatch() {
+            return true;
         }
     }
 

@@ -78,7 +78,7 @@ public class EllipsisTest {
                 Unify f = new Unify(VAR_PATTERN, new XorShift128PlusRandom(1 + seed), Param.unify.UNIFICATION_STACK_CAPACITY) {
 
                     @Override
-                    public void tryMatch() {
+                    public boolean tryMatch() {
                         
 
 
@@ -122,6 +122,7 @@ public class EllipsisTest {
                             assertEquals(0, s.varPattern(), s + " should be all subbed by " + this.xy);
                         }
 
+                        return true;
                     }
                 };
 
@@ -416,8 +417,9 @@ public class EllipsisTest {
             Random rng = new XorShift128PlusRandom(seed);
             Unify f = new Unify(VAR_PATTERN, rng, Param.unify.UNIFICATION_STACK_CAPACITY, 128) {
                 @Override
-                public void tryMatch() {
+                public boolean tryMatch() {
                     results.add(xy.toString());
+                    return true;
                 }
             };
 

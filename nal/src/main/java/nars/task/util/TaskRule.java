@@ -71,9 +71,9 @@ public class TaskRule extends TaskMatch {
         }
 
         @Override
-        public void tryMatch() {
+        public boolean tryMatch() {
             accept(x, xy);
-            stop();
+            return false; //done
         }
 
     }

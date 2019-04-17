@@ -132,9 +132,7 @@ public class Termutifcation extends ArrayHashSet<DeterministicUnification> imple
         }
 
         @Override
-        protected void tryMatch() {
-
-            --discoveriesRemain;
+        protected boolean tryMatch() {
 
             Unification z = unification(false);
             if (z != Unification.Null) {
@@ -148,6 +146,8 @@ public class Termutifcation extends ArrayHashSet<DeterministicUnification> imple
                     }*/
                 }
             }
+
+            return --discoveriesRemain > 0;
         }
     }
 }

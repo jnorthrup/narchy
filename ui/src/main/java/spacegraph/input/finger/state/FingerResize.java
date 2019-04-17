@@ -25,6 +25,10 @@ public abstract class FingerResize extends Dragging {
         this.invY = invertY;
     }
 
+    @Override
+    public @Nullable FingerRenderer cursor() {
+        return mode.cursor();
+    }
 
     public abstract DragEdit mode(Finger finger);
 
@@ -157,16 +161,10 @@ public abstract class FingerResize extends Dragging {
 
     protected abstract void resize(float x1, float y1, float x2, float y2);
 
-    @Override
-    public @Nullable FingerRenderer renderer(Finger finger) {
-        DragEdit mode = mode(finger);
-        return mode != null ? mode.cursor() : null;
-    }
 
     @Override
     public void stop(Finger finger) {
         super.stop(finger);
-        finger.renderer = finger.rendererDefault;
         this.mode = null;
     }
 

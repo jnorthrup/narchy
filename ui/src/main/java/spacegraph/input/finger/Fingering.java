@@ -45,7 +45,7 @@ abstract public class Fingering {
     }
 
     //TODO just use 'null'
-    @Deprecated public static final Fingering Null = new Fingering() {
+    @Deprecated public static final Fingering Default = new Fingering() {
 
         @Override
         public String toString() {
@@ -75,5 +75,9 @@ abstract public class Fingering {
         return next;
     }
 
+    /** optional cursor override */
+    @Nullable public FingerRenderer cursor() {
+        return null;
+    }
 
 }

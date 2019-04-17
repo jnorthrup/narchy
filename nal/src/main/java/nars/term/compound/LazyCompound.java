@@ -45,7 +45,7 @@ public class LazyCompound {
      *  because that will just cause the same value to be assumed when it should not be.
      * */
     private boolean constantPropagate = true;
-    private int volRemain;
+    protected int volRemain;
 
     public LazyCompound() {
 
@@ -188,9 +188,11 @@ public class LazyCompound {
 //        else {
 //            if (sub != null)
 //                sub.readonly(); //optional
+
         return getNext(b, c.arrayDirect(), new int[]{0, c.len});
-//        }
     }
+
+
 
     private Term getNext(TermBuilder b, byte[] ii, int[] range) {
         if (volRemain <= 0)
@@ -202,6 +204,10 @@ public class LazyCompound {
 
         Term next;
         if (ctl < MAX_CONTROL_CODES) {
+
+            /** -1 volume for the compound; the subterms are counted elsewhere */
+            this.volRemain--;
+
             Op op = Op.ops[ctl];
             if (op == NEG)
                 next = getNext(b, ii, range).neg();
@@ -227,10 +233,15 @@ public class LazyCompound {
                         throw new WTF();
                     }
                 } else {
+                    int vBefore = volRemain;
+
                     Term[] s = getNext(b, subterms, ii, range);
+
                     if (s == null)
                         return Null;
                     else {
+
+                        int vAfter = volRemain;
 
                         if (op==INH && evalInline() && s[1] instanceof InlineFunctor && s[0].op()==PROD) {
 
@@ -247,8 +258,14 @@ public class LazyCompound {
 
                             next = op.the(b, dt, s); //assert (next != null);
 
-                            if (next != Null && constantPropagate)
-                                replaceAhead(ii, range, from, next);
+                            if (next != Null) {
+
+                                //adjust volume count for compound term reductions, etc.
+                                volRemain = vBefore + 1 - next.volume();
+
+                                if (constantPropagate)
+                                    replaceAhead(ii, range, from, next);
+                            }
 
                             //TODO
 //                            if (!constantPropagate && !next.hasAny)
@@ -267,7 +284,7 @@ public class LazyCompound {
             while (r0 < r1 && code.at(r0) == 0) { ++r0; }
             range[0] = r0;
 
-            volRemain -= next.volume(); //only deduct for concrete atoms
+            volRemain -= next.volume();
         }
 
         return next;

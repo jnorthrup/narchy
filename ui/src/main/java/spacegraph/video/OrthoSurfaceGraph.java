@@ -37,7 +37,7 @@ public class OrthoSurfaceGraph extends JoglDisplay implements SurfaceGraph {
     /* render context */
     public final ReSurface rendering = new ReSurface();
 
-    public final Finger finger;
+    public final Finger mouse;
     private final NewtKeyboard keyboard;
 
 
@@ -69,7 +69,7 @@ public class OrthoSurfaceGraph extends JoglDisplay implements SurfaceGraph {
         }
     };
 
-    private final Stacking layers = new Stacking() {
+    public final Stacking layers = new Stacking() {
 
         private transient int _w, _h;
 
@@ -133,7 +133,7 @@ public class OrthoSurfaceGraph extends JoglDisplay implements SurfaceGraph {
 
         video.window.setPointerVisible(false);
 
-        finger = new NewtMouseFinger(this, layers::finger);
+        mouse = new NewtMouseFinger(this, layers::finger);
 
         keyboard = new NewtKeyboard(/*TODO this */);
 
@@ -142,9 +142,8 @@ public class OrthoSurfaceGraph extends JoglDisplay implements SurfaceGraph {
 
         Zoomed z = new Zoomed(this, keyboard, content);
         layers.add(z);
-        layers.add(z.overlayZoomBounds(finger));
-        layers.add(finger.overlayCursor());
-
+        layers.add(z.overlayZoomBounds(mouse));
+        layers.add(new Finger.CursorOverlay(mouse));
 
 
 //        //addOverlay(this.keyboard.keyFocusSurface(cam));
@@ -224,14 +223,14 @@ public class OrthoSurfaceGraph extends JoglDisplay implements SurfaceGraph {
         g.add(fingerInfo);
 
         return window(new Animating<>(g, ()->{
-            Surface t = finger.touching();
+            Surface t = mouse.touching();
             fingerInfo.text(
-                "buttn: " + finger.buttonSummary() + '\n' +
-                "state: " +  finger.fingering() + '\n' +
-                "posPx: " + finger.posPixel + '\n' +
+                "buttn: " + mouse.buttonSummary() + '\n' +
+                "state: " +  mouse.fingering() + '\n' +
+                "posPx: " + mouse.posPixel + '\n' +
                 //"posGl: " + finger.posGlobal(layers.first(Zoomed.class)) + '\n' +
                 "touch: " + t + '\n' +
-                "posRl: " + (t!=null ? finger.posRelative(t.bounds) : "?") + '\n' +
+                "posRl: " + (t!=null ? mouse.posRelative(t.bounds) : "?") + '\n' +
                 ""
             );
         }, 0.25f),500,300);

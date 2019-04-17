@@ -479,12 +479,10 @@ public class Derivation extends PreDerivation {
     }
 
     @Override
-    public final void tryMatch() {
+    public final boolean tryMatch() {
 
         Predicate<Derivation> f = this.forEachMatch;
-        if (f!=null)
-            f.test(this);
-
+        return (f == null) || f.test(this);
     }
 
 

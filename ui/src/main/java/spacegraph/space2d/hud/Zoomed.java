@@ -97,7 +97,7 @@ public class Zoomed<S extends Surface> extends MutableUnitContainer<S> implement
 
         @Override
         protected boolean ready(Finger f) {
-            if (f.fingering() == Fingering.Null) {
+            if (f.fingering() == Fingering.Default) {
                 camStart = new v3(cam);
                 return super.ready(f);
             } else {
