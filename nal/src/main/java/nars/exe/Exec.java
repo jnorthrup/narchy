@@ -25,7 +25,7 @@ abstract public class Exec extends NARPart implements Executor, ConsumerX<ITask>
 
     protected Exec(int concurrencyMax) {
         this.concurrencyMax = concurrencyMax; //TODO this will be a value like Runtime.getRuntime().availableProcessors() when concurrency can be adjusted dynamically
-        add(CycLoop.the(this::cycle));
+        add(new MyCycLoop());
     }
 
     abstract public void input(Object t);
@@ -139,5 +139,13 @@ abstract public class Exec extends NARPart implements Executor, ConsumerX<ITask>
 
     public void synch() {
 
+    }
+
+    private final class MyCycLoop extends CycLoop {
+
+        @Override
+        protected void run(NAR n) {
+            cycle(n);
+        }
     }
 }

@@ -27,7 +27,9 @@ import java.util.function.Function;
 import static nars.Op.BELIEF;
 
 
-/** sequential hearing and reading input abilities */
+/** sequential hearing and reading input abilities
+ * TODO extend NARPart, add Loop as field
+ * */
 public class NARHear extends Loop {
 
     final static Atomic START = Atomic.the("start");

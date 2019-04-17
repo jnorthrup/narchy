@@ -1,6 +1,7 @@
 package nars.time;
 
 import jcog.data.iterator.ArrayIterator;
+import jcog.data.list.FasterList;
 import jcog.data.list.MetalConcurrentQueue;
 import nars.NAR;
 import nars.exe.Exec;
@@ -9,7 +10,6 @@ import javax.measure.Quantity;
 import java.io.Serializable;
 import java.util.PriorityQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
@@ -17,6 +17,14 @@ import java.util.stream.Stream;
  * 1-D Time Model (and Clock)
  */
 public abstract class Time implements Serializable {
+
+    final MetalConcurrentQueue<ScheduledTask> incoming = new MetalConcurrentQueue<>(Exec.TIME_QUEUE_CAPACITY);
+    final FasterList<ScheduledTask> intermediate = new FasterList<>(Exec.TIME_QUEUE_CAPACITY);
+    final PriorityQueue<ScheduledTask> scheduled = new PriorityQueue<>(Exec.TIME_QUEUE_CAPACITY /* estimate capacity */);
+    /**
+     * busy mutex
+     */
+    private final AtomicBoolean busy = new AtomicBoolean(false);
 
     abstract public long now();
 
@@ -30,7 +38,6 @@ public abstract class Time implements Serializable {
      */
     public abstract long nextStamp();
 
-
     /**
      * the default duration applied to input tasks that do not specify one
      * >0
@@ -43,18 +50,6 @@ public abstract class Time implements Serializable {
      * @param d, d>0
      */
     public abstract Time dur(int d);
-
-    final AtomicLong scheduledNext = new AtomicLong(Long.MIN_VALUE);
-
-    final MetalConcurrentQueue<ScheduledTask> incoming = new MetalConcurrentQueue<>(Exec.TIME_QUEUE_CAPACITY);
-
-    final PriorityQueue<ScheduledTask> scheduled = new PriorityQueue<>(Exec.TIME_QUEUE_CAPACITY /* estimate capacity */);
-
-    /**
-     * busy mutex
-     */
-    private final AtomicBoolean scheduling = new AtomicBoolean(false);
-
 
     public void clear(NAR n) {
         synchronized (scheduled) {
@@ -75,19 +70,15 @@ public abstract class Time implements Serializable {
             s = scheduled.toArray(ScheduledTask[]::new);
         }
         return Stream.concat(
-            incoming.stream(),
-            ArrayIterator.stream(s) //a copy
+                incoming.stream(),
+                ArrayIterator.stream(s) //a copy
         );
     }
 
 
     public final void runAt(ScheduledTask event) {
-//        long w = event.start();
-//        assert(w!=ETERNAL && w!=TIMELESS);
-
         incoming.add(event);
-
-
+//        long w = event.start();
 //        scheduledNext.accumulateAndGet(w, Math::min);
     }
 
@@ -97,53 +88,43 @@ public abstract class Time implements Serializable {
      */
     public void schedule(Consumer<ScheduledTask> each) {
 
-        if (!scheduling.compareAndSet(false, true)) {
+        if (busy.compareAndSet(false, true)) {
 
             try {
                 long now = now();
 
                 {
-                    //fire  previously scheduled
-                    if (now >= scheduledNext.get()) {
-                        ScheduledTask next;
+                    //fire previously scheduled
+                    ScheduledTask next;
 
-                        synchronized (scheduled) {
-                            while (((next = scheduled.peek()) != null) && (next.start() <= now)) {
-                                each.accept(scheduled.poll()); //assert (next == actualNext);
-                            }
-                        }
-
-                        scheduledNext.accumulateAndGet(
-                                next != null ? next.start() : Long.MAX_VALUE,
-                                Math::min
-                        );
-
+                    while (((next = scheduled.peek()) != null) && (next.start() <= now)) {
+                        each.accept(scheduled.poll()); //assert (next == actualNext);
                     }
+
+
                 }
                 {
                     //drain incoming queue
-
-                    if (!incoming.isEmpty()) {
-                        synchronized (scheduled) {
-                            incoming.clear(next -> {
-                                if (next.start() <= now)
-                                    each.accept(next);
-                                else {
-                                    scheduled.offer(next);
-                                }
-                            });
+                    incoming.clear(next -> {
+                        if (next.start() <= now)
+                            each.accept(next);
+                        else {
+                            scheduled.offer(next);
                         }
-                    }
+                    });
+
+
                 }
 
 
             } finally {
-                scheduling.set(false);
+                busy.set(false);
             }
         }
 
 
     }
+
 
     abstract public void next(NAR n);
 

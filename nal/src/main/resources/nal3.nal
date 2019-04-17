@@ -37,10 +37,10 @@
 
 
 //union/intersection belief/goal to diff question/quest
-    (W --> (A&B)), A, --isVar(W) |- (W --> (A-B)), (Punctuation:Ask)
-     (W --> (A|B)), A, --isVar(W) |- (W --> (A-B)), (Punctuation:Ask)
-    ((A|B) --> W), A, --isVar(W) |- ((A~B) --> W), (Punctuation:Ask)
-     ((A&B) --> W), A, --isVar(W) |- ((A~B) --> W), (Punctuation:Ask)
+    (W --> (A&B)), W, --isVar(W) |- (W --> (A-B)), (Punctuation:Ask)
+     (W --> (A|B)), W, --isVar(W) |- (W --> (A-B)), (Punctuation:Ask)
+    ((A|B) --> W), W, --isVar(W) |- ((A~B) --> W), (Punctuation:Ask)
+     ((A&B) --> W), W, --isVar(W) |- ((A~B) --> W), (Punctuation:Ask)
 
 
 //NAL Specification Table 11.11

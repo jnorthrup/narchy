@@ -63,13 +63,13 @@ public class OpjectsTest {
         n.onTask(sb::append);
 
 
-        n.input("set(x,1)! :|:");
+        n.input("set(x,1)! |");
 
         n.run(dur);
 
         assertEquals(1, evokes.size());
 
-        n.input("get(x,#y)! :|:");
+        n.input("get(x,#y)! |");
 
         n.run(dur);
 

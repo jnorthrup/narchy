@@ -341,6 +341,7 @@ public class NAL3Test extends NALTest {
     @Test
     void questionDecomposition1() {
         test
+                .termVolMax(5)
                 .ask("(swan --> bird)")
                 .believe("((swan|swimmer) --> bird)")
                 .mustOutput(cycles, "(swimmer --> bird)", QUESTION);

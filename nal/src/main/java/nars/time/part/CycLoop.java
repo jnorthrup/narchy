@@ -32,6 +32,10 @@ abstract public class CycLoop extends NARPart implements Consumer<NAR> {
         return new LambdaCycLoop(each);
     }
 
+    protected CycLoop() {
+
+    }
+
     @Override
     protected void starting(NAR nar) {
         assert(off == null);

@@ -195,6 +195,9 @@ abstract public class DurLoop extends NARPart {
                 @Deprecated NAR nnar = DurLoop.this.nar; //prevent NPE in durCycles()
                 if (nnar!=null && DurLoop.this.isOn()) {
                     this.nextStart = scheduleNext(durCycles(), atStart);
+
+                    //System.out.println(lastStarted + " -> "  + atStart + " -> " + nar.time() + " -> " + nextStart);
+
                     nar.runAt(this);
                 }
 

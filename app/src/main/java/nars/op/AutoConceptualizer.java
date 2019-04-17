@@ -68,8 +68,6 @@ public class AutoConceptualizer extends AbstractSensor {
             float f;
             if (t == null) {
                 f = 0.5f;
-                
-                
             } else {
                 f = t.freq();
             }
@@ -88,6 +86,7 @@ public class AutoConceptualizer extends AbstractSensor {
 
         What w = g.what();
 
+        int dur = w.dur();
         int[] order = new int[inputs];
         for (int i = 0; i < outputs; i++) {
             b[i] = 1; 
@@ -96,17 +95,15 @@ public class AutoConceptualizer extends AbstractSensor {
             
             Term feature = conj(order, a /* threshold, etc */, 3 /*a.length/2*/,
                     thresh);
-            if (feature != null) {
-                
-                onFeature(feature, w);
-            }
+            if (feature != null)
+                w.accept(onFeature(feature, now, dur, n.evidence()));
+
             b[i] = 0; 
         }
     }
 
-    protected void onFeature(Term feature, What w) {
-        SignalTask t = new SignalTask(feature, BELIEF, $.t(1f, 0.9f), nar.time(), nar.time() - nar.dur() / 2, nar.time() + nar.dur() / 2, nar.evidence());
-        in.accept(t, w);
+    protected SignalTask onFeature(Term feature, long now, int dur, long[] evi) {
+        return new SignalTask(feature, BELIEF, $.t(1f, 0.9f), now, now - dur / 2, now + dur / 2, evi);
     }
 
     private Term conj(int[] order, float[] a, int maxArity, float threshold) {
