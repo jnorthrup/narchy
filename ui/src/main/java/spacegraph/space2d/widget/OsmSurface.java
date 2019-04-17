@@ -1,5 +1,6 @@
 package spacegraph.space2d.widget;
 
+import com.google.common.base.Joiner;
 import com.jogamp.opengl.GL2;
 import com.jogamp.opengl.GLContext;
 import jcog.data.list.FasterList;
@@ -7,12 +8,17 @@ import jcog.math.v2;
 import jcog.tree.rtree.HyperRegion;
 import jcog.tree.rtree.rect.HyperRectFloat;
 import jcog.tree.rtree.rect.RectFloat;
+import org.eclipse.collections.api.block.function.primitive.DoubleFunction;
+import org.eclipse.collections.impl.block.factory.Comparators;
 import spacegraph.input.finger.Finger;
 import spacegraph.input.finger.state.FingerMove;
 import spacegraph.space2d.ReSurface;
 import spacegraph.space2d.Surface;
+import spacegraph.space2d.container.Bordering;
 import spacegraph.space2d.container.PaintSurface;
-import spacegraph.space2d.container.Stacking;
+import spacegraph.space2d.container.unit.Animating;
+import spacegraph.space2d.container.unit.Clipped;
+import spacegraph.space2d.widget.text.BitmapLabel;
 import spacegraph.space2d.widget.text.VectorLabel;
 import spacegraph.util.geo.IRL;
 import spacegraph.util.geo.osm.Osm;
@@ -34,30 +40,35 @@ public class OsmSurface extends PaintSurface {
         Draw.rectFrame(0, 0, 1, 1, 0.1f, gl);
     };
     public final AtomicBoolean debugIndexBounds = new AtomicBoolean(false);
+
     //new OsmSpace.ECEFProjection();
+
     final v2 translate = new v2();
     private final IRL index;
     private final OsmSpace.LonLatProjection projection =
             new OsmSpace.RawProjection();
+
     final FingerMove pan = new FingerMove(0) {
 
         final v2 prev = new v2();
 
         @Override
         public v2 pos(Finger finger) {
-            return finger.posRelative(OsmSurface.this);
+            //return OsmSurface.this.bounds.center();
+            //return finger.posRelative(OsmSurface.this);
+            return finger.posGlobal();
         }
 
         @Override
-        protected boolean ready(Finger f) {
-            prev.set(0, 0);
-            return super.ready(f);
+        protected boolean starting(Finger f) {
+            prev.set(pos(f));
+            return super.starting(f);
         }
 
         @Override
         public void move(float tx, float ty) {
-            projection.pan(tx - prev.x, ty - prev.y, bounds);
-            prev.set(tx, ty);
+            projection.pan(tx, ty, bounds);
+            //prev.set(pos(f)tx, ty);
         }
     };
     private final List<OsmElement> hilight = new FasterList(128);
@@ -227,9 +238,11 @@ public class OsmSurface extends PaintSurface {
         if (finger.test(pan)) {
             return this;
         } else {
-            v2 pos = finger.posGlobal(); //posPixel;
-            float wx = -bounds.w / 2 + pos.x;
-            float wy = -bounds.h / 2 + pos.y;
+            //v2 pos = finger.posGlobal(); //posPixel;
+
+            v2 pos = finger.posGlobal();
+            float wx = (pos.x - cx());
+            float wy = (pos.y - cy());
             float wz = 0;
 
             //TODO unproject screen to world
@@ -257,16 +270,43 @@ public class OsmSurface extends PaintSurface {
     }
 
     public Surface widget() {
-        return new Stacking(
-                this
-//                ,
-//                new Bordering().south(
-//                    Gridding.col(
-//                        new AnimLabel(()->"translation: " + translate.toString()),
-//                        new AnimLabel(()->"scale: " + scale.toString())
-//                    )
-//                )
-        );
+        return //new Stacking(
+                new Bordering(new Clipped(this))
+                    .south(
+                        new Animating<>(new BitmapLabel(), (b)->{
+
+                            List<OsmElement> h = this.hilight;
+                            if (!h.isEmpty()) {
+                                try {
+                                    OsmElement hh = ((FasterList<OsmElement>) h).min(
+                                            Comparators.byDoubleFunction((DoubleFunction<OsmElement>)
+                                                    HyperRegion::perimeter)
+                                    );
+                                    if (hh != null) {
+//
+//                            }
+//                            int hn = h.size();
+//                            if (hn > 1) {
+//                                b.text(hn + " objects");
+//                            } else if (hn == 1) {
+
+                                        b.text(Joiner.on("\n").join(hh.tags.entrySet()));
+                                    }
+                                } catch (Throwable t) {
+                                    b.text("");
+                                    //ignored HACK
+                                }
+                            } else {
+                                b.text("");
+                            }
+                        }, 0.1f)
+//                        Gridding.col(
+//                            new AnimLabel(()->"translation: " + translate.toString()),
+//                            new AnimLabel(()->"scale: " + scale.toString())
+//                        )
+                )
+                ;
+        //);
     }
 
     private static class AnimLabel extends VectorLabel {

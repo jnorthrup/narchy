@@ -29,7 +29,7 @@ public class NewtMouseFinger extends MouseFinger implements MouseListener, Windo
         win.addMouseListenerPre(this);
         win.addWindowListener(this);
         if (win.window.hasFocus())
-            active.set(true);
+            focused.set(true);
 
         win.onUpdate((Runnable) this::update);
 
@@ -94,7 +94,7 @@ public class NewtMouseFinger extends MouseFinger implements MouseListener, Windo
 
     @Override
     public void mouseEntered(@Nullable MouseEvent e) {
-        if (active.compareAndSet(false, true)) {
+        if (focused.compareAndSet(false, true)) {
             enter();
             if (e != null)
                 update(false, e);
@@ -103,7 +103,7 @@ public class NewtMouseFinger extends MouseFinger implements MouseListener, Windo
 
     @Override
     public void mouseExited(MouseEvent e) {
-        if (active.compareAndSet(true, false)) {
+        if (focused.compareAndSet(true, false)) {
             update(false, null);
             exit();
         }
@@ -178,7 +178,7 @@ public class NewtMouseFinger extends MouseFinger implements MouseListener, Windo
 
     @Override
     public void windowGainedFocus(WindowEvent e) {
-        if (active.compareAndSet(false, true)) {
+        if (focused.compareAndSet(false, true)) {
             enter();
             update(false, null);
         }
@@ -186,7 +186,7 @@ public class NewtMouseFinger extends MouseFinger implements MouseListener, Windo
 
     @Override
     public void windowLostFocus(WindowEvent e) {
-        if (active.compareAndSet(true, false)) {
+        if (focused.compareAndSet(true, false)) {
             update(false, null);
             exit();
         }

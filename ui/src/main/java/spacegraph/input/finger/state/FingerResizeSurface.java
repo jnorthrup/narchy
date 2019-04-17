@@ -27,8 +27,8 @@ public class FingerResizeSurface extends FingerResize {
     }
 
     @Override
-    protected boolean ready(Finger f) {
-        return f.intersects(s.bounds) && super.ready(f);
+    protected boolean starting(Finger f) {
+        return f.intersects(s.bounds) && super.starting(f);
     }
 
     @Override

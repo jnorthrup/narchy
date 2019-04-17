@@ -48,8 +48,8 @@ public class Wiring extends Dragging {
     }
 
     @Override
-    protected boolean ready(Finger f) {
-        if (f.pressedNow(button) && super.ready(f)) {
+    protected boolean starting(Finger f) {
+        if (f.pressedNow(button) && super.starting(f)) {
             if (this.start instanceof Wireable)
                 ((Wireable) start).onWireOut(this, true);
             return true;

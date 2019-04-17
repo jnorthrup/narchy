@@ -33,8 +33,8 @@ public abstract class FingerResize extends Dragging {
     public abstract DragEdit mode(Finger finger);
 
     @Override
-    protected boolean ready(Finger f) {
-        if (super.ready(f)) {
+    protected boolean starting(Finger f) {
+        if (super.starting(f)) {
             this.before = size();
             this.posStart.set(pos(f));
             return true;

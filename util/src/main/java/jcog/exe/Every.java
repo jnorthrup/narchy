@@ -31,7 +31,7 @@ public class Every {
         this.periodMS.set(initialPeriodMS);
     }
 
-    public synchronized void next() {
+    public void next() {
         long now = System.currentTimeMillis();
         long delta = now - last;
         if (delta > periodMS.intValue()) {

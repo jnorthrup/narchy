@@ -18,6 +18,8 @@ public class Animating<X extends Surface> extends UnitContainer<X> implements An
     /** in seconds.  TODO adjustable */
     static final float maxLag = 0.01f;
 
+    private boolean async = true;
+
     public Animating(X the, Runnable each, float minUpdatePeriod) {
         this(the, (z)->each.run(), () -> minUpdatePeriod);
     }
@@ -53,9 +55,15 @@ public class Animating<X extends Surface> extends UnitContainer<X> implements An
 
     @Override
     public boolean animate(float dt) {
-        waiting -= dt;
-        if (waiting < 0) {
-            Exe.invoke(this::update);
+        if (showing()) {
+            waiting -= dt;
+            if (waiting < 0) {
+                if (async) {
+                    Exe.invoke(this::update);
+                } else {
+                    update();
+                }
+            }
         }
         return true;
     }

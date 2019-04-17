@@ -27,7 +27,7 @@ public abstract class BitmapTextGrid extends AbstractConsoleSurface {
     /**
      * pixel scale of each rendered character bitmap
      */
-    static final int DEFAULT_FONT_SCALE = 48;
+    static final int DEFAULT_FONT_SCALE = 64;
     private static final Logger logger = Log.logger(BitmapTextGrid.class);
     private static volatile Font defaultFont;
     final AtomicBoolean invalidBmp = new AtomicBoolean(false), invalidTex = new AtomicBoolean(false);
@@ -42,7 +42,6 @@ public abstract class BitmapTextGrid extends AbstractConsoleSurface {
     private Font font;
     private Graphics2D backbufferGraphics;
     private float alpha = 1f;
-    private boolean fillTextBackground = false;
 
     protected BitmapTextGrid() {
         font(defaultFont());
@@ -150,11 +149,6 @@ public abstract class BitmapTextGrid extends AbstractConsoleSurface {
 
     private int[] intData() {
         return ((DataBufferInt) backbuffer.getRaster().getDataBuffer()).getData();
-    }
-
-    public void setFillTextBackground(boolean fillTextBackground) {
-        this.fillTextBackground = fillTextBackground;
-
     }
 
     public BitmapTextGrid alpha(float alpha) {
@@ -330,7 +324,7 @@ public abstract class BitmapTextGrid extends AbstractConsoleSurface {
         int x = columnIndex * fontWidth;
         int y = rowIndex * fontHeight;
 
-        if (fillTextBackground) {
+        if (backgroundColor.getAlpha()>0) {
             g.setColor(backgroundColor);
             g.fillRect(x, y, characterWidth, fontHeight);
         }

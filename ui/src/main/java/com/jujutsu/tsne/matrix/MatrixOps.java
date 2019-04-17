@@ -477,16 +477,16 @@ public enum MatrixOps { ;
 		return scalarInverse(m1, null);
 	}
 
-	public static double [][] scalarInverse(double [][] m1, double[][] result) {
-		if (result == null)
-			result = new double[m1.length][m1[0].length];
+	public static double [][] scalarInverse(double [][] x, double[][] y) {
+		if (y == null)
+			y = new double[x.length][x[0].length];
 
-		for (int i = 0; i < result.length; i++) {
-			for (int j = 0; j < result[0].length; j++) {
-				result[i][j] = 1/m1[i][j];
-			}
+		for (int i = 0; i < y.length; i++) {
+			double[] mi = x[i], ri = y[i];
+			for (int j = 0; j < y[0].length; j++)
+				ri[j] = 1 / mi[j];
 		}
-		return result;
+		return y;
 	}
 	
 	/**
@@ -830,11 +830,8 @@ public enum MatrixOps { ;
 	 */
 	public static double sum(double [][] matrix) {
 		double sum = 0.0;
-		for (double[] aMatrix : matrix) {
-			for (int j = 0; j < matrix[0].length; j++) {
-				sum += aMatrix[j];
-			}
-		}
+		for (double[] r : matrix)
+			sum += sum(r);
 		return sum;
 	}
 
@@ -854,10 +851,13 @@ public enum MatrixOps { ;
 	 * @return
 	 */
 	public static double [][] maximum(double [][] matrix, double maxval) {
-		double [][] maxed = new double[matrix.length][matrix[0].length];
+		int l = matrix[0].length;
+		double [][] maxed = new double[matrix.length][l];
 		for (int i = 0; i < matrix.length; i++) {
-			for (int j = 0; j < matrix[0].length; j++) {
-				maxed[i][j] = matrix[i][j] > maxval ? matrix[i][j] : maxval;
+			double[] maxI = maxed[i];
+			double[] mmi = matrix[i];
+			for (int j = 0; j < l; j++) {
+				maxI[j] = mmi[j] > maxval ? mmi[j] : maxval;
 			}
 		}
 		return maxed;
@@ -873,10 +873,12 @@ public enum MatrixOps { ;
 	 * @return
 	 */
 	public static void assignAllLessThan(double[][] matrix, double lessthan, double assign) {
+		int l = matrix[0].length;
 		for (int i = 0; i < matrix.length; i++) {
-			for (int j = 0; j < matrix[0].length; j++) {
-				if( matrix[i][j] < lessthan) {
-					matrix[i][j] = assign;
+			double[] mi = matrix[i];
+			for (int j = 0; j < l; j++) {
+				if( mi[j] < lessthan) {
+					mi[j] = assign;
 				}
 			}
 		}
@@ -898,14 +900,14 @@ public enum MatrixOps { ;
 	 * @return
 	 */
 	public static double [][] replaceNaN(double [][] matrix, double repl) {
-		double [][] result = new double[matrix.length][matrix[0].length];
+		int l = matrix[0].length;
+		double [][] result = new double[matrix.length][l];
 		for (int i = 0; i < matrix.length; i++) {
-			for (int j = 0; j < matrix[0].length; j++) {
-				if(Double.isNaN(matrix[i][j])) {
-					result[i][j] = repl;
-				} else {
-					result[i][j] = matrix[i][j];
-				}
+			double[] mi = matrix[i];
+			double[] ri = result[i];
+			for (int j = 0; j < l; j++) {
+				double mij = mi[j];
+				ri[j] = Double.isNaN(mij) ? repl : mij;
 			}
 		}
 		return result;
@@ -1007,9 +1009,8 @@ public enum MatrixOps { ;
 	
 	public static int [] range(int n) {
 		int [] result = new int[n];
-		for (int i = 0; i < n; i++) {
+		for (int i = 0; i < n; i++)
 			result[i] = i;
-		}
 		return result;
 	}
 

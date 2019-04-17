@@ -57,9 +57,9 @@ public abstract class FingerMove extends Dragging {
     }
 
     @Override
-    protected boolean ready(Finger f) {
+    protected boolean starting(Finger f) {
         this.start.set(pos(f));
-        return super.ready(f);
+        return super.starting(f);
     }
 
 

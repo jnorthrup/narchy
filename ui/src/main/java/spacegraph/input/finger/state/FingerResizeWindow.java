@@ -34,8 +34,8 @@ public class FingerResizeWindow extends FingerResize {
     }
 
     @Override
-    protected boolean ready(Finger f) {
-        if (super.ready(f)) {
+    protected boolean starting(Finger f) {
+        if (super.starting(f)) {
             JoglWindow ww = this.space.video;
             size = RectFloat.X0Y0WH(ww.getX(), ww.getY(), ww.getWidth(),ww.getHeight());
             return true;

@@ -85,14 +85,22 @@ public class BitmapLabel extends AbstractLabel {
 
 
 
-    public AbstractLabel textColor(float rr, float gg, float bb) {
+    public AbstractLabel textColor(float rr, float gg, float bb, float aa) {
         fgColor.set((rr), (gg), (bb), 1f);
         return this;
     }
 
-    public AbstractLabel backgroundColor(float rr, float gg, float bb) {
-        bgColor.set((rr), (gg), (bb), 1f);
+    public final AbstractLabel textColor(float rr, float gg, float bb) {
+        return textColor(rr, gg, bb, 1f);
+    }
+
+    public AbstractLabel backgroundColor(float rr, float gg, float bb, float aa) {
+        bgColor.set((rr), (gg), (bb), aa);
         return this;
+    }
+
+    public final AbstractLabel backgroundColor(float rr, float gg, float bb) {
+        return backgroundColor(rr, gg, bb, 1f);
     }
 
 
@@ -100,7 +108,6 @@ public class BitmapLabel extends AbstractLabel {
 
         MyBitmapTextGrid() {
             cursorCol = cursorRow = -1; //hidden
-            setFillTextBackground(false);
         }
 
         @Override

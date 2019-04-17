@@ -203,10 +203,6 @@ public class Shell {
                 }
             },1000,800);
 
-
-
-            termView.text.setFillTextBackground(false);
-
             termView.output().write('x');
             termView.output().flush();
         }

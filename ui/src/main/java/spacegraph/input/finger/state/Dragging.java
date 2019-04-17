@@ -15,7 +15,7 @@ abstract public class Dragging extends Fingering {
 
     @Override
     public boolean start(Finger f) {
-        if (pressedNow(f) && ready(f)) {
+        if (pressedNow(f) && starting(f)) {
             if (drag(f)) {
                 active = true;
                 return true;
@@ -25,7 +25,7 @@ abstract public class Dragging extends Fingering {
         return false;
     }
 
-    protected boolean ready(Finger f) {
+    protected boolean starting(Finger f) {
         return true;
     }
 

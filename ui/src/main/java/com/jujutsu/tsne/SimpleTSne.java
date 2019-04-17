@@ -36,6 +36,8 @@ public class SimpleTSne implements TSne {
     private double[][] iY;
     protected double[][] gains;
 
+    static final int TRIES = 50; //??
+
 
     private final double eta =
             //0.1f;
@@ -85,7 +87,7 @@ public class SimpleTSne implements TSne {
         P = scalarMult(P, 4);
         P = maximum(P, Double.MIN_NORMAL);
 
-        System.out.println("Y:Shape is = " + Y.length + " x " + Y[0].length);
+//        System.out.println("Y:Shape is = " + Y.length + " x " + Y[0].length);
 
 
         return Y;
@@ -109,7 +111,9 @@ public class SimpleTSne implements TSne {
                 sum_Y)),
                 sum_Y),
                 1), numMatrix);
-        assignAtIndex(numMatrix, range(n), range(n), 0);
+
+        int[] rn = range(n);
+        assignAtIndex(numMatrix, rn, rn, 0);
         double[][] Q = scalarDivide(numMatrix, sum(numMatrix));
 
         Q = maximum(Q, Float.MIN_NORMAL /*1e-12*/);
@@ -132,7 +136,6 @@ public class SimpleTSne implements TSne {
         if (logger.isDebugEnabled()) {
             double error = sum(scalarMultiply(P, replaceNaN(log(scalarDivide(P, Q)),
                     0
-
             )));
             logger.debug("error={}", error);
         }
@@ -162,7 +165,7 @@ public class SimpleTSne implements TSne {
         double[][] P = fillMatrix(n, n, 0.0);
         double[] beta = fillMatrix(n, n, 1.0)[0];
         double logU = Math.log(perplexity);
-        System.out.println("Starting x2p...");
+//        System.out.println("Starting x2p...");
         for (int i = 0; i < n; i++) {
             if (i % 500 == 0)
                 System.out.println("Computing P-values for point " + i + " of " + n + "...");
@@ -177,7 +180,7 @@ public class SimpleTSne implements TSne {
 
             double Hdiff = H - logU;
             int tries = 0;
-            while (Math.abs(Hdiff) > tol && tries < 50) {
+            while (Math.abs(Hdiff) > tol && tries < TRIES) {
                 if (Hdiff > 0) {
                     betamin = beta[i];
                     if (Double.isInfinite(betamax))
@@ -206,7 +209,7 @@ public class SimpleTSne implements TSne {
         r.beta = beta;
         double sigma = mean(sqrt(scalarInverse(beta)));
 
-        System.out.println("Mean value of sigma: " + sigma);
+        //System.out.println("Mean value of sigma: " + sigma);
 
         return r;
     }

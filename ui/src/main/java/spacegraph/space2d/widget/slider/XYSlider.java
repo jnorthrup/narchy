@@ -99,8 +99,8 @@ public class XYSlider extends PaintSurface implements Hovered {
     final Dragging drag = new SurfaceDragging(this, BUTTON) {
 
         @Override
-        protected boolean ready(Finger f) {
-            return pressing = super.ready(f);
+        protected boolean starting(Finger f) {
+            return pressing = super.starting(f);
         }
 
         @Override

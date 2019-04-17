@@ -64,9 +64,9 @@ public class Zoomed<S extends Surface> extends MutableUnitContainer<S> implement
         final float rate = 0.4f;
 
         @Override
-        protected boolean ready(Finger f) {
+        protected boolean starting(Finger f) {
             start.set(f.posPixel);
-            return super.ready(f);
+            return super.starting(f);
         }
 
         @Override
@@ -96,10 +96,10 @@ public class Zoomed<S extends Surface> extends MutableUnitContainer<S> implement
         }
 
         @Override
-        protected boolean ready(Finger f) {
+        protected boolean starting(Finger f) {
             if (f.fingering() == Fingering.Default) {
                 camStart = new v3(cam);
-                return super.ready(f);
+                return super.starting(f);
             } else {
                 return false;
             }
@@ -191,6 +191,9 @@ public class Zoomed<S extends Surface> extends MutableUnitContainer<S> implement
 
     @Override
     public Surface finger(Finger finger) {
+
+        finger.boundsScreen = bounds;
+
         return finger.push(cam, (f)->{
             Surface innerTouched = super.finger(f);
 

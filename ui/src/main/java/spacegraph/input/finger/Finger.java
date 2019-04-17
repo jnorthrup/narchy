@@ -52,7 +52,7 @@ abstract public class Finger implements Predicate<Fingering> {
     /**
      * ex: true when finger enters the window, false when it leaves
      */
-    protected final AtomicBoolean active = new AtomicBoolean(false);
+    protected final AtomicBoolean focused = new AtomicBoolean(false);
     protected final v2 _posGlobal = new v2();
     final FasterList<SurfaceTransform> transforms = new FasterList();
 
@@ -66,6 +66,7 @@ abstract public class Finger implements Predicate<Fingering> {
     //@Deprecated protected transient Function<v2, v2> _screenToGlobalRect;
     private final AtomicMetalBitSet buttonDown = new AtomicMetalBitSet();
     private final AtomicFloat[] rotation = new AtomicFloat[3];
+    public RectFloat boundsScreen;
 
     {
         rotation[0] = new AtomicFloat();
@@ -97,22 +98,22 @@ abstract public class Finger implements Predicate<Fingering> {
         return y;
     }
 
-    public Surface touching() {
-        return touching.getOpaque();
+    @Nullable public final Surface touching() {
+        return focused() ? touching.getOpaque() : null;
     }
 
     /**
      * call when finger exits the window / screen, the window becomes unfingerable, etc..
      */
-    public void exit() {
-        active.set(false);
+    public final void exit() {
+        focused.set(false);
     }
 
     /**
      * call when finger enters the window
      */
-    public void enter() {
-        active.set(true);
+    public final void enter() {
+        focused.set(true);
     }
 
     /**
@@ -301,7 +302,7 @@ abstract public class Finger implements Predicate<Fingering> {
 //    }
 
     private boolean focused() {
-        return active.getOpaque();
+        return focused.getOpaque();
     }
 
     public final v2 posRelative(Surface s) {
@@ -347,15 +348,10 @@ abstract public class Finger implements Predicate<Fingering> {
         v2 p = _posGlobal.clone();
         transforms.add(t);
         try {
+            Zoomed.Camera z = (Zoomed.Camera) t;
+            _posGlobal.set(z.pixelToGlobal(_posGlobal.x, _posGlobal.y));
 
-
-            _posGlobal.set(((Zoomed.Camera) t).pixelToGlobal(_posGlobal.x, _posGlobal.y));
-            //System.out.println(p + " " + _posGlobal);
-
-            S result = fingering.apply(this);
-
-            return result;
-
+            return fingering.apply(this);
         } finally {
             _posGlobal.set(p);
             transforms.removeLast();

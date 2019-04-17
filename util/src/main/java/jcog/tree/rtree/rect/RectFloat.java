@@ -56,6 +56,10 @@ public class RectFloat implements HyperRegion, Comparable<RectFloat> {
         return X0Y0WH(cx - w / 2, cy - h / 2, w, h);
     }
 
+    public static RectFloat XYWH(v2 center, float w, float h) {
+        return XYWH(center.x, center.y, w, h);
+    }
+
     /** x,y corresponds to "lower left" corner rather than XYWH's center */
     public static RectFloat X0Y0WH(float x0, float y0, float w, float h) {
         w = Math.abs(w); h = Math.abs(h);

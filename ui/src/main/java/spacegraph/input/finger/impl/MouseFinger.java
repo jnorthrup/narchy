@@ -20,7 +20,7 @@ abstract public class MouseFinger extends Finger {
 
     protected void update() {
 
-        if (!active.get())
+        if (!focused.get())
             return;
 
         if (!updating.compareAndSet(false, true)) {

@@ -23,11 +23,11 @@ abstract public class FingerMoveWindow extends FingerMove {
 
 
     @Override
-    protected boolean ready(Finger f) {
+    protected boolean starting(Finger f) {
         JoglDisplay w = window();
         windowStartX = w.video.getX();
         windowStartY = w.video.getY();
-        return super.ready(f);
+        return super.starting(f);
     }
 
     @Override public final v2 pos(Finger finger) {

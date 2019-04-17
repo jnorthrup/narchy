@@ -14,7 +14,7 @@ public abstract class SurfaceDragging extends Dragging {
     }
 
     @Override
-    protected boolean ready(Finger f) {
+    protected boolean starting(Finger f) {
         return f.intersects(s.bounds);
     }
 

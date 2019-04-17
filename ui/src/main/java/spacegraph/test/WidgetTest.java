@@ -7,10 +7,11 @@ import spacegraph.space2d.container.ContainerSurface;
 import spacegraph.space2d.container.Splitting;
 import spacegraph.space2d.container.graph.EditGraph2D;
 import spacegraph.space2d.container.grid.Gridding;
-import spacegraph.space2d.widget.button.*;
+import spacegraph.space2d.widget.button.CheckBox;
+import spacegraph.space2d.widget.button.HexButton;
+import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.space2d.widget.chip.NoiseVectorChip;
 import spacegraph.space2d.widget.chip.SpeakChip;
-import spacegraph.space2d.widget.console.TextEdit0;
 import spacegraph.space2d.widget.menu.ListMenu;
 import spacegraph.space2d.widget.menu.TabMenu;
 import spacegraph.space2d.widget.menu.view.GridMenuView;
@@ -89,14 +90,14 @@ public class WidgetTest {
                         ),
                         new XYSlider()
                 ),
-                "Dialog", () -> grid(
-                        new TextEdit0("xyz").show(),
-                        new FloatSlider(0.33f, 0.25f, 1, "Level"),
-                        new ButtonSet(ButtonSet.Mode.One, new CheckBox("X"), new CheckBox("y"), new CheckBox("z")),
-
-                        Submitter.text("OK", (String result) -> {
-                        })
-                ),
+//                "Dialog", () -> grid(
+//                        new TextEdit0("xyz").show(),
+//                        new FloatSlider(0.33f, 0.25f, 1, "Level"),
+//                        new ButtonSet(ButtonSet.Mode.One, new CheckBox("X"), new CheckBox("y"), new CheckBox("z")),
+//
+//                        Submitter.text("OK", (String result) -> {
+//                        })
+//                ),
 
                 "Wizard", ProtoWidget::new,
                 "Label", () -> grid(

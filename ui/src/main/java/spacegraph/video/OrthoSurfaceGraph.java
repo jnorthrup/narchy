@@ -222,6 +222,7 @@ public class OrthoSurfaceGraph extends JoglDisplay implements SurfaceGraph {
 
         g.add(fingerInfo);
 
+        //TODO static Animating.Label(
         return window(new Animating<>(g, ()->{
             Surface t = mouse.touching();
             fingerInfo.text(

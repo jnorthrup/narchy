@@ -75,7 +75,7 @@ public class SignalView extends Timeline2D {
         }
 
         @Override
-        protected boolean ready(Finger f) {
+        protected boolean starting(Finger f) {
             selectStart = sample(f.posGlobal().x);
             return true;
         }

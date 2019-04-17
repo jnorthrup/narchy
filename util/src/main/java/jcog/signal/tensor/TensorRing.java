@@ -3,7 +3,6 @@ package jcog.signal.tensor;
 import jcog.data.atomic.AtomicCycle;
 import jcog.signal.Tensor;
 import org.eclipse.collections.api.block.procedure.primitive.IntFloatProcedure;
-import org.eclipse.collections.api.block.procedure.primitive.IntProcedure;
 import org.jetbrains.annotations.Nullable;
 
 /** TODO delegate not inherit */

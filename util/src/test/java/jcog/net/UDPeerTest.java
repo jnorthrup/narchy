@@ -32,9 +32,11 @@ class UDPeerTest {
     void testDiscoverableByLANMulticast() throws IOException {
 
         UDPeer x = new UDPeer();
+        x.setFPS(4);
+
         UDPeer y = new UDPeer();
-        x.setFPS(16);
-        y.setFPS(16);
+        y.setFPS(4);
+
 
         Util.sleepMS(5000);
 

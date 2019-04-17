@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.primitives.Ints;
 import com.google.common.primitives.Longs;
+import jcog.Log;
 import jcog.Texts;
 import jcog.Util;
 import jcog.data.NumberX;
@@ -27,7 +28,6 @@ import org.HdrHistogram.Histogram;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -58,7 +58,7 @@ import static jcog.net.UDPeer.Msg.ADDRESS_BYTES;
  */
 public class UDPeer extends UDP {
 
-    protected final Logger logger;
+    protected static final Logger logger = Log.logger(UDPeer.class);
 
 //    public final HashMapTagSet can = new HashMapTagSet("C");
 //    public final HashMapTagSet need = new HashMapTagSet("N");
@@ -144,9 +144,7 @@ public class UDPeer extends UDP {
         while ((me = (int)(UUID.randomUUID().getLeastSignificantBits() & 0xffff)) == UNKNOWN_ID) ;
         this.me = me;
 
-        this.logger = LoggerFactory.getLogger(getClass().getSimpleName() + ':' + name());
-
-        them = new HijackBag<Integer, UDProfile>(3) {
+        them = new HijackBag<>(3) {
 
             @Override
             public void onAdd(UDProfile p) {
@@ -178,7 +176,7 @@ public class UDPeer extends UDP {
 
             @Override
             public void priAdd(UDProfile entry, float amount) {
-                
+
             }
 
 
@@ -277,7 +275,7 @@ public class UDPeer extends UDP {
 
     @Override
     protected void starting() {
-        synchronized (this) {
+        //synchronized (this) {
             super.starting();
             if (discover != null) {
                 discover.start();
@@ -285,19 +283,19 @@ public class UDPeer extends UDP {
             } else {
                 discoverEvery = Every.Never;
             }
-        }
+        //}
     }
 
     @Override
     protected void stopping() {
-        synchronized (this) {
+        //synchronized (this) {
             if (discover != null) {
                 discover.stop();
                 discoverEvery = Every.Never;
             }
             them.clear();
             super.stopping();
-        }
+        //}
     }
 
 
