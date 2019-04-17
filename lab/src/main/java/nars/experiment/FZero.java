@@ -60,7 +60,7 @@ public class FZero extends GameX {
             return new FZero($.the("fz"), n);
 
 
-        }, fps);
+        }, fps*2);
 
 //        int instances = 2;
 //        for (int i = 0; i < instances; i++)

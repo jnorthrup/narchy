@@ -245,8 +245,8 @@ abstract public class GameX extends Game {
                         //CaffeineMemory.soft()
 
                         new CaffeineMemory(
-                                //    16*1024
-                                64 * 1024
+                                   16*1024
+                                //64 * 1024
                         )
                         //, c -> (int) Math.ceil(c.term().voluplexity()))
 

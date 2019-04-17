@@ -29,7 +29,7 @@ public interface AbstractTermTransform extends TermTransform, nars.term.util.bui
     /** global default transform procedure: can decide semi-optimal transform implementation */
     static Term transform(LazyCompound l, Term x, TermTransform transform, int volMax) {
         if (x instanceof Compound && Param.TERMIFY_TRANSFORM_LAZY) {
-            return ((AbstractTermTransform)transform).applyCompoundLazy(l, (Compound)x,
+            return ((AbstractTermTransform)transform).applyCompoundLazy((Compound)x, l,
                     //HeapTermBuilder.the
                     Op.terms,
                     volMax
@@ -191,10 +191,10 @@ public interface AbstractTermTransform extends TermTransform, nars.term.util.bui
     }
 
     default Term applyCompoundLazy(Compound x) {
-        return applyCompoundLazy(new LazyCompound(), x, Op.terms, Param.term.COMPOUND_VOLUME_MAX);
+        return applyCompoundLazy(x, new LazyCompound(), Op.terms, Param.term.COMPOUND_VOLUME_MAX);
     }
 
-    default Term applyCompoundLazy(LazyCompound l, Compound x, TermBuilder b, int volMax) {
+    default Term applyCompoundLazy(Compound x, LazyCompound l, TermBuilder b, int volMax) {
         l = applyLazy(l, x);
         return l == null ? Null : l.get(b, volMax);
     }

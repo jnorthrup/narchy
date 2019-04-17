@@ -436,7 +436,7 @@ public class NARio extends GameX {
             return x;
 
 
-        }, fps);
+        }, fps*2);
 
 
     }

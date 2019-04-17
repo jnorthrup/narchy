@@ -69,7 +69,7 @@ public class Derivation extends PreDerivation {
 
     final UnifyPremise unifyPremise = new UnifyPremise();
 
-    public final Premisify.MatchFork matchFork = new Premisify.MatchFork();
+    public final Premisify.MatchFork termBuilder = new Premisify.MatchFork();
 
     private long timePrev = Long.MIN_VALUE;
 
@@ -244,7 +244,20 @@ public class Derivation extends PreDerivation {
                 , null, Param.unify.UNIFICATION_STACK_CAPACITY
         );
 
-        this.anon = new AnonWithVarShift(ANON_INITIAL_CAPACITY, Op.VAR_DEP.bit | Op.VAR_QUERY.bit);
+        this.anon = new AnonWithVarShift(ANON_INITIAL_CAPACITY, Op.VAR_DEP.bit | Op.VAR_QUERY.bit) {
+            @Override
+            protected Term putCompound(Compound x) {
+                //return super.putCompound(x);
+                termBuilder.clear();
+                return applyCompoundLazy(x, termBuilder, Op.terms, Param.term.COMPOUND_VOLUME_MAX);
+            }
+            @Override
+            protected Term getCompound(Compound x) {
+                //return super.putCompound(x);
+                termBuilder.clear();
+                return applyCompoundLazy(x, termBuilder, Op.terms, Param.term.COMPOUND_VOLUME_MAX);
+            }
+        };
     }
 
     public DerivationTransform transform;
