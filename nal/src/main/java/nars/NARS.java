@@ -233,6 +233,10 @@ public class NARS {
         return new DefaultNAR(nal, false).get();
     }
 
+    public static NAR tmp(int nalStart, int nalEnd) {
+        return new NARS.DefaultNAR(0, false).withNAL(nalStart,nalEnd).get();
+    }
+
     /**
      * single thread but for multithread usage:
      * unbounded soft reference index

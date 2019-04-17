@@ -24,7 +24,9 @@ public class NAL6Test extends NALTest {
 
     @Override
     protected NAR nar() {
+//        NAR n = NARS.tmp(6, 8);
         NAR n = NARS.tmp(6);
+
         n.termVolumeMax.set(14);
         //n.freqResolution.setAt(0.1f);
         n.confMin.set(0.25f);
@@ -239,38 +241,7 @@ public class NAL6Test extends NALTest {
                 0.43f);
     }
 
-    @Test
-    void variable_elimination_sim_subj() {
 
-        TestNAR tester = test;
-        tester.believe("(($x --> bird) <-> ($x --> swimmer))");
-        tester.believe("(swan --> bird)", 0.90f, 0.9f);
-        tester.mustBelieve(cycles, "(swan --> swimmer)", 0.90f,
-                0.81f);
-
-    }
-
-    @Test
-    void variable_elimination_analogy_substIfUnify() {
-
-        TestNAR tester = test;
-        tester.believe("((bird --> $x) <-> (swimmer --> $x))");
-        tester.believe("(bird --> swan)", 0.80f, 0.9f);
-        tester.mustBelieve(cycles, "(swimmer --> swan)", 0.80f,
-                0.81f);
-
-    }
-
-    @Test
-    void variable_elimination_analogy_substIfUnifyOther() {
-        //same as variable_elimination_analogy_substIfUnify but with sanity test for commutive equivalence
-        TestNAR tester = test;
-        tester.believe("((bird --> $x) <-> (swimmer --> $x))");
-        tester.believe("(swimmer --> swan)", 0.80f, 0.9f);
-        tester.mustBelieve(cycles, "(bird --> swan)", 0.80f,
-                0.81f);
-
-    }
 
     @Test
     void variable_elimination_analogy_substIfUnify_Neg() {

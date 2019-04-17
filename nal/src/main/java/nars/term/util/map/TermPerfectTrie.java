@@ -20,7 +20,7 @@ import java.util.List;
  */
 public class TermPerfectTrie<K extends Term, V> extends Trie<List<K>, V> implements TrieSequencer<List<K>> {
 
-    final ObjectIntHashMap<Term> conds = new ObjectIntHashMap<>();
+    private final ObjectIntHashMap<Term> conds = new ObjectIntHashMap<>();
 
     public void print() {
         print(System.out);
@@ -37,7 +37,7 @@ public class TermPerfectTrie<K extends Term, V> extends Trie<List<K>, V> impleme
 
 
 
-    public static <A, B> void printSummary(TrieNode<List<A>, B> node, PrintStream out) {
+    private static <A, B> void printSummary(TrieNode<List<A>, B> node, PrintStream out) {
 
         node.forEach(n -> {
             List<A> seq = n.seq();
@@ -85,7 +85,7 @@ public class TermPerfectTrie<K extends Term, V> extends Trie<List<K>, V> impleme
         return s.getSummary().toString().replace('\n', ' ').replace("StatisticalSummaryValues: ", "");
     }
 
-    public static <K, V> void costAnalyze(FloatFunction<K> costFn, SummaryStatistics termCost, SummaryStatistics sequenceLength, SummaryStatistics branchFanOut, SummaryStatistics endDepth, int[] currentDepth, TrieNode<List<K>, V> root) {
+    private static <K, V> void costAnalyze(FloatFunction<K> costFn, SummaryStatistics termCost, SummaryStatistics sequenceLength, SummaryStatistics branchFanOut, SummaryStatistics endDepth, int[] currentDepth, TrieNode<List<K>, V> root) {
 
         int nc = root.childCount();
         if (nc > 0)
@@ -127,7 +127,7 @@ public class TermPerfectTrie<K extends Term, V> extends Trie<List<K>, V> impleme
     /**
      * override this to implement custom merging behavior; there can be only one
      */
-    protected void onMatch(K existing, K incoming) {
+    private void onMatch(K existing, K incoming) {
 
     }
 

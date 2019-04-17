@@ -105,11 +105,13 @@ public class PriNode extends PLink<Term> {
 
         public ConstPriNode(Object id, float initialValue) {
             this(id, new FloatRange(initialValue, ScalarValue.EPSILON, 1f));
+
         }
 
         public ConstPriNode(Object id, FloatRange f) {
             super(id);
             this.f = f;
+            pri(f.floatValue());
         }
 
         @Override
@@ -119,7 +121,7 @@ public class PriNode extends PLink<Term> {
 
         @Override
         public void update(MapNodeGraph<PriNode, Object> graph) {
-            this.amp.set(f.floatValue());
+            pri(f.floatValue());
             super.update(graph);
         }
     }

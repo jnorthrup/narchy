@@ -32,6 +32,9 @@ public class DeriverRules {
 
     public final DeriverPlanner planner;
 
+    /** structure vector of operator types which must not be anonymized in premise formation */
+    public final int mustAtomize;
+
     static short[] what(Unify p) {
         Derivation d = (Derivation)p;
         d.canCollector.clear();
@@ -39,7 +42,7 @@ public class DeriverRules {
         return Util.toShort(d.canCollector.toArray());
     }
 
-    DeriverRules(PREDICATE<Derivation> what, DeriveAction[] actions, DeriverPlanner planner) {
+    DeriverRules(PREDICATE<Derivation> what, DeriveAction[] actions, int mustAtomize, DeriverPlanner planner) {
 
         this.what = what;
 
@@ -49,6 +52,9 @@ public class DeriverRules {
         this.why = Stream.of(actions).flatMap(b -> Stream.of(b.why)).toArray(Why[]::new);
 
         this.planner = planner;
+
+        this.mustAtomize = mustAtomize;
+
     }
 
     /**

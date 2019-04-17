@@ -6,6 +6,7 @@ import nars.Op;
 import nars.The;
 import nars.eval.Evaluation;
 import nars.subterm.Subterms;
+import nars.term.Compound;
 import nars.term.Functor;
 import nars.term.Term;
 import nars.term.Variable;
@@ -96,15 +97,17 @@ public final class Equal extends InlineCommutiveBinaryBidiFunctor implements The
             //algebraic solutions TODO use symbolic algebra system
             Term xf = Functor.func(x);
             if (xf.equals(MathFunc.add)) {
-                Term[] xa = Functor.funcArgsArray(x, 2);
-                if (xa[0].op().var && xa[1].op() == INT)
-                    return e.is(xa[0], Int.the(((Int) y).id - ((Int) xa[1]).id)) ? True : Null; //"equal(add(#x,a),b)"
-                else if (xa[1].op().var && xa[0].op() == INT)
+                Subterms xa = Functor.args((Compound)x, 2);
+                Term xa0 = xa.sub(0), xa1 = xa.sub(1);
+                if (xa0.op().var && xa1.op() == INT)
+                    return e.is(xa0, Int.the(((Int) y).id - ((Int) xa1).id)) ? True : Null; //"equal(add(#x,a),b)"
+                else if (xa1.op().var && xa0.op() == INT)
                     throw new TODO();
             } else if (xf.equals(MathFunc.mul)) {
-                Term[] xa = Functor.funcArgsArray(x, 2);
-                if (xa[0].op().var && xa[1].op() == INT)
-                    return e.is(xa[0], $.the(((double)((Int) y).id) / ((Int) xa[1]).id)) ? True : Null; //"equal(mul(#x,a),b)"
+                Subterms xa = Functor.args((Compound)x, 2);
+                Term xa0 = xa.sub(0), xa1 = xa.sub(1);
+                if (xa0.op().var && xa1.op() == INT)
+                    return e.is(xa0, $.the(((double)((Int) y).id) / ((Int) xa1).id)) ? True : Null; //"equal(mul(#x,a),b)"
             }
         }
 

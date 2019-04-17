@@ -6,7 +6,6 @@ import jcog.util.ArrayUtils;
 import nars.$;
 import nars.Narsese;
 import nars.Op;
-import nars.concept.Operator;
 import nars.derive.Derivation;
 import nars.derive.PreDerivation;
 import nars.derive.filter.CommutativeConstantPreFilter;
@@ -137,7 +136,7 @@ public class PremiseRuleSource extends ProxyTerm {
                 throw new RuntimeException("invalid precondition: " + p);
 
             String pred = name.toString();
-            Subterms args = Operator.args(p);
+            Subterms args = Functor.args(p);
             int an = args.subs();
             Term X = an > 0 ? args.sub(0) : null;
             Term Y = an > 1 ? args.sub(1) : null;

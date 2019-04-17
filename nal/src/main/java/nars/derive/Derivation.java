@@ -334,6 +334,7 @@ public class Derivation extends PreDerivation {
             this.taskTerm = anon.put(nextTaskTerm);
             if (taskTerm instanceof Bool || ((taskTerm instanceof Compound && nextTaskTerm instanceof Compound) && taskTerm.op() != nextTaskTerm.op())) //(!taskTerm.op().taskable)
                 throw new WTF(nextTaskTerm + " could not be anon, result: " + taskTerm);
+            assert (taskTerm != null) : (nextTask + " could not be anonymized: " + nextTaskTerm.anon() + " , " + taskTerm);
             this.taskUniques = anon.uniques();
         }
 
@@ -341,7 +342,6 @@ public class Derivation extends PreDerivation {
         if (currentTask == null || currentTask != nextTask) {
 
 
-            assert (taskTerm != null) : (nextTask + " could not be anonymized: " + nextTaskTerm.anon() + " , " + taskTerm);
 
             this.taskStamp.clear(); //force (re-)compute in post-derivation stage
 
@@ -517,6 +517,7 @@ public class Derivation extends PreDerivation {
         }
 
         this.deriver = d;
+        //this.anon.mustAtomize(deriver.rules.mustAtomize | Op.Variable); //<- not ready yet
         return this;
     }
 
@@ -679,7 +680,8 @@ public class Derivation extends PreDerivation {
         @Override
         protected Term resolve(nars.term.Variable x) {
             if (xy != null) {
-                Term y = xy.apply(x); if (y == null) return x; else return y;
+                Term y = xy.apply(x);
+                return y == null ? x : y;
             } else
                 return Derivation.this.resolve(x);
         }

@@ -186,11 +186,11 @@ public enum ListFunc {
         }
     });
 
-    public static final Functor subs = Functor.f2Or3("subs", (Term[] args) -> {
-        if (args.length == 2) {
+    public static final Functor subs = Functor.f2Or3("subs", (Subterms args) -> {
+        if (args.subs() == 2) {
 
-            Term x = args[0];
-            Term n = args[1];
+            Term x = args.sub(0);
+            Term n = args.sub(1);
             if (n.op() == INT) {
                 int nn = ((Int) n).id;
                 Subterms xx = x.subterms();

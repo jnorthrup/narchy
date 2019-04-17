@@ -7,7 +7,6 @@ import nars.NAR;
 import nars.Op;
 import nars.concept.Concept;
 import nars.concept.NodeConcept;
-import nars.concept.Operator;
 import nars.concept.PermanentConcept;
 import nars.eval.Evaluation;
 import nars.link.TermLinker;
@@ -43,6 +42,28 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, B
         super(atom, TermLinker.NullLinker);
     }
 
+    @Deprecated public static Subterms args(Term x) {
+        return args((Compound)x);
+    }
+    @Deprecated public static Term[] argsArray(Term x) {
+        return args(x).arrayShared();
+    }
+
+    /**
+     * returns the arguments of an operation (task or target)
+     */
+    public static Subterms args(Compound x) {
+        assert (x.op() == INH && x.subIs(1, ATOM));
+        return x.sub(0).subterms();
+    }
+
+    @Nullable public static Subterms args(Compound x, int requireArity) {
+        Subterms s = args(x);
+        return s.subs()==requireArity ?  s : null;
+    }
+
+
+
     @Override
     public final Op op() {
         return ATOM;
@@ -60,20 +81,10 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, B
         return false;
     }
 
-    public static Term[] funcArgsArray(Term x) {
-        return Operator.args(x).arrayShared();
-    }
-
-    @Nullable public static Term[] funcArgsArray(Term x, int requireN) {
-        Subterms a = Operator.args(x);
-        return a.subs() == requireN ? a.arrayShared() : null;
-    }
-
     @Override
     public final byte[] bytes() {
         return ((Atomic) term).bytes();
     }
-
 
     @Override
     public Term term() {
@@ -154,7 +165,7 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, B
     }
 
     public static LambdaFunctor f1(String termAtom, Function<Term, Term> ff) {
-        return f1(fName(termAtom), safeFunctor(ff));
+        return f1(fName(termAtom), /*safeFunctor*/(ff));
     }
 
     public static Functor f1Inline(String termAtom, Function<Term, Term> ff) {
@@ -172,19 +183,16 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, B
     }
 
 
-    private static Function<Term, Term> safeFunctor(Function<Term, Term> ff) {
-        return x ->
-                (x == null) ? null
-                        :
-                        ff.apply(x);
-    }
+//    private static Function<Term, Term> safeFunctor(Function<Term, Term> ff) {
+//        return x -> x == null ? null : ff.apply(x);
+//    }
 
     /**
      * a functor involving a concept resolved by the 1st argument target
      */
     public static LambdaFunctor f1Concept(String termAtom, NAR nar, BiFunction<Concept, NAR, Term> ff) {
         return f1(fName(termAtom), t -> {
-            Concept c = nar.concept(t);
+            Concept c = nar.conceptualizeDynamic(t);
             return c != null ? ff.apply(c, nar) : null;
         });
     }
@@ -214,19 +222,8 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, B
         return f(termAtom, 3, (tt) -> ff.apply(tt.sub(0), tt.sub(1), tt.sub(2)));
     }
 
-    public static LambdaFunctor f2Or3(String termAtom, Function<Term[], Term> ff) {
-        return f2Or3(fName(termAtom), ff);
+    public static LambdaFunctor f2Or3(String termAtom, Function<Subterms, Term> ff) {
+        return f(fName(termAtom), 2, 3, ff::apply);
     }
-
-    private static LambdaFunctor f2Or3(Atom termAtom, Function<Term[], Term> ff) {
-        return f(termAtom, 2, 3, (tt) -> ff.apply(tt.arrayShared()));
-    }
-
-
-//    static class TheAbstractInlineFunctor1Inline extends AbstractInlineFunctor1.MyAbstractInlineFunctor1Inline implements The {
-//        public TheAbstractInlineFunctor1Inline(String termAtom, Function<Term, Term> ff) {
-//            super(termAtom, ff);
-//        }
-//    }
 
 }

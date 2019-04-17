@@ -17,9 +17,20 @@ public class AnonWithVarShift extends CachedAnon {
     /** offsets */
     int indepShift = 0, depShift = 0, queryShift = 0;
 
+    private int mustAtomize = Integer.MAX_VALUE;
+
     public AnonWithVarShift(int cap, int variableStructure) {
         super(cap);
         this.mask = variableStructure;
+    }
+
+    public void mustAtomize(int mustAtomize) {
+        this.mustAtomize = mustAtomize;
+    }
+
+    @Override
+    protected boolean intern(Term x) {
+        return super.intern(x) || (mustAtomize!=Integer.MAX_VALUE && !x.hasAny(mustAtomize));
     }
 
     @Override

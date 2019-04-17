@@ -12,7 +12,7 @@ import nars.NAR;
 import nars.Op;
 import nars.Task;
 import nars.concept.Concept;
-import nars.concept.Operator;
+import nars.term.Functor;
 import nars.term.Term;
 import nars.time.part.DurLoop;
 import nars.truth.Truth;
@@ -51,7 +51,7 @@ public class AtomicOperations implements BiFunction<Task, NAR, Task> {
 
     private final AtomicReference<DurLoop> onCycle = new AtomicReference(null);
 
-    public AtomicOperations(@Nullable BiConsumer<Term, Timed> exe, float exeThresh) {
+    public AtomicOperations(@Nullable BiConsumer</*TODO: Compound*/Term, Timed> exe, float exeThresh) {
         this(exe, new FloatRange(exeThresh, 0.5f, 1f));
     }
 
@@ -65,7 +65,7 @@ public class AtomicOperations implements BiFunction<Task, NAR, Task> {
      * implementations can override this to prefilter invalid operation patterns
      */
     protected Task exePrefilter(Task x) {
-        return Operator.args(x.term()).hasAny(Op.AtomicConstant) ? x : null;
+        return Functor.args(x.term()).hasAny(Op.AtomicConstant) ? x : null;
     }
 
 

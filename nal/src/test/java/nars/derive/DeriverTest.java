@@ -145,17 +145,19 @@ class DeriverTest {
     @Test
     void testDeriveQuest() {
 
-            test("(P --> S), (S --> P), task(\"?\") |- (P --> S),   (Punctuation:Quest)")
+        int cycles = 16;
+        test("(P --> S), (S --> P), task(\"?\") |- (P --> S),   (Punctuation:Quest)")
                 .ask("b:a")
                 .believe("a:b")
-                .mustOutput(100, "b:a", QUEST)
-                .run(100)
+                .mustOutput(cycles, "b:a", QUEST)
+                .run(cycles)
                 ;
     }
 
     private TestNAR test(String... rules) {
         NAR n = new NARS().get();
         new BatchDeriver(new PremiseDeriverRuleSet(n, rules));
+        n.synch();
         TestNAR t = new TestNAR(n);
         tests.add(t);
         return t;

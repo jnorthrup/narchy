@@ -2,6 +2,8 @@ package nars.op;
 
 import nars.*;
 import nars.concept.Concept;
+import nars.subterm.Subterms;
+import nars.term.Functor;
 import nars.term.Term;
 import nars.term.atom.Atomic;
 import nars.test.TestNAR;
@@ -15,7 +17,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import static nars.Op.COMMAND;
 import static nars.term.Functor.f;
-import static nars.term.Functor.funcArgsArray;
 import static org.junit.jupiter.api.Assertions.*;
 
 
@@ -86,13 +87,13 @@ class OperatorTest {
         NAR n = NARS.tmp();
         n.time.dur(10);
         n.addOp(Atomic.atom("x"), new AtomicOperations((x, nar) -> {
-            Term[] args = funcArgsArray(x);
-            if (args.length > 0) {
+            Subterms args = Functor.args(x);
+            if (args.subs() > 0) {
                 Term r;
-                if ($.the(1).equals(args[0])) {
+                if ($.the(1).equals(args.sub(0))) {
                     System.err.println("YES");
                     r = $.the("good");
-                } else if ($.the(0).equals(args[0])) {
+                } else if ($.the(0).equals(args.sub(0))) {
                     r = $.the("good").neg();
                 } else {
                     return;
@@ -115,7 +116,7 @@ class OperatorTest {
         NAR n = NARS.tmp();
         n.addOp(Atomic.atom("x"), new AtomicOperations((t, nar) -> {
             Term x = t.term();
-            Term[] args = funcArgsArray(t);
+            Subterms args = Functor.args(t);
             Term y = $.func("args", args);
             Term xy = $.impl(x, y);
             n.believe(xy, Tense.Present);

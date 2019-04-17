@@ -19,6 +19,7 @@ import nars.control.channel.CauseChannel;
 import nars.subterm.Subterms;
 import nars.task.ITask;
 import nars.task.NALTask;
+import nars.term.Functor;
 import nars.term.ProxyTerm;
 import nars.term.Term;
 import nars.term.atom.Atomic;
@@ -482,7 +483,7 @@ public class Opjects extends DefaultTermizer {
 
             runCache = CaffeineMemoize.build(term -> {
 
-                Subterms args = validArgs(Operator.args(term));
+                Subterms args = validArgs(Functor.args(term));
                 if (args == null)
                     return null;
 

@@ -934,7 +934,7 @@ public class NAL5Test extends NALTest {
     }
 
     @Test
-    public void testImplSubj_Questioned() {
+    void testImplSubj_Questioned() {
         test
             .termVolMax(3)
             .input("(x ==> y)?")
@@ -944,7 +944,7 @@ public class NAL5Test extends NALTest {
     }
 
     @Test
-    public void testImplSubj_and_ConditionsQuestioned_fwd() {
+    void testImplSubj_and_ConditionsQuestioned_fwd() {
         test.termVolMax(3)
                 .ask("x")
                 .input("(x ==> y).")
@@ -952,7 +952,7 @@ public class NAL5Test extends NALTest {
         ;
     }
     @Test
-    public void testImplSubj_and_ConditionsQuestioned_rev() {
+    void testImplSubj_and_ConditionsQuestioned_rev() {
         test.termVolMax(3)
                 .ask("y")
                 .input("(x ==> y).")
@@ -961,7 +961,7 @@ public class NAL5Test extends NALTest {
     }
 
     @Test
-    public void testImplNegSubjQuestioned() {
+    void testImplNegSubjQuestioned() {
         test.termVolMax(4)
                 .input("(--x ==> y)?")
                 .mustQuestion(cycles, "x")
@@ -970,7 +970,7 @@ public class NAL5Test extends NALTest {
     }
 
     @Test
-    public void testImplConjSubjQuestioned() {
+    void testImplConjSubjQuestioned() {
         test
                 .input("((a && b) ==> y)?")
                 .mustQuestion(cycles, "(a && b)")
@@ -978,7 +978,7 @@ public class NAL5Test extends NALTest {
     }
 
     @Test
-    public void testAnonymousAbduction() {
+    void testAnonymousAbduction() {
         test
                 .believe("(x ==> #1)")
                 .ask("x")
@@ -987,7 +987,7 @@ public class NAL5Test extends NALTest {
     }
 
     @Test
-    public void testAnonymousAbductionNeg() {
+    void testAnonymousAbductionNeg() {
         test
                 .believe("(--x ==> #1)")
                 .ask("x")
@@ -996,7 +996,7 @@ public class NAL5Test extends NALTest {
     }
 
     @Test
-    public void testAnonymousDeduction() {
+    void testAnonymousDeduction() {
         test
                 .believe("(#1 ==> x)")
                 .ask("x")
@@ -1005,7 +1005,7 @@ public class NAL5Test extends NALTest {
     }
 
     @Test
-    public void testAnonymousDeductionNeg() {
+    void testAnonymousDeductionNeg() {
         test
                 .believe("(#1 ==> --x)")
                 .ask("x")
@@ -1014,7 +1014,7 @@ public class NAL5Test extends NALTest {
     }
 
     @Test
-    public void conjPreconditionDecompositionToImpl_BackChaining_Question() {
+    void conjPreconditionDecompositionToImpl_BackChaining_Question() {
         test
                 .ask("((x&&y)==>z)")
                 .mustQuestion(cycles, "(x&&y)")
@@ -1026,7 +1026,7 @@ public class NAL5Test extends NALTest {
     }
 
     @Test
-    public void conjPostconditionDecompositionToImpl_BackChaining_Question() {
+    void conjPostconditionDecompositionToImpl_BackChaining_Question() {
         test
                 .ask("(z==>(x&&y))")
                 .mustQuestion(cycles, "(x&&y)")
@@ -1036,11 +1036,44 @@ public class NAL5Test extends NALTest {
     }
 
     @Test
-    public void implConjNeutralize() {
+    void implConjNeutralize() {
         test
                 .believe("((x && y) ==> z)")
                 .believe("((x && --y) ==> --z)")
                 .mustBelieve(cycles, "((y ==> z) && (--y ==> --z))", 1f, 0.45f)
         ;
+    }
+
+
+    @Test
+    void variable_elimination_sim_subj() {
+
+        TestNAR tester = test;
+        tester.believe("(($x --> bird) <-> ($x --> swimmer))");
+        tester.believe("(swan --> bird)", 0.90f, 0.9f);
+        tester.mustBelieve(cycles, "(swan --> swimmer)", 0.90f,
+                0.81f);
+
+    }
+    @Test
+    void variable_elimination_analogy_substIfUnify() {
+
+        TestNAR tester = test;
+        tester.believe("((bird --> $x) <-> (swimmer --> $x))");
+        tester.believe("(bird --> swan)", 0.80f, 0.9f);
+        tester.mustBelieve(cycles, "(swimmer --> swan)", 0.80f,
+                0.81f);
+
+    }
+
+    @Test
+    void variable_elimination_analogy_substIfUnifyOther() {
+        //same as variable_elimination_analogy_substIfUnify but with sanity test for commutive equivalence
+        TestNAR tester = test;
+        tester.believe("((bird --> $x) <-> (swimmer --> $x))");
+        tester.believe("(swimmer --> swan)", 0.80f, 0.9f);
+        tester.mustBelieve(cycles, "(bird --> swan)", 0.80f,
+                0.81f);
+
     }
 }

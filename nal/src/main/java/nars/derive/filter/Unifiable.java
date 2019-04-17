@@ -3,7 +3,6 @@ package nars.derive.filter;
 import jcog.WTF;
 import nars.$;
 import nars.Param;
-import nars.concept.Operator;
 import nars.derive.PreDerivation;
 import nars.derive.premise.PremiseRuleSource;
 import nars.op.UniSubst;
@@ -83,7 +82,7 @@ public class Unifiable extends AbstractPred<PreDerivation> {
 
         if (concFunc.equals(UniSubst.unisubst)) {
 
-            Subterms a = Operator.args(c);
+            Subterms a = Functor.args(c);
 
             Term x = a.sub(1);
 

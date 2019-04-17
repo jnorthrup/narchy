@@ -3,7 +3,6 @@ package nars.concept;
 import jcog.util.ArrayUtils;
 import nars.*;
 import nars.link.TermLinker;
-import nars.subterm.Subterms;
 import nars.task.NALTask;
 import nars.term.Term;
 import nars.term.atom.Atom;
@@ -12,7 +11,6 @@ import nars.term.atom.Atomic;
 import java.util.function.BiFunction;
 
 import static nars.Op.ATOM;
-import static nars.Op.INH;
 
 /**
  * Operator interface specifically for goal and command punctuation
@@ -61,14 +59,6 @@ public final class Operator extends NodeConcept implements PermanentConcept, Ato
     @Override
     public byte[] bytes() {
         return ((Atomic) term).bytes();
-    }
-
-    /**
-     * returns the arguments of an operation (task or target)
-     */
-    public static Subterms args(Term operation) {
-        assert (operation.op() == INH && operation.subIs(1, ATOM));
-        return operation.sub(0).subterms();
     }
 
     public static Task error(Task x, Throwable error, long when) {

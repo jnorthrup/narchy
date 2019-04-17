@@ -24,6 +24,7 @@ public class NAL7Test extends NALTest {
     public static final float CONF_TOLERANCE_FOR_PROJECTIONS = 2f; //200%
     private final static int cycles = 750;
 
+
     @BeforeEach
     void setTolerance() {
         test.confTolerance(CONF_TOLERANCE_FOR_PROJECTIONS);

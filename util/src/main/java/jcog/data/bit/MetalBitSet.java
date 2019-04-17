@@ -105,6 +105,16 @@ abstract public class MetalBitSet {
     }
 
 
+    public void setAll(int bitVector, int o) {
+        assert(o < 32);
+        for (int i = 0; bitVector!=0 && i < o; i++) {
+            if ((bitVector & 1) != 0)
+                set(i);
+            bitVector >>= 1;
+        }
+    }
+
+
     /** TODO implement better bulk setAt(start,end,v) impl */
     public static class LongArrayBitSet extends MetalBitSet {
         long[] data;
@@ -195,7 +205,6 @@ abstract public class MetalBitSet {
                 if (next) {
                     d[i] |= j;
                 } else {
-
                     d[i] &= ~j;
                 }
             }
@@ -258,9 +267,13 @@ abstract public class MetalBitSet {
     }
 
 
-    public static class IntBitSet extends MetalBitSet {
+    public static final class IntBitSet extends MetalBitSet {
 
         private int x;
+
+        public final int intValue() {
+            return x;
+        }
 
         @Override
         public int first(boolean what) {

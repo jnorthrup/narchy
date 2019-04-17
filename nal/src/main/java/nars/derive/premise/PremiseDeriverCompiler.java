@@ -1,6 +1,7 @@
 package nars.derive.premise;
 
 import jcog.Util;
+import jcog.data.bit.MetalBitSet;
 import jcog.data.list.FasterList;
 import jcog.memoize.CaffeineMemoize;
 import jcog.tree.perfect.TrieNode;
@@ -29,7 +30,6 @@ import java.util.function.Function;
 public enum PremiseDeriverCompiler {
     ;
 
-
     public static DeriverRules the(Set<PremiseRuleProto> r) {
         return the.apply(r);
     }
@@ -42,21 +42,29 @@ public enum PremiseDeriverCompiler {
         assert (!r.isEmpty());
 
         /** indexed by local (deriver-specific) id */
-        int rules = r.size();
+        int n = r.size();
 
         /** map preconditions to conclusions by local conclusion id.
          * the key is an array with a null placeholder at the end to be completed later in this stage
          * */
-        final List<Pair<PREDICATE<Derivation>[], DeriveAction>> pairs = new FasterList<>(rules);
+        final List<Pair<PREDICATE<Derivation>[], DeriveAction>> pairs = new FasterList<>(n);
 
-        r.forEach(rule -> pairs.add(rule.rule));
+        int o = Op.ops.length;
+        MetalBitSet mustAtomize = MetalBitSet.bits(o);
+        r.forEach(rule -> {
+            mustAtomize.setAll(rule.taskPattern.structure(), o);
+            mustAtomize.setAll(rule.beliefPattern.structure(), o);
+            pairs.add(rule.rule);
+        });
+        int mustAtomizableStructure = ((MetalBitSet.IntBitSet)mustAtomize).intValue() & ((1 << (o+1))-1);
+        //int nonAtomizableStructure = (~((MetalBitSet.IntBitSet)mustAtomize).intValue()) & ((1 << (o+1))-1);
 
         final TermPerfectTrie<PREDICATE<Derivation>, DeriveAction> path = new TermPerfectTrie<>();
 
 
-        DeriveAction[] rootBranches = new DeriveAction[rules];
+        DeriveAction[] rootBranches = new DeriveAction[n];
 
-        for (int i = 0; i < rules; i++) {
+        for (int i = 0; i < n; i++) {
             Pair<PREDICATE<Derivation>[], DeriveAction> pair = pairs.get(i);
 
             DeriveAction POST = pair.getTwo();
@@ -81,6 +89,7 @@ public enum PremiseDeriverCompiler {
         return new DeriverRules(
                 PremiseDeriverCompiler.compile(path),
                 rootBranches,
+                mustAtomizableStructure,
 
                 //DeriverPlanner.DirectDeriverPlanner
                 new DeriverPlanner.CentralMemoizer()

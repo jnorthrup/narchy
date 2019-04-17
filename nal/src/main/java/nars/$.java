@@ -155,6 +155,9 @@ public enum $ {
     }
 
 
+    public static Term func(String opTerm, Subterms arg) {
+        return func(Atomic.the(opTerm), arg);
+    }
     public static Term func(String opTerm, String... arg) throws Narsese.NarseseException {
         return func(Atomic.the(opTerm), $.array(arg));
     }
@@ -163,6 +166,9 @@ public enum $ {
      * function ((a,b)==>c) aka: c(a,b)
      */
     public static Term func(Atomic opTerm, Term... arg) {
+        return INH.the(PROD.the(arg), opTerm);
+    }
+    public static Term func(Atomic opTerm, Subterms arg) {
         return INH.the(PROD.the(arg), opTerm);
     }
 

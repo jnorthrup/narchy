@@ -71,30 +71,30 @@ public class Anon extends AbstractTermTransform.NegObliviousTermTransform {
     }
 
     public final Term put(Term x) {
-
-        if (x instanceof Atomic) {
-
-            if (x instanceof AnonID) {
-                return putAnon(x);
-            }
-
-            if (x instanceof UnnormalizedVariable)
-                return x; //HACK
-
-            return Anom.the[map.intern(x)];
-
+        if (x instanceof AnonID) {
+            return putAnon(x);
+        } else if (x instanceof UnnormalizedVariable) {
+            return x; //HACK is this necessary?
+        } else if (intern(x)) {
+            return putIntern(x);
         } else {
             return putCompound((Compound) x);
         }
+    }
+
+    private Anom putIntern(Term x) {
+        return Anom.the[map.intern(x)];
+    }
+
+    /** default implementation: anonymize atoms, but also could be a Compound -> Atom anonymize */
+    protected boolean intern(Term x) {
+        return x instanceof Atomic;
     }
 
     /** anon filter in which subclasses can implement variable shifting */
     Term putAnon(Term x) {
         return x;
     }
-
-
-
 
     public final Term get(Term x) {
         if (x instanceof Compound) {
@@ -138,38 +138,4 @@ public class Anon extends AbstractTermTransform.NegObliviousTermTransform {
     }
 
 }
-//    private static final AtomicBoolean validateLock = new AtomicBoolean();
-//
-//    void validate(Term x, Term y, boolean putOrGet) {
-//
-//        if (Param.DEBUG) {
-//            if (!validateLock.compareAndSet(false, true))
-//                return;
-//            try {
-//
-////            if (termToId.isEmpty() || idToTerm.isEmpty())
-////                throw new WTF("termToId is empty: " + x + " -> " + y);
-//
-//                if (y.op() != x.op())
-//                    throw new WTF("anon changed op: " + x + " -> " + y);
-//                if (y.volume() != x.volume())
-//                    throw new WTF("anon changed vol: " + x + " -> " + y + " <- " + get(y));
-//
-//
-////            if (putOrGet) {
-////                Term z = get(y);
-////                if (!z.equals(x)) {
-////                    /* temporary for debug: */ get(y);
-////                    throw new WTF("invalid put:\n\t" + x + "\n\t" + y + "\n\t" + z);
-////                }
-////            } else {
-////                Term z = put(y);
-////                if (!z.equals(x))
-////                    throw new WTF("invalid get:\n\t" + x + "\n\t" + y + "\n\t" + z);
-////
-////            }
-//            } finally {
-//                validateLock.setAt(false);
-//            }
-//        }
-//    }
+

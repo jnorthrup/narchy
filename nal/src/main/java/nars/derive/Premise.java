@@ -92,34 +92,31 @@ public class Premise implements Comparable<Premise> {
      */
     private boolean match(Derivation d, int matchTTL) {
 
-        boolean beliefConceptCanAnswerTaskConcept = false;
+        boolean beliefConceptUnifiesTaskConcept = false;
 
         Term beliefTerm = this.beliefTerm;
-        //if (task.isQuestionOrQuest())
-        {
-            Term taskTerm = task.term();
-            if (taskTerm.op() == beliefTerm.op()) {
-                if (taskTerm.equals(beliefTerm)) {
-                    beliefConceptCanAnswerTaskConcept = true;
-                } else {
+        Term taskTerm = task.term();
+        if (taskTerm.op() == beliefTerm.op()) {
+            if (taskTerm.equals(beliefTerm)) {
+                beliefConceptUnifiesTaskConcept = true;
+            } else {
 
-                    if (beliefTerm.hasAny(var) || taskTerm.hasAny(var) || taskTerm.hasXternal() || beliefTerm.hasXternal()) {
+                if (beliefTerm.hasAny(var) || taskTerm.hasAny(var) || taskTerm.hasXternal() || beliefTerm.hasXternal()) {
 
-                        Term unifiedBeliefTerm = d.unifyPremise.unified(taskTerm, beliefTerm, matchTTL);
+                    Term unifiedBeliefTerm = d.unifyPremise.unified(taskTerm, beliefTerm, matchTTL);
 
-                        if (unifiedBeliefTerm != null) {
+                    if (unifiedBeliefTerm != null) {
 
-                            if (beliefTerm!=unifiedBeliefTerm && (!unifiedBeliefTerm.isNormalized() && d.random.nextBoolean())) {
-                                unifiedBeliefTerm = unifiedBeliefTerm.normalize();
-                                beliefTerm = unifiedBeliefTerm;
-                            }
-
-                            beliefConceptCanAnswerTaskConcept = true;
-                        } else {
-                            beliefConceptCanAnswerTaskConcept = false;
+                        if (beliefTerm!=unifiedBeliefTerm && (!unifiedBeliefTerm.isNormalized() && d.random.nextBoolean())) {
+                            unifiedBeliefTerm = unifiedBeliefTerm.normalize();
+                            beliefTerm = unifiedBeliefTerm;
                         }
 
+                        beliefConceptUnifiesTaskConcept = true;
+                    } else {
+                        beliefConceptUnifiesTaskConcept = false;
                     }
+
                 }
             }
         }
@@ -128,7 +125,7 @@ public class Premise implements Comparable<Premise> {
 //        if (solved!=null && solved!=beliefTerm)
 //            System.out.println(beliefTerm + " -> " + solved);
 
-        Task belief = match(d, beliefTerm, beliefConceptCanAnswerTaskConcept);
+        Task belief = match(d, beliefTerm, beliefConceptUnifiesTaskConcept);
 
         if (task.stamp().length== 0) {
             //only allow unstamped tasks to apply with stamped beliefs.
@@ -182,7 +179,7 @@ public class Premise implements Comparable<Premise> {
         return true;
     }
 
-    private @Nullable Task match(Derivation d, Term beliefTerm, boolean beliefConceptCanAnswerTaskConcept) {
+    private @Nullable Task match(Derivation d, Term beliefTerm, boolean beliefConceptUnifiesTaskConcept) {
 
         NAR n = d.nar();
 
@@ -203,7 +200,7 @@ public class Premise implements Comparable<Premise> {
 
         final BeliefTable beliefTable = beliefConcept.beliefs();
 
-        if (beliefConceptCanAnswerTaskConcept && task.isQuestionOrQuest()) {
+        if (beliefConceptUnifiesTaskConcept && task.isQuestionOrQuest()) {
 
             boolean answerGoal = task.isQuest();
 

@@ -11,6 +11,7 @@ import nars.Task;
 import nars.concept.Operator;
 import nars.op.language.util.Twenglish;
 import nars.task.NALTask;
+import nars.term.Functor;
 import nars.term.Term;
 import nars.term.atom.Atomic;
 import nars.util.Timed;
@@ -159,7 +160,7 @@ public class NARHear extends Loop {
     static public void readURL(NAR nar) {
         nar.addOp(Atomic.atom("readURL"), (t, n) -> {
 
-            Term[] args = Operator.args(t.term()).arrayClone();
+            Term[] args = Functor.args(t.term()).arrayClone();
             try {
 
 
