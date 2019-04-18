@@ -47,7 +47,7 @@ public class CuboidSurfaceGraph<X> extends SimpleSpatial<X> implements SurfaceGr
     }
 
 
-    private CuboidSurfaceGraph(X x, Surface front, float w, float h) {
+    public CuboidSurfaceGraph(X x, Surface front, float w, float h) {
         this(x, front, w, h, (Math.min(w, h) / 2f));
     }
 

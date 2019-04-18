@@ -16,11 +16,11 @@ import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.space2d.widget.chip.AudioOutPort;
 import spacegraph.space2d.widget.chip.StringSynthChip;
 import spacegraph.space2d.widget.chip.WaveViewChip;
-import spacegraph.space2d.widget.console.TextEdit0;
 import spacegraph.space2d.widget.meter.WaveBitmap;
 import spacegraph.space2d.widget.port.*;
 import spacegraph.space2d.widget.slider.XYSlider;
 import spacegraph.space2d.widget.text.LabeledPane;
+import spacegraph.space2d.widget.textedit.TextEdit;
 import spacegraph.space2d.widget.windo.Windo;
 
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -127,14 +127,12 @@ public class GraphEditTest {
             EditGraph2D g = window(1000, 1000);
 
             {
-                TextEdit0 e = new TextEdit0("a b c d e", true);
-                e.resize(16, 3);
+                TextEdit e = new TextEdit(8, 1).text("a b c d e");
                 Port p = new Port();
-                e.on(p::out);
-                RectFloat r = RectFloat.XYXY((float) 0, (float) 0, (float) 250, (float) 250);
-                ((Surface) g.add(
+                e.onChange(p::out);
+                g.add(
                         new Bordering(e).set(Bordering.E, p, 0.1f)
-                )).pos(r);
+                ).sizeRel(0.5f, 0.5f);
             }
 
             {

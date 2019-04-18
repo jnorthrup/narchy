@@ -41,7 +41,7 @@ abstract public class JoglDisplay {
     public float bottom;
     private float left;
     private float right;
-    private float aspect;
+
     private float tanFovV;
 
     public float zNear = 0.5f, zFar = 1200;
@@ -96,7 +96,7 @@ abstract public class JoglDisplay {
 
     }
 
-    protected void renderVolume(float dtS) {
+    protected void renderVolume(float dtS, GL2 gl) {
 
     }
 
@@ -108,30 +108,44 @@ abstract public class JoglDisplay {
     }
 
 
-    private void clear() {
-        //view.clearMotionBlur(0.5f);
-        video.clearComplete();
+    private void clear(GL2 gl) {
+        //clearMotionBlur(0.5f, gl);
+        clearComplete(gl);
+
+    }
+
+    protected void clearComplete(GL2 gl) {
+        gl.glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    }
+
+    private void clearMotionBlur(float rate /* TODO */, GL2 gl) {
+
+
+        gl.glAccum(GL2.GL_LOAD, 0.5f);
+
+        gl.glAccum(GL2.GL_ACCUM, 0.5f);
+
+
+        gl.glAccum(GL2.GL_RETURN, rate);
+        gl.glClear(GL.GL_DEPTH_BUFFER_BIT);
+
 
     }
 
 
-    protected void updateCamera(float dtS) {
-        perspective();
+    protected void updateCamera(float dtS, GL2 gl) {
+        perspective(gl);
     }
 
-    private void perspective() {
+    private void perspective(GL2 gl) {
 
 
-        if (video.gl == null)
-            return;
-
-        video.gl.glMatrixMode(GL_PROJECTION);
-        video.gl.glLoadIdentity();
+        gl.glMatrixMode(GL_PROJECTION);
+        gl.glLoadIdentity();
 
 
         float aspect = ((float) video.getWidth()) / video.getHeight();
 
-        JoglDisplay.this.aspect = aspect;
 
         tanFovV = (float) Math.tan(45 * FloatUtil.PI / 180.0f / 2f);
 
@@ -141,7 +155,7 @@ abstract public class JoglDisplay {
         left = -right;
 
 
-        video.gl.glMultMatrixf(FloatUtil.makePerspective(mat4f, 0, true, 45 * FloatUtil.PI / 180.0f, aspect, zNear, zFar), 0);
+        gl.glMultMatrixf(FloatUtil.makePerspective(mat4f, 0, true, 45 * FloatUtil.PI / 180.0f, aspect, zNear, zFar), 0);
 
 
         Draw.glu.gluLookAt(camPos.x - camFwd.x, camPos.y - camFwd.y, camPos.z - camFwd.z,
@@ -149,8 +163,8 @@ abstract public class JoglDisplay {
                 camUp.x, camUp.y, camUp.z);
 
 
-        video.gl.glMatrixMode(GL_MODELVIEW);
-        video.gl.glLoadIdentity();
+        gl.glMatrixMode(GL_MODELVIEW);
+        gl.glLoadIdentity();
 
 
     }
@@ -185,55 +199,17 @@ abstract public class JoglDisplay {
         @Override
         protected void init(GL2 gl) {
 
-            gl.glEnable(GL_STENCIL);
-
-            gl.glEnable(GL_LINE_SMOOTH);
-            gl.glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
-
-            gl.glEnable(GL_POLYGON_SMOOTH);
-            gl.glHint(GL_POLYGON_SMOOTH_HINT, GL_NICEST);
-
-            gl.glEnable(GL_MULTISAMPLE);
-
-
-            gl.glHint(GL_POLYGON_SMOOTH_HINT, GL_NICEST);
-
-            gl.glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
-
-            gl.glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
-
-
-            gl.glColorMaterial(GL_FRONT_AND_BACK,
-                    GL_AMBIENT_AND_DIFFUSE
-            );
-            gl.glEnable(GL_COLOR_MATERIAL);
-            gl.glEnable(GL_NORMALIZE);
-
-
-            initDepth(gl);
-
-
-            initBlend(gl);
-
-
-            initLighting(gl);
-
             initInput();
 
-            JoglDisplay.this.init();
+            JoglDisplay.this.init(gl);
 
+            JoglDisplay.this.init();
         }
 
         @Override
         protected final void render(float dtS) {
 
-            clear();
-
-            updateCamera(dtS);
-
-            renderVolume(dtS);
-
-            renderOrthos(dtS);
+            JoglDisplay.this.render(dtS, gl);
         }
 
         @Override
@@ -253,6 +229,55 @@ abstract public class JoglDisplay {
         }
 
 
+    }
+
+    public void init(GL2 gl) {
+        gl.glEnable(GL_STENCIL);
+
+        gl.glEnable(GL_LINE_SMOOTH);
+        gl.glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
+
+        gl.glEnable(GL_POLYGON_SMOOTH);
+        gl.glHint(GL_POLYGON_SMOOTH_HINT, GL_NICEST);
+
+        gl.glEnable(GL_MULTISAMPLE);
+
+
+        gl.glHint(GL_POLYGON_SMOOTH_HINT, GL_NICEST);
+
+        gl.glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
+
+        gl.glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
+
+
+        gl.glColorMaterial(GL_FRONT_AND_BACK,
+                GL_AMBIENT_AND_DIFFUSE
+        );
+        gl.glEnable(GL_COLOR_MATERIAL);
+        gl.glEnable(GL_NORMALIZE);
+
+
+        initDepth(gl);
+
+
+        initBlend(gl);
+
+
+        initLighting(gl);
+
+
+
+
+    }
+
+    public void render(float dtS, GL2 gl) {
+        clear(gl);
+
+        updateCamera(dtS, gl);
+
+        renderVolume(dtS, gl);
+
+        renderOrthos(dtS);
     }
 
     protected void update() {

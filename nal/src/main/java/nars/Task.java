@@ -39,6 +39,7 @@ import org.eclipse.collections.impl.map.mutable.primitive.ByteObjectHashMap;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -1060,12 +1061,12 @@ public interface Task extends Truthed, Stamp, TermedDelegate, ITask, TaskRegion,
         return beliefOrGoal ? isBelief() : isGoal();
     }
 
-//    /** fast, imprecise sort.  for cache locality and concurrency purposes */
-//    static final Comparator<Task> sloppySorter = Comparator
-//            .comparingInt((Task x) ->
-//                    //x.term()
-//                    x.term().concept()
-//                        .hashCode())
-//            .thenComparing((Task x) -> -x.priElseZero());
+    /** fast, imprecise sort.  for cache locality and concurrency purposes */
+    static final Comparator<Task> sloppySorter = Comparator
+            .comparingInt((Task x) ->
+                    //x.term()
+                    x.term().concept()
+                        .hashCode())
+            .thenComparing((Task x) -> -x.priElseZero());
 
 }

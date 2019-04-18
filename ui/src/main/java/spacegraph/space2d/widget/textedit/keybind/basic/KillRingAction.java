@@ -18,7 +18,7 @@ public class KillRingAction implements Action {
   @Override
   public void execute(TextEditModel editor, String... args) {
     Buffer currentBuffer = editor.buffer();
-    if (currentBuffer.isLineLast()) {
+    if (currentBuffer.isLineEnd()) {
       currentBuffer.delete();
     } else {
       currentBuffer.mark();

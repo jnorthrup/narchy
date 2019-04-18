@@ -18,7 +18,6 @@ import nars.Task;
 import nars.control.CauseMerge;
 import nars.control.channel.ConsumerX;
 import nars.task.ITask;
-import org.eclipse.collections.api.block.procedure.Procedure;
 
 import java.util.Iterator;
 import java.util.Map;
@@ -342,10 +341,7 @@ abstract public class PriBuffer<T extends Prioritizable> implements Consumer<T> 
                         int remain = n;
                         int nEach = (int) Math.ceil(((float) remain) / c);
 
-                        Procedure<ITask> targetBatch = target::accept;
-                        Consumer<FasterList<ITask>> targetBatched = (batch) -> {
-                            batch.forEach(targetBatch);
-                        };
+                        Consumer<FasterList<ITask>> targetBatched = (batch) -> batch.forEach(target);
 
                         for (int i = 0; i < c && remain > 0; i++) {
                             int asked = Math.min(remain, nEach);

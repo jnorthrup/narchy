@@ -9,8 +9,6 @@ import nars.term.Term;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.jetbrains.annotations.Nullable;
 
-import java.lang.ref.Reference;
-import java.lang.ref.SoftReference;
 import java.util.Random;
 import java.util.function.Predicate;
 
@@ -21,6 +19,10 @@ public final class TermLinks {
 
     @Nullable
     private volatile TaskLink[] links;
+
+    protected int cap(int bagSize) {
+        return Math.max(2, (int) Math.ceil(1.5f * Math.sqrt(bagSize)) /* estimate */);
+    }
 
     private TermLinks(long now, int minUpdateCycles) {
         this.updated = now - minUpdateCycles;
@@ -34,15 +36,16 @@ public final class TermLinks {
 
         String id = bag.id(in, out);
 
-        Reference<TermLinks> matchRef = src.meta(id);
-        TermLinks match = matchRef != null ? matchRef.get() : null;
 
-        //TermLinks match = src.meta(id);
+//        Reference<TermLinks> matchRef = src.meta(id);
+//        TermLinks match = matchRef != null ? matchRef.get() : null;
+
+        TermLinks match = src.meta(id);
 
         if (match == null) {
+            //src.meta(id, new SoftReference<>(match));
             match = new TermLinks(now, minUpdateCycles);
-            src.meta(id, new SoftReference<>(match));
-            //src.meta(id, match);
+            src.meta(id, match);
         }
 
         return match.sample( src.term(), bag, punc, filter, in, out, now, minUpdateCycles, rng);
@@ -51,14 +54,14 @@ public final class TermLinks {
     public boolean refresh(Term x, Iterable<TaskLink> items, int itemCount, boolean reverse, long now, int minUpdateCycles) {
         if (now - updated >= minUpdateCycles) {
 
-            int cap = Math.max(4, (int) Math.ceil(2 * Math.sqrt(itemCount)) /* estimate */);
+            int cap = cap(itemCount);
 
             RankedN<TaskLink> match = null;
 
             int i = 0;
             for (TaskLink t : items) {
-                if (t == null)
-                    continue; //HACK
+//                if (t == null)
+//                    continue; //HACK
 
                 float xp = t.priElseZero();
                 if (match == null || /*match instanceof Set ||*/ (match instanceof RankedN && xp > match.minValueIfFull())) {
@@ -92,6 +95,7 @@ public final class TermLinks {
         return links != null;
     }
 
+
     @Nullable public Term sample(Predicate<TaskLink> filter, byte punc, Random rng) {
         TaskLink l;
         TaskLink[] ll = links;
@@ -108,7 +112,7 @@ public final class TermLinks {
         return l != null ? l.from() : null;
     }
 
-    public final Term sample(Term  srcTerm, Table<nars.link.TaskLink,nars.link.TaskLink> bag, byte punc, Predicate<TaskLink> filter, boolean in, boolean out, long now, int minUpdateCycles, Random rng) {
+    public final Term sample(Term  srcTerm, Table<?, TaskLink> bag, byte punc, Predicate<TaskLink> filter, boolean in, boolean out, long now, int minUpdateCycles, Random rng) {
         return sample(srcTerm, bag, bag.capacity(), punc, filter, in, out, now, minUpdateCycles, rng);
     }
 

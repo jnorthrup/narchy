@@ -8,9 +8,6 @@ import nars.concept.Concept;
 import nars.derive.Derivers;
 import nars.derive.impl.BatchDeriver;
 import nars.gui.graph.DynamicConceptSpace;
-import spacegraph.space2d.Surface;
-import spacegraph.space2d.widget.console.ConsoleGUI;
-import spacegraph.space2d.widget.console.TextEdit0;
 import spacegraph.space3d.SpaceDisplayGraph3D;
 
 /** TODO get working again */
@@ -45,40 +42,40 @@ public class Concepts3D extends DynamicConceptSpace {
         //                        } catch (Narsese.NarseseException e) {
         //                            e.printStackTrace();
         //                        }
-        Surface inputPanel =
-                new TextEdit0((/*inputbox = */new TextEdit0.TextEditUI() {
-                    @Override
-                    protected void onKeyCtrlEnter() {
-
-                        nar.runLater(() -> {
-
-                            //nar.reset();
-                            nar.clear();
-
-                            cpts.clear();
-
-                            Concepts3D.this.clear();
-
-                            try {
-                                nar.input(text());
-                            } catch (Narsese.NarseseException e) {
-                                e.printStackTrace();
-                            }
-                        });
-//                        try {
+//        Surface inputPanel =
+//                new TextEdit0((/*inputbox = */new TextEdit0.TextEditUI() {
+//                    @Override
+//                    protected void onKeyCtrlEnter() {
 //
-//                        } catch (Narsese.NarseseException e) {
-//                            e.printStackTrace();
-//                        }
-                    }
-
-                }));
+//                        nar.runLater(() -> {
+//
+//                            //nar.reset();
+//                            nar.clear();
+//
+//                            cpts.clear();
+//
+//                            Concepts3D.this.clear();
+//
+//                            try {
+//                                nar.input(text());
+//                            } catch (Narsese.NarseseException e) {
+//                                e.printStackTrace();
+//                            }
+//                        });
+////                        try {
+////
+////                        } catch (Narsese.NarseseException e) {
+////                            e.printStackTrace();
+////                        }
+//                    }
+//
+//                }));
 //        sg.addAt(new SubOrtho(grid(
 //                inputPanel,
 //                NARui.top(nar)
 //        )).posWindow(0.5f, 0.95f, 1f, 0.1f));
 
-        ((ConsoleGUI) inputPanel).resize(25, 2);
+//        ((ConsoleGUI) inputPanel).resize(25, 2);
 
 //
 //

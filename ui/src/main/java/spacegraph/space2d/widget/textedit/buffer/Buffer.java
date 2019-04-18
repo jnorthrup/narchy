@@ -58,7 +58,6 @@ public class Buffer {
     @Deprecated private void update() {
         IntStream.range(0, lines.size()).forEach(i -> lines.get(i).updatePosition(i));
         observer.update(this);
-        observer.updateCursor(currentCursor);
     }
 
     public void insert(String string) {
@@ -215,7 +214,7 @@ public class Buffer {
 
     public void backspace() {
         synchronized(this) {
-            if (!isBufferHead() || !isLineHead()) {
+            if (!isBufferHead() || !isLineStart()) {
                 back();
                 delete();
             }
@@ -224,11 +223,11 @@ public class Buffer {
 
     public void delete() {
         synchronized(this) {
-            if (!isEmpty() && (!isBufferLast() || !isLineLast())) {
-                if (!isLineLast()) {
+            if (!isEmpty() && (!isBufferLast() || !isLineEnd())) {
+                if (!isLineEnd()) {
                     currentLine().removeChar(currentCursor.getCol());
                 } else {
-                    isLineLast();
+                    isLineEnd();
                     if (!isBufferLast()) {
                         BufferLine currentLine = currentLine();
                         BufferLine removedLine = lines.remove(currentCursor.getRow() + 1);
@@ -247,41 +246,37 @@ public class Buffer {
     }
 
     public void head() {
-        if (currentCursor.setCol(0))
-            observer.updateCursor(currentCursor);
+        currentCursor.setCol(0);
     }
 
     public void last() {
         last(true);
     }
     public void last(boolean update) {
-        if (currentCursor.setCol(currentLine().length()) && update)
-            observer.updateCursor(currentCursor);
+        currentCursor.setCol(currentLine().length());
     }
 
     public void back() {
-        if (isLineHead()) {
+        if (isLineStart()) {
             boolean isDocHead = isBufferHead();
             previous();
             if (!isDocHead) {
                 last();
             }
         } else {
-            if (currentCursor.decCol(1))
-                observer.updateCursor(currentCursor);
+            currentCursor.decCol(1);
         }
     }
 
     public void forward() {
-        if (isLineLast()) {
+        if (isLineEnd()) {
             boolean isDocLast = isBufferLast();
             next();
             if (!isDocLast) {
                 head();
             }
         } else {
-            if (currentCursor.incCol(1))
-                observer.updateCursor(currentCursor);
+            currentCursor.incCol(1);
         }
     }
 
@@ -291,7 +286,6 @@ public class Buffer {
                 if (currentCursor.getCol() > currentLine().length()) {
                     last(false);
                 }
-                observer.updateCursor(currentCursor);
             }
         }
     }
@@ -302,27 +296,26 @@ public class Buffer {
                 if (currentCursor.getCol() > currentLine().length()) {
                     last(false);
                 }
-                observer.updateCursor(currentCursor);
             }
 
         }
     }
 
     public void bufferHead() {
-        if (currentCursor.setRow(0) || currentCursor.setCol(0))
-            observer.updateCursor(currentCursor);
+        currentCursor.setRow(0);
+        currentCursor.setCol(0);
     }
 
     public void bufferLast() {
-        if (currentCursor.setRow(lines.size() - 1) || currentCursor.setCol(currentLine().length()))
-            observer.updateCursor(currentCursor);
+        currentCursor.setRow(lines.size() - 1);
+        currentCursor.setCol(currentLine().length());
     }
 
     private boolean isBufferHead() {
         return currentCursor.getRow() == 0;
     }
 
-    public boolean isLineHead() {
+    public boolean isLineStart() {
         return currentCursor.getCol() == 0;
     }
 
@@ -330,8 +323,15 @@ public class Buffer {
         return currentCursor.getRow() == lines.size() - 1;
     }
 
-    public boolean isLineLast() {
-        return currentCursor.getCol() == currentLine().length();
+    public boolean isLineEnd() {
+
+        int ll = currentLine().length();
+        int cc = currentCursor.getCol();
+        if (cc > ll) {
+            currentCursor.setCol(ll);
+            cc = ll;
+        }
+        return cc == ll;
     }
 
 

@@ -136,6 +136,9 @@ public abstract class Param extends Parts<Term,NAR> {
 
     public static final boolean FORK_JOIN_EXEC_ASYNC_MODE = false;
 
+    /** might help with overall throughput by reducing lock and synchronization contention by grouping sequences of tasks by the destination concept */
+    public static final boolean PRE_SORT_TASK_INPUT_BATCH = false;
+
     protected static final boolean DYNAMIC_CONCEPT_TRANSIENT = false;
 
     public static final int WHATS_CAPACITY = 128;

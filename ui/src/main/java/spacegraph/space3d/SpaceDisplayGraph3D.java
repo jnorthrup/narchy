@@ -74,7 +74,7 @@ public class SpaceDisplayGraph3D<X> extends JoglDisplay implements Iterable<Spat
     @Deprecated
     private final Queue<Spatial> toRemove = new ConcurrentLinkedQueue<>();
 
-    private final List<AbstractSpace<X>> inputs = new FasterList<>(1);
+    private final FasterList<AbstractSpace<X>> inputs = new FasterList<>(1);
 
 
     public SpaceDisplayGraph3D<X> camPos(float x, float y, float z) {
@@ -183,21 +183,21 @@ public class SpaceDisplayGraph3D<X> extends JoglDisplay implements Iterable<Spat
 
     }
 
-    protected void renderVolume(float  dtS) {
+    protected void renderVolume(float dtS, GL2 gl) {
 
         int dtMS = Math.max(1, Math.round(1000 * dtS));
 
-        forEach(s -> s.renderAbsolute(video.gl, dtMS));
+        forEach(s -> s.renderAbsolute(gl, dtMS));
 
         forEach(s -> s.forEachBody(body -> {
 
-            video.gl.glPushMatrix();
+            gl.glPushMatrix();
 
-            Draw.transform(video.gl, body.transform);
+            Draw.transform(gl, body.transform);
 
-            s.renderRelative(video.gl, body, dtMS);
+            s.renderRelative(gl, body, dtMS);
 
-            video.gl.glPopMatrix();
+            gl.glPopMatrix();
 
         }));
 
@@ -311,8 +311,7 @@ public class SpaceDisplayGraph3D<X> extends JoglDisplay implements Iterable<Spat
 
     @Override
     final public void forEach(Consumer<? super Spatial<X>> each) {
-        for (AbstractSpace<X> input : inputs)
-            input.forEach(each);
+        inputs.forEachWith(AbstractSpace::forEach, each);
     }
 
 

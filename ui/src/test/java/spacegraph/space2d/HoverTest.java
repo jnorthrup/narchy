@@ -1,4 +1,4 @@
-package spacegraph.space2d.hud;
+package spacegraph.space2d;
 
 import jcog.tree.rtree.rect.RectFloat;
 import spacegraph.SpaceGraph;

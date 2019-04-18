@@ -37,11 +37,13 @@ public class TextEditView implements BufferListener {
         int x2 = x1 + (int) Math.ceil(vw);
         int y2 = y1 + (int) Math.ceil(vh);
 
-        if (cursor)
+        if (cursor) {
+            updateCursor(document.cursor());
             this.cursor.draw(g);
+        }
 
         float ox = x1 - vx;
-        LineView[] ll  = lines.array();
+        LineView[] ll = lines.array();
         for (int y = Math.max(0, y1); y < Math.min(ll.length, y2); y++) {
             LineView line = ll[y];
             if (line != null) {
@@ -52,19 +54,23 @@ public class TextEditView implements BufferListener {
         g.glPopMatrix();
     }
 
-    @Override
-    public void updateCursor(CursorPosition c) {
+
+    private void updateCursor(CursorPosition c) {
         LineView lv = lines.get(c.getRow());
 
+        int lineChars = lv.length();
+
         float x;
-        if (document.isLineHead()) {
-            x = (float) lv.getChars().stream().mapToDouble(cv -> cv.width() / 2).findFirst()
-                    .orElse(cursor.getWidth() / 2);
-        } else if (document.isLineLast()) {
+        if (document.isLineStart()) {
+//            x = (float) lv.getChars().stream().mapToDouble(cv -> cv.width() / 2).findFirst()
+//                    .orElse(cursor.getWidth() / 2);
+            x = cursor.getWidth()/2; //lv.getChars().get(0).width()/2;
+        } else if (c.getCol() >= lineChars) {
             x = lv.getWidth() + (cursor.getWidth() / 2);
         } else {
             x = lv.getChars().get(c.getCol()).position.x;
         }
+
         cursor.position.set(x, lv.position.y, 0);
     }
 
@@ -86,25 +92,27 @@ public class TextEditView implements BufferListener {
 
     @Override
     public void removeLine(BufferLine bufferLine) {
-        lines.removeIf(lineView -> lineView.getBufferLine() == bufferLine);
-                updateY();
-        }
+        if (lines.removeIf(lineView -> lineView.getBufferLine() == bufferLine))
+            updateY();
+    }
 
     @Override
     public void moveChar(BufferLine fromLine, BufferLine toLine, BufferChar c) {
-        final int[] k = new int[] { 0 };
+        final int[] k = new int[]{0};
         lines.stream().filter(l -> l.getBufferLine() == fromLine).findFirst().ifPresent(
                 (from) -> lines.stream().filter(l -> l.getBufferLine() == toLine).
                         findFirst().ifPresent((to) -> {
-            float fromY = from.position.y, toY = to.position.y;
-            CharView leaveChar = from.leaveChar(c);
-            leaveChar.position.y = -(toY - fromY);
-            to.addChar(leaveChar, k[0]++);
-            to.update();
-        }));
+                    float fromY = from.position.y, toY = to.position.y;
+                    CharView leaveChar = from.leaveChar(c);
+                    leaveChar.position.y = -(toY - fromY);
+                    to.addChar(leaveChar, k[0]++);
+                    to.update();
+                }));
     }
 
-    /** update y positions of each line */
+    /**
+     * update y positions of each line
+     */
     protected void updateY() {
         synchronized (lines) {
             lines.sort();

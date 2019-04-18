@@ -156,7 +156,7 @@ public class OrthoSurfaceGraph extends JoglDisplay implements SurfaceGraph {
     }
 
     @Override
-    protected void updateCamera(float dtS) {
+    protected void updateCamera(float dtS, GL2 gl) {
         //null
     }
 

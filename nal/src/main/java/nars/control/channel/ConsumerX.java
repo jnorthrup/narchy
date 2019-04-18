@@ -6,6 +6,8 @@ import jcog.pri.Prioritizable;
 import jcog.pri.bag.Sampler;
 import jcog.pri.bag.impl.ArrayBag;
 import jcog.pri.bag.impl.BufferedBag;
+import nars.Param;
+import nars.Task;
 import nars.exe.Exec;
 
 import java.util.Collection;
@@ -69,7 +71,7 @@ import java.util.stream.Stream;
         return 1;
     }
 
-    static final ThreadLocal<FasterList> drainBuffer = ThreadLocal.withInitial(FasterList::new);
+    ThreadLocal<FasterList> drainBuffer = ThreadLocal.withInitial(FasterList::new);
 
 //    void input(Bag<ITask, ITask> b, What target, int min);
     /** asynchronously drain N elements from a bag as input */
@@ -91,12 +93,16 @@ import java.util.stream.Stream;
                 b.pop(null, max, batch::add); //per item.. may be slow
             }
 
-            if (!batch.isEmpty()) {
+            int bs = batch.size();
+            if (bs > 0) {
 
                 try {
 
-//                    if (batch.size() > 2)
-//                        batch.sortThis(Task.sloppySorter);
+                    if (bs > 2) {
+                        if (Param.PRE_SORT_TASK_INPUT_BATCH) {
+                            batch.sortThis(Task.sloppySorter);
+                        }
+                    }
 
                     runner.accept(batch);
 

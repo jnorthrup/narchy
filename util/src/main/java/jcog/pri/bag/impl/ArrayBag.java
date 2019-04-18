@@ -124,10 +124,13 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
     @Override
     public Stream<Y> stream() {
         int s = size();
-        if (s == 0) return Stream.empty();
+        if (s == 0)
+            return Stream.empty();
         else {
             Object[] x = table.items.array();
-            return ArrayIterator.stream(x).map(o -> (Y) o).filter(y -> y != null && !y.isDeleted());
+            return ArrayIterator.stream(x).filter(Objects::nonNull)
+                    .map(o -> (Y) o)
+                    .filter(y -> !y.isDeleted());
         }
     }
 

@@ -53,7 +53,6 @@ import spacegraph.space2d.widget.button.ButtonSet;
 import spacegraph.space2d.widget.button.CheckBox;
 import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.space2d.widget.button.Submitter;
-import spacegraph.space2d.widget.console.TextEdit0;
 import spacegraph.space2d.widget.menu.Menu;
 import spacegraph.space2d.widget.menu.TabMenu;
 import spacegraph.space2d.widget.meta.MetaFrame;
@@ -84,6 +83,7 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.StreamSupport;
 
+import static com.jogamp.newt.event.KeyEvent.VK_ENTER;
 import static java.util.stream.Collectors.toList;
 import static nars.$.$$;
 import static nars.Op.*;
@@ -479,10 +479,10 @@ public class NARui {
         return grid(d);
     }
 
-    public static TextEdit0 newNarseseInput(NAR n, Consumer<Task> onTask, Consumer<Exception> onException) {
-        TextEdit0 input = new TextEdit0(16, 1);
+    public static TextEdit newNarseseInput(NAR n, Consumer<Task> onTask, Consumer<Exception> onException) {
+        TextEdit input = new TextEdit(16, 1);
         input.onKey((k) -> {
-            if (k.getKeyType() == KeyType.Enter) {
+            if (k.getKeyCode() == VK_ENTER) {
                 String s = input.text();
                 input.text("");
                 try {

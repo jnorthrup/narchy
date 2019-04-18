@@ -9,8 +9,6 @@ public interface BufferListener {
 
     void update(Buffer buffer);
 
-    void updateCursor(CursorPosition cursor);
-
     void addLine(BufferLine bufferLine);
 
     void removeLine(BufferLine bufferLine);
@@ -28,11 +26,6 @@ public interface BufferListener {
         @Override
         public void update(Buffer buffer) {
             listeners.forEach((l) -> l.update(buffer));
-        }
-
-        @Override
-        public void updateCursor(CursorPosition cursor) {
-            listeners.forEach((l) -> l.updateCursor(cursor));
         }
 
         @Override

@@ -338,6 +338,7 @@ public class NAL7Test extends NALTest {
         test
 
 
+                .termVolMax(7)
                 .inputAt(1, "(X:x &&+1 (Y:y &&+2 Z:z)). :|:")
                 .mustBelieve(cycles, "X:x.", 1.00f, 0.73f, 1)
                 .mustBelieve(cycles, "(Y:y &&+2 Z:z).", 1.00f, 0.81f, 2)
@@ -909,6 +910,7 @@ public class NAL7Test extends NALTest {
     void testDecomposeConjunctionEmbeddedInnerCommute() {
 
         test
+                .termVolMax(6)
                 .input("((&|,a,b,c) &&+1 z). |")
                 .mustBelieve(cycles, "(a &&+1 z)", 1f, 0.73f, 0)
                 .mustBelieve(cycles, "(b &&+1 z)", 1f, 0.73f, 0)
@@ -1463,6 +1465,7 @@ public class NAL7Test extends NALTest {
 
     @Test public void occtestShiftWorkingRight() {
 
+        test.termVolMax(7);
         test.inputAt(1, "(x &&+5 y). |");
         test.inputAt(1, "((x &&+5 y)=|>(b &&+5 c)). |");
         test.mustBelieve(cycles , "(b &&+5 c)", 1.00f, 0.45f, (t)->t==6);

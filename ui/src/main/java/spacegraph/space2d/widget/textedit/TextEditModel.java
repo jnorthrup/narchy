@@ -55,7 +55,6 @@ public class TextEditModel extends Widget /* TODO Surface */ implements ScrollXY
     }
 
 
-
     @Override
     public void update(ScrollXY s) {
 

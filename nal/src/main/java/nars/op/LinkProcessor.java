@@ -1,7 +1,6 @@
 package nars.op;
 
 import jcog.sort.FloatRank;
-import jcog.sort.RankedN;
 import nars.attention.What;
 import nars.control.How;
 import nars.link.TaskLink;
@@ -15,13 +14,10 @@ import java.util.function.BooleanSupplier;
  * active tasklinks by some metric, and applying a procedure
  * based on the aggregate.
  */
-public abstract class LinkRanker<Y> extends How {
+public abstract class LinkProcessor<Y> extends How {
 
-//    public LinkRanker() {
-//        super();
-//    }
 
-    public LinkRanker() {
+    protected LinkProcessor() {
         super();
     }
 
@@ -29,19 +25,27 @@ public abstract class LinkRanker<Y> extends How {
     public void next(What w, BooleanSupplier kontinue) {
 
 
-        RankedN<Y> best = new RankedN<>(newArray(cap()), score()); //TODO option for threadLocal
+//        RankedN<Y> best = new RankedN<>(newArray(cap()), score()); //TODO option for threadLocal
+//        //when = When.sinceAgo(nar.dur(), nar);
 
-        //when = When.sinceAgo(nar.dur(), nar);
+//        w.forEach(x -> {
+//            Y y = apply(x, when);
+//            if (y!=null)
+//                best.add(y);
+//        });
+//
+//        if (!best.isEmpty())
+//            run(best, w);
 
-        When when = WhenTimeIs.now(w);
-        w.forEach(x -> {
-            Y y = apply(x, when);
-            if (y!=null)
-                best.add(y);
-        });
-
-        if (!best.isEmpty())
-            run(best, w);
+        do {
+            When when = WhenTimeIs.now(w);
+            TaskLink x = w.sample();
+            if (x != null) {
+                Y y = apply(x, when);
+                if (y != null)
+                    run(y, w);
+            }
+        } while (kontinue.getAsBoolean());
 
     }
 
@@ -55,6 +59,6 @@ public abstract class LinkRanker<Y> extends How {
 
     abstract public int cap();
 
-    abstract protected void run(RankedN<Y> best, What w);
+    abstract protected void run(Y l, What w);
 
 }
