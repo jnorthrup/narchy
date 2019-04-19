@@ -115,11 +115,11 @@ public class Branch<X> extends AbstractNode<X> {
 
         Node<X>[] data = this.data;
 
-        boolean addOrMerge = x.isAddOrMerge();
+        boolean addOrMerge = x.isAddOrMerge(); //save now
 
         //1. test containment
         x.setAdd(false);
-        if (x.model.mergeCanStretch() ? bounds.intersects(x.bounds) : bounds.contains(x.bounds)) {
+        if (x.maybeContainedBy(bounds)) {
 
             short s = this.size;
             boolean merged = false, mergeBoundUpdate = false;
@@ -148,21 +148,23 @@ public class Branch<X> extends AbstractNode<X> {
                     updateBounds();
                 return null;
             }
-
-
         }
 
         x.setAdd(addOrMerge);
         if (!addOrMerge)
             return this;
 
-        //assert (!added[0]);
+        return insert(x, data);
+    }
 
+    @Nullable
+    private Node<X> insert(RInsertion<X> x, Node<X>[] data) {
+        //assert (!added[0]);
         if (size < data.length) {
 
 
             x.setAdd(true);
-            Node<X> l = x.model.newLeaf().add(x);
+            Node<X> l = x.model.newLeaf().insert(x);
             grow(addChild(l));
             //assert (added[0]);
 

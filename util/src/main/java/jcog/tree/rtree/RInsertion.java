@@ -1,5 +1,7 @@
 package jcog.tree.rtree;
 
+import org.jetbrains.annotations.Nullable;
+
 public class RInsertion<X> {
 
     public final Spatialization<X> model;
@@ -46,11 +48,24 @@ public class RInsertion<X> {
         return added;
     }
 
-    public void setAdded() {
+    void setAdded() {
         added = true;
     }
 
     public void setAdd(boolean addOrMerge) {
         this.addOrMerge = addOrMerge;
+    }
+
+    @Nullable
+    public X merge(X y) {
+        return model.merge(y, x);
+    }
+
+    public void mergeIdentity() {
+
+    }
+
+    public boolean maybeContainedBy(HyperRegion c) {
+        return model.mergeCanStretch() ? c.intersects(bounds) : c.contains(bounds);
     }
 }

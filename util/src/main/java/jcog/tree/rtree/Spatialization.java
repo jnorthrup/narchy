@@ -88,6 +88,11 @@ public class Spatialization<X> {
         return false;
     }
 
+    public RInsertion<X> insertion(X t) {
+        return new RInsertion<>(t, true, this);
+    }
+
+
 //    public HyperRegion mbr(Node<X>[] data) {
 //        return HyperRegion.mbr(data);
 //    }

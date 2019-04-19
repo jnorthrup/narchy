@@ -102,7 +102,8 @@ public class RTree<T> implements Space<T> {
     public boolean add(/*@NotNull*/ final T t) {
 
 
-        RInsertion<T> i = new RInsertion<>(t, true, model);
+        RInsertion<T> i = model.insertion(t);
+
         Node<T> nextRoot = root.add(i);
 
         if (i.added()) {
@@ -120,10 +121,8 @@ public class RTree<T> implements Space<T> {
 //                throw new WTF("inconsistent");
 //            }
 
-
             return true;
         }
-
 
         return false;
     }

@@ -24,6 +24,7 @@ import jcog.Util;
 import jcog.data.iterator.ArrayIterator;
 import jcog.tree.rtree.util.CounterNode;
 import jcog.tree.rtree.util.Stats;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -120,26 +121,37 @@ public class Leaf<X> extends AbstractNode<X> {
     @Override
     public Node<X> add(/*@NotNull*/RInsertion<X> x) {
 
-        boolean mightContain = size > 0 && (/* TODO model.mergeEqualOnly() ? bounds.contains(tb) : */
-                x.model.mergeCanStretch() ? bounds.intersects(x.bounds) : bounds.contains(x.bounds));
-
-        if (mightContain) {
+        if (size > 0 && x.maybeContainedBy(bounds)) {
             for (int i = 0, s = size; i < s; i++) {
                 X y = data[i];
-                if (y == x.x)
+                if (y == x.x) {
+                    x.mergeIdentity();
                     return null; //identical instance found
+                }
 
+                X xy = x.merge(y);
+                if (xy != null)
+                    return merged(xy, x, y, i);
+            }
+        }
 
-                X xy = x.model.merge(y, x.x);
-                if (xy != null) {
-                    if (xy != y) {
+        if (!x.isAddOrMerge()) {
+            return this;
+        }
 
+        return insert(x);
+    }
 
-                        data[i] = xy;
+    @Nullable
+    private Node<X> merged(X xy, RInsertion<X> x, X y, int i) {
+        if (xy == y)
+            return null;
 
-                        HyperRegion yb = x.model.bounds(y);
-                        if (!yb.equals(x.model.bounds(xy)))
-                            bounds = Util.maybeEqual(bounds, HyperRegion.mbr(x.model, data)); //recompute
+        data[i] = xy;
+
+        HyperRegion yb = x.model.bounds(y);
+        if (!yb.equals(x.model.bounds(xy)))
+            bounds = Util.maybeEqual(bounds, HyperRegion.mbr(x.model, data)); //recompute
 
 //                            HyperRegion xtb = model.bounds(xy);
 //                            if (!bounds.contains(xtb)) {
@@ -149,29 +161,27 @@ public class Leaf<X> extends AbstractNode<X> {
 //                                b = b.mbr(i == k ? xtb : model.bounds(data[k]));
 //                            bounds = b;
 ////                            }
-                    }
-                    return null;
-                }
-            }
-        }
+        return null;
+    }
 
-        if (x.isAddOrMerge()) {
+    Node<X> insert(X x, Spatialization<X> model) {
+        return insert(x, model.bounds(x), model);
+    }
 
-            x.setAdded();
+    Node<X> insert(RInsertion<X> r) {
+        r.setAdded();
+        return insert(r.x, r.bounds, r.model);
+    }
 
-            if (size < data.length) {
+    Node<X> insert(X x, HyperRegion bounds, Spatialization<X> model) {
+        if (size < data.length) {
 
-                data[this.size++] = x.x;
-                grow(x.bounds);
+            data[this.size++] = x;
+            grow(bounds);
 
-                return this;
-            } else {
-                return x.model.split(x.x, this);
-            }
-
-        } else {
-            //return contains(x, B, model) ? null : this;
             return this;
+        } else {
+            return model.split(x, this);
         }
     }
 
@@ -353,7 +363,7 @@ public class Leaf<X> extends AbstractNode<X> {
      * @param x     data entry to be added
      * @param model
      */
-    public final void transfer(final Node<X> a, final Node<X> b, final X x, Spatialization<X> model) {
+    public final void transfer(final Leaf<X> a, final Leaf<X> b, final X x, Spatialization<X> model) {
 
         final HyperRegion xReg = model.bounds(x);
         double tCost = xReg.cost();
@@ -368,7 +378,7 @@ public class Leaf<X> extends AbstractNode<X> {
         double bxCost = bMbr.cost();
         final double bCostInc = Math.max(bxCost - ((/*bReg!=null ? */ bReg.cost()/* : 0*/) + tCost), 0.0);
 
-        Node<X> target;
+        Leaf<X> target;
         double eps = model.epsilon();
         if (Util.equals(aCostInc, bCostInc, eps)) {
             if (Util.equals(axCost, bxCost, eps)) {
@@ -389,7 +399,8 @@ public class Leaf<X> extends AbstractNode<X> {
         }
 
 
-        target.add(new RInsertion<>(x, true, model));
+        //target.add(new RInsertion<>(x, true, model));
+        target.insert(x, model);
         //assert (added[0]); <-- TODO check this
     }
 
