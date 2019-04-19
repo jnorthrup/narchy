@@ -93,6 +93,7 @@ class ImplicationNetworkTest {
         BeliefTable bGoals = n.concept(b).goals();
         Truth bGoal = bGoals.truth(ETERNAL, n);
         n.concept(b).print();
+        assertNotNull(bGoal);
         assertEquals(1, bGoals.taskCount());
 
         

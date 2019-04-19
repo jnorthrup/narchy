@@ -236,30 +236,38 @@ public class PremiseRuleSource extends ProxyTerm {
                     neq(constraints, XX, YY);
                     boolean yNeg = pred.contains("Neg");
                     constraints.add(new SubOfConstraint(XX, YY, Event, yNeg ? -1 : +1).negIf(negated));
+
+                    eventable(YY);
+
                     if (negated) {
                         negationApplied = true;
                     }
                     break;
                 }
 
-                case "eventFirstOf":
-//                case "eventFirstOfNeg":
-                case "eventLastOf":
-//                case "eventLastOfNeg":
-                {
-                    match(X, new TermMatcher.Is(CONJ));
-                    neq(constraints, XX, YY);
-                    boolean yNeg = pred.contains("Neg");
-                    constraints.add(new SubOfConstraint(XX, YY, pred.contains("First") ? EventFirst : EventLast, yNeg ? -1 : +1).negIf(negated));
-                    if (negated) {
-                        negationApplied = true;
-                    }
-                    break;
-                }
+//                case "eventFirstOf":
+////                case "eventFirstOfNeg":
+//                case "eventLastOf":
+////                case "eventLastOfNeg":
+//                {
+//                    match(X, new TermMatcher.Is(CONJ));
+//                    neq(constraints, XX, YY);
+//                    boolean yNeg = pred.contains("Neg");
+//                    constraints.add(new SubOfConstraint(XX, YY, pred.contains("First") ? EventFirst : EventLast, yNeg ? -1 : +1).negIf(negated));
+//
+//                    eventable(YY);
+//
+//                    if (negated) {
+//                        negationApplied = true;
+//                    }
+//                    break;
+//                }
 
                 case "eventOfPN":
                     neq(constraints, XX, YY);
                     match(X, new TermMatcher.Is(CONJ));
+
+                    eventable(YY);
 
                     constraints.add(new SubOfConstraint(XX, YY, Event, 0));
                     break;
@@ -612,6 +620,10 @@ public class PremiseRuleSource extends ProxyTerm {
         this.PRE = preconditions();
 //        this.constraintSet = CONSTRAINTS.toSet();
 
+    }
+
+    private void eventable(Variable YY) {
+        constraints.add(TermMatcher.Eventable.constraint(YY, true));
     }
 
     private void hasAny(Term x, Op o) {

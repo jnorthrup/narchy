@@ -2,6 +2,7 @@ package nars.term;
 
 import jcog.bloom.StableBloomFilter;
 import jcog.bloom.hash.BytesHashProvider;
+import jcog.data.bit.MetalBitSet;
 import jcog.util.ArrayUtils;
 import nars.Op;
 import nars.io.IO;
@@ -38,17 +39,23 @@ public enum Terms {
     ;
 
 
-    /** sort and deduplicates the elements; returns new array if modifications to order or deduplication are necessary  */
+    /**
+     * sort and deduplicates the elements; returns new array if modifications to order or deduplication are necessary
+     */
     public static Term[] sorted(Term... x) {
         int len = x.length;
         switch (len) {
-            case 0: return Op.EmptyTermArray;
-            case 1: return x;
-            case 2: return sorted2(x);
-            case 3: return sorted3(x);
+            case 0:
+                return Op.EmptyTermArray;
+            case 1:
+                return x;
+            case 2:
+                return sorted2(x);
+            case 3:
+                return sorted3(x);
             default: {
                 Term[] y = new TermList(x.clone()).sortAndDedup();
-                if (y!=x && Arrays.equals(x,y))
+                if (y != x && Arrays.equals(x, y))
                     return x; //unchanged
                 else
                     return y;
@@ -99,7 +106,7 @@ public enum Terms {
         }
     }
 
-    
+
     public static Term[] sorted2(Term[] t) {
         Term a = t[0], b = t[1];
         int ab = a.compareTo(b);
@@ -139,7 +146,7 @@ public enum Terms {
 
     public static void printRecursive(Term x, int level, Consumer<String> c) {
 
-        StringBuilder line = new StringBuilder(level*2 + 32);
+        StringBuilder line = new StringBuilder(level * 2 + 32);
         line.append("  ".repeat(Math.max(0, level)));
 
         line.append(x);
@@ -236,13 +243,13 @@ public enum Terms {
         ObjectIntHashMap<Term> uniques = new ObjectIntHashMap(c.volume());
 
         c.forEach(cc ->
-            cc.recurseTerms((Term subterm) -> {
-                if (subterm == c)
-                    return;
-                int s = score.applyAsInt(subterm);
-                if (s > 0)
-                    uniques.addToValue(subterm, s);
-            })
+                cc.recurseTerms((Term subterm) -> {
+                    if (subterm == c)
+                        return;
+                    int s = score.applyAsInt(subterm);
+                    if (s > 0)
+                        uniques.addToValue(subterm, s);
+                })
         );
 
         int total = uniques.size();
@@ -348,10 +355,12 @@ public enum Terms {
     private static boolean canExtractFixedPath(Term container) {
         return !(container instanceof PatternCompound.PatternCompoundWithEllipsis)
                 &&
-               !container.isCommutative();
+                !container.isCommutative();
     }
 
-    /** provides canonically sorted subterms of subterms */
+    /**
+     * provides canonically sorted subterms of subterms
+     */
     public static Subterms sorted(Subterms x) {
         if (x.isSorted())
             return x;
@@ -386,7 +395,7 @@ public enum Terms {
 
         int xs = x.structure();
         int ys = y.structure();
-        if (((xs & var)==0) && ((ys&var)==0)) //no variables
+        if (((xs & var) == 0) && ((ys & var) == 0)) //no variables
             return false;
 
         //TODO Conj Xternal allow
@@ -410,11 +419,28 @@ public enum Terms {
         return true;
     }
 
+
+    public static Term withoutAll(Term container, Predicate<Term> filter) {
+        Subterms cs = container.subterms();
+        MetalBitSet match = cs.subsTrue(filter);
+        int n = match.cardinality();
+        if (n ==0) {
+            return container; //no matches
+        } else {
+            Term[] remain = cs.subsExcluding(match);
+            if (remain == null)
+                return Null;
+            else {
+                return container.op().the(container.dt(), remain);
+            }
+        }
+    }
+
     /**
      * returns null if not found, and Null if no subterms remain after removal
      */
     @Nullable
-    public static Term without(Term container, Predicate<Term> filter, Random rand) {
+    public static Term withoutOne(Term container, Predicate<Term> filter, Random rand) {
 
 
         Subterms cs = container.subterms();
@@ -435,10 +461,28 @@ public enum Terms {
             default:
                 return container.op().the(container.dt(), cs.subsExcluding(i));
         }
-
     }
-}
 
+    @Nullable
+    public static Term[] withoutOne(Subterms cs, Predicate<Term> filter, Random rand) {
+
+        int i = cs.indexOf(filter, rand);
+        if (i == -1)
+            return null;
+
+
+        switch (cs.subs()) {
+            case 1:
+                return null;
+            case 2:
+                Term remain = cs.sub(1 - i);
+                return new Term[]{remain};
+            default:
+                return cs.subsExcluding(i);
+        }
+    }
+
+}
 
 
 

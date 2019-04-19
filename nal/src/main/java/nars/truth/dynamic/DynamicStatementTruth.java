@@ -117,11 +117,11 @@ public class DynamicStatementTruth {
 
             int innerDT;
             if (superDT == DTERNAL || superDT == XTERNAL) {
-                Term cu = common.unneg();
-                if (cu.equalsPosOrNeg(what) || cu.containsPosOrNeg(what))
+//                Term cu = common.unneg();
+//                if (cu.equalsPosOrNeg(what) || cu.containsPosOrNeg(what))
                     innerDT = XTERNAL; //force XTERNAL since 0 or DTERNAL will collapse
-                else
-                    innerDT = s != ETERNAL ? 0 : DTERNAL;
+//                else
+//                    innerDT = s != ETERNAL ? 0 : DTERNAL;
             } else {
                 if (s == start && e - s >= decRange)
                     innerDT = DTERNAL; //eternal component
@@ -161,11 +161,13 @@ public class DynamicStatementTruth {
         static Term reconstruct(Compound superterm, List<Task> components, boolean subjOrPred, boolean union) {
             Term superSect = superterm.sub(subjOrPred ? 0 : 1);
             Op op = superterm.op();
+            boolean superSectNeg = false;
             if (union) {
                 if (superSect.op() == NEG) {
-                    if (op == CONJ || op == IMPL /* will be subj only, pred is auto unnegated */)
+                    if (op == CONJ || op == IMPL /* will be subj only, pred is auto unnegated */) {
+                        superSectNeg = true;
                         superSect = superSect.unneg();
-                    else {
+                    } else {
                         throw new WTF();
                     }
 
@@ -266,6 +268,9 @@ public class DynamicStatementTruth {
 //                if (op == CONJ || op == IMPL /* but not Sect's */)
 //                    sect = sect.neg();
 //            }
+
+            if (superSectNeg)
+                sect = sect.neg(); //&& --> ||
 
             return subjOrPred ? op.the(sect, outerDT, common) : op.the(common, outerDT, sect);
         }

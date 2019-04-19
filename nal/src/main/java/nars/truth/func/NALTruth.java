@@ -243,13 +243,14 @@ public enum NALTruth implements TruthFunc {
     UnionPT() {
         @Override
         public Truth apply(Truth T, Truth B, NAR n, float minConf) {
-            return NALTruth.pt(T, B, n, minConf, Union);
+            return NALTruth.pt(T, B, n, minConf, T.isNegative() ?  Intersection /* yes i know this is opposite but it works */ : Union);
         }
     },
+
     IntersectionPT() {
         @Override
         public Truth apply(Truth T, Truth B, NAR n, float minConf) {
-            return NALTruth.pt(T, B, n, minConf, Intersection);
+            return NALTruth.pt(T, B, n, minConf, T.isNegative() ? Union /* yes i know this is opposite but it works */ : Intersection);
         }
     },
 

@@ -32,15 +32,19 @@ public class STMLinkage extends NARPart {
 
     private final MetalConcurrentQueue<Pair<Task, Concept>> stm;
 
+    @Deprecated
     public STMLinkage(NAR nar, int capacity) {
+        this(capacity);
+        nar.start(this);
+    }
+
+    public STMLinkage(int capacity) {
         super();
 
         stm = //Util.blockingQueue(capacity + 1 );
                 new MetalConcurrentQueue<>(capacity);
 
 //        cause = nar.newCause(this);
-
-        nar.start(this);
     }
 
     @Override

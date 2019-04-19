@@ -374,17 +374,22 @@ public class Builtin {
                 return Conj.negateEvents(arg);
             }
         });
+
+        /** warning: this returns Null if unchanged */
         nar.add(new AbstractInlineFunctor2("without") {
             @Override
             protected Term apply(Term container, Term content) {
-                return Terms.without(container, x -> x.equals(content), nar.random());
+                Term y = Terms.withoutAll(container, x -> x.equals(content));
+                return y == container ? Null : y;
             }
         });
+        /** warning: this returns Null if unchanged */
         nar.add(new AbstractInlineFunctor2("withoutPosOrNeg") {
             @Override
-            protected Term apply(Term container, Term content) {
-                Term c = content.unneg();
-                return Terms.without(container, x -> x.unneg().equals(c), nar.random());
+            protected Term apply(Term container, Term _content) {
+                Term content = _content.unneg();
+                Term y = Terms.withoutAll(container, x -> x.unneg().equals(content));
+                return y == container ? Null : y;
             }
         });
 

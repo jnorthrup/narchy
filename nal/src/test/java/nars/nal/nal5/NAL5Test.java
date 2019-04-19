@@ -21,7 +21,7 @@ public class NAL5Test extends NALTest {
 
     @Override
     protected NAR nar() {
-        NAR n = NARS.tmp(6);
+        NAR n = NARS.tmp(6,6);
         n.termVolumeMax.set(10);
         n.confMin.set(0.1f);
         return n;
@@ -277,16 +277,32 @@ public class NAL5Test extends NALTest {
                 1f, 0.81f);
 
     }
-
-
+    @Test
+    void compound_composition_Subj_simple() {
+        TestNAR tester = test;
+        test.termVolMax(11);
+        tester.believe("(x ==> z)");
+        tester.believe("(y ==> z)", 0.9f, 0.81f);
+        tester.mustBelieve(cycles, " ((x && y) ==> z)", 1f, 0.73f);
+        tester.mustBelieve(cycles, " ((x || y) ==> z)", 0.9f, 0.73f);
+    }
+    @Test
+    void compound_composition_SubjNeg_simple() {
+        TestNAR tester = test;
+        test.termVolMax(11);
+        tester.believe("--(x ==> z)");
+        tester.believe("--(y ==> z)", 0.9f, 0.81f);
+        tester.mustBelieve(cycles, "((x && y) ==> z)", 0.1f, 0.73f);
+        tester.mustBelieve(cycles, "((x || y) ==> z)", 0f, 0.73f);
+    }
     @Test
     void compound_composition_Subj() {
         TestNAR tester = test;
-        test.termVolMax(14);
+        test.termVolMax(16);
         tester.believe("(bird:robin ==> animal:robin)");
         tester.believe("((robin-->[flying]) ==> animal:robin)", 0.9f, 0.81f);
-        tester.mustBelieve(cycles * 2, " ((bird:robin && (robin-->[flying])) ==> animal:robin)", 0.9f, 0.73f);
-        //tester.mustBelieve(cycles*2, " ((bird:robin || (robin-->[flying])) ==> animal:robin)", 1f, 0.73f);
+        tester.mustBelieve(cycles, "((bird:robin && (robin-->[flying])) ==> animal:robin)", 1f, 0.73f);
+        tester.mustBelieve(cycles, "((bird:robin || (robin-->[flying])) ==> animal:robin)", 0.9f, 0.73f);
     }
 
     @Test
@@ -295,8 +311,8 @@ public class NAL5Test extends NALTest {
         test.termVolMax(14).confMin(0.65f);
         tester.believe("--(bird:robin ==> animal:nonRobin)");
         tester.believe("--((robin-->[flying]) ==> animal:nonRobin)", 0.9f, 0.81f);
-        tester.mustBelieve(cycles, " ((bird:robin && (robin-->[flying])) ==> animal:nonRobin)", 0.1f, 0.73f);
-        //tester.mustBelieve(cycles, " ((bird:robin || (robin-->[flying])) ==> animal:nonRobin)", 0f, 0.73f);
+        tester.mustBelieve(cycles, "((bird:robin && (robin-->[flying])) ==> animal:nonRobin)", 0.1f, 0.73f);
+        //tester.mustBelieve(cycles, "((bird:robin || (robin-->[flying])) ==> animal:nonRobin)", 0f, 0.73f);
     }
 
 
@@ -1045,35 +1061,5 @@ public class NAL5Test extends NALTest {
     }
 
 
-    @Test
-    void variable_elimination_sim_subj() {
 
-        TestNAR tester = test;
-        tester.believe("(($x --> bird) <-> ($x --> swimmer))");
-        tester.believe("(swan --> bird)", 0.90f, 0.9f);
-        tester.mustBelieve(cycles, "(swan --> swimmer)", 0.90f,
-                0.81f);
-
-    }
-    @Test
-    void variable_elimination_analogy_substIfUnify() {
-
-        TestNAR tester = test;
-        tester.believe("((bird --> $x) <-> (swimmer --> $x))");
-        tester.believe("(bird --> swan)", 0.80f, 0.9f);
-        tester.mustBelieve(cycles, "(swimmer --> swan)", 0.80f,
-                0.81f);
-
-    }
-
-    @Test
-    void variable_elimination_analogy_substIfUnifyOther() {
-        //same as variable_elimination_analogy_substIfUnify but with sanity test for commutive equivalence
-        TestNAR tester = test;
-        tester.believe("((bird --> $x) <-> (swimmer --> $x))");
-        tester.believe("(swimmer --> swan)", 0.80f, 0.9f);
-        tester.mustBelieve(cycles, "(bird --> swan)", 0.80f,
-                0.81f);
-
-    }
 }

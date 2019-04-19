@@ -50,36 +50,36 @@ public enum SubtermCondition implements BiPredicate<Term, Term> {
             return 1f;
         }
     },
-    EventFirst() {
-        @Override
-        public final boolean test(Term container, Term x) {
-            return Conj.isEventFirstOrLast(container, x,  true);
-        }
-
-        @Override
-        public boolean testContainer(Term container) {
-            return container.op()==CONJ;
-        }
-
-        public float cost() {
-            return 1.5f;
-        }
-    },
-    EventLast() {
-        @Override
-        public final boolean test(Term container, Term x) {
-            return Conj.isEventFirstOrLast(container, x,false);
-        }
-
-        @Override
-        public boolean testContainer(Term container) {
-            return container.op()==CONJ;
-        }
-
-        public float cost() {
-            return 1.75f;
-        } //more intensive comparison than first
-    }
+//    EventFirst() {
+//        @Override
+//        public final boolean test(Term container, Term x) {
+//            return Conj.isEventFirstOrLast(container, x,  true);
+//        }
+//
+//        @Override
+//        public boolean testContainer(Term container) {
+//            return container.op()==CONJ;
+//        }
+//
+//        public float cost() {
+//            return 1.5f;
+//        }
+//    },
+//    EventLast() {
+//        @Override
+//        public final boolean test(Term container, Term x) {
+//            return Conj.isEventFirstOrLast(container, x,false);
+//        }
+//
+//        @Override
+//        public boolean testContainer(Term container) {
+//            return container.op()==CONJ;
+//        }
+//
+//        public float cost() {
+//            return 1.75f;
+//        } //more intensive comparison than first
+//    }
 
 //    /**
 //     * conj containment of another event, or at least one event of another conj

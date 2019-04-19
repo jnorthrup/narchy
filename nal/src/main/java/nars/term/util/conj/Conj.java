@@ -376,34 +376,34 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
         }
     }
 
-    /**
-     * returns null if wasnt contained, True if nothing remains after removal
-     */
-    @Nullable
-    public static Term withoutEarlyOrLate(Term conj, Term event, boolean earlyOrLate) {
-
-        Op o = conj.op();
-        if (o == NEG) {
-            Term n = withoutEarlyOrLate(conj, event, earlyOrLate);
-            return n != null ? n.neg() : null;
-        }
-
-        if (o == CONJ && !conj.impossibleSubTerm(event)) {
-            if (isSeq(conj)) {
-                Conj c = Conj.from(conj);
-                //if (c.dropEvent(event, earlyOrLate, filterContradiction))
-                if (c.dropEvent(event, earlyOrLate, false))
-                    return c.term();
-            } else {
-                Term[] csDropped = conj.subterms().subsExcluding(event);
-                if (csDropped != null)
-                    return (csDropped.length == 1) ? csDropped[0] : terms.conj(conj.dt(), csDropped);
-            }
-        }
-
-        return null; //no change
-
-    }
+//    /**
+//     * returns null if wasnt contained, True if nothing remains after removal
+//     */
+//    @Nullable
+//    public static Term withoutEarlyOrLate(Term conj, Term event, boolean earlyOrLate) {
+//
+//        Op o = conj.op();
+//        if (o == NEG) {
+//            Term n = withoutEarlyOrLate(conj, event, earlyOrLate);
+//            return n != null ? n.neg() : null;
+//        }
+//
+//        if (o == CONJ && !conj.impossibleSubTerm(event)) {
+//            if (isSeq(conj)) {
+//                Conj c = Conj.from(conj);
+//                //if (c.dropEvent(event, earlyOrLate, filterContradiction))
+//                if (c.dropEvent(event, earlyOrLate, false))
+//                    return c.term();
+//            } else {
+//                Term[] csDropped = conj.subterms().subsExcluding(event);
+//                if (csDropped != null)
+//                    return (csDropped.length == 1) ? csDropped[0] : terms.conj(conj.dt(), csDropped);
+//            }
+//        }
+//
+//        return null; //no change
+//
+//    }
 
     /**
      * means that the internal represntation of the target is concurrent
@@ -693,13 +693,15 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
         } else {
             Subterms s = include.subterms();
             //try positive first
-            Term[] ss = s.subsExcluding(exclude);
+            Term[] ss = Terms.withoutOne(s, t -> t.equals(exclude), ThreadLocalRandom.current());
+                    //, s.subsExcluding(exclude);
             if (ss != null) { int dt = include.dt();
                 return ss.length > 1 ? terms.conj(dt, ss) : ss[0];
             } else {
                 //try negative next
                 if (excludeNeg) {
-                    ss = s.subsExcluding(exclude.neg());
+                    Term excludeNegTerm = exclude.neg();
+                    ss = Terms.withoutOne(s, t -> t.equals(excludeNegTerm), ThreadLocalRandom.current());
                     if (ss != null) {
                         return terms.conj(include.dt(), ss);
                     }

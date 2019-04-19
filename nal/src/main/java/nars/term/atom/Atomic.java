@@ -160,7 +160,8 @@ public interface Atomic extends Term {
     /*@NotNull*/
     static Atomic the(String id) {
         int l = id.length();
-        assert (l > 0) : "attempted zero-length Atomic id";
+        if (l <= 0)
+            throw new RuntimeException("attempted construction of zero-length Atomic id");
 
         
         if (l == 1) {

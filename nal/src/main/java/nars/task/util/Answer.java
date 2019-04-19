@@ -1,5 +1,6 @@
 package nars.task.util;
 
+import jcog.WTF;
 import jcog.math.LongInterval;
 import jcog.sort.FloatRank;
 import jcog.sort.RankedN;
@@ -233,8 +234,10 @@ public final class Answer implements Timed {
         return (x, min) -> {
 
             float dtDiff = Intermpolate.dtDiff(template, x.term());
-            if (!Float.isFinite(dtDiff))
-                return Float.NaN;
+            if (!Float.isFinite(dtDiff)) {
+                throw new WTF(x.term() + " mismatch: template=" + template);
+                //return Float.NaN;
+            }
 
             float d = 1 / (1 + dtDiff);
             if (d < min)

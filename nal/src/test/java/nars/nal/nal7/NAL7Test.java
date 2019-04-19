@@ -1,7 +1,10 @@
 package nars.nal.nal7;
 
 import nars.$;
+import nars.NAR;
+import nars.NARS;
 import nars.Narsese;
+import nars.op.stm.STMLinkage;
 import nars.term.Term;
 import nars.test.NALTest;
 import nars.test.TestNAR;
@@ -22,16 +25,23 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class NAL7Test extends NALTest {
 
     public static final float CONF_TOLERANCE_FOR_PROJECTIONS = 2f; //200%
-    private final static int cycles = 750;
+    private final static int cycles = 550;
 
+    @Override
+    protected NAR nar() {
+        NAR n = NARS
+                //.tmp();
+                .tmp(6,8); new STMLinkage(n, 1);
+        return n;
+    }
 
     @BeforeEach
     void setTolerance() {
         test.confTolerance(CONF_TOLERANCE_FOR_PROJECTIONS);
         test.termVolMax(12);
         test.confMin(0.3f);
-        test.nar.freqResolution.set(0.04f);
-        test.nar.confResolution.set(0.02f);
+        test.nar.freqResolution.set(0.1f);
+        test.nar.confResolution.set(0.05f);
     }
 
 

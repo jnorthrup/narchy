@@ -9,12 +9,14 @@ import org.junit.jupiter.api.Test;
 
 public class NAL1Test extends NALTest {
 
-    protected int cycles = 650;
+    protected int cycles = 450;
 
     @Override
     protected NAR nar() {
 
-        return NARS.tmp(1);
+        NAR n = NARS.tmp(1);
+        n.termVolumeMax.set(7);
+        return n;
     }
 
     @Test
@@ -130,6 +132,7 @@ public class NAL1Test extends NALTest {
         */
 
         test
+                .termVolMax(3)
                 .believe("(x --> y)")
                 .ask("(x --> z)")
                 .mustOutput(cycles, "<y --> z>?")
@@ -224,6 +227,7 @@ public class NAL1Test extends NALTest {
     void inheritanceToSimilarity2() {
 
         TestNAR tester = test;
+        tester.termVolMax(3);
         tester.believe("<swan --> bird>");
         tester.believe("<bird <-> swan>", 0.1f, 0.9f);
         tester.mustBelieve(cycles, "<bird --> swan>",
@@ -235,10 +239,42 @@ public class NAL1Test extends NALTest {
     void similarityToInheritance4() {
 
         TestNAR tester = test;
+        tester.termVolMax(3);
         tester.believe("<bird <-> swan>", 0.9f, 0.9f);
         tester.ask("<swan --> bird>");
         tester.mustBelieve(cycles, "<swan --> bird>", 0.9f, 0.73f /*0.9f*/);
 
     }
 
+    @Test
+    void variable_elimination_sim_subj() {
+
+        TestNAR tester = test;
+        tester.believe("(($x --> bird) <-> ($x --> swimmer))");
+        tester.believe("(swan --> bird)", 0.90f, 0.9f);
+        tester.mustBelieve(cycles, "(swan --> swimmer)", 0.90f,
+                0.81f);
+
+    }
+    @Test
+    void variable_elimination_analogy_substIfUnify() {
+
+        TestNAR tester = test;
+        tester.believe("((bird --> $x) <-> (swimmer --> $x))");
+        tester.believe("(bird --> swan)", 0.80f, 0.9f);
+        tester.mustBelieve(cycles, "(swimmer --> swan)", 0.80f,
+                0.81f);
+
+    }
+
+    @Test
+    void variable_elimination_analogy_substIfUnifyOther() {
+        //same as variable_elimination_analogy_substIfUnify but with sanity test for commutive equivalence
+        TestNAR tester = test;
+        tester.believe("((bird --> $x) <-> (swimmer --> $x))");
+        tester.believe("(swimmer --> swan)", 0.80f, 0.9f);
+        tester.mustBelieve(cycles, "(bird --> swan)", 0.80f,
+                0.81f);
+
+    }
 }

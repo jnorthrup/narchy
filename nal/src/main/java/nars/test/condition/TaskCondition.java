@@ -210,11 +210,18 @@ public class TaskCondition implements NARCondition, Predicate<Task>, Consumer<Ta
         final TreeMap<Float, Task> similar = this.similar;
 
 
-        float worstDiff = similar.size() >= maxSimilars ? similar.lastKey() : Float.POSITIVE_INFINITY;
 
+        int sims = similar.size();
+        float worstDiff = sims >= maxSimilars ? similar.lastKey() : Float.POSITIVE_INFINITY;
+
+        float difference = 0;
+        if (task.punc() != punc)
+            difference += 4;
+        if (difference >= worstDiff)
+            return;
 
         Term tterm = task.term();
-        float difference =
+        difference +=
                 3 * termDistance(tterm, term, worstDiff);
         if (difference >= worstDiff)
             return;
@@ -237,15 +244,12 @@ public class TaskCondition implements NARCondition, Predicate<Task>, Consumer<Ta
                 return;
         }
 
-        if (task.punc() != punc)
-            difference += 4;
+//        if (difference >= worstDiff)
+//            return;
 
-        if (difference >= worstDiff)
-            return;
-
-        difference += 0.0001f * ((float)task.hashCode()) / (Integer.MAX_VALUE*2); //HACK differentiate by hashcode
+        difference += 0.00001f * ((float)Math.abs(task.hashCode()) / (Integer.MAX_VALUE*2)); //HACK differentiate by hashcode
         if (similar.put(difference, task)==null) {
-            if (similar.size() > maxSimilars) {
+            if (sims+1 > maxSimilars) {
                 similar.remove(similar.lastEntry().getKey());
             }
         }

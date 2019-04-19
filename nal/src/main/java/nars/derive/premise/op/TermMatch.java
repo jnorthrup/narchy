@@ -46,7 +46,11 @@ public final class TermMatch<X> extends AbstractTermMatchPred<X> {
     }
 
     private static Term name(TermMatcher match, @Deprecated Function resolve, boolean exactOrSuper) {
-        Atomic a = Atomic.the(match.getClass().getSimpleName());
+        Class<? extends TermMatcher> mc = match.getClass();
+        String cc = mc.isAnonymousClass() ? match.toString() : mc.getSimpleName();
+        if (cc.length()==0)
+            throw new WTF();
+        Atomic a = Atomic.the(cc);
         Term r = $.the(resolve.toString());
         r = exactOrSuper ? r : $.func(IN_ATOM, r);
         Term p = match.param();

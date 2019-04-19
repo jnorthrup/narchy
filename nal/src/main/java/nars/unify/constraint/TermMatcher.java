@@ -8,7 +8,6 @@ import nars.term.Term;
 import nars.term.Variable;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
-import nars.unify.Unify;
 
 import javax.annotation.Nullable;
 
@@ -53,7 +52,7 @@ abstract public class TermMatcher {
     public abstract Term param();
 
     public UnifyConstraint constraint(Variable x, boolean trueOrFalse) {
-        return new MyUnifyConstraint(x, trueOrFalse);
+        return new UnaryConstraint(this, x, trueOrFalse);
     }
 
     public abstract float cost();
@@ -376,24 +375,35 @@ abstract public class TermMatcher {
 
     }
 
-    private final class MyUnifyConstraint extends UnifyConstraint {
+    /** the term can appear as an event (condition) in a conjunction compound */
+    public static final TermMatcher Eventable = new TermMatcher() {
 
-        private final boolean trueOrFalse;
+        @Override
+        public String toString() {
+            return "Eventable";
+        }
 
-        MyUnifyConstraint(Variable x, boolean trueOrFalse) {
-            super(x, TermMatcher.this.getClass().getSimpleName(),
-                    ($.p(TermMatcher.this.param() != null ? TermMatcher.this.param() : Op.EmptyProduct).negIf(!trueOrFalse)));
-            this.trueOrFalse = trueOrFalse;
+        @Override
+        public Term param() {
+            return null;
+        }
+
+        @Override
+        public boolean test(Term term) {
+            return term.unneg().op().eventable;
+        }
+
+        @Override
+        public boolean testSuper(Term x) {
+            //TODO: Op.Eventables
+            return true;
         }
 
         @Override
         public float cost() {
-            return TermMatcher.this.cost(); //TODO
+            return 0.015f;
         }
 
-        @Override
-        public boolean invalid(Term y, Unify f) {
-            return TermMatcher.this.test(y) != trueOrFalse;
-        }
-    }
+    };
+
 }
