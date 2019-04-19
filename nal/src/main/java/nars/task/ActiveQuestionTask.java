@@ -10,6 +10,7 @@ import nars.NAR;
 import nars.Op;
 import nars.Param;
 import nars.Task;
+import nars.attention.What;
 import nars.subterm.Subterms;
 import nars.term.Term;
 import nars.unify.Unify;
@@ -90,14 +91,16 @@ public class ActiveQuestionTask extends NALTask.NALTaskX implements Consumer<Tas
     }
 
     @Override
-    public ITask next(NAR nar) {
+    public ITask next(What w) {
 
 
         //synchronized (this) {
             if (onTask!=null)
                 return null; //already processed and active
             else {
-                ITask next = super.next(nar);
+                ITask next = super.next(w);
+
+                NAR nar = w.nar;
                 this.ttl = nar.deriveBranchTTL.intValue();
                 this.onTask = nar.onTask(this, punc() == QUESTION ? BELIEF : /* quest */ GOAL);
                 return next;

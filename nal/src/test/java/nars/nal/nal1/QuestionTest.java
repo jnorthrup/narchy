@@ -145,7 +145,7 @@ class QuestionTest {
     @Test
     @Disabled
     void testMathBackchain() throws Narsese.NarseseException {
-        NAR n = NARS.tmp();
+        NAR n = NARS.tmp(1);
 
 
         n.add(f("odd", a -> {
@@ -175,7 +175,7 @@ class QuestionTest {
     @Disabled
     @Test
     void testDeriveQuestionOrdinary() {
-        new TestNAR(NARS.tmp())
+        new TestNAR(NARS.tmp(1))
                 .ask("((S | P) --> M)")
                 .believe("(S --> M)")
                 .mustQuestion(512, "(P --> M)").test();
@@ -184,7 +184,7 @@ class QuestionTest {
     @Disabled
     @Test
     void testDeriveQuestOrdinary() {
-        new TestNAR(NARS.tmp())
+        new TestNAR(NARS.tmp(1))
                 .quest("((S | P) --> M)")
                 .believe("(S --> M)")
                 .mustQuest(256, "(P --> M)").test();
@@ -193,10 +193,10 @@ class QuestionTest {
     @Disabled
     @Test
     void testExplicitEternalizationViaQuestion() {
-        new TestNAR(NARS.tmp())
-                .inputAt(1, "x. :|: %1.00;0.90%")
-                .inputAt(4, "x. :|: %0.50;0.90%")
-                .inputAt(7, "x. :|: %0.00;0.90%")
+        new TestNAR(NARS.tmp(1))
+                .inputAt(1, "x. | %1.00;0.90%")
+                .inputAt(4, "x. | %0.50;0.90%")
+                .inputAt(7, "x. | %0.00;0.90%")
                 .inputAt(8, "$1.0 x?")
                 .mustBelieve(64, "x", 0.5f, 0.73f /*ETERNAL*/)
                 .mustBelieve(64, "x", 0.5f, 0.9f, t -> t == 4 /*temporal*/)
@@ -206,10 +206,10 @@ class QuestionTest {
     @Disabled
     @Test
     void testExplicitEternalizationViaQuestionDynamic() {
-        new TestNAR(NARS.tmp())
-                .inputAt(1, "x. :|: %1.00;0.90%")
-                .inputAt(4, "y. :|: %1.00;0.90%")
-                .inputAt(1, "$1.0 (x &&+3 y)? :|:")
+        new TestNAR(NARS.tmp(1))
+                .inputAt(1, "x. | %1.00;0.90%")
+                .inputAt(4, "y. | %1.00;0.90%")
+                .inputAt(1, "$1.0 (x &&+3 y)? |")
                 .inputAt(1, "$1.0 (x &&+3 y)?")
 
 
@@ -220,7 +220,7 @@ class QuestionTest {
 
     @Test
     void testDepVarInIndepImpl() {
-        new TestNAR(NARS.tmp())
+        new TestNAR(NARS.tmp(6))
                 .input("f(#x).")
                 .input("(f($x) ==> g($x)).")
                 .mustBelieve(64, "g(#1)", 1f, 0.81f)
@@ -228,7 +228,7 @@ class QuestionTest {
     }
     @Test
     void testDepVarInIndepImpl2() {
-        new TestNAR(NARS.tmp())
+        new TestNAR(NARS.tmp(6))
                 .input("f(#x,y).")
                 .input("(f($x,y) ==> g($x,y)).")
                 .mustBelieve(64, "g(#1,y)", 1f, 0.81f)
@@ -238,7 +238,7 @@ class QuestionTest {
     void testDepVarInIndepImpl3() {
         assertTrue(!$$$("f(#2,#1)").isNormalized());
         assertEq("f(#1,#2)", $$$("f(#2,#1)").normalize());
-        NAR n = NARS.tmp();
+        NAR n = NARS.tmp(6);
 //        n.onTask(t->{
 //            if (t.term().toString().equals("f(#2,#1)"))
 //                throw new WTF();

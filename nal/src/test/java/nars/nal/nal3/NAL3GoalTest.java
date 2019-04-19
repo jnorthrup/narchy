@@ -7,7 +7,6 @@ import nars.derive.impl.BatchDeriver;
 import nars.nal.nal8.GoalDecompositionTest;
 import nars.test.NALTest;
 import nars.test.TestNAR;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static nars.nal.nal3.NAL3Test.cycles;
@@ -28,6 +27,7 @@ class NAL3GoalTest {
             for (boolean beliefPos : new boolean[]{true, false}) {
                 float f = beliefPos ? 1f : 0f;
                 for (boolean fwd : new boolean[]{true, false}) {
+                    if (fwd) f = 1-f;
                     testGoalDiff(false, beliefPos, true, fwd, f, 0.81f, subjOrPred);
                 }
             }
@@ -80,12 +80,12 @@ class NAL3GoalTest {
         System.out.println(goalTask + '\t' + beliefTask + "\t=>\t" + expectedTask);
 
 
-        new TestNAR(NARS.tmp(3))
+        new TestNAR(NARS.tmp(3,3))
                 .termVolMax(6)
                 .input(goalTask)
                 .input(beliefTask)
-                .mustGoal(GoalDecompositionTest.cycles, YY, f, c)
-                .run(cycles);
+                .mustGoal(cycles, YY, f, c)
+                .run(0);
 
     }
 
@@ -147,8 +147,8 @@ class NAL3GoalTest {
                 .termVolMax(5)
                 .input("(X --> Z)!")
                 .input("((X|Y) --> Z).")
-                .mustGoal(GoalDecompositionTest.cycles, "((X|Y) --> Z)", 1, 0.81f)
-                .run(16);
+                .mustGoal(cycles, "((X|Y) --> Z)", 1, 0.81f)
+                .run(0);
         //TODO other cases
     }
 
@@ -186,14 +186,15 @@ class NAL3GoalTest {
 
     static class DecompositionTest extends NALTest {
 
-        public static final int cycles = 150;
+        public static final int cycles = 1050;
 
-
-        @BeforeEach
-        void setTolerance() {
-            test.nar.time.dur(3);
-            test.termVolMax(6);
+        @Override
+        protected NAR nar() {
+            NAR n = NARS.tmp(3,3);
+            n.termVolumeMax.set(6);
+            return n;
         }
+
 
         @Test
         void testIntersectionSinglePremiseDecomposeGoal1Pos() {
@@ -218,11 +219,18 @@ class NAL3GoalTest {
                     .mustGoal(cycles, "(b-->g)", 1f, 0.81f);
         }
         @Test
-        void testUnionConditionalDecomposeGoalPosNeg() {
+        void testSubjUnionConditionalDecomposeGoalPosNeg() {
             test
                     .input("((a&b)-->g)!")
                     .input("--(a-->g).")
                     .mustGoal(cycles, "(b-->g)", 1f, 0.81f);
+        }
+        @Test
+        void testPredUnionConditionalDecomposeGoalPosNeg() {
+            test
+                    .input("(g-->(a|b))!")
+                    .input("--(g-->a).")
+                    .mustGoal(cycles, "(g-->b)", 1f, 0.81f);
         }
 
 
@@ -253,17 +261,33 @@ class NAL3GoalTest {
         }
 
         @Test
-        void testIntersectionNegIntersectionGoalSinglePremiseDecompose() {
+        void testNegIntersectionBeliefSinglePremiseDecompose() {
+            test
+                    .input("--((a|b)-->g).")
+                    .mustBelieve(cycles, "(a-->g)", 0f, 0.45f)
+                    .mustBelieve(cycles, "(b-->g)", 0f, 0.45f)
+            ;
+        }
+        @Test
+        void testNegIntersectionGoalSinglePremiseDecompose() {
             test
                     .input("--((a|b)-->g)!")
-                    .mustGoal(cycles, "(a-->g)", 0f, 0.81f)
-                    .mustGoal(cycles, "(b-->g)", 0f, 0.81f)
+                    .mustGoal(cycles, "(a-->g)", 0f, 0.45f)
+                    .mustGoal(cycles, "(b-->g)", 0f, 0.45f)
+            ;
+        }
+        @Test
+        void testNegUnionBeliefSinglePremiseDecompose() {
+            test
+                    .input("--((a&b)-->g).")
+                    .mustBelieve(cycles, "(a-->g)", 0f, 0.81f)
+                    .mustBelieve(cycles, "(b-->g)", 0f, 0.81f)
             ;
         }
 
 
         @Test
-        void testIntersectionNegUnionGoalSinglePremiseDecompose() {
+        void testNegUnionGoalSinglePremiseDecompose() {
             test
                     .input("--((a&b)-->g)!")
                     .mustGoal(cycles, "(a-->g)", 0f, 0.81f)

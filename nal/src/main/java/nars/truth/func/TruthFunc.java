@@ -81,7 +81,7 @@ public interface TruthFunc {
     /** swaps the task truth and belief truth */
     final class SwappedTruth extends ProxyTruthFunc {
 
-        SwappedTruth(TruthFunc o) {
+        public SwappedTruth(TruthFunc o) {
             super(o);
         }
 

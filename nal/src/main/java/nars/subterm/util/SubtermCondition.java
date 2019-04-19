@@ -132,10 +132,6 @@ public enum SubtermCondition implements BiPredicate<Term, Term> {
 
     abstract public float cost();
 
-    public final boolean test(Term container, Term x, boolean testNegAlso) {
-        return test(container, x) || (testNegAlso && test(container, x.neg()));
-    }
-
     public boolean testContainer(Term container) {
         //default impl
         return true;

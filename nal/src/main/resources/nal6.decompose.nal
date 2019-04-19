@@ -1,16 +1,10 @@
 //conjunction/disjunction structural decomposition
 
-    //specific deduction
-    C, X, eventOf(C,X)                    |-   conjWithout(C,  X), (Belief:DeductionPP)
-    C, X, eventOfNeg(C,X), has(C,"--")    |-   conjWithout(C,--X), (Belief:DeductionPN)
-        //anti-specific deduction: "conjunction contraposition" (weak)
-        C, X, eventOf(C,X)                    |-   negateEvents(conjWithout(C,  X)), (Belief:DeductionWeakPN)
-        C, X, eventOfNeg(C,X), has(C,"--")    |-   negateEvents(conjWithout(C,--X)), (Belief:DeductionWeakPP)
+
 
     //free structural Conjunction/Disjunction decomposition
-    C, X, eventOfPN(C,X)                              |-   conjWithoutPN(C,X), (Belief:StructuralDeduction)
+    C, X, eventOfPN(C,X)                              |-   conjWithoutPN(C,X), (Belief:StructuralDeduction, Goal:StructuralDeduction)
       C, X, eventOfPN(C,X), task("?@"), hasBelief()   |-   conjWithoutPN(C,X)
-    C, X, eventOfPN(C,X)                              |-   conjWithoutPN(C,X), (Goal:StructuralDeduction)
 
     //impl conj/disj pred belief and question free structural implication decomposition
     (A ==> C), X, eventOfPN(C,X), --isVar(A)   |-   (A ==> conjWithoutPN(C,  X)), (Belief:StructuralDeduction)
@@ -70,14 +64,6 @@
       //(A==>C), (A==>X), is(C,"&&"), --isVar(X)     |- (A ==> conjAfter(C,--X)), (Belief:DeductionPN)
       //(A==>C), (A==>X), is(C,"&&"), --isVar(X)     |- (A ==> conjAfter(C,  X)), (Belief:DeductionNN)
 
-    //conditional goal disjunction decompose (alternate suppress by goal)
-    G, D, eventOf(D,G), conjParallel(D), --isVar(G)                   |- --conjWithout(D,  G), (Goal:DesireWeakPN)
-    G, D, eventOfNeg(D,G), conjParallel(D), has(D,"--"), --isVar(G)   |- --conjWithout(D,--G), (Goal:DesireWeakNN)
-
-    //conditional goal disjunction decompose (alternate suppress by belief)
-    D, X, eventOf(D,X), conjParallel(D), --isVar(X)                   |-   --conjWithout(D,  X), (Goal:DeductionWeakNP)
-    D, X, eventOfNeg(D,X), conjParallel(D), has(D,"--"), --isVar(X)   |-   --conjWithout(D,--X), (Goal:DeductionWeakNN)
-
 
     //TODO nal3 shortcut - decompose trailing intersection/union event
 
@@ -98,19 +84,37 @@
         X, (--X ==> V), task("?"), is(V,"#"), --isVar(X)    |- --X, (Belief:BeliefStructuralAbduction)
 
 
+//TODO these maybe better as Decompose__ truths
+    //conditional goal disjunction decompose (alternate suppress by goal)
+    G, D, eventOf(D,G), conjParallel(D), --isVar(G)      |- --conjWithout(D,  G), (Goal:DesireWeakPN)
+    G, D, eventOfNeg(D,G), conjParallel(D), --isVar(G)   |- --conjWithout(D,--G), (Goal:DesireWeakNN)
+
+    //conditional goal disjunction decompose (alternate suppress by belief)
+    D, X, eventOf(D,X), conjParallel(D), --isVar(X)      |-   --conjWithout(D,  X), (Goal:DeductionWeakNP)
+    D, X, eventOfNeg(D,X), conjParallel(D), --isVar(X)   |-   --conjWithout(D,--X), (Goal:DeductionWeakNN)
+
+    //specific deduction
+    C, X, eventOf(C,X)           |-   conjWithout(C,  X), (Belief:DeductionPP)
+    C, X, eventOfNeg(C,X)        |-   conjWithout(C,--X), (Belief:DeductionPN)
+        //anti-specific deduction: "conjunction contraposition" (weak)
+        C, X, eventOf(C,X)       |-   negateEvents(conjWithout(C,  X)), (Belief:DeductionWeakPN)
+        C, X, eventOfNeg(C,X)    |-   negateEvents(conjWithout(C,--X)), (Belief:DeductionWeakPP)
+
 //// propositional decomposition ////////////////////////////////////////////////////////////////////////////////////
 //If S is the case, and (&&,S,A..+) is not the case, it can't be that (&&,A..+) is the case
+// TODO these could be merged with NAL3 decompositions into a general decomposition rule
 
     //CONJ
-    X, C, eventOf(C,X), conjParallel(C), --isVar(X)                   |-   conjWithout(C,  X), (Belief:DecomposePP)
-    X, C, eventOfNeg(C,X), conjParallel(C), has(C,"--"), --isVar(X)   |-   conjWithout(C,--X), (Belief:DecomposeNP)
+    X, C, eventOf(C,X), conjParallel(C)     |-     conjWithout(C,  X), (Belief:DecomposePP)
+    X, C, eventOf(C,X), conjParallel(C)     |-   --conjWithout(C,  X), (Belief:DecomposePN)
+    X, C, eventOfNeg(C,X), conjParallel(C)  |-     conjWithout(C,--X), (Belief:DecomposeNP)
+    X, C, eventOfNeg(C,X), conjParallel(C)  |-   --conjWithout(C,--X), (Belief:DecomposeNN)
 
-    //DISJ
-    X, D, eventOfNeg(D,X), conjParallel(D), has(D,"--"), --isVar(X)   |-   --conjWithout(D,--X), (Belief:DecomposeNN)
-    X, D, eventOf(D,X), conjParallel(D), --isVar(X)                   |-   --conjWithout(D,  X), (Belief:DecomposePN)
-
-
-
+//    //DISJ
+//    X, D, eventOf(D,X), conjParallel(D)     |-     conjWithout(D,  X), (Belief:DecomposeNP)
+//    X, D, eventOf(D,X), conjParallel(D)     |-   --conjWithout(D,  X), (Belief:DecomposeNN)
+//    X, D, eventOfNeg(D,X), conjParallel(D)  |-     conjWithout(D,--X), (Belief:DecomposePP)
+//    X, D, eventOfNeg(D,X), conjParallel(D)  |-   --conjWithout(D,--X), (Belief:DecomposePN)
 
 //Conditional implication decomposition
 //  Original:
@@ -119,20 +123,23 @@
 //    (M ==> S), (M ==> (&&,S,A_1..n)) |- (M ==> (&&,A_1..n)), (Truth:DecomposePositiveNegativeNegative, Order:ForAllSame, SequenceIntervals:FromBelief)
 //    (M ==> S), (M ==> (||,S,A_1..n)) |- (M ==> (||,A_1..n)), (Truth:DecomposeNegativePositivePositive, Order:ForAllSame)
 
-    //changed from above NP -> PP, etc
-    (  S ==> M), (C ==> M), eventOf(C,S)                    |-   (  conjWithout(C,   S) ==> M), (Belief:DecomposePP)
-        (  S ==> M), (C ==> M), eventOf(C,S)                |- --(  conjWithout(C,   S) ==> M), (Belief:DecomposeNN)
-      (  S ==> M), (--D ==> M), eventOfNeg(D,S)             |- --(--conjWithout(D, --S) ==> M), (Belief:DecomposePN)
-          (  S ==> M), (--D ==> M), eventOfNeg(D,S)         |-   (--conjWithout(D, --S) ==> M), (Belief:DecomposeNP)
 
+    //conj
+    (  S ==> M), (C ==> M), eventOf(C,S), --is(C,"--")                |-      (  conjWithout(C, S) ==> M), (Belief:DecomposePP)
+     (  S ==> M), (C ==> M), eventOf(C,S), --is(C,"--")                |-   --(  conjWithout(C, S) ==> M), (Belief:DecomposeNN)
+       (  --S ==> M), (C ==> M), eventOfNeg(C,S), --is(C,"--")         |-   (  conjWithout(C, --S) ==> M), (Belief:DecomposePP)
+         ( --S ==> M), (C ==> M), eventOfNeg(C,S), --is(C,"--")       |- --(  conjWithout(C, --S) ==> M), (Belief:DecomposeNN)
 
-    (M ==> S), (M ==> C), eventOf(C,S)                        |- --(M ==> conjWithout(C,   S)), (Belief:DecomposePN)
-     (M ==> S), (M ==> C), eventOf(C,S)                        |-  (M ==> conjWithout(C,   S)), (Belief:DecomposeNP)
-    (M ==> S), (M ==> C), eventOfNeg(C,S), has(C,"--")        |- --(M ==> conjWithout(C, --S)), (Belief:DecomposeNN)
-     (M ==> S), (M ==> C), eventOfNeg(C,S), has(C,"--")        |-  (M ==> conjWithout(C, --S)), (Belief:DecomposePP)
-        //(M ==> S), (M ==> D), eventOfNeg(D,S), has(D,"--")    |-   (M ==> conjWithout(D, --S)), (Belief:DecomposeNP)
-        //(M ==> S), (M ==> D), eventOf(D,S)                    |-   (M ==> conjWithout(D,   S)), (Belief:DecomposePP)
+    //disj
+    (  S ==> M), (--C ==> M), eventOfNeg(C,S), --is(C,"--")              |-  (  --conjWithout(C, --S) ==> M), (Belief:DecomposeNP)
+       ( S ==> M), (--C ==> M), eventOfNeg(C,S), --is(C,"--")            |- --(  --conjWithout(C, --S) ==> M), (Belief:DecomposePN)
+           ( --S ==> M), (--C ==> M), eventOf(C,S), --is(C,"--")     |-   (  --conjWithout(C, --S) ==> M), (Belief:DecomposeNP)
+        (  --S ==> M), (--C ==> M), eventOf(C,S), --is(C,"--")       |- --(  --conjWithout(C, --S) ==> M), (Belief:DecomposePN)
 
+    (M ==> S), (M ==> C), eventOf(C,S)                  |- --(M ==> conjWithout(C,   S)), (Belief:DecomposePN)
+     (M ==> S), (M ==> C), eventOf(C,S)                 |-   (M ==> conjWithout(C,   S)), (Belief:DecomposePP)
+    (M ==> S), (M ==> C), eventOfNeg(C,S)               |- --(M ==> conjWithout(C, --S)), (Belief:DecomposeNN)
+     (M ==> S), (M ==> C), eventOfNeg(C,S)              |-   (M ==> conjWithout(C, --S)), (Belief:DecomposeNP)
 
 
 

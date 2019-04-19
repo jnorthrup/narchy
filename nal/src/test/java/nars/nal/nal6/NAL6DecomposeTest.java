@@ -1,23 +1,17 @@
 package nars.nal.nal6;
 
-import nars.$;
 import nars.NAR;
 import nars.NARS;
 import nars.test.NALTest;
 import nars.test.TestNAR;
-import nars.truth.PreciseTruth;
-import nars.truth.Truth;
-import nars.truth.func.TruthFunctions;
-import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static nars.Op.BELIEF;
 
 abstract public class NAL6DecomposeTest extends NALTest {
-    private static final int cycles = 350;
+    private static final int cycles = 850;
 
     @BeforeEach
     void setup() {
@@ -26,7 +20,7 @@ abstract public class NAL6DecomposeTest extends NALTest {
 
     @Override
     protected NAR nar() {
-        NAR n = NARS.tmp(6);
+        NAR n = NARS.tmp(6, 6);
         n.termVolumeMax.set(10);
         n.confMin.set(0.02f);
         return n;
@@ -43,29 +37,35 @@ abstract public class NAL6DecomposeTest extends NALTest {
 
         private void assertDecomposeSubjAB(float fAB, float fA, float c, float fB, float cB, boolean conjOrDisj) {
 
-            if (conjOrDisj) {
-                PreciseTruth tA = $.t(fA, c);
-                PreciseTruth tAB = $.t(fAB, c);
-                Truth tAB_decompose_tA = TruthFunctions.decompose(tA, tAB, true, true, true, 0);
-                assertNotNull(tAB_decompose_tA);
-                System.out.println(tAB + " <= " + tA + " * " + tAB_decompose_tA);
-
-                assertEquals(fB, tAB_decompose_tA.freq(), 0.01f);
-
-                //reverse, to check:
-                @Nullable Truth tAB_check = TruthFunctions.intersection(tA, tAB_decompose_tA, 0);
-                assertEquals(tAB.freq(), tAB_check.freq(), 0.01f);
-            }
+//            if (conjOrDisj) {
+//                PreciseTruth tA = $.t(fA, c);
+//                PreciseTruth tAB = $.t(fAB, c);
+//                Truth tAB_decompose_tA = TruthFunctions.decompose(tA, tAB, true, true, true, 0);
+//                assertNotNull(tAB_decompose_tA);
+//                System.out.println(tAB + " <= " + tA + " * " + tAB_decompose_tA);
+//
+//                assertEquals(fB, tAB_decompose_tA.freq(), 0.01f);
+//
+//                //reverse, to check:
+//                @Nullable Truth tAB_check = TruthFunctions.intersection(tA, tAB_decompose_tA, 0);
+//                assertEquals(tAB.freq(), tAB_check.freq(), 0.01f);
+//            }
 
             //tests:
-            // (S ==> M), (C ==> M), eventOf(C,S) |- (conjWithout(C,S) ==> M), (Belief:DecomposeNegativePositivePositive)
+            // (S ==> M), (C ==> M), eventOf(C,S) |- (conjWithout(C,S) ==> M), ...
             String AB = conjOrDisj ? "(A && B)" : "(A || B)";
             test
                     .termVolMax(conjOrDisj ? 5 : 8)
                     .believe('(' + AB + " ==> X)", fAB, c)
                     .believe("(A ==> X)", fA, c)
-                    .mustBelieve(cycles, "(B ==> X)", fB, cB)
-            ;
+                    .mustBelieve(cycles, "(B ==> X)", fB, cB);
+
+            float df = 0.02f;
+            if (fB < 1f-df)
+                    test.mustNotOutput(cycles, "(B ==> X)", BELIEF, fB + df, 1, 0, 1, (t)->true);
+            if (fB > df)
+                    test.mustNotOutput(cycles, "(B ==> X)", BELIEF, 0, fB - df, 0, 1, (t)->true);
+
         }
 
         @Test
@@ -85,12 +85,12 @@ abstract public class NAL6DecomposeTest extends NALTest {
 
         @Test
         void testDecomposeSubjDisjPosPosWeak() {
-            assertDecomposeSubjDisjAandB(1f, 0.5f, 0.1f, 0.08f);
+            assertDecomposeSubjDisjAandB(1f, 0.5f, 0.5f /*0.1f*/, 0.08f);
         }
 
         @Test
-        void testDecomposeSubjDisjPosPosOpposite() {
-            assertDecomposeSubjDisjAandB(1f, 0.1f, 1f, 0.73f);
+        void testDecomposeSubjDisjNegPos() {
+            assertDecomposeSubjDisjAandB(1f, 0f, 1f, 0.81f);
         }
 
         @Test
@@ -106,7 +106,7 @@ abstract public class NAL6DecomposeTest extends NALTest {
 
         @Test
         void testDecomposeSubjConjNegNeg() {
-            assertDecomposeSubjConjAandB(0f, 1f, 0f, 0.81f);
+            assertDecomposeSubjConjAandB(0f, 0f, 0f, 0.81f);
         }
 
         //    @Test void testDecomposeSubjConjNegWeakNeg() {
@@ -267,7 +267,7 @@ abstract public class NAL6DecomposeTest extends NALTest {
         @Test
         void testDecomposeImplPred2() {
             test.nar.termVolumeMax.set(11);
-            test.nar.confMin.set(0.6f);
+            test.nar.confMin.set(0.3f);
             test
                     .believe("( (a,#b) ==> (&&, (x,#b), y, z ) )")
                     .mustBelieve(cycles, "( (a,#b) ==> (x,#b) )", 1f, 0.73f)

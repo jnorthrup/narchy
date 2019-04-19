@@ -99,16 +99,11 @@ class QueryVariableTest {
                 "(a --> b)" /* unknown solution to be derived */ :
                 "(b --> a)" /* existing solution, to test finding existing solutions */;
 
-
-        
         NAR n = NARS.tmp(1);
-
-
 
         n.input("(a <-> b). %1.0;0.5%",
                 "(b --> a). %1.0;0.5%");
         n.run(cyclesBeforeQuestion);
-
 
         n.question(question, ETERNAL, (q, a) -> {
             assertEquals('?', q.punc());

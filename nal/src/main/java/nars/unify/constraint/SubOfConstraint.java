@@ -44,20 +44,32 @@ public class SubOfConstraint extends RelationConstraint {
 
     @Override
     public float cost() {
-        return containment.cost();
+        float baseCost = containment.cost();
+        switch (polarityCompare) {
+            case 1: return baseCost;
+            case 0: return 1.9f * baseCost;
+            case -1: return 1.1f * baseCost;
+            default:
+                throw new UnsupportedOperationException();
+        }
     }
 
     public final boolean invalid(Term xx, Term yy) {
+        SubtermCondition c = this.containment;
+
         Term container = forward ? xx : yy;
-        if (!containment.testContainer(container))
+        if (!c.testContainer(container))
             return true;
 
-        /** x polarized */
-        Term contentP = (forward ? yy : xx).negIf(polarityCompare < 0);
+        Term content = forward ? yy : xx;
+        switch (polarityCompare) {
+            case 1: return !c.test(container, content);
+            case -1: return !c.test(container, content.neg());
+            case 0: return !c.test(container, content) && !c.test(container, content.neg());
+            default:
+                throw new UnsupportedOperationException();
+        }
 
-        boolean posAndNeg = polarityCompare==0;
-
-        return !containment.test(container, contentP, posAndNeg);
     }
 
     public final boolean valid(Term x, Term y) {

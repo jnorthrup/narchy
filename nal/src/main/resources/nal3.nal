@@ -36,13 +36,16 @@
         //((A,B) --> M), ((X,Y) --> M), is(A,"+"), is(B,"+"), is(X,"+"), is(Y,"+") |- ((union(A,X),union(B,Y)) --> M), (Belief:Union)
 
 
-//union/intersection belief/goal to diff question/quest
-    (W --> (A&B)), W, --isVar(W) |- (W --> (A-B)), (Punctuation:Ask)
-     (W --> (A|B)), W, --isVar(W) |- (W --> (A-B)), (Punctuation:Ask)
-    ((A|B) --> W), W, --isVar(W) |- ((A~B) --> W), (Punctuation:Ask)
-     ((A&B) --> W), W, --isVar(W) |- ((A~B) --> W), (Punctuation:Ask)
+//intersection/union belief/goal to diff question/quest
+    (W --> (A&B)), W, --is(A,"--"), --is(B,"--")  |- (W --> (A-B)), (Punctuation:Ask)
+     //(W --> (A|B)), W |- (W --> (A-B)), (Punctuation:Ask)
+    ((A|B) --> W), W, --is(A,"--"), --is(B,"--")  |- ((A~B) --> W), (Punctuation:Ask)
+     //((A&B) --> W), W |- ((A~B) --> W), (Punctuation:Ask)
 
+//diff belief/goal to swapped diff question
+    (W --> (A-B)), W, --is(A,"--"), --is(B,"--")  |- (W --> (B-A)), (Punctuation:Ask)
+    ((A~B) --> W), W, --is(A,"--"), --is(B,"--")  |- ((B~A) --> W), (Punctuation:Ask)
 
 //NAL Specification Table 11.11
-//(M-->(X-Y)), M  |- --(M-->Y), (Belief:Identity, Goal:Identity)
-//((X~Y)-->M), M  |- --(Y-->M), (Belief:Identity, Goal:Identity)
+//(M-->(X-Y)), M, --is(X,"--"), --is(Y,"--")  |- --(M-->Y), (Belief:StructuralDeduction, Goal:StructuralDeduction)
+//((X~Y)-->M), M, --is(X,"--"), --is(Y,"--")  |- --(Y-->M), (Belief:StructuralDeduction, Goal:StructuralDeduction)

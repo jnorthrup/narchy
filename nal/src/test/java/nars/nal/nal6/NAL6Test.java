@@ -15,7 +15,7 @@ import static nars.time.Tense.ETERNAL;
 
 public class NAL6Test extends NALTest {
 
-    private static final int cycles = 1500;
+    private static final int cycles = 2500;
 
     @BeforeEach
     void setup() {
@@ -78,7 +78,7 @@ public class NAL6Test extends NALTest {
 
         tester.believe("<<bird --> $x> ==> <robin --> $x>>");
         tester.believe("<<swimmer --> $y> ==> <robin --> $y>>", 0.70f, 0.90f);
-        tester.mustBelieve(cycles, "<(&&,(bird --> $1),(swimmer --> $1)) ==> (robin --> $1)>", 0.7f /*1f? */, 0.81f);
+        tester.mustBelieve(cycles, "(((bird --> $1) && (swimmer --> $1)) ==> (robin --> $1))", 0.7f /*1f? */, 0.81f);
 
         tester.mustBelieve(cycles, "<(bird --> $1) ==> (swimmer --> $1)>", 1f, 0.36f /*0.73F*/);
         tester.mustBelieve(cycles, "<(swimmer --> $1) ==> (bird --> $1)>", 0.7f, 0.45f);
@@ -839,7 +839,6 @@ public class NAL6Test extends NALTest {
     @Test
     void strong_unification_dep_indep_post() {
         test.termVolMax(7)
-                .logDebug()
                 .believe("(#x --> z)")
                 .believe("(($x --> y) ==> ($x --> z))")
                 .mustBelieve(cycles, "(#x-->y)", 1f, 0.45f);
@@ -1201,7 +1200,7 @@ public class NAL6Test extends NALTest {
     @Test
     void testMutexAbduction() {
         test
-                .termVolMax(8)
+                .termVolMax(6)
                 .believe("(--(x && y) ==> z)")
                 .believe("(x && z)")
                 .mustBelieve(cycles, "y", 0f, 0.45f)
@@ -1243,7 +1242,14 @@ public class NAL6Test extends NALTest {
                 .mustQuestion(cycles, "(x&&y)")
         ;
     }
-
+    @Test
+    void testImplPredQuestionUnify() {
+        test
+                .believe("((x && $1)==>z($1))")
+                .ask("z(y)")
+                .mustQuestion(cycles, "(x && y)")
+        ;
+    }
     @Test
     void testImplPredQuest() {
         test
@@ -1267,16 +1273,8 @@ public class NAL6Test extends NALTest {
     @Test
     void testImplSubjQuestionUnificationConst() {
         test
+                .termVolMax(13)
                 .believe("(Criminal($1) ==> (&&,Sells($1,#2,#3),z))")
-                .ask("Criminal(x)")
-                .mustQuestion(cycles, "(&&,Sells(x,#2,#3),z)")
-        ;
-    }
-
-    @Test
-    void testImplSubjNegQuestionUnificationConst() {
-        test
-                .believe("(--Criminal($1) ==> (&&,Sells($1,#2,#3),z))")
                 .ask("Criminal(x)")
                 .mustQuestion(cycles, "(&&,Sells(x,#2,#3),z)")
         ;
@@ -1289,6 +1287,16 @@ public class NAL6Test extends NALTest {
                 .believe("(Criminal($1) ==> (&&,Sells($1,#2,#3),z))")
                 .ask("Criminal(?x)")
                 .mustQuestion(cycles, "(&&,Sells(?1,#2,#3),z)")
+        ;
+    }
+
+    @Test
+    void testImplSubjNegQuestionUnificationConst() {
+        test
+                .termVolMax(14)
+                .believe("(--Criminal($1) ==> (&&,Sells($1,#2,#3),z))")
+                .ask("Criminal(x)")
+                .mustQuestion(cycles, "(&&,Sells(x,#2,#3),z)")
         ;
     }
 

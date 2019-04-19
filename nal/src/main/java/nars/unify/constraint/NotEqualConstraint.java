@@ -186,35 +186,26 @@ public final class NotEqualConstraint extends RelationConstraint {
 
         @Override
         public boolean invalid(Term x, Term y) {
-            return isSubtermOfTheOther(x, y, true, true);
-        }
 
-        final static Predicate<Term> limit =
-                Op.recursiveCommonalityDelimeterWeak;
-        //Op.recursiveCommonalityDelimeterStrong;
+            if (x.equals(y))
+                return true;
 
-
-        static boolean isSubtermOfTheOther(Term a, Term b, boolean recurse, boolean excludeVariables) {
-
-            if (a.equals(b) || ((excludeVariables) && (a instanceof Variable || b instanceof Variable)))
-                return false;
-
-            int av = a.volume(), bv = b.volume();
+            int av = x.volume(), bv = y.volume();
 
 
             //a > b |- a contains b?
 
             if (av < bv) {
 
-                Term c = a;
-                a = b;
-                b = c;
+                Term c = x;
+                x = y;
+                y = c;
             }
 
-            Iterable<Term> bb = inhComponents(b);
+            Iterable<Term> bb = inhComponents(y);
             if (bb != null) {
                 for (Term bbb : bb) {
-                    if (test(a, recurse, excludeVariables, bbb))
+                    if (test(x, true, false, bbb))
                         return true;
                 }
                 return false;
@@ -222,10 +213,14 @@ public final class NotEqualConstraint extends RelationConstraint {
                 if (av == bv) {
                     return false;
                 } else {
-                    return test(a, recurse, excludeVariables, b);
+                    return test(x, true, false, y);
                 }
             }
         }
+
+        final static Predicate<Term> limit =
+                Op.recursiveCommonalityDelimeterWeak;
+        //Op.recursiveCommonalityDelimeterStrong;
 
 
         private static boolean test(Term a, boolean recurse, boolean excludeVariables, Term b) {

@@ -1,5 +1,6 @@
 package nars.link;
 
+import jcog.data.list.FasterList;
 import jcog.data.list.table.Table;
 import jcog.decide.Roulette;
 import jcog.pri.ScalarValue;
@@ -10,6 +11,7 @@ import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Random;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Predicate;
 
 /** caches an array of tasklinks tangent to an atom */
@@ -17,11 +19,12 @@ public final class TermLinks {
 
     private volatile long updated;
 
-    @Nullable
-    private volatile TaskLink[] links;
+    private final FasterList<TaskLink> links = new TaskLinkList();
+    final AtomicBoolean busy = new AtomicBoolean(false);
 
     protected int cap(int bagSize) {
         return Math.max(2, (int) Math.ceil(1.5f * Math.sqrt(bagSize)) /* estimate */);
+        //return bagSize;
     }
 
     private TermLinks(long now, int minUpdateCycles) {
@@ -54,24 +57,28 @@ public final class TermLinks {
     public boolean refresh(Term x, Iterable<TaskLink> items, int itemCount, boolean reverse, long now, int minUpdateCycles) {
         if (now - updated >= minUpdateCycles) {
 
-            int cap = cap(itemCount);
+            if (!busy.compareAndSet(false, true))
+                return false;
+            try {
+                /*synchronized (links)*/ {
+                    int cap = cap(itemCount);
 
-            RankedN<TaskLink> match = null;
+                    RankedN<TaskLink> match = null;
 
-            int i = 0;
-            for (TaskLink t : items) {
+                    int i = 0;
+                    for (TaskLink t : items) {
 //                if (t == null)
 //                    continue; //HACK
 
-                float xp = t.priElseZero();
-                if (match == null || /*match instanceof Set ||*/ (match instanceof RankedN && xp > match.minValueIfFull())) {
-                    Term y = t.other(x, reverse);
-                    if (y != null) {
+                        float xp = t.priElseZero();
+                        if (match == null || /*match instanceof Set ||*/ (match instanceof RankedN && xp > match.minValueIfFull())) {
+                            Term y = t.other(x, reverse);
+                            if (y != null) {
 
-                        if (match == null) {
+                                if (match == null) {
 //                            @Nullable RankedN<TaskLink> existingLinks = this.links;
 //                            if (existingLinks==null)
-                                match = new RankedN<>(new TaskLink[Math.min(itemCount - i, cap)], (FloatFunction<TaskLink>) TaskLink::pri);
+                                    match = new RankedN<>(new TaskLink[Math.min(itemCount - i, cap)], (FloatFunction<TaskLink>) TaskLink::pri);
 //                            else {
 //                                //recycle
 //                                //  this will affect other threads that might be reading from it.
@@ -79,37 +86,57 @@ public final class TermLinks {
 //                                existingLinks.clearWeak();
 //                                match = existingLinks;
 //                            }
+                                }
+
+                                match.add(t);
+                            }
                         }
-
-                        match.add(t);
+                        i++;
                     }
+
+
+                    links.clear();
+                    if (match != null) {
+                        int ms = match.size();
+                        if (ms > 0) {
+                            links.ensureCapacity(ms);
+                            match.forEach(links::addFast);
+                        }
+                    }
+
+                    updated = now;
                 }
-                i++;
+            } finally {
+                busy.set(false);
             }
-
-
-            links = match!=null ? match.toArrayIfSameSizeOrRecycleIfAtCapacity(TaskLink.EmptyTaskLinkArray) : null;
-            updated = now;
         }
 
-        return links != null;
+        return !links.isEmpty();
     }
 
 
     @Nullable public Term sample(Predicate<TaskLink> filter, byte punc, Random rng) {
         TaskLink l;
-        TaskLink[] ll = links;
-        if (ll == null)
-            l = null;
+        @Nullable FasterList<TaskLink> ll = links;
+        int lls = ll.size();
+        if (lls == 0)
+            return null;
         else {
-            int li = Roulette.selectRouletteCached(ll.length, (int i)-> {
-                TaskLink x = ll[i];
-                return filter.test(x) ?
-                                Math.max(ScalarValue.EPSILON, x.priPunc(punc)) : Float.NaN;
-            }, rng::nextFloat);
-            l = li >= 0 ? ll[li] : null;
+            TaskLink[] lll = ll.array();
+            lls = Math.min(lll.length, lls);
+            if (lls == 0) return null;
+            else if (lls == 1) l = lll[0];
+            else {
+                int li = Roulette.selectRouletteCached(lls, (int i) -> {
+                    TaskLink x = lll[i];
+                    return (x != null && filter.test(x)) ?
+                            Math.max(ScalarValue.EPSILON, x.priPunc(punc)) : Float.NaN;
+                }, rng::nextFloat);
+                l = li >= 0 ? lll[li] : null;
+            }
+            return l != null ? l.from() : null;
         }
-        return l != null ? l.from() : null;
+
     }
 
     public final Term sample(Term  srcTerm, Table<?, TaskLink> bag, byte punc, Predicate<TaskLink> filter, boolean in, boolean out, long now, int minUpdateCycles, Random rng) {
@@ -121,4 +148,16 @@ public final class TermLinks {
                 sample(filter, punc, rng) : null;
     }
 
+    private static final class TaskLinkList extends FasterList<TaskLink> {
+        final static TaskLink[] EmptyTaskLinksArray = new TaskLink[0];
+
+        TaskLinkList() {
+            items = EmptyTaskLinksArray;
+        }
+
+        @Override
+        protected TaskLink[] newArray(int newCapacity) {
+            return new TaskLink[newCapacity];
+        }
+    }
 }

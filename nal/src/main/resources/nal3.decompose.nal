@@ -1,20 +1,76 @@
 //NAL3 single premise intersection decompose
     (M --> I), X, is(I,"&"), subOfPosOrNeg(I,X)   |-   (M --> withoutPosOrNeg(I,X)),   (Belief:StructuralDeduction,Goal:StructuralDeduction)
-        //(M --> S), X, is(S,"&"), subOf(S,X)   |-          (M --> X), (Belief:StructuralDeduction,Goal:StructuralDeduction)
-        //(M --> S), X, is(S,"&"), subOf(S,--X)   |-      --(M --> X), (Belief:StructuralDeduction,Goal:StructuralDeduction)
-
+     (M --> I), X, is(I,"&"), subOfPosOrNeg(I,X)   |-   --(M --> withoutPosOrNeg(I,X)),   (Belief:StructuralDeductionWeakN,Goal:StructuralDeductionWeakN)
     (I --> M), X, is(I,"|"), subOfPosOrNeg(I,X)   |-   (withoutPosOrNeg(I,X)-->M), (Belief:StructuralDeduction,Goal:StructuralDeduction)
-        //(S --> M), X, is(S,"|"), subOf(S,X)   |-         (X --> M), (Belief:StructuralDeduction,Goal:StructuralDeduction)
-        //(S --> M), X, is(S,"|"), subOf(S,--X)   |-     --(X --> M), (Belief:StructuralDeduction,Goal:StructuralDeduction)
+     (I --> M), X, is(I,"|"), subOfPosOrNeg(I,X)   |-   --(withoutPosOrNeg(I,X)-->M), (Belief:StructuralDeductionWeakN,Goal:StructuralDeductionWeakN)
 
 //NAL3 single premise union decompose
     (M --> U), X, is(U,"|"), subOfPosOrNeg(U,X)   |-    (M --> withoutPosOrNeg(U,X)), (Belief:StructuralDeductionWeak,Goal:StructuralDeductionWeak)
+      (M --> U), X, is(U,"|"), subOfPosOrNeg(U,X)   |-    --(M --> withoutPosOrNeg(U,X)), (Belief:StructuralDeductionN,Goal:StructuralDeductionN)
     (U --> M), X, is(U,"&"), subOfPosOrNeg(U,X)   |-    (withoutPosOrNeg(U,X) --> M), (Belief:StructuralDeductionWeak,Goal:StructuralDeductionWeak)
+      (U --> M), X, is(U,"&"), subOfPosOrNeg(U,X)   |-    --(withoutPosOrNeg(U,X) --> M), (Belief:StructuralDeductionN,Goal:StructuralDeductionN)
 
 
-//decompose sect for a question/quest involving one component
-    (A --> X), (S --> X), task("?@"), is(S,{"|","&"}), subOfPosOrNeg(S,A) |- (withoutPosOrNeg(S,A) --> X)
-    (X --> A), (X --> S), task("?@"), is(S,{"|","&"}), subOfPosOrNeg(S,A) |- (X --> withoutPosOrNeg(S,A))
+//// inheritance decomposition ////////////////////////////////////////////////////////////////////////////////////
+//if (S --> M) is the case, and ((|,S,A..+) --> M) is not the case, then ((|,A..+) --> M) is not the case, hence Belief:DecomposePositiveNegativeNegative
+
+
+     (M --> X), (M --> I), is(I,"&"), subOf(I,X)     |- --(M --> without(I,  X)), (Belief:DecomposePN, Goal:DecomposePN)
+        (M --> X), (M --> I), is(I,"&"), subOf(I,X)     |- (M --> without(I,  X)), (Belief:DecomposePP, Goal:DecomposePP)
+     (M --> X), (M --> I), is(I,"&"), subOf(I,--X) |- --(M --> without(I,--X)), (Belief:DecomposeNN, Goal:DecomposeNN)
+        (M --> X), (M --> I), is(I,"&"), subOf(I,--X)   |- (M --> without(I,--X)), (Belief:DecomposeNP, Goal:DecomposeNP)
+
+             //swapped for matching goal tasks:
+             (M --> I), (M --> X), is(I,"&"), subOf(I,X)     |- --(M --> without(I,  X)), (Goal:DecomposeNP)
+                 (M --> I), (M --> X), is(I,"&"), subOf(I,X)     |- (M --> without(I,  X)), (Goal:DecomposePP)
+               (M --> I), (M --> X), is(I,"&"), subOf(I,--X) |- --(M --> without(I,--X)), (Goal:DecomposeNN)
+                 (M --> I), (M --> X), is(I,"&"), subOf(I,--X)   |- (M --> without(I,--X)), (Goal:DecomposePN)
+
+     (X --> M), (I --> M), is(I,"|"), subOf(I,X)     |- --(without(I,  X) --> M), (Belief:DecomposePN, Goal:DecomposePN)
+        (X --> M), (I --> M), is(I,"|"), subOf(I,X)     |-    (without(I,  X) --> M), (Belief:DecomposePP, Goal:DecomposePP)
+     (X --> M), (I --> M), is(I,"|"), subOf(I,--X) |- --(without(I,--X) --> M), (Belief:DecomposeNN, Goal:DecomposeNN)
+         (X --> M), (I --> M), is(I,"|"), subOf(I,--X) |- (without(I,--X) --> M), (Belief:DecomposeNP, Goal:DecomposeNP)
+
+            //swapped for matching goal tasks:
+             (I --> M), (X --> M), is(I,"|"), subOf(I,X)     |- --(without(I,  X) --> M), (Goal:DecomposeNP)
+                (I --> M), (X --> M), is(I,"|"), subOf(I,X)     |-    (without(I,  X) --> M), (Goal:DecomposePP)
+             (I --> M), (X --> M), is(I,"|"), subOf(I,--X) |- --(without(I,--X) --> M), (Goal:DecomposeNN)
+                 (I --> M), (X --> M), is(I,"|"), subOf(I,--X) |- (without(I,--X) --> M), (Goal:DecomposePN)
+
+
+     (M --> X), (M --> U), is(U,"|"), subOf(U,X)     |-   (M --> without(U,  X)), (Belief:DecomposeNP, Goal:DecomposeNP)
+       (M --> X), (M --> U), is(U,"|"), subOf(U,X)   |-   --(M --> without(U,  X)), (Belief:DecomposeNN, Goal:DecomposeNN)
+     (M --> X), (M --> U), is(U,"|"), subOf(U,--X) |-   (M --> without(U,--X)), (Belief:DecomposePP, Goal:DecomposePP)
+       (M --> X), (M --> U), is(U,"|"), subOf(U,--X) |-   --(M --> without(U,--X)), (Belief:DecomposePN, Goal:DecomposePN)
+
+             //swapped for matching goal tasks:
+             (M --> U), (M --> X), is(U,"|"), subOf(U,X)     |-   (M --> without(U,  X)), (Goal:DecomposePN)
+                 (M --> U), (M --> X), is(U,"|"), subOf(U,X)   |-   --(M --> without(U,  X)), (Goal:DecomposeNN)
+               (M --> U), (M --> X), is(U,"|"), subOf(U,--X) |-   (M --> without(U,--X)), (Goal:DecomposePP)
+                 (M --> U), (M --> X), is(U,"|"), subOf(U,--X) |-   --(M --> without(U,--X)), (Goal:DecomposeNP)
+
+     (X --> M), (U --> M), is(U,"&"), subOf(U,X)     |-   (without(U,  X) --> M), (Belief:DecomposeNP, Goal:DecomposeNP)
+       (X --> M), (U --> M), is(U,"&"), subOf(U,X)   |-  --(without(U,  X) --> M), (Belief:DecomposeNN, Goal:DecomposeNN)
+     (X --> M), (U --> M), is(U,"&"), subOf(U,--X) |-   (without(U,--X) --> M), (Belief:DecomposePP, Goal:DecomposePP)
+       (X --> M), (U --> M), is(U,"&"), subOf(U,--X) |-   --(without(U,--X) --> M), (Belief:DecomposePN, Goal:DecomposePN)
+
+            //swapped for matching goal tasks:
+             (U --> M), (X --> M), is(U,"&"), subOf(U,X)     |-   (without(U,  X) --> M), (Goal:DecomposePN)
+                 (U --> M), (X --> M), is(U,"&"), subOf(U,X)   |-  --(without(U,  X) --> M), (Goal:DecomposeNN)
+               (U --> M), (X --> M), is(U,"&"), subOf(U,--X) |-   (without(U,--X) --> M), (Goal:DecomposePP)
+                 (U --> M), (X --> M), is(U,"&"), subOf(U,--X) |-   --(without(U,--X) --> M), (Goal:DecomposeNP)
+
+
+
+//intersection/union/diff question/quest decompose
+bidi:    (S --> X), A, task("?@"), is(S,{"|","&"}), subOfPosOrNeg(S,A) |- (withoutPosOrNeg(S,A) --> X)
+bidi:    (X --> S), A, task("?@"), is(S,{"|","&"}), subOfPosOrNeg(S,A) |- (X --> withoutPosOrNeg(S,A))
+//intersection/union/diff belief + component question/quest decompose
+bidi:    (A --> X), (S --> X), task("?@"), is(S,{"|","&"}), subOfPosOrNeg(S,A) |- (withoutPosOrNeg(S,A) --> X)
+bidi:    (X --> A), (X --> S), task("?@"), is(S,{"|","&"}), subOfPosOrNeg(S,A) |- (X --> withoutPosOrNeg(S,A))
+
+
+
 
 //        (M --> S), X, is(S,"&"), subOf(S,X)   |-    --(M --> X), (Belief:StructuralDeductionN,Goal:StructuralDeductionN)
 //        (M --> S), X, is(S,"&"), subOf(S,--X)   |-    (M --> X), (Belief:StructuralDeductionN,Goal:StructuralDeductionN)
@@ -33,55 +89,5 @@
       //(S --> M), X, is(S,"|"), subOf(S,X)   |- --(X --> M), (Belief:StructuralDeductionNN)
     //(S --> M), X, is(S,"|"), subOf(S,--X) |-   --(X --> M), (Belief:StructuralDeduction)
       //(S --> M), X, is(S,"|"), subOf(S,--X) |-   (X --> M), (Belief:StructuralDeductionNN)
-
-
-
-//// inheritance decomposition ////////////////////////////////////////////////////////////////////////////////////
-//if (S --> M) is the case, and ((|,S,A..+) --> M) is not the case, then ((|,A..+) --> M) is not the case, hence Belief:DecomposePositiveNegativeNegative
-
-//(M --> S), (M --> (|,S,A_1..n)) |- (M --> (|,A_1..n)), (Truth:DecomposeNegativePositivePositive) = NP
-     (M --> X), (M --> U), is(U,"|"), subOf(U,X)      |-   (M --> without(U,  X)), (Belief:DecomposeNP)
-       (M --> X), (M --> U), is(U,"|"), subOf(U,--X)  |-   (M --> without(U,--X)), (Belief:DecomposePP)
-     (M --> X), (M --> I), is(I,"&"), subOf(I,X)      |- --(M --> without(I,  X)), (Belief:DecomposePN)
-        (M --> X), (M --> I), is(I,"&"), subOf(I,--X) |- --(M --> without(I,--X)), (Belief:DecomposeNN)
-     (X --> M), (I --> M), is(I,"|"), subOf(I,X)      |- --(without(I,  X) --> M), (Belief:DecomposePN)
-       (X --> M), (I --> M), is(I,"|"), subOf(I,--X)  |- --(without(I,--X) --> M), (Belief:DecomposeNN)
-     (X --> M), (U --> M), is(U,"&"), subOf(U,X)      |-   (without(U,  X) --> M), (Belief:DecomposeNP)
-      (X --> M), (U --> M), is(U,"&"), subOf(U,--X)   |-   (without(U,--X) --> M), (Belief:DecomposePP)
-
-//       (M --> X), (M --> S), is(S,"|"), subOf(S,X) |- --(M --> without(S,X)), (Belief:DecomposePP)
-       //(M --> X), (M --> S), is(S,"|"), subOf(S,--X)  |-  (M --> without(S,--X)), (Belief:DecomposeNN)
-
-//(M --> S), (M --> (&,S,A_1..n)) |- (M --> (&,A_1..n)), (Truth:DecomposePositiveNegativeNegative) = --PN
-
-//          //experimental unify
-//          (M --> X), (N --> S), is(S,"&"), subOf(S,X), has(N,"#"),neq(M,N)   |- --unisubst((N --> without(S,X)), N, M), (Belief:DecomposePN)
-     
-        //TODO
-
-
-//(S --> M), ((|,S,A_1..n) --> M) |- ((|,A_1..n) --> M), (Truth:DecomposePositiveNegativeNegative) = --PN
-
-//           //experimental unify
-//           (X --> M), (S --> N), is(S,"|"), subOf(S,X), has(N,"#"),neq(M,N)   |- --unisubst((without(S,X) --> N), N, M), (Belief:DecomposePN)
-
-//(S --> M), ((&,S,A_1..n) --> M) |- ((&,A_1..n) --> M), (Truth:DecomposeNegativePositivePositive) = NP
-
-//       (X --> M), (S --> M), is(S,"&"), subOf(S,--X) |- (without(S,--X) --> M), (Belief:DecomposePP)
-//      (X --> M), (S --> M), is(S,"&"), subOf(S,X)   |- --(without(S,X) --> M), (Belief:DecomposePP)
-
-
-
-
- //intersection conditional goal decompose
- (S --> M), (X --> M), is(S,"|"), subOf(S,X) |- (without(S, X) --> M), (Goal:DecomposePP)
-   (S --> M), (X --> M), is(S,"|"), subOf(S,X) |- --(without(S, X) --> M), (Goal:DecomposeNP)
-   //(S --> M), (X --> M), is(S,"|"), subOf(S,--X) |- (without(S, --X) --> M), (Goal:DecomposePN)
- (S --> M), (X --> M), is(S,"&"), subOf(S,X) |- (without(S, X) --> M), (Goal:DecomposePN)
-   //(S --> M), (X --> M), is(S,"&"), subOf(S,--X) |- (without(S, --X) --> M), (Goal:DecomposePP)
- (M --> S), (M --> X), is(S,"&"), subOf(S,X) |- (M --> without(S, X)), (Goal:DecomposePP)
-   //(M --> S), (M --> X), is(S,"&"), subOf(S,--X) |- (M --> without(S, --X)), (Goal:DecomposePN)
- (M --> S), (M --> X), is(S,"|"), subOf(S,X) |- (without(S, X) --> M), (Goal:DecomposePN)
-   //(M --> S), (M --> X), is(S,"|"), subOf(S,--X) |- (without(S, --X) --> M), (Goal:DecomposePP)
 
 

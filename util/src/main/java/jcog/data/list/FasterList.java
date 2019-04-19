@@ -143,7 +143,7 @@ public class FasterList<X> extends FastList<X> {
     private void transferItemsToNewArrayWithCapacity(int newCapacity)
     {
         //this.items = (X[]) this.copyItemsWithNewCapacity(newCapacity);
-        Object[] newItems = new Object[newCapacity];
+        Object[] newItems = newArray(newCapacity);
         System.arraycopy(this.items, 0, newItems, 0, Math.min(this.size, newCapacity));
         this.items = (X[]) newItems;
     }

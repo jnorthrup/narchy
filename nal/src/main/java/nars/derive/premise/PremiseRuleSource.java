@@ -1,6 +1,7 @@
 package nars.derive.premise;
 
 import it.unimi.dsi.fastutil.bytes.ByteArrayList;
+import jcog.TODO;
 import jcog.data.list.FasterList;
 import jcog.util.ArrayUtils;
 import nars.$;
@@ -62,6 +63,7 @@ import static nars.term.control.PREDICATE.sortByCostIncreasing;
 public class PremiseRuleSource extends ProxyTerm {
 
     private static final Pattern ruleImpl = Pattern.compile("\\|-");
+    private static final String BIDI_modifier = "bidi:";
     public final String source;
     final Truthify truthify;
 
@@ -90,7 +92,11 @@ public class PremiseRuleSource extends ProxyTerm {
     private final BytePredicate taskPunc;
 
 
-    private PremiseRuleSource(String ruleSrc) throws Narsese.NarseseException {
+    public PremiseRuleSource(String ruleSrc) throws Narsese.NarseseException {
+        this(ruleSrc, false);
+    }
+
+    private PremiseRuleSource(String ruleSrc, boolean swap) throws Narsese.NarseseException {
         super(
                 INDEX.rule(new UppercaseAtomsToPatternVariables().apply($.pFast(parseRuleComponents(ruleSrc))))
         );
@@ -100,17 +106,27 @@ public class PremiseRuleSource extends ProxyTerm {
         constraints = new UnifiedSet(8);
         pre = new UnifiedSet(8);
 
-        /**
-         * deduplicate and generate match-optimized compounds for rules
-         */
-
 
         Term[] precon = ref.sub(0).arrayShared();
         Term[] postcon = ref.sub(1).arrayShared();
 
 
-        this.taskPattern = PatternTermBuilder.patternify(precon[0]);
-        this.beliefPattern = PatternTermBuilder.patternify(precon[1]);
+
+        Term a = PatternTermBuilder.patternify(precon[0]);
+        Term b = PatternTermBuilder.patternify(precon[1]);
+        if (swap) {
+            String preconStr = ref.sub(0).toString().toLowerCase();
+            //if (preconStr.contains("task") || preconStr.contains("belief"))
+              //  throw new TODO();
+            String postconStr = ref.sub(1).toString()/*.toLowerCase()*/;
+            if (postconStr.contains("task") || postconStr.contains("belief"))
+                throw new TODO();
+            Term c = a;
+            a = b;
+            b = c;
+        }
+        this.taskPattern = a;
+        this.beliefPattern = b;
         if (beliefPattern.op() == Op.ATOM) {
             throw new RuntimeException("belief target must contain no atoms: " + beliefPattern);
         }
@@ -215,22 +231,31 @@ public class PremiseRuleSource extends ProxyTerm {
                     break;
 
                 case "eventOf":
-                case "eventOfNeg":
+                case "eventOfNeg": {
                     match(X, new TermMatcher.Is(CONJ));
                     neq(constraints, XX, YY);
-                    constraints.add(new SubOfConstraint(XX, YY, Event, pred.contains("Neg") ? -1 : +1).negIf(negated));
-                    if (negated) negationApplied = true;
+                    boolean yNeg = pred.contains("Neg");
+                    constraints.add(new SubOfConstraint(XX, YY, Event, yNeg ? -1 : +1).negIf(negated));
+                    if (negated) {
+                        negationApplied = true;
+                    }
                     break;
+                }
 
                 case "eventFirstOf":
-                case "eventFirstOfNeg":
+//                case "eventFirstOfNeg":
                 case "eventLastOf":
-                case "eventLastOfNeg":
+//                case "eventLastOfNeg":
+                {
                     match(X, new TermMatcher.Is(CONJ));
                     neq(constraints, XX, YY);
-                    constraints.add(new SubOfConstraint(XX, YY, pred.contains("First") ? EventFirst : EventLast, pred.contains("Neg") ? -1 : +1).negIf(negated));
-                    if (negated) negationApplied = true;
+                    boolean yNeg = pred.contains("Neg");
+                    constraints.add(new SubOfConstraint(XX, YY, pred.contains("First") ? EventFirst : EventLast, yNeg ? -1 : +1).negIf(negated));
+                    if (negated) {
+                        negationApplied = true;
+                    }
                     break;
+                }
 
                 case "eventOfPN":
                     neq(constraints, XX, YY);
@@ -309,7 +334,7 @@ public class PremiseRuleSource extends ProxyTerm {
 
                 case "has": {
                     //hasAny
-                    match(X, new TermMatcher.Has(Op.the($.unquote(Y)), true), !negated);
+                    hasAny(X, Op.the($.unquote(Y)), negated);
                     if (negated)
                         negationApplied = true;
                     break;
@@ -373,7 +398,7 @@ public class PremiseRuleSource extends ProxyTerm {
         Term beliefTruth = null, goalTruth = null;
         Occurrify.OccurrenceSolver time = Occurrify.mergeDefault;
 
-        Term[] modifiers = postcon != null && postcon.length > 1 ? Terms.sorted(postcon[1].arrayShared()) : Op.EmptyTermArray;
+        Term[] modifiers = postcon != null && postcon.length > 1 ? postcon[1].arrayShared() : Op.EmptyTermArray;
 
         for (Term m : modifiers) {
             if (m.op() != Op.INH)
@@ -451,6 +476,12 @@ public class PremiseRuleSource extends ProxyTerm {
         if (goalTruth != null && goalTruthOp == null)
             throw new RuntimeException("unknown GoalFunction: " + goalTruth);
 
+        if (swap) {
+            if (beliefTruthOp!=null)
+                beliefTruthOp = new TruthFunc.SwappedTruth(beliefTruthOp); //use interned
+            if (goalTruthOp!=null)
+                goalTruthOp = new TruthFunc.SwappedTruth(goalTruthOp); //use interned
+        }
 
         {
             CommutativeConstantPreFilter.tryFilter(true, taskPattern, beliefPattern, pre);
@@ -583,6 +614,14 @@ public class PremiseRuleSource extends ProxyTerm {
 
     }
 
+    private void hasAny(Term x, Op o) {
+        hasAny(x, o, false);
+    }
+
+    private void hasAny(Term x, Op o, boolean negated) {
+        match(x, new TermMatcher.Has(o, true), !negated);
+    }
+
     public static Term volMin(int volMin) {
         return $.func("volMin", $.the(volMin));
     }
@@ -591,10 +630,12 @@ public class PremiseRuleSource extends ProxyTerm {
         int rules = pre.size();
         PREDICATE[] PRE = pre.toArray(new PREDICATE[rules + 1 /* extra to be filled in later stage */]);
 
-        Arrays.sort(PRE, 0, rules, sortByCostIncreasing);
-
         assert (PRE[PRE.length - 1] == null);
-        assert rules <= 1 || (PRE[0].cost() <= PRE[rules - 2].cost()); //increasing cost
+
+        if (rules > 1) {
+            Arrays.sort(PRE, 0, rules, sortByCostIncreasing);
+            assert (PRE[0].cost() <= PRE[rules - 2].cost()); //increasing cost
+        }
 
 
         //not working yet:
@@ -734,8 +775,21 @@ public class PremiseRuleSource extends ProxyTerm {
 
     }
 
-    public static PremiseRuleSource parse(String ruleSrc) throws Narsese.NarseseException {
-        return new PremiseRuleSource(ruleSrc);
+
+    public static Stream<PremiseRuleSource> parse(String src) {
+        try {
+            //bidi-rectional: swap premise components, and swap truth func param
+            if (src.startsWith(BIDI_modifier)) {
+                src = src.substring(BIDI_modifier.length());
+                PremiseRuleSource a = new PremiseRuleSource(src, false);
+                PremiseRuleSource b = new PremiseRuleSource(src, true);
+                return a.equals(b) ? Stream.of(a) : Stream.of(a, b);
+            } else {
+                return Stream.of(new PremiseRuleSource(src));
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("rule parse:\n\t" + src, e);
+        }
     }
 
     public static Stream<PremiseRuleSource> parse(String... rawRules) {
@@ -743,14 +797,7 @@ public class PremiseRuleSource extends ProxyTerm {
     }
 
     public static Stream<PremiseRuleSource> parse(Stream<String> rawRules) {
-        return rawRules.map(src -> {
-            try {
-                return parse(src);
-            } catch (Exception e) {
-                throw new RuntimeException("rule parse:\n\t" + src, e);
-            }
-        });
-
+        return rawRules.flatMap(PremiseRuleSource::parse);
     }
 
     private static Subterms parseRuleComponents(String src) throws Narsese.NarseseException {

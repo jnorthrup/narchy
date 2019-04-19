@@ -4,7 +4,6 @@ package nars.nal.nal3;
 import nars.$;
 import nars.NAR;
 import nars.NARS;
-import nars.Param;
 import nars.subterm.util.SubtermCondition;
 import nars.term.Term;
 import nars.test.NALTest;
@@ -22,12 +21,12 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class NAL3Test extends NALTest {
 
-    static final int cycles = 150;
+    static final int cycles = 2550;
 
     @Override
     protected NAR nar() {
-        NAR n = NARS.tmp(3);
-        n.termVolumeMax.set(7);
+        NAR n = NARS.tmp(3, 3);
+        n.termVolumeMax.set(6);
         return n;
     }
 
@@ -112,11 +111,11 @@ public class NAL3Test extends NALTest {
             test.mustBelieve(cycles, unknown, freq, freq, 0, 0.81f); //up to 0.81 conf
         }
 
-        float confThresh = 0.15f;
-        if (freq > 0)
-            test.mustNotOutput(cycles, known, BELIEF, 0, freq - Param.truth.TRUTH_EPSILON, confThresh, 1, ETERNAL);
-        if (freq < 1)
-            test.mustNotOutput(cycles, known, BELIEF, freq + Param.truth.TRUTH_EPSILON, 1, confThresh, 1, ETERNAL);
+//        float confThresh = 0.15f;
+//        if (freq > 0)
+//            test.mustNotOutput(cycles, known, BELIEF, 0, freq - Param.truth.TRUTH_EPSILON, confThresh, 1, ETERNAL);
+//        if (freq < 1)
+//            test.mustNotOutput(cycles, known, BELIEF, freq + Param.truth.TRUTH_EPSILON, 1, confThresh, 1, ETERNAL);
         return test;
     }
 
@@ -124,24 +123,25 @@ public class NAL3Test extends NALTest {
     @Test
     void intersectionComposition() {
         test
-                .believe("(swan --> bird)")
-                .believe("(swimmer--> bird)")
-                .mustBelieve(cycles, "((swan&swimmer) --> bird)", 1f, 0.81f);
+            .believe("(swan --> bird)")
+            .believe("(swimmer--> bird)")
+            .mustBelieve(cycles, "((swan&swimmer) --> bird)", 1f, 0.81f);
     }
 
     @Test
     void intersectionCompositionWrappedInProd() {
         test
-                .believe("((swan) --> bird)")
-                .believe("((swimmer)--> bird)")
-                .mustBelieve(cycles, "(((swan)&(swimmer)) --> bird)", 1f, 0.81f);
+            .termVolMax(7)
+            .believe("((swan) --> bird)")
+            .believe("((swimmer)--> bird)")
+            .mustBelieve(cycles, "(((swan)&(swimmer)) --> bird)", 1f, 0.81f);
     }
 
 
     @Test
     void diff_compound_decomposition_single3() {
         TestNAR tester = test;
-
+        tester.termVolMax(7);
         tester.believe("<(dinosaur ~ ant) --> [strong]>", 0.9f, 0.9f);
         tester.mustBelieve(cycles, "<dinosaur --> [strong]>", 0.90f, 0.73f);
         tester.mustBelieve(cycles, "<ant --> [strong]>", 0.10f, 0.73f);
@@ -149,6 +149,7 @@ public class NAL3Test extends NALTest {
     @Test
     void diff_compound_decomposition_low_dynamic() {
         TestNAR tester = test;
+        tester.termVolMax(7);
         tester.believe("<(ant ~ spider) --> [strong]>", 0.1f, 0.9f);
         tester.mustBelieve(cycles, "<spider --> [strong]>", 0.90f, 0.08f);
         tester.mustBelieve(cycles, "<ant --> [strong]>", 0.10f, 0.08f);
@@ -337,6 +338,15 @@ public class NAL3Test extends NALTest {
         ;
     }
 
+    @Test
+    void questionDecomposition0() {
+        test
+                .termVolMax(5)
+                .ask("((swan|swimmer) --> bird)")
+                .mustOutput(cycles, "(swimmer --> bird)", QUESTION)
+                .mustOutput(cycles, "(swan --> bird)", QUESTION)
+        ;
+    }
 
     @Test
     void questionDecomposition1() {

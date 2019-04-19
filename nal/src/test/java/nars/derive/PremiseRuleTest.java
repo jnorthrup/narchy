@@ -33,21 +33,15 @@ class PremiseRuleTest {
         assertEquals(expect, p.toString());
 
 
-
-
-
-
     }
 
 
     @Test
     void testParser() throws Narsese.NarseseException {
 
-        
 
         assertNotNull(Narsese.term("<A --> b>"), "metaparser can is a superset of narsese");
 
-        
 
         assertEquals(0, Narsese.term("#A").complexity());
         assertEquals(1, Narsese.term("#A").volume());
@@ -58,38 +52,32 @@ class PremiseRuleTest {
         assertEquals(1, Narsese.term("<%A --> %B>").complexity());
 
         {
-            
 
 
-
-            PremiseRuleSource x = PremiseRuleSource.parse("A, A |- (A,A), (Belief:Intersection)");
+            PremiseRuleSource x = new PremiseRuleSource("A, A |- (A,A), (Belief:Intersection)");
             assertNotNull(x);
-            
-            
+
+
         }
 
 
         int vv = 19;
         {
-            
 
 
+            PremiseRuleSource x = new PremiseRuleSource("<A --> B>, <B --> A> |- <A <-> B>, (Belief:Intersection, Goal:Intersection)");
 
-            PremiseRuleSource x = PremiseRuleSource.parse("<A --> B>, <B --> A> |- <A <-> B>, (Belief:Intersection, Goal:Intersection)");
-            
             assertEquals(vv, x.ref.volume());
-            
+
 
         }
         {
-            
 
 
+            PremiseRuleSource x = new PremiseRuleSource("<A --> B>, <B --> A> |- <A <-> nonvar>, (Belief:Intersection, Goal:Intersection)");
 
-            PremiseRuleSource x = PremiseRuleSource.parse("<A --> B>, <B --> A> |- <A <-> nonvar>, (Belief:Intersection, Goal:Intersection)");
-            
-            assertEquals(vv, x.ref.volume()); 
-            
+            assertEquals(vv, x.ref.volume());
+
         }
 //        {
 //
@@ -103,41 +91,17 @@ class PremiseRuleTest {
 //        }
 
 
+        PremiseRuleSource x = new PremiseRuleSource("(S --> M), (P --> M) |- (P <-> S), (Belief:Comparison,Goal:Desire)");
 
 
-
-
-
-
-        
-        
-
-
-
-        PremiseRuleSource x = PremiseRuleSource.parse("(S --> M), (P --> M) |- (P <-> S), (Belief:Comparison,Goal:Desire)");
-        
-        
         assertEquals(vv, x.ref.volume());
 
     }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
     @Test
     void testMinSubsRulePredicate() {
-        
+
 
         DeriverRules d = PremiseDeriverCompiler.the(new PremiseDeriverRuleSet(NARS.shell(), "(A-->B),B,is(B,\"[\"),subsMin(B,2) |- (A-->dropAnySet(B)), (Belief:StructuralDeduction)"));
         d.printRecursive();
@@ -153,6 +117,7 @@ class PremiseRuleTest {
         d.printRecursive();
         assertTrue(d.what.toString().contains("DoublePremise"));
     }
+
     @Test
     void testDoubleOnlyTruthAddsRequiresDoubleGoal() {
 
@@ -162,6 +127,7 @@ class PremiseRuleTest {
         d.printRecursive();
         assertTrue(d.what.toString().contains("DoublePremise"));
     }
+
     @Test
     void testDoubleOnlyTruthAddsRequiresDoubleBeliefOrGoal() {
 
@@ -171,6 +137,7 @@ class PremiseRuleTest {
         d.printRecursive();
         assertTrue(d.what.toString().contains("DoublePremise"));
     }
+
     @Test
     void testDoubleOnlyTruthAddsRequiresDoubleQuestionOverride() {
 
@@ -185,8 +152,8 @@ class PremiseRuleTest {
     void testInferQuestionPunctuationFromTaskRequirement() {
 
         DeriverRules d = PremiseDeriverCompiler.the(new PremiseDeriverRuleSet(NARS.shell(),
-            "Y, Y, task(\"?\") |- (?1 &| Y), (Punctuation:Question)"
-                ));
+                "Y, Y, task(\"?\") |- (?1 &| Y), (Punctuation:Question)"
+        ));
         d.printRecursive();
 //        assertEquals("((\"?\"-->task),can({0}))", d.what.toString());
         assertTrue(d.what.toString().contains("TaskPunc("));
@@ -200,7 +167,7 @@ class PremiseRuleTest {
 
         d.printRecursive();
         String s = d.what.toString();
-        assertTrue(s.contains("unifiable("), ()->s); //TODO this and other cases
+        assertTrue(s.contains("unifiable("), () -> s); //TODO this and other cases
     }
 
     @Test
@@ -208,28 +175,30 @@ class PremiseRuleTest {
         DeriverRules d = PremiseDeriverCompiler.the(new PremiseDeriverRuleSet(NARS.shell(),
                 "X,Y,is(X,\"*\") |- (X,Y), (Belief:Intersection)"));
         String s = d.what.toString();
-        assertTrue( s.contains("Is(taskTerm,\"*\")"), ()->s);
+        assertTrue(s.contains("Is(taskTerm,\"*\")"), () -> s);
     }
 
     @Test
     void testOpIsPreFilterSubPath() {
         DeriverRules d = PremiseDeriverCompiler.the(new PremiseDeriverRuleSet(NARS.shell(),
                 "(Z,X),Y,is(X,\"*\") |- (X,Y), (Belief:Intersection)"));
-        assertTrue( d.what.toString().contains("IsHas"), ()-> d.what.toString());
+        assertTrue(d.what.toString().contains("IsHas"), () -> d.what.toString());
     }
+
     @Test
     void testOpIsPreFilterSubPathNot() {
         DeriverRules d = PremiseDeriverCompiler.the(new PremiseDeriverRuleSet(NARS.shell(),
                 "((Z),X),Y, --is(X,\"{\") |- (X,Y), (Belief:Intersection)"));
         String s = d.what.toString();
-        assertTrue( s.contains("(--,Is("), ()->s);
+        assertTrue(s.contains("(--,Is("), () -> s);
     }
+
     @Test
     void testOpIsPreFilterSubPathRepeatIsOKButChooseShortestPath() {
         DeriverRules d = PremiseDeriverCompiler.the(new PremiseDeriverRuleSet(NARS.shell(),
                 "((X),X),Y,is(X,\"*\") |- (X,Y), (Belief:Intersection)"));
         String s = d.what.toString();
-        assertTrue( s.contains("Is("), ()->s); //and not: (0,0)
+        assertTrue(s.contains("Is("), () -> s); //and not: (0,0)
     }
 
     @Test
@@ -237,7 +206,7 @@ class PremiseRuleTest {
         DeriverRules d = PremiseDeriverCompiler.the(new PremiseDeriverRuleSet(NARS.shell(),
                 "((X),X),Y,subsMin(Y,2) |- (X,Y), (Belief:Intersection)"));
         String s = d.what.toString();
-        assertTrue( s.contains("SubsMin(beliefTerm,2)"), ()->s); //and not: (0,0)
+        assertTrue(s.contains("SubsMin(beliefTerm,2)"), () -> s); //and not: (0,0)
     }
 
     @Test
@@ -245,9 +214,8 @@ class PremiseRuleTest {
         DeriverRules d = PremiseDeriverCompiler.the(new PremiseDeriverRuleSet(NARS.shell(),
                 "((X),Z),Y,subsMin(X,2) |- (X,Y), (Belief:Intersection)"));
         String s = d.what.toString();
-        assertTrue( s.contains("SubsMin("), ()->s); //and not: (0,0)
+        assertTrue(s.contains("SubsMin("), () -> s); //and not: (0,0)
     }
-
 
 
     @Test
@@ -282,94 +250,15 @@ TODO - share unification state for different truth/conclusions
 
     @Test
     void testConjWithEllipsisIsXternal() {
-
         DeriverRules d = PremiseDeriverCompiler.the(new PremiseDeriverRuleSet(NARS.shell(), "X,Y |- (&&,X,%A..+), (Belief:Analogy)", "X,Y |- (&&,%A..+), (Belief:Analogy)"));
-            d.printRecursive();
+        d.printRecursive();
     }
+
     @Test
     void printTermRecursive() throws Narsese.NarseseException {
-        
-
-
-
-        Compound y = (Compound) PremiseRuleSource.parse("(S --> P), --%S |- (P --> S), (Belief:Conversion)").ref;
+        Compound y = (Compound) new PremiseRuleSource("(S --> P), --%S |- (P --> S), (Belief:Conversion)").ref;
         Terms.printRecursive(System.out, y);
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 }

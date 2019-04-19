@@ -204,7 +204,7 @@ public class ArkaNAR extends GameX {
         public static final float BALL_RADIUS = 15.0f;
         public float BALL_VELOCITY = 0.5f;
 
-        public static final float PADDLE_WIDTH = 40.0f;
+        public static final float PADDLE_WIDTH = 30.0f;
         public static final float PADDLE_HEIGHT = 20.0f;
 
         public static final float BLOCK_WIDTH = 40.0f;
