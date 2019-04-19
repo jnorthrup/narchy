@@ -25,7 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class NAL7Test extends NALTest {
 
     public static final float CONF_TOLERANCE_FOR_PROJECTIONS = 2f; //200%
-    private final static int cycles = 550;
+    private final static int cycles = 1550;
 
     @Override
     protected NAR nar() {
@@ -366,7 +366,7 @@ public class NAL7Test extends NALTest {
                 .termVolMax(11)
                 .believe("(enter($x, room) ==>-3 open($x, door))", 0.9f, 0.9f)
                 .believe("(open($y, door) ==>-4 hold($y, key))", 0.8f, 0.9f)
-                .mustBelieve(cycles, "(enter($1,room) ==>-7 hold($1,key))", 0.72f, 0.58f)
+                .mustBelieve(cycles, "(enter($1,room) ==>-7 hold($1,key))", 0.7f, 0.58f)
                 .mustNotOutput(cycles, "(enter($1,room) ==>-4 hold($1,key))", BELIEF, ETERNAL)
                 .mustBelieve(cycles, "(hold($1,key) ==>+7 enter($1,room))", 1f, 0.37f);
     }

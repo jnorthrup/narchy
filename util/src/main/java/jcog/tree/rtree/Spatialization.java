@@ -27,6 +27,8 @@ public class Spatialization<X> {
         this.split = split;
     }
 
+
+
     public HyperRegion bounds(/*@NotNull*/ X x) {
         return bounds.apply(x);
     }

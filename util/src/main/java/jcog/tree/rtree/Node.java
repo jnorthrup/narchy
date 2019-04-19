@@ -70,21 +70,13 @@ public interface Node<X> extends Nodelike<X> {
 
     /**
      * Add t to the index
-     *  @param x      - value to add to index
-     * @param parent - the callee which is the parent of this instance.
+     *  @param parent - the callee which is the parent of this instance.
      *                  if parent is null, indicates it is in the 'merge attempt' stage
      *                  if parent is non-null, in the 'insertion attempt' stage
-     * @param model
-     * @param added
-     *      TODO make this an "RTreeInsertion" enum signaling:
-     *              (added,merged) x (bounds changed, bounds not changed)
-     *
-     *              so when a callee Branch receives "bounds not changed"
-     *              it will know it doesnt need to update bounds
-     *
+     * @param i
      * @return null if Leaf merged it with existing item
      */
-    Node<X> add(/*@NotNull */X x, boolean addOrMerge, /*@NotNull */Spatialization<X> model, boolean[] added);
+    Node<X> add(/*@NotNull */  /*@NotNull */RInsertion<X> i);
 
     /**
      * Remove t from the index

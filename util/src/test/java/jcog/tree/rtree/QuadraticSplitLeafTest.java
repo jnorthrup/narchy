@@ -104,24 +104,21 @@ class QuadraticSplitLeafTest {
     void overlappingEntryTest() {
 
         final RTree<RectDouble> rTree = RTree2DTest.createRect2DTree(TYPE);
-        rTree.add(new RectDouble(0, 0, 1, 1));
-        rTree.add(new RectDouble(0, 0, 2, 2));
-        rTree.add(new RectDouble(0, 0, 2.1, 2));
-        rTree.add(new RectDouble(0, 0, 3, 3));
+        rTree.add(new RectDouble(0, 0, 1, 1));  assert(rTree.size()==1);
+        rTree.add(new RectDouble(0, 0, 2, 2));  assert(rTree.size()==2);
+        rTree.add(new RectDouble(0, 0, 2.1, 2)); assert(rTree.size()==3);
+        rTree.add(new RectDouble(0, 0, 3, 3));   assert(rTree.size()==4);
         rTree.add(new RectDouble(0, 0, 3.1, 3));
-
         rTree.add(new RectDouble(0, 0, 4, 4));
-        rTree.add(new RectDouble(0, 0, 5, 5));
+        rTree.add(new RectDouble(0, 0, 5, 5)); assert(rTree.size()==7);
         rTree.add(new RectDouble(0, 0, 6, 6));
-        rTree.add(new RectDouble(0, 0, 7, 7));
-        rTree.add(new RectDouble(0, 0, 7.1, 7));
-
-        rTree.add(new RectDouble(0, 0, 8, 8));
-        rTree.add(new RectDouble(0, 0, 9, 9));
-        rTree.add(new RectDouble(0, 1, 2, 2));
+        rTree.add(new RectDouble(0, 0, 7, 7)); assert(rTree.size()==9);
+        rTree.add(new RectDouble(0, 0, 7.1, 7)); assert(rTree.size()==10);
+        rTree.add(new RectDouble(0, 0, 8, 8));  assert(rTree.size()==11);
+        rTree.add(new RectDouble(0, 0, 9, 9)); assert(rTree.size()==12);
+        rTree.add(new RectDouble(0, 1, 2, 2)); assert(rTree.size()==13);
         rTree.add(new RectDouble(0, 1, 3, 3));
         rTree.add(new RectDouble(0, 1, 4, 4));
-
         rTree.add(new RectDouble(0, 1, 4.1, 4));
         rTree.add(new RectDouble(0, 1, 5, 5));
 

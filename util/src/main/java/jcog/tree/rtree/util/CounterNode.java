@@ -22,6 +22,7 @@ package jcog.tree.rtree.util;
 
 import jcog.tree.rtree.HyperRegion;
 import jcog.tree.rtree.Node;
+import jcog.tree.rtree.RInsertion;
 import jcog.tree.rtree.Spatialization;
 
 import java.util.Iterator;
@@ -89,8 +90,8 @@ public final class CounterNode<X> implements Node<X> {
     }
 
     @Override
-    public Node<X> add(X x, boolean addOrMerge, Spatialization<X> model, boolean[] added) {
-        return this.node.add(x, addOrMerge, model, added);
+    public Node<X> add(RInsertion<X> i) {
+        return this.node.add(i);
     }
 
     @Override

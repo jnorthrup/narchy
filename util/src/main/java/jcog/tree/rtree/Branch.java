@@ -106,20 +106,20 @@ public class Branch<X> extends AbstractNode<X> {
     /**
      * Adds a data entry to one of the child nodes of this branch
      *
-     * @param x      data entry to addAt
      * @param parent
-     * @param model
-     * @param added
+     * @param x
      * @return Node that the entry was added to
      */
     @Override
-    public Node<X> add(final X x, boolean addOrMerge, Spatialization<X> model, boolean[] added) {
-
-        final HyperRegion B = model.bounds(x);
+    public Node<X> add(RInsertion<X> x) {
 
         Node<X>[] data = this.data;
 
-        if (model.mergeCanStretch() ? bounds.intersects(B) : bounds.contains(B)) {
+        boolean addOrMerge = x.isAddOrMerge();
+
+        //1. test containment
+        x.setAdd(false);
+        if (x.model.mergeCanStretch() ? bounds.intersects(x.bounds) : bounds.contains(x.bounds)) {
 
             short s = this.size;
             boolean merged = false, mergeBoundUpdate = false;
@@ -128,7 +128,7 @@ public class Branch<X> extends AbstractNode<X> {
 
                 HyperRegion ciBefore = ci.bounds();
 
-                Node<X> di = ci.add(x, false, model, null);
+                Node<X> di = ci.add(x);
 
                 if (di == null) {
                     merged = true;
@@ -143,6 +143,7 @@ public class Branch<X> extends AbstractNode<X> {
             }
 
             if (merged) {
+                //x.setMerged();
                 if (mergeBoundUpdate)
                     updateBounds();
                 return null;
@@ -151,6 +152,7 @@ public class Branch<X> extends AbstractNode<X> {
 
         }
 
+        x.setAdd(addOrMerge);
         if (!addOrMerge)
             return this;
 
@@ -159,7 +161,8 @@ public class Branch<X> extends AbstractNode<X> {
         if (size < data.length) {
 
 
-            Node<X> l = model.newLeaf().add(x, addOrMerge, model, added);
+            x.setAdd(true);
+            Node<X> l = x.model.newLeaf().add(x);
             grow(addChild(l));
             //assert (added[0]);
 
@@ -167,10 +170,10 @@ public class Branch<X> extends AbstractNode<X> {
 
         } else {
 
-            final int bestLeaf = chooseLeaf(B);
+            final int bestLeaf = chooseLeaf(x.bounds);
 
             HyperRegion before = data[bestLeaf].bounds();
-            Node<X> nextBest = data[bestLeaf].add(x, true, model, added);
+            Node<X> nextBest = data[bestLeaf].add(x);
             if (nextBest == null) {
                 if (!before.equals(data[bestLeaf].bounds()))
                     updateBounds();

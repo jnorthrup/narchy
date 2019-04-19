@@ -118,30 +118,28 @@ public class Leaf<X> extends AbstractNode<X> {
 
 
     @Override
-    public Node<X> add(/*@NotNull*/ final X x, boolean addOrMerge, Spatialization<X> model, boolean[] added) {
-
-        final HyperRegion B = model.bounds(x);
+    public Node<X> add(/*@NotNull*/RInsertion<X> x) {
 
         boolean mightContain = size > 0 && (/* TODO model.mergeEqualOnly() ? bounds.contains(tb) : */
-                model.mergeCanStretch() ? bounds.intersects(B) : bounds.contains(B));
+                x.model.mergeCanStretch() ? bounds.intersects(x.bounds) : bounds.contains(x.bounds));
 
         if (mightContain) {
             for (int i = 0, s = size; i < s; i++) {
                 X y = data[i];
-                if (y == x)
+                if (y == x.x)
                     return null; //identical instance found
 
 
-                X xy = model.merge(y, x);
+                X xy = x.model.merge(y, x.x);
                 if (xy != null) {
                     if (xy != y) {
 
 
                         data[i] = xy;
 
-                        HyperRegion yb = model.bounds(y);
-                        if (!yb.equals(model.bounds(xy)))
-                            bounds = Util.maybeEqual(bounds, HyperRegion.mbr(model, data)); //recompute
+                        HyperRegion yb = x.model.bounds(y);
+                        if (!yb.equals(x.model.bounds(xy)))
+                            bounds = Util.maybeEqual(bounds, HyperRegion.mbr(x.model, data)); //recompute
 
 //                            HyperRegion xtb = model.bounds(xy);
 //                            if (!bounds.contains(xtb)) {
@@ -157,18 +155,18 @@ public class Leaf<X> extends AbstractNode<X> {
             }
         }
 
-        if (addOrMerge) {
+        if (x.isAddOrMerge()) {
 
-            added[0] = true;
+            x.setAdded();
 
             if (size < data.length) {
 
-                data[this.size++] = x;
-                grow(B);
+                data[this.size++] = x.x;
+                grow(x.bounds);
 
                 return this;
             } else {
-                return model.split(x, this);
+                return x.model.split(x.x, this);
             }
 
         } else {
@@ -390,8 +388,8 @@ public class Leaf<X> extends AbstractNode<X> {
             target = (aCostInc <= bCostInc) ? a : b;
         }
 
-        boolean[] added = new boolean[1];
-        target.add(x, true, model, added);
+
+        target.add(new RInsertion<>(x, true, model));
         //assert (added[0]); <-- TODO check this
     }
 

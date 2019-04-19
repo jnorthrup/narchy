@@ -101,11 +101,11 @@ public class RTree<T> implements Space<T> {
     @Override
     public boolean add(/*@NotNull*/ final T t) {
 
-        boolean[] added = new boolean[1];
 
-        Node<T> nextRoot = root.add(t, true, model, added);
+        RInsertion<T> i = new RInsertion<>(t, true, model);
+        Node<T> nextRoot = root.add(i);
 
-        if (added[0]) {
+        if (i.added()) {
 
             //assert(nextRoot!=null);
             this.root = nextRoot;

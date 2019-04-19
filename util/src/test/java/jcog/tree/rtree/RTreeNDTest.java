@@ -194,10 +194,10 @@ class RTreeNDTest {
             Arrays.sort(results);
             
             for (int i = 0; i < resultCount; i++) {
-                assertTrue(Util.equals(results[i].min.x, (double) (i + 5), Spatialization.EPSILON) &&
-                                Util.equals(results[i].min.y, (double) (i + 5), Spatialization.EPSILON) &&
-                                Util.equals(results[i].max.x, (double) (i + 8), Spatialization.EPSILON) &&
-                                Util.equals(results[i].max.y, (double) (i + 8), Spatialization.EPSILON),
+                assertTrue(Util.equals(results[i].min.x, (i + 5), Spatialization.EPSILON) &&
+                                Util.equals(results[i].min.y, (i + 5), Spatialization.EPSILON) &&
+                                Util.equals(results[i].max.x, (i + 8), Spatialization.EPSILON) &&
+                                Util.equals(results[i].max.y, (i + 8), Spatialization.EPSILON),
                         "Unexpected result found:" + results[i]);
             }
         }
@@ -235,10 +235,10 @@ class RTreeNDTest {
 
             
             for (int i = 0; i < resultCount; i++) {
-                assertTrue(Util.equals(results.get(i).min.x, (double) (i + 2), Spatialization.EPSILON) &&
-                                Util.equals(results.get(i).min.y, (double) (i + 2), Spatialization.EPSILON) &&
-                                Util.equals(results.get(i).max.x, (double) (i + 5), Spatialization.EPSILON) &&
-                                Util.equals(results.get(i).max.y, (double) (i + 5), Spatialization.EPSILON),
+                assertTrue(Util.equals(results.get(i).min.x, (i + 2), Spatialization.EPSILON) &&
+                                Util.equals(results.get(i).min.y, (i + 2), Spatialization.EPSILON) &&
+                                Util.equals(results.get(i).max.x, (i + 5), Spatialization.EPSILON) &&
+                                Util.equals(results.get(i).max.y, (i + 5), Spatialization.EPSILON),
                         "Unexpected result found");
             }
         }
