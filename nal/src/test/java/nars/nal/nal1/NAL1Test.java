@@ -277,4 +277,16 @@ public class NAL1Test extends NALTest {
                 0.81f);
 
     }
+
+
+    @Test
+    void variable_elimination_analogy_substIfUnify_Neg() {
+        TestNAR tester = test;
+        tester.termVolMax(8);
+        tester.believe("(--(x --> $1) <-> (z --> $1))");
+        tester.believe("(x --> y)", 0.10f, 0.9f);
+        tester.mustBelieve(cycles, "(z --> y)", 0.9f,
+                0.81f);
+
+    }
 }

@@ -244,16 +244,6 @@ public class NAL6Test extends NALTest {
 
 
     @Test
-    void variable_elimination_analogy_substIfUnify_Neg() {
-        TestNAR tester = test;
-        tester.believe("(--(x --> $1) <-> (z --> $1))");
-        tester.believe("(x --> y)", 0.10f, 0.9f);
-        tester.mustBelieve(cycles, "(z --> y)", 0.9f,
-                0.81f);
-
-    }
-
-    @Test
     void variable_elimination5() {
 
 
@@ -775,6 +765,7 @@ public class NAL6Test extends NALTest {
                 .mustBelieve(cycles, "lock:lock1", 0.00f, 0.45f)
         ;
     }
+
 
     /**
      * Conditional Abduction via Multi-conditional Syllogism

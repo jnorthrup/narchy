@@ -112,7 +112,11 @@ public class TermReductionsTest extends NarseseTest {
         assertInvalidTerms(
                 "((swimmer~swan)-->swimmer)",
                 "((x|y)-->x)",
+                "((x&y)-->x)",
+                "(x-->(x|y))",
+                "(x-->(x&y))",
                 "(y<->(x|y))",
+                "(y<->(x&y))",
                 "(#1<->(#1|y))"
         );
     }
@@ -124,8 +128,8 @@ public class TermReductionsTest extends NarseseTest {
 
     @Test
     void testIntersectIntReduction_to_one() {
-        assertEq("(robin-->bird)", "<robin-->(|,bird)>");
-        assertEq("(robin-->bird)", "<(|,robin)-->(|,bird)>");
+        assertEq("(robin-->bird)", "(robin-->(|,bird))");
+        assertEq("(robin-->bird)", "((|,robin)-->(|,bird))");
     }
 
     @Test
@@ -390,9 +394,8 @@ public class TermReductionsTest extends NarseseTest {
     }
 
 
-    @Disabled static class StructuralMobius {
         @Test
-        void testAllowSimNegationStatements() throws Narsese.NarseseException {
+        void distinctSimNegationStatements() throws Narsese.NarseseException {
             assertEq(Bool.True, "(a<->a)");
 
             assertNotEquals($("(--a <-> b)"), $("(a <-> --b)"));
@@ -406,6 +409,8 @@ public class TermReductionsTest extends NarseseTest {
 //        assertEq("((--,a)<->a)", "((--,a)<->a)");
 
         }
+
+    @Disabled static class StructuralMobius {
 
         @Test
         void testAllowInhNegationStatements() throws Narsese.NarseseException {

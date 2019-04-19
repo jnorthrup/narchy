@@ -250,7 +250,7 @@
     //Anti-conditional Abduction via Multi-conditional Syllogism
     (C ==> X), (E ==> Y), eventOf(C,E)      |-    unisubst(--conjWithout(C,E),X,Y), (Belief:AbductionXOR)
 
-        //((&&,B,A..+) ==> X), (E ==> Y)          |-    unisubst((&&,A..+),(polarizeTask(X) && B),(polarizeBelief(Y) && E)), (Belief:AbductionDepolarized)
+        ((&&,B,A..+) ==> X), (E ==> Y)          |-    unisubst((&&,A..+),(polarizeTask(X) && B),(polarizeBelief(Y) && E)), (Belief:AbductionDepolarized)
 
 
       //TODO check (--C ==> X), (--E ==> Y), eventOf(C,E), --isVar(X), --isVar(Y)    |-    unisubst(conjWithout(C,E),X,Y), (Belief:AbductionPB)

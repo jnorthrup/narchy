@@ -1,5 +1,6 @@
 //Similarity to Inheritance
     (S --> P), (S <-> P),  task("?"),  hasBelief() |- (S --> P),   (Belief:BeliefStructuralDeduction, Punctuation:Belief)
+    (S --> P), (S <-> P),  task("@"),  hasBelief() |- (S --> P),   (Goal:BeliefStructuralDeduction, Punctuation:Goal)
       //(S --> P), (--S <-> P),   task("?") |- (--S --> P),   (Belief:BeliefStructuralDeduction, Punctuation:Belief)
       //(S --> P),   (S <-> --P), task("?") |- (S --> --P),   (Belief:BeliefStructuralDeduction, Punctuation:Belief)
 
@@ -8,8 +9,16 @@
 //Inheritance to Similarity
     (S <-> P), (S --> P), task("?"), hasBelief() |- (S <-> P),   (Belief:BeliefStructuralAbduction, Punctuation:Belief)
 
-
 //    (S <-> P), (S --> P), task("?") |- (--,(S <-> P)),   (Belief:BeliefStructuralAbduction, Punctuation:Belief)
+
+//What is the difference
+    //(X <-> Y), (X <-> Z), eqNeg(Y,Z) |- (?1 --> (X - unneg(Y))), (Punctuation:Ask)
+    //(X <-> Y), (X <-> Z), eqNeg(Y,Z) |- (?1 --> (unneg(Y) - X)), (Punctuation:Ask)
+    //(X <-> Y), (X <-> Z), eqNeg(Y,Z) |- ((X ~ unneg(Y)) --> ?1), (Punctuation:Ask)
+    //(X <-> Y), (X <-> Z), eqNeg(Y,Z) |- ((unneg(Y) ~ X) --> ?1), (Punctuation:Ask)
+    //(X <-> Y), (X <-> Y)             |- (?1 --> (X-Y)), (Punctuation:Ask)
+    //(X <-> Y), (X <-> Y)             |- ((X~Y) --> ?1), (Punctuation:Ask)
+
 
 ////inheritance transform
 //    X, (S --> P), task("?"), in(X,P), neq(X,S) |- (X <-> substitute(X,P,S,novel)),   (Belief:BeliefStructuralAbduction, Punctuation:Belief)
