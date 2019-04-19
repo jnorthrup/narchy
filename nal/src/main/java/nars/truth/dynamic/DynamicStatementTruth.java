@@ -262,10 +262,10 @@ public class DynamicStatementTruth {
             Term common = superterm.sub(subjOrPred ? 1 : 0);
 
             //TODO check
-            if (union || (!subjOrPred)) {
-                if (op == CONJ || op == IMPL /* but not Sect's */)
-                    sect = sect.neg();
-            }
+//            if (union || (!subjOrPred)) {
+//                if (op == CONJ || op == IMPL /* but not Sect's */)
+//                    sect = sect.neg();
+//            }
 
             return subjOrPred ? op.the(sect, outerDT, common) : op.the(common, outerDT, sect);
         }

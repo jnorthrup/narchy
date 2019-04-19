@@ -49,7 +49,7 @@ public abstract class Param extends Parts<Term,NAR> {
     public static final boolean VOLMAX_RESTRICTS_INPUT = true; //input tasks
     public static final boolean VOLMAX_RESTRICTS = false; //all tasks
     public static final boolean TERMIFY_TRANSFORM_LAZY = true;
-    public static final boolean OVERLAP_DOUBLE_SET_CYCLIC = false;
+    public static final boolean OVERLAP_DOUBLE_SET_CYCLIC = true;
 
 
 
@@ -129,7 +129,7 @@ public abstract class Param extends Parts<Term,NAR> {
     /** should be enough to account for an expected evidence integration error rate */
     public static final float PROJECTION_EVIDENCE_INFLATION_PCT_TOLERANCE = 0.1f;
 
-    public static final int DYN_TASK_MATCH_MODE = 1;
+    public static final int DYN_TASK_MATCH_MODE = 2;
 
     /** if false, will use pri=ScalarValue.EPSILON */
     public static final boolean DELETE_PROXY_TASK_TO_DELETED_TASK = false;

@@ -142,9 +142,12 @@ public class TaskLinks implements Sampler<TaskLink> {
                     if (t instanceof Atom) {
                         //why is this necessary
                         float probability =
+                                0.5f;
+                                //1f / (1 + link.from().volume()/2f);
+                                //1f / (1 + link.from().volume());
                                 //1 - 1f / (1 + s.volume());
-                                1 - 1f / (1 + t.volume());
-                                //0.5f;
+                                //1 - 1f / (1 + t.volume());
+
                         if (d.random.nextFloat() <= probability) {
                             //sample active tasklinks for a tangent match to the atom
 //                            Atom tt = (Atom) t;
