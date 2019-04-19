@@ -8,7 +8,6 @@ import nars.Task;
 import nars.control.CauseMerge;
 import nars.table.BeliefTable;
 import nars.task.NALTask;
-import nars.task.signal.SignalTask;
 import nars.truth.polation.TruthProjection;
 
 import java.util.function.Predicate;
@@ -22,8 +21,6 @@ public interface TemporalBeliefTable extends BeliefTable {
 
 
     void setTaskCapacity(int temporals);
-
-    void update(SignalTask x, Runnable change);
 
     long tableDur();
 

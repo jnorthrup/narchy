@@ -25,10 +25,7 @@ import jcog.util.LambdaStampedLock;
 
 import java.util.Iterator;
 import java.util.Objects;
-import java.util.function.BiConsumer;
-import java.util.function.BiPredicate;
-import java.util.function.Consumer;
-import java.util.function.Predicate;
+import java.util.function.*;
 import java.util.stream.Stream;
 
 /**
@@ -79,18 +76,17 @@ public class ConcurrentRTree<X> extends LambdaStampedLock implements Space<X> {
     /**
      * Blocking locked addAt
      *
-     * @param t - entry to addAt
+     * @param x - entry to addAt
      */
     @Override
-    public boolean add(X t) {
+    public RInsertion<X> insert(X x) {
         long l = writeLock();
         try {
-            return tree.add(t);
+            return tree.insert(x);
         } finally {
             unlockWrite(l);
         }
     }
-
 
     /**
      * prefer this instead of add() in multithread environments, because it elides what might ordinarily involve a lock wait
@@ -151,6 +147,15 @@ public class ConcurrentRTree<X> extends LambdaStampedLock implements Space<X> {
         long l = writeLock();
         try {
             return x.test(tree);
+        } finally {
+            unlockWrite(l);
+        }
+    }
+
+    public final <Y> Y write(Function<Space<X>,Y> x) {
+        long l = writeLock();
+        try {
+            return x.apply(tree);
         } finally {
             unlockWrite(l);
         }

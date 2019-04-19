@@ -43,36 +43,36 @@ import java.util.stream.Stream;
  * <p>
  * Created by jcairns on 4/30/15.</p>
  */
-public class RTree<T> implements Space<T> {
+public class RTree<X> implements Space<X> {
 
     private static final MetalAtomicIntegerFieldUpdater<RTree> SIZE = new MetalAtomicIntegerFieldUpdater(RTree.class, "_size");
 
-    private volatile Node<T> root;
+    private volatile Node<X> root;
 
     private volatile int _size;
 
-    public final Spatialization<T> model;
+    public final Spatialization<X> model;
 
-    public RTree(int max, Split<T> splitType) {
+    public RTree(int max, Split<X> splitType) {
         this((x-> (HyperRegion) x), max, splitType);
     }
 
-    public RTree(@Nullable Function<T, HyperRegion> spatialize, final int mMax, final Split<T> splitType) {
+    public RTree(@Nullable Function<X, HyperRegion> spatialize, final int mMax, final Split<X> splitType) {
         this(new Spatialization<>(spatialize, splitType, mMax));
     }
 
-    public RTree(Spatialization<T> model) {
+    public RTree(Spatialization<X> model) {
         this.model = model;
         clear();
     }
 
     @Override
-    public Stream<T> stream() {
+    public Stream<X> stream() {
         return root.streamValues();
     }
 
     @Override
-    public final Iterator<T> iterator() {
+    public final Iterator<X> iterator() {
         return root.iterateValues();
     }
 
@@ -86,30 +86,27 @@ public class RTree<T> implements Space<T> {
     }
 
     @Override
-    public boolean OR(Predicate<T> o) {
+    public boolean OR(Predicate<X> o) {
         return root().OR(o);
     }
 
     @Override
-    public boolean AND(Predicate<T> o) {
+    public boolean AND(Predicate<X> o) {
         return root().AND(o);
     }
 
-    /**
-     * TODO handle duplicate items (ie: dont increase entryCount if exists)
-     */
-    @Override
-    public boolean add(/*@NotNull*/ final T t) {
 
+    public final RInsertion<X> insert(/*@NotNull*/ final X x) {
+        RInsertion<X> i = model.insertion(x);
 
-        RInsertion<T> i = model.insertion(t);
+        Node<X> nextRoot = root.add(i);
 
-        Node<T> nextRoot = root.add(i);
+        if (nextRoot!=null)
+            this.root = nextRoot; //even if not added; in case merge changed something, dunno
 
         if (i.added()) {
 
             //assert(nextRoot!=null);
-            this.root = nextRoot;
             //this.root = nextRoot!=null ? nextRoot : model.newLeaf();
             SIZE.getAndIncrement(this);
 
@@ -121,18 +118,16 @@ public class RTree<T> implements Space<T> {
 //                throw new WTF("inconsistent");
 //            }
 
-            return true;
         }
 
-        return false;
+        return i;
     }
-
 
     /**
      * @param xBounds - the bounds of t which may not necessarily need to be the same as the bounds as model might report it now; for removing a changing value
      */
     @Override
-    public boolean remove(final T x) {
+    public boolean remove(final X x) {
         int before = SIZE.get(this);
         if (before == 0)
             return false;
@@ -141,7 +136,7 @@ public class RTree<T> implements Space<T> {
             return false;
 
         boolean[] removed = new boolean[1];
-        @Nullable Node<T> nextRoot = root.remove(x, bx, model, removed);
+        @Nullable Node<X> nextRoot = root.remove(x, bx, model, removed);
         if (removed[0]) {
 
             SIZE.getAndDecrement(this);
@@ -154,7 +149,7 @@ public class RTree<T> implements Space<T> {
     }
 
     @Override
-    public boolean replace(final T told, final T tnew) {
+    public boolean replace(final X told, final X tnew) {
 
         if (told == tnew) {
             return true;
@@ -189,18 +184,18 @@ public class RTree<T> implements Space<T> {
 
 
     @Override
-    public void forEach(Consumer<? super T> consumer) {
+    public void forEach(Consumer<? super X> consumer) {
         if (root != null)
             root.forEach(consumer);
     }
 
     @Override
-    public boolean intersectsWhile(HyperRegion rect, Predicate<T> t) {
+    public boolean intersectsWhile(HyperRegion rect, Predicate<X> t) {
          return root.intersecting(rect, t, model);
     }
 
     @Override
-    public boolean containsWhile(HyperRegion rect, final Predicate<T> t) {
+    public boolean containsWhile(HyperRegion rect, final Predicate<X> t) {
         return root.containing(rect, t, model);
     }
 
@@ -208,7 +203,7 @@ public class RTree<T> implements Space<T> {
      * returns how many items were filled
      */
     @Override
-    @Deprecated public int containedToArray(HyperRegion rect, final T[] t) {
+    @Deprecated public int containedToArray(HyperRegion rect, final X[] t) {
         final int[] i = {0};
         root.containing(rect, (x) -> {
             t[i[0]++] = x;
@@ -217,9 +212,9 @@ public class RTree<T> implements Space<T> {
         return i[0];
     }
 
-    @Deprecated public Set<T> containedToSet(HyperRegion rect) {
+    @Deprecated public Set<X> containedToSet(HyperRegion rect) {
         int s = size();
-        Set<T> t = new HashSet(s);
+        Set<X> t = new HashSet(s);
         root.containing(rect, x -> {
             t.add(x);
             return true;
@@ -251,21 +246,21 @@ public class RTree<T> implements Space<T> {
     }
 
     @Override
-    public Node<T> root() {
+    public Node<X> root() {
         return this.root;
     }
 
     @Override
-    public boolean contains(T x, HyperRegion b, Spatialization<T> model) {
+    public boolean contains(X x, HyperRegion b, Spatialization<X> model) {
         return root.contains(x, b, model);
     }
 
-    public boolean contains(T t) {
-        return contains(t, model.bounds(t), model);
+    public boolean contains(X x) {
+        return contains(x, model.bounds(x), model);
     }
 
     @Override
-    public HyperRegion bounds(T x) {
+    public HyperRegion bounds(X x) {
         return model.bounds(x);
     }
 

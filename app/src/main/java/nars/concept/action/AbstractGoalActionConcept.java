@@ -212,8 +212,6 @@ public class AbstractGoalActionConcept extends AgentAction {
     public void update( Game g) {
         long prev = g.prev, now = g.now;
 
-        //HACK temporary
-
         updateCuriosity(g.curiosity);
 
         NAR n = g.nar();

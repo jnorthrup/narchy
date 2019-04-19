@@ -136,10 +136,14 @@ public interface Space<X> extends Nodelike<X> {
     /**
      * Add the data entry to the SpatialSearch structure
      *
-     * @param t Data entry to be added
+     * @param x Data entry to be added
      * @return whether the item was added, or false if it wasn't (ex: duplicate or some other prohibition)
      */
-    boolean add(final X t);
+    default /* final */ boolean add(final X x) {
+        return insert(x).added();
+    }
+
+    RInsertion<X> insert(/*@NotNull*/ final X x);
 
     /**
      * adds, deferred if necessary until un-busy

@@ -40,6 +40,10 @@ public class RInsertion<X> {
         this.added = false;
     }
 
+    public RInsertion(X x, Spatialization<X> model) {
+        this(x, true, model);
+    }
+
     public boolean isAddOrMerge() {
         return addOrMerge;
     }

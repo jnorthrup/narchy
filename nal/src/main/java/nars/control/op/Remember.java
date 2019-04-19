@@ -229,8 +229,6 @@ public class Remember extends AbstractTask {
 
 
     public void forget(Task x) {
-//        if (x == null)
-//            throw new NullPointerException(); //TEMPORARY
 
         if (remembered != null && remembered.removeInstance(x)) {
             //throw new TODO();

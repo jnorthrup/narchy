@@ -13,7 +13,6 @@ import nars.Task;
 import nars.control.op.Remember;
 import nars.task.ProxyTask;
 import nars.task.Revision;
-import nars.task.signal.SignalTask;
 import nars.task.util.Answer;
 import nars.task.util.TaskRegion;
 import nars.task.util.TimeRange;
@@ -27,6 +26,7 @@ import org.jetbrains.annotations.Nullable;
 import java.io.PrintStream;
 import java.util.Arrays;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
@@ -203,8 +203,6 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
                 return true;
             } else {
 
-                //  treeRW.remove(W); //TEMPORARY
-
 //            Spatialization model = ((RTree) treeRW).model;
 //            HyperRegion ww = model.bounds(W);
 //            List<Node<TaskRegion>> containingNodes = treeRW.root().streamNodesRecursively().filter((Node n) -> {
@@ -237,22 +235,6 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
         return size();
     }
 
-    @Override
-    @Deprecated
-    public void update(SignalTask task, Runnable change) {
-        write(treeRW -> {
-
-            boolean removed = treeRW.remove(task);
-            /*if (!removed)
-                return;*/
-
-            change.run();
-
-            if (!task.isDeleted()) {
-                boolean added = treeRW.add(task);
-            }
-        });
-    }
 
     @Override
     public final void match(Answer a) {
@@ -301,15 +283,17 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 //        }
 
 
-        RTreeBeliefModel.merged.remove();
-
-        write(treeRW -> {
-            if (treeRW.add(input)) {
+        /** TODO only enter write lock after deciding insertion is necessary (not merged with existing)
+         *    subclass RInsertion to RConcurrentInsertion, storing Stamped Lock lock value along with it */
+        TaskInsertion insertion = write((Function<Space<TaskRegion>,TaskInsertion>) (treeRW -> {
+            TaskInsertion ii = (TaskInsertion) treeRW.insert(input);
+            if (ii.added()) {
                 ensureCapacity(treeRW, input.isBelief() /* else Goal*/, r);
             }
-        });
+            return ii;
+        }));
 
-        Task existing = RTreeBeliefModel.merged.get();
+        Task existing = (Task) insertion.mergedWith;
         if (existing != null && existing != input) {
             r.merge(existing);
             onReject(input);
@@ -471,15 +455,15 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
     private static final class RTreeBeliefModel extends Spatialization<TaskRegion> {
 
         static final Spatialization<TaskRegion> the = new RTreeBeliefModel();
-        /**
-         * HACK store merge notifications
-         */
-        @Deprecated
-        final static ThreadLocal<Task> merged = new ThreadLocal();
 
         private RTreeBeliefModel() {
             super((t -> t), RTreeBeliefTable.SPLIT,
                     RTreeBeliefTable.MAX_TASKS_PER_LEAF);
+        }
+
+        @Override
+        public RInsertion<TaskRegion> insertion(TaskRegion t) {
+            return new TaskInsertion(t);
         }
 
         @Override
@@ -529,9 +513,6 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 
                 }
             }
-
-            merged.set(m);
-
             return m;
         }
 
@@ -539,6 +520,31 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
             return true;
         }
 
+
+    }
+
+    private static class TaskInsertion extends RInsertion<TaskRegion> {
+
+        @Nullable TaskRegion mergedWith = null;
+
+        public TaskInsertion(TaskRegion t) {
+            super(t, RTreeBeliefModel.the);
+        }
+
+        @Override
+        public void mergeIdentity() {
+            mergedWith = x;
+        }
+
+        @Nullable
+        @Override
+        public TaskRegion merge(TaskRegion y) {
+            TaskRegion m = super.merge(y);
+            if (m!=null)
+                mergedWith = m;
+
+            return m;
+        }
     }
 
 //    /** TODO */

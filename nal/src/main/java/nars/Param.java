@@ -208,7 +208,7 @@ public abstract class Param extends Parts<Term,NAR> {
             , 0, 1);
     @Deprecated public final FloatRange questionForgetRate = new FloatRange(0.5f, 0, 1);
     public final IntRange premiseUnifyTTL = new IntRange(16, 1, 32);
-    public final IntRange deriveBranchTTL = new IntRange(8 * derive.TTL_MIN, derive.TTL_MIN, 64 * derive.TTL_MIN );
+    public final IntRange deriveBranchTTL = new IntRange(4 * derive.TTL_MIN, derive.TTL_MIN, 64 * derive.TTL_MIN );
     /**
      * how many cycles above which to dither dt and occurrence time
      * TODO move this to Time class and cache the cycle value rather than dynamically computing it
