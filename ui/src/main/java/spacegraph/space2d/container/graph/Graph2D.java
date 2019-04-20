@@ -3,13 +3,11 @@ package spacegraph.space2d.container.graph;
 import com.jogamp.opengl.GL2;
 import jcog.data.graph.NodeGraph;
 import jcog.data.map.CellMap;
-import jcog.data.map.MRUMap;
 import jcog.data.pool.MetalPool;
 import jcog.data.set.ArrayHashSet;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.space2d.ReSurface;
 import spacegraph.space2d.Surface;
-import spacegraph.space2d.container.ContainerSurface;
 import spacegraph.space2d.container.Splitting;
 import spacegraph.space2d.container.collection.MutableMapContainer;
 import spacegraph.space2d.container.grid.Gridding;
@@ -21,7 +19,6 @@ import spacegraph.space2d.widget.textedit.TextEdit;
 import spacegraph.video.Draw;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
@@ -62,27 +59,27 @@ public class Graph2D<X> extends MutableMapContainer<X, NodeVis<X>> {
     public boolean delete() {
         if (super.delete()) {
             edgePool.delete();
-            nodeCache.clear();
+//            nodeCache.clear();
             //TODO anything else?
             return true;
         }
         return false;
     }
 
-    final MRUMap<X, NodeVis<X>> nodeCache = new MRUMap<>(8 * 1024) {
-        @Override
-        protected void onEvict(Map.Entry<X, NodeVis<X>> entry) {
-            NodeVis<X> s = entry.getValue();
-            if (s.id == null)
-                s.stop();
-        }
-
-        @Override
-        public void clear() {
-            forEachValue(Surface::delete);
-            super.clear();
-        }
-    }; //TODO set capacity good
+//    final MRUMap<X, NodeVis<X>> nodeCache = new MRUMap<>(8 * 1024) {
+//        @Override
+//        protected void onEvict(Map.Entry<X, NodeVis<X>> entry) {
+//            NodeVis<X> s = entry.getValue();
+//            if (s.id == null)
+//                s.stop();
+//        }
+//
+//        @Override
+//        public void clear() {
+//            forEachValue(Surface::delete);
+//            super.clear();
+//        }
+//    }; //TODO set capacity good
 
 
     @Override
@@ -268,11 +265,9 @@ public class Graph2D<X> extends MutableMapContainer<X, NodeVis<X>> {
 
     @Override
     protected void stopping() {
-        synchronized (nodeCache) {
-            nodeCache.values().forEach(ContainerSurface::delete);
-            nodeCache.clear();
-            edgePool.delete();
-        }
+//            nodeCache.values().forEach(ContainerSurface::delete);
+//            nodeCache.clear();
+        edgePool.delete();
         super.stopping();
     }
 
@@ -300,14 +295,14 @@ public class Graph2D<X> extends MutableMapContainer<X, NodeVis<X>> {
 
     }
 
-    private NodeVis<X> materialize(X x) {
-        NodeVis<X> yy = nodeCache.computeIfAbsent(x, x0 -> {
-            NodeVis<X> y = new NodeVis<>();
-            y.start(x0);
-            builder.accept(y);
-            return y;
-        });
-        yy.id = x; //in case x different instance but equal
+    private NodeVis<X> materialize(X x0) {
+//        NodeVis<X> yy = nodeCache.computeIfAbsent(x, x0 -> {
+            NodeVis<X> yy = new NodeVis<>();
+            yy.start(x0);
+            builder.accept(yy);
+//            return y;
+//        });
+        yy.id = x0; //in case x different instance but equal
         updater.init(this, yy);
         return yy;
     }
@@ -325,6 +320,7 @@ public class Graph2D<X> extends MutableMapContainer<X, NodeVis<X>> {
     @Override
     protected void unmaterialize(NodeVis<X> v) {
         v.end(edgePool);
+        v.delete();
     }
 
     private void render() {

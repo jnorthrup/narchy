@@ -5,8 +5,6 @@ import jcog.data.graph.Node;
 import jcog.data.graph.NodeGraph;
 import jcog.math.FloatRange;
 import jcog.pri.PLink;
-import jcog.pri.ScalarValue;
-import jcog.util.Essence;
 import nars.$;
 import nars.NAR;
 import nars.term.Term;
@@ -100,19 +98,26 @@ public class PriNode extends PLink<Term> {
 
     public static class ConstPriNode extends PriNode {
 
-        @Essence
-        public final FloatRange f;
+//        @Essence
+//        public final FloatRange f;
 
-        public ConstPriNode(Object id, float initialValue) {
-            this(id, new FloatRange(initialValue, ScalarValue.EPSILON, 1f));
+//        public ConstPriNode(Object id, float initialValue) {
+//            this(id, new FloatRange(initialValue, ScalarValue.EPSILON, 1f));
+//
+//        }
 
-        }
-
-        public ConstPriNode(Object id, FloatRange f) {
+        public ConstPriNode(Object id, float p) {
             super(id);
-            this.f = f;
-            pri(f.floatValue());
+            pri(p);
+//            this.f = f;
+//            pri(f.floatValue());
         }
+//
+//        @Override
+//        public float pri(float p) {
+//            f.set(p);
+//            return super.pri(p);
+//        }
 
         @Override
         protected float priFraction() {
@@ -121,7 +126,7 @@ public class PriNode extends PLink<Term> {
 
         @Override
         public void update(MapNodeGraph<PriNode, Object> graph) {
-            pri(f.floatValue());
+//            pri(f.floatValue());
             super.update(graph);
         }
     }

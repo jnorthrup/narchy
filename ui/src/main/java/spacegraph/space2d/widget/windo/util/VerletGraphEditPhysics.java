@@ -51,7 +51,7 @@ public class VerletGraphEditPhysics extends GraphEditPhysics {
     }
 
     @Override
-    protected void starting(EditGraph2D<?> parent) {
+    protected void starting(EditGraph2D parent) {
         physics.physics.setDrag(0.25f);
         physics.debugRender.set(false);
         physics.pos(parent.bounds);

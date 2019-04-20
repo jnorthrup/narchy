@@ -162,8 +162,8 @@ public class WidgetTest {
     }
 
     private static Surface wiringDemo(Consumer<EditGraph2D> o) {
-        EditGraph2D<Surface> g;
-        g = new EditGraph2D<>() {
+        EditGraph2D g;
+        g = new EditGraph2D() {
             @Override
             protected void starting() {
                 super.starting();

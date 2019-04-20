@@ -9,7 +9,6 @@ import jcog.data.graph.Node;
 import jcog.data.graph.path.FromTo;
 import jcog.event.Off;
 import jcog.math.v2;
-import jcog.reflect.AutoBuilder;
 import jcog.tree.rtree.rect.RectFloat;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.SpaceGraph;
@@ -48,14 +47,15 @@ import java.util.function.Predicate;
  * TODO unify this with Graph2D
  * TODO remove all synchronized(links) with appropriate reliance on its ConcurrentHashMap and any additional per-node/per-edge locking
  */
-public class EditGraph2D<S extends Surface> extends MutableMapContainer<Surface, ContainerSurface> {
+public class EditGraph2D extends MutableMapContainer<Surface, ContainerSurface> {
 
     /**
      * default/ambient link graph
      * TODO use weakref's
      */
-    @Deprecated
-    public static final MapNodeGraph<Surface, Wire> staticLinks = new LinkGraph();
+//    @Deprecated
+//    public static final MapNodeGraph<Surface, Wire> staticLinks = new LinkGraph();
+
     public final GraphEditPhysics physics =
             //new VerletGraphEditPhysics();
             new Box2DGraphEditPhysics();
@@ -75,7 +75,7 @@ public class EditGraph2D<S extends Surface> extends MutableMapContainer<Surface,
      * for links and other supporting geometry that is self-managed
      * TODO encapsulate so its private
      */
-    public final Stacking raw = new Stacking();
+    private final Stacking raw = new Stacking();
 
     private final DoubleClicking doubleClicking = new DoubleClicking(0, this::doubleClick, this);
     private Off loop;
@@ -85,8 +85,8 @@ public class EditGraph2D<S extends Surface> extends MutableMapContainer<Surface,
         clipBounds = false; //TODO only if fencing
     }
 
-    public static <X extends Surface> EditGraph2D<X> window(int w, int h) {
-        EditGraph2D<X> g = new EditGraph2D<>();
+    public static <X extends Surface> EditGraph2D window(int w, int h) {
+        EditGraph2D g = new EditGraph2D();
         SpaceGraph.window(g, w, h).dev();
         return g;
     }
@@ -110,6 +110,8 @@ public class EditGraph2D<S extends Surface> extends MutableMapContainer<Surface,
 
         loop.close(); loop = null;
 
+        links.clear();
+
         physics.stop();
     }
 
@@ -117,7 +119,7 @@ public class EditGraph2D<S extends Surface> extends MutableMapContainer<Surface,
     /**
      * wraps window content for a new window
      */
-    protected Scale windowContent(Surface xx) {
+    private Scale windowContent(Surface xx) {
         return new Scale(new MetaFrame(xx), 0.98f);
     }
 
@@ -158,15 +160,11 @@ public class EditGraph2D<S extends Surface> extends MutableMapContainer<Surface,
         });
     }
 
-    public @Nullable ContainerSurface get(Surface t) {
-        return getValue(t);
-    }
-
     @Override
     public ContainerSurface remove(Object key) {
         ContainerSurface w = super.remove(key);
         if (w != null) {
-            w.stop();
+            w.delete(); //stop();
             physics.remove(w);
             return w;
         }
@@ -191,7 +189,7 @@ public class EditGraph2D<S extends Surface> extends MutableMapContainer<Surface,
         return w;
     }
 
-    public final ContainerSurface add(S x, float w, float h) {
+    public final ContainerSurface add(Surface x, float w, float h) {
         ContainerSurface y = add(x);
         y.resize(w, h);
         return y;
@@ -234,11 +232,6 @@ public class EditGraph2D<S extends Surface> extends MutableMapContainer<Surface,
      */
     public void windoSizeMinRel(float w, float h) {
         windoSizeMinRel.set(w, h);
-    }
-
-    public <X, Z extends S> Windo build(X value, AutoBuilder<X, Z> builder) {
-        Z z = builder.build(value);
-        return add(z);
     }
 
     public Animating<Debugger> debugger() {
@@ -294,7 +287,7 @@ public class EditGraph2D<S extends Surface> extends MutableMapContainer<Surface,
         return s;
     }
 
-    protected void doubleClick(v2 pos) {
+    private void doubleClick(v2 pos) {
 
         Windo z = add(
                 new WizardFrame(new ProtoWidget())
@@ -383,7 +376,7 @@ public class EditGraph2D<S extends Surface> extends MutableMapContainer<Surface,
 
     private static class LinkGraph extends MapNodeGraph<Surface, Wire> {
 
-        public LinkGraph() {
+        LinkGraph() {
             super(new ConcurrentHashMap<>());
         }
 
@@ -459,17 +452,17 @@ public class EditGraph2D<S extends Surface> extends MutableMapContainer<Surface,
             boundsInfo.text(EditGraph2D.this.bounds.toString());
 
             children.text(Joiner.on("\n").join(Iterables.transform(
-                    EditGraph2D.this.keySet(), t -> info(t, EditGraph2D.this.get(t)))));
+                    EditGraph2D.this.keySet(), t -> info(t, getValue(t)))));
         }
 
-        protected String info(Surface x, ContainerSurface w) {
+        private String info(Surface x, ContainerSurface w) {
             return x + "\n  " + (w != null ? w.bounds : "?");
         }
 
     }
 
     private static class MyWeakSurface extends WeakSurface {
-        public MyWeakSurface(Surface xx) {
+        MyWeakSurface(Surface xx) {
             super(xx);
         }
 

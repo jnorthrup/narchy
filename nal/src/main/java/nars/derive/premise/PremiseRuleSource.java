@@ -185,6 +185,7 @@ public class PremiseRuleSource extends ProxyTerm {
                     break;
 
                 case "eqNeg":
+                    //TODO special predicate: either (but not both) is Neg
                     neq(constraints, XX, YY);
                     constraints.add(new NotEqualConstraint.EqualNegConstraint(XX, YY));
                     break;
@@ -227,17 +228,23 @@ public class PremiseRuleSource extends ProxyTerm {
                     break;
 
                 case "conjParallel":
+                    is(X, CONJ);
                     match(X, ConjParallel.the);
                     break;
 
                 case "eventOf":
                 case "eventOfNeg": {
-                    match(X, new TermMatcher.Is(CONJ));
                     neq(constraints, XX, YY);
                     boolean yNeg = pred.contains("Neg");
                     constraints.add(new SubOfConstraint(XX, YY, Event, yNeg ? -1 : +1).negIf(negated));
 
-                    eventable(YY);
+                    if (!negated) {
+                        is(XX, CONJ);
+                        if (yNeg && (YY.equals(taskPattern) || YY.equals(beliefPattern))) {
+                            hasAny(XX, NEG); //taskPattern and beliefPattern themselves will always be unneg so it is safe to expect a negation
+                        }
+                        eventable(YY);
+                    }
 
                     if (negated) {
                         negationApplied = true;
@@ -265,7 +272,7 @@ public class PremiseRuleSource extends ProxyTerm {
 
                 case "eventOfPN":
                     neq(constraints, XX, YY);
-                    match(X, new TermMatcher.Is(CONJ));
+                    is(X, CONJ);
 
                     eventable(YY);
 
@@ -286,8 +293,8 @@ public class PremiseRuleSource extends ProxyTerm {
 
 
                     neq(constraints, XX, YY);
-                    match(X, new TermMatcher.Is(CONJ));
-                    match(Y, new TermMatcher.Is(CONJ));
+                    is(X, CONJ);
+                    is(Y, CONJ);
                     constraints.add(new CommonSubEventConstraint(XX, YY));
 
                     break;
@@ -314,13 +321,13 @@ public class PremiseRuleSource extends ProxyTerm {
                     } else {
                         struct = Op.the($.unquote(Y)).bit;
                     }
-                    match(X, new TermMatcher.Is(struct), !negated);
+                    is(X, struct, negated);
                     if (negated)
                         negationApplied = true;
                     break;
                 }
                 case "isVar": {
-                    match(X, new TermMatcher.Is(Op.Variable), !negated);
+                    is(X, Op.Variable, negated);
                     if (negated)
                         negationApplied = true;
                     break;
@@ -620,6 +627,18 @@ public class PremiseRuleSource extends ProxyTerm {
         this.PRE = preconditions();
 //        this.constraintSet = CONSTRAINTS.toSet();
 
+    }
+
+    private void is(Term x, Op o) {
+        is(x, o.bit);
+    }
+
+    private void is(Term x, int struct) {
+        is(x, struct, false);
+    }
+
+    private void is(Term x, int struct, boolean negated) {
+        match(x, new TermMatcher.Is(struct), !negated);
     }
 
     private void eventable(Variable YY) {

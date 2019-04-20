@@ -87,7 +87,7 @@ public class InterningTermBuilder extends HeapTermBuilder {
             Function<Intermed.InternedCompoundByComponents, Term> c;
             if (o == CONJ) {
                 c = newOpCache("conj",
-                        j -> super.conj(true, j.dt, j.subs()), cacheSizePerOp);
+                        x -> super.conj(true, x.dt, x.subs()), cacheSizePerOp);
             } else if (o.statement) {
                 c = statements;
             } else {

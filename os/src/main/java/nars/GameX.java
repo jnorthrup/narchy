@@ -245,9 +245,10 @@ abstract public class GameX extends Game {
                         //CaffeineMemory.soft()
 
                         new CaffeineMemory(
+                                //8 * 1024
                                 //16*1024
-                                   32*1024
-                                //64 * 1024
+                                   //32*1024
+                                64 * 1024
                         )
                         //, c -> (int) Math.ceil(c.term().voluplexity()))
 
@@ -384,8 +385,8 @@ abstract public class GameX extends Game {
         n.questionPriDefault.set(0.005f);
         n.questPriDefault.set(0.005f);
 
-        n.beliefConfDefault.set(0.75f);
-        n.goalConfDefault.set(0.75f);
+        n.beliefConfDefault.set(0.8f);
+        n.goalConfDefault.set(0.8f);
 
         //n.emotion.want(MetaGoal.PerceiveCmplx, -0.01f); //<- dont set negative unless sure there is some positive otherwise nothing happens
 

@@ -9,7 +9,7 @@ import spacegraph.space2d.widget.port.Wire;
 /** model for physics-based management of EditGraph2D spaces */
 public abstract class GraphEditPhysics {
 
-    protected EditGraph2D<?> graph = null;
+    protected EditGraph2D graph = null;
 
     transient public Surface below = new EmptySurface();
     transient public Surface above = new EmptySurface();
@@ -19,12 +19,12 @@ public abstract class GraphEditPhysics {
 
     abstract public void remove(Surface w);
 
-    public final void start(EditGraph2D<?> parent) {
+    public final void start(EditGraph2D parent) {
         starting(this.graph = parent);
     }
 
     /** may construct surfaceBelow and surfaceAbove in implementations */
-    abstract protected void starting(EditGraph2D<?> graph);
+    abstract protected void starting(EditGraph2D graph);
 
     abstract public void stop();
 
@@ -33,7 +33,7 @@ public abstract class GraphEditPhysics {
     /** queues procedures synchronously in the physics model's private sequential queue */
     public abstract void invokeLater(Runnable o);
 
-    public void update(EditGraph2D<?> g, float dt) {
+    public void update(EditGraph2D g, float dt) {
 
     }
 

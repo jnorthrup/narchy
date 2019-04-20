@@ -255,8 +255,8 @@ public class Port<X> extends Widget implements Wiring.Wireable {
         EditGraph2D graph = parentOrSelf(EditGraph2D.class);
         if (graph != null)
             this.node = graph.links.addNode(this);
-        else
-            this.node = EditGraph2D.staticLinks.addNode(this); //HACK
+//        else
+//            this.node = EditGraph2D.staticLinks.addNode(this); //HACK
 
         FloatObjectProcedure<Port<X>> u = this.updater;
         if (u != null)

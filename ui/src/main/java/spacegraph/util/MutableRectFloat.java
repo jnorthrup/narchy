@@ -33,14 +33,14 @@ public class MutableRectFloat<X> extends v2 {
         set(r);
     }
 
-    public final MutableRectFloat setXYXY(float x1, float y1, float x2, float y2) {
+    private final MutableRectFloat setXYXY(float x1, float y1, float x2, float y2) {
         this.x = (x1+x2)/2; this.y = (y1+y2)/2;
         return size(
             (x2-x1), (y2-y1)
         );
     }
 
-    public final MutableRectFloat setXYWH(float x, float y, float w, float h) {
+    private final MutableRectFloat setXYWH(float x, float y, float w, float h) {
         this.cxPrev = this.x = x;
         this.cyPrev = this.y = y;
         return size(w, h);
@@ -56,7 +56,7 @@ public class MutableRectFloat<X> extends v2 {
         setXYWH(r.x, r.y, r.w, r.h);
     }
 
-    public final boolean setIfChanged(MutableRectFloat r, float epsilon) {
+    final boolean setIfChanged(MutableRectFloat r, float epsilon) {
         if (equals(r, epsilon))
             return false;
         set(r);
@@ -147,7 +147,7 @@ public class MutableRectFloat<X> extends v2 {
         y = Util.clamp(y, bounds.bottom() + h / 2, bounds.top() - h / 2);
     }
 
-    public void randomize(RectFloat bounds) {
+    private void randomize(RectFloat bounds) {
         throw new TODO();
     }
 

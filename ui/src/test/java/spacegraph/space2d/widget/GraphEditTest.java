@@ -179,7 +179,7 @@ public class GraphEditTest {
 
     public static class StringSynthTest {
         public static void main(String[] args) {
-            EditGraph2D<Surface> g = new EditGraph2D<>();
+            EditGraph2D g = new EditGraph2D();
             SpaceGraph.window(g, 1000, 1000);
 
 
