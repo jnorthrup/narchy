@@ -60,28 +60,9 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
     /**
      * index by target
      */
-//    public final Multimap<Term, Event> byTerm = MultimapBuilder
-//            .hashKeys()
-//            .linkedHashSetValues()
-//            .build();
 
-    public final Map<Term, Collection<Event>> byTerm = new HashMap<>() {
-        @Override
-        public Collection<Event> get(Object key) {
-            Collection<Event> x = super.get(key);
-            return x == null ? List.of() : x;
-        }
-    };
-
-//    public final UnifiedSetMultimap<Term, Event> byTerm = new UnifiedSetMultimap<>();
-
-
-    public final MutableSet<Term> autoNeg = new UnifiedSet() {
-        @Override
-        public boolean add(Object key) {
-            return super.add(((Term) key).unneg());
-        }
-    };
+    final Map<Term, Collection<Event>> byTerm = new UnifiedMap<>();
+    protected final MutableSet<Term> autoNeg = new UnifiedSet();
 
     protected final ArrayHashSet<Event> solutions = new ArrayHashSet();
     private transient Term solving;
@@ -122,7 +103,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
      * creates an event for a hypothetical target which may not actually be an event;
      * but if it is there or becomes there, it will connect what it needs to
      */
-    protected Event shadow(Term v) {
+    private Event shadow(Term v) {
         //return event(v, TIMELESS, false);
         return new Relative(v);
     }
@@ -163,7 +144,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 
             if (add) {
 
-                Collection<Event> te = byTerm.get(t);
+                Collection<Event> te = events(t);
                 int nte = te.size();
                 if (nte > 0) {
 
@@ -242,6 +223,11 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
         }
     }
 
+    private Collection<Event> events(Term t) {
+        Collection<Event> ee = byTerm.get(t);
+        if (ee == null) return List.of(); else return ee;
+    }
+
 //    private int absoluteCount(Term t) {
 //        Collection<Event> tt = byTerm.get(t);
 //        return absoluteCount(tt);
@@ -312,22 +298,32 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
         Event event = x.id();
         Term eventTerm = event.id;
 
-        final boolean[] newTerm = {false}, newEvent = {false};
-        byTerm.compute(eventTerm, (k, v) -> {
-            if (v == null) {
-                newTerm[0] = newEvent[0] = true;
-                return new ArrayHashSet<Event>(2).with(event);
-            } else {
-                if (v.add(event)) {
-                    newEvent[0] = true;
-                }
-                return v;
-            }
-        });
-        if (!newEvent[0])
-            return;
-        if (newTerm[0])
+//        final boolean[] newTerm = {false}, newEvent = {false};
+//        byTerm.compute(eventTerm, (k, v) -> {
+//            if (!(v instanceof Set)) {
+//            //if (v == null) {
+//                newTerm[0] = newEvent[0] = true;
+//                //return new ArrayHashSet<Event>(2).with(event);
+//                return new UnifiedSet<Event>(2, 1f).with(event);
+//            } else {
+//                if (v.add(event)) {
+//                    newEvent[0] = true;
+//                }
+//                return v;
+//            }
+//        });
+        Collection<Event> ee = byTerm.computeIfAbsent(eventTerm, (e) ->
+                //!(p instanceof Set) ?
+                        new UnifiedSet<Event>(2, 1f)
+                  //      : p
+        );
+        boolean newTerm = ee.isEmpty();
+        boolean newEvent = ee.add(event);
+        if (newTerm)
             onNewTerm(eventTerm);
+        if (!newEvent)
+            return;
+
 
 
 //        Collection<Event> ee = byTerm.get(eventTerm);
@@ -590,14 +586,14 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 
         FasterList<Event> ab = null;
 
-        Collection<Event> aa = byTerm.get(a);
+        Collection<Event> aa = events(a);
         if (!aa.isEmpty())
             ab = new FasterList(aa);
         else if (aEqB)
             return true; //nothing
 
         if (!aEqB) {
-            Collection<Event> bb = byTerm.get(b);
+            Collection<Event> bb = events(b);
             if (!bb.isEmpty()) {
                 if (ab != null)
                     ab.addAll(bb);
@@ -987,7 +983,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
     }
 
 
-    protected final boolean solution(Event y) {
+    private final boolean solution(Event y) {
         if (!(y.start() == TIMELESS && solving.equals(y.id)) && validPotentialSolution(y.id)) {
             if (solutions.add(y)) {
                 return target.test(y);
@@ -1003,7 +999,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
         } else {
 
             //try exact absolute solutions
-            for (Event e : byTerm.get(f.id)) {
+            for (Event e : events(f.id)) {
                 if (e instanceof Absolute && ((!(f instanceof Absolute)) || !e.equals(f)) && !each.test(e))
                     return false;
             }
@@ -1313,7 +1309,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
             /** clone the list because modifying solutions while iterating will cause infinite loop */
             return new FasterList<>(solutions.list).allSatisfy((s) -> {
                 if (s instanceof Absolute && (s.start()!=ETERNAL) && !(s.equals(x)) && s.id.equals(t)) {
-                    for (Event e : byTerm.get(t)) {
+                    for (Event e : events(t)) {
                         {
                             //TODO shuffle found self-loops, there could be sevreal
                             Node<Event, TimeSpan> ne = node(e);
@@ -1538,7 +1534,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 
             Iterable<FromTo<Node<Event, TimeSpan>, TimeSpan>> exist = n.edges(true, true);
 
-            Collection<Event> ee = byTerm.get(n.id().id);
+            Collection<Event> ee = events(n.id().id);
             int ees = ee.size();
             if (ees <= 0)
                 return exist;

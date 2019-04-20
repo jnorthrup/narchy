@@ -164,13 +164,13 @@ public class Leaf<X> extends AbstractNode<X> {
         return null;
     }
 
-    Node<X> insert(X x, Spatialization<X> model) {
-        return insert(x, model.bounds(x), model);
-    }
-
     Node<X> insert(RInsertion<X> r) {
         r.setAdded();
         return insert(r.x, r.bounds, r.model);
+    }
+
+    Node<X> insert(X x, Spatialization<X> model) {
+        return insert(x, model.bounds(x), model);
     }
 
     Node<X> insert(X x, HyperRegion bounds, Spatialization<X> model) {

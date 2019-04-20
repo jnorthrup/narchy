@@ -25,7 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class NAL7Test extends NALTest {
 
     public static final float CONF_TOLERANCE_FOR_PROJECTIONS = 2f; //200%
-    private final static int cycles = 1550;
+    private final static int cycles = 850;
 
     @Override
     protected NAR nar() {
@@ -1002,13 +1002,13 @@ public class NAL7Test extends NALTest {
 
     }
 
-    @Test
+    @Disabled @Test
     void testIntersectionTemporalSimultaneous() {
 
         test
                 .inputAt(0, "(x --> a). :|:")
                 .inputAt(0, "(y --> a). :|:")
-                .mustBelieve(cycles * 4, "((x&y)-->a)", 1f, 0.81f, 0)
+                .mustBelieve(cycles, "((x&y)-->a)", 1f, 0.81f, 0)
         ;
     }
 

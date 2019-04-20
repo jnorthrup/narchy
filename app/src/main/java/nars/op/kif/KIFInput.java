@@ -16,6 +16,7 @@
  */
 package nars.op.kif;
 
+import com.google.common.collect.ForwardingSet;
 import jcog.TODO;
 import jcog.Util;
 import jcog.WTF;
@@ -592,12 +593,14 @@ public class KIFInput {
         a = tmp.sub(0);
         b = tmp.sub(1);
 
-        MutableSet<Term> aVars = new VarOnlySet();
+        MutableSet<Term> _aVars = new UnifiedSet();
+        Set<Term> aVars = new VarOnlySet(_aVars);
         if (a instanceof Compound)
             ((Compound) a).recurseSubtermsToSet(Op.Variable, aVars, true);
         else if (a.op().var)
             aVars.add(a);
-        MutableSet<Term> bVars = new VarOnlySet();
+        MutableSet<Term> _bVars = new UnifiedSet();
+        Set<Term> bVars = new VarOnlySet(_bVars);
         if (b instanceof Compound)
             ((Compound) b).recurseSubtermsToSet(Op.Variable, bVars, true);
         else if (b.op().var)
@@ -605,7 +608,7 @@ public class KIFInput {
 
         Map<Term, Term> remap = new HashMap();
 
-        MutableSet<Term> common = aVars.intersect(bVars);
+        MutableSet<Term> common = _aVars.intersect(_bVars);
         if (!common.isEmpty()) {
             common.forEach(t -> {
                 Variable u = $.v(
@@ -617,7 +620,7 @@ public class KIFInput {
                     remap.put(t, u);
             });
         }
-        for (MutableSet<Term> ab : new MutableSet[]{aVars, bVars}) {
+        for (MutableSet<Term> ab : new MutableSet[]{_aVars, _bVars}) {
             ab.forEach(aa -> {
                 if (aa.op() == VAR_INDEP && !common.contains(aa)) {
                     String str = aa.toString().substring(1);
@@ -664,15 +667,25 @@ public class KIFInput {
         Term range;
     }
 
-    /**
-     * HACK because recurseTermsToSet isnt designed to check only Op
-     */
-    private static class VarOnlySet extends UnifiedSet {
+
+    private static class VarOnlySet extends ForwardingSet<Term> {
+        private final MutableSet<Term> _aVars;
+
+        public VarOnlySet(MutableSet<Term> _aVars) {
+            this._aVars = _aVars;
+        }
+
+        /**
+         * HACK because recurseTermsToSet isnt designed to check only Op
+         */
         @Override
-        public boolean add(Object key) { 
-            if (!((Term) key).op().var)
-                return true;
-            return super.add(key);
+        public boolean add(Term key) {
+            return !key.op().var || super.add(key);
+        }
+
+        @Override
+        protected java.util.Set<Term> delegate() {
+            return _aVars;
         }
     }
 }

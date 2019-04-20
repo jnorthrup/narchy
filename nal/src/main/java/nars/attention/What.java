@@ -15,7 +15,6 @@ import nars.link.TaskLink;
 import nars.task.ITask;
 import nars.task.util.PriBuffer;
 import nars.term.Term;
-import nars.time.part.CycLoop;
 import nars.time.part.DurLoop;
 import nars.util.Timed;
 
@@ -100,24 +99,17 @@ abstract public class What extends NARPart implements Prioritizable, Sampler<Tas
         super(id);
         this.pri = new PriNode(this.id);
         this.in = in;
-        if (!in.async(out)) {
-            add(CycLoop.the(this::perceive));
-            //add(new DurLoop.DurNARConsumer(this::perceive));
-        }
 
-        //add(CycLoop.the(this::commit));
-        add(new DurLoop.DurNARConsumer(this::commit));
+        add(new DurLoop.DurNARConsumer(
+            !in.async(out) ? this::perceiveCommit : this::commit)
+                .durs(0));
     }
 
     @Override
     public final int concurrency() {
         return nar.exe.concurrency();
+        //return 1;
     }
-
-//    @Override
-//    public String toString() {
-//        return pri.toBudgetString() + " " + id;
-//    }
 
     @Override
     public float pri() {
@@ -135,6 +127,10 @@ abstract public class What extends NARPart implements Prioritizable, Sampler<Tas
         in.commit(out, n);
     }
 
+    private void perceiveCommit(NAR nar) {
+        perceive(nar);
+        commit(nar);
+    }
 
     /** called periodically, ex: per duration, for maintenance such as gradual forgetting and merging new input.
      *  only one thread will be in this method at a time guarded by an atomic guard */

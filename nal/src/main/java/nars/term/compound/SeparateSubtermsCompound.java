@@ -27,11 +27,11 @@ public abstract class SeparateSubtermsCompound implements Compound {
     protected SeparateSubtermsCompound(Op o, Subterms x) {
         this(x.hashWith(o.id));
     }
-    protected SeparateSubtermsCompound(byte op, Subterms x) {
+    SeparateSubtermsCompound(byte op, Subterms x) {
         this(x.hashWith(op));
     }
 
-    protected SeparateSubtermsCompound(int hash) {
+    SeparateSubtermsCompound(int hash) {
         this.hash = hash;
     }
 
@@ -41,7 +41,7 @@ public abstract class SeparateSubtermsCompound implements Compound {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public final boolean equals(Object obj) {
         return Compound.equals(this, obj,true);
     }
 

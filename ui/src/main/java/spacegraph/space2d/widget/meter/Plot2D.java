@@ -342,6 +342,8 @@ public class Plot2D extends Widget {
                 this.maxValue = maxValue[0];
                 vis.update();
             }
+//            } else
+//                throw new WTF();
 
         }
     }

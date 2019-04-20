@@ -542,9 +542,9 @@ public class Game extends NARPart implements NSense, NAct, Timed {
         return eventFrame.on((x) -> each.run());
     }
 
-    public Off onFrameWeak(Runnable each) {
-        return eventFrame.onWeak((x) -> each.run());
-    }
+//    public Off onFrameWeak(Runnable each) {
+//        return eventFrame.onWeak((x) -> each.run());
+//    }
 
 
     public FastCoWList<AgentAction> actions() {

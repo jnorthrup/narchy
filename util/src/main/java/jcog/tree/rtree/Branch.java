@@ -113,7 +113,7 @@ public class Branch<X> extends AbstractNode<X> {
     @Override
     public Node<X> add(RInsertion<X> x) {
 
-        Node<X>[] data = this.data;
+        final Node<X>[] data = this.data;
 
         boolean addOrMerge = x.isAddOrMerge(); //save now
 
@@ -150,23 +150,23 @@ public class Branch<X> extends AbstractNode<X> {
             }
         }
 
-        x.setAdd(addOrMerge);
+
         if (!addOrMerge)
             return this;
-
-        return insert(x, data);
+        else {
+            x.setAdd(true);
+            return insert(x);
+        }
     }
 
     @Nullable
-    private Node<X> insert(RInsertion<X> x, Node<X>[] data) {
-        //assert (!added[0]);
+    private Node<X> insert(RInsertion<X> x) {
+
         if (size < data.length) {
 
-
-            x.setAdd(true);
             Node<X> l = x.model.newLeaf().insert(x);
-            grow(addChild(l));
-            //assert (added[0]);
+            addChild(l);
+            grow(x.bounds);
 
             return this;
 
@@ -179,7 +179,6 @@ public class Branch<X> extends AbstractNode<X> {
             if (nextBest == null) {
                 if (!before.equals(data[bestLeaf].bounds()))
                     updateBounds();
-                //assert(!added[0]);
                 return null; /*merged*/
             } else {
 
@@ -192,7 +191,6 @@ public class Branch<X> extends AbstractNode<X> {
                     data[bestLeaf] = nextBest;
                 }
 
-                //assert(added[0]);
                 updateBounds();
                 return this;
             }
@@ -201,17 +199,14 @@ public class Branch<X> extends AbstractNode<X> {
         }
     }
 
-    private void grow(int i) {
-        grow(data[i].bounds());
-    }
-
     @Override
     public Node<X> remove(final X x, HyperRegion xBounds, Spatialization<X> model, boolean[] removed) {
 
         if (size > 1 && !bounds().contains(xBounds))
             return this; //not here
 
-        for (int i = 0; i < size; i++) {
+        int nsize = this.size;
+        for (int i = 0; i < nsize; i++) {
             Node<X> y = data[i];
             @Nullable Node<X> cAfter = y.remove(x, xBounds, model, removed);
 
