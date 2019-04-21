@@ -1,5 +1,6 @@
 package nars;
 
+import fucknutreport.config.NodeConfig;
 import jcog.Skill;
 import jcog.Util;
 import jcog.math.FloatRange;
@@ -40,48 +41,49 @@ public abstract class Param extends Parts<Term, NAR> {
             //Conceptualization.PreciseXternal;
             //Conceptualization.FlattenAndDeduplicateAndUnnegateConj //untested
             ;
-    public static final boolean SHUFFLE_TERMUTES = !configIs("DISABLE_SHUFFLE_TERMUTES");
-    public static final boolean DT_DITHER_LOGARITHMICALLY = !configIs("DISABLE_DT_DITHER_LOGARITHMICALLY");
+    public static final boolean SHUFFLE_TERMUTES= !configIs("DISABLE_SHUFFLE_TERMUTES");
+    public static final boolean DT_DITHER_LOGARITHMICALLY= !configIs("DISABLE_DT_DITHER_LOGARITHMICALLY");
     /**
      * return <= 0 to disable
      */
     @Deprecated
-    public static final float TASKLINK_GENERATED_QUESTION_PRI_RATE = Float.parseFloat(getK("TASKLINK_GENERATED_QUESTION_PRI_RATE" , "0"));
-    public static final boolean REVISION_ALLOW_OVERLAP_IF_DISJOINT_TIME = !configIs("DISABLE_REVISION_ALLOW_OVERLAP_IF_DISJOINT_TIME");
-    public static final boolean DYNAMIC_TRUTH_STAMP_OVERLAP_FILTER = configIs("DYNAMIC_TRUTH_STAMP_OVERLAP_FILTER");
+    public static final float TASKLINK_GENERATED_QUESTION_PRI_RATE =
+            0;
+    public static final boolean REVISION_ALLOW_OVERLAP_IF_DISJOINT_TIME= !configIs("DISABLE_REVISION_ALLOW_OVERLAP_IF_DISJOINT_TIME");
+    public static final boolean DYNAMIC_TRUTH_STAMP_OVERLAP_FILTER= configIs("DYNAMIC_TRUTH_STAMP_OVERLAP_FILTER");
     //0.75f;
-    public static final boolean VOLMAX_RESTRICTS_INPUT = configIs("VOLMAX_RESTRICTS_INPUT");
-    //input tasks
-    public static final boolean VOLMAX_RESTRICTS = !configIs("DISABLE_VOLMAX_RESTRICTS"); //all tasks
-    public static final boolean TERMIFY_TRANSFORM_LAZY = configIs("TERMIFY_TRANSFORM_LAZY");
-    public static final boolean OVERLAP_DOUBLE_SET_CYCLIC = configIs("OVERLAP_DOUBLE_SET_CYCLIC");
+    public static final boolean VOLMAX_RESTRICTS_INPUT= configIs("VOLMAX_RESTRICTS_INPUT"); //input tasks
+    public static final boolean VOLMAX_RESTRICTS= !configIs("DISABLE_VOLMAX_RESTRICTS"); //all tasks
+    public static final boolean TERMIFY_TRANSFORM_LAZY= NodeConfig.configIs("TERMIFY_TRANSFORM_LAZY");
+    public static final boolean OVERLAP_DOUBLE_SET_CYCLIC= configIs("OVERLAP_DOUBLE_SET_CYCLIC");
 
 
-//    public static final int TERM_BYTE_KEY_CACHED_BELOW_VOLUME = getK("TERM_BYTE_KEY_CACHED_BELOW_VOLUME" ,"" + 8 )   ;
-    //public static final int SUBTERM_BYTE_KEY_CACHED_BELOW_VOLUME = getK("SUBTERM_BYTE_KEY_CACHED_BELOW_VOLUME" ,"" + 10 )   ; //TODO
+//    public static final int TERM_BYTE_KEY_CACHED_BELOW_VOLUME = 8;
+    //public static final int SUBTERM_BYTE_KEY_CACHED_BELOW_VOLUME = 10; //TODO
     /**
      * TODO needs tested whether recursive Unification inherits TTL
      */
-    public static final int TASK_EVALUATION_TTL = Integer.parseInt(getK("TASK_EVALUATION_TTL" , "16"));
-    public static final int TASK_EVAL_FORK_LIMIT = Integer.parseInt(getK("TASK_EVAL_FORK_LIMIT" , "8"));
+    public static final int TASK_EVALUATION_TTL = 16;
+    public static final int TASK_EVAL_FORK_LIMIT = 8;
 
     //    /** can produce varieties of terms with dt below the dithered threshold time */
-//    public static final boolean ALLOW_UNDITHERED_DT_IF_DITHERED_FAILS = getK("DISABLE_ALLOW_UNDITHERED_DT_IF_DITHERED_FAILS","true")==false;;
-    public static final int TASK_EVAL_FORK_ATTEMPT_LIMIT = Integer.parseInt(getK("TASK_EVAL_FORK_ATTEMPT_LIMIT" ,"" + TASK_EVAL_FORK_LIMIT * 2 ));
+//    public static final boolean ALLOW_UNDITHERED_DT_IF_DITHERED_FAILS= !configIs("DISABLE_ALLOW_UNDITHERED_DT_IF_DITHERED_FAILS");
+    public static final int TASK_EVAL_FORK_ATTEMPT_LIMIT = Param.TASK_EVAL_FORK_LIMIT * 2;
     /**
      * >= 1  - maximum # of Answer attempts per Answer capacity.  so 2 means 2 tasks are tried for each Answer task slot in its capacity
      */
-    public static final float ANSWER_COMPLETENESS = Float.parseFloat(getK("ANSWER_COMPLETENESS" , "1.0"));
+    public static final float ANSWER_COMPLETENESS =
+            1f;
     //2f;
     //0.5f;
 
-    public static final boolean DEBUG_SIMILAR_DERIVATIONS = !configIs("DISABLE_DEBUG_SIMILAR_DERIVATIONS");
+    public static final boolean DEBUG_SIMILAR_DERIVATIONS= !configIs("DISABLE_DEBUG_SIMILAR_DERIVATIONS");
     /**
      * should be monotonically increasing at most
      */
     public static final PriMerge tasklinkMerge = PriMerge.or;
 
-//    public static final boolean ETERNALIZE_BELIEF_PROJECTED_FOR_GOAL_DERIVATION = getK("DISABLE_ETERNALIZE_BELIEF_PROJECTED_FOR_GOAL_DERIVATION","true")==false;;
+//    public static final boolean ETERNALIZE_BELIEF_PROJECTED_FOR_GOAL_DERIVATION= !configIs("DISABLE_ETERNALIZE_BELIEF_PROJECTED_FOR_GOAL_DERIVATION");
     /**
      * budget factor for combining 2 tasks in derivation
      * ex: double-premise derivations which depends on the task and belief budget
@@ -91,35 +93,35 @@ public abstract class Param extends Parts<Term, NAR> {
             (t, b) -> Util.unitize(t + b); //plus, max=1
 
 //    /** durs surrounding a derived temporal goal with one eternal (of two) parent tasks */
-//    public static final float GOAL_PROJECT_TO_PRESENT_RADIUS_DURS = (float) getK("GOAL_PROJECT_TO_PRESENT_RADIUS_DURS" ,"" + 1 )   ;
+//    public static final float GOAL_PROJECT_TO_PRESENT_RADIUS_DURS = 1;
     /**
      * Evidential Horizon, the amount of future evidence to be considered
      */
-    public static final float HORIZON = Float.parseFloat(getK("HORIZON" , "1.0"));
+    public static final float HORIZON = 1f;
 
 //    /** within how many durations a difference in dt is acceptable for target unification */
-//    public static final float UNIFY_DT_TOLERANCE_DUR_FACTOR = (float) getK("UNIFY_DT_TOLERANCE_DUR_FACTOR" ,"" + 1f )   ;
+//    public static final float UNIFY_DT_TOLERANCE_DUR_FACTOR = 1f;
 
-//    public static final boolean LINK_VARIABLE_UNIFIED_PREMISE = getK("DISABLE_LINK_VARIABLE_UNIFIED_PREMISE","true")==false;;
+//    public static final boolean LINK_VARIABLE_UNIFIED_PREMISE= !configIs("DISABLE_LINK_VARIABLE_UNIFIED_PREMISE");
     /**
      * Maximum length of the evidental base of the Stamp, a power of 2
      * TODO IntRange
      */
-    public static final int STAMP_CAPACITY = Integer.parseInt(getK("STAMP_CAPACITY" , "16"));
+    public static final int STAMP_CAPACITY = 16;
     /**
      * TODO make this NAR-specific
      */
-    public static final int CAUSE_MAX = Integer.parseInt(getK("CAUSE_MAX" , "32"));
-    public static final IntRange causeCapacity = new IntRange(32, 1, CAUSE_MAX);
+    public static final int CAUSE_MAX = 32;
+    public static final IntRange causeCapacity = new IntRange(32, 1, Param.CAUSE_MAX);
 
 
     //    /**
 //     * warning: can interfere with expected test results
 //     */
-//    public static final boolean ETERNALIZE_FORGOTTEN_TEMPORALS = configIs("NOT_ETERNALIZE_FORGOTTEN_TEMPORALS" ,"true")==false);
-    public static final int CURIOSITY_CAPACITY = Integer.parseInt(getK("CURIOSITY_CAPACITY" ,"" + STAMP_CAPACITY / 2 ));
+//    public static boolean ETERNALIZE_FORGOTTEN_TEMPORALS = false;
+    public static final int CURIOSITY_CAPACITY = Param.STAMP_CAPACITY / 2;
     public static final long CURIOSITY_TASK_RANGE_DURS = 3;
-    public static final boolean DEBUG_TASK_LOG = configIs("DEBUG_TASK_LOG");
+    public static final boolean DEBUG_TASK_LOG= configIs("DEBUG_TASK_LOG");
     //PriMerge.plus;
     //PriMerge.max;
     //Util::mean;
@@ -135,31 +137,31 @@ public abstract class Param extends Parts<Term, NAR> {
     //2f;
 
     //    /** 0..1.0: how much to reduce a signal which hasnt changed (in proportion to change significance) */
-//    public static final float SIGNAL_UNSURPRISING_FACTOR = (float) getK("SIGNAL_UNSURPRISING_FACTOR" ,"" + 0.1f )   ;
-    public static final boolean DYNAMIC_TRUTH_TASK_TIME_DITHERING = !configIs("DISABLE_DYNAMIC_TRUTH_TASK_TIME_DITHERING");
+//    public static final float SIGNAL_UNSURPRISING_FACTOR = 0.1f;
+    public static final boolean DYNAMIC_TRUTH_TASK_TIME_DITHERING= !configIs("DISABLE_DYNAMIC_TRUTH_TASK_TIME_DITHERING");
     /**
      * should be enough to account for an expected evidence integration error rate
      */
-    public static final float PROJECTION_EVIDENCE_INFLATION_PCT_TOLERANCE = Float.parseFloat(getK("PROJECTION_EVIDENCE_INFLATION_PCT_TOLERANCE" , "0.1"));
+    public static final float PROJECTION_EVIDENCE_INFLATION_PCT_TOLERANCE = 0.1f;
 
-    public static final int DYN_TASK_MATCH_MODE = Integer.parseInt(getK("DYN_TASK_MATCH_MODE" , "2"));
+    public static final int DYN_TASK_MATCH_MODE = 2;
 
     /**
      * if false, will use pri=ScalarValue.EPSILON
      */
-    public static final boolean DELETE_PROXY_TASK_TO_DELETED_TASK = !configIs("DISABLE_DELETE_PROXY_TASK_TO_DELETED_TASK");
+    public static final boolean DELETE_PROXY_TASK_TO_DELETED_TASK= !configIs("DISABLE_DELETE_PROXY_TASK_TO_DELETED_TASK");
 
-    public static final boolean FORK_JOIN_EXEC_ASYNC_MODE = !configIs("DISABLE_FORK_JOIN_EXEC_ASYNC_MODE" )  ;
+    public static final boolean FORK_JOIN_EXEC_ASYNC_MODE= !configIs("DISABLE_FORK_JOIN_EXEC_ASYNC_MODE");
 
     /**
      * might help with overall throughput by reducing lock and synchronization contention by grouping sequences of tasks by the destination concept
      */
-    public static final boolean PRE_SORT_TASK_INPUT_BATCH = !configIs("DISABLE_PRE_SORT_TASK_INPUT_BATCH");
-    public static final int WHATS_CAPACITY = Integer.parseInt(getK("WHATS_CAPACITY" , "128"));
-    public static final int HOWS_CAPACITY = Integer.parseInt(getK("HOWS_CAPACITY" , "128"));
+    public static final boolean PRE_SORT_TASK_INPUT_BATCH= !configIs("DISABLE_PRE_SORT_TASK_INPUT_BATCH");
+    public static final int WHATS_CAPACITY = 128;
+    public static final int HOWS_CAPACITY = 128;
     protected static final boolean DYNAMIC_CONCEPT_TRANSIENT = false;
-    public static final boolean ETERNALIZE_BELIEF_PROJECTED_IN_DERIVATION = !configIs("NOT_ETERNALIZE_BELIEF_PROJECTED_IN_DERIVATION" );
-    public static final boolean STRONG_COMPOSITION =  !configIs("NOT_STRONG_COMPOSITION" );
+    public static boolean ETERNALIZE_BELIEF_PROJECTED_IN_DERIVATION;
+    public static boolean STRONG_COMPOSITION;
     /**
      * use this for advanced error checking, at the expense of lower performance.
      * it is enabled for unit tests automatically regardless of the value here.
@@ -167,14 +169,21 @@ public abstract class Param extends Parts<Term, NAR> {
     public static boolean DEBUG;
 
     static {
-        Op.terms =
+        terms =
                 //HeapTermBuilder.the;
 
                 //new InterningTermBuilder();
 
                 new MemoizingTermBuilder();
 
-
+//                new VerifyingTermBuilder(
+//                    new MemoizingTermBuilder(),
+//                    new VerifyingTermBuilder(
+//                            new MemoizingTermBuilder() //new InterningTermBuilder()
+//                            ,
+//                            HeapTermBuilder.the
+//                    )
+//                );
     }
 
     /**
@@ -182,10 +191,14 @@ public abstract class Param extends Parts<Term, NAR> {
      * ratio of the dt difference compared to the smaller dt of the two being merged
      * probably values less than 0.5 are safe
      */
-    public final FloatRange intermpolationRangeLimit = new FloatRange(/*0.5f*/ 1f, 0, 1);
-    @Deprecated public final FloatRange questionForgetRate = new FloatRange(0.5f, 0, 1);
+    public final FloatRange intermpolationRangeLimit = new FloatRange(
+            //0.5f
+            1f
+            , 0, 1);
+    @Deprecated
+    public final FloatRange questionForgetRate = new FloatRange(0.5f, 0, 1);
     public final IntRange premiseUnifyTTL = new IntRange(16, 1, 32);
-    public final IntRange deriveBranchTTL = new IntRange(8 * derive.TTL_MIN, derive.TTL_MIN, 64 * derive.TTL_MIN);
+    public final IntRange deriveBranchTTL = new IntRange(8 * Param.derive.TTL_MIN, Param.derive.TTL_MIN, 64 * Param.derive.TTL_MIN);
     /**
      * how many cycles above which to dither dt and occurrence time
      * TODO move this to Time class and cache the cycle value rather than dynamically computing it
@@ -204,17 +217,17 @@ public abstract class Param extends Parts<Term, NAR> {
     /**
      * global truth frequency resolution by which reasoning is dithered
      */
-    public final FloatRange freqResolution = new FloatRangeRounded(truth.TRUTH_EPSILON, truth.TRUTH_EPSILON, 1f, truth.TRUTH_EPSILON);
+    public final FloatRange freqResolution = new FloatRangeRounded(Param.truth.TRUTH_EPSILON, Param.truth.TRUTH_EPSILON, 1f, Param.truth.TRUTH_EPSILON);
     /**
      * global truth confidence resolution by which reasoning is dithered
      */
-    public final FloatRange confResolution = new FloatRangeRounded(truth.TRUTH_EPSILON, truth.TRUTH_EPSILON, 1f, truth.TRUTH_EPSILON) {
+    public final FloatRange confResolution = new FloatRangeRounded(Param.truth.TRUTH_EPSILON, Param.truth.TRUTH_EPSILON, 1f, Param.truth.TRUTH_EPSILON) {
         @Override
         public void set(float value) {
             super.set(value);
-            value = get();
-            if (confMin.floatValue() < value)
-                confMin.set(value);
+            value = this.get();
+            if (Param.this.confMin.floatValue() < value)
+                Param.this.confMin.set(value);
         }
     };
     /**
@@ -226,38 +239,37 @@ public abstract class Param extends Parts<Term, NAR> {
      * Default priority of input question
      */
     public final FloatRange questPriDefault = new FloatRange(0.5f, ScalarValue.EPSILON, 1f);
-    public final FloatRange beliefConfDefault = new FloatRange(0.9f, truth.TRUTH_EPSILON, 1f - truth.TRUTH_EPSILON);
-    public final FloatRange goalConfDefault = new FloatRange(0.9f, truth.TRUTH_EPSILON, 1f - truth.TRUTH_EPSILON);
+    public final FloatRange beliefConfDefault = new FloatRange(0.9f, Param.truth.TRUTH_EPSILON, 1f - Param.truth.TRUTH_EPSILON);
+    public final FloatRange goalConfDefault = new FloatRange(0.9f, Param.truth.TRUTH_EPSILON, 1f - Param.truth.TRUTH_EPSILON);
     public final PriNode beliefPriDefault = new PriNode.ConstPriNode("beliefPriDefault", 0.5f);
     public final PriNode goalPriDefault = new PriNode.ConstPriNode("goalPriDefault", 0.5f);
-
-    protected Param(Exec exe) {
+    protected Param(final Exec exe) {
         super(exe);
     }
 
     /**
      * priority of sensor task, with respect to how significantly it changed from a previous value
      */
-    public static float signalSurprise(Task prev, Task next, FloatSupplier pri, NAR n) {
+    public static float signalSurprise(final Task prev, final Task next, final FloatSupplier pri, final NAR n) {
 
         float p = pri.asFloat();
         if (p != p)
             return NaN;
 
-        boolean NEW = prev == null;
+        final boolean NEW = prev == null;
 
-        boolean stretched = !NEW && prev == next;
+        final boolean stretched = !NEW && prev == next;
 
-        boolean latched = !NEW && !stretched &&
-                Math.abs(next.start() - prev.end()) < belief.signal.SIGNAL_LATCH_LIMIT_DURS * n.dur();
+        final boolean latched = !NEW && !stretched &&
+                Math.abs(next.start() - prev.end()) < Param.belief.signal.SIGNAL_LATCH_LIMIT_DURS * n.dur();
 
         //decrease priority by similarity to previous truth
         if (prev != null && (stretched || latched)) {
 
             //TODO abstract this frequence response curve
-            float deltaFreq = prev != next ? Math.abs(prev.freq() - next.freq()) : 0; //TODO use a moving average or other anomaly/surprise detection
+            final float deltaFreq = prev != next ? Math.abs(prev.freq() - next.freq()) : 0; //TODO use a moving average or other anomaly/surprise detection
             if (deltaFreq > Float.MIN_NORMAL) {
-                float perceived = 0.01f + 0.99f * (float) Math.pow(deltaFreq, 0.5f /* etc*/);
+                final float perceived = 0.01f + 0.99f * (float) Math.pow(deltaFreq, 1 / 2f /* etc*/);
                 p *= perceived;
             }
             //p *= Util.lerp(deltaFreq, perceived, 1);
@@ -300,15 +312,15 @@ public abstract class Param extends Parts<Term, NAR> {
      *            <p>
      *            TODO integrate with EvidenceEvaluator
      */
-    public static double evi(double evi, long dt, int dur) {
+    public static double evi(final double evi, final long dt, final int dur) {
 
         //assert(dur > 0);
-        assert dur > 0 && dt > 0;
+        assert (dur > 0 && dt > 0);
 
-        double e;
+        final double e;
 
         //inverse linear decay
-        double falloffDurs =
+        final double falloffDurs =
                 //0.5f;
                 //1;
                 //1.618f; //phi
@@ -318,10 +330,10 @@ public abstract class Param extends Parts<Term, NAR> {
         //8;
         //64;
 
-        double decayTime = falloffDurs * dur;
+        final double decayTime = falloffDurs * dur;
 
         //quadratic decay: integral finite from to infinity, see: https://en.wikipedia.org/wiki/List_of_definite_integrals
-        e = evi / (1.0 + Util.sqr(dt / decayTime));
+        e = (evi / (1.0 + Util.sqr(dt / decayTime)));
         //e = (float)(evi / (1.0 + Util.sqr(((double)dt) / dur ) / falloffDurs));
 
         //exponential decay: see https://en.wikipedia.org/wiki/Exponential_integral
@@ -369,7 +381,7 @@ public abstract class Param extends Parts<Term, NAR> {
     /**
      * provides an instance of the default truthpolation implementation
      */
-    public TruthProjection projection(long start, long end, int dur) {
+    public TruthProjection projection(final long start, final long end, final int dur) {
         return new LinearTruthProjection(start, end, dur);
         //return new FocusingLinearTruthPolation(start, end, dur);
     }
@@ -378,7 +390,7 @@ public abstract class Param extends Parts<Term, NAR> {
      * number of time units (cycles) to dither into
      */
     public int dtDither() {
-        return dtDither.intValue();
+        return this.dtDither.intValue();
     }
 
     /**
@@ -388,33 +400,33 @@ public abstract class Param extends Parts<Term, NAR> {
 
     abstract long time();
 
-    public final float confDefault(byte punctuation) {
+    public final float confDefault(final byte punctuation) {
 
         switch (punctuation) {
             case BELIEF:
-                return beliefConfDefault.floatValue();
+                return this.beliefConfDefault.floatValue();
 
             case GOAL:
-                return goalConfDefault.floatValue();
+                return this.goalConfDefault.floatValue();
 
             default:
                 throw new RuntimeException("Invalid punctuation " + punctuation + " for a TruthValue");
         }
     }
 
-    public float priDefault(byte punctuation) {
+    public float priDefault(final byte punctuation) {
         switch (punctuation) {
             case BELIEF:
-                return beliefPriDefault.asFloat();
+                return this.beliefPriDefault.asFloat();
 
             case GOAL:
-                return goalPriDefault.asFloat();
+                return this.goalPriDefault.asFloat();
 
             case QUEST:
-                return questPriDefault.floatValue();
+                return this.questPriDefault.floatValue();
 
             case QUESTION:
-                return questionPriDefault.floatValue();
+                return this.questionPriDefault.floatValue();
 
 
             case COMMAND:
@@ -429,10 +441,14 @@ public abstract class Param extends Parts<Term, NAR> {
         /**
          * internal granularity which truth components are rounded to
          */
-        public static final float TRUTH_EPSILON = Float.parseFloat(getK("TRUTH_EPSILON" , "0.01"));
-        public static final float TRUTH_CONF_MAX = Float.parseFloat(getK("TRUTH_CONF_MAX" ,"" + (1f - TRUTH_EPSILON )));
-        public static final float TRUTH_EVI_MAX = Float.parseFloat(getK("TRUTH_EVI_MAX" ,"" + c2wSafe(TRUTH_CONF_MAX) ));
-        public static final double TRUTH_EVI_MIN = Double.parseDouble(getK("TRUTH_EVI_MIN" , "2.2250738585072014E-308"));
+        public static final float TRUTH_EPSILON = 0.01f;
+        public static final float TRUTH_CONF_MAX = 1f - Param.truth.TRUTH_EPSILON;
+        public static final float TRUTH_EVI_MAX = c2wSafe(Param.truth.TRUTH_CONF_MAX);
+        public static final double TRUTH_EVI_MIN =
+                //c2wSafe(TRUTH_EPSILON);
+                //ScalarValue.EPSILON;
+                //Float.MIN_NORMAL;
+                Double.MIN_NORMAL;
     }
 
     /**
@@ -450,14 +466,14 @@ public abstract class Param extends Parts<Term, NAR> {
 
     public enum premise {
         ;
-        public static final boolean PREMISE_FOCUS_TIME_DITHER = configIs("PREMISE_FOCUS_TIME_DITHER");
+        public static final boolean PREMISE_FOCUS_TIME_DITHER= configIs("PREMISE_FOCUS_TIME_DITHER");
 
         /**
          * disable common variables for the query variables matched in premise formation; since the task target is not transformed like the belief target is.
          */
-        public static final boolean PREMISE_UNIFY_COMMON_VARIABLES = !configIs("DISABLE_PREMISE_UNIFY_COMMON_VARIABLES");
+        public static final boolean PREMISE_UNIFY_COMMON_VARIABLES= !configIs("DISABLE_PREMISE_UNIFY_COMMON_VARIABLES");
 
-        public static final boolean PREMISE_KEY_DITHER = configIs("PREMISE_KEY_DITHER");
+        public static final boolean PREMISE_KEY_DITHER= configIs("PREMISE_KEY_DITHER");
     }
 
 
@@ -470,13 +486,13 @@ public abstract class Param extends Parts<Term, NAR> {
          * eventually raise to above-confMin).  generally, false should be more accurate with a tradeoff
          * for overhead due to increased belief table churn.
          */
-        public static final boolean REVISION_MIN_EVI_FILTER = !configIs("DISABLE_REVISION_MIN_EVI_FILTER");
-        public static final boolean DYNAMIC_TRUTH_TASK_STORE = configIs("DYNAMIC_TRUTH_TASK_STORE");
+        public static final boolean REVISION_MIN_EVI_FILTER= !configIs("DISABLE_REVISION_MIN_EVI_FILTER");
+        public static final boolean DYNAMIC_TRUTH_TASK_STORE= configIs("DYNAMIC_TRUTH_TASK_STORE");
         /**
          * perceptible priority increase that warrants automatic reactivation.
          * used during Remember's merge repeat suppression filter
          */
-        public static final float REMEMBER_REPEAT_PRI_THRESHOLD = Float.parseFloat(getK("REMEMBER_REPEAT_PRI_THRESHOLD" ,"" + ScalarValue.EPSILONcoarse ));
+        public static final float REMEMBER_REPEAT_PRI_THRESHOLD = ScalarValue.EPSILONcoarse;
         /**
          * memory reconsolidation period - time period for a memory to be refreshed as new
          * useful as a novelty threshold:
@@ -487,7 +503,7 @@ public abstract class Param extends Parts<Term, NAR> {
          * maximum span of a Task, in cycles.
          * beyond a certain length, evidence integration precision suffers accuracy diminishes and may become infinite
          */
-        public static long TASK_RANGE_LIMIT = 2305843009213693952L /* estimate */;
+        public static long TASK_RANGE_LIMIT = (1L << 61) /* estimate */;
 
 
         /**
@@ -496,22 +512,20 @@ public abstract class Param extends Parts<Term, NAR> {
         public enum signal {
             ;
 
-            public static final boolean SIGNAL_TABLE_FILTER_NON_SIGNAL_TEMPORAL_TASKS = configIs("SIGNAL_TABLE_FILTER_NON_SIGNAL_TEMPORAL_TASKS");
-            public static final int SIGNAL_BELIEF_TABLE_SERIES_SIZE = Integer.parseInt(getK("SIGNAL_BELIEF_TABLE_SERIES_SIZE" , "512"));
+            public static final boolean SIGNAL_TABLE_FILTER_NON_SIGNAL_TEMPORAL_TASKS= configIs("SIGNAL_TABLE_FILTER_NON_SIGNAL_TEMPORAL_TASKS");
+            public static final int SIGNAL_BELIEF_TABLE_SERIES_SIZE = 512;
             /**
              * maximum time (in durations) that a signal task can stretch the same value
              * until a new task (with new evidence) is created (seamlessly continuing it afterward)
              * <p>
              * TODO make this a per-sensor implementation cdecision
              */
-            public static final float SIGNAL_STRETCH_LIMIT_DURS = Float.parseFloat(getK("SIGNAL_STRETCH_LIMIT_DURS" , "8"));
+            public static final float SIGNAL_STRETCH_LIMIT_DURS = 8;
             /**
              * maximum time between signal updates to stretch an equivalently-truthed data point across.
              * stretches perception across some amount of lag
              */
-            public static final float SIGNAL_LATCH_LIMIT_DURS =
-                    //0.5f;
-                    1f;
+            public static final float SIGNAL_LATCH_LIMIT_DURS =/*0.5f;*/ 1f;
         }
     }
 
@@ -522,7 +536,7 @@ public abstract class Param extends Parts<Term, NAR> {
         /**
          * whether INT atoms can name a concept directly
          */
-        public static final boolean INT_CONCEPTUALIZABLE = !configIs("DISABLE_INT_CONCEPTUALIZABLE");
+        public static final boolean INT_CONCEPTUALIZABLE= !configIs("DISABLE_INT_CONCEPTUALIZABLE");
         /**
          * applies certain reductions to INH and SIM terms when one or both of their immediate subterms
          * are negated.  in assuming a "closed-boolean-world" in which there is one and only one
@@ -540,22 +554,22 @@ public abstract class Param extends Parts<Term, NAR> {
          * (--x <-> --y)  |-    (x <-> y)
          */
         @Skill({"List_of_dualities", "Nondualism", "Möbius_strip"})
-        public static final boolean INH_CLOSED_BOOLEAN_DUALITY_MOBIUS_PARADIGM = configIs("INH_CLOSED_BOOLEAN_DUALITY_MOBIUS_PARADIGM");
+        public static final boolean INH_CLOSED_BOOLEAN_DUALITY_MOBIUS_PARADIGM= configIs("INH_CLOSED_BOOLEAN_DUALITY_MOBIUS_PARADIGM");
 
         /**
          * absolute limit for constructing terms in any context in which a NAR is not known, which could provide a limit.
          * typically a NAR instance's 'compoundVolumeMax' parameter will be lower than this
          */
-        public static final int COMPOUND_VOLUME_MAX = Integer.parseInt(getK("COMPOUND_VOLUME_MAX" , "32767"));
+        public static final int COMPOUND_VOLUME_MAX = Short.MAX_VALUE;
         /**
          * limited because some subterm paths are stored as byte[]. to be safe, use 7-bits
          */
-        public static final int SUBTERMS_MAX = Integer.parseInt(getK("SUBTERMS_MAX" , "127"));
-        public static final int MAX_INTERNED_VARS = Integer.parseInt(getK("MAX_INTERNED_VARS" , "32"));
+        public static final int SUBTERMS_MAX = Byte.MAX_VALUE;
+        public static final int MAX_INTERNED_VARS = 32;
         /**
          * how many INT terms are canonically interned/cached. [0..n)
          */
-        public static final int MAX_INTERNED_INTS = Integer.parseInt(getK("MAX_INTERNED_INTS" , "64"));
+        public static final int MAX_INTERNED_INTS = 64;
     }
 
     public enum test {
@@ -565,16 +579,16 @@ public abstract class Param extends Parts<Term, NAR> {
          * for NALTest's: extends the time all unit tests are allowed to run for.
          * normally be kept to 1 but for debugging this may be increased to find what tests need more time
          */
-        public static final float TIME_MULTIPLIER = Float.parseFloat(getK("TIME_MULTIPLIER" , "3.0"));
+        public static final float TIME_MULTIPLIER = 3f;
         /**
          * how precise unit test results must match expected values to pass
          */
-        public static final float TRUTH_ERROR_TOLERANCE = Float.parseFloat(getK("TRUTH_ERROR_TOLERANCE" ,"" + truth.TRUTH_EPSILON * 2 ));
-        public static final boolean DEBUG_EXTRA = !configIs("NOT_DEBUG_EXTRA" );
-        //public static final int TTL_MUTATE_COMPONENT = getK("TTL_MUTATE_COMPONENT" ,"" + 0 )   ;
-        public static final boolean DEBUG_ENSURE_DITHERED_TRUTH = !configIs("NOT_DEBUG_ENSURE_DITHERED_TRUTH" ) ;
-        public static final boolean DEBUG_ENSURE_DITHERED_OCCURRENCE = !configIs("NOT_DEBUG_ENSURE_DITHERED_OCCURRENCE" ) ;
-        public static final boolean DEBUG_ENSURE_DITHERED_DT = !configIs("NOT_DEBUG_ENSURE_DITHERED_DT" );
+        public static final float TRUTH_ERROR_TOLERANCE = Param.truth.TRUTH_EPSILON * 2;
+        public static boolean DEBUG_EXTRA;
+        //public static final int TTL_MUTATE_COMPONENT = 0;
+        public static boolean DEBUG_ENSURE_DITHERED_TRUTH;
+        public static boolean DEBUG_ENSURE_DITHERED_OCCURRENCE;
+        public static boolean DEBUG_ENSURE_DITHERED_DT;
     }
 
     public enum derive {
@@ -583,85 +597,85 @@ public abstract class Param extends Parts<Term, NAR> {
         /**
          * may cause unwanted "sticky" event conflation. may only be safe when the punctuation of the task in which the event contained is the same
          */
-        public static final boolean TIMEGRAPH_ABSORB_CONTAINED_EVENT = !configIs("DISABLE_TIMEGRAPH_ABSORB_CONTAINED_EVENT" )  ;
+        public static final boolean TIMEGRAPH_ABSORB_CONTAINED_EVENT= !configIs("DISABLE_TIMEGRAPH_ABSORB_CONTAINED_EVENT");
         /**
          * if false, keeps intersecting timegraph events separate.
          * if true, it merges them to one event. may cause unwanted "sticky" event conflation
          * may only be safe when the punctuation of the task in which the event contained is the same
          */
-        public static final boolean TIMEGRAPH_MERGE_INTERSECTING_EVENTS = !configIs("DISABLE_TIMEGRAPH_MERGE_INTERSECTING_EVENTS" )  ;
+        public static final boolean TIMEGRAPH_MERGE_INTERSECTING_EVENTS= !configIs("DISABLE_TIMEGRAPH_MERGE_INTERSECTING_EVENTS");
         /**
          * whether timegraph should not return solutions with volume significantly less than the input's.
          * set 0 to disable the filter
          */
-        public static final float TIMEGRAPH_IGNORE_DEGENERATE_SOLUTIONS_FACTOR = Float.parseFloat(getK("TIMEGRAPH_IGNORE_DEGENERATE_SOLUTIONS_FACTOR" , "0.0"));
+        public static final float TIMEGRAPH_IGNORE_DEGENERATE_SOLUTIONS_FACTOR = 0f;
         /**
          * whether to dither events as they are represented internally.  output events are dithered for the NAR regardless.
          */
-        public static final boolean TIMEGRAPH_DITHER_EVENTS_INTERNALLY = !configIs("DISABLE_TIMEGRAPH_DITHER_EVENTS_INTERNALLY" )  ;
+        public static final boolean TIMEGRAPH_DITHER_EVENTS_INTERNALLY= !configIs("DISABLE_TIMEGRAPH_DITHER_EVENTS_INTERNALLY");
         /**
          * TTL = 'time to live'
          */
-        public static final int TermutatorSearchTTL = Integer.parseInt(getK("TermutatorSearchTTL" , "4"));
-        public static final int TermUnifyForkMax = Integer.parseInt(getK("TermUnifyForkMax" , "2"));
+        public static final int TermutatorSearchTTL = 4;
+        public static final int TermUnifyForkMax = 2;
 
 
-        public static final int TTL_UNISUBST_MAX = Integer.parseInt(getK("TTL_UNISUBST_MAX" , "5"));
-        public static final int TTL_CONJ_BEFORE_AFTER = Integer.parseInt(getK("TTL_CONJ_BEFORE_AFTER" ,"" + TTL_UNISUBST_MAX ));
+        public static final int TTL_UNISUBST_MAX = 5;
+        public static final int TTL_CONJ_BEFORE_AFTER = Param.derive.TTL_UNISUBST_MAX;
 
 
         @Range(min = 1, max = 32)
-        public static final int TIMEGRAPH_ITERATIONS = Integer.parseInt(getK("TIMEGRAPH_ITERATIONS" , "2"));
+        public static final int TIMEGRAPH_ITERATIONS = 2;
 
         @Range(min = 0, max = 64)
-        public static final int TTL_COST_BRANCH = Integer.parseInt(getK("TTL_COST_BRANCH" , "1"));
+        public static final int TTL_COST_BRANCH = 1;
         /**
          * cost of executing a termute permutation
          */
         @Range(min = 0, max = 64)
-        public static final int TTL_COST_MUTATE = Integer.parseInt(getK("TTL_COST_MUTATE" , "1"));
+        public static final int TTL_COST_MUTATE = 1;
         /**
          * cost of a successful task derivation
          */
         @Range(min = 0, max = 64)
-        public static final int TTL_COST_DERIVE_TASK_SUCCESS = Integer.parseInt(getK("TTL_COST_DERIVE_TASK_SUCCESS" , "5"));
+        public static final int TTL_COST_DERIVE_TASK_SUCCESS = 5;
         /**
          * estimate
          */
         @Deprecated
         public static final int TTL_MIN =
-                2 +
-                        TTL_COST_BRANCH * 1 + TTL_COST_DERIVE_TASK_SUCCESS;
+                (2) +
+                        (Param.derive.TTL_COST_BRANCH * 1) + Param.derive.TTL_COST_DERIVE_TASK_SUCCESS;
         /**
          * cost of a repeat (of another within the premise's batch) task derivation
          */
         @Range(min = 0, max = 64)
-        public static final int TTL_COST_DERIVE_TASK_REPEAT = Integer.parseInt(getK("TTL_COST_DERIVE_TASK_REPEAT" , "3"));
+        public static final int TTL_COST_DERIVE_TASK_REPEAT = 3;
         /**
          * cost of a task derived, but too similar to one of its parents
          */
         @Range(min = 0, max = 64)
-        public static final int TTL_COST_DERIVE_TASK_SAME = Integer.parseInt(getK("TTL_COST_DERIVE_TASK_SAME" , "2"));
+        public static final int TTL_COST_DERIVE_TASK_SAME = 2;
         /**
          * cost of a failed/aborted task derivation
          */
         @Range(min = 0, max = 64)
-        public static final int TTL_COST_DERIVE_TASK_FAIL = Integer.parseInt(getK("TTL_COST_DERIVE_TASK_FAIL" , "1"));
+        public static final int TTL_COST_DERIVE_TASK_FAIL = 1;
         @Range(min = 0, max = 64)
-        public static final int TTL_COST_DERIVE_TASK_UNPRIORITIZABLE = Integer.parseInt(getK("TTL_COST_DERIVE_TASK_UNPRIORITIZABLE" ,"" + TTL_COST_DERIVE_TASK_FAIL ));
-        public static final boolean DERIVE_FILTER_SIMILAR_TO_PARENTS = configIs("DERIVE_FILTER_SIMILAR_TO_PARENTS");
+        public static final int TTL_COST_DERIVE_TASK_UNPRIORITIZABLE = Param.derive.TTL_COST_DERIVE_TASK_FAIL;
+        public static final boolean DERIVE_FILTER_SIMILAR_TO_PARENTS= configIs("DERIVE_FILTER_SIMILAR_TO_PARENTS");
 
         /**
          * attempt to create a question/quest task from an invalid belief/goal (probably due to missing or unsolved temporal information
          */
-        public static final boolean DERIVATION_FORM_QUESTION_FROM_AMBIGUOUS_BELIEF_OR_GOAL = !configIs("DISABLE_DERIVATION_FORM_QUESTION_FROM_AMBIGUOUS_BELIEF_OR_GOAL");
+        public static final boolean DERIVATION_FORM_QUESTION_FROM_AMBIGUOUS_BELIEF_OR_GOAL= !configIs("DISABLE_DERIVATION_FORM_QUESTION_FROM_AMBIGUOUS_BELIEF_OR_GOAL");
 
 
-        public static final int TERMIFY_VOLMAX_SCRATCH_BASE = Integer.parseInt(getK("TERMIFY_VOLMAX_SCRATCH_BASE" , "2"));
+        public static final int TERMIFY_VOLMAX_SCRATCH_BASE = 2;
         /**
          * should be as close to 1 as possible
          */
-        public static final float TERMIFY_TERM_VOLMAX_SCRATCH_FACTOR = Float.parseFloat(getK("TERMIFY_TERM_VOLMAX_SCRATCH_FACTOR" , "2.0"));
+        public static final float TERMIFY_TERM_VOLMAX_SCRATCH_FACTOR = 2f;
     }
 
     public enum unify {
@@ -670,8 +684,9 @@ public abstract class Param extends Parts<Term, NAR> {
         /**
          * max variable unification recursion depth as a naive cyclic filter
          */
-        public static final int UNIFY_VAR_RECURSION_DEPTH_LIMIT = Integer.parseInt(getK("UNIFY_VAR_RECURSION_DEPTH_LIMIT" , "4"));
-        public static final int UNIFY_COMMON_VAR_MAX = Integer.parseInt(getK("UNIFY_COMMON_VAR_MAX" , "6"));
-        public static final int UNIFICATION_STACK_CAPACITY = Integer.parseInt(getK("UNIFICATION_STACK_CAPACITY" , "64"));
+        public static final int UNIFY_VAR_RECURSION_DEPTH_LIMIT = 4;
+        public static final int UNIFY_COMMON_VAR_MAX = 6;
+        public static final int UNIFICATION_STACK_CAPACITY = 64;
     }
+
 }
