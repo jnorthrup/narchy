@@ -14,14 +14,16 @@
     <url>http://github.com/automenta/narchy</url>
 
     <prerequisites>
-        <maven>3.6</maven>
+        <maven>3.8.0</maven>
     </prerequisites>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <kotlin.version>1.3.30</kotlin.version>
     </properties>
 
     <modules>
+        <module>eclipserepodeps</module>
         <module>util</module>
         <module>ui</module>
         <module>logic</module>
@@ -33,6 +35,20 @@
         <module>test</module>
     </modules>
 
+    <dependencies>
+        <dependency>
+            <groupId>org.jetbrains.kotlin</groupId>
+            <artifactId>kotlin-stdlib-jdk8</artifactId>
+            <version>${kotlin.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jetbrains.kotlin</groupId>
+            <artifactId>kotlin-test</artifactId>
+            <version>${kotlin.version}</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
     <repositories>
         <repository>
             <id>jcenter</id>
@@ -43,7 +59,6 @@
             <url>http://repo.jenkins-ci.org/releases</url>
         </repository>
     </repositories>
-
     <build>
         <plugins>
             <plugin>
@@ -58,20 +73,30 @@
                 </configuration>
             </plugin>
 
+
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.8.0</version>
-                <configuration>
-                    <release>12</release>
-                    <target>12</target>
-                    <useIncrementalCompilation>true</useIncrementalCompilation>
-                </configuration>
+                <!--  not agonizing, not mysterious, supports an easy windows port.
+                #!/usr/bin/env bash
+                JDIR=$(dirname $0)/../
+                java -classpath "$JDIR./target/*:$JDIR./target/lib/*"  ${EXECMAIN:=com.stackoverflow.nullpointer.expression.SwitchExpressions} $@
+                -->
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>install</phase>
+                        <goals>
+                            <goal>copy-dependencies</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}/lib</outputDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
 
-
             <!-- This is just to make sure the class is set as main class to execute from the jar-->
-            <plugin>
+<!--
+            <plugin> agonizing and error prone
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
                 <version>3.2.1</version>
@@ -82,7 +107,7 @@
                             <goal>shade</goal>
                         </goals>
                         <configuration>
-                            <!--                            <minimizeJar>true</minimizeJar>-->
+                            &lt;!&ndash;                            <minimizeJar>true</minimizeJar>&ndash;&gt;
                             <filters>
                                 <filter>
                                     <artifact>*:*</artifact>
@@ -99,13 +124,14 @@
                                         implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
                                 <transformer
                                         implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                                    <!--                                    <mainClass>com.stackoverflow.nullpointer.expression.SwitchExpressions</mainClass>-->
+                                    &lt;!&ndash;                                    <mainClass>com.stackoverflow.nullpointer.expression.SwitchExpressions</mainClass>&ndash;&gt;
                                 </transformer>
                             </transformers>
                         </configuration>
                     </execution>
                 </executions>
             </plugin>
+-->
 
 
 
@@ -165,6 +191,41 @@
 <!--            </plugin>-->
 
 
+            <plugin>
+                <groupId>org.jetbrains.kotlin</groupId>
+                <artifactId>kotlin-maven-plugin</artifactId>
+                <version>${kotlin.version}</version>
+                <executions>
+                    <execution>
+                        <id>compile</id>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>compile</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>test-compile</id>
+                        <phase>test-compile</phase>
+                        <goals>
+                            <goal>test-compile</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <experimentalCoroutines>enable</experimentalCoroutines>
+                    <jvmTarget>12</jvmTarget>
+                </configuration>
+            </plugin>
+            <plugin><!-- after kotlin-->
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.8.0</version>
+                <configuration>
+                    <release>12</release>
+                    <target>12</target>
+                    <useIncrementalCompilation>true</useIncrementalCompilation>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 </project>
