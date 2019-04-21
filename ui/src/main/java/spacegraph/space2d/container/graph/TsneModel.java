@@ -3,6 +3,7 @@ package spacegraph.space2d.container.graph;
 import com.jujutsu.tsne.SimpleTSne;
 import com.jujutsu.tsne.TSneConfig;
 import jcog.data.set.ArrayHashSet;
+import jcog.data.set.ArraySet;
 import jcog.math.FloatRange;
 import jcog.math.IntRange;
 import jcog.table.DataTable;
@@ -34,7 +35,7 @@ public class TsneModel implements Graph2D.Graph2DUpdater<DataTable.Instance> {
             false, true
     );
 
-    final ArrayHashSet<NodeVis<DataTable.Instance>> xx = new ArrayHashSet<>();
+    final ArraySet<NodeVis<DataTable.Instance>> xx = new ArrayHashSet<>();
     final ArrayHashSet<NodeVis<DataTable.Instance>> nn = new ArrayHashSet<>();
     double[][] X = new double[0][0];
 

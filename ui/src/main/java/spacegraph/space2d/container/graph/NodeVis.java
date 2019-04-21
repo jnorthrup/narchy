@@ -118,7 +118,7 @@ public class NodeVis<X> extends Windo {
         });
     }
 
-    protected void invalidateEdges() {
+    void invalidateEdges() {
         outs.forEachValue(e -> e.invalid = true);
     }
 

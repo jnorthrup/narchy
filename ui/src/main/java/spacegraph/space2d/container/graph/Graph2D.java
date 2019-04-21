@@ -4,6 +4,7 @@ import com.jogamp.opengl.GL2;
 import jcog.data.graph.NodeGraph;
 import jcog.data.map.CellMap;
 import jcog.data.pool.MetalPool;
+import jcog.data.pool.Pool;
 import jcog.data.set.ArrayHashSet;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.space2d.ReSurface;
@@ -42,7 +43,7 @@ public class Graph2D<X> extends MutableMapContainer<X, NodeVis<X>> {
 
     private List<Graph2DRenderer<X>> renderers = List.of();
 
-    private final MetalPool<EdgeVis<X>> edgePool = new MetalPool<>() {
+    private final Pool<EdgeVis<X>> edgePool = new MetalPool<>() {
         @Override
         public EdgeVis<X> create() {
             return new EdgeVis<>();
@@ -89,7 +90,7 @@ public class Graph2D<X> extends MutableMapContainer<X, NodeVis<X>> {
 
     private volatile Graph2DUpdater<X> updater = NullUpdater;
 
-    final static Graph2DUpdater NullUpdater = (c, d) -> {
+    private final static Graph2DUpdater NullUpdater = (c, d) -> {
     };
 
     private final transient Set<X> wontRemain = new ArrayHashSet();
@@ -247,9 +248,9 @@ public class Graph2D<X> extends MutableMapContainer<X, NodeVis<X>> {
 
     private Graph2D<X> update(Iterable<X> nodes, boolean addOrReplace) {
 
-        if (!busy.compareAndSet(false, true)) {
+        if (!busy.compareAndSet(false, true))
             return this;
-        }
+
         try {
 
             updateNodes(nodes, addOrReplace);
@@ -333,7 +334,7 @@ public class Graph2D<X> extends MutableMapContainer<X, NodeVis<X>> {
      */
     public static final class GraphEditing<X> {
 
-        public final Graph2D<X> graph;
+        final Graph2D<X> graph;
 
         GraphEditing(Graph2D<X> g) {
             this.graph = g;

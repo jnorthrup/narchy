@@ -25,6 +25,7 @@ import nars.term.*;
 import nars.term.atom.Bool;
 import nars.term.util.transform.VariableTransform;
 import nars.term.var.VarIndep;
+import nars.time.Tense;
 import nars.truth.PreciseTruth;
 import nars.truth.Stamp;
 import nars.truth.Truth;
@@ -729,7 +730,14 @@ public interface Task extends Truthed, Stamp, TermedDelegate, ITask, TaskRegion,
      * @return value >= 0 indicating the evidence
      */
     default double evi(long when, final int dur) {
-        return EvidenceEvaluator.of(this, dur).applyAsDouble(when);
+        long s = start();
+        double ee = evi();
+        if (s == Tense.ETERNAL)
+            //result = new EvidenceEvaluator.EternalEvidenceEvaluator(ee);
+            return ee;
+        else {
+            return EvidenceEvaluator.of(s, end(), ee, dur).y(when);
+        }
     }
 
     @Override

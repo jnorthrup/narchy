@@ -64,7 +64,7 @@ public class TruthIntegration {
         if (tStart <= qStart && tEnd >= qEnd) {
 
             //task contains question
-            return ee.eviIntegrate(qStart, qEnd);
+            return ee.integrate(qStart, qEnd);
 
             //return eviInteg(t, dur, qStart, qEnd);
             //return (qEnd - qStart) * t.evi(); //fast, assumes task evi is uniform between the end-points:
@@ -88,9 +88,7 @@ public class TruthIntegration {
                 //internal to task.  supersample not necessary unless task is not uniform
                 //task falling edge supersample
                 //supersample
-                return ee.eviIntegrate(
-                        qStart, Math.min(qStart, (qStart + tStart) / 2), Math.max(qStart, tStart - 1), tStart, tEnd,
-                        Math.min(tEnd + 1, qEnd), Math.max(qEnd, (tEnd + qEnd) / 2), qEnd);
+                return ee.integrate(qStart, Math.min(qStart, (qStart + tStart) / 2), Math.max(qStart, tStart - 1), tStart, tEnd, Math.min(tEnd + 1, qEnd), Math.max(qEnd, (tEnd + qEnd) / 2), qEnd);
                 //                }
 
             } else {
@@ -99,24 +97,24 @@ public class TruthIntegration {
                     //ends before the task
                     //supersample
                     //task rising edge supersample
-                    return ee.eviIntegrate(qStart, (qStart+tStart)/2, Math.max(qStart, tStart - 1), tStart, qEnd);
+                    return ee.integrate(qStart, (qStart+tStart)/2, Math.max(qStart, tStart - 1), tStart, qEnd);
 
                 } else if (qStart >= tStart && qEnd <= tEnd) {
                     //starts before the task and ends in it
                     //supersample
                     //task rising edge supersample
-                    return ee.eviIntegrate(qStart, (qStart+tStart)/2, Math.max(qStart, tStart - 1), tStart, qEnd);
+                    return ee.integrate(qStart, (qStart+tStart)/2, Math.max(qStart, tStart - 1), tStart, qEnd);
                 } else if (qStart >= tStart && qStart <= tEnd && qEnd >= tEnd) {
                     //tstart, qstart, qend
                     //finishes after the task
                     //task falling edge supersample
                     //supersample
-                    return ee.eviIntegrate(qStart, tEnd, Math.min(tEnd + 1, qEnd), Math.max(qEnd, (tEnd+qEnd)/2), qEnd);
+                    return ee.integrate(qStart, tEnd, Math.min(tEnd + 1, qEnd), Math.max(qEnd, (tEnd+qEnd)/2), qEnd);
                 } else { //if (tStart >= qStart && qEnd <= tEnd) {
                     assert(tStart >= qStart && qEnd <= tEnd);
                     //qStart, tstart, qend
                     //supersample
-                    return ee.eviIntegrate(qStart, (qStart+tStart)/2, tStart, qEnd);
+                    return ee.integrate(qStart, (qStart+tStart)/2, tStart, qEnd);
                 } /*else
                     throw new WTF();*/
 
@@ -129,7 +127,7 @@ public class TruthIntegration {
             //return eviInteg(t, dur, qStart, qEnd);
 
             //supersample
-            return ee.eviIntegrate(qStart, (qStart + qEnd) / 2, qEnd);
+            return ee.integrate(qStart, (qStart + qEnd) / 2, qEnd);
         }
     }
 

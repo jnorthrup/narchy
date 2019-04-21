@@ -49,13 +49,6 @@ import java.util.function.Predicate;
  */
 public class EditGraph2D extends MutableMapContainer<Surface, ContainerSurface> {
 
-    /**
-     * default/ambient link graph
-     * TODO use weakref's
-     */
-//    @Deprecated
-//    public static final MapNodeGraph<Surface, Wire> staticLinks = new LinkGraph();
-
     public final GraphEditPhysics physics =
             //new VerletGraphEditPhysics();
             new Box2DGraphEditPhysics();

@@ -11,7 +11,7 @@ public class EdgeVis<X> {
 
     float r, g, b, a;
     public float weight;
-    volatile public EdgeVisRenderer renderer;
+    private volatile EdgeVisRenderer renderer;
 
     public EdgeVis() {
         clear();
@@ -67,7 +67,7 @@ public class EdgeVis<X> {
             }
         };
 
-        abstract public void render(EdgeVis e, NodeVis from, GL2 gl);
+        protected abstract void render(EdgeVis e, NodeVis from, GL2 gl);
     }
 
     private void color(GL2 gl) {

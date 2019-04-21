@@ -249,6 +249,7 @@ abstract public class GameX extends Game {
                                 //16*1024
                                    //32*1024
                                 64 * 1024
+                                //128*1024
                         )
                         //, c -> (int) Math.ceil(c.term().voluplexity()))
 
