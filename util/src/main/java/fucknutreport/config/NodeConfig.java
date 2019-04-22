@@ -1,14 +1,18 @@
 package fucknutreport.config;
 
+import jcog.Log;
 import kotlin.jvm.JvmStatic;
 import kotlin.jvm.internal.Intrinsics;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
 
 
 public final class NodeConfig {
+   private static final Logger logger = Log.logger(NodeConfig.class);
+
    private static final boolean insecure;
-   public static final NodeConfig INSTANCE;
+   private static final NodeConfig INSTANCE;
 
    /** @deprecated */
    // $FF: synthetic method
@@ -22,14 +26,14 @@ public final class NodeConfig {
 
    @JvmStatic
    @Nullable
-   public static String qget2(@NotNull String nodeVarName, @Nullable String defaultVal) {
+   private static String qget2(@NotNull String nodeVarName, @Nullable String defaultVal) {
       Intrinsics.checkParameterIsNotNull(nodeVarName, "nodeVarName");
       return get2(nodeVarName, defaultVal, true);
    }
 
    @JvmStatic
    @Nullable
-   public static String get2(@NotNull String configKey, @Nullable String defaultVal, boolean quiet) {
+   private static String get2(@NotNull String configKey, @Nullable String defaultVal, boolean quiet) {
       Intrinsics.checkParameterIsNotNull(configKey, "configKey");
       boolean var5 = false;
       String var10000 = configKey.toLowerCase();
@@ -75,13 +79,14 @@ public final class NodeConfig {
 
    @JvmStatic
    @NotNull
-   public static String reportConfig(@NotNull String javapropname, @NotNull String val) {
+   private static String reportConfig(@NotNull String javapropname, @NotNull String val) {
       Intrinsics.checkParameterIsNotNull(javapropname, "javapropname");
       Intrinsics.checkParameterIsNotNull(val, "val");
       boolean var3 = false;
       boolean var4 = false;
 //      int var6 = false;
-      System.err.println("-D" + javapropname + "=\"" + val + '"');
+      //System.err.println("-D" + javapropname + "=\"" + val + '"');
+      logger.info("-D{}={}", javapropname, val);
       return val;
    }
 
