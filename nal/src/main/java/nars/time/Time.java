@@ -4,7 +4,6 @@ import jcog.data.iterator.ArrayIterator;
 import jcog.data.list.FasterList;
 import jcog.data.list.MetalConcurrentQueue;
 import nars.NAR;
-import nars.exe.Exec;
 
 import javax.measure.Quantity;
 import java.io.Serializable;
@@ -18,9 +17,10 @@ import java.util.stream.Stream;
  */
 public abstract class Time implements Serializable {
 
-    final MetalConcurrentQueue<ScheduledTask> incoming = new MetalConcurrentQueue<>(Exec.TIME_QUEUE_CAPACITY);
-    final FasterList<ScheduledTask> intermediate = new FasterList<>(Exec.TIME_QUEUE_CAPACITY);
-    final PriorityQueue<ScheduledTask> scheduled = new PriorityQueue<>(Exec.TIME_QUEUE_CAPACITY /* estimate capacity */);
+    private final static int TIME_QUEUE_CAPACITY = 2 * 1024;
+    final MetalConcurrentQueue<ScheduledTask> incoming = new MetalConcurrentQueue<>(TIME_QUEUE_CAPACITY);
+    final FasterList<ScheduledTask> intermediate = new FasterList<>(TIME_QUEUE_CAPACITY);
+    final PriorityQueue<ScheduledTask> scheduled = new PriorityQueue<>(TIME_QUEUE_CAPACITY /* estimate capacity */);
     /**
      * busy mutex
      */

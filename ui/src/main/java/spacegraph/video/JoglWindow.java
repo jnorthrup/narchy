@@ -503,8 +503,12 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
                         d.flushGLRunnables();
                         d.display();
                     } catch (GLException e) {
-                        e.getCause().printStackTrace();
-                        //e.printStackTrace();
+                        Throwable c = e.getCause();
+                        if(c!=null)
+                            c.printStackTrace();
+                        else
+                            e.printStackTrace();
+
                         stop();
                         return false;
                     }

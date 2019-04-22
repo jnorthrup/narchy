@@ -14,7 +14,7 @@
     <url>http://github.com/automenta/narchy</url>
 
     <prerequisites>
-        <maven>3.8.0</maven>
+        <maven>3.6.1</maven>
     </prerequisites>
 
     <properties>

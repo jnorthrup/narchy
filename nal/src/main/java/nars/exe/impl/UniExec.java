@@ -33,7 +33,7 @@ public class UniExec extends Exec {
         return false;
     }
 
-    protected void cycle(NAR nar) {
+    protected void next(NAR nar) {
         nar.time.schedule(this::executeNow);
 
         /*

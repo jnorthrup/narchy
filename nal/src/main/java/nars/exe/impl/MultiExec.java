@@ -80,7 +80,7 @@ abstract public class MultiExec extends Exec {
             execute(x);
     }
 
-    @Override protected final void cycle(NAR nar) {
+    @Override protected final void next(NAR nar) {
         nar.time.schedule(this::execute);
     }
 

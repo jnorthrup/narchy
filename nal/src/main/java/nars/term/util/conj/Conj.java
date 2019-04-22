@@ -62,13 +62,13 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
 
     public static final int ROARING_UPGRADE_THRESH = 8;
 
-    /**
-     * TermBuilder to use internally
-     */
-    @Deprecated
-    private static final TermBuilder terms =
-            //HeapTermBuilder.the;
-            Op.terms;
+//    /**
+//     * TermBuilder to use internally
+//     */
+//    @Deprecated
+//    private static final TermBuilder terms =
+//            //HeapTermBuilder.the;
+//            Op.terms;
     private static final Predicate<Term> isTemporalComponent = Conj::isSeq;
     private static final Predicate<Term> isEternalComponent = isTemporalComponent.negate();
     public final LongObjectHashMap<Object> event;

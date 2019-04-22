@@ -6,7 +6,6 @@ import nars.NAR;
 import nars.control.NARPart;
 import nars.control.channel.ConsumerX;
 import nars.task.ITask;
-import nars.time.part.CycLoop;
 import org.slf4j.Logger;
 
 import java.io.IOException;
@@ -20,12 +19,10 @@ import java.util.function.Consumer;
 abstract public class Exec extends NARPart implements Executor, ConsumerX<ITask> {
 
     public static final Logger logger = Log.logger(Exec.class);
-    public final static int TIME_QUEUE_CAPACITY = 2 * 1024;
     private final int concurrencyMax;
 
     protected Exec(int concurrencyMax) {
         this.concurrencyMax = concurrencyMax; //TODO this will be a value like Runtime.getRuntime().availableProcessors() when concurrency can be adjusted dynamically
-        add(new MyCycLoop());
     }
 
     abstract public void input(Object t);
@@ -124,7 +121,7 @@ abstract public class Exec extends NARPart implements Executor, ConsumerX<ITask>
             executeNow((Runnable) t);
     }
 
-    abstract protected void cycle(NAR nar);
+    abstract protected void next(NAR nar);
 
     public void print(Appendable out) {
         try {
@@ -141,11 +138,5 @@ abstract public class Exec extends NARPart implements Executor, ConsumerX<ITask>
 
     }
 
-    private final class MyCycLoop extends CycLoop {
 
-        @Override
-        protected void run(NAR n) {
-            cycle(n);
-        }
-    }
 }
