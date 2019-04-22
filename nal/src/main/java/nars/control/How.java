@@ -1,5 +1,6 @@
 package nars.control;
 
+import jcog.Skill;
 import jcog.pri.Prioritizable;
 import nars.NAR;
 import nars.attention.PriNode;
@@ -38,7 +39,7 @@ import static nars.time.Tense.TIMELESS;
  * records runtime instrumentation, profiling, and other telemetry for a particular Causable
  * both per individual threads, and collectively
  */
-abstract public class How extends NARPart implements Prioritizable {
+@Skill("Effects_unit") abstract public class How extends NARPart implements Prioritizable {
 
 
     public abstract void next(What w, BooleanSupplier kontinue);

@@ -20,7 +20,7 @@ import org.slf4j.Logger;
 /**
  *
  */
-@Skill("Effects_unit") abstract public class NARPart extends Part<NAR> implements Termed, OffOn {
+abstract public class NARPart extends Part<NAR> implements Termed, OffOn {
 
     private static final Logger logger = Log.logger(NARPart.class);
     private static final NARPart[] EmptyArray = new NARPart[0];

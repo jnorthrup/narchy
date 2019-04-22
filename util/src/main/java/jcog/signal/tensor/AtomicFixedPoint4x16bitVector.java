@@ -20,10 +20,9 @@ public class AtomicFixedPoint4x16bitVector implements WritableTensor {
 
 
 
-    private static final float SHORT_TO_FLOAT_SCALE = Short.MAX_VALUE*2 + 1;
-
     //TODO atomic addAt methods
-    static final int[] QUAD_16_SHAPE = new int[] { 4 };
+    private static final int[] QUAD_16_SHAPE = new int[] { 4 };
+    private static final float SHORT_TO_FLOAT_SCALE = Short.MAX_VALUE*2 + 1;
     private static final AtomicLongFieldUpdater<AtomicFixedPoint4x16bitVector> X =
             AtomicLongFieldUpdater.newUpdater(AtomicFixedPoint4x16bitVector.class, "x");
     private volatile long x;
@@ -31,12 +30,20 @@ public class AtomicFixedPoint4x16bitVector implements WritableTensor {
     /**
      * @param c quad selector: 0, 1, 2, 3
      */
-    static float toFloat(long x, int c) {
+    private static float toFloat(long x, int c) {
         return toFloat(shortAt(x, c));
     }
 
-    static int shortAt(long x, int c) {
+    private static int shortAt(long x, int c) {
         return ((int) (x >>> (c * 16))) & '\uffff';
+    }
+
+    static float toFloat(long s) {
+        return s / SHORT_TO_FLOAT_SCALE;
+    }
+
+    static int toShort(float f) {
+        return ((int) (f * SHORT_TO_FLOAT_SCALE));
     }
 
     @Override
@@ -47,21 +54,17 @@ public class AtomicFixedPoint4x16bitVector implements WritableTensor {
 
     @Override
     public float sumValues() {
-
         long x = X.get(this);
-        float /* double? */ s = 0;
+//        float /* double? */ s = 0;
+//        for (int i = 0; i < 4; i++)
+//            s += toFloat(x, i);
+//        return s;
+
+        long s = 0;
         for (int i = 0; i < 4; i++)
-            s += toFloat(x, i);
-        return s;
-    }
+            s += shortAt(x, i);
+        return toFloat(s);
 
-
-    static float toFloat(long s) {
-        return s / SHORT_TO_FLOAT_SCALE;
-    }
-
-    static int toShort(float f) {
-        return ((int) (f * SHORT_TO_FLOAT_SCALE));
     }
 
     @Override
@@ -119,7 +122,7 @@ public class AtomicFixedPoint4x16bitVector implements WritableTensor {
     }
 
     @Override
-    public int[] shape() {
+    public final int[] shape() {
         return QUAD_16_SHAPE;
     }
 
