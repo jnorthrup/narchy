@@ -1,7 +1,6 @@
 package nars.control;
 
 import jcog.Skill;
-import jcog.TODO;
 import jcog.Util;
 import jcog.data.graph.MapNodeGraph;
 import jcog.data.graph.NodeGraph;
@@ -54,16 +53,17 @@ import java.util.Arrays;
      * raw cause id (short int) -> cause table
      *
      */
-    public final FasterList<Why> why = new FasterList<>(512) {
-        @Override
-        protected Why[] newArray(int newCapacity) {
-
-            if (newCapacity >= Short.MAX_VALUE)
-                throw new TODO("all possible 16-bit cause ID's consumed");
-
-            return new Why[newCapacity];
-        }
-    };
+    public final FasterList<Why> why = new FasterList<>(0, new Why[512]);
+//    {
+//        @Override
+//        protected Why[] newArray(int newCapacity) {
+//
+//            if (newCapacity >= Short.MAX_VALUE)
+//                throw new TODO("all possible 16-bit cause ID's consumed");
+//
+//            return new Why[newCapacity];
+//        }
+//    };
 
 
     /** hierarchical priority distribution DAG (TODO ensure acyclic) */

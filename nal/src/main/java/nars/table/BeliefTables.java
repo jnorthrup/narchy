@@ -16,10 +16,6 @@ import java.util.stream.Stream;
  */
 public class BeliefTables extends FasterList<BeliefTable> implements BeliefTable {
 
-//    public BeliefTables(Object... beliefTablesOrSuppliersOfThem) {
-//        super(beliefTablesOrSuppliersOfThem);
-//    }
-
     public BeliefTables(BeliefTable... b) {
         super(b);
     }
@@ -30,11 +26,6 @@ public class BeliefTables extends FasterList<BeliefTable> implements BeliefTable
      * */
     @Override public boolean isEmpty() {
         return allSatisfy(TaskTable::isEmpty);
-    }
-
-    @Override
-    protected BeliefTable[] newArray(int newCapacity) {
-        return newCapacity > 0 ? new BeliefTable[newCapacity] : BeliefTable.EmptyArray;
     }
 
     @Override

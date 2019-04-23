@@ -20,13 +20,12 @@ import static nars.time.Tense.*;
  */
 public class ConjLazy extends LongObjectArraySet<Term> implements ConjBuilder {
 
-
-    public ConjLazy(int expectedSize) {
-        super(expectedSize);
-    }
-
     public ConjLazy() {
         this(4);
+    }
+
+    public ConjLazy(int expectedSize) {
+        super(0, new Term[expectedSize]);
     }
 
     @Override
@@ -138,10 +137,7 @@ public class ConjLazy extends LongObjectArraySet<Term> implements ConjBuilder {
         return l;
     }
 
-    @Override
-    protected final Object[] newArray(int newCapacity) {
-        return new Term[newCapacity];
-    }
+
 
     @Override
     public void negateEvents() {

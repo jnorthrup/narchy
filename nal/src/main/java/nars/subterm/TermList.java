@@ -8,7 +8,6 @@ import nars.term.util.TermException;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
-import java.util.Collection;
 
 import static nars.Op.CONJ;
 import static nars.term.atom.Bool.True;
@@ -17,27 +16,16 @@ import static nars.term.atom.Bool.True;
 public class TermList extends FasterList<Term> implements Subterms {
 
 
-    protected TermList() { super(); }
-
     public TermList(int initialCapacity) {
         super(0, new Term[initialCapacity]);
     }
 
     public TermList(Term... direct) {
-        super(direct.length, direct);
-    }
-
-    private TermList(Collection<Term> copied) {
-        this(copied.toArray(Op.EmptyTermArray));
-    }
-
-    public TermList(Iterable<Term> copied) {
-        super(0);
-        copied.forEach(this::addFast);
+        super(direct);
     }
 
     public TermList(Subterms copied) {
-        super(copied.subs());
+        super(0, new Term[copied.subs()]);
         copied.forEach(this::addFast);
     }
 
@@ -125,9 +113,6 @@ public class TermList extends FasterList<Term> implements Subterms {
             return Arrays.copyOf(x, s);
     }
 
-    @Override protected Term[] newArray(int newCapacity) {
-        return new Term[newCapacity];
-    }
 
     /** finalization step on constructing a Subterm */
     @Nullable

@@ -2096,7 +2096,7 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
                         } else if (wt != True && wt != null) {
 
                             if (temporals == null)
-                                temporals = new LongObjectArraySet<>((numOcc - occSkipped) * 2 /* estimate */);
+                                temporals = new LongObjectArraySet<Term>(0, new Term[(numOcc - occSkipped) * 2 /* estimate */]);
 
                             temporals.add(when, wt);
 

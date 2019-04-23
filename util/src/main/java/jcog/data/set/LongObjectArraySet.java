@@ -27,6 +27,11 @@ public class LongObjectArraySet<X> extends FasterList<X> {
         this(0);
     }
 
+    public LongObjectArraySet(int initialSize, X[] array) {
+        super(initialSize, array);
+        when = ArrayUtils.EMPTY_LONG_ARRAY;
+    }
+
     public LongObjectArraySet(int initialCapacity) {
         super(initialCapacity);
         when = ArrayUtils.EMPTY_LONG_ARRAY;

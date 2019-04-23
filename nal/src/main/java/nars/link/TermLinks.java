@@ -19,7 +19,9 @@ public final class TermLinks {
 
     private volatile long updated;
 
-    private final FasterList<TaskLink> links = new TaskLinkList();
+    final static TaskLink[] EmptyTaskLinksArray = new TaskLink[0];
+    private final FasterList<TaskLink> links = new FasterList(0, EmptyTaskLinksArray);
+
     private final AtomicBoolean busy = new AtomicBoolean(false);
 
     protected int cap(int bagSize) {
@@ -149,16 +151,5 @@ public final class TermLinks {
                 sample(filter, punc, rng) : null;
     }
 
-    private static final class TaskLinkList extends FasterList<TaskLink> {
-        final static TaskLink[] EmptyTaskLinksArray = new TaskLink[0];
 
-        TaskLinkList() {
-            items = EmptyTaskLinksArray;
-        }
-
-        @Override
-        protected TaskLink[] newArray(int newCapacity) {
-            return new TaskLink[newCapacity];
-        }
-    }
 }

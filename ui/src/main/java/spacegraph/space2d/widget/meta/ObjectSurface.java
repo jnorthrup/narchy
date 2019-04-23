@@ -31,14 +31,11 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class ObjectSurface<X> extends MutableUnitContainer {
 
     private static final AutoBuilder.AutoBuilding<Object, Surface> DefaultObjectSurfaceBuilder = (@Nullable Object ctx, List<Pair<Object, Iterable<Surface>>> target, @Nullable Object obj) -> {
-        List<Surface> outer = new FasterList<>(target.size()) {
-            @Override
-            protected Object[] newArray(int newCapacity) {
-                return new Surface[newCapacity]; //HACK
-            }
-        };
+
+        List<Surface> outer = new FasterList(0, EmptySurfaceArray);
+
         for (Pair<Object, Iterable<Surface>> p : target) {
-            List<Surface> cx = new SurfaceList();
+            List<Surface> cx = new FasterList(0, EmptySurfaceArray);
             p.getTwo().forEach(e -> {
                 assert(e!=null);
                 cx.add(e);
@@ -305,18 +302,7 @@ public class ObjectSurface<X> extends MutableUnitContainer {
         }
     }
 
-    public static class SurfaceList extends FasterList {
-        public SurfaceList() {
-            super(0);
-        }
-
-        @Override
-        protected Object[] newArray(int newCapacity) {
-            return new Surface[newCapacity]; //HACK
-        }
-    }
-
-//    private class AutoServices extends Widget {
+    //    private class AutoServices extends Widget {
 //        AutoServices(Services<?, ?> x) {
 //
 //            List<Surface> l = new FasterList(x.size());

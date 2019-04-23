@@ -26,30 +26,19 @@ public class TaskList extends FasterList<Task> implements TaskRegion {
 
 
     public TaskList(int initialCap) {
-        super(initialCap);
+        super(0, new Task[initialCap]);
     }
 
     public TaskList(Collection<Task> t) {
-        this(t, t.size());
+        super(0, new Task[t.size()]); t.forEach(this::addFast);
     }
 
     public TaskList(Iterable<Task> t, int sizeEstimate) {
-        super(sizeEstimate);
-        t.forEach(this::add);
-    }
-
-    public TaskList(int size, Task[] t) {
-        super(size, t);
-//        for (Task x : t) if (x == null) throw new NullPointerException(); //TEMPORARY
+        super(0, new Task[sizeEstimate]); t.forEach(this::add);
     }
 
     private static float pri(TaskRegion x) {
         return ((Prioritized) x).priElseZero();
-    }
-
-    @Override
-    protected Object[] newArray(int newCapacity) {
-        return new Task[newCapacity];
     }
 
     @Override

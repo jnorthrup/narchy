@@ -7,7 +7,6 @@ import nars.Op;
 import nars.Param;
 import nars.term.Compound;
 import nars.term.Term;
-import nars.term.Termed;
 import nars.term.var.Img;
 import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 
@@ -98,7 +97,7 @@ public final class TemplateTermLinker extends FasterList<Term> implements TermLi
 //    }
 
     private TemplateTermLinker(Term[] terms) {
-        super(terms.length, terms);
+        super(terms);
 
         int lastConcept;
         if (size > 1) {
@@ -127,12 +126,6 @@ public final class TemplateTermLinker extends FasterList<Term> implements TermLi
         assert (lastConcept < 127);
         concepts = (byte) (lastConcept);
     }
-
-    @Override
-    protected Termed[] newArray(int newCapacity) {
-        return new Termed[newCapacity];
-    }
-
 
     /**
      * recurses into subterms

@@ -43,8 +43,9 @@ import static nars.time.Tense.ETERNAL;
 @Skill({"Interpolation", "Extrapolation"})
 abstract public class TruthProjection extends FasterList<TruthProjection.TaskComponent> {
 
-    long start;
-    long end;
+    private static final TaskComponent[] Empty_TaskComponent_Array = new TaskComponent[0];
+
+    long start, end;
     int dur;
 
     /**
@@ -54,7 +55,7 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
     public Term term = null;
 
     TruthProjection(long start, long end, int dur) {
-        super(0);
+        super(0, Empty_TaskComponent_Array);
         this.start = start;
         this.end = end;
 
@@ -78,11 +79,6 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
         return add(new TaskComponent(t));
     }
 
-
-    @Override
-    protected final TaskComponent[] newArray(int newCapacity) {
-        return new TaskComponent[newCapacity];
-    }
 
 
     private boolean update(TaskComponent tc, boolean force) {
