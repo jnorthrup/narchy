@@ -39,7 +39,7 @@ public class TaskLinks implements Sampler<TaskLink> {
     /**
      * short target memory, TODO abstract and remove, for other forms of attention that dont involve TaskLinks or anything like them
      */
-    @Deprecated public nars.link.TaskLinkBag links = null;
+    public nars.link.TaskLinkBag links = null;
 
     /** tasklink forget rate */
     public final FloatRange decay = new FloatRange(0.5f,  0, 1f /* 2f */);
@@ -78,7 +78,7 @@ public class TaskLinks implements Sampler<TaskLink> {
                 //new TaskLinkHijackBag(c, 5)
         );
 
-        links.setCapacity(linksMax.intValue());
+        links.setCapacity(c);
     }
 
 
@@ -110,29 +110,26 @@ public class TaskLinks implements Sampler<TaskLink> {
 
         Term t = link.to();
 
-        byte punc = task.punc();
-
-
-
-        float p =
-                link.priPunc(punc);
-        //task.priElseZero();
-
-        float sustain = this.sustain.floatValue();
-
-        Term u = null;
-        Concept ct;
         if (t.op().conceptualizable) {
 
-            NAR nar = d.nar();
-//        Random rng = d.random;
+            Concept ct;
+            byte punc = task.punc();
 
+            float p =
+                    link.priPunc(punc);
+            //task.priElseZero();
+
+            float sustain = this.sustain.floatValue();
+
+            NAR nar = d.nar();
 
 //            boolean self = s.equals(t);
 
             ct = nar.conceptualize(t);
             if (ct != null) {
                 t = ct.term();
+
+                Term u = null;
                 TermLinker linker = ct.linker();
                 if (linker != TermLinker.NullLinker && !((FasterList) linker).isEmpty())
                     //grow-ahead: s -> t -> u
@@ -143,20 +140,19 @@ public class TaskLinks implements Sampler<TaskLink> {
                         //why is this necessary
                         float probability =
                                 0.5f;
-                                //1f / (1 + link.from().volume()/2f);
-                                //1f / (1 + link.from().volume());
-                                //1 - 1f / (1 + s.volume());
-                                //1 - 1f / (1 + t.volume());
+                        //1f / (1 + link.from().volume()/2f);
+                        //1f / (1 + link.from().volume());
+                        //1 - 1f / (1 + s.volume());
+                        //1 - 1f / (1 + t.volume());
 
                         if (d.random.nextFloat() <= probability) {
                             //sample active tasklinks for a tangent match to the atom
-//                            Atom tt = (Atom) t;
                             Predicate<TaskLink> filter =
                                     x -> !link.equals(x);
-                            //x -> !link.equals(x) && !link.other(tt).equals(s);
 
-                            u = links.atomTangent(ct, punc, filter, d.time(),
+                            return links.atomTangent(ct, punc, filter, d.time(),
                                     d.dur() * Param.belief.REMEMBER_REPEAT_THRESH_DURS /* repurposed */, d.random);
+
 //                        if (u!=null && u.equals(s)) {
 ////                            u = links.atomTangent(ct, ((TaskLink x)->!link.equals(x)), d.time, 1, d.random);//TEMPORARY
 //                            throw new WTF();
@@ -173,10 +169,7 @@ public class TaskLinks implements Sampler<TaskLink> {
                 }
 
 
-            }
-
-
-            if (u != null && !t.equals(u)) {
+                if (u != null && !t.equals(u)) {
 
 
 //                //TODO abstact activation parameter object
@@ -191,33 +184,34 @@ public class TaskLinks implements Sampler<TaskLink> {
 //                float p =
 //                        inflation < 1 ? Util.lerp(inflation, link.take(punc, want*inflation), want) : want;
 
-                float pAmp = p * amp.floatValue();
-                final Term s = link.from();
+                    float pAmp = p * amp.floatValue();
+                    final Term s = link.from();
 
-                //CHAIN pattern
-                link(s, u, punc, pAmp); //forward (hop)
-                //link(u, s, punc, pp); //reverse (hop)
-                //link(t, u, punc, pp); //forward (adjacent)
-                //link(u, t, punc, pp); //reverse (adjacent)
-
-
-                if (sustain < 1) {
-                    link.take(punc, pAmp * (1-sustain));
-                }
+                    //CHAIN pattern
+                    link(s, u, punc, pAmp); //forward (hop)
+                    //link(u, s, punc, pp); //reverse (hop)
+                    //link(t, u, punc, pp); //forward (adjacent)
+                    //link(u, t, punc, pp); //reverse (adjacent)
 
 
-                //link(s, t, punc, ); //redundant
-                //link(t, s, punc, pp); //reverse echo
+                    if (sustain < 1) {
+                        link.take(punc, pAmp * (1 - sustain));
+                    }
+
+
+                    //link(s, t, punc, ); //redundant
+                    //link(t, s, punc, pp); //reverse echo
 
 //                if (self)
 //                    t = u;
 
-            } else {
+                } else {
 //                int n = 1;
 //                float pp = p * conductance / n;
 //
 //                link(t, s, punc, pp); //reverse echo
 
+                }
             }
         }
         //link.take(punc, pp*n);

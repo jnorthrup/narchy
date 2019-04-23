@@ -20,7 +20,7 @@ public final class TermLinks {
     private volatile long updated;
 
     private final FasterList<TaskLink> links = new TaskLinkList();
-    final AtomicBoolean busy = new AtomicBoolean(false);
+    private final AtomicBoolean busy = new AtomicBoolean(false);
 
     protected int cap(int bagSize) {
         return Math.max(2, (int) Math.ceil(1.5f * Math.sqrt(bagSize)) /* estimate */);
@@ -104,11 +104,12 @@ public final class TermLinks {
                         }
                     }
 
-                    updated = now;
                 }
             } finally {
                 busy.set(false);
             }
+
+            updated = now;
         }
 
         return !links.isEmpty();
