@@ -7,6 +7,23 @@ import org.jetbrains.annotations.Nullable;
 /** indicates an implementation has, or is associated with a specific TruthValue */
 public interface Truthed  {
 
+    @Skill("Quantum_spin") default float freq() {
+        return truth().freq();
+    }
+
+    /** a dual (reversible) asymptotic normalization of evi(), see: HORIZON */
+    default float conf() {
+        //return w2cSafe(evi());
+        return truth().conf();
+    }
+
+    /** weight of evidence ( confidence converted to weight, 'c2w()' ) */
+    @Skill({"Epistemology", "Evidence_law"}) default double evi() {
+        //return c2wSafe((double)conf());
+        return truth().evi();
+    }
+
+
     @Nullable
     Truth truth();
 
@@ -52,23 +69,6 @@ public interface Truthed  {
      */
     default boolean isPositive() {
         return freq() >= 0.5f;
-    }
-
-
-    default float freq() {
-        return truth().freq();
-    }
-
-    /** a dual (reversible) asymptotic normalization of evi(), see: HORIZON */
-    default float conf() {
-        //return w2cSafe(evi());
-        return truth().conf();
-    }
-
-    /** weight of evidence ( confidence converted to weight, 'c2w()' ) */
-    @Skill({"Epistemology", "Evidence_law"}) default double evi() {
-        //return c2wSafe((double)conf());
-        return truth().evi();
     }
 
 
