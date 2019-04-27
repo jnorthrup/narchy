@@ -4,6 +4,7 @@ import jcog.TODO;
 import jcog.math.IntRange;
 import jcog.pri.Prioritizable;
 import jcog.pri.bag.Sampler;
+import nars.NAL;
 import nars.NAR;
 import nars.Task;
 import nars.attention.derive.DefaultPuncWeightedDerivePri;
@@ -134,7 +135,7 @@ abstract public class What extends NARPart implements Prioritizable, Sampler<Tas
 
     /** called periodically, ex: per duration, for maintenance such as gradual forgetting and merging new input.
      *  only one thread will be in this method at a time guarded by an atomic guard */
-    abstract protected void commit(NAR nar);
+    abstract protected void commit(NAL<NAL<NAR>> NAL);
 
     /** explicitly return the attention to a completely or otherwise reasonably quiescent state.
      *  how exactly can be decided by the implementation. */
@@ -181,8 +182,8 @@ abstract public class What extends NARPart implements Prioritizable, Sampler<Tas
         }
 
         @Override
-        protected void commit(NAR nar) {
-            what.commit(nar);
+        protected void commit(NAL<NAL<NAR>> NAL) {
+            what.commit(NAL);
         }
 
         @Override
@@ -243,7 +244,7 @@ abstract public class What extends NARPart implements Prioritizable, Sampler<Tas
         }
 
         @Override
-        protected void commit(NAR nar) {
+        protected void commit(NAL<NAL<NAR>> NAL) {
 
             links.commit();
         }

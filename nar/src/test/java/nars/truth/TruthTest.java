@@ -3,9 +3,9 @@ package nars.truth;
 import jcog.Texts;
 import jcog.Util;
 import jcog.random.XorShift128PlusRandom;
+import nars.NAL;
 import nars.NAR;
 import nars.NARS;
-import nars.NAL;
 import nars.task.Revision;
 import nars.truth.func.TruthFunctions;
 import org.jetbrains.annotations.Nullable;
@@ -163,7 +163,7 @@ class TruthTest {
     }
 
     @Test void testDitheringSanity() {
-        NAR n = NARS.shell();
+        NAL<NAL<NAR>> n = NARS.shell();
         n.confResolution.set(0.1f);
         int steps = 99;
         float step = 0.01f;

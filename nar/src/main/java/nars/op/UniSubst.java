@@ -2,8 +2,8 @@ package nars.op;
 
 import jcog.Util;
 import nars.$;
-import nars.Op;
 import nars.NAL;
+import nars.Op;
 import nars.derive.Derivation;
 import nars.eval.Evaluation;
 import nars.subterm.Subterms;

@@ -1,7 +1,7 @@
 package nars.term.util;
 
-import nars.Op;
 import nars.NAL;
+import nars.Op;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.atom.Bool;

@@ -119,9 +119,9 @@ public class NARio extends GameX {
         );
 
         PriNode tileAttnGroup = new PriNode(tileSensors);
-        tileAttnGroup.parent(nar(), attnSensor);
+        nar().parent(tileAttnGroup, attnSensor); //HACK
         for (SelectorSensor s : tileSensors)
-            s.attn.parent(nar(), tileAttnGroup);
+            nar().parent(s.attn, tileAttnGroup);  //HACK
 
 
         SpaceGraph.window(camAE.newChart(), 500, 500);

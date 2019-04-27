@@ -1,8 +1,8 @@
 package nars.op;
 
 import jcog.version.Versioning;
-import nars.Op;
 import nars.NAL;
+import nars.Op;
 import nars.term.Term;
 import nars.unify.Unify;
 import org.jetbrains.annotations.Nullable;

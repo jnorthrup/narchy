@@ -1,6 +1,7 @@
 package nars.op.java;
 
 import nars.$;
+import nars.NAL;
 import nars.NAR;
 import org.slf4j.LoggerFactory;
 
@@ -11,7 +12,7 @@ public class Teacher<X> {
 
     final static org.slf4j.Logger logger = LoggerFactory.getLogger(Teacher.class);
     protected final X x;
-    protected final NAR n;
+    protected final NAL<NAL<NAR>> n;
 
     public Teacher(NAR n, X c) {
         this(new Opjects(n), c);

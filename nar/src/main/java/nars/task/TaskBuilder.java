@@ -36,7 +36,7 @@ import static nars.time.Tense.ETERNAL;
  * <p>
  * once input, input tasks will have unique serial numbers anyway
  */
-@Deprecated public class TaskBuilder extends UnitPri implements TermedDelegate, Truthed, Function<NAR, Task> {
+@Deprecated public class TaskBuilder extends UnitPri implements TermedDelegate, Truthed, Function<NAL<NAL<NAR>>, Task> {
 
     
     private Term term;
@@ -71,8 +71,8 @@ import static nars.time.Tense.ETERNAL;
 
 
 
-    public TaskBuilder(Term t, byte punct, float freq,  NAR nar) throws TaskException {
-        this(t, punct, t(freq, nar.confDefault(punct)));
+    public TaskBuilder(Term t, byte punct, float freq,  NAL<NAL<NAR>> NAL) throws TaskException {
+        this(t, punct, t(freq, NAL.confDefault(punct)));
     }
 
     
@@ -123,7 +123,7 @@ import static nars.time.Tense.ETERNAL;
     }
 
     @Override
-    public Task apply(NAR n) throws Concept.InvalidConceptException, TaskException {
+    public Task apply(NAL<NAL<NAR>> n) throws Concept.InvalidConceptException, TaskException {
 
         if (isDeleted())
             throw new TaskException(this, "Deleted");

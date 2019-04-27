@@ -1,8 +1,8 @@
 package nars.concept.action;
 
 import nars.$;
-import nars.NAR;
 import nars.NAL;
+import nars.NAR;
 import nars.Task;
 import nars.agent.Game;
 import nars.attention.What;
@@ -305,7 +305,7 @@ public class AbstractGoalActionConcept extends AgentAction {
 
 
 
-    @Nullable SignalTask curiosity(Truth goal, long pStart, long pEnd, NAR n) {
+    @Nullable SignalTask curiosity(Truth goal, long pStart, long pEnd, NAL<NAL<NAR>> n) {
         long[] evi = n.evidence();
 
         SignalTask curiosity = new CuriosityTask(term, goal, n.time(), pStart, pEnd, evi);

@@ -8,8 +8,8 @@ import jcog.math.LongInterval;
 import jcog.pri.Prioritizable;
 import jcog.pri.Prioritized;
 import jcog.util.ArrayUtils;
-import nars.NAR;
 import nars.NAL;
+import nars.NAR;
 import nars.Task;
 import nars.attention.What;
 import nars.bag.BagClustering;
@@ -20,12 +20,12 @@ import nars.task.ITask;
 import nars.task.NALTask;
 import nars.task.UnevaluatedTask;
 import nars.task.util.TaskException;
+import nars.task.util.TaskList;
 import nars.term.Term;
 import nars.term.TermedDelegate;
 import nars.term.util.conj.ConjLazy;
 import nars.truth.Stamp;
 import nars.truth.Truth;
-import nars.task.util.TaskList;
 import org.eclipse.collections.api.tuple.primitive.ObjectBooleanPair;
 import org.jetbrains.annotations.Nullable;
 
@@ -274,11 +274,11 @@ public class ConjClustering extends How {
         /** generated tasks */
         final FasterList<Task> out = new FasterList();
         private final int tasksGeneratedPerCentroidIterationMax;
-        private final NAR nar;
+        private final NAL<NAL<NAR>> NAL;
 
-        CentroidConjoiner(int tasksGeneratedPerCentroidIterationMax, NAR nar) {
+        CentroidConjoiner(int tasksGeneratedPerCentroidIterationMax, NAL<NAL<NAR>> NAL) {
             this.tasksGeneratedPerCentroidIterationMax = tasksGeneratedPerCentroidIterationMax;
-            this.nar = nar;
+            this.NAL = NAL;
         }
 
         private int conjoinCentroid(FasterList<Task> in) {
@@ -288,7 +288,7 @@ public class ConjClustering extends How {
 
 
             int count = 0;
-            float confMinThresh = confMin + nar.confResolution.floatValue()/2f;
+            float confMinThresh = confMin + NAL.confResolution.floatValue()/2f;
 
             boolean active = true, reset = true;
 
@@ -433,7 +433,7 @@ public class ConjClustering extends How {
             if (e < NAL.truth.TRUTH_EVI_MIN)
                 return null;
 
-            final Truth t = Truth.theDithered(freq, e, nar);
+            final Truth t = Truth.theDithered(freq, e, NAL);
             if (t != null) {
 
                 Term cj = ConjLazy.sequence(x);
@@ -448,7 +448,7 @@ public class ConjClustering extends How {
                         long tEnd = start + range;
                         NALTask y = new STMClusterTask(cp, t,
                                 start, tEnd,
-                                Stamp.sample(NAL.STAMP_CAPACITY, actualStamp, nar.random()), punc, now);
+                                Stamp.sample(NAL.STAMP_CAPACITY, actualStamp, NAL.random()), punc, now);
                         y.cause(CauseMerge.AppendUnique.merge(NAL.causeCapacity.intValue(), x));
 
 

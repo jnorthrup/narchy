@@ -9,6 +9,7 @@ import jcog.event.RunThese;
 import jcog.service.Part;
 import jcog.service.Parts;
 import nars.$;
+import nars.NAL;
 import nars.NAR;
 import nars.term.Term;
 import nars.term.Termed;
@@ -113,7 +114,7 @@ abstract public class NARPart extends Part<NAR> implements Termed, OffOn {
         local.removeIf((p)->{p.delete(); return true; });
         whenDeleted.close();
 
-        NAR n = this.nar;
+        NAL<NAL<NAR>> n = this.nar;
         if (n !=null) {
             n.stop(this);
         } else {
@@ -157,8 +158,8 @@ abstract public class NARPart extends Part<NAR> implements Termed, OffOn {
     @Override
     protected final void start(NAR nar) {
 
-        NAR prevNar = this.nar;
-        if (!(prevNar == null || prevNar == nar))
+        NAL<NAL<NAR>> prevNAL = this.nar;
+        if (!(prevNAL == null || prevNAL == nar))
             throw new WTF("NAR mismatch");
 
         logger.info("start {}", term());

@@ -1,8 +1,8 @@
 package nars.subterm;
 
 import jcog.data.list.FasterList;
-import nars.Op;
 import nars.NAL;
+import nars.Op;
 import nars.term.Term;
 import nars.term.util.TermException;
 import org.jetbrains.annotations.Nullable;

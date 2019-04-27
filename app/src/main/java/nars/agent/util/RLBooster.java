@@ -7,6 +7,7 @@ import jcog.learn.Agent;
 import jcog.math.FloatRange;
 import jcog.signal.tensor.TensorRing;
 import nars.$;
+import nars.NAL;
 import nars.NAR;
 import nars.Task;
 import nars.agent.Game;
@@ -133,7 +134,7 @@ public class RLBooster  {
 
 
     public void accept(What w) {
-        NAR nar = env.nar();
+        NAL<NAL<NAR>> NAL = env.nar();
 
         double reward = (env.happiness() - 0.5)*2 /* polarize */;
         lastReward = reward;
@@ -142,7 +143,7 @@ public class RLBooster  {
 //        long end = env.now(); //+ dur/2;
 //        //HACK
 //        int dur = nar.dur();
-        long now = nar.time();
+        long now = NAL.time();
         long start = now;
         long end = env.next;
         if (end < start)
@@ -175,8 +176,8 @@ public class RLBooster  {
             }
 
             if (t !=null) {
-                Task tt = new SignalTask(actions[o].term(), GOAL, t, start, start, end, nar.time.nextStamp());
-                tt.pri(nar);
+                Task tt = new SignalTask(actions[o].term(), GOAL, t, start, start, end, NAL.time.nextStamp());
+                tt.pri(NAL);
                 e.add(tt);
             }
         }

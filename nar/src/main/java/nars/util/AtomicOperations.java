@@ -8,6 +8,7 @@ import jcog.pri.PriReference;
 import jcog.pri.bag.impl.ArrayBag;
 import jcog.pri.bag.impl.PriReferenceArrayBag;
 import jcog.pri.op.PriMerge;
+import nars.NAL;
 import nars.NAR;
 import nars.Op;
 import nars.Task;
@@ -29,7 +30,7 @@ import java.util.function.BiFunction;
  * debounced and atomically/asynchronously executable operation
  * TODO support asych executions that delay or stretch feedback until they complete
  */
-public class AtomicOperations implements BiFunction<Task, NAR, Task> {
+public class AtomicOperations implements BiFunction<Task, NAL<NAL<NAR>>, Task> {
 
     /**
      * expectation threhold (in range 0.5..1.0 indicating the minimum expectation minimum
@@ -168,7 +169,7 @@ public class AtomicOperations implements BiFunction<Task, NAR, Task> {
      * operator leaves active probing mode
      * @param n
      */
-    protected void disable(NAR n) {
+    protected void disable(NAL<NAL<NAR>> n) {
         DurLoop d;
         if ((d = onCycle.getOpaque()) != null) {
             n.stop(d);

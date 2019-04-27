@@ -1,8 +1,8 @@
 package nars.task;
 
 import jcog.data.set.MetalLongSet;
-import nars.NAR;
 import nars.NAL;
+import nars.NAR;
 import nars.Task;
 import nars.task.util.TaskRegion;
 import nars.time.Tense;
@@ -53,7 +53,7 @@ public enum Revision {;
      * also cause merge is deferred in the same way
      * @return
      */
-    public static <T extends TaskRegion> Pair<Task, TruthProjection> merge(NAR nar, boolean dither, T[] tasks) {
+    public static <T extends TaskRegion> Pair<Task, TruthProjection> merge(NAL<NAL<NAR>> NAL, boolean dither, T[] tasks) {
 
 
         assert (tasks.length > 1);
@@ -66,11 +66,11 @@ public enum Revision {;
         }
 
 
-        long[] u = Tense.merge(dither ? nar.dtDither() : 0, tasks);
+        long[] u = Tense.merge(dither ? NAL.dtDither() : 0, tasks);
         if (u == null)
             return null;
 
-        TruthProjection p = nar.projection(u[0], u[1], 0).add(tasks);
+        TruthProjection p = NAL.projection(u[0], u[1], 0).add(tasks);
 
         MetalLongSet stamp = p.commit(true, 2, true);
         if (stamp == null)
@@ -79,10 +79,10 @@ public enum Revision {;
         assert(p.size()>=2);
 
         double eviMin =
-                NAL.belief.REVISION_MIN_EVI_FILTER ? nar.confMin.asEvi() : NAL.truth.TRUTH_EVI_MIN;
+                NAL.belief.REVISION_MIN_EVI_FILTER ? NAL.confMin.asEvi() : NAL.truth.TRUTH_EVI_MIN;
                 //;
 
-        Truth truth = p.truth(eviMin, dither, true, nar);
+        Truth truth = p.truth(eviMin, dither, true, NAL);
         if (truth == null)
             return null;
 
@@ -90,8 +90,8 @@ public enum Revision {;
         Task y = Task.tryTask(p.term, punc, truth, (c, tr) ->
                 new UnevaluatedTask(c, punc,
                         tr,
-                        nar.time(), p.start(), p.end(),
-                        Stamp.sample(NAL.STAMP_CAPACITY, stamp /* TODO account for relative evidence contributions */, nar.random())
+                        NAL.time(), p.start(), p.end(),
+                        Stamp.sample(NAL.STAMP_CAPACITY, stamp /* TODO account for relative evidence contributions */, NAL.random())
                 )
         );
         return pair(y, p);

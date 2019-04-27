@@ -67,7 +67,7 @@ public class NARS {
     /**
      * applied in sequence as final step before returning the NAR
      */
-    protected final FasterList<Consumer<NAR>> step = new FasterList<>(8);
+    protected final FasterList<Consumer<NAL<NAL<NAR>>>> step = new FasterList<>(8);
 
 
     public NARS index( Memory concepts) {
@@ -294,7 +294,7 @@ public class NARS {
     /**
      * adds a post-processing step before ready NAR is returned
      */
-    public NARS then(Consumer<NAR> n) {
+    public NARS then(Consumer<NAL<NAL<NAR>>> n) {
         step.add(n);
         return this;
     }

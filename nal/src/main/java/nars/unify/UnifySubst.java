@@ -1,7 +1,7 @@
 package nars.unify;
 
-import nars.Op;
 import nars.NAL;
+import nars.Op;
 import nars.term.Term;
 
 import java.util.Random;

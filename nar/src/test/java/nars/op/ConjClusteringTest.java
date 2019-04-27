@@ -50,7 +50,7 @@ class ConjClusteringTest {
         assert1234(n, b);
     }
 
-    private static void assert1234(NAR n, BeliefTable b) {
+    private static void assert1234(NAL<NAL<NAR>> n, BeliefTable b) {
         Task the = b.taskStream().findFirst().get();
         float p = the.pri();
         assertTrue(p==p);

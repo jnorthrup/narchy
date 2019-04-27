@@ -1,8 +1,8 @@
 package nars.derive.op;
 
 import nars.$;
-import nars.NAR;
 import nars.NAL;
+import nars.NAR;
 import nars.derive.Derivation;
 import nars.term.ProxyTerm;
 import nars.term.Term;

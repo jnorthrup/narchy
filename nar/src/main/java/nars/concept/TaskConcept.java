@@ -1,8 +1,8 @@
 package nars.concept;
 
 import jcog.data.list.FasterList;
-import nars.NAR;
 import nars.NAL;
+import nars.NAR;
 import nars.Task;
 import nars.concept.util.ConceptBuilder;
 import nars.control.MetaGoal;

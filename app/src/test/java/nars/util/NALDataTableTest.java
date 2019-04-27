@@ -5,6 +5,7 @@ import jcog.data.set.MetalLongSet;
 import jcog.random.XoRoShiRo128PlusRandom;
 import jcog.table.ARFF;
 import jcog.table.DataTable;
+import nars.NAL;
 import nars.NAR;
 import nars.NARS;
 import nars.Narsese;
@@ -46,7 +47,7 @@ public class NALDataTableTest {
     }
 
 
-    static NAR validatePrediction(NAR n, String arffData, String... hints) throws IOException, ARFF.ARFFParseError {
+    static NAL<NAL<NAR>> validatePrediction(NAR n, String arffData, String... hints) throws IOException, ARFF.ARFFParseError {
         ArrayHashSet<Row> data = new ArrayHashSet<>();
 
         DataTable dataset = new ARFF(arffData) {

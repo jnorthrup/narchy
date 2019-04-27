@@ -5,6 +5,7 @@ import jcog.data.iterator.ArrayIterator;
 import jcog.data.list.FasterList;
 import jcog.data.list.MetalConcurrentQueue;
 import jcog.pri.Prioritizable;
+import nars.NAL;
 import nars.NAR;
 import nars.control.NARPart;
 import nars.control.channel.ConsumerX;
@@ -46,7 +47,7 @@ abstract public class Exec extends NARPart implements Executor, ConsumerX<ITask>
 
     abstract public void input(Object t);
 
-    private static void taskError(Prioritizable t, Prioritizable x, Throwable ee, NAR nar) {
+    private static void taskError(Prioritizable t, Prioritizable x, Throwable ee, NAL<NAL<NAR>> NAL) {
         //TODO: if(RELEASE)
 //        if (t == x)
 //            nar.logger.error("{} {}", x, ee);
@@ -66,7 +67,7 @@ abstract public class Exec extends NARPart implements Executor, ConsumerX<ITask>
         }
     }
 
-    public void input(Consumer<NAR> r) {
+    public void input(Consumer<NAL<NAL<NAR>>> r) {
         if (concurrent()) {
             ForkJoinPool.commonPool().execute(() -> r.accept(nar));
         } else {
@@ -96,7 +97,7 @@ abstract public class Exec extends NARPart implements Executor, ConsumerX<ITask>
         return concurrencyMax;
     }
 
-    protected final void executeNow(Consumer<NAR> t) {
+    protected final void executeNow(Consumer<NAL<NAL<NAR>>> t) {
         try {
             t.accept(nar);
         } catch (Throwable e) {
@@ -119,10 +120,10 @@ abstract public class Exec extends NARPart implements Executor, ConsumerX<ITask>
         executeNow(x, nar);
     }
 
-    private static void executeNow(ITask x, NAR nar) {
+    private static void executeNow(ITask x, NAL<NAL<NAR>> NAL) {
         ITask t = x;
         try {
-            ITask.run(t, nar);
+            ITask.run(t, NAL);
         } catch (Throwable e) {
             logger.error("{} {}", t, e);
         }
@@ -158,7 +159,7 @@ abstract public class Exec extends NARPart implements Executor, ConsumerX<ITask>
     }
 
 
-    public void clear(NAR n) {
+    public void clear(NAL<NAL<NAR>> n) {
         synchronized (scheduled) {
             synch(n);
             incoming.clear();
@@ -235,7 +236,7 @@ abstract public class Exec extends NARPart implements Executor, ConsumerX<ITask>
     /**
      * flushes the pending work queued for the current time
      */
-    public final void synch(NAR n) {
+    public final void synch(NAL<NAL<NAR>> n) {
         schedule(x -> x.accept(n));
     }
 }

@@ -6,8 +6,8 @@ import jcog.data.list.FasterList;
 import jcog.decide.MutableRoulette;
 import jcog.math.FloatRange;
 import jcog.math.MutableEnum;
-import nars.NAR;
 import nars.NAL;
+import nars.NAR;
 import nars.agent.Game;
 import nars.concept.action.AbstractGoalActionConcept;
 import nars.task.Revision;
@@ -78,18 +78,18 @@ public class Curiosity {
 
         this.rate.set(initialRate);
 
-        a.onFrame((Consumer<NAR>)this::update);
+        a.onFrame((Consumer<NAL<NAL<NAR>>>)this::update);
 
     }
 
-    private void update(NAR nar) {
+    private void update(NAL<NAL<NAR>> NAL) {
         if (!enable.getOpaque())
             return;
 
         float curiConf =
                 //nar.confMin.floatValue()/2;
                 //nar.confMin.floatValue();
-                nar.confMin.floatValue() * 2;
+                NAL.confMin.floatValue() * 2;
                 //nar.confMin.floatValue() * 4;
                 //Util.lerp(1/8f, nar.confMin.floatValue(), Param.TRUTH_MAX_CONF);
                 //nar.confDefault(GOAL)/4;
@@ -100,7 +100,7 @@ public class Curiosity {
                 //w2c(c2w(nar.confDefault(GOAL))/2);
                 //nar.confDefault(GOAL);
 
-        conf.set(Util.clamp(curiConf, nar.confMin.floatValue(), NAL.truth.TRUTH_CONF_MAX));
+        conf.set(Util.clamp(curiConf, NAL.confMin.floatValue(), NAL.truth.TRUTH_CONF_MAX));
 
         int cc = curiosity.size();
 

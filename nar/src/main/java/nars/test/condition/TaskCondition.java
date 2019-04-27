@@ -3,6 +3,7 @@ package nars.test.condition;
 
 import jcog.Texts;
 import jcog.data.list.FasterList;
+import nars.NAL;
 import nars.NAR;
 import nars.Op;
 import nars.Task;
@@ -24,7 +25,7 @@ import static nars.Op.NEG;
 public class TaskCondition implements NARCondition, Predicate<Task>, Consumer<Tasked> {
 
 
-    protected final NAR nar;
+    protected final NAL<NAL<NAR>> NAL;
     private final byte punc;
 
 
@@ -55,7 +56,7 @@ public class TaskCondition implements NARCondition, Predicate<Task>, Consumer<Ta
     @Deprecated protected final TreeMap<Float, Task> similar = new TreeMap();
 
 
-    public TaskCondition(NAR n, long creationStart, long creationEnd, Term term, byte punc, float freqMin, float freqMax, float confMin, float confMax, LongLongPredicate time) throws RuntimeException {
+    public TaskCondition(NAL<NAL<NAR>> n, long creationStart, long creationEnd, Term term, byte punc, float freqMin, float freqMax, float confMin, float confMax, LongLongPredicate time) throws RuntimeException {
 
 
         if (freqMax < freqMin) throw new RuntimeException("freqMax < freqMin");
@@ -64,7 +65,7 @@ public class TaskCondition implements NARCondition, Predicate<Task>, Consumer<Ta
         if (creationEnd - creationStart < 1)
             throw new RuntimeException("cycleEnd must be after cycleStart by at least 1 cycle");
 
-        this.nar = n;
+        this.NAL = n;
         this.time = time;
 
         this.creationStart = creationStart;
@@ -180,7 +181,7 @@ public class TaskCondition implements NARCondition, Predicate<Task>, Consumer<Ta
 
 
     private final boolean creationTimeMatches() {
-        long now = nar.time();
+        long now = NAL.time();
         return (((creationStart == -1) || (now >= creationStart)) &&
                 ((creationEnd == -1) || (now <= creationEnd)));
     }

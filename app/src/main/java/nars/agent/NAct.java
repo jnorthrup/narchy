@@ -7,8 +7,8 @@ import jcog.math.FloatRange;
 import jcog.math.FloatSupplier;
 import jcog.util.FloatConsumer;
 import nars.$;
-import nars.NAR;
 import nars.NAL;
+import nars.NAR;
 import nars.agent.util.UnipolarMotor;
 import nars.attention.What;
 import nars.concept.action.AgentAction;
@@ -357,7 +357,7 @@ public interface NAct {
 //                //0.9f;
 //                1f; //instant
 
-        NAR n = nar();
+        NAL<NAL<NAR>> n = nar();
         GoalActionConcept LA = action(l, (b, g) -> {
             float q = Q.q(b,g);
 
@@ -555,7 +555,7 @@ public interface NAct {
     }
     
     default BooleanPredicate debounce(BooleanPredicate f, float durations) {
-        NAR n = nar();
+        NAL<NAL<NAR>> n = nar();
         final long[] last = {Math.round(n.time() - durations * n.dur())};
 
         return (x)->{

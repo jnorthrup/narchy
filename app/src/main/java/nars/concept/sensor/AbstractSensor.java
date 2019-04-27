@@ -1,6 +1,7 @@
 package nars.concept.sensor;
 
 import jcog.math.FloatRange;
+import nars.NAL;
 import nars.NAR;
 import nars.control.NARPart;
 import nars.term.Term;
@@ -9,11 +10,11 @@ abstract public class AbstractSensor extends NARPart implements GameLoop {
 
     protected final FloatRange res;
 
-    protected AbstractSensor(NAR nar) {
-        this(null, nar);
+    protected AbstractSensor(NAL<NAL<NAR>> NAL) {
+        this(null, NAL);
     }
 
-    protected AbstractSensor(Term id, NAR n) {
+    protected AbstractSensor(Term id, NAL<NAL<NAR>> n) {
         super(id);
 
         //defaults

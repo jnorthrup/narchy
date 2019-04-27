@@ -1,6 +1,7 @@
 package nars.truth.dynamic;
 
 import jcog.util.ObjectLongLongPredicate;
+import nars.NAL;
 import nars.NAR;
 import nars.Task;
 import nars.concept.util.ConceptBuilder;
@@ -20,7 +21,7 @@ import java.util.List;
  */
 abstract public class AbstractDynamicTruth {
 
-    abstract public Truth truth(TaskList var1, /* eviMin, */ NAR nar);
+    abstract public Truth truth(TaskList var1, /* eviMin, */ NAL<NAL<NAR>> NAL);
 
     public final boolean evalComponents(Answer a, ObjectLongLongPredicate<Term> each) {
         return evalComponents((Compound)a.term(), a.time.start, a.time.end, each);
@@ -31,7 +32,7 @@ abstract public class AbstractDynamicTruth {
     /**
      * used to reconstruct a dynamic target from some or all components
      */
-    abstract public Term reconstruct(Compound superterm, List<Task> c, NAR nar, long start, long end);
+    abstract public Term reconstruct(Compound superterm, List<Task> c, NAL<NAL<NAR>> NAL, long start, long end);
 
     /**
      * allow filtering of resolved Tasks

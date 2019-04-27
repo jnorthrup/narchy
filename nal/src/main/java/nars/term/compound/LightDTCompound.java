@@ -1,8 +1,8 @@
 package nars.term.compound;
 
 import jcog.Util;
-import nars.Op;
 import nars.NAL;
+import nars.Op;
 import nars.subterm.Subterms;
 import nars.term.Compound;
 import nars.term.util.TermException;

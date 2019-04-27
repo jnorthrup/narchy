@@ -5,8 +5,8 @@ import jcog.Util;
 import jcog.math.FloatRange;
 import jcog.math.FloatSupplier;
 import jcog.random.SplitMix64Random;
-import nars.NAR;
 import nars.NAL;
+import nars.NAR;
 import nars.agent.Game;
 import nars.attention.What;
 import nars.concept.TaskConcept;
@@ -209,7 +209,7 @@ public class VectorSensorView extends BitmapMatrixView implements BitmapMatrixVi
         super.stopping();
     }
 
-    private void accept(NAR n) {
+    private void accept(NAL<NAL<NAR>> n) {
 
         if (showing()) {
 

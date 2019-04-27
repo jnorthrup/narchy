@@ -8,14 +8,9 @@ import jcog.pri.Prioritized;
 import nars.NAL;
 import nars.Task;
 import nars.control.CauseMerge;
-import nars.task.NALTask;
-import nars.term.Term;
-import nars.truth.Truth;
-import nars.util.Timed;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
-import java.util.function.Supplier;
 
 /**
  * A List of Task's which can be used for various purposes, including dynamic truth and evidence calculations (as utility methods)

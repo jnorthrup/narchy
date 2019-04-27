@@ -1,8 +1,8 @@
 package nars.term.util.builder;
 
 import jcog.data.byt.DynBytes;
-import nars.Op;
 import nars.NAL;
+import nars.Op;
 import nars.subterm.Subterms;
 import nars.term.Compound;
 import nars.term.Term;

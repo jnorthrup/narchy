@@ -1,9 +1,6 @@
 package nars.op.java;
 
-import nars.$;
-import nars.NAR;
-import nars.NARS;
-import nars.Task;
+import nars.*;
 import nars.op.stm.ConjClustering;
 import nars.term.Term;
 import nars.time.Tense;
@@ -216,17 +213,17 @@ public class ThermostatTest {
 
     public static class TaskConceptLogger implements Predicate<Task> {
         private final Predicate<Task> pred;
-        private final NAR nar;
+        private final NAL<NAR> NAL;
 
-        public TaskConceptLogger(NAR n, Predicate<Task> o) {
+        public TaskConceptLogger(NAL<NAR> n, Predicate<Task> o) {
             this.pred = o;
-            this.nar = n;
+            this.NAL = n;
         }
 
         @Override
         public boolean test(Task task) {
             boolean result = pred.test(task);
-            System.out.print(nar.time() + "\t");
+            System.out.print(NAL.time() + "\t");
             //nar.concept(task.target(), false).printSummary(System.out, nar);
             return result;
         }

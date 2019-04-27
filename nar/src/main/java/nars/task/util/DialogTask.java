@@ -4,6 +4,7 @@ import jcog.data.map.ConcurrentFastIteratingHashSet;
 import jcog.data.set.ArrayHashSet;
 import jcog.event.Off;
 import jcog.util.ArrayUtils;
+import nars.NAL;
 import nars.NAR;
 import nars.Op;
 import nars.Task;
@@ -23,7 +24,7 @@ public class DialogTask extends NARPart {
     final ConcurrentFastIteratingHashSet<Task> tasks = new ConcurrentFastIteratingHashSet<>(Task.EmptyArray);
     private final Deriver deriver;
     private final Off monitor;
-    private final NAR nar;
+    private final NAL<NAL<NAR>> NAL;
     final Set<Term> unifyWith = new ArrayHashSet();
 
     public boolean add(Task t) {
@@ -31,7 +32,7 @@ public class DialogTask extends NARPart {
     }
 
     public DialogTask(NAR n, Task... input) {
-        this.nar = n;
+        this.NAL = n;
 
         assert (input.length > 0);
         boolean questions = false, quests = false;
@@ -87,7 +88,7 @@ public class DialogTask extends NARPart {
         Term xx = Image.imageNormalize( x.term() );
         Op xo = xx.op();
 
-        SubUnify uu = new SubUnify(nar.random());
+        SubUnify uu = new SubUnify(NAL.random());
         for (Term u : unifyWith) {
             if (u.op()==xo) { //prefilter
                 uu.clear();

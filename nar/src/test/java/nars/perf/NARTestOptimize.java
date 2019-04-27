@@ -4,9 +4,9 @@ import jcog.lab.DefaultScientist;
 import jcog.lab.Lab;
 import jcog.lab.Opti;
 import jcog.lab.Optilive;
+import nars.NAL;
 import nars.NAR;
 import nars.NARS;
-import nars.NAL;
 import nars.nal.nal1.NAL1Test;
 import nars.nal.nal3.NAL3Test;
 import nars.nal.nal5.NAL5Test;
@@ -40,8 +40,8 @@ class NARTestOptimize {
 //                    NAL8Test.class,
             };
 
-            Lab<NAR> l = new Lab<>(() -> {
-                NAR n = NARS.tmp();
+            Lab<NAL<NAL<NAR>>> l = new Lab<>(() -> {
+                NAL<NAL<NAR>> n = NARS.tmp();
                 n.random();
                 return n;
             })
@@ -49,7 +49,7 @@ class NARTestOptimize {
 //                        (NAR n, int i) -> n.attn.links.setCapacity(i))
 
                 .var("ttlMax", 1 * NAL.derive.TTL_MIN, 8 * NAL.derive.TTL_MIN, 3,
-                        (NAR n, int i) -> n.deriveBranchTTL.set(i))
+                        (NAL<NAL<NAR>> n, int i) -> n.deriveBranchTTL.set(i))
 //                .var("linkFanOut", 1, 16, 1,
 //                        (NAR n, int f) -> Param.LinkFanoutMax = f)
 //                .var("conceptActivation", ScalarValue.EPSILONsqrt, 1f, 0.1f,
@@ -83,7 +83,7 @@ class NARTestOptimize {
 
 
             int suiteIterations = 2;
-            Optilive<NAR, TestNARSuite> o = l.optilive((Supplier<NAR> s) ->
+            Optilive<NAL<NAL<NAR>>, TestNARSuite> o = l.optilive((Supplier<NAL<NAL<NAR>>> s) ->
                             new TestNARSuite(s, testClasses).run(parallel, suiteIterations),
                 (TestNARSuite t) -> (float) t.score());
 

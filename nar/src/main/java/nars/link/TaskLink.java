@@ -5,8 +5,8 @@ import jcog.decide.Roulette;
 import jcog.pri.UnitPrioritizable;
 import jcog.pri.op.PriMerge;
 import jcog.pri.op.PriReturn;
-import nars.NAR;
 import nars.NAL;
+import nars.NAR;
 import nars.Task;
 import nars.concept.Concept;
 import nars.table.TaskTable;
@@ -79,11 +79,11 @@ public interface TaskLink extends UnitPrioritizable, FromTo<Term, TaskLink> {
         return priPunc(rng);
     }
 
-    @Nullable default /* final */Task get(When<NAR> when) {
+    @Nullable default /* final */Task get(When<NAL<NAL<NAR>>> when) {
         return get(punc(when.x.random()), when, null);
     }
 
-    @Nullable default Task get(byte punc, When<NAR> when, Predicate<Task> filter) {
+    @Nullable default Task get(byte punc, When<NAL<NAL<NAR>>> when, Predicate<Task> filter) {
         if (punc == 0)
             return null; //flat-lined tasklink
 

@@ -1,5 +1,6 @@
 package nars.concept;
 
+import nars.NAL;
 import nars.NAR;
 import nars.NARS;
 import nars.Narsese;
@@ -10,7 +11,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 class ActivateTest {
 
-    private final NAR n = new NARS().shell();
+    private final NAL<NAL<NAR>> n = new NARS().shell();
 
 //    @Test
 //    void testConceptFireLinkSelection() throws Narsese.NarseseException {

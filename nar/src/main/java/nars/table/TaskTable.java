@@ -1,5 +1,6 @@
 package nars.table;
 
+import nars.NAL;
 import nars.NAR;
 import nars.Task;
 import nars.control.op.Remember;
@@ -93,7 +94,7 @@ public interface TaskTable {
                 .task(true, forceProject, false) : null;
     }
 
-    @Nullable default /* final */ Task match(When<NAR> w, @Nullable Term template, Predicate<Task> filter) {
+    @Nullable default /* final */ Task match(When<NAL<NAL<NAR>>> w, @Nullable Term template, Predicate<Task> filter) {
         return match(w.start, w.end, template, filter, w.dur, w.x); }
 
     @Nullable default /* final */ Task match(long start, long end, Term template, int dur, NAR nar) {
@@ -106,7 +107,7 @@ public interface TaskTable {
         return match(start, end, true, template, filter, dur, n);
     }
 
-    default Task sample(When<NAR> when, @Nullable Term template, @Nullable Predicate<Task> filter) {
+    default Task sample(When<NAL<NAL<NAR>>> when, @Nullable Term template, @Nullable Predicate<Task> filter) {
 
         if (isEmpty())
             return null;

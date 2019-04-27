@@ -13,6 +13,7 @@ import com.jogamp.opengl.GL2;
 import georegression.struct.point.Point2D_I32;
 import jcog.signal.wave2d.Bitmap2D;
 import nars.$;
+import nars.NAL;
 import nars.NAR;
 import nars.agent.Game;
 import nars.attention.What;
@@ -255,7 +256,7 @@ public class ShapeSensor extends NARPart {
         }
 
         public void input(CauseChannel<ITask> t, long last, What what) {
-            NAR n = what.nar;
+            NAL<NAL<NAR>> n = what.nar;
             long now = n.time();
             for (Term x : image) {
                 ITask xx = new SignalTask($.inh(x, id), BELIEF, $.t(1f, n.confDefault(BELIEF)),

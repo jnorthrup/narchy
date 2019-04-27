@@ -5,8 +5,8 @@ import jcog.data.list.FasterList;
 import jcog.pri.Prioritizable;
 import jcog.sort.SortedArray;
 import nars.$;
-import nars.NAR;
 import nars.NAL;
+import nars.NAR;
 import nars.Task;
 import nars.control.CauseMerge;
 import nars.control.op.Remember;
@@ -275,7 +275,7 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
         float aProp = Float.NaN;
         final double ie = input.evi();
 
-        NAR nar = r.nar;
+        NAL<NAL<NAR>> NAL = r.nar;
 
         for (Object _x : list) {
             if (_x == null) break; //HACK
@@ -292,9 +292,9 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
                 //HACK interpolate truth if only freq differs
                 if ((!x.isCyclic() && !input.isCyclic()) &&
                         Arrays.equals(x.stamp(), input.stamp()) &&
-                        Util.equals(x.conf(), input.conf(), nar.confResolution.floatValue())) {
+                        Util.equals(x.conf(), input.conf(), NAL.confResolution.floatValue())) {
 
-                    yt = $.t((x.freq() + input.freq()) / 2, x.conf()).dither(nar);
+                    yt = $.t((x.freq() + input.freq()) / 2, x.conf()).dither(NAL);
                 }
 
             } else {
@@ -311,7 +311,7 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
                             Intermpolate.intermpolate(
                                     (Compound)inputTerm, (Compound)xTerm,
                                     _aProp,
-                                    nar
+                                    NAL
                             );
 
                     if (!nt.op().taskable)
@@ -322,9 +322,9 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
                     nt = inputTerm;
                 }
 
-                yt = yt.dither(nar);
+                yt = yt.dither(NAL);
 
-                if (yt == null || (nt.equals(inputTerm) && ((yt.equalTruth(xt, nar) || yt.equalTruth(input.truth(), nar)))))
+                if (yt == null || (nt.equals(inputTerm) && ((yt.equalTruth(xt, NAL) || yt.equalTruth(input.truth(), NAL)))))
                     continue;
 
                 if (conclusion != null) {
@@ -347,7 +347,7 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
 
             Task finalOldBelief = oldBelief;
             float finalAProp = aProp;
-            revised = Task.tryTask(newTerm, input.punc(), conclusion, (term, revisionTruth) -> NALTask.the(term, input.punc(), revisionTruth, nar.time(), ETERNAL, ETERNAL, Stamp.merge(input.stamp(), finalOldBelief.stamp(), finalAProp, nar.random()))
+            revised = Task.tryTask(newTerm, input.punc(), conclusion, (term, revisionTruth) -> NALTask.the(term, input.punc(), revisionTruth, NAL.time(), ETERNAL, ETERNAL, Stamp.merge(input.stamp(), finalOldBelief.stamp(), finalAProp, NAL.random()))
             );
             if (revised != null) {
                 //TODO maybe based on relative evidence

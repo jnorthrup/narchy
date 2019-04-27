@@ -1,8 +1,8 @@
 package nars.memory;
 
 import com.github.benmanes.caffeine.cache.*;
-import nars.NAR;
 import nars.NAL;
+import nars.NAR;
 import nars.concept.Concept;
 import nars.concept.PermanentConcept;
 import nars.term.Term;

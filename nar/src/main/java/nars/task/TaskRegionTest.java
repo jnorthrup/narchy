@@ -2,6 +2,7 @@ package nars.task;
 
 import jcog.math.LongInterval;
 import jcog.tree.rtree.HyperRegion;
+import nars.NAL;
 import nars.NAR;
 import nars.NARS;
 import nars.Task;
@@ -18,7 +19,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class TaskRegionTest {
 
     static final Term x = Atomic.atom("x");
-    static final NAR n = NARS.shell();
+    static final NAL<NAL<NAR>> n = NARS.shell();
 
     @Test void testTasksRegionContainsTask() {
         //@1..9[0.6..1;0.9..0.9%]

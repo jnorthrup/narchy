@@ -2,8 +2,8 @@ package nars.term;
 
 import jcog.Paper;
 import jcog.Skill;
-import nars.Op;
 import nars.NAL;
+import nars.Op;
 import nars.term.atom.Atomic;
 import nars.term.var.CommonVariable;
 import nars.term.var.ellipsis.Ellipsis;

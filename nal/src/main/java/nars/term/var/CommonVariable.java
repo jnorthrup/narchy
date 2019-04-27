@@ -2,8 +2,8 @@ package nars.term.var;
 
 import com.google.common.base.Joiner;
 import jcog.WTF;
-import nars.Op;
 import nars.NAL;
+import nars.Op;
 import nars.subterm.AnonSubterms;
 import nars.term.Term;
 import nars.term.Terms;

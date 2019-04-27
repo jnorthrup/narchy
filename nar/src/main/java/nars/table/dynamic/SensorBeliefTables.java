@@ -6,8 +6,8 @@ import jcog.math.FloatSupplier;
 import jcog.math.LongInterval;
 import jcog.pri.op.PriMerge;
 import jcog.sort.FloatRank;
-import nars.NAR;
 import nars.NAL;
+import nars.NAR;
 import nars.Task;
 import nars.attention.What;
 import nars.control.op.Remember;
@@ -85,7 +85,7 @@ public class SensorBeliefTables extends BeliefTables {
 
 
     public void add(Truth value, long start, long end, FloatSupplier pri, short cause, int dur,What w) {
-        NAR n = w.nar;
+        NAL<NAL<NAR>> n = w.nar;
 
         if (value!=null) {
             value = value.dither(
@@ -111,7 +111,7 @@ public class SensorBeliefTables extends BeliefTables {
 
 //    long[] eviShared = null;
 
-    private SeriesTask add(@Nullable Truth next, long nextStart, long nextEnd, Term term, byte punc, int dur, NAR nar) {
+    private SeriesTask add(@Nullable Truth next, long nextStart, long nextEnd, Term term, byte punc, int dur, NAL<NAL<NAR>> NAL) {
 
         SeriesTask nextT = null, last = series.series.last();
         if (last != null) {
@@ -153,13 +153,13 @@ public class SensorBeliefTables extends BeliefTables {
         }
 
         if (next != null) {
-            series.add(nextT = newTask(term, punc, nextStart, nextEnd, next, nar));
+            series.add(nextT = newTask(term, punc, nextStart, nextEnd, next, NAL));
         }
 
         return nextT;
     }
 
-    private SeriesTask newTask(Term term, byte punc, long s, long e, Truth next, NAR nar) {
+    private SeriesTask newTask(Term term, byte punc, long s, long e, Truth next, NAL<NAL<NAR>> NAL) {
         long[] evi;
 
 //        if (Param.REVISION_ALLOW_OVERLAP_IF_DISJOINT_TIME) {
@@ -167,7 +167,7 @@ public class SensorBeliefTables extends BeliefTables {
 //                eviShared = nar.evidence();
 //            evi = eviShared;
 //        } else {
-            evi = nar.evidence(); //unique
+            evi = NAL.evidence(); //unique
 //        }
 
 //        if (Param.SIGNAL_TASK_OCC_DITHER) {

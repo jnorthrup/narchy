@@ -94,11 +94,11 @@ abstract public class GameX extends Game {
         super(id, gameTime, nar);
     }
 
-    public static NAR runRT(Function<NAR, Game> init, float narFPS) {
+    public static NAL<NAL<NAR>> runRT(Function<NAL<NAL<NAR>>, Game> init, float narFPS) {
         return runRT(init, -1, narFPS);
     }
 
-    public static NAR runRT(Function<NAR, Game> init, int threads, float narFPS) {
+    public static NAL<NAL<NAR>> runRT(Function<NAL<NAL<NAR>>, Game> init, int threads, float narFPS) {
         NAR n = baseNAR(narFPS, threads);
 
         Game g = init.apply(n);
@@ -133,7 +133,7 @@ abstract public class GameX extends Game {
      * ex: new PoleCart($.p(Atomic.the(PoleCart.class.getSimpleName()), n.self()), n);
      */
     @Deprecated
-    public static NAR runRTNet(Function<NAR, Game> a, int threads, float narFPS, float netFPS) {
+    public static NAL<NAL<NAR>> runRTNet(Function<NAL<NAL<NAR>>, Game> a, int threads, float narFPS, float netFPS) {
         return runRT((n) -> {
 
             Game aa = a.apply(n);
@@ -302,7 +302,7 @@ abstract public class GameX extends Game {
 
     }
 
-    private static void initPlugins3(NAR n, Game a) {
+    private static void initPlugins3(NAL<NAL<NAR>> n, Game a) {
 
         MetaAgent meta = new MetaAgent(16f, a);
         meta.what().pri(0.25f);

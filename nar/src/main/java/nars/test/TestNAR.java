@@ -654,7 +654,7 @@ public class TestNAR {
         return this;
     }
 
-    final class EarlyExit implements Consumer<NAR> {
+    final class EarlyExit implements Consumer<NAL<NAL<NAR>>> {
 
         final int checkResolution;
         int cycle;

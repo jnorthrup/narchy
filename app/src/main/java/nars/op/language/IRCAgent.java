@@ -1,12 +1,12 @@
 package nars.op.language;
 
+import nars.NAL;
 import nars.NAR;
 import nars.NARS;
-import nars.NAL;
 import nars.Task;
 import nars.attention.What;
-import nars.op.TaskLeak;
 import nars.exe.impl.WorkerExec;
+import nars.op.TaskLeak;
 import nars.op.language.util.IRC;
 import nars.op.stm.ConjClustering;
 import nars.time.clock.RealTime;

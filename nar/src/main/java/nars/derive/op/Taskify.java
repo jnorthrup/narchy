@@ -24,9 +24,9 @@ import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
-import static nars.Op.*;
 import static nars.NAL.derive.DERIVE_FILTER_SIMILAR_TO_PARENTS;
 import static nars.NAL.derive.TermUnifyForkMax;
+import static nars.Op.*;
 import static nars.time.Tense.ETERNAL;
 
 public class Taskify extends ProxyTerm {
@@ -247,7 +247,7 @@ public class Taskify extends ProxyTerm {
         return true;
     }
 
-    protected boolean same(Term derived, byte punc, Truth truth, long start, long end, Task parent, NAR n) {
+    protected boolean same(Term derived, byte punc, Truth truth, long start, long end, Task parent, NAL<NAL<NAR>> n) {
 
         if (DERIVE_FILTER_SIMILAR_TO_PARENTS) {
 

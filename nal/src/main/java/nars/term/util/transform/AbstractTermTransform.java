@@ -1,7 +1,7 @@
 package nars.term.util.transform;
 
-import nars.Op;
 import nars.NAL;
+import nars.Op;
 import nars.subterm.Subterms;
 import nars.subterm.TermList;
 import nars.term.Compound;

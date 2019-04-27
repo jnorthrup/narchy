@@ -1,5 +1,6 @@
 package nars.truth.dynamic;
 
+import nars.NAL;
 import nars.NAR;
 import nars.Task;
 import nars.task.util.TaskList;
@@ -20,12 +21,12 @@ abstract public class AbstractSectTruth extends AbstractDynamicTruth {
     }
 
     @Override
-    public final Truth truth(TaskList l, NAR nar) {
-        return apply(l, nar, unionOrIntersection, unionOrIntersection);
+    public final Truth truth(TaskList l, NAL<NAL<NAR>> NAL) {
+        return apply(l, NAL, unionOrIntersection, unionOrIntersection);
     }
 
     @Nullable
-    private static Truth apply(TaskList l, NAR nar, boolean negComponents, boolean negResult) {
+    private static Truth apply(TaskList l, NAL<NAL<NAR>> NAL, boolean negComponents, boolean negResult) {
         Truth y = null;
         for (TaskRegion li : l) {
             Truth x = (((Task) li)).truth();
@@ -38,7 +39,7 @@ abstract public class AbstractSectTruth extends AbstractDynamicTruth {
             if (y == null) {
                 y = x;
             } else {
-                y = NALTruth.Intersection.apply(y, x, nar);
+                y = NALTruth.Intersection.apply(y, x, NAL);
                 if (y == null)
                     return null;
             }

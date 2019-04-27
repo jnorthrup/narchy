@@ -1,6 +1,7 @@
 package nars.time.event;
 
 import nars.$;
+import nars.NAL;
 import nars.NAR;
 import nars.attention.What;
 import nars.derive.Derivation;
@@ -26,9 +27,9 @@ abstract public class WhenTimeIs extends ScheduledTask {
     }
 
     private static final class WhenTimeIs_Consume extends WhenTimeIs {
-        private final Consumer<NAR> then;
+        private final Consumer<NAL<NAL<NAR>>> then;
 
-        private WhenTimeIs_Consume(long whenOrAfter, Consumer<NAR> then) {
+        private WhenTimeIs_Consume(long whenOrAfter, Consumer<NAL<NAL<NAR>>> then) {
             super(whenOrAfter);
             this.then = then;
         }
@@ -68,39 +69,39 @@ abstract public class WhenTimeIs extends ScheduledTask {
         this.whenOrAfter = whenOrAfter;
     }
 
-    public static When<NAR> range(long subStart, long subEnd, Answer a) {
+    public static When<NAL<NAL<NAR>>> range(long subStart, long subEnd, Answer a) {
         return new When<>(subStart, subEnd, a.dur, a.nar);
     }
 
-    public static When<NAR> eternal(Timed n) {
+    public static When<NAL<NAL<NAR>>> eternal(Timed n) {
         return new When(Tense.ETERNAL, Tense.ETERNAL, n.dur(), n);
     }
 
     /** generates a default 'now' moment: current X clock time with dur/2 radius.
      *  the equal-length past and future periods comprising the extent of the present moment. */
-    public static When<NAR> now(int dur, Timed nar) {
+    public static When<NAL<NAL<NAR>>> now(int dur, Timed nar) {
         long now = nar.time();
         return new When(now - dur/2, now + dur/2, dur, nar);
     }
-    private static When<NAR> now(IntSupplier dur, Timed nar) {
+    private static When<NAL<NAL<NAR>>> now(IntSupplier dur, Timed nar) {
         return now(dur.getAsInt(), nar);
     }
-    public static When<NAR> now(Timed t) {
+    public static When<NAL<NAL<NAR>>> now(Timed t) {
         return now(t.dur(), t);
     }
-    public static When<NAR> now(Derivation d) {
+    public static When<NAL<NAL<NAR>>> now(Derivation d) {
         return now(d::dur, d.nar());
     }
-    public static When<NAR> now(What w) {
+    public static When<NAL<NAL<NAR>>> now(What w) {
         return now(w::dur, w.nar);
     }
 
-    public static When<NAR> since(long when, Timed t) {
+    public static When<NAL<NAL<NAR>>> since(long when, Timed t) {
         long now = t.time();
         return new When(Math.min(when, now), now, t.dur(), t);
     }
 
-    public static When<NAR> until(long when, Timed t) {
+    public static When<NAL<NAL<NAR>>> until(long when, Timed t) {
         long now = t.time();
         return new When(now, Math.max(when, now), t.dur(), t);
     }

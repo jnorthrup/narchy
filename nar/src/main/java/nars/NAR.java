@@ -103,7 +103,7 @@ import static org.fusesource.jansi.Ansi.ansi;
  * * step mode - controlled by an outside system, such as during debugging or testing
  * * thread mode - runs in a pausable closed-loop at a specific maximum framerate.
  */
-public class NAR extends NAL<NAR> implements Consumer<ITask>, NARIn, NAROut, Cycled {
+public class NAR extends NAL<NAL<NAR>> implements Consumer<ITask>, NARIn, NAROut, Cycled {
 
     static final String VERSION = "NARchy v?.?";
     static final Logger logger = Log.logger(NAR.class);
@@ -132,8 +132,8 @@ public class NAR extends NAL<NAR> implements Consumer<ITask>, NARIn, NAROut, Cyc
     };
 
 
-    public final Topic<NAR> eventClear = new ListTopic<>();
-    public final Topic<NAR> eventCycle = new ListTopic<>();
+    public final Topic<NAL<NAL<NAR>>> eventClear = new ListTopic<>();
+    public final Topic<NAL<NAL<NAR>>> eventCycle = new ListTopic<>();
     public final TaskTopic eventTask = new TaskTopic();
     public final Control control;
 
@@ -226,8 +226,8 @@ public class NAR extends NAL<NAR> implements Consumer<ITask>, NARIn, NAROut, Cyc
      *
      * @param change a change event emitted by Parts
      */
-    private void indexPartChange(ObjectBooleanPair<Part<NAR>> change) {
-        Part<NAR> p = change.getOne();
+    private void indexPartChange(ObjectBooleanPair<Part<NAL<NAL<NAR>>>> change) {
+        Part<NAL<NAL<NAR>>> p = change.getOne();
         if (p instanceof How) {
             How h = (How) p;
             if (change.getTwo()) {
@@ -508,7 +508,7 @@ public class NAR extends NAL<NAR> implements Consumer<ITask>, NARIn, NAROut, Cyc
         return want(term, Tense.Eternal, freq, conf);
     }
 
-    public NAR believe(String term, Tense tense, float freq, float conf) {
+    public NAL<NAL<NAR>> believe(String term, Tense tense, float freq, float conf) {
         try {
             believe(priDefault(BELIEF), $(term), time(tense), freq, conf);
         } catch (NarseseException e) {
@@ -542,7 +542,7 @@ public class NAR extends NAL<NAR> implements Consumer<ITask>, NARIn, NAROut, Cyc
         return this;
     }
 
-    public NAR believe(String termString, boolean isTrue) throws NarseseException {
+    public NAL<NAL<NAR>> believe(String termString, boolean isTrue) throws NarseseException {
         believe($(termString), isTrue);
         return this;
     }
@@ -660,7 +660,7 @@ public class NAR extends NAL<NAR> implements Consumer<ITask>, NARIn, NAROut, Cyc
     /**
      * logs tasks and other budgeted items with a summary exceeding a threshold
      */
-    public NAR logPriMin(Appendable out, float priThresh) {
+    public NAL<NAL<NAR>> logPriMin(Appendable out, float priThresh) {
         return log(out, v -> {
             Prioritized b = null;
             if (v instanceof Prioritized) {
@@ -691,7 +691,7 @@ public class NAR extends NAL<NAR> implements Consumer<ITask>, NARIn, NAROut, Cyc
 
     @Nullable
     @Override
-    public final Term term(Part<NAR> p) {
+    public final Term term(Part<NAL<NAL<NAR>>> p) {
         return ((NARPart) p).id;
     }
 
@@ -751,14 +751,14 @@ public class NAR extends NAL<NAR> implements Consumer<ITask>, NARIn, NAROut, Cyc
     /**
      * simplified wrapper for use cases where only the arguments of an operation task, and not the task itself matter
      */
-    public final void addOpN(String atom, BiConsumer<Subterms, NAR> exe) {
+    public final void addOpN(String atom, BiConsumer<Subterms, NAL<NAL<NAR>>> exe) {
         addOp(Atomic.atom(atom), (task, nar) -> {
             exe.accept(task.term().sub(0).subterms(), nar);
             return null;
         });
     }
 
-    public final Operator addOp1(String atom, BiConsumer<Term, NAR> exe) {
+    public final Operator addOp1(String atom, BiConsumer<Term, NAL<NAL<NAR>>> exe) {
         return addOp(Atomic.atom(atom), (task, nar) -> {
 
             Subterms ss = task.term().sub(0).subterms();
@@ -768,7 +768,7 @@ public class NAR extends NAL<NAR> implements Consumer<ITask>, NARIn, NAROut, Cyc
         });
     }
 
-    public final void addOp2(String atom, TriConsumer<Term, Term, NAR> exe) {
+    public final void addOp2(String atom, TriConsumer<Term, Term, NAL<NAL<NAR>>> exe) {
         addOp(Atomic.atom(atom), (task, nar) -> {
 
             Subterms ss = task.term().sub(0).subterms();
@@ -781,7 +781,7 @@ public class NAR extends NAL<NAR> implements Consumer<ITask>, NARIn, NAROut, Cyc
     /**
      * registers an operator
      */
-    public final Operator addOp(Atom name, BiFunction<Task, NAR, Task> exe) {
+    public final Operator addOp(Atom name, BiFunction<Task, NAL<NAL<NAR>>, Task> exe) {
         Operator op = Operator.simple(name, exe);
         memory.set(op);
         return op;
@@ -947,11 +947,11 @@ public class NAR extends NAL<NAR> implements Consumer<ITask>, NARIn, NAROut, Cyc
         return this;
     }
 
-    public NAR inputNarsese(URL url) throws IOException, NarseseException {
+    public NAL<NAL<NAR>> inputNarsese(URL url) throws IOException, NarseseException {
         return inputNarsese(url.openStream());
     }
 
-    public NAR inputNarsese(InputStream inputStream) throws IOException, NarseseException {
+    public NAL<NAL<NAR>> inputNarsese(InputStream inputStream) throws IOException, NarseseException {
         String x = new String(inputStream.readAllBytes());
         input(x);
         return this;
@@ -1000,7 +1000,7 @@ public class NAR extends NAL<NAR> implements Consumer<ITask>, NARIn, NAROut, Cyc
     }
 
     @Nullable
-    public final void runAt(long whenOrAfter, Consumer<NAR> t) {
+    public final void runAt(long whenOrAfter, Consumer<NAL<NAL<NAR>>> t) {
         if (time() >= whenOrAfter)
             exe.input(t); //immediate
         else
@@ -1128,7 +1128,7 @@ public class NAR extends NAL<NAR> implements Consumer<ITask>, NARIn, NAROut, Cyc
      * a frame batches a burst of multiple cycles, for coordinating with external systems in which multiple cycles
      * must be run per control frame.
      */
-    public final Off onCycle(Consumer<NAR> each) {
+    public final Off onCycle(Consumer<NAL<NAL<NAR>>> each) {
         return eventCycle.on(each);
     }
 
@@ -1167,7 +1167,7 @@ public class NAR extends NAL<NAR> implements Consumer<ITask>, NARIn, NAROut, Cyc
     }
      */
 
-    public final DurLoop onDur(Consumer<NAR> on) {
+    public final DurLoop onDur(Consumer<NAL<NAL<NAR>>> on) {
         DurLoop.DurNARConsumer r = new DurLoop.DurNARConsumer(on);
         start(r);
         return r;
@@ -1185,7 +1185,7 @@ public class NAR extends NAL<NAR> implements Consumer<ITask>, NARIn, NAROut, Cyc
         return eventTask.on(listener, punctuations);
     }
 
-    public NAR trace() {
+    public NAL<NAL<NAR>> trace() {
         trace(System.out);
         return this;
     }
@@ -1208,7 +1208,7 @@ public class NAR extends NAL<NAR> implements Consumer<ITask>, NARIn, NAROut, Cyc
         return this == obj;
     }
 
-    public NAR believe(Term c, Tense tense) {
+    public NAL<NAL<NAR>> believe(Term c, Tense tense) {
         believe(c, tense, 1f);
         return this;
     }
@@ -1245,34 +1245,34 @@ public class NAR extends NAL<NAR> implements Consumer<ITask>, NARIn, NAROut, Cyc
         return time.now();
     }
 
-    public NAR inputBinary(File input) throws IOException {
+    public NAL<NAL<NAR>> inputBinary(File input) throws IOException {
         return inputBinary(new GZIPInputStream(new BufferedInputStream(new FileInputStream(input), IO.streamBufferBytesDefault), IO.gzipWindowBytesDefault));
     }
 
-    public NAR outputBinary(File f) throws IOException {
+    public NAL<NAL<NAR>> outputBinary(File f) throws IOException {
         return outputBinary(f, false);
     }
 
-    public final NAR outputBinary(File f, boolean append) throws IOException {
+    public final NAL<NAL<NAR>> outputBinary(File f, boolean append) throws IOException {
         return outputBinary(f, append, ((Task t) -> t));
     }
 
-    public final NAR outputBinary(File f, boolean append, Predicate<Task> each) throws IOException {
+    public final NAL<NAL<NAR>> outputBinary(File f, boolean append, Predicate<Task> each) throws IOException {
         return outputBinary(f, append, (Task t) -> each.test(t) ? t : null);
     }
 
-    public NAR outputBinary(File f, boolean append, Function<Task, Task> each) throws IOException {
+    public NAL<NAL<NAR>> outputBinary(File f, boolean append, Function<Task, Task> each) throws IOException {
         FileOutputStream f1 = new FileOutputStream(f, append);
         OutputStream ff = new GZIPOutputStream(f1, IO.gzipWindowBytesDefault);
         outputBinary(ff, each);
         return this;
     }
 
-    public final NAR outputBinary(OutputStream o) {
+    public final NAL<NAL<NAR>> outputBinary(OutputStream o) {
         return outputBinary(o, (Task x) -> x);
     }
 
-    public final NAR outputBinary(OutputStream o, Predicate<Task> filter) {
+    public final NAL<NAL<NAR>> outputBinary(OutputStream o, Predicate<Task> filter) {
         return outputBinary(o, (Task x) -> filter.test(x) ? x : null);
     }
 
@@ -1282,7 +1282,7 @@ public class NAR extends NAL<NAR> implements Consumer<ITask>, NARIn, NAROut, Cyc
      * the each function allows transforming each task to an optional output form.
      * if this function returns null it will not output that task (use as a filter).
      */
-    public NAR outputBinary(OutputStream o, Function<Task, Task> each) {
+    public NAL<NAL<NAR>> outputBinary(OutputStream o, Function<Task, Task> each) {
 
         Util.time(logger, "outputBinary", () -> {
 
@@ -1322,7 +1322,7 @@ public class NAR extends NAL<NAR> implements Consumer<ITask>, NARIn, NAROut, Cyc
         return this;
     }
 
-    public NAR outputText(OutputStream o, Function<Task, Task> each) {
+    public NAL<NAL<NAR>> outputText(OutputStream o, Function<Task, Task> each) {
 
 
         PrintStream ps = new PrintStream(o);
@@ -1350,15 +1350,15 @@ public class NAR extends NAL<NAR> implements Consumer<ITask>, NARIn, NAROut, Cyc
         return this;
     }
 
-    public NAR output(File o, boolean binary) throws FileNotFoundException {
+    public NAL<NAL<NAR>> output(File o, boolean binary) throws FileNotFoundException {
         return output(new BufferedOutputStream(new FileOutputStream(o), IO.outputBufferBytesDefault), binary);
     }
 
-    public NAR output(File o, Function<Task, Task> f) throws FileNotFoundException {
+    public NAL<NAL<NAR>> output(File o, Function<Task, Task> f) throws FileNotFoundException {
         return outputBinary(new BufferedOutputStream(new FileOutputStream(o), IO.outputBufferBytesDefault), f);
     }
 
-    public NAR output(OutputStream o, boolean binary) {
+    public NAL<NAL<NAR>> output(OutputStream o, boolean binary) {
         if (binary) {
             return outputBinary(o, (Task x) -> x.isDeleted() ? null : x);
         } else {

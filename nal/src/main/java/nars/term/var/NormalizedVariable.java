@@ -22,8 +22,8 @@ package nars.term.var;
 
 
 import nars.$;
-import nars.Op;
 import nars.NAL;
+import nars.Op;
 import nars.term.Variable;
 import nars.term.anon.AnonID;
 import org.jetbrains.annotations.Nullable;

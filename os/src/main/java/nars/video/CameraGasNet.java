@@ -7,6 +7,7 @@ import jcog.math.FloatNormalized;
 import jcog.math.FloatSupplier;
 import jcog.signal.wave2d.Bitmap2D;
 import nars.$;
+import nars.NAL;
 import nars.NAR;
 import nars.agent.Game;
 import nars.term.Term;
@@ -25,7 +26,7 @@ import java.util.stream.IntStream;
  * manages reading a camera to a pixel grid of SensorConcepts
  * monochrome
  */
-public class CameraGasNet<P extends Bitmap2D> implements Consumer<NAR> {
+public class CameraGasNet<P extends Bitmap2D> implements Consumer<NAL<NAL<NAR>>> {
 
     private final Timed timed;
 

@@ -257,7 +257,7 @@ public class Opjects extends DefaultTermizer {
 
     interface InstanceMethodValueModel {
 
-        void update(Term instance, Object obj, Method method, Object[] args, Object nextValue, NAR nar);
+        void update(Term instance, Object obj, Method method, Object[] args, Object nextValue, NAL<NAL<NAR>> NAL);
     }
 
 
@@ -268,12 +268,12 @@ public class Opjects extends DefaultTermizer {
 
 
         @Override
-        public void update(Term instance, Object obj, Method method, Object[] args, Object nextValue, NAR nar) {
+        public void update(Term instance, Object obj, Method method, Object[] args, Object nextValue, NAL<NAL<NAR>> NAL) {
 
 
 
-            long now = nar.time();
-            int dur = nar.dur();
+            long now = NAL.time();
+            int dur = NAL.dur();
             long start = now - dur / 2;
             long end = now + dur / 2;
 
@@ -286,7 +286,7 @@ public class Opjects extends DefaultTermizer {
 
             if (!isVoid) {
                 Term t = opTerm(instance, method, args, nextValue);
-                value = value(t, f, start, end, nar);
+                value = value(t, f, start, end, NAL);
             } else {
                 value = null;
             }
@@ -295,7 +295,7 @@ public class Opjects extends DefaultTermizer {
 
             NALTask feedback;
             if (isVoid || evokedOrInvoked) {
-                feedback = feedback(opTerm(instance, method, args, isVoid ? null : $.varDep(1)), start, end, nar);
+                feedback = feedback(opTerm(instance, method, args, isVoid ? null : $.varDep(1)), start, end, NAL);
             } else {
                 feedback = null;
             }
@@ -310,7 +310,7 @@ public class Opjects extends DefaultTermizer {
 
         }
 
-        public NALTask feedback(Term nt, long start, long end, NAR nar) {
+        public NALTask feedback(Term nt, long start, long end, NAL<NAL<NAR>> NAL) {
 
             NALTask feedback =
 //                new TruthletTask(nt, BELIEF,
@@ -320,14 +320,14 @@ public class Opjects extends DefaultTermizer {
 //                            end, uninvokeFreq,
 //                            uninvokeEvi
 //                    ), nar);
-                    NALTask.the(nt, BELIEF, PreciseTruth.byEvi(invokeFreq, invokeEvi), start, start, end, nar.evidence());
+                    NALTask.the(nt, BELIEF, PreciseTruth.byEvi(invokeFreq, invokeEvi), start, start, end, NAL.evidence());
             if (NAL.DEBUG) feedback.log("Invoked");
             feedback.priMax(beliefPri);
             return feedback;
         }
 
 
-        public NALTask value(Term nextTerm, float freq, long start, long end, NAR nar) {
+        public NALTask value(Term nextTerm, float freq, long start, long end, NAL<NAL<NAR>> NAL) {
             Term nt = nextTerm;
             if (nt.op() == NEG) {
                 nt = nt.unneg();
@@ -343,7 +343,7 @@ public class Opjects extends DefaultTermizer {
 //                            doubtEvi
 //                    ),
 //                    nar);
-                    NALTask.the(nt, BELIEF, PreciseTruth.byEvi(freq, beliefEvi), start, start, end, nar.evidence());
+                    NALTask.the(nt, BELIEF, PreciseTruth.byEvi(freq, beliefEvi), start, start, end, NAL.evidence());
 
             if (NAL.DEBUG) value.log("Invoke Result");
 
@@ -554,7 +554,7 @@ public class Opjects extends DefaultTermizer {
         }
 
         @Override
-        protected void disable(NAR n) {
+        protected void disable(NAL<NAL<NAR>> n) {
             probing.remove(this);
         }
 

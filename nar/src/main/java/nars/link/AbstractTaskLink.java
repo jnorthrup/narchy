@@ -6,8 +6,8 @@ import jcog.pri.ScalarValue;
 import jcog.pri.op.PriMerge;
 import jcog.pri.op.PriReturn;
 import jcog.util.FloatFloatToFloatFunction;
-import nars.Op;
 import nars.NAL;
+import nars.Op;
 import nars.task.util.TaskException;
 import nars.term.Term;
 

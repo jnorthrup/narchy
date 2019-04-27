@@ -1,24 +1,13 @@
 package nars.op;
 
-import com.google.common.base.Splitter;
-import jcog.TODO;
 import jcog.WTF;
-import jcog.util.ArrayUtils;
-import nars.$;
-import nars.term.Term;
-import nars.term.atom.Atom;
 import org.apache.commons.vfs2.*;
 import org.apache.commons.vfs2.util.WeakRefFileListener;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.net.URI;
 import java.net.URL;
-import java.util.List;
-
-import static nars.Op.INH;
-import static nars.Op.PROD;
 
 /** File and URL access interface (through VFS) */
 public class FileFunc {

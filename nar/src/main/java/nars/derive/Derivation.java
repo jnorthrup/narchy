@@ -6,9 +6,9 @@ import jcog.data.set.ArrayHashSet;
 import jcog.data.set.MetalLongSet;
 import jcog.math.Longerval;
 import jcog.pri.ScalarValue;
+import nars.NAL;
 import nars.NAR;
 import nars.Op;
-import nars.NAL;
 import nars.Task;
 import nars.attention.What;
 import nars.control.CauseMerge;
@@ -504,7 +504,7 @@ public class Derivation extends PreDerivation {
         this.what = w;
         //if (this.what!=w) { .. }
 
-        NAR p = this.nar(), n = w.nar;
+        NAL<NAL<NAR>> p = this.nar(), n = w.nar;
         if (p != n) {
 
             this.reset();

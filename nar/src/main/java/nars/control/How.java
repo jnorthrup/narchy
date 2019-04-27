@@ -2,6 +2,7 @@ package nars.control;
 
 import jcog.Skill;
 import jcog.pri.Prioritizable;
+import nars.NAL;
 import nars.NAR;
 import nars.attention.PriNode;
 import nars.attention.What;
@@ -114,10 +115,10 @@ import static nars.time.Tense.TIMELESS;
 //        sleepUntil(nar.time()+1);
 //    }
 
-    public boolean inactive(NAR nar) {
+    public boolean inactive(NAL<NAL<NAR>> NAL) {
         if (sleepUntil == TIMELESS)
             return false;
-        return inactive(nar.time());
+        return inactive(NAL.time());
     }
 
     boolean inactive(long now) {

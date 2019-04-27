@@ -2,6 +2,7 @@ package nars.video;
 
 import com.github.sarxos.webcam.Webcam;
 import nars.$;
+import nars.NAL;
 import nars.NAR;
 import nars.control.NARPart;
 import spacegraph.SpaceGraph;
@@ -26,7 +27,7 @@ public class NARVideo extends NARPart {
         volatile Surface surface;
         volatile private JoglDisplay surfaceWindow = null;
 
-        Video(NAR nar, Webcam cam) {
+        Video(NAL<NAL<NAR>> NAL, Webcam cam) {
             super($.p($.the("video"), $.the(cam.getName())));
             this.cam = cam;
             surface = new Gridding(); 

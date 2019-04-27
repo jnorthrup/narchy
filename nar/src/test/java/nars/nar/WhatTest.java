@@ -5,6 +5,7 @@
 package nars.nar;
 
 
+import nars.NAL;
 import nars.NAR;
 import nars.NARS;
 import org.junit.jupiter.api.Test;
@@ -17,7 +18,7 @@ class WhatTest {
      *      and also sharing cpu time (in some proportion).
      */
     @Test void testCompartmentalization1() {
-        NAR n = NARS.tmp();
+        NAL<NAL<NAR>> n = NARS.tmp();
 
     }
 

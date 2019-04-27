@@ -2,9 +2,9 @@ package nars.term.util.transform;
 
 import jcog.random.XorShift128PlusRandom;
 import nars.$;
+import nars.NAL;
 import nars.Narsese;
 import nars.Op;
-import nars.NAL;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.Variable;

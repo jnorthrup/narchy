@@ -1,8 +1,8 @@
 package nars.eval;
 
 import jcog.data.set.ArrayHashSet;
-import nars.Op;
 import nars.NAL;
+import nars.Op;
 import nars.term.Compound;
 import nars.term.Functor;
 import nars.term.Term;

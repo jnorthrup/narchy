@@ -1,8 +1,8 @@
 package nars.truth;
 
 import jcog.WTF;
-import nars.NAR;
 import nars.NAL;
+import nars.NAR;
 import nars.table.BeliefTable;
 import nars.task.util.Answer;
 import nars.term.Term;

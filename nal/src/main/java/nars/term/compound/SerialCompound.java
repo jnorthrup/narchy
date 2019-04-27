@@ -2,8 +2,8 @@ package nars.term.compound;
 
 import com.google.common.primitives.Ints;
 import jcog.data.byt.DynBytes;
-import nars.Op;
 import nars.NAL;
+import nars.Op;
 import nars.The;
 import nars.io.IO;
 import nars.io.TermIO;

@@ -2,8 +2,8 @@ package nars.term.util.transform;
 
 import jcog.random.XorShift128PlusRandom;
 import nars.$;
-import nars.Narsese;
 import nars.NAL;
+import nars.Narsese;
 import nars.derive.premise.PatternTermBuilder;
 import nars.derive.premise.PremiseRuleSource;
 import nars.term.Compound;

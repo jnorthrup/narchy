@@ -1,7 +1,7 @@
 package nars.table;
 
-import nars.NAR;
 import nars.NAL;
+import nars.NAR;
 import nars.Task;
 import nars.task.util.Answer;
 import nars.term.Term;

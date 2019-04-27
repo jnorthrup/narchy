@@ -11,6 +11,7 @@ import nars.NAL;
 import nars.Op;
 import nars.Task;
 import nars.task.Tasked;
+import nars.task.util.TaskList;
 import nars.task.util.TaskRegion;
 import nars.term.Compound;
 import nars.term.Term;
@@ -19,7 +20,6 @@ import nars.term.util.TermException;
 import nars.time.Tense;
 import nars.truth.Stamp;
 import nars.truth.Truth;
-import nars.task.util.TaskList;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;

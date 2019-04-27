@@ -5,6 +5,7 @@ import jcog.Texts;
 import jcog.Util;
 import jcog.data.list.FasterList;
 import jcog.math.FloatAveragedWindow;
+import nars.NAL;
 import nars.NAR;
 import nars.exe.Exec;
 import nars.task.AbstractTask;
@@ -85,7 +86,7 @@ abstract public class MultiExec extends Exec {
     }
 
     @Override
-    public final void input(Consumer<NAR> r) {
+    public final void input(Consumer<NAL<NAR>> r) {
         execute(r);
     }
 

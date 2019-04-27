@@ -3,10 +3,10 @@ package nars.op.language;
 
 import nars.*;
 import nars.attention.What;
-import nars.op.TaskLeak;
 import nars.derive.Derivers;
 import nars.derive.impl.BatchDeriver;
 import nars.exe.impl.UniExec;
+import nars.op.TaskLeak;
 import nars.op.language.util.IRC;
 import nars.op.stm.ConjClustering;
 import nars.term.Term;

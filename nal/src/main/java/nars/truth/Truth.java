@@ -22,8 +22,8 @@ package nars.truth;
 
 import jcog.Texts;
 import jcog.Util;
-import nars.Op;
 import nars.NAL;
+import nars.Op;
 import nars.Task;
 import nars.truth.polation.TruthIntegration;
 import org.jetbrains.annotations.Nullable;

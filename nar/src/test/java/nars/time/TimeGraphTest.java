@@ -6,7 +6,6 @@ import nars.$;
 import nars.Narsese;
 import nars.Op;
 import nars.term.Term;
-import nars.time.TimeGraph;
 import org.eclipse.collections.impl.set.mutable.primitive.IntHashSet;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;

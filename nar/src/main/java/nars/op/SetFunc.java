@@ -10,9 +10,9 @@ import nars.subterm.Subterms;
 import nars.term.Functor;
 import nars.term.Term;
 import nars.term.atom.Atomic;
-import nars.term.util.transform.InlineFunctor;
 import nars.term.functor.UnaryParametricBidiFunctor;
 import nars.term.util.SetSectDiff;
+import nars.term.util.transform.InlineFunctor;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Comparator;

@@ -23,7 +23,6 @@ package nars.term;
 
 import jcog.Util;
 import jcog.data.list.FasterList;
-import nars.NAL;
 import nars.Op;
 import nars.The;
 import nars.subterm.Subterms;

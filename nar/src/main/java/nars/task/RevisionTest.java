@@ -93,7 +93,7 @@ public class RevisionTest {
 
     @Test void testNonAdjacentTasks() throws Narsese.NarseseException {
 //        if (Param.REVISION_ALLOW_DILUTE_UNION) { //HACK requires truth dilution to be enabled, which ideally will be controlled on a per-revision basis. not statically
-            NAR n = NARS.shell();
+            NAL<NAL<NAR>> n = NARS.shell();
 
             Task t01 = t(1, 0.9f, 0, 1).apply(n);
             Task t02 = t(1, 0.9f, 0, 2).apply(n);
@@ -120,7 +120,7 @@ public class RevisionTest {
 
     }
 
-    private Task merge(Task t01, Task t45, NAR n) {
+    private Task merge(Task t01, Task t45, NAL<NAL<NAR>> n) {
         return Revision.merge(n, false, new Task[] { t01, t45 }).getOne();
     }
 
@@ -456,7 +456,7 @@ public class RevisionTest {
             assertEquals(ab, Intermpolate.dtDiff(b, a), ScalarValue.EPSILON); //commutative
         }
 
-        NAR s = NARS.shell();
+        NAL<NAL<NAR>> s = NARS.shell();
 
         Term concept = a.concept();
         assertEquals(concept, b.concept(), "concepts differ: " + a + ' ' + b);

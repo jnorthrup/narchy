@@ -5,11 +5,11 @@ import jcog.func.TriConsumer;
 import jcog.math.FloatRange;
 import jcog.net.UDPeer;
 import nars.attention.What;
-import nars.op.TaskLeak;
 import nars.control.NARPart;
 import nars.control.channel.CauseChannel;
 import nars.io.IO;
 import nars.io.TaskIO;
+import nars.op.TaskLeak;
 import nars.task.ActiveQuestionTask;
 import nars.task.ITask;
 import nars.time.clock.RealTime;
@@ -27,7 +27,7 @@ import static jcog.net.UDPeer.Command.TELL;
 /**
  * InterNARchy / InterNARS P2P Network Interface for a NAR
  */
-public class InterNAR extends NARPart implements TriConsumer<NAR, ActiveQuestionTask, Task> {
+public class InterNAR extends NARPart implements TriConsumer<NAL<NAR>, ActiveQuestionTask, Task> {
 
     public static final Logger logger = LoggerFactory.getLogger(InterNAR.class);
     private final int port;
@@ -236,7 +236,7 @@ public class InterNAR extends NARPart implements TriConsumer<NAR, ActiveQuestion
 
 
     @Override
-    public void accept(NAR NAR, ActiveQuestionTask question, Task answer) {
+    public void accept(NAL<NAL<NAR>> NAL, ActiveQuestionTask question, Task answer) {
         UDPeer.Msg q = question.meta("UDPeer");
         if (q == null)
             return;

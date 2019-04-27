@@ -1,6 +1,7 @@
 package nars.derive;
 
 import nars.$;
+import nars.NAL;
 import nars.NAR;
 import nars.NARS;
 import nars.derive.impl.BatchDeriver;
@@ -27,7 +28,7 @@ class DeriverTest {
 
     private final List<TestNAR> tests = $.newArrayList();
 
-    private static void print(NAR n, PrintStream p) {
+    private static void print(NAL<NAL<NAR>> n, PrintStream p) {
         derivers(n).forEach(d -> {
             p.println(d);
             d.rules.printRecursive(p);

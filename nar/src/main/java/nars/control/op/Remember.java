@@ -3,19 +3,19 @@ package nars.control.op;
 import jcog.WTF;
 import jcog.data.list.FasterList;
 import jcog.pri.Prioritizable;
-import nars.NAR;
 import nars.NAL;
+import nars.NAR;
 import nars.Task;
 import nars.attention.What;
 import nars.concept.Concept;
 import nars.concept.TaskConcept;
 import nars.op.stm.ConjClustering;
+import nars.table.dynamic.ImageBeliefTable;
 import nars.task.*;
 import nars.task.proxy.SpecialTermTask;
 import nars.task.util.TaskException;
 import nars.term.Term;
 import nars.term.util.Image;
-import nars.table.dynamic.ImageBeliefTable;
 import nars.time.Tense;
 import nars.truth.Truth;
 import org.jetbrains.annotations.Nullable;
@@ -213,7 +213,7 @@ public class Remember extends AbstractTask {
         c.add(this, n);
 
         if (remembered != null && !remembered.isEmpty()) {
-            remembered.forEachWith((ITask r, NAR nn) -> {
+            remembered.forEachWith((ITask r, NAL<NAL<NAR>> nn) -> {
                 if (r.equals(this.input)) //HACK
                     link((Task) r, c, w); //root
                 else
@@ -307,7 +307,7 @@ public class Remember extends AbstractTask {
      *
      * @param dCreationDurs (creation(next) - creation(prev))/durCycles
      */
-    protected static boolean rememberFilter(Task prev, Task next, Task remembered, float dPri, NAR n) {
+    protected static boolean rememberFilter(Task prev, Task next, Task remembered, float dPri, NAL<NAL<NAR>> n) {
 
         long dDurCycles = Math.max(0, next.creation() - prev.creation());
         float dCreationDurs = dDurCycles == 0 ? 0 : (dDurCycles / ((float) n.dur()));
