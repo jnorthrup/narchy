@@ -684,6 +684,10 @@ public class Derivation extends PreDerivation {
         return nar;
     }
 
+    public long[] evidence() {
+        return concSingle ? evidenceSingle() : evidenceDouble();
+    }
+
     public final class DerivationTransform extends UnifyTransform {
 
         public transient Function<Variable,Term> xy = null;

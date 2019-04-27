@@ -68,7 +68,7 @@ import static nars.term.util.Image.imageNormalize;
  * <patham9_> and require at least one dep-var to be unified in dep-var unification.
  * <patham9_> in principle the restriction to have at least one dep-var unified could be skipped, but the additional weaker result doesn't add any value to the system
  */
-public class UniSubst extends Functor implements InlineFunctor {
+public class UniSubst extends Functor implements InlineFunctor<Evaluation> {
 
 
     /** must involve a variable substitution, deriving a new term */

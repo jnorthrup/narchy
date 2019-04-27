@@ -17,7 +17,7 @@ import nars.derive.impl.BatchDeriver;
 import nars.exe.impl.UniExec;
 import nars.gui.NARui;
 import nars.gui.sensor.VectorSensorView;
-import nars.index.concept.CaffeineMemory;
+import nars.memory.CaffeineMemory;
 import nars.op.stm.STMLinkage;
 import nars.sensor.Bitmap2DSensor;
 import nars.term.Term;

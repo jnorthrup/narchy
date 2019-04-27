@@ -4,7 +4,6 @@ import jcog.data.byt.DynBytes;
 import jcog.pri.Prioritizable;
 import jcog.pri.Weight;
 import jcog.util.ArrayUtils;
-import nars.NAR;
 import nars.task.ITask;
 
 import java.util.Arrays;
@@ -35,7 +34,7 @@ public abstract class BatchableTask extends Weight implements ITask, Prioritizab
         return COMMAND;
     }
 
-    final public ITask next(NAR n) {
+    final public ITask next(Object n) {
         throw new UnsupportedOperationException();
     }
 

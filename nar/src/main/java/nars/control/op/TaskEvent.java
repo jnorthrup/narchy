@@ -15,8 +15,8 @@ public final class TaskEvent extends AbstractTask {
     }
 
     @Override
-    public ITask next(NAR n) {
-        emit(task, n);
+    public ITask next(Object n) {
+        emit(task, (NAR)n);
         return null;
     }
 

@@ -91,8 +91,9 @@ public class ActiveQuestionTask extends NALTaskX implements Consumer<Task> {
     }
 
     @Override
-    public ITask next(What w) {
+    public ITask next(Object ww) {
 
+        What w = (What)ww;
 
         //synchronized (this) {
             if (onTask!=null)

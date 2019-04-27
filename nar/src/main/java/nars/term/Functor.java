@@ -15,6 +15,7 @@ import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
 import nars.term.control.AbstractPred;
+import nars.term.functor.AbstractInlineFunctor;
 import nars.term.functor.AbstractInlineFunctor1;
 import nars.term.functor.AbstractInlineFunctor2;
 import nars.term.functor.LambdaFunctor;
@@ -168,11 +169,11 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, B
         return f1(fName(termAtom), /*safeFunctor*/(ff));
     }
 
-    public static Functor f1Inline(String termAtom, Function<Term, Term> ff) {
+    public static AbstractInlineFunctor f1Inline(String termAtom, Function<Term, Term> ff) {
         return new AbstractInlineFunctor1.MyAbstractInlineFunctor1Inline(termAtom, ff);
     }
 
-    public static Functor f2Inline(String termAtom, BiFunction<Term, Term, Term> ff) {
+    public static AbstractInlineFunctor f2Inline(String termAtom, BiFunction<Term, Term, Term> ff) {
         return new AbstractInlineFunctor2.MyAbstractInlineFunctor2Inline(termAtom, ff);
     }
 

@@ -100,8 +100,8 @@ public class Inperience2 extends How {
         }
 
         @Override
-        public ITask next(NAR n) {
-            return Remember.the(this, n); //copied from UnevaluatedTask
+        public ITask next(Object n) {
+            return Remember.the(this, (NAR)n); //copied from UnevaluatedTask
         }
     }
 }

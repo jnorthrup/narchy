@@ -3,8 +3,6 @@ package nars.task;
 import jcog.Log;
 import jcog.data.list.FasterList;
 import jcog.pri.Prioritizable;
-import nars.NAR;
-import nars.attention.What;
 import org.slf4j.Logger;
 
 /**
@@ -28,26 +26,19 @@ import org.slf4j.Logger;
  */
 @Deprecated public interface ITask extends Prioritizable {
 
-    default ITask next(What w) {
-        return next(w.nar);
-    }
+    byte punc();
 
     /**
      * process the next stage; returns null if finished
      */
-    @Deprecated ITask next(NAR n);
+    @Deprecated ITask next(Object n);
 
-
-    byte punc();
-
-
-    static void run(FasterList<ITask> t, What w) {
+    @Deprecated static <W> void run(FasterList<ITask> t, W w) {
         t.forEachWith(ITask::run, w);
     }
 
-
     /** TODO rewrite as ForkJoin recursive task */
-    static <W> void run(ITask t, W w) {
+    @Deprecated static <W> void run(ITask t, W w) {
         ITask x = t;
         do {
             x = x.next(w);

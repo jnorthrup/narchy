@@ -167,7 +167,7 @@ public class Taskify extends ProxyTerm {
         DerivedTask t = Task.tryTask(x, punc, tru, (C, tr) ->
                 NAL.DEBUG ?
                         new DebugDerivedTask(C, punc, tr, S, E, d) :
-                        new DerivedTask(C, punc, tr, S, E, d)
+                        new DerivedTask(C, punc, tr, d.time(), S, E, d.evidence())
         );
 
         if (t == null) {

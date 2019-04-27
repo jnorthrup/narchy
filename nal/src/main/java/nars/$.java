@@ -8,7 +8,6 @@ import jcog.Texts;
 import jcog.Util;
 import jcog.data.list.FasterList;
 import jcog.util.ArrayUtils;
-import nars.op.FileFunc;
 import nars.subterm.AnonSubterms;
 import nars.subterm.Subterms;
 import nars.subterm.TermList;

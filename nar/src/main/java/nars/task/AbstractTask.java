@@ -2,7 +2,6 @@ package nars.task;
 
 import jcog.Util;
 import jcog.pri.Prioritizable;
-import nars.NAR;
 import org.eclipse.collections.impl.block.factory.Comparators;
 import org.jetbrains.annotations.Nullable;
 
@@ -146,7 +145,12 @@ public abstract class AbstractTask implements ITask, Prioritizable {
             }
         }
 
-
+        @Override
+        public ITask next(Object n) {
+            for (ITask t: tasks)
+                ITask.run(t, n);
+            return null;
+        }
 
     }
     /** execute the given tasks */
@@ -157,7 +161,12 @@ public abstract class AbstractTask implements ITask, Prioritizable {
         public TasksIterable(Iterable<? extends ITask> x) {
             this.tasks = x;
         }
-
+        @Override
+        public ITask next(Object n) {
+            for (ITask t: tasks)
+                ITask.run(t, n);
+            return null;
+        }
 
     }
 

@@ -1,4 +1,4 @@
-package nars.index.concept;
+package nars.memory;
 
 import com.google.common.collect.Streams;
 import jcog.data.byt.AbstractBytes;

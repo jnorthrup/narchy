@@ -12,8 +12,7 @@ import jcog.pri.op.PriMerge;
 import jcog.service.Parts;
 import jcog.util.FloatFloatToFloatFunction;
 import jcog.util.Range;
-import nars.eval.Evaluator;
-import nars.term.Functor;
+import nars.attention.PriNode;
 import nars.term.Term;
 import nars.term.atom.Atom;
 import nars.term.util.builder.MemoizingTermBuilder;
@@ -414,9 +413,9 @@ public abstract class NAL<W> extends Parts<Term, W> implements Timed {
     /**
      * cycles per duration
      */
-    abstract int dur();
+    abstract public int dur();
 
-    abstract long time();
+    abstract public long time();
 
     public final float confDefault(final byte punctuation) {
 

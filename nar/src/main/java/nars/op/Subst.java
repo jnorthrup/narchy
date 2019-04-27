@@ -17,7 +17,7 @@ import static nars.term.atom.Bool.Null;
  * if STRICT is 4th argument, then there will only be a valid result
  * if the input has changed (not if nothing changed, and not if the attempted change had no effect)
  */
-public class Subst extends Functor implements InlineFunctor, The {
+public class Subst extends Functor implements InlineFunctor<Evaluation>, The {
 
 
     public static final Subst replace = new Subst("replace");

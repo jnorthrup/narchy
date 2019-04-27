@@ -173,7 +173,7 @@ public class DynTaskify extends TaskList {
             }
         }
 
-        return Answer.merge(term1, t, ()->stamp(nar::random), beliefOrGoal, s, e, nar);
+        return Answer.merge(this, term1, t, ()->stamp(nar::random), beliefOrGoal, s, e, nar);
     }
 
 

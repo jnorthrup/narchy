@@ -163,7 +163,7 @@ public class SetFunc {
             }
 
             private Term eval(Term t, Atomic atom) {
-                return $.func(atom, t).eval(nar);
+                return nar.eval($.func(atom, t));
             }
 
             @Override
@@ -196,7 +196,7 @@ public class SetFunc {
 
     }
 
-    abstract static class AbstractBinarySetFunctor extends Functor implements InlineFunctor, The {
+    abstract static class AbstractBinarySetFunctor extends Functor implements InlineFunctor<Evaluation>, The {
 
         protected AbstractBinarySetFunctor(String id) {
             super(id);

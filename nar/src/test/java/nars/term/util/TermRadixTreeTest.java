@@ -3,7 +3,7 @@ package nars.term.util;
 import jcog.data.byt.AbstractBytes;
 import nars.NARS;
 import nars.Narsese;
-import nars.index.concept.RadixTreeMemory;
+import nars.memory.RadixTreeMemory;
 import nars.term.Term;
 import nars.term.Termed;
 import nars.term.atom.Atomic;

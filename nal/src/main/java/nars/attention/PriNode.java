@@ -6,7 +6,6 @@ import jcog.data.graph.NodeGraph;
 import jcog.math.FloatRange;
 import jcog.pri.PLink;
 import nars.$;
-import nars.NAR;
 import nars.term.Term;
 
 public class PriNode extends PLink<Term> {
@@ -71,15 +70,15 @@ public class PriNode extends PLink<Term> {
         this.pri(pri);
     }
 
-
-    public PriNode parent(NAR n, PriNode... parent) {
-        MapNodeGraph<PriNode, Object> g = n.control.graph;
-
-        NodeGraph.MutableNode<PriNode,Object> thisNode = g.addNode(this);
-        parent(parent, g, thisNode);
-
-        return this;
-    }
+//
+//    public PriNode parent(NAR n, PriNode... parent) {
+//        MapNodeGraph<PriNode, Object> g = n.control.graph;
+//
+//        NodeGraph.MutableNode<PriNode,Object> thisNode = g.addNode(this);
+//        parent(parent, g, thisNode);
+//
+//        return this;
+//    }
 
     /** re-parent */
     public void parent(PriNode[] parent, MapNodeGraph<PriNode, Object> g, NodeGraph.MutableNode<PriNode, Object> thisNode) {

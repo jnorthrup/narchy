@@ -34,7 +34,7 @@ public class UniExec extends Exec {
     }
 
     protected void next(NAR nar) {
-        nar.time.schedule(this::executeNow);
+        nar.exe.schedule(this::executeNow);
 
         /*
         simplest possible implementation: flat 1 work unit per each what

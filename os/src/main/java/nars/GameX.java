@@ -23,7 +23,7 @@ import nars.derive.premise.PremiseDeriverRuleSet;
 import nars.derive.timing.ActionTiming;
 import nars.exe.impl.WorkerExec;
 import nars.gui.NARui;
-import nars.index.concept.CaffeineMemory;
+import nars.memory.CaffeineMemory;
 import nars.op.Arithmeticize;
 import nars.op.AutoencodedBitmap;
 import nars.op.Eternalizer;

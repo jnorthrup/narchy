@@ -8,9 +8,7 @@ import jcog.pri.UnitPrioritizable;
 import jcog.pri.op.PriMerge;
 import jcog.pri.op.PriReturn;
 import jcog.tree.rtree.HyperRegion;
-import nars.attention.What;
 import nars.control.CauseMerge;
-import nars.control.op.Perceive;
 import nars.subterm.Subterms;
 import nars.task.DerivedTask;
 import nars.task.ITask;
@@ -1009,25 +1007,10 @@ public interface Task extends Truthed, Stamp, TermedDelegate, ITask, TaskRegion,
     }
 
     @Override
-    default ITask next(What w) {
-        return Perceive.perceive(this, w);
+    default ITask next(Object w) {
+        //return Perceive.perceive(this, w);
+        return null;
     }
-
-
-//    /**
-//     * evaluate the midpoint value of every pair of times, and then multiply by x area between them
-//     */
-//    default float eviIntegRectMid(long dur, long... times) {
-//        float e = 0;
-//        for (int i = 1, timesLength = times.length; i < timesLength; i++) {
-//            long a = times[i - 1];
-//            long b = times[i];
-//            assert (b > a);
-//            long ab = (a + b) / 2L;
-//            e += (b - a) * evi(ab, dur);
-//        }
-//        return e;
-//    }
 
 
     /**

@@ -8,7 +8,7 @@ import jcog.util.Range;
 import nars.*;
 import nars.attention.What;
 import nars.control.channel.CauseChannel;
-import nars.index.concept.Memory;
+import nars.memory.Memory;
 import nars.subterm.Subterms;
 import nars.task.ITask;
 import nars.task.NALTask;

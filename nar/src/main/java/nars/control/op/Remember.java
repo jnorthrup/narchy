@@ -114,15 +114,10 @@ public class Remember extends AbstractTask {
         return Remember.class.getSimpleName() + '(' + input + ')';
     }
 
-    @Override
-    public ITask next(NAR n) {
-
-        throw new UnsupportedOperationException();
-    }
 
     @Override
-    public ITask next(What w) {
-        commit(input, store, w);
+    public ITask next(Object w) {
+        commit(input, store, (What)w);
         return null;
     }
 

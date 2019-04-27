@@ -1,7 +1,6 @@
 package nars.task;
 
 import nars.Task;
-import nars.derive.Derivation;
 import nars.term.Term;
 import nars.truth.Truth;
 import org.jetbrains.annotations.Nullable;
@@ -12,11 +11,13 @@ import org.jetbrains.annotations.Nullable;
  */
 public class DerivedTask extends GenericNALTask {
 
-    
-
-    public DerivedTask(Term tc, byte punct, @Nullable Truth truth, long start, long end, Derivation d) {
-        super(tc, punct, truth, d.time(), start, end, d.concSingle ? d.evidenceSingle() : d.evidenceDouble());
+    public DerivedTask(Term tc, byte punct, @Nullable Truth truth, long now, long start, long end, long[] evi) {
+        super(tc, punct, truth, now, start, end, evi);
     }
+
+//    public DerivedTask(Term tc, byte punct, @Nullable Truth truth, long start, long end, Derivation d) {
+//        super(tc, punct, truth, d.time(), start, end, d.concSingle ? d.evidenceSingle() : d.evidenceDouble());
+//    }
 
     @Override
     public final boolean isInput() {

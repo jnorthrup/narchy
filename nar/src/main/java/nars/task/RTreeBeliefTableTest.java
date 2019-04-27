@@ -27,6 +27,7 @@ import java.util.List;
 import static java.util.stream.Collectors.toList;
 import static jcog.Texts.n4;
 import static nars.Op.BELIEF;
+import static nars.task.TaskTest.task;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -39,7 +40,7 @@ class RTreeBeliefTableTest {
     }
 
     private static Task add(BeliefTable r, Termed x, float freq, float conf, long start, long end, long evi, NAR n) {
-        Task a = $.task(x.term(), BELIEF, freq, conf).time(start, start, end).evidence(evi).apply(n);
+        Task a = task(x.term(), BELIEF, freq, conf).time(start, start, end).evidence(evi).apply(n);
         a.pri(0.5f);
         r.remember(Remember.the(a, n));
         return a;
@@ -65,7 +66,7 @@ class RTreeBeliefTableTest {
         while ((time = n.time()) < end) {
             float f = func.valueOf(time);
             System.out.print(time + "=" + f + '\t');
-            n.input($.task(TaskRegionTest.x, BELIEF, f, 0.9f).time(time).withPri(0.5f).apply(n));
+            n.input(task(TaskRegionTest.x, BELIEF, f, 0.9f).time(time).withPri(0.5f).apply(n));
             n.run(period);
             c.beliefs().print();
             System.out.println();

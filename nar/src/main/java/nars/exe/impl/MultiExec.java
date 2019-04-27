@@ -81,7 +81,7 @@ abstract public class MultiExec extends Exec {
     }
 
     @Override protected final void next(NAR nar) {
-        nar.time.schedule(this::execute);
+        nar.exe.schedule(this::execute);
     }
 
     @Override
@@ -176,9 +176,9 @@ abstract public class MultiExec extends Exec {
         }
 
         @Override
-        public ITask next(NAR n) {
+        public ITask next(Object n) {
             long end = nanoTime();
-            queueLatency(start, end, n);
+            queueLatency(start, end, (NAR)n);
             return null;
         }
 

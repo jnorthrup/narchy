@@ -5,6 +5,7 @@ import nars.NAR;
 import nars.NARS;
 import nars.Narsese;
 import nars.op.stm.STMLinkage;
+import nars.task.TaskTest;
 import nars.term.Term;
 import nars.test.NALTest;
 import nars.test.TestNAR;
@@ -1044,7 +1045,7 @@ public class NAL7Test extends NALTest {
         for (int i = 0; i < cycles; i++) {
 
             if (i == cycles - 1) {
-                $.task($("y"), QUESTION, null).time(0, x, x + 2 * eventDT).withPri(1f).apply(t.nar);
+                TaskTest.task($("y"), QUESTION, null).time(0, x, x + 2 * eventDT).withPri(1f).apply(t.nar);
             }
 
             t

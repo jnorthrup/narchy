@@ -1,8 +1,6 @@
 package nars.task;
 
-import nars.NAR;
 import nars.Task;
-import nars.control.op.Remember;
 import nars.task.util.TaskException;
 import nars.term.Term;
 import nars.truth.Truth;
@@ -37,8 +35,9 @@ public class UnevaluatedTask extends GenericNALTask {
 //        return postProcess(q, false);
 //    }
     @Override
-    public ITask next(NAR n) {
+    public ITask next(Object n) {
         /* no evaluation */
-        return Remember.the(this, n);
+        //return Remember.the(this, n);
+        return null;
     }
 }

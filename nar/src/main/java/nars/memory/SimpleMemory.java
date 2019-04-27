@@ -1,4 +1,4 @@
-package nars.index.concept;
+package nars.memory;
 
 import jcog.data.map.MRUMap;
 import nars.concept.Concept;

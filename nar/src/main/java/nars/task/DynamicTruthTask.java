@@ -1,10 +1,8 @@
 package nars.task;
 
-import nars.Op;
 import nars.NAL;
+import nars.Op;
 import nars.Task;
-import nars.attention.What;
-import nars.control.op.Remember;
 import nars.task.util.TaskException;
 import nars.term.Term;
 import nars.truth.Truth;
@@ -43,8 +41,9 @@ public class DynamicTruthTask extends UnevaluatedTask /*NALTask*/ {
     }
 
     @Override
-    public ITask next(What n) {
-        return Remember.the(this, NAL.belief.DYNAMIC_TRUTH_TASK_STORE, true, true, n);
+    public ITask next(Object n) {
+        //return Remember.the(this, NAL.belief.DYNAMIC_TRUTH_TASK_STORE, true, true, (What)n);
+        return null;
     }
 
     @Override

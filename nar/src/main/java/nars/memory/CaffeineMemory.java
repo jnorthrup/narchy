@@ -1,4 +1,4 @@
-package nars.index.concept;
+package nars.memory;
 
 import com.github.benmanes.caffeine.cache.*;
 import nars.NAR;

@@ -529,14 +529,6 @@ public interface Term extends Termlike, Termed, Comparable<Term> {
      */
     Term unneg();
 
-
-    @Deprecated
-    default Term eval(NAL nar) {
-        Term y = Evaluation.solveFirst(this, nar);
-        return y == null ? this : y;
-    }
-
-
     /**
      * event list, sorted by time
      * sorted by time; decomposes inner parallel conj

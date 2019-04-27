@@ -19,7 +19,7 @@ import static org.junit.jupiter.api.Assertions.*;
 /**
  * Created by me on 11/3/15.
  */
-class TaskTest {
+public class TaskTest {
 
     @Test
     void testTenseEternality() throws Narsese.NarseseException {

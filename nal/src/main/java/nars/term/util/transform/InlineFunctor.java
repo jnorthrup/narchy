@@ -9,7 +9,7 @@ import java.util.function.BiFunction;
  * transformation or target construction processes.
  * these are good for simple functors that are guaranteed to return quickly.
  */
-public interface InlineFunctor extends BiFunction<Object/*Evaluation*/, Subterms, Term> {
+public interface InlineFunctor<E> extends BiFunction<E /*Evaluation*/, Subterms, Term> {
 
     /** dont override this one, override the Subterms arg version */
     default /*final */ Term applyInline(Term args) {

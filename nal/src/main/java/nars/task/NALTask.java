@@ -22,11 +22,11 @@ public abstract class NALTask extends UnitPri implements Task {
 
     private volatile boolean cyclic;
 
-    public static NALTask the(Term c, byte punct, Truth tr, When<NAL> when) {
+    public static NALTask the(Term c, byte punct, Truth tr, When<? extends NAL> when) {
         return the(c, punct, tr, when.x.time.now(), when.start, when.end, new long[]{when.x.time.nextStamp()});
     }
 
-    public static NALTask the(Term c, byte punct, Truth tr, When<NAL> when, long[] evidence) {
+    public static NALTask the(Term c, byte punct, Truth tr, When<? extends NAL> when, long[] evidence) {
         return the(c, punct, tr, when.x.time.now(), when.start, when.end, evidence);
     }
 

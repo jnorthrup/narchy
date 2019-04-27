@@ -1,7 +1,7 @@
 package nars.term.index;
 
 import nars.*;
-import nars.index.concept.*;
+import nars.memory.*;
 import nars.subterm.Subterms;
 import nars.term.Compound;
 import nars.term.Term;

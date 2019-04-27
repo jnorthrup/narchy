@@ -1,17 +1,16 @@
 package nars.derive;
 
 import nars.Builtin;
-import nars.NAR;
 import nars.NAL;
+import nars.NAR;
 import nars.op.Equal;
 import nars.op.SetFunc;
 import nars.term.Functor;
 import nars.term.Term;
 import nars.term.atom.Atomic;
 import nars.term.functor.AbstractInlineFunctor2;
-import nars.term.util.transform.InlineFunctor;
-import nars.term.util.Image;
 import nars.term.util.conj.ConjMatch;
+import nars.term.util.transform.InlineFunctor;
 import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 
 import java.util.Map;
@@ -53,9 +52,7 @@ public enum DerivationFunctors {
                 d.polarizeTask,
                 d.polarizeBelief,
                 d.polarizeRandom,
-                Image.imageExt,
-                Image.imageInt,
-                Image.imageNormalize,
+
                 SetFunc.union,
                 SetFunc.interSect,
                 SetFunc.unionSect,

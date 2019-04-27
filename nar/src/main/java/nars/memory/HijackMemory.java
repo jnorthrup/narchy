@@ -1,4 +1,4 @@
-package nars.index.concept;
+package nars.memory;
 
 import jcog.pri.PLink;
 import jcog.pri.PLinkHashCached;

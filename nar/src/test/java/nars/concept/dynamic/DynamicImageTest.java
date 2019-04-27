@@ -4,9 +4,9 @@ import nars.NAR;
 import nars.NARS;
 import nars.Narsese;
 import nars.concept.Concept;
+import nars.table.dynamic.ImageBeliefTable;
 import nars.term.Term;
 import nars.term.util.Image;
-import nars.term.util.ImageBeliefTable;
 import org.junit.jupiter.api.Test;
 
 import static nars.$.$;

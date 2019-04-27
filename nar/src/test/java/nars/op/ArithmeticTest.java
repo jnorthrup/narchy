@@ -51,8 +51,8 @@ class ArithmeticTest {
     @Test
     void testAddCommutive() throws Narsese.NarseseException {
 
-        String fwd = $.$("add(#x,1)").eval(n).toString();
-        String rev = $.$("add(1,#x)").eval(n).toString();
+        String fwd = n.eval($.$("add(#x,1)")).toString();
+        String rev = n.eval($.$("add(1,#x)")).toString();
         assertEquals("add(#1,1)", fwd);
         assertEquals(fwd, rev);
 
@@ -100,7 +100,7 @@ class ArithmeticTest {
 
     static void assertEval(Term out, String in) {
         assertEquals( out,
-                $$(in).eval(NARS.shell())
+                NARS.shell().eval($$(in))
         );
     }
 
@@ -199,9 +199,9 @@ class ArithmeticTest {
 
     @Test
     void testComparator() {
-        TermTest.assertEq("-1", $$("cmp(1,2)").eval(n));
-        TermTest.assertEq("cmp(1,2,-1)", $$("cmp(1,2,#x)").eval(n));
-        TermTest.assertEq("cmp(#1,2,#2)", $$("cmp(#1,2,#x)").eval(n));
+        TermTest.assertEq("-1", n.eval($$("cmp(1,2)")));
+        TermTest.assertEq("cmp(1,2,-1)", n.eval($$("cmp(1,2,#x)")));
+        TermTest.assertEq("cmp(#1,2,#2)", n.eval($$("cmp(#1,2,#x)")));
 
         assertArithmetic("(f(1)==>f(2))", "[((f(#1)==>f(#2))&&cmp(#1,#2,-1)), ((f(#1)==>f(add(#1,1)))&&equal(#1,1))]");
         assertArithmetic("(f(2)==>f(1))", "[((f(#1)==>f(#2))&&cmp(#2,#1,-1)), ((f(add(#1,1))==>f(#1))&&equal(#1,1))]");
@@ -209,44 +209,44 @@ class ArithmeticTest {
 
     @Test
     void testCmpReduceToEqual1() {
-        TermTest.assertEq("equal(#1,#2)", $$("cmp(#x,#y,0)").eval(n));
-        TermTest.assertEq("equal(#1,#2)", $$("cmp(#y,#x,0)").eval(n));
+        TermTest.assertEq("equal(#1,#2)", n.eval($$("cmp(#x,#y,0)")));
+        TermTest.assertEq("equal(#1,#2)", n.eval($$("cmp(#y,#x,0)")));
     }
     @Test
     void testCmpReduceToEqual2() {
-        TermTest.assertEq("equal((a,#1),(b,#2))", $$("cmp((a,#x),(b,#y),0)").eval(n));
-        TermTest.assertEq("equal((a,#2),(b,#1))", $$("cmp((b,#x),(a,#y),0)").eval(n));
+        TermTest.assertEq("equal((a,#1),(b,#2))", n.eval($$("cmp((a,#x),(b,#y),0)")));
+        TermTest.assertEq("equal((a,#2),(b,#1))", n.eval($$("cmp((b,#x),(a,#y),0)")));
     }
 
     @Test
     void testComparatorOrdering1() {
-        TermTest.assertEq("cmp(1,2,-1)", $$("cmp(2,1,#x)").eval(n));
+        TermTest.assertEq("cmp(1,2,-1)", n.eval($$("cmp(2,1,#x)")));
 
-        TermTest.assertEq("cmp(1,2,-1)", $$("cmp(2,1,1)").eval(n));
+        TermTest.assertEq("cmp(1,2,-1)", n.eval($$("cmp(2,1,1)")));
     }
 
     @Test
     void testComparatorOrdering_withVars() {
-        TermTest.assertEq("cmp(1,2,-1)", $$("cmp(2,1,#x)").eval(n));
+        TermTest.assertEq("cmp(1,2,-1)", n.eval($$("cmp(2,1,#x)")));
     }
 
     @Test
     void testComparatorCondition_1() {
-        TermTest.assertEq("f(4)", $$("(&&, cmp(#1,3,1), f(#1), equal(#1,4))").eval(n));
+        TermTest.assertEq("f(4)", n.eval($$("(&&, cmp(#1,3,1), f(#1), equal(#1,4))")));
     }
 
     @Test
     void testComparatorCondition_2() {
         //backwards solve possible because cmp==0
-        TermTest.assertEq("f(4,4)", $$("(&&, cmp(#1,#2,0), f(#1,#2), equal(#1,4))").eval(n));
+        TermTest.assertEq("f(4,4)", n.eval($$("(&&, cmp(#1,#2,0), f(#1,#2), equal(#1,4))")));
 
     }
 
     @Test
     void testComparatorWithVars_DontEval() {
-        TermTest.assertEq("cmp(x(1),x(2),-1)", $$("cmp(x(1),x(2),#c)").eval(n)); //constant
-        TermTest.assertEq("cmp(x(#1),x(#2),#3)", $$("cmp(x(#a),x(#b),#c)").eval(n)); //variable
-        TermTest.assertEq("cmp(x(#1),x(#1),0)", $$("cmp(x(#a),x(#a),#c)").eval(n)); //variable, but equality known
+        TermTest.assertEq("cmp(x(1),x(2),-1)", n.eval($$("cmp(x(1),x(2),#c)"))); //constant
+        TermTest.assertEq("cmp(x(#1),x(#2),#3)", n.eval($$("cmp(x(#a),x(#b),#c)"))); //variable
+        TermTest.assertEq("cmp(x(#1),x(#1),0)", n.eval($$("cmp(x(#a),x(#a),#c)"))); //variable, but equality known
     }
 
     @Test void testNonConjArithmeticize() {

@@ -287,7 +287,7 @@ public class Premise implements Comparable<Premise> {
         if (match != null) {
             //assert (task.isQuest() || match.punc() == BELIEF) : "quest answered with a belief but should be a goal";
 
-            return task.onAnswered(match, d.nar());
+            return task.onAnswered(match);
 
         }
 

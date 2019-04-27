@@ -31,12 +31,13 @@ import nars.control.How;
 import nars.control.NARPart;
 import nars.control.Why;
 import nars.control.channel.CauseChannel;
+import nars.eval.Evaluation;
 import nars.eval.Evaluator;
 import nars.eval.Facts;
 import nars.exe.Exec;
 import nars.exe.NARLoop;
-import nars.index.concept.Memory;
 import nars.io.IO;
+import nars.memory.Memory;
 import nars.subterm.Subterms;
 import nars.table.BeliefTable;
 import nars.task.ITask;
@@ -1675,4 +1676,12 @@ public class NAR extends NAL<NAR> implements Consumer<ITask>, NARIn, NAROut, Cyc
         return next;
     }
 
+    @Deprecated public Term eval(Term x) {
+        if (x instanceof Compound) {
+            Term y = Evaluation.solveFirst((Compound)x, this);
+            return y == null ? x : y;
+        } else {
+            return x;
+        }
+    }
 }

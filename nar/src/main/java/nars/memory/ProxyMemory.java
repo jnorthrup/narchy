@@ -1,4 +1,4 @@
-package nars.index.concept;
+package nars.memory;
 
 import nars.concept.Concept;
 import nars.concept.PermanentConcept;

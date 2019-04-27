@@ -317,15 +317,15 @@ public class Evaluation {
     /**
      * returns first result. returns null if no solutions
      */
-    public static Term solveFirst(Term x, NAR n) {
+    public static Term solveFirst(Compound x, NAR n) {
         return solveFirst(x, n::axioms);
     }
 
-    public static Set<Term> eval(Term x, NAR n) {
+    public static Set<Term> eval(Compound x, NAR n) {
         return eval(x, true, false, n);
     }
 
-    public static Set<Term> eval(Term x, boolean includeTrues, boolean includeFalses, NAR n) {
+    public static Set<Term> eval(Compound x, boolean includeTrues, boolean includeFalses, NAR n) {
         return eval(x, includeTrues, includeFalses, n::axioms);
     }
 

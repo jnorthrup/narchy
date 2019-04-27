@@ -211,7 +211,7 @@ abstract public class Inperience extends TaskLeakTransform {
 
         @Override
         protected Term reify(Task t) {
-            Term tt = t.term().eval(nar);
+            Term tt = nar.eval(t.term());
 
             if (!tt.op().taskable)
                 return Bool.Null;

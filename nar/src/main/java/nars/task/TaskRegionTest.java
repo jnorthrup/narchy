@@ -2,7 +2,6 @@ package nars.task;
 
 import jcog.math.LongInterval;
 import jcog.tree.rtree.HyperRegion;
-import nars.$;
 import nars.NAR;
 import nars.NARS;
 import nars.Task;
@@ -13,6 +12,7 @@ import nars.term.atom.Atomic;
 import org.junit.jupiter.api.Test;
 
 import static nars.Op.BELIEF;
+import static nars.task.TaskTest.task;
 import static org.junit.jupiter.api.Assertions.*;
 
 class TaskRegionTest {
@@ -25,7 +25,7 @@ class TaskRegionTest {
         //$.50 x. 1 %.60;.90%
 
         TasksRegion c = new TasksRegion(1, 9, 0.6f, 1f, 0.9f, 0.9f);
-        Task x = task(0.6f, 0.9f, 1, 1);
+        Task x = _task(0.6f, 0.9f, 1, 1);
         assertTrue(c.contains((LongInterval)x));
         assertTrue(c.intersects((LongInterval)x));
         assertTrue(c.contains((HyperRegion)x));
@@ -37,22 +37,22 @@ class TaskRegionTest {
     @Test
     void testMBR() {
 
-        Task a = task(0.5f, 0.5f, 0, 1);
+        Task a = _task(0.5f, 0.5f, 0, 1);
         assertEquals(0, a.start());
         assertEquals(1, a.end());
         assertEquals(2, a.range());
         assertSame(a, a.mbr(a));
 
         //stretch only f, c
-        Task b = task(0.3f, 0.7f, 0, 1);
+        Task b = _task(0.3f, 0.7f, 0, 1);
         validateStretch("@0..1[0.3..0.5;0.5..0.7%]", a, b);
 
         //stretch only time
-        Task c = task(0.5f, 0.5f, -1, 3);
+        Task c = _task(0.5f, 0.5f, -1, 3);
         validateStretch("@-1..3[0.5..0.5;0.5..0.5%]", a, c);
 
         //stretch both time and f,c:
-        Task d = task(0.3f, 0.7f, -1, 3);
+        Task d = _task(0.3f, 0.7f, -1, 3);
         validateStretch("@-1..3[0.3..0.5;0.5..0.7%]", a, d);
 
         assertEquals(a.mbr(d), a.mbr(b).mbr(a.mbr(c)));
@@ -86,7 +86,7 @@ class TaskRegionTest {
         assertSame(ba, ba.mbr(ab));
     }
 
-    private static Task task(float f, float c, long s, long e) {
-        return $.task(x, BELIEF, f, c).time(s, e).apply(n);
+    private static Task _task(float f, float c, long s, long e) {
+        return task(x, BELIEF, f, c).time(s, e).apply(n);
     }
 }

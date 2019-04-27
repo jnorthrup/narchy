@@ -3,7 +3,7 @@ package nars;
 import nars.derive.Derivers;
 import nars.derive.impl.BatchDeriver;
 import nars.exe.impl.WorkerExec;
-import nars.index.concept.CaffeineMemory;
+import nars.memory.CaffeineMemory;
 import nars.op.language.NARHear;
 import nars.op.language.NARSpeak;
 import nars.op.stm.ConjClustering;

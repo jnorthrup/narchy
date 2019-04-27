@@ -1,8 +1,8 @@
 package nars.term;
 
-import nars.$;
 import nars.*;
 import nars.io.NarseseTest;
+import nars.task.TaskTest;
 import nars.task.util.TaskException;
 import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
@@ -12,8 +12,8 @@ import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-import static nars.$.*;
-import static nars.Op.terms;
+import static nars.$.$;
+import static nars.$.t;
 import static nars.Op.*;
 import static nars.term.TermTestMisc.assertValid;
 import static nars.term.TermTestMisc.assertValidTermValidConceptInvalidTaskContent;
@@ -552,7 +552,7 @@ public class TermReductionsTest extends NarseseTest {
             assertTrue(t instanceof Compound, x + " :: " + t);
             assertTrue(t.dt() != DTERNAL);
 
-            Task y = task(t, Op.BELIEF, t(1f, 0.9f)).apply(n);
+            Task y = TaskTest.task(t, Op.BELIEF, t(1f, 0.9f)).apply(n);
 
             y.term().printRecursive();
             assertEquals(x, y.term().toString());
