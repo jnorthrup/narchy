@@ -2,7 +2,6 @@ package nars.unify.constraint;
 
 import nars.$;
 import nars.Op;
-import nars.derive.premise.PremiseRuleSource;
 import nars.subterm.Subterms;
 import nars.term.Term;
 import nars.term.Variable;
@@ -22,6 +21,10 @@ abstract public class TermMatcher {
 
         int v = x.volume();
         return (xs != 0 || v > 1) ? new IsHas(x.op(), xs, v, depth) : new Is(x.op());
+    }
+
+    public static Term volMin(int volMin) {
+        return $.func("volMin", $.the(volMin));
     }
 
     /**
@@ -159,7 +162,7 @@ abstract public class TermMatcher {
             this.struct = struct;
             this.anyOrAll = anyOrAll;
             this.volMin = volMin;
-            this.param = $.p(Op.strucTerm(struct), anyOrAll ? ANY : ALL, PremiseRuleSource.volMin(volMin));
+            this.param = $.p(Op.strucTerm(struct), anyOrAll ? ANY : ALL, volMin(volMin));
             this.cost = Math.max(
                     (anyOrAll ? 0.21f : 0.19f) - 0.001f * Integer.bitCount(struct),
                     0.1f);
@@ -217,11 +220,11 @@ abstract public class TermMatcher {
 
             Atom isParam = Op.ops[this.is].strAtom;
             if (struct > 0 && volMin > 1) {
-                this.param = $.p(isParam, Op.strucTerm(struct), PremiseRuleSource.volMin(volMin));
+                this.param = $.p(isParam, Op.strucTerm(struct), volMin(volMin));
             } else if (struct > 0) {
                 this.param = $.p(isParam, Op.strucTerm(struct));
             } else {
-                this.param = $.p(isParam, PremiseRuleSource.volMin(volMin));
+                this.param = $.p(isParam, volMin(volMin));
             }
         }
         @Override

@@ -5,7 +5,7 @@ import nars.NARS;
 import nars.NAL;
 import nars.Task;
 import nars.attention.What;
-import nars.bag.leak.TaskLeak;
+import nars.op.TaskLeak;
 import nars.exe.impl.WorkerExec;
 import nars.op.language.util.IRC;
 import nars.op.stm.ConjClustering;

@@ -7,7 +7,7 @@ import nars.term.Functor;
 import nars.term.Term;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
-import nars.term.functor.InlineFunctor;
+import nars.term.util.transform.InlineFunctor;
 import org.jetbrains.annotations.Nullable;
 
 import static nars.term.atom.Bool.Null;

@@ -2,13 +2,9 @@ package nars.unify.constraint;
 
 import nars.$;
 import nars.Op;
-import nars.derive.premise.op.ConstraintAsPremisePredicate;
 import nars.term.Term;
-import nars.term.Terms;
 import nars.term.Variable;
-import nars.term.control.PREDICATE;
 import nars.unify.Unify;
-import org.jetbrains.annotations.Nullable;
 
 public final class UnaryConstraint<U extends Unify> extends UnifyConstraint<U> {
 
@@ -24,16 +20,6 @@ public final class UnaryConstraint<U extends Unify> extends UnifyConstraint<U> {
         this.trueOrFalse = trueOrFalse;
     }
 
-    @Override
-    public @Nullable PREDICATE preFilter(Term taskPattern, Term beliefPattern) {
-        byte[] xInTask = Terms.pathConstant(taskPattern, x);
-        byte[] xInBelief = Terms.pathConstant(beliefPattern, x);
-        if (xInTask!=null || xInBelief!=null) {
-            return ConstraintAsPremisePredicate.the(this, xInTask, xInBelief, null, null);
-        }
-
-        return null;
-    }
 
     @Override
     public float cost() {

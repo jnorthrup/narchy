@@ -7,9 +7,8 @@ import jcog.WTF;
 import jcog.data.bit.MetalBitSet;
 import jcog.data.list.FasterList;
 import jcog.data.set.MetalLongSet;
-import nars.NAR;
-import nars.Op;
 import nars.NAL;
+import nars.Op;
 import nars.Task;
 import nars.task.Tasked;
 import nars.task.util.TaskRegion;
@@ -20,7 +19,7 @@ import nars.term.util.TermException;
 import nars.time.Tense;
 import nars.truth.Stamp;
 import nars.truth.Truth;
-import nars.truth.dynamic.TaskList;
+import nars.task.util.TaskList;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
@@ -67,7 +66,7 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
      * computes the final truth value
      */
     @Nullable
-    public abstract Truth truth(double eviMin, boolean dither, boolean tCrop, NAR nar);
+    public abstract Truth truth(double eviMin, boolean dither, boolean tCrop, NAL nar);
 
     public final boolean add(TaskRegion t) {
         return add(t.task());
@@ -354,7 +353,7 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
     }
 
 
-    float intermpolateAndCull(NAR nar) {
+    float intermpolateAndCull(NAL nar) {
 
         final int root = firstValidIndex();
         int thisSize = size();

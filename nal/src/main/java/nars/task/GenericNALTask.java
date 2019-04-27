@@ -1,5 +1,6 @@
 package nars.task;
 
+import jcog.math.LongInterval;
 import nars.NAL;
 import nars.Task;
 import nars.task.util.TaskException;
@@ -26,7 +27,7 @@ public class GenericNALTask extends ActualNALTask {
     protected GenericNALTask(Term term, byte punc, @Nullable Truth truth, long creation, long start, long end, long[] stamp) throws TaskException {
         super(term, punc, truth, creation, start, end, stamp);
 
-        if (start!=ETERNAL && end-start > NAL.belief.TASK_RANGE_LIMIT)
+        if (start!= LongInterval.ETERNAL && end-start > NAL.belief.TASK_RANGE_LIMIT)
             throw new TaskException(term, "excessive range: " + (end-start));
 
         if (!term.op().taskable)
@@ -35,9 +36,9 @@ public class GenericNALTask extends ActualNALTask {
         if (truth == null ^ (!((punc == BELIEF) || (punc == GOAL))))
             throw new TaskException(term, "null truth");
 
-        if ((start == ETERNAL && end != ETERNAL) ||
+        if ((start == LongInterval.ETERNAL && end != LongInterval.ETERNAL) ||
                 (start > end) ||
-                (start == TIMELESS) || (end == TIMELESS)
+                (start == LongInterval.TIMELESS) || (end == LongInterval.TIMELESS)
         ) {
             throw new RuntimeException("start=" + start + ", end=" + end + " is invalid task occurrence time");
         }

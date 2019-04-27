@@ -60,7 +60,6 @@ import nars.time.event.WhenTimeIs;
 import nars.time.part.DurLoop;
 import nars.truth.PreciseTruth;
 import nars.truth.Truth;
-import nars.util.Timed;
 import org.HdrHistogram.Histogram;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.eclipse.collections.api.block.function.primitive.ShortToObjectFunction;
@@ -100,14 +99,13 @@ import static org.fusesource.jansi.Ansi.ansi;
  * * step mode - controlled by an outside system, such as during debugging or testing
  * * thread mode - runs in a pausable closed-loop at a specific maximum framerate.
  */
-public class NAR extends NAL<NAR> implements Consumer<ITask>, NARIn, NAROut, Cycled, Timed {
+public class NAR extends NAL<NAR> implements Consumer<ITask>, NARIn, NAROut, Cycled {
 
     static final String VERSION = "NARchy v?.?";
     static final Logger logger = Log.logger(NAR.class);
     private static final Set<String> loggedEvents = java.util.Set.of("eventTask");
     public final Exec exe;
     public final NARLoop loop;
-    public final Time time;
     public final Memory memory;
     @Deprecated
     public final MemoryExternal memoryExternal = new MemoryExternal(this);
@@ -135,11 +133,7 @@ public class NAR extends NAL<NAR> implements Consumer<ITask>, NARIn, NAROut, Cyc
     public final TaskTopic eventTask = new TaskTopic();
     public final Control control;
 
-    public final ThreadLocal<Evaluator> evaluator = ThreadLocal.withInitial(() ->
-        new Evaluator(this::axioms)
-    );
 
-    protected final Supplier<Random> random;
 
     /**
      * id of this NAR's self; ie. its name
@@ -158,13 +152,12 @@ public class NAR extends NAL<NAR> implements Consumer<ITask>, NARIn, NAROut, Cyc
      * @param conceptBuilder
      */
     public NAR(Memory memory, Exec exe, Function<Term, What> whatBuilder, Time time, Supplier<Random> rng, ConceptBuilder conceptBuilder) {
-        super(exe);
+        super(exe, time, rng);
 
         eventAddRemove.on(this::indexPartChange);
 
-        this.random = rng;
 
-        (this.time = time).reset();
+
 
         this.memory = memory;
         this.exe = exe;
@@ -260,6 +253,12 @@ public class NAR extends NAL<NAR> implements Consumer<ITask>, NARIn, NAROut, Cyc
         return x instanceof Functor ? (Functor) x : null;
     }
 
+    public final ThreadLocal<Evaluator> evaluator = ThreadLocal.withInitial(() ->
+            new Evaluator(this::axioms)
+    );
+
+
+
     /**
      * creates a snapshot statistics object
      * TODO extract a Method Object holding the snapshot stats with the instances created below as its fields
@@ -338,7 +337,7 @@ public class NAR extends NAL<NAR> implements Consumer<ITask>, NARIn, NAROut, Cyc
             stop();
 
             clear();
-            time.clear(this);
+            exe.clear(this);
             time.reset();
 
             start(exe);
@@ -514,8 +513,8 @@ public class NAR extends NAL<NAR> implements Consumer<ITask>, NARIn, NAROut, Cyc
         return this;
     }
 
-    public long time(Tense tense) {
-        return Tense.getRelativeOccurrence(tense, this);
+    @Deprecated public long time(Tense tense) {
+        return time.relativeOccurrence(tense);
     }
 
     public NAR believe(String termString, float freq, float conf) {
@@ -792,13 +791,6 @@ public class NAR extends NAL<NAR> implements Consumer<ITask>, NARIn, NAROut, Cyc
         return time.dur();
     }
 
-    /**
-     * provides a Random number generator
-     */
-    @Override
-    public final Random random() {
-        return random.get();
-    }
 
     @Nullable
     public final Truth truth(Termed concept, byte punc, long when) {
@@ -1036,7 +1028,7 @@ public class NAR extends NAL<NAR> implements Consumer<ITask>, NARIn, NAROut, Cyc
         if (time() >= t.start())
             exe.input(t); //immediate
         else
-            time.runAt(t);
+            exe.runAt(t);
         return t;
     }
 
@@ -1050,7 +1042,7 @@ public class NAR extends NAL<NAR> implements Consumer<ITask>, NARIn, NAROut, Cyc
      * after the end of the current frame before the next frame.
      */
     public final void runLater(ScheduledTask t) {
-        time.runAt(t);
+        exe.runAt(t);
     }
 
     /**
@@ -1487,12 +1479,7 @@ public class NAR extends NAL<NAR> implements Consumer<ITask>, NARIn, NAROut, Cyc
         return control.value(effect);
     }
 
-    /**
-     * creates a new evidence stamp (1-element array)
-     */
-    public final long[] evidence() {
-        return new long[]{time.nextStamp()};
-    }
+
 
     public Why newCause(Object name) {
         return control.newCause(name);
@@ -1615,7 +1602,7 @@ public class NAR extends NAL<NAR> implements Consumer<ITask>, NARIn, NAROut, Cyc
                 Streams.stream(eventClear).map(WhenClear::new),
                 this.partStream()
                         .map((s) -> ((NARPart) s).event()).filter(Objects::nonNull),
-                time.events()
+                exe.events()
                         .filter(t -> !(t instanceof DurLoop.WhenDur)) //HACK (these should already be included in service's events)
 //            causes.stream(),
         );

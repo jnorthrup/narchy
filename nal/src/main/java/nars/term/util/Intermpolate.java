@@ -3,7 +3,7 @@ package nars.term.util;
 import jcog.Util;
 import jcog.WTF;
 import jcog.pri.ScalarValue;
-import nars.NAR;
+import nars.NAL;
 import nars.Op;
 import nars.subterm.Subterms;
 import nars.term.Compound;
@@ -21,7 +21,7 @@ import static nars.time.Tense.XTERNAL;
  */
 public enum Intermpolate {;
 
-    private static Term intermpolate(/*@NotNull*/ Compound a,  /*@NotNull*/ Compound b, float aProp, float curDepth, NAR nar) {
+    private static Term intermpolate(/*@NotNull*/ Compound a,  /*@NotNull*/ Compound b, float aProp, float curDepth, NAL nar) {
 
         if (a.equals(b))
             return a;
@@ -99,11 +99,11 @@ public enum Intermpolate {;
 //        }
 //    }
 
-    static int chooseDT(Term a, Term b, float aProp, NAR nar) {
+    static int chooseDT(Term a, Term b, float aProp, NAL nar) {
         return chooseDT(a.dt(), b.dt(), aProp, nar);
     }
 
-    public static int chooseDT(int adt, int bdt, float aProp, NAR nar) {
+    public static int chooseDT(int adt, int bdt, float aProp, NAL nar) {
         int dt;
         if (adt == bdt) {
             dt = adt;
@@ -129,7 +129,7 @@ public enum Intermpolate {;
     /**
      * merge delta
      */
-    static int merge(int adt, int bdt, float aProp, NAR nar) {
+    static int merge(int adt, int bdt, float aProp, NAL nar) {
 
 
         int range = Math.max(Math.abs(adt), Math.abs(bdt));
@@ -144,7 +144,7 @@ public enum Intermpolate {;
         }
     }
 
-    public static Term intermpolate(/*@NotNull*/ Compound a, /*@NotNull*/ Compound b, float aProp, NAR nar) {
+    public static Term intermpolate(/*@NotNull*/ Compound a, /*@NotNull*/ Compound b, float aProp, NAL nar) {
         return intermpolate(a, b, aProp, 0, nar);
     }
 

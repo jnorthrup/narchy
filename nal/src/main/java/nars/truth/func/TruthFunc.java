@@ -1,6 +1,6 @@
 package nars.truth.func;
 
-import nars.NAR;
+import nars.NAL;
 import nars.term.Term;
 import nars.term.atom.Atomic;
 import nars.truth.Truth;
@@ -49,7 +49,7 @@ public interface TruthFunc {
      *                if confidence is equal to or greater, then it is valid
      * @return
      */
-    @Nullable Truth apply(@Nullable Truth task, @Nullable Truth belief, NAR n, float minConf);
+    @Nullable Truth apply(@Nullable Truth task, @Nullable Truth belief, NAL n, float minConf);
 
    
 
@@ -88,7 +88,7 @@ public interface TruthFunc {
         @Override
         public
         @Nullable
-        Truth apply(@Nullable Truth task, @Nullable Truth belief, NAR n, float minConf) {
+        Truth apply(@Nullable Truth task, @Nullable Truth belief, NAL n, float minConf) {
             return o.apply(belief, task, n, minConf);
         }
 
@@ -107,7 +107,7 @@ public interface TruthFunc {
             super(o);
         }
 
-        @Override @Nullable public Truth apply(@Nullable Truth task, @Nullable Truth belief, NAR n, float minConf) {
+        @Override @Nullable public Truth apply(@Nullable Truth task, @Nullable Truth belief, NAL n, float minConf) {
             return o.apply(task.neg(), belief, n, minConf);
         }
 
@@ -122,7 +122,7 @@ public interface TruthFunc {
             super(o);
         }
 
-        @Override @Nullable public Truth apply(@Nullable Truth task, @Nullable Truth belief, NAR n, float minConf) {
+        @Override @Nullable public Truth apply(@Nullable Truth task, @Nullable Truth belief, NAL n, float minConf) {
             return o.apply(task, belief.neg(), n, minConf);
         }
 
@@ -146,7 +146,7 @@ public interface TruthFunc {
             super(o);
         }
 
-        @Override @Nullable public Truth apply(@Nullable Truth T, @Nullable Truth B, NAR n, float minConf) {
+        @Override @Nullable public Truth apply(@Nullable Truth T, @Nullable Truth B, NAL n, float minConf) {
             return o.apply(unnegIfNotNull(T), unnegIfNotNull(B), n, minConf);
         }
 
@@ -184,7 +184,7 @@ public interface TruthFunc {
             super(o);
         }
 
-        @Override @Nullable public Truth apply(@Nullable Truth task, @Nullable Truth belief, NAR n, float minConf) {
+        @Override @Nullable public Truth apply(@Nullable Truth task, @Nullable Truth belief, NAL n, float minConf) {
             return task == null ? null : o.apply(task.neg(), belief!=null ? belief.neg() : null, n, minConf);
         }
 

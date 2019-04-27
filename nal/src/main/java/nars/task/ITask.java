@@ -26,7 +26,7 @@ import org.slf4j.Logger;
  *
  * @param X identifier key
  */
-public interface ITask extends Prioritizable {
+@Deprecated public interface ITask extends Prioritizable {
 
     default ITask next(What w) {
         return next(w.nar);
@@ -47,7 +47,7 @@ public interface ITask extends Prioritizable {
 
 
     /** TODO rewrite as ForkJoin recursive task */
-    static void run(ITask t, What w) {
+    static <W> void run(ITask t, W w) {
         ITask x = t;
         do {
             x = x.next(w);

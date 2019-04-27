@@ -7,7 +7,7 @@ import nars.term.Compound;
 import nars.term.Functor;
 import nars.term.Term;
 import nars.term.Variable;
-import nars.term.functor.InlineFunctor;
+import nars.term.util.transform.InlineFunctor;
 
 import static nars.term.atom.Bool.False;
 import static nars.term.atom.Bool.True;

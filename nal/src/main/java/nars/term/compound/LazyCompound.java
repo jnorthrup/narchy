@@ -4,15 +4,15 @@ import com.google.common.primitives.Ints;
 import jcog.WTF;
 import jcog.data.byt.DynBytes;
 import jcog.util.ArrayUtils;
-import nars.Op;
 import nars.NAL;
+import nars.Op;
 import nars.subterm.Subterms;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.atom.Atomic;
-import nars.term.functor.InlineFunctor;
 import nars.term.util.builder.TermBuilder;
 import nars.term.util.map.ByteAnonMap;
+import nars.term.util.transform.InlineFunctor;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;

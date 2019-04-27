@@ -5,7 +5,7 @@ import jcog.func.TriConsumer;
 import jcog.math.FloatRange;
 import jcog.net.UDPeer;
 import nars.attention.What;
-import nars.bag.leak.TaskLeak;
+import nars.op.TaskLeak;
 import nars.control.NARPart;
 import nars.control.channel.CauseChannel;
 import nars.io.IO;

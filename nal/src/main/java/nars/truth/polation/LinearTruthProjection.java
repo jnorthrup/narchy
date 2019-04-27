@@ -1,7 +1,7 @@
 package nars.truth.polation;
 
 import jcog.pri.ScalarValue;
-import nars.NAR;
+import nars.NAL;
 import nars.truth.PreciseTruth;
 import nars.truth.Truth;
 import org.jetbrains.annotations.Nullable;
@@ -23,7 +23,7 @@ public class LinearTruthProjection extends TruthProjection {
 
     @Override
     @Nullable
-    public Truth truth(double eviMin, boolean dither, boolean tCrop, NAR nar) {
+    public Truth truth(double eviMin, boolean dither, boolean tCrop, NAL nar) {
 
         if (size()==0)
             return null;

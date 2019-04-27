@@ -5,12 +5,10 @@ import jcog.WTF;
 import jcog.data.iterator.ArrayIterator;
 import jcog.math.LongInterval;
 import jcog.math.Longerval;
-import nars.NAR;
-import nars.Op;
 import nars.NAL;
+import nars.Op;
 import nars.task.util.TaskRegion;
 import nars.term.Term;
-import nars.util.Timed;
 import org.jetbrains.annotations.Nullable;
 
 import static java.lang.Long.MAX_VALUE;
@@ -73,19 +71,6 @@ public enum Tense {
         return order(b - a, durationCycles);
     }
 
-    @Deprecated public static long getRelativeOccurrence(Tense tense, Timed m) {
-        /*m.duration()*/
-        switch (tense) {
-            case Present:
-                return m.time();
-            case Past:
-                return m.time() - 1;
-            case Future:
-                return m.time() + 1;
-            default:
-                return ETERNAL;
-        }
-    }
 
 
     public static long dither(long t, int dither) {
@@ -115,17 +100,17 @@ public enum Tense {
         } else return Util.round(t, dither);
     }
 
-    public static int dither(int dt, NAR nar) {
+    public static int dither(int dt, NAL nar) {
         return dither(dt, nar.dtDither());
     }
 
-    public static long dither(long t, NAR nar) {
+    public static long dither(long t, NAL nar) {
         return dither(t, nar.dtDither());
     }
 
 
     /** modifies the input array, and returns it */
-    public static long[] dither(long[] t, NAR nar) {
+    public static long[] dither(long[] t, NAL nar) {
         return dither(t, nar.dtDither());
     }
 

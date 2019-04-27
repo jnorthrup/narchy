@@ -3,6 +3,7 @@ package nars;
 import jcog.TODO;
 import jcog.Util;
 import jcog.data.list.FasterList;
+import jcog.math.LongInterval;
 import jcog.pri.UnitPrioritizable;
 import jcog.pri.op.PriMerge;
 import jcog.pri.op.PriReturn;
@@ -159,7 +160,7 @@ public interface Task extends Truthed, Stamp, TermedDelegate, ITask, TaskRegion,
         if (truth != null)
             h = Util.hashCombine(h, truth.hashCode());
 
-        if (start != ETERNAL) {
+        if (start != LongInterval.ETERNAL) {
             h = Util.hashCombine(h, start);
             if (end != start)
                 h = Util.hashCombine(h, end);
@@ -462,7 +463,7 @@ public interface Task extends Truthed, Stamp, TermedDelegate, ITask, TaskRegion,
      * start!=ETERNAL
      */
     @Nullable
-    static Task project(Task t, long start, long end, double eviMin, boolean ditherTruth, boolean ditherTime, NAR n) {
+    static Task project(Task t, long start, long end, double eviMin, boolean ditherTruth, boolean ditherTime, NAL n) {
 
         if (t.start() == start && t.end() == end || (t.isBeliefOrGoal() && t.isEternal()))
             return t;
@@ -508,7 +509,7 @@ public interface Task extends Truthed, Stamp, TermedDelegate, ITask, TaskRegion,
     /**
      * leave n null to avoid dithering
      */
-    static Task eternalized(Task x, float eviFactor, float eviMin, @Nullable NAR n) {
+    static Task eternalized(Task x, float eviFactor, float eviMin, @Nullable NAL n) {
         boolean isEternal = x.isEternal();
         boolean hasTruth = x.isBeliefOrGoal();
         if (isEternal) {
@@ -539,7 +540,7 @@ public interface Task extends Truthed, Stamp, TermedDelegate, ITask, TaskRegion,
                 /* TODO current time, from NAR */
                 (c, t) ->
                         new UnevaluatedTask(c, punc, t,
-                                x.creation(), ETERNAL, ETERNAL,
+                                x.creation(), LongInterval.ETERNAL, LongInterval.ETERNAL,
                                 x.stamp()
                         )
         );
@@ -791,7 +792,7 @@ public interface Task extends Truthed, Stamp, TermedDelegate, ITask, TaskRegion,
      * to cancel any matched premise belief.
      */
     @Nullable
-    default Task onAnswered(/*@NotNull*/Task answer, NAR n) {
+    default Task onAnswered(/*@NotNull*/Task answer) {
 
         Task question = this;
 
@@ -907,7 +908,7 @@ public interface Task extends Truthed, Stamp, TermedDelegate, ITask, TaskRegion,
     }
 
     default boolean isEternal() {
-        return start() == ETERNAL;
+        return start() == LongInterval.ETERNAL;
     }
 
     default int dt() {
@@ -984,11 +985,11 @@ public interface Task extends Truthed, Stamp, TermedDelegate, ITask, TaskRegion,
     /**
      * auto budget by truth (if belief/goal, or punctuation if question/quest)
      */
-    default Task budget(NAR nar) {
+    default Task budget(NAL nar) {
         return budget(1f, nar);
     }
 
-    default Task budget(float factor, NAR nar) {
+    default Task budget(float factor, NAL nar) {
         priMax(factor * nar.priDefault(punc()));
         return this;
     }
@@ -1044,7 +1045,7 @@ public interface Task extends Truthed, Stamp, TermedDelegate, ITask, TaskRegion,
         return this;
     }
 
-    default Task pri(NAR defaultPrioritizer) {
+    default Task pri(NAL defaultPrioritizer) {
         return priSet(defaultPrioritizer.priDefault(punc()));
     }
 
@@ -1061,7 +1062,7 @@ public interface Task extends Truthed, Stamp, TermedDelegate, ITask, TaskRegion,
     }
 
     /** fast, imprecise sort.  for cache locality and concurrency purposes */
-    static final Comparator<Task> sloppySorter = Comparator
+    Comparator<Task> sloppySorter = Comparator
             .comparingInt((Task x) ->
                     //x.term()
                     x.term().concept()

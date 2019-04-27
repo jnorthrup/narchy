@@ -1,7 +1,6 @@
 package nars.time.clock;
 
 import jcog.Texts;
-import nars.NAR;
 import nars.time.Time;
 import tec.uom.se.quantity.time.TimeQuantities;
 
@@ -66,7 +65,7 @@ public abstract class RealTime extends Time {
     }
 
     @Override
-    public final void next(NAR n) {
+    public final void next() {
         this.dur = nextDur;
         this.last = T.getAndSet(this, realtime());
     }

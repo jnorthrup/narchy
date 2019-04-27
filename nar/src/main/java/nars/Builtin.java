@@ -51,7 +51,6 @@ import static org.junit.jupiter.api.Assertions.assertSame;
  * https:
  */
 public class Builtin {
-
     public static final Functor[] statik = {
 
             Equal.the,
@@ -77,9 +76,9 @@ public class Builtin {
             ListFunc.sub,
             ListFunc.subs,
 
-            Image.imageNormalize,
-            Image.imageInt,
-            Image.imageExt,
+            Functor.f1Inline("imageNormalize", Image::imageNormalize),
+            Functor.f2Inline("imageInt", Image::imageInt),
+            Functor.f2Inline("imageExt", Image::imageExt),
 
 
 

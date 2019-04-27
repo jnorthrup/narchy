@@ -12,17 +12,22 @@ import jcog.pri.op.PriMerge;
 import jcog.service.Parts;
 import jcog.util.FloatFloatToFloatFunction;
 import jcog.util.Range;
-import nars.attention.PriNode;
+import nars.eval.Evaluator;
+import nars.term.Functor;
 import nars.term.Term;
 import nars.term.atom.Atom;
 import nars.term.util.builder.MemoizingTermBuilder;
 import nars.term.util.transform.Conceptualization;
 import nars.term.util.transform.Retemporalize;
+import nars.time.Time;
 import nars.truth.polation.LinearTruthProjection;
 import nars.truth.polation.TruthProjection;
 import nars.truth.util.ConfRange;
+import nars.util.Timed;
 
+import java.util.Random;
 import java.util.concurrent.Executor;
+import java.util.function.Supplier;
 
 import static fucknutreport.config.NodeConfig.configIs;
 import static java.lang.Float.NaN;
@@ -32,7 +37,7 @@ import static nars.truth.func.TruthFunctions.c2wSafe;
 /**
  * NAR Parameters
  */
-public abstract class NAL<W> extends Parts<Term, W> {
+public abstract class NAL<W> extends Parts<Term, W> implements Timed {
 
 
     public static final Retemporalize conceptualization =
@@ -244,10 +249,22 @@ public abstract class NAL<W> extends Parts<Term, W> {
     public final PriNode beliefPriDefault = new PriNode.ConstPriNode("beliefPriDefault", 0.5f);
     public final PriNode goalPriDefault = new PriNode.ConstPriNode("goalPriDefault", 0.5f);
 
-    protected NAL(final Executor exe) {
+    public final Time time;
+
+    protected final Supplier<Random> random;
+
+    protected NAL(final Executor exe, Time time, Supplier<Random> rng) {
         super(exe);
+        this.random = rng;
+        (this.time = time).reset();
     }
 
+    /**
+     * creates a new evidence stamp
+     */
+    public final long[] evidence() {
+        return new long[]{time.nextStamp()};
+    }
     /**
      * priority of sensor task, with respect to how significantly it changed from a previous value
      */
@@ -434,6 +451,15 @@ public abstract class NAL<W> extends Parts<Term, W> {
                 return 1;
         }
         throw new RuntimeException("Unknown punctuation: " + punctuation);
+    }
+
+
+    /**
+     * provides a Random number generator
+     */
+    @Override
+    public final Random random() {
+        return random.get();
     }
 
     public enum truth {

@@ -25,7 +25,7 @@ import nars.term.TermedDelegate;
 import nars.term.util.conj.ConjLazy;
 import nars.truth.Stamp;
 import nars.truth.Truth;
-import nars.truth.dynamic.TaskList;
+import nars.task.util.TaskList;
 import org.eclipse.collections.api.tuple.primitive.ObjectBooleanPair;
 import org.jetbrains.annotations.Nullable;
 

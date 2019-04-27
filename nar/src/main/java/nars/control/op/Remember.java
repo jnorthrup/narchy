@@ -15,6 +15,7 @@ import nars.task.proxy.SpecialTermTask;
 import nars.task.util.TaskException;
 import nars.term.Term;
 import nars.term.util.Image;
+import nars.table.dynamic.ImageBeliefTable;
 import nars.time.Tense;
 import nars.truth.Truth;
 import org.jetbrains.annotations.Nullable;
@@ -156,8 +157,8 @@ public class Remember extends AbstractTask {
                 if (c == null)
                     return;
 
-                if (input instanceof Image.ImageBeliefTable.ImageTermTask)
-                    input = ((Image.ImageBeliefTable.ImageTermTask)input).task; //unwrap existing
+                if (input instanceof ImageBeliefTable.ImageTermTask)
+                    input = ((ImageBeliefTable.ImageTermTask)input).task; //unwrap existing
                 else {
                     input = new SpecialTermTask(imgNormal, input);
                     input.pri(0); //prevent the product task from being activated significantly, because the image task will be emitted at its priority also.

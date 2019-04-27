@@ -1,17 +1,24 @@
 package nars.exe;
 
 import jcog.Log;
+import jcog.data.iterator.ArrayIterator;
+import jcog.data.list.FasterList;
+import jcog.data.list.MetalConcurrentQueue;
 import jcog.pri.Prioritizable;
 import nars.NAR;
 import nars.control.NARPart;
 import nars.control.channel.ConsumerX;
 import nars.task.ITask;
+import nars.time.ScheduledTask;
 import org.slf4j.Logger;
 
 import java.io.IOException;
+import java.util.PriorityQueue;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 /**
  * manages low level task scheduling and execution
@@ -19,6 +26,18 @@ import java.util.function.Consumer;
 abstract public class Exec extends NARPart implements Executor, ConsumerX<ITask> {
 
     public static final Logger logger = Log.logger(Exec.class);
+
+    private final static int TIME_QUEUE_CAPACITY = 2 * 1024;
+    final MetalConcurrentQueue<ScheduledTask> incoming = new MetalConcurrentQueue<>(TIME_QUEUE_CAPACITY);
+    final FasterList<ScheduledTask> intermediate = new FasterList<>(TIME_QUEUE_CAPACITY);
+    final PriorityQueue<ScheduledTask> scheduled = new PriorityQueue<>(TIME_QUEUE_CAPACITY /* estimate capacity */);
+
+    /**
+     * busy mutex
+     */
+    private final AtomicBoolean busy = new AtomicBoolean(false);
+
+
     private final int concurrencyMax;
 
     protected Exec(int concurrencyMax) {
@@ -139,4 +158,84 @@ abstract public class Exec extends NARPart implements Executor, ConsumerX<ITask>
     }
 
 
+    public void clear(NAR n) {
+        synchronized (scheduled) {
+            synch(n);
+            incoming.clear();
+            scheduled.clear();
+        }
+    }
+
+
+
+    public final Stream<ScheduledTask> events() {
+        ScheduledTask[] s;
+        synchronized (scheduled) {
+            s = scheduled.toArray(ScheduledTask[]::new);
+        }
+        return Stream.concat(
+                incoming.stream(),
+                ArrayIterator.stream(s) //a copy
+        );
+    }
+
+
+    public final void runAt(ScheduledTask event) {
+        incoming.add(event);
+//        long w = event.start();
+//        scheduledNext.accumulateAndGet(w, Math::min);
+    }
+
+
+    /**
+     * drain scheduled tasks ready to be executed
+     */
+    public void schedule(Consumer<ScheduledTask> each) {
+
+        if (busy.compareAndSet(false, true)) {
+
+            try {
+                long now = nar.time();
+
+                {
+                    //fire previously scheduled
+                    ScheduledTask next;
+
+                    while (((next = scheduled.peek()) != null) && (next.start() <= now)) {
+                        each.accept(scheduled.poll()); //assert (next == actualNext);
+                    }
+
+
+                }
+                {
+                    //drain incoming queue
+                    incoming.clear(next -> {
+                        if (next.start() <= now)
+                            each.accept(next);
+                        else {
+                            scheduled.offer(next);
+                        }
+                    });
+
+
+                }
+
+
+            } finally {
+                busy.set(false);
+            }
+        }
+
+
+    }
+
+
+
+
+    /**
+     * flushes the pending work queued for the current time
+     */
+    public final void synch(NAR n) {
+        schedule(x -> x.accept(n));
+    }
 }

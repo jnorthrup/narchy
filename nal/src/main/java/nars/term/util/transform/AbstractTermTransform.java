@@ -8,7 +8,6 @@ import nars.term.Compound;
 import nars.term.Term;
 import nars.term.atom.Bool;
 import nars.term.compound.LazyCompound;
-import nars.term.functor.InlineFunctor;
 import nars.term.util.builder.TermBuilder;
 import org.jetbrains.annotations.Nullable;
 

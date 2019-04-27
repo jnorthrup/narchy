@@ -23,10 +23,9 @@ package nars.term;
 
 import jcog.Util;
 import jcog.data.list.FasterList;
-import nars.NAR;
+import nars.NAL;
 import nars.Op;
 import nars.The;
-import nars.eval.Evaluation;
 import nars.subterm.Subterms;
 import nars.term.anon.Anom;
 import nars.term.anon.AnonID;
@@ -532,7 +531,7 @@ public interface Term extends Termlike, Termed, Comparable<Term> {
 
 
     @Deprecated
-    default Term eval(NAR nar) {
+    default Term eval(NAL nar) {
         Term y = Evaluation.solveFirst(this, nar);
         return y == null ? this : y;
     }

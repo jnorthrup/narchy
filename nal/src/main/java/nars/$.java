@@ -1,6 +1,7 @@
 package nars;
 
 
+import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import jcog.TODO;
 import jcog.Texts;
@@ -11,7 +12,6 @@ import nars.op.FileFunc;
 import nars.subterm.AnonSubterms;
 import nars.subterm.Subterms;
 import nars.subterm.TermList;
-import nars.task.TaskBuilder;
 import nars.term.Variable;
 import nars.term.*;
 import nars.term.anon.AnonID;
@@ -28,7 +28,6 @@ import nars.term.var.NormalizedVariable;
 import nars.term.var.UnnormalizedVariable;
 import nars.term.var.VarPattern;
 import nars.truth.PreciseTruth;
-import nars.truth.Truth;
 import org.apache.commons.math3.fraction.Fraction;
 import org.eclipse.collections.api.RichIterable;
 import org.eclipse.collections.api.block.function.primitive.CharToObjectFunction;
@@ -68,6 +67,7 @@ public enum $ {
     ;
 
     static final Atom emptyQuote = (Atom) Atomic.the("\"\"");
+    private static final Atomic DIV = $.the("div");
 
     static {
         Thread.currentThread().setName("$");
@@ -89,6 +89,7 @@ public enum $ {
             throw new RuntimeException(e);
         }
     }
+
     /**
      * doesnt normalize, doesnt throw exception, but may throw RuntimeException
      */
@@ -99,6 +100,7 @@ public enum $ {
             throw new RuntimeException(e);
         }
     }
+
     public static Atom quote(Object text) {
         String s = text.toString();
 
@@ -108,7 +110,6 @@ public enum $ {
             return (Atom) Atomic.the(Texts.quote(s));
     }
 
-
     public static Term[] the(String... id) {
         int l = id.length;
         Term[] x = new Term[l];
@@ -116,7 +117,6 @@ public enum $ {
             x[i] = Atomic.the(id[i]);
         return x;
     }
-
 
     public static Atom the(char c) {
         return (Atom) Atomic.the(String.valueOf(c));
@@ -130,7 +130,6 @@ public enum $ {
         return (T) INH.the(subj, pred);
     }
 
-
     public static <T extends Term> T inh(Term subj, String pred) {
         return $.inh(subj, $.the(pred));
     }
@@ -139,25 +138,22 @@ public enum $ {
         return $.inh($.the(subj), pred);
     }
 
-
     public static <T extends Term> T inh(String subj, String pred) throws Narsese.NarseseException {
         return (T) inh($(subj), $(pred));
     }
-
 
     public static <T extends Term> T sim(Term subj, Term pred) {
         return (T) SIM.the(subj, pred);
     }
 
-
     public static Term func(String opTerm, Term... arg) {
         return func(Atomic.the(opTerm), arg);
     }
 
-
     public static Term func(String opTerm, Subterms arg) {
         return func(Atomic.the(opTerm), arg);
     }
+
     public static Term func(String opTerm, String... arg) throws Narsese.NarseseException {
         return func(Atomic.the(opTerm), $.array(arg));
     }
@@ -168,6 +164,7 @@ public enum $ {
     public static Term func(Atomic opTerm, Term... arg) {
         return INH.the(PROD.the(arg), opTerm);
     }
+
     public static Term func(Atomic opTerm, Subterms arg) {
         return INH.the(PROD.the(arg), opTerm);
     }
@@ -195,26 +192,22 @@ public enum $ {
         return (T) IMPL.the(a, b);
     }
 
-
     public static <T extends Term> T impl(Term a, int dt, Term b) {
         return (T) IMPL.the(a, dt, b);
     }
-
 
     public static Term p(Collection<Term> t) {
         return $.p(t.toArray(Op.EmptyTermArray));
     }
 
-
     public static Term p(Term... t) {
         return PROD.the(t);
     }
 
-
     /**
      * creates from a sublist of a list
      */
-    
+
     public static Term p(List<Term> l, int from, int to) {
         if (from == to)
             return Op.EmptyProduct;
@@ -262,7 +255,7 @@ public enum $ {
             case 1:
                 char c0 = name.charAt(0);
                 if (isDigit(c0))
-                    return $.v(type, (byte)(c0-'0') );
+                    return $.v(type, (byte) (c0 - '0'));
                 break;
             case 2:
                 char d0 = name.charAt(0);
@@ -275,7 +268,6 @@ public enum $ {
         }
         return new UnnormalizedVariable(type, type.ch + name);
     }
-
 
     public static Variable varDep(int i) {
         return v(VAR_DEP, (byte) i);
@@ -293,7 +285,6 @@ public enum $ {
         return v(VAR_INDEP, s);
     }
 
-
     public static Variable varQuery(int i) {
         return v(VAR_QUERY, (byte) i);
     }
@@ -305,7 +296,6 @@ public enum $ {
     public static VarPattern varPattern(int i) {
         return (VarPattern) v(VAR_PATTERN, (byte) i);
     }
-
 
     /**
      * Try to make a new compound from two components. Called by the logic rules.
@@ -320,28 +310,13 @@ public enum $ {
         return INH.the(SETe.the(subj), pred);
     }
 
-    public static <T extends Term> T instprop( Term subject,  Term predicate) {
+    public static <T extends Term> T instprop(Term subject, Term predicate) {
         return (T) INH.the(SETe.the(subject), SETi.the(predicate));
     }
 
     public static <T extends Term> T prop(Term subject, Term predicate) {
         return (T) INH.the(subject, SETi.the(predicate));
     }
-
-
-    
-    public static TaskBuilder task( String term, byte punct, float freq, float conf) throws Narsese.NarseseException {
-        return task($.$(term), punct, freq, conf);
-    }
-
-    public static TaskBuilder task( Term term, byte punct, float freq, float conf) {
-        return task(term, punct, t(freq, conf));
-    }
-
-    public static TaskBuilder task( Term term, byte punct, Truth truth) {
-        return new TaskBuilder(term, punct, truth);
-    }
-
 
     public static Term p(char[] c, CharToObjectFunction<Term> f) {
         Term[] x = new Term[c.length];
@@ -351,14 +326,13 @@ public enum $ {
         return $.p(x);
     }
 
-    public static <X> Term p( X[] x,  Function<X, Term> toTerm) {
+    public static <X> Term p(X[] x, Function<X, Term> toTerm) {
         return $.p((Term[]) terms(x, toTerm));
     }
 
-    public static <X> Term[] terms( X[] map,  Function<X, Term> toTerm) {
+    public static <X> Term[] terms(X[] map, Function<X, Term> toTerm) {
         return Stream.of(map).map(toTerm).toArray(Term[]::new);
     }
-
 
     private static Term[] array(Collection<? extends Term> t) {
         return t.toArray(Op.EmptyTermArray);
@@ -400,7 +374,6 @@ public enum $ {
         return t;
     }
 
-
     /**
      * unnormalized variable
      */
@@ -414,8 +387,6 @@ public enum $ {
     public static NormalizedVariable v(/**/ Op type, byte id) {
         return (NormalizedVariable) NormalizedVariable.the(type, id);
     }
-
-
 
     /**
      * parallel conjunction &| aka &&+0
@@ -434,11 +405,16 @@ public enum $ {
         return CONJ.the(b).neg();
     }
 
-    /** alias for disjunction */
+    /**
+     * alias for disjunction
+     */
     public static Term or(Term... x) {
         return disj(x);
     }
-    /** alias for conjunction */
+
+    /**
+     * alias for conjunction
+     */
     public static Term and(Term... x) {
         return CONJ.the(x);
     }
@@ -447,14 +423,12 @@ public enum $ {
         return SECTe.the(x);
     }
 
-
     /**
      * create a literal atom from a class (it's name)
      */
     public static Atom the(Class c) {
         return (Atom) Atomic.the(c.getName());
     }
-
 
     /**
      * gets the atomic target of an integer, with specific radix (up to 36)
@@ -463,18 +437,13 @@ public enum $ {
         return $.quote(Integer.toString(i, radix));
     }
 
-
     public static Atomic the(int v) {
         return Int.the(v);
     }
 
-
-
-
     public static PreciseTruth t(float f, float c) {
         return PreciseTruth.byConf(f, c);
     }
-
 
     /**
      * negates each entry in the array
@@ -492,7 +461,6 @@ public enum $ {
         return p(Util.bytesToInts(array));
     }
 
-
     public static Atomic the(byte c) {
         return theAtomic(new byte[]{c});
     }
@@ -506,13 +474,15 @@ public enum $ {
         return x;
     }
 
-    /** use with caution */
+    /**
+     * use with caution
+     */
     public static Term the(boolean b) {
         return b ? Bool.True : Bool.False;
     }
 
     public static Term the(float x) {
-        if (x!=x)
+        if (x != x)
             throw new TODO("NaN");
 
         int rx = (int) Util.round(x, 1);
@@ -525,8 +495,9 @@ public enum $ {
 
         //return quote(Float.toString(v));
     }
+
     public static Term the(double x) {
-        if (x!=x)
+        if (x != x)
             throw new TODO("NaN");
         int rx = (int) Util.round(x, 1);
         if (Util.equals(rx, x, Double.MIN_NORMAL)) {
@@ -546,7 +517,6 @@ public enum $ {
         }
     }
 
-    private static final Atomic DIV = $.the("div");
     public static Term the(Fraction o) {
         return $.func(DIV, $.the(o.getNumerator()), $.the(o.getDenominator()));
     }
@@ -559,7 +529,7 @@ public enum $ {
             return the((Number) x);
 
         if (x instanceof String)
-            return the((String)x);
+            return the((String) x);
 
         throw new UnsupportedOperationException(x + " termize fail");
     }
@@ -569,15 +539,8 @@ public enum $ {
     }
 
     public static Term the(Path file) {
-        return FileFunc.the(file.toUri());
+        return the(file.toUri());
     }
-    public static Term the(URL url) {
-        return FileFunc.the(url);
-    }
-    public static Term the(URI uri) {
-        return FileFunc.the(uri);
-    }
-
 
     public static Path file(Term x) {
         throw new TODO();
@@ -625,8 +588,6 @@ public enum $ {
     }
 
 
-
-
     /**
      * most significant digit first, least last. padded with zeros
      */
@@ -651,14 +612,14 @@ public enum $ {
     }
 
 
-    public static  Term pRecurseIntersect(char prefix,  Term... t) {
+    public static Term pRecurseIntersect(char prefix, Term... t) {
         final int[] index = {0};
         return SECTe.the($.terms(t, x -> Atomic.the(Strings.repeat(String.valueOf(prefix), ++index[0]) + x)));
     }
 
-    public static  Term pRecurse(boolean innerStart,  Term... t) {
-        int j = t.length-1;
-        int n = innerStart ? 0 : j -1;
+    public static Term pRecurse(boolean innerStart, Term... t) {
+        int j = t.length - 1;
+        int n = innerStart ? 0 : j - 1;
         Term inner = t[n];
         Term nextInner = inner.op() != PROD ? $.p(inner) : inner;
         while (j-- > 0) {
@@ -676,9 +637,9 @@ public enum $ {
         return nextInner;
     }
 
-    public static @Nullable Compound inhRecurse( Term... t) {
+    public static @Nullable Compound inhRecurse(Term... t) {
         int tl = t.length;
-         Term bottom = t[--tl];
+        Term bottom = t[--tl];
         Compound nextInner = $.inh(t[--tl], bottom);
         while (nextInner != null && tl > 0) {
             nextInner = $.inh(t[--tl], nextInner);
@@ -687,7 +648,6 @@ public enum $ {
     }
 
 
-    
     public static String unquote(Term s) {
         return Texts.unquote(s.toString());
     }
@@ -745,6 +705,7 @@ public enum $ {
         if (x.subs() == 0) throw new UnsupportedOperationException();
         return new LightCompound(Op.SETe, x);
     }
+
     public static Term sFast(Term[] x) {
         return sFast(true, x);
     }
@@ -835,9 +796,9 @@ public enum $ {
 
     public static Term funcImg(Atomic f, Term... x) {
 //        if (x.length > 1) {
-            Term[] xx = ArrayUtils.insert(0, x, f);
-            xx[x.length] = ImgExt;
-            return INH.the(x[x.length - 1], PROD.the(xx));
+        Term[] xx = ArrayUtils.insert(0, x, f);
+        xx[x.length] = ImgExt;
+        return INH.the(x[x.length - 1], PROD.the(xx));
 //        } else {
 //            return $.func(f, x);
 //        }
@@ -847,7 +808,7 @@ public enum $ {
     public static Term diff(Term a, Term b) {
         //throw new TODO("use setAt/sect methods");
         Op aop = a.op();
-        if (aop ==b.op()) {
+        if (aop == b.op()) {
             if (aop == SETi) {
                 return SetSectDiff.differenceSet(SETi, a, b);
             } else if (aop == SETe) {
@@ -861,7 +822,7 @@ public enum $ {
     public static Term identity(Object x) {
 
         if (x instanceof Term)
-            return ((Term)x);
+            return ((Term) x);
         else if (x instanceof Termed) {
             Term u = ((Termed) x).term();
             if (u != null)
@@ -870,7 +831,7 @@ public enum $ {
         }
 
         if (x instanceof String)
-            return Atomic.the((String)x);
+            return Atomic.the((String) x);
         else {
             Class<?> c = x.getClass();
             Term idHash = $.intRadix(System.identityHashCode(x), 36);
@@ -888,7 +849,84 @@ public enum $ {
 
     public static Atom uuid(@Nullable String prefix) {
         String u = Util.uuid64();
-        return $.quote(prefix!=null ? prefix + u : u);
+        return $.quote(prefix != null ? prefix + u : u);
+    }
+
+    public static Term the(URL u) {
+
+        if (u.getQuery()!=null)
+            throw new TODO();
+
+        String schemeStr = u.getProtocol();
+        String authorityStr = u.getAuthority();
+        String pathStr = u.getPath();
+
+        return URI(schemeStr, authorityStr, pathStr);
+    }
+
+    public static Term the(URI u) {
+
+        if (u.getFragment()!=null || u.getQuery()!=null)
+            throw new TODO();
+
+        String schemeStr = u.getScheme();
+        String authorityStr = u.getAuthority();
+        String pathStr = u.getPath();
+
+        return URI(schemeStr, authorityStr, pathStr);
+    }
+
+    /** https://en.wikipedia.org/wiki/Uniform_Resource_Identifier
+     *
+     * the URI scheme becomes the inheritance subject of the operation. so path components are the pred as a product. query can be the final component wrapped in a set to distinguish it, and init can be a json-like set of key/value pairs. the authority username/password can be special fields in that set of pairs.
+     *
+     * TODO authority, query
+     * */
+    public static Term URI(String schemeStr, @Nullable String authority, String pathStr) {
+        /*
+        URI = scheme:[//authority]path[?query][#fragment]
+        authority = [userinfo@]host[:port]
+
+                  userinfo     host        port
+          ┌─┴─┬──┴────┬┴┐
+          https://john.doe@www.example.com:123/forum/questions/?tag=networking&order=newest#top
+         └┬┘└──────────────┴────────┴───────┬────-┴┬┘
+         scheme           authority                 path                   query          fragment
+
+          ldap://[2001:db8::7]/c=GB?objectClass?one
+          └─┬┘ └───────┬─────┘└─┬─┘ └──────┬──────┘
+         scheme    authority  path       query
+
+          mailto:John.Doe@example.com
+          └──┬─┘ └─────────┬────────┘
+          scheme         path
+
+          news:comp.infosystems.www.servers.unix
+          └─┬┘ └───────────────┬───────────────┘
+         scheme              path
+
+          tel:+1-816-555-1212
+          └┬┘ └──────┬──────┘
+        scheme     path
+
+          telnet://192.0.2.16:80/
+          └──┬─┘ └──────┬──────┘│
+          scheme    authority  path
+
+          urn:oasis:names:specification:docbook:dtd:xml:4.1.2
+          └┬┘ └──────────────────────┬──────────────────────┘
+        scheme                     path
+
+        */
+
+        Atom scheme = (Atom) the(schemeStr); //TODO cache these commonly used
+
+        //TODO use more reliable path parser
+        List<String> pathComponents = Splitter.on('/').omitEmptyStrings().splitToList(pathStr);
+
+        Term path = p((String[])(pathComponents.toArray(ArrayUtils.EMPTY_STRING_ARRAY)));
+        return (authority == null || authority.isEmpty()) ?
+                inh(path, scheme) : inh( PROD.the(INH.the(path, /*TODO parse*/the(authority))), scheme);
     }
 
 

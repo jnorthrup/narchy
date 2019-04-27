@@ -25,6 +25,7 @@ import nars.term.Term;
 import nars.term.atom.Atomic;
 import nars.term.obj.QuantityTerm;
 import nars.time.Tense;
+import nars.time.Time;
 import nars.truth.Truth;
 import nars.util.SoftException;
 import org.jetbrains.annotations.Nullable;
@@ -42,7 +43,7 @@ import static nars.time.Tense.ETERNAL;
 import static nars.time.Tense.TIMELESS;
 
 /**
- * NARese, syntax and language for interacting with a NAR in NARS.
+ * NARese, syntax and language for interacting with a NAL in NARS.
  * https:
  */
 public final class Narsese {
@@ -84,23 +85,7 @@ public final class Narsese {
     /**
      * returns number of tasks created
      */
-    public static void tasks(String input, Collection<Task> c, NAR m) throws NarseseException {
-        tasks(input, c::add, m);
-    }
-
-    public static List<Task> tasks(String input, NAR m) throws NarseseException {
-        List<Task> result = new FasterList<>(1);
-        tasks(input, result, m);
-
-        return result;
-    }
-
-    /**
-     * gets a stream of raw immutable task-generating objects
-     * which can be re-used because a Memory can generate them
-     * ondemand
-     */
-    static void tasks(String input, Consumer<Task> c, NAR m) throws NarseseException {
+    public static void tasks(String input, Collection<Task> c, NAL m) throws NarseseException {
         Narsese p = the();
 
         int parsedTasks = 0;
@@ -124,7 +109,7 @@ public final class Narsese {
 
             Task t = decodeTask(m, y);
 
-            c.accept(t);
+            ((Consumer<Task>) c::add).accept(t);
             parsedTasks++;
 
         }
@@ -135,17 +120,24 @@ public final class Narsese {
 
     }
 
+    public static List<Task> tasks(String input, NAL m) throws NarseseException {
+        List<Task> result = new FasterList<>(1);
+        tasks(input, result, m);
+
+        return result;
+    }
+
     /**
      * parse one task
      */
-    public static Task task(String input, NAR n) throws NarseseException {
+    public static Task task(String input, NAL n) throws NarseseException {
         List<Task> tt = tasks(input, n);
         if (tt.size() != 1)
             throw new NarseseException(tt.size() + " tasks parsed in single-task parse: " + input);
         return tt.get(0);
     }
 
-    static Task decodeTask(NAR nar, Object[] x) {
+    static Task decodeTask(NAL nar, Object[] x) {
         if (x.length == 1 && x[0] instanceof Task) {
             return (Task) x[0];
         }
@@ -189,7 +181,7 @@ public final class Narsese {
         Task y = Task.tryTask(content, punct, t, (C, tr) -> {
 
 
-            long[] occ = occurrence(nar, x[4]);
+            long[] occ = occurrence(nar.time, x[4]);
 
             Task yy = NALTask.the(C, punct, tr, nar.time(), occ[0], occ[1], nar.evidence());
             yy.pri(x[0] == null ? nar.priDefault(punct) : (Float) x[0]);
@@ -205,25 +197,25 @@ public final class Narsese {
 
     }
 
-    private static long[] occurrence(NAR nar, Object O) {
+    private static long[] occurrence(Time t, Object O) {
         if (O == null)
             return new long[]{ETERNAL, ETERNAL};
         else if (O instanceof Tense) {
-            long o = Tense.getRelativeOccurrence((Tense) O, nar);
+            long o = t.relativeOccurrence((Tense)O);
             return new long[]{o, o};
         } else if (O instanceof QuantityTerm) {
-            long qCycles = nar.time.toCycles(((QuantityTerm) O).quant);
-            long o = nar.time() + qCycles;
+            long qCycles = t.toCycles(((QuantityTerm) O).quant);
+            long o = t.now() + qCycles;
             return new long[]{o, o};
         } else if (O instanceof Integer) {
 
-            long o = nar.time() + (Integer) O;
+            long o = t.now() + (Integer) O;
             return new long[]{o, o};
         } else if (O instanceof Object[]) {
-            long[] start = occurrence(nar, ((Object[]) O)[0]);
+            long[] start = occurrence(t, ((Object[]) O)[0]);
             if (start[0] != start[1] || start[0] == ETERNAL || start[0] == TIMELESS)
                 throw new UnsupportedOperationException();
-            long[] end = occurrence(nar, ((Object[]) O)[1]);
+            long[] end = occurrence(t, ((Object[]) O)[1]);
             if (end[0] != end[1] || end[0] == ETERNAL || end[0] == TIMELESS)
                 throw new UnsupportedOperationException();
             if (start[0] <= end[0]) {

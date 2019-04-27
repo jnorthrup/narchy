@@ -3,7 +3,7 @@ package nars.op.language;
 
 import nars.*;
 import nars.attention.What;
-import nars.bag.leak.TaskLeak;
+import nars.op.TaskLeak;
 import nars.derive.Derivers;
 import nars.derive.impl.BatchDeriver;
 import nars.exe.impl.UniExec;

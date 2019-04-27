@@ -39,11 +39,6 @@ public abstract class UnifyConstraint<U extends Unify> extends AbstractPred<U> {
     abstract public float cost();
 
 
-    @Nullable
-    @Deprecated public PREDICATE preFilter(Term taskPattern, Term beliefPattern) {
-        return null;
-    }
-
     private final static Atomic UnifyIf = Atomic.the("unifyIf");
     public final Variable x;
 

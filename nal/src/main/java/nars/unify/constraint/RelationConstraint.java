@@ -2,13 +2,10 @@ package nars.unify.constraint;
 
 import jcog.WTF;
 import nars.$;
-import nars.derive.premise.op.ConstraintAsPremisePredicate;
 import nars.term.Term;
-import nars.term.Terms;
 import nars.term.Variable;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
-import nars.term.control.PREDICATE;
 import nars.unify.Unify;
 import org.jetbrains.annotations.Nullable;
 
@@ -18,7 +15,7 @@ import static nars.Op.NEG;
 abstract public class RelationConstraint<U extends Unify> extends UnifyConstraint<U> {
 
 
-    protected final Variable y;
+    public final Variable y;
     private final boolean yNeg;
 
     private RelationConstraint(Term id, Variable x, Variable y) {
@@ -52,31 +49,7 @@ abstract public class RelationConstraint<U extends Unify> extends UnifyConstrain
         return negate ? neg() : this;
     }
 
-    @Override
-    public @Nullable PREDICATE preFilter(Term taskPattern, Term beliefPattern) {
 
-//        //only test one of the directions
-//        // because the opposite y->x will also be created so we only need one predicate filter for both
-//        if (x.compareTo(y) > 0) {
-//            RelationConstraint m = mirror();
-//            if (m.x.compareTo(m.y) > 0)
-//                throw new WTF();
-//            return m.preFilter(taskPattern, beliefPattern); //use a canonical ordering to maximize chances of trie alignment
-//        }
-
-
-        byte[] xInTask = Terms.pathConstant(taskPattern, x);
-        byte[] xInBelief = Terms.pathConstant(beliefPattern, x);
-        if (xInTask!=null || xInBelief!=null) {
-            byte[] yInTask = Terms.pathConstant(taskPattern, y);
-            byte[] yInBelief = Terms.pathConstant(beliefPattern, y);
-            if ((yInTask != null || yInBelief != null)) {
-                return ConstraintAsPremisePredicate.the(this, xInTask, xInBelief, yInTask, yInBelief);
-            }
-        }
-
-        return null;
-    }
 
     @Override
     public final boolean invalid(Term x, Unify f) {
@@ -91,9 +64,9 @@ abstract public class RelationConstraint<U extends Unify> extends UnifyConstrain
         return true;
     }
 
-    static final class NegRelationConstraint extends RelationConstraint {
+    public static final class NegRelationConstraint extends RelationConstraint {
 
-        private final RelationConstraint r;
+        public final RelationConstraint r;
 
         private NegRelationConstraint(RelationConstraint r) {
             super(r.ref.neg(), r.x, r.y);
@@ -128,10 +101,6 @@ abstract public class RelationConstraint<U extends Unify> extends UnifyConstrain
             return r.cost() + 0.001f;
         }
 
-        @Override
-        public @Nullable PREDICATE preFilter(Term taskPattern, Term beliefPattern) {
-            PREDICATE p = r.preFilter(taskPattern, beliefPattern);
-            return p != null ? p.neg() : null;
-        }
+
     }
 }

@@ -4,7 +4,7 @@ import jcog.Util;
 import jcog.WTF;
 import jcog.data.list.FasterList;
 import jcog.data.set.ArrayUnenforcedSet;
-import nars.NAR;
+import nars.NAL;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.util.Intermpolate;
@@ -36,7 +36,7 @@ public class Conjterpolate extends Conj {
     /**
      * proportion of a vs. b, ie: (a/(a+b))
      */
-    public Conjterpolate(Term a, Term b, float aProp, NAR nar) {
+    public Conjterpolate(Term a, Term b, float aProp, NAL nar) {
         super();
 
         this.dither = nar.dtDither();

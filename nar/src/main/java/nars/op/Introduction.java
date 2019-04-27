@@ -4,7 +4,6 @@ import jcog.math.FloatRange;
 import nars.NAR;
 import nars.Task;
 import nars.attention.What;
-import nars.bag.leak.TaskLeakTransform;
 import nars.task.UnevaluatedTask;
 import nars.term.Term;
 import nars.term.atom.Bool;

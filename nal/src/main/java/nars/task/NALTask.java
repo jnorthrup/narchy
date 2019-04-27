@@ -1,20 +1,13 @@
 package nars.task;
 
-import jcog.data.list.FasterList;
-import jcog.data.map.CompactArrayMap;
 import jcog.pri.UnitPri;
-import nars.NAR;
 import nars.NAL;
 import nars.Task;
 import nars.control.CauseMerge;
-import nars.task.util.TaskException;
 import nars.term.Term;
 import nars.time.When;
 import nars.truth.Truth;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.List;
-import java.util.function.Function;
 
 /**
  * generic immutable Task implementation,
@@ -29,12 +22,12 @@ public abstract class NALTask extends UnitPri implements Task {
 
     private volatile boolean cyclic;
 
-    public static NALTask the(Term c, byte punct, Truth tr, When<NAR> when) {
-        return the(c, punct, tr, when.x.time(), when.start, when.end, new long[]{when.x.time.nextStamp()});
+    public static NALTask the(Term c, byte punct, Truth tr, When<NAL> when) {
+        return the(c, punct, tr, when.x.time.now(), when.start, when.end, new long[]{when.x.time.nextStamp()});
     }
 
-    public static NALTask the(Term c, byte punct, Truth tr, When<NAR> when, long[] evidence) {
-        return the(c, punct, tr, when.x.time(), when.start, when.end, evidence);
+    public static NALTask the(Term c, byte punct, Truth tr, When<NAL> when, long[] evidence) {
+        return the(c, punct, tr, when.x.time.now(), when.start, when.end, evidence);
     }
 
     public static NALTask the(Term c, byte punct, Truth tr, long creation, long start, long end, long[] evidence) {
@@ -135,42 +128,4 @@ public abstract class NALTask extends UnitPri implements Task {
         return appendTo(null).toString();
     }
 
-    /**
-     * extended: with meta table
-     */
-    public static class NALTaskX extends GenericNALTask implements jcog.data.map.MetaMap {
-
-        private final CompactArrayMap<String, Object> meta = new CompactArrayMap<>();
-
-        NALTaskX(Term term, byte punc, @Nullable Truth truth, long creation, long start, long end, long[] stamp) throws TaskException {
-            super(term, punc, truth, creation, start, end, stamp);
-        }
-
-        @Override
-        public @Nullable List log(boolean createIfMissing) {
-            if (createIfMissing)
-                return meta("!", (x) -> new FasterList(1));
-            else
-                return meta("!");
-        }
-
-        @Override
-        public <X> X meta(String key, Function<String, X> valueIfAbsent) {
-            CompactArrayMap<String, Object> m = this.meta;
-            return m != null ? (X) m.computeIfAbsent(key, valueIfAbsent) : null;
-        }
-
-        @Override
-        public Object meta(String key, Object value) {
-            CompactArrayMap<String, Object> m = this.meta;
-            if (m != null) m.put(key, value);
-            return value;
-        }
-
-        @Override
-        public <X> X meta(String key) {
-            CompactArrayMap<String, Object> m = this.meta;
-            return m != null ? (X) m.get(key) : null;
-        }
-    }
 }

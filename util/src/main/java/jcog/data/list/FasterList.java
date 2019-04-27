@@ -345,7 +345,7 @@ public class FasterList<X> extends FastList<X> {
     /**
      * reduce
      */
-    protected float reapply(FloatFunction<? super X> function, FloatFloatToFloatFunction combine) {
+    public float reapply(FloatFunction<? super X> function, FloatFloatToFloatFunction combine) {
         int n = size;
         switch (n) {
             case 0:
