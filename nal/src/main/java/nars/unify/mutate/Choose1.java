@@ -40,6 +40,9 @@ public class Choose1 extends Termutator.AbstractTermutator {
         this.xEllipsis = xEllipsis;
         this.x = x;
 
+        int ml = yy.length - 1;
+        assert(ml >= xEllipsis.minArity);
+
 
     }
 
@@ -86,7 +89,6 @@ public class Choose1 extends Termutator.AbstractTermutator {
 //            return; //doesnt match, dont need to permute
 
 
-        Term[] yy = this.yy;
 
         int l = yy.length-1;
         int shuffle = u.random.nextInt(yy.length); 
@@ -95,19 +97,16 @@ public class Choose1 extends Termutator.AbstractTermutator {
 
         for (Term x = this.x; l >=0; l--) {
 
-            int iy = (shuffle + l) % this.yy.length;
-            Term y = this.yy[iy];
+            int iy = (shuffle + l) % yy.length;
+            Term y = yy[iy];
             if (x.unify(y, u)) {
-                Term m = EllipsisMatch.matchedExcept(xEllipsis.minArity, yy, (byte) iy);
-                if (m!=null && xEllipsis.unify(m, u)) {
+                if (xEllipsis.unify( EllipsisMatch.matchedExcept(yy, (byte) iy), u)) {
                     if (!u.tryMutate(chain, current))
                         break;
                 }
-
             }
 
-            if (!u.revertLive(start))
-                break;
+            if (!u.revertLive(start))break;
         }
 //
 //        if (xEllipsis.minArity == 0) {

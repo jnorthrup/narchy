@@ -79,7 +79,6 @@ public class UnifyTest {
         Term t1;
         if (type == Op.VAR_PATTERN && s1.contains("%")) {
             t1 = Narsese.term(s1, false);
-            //t1 = pattern(anon1 ? a.put(t1) : t1).normalize();
             t1 = pattern((anon1 ? a.put(t1) : t1).normalize());
         } else {
             t1 = Narsese.term(s1, true);
@@ -131,7 +130,7 @@ public class UnifyTest {
 
                 } else {
 
-                    assertTrue((n1) > (xy.size()), "why matched?: " + xy);
+                    assertTrue(n1 > xy.size(), "why matched?: " + xy);
 
                 }
 
@@ -700,12 +699,23 @@ public class UnifyTest {
     void ellipsisCommutiveRepeat2_aa() {
 
         test(Op.VAR_PATTERN,
-                "{{a, %X..+}, {z, b, %X..+}}",
-                "{{a, b, c, d}, {z, b, c, d}}", false);
+                "({a, %X..+}, {z, %X..+})",
+                "({a, b, c, d}, {z, b, c, d})", true);
+    }
+
+    @Test
+    void ellipsisCommutiveRepeat2_aa_mismatch() {
+        test(Op.VAR_PATTERN,
+                "({a, %X..+}, {z, b, %X..+})",
+                "({a, b, c, d}, {z, b, c, d})", false);
     }
 
     @Test
     void ellipsisCommutiveRepeat2_set() {
+        test(Op.VAR_PATTERN,
+                "({a, %X..+, %B}, {z, %X..+, %A})",
+                "({a, b, c, d}, {z, b, c, d})", true);
+
         test(Op.VAR_PATTERN,
                 "{{a, %X..+, %B}, {z, %X..+, %A}}",
                 "{{a, b, c, d}, {z, b, c, d}}", true);

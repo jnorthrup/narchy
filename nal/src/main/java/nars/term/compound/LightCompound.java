@@ -18,7 +18,7 @@ public class LightCompound extends SeparateSubtermsCompound  {
         this(o.id, s);
     }
 
-    protected LightCompound(byte o, Term... s) {
+    private LightCompound(byte o, Term... s) {
         this(o, $.vFast(s));
     }
 

@@ -5,7 +5,6 @@ import nars.Op;
 import nars.subterm.Subterms;
 import nars.term.Term;
 import nars.term.compound.LightCompound;
-import nars.term.util.builder.HeapTermBuilder;
 import nars.term.util.transform.Retemporalize;
 import nars.unify.Unify;
 import org.jetbrains.annotations.Nullable;
@@ -13,8 +12,8 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Collection;
 import java.util.SortedSet;
 
-import static nars.Op.*;
-import static nars.time.Tense.XTERNAL;
+import static nars.Op.EmptySubterms;
+import static nars.Op.FRAG;
 
 /**
  * Holds results of an ellipsis match and
@@ -33,7 +32,7 @@ public final class EllipsisMatch extends LightCompound {
     }
 
     private EllipsisMatch(Term[] x) {
-        super(FRAG.id, x);
+        super(FRAG, x);
         assert(x.length > 1 || (x.length == 0 && empty == null /* HACK */));
     }
 
@@ -61,7 +60,7 @@ public final class EllipsisMatch extends LightCompound {
 
 
 
-    public static Term fragment(@Deprecated boolean seq, SortedSet<Term> x) {
+    public static Term fragment(SortedSet<Term> x) {
         int num = x.size();
         switch (num) {
             case 0:
@@ -69,10 +68,7 @@ public final class EllipsisMatch extends LightCompound {
             case 1:
                 return x.first();
             default:
-                if (seq)
-                    return CONJ.the(HeapTermBuilder.the, XTERNAL, x);
-                else
-                    return new EllipsisMatch(x);
+                return new EllipsisMatch(x);
         }
     }
 
@@ -80,7 +76,7 @@ public final class EllipsisMatch extends LightCompound {
 
         int ll = matched.subs();
         if (except.length == ll-1) {
-            //choose only the non-matched subterm
+            //choose only the unmatched subterm
             for (byte i = 0; i < ll; i++) {
                 if (ArrayUtils.indexOf(except, i)==-1)
                     return matched.sub(i);
@@ -94,18 +90,18 @@ public final class EllipsisMatch extends LightCompound {
                 if (ArrayUtils.indexOf(except, i)==-1)
                     t[j++] = matched.sub(i);
             }
-            assert(j == t.length);
+            //assert(j == t.length);
             return fragment(t);
         }
     }
 
-    @Nullable public static Term matchedExcept(int minArity,Term[] matched, byte... except) {
+    @Nullable public static Term matchedExcept(Term[] matched, byte... except) {
         int ll = matched.length;
         int ee = except.length;
         int ml = ll - ee;
+
         Term[] t = new Term[ml];
-        if (ml < minArity)
-            return null;
+
 
         int j = 0;
         main:
