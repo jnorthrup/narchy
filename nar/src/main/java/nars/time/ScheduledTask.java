@@ -1,7 +1,6 @@
 package nars.time;
 
 import com.google.common.primitives.Longs;
-import nars.NAL;
 import nars.NAR;
 import nars.term.Term;
 import nars.time.event.WhenInternal;
@@ -10,7 +9,7 @@ import java.util.function.Consumer;
 
 /** event schedled for a specific time in the past or present (run as soon as possible), or delayed until
  * the future */
-public abstract class ScheduledTask extends WhenInternal implements Consumer<NAL<NAL<NAR>>>, Comparable<ScheduledTask> {
+public abstract class ScheduledTask extends WhenInternal implements Consumer<NAR>, Comparable<ScheduledTask> {
 
     /** when or after this task may be run next */
     abstract public long start();

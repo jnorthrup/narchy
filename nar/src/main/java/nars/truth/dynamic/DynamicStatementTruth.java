@@ -4,7 +4,6 @@ import jcog.Util;
 import jcog.WTF;
 import jcog.data.list.FasterList;
 import jcog.util.ObjectLongLongPredicate;
-import nars.NAL;
 import nars.NAR;
 import nars.Op;
 import nars.Task;
@@ -155,7 +154,7 @@ public class DynamicStatementTruth {
         }
 
         @Override
-        public Term reconstruct(Compound superterm, List<Task> components, NAL<NAL<NAR>> NAL, long start, long end) {
+        public Term reconstruct(Compound superterm, List<Task> components, NAR nar, long start, long end) {
             return reconstruct(superterm, components, subjOrPred, unionOrIntersection);
         }
 
@@ -375,7 +374,7 @@ public class DynamicStatementTruth {
         }
 
         @Override
-        public Term reconstruct(Compound superterm, List<Task> components, NAL<NAL<NAR>> NAL, long start, long end) {
+        public Term reconstruct(Compound superterm, List<Task> components, NAR nar, long start, long end) {
             return reconstruct(superterm, components, true, false /* reconstruct as-is; union only applies to the truth calculation */);
         }
     }
@@ -395,7 +394,7 @@ public class DynamicStatementTruth {
         }
 
         @Override
-        public Term reconstruct(Compound superterm, List<Task> components, NAL<NAL<NAR>> NAL, long start, long end) {
+        public Term reconstruct(Compound superterm, List<Task> components, NAR nar, long start, long end) {
             return reconstruct(superterm, components, true, true);
         }
     }

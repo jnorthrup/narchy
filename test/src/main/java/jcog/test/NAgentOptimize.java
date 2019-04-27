@@ -28,11 +28,11 @@ public class NAgentOptimize {
         ,96, 4);
     }
 
-    public NAgentOptimize(Function<NAL<NAL<NAR>>, Game> agent, int experimentCycles, int repeats) {
+    public NAgentOptimize(Function<NAR, Game> agent, int experimentCycles, int repeats) {
 
 
-        Lab<NAL<NAL<NAR>>> l = new Lab<>(() -> {
-            NAL<NAL<NAR>> n = NARS.tmp();
+        Lab<NAR> l = new Lab<>(() -> {
+            NAR n = NARS.tmp();
             n.random();
 
             /* defaults TODO "learn" these from the experiments and reapply them in future experiments */
@@ -47,7 +47,7 @@ public class NAgentOptimize {
 //                .var("attnCapacity", 4, 128, 8,
 //                        (NAR n, int i) -> n.attn.active.setCapacity(i))
                 .var("termVolMax", 3, 16, 2,
-                        (NAL<NAL<NAR>> n, int i) -> n.termVolumeMax.set(i))
+                        (NAR n, int i) -> n.termVolumeMax.set(i))
 //                .var("ttlMax", 6, 20, 3,
 //                        (NAR n, int i) -> n.deriveBranchTTL.setAt(i))
 //                .var("linkFanOut", 1, 16, 1,
@@ -59,12 +59,12 @@ public class NAgentOptimize {
 //                .var("beliefPriDefault", 0, 1f, 0.1f,
 //                        (NAR n, float f) -> n.beliefPriDefault.setAt(f))
                 .var("questionPriDefault", 0, 1f, 0.1f,
-                        (NAL<NAL<NAR>> n, float f) -> {
+                        (NAR n, float f) -> {
                             n.questionPriDefault.set(f);
                             n.questPriDefault.set(f);
                         })
                 .var("goalPriDefault", 0, 1f, 0.1f,
-                        (NAL<NAL<NAR>> n, float f) -> n.goalPriDefault.pri(f))
+                        (NAR n, float f) -> n.goalPriDefault.pri(f))
 
 //                .var("derivationComplexityExponent", 1f, 3f, 0.5f,
 //                        (NAR n, float f) -> Deriver.derivers(n).forEach(x ->
@@ -92,7 +92,7 @@ public class NAgentOptimize {
 
 
 
-        Optilive<NAL<NAL<NAR>>, Game> o = l.optilive(n->agent.apply(n.get()),
+        Optilive<NAR, Game> o = l.optilive(n->agent.apply(n.get()),
                 jcog.lab.Optimize.repeat((Game t) -> {
                     final double[] rewardSum = {0}, dexSum = { 0 };
                     t.onFrame(()-> {

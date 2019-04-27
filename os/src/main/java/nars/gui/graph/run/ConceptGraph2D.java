@@ -4,7 +4,6 @@ import com.google.common.collect.Iterables;
 import jcog.data.map.CellMap;
 import jcog.math.FloatRange;
 import jcog.pri.ScalarValue;
-import nars.NAL;
 import nars.NAR;
 import nars.concept.Concept;
 import nars.gui.NARui;
@@ -333,9 +332,9 @@ public class ConceptGraph2D extends Graph2D<Term> {
 
     private static class StatementVis implements Graph2DRenderer<Term> {
         public final AtomicBoolean statements = new AtomicBoolean(true);
-        final NAL<NAL<NAR>> n;
+        final NAR n;
 
-        private StatementVis(NAL<NAL<NAR>> n) {
+        private StatementVis(NAR n) {
             this.n = n;
         }
 

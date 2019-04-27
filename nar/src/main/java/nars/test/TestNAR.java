@@ -4,7 +4,6 @@ import jcog.data.list.FasterList;
 import jcog.event.ByteTopic;
 import nars.*;
 import nars.control.MetaGoal;
-import nars.task.ITask;
 import nars.task.Tasked;
 import nars.term.Term;
 import nars.term.util.TermException;
@@ -266,9 +265,9 @@ public class TestNAR {
     }
 
 
-    public TestNAR input(ITask... s) {
+    public TestNAR input(Task... s) {
         finished = false;
-        for (ITask x : s) {
+        for (Task x : s) {
             if (x.pri() == 0 || x.isDeleted())
                 throw new RuntimeException("input task has zero or deleted priority");
             nar.input(x);
@@ -654,7 +653,7 @@ public class TestNAR {
         return this;
     }
 
-    final class EarlyExit implements Consumer<NAL<NAL<NAR>>> {
+    final class EarlyExit implements Consumer<NAR> {
 
         final int checkResolution;
         int cycle;

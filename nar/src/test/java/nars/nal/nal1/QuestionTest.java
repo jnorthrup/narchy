@@ -90,8 +90,8 @@ class QuestionTest {
         DoubleSummaryStatistics withTime = new DoubleSummaryStatistics();
         DoubleSummaryStatistics withOutTime = new DoubleSummaryStatistics();
 
-        IntFunction<NAL<NAL<NAR>>> narProvider = (seed) -> {
-            NAL<NAL<NAR>> d = NARS.tmp(1);
+        IntFunction<NAR> narProvider = (seed) -> {
+            NAR d = NARS.tmp(1);
             //d.random().setSeed(seed);
             d.termVolumeMax.set(8);
             d.freqResolution.set(0.1f);

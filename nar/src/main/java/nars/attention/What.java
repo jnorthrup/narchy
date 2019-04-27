@@ -4,16 +4,16 @@ import jcog.TODO;
 import jcog.math.IntRange;
 import jcog.pri.Prioritizable;
 import jcog.pri.bag.Sampler;
-import nars.NAL;
 import nars.NAR;
 import nars.Task;
 import nars.attention.derive.DefaultPuncWeightedDerivePri;
 import nars.concept.Concept;
 import nars.control.NARPart;
 import nars.control.channel.ConsumerX;
+import nars.control.op.Perceive;
 import nars.control.op.TaskEvent;
 import nars.link.TaskLink;
-import nars.task.ITask;
+import nars.task.AbstractTask;
 import nars.task.util.PriBuffer;
 import nars.term.Term;
 import nars.time.part.DurLoop;
@@ -67,12 +67,12 @@ import java.util.stream.Stream;
  *  through a minimal API.  thus Attention's are referred to by a Term so that operations upon them may
  *  be conceptualized and self-executed.
   */
-abstract public class What extends NARPart implements Prioritizable, Sampler<TaskLink>, Iterable<TaskLink>, Externalizable, ConsumerX<ITask>, Timed {
+abstract public class What extends NARPart implements Prioritizable, Sampler<TaskLink>, Iterable<TaskLink>, Externalizable, ConsumerX<Task>, Timed {
 
     public final PriNode pri;
 
     /** input bag */
-    public final PriBuffer<ITask> in;
+    public final PriBuffer<Task> in;
 
     /** advised deriver pri model
      *      however, each deriver instance can also be configured individually and dynamically.
@@ -82,21 +82,28 @@ abstract public class What extends NARPart implements Prioritizable, Sampler<Tas
             //new DefaultDerivePri();
             new DefaultPuncWeightedDerivePri();
 
-    final ConsumerX<ITask> out = new ConsumerX<>() {
+    final ConsumerX<Task> out = new ConsumerX<>() {
 
         @Override
         public int concurrency() {
             return What.this.concurrency();
         }
 
-        @Override
-        public void accept(ITask x) {
-            ITask.run(x, What.this);
+        @Deprecated /* HACK */ @Override public void accept(Task x) {
+            //Task.run(x, What.this);
+            if (x == null)
+                return;
+            if (x instanceof AbstractTask) {
+                Task.run(x, What.this);
+            } else {
+                accept(Perceive.perceive(x, What.this));
+                //Task.run(Perceive.perceive(x, What.this), What.this);
+            }
         }
     };
 
 
-    protected What(Term id, PriBuffer<ITask> in) {
+    protected What(Term id, PriBuffer<Task> in) {
         super(id);
         this.pri = new PriNode(this.id);
         this.in = in;
@@ -135,7 +142,7 @@ abstract public class What extends NARPart implements Prioritizable, Sampler<Tas
 
     /** called periodically, ex: per duration, for maintenance such as gradual forgetting and merging new input.
      *  only one thread will be in this method at a time guarded by an atomic guard */
-    abstract protected void commit(NAL<NAL<NAR>> NAL);
+    abstract protected void commit(NAR nar);
 
     /** explicitly return the attention to a completely or otherwise reasonably quiescent state.
      *  how exactly can be decided by the implementation. */
@@ -182,8 +189,8 @@ abstract public class What extends NARPart implements Prioritizable, Sampler<Tas
         }
 
         @Override
-        protected void commit(NAL<NAL<NAR>> NAL) {
-            what.commit(NAL);
+        protected void commit(NAR nar) {
+            what.commit(nar);
         }
 
         @Override
@@ -225,7 +232,7 @@ abstract public class What extends NARPart implements Prioritizable, Sampler<Tas
 
         public final TaskLinks links = new TaskLinks();
 
-        public TaskLinkWhat(Term id, int capacity, PriBuffer<ITask> in) {
+        public TaskLinkWhat(Term id, int capacity, PriBuffer<Task> in) {
             super(id, in);
             links.linksMax.set(capacity);
         }
@@ -244,7 +251,7 @@ abstract public class What extends NARPart implements Prioritizable, Sampler<Tas
         }
 
         @Override
-        protected void commit(NAL<NAL<NAR>> NAL) {
+        protected void commit(NAR nar) {
 
             links.commit();
         }
@@ -281,11 +288,11 @@ abstract public class What extends NARPart implements Prioritizable, Sampler<Tas
     }
 
     @Override
-    @Deprecated public final void accept(ITask x) {
+    @Deprecated public final void accept(Task x) {
         in.put(x);
     }
 
-    @Deprecated public final ITask put(ITask x) {
+    @Deprecated public final Task put(Task x) {
         return in.put(x);
     }
 

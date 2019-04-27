@@ -4,11 +4,11 @@ import com.google.common.collect.Iterables;
 import jcog.math.FloatSupplier;
 import nars.$;
 import nars.NAR;
+import nars.Task;
 import nars.agent.Game;
 import nars.attention.AttnBranch;
 import nars.concept.Concept;
 import nars.control.channel.CauseChannel;
-import nars.task.ITask;
 import nars.term.Term;
 import nars.term.Termed;
 import nars.truth.Truth;
@@ -22,7 +22,7 @@ import static nars.Op.BELIEF;
 abstract public class VectorSensor extends AbstractSensor implements Iterable<Signal> {
 
 
-    public final CauseChannel<ITask> in;
+    public final CauseChannel<Task> in;
 
     public final AttnBranch attn;
 
@@ -48,7 +48,7 @@ abstract public class VectorSensor extends AbstractSensor implements Iterable<Si
         this.in = newChannelIn(n);
     }
 
-    protected CauseChannel<ITask> newChannelIn(NAR nar) {
+    protected CauseChannel<Task> newChannelIn(NAR nar) {
         return nar.newChannel(id != null ? id : this);
     }
 

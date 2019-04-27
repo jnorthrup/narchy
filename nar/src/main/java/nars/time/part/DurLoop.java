@@ -5,7 +5,6 @@ import jcog.event.Off;
 import jcog.math.FloatRange;
 import jcog.math.FloatSupplier;
 import nars.$;
-import nars.NAL;
 import nars.NAR;
 import nars.control.NARPart;
 import nars.term.Term;
@@ -105,7 +104,7 @@ abstract public class DurLoop extends NARPart {
     /**
      * time (raw cycles, not durations) which elapsed since run was scheduled last
      */
-    abstract protected void run(NAL<NAL<NAR>> n, long dt);
+    abstract protected void run(NAR n, long dt);
 
 
 
@@ -133,7 +132,7 @@ abstract public class DurLoop extends NARPart {
         }
 
         @Override
-        protected void run(NAL<NAL<NAR>> n, long dt) {
+        protected void run(NAR n, long dt) {
             r.run();
         }
 
@@ -141,15 +140,15 @@ abstract public class DurLoop extends NARPart {
 
     public static final class DurNARConsumer extends DurLoop {
 
-        final Consumer<NAL<NAL<NAR>>> r;
+        final Consumer<NAR> r;
 
-        public DurNARConsumer(Consumer<NAL<NAL<NAR>>> r) {
+        public DurNARConsumer(Consumer<NAR> r) {
             super($.identity(r));
             this.r = r;
         }
 
         @Override
-        protected void run(NAL<NAL<NAR>> n, long dt) {
+        protected void run(NAR n, long dt) {
             r.accept(n);
         }
 
@@ -193,7 +192,7 @@ abstract public class DurLoop extends NARPart {
             } finally {
                 //TODO catch Exception, option for auto-stop on exception
 
-                @Deprecated NAL<NAL<NAR>> nnar = DurLoop.this.nar; //prevent NPE in durCycles()
+                @Deprecated NAR nnar = DurLoop.this.nar; //prevent NPE in durCycles()
                 if (nnar!=null && DurLoop.this.isOn()) {
                     this.nextStart = scheduleNext(durCycles(), atStart);
 

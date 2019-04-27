@@ -3,7 +3,6 @@ package nars.truth.dynamic;
 import jcog.data.list.FasterList;
 import jcog.util.ArrayUtils;
 import jcog.util.ObjectLongLongPredicate;
-import nars.NAL;
 import nars.NAR;
 import nars.Op;
 import nars.Task;
@@ -27,7 +26,7 @@ public class DynamicConjTruth {
     public static final AbstractDynamicTruth ConjIntersection = new AbstractSectTruth(false) {
 
         @Override
-        public Term reconstruct(Compound superterm, List<Task> components, NAL<NAL<NAR>> NAL, long start, long end) {
+        public Term reconstruct(Compound superterm, List<Task> components, NAR nar, long start, long end) {
 
             long range;
             if (start!=ETERNAL) {

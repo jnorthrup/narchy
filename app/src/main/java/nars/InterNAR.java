@@ -11,7 +11,6 @@ import nars.io.IO;
 import nars.io.TaskIO;
 import nars.op.TaskLeak;
 import nars.task.ActiveQuestionTask;
-import nars.task.ITask;
 import nars.time.clock.RealTime;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -27,7 +26,7 @@ import static jcog.net.UDPeer.Command.TELL;
 /**
  * InterNARchy / InterNARS P2P Network Interface for a NAR
  */
-public class InterNAR extends NARPart implements TriConsumer<NAL<NAR>, ActiveQuestionTask, Task> {
+public class InterNAR extends NARPart implements TriConsumer<NAR, ActiveQuestionTask, Task> {
 
     public static final Logger logger = LoggerFactory.getLogger(InterNAR.class);
     private final int port;
@@ -35,7 +34,7 @@ public class InterNAR extends NARPart implements TriConsumer<NAL<NAR>, ActiveQue
 
     static final int outCapacity = 128; //TODO abstract
 
-    private final CauseChannel<ITask> recv;
+    private final CauseChannel<Task> recv;
     private final TaskLeak send;
 
 
@@ -236,7 +235,7 @@ public class InterNAR extends NARPart implements TriConsumer<NAL<NAR>, ActiveQue
 
 
     @Override
-    public void accept(NAL<NAL<NAR>> NAL, ActiveQuestionTask question, Task answer) {
+    public void accept(NAR NAR, ActiveQuestionTask question, Task answer) {
         UDPeer.Msg q = question.meta("UDPeer");
         if (q == null)
             return;

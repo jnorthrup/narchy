@@ -85,7 +85,7 @@ public class SensorBeliefTables extends BeliefTables {
 
 
     public void add(Truth value, long start, long end, FloatSupplier pri, short cause, int dur,What w) {
-        NAL<NAL<NAR>> n = w.nar;
+        NAR n = w.nar;
 
         if (value!=null) {
             value = value.dither(
@@ -111,7 +111,7 @@ public class SensorBeliefTables extends BeliefTables {
 
 //    long[] eviShared = null;
 
-    private SeriesTask add(@Nullable Truth next, long nextStart, long nextEnd, Term term, byte punc, int dur, NAL<NAL<NAR>> NAL) {
+    private SeriesTask add(@Nullable Truth next, long nextStart, long nextEnd, Term term, byte punc, int dur, NAR nar) {
 
         SeriesTask nextT = null, last = series.series.last();
         if (last != null) {
@@ -153,13 +153,13 @@ public class SensorBeliefTables extends BeliefTables {
         }
 
         if (next != null) {
-            series.add(nextT = newTask(term, punc, nextStart, nextEnd, next, NAL));
+            series.add(nextT = newTask(term, punc, nextStart, nextEnd, next, nar));
         }
 
         return nextT;
     }
 
-    private SeriesTask newTask(Term term, byte punc, long s, long e, Truth next, NAL<NAL<NAR>> NAL) {
+    private SeriesTask newTask(Term term, byte punc, long s, long e, Truth next, NAR nar) {
         long[] evi;
 
 //        if (Param.REVISION_ALLOW_OVERLAP_IF_DISJOINT_TIME) {
@@ -167,7 +167,7 @@ public class SensorBeliefTables extends BeliefTables {
 //                eviShared = nar.evidence();
 //            evi = eviShared;
 //        } else {
-            evi = NAL.evidence(); //unique
+            evi = nar.evidence(); //unique
 //        }
 
 //        if (Param.SIGNAL_TASK_OCC_DITHER) {

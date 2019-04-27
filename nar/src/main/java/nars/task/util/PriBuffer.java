@@ -16,7 +16,6 @@ import nars.NAR;
 import nars.Task;
 import nars.control.CauseMerge;
 import nars.control.channel.ConsumerX;
-import nars.task.ITask;
 
 import java.util.Iterator;
 import java.util.Map;
@@ -209,7 +208,7 @@ abstract public class PriBuffer<T extends Prioritizable> implements Consumer<T> 
      * allowing multiple inputting threads to fill the bag, potentially deduplicating each's results,
      * while other thread(s) drain it in prioritized order as input to NAR.
      */
-    public static class BagTaskBuffer extends PriBuffer<ITask> {
+    public static class BagTaskBuffer extends PriBuffer<Task> {
 
         public final IntRange capacity = new IntRange(0, 0, 4 * 1024);
 
@@ -225,7 +224,7 @@ abstract public class PriBuffer<T extends Prioritizable> implements Consumer<T> 
         /**
          * temporary buffer before input so they can be merged in case of duplicates
          */
-        public final Bag<ITask, ITask> tasks;
+        public final Bag<Task, Task> tasks;
 
         @Override
         public int capacity() {
@@ -240,7 +239,7 @@ abstract public class PriBuffer<T extends Prioritizable> implements Consumer<T> 
                  * merge in the pre-buffer
                  */
                 @Override
-                protected float merge(ITask existing, ITask incoming, float incomingPri) {
+                protected float merge(Task existing, Task incoming, float incomingPri) {
                     return Task.merge(existing, incoming, merge, CauseMerge.Append, PriReturn.Overflow, true);
                 }
 
@@ -254,8 +253,8 @@ abstract public class PriBuffer<T extends Prioritizable> implements Consumer<T> 
                          * merge in the post-buffer
                          */
                         @Override
-                        protected float merge(Prioritizable existing, ITask incoming, float pri, PriMerge merge) {
-                            return Task.merge((ITask) existing, incoming, merge, CauseMerge.Append, PriReturn.Delta, true);
+                        protected float merge(Prioritizable existing, Task incoming, float pri, PriMerge merge) {
+                            return Task.merge((Task) existing, incoming, merge, CauseMerge.Append, PriReturn.Delta, true);
                         }
                     }
             );
@@ -300,17 +299,17 @@ abstract public class PriBuffer<T extends Prioritizable> implements Consumer<T> 
         }
 
         @Override
-        public final boolean async(ConsumerX<ITask> target) {
+        public final boolean async(ConsumerX<Task> target) {
             return false;
         }
 
         @Override
-        public ITask put(ITask x) {
+        public Task put(Task x) {
             return tasks.put(x);
         }
 
         @Override
-        public void commit(ConsumerX<ITask> target, NAR nar) {
+        public void commit(ConsumerX<Task> target, NAR nar) {
 
             long now = nar.time();
             if (prev == Long.MIN_VALUE)
@@ -320,7 +319,7 @@ abstract public class PriBuffer<T extends Prioritizable> implements Consumer<T> 
 
             prev = now;
 
-            Bag<ITask, ITask> b = this.tasks;
+            Bag<Task, Task> b = this.tasks;
 
             b.setCapacity(capacity.intValue());
             b.commit(null);
@@ -340,7 +339,7 @@ abstract public class PriBuffer<T extends Prioritizable> implements Consumer<T> 
                         int remain = n;
                         int nEach = (int) Math.ceil(((float) remain) / c);
 
-                        Consumer<FasterList<ITask>> targetBatched = (batch) -> batch.forEach(target);
+                        Consumer<FasterList<Task>> targetBatched = (batch) -> batch.forEach(target);
 
                         for (int i = 0; i < c && remain > 0; i++) {
                             int asked = Math.min(remain, nEach);

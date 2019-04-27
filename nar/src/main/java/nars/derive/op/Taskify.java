@@ -8,7 +8,6 @@ import nars.derive.Derivation;
 import nars.derive.premise.PremiseRuleProto;
 import nars.task.DebugDerivedTask;
 import nars.task.DerivedTask;
-import nars.task.ITask;
 import nars.term.ProxyTerm;
 import nars.term.Term;
 import nars.term.atom.Atomic;
@@ -193,7 +192,7 @@ public class Taskify extends ProxyTerm {
 
 
         int cost;
-        ITask u = d.add(t);
+        Task u = d.add(t);
         if (u != t) {
 
             d.nar().emotion.deriveFailDerivationDuplicate.increment();
@@ -247,7 +246,7 @@ public class Taskify extends ProxyTerm {
         return true;
     }
 
-    protected boolean same(Term derived, byte punc, Truth truth, long start, long end, Task parent, NAL<NAL<NAR>> n) {
+    protected boolean same(Term derived, byte punc, Truth truth, long start, long end, Task parent, NAR n) {
 
         if (DERIVE_FILTER_SIMILAR_TO_PARENTS) {
 

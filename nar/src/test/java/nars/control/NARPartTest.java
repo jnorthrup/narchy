@@ -2,7 +2,6 @@ package nars.control;
 
 import jcog.Util;
 import jcog.service.Part;
-import nars.NAL;
 import nars.NAR;
 import nars.NARS;
 import nars.term.Term;
@@ -21,7 +20,7 @@ class NARPartTest {
     void testRemoveDurServiceWhenDelete() {
         NAR n = NARS.shell();
 
-        Set<Part<NAL<NAL<NAR>>>> before = n.partStream().collect(toSet());
+        Set<Part<NAR>> before = n.partStream().collect(toSet());
 
         DurLoop d = n.onDur(() -> {
 
@@ -35,13 +34,13 @@ class NARPartTest {
 
         n.synch();
 
-        Set<Part<NAL<NAL<NAR>>>> during = n.partStream().collect(toSet());
+        Set<Part<NAR>> during = n.partStream().collect(toSet());
 
         d.delete();
 
         n.synch();
 
-        Set<Part<NAL<NAL<NAR>>>> after = n.partStream().collect(toSet());
+        Set<Part<NAR>> after = n.partStream().collect(toSet());
 
         assertEquals(before.size()+1, during.size());
 

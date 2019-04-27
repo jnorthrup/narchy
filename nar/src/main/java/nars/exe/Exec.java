@@ -5,11 +5,10 @@ import jcog.data.iterator.ArrayIterator;
 import jcog.data.list.FasterList;
 import jcog.data.list.MetalConcurrentQueue;
 import jcog.pri.Prioritizable;
-import nars.NAL;
 import nars.NAR;
+import nars.Task;
 import nars.control.NARPart;
 import nars.control.channel.ConsumerX;
-import nars.task.ITask;
 import nars.time.ScheduledTask;
 import org.slf4j.Logger;
 
@@ -24,7 +23,7 @@ import java.util.stream.Stream;
 /**
  * manages low level task scheduling and execution
  */
-abstract public class Exec extends NARPart implements Executor, ConsumerX<ITask> {
+abstract public class Exec extends NARPart implements Executor, ConsumerX<Task> {
 
     public static final Logger logger = Log.logger(Exec.class);
 
@@ -47,7 +46,7 @@ abstract public class Exec extends NARPart implements Executor, ConsumerX<ITask>
 
     abstract public void input(Object t);
 
-    private static void taskError(Prioritizable t, Prioritizable x, Throwable ee, NAL<NAL<NAR>> NAL) {
+    private static void taskError(Prioritizable t, Prioritizable x, Throwable ee, NAR nar) {
         //TODO: if(RELEASE)
 //        if (t == x)
 //            nar.logger.error("{} {}", x, ee);
@@ -67,7 +66,7 @@ abstract public class Exec extends NARPart implements Executor, ConsumerX<ITask>
         }
     }
 
-    public void input(Consumer<NAL<NAL<NAR>>> r) {
+    public void input(Consumer<NAR> r) {
         if (concurrent()) {
             ForkJoinPool.commonPool().execute(() -> r.accept(nar));
         } else {
@@ -97,7 +96,7 @@ abstract public class Exec extends NARPart implements Executor, ConsumerX<ITask>
         return concurrencyMax;
     }
 
-    protected final void executeNow(Consumer<NAL<NAL<NAR>>> t) {
+    protected final void executeNow(Consumer<NAR> t) {
         try {
             t.accept(nar);
         } catch (Throwable e) {
@@ -116,14 +115,14 @@ abstract public class Exec extends NARPart implements Executor, ConsumerX<ITask>
      * immediately execute a Task
      */
     @Override
-    public final void accept(ITask x) {
+    public final void accept(Task x) {
         executeNow(x, nar);
     }
 
-    private static void executeNow(ITask x, NAL<NAL<NAR>> NAL) {
-        ITask t = x;
+    private static void executeNow(Task x, NAR nar) {
+        Task t = x;
         try {
-            ITask.run(t, NAL);
+            Task.run(t, nar);
         } catch (Throwable e) {
             logger.error("{} {}", t, e);
         }
@@ -133,8 +132,8 @@ abstract public class Exec extends NARPart implements Executor, ConsumerX<ITask>
      * inline, synchronous
      */
     protected final void executeNow(Object t) {
-        if (t instanceof ITask)
-            accept((ITask) t);
+        if (t instanceof Task)
+            accept((Task) t);
         else if (t instanceof Consumer)
             executeNow((Consumer)t);
         else
@@ -159,7 +158,7 @@ abstract public class Exec extends NARPart implements Executor, ConsumerX<ITask>
     }
 
 
-    public void clear(NAL<NAL<NAR>> n) {
+    public void clear(NAR n) {
         synchronized (scheduled) {
             synch(n);
             incoming.clear();
@@ -236,7 +235,7 @@ abstract public class Exec extends NARPart implements Executor, ConsumerX<ITask>
     /**
      * flushes the pending work queued for the current time
      */
-    public final void synch(NAL<NAL<NAR>> n) {
+    public final void synch(NAR n) {
         schedule(x -> x.accept(n));
     }
 }

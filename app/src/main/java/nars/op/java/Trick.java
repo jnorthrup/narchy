@@ -1,6 +1,5 @@
 package nars.op.java;
 
-import nars.NAL;
 import nars.NAR;
 
 import java.util.function.Consumer;
@@ -33,7 +32,7 @@ public class Trick<X> {
          return post.test(x);
     }
 
-    public synchronized void train(X x, NAL<NAL<NAR>> n) {
+    public synchronized void train(X x, NAR n) {
 
 
 

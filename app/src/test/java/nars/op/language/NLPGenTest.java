@@ -1,6 +1,5 @@
 package nars.op.language;
 
-import nars.NAL;
 import nars.NAR;
 import nars.NARS;
 import nars.Narsese;
@@ -17,7 +16,7 @@ public class NLPGenTest {
 
     final NLPGen g = new NLPGen();
 
-    NAL<NAL<NAR>> n = new NARS().get();
+    NAR n = new NARS().get();
 
     @Test
     public void testSimple1() throws Narsese.NarseseException {

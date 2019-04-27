@@ -1,5 +1,6 @@
 package nars.task;
 
+import jcog.TODO;
 import jcog.util.ArrayUtils;
 import nars.Task;
 import nars.term.Term;
@@ -45,6 +46,11 @@ public class CommandTask implements Task {
     @Override
     public String toString() {
         return term + ";";
+    }
+
+    @Override
+    public Task next(Object w) {
+        throw new TODO(this);
     }
 
     @Override

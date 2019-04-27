@@ -1,9 +1,11 @@
 package nars;
 
+import jcog.Log;
 import jcog.TODO;
 import jcog.Util;
 import jcog.data.list.FasterList;
 import jcog.math.LongInterval;
+import jcog.pri.Prioritizable;
 import jcog.pri.UnitPrioritizable;
 import jcog.pri.op.PriMerge;
 import jcog.pri.op.PriReturn;
@@ -11,7 +13,6 @@ import jcog.tree.rtree.HyperRegion;
 import nars.control.CauseMerge;
 import nars.subterm.Subterms;
 import nars.task.DerivedTask;
-import nars.task.ITask;
 import nars.task.NALTask;
 import nars.task.UnevaluatedTask;
 import nars.task.proxy.SpecialNegatedTermTask;
@@ -37,6 +38,7 @@ import org.eclipse.collections.api.tuple.primitive.ObjectBooleanPair;
 import org.eclipse.collections.impl.map.mutable.primitive.ByteByteHashMap;
 import org.eclipse.collections.impl.map.mutable.primitive.ByteObjectHashMap;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
 
 import java.util.Arrays;
 import java.util.Comparator;
@@ -50,10 +52,20 @@ import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
 /**
  * NAL Task to be processed, consists of a Sentence, stamp, time, and budget.
  */
-public interface Task extends Truthed, Stamp, TermedDelegate, ITask, TaskRegion, UnitPrioritizable {
+public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPrioritizable {
+
+//    Task next(Object w);
+
+    @Deprecated
+    default Task next(Object w) {
+        //return Perceive.perceive(this, w);
+        //return null;
+        throw new TODO();
+    }
 
 
     Task[] EmptyArray = new Task[0];
+    Logger logger = Log.logger(Task.class);
 
     static boolean equal(Task thiz, Object that) {
         return (thiz == that) ||
@@ -109,11 +121,11 @@ public interface Task extends Truthed, Stamp, TermedDelegate, ITask, TaskRegion,
     /**
      * with most common defaults
      */
-    static void merge(ITask pp, ITask tt) {
+    static void merge(Task pp, Task tt) {
         merge(pp, tt, PriMerge.max, CauseMerge.Append, PriReturn.Void, true);
     }
 
-    static float merge(ITask e, ITask i, PriMerge merge, CauseMerge cMerge, PriReturn returning, boolean updateCreationTime) {
+    static float merge(final Task e, final Task i, PriMerge merge, CauseMerge cMerge, PriReturn returning, boolean updateCreationTime) {
 
         if (e == i)
             return 0;
@@ -121,23 +133,21 @@ public interface Task extends Truthed, Stamp, TermedDelegate, ITask, TaskRegion,
         float y = merge.merge(e, i.pri(), returning);
 
         if (i != e && i instanceof Task) {
-            Task ii = (Task) i; //HACK
 
             if (e instanceof NALTask) {
                 NALTask ee = (NALTask) e;
-                ee.causeMerge(ii.why(), cMerge);
+                ee.causeMerge(i.why(), cMerge);
             }
 
             if (e instanceof Task) {
-                Task ee = (Task) e;
                 if (updateCreationTime) {
-                    long inCreation = ii.creation();
-                    if (inCreation > ee.creation())
-                        ee.setCreation(inCreation);
+                    long inCreation = i.creation();
+                    if (inCreation > e.creation())
+                        e.setCreation(inCreation);
                 }
 
-                if (ee.isCyclic() && !ii.isCyclic())
-                    ee.setCyclic(false);
+                if (e.isCyclic() && !i.isCyclic())
+                    e.setCyclic(false);
             }
         }
 
@@ -631,6 +641,21 @@ public interface Task extends Truthed, Stamp, TermedDelegate, ITask, TaskRegion,
         }
     }
 
+    /** TODO rewrite as ForkJoin recursive task */
+    @Deprecated static <W> void run(Task t, W w) {
+        Task x = t;
+        do {
+            x = x.next(w);
+        } while (x != null);
+    }
+
+    static void error(Prioritizable t, Prioritizable x, Throwable ee) {
+        if (t == x)
+            Task.logger.error("{} {}", x, ee);
+        else
+            Task.logger.error("{}->{} {}", t, x, ee);
+    }
+
     /** Causal trace */
     short[] why();
 
@@ -1005,18 +1030,6 @@ public interface Task extends Truthed, Stamp, TermedDelegate, ITask, TaskRegion,
         Truth t = truth(start, end, dur);
         return t == null ? Float.NaN : t.expectation();
     }
-
-    @Override
-    default ITask next(Object w) {
-        //return Perceive.perceive(this, w);
-        return null;
-    }
-
-
-    /**
-     * maybe
-     */
-
 
     byte punc();
 

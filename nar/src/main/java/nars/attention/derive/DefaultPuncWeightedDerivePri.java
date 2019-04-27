@@ -2,7 +2,6 @@ package nars.attention.derive;
 
 import jcog.Util;
 import jcog.pri.ScalarValue;
-import nars.NAL;
 import nars.NAR;
 import nars.Task;
 import nars.derive.Derivation;
@@ -31,12 +30,12 @@ public class DefaultPuncWeightedDerivePri extends DefaultDerivePri {
     }
 
     /** repurposes nar's default punctuation priorities (for input) as the derivation punctuation weighting */
-    public void cache(NAL<NAL<NAR>> NAL) {
+    public void cache(NAR nar) {
 
-        float beliefPri = NAL.beliefPriDefault.asFloat();
-        float goalPri = NAL.goalPriDefault.asFloat();
-        float questionPri = NAL.questionPriDefault.floatValue();
-        float questPri = NAL.questPriDefault.floatValue();
+        float beliefPri = nar.beliefPriDefault.asFloat();
+        float goalPri = nar.goalPriDefault.asFloat();
+        float questionPri = nar.questionPriDefault.floatValue();
+        float questPri = nar.questPriDefault.floatValue();
 
         //normalize to 1.0, for postAmp usage
         float sum = Util.sum(beliefPri, goalPri, questionPri, questPri);

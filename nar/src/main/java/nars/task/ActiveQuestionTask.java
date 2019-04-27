@@ -54,20 +54,20 @@ public class ActiveQuestionTask extends NALTaskX implements Consumer<Task> {
     /**
      * wrap an existing question task
      */
-    public ActiveQuestionTask(Task q, int history, NAL<NAL<NAR>> NAL, BiConsumer<? super ActiveQuestionTask, Task> eachAnswer) {
-        this(q.term(), q.punc(), q.mid() /*, q.end()*/, history, NAL, eachAnswer);
+    public ActiveQuestionTask(Task q, int history, NAR nar, BiConsumer<? super ActiveQuestionTask, Task> eachAnswer) {
+        this(q.term(), q.punc(), q.mid() /*, q.end()*/, history, nar, eachAnswer);
     }
 
-    public ActiveQuestionTask(Term term, byte punc, long occ, int history, NAL<NAL<NAR>> NAL, Consumer<Task> eachAnswer) {
-        this(term, punc, occ, history, NAL, (q, a) -> eachAnswer.accept(a));
+    public ActiveQuestionTask(Term term, byte punc, long occ, int history, NAR nar, Consumer<Task> eachAnswer) {
+        this(term, punc, occ, history, nar, (q, a) -> eachAnswer.accept(a));
     }
 
-    public ActiveQuestionTask(Term term, byte punc, long occ, int history, NAL<NAL<NAR>> NAL, BiConsumer<? super ActiveQuestionTask, Task> eachAnswer) {
-        super(term, punc, null, NAL.time(), occ, occ, NAL.evidence());
+    public ActiveQuestionTask(Term term, byte punc, long occ, int history, NAR nar,  BiConsumer<? super ActiveQuestionTask, Task> eachAnswer) {
+        super(term, punc, null, nar.time(), occ, occ, nar.evidence());
 
         assert(punc==QUESTION || punc == QUEST);
 
-        budget(NAL);
+        budget(nar);
 
         this.answers = newBag(history);
         this.eachAnswer = eachAnswer;
@@ -79,7 +79,7 @@ public class ActiveQuestionTask extends NALTaskX implements Consumer<Task> {
             if (term.hasVars())
                 this.test = t -> {
                     if (t.op() == o && Subterms.possiblyUnifiable(term, t, Op.Variable)) {
-                        MySubUnify u = new MySubUnify(NAL.random(), ttl); //TODO pool ThreadLocal
+                        MySubUnify u = new MySubUnify(nar.random(), ttl); //TODO pool ThreadLocal
                         u.unify(term(), t);
                         return u.match;
                     }
@@ -91,7 +91,7 @@ public class ActiveQuestionTask extends NALTaskX implements Consumer<Task> {
     }
 
     @Override
-    public ITask next(Object ww) {
+    public Task next(Object ww) {
 
         What w = (What)ww;
 
@@ -99,7 +99,7 @@ public class ActiveQuestionTask extends NALTaskX implements Consumer<Task> {
             if (onTask!=null)
                 return null; //already processed and active
             else {
-                ITask next = super.next(w);
+                Task next = super.next(w);
 
                 NAR nar = w.nar;
                 this.ttl = nar.deriveBranchTTL.intValue();

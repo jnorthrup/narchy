@@ -41,7 +41,7 @@ public class DynamicTruthTask extends UnevaluatedTask /*NALTask*/ {
     }
 
     @Override
-    public ITask next(Object n) {
+    public Task next(Object n) {
         //return Remember.the(this, NAL.belief.DYNAMIC_TRUTH_TASK_STORE, true, true, (What)n);
         return null;
     }

@@ -9,7 +9,7 @@ import org.jetbrains.annotations.Nullable;
 /**
  * TODO extend an ImmutableTask class
  */
-public class DerivedTask extends GenericNALTask {
+public class DerivedTask extends TemporalTask {
 
     public DerivedTask(Term tc, byte punct, @Nullable Truth truth, long now, long start, long end, long[] evi) {
         super(tc, punct, truth, now, start, end, evi);

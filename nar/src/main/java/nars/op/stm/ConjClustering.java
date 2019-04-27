@@ -16,7 +16,6 @@ import nars.bag.BagClustering;
 import nars.control.CauseMerge;
 import nars.control.How;
 import nars.control.channel.CauseChannel;
-import nars.task.ITask;
 import nars.task.NALTask;
 import nars.task.UnevaluatedTask;
 import nars.task.util.TaskException;
@@ -42,7 +41,7 @@ public class ConjClustering extends How {
 
     public final BagClustering<Task> data;
     private final BagClustering.Dimensionalize<Task> model;
-    private final CauseChannel<ITask> in;
+    private final CauseChannel<Task> in;
     private final byte punc;
 
     public final FloatRange termVolumeMaxPct = new FloatRange(0.75f, 0, 1f);
@@ -274,11 +273,11 @@ public class ConjClustering extends How {
         /** generated tasks */
         final FasterList<Task> out = new FasterList();
         private final int tasksGeneratedPerCentroidIterationMax;
-        private final NAL<NAL<NAR>> NAL;
+        private final NAR nar;
 
-        CentroidConjoiner(int tasksGeneratedPerCentroidIterationMax, NAL<NAL<NAR>> NAL) {
+        CentroidConjoiner(int tasksGeneratedPerCentroidIterationMax, NAR nar) {
             this.tasksGeneratedPerCentroidIterationMax = tasksGeneratedPerCentroidIterationMax;
-            this.NAL = NAL;
+            this.nar = nar;
         }
 
         private int conjoinCentroid(FasterList<Task> in) {
@@ -288,7 +287,7 @@ public class ConjClustering extends How {
 
 
             int count = 0;
-            float confMinThresh = confMin + NAL.confResolution.floatValue()/2f;
+            float confMinThresh = confMin + nar.confResolution.floatValue()/2f;
 
             boolean active = true, reset = true;
 
@@ -433,7 +432,7 @@ public class ConjClustering extends How {
             if (e < NAL.truth.TRUTH_EVI_MIN)
                 return null;
 
-            final Truth t = Truth.theDithered(freq, e, NAL);
+            final Truth t = Truth.theDithered(freq, e, nar);
             if (t != null) {
 
                 Term cj = ConjLazy.sequence(x);
@@ -448,7 +447,7 @@ public class ConjClustering extends How {
                         long tEnd = start + range;
                         NALTask y = new STMClusterTask(cp, t,
                                 start, tEnd,
-                                Stamp.sample(NAL.STAMP_CAPACITY, actualStamp, NAL.random()), punc, now);
+                                Stamp.sample(NAL.STAMP_CAPACITY, actualStamp, nar.random()), punc, now);
                         y.cause(CauseMerge.AppendUnique.merge(NAL.causeCapacity.intValue(), x));
 
 

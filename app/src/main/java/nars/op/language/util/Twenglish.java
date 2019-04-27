@@ -19,7 +19,6 @@ package nars.op.language.util;
 import jcog.io.Twokenize;
 import jcog.io.Twokenize.Span;
 import nars.$;
-import nars.NAL;
 import nars.NAR;
 import nars.task.TaskBuilder;
 import nars.term.Term;
@@ -180,7 +179,7 @@ public class Twenglish {
 
 
     @NotNull
-    protected Collection<TaskBuilder> parseSentence(String source, @NotNull NAL<NAL<NAR>> n, @NotNull List<Span> s) {
+    protected Collection<TaskBuilder> parseSentence(String source, @NotNull NAR n, @NotNull List<Span> s) {
 
         LinkedList<Term> t = new LinkedList();
         Span last = null;
@@ -324,7 +323,7 @@ public class Twenglish {
      * returns a list of all tasks that it was able to parse for the input
      */
     @NotNull
-    public List<TaskBuilder> parse(String source, @NotNull NAL<NAL<NAR>> n, String s) {
+    public List<TaskBuilder> parse(String source, @NotNull NAR n, String s) {
 
 
         List<TaskBuilder> results = $.newArrayList();

@@ -1,6 +1,5 @@
 package nars.perf;
 
-import nars.NAL;
 import nars.NAR;
 import nars.perf.util.StackProfiler2;
 import nars.test.TestNARSuite;
@@ -23,7 +22,7 @@ import java.util.function.Supplier;
  * */
 public enum NARBenchmarks { ;
 
-    public static void runTests(boolean parallel, Supplier<NAL<NAL<NAR>>> n, Class... tests) {
+    public static void runTests(boolean parallel, Supplier<NAR> n, Class... tests) {
         //new JUnitPlanetX().test(tests).run();
         new TestNARSuite(n, tests).run(parallel);
     }

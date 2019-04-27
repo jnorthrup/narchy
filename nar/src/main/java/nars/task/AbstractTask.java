@@ -1,9 +1,16 @@
 package nars.task;
 
+import jcog.Log;
 import jcog.Util;
 import jcog.pri.Prioritizable;
+import jcog.util.ArrayUtils;
+import nars.$;
+import nars.Task;
+import nars.term.Term;
+import nars.truth.Truth;
 import org.eclipse.collections.impl.block.factory.Comparators;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -14,10 +21,11 @@ import java.util.Collection;
  * the reasoner remains oblivious of these.
  * but it holds a constant 1.0 priority.
  */
-public abstract class AbstractTask implements ITask, Prioritizable {
+public abstract class AbstractTask implements Task {
 
-    @Nullable
-    public static ITask of(@Nullable Collection<ITask> next) {
+    public static final Logger logger = Log.logger(AbstractTask.class);
+
+    public static Task of(@Nullable Collection<Task> next) {
         if (next == null) return null;
         switch (next.size()) {
             case 0:
@@ -25,9 +33,17 @@ public abstract class AbstractTask implements ITask, Prioritizable {
             case 1:
                 return Util.only(next);
             default:
-                return new TasksArray(next.toArray(ITask[]::new), true);
+                return new TasksArray(next.toArray(Task[]::new), true);
         }
     }
+
+
+//    public static void error(Prioritizable t, Prioritizable x, Throwable ee) {
+//        if (t == x)
+//            Task.logger.error("{} {}", x, ee);
+//        else
+//            Task.logger.error("{}->{} {}", t, x, ee);
+//    }
 
     public final byte punc() {
         return 0;
@@ -58,6 +74,12 @@ public abstract class AbstractTask implements ITask, Prioritizable {
         //return 1f;
         throw new UnsupportedOperationException();
     }
+
+    /**
+     * process the next stage; returns null if finished
+     */
+    @Deprecated
+    public abstract Task next(Object n);
 
 
 //    /**
@@ -131,12 +153,73 @@ public abstract class AbstractTask implements ITask, Prioritizable {
 //
 //    }
 
+    @Override
+    public short[] why() {
+        return ArrayUtils.EMPTY_SHORT_ARRAY;
+    }
+
+    @Override
+    public @Nullable Truth truth(long when, int dur) {
+        return null;
+    }
+
+    @Override
+    public @Nullable Truth truth(long targetStart, long targetEnd, int dur) {
+        return null;
+    }
+
+    @Override
+    public @Nullable Truth truth() {
+        return null;
+    }
+
+    @Override
+    public boolean isCyclic() {
+        return false;
+    }
+
+    @Override
+    public void setCyclic(boolean b) {
+
+    }
+
+    @Override
+    public long creation() {
+        return 0;
+    }
+
+    @Override
+    public void setCreation(long creation) {
+
+    }
+
+    @Override
+    public long start() {
+        return ETERNAL;
+    }
+
+    @Override
+    public long end() {
+        return ETERNAL;
+    }
+
+    @Override
+    public long[] stamp() {
+        return ArrayUtils.EMPTY_LONG_ARRAY;
+    }
+
+    @Override
+    public Term term() {
+        return $.identity(this);
+    }
+
+
     /** execute the given tasks */
     public final static class TasksArray extends AbstractTask {
 
-        private final ITask[] tasks;
+        private final Task[] tasks;
 
-        private TasksArray(ITask[] x, boolean anyOrder) {
+        private TasksArray(Task[] x, boolean anyOrder) {
             this.tasks = x;
 
             //sort by type, emulating loop unrolling by batching the set of tasks by their type.
@@ -146,9 +229,9 @@ public abstract class AbstractTask implements ITask, Prioritizable {
         }
 
         @Override
-        public ITask next(Object n) {
-            for (ITask t: tasks)
-                ITask.run(t, n);
+        public Task next(Object n) {
+            for (Task t: tasks)
+                Task.run(t, n);
             return null;
         }
 
@@ -156,15 +239,15 @@ public abstract class AbstractTask implements ITask, Prioritizable {
     /** execute the given tasks */
     public final static class TasksIterable extends AbstractTask {
 
-        private final Iterable<? extends ITask> tasks;
+        private final Iterable<? extends Task> tasks;
 
-        public TasksIterable(Iterable<? extends ITask> x) {
+        public TasksIterable(Iterable<? extends Task> x) {
             this.tasks = x;
         }
         @Override
-        public ITask next(Object n) {
-            for (ITask t: tasks)
-                ITask.run(t, n);
+        public Task next(Object n) {
+            for (Task t: tasks)
+                Task.run(t, n);
             return null;
         }
 

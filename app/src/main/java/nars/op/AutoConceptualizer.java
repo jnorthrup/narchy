@@ -5,13 +5,13 @@ import jcog.learn.Autoencoder;
 import jcog.util.ArrayUtils;
 import nars.$;
 import nars.NAR;
+import nars.Task;
 import nars.agent.Game;
 import nars.attention.What;
 import nars.concept.Concept;
 import nars.concept.sensor.AbstractSensor;
 import nars.control.channel.CauseChannel;
 import nars.table.BeliefTable;
-import nars.task.ITask;
 import nars.task.signal.SignalTask;
 import nars.term.Term;
 import nars.term.Termed;
@@ -36,7 +36,7 @@ public class AutoConceptualizer extends AbstractSensor {
 
     private final boolean beliefOrGoal;
     private final float[] x;
-    private final CauseChannel<ITask> in;
+    private final CauseChannel<Task> in;
     float learningRate = 0.05f;
     float noiseLevel = 0.0002f;
 

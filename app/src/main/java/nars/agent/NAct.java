@@ -357,7 +357,7 @@ public interface NAct {
 //                //0.9f;
 //                1f; //instant
 
-        NAL<NAL<NAR>> n = nar();
+        NAR n = nar();
         GoalActionConcept LA = action(l, (b, g) -> {
             float q = Q.q(b,g);
 
@@ -555,7 +555,7 @@ public interface NAct {
     }
     
     default BooleanPredicate debounce(BooleanPredicate f, float durations) {
-        NAL<NAL<NAR>> n = nar();
+        NAR n = nar();
         final long[] last = {Math.round(n.time() - durations * n.dur())};
 
         return (x)->{

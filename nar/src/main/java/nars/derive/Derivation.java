@@ -18,7 +18,6 @@ import nars.eval.Evaluation;
 import nars.op.Subst;
 import nars.op.UniSubst;
 import nars.subterm.Subterms;
-import nars.task.ITask;
 import nars.term.Compound;
 import nars.term.Functor;
 import nars.term.Term;
@@ -504,7 +503,7 @@ public class Derivation extends PreDerivation {
         this.what = w;
         //if (this.what!=w) { .. }
 
-        NAL<NAL<NAR>> p = this.nar(), n = w.nar;
+        NAR p = this.nar(), n = w.nar;
         if (p != n) {
 
             this.reset();
@@ -626,7 +625,7 @@ public class Derivation extends PreDerivation {
             return y;
     }
 
-    public final ITask add(Task t) {
+    public final nars.Task add(Task t) {
         return what.put(t);
     }
 

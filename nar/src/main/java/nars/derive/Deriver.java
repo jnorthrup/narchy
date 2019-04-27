@@ -2,7 +2,6 @@ package nars.derive;
 
 import jcog.Util;
 import jcog.func.TriFunction;
-import nars.NAL;
 import nars.NAR;
 import nars.Task;
 import nars.attention.What;
@@ -64,7 +63,7 @@ abstract public class Deriver extends How {
         nar.start(this);
     }
 
-    public static Stream<Deriver> derivers(NAL<NAL<NAR>> n) {
+    public static Stream<Deriver> derivers(NAR n) {
         return n.partStream().filter(Deriver.class::isInstance).map(Deriver.class::cast);
     }
 

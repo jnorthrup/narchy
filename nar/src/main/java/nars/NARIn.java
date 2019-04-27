@@ -1,7 +1,6 @@
 package nars;
 
 import nars.task.ActiveQuestionTask;
-import nars.task.ITask;
 import nars.term.Term;
 import org.jetbrains.annotations.Nullable;
 
@@ -13,10 +12,10 @@ import java.util.function.Consumer;
  */
 public interface NARIn {
 
-    void input(ITask t);
+    void input(Task t);
 
-    default void input(ITask... t) {
-        for (ITask x : t) input(x);
+    default void input(Task... t) {
+        for (Task x : t) input(x);
     }
 
     @Nullable
@@ -32,13 +31,13 @@ public interface NARIn {
     @Nullable
     default ActiveQuestionTask question(Term term, long occ, byte punc /* question or quest */, BiConsumer<ActiveQuestionTask, Task> eachAnswer) {
         assert(punc == Op.QUESTION || punc == Op.QUEST);
-        return inputTask( new ActiveQuestionTask(term, punc, occ, 16, (NAL<NAL<NAR>>)this, eachAnswer) );
+        return inputTask( new ActiveQuestionTask(term, punc, occ, 16, (NAR)this, eachAnswer) );
     }
 
     @Nullable
     default ActiveQuestionTask ask(Term term, long occ, byte punc /* question or quest */, Consumer<Task> eachAnswer) {
         assert(punc == Op.QUESTION || punc == Op.QUEST);
-        return inputTask( new ActiveQuestionTask(term, punc, occ, 16, (NAL<NAL<NAR>>)this, eachAnswer) );
+        return inputTask( new ActiveQuestionTask(term, punc, occ, 16, (NAR)this, eachAnswer) );
     }
 
 

@@ -29,9 +29,9 @@ public final class Operator extends NodeConcept implements PermanentConcept, Ato
 
     private static final String LOG_FUNCTOR = String.valueOf(Character.valueOf((char) 8594));
 
-    public final BiFunction<Task, NAL<NAL<NAR>>, Task> model;
+    public final BiFunction<Task, NAR, Task> model;
 
-    private Operator(Atom atom, BiFunction<Task, NAL<NAL<NAR>>, Task> model) {
+    private Operator(Atom atom, BiFunction<Task, NAR, Task> model) {
         super(atom, TermLinker.NullLinker);
         this.model = model;
     }
@@ -41,7 +41,7 @@ public final class Operator extends NodeConcept implements PermanentConcept, Ato
         return ATOM;
     }
 
-    public static Operator simple(Atom name, BiFunction<Task, NAL<NAL<NAR>>, Task> exe) {
+    public static Operator simple(Atom name, BiFunction<Task, NAR, Task> exe) {
          return new Operator(name, new SimpleOperatorModel(exe));
     }
 
@@ -88,11 +88,11 @@ public final class Operator extends NodeConcept implements PermanentConcept, Ato
     }
 
 
-    static class SimpleOperatorModel implements BiFunction<Task, NAL<NAL<NAR>>, Task> {
+    static class SimpleOperatorModel implements BiFunction<Task, NAR, Task> {
 
-        private final BiFunction<Task, NAL<NAL<NAR>>, Task> exe;
+        private final BiFunction<Task, NAR, Task> exe;
 
-        SimpleOperatorModel(BiFunction<Task, NAL<NAL<NAR>>, Task> exe) {
+        SimpleOperatorModel(BiFunction<Task, NAR, Task> exe) {
             this.exe = exe;
         }
 

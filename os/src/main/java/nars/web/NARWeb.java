@@ -90,11 +90,11 @@ abstract public class NARWeb extends WebServer {
         }
     }
 
-    protected void stopping(NAL<NAL<NAR>> n) {
+    protected void stopping(NAR n) {
 
     }
 
-    protected void starting(NAL<NAL<NAR>> n) {
+    protected void starting(NAR n) {
 
     }
 
@@ -104,10 +104,10 @@ abstract public class NARWeb extends WebServer {
      */
     public static class Single extends NARWeb {
 
-        private final NAL<NAL<NAR>> NAL;
+        private final NAR nar;
 
-        public Single(NAL<NAL<NAR>> NAL) {
-            this.NAL = NAL;
+        public Single(NAR nar) {
+            this.nar = nar;
         }
 
         public static void main(String[] args) throws IOException {
@@ -131,7 +131,7 @@ abstract public class NARWeb extends WebServer {
 
         @Override
         protected @Nullable NAR nar(WebSocketConnection conn, String url) {
-            return url.equals("/") ? NAL : null;
+            return url.equals("/") ? nar : null;
         }
     }
 
@@ -158,11 +158,11 @@ abstract public class NARWeb extends WebServer {
                 return null;
             }
 
-            return reasoners.computeIfAbsent(url, (Function<String, NAL<NAL<NAR>>>) this::nar);
+            return reasoners.computeIfAbsent(url, (Function<String, NAR>) this::nar);
         }
 
         //TODO <URI,NAR>
-        final CustomConcurrentHashMap<String, NAL<NAL<NAR>>> reasoners = new CustomConcurrentHashMap<>(
+        final CustomConcurrentHashMap<String, NAR> reasoners = new CustomConcurrentHashMap<>(
                 STRONG, EQUALS, WEAK, IDENTITY, 64) {
             @Override
             protected void reclaim(NAR n) {
@@ -193,7 +193,7 @@ abstract public class NARWeb extends WebServer {
                 }
 
                 @Override
-                public void input(Consumer<NAL<NAL<NAR>>> r) {
+                public void input(Consumer<NAR> r) {
                     execute(() -> r.accept(this.nar));
                 }
             };
@@ -269,7 +269,7 @@ abstract public class NARWeb extends WebServer {
         volatile WebSocket w;
         final PriArrayBag<Task> out = new PriArrayBag<Task>(PriMerge.max, 64);
         final AtomicBoolean busy = new AtomicBoolean();
-        public WebSocketLogger(WebSocket ws, NAL<NAL<NAR>> n) {
+        public WebSocketLogger(WebSocket ws, NAR n) {
             this.w = ws;
 
         }

@@ -1,7 +1,6 @@
 package nars.derive.impl;
 
 import jcog.math.IntRange;
-import nars.NAL;
 import nars.NAR;
 import nars.Task;
 import nars.attention.What;
@@ -37,7 +36,7 @@ public class BatchDeriver extends Deriver {
 
         do {
 
-            When<NAL<NAL<NAR>>> when = WhenTimeIs.now(d);
+            When<NAR> when = WhenTimeIs.now(d);
 
             hypothesize(when, premises, d);
 

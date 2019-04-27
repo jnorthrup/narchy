@@ -13,7 +13,7 @@ import java.util.function.Function;
 /**
  * extended: with meta table
  */
-public class NALTaskX extends GenericNALTask implements jcog.data.map.MetaMap {
+public class NALTaskX extends TemporalTask implements jcog.data.map.MetaMap {
 
     private final CompactArrayMap<String, Object> meta = new CompactArrayMap<>();
 

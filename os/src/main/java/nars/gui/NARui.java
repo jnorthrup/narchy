@@ -15,7 +15,10 @@ import jcog.math.Quantiler;
 import jcog.pri.VLink;
 import jcog.service.Part;
 import jcog.service.Parts;
-import nars.*;
+import nars.AttentionUI;
+import nars.NAR;
+import nars.Narsese;
+import nars.Task;
 import nars.agent.Game;
 import nars.agent.util.RLBooster;
 import nars.attention.TaskLinks;
@@ -252,7 +255,7 @@ public class NARui {
 
     }
 
-    public static Surface memLoad(NAL<NAL<NAR>> NAL) {
+    public static Surface memLoad(NAR nar) {
         return new VectorLabel("Load: TODO");
     }
 

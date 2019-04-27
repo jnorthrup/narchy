@@ -11,6 +11,11 @@ public class TODO extends UnsupportedOperationException {
     public TODO(String what) {
         super(what);
     }
+
+    public TODO(Object what) {
+        super(what.toString());
+    }
+
     public TODO(Throwable catchIt) {
         super(catchIt);
     }

@@ -23,7 +23,7 @@ public class TaskTest {
 
     @Test
     void testTenseEternality() throws Narsese.NarseseException {
-        NAL<NAL<NAR>> n = new NARS().get();
+        NAR n = new NARS().get();
 
         String s = "<a --> b>.";
 

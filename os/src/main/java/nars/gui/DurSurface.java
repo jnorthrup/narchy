@@ -1,6 +1,5 @@
 package nars.gui;
 
-import nars.NAL;
 import nars.NAR;
 import nars.time.part.DurLoop;
 import spacegraph.space2d.ReSurface;
@@ -85,7 +84,7 @@ abstract public class DurSurface<S extends Surface> extends AbstractCachedSurfac
         super.renderContent(r);
     }
 
-    public static DurSurface get(Surface x, NAR n, Consumer<NAL<NAL<NAR>>> eachDur) {
+    public static DurSurface get(Surface x, NAR n, Consumer<NAR> eachDur) {
         return new DurSurface(x, n) {
             @Override
             protected void update() {
@@ -124,7 +123,7 @@ abstract public class DurSurface<S extends Surface> extends AbstractCachedSurfac
 //        };
 //    }
     public static  <S extends Surface> DurSurface<S> get(S narConsumer, NAR n) {
-        return get(narConsumer, n, (Consumer<NAL<NAL<NAR>>>)narConsumer);
+        return get(narConsumer, n, (Consumer<NAR>)narConsumer);
     }
 
     public DurSurface<S> live() {

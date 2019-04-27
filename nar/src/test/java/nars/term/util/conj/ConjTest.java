@@ -2150,7 +2150,7 @@ public class ConjTest {
     static final Term a = $.the("a");
     static final Term b = $.the("b");
     private final Random rng = new XoRoShiRo128PlusRandom(1);
-    private final NAL<NAR> n = NARS.shell();
+    private final NAR n = NARS.shell();
 
     @Deprecated
     static Term conj(FasterList<LongObjectPair<Term>> events) {

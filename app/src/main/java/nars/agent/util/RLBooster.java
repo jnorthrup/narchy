@@ -7,14 +7,12 @@ import jcog.learn.Agent;
 import jcog.math.FloatRange;
 import jcog.signal.tensor.TensorRing;
 import nars.$;
-import nars.NAL;
 import nars.NAR;
 import nars.Task;
 import nars.agent.Game;
 import nars.attention.What;
 import nars.concept.action.AgentAction;
 import nars.control.channel.CauseChannel;
-import nars.task.ITask;
 import nars.task.signal.SignalTask;
 import nars.term.Term;
 import nars.truth.Truth;
@@ -39,7 +37,7 @@ public class RLBooster  {
     final float[] input;
     final int inD, outD;
     final AgentAction[] actions;
-    private final CauseChannel<ITask> in;
+    private final CauseChannel<Task> in;
     private final List<Term> inputs;
     private final int actionDiscretization;
     private final TensorRing history;
@@ -134,7 +132,7 @@ public class RLBooster  {
 
 
     public void accept(What w) {
-        NAL<NAL<NAR>> NAL = env.nar();
+        NAR nar = env.nar();
 
         double reward = (env.happiness() - 0.5)*2 /* polarize */;
         lastReward = reward;
@@ -143,7 +141,7 @@ public class RLBooster  {
 //        long end = env.now(); //+ dur/2;
 //        //HACK
 //        int dur = nar.dur();
-        long now = NAL.time();
+        long now = nar.time();
         long start = now;
         long end = env.next;
         if (end < start)
@@ -176,8 +174,8 @@ public class RLBooster  {
             }
 
             if (t !=null) {
-                Task tt = new SignalTask(actions[o].term(), GOAL, t, start, start, end, NAL.time.nextStamp());
-                tt.pri(NAL);
+                Task tt = new SignalTask(actions[o].term(), GOAL, t, start, start, end, nar.time.nextStamp());
+                tt.pri(nar);
                 e.add(tt);
             }
         }

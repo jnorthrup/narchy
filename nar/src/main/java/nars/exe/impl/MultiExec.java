@@ -5,11 +5,10 @@ import jcog.Texts;
 import jcog.Util;
 import jcog.data.list.FasterList;
 import jcog.math.FloatAveragedWindow;
-import nars.NAL;
 import nars.NAR;
+import nars.Task;
 import nars.exe.Exec;
 import nars.task.AbstractTask;
-import nars.task.ITask;
 import nars.task.NALTask;
 import nars.task.ProxyTask;
 import nars.time.clock.RealTime;
@@ -76,7 +75,7 @@ abstract public class MultiExec extends Exec {
     @Override
     public final void input(Object x) {
         if (x instanceof NALTask || x instanceof ProxyTask)
-            accept((ITask) x);
+            accept((Task) x);
         else
             execute(x);
     }
@@ -86,7 +85,7 @@ abstract public class MultiExec extends Exec {
     }
 
     @Override
-    public final void input(Consumer<NAL<NAR>> r) {
+    public final void input(Consumer<NAR> r) {
         execute(r);
     }
 
@@ -177,7 +176,7 @@ abstract public class MultiExec extends Exec {
         }
 
         @Override
-        public ITask next(Object n) {
+        public Task next(Object n) {
             long end = nanoTime();
             queueLatency(start, end, (NAR)n);
             return null;

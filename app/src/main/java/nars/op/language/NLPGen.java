@@ -19,7 +19,7 @@ import static nars.Op.VAR_PATTERN;
  */
 public class NLPGen {
 
-    final NAL<NAL<NAR>> terminal = NARS.shell();
+    final NAR terminal = NARS.shell();
     final PatternTermBuilder index = new PatternTermBuilder();
 
     public interface Rule {

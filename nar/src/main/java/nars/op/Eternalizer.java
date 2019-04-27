@@ -9,7 +9,6 @@ import nars.attention.What;
 import nars.control.channel.CauseChannel;
 import nars.link.TaskLink;
 import nars.table.BeliefTable;
-import nars.task.ITask;
 import nars.term.Term;
 import nars.time.When;
 
@@ -24,7 +23,7 @@ public class Eternalizer extends LinkProcessor<Task> {
     public final FloatRange eviFactor = new FloatRange(1f, 0, 1);
     public final FloatRange priFactor = new FloatRange(0.5f, 0, 1);
     public final FloatRange noise = new FloatRange(0f, 0, 1);
-    private final CauseChannel<ITask> in;
+    private final CauseChannel<Task> in;
 
     public Eternalizer(NAR nar) {
         super();

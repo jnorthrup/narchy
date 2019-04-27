@@ -4,7 +4,6 @@ import com.google.common.collect.Streams;
 import jcog.data.byt.AbstractBytes;
 import jcog.tree.radix.ConcurrentRadixTree;
 import jcog.tree.radix.MyRadixTree;
-import nars.NAL;
 import nars.NAR;
 import nars.concept.Concept;
 import nars.concept.PermanentConcept;
@@ -22,7 +21,7 @@ import java.util.stream.Stream;
  * concurrent radix tree index
  * TODO restore byte[] sequence writing that doesnt prepend atom length making leaves unfoldable by natural ordering
  */
-public class RadixTreeMemory extends Memory implements Consumer<NAL<NAL<NAR>>> {
+public class RadixTreeMemory extends Memory implements Consumer<NAR> {
 
     private final float maxIterationRemovalPct = 0.05f;
     private final float descentRate = 0.618f;

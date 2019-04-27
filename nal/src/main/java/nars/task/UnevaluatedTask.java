@@ -10,7 +10,7 @@ import nars.truth.Truth;
  *  something is specified in the task that evaluation
  *  otherwise would un-do.
  */
-public class UnevaluatedTask extends GenericNALTask {
+public class UnevaluatedTask extends TemporalTask {
 
     public UnevaluatedTask(Term t, byte punct, Truth truth, long creation, long start, long end, long[] stamp) {
         super(t, punct, truth, creation, start, end,
@@ -35,7 +35,7 @@ public class UnevaluatedTask extends GenericNALTask {
 //        return postProcess(q, false);
 //    }
     @Override
-    public ITask next(Object n) {
+    public Task next(Object n) {
         /* no evaluation */
         //return Remember.the(this, n);
         return null;

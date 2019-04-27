@@ -1,7 +1,6 @@
 package nars.test;
 
 import jcog.data.list.FasterList;
-import nars.NAL;
 import nars.NAR;
 import org.eclipse.collections.api.block.function.primitive.DoubleFunction;
 
@@ -15,14 +14,14 @@ import java.util.stream.Stream;
 
 public class TestNARSuite extends FasterList<TestNARSuite.MyTestNAR> {
 
-    private final Supplier<NAL<NAL<NAR>>> narBuilder;
+    private final Supplier<NAR> narBuilder;
     private final Stream<Method> testMethods;
 
-    public TestNARSuite(Supplier<NAL<NAL<NAR>>> narBuilder, Class<? extends NALTest>... testClasses) {
+    public TestNARSuite(Supplier<NAR> narBuilder, Class<? extends NALTest>... testClasses) {
         this(narBuilder, NALTest.tests(testClasses));
     }
 
-    public TestNARSuite(Supplier<NAL<NAL<NAR>>> narBuilder, Stream<Method> testMethods) {
+    public TestNARSuite(Supplier<NAR> narBuilder, Stream<Method> testMethods) {
         this.narBuilder = narBuilder;
         this.testMethods = testMethods;
     }
@@ -58,22 +57,22 @@ public class TestNARSuite extends FasterList<TestNARSuite.MyTestNAR> {
     }
 
 
-    public double sum(Function<NAL<NAL<NAR>>,Number> n) {
+    public double sum(Function<NAR,Number> n) {
         return doubleStream(n).sum();
     }
-    public double sum(DoubleFunction<NAL<NAL<NAR>>> n) {
+    public double sum(DoubleFunction<NAR> n) {
         return doubleStream(n).sum();
     }
 
-    public DoubleStream doubleStream(DoubleFunction<NAL<NAL<NAR>>> n) {
+    public DoubleStream doubleStream(DoubleFunction<NAR> n) {
         return narStream().mapToDouble(n);
     }
 
-    public Stream<NAL<NAL<NAR>>> narStream() {
+    public Stream<NAR> narStream() {
         return stream().map(x -> x.nar);
     }
 
-    public DoubleStream doubleStream(Function<NAL<NAL<NAR>>,Number> n) {
+    public DoubleStream doubleStream(Function<NAR,Number> n) {
         return narStream().map(n).mapToDouble(Number::doubleValue);
     }
 

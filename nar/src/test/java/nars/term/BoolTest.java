@@ -1,6 +1,9 @@
 package nars.term;
 
-import nars.*;
+import nars.$;
+import nars.NAR;
+import nars.NARS;
+import nars.Op;
 import nars.io.IO;
 import nars.op.Equal;
 import nars.truth.Truth;
@@ -60,7 +63,7 @@ public class BoolTest {
     /** same tautological assumptions should hold in equal(x,y) results */
     @Test void testEqualOperatorTautologies() {
         //TODO finish
-        NAL<NAL<NAR>> n = NARS.shell();
+        NAR n = NARS.shell();
         assertEquals(True, Equal.the(True,True));
         assertEquals(False, Equal.the(True,False));
         assertEquals(Null, Equal.the(True,Null));

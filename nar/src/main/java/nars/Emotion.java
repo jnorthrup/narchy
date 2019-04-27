@@ -22,7 +22,7 @@ import static jcog.Texts.n4;
  *
  * TODO cycleCounter, durCounter etc
  */
-public class Emotion implements Meter, Consumer<NAL<NAL<NAR>>> {
+public class Emotion implements Meter, Consumer<NAR> {
 
     /**
      * priority rate of Task processing attempted

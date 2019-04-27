@@ -79,7 +79,7 @@ public class SeriesBeliefTable<T extends Task> extends DynamicTaskTable {
         series.forEach(action);
     }
 
-    void clean(List<BeliefTable> tables, NAL<NAL<NAR>> n) {
+    void clean(List<BeliefTable> tables, NAR n) {
         if (!NAL.belief.signal.SIGNAL_TABLE_FILTER_NON_SIGNAL_TEMPORAL_TASKS)
             return;
 

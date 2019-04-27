@@ -19,7 +19,6 @@ import nars.attention.AntistaticBag;
 import nars.attention.PriNode;
 import nars.control.channel.CauseChannel;
 import nars.control.op.Remember;
-import nars.task.ITask;
 import nars.task.NALTask;
 import nars.time.part.DurLoop;
 import org.eclipse.collections.api.block.function.primitive.ShortToObjectFunction;
@@ -219,7 +218,7 @@ import java.util.Arrays;
     /**
      * automatically adds the cause id to each input
      */
-    public CauseChannel<ITask> newChannel(Object id) {
+    public CauseChannel<Task> newChannel(Object id) {
         return new TaskChannel(newCause(id));
     }
 
@@ -232,7 +231,7 @@ import java.util.Arrays;
         }
     }
 
-    static final class TaskChannel extends CauseChannel<ITask> {
+    static final class TaskChannel extends CauseChannel<Task> {
 
         private final short ci;
         final short[] uniqueCause;
@@ -243,7 +242,7 @@ import java.util.Arrays;
             uniqueCause = new short[]{ci};
         }
 
-        @Override protected void preAccept(ITask x) {
+        @Override protected void preAccept(Task x) {
             if (x instanceof NALTask) {
                 NALTask t = (NALTask) x;
                 short[] currentCause = t.why();

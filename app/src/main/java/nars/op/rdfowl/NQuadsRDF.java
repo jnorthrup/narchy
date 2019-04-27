@@ -1,7 +1,6 @@
 package nars.op.rdfowl;
 
 import nars.$;
-import nars.NAL;
 import nars.NAR;
 import nars.Task;
 import nars.task.NALTask;
@@ -100,18 +99,18 @@ public abstract class NQuadsRDF {
     }
 
 
-    public static Stream<Task> stream(@NotNull NAL<NAL<NAR>> n, File f) throws FileNotFoundException {
+    public static Stream<Task> stream(@NotNull NAR n, File f) throws FileNotFoundException {
         return NQuadsRDF.stream(n, NQuadsRDF.stream(f));
     }
 
-    public static Stream<Task> stream(@NotNull NAL<NAL<NAR>> NAL, @NotNull Stream<Node[]> nxp) {
+    public static Stream<Task> stream(@NotNull NAR nar, @NotNull Stream<Node[]> nxp) {
 
         return nxp.map((Node[] nx) -> {
             if (nx.length >= 3) {
                 
 
                 return inputNALlike(
-                        NAL,
+                        nar,
                         resource(nx[0]),
                         resource(nx[1]),
                         resource(nx[2])
@@ -321,7 +320,7 @@ public abstract class NQuadsRDF {
         add(Atomic.the("isDefinedBy"));
     }};
 
-    public static Task inputRaw(@NotNull NAL<NAL<NAR>> NAL,
+    public static Task inputRaw(@NotNull NAR nar,
                                 @Nullable Atom subject,
                                 @NotNull Atom predicate, @NotNull Term object) {
 
@@ -335,7 +334,7 @@ public abstract class NQuadsRDF {
             Term term = /*$.inst*/ $.inh($.p(subject, object), predicate);
             if (term == null)
                 throw new NullPointerException();
-            Task t = new TaskBuilder(term, BELIEF, $.t(1f, NAL.confDefault(BELIEF))).apply(NAL);
+            Task t = new TaskBuilder(term, BELIEF, $.t(1f, nar.confDefault(BELIEF))).apply(nar);
             return t;
         } catch (Exception e) {
             logger.error("rdf({}) to task: {}", new Term[]{subject, object, predicate}, e);
@@ -349,7 +348,7 @@ public abstract class NQuadsRDF {
      * Saves the relation into the database. Both entities must exist if the
      * relation is to be saved. Takes care of updating relation_types as well.
      */
-    public static Task inputNALlike(@NotNull NAL<NAL<NAR>> NAL,
+    public static Task inputNALlike(@NotNull NAR nar,
                                     @Nullable Atomic subject,
                                     @Nullable Atomic predicate, @Nullable Term object) {
 
@@ -457,8 +456,8 @@ public abstract class NQuadsRDF {
 
         if (belief instanceof Compound) {
 
-            return NALTask.the(belief, BELIEF, $.t(1f, NAL.confDefault(BELIEF)), NAL.time(), Tense.ETERNAL, Tense.ETERNAL, NAL.evidence())
-                    .pri(NAL)
+            return NALTask.the(belief, BELIEF, $.t(1f, nar.confDefault(BELIEF)), nar.time(), Tense.ETERNAL, Tense.ETERNAL, nar.evidence())
+                    .pri(nar)
                     ;
 
 

@@ -3,7 +3,6 @@ package nars.term;
 import jcog.Util;
 import jcog.func.TriFunction;
 import nars.$;
-import nars.NAL;
 import nars.NAR;
 import nars.Op;
 import nars.concept.Concept;
@@ -192,7 +191,7 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, B
     /**
      * a functor involving a concept resolved by the 1st argument target
      */
-    public static LambdaFunctor f1Concept(String termAtom, NAR nar, BiFunction<Concept, NAL<NAL<NAR>>, Term> ff) {
+    public static LambdaFunctor f1Concept(String termAtom, NAR nar, BiFunction<Concept, NAR, Term> ff) {
         return f1(fName(termAtom), t -> {
             Concept c = nar.conceptualizeDynamic(t);
             return c != null ? ff.apply(c, nar) : null;

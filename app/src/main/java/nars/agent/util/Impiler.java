@@ -20,7 +20,6 @@ import nars.concept.Concept;
 import nars.concept.TaskConcept;
 import nars.control.channel.CauseChannel;
 import nars.op.TaskLeak;
-import nars.task.ITask;
 import nars.task.NALTask;
 import nars.task.util.TaskList;
 import nars.term.Term;
@@ -56,7 +55,7 @@ public class Impiler {
 
     public static class ImpilerSolver extends TaskLeak {
 
-        private final CauseChannel<ITask> in;
+        private final CauseChannel<Task> in;
 
         public ImpilerSolver(int capacity, float ratePerDuration, NAR n) {
             super(capacity, n);

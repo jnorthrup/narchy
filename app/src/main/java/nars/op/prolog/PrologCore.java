@@ -10,7 +10,6 @@ import nars.attention.What;
 import nars.control.channel.CauseChannel;
 import nars.memory.Memory;
 import nars.subterm.Subterms;
-import nars.task.ITask;
 import nars.task.NALTask;
 import nars.term.Compound;
 import nars.term.Term;
@@ -86,7 +85,7 @@ public class PrologCore extends PrologAgent implements Consumer<Task> {
 
 
     private final long timeoutMS = 50;
-    private final CauseChannel<ITask> in;
+    private final CauseChannel<Task> in;
     private What what;
 
 

@@ -14,7 +14,6 @@ import jcog.math.FloatSupplier;
 import jcog.service.Part;
 import jcog.util.ArrayUtils;
 import nars.$;
-import nars.NAL;
 import nars.NAR;
 import nars.attention.PriNode;
 import nars.attention.What;
@@ -57,7 +56,7 @@ import static nars.time.Tense.ETERNAL;
 @Paper @Skill({"Game_studies", "Game_theory"})
 public class Game extends NARPart implements NSense, NAct, Timed {
 
-    private final Topic<NAL<NAL<NAR>>> eventFrame = new ListTopic();
+    private final Topic<NAR> eventFrame = new ListTopic();
 
     private static final Logger logger = Log.logger(Game.class);
 
@@ -228,7 +227,7 @@ public class Game extends NARPart implements NSense, NAct, Timed {
     }
 
     public Random random() {
-        NAL<NAL<NAR>> n = this.nar;
+        NAR n = this.nar;
         return n != null ? n.random() : ThreadLocalRandom.current();
     }
 

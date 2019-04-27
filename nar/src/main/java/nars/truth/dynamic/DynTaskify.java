@@ -121,9 +121,9 @@ public class DynTaskify extends TaskList {
         }
 
 
-        NAL<NAL<NAR>> NAL = a.nar;
+        NAR nar = a.nar;
         Compound template = (Compound) a.term();
-        Term term1 = model.reconstruct(template, this, NAL, s, e);
+        Term term1 = model.reconstruct(template, this, nar, s, e);
         if (term1 == null || !term1.unneg().op().taskable) { //quick tests
             if (NAL.DEBUG)
                 throw new WTF("could not reconstruct: " + template + ' ' + this);
@@ -142,7 +142,7 @@ public class DynTaskify extends TaskList {
                         NAL.truth.TRUTH_EVI_MIN, //minimal truth threshold for accumulating evidence
                         false,
                         NAL.DYNAMIC_TRUTH_TASK_TIME_DITHERING,
-                        NAL);
+                        nar);
                 if (tt == null)
                     return null;
                 setFast(i, tt);
@@ -150,7 +150,7 @@ public class DynTaskify extends TaskList {
         }
 
 
-        Truth t = model.truth(this, NAL);
+        Truth t = model.truth(this, nar);
         //t = (t != null && eviFactor != 1) ? PreciseTruth.byEvi(t.freq(), t.evi() * eviFactor) : t;
         if (t == null)
             return null;
@@ -161,19 +161,19 @@ public class DynTaskify extends TaskList {
         boolean internalOrExternal = !a.ditherTruth;
         if (!internalOrExternal) {
             //dither and limit truth
-            t = t.dither(NAL);
+            t = t.dither(nar);
             if (t == null)
                 return null;
 
             //dither time
             if (s!= LongInterval.ETERNAL) {
-                int dtDither = NAL.dtDither();
+                int dtDither = nar.dtDither();
                 s = Tense.dither(s, dtDither);
                 e = Tense.dither(e, dtDither);
             }
         }
 
-        return Answer.merge(this, term1, t, ()->stamp(NAL::random), beliefOrGoal, s, e, NAL);
+        return Answer.merge(this, term1, t, ()->stamp(nar::random), beliefOrGoal, s, e, nar);
     }
 
 

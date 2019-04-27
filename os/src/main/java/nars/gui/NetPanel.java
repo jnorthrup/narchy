@@ -3,7 +3,6 @@ package nars.gui;
 import com.google.common.base.Joiner;
 import jcog.net.UDPeer;
 import nars.InterNAR;
-import nars.NAL;
 import nars.NAR;
 import spacegraph.space2d.container.Bordering;
 import spacegraph.space2d.widget.text.AbstractLabel;
@@ -11,12 +10,12 @@ import spacegraph.space2d.widget.text.BitmapLabel;
 
 public class NetPanel extends Bordering {
 
-    private final NAL<NAL<NAR>> NAL;
+    private final NAR nar;
     private final InterNAR net;
     private final AbstractLabel status;
 
     public NetPanel(NAR n, InterNAR net) {
-        this.NAL = n;
+        this.nar = n;
         this.net = net;
 
         north(new BitmapLabel(net.peer.name() + ' ' + net.peer.addr));

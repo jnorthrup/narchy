@@ -540,7 +540,7 @@ public class TermReductionsTest extends NarseseTest {
 
     @Test
     void testRepeatEvent() throws Narsese.NarseseException {
-        NAL<NAL<NAR>> n = NARS.shell();
+        NAR n = NARS.shell();
 
         for (String x : new String[]{
                 "((a) ==>+1 (a))",

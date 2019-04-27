@@ -14,7 +14,6 @@ import nars.concept.sensor.GameLoop;
 import nars.control.channel.CauseChannel;
 import nars.op.mental.Inperience;
 import nars.table.eternal.DefaultOnlyEternalTable;
-import nars.task.ITask;
 import nars.task.NALTask;
 import nars.term.Term;
 import nars.term.Termed;
@@ -39,7 +38,7 @@ public abstract class Reward implements GameLoop, TermedDelegate, Iterable<Conce
 
     protected transient volatile float rewardBelief = Float.NaN;
 
-    protected final CauseChannel<ITask> in;
+    protected final CauseChannel<Task> in;
 
     final static boolean goalUnstamped = false;
 

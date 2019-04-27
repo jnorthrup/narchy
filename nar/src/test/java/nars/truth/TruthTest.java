@@ -163,7 +163,7 @@ class TruthTest {
     }
 
     @Test void testDitheringSanity() {
-        NAL<NAL<NAR>> n = NARS.shell();
+        NAR n = NARS.shell();
         n.confResolution.set(0.1f);
         int steps = 99;
         float step = 0.01f;

@@ -39,7 +39,7 @@ public class InterNARTest {
         n.delete();
     }
 
-    static void testAB(BiConsumer<NAL<NAL<NAR>>, NAL<NAL<NAR>>> beforeConnect, BiConsumer<NAL<NAL<NAR>>, NAL<NAL<NAR>>> afterConnect) {
+    static void testAB(BiConsumer<NAR, NAR> beforeConnect, BiConsumer<NAR, NAR> afterConnect) {
 
         final int MAX_CONNECT_INTERVALS = 100;
         final int CONNECT_INTERVAL_MS = 30;

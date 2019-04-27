@@ -32,7 +32,7 @@ public class Remember extends AbstractTask {
      */
     @Deprecated public Task input;
 
-    private FasterList<ITask> remembered = null;
+    private FasterList<Task> remembered = null;
 
     private final boolean store, link, notify;
     public boolean done = false;
@@ -116,16 +116,16 @@ public class Remember extends AbstractTask {
 
 
     @Override
-    public ITask next(Object w) {
+    public Task next(Object w) {
         commit(input, store, (What)w);
         return null;
     }
 
-    private void commit(ITask input, What w) {
+    private void commit(Task input, What w) {
         if (input instanceof Task)
             commit((Task) input, false, w);
         else
-            ITask.run(input, w); //inline
+            Task.run(input, w); //inline
     }
 
     /** TODO check that image dont double link/activate for their product terms */
@@ -213,7 +213,7 @@ public class Remember extends AbstractTask {
         c.add(this, n);
 
         if (remembered != null && !remembered.isEmpty()) {
-            remembered.forEachWith((ITask r, NAL<NAL<NAR>> nn) -> {
+            remembered.forEachWith((Task r, NAR nn) -> {
                 if (r.equals(this.input)) //HACK
                     link((Task) r, c, w); //root
                 else
@@ -239,7 +239,7 @@ public class Remember extends AbstractTask {
         }
     }
 
-    public void remember(ITask x) {
+    public void remember(Task x) {
         if (x == input)
             done = true;
 
@@ -307,7 +307,7 @@ public class Remember extends AbstractTask {
      *
      * @param dCreationDurs (creation(next) - creation(prev))/durCycles
      */
-    protected static boolean rememberFilter(Task prev, Task next, Task remembered, float dPri, NAL<NAL<NAR>> n) {
+    protected static boolean rememberFilter(Task prev, Task next, Task remembered, float dPri, NAR n) {
 
         long dDurCycles = Math.max(0, next.creation() - prev.creation());
         float dCreationDurs = dDurCycles == 0 ? 0 : (dDurCycles / ((float) n.dur()));

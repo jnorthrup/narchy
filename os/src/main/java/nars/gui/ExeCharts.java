@@ -9,7 +9,6 @@ import jcog.math.FloatRange;
 import jcog.math.IntRange;
 import jcog.math.MutableEnum;
 import jcog.tree.rtree.rect.RectFloat;
-import nars.NAL;
 import nars.NAR;
 import nars.attention.AntistaticBag;
 import nars.control.How;
@@ -108,7 +107,7 @@ public class ExeCharts {
 
 
         Gridding g = grid(exeQueue, busy);
-        DurSurface d = DurSurface.get(g, n, new Consumer<NAL<NAL<NAR>>>() {
+        DurSurface d = DurSurface.get(g, n, new Consumer<NAR>() {
 
             final Off c = n.onCycle((nn) -> {
                 busyBuffer.offer(nn.emotion.busyVol.asFloat());
@@ -284,13 +283,13 @@ public class ExeCharts {
 
         NARLoopPanel(NARLoop loop) {
             super(loop);
-            NAL<NAL<NAR>> NAL = loop.nar;
-            durMS.set(NAL.dur());
-            if (NAL.time instanceof RealTime) {
-                time = ((RealTime) NAL.time);
+            NAR nar = loop.nar;
+            durMS.set(nar.dur());
+            if (nar.time instanceof RealTime) {
+                time = ((RealTime) nar.time);
                 add(
                         new IntSlider("Dur(ms)", durMS)
-                                .on(durMS-> NAL.time.dur(Math.max((int)Math.round(durMS), 1))),
+                                .on(durMS->nar.time.dur(Math.max((int)Math.round(durMS), 1))),
                         new FloatSlider(loop.throttle, "Throttle")
                 );
             } else {
@@ -306,7 +305,7 @@ public class ExeCharts {
 
             if (loop.isRunning()) {
 
-                NAL<NAL<NAR>> n = ((NARLoop) loop).nar;
+                NAR n = ((NARLoop) loop).nar;
                 if (n.time instanceof RealTime) {
                     double actualMS = ((RealTime) n.time).durSeconds() * 1000.0;
                     if (!Util.equals(durMS.doubleValue(), actualMS, 0.1)) {

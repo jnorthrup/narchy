@@ -34,7 +34,7 @@ public abstract class NALTask extends UnitPri implements Task {
         if (start == ETERNAL) {
             return new EternalTask(c, punct, tr, creation, evidence);
         } else {
-            return new GenericNALTask(c, punct, tr, creation, start, end, evidence);
+            return new TemporalTask(c, punct, tr, creation, start, end, evidence);
         }
     }
 

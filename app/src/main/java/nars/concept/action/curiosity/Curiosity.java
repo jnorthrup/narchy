@@ -78,18 +78,18 @@ public class Curiosity {
 
         this.rate.set(initialRate);
 
-        a.onFrame((Consumer<NAL<NAL<NAR>>>)this::update);
+        a.onFrame((Consumer<NAR>)this::update);
 
     }
 
-    private void update(NAL<NAL<NAR>> NAL) {
+    private void update(NAR nar) {
         if (!enable.getOpaque())
             return;
 
         float curiConf =
                 //nar.confMin.floatValue()/2;
                 //nar.confMin.floatValue();
-                NAL.confMin.floatValue() * 2;
+                nar.confMin.floatValue() * 2;
                 //nar.confMin.floatValue() * 4;
                 //Util.lerp(1/8f, nar.confMin.floatValue(), Param.TRUTH_MAX_CONF);
                 //nar.confDefault(GOAL)/4;
@@ -100,7 +100,7 @@ public class Curiosity {
                 //w2c(c2w(nar.confDefault(GOAL))/2);
                 //nar.confDefault(GOAL);
 
-        conf.set(Util.clamp(curiConf, NAL.confMin.floatValue(), NAL.truth.TRUTH_CONF_MAX));
+        conf.set(Util.clamp(curiConf, nar.confMin.floatValue(), NAL.truth.TRUTH_CONF_MAX));
 
         int cc = curiosity.size();
 

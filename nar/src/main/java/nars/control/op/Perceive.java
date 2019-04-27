@@ -11,7 +11,6 @@ import nars.concept.Concept;
 import nars.concept.Operator;
 import nars.eval.Evaluation;
 import nars.task.AbstractTask;
-import nars.task.ITask;
 import nars.term.Compound;
 import nars.term.Functor;
 import nars.term.Term;
@@ -34,7 +33,7 @@ public enum Perceive { ;
 
     static final Logger logger = LoggerFactory.getLogger(Perceive.class);
 
-    public static ITask perceive(Task t, What w) {
+    public static Task perceive(Task t, What w) {
 
         NAR n = w.nar;
         n.emotion.perceivedTaskStart.increment();
@@ -48,7 +47,7 @@ public enum Perceive { ;
     }
 
     /** deduplicate and bundle to one task */
-    private @Nullable static ITask task(FastList<ITask> yy) {
+    private static Task task(FastList<Task> yy) {
         if (yy == null)
             return null;
 
@@ -65,7 +64,7 @@ public enum Perceive { ;
         }
 
         //test for deduplication
-        java.util.Set<ITask> yyy = new HashSet(yys);
+        java.util.Set<Task> yyy = new HashSet(yys);
         yyy.addAll(yy);
         int yyys = yyy.size();
         if (yyys==1)
@@ -75,7 +74,7 @@ public enum Perceive { ;
     }
 
     /** returns true if the task is acceptable */
-    private static ITask perceive(Task x, Term y, What w) {
+    private static Task perceive(Task x, Term y, What w) {
 
 
         Task t;
@@ -122,7 +121,7 @@ public enum Perceive { ;
         return perceived(t, w.nar);
     }
 
-    private static ITask rememberTransformed(Task input, Term y, byte punc) {
+    private static Task rememberTransformed(Task input, Term y, byte punc) {
         @Nullable ObjectBooleanPair<Term> yy = Task.tryContent(y, punc,
                 !input.isInput() // || !Param.DEBUG
         );
@@ -147,7 +146,7 @@ public enum Perceive { ;
         private final What what;
         private final Task t;
         private int tried = 0;
-        private FasterList<ITask> result = null;
+        private FasterList<Task> result = null;
 
         TaskEvaluation(Task t, What w) {
             super();
@@ -165,7 +164,7 @@ public enum Perceive { ;
             if (y == Bool.Null)
                 return true; //continue TODO maybe limit these
 
-            ITask next = Perceive.perceive(t, y, what);
+            Task next = Perceive.perceive(t, y, what);
             if (next != null) {
                 if (result==null)
                     result = new FasterList<>(1);
@@ -192,12 +191,12 @@ public enum Perceive { ;
         }
     }
 
-    private static ITask perceived(ITask t, NAR n) {
+    private static Task perceived(Task t, NAR n) {
 
         byte punc = t.punc();
         boolean cmd = punc == COMMAND;
 
-        ITask e = null, r = null;
+        Task e = null, r = null;
         if (cmd || (t instanceof Task && (punc == GOAL && !((Task)t).isEternal()))) {
             e = execute((Task)t, n, cmd);
         }
@@ -207,19 +206,19 @@ public enum Perceive { ;
         }
 
         if (e != null && r != null)
-            return task(new FasterList<ITask>(2).with(e, r));
+            return task(new FasterList<Task>(2).with(e, r));
         else if (e!=null)
             return e;
         else return r;
     }
 
-    private static ITask execute(Task t, NAR n, boolean cmd) {
+    private static Task execute(Task t, NAR n, boolean cmd) {
         Term maybeOperator = Functor.func(t.term());
 
         if (maybeOperator!= Bool.Null) {
             Concept oo = n.concept(maybeOperator);
             if (oo instanceof Operator) {
-                FasterList<ITask> queue = new FasterList(cmd ? 2 : 1);
+                FasterList<Task> queue = new FasterList(cmd ? 2 : 1);
 
                 Operator o = (Operator)oo;
                 try {

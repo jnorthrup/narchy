@@ -284,28 +284,28 @@ public class IntermpolationTest {
 
     @Test
     void testEmbeddedIntermpolation() {
-        NAL<NAL<NAR>> NAL = NARS.shell();
-        NAL.time.dur(8);
+        NAR nar = NARS.shell();
+        nar.time.dur(8);
 
         Compound a0 = $$("(b ==>+6 c)");
         Compound b0 = $$("(b ==>+10 c)");
 
-        Term c0 = Intermpolate.intermpolate(a0, b0, 0.5f, NAL);
+        Term c0 = Intermpolate.intermpolate(a0, b0, 0.5f, nar);
         assertEquals("(b ==>+8 c)", c0.toString());
 
 
         Compound a = $$("(a, (b ==>+6 c))");
         Compound b = $$("(a, (b ==>+10 c))");
 
-        Term c = Intermpolate.intermpolate(a, b, 0.5f, NAL);
+        Term c = Intermpolate.intermpolate(a, b, 0.5f, nar);
         assertEquals("(a,(b ==>+8 c))", c.toString());
 
         {
 
             assertEquals("(a,(b ==>+6 c))",
-                    Intermpolate.intermpolate(a, b, 1f, NAL).toString());
+                    Intermpolate.intermpolate(a, b, 1f, nar).toString());
             assertEquals("(a,(b ==>+10 c))",
-                    Intermpolate.intermpolate(a, b, 0f, NAL).toString());
+                    Intermpolate.intermpolate(a, b, 0f, nar).toString());
 
 
         }

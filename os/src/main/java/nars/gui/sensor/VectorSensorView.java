@@ -209,7 +209,7 @@ public class VectorSensorView extends BitmapMatrixView implements BitmapMatrixVi
         super.stopping();
     }
 
-    private void accept(NAL<NAL<NAR>> n) {
+    private void accept(NAR n) {
 
         if (showing()) {
 

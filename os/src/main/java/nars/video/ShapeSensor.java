@@ -13,13 +13,12 @@ import com.jogamp.opengl.GL2;
 import georegression.struct.point.Point2D_I32;
 import jcog.signal.wave2d.Bitmap2D;
 import nars.$;
-import nars.NAL;
 import nars.NAR;
+import nars.Task;
 import nars.agent.Game;
 import nars.attention.What;
 import nars.control.NARPart;
 import nars.control.channel.CauseChannel;
-import nars.task.ITask;
 import nars.task.signal.SignalTask;
 import nars.term.Term;
 import nars.term.atom.Int;
@@ -47,7 +46,7 @@ public class ShapeSensor extends NARPart {
 
     static double minimumSideFraction = 0.25;
     private final Bitmap2D input;
-    private final CauseChannel<ITask> in;
+    private final CauseChannel<Task> in;
     private final Term id;
     private final float R = 1f;
     private final float G = 1f;
@@ -255,11 +254,11 @@ public class ShapeSensor extends NARPart {
             return ab <= 0 ? $.p(a, b) : $.p(b, a);
         }
 
-        public void input(CauseChannel<ITask> t, long last, What what) {
-            NAL<NAL<NAR>> n = what.nar;
+        public void input(CauseChannel<Task> t, long last, What what) {
+            NAR n = what.nar;
             long now = n.time();
             for (Term x : image) {
-                ITask xx = new SignalTask($.inh(x, id), BELIEF, $.t(1f, n.confDefault(BELIEF)),
+                Task xx = new SignalTask($.inh(x, id), BELIEF, $.t(1f, n.confDefault(BELIEF)),
                         last, now, n.time.nextStamp()).priSet(n.priDefault(BELIEF));
                 t.accept(xx, what);
             }

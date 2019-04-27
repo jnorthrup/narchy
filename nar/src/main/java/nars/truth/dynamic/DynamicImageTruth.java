@@ -1,7 +1,6 @@
 package nars.truth.dynamic;
 
 import jcog.util.ObjectLongLongPredicate;
-import nars.NAL;
 import nars.NAR;
 import nars.Task;
 import nars.concept.util.ConceptBuilder;
@@ -24,7 +23,7 @@ public class DynamicImageTruth {
         }
 
         @Override
-        public Truth truth(TaskList var1, NAL<NAL<NAR>> NAL) {
+        public Truth truth(TaskList var1, NAR nar) {
             throw new UnsupportedOperationException();
         }
 
@@ -34,7 +33,7 @@ public class DynamicImageTruth {
         }
 
         @Override
-        public Term reconstruct(Compound superterm, List<Task> c, NAL<NAL<NAR>> NAL, long start, long end) {
+        public Term reconstruct(Compound superterm, List<Task> c, NAR nar, long start, long end) {
             throw new UnsupportedOperationException();
         }
 

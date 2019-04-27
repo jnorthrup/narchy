@@ -11,7 +11,6 @@ import nars.control.How;
 import nars.control.channel.CauseChannel;
 import nars.control.op.Remember;
 import nars.link.TaskLink;
-import nars.task.ITask;
 import nars.task.proxy.SpecialPuncTermAndTruthTask;
 import nars.term.Term;
 import nars.time.When;
@@ -30,7 +29,7 @@ public class Inperience2 extends How {
 
     public final FloatRange priFactor = new FloatRange(0.5f, 0, 2f);
 
-    private final CauseChannel<ITask> in;
+    private final CauseChannel<Task> in;
 
     public Inperience2(NAR n) {
         super();
@@ -100,7 +99,7 @@ public class Inperience2 extends How {
         }
 
         @Override
-        public ITask next(Object n) {
+        public Task next(Object n) {
             return Remember.the(this, (NAR)n); //copied from UnevaluatedTask
         }
     }

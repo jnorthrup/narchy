@@ -40,8 +40,8 @@ class NARTestOptimize {
 //                    NAL8Test.class,
             };
 
-            Lab<NAL<NAL<NAR>>> l = new Lab<>(() -> {
-                NAL<NAL<NAR>> n = NARS.tmp();
+            Lab<NAR> l = new Lab<>(() -> {
+                NAR n = NARS.tmp();
                 n.random();
                 return n;
             })
@@ -49,7 +49,7 @@ class NARTestOptimize {
 //                        (NAR n, int i) -> n.attn.links.setCapacity(i))
 
                 .var("ttlMax", 1 * NAL.derive.TTL_MIN, 8 * NAL.derive.TTL_MIN, 3,
-                        (NAL<NAL<NAR>> n, int i) -> n.deriveBranchTTL.set(i))
+                        (NAR n, int i) -> n.deriveBranchTTL.set(i))
 //                .var("linkFanOut", 1, 16, 1,
 //                        (NAR n, int f) -> Param.LinkFanoutMax = f)
 //                .var("conceptActivation", ScalarValue.EPSILONsqrt, 1f, 0.1f,
@@ -83,7 +83,7 @@ class NARTestOptimize {
 
 
             int suiteIterations = 2;
-            Optilive<NAL<NAL<NAR>>, TestNARSuite> o = l.optilive((Supplier<NAL<NAL<NAR>>> s) ->
+            Optilive<NAR, TestNARSuite> o = l.optilive((Supplier<NAR> s) ->
                             new TestNARSuite(s, testClasses).run(parallel, suiteIterations),
                 (TestNARSuite t) -> (float) t.score());
 

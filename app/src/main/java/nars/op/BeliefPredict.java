@@ -12,7 +12,6 @@ import nars.Task;
 import nars.attention.What;
 import nars.control.NARPart;
 import nars.control.channel.CauseChannel;
-import nars.task.ITask;
 import nars.task.signal.SignalTask;
 import nars.term.Term;
 import nars.term.Termed;
@@ -42,7 +41,7 @@ public class BeliefPredict extends NARPart {
     public final FloatRange confFadeFactor = new FloatRange(0.9f, 0, 1f);
 
     //final List<ITask> currentPredictions = new FasterList<>();
-    private final CauseChannel<ITask> predict;
+    private final CauseChannel<Task> predict;
     private final LivePredictor predictor;
 
 

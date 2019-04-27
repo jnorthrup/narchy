@@ -15,7 +15,6 @@ import nars.table.BeliefTables;
 import nars.table.dynamic.SensorBeliefTables;
 import nars.table.dynamic.SeriesBeliefTable;
 import nars.table.temporal.RTreeBeliefTable;
-import nars.task.ITask;
 import nars.task.signal.SignalTask;
 import nars.task.util.Answer;
 import nars.task.util.series.RingBufferTaskSeries;
@@ -83,7 +82,7 @@ public class AbstractGoalActionConcept extends AgentAction {
         GOALS.add(mutableGoals);
     }
 
-    protected CauseChannel<ITask> channel(NAR n) {
+    protected CauseChannel<Task> channel(NAR n) {
         return n.newChannel(this);
     }
 
@@ -305,7 +304,7 @@ public class AbstractGoalActionConcept extends AgentAction {
 
 
 
-    @Nullable SignalTask curiosity(Truth goal, long pStart, long pEnd, NAL<NAL<NAR>> n) {
+    @Nullable SignalTask curiosity(Truth goal, long pStart, long pEnd, NAR n) {
         long[] evi = n.evidence();
 
         SignalTask curiosity = new CuriosityTask(term, goal, n.time(), pStart, pEnd, evi);

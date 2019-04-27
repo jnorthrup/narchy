@@ -4,7 +4,10 @@ import jcog.Texts;
 import jcog.data.list.FasterList;
 import jcog.table.ARFF;
 import jcog.table.DataTable;
-import nars.*;
+import nars.$;
+import nars.NAR;
+import nars.Op;
+import nars.Task;
 import nars.task.NALTask;
 import nars.term.Term;
 import nars.term.var.NormalizedVariable;
@@ -62,7 +65,7 @@ public class NALData {
 
 
     /** beliefs representing the schema's metadata */
-    private static Stream<Task> metaBeliefs(NAL<NAL<NAR>> NAL, DataTable a, BiFunction<Term, Term[], Term> pointGenerator) {
+    private static Stream<Task> metaBeliefs(NAR nar, DataTable a, BiFunction<Term, Term[], Term> pointGenerator) {
         List<Term> meta = new FasterList();
 
         int n = a.columnCount();
@@ -87,7 +90,7 @@ public class NALData {
 
         }
 
-        return meta.stream().map(t -> NALTask.the(t.normalize(), BELIEF, $.t(1f, NAL.confDefault(BELIEF)), NAL.time(), ETERNAL, ETERNAL, NAL.evidence()).pri(NAL)
+        return meta.stream().map(t -> NALTask.the(t.normalize(), BELIEF, $.t(1f, nar.confDefault(BELIEF)), nar.time(), ETERNAL, ETERNAL, nar.evidence()).pri(nar)
         );
     }
 
@@ -95,7 +98,7 @@ public class NALData {
         return $.$$(Texts.unquote(ai));
     }
 
-    public static Stream<Task> tasks(NAL<NAL<NAR>> n, DataTable a, BiFunction<Term, Term[], Term> pointGenerator) {
+    public static Stream<Task> tasks(NAR n, DataTable a, BiFunction<Term, Term[], Term> pointGenerator) {
         return data(n, a, (byte)0, pointGenerator);
     }
 
@@ -115,7 +118,7 @@ public class NALData {
      *      (a,b,c,d) -> ((a,b,c)-->d)
      *
      */
-    public static Stream<Task> data(NAL<NAL<NAR>> n, DataTable a, byte punc, BiFunction<Term, Term[], Term> pointGenerator) {
+    public static Stream<Task> data(NAR n, DataTable a, byte punc, BiFunction<Term, Term[], Term> pointGenerator) {
         long now = n.time();
         return terms(a, pointGenerator).map(point->{
 

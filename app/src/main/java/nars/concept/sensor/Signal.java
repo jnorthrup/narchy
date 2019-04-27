@@ -4,7 +4,6 @@ import jcog.Util;
 import jcog.math.FloatRange;
 import jcog.math.FloatSupplier;
 import nars.$;
-import nars.NAL;
 import nars.NAR;
 import nars.agent.Game;
 import nars.attention.AttnBranch;
@@ -134,8 +133,8 @@ public class Signal extends TaskConcept implements GameLoop, FloatFunction<Term>
 
     @Override
     public void update(Game g) {
-        NAL<NAL<NAR>> NAL = g.nar();
-        update((tp, tn) -> $.t(Util.unitize(tn), NAL.confDefault(BELIEF)), attn::pri, cause, g
+        NAR nar = g.nar();
+        update((tp, tn) -> $.t(Util.unitize(tn), nar.confDefault(BELIEF)), attn::pri, cause, g
         );
     }
 

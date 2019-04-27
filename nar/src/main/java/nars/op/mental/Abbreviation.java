@@ -18,7 +18,6 @@ import nars.control.How;
 import nars.control.channel.CauseChannel;
 import nars.link.TaskLink;
 import nars.subterm.Subterms;
-import nars.task.ITask;
 import nars.task.NALTask;
 import nars.term.Compound;
 import nars.term.Term;
@@ -66,7 +65,7 @@ public class Abbreviation/*<S extends Term>*/ extends How {
      */
     private final Bag<Term, PLink<Term>> pending;
     private final String termPrefix;
-    private final CauseChannel<ITask> in;
+    private final CauseChannel<Task> in;
 
 
     public Abbreviation(String termPrefix, int volMin, int volMax, NAR nar) {
