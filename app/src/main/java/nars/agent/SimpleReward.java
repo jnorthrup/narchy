@@ -67,7 +67,7 @@ public class SimpleReward extends BeliefReward {
             }
         };
         if (!concept.attn.equals(attn))
-            concept.attn.parent(nar(), attn);
+            nar().parent(concept.attn, attn);
         return concept;
     }
 

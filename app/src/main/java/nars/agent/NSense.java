@@ -313,9 +313,9 @@ public interface NSense {
         g.actions.add(pn.pos);
         g.actions.add(pn.neg);
         g.onFrame(aa->pn.update(g));
-        pn.attn.parent(nar, g.attnAction);
-        pn.pos.attn.parent(nar, pn.attn);
-        pn.neg.attn.parent(nar, pn.attn);
+        nar.parent(pn.attn, g.attnAction);
+        nar.parent(pn.pos.attn, pn.attn);
+        nar.parent(pn.neg.attn, pn.attn);
 
         return pn;
     }

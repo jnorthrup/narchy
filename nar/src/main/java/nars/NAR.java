@@ -9,6 +9,8 @@ import jcog.Texts;
 import jcog.Util;
 import jcog.WTF;
 import jcog.data.byt.DynBytes;
+import jcog.data.graph.MapNodeGraph;
+import jcog.data.graph.NodeGraph;
 import jcog.data.list.FasterList;
 import jcog.event.ListTopic;
 import jcog.event.Off;
@@ -20,6 +22,7 @@ import jcog.pri.Prioritized;
 import jcog.service.Part;
 import nars.Narsese.NarseseException;
 import nars.attention.AntistaticBag;
+import nars.attention.PriNode;
 import nars.attention.What;
 import nars.concept.Concept;
 import nars.concept.Operator;
@@ -1683,5 +1686,17 @@ public class NAR extends NAL<NAR> implements Consumer<ITask>, NARIn, NAROut, Cyc
         } else {
             return x;
         }
+    }
+
+    @Deprecated public PriNode parent(PriNode attn, PriNode... parent) {
+
+        //    public PriNode parent(NAR n, PriNode... parent) {
+        MapNodeGraph<PriNode, Object> g = control.graph;
+
+        NodeGraph.MutableNode<PriNode,Object> thisNode = g.addNode(attn);
+        attn.parent(parent, g, thisNode);
+
+        return attn;
+
     }
 }

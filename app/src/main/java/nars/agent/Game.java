@@ -211,17 +211,17 @@ public class Game extends NARPart implements NSense, NAct, Timed {
 
     private void addAttention(PriNode target, Object s) {
         if (s instanceof VectorSensor) {
-            ((VectorSensor) s).attn.parent(nar, target);
+            nar.parent(((VectorSensor) s).attn, target);
         } else if (s instanceof Signal) {
-            ((Signal) s).attn.parent(nar, target);
+            nar.parent(((Signal) s).attn, target);
         } else if (s instanceof Reward) {
-            ((Reward) s).attn.parent(nar, target);
+            nar.parent(((Reward) s).attn, target);
         } else if (s instanceof AgentAction) {
-            ((AgentAction) s).attn.parent(nar, target);
+            nar.parent(((AgentAction) s).attn, target);
         } else if (s instanceof BiPolarAction) {
-            ((BiPolarAction) s).attn.parent(nar, target);
+            nar.parent(((BiPolarAction) s).attn, target);
         } else if (s instanceof PriNode)
-            ((PriNode) s).parent(nar, target);
+            nar.parent(((PriNode) s), target);
         else
             throw new TODO();
     }
@@ -254,9 +254,9 @@ public class Game extends NARPart implements NSense, NAct, Timed {
     //@Override
     protected void starting(NAR nar) {
         nar.control.add(pri);
-        attnAction.parent(nar, this.pri, nar.goalPriDefault);
-        attnSensor.parent(nar, this.pri, nar.beliefPriDefault);
-        attnReward.parent(nar, this.pri, nar.goalPriDefault /* TODO avg */);
+        nar.parent(attnAction, this.pri, nar.goalPriDefault);
+        nar.parent(attnSensor, this.pri, nar.beliefPriDefault);
+        nar.parent(attnReward, this.pri, nar.goalPriDefault /* TODO avg */);
 
 
     }
