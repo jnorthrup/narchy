@@ -5,9 +5,9 @@ import jcog.Util;
 import jcog.data.list.FasterList;
 import jcog.math.LongInterval;
 import jcog.pri.Prioritized;
-import nars.NAR;
-import nars.Param;
+import nars.NAL;
 import nars.Task;
+import nars.attention.What;
 import nars.control.CauseMerge;
 import nars.task.DynamicTruthTask;
 import nars.task.NALTask;
@@ -63,7 +63,7 @@ public class TaskList extends FasterList<Task> implements TaskRegion {
     @Override
     @Nullable
     public short[] why() {
-        return CauseMerge.AppendUnique.merge(Param.causeCapacity.intValue(),
+        return CauseMerge.AppendUnique.merge(NAL.causeCapacity.intValue(),
                 Util.map(0, size(), short[][]::new, x -> get(x).why()));
     }
 
@@ -99,20 +99,20 @@ public class TaskList extends FasterList<Task> implements TaskRegion {
     }
 
 
-    public final Task merge(Term content, Truth t, Supplier<long[]> stamp, boolean beliefOrGoal, long start, long end, NAR nar) {
+    public final Task merge(Term content, Truth t, Supplier<long[]> stamp, boolean beliefOrGoal, long start, long end, What w) {
 
-        NALTask dyn = DynamicTruthTask.task(content, t, stamp, beliefOrGoal, start, end, nar);
+        NALTask dyn = DynamicTruthTask.task(content, t, stamp, beliefOrGoal, start, end, w);
         if(dyn==null)
             return null;
 
         dyn.cause( why() );
 
         dyn.pri(
-                reapply(TaskList::pri, Param.DerivationPri)
+                reapply(TaskList::pri, NAL.DerivationPri)
                         // * dyn.originality() //HACK
         );
 
-        if (Param.test.DEBUG_EXTRA)
+        if (NAL.test.DEBUG_EXTRA)
             dyn.log("Dynamic");
 
         return dyn;

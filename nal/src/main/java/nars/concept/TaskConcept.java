@@ -2,7 +2,7 @@ package nars.concept;
 
 import jcog.data.list.FasterList;
 import nars.NAR;
-import nars.Param;
+import nars.NAL;
 import nars.Task;
 import nars.concept.util.ConceptBuilder;
 import nars.control.MetaGoal;
@@ -95,7 +95,7 @@ public class TaskConcept extends NodeConcept  {
     public void add(Remember t, NAR n) {
         Task ti = t.input;
         //if (ti!=null) {
-            assert !Param.test.DEBUG_EXTRA || (ti.term().concept().equals(term));
+            assert !NAL.test.DEBUG_EXTRA || (ti.term().concept().equals(term));
             table(ti.punc()).remember(t);
         //}
     }

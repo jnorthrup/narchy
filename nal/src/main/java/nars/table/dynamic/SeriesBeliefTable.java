@@ -4,7 +4,7 @@ import jcog.Util;
 import jcog.data.list.FasterList;
 import jcog.math.LongInterval;
 import nars.NAR;
-import nars.Param;
+import nars.NAL;
 import nars.Task;
 import nars.table.BeliefTable;
 import nars.table.TaskTable;
@@ -80,7 +80,7 @@ public class SeriesBeliefTable<T extends Task> extends DynamicTaskTable {
     }
 
     void clean(List<BeliefTable> tables, NAR n) {
-        if (!Param.belief.signal.SIGNAL_TABLE_FILTER_NON_SIGNAL_TEMPORAL_TASKS)
+        if (!NAL.belief.signal.SIGNAL_TABLE_FILTER_NON_SIGNAL_TEMPORAL_TASKS)
             return;
 
         long sStart = series.start(), sEnd;

@@ -8,7 +8,7 @@ import jcog.sort.Top;
 import jcog.tree.rtree.*;
 import jcog.tree.rtree.split.LinearSplitLeaf;
 import nars.NAR;
-import nars.Param;
+import nars.NAL;
 import nars.Task;
 import nars.control.op.Remember;
 import nars.task.ProxyTask;
@@ -109,7 +109,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 
             float conf =
                     //(((float) r.coord(2, false)) + ((float) r.coord(2, true))) / 2;
-                    Math.max(Param.truth.TRUTH_EPSILON, r.confMin());
+                    Math.max(NAL.truth.TRUTH_EPSILON, r.confMin());
 
             y = y * (1 - conf);
             if (y < min)

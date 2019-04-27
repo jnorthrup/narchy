@@ -6,8 +6,8 @@
 //import nars.NAR;
 //import nars.NARS;
 //import nars.Narsese;
-//import nars.control.MetaGoal;
-//import nars.control.Traffic;
+//import MetaGoal;
+//import Traffic;
 //import nars.exe.*;
 //import nars.task.DerivedTask;
 //import org.eclipse.collections.api.block.function.primitive.IntToIntFunction;

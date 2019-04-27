@@ -6,7 +6,7 @@ import jcog.pri.UnitPrioritizable;
 import jcog.pri.op.PriMerge;
 import jcog.pri.op.PriReturn;
 import nars.NAR;
-import nars.Param;
+import nars.NAL;
 import nars.Task;
 import nars.concept.Concept;
 import nars.table.TaskTable;
@@ -112,7 +112,7 @@ public interface TaskLink extends UnitPrioritizable, FromTo<Term, TaskLink> {
             if (y == null) {
                 if (!beliefOrGoal) {
                     //form question
-                    float qpri = Param.TASKLINK_GENERATED_QUESTION_PRI_RATE;
+                    float qpri = NAL.TASKLINK_GENERATED_QUESTION_PRI_RATE;
                     if (qpri > Float.MIN_NORMAL) {
                         if (Task.validTaskTerm(x, punc, true)) {
                             y = NALTask.the(x, punc, null, when);

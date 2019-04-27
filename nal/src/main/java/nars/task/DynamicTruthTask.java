@@ -1,9 +1,9 @@
 package nars.task;
 
-import nars.NAR;
 import nars.Op;
-import nars.Param;
+import nars.NAL;
 import nars.Task;
+import nars.attention.What;
 import nars.control.op.Remember;
 import nars.task.util.TaskException;
 import nars.term.Term;
@@ -25,7 +25,7 @@ public class DynamicTruthTask extends UnevaluatedTask /*NALTask*/ {
     }
 
     @Nullable
-    public static NALTask task(Term content, Truth t, Supplier<long[]> stamp, boolean beliefOrGoal, long start, long end, NAR nar) {
+    public static NALTask task(Term content, Truth t, Supplier<long[]> stamp, boolean beliefOrGoal, long start, long end, Timed nar) {
         boolean neg = content.op() == NEG;
         if (neg) {
             content = content.unneg();
@@ -33,7 +33,7 @@ public class DynamicTruthTask extends UnevaluatedTask /*NALTask*/ {
 
         ObjectBooleanPair<Term> r = Task.tryContent(
                 content,
-                beliefOrGoal ? BELIEF : GOAL, !Param.test.DEBUG_EXTRA);
+                beliefOrGoal ? BELIEF : GOAL, !NAL.test.DEBUG_EXTRA);
 
         return r!=null ? new DynamicTruthTask(
                 r.getOne(), beliefOrGoal,
@@ -43,8 +43,8 @@ public class DynamicTruthTask extends UnevaluatedTask /*NALTask*/ {
     }
 
     @Override
-    public ITask next(NAR n) {
-        return Remember.the(this, Param.belief.DYNAMIC_TRUTH_TASK_STORE, true, true, n);
+    public ITask next(What n) {
+        return Remember.the(this, NAL.belief.DYNAMIC_TRUTH_TASK_STORE, true, true, n);
     }
 
     @Override

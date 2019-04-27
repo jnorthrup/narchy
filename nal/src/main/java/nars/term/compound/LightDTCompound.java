@@ -2,7 +2,7 @@ package nars.term.compound;
 
 import jcog.Util;
 import nars.Op;
-import nars.Param;
+import nars.NAL;
 import nars.subterm.Subterms;
 import nars.term.Compound;
 import nars.term.util.TermException;
@@ -42,7 +42,7 @@ public final class LightDTCompound extends SeparateSubtermsCompound {
 //        if (!(dt == XTERNAL || Math.abs(dt) < Param.DT_ABS_LIMIT))
 //            throw new TermException(base.op(), dt, s, "exceeded DT limit");
 
-        if (Param.test.DEBUG_EXTRA) {
+        if (NAL.test.DEBUG_EXTRA) {
 
             assert (getClass() != LightDTCompound.class /* a subclass */ || dt != DTERNAL);
 

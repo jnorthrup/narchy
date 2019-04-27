@@ -13,7 +13,7 @@ import jcog.util.ArrayUtils;
 import jcog.util.HashCachedPair;
 import nars.$;
 import nars.NAR;
-import nars.Param;
+import nars.NAL;
 import nars.Task;
 import nars.attention.What;
 import nars.bag.leak.TaskLeak;
@@ -144,7 +144,7 @@ public class Impiler {
 
                             Truth t = null;
                             LongHashSet stamp = null;
-                            final int stampLimit = Param.STAMP_CAPACITY;
+                            final int stampLimit = NAL.STAMP_CAPACITY;
                             for (int s = 0; s < n; s++) {
                                 ImplEdge e = path.get(s).getTwo().id();
                                 float ff = e.freq;
@@ -573,7 +573,7 @@ public class Impiler {
                 LongHashSet stamp = null;
                 long dt = 0;
                 float freq = 1f, conf = 1f;
-                final int stampLimit = Param.STAMP_CAPACITY;
+                final int stampLimit = NAL.STAMP_CAPACITY;
                 for (ImplEdge e : this) {
                     int xdt = e.dt;
                     if (xdt != DTERNAL)

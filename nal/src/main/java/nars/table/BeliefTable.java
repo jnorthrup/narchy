@@ -1,7 +1,7 @@
 package nars.table;
 
 import nars.NAR;
-import nars.Param;
+import nars.NAL;
 import nars.Task;
 import nars.task.util.Answer;
 import nars.term.Term;
@@ -47,7 +47,7 @@ public interface BeliefTable extends TaskTable {
 
     /** precision = max # of tasks to include in the sample */
     default Truth truth(long start, long end, @Nullable Term template, Predicate<Task> filter, int precision, int dur, NAR n) {
-        assert(precision < Param.STAMP_CAPACITY);
+        assert(precision < NAL.STAMP_CAPACITY);
         if (isEmpty())
             return null;
         return Answer.relevant(true, precision, start, end, template, filter, n)

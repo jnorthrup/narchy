@@ -7,7 +7,7 @@ import jcog.data.set.MetalLongSet;
 import jcog.math.LongInterval;
 import nars.NAR;
 import nars.Op;
-import nars.Param;
+import nars.NAL;
 import nars.Task;
 import nars.concept.Concept;
 import nars.concept.TaskConcept;
@@ -65,7 +65,7 @@ public class DynTaskify extends TaskList {
 
 
         Predicate<Task> answerfilter = a.filter;
-        this.filter = Param.DYNAMIC_TRUTH_STAMP_OVERLAP_FILTER ?
+        this.filter = NAL.DYNAMIC_TRUTH_STAMP_OVERLAP_FILTER ?
                         Answer.filter(answerfilter, this::doesntOverlap) :
                         answerfilter;
 
@@ -124,7 +124,7 @@ public class DynTaskify extends TaskList {
         Compound template = (Compound) a.term();
         Term term1 = model.reconstruct(template, this, nar, s, e);
         if (term1 == null || !term1.unneg().op().taskable) { //quick tests
-            if (Param.DEBUG)
+            if (NAL.DEBUG)
                 throw new WTF("could not reconstruct: " + template + ' ' + this);
             return null;
         }
@@ -138,9 +138,9 @@ public class DynTaskify extends TaskList {
             long ss = s + shift, ee = e + shift;
             if (xStart != ss || x.end() != ee) {
                 Task tt = Task.project(x, ss, ee,
-                        Param.truth.TRUTH_EVI_MIN, //minimal truth threshold for accumulating evidence
+                        NAL.truth.TRUTH_EVI_MIN, //minimal truth threshold for accumulating evidence
                         false,
-                        Param.DYNAMIC_TRUTH_TASK_TIME_DITHERING,
+                        NAL.DYNAMIC_TRUTH_TASK_TIME_DITHERING,
                         nar);
                 if (tt == null)
                     return null;
@@ -195,7 +195,7 @@ public class DynTaskify extends TaskList {
             so = subTerm.op();
         }
         if (!so.taskable || !subTerm.isNormalized()) {
-            if (Param.DEBUG)
+            if (NAL.DEBUG)
                 throw new TermException("unnormalized subterm in supposed dynamic super-compound", subTerm);
             return false;
         }
@@ -208,7 +208,7 @@ public class DynTaskify extends TaskList {
 
         BeliefTable table = (BeliefTable) subConcept.table(beliefOrGoal ? BELIEF : GOAL);
         Task bt;
-        switch (Param.DYN_TASK_MATCH_MODE) {
+        switch (NAL.DYN_TASK_MATCH_MODE) {
             case 0:
                 bt = table.matchExact(subStart, subEnd, subTerm, filter, dur, nar);
                 break;
@@ -313,13 +313,13 @@ public class DynTaskify extends TaskList {
                 case 2:
                     //lazy calculated stamp
                     long[] a = get(0).stamp(), b = get(1).stamp();
-                    return Stamp.sample(Param.STAMP_CAPACITY, Stamp.toSet(a.length + b.length, a, b), rng.get());
+                    return Stamp.sample(NAL.STAMP_CAPACITY, Stamp.toSet(a.length + b.length, a, b), rng.get());
                 case 0:
                 default:
                     throw new UnsupportedOperationException();
             }
         } else {
-            return Stamp.sample(Param.STAMP_CAPACITY, this.evi, rng.get());
+            return Stamp.sample(NAL.STAMP_CAPACITY, this.evi, rng.get());
         }
     }
 

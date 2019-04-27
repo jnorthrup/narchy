@@ -8,7 +8,7 @@
 //import nars.concept.Concept;
 //import nars.concept.TaskConcept;
 //import nars.concept.action.ActionConcept;
-//import nars.control.channel.CauseChannel;
+//import CauseChannel;
 //import nars.exe.Causable;
 //import nars.link.Activate;
 //import nars.task.ITask;

@@ -1,6 +1,6 @@
 package nars.truth;
 
-import nars.Param;
+import nars.NAL;
 
 import static nars.truth.func.TruthFunctions.c2wSafe;
 
@@ -72,7 +72,7 @@ public class DiscreteTruth implements Truth {
                     ||
             ((that instanceof DiscreteTruth) ?
                     (hash == ((DiscreteTruth)that).hash) :
-                    equalTruth((Truth) that, Param.truth.TRUTH_EPSILON));
+                    equalTruth((Truth) that, NAL.truth.TRUTH_EPSILON));
     }
 
     @Override

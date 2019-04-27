@@ -5,7 +5,7 @@ import jcog.data.list.FasterList;
 import jcog.data.set.ArrayHashSet;
 import jcog.version.*;
 import nars.Op;
-import nars.Param;
+import nars.NAL;
 import nars.term.Term;
 import nars.term.Termlike;
 import nars.term.Variable;
@@ -167,7 +167,7 @@ public abstract class Unify extends Versioning<Term> {
 
             boolean kontinue = tryMatch();
 
-            return use(Param.derive.TTL_COST_MUTATE) && kontinue;
+            return use(NAL.derive.TTL_COST_MUTATE) && kontinue;
         }
 
     }
@@ -297,7 +297,7 @@ public abstract class Unify extends Versioning<Term> {
     }
 
     public void tryMatches(Termutator[] t) {
-        if (Param.SHUFFLE_TERMUTES && t.length > 1) {
+        if (NAL.SHUFFLE_TERMUTES && t.length > 1) {
             Util.shuffle(t, random);
         }
 
@@ -479,12 +479,12 @@ public abstract class Unify extends Versioning<Term> {
         }
 
         void constrain(UnifyConstraint c) {
-            if (Param.DEBUG) { assert(value==null && constraint == null); }
+            if (NAL.DEBUG) { assert(value==null && constraint == null); }
             constraint = c;
         }
 
         void unconstrain() {
-            if (Param.DEBUG) {  assert(constraint != null && value==null); }
+            if (NAL.DEBUG) {  assert(constraint != null && value==null); }
             constraint = null;
         }
     }

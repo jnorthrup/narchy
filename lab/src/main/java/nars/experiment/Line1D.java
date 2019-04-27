@@ -10,7 +10,7 @@
 //import nars.Task;
 //import nars.gui.EmotionPlot;
 //import nars.gui.NARui;
-//import nars.op.stm.ConjClustering;
+//import ConjClustering;
 //import nars.task.DerivedTask;
 //import nars.test.agent.Line1DSimplest;
 //import nars.util.TimeAware;

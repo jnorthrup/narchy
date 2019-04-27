@@ -99,7 +99,7 @@ public class UnifyTest {
         final boolean[] termuted = {false};
         AtomicBoolean subbed = new AtomicBoolean(false);
 
-        Unify sub = new Unify(type, new XorShift128PlusRandom(rngSeed), Param.unify.UNIFICATION_STACK_CAPACITY) {
+        Unify sub = new Unify(type, new XorShift128PlusRandom(rngSeed), NAL.unify.UNIFICATION_STACK_CAPACITY) {
 
             @Override
             protected void tryMatches() {
@@ -893,7 +893,7 @@ public class UnifyTest {
 
         AtomicBoolean matched = new AtomicBoolean(false);
 
-        Unify f = new Unify(Op.VAR_QUERY, new XorShift128PlusRandom(1), Param.unify.UNIFICATION_STACK_CAPACITY, 128) {
+        Unify f = new Unify(Op.VAR_QUERY, new XorShift128PlusRandom(1), NAL.unify.UNIFICATION_STACK_CAPACITY, 128) {
 
             @Override
             public boolean tryMatch() {

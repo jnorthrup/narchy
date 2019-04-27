@@ -17,7 +17,7 @@
     <dependencies>
         <dependency>
             <groupId>narchy</groupId>
-            <artifactId>nal</artifactId>
+            <artifactId>nar</artifactId>
             <version>1.0</version>
             <scope>compile</scope>
         </dependency>

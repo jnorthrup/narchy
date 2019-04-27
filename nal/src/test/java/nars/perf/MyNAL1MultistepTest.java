@@ -1,7 +1,7 @@
 package nars.perf;
 
 import jcog.math.FloatSupplier;
-import nars.Param;
+import nars.NAL;
 import nars.nal.nal1.NAL1MultistepTest;
 
 class MyNAL1MultistepTest implements FloatSupplier {
@@ -14,8 +14,8 @@ class MyNAL1MultistepTest implements FloatSupplier {
 
             NAL1MultistepTest n = new NAL1MultistepTest();
 
-            System.out.println("TTL_MUTATE=" + Param.derive.TTL_COST_MUTATE);
-            System.out.println("TTL_MUTATE=" + Param.derive.TTL_COST_DERIVE_TASK_SUCCESS);
+            System.out.println("TTL_MUTATE=" + NAL.derive.TTL_COST_MUTATE);
+            System.out.println("TTL_MUTATE=" + NAL.derive.TTL_COST_DERIVE_TASK_SUCCESS);
 
             n.multistepSim4();
             n.end();

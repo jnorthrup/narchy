@@ -6,9 +6,7 @@ import jcog.data.list.FasterList;
 import jcog.data.set.ArrayHashSet;
 import jcog.version.VersionMap;
 import jcog.version.Versioning;
-import nars.NAR;
 import nars.Op;
-import nars.Param;
 import nars.subterm.Subterms;
 import nars.term.Compound;
 import nars.term.Functor;
@@ -298,12 +296,7 @@ public class Evaluation {
         return v != null ? v.size() : 0;
     }
 
-    /**
-     * returns first result. returns null if no solutions
-     */
-    public static Term solveFirst(Term x, NAR n) {
-        return solveFirst(x, n::axioms);
-    }
+
 
     private static Term solveFirst(Term x, Function<Atom, Functor> axioms) {
         Term[] y = new Term[1];
@@ -318,9 +311,13 @@ public class Evaluation {
         return y[0];
     }
 
-    //    public static Set<Term> eval(String s, NAR n) {
-//        return eval($$(s), n);
-//    }
+
+    /**
+     * returns first result. returns null if no solutions
+     */
+    public static Term solveFirst(Term x, NAR n) {
+        return solveFirst(x, n::axioms);
+    }
 
     public static Set<Term> eval(Term x, NAR n) {
         return eval(x, true, false, n);
@@ -328,6 +325,14 @@ public class Evaluation {
 
     public static Set<Term> eval(Term x, boolean includeTrues, boolean includeFalses, NAR n) {
         return eval(x, includeTrues, includeFalses, n::axioms);
+    }
+
+    private void ensureReady() {
+        if (v == null) {
+            v = new Versioning<>(Param.unify.UNIFICATION_STACK_CAPACITY, Param.TASK_EVALUATION_TTL);
+            subst = new VersionMap<>(v);
+            termutator = new FasterList(1);
+        }
     }
 
     private static final class MyEvaluated extends UnifiedSet<Term> implements Predicate<Term> {
@@ -360,13 +365,6 @@ public class Evaluation {
     }
 
 
-    private void ensureReady() {
-        if (v == null) {
-            v = new Versioning<>(Param.unify.UNIFICATION_STACK_CAPACITY, Param.TASK_EVALUATION_TTL);
-            subst = new VersionMap<>(v);
-            termutator = new FasterList(1);
-        }
-    }
 
 
     private Evaluation clear() {

@@ -5,7 +5,7 @@ import jcog.lab.Optilive;
 import jcog.test.control.BooleanReactionTest;
 import nars.NAR;
 import nars.NARS;
-import nars.Param;
+import nars.NAL;
 import nars.agent.Game;
 
 import java.util.function.Function;
@@ -102,7 +102,7 @@ public class NAgentOptimize {
                     try {
                         t.nar().run(experimentCycles);
                     } catch (Throwable ee) {
-                        if (Param.DEBUG)
+                        if (NAL.DEBUG)
                             ee.printStackTrace();
                         return Float.NEGATIVE_INFINITY;
                     }

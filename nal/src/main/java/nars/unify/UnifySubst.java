@@ -1,7 +1,7 @@
 package nars.unify;
 
 import nars.Op;
-import nars.Param;
+import nars.NAL;
 import nars.term.Term;
 
 import java.util.Random;
@@ -17,11 +17,11 @@ abstract public class UnifySubst extends Unify {
     private Term input;
 
     public UnifySubst(int varType, Random rng) {
-        super(varType, rng, Param.unify.UNIFICATION_STACK_CAPACITY);
+        super(varType, rng, NAL.unify.UNIFICATION_STACK_CAPACITY);
     }
 
     UnifySubst(Op varType, Random rng) {
-        super(varType, rng, Param.unify.UNIFICATION_STACK_CAPACITY);
+        super(varType, rng, NAL.unify.UNIFICATION_STACK_CAPACITY);
     }
 
     @Override

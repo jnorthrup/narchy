@@ -3,7 +3,6 @@ package nars.gui;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.AtomicDouble;
-import com.googlecode.lanterna.input.KeyType;
 import jcog.TODO;
 import jcog.Util;
 import jcog.data.iterator.ArrayIterator;

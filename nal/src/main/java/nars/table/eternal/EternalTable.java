@@ -6,7 +6,7 @@ import jcog.pri.Prioritizable;
 import jcog.sort.SortedArray;
 import nars.$;
 import nars.NAR;
-import nars.Param;
+import nars.NAL;
 import nars.Task;
 import nars.control.CauseMerge;
 import nars.control.op.Remember;
@@ -352,10 +352,10 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
             if (revised != null) {
                 //TODO maybe based on relative evidence
                 revised.pri(Prioritizable.fund(Math.max(finalOldBelief.priElseZero(), input.priElseZero()), false, finalOldBelief, input));
-                revised.cause(CauseMerge.AppendUnique.merge(Param.causeCapacity.intValue(), input, finalOldBelief));
+                revised.cause(CauseMerge.AppendUnique.merge(NAL.causeCapacity.intValue(), input, finalOldBelief));
 
 
-                if (Param.DEBUG)
+                if (NAL.DEBUG)
                     revised.log("Insertion Revision");
 
 

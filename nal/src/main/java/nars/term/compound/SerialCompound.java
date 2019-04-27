@@ -3,7 +3,7 @@ package nars.term.compound;
 import com.google.common.primitives.Ints;
 import jcog.data.byt.DynBytes;
 import nars.Op;
-import nars.Param;
+import nars.NAL;
 import nars.The;
 import nars.io.IO;
 import nars.io.TermIO;
@@ -37,7 +37,7 @@ public class SerialCompound extends DynBytes implements SameSubtermsCompound, Th
         for (Term x: subterms)
             v += x.volume();
 
-        if (v > Param.term.COMPOUND_VOLUME_MAX)
+        if (v > NAL.term.COMPOUND_VOLUME_MAX)
             throw new TermException("complexity overflow");
 
         this.volume = (byte) v;

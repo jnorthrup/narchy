@@ -22,7 +22,7 @@ package nars.truth.func;
 
 import jcog.Util;
 import nars.$;
-import nars.Param;
+import nars.NAL;
 import nars.truth.Truth;
 import org.jetbrains.annotations.Nullable;
 
@@ -174,7 +174,7 @@ public final class TruthFunctions {
                 Math.max(and(f1, f2), and(1 - f1, 1 - f2));
         float c = w2cSafe(and(f0, TruthFunctions.confCompose(a, b)));
         if (c >= minConf) {
-            float f = (Util.equals(f0, 0, Param.truth.TRUTH_EPSILON)) ? 0 : (and(f1, f2) / f0);
+            float f = (Util.equals(f0, 0, NAL.truth.TRUTH_EPSILON)) ? 0 : (and(f1, f2) / f0);
             return t(f, c);
         }
 
@@ -189,7 +189,7 @@ public final class TruthFunctions {
     }
 
     public static float confCompose(float cx, float cy) {
-        if (Param.STRONG_COMPOSITION) {
+        if (NAL.STRONG_COMPOSITION) {
             //convinced
             return Math.min(cx, cy);
         } else {
@@ -301,10 +301,10 @@ public final class TruthFunctions {
 
 
     public static float c2w(float c) {
-        if (c < Param.truth.TRUTH_EPSILON)
+        if (c < NAL.truth.TRUTH_EPSILON)
             throw new Truth.TruthException("confidence underflow", c);
 
-        if (c > Param.truth.TRUTH_CONF_MAX) {
+        if (c > NAL.truth.TRUTH_CONF_MAX) {
             throw new Truth.TruthException("confidence overflow", c);
             //c = Param.TRUTH_CONF_MAX;
         }
@@ -316,10 +316,10 @@ public final class TruthFunctions {
     }
 
     public static float c2wSafe(float c) {
-        return c2wSafe(c, Param.HORIZON);
+        return c2wSafe(c, NAL.HORIZON);
     }
     public static double c2wSafe(double c) {
-        return c2wSafe(c, Param.HORIZON);
+        return c2wSafe(c, NAL.HORIZON);
     }
 
 
@@ -354,14 +354,14 @@ public final class TruthFunctions {
      * @return The corresponding confidence, in [0, 1)
      */
     public static float w2c(float w) {
-        if (w < Param.truth.TRUTH_EVI_MIN)
+        if (w < NAL.truth.TRUTH_EVI_MIN)
             throw new Truth.TruthException("insufficient evidence", w);
         if (!Float.isFinite(w))
             throw new Truth.TruthException("non-finite evidence", w);
         return w2cSafe(w);
     }
     public static float w2c(double w) {
-        if (w < Param.truth.TRUTH_EVI_MIN)
+        if (w < NAL.truth.TRUTH_EVI_MIN)
             throw new Truth.TruthException("insufficient evidence", w);
         if (!Double.isFinite(w))
             throw new Truth.TruthException("non-finite evidence", w);
@@ -369,7 +369,7 @@ public final class TruthFunctions {
     }
 
     public static float w2cSafe(float w) {
-        return w2cSafe(w, Param.HORIZON);
+        return w2cSafe(w, NAL.HORIZON);
     }
 
     public static float w2cSafe(double w) {
@@ -377,7 +377,7 @@ public final class TruthFunctions {
     }
     /** high precision */
     public static double w2cSafeDouble(double w) {
-        return w2cSafe(w, Param.HORIZON);
+        return w2cSafe(w, NAL.HORIZON);
     }
 
 
@@ -385,7 +385,7 @@ public final class TruthFunctions {
         if (evidenceLength <= 1) {
             return 1f;
         } else {
-            return 1f / (1f + (evidenceLength - 1) / (Param.STAMP_CAPACITY - 1f));
+            return 1f / (1f + (evidenceLength - 1) / (NAL.STAMP_CAPACITY - 1f));
         }
     }
 

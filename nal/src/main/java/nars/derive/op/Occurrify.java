@@ -4,7 +4,7 @@ import jcog.WTF;
 import jcog.data.bit.MetalBitSet;
 import jcog.data.set.ArrayHashSet;
 import nars.Op;
-import nars.Param;
+import nars.NAL;
 import nars.Task;
 import nars.derive.Derivation;
 import nars.term.Compound;
@@ -201,7 +201,7 @@ public class Occurrify extends TimeGraph {
         if (!Taskify.valid(c2, d.concPunc)) {
             boolean fail;
 
-            if (Param.derive.DERIVATION_FORM_QUESTION_FROM_AMBIGUOUS_BELIEF_OR_GOAL && d.concPunc == BELIEF || d.concPunc == GOAL) {
+            if (NAL.derive.DERIVATION_FORM_QUESTION_FROM_AMBIGUOUS_BELIEF_OR_GOAL && d.concPunc == BELIEF || d.concPunc == GOAL) {
                 //as a last resort, try forming a question from the remains
                 byte qPunc = d.concPunc == BELIEF ? QUESTION : QUEST;
                 if (!Taskify.valid(c2, qPunc)) {
@@ -237,7 +237,7 @@ public class Occurrify extends TimeGraph {
             x = Retemporalize.retemporalizeXTERNALToDTERNAL.apply(x);
             if (!Taskify.valid(x, d.concPunc)) {
                 d.nar().emotion.deriveFailTemporal.increment();
-                Taskify.spam(d, Param.derive.TTL_COST_DERIVE_TASK_FAIL);
+                Taskify.spam(d, NAL.derive.TTL_COST_DERIVE_TASK_FAIL);
                 return null;
             }
         }
@@ -299,7 +299,7 @@ public class Occurrify extends TimeGraph {
 
     @Override
     public long eventOcc(long when) {
-        if (Param.derive.TIMEGRAPH_DITHER_EVENTS_INTERNALLY)
+        if (NAL.derive.TIMEGRAPH_DITHER_EVENTS_INTERNALLY)
             return Tense.dither(when, d.ditherDT);
         else
             return when;
@@ -500,13 +500,13 @@ public class Occurrify extends TimeGraph {
 
         int v = y.volume();
         return v <= d.termVolMax && super.validPotentialSolution(y) &&
-               v >= Param.derive.TIMEGRAPH_IGNORE_DEGENERATE_SOLUTIONS_FACTOR * patternVolume
+               v >= NAL.derive.TIMEGRAPH_IGNORE_DEGENERATE_SOLUTIONS_FACTOR * patternVolume
                ;
     }
 
     private ArrayHashSet<Event> solutions(Term pattern) {
 
-        ttl = Param.derive.TIMEGRAPH_ITERATIONS;
+        ttl = NAL.derive.TIMEGRAPH_ITERATIONS;
         patternVolume = pattern.volume();
         patternOp = pattern.op();
 
@@ -1331,7 +1331,7 @@ public class Occurrify extends TimeGraph {
             if (offset != DTERNAL)
                 return pair(x, new long[]{srcStart + offset, srcEnd + offset});
 
-            if (Param.DEBUG)
+            if (NAL.DEBUG)
                 throw new WTF();
 
             return null;

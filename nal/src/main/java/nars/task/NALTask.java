@@ -4,7 +4,7 @@ import jcog.data.list.FasterList;
 import jcog.data.map.CompactArrayMap;
 import jcog.pri.UnitPri;
 import nars.NAR;
-import nars.Param;
+import nars.NAL;
 import nars.Task;
 import nars.control.CauseMerge;
 import nars.task.util.TaskException;
@@ -91,7 +91,7 @@ public abstract class NALTask extends UnitPri implements Task {
 
     public void causeMerge(short[] c, CauseMerge merge) {
 
-        int causeCap = Param.causeCapacity.intValue();
+        int causeCap = NAL.causeCapacity.intValue();
 
         //synchronized (this) {
             //HACK

@@ -5,7 +5,7 @@ import jcog.math.LongInterval;
 import jcog.sort.FloatRank;
 import jcog.sort.RankedN;
 import nars.NAR;
-import nars.Param;
+import nars.NAL;
 import nars.Task;
 import nars.table.TaskTable;
 import nars.task.proxy.SpecialTruthAndOccurrenceTask;
@@ -35,7 +35,7 @@ public final class Answer implements Timed {
     public final static int BELIEF_MATCH_CAPACITY =
             //Param.STAMP_CAPACITY - 1;
             //Math.max(1, Param.STAMP_CAPACITY / 2);
-            Math.max(1, 2 * (int) Math.ceil(Math.sqrt(Param.STAMP_CAPACITY)));
+            Math.max(1, 2 * (int) Math.ceil(Math.sqrt(NAL.STAMP_CAPACITY)));
             //3;
 
     public static final int BELIEF_SAMPLE_CAPACITY = BELIEF_MATCH_CAPACITY/2;
@@ -172,7 +172,7 @@ public final class Answer implements Timed {
         return new Answer(r, filter, capacity, nar)
                 .time(start, end)
                 .template(template)
-                .clear((int) Math.ceil(Param.ANSWER_COMPLETENESS * capacity));
+                .clear((int) Math.ceil(NAL.ANSWER_COMPLETENESS * capacity));
     }
 
 
@@ -379,7 +379,7 @@ public final class Answer implements Timed {
     }
 
     public double eviMin() {
-        return ditherTruth ? nar.confMin.asEvi() : Param.truth.TRUTH_EVI_MIN;
+        return ditherTruth ? nar.confMin.asEvi() : NAL.truth.TRUTH_EVI_MIN;
     }
 
     /**
@@ -407,9 +407,9 @@ public final class Answer implements Timed {
 
         TruthProjection tp = truthpolation(taskList());
         if (tp != null) {
-            assert (!ditherTruth); assert (eviMin() <= Param.truth.TRUTH_EVI_MIN);
+            assert (!ditherTruth); assert (eviMin() <= NAL.truth.TRUTH_EVI_MIN);
 
-            return tp.truth(Param.truth.TRUTH_EVI_MIN, false, false /* give the value at specified range, no matter how sparse */, nar);
+            return tp.truth(NAL.truth.TRUTH_EVI_MIN, false, false /* give the value at specified range, no matter how sparse */, nar);
         }
 
         return null;

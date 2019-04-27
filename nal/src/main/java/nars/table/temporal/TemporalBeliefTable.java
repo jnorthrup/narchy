@@ -3,7 +3,7 @@ package nars.table.temporal;
 import jcog.Skill;
 import jcog.Util;
 import jcog.pri.Prioritized;
-import nars.Param;
+import nars.NAL;
 import nars.Task;
 import nars.control.CauseMerge;
 import nars.table.BeliefTable;
@@ -43,7 +43,7 @@ public interface TemporalBeliefTable extends BeliefTable {
 
         Task[] tr = Util.map(TruthProjection.TaskComponent::task, new Task[sources.size()], sources.array());
 
-        ((NALTask)xy).cause(CauseMerge.AppendUnique.merge(Param.causeCapacity.intValue(), tr));
+        ((NALTask)xy).cause(CauseMerge.AppendUnique.merge(NAL.causeCapacity.intValue(), tr));
 
         float priSum = Util.sum(Prioritized::priElseZero, tr);
         float priMean = priSum/tr.length; //mean

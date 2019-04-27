@@ -1,7 +1,7 @@
 package nars.task.signal;
 
 import jcog.Skill;
-import nars.Param;
+import nars.NAL;
 import nars.util.Timed;
 
 import static nars.time.Tense.ETERNAL;
@@ -52,7 +52,7 @@ public class SustainTruthlet extends ProxyTruthlet<RangeTruthlet> {
         if (dist > 0) {
             float f = freqEvi[0];
             if (f == f)
-                freqEvi[1] = (float) Param.evi(freqEvi[1], dist, /* dur */ dur());
+                freqEvi[1] = (float) NAL.evi(freqEvi[1], dist, /* dur */ dur());
         }
 
     }

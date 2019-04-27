@@ -2,7 +2,7 @@ package nars.term.util.builder;
 
 import jcog.data.byt.DynBytes;
 import nars.Op;
-import nars.Param;
+import nars.NAL;
 import nars.subterm.Subterms;
 import nars.term.Compound;
 import nars.term.Term;
@@ -165,7 +165,7 @@ public abstract class TermBuilder implements TermConstructor {
         if (!x.hasAny(Op.Temporal))
             return x;
         return x.temporalize(
-                Param.conceptualization
+                NAL.conceptualization
         );
     }
 

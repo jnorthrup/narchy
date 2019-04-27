@@ -2,7 +2,7 @@ package nars.truth;
 
 import jcog.WTF;
 import nars.NAR;
-import nars.Param;
+import nars.NAL;
 import nars.table.BeliefTable;
 import nars.task.util.Answer;
 import nars.term.Term;
@@ -83,7 +83,7 @@ public class TruthWave {
         b.forEachTask(minT, maxT, x -> {
             int ss = size[0];
             if (ss >= s) {
-                if (Param.DEBUG)
+                if (NAL.DEBUG)
                     throw new WTF("truthwave capacity exceeded");
                 return;
             }
@@ -164,7 +164,7 @@ public class TruthWave {
         int j = 0;
         Answer a = Answer.relevant(true, precision, start, end, term, null, nar)
                 .dur(dur);
-        int tries = (int) Math.ceil(precision* Param.ANSWER_COMPLETENESS);
+        int tries = (int) Math.ceil(precision* NAL.ANSWER_COMPLETENESS);
 
         for (int i = 0; i < points; i++) {
             long s = Math.round(t - halfDT);

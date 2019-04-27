@@ -417,7 +417,7 @@ public interface Task extends Truthed, Stamp, TermedDelegate, ITask, TaskRegion,
 
     @Nullable
     static <T extends Task> T tryTask(Term t, byte punc, Truth tr, BiFunction<Term, Truth, T> withResult) {
-        return tryTask(t, punc, tr, withResult, !Param.test.DEBUG_EXTRA);
+        return tryTask(t, punc, tr, withResult, !NAL.test.DEBUG_EXTRA);
     }
 
     @Nullable
@@ -482,7 +482,7 @@ public interface Task extends Truthed, Stamp, TermedDelegate, ITask, TaskRegion,
 
             if (tt.evi() > t.evi()) {
                 double inflationPct = (tt.evi() - t.evi()) / (t.evi());
-                if (Param.DEBUG || inflationPct >= Param.PROJECTION_EVIDENCE_INFLATION_PCT_TOLERANCE) {
+                if (NAL.DEBUG || inflationPct >= NAL.PROJECTION_EVIDENCE_INFLATION_PCT_TOLERANCE) {
                     throw new Truth.TruthException("inflation, %=", inflationPct);
                 } /* else {
                     //allow
@@ -924,7 +924,7 @@ public interface Task extends Truthed, Stamp, TermedDelegate, ITask, TaskRegion,
 
             double eve = TruthIntegration.eviAvg(this, targetStart, targetEnd, dur);
 
-            if (eve > Param.truth.TRUTH_EVI_MIN) {
+            if (eve > NAL.truth.TRUTH_EVI_MIN) {
                 return PreciseTruth.byEvi(
                         freq() /* TODO interpolate frequency wave */,
                         eve);
@@ -946,7 +946,7 @@ public interface Task extends Truthed, Stamp, TermedDelegate, ITask, TaskRegion,
      * of the Task and the reason for it.
      */
     default Task log(Object entry) {
-        if (!Param.DEBUG_TASK_LOG)
+        if (!NAL.DEBUG_TASK_LOG)
             return this;
 
         List ll = log(true);
@@ -1007,19 +1007,10 @@ public interface Task extends Truthed, Stamp, TermedDelegate, ITask, TaskRegion,
         return t == null ? Float.NaN : t.expectation();
     }
 
-    /**
-     * default implementation involves the complete perception process
-     */
-    default ITask next(NAR n) {
-        throw new UnsupportedOperationException();
-    }
-
     @Override
     default ITask next(What w) {
         return Perceive.perceive(this, w);
     }
-
-
 
 
 //    /**

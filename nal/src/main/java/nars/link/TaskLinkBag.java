@@ -7,7 +7,7 @@ import jcog.pri.bag.Bag;
 import jcog.pri.bag.impl.BufferedBag;
 import jcog.pri.op.PriMerge;
 import jcog.pri.op.PriReturn;
-import nars.Param;
+import nars.NAL;
 import nars.concept.Concept;
 import nars.term.Term;
 
@@ -18,7 +18,7 @@ import java.util.function.Predicate;
 public class TaskLinkBag extends BufferedBag.SimpleBufferedBag<TaskLink, TaskLink> {
 
     public TaskLinkBag(Bag<TaskLink, TaskLink> activates) {
-        super(activates, new TaskLinkBuffer(Param.tasklinkMerge));
+        super(activates, new TaskLinkBuffer(NAL.tasklinkMerge));
     }
 
     public String id(boolean in, boolean out) {

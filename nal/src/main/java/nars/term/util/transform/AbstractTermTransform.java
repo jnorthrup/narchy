@@ -1,7 +1,7 @@
 package nars.term.util.transform;
 
 import nars.Op;
-import nars.Param;
+import nars.NAL;
 import nars.subterm.Subterms;
 import nars.subterm.TermList;
 import nars.term.Compound;
@@ -23,12 +23,12 @@ import static nars.time.Tense.XTERNAL;
 public interface AbstractTermTransform extends TermTransform, nars.term.util.builder.TermConstructor {
 
     static Term transform(Term x, TermTransform transform) {
-        return transform(new LazyCompound(), x, transform, Param.term.COMPOUND_VOLUME_MAX);
+        return transform(new LazyCompound(), x, transform, NAL.term.COMPOUND_VOLUME_MAX);
     }
 
     /** global default transform procedure: can decide semi-optimal transform implementation */
     static Term transform(LazyCompound l, Term x, TermTransform transform, int volMax) {
-        if (x instanceof Compound && Param.TERMIFY_TRANSFORM_LAZY) {
+        if (x instanceof Compound && NAL.TERMIFY_TRANSFORM_LAZY) {
             return ((AbstractTermTransform)transform).applyCompoundLazy((Compound)x, l,
                     //HeapTermBuilder.the
                     Op.terms,
@@ -191,7 +191,7 @@ public interface AbstractTermTransform extends TermTransform, nars.term.util.bui
     }
 
     default Term applyCompoundLazy(Compound x) {
-        return applyCompoundLazy(x, new LazyCompound(), Op.terms, Param.term.COMPOUND_VOLUME_MAX);
+        return applyCompoundLazy(x, new LazyCompound(), Op.terms, NAL.term.COMPOUND_VOLUME_MAX);
     }
 
     default Term applyCompoundLazy(Compound x, LazyCompound l, TermBuilder b, int volMax) {

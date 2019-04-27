@@ -23,7 +23,7 @@ package nars.term.var;
 
 import nars.$;
 import nars.Op;
-import nars.Param;
+import nars.NAL;
 import nars.term.Variable;
 import nars.term.anon.AnonID;
 import org.jetbrains.annotations.Nullable;
@@ -40,13 +40,13 @@ public abstract class NormalizedVariable extends AnonID implements Variable {
     /**
      * numerically-indexed variable instance cache; prevents duplicates and speeds comparisons
      */
-    private static final AnonID[][] varCache = new AnonID[4][Param.term.MAX_INTERNED_VARS];
+    private static final AnonID[][] varCache = new AnonID[4][NAL.term.MAX_INTERNED_VARS];
 
     static {
 
         for (Op o: new Op[]{VAR_PATTERN, Op.VAR_QUERY, VAR_DEP, VAR_INDEP}) {
             int t = opToVarIndex(o);
-            for (byte i = 1; i < Param.term.MAX_INTERNED_VARS; i++) {
+            for (byte i = 1; i < NAL.term.MAX_INTERNED_VARS; i++) {
                 varCache[t][i] = vNew(o, i);
             }
         }
@@ -126,7 +126,7 @@ public abstract class NormalizedVariable extends AnonID implements Variable {
 
     public static AnonID the(/*@NotNull*/ byte op, byte id) {
         assert(id > 0);
-        if (id < Param.term.MAX_INTERNED_VARS) {
+        if (id < NAL.term.MAX_INTERNED_VARS) {
             return varCache[NormalizedVariable.opToVarIndex(op)][id];
         } else {
             return vNew(Op.ops[op], id);

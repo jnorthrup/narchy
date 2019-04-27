@@ -3,7 +3,7 @@ package nars.term.util.transform;
 import jcog.random.XorShift128PlusRandom;
 import nars.$;
 import nars.Narsese;
-import nars.Param;
+import nars.NAL;
 import nars.derive.premise.PatternTermBuilder;
 import nars.derive.premise.PremiseRuleSource;
 import nars.term.Compound;
@@ -75,7 +75,7 @@ public class EllipsisTest {
 
                 //System.out.println(seed + ": " + x + " unify " + y + " => " + r);
 
-                Unify f = new Unify(VAR_PATTERN, new XorShift128PlusRandom(1 + seed), Param.unify.UNIFICATION_STACK_CAPACITY) {
+                Unify f = new Unify(VAR_PATTERN, new XorShift128PlusRandom(1 + seed), NAL.unify.UNIFICATION_STACK_CAPACITY) {
 
                     @Override
                     public boolean tryMatch() {
@@ -415,7 +415,7 @@ public class EllipsisTest {
 
 
             Random rng = new XorShift128PlusRandom(seed);
-            Unify f = new Unify(VAR_PATTERN, rng, Param.unify.UNIFICATION_STACK_CAPACITY, 128) {
+            Unify f = new Unify(VAR_PATTERN, rng, NAL.unify.UNIFICATION_STACK_CAPACITY, 128) {
                 @Override
                 public boolean tryMatch() {
                     results.add(xy.toString());

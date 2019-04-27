@@ -3,7 +3,7 @@ package nars.term;
 import jcog.Paper;
 import jcog.Skill;
 import nars.Op;
-import nars.Param;
+import nars.NAL;
 import nars.term.atom.Atomic;
 import nars.term.var.CommonVariable;
 import nars.term.var.ellipsis.Ellipsis;
@@ -96,7 +96,7 @@ public interface Variable extends Atomic {
 //            else
 //                return x.unify(y, u);
 
-            if (u.varDepth < Param.unify.UNIFY_VAR_RECURSION_DEPTH_LIMIT) {
+            if (u.varDepth < NAL.unify.UNIFY_VAR_RECURSION_DEPTH_LIMIT) {
                 u.varDepth++;
                 boolean result = x.unify(y, u);
                 u.varDepth--;

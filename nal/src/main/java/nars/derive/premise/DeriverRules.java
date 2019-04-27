@@ -3,7 +3,7 @@ package nars.derive.premise;
 import jcog.Util;
 import jcog.data.bit.MetalBitSet;
 import jcog.decide.MutableRoulette;
-import nars.Param;
+import nars.NAL;
 import nars.control.Why;
 import nars.derive.Derivation;
 import nars.term.control.PREDICATE;
@@ -62,7 +62,7 @@ public class DeriverRules {
      */
     private boolean test(Derivation d, int branch) {
         could[branch].run.test(d);
-        return d.use(Param.derive.TTL_COST_BRANCH);
+        return d.use(NAL.derive.TTL_COST_BRANCH);
     }
 
     public void run(Derivation d, short[] can) {

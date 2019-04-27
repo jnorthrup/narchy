@@ -1,7 +1,7 @@
 package nars.index.concept;
 
 import nars.NAR;
-import nars.Param;
+import nars.NAL;
 import nars.concept.Concept;
 import nars.concept.PermanentConcept;
 import nars.term.Term;
@@ -92,26 +92,26 @@ public abstract class Memory {
 
         Term xt = _x.term();
         if (!xt.op().conceptualizable) {
-            if (Param.DEBUG)
+            if (NAL.DEBUG)
                 throw new TermException("not conceptualizable", xt);
             else
                 return null;
         }
 
-        if (Param.DEBUG) { if (!xt.the()) throw new TermException("not immutable", xt); }
+        if (NAL.DEBUG) { if (!xt.the()) throw new TermException("not immutable", xt); }
 
         if (!xt.isNormalized()) //pre-test
             throw new TermException("concept term not normalized",xt);
 
         Term x = xt.concept();
         if (!x.op().conceptualizable) {
-            if (Param.DEBUG)
+            if (NAL.DEBUG)
                 throw new TermException("not conceptualizable", xt);
             else
                 return null;
         }
 
-        if (Param.DEBUG) { if (!x.the()) throw new TermException("not immutable", x); }
+        if (NAL.DEBUG) { if (!x.the()) throw new TermException("not immutable", x); }
 
         return (Concept) get(x, createIfMissing);
     }

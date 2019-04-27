@@ -2,7 +2,7 @@ package nars.task;
 
 import jcog.data.set.MetalLongSet;
 import nars.NAR;
-import nars.Param;
+import nars.NAL;
 import nars.Task;
 import nars.task.util.TaskRegion;
 import nars.time.Tense;
@@ -79,7 +79,7 @@ public enum Revision {;
         assert(p.size()>=2);
 
         double eviMin =
-                Param.belief.REVISION_MIN_EVI_FILTER ? nar.confMin.asEvi() : Param.truth.TRUTH_EVI_MIN;
+                NAL.belief.REVISION_MIN_EVI_FILTER ? nar.confMin.asEvi() : NAL.truth.TRUTH_EVI_MIN;
                 //;
 
         Truth truth = p.truth(eviMin, dither, true, nar);
@@ -91,7 +91,7 @@ public enum Revision {;
                 new UnevaluatedTask(c, punc,
                         tr,
                         nar.time(), p.start(), p.end(),
-                        Stamp.sample(Param.STAMP_CAPACITY, stamp /* TODO account for relative evidence contributions */, nar.random())
+                        Stamp.sample(NAL.STAMP_CAPACITY, stamp /* TODO account for relative evidence contributions */, nar.random())
                 )
         );
         return pair(y, p);

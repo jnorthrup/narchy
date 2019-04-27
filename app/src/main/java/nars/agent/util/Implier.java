@@ -11,7 +11,7 @@
 //import nars.agent.NAgent;
 //import nars.concept.Concept;
 //import nars.control.DurService;
-//import nars.control.channel.CauseChannel;
+//import CauseChannel;
 //import nars.task.ITask;
 //import nars.task.NALTask;
 //import nars.task.signal.SignalTask;

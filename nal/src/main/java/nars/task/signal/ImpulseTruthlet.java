@@ -1,6 +1,6 @@
 package nars.task.signal;
 
-import nars.Param;
+import nars.NAL;
 import nars.time.Tense;
 
 /**
@@ -29,7 +29,7 @@ public class ImpulseTruthlet extends ProxyTruthlet {
             
             freqEvi[0] = freqInactive;
             long dist = Math.min(Math.abs(s - when), Math.abs(e - when));
-            freqEvi[1] = (float) Param.evi(eviInactive, dist, Math.max(1, Tense.occToDT((e - s) / 2)));
+            freqEvi[1] = (float) NAL.evi(eviInactive, dist, Math.max(1, Tense.occToDT((e - s) / 2)));
         }
     }
 

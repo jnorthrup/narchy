@@ -7,7 +7,7 @@ import jcog.math.LongInterval;
 import jcog.pri.op.PriMerge;
 import jcog.sort.FloatRank;
 import nars.NAR;
-import nars.Param;
+import nars.NAL;
 import nars.Task;
 import nars.attention.What;
 import nars.control.op.Remember;
@@ -44,7 +44,7 @@ public class SensorBeliefTables extends BeliefTables {
         this(c, beliefOrGoal,
                 //TODO impl time series with concurrent ring buffer from gluegen
                 //new ConcurrentSkiplistTaskSeries<>(Param.SIGNAL_BELIEF_TABLE_SERIES_SIZE)
-                new RingBufferTaskSeries<>(  Param.belief.signal.SIGNAL_BELIEF_TABLE_SERIES_SIZE));
+                new RingBufferTaskSeries<>(  NAL.belief.signal.SIGNAL_BELIEF_TABLE_SERIES_SIZE));
     }
 
     SensorBeliefTables(Term term, boolean beliefOrGoal, AbstractTaskSeries<Task> s) {
@@ -64,7 +64,7 @@ public class SensorBeliefTables extends BeliefTables {
     @Override
     public final void remember(Remember r) {
 
-        if (Param.belief.signal.SIGNAL_TABLE_FILTER_NON_SIGNAL_TEMPORAL_TASKS) {
+        if (NAL.belief.signal.SIGNAL_TABLE_FILTER_NON_SIGNAL_TEMPORAL_TASKS) {
             Task x = r.input;
             if (!(x instanceof SeriesTask)) { //shouldnt happen anyway
                 if (!x.isEternal() && !x.isInput() /* explicit overrides from user */) {
@@ -225,7 +225,7 @@ public class SensorBeliefTables extends BeliefTables {
         if (next == null)
             return; //?
 
-        float surprise = Param.signalSurprise(prev, next, pri, w.nar);
+        float surprise = NAL.signalSurprise(prev, next, pri, w.dur());
         if (surprise!=surprise)
             return;
 

@@ -62,7 +62,7 @@ public enum Op {
                     return u.unneg();
 
                 case FRAG:
-                    if (Param.DEBUG)
+                    if (NAL.DEBUG)
                         throw new TermException("fragment can not be negated", u);
                     return Null;
 
@@ -498,7 +498,7 @@ public enum Op {
                 !var &&
                         !isBool &&
                         !isImg &&
-                        (Param.term.INT_CONCEPTUALIZABLE || !isInt)
+                        (NAL.term.INT_CONCEPTUALIZABLE || !isInt)
         //!isNeg && //<- HACK technically NEG cant be conceptualized but in many cases this is assumed. so NEG must not be included in conceptualizable for it to work currently
         ;
 
@@ -507,7 +507,7 @@ public enum Op {
         beliefable = taskable;
         goalable = taskable && !isImpl;
 
-        this.eventable = (Param.term.INT_CONCEPTUALIZABLE || !isInt) && !isImg && !isBool && !isSect;
+        this.eventable = (NAL.term.INT_CONCEPTUALIZABLE || !isInt) && !isImg && !isBool && !isSect;
 
         indepVarParent = isImpl;
         depVarParent = isConj;
@@ -770,9 +770,9 @@ public enum Op {
         static final IntIntPair One = pair(1, 1);
         static final IntIntPair Two = pair(2, 2);
 
-        static final IntIntPair GTEZero = pair(0, Param.term.SUBTERMS_MAX);
-        static final IntIntPair GTEOne = pair(1, Param.term.SUBTERMS_MAX);
-        static final IntIntPair GTETwo = pair(2, Param.term.SUBTERMS_MAX);
+        static final IntIntPair GTEZero = pair(0, NAL.term.SUBTERMS_MAX);
+        static final IntIntPair GTEOne = pair(1, NAL.term.SUBTERMS_MAX);
+        static final IntIntPair GTETwo = pair(2, NAL.term.SUBTERMS_MAX);
 
     }
 

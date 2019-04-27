@@ -10,7 +10,7 @@
 //import nars.NAR;
 //import nars.concept.Concept;
 //import nars.concept.sensor.FilteredScalar;
-//import nars.control.channel.CauseChannel;
+//import CauseChannel;
 //import nars.task.ITask;
 //import nars.term.Term;
 //

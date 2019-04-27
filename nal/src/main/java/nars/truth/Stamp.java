@@ -30,7 +30,7 @@ import jcog.io.BinTxt;
 import jcog.math.LongInterval;
 import jcog.util.ArrayUtils;
 import nars.Op;
-import nars.Param;
+import nars.NAL;
 import nars.Task;
 import nars.truth.func.TruthFunctions;
 import org.eclipse.collections.api.list.primitive.MutableLongList;
@@ -59,7 +59,7 @@ public interface Stamp {
 //                Param.STAMP_CAPACITY,
 //                true);
 
-        final int capacity = Param.STAMP_CAPACITY;
+        final int capacity = NAL.STAMP_CAPACITY;
         return merge(a, b, rng, aToB, capacity);
     }
 
@@ -260,7 +260,7 @@ public interface Stamp {
 
     static boolean validStamp(long[] stamp) {
         if (stamp.length > 1) {
-            if (stamp.length > Param.STAMP_CAPACITY)
+            if (stamp.length > NAL.STAMP_CAPACITY)
                 throw new WTF();
             for (int i = 1, stampLength = stamp.length; i < stampLength; i++) {
                 long x = stamp[i];
@@ -483,7 +483,7 @@ public interface Stamp {
     }
 
     static boolean overlaps(Task x, Task y) {
-        return (!Param.REVISION_ALLOW_OVERLAP_IF_DISJOINT_TIME || x.intersects(y.start(), y.end()))
+        return (!NAL.REVISION_ALLOW_OVERLAP_IF_DISJOINT_TIME || x.intersects(y.start(), y.end()))
                    &&
                Stamp.overlapsAny(x, y);
     }

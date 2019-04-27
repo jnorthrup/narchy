@@ -4,7 +4,7 @@ import jcog.data.bit.MetalBitSet;
 import jcog.data.list.FasterList;
 import jcog.util.ArrayUtils;
 import nars.Op;
-import nars.Param;
+import nars.NAL;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.var.Img;
@@ -72,7 +72,7 @@ public final class TemplateTermLinker extends FasterList<Term> implements TermLi
 
         if (term.subs() > 0) {
 
-            if (Param.test.DEBUG_EXTRA) {
+            if (NAL.test.DEBUG_EXTRA) {
                 if (!term.equals(term.concept()))
                     throw new RuntimeException("templates only should be generated for rooted terms:\n\t" + term + "\n\t" + term.concept());
             }

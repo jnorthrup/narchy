@@ -9,7 +9,7 @@ import jcog.data.list.FasterList;
 import jcog.data.set.ArrayUnenforcedSortedSet;
 import jcog.util.ArrayUtils;
 import nars.Op;
-import nars.Param;
+import nars.NAL;
 import nars.subterm.util.TermMetadata;
 import nars.term.Compound;
 import nars.term.Term;
@@ -1289,7 +1289,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
             if (k == null || k == Bool.Null) {
                 return null;
             } else if (k.op()==FRAG) {
-                if (Param.DEBUG)
+                if (NAL.DEBUG)
                     throw new TODO("recursive EllipsisMatch unsupported");
                 else
                     return null;

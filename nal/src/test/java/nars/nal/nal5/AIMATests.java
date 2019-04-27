@@ -50,7 +50,7 @@ class AIMATests {
         n.question($$("Q"));
 
         try {
-            assertBelief(n, true, "Q", (int) (Param.test.TIME_MULTIPLIER * 1500));
+            assertBelief(n, true, "Q", (int) (NAL.test.TIME_MULTIPLIER * 1500));
         } finally {
             terms.keyValuesView().toSortedListBy(x -> -x.getTwo()).forEach(t -> {
                 System.out.println(t);

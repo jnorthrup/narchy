@@ -9,7 +9,7 @@ import jcog.data.list.FasterList;
 import jcog.data.set.MetalLongSet;
 import nars.NAR;
 import nars.Op;
-import nars.Param;
+import nars.NAL;
 import nars.Task;
 import nars.task.Tasked;
 import nars.task.util.TaskRegion;
@@ -99,7 +99,7 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
         } else {
             e = TruthIntegration.evi(task, start, end, dur);
         }
-        return e < Param.truth.TRUTH_EVI_MIN ? Double.NaN : e;
+        return e < NAL.truth.TRUTH_EVI_MIN ? Double.NaN : e;
     }
 
 
@@ -173,7 +173,7 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
                         //TODO prevent unnecessary MetalLongSet creation
                     }
                 }
-                e = new MetalLongSet(Param.STAMP_CAPACITY); //first iteration
+                e = new MetalLongSet(NAL.STAMP_CAPACITY); //first iteration
             } else
                 e.clear(); //2nd iteration, or after
 
@@ -408,7 +408,7 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
                             ab = Intermpolate.intermpolate((Compound)a, (Compound)b, (float) (e1Evi / (e1Evi + e2Evi)), nar);
                         } catch (TermException e) {
                             //HACK TODO avoid needing to throw exception
-                            if (Param.DEBUG) {
+                            if (NAL.DEBUG) {
                                 throw new RuntimeException(e);
                             } else {
                                 //ignore.  it may be a contradictory combination of events.
@@ -456,7 +456,7 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
 
     @Nullable
     public final Truth truth() {
-        return truth(Param.truth.TRUTH_EVI_MIN, false, false, null);
+        return truth(NAL.truth.TRUTH_EVI_MIN, false, false, null);
     }
 
 
@@ -528,11 +528,11 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
 
     public Supplier<long[]> stamper(Supplier<Random> rng) {
         @Nullable MetalLongSet s = Stamp.toMutableSet(
-                Param.STAMP_CAPACITY,
+                NAL.STAMP_CAPACITY,
                 i -> get(i).task.stamp(),
                 size()); //calculate stamp after filtering and after intermpolation filtering
-        if (s.size() > Param.STAMP_CAPACITY) {
-            return ()->Stamp.sample(Param.STAMP_CAPACITY, s, rng.get());
+        if (s.size() > NAL.STAMP_CAPACITY) {
+            return ()->Stamp.sample(NAL.STAMP_CAPACITY, s, rng.get());
         } else {
             return s::toSortedArray;
         }

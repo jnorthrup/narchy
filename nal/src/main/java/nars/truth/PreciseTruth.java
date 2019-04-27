@@ -1,6 +1,6 @@
 package nars.truth;
 
-import nars.Param;
+import nars.NAL;
 import org.jetbrains.annotations.Nullable;
 
 import static nars.truth.func.TruthFunctions.*;
@@ -40,16 +40,16 @@ public final class PreciseTruth extends DiscreteTruth {
     /** use with caution, if you are calculating a precise evi and a dithered conf, they should correspond */
     static PreciseTruth byConfEvi(float freq, double conf, double evi) {
 
-        if (evi < Param.truth.TRUTH_EVI_MIN)
+        if (evi < NAL.truth.TRUTH_EVI_MIN)
             return null;
 
-        if (conf >= Param.truth.TRUTH_CONF_MAX || evi>= Param.truth.TRUTH_EVI_MAX) {
+        if (conf >= NAL.truth.TRUTH_CONF_MAX || evi>= NAL.truth.TRUTH_EVI_MAX) {
             //upper limit on truth
-            conf = Param.truth.TRUTH_CONF_MAX;
-            evi = Param.truth.TRUTH_EVI_MAX;
+            conf = NAL.truth.TRUTH_CONF_MAX;
+            evi = NAL.truth.TRUTH_EVI_MAX;
         }
 
-        if (evi < Param.truth.TRUTH_EVI_MIN || !Double.isFinite(evi))
+        if (evi < NAL.truth.TRUTH_EVI_MIN || !Double.isFinite(evi))
             throw new TruthException("non-positive evi", evi);
 
         return new PreciseTruth(freq, conf, evi);

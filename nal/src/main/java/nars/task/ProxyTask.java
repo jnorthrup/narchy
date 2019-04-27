@@ -2,7 +2,7 @@ package nars.task;
 
 import jcog.pri.ScalarValue;
 import jcog.pri.UnitPri;
-import nars.Param;
+import nars.NAL;
 import nars.Task;
 import nars.term.Term;
 import nars.truth.Truth;
@@ -33,7 +33,7 @@ public class ProxyTask extends UnitPri implements Task {
 
         float p = task.pri();
         if (p!=p) {
-            if (Param.DELETE_PROXY_TASK_TO_DELETED_TASK)
+            if (NAL.DELETE_PROXY_TASK_TO_DELETED_TASK)
                 delete();
             else
                 pri(ScalarValue.EPSILON);

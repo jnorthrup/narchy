@@ -146,12 +146,7 @@ public abstract class AbstractTask implements ITask, Prioritizable {
             }
         }
 
-        @Override
-        public ITask next(NAR n) {
-            for (ITask t: tasks)
-                ITask.run(t, n);
-            return null;
-        }
+
 
     }
     /** execute the given tasks */
@@ -163,12 +158,6 @@ public abstract class AbstractTask implements ITask, Prioritizable {
             this.tasks = x;
         }
 
-        @Override
-        public ITask next(NAR n) {
-            for (ITask t: tasks)
-                ITask.run(t, n);
-            return null;
-        }
 
     }
 

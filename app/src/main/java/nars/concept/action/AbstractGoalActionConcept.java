@@ -2,7 +2,7 @@ package nars.concept.action;
 
 import nars.$;
 import nars.NAR;
-import nars.Param;
+import nars.NAL;
 import nars.Task;
 import nars.agent.Game;
 import nars.attention.What;
@@ -271,7 +271,7 @@ public class AbstractGoalActionConcept extends AgentAction {
                     long lastCuriosity = curiosityTable.series.end();
                     long curiStart = lastCuriosity != TIMELESS ? Math.max(s, lastCuriosity + 1) : s;
                     int dither = n.dtDither();
-                    long curiEnd = curiStart + Math.max(dither, Math.round((now - prev) * Param.CURIOSITY_TASK_RANGE_DURS * n.random().nextFloat())); //(1 + (curiosity.Math.max(curiStart, e);
+                    long curiEnd = curiStart + Math.max(dither, Math.round((now - prev) * NAL.CURIOSITY_TASK_RANGE_DURS * n.random().nextFloat())); //(1 + (curiosity.Math.max(curiStart, e);
 
                     //curiStart = Tense.dither(curiStart, dither);
                     //curiEnd = Tense.dither(curiEnd, dither);
@@ -326,7 +326,7 @@ public class AbstractGoalActionConcept extends AgentAction {
 
     private static class CuriosityBeliefTable extends SeriesBeliefTable {
         public CuriosityBeliefTable(Term term) {
-            super(term, false, new RingBufferTaskSeries<>(Param.CURIOSITY_CAPACITY));
+            super(term, false, new RingBufferTaskSeries<>(NAL.CURIOSITY_CAPACITY));
         }
 
         @Override

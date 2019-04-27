@@ -2,7 +2,7 @@ package nars.truth.util;
 
 import jcog.math.LongFloatTrapezoidalIntegrator;
 import jcog.math.LongInterval;
-import nars.Param;
+import nars.NAL;
 
 /**
  * used for accelerating evidence queries involving a batch of time points
@@ -42,7 +42,7 @@ public abstract class EvidenceEvaluator extends LongFloatTrapezoidalIntegrator  
         public double y(long when) {
             long dt = dt(when);
             return (dt == 0) ?
-                    evi : ((dur > 0) ? Param.evi(evi, dt, dur) : 0 /* none */);
+                    evi : ((dur > 0) ? NAL.evi(evi, dt, dur) : 0 /* none */);
         }
 
         long dt(long when) {

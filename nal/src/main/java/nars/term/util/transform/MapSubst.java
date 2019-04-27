@@ -3,7 +3,7 @@ package nars.term.util.transform;
 import jcog.TODO;
 import jcog.WTF;
 import jcog.data.list.FasterList;
-import nars.Param;
+import nars.NAL;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.atom.Atomic;
@@ -140,7 +140,7 @@ abstract public class MapSubst implements Subst {
 
     public static TermTransform replace(Term from, Term to) {
 
-        if (Param.DEBUG && from == to)
+        if (NAL.DEBUG && from == to)
             throw new WTF("pointless substitution");
 
         if (from instanceof Atomic) {

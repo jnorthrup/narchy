@@ -4,7 +4,7 @@ import jcog.random.XorShift128PlusRandom;
 import nars.$;
 import nars.Narsese;
 import nars.Op;
-import nars.Param;
+import nars.NAL;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.Variable;
@@ -31,7 +31,7 @@ class TermutatorTest {
     private final int TTL = 256;
 
     private final Unify unifier = new Unify(Op.VAR_PATTERN, new XorShift128PlusRandom(1),
-            Param.unify.UNIFICATION_STACK_CAPACITY, TTL) {
+            NAL.unify.UNIFICATION_STACK_CAPACITY, TTL) {
         @Override public boolean tryMatch() {
             return false;
         }

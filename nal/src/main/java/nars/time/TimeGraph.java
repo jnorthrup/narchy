@@ -14,7 +14,7 @@ import jcog.math.LongInterval;
 import jcog.math.Longerval;
 import jcog.util.ArrayUtils;
 import nars.Op;
-import nars.Param;
+import nars.NAL;
 import nars.subterm.Subterms;
 import nars.term.Compound;
 import nars.term.Term;
@@ -165,7 +165,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
                             if (as == ETERNAL)
                                 continue;
 
-                            if (Param.derive.TIMEGRAPH_ABSORB_CONTAINED_EVENT) {
+                            if (NAL.derive.TIMEGRAPH_ABSORB_CONTAINED_EVENT) {
                                 if (af.containsOrEquals(start, end)) {
                                     //add = false;
                                     //break; //dont affect the stored graph, but return the smaller interval that was input
@@ -179,14 +179,14 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 
 
                             if (add && af.containedIn(start, end)) {
-                                if (Param.derive.TIMEGRAPH_ABSORB_CONTAINED_EVENT) {
+                                if (NAL.derive.TIMEGRAPH_ABSORB_CONTAINED_EVENT) {
                                     //absorb existing
                                     removeNode(f);
                                     ff.remove();
                                     nte--;
                                 }
                             } else {
-                                if (start != ETERNAL && Param.derive.TIMEGRAPH_MERGE_INTERSECTING_EVENTS) {
+                                if (start != ETERNAL && NAL.derive.TIMEGRAPH_MERGE_INTERSECTING_EVENTS) {
                                     long[] merged;
                                     if ((merged = af.unionIfIntersects(start, end)) != null) {
 
@@ -265,7 +265,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 
     private void link(Event x, long dt, Event y) {
 
-        if (Param.DEBUG) {
+        if (NAL.DEBUG) {
             if (dt == DTERNAL)
                 throw new WTF("probably meant to use ETERNAL"); //TEMPORARY
             if (dt == XTERNAL)

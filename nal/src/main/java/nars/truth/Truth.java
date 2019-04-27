@@ -22,9 +22,8 @@ package nars.truth;
 
 import jcog.Texts;
 import jcog.Util;
-import nars.NAR;
 import nars.Op;
-import nars.Param;
+import nars.NAL;
 import nars.Task;
 import nars.truth.polation.TruthIntegration;
 import org.jetbrains.annotations.Nullable;
@@ -49,7 +48,7 @@ public interface Truth extends Truthed {
      * truth component resolution corresponding to Param.TRUTH_EPSILON
      */
     short hashDiscretenessEpsilon = (short)
-            (Math.round(1f / (Param.truth.TRUTH_EPSILON)));
+            (Math.round(1f / (NAL.truth.TRUTH_EPSILON)));
 
     /**
      * The hash code of a TruthValue, perfectly condensed,
@@ -74,7 +73,7 @@ public interface Truth extends Truthed {
             throw new TruthException("invalid conf", conf);
 
         int freqHash = Util.toInt(freq, discreteness);
-        int confHash = Util.toInt(Math.min(Param.truth.TRUTH_CONF_MAX, conf), discreteness);
+        int confHash = Util.toInt(Math.min(NAL.truth.TRUTH_CONF_MAX, conf), discreteness);
         return (freqHash << 16) | confHash;
     }
     static int truthToInt(double freq, double conf, short discreteness) {
@@ -86,7 +85,7 @@ public interface Truth extends Truthed {
             throw new TruthException("invalid conf", conf);
 
         int freqHash = (int) Util.toInt(freq, discreteness);
-        int confHash = (int) Util.toInt(Math.min(Param.truth.TRUTH_CONF_MAX, conf), discreteness);
+        int confHash = (int) Util.toInt(Math.min(NAL.truth.TRUTH_CONF_MAX, conf), discreteness);
         return (freqHash << 16) | confHash;
     }
 
@@ -113,7 +112,7 @@ public interface Truth extends Truthed {
             return (DiscreteTruth) truth;
     }
 
-    static void assertDithered(@Nullable Truth t, NAR n) {
+    static void assertDithered(@Nullable Truth t, NAL n) {
         if (t != null) {
             Truth d = t.dither(n);
             if (!t.equals(d))
@@ -238,7 +237,7 @@ public interface Truth extends Truthed {
     }
 
     @Nullable
-    static PreciseTruth theDithered(float f, double e, NAR nar) {
+    static PreciseTruth theDithered(float f, double e, NAL nar) {
         if (e < nar.confMin.asEvi())
             return null;
 
@@ -304,7 +303,7 @@ public interface Truth extends Truthed {
         return equalTruth(x, tolerance, tolerance);
     }
 
-    default boolean equalTruth(@Nullable Truth x, NAR nar) {
+    default boolean equalTruth(@Nullable Truth x, NAL nar) {
         return equalTruth(x, nar.freqResolution.floatValue(), nar.confResolution.floatValue());
     }
 
@@ -313,13 +312,13 @@ public interface Truth extends Truthed {
     }
 
     @Nullable
-    default PreciseTruth dither(NAR nar) {
+    default PreciseTruth dither(NAL nar) {
         return theDithered(freq(), evi(), nar);
     }
 
 
     default Truth dither(float freqRes, float confRes) {
-        if (freqRes < Param.truth.TRUTH_EPSILON && confRes < Param.truth.TRUTH_EPSILON)
+        if (freqRes < NAL.truth.TRUTH_EPSILON && confRes < NAL.truth.TRUTH_EPSILON)
             return this;
 
         float f = freq();
@@ -337,7 +336,7 @@ public interface Truth extends Truthed {
         if (e < eviMin)
             return null;
 
-        if (!negate && freqRes < Param.truth.TRUTH_EPSILON && confRes < Param.truth.TRUTH_EPSILON)
+        if (!negate && freqRes < NAL.truth.TRUTH_EPSILON && confRes < NAL.truth.TRUTH_EPSILON)
             return this;
 
         float f = freq();
@@ -351,7 +350,7 @@ public interface Truth extends Truthed {
     }
 
 
-    default Truth eternalized(float factor, double eviMin, @Nullable NAR n) {
+    default Truth eternalized(float factor, double eviMin, @Nullable NAL n) {
         float f = freq();
         double e = factor * eviEternalized();
         if (e < eviMin)

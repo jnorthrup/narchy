@@ -6,7 +6,7 @@ import jcog.math.FloatRange;
 import jcog.math.FloatSupplier;
 import jcog.random.SplitMix64Random;
 import nars.NAR;
-import nars.Param;
+import nars.NAL;
 import nars.agent.Game;
 import nars.attention.What;
 import nars.concept.TaskConcept;
@@ -252,7 +252,7 @@ public class VectorSensorView extends BitmapMatrixView implements BitmapMatrixVi
         float bf = 0;
 
         Answer a = this.answer;
-        int tries = (int) Math.ceil(truthPrecision * Param.ANSWER_COMPLETENESS);
+        int tries = (int) Math.ceil(truthPrecision * NAL.ANSWER_COMPLETENESS);
         if (beliefs.get()) {
             Truth b = a!=null ? a.clear(tries).match(s.beliefs()).truth() : null;
             bf = b != null ? b.freq() : noise();

@@ -8,7 +8,7 @@ import jcog.math.FloatSupplier;
 import jcog.util.FloatConsumer;
 import nars.$;
 import nars.NAR;
-import nars.Param;
+import nars.NAL;
 import nars.agent.util.UnipolarMotor;
 import nars.attention.What;
 import nars.concept.action.AgentAction;
@@ -489,7 +489,7 @@ public interface NAct {
      *  TODO make a negative polarity option
      */
     default GoalActionConcept actionHemipolar(Term s, FloatToFloatFunction update) {
-        float epsilon = Param.truth.TRUTH_EPSILON/2;
+        float epsilon = NAL.truth.TRUTH_EPSILON/2;
         return actionUnipolar(s, (raw)->{
             if (raw==raw) {
 

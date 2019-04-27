@@ -1,7 +1,7 @@
 package nars.truth.util;
 
 import jcog.math.FloatRange;
-import nars.Param;
+import nars.NAL;
 import nars.truth.func.TruthFunctions;
 
 import static nars.truth.func.TruthFunctions.c2wSafe;
@@ -11,7 +11,7 @@ public final class ConfRange extends FloatRange {
     private double _evi;
 
     public ConfRange() {
-        super(Param.truth.TRUTH_EPSILON, TruthFunctions.w2cSafe(Param.truth.TRUTH_EVI_MIN), Param.truth.TRUTH_CONF_MAX);
+        super(NAL.truth.TRUTH_EPSILON, TruthFunctions.w2cSafe(NAL.truth.TRUTH_EVI_MIN), NAL.truth.TRUTH_CONF_MAX);
     }
 
     @Override

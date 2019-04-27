@@ -5,7 +5,7 @@ import jcog.WTF;
 import jcog.data.byt.DynBytes;
 import jcog.util.ArrayUtils;
 import nars.Op;
-import nars.Param;
+import nars.NAL;
 import nars.subterm.Subterms;
 import nars.term.Compound;
 import nars.term.Term;
@@ -180,7 +180,7 @@ public class LazyCompound {
     }
 
     public Term get(TermBuilder b) {
-        return get(b, Param.term.COMPOUND_VOLUME_MAX);
+        return get(b, NAL.term.COMPOUND_VOLUME_MAX);
     }
     /**
      * run the construction process

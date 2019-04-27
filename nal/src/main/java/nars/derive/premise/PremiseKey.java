@@ -1,7 +1,7 @@
 package nars.derive.premise;
 
 import jcog.memoize.byt.ByteKeyExternalWithParameter;
-import nars.Param;
+import nars.NAL;
 import nars.Task;
 import nars.derive.Derivation;
 import nars.derive.PreDerivation;
@@ -18,7 +18,7 @@ class PremiseKey extends ByteKeyExternalWithParameter<Unify> {
         super(d);
 
         /* TODO move dithering option to parameter */
-        if (Param.premise.PREMISE_KEY_DITHER && ditherDT > 1) {
+        if (NAL.premise.PREMISE_KEY_DITHER && ditherDT > 1) {
             TermIO.DeferredTemporalTermIO io = new TermIO.DeferredTemporalTermIO();
             io.write(d.taskTerm, key);
             io.write(d.beliefTerm, key);

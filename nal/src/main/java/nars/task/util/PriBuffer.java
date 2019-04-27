@@ -1,7 +1,6 @@
 package nars.task.util;
 
 import jcog.TODO;
-import jcog.WTF;
 import jcog.data.list.FasterList;
 import jcog.math.FloatRange;
 import jcog.math.IntRange;
@@ -13,7 +12,7 @@ import jcog.pri.bag.impl.PriArrayBag;
 import jcog.pri.op.PriMerge;
 import jcog.pri.op.PriReturn;
 import nars.NAR;
-import nars.Param;
+import nars.NAL;
 import nars.Task;
 import nars.control.CauseMerge;
 import nars.control.channel.ConsumerX;
@@ -234,7 +233,7 @@ abstract public class PriBuffer<T extends Prioritizable> implements Consumer<T> 
         }
 
         {
-            final PriMerge merge = Param.tasklinkMerge;
+            final PriMerge merge = NAL.tasklinkMerge;
             tasks = new BufferedBag.SimpleBufferedBag<>(new PriArrayBag<>(merge, 0) {
 
                 /**

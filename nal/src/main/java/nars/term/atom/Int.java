@@ -4,7 +4,7 @@ import com.google.common.collect.DiscreteDomain;
 import com.google.common.collect.Range;
 import jcog.data.byt.util.IntCoding;
 import nars.Op;
-import nars.Param;
+import nars.NAL;
 import nars.The;
 import nars.io.IO;
 import nars.term.Term;
@@ -16,10 +16,10 @@ import static nars.Op.INT;
  */
 public final class Int implements Intlike, The {
 
-    static final Int[] pos = new Int[Param.term.MAX_INTERNED_INTS];
-    private static final Int[] neg = new Int[Param.term.MAX_INTERNED_INTS];
+    static final Int[] pos = new Int[NAL.term.MAX_INTERNED_INTS];
+    private static final Int[] neg = new Int[NAL.term.MAX_INTERNED_INTS];
     static {
-        for (int i = 0; i < Param.term.MAX_INTERNED_INTS; i++) {
+        for (int i = 0; i < NAL.term.MAX_INTERNED_INTS; i++) {
             pos[i] = new Int(i);
             neg[i] = new Int(-i);
         }
@@ -51,10 +51,10 @@ public final class Int implements Intlike, The {
     }
 
     public static Int the(int i) {
-        if (i >= 0 && i < Param.term.MAX_INTERNED_INTS) {
+        if (i >= 0 && i < NAL.term.MAX_INTERNED_INTS) {
             return pos[i];
         } else {
-            if (i < 0 && i > -Param.term.MAX_INTERNED_INTS) {
+            if (i < 0 && i > -NAL.term.MAX_INTERNED_INTS) {
                 return neg[-i];
             } else {
                 return new Int(i);

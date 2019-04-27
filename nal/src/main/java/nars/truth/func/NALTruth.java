@@ -3,7 +3,7 @@ package nars.truth.func;
 import jcog.util.Reflect;
 import nars.$;
 import nars.NAR;
-import nars.Param;
+import nars.NAL;
 import nars.term.Term;
 import nars.truth.Truth;
 import nars.truth.func.annotation.AllowOverlap;
@@ -457,7 +457,7 @@ public enum NALTruth implements TruthFunc {
 
 
     final public @Nullable Truth apply(@Nullable Truth task, @Nullable Truth belief, NAR m) {
-        return apply(task, belief, m, Param.truth.TRUTH_EPSILON);
+        return apply(task, belief, m, NAL.truth.TRUTH_EPSILON);
     }
 }
 //    IntersectionSym() {

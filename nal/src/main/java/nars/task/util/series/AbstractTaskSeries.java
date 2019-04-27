@@ -1,6 +1,6 @@
 package nars.task.util.series;
 
-import nars.Param;
+import nars.NAL;
 import nars.Task;
 import org.jetbrains.annotations.Nullable;
 
@@ -22,10 +22,10 @@ abstract public class AbstractTaskSeries<T extends Task> implements TaskSeries<T
      * maximum durations a steady signal can grow for
      */
     public float latchDurs() {
-        return Param.belief.signal.SIGNAL_LATCH_LIMIT_DURS;
+        return NAL.belief.signal.SIGNAL_LATCH_LIMIT_DURS;
     }
     public float stretchDurs() {
-        return Param.belief.signal.SIGNAL_STRETCH_LIMIT_DURS;
+        return NAL.belief.signal.SIGNAL_STRETCH_LIMIT_DURS;
     }
 
 

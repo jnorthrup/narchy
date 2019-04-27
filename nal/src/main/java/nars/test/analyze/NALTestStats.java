@@ -1,6 +1,6 @@
 //package nars.test.analyze;
 //
-//import nars.control.MetaGoal;
+//import MetaGoal;
 //import nars.test.NALTest;
 //import org.junit.jupiter.api.extension.AfterAllCallback;
 //import org.junit.jupiter.api.extension.AfterEachCallback;

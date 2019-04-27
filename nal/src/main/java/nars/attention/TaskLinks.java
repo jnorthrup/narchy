@@ -12,7 +12,7 @@ import jcog.pri.bag.impl.hijack.PriHijackBag;
 import jcog.pri.op.PriMerge;
 import jcog.pri.op.PriReturn;
 import nars.NAR;
-import nars.Param;
+import nars.NAL;
 import nars.Task;
 import nars.concept.Concept;
 import nars.concept.TaskConcept;
@@ -67,7 +67,7 @@ public class TaskLinks implements Sampler<TaskLink> {
 
 
 
-    private PriMerge merge = Param.tasklinkMerge;
+    private PriMerge merge = NAL.tasklinkMerge;
 
 
     public TaskLinks(/*TODO bag as parameter */) {
@@ -151,7 +151,7 @@ public class TaskLinks implements Sampler<TaskLink> {
                                     x -> !link.equals(x);
 
                             return links.atomTangent(ct, punc, filter, d.time(),
-                                    d.dur() * Param.belief.REMEMBER_REPEAT_THRESH_DURS /* repurposed */, d.random);
+                                    d.dur() * NAL.belief.REMEMBER_REPEAT_THRESH_DURS /* repurposed */, d.random);
 
 //                        if (u!=null && u.equals(s)) {
 ////                            u = links.atomTangent(ct, ((TaskLink x)->!link.equals(x)), d.time, 1, d.random);//TEMPORARY

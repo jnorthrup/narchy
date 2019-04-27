@@ -7,7 +7,7 @@ import jcog.pri.op.PriMerge;
 import jcog.pri.op.PriReturn;
 import jcog.util.FloatFloatToFloatFunction;
 import nars.Op;
-import nars.Param;
+import nars.NAL;
 import nars.task.util.TaskException;
 import nars.term.Term;
 
@@ -42,7 +42,7 @@ public abstract class AbstractTaskLink implements TaskLink {
             throw new TaskException(source, "source term not taskable");
         if (!so.conceptualizable)
             throw new TaskException(source, "source term not conceptualizable");
-        if (Param.DEBUG) {
+        if (NAL.DEBUG) {
             if (!source.isNormalized())
                 throw new TaskException(source, "source term not normalized");
         }
@@ -125,7 +125,7 @@ public abstract class AbstractTaskLink implements TaskLink {
     }
 
     public final TaskLink priMerge(byte punc, float pri) {
-        mergeComponent(punc, pri, Param.tasklinkMerge);
+        mergeComponent(punc, pri, NAL.tasklinkMerge);
         return this;
     }
 

@@ -2,7 +2,7 @@ package nars.op.language;
 
 import nars.NAR;
 import nars.NARS;
-import nars.Param;
+import nars.NAL;
 import nars.Task;
 import nars.attention.What;
 import nars.bag.leak.TaskLeak;
@@ -365,7 +365,7 @@ public class IRCAgent extends IRC {
                 Runnable r = IRCAgent.this.send(channels, s);
                 if (r!=null) {
                     nar.runLater(r);
-                    if (Param.DEBUG && !next.isCommand())
+                    if (NAL.DEBUG && !next.isCommand())
                         logger.info("{}\n{}", next, next.proof());
                 } else {
                     

@@ -112,7 +112,7 @@ public class PrologCore extends PrologAgent implements Consumer<Task> {
     public PrologCore(NAR n, String theory) {
         super(theory, new MyClauseIndex(n.memory));
 
-        if (Param.DEBUG)
+        if (NAL.DEBUG)
             setSpy(true);
 
         this.in = n.newChannel(this);

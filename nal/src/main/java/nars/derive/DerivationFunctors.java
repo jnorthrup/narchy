@@ -2,7 +2,7 @@ package nars.derive;
 
 import nars.Builtin;
 import nars.NAR;
-import nars.Param;
+import nars.NAL;
 import nars.op.Equal;
 import nars.op.SetFunc;
 import nars.term.Functor;
@@ -76,13 +76,13 @@ public enum DerivationFunctors {
                 (Functor) nar.concept("withoutPosOrNeg"),
                 new AbstractInlineFunctor2("conjBefore") {
                     @Override protected Term apply(Term conj, Term event) {
-                        Term x = ConjMatch.beforeOrAfter(conj, event, true, d, Param.derive.TTL_CONJ_BEFORE_AFTER);
+                        Term x = ConjMatch.beforeOrAfter(conj, event, true, d, NAL.derive.TTL_CONJ_BEFORE_AFTER);
                         return x == null ? Null : x;
                     }
                 },
                 new AbstractInlineFunctor2("conjAfter") {
                     @Override protected Term apply(Term conj, Term event) {
-                        Term x = ConjMatch.beforeOrAfter(conj, event, false, d, Param.derive.TTL_CONJ_BEFORE_AFTER);
+                        Term x = ConjMatch.beforeOrAfter(conj, event, false, d, NAL.derive.TTL_CONJ_BEFORE_AFTER);
                         return x == null ? Null : x;
                     }
                 }

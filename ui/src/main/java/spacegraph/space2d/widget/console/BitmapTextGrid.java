@@ -81,7 +81,7 @@ public abstract class BitmapTextGrid extends AbstractConsoleSurface {
 //        resize(cols, rows);
 //    }
 
-    private synchronized void ensureBufferSize() {
+    private void ensureBufferSize() {
 
         BufferedImage bPrev = this.backbuffer;
         int pw = pixelWidth();
@@ -163,10 +163,10 @@ public abstract class BitmapTextGrid extends AbstractConsoleSurface {
             return;
 
         if (invalidBmp.compareAndSet(true, false)) {
-            synchronized (this) {
+            //synchronized (this) {
                 ensureBufferSize();
                 renderText();
-            }
+            //}
             invalidTex.set(true);
         }
         //super.renderContent(r);

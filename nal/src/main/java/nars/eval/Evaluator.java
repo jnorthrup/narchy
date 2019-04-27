@@ -2,7 +2,7 @@ package nars.eval;
 
 import jcog.data.set.ArrayHashSet;
 import nars.Op;
-import nars.Param;
+import nars.NAL;
 import nars.term.Compound;
 import nars.term.Functor;
 import nars.term.Term;
@@ -54,7 +54,7 @@ public class Evaluator extends DirectTermTransform /*extends LazyCompound*/ {
                 if (clauses[0] != null && clauses[0].contains(X))
                     return true;
 
-                if (Param.DEBUG) {
+                if (NAL.DEBUG) {
                     assert(compoundBuilder.isEmpty()); //if this isnt the case, compoundBuilder may need to be a stack
                 }
 

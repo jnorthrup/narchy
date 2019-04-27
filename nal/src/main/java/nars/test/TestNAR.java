@@ -61,8 +61,8 @@ public class TestNAR {
      */
     private final boolean collectTrace = false;
     private final int temporalTolerance = 0;
-    private final float freqTolerance = Param.test.TRUTH_ERROR_TOLERANCE;
-    private float confTolerance = Param.test.TRUTH_ERROR_TOLERANCE;
+    private final float freqTolerance = NAL.test.TRUTH_ERROR_TOLERANCE;
+    private float confTolerance = NAL.test.TRUTH_ERROR_TOLERANCE;
     private final ByteTopic<Tasked>[] taskEvents;
     private boolean finished;
     private boolean exitOnAllSuccess = true;
@@ -324,9 +324,9 @@ public class TestNAR {
     }
 
     public TestNAR logDebug() {
-        if (!Param.DEBUG) {
+        if (!NAL.DEBUG) {
             logger.warn("WARNING: debug mode enabled statically");
-            Param.DEBUG = true;
+            NAL.DEBUG = true;
         }
         return log();
     }
@@ -395,7 +395,7 @@ public class TestNAR {
 
     private TestNAR mustEmit(ByteTopic<Tasked>[] c, long cyclesAhead, String sentenceTerm, byte punc, float freqMin, float freqMax, float confMin, float confMax, LongLongPredicate time, boolean must) throws Narsese.NarseseException {
         long now = time();
-        cyclesAhead = Math.round(cyclesAhead * Param.test.TIME_MULTIPLIER);
+        cyclesAhead = Math.round(cyclesAhead * NAL.test.TIME_MULTIPLIER);
         return mustEmit(c, now, now + cyclesAhead, sentenceTerm, punc, freqMin, freqMax, confMin, confMax, time, must);
     }
 

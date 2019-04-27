@@ -8,7 +8,7 @@ import jcog.math.Longerval;
 import jcog.pri.ScalarValue;
 import nars.NAR;
 import nars.Op;
-import nars.Param;
+import nars.NAL;
 import nars.Task;
 import nars.attention.What;
 import nars.control.CauseMerge;
@@ -74,7 +74,7 @@ public class Derivation extends PreDerivation {
     private long timePrev = Long.MIN_VALUE;
 
     {
-        unifyPremise.commonVariables = Param.premise.PREMISE_UNIFY_COMMON_VARIABLES;
+        unifyPremise.commonVariables = NAL.premise.PREMISE_UNIFY_COMMON_VARIABLES;
     }
     public final Collection<Premise> premiseBuffer =
             new ArrayHashSet();
@@ -208,7 +208,7 @@ public class Derivation extends PreDerivation {
     private transient Term _beliefTerm;
     private transient long[] evidenceDouble, evidenceSingle;
     private transient int taskUniques;
-    private final transient MetalLongSet taskStamp = new MetalLongSet(Param.STAMP_CAPACITY);
+    private final transient MetalLongSet taskStamp = new MetalLongSet(NAL.STAMP_CAPACITY);
     public transient boolean overlapDouble, overlapSingle;
 
 
@@ -241,7 +241,7 @@ public class Derivation extends PreDerivation {
         super(
                 null
                 //VAR_PATTERN
-                , null, Param.unify.UNIFICATION_STACK_CAPACITY
+                , null, NAL.unify.UNIFICATION_STACK_CAPACITY
         );
 
         this.anon = new AnonWithVarShift(ANON_INITIAL_CAPACITY, Op.VAR_DEP.bit | Op.VAR_QUERY.bit) {
@@ -249,13 +249,13 @@ public class Derivation extends PreDerivation {
             protected Term putCompound(Compound x) {
                 //return super.putCompound(x);
                 termBuilder.clear();
-                return applyCompoundLazy(x, termBuilder, Op.terms, Param.term.COMPOUND_VOLUME_MAX);
+                return applyCompoundLazy(x, termBuilder, Op.terms, NAL.term.COMPOUND_VOLUME_MAX);
             }
             @Override
             protected Term getCompound(Compound x) {
                 //return super.putCompound(x);
                 termBuilder.clear();
-                return applyCompoundLazy(x, termBuilder, Op.terms, Param.term.COMPOUND_VOLUME_MAX);
+                return applyCompoundLazy(x, termBuilder, Op.terms, NAL.term.COMPOUND_VOLUME_MAX);
             }
         };
     }
@@ -291,13 +291,13 @@ public class Derivation extends PreDerivation {
                                 beliefTruthBelief :
                                 nextBelief.truth(taskStart, taskEnd, dur());
 
-                if (Param.ETERNALIZE_BELIEF_PROJECTED_IN_DERIVATION
+                if (NAL.ETERNALIZE_BELIEF_PROJECTED_IN_DERIVATION
                         && !taskEternal
                         && beliefTruthBelief!=null
                         && (beliefTruthTask == null || !beliefTruthTask.equals(beliefTruthBelief))) {
                     this.beliefTruthTask = Truth.stronger(
                             beliefTruthTask,
-                            beliefTruthBelief.eternalized(1, Param.truth.TRUTH_EVI_MIN, null /* dont dither */)
+                            beliefTruthBelief.eternalized(1, NAL.truth.TRUTH_EVI_MIN, null /* dont dither */)
                     );
                 }
             }
@@ -319,7 +319,7 @@ public class Derivation extends PreDerivation {
                             anon.put(this._beliefTerm = nextBeliefTerm); //unshifted, since the target may be structural
         }
 
-        if (Param.DEBUG) {
+        if (NAL.DEBUG) {
             if ((beliefTerm instanceof Bool) || ((beliefTerm instanceof Compound && _beliefTerm instanceof Compound) && (beliefTerm.op() != _beliefTerm.op())))
                 throw new WTF(_beliefTerm + " could not be anon, result: " + beliefTerm);
 
@@ -386,7 +386,7 @@ public class Derivation extends PreDerivation {
         float priSingle = taskPri;
         float priDouble = belief == null ?
                 taskPri :
-                Param.DerivationPri.apply(taskPri, pri(belief));
+                NAL.DerivationPri.apply(taskPri, pri(belief));
 
 //        if (Param.INPUT_BUFFER_PRI_BACKPRESSURE && Math.max(priDouble, priSingle) < nar.input.priMin() /* TODO cache */)
 //            return false;
@@ -467,7 +467,7 @@ public class Derivation extends PreDerivation {
 //            }
 //        }
 
-        int causeCap = Param.causeCapacity.intValue();
+        int causeCap = NAL.causeCapacity.intValue();
         this.parentCause =
                 CauseMerge.limit(
                         _belief != null ?

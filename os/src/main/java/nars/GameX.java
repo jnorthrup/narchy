@@ -177,7 +177,7 @@ abstract public class GameX extends Game {
 //        return n;
 //    }
 
-    static NAR baseNAR(float durFPS, int _threads) {
+    private static NAR baseNAR(float durFPS, int _threads) {
     /*
     try {
         Exe.UDPeerProfiler prof = new Exe.UDPeerProfiler();
@@ -248,8 +248,9 @@ abstract public class GameX extends Game {
                                 //8 * 1024
                                 //16*1024
                                    //32*1024
-                                64 * 1024
+                                //64 * 1024
                                 //128*1024
+                                256*1024
                         )
                         //, c -> (int) Math.ceil(c.term().voluplexity()))
 
@@ -273,7 +274,7 @@ abstract public class GameX extends Game {
         return n;
     }
 
-    static void initPlugins2(NAR n, Game a) {
+    private static void initPlugins2(NAR n, Game a) {
 
 
         PremiseDeriverRuleSet rules = Derivers.nal(n, 6, 8,
@@ -301,7 +302,7 @@ abstract public class GameX extends Game {
 
     }
 
-    static void initPlugins3(NAR n, Game a) {
+    private static void initPlugins3(NAR n, Game a) {
 
         MetaAgent meta = new MetaAgent(16f, a);
         meta.what().pri(0.25f);
@@ -375,7 +376,7 @@ abstract public class GameX extends Game {
         );
 
         n.confMin.set(0.01f);
-        n.termVolumeMax.set(32);
+        n.termVolumeMax.set(40);
 
 
         //n.attn.linksMax.set(1024);
@@ -420,7 +421,7 @@ abstract public class GameX extends Game {
         //n.emotion.want(MetaGoal.Answer, 0f);
     }
 
-    public static void initPlugins(NAR n) {
+    private static void initPlugins(NAR n) {
 
 //        Consumer<Why[]> governor = (cc) -> {
 ////           final Random rng = n.random();
@@ -672,7 +673,7 @@ abstract public class GameX extends Game {
     }
 
 
-    protected Bitmap2DSensor<ScaledBitmap2D> senseCamera(String id, Supplier<BufferedImage> w, int pw, int ph) {
+    private Bitmap2DSensor<ScaledBitmap2D> senseCamera(String id, Supplier<BufferedImage> w, int pw, int ph) {
         return senseCamera(id, new ScaledBitmap2D(w, pw, ph));
     }
 
@@ -681,12 +682,12 @@ abstract public class GameX extends Game {
     }
 
 
-    protected Bitmap2DSensor<PixelBag> senseCameraRetina(String id, Supplier<BufferedImage> w, int pw, int ph) {
+    private Bitmap2DSensor<PixelBag> senseCameraRetina(String id, Supplier<BufferedImage> w, int pw, int ph) {
         return senseCameraRetina($$(id), w, pw, ph);
     }
 
 
-    protected Bitmap2DSensor<PixelBag> senseCameraRetina(Term id, Supplier<BufferedImage> w, int pw, int ph) {
+    private Bitmap2DSensor<PixelBag> senseCameraRetina(Term id, Supplier<BufferedImage> w, int pw, int ph) {
         return senseCamera(id, new PixelBag(new MonoBufImgBitmap2D(w), pw, ph));
     }
 
@@ -793,7 +794,7 @@ abstract public class GameX extends Game {
         private final int w, h;
         private OrthoSurfaceGraph win;
 
-        public SpaceGraphPart(Supplier<Surface> surface, int w, int h) {
+        SpaceGraphPart(Supplier<Surface> surface, int w, int h) {
             this.w = w;
             this.h = h;
             this.surface = surface;

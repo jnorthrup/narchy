@@ -1,7 +1,7 @@
 package nars.term.util;
 
 import nars.Op;
-import nars.Param;
+import nars.NAL;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.atom.Bool;
@@ -210,7 +210,7 @@ public class Statement {
 
         boolean negate = false;
         if (op == INH /*|| op == SIM*/) {
-            if (Param.term.INH_CLOSED_BOOLEAN_DUALITY_MOBIUS_PARADIGM) {
+            if (NAL.term.INH_CLOSED_BOOLEAN_DUALITY_MOBIUS_PARADIGM) {
                 //EXPERIMENTAL support for negated inheritance subterms
                 boolean sn = subject.op() == NEG;
                 boolean pn = predicate.op() == NEG;

@@ -4,7 +4,7 @@ import com.google.common.collect.ListMultimap;
 import com.google.common.collect.MultimapBuilder;
 import jcog.Util;
 import nars.$;
-import nars.Param;
+import nars.NAL;
 import nars.term.Term;
 import nars.term.Variable;
 import nars.term.atom.Atomic;
@@ -104,7 +104,7 @@ public abstract class UnifyConstraint<U extends Unify> extends AbstractPred<U> {
                     UnifyConstraint<?>[] d = cc.toArray(new UnifyConstraint[ccn]);
                     Arrays.sort(d, PREDICATE.sortByCostIncreasing);
 
-                    if (Param.test.DEBUG_EXTRA) {
+                    if (NAL.test.DEBUG_EXTRA) {
                         final Term target = d[0].x;
                         for (int i = 1; i < d.length; i++)
                             assert (d[i].x.equals(target));

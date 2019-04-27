@@ -2,7 +2,7 @@ package nars.index.concept;
 
 import com.github.benmanes.caffeine.cache.*;
 import nars.NAR;
-import nars.Param;
+import nars.NAL;
 import nars.concept.Concept;
 import nars.concept.PermanentConcept;
 import nars.term.Term;
@@ -127,7 +127,7 @@ public class CaffeineMemory extends Memory implements CacheLoader<Term, Concept>
         
         String s = concepts.estimatedSize() + " concepts, ";
 
-        if (Param.DEBUG)
+        if (NAL.DEBUG)
             s += ' ' + concepts.stats().toString();
 
         return s;

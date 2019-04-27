@@ -2,7 +2,7 @@ package nars.subterm;
 
 import jcog.data.list.FasterList;
 import nars.Op;
-import nars.Param;
+import nars.NAL;
 import nars.term.Term;
 import nars.term.util.TermException;
 import org.jetbrains.annotations.Nullable;
@@ -145,7 +145,7 @@ public class TermList extends FasterList<Term> implements Subterms {
             }
         }
 
-        if (volume() > Param.term.COMPOUND_VOLUME_MAX) {
+        if (volume() > NAL.term.COMPOUND_VOLUME_MAX) {
             throw new TermException("complexity overflow", this);
         }
 

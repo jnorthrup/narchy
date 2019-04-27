@@ -7,7 +7,7 @@ import jcog.math.LongInterval;
 import jcog.math.Longerval;
 import nars.NAR;
 import nars.Op;
-import nars.Param;
+import nars.NAL;
 import nars.task.util.TaskRegion;
 import nars.term.Term;
 import nars.util.Timed;
@@ -108,7 +108,7 @@ public enum Tense {
     static long _dither(long t, boolean relative, int dither) {
         //return Util.round(t, dither);
 
-        if (relative && Param.DT_DITHER_LOGARITHMICALLY && t > dither*dither) {
+        if (relative && NAL.DT_DITHER_LOGARITHMICALLY && t > dither*dither) {
             //logarithmic dithering
             long r = (long) Util.round(Math.pow(dither, Util.round(Math.log( t )/Math.log(dither), 1f/dither)), dither);
             return r;

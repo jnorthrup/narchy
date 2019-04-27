@@ -5,7 +5,7 @@ import jcog.data.set.ArrayHashRing;
 import jcog.memoize.QuickMemoize;
 import jcog.util.HashCachedPair;
 import nars.$;
-import nars.Param;
+import nars.NAL;
 import nars.derive.Derivation;
 import nars.term.Term;
 import nars.term.atom.Atomic;
@@ -24,8 +24,8 @@ import java.util.function.BiFunction;
 import java.util.function.Predicate;
 
 import static nars.$.$$;
-import static nars.Param.derive.TermUnifyForkMax;
-import static nars.Param.derive.TermutatorSearchTTL;
+import static nars.NAL.derive.TermUnifyForkMax;
+import static nars.NAL.derive.TermutatorSearchTTL;
 
 /**
  * Created by me on 5/26/16.
@@ -210,8 +210,8 @@ public class Premisify extends AbstractPred<Derivation> {
             Term y = AbstractTermTransform.transform(this, x,
                     dd.transform,
                     x.volume() +
-                            Param.derive.TERMIFY_VOLMAX_SCRATCH_BASE +
-                            (int)Math.ceil(Param.derive.TERMIFY_TERM_VOLMAX_SCRATCH_FACTOR * dd.termVolMax
+                            NAL.derive.TERMIFY_VOLMAX_SCRATCH_BASE +
+                            (int)Math.ceil(NAL.derive.TERMIFY_TERM_VOLMAX_SCRATCH_FACTOR * dd.termVolMax
                     )
             );
 

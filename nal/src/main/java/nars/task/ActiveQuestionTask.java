@@ -8,7 +8,7 @@ import jcog.pri.bag.impl.PLinkArrayBag;
 import jcog.pri.op.PriMerge;
 import nars.NAR;
 import nars.Op;
-import nars.Param;
+import nars.NAL;
 import nars.Task;
 import nars.attention.What;
 import nars.subterm.Subterms;
@@ -120,7 +120,7 @@ public class ActiveQuestionTask extends NALTask.NALTaskX implements Consumer<Tas
         boolean match;
 
         MySubUnify(Random r, int ttl) {
-            super(null, r, Param.unify.UNIFICATION_STACK_CAPACITY, ttl);
+            super(null, r, NAL.unify.UNIFICATION_STACK_CAPACITY, ttl);
         }
 
         @Override

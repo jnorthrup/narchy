@@ -41,23 +41,10 @@ public interface ITask extends Prioritizable {
     byte punc();
 
 
-    static void run(FasterList<ITask> t, NAR nar) {
-        t.forEachWith(ITask::run, nar);
-    }
     static void run(FasterList<ITask> t, What w) {
         t.forEachWith(ITask::run, w);
     }
 
-    /**
-     * continues executing the chain of returned tasks until the end
-     * TODO rewrite as ForkJoin recursive task
-     */
-    @Deprecated static void run(ITask t, NAR nar) {
-        ITask x = t;
-        do {
-            x = x.next(nar);
-        } while (x != null);
-    }
 
     /** TODO rewrite as ForkJoin recursive task */
     static void run(ITask t, What w) {
@@ -67,7 +54,7 @@ public interface ITask extends Prioritizable {
         } while (x != null);
     }
 
-    static void error(Prioritizable t, Prioritizable x, Throwable ee, NAR nar) {
+    static void error(Prioritizable t, Prioritizable x, Throwable ee) {
         if (t == x)
             ITask.logger.error("{} {}", x, ee);
         else

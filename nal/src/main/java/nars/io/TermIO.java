@@ -6,7 +6,7 @@ import jcog.data.byt.util.IntCoding;
 import nars.$;
 import nars.Narsese;
 import nars.Op;
-import nars.Param;
+import nars.NAL;
 import nars.subterm.AnonSubterms;
 import nars.subterm.RemappedSubterms;
 import nars.subterm.Subterms;
@@ -129,7 +129,7 @@ public interface TermIO {
 
                     int siz = in.readByte();
 
-                    assert (siz < Param.term.SUBTERMS_MAX);
+                    assert (siz < NAL.term.SUBTERMS_MAX);
 
                     Term[] s = new Term[siz];
                     for (int i = 0; i < siz; i++) {

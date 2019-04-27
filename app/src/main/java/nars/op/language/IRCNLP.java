@@ -107,7 +107,7 @@ public class IRCNLP extends IRC {
                 Runnable r = IRCNLP.this.send(channels, s);
                 if (r != null) {
                     nar.runLater(r);
-                    if (Param.DEBUG && !next.isCommand())
+                    if (NAL.DEBUG && !next.isCommand())
                         logger.info("{}\n{}", next, next.proof());
                 } else {
 

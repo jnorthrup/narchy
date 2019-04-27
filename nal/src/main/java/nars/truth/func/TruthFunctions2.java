@@ -3,7 +3,7 @@ package nars.truth.func;
 import jcog.Skill;
 import jcog.Util;
 import nars.$;
-import nars.Param;
+import nars.NAL;
 import nars.truth.Truth;
 import org.jetbrains.annotations.Nullable;
 
@@ -335,7 +335,7 @@ enum TruthFunctions2 {
         if (cxy >= minConf) {
 
             float fxy = XY.freq();
-            float fx = Math.max(Util.sqr(Param.truth.TRUTH_EPSILON), X.freq()); //prevent division by zero
+            float fx = Math.max(Util.sqr(NAL.truth.TRUTH_EPSILON), X.freq()); //prevent division by zero
             float fy = fxy / fx;
 
             float cFactor = 1;

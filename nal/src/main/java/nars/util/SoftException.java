@@ -1,7 +1,7 @@
 package nars.util;
 
 import com.google.common.base.Joiner;
-import nars.Param;
+import nars.NAL;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.stream.Stream;
@@ -26,7 +26,7 @@ public class SoftException extends RuntimeException {
 
     @Override
     public final synchronized Throwable fillInStackTrace() {
-        if (!Param.DEBUG)
+        if (!NAL.DEBUG)
             return this; 
         else {
             

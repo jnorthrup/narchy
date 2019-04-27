@@ -7,7 +7,7 @@ import jcog.data.list.FasterList;
 import jcog.data.set.LongObjectArraySet;
 import jcog.util.ArrayUtils;
 import nars.Op;
-import nars.Param;
+import nars.NAL;
 import nars.subterm.Subterms;
 import nars.term.Compound;
 import nars.term.Term;
@@ -1449,7 +1449,7 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
     }
 
     private static boolean todoOrFalse() {
-        if (Param.DEBUG)
+        if (NAL.DEBUG)
             throw new TODO();
         else
             return false;
