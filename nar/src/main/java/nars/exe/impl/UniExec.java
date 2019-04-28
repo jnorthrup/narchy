@@ -34,6 +34,7 @@ public class UniExec extends Exec {
     }
 
     protected void next(NAR nar) {
+        this.nar = nar;
         nar.exe.schedule(this::executeNow);
 
         /*

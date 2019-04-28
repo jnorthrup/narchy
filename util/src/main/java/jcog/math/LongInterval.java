@@ -353,7 +353,7 @@ public interface LongInterval {
     default boolean containsSafe(long s, long e) {
         long start = start();
         if (start == ETERNAL)
-            return s==ETERNAL; //eternal contains itself
+            return true; //eternal contains itself
         else
             return s!=ETERNAL && (s >= start && e <= end());
     }

@@ -2032,7 +2032,7 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
         int numTmpOcc = numOcc;
 
 
-        List<Term> tmp = new FasterList(2);
+        FasterList<Term> tmp = new FasterList(2);
         Term eternal;
         if (event.containsKey(ETERNAL)) {
             numTmpOcc--;
@@ -2296,15 +2296,11 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
     }
 
 
-//    private Term target(long when, Object what) {
-//        return target(when, what, null);
-//    }
-
-    private Term term(long when, List<Term> tmp) {
+    private Term term(long when, FasterList<Term> tmp) {
         return term(when, event.get(when), tmp);
     }
 
-    private int term(Object what, Consumer<Term> each) {
+    private int term(Object what, FasterList<Term> buffer) {
         if (what == null)
             return 0;
 
@@ -2315,7 +2311,7 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
             for (byte x : b) {
                 if (x == 0)
                     break; //null-terminator reached
-                each.accept(unindex(x));
+                buffer.add(unindex(x));
                 k++;
             }
             return k;
@@ -2325,25 +2321,25 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
 
     }
 
-    private Term term(long when, Object what, List<Term> tmp) {
+    private Term term(long when, Object what, FasterList<Term> buffer) {
 
-        tmp.clear();
+        buffer.clear();
 
-        int n = term(what, tmp::add);
+        int n = term(what, buffer);
         if (n == 0)
             return null;
 
-        int ts = tmp.size();
+        int ts = buffer.size();
         switch (ts) {
             case 0:
                 return null;
             case 1:
-                return tmp.get(0);
+                return buffer.get(0);
             default: {
 //                if (when==ETERNAL && ((FasterList<Term>)tmp).count(Conj::isSeq)>1)
 //                    return Null; //too complex
 
-                return terms.theSortedCompound(CONJ, when == ETERNAL ? DTERNAL : 0, tmp);
+                return terms.theSortedCompound(CONJ, when == ETERNAL ? DTERNAL : 0, buffer);
             }
 
         }

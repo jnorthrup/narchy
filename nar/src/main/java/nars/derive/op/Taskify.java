@@ -93,22 +93,14 @@ public class Taskify extends ProxyTerm {
      * note: the return value here shouldnt matter so just return true anyway
      */
     protected boolean taskify(Term x0, Derivation d) {
-        if (x0 == null)
-            return false; //HACK
 
         final byte punc = d.concPunc;
         if (punc == 0)
             throw new RuntimeException("no punctuation assigned");
 
-        Term x1 = d.anon.get(x0);
-        if (x1 == null)
-            throw new NullPointerException("could not un-anonymize " + x0 + " with " + d.anon);
-
-
-        Term x = Task.normalize(x1);
+        Term x = Task.normalize(x0);
 
         Op xo = x.op();
-
 
         boolean neg = xo == NEG;
         if (neg) {
@@ -119,20 +111,13 @@ public class Taskify extends ProxyTerm {
             return spam(d, NAL.derive.TTL_COST_DERIVE_TASK_FAIL);
 
 
-//        if (xo == INH && Param.DERIVE_AUTO_IMAGE_NORMALIZE && !d.concSingle) {
-//            Term y = Image.imageNormalize(x);
-//            if (y!=x) {
-//                x = y;
-//                //xo = x.op();
-//            }
-//        }
-
         Truth tru;
 
+        NAR nar = d.nar();
         if (punc == BELIEF || punc == GOAL) {
 
             //dither truth
-            tru = d.concTruth.dither(d.nar().freqResolution.floatValue(), d.nar().confResolution.floatValue(), d.eviMin, neg);
+            tru = d.concTruth.dither(nar.freqResolution.floatValue(), nar.confResolution.floatValue(), d.eviMin, neg);
             if (tru == null)
                 return spam(d, NAL.derive.TTL_COST_DERIVE_TASK_UNPRIORITIZABLE);
 
@@ -155,13 +140,20 @@ public class Taskify extends ProxyTerm {
             S = E = ETERNAL;
         }
 
-
-        if (same(x, punc, tru, S, E, d._task, d.nar()) ||
-                (d._belief != null && same(x, punc, tru, S, E, d._belief, d.nar()))) {
-            d.nar().emotion.deriveFailParentDuplicate.increment();
-            return spam(d, NAL.derive.TTL_COST_DERIVE_TASK_SAME);
+        /** compares taskTerm before un-anon */
+        if (same(x, punc, tru, S, E, d.taskTerm, d._task, nar)) {
+            return parentDuplicate(d, nar);
         }
 
+        /** un-anon */
+        x = d.anon.get(x);
+        if (x == null)
+            throw new NullPointerException("could not un-anonymize " + x0 + " with " + d.anon);
+
+        /** compares beliefTerm un-anon */
+        if (d._belief != null && same(x, punc, tru, S, E, d._belief.term(), d._belief, nar)) {
+            return parentDuplicate(d, nar);
+        }
 
         DerivedTask t = Task.tryTask(x, punc, tru, (C, tr) ->
                 NAL.DEBUG ?
@@ -170,7 +162,7 @@ public class Taskify extends ProxyTerm {
         );
 
         if (t == null) {
-            d.nar().emotion.deriveFailTaskify.increment();
+            nar.emotion.deriveFailTaskify.increment();
             return spam(d, NAL.derive.TTL_COST_DERIVE_TASK_FAIL);
         }
 
@@ -178,7 +170,7 @@ public class Taskify extends ProxyTerm {
         float priority = d.what.derivePri.pri(t, d);
 
         if (priority != priority) {
-            d.nar().emotion.deriveFailPrioritize.increment();
+            nar.emotion.deriveFailPrioritize.increment();
             return spam(d, NAL.derive.TTL_COST_DERIVE_TASK_UNPRIORITIZABLE);
         }
 
@@ -195,7 +187,7 @@ public class Taskify extends ProxyTerm {
         Task u = d.add(t);
         if (u != t) {
 
-            d.nar().emotion.deriveFailDerivationDuplicate.increment();
+            nar.emotion.deriveFailDerivationDuplicate.increment();
             cost = NAL.derive.TTL_COST_DERIVE_TASK_REPEAT;
 
         } else {
@@ -203,12 +195,17 @@ public class Taskify extends ProxyTerm {
             if (NAL.DEBUG)
                 t.log(channel.ruleString);
 
-            d.nar().emotion.deriveTask.increment();
+            nar.emotion.deriveTask.increment();
             cost = NAL.derive.TTL_COST_DERIVE_TASK_SUCCESS;
 
         }
         return d.use(cost);
 
+    }
+
+    private boolean parentDuplicate(Derivation d, NAR nar) {
+        nar.emotion.deriveFailParentDuplicate.increment();
+        return spam(d, NAL.derive.TTL_COST_DERIVE_TASK_SAME);
     }
 
     private final static Logger logger = LoggerFactory.getLogger(Taskify.class);
@@ -246,7 +243,7 @@ public class Taskify extends ProxyTerm {
         return true;
     }
 
-    protected boolean same(Term derived, byte punc, Truth truth, long start, long end, Task parent, NAR n) {
+    protected boolean same(Term derived, byte punc, Truth truth, long start, long end, Term parentTerm, Task parent, NAR n) {
 
         if (DERIVE_FILTER_SIMILAR_TO_PARENTS) {
 
@@ -254,7 +251,7 @@ public class Taskify extends ProxyTerm {
                 return false;
 
             if (parent.punc() == punc) {
-                if (parent.term().equals(derived.term())) { //TODO test for dtDiff
+                if (parentTerm.equals(derived)) { //TODO test for dtDiff
                     if (parent.containsSafe(start, end)) {
 
                         if ((punc == QUESTION || punc == QUEST) || (
