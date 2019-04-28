@@ -1,12 +1,13 @@
 package nars.task.signal;
 
 
+import nars.task.TemporalTask;
 import nars.task.UnevaluatedTask;
 import nars.term.Term;
 import nars.truth.Truth;
 
 
-public class SignalTask extends UnevaluatedTask {
+public class SignalTask extends TemporalTask implements UnevaluatedTask  {
 
     public SignalTask(Term t, byte punct, Truth truth, long creation, long start, long end, long[] stamp) {
         super(t, punct, truth, creation, start, end,
@@ -14,23 +15,8 @@ public class SignalTask extends UnevaluatedTask {
         assert(start!=ETERNAL && end!=ETERNAL);
     }
 
-    public SignalTask(Term t, byte punct, Truth truth, long creation, long start, long end, long stamp) {
-        this(t, punct, truth, creation, start, end,new long[]{stamp});
-    }
-
     public SignalTask(Term t, byte punct, Truth truth, long start, long end, long stamp) {
-        this(t, punct, truth, start, start, end, stamp);
-    }
-
-
-    @Override
-    public final boolean isInput() {
-        return true;
-    }
-
-    @Override
-    public final boolean isCyclic() {
-        return false;
+        this(t, punct, truth, start, start, end, new long[] { stamp });
     }
 
 

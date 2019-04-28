@@ -93,7 +93,7 @@ public class Gradius extends GameX {
                     Bitmap2DSensor c = senseCamera((x, y) ->
                                     $.inh(
                                             $.p($.the(x), $.the(y)),
-                                            $.p(id, $.the(ii), $.the(jj))
+                                            $.p(id, $.the("x" + ii), $.the("y" + jj))
                                     ),
                             //$.p(
                             //$.inh(

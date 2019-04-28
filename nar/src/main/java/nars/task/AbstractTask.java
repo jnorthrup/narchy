@@ -217,7 +217,7 @@ public abstract class AbstractTask implements Task {
     /** execute the given tasks */
     public final static class TasksArray extends AbstractTask {
 
-        private final Task[] tasks;
+        public final Task[] tasks;
 
         private TasksArray(Task[] x, boolean anyOrder) {
             this.tasks = x;

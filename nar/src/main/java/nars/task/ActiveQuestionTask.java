@@ -10,7 +10,6 @@ import nars.NAL;
 import nars.NAR;
 import nars.Op;
 import nars.Task;
-import nars.attention.What;
 import nars.subterm.Subterms;
 import nars.term.Term;
 import nars.unify.Unify;
@@ -22,6 +21,7 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 import static nars.Op.*;
+import static nars.Op.GOAL;
 
 /**
  * Question task which accepts a callback to be invoked on answers
@@ -88,26 +88,11 @@ public class ActiveQuestionTask extends NALTaskX implements Consumer<Task> {
             else
                 this.test = term::equals;
         }
+
+        this.ttl = nar.deriveBranchTTL.intValue();
+        this.onTask = nar.onTask(this, punc == QUESTION ? BELIEF : /* quest */ GOAL);
     }
 
-    @Override
-    public Task next(Object ww) {
-
-        What w = (What)ww;
-
-        //synchronized (this) {
-            if (onTask!=null)
-                return null; //already processed and active
-            else {
-                Task next = super.next(w);
-
-                NAR nar = w.nar;
-                this.ttl = nar.deriveBranchTTL.intValue();
-                this.onTask = nar.onTask(this, punc() == QUESTION ? BELIEF : /* quest */ GOAL);
-                return next;
-            }
-        //}
-    }
 
     @Override
     public final void accept(Task t) {

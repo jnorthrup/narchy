@@ -61,7 +61,7 @@ public class TermList extends FasterList<Term> implements Subterms {
 
     @Override
     public Term[] arrayClone() {
-        return toArray(Op.EmptyTermArray);
+        return toArray();
     }
 
 

@@ -19,6 +19,7 @@ import nars.truth.polation.TruthIntegration;
 import nars.truth.polation.TruthProjection;
 import nars.util.Timed;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
+import org.eclipse.collections.api.tuple.primitive.ObjectBooleanPair;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Random;
@@ -65,7 +66,7 @@ public final class Answer implements Timed {
 
     public static Task merge(TaskList tasks, Term content, Truth t, Supplier<long[]> stamp, boolean beliefOrGoal, long start, long end, Timed w) {
 
-        NALTask dyn = DynamicTruthTask.task(content, t, stamp, beliefOrGoal, start, end, w);
+        NALTask dyn = task(content, t, stamp, beliefOrGoal, start, end, w);
         if(dyn==null)
             return null;
 
@@ -80,6 +81,24 @@ public final class Answer implements Timed {
             dyn.log("Dynamic");
 
         return dyn;
+    }
+
+    @Nullable
+    public static NALTask task(Term content, Truth t, Supplier<long[]> stamp, boolean beliefOrGoal, long start, long end, Timed time) {
+        boolean neg = content.op() == NEG;
+        if (neg) {
+            content = content.unneg();
+        }
+
+        ObjectBooleanPair<Term> r = Task.tryContent(
+                content,
+                beliefOrGoal ? BELIEF : GOAL, !NAL.test.DEBUG_EXTRA);
+
+        return r!=null ? new DynamicTruthTask(
+                r.getOne(), beliefOrGoal,
+                t.negIf(neg ^ r.getTwo()),
+                time, start, end,
+                stamp.get()) : null;
     }
 
 

@@ -174,7 +174,7 @@ public class RLBooster  {
             }
 
             if (t !=null) {
-                Task tt = new SignalTask(actions[o].term(), GOAL, t, start, start, end, nar.time.nextStamp());
+                Task tt = new SignalTask(actions[o].term(), GOAL, t, start, start, end, new long[] { nar.time.nextStamp() });
                 tt.pri(nar);
                 e.add(tt);
             }

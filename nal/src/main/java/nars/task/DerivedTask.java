@@ -15,14 +15,6 @@ public class DerivedTask extends TemporalTask {
         super(tc, punct, truth, now, start, end, evi);
     }
 
-//    public DerivedTask(Term tc, byte punct, @Nullable Truth truth, long start, long end, Derivation d) {
-//        super(tc, punct, truth, d.time(), start, end, d.concSingle ? d.evidenceSingle() : d.evidenceDouble());
-//    }
-
-    @Override
-    public final boolean isInput() {
-        return false;
-    }
 
     /**
      * provided in DebugDerivedTask subclass

@@ -44,7 +44,9 @@ public class Remember extends AbstractTask {
 
     @Nullable
     public static Remember the(Task x, NAR n) {
-        return the(x, true, true, true, n);
+        return the(x,
+                !(x instanceof DynamicTruthTask) || NAL.belief.DYNAMIC_TRUTH_TASK_STORE,
+                true, true, n);
     }
 
     @Nullable

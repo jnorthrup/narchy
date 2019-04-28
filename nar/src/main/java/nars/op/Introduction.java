@@ -4,7 +4,7 @@ import jcog.math.FloatRange;
 import nars.NAR;
 import nars.Task;
 import nars.attention.What;
-import nars.task.UnevaluatedTask;
+import nars.task.TemporalTask;
 import nars.term.Term;
 import nars.term.atom.Bool;
 import org.jetbrains.annotations.Nullable;
@@ -30,22 +30,38 @@ public abstract class Introduction extends TaskLeakTransform {
 
         Term y = newTerm(xx);
 
-        if (y != null && !(y instanceof Bool) && (y.volume() <= volMax)) {
-            Term x = xx.term();
-            if (!y.equals(x) && y.op().conceptualizable) {
+        if(y!=null && !(y instanceof Bool)) {
+            Term yu = y.unneg();
+            if (yu.volume() <= volMax && yu.op().conceptualizable) {
+                Term x = xx.term();
+                if (!yu.equals(x)) {
 
-                Task yy = Task.clone(xx, y, xx.truth(), xx.punc(), (c, t) -> new UnevaluatedTask(c, xx, t));
+                    Task yy = Task.clone(xx, y, xx.truth(), xx.punc(),
+                            (c, t) -> {
+                                if (c.equals(x)) //HACK normalization might cause this to become true although it is seemingly checked before Task.clone()
+                                    return null;
 
-                if (yy != null) {
-                    Task.deductComplexification(xx, yy, priFactor.floatValue(), true);
+                                return tasksUnevaluated() ?
+                                        new TemporalTask.Unevaluated(c, xx, t) :
+                                        new TemporalTask(c, xx, t);
+                            });
 
-                    in.accept(yy, what);
-                    return 1;
+                    if (yy != null) {
+                        Task.deductComplexification(xx, yy, priFactor.floatValue(), true);
+
+                        in.accept(yy, what);
+                        return 1;
+                    }
                 }
             }
         }
 
         return 0;
+    }
+
+    /** return true to produce Unevaluated tasks, which can prevent circular processing */
+    protected boolean tasksUnevaluated() {
+        return true;
     }
 
 }

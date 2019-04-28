@@ -1,5 +1,6 @@
 package nars.task;
 
+import jcog.WTF;
 import jcog.pri.ScalarValue;
 import jcog.pri.UnitPri;
 import nars.NAL;
@@ -93,6 +94,11 @@ public class ProxyTask extends UnitPri implements Task {
             return this.hash = Task.hash(term(), truth(), punc(), start(), end(), stamp());
         else
             return h;
+    }
+
+    @Override
+    @Deprecated public Task next(Object w) {
+        throw new WTF();
     }
 
     @Override

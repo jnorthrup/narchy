@@ -96,7 +96,12 @@ abstract public class What extends NARPart implements Prioritizable, Sampler<Tas
             if (x == null)
                 return;
             if (x instanceof AbstractTask) {
-                Task.run(x, What.this);
+                if (x instanceof AbstractTask.TasksArray) {
+                    for (Task t : ((AbstractTask.TasksArray)x).tasks)
+                        accept(t);
+                } else {
+                    Task.run(x, What.this);
+                }
             } else {
                 if (x instanceof UnevaluatedTask) {
                     accept(Remember.the(x, nar));

@@ -49,10 +49,12 @@ public final class Member extends Functor implements The, InlineFunctor<Evaluati
 
 
         if (xVar) {
-            if (y instanceof Compound)
-                evaluation.canBe(x, yy);
-            else
-                evaluation.is(x, y);
+            if (evaluation!=null) { //HACK
+                if (y instanceof Compound)
+                    evaluation.canBe(x, yy);
+                else
+                    evaluation.is(x, y);
+            }
             return null;
         }
 

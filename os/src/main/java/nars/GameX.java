@@ -24,10 +24,7 @@ import nars.derive.timing.ActionTiming;
 import nars.exe.impl.WorkerExec;
 import nars.gui.NARui;
 import nars.memory.CaffeineMemory;
-import nars.op.Arithmeticize;
-import nars.op.AutoencodedBitmap;
-import nars.op.Eternalizer;
-import nars.op.Introduction;
+import nars.op.*;
 import nars.op.mental.Inperience2;
 import nars.op.stm.ConjClustering;
 import nars.sensor.Bitmap2DSensor;
@@ -524,7 +521,8 @@ abstract public class GameX extends Game {
 //                8, 96);
 
         Introduction arith = new Arithmeticize.ArithmeticIntroduction(n, 64);
-        //Introduction factorizer = new Factorize.FactorIntroduction( n, 16);
+
+        Introduction factorizer = new Factorize.FactorIntroduction( n, 16);
 
 
         new Inperience2(n);

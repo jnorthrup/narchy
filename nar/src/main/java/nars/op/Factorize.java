@@ -100,7 +100,7 @@ public class Factorize {
 
     /** returns null if detects no reason to re-process */
     @Nullable private static Term[] distribute(Subterms xx) {
-        TermList x = xx.toList();
+        final TermList x = xx.toList();
 
         //TODO track what subterms (if any) are totally un-involved and exclude them from processing in subsequent stages
         //TODO sort the subterms for optimal processing order

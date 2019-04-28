@@ -107,8 +107,8 @@ public class Premise implements Comparable<Premise> {
                 if (unifiedBeliefTerm != null) {
 
                     unifiedBeliefTerm =
-                            d.random.nextBoolean() ?
-                                unifiedBeliefTerm :
+                            //d.random.nextBoolean() ?
+                                //unifiedBeliefTerm :
                                 unifiedBeliefTerm.normalize();
                     beliefTerm = unifiedBeliefTerm;
 

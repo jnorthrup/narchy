@@ -409,7 +409,7 @@ public class TestNAR {
         cycleEnd += tt;
 
         Term term =
-                Narsese.term(sentenceTerm, true);
+                $.$(sentenceTerm);
         int tv = term.volume();
         int tvMax = nar.termVolumeMax.intValue();
         if (tv > tvMax) {

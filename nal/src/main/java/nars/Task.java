@@ -13,6 +13,7 @@ import jcog.tree.rtree.HyperRegion;
 import nars.control.CauseMerge;
 import nars.subterm.Subterms;
 import nars.task.DerivedTask;
+import nars.task.EternalTask;
 import nars.task.NALTask;
 import nars.task.UnevaluatedTask;
 import nars.task.proxy.SpecialNegatedTermTask;
@@ -54,14 +55,7 @@ import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
  */
 public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPrioritizable {
 
-//    Task next(Object w);
-
-    @Deprecated
-    default Task next(Object w) {
-        //return Perceive.perceive(this, w);
-        //return null;
-        throw new TODO();
-    }
+    @Deprecated Task next(Object w);
 
 
     Task[] EmptyArray = new Task[0];
@@ -547,10 +541,7 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
                 punc,
                 /* TODO current time, from NAR */
                 (c, t) ->
-                        new UnevaluatedTask(c, punc, t,
-                                x.creation(), LongInterval.ETERNAL, LongInterval.ETERNAL,
-                                x.stamp()
-                        )
+                        new EternalizedTask(c, punc, t, x)
         );
         if (y != null && x.isCyclic())
             y.setCyclic(true); //inherit cyclic
@@ -1064,5 +1055,12 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
                     x.term().concept()
                         .hashCode())
             .thenComparing((Task x) -> -x.priElseZero());
+
+    final class EternalizedTask extends EternalTask implements UnevaluatedTask {
+
+        EternalizedTask(Term c, byte punc, Truth t, Task x) {
+            super(c, punc, t, x.creation(), x.stamp());
+        }
+    }
 
 }

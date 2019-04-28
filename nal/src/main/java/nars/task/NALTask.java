@@ -1,5 +1,6 @@
 package nars.task;
 
+import jcog.WTF;
 import jcog.pri.UnitPri;
 import nars.NAL;
 import nars.Task;
@@ -14,6 +15,15 @@ import org.jetbrains.annotations.Nullable;
  * with mutable cause[] and initially empty meta table
  */
 public abstract class NALTask extends UnitPri implements Task {
+
+
+    @Deprecated
+    public final Task next(Object w) {
+        //return Perceive.perceive(this, w);
+        //return null;
+        throw new WTF();
+    }
+
     protected final Term term;
     private final Truth truth;
     protected final byte punc;

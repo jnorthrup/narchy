@@ -31,7 +31,7 @@ public class FasterList<X> extends FastList<X> {
     }
 
     public FasterList(int initialCapacity) {
-        this.items = (X[]) newArray(initialCapacity);
+        this.items = newArray(initialCapacity);
     }
 
     public FasterList(Iterable<X> copy) {
@@ -130,7 +130,7 @@ public class FasterList<X> extends FastList<X> {
         int oldCapacity = this.items.length;
         if (minCapacity > oldCapacity) {
             if (oldCapacity == 0) {
-                items = (X[]) newArray(minCapacity);
+                items = newArray(minCapacity);
             } else {
                 int newCapacity = Math.max(sizePlusFiftyPercent(oldCapacity), minCapacity);
                 this.transferItemsToNewArrayWithCapacity(newCapacity);
@@ -298,18 +298,24 @@ public class FasterList<X> extends FastList<X> {
      * early
      * *
      */
-    public X[] array() {
+    public final X[] array() {
         return items;
     }
 
-    public FasterList<X> compact() {
+    public final FasterList<X> compact() {
         X[] i = items;
         int s = size;
         if (i.length != s) {
-            items = Arrays.copyOf(items, size);
+            items = Arrays.copyOf(i, s);
         }
         return this;
     }
+
+    @Override
+    public X[] toArray() {
+        return Arrays.copyOf(items, size);
+    }
+
 
     /**
      * returns the array directly, or reconstructs it for the target type for the exact size required
@@ -528,6 +534,33 @@ public class FasterList<X> extends FastList<X> {
         return true;
     }
 
+    public void add(int index, X element) {
+        if (index > -1 && index < this.size) {
+            this.addAtIndex(index, element);
+        } else if (index == this.size) {
+            this.add(element);
+        } else {
+            throw new ArrayIndexOutOfBoundsException(index);
+        }
+    }
+
+    private void addAtIndex(int index, X element) {
+        int oldSize = this.size++;
+        if (this.items.length == oldSize) {
+            X[] newItems = newArray(this.sizePlusFiftyPercent(oldSize));
+            if (index > 0) {
+                System.arraycopy(this.items, 0, newItems, 0, index);
+            }
+
+            System.arraycopy(this.items, index, newItems, index + 1, oldSize - index);
+            this.items = newItems;
+        } else {
+            System.arraycopy(this.items, index, this.items, index + 1, oldSize - index);
+        }
+
+        this.items[index] = element;
+    }
+
     public final int addAndGetSize(X x) {
         ensureCapacityForAdditional(1);
         addFast(x);
@@ -614,6 +647,7 @@ public class FasterList<X> extends FastList<X> {
         }
         return false;
     }
+
 
     @Override
     public Iterator<X> iterator() {
@@ -948,7 +982,7 @@ public class FasterList<X> extends FastList<X> {
      */
     public void delete() {
         size = 0;
-        items = (X[]) newArray(0);
+        items = newArray(0);
     }
 
     @Override

@@ -1,6 +1,5 @@
 package nars.op.mental;
 
-import jcog.data.list.FasterList;
 import jcog.math.FloatRange;
 import nars.$;
 import nars.NAL;
@@ -16,7 +15,6 @@ import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
 import nars.term.atom.Int;
 import nars.term.util.Image;
-import nars.term.util.conj.Conj;
 import nars.term.util.transform.AbstractTermTransform;
 import nars.term.util.transform.Retemporalize;
 import nars.term.util.transform.TermTransform;
@@ -28,7 +26,6 @@ import org.eclipse.collections.impl.factory.Sets;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.List;
 import java.util.function.BooleanSupplier;
 
 import static nars.Op.*;
@@ -108,27 +105,27 @@ abstract public class Inperience extends TaskLeakTransform {
                                 $.func(this.dt, /*Tense.dither(*/Int.the(dt)));
                     }
 
-                case CONJ:
-
-                    if (Conj.concurrent(dt)) {
-                        return $.func(and, SETe.the(term.subterms().transformSubs(this, SETe)));
-                    } else {
-                        List<Term> ss = new FasterList(3);
-                        final long[] last = {0};
-                        term.eventsWhile((when,what)->{
-                            if (!ss.isEmpty()) {
-                                long interval = when - last[0];
-                                if (interval > 0)
-                                    ss.add($.func(this.dt, /*Tense.dither(*/$.the(interval)));
-                            }
-                            ss.add(apply(what));
-                            last[0] = when;
-                            return true;
-                        },0, false, false, false);
-
-                        return $.func(seq, ss);
-
-                    }
+//                case CONJ:
+//
+//                    if (Conj.concurrent(dt)) {
+//                        return $.func(and, SETe.the(term.subterms().transformSubs(this, SETe)));
+//                    } else {
+//                        List<Term> ss = new FasterList(3);
+//                        final long[] last = {0};
+//                        term.eventsWhile((when,what)->{
+//                            if (!ss.isEmpty()) {
+//                                long interval = when - last[0];
+//                                if (interval > 0)
+//                                    ss.add($.func(this.dt, /*Tense.dither(*/$.the(interval)));
+//                            }
+//                            ss.add(apply(what));
+//                            last[0] = when;
+//                            return true;
+//                        },0, false, false, false);
+//
+//                        return $.func(seq, ss);
+//
+//                    }
             }
             return term;
         }

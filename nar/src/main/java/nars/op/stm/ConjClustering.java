@@ -17,6 +17,7 @@ import nars.control.CauseMerge;
 import nars.control.How;
 import nars.control.channel.CauseChannel;
 import nars.task.NALTask;
+import nars.task.TemporalTask;
 import nars.task.UnevaluatedTask;
 import nars.task.util.TaskException;
 import nars.task.util.TaskList;
@@ -250,16 +251,12 @@ public class ConjClustering extends How {
         return in.value();
     }
 
-    public static class STMClusterTask extends UnevaluatedTask {
+    public static class STMClusterTask extends TemporalTask implements UnevaluatedTask {
 
         STMClusterTask(@Nullable ObjectBooleanPair<Term> cp, Truth t, long start, long end, long[] evidence, byte punc, long now) throws TaskException {
             super(cp.getOne(), punc, t.negIf(cp.getTwo()), now, start, end, evidence);
         }
 
-        @Override
-        public boolean isInput() {
-            return false;
-        }
     }
 
     private final class CentroidConjoiner {

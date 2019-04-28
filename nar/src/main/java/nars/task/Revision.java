@@ -87,7 +87,7 @@ public enum Revision {;
 
         byte punc = p.punc();
         Task y = Task.tryTask(p.term, punc, truth, (c, tr) ->
-                new UnevaluatedTask(c, punc,
+                new TemporalTask(c, punc,
                         tr,
                         nal.time(), p.start(), p.end(),
                         Stamp.sample(NAL.STAMP_CAPACITY, stamp /* TODO account for relative evidence contributions */, nal.random())
