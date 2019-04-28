@@ -1,4 +1,4 @@
-package nars.op;
+package nars.util.var;
 
 import jcog.data.list.FasterList;
 import jcog.decide.Roulette;
@@ -37,7 +37,7 @@ public class DepIndepVarIntroduction extends VarIntroduction {
     /**
      * sum by complexity if passes include filter
      */
-    static final ToIntFunction<Term> depIndepFilter = t ->
+    public static final ToIntFunction<Term> depIndepFilter = t ->
         (t.op().var) ? 0 : (t.hasAny(Op.VAR_INDEP.bit) ? 0 : 1);
 
     /** if no variables are present in the target target, use the normalized variable which can help ensure avoidance of a need for full compound normalization */
@@ -52,7 +52,7 @@ public class DepIndepVarIntroduction extends VarIntroduction {
 
     private static boolean validIndepVarSuperterm(Op o) { return o.statement; }
 
-    @Override
+    @Nullable @Override
     public Pair<Term, Map<Term, Term>> apply(Term x, Random rng) {
         return x.hasAny(ConjOrStatementBits) ? super.apply(x, rng) : null;
     }
@@ -62,14 +62,14 @@ public class DepIndepVarIntroduction extends VarIntroduction {
         return select.apply(Terms.sorted(input));
     }
 
-    public static final int MEMOIZE_CAPACITY = 32 * 1024;
+    private static final int MEMOIZE_CAPACITY = 32 * 1024;
 
     private final static Function<Subterms,Term[]> select = Memoizers.the.memoizeByte(
             DepIndepVarIntroduction.class.getSimpleName() + "_select",
             Intermed.SubtermsKey::new,
             DepIndepVarIntroduction::_select, MEMOIZE_CAPACITY);
 
-    static protected Term[] _select(Intermed.SubtermsKey input) {
+    private static Term[] _select(Intermed.SubtermsKey input) {
         Term[] n = Terms.nextRepeat(input.subs, depIndepFilter, 2);
         return Objects.requireNonNullElse(n, Op.EmptyTermArray);
     }

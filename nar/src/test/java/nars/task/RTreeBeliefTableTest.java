@@ -17,6 +17,7 @@ import nars.task.util.TaskRegion;
 import nars.task.util.TimeRange;
 import nars.term.Term;
 import nars.term.Termed;
+import nars.term.atom.Atomic;
 import nars.truth.Truth;
 import org.eclipse.collections.api.block.function.primitive.LongToFloatFunction;
 import org.jetbrains.annotations.NotNull;
@@ -45,7 +46,7 @@ class RTreeBeliefTableTest {
         r.remember(Remember.the(a, n));
         return a;
     }
-
+    static final Term x = Atomic.atom("x");
     private static void testAccuracy(int dur, int period, int end, int cap, LongToFloatFunction func) {
 
         NAR n = NARS.shell();
@@ -53,7 +54,7 @@ class RTreeBeliefTableTest {
         n.time.dur(dur);
 
 
-        TaskConcept c = (TaskConcept) n.conceptualize(TaskRegionTest.x);
+        TaskConcept c = (TaskConcept) n.conceptualize(x);
         @NotNull BeliefTables cb = (BeliefTables) (true ? c.beliefs() : c.goals());
 
         cb.tableFirst(EternalTable.class).setTaskCapacity(0);
@@ -66,7 +67,7 @@ class RTreeBeliefTableTest {
         while ((time = n.time()) < end) {
             float f = func.valueOf(time);
             System.out.print(time + "=" + f + '\t');
-            n.input(task(TaskRegionTest.x, BELIEF, f, 0.9f).time(time).withPri(0.5f).apply(n));
+            n.input(task(x, BELIEF, f, 0.9f).time(time).withPri(0.5f).apply(n));
             n.run(period);
             c.beliefs().print();
             System.out.println();
@@ -99,7 +100,7 @@ class RTreeBeliefTableTest {
         for (long i = start; i < end; i++) {
             float actual = func.valueOf(i);
 
-            Truth actualTruth = n.beliefTruth(TaskRegionTest.x, i);
+            Truth actualTruth = n.beliefTruth(x, i);
             float approx, err;
             if (actualTruth != null) {
                 approx = actualTruth.freq();

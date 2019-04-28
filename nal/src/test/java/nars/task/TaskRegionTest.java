@@ -2,8 +2,9 @@ package nars.task;
 
 import jcog.math.LongInterval;
 import jcog.tree.rtree.HyperRegion;
-import nars.NAR;
-import nars.NARS;
+import nars.$;
+import nars.DummyNAL;
+import nars.NAL;
 import nars.Task;
 import nars.task.util.TaskRegion;
 import nars.task.util.TasksRegion;
@@ -12,13 +13,12 @@ import nars.term.atom.Atomic;
 import org.junit.jupiter.api.Test;
 
 import static nars.Op.BELIEF;
-import static nars.task.TaskTest.task;
 import static org.junit.jupiter.api.Assertions.*;
 
 class TaskRegionTest {
 
     static final Term x = Atomic.atom("x");
-    static final NAR n = NARS.shell();
+    private static final NAL n = new DummyNAL();
 
     @Test void testTasksRegionContainsTask() {
         //@1..9[0.6..1;0.9..0.9%]
@@ -87,6 +87,6 @@ class TaskRegionTest {
     }
 
     private static Task _task(float f, float c, long s, long e) {
-        return task(x, BELIEF, f, c).time(s, e).apply(n);
+        return new TaskBuilder(x, BELIEF, $.t(f, c)).time(s, e).apply(n);
     }
 }

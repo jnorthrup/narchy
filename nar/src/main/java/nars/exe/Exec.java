@@ -5,10 +5,10 @@ import jcog.data.iterator.ArrayIterator;
 import jcog.data.list.FasterList;
 import jcog.data.list.MetalConcurrentQueue;
 import jcog.pri.Prioritizable;
+import jcog.util.ConsumerX;
 import nars.NAR;
 import nars.Task;
 import nars.control.NARPart;
-import jcog.util.ConsumerX;
 import nars.time.ScheduledTask;
 import org.slf4j.Logger;
 

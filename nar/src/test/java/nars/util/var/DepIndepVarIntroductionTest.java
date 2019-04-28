@@ -1,4 +1,4 @@
-package nars.op;
+package nars.util.var;
 
 import nars.$;
 import nars.NAR;
@@ -12,8 +12,8 @@ import java.util.Arrays;
 import java.util.TreeSet;
 
 import static nars.$.$$;
-import static nars.op.DepIndepVarIntroduction.depIndepFilter;
 import static nars.term.util.TermTest.assertEq;
+import static nars.util.var.DepIndepVarIntroduction.depIndepFilter;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**

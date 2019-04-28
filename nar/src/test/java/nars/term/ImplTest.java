@@ -3,7 +3,6 @@ package nars.term;
 import nars.$;
 import nars.Narsese;
 import nars.term.atom.Bool;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import static nars.$.$;

@@ -1,9 +1,9 @@
 package nars.derive.op;
 
 import nars.derive.Derivation;
-import nars.op.DepIndepVarIntroduction;
 import nars.term.Term;
 import nars.term.atom.Atomic;
+import nars.util.var.DepIndepVarIntroduction;
 import org.eclipse.collections.api.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
 

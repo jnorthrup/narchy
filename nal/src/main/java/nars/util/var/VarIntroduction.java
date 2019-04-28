@@ -1,4 +1,4 @@
-package nars.op;
+package nars.util.var;
 
 import nars.subterm.Subterms;
 import nars.term.Term;
@@ -12,7 +12,7 @@ import java.util.Random;
 
 abstract class VarIntroduction {
 
-    Pair<Term, Map<Term, Term>> apply(final Term x, Random rng) {
+    @Nullable Pair<Term, Map<Term, Term>> apply(final Term x, Random rng) {
 
         if (x.complexity() < 2) 
             return null;
@@ -44,5 +44,5 @@ abstract class VarIntroduction {
     /**
      * provides the next terms that will be substituted in separate permutations; return null to prevent introduction
      */
-    abstract protected Term introduce(Term input, Term selection);
+    @Nullable abstract protected Term introduce(Term input, Term selection);
 }

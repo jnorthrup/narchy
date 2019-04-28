@@ -1,6 +1,9 @@
 package nars.io;
 
-import nars.*;
+import nars.$;
+import nars.DummyNAL;
+import nars.Narsese;
+import nars.Task;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.Termed;
@@ -12,16 +15,9 @@ import nars.term.atom.Bool;
 import nars.term.atom.Int;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import static java.lang.System.out;
 import static nars.$.$;

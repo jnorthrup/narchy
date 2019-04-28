@@ -3,8 +3,10 @@ package nars.task;
 import jcog.data.array.LongArrays;
 import jcog.pri.Prioritized;
 import jcog.pri.UnitPri;
-import nars.*;
-import nars.concept.Concept;
+import nars.NAL;
+import nars.Narsese;
+import nars.Op;
+import nars.Task;
 import nars.task.util.TaskException;
 import nars.term.Compound;
 import nars.term.Term;
@@ -36,7 +38,7 @@ import static nars.time.Tense.ETERNAL;
  * <p>
  * once input, input tasks will have unique serial numbers anyway
  */
-@Deprecated public class TaskBuilder extends UnitPri implements TermedDelegate, Truthed, Function<NAR, Task> {
+@Deprecated public class TaskBuilder extends UnitPri implements TermedDelegate, Truthed, Function<NAL, Task> {
 
     
     private Term term;
@@ -71,7 +73,7 @@ import static nars.time.Tense.ETERNAL;
 
 
 
-    public TaskBuilder(Term t, byte punct, float freq,  NAR nar) throws TaskException {
+    public TaskBuilder(Term t, byte punct, float freq,  NAL nar) throws TaskException {
         this(t, punct, t(freq, nar.confDefault(punct)));
     }
 
@@ -123,7 +125,7 @@ import static nars.time.Tense.ETERNAL;
     }
 
     @Override
-    public Task apply(NAR n) throws Concept.InvalidConceptException, TaskException {
+    public Task apply(NAL n) throws TaskException {
 
         if (isDeleted())
             throw new TaskException(this, "Deleted");

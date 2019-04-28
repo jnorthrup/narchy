@@ -11,11 +11,11 @@ import jcog.pri.bag.impl.BufferedBag;
 import jcog.pri.bag.impl.PriArrayBag;
 import jcog.pri.op.PriMerge;
 import jcog.pri.op.PriReturn;
+import jcog.util.ConsumerX;
 import nars.NAL;
 import nars.NAR;
 import nars.Task;
 import nars.control.CauseMerge;
-import jcog.util.ConsumerX;
 
 import java.util.Iterator;
 import java.util.Map;
