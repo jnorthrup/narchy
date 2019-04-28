@@ -143,7 +143,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
      * returns true if at least one net task has been removed from the table.
      */
     /*@NotNull*/
-    private static boolean compress(Space<TaskRegion> tree, FloatFunction<Task> taskStrength, FloatRank<TaskRegion> leafRegionWeakness, Remember remember, NAR nar) {
+    private static boolean compress(Space<TaskRegion> tree, FloatFunction<Task> taskStrength, FloatRank<TaskRegion> leafRegionWeakness, Remember remember, NAL nal) {
 
         Top<Leaf<TaskRegion>> mergeableLeaf = new Top<>((L, min1) ->
                 leafRegionWeakness.rank((TaskRegion) L.bounds(), min1));
@@ -152,7 +152,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 
         return !findEvictable(tree, tree.root(), /*closest, */weakest, mergeableLeaf)
                 ||
-                mergeOrDelete(tree, weakest, mergeableLeaf, taskStrength, remember, nar);
+                mergeOrDelete(tree, weakest, mergeableLeaf, taskStrength, remember, nal);
     }
 
     private static boolean mergeOrDelete(Space<TaskRegion> treeRW,
@@ -160,7 +160,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
                                          Top<Leaf<TaskRegion>> mergeableLeaf,
                                          FloatFunction<Task> taskStrength,
                                          Remember r,
-                                         NAR nar) {
+                                         NAL nal) {
 
         Task W = weakest.the;
 
@@ -170,7 +170,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
         Pair<Task, TruthProjection> AB;
         if (!mergeableLeaf.isEmpty()) {
             Leaf<TaskRegion> ab = mergeableLeaf.get();
-            AB = Revision.merge(nar, true, Arrays.copyOf(ab.data, ab.size)); //HACK type adaptation
+            AB = Revision.merge(nal, true, Arrays.copyOf(ab.data, ab.size)); //HACK type adaptation
             if (AB != null) {
                 valueMergeLeaf = (float) (
                         +taskStrength.floatValueOf(AB.getOne())
@@ -325,7 +325,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
         FloatRank<TaskRegion> leafRegionWeakness = null;
         int e = 0, cap;
         long atStart;
-        NAR nar = remember.nar;
+        NAL nar = remember.nar;
         while (treeRW.size() > (cap = capacity)) {
             if (taskStrength == null) {
                 atStart = nar.time();

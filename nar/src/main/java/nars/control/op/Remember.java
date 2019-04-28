@@ -134,7 +134,7 @@ public class Remember extends AbstractTask {
     /** TODO check that image dont double link/activate for their product terms */
     private void commit(Task input, boolean store, What w) {
 
-        NAR n = nar;
+        NAR n = w.nar;
 
         TaskConcept c = null;
 

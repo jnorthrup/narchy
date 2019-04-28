@@ -11,9 +11,11 @@ import nars.attention.derive.DefaultPuncWeightedDerivePri;
 import nars.concept.Concept;
 import nars.control.NARPart;
 import nars.control.op.Perceive;
+import nars.control.op.Remember;
 import nars.control.op.TaskEvent;
 import nars.link.TaskLink;
 import nars.task.AbstractTask;
+import nars.task.UnevaluatedTask;
 import nars.task.util.PriBuffer;
 import nars.term.Term;
 import nars.time.part.DurLoop;
@@ -96,8 +98,11 @@ abstract public class What extends NARPart implements Prioritizable, Sampler<Tas
             if (x instanceof AbstractTask) {
                 Task.run(x, What.this);
             } else {
-                accept(Perceive.perceive(x, What.this));
-                //Task.run(Perceive.perceive(x, What.this), What.this);
+                if (x instanceof UnevaluatedTask) {
+                    accept(Remember.the(x, nar));
+                } else {
+                    accept(Perceive.perceive(x, What.this));
+                }
             }
         }
     };

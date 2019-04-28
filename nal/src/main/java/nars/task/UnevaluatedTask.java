@@ -1,5 +1,6 @@
 package nars.task;
 
+import jcog.WTF;
 import nars.Task;
 import nars.task.util.TaskException;
 import nars.term.Term;
@@ -21,23 +22,10 @@ public class UnevaluatedTask extends TemporalTask {
         super(parent, c, t);
     }
 
-//    @Override
-//    public boolean isInput() {
-//        return false;
-//    }
-
-    //    @Override
-//    public ITask next(NAR n) {
-//
-//        //HACK, for ensuring the operator invocation etc
-//        FasterList<ITask> q = new FasterList(1);
-//        preProcess(n, target(), q);
-//        return postProcess(q, false);
-//    }
     @Override
-    public Task next(Object n) {
+    @Deprecated public Task next(Object n) {
         /* no evaluation */
         //return Remember.the(this, n);
-        return null;
+        throw new WTF();
     }
 }
