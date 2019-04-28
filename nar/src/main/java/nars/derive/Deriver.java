@@ -2,6 +2,8 @@ package nars.derive;
 
 import jcog.Util;
 import jcog.func.TriFunction;
+import jcog.signal.meter.FastCounter;
+import nars.Emotion;
 import nars.NAR;
 import nars.Task;
 import nars.attention.What;
@@ -29,14 +31,13 @@ import java.util.stream.Stream;
  */
 abstract public class Deriver extends How {
 
+    public final DeriverRules rules;
     /**
      * determines the temporal focus of (TODO tasklink and ) belief resolution to be matched during premise formation
      * input: premise Task, premise belief target
      * output: long[2] time interval
      **/
     public TriFunction<What, Task, Term, long[]> timing;
-
-    public final DeriverRules rules;
 
     protected Deriver(Set<PremiseRuleProto> rules, NAR nar) {
         this(PremiseDeriverCompiler.the(rules), nar);
@@ -68,7 +69,6 @@ abstract public class Deriver extends How {
     }
 
 
-
     @Override
     public final void next(What w, final BooleanSupplier kontinue) {
 
@@ -79,10 +79,6 @@ abstract public class Deriver extends How {
 
 
     abstract protected void derive(Derivation d, BooleanSupplier kontinue);
-
-
-
-
 
 
     /**
@@ -107,10 +103,40 @@ abstract public class Deriver extends How {
     }
 
 
-    public final short[] what(PreDerivation d) {
+    final short[] what(PreDerivation d) {
         return rules.planner.apply(d);
     }
 
+
+    public final void derive(Premise p, Derivation d, int matchTTL, int deriveTTL) {
+
+        FastCounter result;
+
+        Emotion e = d.nar().emotion;
+
+        if (p.match(d, matchTTL)) {
+
+            short[] can = d.deriver.what(d);
+
+            if (can.length > 0) {
+
+                d.derive(
+                        //Util.lerp(Math.max(d.priDouble, d.priSingle), Param.TTL_MIN, deriveTTL)
+                        deriveTTL, can
+                );
+
+                result = e.premiseFire;
+
+            } else {
+                result = e.premiseUnderivable;
+            }
+        } else {
+            result = e.premiseUnbudgetable;
+        }
+
+
+        result.increment();
+    }
 
 }
 

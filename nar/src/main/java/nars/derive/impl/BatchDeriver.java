@@ -41,8 +41,9 @@ public class BatchDeriver extends Deriver {
             hypothesize(when, premises, d);
 
             if (!premises.isEmpty()) {
-                for (Premise p : premises)
-                    p.derive(d, matchTTL, deriveTTL);
+                for (Premise p : premises) {
+                    derive(p, d, matchTTL, deriveTTL);
+                }
                 premises.clear();
             }
 

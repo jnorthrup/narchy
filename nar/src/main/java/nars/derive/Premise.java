@@ -4,8 +4,10 @@
  */
 package nars.derive;
 
-import jcog.signal.meter.FastCounter;
-import nars.*;
+import nars.NAL;
+import nars.NAR;
+import nars.Op;
+import nars.Task;
 import nars.concept.Concept;
 import nars.concept.TaskConcept;
 import nars.op.mental.AliasConcept;
@@ -24,17 +26,24 @@ import static nars.time.Tense.ETERNAL;
  * <p>
  * It is meant to be disposable and should not be kept referenced longer than necessary
  * to avoid GC loops, so it may need to be weakly referenced.
- *
+ * <p>
  * note: Comparable as implemented here is not 100% consistent with Task.equals and Term.equals.  it is
  * sloppily consistent for its purpose in collating Premises in optimal sorts during hypothesizing
  */
 public class Premise implements Comparable<Premise> {
 
+    /**
+     * variable types unifiable in premise formation
+     */
+    final static int var =
+            //Op.VAR_QUERY.bit | Op.VAR_DEP.bit
+            Op.VAR_QUERY.bit
+            //Op.Variable //all
+            ;
     public final Task task;
-
     public final Term beliefTerm;
-
     public final long hash;
+
 
     public Premise(Task task, Term beliefTerm) {
         super();
@@ -46,7 +55,6 @@ public class Premise implements Comparable<Premise> {
         this.hash = premiseHash(task, beliefTerm);
     }
 
-
     /**
      * specially constructed hash that is useful for sorting premises by:
      * a) task equivalency (hash)
@@ -55,23 +63,14 @@ public class Premise implements Comparable<Premise> {
      * <p>
      * designed to maximize sequential repeat of derived task target
      */
-    public static long premiseHash(Task task, Term beliefTerm) {
-                //task's lower 23 bits in bits 40..64
+    private static long premiseHash(Task task, Term beliefTerm) {
+        //task's lower 23 bits in bits 40..64
         return (((long) task.hashCode()) << (64 - 24))
                 | //task target's lower 20 bits in bits 20..40
                 (((long) (task.term().hashCode() & 0b00000000000011111111111111111111)) << 20)
                 | //termlink's lower 20 bits in bits 0..20
                 ((beliefTerm.hashCode() & 0b00000000000011111111111111111111));
     }
-
-    /**
-     * variable types unifiable in premise formation
-     */
-    final static int var =
-            //Op.VAR_QUERY.bit | Op.VAR_DEP.bit
-            Op.VAR_QUERY.bit
-            //Op.Variable //all
-    ;
 
     /**
      * resolve the most relevant belief of a given target/concept
@@ -90,35 +89,36 @@ public class Premise implements Comparable<Premise> {
      *
      * @param matchTime - temporal focus control: determines when a matching belief or answer should be projected to
      */
-    private boolean match(Derivation d, int matchTTL) {
+    boolean match(Derivation d, int matchTTL) {
 
         boolean beliefConceptUnifiesTaskConcept = false;
 
         Term beliefTerm = this.beliefTerm;
         Term taskTerm = task.term();
-        if (taskTerm.op() == beliefTerm.op()) {
-            if (taskTerm.equals(beliefTerm)) {
-                beliefConceptUnifiesTaskConcept = true;
-            } else {
+        if (taskTerm.equals(beliefTerm)) {
+            beliefConceptUnifiesTaskConcept = true;
+        } else if (taskTerm.op() == beliefTerm.op()) {
 
-                if (beliefTerm.hasAny(var) || taskTerm.hasAny(var) || taskTerm.hasXternal() || beliefTerm.hasXternal()) {
 
-                    Term unifiedBeliefTerm = d.unifyPremise.unified(taskTerm, beliefTerm, matchTTL);
+            if (beliefTerm.hasAny(var) || taskTerm.hasAny(var) || taskTerm.hasXternal() || beliefTerm.hasXternal()) {
 
-                    if (unifiedBeliefTerm != null) {
+                Term unifiedBeliefTerm = d.unifyPremise.unified(taskTerm, beliefTerm, matchTTL);
 
-                        if (beliefTerm!=unifiedBeliefTerm && (!unifiedBeliefTerm.isNormalized() && d.random.nextBoolean())) {
-                            unifiedBeliefTerm = unifiedBeliefTerm.normalize();
-                            beliefTerm = unifiedBeliefTerm;
-                        }
+                if (unifiedBeliefTerm != null) {
 
-                        beliefConceptUnifiesTaskConcept = true;
-                    } else {
-                        beliefConceptUnifiesTaskConcept = false;
-                    }
+                    unifiedBeliefTerm =
+                            d.random.nextBoolean() ?
+                                unifiedBeliefTerm :
+                                unifiedBeliefTerm.normalize();
+                    beliefTerm = unifiedBeliefTerm;
 
+                    beliefConceptUnifiesTaskConcept = true;
+                } else {
+                    beliefConceptUnifiesTaskConcept = false;
                 }
+
             }
+
         }
 
 //        Term solved = Evaluation.solveFirst(beliefTerm, d.nar);
@@ -127,10 +127,10 @@ public class Premise implements Comparable<Premise> {
 
         Task belief = match(d, beliefTerm, beliefConceptUnifiesTaskConcept);
 
-        if (task.stamp().length== 0) {
+        if (task.stamp().length == 0) {
             //only allow unstamped tasks to apply with stamped beliefs.
             //otherwise stampless tasks could loop forever in single premise or in interaction with another stampless task
-            if (belief==null || belief.stamp().length==0)
+            if (belief == null || belief.stamp().length == 0)
                 return false;
         }
 
@@ -214,7 +214,7 @@ public class Premise implements Comparable<Premise> {
                     return null; //no belief
             } else {
                 Task answered = tryAnswer(beliefTerm, answerTable, d);
-                if (answered!=null) {
+                if (answered != null) {
                     if (answered.evi() >= d.eviMin) {
 
 //                        d.addAt(answered); //TODO determine if inputting here is really only useful if revised or dynamic
@@ -226,7 +226,7 @@ public class Premise implements Comparable<Premise> {
 //                            //d.add(answered);
 //                        } else {
 //                            //just emit if belief
-                            n.eventTask.emit(answered);
+                        n.eventTask.emit(answered);
 //                        }
                     }
 
@@ -250,7 +250,7 @@ public class Premise implements Comparable<Premise> {
 //        if (task.stamp().length == 0) {
 //            return t -> !t.equals(task) && t.stamp().length > 0; //dont allow derivation of 2 unstamped tasks - infinite feedback - dont cross the streams
 //        } else {
-            return t -> !t.equals(task);//null; //stampFilter(d);
+        return t -> !t.equals(task);//null; //stampFilter(d);
 //        }
 
     }
@@ -260,11 +260,11 @@ public class Premise implements Comparable<Premise> {
 
         Predicate<Task> beliefFilter =
                 beliefTerm.equalsRoot(task.term()) ?
-                    beliefFilter() :
-                    null;
+                        beliefFilter() :
+                        null;
 
         return bb.matching(focus[0], focus[1], beliefTerm, beliefFilter, d.dur(), d.nar())
-                    .task(true, false, true);
+                .task(true, false, true);
     }
 
 
@@ -275,7 +275,7 @@ public class Premise implements Comparable<Premise> {
             long[] f = timeFocus(beliefTerm, d);
             ts = f[0];
             te = f[1];
-            assert(ts!=ETERNAL);
+            assert (ts != ETERNAL);
         } else {
             te = task.end();
         }
@@ -296,7 +296,7 @@ public class Premise implements Comparable<Premise> {
 
     private long[] timeFocus(Term beliefTerm, Derivation d) {
         long[] l = d.deriver.timing.apply(d.what, task, beliefTerm);
-        if (NAL.premise.PREMISE_FOCUS_TIME_DITHER && l[0]!=ETERNAL) {
+        if (NAL.premise.PREMISE_FOCUS_TIME_DITHER && l[0] != ETERNAL) {
             Tense.dither(l, d.ditherDT);
         }
         return l;
@@ -360,46 +360,13 @@ public class Premise implements Comparable<Premise> {
     }
 
 
-    public final void derive(Derivation d, int matchTTL, int deriveTTL) {
-
-        FastCounter result;
-
-        Emotion e = d.nar().emotion;
-
-        if (match(d, matchTTL)) {
-
-            short[] can = d.deriver.what(d);
-
-            if (can.length > 0) {
-
-                d.derive(
-                    //Util.lerp(Math.max(d.priDouble, d.priSingle), Param.TTL_MIN, deriveTTL)
-                    deriveTTL, can
-                );
-
-                result = e.premiseFire;
-
-            } else {
-                result = e.premiseUnderivable;
-            }
-        } else {
-            result = e.premiseUnbudgetable;
-        }
-
-
-        result.increment();
-
-
-
-    }
-
     @Override
     public int compareTo(Premise premise) {
         if (this == premise)
             return 0;
 
         int h = Long.compare(hash, premise.hash);
-        if (h!=0)
+        if (h != 0)
             return h;
 
         if (task.equals(premise.task) && beliefTerm.equals(premise.beliefTerm))
