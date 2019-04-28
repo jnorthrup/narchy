@@ -1,18 +1,22 @@
 package nars.nar;
 
 import com.google.common.primitives.Longs;
-import nars.$;
-import nars.NAR;
-import nars.NARS;
-import nars.Narsese;
+import nars.*;
 import nars.concept.Concept;
 import nars.term.Termed;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.StringWriter;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import static java.lang.System.out;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
@@ -140,6 +144,76 @@ class NARTest {
 
         n.run((int) Longs.max(events));
         assertEquals(events.length, runs[0]);
+    }
+    @ParameterizedTest
+    @ValueSource(strings = {
+            "a:b. b:c.",
+            "a:b. b:c. c:d! a@",
+            "d(x,c). :|: (x<->c)?",
+            "((x &&+1 b) &&+1 c). :|: (c && --b)!"
+    })
+    void testNARTaskSaveAndReload(String input) throws Exception {
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream(16384);
+
+        final AtomicInteger count = new AtomicInteger();
+
+
+
+        Set<Task> written = new HashSet();
+
+        NAR a = NARS.tmp()
+
+                .input(new String[] { input });
+        a
+                .run(16);
+        a
+                .synch()
+                .outputBinary(baos, (Task t)->{
+                    assertTrue(written.add(t),()->"duplicate: " + t);
+                    count.incrementAndGet();
+                    return true;
+                })
+
+        ;
+
+        byte[] x = baos.toByteArray();
+        out.println(count.get() + " tasks serialized in " + x.length + " bytes");
+
+        NAR b = NARS.shell()
+                .inputBinary(new ByteArrayInputStream(x));
+
+
+
+
+
+
+
+        Set<Task> aHas = new HashSet();
+
+        a.tasks().forEach((Task t) -> aHas.add(t) );
+
+        assertEquals(count.get(), aHas.size());
+
+        assertEquals(written, aHas);
+
+        Set<Task> bRead = new HashSet();
+
+        b.tasks().forEach(t -> bRead.add(t));
+
+        assertEquals(aHas, bRead);
+
+
+
+
+
+
+
+
+
+
+
+
     }
 
 }

@@ -15,7 +15,7 @@ import nars.NAL;
 import nars.NAR;
 import nars.Task;
 import nars.control.CauseMerge;
-import nars.control.channel.ConsumerX;
+import jcog.util.ConsumerX;
 
 import java.util.Iterator;
 import java.util.Map;
@@ -344,7 +344,10 @@ abstract public class PriBuffer<T extends Prioritizable> implements Consumer<T> 
                         for (int i = 0; i < c && remain > 0; i++) {
                             int asked = Math.min(remain, nEach);
                             remain -= asked;
-                            target.input(b, target, asked, nar.exe, targetBatched);
+                            target.input(b, target, asked, nar.exe,
+                                targetBatched,
+                                NAL.PRE_SORT_TASK_INPUT_BATCH ? Task.sloppySorter : null
+                                );
                         }
                     }
 

@@ -1,4 +1,4 @@
-package nars.control.channel;
+package jcog.util;
 
 import jcog.data.iterator.ArrayIterator;
 import jcog.data.list.FasterList;
@@ -6,15 +6,16 @@ import jcog.pri.Prioritizable;
 import jcog.pri.bag.Sampler;
 import jcog.pri.bag.impl.ArrayBag;
 import jcog.pri.bag.impl.BufferedBag;
-import nars.NAL;
-import nars.Task;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
+
 
 /** recipient of instances: in collections, iterators, streams, or individually.
  * */
@@ -74,7 +75,7 @@ import java.util.stream.Stream;
 
 //    void input(Bag<ITask, ITask> b, What target, int min);
     /** asynchronously drain N elements from a bag as input */
-    default void input(Sampler<? extends X> taskSampler, ConsumerX<? super X> target, int max, Executor exe, Consumer<FasterList<X>> runner) {
+    default void input(Sampler<? extends X> taskSampler, ConsumerX<? super X> target, int max, Executor exe, Consumer<FasterList<X>> runner, @Nullable Comparator<X> batchSorter) {
         Sampler b;
         if  (taskSampler instanceof BufferedBag)
             b = ((BufferedBag) taskSampler).bag;
@@ -97,10 +98,8 @@ import java.util.stream.Stream;
 
                 try {
 
-                    if (bs > 2) {
-                        if (NAL.PRE_SORT_TASK_INPUT_BATCH) {
-                            batch.sortThis(Task.sloppySorter);
-                        }
+                    if (bs > 2 && batchSorter!=null) {
+                        batch.sortThis(batchSorter);
                     }
 
                     runner.accept(batch);

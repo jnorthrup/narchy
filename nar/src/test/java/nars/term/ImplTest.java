@@ -8,7 +8,6 @@ import org.junit.jupiter.api.Test;
 
 import static nars.$.$;
 import static nars.$.$$;
-import static nars.io.NarseseTest.assertInvalidTerms;
 import static nars.term.atom.Bool.False;
 import static nars.term.atom.Bool.Null;
 import static nars.term.util.TermTest.assertEq;
@@ -170,12 +169,6 @@ public class ImplTest {
     }
 
 
-    @Disabled
-    @Test
-    void testReducedAndInvalidImplications5() {
-
-        assertInvalidTerms("((P==>Q) ==> R)");
-    }
 
 
     @Test
@@ -315,5 +308,18 @@ public class ImplTest {
             assertEq("((x &&+1 y)==>z)", "(x ==>+1 (y==>z))"); //temporal
             assertEq("((x &&+1 y) ==>+1 z)", "(x ==>+1 (y ==>+1 z))"); //temporal
         }
+
+    @Test
+    void testCoNegatedImpl() {
+        TermTestMisc.assertValidTermValidConceptInvalidTaskContent(("(--x ==> x)."));
+        TermTestMisc.assertValidTermValidConceptInvalidTaskContent(("(--x =|> x)."));
+    }
+
+    @Test
+    void testCoNegatedImplOK() throws Narsese.NarseseException {
+        TermTestMisc.assertValid($("((--,(a)) ==>+1 (a))"));
+        TermTestMisc.assertValid($("((--,a) ==>+1 a)"));
+    }
+
 
 }

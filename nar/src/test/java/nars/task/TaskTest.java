@@ -1,8 +1,11 @@
 package nars.task;
 
+import nars.$;
 import nars.*;
 import nars.concept.Concept;
 import nars.concept.TaskConcept;
+import nars.task.util.TaskException;
+import nars.term.Compound;
 import nars.term.Term;
 import nars.truth.Truth;
 import org.jetbrains.annotations.NotNull;
@@ -10,9 +13,10 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 
-import static nars.$.$$;
+import static nars.$.*;
 import static nars.Op.BELIEF;
 import static nars.term.util.TermTest.assertEq;
+import static nars.time.Tense.DTERNAL;
 import static nars.time.Tense.ETERNAL;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -33,11 +37,45 @@ public class TaskTest {
 
         assertEquals(Narsese.the().task(s, n).start(), ETERNAL, "tense=eternal is eternal");
 
-        
+
 
     }
 
+    @Test
+    void testInvalidStatementIndepVarTask() {
+        NAR t = NARS.shell();
+        try {
+            t.inputTask("at($1,$2,$3).");
+            fail("");
+        } catch (Narsese.NarseseException | TaskException e) {
+            assertTrue(true);
+        }
+    }
 
+
+    @Test
+    void testRepeatEvent() throws Narsese.NarseseException {
+        NAR n = NARS.shell();
+
+        for (String x : new String[]{
+                "((a) ==>+1 (a))",
+                "((a) &&+1 (a))",
+
+                /*"((a) &&+1 (a))",*/
+        }) {
+            Term t = $(x);
+            assertTrue(t instanceof Compound, x + " :: " + t);
+            assertTrue(t.dt() != DTERNAL);
+
+            Task y = TaskTest.task(t, Op.BELIEF, t(1f, 0.9f)).apply(n);
+
+            y.term().printRecursive();
+            assertEquals(x, y.term().toString());
+
+        }
+
+
+    }
 
 
 
@@ -126,7 +164,7 @@ public class TaskTest {
 
     private void inputTwoUniqueTasks(@NotNull NAR n) throws Narsese.NarseseException {
 
-        
+
 
         Task x = n.inputTask("<a --> b>.");
         assertArrayEquals(new long[]{1}, x.stamp());
@@ -138,7 +176,7 @@ public class TaskTest {
 
         n.reset();
 
-        n.input("<e --> f>.  <g --> h>. "); 
+        n.input("<e --> f>.  <g --> h>. ");
 
         n.run(10);
 
@@ -151,10 +189,10 @@ public class TaskTest {
     @Test
     void testDoublePremiseMultiEvidence() throws Narsese.NarseseException {
 
-        
-        
+
+
         NAR d = new NARS().get();
-        
+
         d.input("<a --> b>.", "<b --> c>.");
 
         long[] ev = {1, 2};

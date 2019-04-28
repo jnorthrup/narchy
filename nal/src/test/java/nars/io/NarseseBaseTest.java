@@ -8,6 +8,7 @@ import nars.term.Compound;
 import nars.term.Term;
 import nars.term.Variable;
 import nars.term.atom.Atomic;
+import nars.term.util.TermTest;
 import nars.term.var.ellipsis.EllipsisMatch;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
@@ -139,7 +140,7 @@ class NarseseBaseTest extends NarseseTest {
 
     @Test
     void testFailureOfMultipleDistinctInfixOperators() {
-        assertInvalidTerms("(a * b & c)");
+        TermTest.assertInvalidTerms("(a * b & c)");
     }
 
     @Test
@@ -553,7 +554,7 @@ class NarseseBaseTest extends NarseseTest {
 
     @Test
     void testEmptySets() {
-        assertInvalidTerms("{}", "[]");
+        TermTest.assertInvalidTerms("{}", "[]");
     }
 
 

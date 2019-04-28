@@ -6,6 +6,7 @@ import nars.term.Term;
 import nars.term.atom.Bool;
 import nars.time.Tense;
 import org.jetbrains.annotations.NotNull;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
@@ -60,11 +61,11 @@ class NarseseExtendedTest extends NarseseTest {
     @Test
     void testOriginalTruth() throws Narsese.NarseseException {
         
-        eternal(task("(a && b). %1.0;0.9%"));
+        eternal(NarseseTest.task("(a && b). %1.0;0.9%"));
 
         
-        tensed(task("(a && b). :|: %1.0;0.9%"), Present);
-        tensed(task("(a && b). | %1.0;0.9%"), Present);
+        tensed(NarseseTest.task("(a && b). :|: %1.0;0.9%"), Present);
+        tensed(NarseseTest.task("(a && b). | %1.0;0.9%"), Present);
     }
 
 
@@ -78,12 +79,12 @@ class NarseseExtendedTest extends NarseseTest {
 
 
 
-        eternal(task("(a && b). %1.0;0.7%"));
+        eternal(NarseseTest.task("(a && b). %1.0;0.7%"));
 
         /*tensed(task("(a & b). %1.0|"), Present);
         tensed(task("(a & b). %1.0/"), Future);
         tensed(task("(a & b). %1.0\\"), Past);*/
-        eternal(task("(a && b). %1.0;0.9%"));
+        eternal(NarseseTest.task("(a && b). %1.0;0.9%"));
 
 
     }
@@ -95,17 +96,17 @@ class NarseseExtendedTest extends NarseseTest {
 
     @Test
     void testColonReverseInheritance() throws Narsese.NarseseException {
-        Compound t = term("namespace:named");
+        Compound t = NarseseTest.term("namespace:named");
         assertEquals(Op.INH, t.op());
         assertEquals("named", t.sub(0).toString());
         assertEquals("namespace", t.sub(1).toString());
 
 
 
-        Compound u = term("<a:b --> c:d>");
+        Compound u = NarseseTest.term("<a:b --> c:d>");
         assertEquals("((b-->a)-->(d-->c))", u.toString());
 
-        Task ut = task("<a:b --> c:d>.");
+        Task ut = NarseseTest.task("<a:b --> c:d>.");
         assertNotNull(ut);
         assertEquals(ut.term(), u);
 
@@ -136,7 +137,7 @@ class NarseseExtendedTest extends NarseseTest {
 
 
     private static void eqTask(String x, String b) throws Narsese.NarseseException {
-        Task a = Narsese.the().task(x + '.', NARS.shell());
+        Task a = Narsese.the().task(x + '.', new DummyNAL());
         assertNotNull(a);
         assertEquals(b, a.term().toString());
     }
@@ -184,7 +185,7 @@ class NarseseExtendedTest extends NarseseTest {
 
 
         for (String s : new String[]{"--(negated-->a)!", "-- (negated-->a)!"}) {
-            Task t = task(s);
+            Task t = NarseseTest.task(s);
 
             
             /*
@@ -201,36 +202,36 @@ class NarseseExtendedTest extends NarseseTest {
 
     @Test
     void testNegationShortHandOnAtomics() throws Narsese.NarseseException {
-        assertEquals("(--,x)", term("--x").toString());
-        assertEquals("(--,wtf)", term("--wtf").toString());
-        assertEquals("(--,1)", term("--1").toString());
+        Assertions.assertEquals("(--,x)", NarseseTest.term("--x").toString());
+        Assertions.assertEquals("(--,wtf)", NarseseTest.term("--wtf").toString());
+        Assertions.assertEquals("(--,1)", NarseseTest.term("--1").toString());
 
-        assertEquals("(--,(before-->x))", term("--x:before").toString());
+        Assertions.assertEquals("(--,(before-->x))", NarseseTest.term("--x:before").toString());
     }
 
     @Test
     void testNegationShortHandOnVars() throws Narsese.NarseseException {
         for (char n : new char[] { '1', 'x' } )
             for (char t : new char[] { '%', '$', '#', '?' } ) {
-                assertEquals("(--," + t + n + ')', term("--" + t + n).toString());
-                assertEquals("(a,(--," + t + n + "))", term("(a, --" + t + n + ')').toString());
+                Assertions.assertEquals("(--," + t + n + ')', NarseseTest.term("--" + t + n).toString());
+                Assertions.assertEquals("(a,(--," + t + n + "))", NarseseTest.term("(a, --" + t + n + ')').toString());
             }
 
     }
 
     @Test
     void testNegationShortHandOnFunc() throws Narsese.NarseseException {
-        assertEquals("(--,sentence(x))", term("--sentence(x)").toString());
+        Assertions.assertEquals("(--,sentence(x))", NarseseTest.term("--sentence(x)").toString());
     }
 
     @Test
     void testNegationShortHandAsSubterms() throws Narsese.NarseseException {
-        assertEquals("(--,a)", term("--a").toString());
-        assertEquals("((--,a))", term("(--a)").toString());
-        assertEquals("((--,a),a,c)", term("( --a , a, c)").toString());
-        assertEquals("((--,a),a,c)", term("(--a, a, c)").toString());
-        assertEquals("(a,(--,a),c)", term("(a, --a, c)").toString());
-        assertEquals("((--,a),(--,(a)),a,c)", term("(--a, --(a), a, c)").toString());
+        Assertions.assertEquals("(--,a)", NarseseTest.term("--a").toString());
+        Assertions.assertEquals("((--,a))", NarseseTest.term("(--a)").toString());
+        Assertions.assertEquals("((--,a),a,c)", NarseseTest.term("( --a , a, c)").toString());
+        Assertions.assertEquals("((--,a),a,c)", NarseseTest.term("(--a, a, c)").toString());
+        Assertions.assertEquals("(a,(--,a),c)", NarseseTest.term("(a, --a, c)").toString());
+        Assertions.assertEquals("((--,a),(--,(a)),a,c)", NarseseTest.term("(--a, --(a), a, c)").toString());
     }
 
     @Test
@@ -238,20 +239,20 @@ class NarseseExtendedTest extends NarseseTest {
 
 
 
-        assertEquals( "(--,(x))", term("--(x)").toString() );
-        assertEquals( "(--,(x))", term("-- (x)").toString() );
+        Assertions.assertEquals( "(--,(x))", NarseseTest.term("--(x)").toString() );
+        Assertions.assertEquals( "(--,(x))", NarseseTest.term("-- (x)").toString() );
 
-        assertEquals( "(--,(x&&y))", term("-- (x && y)").toString() );
+        Assertions.assertEquals( "(--,(x&&y))", NarseseTest.term("-- (x && y)").toString() );
 
-        assertEquals( term("(goto(z) ==>+5 --(x))"),
-                term("(goto(z) ==>+5 (--,(x)))")
+        Assertions.assertEquals( NarseseTest.term("(goto(z) ==>+5 --(x))"),
+                NarseseTest.term("(goto(z) ==>+5 (--,(x)))")
         );
 
-        assertEquals( term("(goto(z) ==>+5 --x:y)"),
-                      term("(goto(z) ==>+5 (--,x:y))")
+        Assertions.assertEquals( NarseseTest.term("(goto(z) ==>+5 --x:y)"),
+                      NarseseTest.term("(goto(z) ==>+5 (--,x:y))")
         );
 
-        Compound nab = term("--(a & b)");
+        Compound nab = NarseseTest.term("--(a & b)");
         assertSame(nab.op(), Op.NEG);
 
         assertSame(nab.sub(0).op(), Op.SECTe);
@@ -266,18 +267,18 @@ class NarseseExtendedTest extends NarseseTest {
     /** tests correct order of operations */
     @Test
     void testNegationOfShorthandInh() throws Narsese.NarseseException {
-        assertEquals(
+        Assertions.assertEquals(
                 
                 "(--,(b-->a))",
-                term("--a:b").toString() );
-        assertEquals(
+                NarseseTest.term("--a:b").toString() );
+        Assertions.assertEquals(
                 //"((--,b)-->a)",
                 "(--,(b-->a))",
-                term("a:--b").toString() );
-        assertEquals(
+                NarseseTest.term("a:--b").toString() );
+        Assertions.assertEquals(
                 
                 "(--,((--,b)-->a))",
-                term("--a:--b").toString() );
+                NarseseTest.term("--a:--b").toString() );
     }
 
     @Disabled
@@ -300,33 +301,33 @@ class NarseseExtendedTest extends NarseseTest {
 
     @Test
     void testTripleQuote() throws Narsese.NarseseException {
-        assertEquals( "(\"\"\"triplequoted\"\"\")", term("(\"\"\"triplequoted\"\"\")").toString() );
-        assertEquals( "(\"\"\"triple\"quoted\"\"\")", term("(\"\"\"triple\"quoted\"\"\")").toString() );
+        Assertions.assertEquals( "(\"\"\"triplequoted\"\"\")", NarseseTest.term("(\"\"\"triplequoted\"\"\")").toString() );
+        Assertions.assertEquals( "(\"\"\"triple\"quoted\"\"\")", NarseseTest.term("(\"\"\"triple\"quoted\"\"\")").toString() );
     }
 
     @Test
     void testParallelTemporals() throws Narsese.NarseseException {
 
         
-        assertEquals("(a=|>b)", term("(a =|> b)").toString());
+        Assertions.assertEquals("(a=|>b)", NarseseTest.term("(a =|> b)").toString());
     }
 
     @Test
     void testParallelTemporals2() throws Narsese.NarseseException {
-        assertEquals("(x &&+2 y)", term("(x &&+2 y)").toString());
+        Assertions.assertEquals("(x &&+2 y)", NarseseTest.term("(x &&+2 y)").toString());
     }
     @Test
     void testParallelConjInfix() throws Narsese.NarseseException {
-        assertEquals("(a&|b)", term("(a &| b)").toString());
-        assertEquals("(x &&+2 ((a)&|(b)))", term("(x &&+2 ((a) &| (b)))").toString());
-        assertEquals("(x &&+2 (&|,(a),(b),(c)))", term("(x &&+2 ( ((a) &| (b)) &| (c)))").toString());
+        Assertions.assertEquals("(a&|b)", NarseseTest.term("(a &| b)").toString());
+        Assertions.assertEquals("(x &&+2 ((a)&|(b)))", NarseseTest.term("(x &&+2 ((a) &| (b)))").toString());
+        Assertions.assertEquals("(x &&+2 (&|,(a),(b),(c)))", NarseseTest.term("(x &&+2 ( ((a) &| (b)) &| (c)))").toString());
     }
     @Test
     void testParallelConjPrefix() throws Narsese.NarseseException {
-        assertEquals("(&|,a,b,c)", term("(&|, a, b, c)").toString());
-        assertEquals("(&|,(a),(b),(c))", term("(&|, (a), (b), (c))").toString());
-        assertEquals("(&|,(a),(b),(c))", term("(&|,(a), (b), (c))").toString());
-        assertEquals("(x &&+2 (&|,(a),(b),(c)))", term("(x &&+2 (&|,(a), (b), (c)))").toString());
+        Assertions.assertEquals("(&|,a,b,c)", NarseseTest.term("(&|, a, b, c)").toString());
+        Assertions.assertEquals("(&|,(a),(b),(c))", NarseseTest.term("(&|, (a), (b), (c))").toString());
+        Assertions.assertEquals("(&|,(a),(b),(c))", NarseseTest.term("(&|,(a), (b), (c))").toString());
+        Assertions.assertEquals("(x &&+2 (&|,(a),(b),(c)))", NarseseTest.term("(x &&+2 (&|,(a), (b), (c)))").toString());
     }
  
     @Test
@@ -339,9 +340,9 @@ class NarseseExtendedTest extends NarseseTest {
 
 
         
-        assertEquals(
+        Assertions.assertEquals(
                 "(a_b)",
-                term("(a_b)").toString()
+                NarseseTest.term("(a_b)").toString()
         );
 
 
@@ -353,7 +354,7 @@ class NarseseExtendedTest extends NarseseTest {
         
         String input = "((_,_) <-> x)";
 
-        Compound x = term(input);
+        Compound x = NarseseTest.term(input);
         
         assertEquals("((_,_)<->x)", x.toString());
 
@@ -361,10 +362,10 @@ class NarseseExtendedTest extends NarseseTest {
         
         assertEquals("((#1,#2)<->x)", y.toString());
 
-        Task question = task(x + "?");
+        Task question = NarseseTest.task(x + "?");
         assertEquals("((#1,#2)<->x)?", question.toStringWithoutBudget());
 
-        Task belief = task(x + ".");
+        Task belief = NarseseTest.task(x + ".");
         assertEquals("((#1,#2)<->x). %1.0;.90%", belief.toStringWithoutBudget());
 
     }

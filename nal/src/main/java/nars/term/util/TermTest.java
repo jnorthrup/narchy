@@ -26,8 +26,10 @@ import nars.term.Compound;
 import nars.term.Term;
 import nars.term.Termed;
 import nars.term.Termlike;
+import nars.term.atom.Bool;
 import nars.term.compound.CachedCompound;
 import nars.term.util.builder.TermBuilder;
+import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Assertions;
 
 import java.util.List;
@@ -235,4 +237,17 @@ public enum TermTest { ;
 
     }
 
+    /** HACK may need to split this into two functions, one which accepts bool result and others which only accept a thrown exception */
+    public static void assertInvalidTerms(@NotNull String... inputs) {
+        for (String s : inputs) {
+
+            try {
+                Term e = Narsese.term(s);
+                assertTrue(e instanceof Bool, () -> s + " should not be parseable but got: " + e);
+
+            } catch (Narsese.NarseseException | TermException e) {
+                assertTrue(true);
+            }
+        }
+    }
 }

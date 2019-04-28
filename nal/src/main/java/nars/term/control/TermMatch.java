@@ -1,16 +1,12 @@
-package nars.derive.premise.op;
+package nars.term.control;
 
 import jcog.WTF;
 import jcog.data.list.FasterList;
 import nars.$;
 import nars.Op;
-import nars.derive.premise.AbstractTermMatchPred;
-import nars.derive.premise.PremiseRuleSource;
-import nars.derive.premise.PremiseTermAccessor;
 import nars.term.Term;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
-import nars.term.control.PREDICATE;
 import nars.unify.constraint.TermMatcher;
 
 import java.util.function.Function;
@@ -32,10 +28,8 @@ public final class TermMatch<X> extends AbstractTermMatchPred<X> {
         this(match, true, true, resolve, cost(pathLen));
     }
 
-    public TermMatch(TermMatcher match, boolean trueOrFalse, boolean exactOrSuper, boolean taskOrBelief, byte[] path) {
-        this(match, trueOrFalse, exactOrSuper, TaskOrBelief(taskOrBelief).path(path), cost(path.length));
-    }
-    private TermMatch(TermMatcher match, boolean trueOrFalse, boolean exactOrSuper, Function/*<X, Term>*/ resolve, float resolveCost) {
+
+    public TermMatch(TermMatcher match, boolean trueOrFalse, boolean exactOrSuper, Function/*<X, Term>*/ resolve, float resolveCost) {
         super(name(match, resolve, exactOrSuper).negIf(!trueOrFalse), resolve, resolveCost);
 
         this.match = match;
@@ -57,9 +51,6 @@ public final class TermMatch<X> extends AbstractTermMatchPred<X> {
         return p!=null ? $.func(a, r, p) : $.func(a, r);
     }
 
-    private static PremiseTermAccessor TaskOrBelief(boolean taskOrBelief) {
-        return taskOrBelief ? PremiseRuleSource.TaskTerm : PremiseRuleSource.BeliefTerm;
-    }
 
     @Override
     public boolean reduceIn(FasterList<PREDICATE<X>> p) {

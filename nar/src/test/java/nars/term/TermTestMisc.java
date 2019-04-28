@@ -5,6 +5,7 @@ import nars.concept.Concept;
 import nars.subterm.ArrayTermVector;
 import nars.subterm.Subterms;
 import nars.subterm.UniSubterm;
+import nars.task.RevisionTest;
 import nars.task.util.TaskException;
 import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
@@ -12,6 +13,7 @@ import nars.term.util.TermException;
 import nars.term.util.TermTest;
 import nars.util.Timed;
 import org.jetbrains.annotations.NotNull;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -23,7 +25,6 @@ import static java.lang.Long.toBinaryString;
 import static nars.$.$;
 import static nars.$.$$;
 import static nars.Op.*;
-import static nars.task.RevisionTest.x;
 import static org.junit.jupiter.api.Assertions.*;
 
 /** target tests to be organzied more specifically */
@@ -224,6 +225,7 @@ public class TermTestMisc {
     void invalidTermIndep() {
 
         String t = "($1-->({place4}~$1))";
+
 
 
         try {
@@ -558,8 +560,8 @@ public class TermTestMisc {
 
     @Test
     void testSubTermStructure() throws Narsese.NarseseException {
-        assertTrue(x.term().impossibleSubTerm(x.term()));
-        assertTrue(!x.hasAll($.$("(a-->#b)").term().structure()));
+        Assertions.assertTrue(RevisionTest.x.term().impossibleSubTerm(RevisionTest.x.term()));
+        assertTrue(!RevisionTest.x.hasAll($.$("(a-->#b)").term().structure()));
     }
 
     @Test

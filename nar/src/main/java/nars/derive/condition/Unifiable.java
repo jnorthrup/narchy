@@ -1,4 +1,4 @@
-package nars.derive.filter;
+package nars.derive.condition;
 
 import jcog.WTF;
 import nars.$;

@@ -9,7 +9,7 @@ import nars.Task;
 import nars.attention.derive.DefaultPuncWeightedDerivePri;
 import nars.concept.Concept;
 import nars.control.NARPart;
-import nars.control.channel.ConsumerX;
+import jcog.util.ConsumerX;
 import nars.control.op.Perceive;
 import nars.control.op.TaskEvent;
 import nars.link.TaskLink;

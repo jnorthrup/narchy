@@ -8,7 +8,7 @@ import jcog.pri.Prioritizable;
 import nars.NAR;
 import nars.Task;
 import nars.control.NARPart;
-import nars.control.channel.ConsumerX;
+import jcog.util.ConsumerX;
 import nars.time.ScheduledTask;
 import org.slf4j.Logger;
 

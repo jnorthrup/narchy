@@ -87,10 +87,14 @@ class ConjDiffTest {
         assertConjDiffPN(xy, x, "[(y &&+1232 (--,y))]"); //1 compound result
     }
 
+    private final Term xy = $$("((x &&+4120 (y&&z)) &&+1232 --y)");
+
     @Test void testConjWithoutPN_EliminateOnlyOneAtAtime_Seq_with_inner_Comm() {
-        Term xy = $$("((x &&+4120 (y&&z)) &&+1232 --y)");
         assertConjDiffPN(xy, $$("(y&|z)"), "[(x &&+5352 (--,y))]");
         assertConjDiffPN(xy, $$("(y&|z)").neg(), "[(x &&+5352 (--,y))]");
+    }
+
+    @Test void testConjWithoutPN_EliminateOnlyOneAtAtime_Seq_with_inner_Comm_unify() {
         assertConjDiffPN(xy, $$("(y&&z)"), "[]"); //TODO unify
     }
 

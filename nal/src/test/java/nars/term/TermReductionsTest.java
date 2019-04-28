@@ -1,27 +1,22 @@
 package nars.term;
 
-import nars.*;
+import nars.$;
+import nars.Narsese;
+import nars.Op;
 import nars.io.NarseseTest;
-import nars.task.TaskTest;
-import nars.task.util.TaskException;
 import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
 import nars.term.util.SetSectDiff;
+import nars.term.util.TermTest;
 import nars.term.util.conj.ConjSeq;
 import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import static nars.$.$;
-import static nars.$.t;
 import static nars.Op.*;
-import static nars.term.TermTestMisc.assertValid;
-import static nars.term.TermTestMisc.assertValidTermValidConceptInvalidTaskContent;
 import static nars.term.atom.Bool.Null;
 import static nars.term.util.TermTest.assertEq;
-import static nars.term.util.conj.ConjTest.$$c;
-import static nars.time.Tense.DTERNAL;
-import static nars.time.Tense.XTERNAL;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
@@ -108,8 +103,8 @@ public class TermReductionsTest extends NarseseTest {
     @Test
     void testCyclicalNAL1_and_NAL2() {
 
-        assertInvalidTerms("((#1~swan)-->#1)");
-        assertInvalidTerms(
+        TermTest.assertInvalidTerms("((#1~swan)-->#1)");
+        TermTest.assertInvalidTerms(
                 "((swimmer~swan)-->swimmer)",
                 "((x|y)-->x)",
                 "((x&y)-->x)",
@@ -355,7 +350,7 @@ public class TermReductionsTest extends NarseseTest {
     void testImplicationConjCommonSubterms() {
         assertEq("((&&,a,b,c)==>d)", "((&&, a, b, c) ==> (&&, a, d))");
         assertEq("((a&&d)==>(b&&c))", "((&&, a, d) ==> (&&, a, b, c))");
-        assertInvalidTerms("((&&, a, b, c) ==> (&&, a, b))");
+        TermTest.assertInvalidTerms("((&&, a, b, c) ==> (&&, a, b))");
         assertEq("((a&&b)==>c)", "((&&, a, b) ==> (&&, a, b, c))");
         assertEq(Bool.True, "((&&, a, b, c) ==> a)");
 
@@ -363,16 +358,6 @@ public class TermReductionsTest extends NarseseTest {
     }
 
 
-    @Test
-    void testInvalidStatementIndepVarTask() {
-        NAR t = NARS.shell();
-        try {
-            t.inputTask("at($1,$2,$3).");
-            fail("");
-        } catch (Narsese.NarseseException | TaskException e) {
-            assertTrue(true);
-        }
-    }
 
 
     @Test
@@ -445,13 +430,6 @@ public class TermReductionsTest extends NarseseTest {
 
 
     @Test
-    void testCoNegatedImpl() {
-        assertValidTermValidConceptInvalidTaskContent(("(--x ==> x)."));
-        assertValidTermValidConceptInvalidTaskContent(("(--x =|> x)."));
-    }
-
-
-    @Test
     void testImplCommonSubterms() {
 
         assertEq("(((--,isIn($1,xyz))&&(--,(($1,xyz)-->$2)))==>((y-->x)))", "(((--,isIn($1,xyz))&&(--,(($1,xyz)-->$2)))==>((--,(($1,xyz)-->$2))&&(x:y)))");
@@ -471,25 +449,6 @@ public class TermReductionsTest extends NarseseTest {
         assertEq(Bool.True, "((((_1,_2)&|(_1,_3)) &&+2 ((_1,_2)&|(_1,_3))) ==>-2 ((_1,_2)&|(_1,_3)))");
     }
 
-    @Test
-    void testCommutizeRepeatingImpl() {
-
-        assertEquals(Bool.True,
-                $$c("(a ==>+1 a)").dt(DTERNAL));
-        assertEquals(Bool.False,
-                $$c("(--a ==>+1 a)").dt(DTERNAL));
-
-        assertEquals(Bool.True,
-                $$c("(a ==>+1 a)").dt(0));
-        assertEquals(Bool.False,
-                $$c("(--a ==>+1 a)").dt(0));
-
-
-        assertEquals("(a ==>+- a)",
-                $$c("(a ==>+1 a)").dt(XTERNAL).toString());
-        assertEquals("((--,a) ==>+- a)",
-                $$c("(--a ==>+1 a)").dt(XTERNAL).toString());
-    }
 
     @Test
     void testImplXternalDternalPredicateImpl() {
@@ -531,36 +490,6 @@ public class TermReductionsTest extends NarseseTest {
 
     }
 
-    @Test
-    void testCoNegatedImplOK() throws Narsese.NarseseException {
-        assertValid($("((--,(a)) ==>+1 (a))"));
-        assertValid($("((--,a) ==>+1 a)"));
-    }
-
-
-    @Test
-    void testRepeatEvent() throws Narsese.NarseseException {
-        NAR n = NARS.shell();
-
-        for (String x : new String[]{
-                "((a) ==>+1 (a))",
-                "((a) &&+1 (a))",
-
-                /*"((a) &&+1 (a))",*/
-        }) {
-            Term t = $(x);
-            assertTrue(t instanceof Compound, x + " :: " + t);
-            assertTrue(t.dt() != DTERNAL);
-
-            Task y = TaskTest.task(t, Op.BELIEF, t(1f, 0.9f)).apply(n);
-
-            y.term().printRecursive();
-            assertEquals(x, y.term().toString());
-
-        }
-
-
-    }
 
 
     @Test
@@ -614,11 +543,11 @@ public class TermReductionsTest extends NarseseTest {
 
     @Test
     void testCoNegatedIntersectionAndDiffs() {
-        assertInvalidTerms("(|,(x),(--,(x))");
-        assertInvalidTerms("(&,(x),(--,(x))");
-        assertInvalidTerms("(-,(x),(--,(x))");
-        assertInvalidTerms("(~,(x),(--,(x))");
-        assertInvalidTerms("(-,(x),(x))");
+        TermTest.assertInvalidTerms("(|,(x),(--,(x))");
+        TermTest.assertInvalidTerms("(&,(x),(--,(x))");
+        TermTest.assertInvalidTerms("(-,(x),(--,(x))");
+        TermTest.assertInvalidTerms("(~,(x),(--,(x))");
+        TermTest.assertInvalidTerms("(-,(x),(x))");
     }
 
 

@@ -1,4 +1,4 @@
-package nars.task.util;
+package nars.task;
 
 import jcog.util.ArrayUtils;
 import nars.NAR;

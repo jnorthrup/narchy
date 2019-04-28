@@ -9,16 +9,16 @@ import nars.Narsese;
 import nars.Op;
 import nars.derive.Derivation;
 import nars.derive.PreDerivation;
-import nars.derive.filter.CommutativeConstantPreFilter;
-import nars.derive.filter.DoublePremiseRequired;
-import nars.derive.filter.Unifiable;
+import nars.derive.condition.CommutativeConstantPreFilter;
+import nars.derive.condition.DoublePremiseRequired;
+import nars.derive.condition.Unifiable;
 import nars.derive.op.ConjParallel;
 import nars.derive.op.Occurrify;
 import nars.derive.op.Termify;
 import nars.derive.op.Truthify;
-import nars.derive.premise.op.ConstraintAsPremisePredicate;
-import nars.derive.premise.op.TaskPunc;
-import nars.derive.premise.op.TermMatch;
+import nars.derive.condition.ConstraintAsPremisePredicate;
+import nars.derive.condition.TaskPunc;
+import nars.term.control.TermMatch;
 import nars.subterm.BiSubterm;
 import nars.subterm.Subterms;
 import nars.term.Variable;
@@ -55,6 +55,7 @@ import java.util.stream.Stream;
 
 import static nars.Op.*;
 import static nars.subterm.util.SubtermCondition.*;
+import static nars.term.control.AbstractTermMatchPred.cost;
 import static nars.term.control.PREDICATE.sortByCostIncreasing;
 
 /**
@@ -881,13 +882,19 @@ public class PremiseRuleSource extends ProxyTerm {
         return new BiSubterm(a, b);
     }
 
+
+    private static PremiseTermAccessor TaskOrBelief(boolean taskOrBelief) {
+        return taskOrBelief ? PremiseRuleSource.TaskTerm : PremiseRuleSource.BeliefTerm;
+    }
+
     private void matchSuper(boolean taskOrBelief, TermMatcher m, boolean trueOrFalse) {
-        pre.add(new TermMatch(m, trueOrFalse, false, taskOrBelief, ArrayUtils.EMPTY_BYTE_ARRAY));
+        byte[] path = ArrayUtils.EMPTY_BYTE_ARRAY;
+        pre.add(new TermMatch(m, trueOrFalse, false, TaskOrBelief(taskOrBelief).path(path), cost(path.length)));
     }
 
 
-    private void match(boolean taskOrBelief, byte[] path, TermMatcher m, boolean isOrIsnt) {
-        pre.add(new TermMatch(m, isOrIsnt, true, taskOrBelief, path));
+    private void match(boolean taskOrBelief, byte[] path, TermMatcher m, boolean trueOrFalse) {
+        pre.add(new TermMatch(m, trueOrFalse, true, TaskOrBelief(taskOrBelief).path(path), cost(path.length)));
     }
 
 

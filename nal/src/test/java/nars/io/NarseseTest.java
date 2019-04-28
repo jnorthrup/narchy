@@ -1,14 +1,12 @@
 package nars.io;
 
 import nars.$;
-import nars.NARS;
+import nars.DummyNAL;
 import nars.Narsese;
 import nars.Task;
 import nars.task.util.TaskException;
 import nars.term.Compound;
 import nars.term.Term;
-import nars.term.atom.Bool;
-import nars.term.util.TermException;
 import nars.truth.Truth;
 import org.jetbrains.annotations.NotNull;
 
@@ -24,20 +22,6 @@ public abstract class NarseseTest {
     public static <T extends Term> T term(@NotNull String s) throws Narsese.NarseseException {
 
         return (T) Narsese.term(s);
-    }
-
-    //HACK may need to split this into two functions, one which accepts bool result and others which only accept a thrown exception
-    public static void assertInvalidTerms(@NotNull String... inputs) {
-        for (String s : inputs) {
-
-            try {
-                Term e = term(s);
-                assertTrue(e instanceof Bool, () -> s + " should not be parseable but got: " + e);
-
-            } catch (Narsese.NarseseException | TermException e) {
-                assertTrue(true);
-            }
-        }
     }
 
 
@@ -61,7 +45,7 @@ public abstract class NarseseTest {
 
 
         List<Task> l = $.newArrayList(1);
-        Narsese.tasks(s, l, NARS.shell());
+        Narsese.tasks(s, l, new DummyNAL());
         return l;
     }
 

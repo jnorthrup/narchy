@@ -1,6 +1,7 @@
 package nars.control.channel;
 
 import jcog.pri.Prioritizable;
+import jcog.util.ConsumerX;
 import nars.control.Why;
 
 import java.util.Collection;

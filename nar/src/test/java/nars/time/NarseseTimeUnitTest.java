@@ -1,4 +1,4 @@
-package nars.io;
+package nars.time;
 
 import nars.NAR;
 import nars.NARS;
@@ -7,7 +7,6 @@ import nars.Task;
 import org.junit.jupiter.api.Test;
 
 import static nars.$.$$;
-import static nars.io.NarseseTest.task;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -18,14 +17,14 @@ class NarseseTimeUnitTest {
 
     @Test
     void testOccurence() throws Narsese.NarseseException {
-        @Deprecated Task now = task("(a-->b). :|:");
+        @Deprecated Task now = n.inputTask("(a-->b). :|:");
         
         
-        Task now1 = task("(a-->b). |"); 
-        Task now1withTruth = task("(a-->b). | %1.0;0.90%"); 
-        Task now2 = task("(a-->b). +0"); 
-        Task next = task("(a-->b). +1");
-        Task prev = task("(a-->b). -1");
+        Task now1 = n.inputTask("(a-->b). |");
+        Task now1withTruth = n.inputTask("(a-->b). | %1.0;0.90%");
+        Task now2 = n.inputTask("(a-->b). +0");
+        Task next = n.inputTask("(a-->b). +1");
+        Task prev = n.inputTask("(a-->b). -1");
         assertEquals(now1.start() , now2.start());
         assertEquals(now1.start() , now1withTruth.start());
         assertEquals(now1.start()+1 , next.start());
@@ -36,7 +35,7 @@ class NarseseTimeUnitTest {
     void testCycleTimeOccurenceRange() throws Narsese.NarseseException {
 //        @Deprecated Task now = task("(a-->b). :|:");
 
-        Task now1 = task("(a-->b). +1..2");
+        Task now1 = n.inputTask("(a-->b). +1..2");
         assertEquals(1 , now1.start());
         assertEquals(2, now1.end());
     }

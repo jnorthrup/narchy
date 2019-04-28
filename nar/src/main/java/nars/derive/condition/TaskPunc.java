@@ -1,15 +1,19 @@
-package nars.derive.premise.op;
+package nars.derive.condition;
 
 import nars.$;
 import nars.derive.PreDerivation;
+import nars.term.atom.Atom;
+import nars.term.atom.Atomic;
 import nars.term.control.AbstractPred;
 import org.eclipse.collections.api.block.predicate.primitive.BytePredicate;
 
 public final class TaskPunc extends AbstractPred<PreDerivation> {
     private final BytePredicate taskPunc;
 
+    private static final Atom TASKPUNC = (Atom) Atomic.the(TaskPunc.class.getSimpleName());
+
     public TaskPunc(BytePredicate taskPunc) {
-        super($.funcFast(TaskPunc.class.getSimpleName(), $.quote(taskPunc)));
+        super($.func(TASKPUNC, $.quote(taskPunc)));
         this.taskPunc = taskPunc;
     }
 

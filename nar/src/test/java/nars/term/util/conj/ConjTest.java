@@ -15,6 +15,7 @@ import nars.term.util.transform.Retemporalize;
 import nars.term.var.ellipsis.Ellipsis;
 import org.eclipse.collections.api.tuple.primitive.LongObjectPair;
 import org.jetbrains.annotations.NotNull;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.roaringbitmap.RoaringBitmap;
@@ -24,7 +25,6 @@ import java.util.Random;
 
 import static nars.$.*;
 import static nars.Op.CONJ;
-import static nars.io.NarseseTest.assertInvalidTerms;
 import static nars.term.TemporalTermTest.testParse;
 import static nars.term.TermTestMisc.assertValid;
 import static nars.term.atom.Bool.*;
@@ -1390,7 +1390,6 @@ public class ConjTest {
 
     @Test
     void testSingularStatementsInDisjunction() {
-
         assertInvalidTerms("(||,(a<->a),c:d,e:f)");
     }
 
@@ -2206,5 +2205,24 @@ public class ConjTest {
         // ((&|,(((--,(#1,#2))&(--,(#2,#2)))-->_1),_3(#1,#2,_2),(--,_4))&&((_4 &&+140 _3(#4,#5,_2)) &&+600 _3(#4,#5,_2)))
     }
 
+    @Test
+    void testCommutizeRepeatingImpl() {
+
+        Assertions.assertEquals(Bool.True,
+                ConjTest.$$c("(a ==>+1 a)").dt(DTERNAL));
+        Assertions.assertEquals(Bool.False,
+                ConjTest.$$c("(--a ==>+1 a)").dt(DTERNAL));
+
+        Assertions.assertEquals(Bool.True,
+                ConjTest.$$c("(a ==>+1 a)").dt(0));
+        Assertions.assertEquals(Bool.False,
+                ConjTest.$$c("(--a ==>+1 a)").dt(0));
+
+
+        Assertions.assertEquals("(a ==>+- a)",
+                ConjTest.$$c("(a ==>+1 a)").dt(XTERNAL).toString());
+        Assertions.assertEquals("((--,a) ==>+- a)",
+                ConjTest.$$c("(--a ==>+1 a)").dt(XTERNAL).toString());
+    }
 }
 

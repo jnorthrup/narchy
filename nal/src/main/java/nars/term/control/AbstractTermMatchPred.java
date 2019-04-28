@@ -1,7 +1,6 @@
-package nars.derive.premise;
+package nars.term.control;
 
 import nars.term.Term;
-import nars.term.control.AbstractPred;
 
 import java.util.function.Function;
 
@@ -15,7 +14,7 @@ public abstract class AbstractTermMatchPred<X> extends AbstractPred<X> {
         this.resolveCost = resolveCost;
     }
 
-    protected static float cost(int pathLen) {
+    public static float cost(int pathLen) {
         return pathLen * 0.01f;
     }
 

@@ -160,7 +160,7 @@ public abstract class NAL<W> extends Parts<Term, W> implements Timed {
     /**
      * might help with overall throughput by reducing lock and synchronization contention by grouping sequences of tasks by the destination concept
      */
-    public static final boolean PRE_SORT_TASK_INPUT_BATCH= !configIs("DISABLE_PRE_SORT_TASK_INPUT_BATCH");
+    public static final boolean PRE_SORT_TASK_INPUT_BATCH = configIs("PRE_SORT_TASK_INPUT_BATCH");
     public static final int WHATS_CAPACITY = 128;
     public static final int HOWS_CAPACITY = 128;
     protected static final boolean DYNAMIC_CONCEPT_TRANSIENT = false;

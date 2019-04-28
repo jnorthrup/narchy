@@ -35,14 +35,16 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 class TermIOTest {
 
-    private final NAR nar = NARS.shell();
+//    private final NAR nar = NARS.shell();
+    final DummyNAL nal = new DummyNAL();
 
     private byte[] assertEqualSerialize(@NotNull String orig) throws Narsese.NarseseException, IOException {
         return assertEqualSerialize($.$(orig).term());
     }
 
     private void assertEqualTask(@NotNull String orig) throws Narsese.NarseseException, IOException {
-        assertEqualSerialize((Object)nar.inputTask(orig));
+        //assertEqualSerialize((Object)nar.inputTask(orig));
+        assertEqualSerialize(Narsese.task(orig, nal));
     }
 
     private static byte[] assertEqualSerialize(@NotNull Object orig) throws IOException {
@@ -275,6 +277,8 @@ class TermIOTest {
         assertEqualTask("$0.1 (a ==>+4 (b-->c)). | %1.0;0.8%");
         assertEqualTask("$0.1 ((x,1) ==>+4 ((y,2)-->z)). | %1.0;0.8%");
 
+        assertEqualTask("$0.3 (a-->(bd))! %1.0;0.8%");
+
         assertEqualTask("(x ==>+- y)?");
         assertEqualTask("(x ==>+- y)? |");
         assertEqualTask("(x ==>+- x)?");
@@ -292,81 +296,8 @@ class TermIOTest {
 
     }
 
-    @Test
-    void testTaskSerialization2() throws Exception {
-        assertEqualSerialize((Object)nar.inputTask("$0.3 (a-->(bd))! %1.0;0.8%"));
-    }
-
-    @ParameterizedTest
-    @ValueSource(strings = {
-        "a:b. b:c.",
-        "a:b. b:c. c:d! a@",
-        "d(x,c). :|: (x<->c)?",
-        "((x &&+1 b) &&+1 c). :|: (c && --b)!"
-    })
-    void testNARTaskSaveAndReload(String input) throws Exception {
-
-        ByteArrayOutputStream baos = new ByteArrayOutputStream(16384);
-
-        final AtomicInteger count = new AtomicInteger();
 
 
-
-        Set<Task> written = new HashSet();
-
-        NAR a = NARS.tmp()
-
-                .input(new String[] { input });
-        a
-                .run(16);
-        a
-                .synch()
-                .outputBinary(baos, (Task t)->{
-                    assertTrue(written.add(t),()->"duplicate: " + t);
-                    count.incrementAndGet();
-                    return true;
-                })
-                
-        ;
-
-        byte[] x = baos.toByteArray();
-        out.println(count.get() + " tasks serialized in " + x.length + " bytes");
-
-        NAR b = NARS.shell()
-                .inputBinary(new ByteArrayInputStream(x));
-                
-                
-                
-        
-
-        
-
-        Set<Task> aHas = new HashSet();
-
-        a.tasks().forEach((Task t) -> aHas.add(t) );
-
-        assertEquals(count.get(), aHas.size());
-
-        assertEquals(written, aHas);
-
-        Set<Task> bRead = new HashSet();
-
-        b.tasks().forEach(t -> bRead.add(t));
-
-        assertEquals(aHas, bRead);
-
-
-
-        
-
-
-
-
-
-
-
-
-    }
 
 //    @Disabled
 //    static class ByteMappingTest {
