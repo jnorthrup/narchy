@@ -19,7 +19,7 @@ abstract public class ScalarReward extends Reward {
     boolean negate;
     protected transient volatile float reward = Float.NaN;
 
-    public ScalarReward(Term id, Game a) {
+    ScalarReward(Term id, Game a) {
         super(id, a);
         this.id = id;
         negate = id.op()==NEG;
@@ -28,6 +28,7 @@ abstract public class ScalarReward extends Reward {
             throw new NullPointerException("concept null for target: " + id);
         alwaysWantEternally(id);
     }
+
     @Override
     public final void update(Game a) {
         this.reward = reward(a);

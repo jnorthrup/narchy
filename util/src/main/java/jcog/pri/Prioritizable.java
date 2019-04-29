@@ -106,9 +106,6 @@ public interface Prioritizable extends Prioritized, ScalarValue {
         return toBudgetStringExternal().toString();
     }
 
-    default String getBudgetString() {
-        return Prioritized.toString(this);
-    }
 
 
 //    /**

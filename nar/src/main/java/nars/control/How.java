@@ -39,7 +39,14 @@ import static nars.time.Tense.TIMELESS;
  * records runtime instrumentation, profiling, and other telemetry for a particular Causable
  * both per individual threads, and collectively
  */
-@Skill("Effects_unit") abstract public class How extends NARPart implements Prioritizable {
+@Skill({
+    "Effects_unit",
+    "Utility_maximization_problem",
+    "Optimal_decision",
+    "Action_axiom",
+    "Norm_(artificial_intelligence)"
+})
+abstract public class How extends NARPart implements Prioritizable {
 
 
     public abstract void next(What w, BooleanSupplier kontinue);

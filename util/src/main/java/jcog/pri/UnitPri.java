@@ -7,7 +7,7 @@ public class UnitPri extends Pri implements UnitPrioritizable {
         super();
     }
 
-    public UnitPri(Prioritizable x) {
+    public UnitPri(Prioritized x) {
         super(x);
     }
 

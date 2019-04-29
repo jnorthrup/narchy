@@ -11,7 +11,7 @@ import org.jetbrains.annotations.Nullable;
  *      reports a priority scalar value (32-bit float precision)
  *      NaN means it is 'deleted' which is a valid and testable state
  */
-@Skill({"Microeconomics","Macroeconomics"})
+@Skill({"Demand", "Microeconomics", "Macroeconomics"})
 public interface Prioritized extends Deleteable {
 
     /**
@@ -60,7 +60,6 @@ public interface Prioritized extends Deleteable {
         switch (s) {
             default:
                 return Ansi.Color.DEFAULT;
-
             case 1:
                 return Ansi.Color.MAGENTA;
             case 2:
@@ -69,7 +68,6 @@ public interface Prioritized extends Deleteable {
                 return Ansi.Color.YELLOW;
             case 4:
                 return Ansi.Color.RED;
-
         }
     }
 
@@ -91,6 +89,10 @@ public interface Prioritized extends Deleteable {
     @Override default boolean isDeleted() {
         float p = pri();
         return p!=p; 
+    }
+
+    default String getBudgetString() {
+        return Prioritized.toString(this);
     }
 
 //    static float sum(Prioritized... src) {

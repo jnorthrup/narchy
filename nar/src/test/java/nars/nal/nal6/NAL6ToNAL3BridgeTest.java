@@ -7,9 +7,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-public class NAL6ToNAL3BridgeTest extends NALTest {
-    public static final float CONF = 0.81f;
-    final static int cycles = 256;
+class NAL6ToNAL3BridgeTest extends NALTest {
+    private static final float CONF = 0.81f;
+    private final static int cycles = 256;
 
 
         @BeforeEach
@@ -18,24 +18,30 @@ public class NAL6ToNAL3BridgeTest extends NALTest {
         new BatchDeriver(Derivers.files(test.nar, "nal6.to.nal3.nal"));
         }
 
-    @Test public void test1() { test.input("((X-->A) && (Y-->A)).")
+    @Disabled @Test
+    void test1() { test.input("((X-->A) && (Y-->A)).")
             //.mustGoal(cycles, "((X|Y)-->A)", 1.0f, CONF); }
             .mustQuestion(cycles, "((X|Y)-->A)"); }
-    @Test public void test2() {
+    @Disabled @Test
+    void test2() {
         test.input("((X-->A) || (Y-->A)).").mustQuestion(cycles, "((X&Y)-->A)");
     }
-    @Test public void test3() {
+    @Disabled @Test
+    void test3() {
         test.input("((A-->X) && (A-->Y)).").mustQuestion(cycles, "(A-->(X&Y))");
     }
-    @Test public void test4() {
+    @Disabled @Test
+    void test4() {
         test.input("((A-->X) || (A-->Y)).")
                 .mustQuestion(cycles, "(A-->(X|Y))");
     }
-    @Disabled @Test public void test5() {
+    @Disabled @Test
+    void test5() {
         test.input("((A-->X) ~ (A-->Y))!").mustGoal(cycles, "(A-->(X-Y))", 1.0f, CONF);
     }
     @Disabled
-    @Test public void test6() {
+    @Test
+    void test6() {
         test.input("((X-->A) ~ (Y-->A))!").mustGoal(cycles, "((X~Y)-->A)", 1.0f, CONF);
     }
 
