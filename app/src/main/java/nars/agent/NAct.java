@@ -555,7 +555,7 @@ import static nars.Op.BELIEF;
     }
     
     default BooleanPredicate debounce(BooleanPredicate f, float durations) {
-        NAR n = nar();
+        What n = what();
         final long[] last = {Math.round(n.time() - durations * n.dur())};
 
         return (x)->{

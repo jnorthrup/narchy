@@ -5,7 +5,7 @@ import nars.attention.AttnBranch;
 import nars.concept.sensor.Signal;
 import nars.term.Term;
 
-public class SimpleReward extends BeliefReward {
+public class SimpleReward extends ScalarReward {
 
 //    private static final Logger logger = LoggerFactory.getLogger(SimpleReward.class);
     private final FloatSupplier rewardFunc;
@@ -60,7 +60,7 @@ public class SimpleReward extends BeliefReward {
 
 
     @Override protected Signal newConcept() {
-        Signal concept = new Signal(id, in.id, () -> rewardBelief, /*linker, */nar()) {
+        Signal concept = new Signal(id, in.id, () -> reward, /*linker, */nar()) {
             @Override
             protected AttnBranch newAttn(Term term) {
                 return new AttnBranch(term, this.components());
@@ -77,8 +77,8 @@ public class SimpleReward extends BeliefReward {
     }
 
     @Override
-    public void updateReward(Game a) {
-        this.rewardBelief = rewardFunc.asFloat();
-        ((Signal)concept).update(a);
+    protected final float reward(Game a) {
+        return rewardFunc.asFloat();
     }
+
 }

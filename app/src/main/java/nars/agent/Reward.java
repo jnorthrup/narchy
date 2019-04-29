@@ -36,7 +36,6 @@ public abstract class Reward implements GameLoop, TermedDelegate, Iterable<Conce
 
     protected final Game game;
 
-    protected transient volatile float rewardBelief = Float.NaN;
 
     protected final CauseChannel<Task> in;
 
@@ -71,19 +70,16 @@ public abstract class Reward implements GameLoop, TermedDelegate, Iterable<Conce
      *
      * happiness = 1 - Math.abs(rewardBeliefExp - rewardGoalExp)/Math.max(rewardBeliefExp,rewardGoalExp)
      * */
-    abstract public float happiness();
+    abstract public float happiness(int dur);
 
-    /** scalar value representing the reward state (0..1.0) */
-    protected abstract float rewardFreq(boolean beliefOrGoal);
-
-    public final NAR nar() { return game.nar(); }
-
-    public final void update(Game g) {
-        rewardBelief = rewardFreq(true);
-        updateReward(g);
+    protected final float rewardFreq(boolean beliefOrGoal) {
+        return rewardFreq(beliefOrGoal, game.dur());
     }
 
-    protected abstract void updateReward(Game g);
+    /** scalar value representing the reward state (0..1.0) */
+    protected abstract float rewardFreq(boolean beliefOrGoal, int dur);
+
+    public final NAR nar() { return game.nar(); }
 
     @Deprecated protected FloatFloatToObjectFunction<Truth> truther() {
         return (prev, next) -> (next == next) ?
