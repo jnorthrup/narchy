@@ -34,8 +34,8 @@ public class Unifiable extends AbstractPred<PreDerivation> {
 
     Unifiable(byte[] xpInT, byte[] xpInB, byte[] ypInT, byte[] ypInB, int varBits, boolean isStrict) {
         super($.func(UnifyPreFilter, $.intRadix(varBits, 2), UniSubst.NOVEL.negIf(!isStrict),
-                PremiseRuleSource.pp(xpInT), PremiseRuleSource.pp(xpInB),
-                PremiseRuleSource.pp(ypInT), PremiseRuleSource.pp(ypInB)));
+                PremiseRuleSource.pathTerm(xpInT), PremiseRuleSource.pathTerm(xpInB),
+                PremiseRuleSource.pathTerm(ypInT), PremiseRuleSource.pathTerm(ypInB)));
         this.xpInT = xpInT;
         this.xpInB = xpInB;
         this.ypInT = ypInT;

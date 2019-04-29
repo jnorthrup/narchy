@@ -7,6 +7,7 @@ import nars.term.Term;
 import nars.term.Variable;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
+import nars.term.var.VarPattern;
 
 import javax.annotation.Nullable;
 
@@ -260,6 +261,7 @@ abstract public class TermMatcher {
         public final Term x;
 
         public Contains(Term x) {
+            assert(!(x instanceof VarPattern)); //HACK
             this.x = x;
         }
 
@@ -293,6 +295,7 @@ abstract public class TermMatcher {
 
         public Equals(Term x) {
             this.x = x;
+            assert(!(x instanceof VarPattern)); //HACK
         }
 
         @Override
@@ -316,37 +319,38 @@ abstract public class TermMatcher {
         }
     }
 
-    /**
-     * non-recursive containment
-     */
-    public final static class EqualsRoot extends TermMatcher {
-
-        public final Term x;
-
-        public EqualsRoot(Term x) {
-            this.x = x;
-        }
-
-        @Override
-        public Term param() {
-            return x;
-        }
-
-        @Override
-        public float cost() {
-            return 0.15f;
-        }
-
-        @Override
-        public boolean test(Term term) {
-            return term.equalsRoot(x);
-        }
-
-        @Override
-        public boolean testSuper(Term x) {
-            return !x.impossibleSubTerm(this.x);
-        }
-    }
+//    /**
+//     * non-recursive containment
+//     */
+//    public final static class EqualsRoot extends TermMatcher {
+//
+//        public final Term x;
+//
+//        public EqualsRoot(Term x) {
+//            this.x = x;
+//            assert(!(x instanceof VarPattern)); //HACK
+//        }
+//
+//        @Override
+//        public Term param() {
+//            return x;
+//        }
+//
+//        @Override
+//        public float cost() {
+//            return 0.15f;
+//        }
+//
+//        @Override
+//        public boolean test(Term term) {
+//            return term.equalsRoot(x);
+//        }
+//
+//        @Override
+//        public boolean testSuper(Term x) {
+//            return !x.impossibleSubTerm(this.x);
+//        }
+//    }
 
     public final static class SubsMin extends TermMatcher {
 

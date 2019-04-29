@@ -42,7 +42,6 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
@@ -162,14 +161,14 @@ public class PremiseRuleSource extends ProxyTerm {
 
 
                 case "neq":
-                    neq(constraints, XX, Y);
+                    neq(XX, Y);
                     break;
                 case "neqRoot":
                     neqRoot(XX, YY);
                     break;
-                case "eqRoot":
-                    match(XX, new TermMatcher.EqualsRoot(YY));
-                    break;
+//                case "eqRoot":
+//                    match(XX, new TermMatcher.EqualsRoot(YY));
+//                    break;
                 case "subCountEqual":
                     constraints.add(new NotEqualConstraint.SubCountEqual(XX, YY));
                     break;
@@ -184,7 +183,7 @@ public class PremiseRuleSource extends ProxyTerm {
 
                 case "eqNeg":
                     //TODO special predicate: either (but not both) is Neg
-                    neq(constraints, XX, YY);
+                    neq(XX, YY);
                     constraints.add(new NotEqualConstraint.EqualNegConstraint(XX, YY));
                     break;
 
@@ -200,7 +199,7 @@ public class PremiseRuleSource extends ProxyTerm {
 
                 case "subOf": {
                     if (!negated)
-                        neq(constraints, XX, Y);
+                        neq(XX, Y);
 
                     if (Y.unneg() instanceof Variable) {
                         constraints.add(new SubOfConstraint(XX, ((Variable) (Y.unneg())),
@@ -216,12 +215,12 @@ public class PremiseRuleSource extends ProxyTerm {
 
                 case "subOfPosOrNeg":
                     //TODO handle negation
-                    neq(constraints, XX, YY);
+                    neq(XX, YY);
                     constraints.add(new SubOfConstraint(XX, YY, Subterm, 0));
                     break;
 
                 case "in":
-                    neq(constraints, XX, Y.unneg());
+                    neq(XX, Y.unneg());
                     constraints.add(new SubOfConstraint(XX, ((Variable) Y.unneg()), Recursive, Y.op() == NEG ? -1 : +1));
                     break;
 
@@ -232,7 +231,7 @@ public class PremiseRuleSource extends ProxyTerm {
 
                 case "eventOf":
                 case "eventOfNeg": {
-                    neq(constraints, XX, YY);
+                    neq(XX, YY);
                     boolean yNeg = pred.contains("Neg");
                     constraints.add(new SubOfConstraint(XX, YY, Event, yNeg ? -1 : +1).negIf(negated));
 
@@ -269,7 +268,7 @@ public class PremiseRuleSource extends ProxyTerm {
 //                }
 
                 case "eventOfPN":
-                    neq(constraints, XX, YY);
+                    neq(XX, YY);
                     is(X, CONJ);
 
                     eventable(YY);
@@ -290,7 +289,7 @@ public class PremiseRuleSource extends ProxyTerm {
                 case "eventCommon":
 
 
-                    neq(constraints, XX, YY);
+                    neq(XX, YY);
                     is(X, CONJ);
                     is(Y, CONJ);
                     constraints.add(new CommonSubEventConstraint(XX, YY));
@@ -966,7 +965,7 @@ public class PremiseRuleSource extends ProxyTerm {
         );
     }
 
-    private void neq(Set<UnifyConstraint> constraints, Variable x, Term y) {
+    private void neq(Variable x, Term y) {
 
         if (y.op() == NEG && y.unneg() instanceof Variable) {
             constraints.add(new NotEqualConstraint.EqualNegConstraint(x, (Variable) (y.unneg())).neg());
@@ -978,23 +977,22 @@ public class PremiseRuleSource extends ProxyTerm {
     }
 
     private void neqRoot(Variable x, Variable y) {
-        match(x, new TermMatcher.EqualsRoot(y), false);
-        //constraints.addAt(new NotEqualConstraint.NotEqualRootConstraint(x, y));
+        constraints.add(new NotEqualConstraint.NotEqualRootConstraint(x, y));
     }
 
-    public static Term pp(@Nullable byte[] b) {
-        return b == null ? $.the(-1) /* null */ : $.p(b);
+    public static Term pathTerm(@Nullable byte[] path) {
+        return path == null ? $.the(-1) /* null */ : $.p(path);
     }
 
 
-    public final static PremiseTermAccessor TaskTerm = new PremiseTermAccessor(0, "taskTerm") {
+    private final static PremiseTermAccessor TaskTerm = new PremiseTermAccessor(0, "taskTerm") {
         @Override
         public Term apply(PreDerivation d) {
             return d.taskTerm;
         }
     };
 
-    public final static PremiseTermAccessor BeliefTerm = new PremiseTermAccessor(1, "beliefTerm") {
+    private final static PremiseTermAccessor BeliefTerm = new PremiseTermAccessor(1, "beliefTerm") {
 
         @Override
         public Term apply(PreDerivation d) {
@@ -1005,7 +1003,7 @@ public class PremiseRuleSource extends ProxyTerm {
 
     static class UppercaseAtomsToPatternVariables extends DirectTermTransform {
 
-        final UnifiedMap<String, Term> map = new UnifiedMap<>(4);
+        final UnifiedMap<String, Term> map = new UnifiedMap<>(8);
 
         static final ImmutableSet<Atomic> reservedMetaInfoCategories = Sets.immutable.of(
                 Atomic.the("Belief"),

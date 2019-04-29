@@ -47,7 +47,7 @@ public final class NotEqualConstraint extends RelationConstraint {
 
     public static final class NotEqualRootConstraint extends RelationConstraint {
 
-        NotEqualRootConstraint(Variable target, Variable other) {
+        public NotEqualRootConstraint(Variable target, Variable other) {
             super("neqRoot", target, other);
         }
 

@@ -166,8 +166,8 @@ public abstract class NAL<W> extends Parts<Term, W> implements Timed {
 
     /** divisor for dividing the table's range of held beliefs in determining a 'table duration' for comparison of relative task strength */
     public static final long TEMPORAL_BELIEF_TABLE_DUR_DIVISOR =
-            //2;
-            4;
+            2;
+            //4;
 
 
     protected static final boolean DYNAMIC_CONCEPT_TRANSIENT = false;

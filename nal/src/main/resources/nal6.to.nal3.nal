@@ -1,14 +1,16 @@
 //NAL6 -> NAL3 bridge
 
+//conj/sect equivalence tagging
 (&&,X,Y,A..*), (&&,X,Y,A..*), neqRCom(X,Y)  |- ((&&,X,Y,A..*)-->(X&Y)), (Belief:Identity,Goal:Identity)
-//--eqNeg(X,Y),
+    //--eqNeg(X,Y),
 (&&,X,Y,A..*), (&&,X,Y,A..*), neqRCom(X,Y)  |- ((X|Y)-->(&&,X,Y,A..*)), (Belief:Identity,Goal:Identity)
 
-//drill-down induction
-((X-->Z) ==> A), ((|,X,A..+)-->Z)  |- (((|,X,A..+)-->Z) ==> A), (Belief:Induction)
-  (--(X-->Z) ==> A), ((|,X,A..+)-->Z)  |- (--((|,X,A..+)-->Z) ==> A), (Belief:InductionPN)
-((Z-->X) ==> A), (Z-->(&,X,A..+))  |- ((Z-->(&,X,A..+)) ==> A), (Belief:Induction)
-  (--(Z-->X) ==> A), (Z-->(&,X,A..+))  |- (--(Z-->(&,X,A..+)) ==> A), (Belief:InductionPN)
+
+//drill-down impl/sect induction
+((X-->Z) ==> A), (S-->Z), is(S,"|"), subOf(S,X)  |- ((S-->Z) ==> A), (Belief:Induction)
+  (--(X-->Z) ==> A), (S-->Z), is(S,"|"), subOf(S,X)  |- (--(S-->Z) ==> A), (Belief:InductionPN)
+((Z-->X) ==> A), (Z-->S), is(S,"&"), subOf(S,X)  |- ((Z-->S) ==> A), (Belief:Induction)
+  (--(Z-->X) ==> A), (Z-->S), is(S,"&"), subOf(S,X)  |- (--(Z-->S) ==> A), (Belief:InductionPN)
 
     //TODO for predicate
 
