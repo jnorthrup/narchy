@@ -1,16 +1,27 @@
 //NAL6 -> NAL3 bridge
 
-//TODO n-ary conj
+(&&,X,Y,A..*), (&&,X,Y,A..*), neqRCom(X,Y)  |- ((&&,X,Y,A..*)-->(X&Y)), (Belief:Identity,Goal:Identity)
+//--eqNeg(X,Y),
+(&&,X,Y,A..*), (&&,X,Y,A..*), neqRCom(X,Y)  |- ((X|Y)-->(&&,X,Y,A..*)), (Belief:Identity,Goal:Identity)
+
+//drill-down induction
+((X-->Z) ==> A), ((|,X,A..+)-->Z)  |- (((|,X,A..+)-->Z) ==> A), (Belief:Induction)
+  (--(X-->Z) ==> A), ((|,X,A..+)-->Z)  |- (--((|,X,A..+)-->Z) ==> A), (Belief:InductionPN)
+((Z-->X) ==> A), (Z-->(&,X,A..+))  |- ((Z-->(&,X,A..+)) ==> A), (Belief:Induction)
+  (--(Z-->X) ==> A), (Z-->(&,X,A..+))  |- (--(Z-->(&,X,A..+)) ==> A), (Belief:InductionPN)
+
+    //TODO for predicate
 
 
-  ((A-->X) && (B-->X)),   X, neqRCom(A,B)  |- ((A|B)-->X), (Punctuation:Ask)
-(--(A-->X) && --(B-->X)), X, neqRCom(A,B)  |- ((A&B)-->X), (Punctuation:Ask)
 
+//  ((A-->X) && (B-->X)),   X, neqRCom(A,B)  |- ((A|B)-->X), (Punctuation:Ask)
+//(--(A-->X) && --(B-->X)), X, neqRCom(A,B)  |- ((A&B)-->X), (Punctuation:Ask)
+    //TODO n-ary conj
     //((A<->X) && (B<->X)),   X, neq(A,B)  |- ((A|B)<->X), (Belief:StructuralReduction, Goal:StructuralReduction, Time:TaskRange)
     //(--(A<->X) && --(B<->X)), X, neq(A,B)  |- ((A&B)<->X), (Belief:StructuralReductionN, Goal:StructuralReductionN, Time:TaskRange)
 
-  ((X-->A) && (X-->B)),   X, neqRCom(A,B)  |- (X-->(A&B)), (Punctuation:Ask)
-(--(X-->A) && --(X-->B)), X, neqRCom(A,B)  |- (X-->(A|B)), (Punctuation:Ask)
+//  ((X-->A) && (X-->B)),   X, neqRCom(A,B)  |- (X-->(A&B)), (Punctuation:Ask)
+//(--(X-->A) && --(X-->B)), X, neqRCom(A,B)  |- (X-->(A|B)), (Punctuation:Ask)
 
 //disjoint hypothesis
 //(X && --Y), (--X && Y), neqRCom(X,Y)  |- --(X<->Y), (Belief:Intersection)

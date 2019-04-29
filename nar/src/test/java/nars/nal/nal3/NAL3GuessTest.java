@@ -18,6 +18,14 @@ public class NAL3GuessTest extends NALTest {
         return n;
     }
 
+    @Test
+    void drilldown1() {
+
+        TestNAR tester = test;
+        tester.believe("((x|y)-->z)");
+        tester.mustQuestion(cycles, "((|,x,y,?1)-->z)");
+
+    }
 
     @Test
     void composition_on_both_sides_of_a_statement() {
