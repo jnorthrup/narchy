@@ -53,7 +53,7 @@ public class GoalActionConcept extends AbstractGoalActionConcept {
                 goal
         );
 
-        feedback(fb, cause, g);
+        feedback(fb, causeArray, g);
     }
 
 

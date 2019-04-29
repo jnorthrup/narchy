@@ -23,7 +23,7 @@ abstract public class VectorSensor extends AbstractSensor implements Iterable<Si
 
 
     public final CauseChannel<Task> in;
-
+    private final short[] causeArray;
     public final AttnBranch attn;
 
 
@@ -46,6 +46,7 @@ abstract public class VectorSensor extends AbstractSensor implements Iterable<Si
         attn = new AttnBranch(this.id, this);
 
         this.in = newChannelIn(n);
+        this.causeArray = new short[] { in.id };
     }
 
     protected CauseChannel<Task> newChannelIn(NAR nar) {
@@ -68,10 +69,10 @@ abstract public class VectorSensor extends AbstractSensor implements Iterable<Si
             return c > min ? $.t(n, c) : null;
         };
 
-        short cause = in.id;
+
         FloatSupplier aPri = attn::pri;
         for (Signal s : this) {
-            s.update(truther, aPri, cause, g);
+            s.update(truther, aPri, causeArray, g);
         }
     }
 

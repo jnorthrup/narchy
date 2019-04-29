@@ -36,9 +36,10 @@ public abstract class AtomicPri implements ScalarValue {
         return String.valueOf(pri());
     }
 
-    public final float priElseZero() {
+    @Override
+    public float priElse(float valueIfDeleted) {
         int i = _pri();
-        return i == iNaN ? 0 : intBitsToFloat(i);
+        return i == iNaN ? valueIfDeleted : intBitsToFloat(i);
     }
 
     @Override

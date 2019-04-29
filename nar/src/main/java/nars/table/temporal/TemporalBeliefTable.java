@@ -22,7 +22,7 @@ public interface TemporalBeliefTable extends BeliefTable {
 
     void setTaskCapacity(int temporals);
 
-    long tableDur();
+    long tableDur(long now);
 
     void whileEach(Predicate<? super Task> each);
 

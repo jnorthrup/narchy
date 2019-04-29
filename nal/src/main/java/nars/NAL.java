@@ -163,6 +163,13 @@ public abstract class NAL<W> extends Parts<Term, W> implements Timed {
     public static final boolean PRE_SORT_TASK_INPUT_BATCH = configIs("PRE_SORT_TASK_INPUT_BATCH");
     public static final int WHATS_CAPACITY = 128;
     public static final int HOWS_CAPACITY = 128;
+
+    /** divisor for dividing the table's range of held beliefs in determining a 'table duration' for comparison of relative task strength */
+    public static final long TEMPORAL_BELIEF_TABLE_DUR_DIVISOR =
+            //2;
+            4;
+
+
     protected static final boolean DYNAMIC_CONCEPT_TRANSIENT = false;
     public static boolean ETERNALIZE_BELIEF_PROJECTED_IN_DERIVATION;
     public static boolean STRONG_COMPOSITION;
@@ -202,7 +209,7 @@ public abstract class NAL<W> extends Parts<Term, W> implements Timed {
     @Deprecated
     public final FloatRange questionForgetRate = new FloatRange(0.5f, 0, 1);
     public final IntRange premiseUnifyTTL = new IntRange(16, 1, 32);
-    public final IntRange deriveBranchTTL = new IntRange(8 * NAL.derive.TTL_MIN, NAL.derive.TTL_MIN, 64 * NAL.derive.TTL_MIN);
+    public final IntRange deriveBranchTTL = new IntRange(32 * NAL.derive.TTL_MIN, NAL.derive.TTL_MIN, 64 * NAL.derive.TTL_MIN);
     /**
      * how many cycles above which to dither dt and occurrence time
      * TODO move this to Time class and cache the cycle value rather than dynamically computing it

@@ -62,7 +62,7 @@ public class AbstractGoalActionConcept extends AgentAction {
      */
     public @Nullable Truth curiDex;
 
-    final short cause;
+    final short[] causeArray;
 
     protected AbstractGoalActionConcept(Term term, NAR n) {
         this(term, new RTreeBeliefTable(), n);
@@ -73,7 +73,7 @@ public class AbstractGoalActionConcept extends AgentAction {
                 new BeliefTables(),
                 n);
 
-        cause = n.newCause(term).id;
+        causeArray = new short[] { n.newCause(term).id };
 
         /** make sure to add curiosity table first in the list, as a filter */
         BeliefTables GOALS = ((BeliefTables) goals());
@@ -309,11 +309,11 @@ public class AbstractGoalActionConcept extends AgentAction {
 
         SignalTask curiosity = new CuriosityTask(term, goal, n.time(), pStart, pEnd, evi);
         curiosity.priMax(attn.pri());
-        curiosity.cause(new short[]{cause});
+        curiosity.cause(causeArray);
         return curiosity;
     }
 
-    protected void feedback(@Nullable Truth f, short cause, Game g) {
+    protected void feedback(@Nullable Truth f, short[] cause, Game g) {
         ((SensorBeliefTables) beliefs()).add(f, g.prev, g.now, attn::pri, cause, g.dur(), g.what());
     }
 

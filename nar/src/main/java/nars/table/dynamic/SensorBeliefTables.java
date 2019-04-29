@@ -47,7 +47,7 @@ public class SensorBeliefTables extends BeliefTables {
                 new RingBufferTaskSeries<>(  NAL.belief.signal.SIGNAL_BELIEF_TABLE_SERIES_SIZE));
     }
 
-    SensorBeliefTables(Term term, boolean beliefOrGoal, AbstractTaskSeries<Task> s) {
+    private SensorBeliefTables(Term term, boolean beliefOrGoal, AbstractTaskSeries<Task> s) {
         super(new SeriesBeliefTable<>(term, beliefOrGoal, s));
 
         this.series = tableFirst(SeriesBeliefTable.class); assert(series!=null);
@@ -57,7 +57,7 @@ public class SensorBeliefTables extends BeliefTables {
         tasklink = newTaskLink(term);
     }
 
-    protected AtomicTaskLink newTaskLink(Term term) {
+    private AtomicTaskLink newTaskLink(Term term) {
         return new AtomicTaskLink(term);
     }
 
@@ -84,7 +84,7 @@ public class SensorBeliefTables extends BeliefTables {
 
 
 
-    public void add(Truth value, long start, long end, FloatSupplier pri, short cause, int dur,What w) {
+    public void add(Truth value, long start, long end, FloatSupplier pri, short cause[], int dur,What w) {
         NAR n = w.nar;
 
         if (value!=null) {
@@ -102,7 +102,7 @@ public class SensorBeliefTables extends BeliefTables {
 
         if (x!=null) {
             series.clean(this, n);
-            x.cause(new short[] { cause });
+            x.cause(cause);
             remember(x, pri, w);
         } else {
             this.prev = null;
@@ -257,10 +257,12 @@ public class SensorBeliefTables extends BeliefTables {
 
             int margin = narDur;
 
-            long ss = series.start() + margin;
-            if (ss != TIMELESS) {
-                long se = series.end() - margin;
-                if (se!=TIMELESS) {
+            long _ss = series.start();
+            if (_ss != TIMELESS) {
+                long _se = series.end();
+                if (_se!=TIMELESS) {
+                    long ss = _ss + margin;
+                    long se = _se - margin;
                     return (t, min) -> {
                         float v = base.rank(t, min);
                         if (v == v && v > min) {

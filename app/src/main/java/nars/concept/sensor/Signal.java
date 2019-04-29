@@ -34,7 +34,8 @@ import static nars.Op.GOAL;
 public class Signal extends TaskConcept implements GameLoop, FloatFunction<Term>, FloatSupplier, PermanentConcept {
 
     public final AttnBranch attn;
-    final short cause;
+    private final short cause;
+    private final short[] causeArray;
 
     /**
      * update directly with next value
@@ -71,6 +72,7 @@ public class Signal extends TaskConcept implements GameLoop, FloatFunction<Term>
 
         this.source = signal;
         this.cause = cause;
+        this.causeArray = new short[] { cause };
 
         this.attn = newAttn(term);
 
@@ -105,7 +107,7 @@ public class Signal extends TaskConcept implements GameLoop, FloatFunction<Term>
         return currentValue;
     }
 
-    public void update(FloatFloatToObjectFunction<Truth> truther, FloatSupplier pri, short cause, Game g) {
+    public void update(FloatFloatToObjectFunction<Truth> truther, FloatSupplier pri, short[] cause, Game g) {
 
         float prevValue = currentValue;
 
@@ -134,8 +136,7 @@ public class Signal extends TaskConcept implements GameLoop, FloatFunction<Term>
     @Override
     public void update(Game g) {
         NAR nar = g.nar();
-        update((tp, tn) -> $.t(Util.unitize(tn), nar.confDefault(BELIEF)), attn::pri, cause, g
-        );
+        update((tp, tn) -> $.t(Util.unitize(tn), nar.confDefault(BELIEF)), attn::pri, causeArray, g);
     }
 
 

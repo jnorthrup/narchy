@@ -329,14 +329,19 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
         while (treeRW.size() > (cap = capacity)) {
             if (taskStrength == null) {
                 atStart = nar.time();
-                int tableDur = Tense.occToDT(tableDur());
-                taskStrength = taskStrength(beliefOrGoal, atStart, nar.dur(), tableDur);
+                int tableDur = Tense.occToDT(tableDur(atStart));
+                int dur =
+                        //nar.dur();
+                        tableDur;
+                taskStrength = taskStrength(beliefOrGoal, atStart, dur, tableDur);
                 leafRegionWeakness = regionWeakness(atStart, beliefOrGoal ? PRESENT_AND_FUTURE_BOOST_BELIEF : PRESENT_AND_FUTURE_BOOST_GOAL, tableDur);
             }
+
             if (!compress(treeRW,  /** only limit by inputRegion on first iter */
                     taskStrength, leafRegionWeakness,
                     remember, nar))
                 return false;
+
             e++;
             assert (e < cap);
         }
@@ -358,13 +363,18 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
     }
 
     /**
-     * this is the range as a radius then further subdivided
+     * this is the range as a radius surrounding present moment and optionally further subdivided
      * to represent half inside the super-duration, half outside the super-duration
      */
     @Override
-    public long tableDur() {
+    public long tableDur(long now) {
         TaskRegion root = bounds();
-        return root == null ? 0 : 1 + root.range() / 2;
+        if (root == null)
+            return 1;
+        else {
+            //return 1 + (root == null ? 0 : root.range() / NAL.TEMPORAL_BELIEF_TABLE_DUR_DIVISOR);
+            return 1 + Math.max(Math.abs(now - root.start()), Math.abs(now - root.end())) / NAL.TEMPORAL_BELIEF_TABLE_DUR_DIVISOR;
+        }
     }
 
 
