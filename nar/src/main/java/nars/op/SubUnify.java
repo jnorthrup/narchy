@@ -1,6 +1,5 @@
 package nars.op;
 
-import jcog.version.Versioning;
 import nars.NAL;
 import nars.Op;
 import nars.term.Term;
@@ -32,10 +31,10 @@ public class SubUnify extends Unify {
         super(varBits, rng, NAL.unify.UNIFICATION_STACK_CAPACITY);
     }
 
-    @Override
-    public Versioning clear() {
-        return super.clear();
-    }
+//    @Override
+//    public Versioning clear() {
+//        return super.clear();
+//    }
 
     /**
      * terminate after the first match

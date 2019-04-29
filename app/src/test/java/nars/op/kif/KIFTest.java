@@ -11,7 +11,6 @@ import nars.term.util.TermTest;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -19,13 +18,14 @@ import java.nio.file.Paths;
 import static nars.$.$$;
 
 @Disabled
-class KIFInputTest {
+class KIFTest {
 
-    @Test void testFormulaToArgs1() {
+    @Test
+    void testFormulaToArgs1() {
         TermTest.assertEq(
-            "(&&,reflexiveOn(#RELATION,#CLASS),({#RELATION}-->SymmetricRelation),({#RELATION}-->TransitiveRelation))",
-            new KIFInput().
-                formulaToTerm("(and (instance ?RELATION TransitiveRelation) (instance ?RELATION SymmetricRelation) (reflexiveOn ?RELATION ?CLASS))", 1)
+                "(&&,reflexiveOn(#RELATION,#CLASS),({#RELATION}-->SymmetricRelation),({#RELATION}-->TransitiveRelation))",
+                new KIF().
+                        formulaToTerm("(and (instance ?RELATION TransitiveRelation) (instance ?RELATION SymmetricRelation) (reflexiveOn ?RELATION ?CLASS))", 1)
         );
     }
 
@@ -39,7 +39,7 @@ class KIFInputTest {
         String inURL = "file:///home/me/sumo/" + sumo + ".kif";
 
         NAR n = NARS.shell();
-        n.memoryExternal.on(KIFInput.load);
+        n.memoryExternal.on(KIF.load);
 
 
         Term I = $$(inURL);
@@ -67,7 +67,7 @@ class KIFInputTest {
                 tmp();
 
 
-        n.memoryExternal.on(KIFInput.load);
+        n.memoryExternal.on(KIF.load);
 
 
         Term I = $.quote(inURL);
@@ -119,7 +119,7 @@ class KIFInputTest {
 
         NAR n = NARS.shell();
 
-        n.memoryExternal.on(KIFInput.load);
+        n.memoryExternal.on(KIF.load);
 
 
         n.memoryExternal.contents(sumoDir).parallel().forEach(I -> {
@@ -187,7 +187,7 @@ class KIFInputTest {
     }
 
     @Test
-    public void test1() throws Exception {
+    public void test1() throws IOException {
 
         String I =
                 //"/home/me/sumo/Merge.kif";
@@ -195,8 +195,8 @@ class KIFInputTest {
                 "/home/me/sumo/ComputerInput.kif";
 
         //String O = "/home/me/d/sumo_merge.nal";
-        KIFInput k = new KIFInput(new FileInputStream(I));
-        k.beliefs.forEach(bb->System.out.println(bb));
+        KIF k = KIF.file(I);
+        k.beliefs.forEach(bb -> System.out.println(bb));
 //
 //        NAR nar = NARS.tmp();
 //
@@ -208,6 +208,13 @@ class KIFInputTest {
 //        nar.run(10000);
 
 
+    }
+
+    @Test
+    public void testCapabilityExtension() throws IOException {
+
+        KIF k = KIF.file("/home/me/sumo/Merge.kif");
+        k.beliefs.forEach(bb -> System.out.println(bb));
 
     }
 }

@@ -275,8 +275,8 @@ abstract public class GameX extends Game {
 
 
         PremiseDeriverRuleSet rules = Derivers.nal(n, 6, 8,
-                "motivation.nal",
-                "nal6.to.nal3.nal"
+                "motivation.nal"
+                //"nal6.to.nal3.nal"
                 //"induction.goal.nal"
                 //"nal3.nal",
         );

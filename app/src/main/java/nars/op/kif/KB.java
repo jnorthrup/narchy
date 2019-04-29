@@ -1379,7 +1379,7 @@ public class KB implements Serializable {
      * containing the old (existing) formulas, else returns an empty
      * ArrayList.
      */
-    public ArrayList<Formula> merge(KIF kif, String pathname) {
+    public ArrayList<Formula> merge(KIFParser kif, String pathname) {
 
         ArrayList<Formula> formulasPresent = new ArrayList<Formula>();
         
@@ -1528,7 +1528,7 @@ public class KB implements Serializable {
 
         String result = "The formula could not be added";
         KBmanager mgr = KBmanager.getMgr();
-        KIF kif = new KIF(); 
+        KIFParser kif = new KIFParser();
         String msg = kif.parseStatement(input);
         if (msg != null) {
             result = "Error parsing \"" + input + "\" " + msg;
@@ -2418,7 +2418,7 @@ public class KB implements Serializable {
 
         System.out.println("INFO in KB.addConstituent(): " + filename);
         String canonicalPath = null;
-        KIF file = new KIF();
+        KIFParser file = new KIFParser();
         try {
 
 

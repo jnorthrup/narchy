@@ -68,11 +68,10 @@ public class BitmapLabel extends AbstractLabel {
         view.tryRender(r);
     }
 
-    @Override
-    protected boolean preRender(ReSurface r) {
-        //return r.visP(bounds, minPixelsToBeVisible) > 0; //HACK TODO
-        return true;
-    }
+//    @Override
+//    protected boolean preRender(ReSurface r) {
+//        return r.visP(bounds, minPixelsToBeVisible) > 0; //HACK TODO
+//    }
 
     protected void layoutText() {
 

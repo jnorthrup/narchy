@@ -32,6 +32,7 @@ import org.eclipse.collections.impl.map.mutable.primitive.ObjectByteHashMap;
 import org.eclipse.collections.impl.set.mutable.primitive.ByteHashSet;
 import org.jetbrains.annotations.Nullable;
 import org.roaringbitmap.ImmutableBitmapDataProvider;
+import org.roaringbitmap.PeekableIntIterator;
 import org.roaringbitmap.RoaringBitmap;
 
 import java.util.Arrays;
@@ -2035,7 +2036,7 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
         Term eternal;
         if (event.containsKey(ETERNAL)) {
             numTmpOcc--;
-            eternal = term(ETERNAL, tmp);
+            eternal = term(ETERNAL, B, tmp);
             if (eternal != null) {
                 if (eternal == False || eternal == Null)
                     return this.result = eternal;
@@ -2089,7 +2090,7 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
                         occSkipped++;
                     } else {
 
-                        Term wt = term(when, next.getTwo(), tmp);
+                        Term wt = term(when, next.getTwo(), B, tmp);
                         if (wt == False || wt == Null) {
                             return this.result = wt;
                         } else if (wt != True && wt != null) {
@@ -2290,55 +2291,63 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
         return event.keysView().longIterator();
     }
 
-    public Term term(long when) {
-        return term(when, new FasterList(1));
+    public final Term term(long when) {
+        return term(when, Op.terms);
     }
 
-
-    private Term term(long when, FasterList<Term> tmp) {
-        return term(when, event.get(when), tmp);
+    public Term term(long when, TermBuilder b) {
+        return term(when, b, new FasterList(2));
     }
 
-    private int term(Object what, FasterList<Term> buffer) {
+    private Term term(long when, TermBuilder b, FasterList<Term> tmp) {
+        return term(when, event.get(when), b, tmp);
+    }
+
+    private void term(Object what, FasterList<Term> buffer) {
         if (what == null)
-            return 0;
-
-        if (what instanceof byte[]) {
-            //rb = null;
-            final byte[] b = (byte[]) what;
-            int k = 0;
-            for (byte x : b) {
-                if (x == 0)
-                    break; //null-terminator reached
-                buffer.add(unindex(x));
-                k++;
-            }
-            return k;
+            return;
+        else if (what instanceof byte[]) {
+            term((byte[]) what, buffer);
+        } else if (what instanceof RoaringBitmap) {
+            term((RoaringBitmap) what, buffer);
         } else {
             throw new TODO();
         }
 
     }
 
-    private Term term(long when, Object what, FasterList<Term> buffer) {
+    private void term(byte[] b, FasterList<Term> buffer) {
+        for (byte x : b) {
+            if (x == 0)
+                break; //null-terminator reached
+            buffer.add(unindex(x));
+        }
+    }
 
-        buffer.clear();
+    private void term(RoaringBitmap b, FasterList<Term> buffer) {
+        PeekableIntIterator xx = b.getIntIterator();
+        while (xx.hasNext()) {
+            buffer.add(unindex((byte)xx.next()));
+        }
+    }
 
-        int n = term(what, buffer);
-        if (n == 0)
-            return null;
+    private Term term(long when, Object what, TermBuilder b, FasterList<Term> tmpBuffer) {
 
-        int ts = buffer.size();
+        tmpBuffer.clear();
+
+        term(what, tmpBuffer);
+
+        int ts = tmpBuffer.size();
         switch (ts) {
             case 0:
                 return null;
             case 1:
-                return buffer.get(0);
+                return tmpBuffer.get(0);
             default: {
 //                if (when==ETERNAL && ((FasterList<Term>)tmp).count(Conj::isSeq)>1)
 //                    return Null; //too complex
 
-                return terms.theSortedCompound(CONJ, when == ETERNAL ? DTERNAL : 0, buffer);
+                return b.theSortedCompound(CONJ, when == ETERNAL ? DTERNAL : 0, tmpBuffer);
             }
 
         }
@@ -2371,10 +2380,13 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
 //        return addAt(target, start, end, maxSamples, minSegmentLength);
 //    }
 
+    public final void distribute() {
+        distribute(Op.terms);
+    }
     /**
      * opposite of factor; 'multiplies' all temporal components with any eternal components
      */
-    public void distribute() {
+    public void distribute(TermBuilder b) {
 
         int occ = eventOccurrences();
         if (occ <= 1)
@@ -2383,7 +2395,7 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
         if (eventCount(ETERNAL) == 0)
             return;
 
-        Term ete = term(ETERNAL);
+        Term ete = term(ETERNAL, b);
 
         removeAll(ETERNAL);
 

@@ -177,7 +177,7 @@ public class NARio extends GameX {
 
             return reward;
         });
-        right.setDefault($.t(0, 0.8f));
+        right.setDefault($.t(0, 0.5f));
 
         Reward getCoins = rewardNormalized("getCoins", -1, +1, () -> {
             int coins = Mario.coins;
@@ -190,7 +190,7 @@ public class NARio extends GameX {
             lastCoins = coins;
             return Math.max(0, reward);
         });
-         getCoins.setDefault($.t(0, 0.8f));
+        getCoins.setDefault($.t(0, 0.5f));
 
         Reward alive = rewardNormalized("alive", -1, +1, () -> {
 //            if (dead)

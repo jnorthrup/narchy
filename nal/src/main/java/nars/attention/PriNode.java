@@ -122,11 +122,11 @@ public class PriNode extends PLink<Term> {
         protected float priFraction() {
             return 1;
         }
-
-        @Override
-        public void update(MapNodeGraph<PriNode, Object> graph) {
-//            pri(f.floatValue());
-            super.update(graph);
-        }
+//
+//        @Override
+//        public void update(MapNodeGraph<PriNode, Object> graph) {
+////            pri(f.floatValue());
+//            super.update(graph);
+//        }
     }
 }

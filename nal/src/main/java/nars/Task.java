@@ -699,11 +699,6 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
     }
 
     @Override
-    default float conf() {
-        return truth().conf(); //direct from truth, avoids evidence calculation if DiscreteTruth
-    }
-
-    @Override
     default float freqMean() {
         return freq();
     }

@@ -61,9 +61,4 @@ abstract public class InstrumentedLoop extends Loop {
         super.starting();
     }
 
-    @Override
-    protected void stopping() {
-//        cycleTime.clear();
-//        dutyTime.clear();
-    }
 }

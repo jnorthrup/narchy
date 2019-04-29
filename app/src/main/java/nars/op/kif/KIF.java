@@ -1,600 +1,697 @@
-/**
- * This code is copyright Articulate Software (c) 2003.  Some portions
- * copyright Teknowledge (c) 2003 and reused under the terms of the GNU license.
- * This software is released under the GNU Public License <http:
- * Users of this code also consent, by use of this code, to credit Articulate Software
- * and Teknowledge in any writings, briefings, publications, presentations, or
- * other representations of any software which incorporates, builds on, or uses this
- * code.  Please cite the following article in any publication with references:
- * <p>
- * Pease, A., (2003). The Sigma Ontology Development Environment,
- * in Working Notes of the IJCAI-2003 Workshop on Ontology and Distributed Systems,
- * August 9, Acapulco, Mexico.  See also http:
+/*
+ * Copyright (C) 2014 me
  *
- * Authors:
- * Adam Pease
- * Infosys LTD.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http:
  */
 package nars.op.kif;
 
+import com.google.common.collect.ForwardingSet;
+import jcog.TODO;
+import jcog.Util;
+import jcog.WTF;
+import jcog.util.ArrayUtils;
+import nars.*;
+import nars.op.Equal;
+import nars.op.MathFunc;
+import nars.task.CommandTask;
+import nars.term.Compound;
+import nars.term.Term;
+import nars.term.Variable;
+import nars.term.atom.Bool;
+import nars.term.atom.Int;
+import org.eclipse.collections.api.block.function.Function;
+import org.eclipse.collections.api.set.MutableSet;
+import org.eclipse.collections.impl.map.mutable.primitive.IntObjectHashMap;
+import org.eclipse.collections.impl.set.mutable.UnifiedSet;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.io.*;
-import java.text.ParseException;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Set;
 import java.util.*;
+import java.util.concurrent.ConcurrentSkipListSet;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
-/******************************************************************
- * A class designed to read a file in SUO-KIF format into memory. See
- * <http:
- * language specification. readFile() and writeFile() are the primary entry
- * points and parse() does all the real work.
- *
- * @author Adam Pease
- */
+import static nars.$.$$;
+import static nars.Op.*;
+import static nars.op.rdfowl.NQuadsRDF.equi;
+
+/**
+ * https:
+ * http:
+ * https:
+ * https:
+ **/
 public class KIF {
 
-    /*****************************************************************
-     * A numeric constant denoting normal parse mode, in which syntax constraints are
-     * enforced.
-     */
-    public static final int NORMAL_PARSE_MODE = 1;
-    public static int count = 0;
+    private static final Logger logger = LoggerFactory.getLogger(KIF.class);
+    private static final Term SYMMETRIC_RELATION = $$("SymmetricRelation");
+    private static final Term ASYMMETRIC_RELATION = $$("AsymmetricRelation");
 
-    /****************************************************************
-     * A numeric constant denoting relaxed parse mode, in which fewer syntax constraints
-     * are enforced than in NORMAL_PARSE_MODE.
-     */
-    public static final int RELAXED_PARSE_MODE = 2;
+    public static MemoryExternal.BytesToTasks load = new MemoryExternal.BytesToTasks("kif") {
 
-
-    private int parseMode = NORMAL_PARSE_MODE;
-
-    /** The set of all terms in the knowledge base. This is a set of Strings. */
-    public TreeSet<String> terms = new TreeSet<String>();
-
-    /** A hashMap to store target frequencies for each target in knowledge base */
-    public Map<String, Integer> termFrequency = new HashMap<String, Integer>();
-
-    /**
-     * A HashMap of ArrayLists of Formulas. Each String key points to a list of
-     * String formulas that correspond to that key. For example, "arg-1-Foo"
-     * would be one of several keys for "(instance Foo Bar)".
-     *
-     * @see #createKey(String, boolean, boolean, int, int) for key format.
-     */
-    public HashMap<String, ArrayList<String>> formulas = new HashMap<String, ArrayList<String>>();
-
-    /**
-     * A HashMap of String keys representing the formula, and Formula values.
-     * For example, "(instance Foo Bar)" is a String key that might point to a
-     * Formula that is that string, along with information about at what line
-     * number and in what file it appears.
-     */
-    public HashMap<String, Formula> formulaMap = new HashMap<String, Formula>();
-
-    private final String filename = "";
-
-    private int totalLinesForComments = 0;
-
-    /** warnings generated during parsing */
-    public TreeSet<String> warningSet = new TreeSet<String>();
-    /** errors generated during parsing */
-    public Set<String> errorSet = new TreeSet<String>();
-
-    /*****************************************************************
-     * @return int Returns an integer value denoting the current parse mode.
-     */
-    public int getParseMode() {
-
-        return this.parseMode;
-    }
-
-    /*****************************************************************
-     * Sets the current parse mode to the input value mode.
-     *
-     * @param mode
-     *            An integer value denoting a parsing mode.
-     * @return void
-     */
-    public void setParseMode(int mode) {
-
-        this.parseMode = mode;
-    }
-
-    /****************************************************************
-     * This routine sets up the StreamTokenizer_s so that it parses SUO-KIF. = < >
-     * are treated as word characters, as are normal alphanumerics. ; is the
-     * line comment character and " is the quote character.
-     */
-    public static void setupStreamTokenizer(StreamTokenizer_s st) {
-
-        st.whitespaceChars(0, 32);
-        st.ordinaryChars(33, 44); 
-        st.wordChars(45, 46); 
-        st.ordinaryChar(47); 
-        st.wordChars(48, 58); 
-        st.ordinaryChar(59); 
-        st.wordChars(60, 64); 
-        st.wordChars(65, 90); 
-        st.ordinaryChars(91, 94); 
-        st.wordChars(95, 95); 
-        st.ordinaryChar(96); 
-        st.wordChars(97, 122); 
-        st.ordinaryChars(123, 255); 
-        
-        st.quoteChar('"');
-        st.commentChar(';');
-        st.eolIsSignificant(true);
-    }
-
-    /*****************************************************************
-     */
-    private static void display(StreamTokenizer_s st, boolean inRule, boolean inAntecedent, boolean inConsequent,
-                                int argumentNum, int parenLevel, String key) {
-
-        StringBuilder result = new StringBuilder();
-        result.append(inRule);
-        result.append('\t');
-        result.append(inAntecedent);
-        result.append('\t');
-        result.append(inConsequent);
-        result.append('\t');
-        result.append(st.ttype);
-        result.append('\t');
-        result.append(argumentNum);
-        result.append('\t');
-        result.append(parenLevel);
-        result.append('\t');
-        result.append(st.sval);
-        result.append('\t');
-        result.append(st.nval);
-        result.append('\t');
-        result.append(st);
-        result.append('\t');
-        result.append(key);
-    }
-
-    /*****************************************************************
-     * This method has the side effect of setting the contents of formulaMap and
-     * formulas as it parses the file. It throws a ParseException with file line
-     * numbers if fatal errors are encountered during parsing. Keys in variable
-     * "formulas" include the string representation of the formula.
-     *
-     * @return a Set of warnings that may indicate syntax errors, but not fatal
-     *         parse errors.
-     */
-    protected TreeSet<String> parse(Reader r) {
-
-        int mode = this.getParseMode();
-        StringBuilder expression = new StringBuilder();
-        int lastVal;
-        Formula f = new Formula();
-        String errStart = "Parsing error in " + filename;
-        String errStr = null;
-        int duplicateCount = 0;
-
-        if (r == null) {
-            errStr = "No Input Reader Specified";
-            warningSet.add(errStr);
-            System.err.println("Error in KIF.parse(): " + errStr);
-            return warningSet;
-        }
-        try {
-            count++;
-            StreamTokenizer_s st = new StreamTokenizer_s(r);
-            KIF.setupStreamTokenizer(st);
-            int parenLevel = 0;
-            boolean inRule = false;
-            int argumentNum = -1;
-            boolean inAntecedent = false;
-            boolean inConsequent = false;
-            HashSet<String> keySet = new HashSet<String>();
-            
-            boolean isEOL = false;
-            do {
-                lastVal = st.ttype;
-                st.nextToken();
-                
-                
-                if (st.ttype == StreamTokenizer.TT_EOL) {
-                    if (isEOL) {
-                        
-                        
-                        
-                        if (f.startLine != 0 && (!keySet.isEmpty() || (expression.length() > 0))) {
-                            errStr = (errStart + " possible missed closing parenthesis near start line " + f.startLine
-                                    + " end line " + f.endLine + " for formula " + expression + "\n and key "
-                                    + keySet + " keyset size " + keySet.size() + " exp length "
-                                    + expression.length() + " comment lines " + totalLinesForComments);
-                            errorSet.add(errStr);
-                            throw new ParseException(errStr, f.startLine);
-                        }
-                        continue;
-                    }
-                    else { 
-                        isEOL = true; 
-                        continue;
-                    }
-                }
-                else if (isEOL)
-                    isEOL = false; 
-                if (st.ttype == 40) { 
-                    if (parenLevel == 0) {
-                        
-                        f = new Formula();
-                        f.startLine = st.lineno() + totalLinesForComments;
-                        f.sourceFile = filename;
-                    }
-                    parenLevel++;
-                    if (inRule && !inAntecedent && !inConsequent)
-                        inAntecedent = true;
-                    else {
-                        if (inRule && inAntecedent && (parenLevel == 2)) {
-                            inAntecedent = false;
-                            inConsequent = true;
-                        }
-                    }
-                    if ((parenLevel != 0) && (lastVal != 40) && (expression.length() > 0))
-                        expression.append(' ');
-                    expression.append('(');
-                }
-                else if (st.ttype == 41) { 
-                    parenLevel--;
-                    expression.append(')');
-                    if (parenLevel == 0) { 
-                        String fstr = StringUtil.normalizeSpaceChars(expression.toString());
-                        f.theFormula = fstr.intern();
-                        if (formulaMap.keySet().contains(f.theFormula)) {
-                            String warning = ("Duplicate axiom at line " + f.startLine + " of " + f.sourceFile + ": "
-                                    + expression);
-                            warningSet.add(warning);
-                            System.out.println(warning);
-                            duplicateCount++;
-                        }
-                        if (mode == NORMAL_PARSE_MODE) { 
-                            String validArgs = "";
-
-
-                            if (StringUtil.emptyString(validArgs))
-                                validArgs = Formula.badQuantification();
-                            if (StringUtil.isNonEmptyString(validArgs)) {
-                                errStr = (errStart + ": Invalid number of arguments near line " + f.startLine + " : "
-                                        + validArgs);
-                                errorSet.add(errStr);
-                                throw new ParseException(errStr, f.startLine);
-                            }
-                        }
-                        keySet.add(f.theFormula); 
-                        keySet.add(f.createID());
-                        f.endLine = st.lineno() + totalLinesForComments;
-                        Iterator<String> it = keySet.iterator();
-                        while (it.hasNext()) { 
-                            String fkey = it.next();
-                            if (formulas.containsKey(fkey)) {
-                                if (!formulaMap.keySet().contains(f.theFormula)) { 
-                                    ArrayList<String> list = formulas.get(fkey);
-                                    if (StringUtil.emptyString(f.theFormula)) {
-                                        System.out.println("Error in KIF.parse(): Storing empty formula from line: "
-                                                + f.startLine);
-                                        errorSet.add(errStr);
-                                    }
-                                    else if (!list.contains(f.theFormula))
-                                        list.add(f.theFormula);
-                                }
-                            }
-                            else {
-                                ArrayList<String> list = new ArrayList<String>();
-                                if (StringUtil.emptyString(f.theFormula)) {
-                                    System.out.println(
-                                            "Error in KIF.parse(): Storing empty formula from line: " + f.startLine);
-                                    errorSet.add(errStr);
-                                }
-                                else if (!list.contains(f.theFormula))
-                                    list.add(f.theFormula);
-                                formulas.put(fkey, list);
-                            }
-                        }
-                        formulaMap.put(f.theFormula, f);
-                        inConsequent = false;
-                        inRule = false;
-                        argumentNum = -1;
-                        expression = new StringBuilder();
-                        keySet.clear();
-                    }
-                    else if (parenLevel < 0) {
-                        errStr = (errStart + ": Extra closing parenthesis found near line " + f.startLine);
-                        errorSet.add(errStr);
-                        throw new ParseException(errStr, f.startLine);
-                    }
-                }
-                else if (st.ttype == 34) { 
-                    st.sval = StringUtil.escapeQuoteChars(st.sval);
-                    if (lastVal != 40) 
-                        expression.append(' ');
-                    expression.append('"');
-                    String com = st.sval;
-                    totalLinesForComments += countChar(com, (char) 0X0A);
-                    expression.append(com);
-                    expression.append('"');
-                    if (parenLevel < 2) 
-                        argumentNum = argumentNum + 1;
-                }
-                else if ((st.ttype == StreamTokenizer.TT_NUMBER) || 
-                        (st.sval != null && (Character.isDigit(st.sval.charAt(0))))) {
-                    if (lastVal != 40) 
-                        expression.append(' ');
-                    if (st.nval == 0)
-                        expression.append(st.sval);
-                    else
-                        expression.append(st.nval);
-                    if (parenLevel < 2) 
-                        argumentNum = argumentNum + 1;
-                }
-                else if (st.ttype == StreamTokenizer.TT_WORD) { 
-                    if ((st.sval.equals("=>") || st.sval.equals("<=>")) && parenLevel == 1)
-                        inRule = true; 
-                    if (parenLevel < 2) 
-                        argumentNum = argumentNum + 1;
-                    if (lastVal != 40) 
-                        expression.append(' ');
-                    expression.append(st.sval);
-                    if (expression.length() > 64000) {
-                        errStr = (errStart + ": Sentence over 64000 characters new line " + f.startLine);
-                        errorSet.add(errStr);
-                        throw new ParseException(errStr, f.startLine);
-                    }
-                    
-                    if ((mode == NORMAL_PARSE_MODE) && (st.sval.charAt(0) != '?') && (st.sval.charAt(0) != '@')) { 
-                        terms.add(st.sval); 
-
-                        if (!termFrequency.containsKey(st.sval)) {
-                            termFrequency.put(st.sval, 0);
-                        }
-                        termFrequency.put(st.sval, termFrequency.get(st.sval) + 1);
-
-                        String key = createKey(st.sval, inAntecedent, inConsequent, argumentNum, parenLevel);
-                        keySet.add(key); 
-                    }
-                }
-                else if ((mode == RELAXED_PARSE_MODE) && (st.ttype == 96)) 
-                    expression.append(" `");
-                else if (st.ttype != StreamTokenizer.TT_EOF) {
-                    errStr = (errStart + ": Illegal character near line " + f.startLine);
-                    errorSet.add(errStr);
-                    throw new ParseException(errStr, f.startLine);
-                }
-            } while (st.ttype != StreamTokenizer.TT_EOF);
-
-            if (!keySet.isEmpty() || expression.length() > 0) {
-                errStr = (errStart + ": Missed closing parenthesis near line " + f.startLine);
-                errorSet.add(errStr);
-                throw new ParseException(errStr, f.startLine);
-            }
-        }
-        catch (Exception ex) {
-            String message = ex.getMessage().replaceAll(":", "&58;"); 
-            warningSet.add("Warning in KIF.parse() " + message);
-            ex.printStackTrace();
-        }
-        if (duplicateCount > 0) {
-            String warning = "WARNING in KIF.parse(Reader), " + duplicateCount + " duplicate statement"
-                    + ((duplicateCount > 1) ? "s " : " ") + "detected in "
-                    + (StringUtil.emptyString(filename) ? " the input file" : filename);
-            warningSet.add(warning);
-        }
-        return warningSet;
-    }
-
-    /*****************************************************************
-     * This routine creates a key that relates a token in a logical statement to the
-     * entire statement. It prepends to the token a string indicating its
-     * position in the statement. The key is of the form type-[num]-target, where
-     * [num] is only present when the type is "arg", meaning a statement in
-     * which the target is nested only within one pair of parentheses. The other
-     * possible types are "ant" for rule antecedent, "cons" for rule consequent,
-     * and "stmt" for cases where the target is nested inside multiple levels of
-     * parentheses. An example key would be arg-0-instance for a appearance of
-     * the target "instance" in a statement in the predicate position.
-     *
-     * @param sval            - the token such as "instance", "Human" etc.
-     * @param inAntecedent    - whether the target appears in the antecedent of a rule.
-     * @param inConsequent    - whether the target appears in the consequent of a rule.
-     * @param argumentNum     - the argument position in which the target appears. The
-     *            predicate position is argument 0. The first argument is 1 etc.
-     * @param parenLevel      - if the paren level is > 1 then the target appears nested in a
-     *            statement and the argument number is ignored.
-     */
-    private static String createKey(String sval, boolean inAntecedent, boolean inConsequent, int argumentNum, int parenLevel) {
-
-        if (sval == null) {
-            sval = "null";
-        }
-        String key = "";
-        if (inAntecedent) {
-            key = key.concat("ant-");
-            key = key.concat(sval);
-        }
-
-        if (inConsequent) {
-            key = key.concat("cons-");
-            key = key.concat(sval);
-        }
-
-        if (!inAntecedent && !inConsequent && (parenLevel == 1)) {
-            key = key.concat("arg-");
-            key = key.concat(String.valueOf(argumentNum));
-            key = key.concat("-");
-            key = key.concat(sval);
-        }
-        if (!inAntecedent && !inConsequent && (parenLevel > 1)) {
-            key = key.concat("stmt-");
-            key = key.concat(sval);
-        }
-        return (key);
-    }
-
-    /*****************************************************************
-     * Count the number of appearances of a certain character in a string.
-     *
-     * @param str - the string to be tested.
-     * @param c   - the character to be counted.
-     */
-    private static int countChar(String str, char c) {
-
-        int len = 0;
-        char[] cArray = str.toCharArray();
-        for (int i = 0; i < cArray.length; i++) {
-            if (cArray[i] == c)
-                len++;
-        }
-        return len;
-    }
-
-    /****************************************************************
-     * Read a KIF file.
-     *
-     * @param fname - the full pathname of the file.
-     */
-    public void read(InputStream stream) throws Exception {
-
-        Exception exThr = null;
-        try(Reader fr = new InputStreamReader(stream)) {
-            parse(fr);
-        } catch (Exception ex) {
-            throw new RuntimeException(ex);
-
-
-
-        }
-        if (exThr != null)
-            throw exThr;
-    }
-
-    /****************************************************************
-     * Write a KIF file.
-     *
-     * @param fname - the name of the file to write, including full path.
-     */
-    public void writeFile(String fname) {
-
-        FileWriter fr = null;
-        PrintWriter pr = null;
-        try {
-            fr = new FileWriter(fname);
-            pr = new PrintWriter(fr);
-            Iterator<Formula> it = formulaMap.values().iterator();
-            while (it.hasNext())
-                pr.println(it.next().theFormula);
-        }
-        catch (Exception ex) {
-            System.out.println(ex.getMessage());
-            ex.printStackTrace();
-        }
-        finally {
+        @Override
+        public Stream<Task> apply(InputStream i) {
             try {
-                if (pr != null)
-                    pr.close();
-                if (fr != null)
-                    fr.close();
+                return new KIF(i).beliefs.stream().map(b ->
+                        new CommandTask($.func(Op.Belief, b)));
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-            catch (Exception ex2) {
+            return null;
+        }
+    };
+
+
+
+    public final SortedSet<Term> beliefs =
+            new ConcurrentSkipListSet<>();
+            //new TreeSet();
+
+    private final KIFParser kif;
+    private final boolean includeRelatedInternalConcept = true;
+    private final boolean includeDoc = false;
+
+    private transient final Map<Term, FnDef> fn = new HashMap();
+    private final Set<Term> symmetricRelations = new HashSet();
+    {
+        symmetricRelations.add(SYMMETRIC_RELATION);
+    }
+    
+    
+    
+    private static final boolean includePredArgCounts = false;
+    private static final Set<Term> predExclusions = java.util.Set.of(
+            
+            $$("UnaryPredicate"),
+            $$("BinaryPredicate"),$$("TernaryPredicate"),
+            $$("QuaternaryPredicate"), $$("QuintaryPredicate"),
+
+            $$("UnaryFunction"), $$("BinaryFunction"), $$("TernaryFunction"),
+            $$("QuaternaryRelation"),
+            $$("QuintaryRelation"),
+            $$("SingleValuedRelation"),$$("TotalValuedRelation"),
+
+            $$("AsymmetricRelation")
+    );
+
+    public KIF() {
+        this.kif = new KIFParser();
+    }
+
+    public KIF(InputStream is) throws IOException {
+        this();
+
+        kif.read(is);
+
+        KB kb = KBmanager.getMgr().addKB("preprocess");
+
+        kif.formulaMap.values().forEach(xx -> {
+
+            FormulaPreprocessor.preProcess(xx, false, kb).forEach(x -> {
+                try {
+                    Term y = formulaToTerm(x, 0);
+                    if (y != null) {
+                        beliefs.add(y);
+                    }
+                } catch (Exception e) {
+                    logger.error("{} {}", x, e.getMessage());
+                    e.printStackTrace();
+                }
+            });
+
+            
+            
+            /*Unknown operators: {=>=466, rangeSubclass=5, inverse=1, relatedInternalConcept=7, documentation=128, range=29, exhaustiveAttribute=1, trichotomizingOn=4, subrelation=22, not=2, partition=12, contraryAttribute=1, subAttribute=2, disjoint=5, domain=102, disjointDecomposition=2, domainSubclass=9, <=>=70}*/
+        });
+
+        
+        fn.forEach((f, s) -> {
+            int ds = s.domain.isEmpty() ? 0 : s.domain.keySet().max();
+            Term[] vt = Util.map(0, ds, Term[]::new, i -> $.varDep(1 + i));
+            Term v = null;
+            if (s.range != null) {
+                v = $.varDep("R");
+                vt = ArrayUtils.add(vt, v);
             }
+            final int[] k = {1};
+            Term[] typeConds = Util.map(0, ds, Term[]::new, i ->
+                    INH.the($.varDep(1 + i),
+                            s.domain.getIfAbsent(1 + i, () -> $.varDep(k[0]++))));
+            if (s.range != null) {
+                typeConds = ArrayUtils.add(typeConds, INH.the(v, s.range));
+            }
+            Term types = CONJ.the(
+                    typeConds
+            );
+            Term fxy = impl(INH.the($.p(vt), f), types, true);
+            if (fxy != null) {
+                if (fxy instanceof Bool) {
+                    logger.error("bad function {} {} {}", f, s.domain, s.range);
+                } else {
+                    beliefs.add(fxy);
+                }
+            }
+
+        });
+
+        if (symmetricRelations.size()>1 /*SymmetricRelation exists in the set initially */) {
+            
+            beliefs.removeIf(belief -> {
+                if (belief.op() == INH) {
+                    Term fn = belief.sub(1);
+                    if (symmetricRelations.contains(fn)) {
+                        
+                        Term ab = belief.sub(0);
+                        if (ab.op() != PROD) {
+                            return false; 
+                        }
+                        assert(ab.subs()==2);
+                        Term a = ab.sub(0);
+                        Term b = ab.sub(1);
+                        Term symmetric = INH.the(SECTe.the(PROD.the(a, b), PROD.the(b, a)), fn);
+                        
+                        beliefs.add(symmetric);
+                        return true; 
+                    }
+                }
+                return false;
+            });
+        }
+
+        beliefs.removeIf(b -> {
+            if (b.hasAny(BOOL)) {
+                return true;
+            }
+            Term bb = b.unneg().normalize();
+            if (!Task.validTaskTerm(bb, BELIEF, true)) {
+                logger.error("invalid task target: {}\n\t{}", b, bb);
+                return true;
+            }
+            return false;
+        });
+
+    }
+
+    private static Term atomic(String sx) {
+        sx = sx.replace("?", "#"); 
+        try {
+            return $.$(sx);
+        } catch (Narsese.NarseseException e) {
+            return $.quote(sx);
         }
     }
 
-    /*****************************************************************
-     * Parse a single formula.
-     */
-    public String parseStatement(String formula) {
+    private static Function<Term, Term> domainRangeMerger(Term type) {
+        return (existing) -> {
+            if (existing.equals(type))
+                return existing;
+            else
+                return SETi.the(List.of(existing, type));
+        };
+    }
 
-        StringReader r = new StringReader(formula);
-        boolean isError = false;
-        try {
-            isError = !parse(r).isEmpty();
-            if (isError) {
-                String msg = "Error parsing " + formula;
-                return msg;
-            }
+    public static KIF file(String filePath) throws IOException {
+        return new KIF(new FileInputStream(filePath));
+    }
+
+
+    public Term formulaToTerm(String sx, int level) {
+        sx = sx.replace("?", "#"); 
+
+        Formula f = new Formula(sx);
+
+        Term g = formulaToTerm(f, level);
+
+        return g;
+
+
+
+    }
+
+    private Term formulaToTerm(final Formula x, int level) {
+
+
+        int l = x.listLength();
+        if (l == -1)
+            return atomic(x.theFormula);
+        else if (l == 1) {
+            return $.p(formulaToTerm(x.getArgument(0), level+1));
+        } else if (l == 0) {
+            throw new WTF();
         }
-        catch (Exception e) {
-            System.out.println("Error parsing " + formula);
-            e.printStackTrace();
-            return e.getMessage();
+
+        List<String> sargs = IntStream.range(1, l).mapToObj(x::getArgument).collect(Collectors.toList());
+        List<Term> args = sargs.stream().map((z) -> formulaToTerm(z, level + 1)).collect(Collectors.toList());
+
+        if (args.contains(null))
+            return Bool.Null;
+
+        if (args.isEmpty())
+            return Bool.Null;
+        
+
+        /**
+         *
+         *
+         * https:
+         * def special_link_type(predicate):
+         mapping = {
+         '=>':types.ImplicationLink,
+         '<=>':types.EquivalenceLink,
+         'and':types.AndLink,
+         'or':types.OrLink,
+         'not':types.NotLink,
+         'instance':types.MemberLink,
+         'attribute':types.InheritanceLink,
+         'member':types.MemberLink,
+         'subclass':types.InheritanceLink,
+         'exists':types.ExistsLink,
+         'forall':types.ForAllLink,
+         'causes':types.PredictiveImplicationLink
+         *
+         */
+
+        String xCar = x.car();
+        String root = xCar;
+        Term y = null;
+        switch (root) {
+            case "ListFn":
+                y = $.p(args);
+                break;
+
+
+            case "exhaustiveAttribute": {
+                
+                y = INH.the(args.get(0), Op.SETi.the(args.subList(1, args.size())));
+                break;
+            }
+
+
+            case "subclass":
+            case "instance":
+            case "attribute":
+            case "subrelation":
+            case "subAttribute":
+
+                    if (args.size() != 2) {
+                        throw new RuntimeException("instance expects 2 arguments");
+                    } else {
+                        Term pred = args.get(1);
+
+                        Term subj = args.get(0);
+
+                        if (symmetricRelations.contains(pred)) {
+                            symmetricRelations.add(subj);
+                        }
+
+                        if (pred.equals(SYMMETRIC_RELATION) && !subj.hasVars()) {
+                            return null; 
+                        }
+
+                        if (!includePredArgCounts && predExclusions.contains(pred))
+                            return null;
+
+                        if (root.equals("instance"))
+                            y = $.inst(subj, pred);
+                        else
+                            y = INH.the(subj, pred);
+
+                        if (y instanceof Bool)
+                            return y;
+                    }
+
+                break;
+
+            case "relatedInternalConcept":
+                /*(documentation relatedInternalConcept EnglishLanguage "Means that the two arguments are related concepts within the SUMO, i.e. there is a significant similarity of meaning between them. To indicate a meaning relation between a SUMO concept and a concept from another source, use the Predicate relatedExternalConcept.")            */
+                if (includeRelatedInternalConcept) {
+                    if (args.size() != 2) {
+                        throw new UnsupportedOperationException("relatedInternalConcept expects 2 arguments");
+                    } else {
+                        y = SIM.the(args.get(0), args.get(1));
+                    }
+                }
+                break;
+
+            case "greaterThan":
+                if (args.size()==2)
+                    y = $.func("cmp", args.get(0), args.get(1), Int.the(+1));
+                break;
+            case "lessThan":
+                if (args.size()==2)
+                    y = $.func("cmp", args.get(0), args.get(1), Int.the(-1));
+                break;
+
+            case "equal":
+//                if (!(args.get(0).hasVars() || args.get(1).hasVars())) {
+//
+//                    //y = impl(args.get(0), args.get(1), false);
+//                    y = SIM.the(args.get(0), args.get(1));
+//                } else {
+//
+//                }
+                y = Equal.the(args.get(0), args.get(1));
+                
+                break;
+
+
+            case "forall":
+                String forVar = sargs.get(0);
+                if (forVar.startsWith("(")) {
+                    forVar = forVar.substring(1, forVar.length() - 1); 
+                }
+                boolean missingAParamVar = false;
+                String[] forVars = forVar.split(" ");
+                for (String vv : forVars) {
+                    if (!sargs.get(1).contains(vv)) {
+                        missingAParamVar = true;
+                        break;
+                    }
+                }
+                if (!missingAParamVar) {
+                    y = args.get(1); 
+                } else {
+                    y = impl(args.get(0), args.get(1), true);
+                }
+                break;
+            case "exists":
+                y = args.get(1); 
+                break;
+            case "=>":
+                y = impl(args.get(0), args.get(1), true);
+                break;
+            case "<=>":
+                //y = impl(args.get(0), args.get(1), false);
+                y = Equal.the(args.get(0), args.get(1));
+                break;
+
+
+//            case "causes":
+//                y = IMPL.the(args.get(0), 1, args.get(1));
+//                break;
+
+            case "cooccur":
+            case "during":
+                y = CONJ.the(args.get(0), 0, args.get(1));
+                break;
+//            case "meetsTemporally":
+//                y = CONJ.the(args.get(0), +1, args.get(1));
+//                break;
+
+            case "domain":
+                
+                if (level == 0) {
+                    if (args.size() >= 3) {
+                        Term subj = (args.get(0));
+                        Term arg = (args.get(1));
+                        Term type = (args.get(2));
+                        if (type.equals(ASYMMETRIC_RELATION)) {
+                            return null; 
+                        }
+                        FnDef d = fn.computeIfAbsent(subj, (s) -> new FnDef());
+
+                        d.domain.updateValue(((Int) arg).id, () -> type, domainRangeMerger(type));
+                        
+                    } else {
+                        throw new UnsupportedOperationException("unrecognized domain spec");
+                    }
+                    return null;
+                }
+                break;
+            case "range":
+                if (level == 0) {
+                    if (args.size() == 2) {
+                        Term subj = args.get(0);
+                        Term range = args.get(1);
+                        if (range.equals(ASYMMETRIC_RELATION)) {
+                            return null; 
+                        }
+                        FnDef d = fn.computeIfAbsent(subj, (s) -> new FnDef());
+                        d.range = range;
+                    } else {
+                        throw new UnsupportedOperationException("unrecognized range spec");
+                    }
+                    return null;
+                }
+                break;
+
+            case "AdditionFn":
+                if (args.size()==2)
+                    y = MathFunc.add(args.get(0), args.get(1));
+                else
+                    throw new TODO();
+                break;
+
+            case "MultiplicationFn":
+                if (args.size()==2)
+                    y = MathFunc.mul(args.get(0), args.get(1));
+                else
+                    throw new TODO();
+                break;
+
+//                if (args.size() > 2)
+//                    y = disjoint(args.subList(1, args.size()), args.get(0));
+//                else
+//                    y = Equal.the(args.get(0), args.get(1)).neg();
+//                break;
+
+            case "disjointDecomposition":
+            case "partition":
+            case "disjointRelation":
+            case "disjoint":
+            case "inverse":
+            case "contraryAttribute":
+
+//                if (args.size() > 2)
+                    y = $.inh(VarAuto, SETe.the(args));
+//                else
+//                    y = Equal.the(args.get(0), args.get(1)).neg();
+
+                break;
+
+            case "comment":
+            case "documentation":
+            case "externalImage":
+                if (includeDoc) {
+                    if (args.size() == 3) {
+                        Term subj = args.get(0);
+                        Term lang = args.get(1);
+                        Term desc = $.quote(args.get(2));
+                        try {
+                            y = INH.the($.p(subj, desc), lang);
+                        } catch (Exception e) {
+                            
+                            y = null;
+                        }
+                    } else {
+                        throw new UnsupportedOperationException();
+                    }
+                } else {
+                    return null;
+                }
+                break;
+
+            case "termFormat": {
+                if (includeDoc) {
+                    String language = args.get(0).toString();
+                    language = language.replace("Language", "");
+
+                    Term term = args.get(1);
+                    Term string = args.get(2);
+                    y = INH.the($.p($.the(language), string), term);
+                } else {
+                    return null;
+                }
+                break;
+            }
+
+
+            default:
+                
+                break;
+        }
+
+        if (y == null) {
+
+
+
+            Term z = formulaToTerm(xCar, level + 1);
+
+            if (z != null) {
+                switch (z.toString()) {
+                    case "and":
+                        y = CONJ.the(args);
+                        break;
+                    case "or":
+                        y = $.disj(args.toArray(new Term[0]));
+                        break;
+                    case "not":
+                        y = args.get(0).neg();
+                        break;
+                    default:
+                        if (!z.op().var)
+                            y = INH.the($.p(args), z); 
+                        else {
+                            args.add(0, z); 
+                            y = $.p(args);
+                        }
+                        break;
+                }
+
+            }
+
+
+        }
+
+        if (y instanceof Bool) {
+            logger.warn("{} Bool singularity: args={}",x, args);
+            return Bool.Null;
+        }
+
+        return y;
+    }
+
+    private static Term disjoint(List<Term> args, Term v0) {
+        return Op.INH.the(
+                Op.SECTe.the(args.toArray(Op.EmptyTermArray)), v0
+        ).neg();
+    }
+
+
+
+
+
+
+
+
+
+
+
+    
+
+    public static Term impl(Term a, Term b, boolean implOrEquiv) {
+
+        
+        Term tmp = IMPL.the(a, b);
+        if (tmp.unneg().op() != IMPL) {
+            logger.warn("un-impl: {} ==> {} ", a, b);
+            return Bool.Null;
+        }
+        boolean negated = tmp.op()==NEG;
+
+        tmp = tmp.unneg();
+        a = tmp.sub(0);
+        b = tmp.sub(1);
+
+        MutableSet<Term> _aVars = new UnifiedSet();
+        Set<Term> aVars = new VarOnlySet(_aVars);
+        if (a instanceof Compound)
+            ((Compound) a).recurseSubtermsToSet(Op.Variable, aVars, true);
+        else if (a.op().var)
+            aVars.add(a);
+        MutableSet<Term> _bVars = new UnifiedSet();
+        Set<Term> bVars = new VarOnlySet(_bVars);
+        if (b instanceof Compound)
+            ((Compound) b).recurseSubtermsToSet(Op.Variable, bVars, true);
+        else if (b.op().var)
+            bVars.add(b);
+
+        Map<Term, Term> remap = new HashMap();
+
+        MutableSet<Term> common = _aVars.intersect(_bVars);
+        if (!common.isEmpty()) {
+            common.forEach(t -> {
+                Variable u = $.v(
+                        Op.VAR_INDEP,
+                        
+                        
+                        t.toString().substring(1));
+                if (!t.equals(u) && !remap.containsKey(u))
+                    remap.put(t, u);
+            });
+        }
+        for (MutableSet<Term> ab : new MutableSet[]{_aVars, _bVars}) {
+            ab.forEach(aa -> {
+                if (aa.op() == VAR_INDEP && !common.contains(aa)) {
+                    String str = aa.toString().substring(1);
+
+
+
+                    Variable bb = $.v(Op.VAR_DEP, str);
+                    if (!remap.containsKey(bb))
+                        remap.put(aa, bb);
+                }
+            });
+        }
+
+        if (!remap.isEmpty()) {
+            a = a.replace(remap);
+            if (a == null)
+                throw new NullPointerException("transform failure");
+
+            b = b.replace(remap);
+            if (b == null)
+                throw new NullPointerException("transform failure");
+        }
+
+        try {
+
+
+
+
+
+            return
+                    (implOrEquiv ?
+                            IMPL.the(a, b) :
+                            equi(a, b)).negIf(negated)
+                    ;
+        } catch (Exception ignore) {
+            ignore.printStackTrace();
         }
         return null;
     }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    /*****************************************************************
-     * Test method for this class.
-     */
-    public static void main(String[] args) {
-
-        
-        String exp = "(documentation foo \"(written by John Smith).\")";
-        System.out.println(exp);
-        KIF kif = new KIF();
-        Reader r = new StringReader(exp);
-        kif.parse(r);
-        System.out.println(kif.formulaMap);
-        ArrayList<String> al = kif.formulas.get("arg-0-documentation");
-        String fstr = al.get(0);
-        Formula f = kif.formulaMap.get(fstr);
-        System.out.println(f);
-        f.read(f.cdr());
-        f.read(f.cdr());
-        System.out.println(f);
-        System.out.println(f.car());
+    static class FnDef {
+        final IntObjectHashMap<Term> domain = new IntObjectHashMap();
+        Term range;
     }
 
 
+    private static class VarOnlySet extends ForwardingSet<Term> {
+        private final MutableSet<Term> _aVars;
+
+        public VarOnlySet(MutableSet<Term> _aVars) {
+            this._aVars = _aVars;
+        }
+
+        /**
+         * HACK because recurseTermsToSet isnt designed to check only Op
+         */
+        @Override
+        public boolean add(Term key) {
+            return !key.op().var || super.add(key);
+        }
+
+        @Override
+        protected java.util.Set<Term> delegate() {
+            return _aVars;
+        }
+    }
 }
