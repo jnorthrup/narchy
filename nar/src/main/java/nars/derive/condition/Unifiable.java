@@ -6,8 +6,10 @@ import nars.NAL;
 import nars.derive.PreDerivation;
 import nars.derive.premise.PremiseRuleSource;
 import nars.op.UniSubst;
-import nars.subterm.Subterms;
-import nars.term.*;
+import nars.term.Functor;
+import nars.term.Term;
+import nars.term.Terms;
+import nars.term.Variable;
 import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
 import nars.term.control.AbstractPred;
@@ -17,8 +19,6 @@ import org.eclipse.collections.api.set.MutableSet;
 
 import java.util.Arrays;
 
-import static nars.Op.VAR_DEP;
-import static nars.Op.VAR_INDEP;
 import static nars.term.util.Image.imageNormalize;
 
 public class Unifiable extends AbstractPred<PreDerivation> {

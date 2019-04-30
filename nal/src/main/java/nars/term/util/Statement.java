@@ -215,30 +215,30 @@ public class Statement {
 //            }
 //            }
 
-//            if (op == INH /*|| op == SIM*/) {
-//                if (NAL.term.INH_CLOSED_BOOLEAN_DUALITY_MOBIUS_PARADIGM) {
-//                    //EXPERIMENTAL support for negated inheritance subterms
-//                    boolean sn = subject.op() == NEG;
-//                    boolean pn = predicate.op() == NEG;
-//                    if (!sn && !pn) {
-//                        //normal
-//                    } else if (sn && pn) {
-//                        //double-negative
-//
-//                        //return Null; // (--x --> --y) => (x --> y)??
-//
-//                        subject = subject.unneg();
-//                        predicate = predicate.unneg();
-//
-//                    } else if (sn) {
-//                        negate = true;
-//                        subject = subject.unneg();
-//                    } else /* pn */ {
-//                        negate = true;
-//                        predicate = predicate.unneg();
-//                    }
-//                }
-//            }
+            if (op == INH || op == SIM) {
+                if (NAL.term.INH_CLOSED_BOOLEAN_DUALITY_MOBIUS_PARADIGM) {
+                    //EXPERIMENTAL support for negated inheritance subterms
+                    boolean sn = subject.op() == NEG;
+                    boolean pn = predicate.op() == NEG;
+                    if (!sn && !pn) {
+                        //normal
+                    } else if (sn && pn) {
+                        //double-negative
+
+                        //return Null; // (--x --> --y) => (x --> y)??
+
+                        subject = subject.unneg();
+                        predicate = predicate.unneg();
+
+                    } else if (sn) {
+                        negate = !negate;
+                        subject = subject.unneg();
+                    } else /* pn */ {
+                        negate = !negate;
+                        predicate = predicate.unneg();
+                    }
+                }
+            }
 
         if (op == SIM) {
 //            if (subject instanceof Bool || predicate instanceof Bool) {

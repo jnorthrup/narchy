@@ -1,6 +1,7 @@
 package nars;
 
 import fucknutreport.config.NodeConfig;
+import jcog.Skill;
 import jcog.Util;
 import jcog.math.FloatRange;
 import jcog.math.FloatRangeRounded;
@@ -579,24 +580,25 @@ public abstract class NAL<W> extends Parts<Term, W> implements Timed {
          * whether INT atoms can name a concept directly
          */
         public static final boolean INT_CONCEPTUALIZABLE= !configIs("DISABLE_INT_CONCEPTUALIZABLE");
-//        /**
-//         * applies certain reductions to INH and SIM terms when one or both of their immediate subterms
-//         * are negated.  in assuming a "closed-boolean-world" in which there is one and only one
-//         * opposite for any truth frequency in 0..1,
-//         * <p>
-//         * then the following statements should be equivalent:
-//         * <p>
-//         * INH
-//         * (x --> --y)    |-  --(x --> y)
-//         * (--x --> y)    |-  --(x --> y)
-//         * (--x --> --y)  |-    (x --> y)
-//         * <p>
-//         * SIM (disabled)
-//         * (x <-> --y)    |-  --(x <-> y)
-//         * (--x <-> --y)  |-    (x <-> y)
-//         */
-//        @Skill({"List_of_dualities", "Nondualism", "Möbius_strip"})
-//        public static final boolean INH_CLOSED_BOOLEAN_DUALITY_MOBIUS_PARADIGM= configIs("INH_CLOSED_BOOLEAN_DUALITY_MOBIUS_PARADIGM");
+
+        /**
+         * applies certain reductions to INH and SIM terms when one or both of their immediate subterms
+         * are negated.  in assuming a "closed-boolean-world" in which there is one and only one
+         * opposite for any truth frequency in 0..1,
+         * <p>
+         * then the following statements should be equivalent:
+         * <p>
+         * INH
+         * (x --> --y)    |-  --(x --> y)
+         * (--x --> y)    |-  --(x --> y)
+         * (--x --> --y)  |-    (x --> y)
+         * <p>
+         * SIM (disabled)
+         * (x <-> --y)    |-  --(x <-> y)
+         * (--x <-> --y)  |-    (x <-> y)
+         */
+        @Skill({"List_of_dualities", "Nondualism", "Möbius_strip"})
+        public static final boolean INH_CLOSED_BOOLEAN_DUALITY_MOBIUS_PARADIGM= configIs("INH_CLOSED_BOOLEAN_DUALITY_MOBIUS_PARADIGM");
 
         /**
          * absolute limit for constructing terms in any context in which a NAR is not known, which could provide a limit.

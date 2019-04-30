@@ -30,7 +30,8 @@ import tec.uom.se.AbstractQuantity;
 import java.util.List;
 
 import static nars.Op.*;
-import static nars.time.Tense.*;
+import static nars.time.Tense.ETERNAL;
+import static nars.time.Tense.XTERNAL;
 
 public class NarseseParser extends BaseParser<Object> implements Narsese.INarseseParser {
 

@@ -8,7 +8,6 @@ import jcog.sort.Top;
 import jcog.tree.rtree.*;
 import jcog.tree.rtree.split.LinearSplitLeaf;
 import nars.NAL;
-import nars.NAR;
 import nars.Task;
 import nars.control.op.Remember;
 import nars.task.ProxyTask;

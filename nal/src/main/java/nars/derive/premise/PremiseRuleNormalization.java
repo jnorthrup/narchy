@@ -3,8 +3,6 @@ package nars.derive.premise;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.Variable;
-import nars.term.atom.Atom;
-import nars.term.atom.Atomic;
 import nars.term.util.transform.VariableNormalization;
 import nars.term.var.ellipsis.Ellipsis;
 

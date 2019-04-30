@@ -21,7 +21,6 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 import static nars.Op.*;
-import static nars.Op.GOAL;
 
 /**
  * Question task which accepts a callback to be invoked on answers

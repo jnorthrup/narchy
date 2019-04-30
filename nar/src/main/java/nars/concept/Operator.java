@@ -1,7 +1,10 @@
 package nars.concept;
 
 import jcog.util.ArrayUtils;
-import nars.*;
+import nars.$;
+import nars.NAR;
+import nars.Op;
+import nars.Task;
 import nars.link.TermLinker;
 import nars.task.NALTask;
 import nars.term.Term;
