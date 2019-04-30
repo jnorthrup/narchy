@@ -17,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class NAL4Test extends NALTest {
 
 
-    private static final int cycles = 250;
+    private static final int cycles = 150;
 
     @Override
     protected NAR nar() {
@@ -155,6 +155,7 @@ public class NAL4Test extends NALTest {
     void concludeImageIntInheritImageExt() {
         test
                 .termVolMax(9)
+//                .confMin(0.6f)
                 .believe("(neutralization --> (acid,base))")
                 .believe("((acid,base) --> reaction)")
                 .mustBelieve(cycles, "((neutralization,\\,base) --> (reaction,/,base))", 1.0f, 0.81f)
@@ -165,8 +166,6 @@ public class NAL4Test extends NALTest {
     @Disabled
     @Test
     void testCompositionFromProductInh() {
-
-
         test
                 .believe("(soda --> acid)", 1.0f, 0.9f)
                 .ask("((drink,soda) --> ?death)")
@@ -215,6 +214,7 @@ public class NAL4Test extends NALTest {
     @ParameterizedTest
     void testTransformQuestionPred(byte punc) {
         test
+                .termVolMax(8)
                 .input("(x --> (a,b))" + Character.valueOf((char) punc))
                 .mustOutput(cycles, "b(x,a,\\)", punc)
                 .mustOutput(cycles, "a(x,\\,b)", punc)

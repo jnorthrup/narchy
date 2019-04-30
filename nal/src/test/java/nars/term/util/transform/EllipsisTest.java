@@ -5,7 +5,6 @@ import nars.$;
 import nars.NAL;
 import nars.Narsese;
 import nars.derive.premise.PatternTermBuilder;
-import nars.derive.premise.PremiseRuleSource;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.Variable;
@@ -17,7 +16,6 @@ import nars.term.var.ellipsis.EllipsisZeroOrMore;
 import nars.unify.Unify;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.util.HashSet;
@@ -332,24 +330,24 @@ public class EllipsisTest {
         return new String[]{a, b};
     }
 
-    @Disabled @Test
-    void testVarArg0() throws Narsese.NarseseException {
-
-        String rule = "(%S ==> %M), ((&&,%S,%A..+) ==> %M) |- ((&&,%A..+) ==> %M), (Belief:DecomposeNegativePositivePositive, Order:ForAllSame, SequenceIntervals:FromBelief)";
-
-        Compound _x = $.$('<' + rule + '>');
-        assertTrue(_x instanceof PremiseRuleSource, _x.toString());
-        PremiseRuleSource x = (PremiseRuleSource) _x;
-
-//        x = new PremiseRuleProto(x, NARS.shell());
+//    @Disabled @Test
+//    void testVarArg0() throws Narsese.NarseseException {
 //
+//        String rule = "(%S ==> %M), ((&&,%S,%A..+) ==> %M) |- ((&&,%A..+) ==> %M), (Belief:DecomposeNegativePositivePositive, Order:ForAllSame, SequenceIntervals:FromBelief)";
 //
-//        assertEquals(
-//                "(((%1==>%2),((%1&&%3..+)==>%2)),(((&&,%3..+)==>%2),((DecomposeNegativePositivePositive-->Belief),(ForAllSame-->Order),(FromBelief-->SequenceIntervals))))",
-//                x.toString()
-//        );
-
-    }
+//        Compound _x = $.$('<' + rule + '>');
+//        assertTrue(_x instanceof PremiseRuleSource, _x.toString());
+//        PremiseRuleSource x = (PremiseRuleSource) _x;
+//
+////        x = new PremiseRuleProto(x, NARS.shell());
+////
+////
+////        assertEquals(
+////                "(((%1==>%2),((%1&&%3..+)==>%2)),(((&&,%3..+)==>%2),((DecomposeNegativePositivePositive-->Belief),(ForAllSame-->Order),(FromBelief-->SequenceIntervals))))",
+////                x.toString()
+////        );
+//
+//    }
 
     @Test
     void testEllipsisMatchCommutive1_0a() throws Narsese.NarseseException {

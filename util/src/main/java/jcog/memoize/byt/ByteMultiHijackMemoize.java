@@ -1,73 +1,43 @@
 package jcog.memoize.byt;
 
-import jcog.memoize.HijackMemoize;
+import com.google.common.base.Joiner;
 import jcog.memoize.Memoize;
 
 import java.util.function.Function;
 
 abstract public class ByteMultiHijackMemoize<X extends ByteKeyExternal,Y> implements Memoize<X,Y> {
-    final HijackMemoize<X,Y>[] table;
 
-    public ByteMultiHijackMemoize(Function<X, Y> f, int capacity, int reprobes, boolean soft, int levels) {
+    final ByteHijackMemoize<X,Y>[] level;
+    protected int capacity;
 
-        this.table = new HijackMemoize[levels];
-        //TODO
+    public ByteMultiHijackMemoize(Function<X, Y> f, int capacity, boolean soft, int levels) {
+        this.level = new ByteHijackMemoize[levels];
+        this.capacity = capacity;
+        for (int i = 0; i < levels; i++) {
+            level[i] = new ByteHijackMemoize<>(f, capacity(i), reprobes(i), soft);
+        }
     }
 
-    abstract int level(ByteKey key, int levels);
+    abstract int capacity(int level);
+    abstract int reprobes(int level);
+    abstract int level(ByteKey key);
 
 
+    @Override
+    public String summary() {
+        return Joiner.on("\n\t").join(level);
+    }
 
-//    @Override
-//    public final PriProxy computation(X x, Y y) {
-//        return x.internal(y, value(x, y));
-//    }
-//
-//    @Override
-//    public final PriProxy<X, Y> put(X x, Y y) {
-//        PriProxy<X, Y> xy = super.put(x, y);
-//        x.close();
-//        return xy;
-//    }
-//
-//    @Override
-//    public final @Nullable Y apply(X x) {
-//        Y y = super.apply(x);
-//        x.close();
-//        return y;
-//    }
-//
-//
-//    public Huffman buildCodec() {
-//        return buildCodec(new Huffman(bag.stream().map(b -> bag.key(b).array()),
-//                Huffman.fastestCompDecompTime()));
-//    }
-//
-//    public Huffman buildCodec(Huffman h) {
-//        //TODO add incremental codec building from multiple ByteHijackMemoize's
-//        return h;
-//    }
-//
-//    @Override
-//    protected void boost(PriProxy<X, Y> p) {
-//        p.priAdd(valueBase(p.x()) * CACHE_HIT_BOOST);
-//    }
-//    @Override
-//    protected void cut(PriProxy<X, Y> p) {
-//
-//        p.priSub(valueBase(p.x()) * CACHE_SURVIVE_COST);
-//    }
-//
-//    @Override
-//    public float value(X x, Y y) {
-//        return valueBase(x) * DEFAULT_VALUE;
-//    }
-//
-//    private float valueBase(ByteKey x) {
-//        return 1;
-//        //return 1/((1+x.length()));
-//        //return (float) (1 /(Math.log(1+x.length())));
-//        //return 1 /((1+sqr(x.length())));
-//        //return 1f/(bag.reprobes * (1+ Util.sqr(x.length())));
-//    }
+    @Override
+    public void clear() {
+        for (ByteHijackMemoize m : level)
+            m.clear();
+    }
+
+    @Override
+    public Y apply(X x) {
+        int l = level(x);
+        return level[l].apply(x);
+    }
+
 }

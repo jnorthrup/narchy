@@ -273,7 +273,7 @@ public class Occurrify extends TimeGraph {
 
     private transient boolean decomposeEvents;
     private transient int patternVolume;
-    private transient Op patternOp;
+
 
     public Occurrify(Derivation d) {
         this.d = d;
@@ -494,21 +494,20 @@ public class Occurrify extends TimeGraph {
 
 
     @Override protected boolean validPotentialSolution(Term y) {
-        Op o = y.op();
-        if(o == patternOp && !o.taskable)
+        if (super.validPotentialSolution(y)) {
+            int v = y.volume();
+            return
+                v <= d.termVolMax &&
+                v >= Math.floor(NAL.derive.TIMEGRAPH_IGNORE_DEGENERATE_SOLUTIONS_FACTOR * patternVolume);
+        } else
             return false;
-
-        int v = y.volume();
-        return v <= d.termVolMax && super.validPotentialSolution(y) &&
-               v >= NAL.derive.TIMEGRAPH_IGNORE_DEGENERATE_SOLUTIONS_FACTOR * patternVolume
-               ;
     }
 
     private ArrayHashSet<Event> solutions(Term pattern) {
 
         ttl = NAL.derive.TIMEGRAPH_ITERATIONS;
         patternVolume = pattern.volume();
-        patternOp = pattern.op();
+
 
         solve(pattern,  /* take everything */ this::eachSolution);
 

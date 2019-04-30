@@ -2,16 +2,17 @@ package nars.term.util.transform;
 
 import jcog.random.XoRoShiRo128PlusRandom;
 import jcog.random.XorShift128PlusRandom;
-import nars.*;
+import nars.$;
+import nars.NAL;
+import nars.Narsese;
+import nars.Op;
 import nars.derive.premise.PatternTermBuilder;
 import nars.subterm.Subterms;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.anon.Anon;
-import nars.test.TestNAR;
 import nars.unify.Unify;
 import nars.unify.UnifyAny;
-import nars.util.RuleTest;
 import org.junit.jupiter.api.Test;
 
 import java.util.Set;
@@ -535,15 +536,6 @@ public class UnifyTest {
         test(Op.VAR_DEP, "(x,y)", "(x,$1)", false);
     }
 
-    @Test
-    void posNegQuestion() {
-
-
-        RuleTest.get(new TestNAR(NARS.shell()),
-                "a:b?", "(--,a:b).",
-                "a:b.",
-                0, 0, 0.9f, 0.9f);
-    }
 
     @Test
     void patternSimilarity1() {
@@ -759,26 +751,6 @@ public class UnifyTest {
 
     }
 
-
-    @Test
-    void testA() {
-        String somethingIsBird = "bird:$x";
-        String somethingIsAnimal = "animal:$x";
-        testIntroduction(somethingIsBird, Op.IMPL, somethingIsAnimal, "bird:robin", "animal:robin");
-    }
-
-
-    private void testIntroduction(String subj, Op relation, String pred, String belief, String concl) {
-
-        NAR n = NARS.shell();
-
-        new TestNAR(n)
-                .believe('(' + subj + ' ' + relation + ' ' + pred + ')')
-                .believe(belief)
-                .mustBelieve(4, concl, 0.81f);
-
-
-    }
 
 
     /**

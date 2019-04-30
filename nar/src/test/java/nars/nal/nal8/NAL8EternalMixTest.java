@@ -165,9 +165,9 @@ class NAL8EternalMixTest extends NALTest {
 
         test
 
-                .input("a:b! :|:")
-                .inputAt(10, "(( c:d &&+5 e:f ) ==>+0 a:b).")
-                .mustGoal(cycles, "( c:d &&+5 e:f)", 1.0f, 0.45f, 0)
+                .input("a:b! |")
+                .inputAt(10, "(( c:d &&+5 e:f ) =|> a:b).")
+                .mustGoal(cycles, "( c:d &&+5 e:f)", 1.0f, 0.45f, -5)
                 .mustNotOutput(cycles, "( c:d &&+5 e:f)", GOAL, ETERNAL)
         ;
     }

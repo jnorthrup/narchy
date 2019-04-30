@@ -29,6 +29,7 @@ public class GoalDecompositionTest extends NALTest {
 //
 //        test.log();
         test
+                .termVolMax(5)
                 .input("(&&,a,b). %0.75;0.9%")
                 .input("a. %0.80;0.9%")
                 .mustBelieve(cycles, "b", 0.60f, 0.49f);
@@ -37,6 +38,7 @@ public class GoalDecompositionTest extends NALTest {
     @Test
     void testConjBeliefNeg() {
         test
+                .termVolMax(5)
                 .input("(&&,--a,b).")
                 .input("--a.")
                 .mustBelieve(cycles, "b", 1f, 0.81f);
@@ -46,6 +48,7 @@ public class GoalDecompositionTest extends NALTest {
     void testDisjBeliefPos() {
 
         test
+                .termVolMax(5)
                 .input("(||,a,b). %0.9;0.9%")
                 .input("--a. %0.9;0.9%")
                 .mustBelieve(cycles, "b", 0.81f, 0.66f);
@@ -54,6 +57,7 @@ public class GoalDecompositionTest extends NALTest {
     void testDisjBeliefNeg() {
 
         test
+                .termVolMax(5)
                 .input("(||,--a,b).  %0.9;0.9%")
                 .input("a.  %0.9;0.9%")
                 .mustBelieve(cycles, "b", 0.81f, 0.66f);
@@ -62,6 +66,7 @@ public class GoalDecompositionTest extends NALTest {
     @Test
     void testDisjConditionalDecompose() {
         test
+            .termVolMax(5)
             .input("(||,a,b)!")
             .input("--a.")
             .mustGoal(cycles, "b", 1f, 0.81f)
@@ -76,6 +81,7 @@ public class GoalDecompositionTest extends NALTest {
 //        test.log();
         //produces output from structural deduction
         test
+                .termVolMax(5)
                 .input("(||,a,--b)!")
                 .input("a.")
                 .mustNotOutput(cycles, "b", GOAL, 0f, 1f, 0f, 1f, t->true)

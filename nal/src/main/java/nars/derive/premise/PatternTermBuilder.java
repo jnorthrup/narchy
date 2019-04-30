@@ -1,16 +1,10 @@
 package nars.derive.premise;
 
-import nars.Builtin;
 import nars.term.Compound;
-import nars.term.Functor;
 import nars.term.Term;
-import nars.term.Variable;
-import nars.term.atom.Atom;
-import nars.term.atom.Atomic;
 import nars.term.compound.PatternCompound;
 import nars.term.util.transform.AbstractTermTransform;
 import nars.term.util.transform.Retemporalize;
-import nars.term.util.transform.VariableNormalization;
 import nars.term.var.ellipsis.Ellipsis;
 import nars.term.var.ellipsis.Ellipsislike;
 import org.jetbrains.annotations.Nullable;
@@ -46,41 +40,6 @@ public class PatternTermBuilder /* implements TermBuilder ? */ {
 //    public final Termed intern(Term x) {
 //        return get(x); //.target();
 //    }
-
-    private static final class PremiseRuleNormalization extends VariableNormalization {
-
-
-        @Override
-        protected Term applyFilteredPosCompound(Compound x) {
-            /** process completely to resolve built-in functors,
-             * to override VariableNormalization's override */
-            return applyCompound(x, x.op(), x.dt());
-        }
-
-
-        @Override
-        public Term applyAtomic(Atomic x) {
-            if (x instanceof Atom) {
-                Functor f = Builtin.functor(x);
-                return f != null ? f : x;
-            } else
-                return super.applyAtomic(x);
-        }
-
-        /*@NotNull*/
-        @Override
-        protected Variable newVariable(/*@NotNull*/ Variable x) {
-            if (x instanceof Ellipsis.EllipsisPrototype)
-                return Ellipsis.EllipsisPrototype.make((byte) count,
-                    ((Ellipsis.EllipsisPrototype) x).minArity);
-            else if (x instanceof Ellipsis)
-                return x;
-            else
-                return super.newVariable(x);
-        }
-
-
-    }
 
     private static final AbstractTermTransform.NegObliviousTermTransform Ellipsify = new AbstractTermTransform.NegObliviousTermTransform() {
 

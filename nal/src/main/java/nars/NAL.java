@@ -208,8 +208,8 @@ public abstract class NAL<W> extends Parts<Term, W> implements Timed {
             , 0, 1);
     @Deprecated
     public final FloatRange questionForgetRate = new FloatRange(0.5f, 0, 1);
-    public final IntRange premiseUnifyTTL = new IntRange(16, 1, 32);
-    public final IntRange deriveBranchTTL = new IntRange(16 * NAL.derive.TTL_MIN, NAL.derive.TTL_MIN, 64 * NAL.derive.TTL_MIN);
+    public final IntRange premiseUnifyTTL = new IntRange(8, 1, 32);
+    public final IntRange deriveBranchTTL = new IntRange(8 * NAL.derive.TTL_MIN, NAL.derive.TTL_MIN, 64 * NAL.derive.TTL_MIN);
     /**
      * how many cycles above which to dither dt and occurrence time
      * TODO move this to Time class and cache the cycle value rather than dynamically computing it
@@ -612,7 +612,7 @@ public abstract class NAL<W> extends Parts<Term, W> implements Timed {
          * for NALTest's: extends the time all unit tests are allowed to run for.
          * normally be kept to 1 but for debugging this may be increased to find what tests need more time
          */
-        public static final float TIME_MULTIPLIER = 3f;
+        public static final float TIME_MULTIPLIER = 1f;
         /**
          * how precise unit test results must match expected values to pass
          */
@@ -641,11 +641,16 @@ public abstract class NAL<W> extends Parts<Term, W> implements Timed {
          * whether timegraph should not return solutions with volume significantly less than the input's.
          * set 0 to disable the filter
          */
-        public static final float TIMEGRAPH_IGNORE_DEGENERATE_SOLUTIONS_FACTOR = 0f;
+        public static final float TIMEGRAPH_IGNORE_DEGENERATE_SOLUTIONS_FACTOR = 0.5f;
         /**
          * whether to dither events as they are represented internally.  output events are dithered for the NAR regardless.
          */
         public static final boolean TIMEGRAPH_DITHER_EVENTS_INTERNALLY= !configIs("DISABLE_TIMEGRAPH_DITHER_EVENTS_INTERNALLY");
+        public static final int TTL_CONJ_BEFORE_AFTER = NAL.derive.TTL_UNISUBST_MAX;
+
+
+        @Range(min = 1, max = 32)
+        public static final int TIMEGRAPH_ITERATIONS = 2;
         /**
          * TTL = 'time to live'
          */
@@ -654,11 +659,7 @@ public abstract class NAL<W> extends Parts<Term, W> implements Timed {
 
 
         public static final int TTL_UNISUBST_MAX = 5;
-        public static final int TTL_CONJ_BEFORE_AFTER = NAL.derive.TTL_UNISUBST_MAX;
 
-
-        @Range(min = 1, max = 32)
-        public static final int TIMEGRAPH_ITERATIONS = 2;
 
         @Range(min = 0, max = 64)
         public static final int TTL_COST_BRANCH = 1;

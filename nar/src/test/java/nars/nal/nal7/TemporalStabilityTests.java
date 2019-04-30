@@ -157,7 +157,7 @@ public class TemporalStabilityTests {
 
     @Test
     void testTemporalStabilityLinkedTemporalConj() {
-        new T1(conjSeq2, new int[] { 1, 6, 11 }, 1, 16).test(CYCLES, NARS.tmp());
+        new T1(conjSeq2, new int[] { 1, 6, 11 }, 1, 16).test(CYCLES*2, NARS.tmp());
     }
 
     @Test

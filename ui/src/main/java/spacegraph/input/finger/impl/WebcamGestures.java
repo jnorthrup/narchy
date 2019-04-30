@@ -7,8 +7,6 @@ import boofcv.alg.background.BackgroundModelMoving;
 import boofcv.alg.distort.PointTransformHomography_F32;
 import boofcv.core.image.GConvertImage;
 import boofcv.factory.background.ConfigBackgroundBasic;
-import boofcv.factory.background.ConfigBackgroundGaussian;
-import boofcv.factory.background.ConfigBackgroundGmm;
 import boofcv.factory.background.FactoryBackgroundModel;
 import boofcv.factory.feature.tracker.FactoryPointTracker;
 import boofcv.factory.sfm.FactoryMotion2D;
@@ -49,6 +47,7 @@ public class WebcamGestures extends Finger {
             VideoSource in = WebCam.the();
 
             VideoSource in2 = new VideoEqualizer(in);
+
             VideoSource in3 = new VideoBackgroundRemoval(in2);
 
 //            VideoSource in4 = VideoTransform.the(in, new Function<>() {
@@ -137,35 +136,33 @@ public class WebcamGestures extends Finger {
             ConfigGeneralDetector confDetector = new ConfigGeneralDetector();
             confDetector.threshold = 10;
             confDetector.maxFeatures = 300;
-            confDetector.radius = 6;
+            confDetector.radius = 4;
 
             // Use a KLT tracker
             PointTracker tracker = FactoryPointTracker.klt(new int[]{1, 2, 4, 8}, confDetector, 3,
-                    GrayF32.class, null);
+                    imageType.getImageClass(), null);
 
             // This estimates the 2D image motion
             motion2D =
-                    FactoryMotion2D.createMotion2D(500, 0.5, 3, 100, 0.6, 0.5, false, tracker, new Homography2D_F64());
+                    FactoryMotion2D.createMotion2D(500, 0.5, 3, 100, 0.6, 0.5,
+                            false, tracker, new Homography2D_F64());
 
-            ConfigBackgroundBasic configBasic = new ConfigBackgroundBasic(30, 0.005f);
+
+            background = FactoryBackgroundModel.movingBasic(new ConfigBackgroundBasic(30, 0.005f), new PointTransformHomography_F32(), imageType);
 
             // Configuration for Gaussian model.  Note that the threshold changes depending on the number of image bands
             // 12 = gray scale and 40 = color
-            ConfigBackgroundGaussian configGaussian = new ConfigBackgroundGaussian(12,0.001f);
-            configGaussian.initialVariance = 64;
-            configGaussian.minimumDifference = 5;
+//            ConfigBackgroundGaussian configGaussian = new ConfigBackgroundGaussian(12,0.001f);
+//            configGaussian.initialVariance = 64;
+//            configGaussian.minimumDifference = 5;
+//            background = FactoryBackgroundModel.movingGaussian(configGaussian, new PointTransformHomography_F32(), imageType);
 
             // Note that GMM doesn't interpolate the input image. Making it harder to model object edges.
             // However it runs faster because of this.
-            ConfigBackgroundGmm configGmm = new ConfigBackgroundGmm();
-            configGmm.initialVariance = 1600;
-            configGmm.significantWeight = 1e-1f;
-
-            // Comment/Uncomment to switch background mode
-            background =
-                    //FactoryBackgroundModel.movingBasic(configBasic, new PointTransformHomography_F32(), imageType);
-				//FactoryBackgroundModel.movingGaussian(configGaussian, new PointTransformHomography_F32(), imageType);
-				FactoryBackgroundModel.movingGmm(configGmm,new PointTransformHomography_F32(), imageType);
+//            background = FactoryBackgroundModel.movingGmm(configGmm,new PointTransformHomography_F32(), imageType);
+//            ConfigBackgroundGmm configGmm = new ConfigBackgroundGmm();
+//            configGmm.initialVariance = 1600;
+//            configGmm.significantWeight = 1e-1f;
 
             background.setUnknownValue(1);
 
@@ -203,38 +200,32 @@ public class WebcamGestures extends Finger {
                 homeToWorld.a23 = grey.height/2;
 
                 // Create a background image twice the size of the input image.  Tell it that the home is in the center
-                background.initialize(grey.width * 2, grey.height * 2, homeToWorld);
+                background.initialize(W * 2, H * 2, homeToWorld);
 
             }
 
             input = ConvertBufferedImage.convertFrom(image, input);
 
-            //long before = System.nanoTime();
             GConvertImage.convert(input, grey);
 
-            if( !motion2D.process(grey) ) {
-                throw new TODO();
+            motion2D.process(grey);
+
+            /*if( motion2D.process(grey) )*/ {
+                Homography2D_F64 firstToCurrent64 = (Homography2D_F64) motion2D.getFirstToCurrent();
+                ConvertMatrixData.convert(firstToCurrent64, firstToCurrent32);
+
+                background.segment(firstToCurrent32, input, segmented);
+                background.updateBackground(firstToCurrent32,input);
+
+
+                if (visualized==null || (visualized.getWidth()!=segmented.width || visualized.getHeight()!=segmented.height)) {
+                    visualized = new BufferedImage(segmented.width,segmented.height,BufferedImage.TYPE_BYTE_GRAY);
+                }
+
+                VisualizeBinaryData.renderBinary(segmented,false,visualized);
             }
+            //else throw new TODO(); //input was probably blank
 
-            Homography2D_F64 firstToCurrent64 = (Homography2D_F64) motion2D.getFirstToCurrent();
-            ConvertMatrixData.convert(firstToCurrent64, firstToCurrent32);
-
-            background.segment(firstToCurrent32, input, segmented);
-            background.updateBackground(firstToCurrent32,input);
-            //long after = System.nanoTime();
-
-            //fps = (1.0-alpha)*fps + alpha*(1.0/((after-before)/1e9));
-
-            if (visualized==null || (visualized.getWidth()!=segmented.width || visualized.getHeight()!=segmented.height)) {
-                visualized = new BufferedImage(segmented.width,segmented.height,BufferedImage.TYPE_INT_RGB);
-            }
-
-            VisualizeBinaryData.renderBinary(segmented,false,visualized);
-//            gui.setImage(0, 0, (BufferedImage)video.getGuiImage());
-//            gui.setImage(0, 1, visualized);
-//            gui.repaint();
-
-            //System.out.println("FPS = "+fps);
 
             return visualized;
         }

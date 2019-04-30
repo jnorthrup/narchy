@@ -5,6 +5,7 @@ import jcog.TODO;
 import jcog.data.list.FasterList;
 import jcog.util.ArrayUtils;
 import nars.$;
+import nars.Builtin;
 import nars.Narsese;
 import nars.Op;
 import nars.derive.Derivation;
@@ -49,6 +50,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 import static nars.Op.*;
+import static nars.derive.premise.PatternTermBuilder.patternify;
 import static nars.subterm.util.SubtermCondition.*;
 import static nars.term.control.AbstractTermMatchPred.cost;
 import static nars.term.control.PREDICATE.sortByCostIncreasing;
@@ -93,9 +95,20 @@ public class PremiseRuleSource extends ProxyTerm {
         this(ruleSrc, false);
     }
 
+
+    private static Term rule(String ruleSrc) throws Narsese.NarseseException {
+        return patternify(new MyPremiseRuleNormalization().apply(
+            new UppercaseAtomsToPatternVariables().apply(
+                $.pFast(
+                    parseRuleComponents(ruleSrc)
+                )
+            )
+        ));
+    }
+
     private PremiseRuleSource(String ruleSrc, boolean swap) throws Narsese.NarseseException {
         super(
-                INDEX.rule(new UppercaseAtomsToPatternVariables().apply($.pFast(parseRuleComponents(ruleSrc))))
+                rule(ruleSrc)
         );
 
         this.source = ruleSrc;
@@ -109,8 +122,8 @@ public class PremiseRuleSource extends ProxyTerm {
 
 
 
-        Term a = PatternTermBuilder.patternify(precon[0]);
-        Term b = PatternTermBuilder.patternify(precon[1]);
+        Term a = patternify(precon[0]);
+        Term b = patternify(precon[1]);
         if (swap) {
             String preconStr = ref.sub(0).toString().toLowerCase();
             //if (preconStr.contains("task") || preconStr.contains("belief"))
@@ -705,7 +718,7 @@ public class PremiseRuleSource extends ProxyTerm {
 
     private Term conclusion(Term x) {
         if (!x.unneg().op().var)
-            return conclusionOptimize(ConcTransform.apply(PatternTermBuilder.patternify(x)));
+            return conclusionOptimize(ConcTransform.apply(patternify(x)));
         else
             return x;
     }
@@ -1039,6 +1052,18 @@ public class PremiseRuleSource extends ProxyTerm {
             return AbstractTermTransform.super.applyCompound(c);
         }
     };
+
+    private static class MyPremiseRuleNormalization extends PremiseRuleNormalization {
+        @Override
+        public Term applyAtomic(Atomic x) {
+            if (x instanceof Atom) {
+                Functor f = Builtin.functor(x);
+                return f != null ? f : x;
+            } else
+                return super.applyAtomic(x);
+        }
+
+    }
 }
 
 

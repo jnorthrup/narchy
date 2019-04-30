@@ -1265,6 +1265,7 @@ public class NAL6Test extends NALTest {
     void testImplSubjQuestionUnificationConst() {
         test
                 .termVolMax(13)
+                .confMin(0.8f)
                 .believe("(Criminal($1) ==> (&&,Sells($1,#2,#3),z))")
                 .ask("Criminal(x)")
                 .mustQuestion(cycles, "(&&,Sells(x,#2,#3),z)")
@@ -1275,6 +1276,7 @@ public class NAL6Test extends NALTest {
     void testImplSubjQuestionUnificationQuery() {
         test
                 .termVolMax(13)
+                .confMin(0.8f)
                 .believe("(Criminal($1) ==> (&&,Sells($1,#2,#3),z))")
                 .ask("Criminal(?x)")
                 .mustQuestion(cycles, "(&&,Sells(?1,#2,#3),z)")

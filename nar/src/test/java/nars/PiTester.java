@@ -4,7 +4,6 @@ import jcog.Util;
 import jcog.data.list.FasterList;
 import nars.nal.nal1.NAL1MultistepTest;
 import nars.nal.nal1.NAL1Test;
-import nars.term.AnonTest;
 import org.pitest.classinfo.ClassInfo;
 import org.pitest.classpath.ClassloaderByteArraySource;
 import org.pitest.classpath.CodeSource;
@@ -55,7 +54,7 @@ public class PiTester {
                 t ->
                         t.equals(NAL1Test.class.getName())
                                 || t.equals(NAL1MultistepTest.class.getName())
-                                || t.equals(AnonTest.class.getName())
+//                                || t.equals(AnonTest.class.getName())
 //                                t.equals(BoolTest.class.getName()) ||
 //                                t.equals(ConjTest.class.getName()) ||
 //                                t.equals(VariableTest.class.getName()

@@ -236,6 +236,7 @@ abstract public class Exec extends NARPart implements Executor, ConsumerX<Task> 
      * flushes the pending work queued for the current time
      */
     public final void synch(NAR n) {
+        this.nar = n; //HACK
         schedule(x -> x.accept(n));
     }
 }

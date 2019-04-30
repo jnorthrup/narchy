@@ -1,5 +1,8 @@
 package spacegraph.video;
 
+import jcog.Util;
+import jcog.math.FloatRange;
+
 import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
 import java.util.Arrays;
@@ -16,6 +19,8 @@ public class VideoEqualizer extends VideoTransform {
     /** cumulative histogram */
     private final int[] chistogram = new int[256];
     private final float[] arr = new float[256];
+
+    public final FloatRange momentum = new FloatRange(0.99f, 0, 1f);
 
     /**
      * https://www.codeproject.com/Tips/1172662/Histogram-Equalisation-in-Java
@@ -35,10 +40,11 @@ public class VideoEqualizer extends VideoTransform {
             }
         }
 
+        float momentum = this.momentum.floatValue();
         for (int i = 0; i < 256; i++) {
             int c = (i > 0 ? chistogram[i - 1] : 0) + histogram[i];
             chistogram[i] = c;
-            arr[i] = ((chistogram[i] * 255f) / totpix);
+            arr[i] = Util.lerp(momentum, ((chistogram[i] * 255f) / totpix), arr[i]);
         }
 
         if (out == null || out.getWidth() != W || out.getHeight()!=H) {

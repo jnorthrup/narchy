@@ -4,6 +4,8 @@ import com.google.common.primitives.Longs;
 import nars.*;
 import nars.concept.Concept;
 import nars.term.Termed;
+import nars.test.TestNAR;
+import nars.util.RuleTest;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -145,6 +147,7 @@ class NARTest {
         n.run((int) Longs.max(events));
         assertEquals(events.length, runs[0]);
     }
+
     @ParameterizedTest
     @ValueSource(strings = {
             "a:b. b:c.",
@@ -159,18 +162,17 @@ class NARTest {
         final AtomicInteger count = new AtomicInteger();
 
 
-
         Set<Task> written = new HashSet();
 
         NAR a = NARS.tmp()
 
-                .input(new String[] { input });
+                .input(new String[]{input});
         a
                 .run(16);
         a
                 .synch()
-                .outputBinary(baos, (Task t)->{
-                    assertTrue(written.add(t),()->"duplicate: " + t);
+                .outputBinary(baos, (Task t) -> {
+                    assertTrue(written.add(t), () -> "duplicate: " + t);
                     count.incrementAndGet();
                     return true;
                 })
@@ -184,14 +186,9 @@ class NARTest {
                 .inputBinary(new ByteArrayInputStream(x));
 
 
-
-
-
-
-
         Set<Task> aHas = new HashSet();
 
-        a.tasks().forEach((Task t) -> aHas.add(t) );
+        a.tasks().forEach((Task t) -> aHas.add(t));
 
         assertEquals(count.get(), aHas.size());
 
@@ -204,16 +201,34 @@ class NARTest {
         assertEquals(aHas, bRead);
 
 
-
-
-
-
-
-
-
-
-
-
     }
 
+
+    @Test
+    void testA() {
+        String somethingIsBird = "bird:$x";
+        String somethingIsAnimal = "animal:$x";
+        testIntroduction(somethingIsBird, Op.IMPL, somethingIsAnimal, "bird:robin", "animal:robin");
+    }
+
+
+    private void testIntroduction(String subj, Op relation, String pred, String belief, String concl) {
+
+        NAR n = NARS.shell();
+
+        new TestNAR(n)
+                .believe('(' + subj + ' ' + relation + ' ' + pred + ')')
+                .believe(belief)
+                .mustBelieve(4, concl, 0.81f);
+    }
+
+    @Test
+    void posNegQuestion() {
+
+
+        RuleTest.get(new TestNAR(NARS.shell()),
+                "a:b?", "(--,a:b).",
+                "a:b.",
+                0, 0, 0.9f, 0.9f);
+    }
 }

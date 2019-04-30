@@ -100,6 +100,7 @@ public class NAL3Test extends NALTest {
     private TestNAR testDecomposeNegDiff(float freq, String known, String composed, String unknown) {
         test
             .termVolMax(6)
+            .confMin(0.5f)
             .believe(known, freq, 0.9f)
             .believe(composed, 0.0f, 0.9f)
         ;

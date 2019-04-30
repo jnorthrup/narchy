@@ -22,7 +22,7 @@ class QuestTest {
 
     @Test
     void testQuestAfterGoal1() throws Narsese.NarseseException {
-        testQuest(true, 0, 256);
+        testQuest(true, 0, 512);
     }
     @Test
     void testQuestAfterGoal2() throws Narsese.NarseseException {

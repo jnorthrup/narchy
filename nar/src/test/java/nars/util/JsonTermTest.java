@@ -46,7 +46,7 @@ class JsonTermTest {
             d.believe($.inh(JsonTerm.the(json), id), Tense.Eternal);
             d.believe($.inst(id, Atomic.the("now")), Tense.Present);
         }
-        d.run(256);
+        d.run(16);
     }
 
     @Test
@@ -68,6 +68,6 @@ class JsonTermTest {
         NAR d = new NARS().get();
         d.log();
         d.believe($.inh($.fromJSON(j), "x"));
-        d.run(1000);
+        d.run(16);
     }
 }
