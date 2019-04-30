@@ -1,13 +1,13 @@
 //NAL3 single premise intersection decompose
     (M --> I), X, is(I,"&&"), subOfPosOrNeg(I,X)   |-   (M --> withoutPosOrNeg(I,X)),   (Belief:StructuralDeduction,Goal:StructuralDeduction)
-     //(M --> I), X, is(I,"&&"), subOfPosOrNeg(I,X)   |-   --(M --> withoutPosOrNeg(I,X)),   (Belief:StructuralDeductionWeakN,Goal:StructuralDeductionWeakN)
-    //(I --> M), X, is(I,"||"), subOfPosOrNeg(I,X)   |-   (withoutPosOrNeg(I,X)-->M), (Belief:StructuralDeduction,Goal:StructuralDeduction)
-     //(I --> M), X, is(I,"||"), subOfPosOrNeg(I,X)   |-   --(withoutPosOrNeg(I,X)-->M), (Belief:StructuralDeductionWeakN,Goal:StructuralDeductionWeakN)
+     (M --> --I), X, is(I,"&&"), subOfPosOrNeg(I,X)   |-   (M --> --withoutPosOrNeg(I,X)),   (Belief:StructuralDeductionWeak,Goal:StructuralDeductionWeak)
+    (I --> M), X, is(I,"&&"), subOfPosOrNeg(I,X)   |-   (withoutPosOrNeg(I,X)-->M), (Belief:StructuralDeduction,Goal:StructuralDeduction)
+     (--I --> M), X, is(I,"&&"), subOfPosOrNeg(I,X)   |-   (--withoutPosOrNeg(I,X)-->M), (Belief:StructuralDeductionWeak,Goal:StructuralDeductionWeak)
 
 //NAL3 single premise union decompose
     //(M --> U), X, is(U,"||"), subOfPosOrNeg(U,X)   |-    (M --> withoutPosOrNeg(U,X)), (Belief:StructuralDeductionWeak,Goal:StructuralDeductionWeak)
       //(M --> U), X, is(U,"||"), subOfPosOrNeg(U,X)   |-    --(M --> withoutPosOrNeg(U,X)), (Belief:StructuralDeductionN,Goal:StructuralDeductionN)
-    (U --> M), X, is(U,"&&"), subOfPosOrNeg(U,X)   |-    (withoutPosOrNeg(U,X) --> M), (Belief:StructuralDeduction,Goal:StructuralDeduction)
+    //(U --> M), X, is(U,"&&"), subOfPosOrNeg(U,X)   |-    (withoutPosOrNeg(U,X) --> M), (Belief:StructuralDeduction,Goal:StructuralDeduction)
       //(U --> M), X, is(U,"&&"), subOfPosOrNeg(U,X)   |-    --(withoutPosOrNeg(U,X) --> M), (Belief:StructuralDeductionN,Goal:StructuralDeductionN)
 
 
@@ -39,16 +39,16 @@
 
 
 //intersection/union/diff question/quest decompose
-    //(S --> X), A, task("?@"), is(S,"||"), subOfPosOrNeg(S,A) |- (withoutPosOrNeg(S,A) --> X)
     (S --> X), A, task("?@"), is(S,"&&"), subOfPosOrNeg(S,A) |- (withoutPosOrNeg(S,A) --> X)
-    //(X --> S), A, task("?@"), is(S,"||"), subOfPosOrNeg(S,A) |- (X --> withoutPosOrNeg(S,A))
+    (--S --> X), A, task("?@"), is(S,"&&"), subOfPosOrNeg(S,A) |- (--withoutPosOrNeg(S,A) --> X)
     (X --> S), A, task("?@"), is(S,"&&"), subOfPosOrNeg(S,A) |- (X --> withoutPosOrNeg(S,A))
+    (X --> --S), A, task("?@"), is(S,"&&"), subOfPosOrNeg(S,A) |- (X --> --withoutPosOrNeg(S,A))
 
 //intersection/union/diff belief + component question/quest decompose
-//bidi:    (A --> X), (S --> X), task("?@"), is(S,"||"), subOfPosOrNeg(S,A) |- (withoutPosOrNeg(S,A) --> X)
 bidi:    (A --> X), (S --> X), task("?@"), is(S,"&&"), subOfPosOrNeg(S,A) |- (withoutPosOrNeg(S,A) --> X)
-//bidi:    (X --> A), (X --> S), task("?@"), is(S,"||"), subOfPosOrNeg(S,A) |- (X --> withoutPosOrNeg(S,A))
+bidi:    (A --> X), (--S --> X), task("?@"), is(S,"&&"), subOfPosOrNeg(S,A) |- (--withoutPosOrNeg(S,A) --> X)
 bidi:    (X --> A), (X --> S), task("?@"), is(S,"&&"), subOfPosOrNeg(S,A) |- (X --> withoutPosOrNeg(S,A))
+bidi:    (X --> A), (X --> --S), task("?@"), is(S,"&&"), subOfPosOrNeg(S,A) |- (X --> --withoutPosOrNeg(S,A))
 
 
 

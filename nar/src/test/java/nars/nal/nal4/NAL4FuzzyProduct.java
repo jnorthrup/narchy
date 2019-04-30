@@ -21,7 +21,7 @@ public class NAL4FuzzyProduct extends NALTest {
     protected NAR nar() {
         NAR n = NARS.tmp(4);
         new BatchDeriver(Derivers.files(n, "nal4.sect.nal")); //add-on deriver
-        n.termVolumeMax.set(9);
+        n.termVolumeMax.set(10);
         return n;
     }
 
@@ -67,7 +67,7 @@ public class NAL4FuzzyProduct extends NALTest {
 
     @Test
     void testIntersectionOfProductSubtermsRecursive() {
-        test.termVolMax(15);
+        test.termVolMax(16);
         test
                 .believe("((x,(y,x))-->a)")
                 .believe("((x,(z,x))-->a)")

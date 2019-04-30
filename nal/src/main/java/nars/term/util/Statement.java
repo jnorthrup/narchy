@@ -35,8 +35,7 @@ public class Statement {
                 return True;
             else if (subject.equalsNeg(predicate))
                 return False;
-            else if (subject instanceof Bool || predicate instanceof Bool)
-                return Null;
+
 
             if (op == INH || op == SIM) {
                   if (subject.unneg().equalsRoot(predicate.unneg()))
@@ -50,11 +49,16 @@ public class Statement {
             if (subject == True)
                 return predicate;
             if (subject == False)
-                return False; //return Null;
+                return Null;
             if (!NAL.IMPLICATION_SUBJECT_CAN_CONTAIN_IMPLICATION && subject.hasAny(IMPL)) {
                 return Null; //throw new TODO();
             }
             if (!subject.op().eventable)
+                return Null;
+        }
+
+        if (dtConcurrent) {
+            if (subject instanceof Bool || predicate instanceof Bool)
                 return Null;
         }
 
@@ -218,8 +222,8 @@ public class Statement {
             if (op == INH || op == SIM) {
                 if (NAL.term.INH_CLOSED_BOOLEAN_DUALITY_MOBIUS_PARADIGM) {
                     //EXPERIMENTAL support for negated inheritance subterms
-                    boolean sn = subject.op() == NEG;
-                    boolean pn = predicate.op() == NEG;
+                    boolean sn = subject.op() == NEG && subject.unneg().op()!=CONJ;
+                    boolean pn = predicate.op() == NEG && predicate.unneg().op()!=CONJ;
                     if (!sn && !pn) {
                         //normal
                     } else if (sn && pn) {
