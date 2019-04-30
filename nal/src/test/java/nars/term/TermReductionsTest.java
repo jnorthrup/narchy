@@ -322,7 +322,9 @@ public class TermReductionsTest extends NarseseTest {
     @Test
     void testImplicationTrue() {
         assertEq(Bool.False, "(--x==>x)");
+        assertEq(Bool.False, "(--x=|>x)");
         assertEq(Bool.True, "(x==>x)");
+        assertEq(Bool.True, "(x=|>x)");
         assertEq(Bool.True, "((x)==>(x))");
         assertEq(Bool.False, "(--(x)==>(x))");
     }

@@ -1,5 +1,6 @@
 package nars.term.util;
 
+import jcog.TODO;
 import nars.NAL;
 import nars.Op;
 import nars.term.Compound;
@@ -23,11 +24,13 @@ import static nars.time.Tense.*;
  */
 public class Statement {
 
+
     public static Term statement(TermBuilder B, Op op, int dt, Term subject, Term predicate) {
         if (subject == Null || predicate == Null)
             return Null;
 
         boolean dtConcurrent = dt != XTERNAL && Conj.concurrent(dt);
+
         if (dtConcurrent) {
             if (subject.equals(predicate))
                 return True;
@@ -44,15 +47,24 @@ public class Statement {
             }
         }
 
+        boolean negate = false;
 
         if (op == IMPL) {
 
             if (subject == True)
                 return predicate;
             if (subject == False)
+                return False; //return Null;
+            if (subject.hasAny(IMPL)) {
+                if (!NAL.IMPLICATION_SUBJECT_CAN_CONTAIN_IMPLICATION)
+                    return Null; //throw new TODO();
+            }
+            if (!subject.op().eventable)
                 return Null;
-            if (subject.hasAny(IMPL))
-                return Null;
+            if (predicate.op() == NEG) {
+                predicate = predicate.unneg();
+                negate = !negate;
+            }
 
             //test this after all of the recursions because they may have logically eliminated an IMPL that was in the input
             //TODO valid cases where subj has impl?
@@ -62,11 +74,11 @@ public class Statement {
                     //reduce to the subject as a general condition for the superclass to utilize
                     if (predicate == True)
                         return subject;
-                    if (predicate == False)
+                    else if (predicate == False)
                         return subject.neg();
-                    return Null;
-                case NEG:
-                    return statement(B, IMPL, dt, subject, predicate.unneg()).neg();//recurse
+                    else
+                        return Null;
+
                 case IMPL: {
                     Term newSubj, inner = predicate.sub(0);
                     if (dt == DTERNAL || dt == XTERNAL) {
@@ -74,11 +86,15 @@ public class Statement {
                     } else {
                         newSubj = ConjSeq.sequence(subject, 0, inner, subject.eventRange() + dt, B);
                     }
-                    return statement(B, IMPL, predicate.dt(), newSubj, predicate.sub(1)); //recurse
+                    dt = predicate.dt();
+                    subject = newSubj;
+                    predicate = predicate.sub(1);
+                    break;
                 }
+
             }
 
-            if (!subject.op().eventable || !predicate.op().eventable)
+            if (!predicate.op().eventable)
                 return Null;
 
             int subjDT = subject.dt();
@@ -133,9 +149,8 @@ public class Statement {
 
                     if (predChange) {
 
-                        if (newPred instanceof Bool) {
-                            return newPred;
-                        }
+                        if (newPred instanceof Bool)
+                            return newPred; //collapse
 
 
                         if (dt != DTERNAL) {
@@ -153,42 +168,38 @@ public class Statement {
                                     if (newPred instanceof Compound)
                                         newPred = ((Compound) newPred).dt(DTERNAL, B);
 
-                                    if (newPred instanceof Bool) {
-                                        return newPred;
-                                    }
                                 }
                             }
+
                         }
 
                         if (!newPred.equals(predicate)) { //HACK check again
 //                            try {
-                                return statement(B, IMPL, dt, subject, newPred); //recurse
+                                return statement(B, IMPL, dt, subject, newPred).negIf(negate); //recurse
 //                            } catch (StackOverflowError e) {
 //                                System.out.println("stack overflow: ==> " + subject + ' ' + dt + ' ' + newPred + '<' + predicate);
 //                                throw new WTF("stack overflow: ==> " + subject + ' ' + dt + ' ' + newPred + '<' + predicate);
 //                            }
                         }
 
-//                        predicate = newPred;
-//                        if (predicate.op() == NEG)
-//                            return statement(IMPL, dt, subject, predicate.unneg()).neg();//recurse
-
                     }
+
                 }
             }
-
         }
 
-        if ((op != IMPL
-                || dt == DTERNAL /* allow parallel IMPL unless there is a sequence that could separate the events from overlap */)
-                || (dt == 0 && !Conj.isSeq(subject) && !Conj.isSeq(predicate))
-        ) {
 
-            Predicate<Term> delim = (op == IMPL) ?
-                    recursiveCommonalityDelimeterStrong : Op.recursiveCommonalityDelimeterWeak;
+            if ((op != IMPL
+                    || dt == DTERNAL /* allow parallel IMPL unless there is a sequence that could separate the events from overlap */)
+                    || (dt == 0 && !Conj.isSeq(subject) && !Conj.isSeq(predicate))
+            ) {
 
-            if ((containEachOther(subject, predicate, delim)))
-                return Null;
+                Predicate<Term> delim = (op == IMPL) ?
+                        recursiveCommonalityDelimeterStrong : Op.recursiveCommonalityDelimeterWeak;
+
+                if ((containEachOther(subject, predicate, delim)))
+                    return Null;
+            }
 
 //            boolean sa = subject instanceof AliasConcept.AliasAtom;
 //            if (sa) {
@@ -206,58 +217,58 @@ public class Statement {
 //                if (containEachOther(((AliasConcept.AliasAtom) subject).target, ((AliasConcept.AliasAtom) predicate).target, delim))
 //                    return Null;
 //            }
-        }
+//            }
 
-        boolean negate = false;
-        if (op == INH /*|| op == SIM*/) {
-            if (NAL.term.INH_CLOSED_BOOLEAN_DUALITY_MOBIUS_PARADIGM) {
-                //EXPERIMENTAL support for negated inheritance subterms
-                boolean sn = subject.op() == NEG;
-                boolean pn = predicate.op() == NEG;
-                if (!sn && !pn) {
-                    //normal
-                } else if (sn && pn) {
-                    //double-negative
+//            if (op == INH /*|| op == SIM*/) {
+//                if (NAL.term.INH_CLOSED_BOOLEAN_DUALITY_MOBIUS_PARADIGM) {
+//                    //EXPERIMENTAL support for negated inheritance subterms
+//                    boolean sn = subject.op() == NEG;
+//                    boolean pn = predicate.op() == NEG;
+//                    if (!sn && !pn) {
+//                        //normal
+//                    } else if (sn && pn) {
+//                        //double-negative
+//
+//                        //return Null; // (--x --> --y) => (x --> y)??
+//
+//                        subject = subject.unneg();
+//                        predicate = predicate.unneg();
+//
+//                    } else if (sn) {
+//                        negate = true;
+//                        subject = subject.unneg();
+//                    } else /* pn */ {
+//                        negate = true;
+//                        predicate = predicate.unneg();
+//                    }
+//                }
+//            }
 
-                    //return Null; // (--x --> --y) => (x --> y)??
-
-                    subject = subject.unneg();
-                    predicate = predicate.unneg();
-
-                } else if (sn) {
-                    negate = true;
-                    subject = subject.unneg();
-                } else /* pn */ {
-                    negate = true;
-                    predicate = predicate.unneg();
-                }
-            }
-        }
-
-        if (op == SIM) {
+            if (op == SIM) {
 //            if (subject instanceof Bool || predicate instanceof Bool) {
 //
 //            }
-            if (subject.compareTo(predicate) > 0) {
-                //swap order
-                Term x = predicate;
-                predicate = subject;
-                subject = x;
+                if (subject.compareTo(predicate) > 0) {
+                    //swap order
+                    Term x = predicate;
+                    predicate = subject;
+                    subject = x;
+                }
             }
-        }
 
-        Term t = B.theCompound(op, dt, subject, predicate);
+            Term t = B.theCompound(op, dt, subject, predicate);
 
-        //if (Param.DEBUG) {
-        //test image normalization
-        if (op==INH) {
-            //TODO accept TermBuilder b as parameter
-            Term tt = Image.imageNormalize(t);
-            if (tt instanceof Bool) {
-                return tt;
+            //if (Param.DEBUG) {
+            //test image normalization
+            if (op==INH) {
+                //TODO accept TermBuilder b as parameter
+                Term tt = Image.imageNormalize(t);
+                if (tt instanceof Bool) {
+                    t = tt;
+                }
             }
-        }
-        //}
+            //}
+
 
         return t.negIf(negate);
     }

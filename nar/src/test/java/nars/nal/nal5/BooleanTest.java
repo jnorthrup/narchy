@@ -214,11 +214,9 @@ class BooleanTest {
     @Test void testSATRandomGoalTemporal() { testSATRandom(false, true);    }
 
     static void testSATRandom(boolean beliefOrGoal, boolean temporalOrEternal) {
-        NAR n = NARS.tmp();
 
-        n.termVolumeMax.set(11);
 
-        int s = 4, c = 1000, cRemoveInputs = c*3/4;
+        int s = 4, c = 2000, cRemoveInputs = c*3/4;
 
         int d = 1;
 
@@ -226,6 +224,8 @@ class BooleanTest {
                 //(i)->$$("x" + i);
                 (i)->$.inh($.the(i),$.the("x"));
 
+        NAR n = NARS.tmp(6,8);
+        n.termVolumeMax.set(8);
         n.time.dur(d);
 
 
@@ -243,7 +243,7 @@ class BooleanTest {
             else
                 inputs.add( n.want(what, when, 1f, 0.9f) );
             if (temporalOrEternal)
-                n.run(1); //stagger input
+                n.run(1); //stagger input temporally
         }
         for (int i = 0; i < c; i++) {
 

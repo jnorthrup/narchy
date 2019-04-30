@@ -1,7 +1,6 @@
 package nars;
 
 import fucknutreport.config.NodeConfig;
-import jcog.Skill;
 import jcog.Util;
 import jcog.math.FloatRange;
 import jcog.math.FloatRangeRounded;
@@ -167,7 +166,17 @@ public abstract class NAL<W> extends Parts<Term, W> implements Timed {
     /** divisor for dividing the table's range of held beliefs in determining a 'table duration' for comparison of relative task strength */
     public static final long TEMPORAL_BELIEF_TABLE_DUR_DIVISOR =
             2;
-            //4;
+
+    /**
+     * enables higher-order (recursive) implication statements
+     *
+     * if true: allows recursive implication constructions
+     * if false: reduce to Null as an invalid statement
+     *      ex: (((a==>b) && x) ==> y)
+     */
+    public static final boolean IMPLICATION_SUBJECT_CAN_CONTAIN_IMPLICATION = true;
+
+    //4;
 
 
     protected static final boolean DYNAMIC_CONCEPT_TRANSIENT = false;
@@ -570,24 +579,24 @@ public abstract class NAL<W> extends Parts<Term, W> implements Timed {
          * whether INT atoms can name a concept directly
          */
         public static final boolean INT_CONCEPTUALIZABLE= !configIs("DISABLE_INT_CONCEPTUALIZABLE");
-        /**
-         * applies certain reductions to INH and SIM terms when one or both of their immediate subterms
-         * are negated.  in assuming a "closed-boolean-world" in which there is one and only one
-         * opposite for any truth frequency in 0..1,
-         * <p>
-         * then the following statements should be equivalent:
-         * <p>
-         * INH
-         * (x --> --y)    |-  --(x --> y)
-         * (--x --> y)    |-  --(x --> y)
-         * (--x --> --y)  |-    (x --> y)
-         * <p>
-         * SIM (disabled)
-         * (x <-> --y)    |-  --(x <-> y)
-         * (--x <-> --y)  |-    (x <-> y)
-         */
-        @Skill({"List_of_dualities", "Nondualism", "Möbius_strip"})
-        public static final boolean INH_CLOSED_BOOLEAN_DUALITY_MOBIUS_PARADIGM= configIs("INH_CLOSED_BOOLEAN_DUALITY_MOBIUS_PARADIGM");
+//        /**
+//         * applies certain reductions to INH and SIM terms when one or both of their immediate subterms
+//         * are negated.  in assuming a "closed-boolean-world" in which there is one and only one
+//         * opposite for any truth frequency in 0..1,
+//         * <p>
+//         * then the following statements should be equivalent:
+//         * <p>
+//         * INH
+//         * (x --> --y)    |-  --(x --> y)
+//         * (--x --> y)    |-  --(x --> y)
+//         * (--x --> --y)  |-    (x --> y)
+//         * <p>
+//         * SIM (disabled)
+//         * (x <-> --y)    |-  --(x <-> y)
+//         * (--x <-> --y)  |-    (x <-> y)
+//         */
+//        @Skill({"List_of_dualities", "Nondualism", "Möbius_strip"})
+//        public static final boolean INH_CLOSED_BOOLEAN_DUALITY_MOBIUS_PARADIGM= configIs("INH_CLOSED_BOOLEAN_DUALITY_MOBIUS_PARADIGM");
 
         /**
          * absolute limit for constructing terms in any context in which a NAR is not known, which could provide a limit.
