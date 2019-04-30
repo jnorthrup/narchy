@@ -184,7 +184,7 @@ public class BoolTest {
 
     @Test
     void testIntersectionTautologies() {
-        for (Op o: new Op[]{SECTe, SECTi}) {
+        for (Op o: new Op[]{ CONJ}) {
 
             String sect = o.str;
 

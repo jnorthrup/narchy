@@ -201,14 +201,14 @@ class NarseseBaseTest extends NarseseTest {
     @Test
     void testInfix2() throws Narsese.NarseseException {
         Compound t = term("(x & y)");
-        assertEquals(Op.SECTe, t.op());
+        assertEquals(Op.CONJ, t.op());
         assertEquals(2, t.subs());
         assertEquals("x", t.sub(0).toString());
         assertEquals("y", t.sub(1).toString());
 
-        Compound a = term("(x | y)");
-        assertEquals(Op.SECTi, a.op());
-        assertEquals(2, a.subs());
+//        Compound a = term("(x | y)");
+//        assertEquals(Op.CONJ, a.op());
+//        assertEquals(2, a.subs());
 
         Compound b = term("(x * y)");
         assertEquals(PROD, b.op());
@@ -221,10 +221,10 @@ class NarseseBaseTest extends NarseseTest {
         assertEquals(Op.INH, c.sub(0).op()); 
     }
 
-    @Test void testInifix3() throws Narsese.NarseseException {
-        assertEquals("((a-b)|(--,x))", term("((a-b)|(--,x))").toString());
-        assertEquals("((_2-_1)|(--,_3))", term("((_2-_1)|(--,_3))").toString());
-    }
+//    @Test void testInifix3() throws Narsese.NarseseException {
+//        assertEquals("((a-b)|(--,x))", term("((a-b)|(--,x))").toString());
+//        assertEquals("((_2-_1)|(--,_3))", term("((_2-_1)|(--,_3))").toString());
+//    }
 
     @Test
     void testShortFloat() throws Narsese.NarseseException {

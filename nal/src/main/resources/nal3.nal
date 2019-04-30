@@ -20,10 +20,10 @@
 
 
 //intersection question formation
-//    (W --> S), (W --> B), task("?@"), is(S,"|"), neqRCom(S,B) |- (W --> (S | B)), (Time:Intersect)
-//    (W --> S), (W --> B), task("?@"), is(S,"&"), neqRCom(S,B) |- (W --> (S & B)), (Time:Intersect)
-//    (S --> W), (B --> W), task("?@"), is(S,"&"), neqRCom(S,B) |- ((S & B) --> W), (Time:Intersect)
-//    (S --> W), (B --> W), task("?@"), is(S,"|"), neqRCom(S,B) |- ((S | B) --> W), (Time:Intersect)
+//    (W --> S), (W --> B), task("?@"), is(S,"||"), neqRCom(S,B) |- (W --> (S | B)), (Time:Intersect)
+//    (W --> S), (W --> B), task("?@"), is(S,"&&"), neqRCom(S,B) |- (W --> (S & B)), (Time:Intersect)
+//    (S --> W), (B --> W), task("?@"), is(S,"&&"), neqRCom(S,B) |- ((S & B) --> W), (Time:Intersect)
+//    (S --> W), (B --> W), task("?@"), is(S,"||"), neqRCom(S,B) |- ((S | B) --> W), (Time:Intersect)
 
 //    (P --> M), (S --> M), notSetsOrDifferentSets(S,P), neqRCom(S,P) |- ((P ~ S) --> M), (Belief:Difference, Time:Intersect)
 //    (P --> M), (S --> M), notSetsOrDifferentSets(S,P), neqRCom(S,P) |- ((S ~ P) --> M), (Belief:DifferenceReverse, Time:Intersect)

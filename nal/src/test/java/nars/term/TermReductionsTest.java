@@ -15,6 +15,7 @@ import org.junit.jupiter.api.Test;
 
 import static nars.$.$;
 import static nars.Op.*;
+import static nars.term.atom.Bool.False;
 import static nars.term.atom.Bool.Null;
 import static nars.term.util.TermTest.assertEq;
 import static org.junit.jupiter.api.Assertions.*;
@@ -35,68 +36,68 @@ public class TermReductionsTest extends NarseseTest {
 
 
     @Test
-    void testIntersectExtReduction1() {
+    void testInterCONJxtReduction1() {
 
-        assertEquals("(&,P,Q,R)", SECTe.the(r, SECTe.the(p, q)).toString());
-        assertEq("(&,P,Q,R)", "(&,R,(&,P,Q))");
+        assertEquals("(&&,P,Q,R)", CONJ.the(r, CONJ.the(p, q)).toString());
+        assertEq("(&&,P,Q,R)", "(&&,R,(&&,P,Q))");
     }
 
     @Test
-    void testIntersectExtReduction2() {
+    void testInterCONJxtReduction2() {
 
-        assertEquals("(&,P,Q,R,S)", SECTe.the(SECTe.the(p, q), SECTe.the(r, s)).toString());
-        assertEq("(&,P,Q,R,S)", "(&,(&,P,Q),(&,R,S))");
+        assertEquals("(&&,P,Q,R,S)", CONJ.the(CONJ.the(p, q), CONJ.the(r, s)).toString());
+        assertEq("(&&,P,Q,R,S)", "(&&,(&&,P,Q),(&&,R,S))");
     }
 
     @Test
-    void testIntersectExtReduction3() {
+    void testInterCONJxtReduction3() {
 
-        assertEq("(&,P,Q,R,S,T,U)", "(&,(&,P,Q),(&,R,S), (&,T,U))");
+        assertEq("(&&,P,Q,R,S,T,U)", "(&&,(&&,P,Q),(&&,R,S), (&&,T,U))");
     }
 
     @Test
-    void testIntersectExtReduction2_1() {
+    void testInterCONJxtReduction2_1() {
 
-        assertEq("(&,P,Q,R)", "(&,R,(&,P,Q))");
+        assertEq("(&&,P,Q,R)", "(&&,R,(&&,P,Q))");
     }
 
     @Test
-    void testIntersectExtReduction4() {
+    void testInterCONJxtReduction4() {
 
-        assertEquals("{P,Q,R,S}", SECTe.the(SETe.the(p, q), SETe.the(r, s)).toString());
-        assertEq("{P,Q,R,S}", "(&,{P,Q},{R,S})");
+        assertEquals("{P,Q,R,S}", SETe.the(SETe.the(p, q), SETe.the(r, s)).toString());
+        assertEq("{P,Q,R,S}", "{{P,Q},{R,S}}");
     }
 
 //    @Test
-//    void testIntersectExtReduction5() {
-//        assertEquals(Bool.Null /* emptyset */, SECTe.the(SETi.the(p, q), SETi.the(r, s)));
+//    void testInterCONJxtReduction5() {
+//        assertEquals(Bool.Null /* emptyset */, CONJ.the(SETi.the(p, q), SETi.the(r, s)));
 //    }
 
     @Test
-    void testIntersectIntReduction1() {
+    void testInterCONJntReduction1() {
 
-        assertEquals("(|,P,Q,R)", SECTi.the(r, SECTi.the(p, q)).toString());
-        assertEq("(|,P,Q,R)", "(|,R,(|,P,Q))");
+        //assertEquals("(||,P,Q,R)", CONJ.the(r, CONJ.the(p, q)).toString());
+        assertEq("(||,P,Q,R)", "(||,R,(||,P,Q))");
     }
 
     @Test
-    void testIntersectIntReduction2() {
+    void testInterCONJntReduction2() {
 
-        assertEquals("(|,P,Q,R,S)", SECTi.the(SECTi.the(p, q), SECTi.the(r, s)).toString());
-        assertEq("(|,P,Q,R,S)", "(|,(|,P,Q),(|,R,S))");
+        //assertEquals("(||,P,Q,R,S)", CONJ.the(CONJ.the(p, q), CONJ.the(r, s)).toString());
+        assertEq("(||,P,Q,R,S)", "(||,(||,P,Q),(||,R,S))");
     }
 
     @Test
-    void testIntersectIntReduction3() {
+    void testInterCONJntReduction3() {
 
-        assertEq("(|,P,Q,R)", "(|,R,(|,P,Q))");
+        assertEq("(||,P,Q,R)", "(||,R,(||,P,Q))");
     }
 
     @Test
-    void testIntersectIntReduction4() {
+    void testInterCONJntReduction4() {
 
-        assertEquals("[P,Q,R,S]", SECTi.the(SETi.the(p, q), SETi.the(r, s)).toString());
-        assertEq("[P,Q,R,S]", "(|,[P,Q],[R,S])");
+        assertEquals("[P,Q,R,S]", SETi.the(SETi.the(p, q), SETi.the(r, s)).toString());
+        assertEq("[P,Q,R,S]", "[[P,Q],[R,S]]");
 
     }
 
@@ -117,14 +118,14 @@ public class TermReductionsTest extends NarseseTest {
     }
 
 //    @Test
-//    void testIntersectIntReductionToZero() {
-//        assertInvalidTerms("(|,{P,Q},{R,S})");
+//    void testInterCONJntReductionToZero() {
+//        assertInvalidTerms("(||,{P,Q},{R,S})");
 //    }
 
     @Test
-    void testIntersectIntReduction_to_one() {
-        assertEq("(robin-->bird)", "(robin-->(|,bird))");
-        assertEq("(robin-->bird)", "((|,robin)-->(|,bird))");
+    void testInterCONJntReduction_to_one() {
+        assertEq("(robin-->bird)", "(robin-->(||,bird))");
+        assertEq("(robin-->bird)", "((||,robin)-->(||,bird))");
     }
 
     @Test
@@ -150,30 +151,20 @@ public class TermReductionsTest extends NarseseTest {
 
     @Test
     void testImplicationNegatedPredicate() {
-        assertEq("(--,((P)==>(Q)))", "((P)==>(--,(Q)))");
-        assertEq("((--,(P))==>(Q))", "((--,(P))==>(Q))");
+        assertEq("(--,(P==>Q))", "(P==>(--,Q))");
+        assertEq("((--,P)==>Q)", "((--,P)==>Q)");
     }
-
-    @Test
-    void testConjInhReflexive() {
-        assertEq("((a &&+5 x)-->a)", "((a &&+5 x)-->a)");
-        assertEq("(x-->(a &&+5 x))", "(x-->(a &&+5 x))");
-        assertEq("((a&&b)-->(a&&c))", "((a&&b)-->(a&&c))");
-    }
-
-
 
     @Test
     void testIntExtEqual() {
-        assertEquals(p, SECTe.the(p, p));
-        assertEquals(p, SECTi.the(p, p));
+        assertEquals(p, CONJ.the(p, p));
     }
 
     @Test
     void testDiffEqual() {
 
-        assertEquals(Null, $.diff(p, p));
-        assertEquals(Null, $.diff(p.neg(), p.neg()));
+        assertEquals(False, $.diff(p, p));
+        assertEquals(False, $.diff(p.neg(), p.neg()));
     }
 
 
@@ -321,12 +312,12 @@ public class TermReductionsTest extends NarseseTest {
 
     @Test
     void testImplicationTrue() {
-        assertEq(Bool.False, "(--x==>x)");
-        assertEq(Bool.False, "(--x=|>x)");
+        assertEq(False, "(--x==>x)");
+        assertEq(False, "(--x=|>x)");
         assertEq(Bool.True, "(x==>x)");
         assertEq(Bool.True, "(x=|>x)");
         assertEq(Bool.True, "((x)==>(x))");
-        assertEq(Bool.False, "(--(x)==>(x))");
+        assertEq(False, "(--(x)==>(x))");
     }
 
     @Test
@@ -535,18 +526,18 @@ public class TermReductionsTest extends NarseseTest {
 
 
     @Test
-    void testOneArgIntersection() throws Narsese.NarseseException {
+    void testOneArgInterCONJon() throws Narsese.NarseseException {
         Term x = $.p($.the("x"));
-        assertEquals(x, $("(|,(x))"));
-        assertEquals(x, $("(|,(x),(x))"));
-        assertEquals(x, $("(&,(x))"));
-        assertEquals(x, $("(&,(x),(x))"));
+        assertEquals(x, $("(||,(x))"));
+        assertEquals(x, $("(||,(x),(x))"));
+        assertEquals(x, $("(&&,(x))"));
+        assertEquals(x, $("(&&,(x),(x))"));
     }
 
     @Test
-    void testCoNegatedIntersectionAndDiffs() {
-        TermTest.assertInvalidTerms("(|,(x),(--,(x))");
-        TermTest.assertInvalidTerms("(&,(x),(--,(x))");
+    void testCoNegatedInterCONJonAndDiffs() {
+        TermTest.assertInvalidTerms("(||,(x),(--,(x))");
+        TermTest.assertInvalidTerms("(&&,(x),(--,(x))");
         TermTest.assertInvalidTerms("(-,(x),(--,(x))");
         TermTest.assertInvalidTerms("(~,(x),(--,(x))");
         TermTest.assertInvalidTerms("(-,(x),(x))");

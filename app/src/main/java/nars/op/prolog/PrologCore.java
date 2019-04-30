@@ -286,11 +286,6 @@ public class PrologCore extends PrologAgent implements Consumer<Task> {
                     case "{":
                         return SETe.the((nterms(s)));
 
-                    case "&":
-                        return SECTe.the((nterms(s)));
-                    case "|":
-                        return SECTi.the((nterms(s)));
-
                     case "*":
                         return PROD.the((nterms(s)));
                     case "&&":

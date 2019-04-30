@@ -78,10 +78,10 @@ public enum TermAppender { ;
 
         switch (op) {
 
-            case SECTi:
-            case SECTe:
-                sectAppend(c, p);
-                return;
+//            case SECTi:
+//            case SECTe:
+//                sectAppend(c, p);
+//                return;
 
             case SETi:
             case SETe:
@@ -129,26 +129,26 @@ public enum TermAppender { ;
         p.append(FRAG.ch);
     }
 
-    static void sectAppend(Compound c, Appendable p) throws IOException {
-        Op o = c.op();
-        Subterms cs = c.subterms();
-        if (cs.subs() == 2) {
-            Term subracted = cs.sub(0), from;
-            //negated subterm will be in the 0th position, if anywhere due to target sorting
-            if (subracted.op() == NEG && (from=cs.sub(1)).op()!=NEG) {
-                p.append('(');
-                from.appendTo(p);
-                p.append(o == SECTe ? DIFFi : DIFFe);
-                subracted.unneg().appendTo(p);
-                p.append(')');
-                return;
-            }
-
-            statementAppend(c, p, o);
-        } else {
-            compoundAppend(c, p, o);
-        }
-    }
+//    static void sectAppend(Compound c, Appendable p) throws IOException {
+//        Op o = c.op();
+//        Subterms cs = c.subterms();
+//        if (cs.subs() == 2) {
+//            Term subracted = cs.sub(0), from;
+//            //negated subterm will be in the 0th position, if anywhere due to target sorting
+//            if (subracted.op() == NEG && (from=cs.sub(1)).op()!=NEG) {
+//                p.append('(');
+//                from.appendTo(p);
+//                p.append(o == SECTe ? DIFFi : DIFFe);
+//                subracted.unneg().appendTo(p);
+//                p.append(')');
+//                return;
+//            }
+//
+//            statementAppend(c, p, o);
+//        } else {
+//            compoundAppend(c, p, o);
+//        }
+//    }
 
     static void negAppend(final Compound neg, Appendable p) throws IOException {
         /**

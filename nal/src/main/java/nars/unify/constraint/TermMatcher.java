@@ -11,6 +11,7 @@ import nars.term.var.VarPattern;
 
 import javax.annotation.Nullable;
 
+import static nars.Op.NEG;
 import static nars.Op.VAR_PATTERN;
 
 abstract public class TermMatcher {
@@ -128,8 +129,15 @@ abstract public class TermMatcher {
 
     public static class IsUnneg extends Is {
 
+        private final boolean requireNegation;
+
         public IsUnneg(Op op) {
+            this(op, true);
+        }
+
+        public IsUnneg(Op op, boolean requireNegation) {
             super(op);
+            this.requireNegation = requireNegation;
         }
 
         @Override
@@ -139,7 +147,12 @@ abstract public class TermMatcher {
 
         @Override
         public boolean test(Term x) {
-            return super.test(x.unneg());
+            return (!requireNegation || x.op()==NEG) && super.test(x.unneg());
+        }
+
+        @Override
+        public boolean testSuper(Term sx) {
+            return sx.hasAny(struct | (requireNegation ? NEG.bit : 0));
         }
     }
 

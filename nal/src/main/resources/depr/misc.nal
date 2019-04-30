@@ -11,7 +11,7 @@
 
 //NAL3-in-Conjunction compose/decompose (experimental)
 //    (&&,(P-->X),(P-->Y),A..+), S, notSet(S) |- (&&,(P-->(X&Y)),A..+), (Belief:StructuralDeduction, Goal:StructuralDeduction)
-//    (&&,(M-->S),A..+), (M-->S), is(S,"&") |- (&&,(M --> dropAnySet(S)),A..+), (Belief:StructuralDeduction, Goal:StructuralDeduction)
+//    (&&,(M-->S),A..+), (M-->S), is(S,"&&") |- (&&,(M --> dropAnySet(S)),A..+), (Belief:StructuralDeduction, Goal:StructuralDeduction)
 
 
 

@@ -4,7 +4,7 @@ import nars.term.util.TermTest;
 import org.junit.jupiter.api.Test;
 
 import static nars.$.$$;
-import static nars.Op.SECTi;
+import static nars.Op.CONJ;
 import static nars.term.atom.Bool.Null;
 import static nars.term.util.TermTest.assertEq;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -59,7 +59,7 @@ public class SectTest {
 
 
     @Test void testSectDiff() {
-        Term t = SECTi.the((Term)$$("(--,(?2~(|,(--,(?2~?1)),?2,?3)))"), $$("?2"), $$("?3"));
+        Term t = CONJ.the((Term)$$("(--,(?2~(|,(--,(?2~?1)),?2,?3)))"), $$("?2"), $$("?3"));
         assertEquals(t, t);
     }
 

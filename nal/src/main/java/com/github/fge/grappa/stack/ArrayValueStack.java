@@ -3,7 +3,6 @@ package com.github.fge.grappa.stack;
 import com.google.common.annotations.VisibleForTesting;
 import jcog.util.ArrayUtils;
 
-import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -101,7 +100,6 @@ public final class ArrayValueStack<V>
         array = (V[]) ArrayUtils.EMPTY_OBJECT_ARRAY;
     }
 
-    @Nonnull
     @Override
     public Object takeSnapshot() {
         final V[] copy = array.length > 0  ? Arrays.copyOf(array, array.length) : (V[]) ArrayUtils.EMPTY_OBJECT_ARRAY;

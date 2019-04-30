@@ -99,27 +99,29 @@ public enum Op {
         }
     },
 
-    /**
-     * extensional intersection
-     */
-    @Deprecated SECTe("&", true, 3, Args.GTETwo) {
-        @Override
-        public Term the(TermBuilder b, int dt, Term[] u) {
-            //throw new WTF();
-            return SetSectDiff.intersect(b, SECTe, u);
-        }
-    },
-
-    /**
-     * intensional intersection
-     */
-    @Deprecated SECTi("|", true, 3, Args.GTETwo) {
-        @Override
-        public Term the(TermBuilder b, int dt, Term[] u) {
-            //throw new WTF();
-            return SetSectDiff.intersect(b, SECTi, u);
-        }
-    },
+//    /**
+//     * extensional intersection
+//     */
+//    @Deprecated SECTe("&", true, 3, Args.GTETwo) {
+//        @Override
+//        public Term the(TermBuilder b, int dt, Term[] u) {
+//            return CONJ.the(b, dt, u);
+//            //throw new WTF();
+//            //return SetSectDiff.intersect(b, SECTe, u);
+//        }
+//    },
+//
+//    /**
+//     * intensional intersection
+//     */
+//    @Deprecated SECTi("|", true, 3, Args.GTETwo) {
+//        @Override
+//        public Term the(TermBuilder b, int dt, Term[] u) {
+//            return CONJ.the(b, dt, $.neg(u)).neg(); //DISJ
+//            //throw new WTF();
+//            //return SetSectDiff.intersect(b, SECTi, u);
+//        }
+//    },
 
 
     /**
@@ -291,7 +293,6 @@ public enum Op {
 
     public static final Img ImgInt = new Img((byte) '\\');
     public static final Img ImgExt = new Img((byte) '/');
-    public static final int Sect = or(Op.SECTe, Op.SECTi);
     public static final int Set = or(Op.SETe, Op.SETi);
 
     /**
@@ -322,7 +323,8 @@ public enum Op {
     /**
      * allows conj
      */
-    final static int relationDelimeterWeak = relationDelimeterStrong | Op.or(Op.CONJ);
+    final static int relationDelimeterWeak = relationDelimeterStrong;
+
     public static final Predicate<Term> recursiveCommonalityDelimeterWeak =
             c -> !c.isAny(relationDelimeterWeak);
     /**
@@ -557,6 +559,9 @@ public enum Op {
     }
 
     public static Object theIfPresent(String s) {
+        //HACK TEMPORARY
+        if (s.equals("&")) return CONJ;
+
         Op x = stringToOperator.get(s);
         return x != null ? x : s;
     }
@@ -768,6 +773,6 @@ public enum Op {
     }
 
 
-    public static final String DIFFe = "~";
+    @Deprecated public static final String DIFFe = "~";
     public static final String DIFFi = "-";
 }

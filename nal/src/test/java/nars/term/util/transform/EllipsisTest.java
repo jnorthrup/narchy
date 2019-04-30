@@ -44,7 +44,6 @@ public class EllipsisTest {
         default Set<Term> test(int arity, int repeats) throws Narsese.NarseseException {
             Set<Term> selectedFixed = new HashSet(arity);
 
-            PatternTermBuilder index = new PatternTermBuilder();
 
             Term y = /*index.patternify*/(getMatchable(arity));
 
@@ -57,7 +56,7 @@ public class EllipsisTest {
 
             Term r = /*index.patternify*/( getResult() );
 
-            Term x = PatternTermBuilder.patternify(index.rule( getPattern() ));
+            Term x = PatternTermBuilder.patternify(PatternTermBuilder.rule( getPattern() ));
 
 
             
@@ -349,13 +348,13 @@ public class EllipsisTest {
 //
 //    }
 
-    @Test
-    void testEllipsisMatchCommutive1_0a() throws Narsese.NarseseException {
-        testSect("|");
-    }
+//    @Test
+//    void testEllipsisMatchCommutive1_0a() throws Narsese.NarseseException {
+//        testSect("||");
+//    }
     @Test
     void testEllipsisMatchCommutive1_0b() throws Narsese.NarseseException {
-        testSect("&");
+        testSect("&&");
     }
 
     private void testSect(String o) throws Narsese.NarseseException {
@@ -406,7 +405,7 @@ public class EllipsisTest {
 
 
     private static Set<String> testCombinations(Compound _X, Compound Y, int expect) {
-        Compound X = (Compound) new PatternTermBuilder().rule(_X);
+        Compound X = (Compound) PatternTermBuilder.rule(_X);
 
         Set<String> results = new HashSet(0);
         for (int seed = 0; seed < (expect+1)*(expect+1); seed++) {

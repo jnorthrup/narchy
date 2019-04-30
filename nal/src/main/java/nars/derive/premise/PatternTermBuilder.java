@@ -15,17 +15,15 @@ import static nars.term.var.ellipsis.Ellipsis.firstEllipsis;
 /**
  * Index which specifically holds the target components of a deriver ruleset.
  */
-public class PatternTermBuilder /* implements TermBuilder ? */ {
+public enum PatternTermBuilder /* implements TermBuilder ? */ { ;
 
 
     public static Term patternify(Term x) {
-        if (x instanceof Compound)
-            return Ellipsify.applyCompound((Compound) x);
-        return x;
+        return x instanceof Compound ? Ellipsify.applyCompound((Compound) x) : x;
     }
 
 
-    public /*@NotNull*/ Term rule(Term x) {
+    public static /*@NotNull*/ Term rule(Term x) {
         return patternify(new PremiseRuleNormalization().apply(x));
     }
 

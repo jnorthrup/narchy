@@ -45,11 +45,7 @@ public class UnifyTest {
 
 
     public static /**/ Term pattern(/**/ String s) throws Narsese.NarseseException {
-        return pattern(Narsese.term(s, false));
-    }
-
-    private static Term pattern(Term ss) {
-        return new PatternTermBuilder().rule(ss);
+        return PatternTermBuilder.rule(Narsese.term(s, false));
     }
 
 
@@ -80,7 +76,7 @@ public class UnifyTest {
         Term t1;
         if (type == Op.VAR_PATTERN && s1.contains("%")) {
             t1 = Narsese.term(s1, false);
-            t1 = pattern((anon1 ? a.put(t1) : t1).normalize());
+            t1 = PatternTermBuilder.rule((anon1 ? a.put(t1) : t1).normalize());
         } else {
             t1 = Narsese.term(s1, true);
             if (anon1) t1 = a.put(t1).normalize();

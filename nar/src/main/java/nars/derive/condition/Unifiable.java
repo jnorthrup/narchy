@@ -44,7 +44,7 @@ public class Unifiable extends AbstractPred<PreDerivation> {
         this.isStrict = isStrict;
     }
 
-    private static void tryAdd(Term x, Term y, Term taskPattern, Term beliefPattern, int varBits, boolean strict, MutableSet<PREDICATE<? extends Unify>> pre) {
+    public static void tryAdd(Term x, Term y, Term taskPattern, Term beliefPattern, int varBits, boolean strict, MutableSet<PREDICATE<? extends Unify>> pre) {
         //some structure exists that can be used to prefilter
         byte[] xpInT = Terms.pathConstant(taskPattern, x);
         byte[] xpInB = Terms.pathConstant(beliefPattern, x); //try the belief
@@ -71,41 +71,10 @@ public class Unifiable extends AbstractPred<PreDerivation> {
     }
 
     /** TODO test for the specific derivation functors, in case of non-functor Atom in conclusion */
-    private static boolean hasNoFunctor(Term x) {
+    public static boolean hasNoFunctor(Term x) {
         boolean f = x instanceof Variable || !x.ORrecurse(Functor::isFunc);
 
         return f;
-    }
-
-    public static Compound transform(Compound c, PremiseRuleSource p, MutableSet<PREDICATE<? extends Unify>> pre) {
-        Term concFunc = Functor.func(c);
-
-        if (concFunc.equals(UniSubst.unisubst)) {
-
-            Subterms a = Functor.args(c);
-
-            Term x = a.sub(1);
-
-            if (hasNoFunctor(x)) {
-
-                Term y = a.sub(2);
-
-                if (hasNoFunctor(y)) {
-
-                    int varBits = (a.contains(UniSubst.DEP_VAR)) ? VAR_DEP.bit : (VAR_INDEP.bit | VAR_DEP.bit);
-
-                    boolean strict = a.contains(UniSubst.NOVEL);
-
-                    tryAdd(x, y,
-                            p.taskPattern, p.beliefPattern,
-                            varBits, strict, pre);
-                }
-            }
-
-
-            //TODO compile to 1-arg unisubst
-        }
-        return c;
     }
 
 

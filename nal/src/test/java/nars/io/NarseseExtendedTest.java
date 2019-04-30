@@ -255,7 +255,8 @@ class NarseseExtendedTest extends NarseseTest {
         Compound nab = NarseseTest.term("--(a & b)");
         assertSame(nab.op(), Op.NEG);
 
-        assertSame(nab.sub(0).op(), Op.SECTe);
+        assertSame(nab.sub(0).op(), Op.CONJ);
+
 
 
 
@@ -272,8 +273,7 @@ class NarseseExtendedTest extends NarseseTest {
                 "(--,(b-->a))",
                 NarseseTest.term("--a:b").toString() );
         Assertions.assertEquals(
-                //"((--,b)-->a)",
-                "(--,(b-->a))",
+                "((--,b)-->a)",
                 NarseseTest.term("a:--b").toString() );
         Assertions.assertEquals(
                 

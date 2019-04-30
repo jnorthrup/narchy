@@ -26,7 +26,7 @@ public class NAL3Test extends NALTest {
     @Override
     protected NAR nar() {
         NAR n = NARS.tmp(3, 3);
-        n.termVolumeMax.set(6);
+        n.termVolumeMax.set(8);
         return n;
     }
 
@@ -160,6 +160,7 @@ public class NAL3Test extends NALTest {
     void diff_compound_decomposition_single() {
 
 
+
         test.believe("(robin --> (bird - swimmer))", 0.9f, 0.9f);
         test.mustBelieve(cycles, "<robin --> bird>", 0.90f, 0.73f);
 
@@ -279,16 +280,17 @@ public class NAL3Test extends NALTest {
     @Test
     void testDifferenceQuestion() {
         test
-                .termVolMax(6)
+                .termVolMax(8)
                 .believe("((x|y)-->a)")
                 .mustQuestion(cycles, "((x~y)-->a)")
                 .mustQuestion(cycles, "((y~x)-->a)")
         ;
     }
+
     @Test
     void testDifferenceQuest() {
         test
-                .termVolMax(6)
+                .termVolMax(8)
                 .goal("((x|y)-->a)")
                 .mustQuest(cycles, "((x~y)-->a)")
                 .mustQuest(cycles, "((y~x)-->a)")
@@ -298,7 +300,7 @@ public class NAL3Test extends NALTest {
     @Test
     public void questPropagation() {
 
-        test.nar.termVolumeMax.set(5);
+        test.nar.termVolumeMax.set(8);
         test
                 .goal("x:a")
                 .goal("x:b")

@@ -1,6 +1,5 @@
 package nars.unify.constraint;
 
-import com.google.common.collect.Iterables;
 import nars.Op;
 import nars.term.Term;
 import nars.term.Variable;
@@ -12,7 +11,6 @@ import org.jetbrains.annotations.Nullable;
 import java.util.function.Predicate;
 
 import static nars.Op.INH;
-import static nars.Op.NEG;
 
 
 public final class NotEqualConstraint extends RelationConstraint {
@@ -202,20 +200,20 @@ public final class NotEqualConstraint extends RelationConstraint {
                 y = c;
             }
 
-            Iterable<Term> bb = inhComponents(y);
-            if (bb != null) {
-                for (Term bbb : bb) {
-                    if (test(x, true, false, bbb))
-                        return true;
-                }
-                return false;
-            } else {
+            //Iterable<Term> bb = inhComponents(y);
+//            if (bb != null) {
+//                for (Term bbb : bb) {
+//                    if (test(x, true, false, bbb))
+//                        return true;
+//                }
+//                return false;
+//            } else {
                 if (av == bv) {
                     return false;
                 } else {
                     return test(x, true, false, y);
                 }
-            }
+//            }
         }
 
         final static Predicate<Term> limit =
@@ -232,22 +230,22 @@ public final class NotEqualConstraint extends RelationConstraint {
                 return false;
         }
 
-        @Nullable
-        private static Iterable<Term> inhComponents(Term b) {
-            switch (b.op()) {
-//                case SETe:
-//                case SETi:
-                case SECTi:
-                case SECTe: {
-                    Iterable<Term> x = b.subterms();
-                    if (b.hasAny(NEG))
-                        x = Iterables.transform(x, Term::unneg);
-                    return x;
-                }
-                default:
-                    return null;
-            }
-        }
+//        @Nullable
+//        private static Iterable<Term> inhComponents(Term b) {
+//            switch (b.op()) {
+////                case SETe:
+////                case SETi:
+//                case SECTi:
+//                case SECTe: {
+//                    Iterable<Term> x = b.subterms();
+//                    if (b.hasAny(NEG))
+//                        x = Iterables.transform(x, Term::unneg);
+//                    return x;
+//                }
+//                default:
+//                    return null;
+//            }
+//        }
 
 
     }

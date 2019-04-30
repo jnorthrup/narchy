@@ -7,10 +7,10 @@
 
 
 //drill-down impl/sect induction
-((X-->Z) ==> A), (S-->Z), is(S,"|"), subOf(S,X)  |- ((S-->Z) ==> A), (Belief:Induction)
-  (--(X-->Z) ==> A), (S-->Z), is(S,"|"), subOf(S,X)  |- (--(S-->Z) ==> A), (Belief:InductionPN)
-((Z-->X) ==> A), (Z-->S), is(S,"&"), subOf(S,X)  |- ((Z-->S) ==> A), (Belief:Induction)
-  (--(Z-->X) ==> A), (Z-->S), is(S,"&"), subOf(S,X)  |- (--(Z-->S) ==> A), (Belief:InductionPN)
+((X-->Z) ==> A), (S-->Z), is(S,"||"), subOf(S,X)  |- ((S-->Z) ==> A), (Belief:Induction)
+  (--(X-->Z) ==> A), (S-->Z), is(S,"||"), subOf(S,X)  |- (--(S-->Z) ==> A), (Belief:InductionPN)
+((Z-->X) ==> A), (Z-->S), is(S,"&&"), subOf(S,X)  |- ((Z-->S) ==> A), (Belief:Induction)
+  (--(Z-->X) ==> A), (Z-->S), is(S,"&&"), subOf(S,X)  |- (--(Z-->S) ==> A), (Belief:InductionPN)
 
     //TODO for predicate
 

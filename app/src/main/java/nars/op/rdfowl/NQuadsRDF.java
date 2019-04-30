@@ -437,7 +437,7 @@ public abstract class NQuadsRDF {
             
 
             belief = $.inst($.varDep(1),
-                    SECTi.the(subject, object)
+                    CONJ.the(subject, object)
             ).neg();
 
             

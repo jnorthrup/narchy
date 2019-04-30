@@ -1,8 +1,8 @@
 //sect drill-down questions
-(S --> X), X, is(S,"|") |- ((|,S,?Z)-->X), (Punctuation:Ask)
-(S --> X), X, is(S,"&") |- ((&,S,?Z)-->X), (Punctuation:Ask)
-(X --> S), X, is(S,"|") |- (X-->(|,S,?Z)), (Punctuation:Ask)
-(X --> S), X, is(S,"&") |- (X-->(&,S,?Z)), (Punctuation:Ask)
+(S --> X), X, is(S,"||") |- ((|,S,?Z)-->X), (Punctuation:Ask)
+(S --> X), X, is(S,"&&") |- ((&,S,?Z)-->X), (Punctuation:Ask)
+(X --> S), X, is(S,"||") |- (X-->(|,S,?Z)), (Punctuation:Ask)
+(X --> S), X, is(S,"&&") |- (X-->(&,S,?Z)), (Punctuation:Ask)
 
 
 
@@ -26,8 +26,8 @@
 
 
 ////composition on one side of a statement:
-//    (W --> S), (W --> B), task("?"), is(S,"&"), subOf(S,B) |- (W --> S), (Belief:BeliefStructuralDeduction, Punctuation:Belief, Time:Intersect)
-//    (S --> W), (B --> W), task("?"), is(S,"|"), subOf(S,B) |- (S --> W), (Belief:BeliefStructuralDeduction, Punctuation:Belief, Time:Intersect)
+//    (W --> S), (W --> B), task("?"), is(S,"&&"), subOf(S,B) |- (W --> S), (Belief:BeliefStructuralDeduction, Punctuation:Belief, Time:Intersect)
+//    (S --> W), (B --> W), task("?"), is(S,"||"), subOf(S,B) |- (S --> W), (Belief:BeliefStructuralDeduction, Punctuation:Belief, Time:Intersect)
 
     //(W --> (S-B)), (W --> B), task("?") |- (W --> (S-B)), (Belief:BeliefStructuralDifference, Punctuation:Belief, Time:Task)
     //((S~B) --> W), (B --> W), task("?") |- ((S~B) --> W), (Belief:BeliefStructuralDifference, Punctuation:Belief, Time:Task)

@@ -33,8 +33,8 @@
 
 
 
-    //(S --> M), X, is(S,"&"), subPosOrNeg(S,X) |- (withoutPosOrNeg(S,X) --> M), (Belief:StructuralDeduction)
-        //(S --> M), X, is(S,"|"), subOfNeg(S,X) |- (without(S,--X) --> M), (Belief:StructuralDeduction)
+    //(S --> M), X, is(S,"&&"), subPosOrNeg(S,X) |- (withoutPosOrNeg(S,X) --> M), (Belief:StructuralDeduction)
+        //(S --> M), X, is(S,"||"), subOfNeg(S,X) |- (without(S,--X) --> M), (Belief:StructuralDeduction)
 
 //    (S --> (B - G)), B |- (S --> B), (Belief:StructuralDeduction)
 //        (S --> (B - G)), G |- --(S --> G), (Belief:StructuralDeduction)
@@ -43,7 +43,7 @@
 //        ((B ~ G) --> S), G |- --(G --> S), (Belief:StructuralDeduction)
 
     //raw
-    //S, X, is(S,"|"), subPosOrNeg(S,X) |- without(S,X), (Belief:StructuralDeduction)
+    //S, X, is(S,"||"), subPosOrNeg(S,X) |- without(S,X), (Belief:StructuralDeduction)
 
             //B, (B ~ G), task("@") |- G, (Punctuation:Quest)
             //G, (B ~ G), task("@") |- B, (Punctuation:Quest)

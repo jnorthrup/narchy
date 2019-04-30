@@ -9,8 +9,7 @@ import nars.test.NALTest;
 import org.junit.jupiter.api.Test;
 
 import static nars.$.$$;
-import static nars.Op.SECTe;
-import static nars.Op.SECTi;
+import static nars.Op.CONJ;
 import static nars.term.atom.Bool.Null;
 import static nars.term.util.TermTest.assertEq;
 
@@ -28,26 +27,26 @@ public class NAL4FuzzyProduct extends NALTest {
 
     private static void testUnionSect() {
         assertEq("(x|y)",
-                SetSectDiff.intersect(SECTi, false, $$("x"), $$("y")));
+                SetSectDiff.intersect(CONJ, false, $$("x"), $$("y")));
         assertEq("(x&y)",
-                SetSectDiff.intersect(SECTe, true, $$("x"), $$("y")));
+                SetSectDiff.intersect(CONJ, true, $$("x"), $$("y")));
         assertEq("(x~y)",
-                SetSectDiff.intersect(SECTi, false, $$("x"), $$("y").neg()));
+                SetSectDiff.intersect(CONJ, false, $$("x"), $$("y").neg()));
         assertEq("(y~x)",
-                SetSectDiff.intersect(SECTi, false, $$("x").neg(), $$("y")));
+                SetSectDiff.intersect(CONJ, false, $$("x").neg(), $$("y")));
         assertEq("(x-y)",
-                SetSectDiff.intersect(SECTe, true, $$("x"), $$("y").neg()));
+                SetSectDiff.intersect(CONJ, true, $$("x"), $$("y").neg()));
     }
     private static void testUnionProduct() {
         assertEq("(x,(y|z))",
-                SetSectDiff.intersectProd(SECTi, false, $$("(x,y)"), $$("(x,z)")));
+                SetSectDiff.intersectProd(CONJ, false, $$("(x,y)"), $$("(x,z)")));
         assertEq("(x,(y&z))",
-                SetSectDiff.intersectProd(SECTe, false, $$("(x,y)"), $$("(x,z)")));
+                SetSectDiff.intersectProd(CONJ, false, $$("(x,y)"), $$("(x,z)")));
 
         assertEq("(x,(y-z))",
-                SetSectDiff.intersectProd(SECTe, true, $$("(x,y)"), $$("(x,z)").neg()));
+                SetSectDiff.intersectProd(CONJ, true, $$("(x,y)"), $$("(x,z)").neg()));
         assertEq(Null,
-                SetSectDiff.intersectProd(SECTe, false, $$("(x,y)"), $$("(x,z)").neg()));
+                SetSectDiff.intersectProd(CONJ, false, $$("(x,y)"), $$("(x,z)").neg()));
 
     }
     @Test

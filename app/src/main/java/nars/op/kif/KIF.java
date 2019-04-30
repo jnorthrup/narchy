@@ -184,7 +184,7 @@ public class KIF {
                         assert(ab.subs()==2);
                         Term a = ab.sub(0);
                         Term b = ab.sub(1);
-                        Term symmetric = INH.the(SECTe.the(PROD.the(a, b), PROD.the(b, a)), fn);
+                        Term symmetric = INH.the(CONJ.the(PROD.the(a, b), PROD.the(b, a)), fn);
                         
                         beliefs.add(symmetric);
                         return true; 
@@ -569,7 +569,7 @@ public class KIF {
 
     private static Term disjoint(List<Term> args, Term v0) {
         return Op.INH.the(
-                Op.SECTe.the(args.toArray(Op.EmptyTermArray)), v0
+                $.disj(args.toArray(Op.EmptyTermArray)), v0
         ).neg();
     }
 

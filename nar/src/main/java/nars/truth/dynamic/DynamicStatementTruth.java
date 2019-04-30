@@ -281,21 +281,21 @@ public class DynamicStatementTruth {
 
 
             Term decomposed = stmtCommon(!subjOrPred, superterm);
-            if (!decomposed.op().isAny(Op.Sect)) {
+//            if (!decomposed.op().isAny(Op.Sect)) {
                 //try Image normalizing
                 superterm = (Compound) Image.imageNormalize(superterm);
                 decomposed = stmtCommon(!subjOrPred, superterm);
-            }
+//            }
 
-            if (decomposed.op().isAny(Op.Sect)) {
-                Term common = stmtCommon(subjOrPred, superterm);
-
-                Op op = superterm.op();
-
-                return decomposed.subterms().AND(
-                        y -> each.accept(stmtDecomposeStructural(op, subjOrPred, y, common), start, end)
-                );
-            }
+//            if (decomposed.op().isAny(Op.Sect)) {
+//                Term common = stmtCommon(subjOrPred, superterm);
+//
+//                Op op = superterm.op();
+//
+//                return decomposed.subterms().AND(
+//                        y -> each.accept(stmtDecomposeStructural(op, subjOrPred, y, common), start, end)
+//                );
+//            }
             assert (false);
 //                if (union) {
 //                    if (decomposed.op() == NEG) {

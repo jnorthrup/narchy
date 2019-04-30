@@ -2,7 +2,6 @@ package nars;
 
 
 import com.google.common.base.Splitter;
-import com.google.common.base.Strings;
 import jcog.TODO;
 import jcog.Texts;
 import jcog.Util;
@@ -418,9 +417,6 @@ public enum $ {
         return CONJ.the(x);
     }
 
-    public static Term secte(SortedSet<Term> x) {
-        return SECTe.the(x);
-    }
 
     /**
      * create a literal atom from a class (it's name)
@@ -611,10 +607,7 @@ public enum $ {
     }
 
 
-    public static Term pRecurseIntersect(char prefix, Term... t) {
-        final int[] index = {0};
-        return SECTe.the($.terms(t, x -> Atomic.the(Strings.repeat(String.valueOf(prefix), ++index[0]) + x)));
-    }
+
 
     public static Term pRecurse(boolean innerStart, Term... t) {
         int j = t.length - 1;
@@ -815,7 +808,7 @@ public enum $ {
             }
         }
         //throw new UnsupportedOperationException();
-        return SECTe.the(a, b.neg());
+        return CONJ.the(a, b.neg());
     }
 
     public static Term identity(Object x) {

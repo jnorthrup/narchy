@@ -541,30 +541,10 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
         return seq(AtomStr(), push($.v(varType, (String) pop())));
     }
 
-    
-        /*
-         <compound-target> ::= "{" <target> {","<target>} "}"
-                        | "[" <target> {","<target>} "]"
-                        | "(&," <target> {","<target>} ")"
-                        | "(|," <target> {","<target>} ")"
-                        | "(*," <target> {","<target>} ")"
-                        | "(/," <target> {","<target>} ")"
-                        | "(\," <target> {","<target>} ")"
-                        | "(||," <target> {","<target>} ")"
-                        | "(&&," <target> {","<target>} ")"
-                        | "(&/," <target> {","<target>} ")"
-                        | "(&|," <target> {","<target>} ")"
-                        | "(--," <target> ")"
-                        | "(-," <target> "," <target> ")"
-                        | "(~," <target> "," <target> ")"
-
-        */
-
-
     Rule Op() {
         return sequence(
                 trie(
-                        SECTe.str, SECTi.str,
+//                        SECTe.str, SECTi.str,
 
                         PROD.str,
 
@@ -648,8 +628,9 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
 
                 firstOf(
                         Op.DISJstr,
-                        "&|", "&&+-", "||+-", Op.DIFFe, Op.DIFFi,
-                        Op.SECTe.str
+                        "&|", "&&+-", "||+-",
+                        "&", "|", //TEMPORARY
+                        Op.DIFFe, Op.DIFFi //??
                 ), push(match()),
 
                 push(Compound.class),
@@ -670,13 +651,17 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
 
     static Term buildCompound(List<Term> subs, String op) {
         switch (op) {
+            case "&":
+                return CONJ.the(subs);
             case "&|":
                 return CONJ.the(0, subs);
             case "&&+-":
                 return CONJ.the(XTERNAL, subs);
 
+            case "|": //TEMPORARY
             case DISJstr:
-                return CONJ.the(DTERNAL, $.neg(subs.toArray(EmptyTermArray))).neg();
+                return CONJ.the($.neg(subs.toArray(EmptyTermArray))).neg();
+
             case "||+-":
                 return CONJ.the(XTERNAL, $.neg(subs.toArray(EmptyTermArray))).neg();
 
@@ -690,10 +675,14 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
             case "{-]":
                 return subs.size() != 2 ? Bool.Null : $.instprop(subs.get(0), subs.get(1));
 
+
             case Op.DIFFe:
+                if (subs.size() != 2) return Bool.Null;
+                else return CONJ.the(subs.get(0), subs.get(1).neg());
+
             case Op.DIFFi:
-                return subs.size() != 2 ? Bool.Null :
-                        (op.equals(DIFFe) ? Op.SECTi : Op.SECTe).the(subs.get(0), subs.get(1).neg());
+                if (subs.size() != 2) return Bool.Null;
+                else return $.disj(subs.get(0), subs.get(1).neg());
 
             default: {
                 Op o = Op.stringToOperator.get(op);
@@ -716,8 +705,7 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
                 s(),
                 firstOf(
                         Op.DISJstr,
-                        Op.SECTi.str,
-                        Op.SECTe.str,
+                        "&", "|",
                         Op.INH.str,
                         Op.SIM.str,
                         Op.IMPL.str,

@@ -30,7 +30,6 @@ import nars.truth.Truth;
 import nars.util.SoftException;
 import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nonnull;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -338,7 +337,7 @@ public final class Narsese {
         final Future<LineCounter> lineCounter = null;
         private final char[] charSequence;
 
-        public CharSequenceInputBuffer(@Nonnull final CharSequence charSequence) {
+        CharSequenceInputBuffer(final CharSequence charSequence) {
             int length = charSequence.length();
 
             this.charSequence = new char[length];

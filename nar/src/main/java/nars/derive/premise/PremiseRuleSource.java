@@ -15,6 +15,7 @@ import nars.derive.op.ConjParallel;
 import nars.derive.op.Occurrify;
 import nars.derive.op.Termify;
 import nars.derive.op.Truthify;
+import nars.op.UniSubst;
 import nars.subterm.BiSubterm;
 import nars.subterm.Subterms;
 import nars.term.Variable;
@@ -77,15 +78,10 @@ public class PremiseRuleSource extends ProxyTerm {
     protected final Occurrify.OccurrenceSolver time;
 
 
-    protected final Term beliefTruth;
-    protected final Term goalTruth;
+    protected final Term beliefTruth, goalTruth;
 
-    public final Term taskPattern;
-    public final Term beliefPattern;
+    public final Term taskPattern, beliefPattern;
 
-
-
-    private static final PatternTermBuilder INDEX = new PatternTermBuilder();
     final Termify termify;
 
     private final BytePredicate taskPunc;
@@ -329,6 +325,12 @@ public class PremiseRuleSource extends ProxyTerm {
                             struct |= Op.the($.unquote(yy)).bit;
                         }
                     } else {
+                        //TEMPORARY
+                        if (Y.toString().equals("\"||\"")) {
+                            isUnneg(X, CONJ, negated);
+                            if (negated) negationApplied = true;
+                            break;
+                        }
                         struct = Op.the($.unquote(Y)).bit;
                     }
                     is(X, struct, negated);
@@ -351,17 +353,16 @@ public class PremiseRuleSource extends ProxyTerm {
                 }
 
                 case "isUnneg": {
-                    match(X, new TermMatcher.IsUnneg(Op.the($.unquote(Y))), !negated);
-                    if (negated)
-                        negationApplied = true;
+                    Op o = Op.the($.unquote(Y));
+                    isUnneg(X, o, negated);
+                    if (negated) negationApplied = true;
                     break;
                 }
 
                 case "has": {
                     //hasAny
                     hasAny(X, Op.the($.unquote(Y)), negated);
-                    if (negated)
-                        negationApplied = true;
+                    if (negated) negationApplied = true;
                     break;
                 }
 
@@ -637,6 +638,12 @@ public class PremiseRuleSource extends ProxyTerm {
         this.PRE = preconditions();
 //        this.constraintSet = CONSTRAINTS.toSet();
 
+    }
+
+
+
+    private void isUnneg(Term x, Op o, boolean negated) {
+        match(x, new TermMatcher.IsUnneg(o), !negated);
     }
 
     private PREDICATE<Unify> preFilter(UnifyConstraint cc, Term taskPattern, Term beliefPattern) {
@@ -1047,10 +1054,42 @@ public class PremiseRuleSource extends ProxyTerm {
         @Override
         public Term applyCompound(Compound c) {
 
-            c = Unifiable.transform(c, PremiseRuleSource.this, pre);
+            c = apply(c, PremiseRuleSource.this, pre);
 
             return AbstractTermTransform.super.applyCompound(c);
         }
+
+        private Compound apply(Compound c, PremiseRuleSource p, MutableSet<PREDICATE<? extends Unify>> pre) {
+            Term concFunc = Functor.func(c);
+
+            if (concFunc.equals(UniSubst.unisubst)) {
+
+                Subterms a = Functor.args(c);
+
+                Term x = a.sub(1);
+
+                if (Unifiable.hasNoFunctor(x)) {
+
+                    Term y = a.sub(2);
+
+                    if (Unifiable.hasNoFunctor(y)) {
+
+                        int varBits = (a.contains(UniSubst.DEP_VAR)) ? VAR_DEP.bit : (VAR_INDEP.bit | VAR_DEP.bit);
+
+                        boolean strict = a.contains(UniSubst.NOVEL);
+
+                        Unifiable.tryAdd(x, y,
+                                p.taskPattern, p.beliefPattern,
+                                varBits, strict, pre);
+                    }
+                }
+
+
+                //TODO compile to 1-arg unisubst
+            }
+            return c;
+        }
+
     };
 
     private static class MyPremiseRuleNormalization extends PremiseRuleNormalization {

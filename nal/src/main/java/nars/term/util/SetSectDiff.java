@@ -33,7 +33,8 @@ public class SetSectDiff {
      *          3 (optional):   "*" enabling product splice
      */
     public static @Nullable Term sect(Term a, Term b, boolean union, Subterms s) {
-        Op op = s.sub(2).equals(Op.SECTe.strAtom) ? Op.SECTe : Op.SECTi;
+        Op op = //s.sub(2).equals(Op.SECTe.strAtom) ? Op.SECTe : Op.SECTi;
+            CONJ;
 
         boolean productSplice = s.subs() > 3 && s.sub(3).equals(Op.PROD.strAtom);
 
@@ -80,7 +81,7 @@ public class SetSectDiff {
 
 
         Op oSet = t[0].op();
-        if ((o == SECTe && oSet == SETe) || (o == SECTi && oSet == SETi)) {
+        if ((oSet == SETe) || (oSet == SETi)) {
             boolean allSet = true;
             for (int i = 1, tLength = t.length; i < tLength; i++) {
                 Term x = t[i];
@@ -98,7 +99,7 @@ public class SetSectDiff {
         //TODO if there are no negations or embedded sect's, use a simple deduplication
 
         /** if the boolean value of a key is false, then the entry is negated */
-        ObjectByteHashMap<Term> y = intersect(o, o == SECTe || o == SECTi, union, ArrayIterator.iterable(t), new ObjectByteHashMap<>(t.length));
+        ObjectByteHashMap<Term> y = intersect(o, o==CONJ, union, ArrayIterator.iterable(t), new ObjectByteHashMap<>(t.length));
         if (y == null)
             return Null;
         int s = y.size();
@@ -142,7 +143,7 @@ public class SetSectDiff {
         return intersectProd(Op.terms, o, union, x, y);
     }
 
-    public static Term intersectProd(TermConstructor B, Op o, boolean union, Term x, Term y) {
+    private static Term intersectProd(TermConstructor B, Op o, boolean union, Term x, Term y) {
 
         if (x.equals(y))
             return x;
