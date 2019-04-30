@@ -102,9 +102,10 @@ public enum Op {
     /**
      * extensional intersection
      */
-    SECTe("&", true, 3, Args.GTETwo) {
+    @Deprecated SECTe("&", true, 3, Args.GTETwo) {
         @Override
         public Term the(TermBuilder b, int dt, Term[] u) {
+            //throw new WTF();
             return SetSectDiff.intersect(b, SECTe, u);
         }
     },
@@ -112,32 +113,14 @@ public enum Op {
     /**
      * intensional intersection
      */
-    SECTi("|", true, 3, Args.GTETwo) {
+    @Deprecated SECTi("|", true, 3, Args.GTETwo) {
         @Override
         public Term the(TermBuilder b, int dt, Term[] u) {
+            //throw new WTF();
             return SetSectDiff.intersect(b, SECTi, u);
         }
     },
 
-//    /**
-//     * extensional difference
-//     */
-//    DIFFe("~", false, 3, Args.Two) {
-//        @Override
-//        public Term the(int dt, Term[] u) {
-//            return SetSectDiff.differ(this, u);
-//        }
-//    },
-//
-//    /**
-//     * intensional difference
-//     */
-//    DIFFi("-", false, 3, Args.Two) {
-//        @Override
-//        public Term the(int dt, Term[] u) {
-//            return SetSectDiff.differ(this, u);
-//        }
-//    },
 
     /**
      * PRODUCT
