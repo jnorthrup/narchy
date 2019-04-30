@@ -117,15 +117,13 @@ public class TermReductionsTest extends NarseseTest {
         );
     }
 
-//    @Test
-//    void testInterCONJntReductionToZero() {
-//        assertInvalidTerms("(||,{P,Q},{R,S})");
-//    }
 
     @Test
     void testInterCONJntReduction_to_one() {
-        assertEq("(robin-->bird)", "(robin-->(||,bird))");
-        assertEq("(robin-->bird)", "((||,robin)-->(||,bird))");
+        for (String o : new String[] { "||", "&&" }) {
+            assertEq("(robin-->bird)", "(robin-->(" + o + ",bird))");
+            assertEq("(robin-->bird)", "((" + o + ",robin)-->(" + o + ",bird))");
+        }
     }
 
     @Test

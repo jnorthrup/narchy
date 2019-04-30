@@ -13,7 +13,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class PatternCompoundTest {
 
-    private final PatternTermBuilder i = new PatternTermBuilder();
 
     @Test
     void testPatternCompoundWithXTERNAL() throws Narsese.NarseseException {

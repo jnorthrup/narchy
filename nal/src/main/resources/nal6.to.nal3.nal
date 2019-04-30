@@ -1,10 +1,5 @@
 //NAL6 -> NAL3 bridge
 
-//conj/sect equivalence tagging
-(&&,X,Y,A..*), (&&,X,Y,A..*), neqRCom(X,Y)  |- ((&&,X,Y,A..*)-->(X&Y)), (Belief:Identity,Goal:Identity)
-    //--eqNeg(X,Y),
-(&&,X,Y,A..*), (&&,X,Y,A..*), neqRCom(X,Y)  |- ((X|Y)-->(&&,X,Y,A..*)), (Belief:Identity,Goal:Identity)
-
 
 //drill-down impl/sect induction
 ((X-->Z) ==> A), (S-->Z), is(S,"||"), subOf(S,X)  |- ((S-->Z) ==> A), (Belief:Induction)
@@ -46,3 +41,19 @@
 //identity?
 //  ((X-->A) ~ (X-->B)),   X, neqRCom(A,B), --is(A,"==>"), --is(B,"==>"), --has(A,"&&"), --has(B,"&&"), --has(A,"==>"), --has(B,"==>")  |- (X-->(A-B)), (Belief:StructuralReduction, Goal:StructuralReduction)
 //  ((A-->X) ~ (B-->X)),   X, neqRCom(A,B), --is(A,"==>"), --is(B,"==>"), --has(A,"&&"), --has(B,"&&"), --has(A,"==>"), --has(B,"==>")  |- ((A~B)-->X), (Belief:StructuralReduction, Goal:StructuralReduction)
+
+////conj/sect equivalence tagging
+//(&&,X,Y,A..*), (&&,X,Y,A..*), neqRCom(X,Y)  |- ((&&,X,Y,A..*)-->(X&Y)), (Belief:Identity,Goal:Identity)
+//    //--eqNeg(X,Y),
+//(&&,X,Y,A..*), (&&,X,Y,A..*), neqRCom(X,Y)  |- ((X|Y)-->(&&,X,Y,A..*)), (Belief:Identity,Goal:Identity)
+
+
+////TODO n-ary
+//  ((X-->A) && (Y-->A)), A     |- (((X-->A)&&(Y-->A))-->A), (Belief:StructuralDeduction)
+//(--(X-->A) && (Y-->A)), A   |- ((--(X-->A)&&(Y-->A))-->A), (Belief:StructuralDeduction)
+//(--(X-->A) && --(Y-->A)), A |- ((--(X-->A)&&--(Y-->A))-->A), (Belief:StructuralDeduction)
+//
+//
+////TODO
+////((x && a) <-> (x && b)) => (a <-> b)
+////((x && a) <-> (x && b)) => ((a <-> b)&&x)

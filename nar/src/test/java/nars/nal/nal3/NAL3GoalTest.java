@@ -81,7 +81,7 @@ class NAL3GoalTest {
 
 
         new TestNAR(NARS.tmp(3,3))
-                .termVolMax(6)
+                .termVolMax(8)
                 .input(goalTask)
                 .input(beliefTask)
                 .mustGoal(cycles, YY, f, c)
@@ -144,7 +144,7 @@ class NAL3GoalTest {
         NAR n = NARS.tmp(3);
         new BatchDeriver(Derivers.files(n, "induction.goal.nal"));
         new TestNAR(n)
-                .termVolMax(5)
+                .termVolMax(8)
                 .input("(X --> Z)!")
                 .input("((X|Y) --> Z).")
                 .mustGoal(cycles, "((X|Y) --> Z)", 1, 0.81f)
@@ -156,7 +156,7 @@ class NAL3GoalTest {
     void intersectionGoalDecomposition() {
 
         new TestNAR(NARS.tmp(3))
-                .termVolMax(5)
+                .termVolMax(8)
                 .input("((X|Y) --> Z)!")
                 .input("(X --> Z).")
                 .mustGoal(GoalDecompositionTest.cycles, "(Y --> Z)", 1, 0.81f) //via structural decomposition of intersection, at least
@@ -167,7 +167,7 @@ class NAL3GoalTest {
     void intersectionGoalDecomposition2() {
 
         new TestNAR(NARS.tmp(3))
-                .termVolMax(5)
+                .termVolMax(8)
                 .input("((X&Y) --> Z)!")
                 .input("(X --> Z).")
                 .mustGoal(GoalDecompositionTest.cycles, "(Y --> Z)", 1, 0.45f /*0.81f*/) //via structural decomposition of union, at least
@@ -191,7 +191,7 @@ class NAL3GoalTest {
         @Override
         protected NAR nar() {
             NAR n = NARS.tmp(3,3);
-            n.termVolumeMax.set(6);
+            n.termVolumeMax.set(8);
             return n;
         }
 

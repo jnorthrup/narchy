@@ -35,6 +35,8 @@ public class Statement {
                 return True;
             else if (subject.equalsNeg(predicate))
                 return False;
+            else if (subject instanceof Bool || predicate instanceof Bool)
+                return Null;
 
             if (op == INH || op == SIM) {
                   if (subject.unneg().equalsRoot(predicate.unneg()))

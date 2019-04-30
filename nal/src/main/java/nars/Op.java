@@ -314,19 +314,17 @@ public enum Op {
 
 
     public static final ImmutableMap<String, Op> stringToOperator;
+
     /**
      * ops across which reflexivity of terms is allowed
      */
-    final static int relationDelimeterStrong = Op.or(Op.PROD/*, Op.NEG*/);
+    final static int statementDelimeter = Op.or(Op.PROD/*, Op.NEG*/);
+
     public static final Predicate<Term> recursiveCommonalityDelimeterStrong =
-            c -> !c.isAny(relationDelimeterStrong);
-    /**
-     * allows conj
-     */
-    final static int relationDelimeterWeak = relationDelimeterStrong;
+            c -> !c.isAny(statementDelimeter);
 
     public static final Predicate<Term> recursiveCommonalityDelimeterWeak =
-            c -> !c.isAny(relationDelimeterWeak);
+            c -> !c.isAny(statementDelimeter);
     /**
      * specifier for any NAL level
      */

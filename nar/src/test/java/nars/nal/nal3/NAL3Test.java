@@ -45,7 +45,7 @@ public class NAL3Test extends NALTest {
     void compound_composition_two_premises2() {
 
         TestNAR tester = test;
-        tester.termVolMax(5);
+        tester.termVolMax(8);
         tester.believe("(sport --> competition)", 0.9f, 0.9f);
         tester.believe("(chess --> competition)", 0.8f, 0.9f);
         tester.mustBelieve(cycles, "((chess | sport) --> competition)", 0.72f, 0.81f);
@@ -57,7 +57,7 @@ public class NAL3Test extends NALTest {
     void compound_decomposition_two_premises() {
 
         TestNAR tester = test;
-        tester.termVolMax(5);
+        tester.termVolMax(8);
         tester.believe("<robin --> (bird | swimmer)>", 1.0f, 0.9f);
         tester.believe("<robin --> swimmer>", 0.0f, 0.9f);
         tester.mustBelieve(cycles, "<robin --> bird>", 1.0f, 0.81f);
@@ -99,7 +99,7 @@ public class NAL3Test extends NALTest {
 
     private TestNAR testDecomposeNegDiff(float freq, String known, String composed, String unknown) {
         test
-            .termVolMax(6)
+            .termVolMax(8)
             .confMin(0.5f)
             .believe(known, freq, 0.9f)
             .believe(composed, 0.0f, 0.9f)
@@ -201,7 +201,7 @@ public class NAL3Test extends NALTest {
     @Test
     void testArity1_Decomposition_Union() {
         test
-                .termVolMax(5)
+                .termVolMax(8)
                 .believe("(b-->a)", 0.25f, 0.9f)
                 .believe("((b&c)-->a)", 0.25f, 0.9f)
                 .mustBelieve(cycles, "(c-->a)", 0.19f, 0.15f, ETERNAL);
@@ -212,7 +212,7 @@ public class NAL3Test extends NALTest {
 
 
         test
-                .termVolMax(5)
+                .termVolMax(8)
                 .believe("(a-->b)", 0.25f, 0.9f)
                 .believe("(a-->(b|c))", 0.25f, 0.9f)
                 .mustBelieve(cycles, "(a-->c)", 0.19f, 0.15f, ETERNAL);
@@ -258,7 +258,7 @@ public class NAL3Test extends NALTest {
 
 
         test
-                .termVolMax(5)
+                .termVolMax(8)
                 .believe("(#1-->(RealNumber&ComplexNumber))")
                 .believe("(x-->RealNumber)")
                 .mustBelieve(cycles, "(x-->ComplexNumber)", 1f, 0.81f)
@@ -344,7 +344,7 @@ public class NAL3Test extends NALTest {
     @Test
     void questionDecomposition0() {
         test
-                .termVolMax(5)
+                .termVolMax(8)
                 .ask("((swan|swimmer) --> bird)")
                 .mustOutput(cycles, "(swimmer --> bird)", QUESTION)
                 .mustOutput(cycles, "(swan --> bird)", QUESTION)
@@ -354,7 +354,7 @@ public class NAL3Test extends NALTest {
     @Test
     void questionDecomposition1() {
         test
-                .termVolMax(5)
+                .termVolMax(8)
                 .ask("(swan --> bird)")
                 .believe("((swan|swimmer) --> bird)")
                 .mustOutput(cycles, "(swimmer --> bird)", QUESTION);
