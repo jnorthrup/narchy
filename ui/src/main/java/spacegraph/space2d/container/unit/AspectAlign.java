@@ -15,7 +15,7 @@ public class AspectAlign extends UnitContainer {
     /**
      * height/width target aspect ratio; if aspect is NaN, no adjustment applied
      */
-    private final float aspect;
+    private float aspect;
 
     /**
      * relative size adjustment uniformly applied to x,y
@@ -160,7 +160,10 @@ public class AspectAlign extends UnitContainer {
         return RectFloat.X0Y0WH(tx, ty, tw, th);
     }
 
-
+    public AspectAlign aspect(float aspect) {
+        this.aspect = aspect;
+        return this;
+    }
 
     @Override
     public AspectAlign align(Align align) {

@@ -8,16 +8,14 @@ import com.jogamp.opengl.GLProfile;
 import com.jogamp.opengl.util.texture.Texture;
 import com.jogamp.opengl.util.texture.TextureData;
 import com.jogamp.opengl.util.texture.TextureIO;
+import jcog.TODO;
 import jcog.tree.rtree.rect.RectFloat;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.space2d.ReSurface;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.unit.AspectAlign;
 
-import java.awt.image.BufferedImage;
-import java.awt.image.DataBuffer;
-import java.awt.image.DataBufferByte;
-import java.awt.image.DataBufferInt;
+import java.awt.image.*;
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
@@ -117,7 +115,7 @@ public class Tex {
         Object o = b instanceof DataBufferInt ? ((DataBufferInt) b).getData() : ((DataBufferByte)b).getData();
 
         int W = i.getWidth(), H = i.getHeight();
-        _set(o, W, H, i.getColorModel().hasAlpha());
+        _set(o, W, H, i.getColorModel());
 //        else if (b instanceof DataBufferByte) {
 //            _set(((DataBufferByte) b).getData(), W, H);
 //        } else
@@ -147,7 +145,7 @@ public class Tex {
 //
 //    }
 
-    private void _set(Object x, int width, int height, boolean alpha) {
+    private void _set(Object x, int width, int height, ColorModel color) {
 
         if (src == x)
             return;
@@ -167,27 +165,50 @@ public class Tex {
                 if (dataBefore != null)
                     dataBefore.destroy();
 
-                if (x instanceof int[]) {
-                    data = new TextureData(profile, alpha ? GL_RGBA : GL_RGB,
-                            width, height,
-                            0 /* border */,
-                            GL_BGRA, GL_UNSIGNED_INT_8_8_8_8_REV,
-                            mipmap,
-                            false,
-                            false,
-                            buffer, null
-                    );
+                if (color.getNumColorComponents()==1) {
+                    //grayscale
+
+                    if (x instanceof byte[]) {
+                        data = new TextureData(profile, GL_LUMINANCE,
+                                width, height,
+                                0 /* border */,
+                                GL_LUMINANCE, GL_UNSIGNED_BYTE,
+                                mipmap,
+                                false,
+                                false,
+                                buffer, null
+                        );
+                    } else {
+                        throw new TODO();
+                    }
                 } else {
-                    data = new TextureData(profile, GL_RGB,
-                            width, height,
-                            0 /* border */,
-                            GL_RGB,
-                            GL_UNSIGNED_BYTE,
-                            mipmap,
-                            false,
-                            false,
-                            buffer, null
-                    );
+
+                    //assume RGB/RGBA
+
+                    if (x instanceof int[]) {
+                        boolean alpha = color.hasAlpha();
+
+                        data = new TextureData(profile, alpha ? GL_RGBA : GL_RGB,
+                                width, height,
+                                0 /* border */,
+                                GL_BGRA, GL_UNSIGNED_INT_8_8_8_8_REV,
+                                mipmap,
+                                false,
+                                false,
+                                buffer, null
+                        );
+                    } else {
+                        data = new TextureData(profile, GL_RGB,
+                                width, height,
+                                0 /* border */,
+                                GL_RGB,
+                                GL_UNSIGNED_BYTE,
+                                mipmap,
+                                false,
+                                false,
+                                buffer, null
+                        );
+                    }
                 }
             }
 

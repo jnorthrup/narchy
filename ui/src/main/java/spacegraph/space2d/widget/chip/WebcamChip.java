@@ -7,6 +7,7 @@ import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.widget.button.CheckBox;
 import spacegraph.space2d.widget.port.TypedPort;
 import spacegraph.space2d.widget.text.LabeledPane;
+import spacegraph.video.VideoSurface;
 import spacegraph.video.WebCam;
 
 public class WebcamChip extends Bordering {
@@ -21,7 +22,7 @@ public class WebcamChip extends Bordering {
 
     @Override
     protected void starting() {
-        set(new WebCam.WebCamSurface(wc));
+        set(new VideoSurface(wc));
         set(S, new Gridding(enable, LabeledPane.awesome(out, "play")  /*, device select, ... framerate, */));
         on = wc.tensor.on((x)-> {
             if (enable.on() && out.active()) {
