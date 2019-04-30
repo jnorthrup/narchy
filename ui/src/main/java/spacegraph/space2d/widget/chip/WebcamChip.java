@@ -7,12 +7,13 @@ import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.widget.button.CheckBox;
 import spacegraph.space2d.widget.port.TypedPort;
 import spacegraph.space2d.widget.text.LabeledPane;
+import spacegraph.video.VideoSource;
 import spacegraph.video.VideoSurface;
 import spacegraph.video.WebCam;
 
 public class WebcamChip extends Bordering {
     private Off on;
-    final WebCam wc = WebCam.the();
+    final VideoSource wc = WebCam.the();
     final TypedPort<Tensor> out = new TypedPort<>(Tensor.class);
     final CheckBox enable = new CheckBox("enable");
 

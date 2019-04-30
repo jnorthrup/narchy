@@ -8,6 +8,7 @@ import spacegraph.SpaceGraph;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.video.JoglDisplay;
+import spacegraph.video.VideoSource;
 import spacegraph.video.VideoSurface;
 import spacegraph.video.WebCam;
 
@@ -22,7 +23,7 @@ public class NARVideo extends NARPart {
 
     static class Video extends NARPart {
 
-        private WebCam c;
+        private VideoSource c;
         public final Webcam cam;
         volatile Surface surface;
         volatile private JoglDisplay surfaceWindow = null;
@@ -55,7 +56,11 @@ public class NARVideo extends NARPart {
                     surfaceWindow.delete();
 
                 surface = new Gridding();
-                c.close();
+                try {
+                    c.close();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
                 cam.close();
             }
         }

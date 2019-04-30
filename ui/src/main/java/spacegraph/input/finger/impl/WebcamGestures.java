@@ -1,30 +1,39 @@
 package spacegraph.input.finger.impl;
 
-import boofcv.alg.enhance.EnhanceImageOps;
-import boofcv.alg.misc.ImageMiscOps;
-import boofcv.concurrency.IWorkArrays;
+import boofcv.abst.feature.detect.interest.ConfigGeneralDetector;
+import boofcv.abst.feature.tracker.PointTracker;
+import boofcv.abst.sfm.d2.ImageMotion2D;
+import boofcv.alg.background.BackgroundModelMoving;
+import boofcv.alg.distort.PointTransformHomography_F32;
+import boofcv.core.image.GConvertImage;
+import boofcv.factory.background.ConfigBackgroundBasic;
+import boofcv.factory.background.ConfigBackgroundGaussian;
+import boofcv.factory.background.ConfigBackgroundGmm;
+import boofcv.factory.background.FactoryBackgroundModel;
+import boofcv.factory.feature.tracker.FactoryPointTracker;
+import boofcv.factory.sfm.FactoryMotion2D;
+import boofcv.gui.binary.VisualizeBinaryData;
 import boofcv.io.image.ConvertBufferedImage;
+import boofcv.struct.image.GrayF32;
 import boofcv.struct.image.GrayU8;
-import boofcv.struct.image.InterleavedU8;
+import boofcv.struct.image.ImageType;
+import georegression.struct.homography.Homography2D_F32;
+import georegression.struct.homography.Homography2D_F64;
 import jcog.TODO;
 import jcog.math.v2;
-import jcog.random.XoRoShiRo128PlusRandom;
+import org.ejml.ops.ConvertMatrixData;
 import spacegraph.input.finger.Finger;
 import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.widget.meta.LazySurface;
-import spacegraph.video.VideoSource;
-import spacegraph.video.VideoSurface;
-import spacegraph.video.VideoTransform;
-import spacegraph.video.WebCam;
+import spacegraph.video.*;
 
 import java.awt.image.BufferedImage;
-import java.awt.image.WritableRaster;
-import java.util.Random;
-import java.util.function.Function;
 
 import static spacegraph.SpaceGraph.window;
 
-/** interprets webcam stream as animated skeleton capable of forming gestures for actuating one or more virtual cursors */
+/**
+ * interprets webcam stream as animated skeleton capable of forming gestures for actuating one or more virtual cursors
+ */
 public class WebcamGestures extends Finger {
 
     private static final int BUTTONS = 1;
@@ -33,104 +42,201 @@ public class WebcamGestures extends Finger {
         super(BUTTONS);
     }
 
+    public static void main(String[] args) {
+
+
+        window(new LazySurface(() -> {
+            VideoSource in = WebCam.the();
+
+            VideoSource in2 = new VideoEqualizer(in);
+            VideoSource in3 = new VideoBackgroundRemoval(in2);
+
+//            VideoSource in4 = VideoTransform.the(in, new Function<>() {
+//
+//                final IWorkArrays worker = new IWorkArrays();
+//                final GrayU8 g = new GrayU8(1, 1);
+//                final GrayU8 h = new GrayU8(1, 1);
+//                final Random rng = new XoRoShiRo128PlusRandom(1);
+//
+//                @Override
+//                public BufferedImage apply(BufferedImage f) {
+//                    g.reshape(f.getWidth(), f.getHeight());
+//                    h.reshape(f.getWidth(), f.getHeight());
+//
+//                    ConvertBufferedImage.convertFrom(f, g);
+//
+//                    EnhanceImageOps.sharpen4(g, h);
+//
+//                    return ConvertBufferedImage.extractBuffered(h);
+//                    //return ConvertBufferedImage.convertTo(g, new BufferedImage(f.getWidth(), f.getHeight(), BufferedImage.TYPE_INT_RGB), true);
+//                }
+//            });
+//            VideoSource in3 = VideoTransform.the(in, new Function<>() {
+//
+//                final IWorkArrays worker = new IWorkArrays();
+////                final GrayU8 g = new GrayU8(1,1);
+////                final GrayU8 h = new GrayU8(1,1);
+//                final Random rng = new XoRoShiRo128PlusRandom(1);
+//                final InterleavedU8 g = new InterleavedU8(1, 1, 3);
+//                final InterleavedU8 h = new InterleavedU8(1, 1, 3);
+//
+//                @Override
+//                public BufferedImage apply(BufferedImage f) {
+//                    //ConvertBufferedImage.extractInterleavedU8(f)
+//
+//                    g.reshape(f.getWidth(), f.getHeight());
+//                    h.reshape(f.getWidth(), f.getHeight());
+//                    ConvertBufferedImage.convertFromInterleaved(f, g, true);
+//                    ImageMiscOps.addUniform(g, rng, 1, 25);
+////                    EnhanceImageOps.equalizeLocal(
+////                            ConvertBufferedImage.convertFrom(f, g),
+////                            4, h, 1, worker);
+//                    return ConvertBufferedImage.convertTo(g, new BufferedImage(f.getWidth(), f.getHeight(), BufferedImage.TYPE_INT_RGB), true);
+//                }
+//            });
+
+            return new Gridding(
+                    new VideoSurface(in),
+                    new VideoSurface(in2),
+                    new VideoSurface(in3)
+            );
+        }), 1400, 800);
+    }
+
+
+
     @Override
     public v2 posGlobal() {
         throw new TODO();
     }
 
-    public static void main(String[] args) {
+    /** http://boofcv.org/index.php?title=Example_Background_Moving_Camera */
+    private static class VideoBackgroundRemoval extends VideoTransform {
+        // storage for segmented image.  Background = 0, Foreground = 1
+        final GrayU8 segmented = new GrayU8(1, 1);
+        // Grey scale image that's the input for motion estimation
+        final GrayF32 grey = new GrayF32(1,1);//segmented.width,segmented.height);
+        private final ImageMotion2D motion2D;
+        private final BackgroundModelMoving background;
+        private final Homography2D_F32 firstToCurrent32;
+        private final ImageType imageType;
+        private BufferedImage visualized;
+
+        GrayF32 input = null;
+
+        public VideoBackgroundRemoval(VideoSource in) {
+            super(in);
+
+            // Comment/Uncomment to switch input image type
+            //imageType = ImageType.single(GrayU8.class);
+            imageType = ImageType.single(GrayF32.class);
+//		imageType = ImageType.il(3, InterleavedF32.class);
+///		imageType = ImageType.il(3, InterleavedU8.class);
+
+            // Configure the feature detector
+            ConfigGeneralDetector confDetector = new ConfigGeneralDetector();
+            confDetector.threshold = 10;
+            confDetector.maxFeatures = 300;
+            confDetector.radius = 6;
+
+            // Use a KLT tracker
+            PointTracker tracker = FactoryPointTracker.klt(new int[]{1, 2, 4, 8}, confDetector, 3,
+                    GrayF32.class, null);
+
+            // This estimates the 2D image motion
+            motion2D =
+                    FactoryMotion2D.createMotion2D(500, 0.5, 3, 100, 0.6, 0.5, false, tracker, new Homography2D_F64());
+
+            ConfigBackgroundBasic configBasic = new ConfigBackgroundBasic(30, 0.005f);
+
+            // Configuration for Gaussian model.  Note that the threshold changes depending on the number of image bands
+            // 12 = gray scale and 40 = color
+            ConfigBackgroundGaussian configGaussian = new ConfigBackgroundGaussian(12,0.001f);
+            configGaussian.initialVariance = 64;
+            configGaussian.minimumDifference = 5;
+
+            // Note that GMM doesn't interpolate the input image. Making it harder to model object edges.
+            // However it runs faster because of this.
+            ConfigBackgroundGmm configGmm = new ConfigBackgroundGmm();
+            configGmm.initialVariance = 1600;
+            configGmm.significantWeight = 1e-1f;
+
+            // Comment/Uncomment to switch background mode
+            background =
+                    //FactoryBackgroundModel.movingBasic(configBasic, new PointTransformHomography_F32(), imageType);
+				//FactoryBackgroundModel.movingGaussian(configGaussian, new PointTransformHomography_F32(), imageType);
+				FactoryBackgroundModel.movingGmm(configGmm,new PointTransformHomography_F32(), imageType);
+
+            background.setUnknownValue(1);
+
+//            MediaManager media = DefaultMediaManager.INSTANCE;
+//            SimpleImageSequence video =
+//                    media.openVideo(fileName, background.getImageType());
+////				media.openCamera(null,640,480,background.getImageType());
+
+            //====== Initialize Images
 
 
-        window(new LazySurface(()-> {
-            WebCam in = WebCam.the();
-            VideoSource in2 = VideoTransform.the(in, f -> {
-                return equalize(f);
-            });
-            VideoSource in4 = VideoTransform.the(in, new Function<>() {
 
-                final IWorkArrays worker = new IWorkArrays();
-                final GrayU8 g = new GrayU8(1,1);
-                final GrayU8 h = new GrayU8(1,1);
-                final Random rng = new XoRoShiRo128PlusRandom(1);
+            // coordinate frames
 
-                @Override
-                public BufferedImage apply(BufferedImage f) {
-                    g.reshape(f.getWidth(), f.getHeight());
-                    h.reshape(f.getWidth(), f.getHeight());
 
-                    ConvertBufferedImage.convertFrom(f, g);
+//            ImageGridPanel gui = new ImageGridPanel(1,2);
+//            gui.setImages(visualized, visualized);
 
-                    EnhanceImageOps.sharpen4(g, h);
+//            ShowImages.showWindow(gui, "Detections", true);
+            firstToCurrent32 = new Homography2D_F32();
+        }
 
-                    return ConvertBufferedImage.extractBuffered(h);
-                    //return ConvertBufferedImage.convertTo(g, new BufferedImage(f.getWidth(), f.getHeight(), BufferedImage.TYPE_INT_RGB), true);
-                }
-            });
-            VideoSource in3 = VideoTransform.the(in, new Function<>() {
 
-                final IWorkArrays worker = new IWorkArrays();
-//                final GrayU8 g = new GrayU8(1,1);
-//                final GrayU8 h = new GrayU8(1,1);
+        @Override
+        protected synchronized BufferedImage apply(BufferedImage image) {
 
-                InterleavedU8 g = new InterleavedU8(1, 1, 3);
-                InterleavedU8 h = new InterleavedU8(1, 1, 3);
-                final Random rng = new XoRoShiRo128PlusRandom(1);
+            int W = image.getWidth(), H = image.getHeight();
+            if (segmented.getWidth()!=W || segmented.getHeight()!=H) {
 
-                @Override
-                public BufferedImage apply(BufferedImage f) {
-                    //ConvertBufferedImage.extractInterleavedU8(f)
+                segmented.reshape(W, H);
+                grey.reshape(W, H);
 
-                    g.reshape(f.getWidth(), f.getHeight());
-                    h.reshape(f.getWidth(), f.getHeight());
-                    ConvertBufferedImage.convertFromInterleaved(f, g, true);
-                    ImageMiscOps.addUniform(g, rng, 1, 25);
-//                    EnhanceImageOps.equalizeLocal(
-//                            ConvertBufferedImage.convertFrom(f, g),
-//                            4, h, 1, worker);
-                    return ConvertBufferedImage.convertTo(g, new BufferedImage(f.getWidth(), f.getHeight(), BufferedImage.TYPE_INT_RGB), true);
-                }
-            });
+                Homography2D_F32 homeToWorld = new Homography2D_F32();
+                homeToWorld.a13 = grey.width/2;
+                homeToWorld.a23 = grey.height/2;
 
-            return new Gridding(
-                new VideoSurface(in),
-                new VideoSurface(in2)
-            );
-        }), 1400, 800);
-    }
+                // Create a background image twice the size of the input image.  Tell it that the home is in the center
+                background.initialize(grey.width * 2, grey.height * 2, homeToWorld);
 
-    /** https://www.codeproject.com/Tips/1172662/Histogram-Equalisation-in-Java */
-    static BufferedImage equalize(BufferedImage src){
-        BufferedImage nImg = new BufferedImage(src.getWidth(), src.getHeight(),
-                BufferedImage.TYPE_BYTE_GRAY);
-        WritableRaster wr = src.getRaster();
-        WritableRaster er = nImg.getRaster();
-        int totpix= wr.getWidth()*wr.getHeight();
-        int[] histogram = new int[256];
-
-        for (int x = 0; x < wr.getWidth(); x++) {
-            for (int y = 0; y < wr.getHeight(); y++) {
-                histogram[wr.getSample(x, y, 0)]++;
             }
-        }
 
-        int[] chistogram = new int[256];
-        chistogram[0] = histogram[0];
-        for(int i=1;i<256;i++){
-            chistogram[i] = chistogram[i-1] + histogram[i];
-        }
+            input = ConvertBufferedImage.convertFrom(image, input);
 
-        float[] arr = new float[256];
-        for(int i=0;i<256;i++){
-            arr[i] =  (float)((chistogram[i]*255.0)/(float)totpix);
-        }
+            //long before = System.nanoTime();
+            GConvertImage.convert(input, grey);
 
-        for (int x = 0; x < wr.getWidth(); x++) {
-            for (int y = 0; y < wr.getHeight(); y++) {
-                int nVal = (int) arr[wr.getSample(x, y, 0)];
-                er.setSample(x, y, 0, nVal);
+            if( !motion2D.process(grey) ) {
+                throw new TODO();
             }
+
+            Homography2D_F64 firstToCurrent64 = (Homography2D_F64) motion2D.getFirstToCurrent();
+            ConvertMatrixData.convert(firstToCurrent64, firstToCurrent32);
+
+            background.segment(firstToCurrent32, input, segmented);
+            background.updateBackground(firstToCurrent32,input);
+            //long after = System.nanoTime();
+
+            //fps = (1.0-alpha)*fps + alpha*(1.0/((after-before)/1e9));
+
+            if (visualized==null || (visualized.getWidth()!=segmented.width || visualized.getHeight()!=segmented.height)) {
+                visualized = new BufferedImage(segmented.width,segmented.height,BufferedImage.TYPE_INT_RGB);
+            }
+
+            VisualizeBinaryData.renderBinary(segmented,false,visualized);
+//            gui.setImage(0, 0, (BufferedImage)video.getGuiImage());
+//            gui.setImage(0, 1, visualized);
+//            gui.repaint();
+
+            //System.out.println("FPS = "+fps);
+
+            return visualized;
         }
-        nImg.setData(er);
-        return nImg;
     }
 }

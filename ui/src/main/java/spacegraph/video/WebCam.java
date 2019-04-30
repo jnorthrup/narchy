@@ -47,7 +47,7 @@ public class WebCam extends VideoSource implements WebcamListener {
     /**
      * returns the default webcam, or null if none exist
      */
-    public static WebCam the() {
+    public static VideoSource the() {
         //logger.info("Webcam Devices: {} ", com.github.sarxos.webcam.Webcam.getWebcams());
         Webcam defaultf = Webcam.getDefault();
         return defaultf == null ? null : new WebCam(defaultf);
@@ -87,12 +87,12 @@ public class WebCam extends VideoSource implements WebcamListener {
     }
 
     static class ChannelView extends Gridding {
-        public final WebCam cam;
+        public final VideoSource cam;
         public final RGB mix = new RGB(-1, +1);
         final RGBToMonoBitmap2D mixed = new RGBToMonoBitmap2D(mix);
         private volatile Tensor current = null;
 
-        ChannelView(WebCam cam) {
+        ChannelView(VideoSource cam) {
             this.cam = cam;
 
             BitmapMatrixView bmp = new BitmapMatrixView(cam.width, cam.height, (x, y) -> {
@@ -128,7 +128,7 @@ public class WebCam extends VideoSource implements WebcamListener {
 
 
         public static void main(String[] args) {
-            WebCam wc = the();
+            VideoSource wc = the();
 
             Gridding menu = new Gridding();
             menu.add(new PushButton("++").clicked(() -> SpaceGraph.window(new ChannelView(wc), 400, 400)));

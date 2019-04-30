@@ -40,12 +40,7 @@
             <version>0.33.1</version>
             <scope>compile</scope>
         </dependency>
-        <dependency>
-            <groupId>org.boofcv</groupId>
-            <artifactId>boofcv-sfm</artifactId>
-            <version>0.33.1</version>
-            <scope>compile</scope>
-        </dependency>
+
         <dependency>
             <groupId>org.teavm</groupId>
             <artifactId>teavm-tooling</artifactId>
