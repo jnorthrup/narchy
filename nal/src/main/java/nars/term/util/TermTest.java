@@ -27,7 +27,6 @@ import nars.term.Term;
 import nars.term.Termed;
 import nars.term.Termlike;
 import nars.term.atom.Bool;
-import nars.term.compound.CachedCompound;
 import nars.term.util.builder.TermBuilder;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Assertions;
@@ -190,7 +189,7 @@ public enum TermTest { ;
         assertEquals(TermBuilder.newCompound(PROD, a), TermBuilder.newCompound(PROD, b));
         assertEquals(TermBuilder.newCompound(PROD, b), TermBuilder.newCompound(PROD, a));
         assertEquals($.pFast(a), $.pFast(b));
-        assertEquals(CachedCompound.newCompound(PROD, DTERNAL, a), CachedCompound.newCompound(PROD, DTERNAL, b));
+        assertEquals(TermBuilder.newCompound(PROD, DTERNAL, a), TermBuilder.newCompound(PROD, DTERNAL, b));
 
         Assertions.assertEquals(a.hashCodeSubterms(), b.hashCodeSubterms());
         Assertions.assertEquals(a.structureSurface(), b.structureSurface());

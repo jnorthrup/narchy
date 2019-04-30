@@ -343,7 +343,7 @@ public final class Answer implements Timed {
     }
 
     public Task task(boolean topOrSample, boolean forceProject, boolean dither) {
-        return task(topOrSample, forceProject, dither, dither);
+        return task(topOrSample, forceProject, dither, true);
     }
 
     /**

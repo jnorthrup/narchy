@@ -467,6 +467,11 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
     @Nullable
     static Task project(Task t, long start, long end, double eviMin, boolean ditherTruth, boolean ditherTime, NAL n) {
 
+        if (ditherTime) {
+            start = Tense.dither(start,n);
+            end = Tense.dither(end,n);
+        }
+
         if (t.start() == start && t.end() == end || (t.isBeliefOrGoal() && t.isEternal()))
             return t;
 

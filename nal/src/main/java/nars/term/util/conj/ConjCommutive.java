@@ -34,6 +34,8 @@ public enum ConjCommutive {;
      * assumes u is sorted
      */
     public static Term theSorted(TermBuilder B, int dt, Term... u) {
+
+
         if (u.length == 0)
             return True;
         if (u.length == 1)
@@ -309,6 +311,9 @@ public enum ConjCommutive {;
 //    }
 
     private static Term conjDirect(int dt, Term[] u) {
+//        if (dt == 0)
+//            dt = DTERNAL;
+
         return Op.terms.theCompound(CONJ, dt, u);
     }
 

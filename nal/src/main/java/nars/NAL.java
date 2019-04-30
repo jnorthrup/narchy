@@ -140,9 +140,10 @@ public abstract class NAL<W> extends Parts<Term, W> implements Timed {
     //1.5f;
     //2f;
 
-    //    /** 0..1.0: how much to reduce a signal which hasnt changed (in proportion to change significance) */
-//    public static final float SIGNAL_UNSURPRISING_FACTOR = 0.1f;
-    public static final boolean DYNAMIC_TRUTH_TASK_TIME_DITHERING= !configIs("DISABLE_DYNAMIC_TRUTH_TASK_TIME_DITHERING");
+
+    public static final boolean DYNAMIC_TASK_TIME_DITHERING= configIs("DYNAMIC_TASK_TIME_DITHERING");
+    public static final boolean ANSWER_TASK_TIME_DITHERING= configIs("ANSWER_TASK_TIME_DITHERING");
+
     /**
      * should be enough to account for an expected evidence integration error rate
      */

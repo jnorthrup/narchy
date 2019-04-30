@@ -1,6 +1,7 @@
 package nars.term;
 
 import nars.$;
+import nars.NAL;
 import nars.Narsese;
 import nars.Op;
 import nars.io.NarseseTest;
@@ -372,18 +373,19 @@ public class TermReductionsTest extends NarseseTest {
 
         @Test
         void distinctSimNegationStatements() throws Narsese.NarseseException {
-            assertEq(Bool.True, "(a<->a)");
+            if (!NAL.term.INH_CLOSED_BOOLEAN_DUALITY_MOBIUS_PARADIGM) {
+                assertEq(Bool.True, "(a<->a)");
 
-            assertNotEquals($("(--a <-> b)"), $("(a <-> --b)"));
+                assertNotEquals($("(--a <-> b)"), $("(a <-> --b)"));
 
-            assertEq("((--,a)<->b)", "((--,a) <-> b)");
-            assertNotEquals("(a<->b)", $("((--,a) <-> b)").toString());
-            assertEq("((--,a)<->b)", "(b <-> (--,a))");
-            assertNotEquals("(a<->b)", $("(b <-> (--,a))").toString());
-            assertEq("((--,a)<->(--,b))", "(--a <-> --b)");
+                assertEq("((--,a)<->b)", "((--,a) <-> b)");
+                assertNotEquals("(a<->b)", $("((--,a) <-> b)").toString());
+                assertEq("((--,a)<->b)", "(b <-> (--,a))");
+                assertNotEquals("(a<->b)", $("(b <-> (--,a))").toString());
+                assertEq("((--,a)<->(--,b))", "(--a <-> --b)");
 
 //        assertEq("((--,a)<->a)", "((--,a)<->a)");
-
+            }
         }
 
     @Disabled static class StructuralMobius {

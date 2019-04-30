@@ -100,18 +100,18 @@ public enum Tense {
         } else return Util.round(t, dither);
     }
 
-    public static int dither(int dt, NAL nar) {
-        return dither(dt, nar.dtDither());
+    public static int dither(int dt, NAL n) {
+        return dither(dt, n.dtDither());
     }
 
-    public static long dither(long t, NAL nar) {
-        return dither(t, nar.dtDither());
+    public static long dither(long t, NAL n) {
+        return dither(t, n.dtDither());
     }
 
 
     /** modifies the input array, and returns it */
-    public static long[] dither(long[] t, NAL nar) {
-        return dither(t, nar.dtDither());
+    public static long[] dither(long[] t, NAL n) {
+        return dither(t, n.dtDither());
     }
 
     /** modifies the input array, and returns it */

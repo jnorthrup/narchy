@@ -77,18 +77,18 @@ public abstract class TermBuilder implements TermConstructor {
                 case CONJ:
                     break; //skip below
                 default:
-                    return compound1(o, x);
+                    return newCompound1(o, x);
             }
         }
 
-        return compoundN(o, dt, t, key);
+        return newCompoundN(o, dt, t, key);
     }
 
-    private Compound compoundN(Op o, int dt, Term[] t, @Nullable DynBytes key) {
-        return CachedCompound.newCompound(o, dt, subterms(o, t, dt, key));
+    private Compound newCompoundN(Op o, int dt, Term[] t, @Nullable DynBytes key) {
+        return newCompound(o, dt, subterms(o, t, dt, key));
     }
 
-    protected Compound compound1(Op o, Term x) {
+    protected Compound newCompound1(Op o, Term x) {
         return new CachedUnitCompound(o, x);
     }
 
@@ -97,11 +97,14 @@ public abstract class TermBuilder implements TermConstructor {
     }
 
 
+
     public static Compound newCompound(Op op, Subterms subterms) {
-        return CachedCompound.newCompound(op, DTERNAL, subterms);
+        return newCompound(op, DTERNAL, subterms);
     }
 
-
+    public static Compound newCompound(Op op, int dt, Subterms subterms) {
+        return CachedCompound.newCompound(op, dt, subterms);
+    }
     public Term normalize(Compound x, byte varOffset) {
         Term y = new CompoundNormalization(x, varOffset).applyCompound(x);
 
@@ -122,7 +125,7 @@ public abstract class TermBuilder implements TermConstructor {
         return conj(false, dt, u);
     }
 
-    protected final Term conj(boolean preSorted, final int dt, Term... u) {
+    protected final Term conj(boolean preSorted, int dt, Term... u) {
 
         if (!preSorted && u.length > 1)
             u = Conj.preSort(dt, u);

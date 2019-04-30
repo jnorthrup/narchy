@@ -141,7 +141,7 @@ public class DynTaskify extends TaskList {
                 Task tt = Task.project(x, ss, ee,
                         NAL.truth.TRUTH_EVI_MIN, //minimal truth threshold for accumulating evidence
                         false,
-                        NAL.DYNAMIC_TRUTH_TASK_TIME_DITHERING,
+                        NAL.DYNAMIC_TASK_TIME_DITHERING,
                         nar);
                 if (tt == null)
                     return null;

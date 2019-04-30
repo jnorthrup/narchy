@@ -308,8 +308,8 @@ public class InterningTermBuilder extends HeapTermBuilder {
     }
 
     /** compound1 does not traverse the subterms interning pathway so an explicit resolution step for the only argument is applied here */
-    @Override protected Compound compound1(Op o, Term x) {
-        return super.compound1(o, resolve(x));
+    @Override protected Compound newCompound1(Op o, Term x) {
+        return super.newCompound1(o, resolve(x));
     }
 
     @Override
