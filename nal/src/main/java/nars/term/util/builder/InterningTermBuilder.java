@@ -1,5 +1,6 @@
 package nars.term.util.builder;
 
+import jcog.data.bit.MetalBitSet;
 import jcog.data.byt.DynBytes;
 import jcog.memoize.Memoizers;
 import jcog.memoize.byt.ByteKeyExternal;
@@ -39,7 +40,7 @@ public class InterningTermBuilder extends HeapTermBuilder {
      * memory-saving
      */
     static final boolean sortCanonically = true;
-    private final static boolean internNegs = false;
+//    private final static boolean internNegs = false;
     private final static boolean cacheSubtermKeyBytes = false;
     static final boolean deepDefault = true;
 
@@ -51,6 +52,7 @@ public class InterningTermBuilder extends HeapTermBuilder {
     final Function<InternedCompoundByComponents, Term>[] terms;
 
     private final String id;
+    private final MetalBitSet termsInterned;
 
 
     public InterningTermBuilder() {
@@ -78,7 +80,7 @@ public class InterningTermBuilder extends HeapTermBuilder {
 
         for (int i = 0; i < ops.length; i++) {
             Op o = ops[i];
-            if (o.atomic || (!internNegs && o == NEG)) continue;
+            if (o.atomic || (/*!internNegs && */o == NEG) || (o == FRAG)) continue;
 
             int s = cacheSizePerOp;
 
@@ -97,6 +99,10 @@ public class InterningTermBuilder extends HeapTermBuilder {
             terms[i] = c;
         }
 
+        termsInterned = MetalBitSet.bits(terms.length);
+        for (int i = 0, termsLength = terms.length; i < termsLength; i++) {
+            if (terms[i] != null) termsInterned.set(i);
+        }
 
     }
 
@@ -120,10 +126,6 @@ public class InterningTermBuilder extends HeapTermBuilder {
         return subs;
     }
 
-    private Term compoundInterned(Intermed.InternedCompoundByComponents x) {
-        return terms[x.op].apply(x);
-    }
-
     private static Subterms subsInterned(Function<InternedSubterms, Subterms> m, Term[] t) {
         return m.apply(new InternedSubterms(t));
     }
@@ -143,7 +145,8 @@ public class InterningTermBuilder extends HeapTermBuilder {
     }
 
     private Term compoundInterned(Op op, int dt, Term[] u) {
-        return compoundInterned(new Intermed.InternedCompoundByComponentsArray(op, dt, u));
+        InternedCompoundByComponents x = new Intermed.InternedCompoundByComponentsArray(op, dt, u);
+        return terms[x.op].apply(x);
     }
 
 
@@ -199,7 +202,7 @@ public class InterningTermBuilder extends HeapTermBuilder {
         } else {
             Op xo = x.op();
             boolean negate;
-            if (!internNegs) {
+//            if (!internNegs) {
                 negate = xo == NEG;
                 if (negate) {
                     Term xx = x.unneg();
@@ -208,10 +211,10 @@ public class InterningTermBuilder extends HeapTermBuilder {
                     x = xx;
                     xo = x.op();
                 }
-            } else {
-                negate = false;
-            }
-            if (internableRoot(xo, x.dt()) && x.the()) {
+//            } else {
+//                negate = false;
+//            }
+            if (internableRoot(xo/*, x.dt()*/) && x.the()) {
                 Term y = terms[xo.id].apply(new Intermed.InternedCompoundByComponentsSubs(x));
                 if (y != null)
                     return negate ? y.neg() : y;
@@ -220,18 +223,19 @@ public class InterningTermBuilder extends HeapTermBuilder {
         }
     }
 
-    protected boolean internableRoot(Op op, int dt, Term[] u) {
-        boolean i = internableRoot(op, dt) && internableSubs(u);
+    private boolean internableRoot(Op op, int dt, Term[] u) {
+        boolean i = internableRoot(op) && internableSubs(u);
 //        if (!i) {
 //            System.out.println(op + " " + dt + " " + Arrays.toString(u));
 //        }
         return i;
     }
 
-    protected static boolean internableRoot(Op op, int dt) {
-        return !op.atomic && (internNegs || op != NEG)
-                //&& Tense.dtSpecial(dt)
-                ;
+    private boolean internableRoot(Op op) {
+//        return !op.atomic && (internNegs || op != NEG)
+//                //&& Tense.dtSpecial(dt)
+//                ;
+        return termsInterned.get(op.id);
     }
 
     private boolean internableSubs(Term[] subterms) {

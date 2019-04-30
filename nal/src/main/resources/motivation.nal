@@ -24,7 +24,13 @@
     G, B, task("!"), neq(G,B), --is(B,"?"), hasBelief() |-    (&&,polarizeTask(G),polarizeBelief(B)), (Punctuation:Quest)
 
     //bifurcate plan
-    G, B, task("@"), neq(G,B), --is(B,"?"), hasBelief()   |-    (&&,polarizeRandom(G),polarizeBelief(B)), (Punctuation:Quest)
+    G, B, task("@"), neq(G,B), --is(B,"?"), hasBelief()   |-  (&&,polarizeRandom(G),polarizeBelief(B)), (Punctuation:Quest)
+
+    //implication look-ahead
+    (X==>Y), Y, task("."), --isVar(Y) |- ((X && polarizeTask(Y)) ==> ?1), (Punctuation:Question)
+
+    //implication look-behind
+    (X==>Y), Y, task("."), --isVar(Y) |- (?1 ==> (X && polarizeTask(Y))), (Punctuation:Question)
 
 //    //sequence possibility quest
 //    C, X, task("@"), eventOfPN(C,X) |-  (conjWithoutPN(C,X) && ?1), (Punctuation:Quest)

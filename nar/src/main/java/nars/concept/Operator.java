@@ -25,7 +25,7 @@ import static nars.Op.ATOM;
  * <patham9_> 4. the system wont try to execute and pursue things in the current moment which are "sheduled" to be in the future.
  * <patham9_> 5. the system wont pursue a goal it already pursued for the same reason (due to revision, it is related to 1)
  */
-public final class Operator extends NodeConcept implements PermanentConcept, Atomic, The {
+public final class Operator extends NodeConcept implements PermanentConcept, Atomic {
 
     private static final String LOG_FUNCTOR = String.valueOf(Character.valueOf((char) 8594));
 

@@ -43,6 +43,26 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, B
         super(atom, TermLinker.NullLinker);
     }
 
+    @Override
+    public final Op op() {
+        return ATOM;
+    }
+
+    @Override
+    public final byte[] bytes() {
+        return ((Atomic) term).bytes();
+    }
+
+    @Override
+    public final Term term() {
+        return this;
+    }
+
+    @Override
+    public final int opX() {
+        return term.opX();
+    }
+
     @Deprecated public static Subterms args(Term x) {
         return args((Compound)x);
     }
@@ -63,13 +83,6 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, B
         return s.subs()==requireArity ?  s : null;
     }
 
-
-
-    @Override
-    public final Op op() {
-        return ATOM;
-    }
-
     public static Atomic func(Term x) {
         return isFunc(x) ? (Atomic) x.sub(1) : Bool.Null;
     }
@@ -80,20 +93,6 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, B
             return xx.subIs(0, PROD) && xx.subIs(1, ATOM);
         }
         return false;
-    }
-
-    @Override
-    public final byte[] bytes() {
-        return ((Atomic) term).bytes();
-    }
-
-    @Override
-    public Term term() {
-        return this;
-    }
-    @Override
-    public final int opX() {
-        return term.opX();
     }
 
     protected static Atom fName(String termAtom) {
@@ -123,12 +122,14 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, B
                 (tt.subs() == arityRequired) ? ff.apply(tt) : Bool.Null
         );
     }
+
     private static LambdaFunctor f(Atom termAtom, int minArity, int maxArity, Function<Subterms, Term> ff) {
         return f(termAtom, (tt) -> {
             int n = tt.subs();
             return ((n >= minArity) && ( n<=maxArity)) ? ff.apply(tt) : Bool.Null;
         });
     }
+
     /**
      * zero argument (void) functor (convenience method)
      */
@@ -183,11 +184,6 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, B
         );
     }
 
-
-//    private static Function<Term, Term> safeFunctor(Function<Term, Term> ff) {
-//        return x -> x == null ? null : ff.apply(x);
-//    }
-
     /**
      * a functor involving a concept resolved by the 1st argument target
      */
@@ -197,7 +193,6 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, B
             return c != null ? ff.apply(c, nar) : null;
         });
     }
-
 
     /**
      * two argument functor (convenience method)
@@ -212,9 +207,15 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, B
     public static LambdaFunctor f2(String termAtom, BiFunction<Term, Term, Term> ff) {
         return f2(fName(termAtom), ff);
     }
+
     public static LambdaFunctor f3(String termAtom, TriFunction<Term, Term, Term, Term> ff) {
         return f3(fName(termAtom), ff);
     }
+
+
+//    private static Function<Term, Term> safeFunctor(Function<Term, Term> ff) {
+//        return x -> x == null ? null : ff.apply(x);
+//    }
 
     /**
      * three argument functor (convenience method)

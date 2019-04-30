@@ -492,26 +492,28 @@ public enum Op {
         boolean isNeg = str.equals("--");
         boolean isImg = str.equals("/");
         boolean isSect = str.equals("|") || str.equals("&");
-        this.set = str.equals("{") || str.equals("[");
+        boolean isFrag = str.equals("`");
 
         conceptualizable =
                 !var &&
                         !isBool &&
                         !isImg &&
-                        (NAL.term.INT_CONCEPTUALIZABLE || !isInt)
+                        !isFrag &&
+                        (!isInt || NAL.term.INT_CONCEPTUALIZABLE)
         //!isNeg && //<- HACK technically NEG cant be conceptualized but in many cases this is assumed. so NEG must not be included in conceptualizable for it to work currently
         ;
 
         taskable = conceptualizable && !isInt && !isNeg && !isSect;
 
+        eventable = taskable || isNeg || var;
+
         beliefable = taskable;
         goalable = taskable && !isImpl;
-
-        this.eventable = (NAL.term.INT_CONCEPTUALIZABLE || !isInt) && !isImg && !isBool && !isSect;
 
         indepVarParent = isImpl;
         depVarParent = isConj;
 
+        set = str.equals("{") || str.equals("[");
     }
 
 
