@@ -387,12 +387,12 @@ public class ConjTest {
     @Test
     void testConjRepeatPosNeg() {
         Term x = $.the("x");
-        assertEquals(+1, CONJ.the(-1, new Term[]{x, x}).dt());
-        assertEquals(+1, CONJ.the(+1, new Term[]{x, x}).dt());
-        assertArrayEquals(IO.termToBytes(CONJ.the(+32, new Term[]{x, x})), IO.termToBytes(CONJ.the(-32, new Term[]{x, x})));
+        assertEquals(+1, CONJ.the(-1, x, x).dt());
+        assertEquals(+1, CONJ.the(+1, x, x).dt());
+        assertArrayEquals(IO.termToBytes(CONJ.the(+32, x, x)), IO.termToBytes(CONJ.the(-32, x, x)));
         assertEquals(+1, ((Compound)CONJ.the(XTERNAL, new Term[]{x, x})).dt(-1).dt());
         assertEquals(+1, ((Compound)CONJ.the(XTERNAL, new Term[]{x, x})).dt(+1).dt());
-        assertEquals(CONJ.the(-1, new Term[]{x, x}), CONJ.the(+1, new Term[]{x, x}));
+        assertEquals(CONJ.the(-1, x, x), CONJ.the(+1, x, x));
         assertEquals(((Compound)CONJ.the(XTERNAL, new Term[]{x, x})).dt(-1),
                 ((Compound)CONJ.the(XTERNAL, new Term[]{x, x})).dt(+1));
     }
@@ -473,9 +473,9 @@ public class ConjTest {
     @Test
     void testTrueFalseInXternal() {
         for (int i : new int[]{XTERNAL, 0, DTERNAL}) {
-            assertEquals("x", CONJ.the(i, new Term[]{$.the("x"), Bool.True}).toString());
-            assertEquals(False, CONJ.the(i, new Term[]{$.the("x"), False}));
-            assertEquals(Null, CONJ.the(i, new Term[]{$.the("x"), Null}));
+            assertEquals("x", CONJ.the(i, $.the("x"), Bool.True).toString());
+            assertEquals(False, CONJ.the(i, $.the("x"), False));
+            assertEquals(Null, CONJ.the(i, $.the("x"), Null));
         }
     }
 
@@ -531,7 +531,7 @@ public class ConjTest {
         Term b = $$("(x &| y)");
         assertEq(
                 "((--,((--,y) &&+1 (--,y)))&|x)",
-                $.disj(a, b)
+                Op.DISJ(a, b)
         );
     }
 
@@ -542,7 +542,7 @@ public class ConjTest {
         Term b = $$("(x &&-10 y)");
         assertEq(
                 "((--,((--,y) &&+20 (--,y))) &&+10 x)",
-                $.disj(a, b)
+                Op.DISJ(a, b)
         );
     }
 
@@ -983,7 +983,7 @@ public class ConjTest {
 
     @Test
     public void testInvalidSubsequenceComponent2() {
-        Term s = $$("(--,((||,x,y)&&z))");
+        Term s = $$("(--,((x||y)&&z))");
         assertEq("(&&,(--,x),(--,y),z)", CONJ.the(s, DTERNAL, $$("z")).toString()); //TODO check
     }
 
@@ -1408,16 +1408,16 @@ public class ConjTest {
         assertEq("(||,x,y,z)", "(||,--(--x && --y), z)");
         assertEq("(--,(&|,(--,x),(--,y),(--,z)))", "(--,(((--,x)&|(--,y))&|(--,z)))");
         //assertEq("(--,(&|,(--,x),(--,y),(--,z)))", "(||,--(--x &| --y), z)"); //promoted
-        assertEq("(||,(--,((--,x)&|(--,y))),z)", "(||,--(--x &| --y), z)"); //promoted
+        assertEq("((--,((--,x)&|(--,y)))||z)", "(||,--(--x &| --y), z)"); //promoted
 
     }
 
     @Test
     void testDisjunctionStackOverflow() {
         assertEq("(||,x,y,z)", "((x || y) || z)");
-        assertEq("((||,y,z)&&(--,x))", "((||,(x || y),z) && --x)");
+        assertEq("((y||z)&&(--,x))", "((||,(x || y),z) && --x)");
 
-        assertEq("((||,y,z)&&(--,x))", "((||,x,y,z) && --x)");
+        assertEq("((y||z)&&(--,x))", "((||,x,y,z) && --x)");
         assertEq("x", "((||,x,y,z) && x)");
 
         assertEq("((--,((--,y)&|(--,z)))&&(--,x))", "(--(&|, --x, --y, --z) && --x)");
@@ -1428,15 +1428,15 @@ public class ConjTest {
     @Test
     void testDisjunctEqual() {
         Term pp = p(x);
-        assertEquals(pp, disj(pp, pp));
+        assertEquals(pp, Op.DISJ(pp, pp));
     }
 
     @Test
     void testDisjReduction1() {
 
         Term x = $.the("x");
-        assertEquals(x, $.disj(x, x));
-        assertEquals(x, CONJ.the(DTERNAL, new Term[]{x.neg(), x.neg()}).neg());
+        assertEquals(x, Op.DISJ(x, x));
+        assertEquals(x, CONJ.the(DTERNAL, x.neg(), x.neg()).neg());
     }
 
     @Disabled

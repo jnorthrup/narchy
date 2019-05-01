@@ -185,16 +185,16 @@ class NarseseBaseTest extends NarseseTest {
 
     @Test
     void testDisjunction() throws Narsese.NarseseException {
-        assertEquals("(||,a,b)", $.$("(||,a,b)").toString());
+        assertEquals("(a||b)", $.$("(||,a,b)").toString());
         assertEquals("(||,a,b,c)", $.$("(||,a,b,c)").toString());
-        assertEquals("(||,(b&&c),a)", $.$("(||,a,(b&&c))").toString());
+        assertEquals("((b&&c)||a)", $.$("(||,a,(b&&c))").toString());
         assertEquals("a", $.$("(||,a)").toString());
     }
 
     @Test
     void testDisjunctionBinary() throws Narsese.NarseseException {
-        assertEquals("(||,a,b)", $.$("(a||b)").toString());
-        assertEquals("(||,a,b)", $.$("(a || b)").toString());
+        assertEquals("(a||b)", $.$("(a||b)").toString());
+        assertEquals("(a||b)", $.$("(a || b)").toString());
     }
 
 

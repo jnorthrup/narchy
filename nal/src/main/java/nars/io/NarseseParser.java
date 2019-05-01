@@ -677,13 +677,13 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
                 return subs.size() != 2 ? Bool.Null : $.instprop(subs.get(0), subs.get(1));
 
 
-            case Op.DIFFe:
+            case Op.DIFFi:
                 if (subs.size() != 2) return Bool.Null;
                 else return CONJ.the(subs.get(0), subs.get(1).neg());
 
-            case Op.DIFFi:
+            case Op.DIFFe:
                 if (subs.size() != 2) return Bool.Null;
-                else return $.disj(subs.get(0), subs.get(1).neg());
+                else return DISJ(subs.get(0), subs.get(1).neg());
 
             default: {
                 Op o = Op.stringToOperator.get(op);

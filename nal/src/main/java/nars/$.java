@@ -22,7 +22,6 @@ import nars.term.control.LambdaPred;
 import nars.term.control.PREDICATE;
 import nars.term.obj.JsonTerm;
 import nars.term.util.SetSectDiff;
-import nars.term.util.builder.TermBuilder;
 import nars.term.var.NormalizedVariable;
 import nars.term.var.UnnormalizedVariable;
 import nars.term.var.VarPattern;
@@ -398,21 +397,11 @@ public enum $ {
         return CONJ.the(0, s);
     }
 
-    public static Term disj(TermBuilder b, Term... x) {
-        Term[] xx = x.clone();
-        neg(xx);
-        return CONJ.the(b, xx).neg();
-    }
-
-    public static Term disj(Term... x) {
-        return disj(Op.terms, x);
-    }
-
     /**
      * alias for disjunction
      */
     public static Term or(Term... x) {
-        return disj(x);
+        return DISJ(x);
     }
 
     /**
@@ -666,7 +655,7 @@ public enum $ {
     }
 
     public static <X> PREDICATE<X> OR(PREDICATE<X> a, PREDICATE<X> b) {
-        return new LambdaPred<>($.disj(a, b), (X x) -> a.test(x) || b.test(x));
+        return new LambdaPred<>(DISJ(a, b), (X x) -> a.test(x) || b.test(x));
     }
 
     public static int intValue(Term intTerm) throws NumberFormatException {

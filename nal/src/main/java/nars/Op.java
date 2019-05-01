@@ -590,6 +590,17 @@ public enum Op {
         return allOrAny ? Op.hasAll(haystack, needle) : Op.hasAny(haystack, needle);
     }
 
+    /** build disjunction (consisting of negated conjunction of the negated subterms, ie. de morgan's boolean law ) */
+    public static Term DISJ(TermBuilder b, Term... x) {
+        Term[] xx = x.clone();
+        $.neg(xx);
+        return CONJ.the(b, xx).neg();
+    }
+
+    public static Term DISJ(Term... x) {
+        return DISJ(Op.terms, x);
+    }
+
 
     public final Term the(Subterms s) {
         return the(DTERNAL, s);

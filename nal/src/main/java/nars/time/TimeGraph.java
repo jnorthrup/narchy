@@ -494,10 +494,14 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
                                 //chain the events to the absolute parent
                                 long range = eventEnd - eventStart;
                                 if (edt==DTERNAL) {
-                                    eventTerm.eventsWhile((w, y) -> {
-                                        link(event, ETERNAL, know(y, w, w + range));
-                                        return true;
-                                    }, eventStart, false, true, false);
+                                    eventTerm.subterms().forEach(y -> {
+                                        //inherit event time
+                                        know(y, eventStart, eventEnd);
+                                    });
+//                                    eventTerm.eventsWhile((w, y) -> {
+//                                        link(event, ETERNAL, know(y, w, w + range));
+//                                        return true;
+//                                    }, eventStart, false, true, false);
                                 } else {
                                     eventTerm.eventsWhile((w, y) -> {
                                         link(event, w - eventStart, know(y, w, w + range));

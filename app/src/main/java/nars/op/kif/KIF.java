@@ -539,7 +539,7 @@ public class KIF {
                         y = CONJ.the(args);
                         break;
                     case "or":
-                        y = $.disj(args.toArray(new Term[0]));
+                        y = DISJ(args.toArray(new Term[0]));
                         break;
                     case "not":
                         y = args.get(0).neg();
@@ -569,7 +569,7 @@ public class KIF {
 
     private static Term disjoint(List<Term> args, Term v0) {
         return Op.INH.the(
-                $.disj(args.toArray(Op.EmptyTermArray)), v0
+                DISJ(args.toArray(Op.EmptyTermArray)), v0
         ).neg();
     }
 

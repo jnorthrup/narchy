@@ -14,8 +14,11 @@ import static nars.Op.*;
 import static nars.time.Tense.DTERNAL;
 import static nars.time.Tense.XTERNAL;
 
-/** prints readable forms of terms */
-public enum TermAppender { ;
+/**
+ * prints readable forms of terms
+ */
+public enum TermAppender {
+    ;
 
     static void compoundAppend(Compound c, Appendable p, Op op) throws IOException {
 
@@ -33,16 +36,33 @@ public enum TermAppender { ;
 
     }
 
+    /** auto-infix if subs == 2 */
     static void compoundAppend(String o, Subterms c, Function<Term, Term> filter, Appendable p) throws IOException {
 
         p.append(Op.COMPOUND_TERM_OPENER);
 
-        p.append(o);
+        int n = c.subs();
+        if (n == 2) {
 
-        if (c.subs() == 1)
-            p.append(Op.ARGUMENT_SEPARATOR);
 
-        appendArgs(c, filter, p);
+            appendArg(c, 0, filter, p);
+
+            if (o.endsWith(" "))
+                p.append(' '); //prepend ' '
+
+            p.append(o);
+
+            appendArg(c, 1, filter, p);
+
+        } else {
+
+            p.append(o);
+
+            if (n == 1)
+                p.append(Op.ARGUMENT_SEPARATOR);
+
+            appendArgs(c, filter, p);
+        }
 
         p.append(Op.COMPOUND_TERM_CLOSER);
 
@@ -69,8 +89,12 @@ public enum TermAppender { ;
             if ((i != 0) || bb) {
                 p.append(Op.ARGUMENT_SEPARATOR);
             }
-            filter.apply(c.sub(i)).appendTo(p);
+            appendArg(c, i, filter, p);
         }
+    }
+
+    private static void appendArg(Subterms c, int i, Function<Term, Term> filter, Appendable p) throws IOException {
+        filter.apply(c.sub(i)).appendTo(p);
     }
 
     public static void append(Compound c, Appendable p) throws IOException {
@@ -163,25 +187,8 @@ public enum TermAppender { ;
             if ((((dt = sub.dt()) == DTERNAL) || (dt == XTERNAL))) {
                 Subterms cxx = sub.subterms();
                 if (Terms.negatedNonConjCount(cxx) >= cxx.subs() / 2) {
-                    String s;
-                    switch (dt) {
-                        case XTERNAL:
-                            s = Op.DISJstr + "+- ";
-                            break;
-                        case DTERNAL:
-                            s = Op.DISJstr;
-                            break;
-                        default:
-                            throw new UnsupportedOperationException();
-                    }
-
-//                                    if (cxx.subs() == 2) {
-//                                        statementAppend(cx, op, p); //infix
-//                                    } else {
-                    compoundAppend(s, cxx, Term::neg, p);
-//                                    }
+                    disjAppend(cxx, dt, p);
                     return;
-
                 }
             }
         }
@@ -191,8 +198,27 @@ public enum TermAppender { ;
         p.append(')');
     }
 
+    private static void disjAppend(Subterms cxx, int dt, Appendable p) throws IOException {
+        compoundAppend(disjStr(dt), cxx, Term::neg, p);
+    }
 
-    static void statementAppend(Term c, Appendable p, Op op  /*@NotNull*/) throws IOException {
+    private static String disjStr(int dt) {
+        String s;
+        switch (dt) {
+            case XTERNAL:
+                s = Op.DISJstr + "+- ";
+                break;
+            case DTERNAL:
+                s = Op.DISJstr;
+                break;
+            default:
+                throw new UnsupportedOperationException();
+        }
+        return s;
+    }
+
+
+    static void statementAppend(Term c, Appendable p, Op op  /**/) throws IOException {
 
 
         p.append(Op.COMPOUND_TERM_OPENER);

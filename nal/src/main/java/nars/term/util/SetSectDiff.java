@@ -130,7 +130,7 @@ public class SetSectDiff {
             if (o == SETe || o == SETi || !union) {
                 return Op.compound(B, o, yyyy);
             } else {
-                return $.disj(B, yyyy);
+                return DISJ(B, yyyy);
             }
         }
 

@@ -509,10 +509,20 @@ public class TermReductionsTest extends NarseseTest {
 //            tryDiff(n, "(Y~X)", "%0.0;.81%");
 //            tryDiff(n, "((--,X)~(--,Y))", "%0.0;.81%");
 //        }
+
+        assertEq("((--,Y)&&X)", "(X-Y)");
+        assertEq("(X||(--,Y))", "(X~Y)");
+
+
+
 //        assertEq("(Y~X)", "((--,X)~(--,Y))");
 //        assertEq("(X~Y)", "((--,Y)~(--,X))");
-        assertEq("((Y~X)-->A)", "(((--,X)~(--,Y))-->A)");
+
+        assertEq("(A-->(Y-X))", "(A-->((--,X)~(--,Y)))");
         assertEq("(A-->(Y-X))", "(A-->((--,X)-(--,Y)))");
+
+        assertEq("((Y-X)-->A)", "(((--,X)-(--,Y))-->A)");
+        assertEq("((Y~X)-->A)", "(((--,X)~(--,Y))-->A)");
 
     }
 
