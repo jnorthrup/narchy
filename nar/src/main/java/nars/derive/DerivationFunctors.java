@@ -5,9 +5,12 @@ import nars.NAL;
 import nars.NAR;
 import nars.op.Equal;
 import nars.op.SetFunc;
+import nars.subterm.Subterms;
+import nars.term.Compound;
 import nars.term.Functor;
 import nars.term.Term;
 import nars.term.atom.Atomic;
+import nars.term.functor.AbstractInlineFunctor1;
 import nars.term.functor.AbstractInlineFunctor2;
 import nars.term.util.conj.ConjMatch;
 import nars.term.util.transform.InlineFunctor;
@@ -16,6 +19,7 @@ import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 import java.util.Map;
 import java.util.function.Function;
 
+import static nars.Op.NEG;
 import static nars.derive.Derivation.BeliefTerm;
 import static nars.derive.Derivation.TaskTerm;
 import static nars.term.atom.Bool.Null;
@@ -82,7 +86,31 @@ public enum DerivationFunctors {
                         Term x = ConjMatch.beforeOrAfter(conj, event, false, d, NAL.derive.TTL_CONJ_BEFORE_AFTER);
                         return x == null ? Null : x;
                     }
-                }
+                },
+                new AbstractInlineFunctor1("negateRandomSubterm") {
+
+                    @Override
+                    protected Term apply1(Term _arg) {
+
+                        boolean neg = (_arg.op()==NEG);
+                        Term arg = neg ? _arg.unneg() : _arg;
+
+                        if(!(arg instanceof Compound))
+                            return Null;
+
+                        Subterms x = arg.subterms();
+                        int n = x.subs();
+                        if (n == 0)
+                            return Null;
+
+                        int which = d.random.nextInt(n);
+                        Subterms y = x.transformSub(which, Term::neg);
+                        if (x!=y)
+                            return arg.op().the(y).negIf(neg);
+
+                        return Null;
+                    }
+                },
         };
 
         for (Term x : derivationFunctors) //override any statik's

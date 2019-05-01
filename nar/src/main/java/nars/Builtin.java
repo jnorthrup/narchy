@@ -392,7 +392,15 @@ public class Builtin {
                 return y == container ? Null : y;
             }
         });
-
+        nar.add(new AbstractInlineFunctor2("withoutPosOrNegPolarized") {
+            @Override
+            protected Term apply(Term container, Term _content) {
+                Term content = _content.unneg();
+                boolean neg = container.op()==NEG;
+                Term y = Terms.withoutAll(neg ? container.unneg() : container, x -> x.unneg().equals(content));
+                return y == container ? Null : y.negIf(neg);
+            }
+        });
 
 //        /**
 //         * TODO rename this to 'dropAnyCommutive'

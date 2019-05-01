@@ -8,6 +8,7 @@ import nars.subterm.Subterms;
 import nars.subterm.TermList;
 import nars.term.Term;
 import nars.term.atom.Bool;
+import nars.term.util.builder.TermBuilder;
 import nars.term.util.builder.TermConstructor;
 import org.eclipse.collections.api.block.predicate.Predicate2;
 import org.eclipse.collections.impl.map.mutable.primitive.ObjectByteHashMap;
@@ -29,14 +30,14 @@ public class SetSectDiff {
      *      whether a or b is set, sect, or product
      *
      *      Subterm params:
-     *          2:              "&" or "|" indicating the SECT type
-     *          3 (optional):   "*" enabling product splice
+     *          1:              intersection
+     *          2 (optional):   "*" enabling product splice
      */
     public static @Nullable Term sect(Term a, Term b, boolean union, Subterms s) {
         Op op = //s.sub(2).equals(Op.SECTe.strAtom) ? Op.SECTe : Op.SECTi;
             CONJ;
 
-        boolean productSplice = s.subs() > 3 && s.sub(3).equals(Op.PROD.strAtom);
+        boolean productSplice = s.subs() > 2 && s.sub(2).equals(Op.PROD.strAtom);
 
         if (productSplice && a.unneg().op()==PROD && b.unneg().op()==PROD && a.unneg().subs()==b.unneg().subs() /* && rng? */) {
             return SetSectDiff.intersectProd(op, union, a, b);
@@ -45,7 +46,8 @@ public class SetSectDiff {
         }
     }
 
-    public static Term intersect(TermConstructor b, Op o, Term... t) {
+    public static Term intersectSet(TermBuilder b, Op o, Term... t) {
+        //assert(o == SETe || o == SETi);
         return intersect(b, o, false, t);
     }
 
@@ -53,17 +55,17 @@ public class SetSectDiff {
         return intersect(Op.terms, o, union, t);
     }
 
-    public static Term intersect(TermConstructor b, Op o, boolean union, Term... t) {
+    public static Term intersect(TermBuilder B, Op o, boolean union, Term... t) {
 
         switch (t.length) {
             case 0:
                 return empty(o);
             case 1:
-                return single(t[0], o, b);
+                return single(t[0], o, B);
             case 2:
                 Op o0 = t[0].op(), o1 = t[1].op();
                 if (o0 == o1 && t[0].equals(t[1]))
-                    return single(t[0], o, b);
+                    return single(t[0], o, B);
 
                 //fast eliminate contradiction
 
@@ -106,7 +108,7 @@ public class SetSectDiff {
         if (s == 0)
             return empty(o);
         else if (s == 1)
-            return single(y.keysView().getOnly(), o, b);
+            return single(y.keysView().getOnly(), o, B);
         else {
             TermList yyy = new TermList(s);
             y.keyValuesView().forEachWith((e,YYY) -> YYY.addFast(e.getOne().negIf(e.getTwo() == -1)), yyy);
@@ -123,7 +125,13 @@ public class SetSectDiff {
                         return Null; //duplicate caught
                 }
             }
-            return Op.compound(b, o, yyy.arrayKeep());
+
+            Term[] yyyy = yyy.arrayKeep();
+            if (o == SETe || o == SETi || !union) {
+                return Op.compound(B, o, yyyy);
+            } else {
+                return $.disj(B, yyyy);
+            }
         }
 
 
@@ -143,7 +151,7 @@ public class SetSectDiff {
         return intersectProd(Op.terms, o, union, x, y);
     }
 
-    private static Term intersectProd(TermConstructor B, Op o, boolean union, Term x, Term y) {
+    private static Term intersectProd(TermBuilder B, Op o, boolean union, Term x, Term y) {
 
         if (x.equals(y))
             return x;

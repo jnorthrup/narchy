@@ -12,7 +12,7 @@ import static jcog.data.atomic.AtomicFloatFieldUpdater.iNaN;
 import static jcog.data.atomic.AtomicFloatFieldUpdater.iZero;
 
 public abstract class AtomicPri implements ScalarValue {
-    protected static final AtomicFloatFieldUpdater<jcog.pri.AtomicPri> PRI =
+    private static final AtomicFloatFieldUpdater<jcog.pri.AtomicPri> PRI =
             new AtomicFloatFieldUpdater(jcog.pri.AtomicPri.class, "pri");
 
 //    private static final VarHandle INT;
@@ -30,6 +30,24 @@ public abstract class AtomicPri implements ScalarValue {
 
     /** initialized to zero */
     private final int pri = iZero;
+
+    /** initialized to zero */
+    public AtomicPri() {
+
+    }
+
+    public AtomicPri(float p) {
+        if (p == p) {
+            pri(p);
+        } else {
+            //start deleted
+            PRI.INT.getAndSet(this, iNaN); //HACK
+        }
+    }
+
+    public AtomicPri(Prioritized x) {
+        this(x.pri());
+    }
 
     @Override
     public String toString() {

@@ -1203,6 +1203,18 @@ public interface Subterms extends Termlike, Iterable<Term> {
         }
     }
 
+    default Subterms transformSub(int which, Function<Term,Term> f) {
+        Term x = sub(which);
+        Term y = f.apply(x);
+        if (x!=y) {
+            Term[] xx = arrayClone();
+            xx[which] = y;
+            return Op.terms.subterms(xx);
+        }
+        else
+            return this;
+    }
+
     /**
      * dont override
      */

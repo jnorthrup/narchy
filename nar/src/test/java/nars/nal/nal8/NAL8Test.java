@@ -28,7 +28,7 @@ public class NAL8Test extends NALTest {
         test.confTolerance(NAL7Test.CONF_TOLERANCE_FOR_PROJECTIONS);
         //test.nar.confResolution.set(0.04f); //coarse
 //        test.nar.freqResolution.setAt(0.02f); //coarse
-        test.termVolMax(9);
+        test.termVolMax(10);
         test.confMin(0.15f);
 
     }

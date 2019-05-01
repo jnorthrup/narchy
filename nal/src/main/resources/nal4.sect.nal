@@ -1,6 +1,6 @@
 // these correspond to the nal3.nal composition rules.
 // may be used alongside them without generating redundancy.
-  (M --> P), (M --> S), neq(P,S), is(P,"*"), is(S,"*"), subCountEqual(P,S) |- (M --> unionSect(polarizeTask(P), polarizeBelief(S), "|", "*")), (Belief:UnionDepolarized)
-  (M --> P), (M --> S), neq(P,S), is(P,"*"), is(S,"*"), subCountEqual(P,S) |- (M --> interSect(polarizeTask(P), polarizeBelief(S), "|", "*")), (Belief:IntersectionDepolarized)
-  (P --> M), (S --> M), neq(P,S), is(P,"*"), is(S,"*"), subCountEqual(P,S) |- (interSect(polarizeTask(P), polarizeBelief(S), "|", "*")-->M), (Belief:IntersectionDepolarized)
-  (P --> M), (S --> M), neq(P,S), is(P,"*"), is(S,"*"), subCountEqual(P,S) |- (interSect(polarizeTask(P), polarizeBelief(S), "&", "*")-->M), (Belief:UnionDepolarized)
+  (M --> P), (M --> S), neq(P,S), is(P,"*"), is(S,"*"), subCountEqual(P,S) |- (M --> unionSect(polarizeTask(P), polarizeBelief(S), "*")), (Belief:UnionDepolarized)
+  (M --> P), (M --> S), neq(P,S), is(P,"*"), is(S,"*"), subCountEqual(P,S) |- (M --> interSect(polarizeTask(P), polarizeBelief(S), "*")), (Belief:IntersectionDepolarized)
+  (P --> M), (S --> M), neq(P,S), is(P,"*"), is(S,"*"), subCountEqual(P,S) |- (interSect(polarizeTask(P), polarizeBelief(S), "*")-->M), (Belief:IntersectionDepolarized)
+  (P --> M), (S --> M), neq(P,S), is(P,"*"), is(S,"*"), subCountEqual(P,S) |- (interSect(polarizeTask(P), polarizeBelief(S), "*")-->M), (Belief:UnionDepolarized)

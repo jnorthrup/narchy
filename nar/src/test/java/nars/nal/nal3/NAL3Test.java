@@ -45,11 +45,12 @@ public class NAL3Test extends NALTest {
     void compound_composition_two_premises2() {
 
         TestNAR tester = test;
+
         tester.termVolMax(8);
         tester.believe("(sport --> competition)", 0.9f, 0.9f);
         tester.believe("(chess --> competition)", 0.8f, 0.9f);
-        tester.mustBelieve(cycles, "((chess | sport) --> competition)", 0.72f, 0.81f);
-        tester.mustBelieve(cycles, "((chess & sport) --> competition)", 0.98f, 0.81f);
+        tester.mustBelieve(cycles, "((chess & sport) --> competition)", 0.72f, 0.81f);
+        tester.mustBelieve(cycles, "((chess | sport) --> competition)", 0.98f, 0.81f);
 
     }
 
@@ -142,7 +143,7 @@ public class NAL3Test extends NALTest {
     @Test
     void diff_compound_decomposition_single3() {
         test.termVolMax(7);
-        test.logDebug();
+
         test.believe("<(dinosaur ~ ant) --> [strong]>", 0.9f, 0.9f);
         test.mustBelieve(cycles, "<dinosaur --> [strong]>", 0.90f, 0.73f);
         test.mustBelieve(cycles, "<ant --> [strong]>", 0.10f, 0.73f);
@@ -346,8 +347,8 @@ public class NAL3Test extends NALTest {
         test
                 .termVolMax(8)
                 .ask("((swan|swimmer) --> bird)")
-                .mustOutput(cycles, "(swimmer --> bird)", QUESTION)
-                .mustOutput(cycles, "(swan --> bird)", QUESTION)
+                .mustQuestion(cycles, "(swimmer --> bird)")
+                .mustQuestion(cycles, "(swan --> bird)")
         ;
     }
 

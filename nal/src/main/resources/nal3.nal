@@ -5,17 +5,17 @@
 //  corresponds to extensional union, and extensional intersection corresponds
 //  to intensional union.
 
-    (P --> M), (S --> M),               neqRCom(S,P), neqRoot(S,P), notSetsOrDifferentSets(S,P) |- (interSect(polarizeTask(P),polarizeBelief(S), "|") --> M), (Belief:IntersectionDepolarized)
-    (P --> M), (S --> M),               neqRCom(S,P), neqRoot(S,P), notSetsOrDifferentSets(S,P) |- (unionSect(polarizeTask(P),polarizeBelief(S), "&") --> M), (Belief:UnionDepolarized)
+    (P --> M), (S --> M),               neqRCom(S,P), neqRoot(S,P), notSetsOrDifferentSets(S,P) |- (interSect(polarizeTask(P),polarizeBelief(S)) --> M), (Belief:IntersectionDepolarized)
+    (P --> M), (S --> M),               neqRCom(S,P), neqRoot(S,P), notSetsOrDifferentSets(S,P) |- (unionSect(polarizeTask(P),polarizeBelief(S)) --> M), (Belief:UnionDepolarized)
 
-        (P --> M), (S --> M), task("!"),   neqRCom(S,P), neqRoot(S,P), notSetsOrDifferentSets(S,P) |- (interSect(polarizeTask(P),polarizeRandom(S), "|") --> M), (Punctuation:Quest)
-         (P --> M), (S --> M), task("?@"), neqRCom(S,P), neqRoot(S,P), notSetsOrDifferentSets(S,P) |- (interSect(P,polarizeRandom(S), "|") --> M)
+        (P --> M), (S --> M), task("!"),   neqRCom(S,P), neqRoot(S,P), notSetsOrDifferentSets(S,P) |- (interSect(polarizeTask(P),polarizeRandom(S)) --> M), (Punctuation:Quest)
+         (P --> M), (S --> M), task("?@"), neqRCom(S,P), neqRoot(S,P), notSetsOrDifferentSets(S,P) |- (interSect(P,polarizeRandom(S)) --> M)
 
 
-    (M --> P), (M --> S),               neqRCom(S,P), neqRoot(S,P), notSetsOrDifferentSets(S,P) |- (M --> interSect(polarizeTask(P),polarizeBelief(S), "&")), (Belief:IntersectionDepolarized)
-    (M --> P), (M --> S),               neqRCom(S,P), neqRoot(S,P), notSetsOrDifferentSets(S,P) |- (M --> unionSect(polarizeTask(P),polarizeBelief(S), "|")), (Belief:UnionDepolarized)
-        (M --> P), (M --> S), task("!"),   neqRCom(S,P), neqRoot(S,P), notSetsOrDifferentSets(S,P) |- (M --> interSect(polarizeTask(P),polarizeRandom(S), "&")), (Punctuation:Quest)
-         (M --> P), (M --> S), task("?@"), neqRCom(S,P), neqRoot(S,P), notSetsOrDifferentSets(S,P) |- (M --> interSect(P,polarizeRandom(S), "&"))
+    (M --> P), (M --> S),               neqRCom(S,P), neqRoot(S,P), notSetsOrDifferentSets(S,P) |- (M --> interSect(polarizeTask(P),polarizeBelief(S))), (Belief:IntersectionDepolarized)
+    (M --> P), (M --> S),               neqRCom(S,P), neqRoot(S,P), notSetsOrDifferentSets(S,P) |- (M --> unionSect(polarizeTask(P),polarizeBelief(S))), (Belief:UnionDepolarized)
+        (M --> P), (M --> S), task("!"),   neqRCom(S,P), neqRoot(S,P), notSetsOrDifferentSets(S,P) |- (M --> interSect(polarizeTask(P),polarizeRandom(S))), (Punctuation:Quest)
+         (M --> P), (M --> S), task("?@"), neqRCom(S,P), neqRoot(S,P), notSetsOrDifferentSets(S,P) |- (M --> interSect(P,polarizeRandom(S)))
 
 
 
@@ -36,16 +36,8 @@
         //((A,B) --> M), ((X,Y) --> M), is(A,"+"), is(B,"+"), is(X,"+"), is(Y,"+") |- ((union(A,X),union(B,Y)) --> M), (Belief:Union)
 
 
-//intersection/union belief/goal to diff question/quest
-    (W --> (A&B)), W, --is(A,"--"), --is(B,"--")  |- (W --> (A-B)), (Punctuation:Ask)
-     //(W --> (A|B)), W |- (W --> (A-B)), (Punctuation:Ask)
-    ((A|B) --> W), W, --is(A,"--"), --is(B,"--")  |- ((A~B) --> W), (Punctuation:Ask)
-     //((A&B) --> W), W |- ((A~B) --> W), (Punctuation:Ask)
+//component invert to question
+     (    M -->   I), M, isOrIsUnneg(I,"&&")  |- (M -->   negateRandomSubterm(I)), (Punctuation:AskAll)
+     (    I -->   M), M, isOrIsUnneg(I,"&&")  |- (  negateRandomSubterm(I)-->M),   (Punctuation:AskAll)
 
-//diff belief/goal to swapped diff question
-    (W --> (A-B)), W, --is(A,"--"), --is(B,"--")  |- (W --> (B-A)), (Punctuation:Ask)
-    ((A~B) --> W), W, --is(A,"--"), --is(B,"--")  |- ((B~A) --> W), (Punctuation:Ask)
 
-//NAL Specification Table 11.11
-//(M-->(X-Y)), M, --is(X,"--"), --is(Y,"--")  |- --(M-->Y), (Belief:StructuralDeduction, Goal:StructuralDeduction)
-//((X~Y)-->M), M, --is(X,"--"), --is(Y,"--")  |- --(Y-->M), (Belief:StructuralDeduction, Goal:StructuralDeduction)

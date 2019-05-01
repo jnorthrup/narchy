@@ -6,7 +6,7 @@ import static jcog.Texts.n4;
  * immutable object + mutable number pair;
  * considered in a 'deleted' state when the value is NaN
  */
-public class NLink<X> extends Pri implements PriReference<X> {
+public class NLink<X> extends AtomicPri implements PriReference<X> {
 
     protected final X id;
 

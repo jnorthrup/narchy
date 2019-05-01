@@ -358,6 +358,12 @@ public class PremiseRuleSource extends ProxyTerm {
                     if (negated) negationApplied = true;
                     break;
                 }
+                case "isOrIsUnneg": {
+                    Op o = Op.the($.unquote(Y));
+                    match(X, new TermMatcher.IsUnneg(o, false), !negated);
+                    if (negated) negationApplied = true;
+                    break;
+                }
 
                 case "has": {
                     //hasAny
@@ -387,11 +393,13 @@ public class PremiseRuleSource extends ProxyTerm {
                             break;
 
                         case "\"?@\"":
+                            assert(taskPunc == null && concPunc == null);
                             taskPunc = t -> t == QUESTION || t == QUEST;
                             concPunc = c -> c;  //default
                             break;
 
                         case "\".!\"":
+                            assert(taskPunc == null && concPunc == null);
                             taskPunc = t -> t == BELIEF || t == GOAL;
                             concPunc = c -> c; //default
                             break;
@@ -453,6 +461,7 @@ public class PremiseRuleSource extends ProxyTerm {
 
                         /** belief -> question, goal -> quest */
                         case "Ask":
+                            assert(taskPunc == null && concPunc == null);
                             taskPunc = p -> p == BELIEF || p == GOAL;
                             concPunc = p -> {
                                 switch (p) {
@@ -466,6 +475,23 @@ public class PremiseRuleSource extends ProxyTerm {
                             };
                             break;
 
+                        /** belief,question -> question, goal,quest -> quest */
+                        case "AskAll":
+                            assert(taskPunc == null && concPunc == null);
+                            taskPunc = p -> true;
+                            concPunc = p -> {
+                                switch (p) {
+                                    case BELIEF:
+                                    case QUESTION:
+                                        return QUESTION;
+                                    case GOAL:
+                                    case QUEST:
+                                        return QUEST;
+                                    default:
+                                        return (byte) 0;
+                                }
+                            };
+                            break;
                         default:
                             throw new RuntimeException("unknown punctuation: " + which);
                     }

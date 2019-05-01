@@ -140,14 +140,15 @@ public final class TemplateTermLinker extends FasterList<Term> implements TermLi
                 return;
         }
 
-        Op xo = x.op();
-        boolean done = xo.atomic || !xo.conceptualizable;
-        if (done)
-            return;
-
-        maxDepth += deeper(depth, root, x);
+        //maxDepth += deeper(depth, root, x);
         if (++depth >= maxDepth)
             return;
+
+        Op xo = x.op();
+        if (xo.atomic || !xo.conceptualizable)
+            return;
+
+
 
 
         int nextDepth = depth, nextMaxDepth = maxDepth;
@@ -156,55 +157,55 @@ public final class TemplateTermLinker extends FasterList<Term> implements TermLi
 
     }
 
-    /**
-     * depth extensions
-     */
-    private static int deeper(int depth, Term root, Term x) {
-
-//        if (depth < 1 || depth >= 4)
-//            return 0; //no change
-
-//        Op xo = x.op();
-//        Op ro = root.op();
-//        switch (ro) {
-//            case SIM:
-//            case INH:
-//                if (depth == 1 && x.hasAny(
-//                        //Op.Variable
-//                        Op.VAR_INDEP.bit
-//                )
-////                        ||
-////                        (x.isAny(Op.Sect | Op.Set | Op.Diff))
-//                )
-//                    return +1;
-//                break;
-
-//            case CONJ:
-////                if (depth <=2 && x.hasAny(Op.Variable) )
+//    /**
+//     * depth extensions
+//     */
+//    private static int deeper(int depth, Term root, Term x) {
+//
+////        if (depth < 1 || depth >= 4)
+////            return 0; //no change
+//
+////        Op xo = x.op();
+////        Op ro = root.op();
+////        switch (ro) {
+////            case SIM:
+////            case INH:
+////                if (depth == 1 && x.hasAny(
+////                        //Op.Variable
+////                        Op.VAR_INDEP.bit
+////                )
+//////                        ||
+//////                        (x.isAny(Op.Sect | Op.Set | Op.Diff))
+////                )
 ////                    return +1;
+////                break;
 //
-////                if (depth <=2 && xo.isAny(INH.bit | SETe.bit | SETi.bit | INH.bit) )
+////            case CONJ:
+//////                if (depth <=2 && x.hasAny(Op.Variable) )
+//////                    return +1;
+////
+//////                if (depth <=2 && xo.isAny(INH.bit | SETe.bit | SETi.bit | INH.bit) )
+////
+////                //                    return +1;
+//////                    if (depth ==1 && (xo.statement && x.hasAny(Op.VAR_DEP)))
+//////                        return +1; //necessary for certain NAL6 unification cases
+//////                    if (depth > 1 && !x.hasAny(Op.VAR_DEP))
+//////                        return -1; //event subterm without any var dep, dont actually recurse
+////                break;
+////            case IMPL:
+////                if (depth >=1 && depth <=2 && ((xo == CONJ || x.hasAny(
+////                        Op.VAR_INDEP.bit | Op.VAR_DEP.bit
+////                        //Op.VAR_INDEP.bit
+////                        //Op.Variable
+////                ))))
+////                        return +1;
+////
+////
+////                break;
+////        }
 //
-//                //                    return +1;
-////                    if (depth ==1 && (xo.statement && x.hasAny(Op.VAR_DEP)))
-////                        return +1; //necessary for certain NAL6 unification cases
-////                    if (depth > 1 && !x.hasAny(Op.VAR_DEP))
-////                        return -1; //event subterm without any var dep, dont actually recurse
-//                break;
-//            case IMPL:
-//                if (depth >=1 && depth <=2 && ((xo == CONJ || x.hasAny(
-//                        Op.VAR_INDEP.bit | Op.VAR_DEP.bit
-//                        //Op.VAR_INDEP.bit
-//                        //Op.Variable
-//                ))))
-//                        return +1;
-//
-//
-//                break;
-//        }
-
-        return 0;
-    }
+//        return 0;
+//    }
 
 
 

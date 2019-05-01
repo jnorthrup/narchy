@@ -13,11 +13,10 @@ public final class ByteKeyInternal<Y> extends UnitPri implements ByteKey, PriPro
     private final int hash;
 
     protected ByteKeyInternal(byte[] key, int hash, Y result, float pri) {
-        super();
+        super(pri);
         this.hash = hash;
         this.key = key;
         this.result = result;
-        pri(pri);
     }
 
     @Override
@@ -26,12 +25,12 @@ public final class ByteKeyInternal<Y> extends UnitPri implements ByteKey, PriPro
     }
 
     @Override
-    public final boolean equals(Object obj) {
+    public boolean equals(Object obj) {
         return ByteKey.equals(this, (ByteKey) obj);
     }
 
     @Override
-    public jcog.memoize.byt.ByteKeyInternal<Y> x() {
+    public ByteKeyInternal<Y> x() {
         return this;
     }
 

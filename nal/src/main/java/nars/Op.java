@@ -152,7 +152,7 @@ public enum Op {
 
         @Override
         public Term the(TermBuilder b, int dt, Term... u) {
-            return SetSectDiff.intersect(b, SETi, u);
+            return SetSectDiff.intersectSet(b, SETi, u);
         }
 
         //        @Override
@@ -168,7 +168,7 @@ public enum Op {
 
         @Override
         public Term the(TermBuilder b, int dt, Term... u) {
-            return SetSectDiff.intersect(b, SETe, u);
+            return SetSectDiff.intersectSet(b, SETe, u);
         }
 
 //        @Override

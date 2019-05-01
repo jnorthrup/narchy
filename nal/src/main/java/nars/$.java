@@ -22,6 +22,7 @@ import nars.term.control.LambdaPred;
 import nars.term.control.PREDICATE;
 import nars.term.obj.JsonTerm;
 import nars.term.util.SetSectDiff;
+import nars.term.util.builder.TermBuilder;
 import nars.term.var.NormalizedVariable;
 import nars.term.var.UnnormalizedVariable;
 import nars.term.var.VarPattern;
@@ -397,10 +398,14 @@ public enum $ {
         return CONJ.the(0, s);
     }
 
+    public static Term disj(TermBuilder b, Term... x) {
+        Term[] xx = x.clone();
+        neg(xx);
+        return CONJ.the(b, xx).neg();
+    }
+
     public static Term disj(Term... x) {
-        Term[] b = x.clone();
-        neg(b);
-        return CONJ.the(b).neg();
+        return disj(Op.terms, x);
     }
 
     /**

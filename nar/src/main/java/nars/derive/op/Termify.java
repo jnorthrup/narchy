@@ -6,6 +6,8 @@ import nars.NAR;
 import nars.derive.Derivation;
 import nars.term.ProxyTerm;
 import nars.term.Term;
+import nars.term.atom.Atom;
+import nars.term.atom.Atomic;
 import org.jetbrains.annotations.Nullable;
 
 import static nars.Op.NEG;
@@ -28,14 +30,14 @@ public final class Termify extends ProxyTerm {
     private final Occurrify.OccurrenceSolver time;
     private final Truthify truth;
 
+    private static final Atom TERMIFY = Atomic.atom(Termify.class.getSimpleName());
+
     public Termify(Term pattern, Truthify truth, Occurrify.OccurrenceSolver time) {
-        super($.funcFast("derive", pattern, truth));
+        super($.funcFast(TERMIFY, pattern, truth));
         this.pattern = pattern;
         this.truth = truth;
 
         this.time = time;
-
-
     }
 
     public final @Nullable Term test(Term x, Derivation d) {

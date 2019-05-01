@@ -11,7 +11,7 @@ import org.roaringbitmap.RoaringBitmap;
  * valid for the premise.  a choice which "can" be tried
  * (ie. according to value rank)
  */
-public class Branchify extends AbstractPred<Derivation> {
+public final class Branchify extends AbstractPred<Derivation> {
 
     public final RoaringBitmap can;
 

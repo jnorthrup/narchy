@@ -2,7 +2,7 @@ package jcog.signal.wave1d;
 
 import jcog.Util;
 import jcog.data.atomic.AtomicFloatFieldUpdater;
-import jcog.pri.Pri;
+import jcog.pri.ScalarValue;
 import jcog.signal.tensor.AtomicFloatVector;
 import jcog.signal.tensor.WritableTensor;
 
@@ -72,11 +72,11 @@ public class ArrayHistogram  /*AtomicDoubleArrayTensor*/  /* ArrayTensor */{
 
         float mass = 0;
         boolean flat = false;
-        if (rangeDelta < Pri.EPSILON)
+        if (rangeDelta < ScalarValue.EPSILON)
             flat = true;
         else {
             mass = mass();
-            flat = (mass <= Pri.EPSILON);
+            flat = (mass <= ScalarValue.EPSILON);
         }
 
         WritableTensor data = this.data;
