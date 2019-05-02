@@ -235,8 +235,8 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
         if (punc == Op.BELIEF || punc == Op.GOAL) {
             if (t.hasVarQuery())
                 return fail(t, "belief or goal with query variable", safe);
-            if (t.hasXternal())
-                return fail(t, "belief/goal content with dt=XTERNAL", safe);
+//            if (t.hasXternal())
+//                return fail(t, "belief/goal content with dt=XTERNAL", safe);
         }
 
 

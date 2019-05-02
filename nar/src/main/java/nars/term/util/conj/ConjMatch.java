@@ -1,8 +1,10 @@
 package nars.term.util.conj;
 
 import jcog.Util;
+import jcog.WTF;
 import jcog.data.list.FasterList;
 import jcog.util.ArrayUtils;
+import nars.NAL;
 import nars.derive.Derivation;
 import nars.op.UniSubst;
 import nars.subterm.Subterms;
@@ -63,7 +65,11 @@ public class ConjMatch {
         } else {
             //remove matching parallel/sequence conjunctions
             ConjLazy y = events(event, beforeOrAfter);
-            assert(y.size() > 1);
+
+            if (NAL.DEBUG && y.size() <= 1)
+                throw new WTF(); //??? what does this mean
+            //assert(y.size() > 1);
+
             long[] yRange = Util.minmax(y::when, 0, y.size());
             if (yRange[0] == yRange[1]) {
                 //PARALLEL EVENT
@@ -83,22 +89,16 @@ public class ConjMatch {
 
                 int nFound = found.size();
                 LongObjectPair<List<Term>> b;
-                switch (nFound) {
-                    //case 0: return Null;
-                    case 1:
-                        b = found.keyValuesView().getOnly();
-                        break;
-                    default:
+                //case 0: return Null;
+                if (nFound == 1) {
+                    b = found.keyValuesView().getOnly();
+                } else {
+                    int mostMatched = found.maxBy(List::size).size();
 
-                        int mostMatched = found.maxBy(List::size).size();
+                    LongObjectPair<List<Term>>[] best = found.keyValuesView().select(xx -> xx.getTwo().size() == mostMatched).toArray(ArrayUtils.EMPTY_LONGOBJECT_PAIR_ARRAY);
 
-                        LongObjectPair<List<Term>>[] best = found.keyValuesView().select(xx -> xx.getTwo().size() == mostMatched).toArray(ArrayUtils.EMPTY_LONGOBJECT_PAIR_ARRAY);
-
-                        int numMatched = best.length;
-                        b = best[numMatched > 1 ? d.random.nextInt(numMatched) : 0];
-
-                        break;
-
+                    int numMatched = best.length;
+                    b = best[numMatched > 1 ? d.random.nextInt(numMatched) : 0];
                 }
 
                 long bWhen = b.getOne();
