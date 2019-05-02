@@ -33,7 +33,7 @@ public class DefaultConceptBuilder extends ConceptBuilder {
 
     @Override public TermLinker termlinker(Term term) {
         //return TemplateTermLinker.of(term);
-        return term instanceof Atomic ? NullLinker : DynamicTermLinker.DynamicLinker;
+        return term instanceof Atomic ? NullLinker : DynamicTermLinker.VolWeighted;
     }
 
 

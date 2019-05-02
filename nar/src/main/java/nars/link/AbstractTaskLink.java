@@ -53,7 +53,7 @@ public abstract class AbstractTaskLink implements TaskLink {
     }
 
     @Override
-    final public TaskLink id() {
+    public final TaskLink id() {
         return this;
     }
 
