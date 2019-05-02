@@ -214,7 +214,7 @@ public class PremiseRuleSource extends ProxyTerm {
                         constraints.add(new SubOfConstraint(XX, ((Variable) (Y.unneg())),
                                 Subterm, Y.op() == NEG ? -1 : +1).negIf(negated));
                     } else {
-                        match(XX, new TermMatcher.Contains(Y), true);
+                        match(XX, new TermMatcher.Contains(Y), !negated);
                     }
 
                     if (negated)
@@ -984,9 +984,7 @@ public class PremiseRuleSource extends ProxyTerm {
         match(x, m, true);
     }
 
-    private void matchNot(Term x, TermMatcher m) {
-        match(x, m, false);
-    }
+
 
     private void match(Term x, TermMatcher m, boolean trueOrFalse) {
         match(x, (pathInTask, pathInBelief) -> {

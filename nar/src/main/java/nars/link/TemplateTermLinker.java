@@ -23,24 +23,15 @@ import java.util.stream.Stream;
  * so that they can be accessed quickly as separate from non-conceptualizables.
  *
  * also caches Concept references until a concept becomes deleted
+ *
  */
 public final class TemplateTermLinker extends FasterList<Term> implements TermLinker {
-
-
-    //    /**
-//     * how fast activation spreads from source concept to template target concepts
-//     */
-//    static final float activationRate =
-//            1f;
-//            //0.5f;
-
-
 
 
     /**
      * number of termlinks which are actually conceptualizable; sorted on construction
      */
-    private final byte concepts;
+    @Deprecated private final byte concepts;
 
 
     @Override
@@ -56,7 +47,7 @@ public final class TemplateTermLinker extends FasterList<Term> implements TermLi
         return of(term, layers(term), additional);
     }
 
-    private static int layers(Term term) {
+    static int layers(Term term) {
         if (term instanceof Compound) {
 //            if (term.op()==IMPL && term.hasAny(VAR_INDEP))
 //                return 3;
@@ -65,21 +56,26 @@ public final class TemplateTermLinker extends FasterList<Term> implements TermLi
         return 1;
     }
 
+    @Override
+    public Term sample(Term termIgnored, Random random) {
+        return sample(random);
+    }
+
     /**
      * default recursive termlink templates constructor
      */
-    public static TermLinker of(Term term, int layers, Term... additional) {
+    public static TermLinker of(Term root, int layers, Term... additional) {
 
-        if (term.subs() > 0) {
+        if (root.subs() > 0) {
 
             if (NAL.test.DEBUG_EXTRA) {
-                if (!term.equals(term.concept()))
-                    throw new RuntimeException("templates only should be generated for rooted terms:\n\t" + term + "\n\t" + term.concept());
+                if (!root.equals(root.concept()))
+                    throw new RuntimeException("templates only should be generated for rooted terms:\n\t" + root + "\n\t" + root.concept());
             }
 
-            Set<Term> tc = new UnifiedSet<>(term.volume() /* estimate */ + additional.length);
+            Set<Term> tc = new UnifiedSet<>(root.volume() /* estimate */ + additional.length);
 
-            add(term, tc, 0, term, layers);
+            add(root, tc, 0, root, layers);
 
             Collections.addAll(tc, additional);
 

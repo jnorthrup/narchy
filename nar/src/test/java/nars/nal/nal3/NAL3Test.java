@@ -55,16 +55,23 @@ public class NAL3Test extends NALTest {
     }
 
     @Test
-    void compound_decomposition_two_premises() {
+    void compound_decomposition_two_premises_union() {
 
-        TestNAR tester = test;
-        tester.termVolMax(8);
-        tester.believe("<robin --> (bird | swimmer)>", 1.0f, 0.9f);
-        tester.believe("<robin --> swimmer>", 0.0f, 0.9f);
-        tester.mustBelieve(cycles, "<robin --> bird>", 1.0f, 0.81f);
+        test.termVolMax(8);
+        test.believe("<robin --> (bird | swimmer)>", 0.9f, 0.9f);
+        test.believe("<robin --> swimmer>", 0.9f, 0.9f);
+        test.mustBelieve(cycles, "<robin --> bird>", 1.0f, 0.81f);
 
     }
+    @Test
+    void compound_decomposition_two_premises_sect() {
 
+        test.termVolMax(8);
+        test.believe("<robin --> (bird & swimmer)>", 0.9f, 0.9f);
+        test.believe("<robin --> swimmer>", 0.9f, 0.9f);
+        test.mustBelieve(cycles, "<robin --> bird>", 0.81f, 0.66f);
+
+    }
 
     @ValueSource(floats = {0, 0.25f, 0.5f, 0.75f, 0.9f /* TODO 1f should produce no output, add special test case */})
     @ParameterizedTest
@@ -141,13 +148,20 @@ public class NAL3Test extends NALTest {
 
 
     @Test
-    void diff_compound_decomposition_single3() {
+    void diff_compound_decomposition_single3_intersect() {
         test.termVolMax(8);
-
+        test.believe("<(dinosaur - ant) --> [strong]>", 0.9f, 0.9f);
+        test.mustBelieve(cycles, "<dinosaur --> [strong]>", 0.90f, 0.73f);
+        test.mustBelieve(cycles, "<ant --> [strong]>", 0.10f, 0.73f);
+    }
+    @Test
+    void diff_compound_decomposition_single3_union() {
+        test.termVolMax(8);
         test.believe("<(dinosaur ~ ant) --> [strong]>", 0.9f, 0.9f);
         test.mustBelieve(cycles, "<dinosaur --> [strong]>", 0.90f, 0.73f);
         test.mustBelieve(cycles, "<ant --> [strong]>", 0.10f, 0.73f);
     }
+
     @Test
     void diff_compound_decomposition_low_dynamic() {
         TestNAR tester = test;

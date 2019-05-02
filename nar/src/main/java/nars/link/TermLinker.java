@@ -27,6 +27,11 @@ public interface TermLinker extends Sampler<Term> {
     TermLinker NullLinker = new TermLinker() {
 
         @Override
+        public Term sample(Term term, Random random) {
+            return term;
+        }
+
+        @Override
         public void sample(Random rng, Function<? super Term, SampleReaction> each) {
 
         }
@@ -45,5 +50,6 @@ public interface TermLinker extends Sampler<Term> {
     };
 
 
+    Term sample(Term term, Random random);
 
 }

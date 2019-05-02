@@ -1,7 +1,6 @@
-package nars.attention;
+package nars.link;
 
 import jcog.data.NumberX;
-import jcog.data.list.FasterList;
 import jcog.math.FloatRange;
 import jcog.math.IntRange;
 import jcog.pri.Forgetting;
@@ -17,9 +16,6 @@ import nars.Task;
 import nars.concept.Concept;
 import nars.concept.TaskConcept;
 import nars.derive.Derivation;
-import nars.link.AtomicTaskLink;
-import nars.link.TaskLink;
-import nars.link.TermLinker;
 import nars.term.Term;
 import nars.term.Termed;
 import nars.term.atom.Atom;
@@ -108,11 +104,11 @@ public class TaskLinks implements Sampler<TaskLink> {
      * */
     @Nullable public Term term(TaskLink link, Task task, Derivation d) {
 
-        Term t = link.to();
+        final Term t = link.to();
 
         if (t.op().conceptualizable) {
 
-            Concept ct;
+            Concept T;
             byte punc = task.punc();
 
             float p =
@@ -125,15 +121,14 @@ public class TaskLinks implements Sampler<TaskLink> {
 
 //            boolean self = s.equals(t);
 
-            ct = nar.conceptualize(t);
-            if (ct != null) {
-                t = ct.term();
+            T = nar.conceptualize(t);
+            if (T != null) {
 
                 Term u = null;
-                TermLinker linker = ct.linker();
-                if (linker != TermLinker.NullLinker && !((FasterList) linker).isEmpty())
+                TermLinker linker = T.linker();
+                if (linker != TermLinker.NullLinker)
                     //grow-ahead: s -> t -> u
-                    u = linker.sample(d.random);
+                    u = linker.sample(t.term(), d.random);
                 else {
                     //loopback
                     if (t instanceof Atom) {
@@ -150,7 +145,7 @@ public class TaskLinks implements Sampler<TaskLink> {
                             Predicate<TaskLink> filter =
                                     x -> !link.equals(x);
 
-                            return links.atomTangent(ct, punc, filter, d.time(),
+                            return links.atomTangent(T, punc, filter, d.time(),
                                     d.dur() * NAL.belief.REMEMBER_REPEAT_THRESH_DURS /* repurposed */, d.random);
 
 //                        if (u!=null && u.equals(s)) {
@@ -189,9 +184,9 @@ public class TaskLinks implements Sampler<TaskLink> {
 
                     //CHAIN pattern
                     link(s, u, punc, pAmp); //forward (hop)
-                    //link(u, s, punc, pp); //reverse (hop)
-                    //link(t, u, punc, pp); //forward (adjacent)
-                    //link(u, t, punc, pp); //reverse (adjacent)
+                    //link(u, s, punc, pAmp); //reverse (hop)
+                    //link(t, u, punc, pAmp); //forward (adjacent)
+                    //link(u, t, punc, pAmp); //reverse (adjacent)
 
 
                     if (sustain < 1) {
@@ -250,7 +245,7 @@ public class TaskLinks implements Sampler<TaskLink> {
             return false;
 
 
-        link(new AtomicTaskLink(c.term(), task.punc(), pri));
+        link(new AtomicTaskLink(task.term(), task.punc(), pri));
 
 
         ((TaskConcept) c).value(task, n);

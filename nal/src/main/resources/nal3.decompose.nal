@@ -25,23 +25,23 @@
      (--I --> M), (X --> M), is(I,"&&"), subOf(I,--X) |- (--without(I,--X) --> M), (Belief:DecomposeNN, Goal:DecomposeNN)
          (I --> M), (X --> M), is(I,"&&"), subOf(I,--X) |- (without(I,--X) --> M), (Belief:DecomposePN, Goal:DecomposePN)
 
-     (M --> U), (M --> X), is(U,"&&"), subOf(U,X)     |-   (M --> without(U,  X)), (Belief:DecomposePN, Goal:DecomposePN)
-         (M --> --U), (M --> X), is(U,"&&"), subOf(U,X)   |-   (M --> --without(U,  X)), (Belief:DecomposeNN, Goal:DecomposeNN)
-       (M --> U), (M --> X), is(U,"&&"), subOf(U,--X) |-   (M --> without(U,--X)), (Belief:DecomposePP, Goal:DecomposePP)
-         (M --> --U), (M --> X), is(U,"&&"), subOf(U,--X) |-   (M --> --without(U,--X)), (Belief:DecomposeNP, Goal:DecomposeNP)
-
-     (U --> M), (X --> M), is(U,"&&"), subOf(U,X)     |-   (without(U,  X) --> M), (Belief:DecomposePN, Goal:DecomposePN)
-         (--U --> M), (X --> M), is(U,"&&"), subOf(U,X)   |-  (--without(U,  X) --> M), (Belief:DecomposeNN, Goal:DecomposeNN)
-       (U --> M), (X --> M), is(U,"&&"), subOf(U,--X) |-   (without(U,--X) --> M), (Belief:DecomposePP, Goal:DecomposePP)
-         (--U --> M), (X --> M), is(U,"&&"), subOf(U,--X) |-   (--without(U,--X) --> M), (Belief:DecomposeNP, Goal:DecomposeNP)
-
-
-
+//     (M --> U), (M --> X), is(U,"&&"), subOf(U,X)     |-   (M --> without(U,  X)), (Belief:DecomposePN, Goal:DecomposePN)
+//         (M --> --U), (M --> X), is(U,"&&"), subOf(U,X)   |-   (M --> --without(U,  X)), (Belief:DecomposeNN, Goal:DecomposeNN)
+//       (M --> U), (M --> X), is(U,"&&"), subOf(U,--X) |-   (M --> without(U,--X)), (Belief:DecomposePP, Goal:DecomposePP)
+//         (M --> --U), (M --> X), is(U,"&&"), subOf(U,--X) |-   (M --> --without(U,--X)), (Belief:DecomposeNP, Goal:DecomposeNP)
+//
+//     (U --> M), (X --> M), is(U,"&&"), subOf(U,X)     |-   (without(U,  X) --> M), (Belief:DecomposePN, Goal:DecomposePN)
+//         (--U --> M), (X --> M), is(U,"&&"), subOf(U,X)   |-  (--without(U,  X) --> M), (Belief:DecomposeNN, Goal:DecomposeNN)
+//       (U --> M), (X --> M), is(U,"&&"), subOf(U,--X) |-   (without(U,--X) --> M), (Belief:DecomposePP, Goal:DecomposePP)
+//         (--U --> M), (X --> M), is(U,"&&"), subOf(U,--X) |-   (--without(U,--X) --> M), (Belief:DecomposeNP, Goal:DecomposeNP)
+//
 
 
-//intersection/union/diff belief + component question/quest decompose
-bidi:    (A --> X), (S --> X), task("?@"), isOrIsUnneg(S,"&&"), subOfPosOrNeg(S,A) |- (withoutPosOrNegPolarized(S,A) --> X)
-bidi:    (X --> A), (X --> S), task("?@"), isOrIsUnneg(S,"&&"), subOfPosOrNeg(S,A) |- (X --> withoutPosOrNegPolarized(S,A))
+
+
+////intersection/union/diff belief + component question/quest decompose
+//bidi:    (A --> X), (S --> X), task("?@"), isOrIsUnneg(S,"&&"), subOfPosOrNeg(S,A) |- (withoutPosOrNegPolarized(S,A) --> X)
+//bidi:    (X --> A), (X --> S), task("?@"), isOrIsUnneg(S,"&&"), subOfPosOrNeg(S,A) |- (X --> withoutPosOrNegPolarized(S,A))
 
 
 

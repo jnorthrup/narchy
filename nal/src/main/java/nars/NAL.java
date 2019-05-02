@@ -219,7 +219,7 @@ public abstract class NAL<W> extends Parts<Term, W> implements Timed {
     @Deprecated
     public final FloatRange questionForgetRate = new FloatRange(0.5f, 0, 1);
     public final IntRange premiseUnifyTTL = new IntRange(8, 1, 32);
-    public final IntRange deriveBranchTTL = new IntRange(32 * NAL.derive.TTL_MIN, NAL.derive.TTL_MIN, 64 * NAL.derive.TTL_MIN);
+    public final IntRange deriveBranchTTL = new IntRange(16 * NAL.derive.TTL_MIN, NAL.derive.TTL_MIN, 64 * NAL.derive.TTL_MIN);
     /**
      * how many cycles above which to dither dt and occurrence time
      * TODO move this to Time class and cache the cycle value rather than dynamically computing it
@@ -228,7 +228,7 @@ public abstract class NAL<W> extends Parts<Term, W> implements Timed {
     /**
      * hard upper-bound limit on Compound target complexity;
      * if this is exceeded it may indicate a recursively
-     * malformed target due to a serious inference bug
+     * malformed target due to a bug or unconstrained combinatorial explosion
      */
     public final IntRange termVolumeMax = new IntRange(64, 0, 128 /*COMPOUND_VOLUME_MAX*/);
     /**
@@ -623,7 +623,7 @@ public abstract class NAL<W> extends Parts<Term, W> implements Timed {
          * for NALTest's: extends the time all unit tests are allowed to run for.
          * normally be kept to 1 but for debugging this may be increased to find what tests need more time
          */
-        public static final float TIME_MULTIPLIER = 2f;
+        public static final float TIME_MULTIPLIER = 3f;
         /**
          * how precise unit test results must match expected values to pass
          */

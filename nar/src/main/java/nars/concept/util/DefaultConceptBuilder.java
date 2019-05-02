@@ -3,7 +3,7 @@ package nars.concept.util;
 import nars.Op;
 import nars.concept.Concept;
 import nars.concept.NodeConcept;
-import nars.link.TemplateTermLinker;
+import nars.link.DynamicTermLinker;
 import nars.link.TermLinker;
 import nars.table.BeliefTable;
 import nars.table.BeliefTables;
@@ -13,10 +13,13 @@ import nars.table.question.QuestionTable;
 import nars.table.temporal.RTreeBeliefTable;
 import nars.table.temporal.TemporalBeliefTable;
 import nars.term.Term;
+import nars.term.atom.Atomic;
 import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 
 import java.util.Map;
 import java.util.function.Consumer;
+
+import static nars.link.TermLinker.NullLinker;
 
 public class DefaultConceptBuilder extends ConceptBuilder {
 
@@ -29,7 +32,8 @@ public class DefaultConceptBuilder extends ConceptBuilder {
 
 
     @Override public TermLinker termlinker(Term term) {
-        return TemplateTermLinker.of(term);
+        //return TemplateTermLinker.of(term);
+        return term instanceof Atomic ? NullLinker : DynamicTermLinker.DynamicLinker;
     }
 
 

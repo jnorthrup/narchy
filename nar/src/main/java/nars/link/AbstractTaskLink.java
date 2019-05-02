@@ -35,7 +35,7 @@ public abstract class AbstractTaskLink implements TaskLink {
     protected AbstractTaskLink(Term source, Term target) {
 
         source = source.concept();
-        target = target == null ? source : target.concept();
+        target = target != null ? target.concept() : source;
 
         Op so = source.op();
         if (!so.taskable)

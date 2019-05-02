@@ -14,6 +14,7 @@ import nars.control.op.Perceive;
 import nars.control.op.Remember;
 import nars.control.op.TaskEvent;
 import nars.link.TaskLink;
+import nars.link.TaskLinks;
 import nars.task.AbstractTask;
 import nars.task.UnevaluatedTask;
 import nars.task.util.PriBuffer;
