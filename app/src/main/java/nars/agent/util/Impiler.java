@@ -413,12 +413,11 @@ public class Impiler {
             if (out && !in) return edges(this.out);
             else if (!out && in) return edges(this.in);
             else {
-                boolean ie = this.in.isEmpty();
-                boolean oe = this.out.isEmpty();
+                boolean ie = this.in.isEmpty(), oe = this.out.isEmpty();
                 if (ie && oe) return List.of();
-                if (ie) return edges(this.out);
-                if (oe) return edges(this.in);
-                return Iterables.concat(edges(this.out), edges(this.in));
+                else if (ie) return edges(this.out);
+                else if (oe) return edges(this.in);
+                else return Iterables.concat(edges(this.out), edges(this.in));
             }
         }
 

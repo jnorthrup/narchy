@@ -1,6 +1,6 @@
 package nars.time;
 
-import com.google.common.collect.Iterables;
+import com.google.common.collect.Iterators;
 import jcog.WTF;
 import jcog.data.bit.MetalBitSet;
 import jcog.data.graph.ImmutableDirectedEdge;
@@ -21,6 +21,8 @@ import nars.term.Term;
 import nars.term.util.conj.Conj;
 import nars.term.util.conj.ConjSeq;
 import nars.term.var.CommonVariable;
+import nars.unify.UnifyAny;
+import nars.unify.UnifySubst;
 import org.apache.commons.math3.exception.MathArithmeticException;
 import org.eclipse.collections.api.set.MutableSet;
 import org.eclipse.collections.api.tuple.Pair;
@@ -33,6 +35,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Set;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 import static jcog.Util.hashCombine;
@@ -68,6 +71,11 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
     private transient Term solving;
     private Predicate<Event> target;
 
+    /** temporary unification context */
+    private final UnifySubst u = new UnifyAny();
+    {
+        u.commonVariables = false;
+    }
 
     /**
      * since CONJ will be constructed with conjMerge, if x is conj the dt between events must be calculated from start-start. otherwise it is implication and this is measured internally
@@ -126,6 +134,14 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
     }
 
 
+    private final FasterList<FromTo<Node<Event,TimeSpan>,TimeSpan>>
+            nodeMergeIns = new FasterList(),
+            nodeMergeOuts = new FasterList();
+
+    private final Consumer<FromTo<Node<Event,TimeSpan>,TimeSpan>> eachNodeMergeIn = nodeMergeIns::add;
+    private final Consumer<FromTo<Node<Event,TimeSpan>,TimeSpan>> eachNodeMergeOut = nodeMergeOuts::add;
+
+
     private Event event(Term t, long start, long end, boolean add) {
         if (!t.op().eventable)
             throw new WTF();
@@ -181,7 +197,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
                             if (add && af.containedIn(start, end)) {
                                 if (NAL.derive.TIMEGRAPH_ABSORB_CONTAINED_EVENT) {
                                     //absorb existing
-                                    removeNode(f);
+                                    removeNode(f, eachNodeMergeIn, eachNodeMergeOut);
                                     ff.remove();
                                     nte--;
                                 }
@@ -195,7 +211,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
                                         end = merged[1];
 
                                         if (add) {
-                                            removeNode(f);
+                                            removeNode(f, eachNodeMergeIn, eachNodeMergeOut);
                                             ff.remove();
                                             nte--;
                                             stable &= nte <= 1; //try again if other nodes, because it may connect with other ranges further in the iteration
@@ -217,7 +233,39 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 
 
         if (add) {
-            return addNode(event).id;
+            MutableNode<Event, TimeSpan> newNode = addNode(event);
+            if (!nodeMergeIns.isEmpty()) {
+
+                nodeMergeIns.forEach(i -> {
+
+                    long d = i.id().dt;
+                    assert(d!=ETERNAL && d!=TIMELESS); //HACK TEMPORARY
+
+                    long stretch = i.to().id().start() - newNode.id.start();
+                    assert(stretch >= 0);  //HACK TEMPORARY
+
+                    d -= stretch;
+                    addEdgeByNode((MutableNode)i.from(), TimeSpan.the(d), newNode);
+
+                });
+                nodeMergeIns.clear();
+            }
+            if (!nodeMergeOuts.isEmpty()) {
+                nodeMergeOuts.forEach(o -> {
+
+                    long d = o.id().dt;
+                    assert(d!=ETERNAL && d!=TIMELESS); //HACK TEMPORARY
+
+                    long stretch = newNode.id.end() - o.from().id().end();
+                    assert(stretch >= 0);  //HACK TEMPORARY
+
+                    d += stretch;
+                    addEdgeByNode(newNode, TimeSpan.the(d), (MutableNode)o.to());
+
+                });
+                nodeMergeOuts.clear();
+            }
+            return newNode.id;
         } else {
             return event;
         }
@@ -314,7 +362,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 //        });
         Collection<Event> ee = byTerm.computeIfAbsent(eventTerm, (e) ->
                 //!(p instanceof Set) ?
-                        new UnifiedSet<Event>(2, 1f)
+                        new UnifiedSet<>(2, 1f)
                   //      : p
         );
         boolean newTerm = ee.isEmpty();
@@ -348,63 +396,20 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 
 
             switch (eventTerm.op()) {
-
-//                case SECTe:
-                    //TODO n-ary
-//                    Event a = onlyAbsolute(eventTerm.sub(0));
-//                    if (a != null) {
-//                        Event b = onlyAbsolute(eventTerm.sub(1));
-//                        if (b != null) {
-//                            long as = a.start();
-//                            long bs = b.start();
-//                            if (as == ETERNAL) {
-//                                know(eventTerm, bs, b.end());
-//                            } else if (bs == ETERNAL) {
-//                                know(eventTerm, as, a.end());
-//                            } else {
-////                                Longerval u = Longerval.union(as, a.end(), bs, b.end());
-////                                know(eventTerm, u.a, u.b);
-//                                long[] u = Longerval.intersectionArray(as, a.end(), bs, b.end());
-//                                if (u != null)
-//                                    know(eventTerm, u[0], u[1]);
-//                            }
-//                        }
-//                    }
-//                    break;
-
-//                case DIFFi:
-//                case SECTi:
-//                case SECTe:
-//                case SIM:
-//                case INH:
-//                case SETe:
-//                case SETi: {
-//                    if (!(event instanceof Absolute)) {
-//                        //naive estimate method 1:
-//                        //if all components of the compound are known, assign the average of their occurrence for the compound
-//                        Subterms ess = eventTerm.subterms();
-//                        int essn = ess.subs();
-//                        LongArrayList subOcc = new LongArrayList(essn);
-//
-//                        nextTerm:
-//                        for (Term s : eventTerm.subterms()) {
-//                            for (Event es : events().get(s)) {
-//                                if (es instanceof Absolute) {
-//                                    //TODO select more carefully
-//                                    subOcc.addAt(es.mid());
-//                                    continue nextTerm;
-//                                }
-//                            }
-//                            //occurrence not found
-//                            subOcc = null;
-//                            break;
-//                        }
-//                        if (subOcc != null) {
-//                            know(eventTerm, Math.round(subOcc.average())); //TODO estimate start/end range
-//                        }
-//                    }
-//                }
-
+                default: {
+                    if (eventTerm.hasAny(Op.Temporal)) {
+                        eventTerm.recurseTerms(s -> {
+                            if (!s.op().temporal)
+                                return true;
+                            else {
+                                /* absolute context for inner compound is ignored/erased unless the root is temporal compound (handled in cases below) */
+                                know(s);
+                                return false;
+                            }
+                        }, (t) -> true, null);
+                    }
+                    break;
+                }
 
                 case IMPL:
 
@@ -429,7 +434,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
                         }, 0, false, true, true);
 
                     } else if (edt == XTERNAL) {
-
+                        /* without any absolute context */
                     } else {
                         link(se, edt + subj.eventRange(), pe);
 
@@ -468,60 +473,57 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
                     switch (edt) {
 
                         case XTERNAL:
-                            for (Term sub : eventTerm.subterms())
-                                know(sub);
-                            break;
-
-
-                        case 0:
-                            Subterms es = eventTerm.subterms();
-                            int esn = es.subs();
-                            for (int i = 0; i < esn; i++)
-                                link(event, 0,
-                                        eventStart==TIMELESS ?
-                                            know(es.sub(i))
-                                            :
-                                            (eventStart==ETERNAL ? know(es.sub(i), ETERNAL) :
-                                                    know(es.sub(i), eventStart, eventEnd))
-                                );
-
+                            for (Term y : eventTerm.subterms())
+                                know(y);
                             break;
 
                         case DTERNAL:
+                            //inherit event time
+                            eventTerm.subterms().forEach(y -> {
+                                know(y, eventStart, eventEnd);
+                            });
+                            break;
+
                         default:
 
                             if (eventStart != ETERNAL && eventStart != TIMELESS) {
-                                //chain the events to the absolute parent
+
                                 long range = eventEnd - eventStart;
-                                if (edt==DTERNAL) {
-                                    eventTerm.subterms().forEach(y -> {
-                                        //inherit event time
-                                        know(y, eventStart, eventEnd);
-                                    });
-//                                    eventTerm.eventsWhile((w, y) -> {
-//                                        link(event, ETERNAL, know(y, w, w + range));
-//                                        return true;
-//                                    }, eventStart, false, true, false);
-                                } else {
-                                    eventTerm.eventsWhile((w, y) -> {
-                                        link(event, w - eventStart, know(y, w, w + range));
-                                        return true;
-                                    }, eventStart, false, false, false);
-                                }
+                                eventTerm.eventsWhile((w, y) -> {
+                                    Event Y = know(y, w, w + range);
+                                    //chain the events to the absolute parent
+                                    link(event, w - eventStart, Y);
+                                    return true;
+                                }, eventStart, edt==0, false, false);
+
                             } else {
-                                //chain the events together relatively
-                                final Event[] prev = {event};
+                                //chain the events together relatively.  chain to the parent event if it's absolute
+                                final Event[] prev =
+                                        //{ eventStart!=ETERNAL && eventStart!=TIMELESS ? event : null };
+                                        {event};
                                 final long[] prevDT = {0};
                                 eventTerm.eventsWhile((w, y) -> {
-                                    if (!y.equals(eventTerm)) {
-                                        Event next = know(y);
+                                    assert(!y.equals(eventTerm));
 
-                                        link(prev[0], w - prevDT[0], next);
-                                        prevDT[0] = w;
-                                        prev[0] = next;
+                                    Event next = know(y);
+
+                                    Event p = prev[0];
+                                    if (p!=null) {
+                                        if (p != event || (eventStart!=ETERNAL && eventStart!=TIMELESS)) {
+                                            //chain to previous, starting with parent
+                                            link(p, w - prevDT[0], next);
+                                            prevDT[0] = w;
+                                            prev[0] = next;
+                                        } else {
+                                            //chain to parent
+                                            if (eventStart!=ETERNAL)
+                                                link(p, w, next);
+                                        }
+
                                     }
+
                                     return true;
-                                }, 0, false, false, false);
+                                }, 0, edt==0, false, false);
                             }
 
                             break;
@@ -534,8 +536,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
     }
 
     protected boolean decomposeAddedEvent(Event event) {
-        //return true;
-        return event.id.op().temporal;
+        return true;
     }
 
     private void onNewTerm(Term t) {
@@ -1065,19 +1066,26 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
         }
     }
 
+
     private boolean solveRootMatches(Term x, Predicate<Event> each) {
 
         Op xop = x.op();
+        boolean xVar = xop.var;
 
-        if (x.equals(x.root())) {
+        //if (x.equals(x.root())) {
             //try any absolute events which have different target ID but the same target root as these will be readily valid solutions
             FasterList<Event> toTry = null; //buffer to avoid concurrent modification exception
             for (Map.Entry<Term, Collection<Event>> e : byTerm.entrySet()) {
                 Term et = e.getKey();
-                if (et.op() == xop && !x.equals(et) && x.equals(et.root())) {
-                    if (toTry == null) toTry = new FasterList(e.getValue());
-                    else
-                        toTry.addAll(e.getValue());
+
+                if (xop == et.op() && (x.equals(et) || (!xVar && !et.op().var && x.unify(et, u.clear())))) {
+
+                    for (Event z : e.getValue()) {
+                        if (z instanceof Absolute || !z.id.equals(x)) {
+                            if (toTry == null) toTry = new FasterList();
+                            toTry.add(z);
+                        }
+                    }
                 }
             }
             if (toTry != null) {
@@ -1086,7 +1094,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
                 return toTry.allSatisfy(each::test);
             }
 
-        }
+        //}
 
 
         return true;
@@ -1286,13 +1294,13 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 
         boolean result = bfs(roots, tv);
 
-        if (created != null && result /* tail call optimization  - dont bother removing if we're done anyway */) {
-            int m = 0;
-            for (Event x : roots) {
-                if (created.get(m++))
-                    removeNode(x);
-            }
-        }
+//        if (created != null/* && result *//* tail call optimization  - dont bother removing if we're done anyway */) {
+//            int m = 0;
+//            for (Event x : roots) {
+//                if (created.get(m++))
+//                    removeNode(x);
+//            }
+//        }
 
         return result;
     }
@@ -1318,7 +1326,8 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
                             //TODO shuffle found self-loops, there could be sevreal
                             Node<Event, TimeSpan> ne = node(e);
                             if (ne != null) {
-                                for (FromTo<Node<Event, TimeSpan>, TimeSpan> ee : ne.edges(false, true)) {
+                                for (Iterator<FromTo<Node<Event, TimeSpan>, TimeSpan>> iterator = ne.edgeIterator(false, true); iterator.hasNext(); ) {
+                                    FromTo<Node<Event, TimeSpan>, TimeSpan> ee = iterator.next();
                                     long dt = ee.id().dt;
                                     if (dt != 0 && dt != ETERNAL && dt != TIMELESS) {
                                         if (ee.loop()) {
@@ -1534,9 +1543,9 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
     private abstract class CrossTimeSolver extends Search<Event, TimeSpan> {
 
         @Override
-        protected Iterable<FromTo<Node<Event, nars.time.TimeSpan>, TimeSpan>> next(Node<Event, TimeSpan> n) {
+        protected Iterator<FromTo<Node<Event, nars.time.TimeSpan>, TimeSpan>> next(Node<Event, TimeSpan> n) {
 
-            Iterable<FromTo<Node<Event, TimeSpan>, TimeSpan>> exist = n.edges(true, true);
+            Iterator<FromTo<Node<Event, TimeSpan>, TimeSpan>> exist = n.edgeIterator(true, true);
 
             Collection<Event> ee = events(n.id().id);
             int ees = ee.size();
@@ -1555,7 +1564,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
                 }
                 ii++;
             }
-            return (dyn != null) ? Iterables.concat(exist, dyn) : exist;
+            return (dyn != null) ? Iterators.concat(exist, dyn.iterator()) : exist;
 
 
 //            Iterator<Event> x = ee.iterator();
@@ -1634,11 +1643,15 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 
             long spanDT = event.id().dt;
 
-            assert (spanDT != TIMELESS);
+            //assert (spanDT != TIMELESS);
 
             if (spanDT == ETERNAL) {
                 //dt = ETERNAL; //lock in eternal mode for the duration of the path, but still accumulate duration
                 //no effect but do not set eternable
+
+                if (spanDT!=0)
+                    return null; //crossover from eternal to temporal
+
             } else if (dt != ETERNAL && spanDT != 0) {
                 dt += (spanDT) * (span.getOne() ? +1 : -1);
             }

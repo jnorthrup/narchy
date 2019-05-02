@@ -1,6 +1,7 @@
 package nars.unify;
 
 import jcog.Util;
+import jcog.WTF;
 import jcog.data.list.FasterList;
 import jcog.data.set.ArrayHashSet;
 import jcog.version.*;
@@ -182,11 +183,19 @@ public abstract class Unify extends Versioning<Term> {
 
         Term /*Variable*/ z = x, y;
 
+        int safety = NAL.unify.UNIFY_VAR_RECURSION_DEPTH_LIMIT;
         do {
             y = xy.get(z);
             if (y==null)
                 break;
             z = y;
+
+            if (--safety == 0) {
+                if (NAL.DEBUG)
+                    throw new WTF("var cycle detected");
+                return x;
+            }
+
         } while (z instanceof Variable);
         return z;
     }

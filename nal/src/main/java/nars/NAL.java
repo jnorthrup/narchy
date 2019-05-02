@@ -1,6 +1,5 @@
 package nars;
 
-import fucknutreport.config.NodeConfig;
 import jcog.Skill;
 import jcog.Util;
 import jcog.math.FloatRange;
@@ -45,20 +44,20 @@ public abstract class NAL<W> extends Parts<Term, W> implements Timed {
             //Conceptualization.PreciseXternal;
             //Conceptualization.FlattenAndDeduplicateAndUnnegateConj //untested
             ;
-    public static final boolean SHUFFLE_TERMUTES= !configIs("DISABLE_SHUFFLE_TERMUTES");
-    public static final boolean DT_DITHER_LOGARITHMICALLY= !configIs("DISABLE_DT_DITHER_LOGARITHMICALLY");
+    public static final boolean SHUFFLE_TERMUTES= configIs("SHUFFLE_TERMUTES");
+    public static final boolean DT_DITHER_LOGARITHMICALLY= configIs("DT_DITHER_LOGARITHMICALLY");
     /**
      * return <= 0 to disable
      */
     @Deprecated
     public static final float TASKLINK_GENERATED_QUESTION_PRI_RATE =
             0;
-    public static final boolean REVISION_ALLOW_OVERLAP_IF_DISJOINT_TIME= !configIs("DISABLE_REVISION_ALLOW_OVERLAP_IF_DISJOINT_TIME");
+    public static final boolean REVISION_ALLOW_OVERLAP_IF_DISJOINT_TIME= configIs("REVISION_ALLOW_OVERLAP_IF_DISJOINT_TIME");
     public static final boolean DYNAMIC_TRUTH_STAMP_OVERLAP_FILTER= configIs("DYNAMIC_TRUTH_STAMP_OVERLAP_FILTER");
     //0.75f;
     public static final boolean VOLMAX_RESTRICTS_INPUT= configIs("VOLMAX_RESTRICTS_INPUT"); //input tasks
-    public static final boolean VOLMAX_RESTRICTS= !configIs("DISABLE_VOLMAX_RESTRICTS"); //all tasks
-    public static final boolean TERMIFY_TRANSFORM_LAZY= NodeConfig.configIs("TERMIFY_TRANSFORM_LAZY");
+    public static final boolean VOLMAX_RESTRICTS= configIs("VOLMAX_RESTRICTS"); //all tasks
+    public static final boolean TERMIFY_TRANSFORM_LAZY= configIs("TERMIFY_TRANSFORM_LAZY");
     public static final boolean OVERLAP_DOUBLE_SET_CYCLIC= configIs("OVERLAP_DOUBLE_SET_CYCLIC");
 
 
@@ -81,7 +80,7 @@ public abstract class NAL<W> extends Parts<Term, W> implements Timed {
     //2f;
     //0.5f;
 
-    public static final boolean DEBUG_SIMILAR_DERIVATIONS= !configIs("DISABLE_DEBUG_SIMILAR_DERIVATIONS");
+    public static final boolean DEBUG_SIMILAR_DERIVATIONS= false;
     /**
      * should be monotonically increasing at most
      */
@@ -154,9 +153,9 @@ public abstract class NAL<W> extends Parts<Term, W> implements Timed {
     /**
      * if false, will use pri=ScalarValue.EPSILON
      */
-    public static final boolean DELETE_PROXY_TASK_TO_DELETED_TASK= !configIs("DISABLE_DELETE_PROXY_TASK_TO_DELETED_TASK");
+    public static final boolean DELETE_PROXY_TASK_TO_DELETED_TASK= configIs("DELETE_PROXY_TASK_TO_DELETED_TASK");
 
-    public static final boolean FORK_JOIN_EXEC_ASYNC_MODE= !configIs("DISABLE_FORK_JOIN_EXEC_ASYNC_MODE");
+    public static final boolean FORK_JOIN_EXEC_ASYNC_MODE= configIs("FORK_JOIN_EXEC_ASYNC_MODE");
 
     /**
      * might help with overall throughput by reducing lock and synchronization contention by grouping sequences of tasks by the destination concept
@@ -515,7 +514,7 @@ public abstract class NAL<W> extends Parts<Term, W> implements Timed {
         /**
          * disable common variables for the query variables matched in premise formation; since the task target is not transformed like the belief target is.
          */
-        public static final boolean PREMISE_UNIFY_COMMON_VARIABLES= !configIs("DISABLE_PREMISE_UNIFY_COMMON_VARIABLES");
+        public static final boolean PREMISE_UNIFY_COMMON_VARIABLES = configIs("PREMISE_UNIFY_COMMON_VARIABLES");
 
         public static final boolean PREMISE_KEY_DITHER= configIs("PREMISE_KEY_DITHER");
     }
@@ -530,7 +529,7 @@ public abstract class NAL<W> extends Parts<Term, W> implements Timed {
          * eventually raise to above-confMin).  generally, false should be more accurate with a tradeoff
          * for overhead due to increased belief table churn.
          */
-        public static final boolean REVISION_MIN_EVI_FILTER= !configIs("DISABLE_REVISION_MIN_EVI_FILTER");
+        public static final boolean REVISION_MIN_EVI_FILTER= configIs("REVISION_MIN_EVI_FILTER");
         public static final boolean DYNAMIC_TRUTH_TASK_STORE= configIs("DYNAMIC_TRUTH_TASK_STORE");
         /**
          * perceptible priority increase that warrants automatic reactivation.
@@ -580,7 +579,7 @@ public abstract class NAL<W> extends Parts<Term, W> implements Timed {
         /**
          * whether INT atoms can name a concept directly
          */
-        public static final boolean INT_CONCEPTUALIZABLE= !configIs("DISABLE_INT_CONCEPTUALIZABLE");
+        public static final boolean INT_CONCEPTUALIZABLE= configIs("INT_CONCEPTUALIZABLE");
 
         /**
          * applies certain reductions to INH and SIM terms when one or both of their immediate subterms
@@ -642,27 +641,27 @@ public abstract class NAL<W> extends Parts<Term, W> implements Timed {
         /**
          * may cause unwanted "sticky" event conflation. may only be safe when the punctuation of the task in which the event contained is the same
          */
-        public static final boolean TIMEGRAPH_ABSORB_CONTAINED_EVENT= !configIs("DISABLE_TIMEGRAPH_ABSORB_CONTAINED_EVENT");
+        public static final boolean TIMEGRAPH_ABSORB_CONTAINED_EVENT= configIs("TIMEGRAPH_ABSORB_CONTAINED_EVENT");
         /**
          * if false, keeps intersecting timegraph events separate.
          * if true, it merges them to one event. may cause unwanted "sticky" event conflation
          * may only be safe when the punctuation of the task in which the event contained is the same
          */
-        public static final boolean TIMEGRAPH_MERGE_INTERSECTING_EVENTS= !configIs("DISABLE_TIMEGRAPH_MERGE_INTERSECTING_EVENTS");
+        public static final boolean TIMEGRAPH_MERGE_INTERSECTING_EVENTS= configIs("TIMEGRAPH_MERGE_INTERSECTING_EVENTS");
         /**
          * whether timegraph should not return solutions with volume significantly less than the input's.
          * set 0 to disable the filter
          */
-        public static final float TIMEGRAPH_IGNORE_DEGENERATE_SOLUTIONS_FACTOR = 0.33f;
+        public static final float TIMEGRAPH_IGNORE_DEGENERATE_SOLUTIONS_FACTOR = 0f;
         /**
          * whether to dither events as they are represented internally.  output events are dithered for the NAR regardless.
          */
-        public static final boolean TIMEGRAPH_DITHER_EVENTS_INTERNALLY= !configIs("DISABLE_TIMEGRAPH_DITHER_EVENTS_INTERNALLY");
+        public static final boolean TIMEGRAPH_DITHER_EVENTS_INTERNALLY= configIs("TIMEGRAPH_DITHER_EVENTS_INTERNALLY");
         public static final int TTL_CONJ_BEFORE_AFTER = NAL.derive.TTL_UNISUBST_MAX;
 
 
         @Range(min = 1, max = 32)
-        public static final int TIMEGRAPH_ITERATIONS = 2;
+        public static final int TIMEGRAPH_ITERATIONS = 4;
         /**
          * TTL = 'time to live'
          */
@@ -714,7 +713,7 @@ public abstract class NAL<W> extends Parts<Term, W> implements Timed {
         /**
          * attempt to create a question/quest task from an invalid belief/goal (probably due to missing or unsolved temporal information
          */
-        public static final boolean DERIVATION_FORM_QUESTION_FROM_AMBIGUOUS_BELIEF_OR_GOAL= !configIs("DISABLE_DERIVATION_FORM_QUESTION_FROM_AMBIGUOUS_BELIEF_OR_GOAL");
+        public static final boolean DERIVATION_FORM_QUESTION_FROM_AMBIGUOUS_BELIEF_OR_GOAL= configIs("DERIVATION_FORM_QUESTION_FROM_AMBIGUOUS_BELIEF_OR_GOAL");
 
 
         public static final int TERMIFY_VOLMAX_SCRATCH_BASE = 2;

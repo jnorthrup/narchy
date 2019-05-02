@@ -75,7 +75,10 @@ abstract public class Search<N, E> {
             return true;  //??
 
         q.add(Tuples.pair(path = Collections.emptyList(), start));
-        log.visit(start);
+
+        if (!log.visit(start)) {
+            return true; //reached a root via a previous root
+        }
 
         Pair<List<BooleanObjectPair<FromTo<Node<N,E>,E>>>, Node<N,E>> current;
         while ((current = q.poll()) != null) {
@@ -84,8 +87,11 @@ abstract public class Search<N, E> {
 
             path = current.getOne();
 
-            for (FromTo<Node<N,E>,E> e : next(at)) {
-                Node<N,E> next = next(e, at);
+            Iterator<FromTo<Node<N, E>, E>> iterator = next(at);
+
+            for (; iterator.hasNext(); ) {
+                FromTo<Node<N, E>, E> e = iterator.next();
+                Node<N, E> next = next(e, at);
                 if (next == null || !log.visit(next))
                     continue;
 
@@ -157,18 +163,18 @@ abstract public class Search<N, E> {
     }
 
 
-    private boolean dfsNode(Node<N, E> current) {
+    private boolean dfsNode(Node<N, E> n) {
 
-        if (!log.visit(current))
+        if (!log.visit(n))
             return true; 
 
-        Iterator<FromTo<Node<N,E>,E>> n = next(current).iterator();
-        if (!n.hasNext())
+        Iterator<FromTo<Node<N,E>,E>> ii = next(n);
+        if (!ii.hasNext())
             return true;
 
-        this.at = current;
+        this.at = n;
 
-        return Iterators.all(n, e -> {
+        return Iterators.all(ii, e -> {
 
             Node<N,E> next = next(e, at);
 
@@ -185,7 +191,7 @@ abstract public class Search<N, E> {
                 return false; 
 
             
-            this.at = current;
+            this.at = n;
             path.remove(path.size() - 1);
 
             return true;
@@ -193,8 +199,8 @@ abstract public class Search<N, E> {
 
     }
 
-    protected Iterable<FromTo<Node<N,E>,E>> next(Node<N,E> current) {
-        return current.edges(true, true);
+    protected Iterator<FromTo<Node<N,E>,E>> next(Node<N,E> current) {
+        return current.edgeIterator(true, true);
     }
 
 

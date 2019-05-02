@@ -70,7 +70,7 @@ public interface Variable extends Atomic {
 //                    else if (yOp.id < xOp.id && u.varReverse(yOp))
 //                        return u.putXY((Variable) y, x);
 //                    if (yOp == xOp)
-                    if (xOp!=VAR_PATTERN && yOp!=VAR_PATTERN)
+                    if (xOp!=VAR_PATTERN && yOp!=VAR_PATTERN && u.commonVariables)
                         return CommonVariable.unify((Variable) x, (Variable) y, u);
                     else {
                         if (yOp.id < xOp.id && u.varReverse(yOp))

@@ -32,6 +32,7 @@ import jcog.sort.FloatRank;
 import jcog.sort.RankedN;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 
+import java.util.Iterator;
 import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -88,10 +89,11 @@ public class PathFinder<N, E> extends RankedN<Path<N,E>> {
         this.direction = direction;
         //this.validator = createValidtor();
 
-        Iterable<FromTo<Node<N,E>,E>> next = getNextEdges(start);
-        for (FromTo<Node<N,E>,E> e : next) {
+        Iterator<FromTo<Node<N,E>,E>> next = getNextEdges(start);
+        for (Iterator<FromTo<Node<N, E>, E>> iterator = next; iterator.hasNext(); ) {
+            FromTo<Node<N, E>, E> e = iterator.next();
             /*direction*/
-            Path<N, E> bp = new BasicPath<>(graph,start);
+            Path<N, E> bp = new BasicPath<>(graph, start);
             bp = bp.append(e.id(), Path.secondNode(e, direction));
             add(bp);
         }
@@ -130,8 +132,8 @@ public class PathFinder<N, E> extends RankedN<Path<N,E>> {
         this.direction = direction;
         //this.validator = createValidtor();
 
-        Iterable<FromTo<Node<N,E>,E>> next = getNextEdges(start);
-        for (FromTo<Node<N,E>,E> e : next) {
+        for (Iterator<FromTo<Node<N, E>, E>> iterator = getNextEdges(start); iterator.hasNext(); ) {
+            FromTo<Node<N, E>, E> e = iterator.next();
             /*direction*/
             Path<N, E> bp = new BasicPath<>(graph, start);
             bp = bp.append(e.id(), Path.secondNode(e, direction));
@@ -215,10 +217,11 @@ public class PathFinder<N, E> extends RankedN<Path<N,E>> {
      * @param n Вершина
      * @return Ребра/дуги направления движения.
      */
-    protected Iterable<FromTo<Node<N, E>,E>> getNextEdges(N n) {
+    protected Iterator<FromTo<Node<N, E>,E>> getNextEdges(N n) {
+        Node<N, E> N = graph.node(n);
         return direction.equals(Path.Direction.AB)
-                ? graph.node(n).edges(false, true)
-                : graph.node(n).edges(true, false);
+                ? N.edgeIterator(false, true)
+                : N.edgeIterator(true, false);
     }
 
     /* (non-Javadoc)
@@ -239,10 +242,11 @@ public class PathFinder<N, E> extends RankedN<Path<N,E>> {
         if (p.nodeCount() > 0) {
             N last = p.node(-1);
             if (!p.hasCycles()) {
-                Iterable<FromTo<Node<N,E>,E>> next = getNextEdges(last);
 
-                for (FromTo<Node<N,E>,E> e : next)
+                for (Iterator<FromTo<Node<N, E>, E>> iterator = getNextEdges(last); iterator.hasNext(); ) {
+                    FromTo<Node<N, E>, E> e = iterator.next();
                     add(append(p, e));
+                }
 
             } else {
                 logFiner("cycle detected");

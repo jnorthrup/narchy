@@ -6,20 +6,24 @@ import jcog.WTF;
 import jcog.data.graph.path.FromTo;
 
 import java.io.PrintStream;
+import java.util.Iterator;
 import java.util.stream.Stream;
 
 import static com.google.common.collect.Iterables.transform;
 
 public interface Node<N, E> {
 
+    N id();
+
     static <X,Y> FromTo<Node<Y,X>,X> edge(Node<Y, X> from, X what, Node<Y, X> to) {
         return new ImmutableDirectedEdge<>(from, what, to);
     }
 
-    N id();
-
     Iterable<FromTo<Node<N,E>,E>> edges(boolean in, boolean out);
 
+    default Iterator<FromTo<Node<N,E>,E>> edgeIterator(boolean in, boolean out) { return edges(in, out).iterator(); }
+
+    /** TODO Iterator version of this, like edges and edgesIterator */
     default Iterable<? extends Node<N,E>> nodes(boolean in, boolean out) {
         Iterable<Node<N, E>> i = in ? transform(edges(true, false), x -> x.other(this)) : null;
         Iterable<Node<N, E>> o = out ? transform(edges(false,true), x->x.other(this)) : null;

@@ -62,14 +62,23 @@ public class MapNodeGraph<N, E> extends NodeGraph<N, E> {
     public boolean removeNode(N key) {
         Node<N, E> removed = nodes.remove(key);
         if (removed != null) {
-            removed.edges(true, false).forEach(this::edgeRemoveOut);
-            removed.edges(false, true).forEach(this::edgeRemoveIn);
+            removed.edgeIterator(true, false).forEachRemaining(this::edgeRemoveOut);
+            removed.edgeIterator(false, true).forEachRemaining(this::edgeRemoveIn);
             onRemoved(removed);
             return true;
         }
         return false;
     }
-
+    public boolean removeNode(N key, Consumer<FromTo<Node<N, E>, E>> inEdges, Consumer<FromTo<Node<N, E>, E>> outEdges) {
+        Node<N, E> removed = nodes.remove(key);
+        if (removed != null) {
+            removed.edgeIterator(true, false).forEachRemaining(inEdges.andThen(this::edgeRemoveOut));
+            removed.edgeIterator(false, true).forEachRemaining(outEdges.andThen(this::edgeRemoveIn));
+            onRemoved(removed);
+            return true;
+        }
+        return false;
+    }
 
     public final MutableNode<N, E> addNode(N key) {
         return addNode(key, true);
@@ -219,13 +228,13 @@ public class MapNodeGraph<N, E> extends NodeGraph<N, E> {
                 int e = fromNode.ins() + fromNode.outs();
                 if (e > 0) {
                     List<FromTo> removed = new FasterList(e);
-                    fromNode.edges(true, false).forEach(inEdge -> {
+                    fromNode.edgeIterator(true, false).forEachRemaining(inEdge -> {
                         removed.add(inEdge);
                         MutableNode x = (MutableNode) (inEdge.from());
                         if (x != fromNode)
                             addEdgeByNode(x, inEdge.id(), toNode);
                     });
-                    fromNode.edges(false, true).forEach(outEdge -> {
+                    fromNode.edgeIterator(false, true).forEachRemaining(outEdge -> {
                         removed.add(outEdge);
                         MutableNode x = (MutableNode) (outEdge.to());
                         if (x != fromNode)

@@ -1,10 +1,13 @@
 package fucknutreport.config;
 
+import com.google.common.io.Resources;
 import jcog.Log;
+import jcog.Texts;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
+import java.io.IOException;
 import java.util.Objects;
 
 //import kotlin.jvm.JvmStatic;
@@ -39,34 +42,41 @@ public final class NodeConfig {
    private static String get2(@NotNull String configKey, @Nullable String defaultVal, boolean quiet) {
       //Intrinsics.checkParameterIsNotNull(configKey, "configKey");
       boolean var5 = false;
-      String var10000 = configKey.toLowerCase();
+      String y = null;
       //Intrinsics.checkExpressionValueIsNotNull(var10000, "(this as java.lang.String).toLowerCase()");
-      String javapropname = var10000.replace('_', '.');//, false, 4, (Object)null);
-      var10000 = System.getenv(configKey);
-      if (var10000 == null) {
-         var10000 = System.getProperty(javapropname);
+      String javapropname = configKey.toLowerCase().replace('_', '.');//, false, 4, (Object)null);
+
+      y = System.getenv(configKey); //HACK
+
+      if (y == null) {
+         y = System.getProperty(javapropname);
+         if (y == null) {
+            y = System.getenv(javapropname);
+            if (y == null) {
+               y = System.getProperty(configKey);
+            }
+         }
       }
 
-      if (var10000 == null) {
-         var10000 = defaultVal;
-      }
+      if (y != null) {
 
-      if (var10000 != null) {
-         String var4 = var10000;
-         var5 = false;
+         y = Texts.unquote(y);
+
          boolean var6 = false;
 //         int var8 = false;
-         System.setProperty(javapropname, var4);
+         System.setProperty(javapropname, y);
          if (!quiet || insecure) {
-            reportConfig(javapropname, var4);
+            reportConfig(javapropname, y);
          }
 
-         var10000 = var4;
       } else {
-         var10000 = null;
+         if (defaultVal == null)
+            throw new RuntimeException("configuration unknown: " + configKey);
+         else
+            y = defaultVal;
       }
 
-      return var10000;
+      return y;
    }
 
    // $FF: synthetic method
@@ -85,8 +95,8 @@ public final class NodeConfig {
    private static String reportConfig(@NotNull String javapropname, @NotNull String val) {
       //Intrinsics.checkParameterIsNotNull(javapropname, "javapropname");
       //Intrinsics.checkParameterIsNotNull(val, "val");
-      boolean var3 = false;
-      boolean var4 = false;
+//      boolean var3 = false;
+//      boolean var4 = false;
 //      int var6 = false;
       //System.err.println("-D" + javapropname + "=\"" + val + '"');
       logger.info("-D{}={}", javapropname, val);
@@ -94,49 +104,47 @@ public final class NodeConfig {
    }
 
    /*@JvmStatic*/
-   public static boolean configIs(@NotNull String key, @NotNull String def) {
-      //Intrinsics.checkParameterIsNotNull(key, "key");
-      //Intrinsics.checkParameterIsNotNull(def, "def");
-      return Objects.equals(getK(key, def), def);
+   public static boolean configIs(@NotNull String key, @Nullable Boolean def) {
+      return Boolean.valueOf( get2(key, def!=null ? def.toString() : null, false) );
    }
 
-   // $FF: synthetic method
-   /*@JvmStatic*/
-   public static boolean configIs$default(String var0, String var1, int var2, Object var3) {
-      if ((var2 & 2) != 0) {
-         var1 = "true";
-      }
-
-      return configIs(var0, var1);
-   }
+//   // $FF: synthetic method
+//   /*@JvmStatic*/
+//   public static boolean configIs$default(String var0, String var1, int var2, Object var3) {
+//      if ((var2 & 2) != 0) {
+//         var1 = "true";
+//      }
+//
+//      return configIs(var0, var1);
+//   }
 
    /*@JvmStatic*/
    public static boolean configIs(@NotNull String key) {
       //Intrinsics.checkParameterIsNotNull(key, "key");
-      boolean var2 = false;
-      boolean var3 = false;
+//      boolean var2 = false;
+//      boolean var3 = false;
 //      int var5 = false;
-      return configIs(key, "true");
+      return configIs(key, null /* "true"*/);
    }
 
-   /*@JvmStatic*/
-   public static boolean notConfig(@NotNull String key) {
-      //Intrinsics.checkParameterIsNotNull(key, "key");
-      return configIs(key, "false");
-   }
+//   /*@JvmStatic*/
+//   public static boolean notConfig(@NotNull String key) {
+//      //Intrinsics.checkParameterIsNotNull(key, "key");
+//      return configIs(key, "false");
+//   }
 
-   /*@JvmStatic*/
-   @NotNull
-   public static String getK(@NotNull String key, @NotNull String var1) {
-      //Intrinsics.checkParameterIsNotNull(key, "key");
-      //Intrinsics.checkParameterIsNotNull(var1, "default");
-      String var10000 = get2(key, var1, false);
-      if (var10000 == null) {
-         //Intrinsics.throwNpe();
-      }
-
-      return var10000;
-   }
+//   /*@JvmStatic*/
+//   @NotNull
+//   public static String getK(@NotNull String key, @NotNull String var1) {
+//      //Intrinsics.checkParameterIsNotNull(key, "key");
+//      //Intrinsics.checkParameterIsNotNull(var1, "default");
+//      String var10000 = get2(key, var1, false);
+//      if (var10000 == null) {
+//         //Intrinsics.throwNpe();
+//      }
+//
+//      return var10000;
+//   }
 
    /*@JvmStatic*/
    @Nullable
@@ -157,6 +165,12 @@ public final class NodeConfig {
 
    static {
       NodeConfig var0 = new NodeConfig();
+      try {
+         System.getProperties().load(Resources.getResource("defaults.ini").openStream());
+      } catch (IOException e) {
+         e.printStackTrace();
+      }
+
       INSTANCE = var0;
       //insecure = Intrinsics.areEqual(System.getProperty("insecure", "false"), String.valueOf(Boolean.TRUE));
       insecure = Objects.equals(System.getProperty("insecure", "false"), String.valueOf(Boolean.TRUE));

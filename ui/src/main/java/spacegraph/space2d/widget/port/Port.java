@@ -15,6 +15,7 @@ import spacegraph.space2d.widget.port.util.Wiring;
 import spacegraph.video.Draw;
 
 import javax.annotation.Nullable;
+import java.util.Iterator;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -278,7 +279,8 @@ public class Port<X> extends Widget implements Wiring.Wireable {
         if (enabled) {
             Node<spacegraph.space2d.Surface, Wire> n = this.node;
             if (n != null) {
-                for (FromTo<Node<Surface, Wire>, Wire> t : n.edges(true, true)) {
+                for (Iterator<FromTo<Node<Surface, Wire>, Wire>> iterator = n.edgeIterator(true, true); iterator.hasNext(); ) {
+                    FromTo<Node<Surface, Wire>, Wire> t = iterator.next();
                     Wire wire = t.id();
                     Port recv = ((Port) wire.other(Port.this));
                     if (recv != sender) //1-level cycle block

@@ -1,6 +1,6 @@
 package nars.term.control;
 
-import com.google.common.collect.Iterables;
+import com.google.common.collect.Iterators;
 import jcog.Util;
 import jcog.data.list.FasterList;
 import nars.term.ProxyTerm;
@@ -9,7 +9,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.Comparator;
-import java.util.List;
+import java.util.Iterator;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
@@ -67,9 +67,10 @@ public interface PREDICATE<X> extends Term, Predicate<X> {
 
     @Nullable
     static <X> PREDICATE<X> compileAnd(Collection<PREDICATE<X>> cond, @Nullable PREDICATE<X> conseq) {
+        Iterator<PREDICATE<X>> c = cond.iterator();
         return compileAnd(
-                    Iterables.toArray(
-                            (conseq != null ? Iterables.concat(cond, List.of(conseq)) : cond),
+                    Iterators.toArray(
+                            (conseq != null ? Iterators.concat(c, Iterators.singletonIterator(conseq)) : c),
                             PREDICATE.class)
             );
     }

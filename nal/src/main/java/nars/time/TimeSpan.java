@@ -14,15 +14,15 @@ public final class TimeSpan {
     }
 
     public static TimeSpan the(long dt) {
-        assert (dt != TIMELESS);
-        assert (dt != XTERNAL) : "probably meant to use TIMELESS";
-        assert (dt != DTERNAL) : "probably meant to use ETERNAL";
 
         if (dt == 0) {
             return TS_ZERO;
         } else if (dt == ETERNAL) {
             return TS_ETERNAL;
         } else {
+            assert (dt != TIMELESS);
+            assert (dt != XTERNAL) : "probably meant to use TIMELESS";
+            assert (dt != DTERNAL) : "probably meant to use ETERNAL";
             return new TimeSpan(dt);
         }
     }
