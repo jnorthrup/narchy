@@ -32,6 +32,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 import static nars.term.Terms.sorted;
 import static nars.term.atom.Bool.Null;
@@ -228,7 +229,7 @@ public enum Op {
      * does this help?  Op.values() bytecode = INVOKESTATIC
      * but accessing this is GETSTATIC
      */
-    public static final Op[] ops = Op.values();
+    private static final Op[] ops = Op.values();
 
     public static final String DISJstr = "||";
     public static final int StatementBits = Op.or(Op.INH, Op.SIM, Op.IMPL);
@@ -577,7 +578,7 @@ public enum Op {
             case 0:
                 throw new UnsupportedOperationException("no bits");
             case 1: {
-                Op op = ops[MathUtil.log(Integer.highestOneBit(struct), 2)];
+                Op op = Op.the(MathUtil.log(Integer.highestOneBit(struct), 2));
                 return op.strAtom;
             }
             default: {
@@ -599,6 +600,14 @@ public enum Op {
 
     public static Term DISJ(Term... x) {
         return DISJ(Op.terms, x);
+    }
+
+    public static int unique() {
+        return ops.length;
+    }
+
+    public static Stream<Op> all() {
+        return Stream.of(ops);
     }
 
 
@@ -736,6 +745,10 @@ public enum Op {
 
     public static Term compound(Op o, int dt, Subterms u) {
         return compound(o, dt, u.arrayShared());
+    }
+
+    public static Op the(int id) {
+        return ops[id];
     }
 
     /**

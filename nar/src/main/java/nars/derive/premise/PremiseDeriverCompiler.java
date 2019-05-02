@@ -49,7 +49,7 @@ public enum PremiseDeriverCompiler {
          * */
         final List<Pair<PREDICATE<Derivation>[], DeriveAction>> pairs = new FasterList<>(n);
 
-        int o = Op.ops.length;
+        int o = Op.unique();
         MetalBitSet mustAtomize = MetalBitSet.bits(o);
         r.forEach(rule -> {
             mustAtomize.setAll(rule.taskPattern.structure(), o);

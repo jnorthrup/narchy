@@ -45,7 +45,7 @@ import static jcog.Util.sqr;
 public class VerletTest implements Consumer<Dynamics2D> {
 
     int DIM=4;
-    int REST_LENGTH=3;
+    float REST_LENGTH=3;
     float STRENGTH = 0.0125f;
     float INNER_STRENGTH = 0.013f;
 

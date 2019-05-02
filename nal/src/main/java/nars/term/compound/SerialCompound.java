@@ -60,7 +60,7 @@ public class SerialCompound extends DynBytes implements SameSubtermsCompound, Th
 
     @Override
     public final /*@NotNull*/ Op op() {
-        return Op.ops[bytes[0]];
+        return Op.the(bytes[0]);
     }
 
     @Override

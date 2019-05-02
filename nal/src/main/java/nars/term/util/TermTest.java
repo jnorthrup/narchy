@@ -71,6 +71,9 @@ public enum TermTest { ;
 
         assertEquals(0, y.compareTo(x));
         assertEquals(0, x.compareTo(y));
+        assertEquals(0, x.compareTo(x));
+        assertEquals(0, y.compareTo(y));
+
 
         assertEquals(x.op(), y.op());
         assertEquals(x.opBit(), y.opBit());

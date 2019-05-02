@@ -74,7 +74,7 @@ public class TrackXY  {
     }
 
     public float distMax() {
-        return (float) Math.sqrt(Util.sqr(W-1) + Util.sqr(H-1));
+        return (float) Math.sqrt(Util.sqr(W-1f) + Util.sqr(H-1f));
     }
 
     /** linear distance from current to target */

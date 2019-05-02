@@ -1,6 +1,5 @@
 package nars.term.compound;
 
-import jcog.Util;
 import nars.Op;
 import nars.The;
 import nars.subterm.Subterms;
@@ -20,9 +19,6 @@ import static nars.time.Tense.DTERNAL;
 import static nars.time.Tense.XTERNAL;
 
 public abstract class UnitCompound implements SameSubtermsCompound {
-
-    @Override
-    abstract public Op op();
 
     protected abstract Term sub();
 
@@ -64,12 +60,12 @@ public abstract class UnitCompound implements SameSubtermsCompound {
 
     @Override
     public int hashCode() {
-        return Compound.hashCode(this);
+        return Compound.hash(this);
     }
 
     @Override
     public final int hashCodeSubterms() {
-        return Util.hashCombine1(sub());
+        return Subterms.hash(sub());
     }
 
 

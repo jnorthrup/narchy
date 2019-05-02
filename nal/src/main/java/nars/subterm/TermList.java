@@ -30,26 +30,23 @@ public class TermList extends FasterList<Term> implements Subterms {
     }
 
     @Override
-    public int hashCode() {
-        int s = size;
-        return s > 0 ? Subterms.hash(items, size) : 1;
+    public final int hashCode() {
+        return Subterms.hash(items, size);
     }
-
-
 
     @Override
     public final boolean these() {
         return false;
     }
 
-    public void ensureExtraCapacityExact(int num) {
+    void ensureExtraCapacityExact(int num) {
         int l = this.items.length;
         int oldCapacity = l, minCapacity = l + num;
         if (minCapacity > oldCapacity)
             this.items = Arrays.copyOf(items, minCapacity);
     }
 
-     @Override
+    @Override
     public TermList toList() {
         return new TermList(arrayClone());
     }
@@ -88,10 +85,7 @@ public class TermList extends FasterList<Term> implements Subterms {
             return nonNullEquals(((TermList)obj));
         } else {
             Subterms ss = ((Subterms)obj);
-            if (hashCodeSubterms()!=ss.hashCodeSubterms())
-                return false;
-            else
-                return ss.equalTerms(this);
+            return ss.equalTerms(this);
         }
     }
 
@@ -105,12 +99,9 @@ public class TermList extends FasterList<Term> implements Subterms {
 
     /** use this only if a (disposable) TermList is done being modified */
     public Term[] arrayKeep() {
-        Term[] x = array();
-        int s = size();
-        if (x.length == s)
-            return x;
-        else
-            return Arrays.copyOf(x, s);
+        Term[] x = items;
+        int s = size;
+        return x.length == s ? x : Arrays.copyOf(x, s);
     }
 
 

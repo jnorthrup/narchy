@@ -36,7 +36,7 @@ import java.util.Map;
 import java.util.TreeSet;
 
 import static nars.Op.*;
-import static nars.op.Equal.cmp;
+import static nars.op.Cmp.cmp;
 import static nars.term.Functor.f0;
 import static nars.term.atom.Bool.*;
 import static nars.time.Tense.DTERNAL;

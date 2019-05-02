@@ -304,7 +304,7 @@ public class InterningTermBuilder extends HeapTermBuilder {
 
     private Term _statement(Intermed.InternedCompoundByComponents c) {
         Term[] s = c.subs();
-        return super.statement(Op.ops[c.op], c.dt, s[0], s[1]);
+        return super.statement(Op.the(c.op), c.dt, s[0], s[1]);
     }
 
     /** compound1 does not traverse the subterms interning pathway so an explicit resolution step for the only argument is applied here */

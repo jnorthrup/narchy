@@ -53,7 +53,7 @@ public class Arithmeticize {
             MathFunc.add.term, MathFunc.add,
             MathFunc.mul.term, MathFunc.mul,
             Equal.the.term, Equal.the,
-            Equal.cmp.term, Equal.cmp
+            Cmp.cmp.term, Cmp.cmp
     )::get;
 
     public static class ArithmeticIntroduction extends Introduction {

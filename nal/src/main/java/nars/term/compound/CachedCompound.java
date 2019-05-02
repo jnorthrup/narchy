@@ -22,7 +22,7 @@ abstract public class CachedCompound extends SeparateSubtermsCompound implements
      */
     private final Subterms subterms;
 
-    public final Op op;
+    public final byte op;
 
     private final short _volume;
     private final int _structure;
@@ -143,7 +143,7 @@ abstract public class CachedCompound extends SeparateSubtermsCompound implements
 
     private CachedCompound(/*@NotNull*/ Op op, int dt, Subterms subterms) {
         super(dt == DTERNAL ? subterms.hashWith(op) : hashCombine(subterms.hashWith(op), dt) );
-        this.op = op;
+        this.op = op.id;
         this.subterms = subterms;
 
         this._structure = subterms.structure() | op.bit;
@@ -208,8 +208,12 @@ abstract public class CachedCompound extends SeparateSubtermsCompound implements
     }
 
     @Override
-    public final Op op() {
-        return op;
+    public int opBit() {
+        return 1<<op;
     }
 
+    @Override
+    public Op op() {
+        return Op.the(op);
+    }
 }

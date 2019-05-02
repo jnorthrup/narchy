@@ -51,10 +51,6 @@ public abstract class SeparateSubtermsCompound implements Compound {
         return hash;
     }
 
-    @Override
-    public final int hashCodeSubterms() {
-        return subterms().hashCodeSubterms();
-    }
 
     /*@NotNull*/
     @Override

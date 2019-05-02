@@ -11,9 +11,7 @@ import com.google.common.base.Charsets;
 import com.google.common.base.Joiner;
 import com.google.common.io.CharStreams;
 import com.google.common.io.Closeables;
-import com.google.common.primitives.Bytes;
-import com.google.common.primitives.Longs;
-import com.google.common.primitives.Primitives;
+import com.google.common.primitives.*;
 import jcog.data.list.FasterList;
 import jcog.io.BinTxt;
 import jcog.math.FloatSupplier;
@@ -153,10 +151,32 @@ public enum Util {
         return Long.hashCode(_hashFn.hashLongs(longs));
     }
 
-    public static int hash(byte[] bytes, int from, int to) {
-        return Long.hashCode(_hashFn.hashBytes(bytes, from, to - from));
+    public static int hash(byte[] x, int from, int to) {
+
+        int len = to-from;
+        switch (len) {
+            case 0: return 1;
+            case 1: return x[from];
+            case 2: return Shorts.fromBytes(x[from], x[from+1]);
+            case 3: return Ints.fromBytes(x[from], x[from+1], x[from+2], (byte)0);
+            case 4: return Ints.fromBytes(x[from], x[from+1], x[from+2], x[from+3]);
+            default: return Long.hashCode(_hashFn.hashBytes(x, from, len));
+        }
+
         //return hashFNV(bytes, from, to);
         //return hashBytes(bytes, from, to);
+
+//        {
+//            int result = 1;
+//            byte[] var2 = x;
+//
+//            for (int var4 = from; var4 < to; ++var4) {
+//                result = 31 * result + var2[var4];
+//            }
+//
+//            return result;
+//        }
+
     }
 
     public static int hash(byte[] bytes) {
@@ -429,7 +449,12 @@ public enum Util {
     }
 
     public static int hashCombine(int a, long b) {
-        return Util.hashCombine(a, (int) b, (int) (b >> 32));
+        //return Util.hashCombine(a, (int) b, (int) (b >> 32));
+        return Util.hashCombine(a, Long.hashCode(b));
+    }
+    public static int hashCombine(int i, long x, long y) {
+        //return hashCombine(hashCombine(i, x), Long.hashCode(y));
+        int ix = hashCombine(i, x); return x==y ? ix : hashCombine(ix, Long.hashCode(y));
     }
 
     public static int hashCombine(int a, long[] b) {
@@ -1641,6 +1666,9 @@ public enum Util {
         return x * x;
     }
 
+    public static float sqrt(float v) {
+        return (float)Math.sqrt(v);
+    }
 
     public static float cube(float x) {
         return x * x * x;
@@ -2748,4 +2776,5 @@ public enum Util {
     public static <X,Y extends X,Z extends X> X maybeEqual(Y current, Z next) {
         return Objects.equals(current, next) ? current : next;
     }
+
 }

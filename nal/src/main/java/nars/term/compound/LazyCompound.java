@@ -109,7 +109,7 @@ public class LazyCompound {
         return this;
     }
 
-    private final static byte MAX_CONTROL_CODES = (byte) Op.ops.length;
+    private final static byte MAX_CONTROL_CODES = (byte) Op.unique();
 
 
     public final LazyCompound negStart() {
@@ -214,7 +214,7 @@ public class LazyCompound {
             /** -1 volume for the compound; the subterms are counted elsewhere */
             this.volRemain--;
 
-            Op op = Op.ops[ctl];
+            Op op = Op.the(ctl);
             if (op == NEG)
                 next = getNext(b, ii, range).neg();
             else {

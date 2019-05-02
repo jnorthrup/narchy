@@ -82,7 +82,7 @@ public interface TermIO {
                     throw new IOException(e);
                 }
             }
-            Op o = Op.ops[opByte & OP_MASK];
+            Op o = Op.the(opByte & OP_MASK);
             switch (o) {
                 case VAR_DEP:
                 case VAR_INDEP:

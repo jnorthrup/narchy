@@ -81,7 +81,7 @@ public class TermTestMisc {
         Atomic X = Atomic.the("x");
         Atomic Y = Atomic.the("y");
         Atomic Z = Atomic.the("z");
-        Stream.of(Op.ops).filter(x -> x.commutative).forEach(o -> {
+        Op.all().filter(x -> x.commutative).forEach(o -> {
             if (o.minSubs < 2)
                 assertFalse(o.the(X).isCommutative());
 

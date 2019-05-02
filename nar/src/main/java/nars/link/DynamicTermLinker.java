@@ -1,9 +1,11 @@
 package nars.link;
 
 import jcog.TODO;
+import jcog.Util;
 import jcog.decide.Roulette;
 import nars.Op;
 import nars.subterm.Subterms;
+import nars.term.Compound;
 import nars.term.Term;
 import nars.term.var.Img;
 
@@ -20,7 +22,7 @@ public abstract class DynamicTermLinker implements TermLinker {
 
     @Override
     public final Term sample(Term t, Random rng) {
-        return sampleDynamic(t, depth(t, rng), rng);
+        return sampleDynamic(t, t instanceof Compound ? depth((Compound)t, rng) : 1, rng);
     }
 
     protected final Term sampleDynamic(Term t, int depthRemain, Random rng) {
@@ -51,7 +53,7 @@ public abstract class DynamicTermLinker implements TermLinker {
             return sampleDynamic(u, depthRemain-1, rng);
     }
 
-    abstract protected int depth(Term root, Random rng);
+    abstract protected int depth(Compound root, Random rng);
 
     /** simple subterm choice abstraction TODO a good interface providing additional context */
     abstract protected Term choose(Subterms tt, int n, Term parent, Random rng);
@@ -63,9 +65,9 @@ public abstract class DynamicTermLinker implements TermLinker {
         throw new TODO();
     }
 
-    public static final DynamicTermLinker RandomDynamicTermLinker = new DynamicTermLinker() {
+    public static final DynamicTermLinker Uniform = new DynamicTermLinker() {
         @Override
-        protected int depth(Term root, Random rng) {
+        protected int depth(Compound root, Random rng) {
             return rng.nextFloat() < 0.5f ? 1 : 2;
         }
 
@@ -75,15 +77,46 @@ public abstract class DynamicTermLinker implements TermLinker {
         }
     };
 
-    public static final DynamicTermLinker VolWeighted = new DynamicTermLinker() {
+    /** uses roulette selection on arbitrary subterm weighting function */
+    public static final DynamicTermLinker Weighted = new DynamicTermLinker() {
         @Override
-        protected int depth(Term root, Random rng) {
-            float w = (float)Math.sqrt(root.volume() / (1 + root.subs()));
+        protected int depth(Compound root, Random rng) {
+            /* https://academo.org/demos/3d-surface-plotter/?expression=(1%2F(1%2Bx%2F(1%2By)))&xRange=0%2C32&yRange=0%2C8&resolution=23 */
+            float fanoutRatio =
+                    //root.volume() / (1f + root.subs());
+                    //1 / (1 + ((float)root.volume())/(1+root.subs()));
+                    1 / (1 + ((float)root.volume()-1)/(1+root.subs()));
+
+            float w =
+                    //fanoutRatio;
+                    (float)Math.sqrt(fanoutRatio);
+                    //(float)Math.pow(fanoutRatio, 0.75f);
+                    //(float)Math.pow(fanoutRatio, 1.5f);
+
             return rng.nextFloat() < w ? 1 : 2;
         }
+
         @Override
         protected Term choose(Subterms tt, int n, Term parent, Random rng) {
-            return tt.sub(Roulette.selectRoulette(n, i->tt.sub(i).volume(), rng));
+            return tt.sub(Roulette.selectRoulette(n, i-> _subValue(tt.sub(i)), rng));
+        }
+
+        private float _subValue(Term sub) {
+            if (sub instanceof Img)
+                return 0;
+            else
+                return subValue(sub);
+        }
+
+        protected float subValue(Term sub) {
+            int v =
+                    //sub.volume();
+                    sub.complexity();
+            return
+                    Util.sqrt(v);
+                    //v;
+                    //Util.sqr((float)v);
+                    //1f/v; //inverse
         }
     };
 }

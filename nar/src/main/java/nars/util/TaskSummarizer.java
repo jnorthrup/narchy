@@ -99,7 +99,7 @@ public class TaskSummarizer extends NARPart implements Consumer<Task> {
                     AtomicInteger[] x = a[oi];
                     int num = x[0].get();
                     if (num > 0) {
-                        Op o = Op.ops[oi];
+                        Op o = Op.the(oi);
                         float volMean = x[1].floatValue() / num;
                         float priMean = Math.max(0, ((x[2].floatValue()-1)/PRI_DIGITS) / num);
                         c.accept(punc, num, o, volMean, priMean);

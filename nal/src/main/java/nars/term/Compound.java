@@ -56,22 +56,6 @@ import static nars.time.Tense.*;
  */
 public interface Compound extends Term, IPair, Subterms {
 
-    @Override
-    default boolean AND(Predicate<Term> p) {
-        return Subterms.super.AND(p);
-    }
-
-    @Override
-    default boolean OR(Predicate<Term> p) {
-        return Subterms.super.OR(p);
-    }
-
-    @Override
-    default boolean contains(Term t) {
-        return Subterms.super.contains(t);
-    }
-
-
     static boolean equals(/*@NotNull*/ Compound A, Object b, boolean compareHashCode) {
         if (A == b) return true;
 
@@ -79,9 +63,10 @@ public interface Compound extends Term, IPair, Subterms {
             Compound B = (Compound) b;
             Op ao = A.op();
             if (ao == B.op()) {
-                return
-                        equalSubs(A, B) && (!ao.temporal || (A.dt() == B.dt()))
-                        ;
+                boolean equal =
+                        equalSubs(A, B) && (!ao.temporal || (A.dt() == B.dt()));
+
+                return equal;
             }
         }
 
@@ -114,42 +99,70 @@ public interface Compound extends Term, IPair, Subterms {
         return sb;
     }
 
+    /**
+     * reference impl for compound hashcode
+     */
+    static int hash(Compound c) {
+        return hash(
+                c.op().id,
+                c.hashCodeSubterms()
+        );
+    }
 
-    Op op();
+    static int hash(int opID, int hashCodeSubterms) {
+        return Util.hashCombine(hashCodeSubterms, opID);
+    }
 
+    static int hash1(int opID, Term onlySubterm) {
+        return hash(opID, Subterms.hash(onlySubterm));
+    }
 
-    /** very fragile be careful here */
-    @Override default /* final */ boolean containsRecursively(Term x, boolean root, Predicate<Term> inSubtermsOf) {
+    static int opX(short volume, byte op, byte subs) {
+        return ((volume & 0b11111111111) << (16 + 5))
+                |
+                (op << 16)
+                |
+                subs;
+    }
+
+    @Override
+    default boolean AND(Predicate<Term> p) {
+        return Subterms.super.AND(p);
+    }
+
+    @Override
+    default boolean OR(Predicate<Term> p) {
+        return Subterms.super.OR(p);
+    }
+
+    @Override
+    default boolean contains(Term t) {
+        return Subterms.super.contains(t);
+    }
+
+    /**
+     * very fragile be careful here
+     */
+    @Override
+    default /* final */ boolean containsRecursively(Term x, boolean root, Predicate<Term> inSubtermsOf) {
         return !impossibleSubTerm(x) && inSubtermsOf.test(this) &&
                 subtermsContainsRecursively(x, root, inSubtermsOf);
     }
+
     default boolean subtermsContainsRecursively(Term x, boolean root, Predicate<Term> inSubtermsOf) {
         return subterms().containsRecursively(x, root, inSubtermsOf);
     }
 
+    @Override
+    default int hashCodeSubterms() {
+        return subterms().hashCodeSubterms();
+    }
 
     /**
      * deprecated; TODO move to SeparateSubtermsCompound interface and allow Compounds which do not have to generate this.  this sums up many of xjrn's suggestions
      */
     @Override
     Subterms subterms();
-
-
-    /**
-     * reference impl for compound hashcode
-     */
-    static int hashCode(Compound c) {
-        return Util.hashCombine(
-                c.hashCodeSubterms(),
-                c.op().id
-        );
-    }
-
-
-    @Override
-    default int hashCodeSubterms() {
-        return subterms().hashCode();
-    }
 
     @Override
     default boolean the() {
@@ -174,15 +187,6 @@ public interface Compound extends Term, IPair, Subterms {
         byte subs = (byte) subs();
         return opX(volume, op, subs);
     }
-
-    static int opX(short volume, byte op, byte subs) {
-        return ((volume & 0b11111111111) << (16 + 5))
-                |
-                (op << 16)
-                |
-                subs;
-    }
-
 
     @Override
     default Term anon() {
@@ -260,31 +264,37 @@ public interface Compound extends Term, IPair, Subterms {
         if (xs != ys) {
             if (o == CONJ) {
                 int xdt = dt(), ydt = y.dt();
-                if (xdt != ydt) {
-                    if (xdt == XTERNAL || ydt == XTERNAL) {
 
-                        if (!Subterms.possiblyUnifiable(x, y, u.varBits))
-                            return false;
+                if ((xdt != ydt) && (xdt == XTERNAL || ydt == XTERNAL) && Subterms.possiblyUnifiable(x, y, u.varBits)) {
 
-                        if (xdt == XTERNAL) {
-                            SortedSet<Term> yyy = y.eventSet();
-                            if ((ys = yyy.size()) != xs)
-                                return false; //TODO permute if possiblyUnifiable
-                            yy = $.vFast(yyy.toArray(EmptyTermArray));
-                        } else /*if (ydt == XTERNAL)*/ {
-                            SortedSet<Term> xxx = x.eventSet();
-                            if ((xs = xxx.size()) != ys)
-                                return false; //TODO permute if possiblyUnifiable
-                            xx = $.vFast(xxx.toArray(EmptyTermArray));
-                        }
+                    if (xdt == XTERNAL) {
+                        SortedSet<Term> yyy = y.eventSet();
+                        if ((yyy.size()) != xs)
+                            return false; //TODO permute if possiblyUnifiable
 
-                        return xx.equals(yy) || Subterms.unifyCommute(xx, yy, u);
+
+                        Term[] yyya = yyy.toArray(EmptyTermArray);
+                        if (xx.equalTerms(yyya))
+                            return true;
+
+                        yy = $.vFast(yyya);
+                    } else /*if (ydt == XTERNAL)*/ {
+                        SortedSet<Term> xxx = x.eventSet();
+                        if ((xxx.size()) != ys)
+                            return false; //TODO permute if possiblyUnifiable
+
+                        Term[] xxxa = xxx.toArray(EmptyTermArray);
+                        if (yy.equalTerms(xxxa))
+                            return true;
+
+                        xx = $.vFast(xxxa);
                     }
 
-                    return false; //differing #subterms and neither is XTERNAL
-                } else {
+                    return Subterms.unifyCommute(xx, yy, u);
+
+                } else
                     return false;
-                }
+
             } else {
                 return false;
             }
@@ -540,8 +550,6 @@ public interface Compound extends Term, IPair, Subterms {
 //    }
 
 
-
-
     /**
      * iterates contained events within a conjunction
      */
@@ -586,7 +594,7 @@ public interface Compound extends Term, IPair, Subterms {
                                 //combine the component with the eternal factor
                                 Term distributed = CONJ.the(w, what, factor);
 
-                                if (distributed.op()!=CONJ)
+                                if (distributed.op() != CONJ)
                                     throw new TermException("invalid conjunction factorization", Compound.this);
 
 //                                    assert (!(distributed instanceof Bool));

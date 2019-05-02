@@ -232,7 +232,7 @@ abstract public class TermMatcher {
             this.structAll = struct | is.bit;
             this.cost = (0.07f + (0.01f * depth)) * (1f / (1 + ((volMin-1)+Integer.bitCount(struct))));
 
-            Atom isParam = Op.ops[this.is].strAtom;
+            Atom isParam = Op.the(this.is).strAtom;
             if (struct > 0 && volMin > 1) {
                 this.param = $.p(isParam, Op.strucTerm(struct), volMin(volMin));
             } else if (struct > 0) {

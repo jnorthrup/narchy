@@ -45,7 +45,7 @@ public class LightCompound extends SeparateSubtermsCompound  {
 
     @Override
     public final Op op() {
-        return Op.ops[op];
+        return Op.the(op);
     }
 
 

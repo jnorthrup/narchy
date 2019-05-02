@@ -3,6 +3,7 @@ package nars.derive;
 import nars.Builtin;
 import nars.NAL;
 import nars.NAR;
+import nars.op.Cmp;
 import nars.op.Equal;
 import nars.op.SetFunc;
 import nars.subterm.Subterms;
@@ -62,7 +63,7 @@ public enum DerivationFunctors {
                 SetFunc.unionSect,
                 SetFunc.differ,
                 SetFunc.intersect,
-                Equal.the, Equal.cmp,
+                Equal.the, Cmp.cmp,
 
                 (Functor) nar.concept("varIntro"),
                 (Functor) nar.concept("unneg"),

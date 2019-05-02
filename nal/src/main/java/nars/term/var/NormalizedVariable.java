@@ -129,7 +129,7 @@ public abstract class NormalizedVariable extends AnonID implements Variable {
         if (id < NAL.term.MAX_INTERNED_VARS) {
             return varCache[NormalizedVariable.opToVarIndex(op)][id];
         } else {
-            return vNew(Op.ops[op], id);
+            return vNew(Op.the(op), id);
         }
     }
 

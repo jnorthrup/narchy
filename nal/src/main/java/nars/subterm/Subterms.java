@@ -44,6 +44,8 @@ import static nars.Op.*;
  */
 public interface Subterms extends Termlike, Iterable<Term> {
 
+
+
     @Override
     default boolean hasXternal() {
         return hasAny(Op.Temporal) && ORrecurse(Term::hasXternal);
@@ -53,7 +55,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
         return ORwith(Term::equals, t);
     }
     default boolean containsInstance(Term t) {
-        return ORwith((tt, u) -> tt == u, t);
+        return ORwith((u, tt) -> tt == u, t);
     }
 
 
@@ -119,10 +121,8 @@ public interface Subterms extends Termlike, Iterable<Term> {
         void acceptBytes(DynBytes constructedWith);
     }
 
-    static int hash(Iterable<Term> term) {
-        int h = 1;
-        for (Term aTerm : term) h = Util.hashCombine(h, aTerm);
-        return h;
+    static int hash(Term onlySub) {
+        return Util.hashCombine1(onlySub);
     }
 
     static int hash(Term[] term) {

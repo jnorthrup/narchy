@@ -2,17 +2,22 @@ package nars.term;
 
 import nars.Op;
 import nars.The;
-import nars.term.compound.UnitCompound;
+import nars.term.compound.SemiCachedUnitCompound;
 import org.jetbrains.annotations.Nullable;
 
 import static nars.Op.NEG;
 
-public final class Neg extends UnitCompound implements The {
+//public final class Neg extends UnitCompound implements The {
+public final class Neg extends SemiCachedUnitCompound implements The {
 
-    private final Term sub;
+    //private final Term sub;
+
+//    public Neg(Term negated) {
+//        this.sub = negated;
+//    }
 
     public Neg(Term negated) {
-        this.sub = negated;
+      super(NEG.id, negated);
     }
 
     @Override
@@ -20,11 +25,10 @@ public final class Neg extends UnitCompound implements The {
         return NEG;
     }
 
-
-    @Override
-    public Term sub() {
-        return sub;
-    }
+//    @Override
+//    public Term sub() {
+//        return sub;
+//    }
 
     @Override
     public Term root() {

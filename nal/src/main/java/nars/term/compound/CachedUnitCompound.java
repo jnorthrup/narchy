@@ -1,35 +1,26 @@
 package nars.term.compound;
 
 import nars.Op;
-import nars.The;
 import nars.term.Compound;
 import nars.term.Term;
-import org.jetbrains.annotations.Nullable;
 
 import static nars.Op.*;
 
 
 /** 1-element Compound impl */
-public class CachedUnitCompound extends UnitCompound implements The {
+public class CachedUnitCompound extends SemiCachedUnitCompound {
 
     private final byte op;
-
-    private final Term sub;
-
-    /** hash including this compound's op (cached) */
-    transient private final int chash;
 
     /** structure including this compound's op (cached) */
     transient private final int cstruct;
     private final short volume;
 
-
     public CachedUnitCompound(/*@NotNull*/ Op op, /*@NotNull*/ Term sub) {
+        super(sub, Compound.hash1(op.id, sub));
         assert(op!=NEG && op!=CONJ);
 
-        this.sub = sub;
         this.op = op.id;
-        this.chash = super.hashCode();
         this.cstruct = super.structure();
 
         int v = sub.volume() + 1;
@@ -48,37 +39,19 @@ public class CachedUnitCompound extends UnitCompound implements The {
     }
 
     @Override
-    public final Term sub() {
-        return sub;
-    }
-
-
-
-    @Override
     public final int structure() {
         return cstruct;
     }
 
-
-    @Override
-    public final int hashCode() {
-        return chash;
-    }
-
-    @Override
-    public boolean equals(@Nullable Object that) {
-        return Compound.equals(this, that, true);
-    }
-
-    @Override
-    public final /*@NotNull*/ Op op() {
-        return Op.ops[op];
-    }
     @Override
     public final int opBit() {
         return 1<<op;
     }
 
+    @Override
+    public final Op op() {
+        return Op.the(op);
+    }
 
     @Override
     public int varPattern() {
