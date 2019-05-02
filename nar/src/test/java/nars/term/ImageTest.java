@@ -8,6 +8,7 @@ import nars.subterm.util.TermMetadata;
 import nars.term.atom.Int;
 import nars.term.compound.CachedCompound;
 import nars.term.util.Image;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import static nars.$.$$;
@@ -158,6 +159,15 @@ class ImageTest {
 
     @Test void testNonRepeatableImage() {
         assertEquals(Null, Image.imageExt($$("a(b,/,c)"), $$("c")));
+    }
+    @Test void testRepeatableImageInSubterm() {
+        assertEq("(b-->(a,/,(/,c)))", Image.imageExt($$("a(b,(/,c))"), $$("b")));
+        assertEq("((/,c)-->(a,b,/))", Image.imageExt($$("a(b,(/,c))"), $$("(/,c)")));
+    }
+
+    @Disabled
+    @Test void testOppositeImageOK() {
+        assertEq("(c-->(a,b,\\,/))", Image.imageExt($$("a(b,\\,c)"), $$("c")));
     }
 
     @Test void testNormalizeVsImageNormalize() {

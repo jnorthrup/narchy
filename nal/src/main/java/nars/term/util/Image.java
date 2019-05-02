@@ -1,7 +1,6 @@
 package nars.term.util;
 
 import jcog.Util;
-import jcog.util.ArrayUtils;
 import nars.Op;
 import nars.subterm.Subterms;
 import nars.term.Compound;
@@ -38,18 +37,25 @@ public enum Image {;
 
             if (s.op() == PROD) {
 
-                Img target = intOrExt ? ImgInt : ImgExt;
-
                 Subterms ss = s.subterms();
-                if (!ss.hasAny(IMG) || (!ss.contains(ImgInt) && !ss.contains(ImgExt))) {
+                int n = ss.subs();
+                if (n>=2 && (ss.structureSurface() & IMG.bit) == 0) {
+                    Img target = intOrExt ? ImgInt : ImgExt;
 
                     int index = ss.indexOf(x);
                     if (index != -1) {
-                        Term[] qq = ArrayUtils.prepend(t.sub(1 - prodSub), ss.arrayShared(), Term[]::new);
 
-                        do {
-                            qq[index + 1] = target;
-                        } while ((index = ss.indexOf(x, index)) != -1);
+                        Term[] qq = new Term[n+1];
+                        qq[0] = t.sub(1-prodSub);
+                        for (int i = 0; i < n; i++) {
+                            Term y;
+                            if (i == index) {
+                                y = target;
+                                index = ss.indexOf(x, index);
+                            } else
+                                y = ss.sub(i);
+                            qq[i+1] = y;
+                        }
 
                         Term q = PROD.the(qq);
                         return intOrExt ? INH.the(q, x) : INH.the(x, q);

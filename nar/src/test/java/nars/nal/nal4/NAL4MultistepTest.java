@@ -64,9 +64,10 @@ public class NAL4MultistepTest extends NALTest {
         int time = 2550;
 
         test.confTolerance(0.2f);
-        test.nar.termVolumeMax.set(12);
+        test.nar.termVolumeMax.set(6);
 //        test.nar.freqResolution.setAt(0.25f);
 //        test.nar.confResolution.setAt(0.1f);
+        test.log();
         test.believe("blue:sky")
             .believe("cat:tom")
             .believe("likes(tom,sky)")

@@ -155,17 +155,20 @@ public class ConjLazy extends LongObjectArraySet<Term> implements ConjBuilder {
             case 2: {
                 long w0 = when[0], w1 = when[1];
 
-                if (w0 == ETERNAL && w1 != ETERNAL)
-                    w0 = w1 = 0; //quick promote to parallel
-                else if (w1 == ETERNAL && w0 != ETERNAL)
-                    w0 = w1 = 0; //quick promote to parallel
 
                 if (w0 == w1) {
+                    //SAME TIME
                     Term a = items[0], b = items[1];
                     if (a.equals(b))
                         return a; //quick test
                     else
                         return CONJ.the(B, (w0 == ETERNAL) ? DTERNAL : 0, a, b);
+                } else {
+
+                    if ((w0 == ETERNAL) ^ (w1 == ETERNAL)) {
+                        w0 = w1 = ETERNAL; //quick collapse ot dternal
+                        //w0 = w1 = 0; //quick promote to parallel
+                    }
                 }
                 break;
             }
@@ -184,13 +187,15 @@ public class ConjLazy extends LongObjectArraySet<Term> implements ConjBuilder {
             }
         }
 
+        sortThis(); //puts eternals first, and organizes contiguously timed items
+
         //failsafe impl:
         ConjBuilder c = new Conj(n);
         for (int i = 0; i < n; i++) {
-            Term t = this.get(i);
-            if (!c.add(when[i], t))
+            if (!c.add(when[i], this.get(i)))
                 break;
         }
+
         return c.term(B);
     }
 

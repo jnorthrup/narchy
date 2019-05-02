@@ -978,6 +978,7 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
             else if (r.contains(id))
                 return +1;
         }
+
         return 0;
     }
 
@@ -1415,6 +1416,13 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
         return true;
     }
 
+    private static <X> boolean eventsANDwith(Object events, ByteObjectPredicate<X> each, X x) {
+        if (events instanceof byte[])
+            return eventsANDwith((byte[])events, each, x);
+        else
+            throw new TODO();
+    }
+
     private static <X> boolean eventsANDwith(byte[] events, ByteObjectPredicate<X> each, X x) {
         for (byte e : events) {
             if (e != 0) {
@@ -1637,9 +1645,57 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
         event.clear();
         result = null;
     }
+//    int conflictOrSame(long at, byte what) {
+//        return conflictOrSame(event.get(at), what);
+//    }
 
-    int conflictOrSame(long at, byte what) {
-        return conflictOrSame(event.get(at), what);
+    protected int conflictOrSame(long at, byte what) {
+        Object ee = event.get(at);
+        if (ee == null) return 0;
+        int w = conflictOrSame(ee, what);
+        if (w == -1) return -1;
+
+        if (at == ETERNAL) {
+            if (!(ee instanceof byte[])) throw new TODO();
+            Term y = unindex(what);
+            boolean absorbed = false;
+            for (byte ix : (byte[])ee) {
+                if (ix == 0) break;
+                Term x = unindex(ix);
+                int ce = conflictExhaustive(x, y);
+                if (ce == -1) return -1;
+                if (ce == +1) absorbed = true;
+            }
+            if (absorbed) return +1;
+        }
+
+        if (w == +1) return +1;
+        return 0;
+    }
+    private int conflictExhaustive(Term x, Term y) {
+        if (x.op()==NEG && x.unneg().op()==CONJ) {
+//            Term xy = CONJ.the(x,y);
+//            Op xyo = xy.op();
+//            if (xyo ==BOOL || xyo !=CONJ)
+//                return -1; //TODO see if True means something
+//            if (xy.equals(x))
+//                return +1; //absorbed
+
+            x = x.unneg();
+            if (x.op() == CONJ) {
+                //disjunctive screening:  test for any conflict as
+                Subterms xx = x.subterms();
+                if (!xx.impossibleSubTerm(y.unneg())) {
+                    //TODO recursive event scan?
+                    if (xx.containsNeg(y))
+                        return -1; //disjunctive conflict
+                    else if (xx.contains(y))
+                        return +1; //absorbed
+                }
+            }
+        }
+
+        return 0;
     }
 
     public final ConjBuilder with(long at, Term x) {
@@ -1670,7 +1726,7 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
     }
 
     @Override
-    public boolean addEvent(long at, Term x) {
+    public final boolean addEvent(long at, Term x) {
 //        if (Param.DEBUG) {
 //            if (at == DTERNAL) //HACK
 //                throw new WTF("probably meant at=ETERNAL not DTERNAL");
@@ -1706,10 +1762,11 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
         if (!polarity) id = (byte) -id;
 
         //quick test for conflict with existing ETERNALs
-        int c = conflictOrSame(ETERNAL, id);
+        int c = conflictOrSame(ETERNAL,  id);
         if (c > 0)
             return true;
         else if (c < 0) {
+            //remove(xUnneg) ?
             result = False;
             return false;
         }
@@ -1739,16 +1796,15 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
             byte[] b = (byte[]) events;
 
             //quick test for exact absorb/contradict
-            if (b[0] != 0) {
-                for (byte bi : b) {
-                    if (bi == 0)
-                        break;
-                    if (id == -bi)
-                        return false; //contradiction
-                    if (id == bi)
-                        return true; //found existing
-                }
+            for (byte bi : b) {
+                if (bi == 0)
+                    break;
+                if (id == -bi)
+                    return false; //contradiction
+                if (id == bi)
+                    return true; //found existing
             }
+
 
             for (int i = 0; i < b.length; i++) {
                 byte bi = b[i];

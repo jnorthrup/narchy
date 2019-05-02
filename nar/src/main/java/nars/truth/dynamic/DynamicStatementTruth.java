@@ -9,8 +9,9 @@ import nars.subterm.Subterms;
 import nars.task.util.TaskRegion;
 import nars.term.Compound;
 import nars.term.Term;
-import nars.term.util.conj.Conj;
+import nars.term.util.Image;
 import nars.term.util.conj.ConjBuilder;
+import nars.term.util.conj.ConjLazy;
 import nars.time.Tense;
 import org.jetbrains.annotations.Nullable;
 
@@ -196,8 +197,8 @@ public class DynamicStatementTruth {
 
                 //IMPL: compute innerDT for the conjunction
                 ConjBuilder c =
-                        new Conj(d.size());
-                        //new ConjLazy(d.size());
+                        //new Conj(d.size());
+                        new ConjLazy(d.size());
 
                 for (int i = 0, componentsSize = d.size(); i < componentsSize; i++) {
                     TaskRegion x = d.get(i);
@@ -297,11 +298,11 @@ public class DynamicStatementTruth {
 
 
             Term decomposed = stmtCommon(!subjOrPred, superterm);
-//            if (!decomposed.op().isAny(Op.Sect)) {
+            if (decomposed.unneg().op()!=Op.CONJ) {
             //try Image normalizing
-//                superterm = (Compound) Image.imageNormalize(superterm);
-//                Term decomposed = stmtCommon(!subjOrPred, superterm);
-//            }
+                superterm = (Compound) Image.imageNormalize(superterm);
+                decomposed = stmtCommon(!subjOrPred, superterm);
+            }
 
             //if (unionOrIntersection) {
             if (decomposed.op() == NEG) {

@@ -17,6 +17,7 @@ import nars.task.util.Answer;
 import nars.task.util.TaskList;
 import nars.term.Compound;
 import nars.term.Term;
+import nars.term.util.Image;
 import nars.term.util.TermException;
 import nars.time.Tense;
 import nars.time.event.WhenTimeIs;
@@ -201,10 +202,17 @@ public class DynTaskify extends TaskList {
             so = subTerm.op();
         }
 
-        if (!so.taskable || !subTerm.isNormalized()) {
-            //if (NAL.DEBUG)
-                throw new TermException("unnormalized subterm in supposed dynamic super-compound", subTerm);
-            //return false;
+        if (!so.taskable)
+            throw new TermException("non-taskable component of supposed dynamic compound", subTerm);
+
+//        if (!subTerm.isNormalized()) {
+//            //seems ok for images
+//            //if (NAL.DEBUG)
+//                throw new TermException("unnormalized component of supposed dynamic compound", subTerm);
+//            //return false;
+//        }
+        if (subTerm.op()==INH) {
+            subTerm = Image.imageNormalize(subTerm);
         }
 
         NAR nar = answer.nar;

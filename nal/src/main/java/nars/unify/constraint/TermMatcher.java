@@ -272,10 +272,12 @@ abstract public class TermMatcher {
     public final static class Contains extends TermMatcher {
 
         public final Term x;
+        private final int xStruct;
 
         public Contains(Term x) {
             assert(!(x instanceof VarPattern)); //HACK
             this.x = x;
+            this.xStruct = x.structure();
         }
 
         @Override
@@ -294,8 +296,9 @@ abstract public class TermMatcher {
         }
 
         @Override
-        public boolean testSuper(Term x) {
-            return x.containsRecursively(this.x);
+        public boolean testSuper(Term term) {
+            return term.hasAny(xStruct);
+                    //containsRecursively(this.x);
         }
     }
 

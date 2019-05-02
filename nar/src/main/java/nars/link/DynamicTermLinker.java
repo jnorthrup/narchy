@@ -85,7 +85,7 @@ public abstract class DynamicTermLinker implements TermLinker {
             float fanoutRatio =
                     //root.volume() / (1f + root.subs());
                     //1 / (1 + ((float)root.volume())/(1+root.subs()));
-                    1 / (1 + ((float)root.volume()-1)/(1+root.subs()));
+                    1 / (1 + (((float)(root.volume()-1))/(1+root.subs())));
 
             float w =
                     //fanoutRatio;
@@ -110,8 +110,8 @@ public abstract class DynamicTermLinker implements TermLinker {
 
         protected float subValue(Term sub) {
             int v =
-                    //sub.volume();
-                    sub.complexity();
+                    sub.volume();
+                    //sub.complexity();
             return
                     Util.sqrt(v);
                     //v;

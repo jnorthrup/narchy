@@ -17,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class NAL4Test extends NALTest {
 
 
-    private static final int cycles = 150;
+    private static final int cycles = 450;
 
     @Override
     protected NAR nar() {
@@ -152,9 +152,26 @@ public class NAL4Test extends NALTest {
         ;
     }
     @Test
+    void structural_transformationInt_neg() {
+        test
+                .believe("(--(x && y) --> (acid,base))")
+                .mustBelieve(cycles, "((--(x && y),\\,base) --> acid)", 1.0f, 0.9f)
+                .mustBelieve(cycles, "((--(x && y),acid,\\) --> base)", 1.0f, 0.9f)
+        ;
+    }
+    @Test
+    void structural_transformationInt_neg_focus() {
+        test
+                .believe("(nothing --> (--acid,--base))")
+                .mustBelieve(cycles, "((nothing,\\,--base) --> acid)", 0.0f, 0.9f)
+                .mustBelieve(cycles, "((nothing,--acid,\\) --> base)", 0.0f, 0.9f)
+        ;
+    }
+
+    @Test
     void concludeImageIntInheritImageExt() {
         test
-                .termVolMax(9)
+                .termVolMax(12)
 //                .confMin(0.6f)
                 .believe("(neutralization --> (acid,base))")
                 .believe("((acid,base) --> reaction)")
@@ -249,7 +266,8 @@ public class NAL4Test extends NALTest {
                 .mustNotOutput(cycles, "(likes-->(cat,[blue]))", BELIEF, 1f, 1f, 0.9f, 0.9f, ETERNAL)
         ;
     }
-    @Test
+
+    @Disabled @Test
     public void testNormalize1aQ() {
 
         test

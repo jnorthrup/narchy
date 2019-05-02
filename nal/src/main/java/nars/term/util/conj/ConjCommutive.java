@@ -154,12 +154,12 @@ public enum ConjCommutive {;
         }
 
 
-        if (pos != null && neg != null && (pos.cardinality() + neg.cardinality()) == u.length) {
-
-            //mix of pos and negative, check for co-negation
-
-            return conjDirect(dt, u);
-        }
+//        if (pos != null && neg != null && (pos.cardinality() + neg.cardinality()) == u.length) {
+//
+//            //mix of pos and negative, check for co-negation
+//
+//            return conjDirect(dt, u);
+//        }
 
         int seqCount = seq != null ? seq.cardinality() : 0;
         if (seqCount == 1) {

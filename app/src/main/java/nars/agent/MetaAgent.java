@@ -143,7 +143,7 @@ public class MetaAgent extends Game {
 
         Reward h = rewardNormalized($.inh(gid, happy), 0, 1, ()-> {
             //new FloatFirstOrderDifference(nar::time, (() -> {
-                return g.happiness();
+                return g.happiness(dur() /* supervisory dur of the meta-agent */);
         });
 
 

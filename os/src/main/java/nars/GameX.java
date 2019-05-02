@@ -195,6 +195,7 @@ abstract public class GameX extends Game {
 
         int threads = _threads <= 0 ? Util.concurrencyExcept(1) : _threads;
 
+        float ramGigs = Runtime.getRuntime().maxMemory() / (1024 * 1024 * 1024f);
         NAR n = new NARS()
 
                 .what(
@@ -241,14 +242,18 @@ abstract public class GameX extends Game {
 
                         //CaffeineMemory.soft()
 
-                        new CaffeineMemory(
+                        ramGigs > 0.25 ?
+                            new CaffeineMemory(
                                 //8 * 1024
                                 //16*1024
                                    //32*1024
                                 //64 * 1024
                                 //128*1024
-                                256*1024
-                        )
+                                Math.round(ramGigs * 128 * 1024)
+                            )
+                            :
+                            CaffeineMemory.soft()
+
                         //, c -> (int) Math.ceil(c.term().voluplexity()))
 
 //                        new HijackConceptIndex(

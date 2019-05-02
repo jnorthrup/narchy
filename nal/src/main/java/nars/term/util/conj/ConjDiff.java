@@ -1,14 +1,19 @@
 package nars.term.util.conj;
 
+import jcog.util.ArrayUtils;
 import nars.term.Term;
 import org.jetbrains.annotations.Nullable;
 
 import static nars.time.Tense.ETERNAL;
 
 public final class ConjDiff extends Conj {
+    private static final int ABSORB = +1;
+    private static final int CONFLICT = -1;
+
     private final Conj exc;
     private final boolean invert;
-    private final long[] excludeEvents;
+    private final long[] excludeEventsAt;
+    private final boolean excludeEventAtEternal;
 
     public static ConjDiff the(Term include, long includeAt, Term exclude, long excludeAt) {
         return the(include, includeAt, exclude, excludeAt, false);
@@ -40,7 +45,8 @@ public final class ConjDiff extends Conj {
     private ConjDiff(Term include, Conj exclude, long offset, boolean invert) {
         super(exclude.termToId, exclude.idToTerm);
         this.exc = exclude;
-        this.excludeEvents = exc.event.keySet().toArray();
+        this.excludeEventsAt = exc.event.keySet().toArray();
+        this.excludeEventAtEternal = ArrayUtils.indexOf(excludeEventsAt, ETERNAL)!=-1;
         this.invert = invert;
         add(offset, include);
         //distribute();
@@ -56,7 +62,7 @@ public final class ConjDiff extends Conj {
     protected int filterAdd(long at, byte id, Term x) {
         if (at == ETERNAL) {
             boolean hasAbsorb = false;
-            for (long see : excludeEvents) {
+            for (long see : excludeEventsAt) {
                 int f = test(see, id);
                 if (f == -1) return -1;
                 if (f == +1) hasAbsorb = true; //but keep checking for contradictions first
@@ -70,6 +76,31 @@ public final class ConjDiff extends Conj {
         }
         return 0;
     }
+
+//    @Override
+//    protected int filterAdd(long at, byte id, Term x) {
+//
+//        if (at == ETERNAL) {
+//            boolean absorbed = false;
+//            for (long excludeAt : excludeEventsAt) {
+//                int f = test(excludeAt, id);
+//                if (f == CONFLICT) return CONFLICT;
+//                if (f == ABSORB) absorbed = true; //but continue testing for contradictions before returning
+//            }
+//            if (absorbed)
+//                return ABSORB;
+//        } else {
+//            int f = ArrayUtils.indexOf(excludeEventsAt, at)!=-1 ? test(at, id) : 0;
+//            if (f == CONFLICT) return CONFLICT;
+//            if (excludeEventAtEternal) {
+//                int g = test(ETERNAL, id);
+//                if (g == CONFLICT) return CONFLICT;
+//                if (g == ABSORB) return ABSORB; //absorbed
+//            }
+//            if (f == ABSORB) return ABSORB; //asorbed
+//        }
+//        return 0;
+//    }
 
     private int test(long at, byte id) {
         return exc.conflictOrSame(at, (byte) (id * (invert ? -1 : +1)));

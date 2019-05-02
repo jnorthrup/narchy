@@ -1,5 +1,6 @@
 package nars.truth.dynamic;
 
+import jcog.WTF;
 import jcog.util.ArrayUtils;
 import jcog.util.ObjectLongLongPredicate;
 import nars.NAR;
@@ -9,8 +10,10 @@ import nars.subterm.Subterms;
 import nars.task.util.TaskRegion;
 import nars.term.Compound;
 import nars.term.Term;
+import nars.term.atom.Bool;
 import nars.term.util.conj.Conj;
 import nars.term.util.conj.ConjBuilder;
+import nars.term.util.conj.ConjLazy;
 import nars.time.Tense;
 import nars.truth.Stamp;
 import org.eclipse.collections.api.block.predicate.primitive.LongObjectPredicate;
@@ -45,8 +48,8 @@ public class DynamicConjTruth {
 
             int n = d.size();
             ConjBuilder l =
-                    //new ConjLazy(n);
-                    new Conj(n);
+                    new ConjLazy(n);
+                    //new Conj(n);
             for (int i = 0; i < n; i++) {
                 TaskRegion t = d.get(i);
                 long s = t.start();
@@ -63,7 +66,15 @@ public class DynamicConjTruth {
                     break;
             }
 
-            return l.term();
+            Term y = l.term();
+
+            //TEMPORARY
+            if (!(y instanceof Bool) && y.anon().op()!=y.op()) {
+                l.term();
+                throw new WTF("conj fault");
+            }
+
+            return y;
         }
 
         @Override
@@ -92,40 +103,53 @@ public class DynamicConjTruth {
             boolean xternal = superDT == XTERNAL;
             boolean parallel = superDT == 0;
 
-            if (xternal || dternal) {
+            if ((xternal || dternal)) {
                 Subterms ss = conj.subterms();
-                if (xternal) {
-                    boolean coneg = false;
-                    if (ss.hasAny(Op.NEG)) {
-                        //quick test
-                        if (ss.subs()==2) {
-                            coneg = ss.sub(0).equalsNeg(ss.sub(1));
-                        } else {
-                            coneg = conj.dt(DTERNAL).volume() < conj.volume(); //collapses will result in reduced volume
+
+                if (xternal && start!=ETERNAL) {
+                    boolean conegOrEquiv = false;
+                    int sss = ss.subs();
+                    if (sss == 2) {
+                        Term a = ss.sub(0), b = ss.sub(1);
+                        //repeat, must be time separated
+                        if (a.equals(b)) {
+                            conegOrEquiv = true;
                         }
                     }
-                    if (coneg) {
-                        int n = ss.subs();
-                        int subRange = Tense.occToDT((end - start) / (n));
-                        if (subRange >= 1) {
-                            //HACK randomly assign each component to a partitioned sub-ranges
-
-                            int[] order = new int[n];
-                            for (int i = 0; i < n; i++) order[i] = i;
-                            ArrayUtils.shuffle(order, ThreadLocalRandom.current());
-
-                            int o = 0;
-                            for (Term x : ss) {
-                                int offset = order[o++] * subRange;
-                                long subStart = start + offset;
-                                long subEnd = subStart + subRange;
-                                if (!each.accept(x, subStart, subEnd))
-                                    return false;
-                            }
-                            return true;
+                    if (!conegOrEquiv && ss.hasAny(Op.NEG)) {
+                        //quick test
+                        if (sss ==2) {
+                            Term a = ss.sub(0), b = ss.sub(1);
+                            conegOrEquiv = a.equalsNeg(b);
                         } else {
-                            //TODO try to determine some interval relative to the first found task which could separate start..end to allow differentiation
+                            conegOrEquiv = !conj.equals(conj.root()) && conj.dt(DTERNAL).volume() < conj.volume(); //collapses will result in reduced volume
                         }
+                    }
+                    if (conegOrEquiv) {
+                        //HACK randomly assign each component to a partitioned sub-ranges
+
+                        //TODO refine
+                        int subRange = Tense.occToDT( (long)Math.ceil((end - start) / ((float)(sss))) );
+
+                        ThreadLocalRandom rng = ThreadLocalRandom.current();
+                        int[] order = new int[sss];
+                        if (sss == 2)
+                            order = rng.nextBoolean() ? new int[] { 0, 1 } : new int[] { 1, 0 };
+                        else {
+                            for (int i = 0; i < sss; i++) order[i] = i;
+                            ArrayUtils.shuffle(order, rng);
+                        }
+
+
+                        long s = start;
+                        for (int i = 0; i < sss; i++) {
+                            Term x = ss.sub(order[i]);
+                            long e = s + subRange;
+                            if (!each.accept(x, s, e))
+                                return false;
+                            s = e+1;
+                        }
+                        return true;
                     }
                 }
 
