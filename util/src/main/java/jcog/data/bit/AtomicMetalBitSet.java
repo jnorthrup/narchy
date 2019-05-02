@@ -1,5 +1,6 @@
 package jcog.data.bit;
 
+import jcog.TODO;
 import jcog.data.atomic.MetalAtomicIntegerFieldUpdater;
 
 /** atomic integer metal bitset, cap = 32 */
@@ -21,7 +22,18 @@ public class AtomicMetalBitSet extends MetalBitSet {
     }
 
     @Override
+    public MetalBitSet negate() {
+        throw new TODO();
+    }
+
+    @Override
+    public MetalBitSet negated() {
+        throw new TODO();
+    }
+
+    @Override
     public boolean get(int i) {
+        assert(i < 32);
         return (X.get(this) & (1 << i)) != 0;
     }
 
@@ -43,12 +55,14 @@ public class AtomicMetalBitSet extends MetalBitSet {
 
     @Override
     public void set(int i) {
+        assert(i < 32);
         int mask = 1<<i;
         X.accumulateAndGet(this, mask, (v,m)-> v|m);
         //X.getAndUpdate(this, v-> v|(mask) );
     }
 
     public boolean getAndSet(int i) {
+        assert(i < 32);
         int mask = 1<<i;
         return ((X.getAndAccumulate(this, mask, (v,m) -> v|m)) & mask) != 0;
         //return (X.getAndUpdate(this, v-> v|(mask) ) & mask) != 0;
@@ -56,11 +70,13 @@ public class AtomicMetalBitSet extends MetalBitSet {
 
     @Override
     public void clear(int i) {
+        assert(i < 32);
         int antimask = ~(1<<i);
         X.accumulateAndGet(this, antimask, (v,am)-> v&(am) );
     }
 
     public boolean getAndClear(int i) {
+        assert(i < 32);
         int mask = (1<<i);
         int antimask = ~mask;
         return (X.accumulateAndGet(this, antimask, (v,am)-> v&(am) ) & mask) != 0;

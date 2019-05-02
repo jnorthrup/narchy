@@ -3,6 +3,7 @@ package nars.truth.dynamic;
 import jcog.Paper;
 import jcog.Util;
 import jcog.WTF;
+import jcog.data.bit.MetalBitSet;
 import jcog.data.set.MetalLongSet;
 import jcog.math.LongInterval;
 import nars.NAL;
@@ -51,7 +52,7 @@ public class DynTaskify extends TaskList {
 
     private final boolean beliefOrGoal;
     private final Predicate<Task> filter;
-
+    final MetalBitSet componentPolarity;
 
     public DynTaskify(AbstractDynamicTruth model, boolean beliefOrGoal, Answer a) {
         super(4 /* estimate */);
@@ -60,6 +61,8 @@ public class DynTaskify extends TaskList {
         this.beliefOrGoal = beliefOrGoal;
         this.model = model;
         this.dur = a.dur;
+        this.componentPolarity = MetalBitSet.bits(32);
+        componentPolarity.negate(); //all positive by default
 
         Term template = a.term();
         assert(template.op() != NEG);
@@ -141,7 +144,7 @@ public class DynTaskify extends TaskList {
                 Task tt = Task.project(x, ss, ee,
                         NAL.truth.TRUTH_EVI_MIN, //minimal truth threshold for accumulating evidence
                         false,
-                        NAL.DYNAMIC_TASK_TIME_DITHERING,
+                        false,
                         nar);
                 if (tt == null)
                     return null;
@@ -187,18 +190,21 @@ public class DynTaskify extends TaskList {
 //    }
 
 
+
     private boolean evalComponent(Term subTerm, long subStart, long subEnd) {
         Op so = subTerm.op();
 
+        int currentComponent = size;
         boolean negated = so == Op.NEG;
         if (negated) {
             subTerm = subTerm.unneg();
             so = subTerm.op();
         }
+
         if (!so.taskable || !subTerm.isNormalized()) {
-            if (NAL.DEBUG)
+            //if (NAL.DEBUG)
                 throw new TermException("unnormalized subterm in supposed dynamic super-compound", subTerm);
-            return false;
+            //return false;
         }
 
         NAR nar = answer.nar;
@@ -223,9 +229,12 @@ public class DynTaskify extends TaskList {
                 throw new UnsupportedOperationException();
         }
 
-        return bt != null &&
-               model.acceptComponent((Compound) template(), bt) &&
-               add(negated ? Task.negated(bt) : bt);
+        if (bt != null && model.acceptComponent((Compound) template(), bt) && add(bt)) {
+            if (negated)
+                componentPolarity.clear(currentComponent);
+            return true;
+        }
+        return false;
     }
 
 
@@ -237,7 +246,7 @@ public class DynTaskify extends TaskList {
 
         if (evi == null) {
             switch (size) {
-                case 1: //dont create set now
+                case 1: //dont create set yet
 //                case 2:
                     break;
                 default: //more than 2:

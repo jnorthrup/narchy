@@ -1,6 +1,5 @@
 package nars.truth.dynamic;
 
-import jcog.data.list.FasterList;
 import jcog.util.ArrayUtils;
 import jcog.util.ObjectLongLongPredicate;
 import nars.NAR;
@@ -16,7 +15,6 @@ import nars.time.Tense;
 import nars.truth.Stamp;
 import org.eclipse.collections.api.block.predicate.primitive.LongObjectPredicate;
 
-import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
 import static nars.time.Tense.*;
@@ -26,12 +24,12 @@ public class DynamicConjTruth {
     public static final AbstractDynamicTruth ConjIntersection = new AbstractSectTruth(false) {
 
         @Override
-        public Term reconstruct(Compound superterm, List<Task> components, NAR nar, long start, long end) {
+        public Term reconstruct(Compound superterm, DynTaskify d, NAR nar, long start, long end) {
 
             long range;
             if (start!=ETERNAL) {
                 //adjust end for the internal sequence range
-                end = ((FasterList<Task>) components).maxValue(Stamp::end);
+                end = d.maxValue(Stamp::end);
                 range = end - start;
             } else {
                 range = ETERNAL;
@@ -40,20 +38,21 @@ public class DynamicConjTruth {
             boolean factored = Conj.isFactoredSeq(superterm);
 
 
-            int n = components.size();
+            int n = d.size();
             ConjLazy l = new ConjLazy(n);
-            for (TaskRegion t : components) {
+            for (int i = 0, dSize = d.size(); i < dSize; i++) {
+                TaskRegion t = d.get(i);
                 long s = t.start();
                 long when;
                 if ((s == ETERNAL) || (range == ETERNAL))
                     when = ETERNAL;
-                else if (factored && (range>0 && s <= start && t.end() >= end))
+                else if (factored && (range > 0 && s <= start && t.end() >= end))
                     when = ETERNAL; //the component spans the entire range, so consider it an eternal factor
                 else
                     when = s;
 
 
-                if (!l.add(when, ((Task) t).term()))
+                if (!l.add(when, ((Task) t).term().negIf(!d.componentPolarity.get(i))))
                     break;
             }
 

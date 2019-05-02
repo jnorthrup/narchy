@@ -39,7 +39,7 @@ class DynamicDiffTest extends AbstractDynamicTaskTest {
         n.believe("c:x", 0.75f, 0.50f);
         n.believe("c:y", 0.25f, 0.50f);
         n.run(1);
-        Term xMinY = $("c:(x - y)"), yMinX = $("c:(y - x)");
+        Term xMinY = $("c:(x ~ y)"), yMinX = $("c:(y ~ x)");
         assertNotNull(((BeliefTables) n.conceptualize(xMinY).beliefs()).tableFirst(DynamicTruthTable.class));
         assertNotNull(((BeliefTables) n.conceptualize(yMinX).beliefs()).tableFirst(DynamicTruthTable.class));
         assertEquals(
@@ -54,7 +54,7 @@ class DynamicDiffTest extends AbstractDynamicTaskTest {
         n.believe("c:x", 0.75f, 0.50f);
         n.believe("c:y", 0.25f, 0.50f);
         n.run(1);
-        Term xMinY = $("c:(x ~ y)"), yMinX = $("c:(y ~ x)");
+        Term xMinY = $("c:(x - y)"), yMinX = $("c:(y - x)");
         assertNotNull(((BeliefTables) n.conceptualize(xMinY).beliefs()).tableFirst(DynamicTruthTable.class));
         assertNotNull(((BeliefTables) n.conceptualize(yMinX).beliefs()).tableFirst(DynamicTruthTable.class));
         assertEquals(
@@ -66,7 +66,7 @@ class DynamicDiffTest extends AbstractDynamicTaskTest {
     }
 
     @Test
-    void testEviDilution() throws Narsese.NarseseException {
+    void testEviDilution() {
         NAR n = NARS.shell();
         n.believe("c:x", 0.75f, 0.50f, 0, 0);
         n.believe("c:y", 0.25f, 0.50f, 1, 1);

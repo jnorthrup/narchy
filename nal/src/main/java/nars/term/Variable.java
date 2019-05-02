@@ -64,8 +64,15 @@ public interface Variable extends Atomic {
                 return unifyVar(u, (Variable)x, y);
             else if (y instanceof Variable && u.varReverse(y.op()))
                 return unifyVar(u, (Variable)y, x);
-            else
-                return x.unify(y, u); //both constant-like
+            else {
+                if (u.varDepth < NAL.unify.UNIFY_VAR_RECURSION_DEPTH_LIMIT) {
+                    u.varDepth++;
+                    boolean result = x.unify(y, u); //both constant-like
+                    u.varDepth--;
+                    return result;
+                } else
+                    return false; //recursion limit exceeded
+            }
         } else {
             return unifyVar(u, this, y0);
         }
@@ -117,8 +124,7 @@ public interface Variable extends Atomic {
                 u.varDepth--;
                 return result;
             } else
-                //recursion limit exceeded
-                return false;
+                return false; //recursion limit exceeded
         }
     }
 

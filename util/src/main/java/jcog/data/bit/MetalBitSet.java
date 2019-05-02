@@ -93,16 +93,12 @@ abstract public class MetalBitSet {
     /** modifies this instance by inverting all the bit values
      *  warning this may modify bits beyond the expected range, causing unexpected cardinality changes
      * */
-    public MetalBitSet negate() {
-        throw new TODO();
-    }
+    abstract public MetalBitSet negate();
 
     /** returns a new instance with the values inverted
      * warning this may modify bits beyond the expected range, causing unexpected cardinality changes
      * */
-    public MetalBitSet negated() {
-        throw new TODO();
-    }
+    abstract public MetalBitSet negated();
 
 
     public void setAll(int bitVector, int o) {
@@ -129,12 +125,22 @@ abstract public class MetalBitSet {
             this.data = data;
         }
 
-        protected LongArrayBitSet(long bits) {
+        LongArrayBitSet(long bits) {
             resize(bits);
         }
 
         public int capacity() {
             return data.length * 64;
+        }
+
+        @Override
+        public MetalBitSet negate() {
+            throw new TODO();
+        }
+
+        @Override
+        public MetalBitSet negated() {
+            throw new TODO();
         }
 
         public void resize(long bits) {
@@ -285,6 +291,11 @@ abstract public class MetalBitSet {
         }
 
         @Override
+        public String toString() {
+            return Integer.toBinaryString(x);
+        }
+
+        @Override
         public boolean isEmpty() {
             return x == 0;
         }
@@ -296,16 +307,19 @@ abstract public class MetalBitSet {
 
         @Override
         public boolean get(int i) {
+            assert(i < 32);
             return (x & (1 << i)) != 0;
         }
 
         @Override
         public void set(int i) {
+            assert(i < 32);
             x |= (1 << i);
         }
 
         @Override
         public void clear(int i) {
+            assert(i < 32);
             x &= ~(1 << i);
         }
 

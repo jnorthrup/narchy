@@ -140,7 +140,7 @@ public abstract class NAL<W> extends Parts<Term, W> implements Timed {
     //2f;
 
 
-    public static final boolean DYNAMIC_TASK_TIME_DITHERING= configIs("DYNAMIC_TASK_TIME_DITHERING");
+
     public static final boolean ANSWER_TASK_TIME_DITHERING= configIs("ANSWER_TASK_TIME_DITHERING");
 
     /**

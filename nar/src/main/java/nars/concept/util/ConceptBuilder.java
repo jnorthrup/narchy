@@ -202,59 +202,45 @@ public abstract class ConceptBuilder implements BiFunction<Term, Concept, Concep
 
     private static AbstractDynamicTruth dynamicInh(Term t) {
 
-        //quick pre-test
         Subterms tt = t.subterms();
-//        if (tt.hasAny(Op.Sect | Op.PROD.bit)) {
-//
-//
-//            if ((tt.OR(s -> s.isAny(Op.Sect)))) {
-//
-//
-//                Term subj = tt.sub(0), pred = tt.sub(1);
-//
-//                Op so = subj.op(), po = pred.op();
-//
-//
-//                if ((so == Op.SECTi) || (so == Op.SECTe)) {
-//
-//                    //TODO move this to impl-specific test function
-//                    Subterms subjsubs = subj.subterms();
-//                    int s = subjsubs.subs();
-//                    for (int i = 0; i < s; i++) {
-//                        if (!validDynamicSubterm.test(INH.the(subjsubs.sub(i), pred)))
-//                            return null;
-//                    }
-//
-//                    switch (so) {
-//                        case SECTi:
-//                            return DynamicStatementTruth.SubjInter;
-//                        case SECTe:
-//                            return DynamicStatementTruth.SubjUnion;
-//                    }
-//
-//
-//                }
-//
-//
-//                if (((po == Op.SECTi) || (po == Op.SECTe))) {
-//
-//
-//                    Compound cpred = (Compound) pred;
-//                    int s = cpred.subs();
-//                    for (int i = 0; i < s; i++) {
-//                        if (!validDynamicSubterm.test(INH.the(subj, cpred.sub(i))))
-//                            return null;
-//                    }
-//
-//                    switch (po) {
-//                        case SECTi:
-//                            return DynamicStatementTruth.PredUnion;
-//                        case SECTe:
-//                            return DynamicStatementTruth.PredInter;
-//                    }
-//                }
-//            }
-//        }
+        if (tt.hasAny(Op.CONJ /*| Op.PROD.bit*/)) {
+
+            Term s = tt.sub(0), p = tt.sub(1);
+
+            {
+                Op so = s.op();
+                Term su = s.unneg();
+                if (so == Op.CONJ || (so == NEG && su.op() == CONJ)) {
+                    Subterms subjsubs = su.subterms();
+                    if (!subjsubs.AND(z -> validDynamicSubterm.test(INH.the(z, p))))
+                        return null;
+
+                    switch (so) {
+                        case CONJ:
+                            return DynamicStatementTruth.SubjInter;
+                        case NEG:
+                            return DynamicStatementTruth.SubjUnion;
+                    }
+                }
+            }
+
+            {
+                Op po = p.op();
+                Term pu = p.unneg();
+                if (po == Op.CONJ || (po == NEG && pu.op() == CONJ)) {
+                    Subterms subjsubs = pu.subterms();
+                    if (!subjsubs.AND(z -> validDynamicSubterm.test(INH.the(s, z))))
+                        return null;
+
+                    switch (po) {
+                        case CONJ:
+                            return DynamicStatementTruth.PredInter;
+                        case NEG:
+                            return DynamicStatementTruth.PredUnion;
+                    }
+                }
+            }
+        }
 
         Term it = Image.imageNormalize(t);
         if (it != t && !(it instanceof Bool))
