@@ -132,18 +132,18 @@ class DynamicConjTest {
                 .believe($$("e"), ETERNAL);
 
         Term xye = $("(&&,x,y,e)");
+
         Task atZero = n.belief(xye, 0);
 
-    assertEquals(0, atZero.start());
-
         Task atOne = n.belief(xye, 1);
-        assertNotNull(atOne);
 
         Task atEte = n.belief(xye, ETERNAL);
 
-//        assertEquals(xx, atZero.target().toString());
-//        assertEquals(xx, atOne.target().toString());
-//        assertEquals(xx, atEte.target().toString());
+        assertNotNull(atZero);
+        assertNotNull(atOne);
+        assertNotNull(atEte);
+
+        assertEquals(0, atZero.start());
 
         assertEquals(1, atOne.start());
         assertEquals(0, atEte.start());

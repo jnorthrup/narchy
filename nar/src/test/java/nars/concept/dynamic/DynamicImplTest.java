@@ -157,7 +157,7 @@ class DynamicImplTest extends AbstractDynamicTaskTest {
         xy = xy.replace(" &&+0 ", "&|");
         xy = xy.replace("x && y", "x&&y");
         xy = xy.replace(" ==> ", "==>");
-        xy = xy.replace("(--,((--,x) && (--,y)))", "(||,x,y)");
+        xy = xy.replace("(--,((--,x) && (--,y)))", "(x||y)");
         xy = xy.replace("((--,x) && (--,y))", "((--,x)&&(--,y))");
         return xy;
     }
@@ -409,7 +409,7 @@ class DynamicImplTest extends AbstractDynamicTaskTest {
                 NARS.shell().believe("--(a ==> x)").believe("(b ==> x)")
         );
         //disj = intersection
-        assertBelief(ETERNAL, "((||,a,b)==>x)",
+        assertBelief(ETERNAL, "((a||b)==>x)",
                 0, 0.81f,
                 NARS.shell().believe("--(a ==> x)").believe("(b ==> x)")
         );

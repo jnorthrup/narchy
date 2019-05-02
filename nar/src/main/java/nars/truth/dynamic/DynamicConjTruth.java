@@ -24,6 +24,11 @@ public class DynamicConjTruth {
     public static final AbstractDynamicTruth ConjIntersection = new AbstractSectTruth(false) {
 
         @Override
+        protected boolean truthNegComponents() {
+            return false;
+        }
+
+        @Override
         public Term reconstruct(Compound superterm, DynTaskify d, NAR nar, long start, long end) {
 
             long range;

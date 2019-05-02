@@ -12,7 +12,7 @@ abstract public class AbstractSectTruth extends AbstractDynamicTruth {
     /**
      * true = union, false = intersection
      */
-    final boolean unionOrIntersection;
+    @Deprecated final boolean unionOrIntersection;
 
     AbstractSectTruth(boolean unionOrIntersection) {
         this.unionOrIntersection = unionOrIntersection;
@@ -20,8 +20,10 @@ abstract public class AbstractSectTruth extends AbstractDynamicTruth {
 
     @Override
     public final Truth truth(DynTaskify l, NAR nar) {
-        return apply(l, nar, false, unionOrIntersection);
+        return apply(l, nar, truthNegComponents(), unionOrIntersection);
     }
+
+    protected abstract boolean truthNegComponents();
 
     @Nullable
     private Truth apply(DynTaskify d, NAR nar, boolean negComponents, boolean negResult) {

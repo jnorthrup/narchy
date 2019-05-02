@@ -159,6 +159,11 @@ public class DynamicStatementTruth {
             this.subjOrPred = subjOrPred;
         }
 
+        @Override
+        protected boolean truthNegComponents() {
+            return false;
+        }
+
         static Term reconstruct(Compound superterm, DynTaskify d, boolean subjOrPred, boolean union) {
             Term superSect = superterm.sub(subjOrPred ? 0 : 1);
             Op op = superterm.op();
@@ -358,6 +363,11 @@ public class DynamicStatementTruth {
         }
 
         @Override
+        protected boolean truthNegComponents() {
+            return true;
+        }
+
+        @Override
         public boolean evalComponents(Compound superterm, long start, long end, ObjectLongLongPredicate<Term> each) {
             Subterms ss = superterm.subterms();
             return decomposeImplConj(superterm, start, end, each, ss.sub(1), (Compound) ss.sub(0), true, false /* reconstruct as-is; union only applies to the truth calculation */);
@@ -375,6 +385,11 @@ public class DynamicStatementTruth {
     private static final class ImplSubjDisj extends AbstractInhImplSectTruth {
         private ImplSubjDisj() {
             super(true, false);
+        }
+
+        @Override
+        protected boolean truthNegComponents() {
+            return false;
         }
 
         @Override
