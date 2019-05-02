@@ -157,8 +157,8 @@ class NAL3GoalTest {
 
         new TestNAR(NARS.tmp(3))
                 .termVolMax(8)
-                .input("((X|Y) --> Z)!")
-                .input("(X --> Z).")
+                .input("((X&Y) --> Z)!")
+//                .input("(X --> Z).")
                 .mustGoal(GoalDecompositionTest.cycles, "(Y --> Z)", 1, 0.81f) //via structural decomposition of intersection, at least
                 .run(0);
 
@@ -168,8 +168,8 @@ class NAL3GoalTest {
 
         new TestNAR(NARS.tmp(3))
                 .termVolMax(8)
-                .input("((X&Y) --> Z)!")
-                .input("(X --> Z).")
+                .input("((X|Y) --> Z)!")
+//                .input("(X --> Z).")
                 .mustGoal(GoalDecompositionTest.cycles, "(Y --> Z)", 1, 0.45f /*0.81f*/) //via structural decomposition of union, at least
                 .run(0);
 

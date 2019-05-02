@@ -2,7 +2,6 @@ package nars.time;
 
 import com.google.common.collect.Iterators;
 import jcog.WTF;
-import jcog.data.bit.MetalBitSet;
 import jcog.data.graph.ImmutableDirectedEdge;
 import jcog.data.graph.MapNodeGraph;
 import jcog.data.graph.Node;
@@ -165,7 +164,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
                 if (nte > 0) {
 
                     boolean stable;
-                    do {
+                    //do {
 
                         stable = true;
 
@@ -217,14 +216,14 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
                                             stable &= nte <= 1; //try again if other nodes, because it may connect with other ranges further in the iteration
                                         }
 
-                                        break;
+                                        //break;
                                     }
                                 }
                             }
 
 
                         }
-                    } while (!stable);
+                    //} while (!stable);
                 }
             }
 
@@ -1255,17 +1254,17 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
     private boolean bfsPush(Collection<Event> roots, Search<Event, TimeSpan> tv) {
 
 
-        MetalBitSet created = null;
+//        MetalBitSet created = null;
         {
-            int n = 0;
+//            int n = 0;
             for (Event r : roots) {
                 if (addNewNode(r)) {
-                    if (created == null) {
-                        created = MetalBitSet.bits(roots.size());
-                    }
-                    created.set(n);
+//                    if (created == null) {
+//                        created = MetalBitSet.bits(roots.size());
+//                    }
+//                    created.set(n);
                 }
-                n++;
+//                n++;
             }
         }
 

@@ -53,10 +53,25 @@ public interface Variable extends Atomic {
             return true;
 
         Term x = u.resolve(this);
+        if (x!=this && x.equals(y0))
+            return true;
         Term y = u.resolvePosNeg(y0);
-        if (x.equals(y))
+        if (y!=y0 && x.equals(y))
             return true;
 
+        if (x!=this || y!=y0) {
+            if (x instanceof Variable)
+                return unifyVar(u, (Variable)x, y);
+            else if (y instanceof Variable && u.varReverse(y.op()))
+                return unifyVar(u, (Variable)y, x);
+            else
+                return x.unify(y, u); //both constant-like
+        } else {
+            return unifyVar(u, this, y0);
+        }
+    }
+
+    default boolean unifyVar(Unify u, Variable x, Term y) {
         Op xOp = x.op();
         if (x instanceof Variable && u.var(xOp)) {
 
@@ -71,7 +86,7 @@ public interface Variable extends Atomic {
 //                        return u.putXY((Variable) y, x);
 //                    if (yOp == xOp)
                     if (xOp!=VAR_PATTERN && yOp!=VAR_PATTERN && u.commonVariables)
-                        return CommonVariable.unify((Variable) x, (Variable) y, u);
+                        return CommonVariable.unify(x, (Variable) y, u);
                     else {
                         if (yOp.id < xOp.id && u.varReverse(yOp))
                             return u.putXY((Variable) y, x);
@@ -80,7 +95,7 @@ public interface Variable extends Atomic {
                 }
             }
 
-            return u.putXY((Variable) x, y);
+            return u.putXY(x, y);
 
         } else if (y instanceof Variable && u.varReverse(y.op())) {
             return u.putXY((Variable) y, x);

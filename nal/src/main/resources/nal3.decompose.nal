@@ -1,7 +1,7 @@
 //NAL3 single premise decompose
     (  M -->   I), X, is(I,"&&"), subOfPosOrNeg(I,X)   |-   (M --> withoutPosOrNeg(I,X)),   (Belief:StructuralDeduction,Goal:StructuralDeduction)
     (  M --> --I), X, is(I,"&&"), subOfPosOrNeg(I,X)   |-   (M --> --withoutPosOrNeg(I,X)),   (Belief:StructuralDeductionWeak,Goal:StructuralDeductionWeak)
-    (  I --> M),   X, is(I,"&&"), subOfPosOrNeg(I,X)   |-   (withoutPosOrNegPolarized(I,X)-->M), (Belief:StructuralDeduction,Goal:StructuralDeduction)
+    (  I --> M),   X, is(I,"&&"), subOfPosOrNeg(I,X)   |-   (withoutPosOrNeg(I,X)-->M), (Belief:StructuralDeduction,Goal:StructuralDeduction)
     (--I --> M),   X, is(I,"&&"), subOfPosOrNeg(I,X)   |-   (--withoutPosOrNeg(I,X)-->M), (Belief:StructuralDeductionWeak,Goal:StructuralDeductionWeak)
 
 //intersection/union/diff question/quest decompose
