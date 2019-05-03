@@ -125,20 +125,21 @@
 
 
     //conj
-    (  S ==> M), (C ==> M), eventOf(C,S), --is(C,"--")                |-      (  conjWithout(C, S) ==> M), (Belief:DecomposePP)
-     (  S ==> M), (C ==> M), eventOf(C,S), --is(C,"--")                |-   --(  conjWithout(C, S) ==> M), (Belief:DecomposeNN)
-       (  --S ==> M), (C ==> M), eventOfNeg(C,S), --is(C,"--")         |-   (  conjWithout(C, --S) ==> M), (Belief:DecomposePP)
-         ( --S ==> M), (C ==> M), eventOfNeg(C,S), --is(C,"--")       |- --(  conjWithout(C, --S) ==> M), (Belief:DecomposeNN)
+    (  S ==> M), (C ==> M), eventOf(C,S)                |-      (  conjWithout(C, S) ==> M), (Belief:DecomposePP)
+     (  S ==> M), (C ==> M), eventOf(C,S)                |-   --(  conjWithout(C, S) ==> M), (Belief:DecomposeNN)
+       (  --S ==> M), (C ==> M), eventOfNeg(C,S)         |-   (  conjWithout(C, --S) ==> M), (Belief:DecomposePP)
+         ( --S ==> M), (C ==> M), eventOfNeg(C,S)       |- --(  conjWithout(C, --S) ==> M), (Belief:DecomposeNN)
 
     //disj
-    (  S ==> M), (--C ==> M), eventOfNeg(C,S), --is(C,"--")              |-  (  --conjWithout(C, --S) ==> M), (Belief:DecomposeNP)
-       ( S ==> M), (--C ==> M), eventOfNeg(C,S), --is(C,"--")            |- --(  --conjWithout(C, --S) ==> M), (Belief:DecomposePN)
-           ( --S ==> M), (--C ==> M), eventOf(C,S), --is(C,"--")     |-   (  --conjWithout(C, --S) ==> M), (Belief:DecomposeNP)
-        (  --S ==> M), (--C ==> M), eventOf(C,S), --is(C,"--")       |- --(  --conjWithout(C, --S) ==> M), (Belief:DecomposePN)
+    (  S ==> M), (--C ==> M), eventOfNeg(C,S)              |-  (  --conjWithout(C, --S) ==> M), (Belief:DecomposeNP)
+       ( S ==> M), (--C ==> M), eventOfNeg(C,S)            |- --(  --conjWithout(C, --S) ==> M), (Belief:DecomposePN)
+           ( --S ==> M), (--C ==> M), eventOf(C,S)     |-   (  --conjWithout(C, S) ==> M), (Belief:DecomposeNP)
+        (  --S ==> M), (--C ==> M), eventOf(C,S)       |- --(  --conjWithout(C, S) ==> M), (Belief:DecomposePN)
 
+//conj pred
     (M ==> S), (M ==> C), eventOf(C,S)                  |- --(M ==> conjWithout(C,   S)), (Belief:DecomposePN)
-     (M ==> S), (M ==> C), eventOf(C,S)                 |-   (M ==> conjWithout(C,   S)), (Belief:DecomposePP)
     (M ==> S), (M ==> C), eventOfNeg(C,S)               |- --(M ==> conjWithout(C, --S)), (Belief:DecomposeNN)
+     (M ==> S), (M ==> C), eventOf(C,S)                 |-   (M ==> conjWithout(C,   S)), (Belief:DecomposePP)
      (M ==> S), (M ==> C), eventOfNeg(C,S)              |-   (M ==> conjWithout(C, --S)), (Belief:DecomposeNP)
 
 

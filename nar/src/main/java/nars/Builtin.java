@@ -113,11 +113,18 @@ public class Builtin {
             new AbstractInlineFunctor2("conjWithout") {
                 @Override
                 protected Term apply(Term conj, Term event) {
-                    Term x = Conj.diffAll(conj, event);
+                    Term x = Conj.diffAll(conj, event, false);
                     return conj.equals(x) ? Null : x;
                 }
             },
-
+            /** like conjWithout, but auto-unneg and re-neg --(&&, , ie for: (|| */
+            new AbstractInlineFunctor2("conjDisjWithout") {
+                @Override
+                protected Term apply(Term conj, Term event) {
+                    Term x = Conj.diffAll(conj, event, true);
+                    return conj.equals(x) ? Null : x;
+                }
+            },
 
             /** applies the changes in structurally similar terms "from" and "to" to the target target */
             Functor.f3((Atom) $.the("substDiff"), (target, from, to) -> {
@@ -459,7 +466,7 @@ public class Builtin {
         nar.add(new AbstractInlineFunctor2("conjWithoutPN") {
             @Override
             protected Term apply(Term conj, Term event) {
-                Term x = Conj.diffAll(conj, event, true);
+                Term x = Conj.diffAll(conj, event, false, true);
                 if (conj.equals(x))
                     return Null;
                 return x;

@@ -628,10 +628,14 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
         return diffAll(include, exclude, false);
     }
 
-    public static Term diffAll(Term include, Term exclude, boolean excludeNeg) {
+    public static Term diffAll(Term include, Term exclude, boolean autoNeg) {
+        return diffAll(include, exclude, autoNeg, false);
+    }
 
-        if (include.op()==NEG) {
-            Term y = diffAll(include.unneg(), exclude);
+    public static Term diffAll(Term include, Term exclude, boolean autoNeg, boolean excludeNeg) {
+
+        if (autoNeg && include.op()==NEG) {
+            Term y = diffAll(include.unneg(), exclude, false, excludeNeg);
             return y==True ? True : y.neg();
         }
 //        boolean eSeq = Conj.isSeq(exclude);
@@ -1032,7 +1036,7 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
 
 
             if (!isSeq(conjUnneg)) {
-                Term newConj = Conj.diffAll(conjUnneg, incoming);
+                Term newConj = Conj.diffAll(conjUnneg, incoming, false);
                 if (newConj.equals(conjUnneg))
                     return True; //no change
 

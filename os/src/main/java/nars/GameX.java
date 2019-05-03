@@ -374,8 +374,8 @@ abstract public class GameX extends Game {
     public static void config(NAR n) {
         n.dtDither.set(
                 //1
-                //10
-                20
+                10
+                //20
                 //40
         );
 

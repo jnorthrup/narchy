@@ -55,6 +55,7 @@ abstract public class NAL6DecomposeTest extends NALTest {
             // (S ==> M), (C ==> M), eventOf(C,S) |- (conjWithout(C,S) ==> M), ...
             String AB = conjOrDisj ? "(A && B)" : "(A || B)";
             test
+                    .logDebug()
                     .termVolMax(conjOrDisj ? 5 : 8)
                     .believe('(' + AB + " ==> X)", fAB, c)
                     .believe("(A ==> X)", fA, c)

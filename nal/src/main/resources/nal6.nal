@@ -228,6 +228,12 @@
     (X ==> Y), (C ==> Z), eventOfNeg(C,Y)   |-   ((X && conjWithout(C,--Y)) ==> Z), (Belief:DeductionNP)
       (X ==> Y), (C ==> Z), eventOfNeg(C,Y) |- --((X && conjWithout(C,--Y)) ==> Z), (Belief:DeductionNN)
 
+    //Disj/Impl Chain Deduction
+    (X ==> Y), (--D ==> Z), eventOfNeg(D,Y)     |-   (X ==> Z), (Belief:DeductionPP)
+      (X ==> Y), (--D ==> Z), eventOfNeg(D,Y)   |- --(X ==> Z), (Belief:DeductionPN)
+    (X ==> Y), (--D ==> Z), eventOf(D,Y)        |-   (X ==> Z), (Belief:DeductionNP)
+      (X ==> Y), (--D ==> Z), eventOf(D,Y)      |- --(X ==> Z), (Belief:DeductionNN)
+
     //Conj/Impl Chain Swap Deduction
 //    //TODO use conj ops
 //    ((&&,X,A..+) ==> Z), (Y ==> X)  |- ((&&,Y,A..+) ==> Z), (Belief:Deduction)
@@ -247,16 +253,18 @@
 
     //Conditional Abduction via Multi-conditional Syllogism
     (C ==> X), (E ==> Y), eventOf(C,E)      |-    unisubst(conjWithout(C,E),X,Y), (Belief:AbductionPB)
+        //TODO disj
+
     //Anti-conditional Abduction via Multi-conditional Syllogism
     (C ==> X), (E ==> Y), eventOf(C,E)      |-    unisubst(--conjWithout(C,E),X,Y), (Belief:AbductionXOR)
+        //TODO disj
 
         ((&&,B,A..+) ==> X), (E ==> Y)          |-    unisubst((&&,A..+),(polarizeTask(X) && B),(polarizeBelief(Y) && E)), (Belief:AbductionDepolarized)
 
 
-      //TODO check (--C ==> X), (--E ==> Y), eventOf(C,E), --isVar(X), --isVar(Y)    |-    unisubst(conjWithout(C,E),X,Y), (Belief:AbductionPB)
 
-        (C ==> Z), (X ==> M), eventOf(C,X) |- ((conjWithout(C,X) &&   M) ==> Z), (Belief:InductionPB)
-        (C ==> Z), (X ==> M), eventOf(C,X) |- ((conjWithout(C,X) && --M) ==> Z), (Belief:InductionPBPN)
+//        (C ==> Z), (X ==> M), eventOf(C,X) |- ((conjWithout(C,X) &&   M) ==> Z), (Belief:InductionPB)
+//        (C ==> Z), (X ==> M), eventOf(C,X) |- ((conjWithout(C,X) && --M) ==> Z), (Belief:InductionPBPN)
 
 //        ((&&,M,X,A..*) ==> C), (Y ==> C) |- unisubst((M ==> C),X,Y), (Belief:AbductionPB)
 //        ((&&,M,A..+) ==> X), ((&&,A..+) ==> Y) |- unisubst((M ==> X),X,Y,"$"), (Belief:AbductionPB)
@@ -365,20 +373,17 @@
 //        if two different precondition conjunctions, with a common element lead to the same conclusion,
 //        it might be that these different preconditions in the specific conjunctions imply each other
 //        because the premises can be swapped for this rule and it is still valid
-    (A ==> X), (B ==> X), eventCommon(A,B) |- (conjWithout(A,B) ==> conjWithout(B,A)), (Belief:InductionPB)
-    (A ==> X), (B ==> X), eventCommon(A,B) |- (conjWithout(B,A) ==> conjWithout(A,B)), (Belief:InductionPB)
+    (A ==> X), (B ==> X), eventCommon(A,B), neq(A,B) |- (conjWithout(A,B) ==> conjWithout(B,A)), (Belief:InductionPB)
+      //? (--A ==> X), (--B ==> X), eventCommon(A,B) |- (conjWithout(A,B) ==> conjWithout(B,A)), (Belief:InductionPB)
+    (A ==> X), (B ==> X), eventCommon(A,B), neq(A,B) |- (conjWithout(B,A) ==> conjWithout(A,B)), (Belief:InductionPB)
+      //? (--A ==> X), (--B ==> X), eventCommon(A,B) |- (conjWithout(B,A) ==> conjWithout(A,B)), (Belief:InductionPB)
 
         //((&&,X,A..+) ==> C), ((&&,Y,A..+) ==> C)   |- ((X ==> Y) && (Y ==> X)), (Bel4ief:InductionPB)
 
-    //((--,A) ==> X), (B ==> X), neq(A,B), eventCommon(A,B) |- ((--,conjWithout(A,B)) ==> conjWithout(B,A)), (Belief:InductionPB)
-    //((--,A) ==> X), (B ==> X), neq(A,B), eventCommon(A,B) |- ((--,conjWithout(B,A)) ==> conjWithout(A,B)), (Belief:InductionPB)
+    (X ==> A), (X ==> B), eventCommon(A,B), neq(A,B) |- (conjWithout(A,B) ==> conjWithout(B,A)), (Belief:AbductionPB)
+    (X ==> A), (X ==> B), eventCommon(A,B), neq(A,B) |- (conjWithout(B,A) ==> conjWithout(A,B)), (Belief:AbductionPB)
 
 
-    (X ==> A), (X ==> B), eventCommon(A,B) |- (conjWithout(A,B) ==> conjWithout(B,A)), (Belief:AbductionPB)
-    (X ==> A), (X ==> B), eventCommon(A,B) |- (conjWithout(B,A) ==> conjWithout(A,B)), (Belief:AbductionPB)
-
-        (X ==> A), (X ==> B), eventCommon(A,B) |- (--conjWithout(A,B) ==> conjWithout(B,A)), (Belief:AbductionPBN)
-        (X ==> A), (X ==> B), eventCommon(A,B) |- (--conjWithout(B,A) ==> conjWithout(A,B)), (Belief:AbductionPBN)
 
 
 

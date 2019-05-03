@@ -197,7 +197,7 @@ public class TestNAR {
                 if (t.isTrue()) {
 
                     if (!quiet) {
-                        t.log(logger);
+                        t.log(false, logger);
 
                         //TODO move this to TaskCondition for negative-specific cases
                         ((TaskCondition) t).matched.forEach(shouldntHave ->
@@ -211,7 +211,7 @@ public class TestNAR {
             if (!quiet) {
                 succeedsIfAll.forEach(t -> {
                     if (!t.isTrue())
-                        t.log(logger);
+                        t.log(false, logger);
                 });
 
 

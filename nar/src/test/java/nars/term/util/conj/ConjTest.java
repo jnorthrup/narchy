@@ -765,13 +765,13 @@ public class ConjTest {
 
     @Test
     void testConjWithoutAllParallel() {
-        assertEquals("(a&&b)", Conj.diffAll(
+        assertEq("(a&&b)", Conj.diffAll(
                 $$("(&&,a,b,c)"),
-                $$("(&&,c,d,e)")).toString());
+                $$("(&&,c,d,e)")));
 
         assertEq("(--,(a&&b))", Conj.diffAll(
                 $$("--(&&,a,b,c)"),
-                $$("(&&,c,d,e)")));
+                $$("(&&,c,d,e)"), true));
 
         assertEq("(a&|b)", Conj.diffAll(
                 $$("(&|,a,b,c)"),

@@ -76,8 +76,8 @@ public abstract class NAL<W> extends Parts<Term, W> implements Timed {
      * >= 1  - maximum # of Answer attempts per Answer capacity.  so 2 means 2 tasks are tried for each Answer task slot in its capacity
      */
     public static final float ANSWER_COMPLETENESS =
-            //1f;
-    2f;
+            1f;
+    //2f;
     //0.5f;
 
     public static final boolean DEBUG_SIMILAR_DERIVATIONS= false;
@@ -219,7 +219,7 @@ public abstract class NAL<W> extends Parts<Term, W> implements Timed {
     @Deprecated
     public final FloatRange questionForgetRate = new FloatRange(0.5f, 0, 1);
     public final IntRange premiseUnifyTTL = new IntRange(8, 1, 32);
-    public final IntRange deriveBranchTTL = new IntRange(16 * NAL.derive.TTL_MIN, NAL.derive.TTL_MIN, 64 * NAL.derive.TTL_MIN);
+    public final IntRange deriveBranchTTL = new IntRange(8 * NAL.derive.TTL_MIN, NAL.derive.TTL_MIN, 64 * NAL.derive.TTL_MIN);
     /**
      * how many cycles above which to dither dt and occurrence time
      * TODO move this to Time class and cache the cycle value rather than dynamically computing it
@@ -663,7 +663,7 @@ public abstract class NAL<W> extends Parts<Term, W> implements Timed {
 
 
         @Range(min = 1, max = 32)
-        public static final int TIMEGRAPH_ITERATIONS = 3;
+        public static final int TIMEGRAPH_ITERATIONS = 4;
         /**
          * TTL = 'time to live'
          */

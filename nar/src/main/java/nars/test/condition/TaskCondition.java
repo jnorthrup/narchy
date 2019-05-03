@@ -179,7 +179,7 @@ public class TaskCondition implements NARCondition, Predicate<Task>, Consumer<Ta
     }
 
 
-    private final boolean creationTimeMatches() {
+    private boolean creationTimeMatches() {
         long now = nar.time();
         return (((creationStart == -1) || (now >= creationStart)) &&
                 ((creationEnd == -1) || (now <= creationEnd)));
@@ -277,16 +277,16 @@ public class TaskCondition implements NARCondition, Predicate<Task>, Consumer<Ta
 
 
     @Override
-    public void log(Logger logger) {
-        String msg = succeeded ? " OK" : "ERR" + '\t' + this;
-        if (succeeded) {
+    public void log(boolean condition, Logger logger) {
+        String msg = toString() + "\n" + (condition ? " OK" : "ERR" + '\t' + this);
+        if (condition) {
             logger.info(msg);
 
             if (matched != null && logger.isTraceEnabled()) {
                 matched.forEach(s -> logger.trace("\t{}", s));
             }
         } else {
-            assert (matched.isEmpty());
+            //assert (matched.isEmpty());
 
             logger.error(msg);
 

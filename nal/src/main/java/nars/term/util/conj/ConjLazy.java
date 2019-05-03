@@ -166,8 +166,8 @@ public class ConjLazy extends LongObjectArraySet<Term> implements ConjBuilder {
                 } else {
 
                     if ((w0 == ETERNAL) ^ (w1 == ETERNAL)) {
-                        w0 = w1 = ETERNAL; //quick collapse ot dternal
-                        //w0 = w1 = 0; //quick promote to parallel
+                        //w0 = w1 = ETERNAL; //quick collapse ot dternal
+                        w0 = w1 = 0; //quick promote to parallel
                     }
                 }
                 break;
