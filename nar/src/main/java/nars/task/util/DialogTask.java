@@ -69,7 +69,7 @@ public class DialogTask extends NARPart {
         n.start(this);
 
         add(deriver);
-        add(monitor);
+        finallyRun(monitor);
     }
 
 

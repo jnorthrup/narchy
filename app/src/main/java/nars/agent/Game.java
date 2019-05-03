@@ -11,7 +11,7 @@ import jcog.event.Topic;
 import jcog.math.FloatClamped;
 import jcog.math.FloatNormalized;
 import jcog.math.FloatSupplier;
-import jcog.service.Part;
+import jcog.thing.Part;
 import jcog.util.ArrayUtils;
 import nars.$;
 import nars.NAR;

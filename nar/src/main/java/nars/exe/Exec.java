@@ -1,6 +1,6 @@
 package nars.exe;
 
-import jcog.Log;
+import com.google.common.flogger.FluentLogger;
 import jcog.WTF;
 import jcog.data.iterator.ArrayIterator;
 import jcog.data.list.FasterList;
@@ -15,7 +15,6 @@ import nars.control.op.Remember;
 import nars.task.AbstractTask;
 import nars.task.UnevaluatedTask;
 import nars.time.ScheduledTask;
-import org.slf4j.Logger;
 
 import java.io.IOException;
 import java.util.PriorityQueue;
@@ -30,7 +29,7 @@ import java.util.stream.Stream;
  */
 abstract public class Exec extends NARPart implements Executor, ConsumerX<AbstractTask> {
 
-    public static final Logger logger = Log.logger(Exec.class);
+    public static final FluentLogger logger = FluentLogger.forEnclosingClass();
 
     private final static int TIME_QUEUE_CAPACITY = 2 * 1024;
     final MetalConcurrentQueue<ScheduledTask> incoming = new MetalConcurrentQueue<>(TIME_QUEUE_CAPACITY);
@@ -79,7 +78,7 @@ abstract public class Exec extends NARPart implements Executor, ConsumerX<Abstra
                 throw new WTF("unrecognized task type: " + x.getClass() + "\t" + x);
             }
         } catch (Throwable e) {
-            logger.error("{} {}", t0, e);
+            logger.atSevere().withCause(e).log(t0.toString());
         }
 
     }
@@ -140,14 +139,14 @@ abstract public class Exec extends NARPart implements Executor, ConsumerX<Abstra
         try {
             t.accept(nar);
         } catch (Throwable e) {
-            logger.error("{} {}", t, e);
+            logger.atSevere().withCause(e).log(t.toString());
         }
     }
     private void executeNow(Runnable t) {
         try {
             t.run();
         } catch (Throwable e) {
-            logger.error("{} {}", t, e);
+            logger.atSevere().withCause(e).log(t.toString());
         }
     }
 
@@ -164,7 +163,7 @@ abstract public class Exec extends NARPart implements Executor, ConsumerX<Abstra
         try {
             Task.run(t, nar);
         } catch (Throwable e) {
-            logger.error("{} {}", t, e);
+            logger.atSevere().withCause(e).log(t.toString());
         }
     }
 

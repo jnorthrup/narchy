@@ -8,11 +8,11 @@ import nars.$;
 import nars.GameX;
 import nars.NAR;
 import nars.agent.GameTime;
+import nars.agent.NAct;
 import nars.agent.Reward;
 import nars.concept.sensor.AbstractSensor;
 import nars.gui.sensor.VectorSensorView;
 import nars.sensor.Bitmap2DSensor;
-import nars.term.atom.Atomic;
 import nars.video.SwingBitmap2D;
 import spacegraph.SpaceGraph;
 
@@ -78,10 +78,10 @@ public class ArkaNAR extends GameX {
         paddleSpeed = 40 * noid.BALL_VELOCITY;
 
 
-        //initUnipolar();
+        initUnipolar();
         //initBipolarDirect();
         //initBipolarRelative();
-        initPushButton();
+        //initPushButton();
 
         float resX = 0.02f;
         float resY = 0.02f;
@@ -172,7 +172,7 @@ public class ArkaNAR extends GameX {
     }
 
     private void initPushButton() {
-        actionPushButtonMutex($.inh(Atomic.the("L"),id), $.inh(Atomic.the("R"),id),
+        actionPushButtonMutex($.inh(id,NAct.NEG), $.inh(id,NAct.PLUS),
                 (b) -> b && noid.paddle.move(-paddleSpeed),
                 (b) -> b && noid.paddle.move(+paddleSpeed)
         );
@@ -181,8 +181,8 @@ public class ArkaNAR extends GameX {
     }
 
     private void initUnipolar() {
-        actionUnipolar($.the("L"), (u) -> noid.paddle.move(-paddleSpeed * u) ? u : 0);
-        actionUnipolar($.the("R"), (u) -> noid.paddle.move(+paddleSpeed * u) ? u : 0);
+        actionUnipolar($.inh(id,NAct.NEG), true, (prev)->0, (u) -> u > 0.5f && noid.paddle.move(-paddleSpeed * 2 * Util.sqr(2 * (u - 0.5f))) ? u : 0);
+        actionUnipolar($.inh(id,NAct.PLUS), true, (prev)->0, (u) -> u > 0.5f && noid.paddle.move(+paddleSpeed * 2 * Util.sqr(2 * (u - 0.5f))) ? u : 0);
     }
 
 

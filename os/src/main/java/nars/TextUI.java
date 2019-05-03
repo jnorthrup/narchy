@@ -151,7 +151,7 @@ public class TextUI {
                 screen = new TerminalScreen(terminal);
                 screen.startScreen();
             } catch (IOException e) {
-                logger.warn("{} {}", this, e.getMessage());
+                //logger.warn("{} {}", this, e.getMessage());
                 close();
                 return;
             }

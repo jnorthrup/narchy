@@ -2,8 +2,8 @@ package spacegraph.space2d.widget.meta;
 
 import com.jogamp.opengl.GL2;
 import jcog.event.Off;
-import jcog.service.Part;
-import jcog.service.Parts;
+import jcog.thing.Part;
+import jcog.thing.Thing;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.space2d.ReSurface;
 import spacegraph.space2d.Surface;
@@ -26,11 +26,11 @@ import static spacegraph.SpaceGraph.window;
 
 public class PartsTable extends Gridding implements GridModel, GridRenderer {
 
-    private final Parts context;
+    private final Thing context;
     private final List<Map.Entry<?,Part>> partEntries = new CopyOnWriteArrayList<>();
     private Off updater;
 
-    public PartsTable(Parts<?, ?> s) {
+    public PartsTable(Thing<?, ?> s) {
         super();
 
         this.context = s;
@@ -103,7 +103,7 @@ public class PartsTable extends Gridding implements GridModel, GridRenderer {
         final Part part;
         private final Object key;
 
-        PartToggle(Parts parts, Map.Entry<?,Part> p) {
+        PartToggle(Thing thing, Map.Entry<?,Part> p) {
             super(ImageTexture.awesome("gears"));
             this.key = p.getKey();
             this.part = p.getValue();
@@ -112,9 +112,9 @@ public class PartsTable extends Gridding implements GridModel, GridRenderer {
                 //Exe.invokeLater(()->{
                     synchronized(part) {
                         if (state)
-                            parts.start(key);
+                            thing.start(key);
                         else
-                            parts.stop(key);
+                            thing.stop(key);
                     }
                 //});
             });

@@ -1,4 +1,4 @@
-package jcog.service;
+package jcog.thing;
 
 import jcog.Paper;
 
@@ -34,14 +34,15 @@ import java.util.concurrent.atomic.AtomicReference;
  *      --name
  *      --etc
  *
+ * @param T thing type that it composes
  */
 @Paper
-public abstract class Part<C>  {
+public abstract class Part<T>  {
 
-    final AtomicReference<Parts.ServiceState> state = new AtomicReference<>(Parts.ServiceState.Off);
+    final AtomicReference<Thing.ServiceState> state = new AtomicReference<>(Thing.ServiceState.Off);
 
     public final boolean isOn() {
-        return state.getOpaque() == Parts.ServiceState.On;
+        return state.getOpaque() == Thing.ServiceState.On;
     }
 
     public final boolean isOnOrStarting() {
@@ -49,7 +50,7 @@ public abstract class Part<C>  {
     }
 
     public final boolean isOff() {
-        return state.getOpaque() == Parts.ServiceState.Off;
+        return state.getOpaque() == Thing.ServiceState.Off;
     }
 
 
@@ -63,15 +64,18 @@ public abstract class Part<C>  {
         return nameString + ':' + super.toString();
     }
 
-    abstract protected void start(C x);
+    protected abstract void start(T x);
 
-    abstract protected void stop(C x);
+    protected abstract void stop(T x);
 
-    public Parts.ServiceState state() {
+    public Thing.ServiceState state() {
         return state.getOpaque();
     }
 
-    protected void _state(Parts.ServiceState forced) {
+    public void _state(Thing.ServiceState forced) {
         this.state.set(forced);
     }
+    //TODO ifState(..) cmpAndSet
+
+    public static final Part[] EmptyArray = new Part[0];
 }

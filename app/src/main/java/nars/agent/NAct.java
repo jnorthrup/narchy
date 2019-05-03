@@ -529,6 +529,7 @@ import static nars.Op.BELIEF;
 //        return actionTriStateContinuous(down, each);
     }
 
+
     /**
      * update function receives a value in 0..1.0 corresponding directly to the present goal frequency
      */

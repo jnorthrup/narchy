@@ -53,6 +53,7 @@ public class ConcurrentFastIteratingHashSet<T> extends AbstractSet<T> {
     final ConcurrentFastIteratingHashMap<T,T> map;
 
 
+
     public ConcurrentFastIteratingHashSet(T[] emptyArray) {
          map = new ConcurrentFastIteratingHashMap<>(emptyArray);
     }
@@ -72,7 +73,7 @@ public class ConcurrentFastIteratingHashSet<T> extends AbstractSet<T> {
         map.forEachValue(action);
     }
 
-    public <Z> void forEachWith(Z z, BiConsumer<? super T,Z> action) {
+    public <Z> void forEachWith(BiConsumer<? super T, Z> action, Z z) {
         map.forEachValueWith(z, action);
     }
 

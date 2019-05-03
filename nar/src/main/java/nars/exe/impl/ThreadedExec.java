@@ -50,7 +50,7 @@ abstract public class ThreadedExec extends MultiExec {
     }
 
     private void executeBlocked(Object x) {
-        logger.warn("{} exe queue blocked on: {}", this, x);
+        logger.atWarning().log("{} exe queue blocked on: {}", this, x);
         executeNow(x);
     }
 
@@ -94,14 +94,14 @@ abstract public class ThreadedExec extends MultiExec {
             if (idealThreads > currentThreads) {
                 //spawn more
                 int demand = idealThreads - currentThreads;
-                logger.info("add {} worker threads (ideal={})", demand, idealThreads);
+                logger.atInfo().log("add {} worker threads (ideal={})", demand, idealThreads);
                 synchronized (exe) {
                     exe.execute(loop(), demand, affinity);
                 }
             } else if (currentThreads > idealThreads) {
                 //stop some
                 int excess = currentThreads - idealThreads;
-                logger.info("stop {} worker threads (ideal={})", excess, idealThreads);
+                logger.atInfo().log("stop {} worker threads (ideal={})", excess, idealThreads);
                 synchronized (exe) {
                     while (concurrency() > idealThreads)
                         exe.remove(concurrency() - 1);

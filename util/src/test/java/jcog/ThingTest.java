@@ -2,8 +2,8 @@ package jcog;
 
 import com.google.common.util.concurrent.MoreExecutors;
 import jcog.exe.Exe;
-import jcog.service.Part;
-import jcog.service.Parts;
+import jcog.thing.Part;
+import jcog.thing.Thing;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -11,14 +11,14 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /** TODO add actual tests */
-class PartsTest {
+class ThingTest {
 
-    private Parts<Object,Object> s;
+    private Thing<Object, Object> s;
 
     @BeforeEach
     void init() {
         Exe.single();
-        s = new Parts("theContext");
+        s = new Thing("theContext");
         assertEquals(MoreExecutors.directExecutor(), s.executor); //ensure single-threaded set
     }
 

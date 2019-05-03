@@ -8,6 +8,7 @@ import org.eclipse.collections.api.block.procedure.Procedure;
 import org.eclipse.collections.api.block.procedure.Procedure2;
 import org.jetbrains.annotations.Nullable;
 
+import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
@@ -30,6 +31,10 @@ public class FastCoWList<X> /*extends AbstractList<X>*/ /*implements List<X>*/ i
     
     public final AtomicReference<X[]> copy = new AtomicReference(ArrayUtils.EMPTY_OBJECT_ARRAY);
 
+
+    public FastCoWList(Class<X> x) {
+        this((i)->(X[])Array.newInstance(x, i));
+    }
 
     public FastCoWList(IntFunction<X[]> arrayBuilder) {
         this(0, arrayBuilder);

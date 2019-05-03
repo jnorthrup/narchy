@@ -1,38 +1,27 @@
 package nars.control;
 
-import jcog.Log;
 import jcog.WTF;
-import jcog.data.map.ConcurrentFastIteratingHashSet;
-import jcog.event.Off;
 import jcog.event.OffOn;
-import jcog.event.RunThese;
-import jcog.service.Part;
-import jcog.service.Parts;
+import jcog.thing.Part;
+import jcog.thing.Parts;
+import jcog.thing.SubPart;
+import jcog.thing.Thing;
 import nars.$;
 import nars.NAR;
 import nars.term.Term;
 import nars.term.Termed;
 import nars.time.event.WhenInternal;
 import org.jetbrains.annotations.Nullable;
-import org.slf4j.Logger;
 
 /**
  *
  */
-abstract public class NARPart extends Part<NAR> implements Termed, OffOn {
+abstract public class NARPart extends Parts<NAR> implements Termed, OffOn, SubPart<NAR> {
 
-    private static final Logger logger = Log.logger(NARPart.class);
     private static final NARPart[] EmptyArray = new NARPart[0];
 
     public final Term id;
 
-    /**
-     * attached resources held until deletion (including while off)
-     */
-    @Deprecated
-    private final RunThese whenDeleted = new RunThese();
-    private final ConcurrentFastIteratingHashSet<NARPart> local = new ConcurrentFastIteratingHashSet<>(NARPart.EmptyArray);
-    public NAR nar;
 
     protected NARPart() {
         this((NAR) null);
@@ -55,6 +44,42 @@ abstract public class NARPart extends Part<NAR> implements Termed, OffOn {
         else
             return x.singleton() ? (x.id) : $.p(id, $.identity(x));
     }
+    /**
+     * resume
+     */
+    public final void on() {
+        nar.start(this);
+    }
+    public final void close() {
+        delete();
+    }
+
+    public boolean delete() {
+
+        logger.atFine().log("delete {}", term());
+
+
+        local.removeIf((p) -> {
+            ((NARPart)p).delete();
+            return true;
+        });
+        whenDeleted.close();
+
+        NAR n = this.nar;
+        if (n != null) {
+            n.stop(this);
+        } else {
+            //experimental hard stop
+            try {
+                stopping(null);
+            } catch (Throwable t) {
+                logger.atSevere().withCause(t).log("stop {}", term());
+            }
+        }
+
+        this.nar = null;
+        return true;
+    }
 
     /**
      * optional event occurrence information.  null if not applicable.
@@ -62,13 +87,6 @@ abstract public class NARPart extends Part<NAR> implements Termed, OffOn {
     @Nullable
     public WhenInternal event() {
         return null;
-    }
-
-    //    /** register a future deactivation 'off' of an instance which has been switched 'on'. */
-    @Deprecated
-    protected final void whenDeleted(Off... x) {
-        for (Off xx : x)
-            whenDeleted.add(xx);
     }
 
 
@@ -94,68 +112,32 @@ abstract public class NARPart extends Part<NAR> implements Termed, OffOn {
 //    }
 
 
-    public final void close() {
-        delete();
+    public void startIn(NAR nar, Part<NAR> container) {
+        logger.atFine().log("start {} -> {} {}", container, term(), getClass().getName());
+
+        this.nar = nar;
+
+        _state(Thing.ServiceState.OffToOn);
+
+
+        starting(this.nar);
+
+        startLocal(nar);
+        _state(Thing.ServiceState.On);
     }
 
-    /**
-     * resume
-     */
-    public final void on() {
-        nar.start(this);
-    }
+    public void stopIn(NAR nar, Part<NAR> container) {
 
-    public boolean delete() {
+        logger.atFine().log(" stop {} -> {} {}", container, term(), getClass().getName());
 
-        logger.debug("delete {}", term());
+        synchronized(this) {
+            _state(Thing.ServiceState.OnToOff);
+            stopLocal(nar);
 
+            stopping(nar);
 
-        local.removeIf((p) -> {
-            p.delete();
-            return true;
-        });
-        whenDeleted.close();
-
-        NAR n = this.nar;
-        if (n != null) {
-            n.stop(this);
-        } else {
-            //experimental hard stop
-            try {
-                stopping(null);
-            } catch (Throwable t) {
-                logger.error("stop {} {}", term(), t);
-            }
+            _state(Thing.ServiceState.Off);
         }
-
-        this.nar = null;
-        return true;
-    }
-
-
-    private void startIn(NARPart container) {
-        logger.debug("start {} -> {} {}", container.term(), term(), getClass().getName());
-
-        this.nar = container.nar;
-
-        synchronized (this) {
-            _state(Parts.ServiceState.OffToOn);
-            starting(nar);
-            startLocal();
-            _state(Parts.ServiceState.On);
-        }
-    }
-
-    private void stopIn(NARPart container) {
-        logger.debug(" stop {} -> {} {}", container.term(), term(), getClass().getName());
-
-        synchronized (this) {
-            _state(Parts.ServiceState.OnToOff);
-            stopLocal();
-            stopping(container.nar);
-            _state(Parts.ServiceState.Off);
-        }
-
     }
 
     @Override
@@ -165,26 +147,20 @@ abstract public class NARPart extends Part<NAR> implements Termed, OffOn {
         if (!(prevNar == null || prevNar == nar))
             throw new WTF("NAR mismatch");
 
-        logger.debug("start {}", term());
+        logger.atFine().log("start {}", term());
 
         starting(this.nar = nar);
 
-        startLocal();
+        startLocal(nar);
     }
 
-    private void startLocal() {
-        this.local.forEach(c -> c.startIn(this));
-    }
 
-    private void stopLocal() {
-        this.local.forEach(c -> c.stopIn(this));
-    }
 
     @Override
     protected final void stop(NAR nar) {
-        logger.debug("stop {}", term());
+        logger.atFine().log("stop {}", term());
 
-        stopLocal();
+        stopLocal(nar);
 
         stopping(nar);
     }
@@ -197,6 +173,8 @@ abstract public class NARPart extends Part<NAR> implements Termed, OffOn {
     protected void stopping(NAR nar) {
 
     }
+
+
 
     /**
      * if false, allows multiple threads to execute this instance
@@ -220,43 +198,6 @@ abstract public class NARPart extends Part<NAR> implements Termed, OffOn {
         return id;
     }
 
-
-    public final void addAll(NARPart... local) {
-        for (NARPart d : local)
-            add(d);
-    }
-
-    protected final void add(Off component) {
-        if (component instanceof NARPart)
-            add((NARPart) component);
-        else
-            whenDeleted.add(component);
-    }
-
-
-    public final void removeAll(NARPart... dd) {
-        for (NARPart d : dd)
-            remove(d);
-    }
-
-    public final void add(NARPart local) {
-        if (!isOff())
-            throw new UnsupportedOperationException(this + " is not in OFF state");
-
-        if (this.local.add(local)) {
-            //..
-        } else
-            throw new UnsupportedOperationException("duplicate local");
-    }
-
-
-    public final boolean remove(NARPart local) {
-        if (this.local.remove(local)) {
-            local.stop(nar);
-            return true;
-        } else
-            throw new UnsupportedOperationException("unknown local: " + local + " in " + this);          //return false;
-    }
 
     @Override
     public final String toString() {

@@ -13,8 +13,8 @@ import jcog.exe.Exe;
 import jcog.learn.ql.HaiQae;
 import jcog.math.Quantiler;
 import jcog.pri.VLink;
-import jcog.service.Part;
-import jcog.service.Parts;
+import jcog.thing.Part;
+import jcog.thing.Thing;
 import nars.AttentionUI;
 import nars.NAR;
 import nars.Narsese;
@@ -128,7 +128,7 @@ public class NARui {
             ;
     }
 
-    public static HashMap<String, Supplier<Surface>> parts(Parts p) {
+    public static HashMap<String, Supplier<Surface>> parts(Thing p) {
         HashMap<String,Supplier<Surface>> m = new HashMap<>();
         p.partStream().forEach(s -> {
             m.put( ((Part)s).toString(), ()-> new ObjectSurface(s));

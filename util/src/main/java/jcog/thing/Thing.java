@@ -11,7 +11,7 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-package jcog.service;
+package jcog.thing;
 
 import com.google.common.util.concurrent.MoreExecutors;
 import jcog.Log;
@@ -22,6 +22,7 @@ import jcog.event.Topic;
 import jcog.exe.Exe;
 import jcog.util.ArrayUtils;
 import org.eclipse.collections.api.tuple.primitive.ObjectBooleanPair;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
@@ -40,7 +41,10 @@ import java.util.stream.Stream;
 import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
 
 /**
+ * Some thing composed of Parts
+ *
  * CONTRAINER / OBJENOME
+ *
  * A collection or container of 'parts'.
  * Smart Dependency Injection (DI) container with:
  * <p>
@@ -57,27 +61,27 @@ import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
  * <p>
  * note: such syntax should be parseable both in JSON and NAL
  *
- * @param K service key
- * @param C service context
+ * @param P parts key
+ * @param T thing context
  */
-public class Parts<K /* service key */, C /* context */> {
+public class Thing<T, P /* service key */  /* context */> {
 
 
-    private final C id;
-    protected final ConcurrentMap<K, Part<C>> parts;
-    public final Topic<ObjectBooleanPair<Part<C>>> eventAddRemove = new ListTopic<>();
+    private final T id;
+    protected final ConcurrentMap<P, Part<T>> parts;
+    public final Topic<ObjectBooleanPair<Part<T>>> eventAddRemove = new ListTopic<>();
     public final Executor executor;
-    private static final Logger logger = Log.logger(Parts.class);
+    private static final Logger logger = Log.logger(Thing.class);
 
-    public Parts() {
+    public Thing() {
         this(null, null);
     }
 
-    public Parts(boolean concurrent) {
+    public Thing(boolean concurrent) {
         this((Executor)null);
     }
 
-    public Parts(@Nullable Executor executor) {
+    public Thing(@Nullable Executor executor) {
         this(null, executor );
     }
 
@@ -89,9 +93,9 @@ public class Parts<K /* service key */, C /* context */> {
      * @throws IllegalArgumentException if not all services are {@linkplain ServiceState#NEW new} or if there
      *                                  are any duplicate services.
      */
-    public Parts(@Nullable C id, @Nullable Executor executor) {
+    public Thing(@Nullable T id, @Nullable Executor executor) {
         if (id == null)
-            id = (C) this; //attempts cast
+            id = (T) this; //attempts cast
 
         this.id = id;
 
@@ -101,7 +105,7 @@ public class Parts<K /* service key */, C /* context */> {
         this.parts = new ConcurrentHashMap<>();
     }
 
-    public Parts(@Nullable C id) {
+    public Thing(@Nullable T id) {
         this(id, null);
     }
 
@@ -109,13 +113,13 @@ public class Parts<K /* service key */, C /* context */> {
     /**
      * restart an already added part
      */
-    public final boolean start(K key) {
+    public final boolean start(P key) {
         tryStart(part(key));
         return false;
     }
 
 
-    public final Part<C> part(K key) {
+    public final Part<T> part(P key) {
         return parts.get(key);
     }
 
@@ -123,34 +127,34 @@ public class Parts<K /* service key */, C /* context */> {
     /**
      * add and starts it
      */
-    public final boolean start(K key, Part<C> instance) {
+    public final boolean start(P key, Part<T> instance) {
         return set(key, instance, true);
     }
 
     /**
      * tries to add the new instance, replacing any existing one, but doesnt start
      */
-    public final boolean add(K key, Part<C> instance) {
+    public final boolean add(P key, Part<T> instance) {
         return set(key, instance, false);
     }
 
-    public final boolean remove(K k) {
-        return set(k, (Part) null, false);
+    public final boolean remove(P p) {
+        return set(p, (Part) null, false);
     }
 
-    public boolean stop(K k) {
-        return set(k, part(k), false);
+    public boolean stop(P p) {
+        return set(p, part(p), false);
     }
 
-    public final boolean stop(Part<C> p) {
+    public final boolean stop(Part<T> p) {
         //HACK TODO improve
-        K k = term(p);
+        P k = term(p);
         return stop(k);
     }
 
-    public final boolean remove(Part<C> p) {
+    public final boolean remove(Part<T> p) {
         //HACK TODO improve
-        K k = term(p);
+        P k = term(p);
         return remove(k);
     }
 
@@ -158,9 +162,9 @@ public class Parts<K /* service key */, C /* context */> {
      * reverse lookup by instance.  this default impl is an exhaustive search.  improve in subclasses
      */
     @Nullable
-    public K term(Part<C> p) {
+    public P term(Part<T> p) {
         //HACK TODO improve
-        Map.Entry<K, Part<C>> e = partEntrySet().stream().filter(z -> z.getValue() == p).findFirst().get();
+        Map.Entry<P, Part<T>> e = partEntrySet().stream().filter(z -> z.getValue() == p).findFirst().get();
         //if (e!=null) {
         return e.getKey();
 //        } else
@@ -172,16 +176,16 @@ public class Parts<K /* service key */, C /* context */> {
 //        return add(key, builder.apply(key));
 //    }
 
-    public final Part<C> start(K key, Class<? extends Part<C>> instanceOf) {
+    public final Part<T> start(P key, Class<? extends Part<T>> instanceOf) {
         return set(key, instanceOf, true);
     }
 
-    public final Part<C> add(K key, Class<? extends Part<C>> instanceOf) {
+    public final Part<T> add(P key, Class<? extends Part<T>> instanceOf) {
         return set(key, instanceOf, false);
     }
 
-    public final Part<C> set(K key, Class<? extends Part<C>> instanceOf, boolean start) {
-        Part<C> p = build(key, instanceOf).get();
+    public final Part<T> set(P key, Class<? extends Part<T>> instanceOf, boolean start) {
+        Part<T> p = build(key, instanceOf).get();
         if (set(key, p, start))
             return p;
         else
@@ -192,7 +196,7 @@ public class Parts<K /* service key */, C /* context */> {
     /**
      * stops all parts (but does not remove them)
      */
-    public Parts<K, C> stopAll() {
+    public Thing<T, P> stopAll() {
         parts.keySet().forEach(this::stop);
         return this;
     }
@@ -200,11 +204,11 @@ public class Parts<K /* service key */, C /* context */> {
         parts.keySet().forEach(this::remove);
     }
 
-    public final Stream<Part<C>> partStream() {
+    public final Stream<Part<T>> partStream() {
         return parts.values().stream();
     }
 
-    public final Set<Map.Entry<K, Part<C>>> partEntrySet() {
+    public final Set<Map.Entry<P, Part<T>>> partEntrySet() {
         return parts.entrySet();
     }
 
@@ -220,7 +224,7 @@ public class Parts<K /* service key */, C /* context */> {
      * Class valueClass
      */
     public void print(PrintStream out) {
-        parts.forEach((k, s) -> out.println(s.state() + "\t" + k + "\t" + s + "\t" + s.getClass()));
+        parts.forEach((p, s) -> out.println(s.state() + "\t" + p + "\t" + s + "\t" + s.getClass()));
     }
 
     private void error(@Nullable Part part, Throwable e, String what) {
@@ -231,7 +235,7 @@ public class Parts<K /* service key */, C /* context */> {
     }
 
 
-    private boolean _stop(Part<C> x, @Nullable Runnable afterOff) {
+    private boolean _stop(Part<T> x, @Nullable Runnable afterOff) {
 
 
         executor.execute(() -> {
@@ -242,7 +246,7 @@ public class Parts<K /* service key */, C /* context */> {
 
                     x.stop(id);
 
-                    boolean nowOff = x.state.compareAndSet(Parts.ServiceState.OnToOff, Parts.ServiceState.Off);
+                    boolean nowOff = x.state.compareAndSet(Thing.ServiceState.OnToOff, Thing.ServiceState.Off);
                     assert (nowOff);
 
                     eventAddRemove.emit(pair(x, false)/*, executor*/);
@@ -253,14 +257,14 @@ public class Parts<K /* service key */, C /* context */> {
                 }
 
             } catch (Throwable e) {
-                x.state.set(Parts.ServiceState.Off);
+                x.state.set(Thing.ServiceState.Off);
                 error(x, e, "stop");
             }
         });
         return true;
     }
 
-    public final Set<K> partKeySet() {
+    public final Set<P> partKeySet() {
         return parts.keySet();
     }
 
@@ -268,12 +272,12 @@ public class Parts<K /* service key */, C /* context */> {
     /**
      * returns true if a state change could be attempted; not whether it was actually successful (since it is invoked async)
      */
-    private boolean set(K key, @Nullable Part<C> x, boolean start) {
+    private boolean set(P key, @Nullable Part<T> x, boolean start) {
 
         if (x == null && start)
             throw new WTF();
 
-        Part<C> removed = x != null ? parts.put(key, x) : parts.remove(key);
+        Part<T> removed = x != null ? parts.put(key, x) : parts.remove(key);
 
         if (x != removed) {
             //something removed
@@ -297,7 +301,8 @@ public class Parts<K /* service key */, C /* context */> {
     }
 
 
-    private boolean tryStart(@Nullable Part<C> x) {
+    private boolean tryStart(@NotNull Part<T> x) {
+
         executor.execute(() -> {
             try {
                 if (x.state.compareAndSet(ServiceState.Off, ServiceState.OffToOn)) {
@@ -318,11 +323,11 @@ public class Parts<K /* service key */, C /* context */> {
         return true;
     }
 
-    public final <X extends Part<C>> Supplier<X> build(Class<X> klass) {
+    public final <X extends Part<T>> Supplier<X> build(Class<X> klass) {
         return build(null, klass);
     }
 
-    public <X extends Part<C>> Supplier<X> build(@Nullable K key, Class<X> klass) {
+    public <X extends Part<T>> Supplier<X> build(@Nullable P key, Class<X> klass) {
         if (!(klass.isInterface() || Modifier.isAbstract(klass.getModifiers()))) {
             //concrete class, attempt constructor injection
             return new PartResolveByConstructorInjection(key, klass);
@@ -364,11 +369,11 @@ public class Parts<K /* service key */, C /* context */> {
         }
     }
 
-    class PartResolveByClass<X extends Part<C>> implements Supplier<X> {
+    class PartResolveByClass<X extends Part<T>> implements Supplier<X> {
 
         private final Class<X> klass;
 
-        private PartResolveByClass(K key, Class<X> klass) {
+        private PartResolveByClass(P key, Class<X> klass) {
             this.klass = klass;
         }
 
@@ -378,11 +383,11 @@ public class Parts<K /* service key */, C /* context */> {
         }
     }
 
-    class PartResolveByConstructorInjection<X extends Part<C>> implements Supplier<X> {
+    class PartResolveByConstructorInjection<X extends Part<T>> implements Supplier<X> {
 
         private final Class<X> klass;
 
-        PartResolveByConstructorInjection(K key, Class<X> klass) {
+        PartResolveByConstructorInjection(P key, Class<X> klass) {
             this.klass = klass;
         }
 

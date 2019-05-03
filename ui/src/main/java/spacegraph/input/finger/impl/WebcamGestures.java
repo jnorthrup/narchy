@@ -20,7 +20,9 @@ import georegression.struct.homography.Homography2D_F64;
 import jcog.TODO;
 import jcog.math.v2;
 import org.ejml.ops.ConvertMatrixData;
+import spacegraph.SpaceGraph;
 import spacegraph.input.finger.Finger;
+import spacegraph.input.finger.SubFinger;
 import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.widget.meta.LazySurface;
 import spacegraph.video.*;
@@ -43,7 +45,7 @@ public class WebcamGestures extends Finger {
     public static void main(String[] args) {
 
 
-        window(new LazySurface(() -> {
+        OrthoSurfaceGraph g = window(new LazySurface(() -> {
             VideoSource in = WebCam.the();
 
             VideoSource in2 = new VideoEqualizer(in);
@@ -100,6 +102,8 @@ public class WebcamGestures extends Finger {
                     new VideoSurface(in3)
             );
         }), 1400, 800);
+
+        g.addFinger(new SubFinger.RandomSubFinger(g.fingers.get(0)));
     }
 
 
@@ -107,6 +111,16 @@ public class WebcamGestures extends Finger {
     @Override
     public v2 posGlobal() {
         throw new TODO();
+    }
+
+    @Override
+    protected void start(SpaceGraph x) {
+
+    }
+
+    @Override
+    protected void stop(SpaceGraph x) {
+
     }
 
     /** http://boofcv.org/index.php?title=Example_Background_Moving_Camera */

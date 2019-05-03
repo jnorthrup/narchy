@@ -8,11 +8,12 @@ import ch.qos.logback.core.ConsoleAppender;
 import ch.qos.logback.core.encoder.LayoutWrappingEncoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.slf4j.NDC;
+//import org.slf4j.NDC;
 
 public class Log {
 
     static {
+
         ch.qos.logback.classic.Logger root = root();
         LoggerContext c = root.getLoggerContext();
         c.reset();
@@ -61,7 +62,6 @@ public class Log {
     }
 
 
-
     /** https://logback.qos.ch/manual/receivers.html */
     public static class LogSend  extends ch.qos.logback.classic.net.server.ServerSocketAppender {
         //TODO
@@ -72,12 +72,12 @@ public class Log {
         //TODO
     }
 
-    public static void enter(String zone) {
-        NDC.push(zone);
-    }
-
-    public static void exit() {
-        NDC.pop();
-    }
+//    public static void enter(String zone) {
+//        NDC.push(zone);
+//    }
+//
+//    public static void exit() {
+//        NDC.pop();
+//    }
 
 }

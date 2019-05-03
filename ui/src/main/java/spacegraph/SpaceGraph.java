@@ -1,6 +1,7 @@
 package spacegraph;
 
 import jcog.Skill;
+import jcog.thing.Thing;
 import jdk.jshell.tool.JavaShellToolBuilder;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.widget.meta.ObjectSurface;
@@ -10,7 +11,7 @@ import spacegraph.video.JoglDisplay;
 import spacegraph.video.OrthoSurfaceGraph;
 
 @Skill("Direct_manipulation_interface")
-public class SpaceGraph {
+public class SpaceGraph extends Thing<SpaceGraph, Object> {
 
     public static void main(String[] args) throws Exception {
         //https://www.infoq.com/articles/jshell-java-repl

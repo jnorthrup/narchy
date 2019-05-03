@@ -8,7 +8,7 @@ import jcog.math.FloatSupplier;
 import jcog.math.IntRange;
 import jcog.pri.ScalarValue;
 import jcog.pri.op.PriMerge;
-import jcog.service.Parts;
+import jcog.thing.Thing;
 import jcog.util.FloatFloatToFloatFunction;
 import jcog.util.Range;
 import nars.attention.PriNode;
@@ -35,7 +35,7 @@ import static nars.truth.func.TruthFunctions.c2wSafe;
 /**
  * NAR Parameters
  */
-public abstract class NAL<W> extends Parts<Term, W> implements Timed {
+public abstract class NAL<W> extends Thing<W, Term> implements Timed {
 
 
     public static final Retemporalize conceptualization =
@@ -219,7 +219,7 @@ public abstract class NAL<W> extends Parts<Term, W> implements Timed {
     @Deprecated
     public final FloatRange questionForgetRate = new FloatRange(0.5f, 0, 1);
     public final IntRange premiseUnifyTTL = new IntRange(8, 1, 32);
-    public final IntRange deriveBranchTTL = new IntRange(8 * NAL.derive.TTL_MIN, NAL.derive.TTL_MIN, 64 * NAL.derive.TTL_MIN);
+    public final IntRange deriveBranchTTL = new IntRange(16 * NAL.derive.TTL_MIN, NAL.derive.TTL_MIN, 64 * NAL.derive.TTL_MIN);
     /**
      * how many cycles above which to dither dt and occurrence time
      * TODO move this to Time class and cache the cycle value rather than dynamically computing it
@@ -625,7 +625,7 @@ public abstract class NAL<W> extends Parts<Term, W> implements Timed {
          * for NALTest's: extends the time all unit tests are allowed to run for.
          * normally be kept to 1 but for debugging this may be increased to find what tests need more time
          */
-        public static final float TIME_MULTIPLIER = 2f;
+        public static final float TIME_MULTIPLIER = 3f;
         /**
          * how precise unit test results must match expected values to pass
          */
@@ -654,7 +654,7 @@ public abstract class NAL<W> extends Parts<Term, W> implements Timed {
          * whether timegraph should not return solutions with volume significantly less than the input's.
          * set 0 to disable the filter
          */
-        public static final float TIMEGRAPH_IGNORE_DEGENERATE_SOLUTIONS_FACTOR = 0.5f;
+        public static final float TIMEGRAPH_IGNORE_DEGENERATE_SOLUTIONS_FACTOR = 0.25f;
         /**
          * whether to dither events as they are represented internally.  output events are dithered for the NAR regardless.
          */

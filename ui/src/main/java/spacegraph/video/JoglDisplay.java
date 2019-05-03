@@ -6,6 +6,7 @@ import com.jogamp.opengl.GLAutoDrawable;
 import com.jogamp.opengl.math.FloatUtil;
 import jcog.event.Off;
 import jcog.math.v3;
+import spacegraph.SpaceGraph;
 import spacegraph.input.key.KeyXYZ;
 import spacegraph.input.key.WindowKeyControls;
 import spacegraph.util.animate.AnimVector3f;
@@ -25,7 +26,7 @@ import static com.jogamp.opengl.fixedfunc.GLMatrixFunc.GL_PROJECTION;
 import static jcog.math.v3.v;
 
 /** JOGL display implementation */
-abstract public class JoglDisplay {
+abstract public class JoglDisplay extends SpaceGraph {
 
     /**
      * the hardware input/output implementation

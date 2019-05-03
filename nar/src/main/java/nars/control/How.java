@@ -1,6 +1,6 @@
 package nars.control;
 
-import jcog.Log;
+import com.google.common.flogger.FluentLogger;
 import jcog.Skill;
 import jcog.pri.Prioritizable;
 import nars.NAR;
@@ -8,7 +8,6 @@ import nars.attention.PriNode;
 import nars.attention.What;
 import nars.term.Term;
 import nars.time.event.WhenInternal;
-import org.slf4j.Logger;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
@@ -49,7 +48,7 @@ import static nars.time.Tense.TIMELESS;
 })
 abstract public class How extends NARPart implements Prioritizable {
 
-    public static final Logger logger = Log.logger(How.class);
+    public static final FluentLogger logger = FluentLogger.forEnclosingClass();
 
 
     public abstract void next(What w, BooleanSupplier kontinue);
@@ -221,7 +220,7 @@ abstract public class How extends NARPart implements Prioritizable {
         try {
             next(w, () -> System.nanoTime() < deadline);
         } catch (Throwable t) {
-            logger.error("{} {}", this, t.getMessage());
+            logger.atSevere().withCause(t).log(this.term().toString());
         } finally {
             long end = System.nanoTime();
             use(end - start);

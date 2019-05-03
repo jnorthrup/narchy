@@ -3,6 +3,7 @@ package spacegraph.video;
 import com.jogamp.newt.event.WindowEvent;
 import com.jogamp.opengl.GL2;
 import com.jogamp.opengl.fixedfunc.GLMatrixFunc;
+import jcog.data.list.FastCoWList;
 import jcog.event.Off;
 import spacegraph.input.finger.Finger;
 import spacegraph.input.finger.Fingering;
@@ -37,9 +38,10 @@ public class OrthoSurfaceGraph extends JoglDisplay implements SurfaceGraph {
     /* render context */
     public final ReSurface rendering = new ReSurface();
 
-    public final Finger mouse;
+    public final FastCoWList<Finger> fingers = new FastCoWList<>(Finger.class);
     private final NewtKeyboard keyboard;
 
+    private final Zoomed content;
 
     private final Fingering windowResize = new FingerResizeWindow(this, MOVE_AND_RESIZE_BUTTON) {
         @Override
@@ -103,6 +105,7 @@ public class OrthoSurfaceGraph extends JoglDisplay implements SurfaceGraph {
     };
 
 
+
     /**
      *
      * @param content content to interact zoomably
@@ -133,17 +136,17 @@ public class OrthoSurfaceGraph extends JoglDisplay implements SurfaceGraph {
 
         video.window.setPointerVisible(false);
 
-        mouse = new NewtMouseFinger(this, layers::finger);
 
         keyboard = new NewtKeyboard(/*TODO this */);
 
         layers.start(this);
 
 
-        Zoomed z = new Zoomed(this, keyboard, content);
-        layers.add(z);
-        layers.add(z.overlayZoomBounds(mouse));
-        layers.add(new Finger.CursorOverlay(mouse));
+        this.content = new Zoomed(this, keyboard, content);
+        layers.add(this.content);
+
+        addFinger( new NewtMouseFinger(this, layers::finger) );
+
 
 
 //        //addOverlay(this.keyboard.keyFocusSurface(cam));
@@ -153,6 +156,12 @@ public class OrthoSurfaceGraph extends JoglDisplay implements SurfaceGraph {
 //                layers.add(new Menu());
 //            }
 
+    }
+
+    public void addFinger(Finger f) {
+        fingers.add(f);
+        layers.add(content.overlayZoomBounds(f));
+        layers.add(new Finger.CursorOverlay(f));
     }
 
     @Override
@@ -224,17 +233,18 @@ public class OrthoSurfaceGraph extends JoglDisplay implements SurfaceGraph {
 
         //TODO static Animating.Label(
         return window(new Animating<>(g, ()->{
-            Surface t = mouse.touching();
+            Finger f = OrthoSurfaceGraph.this.fingers.get(0);
+            Surface t = f.touching();
             fingerInfo.text(
-                "buttn: " + mouse.buttonSummary() + '\n' +
-                "state: " +  mouse.fingering() + '\n' +
-                "posPx: " + mouse.posPixel + '\n' +
+                "buttn: " + f.buttonSummary() + '\n' +
+                "state: " +  f.fingering() + '\n' +
+                "posPx: " + f.posPixel + '\n' +
                 //"posGl: " + finger.posGlobal(layers.first(Zoomed.class)) + '\n' +
                 "touch: " + t + '\n' +
-                "posRl: " + (t!=null ? mouse.posRelative(t.bounds) : "?") + '\n' +
+                "posRl: " + (t!=null ? f.posRelative(t.bounds) : "?") + '\n' +
                 ""
             );
-        }, 0.25f),500,300);
+        }, 0.1f),500,300);
     }
 
     static class Menu extends Bordering {

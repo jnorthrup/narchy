@@ -1,6 +1,5 @@
 package nars.op.language;
 
-import nars.NAL;
 import nars.NAR;
 import nars.NARS;
 import nars.Task;
@@ -365,8 +364,8 @@ public class IRCAgent extends IRC {
                 Runnable r = IRCAgent.this.send(channels, s);
                 if (r!=null) {
                     nar.runLater(r);
-                    if (NAL.DEBUG && !next.isCommand())
-                        logger.info("{}\n{}", next, next.proof());
+//                    if (NAL.DEBUG && !next.isCommand())
+//                        logger.info("{}\n{}", next, next.proof());
                 } else {
                     
                 }

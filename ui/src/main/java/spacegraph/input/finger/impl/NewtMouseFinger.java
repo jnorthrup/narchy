@@ -3,6 +3,7 @@ package spacegraph.input.finger.impl;
 import com.jogamp.newt.event.*;
 import jcog.math.v2;
 import org.jetbrains.annotations.Nullable;
+import spacegraph.SpaceGraph;
 import spacegraph.input.finger.Finger;
 import spacegraph.input.finger.Fingering;
 import spacegraph.space2d.Surface;
@@ -202,5 +203,15 @@ public class NewtMouseFinger extends MouseFinger implements MouseListener, Windo
         if (e.isConsumed())
             return;
         rotationAdd(e.getRotation());
+    }
+
+    @Override
+    protected void start(SpaceGraph x) {
+
+    }
+
+    @Override
+    protected void stop(SpaceGraph x) {
+
     }
 }

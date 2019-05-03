@@ -64,6 +64,7 @@ import static spacegraph.space2d.container.grid.Gridding.grid;
  */
 abstract public class GameX extends Game {
 
+
 //    static {
 //        try {
 //            Exe.setProfiler(new Exe.UDPeerProfiler());
@@ -387,9 +388,9 @@ abstract public class GameX extends Game {
 
 
         n.beliefPriDefault.pri(0.01f);
-        n.goalPriDefault.pri(0.03f);
-        n.questionPriDefault.set(0.005f);
-        n.questPriDefault.set(0.005f);
+        n.goalPriDefault.pri(0.06f);
+        n.questionPriDefault.set(0.002f);
+        n.questPriDefault.set(0.002f);
 
         n.beliefConfDefault.set(0.7f);
         n.goalConfDefault.set(0.7f);

@@ -6,8 +6,10 @@ import jcog.data.atomic.AtomicFloat;
 import jcog.data.bit.AtomicMetalBitSet;
 import jcog.data.list.FasterList;
 import jcog.math.v2;
+import jcog.thing.Part;
 import jcog.tree.rtree.rect.RectFloat;
 import org.jetbrains.annotations.Nullable;
+import spacegraph.SpaceGraph;
 import spacegraph.space2d.ReSurface;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.PaintSurface;
@@ -31,7 +33,7 @@ import static spacegraph.input.finger.Fingering.Default;
  * <p>
  * TODO differentiate this between subclasses which touch only one surface at a time, and those which can touch several (multi-select)
  */
-abstract public class Finger implements Predicate<Fingering> {
+abstract public class Finger extends Part<SpaceGraph> implements Predicate<Fingering> {
 
 
     public final v2 posPixel = new v2(), posScreen = new v2();

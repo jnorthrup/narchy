@@ -5,6 +5,7 @@ import com.jogamp.newt.event.KeyListener;
 import jcog.TODO;
 import jcog.math.v2;
 import jcog.sort.TopN;
+import spacegraph.SpaceGraph;
 import spacegraph.input.finger.Finger;
 import spacegraph.input.key.KeyPressed;
 import spacegraph.space2d.Surface;
@@ -140,6 +141,16 @@ public class NewtKeyboard extends Finger implements KeyListener {
     @Override
     public v2 posGlobal() {
         throw new TODO("estimate based on position of the focused element (if any)");
+    }
+
+    @Override
+    protected void start(SpaceGraph x) {
+
+    }
+
+    @Override
+    protected void stop(SpaceGraph x) {
+
     }
 
 //    public Surface keyFocusSurface(Ortho.Camera cam) {

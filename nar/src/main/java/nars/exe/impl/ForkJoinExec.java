@@ -65,12 +65,12 @@ public class ForkJoinExec extends MultiExec implements Thread.UncaughtExceptionH
 
     @Override
     public void synch() {
-        logger.info("synch");
+        logger.atInfo().log("synch");
 
         int iter = 0;
 //        Log.enter("synch");
         while (!pool.isQuiescent()) {
-            logger.info("await quiescence {}", ++iter);
+            logger.atInfo().log("await quiescence {}", ++iter);
             if ((Thread.currentThread()) instanceof ForkJoinWorkerThread) {
                 ForkJoinTask.helpQuiesce();
             } else {
@@ -78,7 +78,7 @@ public class ForkJoinExec extends MultiExec implements Thread.UncaughtExceptionH
             }
         }
         if (iter > 0)
-            logger.info("synch ready");
+            logger.atInfo().log("synch ready");
 //        Log.exit();
     }
 

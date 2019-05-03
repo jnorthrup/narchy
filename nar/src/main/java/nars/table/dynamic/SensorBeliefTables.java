@@ -94,11 +94,14 @@ public class SensorBeliefTables extends BeliefTables {
             );
         }
 
-        SeriesTask x = add(value,
+
+        SeriesTask x =
+        value!=null ?
+            add(value,
                 start, end,
                 series.term, series.punc(),
                 dur,
-                n);
+                n) : null;
 
         if (x!=null) {
             series.clean(this, n);
@@ -139,11 +142,11 @@ public class SensorBeliefTables extends BeliefTables {
                 //form new task either because the value changed, or because the latch duration was exceeded
 
 
-                if (next == null) {
+                /*if (next == null) {
                     //guess that the signal stopped midway between (starting) now and the end of the last
                     long midGap = Math.min(nextStart-1, lastEnd + dur/2);
                     stretch(last, midGap);
-                } else {
+                } else */{
                     //stretch the previous to the current starting point for the new task
                     if (lastEnd < nextStart-1)
                         stretch(last, nextStart-1);
