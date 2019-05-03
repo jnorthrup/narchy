@@ -654,7 +654,7 @@ public abstract class NAL<W> extends Parts<Term, W> implements Timed {
          * whether timegraph should not return solutions with volume significantly less than the input's.
          * set 0 to disable the filter
          */
-        public static final float TIMEGRAPH_IGNORE_DEGENERATE_SOLUTIONS_FACTOR = 0f;
+        public static final float TIMEGRAPH_IGNORE_DEGENERATE_SOLUTIONS_FACTOR = 0.5f;
         /**
          * whether to dither events as they are represented internally.  output events are dithered for the NAR regardless.
          */

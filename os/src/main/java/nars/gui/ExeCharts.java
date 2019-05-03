@@ -163,10 +163,10 @@ public class ExeCharts {
                 return w.value;
             }
         },
-        ValueRate() {
+        ValueRateNormalized() {
             @Override
             public float floatValueOf(How w) {
-                return w.valueRate;
+                return w.valueRateNormalized;
             }
         },
 //        Time() {

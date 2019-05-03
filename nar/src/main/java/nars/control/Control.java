@@ -9,7 +9,6 @@ import jcog.func.IntIntToObjectFunction;
 import jcog.learn.Agent;
 import jcog.learn.AgentBuilder;
 import jcog.learn.Agenterator;
-import jcog.math.FloatRange;
 import jcog.math.FloatSupplier;
 import jcog.pri.PriMap;
 import nars.NAL;
@@ -78,11 +77,7 @@ import java.util.Arrays;
 
     private final NAR nar;
 
-    /**
-     * proportion of time spent in forced curiosity
-     * TODO move to its own control filter which ensures minimum fair priority among the causables
-     */
-    @Deprecated public final FloatRange explorationRate = new FloatRange(0.05f, 0, 1);
+
 
     private float updatePeriods =
             1;
@@ -152,21 +147,25 @@ import java.util.Arrays;
 
         float valRange = valMax[0] - valMin[0];
         if (Float.isFinite(valRange) && Math.abs(valRange) > Float.MIN_NORMAL) {
-            float exploreMargin = explorationRate.floatValue() * valRange;
+//            /**
+//             * proportion of time spent in forced curiosity
+//             * TODO move to its own control filter which ensures minimum fair priority among the causables
+//             */
+//            @Deprecated public final FloatRange explorationRate = new FloatRange(0.05f, 0, 1);
+//            float exploreMargin = explorationRate.floatValue() * valRange;
 
             how.forEach(c -> {
-                if (c.inactive()) {
-                    c.pri(0);
-                } else {
-                    float vNorm = Util.normalize(c.valueRate, valMin[0] - exploreMargin, valMax[0]);
-                    //pri(s, vNorm);
-                    c.pri(vNorm);
-                }
+//                if (c.inactive()) {
+//                    c.pri(0);
+//                } else {
+                    float vNorm = Util.normalize(c.valueRate, valMin[0] /*- exploreMargin*/, valMax[0]);
+                    c.valueRateNormalized = vNorm;
+//                }
             });
         } else {
             //FLAT
             float pFlat = 1f / n;
-            how.forEach(s -> s.pri(pFlat));
+            how.forEach(s -> s.valueRateNormalized = pFlat);
         }
 
     }

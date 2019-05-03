@@ -387,14 +387,14 @@ abstract public class GameX extends Game {
 
 
         n.beliefPriDefault.pri(0.01f);
-        n.goalPriDefault.pri(0.06f);
+        n.goalPriDefault.pri(0.03f);
         n.questionPriDefault.set(0.005f);
         n.questPriDefault.set(0.005f);
 
-        n.beliefConfDefault.set(0.8f);
-        n.goalConfDefault.set(0.8f);
+        n.beliefConfDefault.set(0.7f);
+        n.goalConfDefault.set(0.7f);
 
-        //n.emotion.want(MetaGoal.PerceiveCmplx, -0.01f); //<- dont set negative unless sure there is some positive otherwise nothing happens
+        n.emotion.want(MetaGoal.PerceiveCmplx, -0.001f); //<- dont set negative unless sure there is some positive otherwise nothing happens
 
         n.emotion.want(MetaGoal.Believe, 0.01f);
         n.emotion.want(MetaGoal.Desire, 0.6f);
@@ -436,23 +436,8 @@ abstract public class GameX extends Game {
 //           }
 //        };
 
-        //governor
-        int gHist = 16;
-        n.onDur((nn) -> {
-            MetaGoal.value(nn);
-            nn.how.forEach(h -> {
-                FloatAveragedWindow g = (FloatAveragedWindow) h.governor;
-                if (g==null)
-                    h.governor = g = new FloatAveragedWindow(gHist, 1f/gHist, 0);
 
-                float v = h.valueRate;
-                if (v != v) v = 0;
-
-                float vv = g.valueOf(v);
-
-                h.pri(Math.max(ScalarValue.EPSILON, vv));
-            });
-        });
+        addGovernor(n);
 
 //        BatchDeriver bd = new BatchDeriver(Derivers.nal(n, 1, 8,
 //                "motivation.nal"
@@ -561,6 +546,30 @@ abstract public class GameX extends Game {
 //        Impiler.ImpilerDeduction d = new Impiler.ImpilerDeduction(8, 8, n);
 
 
+    }
+
+    /** governor
+     * TODO extract to class */
+    private static void addGovernor(NAR n) {
+        int gHist = 16;
+        n.onDur((nn) -> {
+            MetaGoal.value(nn);
+            nn.how.forEach(h -> {
+                FloatAveragedWindow g = (FloatAveragedWindow) h.governor;
+                if (g==null)
+                    h.governor = g = new FloatAveragedWindow(gHist, 0.5f, 0).mode(
+                            FloatAveragedWindow.Mode.Exponential
+                            //FloatAveragedWindow.Mode.Mean
+                    );
+
+                float v = h.valueRateNormalized;
+                if (v != v) v = 0;
+
+                float vv = g.valueOf(v);
+
+                h.pri(Util.clamp(vv, ScalarValue.EPSILON, 1));
+            });
+        });
     }
 
     ;

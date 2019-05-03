@@ -54,6 +54,24 @@ import static org.eclipse.collections.impl.tuple.Tuples.pair;
  * <p>
  * DTERNAL relationships can be maintained separate
  * from +0.
+ *
+ * TODO
+ * subclass of MapNodeGraph which allows tagging edges by an ID.  then index
+ * the edges by these keys so they can be efficiently iterated and removed by tag.
+ *
+ * then use it to store the edges in categories:
+ *      task time edges
+ *      belief time edges
+ *      conclusion time edges
+ *      autonegations
+ *      hypothesized (anything created during search)
+ *      etc.
+ *
+ * then the premise can clear the conclusion edges while retaining task, belief edges throughout
+ * each separate derivation of a premise.
+ * also the tags can be used to heuristically bias the search via associated weight.  so autonegation
+ * can be weighted less allowing preferential traversal of concrete edges in oscillating pos/neg event pathways.
+ *
  */
 public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 

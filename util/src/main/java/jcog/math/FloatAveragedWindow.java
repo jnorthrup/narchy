@@ -39,24 +39,24 @@ public class FloatAveragedWindow implements FloatSupplier, FloatToFloatFunction 
     }
 
     public enum Mode implements AverageStrategy {
+
         Mean {
+            /** alpha param ignored */
             @Override
             public double apply(Tensor window, float alpha) {
-                //how to use the alpha parameter?
+                double total = 0;
+                int count = 0;
+                //TODO Tensor reduce function
+                int vol = window.volume();
+                for (int i = 0; i < vol; i++) { //reverse
+                    float v = window.getAt(i);
+                    if (v != v)
+                        continue;
 
-//                Sum sum = new Sum();
-//                double sampleSize = length;
-//
-//                // Compute initial estimate using definitional formula
-//                double xbar = sum.evaluate(values, begin, length) / sampleSize;
-//
-//                // Compute correction factor in second pass
-//                double correction = 0;
-//                for (int i = begin; i < begin + length; i++) {
-//                    correction += values[i] - xbar;
-//                }
-//                return xbar + (correction/sampleSize);
-                throw new TODO();
+                    total += v;
+                    count++;
+                }
+                return count > 0 ? total / count : Double.NaN;
             }
         },
         Exponential {

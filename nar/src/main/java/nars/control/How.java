@@ -51,6 +51,7 @@ abstract public class How extends NARPart implements Prioritizable {
 
     public static final Logger logger = Log.logger(How.class);
 
+
     public abstract void next(What w, BooleanSupplier kontinue);
 
     /**
@@ -59,10 +60,17 @@ abstract public class How extends NARPart implements Prioritizable {
     public final AtomicBoolean busy;
     public final PriNode pri;
     public final AtomicLong used = new AtomicLong(0);
+
     /**
      * cached: last calculated non-negative value rate
      */
     transient public float valueRate;
+
+    /**
+     * cached: value rate normalized against other running How's
+     */
+    transient public float valueRateNormalized;
+
     /**
      * cached: last calculated positive, negative, or NaN value rate
      */
