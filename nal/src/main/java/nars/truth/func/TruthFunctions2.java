@@ -125,10 +125,17 @@ enum TruthFunctions2 {
      * goal deduction
      */
     @Nullable
-    public static Truth desire(/*@NotNull*/ Truth goal, /*@NotNull*/ Truth belief, float minConf, boolean strong) {
+    public static Truth desire(/*@NotNull*/ Truth goal, /*@NotNull*/ Truth belief, float minConf, boolean bipolar, boolean strong) {
 
         float cc = confCompose(belief, goal);
         if (cc >= minConf) {
+
+
+
+            float bF = belief.freq();
+
+            if (!bipolar)
+                cc = and(bF, cc); //in unipolar mode, attenuate confidence to zero as the low belief frequency pulls the output frequency to 0.5
 
             if (!strong) {
                 cc = weak(cc);
@@ -136,15 +143,17 @@ enum TruthFunctions2 {
                     return null;
             }
 
-            float c = and(belief.freq(), cc);
+            /*if (c >= minConf)*/ {
 
-            if (c >= minConf) {
+                //float f =
+                float f =
+                        bipolar ?
+                            Util.lerp(bF, 1-goal.freq(), goal.freq())
+                            :
+                            Util.lerp(bF, 0.5f, goal.freq());
+                //float f = goal.freq();
 
-                //float f = Util.lerp(belief.freq(), 0.5f, goal.freq());
-                //float f = Util.lerp(belief.freq(), 1-goal.freq(), goal.freq());
-                float f = goal.freq();
-
-                return $.t(f, c);
+                return $.t(f, cc);
 
             }
 

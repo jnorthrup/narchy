@@ -195,12 +195,12 @@ abstract public class GameX extends Game {
 
         int threads = _threads <= 0 ? Util.concurrencyExcept(1) : _threads;
 
-        float ramGigs = Runtime.getRuntime().maxMemory() / (1024 * 1024 * 1024f);
+        double ramGB = Runtime.getRuntime().maxMemory() / (1024 * 1024 * 1024.0);
         NAR n = new NARS()
 
                 .what(
                         (w) -> new What.TaskLinkWhat(w,
-                                1024,
+                                2048,
                                 new PriBuffer.BagTaskBuffer(512, 0.25f))
                 )
 //                .attention(() -> new ActiveConcepts(1024))
@@ -242,14 +242,14 @@ abstract public class GameX extends Game {
 
                         //CaffeineMemory.soft()
 
-                        ramGigs > 0.25 ?
+                        ramGB >= 0.5 ?
                             new CaffeineMemory(
                                 //8 * 1024
                                 //16*1024
                                    //32*1024
                                 //64 * 1024
                                 //128*1024
-                                Math.round(ramGigs * 128 * 1024)
+                                Math.round(ramGB * 128 * 1024)
                             )
                             :
                             CaffeineMemory.soft()

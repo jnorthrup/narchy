@@ -1011,12 +1011,12 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
      *
      * @return
      */
-    @Nullable
-    public final void runAt(long whenOrAfter, Runnable t) {
-        if (time() >= whenOrAfter)
+    public final ScheduledTask runAt(long whenOrAfter, Runnable t) {
+        if (time() >= whenOrAfter) {
             exe.execute(t); //immediate
-        else
-            runAt(WhenTimeIs.then(whenOrAfter, t));
+            return null;
+        } else
+            return runAt(WhenTimeIs.then(whenOrAfter, t));
     }
 
     @Nullable
@@ -1687,15 +1687,4 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
         }
     }
 
-    @Deprecated public PriNode parent(PriNode attn, PriNode... parent) {
-
-        //    public PriNode parent(NAR n, PriNode... parent) {
-        MapNodeGraph<PriNode, Object> g = control.graph;
-
-        NodeGraph.MutableNode<PriNode,Object> thisNode = g.addNode(attn);
-        attn.parent(parent, g, thisNode);
-
-        return attn;
-
-    }
 }

@@ -4,6 +4,7 @@ import com.google.common.collect.Iterators;
 import nars.NAR;
 import nars.concept.Concept;
 import nars.concept.sensor.Signal;
+import nars.table.BeliefTable;
 import nars.term.Term;
 import nars.truth.Truth;
 
@@ -53,7 +54,8 @@ abstract public class ScalarReward extends Reward {
     @Override
     protected float rewardFreq(boolean beliefOrGoal, int dur) {
         NAR n = nar();
-        Truth t = (beliefOrGoal ? concept.beliefs() : concept.goals()).truth(n.time(), dur, n);
+        BeliefTable bt = beliefOrGoal ? concept.beliefs() : concept.goals();
+        Truth t = bt.truth(n.time(), dur, n);
         if (t!=null) {
             float f = t.freq();
             return negate ? 1 - f : f;

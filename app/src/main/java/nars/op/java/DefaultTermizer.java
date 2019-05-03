@@ -99,7 +99,7 @@ public class DefaultTermizer implements Termizer {
 
         if (t == NULL) return null;
         if (t instanceof Int && t.op() == INT)
-            return ((Int) t).id;
+            return ((Int) t).i;
 
         Object x = termToObj.get(t);
         if (x == null)

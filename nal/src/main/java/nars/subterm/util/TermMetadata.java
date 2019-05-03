@@ -81,7 +81,7 @@ abstract public class TermMetadata implements Termlike {
                 if (v instanceof NormalizedVariable) {
 
                     NormalizedVariable nv = (NormalizedVariable) v;
-                    byte varID = nv.id;
+                    byte varID = nv.id();
                     if (varID <= minID[0]) {
                         //same order, ok
                         byte type = nv.anonType();

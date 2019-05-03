@@ -438,7 +438,7 @@ import static nars.Op.BELIEF;
         FloatToFloatFunction ifGoalMissing =
                 x -> 0; //Float.NaN;
 
-        GoalActionConcept x = actionUnipolar(t, false, ifGoalMissing, (f) -> {
+        GoalActionConcept x = actionUnipolar(t, true, ifGoalMissing, (f) -> {
             boolean posOrNeg = f >= thresh.asFloat();
             return on.accept(posOrNeg) ?
                     1f :

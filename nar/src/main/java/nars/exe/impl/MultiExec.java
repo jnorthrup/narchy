@@ -5,12 +5,11 @@ import jcog.Texts;
 import jcog.Util;
 import jcog.data.list.FasterList;
 import jcog.math.FloatAveragedWindow;
+import jcog.math.FloatRange;
 import nars.NAR;
 import nars.Task;
 import nars.exe.Exec;
 import nars.task.AbstractTask;
-import nars.task.NALTask;
-import nars.task.ProxyTask;
 import nars.time.clock.RealTime;
 import nars.time.part.DurLoop;
 
@@ -21,16 +20,19 @@ import static java.lang.System.nanoTime;
 
 abstract public class MultiExec extends Exec {
 
-    protected static final float inputQueueSizeSafetyThreshold =
-            0.99f;
-            //1f;
+    /** 0..1.0: determines acceptable reaction latency.
+     * lower value allows queue to grow larger before it's processed,
+     * higher value demands faster response at (a likely) throughput cost */
+    public final FloatRange alertness = new FloatRange(1f, 0, 1f);
+
 
     private static final float UPDATE_DURS =
             1;
+
     protected final DurLoop.DurRunnable updater;
     //2; //<- untested
 
-    protected long threadWorkTimePerCycle, threadIdleTimePerCycle;
+    long threadWorkTimePerCycle, threadIdleTimePerCycle;
 
     /**
      * global sleep nap period
@@ -43,7 +45,8 @@ abstract public class MultiExec extends Exec {
             1.0;
             //1.5;
 
-    long cycleIdealNS;
+    volatile long cycleIdealNS;
+    volatile long lastCycle = System.nanoTime();
 
     MultiExec(int concurrencyMax  /* TODO adjustable dynamically */) {
         super(concurrencyMax);
@@ -72,13 +75,6 @@ abstract public class MultiExec extends Exec {
         }
     }
 
-    @Override
-    public final void input(Object x) {
-        if (x instanceof NALTask || x instanceof ProxyTask)
-            accept((Task) x);
-        else
-            execute(x);
-    }
 
     @Override protected final void next(NAR nar) {
         nar.exe.schedule(this::execute);
@@ -97,7 +93,6 @@ abstract public class MultiExec extends Exec {
         execute((Object)async);
     }
 
-    long lastCycle = System.nanoTime();
 
     protected void update() {
         long now = System.nanoTime();

@@ -37,6 +37,21 @@ abstract class AbstractUnitSubterm implements Subterms {
     }
 
     @Override
+    public final int volume() {
+        return 1 + sub().volume();
+    }
+
+    @Override
+    public final int complexity() {
+        return 1 + sub().complexity();
+    }
+
+    @Override
+    public final float voluplexity() {
+        return 1 + sub().voluplexity();
+    }
+
+    @Override
     public final boolean AND(Predicate<Term> p) {
         return p.test(sub());
     }
@@ -121,7 +136,7 @@ abstract class AbstractUnitSubterm implements Subterms {
     public boolean isNormalized() {
         Term s = sub();
         if (s instanceof Variable) {
-            return s instanceof NormalizedVariable && ((NormalizedVariable) s).id == 1;
+            return s instanceof NormalizedVariable && ((NormalizedVariable) s).id() == 1;
         }
         return s.isNormalized();
     }

@@ -1,6 +1,5 @@
 package nars.truth.dynamic;
 
-import jcog.WTF;
 import jcog.util.ArrayUtils;
 import jcog.util.ObjectLongLongPredicate;
 import nars.NAR;
@@ -10,7 +9,6 @@ import nars.subterm.Subterms;
 import nars.task.util.TaskRegion;
 import nars.term.Compound;
 import nars.term.Term;
-import nars.term.atom.Bool;
 import nars.term.util.conj.Conj;
 import nars.term.util.conj.ConjBuilder;
 import nars.term.util.conj.ConjLazy;
@@ -68,11 +66,11 @@ public class DynamicConjTruth {
 
             Term y = l.term();
 
-            //TEMPORARY
-            if (!(y instanceof Bool) && y.anon().op()!=y.op()) {
-                l.term();
-                throw new WTF("conj fault");
-            }
+//            //TEMPORARY
+//            if (!(y instanceof Bool) && y.anon().op()!=y.op()) {
+//                l.term();
+//                throw new WTF("conj fault");
+//            }
 
             return y;
         }

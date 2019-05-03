@@ -109,7 +109,7 @@ public class Anon extends AbstractTermTransform.NegObliviousTermTransform {
 //            }
         } else {
             if (x instanceof Anom) {
-                return map.interned((byte) ((AnonID) x).anonID);
+                return map.interned((byte) ((AnonID) x).i);
             }
         }
         return x;

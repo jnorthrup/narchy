@@ -186,9 +186,9 @@ abstract public class ThreadedExec extends MultiExec {
 
 
     boolean queueSafe() {
-        if (inputQueueSizeSafetyThreshold < 1)
-            return in.availablePct(inputQueueCapacityPerThread) >= inputQueueSizeSafetyThreshold;
-        else
-            return in.isEmpty();
+        float a = alertness.floatValue();
+        return a < 1 - Float.MIN_NORMAL ?
+                in.availablePct(inputQueueCapacityPerThread) >= a :
+                in.isEmpty();
     }
 }

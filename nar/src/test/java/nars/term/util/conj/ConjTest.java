@@ -1362,7 +1362,7 @@ public class ConjTest {
     void testRetermporalization2() throws Narsese.NarseseException {
         String su = "((--,(happy)) &&+- (--,((--,(o))&&+-(happy))))";
         Compound u = $(su);
-        assertEquals("((||+- ,(o),(--,(happy))) &&+- (--,(happy)))", u.toString());
+        assertEquals("(((o) ||+- (--,(happy))) &&+- (--,(happy)))", u.toString());
 
         Term ye = u.temporalize(Retemporalize.retemporalizeXTERNALToDTERNAL);
         assertEquals("(--,(happy))", ye.toString());
@@ -1653,7 +1653,7 @@ public class ConjTest {
         }
 
         Term xn = x.neg();
-        assertEq("(||,(--,(x &&+1 (--,x))),y)", xn);
+        assertEq("((--,(x &&+1 (--,x)))||y)", xn);
 
         assertEq(
                 //"((||,(--,(x &&+1 (--,x))),y)&&x)",
@@ -2084,11 +2084,11 @@ public class ConjTest {
     @Test
     void testDisj1() {
 
-        assertEq("((||,x,y)&&a)", "(||,(a && x),(a && y))");
-        assertEq("((||,x,y)&&a)", "--(--(a && x) && --(a && y))");
-        assertEq("(--,((||,x,y)&&a))", "(--(a && x) && --(a && y))");
+        assertEq("((x||y)&&a)", "(||,(a && x),(a && y))");
+        assertEq("((x||y)&&a)", "--(--(a && x) && --(a && y))");
+        assertEq("(--,((x||y)&&a))", "(--(a && x) && --(a && y))");
 
-        assertEq("x", "(||,(a && x),(--a && x))");
+        assertEq("x", "((a && x)||(--a && x))");
         assertEq("x", "--(--(a && x) && --(--a && x))");
     }
 
@@ -2183,7 +2183,7 @@ public class ConjTest {
 
     @Test void testFactorizeDNF() {
         //https://www.wolframalpha.com/input/?i=not+(a+and+b)++and+not+(a+and+c)
-        assertEq("(--,((||,b,c)&&a))" , "(--(a && b) && --(a && c))");
+        assertEq("(--,((b||c)&&a))" , "(--(a && b) && --(a && c))");
     }
 
     @Test void test_Not_A_Sequence() {

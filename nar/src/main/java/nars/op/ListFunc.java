@@ -180,7 +180,7 @@ public enum ListFunc {
 
     public static final Functor sub = Functor.f2("sub", (x, n) -> {
         if (n.op() == INT) {
-            return x.sub(((Int) n).id, Bool.Null);
+            return x.sub(((Int) n).i, Bool.Null);
         } else {
             return null;
         }
@@ -192,7 +192,7 @@ public enum ListFunc {
             Term x = args.sub(0);
             Term n = args.sub(1);
             if (n.op() == INT) {
-                int nn = ((Int) n).id;
+                int nn = ((Int) n).i;
                 Subterms xx = x.subterms();
                 int m = xx.subs();
                 if (nn < m) {

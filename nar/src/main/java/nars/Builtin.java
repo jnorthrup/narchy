@@ -540,7 +540,7 @@ public class Builtin {
                     Op o = index.op();
                     if (o == INT) {
 
-                        int i = ((Int) index).id;
+                        int i = ((Int) index).i;
                         if (i >= 0 && i < len)
                             return x.sub(i);
                         else
@@ -551,9 +551,9 @@ public class Builtin {
                         if (start.op() == INT) {
                             Term end = (index).sub(1);
                             if (end.op() == INT) {
-                                int si = ((Int) start).id;
+                                int si = ((Int) start).i;
                                 if (si >= 0 && si < len) {
-                                    int ei = ((Int) end).id;
+                                    int ei = ((Int) end).i;
                                     if (ei >= 0 && ei <= len) {
                                         if (si == ei)
                                             return Op.EmptyProduct;

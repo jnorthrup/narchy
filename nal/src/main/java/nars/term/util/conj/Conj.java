@@ -565,12 +565,13 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
     private static boolean _isSeq(Term x) {
         Subterms xx = x.subterms();
         return xx.hasAny(CONJ) && //inner conjunction
-                xx.subs() > 1 &&
-                xx.count(Conj::isSeq) == 1 &&
-                (!xx.hasAny(NEG)
+                xx.subs() == 2 &&
+                xx.count(Conj::isSeq) == 1
+                && (!xx.hasAny(NEG)
                         ||
                         /** TODO weird disjunctive seq cases */
-                        xx.count(xxx -> xxx.op() == NEG && xxx.unneg().op() == CONJ) == 0);
+                        xx.count(xxx -> xxx.op() == NEG && xxx.unneg().op() == CONJ) == 0)
+                ;
     }
 
     public static boolean isFactoredSeq(Term x) {
@@ -1674,26 +1675,39 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
     }
     private int conflictExhaustive(Term x, Term y) {
         if (x.op()==NEG && x.unneg().op()==CONJ) {
-//            Term xy = CONJ.the(x,y);
+
+            //Term xu = x.unneg();
+            Term xy = CONJ.the(x, y);
+            if (xy.equals(x))
+                return 0; //absorbed
+            if (xy.op()!=CONJ || xy.volume() < x.volume())
+                return -1; //something happened: bool or other interference
+
+        }
+
+//        if (x.op()==NEG && x.unneg().op()==CONJ) {
+//            Term xy = CONJ.the(x, y);
 //            Op xyo = xy.op();
-//            if (xyo ==BOOL || xyo !=CONJ)
+//            if (xyo == BOOL || xyo != CONJ)
 //                return -1; //TODO see if True means something
 //            if (xy.equals(x))
 //                return +1; //absorbed
+//        }
 
-            x = x.unneg();
-            if (x.op() == CONJ) {
-                //disjunctive screening:  test for any conflict as
-                Subterms xx = x.subterms();
-                if (!xx.impossibleSubTerm(y.unneg())) {
-                    //TODO recursive event scan?
-                    if (xx.containsNeg(y))
-                        return -1; //disjunctive conflict
-                    else if (xx.contains(y))
-                        return +1; //absorbed
-                }
-            }
-        }
+//        if (x.op()==NEG && x.unneg().op()==CONJ) {
+//            x = x.unneg();
+//            if (x.op() == CONJ) {
+//                //disjunctive screening:  test for any conflict as
+//                Subterms xx = x.subterms();
+//                if (!xx.impossibleSubTerm(y.unneg())) {
+//                    //TODO recursive event scan?
+//                    if (xx.contains(y))
+//                        return -1; //disjunctive conflict
+//                    else if (xx.containsNeg(y))
+//                        return +1; //absorbed
+//                }
+//            }
+//        }
 
         return 0;
     }

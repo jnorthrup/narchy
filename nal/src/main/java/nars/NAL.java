@@ -76,8 +76,8 @@ public abstract class NAL<W> extends Parts<Term, W> implements Timed {
      * >= 1  - maximum # of Answer attempts per Answer capacity.  so 2 means 2 tasks are tried for each Answer task slot in its capacity
      */
     public static final float ANSWER_COMPLETENESS =
-            1f;
-    //2f;
+            //1f;
+    2f;
     //0.5f;
 
     public static final boolean DEBUG_SIMILAR_DERIVATIONS= false;
@@ -219,7 +219,7 @@ public abstract class NAL<W> extends Parts<Term, W> implements Timed {
     @Deprecated
     public final FloatRange questionForgetRate = new FloatRange(0.5f, 0, 1);
     public final IntRange premiseUnifyTTL = new IntRange(8, 1, 32);
-    public final IntRange deriveBranchTTL = new IntRange(32 * NAL.derive.TTL_MIN, NAL.derive.TTL_MIN, 64 * NAL.derive.TTL_MIN);
+    public final IntRange deriveBranchTTL = new IntRange(16 * NAL.derive.TTL_MIN, NAL.derive.TTL_MIN, 64 * NAL.derive.TTL_MIN);
     /**
      * how many cycles above which to dither dt and occurrence time
      * TODO move this to Time class and cache the cycle value rather than dynamically computing it
@@ -582,11 +582,13 @@ public abstract class NAL<W> extends Parts<Term, W> implements Timed {
         public static final boolean INT_CONCEPTUALIZABLE= configIs("INT_CONCEPTUALIZABLE");
 
         /**
+         * EXPERIMENTAL logical closure for relations of negations
+         *
          * applies certain reductions to INH and SIM terms when one or both of their immediate subterms
          * are negated.  in assuming a "closed-boolean-world" in which there is one and only one
          * opposite for any truth frequency in 0..1,
          * <p>
-         * then the following statements should be equivalent:
+         * then (some of) the following statements should be equivalent:
          * <p>
          * INH
          * (x --> --y)    |-  --(x --> y)
@@ -613,7 +615,7 @@ public abstract class NAL<W> extends Parts<Term, W> implements Timed {
         /**
          * how many INT terms are canonically interned/cached. [0..n)
          */
-        public static final int MAX_INTERNED_INTS = 64;
+        public static final int ANON_INT_MAX = Byte.MAX_VALUE;
     }
 
     public enum test {
@@ -623,7 +625,7 @@ public abstract class NAL<W> extends Parts<Term, W> implements Timed {
          * for NALTest's: extends the time all unit tests are allowed to run for.
          * normally be kept to 1 but for debugging this may be increased to find what tests need more time
          */
-        public static final float TIME_MULTIPLIER = 3f;
+        public static final float TIME_MULTIPLIER = 2f;
         /**
          * how precise unit test results must match expected values to pass
          */
@@ -652,7 +654,7 @@ public abstract class NAL<W> extends Parts<Term, W> implements Timed {
          * whether timegraph should not return solutions with volume significantly less than the input's.
          * set 0 to disable the filter
          */
-        public static final float TIMEGRAPH_IGNORE_DEGENERATE_SOLUTIONS_FACTOR = 0.1f;
+        public static final float TIMEGRAPH_IGNORE_DEGENERATE_SOLUTIONS_FACTOR = 0f;
         /**
          * whether to dither events as they are represented internally.  output events are dithered for the NAR regardless.
          */
@@ -661,7 +663,7 @@ public abstract class NAL<W> extends Parts<Term, W> implements Timed {
 
 
         @Range(min = 1, max = 32)
-        public static final int TIMEGRAPH_ITERATIONS = 4;
+        public static final int TIMEGRAPH_ITERATIONS = 3;
         /**
          * TTL = 'time to live'
          */

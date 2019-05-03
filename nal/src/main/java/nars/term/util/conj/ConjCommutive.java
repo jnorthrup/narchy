@@ -142,24 +142,11 @@ public enum ConjCommutive {;
                 return False;
         }
 
-        if (pos != null && pos.cardinality() == u.length) {
-            //all pos
-            //assertNot2(u);
+        int pc = pos==null ? 0 : pos.cardinality(), nc = neg == null ? 0 : neg.cardinality();
+        if (pc + nc == u.length) {
+            //mix of pos and negative (no seq) - only needed to have checked for co-negation
             return conjDirect(dt, u);
         }
-
-        if (neg != null && neg.cardinality() == u.length) {
-            //assertNot2(u);
-            return conjDirect(dt, u);
-        }
-
-
-//        if (pos != null && neg != null && (pos.cardinality() + neg.cardinality()) == u.length) {
-//
-//            //mix of pos and negative, check for co-negation
-//
-//            return conjDirect(dt, u);
-//        }
 
         int seqCount = seq != null ? seq.cardinality() : 0;
         if (seqCount == 1) {

@@ -31,7 +31,7 @@ import nars.io.TermAppender;
 import nars.subterm.Subterms;
 import nars.term.anon.Anon;
 import nars.term.compound.UnitCompound;
-import nars.term.util.TermException;
+import nars.term.util.TermTransformException;
 import nars.term.util.builder.TermBuilder;
 import nars.term.util.conj.Conj;
 import nars.term.util.transform.AbstractTermTransform;
@@ -91,12 +91,7 @@ public interface Compound extends Term, IPair, Subterms {
                 ///* conservative estimate */ c.volume() * 2
                 64
         );
-        try {
-            c.appendTo(sb);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        return sb;
+        return c.appendTo(sb);
     }
 
     /**
@@ -595,7 +590,7 @@ public interface Compound extends Term, IPair, Subterms {
                                 Term distributed = CONJ.the(w, what, factor);
 
                                 if (distributed.op() != CONJ)
-                                    throw new TermException("invalid conjunction factorization", Compound.this);
+                                    throw new TermTransformException(Compound.this, distributed, "invalid conjunction factorization");
 
 //                                    assert (!(distributed instanceof Bool));
                                 return each.accept(when, distributed);

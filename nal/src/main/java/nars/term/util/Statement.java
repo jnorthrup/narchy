@@ -219,9 +219,8 @@ public class Statement {
 //            }
 //            }
 
-            if (op == INH || op == SIM) {
+            if (op == INH /*|| op == SIM*/) {
                 if (NAL.term.INH_CLOSED_BOOLEAN_DUALITY_MOBIUS_PARADIGM) {
-                    //EXPERIMENTAL support for negated inheritance subterms
                     boolean sn = subject.op() == NEG && subject.unneg().op()!=CONJ;
                     boolean pn = predicate.op() == NEG && predicate.unneg().op()!=CONJ;
                     if (!sn && !pn) {

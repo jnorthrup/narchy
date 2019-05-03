@@ -221,7 +221,7 @@ abstract public class Search<N, E> {
                 else {
                     nn = g.node(n);
                     if (nn==null)
-                        throw new WTF();
+                        continue; //assume it has been removed after invocation start
                 }
 
                 q.clear();

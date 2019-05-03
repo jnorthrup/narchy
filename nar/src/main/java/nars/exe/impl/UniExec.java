@@ -19,11 +19,6 @@ public class UniExec extends Exec {
     }
 
     @Override
-    public final void input(Object t) {
-        executeNow(t);
-    }
-
-    @Override
     public final int concurrency() {
         return 1;
     }

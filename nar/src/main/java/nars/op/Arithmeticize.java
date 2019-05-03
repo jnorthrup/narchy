@@ -140,7 +140,7 @@ public class Arithmeticize {
                 t = anon.get(t);
             }
             if (t instanceof Int) {
-                ints.add(((Int) t).id);
+                ints.add(((Int) t).i);
             }
             return true;
         }, null);

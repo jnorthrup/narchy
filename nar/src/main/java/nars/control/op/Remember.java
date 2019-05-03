@@ -126,13 +126,6 @@ public class Remember extends AbstractTask {
         return null;
     }
 
-    private void commit(Task input, What w) {
-        if (input instanceof Task)
-            commit((Task) input, false, w);
-        else
-            Task.run(input, w); //inline
-    }
-
     /** TODO check that image dont double link/activate for their product terms */
     private void commit(Task input, boolean store, What w) {
 
@@ -220,9 +213,9 @@ public class Remember extends AbstractTask {
         if (remembered != null && !remembered.isEmpty()) {
             remembered.forEachWith((Task r, NAR nn) -> {
                 if (r.equals(this.input)) //HACK
-                    link((Task) r, c, w); //root
+                    link(r, c, w); //root
                 else
-                    commit(r, w); //sub
+                    commit(r, false, w); //sub
             }, n);
             remembered = null;
         }

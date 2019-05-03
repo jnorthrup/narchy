@@ -236,21 +236,6 @@ public abstract class AbstractTask implements Task {
         }
 
     }
-    /** execute the given tasks */
-    public final static class TasksIterable extends AbstractTask {
 
-        private final Iterable<? extends Task> tasks;
-
-        public TasksIterable(Iterable<? extends Task> x) {
-            this.tasks = x;
-        }
-        @Override
-        public Task next(Object n) {
-            for (Task t: tasks)
-                Task.run(t, n);
-            return null;
-        }
-
-    }
 
 }

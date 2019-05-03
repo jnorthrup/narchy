@@ -385,14 +385,14 @@ public enum NALTruth implements TruthFunc {
     Desire() {
         @Override
         public Truth apply(final Truth T, final Truth B, NAL n, float minConf) {
-            return TruthFunctions2.desire(T, B, minConf, true);
+            return TruthFunctions2.desire(T, B, minConf, false,true);
         }
     },
 
     DesireWeak() {
         @Override
         public Truth apply(final Truth T, final Truth B, NAL n, float minConf) {
-            return TruthFunctions2.desire(T, B, minConf, false);
+            return TruthFunctions2.desire(T, B, minConf, false,false);
         }
     },
 

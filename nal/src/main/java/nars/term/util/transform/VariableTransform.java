@@ -34,7 +34,7 @@ public abstract class VariableTransform extends AbstractTermTransform.FilteredTe
                 else {
                     if (atomic instanceof NormalizedVariable) {
                         //just re-use the ID since the input term is expected to have none of the target type
-                        return NormalizedVariable.the(to, ((NormalizedVariable) atomic).id);
+                        return NormalizedVariable.the(to, ((NormalizedVariable) atomic).id());
                     } else {
                         //unnormalized, just compute the complete unnormalized form.
                         return unnormalizedShadow(atomic, to);

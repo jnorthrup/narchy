@@ -11,7 +11,6 @@ import nars.subterm.AnonSubterms;
 import nars.subterm.RemappedSubterms;
 import nars.subterm.Subterms;
 import nars.term.Compound;
-import nars.term.Neg;
 import nars.term.Term;
 import nars.term.anon.Anom;
 import nars.term.atom.Atomic;
@@ -27,6 +26,7 @@ import java.io.DataInput;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 
+import static nars.Op.NEG;
 import static nars.io.IO.SPECIAL_BYTE;
 import static nars.io.IO.subType;
 import static nars.term.anon.AnonID.termPos;
@@ -152,8 +152,8 @@ public interface TermIO {
 
         @Override
         public void write(Term t, ByteArrayDataOutput out) {
-            if (t instanceof Neg) {
-                out.writeByte(Op.NEG.id);
+            if (t.op()==NEG) {
+                out.writeByte(NEG.id);
                 t = t.unneg();
             }
 
@@ -211,7 +211,7 @@ public interface TermIO {
                 for (int i = 0; i < s; i++) {
                     int x = ttt.subMap(i);
                     if (x < 0) {
-                        out.writeByte(Op.NEG.id);
+                        out.writeByte(NEG.id);
                         x = (byte) -x;
                     }
                     write(ttt.mapTerm(x), out);
@@ -222,7 +222,7 @@ public interface TermIO {
                 out.writeByte(ss.length);
                 for (short s : ss) {
                     if (s < 0) {
-                        out.writeByte(Op.NEG.id);
+                        out.writeByte(NEG.id);
                         s = (short) -s;
                     }
                     write(termPos(s), out);

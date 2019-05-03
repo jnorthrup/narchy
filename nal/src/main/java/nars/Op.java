@@ -8,12 +8,10 @@ import nars.subterm.Subterms;
 import nars.term.Compound;
 import nars.term.Neg;
 import nars.term.Term;
-import nars.term.anon.Anom;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
 import nars.term.util.SetSectDiff;
-import nars.term.util.TermException;
 import nars.term.util.builder.HeapTermBuilder;
 import nars.term.util.builder.TermBuilder;
 import nars.term.util.builder.TermConstructor;
@@ -35,7 +33,6 @@ import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import static nars.term.Terms.sorted;
-import static nars.term.atom.Bool.Null;
 import static nars.time.Tense.DTERNAL;
 import static nars.time.Tense.XTERNAL;
 import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
@@ -50,29 +47,7 @@ public enum Op {
 
     NEG("--", 1, Args.One) {
         public Term the(Term u) {
-            Op uo = u.op();
-            switch (uo) {
-                case ATOM:
-                    if (u instanceof Anom) {
-                        return u.neg();
-                    }
-                    break;
-                case BOOL:
-                    return u.neg();
-                case NEG:
-                    return u.unneg();
-
-                case FRAG:
-                    if (NAL.DEBUG)
-                        throw new TermException("fragment can not be negated", u);
-                    return Null;
-
-                case IMG:
-                    return u;
-                    //return Null;
-            }
-
-            return new Neg(u);
+            return Neg.neg(u);
         }
 
         public Term the(TermBuilder b, int dt, Term[] u) {

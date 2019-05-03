@@ -41,7 +41,7 @@ public class AnonSubterms extends TermVector /*implements Subterms.SubtermsBytes
             boolean neg = hasNeg && ss.op() == NEG;
             if (neg)
                 ss = ss.unneg();
-            short tt = ((AnonID) ss).anonID;
+            short tt = (short) ((AnonID) ss).i;
             t[i] = neg ? ((short)-tt) : tt;
         }
 
@@ -185,19 +185,19 @@ public class AnonSubterms extends TermVector /*implements Subterms.SubtermsBytes
             case NEG:
                 return subsNeg();
             case ATOM:
-                match = AnonID.ATOM_MASK;
+                match = AnonID.ANOMs;
                 break;
             case VAR_PATTERN:
-                match = AnonID.VARPATTERN_MASK;
+                match = AnonID.VARPATTERNs;
                 break;
             case VAR_QUERY:
-                match = AnonID.VARQUERY_MASK;
+                match = AnonID.VARQUERYs;
                 break;
             case VAR_DEP:
-                match = AnonID.VARDEP_MASK;
+                match = AnonID.VARDEPs;
                 break;
             case VAR_INDEP:
-                match = AnonID.VARINDEP_MASK;
+                match = AnonID.VARINDEPs;
                 break;
             default:
                 return 0;
@@ -243,7 +243,7 @@ public class AnonSubterms extends TermVector /*implements Subterms.SubtermsBytes
     }
 
     public int indexOf(AnonID t) {
-        return indexOf(t.anonID);
+        return indexOf((short)t.i);
     }
 
     @Override
@@ -284,7 +284,7 @@ public class AnonSubterms extends TermVector /*implements Subterms.SubtermsBytes
             }
         } else {
             if (x instanceof AnonID) {
-                short aid = ((AnonID) x).anonID;
+                short aid = (short) ((AnonID) x).i;
                 boolean hasNegX = false;
                 for (short xx : this.subterms) {
                     if (xx == aid)

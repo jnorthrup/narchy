@@ -21,7 +21,7 @@ public class CachedUnitCompound extends SemiCachedUnitCompound {
         assert(op!=NEG && op!=CONJ);
 
         this.op = op.id;
-        this.cstruct = super.structure();
+        this.cstruct = sub.structure() | op.bit;
 
         int v = sub.volume() + 1;
         assert(v < Short.MAX_VALUE);

@@ -40,22 +40,22 @@ public class SectTest {
     }
 
 
-    @Test
-    void testSectConceptualization() {
-
-        assertEq("((a==>b)&x)", "((a==>b) & x)");
-        assertEq("((a ==>+1 b)&x)", "((a==>+1 b) & x)");
-        assertEq("((a ==>+- b)&x)", $$("((a==>+1 b) & x)").concept());
-
-
-//        TermTest.assertEq(Bool.Null, "((a==>+1 b) & (a ==>+2 b))");
-//        TermTest.assertEq(Bool.Null, "(&, (a==>b),(a ==>+2 b),(c==>d))");
-//        TermTest.assertEq("(((a ==>+2 b)-->d)&(a ==>+1 b))", "((a==>+1 b) & ((a ==>+2 b)-->d))");
-//        TermTest.assertEq(Bool.Null, "(((a ==> b)-->d) & ((a ==>+2 b)-->d))");
-//        TermTest.assertEq(Bool.Null, "(&, (a==>b),(a ==>+2 b),((c==>d)-->e))");
-
-
-    }
+//    @Test
+//    void testSectConceptualization() {
+//
+//        assertEq("((a==>b)&x)", "((a==>b) & x)");
+//        assertEq("((a ==>+1 b)&x)", "((a==>+1 b) & x)");
+//        assertEq("((a ==>+- b)&x)", $$("((a==>+1 b) & x)").concept());
+//
+//
+////        TermTest.assertEq(Bool.Null, "((a==>+1 b) & (a ==>+2 b))");
+////        TermTest.assertEq(Bool.Null, "(&, (a==>b),(a ==>+2 b),(c==>d))");
+////        TermTest.assertEq("(((a ==>+2 b)-->d)&(a ==>+1 b))", "((a==>+1 b) & ((a ==>+2 b)-->d))");
+////        TermTest.assertEq(Bool.Null, "(((a ==> b)-->d) & ((a ==>+2 b)-->d))");
+////        TermTest.assertEq(Bool.Null, "(&, (a==>b),(a ==>+2 b),((c==>d)-->e))");
+//
+//
+//    }
 
 
     @Test void testSectDiff() {
@@ -86,34 +86,34 @@ public class SectTest {
         String a = "(x &&+1 y)";
         String b = "(x &&+2 y)";
         String c = "z";
-        assertEq(Null, '(' + a + '|' + b + ')');
-        assertEq(Null, '(' + a + '&' + b + ')');
+//        assertEq(Null, '(' + a + '|' + b + ')');
+//        assertEq(Null, '(' + a + '&' + b + ')');
         assertEq(Null, '{' + a + ',' + b + '}');
         assertEq(Null, '[' + a + ',' + b + ']');
-        assertEq(Null, '(' + a + "<->" + b + ')');
+//        assertEq(Null, '(' + a + "<->" + b + ')');
 
         //one is negated
-        assertEq(Null, '(' + a + "| --" + b + ')');
-        assertEq(Null, '(' + a + "& --" + b + ')');
+//        assertEq(Null, '(' + a + "| --" + b + ')');
+//        assertEq(Null, '(' + a + "& --" + b + ')');
         assertEq(Null, '{' + a + ",--" + b + '}');
         assertEq(Null, '[' + a + ",--" + b + ']');
-        assertEq(Null, '(' + a + "<-> --" + b + ')');
+//        assertEq(Null, '(' + a + "<-> --" + b + ')');
 
         //3-ary
-        assertEq(Null, "(|," + a + ',' + b + ',' + c + ')');
-        assertEq(Null, "(&," + a + ',' + b + ',' + c + ')');
+//        assertEq(Null, "(|," + a + ',' + b + ',' + c + ')');
+//        assertEq(Null, "(&," + a + ',' + b + ',' + c + ')');
         assertEq(Null, '{' + a + ',' + b + ',' + c + '}');
         assertEq(Null, '[' + a + ',' + b + ',' + c + ']');
 
     }
 
 
-    @Test
-    void testInvalidTemporal3() {
-        assertEq(Null, "((a==>+1 b)~(a ==>+2 b))");
-        //TermTest.assertEq("((--,(c ==>+2 d))&(a ==>+1 b))", "((X &&+837 Y)~(--,(Y &&+1424 X)))");
-    }
-    @Test void testValidTemporal1() {
-        assertEq("((x &&+1 y)|(x &&+2 z))", "((x &&+1 y)|(x &&+2 z))");
-    }
+//    @Test
+//    void testInvalidTemporal3() {
+//        assertEq(Null, "((a==>+1 b)~(a ==>+2 b))");
+//        //TermTest.assertEq("((--,(c ==>+2 d))&(a ==>+1 b))", "((X &&+837 Y)~(--,(Y &&+1424 X)))");
+//    }
+//    @Test void testValidTemporal1() {
+//        assertEq("((x &&+1 y)|(x &&+2 z))", "((x &&+1 y)|(x &&+2 z))");
+//    }
 }

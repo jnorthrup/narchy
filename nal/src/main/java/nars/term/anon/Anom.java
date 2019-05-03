@@ -40,7 +40,7 @@ public final class Anom extends AnonID {
 
     @Override
     public String toString() {
-        return '_' +  Integer.toString(anonID);
+        return '_' +  Integer.toString(i);
     }
 
 
@@ -66,7 +66,7 @@ public final class Anom extends AnonID {
 //    }
 
     static final Anom[] the = Util.map(0, Byte.MAX_VALUE, Anom[]::new, (i) -> new Anom((byte) i));
-    private static final Term[] theNeg = Util.map(0, Byte.MAX_VALUE, Term[]::new, (i) -> new Neg(the[i]));
+    private static final Term[] theNeg = Util.map(0, Byte.MAX_VALUE, Term[]::new, (i) -> Neg.neg(the[i]));
     static {
         the[0] = null;
         theNeg[0] = null;
@@ -78,6 +78,6 @@ public final class Anom extends AnonID {
 
     @Override
     public final Term neg() {
-        return theNeg[anonID];
+        return theNeg[i];
     }
 }

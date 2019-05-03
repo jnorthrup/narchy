@@ -28,6 +28,7 @@ import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
 import nars.term.functor.AbstractInlineFunctor1;
 import nars.term.functor.AbstractInlineFunctor2;
+import nars.term.util.TermTransformException;
 import nars.term.util.transform.TermTransform;
 import nars.time.Tense;
 import nars.truth.PreciseTruth;
@@ -269,9 +270,9 @@ public class Derivation extends PreDerivation {
      * this is optimized for repeated use of the same task (with differing belief/beliefTerm)
      */
     public void reset(Task nextTask, final Task nextBelief, Term nextBeliefTerm) {
-        occ.clear();
         this._task = resetTask(nextTask, this._task);
         this._belief = resetBelief(nextBelief, nextBeliefTerm);
+        this.occ.clear();
     }
 
     private Task resetBelief(Task nextBelief, Term nextBeliefTerm) {
@@ -313,20 +314,15 @@ public class Derivation extends PreDerivation {
         } else {
             this.beliefTruthBelief = this.beliefTruthTask = null;
             this.beliefStart = this.beliefEnd = TIMELESS;
+            this._beliefTerm = nextBeliefTerm;
             this.beliefTerm =
                     !(nextBeliefTerm instanceof Variable) ?
-                            anon.putShift(this._beliefTerm = nextBeliefTerm, taskTerm) :
-                            anon.put(this._beliefTerm = nextBeliefTerm); //unshifted, since the target may be structural
+                            anon.putShift(nextBeliefTerm, taskTerm) :
+                            anon.put(nextBeliefTerm); //unshifted, since the target may be structural
         }
+        assertAnon(_beliefTerm, beliefTerm, nextBelief);
 
-        if (NAL.DEBUG) {
-            if ((beliefTerm instanceof Bool) || ((beliefTerm instanceof Compound && _beliefTerm instanceof Compound) && (beliefTerm.op() != _beliefTerm.op())))
-                throw new WTF(_beliefTerm + " could not be anon, result: " + beliefTerm);
 
-            assert (beliefTerm != null) : (nextBeliefTerm + " could not be anonymized");
-            //assert (!(beliefTerm instanceof Bool));
-            assert (beliefTerm.op() != NEG) : nextBelief + " , " + nextBeliefTerm + " -> " + beliefTerm + " is invalid NEG op";
-        }
 
         return nextBelief;
     }
@@ -345,9 +341,9 @@ public class Derivation extends PreDerivation {
             anon.clear();
 
             this.taskTerm = anon.put(nextTaskTerm);
-            if (taskTerm instanceof Bool || ((taskTerm instanceof Compound && nextTaskTerm instanceof Compound) && taskTerm.op() != nextTaskTerm.op())) //(!taskTerm.op().taskable)
-                throw new WTF(nextTaskTerm + " could not be anon, result: " + taskTerm);
-            assert (taskTerm != null) : (nextTask + " could not be anonymized: " + nextTaskTerm.anon() + " , " + taskTerm);
+
+            assertAnon(nextTaskTerm, this.taskTerm, nextTask);
+
             this.taskUniques = anon.uniques();
         }
 
@@ -372,6 +368,23 @@ public class Derivation extends PreDerivation {
         }
 
         return nextTask;
+    }
+
+    static private void assertAnon(Term x, @Nullable Term y, @Nullable nars.Task cause) {
+        TermTransformException e = null;
+        if (y == null)
+            e = new TermTransformException(x, y, "invalid Derivation Anon: null");
+        if (y instanceof Bool)
+            e = new TermTransformException(x, y, "invalid Derivation Anon: Bool");
+        if (x instanceof Compound && x.op() != y.op())
+            e = new TermTransformException(x, y, "invalid Derivation Anon: Op changed");
+        if (x.volume() != y.volume())
+            e = new TermTransformException(x, y, "invalid Derivation Anon: Volume Changed");
+        if (e != null) {
+            if (cause!=null)
+                cause.delete();
+            throw e;
+        }
     }
 
     private float pri(Task t) {

@@ -426,7 +426,7 @@ public class KIF {
                         }
                         FnDef d = fn.computeIfAbsent(subj, (s) -> new FnDef());
 
-                        d.domain.updateValue(((Int) arg).id, () -> type, domainRangeMerger(type));
+                        d.domain.updateValue(((Int) arg).i, () -> type, domainRangeMerger(type));
                         
                     } else {
                         throw new UnsupportedOperationException("unrecognized domain spec");

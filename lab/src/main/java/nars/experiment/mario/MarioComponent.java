@@ -6,10 +6,7 @@ import nars.experiment.mario.sprites.Mario;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
+import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
@@ -17,6 +14,7 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class MarioComponent extends JComponent implements Runnable, KeyListener, FocusListener {
 
+    public final Thread thread;
     int fps = 24;
 
     public void startGame() {
@@ -34,7 +32,8 @@ public class MarioComponent extends JComponent implements Runnable, KeyListener,
 
     private static final long serialVersionUID = 739318775993206607L;
 
-    private boolean running;
+    private boolean running = false;
+    public boolean paused = false;
     private final int width;
     private final int height;
     private GraphicsConfiguration graphicsConfiguration;
@@ -59,6 +58,9 @@ public class MarioComponent extends JComponent implements Runnable, KeyListener,
 
 
         setFocusable(true);
+
+        thread = new Thread(this, getClass().getSimpleName() + " Game Thread");
+
     }
 
     private void toggleKey(int keyCode, boolean isPressed) {
@@ -97,20 +99,11 @@ public class MarioComponent extends JComponent implements Runnable, KeyListener,
     public void update(Graphics g) {
     }
 
-    public void start() {
-        if (!running) {
-            running = true;
-            new Thread(this, "Game Thread").start();
-        }
-    }
 
-    public void stop() {
-        Art.stopMusic();
-        running = false;
-    }
 
     @Override
     public void run() {
+        running = true;
         graphicsConfiguration = getGraphicsConfiguration();
 
         mapScene = new MapScene(graphicsConfiguration, this, new Random().nextLong());
@@ -137,7 +130,9 @@ public class MarioComponent extends JComponent implements Runnable, KeyListener,
 
 
         while (running) {
-            scene.tick();
+
+            if (!paused)
+                scene.tick();
 
 //            long nextTM = System.currentTimeMillis();
 //            float alpha = (float) (System.currentTimeMillis() - tm);

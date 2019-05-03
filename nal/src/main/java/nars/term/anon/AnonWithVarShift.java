@@ -60,7 +60,7 @@ public class AnonWithVarShift extends CachedAnon {
                         throw new UnsupportedOperationException();
                 }
                 if (shift != 0) {
-                    int newID = v.id + shift;
+                    int newID = v.id() + shift;
                     assert (newID < Byte.MAX_VALUE - 3); //to be safe
                     x = v.normalizedVariable((byte) newID);
                 }
@@ -77,7 +77,7 @@ public class AnonWithVarShift extends CachedAnon {
         if (base.hasAny(mask)) {
             base.recurseTermsOrdered(b-> b.hasAny(mask), s -> {
                 if (s instanceof NormalizedVariable) {
-                    byte serial = ((NormalizedVariable) s).id;
+                    byte serial = ((NormalizedVariable) s).id();
                         switch (s.op()) {
                             case VAR_DEP:
                                 depShift = Math.max(depShift, serial);

@@ -98,14 +98,14 @@ public final class Equal extends InlineCommutiveBinaryBidiFunctor implements The
                 Subterms xa = Functor.args((Compound)x, 2);
                 Term xa0 = xa.sub(0), xa1 = xa.sub(1);
                 if (xa0.op().var && xa1.op() == INT)
-                    return e.is(xa0, Int.the(((Int) y).id - ((Int) xa1).id)) ? True : Null; //"equal(add(#x,a),b)"
+                    return e.is(xa0, Int.the(((Int) y).i - ((Int) xa1).i)) ? True : Null; //"equal(add(#x,a),b)"
                 else if (xa1.op().var && xa0.op() == INT)
                     throw new TODO();
             } else if (xf.equals(MathFunc.mul)) {
                 Subterms xa = Functor.args((Compound)x, 2);
                 Term xa0 = xa.sub(0), xa1 = xa.sub(1);
                 if (xa0.op().var && xa1.op() == INT)
-                    return e.is(xa0, $.the(((double)((Int) y).id) / ((Int) xa1).id)) ? True : Null; //"equal(mul(#x,a),b)"
+                    return e.is(xa0, $.the(((double)((Int) y).i) / ((Int) xa1).i)) ? True : Null; //"equal(mul(#x,a),b)"
             }
         }
 

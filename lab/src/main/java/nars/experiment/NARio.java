@@ -60,7 +60,6 @@ public class NARio extends GameX {
         frame.setVisible(true);
 
 
-        game.start();
 
         PixelBag cc = new PixelBag(new MonoBufImgBitmap2D(() -> game.image), 32, 24) {
             {
@@ -119,9 +118,12 @@ public class NARio extends GameX {
         );
 
         PriNode tileAttnGroup = new PriNode(tileSensors);
-        nar().parent(tileAttnGroup, attnSensor); //HACK
+        //HACK
+
+        nar().control.parent(tileAttnGroup, new PriNode[]{attnSensor});
+
         for (SelectorSensor s : tileSensors)
-            nar().parent(s.attn, tileAttnGroup);  //HACK
+            nar().control.parent(s.attn, new PriNode[]{tileAttnGroup});
 
 
         SpaceGraph.window(camAE.newChart(), 500, 500);
@@ -214,8 +216,21 @@ public class NARio extends GameX {
         });
         alive.setDefault($.t(1, 0.5f));
 
+        game.paused = true;
+        game.thread.start();
     }
 
+    @Override
+    protected void starting(NAR nar) {
+        super.starting(nar);
+        game.paused = false;
+    }
+
+    @Override
+    protected void stopping(NAR nar) {
+        game.paused = true;
+        super.stopping(nar);
+    }
 
     static final int tileTypes = 3; //0..4
 
@@ -251,11 +266,13 @@ public class NARio extends GameX {
                 $$("L"),
                 $$("R"),
                 (boolean n) -> {
-                    boolean was = game.scene.key(Mario.KEY_LEFT, n);
+                    Scene s = game.scene;
+                    boolean was = s!=null && s.key(Mario.KEY_LEFT, n);
                     return n;
                 },
                 (boolean n) -> {
-                    boolean was = game.scene.key(Mario.KEY_RIGHT, n);
+                    Scene s = game.scene;
+                    boolean was = s!=null && s.key(Mario.KEY_RIGHT, n);
                     return n;
                 })) {
 //                (boolean n) -> { game.scene.key(Mario.KEY_RIGHT, n); return n; })) {
@@ -290,7 +307,9 @@ public class NARio extends GameX {
 //                        else
 //                            press = false;
 //                    }
-                    game.scene.key(Mario.KEY_JUMP, n);
+                    Scene s = game.scene;
+                    if (s!=null)
+                        s.key(Mario.KEY_JUMP, n);
                     return n;
                 });
         //j.actionDur(1);
@@ -301,7 +320,9 @@ public class NARio extends GameX {
 
         actionPushButton($$("speed"),
                 n -> {
-                    game.scene.key(Mario.KEY_SPEED, n);
+                    Scene s = game.scene;
+                    if (s!=null)
+                        s.key(Mario.KEY_SPEED, n);
                     return n;
                 });
         //s.actionDur(1);

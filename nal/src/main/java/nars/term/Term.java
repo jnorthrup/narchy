@@ -365,6 +365,15 @@ public interface Term extends Termlike, Termed, Comparable<Term> {
 
     void appendTo(Appendable w) throws IOException;
 
+    default StringBuilder appendTo(StringBuilder s) {
+        try {
+            appendTo((Appendable)s);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        return s;
+    }
+
     default String structureString() {
         return String.format("%16s",
                 Op.strucTerm(structure()))
@@ -501,7 +510,7 @@ public interface Term extends Termlike, Termed, Comparable<Term> {
         if (this instanceof Atomic /* volume == 1 */) {
 
             if (this instanceof Int /*&& t instanceof Int*/) {
-                return Integer.compare(((Int) this).id, ((Int) t).id);
+                return Integer.compare(((Int) this).i, ((Int) t).i);
             }
             if (this instanceof AnonID && t instanceof AnonID) {
                 return Integer.compare(hashCode(), t.hashCode()); //same op, same hashcode

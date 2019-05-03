@@ -215,17 +215,22 @@ public class Game extends NARPart implements NSense, NAct, Timed {
 
     private void addAttention(PriNode target, Object s) {
         if (s instanceof VectorSensor) {
-            nar.parent(((VectorSensor) s).attn, target);
+
+            nar.control.parent(((VectorSensor) s).attn, new PriNode[]{target});
         } else if (s instanceof Signal) {
-            nar.parent(((Signal) s).attn, target);
+
+            nar.control.parent(((Signal) s).attn, new PriNode[]{target});
         } else if (s instanceof Reward) {
-            nar.parent(((Reward) s).attn, target);
+
+            nar.control.parent(((Reward) s).attn, new PriNode[]{target});
         } else if (s instanceof AgentAction) {
-            nar.parent(((AgentAction) s).attn, target);
+
+            nar.control.parent(((AgentAction) s).attn, new PriNode[]{target});
         } else if (s instanceof BiPolarAction) {
-            nar.parent(((BiPolarAction) s).attn, target);
+
+            nar.control.parent(((BiPolarAction) s).attn, new PriNode[]{target});
         } else if (s instanceof PriNode)
-            nar.parent(((PriNode) s), target);
+            nar.control.parent(((PriNode) s), new PriNode[]{target});
         else
             throw new TODO();
     }
@@ -258,10 +263,16 @@ public class Game extends NARPart implements NSense, NAct, Timed {
     //@Override
     protected void starting(NAR nar) {
         nar.control.add(pri);
-        nar.parent(attnAction, this.pri, nar.goalPriDefault);
-        nar.parent(attnSensor, this.pri, nar.beliefPriDefault);
-        nar.parent(attnReward, this.pri, nar.goalPriDefault /* TODO avg */);
 
+        nar.control.parent(attnAction, new PriNode[]{this.pri, nar.goalPriDefault});
+
+        nar.control.parent(attnSensor, new PriNode[]{this.pri, nar.beliefPriDefault});
+
+        /* TODO avg */
+
+        nar.control.parent(attnReward, new PriNode[]{this.pri, nar.goalPriDefault});
+
+        sensors.stream().filter(x -> x instanceof NARPart).forEach(s -> nar.start((NARPart) s));
 
     }
 
@@ -269,16 +280,22 @@ public class Game extends NARPart implements NSense, NAct, Timed {
     //@Override
     protected void stopping(NAR nar) {
 
-        sensors.forEach(s -> nar.stop((NARPart)s));
-
-        nar.control.remove(pri);
-        nar.control.remove(attnAction);
-        nar.control.remove(attnSensor);
-        nar.control.remove(attnReward);
+        sensors.stream().filter(x -> x instanceof NARPart).forEach(s -> nar.stop((NARPart)s));
 
     }
 
+    @Override
+    public boolean delete() {
+        if (super.delete()) {
+            nar.control.remove(pri);
+            nar.control.remove(attnAction);
+            nar.control.remove(attnSensor);
+            nar.control.remove(attnReward);
+            return true;
+        }
+        return false;
 
+    }
 
     public Reward reward(FloatSupplier rewardfunc) {
         return reward(rewardTerm("reward"), rewardfunc);
@@ -448,7 +465,7 @@ public class Game extends NARPart implements NSense, NAct, Timed {
                     //(Math.max(now, frameTrigger.next(now)), d);
                     Math.max(now, time.next(now));
 
-            assert (prev < now && now < next);
+            //assert (prev < now && now < next);
             this.prev = prev;
             this.now = now;
             this.next = next;

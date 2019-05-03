@@ -31,7 +31,7 @@ public class Gradius extends GameX {
 
     private final Gradius4K g = new Gradius4K();
 
-    private final boolean canPause = false;
+//    private final boolean canPause = false;
 
 
     int lastScore;
@@ -45,6 +45,7 @@ public class Gradius extends GameX {
     public Gradius(NAR nar) {
         super("g", fps(25), nar);
 
+        g.paused = true;
 
         //TODO coordinate with fps
         g.updateMS =
@@ -131,10 +132,10 @@ public class Gradius extends GameX {
 
         actionToggle($.inh($$("fire"), id), b -> g.keys[VK_SHOOT] = b);
 
-        if (canPause) {
-            actionToggle($$("pause"),
-                    b -> g.paused = b);
-        }
+//        if (canPause) {
+//            actionToggle($$("pause"),
+//                    b -> g.paused = b);
+//        }
 
 
         initToggle();
@@ -168,7 +169,17 @@ public class Gradius extends GameX {
 
     }
 
+    @Override
+    protected void starting(NAR nar) {
+        super.starting(nar);
+        g.paused = false;
+    }
 
+    @Override
+    protected void stopping(NAR nar) {
+        g.paused = true;
+        super.stopping(nar);
+    }
 
     void initToggle() {
         //TODO boundary feedback

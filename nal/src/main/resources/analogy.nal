@@ -2,22 +2,23 @@
 //   see:
 //      https://en.wikipedia.org/wiki/Fluid_Concepts_and_Creative_Analogies
 //      https://cogsci.indiana.edu/
+// the similarity beliefs here act as a sort of transistor switch in determining analogy result truth
 
-  X, (X <-> Y), --isVar(Y)                        |- Y, (Belief:Analogy, Goal:Desire)
+  X, (X <-> Y), --isVar(Y)                        |- Y, (Belief:Desire, Goal:Desire)
    X, (X <-> Y), task("?@"), --isVar(Y)            |- Y
     X, (X <-> Y), --isVar(Y)                         |-  --Y, (Goal:DesireWeakPN)
-  X, (--X <-> Y), --isVar(Y)                      |- Y, (Belief:AnalogyN, Goal:DesireWeakN)
+  X, (--X <-> Y), --isVar(Y)                      |- Y, (Belief:DesireN, Goal:DesireN)
    X, (--X <-> Y), task("?@"), --isVar(Y)            |- Y
     X, (--X <-> Y), --isVar(Y)                       |-  --Y, (Goal:DesireWeakNN)
 
 
 
-  Z, (X <-> Y), in(Z,X), neq(Z,Y), --isVar(X), --isVar(Y)   |- substitute(Z, X, Y, novel), (Belief:Analogy, Goal:DesireWeak)
+  Z, (X <-> Y), in(Z,X), neq(Z,Y), --isVar(X), --isVar(Y)   |- substitute(Z, X, Y, novel), (Belief:Desire, Goal:Desire)
   //Z, (X <-> Y), task("."), in(Z,X), neq(Z,Y)   |- substitute(Z, X, Y, novel), (Punctuation:Question, Time:Task)
     //Z, (X <-> Y), task("!"), in(Z,X), neq(Z,Y)   |- substitute(Z, X, Y, novel), (Punctuation:Question, Time:Task)
         //  Belief:Analogy, Goal:DesireWeak)
-  Z, (X <-> Y), neq(Z,X), neq(Z,Y), --isVar(X), --isVar(Y)    |- unisubst(Y, X, Z, novel), (Belief:Analogy, Goal:DesireWeak)
-  Z, (--X <-> Y), neq(Z,X), neq(Z,Y), --isVar(X), --isVar(Y)  |- unisubst(Y, X, Z, novel), (Belief:AnalogyN, Goal:DesireWeakN)
+  Z, (X <-> Y), neq(Z,X), neq(Z,Y), --isVar(X), --isVar(Y)    |- unisubst(Y, X, Z, novel), (Belief:Desire, Goal:Desire)
+  Z, (--X <-> Y), neq(Z,X), neq(Z,Y), --isVar(X), --isVar(Y)  |- unisubst(Y, X, Z, novel), (Belief:DesireN, Goal:DesireN)
       //Z, (X <-> Y), task("."), neq(Z,X), neq(Z,Y)    |- unisubst(Y, X, Z, novel), (Punctuation:Question)
         //  Z, (X <-> Y), task("!"), neq(Z,X), neq(Z,Y)    |- unisubst(Y, X, Z, novel), (Punctuation:Quest)
       //Z, (--X <-> Y), task("."), neq(Z,X), neq(Z,Y)  |- unisubst(Y, X, Z, novel), (Punctuation:Question)

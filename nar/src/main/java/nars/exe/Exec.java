@@ -1,14 +1,19 @@
 package nars.exe;
 
 import jcog.Log;
+import jcog.WTF;
 import jcog.data.iterator.ArrayIterator;
 import jcog.data.list.FasterList;
 import jcog.data.list.MetalConcurrentQueue;
-import jcog.pri.Prioritizable;
 import jcog.util.ConsumerX;
 import nars.NAR;
 import nars.Task;
+import nars.attention.What;
 import nars.control.NARPart;
+import nars.control.op.Perceive;
+import nars.control.op.Remember;
+import nars.task.AbstractTask;
+import nars.task.UnevaluatedTask;
 import nars.time.ScheduledTask;
 import org.slf4j.Logger;
 
@@ -23,7 +28,7 @@ import java.util.stream.Stream;
 /**
  * manages low level task scheduling and execution
  */
-abstract public class Exec extends NARPart implements Executor, ConsumerX<Task> {
+abstract public class Exec extends NARPart implements Executor, ConsumerX<AbstractTask> {
 
     public static final Logger logger = Log.logger(Exec.class);
 
@@ -44,18 +49,49 @@ abstract public class Exec extends NARPart implements Executor, ConsumerX<Task> 
         this.concurrencyMax = concurrencyMax; //TODO this will be a value like Runtime.getRuntime().availableProcessors() when concurrency can be adjusted dynamically
     }
 
-    abstract public void input(Object t);
+    /** HACK this needs better */
+    public static void run(Task t0, What w) {
 
-    private static void taskError(Prioritizable t, Prioritizable x, Throwable ee, NAR nar) {
-        //TODO: if(RELEASE)
-//        if (t == x)
-//            nar.logger.error("{} {}", x, ee);
-//        else
-//            nar.logger.error("{}->{} {}", t, x, ee);
-//
-//        if (Param.DEBUG)
-            throw new RuntimeException(ee);
+        Task t = t0;
+
+        try {
+            while (t!=null && !(t instanceof AbstractTask)) {
+                if (t instanceof UnevaluatedTask) {
+                    t = Remember.the(t, w.nar);
+                } else {
+                    t = Perceive.perceive(t, w);
+                }
+            }
+
+            if (t instanceof AbstractTask) {
+                if (t instanceof AbstractTask.TasksArray) {
+                    //HACK
+                    for (Task tt : ((AbstractTask.TasksArray) t).tasks)
+                        run(tt, w);
+                } else {
+                    Task.run(t, w);
+                }
+            } else if (t != null) {
+                throw new WTF("unrecognized task type: " + t.getClass() + "\t" + t);
+            }
+        } catch (Throwable e) {
+            logger.error("{} {}", t0, e);
+        }
+
     }
+
+
+
+//    private static void taskError(Prioritizable t, Prioritizable x, Throwable ee, NAR nar) {
+//        //TODO: if(RELEASE)
+////        if (t == x)
+////            nar.logger.error("{} {}", x, ee);
+////        else
+////            nar.logger.error("{}->{} {}", t, x, ee);
+////
+////        if (Param.DEBUG)
+//            throw new RuntimeException(ee);
+//    }
 
     /** execute later */
     @Override public void execute(Runnable async) {
@@ -103,7 +139,7 @@ abstract public class Exec extends NARPart implements Executor, ConsumerX<Task> 
             logger.error("{} {}", t, e);
         }
     }
-    private final void executeNow(Runnable t) {
+    private void executeNow(Runnable t) {
         try {
             t.run();
         } catch (Throwable e) {
@@ -115,11 +151,11 @@ abstract public class Exec extends NARPart implements Executor, ConsumerX<Task> 
      * immediately execute a Task
      */
     @Override
-    public final void accept(Task x) {
+    public final void accept(AbstractTask x) {
         executeNow(x, nar);
     }
 
-    private static void executeNow(Task x, NAR nar) {
+    private static void executeNow(/*Abstract*/Task x, NAR nar) {
         Task t = x;
         try {
             Task.run(t, nar);
@@ -132,8 +168,8 @@ abstract public class Exec extends NARPart implements Executor, ConsumerX<Task> 
      * inline, synchronous
      */
     protected final void executeNow(Object t) {
-        if (t instanceof Task)
-            accept((Task) t);
+        if (t instanceof AbstractTask)
+            accept((AbstractTask) t);
         else if (t instanceof Consumer)
             executeNow((Consumer)t);
         else

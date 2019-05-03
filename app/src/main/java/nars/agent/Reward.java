@@ -49,7 +49,8 @@ public abstract class Reward implements GameLoop, TermedDelegate, Iterable<Conce
         this.game = g;
 
         this.attn = new PriNode(id);
-        g.nar().parent(attn, g.attnReward);
+
+        g.nar().control.parent(attn, new PriNode[]{g.attnReward});
 
         in = g.nar().newChannel(id);
 
@@ -107,7 +108,8 @@ public abstract class Reward implements GameLoop, TermedDelegate, Iterable<Conce
         Term at = term().equals(goal) ? $.func(Inperience.want, goal) : $.func(Inperience.want, this.term(), goal);
 
         PriNode a = new MyAttnBranch(at, t);
-        nar().parent(a, attn);
+
+        nar().control.parent(a, new PriNode[]{attn});
     }
 
     private final class MyAttnBranch extends AttnBranch {

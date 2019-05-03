@@ -3,7 +3,7 @@ package nars.subterm;
 import nars.term.Term;
 import nars.term.anon.AnonID;
 
-import static nars.term.anon.AnonID.ATOM_MASK;
+import static nars.term.anon.AnonID.ANOMs;
 
 abstract public class MaskedAnonVector extends ProxySubterms<AnonSubterms> {
 
@@ -16,7 +16,7 @@ abstract public class MaskedAnonVector extends ProxySubterms<AnonSubterms> {
         short x = ref.subRaw(i);
         short ax = x < 0 ? (short) -x : x;
         Term y;
-        if (AnonID.mask(ax)==ATOM_MASK) {
+        if (AnonID.mask(ax)== ANOMs) {
             y = atom((ax & 0xff)-1);
         } else {
             y = AnonID.termPos(ax);

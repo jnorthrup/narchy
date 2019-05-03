@@ -107,14 +107,17 @@ abstract public class NARPart extends Part<NAR> implements Termed, OffOn {
 
     public boolean delete() {
 
-        logger.info("delete {}", term());
+        logger.debug("delete {}", term());
 
 
-        local.removeIf((p)->{p.delete(); return true; });
+        local.removeIf((p) -> {
+            p.delete();
+            return true;
+        });
         whenDeleted.close();
 
         NAR n = this.nar;
-        if (n !=null) {
+        if (n != null) {
             n.stop(this);
         } else {
             //experimental hard stop
@@ -130,9 +133,11 @@ abstract public class NARPart extends Part<NAR> implements Termed, OffOn {
     }
 
 
-    protected final void startIn(NARPart container) {
-        logger.info("start {} -> {} {}", container.term(), term(), getClass().getName());
+    private void startIn(NARPart container) {
+        logger.debug("start {} -> {} {}", container.term(), term(), getClass().getName());
+
         this.nar = container.nar;
+
         synchronized (this) {
             _state(Parts.ServiceState.OffToOn);
             starting(nar);
@@ -141,8 +146,8 @@ abstract public class NARPart extends Part<NAR> implements Termed, OffOn {
         }
     }
 
-    protected final void stopIn(NARPart container) {
-        logger.info(" stop {} -> {} {}", container.term(), term(), getClass().getName());
+    private void stopIn(NARPart container) {
+        logger.debug(" stop {} -> {} {}", container.term(), term(), getClass().getName());
 
         synchronized (this) {
             _state(Parts.ServiceState.OnToOff);
@@ -150,7 +155,6 @@ abstract public class NARPart extends Part<NAR> implements Termed, OffOn {
             stopping(container.nar);
             _state(Parts.ServiceState.Off);
         }
-        this.nar = null;
 
     }
 
@@ -161,7 +165,7 @@ abstract public class NARPart extends Part<NAR> implements Termed, OffOn {
         if (!(prevNar == null || prevNar == nar))
             throw new WTF("NAR mismatch");
 
-        logger.info("start {}", term());
+        logger.debug("start {}", term());
 
         starting(this.nar = nar);
 
@@ -169,22 +173,20 @@ abstract public class NARPart extends Part<NAR> implements Termed, OffOn {
     }
 
     private void startLocal() {
-        this.local.forEach(c->c.startIn(this));
+        this.local.forEach(c -> c.startIn(this));
     }
 
     private void stopLocal() {
-        this.local.forEach(c->c.stopIn(this));
+        this.local.forEach(c -> c.stopIn(this));
     }
 
     @Override
     protected final void stop(NAR nar) {
-        logger.info("stop {}", term());
+        logger.debug("stop {}", term());
 
         stopLocal();
 
         stopping(nar);
-
-        this.nar = null;
     }
 
 
@@ -226,7 +228,7 @@ abstract public class NARPart extends Part<NAR> implements Termed, OffOn {
 
     protected final void add(Off component) {
         if (component instanceof NARPart)
-            add((NARPart)component);
+            add((NARPart) component);
         else
             whenDeleted.add(component);
     }
@@ -266,14 +268,22 @@ abstract public class NARPart extends Part<NAR> implements Termed, OffOn {
      * pause, returns a one-use resume ticket
      */
     public final Runnable pause() {
-        NAR nn = nar;
-        if (nn == null)
-            throw new RuntimeException("not running");
-
-        nn.stop(this);
-
-        return ()->nn.start(this);
+        NAR n = this.nar;
+        if (n != null) {
+            if (n.stop(this)) {
+                return () -> {
+                    NAR nn = this.nar;
+                    if (nn == null) {
+                        //deleted or unstarted
+                    } else {
+                        nn.start(this);
+                    }
+                };
+            }
+        }
         //return new SelfDestructAfterRunningOnlyOnce(nn);
+        return () -> {
+        };
     }
 
 

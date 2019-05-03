@@ -197,19 +197,24 @@ public class ConsoleAgent extends GameX {
 
 
             PriNode charAttn = new PriNode(id);
-            nar().parent(charAttn, attnSensor);
+
+            nar().control.parent(charAttn, new PriNode[]{attnSensor});
 
             for (int x = 0; x < w; x++) {
                 for (int y = 0; y < h; y++) {
                     Term XY = $.p($.the(x), $.the(y));
                     PriNode xy = new PriNode(XY);
-                    nar().parent(xy, charAttn);
+
+                    nar().control.parent(xy, new PriNode[]{charAttn});
+
                     for (int i = 0, alphabetLength = alphabet.length; i < alphabetLength; i++) {
                         char a = alphabet[i];
                         Term xya = $.funcImg((Atomic)id, $.the(a), XY);
                         int xx = x;
                         int yy = y;
-                        nar().parent((charMatrix[x][y][i] = sense(xya, () -> chars[xx][yy] == a)).attn, xy);
+
+                        nar().control.parent((charMatrix[x][y][i] = sense(xya, () -> chars[xx][yy] == a)).attn, new PriNode[]{xy});
+
                     }
                 }
             }

@@ -10,6 +10,7 @@ import jcog.util.FloatConsumer;
 import nars.$;
 import nars.NAR;
 import nars.Narsese;
+import nars.attention.PriNode;
 import nars.concept.action.BiPolarAction;
 import nars.concept.sensor.DigitizedScalar;
 import nars.concept.sensor.GameLoop;
@@ -313,9 +314,12 @@ public interface NSense {
         g.actions.add(pn.pos);
         g.actions.add(pn.neg);
         g.onFrame(aa->pn.update(g));
-        nar.parent(pn.attn, g.attnAction);
-        nar.parent(pn.pos.attn, pn.attn);
-        nar.parent(pn.neg.attn, pn.attn);
+
+        nar.control.parent(pn.attn, new PriNode[]{g.attnAction});
+
+        nar.control.parent(pn.pos.attn, new PriNode[]{pn.attn});
+
+        nar.control.parent(pn.neg.attn, new PriNode[]{pn.attn});
 
         return pn;
     }

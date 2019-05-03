@@ -324,8 +324,8 @@ public class ShapeSensor extends NARPart {
 
                     Draw.colorHash(gl, i[0], 0.75f);
                     for (Term xy : pSet.subterms()) {
-                        int x = ((Int) xy.sub(0)).id;
-                        int y = grid.gy - ((Int) xy.sub(1)).id;
+                        int x = ((Int) xy.sub(0)).i;
+                        int y = grid.gy - ((Int) xy.sub(1)).i;
                         gl.glVertex2f(dx + x * scale, dy + y * scale);
                     }
                     gl.glEnd();

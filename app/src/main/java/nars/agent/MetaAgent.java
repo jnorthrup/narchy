@@ -10,6 +10,8 @@ import nars.concept.action.GoalActionConcept;
 import nars.task.util.PriBuffer;
 import nars.term.Term;
 import nars.term.atom.Atomic;
+import nars.time.ScheduledTask;
+import org.eclipse.collections.api.block.procedure.primitive.BooleanProcedure;
 
 import static nars.$.$$;
 import static nars.Op.SETe;
@@ -25,27 +27,23 @@ public class MetaAgent extends Game {
             beliefPri = Atomic.the("beliefPri"),
             goalPri = Atomic.the("goalPri"),
 
-            enable = Atomic.the("enable"),
+    play = Atomic.the("play"),
             input = Atomic.the("input"),
             duration = Atomic.the("dur"),
             happy = Atomic.the("happy"),
-            dex = Atomic.the("dex")
-            ;
+            dex = Atomic.the("dex");
 
 
 //    public final GoalActionConcept forgetAction;
 //    public final GoalActionConcept beliefPriAction;
 //    private final GoalActionConcept goalPriAction;
 //    private final GoalActionConcept dur;
-
-    private int disableCountDown = 0;
-    private final int disableThreshold = 1;
-    private final long disablePeriod = 4;
-
-
     static int curiStartupDurs = 5000;
     static float curiMax = 0.2f;
     static float curiMinOld = 0.01f, curiMinYoung = 0.04f;
+
+    /** in case it forgets to unpause */
+    private final long autoResumePeriod = 256;
 
 
 
@@ -59,11 +57,13 @@ public class MetaAgent extends Game {
 //        });
     }
 
-    /** assumes games are from the same NAR */
+    /**
+     * assumes games are from the same NAR
+     */
     public MetaAgent(float fps, Game... w) {
-        super( $.func(Atomic.the("meta"),
-                SETe.the(Util.map(p->p.what().term(), new Term[w.length], w))),
-                GameTime.fps(fps),  w[0].nar);
+        super($.func(Atomic.the("meta"),
+                SETe.the(Util.map(p -> p.what().term(), new Term[w.length], w))),
+                GameTime.fps(fps), w[0].nar);
 
         NAR n = this.nar = w[0].nar;
 
@@ -71,7 +71,22 @@ public class MetaAgent extends Game {
         senseNumberDifference($.inh(n.self(), $$("deriveTask")), n.emotion.deriveTask::get);
 
         for (Game ww : w)
-            add(ww, false);
+            add(ww, true);
+    }
+
+    /**
+     * curiosity frequency -> probability mapping curve
+     */
+    static float curiosity(Game agent, long start, float c) {
+
+        float min;
+        float durs = (float) (((double) (agent.nar().time() - start)) / agent.dur());
+        if (durs < curiStartupDurs)
+            min = curiMinYoung;
+        else
+            min = curiMinOld;
+
+        return Util.lerp(c, min, curiMax);
     }
 
     private void add(Game g, boolean allowPause) {
@@ -83,8 +98,7 @@ public class MetaAgent extends Game {
 
 //        forgetAction = actionUnipolar($.inh(id, forget), (FloatConsumer) n.attn.forgetRate::set);
         actionDial($.inh(gid, $.p(forget, $.the(-1))), $.inh(gid, $.p(forget, $.the(+1))),
-                ((What.TaskLinkWhat)w).links.decay, 40);
-
+                ((What.TaskLinkWhat) w).links.decay, 40);
 
 
 //        float priFactorMin = 0.1f, priFactorMax = 4f;
@@ -113,10 +127,10 @@ public class MetaAgent extends Game {
 //        });
 
         int initialDur = w.dur();
-        FloatRange durRange = new FloatRange(initialDur, initialDur/4, initialDur*4) {
+        FloatRange durRange = new FloatRange(initialDur, initialDur / 4, initialDur * 4) {
             @Override
             public float get() {
-                super.set(((What.TaskLinkWhat)w).dur);
+                super.set(((What.TaskLinkWhat) w).dur);
                 return super.get();
             }
 
@@ -125,7 +139,7 @@ public class MetaAgent extends Game {
                 super.set(value);
                 value = super.get();
                 int nextDur = Math.max(1, Math.round(value));
-                ((What.TaskLinkWhat)w).dur.set(nextDur);
+                ((What.TaskLinkWhat) w).dur.set(nextDur);
                 //assert(nar.dur()==nextDur);
             }
         };
@@ -133,7 +147,7 @@ public class MetaAgent extends Game {
 
         if (w.in instanceof PriBuffer.BagTaskBuffer) {
             actionDial($.inh(gid, $.p(input, $.the(-1))), $.inh(gid, $.p(input, $.the(+1))),
-                    ((PriBuffer.BagTaskBuffer)(w.in)).valve, 8);
+                    ((PriBuffer.BagTaskBuffer) (w.in)).valve, 8);
         }
 
 //        this.dur = actionUnipolar($.inh(id, duration), (x) -> {
@@ -141,20 +155,20 @@ public class MetaAgent extends Game {
 //            return x;
 //        });
 
-        Reward h = rewardNormalized($.inh(gid, happy), 0, 1, ()-> {
+        Reward h = rewardNormalized($.inh(gid, happy), 0, 1, () -> {
             //new FloatFirstOrderDifference(nar::time, (() -> {
-                return g.happiness(dur() /* supervisory dur of the meta-agent */);
+            return g.isOn() ? g.happiness(dur() /* supervisory dur of the meta-agent */) : Float.NaN;
         });
 
 
         Reward d = rewardNormalized($.inh(gid, dex), 0, 1,
-                ()->{
+                () -> {
 ////            float p = a.proficiency();
 ////            float hp = Util.or(h, p);
 //            //System.out.println(h + " " + p + " -> " + hp);
 ////            return hp;
-            return (float) g.dexterity();
-        });
+                    return g.isOn() ? (float) g.dexterity() : Float.NaN;
+                });
 
 
         //TODO other Emotion sensors
@@ -168,31 +182,65 @@ public class MetaAgent extends Game {
 
 
         if (allowPause) {
-//            //TODO agent enable
-//            GoalActionConcept enableAction = actionPushButton($.inh(a.id, enable), (e) -> {
-//                //enableAction = n.actionToggle($.func(enable, n.id), (e)->{
-//                //TODO integrate and threshold, pause for limited time
-//                if (!e) {
-//                    if (disableCountDown++ >= disableThreshold) {
-//                        //a.off();
-//                        NAR n = a.nar();
-//                        n.runAt(n.time() + disablePeriod * n.dur(), () -> {
-//                            //re-enable
-//                            //a.time.resume();
-//                            disableCountDown = 0;
-//                        });
-//                    }
-//                } else {
-//                    //a.resume();
-//                    disableCountDown = 0;
-//                }
-//            });
+            float playThresh = 0.25f;
+            Term play =
+                    //$.inh(gid, MetaAgent.play);
+                    gid; //for efficiency
+
+            GoalActionConcept enableAction = actionPushButton(play, new BooleanProcedure() {
+
+                private volatile int autoResumeID = 0;
+                private volatile ScheduledTask autoResume;
+                volatile private Runnable resume = null;
+
+                @Override
+                public void value(boolean e) {
+
+                    //enableAction = n.actionToggle($.func(enable, n.id), (e)->{
+                    //TODO integrate and threshold, pause for limited time
+                    synchronized (this) {
+                        if (e) {
+                            tryResume();
+                        } else {
+                            tryPause();
+                        }
+                    }
+
+                }
+
+                void tryPause() {
+
+                    if (resume == null) {
+
+                        resume = g.pause();
+                        NAR n = nar();
+
+                        int a = autoResumeID;
+                        autoResume = n.runAt(n.time() + autoResumePeriod * n.dur(), () -> {
+                            if (autoResumeID == a)
+                                tryResume();
+                            //else this one has been cancelled
+                        });
+
+                    }
+                }
+
+                void tryResume() {
+
+                    if (resume != null) {
+                        autoResumeID++;
+                        resume.run();
+                        autoResume = null;
+                        resume = null;
+                    }
+
+                }
+            }, () -> playThresh);
         }
 
 
 //        Reward enableReward = reward("enable", () -> enabled.getOpaque() ? +1 : 0f);
     }
-
 
     public GoalActionConcept[] dial(Game a, Atomic label, FloatRange var, int steps) {
         GoalActionConcept[] priAction = actionDial(
@@ -205,21 +253,6 @@ public class MetaAgent extends Game {
 
     private int dur(int initialDur, float d) {
         return Math.max(1, Math.round((d + 0.5f) * 2 * initialDur));
-    }
-
-    /**
-     * curiosity frequency -> probability mapping curve
-     */
-    static float curiosity(Game agent, long start, float c) {
-
-        float min;
-        float durs = (float) (((double) (agent.nar().time() - start)) / agent.dur());
-        if (durs < curiStartupDurs)
-            min = curiMinYoung;
-        else
-            min = curiMinOld;
-
-        return Util.lerp(c, min, curiMax);
     }
 
 //    private static NAgent metavisor(NAgent a) {

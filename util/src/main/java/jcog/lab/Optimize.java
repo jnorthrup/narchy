@@ -41,6 +41,8 @@ import static java.util.stream.Collectors.toList;
  *   goal (score) is in column 0 and it assumed to be maximized. for minimized, negate model's score function
  *
  * TODO - max timeout parameter w/ timer that kills if time exceeded
+ *
+ * https://ax.dev/docs/core.html
  */
 public class Optimize<S, E> extends Lab<E>  {
 

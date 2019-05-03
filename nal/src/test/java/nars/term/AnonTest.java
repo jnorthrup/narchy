@@ -93,7 +93,7 @@ public class AnonTest {
     void testCompounds() {
         assertAnon("(_1-->_2)", "(a-->b)");
 
-        assertAnon("(_1-->#1)", "(a-->#1)");
+
 
         assertAnon("{_1}", "{a}");
         assertAnon("{_1,_2}", "{a,b}");
@@ -108,6 +108,19 @@ public class AnonTest {
         assertAnon("(((_1-->(_2,_3,#1))==>(_4,_5)),?2)",
                 "(((a-->(b,c,#2))==>(e,f)),?1)");
 
+    }
+
+    @Test void testNormalizedVariables() {
+        assertAnon("(_1-->#1)", "(a-->#1)");
+    }
+    @Test void testIntegers() {
+        assertAnon("(_1-->1)", "(a-->1)");
+        assertAnon("(_1-->0)", "(a-->0)");
+        assertAnon("(_1-->-1)", "(a-->-1)");
+
+        assertAnon("(--,0)", "(--,0)");
+        assertAnon("(--,-1)", "(--,-1)");
+        assertAnon("(--,1)", "(--,1)");
     }
 
     @Test

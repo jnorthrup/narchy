@@ -53,7 +53,7 @@ public class Cmp extends SimpleBinaryFunctor {
             int c = x.compareTo(y);
 
             if (xyo == INT) {
-                if (c != ((Int) xy).id)
+                if (c != ((Int) xy).i)
                     return False;
                 else {
 //                        if (c > 0) {

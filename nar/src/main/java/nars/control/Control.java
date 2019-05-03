@@ -231,6 +231,16 @@ import java.util.Arrays;
         }
     }
 
+    @Deprecated public PriNode parent(PriNode attn, PriNode[] parent) {
+        //    public PriNode parent(NAR n, PriNode... parent) {
+        MapNodeGraph<PriNode, Object> g = graph;
+
+        NodeGraph.MutableNode<PriNode,Object> thisNode = g.addNode(attn);
+        attn.parent(parent, g, thisNode);
+
+        return attn;
+    }
+
     static final class TaskChannel extends CauseChannel<Task> {
 
         private final short ci;

@@ -92,13 +92,13 @@ public enum MathFunc { ;
     public static Term add(Term x, Term y) {
         boolean xInt = x.op() == INT;
         if (xInt) {
-            int X = ((Int) x).id;
+            int X = ((Int) x).i;
             if (X == 0) return y;
         }
         if (y.op()==INT) {
-            int Y = ((Int) y).id;
+            int Y = ((Int) y).i;
             if (Y == 0) return x;
-            if (xInt && ((Int) x).id==Y) return mul(x, Int.the(2));
+            if (xInt && ((Int) x).i ==Y) return mul(x, Int.the(2));
         }
 
 
@@ -107,13 +107,13 @@ public enum MathFunc { ;
 
     public static Term mul(Term x, Term y) {
         if (x.op()==INT) {
-            int X = ((Int) x).id;
+            int X = ((Int) x).i;
             if (X == 0) return Int.ZERO;
             if (X == 1) return y;
         }
 
         if (y.op()==INT) {
-            int Y = ((Int) y).id;
+            int Y = ((Int) y).i;
             if (Y == 0) return Int.ZERO;
             if (Y == 1) return x;
         }
@@ -176,9 +176,9 @@ public enum MathFunc { ;
         protected Term compute(Evaluation e, Term x, Term y) {
 
             boolean xi = x.op() == INT;
-            int xx = xi ? ((Int) x).id : Integer.MIN_VALUE;
+            int xx = xi ? ((Int) x).i : Integer.MIN_VALUE;
             boolean yi = y.op() == INT;
-            int yy = yi ? ((Int) y).id : Integer.MIN_VALUE;
+            int yy = yi ? ((Int) y).i : Integer.MIN_VALUE;
 
             if (xi || yi) {
                 Term preReduction = preFilter(x, xx, xi, y, yy, yi);
@@ -230,8 +230,8 @@ public enum MathFunc { ;
         @Override
         protected Term computeXfromYandXY(Evaluation e, Term x, Term y, Term xy) {
             if (y.op()==INT && xy.op()==INT) {
-                int XY = ((Int)xy).id;
-                int Y = ((Int)y).id;
+                int XY = ((Int)xy).i;
+                int Y = ((Int)y).i;
                 if (Y == 0) return xy;
 
                 Term X = uncompute(XY, Y);

@@ -142,28 +142,6 @@ public class NAL2Test extends NALTest {
 
     }
 
-    @Test
-    void analogyPos() {
-
-
-        TestNAR tester = test;
-        tester.believe("<p1 --> p2>");
-        tester.believe("<p2 <-> p3>");
-        tester.mustBelieve(cycles, "<p1 --> p3>",
-                1.0f, 0.81f);
-
-    }
-
-    @Test
-    void analogyNeg() {
-
-        test
-                .believe("--(p1 --> p2)")
-                .believe("(p2 <-> p3)")
-                .mustBelieve(cycles, "(p1 --> p3)",
-                        0f, 0.81f);
-
-    }
 
     @Test
     void testUnion() {

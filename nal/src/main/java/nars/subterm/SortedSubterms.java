@@ -23,8 +23,7 @@ public class SortedSubterms {
                 return b.apply(x);
 
             case 2:
-                if (!(x[0] instanceof Neg) && !(x[1] instanceof Neg)) {
-                //if (x[0].op()!=NEG && x[1].op()!=NEG) {
+                if (x[0].op()!=NEG && x[1].op()!=NEG) {
                     int i = x[0].compareTo(x[1]);
                     if (dedup && i == 0)
                         return b.apply(new Term[]{x[0]});

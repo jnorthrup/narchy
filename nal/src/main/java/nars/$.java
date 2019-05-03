@@ -498,7 +498,7 @@ public enum $ {
 
     public static double doubleValue(Term x) {
         if (x.op() == INT) {
-            return ((Int) x).id;
+            return ((Int) x).i;
         } else if (x.op() == ATOM) {
             return Double.parseDouble($.unquote(x));
         } else {
@@ -660,7 +660,7 @@ public enum $ {
 
     public static int intValue(Term intTerm) throws NumberFormatException {
         if (intTerm instanceof Int && intTerm.op() == INT)
-            return ((Int) intTerm).id;
+            return ((Int) intTerm).i;
 
 
         throw new NumberFormatException();
@@ -668,7 +668,7 @@ public enum $ {
     }
 
     public static int intValue(Term intTerm, int ifNotInt) {
-        return intTerm instanceof Int && intTerm.op() == INT ? ((Int) intTerm).id : ifNotInt;
+        return intTerm instanceof Int && intTerm.op() == INT ? ((Int) intTerm).i : ifNotInt;
     }
 
     public static Term fromJSON(String j) {
