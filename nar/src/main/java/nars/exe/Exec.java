@@ -52,27 +52,31 @@ abstract public class Exec extends NARPart implements Executor, ConsumerX<Abstra
     /** HACK this needs better */
     public static void run(Task t0, What w) {
 
-        Task t = t0;
+        Task x = t0;
 
         try {
-            while (t!=null && !(t instanceof AbstractTask)) {
-                if (t instanceof UnevaluatedTask) {
-                    t = Remember.the(t, w.nar);
+            while (x!=null && !(x instanceof AbstractTask)) {
+                Task y;
+                if (x instanceof UnevaluatedTask) {
+                    y = Remember.the(x, w.nar);
                 } else {
-                    t = Perceive.perceive(t, w);
+                    y = Perceive.perceive(x, w);
                 }
+                if (y!=null && y.equals(x))
+                    throw new WTF(); //HACK
+                x = y;
             }
 
-            if (t instanceof AbstractTask) {
-                if (t instanceof AbstractTask.TasksArray) {
+            if (x instanceof AbstractTask) {
+                if (x instanceof AbstractTask.TasksArray) {
                     //HACK
-                    for (Task tt : ((AbstractTask.TasksArray) t).tasks)
+                    for (Task tt : ((AbstractTask.TasksArray) x).tasks)
                         run(tt, w);
                 } else {
-                    Task.run(t, w);
+                    Task.run(x, w);
                 }
-            } else if (t != null) {
-                throw new WTF("unrecognized task type: " + t.getClass() + "\t" + t);
+            } else if (x != null) {
+                throw new WTF("unrecognized task type: " + x.getClass() + "\t" + x);
             }
         } catch (Throwable e) {
             logger.error("{} {}", t0, e);

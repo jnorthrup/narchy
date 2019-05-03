@@ -259,13 +259,13 @@ public class Statement {
 
         //if (Param.DEBUG) {
         //test image normalization
-        if (op == INH) {
-            //TODO accept TermBuilder b as parameter
-            Term tt = Image.imageNormalize(t);
-            if (tt instanceof Bool) {
-                t = tt;
-            }
-        }
+//        if (op == INH) {
+//            //TODO accept TermBuilder b as parameter
+//            Term tt = Image.imageNormalize(t);
+//            if (tt instanceof Bool) {
+//                t = tt;
+//            }
+//        }
         //}
 
 

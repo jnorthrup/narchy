@@ -427,8 +427,8 @@ import static nars.Op.BELIEF;
 
     default FloatSupplier midThresh() {
         ///return () -> 0.5f + ScalarValue.EPSILON;
-        //return () -> 0.5f + nar().freqResolution.get()/2f; ///<-ok for freq
-        return () -> 0.5f; //<- for exp
+        return () -> 0.5f + nar().freqResolution.get()/2f; ///<-ok for freq
+        //return () -> 0.5f; //<- for exp
     }
 
 

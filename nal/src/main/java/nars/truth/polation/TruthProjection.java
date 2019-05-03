@@ -16,7 +16,7 @@ import nars.task.util.TaskRegion;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.util.Intermpolate;
-import nars.term.util.TermException;
+import nars.term.util.TermTransformException;
 import nars.time.Tense;
 import nars.truth.Stamp;
 import nars.truth.Truth;
@@ -405,7 +405,7 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
                         try {
                             //if there isnt more evidence for the primarily sought target, then just use those components
                             ab = Intermpolate.intermpolate((Compound)a, (Compound)b, (float) (e1Evi / (e1Evi + e2Evi)), nar);
-                        } catch (TermException e) {
+                        } catch (TermTransformException e) {
                             //HACK TODO avoid needing to throw exception
                             if (NAL.DEBUG) {
                                 throw new RuntimeException(e);
