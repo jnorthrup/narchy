@@ -117,9 +117,9 @@ public class Signal extends TaskConcept implements GameLoop, FloatFunction<Term>
 
         ((SensorBeliefTables) beliefs()).add(
                 nextValue == nextValue ? truther.value(prevValue, nextValue) : null,
-                start, end,
+                end,
                 pri, cause,
-                g.dur(),
+                g.durPhysical(),
                 g.what());
     }
 

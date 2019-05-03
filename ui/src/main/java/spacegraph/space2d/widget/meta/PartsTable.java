@@ -40,7 +40,7 @@ public class PartsTable extends Gridding implements GridModel, GridRenderer {
     @Override
     protected void starting() {
         super.starting();
-        updater = context.eventAddRemove.on(this::update);
+        updater = context.eventOnOff.on(this::update);
         update();
     }
 

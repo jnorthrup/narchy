@@ -94,7 +94,7 @@ public class AttentionUI {
         @Override
         protected void starting() {
             super.starting();
-            off = n.eventAddRemove.on(this::update);
+            off = n.eventOnOff.on(this::update);
             update();
         }
 

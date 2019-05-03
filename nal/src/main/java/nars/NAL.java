@@ -568,7 +568,9 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
              * maximum time between signal updates to stretch an equivalently-truthed data point across.
              * stretches perception across some amount of lag
              */
-            public static final float SIGNAL_LATCH_LIMIT_DURS =/*0.5f;*/ 1f;
+            public static final float SIGNAL_LATCH_LIMIT_DURS =/*0.5f;*/
+                    //1f;
+                        2f;
         }
     }
 

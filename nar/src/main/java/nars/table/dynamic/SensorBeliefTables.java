@@ -84,7 +84,7 @@ public class SensorBeliefTables extends BeliefTables {
 
 
 
-    public void add(Truth value, long start, long end, FloatSupplier pri, short cause[], int dur,What w) {
+    public void add(Truth value, long now, FloatSupplier pri, short cause[], int dur, What w) {
         NAR n = w.nar;
 
         if (value!=null) {
@@ -96,12 +96,11 @@ public class SensorBeliefTables extends BeliefTables {
 
 
         SeriesTask x =
-        value!=null ?
             add(value,
-                start, end,
+                    now,
                 series.term, series.punc(),
                 dur,
-                n) : null;
+                n);
 
         if (x!=null) {
             series.clean(this, n);
@@ -114,27 +113,37 @@ public class SensorBeliefTables extends BeliefTables {
 
 //    long[] eviShared = null;
 
-    private SeriesTask add(@Nullable Truth next, long nextStart, long nextEnd, Term term, byte punc, int dur, NAR nar) {
+    /** @param dur can be either a perceptual duration which changes, or a 'physical duration' determined by
+     *             the interface itself (ex: clock rate) */
+    private SeriesTask add(@Nullable Truth next, long now, Term term, byte punc, int dur, NAR nar) {
+
 
         SeriesTask nextT = null, last = series.series.last();
+        long lastEnd = last!=null ? last.end() : Long.MIN_VALUE;
+        long nextStart = Math.max(lastEnd+1, now - dur/2);
+        long nextEnd = Math.max(nextStart+1, now + dur/2);
         if (last != null) {
-            long lastStart = last.start(), lastEnd = last.end();
-            if (lastEnd > nextStart)
+            long lastStart = last.start();
+            if (lastEnd > now)
                 return null; //too soon, does this happen?
 
-            long gapCycles = (nextStart - lastEnd);
+            long gapCycles = (now - lastEnd);
             if (gapCycles <= series.series.latchDurs() * dur) {
 
                 if (next!=null) {
-                    if (last.truth().equals(next)) {
-                        //continue, if not excessively long
-                        long stretchCycles = (nextEnd - lastStart);
-                        if (stretchCycles <= series.series.stretchDurs() * dur) {
+                    long stretchCycles = (now - lastStart);
+                    boolean stretchable = stretchCycles <= series.series.stretchDurs() * dur;
+                    if (stretchable) {
+                        if (last.truth().equals(next)) {
+                            //continue, if not excessively long
+
+
                             //Truth lastEnds = last.truth(lastEnd, 0);
                             //if (lastEnds!=null && lastEnds.equals(next)) {
                             //stretch
                             stretch(last, nextEnd);
                             return last;
+
                         }
                     }
                 }
@@ -145,17 +154,22 @@ public class SensorBeliefTables extends BeliefTables {
                 /*if (next == null) {
                     //guess that the signal stopped midway between (starting) now and the end of the last
                     long midGap = Math.min(nextStart-1, lastEnd + dur/2);
-                    stretch(last, midGap);
-                } else */{
-                    //stretch the previous to the current starting point for the new task
-                    if (lastEnd < nextStart-1)
-                        stretch(last, nextStart-1);
-                }
+                    stretch(last, midGap);*/
+
+
+                //stretch the previous to the current starting point for the new task
+                if (lastEnd < nextStart-1)
+                    stretch(last, nextStart-1);
 
             }
         }
 
         if (next != null) {
+
+
+
+//                System.out.println("new " + now + " .. " + nextEnd + " (" + (nextEnd - now) + " cycles)");
+
             series.add(nextT = newTask(term, punc, nextStart, nextEnd, next, nar));
         }
 
@@ -183,6 +197,7 @@ public class SensorBeliefTables extends BeliefTables {
     }
 
     static private void stretch(SeriesTask t, long e) {
+//        System.out.println("stretch " + t.end() + " .. " +  e + " (" + (e - t.end()) + " cycles)");
         t.setEnd(e);
     }
 
@@ -246,6 +261,7 @@ public class SensorBeliefTables extends BeliefTables {
             w.nar.eventTask.emit(next);
 
     }
+
 
 
 

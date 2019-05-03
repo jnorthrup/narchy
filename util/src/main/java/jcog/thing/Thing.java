@@ -22,7 +22,6 @@ import jcog.event.Topic;
 import jcog.exe.Exe;
 import jcog.util.ArrayUtils;
 import org.eclipse.collections.api.tuple.primitive.ObjectBooleanPair;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
@@ -42,9 +41,9 @@ import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
 
 /**
  * Some thing composed of Parts
- *
+ * <p>
  * CONTRAINER / OBJENOME
- *
+ * <p>
  * A collection or container of 'parts'.
  * Smart Dependency Injection (DI) container with:
  * <p>
@@ -67,22 +66,22 @@ import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
 public class Thing<T, P /* service key */  /* context */> {
 
 
-    private final T id;
-    protected final ConcurrentMap<P, Part<T>> parts;
-    public final Topic<ObjectBooleanPair<Part<T>>> eventAddRemove = new ListTopic<>();
-    public final Executor executor;
     private static final Logger logger = Log.logger(Thing.class);
+    public final Topic<ObjectBooleanPair<Part<T>>> eventOnOff = new ListTopic<>();
+    public final Executor executor;
+    protected final ConcurrentMap<P, Part<T>> parts;
+    private final T id;
 
     public Thing() {
         this(null, null);
     }
 
     public Thing(boolean concurrent) {
-        this((Executor)null);
+        this((Executor) null);
     }
 
     public Thing(@Nullable Executor executor) {
-        this(null, executor );
+        this(null, executor);
     }
 
     /**
@@ -99,7 +98,7 @@ public class Thing<T, P /* service key */  /* context */> {
 
         this.id = id;
 
-        this.executor = executor!=null ? executor :
+        this.executor = executor != null ? executor :
                 (Exe.concurrent() ? ForkJoinPool.commonPool() : MoreExecutors.directExecutor());
 
         this.parts = new ConcurrentHashMap<>();
@@ -143,7 +142,13 @@ public class Thing<T, P /* service key */  /* context */> {
     }
 
     public boolean stop(P p) {
-        return set(p, part(p), false);
+        //return set(p, part(p), false);
+        Part<T> P = parts.get(p);
+        if (P != null) {
+            tryStop(P, null);
+            return true;
+        } else
+            return false;
     }
 
     public final boolean stop(Part<T> p) {
@@ -200,7 +205,9 @@ public class Thing<T, P /* service key */  /* context */> {
         parts.keySet().forEach(this::stop);
         return this;
     }
-    /*@Override*/ public void delete() {
+
+    /*@Override*/
+    public void delete() {
         parts.keySet().forEach(this::remove);
     }
 
@@ -235,13 +242,35 @@ public class Thing<T, P /* service key */  /* context */> {
     }
 
 
-    private boolean _stop(Part<T> x, @Nullable Runnable afterOff) {
+    private boolean tryStart(Part<T> x) {
 
+        if (x.state.compareAndSet(ServiceState.Off, ServiceState.OffToOn)) {
+            executor.execute(() -> {
+                try {
 
-        executor.execute(() -> {
-            try {
+                    x.start(id);
 
-                if (x.state.compareAndSet(ServiceState.On, ServiceState.OnToOff)) {
+                    boolean nowOn = x.state.compareAndSet(ServiceState.OffToOn, ServiceState.On);
+                    assert (nowOn);
+
+                    eventOnOff.emit(pair(x, true)/*, executor*/);
+
+                } catch (Throwable e) {
+                    x.state.set(ServiceState.Off);
+                    error(x, e, "start");
+                }
+            });
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    private boolean tryStop(Part<T> x, @Nullable Runnable afterOff) {
+
+        if (x.state.compareAndSet(ServiceState.On, ServiceState.OnToOff)) {
+            executor.execute(() -> {
+                try {
 
 
                     x.stop(id);
@@ -249,20 +278,24 @@ public class Thing<T, P /* service key */  /* context */> {
                     boolean nowOff = x.state.compareAndSet(Thing.ServiceState.OnToOff, Thing.ServiceState.Off);
                     assert (nowOff);
 
-                    eventAddRemove.emit(pair(x, false)/*, executor*/);
-                }
+                    eventOnOff.emit(pair(x, false)/*, executor*/);
 
-                if (afterOff != null && x.isOff()) {
-                    afterOff.run();
-                }
 
-            } catch (Throwable e) {
-                x.state.set(Thing.ServiceState.Off);
-                error(x, e, "stop");
-            }
-        });
-        return true;
+                    if (afterOff != null && x.isOff()) {
+                        afterOff.run();
+                    }
+
+                } catch (Throwable e) {
+                    x.state.set(Thing.ServiceState.Off);
+                    error(x, e, "stop");
+                }
+            });
+
+            return true;
+        } else
+            return false;
     }
+
 
     public final Set<P> partKeySet() {
         return parts.keySet();
@@ -282,7 +315,7 @@ public class Thing<T, P /* service key */  /* context */> {
         if (x != removed) {
             //something removed
             if (removed != null) {
-                _stop(removed, start ? () -> tryStart(x) : null);
+                tryStop(removed, start ? () -> tryStart(x) : null);
 
                 return true;
 
@@ -294,34 +327,12 @@ public class Thing<T, P /* service key */  /* context */> {
             if (start) {
                 return tryStart(x);
             } else if (x != null) {
-                return _stop(x, null);
+                return tryStop(x, null);
             } else
                 return false;
         }
     }
 
-
-    private boolean tryStart(@NotNull Part<T> x) {
-
-        executor.execute(() -> {
-            try {
-                if (x.state.compareAndSet(ServiceState.Off, ServiceState.OffToOn)) {
-
-                    x.start(id);
-
-                    boolean nowOn = x.state.compareAndSet(ServiceState.OffToOn, ServiceState.On);
-                    assert(nowOn);
-
-                    eventAddRemove.emit(pair(x, true)/*, executor*/);
-
-                }
-            } catch (Throwable e) {
-                x.state.set(ServiceState.Off);
-                error(x, e, "start");
-            }
-        });
-        return true;
-    }
 
     public final <X extends Part<T>> Supplier<X> build(Class<X> klass) {
         return build(null, klass);

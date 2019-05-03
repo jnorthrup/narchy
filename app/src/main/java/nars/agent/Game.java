@@ -373,8 +373,14 @@ public class Game extends NARPart implements NSense, NAct, Timed {
         return r;
     }
 
+    /** perceptual duration */
     public final int dur() {
         return what().dur();
+    }
+
+    /** physical/sensory duration */
+    public final int durPhysical() {
+        return time.dur();
     }
 
     public interface NAgentCycle {
@@ -439,7 +445,7 @@ public class Game extends NARPart implements NSense, NAct, Timed {
      */
     protected final void next() {
 
-        if (!busy.compareAndSet(false, true))
+        if (!isOn() || !busy.compareAndSet(false, true))
             return;
 
 
@@ -459,7 +465,7 @@ public class Game extends NARPart implements NSense, NAct, Timed {
             if (now <= idealPrev)
                 return; //too early
 
-            prev = Math.max(prev, idealPrev); //assume up to one frame behind
+//            prev = Math.max(prev, idealPrev); //assume up to one frame behind
 
             long next =
                     //(Math.max(now, frameTrigger.next(now)), d);
@@ -469,6 +475,8 @@ public class Game extends NARPart implements NSense, NAct, Timed {
             this.prev = prev;
             this.now = now;
             this.next = next;
+
+//            System.out.println(this + " "  + state().toString() + " " + (now - prev));
 
             cycle.next(this, iteration.getAndIncrement(), prev, now);
 

@@ -154,7 +154,7 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
     public NAR(Memory memory, Exec exe, Function<Term, What> whatBuilder, Time time, Supplier<Random> rng, ConceptBuilder conceptBuilder) {
         super(exe, time, rng);
 
-        eventAddRemove.on(this::indexPartChange);
+        eventOnOff.on(this::indexPartChange);
 
 
 
@@ -733,7 +733,7 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
             if (p.isAssignableFrom(pp.getClass()))
                 return (NARPart) pp; //ok
             else {
-                stop(key);
+                remove(key);
             }
         }
 

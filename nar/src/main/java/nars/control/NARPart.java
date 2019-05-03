@@ -212,12 +212,16 @@ abstract public class NARPart extends Parts<NAR> implements Termed, OffOn, SubPa
         NAR n = this.nar;
         if (n != null) {
             if (n.stop(this)) {
+                logger.atFine().log("pause", this);
                 return () -> {
+                    assert(!isOn());
                     NAR nn = this.nar;
                     if (nn == null) {
                         //deleted or unstarted
                     } else {
-                        nn.start(this);
+                        if (nn.start(this)) {
+                            logger.atFine().log("resume", this);
+                        }
                     }
                 };
             }

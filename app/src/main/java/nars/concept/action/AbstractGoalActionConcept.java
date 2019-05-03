@@ -314,7 +314,7 @@ public class AbstractGoalActionConcept extends AgentAction {
     }
 
     protected void feedback(@Nullable Truth f, short[] cause, Game g) {
-        ((SensorBeliefTables) beliefs()).add(f, g.prev, g.now, attn::pri, cause, g.dur(), g.what());
+        ((SensorBeliefTables) beliefs()).add(f, g.now, attn::pri, cause, g.durPhysical(), g.what());
     }
 
 
