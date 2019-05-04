@@ -36,8 +36,6 @@ import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Predicate;
 
-import static com.google.common.collect.Iterators.filter;
-import static com.google.common.collect.Iterators.transform;
 import static nars.Op.*;
 import static nars.time.Tense.*;
 import static nars.time.TimeSpan.TS_ZERO;
@@ -354,6 +352,9 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 
     private void link(Event x, long dt, Event y) {
 
+        if (dt == ETERNAL)
+            throw new WTF("maybe eliminate this case");
+
         if (NAL.DEBUG) {
             if (dt == DTERNAL)
                 throw new WTF("probably meant to use ETERNAL"); //TEMPORARY
@@ -464,13 +465,15 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 //                        //link first two events of each
 //                        if (subj.hasAny(Op.CONJ)) {
                         subj.eventsWhile((w, y) -> {
-                            link(know(y), ETERNAL, pe);
+                            //link(know(y), ETERNAL, pe); //<- is this used?
+                            know(y);
                             return true;
                         }, 0, false, true, true);
 
 //
                         pred.eventsWhile((w, y) -> {
-                            link(se, ETERNAL, know(y));
+                            //link(se, ETERNAL, know(y));  //<- is this used?
+                            know(y);
                             return true;
                         }, 0, false, true, true);
 
@@ -478,29 +481,6 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
                         /* without any absolute context */
                     } else {
                         link(se, edt + subj.eventRange(), pe);
-
-//                        if (!(subj.op()==CONJ && subj.dt()==XTERNAL)) {
-//                            int st = subj.eventRange();
-//                            link(se, (edt + st), pe);
-
-//                            Term sf = se.id.eventLast();
-//                            Term pl = se.id.eventFirst();
-
-
-//                            if (subj.op() == Op.CONJ && subj.dt() == DTERNAL) { //HACK to decompose ordinarily non-decomposed &&
-//                                subj.eventsWhile((w, y) -> {
-//                                    link(know(y), edt + st - w, pe);
-//                                    return true;
-//                                }, 0, false, true, false, 0);
-//                            }
-//
-//                            if (pred.op() == Op.CONJ && pred.dt() == DTERNAL) { //HACK to decompose ordinarily non-decomposed &&
-//                                pred.eventsWhile((w, y) -> {
-//                                    link(se, edt + st + w, know(y));
-//                                    return true;
-//                                }, 0, false, true, false, 0);
-//                            }
-//                        }
                     }
 
                     break;
@@ -1579,47 +1559,65 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
      */
 
 
+    private static final Iterable empty = List.of();
+    private static final Comparator<FromTo<Node<Event, TimeSpan>, TimeSpan>> temporalProximity = (a,b)->{
+        //TODO provenance preference: prefer edges tagged by the opposite source (task -> belief, rather than task -> task)
+        if (a == b) return 0;
+        TimeSpan aa = a.id(), bb = b.id();
+
+        long adt = aa.dt, bdt = bb.dt;
+
+        assert(adt != ETERNAL && bdt != ETERNAL): "shouldnt happen";
+
+        if (aa==bb || adt == bdt) {
+            //TODO shuffle
+            int c = a.from().id().compareTo(b.from().id());
+            if (c == 0) {
+                c = a.to().id().compareTo(b.to().id());
+            }
+            return c;
+        } else
+            return Long.compare(adt, bdt);
+    };
+
     private abstract class CrossTimeSolver extends Search<Event, TimeSpan> {
 
-        protected Iterator<FromTo<Node<Event, nars.time.TimeSpan>, TimeSpan>> tangent(Node<Event, TimeSpan> root, Term t) {
-
-            Collection<Event> ee = eventsOrNull(t);
-            if (ee == null)
-                return Collections.emptyIterator();
-
-            return transform(filter(transform(ee.iterator(), TimeGraph.this::node), xx ->
-                xx != null && !log.hasVisited(xx)
-            ), xx ->
-                new ImmutableDirectedEdge(root, TS_ZERO, xx)
-            );
-
-//            int ees = ee.size();
-//
-//            List<FromTo<Node<Event, TimeSpan>, TimeSpan>> dyn = new FasterList<>(ees);
-
-//            int ii = 0;
-//            for (Event x : ee) {
-//                Node<Event, TimeSpan> xx = node(x);
-//                if (xx != null && xx != n && !log.hasVisited(xx)) {
-//                    dyn.add(new ImmutableDirectedEdge<>(n, TS_ZERO, xx));
-//                }
-//                ii++;
-//            }
-
-
-        }
 
         @Override
         protected Iterable<FromTo<Node<Event, nars.time.TimeSpan>, TimeSpan>> next(Node<Event, TimeSpan> n) {
-
-            Iterable<FromTo<Node<Event, TimeSpan>, TimeSpan>> exist = n.edges(true, true);
-            Event nID = n.id();
             return Iterables.concat(
-                    exist,
-                    ()->tangent(n, nID.id),
-                    ()->tangent(n, nID.id.neg()) //last resort: try neg
+                n.edges(true, true, x->log.hasNotVisited(x.other(n)), temporalProximity),  //existing
+                ()->dynamic(n).iterator()  //virtual, lazy
             );
+        }
 
+        Iterable<FromTo<Node<Event, nars.time.TimeSpan>, TimeSpan>> tangent(Node<Event, TimeSpan> root, Term t) {
+
+            Collection<Event> ee = eventsOrNull(t);
+            if (ee == null) {
+                return empty;
+            } else {
+                return Iterables.transform(
+                    Iterables.filter(
+                        Iterables.transform(ee, TimeGraph.this::node),
+                            n -> n != null && log.hasNotVisited(n)
+                    ),
+                    n -> new ImmutableDirectedEdge(root, TS_ZERO, n)
+                );
+            }
+
+        }
+
+        Iterable<FromTo<Node<Event, nars.time.TimeSpan>, TimeSpan>> dynamic(Node<Event, TimeSpan> n) {
+            Term t = n.id().id;
+            return Iterables.concat(
+                tangentLazy(n, t), //same term, but other events
+                tangentLazy(n, t.neg()) //last resort: try neg of the same term
+            );
+        }
+
+        private Iterable<FromTo<Node<Event, nars.time.TimeSpan>, TimeSpan>> tangentLazy(Node<Event, TimeSpan> n, Term t) {
+            return ()->tangent(n, t).iterator();
         }
 
     }

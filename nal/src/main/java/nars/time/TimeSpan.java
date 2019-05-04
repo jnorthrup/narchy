@@ -3,10 +3,10 @@ package nars.time;
 import static nars.time.Tense.*;
 
 public final class TimeSpan {
+
     public final static TimeSpan TS_ZERO = new TimeSpan(0);
-
-
     public final static TimeSpan TS_ETERNAL = new TimeSpan(ETERNAL);
+
     public final long dt;
 
     private TimeSpan(long dt) {
@@ -20,9 +20,9 @@ public final class TimeSpan {
         } else if (dt == ETERNAL) {
             return TS_ETERNAL;
         } else {
-            assert (dt != TIMELESS);
-            assert (dt != XTERNAL) : "probably meant to use TIMELESS";
-            assert (dt != DTERNAL) : "probably meant to use ETERNAL";
+            assert (dt != TIMELESS && dt!= XTERNAL && dt!=DTERNAL): "bad timespan"; //TEMPORARY
+            //assert (dt != XTERNAL) : probably meant to use TIMELESS";
+            //assert (dt != DTERNAL) : "probably meant to use ETERNAL";
             return new TimeSpan(dt);
         }
     }
@@ -40,6 +40,5 @@ public final class TimeSpan {
     @Override
     public String toString() {
         return (dt == ETERNAL ? "E" : (dt >= 0 ? ("+" + dt) : ("-" + (-dt))));
-
     }
 }

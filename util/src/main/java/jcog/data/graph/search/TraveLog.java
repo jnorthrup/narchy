@@ -16,6 +16,10 @@ public interface TraveLog {
 
     boolean hasVisited(Node n);
 
+    default boolean hasNotVisited(Node n) {
+        return !hasVisited(n);
+    }
+
 
     final class IntHashTraveLog extends IntHashSet implements TraveLog {
 
