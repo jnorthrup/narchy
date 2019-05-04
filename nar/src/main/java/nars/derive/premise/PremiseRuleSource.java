@@ -25,6 +25,7 @@ import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
 import nars.term.control.PREDICATE;
 import nars.term.control.TermMatch;
+import nars.term.util.TermException;
 import nars.term.util.transform.AbstractTermTransform;
 import nars.term.util.transform.DirectTermTransform;
 import nars.term.util.transform.TermTransform;
@@ -117,13 +118,12 @@ public class PremiseRuleSource extends ProxyTerm {
         Term[] postcon = ref.sub(1).arrayShared();
 
 
-
         Term a = patternify(precon[0]);
         Term b = patternify(precon[1]);
         if (swap) {
             String preconStr = ref.sub(0).toString().toLowerCase();
             //if (preconStr.contains("task") || preconStr.contains("belief"))
-              //  throw new TODO();
+            //  throw new TODO();
             String postconStr = ref.sub(1).toString()/*.toLowerCase()*/;
             if (postconStr.contains("task") || postconStr.contains("belief"))
                 throw new TODO();
@@ -133,9 +133,15 @@ public class PremiseRuleSource extends ProxyTerm {
         }
         this.taskPattern = a;
         this.beliefPattern = b;
-        if (beliefPattern.op() == Op.ATOM) {
-            throw new RuntimeException("belief target must contain no atoms: " + beliefPattern);
-        }
+
+        if (taskPattern.op() == NEG)
+            throw new TermException("task pattern can never be NEG", taskPattern);
+        if (taskPattern.op() != VAR_PATTERN && !taskPattern.op().taskable)
+            throw new TermException("task pattern is not taskable", taskPattern);
+        if (beliefPattern.op() == NEG)
+            throw new TermException("task pattern can never be NEG", beliefPattern);
+        if (beliefPattern.op() == Op.ATOM)
+            throw new TermException("belief target must contain no atoms", beliefPattern);
 
 
         ByteToByteFunction concPunc = null;
@@ -319,7 +325,7 @@ public class PremiseRuleSource extends ProxyTerm {
 
                 case "is": {
                     int struct;
-                    if (Y.op()==SETe) {
+                    if (Y.op() == SETe) {
                         struct = 0;
                         for (Term yy : Y.subterms()) {
                             struct |= Op.the($.unquote(yy)).bit;
@@ -393,13 +399,13 @@ public class PremiseRuleSource extends ProxyTerm {
                             break;
 
                         case "\"?@\"":
-                            assert(taskPunc == null && concPunc == null);
+                            assert (taskPunc == null && concPunc == null);
                             taskPunc = t -> t == QUESTION || t == QUEST;
                             concPunc = c -> c;  //default
                             break;
 
                         case "\".!\"":
-                            assert(taskPunc == null && concPunc == null);
+                            assert (taskPunc == null && concPunc == null);
                             taskPunc = t -> t == BELIEF || t == GOAL;
                             concPunc = c -> c; //default
                             break;
@@ -461,7 +467,7 @@ public class PremiseRuleSource extends ProxyTerm {
 
                         /** belief -> question, goal -> quest */
                         case "Ask":
-                            assert(taskPunc == null && concPunc == null);
+                            assert (taskPunc == null && concPunc == null);
                             taskPunc = p -> p == BELIEF || p == GOAL;
                             concPunc = p -> {
                                 switch (p) {
@@ -477,7 +483,7 @@ public class PremiseRuleSource extends ProxyTerm {
 
                         /** belief,question -> question, goal,quest -> quest */
                         case "AskAll":
-                            assert(taskPunc == null && concPunc == null);
+                            assert (taskPunc == null && concPunc == null);
                             taskPunc = p -> true;
                             concPunc = p -> {
                                 switch (p) {
@@ -488,7 +494,7 @@ public class PremiseRuleSource extends ProxyTerm {
                                     case QUEST:
                                         return QUEST;
                                     default:
-                                        return (byte) 0;
+                                        throw new UnsupportedOperationException();
                                 }
                             };
                             break;
@@ -529,10 +535,10 @@ public class PremiseRuleSource extends ProxyTerm {
             throw new RuntimeException("unknown GoalFunction: " + goalTruth);
 
         if (swap) {
-            if (beliefTruthOp!=null)
-                beliefTruthOp = new TruthFunc.SwappedTruth(beliefTruthOp); //use interned
-            if (goalTruthOp!=null)
-                goalTruthOp = new TruthFunc.SwappedTruth(goalTruthOp); //use interned
+            if (beliefTruthOp != null)
+                beliefTruthOp = new TruthFunc.SwappedTruth(beliefTruthOp);
+            if (goalTruthOp != null)
+                goalTruthOp = new TruthFunc.SwappedTruth(goalTruthOp);
         }
 
         {
@@ -541,10 +547,11 @@ public class PremiseRuleSource extends ProxyTerm {
         }
 
 
-        tryGuard(TaskTerm, taskPattern);
-        tryGuard(BeliefTerm, beliefPattern);
+        structureAndVolumeGuards(TaskTerm, taskPattern);
+        structureAndVolumeGuards(BeliefTerm, beliefPattern);
 
 
+        /** infer missing conclusion punctuation */
         if (concPunc == null) {
             if (beliefTruth != null) concBelief = true;
             if (goalTruth != null) concGoal = true;
@@ -586,6 +593,7 @@ public class PremiseRuleSource extends ProxyTerm {
 //            };
         }
 
+        /** infer necessary task punctuation */
         if (taskPunc == null) {
             //auto
             if (beliefTruth != null && goalTruth != null) {
@@ -598,15 +606,27 @@ public class PremiseRuleSource extends ProxyTerm {
             //concPunc = t -> t;
         }
 
-        if (beliefTruthOp != null) {
-            assert (concPunc.valueOf(BELIEF) == BELIEF || concPunc.valueOf(GOAL) == BELIEF || concPunc.valueOf(QUESTION) == BELIEF || concPunc.valueOf(QUEST) == BELIEF);
-            if (!beliefTruthOp.single())
-                pre.add(new DoublePremiseRequired(true, false, false));
-        }
-        if (goalTruthOp != null) {
-            assert (concPunc.valueOf(BELIEF) == GOAL || concPunc.valueOf(GOAL) == GOAL || concPunc.valueOf(QUESTION) == GOAL || concPunc.valueOf(QUEST) == GOAL);
-            if (!goalTruthOp.single())
-                pre.add(new DoublePremiseRequired(false, true, false));
+        /** infer necessary double premise for derived belief  */
+        {
+            boolean doublePremiseMaybe = false;
+            if (beliefTruthOp != null) {
+                assert (concPunc.valueOf(BELIEF) == BELIEF || concPunc.valueOf(GOAL) == BELIEF || concPunc.valueOf(QUESTION) == BELIEF || concPunc.valueOf(QUEST) == BELIEF);
+                if (!beliefTruthOp.single()) {
+                    pre.add(new DoublePremiseRequired(true, false, false));
+                    doublePremiseMaybe = true;
+                }
+            }
+            /** infer necessary double premise for derived goal  */
+            if (goalTruthOp != null) {
+                assert (concPunc.valueOf(BELIEF) == GOAL || concPunc.valueOf(GOAL) == GOAL || concPunc.valueOf(QUESTION) == GOAL || concPunc.valueOf(QUEST) == GOAL);
+                if (!goalTruthOp.single()) {
+                    pre.add(new DoublePremiseRequired(false, true, false));
+                    doublePremiseMaybe = true;
+                }
+            }
+
+            if (doublePremiseMaybe && (beliefPattern.op()!=VAR_PATTERN && !beliefPattern.op().taskable))
+                throw new TermException("double premise may be required and belief pattern is not taskable", beliefPattern);
         }
 
         /*System.out.println( Long.toBinaryString(
@@ -804,13 +824,15 @@ public class PremiseRuleSource extends ProxyTerm {
         return y;
     }
 
-    private void tryGuard(PremiseTermAccessor r, Term root) {
-        tryGuard(r, root,
-                new ByteArrayList(2));
+    /** untested */
+    private void structureAndVolumeGuards(PremiseTermAccessor r, Term root) {
+        structureAndVolumeGuards(r, root, new ByteArrayList(6));
     }
 
-    private void tryGuard(PremiseTermAccessor r, Term root, ByteArrayList p) {
-
+    /** untested */
+    private void structureAndVolumeGuards(PremiseTermAccessor r, Term root, ByteArrayList p) {
+        if (root.op() == VAR_PATTERN)
+            return;
 
         byte[] pp = p.toByteArray(); //HACK
         int depth = pp.length;
@@ -831,7 +853,7 @@ public class PremiseRuleSource extends ProxyTerm {
             for (byte i = 0; i < n; i++) {
                 p.add(i);
                 {
-                    tryGuard(r, root, p);
+                    structureAndVolumeGuards(r, root, p);
                 }
                 p.popByte();
             }
@@ -891,7 +913,7 @@ public class PremiseRuleSource extends ProxyTerm {
                 return Stream.of(new PremiseRuleSource(src));
             }
         } catch (Exception e) {
-            throw new RuntimeException("rule parse:\n\t" + src, e);
+            throw new RuntimeException("rule parse:\n\t" + src + "\n\t" + e.getMessage(), e);
         }
     }
 

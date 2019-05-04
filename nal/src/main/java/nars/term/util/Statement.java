@@ -221,8 +221,9 @@ public class Statement {
 
             if (op == INH /*|| op == SIM*/) {
                 if (NAL.term.INH_CLOSED_BOOLEAN_DUALITY_MOBIUS_PARADIGM) {
-                    boolean sn = subject.op() == NEG && subject.unneg().op()!=CONJ;
-                    boolean pn = predicate.op() == NEG && predicate.unneg().op()!=CONJ;
+                    int mobiusExcept = Op.or(CONJ, VAR_PATTERN);
+                    boolean sn = subject.op() == NEG && !subject.unneg().op().isAny(mobiusExcept);
+                    boolean pn = predicate.op() == NEG && !predicate.unneg().op().isAny(mobiusExcept);
                     if (!sn && !pn) {
                         //normal
                     } else if (sn && pn) {

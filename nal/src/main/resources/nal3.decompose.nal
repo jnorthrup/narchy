@@ -1,8 +1,8 @@
 //NAL3 single premise decompose
     (  M -->   I), X, is(I,"&&"), subOfPosOrNeg(I,X)   |-   (M --> withoutPosOrNeg(I,X)),   (Belief:StructuralDeduction,Goal:StructuralDeduction)
-    (  M --> --I), X, is(I,"&&"), subOfPosOrNeg(I,X)   |-   (M --> --withoutPosOrNeg(I,X)),   (Belief:StructuralDeductionWeak,Goal:StructuralDeductionWeak)
+    (  M --> --%I), X, is(%I,"&&"), subOfPosOrNeg(%I,X)   |-   (M --> --withoutPosOrNeg(%I,X)),   (Belief:StructuralDeduction,Goal:StructuralDeduction)
     (  I --> M),   X, is(I,"&&"), subOfPosOrNeg(I,X)   |-   (withoutPosOrNeg(I,X)-->M), (Belief:StructuralDeduction,Goal:StructuralDeduction)
-    (--I --> M),   X, is(I,"&&"), subOfPosOrNeg(I,X)   |-   (--withoutPosOrNeg(I,X)-->M), (Belief:StructuralDeductionWeak,Goal:StructuralDeductionWeak)
+    (--%I --> M),   X, is(%I,"&&"), subOfPosOrNeg(%I,X)   |-   (--withoutPosOrNeg(%I,X)-->M), (Belief:StructuralDeduction,Goal:StructuralDeduction)
 
 //intersection/union/diff question/quest decompose
     ( M --> I), X, isOrIsUnneg(I,"&&"), task("?@"), subOfPosOrNeg(I,X) |- (M --> withoutPosOrNegPolarized(I,X))
@@ -15,14 +15,14 @@
 
 
 
-     (M --> --I), (M --> X), is(I,"&&"), subOf(I,X)     |- (M --> --without(I,  X)), (Belief:DecomposeNP, Goal:DecomposeNP)
+     (M --> --%I), (M --> X), is(%I,"&&"), subOf(I,X)     |- (M --> --without(%I,  X)), (Belief:DecomposeNP, Goal:DecomposeNP)
          (M --> I), (M --> X), is(I,"&&"), subOf(I,X)     |- (M --> without(I,  X)), (Belief:DecomposePP, Goal:DecomposePP)
-       (M --> --I), (M --> X), is(I,"&&"), subOf(I,--X) |- (M --> --without(I,--X)), (Belief:DecomposeNN, Goal:DecomposeNN)
+       (M --> --%I), (M --> X), is(%I,"&&"), subOf(%I,--X) |- (M --> --without(%I,--X)), (Belief:DecomposeNN, Goal:DecomposeNN)
          (M --> I), (M --> X), is(I,"&&"), subOf(I,--X)   |- (M --> without(I,--X)), (Belief:DecomposePN, Goal:DecomposePN)
 
-     (--I --> M), (X --> M), is(I,"&&"), subOf(I,X)     |- (--without(I,  X) --> M), (Belief:DecomposeNP, Goal:DecomposeNP)
+     (--%I --> M), (X --> M), is(%I,"&&"), subOf(%I,X)     |- (--without(%I,  X) --> M), (Belief:DecomposeNP, Goal:DecomposeNP)
         (I --> M), (X --> M), is(I,"&&"), subOf(I,X)     |-    (without(I,  X) --> M), (Belief:DecomposePP, Goal:DecomposePP)
-     (--I --> M), (X --> M), is(I,"&&"), subOf(I,--X) |- (--without(I,--X) --> M), (Belief:DecomposeNN, Goal:DecomposeNN)
+     (--%I --> M), (X --> M), is(%I,"&&"), subOf(%I,--X) |- (--without(%I,--X) --> M), (Belief:DecomposeNN, Goal:DecomposeNN)
          (I --> M), (X --> M), is(I,"&&"), subOf(I,--X) |- (without(I,--X) --> M), (Belief:DecomposePN, Goal:DecomposePN)
 
 //     (M --> U), (M --> X), is(U,"&&"), subOf(U,X)     |-   (M --> without(U,  X)), (Belief:DecomposePN, Goal:DecomposePN)

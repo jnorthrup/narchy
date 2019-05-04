@@ -17,12 +17,13 @@ import static nars.Op.VAR_PATTERN;
 abstract public class TermMatcher {
 
     public static TermMatcher get(Term x, int depth) {
-        assert (!(x.op() == VAR_PATTERN));
+        Op o = x.op();
+        assert (o != VAR_PATTERN);
 
         int xs = x.subterms().structure() & (~VAR_PATTERN.bit);
 
         int v = x.volume();
-        return (xs != 0 || v > 1) ? new IsHas(x.op(), xs, v, depth) : new Is(x.op());
+        return (xs != 0 || v > 1) ? new IsHas(o, xs, v, depth) : new Is(o);
     }
 
     public static Term volMin(int volMin) {
@@ -217,38 +218,44 @@ abstract public class TermMatcher {
      */
     public final static class IsHas extends TermMatcher {
 
-        final int structAll;
         final int struct;
+        final int structSubs;
         private final int volMin;
         private final byte is;
 
         private final Term param;
         private final float cost;
 
-        private IsHas(Op is, int struct, int volMin, int depth) {
+        private IsHas(Op is, int structSubs, int volMin, int depth) {
+            assert(depth > 0 || is!=NEG): "taskTerm or beliefTerm will never be --";
+
             this.is = is.id;
-            this.struct = struct;
+            this.struct = structSubs | is.bit;
+            this.structSubs = structSubs;
+
+            assert(Integer.bitCount(struct) >= Integer.bitCount(structSubs));
+
             this.volMin = volMin;
-            this.structAll = struct | is.bit;
             this.cost = (0.07f + (0.01f * depth)) * (1f / (1 + ((volMin-1)+Integer.bitCount(struct))));
 
             Atom isParam = Op.the(this.is).strAtom;
-            if (struct > 0 && volMin > 1) {
-                this.param = $.p(isParam, Op.strucTerm(struct), volMin(volMin));
-            } else if (struct > 0) {
-                this.param = $.p(isParam, Op.strucTerm(struct));
+            if (structSubs != 0 && volMin > 1) {
+                this.param = $.p(isParam, Op.strucTerm(structSubs), volMin(volMin));
+            } else if (structSubs != 0) {
+                this.param = $.p(isParam, Op.strucTerm(structSubs));
             } else {
+                assert(volMin>1);
                 this.param = $.p(isParam, volMin(volMin));
             }
         }
         @Override
         public boolean test(Term term) {
-            return term.op().id == is && term.hasAll(structAll) && testVol(term);
+            return term.op().id == is && testVol(term) && term.subterms().hasAll(structSubs);
         }
 
         @Override
         public boolean testSuper(Term x) {
-            return testVol(x) && x.subterms().hasAll(structAll);
+            return testVol(x) && x.subterms().hasAll(struct);
         }
 
         private boolean testVol(Term term) {

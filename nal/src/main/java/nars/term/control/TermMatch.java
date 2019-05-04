@@ -42,7 +42,7 @@ public final class TermMatch<X> extends AbstractTermMatchPred<X> {
     private static Term name(TermMatcher match, @Deprecated Function resolve, boolean exactOrSuper) {
         Class<? extends TermMatcher> mc = match.getClass();
         String cc = mc.isAnonymousClass() ? match.toString() : mc.getSimpleName();
-        if (cc.length()==0)
+        if (cc.isEmpty())
             throw new WTF();
         Atomic a = Atomic.the(cc);
         Term r = $.the(resolve.toString());
