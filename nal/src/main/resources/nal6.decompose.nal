@@ -5,11 +5,11 @@
     //free structural Conjunction/Disjunction decomposition
     C, X, eventOfPN(C,X)                              |-   conjWithoutPN(C,X), (Belief:StructuralDeduction, Goal:StructuralDeduction)
       C, X, eventOfPN(C,X), task("?@"), hasBelief()   |-   conjWithoutPN(C,X)
+    D, X, eventOfPN(D,X)                              |- --conjWithoutPN(D,X), (Belief:StructuralDeductionWeakN, Goal:StructuralDeductionWeakN)
 
     //impl conj/disj pred belief and question free structural implication decomposition
     (A ==> C), X, eventOfPN(C,X), --isVar(A)   |-   (A ==> conjWithoutPN(C,  X)), (Belief:StructuralDeduction)
     //(A ==> C), X, eventOfPN(C,X), --isVar(A)   |-   polarizeTask((A ==> conjWithoutPN(C,  X))), (Belief:StructuralDeductionDepolarized)
-
 
          (A ==> C), X, eventOfPN(C,X), task("?"), --isVar(A)   |- (A ==> conjWithoutPN(C,  X)), (Punctuation:Question)
 

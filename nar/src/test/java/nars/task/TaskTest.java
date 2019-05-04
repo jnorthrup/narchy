@@ -31,11 +31,11 @@ public class TaskTest {
 
         String s = "<a --> b>.";
 
-        assertEquals(Narsese.the().task(s, n).start(), ETERNAL);
+        assertEquals(Narsese.task(s, n).start(), ETERNAL);
 
-        assertTrue(Narsese.the().task(s, n).isEternal(), "default is eternal");
+        assertTrue(Narsese.task(s, n).isEternal(), "default is eternal");
 
-        assertEquals(Narsese.the().task(s, n).start(), ETERNAL, "tense=eternal is eternal");
+        assertEquals(Narsese.task(s, n).start(), ETERNAL, "tense=eternal is eternal");
 
 
 

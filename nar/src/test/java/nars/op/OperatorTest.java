@@ -32,7 +32,7 @@ class OperatorTest {
             invoked.set(true);
             return null;
         }));
-        Task t = Narsese.the().task("c(x);", n);
+        Task t = Narsese.task("c(x);", n);
         assertNotNull(t);
         assertEquals(COMMAND, t.punc());
         assertTrue(t.isCommand());

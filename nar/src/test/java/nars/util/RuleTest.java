@@ -50,7 +50,7 @@ public interface RuleTest {
 	static void test(@NotNull TestNAR test, @NotNull String task, @NotNull String belief, @NotNull String result,
 					 float minFreq, float maxFreq, float minConf, float maxConf) {
 		try {
-            test(test, Narsese.the().task(task, test.nar), Narsese.the().task(belief, test.nar), result, minFreq, maxFreq,
+            test(test, Narsese.task(task, test.nar), Narsese.task(belief, test.nar), result, minFreq, maxFreq,
                     minConf, maxConf);
 		} catch (Narsese.NarseseException e) {
 			e.printStackTrace();

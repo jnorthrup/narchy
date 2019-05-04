@@ -1,14 +1,16 @@
-//NAL3 single premise decompose
-    (  M -->   I), X, is(I,"&&"), subOfPosOrNeg(I,X)   |-   (M --> withoutPosOrNeg(I,X)),   (Belief:StructuralDeduction,Goal:StructuralDeduction)
-      (  M -->   I), X, is(I,"&&"), subOfPosOrNeg(I,X)   |-   --(M --> withoutPosOrNeg(I,X)),   (Belief:StructuralDeductionWeakN,Goal:StructuralDeductionWeakN)
-    (  M --> --%I), X, is(%I,"&&"), subOfPosOrNeg(%I,X)   |-   (M --> --withoutPosOrNeg(%I,X)),   (Belief:StructuralDeduction,Goal:StructuralDeduction)
-    (  I --> M),   X, is(I,"&&"), subOfPosOrNeg(I,X)   |-   (withoutPosOrNeg(I,X)-->M), (Belief:StructuralDeduction,Goal:StructuralDeduction)
-      (  I --> M),   X, is(I,"&&"), subOfPosOrNeg(I,X)   |-   --(withoutPosOrNeg(I,X)-->M), (Belief:StructuralDeductionWeakN,Goal:StructuralDeductionWeakN)
-    (--%I --> M),   X, is(%I,"&&"), subOfPosOrNeg(%I,X)   |-   (--withoutPosOrNeg(%I,X)-->M), (Belief:StructuralDeduction,Goal:StructuralDeduction)
+//NAL3 single premise belief/goal decompose
+    (  M -->   I), X, is(I,"&&"), subOfPN(I,X)   |-   (M --> withoutPN(I,X)),   (Belief:StructuralDeduction,Goal:StructuralDeduction)
+      (  M -->   I), X, is(I,"&&"), subOfPN(I,X)   |-   --(M --> withoutPN(I,X)),   (Belief:StructuralDeductionWeakN,Goal:StructuralDeductionWeakN)
+    (  M --> --%I), X, is(%I,"&&"), subOfPN(%I,X)   |-   (M --> --withoutPN(%I,X)),   (Belief:StructuralDeductionWeak,Goal:StructuralDeductionWeak)
+      (  M --> --%I), X, is(%I,"&&"), subOfPN(%I,X)   |-   --(M --> --withoutPN(%I,X)),   (Belief:StructuralDeductionN,Goal:StructuralDeductionN)
+    (  I --> M),   X, is(I,"&&"), subOfPN(I,X)   |-   (withoutPN(I,X)-->M), (Belief:StructuralDeduction,Goal:StructuralDeduction)
+      (  I --> M),   X, is(I,"&&"), subOfPN(I,X)   |-   --(withoutPN(I,X)-->M), (Belief:StructuralDeductionWeakN,Goal:StructuralDeductionWeakN)
+    (--%I --> M),   X, is(%I,"&&"), subOfPN(%I,X)   |-   (--withoutPN(%I,X)-->M), (Belief:StructuralDeductionWeak,Goal:StructuralDeductionWeak)
+      (--%I --> M),   X, is(%I,"&&"), subOfPN(%I,X)   |-   --(--withoutPN(%I,X)-->M), (Belief:StructuralDeductionN,Goal:StructuralDeductionN)
 
-//intersection/union/diff question/quest decompose
-    ( M --> I), X, isOrIsUnneg(I,"&&"), task("?@"), subOfPosOrNeg(I,X) |- (M --> withoutPosOrNegPolarized(I,X))
-    ( I --> M), X, isOrIsUnneg(I,"&&"), task("?@"), subOfPosOrNeg(I,X) |- (withoutPosOrNegPolarized(I,X) --> M)
+//NAL3 single premise question/quest decompose
+    ( M --> I), X, isOrIsUnneg(I,"&&"), task("?@"), subOfPN(I,X) |- (M --> withoutPNRepolarized(I,X))
+    ( I --> M), X, isOrIsUnneg(I,"&&"), task("?@"), subOfPN(I,X) |- (withoutPNRepolarized(I,X) --> M)
 
 
 
@@ -42,8 +44,8 @@
 
 
 ////intersection/union/diff belief + component question/quest decompose
-//bidi:    (A --> X), (S --> X), task("?@"), isOrIsUnneg(S,"&&"), subOfPosOrNeg(S,A) |- (withoutPosOrNegPolarized(S,A) --> X)
-//bidi:    (X --> A), (X --> S), task("?@"), isOrIsUnneg(S,"&&"), subOfPosOrNeg(S,A) |- (X --> withoutPosOrNegPolarized(S,A))
+//bidi:    (A --> X), (S --> X), task("?@"), isOrIsUnneg(S,"&&"), subOfPN(S,A) |- (withoutPNRepolarized(S,A) --> X)
+//bidi:    (X --> A), (X --> S), task("?@"), isOrIsUnneg(S,"&&"), subOfPN(S,A) |- (X --> withoutPNRepolarized(S,A))
 
 
 

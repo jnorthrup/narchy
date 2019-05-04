@@ -140,7 +140,10 @@ public abstract class AnonID implements Atomic, The {
         if (t instanceof AnonID) {
             return (short) ((AnonID)t).i;
         }
-        if (t.op()==NEG) {
+        if (t instanceof Neg.NegAnonID) {
+            return (short) -((Neg.NegAnonID)t).sub;
+        }
+        if (t instanceof Neg) {
             t = t.unneg();
             if (t instanceof AnonID)
                 return (short) -((AnonID)t).i;

@@ -257,7 +257,7 @@ public class TermReductionsTest extends NarseseTest {
 
     @Test
     void testTemporalConjunctionReduction2() {
-        assertEq("((a&|b) &&+1 c)", "(a &&+0 (b &&+1 c))");
+        assertEq("((a&&b) &&+1 c)", "(a &&+0 (b &&+1 c))");
     }
 
     @Test

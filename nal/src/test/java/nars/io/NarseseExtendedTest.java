@@ -137,7 +137,7 @@ class NarseseExtendedTest extends NarseseTest {
 
 
     private static void eqTask(String x, String b) throws Narsese.NarseseException {
-        Task a = Narsese.the().task(x + '.', new DummyNAL());
+        Task a = Narsese.task(x + '.', new DummyNAL());
         assertNotNull(a);
         assertEquals(b, a.term().toString());
     }
@@ -321,15 +321,15 @@ class NarseseExtendedTest extends NarseseTest {
     @Test
     void testParallelConjInfix() throws Narsese.NarseseException {
         Assertions.assertEquals("(a&|b)", NarseseTest.term("(a &| b)").toString());
-        Assertions.assertEquals("(x &&+2 ((a)&|(b)))", NarseseTest.term("(x &&+2 ((a) &| (b)))").toString());
-        Assertions.assertEquals("(x &&+2 (&|,(a),(b),(c)))", NarseseTest.term("(x &&+2 ( ((a) &| (b)) &| (c)))").toString());
+        Assertions.assertEquals("(x &&+2 ((a)&&(b)))", NarseseTest.term("(x &&+2 ((a) &| (b)))").toString());
+        Assertions.assertEquals("(x &&+2 (&&,(a),(b),(c)))", NarseseTest.term("(x &&+2 ( ((a) &| (b)) &| (c)))").toString());
     }
     @Test
     void testParallelConjPrefix() throws Narsese.NarseseException {
-        Assertions.assertEquals("(&|,a,b,c)", NarseseTest.term("(&|, a, b, c)").toString());
-        Assertions.assertEquals("(&|,(a),(b),(c))", NarseseTest.term("(&|, (a), (b), (c))").toString());
-        Assertions.assertEquals("(&|,(a),(b),(c))", NarseseTest.term("(&|,(a), (b), (c))").toString());
-        Assertions.assertEquals("(x &&+2 (&|,(a),(b),(c)))", NarseseTest.term("(x &&+2 (&|,(a), (b), (c)))").toString());
+        Assertions.assertEquals("(&&,a,b,c)", NarseseTest.term("(&|, a, b, c)").toString());
+        Assertions.assertEquals("(&&,(a),(b),(c))", NarseseTest.term("(&|, (a), (b), (c))").toString());
+        Assertions.assertEquals("(&&,(a),(b),(c))", NarseseTest.term("(&|,(a), (b), (c))").toString());
+        Assertions.assertEquals("(x &&+2 (&&,(a),(b),(c)))", NarseseTest.term("(x &&+2 (&|,(a), (b), (c)))").toString());
     }
  
     @Test

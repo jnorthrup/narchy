@@ -391,7 +391,7 @@ public class Builtin {
             }
         });
         /** warning: this returns Null if unchanged */
-        nar.add(new AbstractInlineFunctor2("withoutPosOrNeg") {
+        nar.add(new AbstractInlineFunctor2("withoutPN") {
             @Override
             protected Term apply(Term container, Term _content) {
                 Term content = _content.unneg();
@@ -399,7 +399,7 @@ public class Builtin {
                 return y == container ? Null : y;
             }
         });
-        nar.add(new AbstractInlineFunctor2("withoutPosOrNegPolarized") {
+        nar.add(new AbstractInlineFunctor2("withoutPNRepolarized") {
             @Override
             protected Term apply(Term container, Term _content) {
                 Term content = _content.unneg();

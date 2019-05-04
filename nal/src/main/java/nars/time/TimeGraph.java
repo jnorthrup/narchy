@@ -518,57 +518,57 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
                             break;
 
                         case DTERNAL:
-                            //inherit event time
-                            eventTerm.subterms().forEach(y -> {
-                                know(y, eventStart, eventEnd);
-                            });
-                            break;
-
                         default:
 
-                            if (eventStart != ETERNAL && eventStart != TIMELESS) {
+                            if (edt == DTERNAL && !Conj.isSeq(eventTerm)) {
 
-                                long range = eventEnd - eventStart;
-                                eventTerm.eventsWhile((w, y) -> {
-                                    Event Y = know(y, w, w + range);
-                                    //chain the events to the absolute parent
-                                    link(event, w - eventStart, Y);
-                                    return true;
-                                }, eventStart, edt==0, false, false);
+                                //commutive dternal: inherit event time simultaneously
+                                eventTerm.subterms().forEach(y -> know(y, eventStart, eventEnd));
 
                             } else {
-                                //chain the events together relatively.  chain to the parent event if it's absolute
-                                final Event[] prev =
-                                        //{ eventStart!=ETERNAL && eventStart!=TIMELESS ? event : null };
-                                        {event};
-                                final long[] prevDT = {0};
-                                eventTerm.eventsWhile((w, y) -> {
-                                    assert(!y.equals(eventTerm));
 
-                                    Event next = know(y);
+                                if (eventStart != ETERNAL && eventStart != TIMELESS) {
 
-                                    Event p = prev[0];
-                                    if (p!=null) {
-                                        if (p != event || (eventStart!=ETERNAL && eventStart!=TIMELESS)) {
-                                            //chain to previous, starting with parent
-                                            link(p, w - prevDT[0], next);
-                                            prevDT[0] = w;
-                                            prev[0] = next;
-                                        } else {
-                                            //chain to parent
-                                            if (eventStart!=ETERNAL)
-                                                link(p, w, next);
+                                    long range = eventEnd - eventStart;
+                                    eventTerm.eventsWhile((w, y) -> {
+                                        Event Y = know(y, w, w + range);
+                                        //chain the events to the absolute parent
+                                        link(event, w - eventStart, Y);
+                                        return true;
+                                    }, eventStart, edt == 0, false, false);
+
+                                } else {
+                                    //chain the events together relatively.  chain to the parent event if it's absolute
+                                    final Event[] prev =
+                                            //{ eventStart!=ETERNAL && eventStart!=TIMELESS ? event : null };
+                                            {event};
+                                    final long[] prevDT = {0};
+                                    eventTerm.eventsWhile((w, y) -> {
+                                        assert (!y.equals(eventTerm));
+
+                                        Event next = know(y);
+
+                                        Event p = prev[0];
+                                        if (p != null) {
+                                            if (p != event || (eventStart != ETERNAL && eventStart != TIMELESS)) {
+                                                //chain to previous, starting with parent
+                                                link(p, w - prevDT[0], next);
+                                                prevDT[0] = w;
+                                                prev[0] = next;
+                                            } else {
+                                                //chain to parent
+                                                if (eventStart != ETERNAL)
+                                                    link(p, w, next);
+                                            }
+
                                         }
 
-                                    }
+                                        return true;
+                                    }, 0, edt == 0, false, false);
+                                }
 
-                                    return true;
-                                }, 0, edt==0, false, false);
                             }
-
-                            break;
                     }
-
                     break;
             }
         }

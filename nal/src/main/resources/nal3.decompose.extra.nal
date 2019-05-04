@@ -33,7 +33,7 @@
 
 
 
-    //(S --> M), X, is(S,"&&"), subPosOrNeg(S,X) |- (withoutPosOrNeg(S,X) --> M), (Belief:StructuralDeduction)
+    //(S --> M), X, is(S,"&&"), subPosOrNeg(S,X) |- (withoutPN(S,X) --> M), (Belief:StructuralDeduction)
         //(S --> M), X, is(S,"||"), subOfNeg(S,X) |- (without(S,--X) --> M), (Belief:StructuralDeduction)
 
 //    (S --> (B - G)), B |- (S --> B), (Belief:StructuralDeduction)

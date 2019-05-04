@@ -1,12 +1,12 @@
 //raw image question
-P, X, is(P,"*"), subsMin(P,2), subOfPosOrNeg(P,X) |- imageExt((P-->?1),X), (Belief:Identity, Goal:Identity)
-P, X, is(P,"*"), subsMin(P,2), subOfPosOrNeg(P,X), task("?@") |- imageExt((P-->?1),X)
+P, X, is(P,"*"), subsMin(P,2), subOfPN(P,X) |- imageExt((P-->?1),X), (Belief:Identity, Goal:Identity)
+P, X, is(P,"*"), subsMin(P,2), subOfPN(P,X), task("?@") |- imageExt((P-->?1),X)
 
 //reversed pair obliviator
     ((A,B)-->X), ((B,A)-->X), neq(A,B) |- ({A,B}-->X), (Belief:Intersection)
     (X-->(A,B)), (X-->(B,A)), neq(A,B) |- (X-->[A,B]), (Belief:Intersection)
 
 //raw image question
-P, X, is(P,"*"), subsMin(P,1), subOfPosOrNeg(P,X), task("?@") |- imageExt((P-->?1),X)
+P, X, is(P,"*"), subsMin(P,1), subOfPN(P,X), task("?@") |- imageExt((P-->?1),X)
   //P, X, is(P,"*"), subsMin(P,2), subOf(P,X) |- imageExt((P-->#1),X), (Belief:Identity, Goal:Identity)
 

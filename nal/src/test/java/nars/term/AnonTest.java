@@ -326,10 +326,10 @@ public class AnonTest {
         //in ths example,
         // because there is no #1 variable,
         // the shift must replace x's #2 with #3 (not #2) which would collapse against itself
-        Term x = $$("(Level(low) ==>+1 ((--,At(#1))&|At(#2)))");
-        Term b = $$("(_1($1) ==>+1 ((--,_1($1))&|_1(#2)))");
+        Term x = $$("(Level(low) ==>+1 ((--,At(#1))&&At(#2)))");
+        Term b = $$("(_1($1) ==>+1 ((--,_1($1))&&_1(#2)))");
         Term y = new AnonWithVarShift(16, Op.VAR_DEP.bit | Op.VAR_QUERY.bit).putShift(x, b);
-        assertEquals("(_2(_1) ==>+1 ((--,_3(#3))&|_3(#4)))", y.toString());
+        assertEquals("(_2(_1) ==>+1 ((--,_3(#3))&&_3(#4)))", y.toString());
     }
 
 }

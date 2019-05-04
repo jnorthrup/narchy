@@ -1770,11 +1770,11 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
         boolean polarity = x.op() != NEG;
         Term xUnneg = polarity ? x : x.unneg();
 
-        if (at != ETERNAL && !polarity && xUnneg.op() == CONJ && xUnneg.dt() == DTERNAL) {
-            //convert a sequenced negated eternal conjunction to parallel
-            xUnneg = ((Compound) xUnneg).dt(0);
-            x = xUnneg.neg();
-        }
+//        if (at != ETERNAL && !polarity && xUnneg.op() == CONJ && xUnneg.dt() == DTERNAL) {
+//            //convert a sequenced negated eternal conjunction to parallel
+//            xUnneg = ((Compound) xUnneg).dt(0);
+//            x = xUnneg.neg();
+//        }
 
         byte id = add(xUnneg);
         if (!polarity) id = (byte) -id;
@@ -2273,7 +2273,8 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
      */
     public boolean factor() {
 
-        if (eventOccurrences() <= 1)
+        int ee = eventOccurrences();
+        if (ee <= 1)
             return false;
 
         List<LongObjectPair<Object>> events = event.keyValuesView().toList();
@@ -2421,7 +2422,7 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
 //                if (when==ETERNAL && ((FasterList<Term>)tmp).count(Conj::isSeq)>1)
 //                    return Null; //too complex
 
-                return b.theSortedCompound(CONJ, when == ETERNAL ? DTERNAL : 0, tmpBuffer);
+                return b.theSortedCompound(CONJ, DTERNAL, tmpBuffer);
             }
 
         }

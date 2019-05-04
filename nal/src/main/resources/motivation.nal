@@ -46,6 +46,13 @@
      //(G && B), B, task("@") |-  (G ==> B), (Punctuation:Question)
      //(G && B), B, task("@") |-  (--G ==> B), (Punctuation:Question)
 
+//quest to 'how' impl question
+   B, X, task("@"), --is(B,"==>"), hasBelief() |- (polarizeBelief(X) ==> B), (Punctuation:Question)
+     //B, X, task("@"), --is(B,"==>"), hasBelief() |- (polarizeRandom(B) ==> X), (Punctuation:Question)
+
+//"what is the difference" between what co-occurrs with goal and non-goal
+    (&&,G,X,A..*), (&&,H,Y,B..*), eqNeg(G,H), neq(X,Y), hasBelief()  |- ((polarizeRandom(X) && polarizeRandom(Y)) --> ?1), (Punctuation:Ask)
+
 //inverted condition question/quest TODO: invertAll(C,X)..
     //C, X, eventOfPN(C,X)   |- invertAll(C,X), (Punctuation:Ask)
         //C, X, eventOfNeg(C,X)  |- substitute(C,--X,X), (Punctuation:Ask)
@@ -111,9 +118,6 @@
     //(X ==> Y), Z, task("?")       |- ((X &&   Z) ==> Y), (Punctuation:Question)
     //(X ==> Y), Z, task("?")       |- ((X && --Z) ==> Y), (Punctuation:Question)
 
-//quest to 'how' impl question
-   B, X, task("@"), --is(B,"==>"), hasBelief() |- (polarizeBelief(X) ==> B), (Punctuation:Question)
-     //B, X, task("@"), --is(B,"==>"), hasBelief() |- (polarizeRandom(B) ==> X), (Punctuation:Question)
 
 //goal sub-condition preference compare
 //   (X-->A), (Y-->A), neqRoot(X,Y), --isVar(X), --isVar(Y), --isVar(A), task("!") |- (((polarizeTask(X) && Y) ~ (polarizeTask(X) && --Y)) --> A), (Punctuation:Quest)

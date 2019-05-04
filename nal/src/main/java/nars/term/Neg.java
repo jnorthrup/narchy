@@ -113,7 +113,7 @@ public interface Neg extends Term { ;
     /** TODO refine */
     final class NegAnonID extends UnitCompound implements The, Neg {
 
-        private final int sub;
+        public final int sub;
 
         NegAnonID(int negated) {
             this.sub = negated;

@@ -229,7 +229,7 @@ public class PremiseRule extends ProxyTerm {
                     break;
                 }
 
-                case "subOfPosOrNeg":
+                case "subOfPN":
                     //TODO handle negation
                     neq(XX, YY);
                     constraints.add(new SubOfConstraint(XX, YY, Subterm, 0));
