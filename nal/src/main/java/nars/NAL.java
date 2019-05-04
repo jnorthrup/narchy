@@ -724,7 +724,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
         /**
          * should be as close to 1 as possible
          */
-        public static final float TERMIFY_TERM_VOLMAX_SCRATCH_FACTOR = 2f;
+        public static final float TERMIFY_TERM_VOLMAX_SCRATCH_FACTOR = 3f;
     }
 
     public enum unify {
@@ -733,9 +733,9 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
         /**
          * max variable unification recursion depth as a naive cyclic filter
          */
-        public static final int UNIFY_VAR_RECURSION_DEPTH_LIMIT = 4;
+        public static final int UNIFY_VAR_RECURSION_DEPTH_LIMIT = 16;
         public static final int UNIFY_COMMON_VAR_MAX = 6;
-        public static final int UNIFICATION_STACK_CAPACITY = 64;
+        public static final int UNIFICATION_STACK_CAPACITY = 128;
     }
 
 }

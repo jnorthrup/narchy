@@ -9,21 +9,16 @@ import org.jetbrains.annotations.Nullable;
 
 abstract public class AbstractSectTruth extends AbstractDynamicTruth {
 
-    /**
-     * true = union, false = intersection
-     */
-    @Deprecated final boolean unionOrIntersection;
 
-    AbstractSectTruth(boolean unionOrIntersection) {
-        this.unionOrIntersection = unionOrIntersection;
-    }
+
 
     @Override
     public final Truth truth(DynTaskify l, NAR nar) {
-        return apply(l, nar, truthNegComponents(), unionOrIntersection);
+        return apply(l, nar, truthNegComponents(), negResult());
     }
 
     protected abstract boolean truthNegComponents();
+    protected abstract boolean negResult();
 
     @Nullable
     private Truth apply(DynTaskify d, NAR nar, boolean negComponents, boolean negResult) {

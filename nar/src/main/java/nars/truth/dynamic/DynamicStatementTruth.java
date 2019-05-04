@@ -9,7 +9,6 @@ import nars.subterm.Subterms;
 import nars.task.util.TaskRegion;
 import nars.term.Compound;
 import nars.term.Term;
-import nars.term.util.Image;
 import nars.term.util.conj.ConjBuilder;
 import nars.term.util.conj.ConjLazy;
 import nars.time.Tense;
@@ -154,15 +153,24 @@ public class DynamicStatementTruth {
     static class AbstractInhImplSectTruth extends AbstractSectTruth {
 
         final boolean subjOrPred;
+        /**
+         * true = union, false = intersection
+         */
+        @Deprecated final boolean unionOrIntersection;
 
         private AbstractInhImplSectTruth(boolean subjOrPred, boolean union) {
-            super(union);
+            this.unionOrIntersection = union;
             this.subjOrPred = subjOrPred;
         }
 
         @Override
         protected boolean truthNegComponents() {
             return false;
+        }
+
+        @Override
+        protected boolean negResult() {
+            return unionOrIntersection;
         }
 
         static Term reconstruct(Compound superterm, DynTaskify d, boolean subjOrPred, boolean union) {
@@ -300,7 +308,7 @@ public class DynamicStatementTruth {
             Term decomposed = stmtCommon(!subjOrPred, superterm);
             if (decomposed.unneg().op()!=Op.CONJ) {
             //try Image normalizing
-                superterm = (Compound) Image.imageNormalize(superterm);
+                //superterm = (Compound) Image.imageNormalize(superterm);
                 decomposed = stmtCommon(!subjOrPred, superterm);
             }
 

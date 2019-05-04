@@ -2,6 +2,8 @@ package nars.nal.nal4;
 
 import nars.NAR;
 import nars.NARS;
+import nars.term.Term;
+import nars.term.util.Image;
 import nars.test.NALTest;
 import nars.test.TestNAR;
 import org.junit.jupiter.api.Test;
@@ -64,15 +66,23 @@ public class NAL4MultistepTest extends NALTest {
         int time = 2550;
 
         test.confTolerance(0.2f);
-        test.nar.termVolumeMax.set(6);
+        test.termVolMax(12);
 //        test.nar.freqResolution.setAt(0.25f);
 //        test.nar.confResolution.setAt(0.1f);
-        test.log();
+
+        Term cat = $$("cat");
+        Term blue = $$("blue");
+        Term likes = $$("likes");
+        Term answer = $$("likes(cat,blue)");;
+
         test.believe("blue:sky")
             .believe("cat:tom")
             .believe("likes(tom,sky)")
             .ask("likes(cat,blue)")
-            .mustBelieve(time, "likes(cat,blue)", 1.0f, 0.27f /*0.45f*/)
+            .mustBelieve(time, answer.toString(), 1.0f, 0.27f /*0.45f*/)
+            .mustBelieve(time, Image.imageExt(answer, cat).toString() /* (cat-->(likes,/,blue))  */, 1.0f, 0.27f /*0.45f*/)
+            .mustBelieve(time, Image.imageExt(answer, blue).toString() /* (blue-->(likes,cat,/)) */, 1.0f, 0.27f /*0.45f*/)
+
         ;
 
     }

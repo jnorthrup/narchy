@@ -134,7 +134,7 @@ public class NAL4Test extends NALTest {
     }
 
     @Test
-    public void structural_transformation6() {
+    void structural_transformation6() {
         test
 
                 .mustBelieve(cycles, "(neutralization --> (acid,base))", 1.0f, 0.9f) //en("Something that can be neutralized by an acid is a base.");
@@ -239,7 +239,7 @@ public class NAL4Test extends NALTest {
     }
 
     @Test
-    public void testNormalize0() {
+    void testNormalize0() {
         test.believe("likes(cat,[blue])")
                 .mustBelieve(cycles, "(cat-->(likes,/,[blue]))", 1f, 0.9f)
                 .mustNotOutput(cycles, "(likes-->(cat,[blue]))", BELIEF, 1f, 1f, 0.9f, 0.9f, ETERNAL)
@@ -247,7 +247,7 @@ public class NAL4Test extends NALTest {
     }
 
     @Test
-    public void testNormalize1() {
+    void testNormalize1() {
         String input = "((likes,cat,\\)-->[blue])";
         assertEquals("(likes-->(cat,[blue]))", Image.imageNormalize($$(input)).toString());
 
@@ -258,7 +258,7 @@ public class NAL4Test extends NALTest {
         ;
     }
     @Test
-    public void testNormalize1a() {
+    void testNormalize1a() {
 
         test
                 .believe("([blue] --> (likes,cat,/))")
@@ -268,7 +268,7 @@ public class NAL4Test extends NALTest {
     }
 
     @Disabled @Test
-    public void testNormalize1aQ() {
+    void testNormalize1aQ() {
 
         test
                 .ask("([blue] --> (likes,cat,/))")
@@ -278,14 +278,14 @@ public class NAL4Test extends NALTest {
     }
 
     @Test
-    public void testNormalize1b() {
+    void testNormalize1b() {
         test.believe("((likes,cat,/)-->[blue])")
                 .mustNotOutputAnything()
         ;
     }
 
     @Test
-    public void testNormalize2() {
+    void testNormalize2() {
         test
                 .mustBelieve(cycles, "likes(cat,[blue])", 0.9f)
                 .mustNotOutput(cycles, "(likes-->(cat,[blue]))", BELIEF, 1f, 1f, 0.9f, 0.9f, ETERNAL)
@@ -313,16 +313,44 @@ public class NAL4Test extends NALTest {
         ;
     }
 
-    @Test
-    public void composition_on_both_sides_of_a_statement_2() {
-
-        test.nar.termVolumeMax.set(9);
-        test.believe("(bird-->animal)",1.0f,0.9f) //en("Bird is a type of animal.");
-        .ask("((bird,plant) --> (animal,plant))")
-        .mustBelieve(cycles, "((bird,plant) --> (animal,plant))", 1.0f, 0.81f) //en("The relation between bird and plant is a type of relation between animal and plant.");
+    @ParameterizedTest @ValueSource(strings={"-->","<->"})
+    void composition_on_both_sides_of_a_statement_2(String op) {
+        test
+            .termVolMax(9)
+            .believe("(bird"+op+"animal)",1.0f,0.9f) //en("Bird is a type of animal.");
+            .ask("((bird,plant)"+op+"(animal,plant))")
+            .mustBelieve(cycles, "((bird,plant)"+op+"(animal,plant))", 1.0f, 0.81f) //en(" The relation between bird and plant is a type of relation between animal and plant.");
         ;
     }
+    @Test
+    void composition_on_both_sides_of_a_statement_2_neg() {
+        test
+                .termVolMax(13)
+                .believe("((x||y)-->animal)",1.0f,0.9f) //en("Bird is a type of animal.");
+                .ask("(((x||y),plant) --> (animal,plant))")
+                .mustBelieve(cycles, "(((x||y),plant) --> (animal,plant))", 1.0f, 0.81f) //en("The relation between bird and plant is a type of relation between animal and plant.");
+        ;
+    }
+    @Test
+    void composition_on_both_sides_of_a_statement_2_alternating_position() {
 
+        test
+                .termVolMax(9)
+                .believe("(bird-->animal)",1.0f,0.9f) //en("Bird is a type of animal.");
+                .ask("((bird,plant) --> (plant,animal))")
+                .mustBelieve(cycles, "((bird,plant) --> (plant,animal))", 1.0f, 0.81f) //en("The relation between bird and plant is a type of relation between animal and plant.");
+        ;
+    }
+    @Test
+    void composition_on_both_sides_of_a_statement_3() {
+
+        test
+                .termVolMax(9)
+                .believe("(bird-->animal)",1.0f,0.9f) //en("Bird is a type of animal.");
+                .ask("((wtf,bird,plant) --> (wtf,animal,plant))")
+                .mustBelieve(cycles, "((wtf,bird,plant) --> (wtf,animal,plant))", 1.0f, 0.81f) //en("The relation between bird and plant is a type of relation between animal and plant.");
+        ;
+    }
 
 }
 

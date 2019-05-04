@@ -12,6 +12,7 @@ import nars.term.Term;
 import nars.term.Terms;
 import org.junit.jupiter.api.Test;
 
+import static nars.term.util.TermTest.assertEq;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
@@ -106,6 +107,12 @@ class PremiseRuleTest {
         DeriverRules d = PremiseDeriverCompiler.the(new PremiseDeriverRuleSet(NARS.shell(), "(A-->B),B,is(B,\"[\"),subsMin(B,2) |- (A-->dropAnySet(B)), (Belief:StructuralDeduction)"));
         d.printRecursive();
         assertNotNull(d);
+    }
+
+    @Test void testNoXternalInSect() throws Narsese.NarseseException {
+        PremiseRuleSource x = new PremiseRuleSource("(X,Y), Z |- (Z-->(X&&Y)), (Belief:Intersection)");
+        assertEq("(Z-->(X&&Y))", x.conclusion());
+
     }
 
     @Test

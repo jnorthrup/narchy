@@ -1,37 +1,30 @@
 package nars.term;
 
-import nars.NAL;
 import nars.Op;
 import nars.The;
 import nars.term.anon.AnonID;
-import nars.term.atom.Atomic;
 import nars.term.compound.SemiCachedUnitCompound;
 import nars.term.compound.UnitCompound;
 import nars.term.util.TermException;
 import org.jetbrains.annotations.Nullable;
 
 import static nars.Op.NEG;
-import static nars.term.atom.Bool.Null;
 
-public enum Neg { ;
+public interface Neg extends Term { ;
 
-    public static Term neg(Term u) {
 
+    static Term neg(Term u) {
 
         Op uo = u.op();
         switch (uo) {
-            case ATOM:
-
-                break;
             case BOOL:
                 return u.neg();
+
             case NEG:
                 return u.unneg();
 
             case FRAG:
-                if (NAL.DEBUG)
-                    throw new TermException("fragment can not be negated", u);
-                return Null;
+                throw new TermException("fragment can not be negated", u);
 
             case IMG:
                 return u; //return Null;
@@ -39,72 +32,86 @@ public enum Neg { ;
 
         if (u instanceof AnonID)
             return new NegAnonID(((AnonID)u).i);
+        else
+            return new NegCached(u);
+    }
 
-        return new NegCached(u);
+    Term sub();
+
+    @Override
+    default Term root() {
+        Term x = sub(), y = x.root();
+        return y != x ? y.neg() : this;
+    }
+
+    @Override
+    default Term concept() {
+        return sub().concept();
+    }
+
+
+    @Override
+    @Nullable default Term normalize(byte varOffset) {
+        Term x = sub();
+        Term y = x instanceof Variable ? ((Variable) x).normalizedVariable((byte) (varOffset + 1)) : x.normalize(varOffset);
+        if (y != x)
+            return y.neg();
+        return this;
+    }
+
+    @Override
+    default Term neg() {
+        return sub();
+    }
+
+    @Override
+    default Term negIf(boolean negate) {
+        return negate ? sub() : this;
+    }
+
+    @Override
+    default Term unneg() {
+        return sub();
+    }
+
+    @Override
+    default boolean equalsNeg(Term t) {
+        return sub().equals(t);
     }
 
 
 
-    private static final class NegCached extends SemiCachedUnitCompound implements The {
+
+    final class NegCached extends SemiCachedUnitCompound implements The, Neg {
 
 
         NegCached(Term negated) {
             super(NEG.id, negated);
         }
 
-
         @Override
         public Op op() {
             return NEG;
         }
 
+        @Override
+        public Term concept() {
+            return Neg.super.concept();
+        }
 
         @Override
         public Term root() {
-            Term x = unneg(), y = x.root();
-            return y != x ? y.neg() : this;
+            return Neg.super.root();
         }
 
         @Override
-        public Term concept() {
-            return unneg().concept();
+        public Term normalize(byte varOffset) {
+            return Neg.super.normalize(varOffset);
         }
-
-
-        @Override
-        public @Nullable Term normalize(byte varOffset) {
-            Term x = unneg();
-            Term y = x instanceof Variable ? ((Variable) x).normalizedVariable((byte) (varOffset + 1)) : x.normalize(varOffset);
-            if (y != x)
-                return y.neg();
-            return this;
-        }
-
-        @Override
-        public Term neg() {
-            return sub;
-        }
-
-        @Override
-        public Term negIf(boolean negate) {
-            return negate ? sub : this;
-        }
-
-        @Override
-        public Term unneg() {
-            return sub;
-        }
-
-
-        @Override
-        public final boolean equalsNeg(Term t) {
-            return sub.equals(t);
-        }
-
     }
 
     /** TODO refine */
-    public static final class NegAnonID extends UnitCompound implements The {
+    final class NegAnonID extends UnitCompound implements The, Neg {
 
         private final int sub;
 
@@ -123,47 +130,36 @@ public enum Neg { ;
         }
 
         @Override
+        public Term concept() {
+            return this;
+        }
+
+        @Override
         public Term root() {
             return this;
         }
 
         @Override
-        public Term concept() {
-            return unneg().concept();
-        }
-
-        @Override
-        public @Nullable Term normalize(byte varOffset) {
-            Term x = unneg();
-            Term y = x instanceof Variable ? ((Variable) x).normalizedVariable((byte) (varOffset + 1)) : x.normalize(varOffset);
-            if (y != x)
-                return y.neg();
+        public Term normalize(byte varOffset) {
+            switch (AnonID.mask(sub)) {
+                case AnonID.VARDEPs:
+                case AnonID.VARINDEPs:
+                case AnonID.VARPATTERNs:
+                case AnonID.VARQUERYs:
+                    return Neg.super.normalize(varOffset);
+            }
             return this;
         }
 
         @Override
-        public Term neg() {
-            return sub();
-        }
-
-        @Override
-        public Term negIf(boolean negate) {
-            return negate ? sub() : this;
-        }
-
-        @Override
-        public Term unneg() {
-            return sub();
-        }
-
-        @Override
         public final boolean equalsNeg(Term t) {
-            return t instanceof Atomic && sub().equals(t);
+            //return t instanceof Atomic && sub().equals(t);
+            return t instanceof AnonID && ((AnonID)t).i == sub;
         }
 
     }
 
-    public final class NegLight extends UnitCompound implements The {
+    final class NegLight extends UnitCompound implements The, Neg {
         private final Term sub;
 
         public NegLight(Term negated) {
@@ -181,46 +177,18 @@ public enum Neg { ;
         }
 
         @Override
-        public Term root() {
-            Term x = unneg(), y = x.root();
-            return y != x ? y.neg() : this;
-        }
-
-        @Override
         public Term concept() {
-            return unneg().concept();
-        }
-
-
-        @Override
-        public @Nullable Term normalize(byte varOffset) {
-            Term x = unneg();
-            Term y = x instanceof Variable ? ((Variable) x).normalizedVariable((byte) (varOffset + 1)) : x.normalize(varOffset);
-            if (y != x)
-                return y.neg();
-            return this;
+            return Neg.super.concept();
         }
 
         @Override
-        public Term neg() {
-            return sub;
+        public Term root() {
+            return Neg.super.root();
         }
 
         @Override
-        public Term negIf(boolean negate) {
-            return negate ? sub : this;
+        public Term normalize(byte varOffset) {
+            return Neg.super.normalize(varOffset);
         }
-
-        @Override
-        public Term unneg() {
-            return sub;
-        }
-
-
-        @Override
-        public final boolean equalsNeg(Term t) {
-            return sub.equals(t);
-        }
-
     }
 }

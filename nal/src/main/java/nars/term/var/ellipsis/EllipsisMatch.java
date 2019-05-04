@@ -129,10 +129,6 @@ public final class EllipsisMatch extends LightCompound {
     }
 
 
-    @Override
-    public final Term unneg() {
-        return this;
-    }
 
     @Override
     public /*@NotNull*/ Term concept() {

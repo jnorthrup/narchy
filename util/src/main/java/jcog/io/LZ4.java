@@ -32,10 +32,8 @@ import java.util.Arrays;
  * http://code.google.com/p/lz4/
  * http://fastcompression.blogspot.fr/p/lz4.html
  */
-final class LZ4 {
+public enum LZ4 { ;
 
-    private LZ4() {
-    }
 
     static final int MEMORY_USAGE = 14;
     static final int MIN_MATCH = 4; // minimum length of a match

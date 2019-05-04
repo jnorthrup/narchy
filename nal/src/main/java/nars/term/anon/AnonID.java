@@ -3,6 +3,7 @@ package nars.term.anon;
 import nars.Op;
 import nars.The;
 import nars.subterm.util.SubtermMetadataCollector;
+import nars.term.Neg;
 import nars.term.Term;
 import nars.term.atom.Atomic;
 import nars.term.var.NormalizedVariable;
@@ -157,6 +158,11 @@ public abstract class AnonID implements Atomic, The {
     public static boolean isAnon(Term[] t) {
         for (Term x : t) {
             //assert (!(x instanceof EllipsisMatch)) : "ellipsis match should not be a subterm of ANYTHING";
+            if (x instanceof AnonID)
+                continue;
+
+            if (!(x instanceof Neg /*Compound*/))
+                return false; //not a NEG
             Term y = x.unneg();
             if (!(y instanceof AnonID))
                 return false;

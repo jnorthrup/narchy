@@ -8,6 +8,7 @@ import nars.task.proxy.SpecialTermTask;
 import nars.task.util.Answer;
 import nars.term.Term;
 import nars.term.util.Image;
+import nars.time.When;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Predicate;
@@ -31,14 +32,15 @@ public class ImageBeliefTable extends DynamicTaskTable {
         this.normal = imageNormalized;
     }
 
-    @Override
-    public @Nullable Task match(long start, long end, boolean forceProject, @Nullable Term template, Predicate<Task> filter, int dur, NAR nar) {
+    /** wraps resulting task as an Image proxy */
+    @Override public @Nullable Task match(long start, long end, boolean forceProject, @Nullable Term template, Predicate<Task> filter, int dur, NAR nar) {
         Task t = super.match(start, end, forceProject, template, filter, dur, nar);
-        if (t!=null) {
-            //wrap the result as an image
-            return new ImageTermTask(this.term, t);
-        }
-        return null;
+        return t != null ? new ImageTermTask(this.term, t) : null;
+    }
+    /** wraps resulting task as an Image proxy */
+    @Override public Task sample(When<NAR> when, @Nullable Term template, @Nullable Predicate<Task> filter) {
+        Task t = super.sample(when, template, filter);
+        return t != null ? new ImageTermTask(this.term, t) : null;
     }
 
     @Override
@@ -47,14 +49,14 @@ public class ImageBeliefTable extends DynamicTaskTable {
         Concept h = host(t.nar, false);
         if (h==null)
             return;
-
         if (!(h instanceof TaskConcept))
             return; //TODO if this happens: may be a NodeConcept in certain cases involving $ vars.  investigate
 
         (beliefOrGoal ? h.beliefs() : h.goals()).match(t);
     }
 
-    //
+
+//
 //        @Nullable private BeliefTable table(NAR n, boolean conceptualize) {
 //            Concept h = host(n, conceptualize);
 //            if (!(h instanceof TaskConcept))

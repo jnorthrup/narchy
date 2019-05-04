@@ -2,7 +2,6 @@ package nars.truth.dynamic;
 
 import jcog.Paper;
 import jcog.Util;
-import jcog.WTF;
 import jcog.data.bit.MetalBitSet;
 import jcog.data.set.MetalLongSet;
 import jcog.math.LongInterval;
@@ -17,7 +16,6 @@ import nars.task.util.Answer;
 import nars.task.util.TaskList;
 import nars.term.Compound;
 import nars.term.Term;
-import nars.term.util.Image;
 import nars.term.util.TermException;
 import nars.time.Tense;
 import nars.time.event.WhenTimeIs;
@@ -129,8 +127,16 @@ public class DynTaskify extends TaskList {
         Compound template = (Compound) a.term();
         Term term1 = model.reconstruct(template, this, nar, s, e);
         if (term1 == null || !term1.unneg().op().taskable) { //quick tests
-            if (NAL.DEBUG)
-                throw new WTF("could not reconstruct: " + template + ' ' + this);
+            if (NAL.DEBUG) {
+                //TEMPORARY
+//                model.evalComponents(answer, (z,start,end)->{
+//                    System.out.println(z);
+//                    nar.conceptualizeDynamic(z).beliefs().match(answer);
+//                    return true;
+//                });
+//                model.reconstruct(template, this, nar, s, e);
+                throw new TermException("DynTaskify template not reconstructed: " + this, template);
+            }
             return null;
         }
 
@@ -211,9 +217,12 @@ public class DynTaskify extends TaskList {
 //                throw new TermException("unnormalized component of supposed dynamic compound", subTerm);
 //            //return false;
 //        }
-        if (subTerm.op()==INH) {
-            subTerm = Image.imageNormalize(subTerm);
-        }
+
+
+//        if (subTerm.op()==INH) {
+//            subTerm = Image.imageNormalize(subTerm);
+//            //if (!subTermImgNorm.equals(subTerm))
+//        }
 
         NAR nar = answer.nar;
         Concept subConcept = nar.conceptualizeDynamic(subTerm);

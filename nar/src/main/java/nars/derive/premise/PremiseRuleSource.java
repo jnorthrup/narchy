@@ -686,6 +686,10 @@ public class PremiseRuleSource extends ProxyTerm {
 
     }
 
+    public final Term conclusion() {
+        return termify.pattern;
+    }
+
 
 
     private void isUnneg(Term x, Op o, boolean negated) {

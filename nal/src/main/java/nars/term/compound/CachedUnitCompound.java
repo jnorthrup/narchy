@@ -34,11 +34,6 @@ public class CachedUnitCompound extends SemiCachedUnitCompound {
     }
 
     @Override
-    public Term unneg() {
-        return this;
-    }
-
-    @Override
     public final int structure() {
         return cstruct;
     }

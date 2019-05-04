@@ -159,14 +159,6 @@ abstract public class CachedCompound extends SeparateSubtermsCompound implements
         return !impossibleSubTerm(t) ? super.indexOf(t) : -1;
     }
 
-    /**
-     * since Neg compounds are disallowed for this impl
-     */
-    @Override
-    public final Term unneg() {
-        return this;
-    }
-
     @Override
     public final int volume() {
         return _volume;

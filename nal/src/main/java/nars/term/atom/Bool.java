@@ -141,10 +141,6 @@ abstract public class Bool extends AbstractAtomic implements The {
     }
 
     @Override
-    abstract public Term unneg();
-
-
-    @Override
     abstract public boolean equalsNeg(Term t);
 
     @Override

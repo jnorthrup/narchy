@@ -109,9 +109,6 @@ public interface Atomic extends Term {
     default /* final */ Subterms subterms() { return EmptySubterms; }
 
     @Override
-    default Term unneg() { return this; }
-
-    @Override
     default Term normalize(byte offset) {
         return this;
     }
@@ -126,7 +123,10 @@ public interface Atomic extends Term {
     }
 
     @Override
-    default Term concept() { return this; }
+    default Term concept() {
+        //return Op.terms.concept(this);
+        return this;
+    }
 
     @Override
     default Term root() { return this; }

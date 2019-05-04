@@ -34,7 +34,7 @@ public class InterningTermBuilder extends HeapTermBuilder {
 
 
     protected static final int sizeDefault = Memoizers.DEFAULT_MEMOIZE_CAPACITY;
-    public static final int volMaxDefault = 12;
+    public static final int volMaxDefault = 13;
 
     /**
      * memory-saving
@@ -52,6 +52,8 @@ public class InterningTermBuilder extends HeapTermBuilder {
     final Function<InternedCompoundByComponents, Term>[] terms;
 
     private final String id;
+
+    /** used for quickly determining if op type is internable */
     private final MetalBitSet termsInterned;
 
 
@@ -151,7 +153,7 @@ public class InterningTermBuilder extends HeapTermBuilder {
 
 
     @Override
-    public Subterms subterms(@Nullable Op inOp, Term... t) {
+    public final Subterms subterms(@Nullable Op inOp, Term... t) {
         if (t.length == 0)
             return EmptySubterms;
         else if (internableSubs(t))

@@ -533,9 +533,12 @@ public interface Term extends Termlike, Termed, Comparable<Term> {
     Subterms subterms();
 
     /**
-     * unwraps negation
+     * unwraps negation - only changes if this term is NEG
      */
-    Term unneg();
+    default Term unneg() {
+        //return op() == NEG ? sub(0) : this;
+        return this;
+    }
 
     /**
      * event list, sorted by time

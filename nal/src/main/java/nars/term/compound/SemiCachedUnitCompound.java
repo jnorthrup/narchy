@@ -22,7 +22,7 @@ public abstract class SemiCachedUnitCompound extends UnitCompound implements The
     }
 
     @Override
-    protected final Term sub() {
+    public final Term sub() {
         return sub;
     }
 

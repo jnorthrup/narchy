@@ -19,7 +19,7 @@ abstract public class AbstractDynamicTruth {
 
     abstract public Truth truth(DynTaskify d, /* eviMin, */ NAR nar);
 
-    public final boolean evalComponents(Answer a, ObjectLongLongPredicate<Term> each) {
+    final boolean evalComponents(Answer a, ObjectLongLongPredicate<Term> each) {
         return evalComponents((Compound)a.term(), a.time.start, a.time.end, each);
     }
 

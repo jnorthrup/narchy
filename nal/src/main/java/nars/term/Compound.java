@@ -663,11 +663,6 @@ public interface Compound extends Term, IPair, Subterms {
     }
 
     @Override
-    default Term unneg() {
-        return op() == NEG ? sub(0) : this;
-    }
-
-    @Override
     @Nullable
     default Term normalize(byte varOffset) {
         if (varOffset == 0 && this.isNormalized())
@@ -676,16 +671,10 @@ public interface Compound extends Term, IPair, Subterms {
         return Op.terms.normalize(this, varOffset);
     }
 
-    @Override
-    default Term root() {
-        return Op.terms.root(this);
-    }
 
+    @Override default Term root() { return Op.terms.root(this);  }
+    @Override default Term concept() { return Op.terms.concept(this);  }
 
-    @Override
-    default Term concept() {
-        return Op.terms.concept(this);
-    }
 
     @Override
     default int eventRange() {

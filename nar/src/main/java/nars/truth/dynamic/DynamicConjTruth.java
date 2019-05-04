@@ -22,12 +22,15 @@ import static nars.time.Tense.*;
 
 public class DynamicConjTruth {
 
-    public static final AbstractDynamicTruth ConjIntersection = new AbstractSectTruth(false) {
+    public static final AbstractDynamicTruth ConjIntersection = new AbstractSectTruth() {
 
         @Override
         protected boolean truthNegComponents() {
             return false;
         }
+
+        @Override
+        protected boolean negResult() { return false; }
 
         @Override
         public Term reconstruct(Compound superterm, DynTaskify d, NAR nar, long start, long end) {
