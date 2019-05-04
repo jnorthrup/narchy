@@ -52,7 +52,6 @@ public abstract class Retemporalize extends AbstractTermTransform.NegObliviousTe
         return x.hasAny(Op.Temporal);
     }
 
-    @Deprecated
     public final static class RetemporalizeAll extends Retemporalize {
 
         final int targetDT;
@@ -66,6 +65,8 @@ public abstract class Retemporalize extends AbstractTermTransform.NegObliviousTe
             return targetDT;
         }
     }
+
+
 
     public final static class RetemporalizeFromTo extends Retemporalize {
 

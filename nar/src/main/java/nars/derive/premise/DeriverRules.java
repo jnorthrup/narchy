@@ -149,9 +149,9 @@ public class DeriverRules {
     }
 
     public void printRecursive(PrintStream p) {
-        PremiseDeriverCompiler.print(what, p);
+        PremiseRuleCompiler.print(what, p);
         for (Object x : could)
-            PremiseDeriverCompiler.print(x, p);
+            PremiseRuleCompiler.print(x, p);
     }
 
 
@@ -160,9 +160,9 @@ public class DeriverRules {
     }
 
     public void print(PrintStream p, int indent) {
-        PremiseDeriverCompiler.print(what, p, indent);
+        PremiseRuleCompiler.print(what, p, indent);
         for (Object x : could)
-            PremiseDeriverCompiler.print(x, p, indent);
+            PremiseRuleCompiler.print(x, p, indent);
     }
 
 

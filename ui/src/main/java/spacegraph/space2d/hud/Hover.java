@@ -4,8 +4,10 @@ import jcog.tree.rtree.rect.RectFloat;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.input.finger.Finger;
 import spacegraph.input.finger.Fingering;
+import spacegraph.space2d.ReSurface;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.Stacking;
+import spacegraph.space2d.container.unit.UnitContainer;
 import spacegraph.video.OrthoSurfaceGraph;
 
 import java.util.function.Function;
@@ -76,7 +78,7 @@ public class Hover<X extends Surface, Y extends Surface> extends Fingering {
 
         if (t != null) {
             t.hide();
-            root.add(t);
+            root.add(new WeakContainer(t));
             //updatePos();
             return true;
         }
@@ -110,5 +112,20 @@ public class Hover<X extends Surface, Y extends Surface> extends Fingering {
     public void stop(Finger finger) {
         hide();
         super.stop(finger);
+    }
+
+    /** HACK ensures the hover is eventually removed */
+    private final class WeakContainer extends UnitContainer {
+        public WeakContainer(Surface t) {
+            super(t);
+        }
+
+        @Override
+        protected boolean preRender(ReSurface r) {
+            if (target==null) {
+                delete(); return false;
+            }
+            return super.preRender(r);
+        }
     }
 }

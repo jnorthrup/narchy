@@ -6,7 +6,7 @@ import nars.NARS;
 import nars.derive.impl.BatchDeriver;
 import nars.derive.op.Occurrify;
 import nars.derive.premise.DeriverRules;
-import nars.derive.premise.PremiseDeriverCompiler;
+import nars.derive.premise.PremiseRuleCompiler;
 import nars.derive.premise.PremiseDeriverRuleSet;
 import nars.test.TestNAR;
 import org.junit.jupiter.api.AfterEach;
@@ -46,7 +46,7 @@ class DeriverTest {
 
         PremiseDeriverRuleSet src = new PremiseDeriverRuleSet(NARS.shell(), rules);
         assertNotEquals(0, src.size());
-        DeriverRules d = PremiseDeriverCompiler.the(src);
+        DeriverRules d = PremiseRuleCompiler.the(src);
 
         if (debug) {
 
@@ -103,7 +103,7 @@ class DeriverTest {
     @Test
     void testAmbiguousPunctuation() {
         assertThrows(Throwable.class, () -> {
-            PremiseDeriverCompiler.the(new PremiseDeriverRuleSet(NARS.shell(),
+            PremiseRuleCompiler.the(new PremiseDeriverRuleSet(NARS.shell(),
                     "Y, Y |- (?1 &| Y), ()"
             ));
         });

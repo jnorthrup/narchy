@@ -19,11 +19,15 @@ public enum PatternTermBuilder /* implements TermBuilder ? */ { ;
 
 
     public static Term patternify(Term x) {
-        return x instanceof Compound ? Ellipsify.applyCompound((Compound) x) : x;
+        return patternify(x, true);
+    }
+
+    public static Term patternify(Term x, boolean xternalize) {
+        return x instanceof Compound ? (xternalize ? Patternify : PatternifyNoXternalize).applyCompound((Compound) x) : x;
     }
 
 
-    public static /*@NotNull*/ Term rule(Term x) {
+    @Deprecated public static /*@NotNull*/ Term rule(Term x) {
         return patternify(new PremiseRuleNormalization().apply(x));
     }
 
@@ -39,15 +43,26 @@ public enum PatternTermBuilder /* implements TermBuilder ? */ { ;
 //        return get(x); //.target();
 //    }
 
-    private static final AbstractTermTransform.NegObliviousTermTransform Ellipsify = new AbstractTermTransform.NegObliviousTermTransform() {
+    private static final Patternify Patternify = new Patternify(true);
+    private static final Patternify PatternifyNoXternalize = new Patternify(false);
+
+    private static final class Patternify extends AbstractTermTransform.NegObliviousTermTransform {
+
+        final boolean xternalize;
+
+        private Patternify(boolean xternalize) {
+            this.xternalize = xternalize;
+        }
 
         @Override
         protected @Nullable Term applyPosCompound(Compound x) {
-            Term __x = Retemporalize.retemporalizeAllToXTERNAL.applyCompound(x);
-            if (!(__x instanceof Compound))
-                return __x;
+            if (xternalize) {
+                x = (Compound) Retemporalize.retemporalizeAllToXTERNAL.applyCompound(x);
+//                if (!(x instanceof Compound))
+//                    return x;
+            }
 
-            Term _x = super.applyPosCompound((Compound) __x);
+            Term _x = super.applyPosCompound(x);
             if (!(_x instanceof Compound)) {
                 return _x;
             }
@@ -63,5 +78,5 @@ public enum PatternTermBuilder /* implements TermBuilder ? */ { ;
             @Nullable Ellipsislike e = firstEllipsis(xx.subterms());
             return (e != null ? PatternCompound.ellipsis((Compound) xx, xx.subterms(), (Ellipsis) e) : xx).negIf(neg);
         }
-    };
+    }
 }

@@ -3,6 +3,7 @@ package nars.unify.constraint;
 import nars.term.Term;
 import nars.term.Variable;
 import nars.term.util.conj.Conj;
+import nars.unify.Unify;
 import org.eclipse.collections.api.block.predicate.primitive.LongObjectPredicate;
 import org.eclipse.collections.api.tuple.primitive.LongObjectPair;
 import org.eclipse.collections.impl.set.mutable.UnifiedSet;
@@ -27,7 +28,7 @@ public final class CommonSubEventConstraint extends RelationConstraint {
     }
 
     @Override
-    public boolean invalid(Term xx, Term yy) {
+    public boolean invalid(Term xx, Term yy, Unify context) {
         if (xx.op()!=CONJ || yy.op()!=CONJ)
             return true;
 

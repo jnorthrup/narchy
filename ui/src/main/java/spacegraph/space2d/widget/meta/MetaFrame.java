@@ -1,22 +1,18 @@
 package spacegraph.space2d.widget.meta;
 
 import jcog.WTF;
-import jcog.tree.rtree.rect.RectFloat;
-import spacegraph.input.finger.Finger;
 import spacegraph.space2d.Labeled;
 import spacegraph.space2d.MenuSupplier;
 import spacegraph.space2d.ReSurface;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.Bordering;
 import spacegraph.space2d.container.ContainerSurface;
-import spacegraph.space2d.hud.Hovered;
-import spacegraph.space2d.widget.text.BitmapLabel;
 import spacegraph.space2d.widget.text.VectorLabel;
 
 /**
  * a dynamic frame for attaching to widgets providing access to context menus, controls, and display
  */
-public class MetaFrame extends Bordering implements Hovered {
+public class MetaFrame extends Bordering  {
 
 
     private MetaFrame() {
@@ -239,10 +235,10 @@ public class MetaFrame extends Bordering implements Hovered {
         return name();
     }
 
-    @Override
-    public Surface hover(RectFloat screenBounds, Finger f) {
-        return new BitmapLabel(screenBounds.toString()).pos(screenBounds.scale(1.5f));
-    }
+//    @Override
+//    public Surface hover(RectFloat screenBounds, Finger f) {
+//        return new BitmapLabel(screenBounds.toString()).pos(screenBounds.scale(1.5f));
+//    }
 
 
     private static class SatelliteMetaFrame extends MetaFrame {

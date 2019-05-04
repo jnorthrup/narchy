@@ -6,6 +6,7 @@ import nars.term.Variable;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
 import nars.term.var.Img;
+import nars.unify.Unify;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Predicate;
@@ -32,7 +33,7 @@ public final class NotEqualConstraint extends RelationConstraint {
     }
 
     @Override
-    public boolean invalid(Term x, Term y) {
+    public boolean invalid(Term x, Term y, Unify context) {
         return y.equals(x);
     }
 
@@ -60,7 +61,7 @@ public final class NotEqualConstraint extends RelationConstraint {
         }
 
         @Override
-        public boolean invalid(Term x, Term y) {
+        public boolean invalid(Term x, Term y, Unify context) {
             return y.equalsRoot(x);
         }
 
@@ -103,7 +104,7 @@ public final class NotEqualConstraint extends RelationConstraint {
         }
 
         @Override
-        public boolean invalid(Term x, Term y) {
+        public boolean invalid(Term x, Term y, Unify context) {
             return !x.equalsNeg(y);
         }
 
@@ -127,7 +128,7 @@ public final class NotEqualConstraint extends RelationConstraint {
         }
 
         @Override
-        public boolean invalid(Term x, Term y) {
+        public boolean invalid(Term x, Term y, Unify context) {
             return !x.equals(y) && !x.equalsNeg(y) ;
         }
 
@@ -183,7 +184,7 @@ public final class NotEqualConstraint extends RelationConstraint {
         }
 
         @Override
-        public boolean invalid(Term x, Term y) {
+        public boolean invalid(Term x, Term y, Unify context) {
 
             if (x.equals(y))
                 return true;
@@ -271,7 +272,7 @@ public final class NotEqualConstraint extends RelationConstraint {
         }
 
         @Override
-        public boolean invalid(Term x, Term y) {
+        public boolean invalid(Term x, Term y, Unify context) {
             return (x.op() == INH && y.op() == INH && (x.sub(0).equals(y.sub(0)) || x.sub(1).equals(y.sub(1))));
         }
 
@@ -293,7 +294,7 @@ public final class NotEqualConstraint extends RelationConstraint {
         }
 
         @Override
-        public boolean invalid(Term x, Term y) {
+        public boolean invalid(Term x, Term y, Unify context) {
             return x!=y && x.subs()!=y.subs();
         }
 
@@ -314,7 +315,7 @@ public final class NotEqualConstraint extends RelationConstraint {
         }
 
         @Override
-        public boolean invalid(Term x, Term y) {
+        public boolean invalid(Term x, Term y, Unify context) {
             Op xo = x.op();
             return xo.set && (xo == y.op());
         }

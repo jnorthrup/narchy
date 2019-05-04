@@ -331,6 +331,26 @@ public class NAL4Test extends NALTest {
                 .mustBelieve(cycles, "(((x||y),plant) --> (animal,plant))", 1.0f, 0.81f) //en("The relation between bird and plant is a type of relation between animal and plant.");
         ;
     }
+
+    @Test
+    void one_element_unwrap() {
+        test
+                .termVolMax(5)
+                .believe("((x)-->(y))",1.0f,0.9f)
+                .ask("(x --> y)")
+                .mustBelieve(cycles, "(x --> y)", 1.0f, 0.81f)
+        ;
+    }
+    @Test
+    void one_element_wrap() {
+        test
+                .termVolMax(5)
+                .believe("(x-->y)",1.0f,0.9f)
+                .ask("((x) --> (y))")
+                .mustBelieve(cycles, "((x) --> (y))", 1.0f, 0.81f)
+        ;
+    }
+
     @Test
     void composition_on_both_sides_of_a_statement_2_alternating_position() {
 
@@ -339,6 +359,7 @@ public class NAL4Test extends NALTest {
                 .believe("(bird-->animal)",1.0f,0.9f) //en("Bird is a type of animal.");
                 .ask("((bird,plant) --> (plant,animal))")
                 .mustBelieve(cycles, "((bird,plant) --> (plant,animal))", 1.0f, 0.81f) //en("The relation between bird and plant is a type of relation between animal and plant.");
+                ////                .mustNotOutput(cycles, "((bird,plant) --> (plant,animal))", BELIEF)
         ;
     }
     @Test

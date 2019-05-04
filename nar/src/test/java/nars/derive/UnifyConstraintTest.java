@@ -3,7 +3,6 @@ package nars.derive;
 import nars.$;
 import nars.NARS;
 import nars.Narsese;
-import nars.term.Term;
 import nars.test.TestNAR;
 import nars.unify.constraint.NotEqualConstraint;
 import org.junit.jupiter.api.Test;
@@ -22,16 +21,16 @@ class UnifyConstraintTest {
     void testNeqComRecursiveConstraint() throws Narsese.NarseseException {
         NotEqualConstraint.NotEqualAndNotRecursiveSubtermOf c = new NotEqualConstraint.NotEqualAndNotRecursiveSubtermOf($.varQuery(1), $.varQuery(2));
         assertFalse(
-                c.invalid($.$("X"), (Term)$.$("Y"))
+                c.invalid($.$("X"), $.$("Y"), null)
         );
         assertFalse(
-                c.invalid($.$("X"), (Term)$.$("f(X,Y)")) 
+                c.invalid($.$("X"), $.$("f(X,Y)"), null)
         );
         assertFalse(
-                c.invalid($.$("X"), (Term)$.$("(X && Y)")) 
+                c.invalid($.$("X"), $.$("(X && Y)"), null)
         );
         assertTrue(
-                c.invalid($.$("X"), (Term)$.$("(X|Y)"))
+                c.invalid($.$("X"), $.$("(X|Y)"), null)
         );
     }
 

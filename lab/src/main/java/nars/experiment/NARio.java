@@ -216,7 +216,7 @@ public class NARio extends GameX {
         });
         alive.setDefault($.t(1, 0.5f));
 
-        game.paused = true;
+//        game.paused = false;
         game.thread.start();
     }
 

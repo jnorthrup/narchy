@@ -6,7 +6,6 @@ import jcog.exe.Loop;
 import jcog.func.IntIntToObjectFunction;
 import jcog.learn.ql.HaiQae;
 import jcog.math.FloatAveragedWindow;
-import jcog.pri.ScalarValue;
 import jcog.signal.wave2d.Bitmap2D;
 import jcog.signal.wave2d.MonoBufImgBitmap2D;
 import jcog.signal.wave2d.ScaledBitmap2D;
@@ -308,7 +307,7 @@ abstract public class GameX extends Game {
 
     private static void initPlugins3(NAR n, Game a) {
 
-        MetaAgent meta = new MetaAgent(16f, a);
+        MetaAgent meta = new MetaAgent(false,16f, a);
         meta.what().pri(0.25f);
 
 //        RLBooster metaBoost = new RLBooster(meta, (i,o)->new HaiQae(i, 10,o),
@@ -386,15 +385,15 @@ abstract public class GameX extends Game {
 
 
 
-//        n.beliefPriDefault.pri(0.01f);
-//        n.goalPriDefault.pri(0.1f);
-//        n.questionPriDefault.set(0.002f);
-//        n.questPriDefault.set(0.002f);
-
         n.beliefPriDefault.pri(0.01f);
-        n.goalPriDefault.pri(0.01f);
-        n.questionPriDefault.set(0.01f);
-        n.questPriDefault.set(0.01f);
+        n.goalPriDefault.pri(0.1f);
+        n.questionPriDefault.set(0.002f);
+        n.questPriDefault.set(0.002f);
+
+//        n.beliefPriDefault.pri(0.01f);
+//        n.goalPriDefault.pri(0.01f);
+//        n.questionPriDefault.set(0.01f);
+//        n.questPriDefault.set(0.01f);
 
         n.beliefConfDefault.set(0.75f);
         n.goalConfDefault.set(0.75f);
@@ -557,8 +556,10 @@ abstract public class GameX extends Game {
      * TODO extract to class */
     private static void addGovernor(NAR n) {
         int gHist = 16;
+        float explorationRate = 0.1f;
         n.onDur((nn) -> {
             MetaGoal.value(nn);
+            int numHow = nn.how.size();
             nn.how.forEach(h -> {
                 FloatAveragedWindow g = (FloatAveragedWindow) h.governor;
                 if (g==null)
@@ -572,7 +573,7 @@ abstract public class GameX extends Game {
 
                 float vv = g.valueOf(v);
 
-                h.pri(Util.clamp(vv, ScalarValue.EPSILON, 1));
+                h.pri(Util.lerp(Util.clamp(vv, 0, 1), explorationRate / numHow, 1));
             });
         });
     }

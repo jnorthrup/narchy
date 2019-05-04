@@ -9,14 +9,13 @@ import nars.term.var.ellipsis.Ellipsis;
 class PremiseRuleNormalization extends VariableNormalization {
 
 
+
     @Override
     protected Term applyFilteredPosCompound(Compound x) {
         /** process completely to resolve built-in functors,
          * to override VariableNormalization's override */
         return applyCompound(x, x.op(), x.dt());
     }
-
-
 
     /*@NotNull*/
     @Override

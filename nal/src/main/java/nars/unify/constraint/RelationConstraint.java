@@ -18,7 +18,7 @@ abstract public class RelationConstraint<U extends Unify> extends UnifyConstrain
     public final Variable y;
     private final boolean yNeg;
 
-    private RelationConstraint(Term id, Variable x, Variable y) {
+    public RelationConstraint(Term id, Variable x, Variable y) {
         super(id, x);
         assert(!x.equals(y));
         this.y = y;
@@ -52,12 +52,12 @@ abstract public class RelationConstraint<U extends Unify> extends UnifyConstrain
 
 
     @Override
-    public final boolean invalid(Term x, Unify f) {
+    public final boolean invalid(Term x, U f) {
         Term yy = f.resolve(y);
-        return yy != y && invalid(x, yNeg ? yy.neg() : yy);
+        return yy != y && invalid(x, yNeg ? yy.neg() : yy, f);
     }
 
-    abstract public boolean invalid(Term xx, Term yy);
+    abstract public boolean invalid(Term xx, Term yy, U context);
 
     /** override to implement subsumption elimination */
     public boolean remainInAndWith(RelationConstraint c) {
@@ -92,8 +92,8 @@ abstract public class RelationConstraint<U extends Unify> extends UnifyConstrain
         }
 
         @Override
-        public boolean invalid(Term xx, Term yy) {
-            return !r.invalid(xx, yy);
+        public boolean invalid(Term xx, Term yy, Unify context) {
+            return !r.invalid(xx, yy, context);
         }
 
         @Override

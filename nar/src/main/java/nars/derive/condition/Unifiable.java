@@ -4,7 +4,7 @@ import jcog.WTF;
 import nars.$;
 import nars.NAL;
 import nars.derive.PreDerivation;
-import nars.derive.premise.PremiseRuleSource;
+import nars.derive.premise.PremiseRule;
 import nars.op.UniSubst;
 import nars.term.Functor;
 import nars.term.Term;
@@ -34,8 +34,8 @@ public class Unifiable extends AbstractPred<PreDerivation> {
 
     Unifiable(byte[] xpInT, byte[] xpInB, byte[] ypInT, byte[] ypInB, int varBits, boolean isStrict) {
         super($.func(UnifyPreFilter, $.intRadix(varBits, 2), UniSubst.NOVEL.negIf(!isStrict),
-                PremiseRuleSource.pathTerm(xpInT), PremiseRuleSource.pathTerm(xpInB),
-                PremiseRuleSource.pathTerm(ypInT), PremiseRuleSource.pathTerm(ypInB)));
+                PremiseRule.pathTerm(xpInT), PremiseRule.pathTerm(xpInB),
+                PremiseRule.pathTerm(ypInT), PremiseRule.pathTerm(ypInB)));
         this.xpInT = xpInT;
         this.xpInB = xpInB;
         this.ypInT = ypInT;

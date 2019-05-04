@@ -24,12 +24,12 @@ import static org.eclipse.collections.impl.tuple.Tuples.pair;
  * ready-made template to make constructing this as fast as possible
  * in potentially multiple NAR instances later
  */
-public class PremiseRuleProto extends PremiseRuleSource {
+public class PremiseRuleProto extends PremiseRule {
 
 
     public final Pair<PREDICATE<Derivation>[], DeriveAction> rule;
 
-    PremiseRuleProto(PremiseRuleSource raw, NAR nar) {
+    PremiseRuleProto(PremiseRule raw, NAR nar) {
         super(raw);
 
         RuleWhy cause = nar.newCause(s -> new RuleWhy(this, s));
@@ -70,11 +70,11 @@ public class PremiseRuleProto extends PremiseRuleSource {
      */
     public static final class RuleWhy extends Why {
 
-        public final PremiseRuleSource rule;
+        public final PremiseRule rule;
         public final String ruleString;
         public final Term term;
 
-        RuleWhy(PremiseRuleSource rule, short id) {
+        RuleWhy(PremiseRule rule, short id) {
             super(id);
             this.rule = rule;
             this.ruleString = rule.source;

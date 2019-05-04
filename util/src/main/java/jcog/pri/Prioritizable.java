@@ -3,6 +3,7 @@ package jcog.pri;
 import com.google.common.base.Function;
 import jcog.Texts;
 import jcog.Util;
+import jcog.math.FloatRange;
 import jcog.pri.op.PriMerge;
 import jcog.pri.op.PriReturn;
 
@@ -156,6 +157,21 @@ public interface Prioritizable extends Prioritized, ScalarValue {
         }
         //assert (u.priElseZero() <= maxPri + ScalarValue.EPSILON): "not: " + u.priElseZero() + " <= " + maxPri + EPSILON;
         return u;
+    }
+
+    default FloatRange priAsFloatRange() {
+        return new FloatRange(pri(), 0, 1) {
+            @Override
+            public void set(float value) {
+                super.set(value);
+                Prioritizable.this.pri(value);
+            }
+
+            @Override
+            public float getAndSet(float r) {
+                throw new UnsupportedOperationException();
+            }
+        };
     }
 
 

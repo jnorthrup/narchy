@@ -27,7 +27,7 @@ import java.util.function.Function;
 /**
  * high-level interface for compiling premise deriver rules
  */
-public enum PremiseDeriverCompiler {
+public enum PremiseRuleCompiler {
     ;
 
     public static DeriverRules the(Set<PremiseRuleProto> r) {
@@ -36,7 +36,7 @@ public enum PremiseDeriverCompiler {
 
     private static final Function<Set<PremiseRuleProto>, DeriverRules> the =
             //Memoizers.the.memoize(PremiseDeriverCompiler.class.getSimpleName(), 64, PremiseDeriverCompiler::_the);
-            CaffeineMemoize.build(PremiseDeriverCompiler::_the, 64, false);
+            CaffeineMemoize.build(PremiseRuleCompiler::_the, 64, false);
 
     private static DeriverRules _the(Set<PremiseRuleProto> r) {
         assert (!r.isEmpty());
@@ -87,7 +87,7 @@ public enum PremiseDeriverCompiler {
 
 
         return new DeriverRules(
-                PremiseDeriverCompiler.compile(path),
+                PremiseRuleCompiler.compile(path),
                 rootBranches,
                 mustAtomizableStructure,
 
@@ -174,7 +174,7 @@ public enum PremiseDeriverCompiler {
     }
 
     public static void print(Object d, PrintStream out) {
-        PremiseDeriverCompiler.print(d, out, 0);
+        PremiseRuleCompiler.print(d, out, 0);
 
 
     }

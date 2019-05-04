@@ -6,7 +6,6 @@ import jcog.math.FloatRange;
 import jcog.math.v2;
 import jcog.pri.ScalarValue;
 import jcog.tree.rtree.Spatialization;
-import jcog.tree.rtree.rect.RectFloat;
 import org.eclipse.collections.api.block.procedure.primitive.FloatFloatProcedure;
 import spacegraph.input.finger.Finger;
 import spacegraph.input.finger.state.Dragging;
@@ -14,9 +13,7 @@ import spacegraph.input.finger.state.SurfaceDragging;
 import spacegraph.space2d.ReSurface;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.PaintSurface;
-import spacegraph.space2d.hud.Hovered;
 import spacegraph.space2d.widget.port.TypedPort;
-import spacegraph.space2d.widget.text.VectorLabel;
 import spacegraph.video.Draw;
 
 import static jcog.Texts.n4;
@@ -25,7 +22,7 @@ import static jcog.Util.unitize;
 /**
  * x and y are in 0..1.0 domain
  */
-public class XYSlider extends PaintSurface implements Hovered {
+public class XYSlider extends PaintSurface  {
 
     public static final int BUTTON = 0;
     private final v2 knob = new v2(0.5f, 0.5f);
@@ -56,24 +53,20 @@ public class XYSlider extends PaintSurface implements Hovered {
         });
     }
 
-    @Override
-    public Surface hover(RectFloat screenBounds, Finger f) {
-        return caption().pos(screenBounds.scale(0.75f));
-    }
 
-    /**
-     * creates a live-updating label
-     */
-    public Surface caption() {
-        return new VectorLabel() {
-            @Override
-            protected void renderContent(ReSurface r) {
-                text(summary());
-                super.renderContent(r);
-            }
-
-        };
-    }
+//    /**
+//     * creates a live-updating label
+//     */
+//    public Surface caption() {
+//        return new VectorLabel() {
+//            @Override
+//            protected void renderContent(ReSurface r) {
+//                text(summary());
+//                super.renderContent(r);
+//            }
+//
+//        };
+//    }
 
     /**
      * TODO optional labels for x and y axes

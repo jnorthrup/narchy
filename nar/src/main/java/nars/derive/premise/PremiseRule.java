@@ -3,6 +3,7 @@ package nars.derive.premise;
 import it.unimi.dsi.fastutil.bytes.ByteArrayList;
 import jcog.TODO;
 import jcog.data.list.FasterList;
+import jcog.data.set.ArrayHashSet;
 import jcog.util.ArrayUtils;
 import nars.$;
 import nars.Builtin;
@@ -56,12 +57,13 @@ import static nars.derive.premise.PatternTermBuilder.patternify;
 import static nars.subterm.util.SubtermCondition.*;
 import static nars.term.control.AbstractTermMatchPred.cost;
 import static nars.term.control.PREDICATE.sortByCostIncreasing;
+import static nars.time.Tense.DTERNAL;
 
 /**
  * A rule which matches a Premise and produces a Task
  * contains: preconditions, predicates, postconditions, post-evaluations and metainfo
  */
-public class PremiseRuleSource extends ProxyTerm {
+public class PremiseRule extends ProxyTerm {
 
     private static final Pattern ruleImpl = Pattern.compile("\\|-");
     private static final String BIDI_modifier = "bidi:";
@@ -88,22 +90,21 @@ public class PremiseRuleSource extends ProxyTerm {
     private final BytePredicate taskPunc;
 
 
-    public PremiseRuleSource(String ruleSrc) throws Narsese.NarseseException {
+    public PremiseRule(String ruleSrc) throws Narsese.NarseseException {
         this(ruleSrc, false);
     }
 
-
     private static Term rule(String ruleSrc) throws Narsese.NarseseException {
-        return patternify(new MyPremiseRuleNormalization().apply(
+        return new MyPremiseRuleNormalization().apply(
             new UppercaseAtomsToPatternVariables().apply(
                 $.pFast(
                     parseRuleComponents(ruleSrc)
                 )
             )
-        ));
+        );
     }
 
-    private PremiseRuleSource(String ruleSrc, boolean swap) throws Narsese.NarseseException {
+    private PremiseRule(String ruleSrc, boolean swap) throws Narsese.NarseseException {
         super(
                 rule(ruleSrc)
         );
@@ -139,7 +140,7 @@ public class PremiseRuleSource extends ProxyTerm {
         if (taskPattern.op() != VAR_PATTERN && !taskPattern.op().taskable)
             throw new TermException("task pattern is not taskable", taskPattern);
         if (beliefPattern.op() == NEG)
-            throw new TermException("task pattern can never be NEG", beliefPattern);
+            throw new TermException("belief pattern can never be NEG", beliefPattern);
         if (beliefPattern.op() == Op.ATOM)
             throw new TermException("belief target must contain no atoms", beliefPattern);
 
@@ -773,11 +774,83 @@ public class PremiseRuleSource extends ProxyTerm {
         return PRE;
     }
 
-    private Term conclusion(Term x) {
-        if (!x.unneg().op().var)
-            return conclusionOptimize(ConcTransform.apply(patternify(x)));
-        else
-            return x;
+    private static final Term eteConj = $.the("eteConj");
+
+    private Term conclusion(Term c) {
+        //verify that all pattern variables in c are present in either taskTerm or beliefTerm
+        assertConclusionVariablesPresent(c);
+
+        if (!c.unneg().op().var) {
+
+            List<Term> subbedConj;
+            ArrayHashSet<Term> savedConj;
+
+            if (c.hasAll(INH.bit|CONJ.bit)) {
+                subbedConj = new FasterList(0);
+                c = saveEteConj(c, subbedConj, savedConj = new ArrayHashSet(0));
+            } else {
+                savedConj = null;
+                subbedConj = null;
+            }
+
+            c = conclusionOptimize(ConcTransform.apply(patternify(c)));
+
+            if (savedConj!=null && !savedConj.isEmpty())
+                c = restoreEteConj(c, subbedConj, savedConj);
+
+        }
+
+        return c;
+    }
+
+    private Term restoreEteConj(Term c, List<Term> subbedConj, ArrayHashSet<Term> savedConj) {
+        for (int i = 0, subbedConjSize = subbedConj.size(); i < subbedConjSize; i++) {
+            Term y = subbedConj.get(i);
+            Term x = savedConj.get(i);
+            c = c.replace(y, x);
+        }
+        return c;
+    }
+
+    /** HACK preserve any && occurring in --> by substituting them then replacing them */
+    @Deprecated private Term saveEteConj(Term c, List<Term> subbedConj, ArrayHashSet<Term> savedConj) {
+
+        c.recurseTerms(x -> x.hasAll(INH.bit | CONJ.bit), t -> {
+            if (t.op() == INH) {
+                Term s = t.sub(0);
+                Term su = s.unneg();
+                if (su.op() == CONJ && su.dt() == DTERNAL)
+                    savedConj.add(patternify(s, false));
+                Term p = t.sub(1);
+                Term pu = p.unneg();
+                if (pu.op() == CONJ && pu.dt() == DTERNAL)
+                    savedConj.add(patternify(p, false));
+            }
+            return true;
+        }, null);
+        if (!savedConj.isEmpty()) {
+            int i = 0;
+            for (Term x : savedConj) {
+                Term y = $.p(eteConj, $.the(i));
+                subbedConj.add(y);
+                c = c.replace(x, y);
+                i++;
+            }
+        }
+        return c;
+    }
+
+    private void assertConclusionVariablesPresent(Term c) {
+        boolean tb = taskPattern.equals(beliefPattern);
+        c.recurseTerms(Termlike::hasVarPattern, z -> {
+            if (z.op() == VAR_PATTERN) {
+                if (!(taskPattern.equals(z) || taskPattern.containsRecursively(z)) &&
+                        (tb || !(beliefPattern.equals(z) || beliefPattern.containsRecursively(z)))) {
+                    throw new RuntimeException("conclusion has pattern variable not contained in task or belief pattern: " + z);
+                }
+            }
+            return true;
+        }, null);
     }
 
     private Term conclusionOptimize(Term y) {
@@ -884,7 +957,7 @@ public class PremiseRuleSource extends ProxyTerm {
         return mc;
     }
 
-    PremiseRuleSource(PremiseRuleSource raw) {
+    PremiseRule(PremiseRule raw) {
         super((/*index.rule*/(raw.ref)));
 
         this.termify = raw.termify;
@@ -905,28 +978,28 @@ public class PremiseRuleSource extends ProxyTerm {
     }
 
 
-    public static Stream<PremiseRuleSource> parse(String src) {
+    public static Stream<PremiseRule> parse(String src) {
         try {
             //bidi-rectional: swap premise components, and swap truth func param
             if (src.startsWith(BIDI_modifier)) {
                 src = src.substring(BIDI_modifier.length());
-                PremiseRuleSource a = new PremiseRuleSource(src, false);
-                PremiseRuleSource b = new PremiseRuleSource(src, true);
+                PremiseRule a = new PremiseRule(src, false);
+                PremiseRule b = new PremiseRule(src, true);
                 return a.equals(b) ? Stream.of(a) : Stream.of(a, b);
             } else {
-                return Stream.of(new PremiseRuleSource(src));
+                return Stream.of(new PremiseRule(src));
             }
         } catch (Exception e) {
             throw new RuntimeException("rule parse:\n\t" + src + "\n\t" + e.getMessage(), e);
         }
     }
 
-    public static Stream<PremiseRuleSource> parse(String... rawRules) {
+    public static Stream<PremiseRule> parse(String... rawRules) {
         return parse(Stream.of(rawRules));
     }
 
-    public static Stream<PremiseRuleSource> parse(Stream<String> rawRules) {
-        return rawRules.flatMap(PremiseRuleSource::parse);
+    public static Stream<PremiseRule> parse(Stream<String> rawRules) {
+        return rawRules.flatMap(PremiseRule::parse);
     }
 
     private static Subterms parseRuleComponents(String src) throws Narsese.NarseseException {
@@ -951,7 +1024,7 @@ public class PremiseRuleSource extends ProxyTerm {
 
 
     private static PremiseTermAccessor TaskOrBelief(boolean taskOrBelief) {
-        return taskOrBelief ? PremiseRuleSource.TaskTerm : PremiseRuleSource.BeliefTerm;
+        return taskOrBelief ? PremiseRule.TaskTerm : PremiseRule.BeliefTerm;
     }
 
     private void matchSuper(boolean taskOrBelief, TermMatcher m, boolean trueOrFalse) {
@@ -1104,12 +1177,12 @@ public class PremiseRuleSource extends ProxyTerm {
         @Override
         public Term applyCompound(Compound c) {
 
-            c = apply(c, PremiseRuleSource.this, pre);
+            c = apply(c, PremiseRule.this, pre);
 
             return AbstractTermTransform.super.applyCompound(c);
         }
 
-        private Compound apply(Compound c, PremiseRuleSource p, MutableSet<PREDICATE<? extends Unify>> pre) {
+        private Compound apply(Compound c, PremiseRule p, MutableSet<PREDICATE<? extends Unify>> pre) {
             Term concFunc = Functor.func(c);
 
             if (concFunc.equals(UniSubst.unisubst)) {
@@ -1153,6 +1226,7 @@ public class PremiseRuleSource extends ProxyTerm {
         }
 
     }
+
 }
 
 

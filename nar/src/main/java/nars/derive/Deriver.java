@@ -10,7 +10,7 @@ import nars.attention.What;
 import nars.control.How;
 import nars.control.Why;
 import nars.derive.premise.DeriverRules;
-import nars.derive.premise.PremiseDeriverCompiler;
+import nars.derive.premise.PremiseRuleCompiler;
 import nars.derive.premise.PremiseDeriverRuleSet;
 import nars.derive.premise.PremiseRuleProto;
 import nars.derive.timing.NonEternalTaskOccurenceOrPresentDeriverTiming;
@@ -40,7 +40,7 @@ abstract public class Deriver extends How {
     public TriFunction<What, Task, Term, long[]> timing;
 
     protected Deriver(Set<PremiseRuleProto> rules, NAR nar) {
-        this(PremiseDeriverCompiler.the(rules), nar);
+        this(PremiseRuleCompiler.the(rules), nar);
         if (rules.isEmpty())
             throw new RuntimeException("rules empty");
     }

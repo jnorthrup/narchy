@@ -311,7 +311,7 @@ class ConceptualizationTest {
 
         Term r = t.root();
         {
-            assertEquals("((--,((||+- ,a,b) &&+- a)) &&+- a)", r.toString());
+            assertEquals("((--,((a ||+- b) &&+- a)) &&+- a)", r.toString());
         }
 
         {

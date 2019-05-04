@@ -17,7 +17,7 @@ import static java.lang.System.nanoTime;
 /** N independent asynchronously looping worker threads */
 abstract public class ThreadedExec extends MultiExec {
 
-    static final int inputQueueCapacityPerThread = 128;
+    static final int inputQueueCapacityPerThread = 512;
 
     final boolean affinity;
     protected int workGranularity = Integer.MAX_VALUE;

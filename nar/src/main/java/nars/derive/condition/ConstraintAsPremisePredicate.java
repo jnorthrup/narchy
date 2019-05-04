@@ -107,12 +107,11 @@ abstract public class ConstraintAsPremisePredicate<U extends PreDerivation, C ex
 
         @Override
         public boolean test(PreDerivation preDerivation) {
-            Term t = preDerivation.taskTerm;
-            Term b = preDerivation.beliefTerm;
+            Term t = preDerivation.taskTerm, b = preDerivation.beliefTerm;
             Term x = extractX.apply(t, b);
             if (x != null) {
                 Term y = extractY.apply(t, b);
-                return y!=null && !constraint.invalid(x, y);
+                return y!=null && !constraint.invalid(x, y, preDerivation);
             }
             return false;
         }

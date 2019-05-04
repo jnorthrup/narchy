@@ -356,7 +356,7 @@ public class FZero extends GameX {
         float rotSpeed = 0.25f;
         final float[] left = new float[1];
         final float[] right = new float[1];
-        float fwdSpeed = 25;
+        float fwdSpeed = 75;
 
         final Atom TANK = Atomic.atom("tank");
         actionUnipolar($.inh(id,$.p(TANK, NAct.NEG)), (x) -> {

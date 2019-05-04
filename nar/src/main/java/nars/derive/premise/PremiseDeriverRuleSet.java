@@ -1,7 +1,6 @@
 package nars.derive.premise;
 
 import com.google.common.base.Splitter;
-import jcog.data.set.ArrayUnenforcedSet;
 import jcog.memoize.CaffeineMemoize;
 import jcog.util.ArrayUtils;
 import nars.NAR;
@@ -9,6 +8,7 @@ import nars.NAR;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
+import java.util.TreeSet;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -19,20 +19,23 @@ import java.util.stream.StreamSupport;
  * intermediate representation of a set of compileable Premise Rules
  * TODO remove this class, just use Set<PremiseDeriverProto>'s
  */
-public class PremiseDeriverRuleSet extends ArrayUnenforcedSet<PremiseRuleProto> {
+public class PremiseDeriverRuleSet extends TreeSet<PremiseRuleProto> {
 
     public final NAR nar;
 
     public PremiseDeriverRuleSet(NAR nar, String... rules) {
-        this(nar, PremiseRuleSource.parse(rules));
+        this(nar, PremiseRule.parse(rules));
     }
 
-    private PremiseDeriverRuleSet(NAR nar, Stream<PremiseRuleSource> parsed) {
+    private PremiseDeriverRuleSet(NAR nar, Stream<PremiseRule> parsed) {
         this.nar = nar;
-        parsed.distinct().map(x -> new PremiseRuleProto(x, nar)).forEach(super::add);
+        parsed.distinct()
+                .map(x -> new PremiseRuleProto(x, nar))
+                .forEach(this::add);
     }
 
-    private final static Function<String, Collection<PremiseRuleSource>> ruleCache =
+
+    private final static Function<String, Collection<PremiseRule>> ruleCache =
             CaffeineMemoize.build((String n) -> {
 
         byte[] bb;
@@ -42,7 +45,7 @@ public class PremiseDeriverRuleSet extends ArrayUnenforcedSet<PremiseRuleProto> 
             e.printStackTrace();
             bb = ArrayUtils.EMPTY_BYTE_ARRAY;
         }
-        return (PremiseRuleSource.parse(load(bb)).collect(Collectors.toSet()));
+        return (PremiseRule.parse(load(bb)).collect(Collectors.toSet()));
 
     }, 32, false);
 

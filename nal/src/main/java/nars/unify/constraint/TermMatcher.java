@@ -26,7 +26,7 @@ abstract public class TermMatcher {
         return (xs != 0 || v > 1) ? new IsHas(o, xs, v, depth) : new Is(o);
     }
 
-    public static Term volMin(int volMin) {
+    static Term volMin(int volMin) {
         return $.func("volMin", $.the(volMin));
     }
 
@@ -99,7 +99,7 @@ abstract public class TermMatcher {
 
         public final int struct;
 
-        public Is(Op op) {
+        Is(Op op) {
             this(op.bit);
         }
 

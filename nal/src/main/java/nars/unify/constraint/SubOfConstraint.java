@@ -3,6 +3,7 @@ package nars.unify.constraint;
 import nars.subterm.util.SubtermCondition;
 import nars.term.Term;
 import nars.term.Variable;
+import nars.unify.Unify;
 
 public class SubOfConstraint extends RelationConstraint {
     private final boolean forward;
@@ -54,7 +55,7 @@ public class SubOfConstraint extends RelationConstraint {
         }
     }
 
-    public final boolean invalid(Term xx, Term yy) {
+    public final boolean invalid(Term xx, Term yy, Unify context) {
         SubtermCondition c = this.containment;
 
         Term container = forward ? xx : yy;
@@ -73,7 +74,7 @@ public class SubOfConstraint extends RelationConstraint {
     }
 
     public final boolean valid(Term x, Term y) {
-        return !invalid(x, y);
+        return !invalid(x, y, null);
     }
 
 }

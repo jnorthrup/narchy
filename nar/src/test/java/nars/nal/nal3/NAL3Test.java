@@ -346,7 +346,7 @@ public class NAL3Test extends NALTest {
 
         assertTrue(
             new SubOfConstraint($.varDep(1), $.varDep(2), SubtermCondition.Subterm)
-                .invalid(cn, xp)
+                .invalid(cn, xp, null)
         );
         test.termVolMax(9);
         test.believe(ii)

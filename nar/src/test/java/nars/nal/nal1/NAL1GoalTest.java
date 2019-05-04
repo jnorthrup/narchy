@@ -10,7 +10,7 @@ import static nars.Op.GOAL;
 public class NAL1GoalTest extends NALTest {
 
 
-    private final int cycles = 150;
+    private final int cycles = 350;
 
     @Override protected NAR nar() {
         return NARS.tmp(1);
@@ -32,8 +32,8 @@ public class NAL1GoalTest extends NALTest {
     void deductionPositiveGoalNegativeBelief() {
         test
                 .input("(a-->b)!")
-                .input("(b-->c). %0.1%")
-                .mustGoal(cycles, "(a-->c)", 1f, 0.08f)
+                .input("(b-->c). %0.2%")
+                .mustGoal(cycles, "(a-->c)", 0.6f, 0.16f);//1f, 0.08f)
         ;
     }
 

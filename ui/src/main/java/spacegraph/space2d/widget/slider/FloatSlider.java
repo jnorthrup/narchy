@@ -120,7 +120,7 @@ public class FloatSlider extends Widget {
             ObjectFloatProcedure<SliderModel> c0 = c;
             c = (each,x) -> {
                 //chain
-                ((NumberX)input).set(x);
+                ((NumberX)input).getAndSet(x);
                 c0.value(each,x);
                 updateText();
             };

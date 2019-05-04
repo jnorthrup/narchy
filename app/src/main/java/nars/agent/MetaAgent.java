@@ -2,6 +2,7 @@ package nars.agent;
 
 import jcog.TODO;
 import jcog.Util;
+import jcog.math.FloatAveraged;
 import jcog.math.FloatRange;
 import nars.$;
 import nars.NAR;
@@ -44,7 +45,7 @@ public class MetaAgent extends Game {
 
     /** in case it forgets to unpause */
     private final long autoResumePeriod = 256;
-
+    private final boolean allowPause;
 
 
     public MetaAgent(NAR n) {
@@ -60,10 +61,12 @@ public class MetaAgent extends Game {
     /**
      * assumes games are from the same NAR
      */
-    public MetaAgent(float fps, Game... w) {
+    public MetaAgent(boolean allowPause, float fps, Game... w) {
         super($.func(Atomic.the("meta"),
                 SETe.the(Util.map(p -> p.what().term(), new Term[w.length], w))),
                 GameTime.fps(fps), w[0].nar);
+
+        this.allowPause = allowPause;
 
         NAR n = this.nar = w[0].nar;
 
@@ -71,7 +74,7 @@ public class MetaAgent extends Game {
         senseNumberDifference($.inh(n.self(), $$("deriveTask")), n.emotion.deriveTask::get);
 
         for (Game ww : w)
-            add(ww, true);
+            add(ww);
     }
 
     /**
@@ -89,7 +92,7 @@ public class MetaAgent extends Game {
         return Util.lerp(c, min, curiMax);
     }
 
-    private void add(Game g, boolean allowPause) {
+    private void add(Game g) {
 
         What w = g.what();
 
@@ -97,8 +100,7 @@ public class MetaAgent extends Game {
         //this.what().accept(new EternalTask($.inh(aid,this.id), BELIEF, $.t(1f, 0.9f), nar));
 
 //        forgetAction = actionUnipolar($.inh(id, forget), (FloatConsumer) n.attn.forgetRate::set);
-        actionDial($.inh(gid, $.p(forget, $.the(-1))), $.inh(gid, $.p(forget, $.the(+1))),
-                ((What.TaskLinkWhat) w).links.decay, 40);
+        actionCtl($.inh(gid, forget), ((What.TaskLinkWhat) w).links.decay);
 
 
 //        float priFactorMin = 0.1f, priFactorMax = 4f;
@@ -116,11 +118,7 @@ public class MetaAgent extends Game {
 //        });
 
         float priMin = 0.1f, priMax = 1;
-        actionDial($.inh(gid, $.p(PRI, $.the(-1))), $.inh(gid, $.p(PRI, $.the(+1))),
-                w::pri, w::pri, priMin, 1, 6);
-
-        actionDial($.inh(gid, $.p(curiosity, $.the(-1))), $.inh(gid, $.p(curiosity, $.the(+1))),
-                g.curiosity.rate, 6);
+        actionCtl($.inh(gid, PRI), w.priAsFloatRange());
 
 //        GoalActionConcept curiosityAction = actionUnipolar($.inh(a.id, curiosity), (c) -> {
 //            a.curiosity.rate.set(curiosity(a, start, c));
@@ -143,11 +141,10 @@ public class MetaAgent extends Game {
                 //assert(nar.dur()==nextDur);
             }
         };
-        actionDial($.inh(gid, $.p(duration, $.the(-1))), $.inh(gid, $.p(duration, $.the(+1))), durRange, 5);
+        actionCtl($.inh(gid, duration), durRange);
 
         if (w.in instanceof PriBuffer.BagTaskBuffer) {
-            actionDial($.inh(gid, $.p(input, $.the(-1))), $.inh(gid, $.p(input, $.the(+1))),
-                    ((PriBuffer.BagTaskBuffer) (w.in)).valve, 8);
+            actionCtl($.inh(gid, input), ((PriBuffer.BagTaskBuffer) (w.in)).valve);
         }
 
 //        this.dur = actionUnipolar($.inh(id, duration), (x) -> {
@@ -242,14 +239,23 @@ public class MetaAgent extends Game {
 //        Reward enableReward = reward("enable", () -> enabled.getOpaque() ? +1 : 0f);
     }
 
-    public GoalActionConcept[] dial(Game a, Atomic label, FloatRange var, int steps) {
-        GoalActionConcept[] priAction = actionDial(
-                $.inh(id, $.p(label, $.the(-1))),
-                $.inh(id, $.p(label, $.the(+1))),
-                var,
-                steps);
-        return priAction;
+    GoalActionConcept actionCtl(Term t, FloatRange r) {
+        FloatAveraged f = new FloatAveraged(0.75f);
+        return actionUnipolar(t, true, (v)->v, (x)->{
+            float y = f.valueOf(x);
+            r.set(Util.lerp(y, r.min, r.max));
+            return y;
+        });
     }
+
+//    public GoalActionConcept[] dial(Game a, Atomic label, FloatRange var, int steps) {
+//        GoalActionConcept[] priAction = actionDial(
+//                $.inh(id, $.p(label, $.the(-1))),
+//                $.inh(id, $.p(label, $.the(+1))),
+//                var,
+//                steps);
+//        return priAction;
+//    }
 
     private int dur(int initialDur, float d) {
         return Math.max(1, Math.round((d + 0.5f) * 2 * initialDur));
