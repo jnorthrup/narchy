@@ -45,7 +45,7 @@ public class FZero extends GameX {
     public Bitmap2DSensor c;
 
     float fwdSpeed = 7;
-    float rotSpeed = 0.25f;
+
     static float fps = 25f;
 
     public static void main(String[] args) {
@@ -126,7 +126,7 @@ public class FZero extends GameX {
                 //new Bitmap2DConceptsView(c, this).withControls()
         ), 500, 500);
 
-        AgentAction F = initUnipolarLinear(5f);
+        //initUnipolarLinear(5f);
 
 //        window(new Gridding(
 //                //new CameraSensorView(c, this).withControls(),
@@ -134,8 +134,8 @@ public class FZero extends GameX {
 
 
         //initPushButtonTank();
-        initLeftRightPushButtonMutex();
-        //initTankContinuous();
+        //initLeftRightPushButtonMutex();
+        initTankContinuous();
 
 
 //        BiPolarAction A =
@@ -350,9 +350,9 @@ public class FZero extends GameX {
     /** TODO correct ackerman/tank drive vehicle dynamics */
     private void initTankContinuous() {
 
-        float res = 0.05f;
+        float res = 0.02f;
         float powerScale = 0.2f;
-
+        float rotSpeed = 0.5f;
         final float[] left = new float[1];
         final float[] right = new float[1];
 
@@ -377,6 +377,7 @@ public class FZero extends GameX {
     }
 
     public BiPolarAction initBipolarRotateRelative(boolean fair, float rotFactor) {
+        float rotSpeed = 0.25f;
         final float[] _r = {0};
         final MiniPID rotFilter = new MiniPID(0.35f, 0.3, 0.2f);
         return actionBipolarFrequencyDifferential($.p($.the("turn"), id), fair, (r0) -> {

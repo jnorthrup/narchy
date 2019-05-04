@@ -4,13 +4,13 @@ import jcog.exe.Exe;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.Splitting;
-import spacegraph.space2d.widget.text.BitmapLabel;
 import spacegraph.space2d.widget.text.VectorLabel;
 import spacegraph.video.ImageTexture;
 
 import java.util.function.Consumer;
 
-public class PushButton extends AbstractButton {
+public class PushButton extends AbstractButton  {
+
 
     @Nullable private Consumer<PushButton> onClick;
 
@@ -20,7 +20,7 @@ public class PushButton extends AbstractButton {
 
     public PushButton(String s) {
         this();
-        label(s);
+        text(s);
     }
 
     public PushButton(Surface content) {
@@ -61,20 +61,6 @@ public class PushButton extends AbstractButton {
         return this;
     }
 
-    public PushButton icon(String s) {
-        set(new ImageTexture(s).view());
-        return this;
-    }
-
-    public PushButton label(String s) {
-        set(
-
-            new BitmapLabel(s)
-            //s.length() < 32 ? new BitmapLabel(s) : new VectorLabel(s)
-            //new VectorLabel(s)
-        );
-        return this;
-    }
 
     @Override
     protected void onClick() {

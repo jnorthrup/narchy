@@ -278,6 +278,7 @@ public class ObjectSurface<X> extends MutableUnitContainer {
 
         MyIntSlider(IntRange p, String k) {
             super(p);
+            tooltip(k); //HACK
             this.k = k;
         }
 

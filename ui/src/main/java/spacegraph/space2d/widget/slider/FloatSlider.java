@@ -34,16 +34,16 @@ public class FloatSlider extends Widget {
 
     public FloatSlider(float v, float min, float max, String label) {
         this(v, min, max);
-        this.labelText = label;
+        text(label);
     }
 
     public FloatSlider(FloatRange f, String label) {
         this(f);
-        this.labelText = label;
+        text(label);
     }
     public FloatSlider(FloatSliderModel f, String label) {
         this(f);
-        this.labelText = label;
+        text(label);
     }
 
     public FloatSlider(FloatRange f) {
@@ -70,6 +70,7 @@ public class FloatSlider extends Widget {
     public FloatSlider text(String label) {
         this.labelText = label;
         updateText();
+        tooltip(label);
         return this;
     }
 

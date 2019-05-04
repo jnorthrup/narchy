@@ -1,6 +1,5 @@
 package nars.task.util;
 
-import jcog.WTF;
 import jcog.math.LongInterval;
 import jcog.sort.FloatRank;
 import jcog.sort.RankedN;
@@ -13,6 +12,7 @@ import nars.task.NALTask;
 import nars.task.proxy.SpecialTruthAndOccurrenceTask;
 import nars.term.Term;
 import nars.term.util.Intermpolate;
+import nars.term.util.TermException;
 import nars.time.Tense;
 import nars.truth.Truth;
 import nars.truth.polation.TruthIntegration;
@@ -270,13 +270,20 @@ public final class Answer implements Timed {
 //        }
 //    }
 
-    public static FloatRank<Task> complexTaskStrength(FloatRank<Task> strength, Term template) {
+    private static FloatRank<Task> complexTaskStrength(FloatRank<Task> strength, Term template) {
         return (x, min) -> {
 
             float dtDiff = Intermpolate.dtDiff(template, x.term());
             if (!Float.isFinite(dtDiff)) {
-                throw new WTF(x.term() + " mismatch: template=" + template);
-                //return Float.NaN;
+                /* probably safe to ignore caused by a Dynamic task result that doesnt quite match what is being sought
+                   TODO record a misfire event. this will measure how much dynamic task generation is reducing efficiency
+                 */
+                if (NAL.DEBUG)
+                    throw new TermException("mismatch for Answer template: " + template, x);
+                else {
+
+                    return Float.NaN;
+                }
             }
 
             float d = 1 / (1 + dtDiff);

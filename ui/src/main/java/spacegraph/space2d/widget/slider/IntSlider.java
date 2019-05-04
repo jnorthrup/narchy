@@ -16,7 +16,7 @@ public class IntSlider extends FloatSlider {
 
     public IntSlider(String label, IntRange x) {
         this(x);
-        this.labelText = label;
+        text(label);
     }
 
 

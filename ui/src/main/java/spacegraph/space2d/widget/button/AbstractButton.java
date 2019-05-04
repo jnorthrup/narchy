@@ -1,10 +1,15 @@
 package spacegraph.space2d.widget.button;
 
 import com.jogamp.newt.event.KeyEvent;
+import org.jetbrains.annotations.Nullable;
 import spacegraph.input.finger.Finger;
 import spacegraph.input.finger.state.Clicking;
 import spacegraph.space2d.Surface;
+import spacegraph.space2d.hud.Hover;
+import spacegraph.space2d.hud.HoverModel;
 import spacegraph.space2d.widget.Widget;
+import spacegraph.space2d.widget.text.BitmapLabel;
+import spacegraph.video.ImageTexture;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -46,9 +51,32 @@ public abstract class AbstractButton extends Widget {
                 return null;
             }
 
+
         }
         return f;
     }
+
+    public AbstractButton icon(String s) {
+        set(new ImageTexture(s).view());
+        return this;
+    }
+
+    public AbstractButton text(String s) {
+
+        set(
+
+                new BitmapLabel(s)
+                //s.length() < 32 ? new BitmapLabel(s) : new VectorLabel(s)
+                //new VectorLabel(s)
+        );
+
+
+        tooltip(s);
+
+
+        return this;
+    }
+
 
     public final boolean enabled() {
         return enabled.getOpaque();

@@ -5,6 +5,7 @@ import com.jogamp.opengl.GL2;
 import jcog.Skill;
 import jcog.Util;
 import jcog.tree.rtree.rect.RectFloat;
+import org.jetbrains.annotations.Nullable;
 import spacegraph.input.finger.Finger;
 import spacegraph.input.key.KeyPressed;
 import spacegraph.space2d.ReSurface;
@@ -12,6 +13,9 @@ import spacegraph.space2d.Surface;
 import spacegraph.space2d.SurfaceGraph;
 import spacegraph.space2d.container.EmptySurface;
 import spacegraph.space2d.container.unit.MutableUnitContainer;
+import spacegraph.space2d.hud.Hover;
+import spacegraph.space2d.hud.HoverModel;
+import spacegraph.space2d.widget.text.BitmapLabel;
 import spacegraph.util.math.Color4f;
 import spacegraph.video.Draw;
 
@@ -22,6 +26,7 @@ import spacegraph.video.Draw;
 @Skill({"Widget_(GUI)", "Template:GUI_widgets"})
 public class Widget extends MutableUnitContainer<Surface> implements KeyPressed {
 
+    private @Nullable Hover<Surface, Surface> hover = null;
 
     public static final float marginPctDefault = 0.04f;
 
@@ -114,6 +119,16 @@ public class Widget extends MutableUnitContainer<Surface> implements KeyPressed 
         Draw.rect(bounds, gl);
     }
 
+    public Widget tooltip(String s) {
+        if (s == null || s.isEmpty())
+            this.hover = null;
+        else {
+            BitmapLabel hoverLabel = new BitmapLabel(s);
+            hoverLabel.backgroundColor(0.9f, 0.5f, 0f, 0.5f);
+            this.hover = new Hover<>(this, b -> hoverLabel, new HoverModel.Cursor());
+        }
+        return this;
+    }
 
     @Override
     public Surface finger(Finger f) {
@@ -128,6 +143,11 @@ public class Widget extends MutableUnitContainer<Surface> implements KeyPressed 
                     priAtleast(0.75f);
                 } else {
                     priAtleast(0.5f);
+                }
+
+                Hover<Surface, Surface> h = this.hover;
+                if (h != null) {
+                    f.test(h);
                 }
 
                 return this;

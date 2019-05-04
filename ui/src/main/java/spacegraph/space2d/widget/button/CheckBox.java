@@ -3,8 +3,6 @@ package spacegraph.space2d.widget.button;
 import org.eclipse.collections.api.block.procedure.primitive.BooleanProcedure;
 import org.eclipse.collections.api.block.procedure.primitive.ObjectBooleanProcedure;
 import spacegraph.space2d.ReSurface;
-import spacegraph.space2d.widget.text.AbstractLabel;
-import spacegraph.space2d.widget.text.BitmapLabel;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -14,18 +12,13 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class CheckBox extends ToggleButton {
 
     private String text = "";
-    public final AbstractLabel label;
 
     public CheckBox(String text) {
         this(text, false);
     }
 
     public CheckBox(String text, boolean enable) {
-        set(label =
-                //new VectorLabel("")
-                new BitmapLabel("")
-        );
-        setText(text);
+        text(text);
         set(enable);
     }
 
@@ -36,11 +29,6 @@ public class CheckBox extends ToggleButton {
     public CheckBox(String text, BooleanProcedure b) {
         this(text);
         on((a, e) -> b.value(e));
-    }
-
-    @Override
-    public String term() {
-        return '"' + text + '"';
     }
 
     public CheckBox(String text, ObjectBooleanProcedure<ToggleButton> on) {
@@ -62,11 +50,10 @@ public class CheckBox extends ToggleButton {
         return super.preRender(r);
     }
 
-
     @Override
     public ToggleButton on(boolean on) {
         if (set(on))
-            label.text(label(text, on));
+            text(text);
         return this;
     }
 
@@ -75,10 +62,9 @@ public class CheckBox extends ToggleButton {
         return text.isEmpty() ? (on ? "[+]" : "[ ]") : ((on ? "[+] " : "[ ] ") + text);
     }
 
-    public void setText(String s) {
-        if (!this.text.equals(s)) {
-            label.text(label(this.text = s, on()));
-        }
-    }
 
+    @Override
+    public AbstractButton text(String s) {
+        return super.text(label(this.text = s, on()));
+    }
 }
