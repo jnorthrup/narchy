@@ -97,7 +97,7 @@ public class TheoJansen {
         {
             RevoluteJointDef jd = new RevoluteJointDef();
 
-            jd.initialize(wheel, chassis, pivot.addClone(center));
+            jd.initialize(wheel, chassis, pivot.addToNew(center));
             jd.collideConnected = false;
             jd.motorSpeed = 0;
             jd.maxMotorTorque = 40.0f;
@@ -107,7 +107,7 @@ public class TheoJansen {
 
         v2 wheelAnchor;
 
-        wheelAnchor = pivot.addClone(new v2(scale * 0.0f, scale * -0.8f));
+        wheelAnchor = pivot.addToNew(new v2(scale * 0.0f, scale * -0.8f));
 
         createLeg(-scale, wheelAnchor);
         createLeg(scale, wheelAnchor);
@@ -174,7 +174,7 @@ public class TheoJansen {
         bd1.type = BodyType.DYNAMIC;
         bd2.type = BodyType.DYNAMIC;
         bd1.position = center;
-        bd2.position = p4.addClone(center);
+        bd2.position = p4.addToNew(center);
 
         bd1.angularDamping = 10.0f;
         bd2.angularDamping = 10.0f;
@@ -194,21 +194,21 @@ public class TheoJansen {
         djd.dampingRatio = 0.5f;
         djd.frequencyHz = 10.0f;
 
-        djd.initialize(body1, body2, p2.addClone(center), p5.addClone(center));
+        djd.initialize(body1, body2, p2.addToNew(center), p5.addToNew(center));
         world.addJoint(djd);
 
-        djd.initialize(body1, body2, p3.addClone(center), p4.addClone(center));
+        djd.initialize(body1, body2, p3.addToNew(center), p4.addToNew(center));
         world.addJoint(djd);
 
-        djd.initialize(body1, wheel, p3.addClone(center), wheelAnchor.addClone(center));
+        djd.initialize(body1, wheel, p3.addToNew(center), wheelAnchor.addToNew(center));
         world.addJoint(djd);
 
-        djd.initialize(body2, wheel, p6.addClone(center), wheelAnchor.addClone(center));
+        djd.initialize(body2, wheel, p6.addToNew(center), wheelAnchor.addToNew(center));
         world.addJoint(djd);
 
         RevoluteJointDef rjd = new RevoluteJointDef();
 
-        rjd.initialize(body2, chassis, p4.addClone(center));
+        rjd.initialize(body2, chassis, p4.addToNew(center));
         world.addJoint(rjd);
     }
 }

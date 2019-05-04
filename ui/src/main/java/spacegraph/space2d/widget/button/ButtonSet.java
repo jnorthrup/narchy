@@ -11,7 +11,7 @@ public class ButtonSet<T extends ToggleButton> extends Gridding {
 
 
     /** uses both set and list (for ordering) aspects of the ArrayHashSet */
-    private final ArrayHashSet<T> buttons = new ArrayHashSet<>();
+    public final ArrayHashSet<T> buttons = new ArrayHashSet<>();
 
 
     /** TODO */

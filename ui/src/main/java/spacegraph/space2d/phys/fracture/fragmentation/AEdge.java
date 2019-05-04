@@ -99,8 +99,8 @@ abstract class AEdge {
         }
         float k = (cross(point, V) - cross(p1, V)) / uv;
         if (k >= 0 && k <= 1) {
-            U.scale(k);
-            return p1.addClone(U);
+            U.scaled(k);
+            return p1.addToNew(U);
         } else {
             double dist1 = p1.distanceSq(point);
             double dist2 = p2.distanceSq(point);

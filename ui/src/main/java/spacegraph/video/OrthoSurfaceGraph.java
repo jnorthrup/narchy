@@ -27,7 +27,6 @@ import spacegraph.util.animate.Animated;
 import java.util.function.BiConsumer;
 
 import static com.jogamp.opengl.fixedfunc.GLMatrixFunc.GL_PROJECTION;
-import static spacegraph.SpaceGraph.window;
 
 public class OrthoSurfaceGraph extends JoglDisplay implements SurfaceGraph {
 
@@ -159,9 +158,13 @@ public class OrthoSurfaceGraph extends JoglDisplay implements SurfaceGraph {
     }
 
     public void addFinger(Finger f) {
+        start(f,f);
         fingers.add(f);
         layers.add(content.overlayZoomBounds(f));
-        layers.add(new Finger.CursorOverlay(f));
+
+        Surface cursor = f.cursorSurface();
+        if (cursor!=null)
+            layers.add(cursor);
     }
 
     @Override

@@ -64,7 +64,7 @@ public class MotorJoint extends Joint {
     }
 
     public void getReactionForce(float inv_dt, v2 out) {
-        out.set(m_linearImpulse).scale(inv_dt);
+        out.set(m_linearImpulse).scaled(inv_dt);
     }
 
     public float getReactionTorque(float inv_dt) {
@@ -297,7 +297,7 @@ public class MotorJoint extends Joint {
 
             if (m_linearImpulse.lengthSquared() > maxImpulse * maxImpulse) {
                 m_linearImpulse.normalize();
-                m_linearImpulse.scale(maxImpulse);
+                m_linearImpulse.scaled(maxImpulse);
             }
 
             impulse.x = m_linearImpulse.x - oldImpulse.x;

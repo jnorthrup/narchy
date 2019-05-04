@@ -121,7 +121,7 @@ public class CuboidSurfaceGraph<X> extends SimpleSpatial<X> implements SurfaceGr
 
                     ((NewtMouseFinger)this.finger).finger((f)->front); //TODO check
 
-                    finger.update(buttons);
+                    finger.updateButtons(buttons);
 
                     return finger.touching();
 

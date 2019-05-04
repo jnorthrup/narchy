@@ -95,7 +95,7 @@ public final class Fracture {
                         double j = u * i; 
                         float sin = (float) Math.sin(j);
                         float cos = (float) Math.cos(j);
-                        v2 v = new v2(sin, cos).scale(radius).added(center);
+                        v2 v = new v2(sin, cos).scaled(radius).added(center);
                         p.add(v);
                     }
                     break;
@@ -112,16 +112,16 @@ public final class Fracture {
 
         //if (b1.type==DYNAMIC) {
             b1.setAngularVelocity((b1.velAngular - oldAngularVelocity) * mConst + oldAngularVelocity);
-            b1.setLinearVelocity(b1.vel.subClone(oldLinearVelocity).scale(mConst).added(oldLinearVelocity));
+            b1.setLinearVelocity(b1.vel.subClone(oldLinearVelocity).scaled(mConst).added(oldLinearVelocity));
         //}
 
         if (!smasher.isFractured(f2) && b2.type == DYNAMIC && !b2.m_fractureTransformUpdate) {
             oldAngularVelocity = !fixA ? contact.m_angularVelocity_bodyA : contact.m_angularVelocity_bodyB;
             oldLinearVelocity = !fixA ? contact.m_linearVelocity_bodyA : contact.m_linearVelocity_bodyB;
             b2.setAngularVelocity((b2.velAngular - oldAngularVelocity) * mConst + oldAngularVelocity);
-            b2.setLinearVelocity(b2.vel.subClone(oldLinearVelocity).scale(mConst).added(oldLinearVelocity));
+            b2.setLinearVelocity(b2.vel.subClone(oldLinearVelocity).scaled(mConst).added(oldLinearVelocity));
             b2.setTransform(
-                    b2.transformPrev.pos.addClone(b2.vel.scaleClone(dt)),
+                    b2.transformPrev.pos.addToNew(b2.vel.scaleClone(dt)),
                     b2.transformPrev.angle()
             ); 
             b2.m_fractureTransformUpdate = true;
@@ -132,7 +132,7 @@ public final class Fracture {
         v2 b2Vec = b2.getLinearVelocityFromWorldPoint(point);
         v2 localVelocity = b2Vec.subbed(b1Vec);
 
-        localVelocity.scale(dt);
+        localVelocity.scaled(dt);
 
         Polygon[] fragment = m.split(smasher, p, localPoint, localVelocity, normalImpulse); 
         if (fragment.length <= 1) { 

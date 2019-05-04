@@ -139,7 +139,7 @@ public class PulleyJoint extends Joint {
 
     @Override
     public void getReactionForce(float inv_dt, v2 argOut) {
-        argOut.set(m_uB).scale(m_impulse).scale(inv_dt);
+        argOut.set(m_uB).scaled(m_impulse).scaled(inv_dt);
     }
 
     @Override
@@ -218,13 +218,13 @@ public class PulleyJoint extends Joint {
         float lengthB = m_uB.length();
 
         if (lengthA > 10f * Settings.linearSlop) {
-            m_uA.scale(1.0f / lengthA);
+            m_uA.scaled(1.0f / lengthA);
         } else {
             m_uA.setZero();
         }
 
         if (lengthB > 10f * Settings.linearSlop) {
-            m_uB.scale(1.0f / lengthB);
+            m_uB.scaled(1.0f / lengthB);
         } else {
             m_uB.setZero();
         }
@@ -251,8 +251,8 @@ public class PulleyJoint extends Joint {
             final v2 PA = pool.popVec2();
             final v2 PB = pool.popVec2();
 
-            PA.set(m_uA).scale(-m_impulse);
-            PB.set(m_uB).scale(-m_ratio * m_impulse);
+            PA.set(m_uA).scaled(-m_impulse);
+            PB.set(m_uB).scaled(-m_ratio * m_impulse);
 
             vA.x += m_invMassA * PA.x;
             vA.y += m_invMassA * PA.y;
@@ -295,8 +295,8 @@ public class PulleyJoint extends Joint {
         float impulse = -m_mass * Cdot;
         m_impulse += impulse;
 
-        PA.set(m_uA).scale(-impulse);
-        PB.set(m_uB).scale(-m_ratio * impulse);
+        PA.set(m_uA).scaled(-impulse);
+        PB.set(m_uB).scaled(-m_ratio * impulse);
         vA.x += m_invMassA * PA.x;
         vA.y += m_invMassA * PA.y;
         wA += m_invIA * v2.cross(m_rA, PA);
@@ -342,13 +342,13 @@ public class PulleyJoint extends Joint {
         float lengthB = uB.length();
 
         if (lengthA > 10.0f * Settings.linearSlop) {
-            uA.scale(1.0f / lengthA);
+            uA.scaled(1.0f / lengthA);
         } else {
             uA.setZero();
         }
 
         if (lengthB > 10.0f * Settings.linearSlop) {
-            uB.scale(1.0f / lengthB);
+            uB.scaled(1.0f / lengthB);
         } else {
             uB.setZero();
         }
@@ -371,8 +371,8 @@ public class PulleyJoint extends Joint {
 
         float impulse = -mass * C;
 
-        PA.set(uA).scale(-impulse);
-        PB.set(uB).scale(-m_ratio * impulse);
+        PA.set(uA).scaled(-impulse);
+        PB.set(uB).scaled(-m_ratio * impulse);
 
         cA.x += m_invMassA * PA.x;
         cA.y += m_invMassA * PA.y;

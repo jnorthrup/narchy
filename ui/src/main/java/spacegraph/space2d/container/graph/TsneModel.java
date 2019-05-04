@@ -98,7 +98,7 @@ public class TsneModel implements Graph2D.Graph2DUpdater<DataTable.Instance> {
                     (((Number)xx.get(j).id.data.get(0)).floatValue() )*0.01f; //customized: first column as size TODO normalize
 
             i.posXYWH((float)(gcx+x), (float)(gcy+y), w, w);
-            i.pos(i.bounds.fenceInside(g.bounds));
+            i.pos(i.bounds.clamp(g.bounds));
 //                Yj[0] = i.left()/scale;
 //                Yj[1] = i.top()/scale;
             j++;

@@ -79,12 +79,12 @@ public interface Tensor  {
     }*/
 
     /** element-wise addition */
-    default TensorFunc add(float v) {
+    default TensorFunc incrementEach(float v) {
         return apply((x) -> x + v);
     }
 
     /** element-wise multiplication */
-    default TensorFunc scaled(float v) {
+    default TensorFunc multiplyEach(float v) {
         return apply((x) -> x * v);
     }
 
@@ -109,7 +109,7 @@ public interface Tensor  {
     }
 
     static Tensor normalize(Tensor vector) {
-        return vector.scaled(1f / sum(vector));
+        return vector.multiplyEach(1f / sum(vector));
     }
 
     static float sum(Tensor vector) {

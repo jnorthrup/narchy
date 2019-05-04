@@ -252,7 +252,7 @@ public class RevoluteJoint extends Joint {
             
             v2.crossToOutUnsafe(wA, m_rA, temp);
             v2.crossToOutUnsafe(wB, m_rB, Cdot1);
-            Cdot1.added(vB).subbed(vA).subbed(temp).scale(positionFactor);
+            Cdot1.added(vB).subbed(vA).subbed(temp).scaled(positionFactor);
             float Cdot2 = wB - wA;
             Cdot.set(Cdot1.x, Cdot1.y, Cdot2);
 
@@ -268,7 +268,7 @@ public class RevoluteJoint extends Joint {
                     float newImpulse = m_impulse.z + impulse.z;
                     if (newImpulse < 0.0f) {
                         final v2 rhs = new v2();
-                        rhs.set(m_mass.ez.x, m_mass.ez.y).scale(m_impulse.z).subbed(Cdot1);
+                        rhs.set(m_mass.ez.x, m_mass.ez.y).scaled(m_impulse.z).subbed(Cdot1);
                         m_mass.solve22ToOut(rhs, temp);
                         impulse.x = temp.x;
                         impulse.y = temp.y;
@@ -285,7 +285,7 @@ public class RevoluteJoint extends Joint {
                     float newImpulse = m_impulse.z + impulse.z;
                     if (newImpulse > 0.0f) {
                         final v2 rhs = new v2();
-                        rhs.set(m_mass.ez.x, m_mass.ez.y).scale(m_impulse.z).subbed(Cdot1);
+                        rhs.set(m_mass.ez.x, m_mass.ez.y).scaled(m_impulse.z).subbed(Cdot1);
                         m_mass.solve22ToOut(rhs, temp);
                         impulse.x = temp.x;
                         impulse.y = temp.y;
@@ -319,7 +319,7 @@ public class RevoluteJoint extends Joint {
 
             v2.crossToOutUnsafe(wA, m_rA, temp);
             v2.crossToOutUnsafe(wB, m_rB, Cdot);
-            Cdot.added(vB).subbed(vA).subbed(temp).scale(positionFactor);
+            Cdot.added(vB).subbed(vA).subbed(temp).scaled(positionFactor);
             m_mass.solve22ToOut(Cdot.negated(), impulse); 
 
             m_impulse.x += impulse.x;
@@ -410,7 +410,7 @@ public class RevoluteJoint extends Joint {
 
             Rot.mulToOutUnsafe(qA, C.set(localAnchorA).subbed(m_localCenterA), rA);
             Rot.mulToOutUnsafe(qB, C.set(localAnchorB).subbed(m_localCenterB), rB);
-            C.set(cB).added(rB).subbed(cA).subbed(rA).scale(positionFactor);
+            C.set(cB).added(rB).subbed(cA).subbed(rA).scaled(positionFactor);
             positionError = C.length();
 
 
@@ -469,7 +469,7 @@ public class RevoluteJoint extends Joint {
 
     @Override
     public void getReactionForce(float inv_dt, v2 argOut) {
-        argOut.set(m_impulse.x, m_impulse.y).scale(inv_dt);
+        argOut.set(m_impulse.x, m_impulse.y).scaled(inv_dt);
     }
 
     @Override

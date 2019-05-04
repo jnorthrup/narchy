@@ -351,7 +351,8 @@ public class RectFloat implements HyperRegion, Comparable<RectFloat> {
         return orThisIfEqual(X0Y0WH((x + o.x)/2, (y+o.y)/2, (w + o.w)/2, (h + o.h)/2));
     }
 
-    public RectFloat fenceInside(RectFloat outer) {
+    /** clamp inside */
+    public RectFloat clamp(RectFloat outer) {
         if (outer.contains(this))
             return this;
         else {

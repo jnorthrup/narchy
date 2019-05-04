@@ -95,7 +95,7 @@ public class FrictionJoint extends Joint {
 
     @Override
     public void getReactionForce(float inv_dt, v2 argOut) {
-        argOut.set(m_linearImpulse).scale(inv_dt);
+        argOut.set(m_linearImpulse).scaled(inv_dt);
     }
 
     @Override
@@ -182,17 +182,17 @@ public class FrictionJoint extends Joint {
 
         if (data.step.warmStarting) {
             
-            m_linearImpulse.scale(data.step.dtRatio);
+            m_linearImpulse.scaled(data.step.dtRatio);
             m_angularImpulse *= data.step.dtRatio;
 
             final v2 P = pool.popVec2();
             P.set(m_linearImpulse);
 
-            temp.set(P).scale(mA);
+            temp.set(P).scaled(mA);
             vA.subbed(temp);
             wA -= iA * (v2.cross(m_rA, P) + m_angularImpulse);
 
-            temp.set(P).scale(mB);
+            temp.set(P).scaled(mB);
             vB.added(temp);
             wB += iB * (v2.cross(m_rB, P) + m_angularImpulse);
 
@@ -260,16 +260,16 @@ public class FrictionJoint extends Joint {
 
             if (m_linearImpulse.lengthSquared() > maxImpulse * maxImpulse) {
                 m_linearImpulse.normalize();
-                m_linearImpulse.scale(maxImpulse);
+                m_linearImpulse.scaled(maxImpulse);
             }
 
             impulse.set(m_linearImpulse).subbed(oldImpulse);
 
-            temp.set(impulse).scale(mA);
+            temp.set(impulse).scaled(mA);
             vA.subbed(temp);
             wA -= iA * v2.cross(m_rA, impulse);
 
-            temp.set(impulse).scale(mB);
+            temp.set(impulse).scaled(mB);
             vB.added(temp);
             wB += iB * v2.cross(m_rB, impulse);
 

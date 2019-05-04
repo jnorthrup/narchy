@@ -218,6 +218,10 @@ public class v2 implements java.io.Serializable, Cloneable, Tensor {
         return this;
     }
 
+    public v2 set(double x, double y) {
+        return set((float)x, (float)y);
+    }
+
     /**
      * Subtract another vector from this one and return result - alters this vector.
      */
@@ -402,8 +406,8 @@ public class v2 implements java.io.Serializable, Cloneable, Tensor {
      *
      * @param s the scalar value
      */
-    public v2 scale(float s) {
-        return scale(s, s);
+    public v2 scaled(float s) {
+        return scaled(s, s);
     }
 //
 //    /**
@@ -415,7 +419,7 @@ public class v2 implements java.io.Serializable, Cloneable, Tensor {
 //        return this;
 //    }
 
-    public final v2 scale(float sx, float sy) {
+    public final v2 scaled(float sx, float sy) {
         this.x *= sx;
         this.y *= sy;
         return this;
@@ -552,6 +556,10 @@ public class v2 implements java.io.Serializable, Cloneable, Tensor {
         y = Util.clamp(t.y, min, max);
     }
 
+
+    public void clamp(float xMin, float yMin, float xMax, float yMax) {
+        set(Util.clamp(x, xMin, xMax), Util.clamp(y, yMin, yMax));
+    }
 
     /**
      * Clamps the minimum value of the tuple parameter to the min
@@ -759,7 +767,7 @@ public class v2 implements java.io.Serializable, Cloneable, Tensor {
         set(0, 0);
     }
 
-    public v2 addClone(v2 u) {
+    public v2 addToNew(v2 u) {
         return new v2(x + u.x, y + u.y);
     }
 
@@ -838,7 +846,7 @@ public class v2 implements java.io.Serializable, Cloneable, Tensor {
             if (lenSq < rate * rate) {
                 set(nx, ny); //finished
             } else {
-                added(new v2(dx, dy).scale((float) (rate / Math.sqrt(lenSq))));
+                added(new v2(dx, dy).scaled((float) (rate / Math.sqrt(lenSq))));
             }
 
         }
@@ -872,6 +880,5 @@ public class v2 implements java.io.Serializable, Cloneable, Tensor {
     public float distanceToY(v2 o) {
         return o.y - y;
     }
-
 
 }

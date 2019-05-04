@@ -40,7 +40,7 @@ class ThingTest {
 
         assertEquals(2, s.partStream().filter(Part::isOff).count());
 
-        s.start("x");
+        s.restart("x");
         assertEquals(1, s.partStream().filter(Part::isOn).count());
         s.stop("x");
         assertEquals(0, s.partStream().filter(Part::isOn).count());

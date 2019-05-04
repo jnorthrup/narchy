@@ -71,7 +71,7 @@ public class FingerResizeWindow extends FingerResize {
         if (!nextSize.equals(size, 1f /* 1 pixel */ )) {
             size = nextSize;
             //Exe.invokeLater(() -> {
-                space.video.setPositionAndSize(xi, yi, w, h);
+                space.video.setPosition(xi, yi); space.video.setSize(w, h);
             //});
         }
     }

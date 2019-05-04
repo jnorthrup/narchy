@@ -8,7 +8,7 @@ import java.util.EnumSet;
 
 public enum EnumSwitch { ;
 
-    protected static Surface newSwitch(ToggleButton[] b, int i2) {
+    protected static ButtonSet newSwitch(ToggleButton[] b, int i2) {
         ButtonSet editPane = new ButtonSet(ButtonSet.Mode.One, b);
 
         if (i2 != -1) {

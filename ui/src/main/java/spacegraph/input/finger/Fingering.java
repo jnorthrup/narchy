@@ -45,11 +45,11 @@ abstract public class Fingering {
     }
 
     //TODO just use 'null'
-    @Deprecated public static final Fingering Default = new Fingering() {
+    @Deprecated public static final Fingering Idle = new Fingering() {
 
         @Override
         public String toString() {
-            return "Null_Fingering";
+            return "Idle";
         }
 
         @Override

@@ -77,7 +77,7 @@ public class ForceDirected2D<X> extends DynamicLayout2D<X> {
 
         for (MutableRectFloat<X> a : nodes) {
             size(a, AUTOSCALE);
-            a.fenceInside(gg);
+            a.clamp(gg);
         }
 
 
@@ -101,7 +101,7 @@ public class ForceDirected2D<X> extends DynamicLayout2D<X> {
             }
             for (MutableRectFloat a : nodes) {
                 a.commitLerp(speed);
-                a.fenceInside(gg);
+                a.clamp(gg);
             }
         }
 
@@ -155,7 +155,7 @@ public class ForceDirected2D<X> extends DynamicLayout2D<X> {
                 //s = (float) Math.sqrt(s);
 
                 if (Math.abs(s) > Spatialization.EPSILONf) {
-                    delta.scale(s);
+                    delta.scaled(s);
                     a.move(delta.x, delta.y);
                     b.move(-delta.x, -delta.y);
                 }
@@ -206,7 +206,7 @@ public class ForceDirected2D<X> extends DynamicLayout2D<X> {
 
         if (s > Spatialization.EPSILONf) {
 
-            delta.scale(s);
+            delta.scaled(s);
 
             float baRad = br / radii;
             a.move(delta.x * baRad, delta.y * baRad);

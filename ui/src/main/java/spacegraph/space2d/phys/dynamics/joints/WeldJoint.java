@@ -126,7 +126,7 @@ public class WeldJoint extends Joint {
     @Override
     public void getReactionForce(float inv_dt, v2 argOut) {
         argOut.set(m_impulse.x, m_impulse.y);
-        argOut.scale(inv_dt);
+        argOut.scaled(inv_dt);
     }
 
     @Override

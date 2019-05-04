@@ -1810,8 +1810,8 @@ class WorldRayCastWrapper implements TreeRayCastCallback {
         if (hit) {
             float fraction = output.fraction;
 
-            temp.set(input.p2).scale(fraction);
-            point.set(input.p1).scale(1 - fraction).added(temp);
+            temp.set(input.p2).scaled(fraction);
+            point.set(input.p1).scaled(1 - fraction).added(temp);
             return callback.reportFixture(fixture, point, output.normal, fraction);
         }
 

@@ -205,14 +205,16 @@ public class Box2DGraphEditPhysics extends GraphEditPhysics {
         above = new Dyn2DRenderer(true, false, true);
     }
 
-    private transient RectFloat fence;
+    /** fence */
+    private transient RectFloat clamp;
+
     private float wMin, hMin;
 
     @Override
     public void update(EditGraph2D g, float dt) {
         wMin = g.windoSizeMinRel.x * g.w();
         hMin = g.windoSizeMinRel.y * g.h();
-        fence = g.bounds;
+        clamp = g.bounds;
             //.scale(0.5f);
 
         w.forEachValue(ww -> ww.pre(physics, preBounds(ww.surface)));
@@ -229,7 +231,7 @@ public class Box2DGraphEditPhysics extends GraphEditPhysics {
     }
 
     private RectFloat preBoundsPos(RectFloat x) {
-        return x.fenceInside(graph.bounds);
+        return x.clamp(graph.bounds);
 //        return x.move(
 //                    Math.min(fence.w - x.right(), Math.max(0, -x.left())),
 //                    Math.min(fence.h - x.top(), Math.max(0, -x.bottom())));
@@ -238,7 +240,7 @@ public class Box2DGraphEditPhysics extends GraphEditPhysics {
     private RectFloat preBoundsSize(RectFloat r) {
         float rw = r.w; if (!Float.isFinite(rw)) rw = 0;
         float rh = r.h; if (!Float.isFinite(rh)) rh = 0;
-        float nw = Util.clamp(rw, wMin, fence.w), nh = Util.clamp(rh, hMin, fence.h);
+        float nw = Util.clamp(rw, wMin, clamp.w), nh = Util.clamp(rh, hMin, clamp.h);
         return r.size(nw, nh);
     }
 
@@ -567,7 +569,7 @@ public class Box2DGraphEditPhysics extends GraphEditPhysics {
 
             Body2D from = null;
 
-            v2 center = sourceCenterWorld().addClone(targetCenterWorld()).scaleClone(0.5f);
+            v2 center = sourceCenterWorld().addToNew(targetCenterWorld()).scaleClone(0.5f);
 
             int mid = num / 2;
             for (int i = 0; i < num; ++i) {

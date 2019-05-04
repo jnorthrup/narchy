@@ -136,7 +136,7 @@ public class TheoJansenTest implements Consumer<Dynamics2D> {
         {
             RevoluteJointDef jd = new RevoluteJointDef();
 
-            jd.initialize(m_wheel, m_chassis, pivot.addClone(m_offset));
+            jd.initialize(m_wheel, m_chassis, pivot.addToNew(m_offset));
             jd.collideConnected = false;
             jd.motorSpeed = m_motorSpeed;
             jd.maxMotorTorque = 400.0f;
@@ -146,7 +146,7 @@ public class TheoJansenTest implements Consumer<Dynamics2D> {
 
         v2 wheelAnchor;
 
-        wheelAnchor = pivot.addClone(new Position(0.0f, -0.8f));
+        wheelAnchor = pivot.addToNew(new Position(0.0f, -0.8f));
 
         createLeg(-1.0f, wheelAnchor);
         createLeg(1.0f, wheelAnchor);
@@ -211,7 +211,7 @@ public class TheoJansenTest implements Consumer<Dynamics2D> {
         bd1.type = BodyType.DYNAMIC;
         bd2.type = BodyType.DYNAMIC;
         bd1.position = m_offset;
-        bd2.position = p4.addClone(m_offset);
+        bd2.position = p4.addToNew(m_offset);
 
         bd1.angularDamping = 10.0f;
         bd2.angularDamping = 10.0f;
@@ -230,21 +230,21 @@ public class TheoJansenTest implements Consumer<Dynamics2D> {
         djd.dampingRatio = 0.5f;
         djd.frequencyHz = 10.0f;
 
-        djd.initialize(body1, body2, p2.addClone(m_offset), p5.addClone(m_offset));
+        djd.initialize(body1, body2, p2.addToNew(m_offset), p5.addToNew(m_offset));
         w.addJoint(djd);
 
-        djd.initialize(body1, body2, p3.addClone(m_offset), p4.addClone(m_offset));
+        djd.initialize(body1, body2, p3.addToNew(m_offset), p4.addToNew(m_offset));
         w.addJoint(djd);
 
-        djd.initialize(body1, m_wheel, p3.addClone(m_offset), wheelAnchor.addClone(m_offset));
+        djd.initialize(body1, m_wheel, p3.addToNew(m_offset), wheelAnchor.addToNew(m_offset));
         w.addJoint(djd);
 
-        djd.initialize(body2, m_wheel, p6.addClone(m_offset), wheelAnchor.addClone(m_offset));
+        djd.initialize(body2, m_wheel, p6.addToNew(m_offset), wheelAnchor.addToNew(m_offset));
         w.addJoint(djd);
 
         RevoluteJointDef rjd = new RevoluteJointDef();
 
-        rjd.initialize(body2, m_chassis, p4.addClone(m_offset));
+        rjd.initialize(body2, m_chassis, p4.addToNew(m_offset));
         w.addJoint(rjd);
     }
 

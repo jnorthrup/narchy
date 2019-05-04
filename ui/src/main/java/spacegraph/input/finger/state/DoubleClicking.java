@@ -56,7 +56,7 @@ public class DoubleClicking {
 
         int c = count.incrementAndGet();
 
-        v2 downHit = finger.pressPosPixel[button].clone();
+        v2 downHit = finger.posPixelPress[button].clone();
         long now = System.nanoTime();
 
         boolean unclick = false;

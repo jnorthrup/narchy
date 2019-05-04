@@ -12,18 +12,19 @@ import org.jetbrains.annotations.Nullable;
 import spacegraph.SpaceGraph;
 import spacegraph.space2d.ReSurface;
 import spacegraph.space2d.Surface;
-import spacegraph.space2d.container.PaintSurface;
+import spacegraph.space2d.container.unit.MutableUnitContainer;
 import spacegraph.space2d.hud.Overlay;
 import spacegraph.space2d.hud.Zoomed;
 import spacegraph.util.SurfaceTransform;
 import spacegraph.video.JoglWindow;
+import spacegraph.video.OrthoSurfaceGraph;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-import static spacegraph.input.finger.Fingering.Default;
+import static spacegraph.input.finger.Fingering.Idle;
 
 /**
  * gestural generalization of mouse cursor's (or touchpad's, etc)
@@ -36,13 +37,16 @@ import static spacegraph.input.finger.Fingering.Default;
 abstract public class Finger extends Part<SpaceGraph> implements Predicate<Fingering> {
 
 
-    public final v2 posPixel = new v2(), posScreen = new v2();
+    public final v2 posPixel = new v2();
+    public final v2 posScreen = new v2();
+    public final v2[] posPixelPress;
+    protected final v2 posGlobal = new v2();
+
     public final AtomicMetalBitSet prevButtonDown = new AtomicMetalBitSet();
     /**
      * last local and global positions on press (downstroke).
      * TODO is it helpful to also track upstroke position?
      */
-    public final v2[] pressPosPixel;
     /**
      * widget above which this finger currently hovers
      */
@@ -50,12 +54,11 @@ abstract public class Finger extends Part<SpaceGraph> implements Predicate<Finge
     /**
      * a exclusive locking/latching state which may be requested by a surface
      */
-    protected final AtomicReference<Fingering> fingering = new AtomicReference<>(Default);
+    protected final AtomicReference<Fingering> fingering = new AtomicReference<>(Idle);
     /**
      * ex: true when finger enters the window, false when it leaves
      */
     protected final AtomicBoolean focused = new AtomicBoolean(false);
-    protected final v2 _posGlobal = new v2();
     final FasterList<SurfaceTransform> transforms = new FasterList();
 
     private final int buttons;
@@ -79,24 +82,34 @@ abstract public class Finger extends Part<SpaceGraph> implements Predicate<Finge
     protected Finger(int buttons) {
         assert (buttons < 32);
         this.buttons = buttons;
-        pressPosPixel = new v2[this.buttons];
+        posPixelPress = new v2[this.buttons];
         for (int i = 0; i < this.buttons; i++) {
-            pressPosPixel[i] = new v2(Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY);
+            posPixelPress[i] = new v2(Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY);
         }
+    }
+
+
+    /** global position of the cursor center
+     * warning: the vector instance returned by this and other methods are mutable.  so they may need to be cloned when accessed to record the state across time.
+     */
+    public v2 posGlobal() {
+        //Function<v2,v2> z = this._screenToGlobal;
+        //Function<v2,v2> z = _z !=null ? _z : (c instanceof Zoomed ? ((Zoomed)c) : c.parentOrSelf(Zoomed.class));
+        return posGlobal;
     }
 
 
     public static v2 normalize(v2 pPixel, JoglWindow win) {
         v2 y = new v2(pPixel);
         y.sub(win.getX(), win.getY());
-        y.scale(1f / win.getWidth(), 1f / win.getHeight());
+        y.scaled(1f / win.getWidth(), 1f / win.getHeight());
         return y;
     }
 
     public static v2 normalize(v2 p, RectFloat b) {
         v2 y = new v2(p);
         y.sub(b.x, b.y);
-        y.scale(1f / b.w, 1f / b.h);
+        y.scaled(1f / b.w, 1f / b.h);
         return y;
     }
 
@@ -142,7 +155,7 @@ abstract public class Finger extends Part<SpaceGraph> implements Predicate<Finge
      * event handler.  this could mean that there is either mouse
      * motion or button status has changed.
      */
-    public void update(@Nullable short[] nextButtonDown) {
+    public void updateButtons(@Nullable short[] nextButtonDown) {
 
         if (nextButtonDown != null) {
             for (short b : nextButtonDown) {
@@ -155,7 +168,7 @@ abstract public class Finger extends Part<SpaceGraph> implements Predicate<Finge
                 buttonDown.set(b, pressed);
 
                 if (pressed && !wasPressed(b)) {
-                    pressPosPixel[b].set(posPixel);
+                    posPixelPress[b].set(posPixel);
                 }
             }
         }
@@ -172,7 +185,7 @@ abstract public class Finger extends Part<SpaceGraph> implements Predicate<Finge
     }
 
     private boolean _dragging(int button) {
-        v2 g = pressPosPixel[button];
+        v2 g = posPixelPress[button];
         return (g.distanceSq(posPixel) > dragThresholdPx * dragThresholdPx);
     }
 
@@ -240,11 +253,11 @@ abstract public class Finger extends Part<SpaceGraph> implements Predicate<Finge
 
         Fingering prev = this.fingering.get();
 
-        if (prev != Default) {
+        if (prev != Idle) {
             if (!prev.update(this)) {
                 prev.stop(this);
-                fingering.set(Default);
-                prev = Default;
+                fingering.set(Idle);
+                prev = Idle;
             }
         }
 
@@ -266,10 +279,6 @@ abstract public class Finger extends Part<SpaceGraph> implements Predicate<Finge
         return false;
     }
 
-    /**
-     * warning: the vector instance returned by this and other methods are mutable.  so they may need to be cloned when accessed to record the state across time.
-     */
-    abstract public v2 posGlobal();
 
     protected void rotationAdd(float[] next) {
         for (int i = 0; i < next.length; i++) {
@@ -303,7 +312,7 @@ abstract public class Finger extends Part<SpaceGraph> implements Predicate<Finge
 //        return new FingerRendererSurface();
 //    }
 
-    private boolean focused() {
+    public boolean focused() {
         return focused.getOpaque();
     }
 
@@ -347,23 +356,27 @@ abstract public class Finger extends Part<SpaceGraph> implements Predicate<Finge
 
 
     public final <S extends Surface> S push(SurfaceTransform t, Function<Finger, S> fingering) {
-        v2 p = _posGlobal.clone();
+        v2 p = posGlobal.clone();
         transforms.add(t);
         try {
             Zoomed.Camera z = (Zoomed.Camera) t;
-            _posGlobal.set(z.pixelToGlobal(_posGlobal.x, _posGlobal.y));
+            posGlobal.set(z.pixelToGlobal(posGlobal.x, posGlobal.y));
 
             return fingering.apply(this);
         } finally {
-            _posGlobal.set(p);
+            posGlobal.set(p);
             transforms.removeLast();
         }
+    }
+
+    public Surface cursorSurface() {
+        return null;
     }
 
     /**
      * marker interface for surfaces which absorb wheel motion, to prevent other system handling from it (ex: camera zoom)
      */
-    public static interface ScrollWheelConsumer {
+    public interface ScrollWheelConsumer {
     }
 
     public static final class TouchOverlay extends Overlay {
@@ -421,32 +434,50 @@ abstract public class Finger extends Part<SpaceGraph> implements Predicate<Finge
 //        }
 //    };
 
-    public static final class CursorOverlay extends PaintSurface {
+    public static class CursorSurface extends MutableUnitContainer {
 
         private final Finger f;
-        FingerRenderer defaultRenderer = FingerRenderer.rendererCrossHairs1;
+        @Deprecated
+        public FingerRenderer renderer = FingerRenderer.rendererCrossHairs1;
 
         {
             clipBounds = false;
         }
 
-        public CursorOverlay(Finger f) {
+        public CursorSurface(Finger f) {
+            super();
             this.f = f;
         }
 
         @Override
+        protected void renderContent(ReSurface r) {
+            doLayout(r.dtS());
+            super.renderContent(r);
+            r.on(this::paint);
+        }
+
+        @Override
+        protected RectFloat innerBounds() {
+            JoglWindow win = ((OrthoSurfaceGraph) root()).video;
+            float sw = win.getWidth(), sh = win.getHeight();
+            return RectFloat.XYWH(f.posPixel, sw*0.1f, sh*0.1f);
+        }
+
         protected void paint(GL2 gl, ReSurface renderer) {
             if (f.focused()) {
 
-                FingerRenderer r = defaultRenderer;
+                FingerRenderer r = this.renderer;
+
                 Fingering ff = f.fingering();
-                if (ff != Default) {
+                if (ff != Idle) {
                     @Nullable FingerRenderer specialRenderer = ff.cursor();
                     if (specialRenderer != null)
                         r = specialRenderer;
                 }
 
-                r.paint(f.posPixel, f, renderer.dtS(), gl);
+                if (r!=null) {
+                    r.paint(f.posPixel, f, renderer.dtS(), gl);
+                }
 
                 //for debugging:
 //                if (ortho!=null) {

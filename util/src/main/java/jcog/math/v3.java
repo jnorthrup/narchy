@@ -274,6 +274,11 @@ public class v3 implements java.io.Serializable, Cloneable, Tensor {
         scaled(thenScale);
     }
 
+    public v3 scaled(float s) {
+        scale(s);
+        return this;
+    }
+
 
     public void randomize(Random r, float scale) {
         set(r.nextFloat() * scale, r.nextFloat() * scale, r.nextFloat() * scale);
@@ -483,7 +488,7 @@ public class v3 implements java.io.Serializable, Cloneable, Tensor {
      *
      * @param s the scalar value
      */
-    public final void scale(float s) {
+    @Deprecated public final void scale(float s) {
         set(s * x, s * y, s * z);
     }
 

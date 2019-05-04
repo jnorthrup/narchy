@@ -39,7 +39,10 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
      * render loop
      */
     private final GameAnimatorControl renderer;
-    private final AtomicBoolean updateWindow = new AtomicBoolean(true);
+
+    private final AtomicBoolean updateWindowPos = new AtomicBoolean(true);
+    private final AtomicBoolean updateWindowSize = new AtomicBoolean(true);
+
     public GL2 gl;
 //    public float renderFPSInvisibleRate = 0;
     /**
@@ -52,7 +55,7 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
      */
     private float renderFPSUnfocusedRate = 0.5f;
     private long lastRenderNS = System.nanoTime();
-    private volatile int nx, ny, nw, nh;
+    private volatile int nx = -1, ny = -1, nw = -1, nh = -1;
 
     JoglWindow() {
 
@@ -96,32 +99,13 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
         return config;
     }
 
-    private void updateWindow() {
-        GLWindow w = window;
-        if (w == null)
-            return;
+    private void updateWindow(GLWindow w) {
 
-        if (!updateWindow.compareAndSet(true, false))
-            return;
-
-        int nw = this.nw, nh = this.nh;
-
-        if (nw == 0 || nh == 0) {
-//            if (w.isVisible())
-//                w.setVisible(false);
-
-        } else {
-//            if (!w.isVisible())
-//                w.setVisible(true);
-
-            if (nw != getWidth() || nh != getHeight()) {
-                w.setSurfaceSize(nw, nh);
-            }
-
-            int nx = this.nx, ny = this.ny;
-            if (nx != getX() || ny != getY())
-                w.setPosition(nx, ny);
-
+        if (updateWindowPos.compareAndSet(true, false)) {
+            w.setPosition(nx, ny);
+        }
+        if (updateWindowSize.compareAndSet(true, false)) {
+            w.setSurfaceSize(nw, nh);
         }
 
     }
@@ -250,16 +234,15 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
         //GLWorkerThread.invokeLater(()-> {
         Exe.invokeLater(() -> {
 
-            GLWindow W = this.window;
+            setSize(w, h);
+            window.setSize(w, h);
+
             if (x != Integer.MIN_VALUE) {
-                setPositionAndSize(x, y, w, h);
-                W.setPosition(x, y); //needs lock
-                W.setSize(w, h);  //needs lock
-            } else {
-                setSize(w, h);
-                W.setSize(w, h); //needs lock
+                window.setPosition(x, y);
+                setPosition(x, y);
             }
 
+            GLWindow W = this.window;
             W.setTitle(title); //needs lock
             W.setVisible(true); //needs lock
 
@@ -277,40 +260,20 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
 
 
     public void setPosition(int x, int y) {
-        setPositionAndSize(x, y, nw, nh);
+        if (nx!=x || ny!=y) {
+            nx = x; ny = y;
+            updateWindowPos.set(true);
+        }
     }
 
-    private void setSize(int w, int h) {
-        setPositionAndSize(nx, ny, w, h);
+    public void setSize(int w, int h) {
+        if (nw!=w || nh!=h) {
+            nw = w; nh = h;
+            updateWindowSize.set(true);
+        }
     }
 
-    public void setPositionAndSize(int x, int y, int w, int h) {
 
-        if (window == null) return;
-
-        boolean change = false;
-        if ((nx != x)) {
-            nx = x;
-            change = true;
-        }
-        if ((ny != y)) {
-            ny = y;
-            change = true;
-        }
-        if ((nw != w)) {
-            nw = w;
-            change = true;
-        }
-        if ((nh != h)) {
-            nh = h;
-            change = true;
-        }
-
-        if (change) {
-            updateWindow.set(true);
-        }
-
-    }
 
     @Override
     public final void init(GLAutoDrawable drawable) {
@@ -410,6 +373,15 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
 
     }
 
+    /** min dimension */
+    public float getWidthHeightMin() {
+        return Math.min(getWidth(),getHeight());
+    }
+    /** max dimension */
+    public float getWidthHeightMax() {
+        return Math.min(getWidth(),getHeight());
+    }
+
     /* from: Jake2's */
     private final class GameAnimatorControl extends AnimatorBase {
 
@@ -479,10 +451,12 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
             @Override
             public boolean next() {
 
-                if (window == null)
+                GLWindow w = window;
+
+                if (w == null)
                     return false;
 
-                if (!window.isVisible())
+                if (!w.isVisible())
                     return false;
 
                 if (drawables.isEmpty())
@@ -497,7 +471,7 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
 
                     update();
 
-                    updateWindow();
+                    updateWindow(w);
 
                     try {
                         d.flushGLRunnables();

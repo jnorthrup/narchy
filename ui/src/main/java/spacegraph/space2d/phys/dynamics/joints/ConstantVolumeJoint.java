@@ -163,7 +163,7 @@ public class ConstantVolumeJoint extends Joint {
 
             float normSqrd = delta.lengthSquared();
             if (normSqrd > Settings.maxLinearCorrection * Settings.maxLinearCorrection) {
-                delta.scale(Settings.maxLinearCorrection / (float) Math.sqrt(normSqrd));
+                delta.scaled(Settings.maxLinearCorrection / (float) Math.sqrt(normSqrd));
             }
             if (normSqrd > Settings.linearSlop * Settings.linearSlop) {
                 done = false;

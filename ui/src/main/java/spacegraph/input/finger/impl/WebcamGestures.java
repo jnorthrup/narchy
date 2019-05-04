@@ -23,8 +23,10 @@ import org.ejml.ops.ConvertMatrixData;
 import spacegraph.SpaceGraph;
 import spacegraph.input.finger.Finger;
 import spacegraph.input.finger.SubFinger;
+import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.widget.meta.LazySurface;
+import spacegraph.test.SignalViewTest;
 import spacegraph.video.*;
 
 import java.awt.image.BufferedImage;
@@ -44,9 +46,9 @@ public class WebcamGestures extends Finger {
 
     public static void main(String[] args) {
 
+        VideoSource in = WebCam.the();
 
         OrthoSurfaceGraph g = window(new LazySurface(() -> {
-            VideoSource in = WebCam.the();
 
             VideoSource in2 = new VideoEqualizer(in);
 
@@ -103,7 +105,9 @@ public class WebcamGestures extends Finger {
             );
         }), 1400, 800);
 
-        g.addFinger(new SubFinger.RandomSubFinger(g.fingers.get(0)));
+        Finger f = g.fingers.get(0);
+        g.addFinger(new MyPolarSubFinger(f, new VideoSurface(in)));
+        g.addFinger(new MyPolarSubFinger(f, SignalViewTest.newSignalView()));
     }
 
 
@@ -242,6 +246,24 @@ public class WebcamGestures extends Finger {
 
 
             return visualized;
+        }
+    }
+
+    private static class MyPolarSubFinger extends SubFinger.PolarSubFinger {
+        private final Surface vx;
+
+        public MyPolarSubFinger(Finger f, Surface vx) {
+            super(f);
+            theta = (float)(Math.random() * 3.14*2);
+            this.vx = vx;
+        }
+
+        @Override
+        public Surface cursorSurface() {
+            CursorSurface c = new CursorSurface(this);
+            c.renderer = null;
+            c.set(vx);
+            return c;
         }
     }
 }

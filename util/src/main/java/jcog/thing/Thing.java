@@ -112,7 +112,7 @@ public class Thing<T, P /* service key */  /* context */> {
     /**
      * restart an already added part
      */
-    public final boolean start(P key) {
+    public final boolean restart(P key) {
         tryStart(part(key));
         return false;
     }

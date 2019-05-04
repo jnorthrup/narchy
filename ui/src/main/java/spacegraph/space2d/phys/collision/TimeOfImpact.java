@@ -371,7 +371,7 @@ class SeparationFunction {
 
             Rot.mulToOutUnsafe(xfb, m_axis, normal);
 
-            m_localPoint.set(localPointB1).added(localPointB2).scale(.5f);
+            m_localPoint.set(localPointB1).added(localPointB2).scaled(.5f);
             Transform.mulToOutUnsafe(xfb, m_localPoint, pointB);
 
             localPointA.set(proxyA.vertex(cache.indexA[0]));
@@ -397,7 +397,7 @@ class SeparationFunction {
 
             Rot.mulToOutUnsafe(xfa, m_axis, normal);
 
-            m_localPoint.set(localPointA1).added(localPointA2).scale(.5f);
+            m_localPoint.set(localPointA1).added(localPointA2).scaled(.5f);
             Transform.mulToOutUnsafe(xfa, m_localPoint, pointA);
 
             localPointB.set(m_proxyB.vertex(cache.indexB[0]));

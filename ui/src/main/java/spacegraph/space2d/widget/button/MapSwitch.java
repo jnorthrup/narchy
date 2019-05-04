@@ -1,12 +1,10 @@
 package spacegraph.space2d.widget.button;
 
-import spacegraph.space2d.Surface;
-
 import java.util.Map;
 
 public enum MapSwitch { ;
     /** TODO decide initialization semantics */
-    public static <X> Surface the(Map<X,Runnable> x) {
+    public static <X> ButtonSet the(Map<X,Runnable> x) {
 
         final int[] initialButton = {-1};
 

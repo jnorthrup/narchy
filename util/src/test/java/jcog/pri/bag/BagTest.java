@@ -138,9 +138,7 @@ class BagTest {
             fail("all elements must have been sampled at least once");
         }
 
-        
-
-        return f.scaled(1f / total);
+        return f.multiplyEach(1f / total);
     }
 
     public static void testRemoveByKey(Bag<String, PriReference<String>> a) {

@@ -507,7 +507,7 @@ class Island {
                 float ratio =
                         Settings.maxTranslation
                                 / (float) Math.sqrt(translationx * translationx + translationy * translationy);
-                v.scale(ratio);
+                v.scaled(ratio);
             }
 
             float rotation = h * w;

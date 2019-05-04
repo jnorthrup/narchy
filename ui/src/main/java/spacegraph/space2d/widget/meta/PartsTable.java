@@ -112,7 +112,7 @@ public class PartsTable extends Gridding implements GridModel, GridRenderer {
                 //Exe.invokeLater(()->{
                     synchronized(part) {
                         if (state)
-                            thing.start(key);
+                            thing.restart(key);
                         else
                             thing.stop(key);
                     }
