@@ -263,7 +263,7 @@ class NAL3GoalTest {
         @Test
         void testNegIntersectionBeliefSinglePremiseDecompose() {
             test
-                    .input("--((a|b)-->g).")
+                    .input("--((a&&b)-->g).")
                     .mustBelieve(cycles, "(a-->g)", 0f, 0.45f)
                     .mustBelieve(cycles, "(b-->g)", 0f, 0.45f)
             ;
