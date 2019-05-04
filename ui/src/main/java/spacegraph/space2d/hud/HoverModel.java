@@ -4,31 +4,31 @@ import jcog.tree.rtree.rect.RectFloat;
 import spacegraph.input.finger.Finger;
 import spacegraph.space2d.Surface;
 
+/**
+ * mutable hover state
+ * used to compute display parameters
+ */
 public abstract class HoverModel {
-    Surface s;
-    Finger f;
+    public Surface s;
+    public Finger f;
+    public float hoverTimeS;
 
-    public void set(Surface root, Finger finger) {
+    public void set(Surface root, Finger finger, float hoverTimeS) {
         this.s = root;
         this.f = finger;
+        this.hoverTimeS = hoverTimeS;
     }
 
-    abstract RectFloat pos(float hoverTimeS);
-
-    //TODO abstract float alpha(float hoverTimeS);
+    public abstract RectFloat pos();
 
     /** attached relative to cursor center and sized relative to element */
     public static class Cursor extends HoverModel {
 
         @Override
-        RectFloat pos(float hoverTimeS) {
-            //RectFloat ss = f.globalToPixel(s.bounds);
-            float scale = Math.max(f.boundsScreen.w, f.boundsScreen.h);
-            double pulse = Math.cos(hoverTimeS * 6f) * 0.05f;
-            float ss = (float) (
-                        pulse +
-                        Math.min(Math.exp(hoverTimeS/4f) * 0.2f, 0.3f)) *
-                               scale;
+        public RectFloat pos() {
+            float scale = 0.25f;
+            float resolution = Math.max(f.boundsScreen.w, f.boundsScreen.h);
+            float ss = scale * resolution;
             return RectFloat.XYWH(f.posPixel, ss, ss);
         }
     }
@@ -40,7 +40,7 @@ public abstract class HoverModel {
     public static class ToolTip extends HoverModel {
 
         @Override
-        RectFloat pos(float hoverTimeS) {
+        public RectFloat pos() {
             RectFloat ss = f.globalToPixel(s.bounds);
             return ss.scale(0.25f).move(ss.w/2, ss.h / 2);
         }
@@ -50,7 +50,7 @@ public abstract class HoverModel {
     public static class Maximum extends HoverModel {
 
         @Override
-        RectFloat pos(float hoverTimeS) {
+        public RectFloat pos() {
             return f.boundsScreen;
         }
     }
@@ -58,7 +58,7 @@ public abstract class HoverModel {
     public static class Exact extends HoverModel {
 
         @Override
-        RectFloat pos(float hoverTimeS) {
+        public RectFloat pos() {
             return s.bounds;
         }
     }

@@ -125,7 +125,7 @@ public class Widget extends MutableUnitContainer<Surface> implements KeyPressed 
         else {
             BitmapLabel hoverLabel = new BitmapLabel(s);
             hoverLabel.backgroundColor(0.9f, 0.5f, 0f, 0.5f);
-            this.hover = new Hover<>(this, b -> hoverLabel, new HoverModel.Cursor());
+            this.hover = new MyHover(hoverLabel);
         }
         return this;
     }
@@ -211,4 +211,38 @@ public class Widget extends MutableUnitContainer<Surface> implements KeyPressed 
     public final boolean focused() {
         return focused;
     }
+
+    /** temporary */
+    private class MyHover extends Hover {
+        private final BitmapLabel hoverLabel;
+
+        public MyHover(BitmapLabel hoverLabel) {
+            super(Widget.this, b -> hoverLabel, new MyCursorModel());
+            this.hoverLabel = hoverLabel;
+        }
+
+        @Override
+        public boolean update(Finger f) {
+            float s = model.hoverTimeS;
+            hoverLabel.alpha(Util.clamp(0.1f + (float)Math.exp(s)*0.2f, 0.1f, 0.5f));
+            return super.update(f);
+        }
+    }
+
+    /** attached relative to cursor center and sized relative to element */
+    public static class MyCursorModel extends HoverModel {
+
+        @Override
+        public RectFloat pos() {
+            //RectFloat ss = f.globalToPixel(s.bounds);
+            float scale = Math.max(f.boundsScreen.w, f.boundsScreen.h);
+            double pulse = Math.cos(hoverTimeS * 6f) * 0.05f;
+            float ss = (float) (
+                    pulse +
+                            Util.clamp(Math.exp(-hoverTimeS*4f)*1.5f, 0.25f, 2f)) *
+                    scale;
+            return RectFloat.XYWH(f.posPixel, ss, ss);
+        }
+    }
+
 }

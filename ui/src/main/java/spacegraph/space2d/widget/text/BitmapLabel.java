@@ -82,6 +82,10 @@ public class BitmapLabel extends AbstractLabel {
             textBounds = bounds; //nothing
     }
 
+    public BitmapLabel alpha(float a) {
+        this.view.alpha(a);
+        return this;
+    }
 
 
     public AbstractLabel textColor(float rr, float gg, float bb, float aa) {

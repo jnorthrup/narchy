@@ -251,7 +251,7 @@ public interface NSense {
 
     default DigitizedScalar senseAngle(FloatSupplier angleInRadians, int divisions, Term root) {
         return senseAngle(angleInRadians, divisions, root,
-                angle -> $.inh(the(angle), root)
+                angle -> $.inh(root,the(angle))
                 //angle -> $.inh($.pRadix(angle, 2, divisions-1), root)
         );
     }

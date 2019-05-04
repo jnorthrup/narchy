@@ -14,7 +14,7 @@ public class TsneModel implements Graph2D.Graph2DUpdater<DataTable.Instance> {
 
     final SimpleTSne s = new SimpleTSne();
 
-    public final IntRange iters = new IntRange(1, 0, 100);
+    public final IntRange iters = new IntRange(1, 0, 6);
 
     /** TODO autonormalize to visible range, or atleast an option for this */
     @Deprecated public final FloatRange spaceScale = new FloatRange(0.05f, 0.001f, 0.5f);

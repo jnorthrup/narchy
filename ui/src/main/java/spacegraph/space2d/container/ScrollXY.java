@@ -43,7 +43,7 @@ public class ScrollXY<S extends ScrollXY.ScrolledXY> extends Bordering {
     /**
      * current view, in local grid coordinate
      */
-    private RectFloat view;
+    private RectFloat view = RectFloat.Zero;
     private v2 viewMin = new v2(0,0);
     //private volatile v2 viewDefault = new v2(0,0);
     protected v2 viewMax = new v2(1,1);
