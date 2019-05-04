@@ -155,6 +155,10 @@ public class ConjLazy extends LongObjectArraySet<Term> implements ConjBuilder {
             case 2: {
                 long w0 = when[0], w1 = when[1];
 
+//                if ((w0 == ETERNAL) ^ (w1 == ETERNAL)) {
+//                    w0 = w1 = ETERNAL; //auto collapse ot dternal
+//                    //w0 = w1 = 0; //auto promote to parallel
+//                }
 
                 if (w0 == w1) {
                     //SAME TIME
@@ -163,13 +167,8 @@ public class ConjLazy extends LongObjectArraySet<Term> implements ConjBuilder {
                         return a; //quick test
                     else
                         return CONJ.the(B, (w0 == ETERNAL) ? DTERNAL : 0, a, b);
-                } else {
-
-                    if ((w0 == ETERNAL) ^ (w1 == ETERNAL)) {
-                        w0 = w1 = ETERNAL; //quick collapse ot dternal
-                        //w0 = w1 = 0; //quick promote to parallel
-                    }
                 }
+
                 break;
             }
             default: {

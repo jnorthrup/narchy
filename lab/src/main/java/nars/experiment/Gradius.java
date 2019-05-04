@@ -30,6 +30,10 @@ import static nars.agent.GameTime.fps;
 public class Gradius extends GameX {
 
     private final Gradius4K g = new Gradius4K();
+    {
+        g.paused = false;
+    }
+
 
 //    private final boolean canPause = false;
 
@@ -45,7 +49,6 @@ public class Gradius extends GameX {
     public Gradius(NAR nar) {
         super("g", fps(25), nar);
 
-        g.paused = true;
 
         //TODO coordinate with fps
         g.updateMS =
@@ -172,7 +175,8 @@ public class Gradius extends GameX {
     @Override
     protected void starting(NAR nar) {
         super.starting(nar);
-        g.paused = false;
+        if (g!=null)
+            g.paused = false;
     }
 
     @Override
