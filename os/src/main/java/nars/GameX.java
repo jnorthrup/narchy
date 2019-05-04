@@ -381,24 +381,28 @@ abstract public class GameX extends Game {
         );
 
         n.confMin.set(0.01f);
-        n.termVolumeMax.set(40);
+        n.termVolumeMax.set(32);
 
 
-        //n.attn.linksMax.set(1024);
 
+
+//        n.beliefPriDefault.pri(0.01f);
+//        n.goalPriDefault.pri(0.1f);
+//        n.questionPriDefault.set(0.002f);
+//        n.questPriDefault.set(0.002f);
 
         n.beliefPriDefault.pri(0.01f);
-        n.goalPriDefault.pri(0.06f);
-        n.questionPriDefault.set(0.002f);
-        n.questPriDefault.set(0.002f);
+        n.goalPriDefault.pri(0.01f);
+        n.questionPriDefault.set(0.01f);
+        n.questPriDefault.set(0.01f);
 
-        n.beliefConfDefault.set(0.7f);
-        n.goalConfDefault.set(0.7f);
+        n.beliefConfDefault.set(0.75f);
+        n.goalConfDefault.set(0.75f);
 
-        n.emotion.want(MetaGoal.PerceiveCmplx, -0.001f); //<- dont set negative unless sure there is some positive otherwise nothing happens
+        n.emotion.want(MetaGoal.PerceiveCmplx, -0.0001f); //<- dont set negative unless sure there is some positive otherwise nothing happens
 
         n.emotion.want(MetaGoal.Believe, 0.01f);
-        n.emotion.want(MetaGoal.Desire, 0.6f);
+        n.emotion.want(MetaGoal.Desire, 0.75f);
 
         n.emotion.want(MetaGoal.Action, +1f);
 

@@ -106,22 +106,8 @@ public enum Image {;
 
     /** assumes that input is INH op has been tested for all image bits */
     @Nullable private static Term normalize(Compound x, boolean actuallyNormalize) {
-//        boolean negated;
-//
-//        Term t;
-        //Op o = t.op();
-//        if (o == NEG) {
-//            negated = true;
-//            t = z.unneg();
-//            o = t.op();
-//        } else {
-//            t = z;
-//            negated = false;
-//        }
+        //assert(x.op()==INH);
 
-        //assert(!(o==NEG));
-        //if (o == INH /*&& t.hasAll(ImageBits)*/) {
-        assert(x.op()==INH);
 
         Term s = x.sub(0);
         Subterms ss = null;

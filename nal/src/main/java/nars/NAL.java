@@ -358,11 +358,11 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
                 //0.5f;
                 //1;
                 //1.618f; //phi
-                //2; //nyquist / horizon
-                4;
-        //dur;
-        //8;
-        //64;
+                2; //nyquist / horizon
+                //4;
+                //dur;
+                //8;
+                //64;
 
         final double decayTime = falloffDurs * dur;
 

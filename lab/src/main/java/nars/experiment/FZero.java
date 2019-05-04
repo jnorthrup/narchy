@@ -8,6 +8,7 @@ import jcog.signal.wave2d.ScaledBitmap2D;
 import nars.$;
 import nars.GameX;
 import nars.NAR;
+import nars.agent.NAct;
 import nars.concept.action.AgentAction;
 import nars.concept.action.BiPolarAction;
 import nars.concept.action.SwitchAction;
@@ -15,6 +16,7 @@ import nars.concept.sensor.DigitizedScalar;
 import nars.gui.sensor.VectorSensorView;
 import nars.sensor.Bitmap2DSensor;
 import nars.term.Term;
+import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
 import nars.time.Tense;
 import nars.video.AutoclassifiedBitmap;
@@ -44,7 +46,6 @@ public class FZero extends GameX {
     private float progress;
     public Bitmap2DSensor c;
 
-    float fwdSpeed = 7;
 
     static float fps = 25f;
 
@@ -350,27 +351,27 @@ public class FZero extends GameX {
     /** TODO correct ackerman/tank drive vehicle dynamics */
     private void initTankContinuous() {
 
-        float res = 0.02f;
-        float powerScale = 0.2f;
-        float rotSpeed = 0.5f;
+        float res = 0.05f;
+        float powerScale = 0.1f;
+        float rotSpeed = 0.25f;
         final float[] left = new float[1];
         final float[] right = new float[1];
+        float fwdSpeed = 25;
 
-        actionUnipolar($.inh("left", id), (x) -> {
-            float power = x * powerScale;
+        final Atom TANK = Atomic.atom("tank");
+        actionUnipolar($.inh(id,$.p(TANK, NAct.NEG)), (x) -> {
+            float power = 2*(x-0.5f) * powerScale;
             left[0] = power;
-            float dp = power - right[0];
-            fz.playerAngle += dp * rotSpeed / 2;
-            fz.vehicleMetrics[0][6] += (left[0] + right[0]) * fwdSpeed / 2f;
+            fz.playerAngle += power * rotSpeed;
+            fz.vehicleMetrics[0][6] = (left[0] + right[0]) * fwdSpeed;
             return x;
         }).resolution(res);
 
-        actionUnipolar($.inh("right", id), (x) -> {
-            float power = x * powerScale;
+        actionUnipolar($.inh(id,$.p(TANK, NAct.PLUS)), (x) -> {
+            float power = 2*(x-0.5f) * powerScale;
             right[0] = power;
-            float dp = power - left[0];
-            fz.playerAngle += -dp * rotSpeed / 2;
-            fz.vehicleMetrics[0][6] += (left[0] + right[0]) * fwdSpeed / 2f;
+            fz.playerAngle += -power * rotSpeed;
+            fz.vehicleMetrics[0][6] = (left[0] + right[0]) * fwdSpeed;
             return x;
         }).resolution(res);
 
@@ -445,8 +446,9 @@ public class FZero extends GameX {
     public AgentAction initUnipolarLinear(float fwdFactor) {
 //        final float[] _a = {0};
 //        final MiniPID fwdFilter = new MiniPID(0.5f, 0.3, 0.2f);
+        float fwdSpeed = 7;
 
-        return actionHemipolar($.inh($$("fwd"),id) /* $.func("vel", id, $.the("move"))*/, (a0) -> {
+        return actionHemipolar($.inh(id,$$("fwd")) /* $.func("vel", id, $.the("move"))*/, (a0) -> {
         //return actionUnipolar($.inh($$("fwd"),id) /* $.func("vel", id, $.the("move"))*/, true, (x) -> Float.NaN /*0.5f*/, (a0) -> {
             float a =
                     //_a[0] = (float) fwdFilter.out(_a[0], a0);
@@ -481,8 +483,8 @@ public class FZero extends GameX {
         public static final int FULL_POWER = 80;
         public static final int MAX_VEL = 20;
         private final JPanel panel;
-        public boolean thrust, left, right;
-        public double playerAngle;
+        public volatile boolean thrust, left, right;
+        public volatile double playerAngle;
         public BufferedImage image = new BufferedImage(
                 320, 240, BufferedImage.TYPE_INT_RGB);
 

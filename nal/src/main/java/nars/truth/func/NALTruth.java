@@ -386,6 +386,7 @@ public enum NALTruth implements TruthFunc {
         @Override
         public Truth apply(final Truth T, final Truth B, NAL n, float minConf) {
             return TruthFunctions2.desire(T, B, minConf, false,true);
+            //return TruthFunctions2.desireSemiBipolar(T, B, minConf, true);
         }
     },
 
@@ -393,6 +394,7 @@ public enum NALTruth implements TruthFunc {
         @Override
         public Truth apply(final Truth T, final Truth B, NAL n, float minConf) {
             return TruthFunctions2.desire(T, B, minConf, false,false);
+            //return TruthFunctions2.desireSemiBipolar(T, B, minConf, false);
         }
     },
 

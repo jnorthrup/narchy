@@ -224,7 +224,8 @@ public class Widget extends MutableUnitContainer<Surface> implements KeyPressed 
         @Override
         public boolean update(Finger f) {
             float s = model.hoverTimeS;
-            hoverLabel.alpha(Util.clamp(0.1f + (float)Math.exp(s)*0.2f, 0.1f, 0.5f));
+            float f1 = 0.1f + (s < 4 ? (float) Math.exp(s) : 1) * 0.2f;
+            hoverLabel.alpha(Util.clamp(f1, 0.1f, 0.5f));
             return super.update(f);
         }
     }

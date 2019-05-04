@@ -23,7 +23,7 @@ abstract public class MultiExec extends Exec {
     /** 0..1.0: determines acceptable reaction latency.
      * lower value allows queue to grow larger before it's processed,
      * higher value demands faster response at (a likely) throughput cost */
-    public final FloatRange alertness = new FloatRange(0.95f, 0, 1f);
+    public final FloatRange alertness = new FloatRange(1f, 0, 1f);
 
 
     private static final float UPDATE_DURS =
