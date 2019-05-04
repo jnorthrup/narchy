@@ -98,6 +98,7 @@ public class Taskify extends ProxyTerm {
         if (punc == 0)
             throw new RuntimeException("no punctuation assigned");
 
+
         Term x = Task.normalize(x0);
 
         Op xo = x.op();
@@ -231,11 +232,11 @@ public class Taskify extends ProxyTerm {
     static boolean valid(Term x, byte punc) {
         if (x == null || x instanceof Bool)
             return false;
+
         x = x.unneg();
         return x.op().taskable &&
-                !x.hasAny(Op.VAR_PATTERN) &&
-                ((punc != BELIEF && punc != GOAL) || (!x.hasVarQuery()));
-
+               !x.hasAny(Op.VAR_PATTERN) &&
+               ((punc == QUESTION || punc == QUEST) || (/* belief or goal: */!x.hasVarQuery() && !x.hasXternal()));
     }
 
     static boolean spam(Derivation d, int cost) {

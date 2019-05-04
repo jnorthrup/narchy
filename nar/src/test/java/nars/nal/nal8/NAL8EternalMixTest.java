@@ -353,7 +353,6 @@ class NAL8EternalMixTest extends NALTest {
     void temporal_goal_detachment_3_valid_negate() {
 
         test
-                .logDebug()
                 .input("--use! |")
                 .inputAt(1, "( hold &&+5 --use ).")
                 .mustGoal(cycles, "hold", 1f, 0.81f, -5)

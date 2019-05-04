@@ -112,15 +112,6 @@ public class Occurrify extends TimeGraph {
     }
 
     @Nullable private static Term temporalify(Term x, OccurrenceSolver time, Derivation d) {
-        //            boolean unwrapNeg;
-//            if (c1.op()==NEG) {
-//                unwrapNeg = true;
-//                c1 = c1.unneg();
-//            } else {
-//                unwrapNeg = false;
-//            }
-
-
 
         Term c2;
         long[] occ;
@@ -161,14 +152,14 @@ public class Occurrify extends TimeGraph {
         }
 
 
-        if (!d.concSingle && (d.taskPunc==GOAL && d.concPunc == GOAL) && occ[0]!=ETERNAL && occ[0] < d.taskStart) {
-            {
-                //immediate shift
-//                long range = occ[1] - occ[0];
-//                occ[0] = d.taskStart;
-//                occ[1] = occ[0] + range;
-            }
-        }
+//        if (!d.concSingle && (d.taskPunc==GOAL && d.concPunc == GOAL) && occ[0]!=ETERNAL && occ[0] < d.taskStart) {
+//            {
+//                //immediate shift
+////                long range = occ[1] - occ[0];
+////                occ[0] = d.taskStart;
+////                occ[1] = occ[0] + range;
+//            }
+//        }
 
 //            if (d.concTruth!=null) {
 //                long start = occ[0], end = occ[1];

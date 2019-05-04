@@ -10,7 +10,7 @@ import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
 import org.jetbrains.annotations.Nullable;
 
-import static nars.Op.NEG;
+import static nars.Op.*;
 import static nars.time.Tense.assertDithered;
 
 /**
