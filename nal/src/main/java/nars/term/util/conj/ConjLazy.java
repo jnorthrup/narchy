@@ -166,7 +166,7 @@ public class ConjLazy extends LongObjectArraySet<Term> implements ConjBuilder {
                     if (a.equals(b))
                         return a; //quick test
                     else
-                        return CONJ.the(B, (w0 == ETERNAL) ? DTERNAL : 0, a, b);
+                        return CONJ.the(B, DTERNAL /*(w0 == ETERNAL) ? DTERNAL : 0*/, a, b);
                 }
 
                 break;
@@ -182,7 +182,7 @@ public class ConjLazy extends LongObjectArraySet<Term> implements ConjBuilder {
                 }
                 //all same time
                 if (parallel)
-                    return CONJ.the(B, (w0 == ETERNAL) ? DTERNAL : 0, this);
+                    return CONJ.the(B, DTERNAL /*(w0 == ETERNAL) ? DTERNAL : 0*/, this);
             }
         }
 

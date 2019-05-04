@@ -44,7 +44,7 @@ public class ConjTest {
         ConjBuilder x = new Conj();
         x.add(ETERNAL, $$("a:x"));
         x.add(0, $$("a:y"));
-        assertEq("((x-->a)&|(y-->a))", x.term());
+        assertEq("((x-->a)&&(y-->a))", x.term());
     }
 
     @Test
@@ -722,7 +722,7 @@ public class ConjTest {
                 $$("--(&&,a,b,c)"),
                 $$("(&&,c,d,e)"), true));
 
-        assertEq("(a&|b)", Conj.diffAll(
+        assertEq("(a&&b)", Conj.diffAll(
                 $$("(&|,a,b,c)"),
                 $$("(&|,c,d,e)")));
 
@@ -787,26 +787,6 @@ public class ConjTest {
                 $$("(&&,x,y)")));
     }
 
-    @Test
-    void testPromoteEternalToParallel3() {
-
-
-        Term x = assertEq(//"((b&&c)&|(x&&y))",
-                //"((b&&c)&|(x&&y))",
-                "(&|,b,c,x,y)",
-                "((b&&c)&|(x&&y))");
-
-        Term y = $$("(&|,(b&&c),x)");
-        assertEquals("(&&,b,c,x)", y.toString());
-
-        assertEquals("y", Conj.diffOne(x, y).toString());
-
-        //ConjCommutive.the(DTERNAL, $$("(a&|b)"), $$("(b&|c)"));
-
-        assertEq("((a&|b)&&(b&|c))", "((a&|b)&&(b&|c))");
-        assertEq("((a&|b)&&(c&|d))", "((a&|b)&&(c&|d))");
-        assertEq("(&|,a,b,c,d)", "((a&&b)&|(c&&d))");
-    }
 
     @Test
     void testConjCommutivity() {
@@ -1515,6 +1495,27 @@ public class ConjTest {
     }
 
     @Disabled static class CanWeAbolishDTeq0 {
+
+        @Test
+        void testPromoteEternalToParallel3() {
+
+
+            Term x = assertEq(//"((b&&c)&|(x&&y))",
+                    //"((b&&c)&|(x&&y))",
+                    "(&|,b,c,x,y)",
+                    "((b&&c)&|(x&&y))");
+
+            Term y = $$("(&|,(b&&c),x)");
+            assertEquals("(&&,b,c,x)", y.toString());
+
+            assertEquals("y", Conj.diffOne(x, y).toString());
+
+            //ConjCommutive.the(DTERNAL, $$("(a&|b)"), $$("(b&|c)"));
+
+            assertEq("((a&|b)&&(b&|c))", "((a&|b)&&(b&|c))");
+            assertEq("((a&|b)&&(c&|d))", "((a&|b)&&(c&|d))");
+            assertEq("(&|,a,b,c,d)", "((a&&b)&|(c&&d))");
+        }
         @Test void misc() {
 
                 assertEq("(&|,(--,(c&|d)),a,b)", "((&&,a,b) &| --(&|,c,d))");
@@ -1957,7 +1958,7 @@ public class ConjTest {
 
     @Test
     void testAnotherComplexInvalidConj() {
-        String a0 = "(((--,((--,_2(_1)) &&+710 (--,_2(_1))))&|(_3-->_1)) &&+710 _2(_1))";
+        String a0 = "(((--,((--,_2(_1)) &&+710 (--,_2(_1))))&&(_3-->_1)) &&+710 _2(_1))";
         Term a = $$(a0);
         assertEq(a0, a);
         Term b = $$("(--,(_2(_1)&|(_3-->_1)))");
@@ -1968,9 +1969,8 @@ public class ConjTest {
     @Test
     void testAnotherComplexInvalidConj2() {
         //TODO check what this actually means
-        String a0 = "((--,((--,_3) &&+190 (--,_3)))&|((_1,_2)&|_3))";
-        Term a = $$(a0);
-        assertEq("((_1,_2)&|_3)", a);
+        Term a = $$("((--,((--,_3) &&+190 (--,_3)))&|((_1,_2)&|_3))");
+        assertEq("((_1,_2)&&_3)", a);
     }
 
     @Test

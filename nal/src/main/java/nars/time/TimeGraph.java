@@ -1,6 +1,6 @@
 package nars.time;
 
-import com.google.common.collect.Iterators;
+import com.google.common.collect.Iterables;
 import jcog.Util;
 import jcog.WTF;
 import jcog.data.graph.ImmutableDirectedEdge;
@@ -24,7 +24,6 @@ import nars.term.var.CommonVariable;
 import nars.unify.UnifyAny;
 import nars.unify.UnifySubst;
 import org.apache.commons.math3.exception.MathArithmeticException;
-import org.eclipse.collections.api.set.MutableSet;
 import org.eclipse.collections.api.tuple.Pair;
 import org.eclipse.collections.api.tuple.primitive.BooleanObjectPair;
 import org.eclipse.collections.api.tuple.primitive.LongObjectPair;
@@ -37,6 +36,8 @@ import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Predicate;
 
+import static com.google.common.collect.Iterators.filter;
+import static com.google.common.collect.Iterators.transform;
 import static nars.Op.*;
 import static nars.time.Tense.*;
 import static nars.time.TimeSpan.TS_ZERO;
@@ -81,7 +82,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
      */
 
     final Map<Term, Collection<Event>> byTerm = new UnifiedMap<>();
-    protected final MutableSet<Term> autoNeg = new UnifiedSet();
+    //protected final MutableSet<Term> autoNeg = new UnifiedSet();
 
     protected final ArrayHashSet<Event> solutions = new ArrayHashSet();
     private transient Term solving;
@@ -580,9 +581,9 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
     }
 
     private void onNewTerm(Term t) {
-        if (autoNeg != null && autoNeg.contains(t.unneg())) {
-            link(shadow(t), 0, shadow(t.neg()));
-        }
+//        if (autoNeg != null && autoNeg.contains(t.unneg())) {
+//            link(shadow(t), 0, shadow(t.neg()));
+//        }
     }
 
 
@@ -1580,40 +1581,44 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 
     private abstract class CrossTimeSolver extends Search<Event, TimeSpan> {
 
-        @Override
-        protected Iterator<FromTo<Node<Event, nars.time.TimeSpan>, TimeSpan>> next(Node<Event, TimeSpan> n) {
+        protected Iterator<FromTo<Node<Event, nars.time.TimeSpan>, TimeSpan>> tangent(Node<Event, TimeSpan> root, Term t) {
 
-            Iterator<FromTo<Node<Event, TimeSpan>, TimeSpan>> exist = n.edgeIterator(true, true);
-
-            Collection<Event> ee = eventsOrNull(n.id().id);
+            Collection<Event> ee = eventsOrNull(t);
             if (ee == null)
-                return exist;
+                return Collections.emptyIterator();
 
-            int ees = ee.size();
+            return transform(filter(transform(ee.iterator(), TimeGraph.this::node), xx ->
+                xx != null && !log.hasVisited(xx)
+            ), xx ->
+                new ImmutableDirectedEdge(root, TS_ZERO, xx)
+            );
 
-            List<FromTo<Node<Event, TimeSpan>, TimeSpan>> dyn = null;
+//            int ees = ee.size();
+//
+//            List<FromTo<Node<Event, TimeSpan>, TimeSpan>> dyn = new FasterList<>(ees);
 
-            int ii = 0;
-            for (Event x : ee) {
-                Node<Event, TimeSpan> xx = node(x);
-                if (xx != null && xx != n && !log.hasVisited(xx)) {
-                    if (dyn == null)
-                        dyn = new FasterList<>(ees - ii);
-                    dyn.add(new ImmutableDirectedEdge<>(n, TS_ZERO, xx));
-                }
-                ii++;
-            }
-            return (dyn != null) ? Iterators.concat(exist, dyn.iterator()) : exist;
+//            int ii = 0;
+//            for (Event x : ee) {
+//                Node<Event, TimeSpan> xx = node(x);
+//                if (xx != null && xx != n && !log.hasVisited(xx)) {
+//                    dyn.add(new ImmutableDirectedEdge<>(n, TS_ZERO, xx));
+//                }
+//                ii++;
+//            }
 
 
-//            Iterator<Event> x = ee.iterator();
-//            return
-//                    Iterators.transform(
-//                            Iterators.filter(Iterators.transform(
-//                                    x,
-//                                    TimeGraph.this::node),
-//                                    e -> e != null && e != n && !log.hasVisited(e)),
-//                            that -> new ImmutableDirectedEdge<>(n, TS_ZERO, that));
+        }
+
+        @Override
+        protected Iterable<FromTo<Node<Event, nars.time.TimeSpan>, TimeSpan>> next(Node<Event, TimeSpan> n) {
+
+            Iterable<FromTo<Node<Event, TimeSpan>, TimeSpan>> exist = n.edges(true, true);
+            Event nID = n.id();
+            return Iterables.concat(
+                    exist,
+                    ()->tangent(n, nID.id),
+                    ()->tangent(n, nID.id.neg()) //last resort: try neg
+            );
 
         }
 

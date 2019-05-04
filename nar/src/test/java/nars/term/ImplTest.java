@@ -58,7 +58,7 @@ public class ImplTest {
     @Test
     void testReducibleImplFactoredPredShouldRemainIntact() {
 
-        for (String cp : new String[]{/*"&&",*/ "&|", " &&+- "}) {
+        for (String cp : new String[]{ "&&", " &&+- "}) {
             String ccp = cp;//cp.equals(" &&+- ") ? cp : "&|";
             assertEq("((x&&y) ==>+1 (y" + ccp + "z))", "((y&&x) ==>+1 (y" + cp + "z))");
             assertEq("(a ==>+1 (b &&+1 (y" + ccp + "z)))", "(a ==>+1 (b &&+1 (y" + cp + "z)))");

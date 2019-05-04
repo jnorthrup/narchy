@@ -87,10 +87,7 @@ abstract public class Search<N, E> {
 
             path = current.getOne();
 
-            Iterator<FromTo<Node<N, E>, E>> iterator = next(at);
-
-            for (; iterator.hasNext(); ) {
-                FromTo<Node<N, E>, E> e = iterator.next();
+            for (FromTo<Node<N,E>,E> e : next(at)) {
                 Node<N, E> next = next(e, at);
                 if (next == null || !log.visit(next))
                     continue;
@@ -168,7 +165,7 @@ abstract public class Search<N, E> {
         if (!log.visit(n))
             return true; 
 
-        Iterator<FromTo<Node<N,E>,E>> ii = next(n);
+        Iterator<FromTo<Node<N,E>,E>> ii = next(n).iterator(); //Iterable?
         if (!ii.hasNext())
             return true;
 
@@ -199,8 +196,8 @@ abstract public class Search<N, E> {
 
     }
 
-    protected Iterator<FromTo<Node<N,E>,E>> next(Node<N,E> current) {
-        return current.edgeIterator(true, true);
+    protected Iterable<FromTo<Node<N,E>,E>> next(Node<N,E> current) {
+        return current.edges(true, true);
     }
 
 

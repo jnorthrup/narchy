@@ -89,11 +89,11 @@ class ConceptualizationTest {
         {
 
             Term x = $("(a ==> (b &&+1 (c && d)))");
-            assertEquals("(a==>(b &&+1 (c&|d)))", x.toString());
+            assertEquals("(a==>(b &&+1 (c&&d)))", x.toString());
             assertEquals("(a ==>+- ( &&+- ,b,c,d))", x.root().toString());
         }
         {
-            Term x = $("(a ==> (b &&+1 (c &| d)))");
+            Term x = $("(a ==> (b &&+1 (c && d)))");
             assertEquals("(a ==>+- ( &&+- ,b,c,d))", x.root().toString());
         }
 
@@ -103,7 +103,7 @@ class ConceptualizationTest {
 
     @Test
     void testStableNormalizationAndConceptualizationComplex() {
-        String s = "(((--,checkScore(#1))&|#1) &&+14540 ((--,((#1)-->$2)) ==>+17140 (isRow(#1,(0,false),true)&|((#1)-->$2))))";
+        String s = "(((--,checkScore(#1))&&#1) &&+14540 ((--,((#1)-->$2)) ==>+17140 (isRow(#1,(0,false),true)&&((#1)-->$2))))";
         Term t = $$(s);
         assertEquals(s, t.toString());
         assertEquals(s, t.normalize().toString());

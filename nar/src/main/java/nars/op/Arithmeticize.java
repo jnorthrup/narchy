@@ -113,7 +113,7 @@ public class Arithmeticize {
         if (anon == null && !x.hasAny(INT))
             return null;
 
-        int cdt = eternal ? DTERNAL : 0;
+        int cdt = DTERNAL; //eternal ? DTERNAL : 0;
 
         //pre-evaluate using the arith operators; ignore other operators (unless they are already present, ex: member)
         //Term xx = Evaluation.solveFirst(x, ArithFunctors);

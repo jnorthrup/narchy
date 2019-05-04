@@ -48,7 +48,7 @@ public class NAL8SequenceTest extends NALTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"&|","&&"})
+    @ValueSource(strings = {"&&"})
     void testSubParallelOutcome(String conj) {
         
         test
@@ -198,7 +198,7 @@ public class NAL8SequenceTest extends NALTest {
     @Test
     void testGoalDeduction_Neg_ParallelWithDepVar() {
         test
-                .input( "(--x(#1,#2) &| y(#1,#2))!")
+                .input( "(--x(#1,#2) && y(#1,#2))!")
                 .input( "--x(1,1).")
                 .mustGoal(cycles, "y(1,1)", 1, 0.81f) //81% for one step
         ;
@@ -206,7 +206,7 @@ public class NAL8SequenceTest extends NALTest {
     @Test
     void testGoalDeduction_ParallelWithDepVar_and_Arithmetic() {
         test
-                .input( "(&|, x(#1,#2), add(#1,#2,#3), y(#3))!")
+                .input( "(&&, x(#1,#2), add(#1,#2,#3), y(#3))!")
                 .input( "x(1,1).")
                 .mustGoal(cycles, "y(2)", 1, 0.81f) //81% for one step
         ;
@@ -214,7 +214,7 @@ public class NAL8SequenceTest extends NALTest {
     @Test
     void testGoalDeduction_ParallelWithDepVar_and_Specific_Arithmetic() {
         test
-                .input( "(&|, x(#1,#2), y(#1,#2), --equal(#1,#2))!")
+                .input( "(&&, x(#1,#2), y(#1,#2), --equal(#1,#2))!")
                 .input( "x(1,1).")
                 .input( "x(1,2).")
                 .mustGoal(cycles, "y(1,2)", 1, 0.81f) //81% for one step

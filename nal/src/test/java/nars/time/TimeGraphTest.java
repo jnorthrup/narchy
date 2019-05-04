@@ -117,7 +117,7 @@ class TimeGraphTest {
     void testSimpleImplWithOneKnownAbsoluteSubEventNeg() {
 
         TimeGraph cc1 = newTimeGraph(1);
-        cc1.autoNeg.add($$("x"));
+//        cc1.autoNeg.add($$("x"));
         cc1.know($$("(--x ==>+1 y)"), 1);
         cc1.know($$("x"), 1);
         assertSolved("y", cc1, "y@2");
@@ -126,7 +126,7 @@ class TimeGraphTest {
     void testSimpleImplWithOneKnownAbsoluteSubEventNegOpposite() {
 
         TimeGraph cc1 = newTimeGraph(1);
-        cc1.autoNeg.add($$("x"));
+//        cc1.autoNeg.add($$("x"));
         cc1.know($$("(x ==>+1 y)"), 1);
         cc1.know($$("--x"), 1);
         assertSolved("y", cc1, "y@2");
@@ -257,9 +257,7 @@ class TimeGraphTest {
     void testNoBrainerNegation() {
 
         TimeGraph C = newTimeGraph(1);
-        C.autoNeg.add($$("x"));
-        C.print();
-        C.know($$("x"), 1);
+        C.know($$("x"), 1); //C.autoNeg.add($$("x"));
         C.know($$("y"), 2);
 
         System.out.println();
@@ -412,8 +410,8 @@ class TimeGraphTest {
     @Test void testTemporalInRelation1() {
         TimeGraph C = newTimeGraph(1);
 
-        C.know($$("a"), 1); C.autoNeg.add($$("a"));
-        C.know($$("b"), 2); C.autoNeg.add($$("b"));
+        C.know($$("a"), 1); //C.autoNeg.add($$("a"));
+        C.know($$("b"), 2); //C.autoNeg.add($$("b"));
 
         assertSolved("(x-->(a &&+- b))", C, "(x-->(a &&+1 b))");
         assertSolved("(x--> --(a &&+- b))", C, "(x-->(--,(a &&+1 b)))");
@@ -425,7 +423,7 @@ class TimeGraphTest {
     @Test void testTemporalInRelation2() {
         TimeGraph C = newTimeGraph(1);
 
-        C.know($$("(a &&+1 b)"), ETERNAL); C.autoNeg.add($$("a")); C.autoNeg.add($$("b"));
+        C.know($$("(a &&+1 b)"), ETERNAL); //C.autoNeg.add($$("a")); C.autoNeg.add($$("b"));
 
 
         assertSolved("(x-->(a &&+- b))", C, "(x-->(a &&+1 b))");
