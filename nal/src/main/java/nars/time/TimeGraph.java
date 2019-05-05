@@ -464,18 +464,18 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 
 //                        //link first two events of each
 //                        if (subj.hasAny(Op.CONJ)) {
-                        subj.eventsWhile((w, y) -> {
-                            //link(know(y), ETERNAL, pe); //<- is this used?
-                            know(y);
-                            return true;
-                        }, 0, false, true, false);
+//                        subj.eventsWhile((w, y) -> {
+//                            //link(know(y), ETERNAL, pe); //<- is this used?
+//                            know(y);
+//                            return true;
+//                        }, 0, false, true, false);
 
 //
-                        pred.eventsWhile((w, y) -> {
-                            //link(se, ETERNAL, know(y));  //<- is this used?
-                            know(y);
-                            return true;
-                        }, 0, false, true, false);
+//                        pred.eventsWhile((w, y) -> {
+//                            //link(se, ETERNAL, know(y));  //<- is this used?
+//                            know(y);
+//                            return true;
+//                        }, 0, false, true, false);
 
                     } else if (edt == XTERNAL) {
                         /* without any absolute context */
