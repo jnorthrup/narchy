@@ -300,7 +300,7 @@ abstract public class What extends NARPart implements Prioritizable, Sampler<Tas
         static final int premiseBufferCapacity = 32;
         float premiseSelectDecayRate = 0.5f;
         float fillFactor = 1f;
-        final PLinkArrayBag<Premise> premises = new PLinkArrayBag<>(PriMerge.replace,premiseBufferCapacity);
+        final PLinkArrayBag<Premise> premises = new PLinkArrayBag<>(PriMerge.min, premiseBufferCapacity);
 
         /**
          * samples premises
