@@ -254,16 +254,20 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
     /**
      * Default priority of input question
      */
-    @Deprecated
-    public final FloatRange questionPriDefault = new FloatRange(0.5f, ScalarValue.EPSILON, 1f);
+
+
     /**
      * Default priority of input question
      */
-    public final FloatRange questPriDefault = new FloatRange(0.5f, ScalarValue.EPSILON, 1f);
-    public final FloatRange beliefConfDefault = new FloatRange(0.9f, NAL.truth.TRUTH_EPSILON, 1f - NAL.truth.TRUTH_EPSILON);
-    public final FloatRange goalConfDefault = new FloatRange(0.9f, NAL.truth.TRUTH_EPSILON, 1f - NAL.truth.TRUTH_EPSILON);
-    public final PriNode beliefPriDefault = new PriNode.ConstPriNode("beliefPriDefault", 0.5f);
-    public final PriNode goalPriDefault = new PriNode.ConstPriNode("goalPriDefault", 0.5f);
+
+    public final ConfRange beliefConfDefault = new ConfRange(0.9f);
+    public final ConfRange goalConfDefault = new ConfRange(0.9f);
+
+    /** HACK use PriNode.amp(..) to set these.  will figure this out.  pri wont work right, as this is the actual value vs. the advised (user provided) */
+    public final PriNode beliefPriDefault = PriNode.mutable("pri.", 0.5f);
+    public final PriNode goalPriDefault = PriNode.mutable("pri!", 0.5f);
+    public final PriNode questionPriDefault = PriNode.mutable("pri?", 0.5f);
+    public final PriNode questPriDefault = PriNode.mutable("pri@", 0.5f);
 
     public final Time time;
 
@@ -448,25 +452,17 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
         }
     }
 
-    public float priDefault(final byte punctuation) {
+    public final float priDefault(final byte punctuation) {
+        PriNode p;
         switch (punctuation) {
-            case BELIEF:
-                return this.beliefPriDefault.asFloat();
-
-            case GOAL:
-                return this.goalPriDefault.asFloat();
-
-            case QUEST:
-                return this.questPriDefault.floatValue();
-
-            case QUESTION:
-                return this.questionPriDefault.floatValue();
-
-
-            case COMMAND:
-                return 1;
+            case BELIEF: p = this.beliefPriDefault; break;
+            case GOAL: p = this.goalPriDefault; break;
+            case QUESTION: p = this.questionPriDefault; break;
+            case QUEST: p = this.questPriDefault; break;
+            case COMMAND: return 1;
+            default: throw new RuntimeException("Unknown punctuation: " + punctuation);
         }
-        throw new RuntimeException("Unknown punctuation: " + punctuation);
+        return p.asFloat();
     }
 
 
@@ -474,12 +470,9 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
      * provides a Random number generator
      */
     @Override
-    public final Random random() {
-        return random.get();
-    }
+    public final Random random() { return random.get(); }
 
-    public enum truth {
-        ;
+    public enum truth { ;
 
         /**
          * internal granularity which truth components are rounded to

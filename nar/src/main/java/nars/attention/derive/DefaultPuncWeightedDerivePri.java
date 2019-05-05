@@ -9,7 +9,9 @@ import nars.derive.Derivation;
 import static nars.Op.*;
 import static nars.time.Tense.ETERNAL;
 
-/** TODO strength parameter */
+/** TODO strength parameter
+ *  TODO toggle for preamp and postamp - both dont need applied necessarily
+ * */
 public class DefaultPuncWeightedDerivePri extends DefaultDerivePri {
 
     long lastUpdate = ETERNAL;
@@ -30,12 +32,12 @@ public class DefaultPuncWeightedDerivePri extends DefaultDerivePri {
     }
 
     /** repurposes nar's default punctuation priorities (for input) as the derivation punctuation weighting */
-    public void cache(NAR nar) {
+    private void cache(NAR nar) {
 
         float beliefPri = nar.beliefPriDefault.asFloat();
         float goalPri = nar.goalPriDefault.asFloat();
-        float questionPri = nar.questionPriDefault.floatValue();
-        float questPri = nar.questPriDefault.floatValue();
+        float questionPri = nar.questionPriDefault.asFloat();
+        float questPri = nar.questPriDefault.asFloat();
 
         //normalize to 1.0, for postAmp usage
         float sum = Util.sum(beliefPri, goalPri, questionPri, questPri);

@@ -80,7 +80,7 @@ abstract public class What extends NARPart implements Prioritizable, Sampler<Tas
     public DerivePri derivePri =
             //new DirectDerivePri();
             new DefaultDerivePri();
-            //new DefaultPuncWeightedDerivePri();
+            //new DefaultPuncWeightedDerivePri(); //<- extreme without disabling either pre or post amp
 
     final ConsumerX<Task> out = new ConsumerX<>() {
 

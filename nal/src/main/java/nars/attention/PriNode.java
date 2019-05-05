@@ -95,7 +95,15 @@ public class PriNode extends PLink<Term> {
         }
     }
 
-    public static class ConstPriNode extends PriNode {
+    public final void amp(float v) {
+        amp.set(v);
+    }
+
+    public static PriNode mutable(String name, float initialValue) {
+        return new Mutable(name, initialValue);
+    }
+
+    private static class Mutable extends PriNode {
 
 //        @Essence
 //        public final FloatRange f;
@@ -105,13 +113,15 @@ public class PriNode extends PLink<Term> {
 //
 //        }
 
-        public ConstPriNode(Object id, float p) {
+        private Mutable(Object id, float p) {
             super(id);
             pri(p);
 //            this.f = f;
 //            pri(f.floatValue());
         }
-//
+
+
+        //
 //        @Override
 //        public float pri(float p) {
 //            f.set(p);
@@ -129,4 +139,5 @@ public class PriNode extends PLink<Term> {
 //            super.update(graph);
 //        }
     }
+
 }

@@ -218,10 +218,10 @@ public class TrackXY_NAR extends GameX {
 
 //        n.attn.links.capacity(1024);
 
-        n.goalPriDefault.pri(0.5f);
-        n.beliefPriDefault.pri(0.1f);
-        n.questionPriDefault.set(0.05f);
-        n.questPriDefault.set(0.05f);
+        n.goalPriDefault.amp(0.5f);
+        n.beliefPriDefault.amp(0.1f);
+        n.questionPriDefault.amp(0.05f);
+        n.questPriDefault.amp(0.05f);
 
 
 //        n.freqResolution.setAt(0.1f);

@@ -1,7 +1,9 @@
 package jcog.data.graph;
 
+import com.google.common.collect.Iterables;
 import com.google.common.graph.SuccessorsFunction;
 import jcog.data.graph.path.FromTo;
+import jcog.data.graph.search.Search;
 import jcog.data.list.FasterList;
 
 import java.util.*;
@@ -78,6 +80,14 @@ public class MapNodeGraph<N, E> extends NodeGraph<N, E> {
             return true;
         }
         return false;
+    }
+
+    /** ensures each root node is added before searching */
+    public boolean bfsNew(Iterable<N> roots, Search<N, E> search) {
+        return bfs(Iterables.transform(roots, r -> {
+            addNewNode(r);
+            return r;
+        }), search);
     }
 
     public final MutableNode<N, E> addNode(N key) {

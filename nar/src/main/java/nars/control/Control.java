@@ -69,7 +69,7 @@ import java.util.Arrays;
             PriMap.newMap(false)
             //new ConcurrentFastIteratingHashMap<>(new Node[0])
     );
-    private final PriNode root = new PriNode.ConstPriNode("root", 1);
+    private final PriNode root = PriNode.mutable("root", 1);
     private final NodeGraph.MutableNode<PriNode,Object> rootNode = graph.addNode(root);
 
 

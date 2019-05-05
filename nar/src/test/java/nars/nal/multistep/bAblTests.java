@@ -73,8 +73,8 @@ class bAblTests extends NALTest {
         t.confTolerance(0.9f);
         t.nar.termVolumeMax.set(35);
         t.nar.freqResolution.set(0.25f);
-        t.nar.beliefPriDefault.pri(0.1f);
-        t.nar.questionPriDefault.set(0.8f);
+        t.nar.beliefPriDefault.amp(0.1f);
+        t.nar.questionPriDefault.amp(0.8f);
 
         t.input("((&&, start($1,$2), at( $1,$B,$C), at( $B,$2,$C2) ) ==> ( path( id,$C,id,$C2)   && chunk( $1,$2,$B) )).")
                 .input("((&&, start($1,$2), at( $1,$B,$C), at( $2,$B,$C2) ) ==> ( path( id,$C,neg,$C2)  && chunk( $1,$2,$B) )).")

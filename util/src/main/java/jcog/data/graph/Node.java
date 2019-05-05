@@ -1,9 +1,9 @@
 package jcog.data.graph;
 
+import com.google.common.base.Function;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Streams;
-import jcog.WTF;
 import jcog.data.graph.path.FromTo;
 import org.jetbrains.annotations.Nullable;
 
@@ -52,16 +52,18 @@ public interface Node<N, E> {
 
     /** TODO Iterator version of this, like edges and edgesIterator */
     default Iterable<? extends Node<N,E>> nodes(boolean in, boolean out) {
-        Iterable<Node<N, E>> i = in ? transform(edges(true, false), x -> x.other(this)) : null;
-        Iterable<Node<N, E>> o = out ? transform(edges(false,true), x->x.other(this)) : null;
+        if (!in && !out)
+            return List.of();
+
+        Function<FromTo<Node<N, E>, E>, Node<N, E>> other = x -> x.other(this);
+        Iterable<Node<N, E>> i = in ? transform(edges(true, false), other) : null;
+        Iterable<Node<N, E>> o = out ? transform(edges(false,true), other) : null;
         if (in && out)
             return Iterables.concat(i, o);
         else if (in)
             return i;
-        else if (out)
+        else //if (out)
             return o;
-        else
-            throw new WTF();
     }
 
     default Stream<FromTo<Node<N,E>,E>> streamIn() {

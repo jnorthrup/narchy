@@ -75,17 +75,19 @@ public abstract class NodeGraph<N, E> /* TODO merge with guava Graph: implements
 //        }
 //    }
 
-    public boolean bfs(Collection<N> startingNodes, Search<N, E> search) {
+
+
+    public boolean bfs(Iterable<N> roots, Search<N, E> search) {
         int c = nodeCount();
         switch (c) {
             case 0:
             case 1:
                 return true; //nothing
             case 2:
-                return dfs(startingNodes, search); //optimization (no queue needed)
+                return dfs(roots, search); //optimization (no queue needed)
         }
 
-        return bfs(startingNodes, new ArrayDeque<>(
+        return bfs(roots, new ArrayDeque<>(
                 2 * (int)Math.ceil(Math.log(c)) /* estimate */), search);
     }
 

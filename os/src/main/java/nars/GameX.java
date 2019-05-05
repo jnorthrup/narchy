@@ -385,10 +385,10 @@ abstract public class GameX extends Game {
 
 
 
-        n.beliefPriDefault.pri(0.05f);
-        n.goalPriDefault.pri(0.1f);
-        n.questionPriDefault.set(0.002f);
-        n.questPriDefault.set(0.002f);
+        n.beliefPriDefault.amp(0.05f);
+        n.goalPriDefault.amp(0.1f);
+        n.questionPriDefault.amp(0.002f);
+        n.questPriDefault.amp(0.002f);
 
 //        n.beliefPriDefault.pri(0.01f);
 //        n.goalPriDefault.pri(0.01f);

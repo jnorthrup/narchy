@@ -8,6 +8,7 @@ import jcog.data.graph.MapNodeGraph;
 import jcog.data.graph.Node;
 import jcog.data.graph.path.FromTo;
 import jcog.data.graph.search.Search;
+import jcog.data.iterator.ArrayIterator;
 import jcog.data.list.FasterList;
 import jcog.data.set.ArrayHashSet;
 import jcog.math.LongInterval;
@@ -605,10 +606,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
     }
 
 
-    private boolean solveDTTrace(Compound x, Predicate<Event> each, Term _a, Term _b, boolean aEqB) {
-
-        Term a = _a;//.eventLast();
-        Term b = _b;//.eventFirst();
+    private boolean solveDTTrace(Compound x, Predicate<Event> each, Term a, Term b, boolean aEqB) {
 
         FasterList<Event> ab = null;
 
@@ -642,7 +640,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
             ab.sortThisByBoolean(e -> !(e instanceof Absolute));
         }
 
-        return bfsPush(ab, new CrossTimeSolver() {
+        return bfsNew(ab, new CrossTimeSolver() {
             @Override
             protected boolean next(BooleanObjectPair<FromTo<Node<Event, TimeSpan>, TimeSpan>> move, Node<Event, TimeSpan> next) {
 
@@ -710,12 +708,10 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
                     dt = -dt;
 
                 long dur = pt[1];
-                switch (x.op()) {
-                    case IMPL:
-                        start = TIMELESS; //the start time does not mean the event occurrence time
-                        if (dt != ETERNAL)
-                            dt -= _a.eventRange();
-                        break;
+                if (x.op() == IMPL) {
+                    start = TIMELESS; //the start time does not mean the event occurrence time
+                    if (dt != ETERNAL)
+                        dt -= a.eventRange();
                 }
 
                 return solveDT(x, start, occToDT(dt), dur, path, dir, each);
@@ -1019,21 +1015,21 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
     }
 
 
-    private boolean solveExact(Event f, Predicate<Event> each) {
-        if (f instanceof Absolute && !f.id.hasXternal()) {
-            return each.test(f);
-        } else {
-
-            //try exact absolute solutions
-
-            for (Event e : events(f.id)) {
-                if (e instanceof Absolute && ((!(f instanceof Absolute)) || !e.equals(f)) && !each.test(e))
-                    return false;
-            }
-
-            return true;
-        }
-    }
+//    private boolean solveExact(Event f, Predicate<Event> each) {
+//        if (f instanceof Absolute && !f.id.hasXternal()) {
+//            return each.test(f);
+//        } else {
+//
+//            //try exact absolute solutions
+//
+//            for (Event e : events(f.id)) {
+//                if (e instanceof Absolute && ((!(f instanceof Absolute)) || !e.equals(f)) && !each.test(e))
+//                    return false;
+//            }
+//
+//            return true;
+//        }
+//    }
 
 //    private boolean solveExact(Term x, Predicate<Event> each) {
 //        return solveExact(null, each, x);
@@ -1274,62 +1270,27 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 //        return bfsPush(List.of(root), tv);
 //    }
 
-    private boolean bfsPush(Collection<Event> roots, Search<Event, TimeSpan> tv) {
-
-
-//        MetalBitSet created = null;
-        {
-//            int n = 0;
-            for (Event r : roots) {
-                if (addNewNode(r)) {
-//                    if (created == null) {
-//                        created = MetalBitSet.bits(roots.size());
-//                    }
-//                    created.set(n);
-                }
-//                n++;
-            }
-        }
-
-
-
-
-//        Iterable<Node<Event,TimeSpan>> rr = Iterables.transform(roots, r -> {
-//            Node<Event, TimeSpan> n = node(r);
-//            if (n == null) {
-//                //virtual node
-//                n = new AbstractNode<>(r) {
-//                    @Override
-//                    public Iterable edges(boolean in, boolean out) {
-//                        if (out) {
-//                            return ()->((TimeSolver)tv).dynamicLink(this);
-//                        } else {
-//                            return List.of();
-//                        }
-//                    }
-//                };
+//    private boolean bfsNew(Iterable<Event> roots, Search<Event, TimeSpan> tv) {
 //
-//            }
-//            return n;
-//        });
-//        boolean result = bfs(q, rr, tv);
-
-        boolean result = bfs(roots, tv);
-
-//        if (created != null/* && result *//* tail call optimization  - dont bother removing if we're done anyway */) {
-//            int m = 0;
-//            for (Event x : roots) {
-//                if (created.get(m++))
-//                    removeNode(x);
-//            }
-//        }
-
-        return result;
-    }
+//        boolean result = bfs(Iterables.transform(roots, r -> {
+//            addNewNode(r);
+//            return r;
+//        }), tv);
+//
+////        if (created != null/* && result *//* tail call optimization  - dont bother removing if we're done anyway */) {
+////            int m = 0;
+////            for (Event x : roots) {
+////                if (created.get(m++))
+////                    removeNode(x);
+////            }
+////        }
+//
+//        return result;
+//    }
 
     private boolean solveOccurrence(Event x, Predicate<Event> each) {
-        return solveExact(x, each) &&
-                solveCrossTime(List.of(x), each) &&
+        return //solveExact(x, each) &&
+                solveBFS(List.of(x), each) &&
                 solveSelfLoop(x, each) &&
                 solveLastResort(x, each);
     }
@@ -1380,8 +1341,8 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
         return each.test(x);
     }
 
-    private boolean solveCrossTime(Collection<Event> x, Predicate<Event> each) {
-        return bfsPush(x, new CrossTimeSolver() {
+    private boolean solveBFS(Collection<Event> x, Predicate<Event> each) {
+        return bfsNew(x, new CrossTimeSolver() {
 
             @Override
             protected boolean next(BooleanObjectPair<FromTo<Node<Event, TimeSpan>, TimeSpan>> move, Node<Event, TimeSpan> n) {
@@ -1580,14 +1541,44 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
             return Long.compare(adt, bdt);
     };
 
+    static final Comparator<? super Event> eventPreference = (a, b)->{
+        if (a == b) return 0;
+        if (b instanceof Relative && !(a instanceof Relative)) return -1;
+        if (a instanceof Relative && !(b instanceof Relative)) return +1;
+
+        //prefer longer duration
+        long ad = a.dur(), bd = b.dur();
+        if (ad > bd)
+            return -1;
+        else if (bd > ad) return +1;
+
+        //TODO shuffle?
+        return a.compareTo(b);
+    };
+
     private abstract class CrossTimeSolver extends Search<Event, TimeSpan> {
 
 
+        private Iterable<Event> sort(Collection<Event> e) {
+            if (e.size() > 1) {
+                Event[] ee = e.toArray(Event.EmptyArray);
+                Arrays.sort(ee, eventPreference);
+                return ArrayIterator.iterable(ee);
+            } else
+                return e;
+        }
+
         @Override
         protected Iterable<FromTo<Node<Event, nars.time.TimeSpan>, TimeSpan>> next(Node<Event, TimeSpan> n) {
+
+            Iterable<FromTo<Node<Event, TimeSpan>, TimeSpan>> existing = n.edges(true, true,
+                    x -> log.hasNotVisited(x.other(n)), temporalProximity);
+
+            Iterable<FromTo<Node<Event, TimeSpan>, TimeSpan>> dynamic = () -> dynamic(n).iterator();
+
             return Iterables.concat(
-                n.edges(true, true, x->log.hasNotVisited(x.other(n)), temporalProximity),  //existing
-                ()->dynamic(n).iterator()  //virtual, lazy
+                existing,  //existing
+                dynamic  //virtual, lazy
             );
         }
 
@@ -1597,10 +1588,11 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
             if (ee == null) {
                 return empty;
             } else {
+
                 return Iterables.transform(
                     Iterables.filter(
-                        Iterables.transform(ee, TimeGraph.this::node),
-                            n -> n != null && log.hasNotVisited(n)
+                        Iterables.transform(sort(ee), TimeGraph.this::node),
+                            n -> n != null && n!=root && log.hasNotVisited(n)
                     ),
                     n -> new ImmutableDirectedEdge(root, TS_ZERO, n)
                 );
@@ -1611,14 +1603,14 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
         Iterable<FromTo<Node<Event, nars.time.TimeSpan>, TimeSpan>> dynamic(Node<Event, TimeSpan> n) {
             Term t = n.id().id;
             return Iterables.concat(
-                tangentLazy(n, t), //same term, but other events
-                tangentLazy(n, t.neg()) //last resort: try neg of the same term
+                tangent(n, t), //same term, but other events
+                tangent(n, t.neg()) //last resort: try neg of the same term
             );
         }
 
-        private Iterable<FromTo<Node<Event, nars.time.TimeSpan>, TimeSpan>> tangentLazy(Node<Event, TimeSpan> n, Term t) {
-            return ()->tangent(n, t).iterator();
-        }
+//        private Iterable<FromTo<Node<Event, nars.time.TimeSpan>, TimeSpan>> tangentLazy(Node<Event, TimeSpan> n, Term t) {
+//            return ()->tangent(n, t).iterator();
+//        }
 
     }
 
@@ -1707,6 +1699,8 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
     }
 
     public abstract static class Event implements LongObjectPair<Term> {
+
+        public static final Event[] EmptyArray = new Event[0];
 
         public final Term id;
         private final int hash;
