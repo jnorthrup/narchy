@@ -7,7 +7,7 @@ import jcog.pri.bag.Sampler;
 import jcog.util.ConsumerX;
 import nars.NAR;
 import nars.Task;
-import nars.attention.derive.DefaultPuncWeightedDerivePri;
+import nars.attention.derive.DefaultDerivePri;
 import nars.concept.Concept;
 import nars.control.NARPart;
 import nars.control.op.TaskEvent;
@@ -79,8 +79,8 @@ abstract public class What extends NARPart implements Prioritizable, Sampler<Tas
      * */
     public DerivePri derivePri =
             //new DirectDerivePri();
-            //new DefaultDerivePri();
-            new DefaultPuncWeightedDerivePri();
+            new DefaultDerivePri();
+            //new DefaultPuncWeightedDerivePri();
 
     final ConsumerX<Task> out = new ConsumerX<>() {
 

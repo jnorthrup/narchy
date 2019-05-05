@@ -113,9 +113,9 @@ class NAL8EternalMixTest extends NALTest {
     void goal_deduction_impl() {
 
         TestNAR tester = test;
-        tester.input("x:y! :|:");
+        tester.input("x:y! |");
         tester.input("(goto(z) ==>+5 x:y).");
-        tester.mustGoal(cycles, "goto(z)", 1.0f, 0.45f, (t) -> t >= 0);
+        tester.mustGoal(cycles, "goto(z)", 1.0f, 0.45f, -5);
     }
 
     @Test
@@ -343,7 +343,7 @@ class NAL8EternalMixTest extends NALTest {
 
                 .input("use! |")
                 .inputAt(2, "( hold &&+5 use ).")
-                .mustGoal(cycles, "hold", 1f, 0.81f, t -> (t >= 0))
+                .mustGoal(cycles, "hold", 1f, 0.81f, t -> t == -5)
                 .mustNotOutput(cycles, "use", GOAL, ETERNAL)
                 .mustNotOutput(cycles, "hold", GOAL, ETERNAL)
         ;
