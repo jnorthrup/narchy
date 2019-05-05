@@ -51,30 +51,15 @@ public enum ConjSeq { ;
     /** TODO TermBuilder */
     static public Term sequence(Term a, long aStart, Term b, long bStart, TermConstructor B) {
 
-        if (aStart == ETERNAL) {
-            assert(bStart == aStart);
-            return CONJ.the(DTERNAL, a, b);
-        } else if (aStart == TIMELESS) {
-            assert(bStart == aStart);
-            return CONJ.the(XTERNAL, a, b);
-        } else if (aStart == bStart) {//(aStart == 0 && bStart == 0) {
-            return CONJ.the(DTERNAL, a, b);
+        if (aStart == ETERNAL) {         assert(bStart == aStart); return CONJ.the(DTERNAL, a, b);
+        } else if (aStart == TIMELESS) { assert(bStart == aStart); return CONJ.the(XTERNAL, a, b);
+        } else if (aStart == bStart) {                             return CONJ.the(0, a, b);
         } else {
-
             assert (bStart != ETERNAL && bStart != TIMELESS);
-//        if (aStart == DTERNAL || bStart == DTERNAL || aStart == XTERNAL || bStart == XTERNAL)
-//            throw new WTF("probably meant ETERNAL"); //TEMPORARY
 
-//        boolean simple = (a.unneg().op() != CONJ) && (b.unneg().op() != CONJ);
-//
-//        if (simple) {
-//            int dt = occToDT(bStart - aStart);
-//            return conjSeqFinal(dt, a, b);
-//        } else {
             ConjBuilder c = new Conj();
             if (c.add(aStart, a))
                 c.add(bStart, b);
             return c.term();
-//        }
         }
     }}

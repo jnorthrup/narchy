@@ -10,7 +10,7 @@ import nars.derive.Derivation;
 import nars.term.Term;
 import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
-import nars.term.compound.LazyCompound;
+import nars.term.compound.LazyCompoundBuilder;
 import nars.term.control.AbstractPred;
 import nars.term.control.PREDICATE;
 import nars.term.util.transform.AbstractTermTransform;
@@ -186,7 +186,7 @@ public class Premisify extends AbstractPred<Derivation> {
         }
     }
 
-    public static final class MatchFork extends LazyCompound implements Predicate<Derivation> {
+    public static final class MatchFork extends LazyCompoundBuilder implements Predicate<Derivation> {
 
         private int forkLimit = -1;
         final Set<Term> tried = new UnifiedSet();
@@ -199,7 +199,6 @@ public class Premisify extends AbstractPred<Derivation> {
             this.taskify = taskify;
             this.forkLimit = forkLimit;
             tried.clear();
-            clear();
         }
 
         @Override
@@ -207,6 +206,9 @@ public class Premisify extends AbstractPred<Derivation> {
             //assert(finalTTL[0]==-1);
 
             Term x = taskify.termify.pattern;
+
+            clear();
+
             Term y = AbstractTermTransform.transform(this, x,
                     dd.transform,
                     x.volume() +

@@ -1194,8 +1194,8 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
         int existingDT = existing.dt();
         int incomingDT = incoming.dt();
 
-        if (existingDT == XTERNAL || incomingDT == XTERNAL)
-            return null; //one or two xternal's, no way to know how they combine or not
+//        if (existingDT == XTERNAL || incomingDT == XTERNAL)
+//            return null; //one or two xternal's, no way to know how they combine or not
 
 //        if (existingDT == 0 && incomingDT == 0) {
 //            assert(eternal);
@@ -1232,13 +1232,17 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
         }
 
         //quick contradiction test
-        if (eternal || existingDT == 0) {
-            if (existing.containsNeg(incoming))
-                return False;
-            if (incoming.op() != CONJ && existing.contains(incoming)) {
-                return existing;
-            }
-        }
+//        if (eternal || existingDT == 0) {
+//            if (existing.containsNeg(incoming))
+//                return False;
+//            if (incoming.op() != CONJ && existing.contains(incoming)) {
+//                return existing;
+//            }
+//        }
+
+
+        if (!Conj.isSeq(existing))
+            return null; //ok
 
         ConjBuilder c = new ConjLazy();
 
@@ -1247,7 +1251,7 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
             if (ww == Null)
                 throw new WTF();
             else if (ww == False) {
-                c.add(ETERNAL, False);
+                //c.add(ETERNAL, False);
                 return false;
             } else if (ww == True)
                 return true;
@@ -1258,7 +1262,7 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
 //                throw new WTF(); //TEMPORARY
 //            }
 
-        }, eternal ? ETERNAL : 0, true, true, false);
+        }, 0, true, false, false);
         if (!ok)
             return False;
 
@@ -1266,10 +1270,11 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
         if (create)
             return d;
         else {
-            if (d.op() != CONJ)
-                return d;
-            else
-                return null; //potentially factor
+//            if (d.op() != CONJ || d.volume() - 1 - incoming.volume() < existing.volume() /* something got reduced */)
+//                return d;
+//            else
+//                return null; //potentially factor
+            return d;
         }
     }
 
@@ -1324,7 +1329,10 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
         boolean conjPolarity = base == existing ? existingPolarity : incomingPolarity;
 
         Term x = base == existing ? incoming : existing;
-        Term result = conjPolarity ? conjoinify(base, x, eternalOrParallel, create) : disjunctify(base, x, eternalOrParallel);
+
+        Term result = conjPolarity ?
+                conjoinify(base, x, eternalOrParallel, create) :
+                disjunctify(base, x, eternalOrParallel);
 
         if (result != null && result.equals(existing))
             result = existing; //same value
@@ -1942,8 +1950,8 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
 
     private Term unindex(byte id) {
         Term x = idToTerm.get(Math.abs(id) - 1);
-        if (x == null)
-            throw new NullPointerException();
+//        if (x == null)
+//            throw new NullPointerException();
         return x.negIf(id < 0);
     }
 
@@ -2252,7 +2260,8 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
                 int tdt = temporal.dt();
                 int edt = eternal.dt();
                 if ((temporal.unneg().op() == CONJ && (tdt == DTERNAL || tdt == 0)) || (eternal.op() == CONJ && (edt == DTERNAL || edt == 0)) || temporal.containsRecursively(eternal.unneg()))
-                    return B.conj(DTERNAL, temporal, eternal); //needs flatten
+                    //needs flatten
+                    return ConjCommutive.the(B, DTERNAL, true, true, temporal, eternal);
                 else {
                     return B.theCompound(CONJ, DTERNAL, sorted(temporal, eternal));
                 }

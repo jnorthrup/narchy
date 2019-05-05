@@ -540,34 +540,6 @@ public interface Term extends Termlike, Termed, Comparable<Term> {
         return this;
     }
 
-    /**
-     * event list, sorted by time
-     * sorted by time; decomposes inner parallel conj
-     * @deprecated use LazyConj.events
-     */
-    @Deprecated default FasterList<LongObjectPair<Term>> eventList() {
-        return eventList(0, true, true);
-    }
-
-    /**
-     * sorted by time; decomposes inner parallel conj
-     * TODO make sorting optional
-     */
-    default FasterList<LongObjectPair<Term>> eventList(long offset, boolean decomposeParallel, boolean decomposeEternal) {
-        if (op()==CONJ) {
-            FasterList<LongObjectPair<Term>> events = new FasterList(2);
-            eventsWhile((w, t) -> {
-                events.add(PrimitiveTuples.pair(w, t));
-                return true;
-            }, offset, decomposeParallel, decomposeEternal, false);
-            return events;
-        } else {
-            return (FasterList)new FasterList<>(1).with(PrimitiveTuples.pair(offset, this));
-        }
-    }
-
-
-
     default boolean eventsWhile(LongObjectPredicate<Term> each, long offset,
                                 boolean decomposeConjParallel, boolean decomposeConjDTernal, boolean decomposeXternal) {
         return each.accept(offset, this);
@@ -580,8 +552,6 @@ public interface Term extends Termlike, Termed, Comparable<Term> {
     default void printRecursive(PrintStream out) {
         Terms.printRecursive(out, this);
     }
-
-
 
     /**
      * returns this target in a form which can identify a concept, or Null if it can't

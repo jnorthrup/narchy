@@ -12,11 +12,11 @@ import static nars.$.$$;
 import static nars.term.atom.Bool.Null;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-class LazyCompoundTest {
+class LazyCompoundBuilderTest {
 
     private static final Term A = $$("a"), B = $$("b"), C = $$("c");
 
-    private static class MyLazyCompound extends LazyCompound {
+    private static class MyLazyCompoundBuilder extends LazyCompoundBuilder {
         @Override
         public Term get(TermBuilder b, int volMax) {
 
@@ -33,13 +33,13 @@ class LazyCompoundTest {
 
     @Test
     void testSimple() {
-        assertEquals("(a,b)", new MyLazyCompound()
+        assertEquals("(a,b)", new MyLazyCompoundBuilder()
                 .compound(Op.PROD, A, B).get().toString());
     }
     @Test
     void testNeg() {
-        LazyCompound l0 = new MyLazyCompound().compound(Op.PROD, A, B, B);
-        LazyCompound l1 = new MyLazyCompound().compound(Op.PROD, A, B, B.neg());
+        LazyCompoundBuilder l0 = new MyLazyCompoundBuilder().compound(Op.PROD, A, B, B);
+        LazyCompoundBuilder l1 = new MyLazyCompoundBuilder().compound(Op.PROD, A, B, B.neg());
 
         DynBytes code = l1.code;
         DynBytes code1 = l0.code;
@@ -48,15 +48,15 @@ class LazyCompoundTest {
         assertEquals(l0.sub.termToId, l1.sub.termToId);
 
         assertEquals("(a,b,(--,b))", l1.get().toString());
-        assertEquals("((--,a),(--,b))", new MyLazyCompound()
+        assertEquals("((--,a),(--,b))", new MyLazyCompoundBuilder()
                 .compound(Op.PROD, A.neg(), B.neg()).get().toString());
     }
     @Test
     void testTemporal() {
-        assertEquals("(a==>b)", new MyLazyCompound()
+        assertEquals("(a==>b)", new MyLazyCompoundBuilder()
                 .compound(Op.IMPL, A, B).get().toString());
 
-        assertEquals("(a ==>+1 b)", new MyLazyCompound()
+        assertEquals("(a ==>+1 b)", new MyLazyCompoundBuilder()
                 .compound(Op.IMPL, 1, A, B).get().toString());
     }
 
@@ -86,7 +86,7 @@ class LazyCompoundTest {
 
     @Test
     void testCompoundInCompound() {
-        assertEquals("(a,{b,c})", new MyLazyCompound()
+        assertEquals("(a,{b,c})", new MyLazyCompoundBuilder()
                 .compoundStart(Op.PROD).subsStart((byte)2).append(A)
                     .compoundStart(Op.SETe).subsStart((byte)2).subs(B, C)
                         .get().toString());

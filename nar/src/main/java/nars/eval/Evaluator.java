@@ -8,7 +8,7 @@ import nars.term.Functor;
 import nars.term.Term;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
-import nars.term.compound.LazyCompound;
+import nars.term.compound.LazyCompoundBuilder;
 import nars.term.util.builder.HeapTermBuilder;
 import nars.term.util.transform.DirectTermTransform;
 import org.jetbrains.annotations.Nullable;
@@ -26,7 +26,7 @@ public class Evaluator extends DirectTermTransform /*extends LazyCompound*/ {
 
     final Function<Atom, Functor> funcResolver;
 
-    final LazyCompound compoundBuilder = new NonEvalLazyCompound();
+    final LazyCompoundBuilder compoundBuilder = new NonEvalLazyCompoundBuilder();
 
     public Evaluator(Function<Atom, Functor> funcResolver) {
         this.funcResolver = funcResolver;
@@ -59,7 +59,7 @@ public class Evaluator extends DirectTermTransform /*extends LazyCompound*/ {
                 }
 
                 try {
-                    LazyCompound y = compoundBuilder.append(X);
+                    LazyCompoundBuilder y = compoundBuilder.append(X);
                     final int[] functors = {0};
                     y.updateMap(g -> {
                         if (g instanceof Functor)
@@ -151,7 +151,7 @@ public class Evaluator extends DirectTermTransform /*extends LazyCompound*/ {
         }
     }
 
-    private static class NonEvalLazyCompound extends LazyCompound {
+    private static class NonEvalLazyCompoundBuilder extends LazyCompoundBuilder {
         @Override
         protected boolean evalInline() {
             return false; //TEMPORARY

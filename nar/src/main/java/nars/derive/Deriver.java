@@ -116,14 +116,11 @@ abstract public class Deriver extends How {
 
         if (p.match(d, matchTTL)) {
 
-            short[] can = d.deriver.what(d);
+            short[] can = what(d);
 
             if (can.length > 0) {
 
-                d.derive(
-                        //Util.lerp(Math.max(d.priDouble, d.priSingle), Param.TTL_MIN, deriveTTL)
-                        deriveTTL, can
-                );
+                rules.run(d, can, deriveTTL);
 
                 result = e.premiseFire;
 
@@ -133,7 +130,6 @@ abstract public class Deriver extends How {
         } else {
             result = e.premiseUnbudgetable;
         }
-
 
         result.increment();
     }

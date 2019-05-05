@@ -248,7 +248,7 @@ public class TrackXY_NAR extends GameX {
         };
 
 
-        ((BatchDeriver) d).tasklinksPerIteration.set(derivationStrength);
+        ((BatchDeriver) d).premisesPerIteration.set(derivationStrength);
 
 
         new STMLinkage(n, 1) {

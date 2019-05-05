@@ -1,10 +1,13 @@
 package nars.attention;
 
 import jcog.TODO;
-import jcog.data.map.ConcurrentFastIteratingHashSet;
 import jcog.math.IntRange;
+import jcog.pri.PLink;
+import jcog.pri.PriReference;
 import jcog.pri.Prioritizable;
 import jcog.pri.bag.Sampler;
+import jcog.pri.bag.impl.PLinkArrayBag;
+import jcog.pri.op.PriMerge;
 import jcog.util.ConsumerX;
 import nars.NAR;
 import nars.Task;
@@ -23,7 +26,6 @@ import nars.time.When;
 import nars.time.event.WhenTimeIs;
 import nars.time.part.DurLoop;
 import nars.util.Timed;
-import org.jetbrains.annotations.Nullable;
 
 import java.io.Externalizable;
 import java.io.IOException;
@@ -171,42 +173,8 @@ abstract public class What extends NARPart implements Prioritizable, Sampler<Tas
         return nar.random();
     }
 
+    abstract public void hypothesize(int premisesPerIteration, int termlinksPerTaskLink, int matchTTL, int deriveTTL, Derivation d);
 
-    /** TODO replace with array bag */
-
-    static final int premiseBufferCapacity = 64;
-    final ConcurrentFastIteratingHashSet<Premise> premises = new ConcurrentFastIteratingHashSet<Premise>(Premise.EmptyArray);
-    /**
-     * forms premises
-     */
-    public Premise hypothesize(int termlinksPerTaskLink, Derivation d) {
-
-        When<NAR> when = WhenTimeIs.now(d);
-
-        if (premises.size() < premiseBufferCapacity) {
-            this.sample(d.random, premiseBufferCapacity, tasklink -> {
-
-                Task task = tasklink.get(when);
-                if (task != null && !task.isDeleted()) {
-                    for (int i = 0; i < termlinksPerTaskLink; i++) {
-                        Term term = ((TaskLinkWhat) this).links.term(tasklink, task, d);
-                        if (term != null) {
-                            if (premises.add(new Premise(task, term)))
-                                return premises.size() < premiseBufferCapacity;
-                        }
-                    }
-                }
-
-                return true;
-
-            });
-        }
-
-        @Nullable Premise p = premises.get(d.random);
-        if (p!=null)
-            premises.remove(p);
-        return p;
-    }
 
 
 
@@ -259,6 +227,11 @@ abstract public class What extends NARPart implements Prioritizable, Sampler<Tas
         public void sample(Random rng, Function<? super TaskLink, SampleReaction> each) {
             what.sample(rng, each);
         }
+
+        @Override
+        public void hypothesize(int premisesPerIteration, int termlinksPerTaskLink, int matchTTL, int deriveTTL, Derivation d) {
+            what.hypothesize(premisesPerIteration, termlinksPerTaskLink,matchTTL,deriveTTL,d);
+        }
     }
 
     /** implements attention with a TaskLinks graph */
@@ -289,7 +262,7 @@ abstract public class What extends NARPart implements Prioritizable, Sampler<Tas
 
         @Override
         protected void commit(NAR nar) {
-
+            premises.commit(null);
             links.commit();
         }
 
@@ -322,6 +295,53 @@ abstract public class What extends NARPart implements Prioritizable, Sampler<Tas
         public final void readExternal(ObjectInput objectInput) {
             throw new TODO();
         }
+
+        /** TODO encapsulate as PremiseBuffer class */
+        static final int premiseBufferCapacity = 32;
+        float premiseSelectDecayRate = 0.5f;
+        float fillFactor = 1f;
+        final PLinkArrayBag<Premise> premises = new PLinkArrayBag<>(PriMerge.replace,premiseBufferCapacity);
+
+        /**
+         * samples premises
+         * thread-safe, for use by multiple threads
+         */
+        public void hypothesize(int premisesPerIteration, int termlinksPerTaskLink, int matchTTL, int deriveTTL, Derivation d) {
+
+            When<NAR> when = WhenTimeIs.now(d);
+
+
+            this.sample(d.random, (int) Math.ceil(Math.max(1, ((float)premisesPerIteration)/termlinksPerTaskLink) * fillFactor), tasklink -> {
+
+                Task task = tasklink.get(when);
+                if (task != null && !task.isDeleted()) {
+                    Term prevTerm = null;
+                    for (int i = 0; i < termlinksPerTaskLink; i++) {
+                        Term term = links.term(tasklink, task, d);
+                        if (term != null && (prevTerm == null || !term.equals(prevTerm))) {
+                            premises.put(new PLink<>(new Premise(task, term), tasklink.priPunc(task.punc())));
+                        }
+                        prevTerm = term;
+                    }
+                }
+
+                return true;
+
+            });
+
+            for (int i = 0; i < premisesPerIteration; i++) {
+                PriReference<Premise> pp = premises.sample(d.random);
+                if (pp == null)
+                    continue;
+
+                pp.priMult(premiseSelectDecayRate);
+
+                d.deriver.derive(pp.get(), d, matchTTL, deriveTTL);
+            }
+
+        }
+
+
     }
 
     @Override

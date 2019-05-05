@@ -66,7 +66,11 @@ public class DeriverRules {
         return d.use(NAL.derive.TTL_COST_BRANCH);
     }
 
-    public void run(Derivation d, short[] can) {
+    public void run(Derivation d, short[] can, int deriveTTL) {
+        d.ready(
+                can, deriveTTL
+                //Util.lerp(Math.max(d.priDouble, d.priSingle), Param.TTL_MIN, deriveTTL)
+        );
 
         /**
          * weight vector generation

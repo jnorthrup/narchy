@@ -23,18 +23,20 @@ import static nars.time.Tense.*;
 public enum ConjCommutive {;
 
     public static Term the(int dt, Term... u) {
-        return theSorted(Op.terms, dt, sorted(u));
+        return the(Op.terms, dt, u);
     }
 
-    public static Term the(int dt, Collection<Term> u) {
-        return theSorted(Op.terms, dt, sorted(u));
+    public static Term the(TermBuilder B, int dt, Term... u) {
+        return the(Op.terms, dt, false, false, u);
     }
 
-    /**
-     * assumes u is sorted
-     */
     public static Term theSorted(TermBuilder B, int dt, Term... u) {
+        return the(Op.terms, dt, true, false, u);
+    }
 
+    public static Term the(TermBuilder B, int dt, boolean sort, boolean direct, Term... u) {
+        if (sort)
+            u = sorted(u);
 
         if (u.length == 0)
             return True;
@@ -173,10 +175,6 @@ public enum ConjCommutive {;
                     }
 
                     if (indep == u.length - 1) {
-//                        //promote dternal wrapped parallel disjunction to parallel
-//                        if (dt == DTERNAL && co.dt()==0)
-//                            return theSorted(0, u); //need to start over (recurse)
-
                         return conjDirect(dt, u); //all independent
                     }
 
@@ -214,49 +212,51 @@ public enum ConjCommutive {;
 
         }
 
-        long sdt = dt == DTERNAL ? ETERNAL : 0;
-        //try {
+        if (direct)
+            return conjDirect(dt, u); //done
+        else {
 
-        //iterate in reverse order to add the smaller (by volume) items first
+            long sdt = dt == DTERNAL ? ETERNAL : 0;
 
-        if (seq != null) {
-            ConjBuilder c = new Conj(u.length);
-            //add the non-conj terms at ETERNAL last.
-            //then if the conjOther is a sequence, add it at zero
-            for (int i = u.length - 1; i >= 0; i--) {
-                if (seq.get(i)) {
-                    if (!c.add(sdt, u[i]))
-                        return c.term(); //fail
-                }
-            }
-            for (int i = u.length - 1; i >= 0; i--) {
-                if (!seq.get(i))
-                    if (!c.add(sdt, u[i]))
-                        return c.term(); //fail
-            }
-            return c.term();
+            //iterate in reverse order to add the smaller (by volume) items first
 
-        } else {
-            switch (u.length) {
-                case 0:
-                    return True;
-                case 1:
-                    return u[0];
-                case 2:
-                    return Conj.conjoin(B, u[0], u[1], dt == DTERNAL);
-                default: {
-                    ConjBuilder c = new Conj(u.length);
-                    for (int i = u.length - 1; i >= 0; i--) {
+            if (seq != null) {
+                ConjBuilder c = new Conj(u.length);
+                //add the non-conj terms at ETERNAL last.
+                //then if the conjOther is a sequence, add it at zero
+                for (int i = u.length - 1; i >= 0; i--) {
+                    if (seq.get(i)) {
                         if (!c.add(sdt, u[i]))
-                            break;
+                            return c.term(); //fail
                     }
-                    return c.term(B);
+                }
+                for (int i = u.length - 1; i >= 0; i--) {
+                    if (!seq.get(i))
+                        if (!c.add(sdt, u[i]))
+                            return c.term(); //fail
+                }
+                return c.term();
+
+            } else {
+                switch (u.length) {
+                    case 0:
+                        return True;
+                    case 1:
+                        return u[0];
+                    case 2:
+                        return Conj.conjoin(B, u[0], u[1], dt == DTERNAL);
+                    default: {
+                        ConjBuilder c = new Conj(u.length);
+                        for (int i = u.length - 1; i >= 0; i--) {
+                            if (!c.add(sdt, u[i]))
+                                break;
+                        }
+                        return c.term(B);
+                    }
                 }
             }
+
         }
-//        } catch (StackOverflowError e) {
-//            throw new WTF("StackOverflow: && " + sdt + " " + Arrays.toString(u)); //TEMPORARY
-//        }
     }
 
     private static boolean absorbCompletelyByFirstLayer(Term co, Term x) {

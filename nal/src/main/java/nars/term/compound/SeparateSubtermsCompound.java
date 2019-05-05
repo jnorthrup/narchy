@@ -10,6 +10,7 @@ import org.eclipse.collections.api.block.predicate.primitive.ObjectIntPredicate;
 import org.eclipse.collections.api.block.procedure.primitive.ObjectIntProcedure;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.function.BiConsumer;
 import java.util.function.BiPredicate;
@@ -134,6 +135,16 @@ public abstract class SeparateSubtermsCompound implements Compound {
     @Override
     public final <X> void forEachWith(BiConsumer<Term, X> t, X argConst) {
         subterms().forEachWith(t, argConst);
+    }
+
+    @Override
+    public int addAllTo(Term[] t, int offset) {
+        return subterms().addAllTo(t, offset);
+    }
+
+    @Override
+    public void addAllTo(Collection<Term> set) {
+        subterms().addAllTo(set);
     }
 
     @Override

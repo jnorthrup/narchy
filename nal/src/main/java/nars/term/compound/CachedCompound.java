@@ -44,7 +44,7 @@ abstract public class CachedCompound extends SeparateSubtermsCompound implements
             else
                 c = new UnnormalizedCachedCompound(op, subterms);
         } else {
-            if (op==CONJ && dt == 0) {
+            if (op==CONJ && dt == DTERNAL) {
                 Util.nop(); //TEMPORARY for debugging
             }
             c = new TemporalCachedCompound(op, dt, subterms);

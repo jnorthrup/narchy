@@ -7,7 +7,7 @@ import nars.NAL;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.atom.Atomic;
-import nars.term.compound.LazyCompound;
+import nars.term.compound.LazyCompoundBuilder;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Iterator;
@@ -84,7 +84,7 @@ abstract public class MapSubst implements Subst {
     }
 
     @Override
-    public boolean transformCompound(Compound x, LazyCompound out) {
+    public boolean transformCompound(Compound x, LazyCompoundBuilder out) {
         throw new TODO();
     }
 

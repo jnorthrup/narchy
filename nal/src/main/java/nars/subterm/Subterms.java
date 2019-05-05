@@ -20,6 +20,7 @@ import nars.term.util.transform.MapSubst;
 import nars.term.util.transform.TermTransform;
 import nars.unify.Unify;
 import nars.unify.mutate.CommutivePermutations;
+import org.eclipse.collections.api.block.function.primitive.IntObjectToIntFunction;
 import org.eclipse.collections.api.block.predicate.primitive.IntObjectPredicate;
 import org.eclipse.collections.api.block.predicate.primitive.ObjectIntPredicate;
 import org.eclipse.collections.api.block.procedure.primitive.ObjectIntProcedure;
@@ -107,6 +108,9 @@ public interface Subterms extends Termlike, Iterable<Term> {
         return intifyShallow((s, x) -> s | x.structure(), 0);
     }
 
+
+
+
     //    default boolean equalsRoot(Subterms y) {
 //        return equals(y) ||
 //                (y.hasAny(Op.Temporal) && y.subs() == subs() && y.structure()==structure() && ANDith((x, i)-> x.equalsRoot(y.sub(i))));
@@ -164,6 +168,11 @@ public interface Subterms extends Termlike, Iterable<Term> {
         int s = subs();
         for (int i = 0; i < s; i++)
             t.accept(sub(i), argConst);
+    }
+    default void forEachWith(IntObjectToIntFunction<Term> t, int x) {
+        int s = subs();
+        for (int i = 0; i < s; i++)
+            x = t.intValueOf(x, sub(i));
     }
 
 //    /**

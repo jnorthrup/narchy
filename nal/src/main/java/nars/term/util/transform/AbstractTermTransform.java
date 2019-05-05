@@ -7,7 +7,7 @@ import nars.subterm.TermList;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.atom.Bool;
-import nars.term.compound.LazyCompound;
+import nars.term.compound.LazyCompoundBuilder;
 import nars.term.util.builder.TermBuilder;
 import org.jetbrains.annotations.Nullable;
 
@@ -22,11 +22,11 @@ import static nars.time.Tense.XTERNAL;
 public interface AbstractTermTransform extends TermTransform, nars.term.util.builder.TermConstructor {
 
     static Term transform(Term x, TermTransform transform) {
-        return transform(new LazyCompound(), x, transform, NAL.term.COMPOUND_VOLUME_MAX);
+        return transform(new LazyCompoundBuilder(), x, transform, NAL.term.COMPOUND_VOLUME_MAX);
     }
 
     /** global default transform procedure: can decide semi-optimal transform implementation */
-    static Term transform(LazyCompound l, Term x, TermTransform transform, int volMax) {
+    static Term transform(LazyCompoundBuilder l, Term x, TermTransform transform, int volMax) {
         if (x instanceof Compound && NAL.TERMIFY_TRANSFORM_LAZY) {
             return ((AbstractTermTransform)transform).applyCompoundLazy((Compound)x, l,
                     //HeapTermBuilder.the
@@ -185,15 +185,15 @@ public interface AbstractTermTransform extends TermTransform, nars.term.util.bui
 
     }
 
-    default LazyCompound applyLazy(LazyCompound l, Compound x) {
+    default LazyCompoundBuilder applyLazy(LazyCompoundBuilder l, Compound x) {
         return !transformCompound(x, l) ? null : l;
     }
 
     default Term applyCompoundLazy(Compound x) {
-        return applyCompoundLazy(x, new LazyCompound(), Op.terms, NAL.term.COMPOUND_VOLUME_MAX);
+        return applyCompoundLazy(x, new LazyCompoundBuilder(), Op.terms, NAL.term.COMPOUND_VOLUME_MAX);
     }
 
-    default Term applyCompoundLazy(Compound x, LazyCompound l, TermBuilder b, int volMax) {
+    default Term applyCompoundLazy(Compound x, LazyCompoundBuilder l, TermBuilder b, int volMax) {
         l = applyLazy(l, x);
         return l == null ? Null : l.get(b, volMax);
     }

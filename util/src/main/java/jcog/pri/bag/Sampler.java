@@ -1,6 +1,5 @@
 package jcog.pri.bag;
 
-import jcog.data.list.FasterList;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Random;
@@ -51,14 +50,13 @@ public interface Sampler<X> {
     }
 
     default Sampler<X> sampleOrPop(Random rng, boolean pop, int max, Consumer<? super X> each) {
-        if (max == 0)
-            return this;
-
-        final int[] count = {max};
-        sample(rng, (Function<X,SampleReaction>)(x -> {
-            each.accept(x);
-            return ((--count[0]) > 0) ? (pop ? Remove : Next) : (pop ? RemoveAndStop : Stop);
-        }));
+        if (max > 0) {
+            final int[] count = {max};
+            sample(rng, (Function<X, SampleReaction>) x -> {
+                each.accept(x);
+                return --count[0] > 0 ? (pop ? Remove : Next) : (pop ? RemoveAndStop : Stop);
+            });
+        }
         return this;
     }
 
@@ -68,13 +66,11 @@ public interface Sampler<X> {
      * < max true's have been returned
      */
     default Sampler<X> sample(Random rng, int max, Predicate<? super X> kontinue) {
-        if (max == 0)
-            return this;
-
-        final int[] count = {max};
-        sample(rng, (Function<X,SampleReaction>)(x ->
-                (kontinue.test(x) && ((--count[0]) > 0)) ?
-                        Next : Stop));
+        if (max > 0) {
+            final int[] count = {max};
+            sample(rng, (Function<X, SampleReaction>)
+                    x -> kontinue.test(x) && --count[0] > 0 ? Next : Stop);
+        }
         return this;
     }
 
@@ -98,38 +94,38 @@ public interface Sampler<X> {
     }
 
 
-    class RoundRobinSampler<X> extends FasterList<X> implements Sampler<X> {
-
-        @Override
-        public void sample(Random rng, Function<? super X, SampleReaction> each) {
-            int limit;
-            X[] ii;
-            restart: while ((limit = Math.min(size, (ii=items).length)) > 0) {
-
-                if (limit == 0)
-                    return;
-                int next = rng.nextInt(limit);
-                int missesBeforeRestart = 4, misses = 0;
-                X n;
-                do {
-                    do {
-                        next++;
-                        if (next == limit)
-                            next = 0; //loop
-                        n = ii[next];
-                        if (n == null) {
-                            if (misses++ >= missesBeforeRestart) {
-                                break restart;
-                            }
-                        } else {
-                            misses = 0;
-                        }
-                    } while (n == null);
-
-                } while (!each.apply(n).stop);
-                return;
-            }
-        }
-    }
+//    class RoundRobinSampler<X> extends FasterList<X> implements Sampler<X> {
+//
+//        @Override
+//        public void sample(Random rng, Function<? super X, SampleReaction> each) {
+//            int limit;
+//            X[] ii;
+//            restart: while ((limit = Math.min(size, (ii=items).length)) > 0) {
+//
+//                if (limit == 0)
+//                    return;
+//                int next = rng.nextInt(limit);
+//                int missesBeforeRestart = 4, misses = 0;
+//                X n;
+//                do {
+//                    do {
+//                        next++;
+//                        if (next == limit)
+//                            next = 0; //loop
+//                        n = ii[next];
+//                        if (n == null) {
+//                            if (misses++ >= missesBeforeRestart) {
+//                                break restart;
+//                            }
+//                        } else {
+//                            misses = 0;
+//                        }
+//                    } while (n == null);
+//
+//                } while (!each.apply(n).stop);
+//                return;
+//            }
+//        }
+//    }
 
 }

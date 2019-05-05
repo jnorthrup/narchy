@@ -150,10 +150,10 @@ public class TemporalTermTest {
 
 
     public static void testParse(String s) {
-        testParse(s, null);
+        testParse(null, s);
     }
 
-    public static void testParse(String input, String expected) {
+    public static void testParse(String expected, String input) {
         Termed t = null;
         try {
             t = $(input);

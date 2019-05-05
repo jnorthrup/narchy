@@ -363,6 +363,12 @@ public interface Termlike {
         throw new TODO();
     }
 
+    default int addAllTo(Term[] t, int offset) {
+        int s = subs();
+        for (int i = 0; i < s;)
+            t[offset++] = sub(i++);
+        return s;
+    }
 
 }
 

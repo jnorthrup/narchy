@@ -11,7 +11,6 @@ import nars.Op;
 import nars.Task;
 import nars.attention.What;
 import nars.control.CauseMerge;
-import nars.derive.impl.BatchDeriver;
 import nars.derive.op.Occurrify;
 import nars.derive.op.Premisify;
 import nars.eval.Evaluation;
@@ -408,7 +407,7 @@ public class Derivation extends PreDerivation {
     /**
      * called after protoderivation has returned some possible Try's
      */
-    public void derive(int ttl, short[] can) {
+    public void ready(short[] can, int ttl) {
 
         if (taskStart == ETERNAL && (_belief == null || beliefStart == ETERNAL)) {
             this.taskBeliefTimeIntersects[0] = this.taskBeliefTimeIntersects[1] = ETERNAL;
@@ -492,7 +491,6 @@ public class Derivation extends PreDerivation {
         what.derivePri.premise(this);
 
 //        try {
-        deriver.rules.run(this, can);
 //        } catch (Exception e) {
 //            reset();
 //            throw e;
@@ -694,19 +692,6 @@ public class Derivation extends PreDerivation {
 
     public long[] evidence() {
         return concSingle ? evidenceSingle() : evidenceDouble();
-    }
-
-    /** derive next; main entry point */
-    public void derive(int matchTTL, int deriveTTL) {
-
-        BatchDeriver deriver = (BatchDeriver) this.deriver;
-
-
-        //fill premise buffer
-        Premise p = what.hypothesize(deriver.termlinksPerTaskLink.intValue(), this);
-        if (p!=null)
-            deriver.derive(p, this, matchTTL, deriveTTL);
-
     }
 
     public final class DerivationTransform extends UnifyTransform {

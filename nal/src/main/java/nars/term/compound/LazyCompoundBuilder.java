@@ -13,6 +13,7 @@ import nars.term.atom.Atomic;
 import nars.term.util.builder.TermBuilder;
 import nars.term.util.map.ByteAnonMap;
 import nars.term.util.transform.InlineFunctor;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
@@ -30,11 +31,11 @@ import static nars.time.Tense.DTERNAL;
  * consists of a tape flat linear tape of instructions which
  * when executed construct the target
  */
-public class LazyCompound {
+public class LazyCompoundBuilder {
     private final static int INITIAL_CODE_SIZE = 16;
     private final static int INITIAL_ANON_SIZE = 8;
 
-    ByteAnonMap sub = null;
+    final ByteAnonMap sub = new ByteAnonMap(INITIAL_ANON_SIZE);
     final DynBytes code = new DynBytes(INITIAL_CODE_SIZE);
 
     private boolean changed;
@@ -47,11 +48,11 @@ public class LazyCompound {
     private boolean constantPropagate = true;
     int volRemain;
 
-    public LazyCompound() {
+    public LazyCompoundBuilder() {
 
     }
     public void clear() {
-        if (sub!=null) sub.clear();
+        sub.clear();
         code.clear();
         changed = false;
         constantPropagate = true;
@@ -62,7 +63,7 @@ public class LazyCompound {
         return sub.updateMap(m);
     }
 
-    final LazyCompound compoundStart(Op o) {
+    final LazyCompoundBuilder compoundStart(Op o) {
         compoundStart(o, DTERNAL);
         return this;
     }
@@ -70,30 +71,30 @@ public class LazyCompound {
     /**
      * append compound
      */
-    public final LazyCompound compound(Op o, Term... subs) {
+    public final LazyCompoundBuilder compound(Op o, Term... subs) {
         return compound(o, DTERNAL, subs);
     }
 
     /**
      * append compound
      */
-    public LazyCompound compound(Op o, int dt, Term... subs) {
+    public LazyCompoundBuilder compound(Op o, int dt, Term... subs) {
         int n = subs.length;
         assert (n < Byte.MAX_VALUE);
         return compoundStart(o, dt).subsStart((byte) n).subs(subs).compoundEnd(o);
     }
 
-    public LazyCompound compoundEnd(Op o) {
+    public LazyCompoundBuilder compoundEnd(Op o) {
         return this;
     }
 
 
-    public LazyCompound subsStart(byte subterms) {
+    public LazyCompoundBuilder subsStart(byte subterms) {
         code.writeByte(subterms);
         return this;
     }
 
-    public LazyCompound compoundStart(Op o, int dt) {
+    public LazyCompoundBuilder compoundStart(Op o, int dt) {
         DynBytes c = this.code;
 
         byte oid = o.id;
@@ -112,7 +113,7 @@ public class LazyCompound {
     private final static byte MAX_CONTROL_CODES = (byte) Op.unique();
 
 
-    public final LazyCompound negStart() {
+    public final LazyCompoundBuilder negStart() {
         compoundStart(NEG, DTERNAL);
         return this;
     }
@@ -121,7 +122,7 @@ public class LazyCompound {
     /**
      * add an already existent sub
      */
-    public LazyCompound append(Term x) {
+    public LazyCompoundBuilder append(Term x) {
         if (x instanceof Atomic) {
             return appendAtomic(x);
         } else {
@@ -129,7 +130,7 @@ public class LazyCompound {
         }
     }
 
-    private LazyCompound append(Compound x) {
+    private LazyCompoundBuilder append(Compound x) {
         Op o = x.op();
         switch (o) {
             case NEG:
@@ -141,36 +142,31 @@ public class LazyCompound {
         }
     }
 
-    private LazyCompound appendSubterms(Subterms s) {
+    private LazyCompoundBuilder appendSubterms(Subterms s) {
         return subsStart((byte) s.subs()).subs(s).subsEnd();
     }
 
-    private LazyCompound appendAtomic(Term x) {
+    private LazyCompoundBuilder appendAtomic(Term x) {
         code.writeByte(MAX_CONTROL_CODES + intern(x));
         return this;
     }
 
     private byte intern(Term x) {
         //assert(!(x == null || x == Null || x.op() == NEG));
-        return sub().intern(x);
+        return sub.intern(x);
     }
 
-    private LazyCompound subs(Iterable<Term> subs) {
+    private LazyCompoundBuilder subs(Iterable<Term> subs) {
         subs.forEach(this::append);
         return this;
     }
 
-    final LazyCompound subs(Term... subs) {
+    final LazyCompoundBuilder subs(Term... subs) {
         for (Term x : subs)
             append(x);
         return this;
     }
 
-
-    private ByteAnonMap sub() {
-        ByteAnonMap sub = this.sub;
-        return this.sub == null ? (this.sub = new ByteAnonMap(INITIAL_ANON_SIZE)) : sub;
-    }
 
     public final Term get() {
         return get(
@@ -195,74 +191,58 @@ public class LazyCompound {
 //            if (sub != null)
 //                sub.readonly(); //optional
 
-        return getNext(b, c.arrayDirect(), new int[]{0, c.len});
+        return nextSubterm(b, c.arrayDirect(), new int[]{0, c.len});
     }
 
 
 
-    private Term getNext(TermBuilder b, byte[] ii, int[] range) {
+    private Term nextSubterm(TermBuilder b, byte[] ii, int[] range) {
         if (volRemain <= 0)
             return Null;
 
         int from;
         byte ctl = ii[(from = range[0]++)];
+        if (ctl == 0)
+            throw new WTF(); //maybe this means to skip this byte
+
         //System.out.println("ctl=" + ctl + " @ " + from);
 
-        Term next;
         if (ctl < MAX_CONTROL_CODES) {
 
             /** -1 volume for the compound; the subterms are counted elsewhere */
             this.volRemain--;
 
             Op op = Op.the(ctl);
+
             if (op == NEG)
-                next = getNext(b, ii, range).neg();
+                return nextSubterm(b, ii, range).neg();
             else {
                 if (op.atomic)
                     throw new WTF(); //alignment error or something
 
-                int dt;
-                if (op.temporal) {
-                    int p = range[0];
-                    range[0] += 4;
-                    dt = Ints.fromBytes(ii[p++], ii[p++], ii[p++], ii[p/*++*/]);
-                } else
-                    dt = DTERNAL;
+                int dt = op.temporal ? dt(ii, range) : DTERNAL;
 
                 byte subterms = ii[range[0]++];
                 if (subterms == 0) {
-                    if (op == PROD)
-                        next = EmptyProduct;
-                    else if (op == CONJ)
-                        next = True;
-                    else {
-                        throw new WTF();
-                    }
+
+                    return emptySubterms(op);
+
                 } else {
                     int vBefore = volRemain;
 
-                    Term[] s = getNext(b, subterms, ii, range);
+                    Term[] s = nextSubterms(b, subterms, ii, range);
 
-                    if (s == null)
+                    if (s == null) {
                         return Null;
-                    else {
-
-                        int vAfter = volRemain;
+                    } else {
 
                         if (op==INH && evalInline() && s[1] instanceof InlineFunctor && s[0].op()==PROD) {
 
-                            next = ((InlineFunctor)s[1]).applyInline(s[0].subterms());
-                            if (next == null)
-                                return Null;
-
-                            //TODO determine if constantPropagate does not need disabled (specially marked "deterministic" functors)
-                            constantPropagate = false; //HACK
-
-                            //TODO if Functor.isDeterministic { replaceAhead...
+                            return eval(s);
 
                         } else {
 
-                            next = op.the(b, dt, s); //assert (next != null);
+                            Term next = op.the(b, dt, s); //assert (next != null);
 
                             if (next != Null) {
 
@@ -276,24 +256,64 @@ public class LazyCompound {
                             //TODO
 //                            if (!constantPropagate && !next.hasAny)
 //                                constantPropagate = true; //return to constant propagation mode now that
+
+                            return next;
                         }
+
 
                     }
                 }
             }
 
         } else {
-            next = next(ctl);
-            volRemain -= next.volume();
-
-            //skip zero padding suffix
-            int r0 = range[0], r1 = range[1];
-            while (r0 < r1 && code.at(r0) == 0) { ++r0; }
-            range[0] = r0;
+            return nextAtom(range, ctl);
 
         }
 
+    }
+
+    @NotNull
+    private Term eval(Term[] s) {
+        Term next = ((InlineFunctor)s[1]).applyInline(s[0].subterms());
+
+        //TODO determine if constantPropagate does not need disabled (specially marked "deterministic" functors)
+        constantPropagate = false; //HACK
+
+        //TODO if Functor.isDeterministic { replaceAhead...
+
+        return next!=null ? next : Null;
+    }
+
+    @NotNull
+    private Term nextAtom(int[] range, byte ctl) {
+        Term next;
+        next = next(ctl);
+        volRemain -= next.volume();
+
+        //skip zero padding suffix
+        int r0 = range[0], r1 = range[1];
+        while (r0 < r1 && code.at(r0) == 0) { ++r0; }
+        range[0] = r0;
         return next;
+    }
+
+    private Term emptySubterms(Op op) {
+        Term next;
+        if (op == PROD)
+            next = EmptyProduct;
+        else if (op == CONJ)
+            next = True;
+        else
+            throw new WTF();
+        return next;
+    }
+
+    private int dt(byte[] ii, int[] range) {
+        int dt;
+        int p = range[0];
+        range[0] += 4;
+        dt = Ints.fromBytes(ii[p++], ii[p++], ii[p++], ii[p/*++*/]);
+        return dt;
     }
 
     protected boolean evalInline() {
@@ -333,7 +353,7 @@ public class LazyCompound {
     }
 
     @Nullable
-    private Term[] getNext(TermBuilder b, byte n, byte[] ii, int[] range) {
+    private Term[] nextSubterms(TermBuilder b, byte n, byte[] ii, int[] range) {
         Term[] t = null;
         //System.out.println(range[0] + ".." + range[1]);
         for (int i = 0; i < n; ) {
@@ -343,7 +363,7 @@ public class LazyCompound {
             //return Arrays.copyOfRange(t, 0, i); //hopefully this is becaues of an ellipsis that got inlined and had no effect
 
             Term y;
-            if ((y = getNext(b, ii, range)) == Null)
+            if ((y = nextSubterm(b, ii, range)) == Null)
                 return null;
 
             //if (y == null) throw new NullPointerException(); //WTF
@@ -351,8 +371,12 @@ public class LazyCompound {
             if (y.op()==FRAG) { //if (y instanceof EllipsisMatch) {
                 int en = y.subs();
                 n += en - 1;
-                t = getNextFrag(t, i, y, n, en);
-                i += en;
+                if (n == 0)
+                    t = EmptyTermArray;
+                else {
+                    t = nextFrag(t, i, y, n, en);
+                    i += en;
+                }
             } else {
                 if (t == null)
                     t = new Term[n];
@@ -363,17 +387,15 @@ public class LazyCompound {
     }
 
     /** expand a fragment */
-    private Term[] getNextFrag(Term[] t, int i, Term y, byte n, int en) {
+    private Term[] nextFrag(Term[] t, int i, Term y, byte n, int en) {
         if (t == null)
-            t = (n == 0) ? EmptyTermArray : new Term[n];
-        else if (t.length != n) {
-            t = (n == 0) ? EmptyTermArray : Arrays.copyOf(t, n);
+            t = new Term[n];
+        else if (t.length < n) {
+            t = Arrays.copyOf(t, n);
         }
         if (en > 0) {
-            for (Term e : y.subterms()) {
-                // if (e == null || e == Null) throw new NullPointerException();
-                t[i++] = e; //TODO recursively process?
-            }
+            //TODO recursively evaluate?
+            y.addAllTo(t, i);
         }
         return t;
     }
@@ -394,7 +416,7 @@ public class LazyCompound {
         code.len = pos;
     }
 
-    public LazyCompound subsEnd() {
+    public LazyCompoundBuilder subsEnd() {
         return this;
     }
 
