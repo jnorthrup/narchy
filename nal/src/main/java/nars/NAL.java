@@ -84,7 +84,9 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
     /**
      * should be monotonically increasing at most
      */
-    public static final PriMerge tasklinkMerge = PriMerge.or;
+    public static final PriMerge tasklinkMerge =
+            //PriMerge.or;
+            PriMerge.plus;
 
 //    public static final boolean ETERNALIZE_BELIEF_PROJECTED_FOR_GOAL_DERIVATION= !configIs("DISABLE_ETERNALIZE_BELIEF_PROJECTED_FOR_GOAL_DERIVATION");
     /**
