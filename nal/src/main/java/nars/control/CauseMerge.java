@@ -1,7 +1,7 @@
 package nars.control;
 
 import jcog.Util;
-import jcog.util.ArrayUtils;
+import jcog.util.ArrayUtil;
 import nars.task.util.TaskRegion;
 import org.eclipse.collections.api.set.primitive.ShortSet;
 import org.eclipse.collections.impl.factory.primitive.ShortSets;
@@ -42,7 +42,7 @@ public enum CauseMerge {
                         if (i == e)
                             return incoming; //incoming contains the only existing
                     }
-                    return ArrayUtils.prepend(incoming, e);
+                    return ArrayUtil.prepend(incoming, e);
                 }
             }
 
@@ -62,7 +62,7 @@ public enum CauseMerge {
 
             int aa = append.size();
             if (aa + incoming.length < capacity) {
-                return ArrayUtils.addAll(incoming, append.toArray());
+                return ArrayUtil.addAll(incoming, append.toArray());
             } else {
                 return mergeSampled(capacity, false, existing, append.toArray());
             }
@@ -91,7 +91,7 @@ public enum CauseMerge {
 
 
     public static short[] limit(short[] cause, int cap) {
-        return cause.length <= cap ? cause : ArrayUtils.subarray(cause, 0, cap);
+        return cause.length <= cap ? cause : ArrayUtil.subarray(cause, 0, cap);
     }
 
     abstract protected short[] apply(short[] existing, short[] incoming, int capacity);
@@ -156,7 +156,7 @@ public enum CauseMerge {
             default:
                 y = merge(causeCapacity,
                         Util.map(TaskRegion::why, short[][]::new,
-                                ArrayUtils.removeNulls(x, TaskRegion[]::new)));
+                                ArrayUtil.removeNulls(x, TaskRegion[]::new)));
                 break;
         }
         return limit(y, causeCapacity);
@@ -189,7 +189,7 @@ public enum CauseMerge {
         if (nonEmpties == 1)
             return lastNonEmpty;
         if (totalItems == 0)
-            return ArrayUtils.EMPTY_SHORT_ARRAY;
+            return ArrayUtil.EMPTY_SHORT_ARRAY;
 
 
         AwesomeShortArrayList ll = new AwesomeShortArrayList(Math.min(maxLen, totalItems));

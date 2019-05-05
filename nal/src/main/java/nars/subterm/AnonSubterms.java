@@ -1,6 +1,6 @@
 package nars.subterm;
 
-import jcog.util.ArrayUtils;
+import jcog.util.ArrayUtil;
 import nars.Op;
 import nars.term.Term;
 import nars.term.anon.AnonArrayIterator;
@@ -230,7 +230,7 @@ public class AnonSubterms extends TermVector /*implements Subterms.SubtermsBytes
 //        if (id < 0 && !anyNeg())
 //            return -1;
 
-        return ArrayUtils.indexOf(subterms, id);
+        return ArrayUtil.indexOf(subterms, id);
     }
 
 // TODO TEST

@@ -4,7 +4,7 @@ import it.unimi.dsi.fastutil.bytes.ByteArrayList;
 import jcog.TODO;
 import jcog.data.list.FasterList;
 import jcog.data.set.ArrayHashSet;
-import jcog.util.ArrayUtils;
+import jcog.util.ArrayUtil;
 import nars.$;
 import nars.Builtin;
 import nars.Narsese;
@@ -1028,7 +1028,7 @@ public class PremiseRule extends ProxyTerm {
     }
 
     private void matchSuper(boolean taskOrBelief, TermMatcher m, boolean trueOrFalse) {
-        byte[] path = ArrayUtils.EMPTY_BYTE_ARRAY;
+        byte[] path = ArrayUtil.EMPTY_BYTE_ARRAY;
         pre.add(new TermMatch(m, trueOrFalse, false, TaskOrBelief(taskOrBelief).path(path), cost(path.length)));
     }
 

@@ -1,6 +1,6 @@
 package nars.truth.dynamic;
 
-import jcog.util.ArrayUtils;
+import jcog.util.ArrayUtil;
 import jcog.util.ObjectLongLongPredicate;
 import nars.NAR;
 import nars.Op;
@@ -138,7 +138,7 @@ public class DynamicConjTruth {
                             order = rng.nextBoolean() ? new int[] { 0, 1 } : new int[] { 1, 0 };
                         else {
                             for (int i = 0; i < sss; i++) order[i] = i;
-                            ArrayUtils.shuffle(order, rng);
+                            ArrayUtil.shuffle(order, rng);
                         }
 
 

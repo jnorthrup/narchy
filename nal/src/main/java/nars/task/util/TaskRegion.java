@@ -2,7 +2,7 @@ package nars.task.util;
 
 import jcog.math.LongInterval;
 import jcog.tree.rtree.HyperRegion;
-import jcog.util.ArrayUtils;
+import jcog.util.ArrayUtil;
 import nars.Task;
 import nars.task.Tasked;
 import nars.truth.Truth;
@@ -103,7 +103,7 @@ public interface TaskRegion extends HyperRegion, Tasked, LongInterval {
     }
 
     default short[] why() {
-        return ArrayUtils.EMPTY_SHORT_ARRAY;
+        return ArrayUtil.EMPTY_SHORT_ARRAY;
     }
 
     @Override

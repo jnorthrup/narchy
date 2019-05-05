@@ -24,7 +24,7 @@
 package spacegraph.space3d.phys.math;
 
 import jcog.data.list.FasterList;
-import jcog.util.ArrayUtils;
+import jcog.util.ArrayUtil;
 import spacegraph.space3d.phys.util.IntArrayList;
 import spacegraph.space3d.phys.util.OArrayList;
 
@@ -265,7 +265,7 @@ public class MiscUtil {
 			while (x[0] < list[j][0]) j--;
 
 			if (i <= j) {
-				ArrayUtils.swap(list, i, j);
+				ArrayUtil.swap(list, i, j);
 				i++;
 				j--;
 			}

@@ -16,7 +16,7 @@
 
 package jcog.data.graph;
 
-import jcog.util.ArrayUtils;
+import jcog.util.ArrayUtil;
 
 /**
  * This class represents a lower (or upper) triangle matrix that stores ints.
@@ -145,6 +145,6 @@ class HalfIntMatrix {
 	}
 
 	private void swap(final int r1, final int c1, final int r2, final int c2) {
-	    ArrayUtils.swap(matrix,  idx(r1, c1), idx(r2, c2));
+	    ArrayUtil.swap(matrix,  idx(r1, c1), idx(r2, c2));
 	}
 }

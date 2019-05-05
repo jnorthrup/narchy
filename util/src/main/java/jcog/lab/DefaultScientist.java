@@ -2,7 +2,7 @@ package jcog.lab;
 
 import jcog.learn.decision.RealDecisionTree;
 import jcog.sort.TopN;
-import jcog.util.ArrayUtils;
+import jcog.util.ArrayUtil;
 import org.eclipse.collections.api.tuple.primitive.FloatObjectPair;
 
 import java.io.PrintStream;
@@ -95,8 +95,8 @@ public class DefaultScientist<S,E> extends Scientist<S,E> {
         } else  {
             //random subset
             Var[] v = vars.toArray(new Var[0]);
-            ArrayUtils.shuffle(v, random);
-            return List.of(ArrayUtils.subarray(v, 0, maxVars));
+            ArrayUtil.shuffle(v, random);
+            return List.of(ArrayUtil.subarray(v, 0, maxVars));
         }
     }
 

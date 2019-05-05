@@ -3,7 +3,7 @@ package jcog.data.set;
 
 import it.unimi.dsi.fastutil.Hash;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
-import jcog.util.ArrayUtils;
+import jcog.util.ArrayUtil;
 import org.eclipse.collections.api.list.primitive.MutableLongList;
 import org.eclipse.collections.impl.list.mutable.primitive.LongArrayList;
 
@@ -25,7 +25,7 @@ public class MetalLongSet extends LongOpenHashSet  {
 
         int s = size();
         if (s == 0)
-            return ArrayUtils.EMPTY_LONG_ARRAY;
+            return ArrayUtil.EMPTY_LONG_ARRAY;
 
         long[] l = toLongArray();
         if (s > 1)

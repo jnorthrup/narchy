@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.net.UrlEscapers;
 import jcog.Util;
 import jcog.net.UDP;
-import jcog.util.ArrayUtils;
+import jcog.util.ArrayUtil;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -93,7 +93,7 @@ public class InfluxDB {
             System.out.println(u);
         } catch (MalformedURLException e) {
             e.printStackTrace();
-            return ArrayUtils.EMPTY_FLOAT_ARRAY;
+            return ArrayUtil.EMPTY_FLOAT_ARRAY;
         }
 
         try {

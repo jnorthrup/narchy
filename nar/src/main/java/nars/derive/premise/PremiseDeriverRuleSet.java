@@ -2,7 +2,7 @@ package nars.derive.premise;
 
 import com.google.common.base.Splitter;
 import jcog.memoize.CaffeineMemoize;
-import jcog.util.ArrayUtils;
+import jcog.util.ArrayUtil;
 import nars.NAR;
 
 import java.io.IOException;
@@ -43,7 +43,7 @@ public class PremiseDeriverRuleSet extends TreeSet<PremiseRuleProto> {
             bb = nn.readAllBytes();
         } catch (IOException e) {
             e.printStackTrace();
-            bb = ArrayUtils.EMPTY_BYTE_ARRAY;
+            bb = ArrayUtil.EMPTY_BYTE_ARRAY;
         }
         return (PremiseRule.parse(load(bb)).collect(Collectors.toSet()));
 

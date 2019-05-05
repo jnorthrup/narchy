@@ -3,7 +3,7 @@ package nars.term.util.conj;
 import jcog.Util;
 import jcog.WTF;
 import jcog.data.list.FasterList;
-import jcog.util.ArrayUtils;
+import jcog.util.ArrayUtil;
 import nars.NAL;
 import nars.derive.Derivation;
 import nars.op.UniSubst;
@@ -95,7 +95,7 @@ public class ConjMatch {
                 } else {
                     int mostMatched = found.maxBy(List::size).size();
 
-                    LongObjectPair<List<Term>>[] best = found.keyValuesView().select(xx -> xx.getTwo().size() == mostMatched).toArray(ArrayUtils.EMPTY_LONGOBJECT_PAIR_ARRAY);
+                    LongObjectPair<List<Term>>[] best = found.keyValuesView().select(xx -> xx.getTwo().size() == mostMatched).toArray(ArrayUtil.EMPTY_LONGOBJECT_PAIR_ARRAY);
 
                     int numMatched = best.length;
                     b = best[numMatched > 1 ? d.random.nextInt(numMatched) : 0];

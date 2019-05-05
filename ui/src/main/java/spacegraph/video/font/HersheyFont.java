@@ -4,7 +4,7 @@ import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL2;
 import jcog.Util;
 import jcog.data.list.FasterList;
-import jcog.util.ArrayUtils;
+import jcog.util.ArrayUtil;
 import org.eclipse.collections.impl.list.mutable.primitive.ByteArrayList;
 import spacegraph.video.Draw;
 
@@ -42,7 +42,7 @@ public final class HersheyFont {
             Util.sleepMS(1);
         }
         if (lines == null) {
-            lines = ArrayUtils.EMPTY_STRING_ARRAY;
+            lines = ArrayUtil.EMPTY_STRING_ARRAY;
         }
 
         String scratch = "";

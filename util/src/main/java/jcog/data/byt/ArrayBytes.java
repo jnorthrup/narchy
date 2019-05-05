@@ -1,7 +1,7 @@
 package jcog.data.byt;
 
 import jcog.Util;
-import jcog.util.ArrayUtils;
+import jcog.util.ArrayUtil;
 
 import java.io.Serializable;
 import java.util.Arrays;
@@ -18,7 +18,7 @@ public class ArrayBytes implements AbstractBytes, Serializable, Comparable<Array
     }
 
     public ArrayBytes(byte[] bytes, int start, int end) {
-        this(ArrayUtils.subarray(bytes, start, end));
+        this(ArrayUtil.subarray(bytes, start, end));
     }
 
     @Override

@@ -3,7 +3,7 @@ package jcog.io;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.github.benmanes.caffeine.cache.Weigher;
-import jcog.util.ArrayUtils;
+import jcog.util.ArrayUtil;
 
 import java.io.ByteArrayOutputStream;
 import java.util.Arrays;
@@ -436,7 +436,7 @@ public class Huffman {
 
     //Note: allocating big dataBuffer rather then checking and resizing buffer is faster as long as buffer limit not reached (will cause outofbounds  error)
     public byte[] decompress(byte[] codes) {
-        if (codes.length == 0) return ArrayUtils.EMPTY_BYTE_ARRAY;
+        if (codes.length == 0) return ArrayUtil.EMPTY_BYTE_ARRAY;
         byte[] data = new byte[codes.length * 20];
         byte[] finalData;
         int dataIdx = 0;
@@ -504,7 +504,7 @@ public class Huffman {
     }
 
     public byte[] compress(byte[] data) {
-        if (data.length == 0) return ArrayUtils.EMPTY_BYTE_ARRAY;
+        if (data.length == 0) return ArrayUtil.EMPTY_BYTE_ARRAY;
         byte[] codes = new byte[data.length];
         int codesIdx = 3;
         int startIdx = 0;
@@ -624,7 +624,7 @@ public class Huffman {
                 }
             }
             while (trees.size() > maxSymbols) trees.poll();
-            if (addAltNode) trees.add(new TmpNode(removedBytes, ArrayUtils.EMPTY_BYTE_ARRAY));
+            if (addAltNode) trees.add(new TmpNode(removedBytes, ArrayUtil.EMPTY_BYTE_ARRAY));
         } else {
             int freq;
             for (Entry<ByteAry, Integer> byteAryIntegerEntry: freqList.asMap().entrySet()) {
@@ -639,7 +639,7 @@ public class Huffman {
             }
             while (trees.size() > maxSymbols) trees.poll();
             if (addAltNode)
-                trees.add(new TmpNode(removedBytes / freqDivide == 0 ? 1 : removedBytes / freqDivide, ArrayUtils.EMPTY_BYTE_ARRAY));
+                trees.add(new TmpNode(removedBytes / freqDivide == 0 ? 1 : removedBytes / freqDivide, ArrayUtil.EMPTY_BYTE_ARRAY));
         }
     }
 
@@ -697,7 +697,7 @@ public class Huffman {
         populateLUTNCodes(((HuffmanNode) objectTree).left, new byte[]{1, 0});
         populateLUTNCodes(((HuffmanNode) objectTree).right, new byte[]{1, 1});
         if (!isAlt && isFinal || freqList == null) {
-            int symbolIdx = (aryHash(ArrayUtils.EMPTY_BYTE_ARRAY) & symbl2CodLstIdx) - 1;
+            int symbolIdx = (aryHash(ArrayUtil.EMPTY_BYTE_ARRAY) & symbl2CodLstIdx) - 1;
             if (symbolIdx + 1 == symbol2Code.length) symbolIdx = -1;
             byte[] aKey;
             while ((aKey = symbol2Code[++symbolIdx]) != null) {

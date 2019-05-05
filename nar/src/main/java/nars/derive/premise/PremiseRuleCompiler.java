@@ -292,7 +292,8 @@ public enum PremiseRuleCompiler {
             RoaringBitmap r = new RoaringBitmap();
             x.removeIf(zz -> {
                 if (zz instanceof Branchify) {
-                    r.or(((Branchify) zz).can);
+                    for (short cc : ((Branchify) zz).can)
+                        r.add(cc);
                     return true;
                 }
                 return false;

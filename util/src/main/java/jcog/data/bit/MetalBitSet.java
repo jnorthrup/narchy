@@ -2,7 +2,7 @@ package jcog.data.bit;
 
 import jcog.TODO;
 import jcog.data.array.IntComparator;
-import jcog.util.ArrayUtils;
+import jcog.util.ArrayUtil;
 
 import java.util.Arrays;
 
@@ -149,7 +149,7 @@ abstract public class MetalBitSet {
             long[] prev = data;
 
             if (bits == 0)
-                data = ArrayUtils.EMPTY_LONG_ARRAY;
+                data = ArrayUtil.EMPTY_LONG_ARRAY;
             else
                 data = new long[Math.max(1, (int) Math.ceil(((double) bits) / Long.SIZE))];
 

@@ -27,7 +27,7 @@
 
 package spacegraph.space3d.phys.dynamics.gimpact;
 
-import jcog.util.ArrayUtils;
+import jcog.util.ArrayUtil;
 
 /**
  *
@@ -37,8 +37,8 @@ class BvhTreeNodeArray {
 
 	private int size;
 	
-	private float[] bound = ArrayUtils.EMPTY_FLOAT_ARRAY;
-	private int[] escapeIndexOrDataIndex = ArrayUtils.EMPTY_INT_ARRAY;
+	private float[] bound = ArrayUtil.EMPTY_FLOAT_ARRAY;
+	private int[] escapeIndexOrDataIndex = ArrayUtil.EMPTY_INT_ARRAY;
 
 	public void clear() {
 		size = 0;

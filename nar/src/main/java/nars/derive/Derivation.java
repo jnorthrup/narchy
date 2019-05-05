@@ -2,7 +2,6 @@ package nars.derive;
 
 import jcog.Util;
 import jcog.WTF;
-import jcog.data.set.ArrayHashSet;
 import jcog.data.set.MetalLongSet;
 import jcog.math.Longerval;
 import jcog.pri.ScalarValue;
@@ -12,6 +11,7 @@ import nars.Op;
 import nars.Task;
 import nars.attention.What;
 import nars.control.CauseMerge;
+import nars.derive.impl.BatchDeriver;
 import nars.derive.op.Occurrify;
 import nars.derive.op.Premisify;
 import nars.eval.Evaluation;
@@ -41,7 +41,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -76,10 +75,7 @@ public class Derivation extends PreDerivation {
     {
         unifyPremise.commonVariables = NAL.premise.PREMISE_UNIFY_COMMON_VARIABLES;
     }
-    public final Collection<Premise> premiseBuffer =
-            new ArrayHashSet();
-    //new LinkedHashSet();
-    //new SortedList<>();
+
 
 //    @Deprecated public final ArrayHashSet<Term> atomMatches = new ArrayHashSet();
 //    @Deprecated public TopN<TaskLink> atomTangent = new TopN<>(new TaskLink[64], (FloatFunction<TaskLink>) ScalarValue::pri);
@@ -486,8 +482,8 @@ public class Derivation extends PreDerivation {
                         _belief != null ?
                                 CauseMerge.Append.merge(causeCap - 1 /* for channel to be appended */, _task, _belief) :
                                 _task.why(), causeCap - 1);
-        if (parentCause.length >= causeCap)
-            throw new WTF();
+//        if (parentCause.length >= causeCap)
+//            throw new WTF();
 
 
         setTTL(ttl);
@@ -594,7 +590,6 @@ public class Derivation extends PreDerivation {
 
     private Derivation reset() {
         anon.clear();
-        premiseBuffer.clear();
         timePrev = Long.MIN_VALUE;
         retransform.clear();
         occ.clear();
@@ -699,6 +694,19 @@ public class Derivation extends PreDerivation {
 
     public long[] evidence() {
         return concSingle ? evidenceSingle() : evidenceDouble();
+    }
+
+    /** derive next; main entry point */
+    public void derive(int matchTTL, int deriveTTL) {
+
+        BatchDeriver deriver = (BatchDeriver) this.deriver;
+
+
+        //fill premise buffer
+        Premise p = what.hypothesize(deriver.termlinksPerTaskLink.intValue(), this);
+        if (p!=null)
+            deriver.derive(p, this, matchTTL, deriveTTL);
+
     }
 
     public final class DerivationTransform extends UnifyTransform {

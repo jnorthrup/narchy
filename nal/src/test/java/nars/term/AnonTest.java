@@ -1,7 +1,7 @@
 package nars.term;
 
 import jcog.random.XoRoShiRo128PlusRandom;
-import jcog.util.ArrayUtils;
+import jcog.util.ArrayUtil;
 import nars.$;
 import nars.Narsese;
 import nars.Op;
@@ -184,7 +184,7 @@ public class AnonTest {
         Random rng = new XoRoShiRo128PlusRandom(1);
         for (int i = 0; i < 4; i++) {
 
-            ArrayUtils.shuffle(x, rng);
+            ArrayUtil.shuffle(x, rng);
 
             TermTest.assertEq(new UniSubterm(x[0]), new AnonSubterms(x[0]));
             TermTest.assertEq(new BiSubterm(x[0], x[1]), new AnonSubterms(x[0], x[1]));

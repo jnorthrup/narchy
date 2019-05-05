@@ -7,7 +7,7 @@ import jcog.data.bit.MetalBitSet;
 import jcog.data.byt.DynBytes;
 import jcog.data.list.FasterList;
 import jcog.data.set.ArrayUnenforcedSortedSet;
-import jcog.util.ArrayUtils;
+import jcog.util.ArrayUtil;
 import nars.NAL;
 import nars.Op;
 import nars.subterm.util.TermMetadata;
@@ -646,7 +646,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
                 a.add(i);
             }
         }
-        return a.isEmpty() ? ArrayUtils.EMPTY_INT_ARRAY : a.toArray();
+        return a.isEmpty() ? ArrayUtil.EMPTY_INT_ARRAY : a.toArray();
     }
 
     /**

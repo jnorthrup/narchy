@@ -3,6 +3,7 @@ package nars.derive.premise;
 import jcog.Util;
 import jcog.data.bit.MetalBitSet;
 import jcog.decide.MutableRoulette;
+import jcog.util.ArrayUtil;
 import nars.NAL;
 import nars.control.Why;
 import nars.derive.Derivation;
@@ -39,7 +40,7 @@ public class DeriverRules {
         Derivation d = (Derivation)p;
         d.canCollector.clear();
         d.deriver.rules.what.test(d);
-        return Util.toShort(d.canCollector.toArray());
+        return d.canCollector.isEmpty() ? ArrayUtil.EMPTY_SHORT_ARRAY : d.canCollector.toArray();
     }
 
     DeriverRules(PREDICATE<Derivation> what, DeriveAction[] actions, int mustAtomize, DeriverPlanner planner) {
@@ -72,7 +73,7 @@ public class DeriverRules {
          */
         short[] could = can;
 
-        float[] maybeHow;
+        float[] maybePri;
         short[] maybeWhat;
 
         if (could.length > 1) {
@@ -90,7 +91,7 @@ public class DeriverRules {
 
             if (toRemove == null) {
                 maybeWhat = could; //no change
-                maybeHow = maybeWhat.length > 1 ? f : null /* not necessary */;
+                maybePri = maybeWhat.length > 1 ? f : null /* not necessary */;
 
             } else {
                 int r = toRemove.cardinality();
@@ -101,13 +102,13 @@ public class DeriverRules {
                 } */ else {
                     int fanOut = n - r;
 
-                    maybeHow = new float[fanOut];
+                    maybePri = new float[fanOut];
                     maybeWhat = new short[fanOut];
                     int xx = 0;
                     int i;
                     for (i = 0; i < n; i++) {
                         if (!toRemove.get(i)) {
-                            maybeHow[xx] = f[i];
+                            maybePri[xx] = f[i];
                             maybeWhat[xx++] = could[i];
                         }
                     }
@@ -121,17 +122,17 @@ public class DeriverRules {
             } else {
                 return;
             }
-            maybeHow = null;
+            maybePri = null; //unnecessary
         }
 
 
-        int fanOut = maybeWhat.length; assert(fanOut > 0);
+        int fanOut = maybeWhat.length; //assert(fanOut > 0);
 
         if (fanOut == 1) {
             test(d, maybeWhat[0]);
         } else {
             //assert((can.length == maybe.length)):  Arrays.toString(could) + " " + Arrays.toString(can) + " " + Arrays.toString(maybe);
-            MutableRoulette.run(maybeHow, d.random, wi -> 0, b -> test(d, maybeWhat[b]));
+            MutableRoulette.run(maybePri, d.random, wi -> 0, b -> test(d, maybeWhat[b]));
         }
 
 

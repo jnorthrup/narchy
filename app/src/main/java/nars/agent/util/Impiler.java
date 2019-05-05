@@ -9,7 +9,7 @@ import jcog.data.graph.path.FromTo;
 import jcog.data.graph.search.Search;
 import jcog.data.list.FasterList;
 import jcog.sort.SortedArray;
-import jcog.util.ArrayUtils;
+import jcog.util.ArrayUtil;
 import jcog.util.HashCachedPair;
 import nars.$;
 import nars.NAL;
@@ -445,7 +445,7 @@ public class Impiler {
 
         public float freq, conf;
         public int dt = DTERNAL;
-        public long[] stamp = ArrayUtils.EMPTY_LONG_ARRAY;
+        public long[] stamp = ArrayUtil.EMPTY_LONG_ARRAY;
 
         public ImplEdge(Term newOne, Term newTwo) {
             super(newOne, newTwo);

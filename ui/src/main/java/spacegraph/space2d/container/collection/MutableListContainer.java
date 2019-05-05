@@ -2,7 +2,7 @@ package spacegraph.space2d.container.collection;
 
 import jcog.Util;
 import jcog.data.list.FastCoWList;
-import jcog.util.ArrayUtils;
+import jcog.util.ArrayUtil;
 import org.eclipse.collections.api.set.primitive.IntSet;
 import org.eclipse.collections.impl.set.mutable.primitive.IntHashSet;
 import spacegraph.space2d.Surface;
@@ -145,7 +145,7 @@ abstract public class MutableListContainer extends AbstractMutableContainer<Surf
 
 
                         Surface[] ee = children.array();
-                        if (!ArrayUtils.equalsIdentity(ee, next)) {
+                        if (!ArrayUtil.equalsIdentity(ee, next)) {
                             IntSet pi = Util.intSet(x -> x.id, ee);
                             IntSet ni = Util.intSet(x -> x.id, next);
                             IntHashSet unchanged = new IntHashSet(ee.length + next.length).withAll(pi.select(ni::contains));

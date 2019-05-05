@@ -47,7 +47,7 @@ import static com.google.common.math.IntMath.factorial;
  *
  * @since 2.0
  */
-public enum ArrayUtils {
+public enum ArrayUtil {
     ;
 
     /**
@@ -3660,7 +3660,7 @@ public enum ArrayUtils {
      * {@link #INDEX_NOT_FOUND} ({@code -1}) if not found or {@code null} array input
      */
     public static int indexOf(final double[] array, final double valueToFind, int startIndex) {
-        if (ArrayUtils.isEmpty(array)) {
+        if (ArrayUtil.isEmpty(array)) {
             return INDEX_NOT_FOUND;
         }
         if (startIndex < 0) {
@@ -3692,7 +3692,7 @@ public enum ArrayUtils {
      * {@link #INDEX_NOT_FOUND} ({@code -1}) if not found or {@code null} array input
      */
     public static int indexOf(final double[] array, final double valueToFind, int startIndex, final double tolerance) {
-        if (ArrayUtils.isEmpty(array)) {
+        if (ArrayUtil.isEmpty(array)) {
             return INDEX_NOT_FOUND;
         }
         if (startIndex < 0) {
@@ -3754,7 +3754,7 @@ public enum ArrayUtils {
      * {@link #INDEX_NOT_FOUND} ({@code -1}) if not found or {@code null} array input
      */
     public static int lastIndexOf(final double[] array, final double valueToFind, int startIndex) {
-        if (ArrayUtils.isEmpty(array)) {
+        if (ArrayUtil.isEmpty(array)) {
             return INDEX_NOT_FOUND;
         }
         if (startIndex < 0) {
@@ -3789,7 +3789,7 @@ public enum ArrayUtils {
      * {@link #INDEX_NOT_FOUND} ({@code -1}) if not found or {@code null} array input
      */
     public static int lastIndexOf(final double[] array, final double valueToFind, int startIndex, final double tolerance) {
-        if (ArrayUtils.isEmpty(array)) {
+        if (ArrayUtil.isEmpty(array)) {
             return INDEX_NOT_FOUND;
         }
         if (startIndex < 0) {
@@ -3868,7 +3868,7 @@ public enum ArrayUtils {
      * {@link #INDEX_NOT_FOUND} ({@code -1}) if not found or {@code null} array input
      */
     public static int indexOf(final float[] array, final float valueToFind, int startIndex) {
-        if (ArrayUtils.isEmpty(array)) {
+        if (ArrayUtil.isEmpty(array)) {
             return INDEX_NOT_FOUND;
         }
         if (startIndex < 0) {
@@ -3911,7 +3911,7 @@ public enum ArrayUtils {
      * {@link #INDEX_NOT_FOUND} ({@code -1}) if not found or {@code null} array input
      */
     public static int lastIndexOf(final float[] array, final float valueToFind, int startIndex) {
-        if (ArrayUtils.isEmpty(array)) {
+        if (ArrayUtil.isEmpty(array)) {
             return INDEX_NOT_FOUND;
         }
         if (startIndex < 0) {
@@ -3972,7 +3972,7 @@ public enum ArrayUtils {
      * array input
      */
     public static int indexOf(final boolean[] array, final boolean valueToFind, int startIndex) {
-        if (ArrayUtils.isEmpty(array)) {
+        if (ArrayUtil.isEmpty(array)) {
             return INDEX_NOT_FOUND;
         }
         if (startIndex < 0) {
@@ -4016,7 +4016,7 @@ public enum ArrayUtils {
      * {@link #INDEX_NOT_FOUND} ({@code -1}) if not found or {@code null} array input
      */
     public static int lastIndexOf(final boolean[] array, final boolean valueToFind, int startIndex) {
-        if (ArrayUtils.isEmpty(array)) {
+        if (ArrayUtil.isEmpty(array)) {
             return INDEX_NOT_FOUND;
         }
         if (startIndex < 0) {
@@ -7256,7 +7256,7 @@ public enum ArrayUtils {
      */
 
     static Object removeAll(final Object array, final BitSet indices) {
-        final int srcLength = ArrayUtils.getLength(array);
+        final int srcLength = ArrayUtil.getLength(array);
 
 
         final int removals = indices.cardinality();
@@ -7287,7 +7287,7 @@ public enum ArrayUtils {
             return x;
         switch (remain) {
             case 0:
-                return ArrayUtils.EMPTY_BYTE_ARRAY;
+                return ArrayUtil.EMPTY_BYTE_ARRAY;
             case 1:
                 return new byte[]{x[indices.next(false, 0, srcLength)]};
             default:
@@ -7307,7 +7307,7 @@ public enum ArrayUtils {
         final int srcLength = x.length, remain = srcLength - toRemove;
         switch (remain) {
             case 0:
-                return (X[]) ArrayUtils.EMPTY_OBJECT_ARRAY;
+                return (X[]) ArrayUtil.EMPTY_OBJECT_ARRAY;
             case 1: {
                 X[] y = Arrays.copyOf(x, 1);
                 y[0] = x[indices.next(false, 0, srcLength)];
@@ -7331,7 +7331,7 @@ public enum ArrayUtils {
             return x;
         switch (remain) {
             case 0:
-                return ArrayUtils.EMPTY_INT_ARRAY;
+                return ArrayUtil.EMPTY_INT_ARRAY;
             case 1:
                 return new int[]{x[indices.next(false, 0, srcLength)]};
             default:
@@ -7529,9 +7529,9 @@ public enum ArrayUtils {
     public static byte[] removeFirstOccurence(final byte[] array, final byte element) {
         switch (array.length) {
             case 0:
-                return ArrayUtils.EMPTY_BYTE_ARRAY;
+                return ArrayUtil.EMPTY_BYTE_ARRAY;
             case 1:
-                if (array[0] == element) return ArrayUtils.EMPTY_BYTE_ARRAY;
+                if (array[0] == element) return ArrayUtil.EMPTY_BYTE_ARRAY;
                 break;
             case 2:
                 if (array[0] == element) return new byte[]{array[1]};
@@ -9042,7 +9042,7 @@ public enum ArrayUtils {
     /** simple byte[] interner for low-count elements */
     public static byte[] intern(byte[] map) {
         switch (map.length) {
-            case 0: return ArrayUtils.EMPTY_BYTE_ARRAY;
+            case 0: return ArrayUtil.EMPTY_BYTE_ARRAY;
             case 1: {
                 switch (map[0]) {
                     case 0: return BYTE_ZERO;
@@ -9106,5 +9106,18 @@ public enum ArrayUtils {
                 return false;
         }
         return true;
+    }
+
+    public static short[] toShort(int[] x) {
+        if (x.length == 0)
+            return EMPTY_SHORT_ARRAY;
+
+        short[] s = new short[x.length];
+        int i = 0;
+        for (int xx : x) {
+            assert (xx <= Short.MAX_VALUE && xx >= Short.MIN_VALUE);
+            s[i++] = (short) xx;
+        }
+        return s;
     }
 }

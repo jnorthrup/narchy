@@ -14,7 +14,7 @@ package jcog.io.lz;
 
 
 
-import jcog.util.ArrayUtils;
+import jcog.util.ArrayUtil;
 
 public final class QuickLZ {
     
@@ -89,7 +89,7 @@ public final class QuickLZ {
         int[][] hashtable = new int[HASH_VALUES][level == 1 ? QLZ_POINTERS_1 : QLZ_POINTERS_3];
 
         if (source.length == 0)
-            return ArrayUtils.EMPTY_BYTE_ARRAY;
+            return ArrayUtil.EMPTY_BYTE_ARRAY;
 
         if (src <= last_matchstart)
             fetch = (int) fast_read(source, src, 3);

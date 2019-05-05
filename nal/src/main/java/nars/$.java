@@ -6,7 +6,7 @@ import jcog.TODO;
 import jcog.Texts;
 import jcog.Util;
 import jcog.data.list.FasterList;
-import jcog.util.ArrayUtils;
+import jcog.util.ArrayUtil;
 import nars.subterm.AnonSubterms;
 import nars.subterm.Subterms;
 import nars.subterm.TermList;
@@ -614,10 +614,10 @@ public enum $ {
 
             if (innerStart) {
                 nextInner = next.op() != PROD ?
-                        $.p(nextInner, next) : $.p(ArrayUtils.add(next.subterms().arrayShared(), nextInner));
+                        $.p(nextInner, next) : $.p(ArrayUtil.add(next.subterms().arrayShared(), nextInner));
             } else {
                 nextInner = next.op() != PROD ?
-                        $.p(next, nextInner) : $.p(ArrayUtils.add(next.subterms().arrayShared(), nextInner));
+                        $.p(next, nextInner) : $.p(ArrayUtil.add(next.subterms().arrayShared(), nextInner));
             }
         }
         return nextInner;
@@ -782,7 +782,7 @@ public enum $ {
 
     public static Term funcImg(Atomic f, Term... x) {
 //        if (x.length > 1) {
-        Term[] xx = ArrayUtils.insert(0, x, f);
+        Term[] xx = ArrayUtil.insert(0, x, f);
         xx[x.length] = ImgExt;
         return INH.the(x[x.length - 1], PROD.the(xx));
 //        } else {
@@ -910,7 +910,7 @@ public enum $ {
         //TODO use more reliable path parser
         List<String> pathComponents = Splitter.on('/').omitEmptyStrings().splitToList(pathStr);
 
-        Term path = p((String[])(pathComponents.toArray(ArrayUtils.EMPTY_STRING_ARRAY)));
+        Term path = p((String[])(pathComponents.toArray(ArrayUtil.EMPTY_STRING_ARRAY)));
         return (authority == null || authority.isEmpty()) ?
                 inh(path, scheme) : inh( PROD.the(INH.the(path, /*TODO parse*/the(authority))), scheme);
     }

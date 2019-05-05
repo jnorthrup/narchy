@@ -12,7 +12,7 @@ import com.googlecode.lanterna.terminal.swing.*;
 import com.googlecode.lanterna.terminal.virtual.DefaultVirtualTerminal;
 import com.jogamp.newt.event.KeyEvent;
 import jcog.Texts;
-import jcog.util.ArrayUtils;
+import jcog.util.ArrayUtil;
 import nars.web.NARWeb;
 import spacegraph.SpaceGraph;
 import spacegraph.space2d.widget.console.ConsoleTerminal;
@@ -55,7 +55,7 @@ public class Shell {
             
         } else {
 
-            args = ArrayUtils.subarray(args, 1, args.length);
+            args = ArrayUtil.subarray(args, 1, args.length);
 
             switch (args[0]) {
                 case "web":

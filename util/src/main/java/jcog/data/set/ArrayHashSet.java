@@ -37,7 +37,9 @@
  */
 package jcog.data.set;
 
+import com.google.common.collect.Iterators;
 import jcog.TODO;
+import jcog.data.iterator.ArrayIterator;
 import jcog.data.list.FasterList;
 import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 
@@ -204,8 +206,18 @@ public class ArrayHashSet<X> extends AbstractSet<X> implements ArraySet<X> {
     }
 
     @Override
-    public Iterator<X> iterator() {
-        return listIterator();
+    public final Iterator<X> iterator() {
+        return size() == 0 ? Collections.emptyListIterator() : new FasterList.FasterListIterator(list);
+    }
+
+    /** use if remove() not needed */
+    public final Iterator<X> iteratorReadOnly() {
+        int s = size();
+        switch (s) {
+            case 0: return Collections.emptyListIterator();
+            case 1: return Iterators.singletonIterator(get(0));
+            default: return ArrayIterator.iterateN(list.array(), s);
+        }
     }
 
 
@@ -397,9 +409,6 @@ public class ArrayHashSet<X> extends AbstractSet<X> implements ArraySet<X> {
             return Collections.emptyListIterator();
         }
 
-        @Override
-        public Iterator iterator() {
-            return Collections.emptyListIterator();
-        }
+
     };
 }

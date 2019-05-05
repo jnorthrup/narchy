@@ -1,7 +1,7 @@
 package nars.subterm;
 
 import jcog.WTF;
-import jcog.util.ArrayUtils;
+import jcog.util.ArrayUtil;
 import nars.term.Compound;
 import nars.term.Term;
 
@@ -58,7 +58,7 @@ abstract public class RemappedSubterms<S extends Subterms> extends MappedSubterm
             ArrayRemappedSubterms<?> mx = ((ArrayRemappedSubterms) x);
             //TODO test if the array is already perfectly reversed without cloning then just undo
             byte[] r = mx.map.clone();
-            ArrayUtils.reverse(r);
+            ArrayUtil.reverse(r);
             if (Arrays.equals(mx.map, r))
                 return x; //palindrome or repeats
 
@@ -200,14 +200,14 @@ abstract public class RemappedSubterms<S extends Subterms> extends MappedSubterm
 
         private ArrayRemappedSubterms(S base, byte[] map) {
             super(base); assert(base.subs()==map.length);
-            this.map = ArrayUtils.intern(map);
+            this.map = ArrayUtil.intern(map);
             this.negs = (byte) super.negs();
             this.hash = Subterms.hash(this);
         }
 
         private ArrayRemappedSubterms(S base, byte[] map, int hash) {
             super(base); assert(base.subs()==map.length);
-            this.map = ArrayUtils.intern(map);
+            this.map = ArrayUtil.intern(map);
             this.negs = (byte) super.negs();
             this.hash = hash;
         }

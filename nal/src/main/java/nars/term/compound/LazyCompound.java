@@ -3,7 +3,7 @@ package nars.term.compound;
 import com.google.common.primitives.Ints;
 import jcog.WTF;
 import jcog.data.byt.DynBytes;
-import jcog.util.ArrayUtils;
+import jcog.util.ArrayUtil;
 import nars.NAL;
 import nars.Op;
 import nars.subterm.Subterms;
@@ -309,7 +309,7 @@ public class LazyCompound {
             int afterTo = to;
             byte n = 0;
             do {
-                int match = ArrayUtils.nextIndexOf(ii, afterTo, end, ii, from, to);
+                int match = ArrayUtil.nextIndexOf(ii, afterTo, end, ii, from, to);
 
                 if (match != -1) {
                     //System.out.println("repeat found");

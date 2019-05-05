@@ -10,7 +10,7 @@ import jcog.data.map.CustomConcurrentHashMap;
 import jcog.math.FloatRange;
 import jcog.memoize.CaffeineMemoize;
 import jcog.memoize.Memoize;
-import jcog.util.ArrayUtils;
+import jcog.util.ArrayUtil;
 import nars.*;
 import nars.attention.What;
 import nars.concept.Concept;
@@ -178,7 +178,7 @@ public class Opjects extends DefaultTermizer {
             List<Class<?>> types = x.getTwo();
 
             String mName = methodTerm.toString();
-            Class<?>[] cc = types.isEmpty() ? ArrayUtils.EMPTY_CLASS_ARRAY : ((FasterList<Class<?>>) types).array();
+            Class<?>[] cc = types.isEmpty() ? ArrayUtil.EMPTY_CLASS_ARRAY : ((FasterList<Class<?>>) types).array();
             Method m = findMethod(c, mName, cc);
             if (m == null || !methodEvokable(m))
                 return null;

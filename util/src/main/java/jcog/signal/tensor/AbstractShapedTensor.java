@@ -1,7 +1,7 @@
 package jcog.signal.tensor;
 
 import jcog.signal.Tensor;
-import jcog.util.ArrayUtils;
+import jcog.util.ArrayUtil;
 
 /** constant shape */
 public abstract class AbstractShapedTensor extends AbstractTensor {
@@ -16,7 +16,7 @@ public abstract class AbstractShapedTensor extends AbstractTensor {
 
         } else {
 
-            this.stride = ArrayUtils.EMPTY_INT_ARRAY;
+            this.stride = ArrayUtil.EMPTY_INT_ARRAY;
         }
 
         this.shape = shape;

@@ -1,7 +1,7 @@
 package org.gridkit.vicluster.telecontrol;
 
 import jcog.data.list.FasterList;
-import jcog.util.ArrayUtils;
+import jcog.util.ArrayUtil;
 import org.gridkit.nanocloud.telecontrol.HostControlConsole;
 import org.gridkit.nanocloud.telecontrol.HostControlConsole.Destroyable;
 import org.gridkit.nanocloud.telecontrol.HostControlConsole.ProcessHandler;
@@ -129,7 +129,7 @@ public class SimpleTunnelInitiator implements TunnellerInitiator {
         }
         cmd.addAll(tunnelerArgs);
         cmd.addAll( "-cp" , jarpath, Tunneller.class.getName());
-        return cmd.toArray(ArrayUtils.EMPTY_STRING_ARRAY);
+        return cmd.toArray(ArrayUtil.EMPTY_STRING_ARRAY);
     }
 
     private String detectCachePath(String jarpath) {

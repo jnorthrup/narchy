@@ -1,7 +1,7 @@
 package jcog.decide;
 
 import jcog.random.XoRoShiRo128PlusRandom;
-import jcog.util.ArrayUtils;
+import jcog.util.ArrayUtil;
 
 import java.util.Random;
 
@@ -47,7 +47,7 @@ public class DecideEpsilonGreedy implements Deciding {
         int nextAction = -1;
         float nextMotivation = Float.NEGATIVE_INFINITY;
 
-        ArrayUtils.shuffle(motivationOrder, random);
+        ArrayUtil.shuffle(motivationOrder, random);
 
         for (int j = 0; j < actions; j++) {
             int i = motivationOrder[j];

@@ -23,7 +23,7 @@ package jcog.tree.rtree.rect;
 
 import jcog.tree.rtree.HyperRegion;
 import jcog.tree.rtree.point.DoubleND;
-import jcog.util.ArrayUtils;
+import jcog.util.ArrayUtil;
 
 import java.io.Serializable;
 import java.util.function.Function;
@@ -41,7 +41,7 @@ public class HyperRectDouble implements HyperRegion, Serializable {
     public static final HyperRegion ALL_2 = HyperRectDouble.all(2);
     public static final HyperRegion ALL_3 = HyperRectDouble.all(3);
     public static final HyperRegion ALL_4 = HyperRectDouble.all(4);
-    public static final DoubleND VOID = new DoubleND(ArrayUtils.EMPTY_DOUBLE_ARRAY) {
+    public static final DoubleND VOID = new DoubleND(ArrayUtil.EMPTY_DOUBLE_ARRAY) {
         @Override
         public String toString() {
             return "*";

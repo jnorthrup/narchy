@@ -3,7 +3,7 @@ package nars.task;
 import jcog.Log;
 import jcog.Util;
 import jcog.pri.Prioritizable;
-import jcog.util.ArrayUtils;
+import jcog.util.ArrayUtil;
 import nars.$;
 import nars.Task;
 import nars.term.Term;
@@ -155,7 +155,7 @@ public abstract class AbstractTask implements Task {
 
     @Override
     public short[] why() {
-        return ArrayUtils.EMPTY_SHORT_ARRAY;
+        return ArrayUtil.EMPTY_SHORT_ARRAY;
     }
 
     @Override
@@ -205,7 +205,7 @@ public abstract class AbstractTask implements Task {
 
     @Override
     public long[] stamp() {
-        return ArrayUtils.EMPTY_LONG_ARRAY;
+        return ArrayUtil.EMPTY_LONG_ARRAY;
     }
 
     @Override

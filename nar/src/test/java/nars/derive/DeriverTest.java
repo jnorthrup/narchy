@@ -145,7 +145,7 @@ class DeriverTest {
     @Test
     void testDeriveQuest() {
 
-        int cycles = 16;
+        int cycles = 64;
         test("(P --> S), (S --> P), task(\"?\") |- (P --> S),   (Punctuation:Quest)")
                 .ask("b:a")
                 .believe("a:b")

@@ -1,5 +1,6 @@
 package nars.link;
 
+import jcog.Util;
 import jcog.data.graph.path.FromTo;
 import jcog.decide.Roulette;
 import jcog.pri.UnitPrioritizable;
@@ -214,19 +215,20 @@ public interface TaskLink extends UnitPrioritizable, FromTo<Term, TaskLink> {
         return new float[]{priPunc(BELIEF), priPunc(GOAL), priPunc(QUESTION), priPunc(QUEST)};
     }
 
-//    default byte puncMax() {
-//        switch (Util.maxIndex(priPunc(BELIEF), priPunc(GOAL), priPunc(QUESTION), priPunc(QUEST))) {
-//            case 0:
-//                return BELIEF;
-//            case 1:
-//                return GOAL;
-//            case 2:
-//                return QUESTION;
-//            case 3:
-//                return QUEST;
-//        }
-//        return -1;
-//    }
+    /** which component is strongest */
+    default byte puncMax() {
+        switch (Util.maxIndex(priPunc(BELIEF), priPunc(GOAL), priPunc(QUESTION), priPunc(QUEST))) {
+            case 0:
+                return BELIEF;
+            case 1:
+                return GOAL;
+            case 2:
+                return QUESTION;
+            case 3:
+                return QUEST;
+        }
+        return -1;
+    }
 
 
 //    /** special tasklink for signals which can stretch and so their target time would not correspond well while changing */

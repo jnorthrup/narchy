@@ -1,6 +1,6 @@
 package nars.task;
 
-import jcog.util.ArrayUtils;
+import jcog.util.ArrayUtil;
 import nars.NAR;
 import nars.NARS;
 import nars.Narsese;
@@ -30,7 +30,7 @@ class AnswerTest {
     static void beliefQuery(String belief, String[] queries) throws Narsese.NarseseException {
         NAR n = NARS.shell();
         n.believe(belief);
-        queries = ArrayUtils.add(queries, belief);
+        queries = ArrayUtil.add(queries, belief);
         for (String q : queries) {
             @Nullable Task a = n.answer($$(q), BELIEF, ETERNAL);
             assertNotNull(a, ()->q + " did not match " + belief);

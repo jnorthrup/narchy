@@ -3,7 +3,7 @@ package jcog.sort;
 import jcog.data.list.FasterList;
 import jcog.decide.Roulette;
 import jcog.math.FloatSupplier;
-import jcog.util.ArrayUtils;
+import jcog.util.ArrayUtil;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.eclipse.collections.api.block.function.primitive.IntToFloatFunction;
 import org.jetbrains.annotations.Nullable;
@@ -22,7 +22,7 @@ import static java.lang.Float.NEGATIVE_INFINITY;
 public class TopN<X> extends SortedArray<X> implements Consumer<X>, FloatFunction<X> {
 
 
-    public final static TopN Empty = new TopN(ArrayUtils.EMPTY_OBJECT_ARRAY, (x, min) -> Float.NaN) {
+    public final static TopN Empty = new TopN(ArrayUtil.EMPTY_OBJECT_ARRAY, (x, min) -> Float.NaN) {
         @Override
         public void setCapacity(int capacity) {
 

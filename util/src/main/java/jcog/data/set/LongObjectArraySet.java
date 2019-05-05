@@ -5,7 +5,7 @@ import com.google.common.collect.Iterables;
 import jcog.TODO;
 import jcog.data.bit.MetalBitSet;
 import jcog.data.list.FasterList;
-import jcog.util.ArrayUtils;
+import jcog.util.ArrayUtil;
 import org.eclipse.collections.api.block.predicate.primitive.LongObjectPredicate;
 import org.eclipse.collections.api.block.procedure.primitive.LongObjectProcedure;
 import org.eclipse.collections.api.iterator.LongIterator;
@@ -31,12 +31,12 @@ public class LongObjectArraySet<X> extends FasterList<X> {
 
     public LongObjectArraySet(int initialSize, X[] array) {
         super(initialSize, array);
-        when = ArrayUtils.EMPTY_LONG_ARRAY;
+        when = ArrayUtil.EMPTY_LONG_ARRAY;
     }
 
     public LongObjectArraySet(int initialCapacity) {
         super(initialCapacity);
-        when = ArrayUtils.EMPTY_LONG_ARRAY;
+        when = ArrayUtil.EMPTY_LONG_ARRAY;
     }
 
 
@@ -226,7 +226,7 @@ public class LongObjectArraySet<X> extends FasterList<X> {
         int s = size();
         if (s > 1) {
             super.reverse();
-            ArrayUtils.reverse(when, 0, s);
+            ArrayUtil.reverse(when, 0, s);
         }
     }
 //    public LongObjectPair<X> removeEvent(int i) {

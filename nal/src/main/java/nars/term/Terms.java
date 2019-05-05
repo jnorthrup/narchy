@@ -3,7 +3,7 @@ package nars.term;
 import jcog.bloom.StableBloomFilter;
 import jcog.bloom.hash.BytesHashProvider;
 import jcog.data.bit.MetalBitSet;
-import jcog.util.ArrayUtils;
+import jcog.util.ArrayUtil;
 import nars.Op;
 import nars.io.IO;
 import nars.subterm.Subterms;
@@ -345,7 +345,7 @@ public enum Terms {
                 (path, xx) -> {
                     if (p[0] == null || p[0].length > path.size()) {
                         //found first or shorter
-                        p[0] = path.isEmpty() ? ArrayUtils.EMPTY_BYTE_ARRAY : path.toArray();
+                        p[0] = path.isEmpty() ? ArrayUtil.EMPTY_BYTE_ARRAY : path.toArray();
                     }
                     return true; //continue
                 });

@@ -20,7 +20,7 @@ import jcog.WTF;
 import jcog.event.ListTopic;
 import jcog.event.Topic;
 import jcog.exe.Exe;
-import jcog.util.ArrayUtils;
+import jcog.util.ArrayUtil;
 import org.eclipse.collections.api.tuple.primitive.ObjectBooleanPair;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -417,7 +417,7 @@ public class Thing<T, P /* service key */  /* context */> {
 
             //try new Part(thisContext) constructors
             if (args == null) {
-                int partsIDSettable = ArrayUtils.indexOf(constructors, c -> c.getParameterTypes().length == 1 && c.getParameterTypes()[0].isAssignableFrom(id.getClass()));
+                int partsIDSettable = ArrayUtil.indexOf(constructors, c -> c.getParameterTypes().length == 1 && c.getParameterTypes()[0].isAssignableFrom(id.getClass()));
                 if (partsIDSettable != -1) {
                     constructor = partsIDSettable;
                     args = new Object[]{id};
@@ -426,10 +426,10 @@ public class Thing<T, P /* service key */  /* context */> {
 
             //try no-arg constructors
             if (args == null) {
-                int noArgConstructor = ArrayUtils.indexOf(constructors, c -> c.getParameterTypes().length == 0);
+                int noArgConstructor = ArrayUtil.indexOf(constructors, c -> c.getParameterTypes().length == 0);
                 if (noArgConstructor != -1) {
                     constructor = noArgConstructor;
-                    args = ArrayUtils.EMPTY_OBJECT_ARRAY;
+                    args = ArrayUtil.EMPTY_OBJECT_ARRAY;
                 }
             }
 

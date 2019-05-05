@@ -1,6 +1,6 @@
 package jcog.signal.tensor;
 
-import jcog.util.ArrayUtils;
+import jcog.util.ArrayUtil;
 
 /** 1D tensor */
 public abstract class AbstractVector extends AbstractTensor {
@@ -10,7 +10,7 @@ public abstract class AbstractVector extends AbstractTensor {
 
     @Override
     public int[] stride() {
-        return ArrayUtils.EMPTY_INT_ARRAY;
+        return ArrayUtil.EMPTY_INT_ARRAY;
     }
 
     @Override

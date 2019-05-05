@@ -5,7 +5,7 @@ import jcog.WTF;
 import jcog.data.bit.MetalBitSet;
 import jcog.data.list.FasterList;
 import jcog.data.set.LongObjectArraySet;
-import jcog.util.ArrayUtils;
+import jcog.util.ArrayUtil;
 import nars.NAL;
 import nars.Op;
 import nars.subterm.Subterms;
@@ -1363,7 +1363,7 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
     }
 
     private static boolean eventsContains(byte[] events, byte b) {
-        return ArrayUtils.contains(events, b);
+        return ArrayUtil.contains(events, b);
     }
 
     private static void events(byte[] events, ByteProcedure each) {
@@ -1507,7 +1507,7 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
                 if (w == targetTime || contradiction[0])
                     return; //HACK should return early via predicate method
 
-                if ((wh instanceof byte[] && ArrayUtils.indexOf((byte[]) wh, idNeg) != -1)
+                if ((wh instanceof byte[] && ArrayUtil.indexOf((byte[]) wh, idNeg) != -1)
                         ||
                         (wh instanceof RoaringBitmap && ((RoaringBitmap) wh).contains(idNeg)))
                     contradiction[0] = true;
@@ -2013,13 +2013,13 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
         } else {
             byte[] b = (byte[]) o;
 
-            int num = ArrayUtils.indexOf(b, (byte) 0);
+            int num = ArrayUtil.indexOf(b, (byte) 0);
             if (num == -1) num = b.length;
 
             int removals = 0;
             for (int ii : i) {
                 assert (ii != 0);
-                int bi = ArrayUtils.indexOf(b, (byte) ii, 0, num);
+                int bi = ArrayUtil.indexOf(b, (byte) ii, 0, num);
                 if (bi != -1) {
                     //if (b[bi] != 0) {
                     b[bi] = 0;
@@ -2038,7 +2038,7 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
 
 
                 //sort all zeros to the end
-                ArrayUtils.sort(b, 0, num - 1, (byte x) -> x == 0 ? Byte.MIN_VALUE : x);
+                ArrayUtil.sort(b, 0, num - 1, (byte x) -> x == 0 ? Byte.MIN_VALUE : x);
 
 //                MetalBitSet toRemove = MetalBitSet.bits(b.length);
 //

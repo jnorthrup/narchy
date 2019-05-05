@@ -1,6 +1,7 @@
 package nars.attention;
 
 import jcog.TODO;
+import jcog.data.map.ConcurrentFastIteratingHashSet;
 import jcog.math.IntRange;
 import jcog.pri.Prioritizable;
 import jcog.pri.bag.Sampler;
@@ -11,13 +12,18 @@ import nars.attention.derive.DefaultDerivePri;
 import nars.concept.Concept;
 import nars.control.NARPart;
 import nars.control.op.TaskEvent;
+import nars.derive.Derivation;
+import nars.derive.Premise;
 import nars.exe.Exec;
 import nars.link.TaskLink;
 import nars.link.TaskLinks;
 import nars.task.util.PriBuffer;
 import nars.term.Term;
+import nars.time.When;
+import nars.time.event.WhenTimeIs;
 import nars.time.part.DurLoop;
 import nars.util.Timed;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.Externalizable;
 import java.io.IOException;
@@ -164,6 +170,45 @@ abstract public class What extends NARPart implements Prioritizable, Sampler<Tas
     public final Random random() {
         return nar.random();
     }
+
+
+    /** TODO replace with array bag */
+
+    static final int premiseBufferCapacity = 64;
+    final ConcurrentFastIteratingHashSet<Premise> premises = new ConcurrentFastIteratingHashSet<Premise>(Premise.EmptyArray);
+    /**
+     * forms premises
+     */
+    public Premise hypothesize(int termlinksPerTaskLink, Derivation d) {
+
+        When<NAR> when = WhenTimeIs.now(d);
+
+        if (premises.size() < premiseBufferCapacity) {
+            this.sample(d.random, premiseBufferCapacity, tasklink -> {
+
+                Task task = tasklink.get(when);
+                if (task != null && !task.isDeleted()) {
+                    for (int i = 0; i < termlinksPerTaskLink; i++) {
+                        Term term = ((TaskLinkWhat) this).links.term(tasklink, task, d);
+                        if (term != null) {
+                            if (premises.add(new Premise(task, term)))
+                                return premises.size() < premiseBufferCapacity;
+                        }
+                    }
+                }
+
+                return true;
+
+            });
+        }
+
+        @Nullable Premise p = premises.get(d.random);
+        if (p!=null)
+            premises.remove(p);
+        return p;
+    }
+
+
 
     /** proxies to another What */
     public static class ProxyWhat extends What {

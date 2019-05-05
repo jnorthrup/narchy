@@ -7,7 +7,7 @@ import jcog.math.FloatRange;
 import jcog.math.LongInterval;
 import jcog.pri.Prioritizable;
 import jcog.pri.Prioritized;
-import jcog.util.ArrayUtils;
+import jcog.util.ArrayUtil;
 import nars.NAL;
 import nars.NAR;
 import nars.Task;
@@ -192,7 +192,7 @@ public class ConjClustering extends How {
             int tts = tt.size();
             if (tts > 1) {
                 if (tts > 2)
-                    ArrayUtils.sort(tt.array(), 0, tts-1, Prioritized::priElseZero);
+                    ArrayUtil.sort(tt.array(), 0, tts-1, Prioritized::priElseZero);
 
                 centroids.add(tt);
             }
@@ -294,7 +294,7 @@ public class ConjClustering extends How {
 
 //            System.out.println(items.size());
 
-            ListIterator<Task> i = ArrayUtils.cycle(in);
+            ListIterator<Task> i = ArrayUtil.cycle(in);
             int volEstimate = 1;
             float freq = 1, conf = 1;
             long start = Long.MAX_VALUE;

@@ -1,7 +1,7 @@
 package nars.task;
 
 import jcog.math.LongInterval;
-import jcog.util.ArrayUtils;
+import jcog.util.ArrayUtil;
 import nars.NAL;
 import nars.Task;
 import nars.task.util.TaskException;
@@ -18,7 +18,7 @@ import static nars.Op.GOAL;
 /** contains concrete references to stamp and cause */
 abstract class ActualNALTask extends NALTask {
     /*@Stable*/ protected final long[] stamp;
-    private /*volatile*/ short[] cause = ArrayUtils.EMPTY_SHORT_ARRAY;
+    private /*volatile*/ short[] cause = ArrayUtil.EMPTY_SHORT_ARRAY;
 
     ActualNALTask(Term term, byte punc, @Nullable Truth truth, long creation, long start, long end, long[] stamp) {
         super(term, punc, truth, start, end, creation, stamp);

@@ -21,7 +21,7 @@ import jcog.pri.bag.Sampler;
 import jcog.pri.bag.impl.HijackBag;
 import jcog.pri.bag.impl.hijack.PriHijackBag;
 import jcog.random.XoRoShiRo128PlusRandom;
-import jcog.util.ArrayUtils;
+import jcog.util.ArrayUtil;
 import org.HdrHistogram.ConcurrentHistogram;
 import org.HdrHistogram.Histogram;
 import org.jetbrains.annotations.NotNull;
@@ -522,7 +522,7 @@ public class UDPeer extends UDP {
     private void sendPong(InetSocketAddress from, Msg ping) {
         Msg m =
                 new Msg(PONG.id, (byte) 1, me, from,
-                        ArrayUtils.addAll(
+                        ArrayUtil.addAll(
                                 Longs.toByteArray(ping.dataLong(0)),
                                 Ints.toByteArray(ping.id())
                         ));

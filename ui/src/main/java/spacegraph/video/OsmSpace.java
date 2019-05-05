@@ -12,7 +12,7 @@ import jcog.math.FloatRange;
 import jcog.math.v2;
 import jcog.math.v3;
 import jcog.tree.rtree.rect.RectFloat;
-import jcog.util.ArrayUtils;
+import jcog.util.ArrayUtil;
 import org.eclipse.collections.impl.list.mutable.primitive.FloatArrayList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -797,7 +797,7 @@ public enum OsmSpace  { ;
             GLU.gluTessEndContour(tobj);
             GLU.gluTessEndPolygon(tobj);
 
-            Consumer<GL2>[] draws = s.dbuf.toArray(ArrayUtils.EMPTY_CONSUMER_ARRAY);
+            Consumer<GL2>[] draws = s.dbuf.toArray(ArrayUtil.EMPTY_CONSUMER_ARRAY);
             if (draws.length == 1)
                 this.draw = draws[0];
             else {

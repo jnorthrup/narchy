@@ -2,7 +2,7 @@ package nars.link;
 
 import jcog.data.bit.MetalBitSet;
 import jcog.data.list.FasterList;
-import jcog.util.ArrayUtils;
+import jcog.util.ArrayUtil;
 import nars.NAL;
 import nars.Op;
 import nars.term.Compound;
@@ -107,7 +107,7 @@ public final class TemplateTermLinker extends FasterList<Term> implements TermLi
                 }
             }
             if (lastConcept > 0 && lastConcept < n) {
-                ArrayUtils.quickSort(0, n, c.indexComparatorReverse(), (a, b) -> {
+                ArrayUtil.quickSort(0, n, c.indexComparatorReverse(), (a, b) -> {
                     Term x = items[b];
                     items[b] = items[a];
                     items[a] = x;

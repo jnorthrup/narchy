@@ -4,8 +4,7 @@ import com.google.common.io.ByteArrayDataOutput;
 import jcog.TODO;
 import jcog.Util;
 import jcog.data.byt.util.IntCoding;
-import jcog.util.ArrayUtils;
-import org.apache.lucene.util.ArrayUtil;
+import jcog.util.ArrayUtil;
 
 import java.io.DataOutput;
 import java.io.IOException;
@@ -156,7 +155,7 @@ public class DynBytes implements ByteArrayDataOutput, Appendable, AbstractBytes,
         if (current - p < extra) {
             this.bytes = realloc(x, current,
                     //space + Math.max(extra, MIN_GROWTH_BYTES)
-                    ArrayUtil.oversize(current + extra, 1)
+                    org.apache.lucene.util.ArrayUtil.oversize(current + extra, 1)
             );
         }
         return p;
@@ -235,7 +234,7 @@ public class DynBytes implements ByteArrayDataOutput, Appendable, AbstractBytes,
             if (force || b.length != l || forceIfSameAs == bytes)
                 return this.bytes = Arrays.copyOfRange(b, 0, l);
         } else {
-            return this.bytes = ArrayUtils.EMPTY_BYTE_ARRAY;
+            return this.bytes = ArrayUtil.EMPTY_BYTE_ARRAY;
         }
         return bytes;
     }
@@ -248,7 +247,7 @@ public class DynBytes implements ByteArrayDataOutput, Appendable, AbstractBytes,
 
     @Override
     public String toString() {
-        return Arrays.toString(ArrayUtils.subarray(bytes, 0, length()));
+        return Arrays.toString(ArrayUtil.subarray(bytes, 0, length()));
     }
 
     public String toStringFromBytes() {

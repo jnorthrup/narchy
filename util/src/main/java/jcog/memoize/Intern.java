@@ -1,7 +1,7 @@
 package jcog.memoize;
 
 import jcog.data.map.CustomConcurrentHashMap;
-import jcog.util.ArrayUtils;
+import jcog.util.ArrayUtil;
 
 import java.lang.ref.WeakReference;
 import java.util.Arrays;
@@ -909,7 +909,7 @@ public final class Intern {
         if (result1 != null) {
             return result1;
         } else {
-            int[] subseqUninterned = ArrayUtils.subarray(seq, start, end - start);
+            int[] subseqUninterned = ArrayUtil.subarray(seq, start, end - start);
             int /*@Interned*/[] subseq = Intern.intern(subseqUninterned);
             internedIntSequenceAndIndices.put(sai, new WeakReference<int /*@Interned*/[]>(subseq));
             return subseq;
@@ -937,7 +937,7 @@ public final class Intern {
         if (result1 != null) {
             return result1;
         } else {
-            long[] subseq_uninterned = ArrayUtils.subarray(seq, start, end - start);
+            long[] subseq_uninterned = ArrayUtil.subarray(seq, start, end - start);
             long /*@Interned*/[] subseq = Intern.intern(subseq_uninterned);
             internedLongSequenceAndIndices.put(sai, new WeakReference<long /*@Interned*/[]>(subseq));
             return subseq;
@@ -965,7 +965,7 @@ public final class Intern {
         if (result1 != null) {
             return result1;
         } else {
-            double[] subseq_uninterned = ArrayUtils.subarray(seq, start, end - start);
+            double[] subseq_uninterned = ArrayUtil.subarray(seq, start, end - start);
             double /*@Interned*/[] subseq = Intern.intern(subseq_uninterned);
             internedDoubleSequenceAndIndices.put(sai, new WeakReference<double /*@Interned*/[]>(subseq));
             return subseq;
@@ -997,7 +997,7 @@ public final class Intern {
             return result1;
         } else {
             /*@PolyNull*/ /*@Interned*/
-            Object[] subseq_uninterned = ArrayUtils.subarray(seq, start, end - start);
+            Object[] subseq_uninterned = ArrayUtil.subarray(seq, start, end - start);
             /*@PolyNull*/ /*@Interned*/
             Object /*@Interned*/[] subseq = Intern.intern(subseq_uninterned);
             @SuppressWarnings("nullness") 
@@ -1035,7 +1035,7 @@ public final class Intern {
             return result1;
         } else {
             /*@PolyNull*/ /*@Interned*/
-            String[] subseq_uninterned = ArrayUtils.subarray(seq, start, end - start);
+            String[] subseq_uninterned = ArrayUtil.subarray(seq, start, end - start);
             /*@PolyNull*/ /*@Interned*/
             String /*@Interned*/[] subseq = Intern.intern(subseq_uninterned);
             @SuppressWarnings("nullness") 

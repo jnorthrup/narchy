@@ -4,7 +4,7 @@ import jcog.Util;
 import jcog.data.atomic.MetalAtomicIntegerFieldUpdater;
 import jcog.data.iterator.ArrayIterator;
 import jcog.pri.ScalarValue;
-import jcog.util.ArrayUtils;
+import jcog.util.ArrayUtil;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.jetbrains.annotations.Nullable;
 
@@ -62,7 +62,7 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
     protected static final MetalAtomicIntegerFieldUpdater<SortedArray> SIZE =
             new MetalAtomicIntegerFieldUpdater(SortedArray.class, "size");
     private static final float GROWTH_RATE = 1.25f;
-    public /*volatile*/ X[] items = (X[]) ArrayUtils.EMPTY_OBJECT_ARRAY;
+    public /*volatile*/ X[] items = (X[]) ArrayUtil.EMPTY_OBJECT_ARRAY;
     protected volatile int size;
 
     public SortedArray() {

@@ -2,7 +2,7 @@ package nars.term.util.conj;
 
 import jcog.WTF;
 import jcog.data.bit.MetalBitSet;
-import jcog.util.ArrayUtils;
+import jcog.util.ArrayUtil;
 import nars.Op;
 import nars.term.Compound;
 import nars.term.Term;
@@ -127,7 +127,7 @@ public enum ConjCommutive {;
                     u = sorted(flatten);
                 } else {
                     //just True's, remove the array elements
-                    u = ArrayUtils.removeAll(u, conjMerge);
+                    u = ArrayUtil.removeAll(u, conjMerge);
                     break;
                 }
                 if (u.length == 1)

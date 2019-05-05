@@ -24,7 +24,7 @@ import com.metamx.collections.bitmap.ImmutableBitmap;
 import com.metamx.collections.spatial.search.Bound;
 import com.metamx.collections.spatial.search.GutmanSearchStrategy;
 import com.metamx.collections.spatial.search.SearchStrategy;
-import jcog.util.ArrayUtils;
+import jcog.util.ArrayUtil;
 
 import java.nio.ByteBuffer;
 
@@ -38,7 +38,7 @@ public class ImmutableRTree {
     public final ByteBuffer data;
     public  final SearchStrategy defaultSearchStrategy = new GutmanSearchStrategy();
 
-    static final ByteBuffer empty = ByteBuffer.wrap(ArrayUtils.EMPTY_BYTE_ARRAY);
+    static final ByteBuffer empty = ByteBuffer.wrap(ArrayUtil.EMPTY_BYTE_ARRAY);
 
     public ImmutableRTree() {
         this.dim = 0;

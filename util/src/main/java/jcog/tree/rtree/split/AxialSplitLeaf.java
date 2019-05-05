@@ -21,7 +21,7 @@ package jcog.tree.rtree.split;
  */
 
 import jcog.tree.rtree.*;
-import jcog.util.ArrayUtils;
+import jcog.util.ArrayUtil;
 import org.eclipse.collections.api.block.function.primitive.IntToDoubleFunction;
 
 import java.util.Arrays;
@@ -76,7 +76,7 @@ public class AxialSplitLeaf<X> implements Split<X> {
         }
 
         if (size > 1)
-            ArrayUtils.sort(obj, 0, size-1, (IntToDoubleFunction) i->strength[i]);
+            ArrayUtil.sort(obj, 0, size-1, (IntToDoubleFunction) i->strength[i]);
 
         //TODO if size is odd, maybe l1Node should have the 1 extra element rather than l2Node as this will:
         final Leaf<X> l1Node = model.transfer(obj, 0, size/2);

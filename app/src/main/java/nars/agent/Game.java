@@ -12,7 +12,7 @@ import jcog.math.FloatClamped;
 import jcog.math.FloatNormalized;
 import jcog.math.FloatSupplier;
 import jcog.thing.Part;
-import jcog.util.ArrayUtils;
+import jcog.util.ArrayUtil;
 import nars.$;
 import nars.NAR;
 import nars.attention.PriNode;
@@ -497,7 +497,7 @@ public class Game extends NARPart implements NSense, NAct, Timed {
     protected void act() {
         //ActionConcept[] aaa = actions.array();
         AgentAction[] aaa = actions.array().clone();
-        ArrayUtils.shuffle(aaa, random()); //HACK shuffle cloned copy for thread safety
+        ArrayUtil.shuffle(aaa, random()); //HACK shuffle cloned copy for thread safety
 
         //TODO fork here
         for (AgentAction a : aaa)

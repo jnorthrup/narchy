@@ -5,7 +5,7 @@ import com.google.common.collect.Streams;
 import jcog.TODO;
 import jcog.data.list.FasterList;
 import jcog.learn.decision.FloatTable;
-import jcog.util.ArrayUtils;
+import jcog.util.ArrayUtil;
 import org.jetbrains.annotations.Nullable;
 import tech.tablesaw.api.*;
 import tech.tablesaw.columns.Column;
@@ -187,7 +187,7 @@ public class DataTable extends Table implements Externalizable {
 
     @Deprecated public FloatTable<String> toFloatTable() {
 
-        FloatTable<String> data = new FloatTable<>(columnNames().toArray(ArrayUtils.EMPTY_STRING_ARRAY) );
+        FloatTable<String> data = new FloatTable<>(columnNames().toArray(ArrayUtil.EMPTY_STRING_ARRAY) );
 
         doWithRows(rr -> data.add(toFloatArray(rr)));
 

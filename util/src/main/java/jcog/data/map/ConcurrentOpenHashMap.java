@@ -21,7 +21,7 @@ package jcog.data.map;
 import com.google.common.collect.Lists;
 import jcog.TODO;
 import jcog.data.list.FasterList;
-import jcog.util.ArrayUtils;
+import jcog.util.ArrayUtil;
 
 import java.util.AbstractMap;
 import java.util.Arrays;
@@ -187,7 +187,7 @@ public class ConcurrentOpenHashMap<K, V> extends AbstractMap<K,V> {
     public V[] values(V[] target, IntFunction<V[]> arrayBuilder) {
         int s = size();
         if (s == 0)
-            return (V[]) ArrayUtils.EMPTY_OBJECT_ARRAY;
+            return (V[]) ArrayUtil.EMPTY_OBJECT_ARRAY;
 
         if (target == null || target.length!=s) {
             target = arrayBuilder.apply(s);

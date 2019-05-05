@@ -74,7 +74,7 @@ public class ClassPatch {
 
             Method main = mainClass.getMethod("main2", String[].class);
 
-            main.invoke(null, new Object[] {ArrayUtils.EMPTY_STRING_ARRAY});
+            main.invoke(null, new Object[] {ArrayUtil.EMPTY_STRING_ARRAY});
         }
 
     }

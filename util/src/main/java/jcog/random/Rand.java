@@ -7,6 +7,8 @@ public interface Rand {
 
     long nextLong();
 
+    default int nextInt() { return nextInt(Integer.MAX_VALUE); }
+
     int nextInt(int i);
 
     void setSeed(long s);

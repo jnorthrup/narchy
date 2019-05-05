@@ -3,7 +3,7 @@ package jcog.sort;
 import jcog.Util;
 import jcog.decide.Roulette;
 import jcog.math.FloatSupplier;
-import jcog.util.ArrayUtils;
+import jcog.util.ArrayUtil;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.eclipse.collections.api.block.function.primitive.IntToFloatFunction;
 import org.jetbrains.annotations.Nullable;
@@ -107,7 +107,7 @@ public class RankedN<X> extends TopN<X> {
     public X[] itemsArray() {
         int s = size();
         //return Util.map(i->i.x, arrayBuilder.apply(s), s, items);
-        return s > 0 ? Arrays.copyOf(items, s) : (X[]) ArrayUtils.EMPTY_OBJECT_ARRAY;
+        return s > 0 ? Arrays.copyOf(items, s) : (X[]) ArrayUtil.EMPTY_OBJECT_ARRAY;
     }
 
     @Override

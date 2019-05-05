@@ -28,7 +28,7 @@
 package spacegraph.space3d.phys.dynamics.gimpact;
 
 import jcog.math.v3;
-import jcog.util.ArrayUtils;
+import jcog.util.ArrayUtil;
 
 /**
  *
@@ -38,8 +38,8 @@ class BvhDataArray {
 
 	private int size;
 	
-	float[] bound = ArrayUtils.EMPTY_FLOAT_ARRAY;
-	int[] data = ArrayUtils.EMPTY_INT_ARRAY;
+	float[] bound = ArrayUtil.EMPTY_FLOAT_ARRAY;
+	int[] data = ArrayUtil.EMPTY_INT_ARRAY;
 
 	public int size() {
 		return size;

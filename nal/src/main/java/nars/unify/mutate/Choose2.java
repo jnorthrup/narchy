@@ -2,7 +2,7 @@ package nars.unify.mutate;
 
 import jcog.TODO;
 import jcog.math.Combinations;
-import jcog.util.ArrayUtils;
+import jcog.util.ArrayUtil;
 import nars.$;
 import nars.Op;
 import nars.subterm.ShuffledSubterms;
@@ -112,7 +112,7 @@ public class Choose2 extends Termutator.AbstractTermutator {
             if (!f.revertLive(start))
                 break;
 
-            ArrayUtils.reverse(c);
+            ArrayUtil.reverse(c);
             phase = !phase;
 
         }

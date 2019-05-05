@@ -3,7 +3,7 @@ package nars.task.util;
 import jcog.data.map.ConcurrentFastIteratingHashSet;
 import jcog.data.set.ArrayHashSet;
 import jcog.event.Off;
-import jcog.util.ArrayUtils;
+import jcog.util.ArrayUtil;
 import nars.NAR;
 import nars.Op;
 import nars.Task;
@@ -62,7 +62,7 @@ public class DialogTask extends NARPart {
         else if (!questions && quests)
             listenPuncs = new byte[] { GOAL };
         else
-            listenPuncs = ArrayUtils.EMPTY_BYTE_ARRAY;
+            listenPuncs = ArrayUtil.EMPTY_BYTE_ARRAY;
 
         monitor = n.onTask(this::onTask, listenPuncs);
 

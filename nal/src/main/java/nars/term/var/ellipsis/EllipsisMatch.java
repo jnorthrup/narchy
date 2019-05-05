@@ -1,6 +1,6 @@
 package nars.term.var.ellipsis;
 
-import jcog.util.ArrayUtils;
+import jcog.util.ArrayUtil;
 import nars.Op;
 import nars.subterm.Subterms;
 import nars.term.Term;
@@ -78,7 +78,7 @@ public final class EllipsisMatch extends LightCompound {
         if (except.length == ll-1) {
             //choose only the unmatched subterm
             for (byte i = 0; i < ll; i++) {
-                if (ArrayUtils.indexOf(except, i)==-1)
+                if (ArrayUtil.indexOf(except, i)==-1)
                     return matched.sub(i);
             }
             throw new NullPointerException();
@@ -87,7 +87,7 @@ public final class EllipsisMatch extends LightCompound {
             Term[] t = new Term[ll - except.length];
             int j = 0;
             for (byte i = 0; i < ll; i++) {
-                if (ArrayUtils.indexOf(except, i)==-1)
+                if (ArrayUtil.indexOf(except, i)==-1)
                     t[j++] = matched.sub(i);
             }
             //assert(j == t.length);

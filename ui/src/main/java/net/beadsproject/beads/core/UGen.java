@@ -4,7 +4,7 @@
 package net.beadsproject.beads.core;
 
 import jcog.data.list.FasterList;
-import jcog.util.ArrayUtils;
+import jcog.util.ArrayUtil;
 import net.beadsproject.beads.events.KillTrigger;
 import net.beadsproject.beads.ugens.Clock;
 import net.beadsproject.beads.ugens.Envelope;
@@ -590,7 +590,7 @@ public abstract class UGen extends Auvent {
         for (Map.Entry<String, Method> stringMethodEntry : methodTable.entrySet()) {
             Method m = stringMethodEntry.getValue();
             try {
-                envelopes.put(stringMethodEntry.getKey(), (UGen) m.invoke(this, ArrayUtils.EMPTY_OBJECT_ARRAY));
+                envelopes.put(stringMethodEntry.getKey(), (UGen) m.invoke(this, ArrayUtil.EMPTY_OBJECT_ARRAY));
             } catch (Exception e) {
 
             }

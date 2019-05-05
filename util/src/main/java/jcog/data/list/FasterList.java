@@ -1052,12 +1052,11 @@ public class FasterList<X> extends FastList<X> {
     /**
      * modified from MutableIterator
      */
-    static final class FasterListIterator<T> implements Iterator<T> {
+    public static final class FasterListIterator<T> implements Iterator<T> {
         protected final FasterList<T> list;
         int currentIndex;
-        int lastIndex = -1;
 
-        FasterListIterator(FasterList<T> list) {
+        public FasterListIterator(FasterList<T> list) {
             this.list = list;
         }
 
@@ -1068,19 +1067,13 @@ public class FasterList<X> extends FastList<X> {
 
         @Override
         public T next() {
-            return this.list.get(this.lastIndex = this.currentIndex++);
+            return this.list.get(this.currentIndex++);
         }
 
         @Override
         public void remove() {
-            if (this.lastIndex == -1) {
-                throw new IllegalStateException();
-            }
-            this.list.removeFast(this.lastIndex);
-            if (this.lastIndex < this.currentIndex) {
-                this.currentIndex--;
-            }
-            this.lastIndex = -1;
+            this.list.removeFast(currentIndex-1);
+            this.currentIndex--;
         }
     }
 

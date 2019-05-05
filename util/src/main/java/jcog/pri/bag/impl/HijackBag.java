@@ -10,7 +10,7 @@ import jcog.mutex.SpinMutex;
 import jcog.mutex.SpinMutexArray;
 import jcog.pri.ScalarValue;
 import jcog.pri.bag.Bag;
-import jcog.util.ArrayUtils;
+import jcog.util.ArrayUtil;
 import org.eclipse.collections.api.block.function.primitive.IntToFloatFunction;
 import org.jetbrains.annotations.Nullable;
 
@@ -636,8 +636,8 @@ public abstract class HijackBag<K, V> extends Bag<K, V> {
                         wPri[which] = 0;
                     } else {
                         //compact the array by swapping the empty cell with the entry cell's (TODO or any other non-null)
-                        ArrayUtils.swap(wVal, windowSize - 1, which);
-                        ArrayUtils.swap(wPri, windowSize - 1, which);
+                        ArrayUtil.swap(wVal, windowSize - 1, which);
+                        ArrayUtil.swap(wPri, windowSize - 1, which);
                     }
                     windowSize--;
                     remove(key(v));

@@ -2,14 +2,14 @@ package spacegraph.audio;
 
 
 import jcog.data.list.FastCoWList;
-import jcog.util.ArrayUtils;
+import jcog.util.ArrayUtil;
 
 import java.util.Arrays;
 
 
 public class SoundMixer extends FastCoWList<Sound> implements StereoSoundProducer {
 
-    private float[] buf = ArrayUtils.EMPTY_FLOAT_ARRAY;
+    private float[] buf = ArrayUtil.EMPTY_FLOAT_ARRAY;
 
     private final int audibleSources;
 

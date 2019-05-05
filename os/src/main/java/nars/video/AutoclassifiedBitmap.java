@@ -7,7 +7,7 @@ import jcog.func.IntIntToFloatFunction;
 import jcog.learn.Autoencoder;
 import jcog.math.FloatRange;
 import jcog.signal.wave2d.Bitmap2D;
-import jcog.util.ArrayUtils;
+import jcog.util.ArrayUtil;
 import nars.$;
 import nars.NAR;
 import nars.agent.Game;
@@ -48,7 +48,7 @@ public class AutoclassifiedBitmap extends VectorSensor {
 
 
 
-    public static final MetaBits NoMetaBits = (x, y) -> ArrayUtils.EMPTY_FLOAT_ARRAY;
+    public static final MetaBits NoMetaBits = (x, y) -> ArrayUtil.EMPTY_FLOAT_ARRAY;
 
     private final MetaBits metabits;
 

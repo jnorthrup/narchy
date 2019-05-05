@@ -1,6 +1,6 @@
 package nars.term.util.conj;
 
-import jcog.util.ArrayUtils;
+import jcog.util.ArrayUtil;
 import nars.term.Term;
 import org.jetbrains.annotations.Nullable;
 
@@ -46,7 +46,7 @@ public final class ConjDiff extends Conj {
         super(exclude.termToId, exclude.idToTerm);
         this.exc = exclude;
         this.excludeEventsAt = exc.event.keySet().toArray();
-        this.excludeEventAtEternal = ArrayUtils.indexOf(excludeEventsAt, ETERNAL)!=-1;
+        this.excludeEventAtEternal = ArrayUtil.indexOf(excludeEventsAt, ETERNAL)!=-1;
         this.invert = invert;
         add(offset, include);
         //distribute();

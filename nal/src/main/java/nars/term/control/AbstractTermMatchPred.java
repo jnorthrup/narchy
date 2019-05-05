@@ -22,7 +22,7 @@ public abstract class AbstractTermMatchPred<X> extends AbstractPred<X> {
     @Override
     public final boolean test(X x) {
         Term y = resolve.apply(x);
-        assert(y!=null);
+        //assert(y!=null);
         //return y!=null && match(y);
         return match(y);
     }

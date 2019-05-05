@@ -1,7 +1,7 @@
 package com.github.fge.grappa.stack;
 
 import com.google.common.annotations.VisibleForTesting;
-import jcog.util.ArrayUtils;
+import jcog.util.ArrayUtil;
 
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.Arrays;
@@ -97,12 +97,12 @@ public final class ArrayValueStack<V>
     @Override
     public void clear() {
         arraySize = 0;
-        array = (V[]) ArrayUtils.EMPTY_OBJECT_ARRAY;
+        array = (V[]) ArrayUtil.EMPTY_OBJECT_ARRAY;
     }
 
     @Override
     public Object takeSnapshot() {
-        final V[] copy = array.length > 0  ? Arrays.copyOf(array, array.length) : (V[]) ArrayUtils.EMPTY_OBJECT_ARRAY;
+        final V[] copy = array.length > 0  ? Arrays.copyOf(array, array.length) : (V[]) ArrayUtil.EMPTY_OBJECT_ARRAY;
         return new ArrayWithSize<>(copy, arraySize);
     }
 

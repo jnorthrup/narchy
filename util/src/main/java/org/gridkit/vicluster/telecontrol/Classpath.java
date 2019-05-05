@@ -8,7 +8,7 @@ package org.gridkit.vicluster.telecontrol;
 
 import jcog.data.list.FasterList;
 import jcog.data.map.ConcurrentFastIteratingHashSet;
-import jcog.util.ArrayUtils;
+import jcog.util.ArrayUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -72,7 +72,7 @@ public class Classpath {
     }
 
     public static Collection<URL> listCurrentClasspath(URL[] uu) {
-        Set<URL> result = new ConcurrentFastIteratingHashSet<>(ArrayUtils.EMPTY_URL_ARRAY);
+        Set<URL> result = new ConcurrentFastIteratingHashSet<>(ArrayUtil.EMPTY_URL_ARRAY);
 
         Stream.of(uu).parallel().forEach(u -> {
             addEntriesFromManifest(result, u);

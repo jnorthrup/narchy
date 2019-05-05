@@ -2,7 +2,7 @@ package jcog.data.list;
 
 import jcog.TODO;
 import jcog.data.iterator.ArrayIterator;
-import jcog.util.ArrayUtils;
+import jcog.util.ArrayUtil;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.eclipse.collections.api.block.procedure.Procedure;
 import org.eclipse.collections.api.block.procedure.Procedure2;
@@ -29,7 +29,7 @@ public class FastCoWList<X> /*extends AbstractList<X>*/ /*implements List<X>*/ i
     private final IntFunction<X[]> arrayBuilder;
 
     
-    public final AtomicReference<X[]> copy = new AtomicReference(ArrayUtils.EMPTY_OBJECT_ARRAY);
+    public final AtomicReference<X[]> copy = new AtomicReference(ArrayUtil.EMPTY_OBJECT_ARRAY);
 
 
     public FastCoWList(Class<X> x) {
@@ -256,10 +256,10 @@ public class FastCoWList<X> /*extends AbstractList<X>*/ /*implements List<X>*/ i
 
     //@Override
     public boolean contains(Object object) {
-        return ArrayUtils.indexOf(array(), object)!=-1;
+        return ArrayUtil.indexOf(array(), object)!=-1;
     }
     public boolean containsInstance(Object object) {
-        return ArrayUtils.indexOfIdentity(array(), object)!=-1;
+        return ArrayUtil.indexOfIdentity(array(), object)!=-1;
     }
 
     //@Override
@@ -315,7 +315,7 @@ public class FastCoWList<X> /*extends AbstractList<X>*/ /*implements List<X>*/ i
     public float[] map(FloatFunction<X> f, float[] target) {
         X[] c = this.array();
         if (c == null)
-            return ArrayUtils.EMPTY_FLOAT_ARRAY;
+            return ArrayUtil.EMPTY_FLOAT_ARRAY;
         int n = c.length;
         if (n != target.length) {
             target = new float[n];

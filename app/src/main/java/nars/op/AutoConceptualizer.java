@@ -2,7 +2,7 @@ package nars.op;
 
 import com.google.common.collect.Iterables;
 import jcog.learn.Autoencoder;
-import jcog.util.ArrayUtils;
+import jcog.util.ArrayUtil;
 import nars.$;
 import nars.NAR;
 import nars.Task;
@@ -118,7 +118,7 @@ public class AutoConceptualizer extends AbstractSensor {
 
 
         float finalMean = 0.5f; 
-        ArrayUtils.sort(order, (i) -> Math.abs(finalMean - a[i]));
+        ArrayUtil.sort(order, (i) -> Math.abs(finalMean - a[i]));
 
         Set<Term> x = new UnifiedSet(maxArity);
         int j = 0;

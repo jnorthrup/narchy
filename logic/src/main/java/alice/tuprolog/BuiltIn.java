@@ -17,7 +17,7 @@
  */
 package alice.tuprolog;
 
-import jcog.util.ArrayUtils;
+import jcog.util.ArrayUtil;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -257,7 +257,7 @@ public final class BuiltIn extends PrologLib {
     private static String[] getStringArrayFromStruct(Struct list) {
         int i = list.listSize();
         if (i == 0)
-            return ArrayUtils.EMPTY_STRING_ARRAY;
+            return ArrayUtil.EMPTY_STRING_ARRAY;
 
         String[] args = new String[i];
         Iterator<? extends Term> it = list.listIterator();

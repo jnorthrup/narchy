@@ -32,12 +32,10 @@ package jcog.data.map;
 import jcog.random.Rand;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.AbstractSet;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+import java.util.function.IntSupplier;
 import java.util.function.Predicate;
 
 /**
@@ -129,10 +127,19 @@ public class ConcurrentFastIteratingHashSet<T> extends AbstractSet<T> {
         return map.asList();
     }
 
-    @Nullable
-    public T get(Rand rng) {
+    public T get(IntSupplier rng) {
         T[] a = map.valueArray();
         if (a.length == 0) return null;
-        return a[rng.nextInt(a.length)];
+        return a[ Math.abs(rng.getAsInt()) % a.length ];
+    }
+
+    @Nullable
+    public T get(Rand rng) {
+        return get(rng::nextInt);
+    }
+
+    @Nullable
+    public T get(Random rng) {
+        return get(rng::nextInt);
     }
 }

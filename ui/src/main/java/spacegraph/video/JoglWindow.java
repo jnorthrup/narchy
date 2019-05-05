@@ -10,7 +10,7 @@ import jcog.event.Off;
 import jcog.event.Topic;
 import jcog.exe.Exe;
 import jcog.exe.InstrumentedLoop;
-import jcog.util.ArrayUtils;
+import jcog.util.ArrayUtil;
 import spacegraph.UI;
 import spacegraph.util.animate.Animated;
 import spacegraph.video.font.HersheyFont;
@@ -324,7 +324,7 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
     }
 
     public void addKeyListener(KeyListener m) {
-        if (ArrayUtils.indexOf(window.getKeyListeners(), m) != -1)
+        if (ArrayUtil.indexOf(window.getKeyListeners(), m) != -1)
             return;
         window.addKeyListener(m);
     }

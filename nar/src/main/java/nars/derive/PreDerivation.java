@@ -4,8 +4,8 @@ import nars.Op;
 import nars.term.Term;
 import nars.truth.Truth;
 import nars.unify.Unify;
+import org.eclipse.collections.impl.list.mutable.primitive.ShortArrayList;
 import org.jetbrains.annotations.Nullable;
-import org.roaringbitmap.RoaringBitmap;
 
 import java.util.Random;
 
@@ -24,7 +24,7 @@ public abstract class PreDerivation extends Unify {
     /**
      * choices mapping the available post targets
      */
-    public final RoaringBitmap canCollector = new RoaringBitmap();
+    public final ShortArrayList canCollector = new ShortArrayList();
 
 
     protected PreDerivation(@Nullable Op type, Random random, int stackMax) {

@@ -1,6 +1,6 @@
 package nars.concept;
 
-import jcog.util.ArrayUtils;
+import jcog.util.ArrayUtil;
 import nars.$;
 import nars.NAR;
 import nars.Op;
@@ -75,7 +75,7 @@ public final class Operator extends NodeConcept implements PermanentConcept, Ato
 
 
     private static Task command(Term content, long when) {
-        return NALTask.the(content, Op.COMMAND, null, when, when, when, ArrayUtils.EMPTY_LONG_ARRAY);
+        return NALTask.the(content, Op.COMMAND, null, when, when, when, ArrayUtil.EMPTY_LONG_ARRAY);
     }
 
     public static Task log(long when, Object content) {

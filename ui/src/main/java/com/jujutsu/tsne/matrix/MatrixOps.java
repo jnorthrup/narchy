@@ -1,7 +1,7 @@
 package com.jujutsu.tsne.matrix;
 
 import jcog.Texts;
-import jcog.util.ArrayUtils;
+import jcog.util.ArrayUtil;
 import org.ejml.data.DMatrix;
 import org.ejml.data.DMatrixRBlock;
 
@@ -1388,7 +1388,7 @@ public enum MatrixOps { ;
 	
 	
 	public static double[][] times(double[][] a, double[][] b){
-		if(a.length == 0) return ArrayUtils.EMPTY_DOUBLE_DOUBLE;
+		if(a.length == 0) return ArrayUtil.EMPTY_DOUBLE_DOUBLE;
 		if(a[0].length != b.length) return null; 
 
 		int n = a[0].length;

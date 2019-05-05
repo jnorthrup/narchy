@@ -1,7 +1,7 @@
 package nars.task;
 
 import jcog.TODO;
-import jcog.util.ArrayUtils;
+import jcog.util.ArrayUtil;
 import nars.Task;
 import nars.term.Term;
 import nars.truth.Truth;
@@ -23,7 +23,7 @@ public class CommandTask implements Task {
                 COMMAND,
                 TIMELESS,
                 TIMELESS,
-                ArrayUtils.EMPTY_LONG_ARRAY);
+                ArrayUtil.EMPTY_LONG_ARRAY);
     }
 
 
@@ -55,7 +55,7 @@ public class CommandTask implements Task {
 
     @Override
     public final short[] why() {
-        return ArrayUtils.EMPTY_SHORT_ARRAY;
+        return ArrayUtil.EMPTY_SHORT_ARRAY;
     }
 
     @Override
@@ -121,7 +121,7 @@ public class CommandTask implements Task {
 
     @Override
     public long[] stamp() {
-        return ArrayUtils.EMPTY_LONG_ARRAY;
+        return ArrayUtil.EMPTY_LONG_ARRAY;
     }
 
     @Override

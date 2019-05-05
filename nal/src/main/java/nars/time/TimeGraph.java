@@ -13,7 +13,7 @@ import jcog.data.list.FasterList;
 import jcog.data.set.ArrayHashSet;
 import jcog.math.LongInterval;
 import jcog.math.Longerval;
-import jcog.util.ArrayUtils;
+import jcog.util.ArrayUtil;
 import nars.NAL;
 import nars.Op;
 import nars.subterm.Subterms;
@@ -735,7 +735,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 
     private Event[] eventArray(UnifiedSet<Event> ae) {
         Event[] aa = ae.toArray(EMPTY_EVENT_ARRAY);
-        if (aa.length > 1) ArrayUtils.shuffle(aa, random());
+        if (aa.length > 1) ArrayUtil.shuffle(aa, random());
         return aa;
     }
 
@@ -1095,7 +1095,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
                 if (!sy.isEmpty()) {
                     Term xyx = xy.getKey();
                     Compound[] two = sy.toArray(Op.EmptyCompoundArray);
-                    if (two.length > 1) ArrayUtils.shuffle(two, random());
+                    if (two.length > 1) ArrayUtil.shuffle(two, random());
 
 //                    int xv = x.volume();
                     for (Term sssi : two) {

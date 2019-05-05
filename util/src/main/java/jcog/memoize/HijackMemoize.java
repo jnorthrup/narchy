@@ -70,7 +70,7 @@ public class HijackMemoize<X, Y> extends AbstractMemoize<X,Y> {
     }
 
     @Nullable
-    public Y getIfPresent(Object k) {
+    public final Y getIfPresent(Object k) {
         PriProxy<X, Y> exists = bag.get(k);
         if (exists != null) {
             Y e = exists.get();

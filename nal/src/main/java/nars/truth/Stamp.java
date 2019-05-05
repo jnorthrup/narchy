@@ -28,7 +28,7 @@ import jcog.WTF;
 import jcog.data.set.MetalLongSet;
 import jcog.io.BinTxt;
 import jcog.math.LongInterval;
-import jcog.util.ArrayUtils;
+import jcog.util.ArrayUtil;
 import nars.NAL;
 import nars.Op;
 import nars.Task;
@@ -110,10 +110,10 @@ public interface Stamp {
         } else {
             LongArrayList A = Stamp.toList(a);
             if (a.length > 1)
-                ArrayUtils.shuffle(A.elements(), rng);
+                ArrayUtil.shuffle(A.elements(), rng);
             LongArrayList B = Stamp.toList(b);
             if (b.length > 1)
-                ArrayUtils.shuffle(B.elements(), rng);
+                ArrayUtil.shuffle(B.elements(), rng);
 
             MetalLongSet AB = new MetalLongSet(abLength);
             do {

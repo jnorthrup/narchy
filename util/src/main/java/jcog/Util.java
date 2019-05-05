@@ -17,7 +17,7 @@ import jcog.io.BinTxt;
 import jcog.math.FloatSupplier;
 import jcog.math.NumberException;
 import jcog.pri.ScalarValue;
-import jcog.util.ArrayUtils;
+import jcog.util.ArrayUtil;
 import net.openhft.hashing.LongHashFunction;
 import org.apache.commons.math3.fitting.PolynomialCurveFitter;
 import org.apache.commons.math3.fitting.WeightedObservedPoint;
@@ -31,7 +31,6 @@ import org.eclipse.collections.api.list.primitive.ByteList;
 import org.eclipse.collections.api.list.primitive.ImmutableByteList;
 import org.eclipse.collections.api.set.MutableSet;
 import org.eclipse.collections.api.set.primitive.IntSet;
-import org.eclipse.collections.api.tuple.Pair;
 import org.eclipse.collections.impl.bag.mutable.HashBag;
 import org.eclipse.collections.impl.factory.primitive.ByteLists;
 import org.eclipse.collections.impl.factory.primitive.IntSets;
@@ -40,7 +39,6 @@ import org.eclipse.collections.impl.list.mutable.primitive.DoubleArrayList;
 import org.eclipse.collections.impl.list.mutable.primitive.IntArrayList;
 import org.eclipse.collections.impl.map.mutable.primitive.ByteByteHashMap;
 import org.eclipse.collections.impl.set.mutable.primitive.IntHashSet;
-import org.eclipse.collections.impl.tuple.Tuples;
 import org.jetbrains.annotations.Nullable;
 import org.msgpack.jackson.dataformat.MessagePackFactory;
 import org.slf4j.Logger;
@@ -1021,7 +1019,7 @@ public enum Util {
         int s = l.size();
         switch (s) {
             case 0:
-                return ArrayUtils.EMPTY_BYTE_ARRAY;
+                return ArrayUtil.EMPTY_BYTE_ARRAY;
             case 1:
                 return new byte[]{l.get(0)};
             case 2:
@@ -1365,6 +1363,9 @@ public enum Util {
         return y;
     }
 
+    /** warning: if values are the same then biases towards the first
+     * TODO make a random one for cases where equivalents exist
+     * */
     public static int maxIndex(float... xx) {
         float y = Float.NEGATIVE_INFINITY;
         int best = -1;
@@ -1497,17 +1498,17 @@ public enum Util {
         return result;
     }
 
-    public static Pair tuple(Object a, Object b) {
-        return Tuples.pair(a, b);
-    }
-
-    public static Pair tuple(Object a, Object b, Object c) {
-        return tuple(tuple(a, b), c);
-    }
-
-    public static Pair tuple(Object a, Object b, Object c, Object d) {
-        return tuple(tuple(a, b, c), d);
-    }
+//    public static Pair tuple(Object a, Object b) {
+//        return Tuples.pair(a, b);
+//    }
+//
+//    public static Pair tuple(Object a, Object b, Object c) {
+//        return tuple(tuple(a, b), c);
+//    }
+//
+//    public static Pair tuple(Object a, Object b, Object c, Object d) {
+//        return tuple(tuple(a, b, c), d);
+//    }
 
     /**
      * min is inclusive, max is exclusive: [min, max)
@@ -2323,7 +2324,7 @@ public enum Util {
             case 6:
                 return ByteLists.immutable.of(x.get(a++), x.get(a++), x.get(a++), x.get(a++), x.get(a++), x.get(a));
             default:
-                return ByteLists.immutable.of(ArrayUtils.subarray(x.toArray(), a, b));
+                return ByteLists.immutable.of(ArrayUtil.subarray(x.toArray(), a, b));
         }
     }
 
@@ -2411,19 +2412,6 @@ public enum Util {
 
 
         return null;
-    }
-
-    public static short[] toShort(int[] x) {
-        if (x.length == 0)
-            return ArrayUtils.EMPTY_SHORT_ARRAY;
-
-        short[] s = new short[x.length];
-        int i = 0;
-        for (int xx : x) {
-            assert (xx <= Short.MAX_VALUE && xx >= Short.MIN_VALUE);
-            s[i++] = (short) xx;
-        }
-        return s;
     }
 
     public static FloatSupplier compose(FloatSupplier f, FloatToFloatFunction g) {
@@ -2566,7 +2554,7 @@ public enum Util {
     public static int[] bytesToInts(byte[] array) {
         int n = array.length;
         if (n == 0)
-            return ArrayUtils.EMPTY_INT_ARRAY;
+            return ArrayUtil.EMPTY_INT_ARRAY;
         int[] t = new int[n];
         for (int i = 0; i < n; i++) {
             t[i] = array[i];
@@ -2580,7 +2568,7 @@ public enum Util {
 
     public static Class[] typesOfArray(Object[] orgs, int from, int to) {
         if (orgs.length == 0)
-            return ArrayUtils.EMPTY_CLASS_ARRAY;
+            return ArrayUtil.EMPTY_CLASS_ARRAY;
         else {
             return map(x -> Primitives.unwrap(x.getClass()),
                     new Class[to - from], 0, orgs, from, to);

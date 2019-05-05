@@ -9,7 +9,7 @@ import jcog.pri.Forgetting;
 import jcog.pri.Prioritizable;
 import jcog.pri.ScalarValue;
 import jcog.pri.op.PriMerge;
-import jcog.util.ArrayUtils;
+import jcog.util.ArrayUtil;
 import jcog.util.FloatFloatToFloatFunction;
 import org.eclipse.collections.api.block.function.primitive.IntToObjectFunction;
 import org.jetbrains.annotations.Nullable;
@@ -225,7 +225,7 @@ public abstract class Bag<X, Y> implements Table<X, Y>, Sampler<Y>, jcog.pri.Pre
     /** subclasses may have more efficient ways of doing this */
     public <Z> Z[] toArray(@Nullable Z[] _target, Function<Y,Z> apply) {
         int s = size();
-        if (s == 0) return (Z[]) ArrayUtils.EMPTY_OBJECT_ARRAY;
+        if (s == 0) return (Z[]) ArrayUtil.EMPTY_OBJECT_ARRAY;
 
         Z[] target = _target == null || _target.length < s ? Arrays.copyOf(_target, s) : _target;
 

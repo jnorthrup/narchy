@@ -20,7 +20,7 @@ import com.google.common.collect.ForwardingSet;
 import jcog.TODO;
 import jcog.Util;
 import jcog.WTF;
-import jcog.util.ArrayUtils;
+import jcog.util.ArrayUtil;
 import nars.*;
 import nars.op.Equal;
 import nars.op.MathFunc;
@@ -147,14 +147,14 @@ public class KIF {
             Term v = null;
             if (s.range != null) {
                 v = $.varDep("R");
-                vt = ArrayUtils.add(vt, v);
+                vt = ArrayUtil.add(vt, v);
             }
             final int[] k = {1};
             Term[] typeConds = Util.map(0, ds, Term[]::new, i ->
                     INH.the($.varDep(1 + i),
                             s.domain.getIfAbsent(1 + i, () -> $.varDep(k[0]++))));
             if (s.range != null) {
-                typeConds = ArrayUtils.add(typeConds, INH.the(v, s.range));
+                typeConds = ArrayUtil.add(typeConds, INH.the(v, s.range));
             }
             Term types = CONJ.the(
                     typeConds

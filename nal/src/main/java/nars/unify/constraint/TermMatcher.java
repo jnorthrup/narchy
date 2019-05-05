@@ -3,6 +3,7 @@ package nars.unify.constraint;
 import nars.$;
 import nars.Op;
 import nars.subterm.Subterms;
+import nars.term.Compound;
 import nars.term.Term;
 import nars.term.Variable;
 import nars.term.atom.Atom;
@@ -214,7 +215,7 @@ abstract public class TermMatcher {
     }
 
     /**
-     * is of a specific type, and has the target in its structure
+     * compound is of a specific type, and has the target in its structure
      */
     public final static class IsHas extends TermMatcher {
 
@@ -250,12 +251,14 @@ abstract public class TermMatcher {
         }
         @Override
         public boolean test(Term term) {
-            return term.op().id == is && testVol(term) && term.subterms().hasAll(structSubs);
+            return term instanceof Compound &&
+                    term.op().id == is && testVol(term) && term.subterms().hasAll(structSubs);
         }
 
         @Override
-        public boolean testSuper(Term x) {
-            return testVol(x) && x.subterms().hasAll(struct);
+        public boolean testSuper(Term term) {
+            return term instanceof Compound &&
+                    testVol(term) && term.subterms().hasAll(struct);
         }
 
         private boolean testVol(Term term) {
