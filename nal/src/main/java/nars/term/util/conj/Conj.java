@@ -1028,7 +1028,7 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
             return incoming; //disjunction totally annihilated by the incoming condition
         }
 
-        int dt = eternal ? DTERNAL : 0;
+        int dt = DTERNAL; //eternal ? DTERNAL : 0;
 
         if (result[0] == False) {
             //removing the matching subterm from the disjunction and reconstruct it

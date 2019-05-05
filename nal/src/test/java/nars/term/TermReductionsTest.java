@@ -243,7 +243,7 @@ public class TermReductionsTest extends NarseseTest {
 
     @Test
     void testTemporalConjunctionReduction1() throws Narsese.NarseseException {
-        assertEq("(a&|b)", "(a &&+0 b)");
+        assertEq("(a&&b)", "(a &&+0 b)");
         assertEquals(
                 $("((--,(ball_left)) &&-270 (ball_right))"),
                 $("((ball_right) &&+270 (--,(ball_left)))"));
@@ -252,7 +252,7 @@ public class TermReductionsTest extends NarseseTest {
 
     @Test
     void testConjunctionParallelWithConjunctionParallel() {
-        assertEq("(&|,nario(13,27),nario(21,27),nario(24,27))", "((nario(21,27)&|nario(24,27))&|nario(13,27))");
+        assertEq("(&&,nario(13,27),nario(21,27),nario(24,27))", "((nario(21,27)&|nario(24,27))&|nario(13,27))");
     }
 
     @Test
@@ -262,12 +262,12 @@ public class TermReductionsTest extends NarseseTest {
 
     @Test
     void testTemporalConjunctionReduction3() {
-        assertEq("(a&|b)", "( (a &&+0 b) && (a &&+0 b) )");
+        assertEq("(a&&b)", "( (a &&+0 b) && (a &&+0 b) )");
     }
 
     @Test
     void testTemporalConjunctionReduction4() {
-        assertEq("(a&|b)", "( a &&+0 (b && b) )");
+        assertEq("(a&&b)", "( a &&+0 (b && b) )");
     }
 
 
@@ -275,7 +275,7 @@ public class TermReductionsTest extends NarseseTest {
     void testTemporalNTermConjunctionParallel() {
 
 
-        assertEq("(&|,a,b,c)", "( a &&+0 (b &&+0 c) )");
+        assertEq("(&&,a,b,c)", "( a &&+0 (b &&+0 c) )");
     }
 
     @Disabled
@@ -681,7 +681,7 @@ public class TermReductionsTest extends NarseseTest {
     void testConjImplReduction1() {
         assertEq(
 
-                "((inside(john,playground)==>inside(bob,kitchen))&|inside(bob,office))",
+                "((inside(john,playground)==>inside(bob,kitchen))&&inside(bob,office))",
                 "(inside(bob,office)&|(inside(john,playground)==>inside(bob,kitchen)))");
     }
 

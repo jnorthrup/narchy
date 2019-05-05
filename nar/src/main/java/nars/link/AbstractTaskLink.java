@@ -89,12 +89,9 @@ public abstract class AbstractTaskLink implements TaskLink {
     public float pri() {
         float p = this.pri;
         if (p != p)
-            return this.pri = _pri(); //update cached value
+            return this.pri = priSum(); //update cached value
         return p;
     }
-
-
-
 
     protected void invalidate() {
         this.pri = Float.NaN;
@@ -142,13 +139,6 @@ public abstract class AbstractTaskLink implements TaskLink {
         return mergeComponent(punc, pri, merge, Delta);
     }
 
-
-    /**
-     * calculates the priority from the components, to be cached until invalidation
-     */
-    protected final float _pri() {
-        return priSum() / 4;
-    }
 
     protected abstract float priSum();
 

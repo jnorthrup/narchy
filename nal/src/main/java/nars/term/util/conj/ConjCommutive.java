@@ -298,8 +298,8 @@ public enum ConjCommutive {;
 //    }
 
     private static Term conjDirect(int dt, Term[] u) {
-//        if (dt == 0)
-//            dt = DTERNAL;
+        if (dt == 0)
+            dt = DTERNAL;
 
         return Op.terms.theCompound(CONJ, dt, u);
     }

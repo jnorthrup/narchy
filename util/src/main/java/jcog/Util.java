@@ -2778,4 +2778,8 @@ public enum Util {
         return Objects.equals(current, next) ? current : next;
     }
 
+    public static void nop() {
+        Thread.onSpinWait();
+    }
+
 }

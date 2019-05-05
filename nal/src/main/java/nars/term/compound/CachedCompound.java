@@ -1,5 +1,6 @@
 package nars.term.compound;
 
+import jcog.Util;
 import nars.Op;
 import nars.The;
 import nars.subterm.Subterms;
@@ -9,6 +10,7 @@ import nars.term.util.transform.Retemporalize;
 import org.eclipse.collections.api.block.predicate.primitive.LongObjectPredicate;
 
 import static jcog.Util.hashCombine;
+import static nars.Op.CONJ;
 import static nars.time.Tense.DTERNAL;
 
 
@@ -42,6 +44,9 @@ abstract public class CachedCompound extends SeparateSubtermsCompound implements
             else
                 c = new UnnormalizedCachedCompound(op, subterms);
         } else {
+            if (op==CONJ && dt == 0) {
+                Util.nop(); //TEMPORARY for debugging
+            }
             c = new TemporalCachedCompound(op, dt, subterms);
         }
 

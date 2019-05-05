@@ -320,7 +320,7 @@ class NarseseExtendedTest extends NarseseTest {
     }
     @Test
     void testParallelConjInfix() throws Narsese.NarseseException {
-        Assertions.assertEquals("(a&|b)", NarseseTest.term("(a &| b)").toString());
+        Assertions.assertEquals("(a&&b)", NarseseTest.term("(a &| b)").toString());
         Assertions.assertEquals("(x &&+2 ((a)&&(b)))", NarseseTest.term("(x &&+2 ((a) &| (b)))").toString());
         Assertions.assertEquals("(x &&+2 (&&,(a),(b),(c)))", NarseseTest.term("(x &&+2 ( ((a) &| (b)) &| (c)))").toString());
     }

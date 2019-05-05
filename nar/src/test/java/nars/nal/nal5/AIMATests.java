@@ -64,7 +64,7 @@ class AIMATests {
 
         final NAR n = NARS.tmp();
 
-        n.freqResolution.set(0.25f);
+//        n.freqResolution.set(0.25f);
 //        n.confResolution.set(0.1f);
 //        n.confMin.set(0.1f);
 
@@ -74,8 +74,6 @@ class AIMATests {
         assertEquals(20, $$("((&&,Weapon(#y),Sells($x,#y,#z),Hostile(#z)) ==> Criminal($x))").volume());
 
         n.termVolumeMax.set(21);
-
-
         //n.log();
 
         n.believe(

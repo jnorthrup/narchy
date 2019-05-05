@@ -207,6 +207,7 @@ public class NAL8SequenceTest extends NALTest {
     @Test
     void testGoalDeduction_ParallelWithDepVar_and_Arithmetic() {
         test
+                .termVolMax(12)
                 .input( "(&&, x(#1,#2), add(#1,#2,#3), y(#3))!")
                 .input( "x(1,1).")
                 .mustGoal(cycles, "y(2)", 1, 0.81f) //81% for one step
@@ -215,6 +216,7 @@ public class NAL8SequenceTest extends NALTest {
     @Test
     void testGoalDeduction_ParallelWithDepVar_and_Specific_Arithmetic() {
         test
+                .termVolMax(13)
                 .input( "(&&, x(#1,#2), y(#1,#2), --equal(#1,#2))!")
                 .input( "x(1,1).")
                 .input( "x(1,2).")

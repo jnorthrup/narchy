@@ -58,7 +58,7 @@ public enum ConjSeq { ;
             assert(bStart == aStart);
             return CONJ.the(XTERNAL, a, b);
         } else if (aStart == bStart) {//(aStart == 0 && bStart == 0) {
-            return CONJ.the(0, a, b);
+            return CONJ.the(DTERNAL, a, b);
         } else {
 
             assert (bStart != ETERNAL && bStart != TIMELESS);

@@ -288,7 +288,7 @@ public class ConjTest {
     }
 
     @Test void eteConjInParallel() {
-        assertEq("(&|,a,b,z)", "((a && b) &| z)");
+        assertEq("(&&,a,b,z)", "((a && b) &| z)");
         assertEq("((--,(a&|b))&|z)", "(--(a && b) &| z)");
     }
 
@@ -503,9 +503,9 @@ public class ConjTest {
     @Test
     void testConegatedConjunctionTerms0not() {
 
-        assertEq("((--,(y&|z))&&x)", "(x&&--(y &| z))");
+        assertEq("((--,(y&&z))&&x)", "(x&&--(y &| z))");
 
-        assertEq("((--,(y&|z))&|x)", "(x &| --(y && z))");
+        assertEq("((--,(y&&z))&&x)", "(x &| --(y && z))");
     }
 
     @Test
@@ -571,7 +571,8 @@ public class ConjTest {
 
     @Test
     void testConjParallelWithNegMix2() {
-        assertEquals("((--,(x &&+1 y))&|(--,y))", $$("((--,(x &&+1 y)) &| (--,y))").toString());
+        assertEquals("(--,y)", $$("((--,(x && y)) && (--,y))").toString());
+        assertEquals("(--,y)", $$("((--,(x &&+1 y)) && (--,y))").toString());
     }
 
     @Test
@@ -1209,7 +1210,7 @@ public class ConjTest {
 
 
         Term abc = $("((a &| b) &| c)");
-        assertEq("(&|,a,b,c)", abc);
+        assertEq("(&&,a,b,c)", abc);
         assertTrue(abc.isCommutative());
 
 //        assertFalse($("(b &&+1 a)").isCommutative());
@@ -1984,12 +1985,12 @@ public class ConjTest {
 
     @Test
     void testParallelDisjunctionAbsorb() {
-        assertEq("((--,y)&|x)", CONJ.the(0, $$("--(x&&y)"), $$("x")));
+        assertEq("((--,y)&&x)", CONJ.the(0, $$("--(x&&y)"), $$("x")));
     }
 
     @Test
     void testParallelDisjunctionInert() {
-        assertEq("((--,(x&|y))&|z)", CONJ.the(0, $$("--(x&&y)"), $$("z")));
+        assertEq("((--,(x&&y))&&z)", CONJ.the(DTERNAL, $$("--(x&&y)"), $$("z")));
     }
 
     @Test
@@ -2023,10 +2024,10 @@ public class ConjTest {
         assertEq("((--,y)&&x)", //<- maybe --y &| x
                 $$("(&&,(--,(y&|x)),x)")
         );
-        assertEq("((--,y)&|x)",
+        assertEq("((--,y)&&x)",
                 $$("(&|,(--,(y&&x)),x)")
         );
-        assertEq("((--,y)&|x)",
+        assertEq("((--,y)&&x)",
                 $$("(&|,(--,(y&|x)),x)")
         );
         assertEq("(&&,(--,y),x,z)",
@@ -2059,27 +2060,27 @@ public class ConjTest {
     @Test
     void testCollapseEteParallel1() {
 
-        assertEq("(&|,a,b,c)", "((&&,a,b)&|c)"); //collapse
+        assertEq("(&&,a,b,c)", "((&&,a,b)&|c)"); //collapse
         //assertEq("((a&&b)&|c)", "((&&,a,b)&|c)"); //NOT collapse
 
-        assertEq("((a&|b)&&c)", "((&|,a,b)&&c)"); //NOT collapse
+        assertEq("(&&,a,b,c)", "((&|,a,b)&&c)"); //NOT collapse
 
     }
 
     @Test
     void testCollapseEteParallel2() {
-        assertEq("(&|,a,b,c,d)", "(&|,(&&,a,b),c,d)"); //collapse
+        assertEq("(&&,a,b,c,d)", "(&|,(&&,a,b),c,d)"); //collapse
 //        assertEq("(&|,(a&&b),c,d)", "(&|,(&&,a,b),c,d)"); //NOT collapse
-        assertEq("(&&,(a&|b),c,d)", "(&&,(&|,a,b),c,d)"); //NOT collapse
+        assertEq("(&&,a,b,c,d)", "(&&,(&|,a,b),c,d)"); //NOT collapse
     }
 
     @Test
     void testCollapseEteParallel3() {
 
         {
-            assertEq("((--,(c&|d))&&(a&|b))", ConjCommutive.the(DTERNAL, $$("(--,(c&|d))"), $$("(a&|b)")));
+            assertEq("(&&,(--,(c&&d)),a,b)", ConjCommutive.the(DTERNAL, $$("(--,(c&|d))"), $$("(a&|b)")));
         }
-        assertEq("((--,(c&|d))&&(a&|b))", "((&|,a,b) && --(&|,c,d))"); //NOT collapse
+        assertEq("(&&,(--,(c&&d)),a,b)", "((&|,a,b) && --(&|,c,d))"); //NOT collapse
 
 
 
@@ -2223,7 +2224,7 @@ public class ConjTest {
     }
 
     @Test void notFactoredSequences() {
-        assertEquals(1,
+        assertEquals(3,
             $$("((--,(#1 &&+74 #1))&&(#1 &&+200 #1))").eventList().size());
 
         assertEquals(1,
