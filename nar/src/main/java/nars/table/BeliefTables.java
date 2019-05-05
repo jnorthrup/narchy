@@ -54,7 +54,7 @@ public class BeliefTables extends FasterList<BeliefTable> implements BeliefTable
     @Override public void remember(Remember r) {
 
         for (int i = 0, thisSize = this.size(); i < thisSize; i++) {
-            BeliefTable t = this.get(i);
+            BeliefTable t = this.getSafe(i); //HACK items seem to get deleted very rarely.. find why
             t.remember(r);
             if (!r.active())
                 return;

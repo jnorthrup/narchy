@@ -334,21 +334,29 @@ public class VectorSensorView extends BitmapMatrixView implements BitmapMatrixVi
                                     }
                             );
                         });
-                    }
-                ),
-                goalCheckBox(view, "Goal+", 1f),
-                goalCheckBox(view, "Goal+-", 0.5f),
-                goalCheckBox(view, "Goal-", 0f)
+                    }),
+
+
+                goalCheckBox(view, "Goal-", 0f),
+                goalCheckBox(view, "Goal-+", 0f, 1f),
+                goalCheckBox(view, "Goal~", 0.5f),
+                goalCheckBox(view, "Goal+-", 1f, 0f),
+                goalCheckBox(view, "Goal+", 1f)
             ), new ObjectSurface<>(view)
                     //TODO attn node plot: supply/demand
                     //new FloatSlider("Supply", view.sensor.attn.supply)
             );
         }
 
-        public CheckBox goalCheckBox(VectorSensorView view, String s, float v) {
+        CheckBox goalCheckBox(VectorSensorView view, String s, /* TODO */ float value) {
+            return goalCheckBox(view, s, value, value);
+        }
+
+        /** from,to allows specifying a transition, ex: (--x &&+1 x) or (x &&+1 --x) if they differe */
+        CheckBox goalCheckBox(VectorSensorView view, String s, /* TODO */ float fromValue, float toValue) {
             return new CheckBox(s, () -> {
                 view.onConceptTouch((c) -> {
-                    next.set(() -> view.nar.want(c.term(), Tense.Present, v));
+                    next.set(() -> view.nar.want(c.term(), Tense.Present, toValue));
                 });
             });
         }

@@ -468,14 +468,14 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
                             //link(know(y), ETERNAL, pe); //<- is this used?
                             know(y);
                             return true;
-                        }, 0, false, true, true);
+                        }, 0, false, true, false);
 
 //
                         pred.eventsWhile((w, y) -> {
                             //link(se, ETERNAL, know(y));  //<- is this used?
                             know(y);
                             return true;
-                        }, 0, false, true, true);
+                        }, 0, false, true, false);
 
                     } else if (edt == XTERNAL) {
                         /* without any absolute context */

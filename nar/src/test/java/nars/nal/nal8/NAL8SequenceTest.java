@@ -203,6 +203,7 @@ public class NAL8SequenceTest extends NALTest {
                 .mustGoal(cycles, "y(1,1)", 1, 0.81f) //81% for one step
         ;
     }
+
     @Test
     void testGoalDeduction_ParallelWithDepVar_and_Arithmetic() {
         test

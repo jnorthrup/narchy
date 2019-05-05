@@ -12,7 +12,6 @@ import org.eclipse.collections.api.tuple.primitive.BooleanObjectPair;
 import org.eclipse.collections.impl.tuple.Tuples;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Queue;
@@ -69,23 +68,25 @@ abstract public class Search<N, E> {
                 ((Cons<BooleanObjectPair<FromTo<Node<N,E>,E>>>) path).tail : path.get(path.size() - 1);
         return step.getTwo().to(step.getOne());
     }
-    
+
+    private static final List empty = List.of();
+
     private boolean bfsNode(Node<N,E> start, Queue<Pair<List<BooleanObjectPair<FromTo<Node<N,E>,E>>>, Node<N,E>>> q) {
         if (start==null)
             return true;  //??
 
-        q.add(Tuples.pair(path = Collections.emptyList(), start));
 
-        if (!log.visit(start)) {
+        q.add(Tuples.pair(this.path = empty, start));
+
+        if (!log.visit(start))
             return true; //reached a root via a previous root
-        }
 
         Pair<List<BooleanObjectPair<FromTo<Node<N,E>,E>>>, Node<N,E>> current;
         while ((current = q.poll()) != null) {
 
             Node<N, E> at = this.at = current.getTwo();
 
-            path = current.getOne();
+            this.path = current.getOne();
 
             for (FromTo<Node<N,E>,E> e : next(at)) {
                 Node<N, E> next = next(e, at);
@@ -94,16 +95,16 @@ abstract public class Search<N, E> {
 
 
                 q.add(Tuples.pair(
-                        Cons.the(path, pair(next == e.to(), e)),
+                        Cons.the(this.path, pair(next == e.to(), e)),
                         next));
             }
 
 
-            if (!path.isEmpty()) {
+            if (!this.path.isEmpty()) {
                 Node<N, E> next = current.getTwo();
                 if (start != next) {
                 BooleanObjectPair<FromTo<Node<N, E>, E>> move =
-                        path instanceof Cons ? ((Cons<BooleanObjectPair<FromTo<Node<N, E>, E>>>) path).tail : path.get(path.size() - 1);
+                        this.path instanceof Cons ? ((Cons<BooleanObjectPair<FromTo<Node<N, E>, E>>>) this.path).tail : this.path.get(this.path.size() - 1);
 
                 if (!next(move, next))
                     return false;
@@ -199,8 +200,6 @@ abstract public class Search<N, E> {
     protected Iterable<FromTo<Node<N,E>,E>> next(Node<N,E> current) {
         return current.edges(true, true);
     }
-
-
 
     /**
      * q is recycleable between executions automatically. just provide a pre-allocated ArrayDeque or similar.

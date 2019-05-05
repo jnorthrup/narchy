@@ -236,7 +236,7 @@ public class Taskify extends ProxyTerm {
         x = x.unneg();
         return x.op().taskable &&
                !x.hasAny(Op.VAR_PATTERN) &&
-               ((punc == QUESTION || punc == QUEST) || (/* belief or goal: */!x.hasVarQuery() && !x.hasXternal()));
+               ((punc == 0 || punc == QUESTION || punc == QUEST) || (/* belief or goal: */!x.hasVarQuery() && !x.hasXternal()));
     }
 
     static boolean spam(Derivation d, int cost) {

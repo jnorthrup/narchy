@@ -1,6 +1,7 @@
 package nars.truth.dynamic;
 
 import jcog.Util;
+import jcog.WTF;
 import jcog.util.ObjectLongLongPredicate;
 import nars.NAR;
 import nars.Op;
@@ -318,7 +319,9 @@ public class DynamicStatementTruth {
                 decomposed = decomposed.unneg();
             }
 
-            assert (decomposed.op() == CONJ);
+            if (decomposed.op()!=CONJ)
+                throw new WTF("what is it?"); //assert (decomposed.op() == CONJ);
+
             //if (decomposed.op() == Op.CONJ) {
             Term common = stmtCommon(subjOrPred, superterm);
 

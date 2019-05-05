@@ -234,7 +234,7 @@ public class FasterList<X> extends FastList<X> {
         if (index < 0)
             return null;
         X[] items = this.items;
-        if (index < Math.min(items.length, this.size)) {
+        if (items!=null && index < Math.min(items.length, this.size)) {
             return items[index];
         } else {
             return null;
