@@ -39,7 +39,6 @@ import static nars.Op.*;
 import static nars.op.Cmp.cmp;
 import static nars.term.Functor.f0;
 import static nars.term.atom.Bool.*;
-import static nars.time.Tense.DTERNAL;
 import static nars.time.Tense.ETERNAL;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
@@ -502,7 +501,9 @@ public class Builtin {
                if (event instanceof Compound && (conj.structure() & event.op().bit) == 0)
                    return Null;
 
-               return Conj.chooseEvent(conj, nar.random(),(!econj || edt!=DTERNAL), (!econj || edt!=0),
+               return Conj.chooseEvent(conj, nar.random(),
+                       //(!econj || edt!=DTERNAL), (!econj || edt!=0),
+                       true,true,
                        (when, what)-> (!requireVars || what.hasVars())
                                && Terms.possiblyUnifiable(event, what, true, Op.Variable));
            }

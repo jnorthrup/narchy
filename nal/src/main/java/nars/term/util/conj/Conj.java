@@ -1355,7 +1355,7 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
         if (xy == True) {
             return x; //x absorbs y
         } else if (xy == null) {
-            return B.theCompound(CONJ, eternalOrParallel ? DTERNAL : 0, sorted(x, y));
+            return B.theCompound(CONJ, DTERNAL /*eternalOrParallel ? DTERNAL : 0*/, sorted(x, y));
         } else {
             //failure or some particular merge result
             return xy;
@@ -1678,15 +1678,24 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
         return 0;
     }
     private int conflictExhaustive(Term x, Term y) {
-        if (x.op()==NEG && x.unneg().op()==CONJ) {
+        if (x.op()==NEG) {
+            Term xu = x.unneg();
+            if (xu.op() == CONJ) {
+                Subterms xus = xu.subterms();
+                if (Term.commonStructure(xus, y)) {
+                    if (xu.contains(y))
+                        return -1; //conflict
+                    if (xus.containsNeg(y))
+                        return 0; //absorbed
 
-            //Term xu = x.unneg();
-            Term xy = CONJ.the(x, y);
-            if (xy.equals(x))
-                return 0; //absorbed
-            if (xy.op()!=CONJ || xy.volume() < x.volume())
-                return -1; //something happened: bool or other interference
-
+                    //Term xu = x.unneg();
+                    Term xy = CONJ.the(x, y);
+                    if (xy.equals(x))
+                        return 0; //absorbed
+                    if (xy.unneg().op() != CONJ || xy.volume() < x.volume())
+                        return -1; //something happened: bool or other interference
+                }
+            }
         }
 
 //        if (x.op()==NEG && x.unneg().op()==CONJ) {
@@ -1898,7 +1907,7 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
             throw new TODO();
         byte[] eee = (byte[]) ee;
         int ec = eventCount(eee);
-        assert (ec > 0);
+        //assert (ec > 0);
         if (ec == 1)
             return ByteSets.immutable.of(eee[0]);
         else if (ec == 2)

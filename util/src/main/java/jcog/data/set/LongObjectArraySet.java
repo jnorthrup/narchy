@@ -2,10 +2,12 @@ package jcog.data.set;
 
 import com.google.common.base.Joiner;
 import com.google.common.collect.Iterables;
+import jcog.TODO;
 import jcog.data.bit.MetalBitSet;
 import jcog.data.list.FasterList;
 import jcog.util.ArrayUtils;
 import org.eclipse.collections.api.block.predicate.primitive.LongObjectPredicate;
+import org.eclipse.collections.api.block.procedure.primitive.LongObjectProcedure;
 import org.eclipse.collections.api.iterator.LongIterator;
 import org.eclipse.collections.api.iterator.MutableLongIterator;
 import org.eclipse.collections.impl.iterator.ImmutableEmptyLongIterator;
@@ -119,6 +121,13 @@ public class LongObjectArraySet<X> extends FasterList<X> {
         throw new UnsupportedOperationException("use removeThe(index)");
     }
 
+    public boolean removeFirst() {
+        if (isEmpty())
+            return false;
+        removeThe(0);
+        return true;
+    }
+
     public boolean remove(long at, X t) {
         return removeIf((when, what) -> at == when && what.equals(t));
     }
@@ -149,6 +158,18 @@ public class LongObjectArraySet<X> extends FasterList<X> {
             }
         }
         return removeAll(m, s);
+    }
+
+    @Override
+    public boolean removeAbove(int index) {
+        throw new TODO();
+    }
+
+    public void forEachEvent(LongObjectProcedure<X> each) {
+        removeIf((when,what)->{
+            each.value(when,what);
+            return false;
+        });
     }
 
     public boolean removeIf(LongObjectPredicate<X> iff) {
@@ -192,6 +213,12 @@ public class LongObjectArraySet<X> extends FasterList<X> {
             }
         }
         return true;
+    }
+
+    @Override
+    public X removeLast() {
+        removeThe(size()-1);
+        return null; //TODO
     }
 
     @Override

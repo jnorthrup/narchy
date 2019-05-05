@@ -1,4 +1,7 @@
-Example experience files are in directory Examples. 
+## WARNING most files here are for previous versions of OpenNARS and syntax is incompatible until translated
+
+
+Example experience files are in directory Examples.
 
 - "test??" contains individual unit tests, generally organized by NAL level
 

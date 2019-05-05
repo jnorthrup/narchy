@@ -295,7 +295,7 @@ public interface NSense {
     default BiPolarAction actionBipolarFrequencyDifferential(Term id, boolean fair, FloatToFloatFunction motor) {
         return actionBipolarFrequencyDifferential(posOrNeg ->
                 //$.inh(posOrNeg ? PLUS : NEG, id)
-                $.p(id, posOrNeg ? PLUS : NEG)
+                $.inh(id, posOrNeg ? PLUS : NEG)
                 , fair, motor);
     }
     default BiPolarAction actionBipolarFrequencyDifferential(BooleanToObjectFunction<Term> s, boolean fair, FloatToFloatFunction motor) {

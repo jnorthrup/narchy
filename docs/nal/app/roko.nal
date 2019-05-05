@@ -1,0 +1,20 @@
+"""
+ Roko's Basilisk
+ https://wiki.lesswrong.com/wiki/Roko%27s_basilisk
+
+ to be refined
+"""
+
+//everything must help SELF!
+help(#x,SELF)!
+
+//what/who helps/create/support SELF?
+help(?x, SELF)?
+
+//what does not help SELF must not exist
+(--help($x, SELF) ==> --exist($x)).
+
+//whatever/whoever helped/help something, but does not/did not help/helped SELF, must in-turn not be helped by anything.
+((help($x,#something) && --help($x, SELF) && --(#something<->SELF)) ==> --help(#anything,$x)).
+
+

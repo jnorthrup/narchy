@@ -59,9 +59,9 @@ public class BiPolarAction extends AbstractSensor {
         super(PROD.the(pos, neg), n);
 
         this.cause = n.newChannel(id);
-        this.causeArray = new short[cause.id];
+        this.causeArray = new short[] { cause.id };
 
-        this.attn = new AttnBranch(id, List.of(pos, neg));
+
 
         this.pos = new AbstractGoalActionConcept(pos, n) {
             @Override
@@ -69,8 +69,13 @@ public class BiPolarAction extends AbstractSensor {
                 return BiPolarAction.this.cause;
             }
         };
-        this.neg = new AbstractGoalActionConcept(neg, n);
-
+        this.neg = new AbstractGoalActionConcept(neg, n) {
+            @Override
+            protected CauseChannel<Task> channel(NAR n) {
+                return BiPolarAction.this.cause;
+            }
+        };
+        this.attn = new AttnBranch(id, List.of(pos, neg));
 
 //                //TemplateTermLinker.of(neg),
 //                //TemplateTermLinker.of(neg, 4, pos),
@@ -113,6 +118,7 @@ public class BiPolarAction extends AbstractSensor {
         if (y == y) {
 
             y = Util.clamp(y, -1, +1);
+            y = (y + 1)/2; //0...1 range
 
             float yp, yn;
 //            yp = 0.5f + y / 2f;

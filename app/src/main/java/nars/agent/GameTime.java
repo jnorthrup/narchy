@@ -35,6 +35,7 @@ abstract public class GameTime {
 
         public final Loop loop;
         private Game g = null;
+        private int dur = 1;
 
         public FPS(float fps) {
             this.initialFPS = fps;
@@ -47,17 +48,18 @@ abstract public class GameTime {
         }
 
         @Override
-        public int dur() {
-            RealTime t = (RealTime) g.nar().time;
-            double unitsPerSec = 1/t.secondsPerUnit();
-            double secondsPerFrame = 1/loop.getFPS();
-            double unitsPerFrame = unitsPerSec * secondsPerFrame;
-            return Math.max(1, (int)Math.round(unitsPerFrame));
+        public final int dur() {
+            return dur;
         }
 
         @Override
         public long next(long now) {
             RealTime t = (RealTime) g.nar().time;
+
+            double unitsPerSec = 1/t.secondsPerUnit();
+            double secondsPerFrame = 1/loop.getFPS();
+            double unitsPerFrame = unitsPerSec * secondsPerFrame;
+            this.dur = Math.max(1, (int)Math.round(unitsPerFrame));
             return now + Math.round(t.secondsToUnits(loop.periodMS.getOpaque()*0.001));
         }
 
@@ -89,6 +91,7 @@ abstract public class GameTime {
         private transient final float durPeriod;
 
         public DurLoop loop = null;
+        private int dur = 1;
 
         Durs(float durPeriod) {
             this.durPeriod = durPeriod;
@@ -101,13 +104,14 @@ abstract public class GameTime {
         }
 
         @Override
-        public int dur() {
-            return Tense.occToDT(loop.durCycles());
+        public final int dur() {
+            return dur;
         }
 
         @Override
         public long next(long now) {
             DurLoop l = this.loop;
+            this.dur = Tense.occToDT(loop.durCycles());
             return l !=null ?  now + l.durCycles() : now;
         }
     }

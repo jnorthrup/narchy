@@ -546,7 +546,7 @@ public interface Term extends Termlike, Termed, Comparable<Term> {
      * @deprecated use LazyConj.events
      */
     @Deprecated default FasterList<LongObjectPair<Term>> eventList() {
-        return eventList(0, true, false);
+        return eventList(0, true, true);
     }
 
     /**

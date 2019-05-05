@@ -930,6 +930,7 @@ public class FasterList<X> extends FastList<X> {
         this.size = s;
     }
 
+
     public boolean removeFirst(X x) {
         int s = this.size;
         if (s > 0) {

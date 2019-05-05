@@ -1,17 +1,9 @@
 package nars.term.util.conj;
 
 import jcog.Util;
-import jcog.WTF;
-import jcog.data.list.FasterList;
-import jcog.data.set.ArrayUnenforcedSet;
 import nars.NAL;
-import nars.term.Compound;
 import nars.term.Term;
-import nars.term.util.Intermpolate;
 import nars.time.Tense;
-import org.eclipse.collections.api.set.MutableSet;
-import org.eclipse.collections.api.tuple.primitive.LongObjectPair;
-import org.eclipse.collections.impl.factory.Sets;
 
 import java.util.Random;
 
@@ -41,22 +33,23 @@ public class Conjterpolate extends Conj {
 
         this.dither = nar.dtDither();
 
-        FasterList<LongObjectPair<Term>> aa = a.eventList();
-        FasterList<LongObjectPair<Term>> bb = b.eventList();
+        ConjLazy aa = ConjLazy.events(a);
+        ConjLazy bb = ConjLazy.events(a);
         int na = aa.size(), nb = bb.size();
         int nabOriginal = Math.min(na,nb);
 
         int minLen = Math.min(na, nb);
         int prefixMatched = 0;
-        for (; aa.get(prefixMatched).equals(bb.get(prefixMatched)) && ++prefixMatched < minLen; ) ;
+        for (; aa.when(prefixMatched)==bb.when(prefixMatched) &&
+                aa.get(prefixMatched).equals(bb.get(prefixMatched)) && ++prefixMatched < minLen; ) ;
 
         if (prefixMatched > 0) {
             for (int i = 0; i < prefixMatched; i++) {
-                if (!add(aa.get(i)))
-                    throw new WTF();
+                if (!add(aa.when(0), aa.get(0)))
+                    return; //conflict or other CONJ failure
+                aa.removeFirst();
+                bb.removeFirst();
             }
-            aa.removeBelow(prefixMatched);
-            bb.removeBelow(prefixMatched);
             na -= prefixMatched;
             nb -= prefixMatched;
             minLen = Math.min(na, nb);
@@ -72,9 +65,13 @@ public class Conjterpolate extends Conj {
             if (suffixMatched > 0) {
                 //add the suffixed matched segment
                 for (int i = 0; i < suffixMatched; i++) {
-                    if (!add(aa.get(na - 1 - i)))
-                        throw new WTF();
+                    int ni = na - 1 - i;
+                    if (!add(aa.when(ni), aa.get(ni)))
+                        return; //conflict or other CONJ failure
+                    aa.removeLast();
+                    bb.removeLast();
                 }
+
                 aa.removeAbove(suffixMatched);
                 bb.removeAbove(suffixMatched);
                 na -= suffixMatched;
@@ -86,41 +83,43 @@ public class Conjterpolate extends Conj {
         if (remainingEvents > 0) {
             if (nb == 0 ^ na == 0) {
                 if (!addAll((aa.isEmpty() ? bb : aa))) //the remaining events
-                    return;
+                    return; //conflict or other CONJ failure
             } else {
-                LongObjectPair<Term> a0 = aa.get(0), b0 = bb.get(0);
-                Term a0t = a0.getTwo(), b0t = b0.getTwo();
-                if (a0t instanceof Compound && b0t instanceof Compound) {
-                    if (na == 1 && nb == 1 && nabOriginal > 1) {
-                        //special case: only one event remains, with the same root target
-                        Term ab = Intermpolate.intermpolate((Compound)a0t, (Compound)b0t, aProp, nar);
+//                LongObjectPair<Term> a0 = aa.get(0), b0 = bb.get(0);
+//                Term a0t = a0.getTwo(), b0t = b0.getTwo();
+//                if (a0t instanceof Compound && b0t instanceof Compound) {
+//                    if (na == 1 && nb == 1 && nabOriginal > 1) {
+//                        //special case: only one event remains, with the same root target
+//                        Term ab = Intermpolate.intermpolate((Compound)a0t, (Compound)b0t, aProp, nar);
+//
+//                        if (ab.op().eventable) {
+//                            long when = Intermpolate.chooseDT(
+//                                    Tense.occToDT(a0.getOne()),
+//                                    Tense.occToDT(b0.getOne()), aProp, nar);
+//                            add(when, ab);
+//                            return;
+//                        }
+//                    }
+//                }
 
-                        if (ab.op().eventable) {
-                            long when = Intermpolate.chooseDT(
-                                    Tense.occToDT(a0.getOne()),
-                                    Tense.occToDT(b0.getOne()), aProp, nar);
-                            add(when, ab);
-                            return;
-                        }
-                    }
-                }
+//                //add common events
+//                MutableSet<LongObjectPair<Term>> common = Sets.intersect(ArrayUnenforcedSet.wrap(aa), ArrayUnenforcedSet.wrap(bb));
+//                if (!common.isEmpty()) {
+//                    for (LongObjectPair<Term> c : common) {
+//                        if (!add(c))
+//                            break; //try to catch if this happens
+//                    }
+//                    aa.removeAll(common);
+//                    bb.removeAll(common);
+//                    remainingEvents -= common.size();
+//                }
 
-                //add common events
-                MutableSet<LongObjectPair<Term>> common = Sets.intersect(ArrayUnenforcedSet.wrap(aa), ArrayUnenforcedSet.wrap(bb));
-                if (!common.isEmpty()) {
-                    for (LongObjectPair<Term> c : common) {
-                        if (!add(c))
-                            break; //try to catch if this happens
-                    }
-                    aa.removeAll(common);
-                    bb.removeAll(common);
-                    remainingEvents -= common.size();
-                }
+
                 if (remainingEvents > 0) {
 
                     Random rng = nar.random();
                     do {
-                        FasterList<LongObjectPair<Term>> which;
+                        ConjLazy which;
                         if (!aa.isEmpty() && !bb.isEmpty())
                             which = rng.nextFloat() < aProp ? aa : bb;
                         else if (aa.isEmpty() && !bb.isEmpty())
@@ -130,8 +129,12 @@ public class Conjterpolate extends Conj {
                         else
                             break;  //?
 
-                        if (!add(which.remove(rng.nextInt(which.size()))))
-                            break;
+                        int ri = rng.nextInt(which.size());
+                        long rw = which.when(ri);
+                        Term rt = which.get(ri);
+                        which.removeThe(ri);
+                        if (!add(rw,rt))
+                            return; //conflict or other CONJ failure
 
                     } while (--remainingEvents > 0);
 
