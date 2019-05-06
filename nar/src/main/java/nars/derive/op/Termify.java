@@ -1,17 +1,14 @@
 package nars.derive.op;
 
 import nars.$;
-import nars.NAL;
-import nars.NAR;
 import nars.derive.Derivation;
+import nars.derive.DerivationFailure;
 import nars.term.ProxyTerm;
 import nars.term.Term;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
-import org.jetbrains.annotations.Nullable;
 
-import static nars.Op.*;
-import static nars.time.Tense.assertDithered;
+import static nars.derive.DerivationFailure.Success;
 
 /**
  * Derivation target construction step of the derivation process that produces a derived task
@@ -40,53 +37,21 @@ public final class Termify extends ProxyTerm {
         this.time = time;
     }
 
-    public final @Nullable Term test(Term x, Derivation d) {
+    public final void test(Term x, Taskify t, Derivation d) {
 
-        d.concOcc = null;
+        d.nar.emotion.deriveTermify.increment();
 
-        NAR nar = d.nar();
-        nar.emotion.deriveTermify.increment();
+        DerivationFailure fail = DerivationFailure.failure(x,
+                (byte) 0 /* dont consider punc consequences until after temporalization */,
+                d);
 
-        if (!Taskify.valid(x, (byte) 0 /* dont consider punc consequences until after temporalization */)) {
-            //Term c1e = c1;
-            nar.emotion.deriveFailEval.increment(/*() ->
-                    rule + " |\n\t" + d.xy + "\n\t -> " + c1e
-            */);
-            return null;
+        if (fail == Success) {
+            if (Occurrify.temporal(truth, d))
+                Occurrify.temporalTask(x, time, t, d);
+            else
+                Occurrify.eternalTask(x, t, d);
         }
 
-        if (x.volume() - (x.op()==NEG ? 1 : 0) > d.termVolMax) {
-            nar.emotion.deriveFailVolLimit.increment();
-            return null;
-        }
-
-
-
-
-
-//        if (c1.op() == NEG) {
-//            c1 = c1.unneg();
-//            if (d.concTruth != null)
-//                d.concTruth = d.concTruth.neg();
-//        }
-
-        Term y = Occurrify.occurrify(x, truth, time, d);
-        if (y!=null) {
-            if (NAL.test.DEBUG_ENSURE_DITHERED_DT)
-                assertDithered(y, d.ditherDT);
-        }
-
-
-
-
-//        if (o) {
-//            if (d.concOcc[0]!=ETERNAL && d.concOcc[0] == d.concOcc[1]) {
-//                if ((d.taskStart != ETERNAL && d._task.range() > 1) && (d._belief != null && !d._belief.isEternal() && d._belief.range() > 1)) {
-//                    System.out.println("WTF");
-//                }
-//            }
-//        }
-        return y;
     }
 
 

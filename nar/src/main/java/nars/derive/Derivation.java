@@ -133,7 +133,7 @@ public class Derivation extends PreDerivation {
         }
     };
 
-    private NAR nar;
+    public NAR nar;
 
 
     /**

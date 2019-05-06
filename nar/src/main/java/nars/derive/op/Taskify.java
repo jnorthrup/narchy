@@ -11,13 +11,11 @@ import nars.task.DerivedTask;
 import nars.term.ProxyTerm;
 import nars.term.Term;
 import nars.term.atom.Atomic;
-import nars.term.atom.Bool;
 import nars.term.util.transform.AbstractTermTransform;
 import nars.time.Tense;
 import nars.truth.Truth;
 import nars.unify.unification.DeterministicUnification;
 import nars.unify.unification.Termutifcation;
-import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,7 +48,7 @@ public class Taskify extends ProxyTerm {
         return true;
     }
 
-    public final Term test(DeterministicUnification xy, Derivation d) {
+    public final void test(DeterministicUnification xy, Derivation d) {
 //        assert(d.transform.xy == null);
 //            int start = d.size();
         d.transform.xy = xy::xy;
@@ -58,14 +56,12 @@ public class Taskify extends ProxyTerm {
         Term y = AbstractTermTransform.transform(termify.pattern, d.transform);
 //      d.revert(start);
         d.transform.xy = null;
-        return test(y, d);
+        test(y, d);
     }
 
 
-    @Nullable
-    public Term test(Term x, Derivation d) {
-        Term y = termify.test(x, d);
-        return y != null && taskify(y, d) ? y : null;
+    public void test(Term x, Derivation d) {
+        termify.test(x, this, d);
     }
 
 
@@ -229,15 +225,6 @@ public class Taskify extends ProxyTerm {
         this.channel = channel;
     }
 
-    static boolean valid(Term x, byte punc) {
-        if (x == null || x instanceof Bool)
-            return false;
-
-        x = x.unneg();
-        return x.op().taskable &&
-               !x.hasAny(Op.VAR_PATTERN) &&
-               ((punc == 0 || punc == QUESTION || punc == QUEST) || (/* belief or goal: */!x.hasVarQuery() && !x.hasXternal()));
-    }
 
     static boolean spam(Derivation d, int cost) {
         d.use(cost);

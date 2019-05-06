@@ -7,6 +7,7 @@ import nars.NAL;
 import nars.Op;
 import nars.Task;
 import nars.derive.Derivation;
+import nars.derive.DerivationFailure;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.atom.Atomic;
@@ -28,6 +29,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 import static nars.Op.*;
+import static nars.derive.DerivationFailure.Success;
 import static nars.time.Tense.*;
 import static org.eclipse.collections.impl.tuple.Tuples.pair;
 
@@ -51,194 +53,8 @@ import static org.eclipse.collections.impl.tuple.Tuples.pair;
  */
 public class Occurrify extends TimeGraph {
 
-    private final Derivation d;
-
-    @Nullable static Term occurrify(Term x, Truthify truth, OccurrenceSolver time, Derivation d) {
-        if (d.temporal) {
-
-            //HACK reset to the input
-            d.taskStart = d._task.start();
-            d.taskEnd = d._task.end();
-            if (d._belief!=null && !d.concSingle) {
-                d.beliefStart = d._belief.start();
-                d.beliefEnd = d._belief.end();
-
-                boolean taskEternal = d.taskStart == ETERNAL;
-                if (truth.beliefProjection == BeliefProjection.Belief || taskEternal) {
-
-                    //unchanged: d.beliefStart = d._belief.start();  d.beliefEnd = d._belief.end();
-
-                } else if (truth.beliefProjection == BeliefProjection.Task) {
-
-                    boolean bothNonEternal = d.taskStart != ETERNAL && d._belief.start() != ETERNAL;
-                    if (bothNonEternal && d.taskTerm.op().temporal && !d.beliefTerm.op().temporal) {
-
-                        //mask task's occurrence, focusing on belief's occ
-                        d.beliefStart = d.taskStart = d._belief.start();
-                        d.taskEnd = d.taskStart + (d._task.range()-1);
-                        d.beliefEnd = d._belief.end();
-
-                    } else {
-
-                        if (d._belief.isEternal()) {
-                            d.beliefStart = d.beliefEnd = ETERNAL; //keep eternal
-                        } else {
-                            //the temporal belief has been shifted to task in the truth computation
-                            long range = (taskEternal || d._belief.start() == ETERNAL) ? 0 : d._belief.range() - 1;
-                            d.beliefStart = d.taskStart;
-                            d.beliefEnd = d.beliefStart + range;
-                        }
-                    }
-                } else {
-
-                    throw new UnsupportedOperationException();
-                }
-
-            } else {
-                d.beliefStart = d.beliefEnd = TIMELESS;
-            }
-
-        } else {
-            assert(d.taskStart == ETERNAL && d.taskEnd == ETERNAL);
-            assert((d.beliefStart == ETERNAL && d.beliefEnd == ETERNAL)||(d.beliefStart == TIMELESS && d.beliefEnd == TIMELESS));
-        }
-
-        if (d.temporalTerms || (d.taskStart!=ETERNAL) || (d.beliefStart!=ETERNAL && d.beliefStart!=TIMELESS) ) {
-            return temporalify(x, time, d);
-        } else {
-            return eternify(x, d);
-        }
-
-    }
-
-    @Nullable private static Term temporalify(Term x, OccurrenceSolver time, Derivation d) {
-
-        Term c2;
-        long[] occ;
-        {
-            Pair<Term, long[]> timing;
-            boolean neg = (x.op()==NEG); //HACK
-            Term xx;
-            if (neg)
-                xx = x.unneg();
-            else
-                xx = x;
-
-            timing = time.occurrence(d, xx);
-            if (timing == null) {
-                d.nar().emotion.deriveFailTemporal.increment();
-                ///*temporary:*/ time.solve(d, c1);
-                return null;
-            }
-
-            if (neg) {
-                Term y = timing.getOne();
-                if (y == xx)
-                    c2 = x;
-                else
-                    c2 = y.neg();
-
-            } else {
-                c2 = timing.getOne();
-            }
-
-            occ = timing.getTwo();
-
-            if (!((occ[0] != TIMELESS) && (occ[1] != TIMELESS) &&
-                    (occ[0] == ETERNAL) == (occ[1] == ETERNAL) &&
-                    (occ[1] >= occ[0])) || (occ[0] == ETERNAL && !d.occ.validEternal()))
-                throw new RuntimeException("bad occurrence result: " + Arrays.toString(occ));
-
-        }
-
-
-//        if (!d.concSingle && (d.taskPunc==GOAL && d.concPunc == GOAL) && occ[0]!=ETERNAL && occ[0] < d.taskStart) {
-//            {
-//                //immediate shift
-////                long range = occ[1] - occ[0];
-////                occ[0] = d.taskStart;
-////                occ[1] = occ[0] + range;
-//            }
-//        }
-
-//            if (d.concTruth!=null) {
-//                long start = occ[0], end = occ[1];
-//                if (start != ETERNAL) {
-//                    if (d.taskStart!=ETERNAL && d.beliefStart!=ETERNAL) {
-//
-//                        long taskEvidenceRange = ((d.taskStart==ETERNAL || (d.taskPunc==QUESTION || d.taskPunc==QUEST)) ? 0 : d._task.range());
-//                        long beliefEviRange = ((!d.concSingle && d._belief != null && d.beliefStart!=ETERNAL) ? d._belief.range() : 0);
-//                        long commonRange = d._belief != null ? Longerval.intersectLength(d.taskStart, d.taskEnd, d.beliefStart, d.beliefEnd) : 0;
-//
-//                        long inputRange = taskEvidenceRange + beliefEviRange - (commonRange/2);
-//                        //assert(inputRange > 0);
-//
-//                        long outputRange = (1 + (end - start));
-//                        long expanded = outputRange - inputRange;
-//                        if (expanded > nar.dtDither()) {
-//                            //dilute the conclusion truth in proportion to the extra space
-//                            double expansionFactor = ((double) expanded) / (expanded + inputRange);
-//                            if (Double.isFinite(expansionFactor))
-//                                d.concTruthEviMul((float) expansionFactor, false);
-//                            ////assert (expansionFactor < 1);
-//                        }
-//                    }
-//                }
-//            }
-
-        if (!Taskify.valid(c2, d.concPunc)) {
-            boolean fail;
-
-            if (NAL.derive.DERIVATION_FORM_QUESTION_FROM_AMBIGUOUS_BELIEF_OR_GOAL && d.concPunc == BELIEF || d.concPunc == GOAL) {
-                //as a last resort, try forming a question from the remains
-                byte qPunc = d.concPunc == BELIEF ? QUESTION : QUEST;
-                if (!Taskify.valid(c2, qPunc)) {
-                    fail = true;
-                } else {
-                    d.concPunc = qPunc;
-                    d.concTruth = null;
-                    fail = false;
-                }
-            } else {
-                fail = true;
-            }
-
-            if (fail) {
-                Term c1e = x;
-                d.nar().emotion.deriveFailTemporal.increment(/*() ->
-                    rule + "\n\t" + d + "\n\t -> " + c1e + "\t->\t" + c2
-            */);
-                return null;
-            }
-
-        }
-
-
-        d.concOcc = occ;
-        return c2;
-    }
-
-    private static @Nullable Term eternify(Term x, Derivation d) {
-        byte punc = d.concPunc;
-        if ((punc == BELIEF || punc == GOAL) && x.hasXternal()) { // && !d.taskTerm.hasXternal() && !d.beliefTerm.hasXternal()) {
-            //HACK this is for deficiencies in the temporal solver that can be fixed
-            x = Retemporalize.retemporalizeXTERNALToDTERNAL.apply(x);
-            if (!Taskify.valid(x, d.concPunc)) {
-                d.nar().emotion.deriveFailTemporal.increment();
-                Taskify.spam(d, NAL.derive.TTL_COST_DERIVE_TASK_FAIL);
-                return null;
-            }
-        }
-
-        d.concOcc = null;
-        return x;
-    }
-
-
     public static final OccurrenceSolver mergeDefault =
             OccurrenceSolver.Default;
-
-
     public static final ImmutableMap<Term, OccurrenceSolver> merge;
 
     static {
@@ -247,6 +63,15 @@ public class Occurrify extends TimeGraph {
             tm.put(Atomic.the(m.name()), m);
         }
         merge = tm.toImmutable();
+    }
+
+    private final Derivation d;
+    private transient boolean decomposeEvents;
+    private transient int patternVolume;
+    private int ttl = 0;
+
+    public Occurrify(Derivation d) {
+        this.d = d;
     }
 
 
@@ -258,15 +83,127 @@ public class Occurrify extends TimeGraph {
 //            nextPos = new UnifiedSet(8, 0.99f);
 
 
+    static boolean temporal(Truthify truth, Derivation d) {
+        if (!d.temporal)
+            return false;
 
-    private transient boolean decomposeEvents;
-    private transient int patternVolume;
+        //HACK reset to the input
+        d.taskStart = d._task.start();
+        d.taskEnd = d._task.end();
+        if (d._belief != null && !d.concSingle) {
+            d.beliefStart = d._belief.start();
+            d.beliefEnd = d._belief.end();
 
+            boolean taskEternal = d.taskStart == ETERNAL;
+            if (truth.beliefProjection == BeliefProjection.Belief || taskEternal) {
 
-    public Occurrify(Derivation d) {
-        this.d = d;
+                //unchanged: d.beliefStart = d._belief.start();  d.beliefEnd = d._belief.end();
+
+            } else if (truth.beliefProjection == BeliefProjection.Task) {
+
+                boolean bothNonEternal = d.taskStart != ETERNAL && d._belief.start() != ETERNAL;
+                if (bothNonEternal && d.taskTerm.op().temporal && !d.beliefTerm.op().temporal) {
+
+                    //mask task's occurrence, focusing on belief's occ
+                    d.beliefStart = d.taskStart = d._belief.start();
+                    d.taskEnd = d.taskStart + (d._task.range() - 1);
+                    d.beliefEnd = d._belief.end();
+
+                } else {
+
+                    if (d._belief.isEternal()) {
+                        d.beliefStart = d.beliefEnd = ETERNAL; //keep eternal
+                    } else {
+                        //the temporal belief has been shifted to task in the truth computation
+                        long range = (taskEternal || d._belief.start() == ETERNAL) ? 0 : d._belief.range() - 1;
+                        d.beliefStart = d.taskStart;
+                        d.beliefEnd = d.beliefStart + range;
+                    }
+                }
+            } else {
+
+                throw new UnsupportedOperationException();
+            }
+
+        } else {
+            d.beliefStart = d.beliefEnd = TIMELESS;
+        }
+        return d.temporalTerms || (d.taskStart != ETERNAL) || (d.beliefStart != ETERNAL && d.beliefStart != TIMELESS);
     }
 
+    static void temporalTask(Term x, OccurrenceSolver time, Taskify t, Derivation d) {
+
+        boolean neg = (x.op() == NEG); //HACK
+        Term xx = neg ? x.unneg() : x;
+
+        Pair<Term, long[]> timing = time.occurrence(x, d);
+        if (timing == null) {
+            d.nar.emotion.deriveFailTemporal.increment();
+            return;
+        }
+
+        Term y;
+        if (neg) {
+            Term tt = timing.getOne();
+            y = tt == xx ? x : tt.neg();
+        } else {
+            y = timing.getOne();
+        }
+
+        long[] occ = timing.getTwo();
+
+        if (!((occ[0] != TIMELESS) && (occ[1] != TIMELESS) &&
+                (occ[0] == ETERNAL) == (occ[1] == ETERNAL) &&
+                (occ[1] >= occ[0])) || (occ[0] == ETERNAL && !d.occ.validEternal()))
+            throw new RuntimeException("bad occurrence result: " + Arrays.toString(occ));
+
+
+        if (NAL.derive.DERIVATION_FORM_QUESTION_FROM_AMBIGUOUS_BELIEF_OR_GOAL && (d.concPunc == BELIEF || d.concPunc == GOAL)) {
+            if (DerivationFailure.failure(y, d.concPunc)) {
+
+                //as a last resort, try forming a question from the remains
+                byte qPunc = d.concPunc == BELIEF ? QUESTION : QUEST;
+                d.concPunc = qPunc;
+                if (DerivationFailure.failure(y, d) == Success) {
+                    d.concPunc = qPunc;
+                    d.concTruth = null;
+                } else {
+                    return; //fail
+                }
+
+            } //else: ok
+        } else {
+            if (DerivationFailure.failure(y, d)!= Success)
+                return;
+        }
+
+        if (y != null) {
+            if (NAL.test.DEBUG_ENSURE_DITHERED_DT)
+                assertDithered(y, d.ditherDT);
+        }
+
+
+        d.concOcc = occ;
+        t.taskify(y, d);
+    }
+
+    static void eternalTask(Term x, Taskify t, Derivation d) {
+        //assert(d.taskStart == ETERNAL && d.taskEnd == ETERNAL);
+        //assert((d.beliefStart == ETERNAL && d.beliefEnd == ETERNAL)||(d.beliefStart == TIMELESS && d.beliefEnd == TIMELESS));
+        byte punc = d.concPunc;
+        if ((punc == BELIEF || punc == GOAL) && x.hasXternal()) { // && !d.taskTerm.hasXternal() && !d.beliefTerm.hasXternal()) {
+            //HACK this is for deficiencies in the temporal solver that can be fixed
+            x = Retemporalize.retemporalizeXTERNALToDTERNAL.apply(x);
+            if (!DerivationFailure.failure(x, d.concPunc)) {
+                d.nar().emotion.deriveFailTemporal.increment();
+                Taskify.spam(d, NAL.derive.TTL_COST_DERIVE_TASK_FAIL);
+                return;
+            }
+        }
+
+        d.concOcc = null;
+        t.taskify(x, d);
+    }
 
     /**
      * whether a target is 'temporal' and its derivations need analyzed by the temporal solver:
@@ -283,95 +220,167 @@ public class Occurrify extends TimeGraph {
         return false;
     }
 
-
-
-    @Override
-    public long eventOcc(long when) {
-        if (NAL.derive.TIMEGRAPH_DITHER_EVENTS_INTERNALLY)
-            return Tense.dither(when, d.ditherDT);
-        else
-            return when;
+    private static Pair<Term, long[]> solveThe(Event event) {
+        long es = event.start();
+        return pair(event.id,
+                es == TIMELESS ? new long[]{TIMELESS, TIMELESS} : new long[]{es, event.end()});
     }
 
+    private static int filterSolutions(ArrayHashSet<Event> solutions) {
+        int ss = solutions.size();
+        if (ss > 1) {
+            MetalBitSet relative = MetalBitSet.bits(ss);
+            MetalBitSet xternal = MetalBitSet.bits(ss);
+            for (int i = 0; i < ss; i++) {
+                Event s = solutions.get(i);
+                if (s instanceof Relative)
+                    relative.set(i);
+                if (s.id.hasXternal())
+                    xternal.set(i);
+            }
+            int xternals = xternal.cardinality();
+            if (xternals > 0 && xternals < ss) {
+                for (int i = 0; i < ss; i++)
+                    if (xternal.get(i))
+                        solutions.list.set(i, null);
 
-    @Override
-    protected Random random() {
-        return d.random;
-    }
+                solutions.list.removeNulls(); //HACK doesnt remove from the ArrayHashSet's Set
+                ss = solutions.list.size();
+            }
+            if (ss > 1) {
 
-
-    @Override
-    protected boolean decomposeAddedEvent(Event event) {
-        return decomposeEvents;
-    }
-
-    @Override
-    public void clear() {
-        super.clear();
-        clearSolutions();
-    }
-
-    /** doesnt clear the graph */
-    public void clearSolutions() {
-        solutions.clear();
-        //autoNeg.clear();
-    }
-
-
-    private Occurrify set(Term pattern, boolean decomposeEvents) {
-
-        clear();
-        //clearSolutions(); //<- is this safe?  accumulates timegraph over multiple derived tasks within before being cleared on new premise
-
-
-        long taskStart = d.taskStart,
-                taskEnd = d.taskEnd,
-                beliefStart = !d.concSingle ? d.beliefStart : TIMELESS,
-                beliefEnd = !d.concSingle ? d.beliefEnd : TIMELESS;
-
-        if (taskStart == ETERNAL && beliefStart!=ETERNAL) {
-            taskStart = taskEnd = TIMELESS;
-        } else if (beliefStart == ETERNAL && taskStart != ETERNAL) {
-            beliefStart = beliefEnd = TIMELESS;
+                int occurrenceSolved = solutions.list.count(t -> t instanceof Absolute);
+                if (occurrenceSolved > 0 && occurrenceSolved < ss) {
+                    if (solutions.removeIf(t -> t instanceof Relative))
+                        ss = solutions.size();
+                }
+            }
+//            if (ss > 1) {
+//                return filterOOB(solutions);
+//            }
         }
-//        if (taskStart == ETERNAL && beliefStart!=ETERNAL) {
-//            taskStart = beliefStart; taskEnd = beliefEnd;
-//        }
+        return ss;
+    }
 
-        this.decomposeEvents = decomposeEvents;
-
-        final Term taskTerm = d.retransform(d.taskTerm);
-        Term beliefTerm;
-        if (d.beliefTerm.equals(d.taskTerm))
-            beliefTerm = taskTerm;
-        else
-            beliefTerm = d.retransform(d.beliefTerm);
-
-//        //auto-neg first
-//        if (taskTerm.hasAny(NEG) || beliefTerm.hasAny(NEG) || pattern.hasAny(NEG)) {
-//            setAutoNeg(pattern, taskTerm, beliefTerm);
-//        }
-
-        Event taskEvent = (taskStart != TIMELESS) ?
-                know(taskTerm, taskStart, taskEnd) :
-                know(taskTerm);
-
-        if (beliefTerm.op().eventable) {
+    @Nullable
+    private static Pair<Term, long[]> solveSubSequence(Term x, Term src, long srcStart, long srcEnd) {
 
 
-            boolean equalBT = beliefTerm.equals(taskTerm);
-            Event beliefEvent = (beliefStart != TIMELESS) ?
-                    know(beliefTerm, beliefStart, beliefEnd) :
-                    ((!equalBT) ? know(beliefTerm) : taskEvent) /* same target, reuse the same event */;
+        if (src.eventRange() == 0) {
+            return pair(x, new long[]{srcStart, srcEnd});
+        } else {
+            int offset = src.subTimeFirst(x);
+            if (offset == DTERNAL) {
+                offset = src.subTimeFirst(x.neg());
+                if (offset == DTERNAL) {
+                    final Term[] first = {null};
+                    x.eventsWhile((when, what) -> {
+                        first[0] = what;
+                        return false;
+                    }, 0, true, true, false);
+                    if (first[0] != null && !x.equals(first[0])) {
+                        offset = src.subTimeFirst(first[0]);
+                        if (offset == DTERNAL) {
+                            offset = src.subTimeFirst(first[0].neg());
+                        }
+                    }
+                }
+            }
+
+            if (offset != DTERNAL)
+                return pair(x, new long[]{srcStart + offset, srcEnd + offset});
+
+            if (NAL.DEBUG)
+                throw new WTF();
+
+            return null;
+
+        }
+    }
+
+    private static long[] occTaskInBelief(Derivation d, boolean taskInBelief, boolean firstOrLast, boolean pos) {
+
+        long base, range;
+
+        if (d.occ.validEternal()) {
+            return new long[]{ETERNAL, ETERNAL};
+        }
+
+        if (d.taskStart == ETERNAL) {
+            base = d.beliefStart;
+            range = d._belief.range() - 1;
+        } else {
+
+            if (d.beliefStart == ETERNAL) {
+                range = d._task.range() - 1;
+                base = d.taskStart;
+            } else {
+                range = Math.min(d._task.range(), d._belief.range()) - 1;
+                base = taskInBelief ? d.taskStart : d.beliefStart;
+            }
+
+        }
+
+        assert (base != ETERNAL && base != TIMELESS);
+
+
+        Term inner, outer;
+        if (taskInBelief) {
+            inner = d.taskTerm.negIf(!pos);
+            outer = d.beliefTerm;
+        } else {
+            inner = d.beliefTerm.negIf(!pos);
+            outer = d.taskTerm;
         }
 
 
+        //TODO some cases: subTimeLast. also would help to specifically locate the pos/neg one
+
+        if (inner.op() == CONJ) {
+            inner = (firstOrLast) ? inner.eventFirst() : inner.eventLast();
+        }
+
+        int shift = firstOrLast ? outer.subTimeFirst(inner) : outer.subTimeLast(inner);
+        if (shift == DTERNAL)
+            return null; //TODO why if this happens. could try the negation it seems to be what is actually there but why
 
 
+        long start = base - shift;
 
-        //compact(); //TODO compaction removes self-loops which is bad, not sure if it does anything else either
+        return new long[]{start, start + range};
+    }
 
-        return this;
+    private static long[] rangeCombine(Derivation d, OccIntersect mode) {
+        long beliefStart = d.beliefStart;
+        if (d.concSingle || (d._belief == null || d.beliefStart == ETERNAL))
+            return occ(d._task);
+        else if (d.taskStart == ETERNAL)
+            return occ(d._belief);
+        else {
+            long taskStart = d.taskStart;
+
+
+            long start;
+            switch (mode) {
+                case Earliest:
+                    start = Math.min(taskStart, beliefStart);
+                    break;
+                case Task:
+                    start = taskStart;
+                    break;
+                case Belief:
+                    start = beliefStart;
+                    break;
+                default:
+                    throw new UnsupportedOperationException();
+            }
+
+            //minimum range = intersection
+            return new long[]{
+                    start,
+                    start + Math.min(d.taskEnd - taskStart, d.beliefEnd - beliefStart)
+            };
+        }
     }
 
 //    private void retransform(Event e) {
@@ -440,110 +449,111 @@ public class Occurrify extends TimeGraph {
 //
 //    }
 
-
-    private static Pair<Term, long[]> solveThe(Event event) {
-        long es = event.start();
-        return pair(event.id,
-                es == TIMELESS ? new long[]{TIMELESS, TIMELESS} : new long[]{es, event.end()});
+    private static long[] occ(Task t) {
+        return new long[]{t.start(), t.end()};
     }
 
-    private int ttl = 0;
+    @Override
+    public long eventOcc(long when) {
+        if (NAL.derive.TIMEGRAPH_DITHER_EVENTS_INTERNALLY)
+            return Tense.dither(when, d.ditherDT);
+        else
+            return when;
+    }
 
-    /** called after solution.add */
+    @Override
+    protected Random random() {
+        return d.random;
+    }
+
+    @Override
+    protected boolean decomposeAddedEvent(Event event) {
+        return decomposeEvents;
+    }
+
+    @Override
+    public void clear() {
+        super.clear();
+        clearSolutions();
+    }
+
+    /**
+     * doesnt clear the graph
+     */
+    public void clearSolutions() {
+        solutions.clear();
+        //autoNeg.clear();
+    }
+
+    private Occurrify set(Term pattern, boolean decomposeEvents) {
+
+        clear();
+        //clearSolutions(); //<- is this safe?  accumulates timegraph over multiple derived tasks within before being cleared on new premise
+
+
+        long taskStart = d.taskStart,
+                taskEnd = d.taskEnd,
+                beliefStart = !d.concSingle ? d.beliefStart : TIMELESS,
+                beliefEnd = !d.concSingle ? d.beliefEnd : TIMELESS;
+
+        if (taskStart == ETERNAL && beliefStart != ETERNAL) {
+            taskStart = taskEnd = TIMELESS;
+        } else if (beliefStart == ETERNAL && taskStart != ETERNAL) {
+            beliefStart = beliefEnd = TIMELESS;
+        }
+//        if (taskStart == ETERNAL && beliefStart!=ETERNAL) {
+//            taskStart = beliefStart; taskEnd = beliefEnd;
+//        }
+
+        this.decomposeEvents = decomposeEvents;
+
+        final Term taskTerm = d.retransform(d.taskTerm);
+        Term beliefTerm;
+        if (d.beliefTerm.equals(d.taskTerm))
+            beliefTerm = taskTerm;
+        else
+            beliefTerm = d.retransform(d.beliefTerm);
+
+//        //auto-neg first
+//        if (taskTerm.hasAny(NEG) || beliefTerm.hasAny(NEG) || pattern.hasAny(NEG)) {
+//            setAutoNeg(pattern, taskTerm, beliefTerm);
+//        }
+
+        Event taskEvent = (taskStart != TIMELESS) ?
+                know(taskTerm, taskStart, taskEnd) :
+                know(taskTerm);
+
+        if (beliefTerm.op().eventable) {
+
+
+            boolean equalBT = beliefTerm.equals(taskTerm);
+            Event beliefEvent = (beliefStart != TIMELESS) ?
+                    know(beliefTerm, beliefStart, beliefEnd) :
+                    ((!equalBT) ? know(beliefTerm) : taskEvent) /* same target, reuse the same event */;
+        }
+
+
+        //compact(); //TODO compaction removes self-loops which is bad, not sure if it does anything else either
+
+        return this;
+    }
+
+    /**
+     * called after solution.add
+     */
     private boolean eachSolution(Event solution) {
         return (ttl-- > 0);
     }
 
-
-    @Override protected boolean validPotentialSolution(Term y) {
+    @Override
+    protected boolean validPotentialSolution(Term y) {
         if (super.validPotentialSolution(y)) {
             int v = y.volume();
             return
-                v <= d.termVolMax &&
-                v >= Math.floor(NAL.derive.TIMEGRAPH_IGNORE_DEGENERATE_SOLUTIONS_FACTOR * patternVolume);
+                    v <= d.termVolMax &&
+                            v >= Math.floor(NAL.derive.TIMEGRAPH_IGNORE_DEGENERATE_SOLUTIONS_FACTOR * patternVolume);
         } else
             return false;
-    }
-
-    private ArrayHashSet<Event> solutions(Term pattern) {
-
-        ttl = NAL.derive.TIMEGRAPH_ITERATIONS;
-        patternVolume = pattern.volume();
-
-
-        solve(pattern,  /* take everything */ this::eachSolution);
-
-        return solutions;
-    }
-
-    @Override
-    protected int occToDT(long x) {
-        return Tense.dither(super.occToDT(x), d.ditherDT);
-    }
-
-    private Term solveDT(Term pattern, ArrayHashSet<Event> solutions) {
-        Term p;
-        int ss = filterSolutions(solutions);
-        if (ss == 0)
-            p = pattern;
-        else if (ss == 1) {
-            p = solutions.first().id;
-        } else {
-            p = solutions.get(random()).id;
-        }
-        return p;
-    }
-
-    private Supplier<Pair<Term, long[]>> solveOccDT(ArrayHashSet<Event> solutions) {
-
-        int ss = solutions.size();
-        if (ss > 0)
-            ss = filterSolutions(solutions);
-
-        switch (ss) {
-            case 0:
-                return () -> null;
-            case 1:
-                return () -> solveThe(solutions.first());
-            default:
-                return () -> solveThe(solutions.get(random()));
-        }
-    }
-
-    private static int filterSolutions(ArrayHashSet<Event> solutions) {
-        int ss = solutions.size();
-        if (ss > 1) {
-            MetalBitSet relative = MetalBitSet.bits(ss);
-            MetalBitSet xternal = MetalBitSet.bits(ss);
-            for (int i = 0; i < ss; i++) {
-                Event s = solutions.get(i);
-                if (s instanceof Relative)
-                    relative.set(i);
-                if (s.id.hasXternal())
-                    xternal.set(i);
-            }
-            int xternals = xternal.cardinality();
-            if (xternals > 0 && xternals < ss) {
-                for (int i = 0; i < ss; i++)
-                    if (xternal.get(i))
-                        solutions.list.set(i, null);
-
-                solutions.list.removeNulls(); //HACK doesnt remove from the ArrayHashSet's Set
-                ss = solutions.list.size();
-            }
-            if (ss > 1) {
-
-                int occurrenceSolved = solutions.list.count(t -> t instanceof Absolute);
-                if (occurrenceSolved > 0 && occurrenceSolved < ss) {
-                    if (solutions.removeIf(t -> t instanceof Relative))
-                        ss = solutions.size();
-                }
-            }
-//            if (ss > 1) {
-//                return filterOOB(solutions);
-//            }
-        }
-        return ss;
     }
 
 //    /**
@@ -596,13 +606,141 @@ public class Occurrify extends TimeGraph {
 //        return ss;
 //    }
 
+    private ArrayHashSet<Event> solutions(Term pattern) {
+
+        ttl = NAL.derive.TIMEGRAPH_ITERATIONS;
+        patternVolume = pattern.volume();
+
+
+        solve(pattern,  /* take everything */ this::eachSolution);
+
+        return solutions;
+    }
+
+    @Override
+    protected int occToDT(long x) {
+        return Tense.dither(super.occToDT(x), d.ditherDT);
+    }
+
+    private Term solveDT(Term pattern, ArrayHashSet<Event> solutions) {
+        Term p;
+        int ss = filterSolutions(solutions);
+        if (ss == 0)
+            p = pattern;
+        else if (ss == 1) {
+            p = solutions.first().id;
+        } else {
+            p = solutions.get(random()).id;
+        }
+        return p;
+    }
+
+    private Supplier<Pair<Term, long[]>> solveOccDT(ArrayHashSet<Event> solutions) {
+
+        int ss = solutions.size();
+        if (ss > 0)
+            ss = filterSolutions(solutions);
+
+        switch (ss) {
+            case 0:
+                return () -> null;
+            case 1:
+                return () -> solveThe(solutions.first());
+            default:
+                return () -> solveThe(solutions.get(random()));
+        }
+    }
+
+//    private static long[] OccConjDecompose(Derivation d, boolean taskInBelief) {
+//        long base;
+//        long range;
+//        if (d.taskStart == ETERNAL && d.beliefStart == ETERNAL) {
+//            return new long[]{ETERNAL, ETERNAL};
+//        }
+//
+//        if (d.taskStart == ETERNAL) {
+//            base = d.beliefStart;
+//            range = d._belief.range() - 1;
+//        } else {
+//            if (d.beliefStart == ETERNAL)
+//                range = d._task.range() - 1;
+//            else
+//                range = Math.min(d._task.range(), d._belief.range()) - 1;
+//
+//            base = taskInBelief || d.beliefStart == ETERNAL ? d.taskStart : d.beliefStart;
+//        }
+//
+//        assert (base != ETERNAL && base != TIMELESS);
+//
+//        int shift;
+//
+//        if (taskInBelief) {
+//
+//            Term inner = d.taskTerm, outer = d.beliefTerm;
+//
+//            //TODO some cases: subTimeLast. also would help to specifically locate the pos/neg one
+//
+//            shift = outer.subTimeFirst(inner);
+//            if (shift == DTERNAL) {
+//                shift = outer.subTimeFirst(inner.neg()); //try negative
+//                if (shift == DTERNAL)
+//                    return null; //TODO why if this happens
+//            }
+//
+//            shift = -shift;
+//
+//        } else {
+//            //shift = the occurrence of the 2nd event (since it was conjDropIfEarly)
+//            shift = 0; //applied later
+//        }
+//
+//        long start = base + shift;
+//
+//        return new long[]{start, start + range};
+//    }
+
+//    private static Pair<Term, long[]> solveSubEvent(Derivation d, Term x, boolean neg) {
+//
+//        long[] w;
+//        if (d.taskStart == ETERNAL)
+//            w = new long[]{ETERNAL, ETERNAL};
+//        else {
+//
+//            int[] offsets = d.taskTerm.subTimes(x.negIf(neg && x.op() != NEG /* not already negative, which is possible as a result from Termify */));
+//            if (offsets == null) {
+//                if (!neg && x.hasAny(CONJ)) {
+//                    //use the first event
+//                    Term[] first = new Term[1];
+//                    x.eventsWhile((when, what) -> {
+//                        first[0] = what;
+//                        return false;
+//                    }, 0, true, true, true, 0);
+//                    if (first[0] != x)
+//                        offsets = d.taskTerm.subTimes(first[0]);
+//                }
+//
+//            }
+//            if (offsets == null || offsets.length == 0) {
+//                if (Param.DEBUG)
+//                    throw new WTF(); //seems to be something involving normalized/unnormalized variables not getting matched
+//                else
+//                    return null;
+//            }
+//
+//            int offset = offsets[(offsets.length > 1) ? d.nar.random().nextInt(offsets.length) : 0];
+//            assert (offset != DTERNAL && offset != XTERNAL);
+//            w = new long[]{d.taskStart + offset, d.taskEnd + offset};
+//        }
+//        return pair(x, w);
+//    }
+//
+
     /**
      * eternal check: conditions under which an eternal result might be valid
      */
     boolean validEternal() {
         return d.taskStart == ETERNAL && (d.concSingle || d.beliefStart == ETERNAL);
     }
-
 
     public enum OccurrenceSolver {
 
@@ -612,7 +750,7 @@ public class Occurrify extends TimeGraph {
          */
         TaskRange() {
             @Override
-            public Pair<Term, long[]> occurrence(Derivation d, Term x) {
+            public Pair<Term, long[]> occurrence(Term x, Derivation d) {
                 return solveDT(d, x, true);
             }
 
@@ -643,7 +781,7 @@ public class Occurrify extends TimeGraph {
 
         Default() {
             @Override
-            public Pair<Term, long[]> occurrence(Derivation d, Term x) {
+            public Pair<Term, long[]> occurrence(Term x, Derivation d) {
                 return solveOccDT(x, d.occ.set(x, true));
             }
 
@@ -725,7 +863,7 @@ public class Occurrify extends TimeGraph {
 
         TaskInBeliefPos() {
             @Override
-            public Pair<Term, long[]> occurrence(Derivation d, Term x) {
+            public Pair<Term, long[]> occurrence(Term x, Derivation d) {
                 return solveLocal(d, x);
             }
 
@@ -738,7 +876,7 @@ public class Occurrify extends TimeGraph {
         },
         TaskInBeliefNeg() {
             @Override
-            public Pair<Term, long[]> occurrence(Derivation d, Term x) {
+            public Pair<Term, long[]> occurrence(Term x, Derivation d) {
                 return solveLocal(d, x);
             }
 
@@ -750,7 +888,7 @@ public class Occurrify extends TimeGraph {
         },
         TaskLastInBeliefPos() {
             @Override
-            public Pair<Term, long[]> occurrence(Derivation d, Term x) {
+            public Pair<Term, long[]> occurrence(Term x, Derivation d) {
                 return (solveLocal(d, x));
             }
 
@@ -761,7 +899,7 @@ public class Occurrify extends TimeGraph {
         },
         TaskLastInBeliefNeg() {
             @Override
-            public Pair<Term, long[]> occurrence(Derivation d, Term x) {
+            public Pair<Term, long[]> occurrence(Term x, Derivation d) {
                 return (solveLocal(d, x));
             }
 
@@ -773,7 +911,7 @@ public class Occurrify extends TimeGraph {
 
         AfterBeliefInTask() {
             @Override
-            public Pair<Term, long[]> occurrence(Derivation d, Term x) {
+            public Pair<Term, long[]> occurrence(Term x, Derivation d) {
                 @Nullable Pair<Term, long[]> p = solveLocal(d, x);
                 long[] pp = p.getTwo();
                 if (d.beliefStart == ETERNAL) {
@@ -819,7 +957,7 @@ public class Occurrify extends TimeGraph {
          */
         TaskSubSequence() {
             @Override
-            public Pair<Term, long[]> occurrence(Derivation d, Term x) {
+            public Pair<Term, long[]> occurrence(Term x, Derivation d) {
                 if (d.taskStart == ETERNAL) {
                     return pair(x, new long[]{ETERNAL, ETERNAL});
                 }
@@ -870,7 +1008,7 @@ public class Occurrify extends TimeGraph {
          */
         BeliefRelative() {
             @Override
-            public Pair<Term, long[]> occurrence(Derivation d, Term x) {
+            public Pair<Term, long[]> occurrence(Term x, Derivation d) {
                 return solveDT(d, x, false);
             }
 
@@ -892,7 +1030,7 @@ public class Occurrify extends TimeGraph {
          */
         TaskRelative() {
             @Override
-            public Pair<Term, long[]> occurrence(Derivation d, Term x) {
+            public Pair<Term, long[]> occurrence(Term x, Derivation d) {
                 return solveDT(d, x, false);
             }
 
@@ -909,13 +1047,13 @@ public class Occurrify extends TimeGraph {
         },
         /**
          * specificially for conjunction induction
-         *
+         * <p>
          * unprojected span, for sequence induction
          * events are not decomposed as this could confuse the solver unnecessarily.  automatic autoneg?
          */
         Sequence() {
             @Override
-            public Pair<Term, long[]> occurrence(Derivation d, Term x) {
+            public Pair<Term, long[]> occurrence(Term x, Derivation d) {
 
 
                 Term tt = d.taskTerm.negIf(d.taskTruth.isNegative());
@@ -931,7 +1069,7 @@ public class Occurrify extends TimeGraph {
                 } else if (tTime == ETERNAL) {
                     y = CONJ.the(DTERNAL, tt, bb);
                     occ = new long[]{bTime, d.beliefEnd};
-                }else  if (bTime == ETERNAL) {
+                } else if (bTime == ETERNAL) {
                     y = CONJ.the(DTERNAL, tt, bb);
                     occ = new long[]{tTime, d.taskEnd};
                 } else {
@@ -988,7 +1126,7 @@ public class Occurrify extends TimeGraph {
 
         Task() {
             @Override
-            public Pair<Term, long[]> occurrence(Derivation d, Term x) {
+            public Pair<Term, long[]> occurrence(Term x, Derivation d) {
                 return solveDT(d, x, false);
             }
 
@@ -1200,7 +1338,7 @@ public class Occurrify extends TimeGraph {
             return term;
         }
 
-        abstract public Pair<Term, long[]> occurrence(Derivation d, Term x);
+        abstract public Pair<Term, long[]> occurrence(Term x, Derivation d);
 
         Pair<Term, long[]> solveOccDT(Term x, Occurrify o) {
             ArrayHashSet<Event> solutions = o.solutions(x);
@@ -1264,217 +1402,8 @@ public class Occurrify extends TimeGraph {
         }
     }
 
-    @Nullable
-    private static Pair<Term, long[]> solveSubSequence(Term x, Term src, long srcStart, long srcEnd) {
-
-
-        if (src.eventRange() == 0) {
-            return pair(x, new long[]{srcStart, srcEnd});
-        } else {
-            int offset = src.subTimeFirst(x);
-            if (offset == DTERNAL) {
-                offset = src.subTimeFirst(x.neg());
-                if (offset == DTERNAL) {
-                    final Term[] first = {null};
-                    x.eventsWhile((when, what) -> {
-                        first[0] = what;
-                        return false;
-                    }, 0, true, true, false);
-                    if (first[0] != null && !x.equals(first[0])) {
-                        offset = src.subTimeFirst(first[0]);
-                        if (offset == DTERNAL) {
-                            offset = src.subTimeFirst(first[0].neg());
-                        }
-                    }
-                }
-            }
-
-            if (offset != DTERNAL)
-                return pair(x, new long[]{srcStart + offset, srcEnd + offset});
-
-            if (NAL.DEBUG)
-                throw new WTF();
-
-            return null;
-
-        }
-    }
-
-    private static long[] occTaskInBelief(Derivation d, boolean taskInBelief, boolean firstOrLast, boolean pos) {
-
-        long base, range;
-
-        if (d.occ.validEternal()) {
-            return new long[]{ETERNAL, ETERNAL};
-        }
-
-        if (d.taskStart == ETERNAL) {
-            base = d.beliefStart;
-            range = d._belief.range() - 1;
-        } else {
-
-            if (d.beliefStart == ETERNAL) {
-                range = d._task.range() - 1;
-                base = d.taskStart;
-            } else {
-                range = Math.min(d._task.range(), d._belief.range()) - 1;
-                base = taskInBelief ? d.taskStart : d.beliefStart;
-            }
-
-        }
-
-        assert (base != ETERNAL && base != TIMELESS);
-
-
-        Term inner, outer;
-        if (taskInBelief) {
-            inner = d.taskTerm.negIf(!pos);
-            outer = d.beliefTerm;
-        } else {
-            inner = d.beliefTerm.negIf(!pos);
-            outer = d.taskTerm;
-        }
-
-
-        //TODO some cases: subTimeLast. also would help to specifically locate the pos/neg one
-
-        if (inner.op() == CONJ) {
-            inner = (firstOrLast) ? inner.eventFirst() : inner.eventLast();
-        }
-
-        int shift = firstOrLast ? outer.subTimeFirst(inner) : outer.subTimeLast(inner);
-        if (shift == DTERNAL)
-            return null; //TODO why if this happens. could try the negation it seems to be what is actually there but why
-
-
-        long start = base - shift;
-
-        return new long[]{start, start + range};
-    }
-
-//    private static long[] OccConjDecompose(Derivation d, boolean taskInBelief) {
-//        long base;
-//        long range;
-//        if (d.taskStart == ETERNAL && d.beliefStart == ETERNAL) {
-//            return new long[]{ETERNAL, ETERNAL};
-//        }
-//
-//        if (d.taskStart == ETERNAL) {
-//            base = d.beliefStart;
-//            range = d._belief.range() - 1;
-//        } else {
-//            if (d.beliefStart == ETERNAL)
-//                range = d._task.range() - 1;
-//            else
-//                range = Math.min(d._task.range(), d._belief.range()) - 1;
-//
-//            base = taskInBelief || d.beliefStart == ETERNAL ? d.taskStart : d.beliefStart;
-//        }
-//
-//        assert (base != ETERNAL && base != TIMELESS);
-//
-//        int shift;
-//
-//        if (taskInBelief) {
-//
-//            Term inner = d.taskTerm, outer = d.beliefTerm;
-//
-//            //TODO some cases: subTimeLast. also would help to specifically locate the pos/neg one
-//
-//            shift = outer.subTimeFirst(inner);
-//            if (shift == DTERNAL) {
-//                shift = outer.subTimeFirst(inner.neg()); //try negative
-//                if (shift == DTERNAL)
-//                    return null; //TODO why if this happens
-//            }
-//
-//            shift = -shift;
-//
-//        } else {
-//            //shift = the occurrence of the 2nd event (since it was conjDropIfEarly)
-//            shift = 0; //applied later
-//        }
-//
-//        long start = base + shift;
-//
-//        return new long[]{start, start + range};
-//    }
-
-//    private static Pair<Term, long[]> solveSubEvent(Derivation d, Term x, boolean neg) {
-//
-//        long[] w;
-//        if (d.taskStart == ETERNAL)
-//            w = new long[]{ETERNAL, ETERNAL};
-//        else {
-//
-//            int[] offsets = d.taskTerm.subTimes(x.negIf(neg && x.op() != NEG /* not already negative, which is possible as a result from Termify */));
-//            if (offsets == null) {
-//                if (!neg && x.hasAny(CONJ)) {
-//                    //use the first event
-//                    Term[] first = new Term[1];
-//                    x.eventsWhile((when, what) -> {
-//                        first[0] = what;
-//                        return false;
-//                    }, 0, true, true, true, 0);
-//                    if (first[0] != x)
-//                        offsets = d.taskTerm.subTimes(first[0]);
-//                }
-//
-//            }
-//            if (offsets == null || offsets.length == 0) {
-//                if (Param.DEBUG)
-//                    throw new WTF(); //seems to be something involving normalized/unnormalized variables not getting matched
-//                else
-//                    return null;
-//            }
-//
-//            int offset = offsets[(offsets.length > 1) ? d.nar.random().nextInt(offsets.length) : 0];
-//            assert (offset != DTERNAL && offset != XTERNAL);
-//            w = new long[]{d.taskStart + offset, d.taskEnd + offset};
-//        }
-//        return pair(x, w);
-//    }
-//
-
     private enum OccIntersect {
         Task, Belief, Earliest
-    }
-
-    private static long[] rangeCombine(Derivation d, OccIntersect mode) {
-        long beliefStart = d.beliefStart;
-        if (d.concSingle || (d._belief == null || d.beliefStart == ETERNAL))
-            return occ(d._task);
-        else if (d.taskStart == ETERNAL)
-            return occ(d._belief);
-        else {
-            long taskStart = d.taskStart;
-
-
-            long start;
-            switch (mode) {
-                case Earliest:
-                    start = Math.min(taskStart, beliefStart);
-                    break;
-                case Task:
-                    start = taskStart;
-                    break;
-                case Belief:
-                    start = beliefStart;
-                    break;
-                default:
-                    throw new UnsupportedOperationException();
-            }
-
-            //minimum range = intersection
-            return new long[]{
-                    start,
-                    start + Math.min(d.taskEnd - taskStart, d.beliefEnd - beliefStart)
-            };
-        }
-    }
-
-    private static long[] occ(Task t) {
-        return new long[]{t.start(), t.end()};
     }
 
 
