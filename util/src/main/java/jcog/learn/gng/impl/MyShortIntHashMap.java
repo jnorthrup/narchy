@@ -1,5 +1,6 @@
 package jcog.learn.gng.impl;
 
+import jcog.TODO;
 import org.eclipse.collections.api.LazyShortIterable;
 import org.eclipse.collections.api.RichIterable;
 import org.eclipse.collections.api.ShortIterable;
@@ -697,6 +698,11 @@ public class MyShortIntHashMap extends AbstractMutableIntValuesMap implements Mu
         System.arraycopy(this.keys, 0, copy, 0, this.keys.length);
         this.keys = copy;
         this.copyKeysOnWrite = false;
+    }
+
+    @Override
+    public void updateValues(ShortIntToIntFunction shortIntToIntFunction) {
+        throw new TODO();
     }
 
     @Override

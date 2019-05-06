@@ -104,12 +104,7 @@ public class Taskify extends ProxyTerm {
     /**
      * note: the return value here shouldnt matter so just return true anyway
      */
-    protected boolean taskify(Term x0, Derivation d) {
-
-        final byte punc = d.concPunc;
-        if (punc == 0)
-            throw new RuntimeException("no punctuation assigned");
-
+    protected void taskify(Term x0, long start, long end, Derivation d) {
 
         Term x = Task.normalize(x0);
 
@@ -120,19 +115,28 @@ public class Taskify extends ProxyTerm {
             x = x.unneg();
             xo = x.op();
         }
-        if (!xo.taskable)
-            return spam(d, NAL.derive.TTL_COST_DERIVE_TASK_FAIL);
-
-
-        Truth tru;
+        if (!xo.taskable) {
+            spam(d, NAL.derive.TTL_COST_DERIVE_TASK_FAIL);
+            return;
+        }
 
         NAR nar = d.nar();
+
+
+        final byte punc = d.concPunc;
+        if (punc == 0)
+            throw new RuntimeException("no punctuation assigned");
+
+        Truth tru;
         if (punc == BELIEF || punc == GOAL) {
 
             //dither truth
             tru = d.concTruth.dither(nar.freqResolution.floatValue(), nar.confResolution.floatValue(), d.eviMin, neg);
-            if (tru == null)
-                return spam(d, NAL.derive.TTL_COST_DERIVE_TASK_UNPRIORITIZABLE);
+            if (tru == null) {
+                nar.emotion.deriveFailTaskifyTruthUnderflow.increment();
+                spam(d, NAL.derive.TTL_COST_DERIVE_TASK_UNPRIORITIZABLE);
+                return;
+            }
 
         } else {
             tru = null; //questions and quests
@@ -140,22 +144,21 @@ public class Taskify extends ProxyTerm {
 
 
         long S, E;
-        if (d.concOcc != null && d.concOcc[0] != ETERNAL) {
+        if (start != ETERNAL) {
+            assert(start <= end): "reversed occurrence: " + start + ".." + end;
 
             int dither = d.ditherDT;
-            if (dither > 1)
-                Tense.dither(d.concOcc, dither);
+            S = Tense.dither(start, dither);
+            E = Tense.dither(end, dither);
 
-            S = d.concOcc[0]; E = d.concOcc[1];
-
-            assert (S <= E) : "task has reversed occurrence: " + S + ".." + E;
         } else {
             S = E = ETERNAL;
         }
 
         /** compares taskTerm before un-anon */
         if (same(x, punc, tru, S, E, d.taskTerm, d._task, nar)) {
-            return parentDuplicate(d, nar);
+            parentDuplicate(d, nar);
+            return;
         }
 
         /** un-anon */
@@ -165,26 +168,28 @@ public class Taskify extends ProxyTerm {
 
         /** compares beliefTerm un-anon */
         if (d._belief != null && same(x, punc, tru, S, E, d._belief.term(), d._belief, nar)) {
-            return parentDuplicate(d, nar);
+            parentDuplicate(d, nar);
+            return;
         }
 
         DerivedTask t = Task.tryTask(x, punc, tru, (C, tr) ->
-                NAL.DEBUG ?
-                        new DebugDerivedTask(C, punc, tr, S, E, d) :
-                        new DerivedTask(C, punc, tr, d.time(), S, E, d.evidence())
+            NAL.DEBUG ?
+                new DebugDerivedTask(C, punc, tr, S, E, d) :
+                new DerivedTask(C, punc, tr, d.time(), S, E, d.evidence())
         );
 
         if (t == null) {
             nar.emotion.deriveFailTaskify.increment();
-            return spam(d, NAL.derive.TTL_COST_DERIVE_TASK_FAIL);
+            spam(d, NAL.derive.TTL_COST_DERIVE_TASK_FAIL);
+            return;
         }
 
 
         float priority = d.what.derivePri.pri(t, d);
-
         if (priority != priority) {
             nar.emotion.deriveFailPrioritize.increment();
-            return spam(d, NAL.derive.TTL_COST_DERIVE_TASK_UNPRIORITIZABLE);
+            spam(d, NAL.derive.TTL_COST_DERIVE_TASK_UNPRIORITIZABLE);
+            return;
         }
 
         //these must be applied before possible merge on input to derivedTask bag
@@ -212,8 +217,8 @@ public class Taskify extends ProxyTerm {
             cost = NAL.derive.TTL_COST_DERIVE_TASK_SUCCESS;
 
         }
-        return d.use(cost);
 
+        d.use(cost);
     }
 
     private boolean parentDuplicate(Derivation d, NAR nar) {

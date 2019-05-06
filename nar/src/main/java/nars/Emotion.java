@@ -1,14 +1,21 @@
 package nars;
 
 
-import jcog.TODO;
+import jcog.Texts;
 import jcog.math.FloatAveragedWindow;
 import jcog.signal.meter.ExplainedCounter;
 import jcog.signal.meter.FastCounter;
 import jcog.signal.meter.Meter;
 import nars.control.MetaGoal;
+import org.HdrHistogram.AtomicHistogram;
+import org.HdrHistogram.Histogram;
+import org.junit.platform.commons.util.ReflectionUtils;
 
 import java.io.PrintStream;
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
@@ -19,7 +26,7 @@ import static jcog.Texts.n4;
  * manages non-logical/meta states of the system
  * and collects/provides information about them to the system
  * variables used to record emotional values
- *
+ * <p>
  * TODO cycleCounter, durCounter etc
  */
 public class Emotion implements Meter, Consumer<NAR> {
@@ -29,27 +36,36 @@ public class Emotion implements Meter, Consumer<NAR> {
      */
 
 
-    /** TODO */
+    private static final int history = 2;
+    private static final Field[] EmotionFields = ReflectionUtils.findFields(Emotion.class, (f) -> true, ReflectionUtils.HierarchyTraversalMode.TOP_DOWN)
+            .stream().filter(f-> !Modifier.isPrivate(f.getModifiers())).sorted(Comparator.comparing(Field::getName))
+            .toArray(Field[]::new);
+
+    /**
+     * TODO
+     */
     //public final FastCounter conceptCreate = new FastCounter("concept create");
 //    public final Counter conceptCreateFail = new FastCounter("concept create fail");
     public final FastCounter conceptDelete = new FastCounter("concept delete");
-
-
-    /** perception attempted */
+    /**
+     * perception attempted
+     */
     public final FastCounter perceivedTaskStart = new FastCounter("perceived task start");
-
-    /** perception complete */
+    /**
+     * perception complete
+     */
     public final FastCounter perceivedTaskEnd = new FastCounter("perceived task end");
-
     //public final Counter taskActivation_x100 = new FastCounter("task activation pri sum x100");
     public final FastCounter premiseFire = new FastCounter("premise fire");
 
+    /** amount of remainder TTL from each derivation */
+    public final AtomicHistogram deriveTTL_waste = new AtomicHistogram(1, 512, 2);
 
-    /** increment of cycles that a dur loop lags in its scheduling.
-     * an indicator of general system lag, especially in real-time operation */
+    /**
+     * increment of cycles that a dur loop lags in its scheduling.
+     * an indicator of general system lag, especially in real-time operation
+     */
     public final FastCounter durLoopLag = new FastCounter("DurLoop lag cycles");
-
-
     /**
      * indicates lack of novelty in premise selection
      */
@@ -57,32 +73,26 @@ public class Emotion implements Meter, Consumer<NAR> {
 
     public final FastCounter premiseUnderivable = new FastCounter("premise underivable");
     public final FastCounter premiseUnbudgetable = new FastCounter("premise unbudgetable");
-
     public final FastCounter deriveTask = new FastCounter("derive task");
     public final FastCounter deriveTermify = new FastCounter("derive termify");
     public final ExplainedCounter deriveFailTemporal = new ExplainedCounter("derive fail temporal");
-    public final ExplainedCounter deriveFailEval = new ExplainedCounter("derive fail eval");
+    public final ExplainedCounter deriveFail = new ExplainedCounter("derive fail eval");
     public final FastCounter deriveFailVolLimit = new FastCounter("derive fail vol limit");
+
     public final FastCounter deriveFailTaskify = new FastCounter("derive fail taskify");
+    public final FastCounter deriveFailTaskifyTruthUnderflow = new FastCounter("derive fail taskify truth underflow");
+
     public final FastCounter deriveFailPrioritize = new FastCounter("derive fail prioritize");
     public final FastCounter deriveFailParentDuplicate = new FastCounter("derive fail parent duplicate");
     public final FastCounter deriveFailDerivationDuplicate = new FastCounter("derive fail derivation duplicate");
-
-
     /**
      * the indices of this array correspond to the ordinal() value of the MetaGoal enum values
      * TODO convert to AtomicFloatArray or something where each value is volatile
      */
     public final float[] want = new float[MetaGoal.values().length];
-
-    static final int history = 2;
     public final FloatAveragedWindow
-            busyVol = new FloatAveragedWindow(history, 0.5f,0f),
-            busyVolPriWeighted = new FloatAveragedWindow(history, 0.5f, 0)
-        ;
-
-//    FastCounter busyVol = new FastCounter("busyVol"), busyVolPriWeighted = new FastCounter("busyVolPriWeighted");
-
+            busyVol = new FloatAveragedWindow(history, 0.5f, 0f),
+            busyVolPriWeighted = new FloatAveragedWindow(history, 0.5f, 0);
     private final NAR nar;
 
     /**
@@ -106,11 +116,6 @@ public class Emotion implements Meter, Consumer<NAR> {
         want[g.ordinal()] = v;
     }
 
-    @Override
-    public String name() {
-        return "emotion";
-    }
-
 
 //    public Runnable getter(MonitorRegistry reg, Supplier<Map<String, Object>> p) {
 //        return new PollRunnable(
@@ -126,10 +131,16 @@ public class Emotion implements Meter, Consumer<NAR> {
 //        );
 //    }
 
+    @Override
+    public String name() {
+        return "emotion";
+    }
+
     /**
      * new frame started
      */
-    @Override public void accept(NAR nar) {
+    @Override
+    public void accept(NAR nar) {
         busyVol.reset(0);
         busyVolPriWeighted.reset(0);
     }
@@ -141,11 +152,9 @@ public class Emotion implements Meter, Consumer<NAR> {
         busyVolPriWeighted.add(vol * pri);
     }
 
-
     public String summary() {
         return "busy=" + n4(busyVol.asDouble());
     }
-
 
     /**
      * sensory prefilter
@@ -158,7 +167,7 @@ public class Emotion implements Meter, Consumer<NAR> {
         float pri = t.priElseZero();
 
         short[] cause = t.why();
-        MetaGoal.PerceiveCmplx.learn(cause, ((float)vol) / NAL.term.COMPOUND_VOLUME_MAX, nar.control.why);
+        MetaGoal.PerceiveCmplx.learn(cause, ((float) vol) / NAL.term.COMPOUND_VOLUME_MAX, nar.control.why);
         MetaGoal.PerceivePri.learn(cause, pri, nar.control.why);
 
         busy(pri, vol);
@@ -167,11 +176,33 @@ public class Emotion implements Meter, Consumer<NAR> {
     }
 
     public void print(PrintStream out) {
-        throw new TODO();
+        //throw new TODO();
     }
 
-    public void commit(BiConsumer<String,Object> statConsumer) {
-        //TODO
+    public void commit(BiConsumer<String, Object> statConsumer) {
+        for (Field f : EmotionFields) {
+            String fn = f.getName();
+            try {
+                statConsumer.accept(fn, v(f.get(Emotion.this)));
+            } catch (IllegalAccessException e) {
+                statConsumer.accept(fn, e.getMessage());
+            }
+        }
+    }
+
+    private static Object v(Object o) {
+        if (o instanceof FastCounter)
+            return ((FastCounter)o).longValue();
+        else if (o instanceof Object[])
+            return Arrays.toString((Object[])o);
+        else if (o instanceof float[])
+            return Texts.n4((float[])o);
+        else if (o instanceof FloatAveragedWindow)
+            return ((FloatAveragedWindow)o).asFloat();
+        else if (o instanceof Histogram) {
+            return Texts.histogramString((Histogram)o, true);
+        }
+        return o;
     }
 
 //    public void onAnswer(Task questionTask, Task answer) {
@@ -200,7 +231,6 @@ public class Emotion implements Meter, Consumer<NAR> {
 //        float str = ansConf;// * qOrig;
 //        MetaGoal.Answer.learn(answer.cause(), str, nar.causes);
 //    }
-
 
 
 }

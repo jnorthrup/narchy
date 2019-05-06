@@ -22,13 +22,25 @@ import static nars.Op.SETe;
  */
 public class MetaAgent extends Game {
 
-    static final Atomic curiosity = Atomic.the("curi"),
+    static final Atomic curiosity =
+
+            /** curiosity rate */
+            Atomic.the("curi"),
+
+            /** tasklink forget factor */
             forget = Atomic.the("forget"),
+
+            /** tasklink activation factor */
+            amplify = Atomic.the("amplify"),
+
+            /** internal truth frequency precision */
+            exact = Atomic.the("exact"),
+
             PRI = Atomic.the("pri"),
             beliefPri = Atomic.the("beliefPri"),
             goalPri = Atomic.the("goalPri"),
 
-    play = Atomic.the("play"),
+            play = Atomic.the("play"),
             input = Atomic.the("input"),
             duration = Atomic.the("dur"),
             happy = Atomic.the("happy"),
@@ -70,8 +82,25 @@ public class MetaAgent extends Game {
 
         NAR n = this.nar = w[0].nar;
 
-        senseNumberDifference($.inh(n.self(), $$("busy")), n.emotion.busyVol::asFloat);
-        senseNumberDifference($.inh(n.self(), $$("deriveTask")), n.emotion.deriveTask::get);
+        Term SELF = n.self();
+        senseNumberDifference($.inh(SELF, $$("busy")), n.emotion.busyVol::asFloat);
+        senseNumberDifference($.inh(SELF, $$("deriveTask")), n.emotion.deriveTask::get);
+
+        actionCtl($.inh(SELF, exact), new FloatRange(0.5f, 0, 1) {
+            @Override
+            public void set(float value) {
+                switch (Math.round(value * 6)) {
+                    case 0: value = 0.5f; break;
+                    case 1: value = 0.2f; break;
+                    case 2: value = 0.1f; break;
+                    case 3: value = 0.05f; break;
+                    case 4: value = 0.02f; break;
+                    case 5: value = 0.01f; break;
+                }
+                nar.freqResolution.set(value);
+                super.set(value);
+            }
+        });
 
         for (Game ww : w)
             add(ww);
@@ -101,6 +130,7 @@ public class MetaAgent extends Game {
 
 //        forgetAction = actionUnipolar($.inh(id, forget), (FloatConsumer) n.attn.forgetRate::set);
         actionCtl($.inh(gid, forget), ((What.TaskLinkWhat) w).links.decay);
+        actionCtl($.inh(gid, amplify), ((What.TaskLinkWhat) w).links.amp);
 
 
 //        float priFactorMin = 0.1f, priFactorMax = 4f;
@@ -143,9 +173,9 @@ public class MetaAgent extends Game {
         };
         actionCtl($.inh(gid, duration), durRange);
 
-        if (w.in instanceof PriBuffer.BagTaskBuffer) {
+        if (w.in instanceof PriBuffer.BagTaskBuffer)
             actionCtl($.inh(gid, input), ((PriBuffer.BagTaskBuffer) (w.in)).valve);
-        }
+
 
 //        this.dur = actionUnipolar($.inh(id, duration), (x) -> {
 //            n.time.dur(Util.lerp(x * x, n.dtDither(), initialDur * 2));

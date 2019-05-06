@@ -65,7 +65,7 @@ public class TestNAR {
     private final ByteTopic<Tasked>[] taskEvents;
     private boolean finished;
     private boolean exitOnAllSuccess = true;
-    private final boolean reportStats = false;
+    private final boolean reportStats = true;
 
     public TestNAR(NAR nar) {
         this.nar = nar;

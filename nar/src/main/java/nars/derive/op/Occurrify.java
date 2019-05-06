@@ -138,8 +138,12 @@ public class Occurrify extends TimeGraph {
     static void temporalTask(Term x, OccurrenceSolver time, Taskify t, Derivation d) {
 
         Term xx = x;
-//        boolean neg = (x.op() == NEG) && (!d.taskTerm.hasAny(NEG) && !d.beliefTerm.hasAny(NEG)); //HACK semi-auto-unneg
-//        Term xx = neg ? x.unneg() : x;
+
+        boolean neg = false;
+        if (x.op()==NEG && (!d.taskTerm.hasAny(NEG) && !d.beliefTerm.hasAny(NEG))) {
+            //HACK semi-auto-unneg to help occurrify
+            x = x.unneg();
+        }
 
         Pair<Term, long[]> timing = time.occurrence(x, d);
         if (timing == null) {
@@ -152,6 +156,9 @@ public class Occurrify extends TimeGraph {
             d.nar.emotion.deriveFailTemporal.increment();
             return;
         }
+
+        if (neg)
+            y = y.neg();
 
         long[] occ = timing.getTwo();
 
@@ -171,13 +178,16 @@ public class Occurrify extends TimeGraph {
                     d.concPunc = qPunc;
                     d.concTruth = null;
                 } else {
+                    d.nar.emotion.deriveFailTemporal.increment();
                     return; //fail
                 }
 
             } //else: ok
         } else {
-            if (DerivationFailure.failure(y, d) != Success)
+            if (DerivationFailure.failure(y, d) != Success) {
+                d.nar.emotion.deriveFailTemporal.increment();
                 return;
+            }
         }
 
         if (y != null) {
@@ -185,9 +195,7 @@ public class Occurrify extends TimeGraph {
                 assertDithered(y, d.ditherDT);
         }
 
-
-        d.concOcc = occ;
-        t.taskify(y, d);
+        t.taskify(y, occ[0], occ[1], d);
     }
 
     static void eternalTask(Term x, Taskify t, Derivation d) {
@@ -206,8 +214,7 @@ public class Occurrify extends TimeGraph {
             }
         }
 
-        d.concOcc = null;
-        t.taskify(x, d);
+        t.taskify(x, ETERNAL, ETERNAL, d);
     }
 
     /**

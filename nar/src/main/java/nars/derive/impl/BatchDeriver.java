@@ -29,7 +29,7 @@ public class BatchDeriver extends Deriver {
         What w = d.what;
 
         do {
-            w.hypothesize(premisesPerIteration, termLinksPerTaskLink, matchTTL, deriveTTL, d);
+            w.derive(premisesPerIteration, termLinksPerTaskLink, matchTTL, deriveTTL, d);
         } while (kontinue.getAsBoolean());
 
     }

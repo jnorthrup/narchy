@@ -173,7 +173,8 @@ class BooleanTest {
     }
 
 
-    @Test public void testXOREternal() throws Narsese.NarseseException {
+    @Test
+    void testXOREternal() throws Narsese.NarseseException {
         //classic XOR example
 
         NAR n = NARS.tmp();
@@ -199,6 +200,8 @@ class BooleanTest {
             x.beliefs().forEachTask(t -> System.out.println(t.proof()));
             System.out.println();
         }
+
+        n.stats(System.out);
 
     }
 

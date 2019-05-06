@@ -66,7 +66,7 @@ public class DeriverRules {
         return d.use(NAL.derive.TTL_COST_BRANCH);
     }
 
-    public void run(Derivation d, short[] can, int deriveTTL) {
+    public void run(Derivation d, short[] can, final int deriveTTL) {
         d.ready(
                 can, deriveTTL
                 //Util.lerp(Math.max(d.priDouble, d.priSingle), Param.TTL_MIN, deriveTTL)
@@ -109,9 +109,8 @@ public class DeriverRules {
                     maybePri = new float[fanOut];
                     maybeWhat = new short[fanOut];
                     int xx = 0;
-                    int i;
-                    for (i = 0; i < n; i++) {
-                        if (!toRemove.get(i)) {
+                    for (int i = 0; i < n; i++) {
+                        if (toRemove.getNot(i)) {
                             maybePri[xx] = f[i];
                             maybeWhat[xx++] = could[i];
                         }
@@ -139,6 +138,7 @@ public class DeriverRules {
             MutableRoulette.run(maybePri, d.random, wi -> 0, b -> test(d, maybeWhat[b]));
         }
 
+        d.nar.emotion.deriveTTL_waste.recordValue(Math.max(0, deriveTTL - d.ttl)); //TODO handle negative amounts, if this occurrs.  limitation of HDR histogram
 
     }
 

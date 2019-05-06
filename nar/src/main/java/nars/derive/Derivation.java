@@ -223,7 +223,6 @@ public class Derivation extends PreDerivation {
     public transient boolean concSingle;
     public transient float parentVoluplexitySum;
 
-    @Deprecated public transient long[] concOcc;
     @Deprecated public transient Truth concTruth;
     public transient byte concPunc;
 

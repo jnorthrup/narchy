@@ -8,6 +8,7 @@ import nars.NAR;
 import nars.Task;
 import nars.derive.Derivation;
 import nars.derive.Premise;
+import nars.link.TaskLink;
 import nars.link.TaskLinks;
 import nars.term.Term;
 import nars.time.When;
@@ -21,17 +22,19 @@ import java.io.Serializable;
 public class PremiseBuffer implements Serializable {
     private final What.TaskLinkWhat taskLinkWhat;
 
-    public static final int premiseBufferCapacity = 64;
+    public static final int premiseBufferCapacity = 128;
 
 //    /** if < 0, removes from bag (but a copy remains in novelty bag so it can subtract from a repeat) */
 //    public float premiseSelectMultiplier = 0.5f;
 
-    /** rate that priority from the novelty bag subtracts from potential premises */
-    float notNovelCost = 0.5f;
+    /** rate that priority from the novelty bag subtracts from potential premises.
+     * may need to be divided by concurrency so that threads dont step on each other */
+    float notNovelCost = 0.25f;
 
     /** search rate */
-    public float fillRate = 1.5f;
+    public float fillRate = 1f;
 
+    /** active premises for sampling */
     public final Bag<Premise,PLink<Premise>> premise;
 
     /** tracks usage, the anti-premise novelty filter */
@@ -50,48 +53,50 @@ public class PremiseBuffer implements Serializable {
     /**
      * samples premises
      */
-    public void hypothesize(int premisesPerIteration, int termlinksPerTaskLink, int matchTTL, int deriveTTL, TaskLinks links, Derivation d) {
+    public void derive(int premisesPerIteration, int termlinksPerTaskLink, int matchTTL, int deriveTTL, TaskLinks links, Derivation d) {
 
         When<NAR> when = WhenTimeIs.now(d);
-
 
         taskLinkWhat.sample(d.random, (int) Math.max(1, Math.ceil(((float) premisesPerIteration) / termlinksPerTaskLink) * fillRate), tasklink -> {
 
             Task task = tasklink.get(when);
-            if (task != null && !task.isDeleted()) {
-                Term prevTerm = null;
-                for (int i = 0; i < termlinksPerTaskLink; i++) {
-                    Term term = links.term(tasklink, task, d);
-                    if (term != null && (prevTerm == null || !term.equals(prevTerm))) {
-                        PLink<Premise> l = new PLink<>(new Premise(task, term), tasklink.priPunc(task.punc()));
-                        premise.put(l);
-                    }
-                    prevTerm = term;
-                }
-            }
+            if (task != null && !task.isDeleted())
+                hypothesize(tasklink, task, termlinksPerTaskLink, links, d);
 
             return true;
 
         });
 
-        for (int i = 0; i < premisesPerIteration; i++) {
-            PLink<Premise> pp = premise.sample(d.random);
-            if (pp == null)
-                continue;
+        premise.sample(d.random, premisesPerIteration, pp->{
+            fire(pp, matchTTL, deriveTTL, d);
+        });
 
-            Premise P = pp.get();
-            PLink<Premise> existing = premiseTried.put(pp);
-            if (existing!=null && existing!=pp)
-                pp.priSub(existing.pri() * notNovelCost);
+    }
 
-//            if (premiseSelectMultiplier < 0)
-//                premise.remove(P);
-//            else
-//                pp.priMult(premiseSelectMultiplier);
+    public void fire(PLink<Premise> pp, int matchTTL, int deriveTTL, Derivation d) {
+        Premise P = pp.get();
+        PLink<Premise> existing = premiseTried.put(pp);
+        if (existing!=null && existing!=pp)
+            pp.priSub(existing.pri() * notNovelCost);
 
-            d.deriver.derive(P, d, matchTTL, deriveTTL);
+        d.deriver.derive(P, d, matchTTL, deriveTTL);
+    }
+
+    void hypothesize(TaskLink tasklink, Task task, int termlinksPerTaskLink, TaskLinks links, Derivation d) {
+        Term prevTerm = null;
+
+        float linkPri = 0;
+        for (int i = 0; i < termlinksPerTaskLink; i++) {
+            Term term = links.term(tasklink, task, d);
+            if (term != null && (prevTerm == null || !term.equals(prevTerm))) {
+                if (i == 0)
+                    linkPri = tasklink.priPunc(task.punc());
+
+                PLink<Premise> l = new PLink<>(new Premise(task, term), linkPri);
+                premise.put(l);
+            }
+            prevTerm = term;
         }
-
     }
 
     public void commit() {

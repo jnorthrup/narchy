@@ -163,7 +163,7 @@ abstract public class What extends NARPart implements Prioritizable, Sampler<Tas
         return nar.random();
     }
 
-    abstract public void hypothesize(int premisesPerIteration, int termlinksPerTaskLink, int matchTTL, int deriveTTL, Derivation d);
+    abstract public void derive(int premisesPerIteration, int termlinksPerTaskLink, int matchTTL, int deriveTTL, Derivation d);
 
 
 
@@ -219,8 +219,8 @@ abstract public class What extends NARPart implements Prioritizable, Sampler<Tas
         }
 
         @Override
-        public void hypothesize(int premisesPerIteration, int termlinksPerTaskLink, int matchTTL, int deriveTTL, Derivation d) {
-            what.hypothesize(premisesPerIteration, termlinksPerTaskLink,matchTTL,deriveTTL,d);
+        public void derive(int premisesPerIteration, int termlinksPerTaskLink, int matchTTL, int deriveTTL, Derivation d) {
+            what.derive(premisesPerIteration, termlinksPerTaskLink,matchTTL,deriveTTL,d);
         }
     }
 
@@ -231,7 +231,7 @@ abstract public class What extends NARPart implements Prioritizable, Sampler<Tas
         public final IntRange dur = new IntRange(1, 1, 1000);
 
         public final TaskLinks links = new TaskLinks();
-        final PremiseBuffer premiseBuffer = new PremiseBuffer(this);
+        final PremiseBuffer premises = new PremiseBuffer(this);
 
         public TaskLinkWhat(Term id, int capacity, PriBuffer<Task> in) {
             super(id, in);
@@ -253,7 +253,7 @@ abstract public class What extends NARPart implements Prioritizable, Sampler<Tas
 
         @Override
         protected void commit(NAR nar) {
-            premiseBuffer.commit();
+            premises.commit();
             links.commit();
         }
 
@@ -292,8 +292,8 @@ abstract public class What extends NARPart implements Prioritizable, Sampler<Tas
          * samples premises
          * thread-safe, for use by multiple threads
          */
-        public void hypothesize(int premisesPerIteration, int termlinksPerTaskLink, int matchTTL, int deriveTTL, Derivation d) {
-            premiseBuffer.hypothesize(premisesPerIteration, termlinksPerTaskLink, matchTTL, deriveTTL, links, d);
+        public void derive(int premisesPerIteration, int termlinksPerTaskLink, int matchTTL, int deriveTTL, Derivation d) {
+            premises.derive(premisesPerIteration, termlinksPerTaskLink, matchTTL, deriveTTL, links, d);
         }
 
 

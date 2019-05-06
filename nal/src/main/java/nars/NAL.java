@@ -637,7 +637,6 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
          */
         public static final float TRUTH_ERROR_TOLERANCE = NAL.truth.TRUTH_EPSILON * 2;
         public static boolean DEBUG_EXTRA;
-        //public static final int TTL_MUTATE_COMPONENT = 0;
         public static boolean DEBUG_ENSURE_DITHERED_TRUTH;
         public static boolean DEBUG_ENSURE_DITHERED_OCCURRENCE;
         public static boolean DEBUG_ENSURE_DITHERED_DT;
@@ -669,7 +668,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
 
 
         @Range(min = 1, max = 32)
-        public static final int TIMEGRAPH_ITERATIONS = 2;
+        public static final int TIMEGRAPH_ITERATIONS = 4;
         /**
          * TTL = 'time to live'
          */

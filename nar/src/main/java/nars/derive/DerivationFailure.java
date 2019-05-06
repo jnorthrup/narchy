@@ -77,8 +77,9 @@ public enum DerivationFailure {
         return failure(x, punc, 0) == Success;
     }
 
+    /** default misc failure */
     protected void record(NAR n) {
-        n.emotion.deriveFailEval.increment(/*() ->
+        n.emotion.deriveFail.increment(/*() ->
                 rule + " |\n\t" + d.xy + "\n\t -> " + c1e
         */);
     }
