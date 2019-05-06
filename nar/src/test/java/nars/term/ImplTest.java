@@ -36,8 +36,8 @@ public class ImplTest {
 
     @Test
     void testReducibleImplFactored() {
-        assertEq("((x&|y)=|>z)", "((x &| y) =|> (y &| z))");
-        assertEq("((x&|y)==>z)", "((x &| y) ==> (y &| z))");
+        assertEq("((x&&y)=|>z)", "((x &| y) =|> (y &| z))");
+        assertEq("((x&&y)==>z)", "((x &| y) ==> (y &| z))");
     }
 
 //    @Test

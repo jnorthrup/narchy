@@ -911,6 +911,7 @@ public class NAL6Test extends NALTest {
     void testPropositionalDecompositionConjNeg() {
         ////If S is the case, and (&&,S,A_1..n) is not the case, it can't be that (&&,A_1..n) is the case
         test
+                .termVolMax(9)
                 .believe("--(&&,--x,y,z)")
                 .believe("--x")
                 .mustBelieve(cycles, "(y&&z)", 0f, 0.81f)
@@ -921,6 +922,7 @@ public class NAL6Test extends NALTest {
     void testPropositionalDecompositionDisjPos() {
         ////If S is the case, and (&&,S,A_1..n) is not the case, it can't be that (&&,A_1..n) is the case
         test
+                .termVolMax(9)
                 .believe("--(||,x,y,z)")
                 .believe("--x")
                 .mustBelieve(cycles, "(y||z)", 0f, 0.81f)
@@ -931,6 +933,7 @@ public class NAL6Test extends NALTest {
     void testPropositionalDecompositionDisjNeg() {
         ////If S is the case, and (&&,S,A_1..n) is not the case, it can't be that (&&,A_1..n) is the case
         test
+                .termVolMax(9)
                 .believe("--(||,--x,y,z)")
                 .believe("x")
                 .mustBelieve(cycles, "(y||z)", 0f, 0.81f)
@@ -940,6 +943,7 @@ public class NAL6Test extends NALTest {
     @Test
     void testDecomposeDisj() {
         test
+                .termVolMax(7)
                 .believe("(||, x, z)")
                 .believe("--x")
                 .mustBelieve(cycles, "z", 1f, 0.81f)
@@ -949,6 +953,7 @@ public class NAL6Test extends NALTest {
     @Test
     void testDecomposeDisjNeg() {
         test
+                .termVolMax(5)
                 .believe("(||, --x, z)")
                 .believe("x")
                 .mustBelieve(cycles, "z", 1f, 0.81f)
@@ -958,6 +963,7 @@ public class NAL6Test extends NALTest {
     @Test
     void testDecomposeDisjNeg2() {
         test
+                .termVolMax(5)
                 .believe("(||, x, --z)")
                 .believe("--x")
                 .mustBelieve(cycles, "z", 0f, 0.81f)
@@ -968,8 +974,8 @@ public class NAL6Test extends NALTest {
     void testDecomposeImplSubjConjQuestion() {
         test
                 .ask("( (&&, y, z) ==> x )")
-                .mustOutput(cycles, "( y ==>+- x )", QUESTION)
-                .mustOutput(cycles, "( z ==>+- x )", QUESTION)
+                .mustOutput(cycles, "( y ==> x )", QUESTION)
+                .mustOutput(cycles, "( z ==> x )", QUESTION)
         ;
     }
 
@@ -977,8 +983,8 @@ public class NAL6Test extends NALTest {
     void testDecomposeImplSubjDisjQuestion() {
         test
                 .ask("( (||, y, z) ==> x )")
-                .mustOutput(cycles, "( y ==>+- x )", QUESTION)
-                .mustOutput(cycles, "( z ==>+- x )", QUESTION)
+                .mustOutput(cycles, "( y ==> x )", QUESTION)
+                .mustOutput(cycles, "( z ==> x )", QUESTION)
         ;
     }
 
@@ -987,8 +993,8 @@ public class NAL6Test extends NALTest {
     void testDecomposeImplPredConjQuestion() {
         test
                 .ask("( x ==> (&&, y, z) )")
-                .mustOutput(cycles, "( x ==>+- y )", QUESTION)
-                .mustOutput(cycles, "( x ==>+- z )", QUESTION)
+                .mustOutput(cycles, "( x ==> y )", QUESTION)
+                .mustOutput(cycles, "( x ==> z )", QUESTION)
         ;
     }
 
@@ -996,8 +1002,8 @@ public class NAL6Test extends NALTest {
     void testDecomposeImplPredDisjQuestion() {
         test
                 .ask("( x ==> (||, y, z) )")
-                .mustOutput(cycles, "( x ==>+- y )", QUESTION)
-                .mustOutput(cycles, "( x ==>+- z )", QUESTION)
+                .mustOutput(cycles, "( x ==> y )", QUESTION)
+                .mustOutput(cycles, "( x ==> z )", QUESTION)
         ;
     }
 

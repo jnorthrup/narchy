@@ -2,13 +2,12 @@ package jcog.data.graph;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Iterables;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Streams;
 import jcog.data.graph.path.FromTo;
+import jcog.data.list.FasterList;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.PrintStream;
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
@@ -28,7 +27,7 @@ public interface Node<N, E> {
     Iterable<FromTo<Node<N,E>,E>> edges(boolean in, boolean out);
 
     default Iterable<FromTo<Node<N,E>,E>> edges(boolean in, boolean out, @Nullable Predicate<FromTo<Node<N,E>,E>> filter, @Nullable Comparator<FromTo<Node<N,E>,E>> sorter) {
-        ArrayList<FromTo<Node<N, E>, E>> l = Lists.newArrayList(edgeIterator(in, out));
+        FasterList<FromTo<Node<N, E>, E>> l = new FasterList(edgeIterator(in, out));
         int s = l.size();
         if (s == 0)
             return List.of();
@@ -42,7 +41,7 @@ public interface Node<N, E> {
         }
 
         if (sorter!=null && s>1) {
-            l.sort(sorter);
+            l.sortThis(sorter);
         }
 
         return l;
