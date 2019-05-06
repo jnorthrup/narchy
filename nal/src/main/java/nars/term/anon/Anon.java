@@ -84,7 +84,7 @@ public class Anon extends AbstractTermTransform.NegObliviousTermTransform {
     }
 
     private Anom putIntern(Term x) {
-        return Anom.the[map.intern(x)];
+        return Anom.the(map.intern(x));
     }
 
     /** default implementation: anonymize atoms, but also could be a Compound -> Atom anonymize */

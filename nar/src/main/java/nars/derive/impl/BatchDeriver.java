@@ -13,7 +13,7 @@ import java.util.function.BooleanSupplier;
 public class BatchDeriver extends Deriver {
 
     public final IntRange premisesPerIteration = new IntRange(1, 1, 32);
-    public final IntRange termLinksPerTaskLink = new IntRange(2, 1, 4);
+    public final IntRange termLinksPerTaskLink = new IntRange(1, 1, 4);
 
     public BatchDeriver(PremiseDeriverRuleSet rules) {
         super(rules, rules.nar);

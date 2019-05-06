@@ -22,7 +22,7 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 
 import static nars.NAL.derive.DERIVE_FILTER_SIMILAR_TO_PARENTS;
-import static nars.NAL.derive.TermUnifyForkMax;
+import static nars.NAL.derive.Termify_Forks;
 import static nars.Op.*;
 import static nars.time.Tense.ETERNAL;
 
@@ -52,7 +52,7 @@ public class Taskify extends ProxyTerm {
             if (s > 1)
                 ((FasterList) ii).shuffleThis(d.random);
 
-            int fanOut = Math.min(s, TermUnifyForkMax);
+            int fanOut = Math.min(s, Termify_Forks);
             for (int i = 0; i < fanOut; i++) {
                 apply(ii.get(i), d);
                 if (!d.live())

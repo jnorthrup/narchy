@@ -115,6 +115,10 @@ public interface Neg extends Term { ;
 
         public final int sub;
 
+        public NegIntrin(Intrin i) {
+            this(i.i);
+        }
+
         public NegIntrin(int negated) {
             this.sub = negated;
         }

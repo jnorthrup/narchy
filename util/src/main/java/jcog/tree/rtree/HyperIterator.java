@@ -10,6 +10,8 @@ import java.util.function.Supplier;
  * BFS that descends through RTree visiting nodes and leaves in an order determined
  * by a score function that ranks the next nodes to either provide via an Iterator<X>-like interface
  * or to expand the ranked buffer to find more results.
+ *
+ * TODO generalize for non-rtree uses, subclass that specifically for RTree and implement an abstract growth method for its lazy Node<> iteration
  */
 public class HyperIterator<X>  {
 

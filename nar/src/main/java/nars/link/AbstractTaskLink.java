@@ -10,6 +10,7 @@ import nars.NAL;
 import nars.Op;
 import nars.task.util.TaskException;
 import nars.term.Term;
+import nars.term.atom.Bool;
 
 import static jcog.Util.assertFinite;
 import static jcog.pri.op.PriReturn.Void;
@@ -20,8 +21,8 @@ public abstract class AbstractTaskLink implements TaskLink {
     /**
      * source,target as a 2-ary subterm
      */
-    private final Term from;
-    private final Term to;
+    private final Term src;
+    private final Term tgt;
     private final int hash;
     /**
      * cached; NaN means invalidated
@@ -35,21 +36,27 @@ public abstract class AbstractTaskLink implements TaskLink {
     protected AbstractTaskLink(Term source, Term target) {
 
         source = source.concept();
-        target = target != null ? target.concept() : source;
+        target = target != null ?
+                (target.op().conceptualizable ?
+                        target.concept() : target
+                ) :
+                source; //loop
+
+        assert(!(source instanceof Bool) && !(target instanceof Bool));
 
         Op so = source.op();
         if (!so.taskable)
             throw new TaskException(source, "source term not taskable");
         if (!so.conceptualizable)
             throw new TaskException(source, "source term not conceptualizable");
-        if (NAL.DEBUG) {
-            if (!source.isNormalized())
-                throw new TaskException(source, "source term not normalized");
-        }
+//        if (NAL.DEBUG) {
+//            if (!source.isNormalized())
+//                throw new TaskException(source, "source term not normalized and can not name a task");
+//        }
 
-        this.from = source;
-        this.to = target;
-        this.hash = Util.hashCombine(from, to);
+        this.src = source;
+        this.tgt = target;
+        this.hash = Util.hashCombine(src, tgt);
     }
 
     @Override
@@ -60,12 +67,9 @@ public abstract class AbstractTaskLink implements TaskLink {
     @Override
     public final boolean equals(Object obj) {
         if (this == obj) return true;
-        if (obj instanceof TaskLink) {
-            if (hashCode() == obj.hashCode()) {
-                TaskLink t = (TaskLink) obj;
-                if (from().equals(t.from()))
-                    return to().equals(t.to());
-            }
+        if (obj instanceof TaskLink && hash == obj.hashCode()) {
+            TaskLink t = (TaskLink) obj;
+            return from().equals(t.from()) && to().equals(t.to());
         }
         return false;
     }
@@ -77,12 +81,12 @@ public abstract class AbstractTaskLink implements TaskLink {
 
     @Override
     public final Term from() {
-        return from;
+        return src;
     }
 
     @Override
     public final Term to() {
-        return to;
+        return tgt;
     }
 
     @Override

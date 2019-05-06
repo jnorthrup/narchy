@@ -222,7 +222,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
     @Deprecated
     public final FloatRange questionForgetRate = new FloatRange(0.5f, 0, 1);
     public final IntRange premiseUnifyTTL = new IntRange(8, 1, 32);
-    public final IntRange deriveBranchTTL = new IntRange(16 * NAL.derive.TTL_MIN, NAL.derive.TTL_MIN, 64 * NAL.derive.TTL_MIN);
+    public final IntRange deriveBranchTTL = new IntRange(32 * NAL.derive.TTL_MIN, NAL.derive.TTL_MIN, 64 * NAL.derive.TTL_MIN);
     /**
      * how many cycles above which to dither dt and occurrence time
      * TODO move this to Time class and cache the cycle value rather than dynamically computing it
@@ -660,7 +660,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
          * whether timegraph should not return solutions with volume significantly less than the input's.
          * set 0 to disable the filter
          */
-        public static final float TIMEGRAPH_IGNORE_DEGENERATE_SOLUTIONS_FACTOR = 0.5f;
+        public static final float TIMEGRAPH_IGNORE_DEGENERATE_SOLUTIONS_FACTOR = 0.85f;
         /**
          * whether to dither events as they are represented internally.  output events are dithered for the NAR regardless.
          */
@@ -674,7 +674,8 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
          * TTL = 'time to live'
          */
         public static final int TermutatorSearchTTL = 4;
-        public static final int TermUnifyForkMax = 1;
+
+        public static final int Termify_Forks = 2;
 
 
         public static final int TTL_UNISUBST_MAX = 5;
@@ -727,7 +728,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
         /**
          * should be as close to 1 as possible
          */
-        public static final float TERMIFY_TERM_VOLMAX_SCRATCH_FACTOR = 3f;
+        public static final float TERMIFY_TERM_VOLMAX_SCRATCH_FACTOR = 4f;
     }
 
     public enum unify {
@@ -736,7 +737,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
         /**
          * max variable unification recursion depth as a naive cyclic filter
          */
-        public static final int UNIFY_VAR_RECURSION_DEPTH_LIMIT = 8;
+        public static final int UNIFY_VAR_RECURSION_DEPTH_LIMIT = 4;
         public static final int UNIFY_COMMON_VAR_MAX = UNIFY_VAR_RECURSION_DEPTH_LIMIT;
         public static final int UNIFICATION_STACK_CAPACITY = 128;
     }

@@ -1,7 +1,6 @@
 package nars.attention;
 
 import jcog.pri.PLink;
-import jcog.pri.PriReference;
 import jcog.pri.bag.Bag;
 import jcog.pri.bag.impl.hijack.PriLinkHijackBag;
 import jcog.pri.op.PriMerge;
@@ -24,8 +23,8 @@ public class PremiseBuffer implements Serializable {
 
     public static final int premiseBufferCapacity = 64;
 
-    /** if < 0, removes from bag (but a copy remains in novelty bag so it can subtract from a repeat) */
-    public float premiseSelectMultiplier = 0.5f;
+//    /** if < 0, removes from bag (but a copy remains in novelty bag so it can subtract from a repeat) */
+//    public float premiseSelectMultiplier = 0.5f;
 
     /** rate that priority from the novelty bag subtracts from potential premises */
     float notNovelCost = 0.5f;
@@ -65,9 +64,6 @@ public class PremiseBuffer implements Serializable {
                     Term term = links.term(tasklink, task, d);
                     if (term != null && (prevTerm == null || !term.equals(prevTerm))) {
                         PLink<Premise> l = new PLink<>(new Premise(task, term), tasklink.priPunc(task.punc()));
-                        PLink<Premise> existing = premiseTried.put(l);
-                        if (existing!=null && existing!=l)
-                            l.priSub(existing.pri() * notNovelCost);
                         premise.put(l);
                     }
                     prevTerm = term;
@@ -79,16 +75,19 @@ public class PremiseBuffer implements Serializable {
         });
 
         for (int i = 0; i < premisesPerIteration; i++) {
-            PriReference<Premise> pp = premise.sample(d.random);
+            PLink<Premise> pp = premise.sample(d.random);
             if (pp == null)
                 continue;
 
             Premise P = pp.get();
+            PLink<Premise> existing = premiseTried.put(pp);
+            if (existing!=null && existing!=pp)
+                pp.priSub(existing.pri() * notNovelCost);
 
-            if (premiseSelectMultiplier < 0)
-                premise.remove(P);
-            else
-                pp.priMult(premiseSelectMultiplier);
+//            if (premiseSelectMultiplier < 0)
+//                premise.remove(P);
+//            else
+//                pp.priMult(premiseSelectMultiplier);
 
             d.deriver.derive(P, d, matchTTL, deriveTTL);
         }

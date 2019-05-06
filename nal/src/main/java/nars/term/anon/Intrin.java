@@ -82,7 +82,7 @@ import static nars.Op.ImgInt;
         byte num = (byte) (i & 0xff);
         switch (group(i)) {
             case ANOMs:
-                return Anom.the[num];
+                return Anom.the(num);
             case IMGs:
                 return num == '/' ? ImgExt : ImgInt;
             case VARDEPs:

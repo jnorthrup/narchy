@@ -10,11 +10,15 @@ import nars.attention.What;
 import nars.control.How;
 import nars.control.Why;
 import nars.derive.premise.DeriverRules;
-import nars.derive.premise.PremiseRuleCompiler;
 import nars.derive.premise.PremiseDeriverRuleSet;
+import nars.derive.premise.PremiseRuleCompiler;
 import nars.derive.premise.PremiseRuleProto;
 import nars.derive.timing.NonEternalTaskOccurenceOrPresentDeriverTiming;
+import nars.link.DynamicTermLinker;
+import nars.link.TermLinker;
 import nars.term.Term;
+import nars.term.atom.Atomic;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Set;
 import java.util.function.BooleanSupplier;
@@ -134,6 +138,10 @@ abstract public class Deriver extends How {
         result.increment();
     }
 
+    @Nullable
+    public TermLinker linker(Term t) {
+        return t instanceof Atomic ? null : DynamicTermLinker.Weighted;
+    }
 }
 
 

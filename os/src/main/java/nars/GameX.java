@@ -395,8 +395,8 @@ abstract public class GameX extends Game {
 //        n.questionPriDefault.set(0.01f);
 //        n.questPriDefault.set(0.01f);
 
-        n.beliefConfDefault.set(0.8f);
-        n.goalConfDefault.set(0.8f);
+        n.beliefConfDefault.set(0.85f);
+        n.goalConfDefault.set(0.85f);
 
         n.emotion.want(MetaGoal.PerceiveCmplx, -0.0001f); //<- dont set negative unless sure there is some positive otherwise nothing happens
 

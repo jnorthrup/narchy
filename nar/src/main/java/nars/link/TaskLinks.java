@@ -126,10 +126,11 @@ public class TaskLinks implements Sampler<TaskLink> {
 
                 Term u = null;
                 Term tt = t.term();
-                TermLinker linker = d.linker(tt);
-                if (linker != TermLinker.NullLinker)
+                TermLinker linker = d.deriver.linker(tt);
+                if (linker != null)
                     //grow-ahead: s -> t -> u
                     u = linker.sample(tt, d.random);
+
                 else {
                     //loopback
                     if (t instanceof Atom) {
@@ -143,11 +144,12 @@ public class TaskLinks implements Sampler<TaskLink> {
 
                         if (d.random.nextFloat() <= probability) {
                             //sample active tasklinks for a tangent match to the atom
-                            Predicate<TaskLink> filter =
-                                    x -> !link.equals(x);
+                            //Predicate<TaskLink> filter = x -> !link.equals(x);
+                            Predicate<TaskLink> filter = ((Predicate<TaskLink>)link::equals).negate();
 
-                            return links.atomTangent(T, punc, filter, d.time(),
+                            Term z = links.atomTangent(T, punc, filter, d.time(),
                                     d.dur() * NAL.belief.REMEMBER_REPEAT_THRESH_DURS /* repurposed */, d.random);
+                            return z;
 
 //                        if (u!=null && u.equals(s)) {
 ////                            u = links.atomTangent(ct, ((TaskLink x)->!link.equals(x)), d.time, 1, d.random);//TEMPORARY
@@ -213,6 +215,7 @@ public class TaskLinks implements Sampler<TaskLink> {
         //link.take(punc, pp*n);
 
         //System.out.println(s + "\t" + t + "\t" + u);
+
 
         return t;
     }

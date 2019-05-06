@@ -117,9 +117,8 @@ class TimeGraphTest {
     void testSimpleImplWithOneKnownAbsoluteSubEventNeg() {
 
         TimeGraph cc1 = newTimeGraph(1);
-//        cc1.autoNeg.add($$("x"));
         cc1.know($$("(--x ==>+1 y)"), 1);
-        cc1.know($$("x"), 1);
+        cc1.know($$("x"), 1);  //        cc1.autoNeg.add($$("x"));
         assertSolved("y", cc1, "y@2");
     }
     @Test
@@ -404,7 +403,7 @@ class TimeGraphTest {
         TimeGraph C = newTimeGraph(1);
         C.know($$("x"), 0);
         C.know($$("(y&&z)"), 1);
-        assertSolved("(y &&+- z)", C, "(y&&z)@1", "(y&|z)@1");
+        assertSolved("(y &&+- z)", C, "(y&&z)@1");
     }
 
     @Test void testTemporalInRelation1() {

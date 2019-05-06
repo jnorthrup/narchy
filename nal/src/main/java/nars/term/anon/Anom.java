@@ -65,8 +65,14 @@ public final class Anom extends Intrin {
 //        }
 //    }
 
-    static final Anom[] the = Util.map(0, Byte.MAX_VALUE, Anom[]::new, (i) -> new Anom((byte) i));
-    private static final Term[] theNeg = Util.map(0, Byte.MAX_VALUE, Term[]::new, (i) -> Neg.neg(the[i]));
+    /** intrinsic anom */
+    private static final Anom[] the =
+        Util.map(0, Byte.MAX_VALUE, Anom[]::new, i -> new Anom((byte) i));
+
+    /** intrinsic anoms negated */
+    private static final Neg.NegIntrin[] theNeg =
+        Util.map(0, Byte.MAX_VALUE, Neg.NegIntrin[]::new, i -> new Neg.NegIntrin(the[i]));
+
     static {
         the[0] = null;
         theNeg[0] = null;

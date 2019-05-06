@@ -70,7 +70,7 @@ public class Occurrify extends TimeGraph {
     int noXternalPoints = 2;
     int sameAsPatternRootPoints = 1;
     private transient boolean decomposeEvents;
-    private transient int patternVolume;
+    private transient int patternVolumeMin;
 
 
 //    /**
@@ -81,6 +81,7 @@ public class Occurrify extends TimeGraph {
 //            nextPos = new UnifiedSet(8, 0.99f);
     private int ttl = 0;
     private Term pattern;
+
 
     public Occurrify(Derivation d) {
         this.d = d;
@@ -466,6 +467,8 @@ public class Occurrify extends TimeGraph {
                     ((!equalBT) ? know(beliefTerm) : taskEvent) /* same target, reuse the same event */;
         }
 
+        autoneg = (taskTerm.hasAny(NEG) || beliefTerm.hasAny(NEG) || pattern.hasAny(NEG));
+
         //compact(); //TODO compaction removes self-loops which is bad, not sure if it does anything else either
 
         return this;
@@ -484,7 +487,7 @@ public class Occurrify extends TimeGraph {
             int v = y.volume();
             return
                     v <= d.termVolMax &&
-                            v >= Math.floor(NAL.derive.TIMEGRAPH_IGNORE_DEGENERATE_SOLUTIONS_FACTOR * patternVolume);
+                            v >= patternVolumeMin;
         } else
             return false;
     }
@@ -493,8 +496,8 @@ public class Occurrify extends TimeGraph {
 
         ttl = NAL.derive.TIMEGRAPH_ITERATIONS;
         this.pattern = pattern;
-        this.patternVolume = pattern.volume();
-
+        this.patternVolumeMin =
+                (int) Math.floor(NAL.derive.TIMEGRAPH_IGNORE_DEGENERATE_SOLUTIONS_FACTOR * pattern.volume());
 
         solve(pattern,  /* take everything */ this::eachSolution);
 

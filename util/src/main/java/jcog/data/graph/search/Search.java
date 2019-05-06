@@ -120,6 +120,7 @@ abstract public class Search<N, E> {
 
 
 
+
     /** can be overridden to hijack the determined next destination */
     @Nullable
     protected Node<N, E> next(FromTo<Node<N, E>, E> e, Node<N, E> at) {
@@ -197,8 +198,8 @@ abstract public class Search<N, E> {
 
     }
 
-    protected Iterable<FromTo<Node<N,E>,E>> next(Node<N,E> current) {
-        return current.edges(true, true);
+    protected Iterable<FromTo<Node<N,E>,E>> next(Node<N,E> n) {
+        return n.edges(true, true);
     }
 
     /**

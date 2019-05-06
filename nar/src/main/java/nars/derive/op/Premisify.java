@@ -17,7 +17,7 @@ import nars.unify.unification.Termutifcation;
 import java.util.function.BiFunction;
 
 import static nars.$.$$;
-import static nars.NAL.derive.TermUnifyForkMax;
+import static nars.NAL.derive.Termify_Forks;
 import static nars.NAL.derive.TermutatorSearchTTL;
 
 /**
@@ -47,7 +47,7 @@ public class Premisify extends AbstractPred<Derivation> {
         //not working yet:
         //return substituteUnification(d);
 
-        substituteDirect(d, TermUnifyForkMax);
+        substituteDirect(d, Termify_Forks);
         return true;
     }
 
@@ -64,7 +64,7 @@ public class Premisify extends AbstractPred<Derivation> {
             if (u instanceof Termutifcation) {
                 int searchTTL = TermutatorSearchTTL;
                 if (((Termutifcation) u).isEmpty() || d.ttl > searchTTL) {
-                    ((Termutifcation) u).discover(d, TermUnifyForkMax, searchTTL);
+                    ((Termutifcation) u).discover(d, Termify_Forks, searchTTL);
                 }
             }
 
@@ -170,7 +170,7 @@ public class Premisify extends AbstractPred<Derivation> {
 
                 if (u instanceof Termutifcation)
                     ((Termutifcation) u).discover(derivation,
-                            TermUnifyForkMax, TermutatorSearchTTL);
+                            Termify_Forks, TermutatorSearchTTL);
 
                 test(u, derivation);
             }

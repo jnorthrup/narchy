@@ -47,7 +47,6 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 import static nars.Op.*;
-import static nars.link.TermLinker.NullLinker;
 import static nars.term.atom.Bool.Null;
 import static nars.time.Tense.ETERNAL;
 import static nars.time.Tense.TIMELESS;
@@ -697,9 +696,6 @@ public class Derivation extends PreDerivation {
         return concSingle ? evidenceSingle() : evidenceDouble();
     }
 
-    public TermLinker linker(Term t) {
-        return t instanceof Atomic ? NullLinker : DynamicTermLinker.Weighted;
-    }
 
     public final class DerivationTransform extends UnifyTransform {
 
@@ -740,6 +736,8 @@ public class Derivation extends PreDerivation {
         }
 
     }
+
+
 }
 
 
