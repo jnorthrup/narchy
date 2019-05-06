@@ -283,7 +283,7 @@ public class LazyCompoundBuilder {
 
     @NotNull
     private Term nextAtom(int[] range, byte ctl) {
-        Term next = next(ctl);
+        Term next = nextInterned(ctl);
         volRemain -= next.volume();
         return next;
     }
@@ -337,33 +337,29 @@ public class LazyCompoundBuilder {
         }
     }
 
-    private Term next(byte ctl) {
-        Term n = sub.interned((byte) (ctl - MAX_CONTROL_CODES));
-        //assert(n!=null); //        if (n == null)        throw new NullPointerException();
-        return n;
+    private Term nextInterned(byte ctl) {
+        return sub.interned((byte) (ctl - MAX_CONTROL_CODES));
     }
 
-    @Nullable
-    private Term[] nextSubterms(TermBuilder b, byte n, byte[] ii, int[] range) {
+    /**
+     * @return null as a termination signal to callee (resulting in it returning Null, etc),
+     *         or a Term[] array (of >=0 length) containing the subterms of the compound the callee is constructing
+     */
+    @Nullable private Term[] nextSubterms(TermBuilder b, byte n, byte[] ii, int[] range) {
         Term[] t = null;
-        //System.out.println(range[0] + ".." + range[1]);
         for (int i = 0; i < n; ) {
-            //System.out.println("\t" + s + "\t" + range[0] + ".." + range[1]);
-            if (range[0] >= range[1])
-                throw new ArrayIndexOutOfBoundsException();
-            //return Arrays.copyOfRange(t, 0, i); //hopefully this is becaues of an ellipsis that got inlined and had no effect
+//            if (range[0] >= range[1])
+//                throw new ArrayIndexOutOfBoundsException();
 
             Term y;
             if ((y = nextSubterm(b, ii, range)) == Null)
                 return null;
 
-            //if (y == null) throw new NullPointerException(); //WTF
-
             if (y.op()==FRAG) { //if (y instanceof EllipsisMatch) {
                 int en = y.subs();
                 n += en - 1;
                 if (n == 0)
-                    t = EmptyTermArray;
+                    return EmptyTermArray; //the only element and the fragment was empty
                 else {
                     t = nextFrag(t, i, y, n, en);
                     i += en;
@@ -374,6 +370,8 @@ public class LazyCompoundBuilder {
                 t[i++] = y;
             }
         }
+//        if (ArrayUtil.indexOf(t, (Object)null)!=-1)
+//            throw new NullPointerException(); //TEMPORARY for debugging
         return t;
     }
 
@@ -381,7 +379,8 @@ public class LazyCompoundBuilder {
     private Term[] nextFrag(Term[] t, int i, Term y, byte n, int en) {
         if (t == null)
             t = new Term[n];
-        else if (t.length < n) {
+        else if (t.length != n) {
+            //used to grow OR shrink
             t = Arrays.copyOf(t, n);
         }
         if (en > 0) {

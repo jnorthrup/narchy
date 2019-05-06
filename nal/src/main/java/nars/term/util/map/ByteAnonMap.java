@@ -43,8 +43,8 @@ public class ByteAnonMap {
     }
 
     /** get: accepts in range 1..Byte.MAX_VALUE (does not accept 0) */
-    public Term interned(byte id) {
-        assert(id > 0);
+    public final Term interned(byte id) {
+        //assert(id > 0);
         return idToTerm.get(id-1);
     }
 
