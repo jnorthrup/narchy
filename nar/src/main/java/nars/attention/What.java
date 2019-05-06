@@ -297,10 +297,15 @@ abstract public class What extends NARPart implements Prioritizable, Sampler<Tas
         }
 
         /** TODO encapsulate as PremiseBuffer class */
-        static final int premiseBufferCapacity = 32;
-        float premiseSelectDecayRate = 0.5f;
+        static final int premiseBufferCapacity = 64;
+        float premiseSelectDecayRate = 0.1f;
         float fillFactor = 1f;
-        final PLinkArrayBag<Premise> premises = new PLinkArrayBag<>(PriMerge.min, premiseBufferCapacity);
+
+        /** this is meant to implement a novelty filter so this is like an inverse or inside-out bag */
+        final PLinkArrayBag<Premise> premises = new PLinkArrayBag<>(
+                //PriMerge.min,
+                PriMerge.avg,
+                premiseBufferCapacity);
 
         /**
          * samples premises

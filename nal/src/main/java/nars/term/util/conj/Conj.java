@@ -2370,9 +2370,16 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
         MutableByteIterator ii = common.byteIterator();
         while (ii.hasNext()) {
             byte f = ii.next();
-            boolean added = addEvent(ETERNAL, f); assert(added);
-            for (LongObjectPair<Object> whenWhat : events) {
-                boolean removed = remove(whenWhat.getOne(), f); assert(removed);
+            boolean added = addEvent(ETERNAL, f);
+            /*if (!added)
+                throw new WTF(); assert(added);*/
+
+            if (added) {
+                //component successfully factored
+                for (LongObjectPair<Object> whenWhat : events) {
+                    boolean removed = remove(whenWhat.getOne(), f);
+                    assert (removed);
+                }
             }
         }
 

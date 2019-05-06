@@ -59,7 +59,7 @@ public enum ConjCommutive {;
 
             if (a.unneg().op() != CONJ && b.unneg().op() != CONJ) {
                 //fast construct for simple case, verified above to not contradict itself
-                return conjDirect(dt, /*sorted*/u);
+                return conjDirect(B, dt, /*sorted*/u);
             }
         }
 
@@ -147,7 +147,7 @@ public enum ConjCommutive {;
         int pc = pos==null ? 0 : pos.cardinality(), nc = neg == null ? 0 : neg.cardinality();
         if (pc + nc == u.length) {
             //mix of pos and negative (no seq) - only needed to have checked for co-negation
-            return conjDirect(dt, u);
+            return conjDirect(B, dt, u);
         }
 
         int seqCount = seq != null ? seq.cardinality() : 0;
@@ -174,46 +174,45 @@ public enum ConjCommutive {;
                         }
                     }
 
-                    if (indep == u.length - 1) {
-                        return conjDirect(dt, u); //all independent
-                    }
+                    if (indep == u.length - 1)
+                        return conjDirect(B, dt, u); //all independent
 
                     if (elim == u.length - 1)
                         return co; //all absorbed
 
 
-                } else if (dt == 0) {
+                } /*else if (dt == 0 || dt == DTERNAL) {
                     if (co.dt() == XTERNAL) {
                         //allow because there is no way to know what the correspondence of timing is
                         return conjDirect(dt, u);
                     }
-                }
+                }*/
             }
 
         }
-        if (u.length == 2) {
-            //TODO exclude the case with disj and conjOther
-            int dd;
-            if (disj != null && disj.cardinality() == 1 && seqCount == 0)
-                dd = disj.first(true);
-            else if (dt == DTERNAL && seqCount == 1)
-                dd = seq.first(true);
-            else
-                dd = -1;
-
-            if (dd != -1) {
-                Term d = u[dd];
-                Term x = u[1 - dd];
-                Term cj = Conj.conjoin(B, d, x, dt == DTERNAL);
-                if (cj == null)
-                    throw new WTF();
-                return cj;
-            }
-
-        }
+//        if (u.length == 2) {
+//            //TODO exclude the case with disj and conjOther
+//            int dd;
+//            if (disj != null && disj.cardinality() == 1 && seqCount == 0)
+//                dd = disj.first(true);
+//            else if (dt == DTERNAL && seqCount == 1)
+//                dd = seq.first(true);
+//            else
+//                dd = -1;
+//
+//            if (dd != -1) {
+//                Term d = u[dd];
+//                Term x = u[1 - dd];
+//                Term cj = Conj.conjoin(B, d, x, dt == DTERNAL);
+//                if (cj == null)
+//                    throw new WTF();
+//                return cj;
+//            }
+//
+//        }
 
         if (direct)
-            return conjDirect(dt, u); //done
+            return conjDirect(B, dt, u); //done
         else {
 
             long sdt = dt == DTERNAL ? ETERNAL : 0;
@@ -224,16 +223,12 @@ public enum ConjCommutive {;
                 ConjBuilder c = new Conj(u.length);
                 //add the non-conj terms at ETERNAL last.
                 //then if the conjOther is a sequence, add it at zero
-                for (int i = u.length - 1; i >= 0; i--) {
-                    if (seq.get(i)) {
-                        if (!c.add(sdt, u[i]))
-                            return c.term(); //fail
+                for (boolean bs : new boolean[] { true, false }) {
+                    for (int i = u.length - 1; i >= 0; i--) {
+                        if (bs == seq.get(i))
+                            if (!c.add(sdt, u[i]))
+                                return c.term(); //fail
                     }
-                }
-                for (int i = u.length - 1; i >= 0; i--) {
-                    if (!seq.get(i))
-                        if (!c.add(sdt, u[i]))
-                            return c.term(); //fail
                 }
                 return c.term();
 
@@ -297,11 +292,11 @@ public enum ConjCommutive {;
 //            throw new WTF("why wasnt this simple case caught earlier");
 //    }
 
-    private static Term conjDirect(int dt, Term[] u) {
+    private static Term conjDirect(TermBuilder b, int dt, Term[] u) {
         if (dt == 0)
             dt = DTERNAL;
 
-        return Op.terms.theCompound(CONJ, dt, u);
+        return b.theCompound(CONJ, dt, u);
     }
 
     private static boolean coNegate(MetalBitSet pos, MetalBitSet neg, Term[] u) {

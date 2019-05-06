@@ -201,11 +201,8 @@ public class LazyCompoundBuilder {
             return Null;
 
         int from;
-        byte ctl = ii[(from = range[0]++)];
-        if (ctl == 0)
-            throw new WTF(); //maybe this means to skip this byte
-
-        //System.out.println("ctl=" + ctl + " @ " + from);
+        byte ctl;
+        while ((ctl = ii[(from = range[0]++)]) == 0); //skip zero-padding
 
         if (ctl < MAX_CONTROL_CODES) {
 
@@ -286,14 +283,8 @@ public class LazyCompoundBuilder {
 
     @NotNull
     private Term nextAtom(int[] range, byte ctl) {
-        Term next;
-        next = next(ctl);
+        Term next = next(ctl);
         volRemain -= next.volume();
-
-        //skip zero padding suffix
-        int r0 = range[0], r1 = range[1];
-        while (r0 < r1 && code.at(r0) == 0) { ++r0; }
-        range[0] = r0;
         return next;
     }
 
