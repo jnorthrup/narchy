@@ -59,13 +59,11 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
     public static final boolean VOLMAX_RESTRICTS= configIs("VOLMAX_RESTRICTS"); //all tasks
 
     /** mostly tested */
-    public static final boolean TERMIFY_TRANSFORM_LAZY= false;
+    public static final boolean TERMIFY_TRANSFORM_LAZY= true;
 
     public static final boolean OVERLAP_DOUBLE_SET_CYCLIC= configIs("OVERLAP_DOUBLE_SET_CYCLIC");
 
 
-//    public static final int TERM_BYTE_KEY_CACHED_BELOW_VOLUME = 8;
-    //public static final int SUBTERM_BYTE_KEY_CACHED_BELOW_VOLUME = 10; //TODO
     /**
      * TODO needs tested whether recursive Unification inherits TTL
      */
@@ -619,7 +617,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
         public static final int ANON_INT_MAX = Byte.MAX_VALUE;
 
         public static final boolean INH_IMAGE_RECURSION = false;
-        public static final int LAZY_COMPOUND_MIN_REPLACE_AHEAD_SPAN = 2;
+        public static final int LAZY_COMPOUND_MIN_REPLACE_AHEAD_SPAN = 1;
 
         /** prevent variable introduction from erasing negative compounds,
          *  though content within negatives can be var introduced as normal. */

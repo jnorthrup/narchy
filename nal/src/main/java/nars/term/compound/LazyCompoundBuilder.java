@@ -189,105 +189,107 @@ public class LazyCompoundBuilder {
 
     private Term nextSubterm(TermBuilder b, byte[] ii, int[] range) {
 
-        int from;
-        byte ctl;
-        while ((ctl = ii[(from = range[0]++)]) == 0); //skip zero-padding
+        if (range[0] >= range[1])
+            throw new WTF();
+
+        int end = range[1];
+        int from = range[0];
+        byte ctl = ii[range[0]++];
 
         if (ctl >= MAX_CONTROL_CODES)
-            return nextAtom(range, ctl);
+            return nextAtom(ctl, ii, range);
+        else if (ctl == NEG.id)
+            return nextSubterm(b, ii, range).neg();
 
         Op op = Op.the(ctl);
 
-        if (op == NEG)
-            return nextSubterm(b, ii, range).neg();
-        else {
-            if (op.atomic)
-                throw new WTF(); //alignment error or something
+        if (op.atomic)
+            throw new WTF(); //alignment error or something
 
-            int dt = op.temporal ? dt(ii, range) : DTERNAL;
+        int dt = op.temporal ? dt(ii, range) : DTERNAL;
 
-            int volRemainLocal = this.volRemain - 1 /* one for the compound itself */;
+        int volRemainLocal = this.volRemain - 1 /* one for the compound itself */;
 
-            byte subterms = ii[range[0]++];
-            if (subterms == 0) {
+        byte subterms = ii[range[0]++];
+        if (subterms == 0) {
 
-                return emptySubterms(op);
+            return emptySubterms(op);
 
+        } else {
+
+            /**
+             * @return null as a termination signal to callee (resulting in it returning Null, etc),
+             *         or a Term[] array (of >=0 length) containing the subterms of the compound the callee is constructing
+             */
+            //@Nullable private Term[] nextSubterms(TermBuilder b, byte subterms, byte[] ii, int[] range) {
+            //s = nextSubterms(b, subterms, ii, range);
+            Term[] s = null;
+            {
+
+
+                subterms: for (int i = 0; i < subterms; ) {
+                    if (range[0] > range[1])
+                        throw new ArrayIndexOutOfBoundsException();
+
+                    Term x;
+                    if ((x = nextSubterm(b, ii, range)) == Null)
+                        return Null;
+
+                    if (x.op()==FRAG) { //if (y instanceof EllipsisMatch) {
+                        int en = x.subs();
+                        subterms += en - 1;
+                        if (subterms == 0) {
+                            //return EmptyTermArray; //the only element and the fragment was empty
+                            s = EmptyTermArray;
+                            break;
+                        } else {
+                            s = nextFrag(s, i, x, subterms, en);
+                            volRemainLocal -= Util.sum(Term::volume, i, i+en, s);
+                            i += en;
+                        }
+                    } else {
+                        if (s == null)
+                            s = new Term[subterms];
+
+                        volRemainLocal -= x.volume();
+
+                        s[i++] = x;
+                    }
+
+                    if ((this.volRemain = volRemainLocal) <= 0) {
+                        //capacity reached
+                        //range[0] = range[1] = -1;
+                        return Null;
+                    }
+
+                }
+
+            }
+
+            if (s == null) {
+                return Null;
             } else {
 
-                /**
-                 * @return null as a termination signal to callee (resulting in it returning Null, etc),
-                 *         or a Term[] array (of >=0 length) containing the subterms of the compound the callee is constructing
-                 */
-                //@Nullable private Term[] nextSubterms(TermBuilder b, byte subterms, byte[] ii, int[] range) {
-                //s = nextSubterms(b, subterms, ii, range);
-                Term[] s = null;
-                {
+                if (op==INH && evalInline() && s[1] instanceof InlineFunctor && s[0].op()==PROD) {
 
+                    //TODO defer evaluation until end
+                    return eval(s);
 
-                    subterms: for (int i = 0; i < subterms; ) {
-                        if (range[0] >= range[1])
-                            throw new ArrayIndexOutOfBoundsException();
-
-                        Term x;
-                        if ((x = nextSubterm(b, ii, range)) == Null)
-                            return Null;
-
-                        if (x.op()==FRAG) { //if (y instanceof EllipsisMatch) {
-                            int en = x.subs();
-                            subterms += en - 1;
-                            if (subterms == 0) {
-                                //return EmptyTermArray; //the only element and the fragment was empty
-                                s = EmptyTermArray;
-                                break;
-                            } else {
-                                s = nextFrag(s, i, x, subterms, en);
-                                volRemainLocal -= Util.sum(Term::volume, i, i+en, s);
-                                i += en;
-                            }
-                        } else {
-                            if (s == null)
-                                s = new Term[subterms];
-
-                            volRemainLocal -= x.volume();
-
-                            s[i++] = x;
-                        }
-
-                        if ((this.volRemain = volRemainLocal) <= 0) {
-                            //capacity reached
-                            range[0] = range[1] = -1;
-                            return Null;
-                        }
-
-                    }
-
-                }
-
-                if (s == null) {
-                    return Null;
                 } else {
 
-                    if (op==INH && evalInline() && s[1] instanceof InlineFunctor && s[0].op()==PROD) {
+                    Term next = op.the(b, dt, s); //assert (next != null);
 
-                        return eval(s);
+                    if (next != Null) {
 
-                    } else {
+                        if (constantPropagate)
+                            replaceAhead(ii, range, from, next);
 
-                        Term next = op.the(b, dt, s); //assert (next != null);
-
-                        if (next != Null) {
-
-                            if (constantPropagate)
-                                replaceAhead(ii, range, from, next);
-
-                        }
-
-                        return next;
                     }
 
-
+                    return next;
                 }
+
+
             }
         }
 
@@ -306,10 +308,22 @@ public class LazyCompoundBuilder {
         return next!=null ? next : Null;
     }
 
-    private Term nextAtom(int[] range, byte ctl) {
+    private Term nextAtom(byte ctl, byte[] ii, int[] range) {
         Term next = nextInterned(ctl);
         if(next==null)
             throw new NullPointerException();
+
+        int at = range[0];
+        int end = range[1];
+        if (at<end && ii[at] == 0) {
+            //skip trailing zero-padding
+            while ((ii[at]) == 0)
+                if (++at >= end)
+                    break;
+
+            range[0] = at;
+        }
+
         return next;
     }
 
