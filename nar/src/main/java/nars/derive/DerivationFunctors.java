@@ -53,7 +53,6 @@ public enum DerivationFunctors {
         Functor[] derivationFunctors = new Functor[]{
                 d.uniSubst,
                 d.mySubst,
-                d.polarizeFunc,
                 d.polarizeTask,
                 d.polarizeBelief,
                 d.polarizeRandom,

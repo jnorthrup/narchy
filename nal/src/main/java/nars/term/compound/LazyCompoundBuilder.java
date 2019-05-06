@@ -6,17 +6,20 @@ import jcog.WTF;
 import jcog.data.byt.DynBytes;
 import jcog.data.list.FasterList;
 import jcog.util.ArrayUtil;
-import nars.$;
 import nars.NAL;
 import nars.Op;
+import nars.subterm.BiSubterm;
 import nars.subterm.Subterms;
 import nars.term.Compound;
 import nars.term.Term;
+import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
+import nars.term.atom.Int;
 import nars.term.util.builder.TermBuilder;
 import nars.term.util.map.ByteAnonMap;
 import nars.term.util.transform.AbstractTermTransform;
 import nars.term.util.transform.InlineFunctor;
+import nars.term.util.transform.InstantFunctor;
 import nars.term.util.transform.TermTransform;
 
 import java.util.Arrays;
@@ -24,7 +27,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 
 import static nars.Op.*;
-import static nars.term.atom.Bool.*;
+import static nars.term.atom.Bool.Null;
 import static nars.time.Tense.DTERNAL;
 
 /**
@@ -238,8 +241,6 @@ public class LazyCompoundBuilder {
 
             if (nextSub == Null)
                 return Null;
-            if (op == CONJ && (nextSub == True || nextSub == False))
-                return nextSub;
 
             if (nextSub.op()==FRAG) {
                 //append fragment subterms
@@ -274,8 +275,7 @@ public class LazyCompoundBuilder {
     private Term nextCompound(Op op, int dt, Term[] subterms, TermBuilder builder, byte[] bytes, int[] range, int start) {
         if (op==INH && evalInline() && subterms[1] instanceof InlineFunctor && subterms[0].op()==PROD) {
 
-            //TODO replaceAhead(...) if the functor is instanceof DeterministicFunctor etc
-            return evalDeferred(subterms);
+            return eval(subterms);
 
         } else {
 
@@ -295,6 +295,8 @@ public class LazyCompoundBuilder {
         protected Term applyPosCompound(Compound x) {
             if (x instanceof DeferredEval) {
                 Term y = ((DeferredEval)x).eval();
+                if (y == Null)
+                    return Null;
                 return apply(y); //recurse
             }
             return super.applyPosCompound(x);
@@ -316,8 +318,8 @@ public class LazyCompoundBuilder {
         final static AtomicInteger serial = new AtomicInteger(0);
 
         /** https://unicode-table.com/en/1F47E/ */
-        //final static Atom DeferredEvalPrefix = Atomic.atom("⚛");
-        final static String DeferredEvalPrefix = ("⚛");
+        final static Atom DeferredEvalPrefix = Atomic.atom("⚛");
+        //final static String DeferredEvalPrefix = ("⚛");
 
         private final InlineFunctor f;
         private final Subterms args;
@@ -326,18 +328,17 @@ public class LazyCompoundBuilder {
         private transient Term value = null;
 
         DeferredEval(InlineFunctor f, Subterms args) {
-//            super(PROD,
-//                $.vFast(Atomic.atom(DeferredEvalPrefix + Int.the(serial.incrementAndGet()))));
-            super(INH, $.vFast(PROD.the(args), (Term)f));
+            super(PROD, new BiSubterm(DeferredEvalPrefix , Int.the(serial.incrementAndGet())));
+            //super(INH, $.vFast(PROD.the(args), (Term)f));
             this.f = f;
             this.args = args;
         }
 
-//
-//        @Override
-//        public String toString() {
-//            return "(" + sub(0) + "=" + f + "(" + args + "))";
-//        }
+
+        @Override
+        public String toString() {
+            return "(" + sub(0) + "=" + f + "(" + args + "))";
+        }
 
         public final Term eval() {
             if (this.value!=null)
@@ -351,11 +352,24 @@ public class LazyCompoundBuilder {
     }
 
     /** adds a deferred evaluation */
-    private Term evalDeferred(Term[] s) {
-        DeferredEval e = new DeferredEval((InlineFunctor) s[1], s[0].subterms());
-        eval.add(e); //TODO check for duplicates?
-        changed(); //<- necessary?
-        return e;
+    private Term eval(Term[] s) {
+
+        InlineFunctor func = (InlineFunctor) s[1];
+        Subterms args = s[0].subterms();
+
+        boolean deferred = func instanceof InstantFunctor;
+
+        if (deferred) {
+            DeferredEval e = new DeferredEval(func, args);
+            eval.add(e); //TODO check for duplicates?
+            return e;
+        } else {
+            Term e = func.applyInline(args);
+            if (e == null)
+                e = Null;
+            changed(); //<- necessary?
+            return e;
+        }
     }
 
 //    private Term eval(Term[] s) {
@@ -394,8 +408,6 @@ public class LazyCompoundBuilder {
 
         if (op == PROD)
             return EmptyProduct;
-        else if (op == CONJ)
-            return True;
         else
             throw new WTF();
 

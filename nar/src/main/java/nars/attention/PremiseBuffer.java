@@ -24,14 +24,11 @@ import java.io.Serializable;
 public class PremiseBuffer implements Serializable {
     private final What.TaskLinkWhat taskLinkWhat;
 
-    public static final int premiseBufferCapacity = 128;
-
-//    /** if < 0, removes from bag (but a copy remains in novelty bag so it can subtract from a repeat) */
-//    public float premiseSelectMultiplier = 0.5f;
+    static final int premiseBufferCapacity = 64;
 
     /** rate that priority from the novelty bag subtracts from potential premises.
      * may need to be divided by concurrency so that threads dont step on each other */
-    float notNovelCost = 0.25f;
+    float notNovelCost = 0.1f;
 
     /** search rate */
     public float fillRate = 1f;
@@ -61,7 +58,7 @@ public class PremiseBuffer implements Serializable {
 
         When<NAR> when = WhenTimeIs.now(d);
 
-        taskLinkWhat.sample(d.random, (int) Math.max(1, Math.ceil(((float) premisesPerIteration) / termlinksPerTaskLink) * fillRate), tasklink -> {
+        taskLinkWhat.sample(d.random, (int) Math.max(1, Math.ceil((fillRate * premisesPerIteration) / termlinksPerTaskLink)), tasklink -> {
 
             Task task = tasklink.get(when);
             if (task != null && !task.isDeleted())

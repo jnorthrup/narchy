@@ -1,7 +1,6 @@
 package nars.derive;
 
 import jcog.Util;
-import jcog.WTF;
 import jcog.data.set.MetalLongSet;
 import jcog.math.Longerval;
 import jcog.pri.ScalarValue;
@@ -27,8 +26,8 @@ import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
 import nars.term.compound.LazyCompoundBuilder;
 import nars.term.functor.AbstractInlineFunctor1;
-import nars.term.functor.AbstractInlineFunctor2;
 import nars.term.util.TermTransformException;
+import nars.term.util.transform.InstantFunctor;
 import nars.term.util.transform.TermTransform;
 import nars.time.Tense;
 import nars.truth.PreciseTruth;
@@ -46,7 +45,6 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 import static nars.Op.*;
-import static nars.term.atom.Bool.Null;
 import static nars.time.Tense.ETERNAL;
 import static nars.time.Tense.TIMELESS;
 
@@ -95,13 +93,30 @@ public class Derivation extends PreDerivation {
     /** current context */
     public transient What what = null;
 
-    final Functor polarizeTask = new AbstractInlineFunctor1("polarizeTask") {
+    abstract static class AbstractInstantFunctor1 extends AbstractInlineFunctor1 implements InstantFunctor<Evaluation> {
+
+        AbstractInstantFunctor1(String atom) {
+            super(atom);
+        }
+    }
+
+    final Functor polarizeTask = new AbstractInstantFunctor1("polarizeTask") {
         @Override
         protected Term apply1(Term arg) {
             Truth t = Derivation.this.taskTruth;
-            if (t == null)
-                throw new WTF("polarizeTask not applicable without taskTruth"); //return Null;  //TODO WTF
-            return t.isPositive() ? arg : arg.neg();
+//            if (t == null)
+//                throw new WTF("polarizeTask not applicable without taskTruth"); //return Null;  //TODO WTF
+            return arg.negIf(t.isNegative());
+        }
+    };
+
+    final Functor polarizeBelief = new AbstractInstantFunctor1("polarizeBelief") {
+        @Override
+        protected Term apply1(Term arg) {
+            Truth b = Derivation.this.beliefTruthBelief;
+//            if (t == null)
+//                return Null;  //TODO WTF
+            return arg.negIf(b.isNegative());
         }
     };
 
@@ -112,35 +127,25 @@ public class Derivation extends PreDerivation {
         }
     };
 
-    final Functor polarizeBelief = new AbstractInlineFunctor1("polarizeBelief") {
-        @Override
-        protected Term apply1(Term arg) {
-            Truth t = Derivation.this.beliefTruthBelief;
-            if (t == null)
-                return Null;  //TODO WTF
-            return t.isPositive() ? arg : arg.neg();
-        }
-    };
-
-    @Deprecated
-    final Functor polarizeFunc = new AbstractInlineFunctor2("polarize") {
-        @Override
-        protected Term apply(Term subterm, Term whichTask) {
-            if (subterm instanceof Bool)
-                return subterm;
-
-            Truth compared;
-            if (whichTask.equals(Task)) {
-                compared = taskTruth;
-            } else {
-                //assert(whichTask.equals(Belief))
-                compared = beliefTruthBelief;
-            }
-            if (compared == null)
-                return Null;
-            return compared.isPositive() ? subterm : subterm.neg();
-        }
-    };
+//    @Deprecated
+//    final Functor polarizeFunc = new AbstractInlineFunctor2("polarize") {
+//        @Override
+//        protected Term apply(Term subterm, Term whichTask) {
+//            if (subterm instanceof Bool)
+//                return subterm;
+//
+//            Truth compared;
+//            if (whichTask.equals(Task)) {
+//                compared = taskTruth;
+//            } else {
+//                //assert(whichTask.equals(Belief))
+//                compared = beliefTruthBelief;
+//            }
+//            if (compared == null)
+//                return Null;
+//            return compared.isPositive() ? subterm : subterm.neg();
+//        }
+//    };
 
     public NAR nar;
 
@@ -207,7 +212,7 @@ public class Derivation extends PreDerivation {
      */
     public transient long taskStart, taskEnd, beliefStart, beliefEnd; //TODO taskEnd, beliefEnd
 
-    public final long[] taskBeliefTimeIntersects = new long[2];
+    private final long[] taskBeliefTimeIntersects = new long[2];
 
     private transient Term _beliefTerm;
     private transient long[] evidenceDouble, evidenceSingle;
@@ -556,7 +561,7 @@ public class Derivation extends PreDerivation {
 
 
     @Nullable
-    public long[] evidenceSingle() {
+    private long[] evidenceSingle() {
         if (evidenceSingle == null) {
             evidenceSingle = _task.stamp();
         }
@@ -564,7 +569,7 @@ public class Derivation extends PreDerivation {
     }
 
     @Nullable
-    public long[] evidenceDouble() {
+    private long[] evidenceDouble() {
         if (evidenceDouble == null) {
             double te, be, tb;
             if (taskPunc == BELIEF || taskPunc == GOAL) {
