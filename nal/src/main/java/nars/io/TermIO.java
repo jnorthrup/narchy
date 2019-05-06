@@ -7,7 +7,7 @@ import nars.$;
 import nars.NAL;
 import nars.Narsese;
 import nars.Op;
-import nars.subterm.AnonSubterms;
+import nars.subterm.IntrinSubterms;
 import nars.subterm.RemappedSubterms;
 import nars.subterm.Subterms;
 import nars.term.Compound;
@@ -216,8 +216,8 @@ public interface TermIO {
                     }
                     write(ttt.mapTerm(x), out);
                 }
-            } else if (tt instanceof AnonSubterms) {
-                AnonSubterms ttt = (AnonSubterms) tt;
+            } else if (tt instanceof IntrinSubterms) {
+                IntrinSubterms ttt = (IntrinSubterms) tt;
                 short[] ss = ttt.subterms;
                 out.writeByte(ss.length);
                 for (short s : ss) {

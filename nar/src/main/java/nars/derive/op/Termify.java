@@ -7,6 +7,7 @@ import nars.term.ProxyTerm;
 import nars.term.Term;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
+import nars.term.util.transform.Retemporalize;
 
 import static nars.derive.DerivationFailure.Success;
 
@@ -21,7 +22,11 @@ import static nars.derive.DerivationFailure.Success;
  */
 public final class Termify extends ProxyTerm {
 
+    /** conclusion template */
     public final Term pattern;
+
+    /** fully eternalized conclusion template for completely non-temporal premises */
+    public final Term patternEternal;
 
     
     private final Occurrify.OccurrenceSolver time;
@@ -31,13 +36,18 @@ public final class Termify extends ProxyTerm {
 
     public Termify(Term pattern, Truthify truth, Occurrify.OccurrenceSolver time) {
         super($.funcFast(TERMIFY, pattern, truth));
+
         this.pattern = pattern;
+
+        this.patternEternal = Retemporalize.retemporalizeXTERNALToDTERNAL.apply(pattern);
+        assert(pattern.equals(patternEternal) || pattern.root().equals(patternEternal.root()));
+
         this.truth = truth;
 
         this.time = time;
     }
 
-    public final void test(Term x, Taskify t, Derivation d) {
+    public final void apply(Term x, Taskify t, Derivation d) {
 
         d.nar.emotion.deriveTermify.increment();
 

@@ -214,6 +214,7 @@ public enum Terms {
      * returns the most optimal subterm that can be replaced with a variable, or null if one does not meet the criteria
      * when there is a chocie, it prefers least aggressive introduction. and then random choice if
      * multiple equals are introducible
+     * @param superterm filter applies to the immediate superterm of a potential subterm
      */
     @Nullable
     public static Term[] nextRepeat(Subterms c, ToIntFunction<Term> countIf, int minCount) {
@@ -240,16 +241,15 @@ public enum Terms {
      */
     @Nullable
     public static ObjectIntHashMap<Term> subtermScore(Subterms c, ToIntFunction<Term> score, int minTotalScore) {
-        ObjectIntHashMap<Term> uniques = new ObjectIntHashMap(c.volume());
+        ObjectIntHashMap<Term> uniques = new ObjectIntHashMap(0); //c.volume());
 
         c.forEach(cc ->
-                cc.recurseTerms((Term subterm) -> {
-                    if (subterm == c)
-                        return;
+                cc.recurseTermsOrdered(z->true, (subterm) -> {
                     int s = score.applyAsInt(subterm);
                     if (s > 0)
                         uniques.addToValue(subterm, s);
-                })
+                    return true;
+                }, null)
         );
 
         int total = uniques.size();

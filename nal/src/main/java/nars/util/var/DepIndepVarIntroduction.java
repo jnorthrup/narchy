@@ -4,6 +4,7 @@ import jcog.data.list.FasterList;
 import jcog.decide.Roulette;
 import jcog.memoize.Memoizers;
 import nars.$;
+import nars.NAL;
 import nars.Op;
 import nars.subterm.Subterms;
 import nars.term.Term;
@@ -39,6 +40,8 @@ public class DepIndepVarIntroduction extends VarIntroduction {
      */
     public static final ToIntFunction<Term> depIndepFilter = t ->
         (t.op().var) ? 0 : (t.hasAny(Op.VAR_INDEP.bit) ? 0 : 1);
+    public static final ToIntFunction<Term> nonNegdepIndepFilter = t ->
+            t.op().isAny(Op.Variable|Op.NEG.bit) ? 0 : (t.hasAny(Op.VAR_INDEP.bit) ? 0 : 1);
 
     /** if no variables are present in the target target, use the normalized variable which can help ensure avoidance of a need for full compound normalization */
     private static final Variable UnnormalizedVarIndep = $.varIndep("_v");
@@ -70,7 +73,8 @@ public class DepIndepVarIntroduction extends VarIntroduction {
             DepIndepVarIntroduction::_select, MEMOIZE_CAPACITY);
 
     private static Term[] _select(Intermed.SubtermsKey input) {
-        Term[] n = Terms.nextRepeat(input.subs, depIndepFilter, 2);
+        Term[] n = Terms.nextRepeat(input.subs,
+                NAL.term.VAR_INTRODUCTION_NEG_FILTER ? nonNegdepIndepFilter : depIndepFilter, 2);
         return Objects.requireNonNullElse(n, Op.EmptyTermArray);
     }
 

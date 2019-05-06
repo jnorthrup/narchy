@@ -11,8 +11,8 @@ import nars.Op;
 import nars.Task;
 import nars.attention.What;
 import nars.control.CauseMerge;
+import nars.derive.op.MatchFork;
 import nars.derive.op.Occurrify;
-import nars.derive.op.Premisify;
 import nars.eval.Evaluation;
 import nars.link.DynamicTermLinker;
 import nars.link.TermLinker;
@@ -70,7 +70,7 @@ public class Derivation extends PreDerivation {
 
     final UnifyPremise unifyPremise = new UnifyPremise();
 
-    public final Premisify.MatchFork termBuilder = new Premisify.MatchFork();
+    public final MatchFork termBuilder = new MatchFork();
 
     private long timePrev = Long.MIN_VALUE;
 

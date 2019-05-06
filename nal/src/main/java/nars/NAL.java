@@ -57,7 +57,10 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
     //0.75f;
     public static final boolean VOLMAX_RESTRICTS_INPUT= configIs("VOLMAX_RESTRICTS_INPUT"); //input tasks
     public static final boolean VOLMAX_RESTRICTS= configIs("VOLMAX_RESTRICTS"); //all tasks
-    public static final boolean TERMIFY_TRANSFORM_LAZY= configIs("TERMIFY_TRANSFORM_LAZY");
+
+    /** mostly tested */
+    public static final boolean TERMIFY_TRANSFORM_LAZY= false;
+
     public static final boolean OVERLAP_DOUBLE_SET_CYCLIC= configIs("OVERLAP_DOUBLE_SET_CYCLIC");
 
 
@@ -616,6 +619,11 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
         public static final int ANON_INT_MAX = Byte.MAX_VALUE;
 
         public static final boolean INH_IMAGE_RECURSION = false;
+        public static final int LAZY_COMPOUND_MIN_REPLACE_AHEAD_SPAN = 2;
+
+        /** prevent variable introduction from erasing negative compounds,
+         *  though content within negatives can be var introduced as normal. */
+        public static boolean VAR_INTRODUCTION_NEG_FILTER = true;
     }
 
     public enum test {
@@ -654,7 +662,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
          * whether timegraph should not return solutions with volume significantly less than the input's.
          * set 0 to disable the filter
          */
-        public static final float TIMEGRAPH_IGNORE_DEGENERATE_SOLUTIONS_FACTOR = 0.25f;
+        public static final float TIMEGRAPH_IGNORE_DEGENERATE_SOLUTIONS_FACTOR = 0.5f;
         /**
          * whether to dither events as they are represented internally.  output events are dithered for the NAR regardless.
          */
@@ -668,7 +676,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
          * TTL = 'time to live'
          */
         public static final int TermutatorSearchTTL = 4;
-        public static final int TermUnifyForkMax = 2;
+        public static final int TermUnifyForkMax = 1;
 
 
         public static final int TTL_UNISUBST_MAX = 5;
@@ -718,11 +726,10 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
         public static final boolean DERIVATION_FORM_QUESTION_FROM_AMBIGUOUS_BELIEF_OR_GOAL= configIs("DERIVATION_FORM_QUESTION_FROM_AMBIGUOUS_BELIEF_OR_GOAL");
 
 
-        public static final int TERMIFY_VOLMAX_SCRATCH_BASE = 2;
         /**
          * should be as close to 1 as possible
          */
-        public static final float TERMIFY_TERM_VOLMAX_SCRATCH_FACTOR = 2f;
+        public static final float TERMIFY_TERM_VOLMAX_SCRATCH_FACTOR = 3f;
     }
 
     public enum unify {
@@ -731,8 +738,8 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
         /**
          * max variable unification recursion depth as a naive cyclic filter
          */
-        public static final int UNIFY_VAR_RECURSION_DEPTH_LIMIT = 6;
-        public static final int UNIFY_COMMON_VAR_MAX = 6;
+        public static final int UNIFY_VAR_RECURSION_DEPTH_LIMIT = 8;
+        public static final int UNIFY_COMMON_VAR_MAX = UNIFY_VAR_RECURSION_DEPTH_LIMIT;
         public static final int UNIFICATION_STACK_CAPACITY = 128;
     }
 

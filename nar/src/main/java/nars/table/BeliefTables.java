@@ -89,11 +89,12 @@ public class BeliefTables extends FasterList<BeliefTable> implements BeliefTable
     }
 
     @Override
-    public final void clear() {
+    @Deprecated public final void clear() {
         forEach(TaskTable::clear);
     }
 
     public final void delete() {
+        forEach(TaskTable::delete);
         super.delete();
         size = 0;
         items = null;

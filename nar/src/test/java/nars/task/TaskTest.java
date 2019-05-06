@@ -15,7 +15,6 @@ import java.util.Arrays;
 
 import static nars.$.*;
 import static nars.Op.BELIEF;
-import static nars.term.util.TermTest.assertEq;
 import static nars.time.Tense.DTERNAL;
 import static nars.time.Tense.ETERNAL;
 import static org.junit.jupiter.api.Assertions.*;
@@ -238,14 +237,14 @@ public class TaskTest {
         Concept c = tt.conceptualize($$("(((sx,$1)&|good) ==>+2331 ((sx,$1)&&good))"));
         assertTrue(c instanceof TaskConcept);
     }
-    @Test void testDiffQueryVarNormalization() throws Narsese.NarseseException {
-        NAR tt = NARS.shell();
-        Term x = assertEq("(?2~?1)", "(?x~?y)");
-        assertEq("(?1~y)", "(?x~y)");
-        assertEq("(?2~?1)", "(?y~?x)");
-        assertEq("(x~?1)", "(x~?y)");
-        assertEquals("((?2~?1)-->z)?",tt.input("((?x~?y)-->z)?").get(0).toStringWithoutBudget());
-        assertEquals("((?2~?1)-->z)?",tt.input("((?y~?x)-->z)?").get(0).toStringWithoutBudget());
-    }
+//    @Test void testDiffQueryVarNormalization() throws Narsese.NarseseException {
+//        NAR tt = NARS.shell();
+//        Term x = assertEq("(?2~?1)", "(?x~?y)");
+//        assertEq("(?1~y)", "(?x~y)");
+//        assertEq("(?2~?1)", "(?y~?x)");
+//        assertEq("(x~?1)", "(x~?y)");
+//        assertEquals("((?2~?1)-->z)?",tt.input("((?x~?y)-->z)?").get(0).toStringWithoutBudget());
+//        assertEquals("((?2~?1)-->z)?",tt.input("((?y~?x)-->z)?").get(0).toStringWithoutBudget());
+//    }
 
 }

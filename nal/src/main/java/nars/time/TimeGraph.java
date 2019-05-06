@@ -512,7 +512,11 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 
                                     long range = eventEnd - eventStart;
                                     eventTerm.eventsWhile((w, y) -> {
+//                                        if (y.equals(eventTerm))
+//                                            return true;
+
                                         Event Y = know(y, w, w + range);
+
                                         //chain the events to the absolute parent
                                         link(event, w - eventStart, Y);
                                         return true;
@@ -523,9 +527,10 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
                                     final Event[] prev =
                                             //{ eventStart!=ETERNAL && eventStart!=TIMELESS ? event : null };
                                             {event};
-                                    final long[] prevDT = {0};
+                                    final long[] prevTime = {0};
                                     eventTerm.eventsWhile((w, y) -> {
-                                        assert (!y.equals(eventTerm));
+//                                        if (y.equals(eventTerm))
+//                                            return true;
 
                                         Event next = know(y);
 
@@ -533,9 +538,8 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
                                         if (p != null) {
                                             if (p != event || (eventStart != ETERNAL && eventStart != TIMELESS)) {
                                                 //chain to previous, starting with parent
-                                                link(p, w - prevDT[0], next);
-                                                prevDT[0] = w;
-                                                prev[0] = next;
+                                                link(p, w - prevTime[0], next);
+
                                             } else {
                                                 //chain to parent
                                                 if (eventStart != ETERNAL)
@@ -543,7 +547,8 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
                                             }
 
                                         }
-
+                                        prevTime[0] = w;
+                                        prev[0] = next;
                                         return true;
                                     }, 0, edt == 0, false, false);
                                 }
@@ -1413,20 +1418,21 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 
 
     private static final Iterable empty = List.of();
-    private static final Comparator<FromTo<Node<Event, TimeSpan>, TimeSpan>> temporalProximity = (a,b)->{
+    @Deprecated /* TODO shuffle */ private static final Comparator<FromTo<Node<Event, TimeSpan>, TimeSpan>> temporalProximity = (a,b)->{
         //TODO provenance preference: prefer edges tagged by the opposite source (task -> belief, rather than task -> task)
         if (a == b) return 0;
         TimeSpan aa = a.id(), bb = b.id();
 
         long adt = aa.dt, bdt = bb.dt;
 
-        assert(adt != ETERNAL && bdt != ETERNAL): "shouldnt happen";
+        //assert(adt != ETERNAL && bdt != ETERNAL): "shouldnt happen";
 
-        if (aa==bb || adt == bdt) {
-            //TODO shuffle
+        if (adt == bdt) {
             int c = a.from().id().compareTo(b.from().id());
             if (c == 0) {
                 c = a.to().id().compareTo(b.to().id());
+                if (c == 0)
+                    return Integer.compare(System.identityHashCode(a), System.identityHashCode(b)); //HACK
             }
             return c;
         } else

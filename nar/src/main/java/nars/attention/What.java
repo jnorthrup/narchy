@@ -2,12 +2,8 @@ package nars.attention;
 
 import jcog.TODO;
 import jcog.math.IntRange;
-import jcog.pri.PLink;
-import jcog.pri.PriReference;
 import jcog.pri.Prioritizable;
 import jcog.pri.bag.Sampler;
-import jcog.pri.bag.impl.PLinkArrayBag;
-import jcog.pri.op.PriMerge;
 import jcog.util.ConsumerX;
 import nars.NAR;
 import nars.Task;
@@ -16,21 +12,15 @@ import nars.concept.Concept;
 import nars.control.NARPart;
 import nars.control.op.TaskEvent;
 import nars.derive.Derivation;
-import nars.derive.Premise;
 import nars.exe.Exec;
 import nars.link.TaskLink;
 import nars.link.TaskLinks;
 import nars.task.util.PriBuffer;
 import nars.term.Term;
-import nars.time.When;
-import nars.time.event.WhenTimeIs;
 import nars.time.part.DurLoop;
 import nars.util.Timed;
 
-import java.io.Externalizable;
-import java.io.IOException;
-import java.io.ObjectInput;
-import java.io.ObjectOutput;
+import java.io.*;
 import java.util.Iterator;
 import java.util.Random;
 import java.util.function.Function;
@@ -241,6 +231,7 @@ abstract public class What extends NARPart implements Prioritizable, Sampler<Tas
         public final IntRange dur = new IntRange(1, 1, 1000);
 
         public final TaskLinks links = new TaskLinks();
+        final PremiseBuffer premiseBuffer = new PremiseBuffer(this);
 
         public TaskLinkWhat(Term id, int capacity, PriBuffer<Task> in) {
             super(id, in);
@@ -262,7 +253,7 @@ abstract public class What extends NARPart implements Prioritizable, Sampler<Tas
 
         @Override
         protected void commit(NAR nar) {
-            premises.commit(null);
+            premiseBuffer.commit();
             links.commit();
         }
 
@@ -296,54 +287,13 @@ abstract public class What extends NARPart implements Prioritizable, Sampler<Tas
             throw new TODO();
         }
 
-        /** TODO encapsulate as PremiseBuffer class */
-        static final int premiseBufferCapacity = 64;
-        float premiseSelectDecayRate = 0.1f;
-        float fillFactor = 1f;
-
-        /** this is meant to implement a novelty filter so this is like an inverse or inside-out bag */
-        final PLinkArrayBag<Premise> premises = new PLinkArrayBag<>(
-                //PriMerge.min,
-                PriMerge.avg,
-                premiseBufferCapacity);
 
         /**
          * samples premises
          * thread-safe, for use by multiple threads
          */
         public void hypothesize(int premisesPerIteration, int termlinksPerTaskLink, int matchTTL, int deriveTTL, Derivation d) {
-
-            When<NAR> when = WhenTimeIs.now(d);
-
-
-            this.sample(d.random, (int) Math.ceil(Math.max(1, ((float)premisesPerIteration)/termlinksPerTaskLink) * fillFactor), tasklink -> {
-
-                Task task = tasklink.get(when);
-                if (task != null && !task.isDeleted()) {
-                    Term prevTerm = null;
-                    for (int i = 0; i < termlinksPerTaskLink; i++) {
-                        Term term = links.term(tasklink, task, d);
-                        if (term != null && (prevTerm == null || !term.equals(prevTerm))) {
-                            premises.put(new PLink<>(new Premise(task, term), tasklink.priPunc(task.punc())));
-                        }
-                        prevTerm = term;
-                    }
-                }
-
-                return true;
-
-            });
-
-            for (int i = 0; i < premisesPerIteration; i++) {
-                PriReference<Premise> pp = premises.sample(d.random);
-                if (pp == null)
-                    continue;
-
-                pp.priMult(premiseSelectDecayRate);
-
-                d.deriver.derive(pp.get(), d, matchTTL, deriveTTL);
-            }
-
+            premiseBuffer.hypothesize(premisesPerIteration, termlinksPerTaskLink, matchTTL, deriveTTL, links, d);
         }
 
 

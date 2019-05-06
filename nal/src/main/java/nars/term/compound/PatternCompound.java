@@ -170,9 +170,8 @@ abstract public class PatternCompound extends CachedCompound.TemporalCachedCompo
     public static final class PatternCompoundEllipsisCommutive extends PatternCompoundWithEllipsis {
 
 
-        public PatternCompoundEllipsisCommutive(Op op, int dt, Ellipsis ellipsis, Subterms subterms) {
+        PatternCompoundEllipsisCommutive(Op op, int dt, Ellipsis ellipsis, Subterms subterms) {
             super(op, dt, ellipsis, subterms);
-            assert (op != CONJ || dt == XTERNAL); //CONJ always XTERNAL
         }
 
         /**

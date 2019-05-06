@@ -47,7 +47,8 @@ import java.util.SortedSet;
 import java.util.function.BiPredicate;
 import java.util.function.Predicate;
 
-import static nars.Op.*;
+import static nars.Op.CONJ;
+import static nars.Op.EmptyTermArray;
 import static nars.time.Tense.*;
 
 /**
@@ -194,6 +195,8 @@ public interface Compound extends Term, IPair, Subterms {
         return !inSuperCompound.test(this) ||
                 whileTrue.test(this) && subterms().recurseTerms(inSuperCompound, whileTrue, this);
     }
+
+
 
     @Override
     default boolean recurseTermsOrdered(Predicate<Term> inSuperCompound, Predicate<Term> whileTrue, Compound parent) {

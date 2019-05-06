@@ -21,18 +21,36 @@ import static nars.time.Tense.XTERNAL;
  */
 public interface AbstractTermTransform extends TermTransform, nars.term.util.builder.TermConstructor {
 
-    static Term transform(Term x, TermTransform transform) {
-        return transform(new LazyCompoundBuilder(), x, transform, NAL.term.COMPOUND_VOLUME_MAX);
+    static Term transform(Term x, AbstractTermTransform transform) {
+        return transform(x, transform, new LazyCompoundBuilder(), NAL.term.COMPOUND_VOLUME_MAX);
     }
 
     /** global default transform procedure: can decide semi-optimal transform implementation */
-    static Term transform(LazyCompoundBuilder l, Term x, TermTransform transform, int volMax) {
+    static Term transform(Term x, AbstractTermTransform transform, LazyCompoundBuilder l, int volMax) {
         if (x instanceof Compound && NAL.TERMIFY_TRANSFORM_LAZY) {
-            return ((AbstractTermTransform)transform).applyCompoundLazy((Compound)x, l,
-                    //HeapTermBuilder.the
-                    Op.terms,
+
+            l.clear();
+
+            Term y = transform.applyCompoundLazy((Compound)x, l,
+                    Op.terms, //HeapTermBuilder.the
                     volMax
             );
+
+            //TEMPORARY for debugging
+//            {
+//                String xs = x.toString();
+//                if (!xs.contains("varIntro") && !xs.contains("andom") && !xs.contains("unisubst")) {
+//                    Term y2 = transform.apply(x);
+//                    if (!y.equals(y2)) {
+//                        System.err.println(transform + " diverged:\n\t" + x + "\ntransform:\t" + y + "\n\tlazy:\t" + y2);
+//                        Util.nop();
+//                    }
+//                }
+//            }
+
+
+            return y;
+
         } else {
             return transform.apply(x);
         }

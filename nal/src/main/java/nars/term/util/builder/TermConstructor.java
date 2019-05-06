@@ -35,7 +35,7 @@ import static nars.time.Tense.DTERNAL;
             return Op.EmptySubterms;
 
         if (tryAnon && Intrin.intrinsic(t))
-            return new AnonSubterms(t);
+            return new IntrinSubterms(t);
         else {
             Term t0 = t[0];
             switch (t.length) {

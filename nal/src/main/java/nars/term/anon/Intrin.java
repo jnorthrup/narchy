@@ -112,8 +112,8 @@ import static nars.Op.ImgInt;
         return neg ? neg(i) : _term(i);
     }
 
-    static Neg.NegAnonID neg(short i) {
-        return new Neg.NegAnonID(i);
+    static Neg.NegIntrin neg(short i) {
+        return new Neg.NegIntrin(i);
     }
 
     public static int group(int i) {
@@ -139,8 +139,8 @@ import static nars.Op.ImgInt;
         if (t instanceof Intrin) {
             return (short) ((Intrin)t).i;
         }
-        if (t instanceof Neg.NegAnonID) {
-            return (short) -((Neg.NegAnonID)t).sub;
+        if (t instanceof Neg.NegIntrin) {
+            return (short) -((Neg.NegIntrin)t).sub;
         }
         if (t instanceof Neg) {
             t = t.unneg();
@@ -182,6 +182,10 @@ import static nars.Op.ImgInt;
         return this;
     }
 
+    @Override
+    public Term neg() {
+        return new Neg.NegIntrin(this.i);
+    }
 
     @Override
     public final int hashCode() {

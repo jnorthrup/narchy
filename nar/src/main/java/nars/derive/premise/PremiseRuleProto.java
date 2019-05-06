@@ -36,7 +36,7 @@ public class PremiseRuleProto extends PremiseRule {
 
         Taskify taskify = new Taskify(termify, cause);
 
-        boolean fwd = ((!hasEllipsis(taskPattern) && hasEllipsis(beliefPattern)) || taskPattern.vars() <= beliefPattern.vars());
+        boolean fwd = ((!hasEllipsis(taskPattern) && hasEllipsis(beliefPattern)) || taskPattern.varPattern() <= beliefPattern.varPattern());
         Premisify premisify =
             new Premisify
             //new Premisify.CachingPremisify

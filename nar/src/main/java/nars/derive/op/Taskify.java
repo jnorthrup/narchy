@@ -28,10 +28,24 @@ import static nars.time.Tense.ETERNAL;
 
 public class Taskify extends ProxyTerm {
 
+    private final static Logger logger = LoggerFactory.getLogger(Taskify.class);
+
+    /**
+     * destination of any derived tasks; also may be used to communicate backpressure
+     * from the recipient.
+     */
+    public final PremiseRuleProto.RuleWhy channel;
+
+    private static final Atomic TASKIFY = Atomic.the("Taskify");
+
     final Termify termify;
 
+    public void apply(Term x, Derivation d) {
+        termify.apply(x, this, d);
+    }
 
-    public final boolean test(Termutifcation u, Derivation d) {
+
+    public final boolean apply(Termutifcation u, Derivation d) {
         List<DeterministicUnification> ii = u.listClone();
         int s = ii.size();
         if (s > 0) {
@@ -40,7 +54,7 @@ public class Taskify extends ProxyTerm {
 
             int fanOut = Math.min(s, TermUnifyForkMax);
             for (int i = 0; i < fanOut; i++) {
-                test(ii.get(i), d);
+                apply(ii.get(i), d);
                 if (!d.live())
                     return false;
             }
@@ -48,21 +62,23 @@ public class Taskify extends ProxyTerm {
         return true;
     }
 
-    public final void test(DeterministicUnification xy, Derivation d) {
+    public final void apply(DeterministicUnification xy, Derivation d) {
 //        assert(d.transform.xy == null);
 //            int start = d.size();
         d.transform.xy = xy::xy;
         d.retransform.clear();
-        Term y = AbstractTermTransform.transform(termify.pattern, d.transform);
+        Term y = AbstractTermTransform.transform(pattern(d), d.transform);
 //      d.revert(start);
         d.transform.xy = null;
-        test(y, d);
+        apply(y, d);
+    }
+
+    Term pattern(Derivation d) {
+        return d.temporal ? termify.pattern : termify.patternEternal;
     }
 
 
-    public void test(Term x, Derivation d) {
-        termify.test(x, this, d);
-    }
+
 
 
 //    /** applies variable introduction between Termify and Taskify step */
@@ -205,14 +221,6 @@ public class Taskify extends ProxyTerm {
         return spam(d, NAL.derive.TTL_COST_DERIVE_TASK_SAME);
     }
 
-    private final static Logger logger = LoggerFactory.getLogger(Taskify.class);
-    /**
-     * destination of any derived tasks; also may be used to communicate backpressure
-     * from the recipient.
-     */
-    public final PremiseRuleProto.RuleWhy channel;
-
-    private static final Atomic TASKIFY = Atomic.the("Taskify");
 
 
     public Taskify(Termify termify, PremiseRuleProto.RuleWhy channel) {

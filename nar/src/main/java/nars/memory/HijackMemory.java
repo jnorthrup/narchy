@@ -3,6 +3,7 @@ package nars.memory;
 import jcog.pri.PLink;
 import jcog.pri.PLinkHashCached;
 import jcog.pri.bag.impl.hijack.PriLinkHijackBag;
+import jcog.pri.op.PriMerge;
 import nars.NAR;
 import nars.concept.Concept;
 import nars.concept.PermanentConcept;
@@ -50,7 +51,7 @@ public class HijackMemory extends Memory {
 
         getBoost = (float) (1f/Math.sqrt(capacity));
 
-        this.table = new PriLinkHijackBag<>(capacity, reprobes) {
+        this.table = new PriLinkHijackBag<>(PriMerge.plus, capacity, reprobes) {
 
             {
                 resize(capacity);

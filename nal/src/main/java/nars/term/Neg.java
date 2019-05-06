@@ -31,7 +31,7 @@ public interface Neg extends Term { ;
         }
 
         if (u instanceof Intrin)
-            return new NegAnonID(((Intrin)u).i);
+            return new NegIntrin(((Intrin)u).i);
         else
             return new NegCached(u);
     }
@@ -111,11 +111,11 @@ public interface Neg extends Term { ;
     }
 
     /** TODO refine */
-    final class NegAnonID extends UnitCompound implements The, Neg {
+    final class NegIntrin extends UnitCompound implements The, Neg {
 
         public final int sub;
 
-        public NegAnonID(int negated) {
+        public NegIntrin(int negated) {
             this.sub = negated;
         }
 

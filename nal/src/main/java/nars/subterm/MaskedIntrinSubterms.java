@@ -5,9 +5,9 @@ import nars.term.anon.Intrin;
 
 import static nars.term.anon.Intrin.ANOMs;
 
-abstract public class MaskedAnonVector extends ProxySubterms<AnonSubterms> {
+abstract public class MaskedIntrinSubterms extends ProxySubterms<IntrinSubterms> {
 
-    protected MaskedAnonVector(AnonSubterms ref) {
+    protected MaskedIntrinSubterms(IntrinSubterms ref) {
         super(ref);
     }
 
@@ -27,10 +27,10 @@ abstract public class MaskedAnonVector extends ProxySubterms<AnonSubterms> {
     /** returns the facade atom for the Anom index id minus 1*/
     public abstract Term atom(int index);
 
-    public static class SubtermsMaskedAnonVector extends MaskedAnonVector {
+    public static class SubtermsMaskedIntrinSubterms extends MaskedIntrinSubterms {
         private final Subterms mask;
 
-        public SubtermsMaskedAnonVector(AnonSubterms skeleton, Subterms mask) {
+        public SubtermsMaskedIntrinSubterms(IntrinSubterms skeleton, Subterms mask) {
             super(skeleton);
             this.mask = mask;
         }

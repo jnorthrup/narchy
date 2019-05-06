@@ -1286,14 +1286,14 @@ public enum Util {
     }
 
     public static <X> int sum(ToIntFunction<X> value, X... xx) {
-        return sum(value, xx.length, xx);
+        return sum(value, 0, xx.length, xx);
     }
 
-    public static <X> int sum(ToIntFunction<X> value, int n, X... xx) {
+    public static <X> int sum(ToIntFunction<X> value, int from, int to, X... xx) {
         int y = 0;
-        for (int i = 0, xxLength = n; i < xxLength; i++) {
+        int len = to-from;
+        for (int i = from; i < len; i++)
             y += value.applyAsInt(xx[i]);
-        }
         return y;
     }
 

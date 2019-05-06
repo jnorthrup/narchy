@@ -21,6 +21,7 @@
 package nars.term;
 
 
+import jcog.TODO;
 import jcog.Util;
 import nars.Op;
 import nars.The;
@@ -156,6 +157,16 @@ public interface Term extends Termlike, Termed, Comparable<Term> {
     boolean recurseTerms(Predicate<Term> inSuperCompound, Predicate<Term> whileTrue, @Nullable Compound /* Compound? */superterm);
 
     boolean recurseTermsOrdered(Predicate<Term> inSuperCompound, Predicate<Term> whileTrue, Compound parent);
+
+    enum TermWalk {
+        Left, //prev subterm
+        Right, //next subterm
+        Down, //descend, recurse, or equivalent to Right if atomic
+        Stop //CUT
+    }
+    default boolean recurseTerms(BiFunction<Compound,Term,TermWalk> whileTrue, Compound superterm) {
+        throw new TODO();
+    }
 
     @Override
     boolean contains(Term t);

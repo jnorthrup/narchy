@@ -26,8 +26,6 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
-import static jcog.Util.lerp;
-
 
 /**
  * A bag implemented as a combination of a Map and a SortedArrayList
@@ -149,18 +147,19 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
         boolean free = s + 1 <= c;
 
         if (!free && cleanAuto()) {
-            s = clean(null);
+            s = update(null);
             free = s + 1 <= c;
         }
 
+        SortedArray<Y> a = table.items;
         if (!free) {
-            Y lastToRemove = table.items.last();
+            Y lastToRemove = a.last();
             float priMin = pri(lastToRemove);
-            if (toAddPri <= priMin)
+            if (toAddPri < priMin)
                 return false;
 
-            Y removed = table.items.removeLast();
-            assert (removed == lastToRemove);
+            Y removed = a.removeLast();
+            //assert (removed == lastToRemove);
             //if (!removed) throw new WTF(); //assert(removed);
 
             removeFromMap(lastToRemove);
@@ -170,13 +169,7 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
         }
 
 
-        Y existing = table.map.put(key, incoming);
-        if (existing != null)
-            throw new WTF();
-        //assert (existing == null);
-
-        int i = table.items.add(incoming, table);
-        assert (i >= 0);
+        tryInsert(key, incoming, toAddPri);
 
         return true;
     }
@@ -217,13 +210,11 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
         table.items.sort(ScalarValue::priComparable, from, to);
     }
 
-    private int clean(@Nullable Consumer<Y> update) {
+    /** update histogram, remove values until under capacity */
+    private int update(@Nullable Consumer<Y> update) {
 
-//        float min = Float.POSITIVE_INFINITY, max = Float.NEGATIVE_INFINITY, mass = 0;
-        int s = size();
-
-        SortedArray<Y> items2 = table.items;
-        final Object[] l = items2.array();
+        SortedArray<Y> items = table.items;
+        final Object[] a = items.array();
 
         float above = Float.POSITIVE_INFINITY;
         boolean sorted = true;
@@ -231,49 +222,46 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
         float m = 0;
 
         int c = capacity();
-        int histRange = s;
-        int bins = histogramBins();
+        int s = size();
+
         ArrayHistogram hist;
+        int bins = histogramBins();
         if (bins > 0) {
             hist = this.hist;
-            hist.clear(0, histRange - 1, bins);
+            hist.clear(0, s - 1, bins);
         } else {
             hist = null; //disabled
         }
 
-
-//        float q = Float.NaN;
         for (int i = 0; i < s; ) {
-            Y y = (Y) l[i];
+            Y y = (Y) a[i];
 
             if (y == null) {
-                sorted = false;
-                i++;
-                continue;
-            }
+                items.removeFast(y, i);
+                s--;
+            } else {
 
-            //assert y != null;
-            float p = pri(y);
+                float p = pri(y);
 
-            if (update != null && p == p) {
-                update.accept(y);
-                p = pri(y);
-            }
-
-            if (p == p) {
-
-                if (hist != null)
-                    hist.addWithoutSettingMass(i, p);
-
-                m += p;
-
-                if (sorted) {
-                    if (p - above >= ScalarValue.EPSILON / 2) {
-                        sorted = false;
-                    } else {
-                        above = p;
-                    }
+                if (update != null && p == p) {
+                    update.accept(y);
+                    p = pri(y);
                 }
+
+                if (p == p) {
+
+                    if (hist != null)
+                        hist.addWithoutSettingMass(i, p);
+
+                    m += p;
+
+                    if (sorted) {
+                        if (p - above >= ScalarValue.EPSILON / 2) {
+                            sorted = false;
+                        } else {
+                            above = p;
+                        }
+                    }
 
 //                if (q == q && p - q >= ScalarValue.EPSILON / 2) {
 //                    //swap with previous (early progressive sorting pass)
@@ -285,28 +273,28 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
 //                    q = p;
 //                }
 
-                i++;
+                    i++;
 
 
-            } else {
-                boolean removed = items2.removeFast(y, i); assert (removed);
-                removeFromMap(y);
-                s--;
-
+                } else {
+                    items.removeFast(y, i);
+                    s--;
+                    removeFromMap(y);
+                }
             }
         }
 
-        if (!sorted) {
+        if (!sorted)
             sort();
-        }
+
+        massSet(m); //set mass here because removedFromMap will decrement mass
 
         while (s > c) {
             removeFromMap(table.items.removeLast());
             s--;
         }
 
-        massSet(m);
-        this.hist.mass(m);
+        this.hist.mass(mass());
 
         return s;
     }
@@ -421,50 +409,50 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
 //
 //    }
 
-    /**
-     * samples the distribution with the assumption that it is flat
-     */
-    private int sampleNextLinearNormalized(Random rng, int size) {
-        float min = ArrayBag.this.priMin(), max = ArrayBag.this.priMax();
+//    /**
+//     * samples the distribution with the assumption that it is flat
+//     */
+//    private int sampleNextLinearNormalized(Random rng, int size) {
+//        float min = ArrayBag.this.priMin(), max = ArrayBag.this.priMax();
+//
+//        float targetPercentile = rng.nextFloat();
+//
+//        float indexNorm =
+//                Util.lerp((max - min), targetPercentile /* flat */, (targetPercentile * targetPercentile) /* curved */);
+//
+//        return Util.bin(indexNorm, size);
+//    }
 
-        float targetPercentile = rng.nextFloat();
-
-        float indexNorm =
-                Util.lerp((max - min), targetPercentile /* flat */, (targetPercentile * targetPercentile) /* curved */);
-
-        return Util.bin(indexNorm, size);
-    }
-
-    /**
-     * evaluates the median value to model the distribution as 2-linear piecewise function
-     * experimental NOT working yet
-     */
-    private int sampleNextBiLinear(Random rng, int size) {
-        if (size == 2) {
-            //special case
-            return sampleNextLinear(rng, size);
-        }
-
-        float targetPercentile = rng.nextFloat();
-        float min = ArrayBag.this.priMin(), max = ArrayBag.this.priMax(), med = priMedian();
-        float range = max - min;
-        float indexNorm;
-
-        if (range > ScalarValue.EPSILON) {
-            float balance = (max - med) / range; //measure of skewness or something; 0.5 = centered (median~=mean)
-            //balance < 0.5: denser distribution of elements below the median
-            //        > 0.5: denser dist above
-            if (balance >= 0.5f)
-                targetPercentile = Util.lerp(2 * (balance - 0.5f), targetPercentile, 1); //distort to the extremum
-            else
-                targetPercentile = Util.lerp(2 * (0.5f - balance), targetPercentile, 0); //distort to the extremum
-        }
-
-        indexNorm =
-                lerp(range, targetPercentile /* flat */, (targetPercentile * targetPercentile) /* curved */);
-
-        return Util.bin(indexNorm, size);
-    }
+//    /**
+//     * evaluates the median value to model the distribution as 2-linear piecewise function
+//     * experimental NOT working yet
+//     */
+//    private int sampleNextBiLinear(Random rng, int size) {
+//        if (size == 2) {
+//            //special case
+//            return sampleNextLinear(rng, size);
+//        }
+//
+//        float targetPercentile = rng.nextFloat();
+//        float min = ArrayBag.this.priMin(), max = ArrayBag.this.priMax(), med = priMedian();
+//        float range = max - min;
+//        float indexNorm;
+//
+//        if (range > ScalarValue.EPSILON) {
+//            float balance = (max - med) / range; //measure of skewness or something; 0.5 = centered (median~=mean)
+//            //balance < 0.5: denser distribution of elements below the median
+//            //        > 0.5: denser dist above
+//            if (balance >= 0.5f)
+//                targetPercentile = Util.lerp(2 * (balance - 0.5f), targetPercentile, 1); //distort to the extremum
+//            else
+//                targetPercentile = Util.lerp(2 * (0.5f - balance), targetPercentile, 0); //distort to the extremum
+//        }
+//
+//        indexNorm =
+//                lerp(range, targetPercentile /* flat */, (targetPercentile * targetPercentile) /* curved */);
+//
+//        return Util.bin(indexNorm, size);
+//    }
 
 
 //    /**
@@ -658,7 +646,7 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
             if (s >= capacity) {
                 inserted = tryInsertFull(key, incoming, pri);
             } else {
-                tryInsertEmpty(key, incoming, pri);
+                tryInsert(key, incoming, pri);
                 inserted = true;
             }
         } finally {
@@ -683,13 +671,10 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
         }
     }
 
-    private void tryInsertEmpty(X key, Y incoming, float p) {
+    private void tryInsert(X key, Y incoming, float p) {
         int i = table.items.add(incoming, -p, table);
-        assert i >= 0;
-
         Y exists = table.map.put(key, incoming);
-        if (exists != null)
-            throw new WTF(); //assert (exists == null);
+        assert(i >= 0 && exists == null);
     }
 
 
@@ -780,7 +765,6 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
 
         removed(removed);
         return removed;
-
     }
 
 
@@ -792,7 +776,7 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
         try {
             if (!isEmpty()) {
 //                l = Util.readToWrite(l, lock);
-                clean(update);
+                update(update);
             }
         } finally {
             lock.unlockWrite(l);
@@ -929,20 +913,20 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
         return x != null ? priElse(x, -1) : 0;
     }
 
-    /**
-     * priority of the middle index item, if exists; else returns average of priMin and priMax
-     */
-    private float priMedian() {
-
-        Object[] ii = table.items.items;
-        int s = Math.min(ii.length, size());
-        if (s > 2)
-            return pri((Y) ii[s / 2]);
-        else if (s > 1)
-            return (priMin() + priMax()) / 2;
-        else
-            return priMin();
-    }
+//    /**
+//     * priority of the middle index item, if exists; else returns average of priMin and priMax
+//     */
+//    private float priMedian() {
+//
+//        Object[] ii = table.items.items;
+//        int s = Math.min(ii.length, size());
+//        if (s > 2)
+//            return pri((Y) ii[s / 2]);
+//        else if (s > 1)
+//            return (priMin() + priMax()) / 2;
+//        else
+//            return priMin();
+//    }
 
     @Override
     public float priMin() {

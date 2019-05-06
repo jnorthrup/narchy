@@ -5,7 +5,7 @@ import jcog.data.byt.DynBytes;
 import jcog.memoize.Memoizers;
 import jcog.memoize.byt.ByteKeyExternal;
 import nars.Op;
-import nars.subterm.AnonSubterms;
+import nars.subterm.IntrinSubterms;
 import nars.subterm.SortedSubterms;
 import nars.subterm.Subterms;
 import nars.term.Compound;
@@ -76,7 +76,7 @@ public class InterningTermBuilder extends HeapTermBuilder {
         subterms = newOpCache("subterms",
                 x -> TermConstructor.theSubterms(false, resolve(x.subs)), cacheSizePerOp * 2);
         anonSubterms = newOpCache("anonSubterms",
-                x -> new AnonSubterms(x.subs), cacheSizePerOp);
+                x -> new IntrinSubterms(x.subs), cacheSizePerOp);
 
         Function statements = newOpCache("statement", this::_statement, cacheSizePerOp * 3);
 

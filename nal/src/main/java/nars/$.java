@@ -7,7 +7,7 @@ import jcog.Texts;
 import jcog.Util;
 import jcog.data.list.FasterList;
 import jcog.util.ArrayUtil;
-import nars.subterm.AnonSubterms;
+import nars.subterm.IntrinSubterms;
 import nars.subterm.Subterms;
 import nars.subterm.TermList;
 import nars.term.Variable;
@@ -734,19 +734,19 @@ public enum $ {
             case 1: {
                 Term a = t[0];
                 if (a.unneg() instanceof Intrin)
-                    return new AnonSubterms(a);
+                    return new IntrinSubterms(a);
                 break;
             }
             case 2: {
                 Term a = t[0], b = t[1];
                 if (a.unneg() instanceof Intrin && b.unneg() instanceof Intrin)
-                    return new AnonSubterms(a, b);
+                    return new IntrinSubterms(a, b);
                 break;
             }
             case 3: {
                 Term a = t[0], b = t[1], c = t[2];
                 if (a.unneg() instanceof Intrin && b.unneg() instanceof Intrin && c.unneg() instanceof Intrin)
-                    return new AnonSubterms(a, b, c);
+                    return new IntrinSubterms(a, b, c);
                 break;
             }
         }

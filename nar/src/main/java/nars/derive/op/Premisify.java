@@ -5,23 +5,16 @@ import jcog.data.set.ArrayHashRing;
 import jcog.memoize.QuickMemoize;
 import jcog.util.HashCachedPair;
 import nars.$;
-import nars.NAL;
 import nars.derive.Derivation;
 import nars.term.Term;
 import nars.term.atom.Atomic;
-import nars.term.atom.Bool;
-import nars.term.compound.LazyCompoundBuilder;
 import nars.term.control.AbstractPred;
 import nars.term.control.PREDICATE;
-import nars.term.util.transform.AbstractTermTransform;
 import nars.unify.Unification;
 import nars.unify.unification.DeterministicUnification;
 import nars.unify.unification.Termutifcation;
-import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 
-import java.util.Set;
 import java.util.function.BiFunction;
-import java.util.function.Predicate;
 
 import static nars.$.$$;
 import static nars.NAL.derive.TermUnifyForkMax;
@@ -109,10 +102,10 @@ public class Premisify extends AbstractPred<Derivation> {
     protected boolean test(Unification u, Derivation d) {
 
         if (u instanceof Termutifcation)
-            taskify.test(((Termutifcation)u), d);
+            taskify.apply(((Termutifcation)u), d);
 
         else if (u instanceof DeterministicUnification)
-            taskify.test((DeterministicUnification) u, d);
+            taskify.apply((DeterministicUnification) u, d);
 
         else
             throw new WTF();
@@ -186,52 +179,4 @@ public class Premisify extends AbstractPred<Derivation> {
         }
     }
 
-    public static final class MatchFork extends LazyCompoundBuilder implements Predicate<Derivation> {
-
-        private int forkLimit = -1;
-        final Set<Term> tried = new UnifiedSet();
-        private Taskify taskify;
-
-        public MatchFork() {
-        }
-
-        public void reset(Taskify taskify, int forkLimit) {
-            this.taskify = taskify;
-            this.forkLimit = forkLimit;
-            tried.clear();
-        }
-
-        @Override
-        public boolean test(Derivation dd) {
-            //assert(finalTTL[0]==-1);
-
-            Term x = taskify.termify.pattern;
-
-            clear();
-
-            Term y = AbstractTermTransform.transform(this, x,
-                    dd.transform,
-                    x.volume() +
-                            NAL.derive.TERMIFY_VOLMAX_SCRATCH_BASE +
-                            (int)Math.ceil(NAL.derive.TERMIFY_TERM_VOLMAX_SCRATCH_FACTOR * dd.termVolMax
-                    )
-            );
-
-            if (!(y instanceof Bool) && y.unneg().op().taskable) {
-
-                if (tried.add(y)) {
-
-                    taskify.test(y, dd);
-
-                    if (tried.size() >= forkLimit) {
-                        return false;
-                    }
-                }
-            }
-
-            return true;
-        }
-
-
-    }
 }
