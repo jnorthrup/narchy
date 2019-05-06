@@ -26,6 +26,7 @@ public interface TermTransform extends Function<Term,Term> {
     }
 
     default boolean apply(Term x, LazyCompoundBuilder out) {
+
         if (x instanceof Compound) {
             return transformCompound((Compound) x, out);
         } else {
@@ -46,7 +47,7 @@ public interface TermTransform extends Function<Term,Term> {
                 }
                 out.append(y);
                 if (y != x)
-                    out.setChanged(true);
+                    out.changed();
                 return true;
             }
         }
@@ -58,7 +59,7 @@ public interface TermTransform extends Function<Term,Term> {
     default Term applyCompound(Compound c) { return c; }
 
     default boolean transformCompound(Compound x, LazyCompoundBuilder out) {
-        boolean c = out.changed();
+        int c = out.change(), u = out.uniques();
         int i = out.pos();
 
         Op o = x.op();
@@ -80,10 +81,10 @@ public interface TermTransform extends Function<Term,Term> {
             out.compoundEnd(o);
         }
 
-        if (!c && !out.changed()) {
-            //remains same; rewind and paste as-is
-            out.rewind(i);
-            out.append(x);
+        if (out.change()==c) {
+            //remains same; rewind and paste the Term as-is
+            out.rewind(i, u);
+            out.appendAtomic(x);
         }
         return true;
     }

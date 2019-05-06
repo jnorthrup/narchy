@@ -4,6 +4,7 @@ import com.google.common.primitives.Ints;
 import jcog.Util;
 import jcog.WTF;
 import jcog.data.byt.DynBytes;
+import jcog.data.list.FasterList;
 import jcog.util.ArrayUtil;
 import nars.NAL;
 import nars.Op;
@@ -11,11 +12,15 @@ import nars.subterm.Subterms;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.atom.Atomic;
+import nars.term.atom.Int;
 import nars.term.util.builder.TermBuilder;
 import nars.term.util.map.ByteAnonMap;
+import nars.term.util.transform.AbstractTermTransform;
 import nars.term.util.transform.InlineFunctor;
+import nars.term.util.transform.TermTransform;
 
 import java.util.Arrays;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 
 import static nars.Op.*;
@@ -37,14 +42,17 @@ public class LazyCompoundBuilder {
     final ByteAnonMap sub = new ByteAnonMap(INITIAL_ANON_SIZE);
     final DynBytes code = new DynBytes(INITIAL_CODE_SIZE);
 
-    private boolean changed;
+    private final FasterList<DeferredEval> eval = new FasterList();
+
+    /** incremental mutation counter to detect unmodified segments that can be inlined / interned atomically */
+    private int change = 0;
 
 
     /** when true, non-dynamic constant sequences will be propagated to inline future repeats in instantiation.
      *  if a non-deterministic functor evaluation occurrs, it must not propagate
      *  because that will just cause the same value to be assumed when it should not be.
      * */
-    private boolean constantPropagate = true;
+    @Deprecated private boolean constantPropagate = true;
     int volRemain;
 
     public LazyCompoundBuilder() {
@@ -53,7 +61,8 @@ public class LazyCompoundBuilder {
     public void clear() {
         sub.clear();
         code.clear();
-        changed = false;
+        eval.clear();
+        change = 0;
         constantPropagate = true;
     }
 
@@ -144,7 +153,8 @@ public class LazyCompoundBuilder {
         return subsStart((byte) s.subs()).subs(s).subsEnd();
     }
 
-    private LazyCompoundBuilder appendAtomic(Term x) {
+    /** interns the term as-is, encapsulated as an atomic symbol */
+    public LazyCompoundBuilder appendAtomic(Term x) {
         code.writeByte(MAX_CONTROL_CODES + intern(x));
         return this;
     }
@@ -182,8 +192,15 @@ public class LazyCompoundBuilder {
     public Term get(TermBuilder b, int volMax) {
         this.volRemain = volMax;
 
-        return nextSubterm(b, code.arrayDirect(), new int[]{0, code.len});
+        Term y = nextSubterm(b, code.arrayDirect(), new int[]{0, code.len});
+
+        if (y instanceof Compound && !eval.isEmpty()) {
+            y = DeferredEvaluator.apply(y);
+        }
+
+        return y;
     }
+
 
 
 
@@ -295,18 +312,86 @@ public class LazyCompoundBuilder {
 
     }
 
-    private Term eval(Term[] s) {
-        InlineFunctor f = (InlineFunctor) s[1];
-        Term next = f.applyInline(s[0].subterms());
 
-//        //disable constant propagation if constantPropagate does not need disabled (specially marked "deterministic" functors)
-//        if (!(f instanceof DeterministicFunctor))
-        constantPropagate = false;
 
-        //TODO if Functor.isDeterministic { replaceAhead...
+    private static final TermTransform DeferredEvaluator = new AbstractTermTransform.NegObliviousTermTransform() {
+        @Override
+        protected Term applyPosCompound(Compound x) {
+            if (x instanceof DeferredEval) {
+                Term y = ((DeferredEval)x).eval();
+                return apply(y); //recurse
+            }
+            return super.applyPosCompound(x);
+        }
 
-        return next!=null ? next : Null;
+        @Override
+        public boolean evalInline() {
+            return true;
+        }
+    };
+
+    public int uniques() {
+        return this.sub.idToTerm.size();
     }
+
+
+    private static final class DeferredEval extends LightCompound {
+
+        final static AtomicInteger serial = new AtomicInteger(0);
+
+        /** https://unicode-table.com/en/1F47E/ */
+        //final static Atom DeferredEvalPrefix = Atomic.atom("⚛");
+        final static String DeferredEvalPrefix = ("⚛");
+
+        private final InlineFunctor f;
+        private final Subterms args;
+
+        /** cached value, null if not computed yet */
+        private transient Term value = null;
+
+        DeferredEval(InlineFunctor f, Subterms args) {
+            super(PROD,
+                Atomic.atom(DeferredEvalPrefix + Int.the(serial.incrementAndGet())));
+            this.f = f;
+            this.args = args;
+        }
+
+        @Override
+        public String toString() {
+            return "(" + sub(0) + "=" + f + "(" + args + "))";
+        }
+
+        public final Term eval() {
+            if (this.value!=null)
+                return this.value;
+
+            Term e = f.applyInline(args);
+            if (e == null)
+                e = Null; //HACK
+            return this.value = e;
+        }
+    }
+
+    /** adds a deferred evaluation */
+    private Term eval(Term[] s) {
+        DeferredEval e = new DeferredEval((InlineFunctor) s[1], s[0].subterms());
+        eval.add(e); //TODO check for duplicates?
+        changed();
+        return e;
+    }
+
+//    private Term eval(Term[] s) {
+//        InlineFunctor f = (InlineFunctor) s[1];
+//        Term next = f.applyInline(s[0].subterms());
+//
+////        //disable constant propagation if constantPropagate does not need disabled (specially marked "deterministic" functors)
+////        if (!(f instanceof DeterministicFunctor))
+//        constantPropagate = false;
+//
+//        //TODO if Functor.isDeterministic { replaceAhead...
+//
+//        return next!=null ? next : Null;
+//    }
 
     private Term nextAtom(byte ctl, byte[] ii, int[] range) {
         Term next = nextInterned(ctl);
@@ -444,20 +529,30 @@ public class LazyCompoundBuilder {
         return t;
     }
 
-    public boolean changed() {
-        return changed;
+    public final int change() {
+        return change;
     }
 
-    public void setChanged(boolean c) {
-        changed = c;
+    public final void changed() {
+        change++;
     }
 
     public int pos() {
         return code.len;
     }
 
-    public void rewind(int pos) {
-        code.len = pos;
+    public void rewind(int codePos) {
+        code.len = codePos;
+    }
+
+    public void rewind(int codePos, int uniques) {
+        int s = sub.idToTerm.size();
+        if (uniques > s) {
+            for (int i = uniques; i < s; i++) {
+                sub.termToId.remove(sub.idToTerm.get(i));
+            }
+            sub.idToTerm.removeAbove(uniques);
+        }
     }
 
     public LazyCompoundBuilder subsEnd() {

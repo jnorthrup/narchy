@@ -127,13 +127,13 @@ public class Anon extends AbstractTermTransform.NegObliviousTermTransform {
     }
 
     protected Term putCompound(Compound x) {
-//        Term x0 = transformCompound(x);
-        Term x1 = applyCompoundLazy(x);
+        Term x0 = applyCompound(x);
+        //Term x1 = applyCompoundLazy(x);
 //        if (!x0.equals(x1)) {
 //            transformCompoundLazily((Compound)x);  throw new WTF(); //TEMPORARY
 //        }
-//        return x0;
-        return x1;
+        return x0;
+        //return x1;
     }
 
     void clear() {

@@ -37,7 +37,7 @@ public abstract class SeparateSubtermsCompound implements Compound {
     }
 
     @Override
-    public final String toString() {
+    public String toString() {
         return Compound.toString(this);
     }
 

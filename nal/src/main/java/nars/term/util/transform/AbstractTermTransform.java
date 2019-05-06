@@ -120,7 +120,7 @@ public interface AbstractTermTransform extends TermTransform, nars.term.util.bui
     default Term appliedCompound(Compound x, Op op, int dt, Subterms xx, Subterms yy) {
         if (yy != xx) {
             Term[] a = yy instanceof TermList ? ((TermList) yy).arrayKeep() : yy.arrayShared();
-            if (op == INH && evalInline() && a[1] instanceof InlineFunctor && a[0].op() == PROD) {
+            if (op == INH && a[1] instanceof InlineFunctor && evalInline() && a[0].op() == PROD) {
                 Term v = ((InlineFunctor) a[1] /* pred */).applyInline(a[0] /* args */);
                 if (v != null)
                     return v;

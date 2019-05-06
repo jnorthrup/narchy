@@ -26,14 +26,20 @@ public class Cmp extends SimpleBinaryFunctor {
 
     @Override
     protected Term apply3(Evaluation e, Term x, Term y, Term xy) {
-        Op xyo = xy.op();
 
         boolean xVar = x instanceof Variable, yVar = y instanceof Variable;
+        boolean equal = x.equals(y);
+        if (!equal) {
+
+            if (xVar || yVar || x.hasVars() || y.hasVars())
+                return null; //indeterminate
+
+        }
 
         if (xy.equals(zero)) {
 
             if ((!xVar && !yVar) || (xVar && yVar)) {
-                if (x.equals(y)) {
+                if (equal) {
                     return True; //obvious
                 } else {
                     return Equal.the(x, y);
@@ -45,37 +51,33 @@ public class Cmp extends SimpleBinaryFunctor {
             }
         }
 
-        if (xVar && yVar)
-            return null; //nothing to do
 
-        if (!x.hasVars() && !y.hasVars()) {
+        Op xyo = xy.op();
+        int c = x.compareTo(y);
 
-            int c = x.compareTo(y);
-
-            if (xyo == INT) {
-                if (c != ((Int) xy).i)
-                    return False;
-                else {
+        if (xyo == INT) {
+            if (c != ((Int) xy).i)
+                return False;
+            else {
 //                        if (c > 0) {
 //                            //just in case
 //                            if (!e.is($.func(cmp, x, y, xy), reverse(x, y, c)))
 //                                return Null;
 //                        }
-                    return True;
-                }
-            } else if (!xy.hasVars())
-                return Null; //some nonsense non-integer constant
+                return True;
+            }
+        } else if (!xy.hasVars())
+            return Null; //some nonsense non-integer constant
 
-            if (xyo.var) {
-                if (e.is(xy, Int.the(c))) {
+        if (xyo.var) {
+            if (e.is(xy, Int.the(c))) {
 //                    if (c > 0) {
 //                        return reverse(x, y, c);
 //                    } else {
-                        return null;
+                    return null;
 //                    }
-                } else {
-                    return Null; //conflict with the correct value
-                }
+            } else {
+                return Null; //conflict with the correct value
             }
         }
 

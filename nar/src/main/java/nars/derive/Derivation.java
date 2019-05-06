@@ -14,8 +14,6 @@ import nars.control.CauseMerge;
 import nars.derive.op.MatchFork;
 import nars.derive.op.Occurrify;
 import nars.eval.Evaluation;
-import nars.link.DynamicTermLinker;
-import nars.link.TermLinker;
 import nars.op.Subst;
 import nars.op.UniSubst;
 import nars.subterm.Subterms;
@@ -243,15 +241,30 @@ public class Derivation extends PreDerivation {
         this.anon = new AnonWithVarShift(ANON_INITIAL_CAPACITY, Op.VAR_DEP.bit | Op.VAR_QUERY.bit) {
             @Override
             protected Term putCompound(Compound x) {
-                //return super.putCompound(x);
-                termBuilder.clear();
-                return applyCompoundLazy(x, termBuilder, Op.terms, NAL.term.COMPOUND_VOLUME_MAX);
+                return super.putCompound(x);
+
+                //TODO needs   @Override
+                //        protected boolean evalInline() {
+                //            return false; //TEMPORARY
+                //        }
+                //termBuilder.clear();
+                //return applyCompoundLazy(x, termBuilder, Op.terms, NAL.term.COMPOUND_VOLUME_MAX);
             }
             @Override
             protected Term getCompound(Compound x) {
-                //return super.putCompound(x);
-                termBuilder.clear();
-                return applyCompoundLazy(x, termBuilder, Op.terms, NAL.term.COMPOUND_VOLUME_MAX);
+                return super.getCompound(x);
+
+                //TODO needs   @Override
+                //        protected boolean evalInline() {
+                //            return false; //TEMPORARY
+                //        }
+                //termBuilder.clear();
+                //return applyCompoundLazy(x, termBuilder, Op.terms, NAL.term.COMPOUND_VOLUME_MAX);
+            }
+
+            @Override
+            public boolean evalInline() {
+                return false;
             }
         };
     }
