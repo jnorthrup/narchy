@@ -52,7 +52,6 @@ public class LazyCompoundBuilder {
      *  if a non-deterministic functor evaluation occurrs, it must not propagate
      *  because that will just cause the same value to be assumed when it should not be.
      * */
-    @Deprecated private boolean constantPropagate = true;
     int volRemain;
 
     public LazyCompoundBuilder() {
@@ -63,7 +62,6 @@ public class LazyCompoundBuilder {
         code.clear();
         eval.clear();
         change = 0;
-        constantPropagate = true;
     }
 
     public boolean updateMap(Function<Term, Term> m) {
@@ -283,24 +281,21 @@ public class LazyCompoundBuilder {
 
             }
 
-            if (s == null) {
+            /*if (s == null) {
                 return Null;
-            } else {
+            } else */{
 
                 if (op==INH && evalInline() && s[1] instanceof InlineFunctor && s[0].op()==PROD) {
 
-                    //TODO defer evaluation until end
-                    return eval(s);
+                    //TODO constant propagate (replaceAhead(...)) if the functor is deterministic ex: (instanceof DeterministicFunctor) etc
+                    return evalDeferred(s);
 
                 } else {
 
                     Term next = op.the(b, dt, s); //assert (next != null);
 
                     if (next != Null) {
-
-                        if (constantPropagate)
-                            replaceAhead(ii, range, from, next);
-
+                        replaceAhead(ii, range, from, next);
                     }
 
                     return next;
@@ -373,10 +368,10 @@ public class LazyCompoundBuilder {
     }
 
     /** adds a deferred evaluation */
-    private Term eval(Term[] s) {
+    private Term evalDeferred(Term[] s) {
         DeferredEval e = new DeferredEval((InlineFunctor) s[1], s[0].subterms());
         eval.add(e); //TODO check for duplicates?
-        changed();
+        changed(); //<- necessary?
         return e;
     }
 

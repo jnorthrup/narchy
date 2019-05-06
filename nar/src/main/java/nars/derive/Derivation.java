@@ -742,10 +742,10 @@ public class Derivation extends PreDerivation {
             return atomic;
         }
 
-        @Override
-        public final boolean evalInline() {
-            return true;
-        }
+//        @Override
+//        public final boolean evalInline() {
+//            return true;
+//        }
 
     }
 

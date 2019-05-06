@@ -1,7 +1,9 @@
 package nars.attention;
 
 import jcog.pri.PLink;
+import jcog.pri.PriReference;
 import jcog.pri.bag.Bag;
+import jcog.pri.bag.impl.PLinkArrayBag;
 import jcog.pri.bag.impl.hijack.PriLinkHijackBag;
 import jcog.pri.op.PriMerge;
 import nars.NAR;
@@ -29,23 +31,25 @@ public class PremiseBuffer implements Serializable {
 
     /** rate that priority from the novelty bag subtracts from potential premises.
      * may need to be divided by concurrency so that threads dont step on each other */
-    float notNovelCost = 0.25f;
+    float notNovelCost = 0.5f;
 
     /** search rate */
     public float fillRate = 1f;
 
     /** active premises for sampling */
-    public final Bag<Premise,PLink<Premise>> premise;
+    public final Bag<Premise,PriReference<Premise>> premise;
 
     /** tracks usage, the anti-premise novelty filter */
-    public final Bag<Premise,PLink<Premise>> premiseTried;
+    public final Bag<Premise,PriReference<Premise>> premiseTried;
+
+    //TODO premise blacklist to detect pointless derivations that shouldnt even be considered, per-Deriver
 
     public PremiseBuffer(What.TaskLinkWhat taskLinkWhat) {
         this.taskLinkWhat = taskLinkWhat;
 
         this.premise =
-                //new PLinkArrayBag<Premise>(PriMerge.max, premiseBufferCapacity);
-                new PriLinkHijackBag<>(PriMerge.max, premiseBufferCapacity, 3);
+                new PLinkArrayBag<>(PriMerge.max, premiseBufferCapacity);
+                //new PriLinkHijackBag<>(PriMerge.max, premiseBufferCapacity, 3);
         this.premiseTried =
                 new PriLinkHijackBag<>(PriMerge.max, premiseBufferCapacity, 2);
     }
@@ -73,9 +77,9 @@ public class PremiseBuffer implements Serializable {
 
     }
 
-    public void fire(PLink<Premise> pp, int matchTTL, int deriveTTL, Derivation d) {
+    public void fire(PriReference<Premise> pp, int matchTTL, int deriveTTL, Derivation d) {
         Premise P = pp.get();
-        PLink<Premise> existing = premiseTried.put(pp);
+        PriReference<Premise> existing = premiseTried.put(pp);
         if (existing!=null && existing!=pp)
             pp.priSub(existing.pri() * notNovelCost);
 
