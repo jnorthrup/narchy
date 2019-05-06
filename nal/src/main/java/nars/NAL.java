@@ -511,6 +511,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
          */
         public static final boolean PREMISE_UNIFY_COMMON_VARIABLES = configIs("PREMISE_UNIFY_COMMON_VARIABLES");
 
+        /** TODO use Gödel numbering not this HACK */
         public static final boolean PREMISE_KEY_DITHER= configIs("PREMISE_KEY_DITHER");
     }
 
@@ -613,6 +614,8 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
          * how many INT terms are canonically interned/cached. [0..n)
          */
         public static final int ANON_INT_MAX = Byte.MAX_VALUE;
+
+        public static final boolean INH_IMAGE_RECURSION = false;
     }
 
     public enum test {

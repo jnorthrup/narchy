@@ -12,6 +12,7 @@ import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
 import nars.term.util.SetSectDiff;
+import nars.term.util.TermException;
 import nars.term.util.builder.HeapTermBuilder;
 import nars.term.util.builder.TermBuilder;
 import nars.term.util.builder.TermConstructor;
@@ -53,9 +54,9 @@ public enum Op {
         public Term the(TermBuilder b, int dt, Term[] u) {
 
             if (u.length != 1)
-                throw new RuntimeException("negation requires one subterm");
+                throw new TermException("negation requires one subterm", NEG, dt, u);
             if (dt != DTERNAL)
-                throw new RuntimeException("negation has no temporality");
+                throw new TermException("negation has no temporality", NEG, dt, u);
 
             return the(u[0]);
         }
@@ -112,6 +113,16 @@ public enum Op {
 
     /**
      * conjunction
+     *   &&   parallel                (a && b)          <= (b && a)
+     *   &&+  sequence forward        (a &&+1 b)
+     *   &&-  sequence reverse        (a &&-1 b)        =>      (b &&+1 a)
+     *   &&+- variable                (a &&+- b)        <=      (b &&+- a)
+     *   &|   joined at the start     (x &| (a &&+1 b)) => ((a&&x) &&+1 b)
+     *   |&   joined at the end       (x |& (a &&+1 b)) => (     a &&+1 (b&&x))   //TODO
+     *
+     * disjunction
+     *   ||   parallel                (a || b)          => --(--a &&   --b)
+     *   ||+- variable                (a ||+- b)        => --(--a &&+- --b)
      */
     CONJ("&&", true, 5, Args.GTETwo) {
         @Override

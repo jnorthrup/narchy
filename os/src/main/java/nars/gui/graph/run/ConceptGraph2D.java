@@ -2,10 +2,8 @@ package nars.gui.graph.run;
 
 import com.google.common.collect.Iterables;
 import jcog.data.map.CellMap;
-import jcog.math.FloatRange;
 import jcog.pri.ScalarValue;
 import nars.NAR;
-import nars.concept.Concept;
 import nars.gui.NARui;
 import nars.link.TaskLink;
 import nars.term.Term;
@@ -72,7 +70,7 @@ public class ConceptGraph2D extends Graph2D<Term> {
                 .render(
                         Graph2D.InvalidateEdges,
                         //                      new TermlinkVis(n),
-                        new SubtermVis(n),
+//                        new SubtermVis(n),
                         new TasklinkVis(links),
                         new StatementVis(n)
                 );
@@ -283,52 +281,52 @@ public class ConceptGraph2D extends Graph2D<Term> {
         }
     }
 
-    private class SubtermVis implements Graph2D.Graph2DRenderer<Term> {
-
-        public final AtomicBoolean subterms = new AtomicBoolean(false);
-
-        public final AtomicBoolean visible = new AtomicBoolean(true);
-
-        public final FloatRange strength = new FloatRange(0.1f, 0, 1f);
-
-        final NAR n;
-
-        private SubtermVis(NAR n) {
-            this.n = n;
-        }
-
-        @Override
-        public void node(NodeVis<Term> node, GraphEditing<Term> graph) {
-            if (!subterms.getOpaque())
-                return;
-
-            boolean visible = this.visible.getOpaque();
-
-            float p = strength.floatValue();
-
-            Term t = node.id;
-            if (t == null) return;
-            Concept c = n.concept(t);
-            if (c != null) {
-
-                c.linker().targets().forEach(s -> {
-                    if (s.op().conceptualizable) {
-                        if (t != null) {
-                            int v = t.volume();
-                            @Nullable EdgeVis<Term> e = graph.edge(node, s.term().concept());
-                            if (e != null) {
-                                e.weightLerp(p, WEIGHT_UPDATE_RATE);
-                                if (visible)
-                                    e.colorAdd(p, p, p, COLOR_UPDATE_RATE / v);
-                            }
-                        }
-                    }
-                });
-
-
-            }
-        }
-    }
+//    private class SubtermVis implements Graph2D.Graph2DRenderer<Term> {
+//
+//        public final AtomicBoolean subterms = new AtomicBoolean(false);
+//
+//        public final AtomicBoolean visible = new AtomicBoolean(true);
+//
+//        public final FloatRange strength = new FloatRange(0.1f, 0, 1f);
+//
+//        final NAR n;
+//
+//        private SubtermVis(NAR n) {
+//            this.n = n;
+//        }
+//
+//        @Override
+//        public void node(NodeVis<Term> node, GraphEditing<Term> graph) {
+//            if (!subterms.getOpaque())
+//                return;
+//
+//            boolean visible = this.visible.getOpaque();
+//
+//            float p = strength.floatValue();
+//
+//            Term t = node.id;
+//            if (t == null) return;
+//            Concept c = n.concept(t);
+//            if (c != null) {
+//
+//                c.linker().targets().forEach(s -> {
+//                    if (s.op().conceptualizable) {
+//                        if (t != null) {
+//                            int v = t.volume();
+//                            @Nullable EdgeVis<Term> e = graph.edge(node, s.term().concept());
+//                            if (e != null) {
+//                                e.weightLerp(p, WEIGHT_UPDATE_RATE);
+//                                if (visible)
+//                                    e.colorAdd(p, p, p, COLOR_UPDATE_RATE / v);
+//                            }
+//                        }
+//                    }
+//                });
+//
+//
+//            }
+//        }
+//    }
 
     private static class StatementVis implements Graph2DRenderer<Term> {
         public final AtomicBoolean statements = new AtomicBoolean(true);

@@ -65,14 +65,34 @@ public interface Variable extends Atomic {
         if (y != y0 && x == y /*x.equals(y)*/)
             return true;
 
-        if (y == y0 && x == this)
-            return unifyVar(u, this, y0);
-
+        boolean xv = x instanceof Variable, yv = y instanceof Variable;
+        if (xv || yv) {
+            //unify variable negation mobius
+            boolean xn = x instanceof Neg, yn = y instanceof Neg;
+            if (xn ^ yn) {
+//            if (xn) {
+//                Term xu = x.unneg();
+//                if (xu instanceof Variable) {
+//                    if (xu)
+//                }
+//            }
+                if (yn) {
+                    Term yu = y.unneg();
+                    if (yu instanceof Variable) {
+                        assert(xv);
+                        if (u.varReverse(yu.op(), x.op())) {
+                            Variable yuy = (Variable) yu;
+                            return yuy.unifyVar(u, yuy, x.neg());
+                        }
+                    }
+                }
+            }
+        }
 
         if (x instanceof Variable)
             return unifyVar(u, (Variable) x, y);
         else if (y instanceof Variable) {
-            return u.varReverse(y.op()) && unifyVar(u, (Variable) y, x);
+            return u.varReverse(y.op(), x.op()) && unifyVar(u, (Variable) y, x);
         } else {
             if (u.varDepth < NAL.unify.UNIFY_VAR_RECURSION_DEPTH_LIMIT) {
                 u.varDepth++;
@@ -102,7 +122,7 @@ public interface Variable extends Atomic {
                     if (xOp != VAR_PATTERN && yOp != VAR_PATTERN && u.commonVariables)
                         return CommonVariable.unify(x, (Variable) y, u);
                     else {
-                        if (yOp.id < xOp.id && u.varReverse(yOp))
+                        if (u.varReverse(yOp, xOp))
                             return u.putXY((Variable) y, x);
                     }
 
@@ -111,7 +131,7 @@ public interface Variable extends Atomic {
 
             return u.putXY(x, y);
 
-        } else if (y instanceof Variable && u.varReverse(y.op())) {
+        } else if (y instanceof Variable && u.varReverse(y.op(), x.op())) {
             return u.putXY((Variable) y, x);
         } else {
             if (x instanceof Variable)

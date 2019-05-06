@@ -109,7 +109,7 @@ public class ActiveQuestionTask extends NALTaskX implements Consumer<Task> {
         }
 
         @Override
-        public boolean tryMatch() {
+        public boolean match() {
             this.match = true;
             return false; //done
         }

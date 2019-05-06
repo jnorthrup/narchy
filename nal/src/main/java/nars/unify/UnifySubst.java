@@ -48,7 +48,7 @@ abstract public class UnifySubst extends Unify {
 
 
     @Override
-    public final boolean tryMatch() {
+    public final boolean match() {
         Term aa = apply(input);
         return aa.op().conceptualizable && each(aa);
     }

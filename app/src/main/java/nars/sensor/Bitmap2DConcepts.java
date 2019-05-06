@@ -1,7 +1,6 @@
 package nars.sensor;
 
 import jcog.data.iterator.Array2DIterable;
-import jcog.data.list.FasterList;
 import jcog.func.IntIntToObjectFunction;
 import jcog.math.FloatRange;
 import jcog.math.FloatSupplier;
@@ -9,9 +8,6 @@ import jcog.signal.wave2d.Bitmap2D;
 import nars.NAR;
 import nars.concept.Concept;
 import nars.concept.sensor.Signal;
-import nars.link.TemplateTermLinker;
-import nars.link.TermLinker;
-import nars.term.Term;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.PrintStream;
@@ -19,8 +15,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
-
-import static nars.Op.EmptyTermArray;
 
 /**
  * rectangular region of pixels
@@ -59,7 +53,7 @@ public class Bitmap2DConcepts<P extends Bitmap2D> implements Iterable<Signal> {
 
                 FloatSupplier f = () -> src.brightness(xx, yy);
 
-                Signal sss = new Signal(pixelTerm.apply(x, y), cause, f, pixelLinker(xx, yy), n).setResolution(res);
+                Signal sss = new Signal(pixelTerm.apply(x, y), cause, f, n).setResolution(res);
 
                 matrix[x][y] = sss;
             }
@@ -68,28 +62,28 @@ public class Bitmap2DConcepts<P extends Bitmap2D> implements Iterable<Signal> {
         this.iter = new Array2DIterable<>(matrix);
     }
 
-    private TermLinker pixelLinker(int xx, int yy) {
-        //n.conceptBuilder.termlinker(target)
-
-        Term[] nn;
-        Term center = pixelTerm.apply(xx, yy);
-        if (linkNESW) {
-            List<Term> neighbors = new FasterList(4);
-            if (xx > 0)
-                neighbors.add(pixelTerm.apply(xx - 1, yy));
-            if (yy > 0)
-                neighbors.add(pixelTerm.apply(xx, yy - 1));
-            if (xx < width - 1)
-                neighbors.add(pixelTerm.apply(xx + 1, yy));
-            if (yy < height - 1)
-                neighbors.add(pixelTerm.apply(xx, yy + 1));
-
-            nn = neighbors.toArray(EmptyTermArray);
-        } else {
-            nn = EmptyTermArray;
-        }
-        return TemplateTermLinker.of(center, nn);
-    }
+//    private TermLinker pixelLinker(int xx, int yy) {
+//        //n.conceptBuilder.termlinker(target)
+//
+//        Term[] nn;
+//        Term center = pixelTerm.apply(xx, yy);
+//        if (linkNESW) {
+//            List<Term> neighbors = new FasterList(4);
+//            if (xx > 0)
+//                neighbors.add(pixelTerm.apply(xx - 1, yy));
+//            if (yy > 0)
+//                neighbors.add(pixelTerm.apply(xx, yy - 1));
+//            if (xx < width - 1)
+//                neighbors.add(pixelTerm.apply(xx + 1, yy));
+//            if (yy < height - 1)
+//                neighbors.add(pixelTerm.apply(xx, yy + 1));
+//
+//            nn = neighbors.toArray(EmptyTermArray);
+//        } else {
+//            nn = EmptyTermArray;
+//        }
+//        return TemplateTermLinker.of(center, nn);
+//    }
 
     /**
      * iterate columns (x) first, then rows (y)

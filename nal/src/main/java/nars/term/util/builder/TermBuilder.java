@@ -6,7 +6,7 @@ import nars.Op;
 import nars.subterm.Subterms;
 import nars.term.Compound;
 import nars.term.Term;
-import nars.term.anon.AnonID;
+import nars.term.anon.Intrin;
 import nars.term.atom.Bool;
 import nars.term.compound.CachedCompound;
 import nars.term.compound.CachedUnitCompound;
@@ -69,7 +69,7 @@ public abstract class TermBuilder implements TermConstructor {
         assert (o.minSubs <= s || hasEllipsis) :
                 "subterm underflow: " + o + ' ' + Arrays.toString(t);
 
-        if (s == 1 && !AnonID.isAnonPosOrNeg(t[0])) {
+        if (s == 1 && !Intrin.intrinsic(t[0])) {
             Term x = t[0];
             switch (o) {
                 case NEG:

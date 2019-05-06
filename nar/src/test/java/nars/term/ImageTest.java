@@ -1,9 +1,6 @@
 package nars.term;
 
-import nars.$;
-import nars.NAR;
-import nars.NARS;
-import nars.Narsese;
+import nars.*;
 import nars.subterm.util.TermMetadata;
 import nars.term.atom.Int;
 import nars.term.compound.CachedCompound;
@@ -205,9 +202,11 @@ class ImageTest {
         assertTrue(x.isNormalized());
     }
     @Test void testNormalizeWTF() {
-        Term x = $$("(ANIMAL-->((cat,ANIMAL),cat,/))");
-        Term y = Image.imageNormalize(x);
-        assertEquals(True, y);
-        assertEquals(True, x); //detect earlier
+        if (!NAL.term.INH_IMAGE_RECURSION) {
+            Term x = $$("(ANIMAL-->((cat,ANIMAL),cat,/))");
+            Term y = Image.imageNormalize(x);
+            assertEquals(True, y);
+            assertEquals(True, x); //detect earlier
+        }
     }
 }

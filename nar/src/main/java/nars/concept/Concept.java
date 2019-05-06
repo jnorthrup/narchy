@@ -24,7 +24,6 @@ import jcog.data.map.MetaMap;
 import nars.NAR;
 import nars.Op;
 import nars.Task;
-import nars.link.TermLinker;
 import nars.table.BeliefTable;
 import nars.table.TaskTable;
 import nars.table.question.QuestionTable;
@@ -192,9 +191,6 @@ public interface Concept extends Termed, MetaMap {
 
 
     }
-
-
-    TermLinker linker();
 
     Stream<Task> tasks(boolean includeBeliefs, boolean includeQuestions, boolean includeGoals, boolean includeQuests);
 

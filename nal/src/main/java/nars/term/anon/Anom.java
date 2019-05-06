@@ -9,7 +9,7 @@ import nars.term.Term;
 import static nars.Op.ATOM;
 
 /* indexed anonymous target */
-public final class Anom extends AnonID {
+public final class Anom extends Intrin {
 
     private static final byte ANOM_SUBTYPE = 1;
     private static final int ANOM_OPX = Term.opX(ATOM, ANOM_SUBTYPE);

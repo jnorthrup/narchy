@@ -75,7 +75,7 @@ public class EllipsisTest {
                 Unify f = new Unify(VAR_PATTERN, new XorShift128PlusRandom(1 + seed), NAL.unify.UNIFICATION_STACK_CAPACITY) {
 
                     @Override
-                    public boolean tryMatch() {
+                    public boolean match() {
                         
 
 
@@ -414,7 +414,7 @@ public class EllipsisTest {
             Random rng = new XorShift128PlusRandom(seed);
             Unify f = new Unify(VAR_PATTERN, rng, NAL.unify.UNIFICATION_STACK_CAPACITY, 128) {
                 @Override
-                public boolean tryMatch() {
+                public boolean match() {
                     results.add(xy.toString());
                     return true;
                 }

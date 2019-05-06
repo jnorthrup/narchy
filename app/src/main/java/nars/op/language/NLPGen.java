@@ -78,7 +78,7 @@ public class NLPGen {
                         Unify u = new Unify(VAR_PATTERN, terminal.random(), NAL.unify.UNIFICATION_STACK_CAPACITY, terminal.deriveBranchTTL.intValue()) {
 
                             @Override
-                            public boolean tryMatch() {
+                            public boolean match() {
 
 
                                 final String[] r = {natural};

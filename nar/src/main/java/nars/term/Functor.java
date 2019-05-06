@@ -9,7 +9,6 @@ import nars.concept.Concept;
 import nars.concept.NodeConcept;
 import nars.concept.PermanentConcept;
 import nars.eval.Evaluation;
-import nars.link.TermLinker;
 import nars.subterm.Subterms;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
@@ -40,7 +39,7 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, B
     }
 
     protected Functor(Atom atom) {
-        super(atom, TermLinker.NullLinker);
+        super(atom);
     }
 
     @Override

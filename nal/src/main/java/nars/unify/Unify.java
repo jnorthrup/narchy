@@ -152,7 +152,7 @@ public abstract class Unify extends Versioning<Term> {
      *
      * @return whether to continue on any subsequent matches
      */
-    protected abstract boolean tryMatch();
+    protected abstract boolean match();
 
 
     public final boolean tryMutate(Termutator[] chain, int next) {
@@ -166,7 +166,7 @@ public abstract class Unify extends Versioning<Term> {
 
         } else {
 
-            boolean kontinue = tryMatch();
+            boolean kontinue = match();
 
             return use(NAL.derive.TTL_COST_MUTATE) && kontinue;
         }
@@ -249,7 +249,7 @@ public abstract class Unify extends Versioning<Term> {
         if (x.unify(y, this)) {
 
             if (finish)
-                tryMatches();
+                matches();
 
             return true;
         }
@@ -299,16 +299,16 @@ public abstract class Unify extends Versioning<Term> {
             return unification(true);
         }
     }
-    protected void tryMatches() {
+    protected void matches() {
         Termutator[] t = commitTermutes();
         if (t!=null) {
-            tryMatches(t);
+            matches(t);
         } else {
-            tryMatch();
+            match();
         }
     }
 
-    public void tryMatches(Termutator[] t) {
+    public void matches(Termutator[] t) {
         if (NAL.SHUFFLE_TERMUTES && t.length > 1) {
             Util.shuffle(t, random);
         }
@@ -328,7 +328,7 @@ public abstract class Unify extends Versioning<Term> {
     }
 
     @Override
-    public Versioning clear() {
+    public Unify clear() {
         clear(null);
         return this;
     }
@@ -369,13 +369,11 @@ public abstract class Unify extends Versioning<Term> {
         return var!=VAR_PATTERN && var(var);
     }
 
-    public final boolean varReverse(Op var) {
-        //assert(var!=VAR_PATTERN);
-        return var!=VAR_PATTERN
-                //&& var!=VAR_QUERY ;
-                && var(var);
-        //return false;
-        //return true;
+    /** can x be assigned to y (y <= x) */
+    public final boolean varReverse(Op target, Op value) {
+        assert(target.var);
+
+        return (!value.var || (target.id < value.id)) && var(target);
     }
 
 
@@ -516,7 +514,7 @@ public abstract class Unify extends Versioning<Term> {
         }
 
         @Override
-        protected boolean tryMatch() {
+        protected boolean match() {
             return true;
         }
     }

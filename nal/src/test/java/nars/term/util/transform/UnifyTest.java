@@ -98,14 +98,14 @@ public class UnifyTest {
         Unify sub = new Unify(type, new XorShift128PlusRandom(rngSeed), NAL.unify.UNIFICATION_STACK_CAPACITY) {
 
             @Override
-            protected void tryMatches() {
+            protected void matches() {
                 if (!termutes.isEmpty())
                     termuted[0] = true;
-                super.tryMatches();
+                super.matches();
             }
 
             @Override
-            public boolean tryMatch() {
+            public boolean match() {
 
                 if (shouldSub) {
                     final int[] matched = {0};
@@ -874,7 +874,7 @@ public class UnifyTest {
         Unify f = new Unify(Op.VAR_QUERY, new XorShift128PlusRandom(1), NAL.unify.UNIFICATION_STACK_CAPACITY, 128) {
 
             @Override
-            public boolean tryMatch() {
+            public boolean match() {
 
                 assertTrue(matches);
 
@@ -899,4 +899,25 @@ public class UnifyTest {
         return f;
     }
 
+    @Test void testVariableOrdering() {
+        UnifyAny u = new UnifyAny();
+        Term a = $$("#1"), b = $$("(--,%1)");
+        assertTrue( u.unify(a, b) );
+        assertEquals("{%1=(--,#1)}", u.xy.toString()); //WRONG: "{#1=(--,%1)}",
+    }
+    @Test void testVariableOrderingReverseA() {
+        UnifyAny u = new UnifyAny();
+        Term a = $$("(--,#1)"), b = $$("%1");
+        assertTrue( u.unify(a, b) );
+        assertEquals("{%1=(--,#1)}", u.xy.toString()); //WRONG: "{#1=(--,%1)}",
+    }
+
+    @Test void testVariableOrderingReverseB() {
+        UnifyAny u = new UnifyAny();
+        Term a = $$("#1"), b = $$("(--,%1)");
+        assertTrue( u.unify(b, a) );
+        assertEquals("{%1=(--,#1)}", u.xy.toString()); //WRONG: "{#1=(--,%1)}",
+    }
+
+    //testUnifyNegativeMobiusStrip
 }

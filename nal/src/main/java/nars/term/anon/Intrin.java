@@ -1,5 +1,6 @@
 package nars.term.anon;
 
+import jcog.Skill;
 import nars.Op;
 import nars.The;
 import nars.subterm.util.SubtermMetadataCollector;
@@ -8,40 +9,45 @@ import nars.term.Term;
 import nars.term.atom.Atomic;
 import nars.term.var.NormalizedVariable;
 
-import static nars.Op.*;
+import static nars.Op.ImgExt;
+import static nars.Op.ImgInt;
 
 /**
- * indicates the target has an anonymous, canonical identifier (16-bit short)
+ * INTrinsic terms
+ *   a finite set of terms canonically addressable by an integer value
+ *   used by the system in critical parts to improve space and time efficiency
+ *
+ * indicates the target has an anonymous, canonical integer identifier
  */
-public abstract class AnonID implements Atomic, The {
+@Skill({"G%C3%B6del_numbering_for_sequences"}) public abstract class Intrin implements Atomic, The {
 
     /** TODO these dont need to be their own bits.
      * these are categories of 8-bit numerically indexable items.
      * use some flexible code page mapping */
-//    public static final short INTs = 1 << 8;
     public static final short ANOMs = 0;
     public static final short VARDEPs = 1 << 8;
     public static final short VARINDEPs = 2 << 8;
     public static final short VARQUERYs = 3 << 8;
     public static final short VARPATTERNs = 4 << 8;
     public static final short IMGs = 5 << 8; // TODO make this a misc category
+//    public static final short INTs = 1 << 8;
 
     /** meant to be a perfect hash among all normalized variables */
     public final int i;
 
-    protected AnonID(Op type, byte num) {
-        this(AnonID.termToId(type, num));
+    protected Intrin(Op type, byte num) {
+        this(Intrin.termToId(type, num));
     }
 
-    protected AnonID(int id) {
+    protected Intrin(int id) {
         this.i = id;
     }
 
     private static short termToId(Op o, byte id) {
-        return (short)(opToMask(o) | id);
+        return (short)(group(o) | id);
     }
 
-    private static short opToMask(Op o) {
+    private static short group(Op o) {
 
         switch (o) {
             case ATOM:
@@ -64,26 +70,17 @@ public abstract class AnonID implements Atomic, The {
 
     }
 
-//    /** fast Anom (non-Var) test. works for either positive or negative */
-//    static boolean isAnonPosOrNeg(short i) {
-//        return isAnom(Math.abs(i));
-//    }
-
-//    /** fast Anom (non-Var) test. assumes positive */
-//    public static boolean isAnom(int i) {
-//        return (i & 0xff00) == ATOM_MASK;
-//    }
 
     public static int isVariable(short i, int ifNot) {
-        int m = mask(i);
+        int m = group(i);
         return (m == VARDEPs || m== VARINDEPs || m == VARPATTERNs || m == VARQUERYs) ?
                 (i & 0xff) : ifNot;
     }
 
-    /** POS ONLY assumes non-negative; if the input is negative use idToTermPosOrNeg */
-    public static Term termPos(short /* short */ i) {
+    /** @param i positive values only  */
+    public static Term _term(short /* short */ i) {
         byte num = (byte) (i & 0xff);
-        switch (mask(i)) {
+        switch (group(i)) {
             case ANOMs:
                 return Anom.the[num];
             case IMGs:
@@ -112,20 +109,22 @@ public abstract class AnonID implements Atomic, The {
         if (neg)
             i = (short) -i;
 
-        Term t = termPos(i);
-
-        return neg ? t.negIf(neg) : t;
+        return neg ? neg(i) : _term(i);
     }
 
-    public static int mask(int i) {
+    static Neg.NegAnonID neg(short i) {
+        return new Neg.NegAnonID(i);
+    }
+
+    public static int group(int i) {
         return i & 0xff00;
     }
-    public static int mask(AnonID a) {
-        return mask(a.i);
+    public static int group(Intrin a) {
+        return group(a.i);
     }
 
-    public static boolean isAnonPosOrNeg(Term t0) {
-        return t0 instanceof AnonID || t0.unneg() instanceof AnonID;
+    public static boolean intrinsic(Term t0) {
+        return t0 instanceof Intrin || (t0 instanceof Neg && t0.unneg() instanceof Intrin);
     }
 
     /** returns 0 if the target is not anon ID or a negation of one */
@@ -137,16 +136,16 @@ public abstract class AnonID implements Atomic, The {
 //                return 0;
 //        }
 
-        if (t instanceof AnonID) {
-            return (short) ((AnonID)t).i;
+        if (t instanceof Intrin) {
+            return (short) ((Intrin)t).i;
         }
         if (t instanceof Neg.NegAnonID) {
             return (short) -((Neg.NegAnonID)t).sub;
         }
         if (t instanceof Neg) {
             t = t.unneg();
-            if (t instanceof AnonID)
-                return (short) -((AnonID)t).i;
+            if (t instanceof Intrin)
+                return (short) -((Intrin)t).i;
         }
         return 0;
     }
@@ -158,16 +157,16 @@ public abstract class AnonID implements Atomic, The {
         return c;
     }
 
-    public static boolean isAnon(Term[] t) {
+    public static boolean intrinsic(Term[] t) {
         for (Term x : t) {
             //assert (!(x instanceof EllipsisMatch)) : "ellipsis match should not be a subterm of ANYTHING";
-            if (x instanceof AnonID)
+            if (x instanceof Intrin)
                 continue;
 
             if (!(x instanceof Neg /*Compound*/))
                 return false; //not a NEG
             Term y = x.unneg();
-            if (!(y instanceof AnonID))
+            if (!(y instanceof Intrin))
                 return false;
 //            //HACK
 //            if (y instanceof Int) {
@@ -183,11 +182,6 @@ public abstract class AnonID implements Atomic, The {
         return this;
     }
 
-
-    public final short anonID(boolean neg) {
-        short s = (short) (i);
-        return neg ? (short) -s : s;
-    }
 
     @Override
     public final int hashCode() {

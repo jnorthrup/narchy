@@ -25,7 +25,7 @@ import nars.$;
 import nars.NAL;
 import nars.Op;
 import nars.term.Variable;
-import nars.term.anon.AnonID;
+import nars.term.anon.Intrin;
 import org.jetbrains.annotations.Nullable;
 
 import static nars.Op.*;
@@ -34,13 +34,13 @@ import static nars.Op.*;
  * Normalized variable
  * "highly immutable" and re-used
  */
-public abstract class NormalizedVariable extends AnonID implements Variable {
+public abstract class NormalizedVariable extends Intrin implements Variable {
 
 
     /**
      * numerically-indexed variable instance cache; prevents duplicates and speeds comparisons
      */
-    private static final AnonID[][] varCache = new AnonID[4][NAL.term.MAX_INTERNED_VARS];
+    private static final Intrin[][] varCache = new Intrin[4][NAL.term.MAX_INTERNED_VARS];
 
     static {
 
@@ -105,7 +105,7 @@ public abstract class NormalizedVariable extends AnonID implements Variable {
      * TODO move this to TermBuilder
      */
 
-    private static AnonID vNew(/*@NotNull*/ Op type, byte id) {
+    private static Intrin vNew(/*@NotNull*/ Op type, byte id) {
         switch (type) {
             case VAR_PATTERN:
                 return new VarPattern(id);
@@ -120,11 +120,11 @@ public abstract class NormalizedVariable extends AnonID implements Variable {
         }
     }
 
-    public static AnonID the(/*@NotNull*/ Op op, byte id) {
+    public static Intrin the(/*@NotNull*/ Op op, byte id) {
         return the(op.id, id);
     }
 
-    public static AnonID the(/*@NotNull*/ byte op, byte id) {
+    public static Intrin the(/*@NotNull*/ byte op, byte id) {
         assert(id > 0);
         if (id < NAL.term.MAX_INTERNED_VARS) {
             return varCache[NormalizedVariable.opToVarIndex(op)][id];

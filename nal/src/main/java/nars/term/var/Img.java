@@ -2,13 +2,13 @@ package nars.term.var;
 
 import nars.Op;
 import nars.term.Term;
-import nars.term.anon.AnonID;
+import nars.term.anon.Intrin;
 import nars.unify.Unify;
 
 import java.io.IOException;
 
 /** the / and \ Image operators */
-public final class Img extends AnonID {
+public final class Img extends Intrin {
 
     private final String str;
     private final char symChar;

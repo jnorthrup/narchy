@@ -4,7 +4,6 @@ import jcog.data.map.CompactArrayMap;
 import nars.NAR;
 import nars.Task;
 import nars.concept.util.ConceptBuilder;
-import nars.link.TermLinker;
 import nars.table.BeliefTable;
 import nars.table.question.QuestionTable;
 import nars.term.Term;
@@ -20,9 +19,6 @@ public class NodeConcept implements Concept {
 
     public final Term term;
 
-
-    private final TermLinker linker;
-
     /** cached here, == target.hashCode() */
     private final int hash;
 
@@ -33,15 +29,13 @@ public class NodeConcept implements Concept {
     }
 
     public NodeConcept(Term term, ConceptBuilder b) {
-        this(term, b.termlinker(term));
+        this(term);
     }
 
-    protected NodeConcept(Term term, TermLinker linker) {
+    protected NodeConcept(Term term) {
         assert (term.op().conceptualizable): term + " not conceptualizable";
         this.term = term;
         this.hash = term.hashCode();
-
-        this.linker = linker;
 
         if (!(this instanceof PermanentConcept))
             meta.put(DELETED, DELETED); //HACK start deleted to avoid re-deleting if flyweight dynamic
@@ -59,11 +53,6 @@ public class NodeConcept implements Concept {
     @Override
     public Term term() {
         return term;
-    }
-
-    @Override
-    public final TermLinker linker() {
-        return linker;
     }
 
     @Override

@@ -23,7 +23,6 @@ import nars.term.util.conj.Conj;
 import nars.term.util.conj.ConjSeq;
 import nars.term.var.CommonVariable;
 import nars.unify.UnifyAny;
-import nars.unify.UnifySubst;
 import org.apache.commons.math3.exception.MathArithmeticException;
 import org.eclipse.collections.api.tuple.Pair;
 import org.eclipse.collections.api.tuple.primitive.BooleanObjectPair;
@@ -88,7 +87,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
     private Predicate<Event> target;
 
     /** temporary unification context */
-    private final UnifySubst u = new UnifyAny();
+    private final UnifyAny u = new UnifyAny();
     {
         u.commonVariables = false;
     }

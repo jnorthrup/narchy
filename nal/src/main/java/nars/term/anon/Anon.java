@@ -71,7 +71,7 @@ public class Anon extends AbstractTermTransform.NegObliviousTermTransform {
     }
 
     public final Term put(Term x) {
-        if (x instanceof AnonID) {
+        if (x instanceof Intrin) {
             return putAnon(x);
         } else if (x instanceof UnnormalizedVariable) {
             return x; //HACK is this necessary?
@@ -109,7 +109,7 @@ public class Anon extends AbstractTermTransform.NegObliviousTermTransform {
 //            }
         } else {
             if (x instanceof Anom) {
-                return map.interned((byte) ((AnonID) x).i);
+                return map.interned((byte) ((Intrin) x).i);
             }
         }
         return x;

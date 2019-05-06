@@ -22,12 +22,11 @@ package nars.term;
 
 
 import jcog.Util;
-import jcog.data.list.FasterList;
 import nars.Op;
 import nars.The;
 import nars.subterm.Subterms;
 import nars.term.anon.Anom;
-import nars.term.anon.AnonID;
+import nars.term.anon.Intrin;
 import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
 import nars.term.atom.Int;
@@ -39,9 +38,7 @@ import nars.time.Tense;
 import nars.unify.Unify;
 import org.eclipse.collections.api.block.predicate.primitive.LongObjectPredicate;
 import org.eclipse.collections.api.list.primitive.ByteList;
-import org.eclipse.collections.api.tuple.primitive.LongObjectPair;
 import org.eclipse.collections.impl.list.mutable.primitive.ByteArrayList;
-import org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
@@ -512,7 +509,7 @@ public interface Term extends Termlike, Termed, Comparable<Term> {
             if (this instanceof Int /*&& t instanceof Int*/) {
                 return Integer.compare(((Int) this).i, ((Int) t).i);
             }
-            if (this instanceof AnonID && t instanceof AnonID) {
+            if (this instanceof Intrin && t instanceof Intrin) {
                 return Integer.compare(hashCode(), t.hashCode()); //same op, same hashcode
             }
 

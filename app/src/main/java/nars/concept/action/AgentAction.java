@@ -9,7 +9,6 @@ import nars.concept.TaskConcept;
 import nars.concept.action.curiosity.CuriosityTask;
 import nars.concept.sensor.GameLoop;
 import nars.control.MetaGoal;
-import nars.link.TermLinker;
 import nars.table.BeliefTable;
 import nars.table.dynamic.SensorBeliefTables;
 import nars.table.temporal.RTreeBeliefTable;
@@ -26,20 +25,15 @@ public abstract class AgentAction extends TaskConcept implements GameLoop, Perma
 
     public final AttnBranch attn;
 
-    protected AgentAction(Term term, TermLinker linker, NAR n) {
+    protected AgentAction(Term term, NAR n) {
         this(term,
                 new SensorBeliefTables(term, true),
                 new RTreeBeliefTable(),
-                linker,
                 n);
     }
 
     protected AgentAction(Term term, BeliefTable beliefs, BeliefTable goals, NAR n) {
-        this(term, beliefs, goals, n.conceptBuilder.termlinker(term), n);
-    }
-
-    protected AgentAction(Term term, BeliefTable beliefs, BeliefTable goals, TermLinker l, NAR n) {
-        super(term, beliefs, goals, l, n.conceptBuilder);
+        super(term, beliefs, goals, n.conceptBuilder);
 
         this.attn = new AttnBranch(term, List.of(term));
         ((SensorBeliefTables) beliefs()).resolution(FloatRange.unit(n.freqResolution));

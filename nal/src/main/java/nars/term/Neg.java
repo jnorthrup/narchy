@@ -2,7 +2,7 @@ package nars.term;
 
 import nars.Op;
 import nars.The;
-import nars.term.anon.AnonID;
+import nars.term.anon.Intrin;
 import nars.term.compound.SemiCachedUnitCompound;
 import nars.term.compound.UnitCompound;
 import nars.term.util.TermException;
@@ -30,8 +30,8 @@ public interface Neg extends Term { ;
                 return u; //return Null;
         }
 
-        if (u instanceof AnonID)
-            return new NegAnonID(((AnonID)u).i);
+        if (u instanceof Intrin)
+            return new NegAnonID(((Intrin)u).i);
         else
             return new NegCached(u);
     }
@@ -115,13 +115,13 @@ public interface Neg extends Term { ;
 
         public final int sub;
 
-        NegAnonID(int negated) {
+        public NegAnonID(int negated) {
             this.sub = negated;
         }
 
         @Override
         public Term sub() {
-            return AnonID.term(sub);
+            return Intrin.term(sub);
         }
 
         @Override
@@ -141,11 +141,11 @@ public interface Neg extends Term { ;
 
         @Override
         public Term normalize(byte varOffset) {
-            switch (AnonID.mask(sub)) {
-                case AnonID.VARDEPs:
-                case AnonID.VARINDEPs:
-                case AnonID.VARPATTERNs:
-                case AnonID.VARQUERYs:
+            switch (Intrin.group(sub)) {
+                case Intrin.VARDEPs:
+                case Intrin.VARINDEPs:
+                case Intrin.VARPATTERNs:
+                case Intrin.VARQUERYs:
                     return Neg.super.normalize(varOffset);
             }
             return this;
@@ -154,7 +154,7 @@ public interface Neg extends Term { ;
         @Override
         public final boolean equalsNeg(Term t) {
             //return t instanceof Atomic && sub().equals(t);
-            return t instanceof AnonID && ((AnonID)t).i == sub;
+            return t instanceof Intrin && ((Intrin)t).i == sub;
         }
 
     }

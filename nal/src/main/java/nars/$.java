@@ -12,7 +12,7 @@ import nars.subterm.Subterms;
 import nars.subterm.TermList;
 import nars.term.Variable;
 import nars.term.*;
-import nars.term.anon.AnonID;
+import nars.term.anon.Intrin;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
@@ -733,19 +733,19 @@ public enum $ {
                 return Op.EmptySubterms;
             case 1: {
                 Term a = t[0];
-                if (a.unneg() instanceof AnonID)
+                if (a.unneg() instanceof Intrin)
                     return new AnonSubterms(a);
                 break;
             }
             case 2: {
                 Term a = t[0], b = t[1];
-                if (a.unneg() instanceof AnonID && b.unneg() instanceof AnonID)
+                if (a.unneg() instanceof Intrin && b.unneg() instanceof Intrin)
                     return new AnonSubterms(a, b);
                 break;
             }
             case 3: {
                 Term a = t[0], b = t[1], c = t[2];
-                if (a.unneg() instanceof AnonID && b.unneg() instanceof AnonID && c.unneg() instanceof AnonID)
+                if (a.unneg() instanceof Intrin && b.unneg() instanceof Intrin && c.unneg() instanceof Intrin)
                     return new AnonSubterms(a, b, c);
                 break;
             }

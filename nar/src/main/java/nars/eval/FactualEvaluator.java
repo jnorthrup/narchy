@@ -9,8 +9,8 @@ import nars.term.Compound;
 import nars.term.Functor;
 import nars.term.Term;
 import nars.term.atom.Atom;
+import nars.unify.Unify;
 import nars.unify.UnifyAny;
-import nars.unify.UnifySubst;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -240,7 +240,7 @@ public class FactualEvaluator extends Evaluator {
 
     private void resolve(Term x, List<Term> matches) {
         /*List<Predicate<VersionMap<Term, Term>>> l = */
-        UnifySubst u = new UnifyAny();
+        Unify u = new UnifyAny();
         u.commonVariables = false;
         factResolver.apply(x.normalize()).forEach(y -> {
 

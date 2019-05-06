@@ -29,7 +29,7 @@ import java.io.UnsupportedEncodingException;
 import static nars.Op.NEG;
 import static nars.io.IO.SPECIAL_BYTE;
 import static nars.io.IO.subType;
-import static nars.term.anon.AnonID.termPos;
+import static nars.term.anon.Intrin._term;
 import static nars.time.Tense.DTERNAL;
 import static nars.time.Tense.XTERNAL;
 
@@ -225,7 +225,7 @@ public interface TermIO {
                         out.writeByte(NEG.id);
                         s = (short) -s;
                     }
-                    write(termPos(s), out);
+                    write(_term(s), out);
                 }
             } else {
                 out.writeByte(tt.subs());

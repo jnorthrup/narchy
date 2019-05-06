@@ -9,7 +9,6 @@ import nars.agent.Game;
 import nars.attention.AttnBranch;
 import nars.concept.PermanentConcept;
 import nars.concept.TaskConcept;
-import nars.link.TermLinker;
 import nars.table.dynamic.SensorBeliefTables;
 import nars.term.Term;
 import nars.term.Termed;
@@ -57,17 +56,13 @@ public class Signal extends TaskConcept implements GameLoop, FloatFunction<Term>
     }
 
     public Signal(Term term, short cause, FloatSupplier signal, NAR n) {
-        this(term, cause, signal, n.conceptBuilder.termlinker(term), n);
-    }
-    public Signal(Term term, short cause, FloatSupplier signal, TermLinker linker, NAR n) {
-        this(term, cause, BELIEF, signal, linker, n);
+        this(term, cause, BELIEF, signal, n);
     }
 
-    private Signal(Term term, short cause, byte punc, FloatSupplier signal, TermLinker linker, NAR n) {
+    private Signal(Term term, short cause, byte punc, FloatSupplier signal, NAR n) {
         super(term,
                 punc == BELIEF ? new SensorBeliefTables(term, true) : n.conceptBuilder.newTable(term, true),
                 punc == GOAL ? new SensorBeliefTables(term, false) : n.conceptBuilder.newTable(term, false),
-                linker,
                 n.conceptBuilder);
 
         this.source = signal;

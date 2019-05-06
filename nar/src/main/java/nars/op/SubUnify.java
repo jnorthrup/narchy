@@ -41,7 +41,7 @@ public class SubUnify extends Unify {
      * @return
      */
     @Override
-    protected final boolean tryMatch() {
+    protected final boolean match() {
 
         if (transformed != null) {
             Term result = apply(transformed);

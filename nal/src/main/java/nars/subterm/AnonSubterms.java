@@ -4,7 +4,7 @@ import jcog.util.ArrayUtil;
 import nars.Op;
 import nars.term.Term;
 import nars.term.anon.AnonArrayIterator;
-import nars.term.anon.AnonID;
+import nars.term.anon.Intrin;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
@@ -12,7 +12,7 @@ import java.util.Iterator;
 import java.util.function.Predicate;
 
 import static nars.Op.NEG;
-import static nars.term.anon.AnonID.term;
+import static nars.term.anon.Intrin.term;
 
 /**
  * a vector which consists purely of AnonID terms
@@ -23,7 +23,7 @@ public class AnonSubterms extends TermVector /*implements Subterms.SubtermsBytes
     public final short[] subterms;
 
     public AnonSubterms(short[] s) {
-        super(AnonID.subtermMetadata(s));
+        super(Intrin.subtermMetadata(s));
         this.subterms = s;
     }
 
@@ -41,7 +41,7 @@ public class AnonSubterms extends TermVector /*implements Subterms.SubtermsBytes
             boolean neg = hasNeg && ss.op() == NEG;
             if (neg)
                 ss = ss.unneg();
-            short tt = (short) ((AnonID) ss).i;
+            short tt = (short) ((Intrin) ss).i;
             t[i] = neg ? ((short)-tt) : tt;
         }
 
@@ -95,7 +95,7 @@ public class AnonSubterms extends TermVector /*implements Subterms.SubtermsBytes
     public Subterms replaceSub(Term from, Term to, Op superOp) {
 
 
-        short fid = AnonID.id(from);
+        short fid = Intrin.id(from);
         if (fid == 0)
             return this; //no change
 
@@ -121,7 +121,7 @@ public class AnonSubterms extends TermVector /*implements Subterms.SubtermsBytes
             return this;
 
 
-        short tid = AnonID.id(to);
+        short tid = Intrin.id(to);
         if (tid != 0) {
             assert (from != to);
             short[] a = this.subterms.clone();
@@ -185,26 +185,26 @@ public class AnonSubterms extends TermVector /*implements Subterms.SubtermsBytes
             case NEG:
                 return subsNeg();
             case ATOM:
-                match = AnonID.ANOMs;
+                match = Intrin.ANOMs;
                 break;
             case VAR_PATTERN:
-                match = AnonID.VARPATTERNs;
+                match = Intrin.VARPATTERNs;
                 break;
             case VAR_QUERY:
-                match = AnonID.VARQUERYs;
+                match = Intrin.VARQUERYs;
                 break;
             case VAR_DEP:
-                match = AnonID.VARDEPs;
+                match = Intrin.VARDEPs;
                 break;
             case VAR_INDEP:
-                match = AnonID.VARINDEPs;
+                match = Intrin.VARINDEPs;
                 break;
             default:
                 return 0;
         }
         int count = 0;
         for (short s: subterms) {
-            if (s > 0 && AnonID.mask(s) == match)
+            if (s > 0 && Intrin.group(s) == match)
                 count++;
         }
         return count;
@@ -238,17 +238,13 @@ public class AnonSubterms extends TermVector /*implements Subterms.SubtermsBytes
 //        return ArrayUtils.indexOf(subterms, id, after+1);
 //    }
 
-    private int indexOf(AnonID t, boolean neg) {
-        return indexOf(t.anonID(neg));
-    }
-
-    public int indexOf(AnonID t) {
+    public int indexOf(Intrin t) {
         return indexOf((short)t.i);
     }
 
     @Override
     public int indexOf(Term t) {
-        short tid = AnonID.id(t);
+        short tid = Intrin.id(t);
         return tid != 0 ? indexOf(tid) : -1;
     }
 
@@ -259,7 +255,7 @@ public class AnonSubterms extends TermVector /*implements Subterms.SubtermsBytes
 //    }
 
     private int indexOfNeg(Term x) {
-        short tid = AnonID.id(x);
+        short tid = Intrin.id(x);
         return tid != 0 ? indexOf((short) -tid) : -1;
     }
 
@@ -278,13 +274,13 @@ public class AnonSubterms extends TermVector /*implements Subterms.SubtermsBytes
         if (x.op() == NEG) {
             if (hasNeg()) {
                 Term tt = x.unneg();
-                if (tt instanceof AnonID) {
-                    return indexOf((AnonID) tt, true) != -1;
+                if (tt instanceof Intrin) {
+                    return indexOf((short) -(((Intrin) tt).i)) != -1;
                 }
             }
         } else {
-            if (x instanceof AnonID) {
-                short aid = (short) ((AnonID) x).i;
+            if (x instanceof Intrin) {
+                short aid = (short) ((Intrin) x).i;
                 boolean hasNegX = false;
                 for (short xx : this.subterms) {
                     if (xx == aid)
@@ -364,7 +360,7 @@ public class AnonSubterms extends TermVector /*implements Subterms.SubtermsBytes
                         if (path[start+1] == 0) {
                             short a = this.subterms[z];
                             if (a < 0)
-                                return AnonID.term((short) -a); //if the subterm is negative its the only way to realize path of length 2
+                                return Intrin.term((short) -a); //if the subterm is negative its the only way to realize path of length 2
                         }
                         break;
                 }

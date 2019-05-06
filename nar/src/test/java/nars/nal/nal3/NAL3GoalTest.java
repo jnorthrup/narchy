@@ -200,15 +200,15 @@ class NAL3GoalTest {
         void testIntersectionSinglePremiseDecomposeGoal1Pos() {
             test
                     .input("((a|b)-->g)!")
-                    .mustGoal(cycles, "(a-->g)", 1f, 0.81f)
-                    .mustGoal(cycles, "(b-->g)", 1f, 0.81f);
+                    .mustGoal(cycles, "(a-->g)", 1f, 0.45f)
+                    .mustGoal(cycles, "(b-->g)", 1f, 0.45f);
         }
 
         @Test
         void testIntersectionConditionalDecomposeGoalPos() {
             test
                     .input("((a|b)-->g)!")
-                    .input("(a-->g).")
+                    .input("(a-->g). %0.8%")
                     .mustGoal(cycles, "(b-->g)", 1f, 0.81f);
         }
         @Test
@@ -272,8 +272,8 @@ class NAL3GoalTest {
         void testNegIntersectionGoalSinglePremiseDecompose() {
             test
                     .input("--((a|b)-->g)!")
-                    .mustGoal(cycles, "(a-->g)", 0f, 0.45f)
-                    .mustGoal(cycles, "(b-->g)", 0f, 0.45f)
+                    .mustGoal(cycles, "(a-->g)", 0f, 0.81f)
+                    .mustGoal(cycles, "(b-->g)", 0f, 0.81f)
             ;
         }
         @Test
@@ -290,8 +290,8 @@ class NAL3GoalTest {
         void testNegUnionGoalSinglePremiseDecompose() {
             test
                     .input("--((a&b)-->g)!")
-                    .mustGoal(cycles, "(a-->g)", 0f, 0.81f)
-                    .mustGoal(cycles, "(b-->g)", 0f, 0.81f)
+                    .mustGoal(cycles, "(a-->g)", 0f, 0.45f)
+                    .mustGoal(cycles, "(b-->g)", 0f, 0.45f)
             ;
         }
 

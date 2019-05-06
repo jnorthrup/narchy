@@ -4,7 +4,7 @@ import com.google.common.collect.Iterators;
 import jcog.TODO;
 import jcog.data.set.UnenforcedConcatSet;
 import nars.term.Term;
-import nars.term.anon.AnonID;
+import nars.term.anon.Intrin;
 import org.eclipse.collections.api.tuple.primitive.ShortObjectPair;
 import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 import org.eclipse.collections.impl.map.mutable.primitive.ShortObjectHashMap;
@@ -66,7 +66,7 @@ public class TermHashMap<X> extends AbstractMap<Term, X> {
 
     @Override
     public X compute(Term key, BiFunction<? super Term, ? super X, ? extends X> f) {
-        short aid = AnonID.id(key);
+        short aid = Intrin.id(key);
         if (aid != 0) {
 
             return id.updateValueWith(aid, () -> f.apply(key, null), (p,k) -> f.apply(k, p), key);
@@ -83,7 +83,7 @@ public class TermHashMap<X> extends AbstractMap<Term, X> {
                              Function<? super Term, ? extends X> mappingFunction) {
 
 
-        short aid = AnonID.id(key);
+        short aid = Intrin.id(key);
         return aid != 0 ?
                 id.getIfAbsentPutWith(aid, mappingFunction::apply, key) :
                 other.computeIfAbsent(key, mappingFunction);
@@ -93,13 +93,13 @@ public class TermHashMap<X> extends AbstractMap<Term, X> {
 
     @Override
     public X get(Object key) {
-        short aid = AnonID.id((Term) key);
+        short aid = Intrin.id((Term) key);
         return aid != 0 ? id.get(aid) : other.get(key);
     }
 
     @Override
     public X put(Term key, X value) {
-        short aid = AnonID.id(key);
+        short aid = Intrin.id(key);
         return aid != 0 ?
                 id.put(aid, value) :
                 other.put(key, value);
@@ -107,7 +107,7 @@ public class TermHashMap<X> extends AbstractMap<Term, X> {
 
     @Override
     public X remove(Object key) {
-        short aid = AnonID.id((Term) key);
+        short aid = Intrin.id((Term) key);
         return aid != 0 ? id.remove(aid) : other.remove(key);
     }
 
@@ -116,7 +116,7 @@ public class TermHashMap<X> extends AbstractMap<Term, X> {
     public void forEach(BiConsumer<? super Term, ? super X> action) {
         id.forEachKeyValue((x, y) -> {
             if (y!=null)
-                action.accept(AnonID.term(x), y);
+                action.accept(Intrin.term(x), y);
         });
         if (!other.isEmpty()) {
             //other.forEach(action);
@@ -158,7 +158,7 @@ public class TermHashMap<X> extends AbstractMap<Term, X> {
 
         @Override
         public Term getKey() {
-            return AnonID.term(x.getOne());
+            return Intrin.term(x.getOne());
         }
 
         @Override

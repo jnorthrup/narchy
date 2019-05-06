@@ -8,7 +8,7 @@ import nars.subterm.AnonSubterms;
 import nars.term.Term;
 import nars.term.Terms;
 import nars.term.Variable;
-import nars.term.anon.AnonID;
+import nars.term.anon.Intrin;
 import nars.unify.Unify;
 import org.eclipse.collections.impl.set.mutable.primitive.ShortHashSet;
 
@@ -59,7 +59,7 @@ public final class CommonVariable extends UnnormalizedVariable {
 
                 t.addAll(C.vars);
 
-                if (!t.add(AnonID.id(V)))
+                if (!t.add(Intrin.id(V)))
                     return C; //subsumed
             }
 

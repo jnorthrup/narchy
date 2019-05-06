@@ -10,7 +10,7 @@ import nars.subterm.SortedSubterms;
 import nars.subterm.Subterms;
 import nars.term.Compound;
 import nars.term.Term;
-import nars.term.anon.AnonID;
+import nars.term.anon.Intrin;
 import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
 import nars.term.util.cache.Intermed;
@@ -164,7 +164,7 @@ public class InterningTermBuilder extends HeapTermBuilder {
 
     private Subterms subtermsInterned(Term[] t) {
         //TODO separate cache for anon's
-        if (AnonID.isAnon(t))
+        if (Intrin.intrinsic(t))
             return subsInterned(anonSubterms, t);
         else if (sortCanonically)
             return SortedSubterms.the(t, this::subsInterned);

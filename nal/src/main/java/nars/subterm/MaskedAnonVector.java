@@ -1,9 +1,9 @@
 package nars.subterm;
 
 import nars.term.Term;
-import nars.term.anon.AnonID;
+import nars.term.anon.Intrin;
 
-import static nars.term.anon.AnonID.ANOMs;
+import static nars.term.anon.Intrin.ANOMs;
 
 abstract public class MaskedAnonVector extends ProxySubterms<AnonSubterms> {
 
@@ -16,10 +16,10 @@ abstract public class MaskedAnonVector extends ProxySubterms<AnonSubterms> {
         short x = ref.subRaw(i);
         short ax = x < 0 ? (short) -x : x;
         Term y;
-        if (AnonID.mask(ax)== ANOMs) {
+        if (Intrin.group(ax)== ANOMs) {
             y = atom((ax & 0xff)-1);
         } else {
-            y = AnonID.termPos(ax);
+            y = Intrin._term(ax);
         }
         return y.negIf(x < 0);
     }

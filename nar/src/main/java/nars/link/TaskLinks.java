@@ -125,10 +125,11 @@ public class TaskLinks implements Sampler<TaskLink> {
             if (T != null) {
 
                 Term u = null;
-                TermLinker linker = T.linker();
+                Term tt = t.term();
+                TermLinker linker = d.linker(tt);
                 if (linker != TermLinker.NullLinker)
                     //grow-ahead: s -> t -> u
-                    u = linker.sample(t.term(), d.random);
+                    u = linker.sample(tt, d.random);
                 else {
                     //loopback
                     if (t instanceof Atom) {

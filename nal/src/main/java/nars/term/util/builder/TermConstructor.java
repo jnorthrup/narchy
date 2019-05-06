@@ -3,7 +3,7 @@ package nars.term.util.builder;
 import nars.Op;
 import nars.subterm.*;
 import nars.term.Term;
-import nars.term.anon.AnonID;
+import nars.term.anon.Intrin;
 import org.jetbrains.annotations.Nullable;
 
 import static nars.time.Tense.DTERNAL;
@@ -34,7 +34,7 @@ import static nars.time.Tense.DTERNAL;
         if (n == 0)
             return Op.EmptySubterms;
 
-        if (tryAnon && AnonID.isAnon(t))
+        if (tryAnon && Intrin.intrinsic(t))
             return new AnonSubterms(t);
         else {
             Term t0 = t[0];

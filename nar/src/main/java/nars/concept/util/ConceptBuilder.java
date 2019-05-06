@@ -6,7 +6,6 @@ import nars.Task;
 import nars.concept.Concept;
 import nars.concept.NodeConcept;
 import nars.concept.TaskConcept;
-import nars.link.TermLinker;
 import nars.subterm.Subterms;
 import nars.table.BeliefTable;
 import nars.table.eternal.EternalTable;
@@ -75,8 +74,8 @@ public abstract class ConceptBuilder implements BiFunction<Term, Concept, Concep
 
 
         return new TaskConcept(t, B, G,
-                this.questionTable(t, true), this.questionTable(t, false),
-                this.termlinker(t));
+                this.questionTable(t, true), this.questionTable(t, false)
+        );
     }
 
 
@@ -286,7 +285,6 @@ public abstract class ConceptBuilder implements BiFunction<Term, Concept, Concep
         ((NodeConcept)c).meta.clear(); //HACK remove any deleted state
     }
 
-    abstract public TermLinker termlinker(Term term);
 
 //    /**
 //     * passes through terms without creating any concept anything

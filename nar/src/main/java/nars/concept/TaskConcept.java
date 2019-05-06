@@ -7,7 +7,6 @@ import nars.Task;
 import nars.concept.util.ConceptBuilder;
 import nars.control.MetaGoal;
 import nars.control.op.Remember;
-import nars.link.TermLinker;
 import nars.table.BeliefTable;
 import nars.table.TaskTable;
 import nars.table.question.QuestionTable;
@@ -27,16 +26,12 @@ public class TaskConcept extends NodeConcept  {
     private final QuestionTable quests, questions;
 
     public TaskConcept(Term term, @Nullable BeliefTable beliefs, @Nullable BeliefTable goals, ConceptBuilder b) {
-        this(term, beliefs, goals, b.termlinker(term), b);
-    }
-
-    public TaskConcept(Term term, @Nullable BeliefTable beliefs, @Nullable BeliefTable goals, TermLinker linker, ConceptBuilder b) {
         this(term,
                 beliefs != null ? beliefs : b.newTable(term, true),
                 goals != null ? goals : b.newTable(term, false),
                 b.questionTable(term, true),
-                b.questionTable(term, false),
-                linker);
+                b.questionTable(term, false)
+        );
     }
 
 
@@ -49,9 +44,8 @@ public class TaskConcept extends NodeConcept  {
      */
     public TaskConcept(Term term,
                        BeliefTable beliefs, BeliefTable goals,
-                       QuestionTable questions, QuestionTable quests,
-                       TermLinker linker) {
-        super(term, linker);
+                       QuestionTable questions, QuestionTable quests) {
+        super(term);
         this.beliefs = beliefs;
         this.goals = goals;
         this.questions = questions;

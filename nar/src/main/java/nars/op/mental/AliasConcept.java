@@ -29,9 +29,8 @@ public final class AliasConcept extends TaskConcept {
     AliasConcept(Term id, Concept abbr) {
         super(
                 id,
-                null, null, null, null,
-                abbr.linker() //shared
-                );
+                null, null, null, null
+        );
 
         this.abbr = abbr;
 

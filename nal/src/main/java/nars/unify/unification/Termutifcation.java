@@ -49,7 +49,7 @@ public class Termutifcation extends ArrayHashSet<DeterministicUnification> imple
         Discovery u = new Discovery(this.base, discoveriesMax);
         u.setTTL(ttl);
 
-        u.tryMatches(termutes);
+        u.matches(termutes);
 
         int spent = Util.clamp(ttl - u.ttl, 0, ttl);
 
@@ -132,7 +132,7 @@ public class Termutifcation extends ArrayHashSet<DeterministicUnification> imple
         }
 
         @Override
-        protected boolean tryMatch() {
+        protected boolean match() {
 
             Unification z = unification(false);
             if (z != Unification.Null) {

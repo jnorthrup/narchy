@@ -32,7 +32,7 @@ class TermutatorTest {
 
     private final Unify unifier = new Unify(Op.VAR_PATTERN, new XorShift128PlusRandom(1),
             NAL.unify.UNIFICATION_STACK_CAPACITY, TTL) {
-        @Override public boolean tryMatch() {
+        @Override public boolean match() {
             return false;
         }
     };

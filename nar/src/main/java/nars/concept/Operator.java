@@ -5,7 +5,6 @@ import nars.$;
 import nars.NAR;
 import nars.Op;
 import nars.Task;
-import nars.link.TermLinker;
 import nars.task.NALTask;
 import nars.term.Term;
 import nars.term.atom.Atom;
@@ -35,7 +34,7 @@ public final class Operator extends NodeConcept implements PermanentConcept, Ato
     public final BiFunction<Task, NAR, Task> model;
 
     private Operator(Atom atom, BiFunction<Task, NAR, Task> model) {
-        super(atom, TermLinker.NullLinker);
+        super(atom);
         this.model = model;
     }
 

@@ -5,7 +5,7 @@ import nars.subterm.Subterms;
 import nars.term.Term;
 import nars.term.Termlike;
 import nars.term.Variable;
-import nars.term.anon.AnonID;
+import nars.term.anon.Intrin;
 import nars.term.util.Image;
 import nars.term.util.TermException;
 import nars.term.var.NormalizedVariable;
@@ -119,19 +119,19 @@ abstract public class TermMetadata implements Termlike {
         int typeToMatch = -1;
         for (short x: subterms) {
             if (x < 0) x = (short) -x;
-            int varID = AnonID.isVariable(x, -1);
+            int varID = Intrin.isVariable(x, -1);
             if (varID == -1) {
                 /*..*/
             } else if (varID == minID) {
                 //same order, ok
-                int type = AnonID.mask(x);
+                int type = Intrin.group(x);
                 if (typeToMatch == -1)
                     typeToMatch = type;
                 else if (typeToMatch!=type)
                     return false; //same id different type, needs normalized
             } else if (varID == minID + 1) {
                 //increase the order, ok, set new type
-                typeToMatch = AnonID.mask(x);
+                typeToMatch = Intrin.group(x);
                 minID++;
             } else if (varID > minID + 1) {
                 return false; //cant be sure

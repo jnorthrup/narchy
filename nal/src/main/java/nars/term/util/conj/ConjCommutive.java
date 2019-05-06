@@ -4,13 +4,15 @@ import jcog.WTF;
 import jcog.data.bit.MetalBitSet;
 import jcog.util.ArrayUtil;
 import nars.Op;
-import nars.term.Compound;
 import nars.term.Term;
 import nars.term.atom.Bool;
 import nars.term.util.builder.TermBuilder;
 import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.TreeSet;
 
 import static nars.Op.CONJ;
 import static nars.term.Terms.sorted;
@@ -96,9 +98,9 @@ public enum ConjCommutive {;
                     case NEG:
                         Term xu = x.unneg();
                         if (xu.op() == CONJ) {
-                            if (dt == 0 && xu.dt() == DTERNAL /* promote inner DTERNAL to parallel */) {
-                                u[i] = ((Compound)xu).dt(0, B).neg();
-                            }
+//                            if (dt == 0 && xu.dt() == DTERNAL /* promote inner DTERNAL to parallel */) {
+//                                u[i] = ((Compound)xu).dt(0, B).neg();
+//                            }
                             disj = set(disj, i, uLength);
                         } else {
                             neg = set(neg, i, uLength);
@@ -223,11 +225,11 @@ public enum ConjCommutive {;
                 ConjBuilder c = new Conj(u.length);
                 //add the non-conj terms at ETERNAL last.
                 //then if the conjOther is a sequence, add it at zero
-                for (boolean bs : new boolean[] { true, false }) {
+                bsmain: for (boolean bs : new boolean[] { true, false }) {
                     for (int i = u.length - 1; i >= 0; i--) {
                         if (bs == seq.get(i))
                             if (!c.add(sdt, u[i]))
-                                return c.term(); //fail
+                                break bsmain;
                     }
                 }
                 return c.term();
