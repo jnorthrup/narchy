@@ -6,13 +6,13 @@ import jcog.WTF;
 import jcog.data.byt.DynBytes;
 import jcog.data.list.FasterList;
 import jcog.util.ArrayUtil;
+import nars.$;
 import nars.NAL;
 import nars.Op;
 import nars.subterm.Subterms;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.atom.Atomic;
-import nars.term.atom.Int;
 import nars.term.util.builder.TermBuilder;
 import nars.term.util.map.ByteAnonMap;
 import nars.term.util.transform.AbstractTermTransform;
@@ -24,8 +24,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 
 import static nars.Op.*;
-import static nars.term.atom.Bool.Null;
-import static nars.term.atom.Bool.True;
+import static nars.term.atom.Bool.*;
 import static nars.time.Tense.DTERNAL;
 
 /**
@@ -202,111 +201,93 @@ public class LazyCompoundBuilder {
 
 
 
-    private Term nextSubterm(TermBuilder b, byte[] ii, int[] range) {
+    private Term nextSubterm(TermBuilder builder, byte[] bytes, int[] range) {
 
         if (range[0] >= range[1])
             throw new WTF();
 
         int end = range[1];
-        int from = range[0];
-        byte ctl = ii[range[0]++];
+        int start = range[0];
+        byte ctl = bytes[range[0]++];
 
         if (ctl >= MAX_CONTROL_CODES)
-            return nextAtom(ctl, ii, range);
+            return nextAtom(ctl, bytes, range);
         else if (ctl == NEG.id)
-            return nextSubterm(b, ii, range).neg();
+            return nextSubterm(builder, bytes, range).neg();
 
         Op op = Op.the(ctl);
 
         if (op.atomic)
             throw new WTF(); //alignment error or something
 
-        int dt = op.temporal ? dt(ii, range) : DTERNAL;
+        int dt = op.temporal ? dt(bytes, range) : DTERNAL;
 
-        int volRemainLocal = this.volRemain - 1 /* one for the compound itself */;
+        int volRemaining = this.volRemain - 1 /* one for the compound itself */;
 
-        byte subterms = ii[range[0]++];
-        if (subterms == 0) {
-
+        byte len = bytes[range[0]++];
+        if (len == 0)
             return emptySubterms(op);
+
+        Term[] subterms = null;
+
+        subterms:
+        for (int i = 0; i < len; ) {
+            //assert(range[0] <= range[1]) //check if this is < or <=
+
+            Term nextSub = nextSubterm(builder, bytes, range);
+
+            if (nextSub == Null)
+                return Null;
+            if (op == CONJ && (nextSub == True || nextSub == False))
+                return nextSub;
+
+            if (nextSub.op()==FRAG) {
+                //append fragment subterms
+                int fragmentLen = nextSub.subs();
+                len += fragmentLen - 1;
+                if (len == 0) {
+                    //empty fragment was the only subterm; early exit
+                    return emptySubterms(op);
+                } else {
+                    subterms = nextFrag(subterms, i, nextSub, len, fragmentLen);
+                    volRemaining -= Util.sum(Term::volume, i, i+fragmentLen, subterms);
+                    i += fragmentLen;
+                }
+            } else {
+                //append next subterm
+                if (subterms == null)
+                    subterms = new Term[len];
+
+                volRemaining -= nextSub.volume();
+
+                subterms[i++] = nextSub;
+            }
+
+            if ((this.volRemain = volRemaining) <= 0)
+                return Null; //capacity reached
+
+        }
+
+        return nextCompound(op, dt, subterms, builder, bytes, range, start);
+    }
+
+    private Term nextCompound(Op op, int dt, Term[] subterms, TermBuilder builder, byte[] bytes, int[] range, int start) {
+        if (op==INH && evalInline() && subterms[1] instanceof InlineFunctor && subterms[0].op()==PROD) {
+
+            //TODO replaceAhead(...) if the functor is instanceof DeterministicFunctor etc
+            return evalDeferred(subterms);
 
         } else {
 
-            /**
-             * @return null as a termination signal to callee (resulting in it returning Null, etc),
-             *         or a Term[] array (of >=0 length) containing the subterms of the compound the callee is constructing
-             */
-            //@Nullable private Term[] nextSubterms(TermBuilder b, byte subterms, byte[] ii, int[] range) {
-            //s = nextSubterms(b, subterms, ii, range);
-            Term[] s = null;
-            {
+            Term next = op.the(builder, dt, subterms); //assert (next != null);
 
-
-                subterms: for (int i = 0; i < subterms; ) {
-                    if (range[0] > range[1])
-                        throw new ArrayIndexOutOfBoundsException();
-
-                    Term x;
-                    if ((x = nextSubterm(b, ii, range)) == Null)
-                        return Null;
-
-                    if (x.op()==FRAG) { //if (y instanceof EllipsisMatch) {
-                        int en = x.subs();
-                        subterms += en - 1;
-                        if (subterms == 0) {
-                            //return EmptyTermArray; //the only element and the fragment was empty
-                            s = EmptyTermArray;
-                            break;
-                        } else {
-                            s = nextFrag(s, i, x, subterms, en);
-                            volRemainLocal -= Util.sum(Term::volume, i, i+en, s);
-                            i += en;
-                        }
-                    } else {
-                        if (s == null)
-                            s = new Term[subterms];
-
-                        volRemainLocal -= x.volume();
-
-                        s[i++] = x;
-                    }
-
-                    if ((this.volRemain = volRemainLocal) <= 0) {
-                        //capacity reached
-                        //range[0] = range[1] = -1;
-                        return Null;
-                    }
-
-                }
-
+            if (next != Null) {
+                replaceAhead(bytes, range, start, next);
             }
 
-            /*if (s == null) {
-                return Null;
-            } else */{
-
-                if (op==INH && evalInline() && s[1] instanceof InlineFunctor && s[0].op()==PROD) {
-
-                    //TODO constant propagate (replaceAhead(...)) if the functor is deterministic ex: (instanceof DeterministicFunctor) etc
-                    return evalDeferred(s);
-
-                } else {
-
-                    Term next = op.the(b, dt, s); //assert (next != null);
-
-                    if (next != Null) {
-                        replaceAhead(ii, range, from, next);
-                    }
-
-                    return next;
-                }
-
-
-            }
+            return next;
         }
-
     }
-
 
 
     private static final TermTransform DeferredEvaluator = new AbstractTermTransform.NegObliviousTermTransform() {
@@ -345,16 +326,18 @@ public class LazyCompoundBuilder {
         private transient Term value = null;
 
         DeferredEval(InlineFunctor f, Subterms args) {
-            super(PROD,
-                Atomic.atom(DeferredEvalPrefix + Int.the(serial.incrementAndGet())));
+//            super(PROD,
+//                $.vFast(Atomic.atom(DeferredEvalPrefix + Int.the(serial.incrementAndGet()))));
+            super(INH, $.vFast(PROD.the(args), (Term)f));
             this.f = f;
             this.args = args;
         }
 
-        @Override
-        public String toString() {
-            return "(" + sub(0) + "=" + f + "(" + args + "))";
-        }
+//
+//        @Override
+//        public String toString() {
+//            return "(" + sub(0) + "=" + f + "(" + args + "))";
+//        }
 
         public final Term eval() {
             if (this.value!=null)
@@ -430,6 +413,7 @@ public class LazyCompoundBuilder {
         return true;
     }
 
+    /** constant propagate matching spans further ahead in the construction process */
     private void replaceAhead(byte[] ii, int[] range, int from, Term next) {
         int to = range[0];
         int end = range[1];
@@ -464,64 +448,18 @@ public class LazyCompoundBuilder {
         return sub.interned((byte) (ctl - MAX_CONTROL_CODES));
     }
 
-//    @Nullable private Term[] nextSubterms(TermBuilder b, byte subterms, byte[] ii, int[] range) {
-//        Term[] s = null;
-//
-//        int volRemainLocal = this.volRemain;
-//
-//        for (int i = 0; i < subterms; ) {
-////            if (range[0] >= range[1])
-////                throw new ArrayIndexOutOfBoundsException();
-//
-//            Term x;
-//            if ((x = nextSubterm(b, ii, range)) == Null)
-//                return null;
-//
-//            if (x.op()==FRAG) { //if (y instanceof EllipsisMatch) {
-//                int en = x.subs();
-//                subterms += en - 1;
-//                if (subterms == 0)
-//                    return EmptyTermArray; //the only element and the fragment was empty
-//                else {
-//                    s = nextFrag(s, i, x, subterms, en);
-//                    volRemainLocal -= Util.sum(Term::volume, i, i+en, s);
-//                    i += en;
-//                }
-//            } else {
-//                if (s == null)
-//                    s = new Term[subterms];
-//
-//                volRemainLocal -= x.volume();
-//
-//                s[i++] = x;
-//            }
-//
-//            if ((this.volRemain = volRemainLocal) <= 0) {
-//                //capacity reached
-//                return null;
-//            }
-//
-//        }
-//
-////        if (ArrayUtil.indexOf(t, (Object)null)!=-1)
-////            throw new NullPointerException(); //TEMPORARY for debugging
-//
-//        return s;
-//    }
-
     /** expand a fragment */
-    private Term[] nextFrag(Term[] t, int i, Term y, byte n, int en) {
-        if (t == null)
-            t = new Term[n];
-        else if (t.length != n) {
+    private Term[] nextFrag(Term[] subterms, int i, Term fragment, byte len, int fragmentLen) {
+        if (subterms == null)
+            subterms = new Term[len];
+        else if (subterms.length != len) {
             //used to grow OR shrink
-            t = Arrays.copyOf(t, n);
+            subterms = Arrays.copyOf(subterms, len);
         }
-        if (en > 0) {
-            //TODO recursively evaluate?
-            y.addAllTo(t, i);
+        if (fragmentLen > 0) {
+            fragment.addAllTo(subterms, i); //TODO recursively evaluate?
         }
-        return t;
+        return subterms;
     }
 
     public final int change() {
@@ -548,6 +486,7 @@ public class LazyCompoundBuilder {
             }
             sub.idToTerm.removeAbove(uniques);
         }
+        rewind(codePos);
     }
 
     public LazyCompoundBuilder subsEnd() {

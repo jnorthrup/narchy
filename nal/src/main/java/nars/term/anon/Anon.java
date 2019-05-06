@@ -109,7 +109,7 @@ public class Anon extends AbstractTermTransform.NegObliviousTermTransform {
 //            }
         } else {
             if (x instanceof Anom) {
-                return map.interned((byte) ((Intrin) x).i);
+                return map.interned(((Anom) x).id());
             }
         }
         return x;
@@ -117,22 +117,23 @@ public class Anon extends AbstractTermTransform.NegObliviousTermTransform {
 
     protected Term getCompound(Compound x) {
         Term y0 = applyCompound(x);
-
-//                    Term y = transformCompoundLazily((Compound)x);
-//                    if (!y.equals(y0)) {
-//                        transformCompoundLazily((Compound)x);  throw new WTF(); //TEMPORARY
-//                    }
-//                    return y;
         return y0;
+
+//      Term y = transformCompoundLazily((Compound)x);
+////      if (!y.equals(y0)) {
+////          transformCompoundLazily((Compound)x);  throw new WTF(); //TEMPORARY
+////      }
+//      return y;
     }
 
     protected Term putCompound(Compound x) {
         Term x0 = applyCompound(x);
-        //Term x1 = applyCompoundLazy(x);
-//        if (!x0.equals(x1)) {
-//            transformCompoundLazily((Compound)x);  throw new WTF(); //TEMPORARY
-//        }
         return x0;
+
+        //Term x1 = applyCompoundLazy(x);
+////        if (!x0.equals(x1)) {
+////           transformCompoundLazily((Compound)x);  throw new WTF(); //TEMPORARY
+////        }
         //return x1;
     }
 

@@ -12,6 +12,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Function;
 
+import static nars.NAL.term.LAZY_COMPOUND_MIN_CONSTANT_INTERN_SPAN;
 import static nars.Op.FRAG;
 import static nars.Op.NEG;
 import static nars.time.Tense.DTERNAL;
@@ -60,7 +61,7 @@ public interface TermTransform extends Function<Term,Term> {
 
     default boolean transformCompound(Compound x, LazyCompoundBuilder out) {
         int c = out.change(), u = out.uniques();
-        int i = out.pos();
+        int p = out.pos();
 
         Op o = x.op();
         if (o == NEG) {
@@ -81,9 +82,9 @@ public interface TermTransform extends Function<Term,Term> {
             out.compoundEnd(o);
         }
 
-        if (out.change()==c) {
-            //remains same; rewind and paste the Term as-is
-            out.rewind(i, u);
+        if (out.change()==c && out.pos() - p >= LAZY_COMPOUND_MIN_CONSTANT_INTERN_SPAN) {
+            //unchanged constant; rewind and pack the exact Term as an interned symbol
+            out.rewind(p, u);
             out.appendAtomic(x);
         }
         return true;

@@ -204,7 +204,7 @@ public interface AbstractTermTransform extends TermTransform, nars.term.util.bui
     }
 
     default LazyCompoundBuilder applyLazy(LazyCompoundBuilder l, Compound x) {
-        return !transformCompound(x, l) ? null : l;
+        return transformCompound(x, l) ? l : null;
     }
 
     default Term applyCompoundLazy(Compound x) {

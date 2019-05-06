@@ -25,6 +25,7 @@ import nars.term.anon.AnonWithVarShift;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
+import nars.term.compound.LazyCompoundBuilder;
 import nars.term.functor.AbstractInlineFunctor1;
 import nars.term.functor.AbstractInlineFunctor2;
 import nars.term.util.TermTransformException;
@@ -67,7 +68,15 @@ public class Derivation extends PreDerivation {
 
     final UnifyPremise unifyPremise = new UnifyPremise();
 
-    public final MatchFork termBuilder = new MatchFork();
+    public final MatchFork termifier = new MatchFork();
+
+    /** for anon and other misc usage (non-evaluating) */
+    final LazyCompoundBuilder termBuilder = new LazyCompoundBuilder() {
+        @Override
+        protected boolean evalInline() {
+            return false;
+        }
+    };
 
     private long timePrev = Long.MIN_VALUE;
 
@@ -243,29 +252,18 @@ public class Derivation extends PreDerivation {
             protected Term putCompound(Compound x) {
                 return super.putCompound(x);
 
-                //TODO needs   @Override
-                //        protected boolean evalInline() {
-                //            return false; //TEMPORARY
-                //        }
-                //termBuilder.clear();
-                //return applyCompoundLazy(x, termBuilder, Op.terms, NAL.term.COMPOUND_VOLUME_MAX);
+                //doesnt work right for some reason:
+//                termBuilder.clear();
+//                return applyCompoundLazy(x, termBuilder, Op.terms, NAL.term.COMPOUND_VOLUME_MAX);
             }
             @Override
             protected Term getCompound(Compound x) {
                 return super.getCompound(x);
 
-                //TODO needs   @Override
-                //        protected boolean evalInline() {
-                //            return false; //TEMPORARY
-                //        }
-                //termBuilder.clear();
-                //return applyCompoundLazy(x, termBuilder, Op.terms, NAL.term.COMPOUND_VOLUME_MAX);
+//                termBuilder.clear();
+//                return applyCompoundLazy(x, termBuilder, Op.terms, NAL.term.COMPOUND_VOLUME_MAX);
             }
 
-            @Override
-            public boolean evalInline() {
-                return false;
-            }
         };
     }
 

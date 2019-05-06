@@ -11,6 +11,7 @@ import nars.Op;
 import nars.task.util.TaskException;
 import nars.term.Term;
 import nars.term.atom.Bool;
+import nars.term.util.TermException;
 
 import static jcog.Util.assertFinite;
 import static jcog.pri.op.PriReturn.Void;
@@ -42,7 +43,10 @@ public abstract class AbstractTaskLink implements TaskLink {
                 ) :
                 source; //loop
 
-        assert(!(source instanceof Bool) && !(target instanceof Bool));
+        if (source instanceof Bool)
+            throw new TermException("source bool", source);
+//        if (target instanceof Bool)
+//            throw new TermException("source bool", target);
 
         Op so = source.op();
         if (!so.taskable)

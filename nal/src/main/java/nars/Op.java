@@ -319,7 +319,7 @@ public enum Op {
 
 
 
-    /** re-initialized in Param */
+    /** re-initialized in NAL */
     public static TermBuilder terms = HeapTermBuilder.the;
 
 

@@ -82,10 +82,10 @@ public final class CommonVariable extends UnnormalizedVariable {
     /** vars must be sorted */
     private CommonVariable(/*@NotNull*/ Op type, IntrinSubterms vars) {
         super(type, key(type, vars));
-        if (NAL.DEBUG) {
-            for (Term t : vars)
-                if (!t.the()) throw new WTF();
-        }
+//        if (NAL.DEBUG) {
+//            for (Term t : vars)
+//                if (!t.the()) throw new WTF();
+//        }
         this.vars = vars.subterms;
                 //commonVariableKey(type, x, y) /* include trailing so that if a common variable gets re-commonalized, it wont become confused with repeats in an adjacent variable */);
     }

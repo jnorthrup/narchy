@@ -370,7 +370,7 @@ public abstract class Unify extends Versioning<Term> {
     }
 
     /** can x be assigned to y (y <= x) */
-    public final boolean varReverse(Op target, Op value) {
+    public final boolean assigns(Op target, Op value) {
         assert(target.var);
 
         return (!value.var || (target.id < value.id)) && var(target);

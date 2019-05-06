@@ -1,7 +1,6 @@
 package nars.nal.nal7;
 
 import com.google.common.math.PairedStatsAccumulator;
-import jcog.Texts;
 import nars.NAR;
 import nars.NARS;
 import nars.Task;
@@ -11,7 +10,6 @@ import nars.op.stm.STMLinkage;
 import nars.term.Term;
 import nars.time.Tense;
 import nars.truth.Truth;
-import org.HdrHistogram.Histogram;
 import org.junit.jupiter.api.Test;
 
 import static nars.$.$$;
@@ -54,14 +52,14 @@ class RuleInductionTest {
 
         PairedStatsAccumulator aConjB_exp = new PairedStatsAccumulator();
 
-        Histogram aConjB_dt = new Histogram(4);
+//        Histogram aConjB_dt = new Histogram(4);
 
         n.onTask(t -> {
             if (!t.isInput() && t.term().root().equals(aConjB_root)) {
                 long start = t.start();
                 int dt = Math.abs(t.dt());
 
-                aConjB_dt.recordValue(dt);
+//                aConjB_dt.recordValue(dt); //cant accept -dt
 
                 assertEquals(start, t.end());
                 assertNotEquals(ETERNAL, start);
@@ -96,8 +94,8 @@ class RuleInductionTest {
             System.out.println("\tslope=" + aConjB_exp.leastSquaresFit().slope());
 
 
-            System.out.println("dt:");
-            Texts.histogramPrint(aConjB_dt, System.out);
+//            System.out.println("dt:");
+//            Texts.histogramPrint(aConjB_dt, System.out);
 
             System.out.println("</>\n");
         }

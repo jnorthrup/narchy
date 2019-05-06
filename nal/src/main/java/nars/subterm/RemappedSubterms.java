@@ -367,7 +367,7 @@ abstract public class RemappedSubterms<S extends Subterms> extends MappedSubterm
         return neg ? y.neg() : y;
     }
 
-    public Term mapSub(int xy) {
+    private Term mapSub(int xy) {
         return ref.sub(xy - 1);
     }
 

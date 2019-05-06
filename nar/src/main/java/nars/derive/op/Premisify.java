@@ -81,7 +81,7 @@ public class Premisify extends AbstractPred<Derivation> {
         if (!unify(d, fwd, false))
             return;
 
-        MatchFork mf = d.termBuilder;
+        MatchFork mf = d.termifier;
         mf.reset(taskify, forkLimit);
 
         d.forEachMatch = mf;

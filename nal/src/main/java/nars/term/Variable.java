@@ -9,8 +9,6 @@ import nars.term.var.CommonVariable;
 import nars.term.var.ellipsis.Ellipsis;
 import nars.unify.Unify;
 
-import static nars.Op.NEG;
-import static nars.Op.VAR_PATTERN;
 import static nars.term.atom.Bool.Null;
 
 /**
@@ -65,94 +63,48 @@ public interface Variable extends Atomic {
         if (y != y0 && x == y /*x.equals(y)*/)
             return true;
 
-        boolean xv = x instanceof Variable, yv = y instanceof Variable;
-        if (xv || yv) {
-            //unify variable negation mobius
-            boolean xn = x instanceof Neg, yn = y instanceof Neg;
-            if (xn ^ yn) {
-//            if (xn) {
-//                Term xu = x.unneg();
-//                if (xu instanceof Variable) {
-//                    if (xu)
-//                }
-//            }
-                if (yn) {
-                    Term yu = y.unneg();
-                    if (yu instanceof Variable) {
-                        assert(xv);
-                        if (u.varReverse(yu.op(), x.op())) {
-                            Variable yuy = (Variable) yu;
-                            return yuy.unifyVar(u, yuy, x.neg());
-                        }
-                    }
-                }
+        //unify variable negation mobius
+        boolean xn = x instanceof Neg, yn = y instanceof Neg;
+        if (xn) {
+            Term xu = x.unneg();
+            if (xu instanceof Variable && ((!(y instanceof Variable) || u.assigns(xu.op(), y.op())))) {
+                x = xu;
+                y = y.neg();
+            }
+        }
+        if (yn) {
+            Term yu = y.unneg();
+            if (yu instanceof Variable && ((!(x instanceof Variable) || u.assigns(yu.op(), x.op())))) {
+                y = yu;
+                x = x.neg();
             }
         }
 
-        if (x instanceof Variable)
-            return unifyVar(u, (Variable) x, y);
-        else if (y instanceof Variable) {
-            return u.varReverse(y.op(), x.op()) && unifyVar(u, (Variable) y, x);
-        } else {
-            if (u.varDepth < NAL.unify.UNIFY_VAR_RECURSION_DEPTH_LIMIT) {
-                u.varDepth++;
-                boolean result = x.unify(y, u); //both constant-like
-                u.varDepth--;
-                return result;
-            } else
-                return false; //recursion limit exceeded
-        }
 
+        if (x instanceof Variable && u.assigns(x.op(), y.op()))
+            return unifyVar(u, (Variable) x, y);
+        else if (y instanceof Variable && u.assigns(y.op(), x.op()))
+            return unifyVar(u, (Variable) y, x);
+        else
+            return (!(x instanceof Variable)) && unifyConst(u, x, y);
     }
 
-    default boolean unifyVar(Unify u, Variable x, Term y) {
-        Op xOp = x.op();
-        if (x instanceof Variable && u.var(xOp)) {
+    private static boolean unifyConst(Unify u, Term x, Term y) {
+        if (u.varDepth < NAL.unify.UNIFY_VAR_RECURSION_DEPTH_LIMIT) {
+            u.varDepth++;
+            boolean result = x.unify(y, u); //both constant-like
+            u.varDepth--;
+            return result;
+        } else
+            return false; //recursion limit exceeded
+    }
 
-            if (!(x instanceof Ellipsis)) {
-
-                if (y instanceof Variable && !(y instanceof Ellipsis)) {
-                    Op yOp = y.op();
-
-//                    if (u.commonVariables && (yOp!=VAR_PATTERN && (u.varCommon(xOp) || u.varCommon(yOp))))
-//                        return CommonVariable.unify((Variable) x, (Variable) y, u);
-//                    else if (yOp.id < xOp.id && u.varReverse(yOp))
-//                        return u.putXY((Variable) y, x);
-//                    if (yOp == xOp)
-                    if (xOp != VAR_PATTERN && yOp != VAR_PATTERN && u.commonVariables)
-                        return CommonVariable.unify(x, (Variable) y, u);
-                    else {
-                        if (u.varReverse(yOp, xOp))
-                            return u.putXY((Variable) y, x);
-                    }
-
-                }
-            }
-
+    private static boolean unifyVar(Unify u, Variable x, Term y) {
+        Op xOp = x.op(), yOp = y.op();
+        if (xOp == yOp && u.commonVariables && !(x instanceof Ellipsis) && !(y instanceof Ellipsis))
+            return CommonVariable.unify(x, (Variable) y, u);
+        else
             return u.putXY(x, y);
-
-        } else if (y instanceof Variable && u.varReverse(y.op(), x.op())) {
-            return u.putXY((Variable) y, x);
-        } else {
-            if (x instanceof Variable)
-                return false; //a variable; but not unifiable
-            if (y.op() == NEG && y.unneg().equals(x))
-                return false;
-            if (x.op() == NEG && x.unneg().equals(y))
-                return false;
-//            if (x instanceof Variable)
-//                return u.putXY((Variable)x, y);
-//            else
-//                return x.unify(y, u);
-
-            if (u.varDepth < NAL.unify.UNIFY_VAR_RECURSION_DEPTH_LIMIT) {
-                u.varDepth++;
-                boolean result = x.unify(y, u);
-                u.varDepth--;
-                return result;
-            } else
-                return false; //recursion limit exceeded
-        }
     }
 
 

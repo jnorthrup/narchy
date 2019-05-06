@@ -727,7 +727,7 @@ public enum $ {
     /**
      * on-stack/on-heap cheaply constructed Subterms
      */
-    public static Subterms vFast(Term[] t) {
+    public static Subterms vFast(Term... t) {
         switch (t.length) {
             case 0:
                 return Op.EmptySubterms;
