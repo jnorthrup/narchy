@@ -11,7 +11,6 @@ import nars.term.Compound;
 import nars.term.Term;
 import nars.term.util.conj.Conj;
 import nars.term.util.conj.ConjBuilder;
-import nars.term.util.conj.ConjLazy;
 import nars.time.Tense;
 import nars.truth.Stamp;
 import org.eclipse.collections.api.block.predicate.primitive.LongObjectPredicate;
@@ -49,8 +48,8 @@ public class DynamicConjTruth {
 
             int n = d.size();
             ConjBuilder l =
-                    new ConjLazy(n);
-                    //new Conj(n);
+                    //new ConjLazy(n);
+                    new Conj(n);
             for (int i = 0; i < n; i++) {
                 TaskRegion t = d.get(i);
                 long s = t.start();
@@ -64,16 +63,11 @@ public class DynamicConjTruth {
 
 
                 if (!l.add(when, ((Task) t).term().negIf(!d.componentPolarity.get(i))))
-                    break;
+                    return null;
             }
 
             Term y = l.term();
 
-//            //TEMPORARY
-//            if (!(y instanceof Bool) && y.anon().op()!=y.op()) {
-//                l.term();
-//                throw new WTF("conj fault");
-//            }
 
             return y;
         }
@@ -102,7 +96,7 @@ public class DynamicConjTruth {
             int superDT = conj.dt();
             boolean dternal = !Conj.isSeq(conj) && superDT == DTERNAL;
             boolean xternal = superDT == XTERNAL;
-            boolean parallel = superDT == 0;
+            boolean parallel = true; //superDT == 0;
 
             if ((xternal || dternal)) {
                 Subterms ss = conj.subterms();

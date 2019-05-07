@@ -133,7 +133,7 @@ public class Conjterpolate extends Conj {
                         long rw = which.when(ri);
                         Term rt = which.get(ri);
                         which.removeThe(ri);
-                        if (!add(rw,rt))
+                        if (!add(rw, rt))
                             return; //conflict or other CONJ failure
 
                     } while (--remainingEvents > 0);

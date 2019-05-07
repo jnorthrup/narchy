@@ -105,6 +105,10 @@ public enum Intermpolate {;
 
     public static int chooseDT(int adt, int bdt, float aProp, NAL nar) {
         int dt;
+
+        if (adt == DTERNAL) adt = 0;
+        if (bdt == DTERNAL) bdt = 0;
+
         if (adt == bdt) {
             dt = adt;
         } else if (adt == XTERNAL || bdt == XTERNAL) {

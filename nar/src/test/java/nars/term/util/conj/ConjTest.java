@@ -2214,5 +2214,12 @@ public class ConjTest {
                 ConjTest.$$c("(--a ==>+1 a)").dt(XTERNAL).toString());
     }
 
+    @Test void stupidDisjReduction() {
+        Term x = $$("((right||rotate)&&rotate)");
+        assertEq("rotate", x);
+        Term y = ConjCommutive.the(Op.terms, DTERNAL, true, true,
+                $$("(right||rotate)"), $$("rotate"));
+        assertEq("rotate", y);
+    }
 }
 

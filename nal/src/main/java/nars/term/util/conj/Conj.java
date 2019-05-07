@@ -2257,14 +2257,46 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
 //                }
 
 
-                int tdt = temporal.dt();
-                int edt = eternal.dt();
-                if ((temporal.unneg().op() == CONJ && (tdt == DTERNAL || tdt == 0)) || (eternal.op() == CONJ && (edt == DTERNAL || edt == 0)) || temporal.containsRecursively(eternal.unneg()))
-                    //needs flatten
-                    return ConjCommutive.the(B, DTERNAL, true, true, temporal, eternal);
-                else {
-                    return B.theCompound(CONJ, DTERNAL, sorted(temporal, eternal));
+                Term tu = temporal.unneg();
+                Term eu = eternal.unneg();
+                int tdt = tu.dt(), edt = eu.dt();
+
+                Term y = null;
+                //if ((temporal.unneg().op() == CONJ && (tdt == DTERNAL || tdt == 0)) || (eternal.op() == CONJ && (edt == DTERNAL || edt == 0)) || temporal.containsRecursively(eternal.unneg()))
+                if ((tu.op()==CONJ || (eu.op()==CONJ) ||
+                        (Term.commonStructure(eu, tu) &&
+                                (eternal.containsRecursively(tu /* pos or neg to be sure */) ||
+                                 temporal.containsRecursively(eu /* pos or neg to be sure */))
+                ))) {
+                    //needs further flattening
+                    y = ConjCommutive.the(B, DTERNAL, true, true, temporal, eternal);
+
+//                    if (y.op()==CONJ && dtSpecial(y.dt()) && y.dt()!=XTERNAL && !Conj.isSeq(y) && y.subterms().hasAny(CONJ)) {
+//                        y = ConjCommutive.the(B, y.dt(), true, true, y.subterms().arrayShared());
+//                    }
+//
+//                    //TEMPORARY for debugging
+//                    if (y.anon().volume()!=y.volume()) {
+//                        System.out.println(y + "\n" + y.anon());
+//                        y.printRecursive();
+//                        y.anon().printRecursive();
+//                        throw new WTF();
+//                    }
+
                 }
+                else {
+                    y = B.theCompound(CONJ, DTERNAL, sorted(temporal, eternal));
+//
+//                    //TEMPORARY for debugging
+//                    if (y.anon().volume()!=y.volume()) {
+//                        System.out.println(y + "\n" + y.anon());
+//                        y.printRecursive();
+//                        y.anon().printRecursive();
+//                        throw new WTF();
+//                    }
+                }
+
+                return y;
             }
         } else if (eternal == null) {
             ci = temporal;
@@ -2272,10 +2304,7 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
             ci = eternal;
         }
 
-        if (ci == null)
-            return True;
-
-        return ci;
+        return ci == null ? True : ci;
     }
 //
 //    private static void flattenInto(Collection<Term> ee, Term ex, int dt) {

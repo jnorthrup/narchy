@@ -254,7 +254,11 @@ public class PremiseRule extends ProxyTerm {
 
                     if (!negated) {
                         is(XX, CONJ);
-                        if (yNeg && (YY.equals(taskPattern) || YY.equals(beliefPattern))) {
+                        if (yNeg &&
+                                (YY.equals(taskPattern) ||
+                                (YY.equals(beliefPattern) ||
+                                (XX.containsRecursively(YY) && !XX.containsRecursively(YY.neg())
+                                )))) {
                             hasAny(XX, NEG); //taskPattern and beliefPattern themselves will always be unneg so it is safe to expect a negation
                         }
                         eventable(YY);

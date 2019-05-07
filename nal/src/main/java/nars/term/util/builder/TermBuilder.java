@@ -145,24 +145,19 @@ public abstract class TermBuilder implements TermConstructor {
                             only;
         }
 
+        Term y;
         switch (dt) {
             case DTERNAL:
-            case 0:
-                return ConjCommutive.theSorted(this, dt, u);
+            case 0:  y = ConjCommutive.theSorted(this, dt, u); break;
 
-            case XTERNAL:
-                return ConjCommutive.theXternal(this, u);
+            case XTERNAL: y = ConjCommutive.theXternal(this, u); break;
 
-            default:
-                return ConjSeq.sequence(this, dt, u);
-
+            default: y = ConjSeq.sequence(this, dt, u); break;
         }
 
+        return y;
     }
 
-//    private static boolean unfoldableInneralXternalConj(Term x) {
-//        return x.op() == CONJ && x.dt() == XTERNAL;
-//    }
 
     public Term root(Compound x) {
         if (!x.hasAny(Op.Temporal))

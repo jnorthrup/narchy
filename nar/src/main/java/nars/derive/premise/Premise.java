@@ -186,14 +186,15 @@ public class Premise implements Comparable<Premise> {
 
     private @Nullable Task match(Derivation d, Term beliefTerm, boolean beliefConceptUnifiesTaskConcept) {
 
+        boolean conceptualizable = beliefTerm.op().taskable && beliefTerm.isNormalized();
+        if (!conceptualizable)
+            return null;
+
         NAR n = d.nar();
 
-        Concept beliefConcept = beliefTerm.op().taskable ?
-                n.conceptualizeDynamic(beliefTerm)
+        Concept beliefConcept = n.conceptualizeDynamic(beliefTerm);
                 //n.conceptualize(beliefTerm)
                 //n.concept(beliefTerm)
-                :
-                null;
 
         /** dereference */
         if (beliefConcept instanceof AliasConcept)
@@ -201,7 +202,6 @@ public class Premise implements Comparable<Premise> {
 
         if (!(beliefConcept instanceof TaskConcept))
             return null;
-
 
         final BeliefTable beliefTable = beliefConcept.beliefs();
 
@@ -240,33 +240,33 @@ public class Premise implements Comparable<Premise> {
             }
         }
 
-        if (!beliefTable.isEmpty()) {
-            return tryMatch(beliefTerm, beliefTable, d);
-        }
+        return (!beliefTable.isEmpty()) ?
+            tryMatch(beliefTerm, beliefTable, d) : null;
 
 //        if (unifiedBelief && belief != null && Param.LINK_VARIABLE_UNIFIED_PREMISE) {
 //            linkVariable(unifiedBelief, d.nar, beliefConcept);
 //        }
 
-        return null;
     }
 
-    private Predicate<Task> beliefFilter() {
+    private boolean beliefFilter(Task t) {
 //        if (task.stamp().length == 0) {
 //            return t -> !t.equals(task) && t.stamp().length > 0; //dont allow derivation of 2 unstamped tasks - infinite feedback - dont cross the streams
 //        } else {
-        return t -> !t.equals(task);//null; //stampFilter(d);
+        //return t -> !t.equals(task);//null; //stampFilter(d);
+        return !t.equals(task);
 //        }
 
     }
 
     private Task tryMatch(Term beliefTerm, BeliefTable bb, Derivation d) {
-        long[] focus = timeFocus(beliefTerm, d);
 
         Predicate<Task> beliefFilter =
                 beliefTerm.equalsRoot(task.term()) ?
-                        beliefFilter() :
+                        this::beliefFilter :
                         null;
+
+        long[] focus = timeFocus(beliefTerm, d);
 
         return bb.matching(focus[0], focus[1], beliefTerm, beliefFilter, d.dur(), d.nar())
                 .task(true, false, true);

@@ -11,8 +11,8 @@ import nars.task.util.TaskRegion;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.util.Image;
+import nars.term.util.conj.Conj;
 import nars.term.util.conj.ConjBuilder;
-import nars.term.util.conj.ConjLazy;
 import nars.time.Tense;
 import org.jetbrains.annotations.Nullable;
 
@@ -207,8 +207,8 @@ public class DynamicStatementTruth {
 
                 //IMPL: compute innerDT for the conjunction
                 ConjBuilder c =
-                        //new Conj(d.size());
-                        new ConjLazy(d.size());
+                        new Conj(d.size());
+                        //new ConjLazy(d.size());
 
                 for (int i = 0, componentsSize = d.size(); i < componentsSize; i++) {
                     TaskRegion x = d.get(i);
@@ -249,10 +249,11 @@ public class DynamicStatementTruth {
 //                    }
 
                     if (!c.add(tWhen, xx.sub(subjOrPred ? 0 : 1).negIf(!d.componentPolarity.get(i) ^ union)))
-                        break;
+                        return null;
                 }
 
                 sect = c.term();
+
                 if (sect == Null)
                     return null; //allow non-Null Bool's?
 

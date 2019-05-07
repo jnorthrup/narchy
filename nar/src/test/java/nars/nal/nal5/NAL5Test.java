@@ -643,7 +643,7 @@ public class NAL5Test extends NALTest {
     void conditional_induction_described() {
 
         
-        test.termVolMax(14);
+        test.termVolMax(16);
         test.believe("<(&&,(robin --> [chirping]),(robin --> [flying])) ==> a>");
         test.believe("<(robin --> [flying]) ==> (robin --> [withBeak])>", 0.9f, 0.9f);
         test.mustBelieve(cycles, "<(&&,(robin --> [chirping]),(robin --> [withBeak])) ==> a>",
@@ -682,7 +682,7 @@ public class NAL5Test extends NALTest {
     @Test
     void conditional_abduction2_depvar_2() {
         test.nar.confMin.set(0.3);
-        test.termVolMax(5);
+        test.termVolMax(9);
         test
                 .believe("((x && y) ==> #1)")
                 .believe("(y ==> #1)")
@@ -700,7 +700,7 @@ public class NAL5Test extends NALTest {
     @Test
     void conditional_induction0Simple() {
         
-        test.nar.termVolumeMax.set(5);
+        test.nar.termVolumeMax.set(8);
         test.believe("((x1 && a) ==> c)");
         test.believe("((y1 && a) ==> c)");
         test.mustBelieve(cycles, "(x1 ==> y1)", 1.00f, 0.45f);
@@ -709,7 +709,7 @@ public class NAL5Test extends NALTest {
 
     @Test
     void conditional_induction0Simple_NegInner() {
-        test.termVolMax(6)
+        test.termVolMax(12)
                 .believe("((x1 && a) ==> c)")
                 .believe("((--y1 && a) ==> c)")
                 .mustBelieve(cycles, "--(x1 ==> y1)", 1.00f, 0.45f)
@@ -719,7 +719,7 @@ public class NAL5Test extends NALTest {
     @Test
     void conditional_induction0SimpleDepVar() {
         test
-                .termVolMax(8)
+                .termVolMax(12)
                 .believe("((x1 && #1) ==> c)")
                 .believe("((y1 && #1) ==> c)")
                 .mustBelieve(cycles, "(x1 ==> y1)", 1.00f, 0.45f)
@@ -729,17 +729,17 @@ public class NAL5Test extends NALTest {
     @Test
     void conditional_induction0SimpleDepVar2() {
         
-        test.termVolMax(7).confMin(0.4f);
+        test.termVolMax(12).confMin(0.4f);
         test.believe("((x1 && #1) ==> (a && #1))");
         test.believe("((y1 && #1) ==> (a && #1))");
-        test.mustBelieve(cycles*2, "(x1 ==> y1)", 1.00f, 0.45f);
-        test.mustBelieve(cycles*2, "(y1 ==> x1)", 1.00f, 0.45f);
+        test.mustBelieve(cycles, "(x1 ==> y1)", 1.00f, 0.45f);
+        test.mustBelieve(cycles, "(y1 ==> x1)", 1.00f, 0.45f);
     }
 
     @Test
     void conditional_induction0SimpleDepVar3() {
         
-        test.nar.termVolumeMax.set(8);
+        test.nar.termVolumeMax.set(12);
         test.believe("((x1 && #1) ==> (a && #1))");
         test.believe("((#1 && #2) ==> (a && #2))");
         test.mustBelieve(cycles, "(x1 ==> #1)", 1.00f, 0.45f);
@@ -749,7 +749,7 @@ public class NAL5Test extends NALTest {
     @Test
     void conditional_induction0SimpleIndepVar() {
 
-        test.termVolMax(8);
+        test.termVolMax(12);
         test.believe("((x1 && $1) ==> (a,$1))");
         test.believe("((y1 && $1) ==> (a,$1))");
         test.mustBelieve(cycles, "(x1 ==> y1)", 1.00f, 0.45f);
@@ -758,7 +758,7 @@ public class NAL5Test extends NALTest {
 
     @Test
     void conditional_induction_3ary() {
-        test.termVolMax(8)
+        test.termVolMax(12)
             .believe("((&&,x1,x2,a) ==> c)")
             .believe("((&&,y1,y2,a) ==> c)")
             .mustBelieve(cycles, "((x1&&x2) ==> (y1&&y2))", 1.00f, 0.45f)
@@ -766,7 +766,7 @@ public class NAL5Test extends NALTest {
     }
     @Test
     void conditional_induction_3ary_some_inner_Neg_other() {
-        test.termVolMax(8)
+        test.termVolMax(12)
                 .believe("((&&,x1,--x2,a) ==> c)")
                 .believe("((&&,y1,y2,a) ==> c)")
                 .mustBelieve(cycles, "((x1&&--x2) ==> (y1&&y2))", 1.00f, 0.45f)
@@ -774,7 +774,7 @@ public class NAL5Test extends NALTest {
     }
     @Test
     void conditional_induction_3ary_some_inner_Neg_the() {
-        test.termVolMax(8)
+        test.termVolMax(12)
                 .believe("((&&,x1,x2,--a) ==> c)")
                 .believe("((&&,y1,y2,--a) ==> c)")
                 .mustBelieve(cycles, "((x1&&x2) ==> (y1&&y2))", 1.00f, 0.45f)
@@ -952,7 +952,7 @@ public class NAL5Test extends NALTest {
     @Test
     void testConversionNeg3() {
         test
-                .termVolMax(4).confMin(0.4f)
+                .termVolMax(7).confMin(0.4f)
                 .input("(--x ==> y)?")
                 .input("(y ==> --x).")
                 .mustBelieve(cycles, "(--x ==> y).", 1f, 0.47f)
@@ -962,7 +962,7 @@ public class NAL5Test extends NALTest {
     @Test
     void testImplSubj_Questioned() {
         test
-            .termVolMax(3)
+            .termVolMax(6)
             .input("(x ==> y)?")
             .mustQuestion(cycles, "x")
             .mustQuestion(cycles, "y")
@@ -971,7 +971,7 @@ public class NAL5Test extends NALTest {
 
     @Test
     void testImplSubj_and_ConditionsQuestioned_fwd() {
-        test.termVolMax(3)
+        test.termVolMax(4)
                 .ask("x")
                 .input("(x ==> y).")
                 .mustQuestion(cycles, "y")
@@ -979,7 +979,7 @@ public class NAL5Test extends NALTest {
     }
     @Test
     void testImplSubj_and_ConditionsQuestioned_rev() {
-        test.termVolMax(3)
+        test.termVolMax(4)
                 .ask("y")
                 .input("(x ==> y).")
                 .mustQuestion(cycles, "x")
@@ -1044,8 +1044,8 @@ public class NAL5Test extends NALTest {
         test
                 .ask("((x&&y)==>z)")
                 .mustQuestion(cycles, "(x&&y)")
-                .mustQuestion(cycles, "(x ==>+- z)")
-                .mustQuestion(cycles, "(y ==>+- z)")
+                .mustQuestion(cycles, "(x ==> z)")
+                .mustQuestion(cycles, "(y ==> z)")
 //                .mustQuestion(cycles, "(x==>(y&&z))")
 //                .mustQuestion(cycles, "(y==>(x&&z))")
         ;
@@ -1056,8 +1056,8 @@ public class NAL5Test extends NALTest {
         test
                 .ask("(z==>(x&&y))")
                 .mustQuestion(cycles, "(x&&y)")
-                .mustQuestion(cycles, "(z ==>+- x)")
-                .mustQuestion(cycles, "(z ==>+- y)")
+                .mustQuestion(cycles, "(z ==> x)")
+                .mustQuestion(cycles, "(z ==> y)")
         ;
     }
 
