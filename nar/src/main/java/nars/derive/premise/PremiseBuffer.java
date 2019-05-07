@@ -24,10 +24,10 @@ public class PremiseBuffer implements Serializable {
 
     /** rate that priority from the novelty bag subtracts from potential premises.
      * may need to be divided by concurrency so that threads dont step on each other */
-    float notNovelCost = 0.1f;
+    float notNovelCost = 0.2f;
 
     /** search rate */
-    public float fillRate = 1f;
+    public float fillRate = 1.5f;
 
     /** active premises for sampling */
     public final Bag<Premise,PriReference<Premise>> premise;
@@ -61,7 +61,7 @@ public class PremiseBuffer implements Serializable {
 
         });
 
-        premise.sample(d.random, premisesPerIteration, pp->{
+        premise.sample/*pop*/(d.random, premisesPerIteration, pp->{
             fire(pp, matchTTL, deriveTTL, d);
         });
 

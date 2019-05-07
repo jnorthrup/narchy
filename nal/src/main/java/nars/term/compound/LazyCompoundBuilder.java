@@ -314,7 +314,8 @@ public class LazyCompoundBuilder {
     }
 
 
-    private static final class DeferredEval extends LighterCompound {
+    private static final class DeferredEval extends LightCompound {
+    //private static final class DeferredEval extends LighterCompound {
 
         final static AtomicInteger serial = new AtomicInteger(0);
 
@@ -333,6 +334,7 @@ public class LazyCompoundBuilder {
             this.f = f;
             this.args = args;
         }
+
 
         @Override
         public @Nullable Term normalize(byte varOffset) {

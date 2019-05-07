@@ -88,8 +88,8 @@ public abstract class DynamicTermLinker implements TermLinker {
                     1 / (1 + (((float)(root.volume()-1))/(1+root.subs())));
 
             float w =
-                    //fanoutRatio;
-                    (float)Math.sqrt(fanoutRatio);
+                    fanoutRatio;
+                    //(float)Math.sqrt(fanoutRatio);
                     //(float)Math.pow(fanoutRatio, 0.75f);
                     //(float)Math.pow(fanoutRatio, 1.5f);
 
