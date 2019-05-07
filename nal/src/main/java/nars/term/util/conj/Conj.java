@@ -2269,7 +2269,7 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
                                  temporal.containsRecursively(eu /* pos or neg to be sure */))
                 ))) {
                     //needs further flattening
-                    y = ConjCommutive.the(B, DTERNAL, true, true, temporal, eternal);
+                    y = ConjCommutive.the(B, Conj.isSeq(tu) && Conj.isSeq(eu) ? 0 : DTERNAL, true, true, temporal, eternal);
 
 //                    if (y.op()==CONJ && dtSpecial(y.dt()) && y.dt()!=XTERNAL && !Conj.isSeq(y) && y.subterms().hasAny(CONJ)) {
 //                        y = ConjCommutive.the(B, y.dt(), true, true, y.subterms().arrayShared());

@@ -66,11 +66,11 @@ public class Occurrify extends TimeGraph {
     }
 
     private final Derivation d;
-    int absolutePoints = 2;
-    int noXternalPoints = 2;
+    int absolutePoints = 5;
+    int noXternalPoints = 3;
     int sameAsPatternRootPoints = 1;
     private transient boolean decomposeEvents;
-    private transient int patternVolumeMin;
+    private transient int patternVolumeMin, patternVolumeMax;
 
 
 //    /**
@@ -493,7 +493,7 @@ public class Occurrify extends TimeGraph {
         if (super.validPotentialSolution(y)) {
             int v = y.volume();
             return
-                    v <= d.termVolMax &&
+                    v <= patternVolumeMax &&
                             v >= patternVolumeMin;
         } else
             return false;
@@ -505,6 +505,7 @@ public class Occurrify extends TimeGraph {
         this.pattern = pattern;
         this.patternVolumeMin =
                 (int) Math.floor(NAL.derive.TIMEGRAPH_IGNORE_DEGENERATE_SOLUTIONS_FACTOR * pattern.volume());
+        this.patternVolumeMax = d.termVolMax;
 
         solve(pattern,  /* take everything */ this::eachSolution);
 

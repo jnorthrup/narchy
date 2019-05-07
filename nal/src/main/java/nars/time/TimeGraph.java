@@ -1714,7 +1714,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 
         @Override
         public int compareTo(LongObjectPair<Term> e) {
-            return cmp.compare(this, (Event)e);
+            return this==e ? 0 : cmp.compare(this, (Event)e);
         }
 
         abstract public long dur(); //        return end() - start();

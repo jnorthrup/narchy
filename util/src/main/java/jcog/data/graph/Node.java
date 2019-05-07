@@ -8,6 +8,7 @@ import jcog.data.list.FasterList;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.PrintStream;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
@@ -26,6 +27,7 @@ public interface Node<N, E> {
 
     Iterable<FromTo<Node<N,E>,E>> edges(boolean in, boolean out);
 
+    /** warning this buffers the iteration */
     default Iterable<FromTo<Node<N,E>,E>> edges(boolean in, boolean out, @Nullable Predicate<FromTo<Node<N,E>,E>> filter, @Nullable Comparator<FromTo<Node<N,E>,E>> sorter) {
         FasterList<FromTo<Node<N, E>, E>> l = new FasterList(edgeIterator(in, out));
         int s = l.size();
@@ -45,6 +47,14 @@ public interface Node<N, E> {
         }
 
         return l;
+    }
+
+    default Iterable<FromTo<Node<N,E>,E>> edges(boolean in, boolean out, @Nullable Predicate<FromTo<Node<N,E>,E>> filter) {
+        Iterable<FromTo<Node<N, E>, E>> l = edges(in, out);
+        if (l instanceof Collection && ((Collection)l).isEmpty())
+            return List.of();
+        else
+            return filter != null ? Iterables.filter(l, filter::test) : l;
     }
 
     default Iterator<FromTo<Node<N,E>,E>> edgeIterator(boolean in, boolean out) { return edges(in, out).iterator(); }

@@ -181,8 +181,8 @@ public enum Op {
      */
     VAR_PATTERN('%', Op.ANY_LEVEL),
     VAR_QUERY('?', Op.ANY_LEVEL),
-    VAR_DEP('#', 5),
     VAR_INDEP('$', 5),
+    VAR_DEP('#', 5),
 
 
 

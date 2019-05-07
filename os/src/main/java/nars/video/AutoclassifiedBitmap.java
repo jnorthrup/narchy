@@ -196,14 +196,9 @@ public class AutoclassifiedBitmap extends VectorSensor {
         for (int i = 0; i < nw; i++) {
             for (int j = 0; j < nh; j++) {
                 for (int f = 0; f < features; f++) {
-                    //Term target = $.prop(coord(r, i, j), $.the(k));
                     Term term = coord(r, i, j, f);
-                    int x = i;
-                    int y = j;
-                    int ff = f;
-                    signals.add(
-                            new Signal(term, cause, () -> encoded[x][y][ff], nar)
-                    );
+                    int x = i, y = j, ff = f;
+                    signals.add( new Signal(term, cause, () -> encoded[x][y][ff], nar) );
                 }
             }
         }

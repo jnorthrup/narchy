@@ -88,11 +88,12 @@ class CommonVariableTest {
     }
 
     @Test void testUnifyCommonVar_DepIndep() {
+        String vx = "$", vy = "#";
         Set<String> uu = new TreeSet();
         for (int i = 0; i < 16; i++) {
             UnifyAny u = new UnifyAny();
             assertTrue(
-                    $$("x($1,#1)").unify($$("x(#1,$1)"), u)
+                    $$("x(" + vx + "1," + vy + "1)").unify($$("x(" + vy + "1," + vx + "1)"), u)
             );
             uu.add(u.toString());
             u.xy.values().forEach(c -> assertSerialize((Variable)c));
@@ -100,10 +101,7 @@ class CommonVariableTest {
         }
 
         assertEquals(1, uu.size());
-        assertEquals(
-                "[{$1=##1$1, #1=##1$1, #2=##2$2, $2=##2$2}$0, {$1=##1$1, #2=##2$2, $2=##2$2, #1=##1$1}$0]"
-                //"[{#1=##1#2, #2=##1#2, $1=$$1$2, $2=$$1$2}$0, {#1=$1, #2=$2}$0]"
-                //"{$1=##1$1, #1=##1$1, #2=##2$2, $2=##2$2}$0"
+        assertEquals("[{$1=#1, $2=#2}$0]"
             ,uu.toString());
 
 //        assertEquals(1, uu.size());
