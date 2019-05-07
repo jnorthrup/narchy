@@ -6,7 +6,7 @@ import nars.term.Variable;
 import nars.term.util.transform.VariableNormalization;
 import nars.term.var.ellipsis.Ellipsis;
 
-class PremiseRuleNormalization extends VariableNormalization {
+public class PremiseRuleNormalization extends VariableNormalization {
 
 
 

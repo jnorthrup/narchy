@@ -9,6 +9,7 @@ import jcog.sort.FloatRank;
 import nars.NAL;
 import nars.NAR;
 import nars.Task;
+import nars.attention.TaskLinkWhat;
 import nars.attention.What;
 import nars.control.op.Remember;
 import nars.link.AtomicTaskLink;
@@ -255,7 +256,7 @@ public class SensorBeliefTables extends BeliefTables {
 //        delta += tasklink.priMax(QUESTION, p/4);
 //        delta += tasklink.priMax(QUEST, p/4);
 
-        ((What.TaskLinkWhat)w).links.link(tasklink);
+        ((TaskLinkWhat)w).links.link(tasklink);
 
         //if (prev!=next)
             w.nar.eventTask.emit(next);

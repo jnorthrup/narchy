@@ -3,7 +3,7 @@ package nars.time.event;
 import nars.$;
 import nars.NAR;
 import nars.attention.What;
-import nars.derive.Derivation;
+import nars.derive.model.Derivation;
 import nars.task.util.Answer;
 import nars.term.Term;
 import nars.time.ScheduledTask;

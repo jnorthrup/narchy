@@ -1,4 +1,4 @@
-package nars.derive.premise;
+package nars.derive.rule;
 
 import jcog.Util;
 import jcog.data.bit.MetalBitSet;
@@ -6,7 +6,7 @@ import jcog.data.list.FasterList;
 import jcog.memoize.CaffeineMemoize;
 import jcog.tree.perfect.TrieNode;
 import nars.Op;
-import nars.derive.Derivation;
+import nars.derive.model.Derivation;
 import nars.derive.op.Branchify;
 import nars.derive.op.Premisify;
 import nars.subterm.Subterms;
@@ -92,7 +92,7 @@ public enum PremiseRuleCompiler {
                 mustAtomizableStructure,
 
                 //DeriverPlanner.DirectDeriverPlanner
-                new DeriverPlanner.CentralMemoizer()
+                new DerivationRunner.CentralMemoizer()
                 //DeriverPlanner.ConceptMetaMemoizer
         );
     }

@@ -2,15 +2,19 @@ package nars.term;
 
 import nars.*;
 import nars.subterm.util.TermMetadata;
+import nars.term.atom.Bool;
 import nars.term.atom.Int;
 import nars.term.compound.CachedCompound;
+import nars.term.compound.LighterCompound;
 import nars.term.util.Image;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import static nars.$.$$;
+import static nars.Op.INH;
 import static nars.term.atom.Bool.Null;
 import static nars.term.atom.Bool.True;
+import static nars.term.util.Image.imageNormalize;
 import static nars.term.util.TermTest.assertEq;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -27,16 +31,16 @@ class ImageTest {
     void testNormlizeExt() {
         assertEq(
                 "reaction(acid,base)",
-                Image.imageNormalize($$("(acid --> (reaction,/,base))"))
+                imageNormalize($$("(acid --> (reaction,/,base))"))
         );
         assertEq(
                 "reaction(acid,base)",
-                Image.imageNormalize($$("(base --> (reaction,acid,/))"))
+                imageNormalize($$("(base --> (reaction,acid,/))"))
         );
 
         assertEq(
                 "reaction(acid)",
-                Image.imageNormalize($$("(acid --> (reaction,/))"))
+                imageNormalize($$("(acid --> (reaction,/))"))
         );
 
 
@@ -49,15 +53,15 @@ class ImageTest {
 
         assertEq(
                 "(neutralization-->(acid,base))",
-                Image.imageNormalize($$("((neutralization,\\,base) --> acid)"))
+                imageNormalize($$("((neutralization,\\,base) --> acid)"))
         );
         assertEq(
                 "(neutralization-->(acid,base))",
-                Image.imageNormalize($$("((neutralization,acid,\\) --> base)"))
+                imageNormalize($$("((neutralization,acid,\\) --> base)"))
         );
         assertEq(
                 "(neutralization-->(acid))",
-                Image.imageNormalize($$("((neutralization,\\) --> acid)"))
+                imageNormalize($$("((neutralization,\\) --> acid)"))
         );
 
     }
@@ -66,7 +70,7 @@ class ImageTest {
     void testCanNotNormlizeIntExt() {
         assertEq(
                 "((neutralization,\\,base)-->(reaction,/,base))",
-                Image.imageNormalize($$("((neutralization,\\,base) --> (reaction,/,base))"))
+                imageNormalize($$("((neutralization,\\,base) --> (reaction,/,base))"))
         );
     }
 
@@ -97,8 +101,8 @@ class ImageTest {
         assertEq("(1-->(bitmap,0,/,0))",
                 Image.imageExt(xx, Int.the(1)));
 
-        assertEq(xx, Image.imageNormalize(Image.imageExt(xx, Int.the(1))));
-        assertEq(xx, Image.imageNormalize(Image.imageExt(xx, Int.the(0))));
+        assertEq(xx, imageNormalize(Image.imageExt(xx, Int.the(1))));
+        assertEq(xx, imageNormalize(Image.imageExt(xx, Int.the(0))));
 
     }
 
@@ -107,7 +111,7 @@ class ImageTest {
         Term x = $$("reaction(acid,#1)");
         Term y = Image.imageExt(x, $.varDep(1));
         assertEquals("(#1-->(reaction,acid,/))", y.toString());
-        assertEquals(x, Image.imageNormalize(y));
+        assertEquals(x, imageNormalize(y));
     }
 
     @Test void testOneArgFunctionAsImage() {
@@ -146,7 +150,7 @@ class ImageTest {
 
         //reverse
 
-        Term b2 = Image.imageNormalize(a3);
+        Term b2 = imageNormalize(a3);
         assertEquals(a1, b2);
 
 //        Term b1 = Image.imageNormalize(b2);
@@ -174,7 +178,7 @@ class ImageTest {
                 "(acid-->(reaction,/))",
                 x.normalize().toString()
         );
-        assertNotEquals(x.normalize(), Image.imageNormalize(x));
+        assertNotEquals(x.normalize(), imageNormalize(x));
     }
 
     @Test void testNormalizeVsImageNormalize2() throws Narsese.NarseseException {
@@ -201,12 +205,19 @@ class ImageTest {
         Term x = Narsese.term("(y,\\,x)", false);
         assertTrue(x.isNormalized());
     }
-    @Test void testNormalizeWTF() {
-        if (!NAL.term.INH_IMAGE_RECURSION) {
-            Term x = $$("(ANIMAL-->((cat,ANIMAL),cat,/))");
-            Term y = Image.imageNormalize(x);
-            assertEquals(True, y);
-            assertEquals(True, x); //detect earlier
-        }
+    @Test void testImageRecursionFilter() {
+        if (NAL.term.INH_IMAGE_RECURSION)
+            return;
+
+        Term x0 = $$("(_ANIMAL-->((cat,ANIMAL),cat,/))");
+        assertEq("((cat,_ANIMAL)-->(cat,ANIMAL))", imageNormalize(x0)); //to see what would happen
+
+        Term x = $$("(ANIMAL-->((cat,ANIMAL),cat,/))");
+        Term y = imageNormalize(x);
+        assertEquals(True, y);
+        assertEquals(True, x); //detect earlier
+
+        assertEq(Bool.True, Image.normalize(new LighterCompound(INH, $$("ANIMAL"), $$("((cat,ANIMAL),cat,/)")), true, true));
+
     }
 }

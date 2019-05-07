@@ -1,8 +1,8 @@
 package nars.derive.condition;
 
 import nars.$;
-import nars.derive.PreDerivation;
-import nars.derive.premise.PremiseRule;
+import nars.derive.model.PreDerivation;
+import nars.derive.rule.PremiseRule;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.Terms;
@@ -15,8 +15,8 @@ import nars.unify.Unify;
 
 import java.util.Collection;
 
-import static nars.derive.Derivation.Belief;
-import static nars.derive.Derivation.Task;
+import static nars.derive.model.Derivation.Belief;
+import static nars.derive.model.Derivation.Task;
 
 public class CommutativeConstantPreFilter extends AbstractPred<PreDerivation> {
 

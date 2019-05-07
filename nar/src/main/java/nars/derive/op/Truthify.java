@@ -3,7 +3,7 @@ package nars.derive.op;
 import jcog.data.list.FasterList;
 import nars.$;
 import nars.Op;
-import nars.derive.Derivation;
+import nars.derive.model.Derivation;
 import nars.derive.op.Occurrify.BeliefProjection;
 import nars.term.Term;
 import nars.term.atom.Atomic;

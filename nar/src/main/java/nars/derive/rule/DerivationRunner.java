@@ -1,10 +1,11 @@
-package nars.derive.premise;
+package nars.derive.rule;
 
 import jcog.memoize.Memoizers;
 import jcog.memoize.byt.ByteHijackMemoize;
 import nars.concept.Concept;
-import nars.derive.Derivation;
-import nars.derive.PreDerivation;
+import nars.derive.model.Derivation;
+import nars.derive.model.PreDerivation;
+import nars.derive.premise.PremiseKey;
 import nars.term.util.builder.InterningTermBuilder;
 
 import java.util.function.Function;
@@ -13,12 +14,13 @@ import static jcog.memoize.Memoizers.DEFAULT_HIJACK_REPROBES;
 
 /** determines the valid conclusions of a particular Pre-derivation.
  * this is returned as a short[] of conclusions id's. */
-@FunctionalInterface public interface DeriverPlanner extends Function<PreDerivation,short[]> {
+@FunctionalInterface public interface DerivationRunner extends Function<PreDerivation,short[]> {
 
     /** memory-less, evaluated exhaustively each */
-    DeriverPlanner DirectDeriverPlanner = DeriverRules::what;
+    DerivationRunner DIRECT_DERIVATION_RUNNER = DeriverRules::what;
 
-    final class CentralMemoizer implements DeriverPlanner {
+
+    final class CentralMemoizer implements DerivationRunner {
 
         final ByteHijackMemoize<PremiseKey, short[]> whats;
 
@@ -46,8 +48,9 @@ import static jcog.memoize.Memoizers.DEFAULT_HIJACK_REPROBES;
     }
 
 
-
-    DeriverPlanner ConceptMetaMemoizer = preDerivation -> {
+    /** experimental: caches the memoizations in Concept meta maps.
+     *  this is likely wasteful even though it attempts to use Soft ref's */
+    DerivationRunner ConceptMetaMemoizer = preDerivation -> {
         Derivation d = (Derivation) preDerivation;
 
 

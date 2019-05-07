@@ -21,6 +21,7 @@ import nars.Narsese;
 import nars.Task;
 import nars.agent.Game;
 import nars.agent.util.RLBooster;
+import nars.attention.TaskLinkWhat;
 import nars.attention.What;
 import nars.concept.Concept;
 import nars.concept.sensor.Signal;
@@ -610,7 +611,7 @@ public class NARui {
     public static Surface attentionUI(What w) {
         final Bordering m = new Bordering();
         NAR n = w.nar;
-        TaskLinks attn = ((What.TaskLinkWhat)w).links;
+        TaskLinks attn = ((TaskLinkWhat)w).links;
         m.center(new TabMenu(Map.of(
                 "Input", () -> taskBufferView(w.in, n),
                 "Spectrum", ()->tasklinkSpectrogram(attn.links, 300, n),

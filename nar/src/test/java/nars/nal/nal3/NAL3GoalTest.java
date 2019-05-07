@@ -3,7 +3,7 @@ package nars.nal.nal3;
 import nars.NAR;
 import nars.NARS;
 import nars.derive.Derivers;
-import nars.derive.impl.BatchDeriver;
+import nars.derive.BatchDeriver;
 import nars.nal.nal8.GoalDecompositionTest;
 import nars.test.NALTest;
 import nars.test.TestNAR;

@@ -3,7 +3,7 @@ package nars.nal.nal4;
 import nars.NAR;
 import nars.NARS;
 import nars.derive.Derivers;
-import nars.derive.impl.BatchDeriver;
+import nars.derive.BatchDeriver;
 import nars.term.util.SetSectDiff;
 import nars.test.NALTest;
 import org.junit.jupiter.api.Test;

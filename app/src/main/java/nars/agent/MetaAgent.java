@@ -6,6 +6,7 @@ import jcog.math.FloatAveraged;
 import jcog.math.FloatRange;
 import nars.$;
 import nars.NAR;
+import nars.attention.TaskLinkWhat;
 import nars.attention.What;
 import nars.concept.action.GoalActionConcept;
 import nars.task.util.PriBuffer;
@@ -90,11 +91,11 @@ public class MetaAgent extends Game {
             @Override
             public void set(float value) {
                 switch (Math.round(value * 6)) {
-                    case 0: value = 0.5f; break;
+                    case 0: value = 0.25f; break;
                     case 1: value = 0.2f; break;
                     case 2: value = 0.1f; break;
                     case 3: value = 0.05f; break;
-                    case 4: value = 0.02f; break;
+                    case 4: value = 0.025f; break;
                     case 5: value = 0.01f; break;
                 }
                 nar.freqResolution.set(value);
@@ -129,8 +130,8 @@ public class MetaAgent extends Game {
         //this.what().accept(new EternalTask($.inh(aid,this.id), BELIEF, $.t(1f, 0.9f), nar));
 
 //        forgetAction = actionUnipolar($.inh(id, forget), (FloatConsumer) n.attn.forgetRate::set);
-        actionCtl($.inh(gid, forget), ((What.TaskLinkWhat) w).links.decay);
-        actionCtl($.inh(gid, amplify), ((What.TaskLinkWhat) w).links.amp);
+        actionCtl($.inh(gid, forget), ((TaskLinkWhat) w).links.decay);
+        actionCtl($.inh(gid, amplify), ((TaskLinkWhat) w).links.amp);
 
 
 //        float priFactorMin = 0.1f, priFactorMax = 4f;
@@ -158,7 +159,7 @@ public class MetaAgent extends Game {
         FloatRange durRange = new FloatRange(initialDur, initialDur / 4, initialDur * 4) {
             @Override
             public float get() {
-                super.set(((What.TaskLinkWhat) w).dur);
+                super.set(((TaskLinkWhat) w).dur);
                 return super.get();
             }
 
@@ -167,7 +168,7 @@ public class MetaAgent extends Game {
                 super.set(value);
                 value = super.get();
                 int nextDur = Math.max(1, Math.round(value));
-                ((What.TaskLinkWhat) w).dur.set(nextDur);
+                ((TaskLinkWhat) w).dur.set(nextDur);
                 //assert(nar.dur()==nextDur);
             }
         };

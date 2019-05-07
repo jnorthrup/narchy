@@ -83,7 +83,7 @@ abstract public class PriBuffer<T extends Prioritizable> implements Consumer<T> 
 
 
         @Override
-        public T put(T x) {
+        public final T put(T x) {
 //            if (each == null)
 //                throw new WTF(); //TEMPORARY
 

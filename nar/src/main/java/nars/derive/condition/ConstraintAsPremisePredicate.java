@@ -2,8 +2,8 @@ package nars.derive.condition;
 
 import jcog.data.list.FasterList;
 import nars.$;
-import nars.derive.Derivation;
-import nars.derive.PreDerivation;
+import nars.derive.model.Derivation;
+import nars.derive.model.PreDerivation;
 import nars.term.Term;
 import nars.term.control.PREDICATE;
 import nars.unify.constraint.ConstraintAsPredicate;

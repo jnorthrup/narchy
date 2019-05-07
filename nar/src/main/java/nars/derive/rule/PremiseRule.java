@@ -1,4 +1,4 @@
-package nars.derive.premise;
+package nars.derive.rule;
 
 import it.unimi.dsi.fastutil.bytes.ByteArrayList;
 import jcog.TODO;
@@ -9,13 +9,14 @@ import nars.$;
 import nars.Builtin;
 import nars.Narsese;
 import nars.Op;
-import nars.derive.Derivation;
-import nars.derive.PreDerivation;
+import nars.derive.model.Derivation;
+import nars.derive.model.PreDerivation;
 import nars.derive.condition.*;
-import nars.derive.op.ConjParallel;
 import nars.derive.op.Occurrify;
 import nars.derive.op.Termify;
 import nars.derive.op.Truthify;
+import nars.derive.premise.PremiseRuleNormalization;
+import nars.derive.premise.PremiseTermAccessor;
 import nars.op.UniSubst;
 import nars.subterm.BiSubterm;
 import nars.subterm.Subterms;
@@ -242,7 +243,7 @@ public class PremiseRule extends ProxyTerm {
 
                 case "conjParallel":
                     is(X, CONJ);
-                    match(X, ConjParallel.the);
+                    match(X, TermMatcher.ConjParallel.the);
                     break;
 
                 case "eventOf":

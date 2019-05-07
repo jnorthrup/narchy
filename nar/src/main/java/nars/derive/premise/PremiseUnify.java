@@ -1,20 +1,21 @@
-package nars.derive;
+package nars.derive.premise;
 
 import nars.term.Term;
 import nars.unify.UnifySubst;
 import org.jetbrains.annotations.Nullable;
 
-public class UnifyPremise extends UnifySubst {
+/** used to determine a premise's "belief task" for the provided "belief term",
+ *  and other premise functionality at the start of a derivation */
+public class PremiseUnify extends UnifySubst {
 
     private Term beliefTerm, beliefTermUnified;
 
-    public UnifyPremise() {
+    public PremiseUnify() {
         super(Premise.var, null);
     }
 
 
-    @Nullable
-    public Term unified(Term taskTerm, Term beliefTerm, int ttl) {
+    @Nullable Term unified(Term taskTerm, Term beliefTerm, int ttl) {
 
         clear();
 

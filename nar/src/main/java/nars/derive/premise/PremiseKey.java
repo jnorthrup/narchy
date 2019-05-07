@@ -3,13 +3,13 @@ package nars.derive.premise;
 import jcog.memoize.byt.ByteKeyExternalWithParameter;
 import nars.NAL;
 import nars.Task;
-import nars.derive.Derivation;
-import nars.derive.PreDerivation;
+import nars.derive.model.Derivation;
+import nars.derive.model.PreDerivation;
 import nars.io.TermIO;
 import nars.unify.Unify;
 
 /** TODO use Gödel numbering to represent a term's unique dt's as independent but canonical numbers ? */
-class PremiseKey extends ByteKeyExternalWithParameter<Unify> {
+public class PremiseKey extends ByteKeyExternalWithParameter<Unify> {
 
     public PremiseKey(PreDerivation d) {
         this(d, ((Derivation)d).ditherDT);

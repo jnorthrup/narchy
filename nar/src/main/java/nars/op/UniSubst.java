@@ -4,7 +4,7 @@ import jcog.Util;
 import nars.$;
 import nars.NAL;
 import nars.Op;
-import nars.derive.Derivation;
+import nars.derive.model.Derivation;
 import nars.eval.Evaluation;
 import nars.subterm.Subterms;
 import nars.term.Functor;

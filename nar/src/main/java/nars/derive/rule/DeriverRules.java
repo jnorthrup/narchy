@@ -1,4 +1,4 @@
-package nars.derive.premise;
+package nars.derive.rule;
 
 import jcog.Util;
 import jcog.data.bit.MetalBitSet;
@@ -6,7 +6,7 @@ import jcog.decide.MutableRoulette;
 import jcog.util.ArrayUtil;
 import nars.NAL;
 import nars.control.Why;
-import nars.derive.Derivation;
+import nars.derive.model.Derivation;
 import nars.term.control.PREDICATE;
 import nars.unify.Unify;
 
@@ -31,7 +31,7 @@ public class DeriverRules {
      */
     private final DeriveAction[] could;
 
-    public final DeriverPlanner planner;
+    public final DerivationRunner planner;
 
     /** structure vector of operator types which must not be anonymized in premise formation */
     public final int mustAtomize;
@@ -43,7 +43,7 @@ public class DeriverRules {
         return d.canCollector.isEmpty() ? ArrayUtil.EMPTY_SHORT_ARRAY : d.canCollector.toArray();
     }
 
-    DeriverRules(PREDICATE<Derivation> what, DeriveAction[] actions, int mustAtomize, DeriverPlanner planner) {
+    DeriverRules(PREDICATE<Derivation> what, DeriveAction[] actions, int mustAtomize, DerivationRunner planner) {
 
         this.what = what;
 
@@ -138,7 +138,7 @@ public class DeriverRules {
             MutableRoulette.run(maybePri, d.random, wi -> 0, b -> test(d, maybeWhat[b]));
         }
 
-        d.nar.emotion.deriveTTL_waste.recordValue(Math.max(0, deriveTTL - d.ttl)); //TODO handle negative amounts, if this occurrs.  limitation of HDR histogram
+        d.nar.emotion.premiseTTL_used.recordValue(Math.max(0, deriveTTL - d.ttl)); //TODO handle negative amounts, if this occurrs.  limitation of HDR histogram
 
     }
 

@@ -99,7 +99,7 @@ class CommonVariableTest {
             //System.out.println(u);
         }
 
-        assertEquals(2, uu.size());
+        assertEquals(1, uu.size());
         assertEquals(
                 "[{$1=##1$1, #1=##1$1, #2=##2$2, $2=##2$2}$0, {$1=##1$1, #2=##2$2, $2=##2$2, #1=##1$1}$0]"
                 //"[{#1=##1#2, #2=##1#2, $1=$$1$2, $2=$$1$2}$0, {#1=$1, #2=$2}$0]"

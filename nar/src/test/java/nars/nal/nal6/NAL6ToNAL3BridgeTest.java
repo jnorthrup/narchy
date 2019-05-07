@@ -1,7 +1,7 @@
 package nars.nal.nal6;
 
 import nars.derive.Derivers;
-import nars.derive.impl.BatchDeriver;
+import nars.derive.BatchDeriver;
 import nars.test.NALTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;

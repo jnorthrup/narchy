@@ -6,7 +6,7 @@ import nars.NARS;
 import nars.Narsese;
 import nars.concept.Concept;
 import nars.derive.Derivers;
-import nars.derive.impl.BatchDeriver;
+import nars.derive.BatchDeriver;
 import nars.gui.graph.DynamicConceptSpace;
 import spacegraph.space3d.SpaceDisplayGraph3D;
 

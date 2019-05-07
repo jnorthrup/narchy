@@ -13,7 +13,7 @@ import nars.*;
 import nars.agent.GameTime;
 import nars.derive.Deriver;
 import nars.derive.Derivers;
-import nars.derive.impl.BatchDeriver;
+import nars.derive.BatchDeriver;
 import nars.exe.impl.UniExec;
 import nars.gui.NARui;
 import nars.gui.sensor.VectorSensorView;

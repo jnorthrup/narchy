@@ -1,12 +1,11 @@
-package nars.attention.derive;
+package nars.derive.pri;
 
 import jcog.Util;
 import jcog.data.list.FasterList;
 import jcog.pri.Prioritized;
 import jcog.pri.ScalarValue;
 import nars.Task;
-import nars.attention.DerivePri;
-import nars.derive.Derivation;
+import nars.derive.model.Derivation;
 
 /** wraps another DeriverBudgeting implementation and ensures that
  * the sum of the priorities of all a premise's derivation

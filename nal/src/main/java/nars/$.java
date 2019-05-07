@@ -676,18 +676,18 @@ public enum $ {
     }
 
 
-    public static Term pFast(Subterms x) {
+    public static Compound pFast(Subterms x) {
         if (x.subs() == 0) return Op.EmptyProduct;
         else return new LightCompound(PROD, x);
     }
 
-    public static Term pFast(Term... x) {
+    public static Compound pFast(Term... x) {
         if (x.length == 0) return Op.EmptyProduct;
         else return new LightCompound(Op.PROD, x);
         //return new LighterCompound(PROD, x);
     }
 
-    public static Term sFast(Subterms x) {
+    public static Compound sFast(Subterms x) {
         if (x.subs() == 0) throw new UnsupportedOperationException();
         return new LightCompound(Op.SETe, x);
     }

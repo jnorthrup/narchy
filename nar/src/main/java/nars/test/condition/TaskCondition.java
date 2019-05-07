@@ -21,6 +21,10 @@ import java.util.function.Predicate;
 
 import static nars.Op.NEG;
 
+/** TODO evolve this into a generic tool for specifying constraints and conditions
+ *  on memory (beliefs, and other measurable quantities/qualities).
+ *  use these to form adaptive runtime hypervisors ensuring optimal and correct operation
+ */
 public class TaskCondition implements NARCondition, Predicate<Task>, Consumer<Tasked> {
 
 

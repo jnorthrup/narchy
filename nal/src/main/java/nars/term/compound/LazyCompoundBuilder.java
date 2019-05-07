@@ -8,19 +8,20 @@ import jcog.data.list.FasterList;
 import jcog.util.ArrayUtil;
 import nars.NAL;
 import nars.Op;
-import nars.subterm.BiSubterm;
 import nars.subterm.Subterms;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
 import nars.term.atom.Int;
+import nars.term.util.TermException;
 import nars.term.util.builder.TermBuilder;
 import nars.term.util.map.ByteAnonMap;
 import nars.term.util.transform.AbstractTermTransform;
 import nars.term.util.transform.InlineFunctor;
 import nars.term.util.transform.InstantFunctor;
 import nars.term.util.transform.TermTransform;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -220,8 +221,8 @@ public class LazyCompoundBuilder {
 
         Op op = Op.the(ctl);
 
-        if (op.atomic)
-            throw new WTF(); //alignment error or something
+        if (op.atomic)  //alignment error or something
+            throw new TermException(LazyCompoundBuilder.class + ": atomic expected where compound begins construction");
 
         int dt = op.temporal ? dt(bytes, range) : DTERNAL;
 
@@ -313,7 +314,7 @@ public class LazyCompoundBuilder {
     }
 
 
-    private static final class DeferredEval extends LightCompound {
+    private static final class DeferredEval extends LighterCompound {
 
         final static AtomicInteger serial = new AtomicInteger(0);
 
@@ -328,12 +329,20 @@ public class LazyCompoundBuilder {
         private transient Term value = null;
 
         DeferredEval(InlineFunctor f, Subterms args) {
-            super(PROD, new BiSubterm(DeferredEvalPrefix , Int.the(serial.incrementAndGet())));
-            //super(INH, $.vFast(PROD.the(args), (Term)f));
+            super(PROD, DeferredEvalPrefix , Int.the(serial.incrementAndGet()));
             this.f = f;
             this.args = args;
         }
 
+        @Override
+        public @Nullable Term normalize(byte varOffset) {
+            return null;
+        }
+
+        @Override
+        public boolean isNormalized() {
+            return true;
+        }
 
         @Override
         public String toString() {
@@ -357,7 +366,7 @@ public class LazyCompoundBuilder {
         InlineFunctor func = (InlineFunctor) s[1];
         Subterms args = s[0].subterms();
 
-        boolean deferred = func instanceof InstantFunctor;
+        boolean deferred = !(func instanceof InstantFunctor);
 
         if (deferred) {
             DeferredEval e = new DeferredEval(func, args);

@@ -3,7 +3,7 @@ package nars.gui.graph.run;
 import jcog.math.IntRange;
 import jcog.pri.bag.util.Bagregate;
 import nars.NAR;
-import nars.attention.What;
+import nars.attention.TaskLinkWhat;
 import nars.gui.DurSurface;
 import nars.link.TaskLinks;
 import nars.term.Term;
@@ -24,7 +24,7 @@ public class BagregateConceptGraph2D extends ConceptGraph2D {
     };
 
     public static Surface get(NAR n) {
-        return get( ((What.TaskLinkWhat) n.what()).links, n);
+        return get( ((TaskLinkWhat) n.what()).links, n);
     }
 
     public static Surface get(TaskLinks links, NAR n) {

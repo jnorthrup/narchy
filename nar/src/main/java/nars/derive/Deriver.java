@@ -9,10 +9,13 @@ import nars.Task;
 import nars.attention.What;
 import nars.control.How;
 import nars.control.Why;
-import nars.derive.premise.DeriverRules;
-import nars.derive.premise.PremiseDeriverRuleSet;
-import nars.derive.premise.PremiseRuleCompiler;
-import nars.derive.premise.PremiseRuleProto;
+import nars.derive.model.Derivation;
+import nars.derive.model.PreDerivation;
+import nars.derive.premise.Premise;
+import nars.derive.rule.DeriverRules;
+import nars.derive.rule.PremiseRuleSet;
+import nars.derive.rule.PremiseRuleCompiler;
+import nars.derive.rule.PremiseRuleProto;
 import nars.derive.timing.NonEternalTaskOccurenceOrPresentDeriverTiming;
 import nars.link.DynamicTermLinker;
 import nars.link.TermLinker;
@@ -49,7 +52,7 @@ abstract public class Deriver extends How {
             throw new RuntimeException("rules empty");
     }
 
-    protected Deriver(PremiseDeriverRuleSet rules) {
+    protected Deriver(PremiseRuleSet rules) {
         this(rules, rules.nar);
     }
 

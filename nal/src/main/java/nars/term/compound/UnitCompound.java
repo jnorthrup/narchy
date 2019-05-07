@@ -1,6 +1,5 @@
 package nars.term.compound;
 
-import nars.Op;
 import nars.The;
 import nars.subterm.Subterms;
 import nars.subterm.UniSubterm;
@@ -67,7 +66,6 @@ public abstract class UnitCompound implements SameSubtermsCompound {
     public final int hashCodeSubterms() {
         return Subterms.hash(sub());
     }
-
 
     @Override
     public final int subs() {

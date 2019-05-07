@@ -12,13 +12,13 @@ import jcog.signal.wave2d.ScaledBitmap2D;
 import nars.agent.Game;
 import nars.agent.GameTime;
 import nars.agent.MetaAgent;
-import nars.attention.What;
+import nars.attention.TaskLinkWhat;
 import nars.concept.Concept;
 import nars.control.MetaGoal;
 import nars.control.NARPart;
 import nars.derive.Derivers;
-import nars.derive.impl.BatchDeriver;
-import nars.derive.premise.PremiseDeriverRuleSet;
+import nars.derive.BatchDeriver;
+import nars.derive.rule.PremiseRuleSet;
 import nars.derive.timing.ActionTiming;
 import nars.exe.impl.WorkerExec;
 import nars.gui.NARui;
@@ -199,7 +199,7 @@ abstract public class GameX extends Game {
         NAR n = new NARS()
 
                 .what(
-                        (w) -> new What.TaskLinkWhat(w,
+                        (w) -> new TaskLinkWhat(w,
                                 2048,
                                 new PriBuffer.BagTaskBuffer(512, 0.25f))
                 )
@@ -279,7 +279,7 @@ abstract public class GameX extends Game {
     private static void initPlugins2(NAR n, Game a) {
 
 
-        PremiseDeriverRuleSet rules = Derivers.nal(n, 6, 8,
+        PremiseRuleSet rules = Derivers.nal(n, 6, 8,
                 "motivation.nal"
                 //"nal6.to.nal3.nal"
                 //"induction.goal.nal"

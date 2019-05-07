@@ -30,7 +30,7 @@ public class TermList extends FasterList<Term> implements Subterms {
     }
 
     @Override
-    public final int hashCode() {
+    public int hashCode() {
         return Subterms.hash(items, size);
     }
 

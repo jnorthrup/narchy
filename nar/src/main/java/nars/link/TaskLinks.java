@@ -14,10 +14,8 @@ import nars.NAL;
 import nars.NAR;
 import nars.Task;
 import nars.concept.Concept;
-import nars.concept.TaskConcept;
-import nars.derive.Derivation;
+import nars.derive.model.Derivation;
 import nars.term.Term;
-import nars.term.Termed;
 import nars.term.atom.Atom;
 import org.jetbrains.annotations.Nullable;
 
@@ -235,26 +233,10 @@ public class TaskLinks implements Sampler<TaskLink> {
 
     /** initial tasklink activation for an input task
      * @return*/
-    public boolean link(Task task, @Nullable Concept taskConcept, NAR n) {
+    public void link(Task task, Concept tc, NAR n) {
 
-        Termed cc = taskConcept == null ? task : taskConcept;
-        Concept c =
-                n.conceptualize(cc);
-                //n.activate(cc, pri, true);
-        if (c == null)
-            return false;
+        link(new AtomicTaskLink(task.term(), task.punc(), task.pri()));
 
-        float pri = task.pri();
-        if (pri!=pri)
-            return false;
-
-
-        link(new AtomicTaskLink(task.term(), task.punc(), pri));
-
-
-        ((TaskConcept) c).value(task, n);
-
-        return true;
     }
 
     @Deprecated public Stream<Term> terms() {

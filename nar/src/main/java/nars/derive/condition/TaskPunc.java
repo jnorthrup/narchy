@@ -1,7 +1,7 @@
 package nars.derive.condition;
 
 import nars.$;
-import nars.derive.PreDerivation;
+import nars.derive.model.PreDerivation;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
 import nars.term.control.AbstractPred;

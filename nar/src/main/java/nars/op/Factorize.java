@@ -117,7 +117,7 @@ public class Factorize {
 //
 //                }
 
-                if (Functor.func(s).equals(Member.the) && (var = s.subPath((byte) 0, (byte) 0)) instanceof Variable) {
+                if (Functor.func(s).equals(Member.member) && (var = s.subPath((byte) 0, (byte) 0)) instanceof Variable) {
                     Term r = s.subPath((byte) 0, (byte) 1);
                     if (r.op().set) {
                         if (xLength == 2) {
@@ -216,7 +216,7 @@ public class Factorize {
             if (!masked.contains(i))
                 t.add(x[i]);
         t.add(rr.getOne() /* shadow */);
-        t.add($.func(Member.the, f, $.sete(rr.getTwo().collect(ObjectBytePair::getOne))));
+        t.add($.func(Member.member, f, $.sete(rr.getTwo().collect(ObjectBytePair::getOne))));
         return Terms.sorted(t);
     }
 

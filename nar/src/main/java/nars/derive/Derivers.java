@@ -1,14 +1,14 @@
 package nars.derive;
 
 import nars.NAR;
-import nars.derive.premise.PremiseDeriverRuleSet;
+import nars.derive.rule.PremiseRuleSet;
 
 import java.util.*;
 
 /**
  * utility class for working witih Deriver's
  */
-public class Derivers {
+public enum Derivers { ;
 
     /** HACK range is inclusive */
     private static Set<String> standard(int minLevel, int maxLevel, String... otherFiles) {
@@ -61,18 +61,18 @@ public class Derivers {
 
 
     /** standard ruleset */
-    public static PremiseDeriverRuleSet nal(NAR nar, int minLevel, int maxLevel, String... extraFiles) {
+    public static PremiseRuleSet nal(NAR nar, int minLevel, int maxLevel, String... extraFiles) {
         return files(nar, standard(minLevel, maxLevel, extraFiles)        );
     }
 
-    public static PremiseDeriverRuleSet files(NAR nar, String... filename) {
+    public static PremiseRuleSet files(NAR nar, String... filename) {
         return files(nar, List.of(filename));
     }
 
-    private static PremiseDeriverRuleSet files(NAR nar, Collection<String> filename) {
-        return PremiseDeriverRuleSet.files(nar, filename);
+    private static PremiseRuleSet files(NAR nar, Collection<String> filename) {
+        return PremiseRuleSet.files(nar, filename);
     }
-    public static PremiseDeriverRuleSet parse(NAR nar, String... rules) {
-        return new PremiseDeriverRuleSet(nar, rules);
+    public static PremiseRuleSet parse(NAR nar, String... rules) {
+        return new PremiseRuleSet(nar, rules);
     }
 }

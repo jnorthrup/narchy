@@ -4,6 +4,7 @@ import nars.Narsese;
 import nars.Op;
 import nars.term.Term;
 import nars.term.compound.LightCompound;
+import nars.term.compound.LighterCompound;
 import nars.term.util.TermTest;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -45,7 +46,9 @@ class TermListTest {
         for (Subterms a : ab) {
             for (Subterms b : ab) {
                 TermTest.assertEq((Term) Op.terms.newCompound(PROD, a), new LightCompound(PROD, b));
-//                if (a.subs() > 0) {
+                TermTest.assertEq((Term) Op.terms.newCompound(PROD, a), new LighterCompound(PROD, b.arrayShared()));
+
+                //                if (a.subs() > 0) {
 //                    TermTest.assertEq((Term) Op.terms.newCompound(SETe, as), new LightCompound(SETe, bs));
 //                    assertNotEquals(Op.terms.newCompound(PROD, a), new LightCompound(SETi, bs));
 //                }

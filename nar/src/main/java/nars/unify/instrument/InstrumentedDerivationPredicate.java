@@ -1,6 +1,6 @@
 package nars.unify.instrument;
 
-import nars.derive.Derivation;
+import nars.derive.model.Derivation;
 import nars.term.Term;
 import nars.term.control.AbstractPred;
 import nars.term.control.PREDICATE;

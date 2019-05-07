@@ -1,11 +1,11 @@
 package nars.control.op;
 
-import jcog.WTF;
 import jcog.data.list.FasterList;
 import jcog.pri.Prioritizable;
 import nars.NAL;
 import nars.NAR;
 import nars.Task;
+import nars.attention.TaskLinkWhat;
 import nars.attention.What;
 import nars.concept.Concept;
 import nars.concept.TaskConcept;
@@ -18,6 +18,7 @@ import nars.task.ProxyTask;
 import nars.task.proxy.SpecialTermTask;
 import nars.task.util.TaskException;
 import nars.term.Term;
+import nars.term.Termed;
 import nars.term.util.Image;
 import nars.time.Tense;
 import nars.truth.Truth;
@@ -172,8 +173,8 @@ public class Remember extends AbstractTask {
             Concept cc = n.conceptualize(input);
             if (!(cc instanceof TaskConcept)) {
                 //may be an atomic functor term, not sure
-                if (NAL.DEBUG)
-                    throw new WTF();
+                //if (NAL.DEBUG)
+                    //throw new WTF();
                 return;
             }
             c = (TaskConcept) cc;
@@ -188,15 +189,27 @@ public class Remember extends AbstractTask {
     }
 
 
-    private void link(Task t, TaskConcept c, What w) {
+    private void link(Task t, @Nullable TaskConcept c, What w) {
 
-        if (link) {
-            //n.attn.link(t, c, n);
-            ((What.TaskLinkWhat)w).links.link(t, c, w.nar);
+        NAR n = w.nar;
+
+        /* 1. resolve */
+        Termed cc = c == null ? t : c;
+        c = (TaskConcept) n.conceptualize(cc);
+
+        if (c != null) {
+
+            if (link)
+                ((TaskLinkWhat) w).links.link(t, c, n);
+
+            //if (value)
+            c.value(t, n);
         }
 
+
+
         if (notify)
-            w.emit(t);
+            w.emit(t); //notify regardless of whether it was conceptualized, linked, etc..
 
     }
 

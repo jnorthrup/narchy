@@ -42,6 +42,7 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, B
         super(atom);
     }
 
+
     @Override
     public final Op op() {
         return ATOM;
@@ -172,6 +173,7 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, B
     public static AbstractInlineFunctor f1Inline(String termAtom, Function<Term, Term> ff) {
         return new AbstractInlineFunctor1.MyAbstractInlineFunctor1Inline(termAtom, ff);
     }
+
 
     public static AbstractInlineFunctor f2Inline(String termAtom, BiFunction<Term, Term, Term> ff) {
         return new AbstractInlineFunctor2.MyAbstractInlineFunctor2Inline(termAtom, ff);

@@ -1,4 +1,4 @@
-package nars.derive;
+package nars.derive.model;
 
 import nars.Op;
 import nars.term.Term;

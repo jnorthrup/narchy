@@ -1,4 +1,4 @@
-package nars.derive;
+package nars.derive.model;
 
 import nars.Builtin;
 import nars.NAL;
@@ -21,8 +21,8 @@ import java.util.Map;
 import java.util.function.Function;
 
 import static nars.Op.NEG;
-import static nars.derive.Derivation.BeliefTerm;
-import static nars.derive.Derivation.TaskTerm;
+import static nars.derive.model.Derivation.BeliefTerm;
+import static nars.derive.model.Derivation.TaskTerm;
 import static nars.term.atom.Bool.Null;
 
 public enum DerivationFunctors {
@@ -51,8 +51,8 @@ public enum DerivationFunctors {
 
 
         Functor[] derivationFunctors = new Functor[]{
-                d.uniSubst,
-                d.mySubst,
+                d.uniSubstFunctor,
+                d.substituteFunctor,
                 d.polarizeTask,
                 d.polarizeBelief,
                 d.polarizeRandom,
@@ -62,7 +62,7 @@ public enum DerivationFunctors {
                 SetFunc.unionSect,
                 SetFunc.differ,
                 SetFunc.intersect,
-                Equal.the, Cmp.cmp,
+                Equal.equal, Cmp.cmp,
 
                 (Functor) nar.concept("varIntro"),
                 (Functor) nar.concept("unneg"),

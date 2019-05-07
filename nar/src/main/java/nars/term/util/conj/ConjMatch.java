@@ -5,7 +5,7 @@ import jcog.WTF;
 import jcog.data.list.FasterList;
 import jcog.util.ArrayUtil;
 import nars.NAL;
-import nars.derive.Derivation;
+import nars.derive.model.Derivation;
 import nars.op.UniSubst;
 import nars.subterm.Subterms;
 import nars.term.Term;
@@ -168,7 +168,7 @@ public class ConjMatch {
         boolean eVar = event.hasAny(varBits);
         if (eVar || (conj.hasAny(varBits) /*&& x.anySatisfy(1, n, z -> z.getTwo().hasAny(varBits)))*/)) {
             //TODO use SubUnify correctly (ie. termutes via tryMatch )
-            UniSubst.MySubUnify s = d.uniSubst.u;
+            UniSubst.MySubUnify s = d.uniSubstFunctor.u;
             nextUnifiable: for (int matchUnify = 0; matchUnify < n; matchUnify++) {
                 Term xx = x.get(matchUnify);
                 if (eVar || xx.hasAny(varBits)) {

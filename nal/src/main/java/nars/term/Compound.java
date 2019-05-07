@@ -132,9 +132,29 @@ public interface Compound extends Term, IPair, Subterms {
     }
 
     @Override
+    default Op op() {
+        return null;
+    }
+
+    @Override
+    boolean equals(Object o);
+
+    @Override
+    int hashCode();
+
+    @Override
+    boolean recurseTerms(Predicate<Term> inSuperCompound, Predicate<Term> whileTrue, @Nullable Compound superterm);
+
+    @Override
+    boolean recurseTermsOrdered(Predicate<Term> inSuperCompound, Predicate<Term> whileTrue, Compound parent);
+
+    @Override
     default boolean contains(Term t) {
         return Subterms.super.contains(t);
     }
+
+    @Override
+    boolean recurseTerms(Predicate<Compound> aSuperCompoundMust, BiPredicate<Term, Compound> whileTrue, @Nullable Compound superterm);
 
     /**
      * very fragile be careful here
@@ -145,14 +165,10 @@ public interface Compound extends Term, IPair, Subterms {
                 subtermsContainsRecursively(x, root, inSubtermsOf);
     }
 
-    default boolean subtermsContainsRecursively(Term x, boolean root, Predicate<Term> inSubtermsOf) {
-        return subterms().containsRecursively(x, root, inSubtermsOf);
-    }
+    boolean subtermsContainsRecursively(Term x, boolean root, Predicate<Term> inSubtermsOf);
 
     @Override
-    default int hashCodeSubterms() {
-        return subterms().hashCodeSubterms();
-    }
+    int hashCodeSubterms();
 
     /**
      * deprecated; TODO move to SeparateSubtermsCompound interface and allow Compounds which do not have to generate this.  this sums up many of xjrn's suggestions
@@ -191,29 +207,18 @@ public interface Compound extends Term, IPair, Subterms {
 
 
     @Override
-    default boolean recurseTerms(Predicate<Term> inSuperCompound, Predicate<Term> whileTrue, Compound superterm) {
-        return !inSuperCompound.test(this) ||
-                whileTrue.test(this) && subterms().recurseTerms(inSuperCompound, whileTrue, this);
-    }
-
-
-
-    @Override
-    default boolean recurseTermsOrdered(Predicate<Term> inSuperCompound, Predicate<Term> whileTrue, Compound parent) {
-        return !inSuperCompound.test(this) ||
-                whileTrue.test(this) && subterms().recurseTermsOrdered(inSuperCompound, whileTrue, this);
-    }
-
-    @Override
-    default boolean recurseTerms(Predicate<Compound> aSuperCompoundMust, BiPredicate<Term, Compound> whileTrue, @Nullable Compound superterm) {
-        return !aSuperCompoundMust.test(this) ||
-                whileTrue.test(this, superterm) && subterms().recurseTerms(aSuperCompoundMust, whileTrue, this);
-    }
-
-
-    @Override
     default boolean ORrecurse(Predicate<Term> p) {
         return p.test(this) || subterms().ORrecurse(p);
+    }
+
+    @Override
+    default Term sub(int i) {
+        return null;
+    }
+
+    @Override
+    default int subs() {
+        return 0;
     }
 
     @Override

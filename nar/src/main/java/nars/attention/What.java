@@ -1,29 +1,25 @@
 package nars.attention;
 
-import jcog.TODO;
-import jcog.math.IntRange;
 import jcog.pri.Prioritizable;
 import jcog.pri.bag.Sampler;
 import jcog.util.ConsumerX;
 import nars.NAR;
 import nars.Task;
-import nars.attention.derive.DefaultDerivePri;
 import nars.concept.Concept;
 import nars.control.NARPart;
 import nars.control.op.TaskEvent;
-import nars.derive.Derivation;
+import nars.derive.model.Derivation;
+import nars.derive.pri.DefaultDerivePri;
+import nars.derive.pri.DerivePri;
 import nars.exe.Exec;
 import nars.link.TaskLink;
-import nars.link.TaskLinks;
 import nars.task.util.PriBuffer;
 import nars.term.Term;
 import nars.time.part.DurLoop;
 import nars.util.Timed;
 
-import java.io.*;
-import java.util.Iterator;
+import java.io.Externalizable;
 import java.util.Random;
-import java.util.function.Function;
 import java.util.stream.Stream;
 
 /**
@@ -166,139 +162,6 @@ abstract public class What extends NARPart implements Prioritizable, Sampler<Tas
     abstract public void derive(int premisesPerIteration, int termlinksPerTaskLink, int matchTTL, int deriveTTL, Derivation d);
 
 
-
-
-    /** proxies to another What */
-    public static class ProxyWhat extends What {
-
-        public final What what;
-
-        public ProxyWhat(What what) {
-            super(what.id, what.in);
-            this.what = what;
-        }
-
-        @Override
-        public int dur() {
-            return what.dur();
-        }
-
-        @Override
-        protected void commit(NAR nar) {
-            what.commit(nar);
-        }
-
-        @Override
-        public void clear() {
-            what.clear();
-        }
-
-        @Override
-        public Stream<Concept> concepts() {
-            return what.concepts();
-        }
-
-        @Override
-        public void writeExternal(ObjectOutput objectOutput) throws IOException {
-            what.writeExternal(objectOutput);
-        }
-
-        @Override
-        public void readExternal(ObjectInput objectInput) throws IOException, ClassNotFoundException {
-            what.readExternal(objectInput);
-        }
-
-        @Override
-        public Iterator<TaskLink> iterator() {
-            return what.iterator();
-        }
-
-        @Override
-        public void sample(Random rng, Function<? super TaskLink, SampleReaction> each) {
-            what.sample(rng, each);
-        }
-
-        @Override
-        public void derive(int premisesPerIteration, int termlinksPerTaskLink, int matchTTL, int deriveTTL, Derivation d) {
-            what.derive(premisesPerIteration, termlinksPerTaskLink,matchTTL,deriveTTL,d);
-        }
-    }
-
-    /** implements attention with a TaskLinks graph */
-    public static class TaskLinkWhat extends What {
-
-        /** in NAR time cycle units */
-        public final IntRange dur = new IntRange(1, 1, 1000);
-
-        public final TaskLinks links = new TaskLinks();
-        final PremiseBuffer premises = new PremiseBuffer(this);
-
-        public TaskLinkWhat(Term id, int capacity, PriBuffer<Task> in) {
-            super(id, in);
-            links.linksMax.set(capacity);
-        }
-
-        @Override
-        protected void starting(NAR nar) {
-
-            dur.set(nar.dur()); //initializes value
-
-            super.starting(nar);
-        }
-
-        @Override
-        public int dur() {
-            return dur.intValue();
-        }
-
-        @Override
-        protected void commit(NAR nar) {
-            premises.commit();
-            links.commit();
-        }
-
-        @Override
-        public void clear() {
-            links.clear();
-        }
-
-        @Override
-        public Stream<Concept> concepts() {
-            return links.concepts(nar);
-        }
-
-        @Override
-        public final Iterator<TaskLink> iterator() {
-            return links.iterator();
-        }
-
-        @Override
-        public final void sample(Random rng, Function<? super TaskLink, SampleReaction> each) {
-            links.sample(rng, each);
-        }
-
-        @Override
-        public final void writeExternal(ObjectOutput objectOutput) {
-            throw new TODO();
-        }
-
-        @Override
-        public final void readExternal(ObjectInput objectInput) {
-            throw new TODO();
-        }
-
-
-        /**
-         * samples premises
-         * thread-safe, for use by multiple threads
-         */
-        public void derive(int premisesPerIteration, int termlinksPerTaskLink, int matchTTL, int deriveTTL, Derivation d) {
-            premises.derive(premisesPerIteration, termlinksPerTaskLink, matchTTL, deriveTTL, links, d);
-        }
-
-
-    }
-
     @Override
     @Deprecated public final void accept(Task x) {
         in.put(x);
@@ -307,6 +170,5 @@ abstract public class What extends NARPart implements Prioritizable, Sampler<Tas
     @Deprecated public final Task put(Task x) {
         return in.put(x);
     }
-
 
 }

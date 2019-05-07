@@ -1,7 +1,6 @@
 package nars.derive.op;
 
-import nars.NAL;
-import nars.derive.Derivation;
+import nars.derive.model.Derivation;
 import nars.term.Term;
 import nars.term.atom.Bool;
 import nars.term.compound.LazyCompoundBuilder;
@@ -11,18 +10,20 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Predicate;
 
-public final class MatchFork extends LazyCompoundBuilder implements Predicate<Derivation> {
+public final class UnifyMatchFork extends LazyCompoundBuilder implements Predicate<Derivation> {
 
     private int forkLimit = -1;
-    final Set<Term> tried = new HashSet();
+    final Set<Term> tried = new HashSet(16, 0.99f);
     private Taskify taskify;
+    private int workVolMax;
 
-    public MatchFork() {
+    public UnifyMatchFork() {
     }
 
-    public void reset(Taskify taskify, int forkLimit) {
+    public void reset(Taskify taskify, int forkLimit, int workVolMax) {
         this.taskify = taskify;
         this.forkLimit = forkLimit;
+        this.workVolMax = workVolMax;
         tried.clear();
     }
 
@@ -31,9 +32,7 @@ public final class MatchFork extends LazyCompoundBuilder implements Predicate<De
 
         Term x = taskify.pattern(d);
 
-        Term y = AbstractTermTransform.transform(x, d.transform, this,
-                (int)Math.ceil(NAL.derive.TERMIFY_TERM_VOLMAX_SCRATCH_FACTOR * d.termVolMax)
-        );
+        Term y = AbstractTermTransform.transform(x, d.transform, this, workVolMax);
 
         if (!(y instanceof Bool) && y.unneg().op().taskable) {
 

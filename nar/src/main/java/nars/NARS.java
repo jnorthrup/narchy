@@ -2,13 +2,14 @@ package nars;
 
 import jcog.Log;
 import jcog.data.list.FasterList;
+import nars.attention.TaskLinkWhat;
 import nars.attention.What;
 import nars.concept.Concept;
 import nars.concept.util.ConceptAllocator;
 import nars.concept.util.ConceptBuilder;
 import nars.concept.util.DefaultConceptBuilder;
 import nars.derive.Derivers;
-import nars.derive.impl.BatchDeriver;
+import nars.derive.BatchDeriver;
 import nars.exe.Exec;
 import nars.exe.impl.UniExec;
 import nars.memory.Memory;
@@ -134,7 +135,7 @@ public class NARS {
 
                 n.termVolumeMax.set(22);
 
-                ((What.TaskLinkWhat) n.what()).links.decay.set(0.05f);
+                ((TaskLinkWhat) n.what()).links.decay.set(0.05f);
 
                 n.beliefPriDefault.amp(0.1f);
                 n.goalPriDefault.amp(0.1f);
@@ -160,7 +161,7 @@ public class NARS {
 
         exec = UniExec::new;
 
-        what = w -> new What.TaskLinkWhat(w, 64,
+        what = w -> new TaskLinkWhat(w, 64,
                        new PriBuffer.DirectPriBuffer()
                        //new PriBuffer.BagTaskBuffer(128, 8f)
                        //new PriBuffer.MapTaskBuffer()

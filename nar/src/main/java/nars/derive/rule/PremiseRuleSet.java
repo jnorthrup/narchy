@@ -1,4 +1,4 @@
-package nars.derive.premise;
+package nars.derive.rule;
 
 import com.google.common.base.Splitter;
 import jcog.memoize.CaffeineMemoize;
@@ -16,18 +16,21 @@ import java.util.stream.StreamSupport;
 
 
 /**
+ * a set of related rules, forming a module that can be combined with other rules and modules
+ * to form customized derivers, compiled together.
+ *
  * intermediate representation of a set of compileable Premise Rules
  * TODO remove this class, just use Set<PremiseDeriverProto>'s
  */
-public class PremiseDeriverRuleSet extends TreeSet<PremiseRuleProto> {
+public class PremiseRuleSet extends TreeSet<PremiseRuleProto> {
 
     public final NAR nar;
 
-    public PremiseDeriverRuleSet(NAR nar, String... rules) {
+    public PremiseRuleSet(NAR nar, String... rules) {
         this(nar, PremiseRule.parse(rules));
     }
 
-    private PremiseDeriverRuleSet(NAR nar, Stream<PremiseRule> parsed) {
+    private PremiseRuleSet(NAR nar, Stream<PremiseRule> parsed) {
         this.nar = nar;
         parsed.distinct()
                 .map(x -> new PremiseRuleProto(x, nar))
@@ -50,10 +53,10 @@ public class PremiseDeriverRuleSet extends TreeSet<PremiseRuleProto> {
     }, 32, false);
 
 
-    public static PremiseDeriverRuleSet files(NAR nar, Collection<String> filename) {
-        return new PremiseDeriverRuleSet(
+    public static PremiseRuleSet files(NAR nar, Collection<String> filename) {
+        return new PremiseRuleSet(
                 nar,
-                filename.stream().flatMap(n -> PremiseDeriverRuleSet.ruleCache.apply(n).stream()));
+                filename.stream().flatMap(n -> PremiseRuleSet.ruleCache.apply(n).stream()));
     }
 
     private static Stream<String> load(byte[] data) {

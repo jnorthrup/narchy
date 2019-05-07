@@ -66,7 +66,9 @@ public class TaskRule extends TaskMatch {
         private final Task x;
 
         MySubUnify(Task x) {
-            super(Op.VAR_PATTERN, TaskRule.this.nar.random(), NAL.unify.UNIFICATION_STACK_CAPACITY, nar.deriveBranchTTL.intValue());
+            super(Op.VAR_PATTERN, TaskRule.this.nar.random(), NAL.unify.UNIFICATION_STACK_CAPACITY,
+                    nar.deriveBranchTTL.intValue() //HACK
+            );
             this.x = x;
         }
 

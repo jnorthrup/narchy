@@ -4,8 +4,8 @@ import jcog.data.set.ArrayHashSet;
 import nars.NAL;
 import nars.Op;
 import nars.Task;
-import nars.derive.Derivation;
-import nars.derive.DerivationFailure;
+import nars.derive.model.Derivation;
+import nars.derive.model.DerivationFailure;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.atom.Atomic;
@@ -29,7 +29,7 @@ import java.util.Random;
 import java.util.function.Function;
 
 import static nars.Op.*;
-import static nars.derive.DerivationFailure.Success;
+import static nars.derive.model.DerivationFailure.Success;
 import static nars.time.Tense.*;
 import static org.eclipse.collections.impl.tuple.Tuples.pair;
 
@@ -140,10 +140,10 @@ public class Occurrify extends TimeGraph {
         Term xx = x;
 
         boolean neg = false;
-        if (x.op()==NEG && (!d.taskTerm.hasAny(NEG) && !d.beliefTerm.hasAny(NEG))) {
-            //HACK semi-auto-unneg to help occurrify
-            x = x.unneg();
-        }
+//        if (x.op()==NEG && (!d.taskTerm.hasAny(NEG) && !d.beliefTerm.hasAny(NEG))) {
+//            //HACK semi-auto-unneg to help occurrify
+//            x = x.unneg();
+//        }
 
         Pair<Term, long[]> timing = time.occurrence(x, d);
         if (timing == null) {

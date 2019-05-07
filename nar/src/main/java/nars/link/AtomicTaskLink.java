@@ -21,9 +21,10 @@ public final class AtomicTaskLink extends AbstractTaskLink {
     public AtomicTaskLink(Term self) {
         super(self);
     }
+
     public AtomicTaskLink(Term self, byte punc, float puncPri) {
         super(self);
-        if (puncPri > Float.MIN_NORMAL)
+        if (puncPri==puncPri && puncPri > Float.MIN_NORMAL)
             priMerge(punc, puncPri, PriMerge.replace);
     }
 

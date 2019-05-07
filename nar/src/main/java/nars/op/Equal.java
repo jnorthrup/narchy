@@ -19,7 +19,7 @@ import static nars.term.atom.Bool.*;
 
 public final class Equal extends InlineCommutiveBinaryBidiFunctor implements The {
 
-    public static final Equal the = new Equal();
+    public static final Equal equal = new Equal();
 
     private Equal() {
         super("equal");
@@ -30,7 +30,7 @@ public final class Equal extends InlineCommutiveBinaryBidiFunctor implements The
         if (p!=null)
             return p;
         else
-            return $.func(the, commute(x, y));
+            return $.func(equal, commute(x, y));
     }
 
     @Override

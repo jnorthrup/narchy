@@ -1,9 +1,9 @@
-package nars.attention;
+package nars.derive.pri;
 
 import jcog.math.FloatRange;
 import jcog.pri.ScalarValue;
 import nars.Task;
-import nars.derive.Derivation;
+import nars.derive.model.Derivation;
 
 public class DirectDerivePri implements DerivePri {
 

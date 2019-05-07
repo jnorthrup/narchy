@@ -52,6 +52,34 @@ public abstract class SeparateSubtermsCompound implements Compound {
         return hash;
     }
 
+    @Override
+    public final int hashCodeSubterms() {
+        return subterms().hashCodeSubterms();
+    }
+
+    @Override
+    public boolean recurseTerms(Predicate<Term> inSuperCompound, Predicate<Term> whileTrue, Compound superterm) {
+        return !inSuperCompound.test(this) ||
+                whileTrue.test(this) && subterms().recurseTerms(inSuperCompound, whileTrue, this);
+    }
+
+    @Override
+    public boolean recurseTermsOrdered(Predicate<Term> inSuperCompound, Predicate<Term> whileTrue, Compound parent) {
+        return !inSuperCompound.test(this) ||
+                whileTrue.test(this) &&
+                subterms().recurseTermsOrdered(inSuperCompound, whileTrue, this);
+    }
+
+    @Override
+    public boolean recurseTerms(Predicate<Compound> aSuperCompoundMust, BiPredicate<Term, Compound> whileTrue, @Nullable Compound superterm) {
+        return !aSuperCompoundMust.test(this) ||
+                whileTrue.test(this, superterm) && subterms().recurseTerms(aSuperCompoundMust, whileTrue, this);
+    }
+
+    public boolean subtermsContainsRecursively(Term x, boolean root, Predicate<Term> inSubtermsOf) {
+        return subterms().containsRecursively(x, root, inSubtermsOf);
+    }
+
 
     /*@NotNull*/
     @Override

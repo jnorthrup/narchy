@@ -1157,10 +1157,9 @@ public interface Subterms extends Termlike, Iterable<Term> {
 
     default boolean recurseTermsOrdered(Predicate<Term> inSuperCompound, Predicate<Term> whileTrue, Compound parent) {
         int s = subs();
-        for (int i = 0; i < s; i++) {
+        for (int i = 0; i < s; i++)
             if (!sub(i).recurseTermsOrdered(inSuperCompound, whileTrue, parent))
                 return false;
-        }
         return true;
     }
 

@@ -1,7 +1,7 @@
-package nars.attention;
+package nars.derive.pri;
 
 import nars.Task;
-import nars.derive.Derivation;
+import nars.derive.model.Derivation;
 
 /** stateless, storing any state information in the Derivation instance */
 public interface DerivePri {

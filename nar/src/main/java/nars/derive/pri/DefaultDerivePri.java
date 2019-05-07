@@ -1,11 +1,10 @@
-package nars.attention.derive;
+package nars.derive.pri;
 
 import jcog.Util;
 import jcog.math.FloatRange;
 import jcog.pri.ScalarValue;
 import nars.Task;
-import nars.attention.DerivePri;
-import nars.derive.Derivation;
+import nars.derive.model.Derivation;
 import nars.truth.Truth;
 import nars.truth.polation.TruthIntegration;
 

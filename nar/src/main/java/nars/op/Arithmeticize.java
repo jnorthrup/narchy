@@ -52,7 +52,7 @@ public class Arithmeticize {
     private static final Function<Atom, Functor> ArithFunctors = Map.of(
             MathFunc.add.term, MathFunc.add,
             MathFunc.mul.term, MathFunc.mul,
-            Equal.the.term, Equal.the,
+            Equal.equal.term, Equal.equal,
             Cmp.cmp.term, Cmp.cmp
     )::get;
 

@@ -255,18 +255,16 @@ public class Statement {
             }
         }
 
-        Term t = B.theCompound(op, dt, subject, predicate);
 
-        //if (Param.DEBUG) {
-        //test image normalization
-        if (op == INH && NAL.term.INH_IMAGE_RECURSION) {
-            //TODO detect this without actually normalizing: (ANIMAL-->((cat,ANIMAL),cat,/))
-            //TODO accept TermBuilder b as parameter
-            Term tt = Image.imageNormalize(t);
-            if (tt instanceof Bool) {
-                t = tt;
-            }
+
+        if (op == INH && !NAL.term.INH_IMAGE_RECURSION) {
+            Term inhCollapsed = Image.recursionFilter(subject, predicate);
+            if (inhCollapsed instanceof Bool)
+                return inhCollapsed;
         }
+
+
+        Term t = B.theCompound(op, dt, subject, predicate);
 
 
 

@@ -1,28 +1,21 @@
 package nars.derive.op;
 
 import jcog.Util;
-import jcog.data.list.FasterList;
 import jcog.util.ArrayUtil;
 import nars.*;
-import nars.derive.Derivation;
-import nars.derive.premise.PremiseRuleProto;
+import nars.derive.model.Derivation;
+import nars.derive.rule.PremiseRuleProto;
 import nars.task.DebugDerivedTask;
 import nars.task.DerivedTask;
 import nars.term.ProxyTerm;
 import nars.term.Term;
 import nars.term.atom.Atomic;
-import nars.term.util.transform.AbstractTermTransform;
 import nars.time.Tense;
 import nars.truth.Truth;
-import nars.unify.unification.DeterministicUnification;
-import nars.unify.unification.Termutifcation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.List;
-
 import static nars.NAL.derive.DERIVE_FILTER_SIMILAR_TO_PARENTS;
-import static nars.NAL.derive.Termify_Forks;
 import static nars.Op.*;
 import static nars.time.Tense.ETERNAL;
 
@@ -45,33 +38,7 @@ public class Taskify extends ProxyTerm {
     }
 
 
-    public final boolean apply(Termutifcation u, Derivation d) {
-        List<DeterministicUnification> ii = u.listClone();
-        int s = ii.size();
-        if (s > 0) {
-            if (s > 1)
-                ((FasterList) ii).shuffleThis(d.random);
 
-            int fanOut = Math.min(s, Termify_Forks);
-            for (int i = 0; i < fanOut; i++) {
-                apply(ii.get(i), d);
-                if (!d.live())
-                    return false;
-            }
-        }
-        return true;
-    }
-
-    public final void apply(DeterministicUnification xy, Derivation d) {
-//        assert(d.transform.xy == null);
-//            int start = d.size();
-        d.transform.xy = xy::xy;
-        d.retransform.clear();
-        Term y = AbstractTermTransform.transform(pattern(d), d.transform);
-//      d.revert(start);
-        d.transform.xy = null;
-        apply(y, d);
-    }
 
     Term pattern(Derivation d) {
         return d.temporal ? termify.pattern : termify.patternEternal;

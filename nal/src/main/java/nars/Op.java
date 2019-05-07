@@ -296,7 +296,7 @@ public enum Op {
 
     public static final Term[] EmptyTermArray = new Term[0];
     public static final Subterms EmptySubterms = new ArrayTermVector(EmptyTermArray);
-    public static final Term EmptyProduct = TermBuilder.newCompound(Op.PROD, EmptySubterms);
+    public static final Compound EmptyProduct = TermBuilder.newCompound(Op.PROD, EmptySubterms);
     private static final int[] NALLevelEqualAndAbove = new int[8 + 1];
 
 

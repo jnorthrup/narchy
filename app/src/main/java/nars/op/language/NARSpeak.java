@@ -7,7 +7,7 @@ import nars.NAR;
 import nars.NARS;
 import nars.Narsese;
 import nars.derive.Derivers;
-import nars.derive.impl.BatchDeriver;
+import nars.derive.BatchDeriver;
 import nars.op.java.Opjects;
 
 /**

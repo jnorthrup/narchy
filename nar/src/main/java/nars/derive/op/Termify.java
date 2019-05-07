@@ -1,15 +1,15 @@
 package nars.derive.op;
 
 import nars.$;
-import nars.derive.Derivation;
-import nars.derive.DerivationFailure;
+import nars.derive.model.Derivation;
+import nars.derive.model.DerivationFailure;
 import nars.term.ProxyTerm;
 import nars.term.Term;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
 import nars.term.util.transform.Retemporalize;
 
-import static nars.derive.DerivationFailure.Success;
+import static nars.derive.model.DerivationFailure.Success;
 
 /**
  * Derivation target construction step of the derivation process that produces a derived task

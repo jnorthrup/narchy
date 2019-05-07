@@ -59,7 +59,7 @@ public class Emotion implements Meter, Consumer<NAR> {
     public final FastCounter premiseFire = new FastCounter("premise fire");
 
     /** amount of remainder TTL from each derivation */
-    public final AtomicHistogram deriveTTL_waste = new AtomicHistogram(1, 512, 2);
+    public final AtomicHistogram premiseTTL_used = new AtomicHistogram(1, 512, 2);
 
     /**
      * increment of cycles that a dur loop lags in its scheduling.

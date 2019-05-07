@@ -1,4 +1,4 @@
-package nars.derive;
+package nars.derive.model;
 
 import jcog.Util;
 import jcog.data.set.MetalLongSet;
@@ -10,10 +10,12 @@ import nars.Op;
 import nars.Task;
 import nars.attention.What;
 import nars.control.CauseMerge;
-import nars.derive.op.MatchFork;
+import nars.derive.Deriver;
+import nars.derive.op.UnifyMatchFork;
 import nars.derive.op.Occurrify;
+import nars.derive.premise.PremiseUnify;
 import nars.eval.Evaluation;
-import nars.op.Subst;
+import nars.op.Replace;
 import nars.op.UniSubst;
 import nars.subterm.Subterms;
 import nars.term.Compound;
@@ -27,6 +29,7 @@ import nars.term.atom.Bool;
 import nars.term.compound.LazyCompoundBuilder;
 import nars.term.functor.AbstractInlineFunctor1;
 import nars.term.util.TermTransformException;
+import nars.term.util.builder.TermBuilder;
 import nars.term.util.transform.InstantFunctor;
 import nars.term.util.transform.TermTransform;
 import nars.time.Tense;
@@ -64,9 +67,9 @@ public class Derivation extends PreDerivation {
     private final static int ANON_INITIAL_CAPACITY = 16;
 
 
-    final UnifyPremise unifyPremise = new UnifyPremise();
+    public final PremiseUnify premiseUnify = new PremiseUnify();
 
-    public final MatchFork termifier = new MatchFork();
+    public final UnifyMatchFork termifier = new UnifyMatchFork();
 
     /** for anon and other misc usage (non-evaluating) */
     final LazyCompoundBuilder termBuilder = new LazyCompoundBuilder() {
@@ -79,7 +82,7 @@ public class Derivation extends PreDerivation {
     private long timePrev = Long.MIN_VALUE;
 
     {
-        unifyPremise.commonVariables = NAL.premise.PREMISE_UNIFY_COMMON_VARIABLES;
+        premiseUnify.commonVariables = NAL.premise.PREMISE_UNIFY_COMMON_VARIABLES;
     }
 
 
@@ -88,7 +91,7 @@ public class Derivation extends PreDerivation {
 
     public final AnonWithVarShift anon;
 
-    public final UniSubst uniSubst = new UniSubst(this);
+    public final UniSubst uniSubstFunctor = new UniSubst(this);
 
     /** current context */
     public transient What what = null;
@@ -163,7 +166,9 @@ public class Derivation extends PreDerivation {
         }
 
     };
-    final Subst mySubst = new Subst("substitute") {
+
+    /** populates retransform map */
+    final Replace substituteFunctor = new Replace("substitute") {
 
         @Override
         public @Nullable Term apply(Evaluation e, Subterms xx) {
@@ -172,13 +177,13 @@ public class Derivation extends PreDerivation {
             Term replacement = xx.sub(2);
             if (replaced.equals(replacement))
                 return input;
-
-            Term y = apply(xx, input, replaced, replacement);
-
-            if (y != null && !(y instanceof Bool)) {
-                retransform.put(replaced, replacement);
+            else {
+                Term y = apply(xx, input, replaced, replacement);
+                if (y != null && !(y instanceof Bool)) {
+                    retransform.put(replaced, replacement);
+                }
+                return y;
             }
-            return y;
         }
     };
 
@@ -240,6 +245,7 @@ public class Derivation extends PreDerivation {
 
     public transient Task _task, _belief;
 
+    public DerivationTransform transform;
 
 
     /**
@@ -252,27 +258,31 @@ public class Derivation extends PreDerivation {
                 , null, NAL.unify.UNIFICATION_STACK_CAPACITY
         );
 
+        TermBuilder b = Op.terms;
         this.anon = new AnonWithVarShift(ANON_INITIAL_CAPACITY, Op.VAR_DEP.bit | Op.VAR_QUERY.bit) {
-            @Override
-            protected Term putCompound(Compound x) {
-                return super.putCompound(x);
 
-                //doesnt work right for some reason:
-//                termBuilder.clear();
-//                return applyCompoundLazy(x, termBuilder, Op.terms, NAL.term.COMPOUND_VOLUME_MAX);
+            @Override
+            protected final Term putCompound(Compound x) {
+                return transform(x);
             }
-            @Override
-            protected Term getCompound(Compound x) {
-                return super.getCompound(x);
 
-//                termBuilder.clear();
-//                return applyCompoundLazy(x, termBuilder, Op.terms, NAL.term.COMPOUND_VOLUME_MAX);
+            @Override
+            protected final Term getCompound(Compound x) {
+                return transform(x);
+            }
+
+            private Term transform(Compound x) {
+                if (NAL.ANONIFY_TRANSFORM_LAZY) {
+                    termBuilder.clear();
+                    return applyCompoundLazy(x, termBuilder, b, NAL.term.COMPOUND_VOLUME_MAX);
+                } else {
+                    return super.putCompound(x);
+                }
             }
 
         };
     }
 
-    public DerivationTransform transform;
 
 
     /**
@@ -530,11 +540,10 @@ public class Derivation extends PreDerivation {
 
         NAR p = this.nar(), n = w.nar;
         if (p != n) {
-
             this.reset();
             this.nar = n;
             this.random = n.random();
-            this.unifyPremise.random(this.random);
+            this.premiseUnify.random(this.random);
             this.transform = new DerivationTransform();
         }
 
@@ -543,7 +552,7 @@ public class Derivation extends PreDerivation {
             this.timePrev = now;
             this.ditherDT = n.dtDither();
 
-            uniSubst.u.dtTolerance = unifyPremise.dtTolerance = this.dtTolerance =
+            uniSubstFunctor.u.dtTolerance = premiseUnify.dtTolerance = this.dtTolerance =
                     //Math.round(Param.UNIFY_DT_TOLERANCE_DUR_FACTOR * dur);
                     n.dtDither();
 
@@ -712,6 +721,7 @@ public class Derivation extends PreDerivation {
     }
 
 
+    /** should be created whenever a different NAR owns this Derivation instance, if ever */
     public final class DerivationTransform extends UnifyTransform {
 
         public transient Function<Variable,Term> xy = null;

@@ -2,7 +2,7 @@
  * Here comes the text of your license
  * Each line should be prefixed with  *
  */
-package nars.derive;
+package nars.derive.premise;
 
 import nars.NAL;
 import nars.NAR;
@@ -10,6 +10,7 @@ import nars.Op;
 import nars.Task;
 import nars.concept.Concept;
 import nars.concept.TaskConcept;
+import nars.derive.model.Derivation;
 import nars.op.mental.AliasConcept;
 import nars.table.BeliefTable;
 import nars.term.Term;
@@ -92,7 +93,7 @@ public class Premise implements Comparable<Premise> {
      *
      * @param matchTime - temporal focus control: determines when a matching belief or answer should be projected to
      */
-    boolean match(Derivation d, int matchTTL) {
+    public boolean match(Derivation d, int matchTTL) {
 
         boolean beliefConceptUnifiesTaskConcept = false;
 
@@ -105,7 +106,7 @@ public class Premise implements Comparable<Premise> {
 
             if (beliefTerm.hasAny(var) || taskTerm.hasAny(var) || taskTerm.hasXternal() || beliefTerm.hasXternal()) {
 
-                Term unifiedBeliefTerm = d.unifyPremise.unified(taskTerm, beliefTerm, matchTTL);
+                Term unifiedBeliefTerm = d.premiseUnify.unified(taskTerm, beliefTerm, matchTTL);
 
                 if (unifiedBeliefTerm != null) {
 

@@ -4,8 +4,8 @@ import com.google.common.math.PairedStatsAccumulator;
 import nars.NAR;
 import nars.NARS;
 import nars.Task;
-import nars.derive.impl.BatchDeriver;
-import nars.derive.premise.PremiseDeriverRuleSet;
+import nars.derive.BatchDeriver;
+import nars.derive.rule.PremiseRuleSet;
 import nars.op.stm.STMLinkage;
 import nars.term.Term;
 import nars.time.Tense;
@@ -32,7 +32,7 @@ class RuleInductionTest {
         NAR n = NARS.shell();
         n.termVolumeMax.set(8);
 
-        BatchDeriver d = new BatchDeriver(new PremiseDeriverRuleSet(n,
+        BatchDeriver d = new BatchDeriver(new PremiseRuleSet(n,
 
                 "B, A, --is(A,\"==>\"),--is(B,\"==>\"), neq(A,B) |- (polarize(B,task) &&+- polarize(A,belief)), (Belief:IntersectionDepolarized, Time:Sequence)"
 

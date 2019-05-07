@@ -4,6 +4,7 @@ import nars.eval.Evaluation;
 import nars.subterm.Subterms;
 import nars.term.Term;
 import nars.term.atom.Bool;
+import nars.term.util.transform.InstantFunctor;
 
 import java.util.function.Function;
 
@@ -17,7 +18,7 @@ abstract public class AbstractInlineFunctor1 extends AbstractInlineFunctor {
 
     @Override
     public final Term applyInline(Subterms args) {
-        if (args.subs()!=1) return Bool.Null;
+        if (args.subs() != 1) return Bool.Null;
         return apply1(args.sub(0));
     }
 
@@ -39,5 +40,12 @@ abstract public class AbstractInlineFunctor1 extends AbstractInlineFunctor {
             return ff.apply(arg);
         }
 
+    }
+
+    abstract public static class AbstractInstantFunctor1 extends AbstractInlineFunctor1 implements InstantFunctor<Evaluation> {
+
+        public AbstractInstantFunctor1(String termAtom) {
+            super(termAtom);
+        }
     }
 }

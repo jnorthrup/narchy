@@ -1,10 +1,10 @@
-package nars.attention.derive;
+package nars.derive.pri;
 
 import jcog.Util;
 import jcog.pri.ScalarValue;
 import nars.NAR;
 import nars.Task;
-import nars.derive.Derivation;
+import nars.derive.model.Derivation;
 
 import static nars.Op.*;
 import static nars.time.Tense.ETERNAL;

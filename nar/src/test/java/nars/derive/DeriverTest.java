@@ -3,11 +3,10 @@ package nars.derive;
 import nars.$;
 import nars.NAR;
 import nars.NARS;
-import nars.derive.impl.BatchDeriver;
 import nars.derive.op.Occurrify;
-import nars.derive.premise.DeriverRules;
-import nars.derive.premise.PremiseRuleCompiler;
-import nars.derive.premise.PremiseDeriverRuleSet;
+import nars.derive.rule.DeriverRules;
+import nars.derive.rule.PremiseRuleCompiler;
+import nars.derive.rule.PremiseRuleSet;
 import nars.test.TestNAR;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -35,16 +34,16 @@ class DeriverTest {
         });
     }
 
-    private static PremiseDeriverRuleSet testCompile(String... rules) {
+    private static PremiseRuleSet testCompile(String... rules) {
         return testCompile(false, rules);
     }
 
-    private static PremiseDeriverRuleSet testCompile(boolean debug, String... rules) {
+    private static PremiseRuleSet testCompile(boolean debug, String... rules) {
 
         assertNotEquals(0, rules.length);
 
 
-        PremiseDeriverRuleSet src = new PremiseDeriverRuleSet(NARS.shell(), rules);
+        PremiseRuleSet src = new PremiseRuleSet(NARS.shell(), rules);
         assertNotEquals(0, src.size());
         DeriverRules d = PremiseRuleCompiler.the(src);
 
@@ -103,7 +102,7 @@ class DeriverTest {
     @Test
     void testAmbiguousPunctuation() {
         assertThrows(Throwable.class, () -> {
-            PremiseRuleCompiler.the(new PremiseDeriverRuleSet(NARS.shell(),
+            PremiseRuleCompiler.the(new PremiseRuleSet(NARS.shell(),
                     "Y, Y |- (?1 &| Y), ()"
             ));
         });
@@ -156,7 +155,7 @@ class DeriverTest {
 
     private TestNAR test(String... rules) {
         NAR n = new NARS().get();
-        new BatchDeriver(new PremiseDeriverRuleSet(n, rules));
+        new BatchDeriver(new PremiseRuleSet(n, rules));
         n.synch();
         TestNAR t = new TestNAR(n);
         tests.add(t);

@@ -17,15 +17,15 @@ import static nars.term.atom.Bool.Null;
  * if STRICT is 4th argument, then there will only be a valid result
  * if the input has changed (not if nothing changed, and not if the attempted change had no effect)
  */
-public class Subst extends Functor implements InlineFunctor<Evaluation>, The {
+public class Replace extends Functor implements InlineFunctor<Evaluation>, The {
 
+    public static final Replace replace = new Replace("replace");
 
-    public static final Subst replace = new Subst("replace");
-
-    protected Subst(String id) {
+    protected Replace(String id) {
         this((Atom)Atomic.the(id));
     }
-    protected Subst(Atom id) {
+
+    protected Replace(Atom id) {
         super(id);
     }
 
@@ -40,14 +40,15 @@ public class Subst extends Functor implements InlineFunctor<Evaluation>, The {
         return apply(xx, input, x, y);
     }
 
-    protected @Nullable static Term apply(Subterms xx, Term input, Term x, Term y) {
+    protected static Term apply(Subterms xx, Term input, Term x, Term y) {
         boolean strict = xx.subEquals(3, UniSubst.NOVEL);
 
-        Term result = !x.equals(y) ? input.replace(x, y) : (strict ? Null : input);
-//        if (result==null)
-//            return null;
-//        else
-            return (result == Null) || (strict && input.equals(result)) ? Null : result;
+        Term result = !x.equals(y) ?
+                input.replace(x, y)
+                :
+                (strict ? Null : input);
+
+        return (result == Null) || (strict && input.equals(result)) ? Null : result;
     }
 
 

@@ -659,10 +659,10 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 
         //TODO re-use DTPairSolver
         return
-                bfsNew(AB, new DTPairSolver(a, b, x, each, true, false, false)) //existing
+                bfsNew(AB, new DTPairSolver(a, b, x, each, true, true, false)) //existing
 //                && bfsNew(AB, new DTPairSolver(a, b, x, each, false, true, false)) //existing
 //          && bfsNew(AB, new DTPairSolver(a, b, x, each, false, true, false)) //tangent
-            //&& bfsNew(AB, new DTPairSolver(a, b, x, each, false, false, true)) //tangentNeg
+            && bfsNew(AB, new DTPairSolver(a, b, x, each, false, true, true)) //tangentNeg
         ;
     }
 
@@ -1238,7 +1238,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
                    bfsNew(List.of(x), new OccSolver(true, true, false, each))
                 //&& bfsNew(List.of(x), new OccSolver(false, false, true, each))
                 && (!autoneg || bfsNew(List.of(shadow(x.id.neg())),
-                    new OccSolver(true, true, true,
+                    new OccSolver(true, false, true,
                         negateEach(x,each))))
                && solveSelfLoop(x, each)
                && solveLastResort(x, each)
@@ -1714,7 +1714,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 
         @Override
         public int compareTo(LongObjectPair<Term> e) {
-            return this==e ? 0 : cmp.compare(this, (Event)e);
+            return cmp.compare(this, (Event)e);
         }
 
         abstract public long dur(); //        return end() - start();

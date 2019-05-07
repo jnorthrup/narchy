@@ -1,6 +1,6 @@
 package nars.derive.op;
 
-import nars.derive.Derivation;
+import nars.derive.model.Derivation;
 import nars.term.Term;
 import nars.term.atom.Atomic;
 import nars.util.var.DepIndepVarIntroduction;

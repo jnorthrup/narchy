@@ -1,21 +1,20 @@
-package nars.derive.impl;
+package nars.derive;
 
 import jcog.math.IntRange;
 import nars.attention.What;
-import nars.derive.Derivation;
-import nars.derive.Deriver;
-import nars.derive.premise.PremiseDeriverRuleSet;
+import nars.derive.model.Derivation;
+import nars.derive.rule.PremiseRuleSet;
 
 import java.util.function.BooleanSupplier;
 
 
-/** buffers premises in batches*/
+/** default deriver implementation */
 public class BatchDeriver extends Deriver {
 
     public final IntRange premisesPerIteration = new IntRange(1, 1, 32);
-    public final IntRange termLinksPerTaskLink = new IntRange(1, 1, 4);
+    public final IntRange termLinksPerTaskLink = new IntRange(2, 1, 4);
 
-    public BatchDeriver(PremiseDeriverRuleSet rules) {
+    public BatchDeriver(PremiseRuleSet rules) {
         super(rules, rules.nar);
     }
 

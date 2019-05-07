@@ -2,7 +2,7 @@ package nars.derive.premise;
 
 import jcog.Util;
 import nars.$;
-import nars.derive.PreDerivation;
+import nars.derive.model.PreDerivation;
 import nars.term.Term;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
@@ -16,7 +16,7 @@ abstract public class PremiseTermAccessor implements Function<PreDerivation, Ter
     final int rootID;
     private final Atom term;
 
-    PremiseTermAccessor(int id, String term) {
+    protected PremiseTermAccessor(int id, String term) {
         this.rootID = id;
         this.term = Atomic.atom(term);
     }

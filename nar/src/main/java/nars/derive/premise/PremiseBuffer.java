@@ -1,4 +1,4 @@
-package nars.attention;
+package nars.derive.premise;
 
 import jcog.pri.PLink;
 import jcog.pri.PriReference;
@@ -6,15 +6,12 @@ import jcog.pri.bag.Bag;
 import jcog.pri.bag.impl.PLinkArrayBag;
 import jcog.pri.bag.impl.hijack.PriLinkHijackBag;
 import jcog.pri.op.PriMerge;
-import nars.NAR;
 import nars.Task;
-import nars.derive.Derivation;
-import nars.derive.Premise;
+import nars.derive.model.Derivation;
 import nars.link.TaskLink;
 import nars.link.TaskLinks;
 import nars.term.Term;
 import nars.time.When;
-import nars.time.event.WhenTimeIs;
 
 import java.io.Serializable;
 
@@ -22,7 +19,6 @@ import java.io.Serializable;
  *  thread-safe; for cooperative use by multiple threads
  */
 public class PremiseBuffer implements Serializable {
-    private final What.TaskLinkWhat taskLinkWhat;
 
     static final int premiseBufferCapacity = 64;
 
@@ -41,8 +37,7 @@ public class PremiseBuffer implements Serializable {
 
     //TODO premise blacklist to detect pointless derivations that shouldnt even be considered, per-Deriver
 
-    public PremiseBuffer(What.TaskLinkWhat taskLinkWhat) {
-        this.taskLinkWhat = taskLinkWhat;
+    public PremiseBuffer() {
 
         this.premise =
                 new PLinkArrayBag<>(PriMerge.max, premiseBufferCapacity);
@@ -54,11 +49,9 @@ public class PremiseBuffer implements Serializable {
     /**
      * samples premises
      */
-    public void derive(int premisesPerIteration, int termlinksPerTaskLink, int matchTTL, int deriveTTL, TaskLinks links, Derivation d) {
+    public void derive(When when, int premisesPerIteration, int termlinksPerTaskLink, int matchTTL, int deriveTTL, TaskLinks links, Derivation d) {
 
-        When<NAR> when = WhenTimeIs.now(d);
-
-        taskLinkWhat.sample(d.random, (int) Math.max(1, Math.ceil((fillRate * premisesPerIteration) / termlinksPerTaskLink)), tasklink -> {
+        d.what.sample(d.random, (int) Math.max(1, Math.ceil((fillRate * premisesPerIteration) / termlinksPerTaskLink)), tasklink -> {
 
             Task task = tasklink.get(when);
             if (task != null && !task.isDeleted())

@@ -2,7 +2,7 @@ package nars.derive.op;
 
 import jcog.util.ArrayUtil;
 import nars.$;
-import nars.derive.Derivation;
+import nars.derive.model.Derivation;
 import nars.term.atom.Atomic;
 import nars.term.control.AbstractPred;
 import org.roaringbitmap.RoaringBitmap;

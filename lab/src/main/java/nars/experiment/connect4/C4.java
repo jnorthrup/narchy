@@ -9,7 +9,7 @@ import nars.NARchy;
 import nars.Narsese;
 import nars.concept.Concept;
 import nars.derive.Deriver;
-import nars.derive.impl.BatchDeriver;
+import nars.derive.BatchDeriver;
 import nars.gui.NARui;
 import nars.op.java.Opjects;
 import nars.term.Term;

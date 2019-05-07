@@ -53,17 +53,17 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 public class Builtin {
     public static final Functor[] statik = {
 
-            Equal.the,
+            Equal.equal,
             cmp,
 
 
             MathFunc.add,
             MathFunc.mul,
-            MathFunc.XOR.the,
+            MathFunc.XOR.xor,
 
-            Member.the,
+            Member.member,
 
-            Subst.replace,
+            Replace.replace,
 
 
             SetFunc.intersect,
@@ -76,31 +76,18 @@ public class Builtin {
             ListFunc.sub,
             ListFunc.subs,
 
-            Functor.f1Inline("imageNormalize", Image::imageNormalize),
+            new AbstractInlineFunctor1.AbstractInstantFunctor1("unneg") {
+                @Override protected Term apply1(Term x) { return x.unneg(); }
+            },
+
+            new AbstractInlineFunctor1.AbstractInstantFunctor1("imageNormalize") {
+                @Override protected Term apply1(Term x) { return Image.imageNormalize(x); }
+            },
+
             Functor.f2Inline("imageInt", Image::imageInt),
             Functor.f2Inline("imageExt", Image::imageExt),
 
 
-
-//            new Functor.AbstractInlineFunctor2("sectRepolarize") {
-//                @Override
-//                protected Term apply(Term inh, Term subterm) {
-//                    if (inh.hasAny(Op.NEG)) {
-//                        if (subterm == Int.the(0)) {
-//                            if (inh.sub(0).op()==NEG) {
-//                                return INH.the(inh.sub(0).unneg(), inh.sub(1)).neg();
-//                            }
-//                        } else if (subterm == Int.the(1)) {
-//                            if (inh.sub(1).op()==NEG) {
-//                                return INH.the(inh.sub(0), inh.sub(1).unneg()).neg();
-//                            }
-//                        } else
-//                            return Null;
-//                    }
-//
-//                    return inh;
-//                }
-//            },
             new AbstractInlineFunctor2("eventOf") {
                 @Override
                 protected Term apply(Term conj, Term event) {
@@ -289,8 +276,6 @@ public class Builtin {
                 return null;
             }),
 
-
-
             Functor.f1("quote", x -> x)
     };
 
@@ -455,10 +440,7 @@ public class Builtin {
 //            return CONJ.the(t.dt(), s);
 //        }));
 
-        nar.add(Functor.f1Inline("unneg", Term::unneg));
 
-//        /** drops a random contained event, whether at first layer or below */
-//        nar.on(Functor.f1Inline("dropAnyEvent", (Term x) -> Conj.dropAnyEvent(x, nar)));
 
 
         /** similar to without() but for (possibly-recursive) CONJ sub-events. removes all instances of the positive or negative of event */
