@@ -28,6 +28,7 @@ public abstract class SeparateSubtermsCompound implements Compound {
     protected SeparateSubtermsCompound(Op o, Subterms x) {
         this(x.hashWith(o.id));
     }
+
     SeparateSubtermsCompound(byte op, Subterms x) {
         this(x.hashWith(op));
     }
@@ -35,6 +36,16 @@ public abstract class SeparateSubtermsCompound implements Compound {
     SeparateSubtermsCompound(int hash) {
         this.hash = hash;
     }
+
+    @Override
+    public boolean isNormalized() {
+        return subterms().isNormalized();
+    }
+
+    public final int structureSub() {
+        return subterms().structure();
+    }
+
 
     @Override
     public String toString() {

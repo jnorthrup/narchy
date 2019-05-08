@@ -2,6 +2,7 @@ package nars.term.compound;
 
 import jcog.TODO;
 import nars.subterm.Subterms;
+import nars.subterm.util.TermMetadata;
 import nars.term.Compound;
 import nars.term.Term;
 import org.jetbrains.annotations.Nullable;
@@ -12,6 +13,12 @@ import java.util.function.Predicate;
 /** provides access to subterms via its own methods (or dynamically)
  *  as opposed to forwarding to another Subterms instance. */
 public interface SameSubtermsCompound extends Compound {
+
+    @Override
+    default boolean isNormalized() {
+        return TermMetadata.normalized(this);
+    }
+
 
     @Override
     default int hashCodeSubterms() {

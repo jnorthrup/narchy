@@ -1,10 +1,13 @@
 
 package nars.op.language;
 
-import nars.*;
+import nars.$;
+import nars.NAR;
+import nars.NARS;
+import nars.Task;
 import nars.attention.What;
-import nars.derive.Derivers;
 import nars.derive.BatchDeriver;
+import nars.derive.Derivers;
 import nars.exe.impl.UniExec;
 import nars.op.TaskLeak;
 import nars.op.language.util.IRC;

@@ -8,7 +8,6 @@ import nars.Op;
 import nars.subterm.IntrinSubterms;
 import nars.subterm.SortedSubterms;
 import nars.subterm.Subterms;
-import nars.term.Compound;
 import nars.term.Term;
 import nars.term.anon.Intrin;
 import nars.term.atom.Atomic;
@@ -310,8 +309,12 @@ public class InterningTermBuilder extends HeapTermBuilder {
     }
 
     /** compound1 does not traverse the subterms interning pathway so an explicit resolution step for the only argument is applied here */
-    @Override protected Compound newCompound1(Op o, Term x) {
+    @Override protected Term newCompound1(Op o, Term x) {
         return super.newCompound1(o, resolve(x));
+    }
+
+    @Override public Term neg(Term x) {
+        return super.neg(resolve(x));
     }
 
     @Override

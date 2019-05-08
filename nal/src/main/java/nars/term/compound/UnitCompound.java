@@ -166,10 +166,6 @@ public abstract class UnitCompound implements SameSubtermsCompound {
         return DTERNAL;
     }
 
-    @Override
-    public final boolean isNormalized() {
-        return sub().isNormalized();
-    }
 
     @Override
     public int volume() {

@@ -87,21 +87,21 @@ public class MetaAgent extends Game {
         senseNumberDifference($.inh(SELF, $$("busy")), n.emotion.busyVol::asFloat);
         senseNumberDifference($.inh(SELF, $$("deriveTask")), n.emotion.deriveTask::get);
 
-        actionCtl($.inh(SELF, exact), new FloatRange(0.5f, 0, 1) {
-            @Override
-            public void set(float value) {
-                switch (Math.round(value * 6)) {
-                    case 0: value = 0.25f; break;
-                    case 1: value = 0.2f; break;
-                    case 2: value = 0.1f; break;
-                    case 3: value = 0.05f; break;
-                    case 4: value = 0.025f; break;
-                    case 5: value = 0.01f; break;
-                }
-                nar.freqResolution.set(value);
-                super.set(value);
-            }
-        });
+//        actionCtl($.inh(SELF, exact), new FloatRange(0.5f, 0, 1) {
+//            @Override
+//            public void set(float value) {
+//                switch (Math.round(value * 6)) {
+//                    case 0: value = 0.25f; break;
+//                    case 1: value = 0.2f; break;
+//                    case 2: value = 0.1f; break;
+//                    case 3: value = 0.05f; break;
+//                    case 4: value = 0.025f; break;
+//                    case 5: value = 0.01f; break;
+//                }
+//                nar.freqResolution.set(value);
+//                super.set(value);
+//            }
+//        });
 
         for (Game ww : w)
             add(ww);

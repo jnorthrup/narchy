@@ -6,7 +6,8 @@ import nars.term.Term;
 import nars.term.atom.Bool;
 import nars.term.util.TermException;
 
-import static nars.Op.*;
+import static nars.Op.BELIEF;
+import static nars.Op.GOAL;
 
 public enum DerivationFailure {
 

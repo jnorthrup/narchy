@@ -22,10 +22,10 @@ public interface FromTo<N, E> /* extends Triple<F,X,F> */ {
 
     @Nullable
     default N other(N x) {
-        N n = from(), t = to();
+        N f = from(), t = to();
         //TODO maybe this needs to be .equals()
-        if (n == x) return t;
-        else if (t == x) return n;
+        if (f == x) return t;
+        else if (t == x) return f;
         else
             throw new NullPointerException(); //return null;
     }

@@ -4,7 +4,6 @@ import jcog.data.byt.DynBytes;
 import nars.Op;
 import nars.term.Term;
 import nars.term.atom.Atomic;
-import nars.term.util.builder.TermBuilder;
 import nars.term.util.transform.AbstractTermTransform;
 import org.junit.jupiter.api.Test;
 
@@ -18,9 +17,9 @@ class LazyCompoundBuilderTest {
 
     private static class MyLazyCompoundBuilder extends LazyCompoundBuilder {
         @Override
-        public Term get(TermBuilder b, int volMax) {
+        public Term get(int volMax) {
 
-            Term t = super.get(b, volMax);
+            Term t = super.get(volMax);
             /* if (Param.DEBUG) */ {
                 int volExpected = volMax - volRemain;
                 int volActual = t.volume();
@@ -34,12 +33,12 @@ class LazyCompoundBuilderTest {
     @Test
     void testSimple() {
         assertEquals("(a,b)", new MyLazyCompoundBuilder()
-                .compound(Op.PROD, A, B).get().toString());
+                .appendCompound(Op.PROD, A, B).get().toString());
     }
     @Test
     void testNeg() {
-        LazyCompoundBuilder l0 = new MyLazyCompoundBuilder().compound(Op.PROD, A, B, B);
-        LazyCompoundBuilder l1 = new MyLazyCompoundBuilder().compound(Op.PROD, A, B, B.neg());
+        LazyCompoundBuilder l0 = new MyLazyCompoundBuilder().appendCompound(Op.PROD, A, B, B);
+        LazyCompoundBuilder l1 = new MyLazyCompoundBuilder().appendCompound(Op.PROD, A, B, B.neg());
 
         DynBytes code = l1.code;
         DynBytes code1 = l0.code;
@@ -49,15 +48,15 @@ class LazyCompoundBuilderTest {
 
         assertEquals("(a,b,(--,b))", l1.get().toString());
         assertEquals("((--,a),(--,b))", new MyLazyCompoundBuilder()
-                .compound(Op.PROD, A.neg(), B.neg()).get().toString());
+                .appendCompound(Op.PROD, A.neg(), B.neg()).get().toString());
     }
     @Test
     void testTemporal() {
         assertEquals("(a==>b)", new MyLazyCompoundBuilder()
-                .compound(Op.IMPL, A, B).get().toString());
+                .appendCompound(Op.IMPL, A, B).get().toString());
 
         assertEquals("(a ==>+1 b)", new MyLazyCompoundBuilder()
-                .compound(Op.IMPL, 1, A, B).get().toString());
+                .appendCompound(Op.IMPL, 1, A, B).get().toString());
     }
 
     static final AbstractTermTransform nullTransform = new AbstractTermTransform() {

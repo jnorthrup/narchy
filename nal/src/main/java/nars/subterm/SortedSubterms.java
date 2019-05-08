@@ -1,6 +1,5 @@
 package nars.subterm;
 
-import nars.term.Neg;
 import nars.term.Term;
 import nars.term.Terms;
 

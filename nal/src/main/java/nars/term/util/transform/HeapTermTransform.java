@@ -7,7 +7,7 @@ import nars.term.util.builder.HeapTermBuilder;
 import nars.term.util.builder.TermBuilder;
 
 /** bypasses interning */
-public abstract class DirectTermTransform extends AbstractTermTransform.NegObliviousTermTransform {
+public abstract class HeapTermTransform extends AbstractTermTransform.NegObliviousTermTransform {
 
     final static TermBuilder localBuilder = HeapTermBuilder.the;
 

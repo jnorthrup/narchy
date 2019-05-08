@@ -1,7 +1,6 @@
 package nars.link;
 
 import jcog.TODO;
-import jcog.Util;
 import jcog.decide.Roulette;
 import nars.Op;
 import nars.subterm.Subterms;
@@ -113,8 +112,8 @@ public abstract class DynamicTermLinker implements TermLinker {
                     sub.volume();
                     //sub.complexity();
             return
-                    Util.sqrt(v);
-                    //v;
+                    //Util.sqrt(v);
+                    v;
                     //Util.sqr((float)v);
                     //1f/v; //inverse
         }

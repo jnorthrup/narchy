@@ -9,6 +9,8 @@ import nars.term.atom.Atom;
 import nars.term.atom.Bool;
 import org.jetbrains.annotations.Nullable;
 
+import static nars.term.atom.Bool.True;
+
 /** Functor template for a binary functor with bidirectional parameter cases */
 public abstract class BinaryBidiFunctor extends Functor implements The {
 
@@ -72,7 +74,7 @@ public abstract class BinaryBidiFunctor extends Functor implements The {
                 //assert(XY!=null): "functor " + this + " " + x + "," + y + ", " + xy + " -> compute=null";
 
                 if (XY.equals(xy)) {
-                    return null; //true, keep
+                    return True; //true, keep
                 } else {
 
                     return Bool.Null; //false?

@@ -1,7 +1,6 @@
 package nars.eval;
 
 import jcog.data.set.ArrayHashSet;
-import nars.NAL;
 import nars.Op;
 import nars.term.Compound;
 import nars.term.Functor;
@@ -10,7 +9,7 @@ import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
 import nars.term.compound.LazyCompoundBuilder;
 import nars.term.util.builder.HeapTermBuilder;
-import nars.term.util.transform.DirectTermTransform;
+import nars.term.util.transform.HeapTermTransform;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Function;
@@ -22,7 +21,7 @@ import static nars.term.atom.Bool.Null;
  * discovers functors within the provided target, or the target itself.
  * transformation results should not be interned, that is why DirectTermTransform used here
  */
-public class Evaluator extends DirectTermTransform /*extends LazyCompound*/ {
+public class Evaluator extends HeapTermTransform {
 
     final Function<Atom, Functor> funcResolver;
 
@@ -54,10 +53,6 @@ public class Evaluator extends DirectTermTransform /*extends LazyCompound*/ {
                 if (clauses[0] != null && clauses[0].contains(X))
                     return true;
 
-                if (NAL.DEBUG) {
-                    assert(compoundBuilder.isEmpty()); //if this isnt the case, compoundBuilder may need to be a stack
-                }
-
                 try {
                     LazyCompoundBuilder y = compoundBuilder.append(X);
                     final int[] functors = {0};
@@ -76,7 +71,7 @@ public class Evaluator extends DirectTermTransform /*extends LazyCompound*/ {
 
                     if (functors[0] > 0) {
 
-                        Term yy = y.get(HeapTermBuilder.the); //TEMPORARY
+                        Term yy = y.get();
                         if (yy.sub(1) instanceof Functor) {
                             if (clauses[0] == null)
                                 clauses[0] = new ArrayHashSet<>(1);
@@ -98,9 +93,8 @@ public class Evaluator extends DirectTermTransform /*extends LazyCompound*/ {
 
     @Override
     public @Nullable Term applyAtomic(Atomic x) {
-        if (x instanceof Functor) {
+        if (x instanceof Functor)
             return x;
-        }
 
         if (x instanceof Atom) {
             Functor f = funcResolver.apply((Atom) x);
@@ -152,6 +146,11 @@ public class Evaluator extends DirectTermTransform /*extends LazyCompound*/ {
     }
 
     private static class NonEvalLazyCompoundBuilder extends LazyCompoundBuilder {
+
+        public NonEvalLazyCompoundBuilder() {
+            super(HeapTermBuilder.the);
+        }
+
         @Override
         protected boolean evalInline() {
             return false; //TEMPORARY

@@ -8,7 +8,6 @@ import nars.term.Compound;
 import nars.term.Term;
 import nars.term.atom.Bool;
 import nars.term.compound.LazyCompoundBuilder;
-import nars.term.util.builder.TermBuilder;
 import org.jetbrains.annotations.Nullable;
 
 import static nars.Op.*;
@@ -32,7 +31,6 @@ public interface AbstractTermTransform extends TermTransform, nars.term.util.bui
             l.clear();
 
             Term y = transform.applyCompoundLazy((Compound)x, l,
-                    Op.terms, //HeapTermBuilder.the
                     volMax
             );
 
@@ -171,49 +169,13 @@ public interface AbstractTermTransform extends TermTransform, nars.term.util.bui
     }
 
 
-    /**
-     * HACK interface version
-     */
-    @Deprecated interface AbstractNegObliviousTermTransform extends AbstractTermTransform {
-
-//        @Override
-//        default boolean transformCompound(Compound x, LazyCompound out) {
-//            if (x.op() == NEG) {
-//                out.negStart();
-//                return transform(x.unneg(), out);
-//            } else {
-//                return TermTransform.super.transformCompound(x, out);
-//            }
-//        }
-
-        @Override
-        @Nullable
-        default Term applyCompound(Compound c) {
-
-            if (c.op() == NEG) {
-                Term xx = c.unneg();
-                Term yy = apply(xx);
-                return yy == xx ? c : yy.neg();
-
-            } else {
-                return AbstractTermTransform.super.applyCompound(c);
-            }
-
-        }
-
-    }
-
-    default LazyCompoundBuilder applyLazy(LazyCompoundBuilder l, Compound x) {
-        return transformCompound(x, l) ? l : null;
-    }
-
     default Term applyCompoundLazy(Compound x) {
-        return applyCompoundLazy(x, new LazyCompoundBuilder(), Op.terms, NAL.term.COMPOUND_VOLUME_MAX);
+        return applyCompoundLazy(x, new LazyCompoundBuilder(), NAL.term.COMPOUND_VOLUME_MAX);
     }
 
-    default Term applyCompoundLazy(Compound x, LazyCompoundBuilder l, TermBuilder b, int volMax) {
-        l = applyLazy(l, x);
-        return l == null ? Null : l.get(b, volMax);
+    default Term applyCompoundLazy(Compound x, LazyCompoundBuilder l, int volMax) {
+        l = transformCompound(x, l) ? l : null;
+        return l == null ? Null : l.get(volMax);
     }
 
 

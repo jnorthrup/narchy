@@ -14,6 +14,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.TreeSet;
 
+import static nars.Op.BOOL;
 import static nars.Op.CONJ;
 import static nars.term.Terms.sorted;
 import static nars.term.atom.Bool.*;
@@ -37,6 +38,25 @@ public enum ConjCommutive {;
     }
 
     public static Term the(TermBuilder B, int dt, boolean sort, boolean direct, Term... u) {
+        //bool pre-filter
+        boolean trueRemoved = false;
+        for (int i = 0, uLength = u.length; i < uLength; i++) {
+            Term x = u[i];
+            if(x.op()==BOOL) {
+                if (x == False)
+                    return False;
+                if (x == Null)
+                    return Null;
+                if (x == True) {
+                    u[i] = null;
+                    trueRemoved = true;
+                }
+            }
+        }
+        if (trueRemoved) {
+            u = ArrayUtil.removeNulls(u);
+        }
+
         if (sort)
             u = sorted(u);
 
@@ -69,29 +89,37 @@ public enum ConjCommutive {;
 
         MetalBitSet pos; //simple positive events
         MetalBitSet neg; //negative events
-        MetalBitSet conjMerge; //mergeable conj compounds
-        MetalBitSet seq; //un-mergeable conj compounds
+        MetalBitSet par; //mergeable conj parallel compounds
+        MetalBitSet seq; //un-mergeable conj seq compounds
         MetalBitSet disj; //disjunctions
 
         Set<Term> flatten = null;
         do {
-            pos = neg = conjMerge = seq = disj = null;
+            pos = neg = par = seq = disj = null;
 
             for (int i = 0, uLength = u.length; i < uLength; i++) {
                 Term x = u[i];
 
                 switch (x.op()) {
-                    case BOOL:
-                        if (x == False) return False;
-                        if (x == Null) return Null;
-                        if (x == True) conjMerge = set(conjMerge, i, uLength);
-                        break;
+//                    case BOOL:
+//                        if (x == False) return False;
+//                        if (x == Null) return Null;
+//                        if (x == True)
+//                            par = set(par, i, uLength); //??
+//                        break;
                     case CONJ:
                         int xdt = x.dt();
-                        if (xdt == dt || (dt == 0 && xdt == DTERNAL /* promote inner DTERNAL to parallel */)) {
-                            conjMerge = set(conjMerge, i, uLength);
+                        if //(xdt == dt || (dt == 0 && xdt == DTERNAL /* promote inner DTERNAL to parallel */)
+                            (
+                                (xdt == 0 || xdt == DTERNAL)
+
+//                                (dt == DTERNAL && (xdt == 0 || xdt == DTERNAL))
+//                                ||
+//                                (dt == 0 && (xdt == DTERNAL))
+                            )
+                         {
+                            par = set(par, i, uLength);
                         } else {
-                            //TODO handle promotion of &&/&| as conjMerge rather than conjOther
                             seq = set(seq, i, uLength);
                         }
                         break;
@@ -112,11 +140,11 @@ public enum ConjCommutive {;
                 }
             }
 
-            if (conjMerge != null) {
+            if (par != null) {
                 if (flatten != null)
                     flatten.clear();
                 for (int i = 0, uLength = u.length; i < uLength; i++) {
-                    if (conjMerge.get(i)) {
+                    if (par.get(i)) {
                         Term x = u[i];
                         if (x == True) continue;
                         if (flatten == null) flatten = new UnifiedSet(uLength * 2);
@@ -125,13 +153,13 @@ public enum ConjCommutive {;
                 }
                 if (flatten != null) {
                     for (int i = 0, uLength = u.length; i < uLength; i++) {
-                        if (!conjMerge.get(i))
+                        if (!par.get(i))
                             flatten.add(u[i]);
                     }
                     u = sorted(flatten);
                 } else {
                     //just True's, remove the array elements
-                    u = ArrayUtil.removeAll(u, conjMerge);
+                    u = ArrayUtil.removeAll(u, par);
                     break;
                 }
                 if (u.length == 1)
@@ -139,7 +167,7 @@ public enum ConjCommutive {;
 
             }
 
-        } while (conjMerge != null);
+        } while (par != null);
 
         if (pos != null && neg != null) {
             if (coNegate(pos, neg, u))
@@ -164,8 +192,7 @@ public enum ConjCommutive {;
                     int indep = 0, elim = 0;
                     for (int i = 0; i < u.length; i++) {
                         if (i == coi) continue;
-                        Term x = u[i];
-                        assert (x.op() != CONJ);
+                        Term x = u[i]; //assert (x.op() != CONJ);
                         if (!conflict(co, x)) {
                             if (absorbCompletelyByFirstLayer(co, x)) {
                                 elim++;

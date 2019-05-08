@@ -1,7 +1,7 @@
 package nars;
 
-import nars.derive.Derivers;
 import nars.derive.BatchDeriver;
+import nars.derive.Derivers;
 import nars.exe.impl.WorkerExec;
 import nars.memory.CaffeineMemory;
 import nars.op.language.NARHear;

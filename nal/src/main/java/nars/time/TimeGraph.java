@@ -658,11 +658,10 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
         Iterable<Event> AB = sortEvents(ab);
 
         //TODO re-use DTPairSolver
-        return
-                bfsNew(AB, new DTPairSolver(a, b, x, each, true, true, false)) //existing
-//                && bfsNew(AB, new DTPairSolver(a, b, x, each, false, true, false)) //existing
-//          && bfsNew(AB, new DTPairSolver(a, b, x, each, false, true, false)) //tangent
-            && bfsNew(AB, new DTPairSolver(a, b, x, each, false, true, true)) //tangentNeg
+        return true
+            && bfsNew(AB, new DTPairSolver(a, b, x, each, true, false, false))
+//            && bfsNew(AB, new DTPairSolver(a, b, x, each, false, true, false))
+//            && bfsNew(AB, new DTPairSolver(a, b, x, each, false, false, true))
         ;
     }
 
@@ -1234,31 +1233,14 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 //    }
 
     private boolean solveOccurrence(Event x, Predicate<Event> each) {
-        return //solveExact(x, each) &&
-                   bfsNew(List.of(x), new OccSolver(true, true, false, each))
-                //&& bfsNew(List.of(x), new OccSolver(false, false, true, each))
-                && (!autoneg || bfsNew(List.of(shadow(x.id.neg())),
-                    new OccSolver(true, false, true,
-                        negateEach(x,each))))
+        return true//solveExact(x, each) &&
+               && bfsNew(List.of(x), new OccSolver(true, true, false, each))
+               //&& bfsNew(List.of(x), new OccSolver(false, false, true, each))
                && solveSelfLoop(x, each)
+               && (!autoneg || bfsNew(List.of(x.neg()), new OccSolver(true, false, true,
+                    z -> each.test(z.neg()))))
                && solveLastResort(x, each)
                 ;
-    }
-
-    private Predicate<Event> negateEach(Event x, Predicate<Event> each) {
-        return e -> {
-            if (!x.equals(e)) {
-                Term eNeg = e.id.neg();
-                if (e instanceof Absolute) {
-                    //found concrete solution
-                    Absolute ee = (Absolute) e;
-                    return each.test(event(eNeg, ee.start, ee.end(), false));
-                } else {
-                    return each.test(shadow(eNeg));
-                }
-            } else
-                return true;
-        };
     }
 
     /**
@@ -1394,6 +1376,11 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
                 return new Absolute(id, start + dt);
             }
         }
+
+        @Override
+        public Event neg() {
+            return new Absolute(id.neg(), start);
+        }
     }
 
     public static final class AbsoluteRange extends Absolute {
@@ -1414,6 +1401,11 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
         public long dur() {
             return end - start;
         }
+
+        @Override
+        public final Event neg() {
+            return new AbsoluteRange(id.neg(), start, end);
+        }
     }
 
     /**
@@ -1431,14 +1423,18 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
         }
 
         @Override
-        public long end() {
+        public final long end() {
             return TIMELESS;
         }
 
         @Override
         public long dur() {
             throw new UnsupportedOperationException();
-            //return 0;
+        }
+
+        @Override
+        public final Event neg() {
+            return new Relative(id.neg());
         }
     }
 
@@ -1525,9 +1521,12 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
         @Override
         protected Iterable<FromTo<Node<Event, nars.time.TimeSpan>, TimeSpan>> next(Node<Event, TimeSpan> n) {
 
+
             Iterable<FromTo<Node<Event, TimeSpan>, TimeSpan>> existing = this.existing ? existing(n) : empty;
-            Iterable<FromTo<Node<Event, TimeSpan>, TimeSpan>> tangent = this.tangent ? tangent(n, false) : empty;
-            Iterable<FromTo<Node<Event, TimeSpan>, TimeSpan>> tangentNeg = this.tangentNeg ? tangent(n, true) : empty;
+
+            Term nid = n.id().id;
+            Iterable<FromTo<Node<Event, TimeSpan>, TimeSpan>> tangent = this.tangent ? tangent(n, nid) : empty;
+            Iterable<FromTo<Node<Event, TimeSpan>, TimeSpan>> tangentNeg = this.tangentNeg ? tangent(n, nid.neg()) : empty;
 
             //TODO elide concat() if only one selected
             return Iterables.concat(existing, tangent, tangentNeg);
@@ -1535,8 +1534,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 
         private Iterable<FromTo<Node<Event, TimeSpan>, TimeSpan>> existing(Node<Event, TimeSpan> n) {
             return n.edges(true, true,
-                    x -> log.hasNotVisited(x.other(n)),
-                    temporalProximity);
+                    x -> log.hasNotVisited(x.other(n)));
         }
 
         Iterable<FromTo<Node<Event, nars.time.TimeSpan>, TimeSpan>> tangent(Node<Event, TimeSpan> root, Term t) {
@@ -1559,9 +1557,6 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 
         }
 
-        Iterable<FromTo<Node<Event, nars.time.TimeSpan>, TimeSpan>> tangent(Node<Event, TimeSpan> n, boolean neg) {
-            return tangent(n, n.id().id.negIf(neg));
-        }
 
 
     }
@@ -1662,6 +1657,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
             this.hash = hash;
         }
 
+        abstract public Event neg();
 
         abstract public long start();
 

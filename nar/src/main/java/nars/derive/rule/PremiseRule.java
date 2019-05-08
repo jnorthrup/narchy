@@ -9,9 +9,9 @@ import nars.$;
 import nars.Builtin;
 import nars.Narsese;
 import nars.Op;
+import nars.derive.condition.*;
 import nars.derive.model.Derivation;
 import nars.derive.model.PreDerivation;
-import nars.derive.condition.*;
 import nars.derive.op.Occurrify;
 import nars.derive.op.Termify;
 import nars.derive.op.Truthify;
@@ -29,7 +29,6 @@ import nars.term.control.PREDICATE;
 import nars.term.control.TermMatch;
 import nars.term.util.TermException;
 import nars.term.util.transform.AbstractTermTransform;
-import nars.term.util.transform.DirectTermTransform;
 import nars.term.util.transform.TermTransform;
 import nars.truth.func.NALTruth;
 import nars.truth.func.TruthFunc;
@@ -1149,7 +1148,7 @@ public class PremiseRule extends ProxyTerm {
     };
 
 
-    static class UppercaseAtomsToPatternVariables extends DirectTermTransform {
+    static class UppercaseAtomsToPatternVariables extends AbstractTermTransform.NegObliviousTermTransform {
 
         final UnifiedMap<String, Term> map = new UnifiedMap<>(8);
 

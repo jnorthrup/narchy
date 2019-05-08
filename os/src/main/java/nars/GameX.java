@@ -16,8 +16,8 @@ import nars.attention.TaskLinkWhat;
 import nars.concept.Concept;
 import nars.control.MetaGoal;
 import nars.control.NARPart;
-import nars.derive.Derivers;
 import nars.derive.BatchDeriver;
+import nars.derive.Derivers;
 import nars.derive.rule.PremiseRuleSet;
 import nars.derive.timing.ActionTiming;
 import nars.exe.impl.WorkerExec;
@@ -380,7 +380,7 @@ abstract public class GameX extends Game {
         );
 
         n.confMin.set(0.01f);
-        n.termVolumeMax.set(24);
+        n.termVolumeMax.set(36);
 
 
 

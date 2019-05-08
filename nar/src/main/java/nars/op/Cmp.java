@@ -1,6 +1,5 @@
 package nars.op;
 
-import nars.Op;
 import nars.eval.Evaluation;
 import nars.term.Functor;
 import nars.term.Term;
@@ -8,8 +7,8 @@ import nars.term.Variable;
 import nars.term.atom.Int;
 import nars.term.functor.SimpleBinaryFunctor;
 
-import static nars.Op.INT;
-import static nars.term.atom.Bool.*;
+import static nars.term.atom.Bool.Null;
+import static nars.term.atom.Bool.True;
 
 /**
  * general purpose comparator: cmp(x, y, x.compareTo(y))
@@ -27,49 +26,32 @@ public class Cmp extends SimpleBinaryFunctor {
     @Override
     protected Term apply3(Evaluation e, Term x, Term y, Term xy) {
 
+
         boolean xVar = x instanceof Variable, yVar = y instanceof Variable;
-        boolean equal = x.equals(y);
-        if (!equal) {
-
-            if (xVar || yVar || x.hasVars() || y.hasVars())
-                return null; //indeterminate
-
-        }
 
         if (xy.equals(zero)) {
 
-            if ((!xVar && !yVar) || (xVar && yVar)) {
-                if (equal) {
+            if (xVar==yVar) {
+                if (x.equals(y)) {
                     return True; //obvious
                 } else {
-                    return Equal.the(x, y);
+                    return Equal.the(x, y); //reduce to equal
                 }
             } else if (xVar) {
                 return e.is(x, y) ? True : Null;
-            } else if (yVar) {
+            } else { //if (yVar) {
                 return e.is(y, x) ? True : Null;
             }
         }
 
-
-        Op xyo = xy.op();
-        int c = x.compareTo(y);
-
-        if (xyo == INT) {
-            if (c != ((Int) xy).i)
-                return False;
-            else {
-//                        if (c > 0) {
-//                            //just in case
-//                            if (!e.is($.func(cmp, x, y, xy), reverse(x, y, c)))
-//                                return Null;
-//                        }
-                return True;
+        if (xy instanceof Variable) {
+            if (x.equals(y)) {
+                return e.is(xy, zero) ? null : Null;
             }
-        } else if (!xy.hasVars())
-            return Null; //some nonsense non-integer constant
+            if (xVar || yVar || x.hasVars() || y.hasVars())
+                return null; //indeterminate
 
-        if (xyo.var) {
+            int c = x.compareTo(y);
             if (e.is(xy, Int.the(c))) {
 //                    if (c > 0) {
 //                        return reverse(x, y, c);

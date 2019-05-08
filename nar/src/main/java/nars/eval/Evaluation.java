@@ -111,7 +111,7 @@ public class Evaluation {
     /**
      * fails fast if no known functors apply
      */
-    public boolean evalTry(Compound x, Evaluator e) {
+    protected boolean evalTry(Compound x, Evaluator e) {
         ArrayHashSet<Term> c = e.clauses(x, this);
         if ((c == null || c.isEmpty()) && (termutator == null || termutator.isEmpty())) {
             each.test(x);
@@ -123,7 +123,7 @@ public class Evaluation {
     /**
      * simple complexity heuristic: sorting first by volume naively ensures innermost functors evaluated first
      */
-    static private final Comparator<Term> byVolume = Comparator.comparingInt(Term::volume).thenComparingInt(Term::vars);
+    static private final Comparator<Term> byVolume = Comparator.comparingInt(Term::volume).thenComparingInt(Term::vars).thenComparingInt(Term::hashCode).thenComparing(System::identityHashCode);
 
     private boolean eval(Evaluator e, final Compound x, @Nullable List<Term> clauses) {
 
@@ -155,7 +155,7 @@ public class Evaluation {
 
                     //run the functor resolver for any new functor terms which may have appeared
 
-                    boolean remove = false, eval = true;
+                    boolean remove = false;
 
                     Term af = Functor.func(a);
                     if (!(af instanceof Functor)) {
@@ -164,7 +164,7 @@ public class Evaluation {
                         if (aa == a) {
                             //no change. no such functor
                             remove = true;
-                            eval = false;
+
                         } else {
                             a = aa;
                         }

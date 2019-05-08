@@ -594,7 +594,7 @@ public interface Term extends Termlike, Termed, Comparable<Term> {
     Term replace(Term from, Term to);
 
     default Term neg() {
-        return NEG.the(this);
+        return Op.terms.neg(this);
     }
 
     default Term negIf(boolean negate) {

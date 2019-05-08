@@ -122,19 +122,21 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
     }
 
     public static boolean containsEvent(Term container, Term x) {
-        if (!x.op().eventable)
-            return false;
-        if (container.op() != CONJ || container.impossibleSubTerm(x))
-            return false;
+        if (!x.op().eventable || container.op() != CONJ || container.impossibleSubTerm(x)) return false;
+
+        if (container.contains(x))
+            return true;
 
         if (isSeq(container)) {
-            boolean xIsConj = x.op() == CONJ;
-            int xdt = xIsConj ? x.dt() : DTERNAL;
-            return !container.eventsWhile((when, cc) -> cc == container || !containsOrEqualsEvent(cc, x), //recurse
-                    0, !xIsConj || xdt != 0, !xIsConj || xdt != DTERNAL, true);
-        } else {
-            return container.contains(x);
-        }
+            //check if the term exists when distributed factorized
+//            boolean xIsConj = x.op() == CONJ;
+//            int xdt = xIsConj ? x.dt() : DTERNAL;
+            return !container.eventsWhile((when, cc) ->
+                    !cc.equals(x)
+                    //cc == container || !containsOrEqualsEvent(cc, x) //recurse
+                    ,0, true /*!xIsConj || xdt != 0*/, true, true);
+        } else
+            return false;
 
     }
 
@@ -1667,24 +1669,41 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
         if (ee == null) return 0;
         int w = conflictOrSame(ee, what);
         if (w == -1) return -1;
+        if (w == +1) return +1;
 
         if (at == ETERNAL) {
-            if (!(ee instanceof byte[])) throw new TODO();
-            Term y = unindex(what);
-            boolean absorbed = false;
-            for (byte ix : (byte[])ee) {
-                if (ix == 0) break;
-                Term x = unindex(ix);
-                int ce = conflictExhaustive(x, y);
-                if (ce == -1) return -1;
-                if (ce == +1) absorbed = true;
-            }
-            if (absorbed) return +1;
+            int x = conflictOrSameEternal(what, ee);
+            if (x != 0) return x;
         }
 
-        if (w == +1) return +1;
         return 0;
     }
+
+    @Nullable
+    private int conflictOrSameEternal(byte what, Object ee) {
+        boolean absorbed = false;
+        Term y = unindex(what);
+        if (ee instanceof byte[]) {
+            for (byte ix : (byte[]) ee) {
+                if (ix == 0) break;
+                int ce = conflictExhaustive(unindex(ix), y);
+                if (ce == -1) return -1;
+                else if (ce == +1) absorbed = true;
+            }
+        } else {
+            RoaringBitmap r = (RoaringBitmap)ee;
+            PeekableIntIterator rr = r.getIntIterator();
+            while (rr.hasNext()) {
+                byte ix = (byte) rr.next();
+                int ce = conflictExhaustive(unindex(ix), y);
+                if (ce == -1) return -1;
+                else if (ce == +1) absorbed = true;
+            }
+        }
+        if (absorbed) return +1;
+        return 0;
+    }
+
     private int conflictExhaustive(Term x, Term y) {
         if (x.op()==NEG) {
             Term xu = x.unneg();
@@ -2261,15 +2280,16 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
                 Term eu = eternal.unneg();
                 int tdt = tu.dt(), edt = eu.dt();
 
-                Term y = null;
+
                 //if ((temporal.unneg().op() == CONJ && (tdt == DTERNAL || tdt == 0)) || (eternal.op() == CONJ && (edt == DTERNAL || edt == 0)) || temporal.containsRecursively(eternal.unneg()))
-                if ((tu.op()==CONJ || (eu.op()==CONJ) ||
-                        (Term.commonStructure(eu, tu) &&
-                                (eternal.containsRecursively(tu /* pos or neg to be sure */) ||
-                                 temporal.containsRecursively(eu /* pos or neg to be sure */))
-                ))) {
-                    //needs further flattening
-                    y = ConjCommutive.the(B, Conj.isSeq(tu) && Conj.isSeq(eu) ? 0 : DTERNAL, true, true, temporal, eternal);
+                if ((tu.op()==CONJ && (eu.op()==CONJ) && Term.commonStructure(eu, tu))) {
+
+
+                    Predicate<Term> tur = z -> tu.containsRecursively(z.unneg());
+                    if ((eu.subterms().OR(tur))) {
+                        //needs further flattening
+                        return ConjCommutive.the(B, DTERNAL, true, true, temporal, eternal);
+                    }
 
 //                    if (y.op()==CONJ && dtSpecial(y.dt()) && y.dt()!=XTERNAL && !Conj.isSeq(y) && y.subterms().hasAny(CONJ)) {
 //                        y = ConjCommutive.the(B, y.dt(), true, true, y.subterms().arrayShared());
@@ -2284,8 +2304,9 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
 //                    }
 
                 }
-                else {
-                    y = B.theCompound(CONJ, DTERNAL, sorted(temporal, eternal));
+
+
+                return B.theCompound(CONJ, DTERNAL, sorted(temporal, eternal));
 //
 //                    //TEMPORARY for debugging
 //                    if (y.anon().volume()!=y.volume()) {
@@ -2294,9 +2315,8 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
 //                        y.anon().printRecursive();
 //                        throw new WTF();
 //                    }
-                }
 
-                return y;
+
             }
         } else if (eternal == null) {
             ci = temporal;

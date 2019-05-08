@@ -7702,7 +7702,7 @@ public enum ArrayUtil {
     }
 
 
-    public static <T> T[] removeNulls(final T[] array, IntFunction<T[]> builder) {
+    public static <T> T[] removeNulls(final T[] array) {
         int nulls = 0;
         for (Object x : array)
             if (x == null) nulls++;
@@ -7711,11 +7711,11 @@ public enum ArrayUtil {
         else {
             int s = array.length - nulls;
             if (s == 0)
-                return builder.apply(0);
+                return Arrays.copyOf(array, 0); //builder.apply(0);
 
             else {
 
-                T[] a = builder.apply(s);
+                T[] a = Arrays.copyOf(array, s);
                 int j = 0;
                 for (T x : array) {
                     if (x != null)

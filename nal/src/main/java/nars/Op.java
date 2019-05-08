@@ -44,7 +44,7 @@ import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
 public enum Op {
 
 
-    ATOM(".", Op.ANY_LEVEL),
+    ATOM(".", Op.ANY_LEVEL, Args.Zero),
 
     NEG("--", 1, Args.One) {
         public Term the(Term u) {
@@ -411,7 +411,7 @@ public enum Op {
 
 
     Op(char c, int minLevel) {
-        this(c, minLevel, Args.None);
+        this(c, minLevel, Args.Zero);
     }
 
 
@@ -421,7 +421,7 @@ public enum Op {
 
 
     Op(String string, int minLevel) {
-        this(string, false /* non-commutive */, minLevel, Args.None);
+        this(string, false /* non-commutive */, minLevel, Args.Zero);
     }
 
     Op(String string, int minLevel, IntIntPair size) {
@@ -764,7 +764,7 @@ public enum Op {
 
     enum Args {
         ;
-        static final IntIntPair None = pair(0, 0);
+        static final IntIntPair Zero = pair(0, 0);
         static final IntIntPair One = pair(1, 1);
         static final IntIntPair Two = pair(2, 2);
 

@@ -397,7 +397,6 @@ public interface Subterms extends Termlike, Iterable<Term> {
      * assume its normalized if no variables are present
      */
     default boolean isNormalized() {
-        //return !hasAny(Op.Variable) && !hasAll(Image.ImageBits);
         return TermMetadata.normalized(this);
     }
 

@@ -6,8 +6,8 @@ import jcog.event.Topic;
 import nars.NAR;
 import nars.NARS;
 import nars.Narsese;
-import nars.derive.Derivers;
 import nars.derive.BatchDeriver;
+import nars.derive.Derivers;
 import nars.op.java.Opjects;
 
 /**

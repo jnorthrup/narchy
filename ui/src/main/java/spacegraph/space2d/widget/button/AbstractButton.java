@@ -1,12 +1,9 @@
 package spacegraph.space2d.widget.button;
 
 import com.jogamp.newt.event.KeyEvent;
-import org.jetbrains.annotations.Nullable;
 import spacegraph.input.finger.Finger;
 import spacegraph.input.finger.state.Clicking;
 import spacegraph.space2d.Surface;
-import spacegraph.space2d.hud.Hover;
-import spacegraph.space2d.hud.HoverModel;
 import spacegraph.space2d.widget.Widget;
 import spacegraph.space2d.widget.text.BitmapLabel;
 import spacegraph.video.ImageTexture;

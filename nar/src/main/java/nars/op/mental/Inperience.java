@@ -141,7 +141,8 @@ abstract public class Inperience extends TaskLeakTransform {
         return $.funcImg(punc == QUESTION ? wonder : evaluate, nar.self(), Described.apply(x));
     }
 
-    public static Term reifyBeliefOrGoal(Task t, NAR nar) {
+    static Term reifyBeliefOrGoal(Task t, NAR nar) {
+
         Term x = Image.imageNormalize(t.term());
 //        Concept c = nar.conceptualizeDynamic(tt.unneg());
 //        if (c == null)
@@ -208,11 +209,6 @@ abstract public class Inperience extends TaskLeakTransform {
 
         @Override
         protected Term reify(Task t) {
-            Term tt = nar.eval(t.term());
-
-            if (!tt.op().taskable)
-                return Bool.Null;
-
             return reifyBeliefOrGoal(t,  nar);
         }
 

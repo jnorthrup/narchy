@@ -96,8 +96,10 @@ public enum Image {
     }
 
 
+    /** tests the term and its subterms recursively for an occurrence of a normalizeable image */
     public static boolean imageNormalizable(Subterms x) {
-        return x.hasAll(Image.ImageBits) && !x.AND(Image::imageSubtermNormalizable);
+        return x.hasAll(Image.ImageBits)
+                 && !x.AND(Image::imageSubtermNormalizable);
     }
 
     private static boolean imageSubtermNormalizable(Term x) {

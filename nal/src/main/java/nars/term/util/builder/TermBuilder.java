@@ -5,8 +5,8 @@ import nars.NAL;
 import nars.Op;
 import nars.subterm.Subterms;
 import nars.term.Compound;
+import nars.term.Neg;
 import nars.term.Term;
-import nars.term.anon.Intrin;
 import nars.term.atom.Bool;
 import nars.term.compound.CachedCompound;
 import nars.term.compound.CachedUnitCompound;
@@ -51,45 +51,39 @@ public abstract class TermBuilder implements TermConstructor {
     }
 
     final Term theCompound(Op o, int dt, Term[] t, @Nullable DynBytes key) {
-        assert (!o.atomic) : o + " is atomic, yet given subterms: " + Arrays.toString(t);
 
+        int s = t.length;
+        if (o.maxSubs < s)
+                throw new TermException("subterm overflow", o, dt, t);
 
         boolean hasEllipsis = false;
-
         for (Term x : t) {
             if (x == Bool.Null)
                 return Bool.Null;
-            if (!hasEllipsis && (x instanceof Ellipsislike))
+            if (x instanceof Ellipsislike)
                 hasEllipsis = true;
         }
 
-        int s = t.length;
-        assert (o.maxSubs >= s) :
-                "subterm overflow: " + o + ' ' + Arrays.toString(t);
         assert (o.minSubs <= s || hasEllipsis) :
                 "subterm underflow: " + o + ' ' + Arrays.toString(t);
 
-        if (s == 1 && !Intrin.intrinsic(t[0])) {
-            Term x = t[0];
-            switch (o) {
-                case NEG:
-                    return NEG.the(x);
-                case CONJ:
-                    break; //skip below
-                default:
-                    return newCompound1(o, x);
-            }
+        if (o == NEG) {
+            assert(t.length == 1);
+            return neg(t[0]);
+        } else if (s == 1 && o!= CONJ /* HACK */ ) {
+            return newCompound1(o, t[0]);
+        } else {
+            return newCompoundN(o, dt, t, key);
         }
-
-        return newCompoundN(o, dt, t, key);
     }
 
     private Compound newCompoundN(Op o, int dt, Term[] t, @Nullable DynBytes key) {
         return newCompound(o, dt, subterms(o, t, dt, key));
     }
 
-    protected Compound newCompound1(Op o, Term x) {
-        return new CachedUnitCompound(o, x);
+
+    protected Term newCompound1(Op o, Term x) {
+       return new CachedUnitCompound(o, x);
     }
 
     protected Subterms subterms(Op o, Term[] t, int dt, @Nullable DynBytes key) {
@@ -284,4 +278,9 @@ public abstract class TermBuilder implements TermConstructor {
 
 
     }
+
+    public Term neg(Term x) {
+        return Neg.neg(x);
+    }
+
 }

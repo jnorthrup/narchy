@@ -156,7 +156,7 @@ public enum CauseMerge {
             default:
                 y = merge(causeCapacity,
                         Util.map(TaskRegion::why, short[][]::new,
-                                ArrayUtil.removeNulls(x, TaskRegion[]::new)));
+                                ArrayUtil.removeNulls(x)));
                 break;
         }
         return limit(y, causeCapacity);

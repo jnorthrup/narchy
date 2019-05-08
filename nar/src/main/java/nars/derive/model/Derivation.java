@@ -11,8 +11,8 @@ import nars.Task;
 import nars.attention.What;
 import nars.control.CauseMerge;
 import nars.derive.Deriver;
-import nars.derive.op.UnifyMatchFork;
 import nars.derive.op.Occurrify;
+import nars.derive.op.UnifyMatchFork;
 import nars.derive.premise.PremiseUnify;
 import nars.eval.Evaluation;
 import nars.op.Replace;
@@ -29,6 +29,7 @@ import nars.term.atom.Bool;
 import nars.term.compound.LazyCompoundBuilder;
 import nars.term.functor.AbstractInlineFunctor1;
 import nars.term.util.TermTransformException;
+import nars.term.util.builder.HeapTermBuilder;
 import nars.term.util.builder.TermBuilder;
 import nars.term.util.transform.InstantFunctor;
 import nars.term.util.transform.TermTransform;
@@ -76,6 +77,17 @@ public class Derivation extends PreDerivation {
         @Override
         protected boolean evalInline() {
             return false;
+        }
+    };
+    final LazyCompoundBuilder directTermBuilder = new LazyCompoundBuilder(null) {
+        @Override
+        protected boolean evalInline() {
+            return false;
+        }
+
+        @Override
+        protected Term compound(Op op, int dt, Term[] subterms) {
+            return HeapTermBuilder.the.theCompound(op, dt, subterms);
         }
     };
 
@@ -247,7 +259,6 @@ public class Derivation extends PreDerivation {
 
     public DerivationTransform transform;
 
-
     /**
      * if using this, must setAt: nar, index, random, DerivationBudgeting
      */
@@ -263,18 +274,18 @@ public class Derivation extends PreDerivation {
 
             @Override
             protected final Term putCompound(Compound x) {
-                return transform(x);
+                return transform(x, directTermBuilder);
             }
 
             @Override
             protected final Term getCompound(Compound x) {
-                return transform(x);
+                return transform(x, termBuilder);
             }
 
-            private Term transform(Compound x) {
+            private Term transform(Compound x, LazyCompoundBuilder termBuilder) {
                 if (NAL.ANONIFY_TRANSFORM_LAZY) {
                     termBuilder.clear();
-                    return applyCompoundLazy(x, termBuilder, b, NAL.term.COMPOUND_VOLUME_MAX);
+                    return applyCompoundLazy(x, termBuilder, NAL.term.COMPOUND_VOLUME_MAX);
                 } else {
                     return super.putCompound(x);
                 }

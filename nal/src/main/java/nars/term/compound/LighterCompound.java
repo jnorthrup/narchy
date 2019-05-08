@@ -32,11 +32,6 @@ public class LighterCompound extends TermList implements AbstractLightCompound {
         this.op = op.id;
     }
 
-//    @Override
-//    public boolean isNormalized() {
-//        return super.isNormalized();
-//    }
-
     @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;

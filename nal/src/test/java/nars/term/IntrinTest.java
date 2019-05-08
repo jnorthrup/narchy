@@ -25,7 +25,7 @@ import static nars.Op.CONJ;
 import static nars.Op.PROD;
 import static org.junit.jupiter.api.Assertions.*;
 
-public class AnonTest {
+public class IntrinTest {
 
     private static Anon assertAnon(String expect, String test) {
         return assertAnon(expect, $$(test));
@@ -68,10 +68,10 @@ public class AnonTest {
             Subterms uni = b.subterms($.varDep(1));
             assertEquals(IntrinSubterms.class, uni.getClass());
         }
-        {
-            Term uniSub = b.compound(PROD, $.varDep(1));
-            assertEquals(IntrinSubterms.class, uniSub.subterms().getClass());
-        }
+//        {
+//            Term uniSub = b.compound(PROD, $.varDep(1));
+//            assertEquals(IntrinSubterms.class, uniSub.subterms().getClass());
+//        }
     }
 
     @Test

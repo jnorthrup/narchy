@@ -437,21 +437,18 @@ public interface Compound extends Term, IPair, Subterms {
     }
 
 
-    @Override
-    default boolean isNormalized() {
-        return subterms().isNormalized();
-    }
-
-    default int structureSub() {
-        return subterms().structure();
-    }
-
     /**
      * gets temporal relation value
      */
     @Override
     int dt();
 
+    @Override
+    boolean isNormalized();
+
+    default int structureSub() {
+        return Subterms.super.structure();
+    }
 
     /**
      * replaces the 'from' target with 'to', recursively
@@ -459,9 +456,10 @@ public interface Compound extends Term, IPair, Subterms {
     default Term replace(Term from, Term to) {
         if (this.equals(from))
             return to;
-        if (impossibleSubTerm(from))
+        else if (impossibleSubTerm(from))
             return this;
-        return MapSubst.replace(from, to).apply(this);
+        else
+            return MapSubst.replace(from, to).apply(this);
 
 //
 //        Subterms oldSubs = subterms();
@@ -722,9 +720,10 @@ public interface Compound extends Term, IPair, Subterms {
 
     }
 
+
     @Override
     default int structure() {
-        return Subterms.super.structure() | opBit();
+        return structureSub() | opBit();
     }
 
     default Term dt(int dt) {
