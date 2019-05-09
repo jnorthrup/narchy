@@ -5,6 +5,7 @@ import jcog.data.bit.MetalBitSet;
 import jcog.util.ArrayUtil;
 import nars.Op;
 import nars.term.Term;
+import nars.term.Terms;
 import nars.term.atom.Bool;
 import nars.term.util.builder.TermBuilder;
 import org.eclipse.collections.impl.set.mutable.UnifiedSet;
@@ -16,7 +17,7 @@ import java.util.TreeSet;
 
 import static nars.Op.BOOL;
 import static nars.Op.CONJ;
-import static nars.term.Terms.sorted;
+import static nars.term.Terms.commuted;
 import static nars.term.atom.Bool.*;
 import static nars.time.Tense.*;
 
@@ -58,7 +59,7 @@ public enum ConjCommutive {;
         }
 
         if (sort)
-            u = sorted(u);
+            u = Terms.commuted(u);
 
         if (u.length == 0)
             return True;
@@ -156,7 +157,7 @@ public enum ConjCommutive {;
                         if (!par.get(i))
                             flatten.add(u[i]);
                     }
-                    u = sorted(flatten);
+                    u = commuted(flatten);
                 } else {
                     //just True's, remove the array elements
                     u = ArrayUtil.removeAll(u, par);
@@ -413,7 +414,7 @@ public enum ConjCommutive {;
             case 2:
                 //special case: simple arity=2
                 if (!u[0].equals(u[1])) // && !unfoldableInneralXternalConj(u[0]) && !unfoldableInneralXternalConj(u[1])) {
-                    args = sorted(u);
+                    args = Terms.commuted(u);
                 else
                     args = new Term[]{u[0], u[0]}; //repeat
                 break;
@@ -427,7 +428,7 @@ public enum ConjCommutive {;
                     Term only = uux.first();
                     args = new Term[]{only, only}; //repeat
                 } else {
-                    args = sorted(uux);
+                    args = commuted(uux);
                 }
 
             }

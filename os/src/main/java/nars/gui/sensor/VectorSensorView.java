@@ -4,6 +4,7 @@ import jcog.TODO;
 import jcog.Util;
 import jcog.math.FloatRange;
 import jcog.math.FloatSupplier;
+import jcog.math.IntRange;
 import jcog.random.SplitMix64Random;
 import nars.NAL;
 import nars.NAR;
@@ -52,7 +53,7 @@ public class VectorSensorView extends BitmapMatrixView implements BitmapMatrixVi
     private long start, end;
 
     /** how much evidence to include in result */
-    static final int truthPrecision = 8;
+    public final IntRange truthPrecision = new IntRange(3, 1, 16);
 
     /** in durs */
     public final FloatRange timeShift = new FloatRange(0, -64, +64);
@@ -75,6 +76,7 @@ public class VectorSensorView extends BitmapMatrixView implements BitmapMatrixVi
     private final TaskConcept[][] concept;
 
     private Answer answer = null;
+    transient private int tries;
 
     public VectorSensorView(Bitmap2DSensor sensor, Game a) {
         this(sensor, a.what());
@@ -221,10 +223,12 @@ public class VectorSensorView extends BitmapMatrixView implements BitmapMatrixVi
             this.start = Math.round(now - windowRadius);
             this.end = Math.round(now + windowRadius);
 
+            tries = (int) Math.ceil(truthPrecision.intValue() * NAL.ANSWER_COMPLETENESS);
 
-            if (answer == null)
+            if (answer == null) {
                 this.answer = Answer
-                        .relevant(true, truthPrecision, start, end, null, null, nar);
+                        .relevant(true, tries, start, end, null, null, nar);
+            }
 
             this.answer.time(start, end).dur(Math.round(baseDur * truthDur.floatValue()));
         }
@@ -243,16 +247,14 @@ public class VectorSensorView extends BitmapMatrixView implements BitmapMatrixVi
     @Override
     public int color(int x, int y) {
 
-
         TaskConcept s = concept(x,y);
         if (s == null)
             return 0;
 
-        float R = 0, G = 0 , B = 0;
+        float R, G , B;
         float bf = 0;
 
         Answer a = this.answer;
-        int tries = (int) Math.ceil(truthPrecision * NAL.ANSWER_COMPLETENESS);
         if (beliefs.get()) {
             Truth b = a!=null ? a.clear(tries).match(s.beliefs()).truth() : null;
             bf = b != null ? b.freq() : noise();

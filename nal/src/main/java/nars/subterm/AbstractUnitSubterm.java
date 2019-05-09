@@ -111,6 +111,11 @@ abstract class AbstractUnitSubterm implements Subterms {
     }
 
     @Override
+    public int hashCodeSubterms() {
+        return Subterms.hash(sub());
+    }
+
+    @Override
     public int structure() {
         return sub().structure();
     }

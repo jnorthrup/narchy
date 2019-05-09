@@ -64,7 +64,7 @@ public class Factorize {
         if (xo != CONJ || !Tense.dtSpecial(x.dt()))
             return x; //unchanged
 
-        Term[] y = factorize.apply(Terms.sorted(x.subterms()));
+        Term[] y = factorize.apply(x.subterms().commuted());
         if (y.length == 0)
             return x; //unchanged
 
@@ -217,7 +217,7 @@ public class Factorize {
                 t.add(x[i]);
         t.add(rr.getOne() /* shadow */);
         t.add($.func(Member.member, f, $.sete(rr.getTwo().collect(ObjectBytePair::getOne))));
-        return Terms.sorted(t);
+        return Terms.commuted(t);
     }
 
     public static Term applyAndNormalize(Term x) {

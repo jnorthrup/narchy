@@ -42,7 +42,7 @@ public enum Terms {
     /**
      * sort and deduplicates the elements; returns new array if modifications to order or deduplication are necessary
      */
-    public static Term[] sorted(Term... x) {
+    public static Term[] commuted(Term... x) {
         int len = x.length;
         switch (len) {
             case 0:
@@ -77,7 +77,7 @@ public enum Terms {
         Term a = t[0], b = t[1], c = t[2];
         int ab = a.compareTo(b);
         if (ab == 0) {
-            return sorted(a, c); //a=b, so just combine a and c (recurse)
+            return commuted(a, c); //a=b, so just combine a and c (recurse)
         } else if (ab > 0) {
             Term x = a;
             a = b;
@@ -268,10 +268,10 @@ public enum Terms {
     /**
      * a Set is already duplicate free, so just sort it
      */
-    public static Term[] sorted(Collection<Term> s) {
+    public static Term[] commuted(Collection<Term> s) {
         Term[] x = s.toArray(Op.EmptyTermArray);
         if ((x.length >= 2) && (!(s instanceof SortedSet)))
-            return sorted(x);
+            return commuted(x);
         else
             return x;
     }
@@ -306,12 +306,6 @@ public enum Terms {
                 new BytesHashProvider<>(IO::termToBytes));
     }
 
-    //
-//    public static boolean commonStructureExcept(Termlike x, Termlike y, int maskedBits) {
-//        int xStruct = x.structure() & ~(maskedBits);
-//        int yStruct = y.structure() & ~(maskedBits);
-//        return (xStruct & yStruct) != 0;
-//    }
 
     /**
      * non-symmetric use only
@@ -358,14 +352,6 @@ public enum Terms {
                 !container.isCommutative();
     }
 
-    /**
-     * provides canonically sorted subterms of subterms
-     */
-    public static Subterms sorted(Subterms x) {
-        if (x.isSorted())
-            return x;
-        return new TermList(Terms.sorted(x.arrayShared()));
-    }
 
     public static boolean isSorted(Term[] s) {
         if (s.length < 2) return true;
@@ -436,32 +422,7 @@ public enum Terms {
         }
     }
 
-    /**
-     * returns null if not found, and Null if no subterms remain after removal
-     */
-    @Nullable
-    public static Term withoutOne(Term container, Predicate<Term> filter, Random rand) {
 
-
-        Subterms cs = container.subterms();
-
-        int i = cs.indexOf(filter, rand);
-        if (i == -1)
-            return Null;
-
-
-        switch (cs.subs()) {
-            case 1:
-                return Null;
-            case 2:
-
-                Term remain = cs.sub(1 - i);
-                Op o = container.op();
-                return o.set ? o.the(remain) : remain;
-            default:
-                return container.op().the(container.dt(), cs.subsExcluding(i));
-        }
-    }
 
     @Nullable
     public static Term[] withoutOne(Subterms cs, Predicate<Term> filter, Random rand) {
@@ -469,7 +430,6 @@ public enum Terms {
         int i = cs.indexOf(filter, rand);
         if (i == -1)
             return null;
-
 
         switch (cs.subs()) {
             case 1:

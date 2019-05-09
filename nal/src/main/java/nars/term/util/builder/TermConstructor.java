@@ -11,7 +11,6 @@ import static nars.time.Tense.DTERNAL;
 /** lowest-level (raw, possibly un-checked) compound construction interface */
 @FunctionalInterface public interface TermConstructor {
 
-    Term compound(Op op, int dt, Term... subterms);
 
     default Subterms subterms(@Nullable Op inOp, Term... u) {
         return TermConstructor.theSubterms(true, u);
@@ -24,6 +23,8 @@ import static nars.time.Tense.DTERNAL;
     default /* final */ Term compound(Op o, Term... u) {
         return compound(o, DTERNAL, u);
     }
+
+    Term compound(Op op, int dt, Term... subterms);
 
     default Term compound(Op op, int dt, Subterms t) {
         return compound(op, dt, t.arrayShared());

@@ -225,6 +225,7 @@ class NAL3GoalTest {
                     .input("--(a-->g).")
                     .mustGoal(cycles, "(b-->g)", 1f, 0.81f);
         }
+
         @Test
         void testPredUnionConditionalDecomposeGoalPosNeg() {
             test

@@ -62,7 +62,7 @@ public class DepIndepVarIntroduction extends VarIntroduction {
 
     @Override
     protected Term[] select(Subterms input) {
-        return select.apply(Terms.sorted(input));
+        return select.apply(input.commuted());
     }
 
     private static final int MEMOIZE_CAPACITY = 32 * 1024;

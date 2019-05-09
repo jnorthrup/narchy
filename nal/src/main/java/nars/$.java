@@ -701,13 +701,13 @@ public enum $ {
     }
 
     public static Term sFast(Collection<Term> x) {
-        return sFast(false, Terms.sorted(x));
+        return sFast(false, Terms.commuted(x));
     }
 
     public static Term sFast(boolean sort, Term[] x) {
         if (x.length == 0) throw new UnsupportedOperationException();
         if (sort && x.length > 1)
-            x = Terms.sorted(x);
+            x = Terms.commuted(x);
         return new LightCompound(Op.SETe, x);
         //return new LighterCompound(Op.SETe, x);
     }

@@ -1,7 +1,6 @@
 package nars.term.compound;
 
 import jcog.TODO;
-import nars.subterm.Subterms;
 import nars.subterm.util.TermMetadata;
 import nars.term.Compound;
 import nars.term.Term;
@@ -20,10 +19,7 @@ public interface SameSubtermsCompound extends Compound {
     }
 
 
-    @Override
-    default int hashCodeSubterms() {
-        return Subterms.hash((Subterms)this);
-    }
+
 
     @Override
     default boolean recurseTerms(Predicate<Term> inSuperCompound, Predicate<Term> whileTrue, @Nullable Compound superterm) {

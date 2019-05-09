@@ -8,6 +8,7 @@ import nars.subterm.Subterms;
 import nars.term.Compound;
 import nars.term.Neg;
 import nars.term.Term;
+import nars.term.Terms;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
@@ -33,7 +34,6 @@ import java.util.Map;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-import static nars.term.Terms.sorted;
 import static nars.term.atom.Bool.True;
 import static nars.time.Tense.DTERNAL;
 import static nars.time.Tense.XTERNAL;
@@ -680,7 +680,10 @@ public enum Op {
     }
 
     public final Term[] sortedIfNecessary(int dt, Term[] u) {
-        return commutative && u.length > 1 && Conj.concurrentInternal(dt) ? sorted(u) : u;
+        return commutative && u.length > 1 && Conj.concurrentInternal(dt) ? Terms.commuted(u) : u;
+    }
+    public final Subterms sortedIfNecessary(int dt, Subterms u) {
+        return commutative && Conj.concurrentInternal(dt) && u.subs() > 1 ? u.commuted() : u;
     }
 
     public final Term the(/*@NotNull*/ Collection<Term> sub) {

@@ -45,7 +45,7 @@ import java.util.function.Predicate;
 
 import static java.lang.System.arraycopy;
 import static nars.Op.*;
-import static nars.term.Terms.sorted;
+import static nars.term.Terms.commuted;
 import static nars.term.atom.Bool.*;
 import static nars.time.Tense.*;
 import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
@@ -269,7 +269,7 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
                 }
             }
         }
-        return Terms.sorted(u);
+        return Terms.commuted(u);
     }
 
     public static Term chooseEvent(Term conj, Random random, boolean decomposeDternal, boolean decomposeParallel, LongObjectPredicate<Term> valid) {
@@ -1104,13 +1104,13 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
         Conj aa = new Conj();
         if (eternal) aa.addAuto(a);
         else aa.add(0, a);
-        aa.factor();
+        //aa.factor();
         //aa.distribute();
 
         Conj bb = newConjSharingTermMap(aa);
         if (eternal) bb.addAuto(b);
         else bb.add(0, b);
-        bb.factor();
+        //bb.factor();
         //bb.distribute();
 
         Conj cc = intersect(aa, bb);
@@ -1118,12 +1118,13 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
             //perfectly disjoint; OK
             return null;
         } else {
-            Term A = aa.term();
-            if (a == Null)
-                return Null;
-            Term B = bb.term();
+            Term B = bb.term(builder);
             if (b == Null)
                 return Null;
+            Term A = aa.term(builder);
+            if (a == Null)
+                return Null;
+
             long as = aa.shiftOrZero(), bs = bb.shiftOrZero();
             long abShift = Math.min(as, bs);
             Conj dd = newConjSharingTermMap(cc);
@@ -1366,7 +1367,7 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
         if (xy == True) {
             return x; //x absorbs y
         } else if (xy == null) {
-            return B.theCompound(CONJ, DTERNAL /*eternalOrParallel ? DTERNAL : 0*/, sorted(x, y));
+            return B.theCompound(CONJ, DTERNAL /*eternalOrParallel ? DTERNAL : 0*/, Terms.commuted(x, y));
         } else {
             //failure or some particular merge result
             return xy;

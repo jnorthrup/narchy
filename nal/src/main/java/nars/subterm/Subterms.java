@@ -11,10 +11,8 @@ import jcog.util.ArrayUtil;
 import nars.NAL;
 import nars.Op;
 import nars.subterm.util.TermMetadata;
-import nars.term.Compound;
-import nars.term.Term;
-import nars.term.Termlike;
 import nars.term.Variable;
+import nars.term.*;
 import nars.term.atom.Bool;
 import nars.term.util.transform.MapSubst;
 import nars.term.util.transform.TermTransform;
@@ -258,6 +256,14 @@ public interface Subterms extends Termlike, Iterable<Term> {
     }
 
 
+    /** sorted and deduplicated */
+    default Subterms commuted() {
+        if (isSorted())
+            return this;
+        else {
+            return new TermList(Terms.commuted(arrayShared()));
+        }
+    }
 
     default boolean isSorted() {
         int s = subs();

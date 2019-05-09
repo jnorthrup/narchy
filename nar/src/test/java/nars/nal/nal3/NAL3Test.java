@@ -265,7 +265,7 @@ public class NAL3Test extends NALTest {
                 .termVolMax(8)
                 .believe("--(x-->(&,RealNumber,ComplexNumber,Letter))")
                 .believe("(x-->RealNumber)")
-                .mustBelieve(cycles, "(x-->(ComplexNumber&Letter))", 0f, 0.81f)
+                .mustBelieve(cycles, "(x-->(ComplexNumber&&Letter))", 0f, 0.81f)
                 .mustNotOutput(cycles, "(x-->((&,RealNumber,ComplexNumber,Letter)|RealNumber))", BELIEF, ETERNAL)
         ;
 

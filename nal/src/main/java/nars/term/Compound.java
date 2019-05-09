@@ -167,9 +167,6 @@ public interface Compound extends Term, IPair, Subterms {
 
     boolean subtermsContainsRecursively(Term x, boolean root, Predicate<Term> inSubtermsOf);
 
-    @Override
-    int hashCodeSubterms();
-
     /**
      * deprecated; TODO move to SeparateSubtermsCompound interface and allow Compounds which do not have to generate this.  this sums up many of xjrn's suggestions
      */
