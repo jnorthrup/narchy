@@ -1,7 +1,6 @@
 package nars.term.var;
 
 import nars.Op;
-import nars.term.Term;
 
 import static nars.Op.VAR_QUERY;
 
@@ -10,12 +9,9 @@ import static nars.Op.VAR_QUERY;
  */
 public final class VarQuery extends NormalizedVariable {
 
-    public VarQuery(byte id) {
+    VarQuery(byte id) {
         super(VAR_QUERY, id);
     }
-
-    private final static int RANK = Term.opX(VAR_QUERY, 0);
-    @Override public int opX() { return RANK;    }
 
     @Override
     public final Op op() {

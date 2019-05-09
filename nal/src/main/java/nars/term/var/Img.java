@@ -12,14 +12,12 @@ public final class Img extends Intrin {
 
     private final String str;
     private final char symChar;
-    private final int rank;
     private final byte[] bytes;
 
     public Img(byte sym) {
         super(Op.IMG, sym);
         this.str = String.valueOf((char) sym);
         this.symChar = (char) sym;
-        this.rank = Term.opX(Op.IMG, sym);
         this.bytes = new byte[] { Op.IMG.id, sym };
     }
 
@@ -34,10 +32,6 @@ public final class Img extends Intrin {
         return Op.IMG;
     }
 
-    @Override
-    public int opX() {
-        return rank;
-    }
 
     @Override
     public boolean unify(Term y, Unify u) {

@@ -1,7 +1,6 @@
 package nars.term.var;
 
 import nars.Op;
-import nars.term.Term;
 
 import static nars.Op.VAR_DEP;
 
@@ -10,13 +9,9 @@ import static nars.Op.VAR_DEP;
  */
 public final class VarDep extends NormalizedVariable {
 
-    public VarDep(byte id) {
+    VarDep(byte id) {
         super(VAR_DEP, id);
     }
-
-    private final static int RANK = Term.opX(VAR_DEP, (short)0);
-    @Override public int opX() { return RANK;    }
-
 
     @Override
     public Op op() {

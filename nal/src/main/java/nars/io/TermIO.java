@@ -1,7 +1,6 @@
 package nars.io;
 
 import com.google.common.io.ByteArrayDataOutput;
-import jcog.TODO;
 import jcog.data.byt.util.IntCoding;
 import nars.$;
 import nars.NAL;
@@ -61,6 +60,7 @@ public interface TermIO {
 
     class DefaultTermIO implements TermIO {
 
+
         /** lower 5 bits (bits 0..4) = base op */
         static final byte OP_MASK = (0b00011111);
         /** upper control flags for the op byte */
@@ -110,7 +110,7 @@ public interface TermIO {
                         case 1:
                             return Anom.the(in.readByte());
                         default:
-                            throw new TODO();
+                            throw new IOException("unknown ATOM subtype: " + subType(opByte));
                     }
                 case INT:
                     return Int.the(IntCoding.readZigZagInt(in));

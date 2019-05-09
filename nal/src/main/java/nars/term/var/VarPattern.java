@@ -10,13 +10,9 @@ import static nars.Op.VAR_PATTERN;
  */
 public class VarPattern extends NormalizedVariable {
 
-    public VarPattern(byte id) {
+    VarPattern(byte id) {
         super(VAR_PATTERN, id);
     }
-
-    private final static int RANK = Term.opX(VAR_PATTERN, 0);
-    @Override public int opX() { return RANK;    }
-
 
     @Override
     public final Op op() {

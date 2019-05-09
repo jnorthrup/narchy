@@ -1,6 +1,8 @@
 package nars.term.util.conj;
 
 import jcog.WTF;
+import nars.$;
+import nars.term.Term;
 import org.junit.jupiter.api.Test;
 
 import static nars.time.Tense.ETERNAL;
@@ -9,19 +11,21 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class ConjBuilderTest {
+
+
     @Test
     void testSimpleEternalsNeg() {
         ConjBuilder c = new Conj();
-        c.add(ETERNAL, ConjTest.x);
-        c.add(ETERNAL, ConjTest.y.neg());
+        c.add(ETERNAL, ConjTest2.x);
+        c.add(ETERNAL, ConjTest2.y.neg());
         assertEquals("((--,y)&&x)", c.term().toString());
     }
 
     @Test
     void testSimpleEvents() {
         for (ConjBuilder c : new ConjBuilder[]{new Conj(), new ConjLazy()}) {
-            c.add(1, ConjTest.x);
-            c.add(2, ConjTest.y);
+            c.add(1, ConjTest2.x);
+            c.add(2, ConjTest2.y);
             assertEquals("(x &&+1 y)", c.term().toString());
             assertEquals(1, c.shift());
             assertEquals(1, c.shiftOrZero());
@@ -34,13 +38,13 @@ class ConjBuilderTest {
     @Test
     void testEventShiftEternal() {
         for (ConjBuilder c : new ConjBuilder[]{new Conj(), new ConjLazy()}) {
-            c.add(ETERNAL, ConjTest.x);
-            c.add(1, ConjTest.y);
+            c.add(ETERNAL, ConjTest2.x);
+            c.add(1, ConjTest2.y);
             assertEquals(1, c.shift());
         }
         for (ConjBuilder c : new ConjBuilder[]{new Conj(), new ConjLazy()}) {
-            c.add(ETERNAL, ConjTest.x);
-            c.add(ETERNAL, ConjTest.y);
+            c.add(ETERNAL, ConjTest2.x);
+            c.add(ETERNAL, ConjTest2.y);
             assertEquals(ETERNAL, c.shift());
             assertEquals(0, c.shiftOrZero());
         }
@@ -49,7 +53,7 @@ class ConjBuilderTest {
     @Test
     void testConjBuilder_DontAccept_TIMELESS() {
         for (ConjBuilder c : new ConjBuilder[]{new Conj(), new ConjLazy()}) {
-            assertThrows(WTF.class, ()->c.add(TIMELESS, ConjTest.x), ()->c.getClass().getSimpleName());
+            assertThrows(WTF.class, ()->c.add(TIMELESS, ConjTest2.x), ()->c.getClass().getSimpleName());
         }
     }
 }

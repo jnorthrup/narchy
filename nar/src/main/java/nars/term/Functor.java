@@ -58,11 +58,6 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, B
         return this;
     }
 
-    @Override
-    public final int opX() {
-        return term.opX();
-    }
-
     @Deprecated public static Subterms args(Term x) {
         return args((Compound)x);
     }

@@ -123,11 +123,7 @@ public class IO {
 
 
     public static byte opAndSubType(Op op, byte subtype) {
-        return opAndSubType(op.id, subtype);
-    }
-
-    private static byte opAndSubType(byte op, byte subtype) {
-        return (byte) (op | (subtype << 5));
+        return (byte) (op.id | (subtype << 5));
     }
 
     static byte subType(byte opByte) {

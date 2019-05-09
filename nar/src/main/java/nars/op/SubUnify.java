@@ -15,8 +15,7 @@ import static nars.term.atom.Bool.Null;
  */
 public class SubUnify extends Unify {
 
-    @Nullable
-    protected Term transformed;
+    @Nullable Term transformed;
 
 
     @Nullable
@@ -27,7 +26,7 @@ public class SubUnify extends Unify {
         this(rng, Op.Variable);
     }
 
-    public SubUnify(Random rng, int varBits) {
+    SubUnify(Random rng, int varBits) {
         super(varBits, rng, NAL.unify.UNIFICATION_STACK_CAPACITY);
     }
 

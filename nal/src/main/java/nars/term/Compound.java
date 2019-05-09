@@ -187,20 +187,6 @@ public interface Compound extends Term, IPair, Subterms {
     }
 
     @Override
-    default int opX() {
-        //return Term.opX(op(), (short) volume());
-        //return Term.opX(op(), (short) subs());
-
-        //upper 11 bits: volume
-        //next 5: op
-        //lower 16: ? subs ? structure hash
-        short volume = (short) volume();
-        byte op = op().id;
-        byte subs = (byte) subs();
-        return opX(volume, op, subs);
-    }
-
-    @Override
     default Term anon() {
         return new Anon(/* TODO size estimate */).put(this);
     }

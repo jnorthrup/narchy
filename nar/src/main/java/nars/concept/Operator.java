@@ -54,11 +54,6 @@ public final class Operator extends NodeConcept implements PermanentConcept, Ato
     }
 
     @Override
-    public int opX() {
-        return Atom.AtomString;
-    }
-
-    @Override
     public byte[] bytes() {
         return ((Atomic) term).bytes();
     }

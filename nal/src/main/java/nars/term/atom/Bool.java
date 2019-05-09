@@ -22,13 +22,6 @@ abstract public class Bool extends AbstractAtomic implements The {
      */
     public static final Bool Null = new Bool(String.valueOf(Op.NullSym), ((byte)-1) ) {
 
-        final int rankBoolNull = Term.opX(BOOL, (short) 0);
-
-        @Override
-        public final int opX() {
-            return rankBoolNull;
-        }
-
         @Override
         public Term neg() {
             return this;
@@ -49,12 +42,6 @@ abstract public class Bool extends AbstractAtomic implements The {
      */
     public static final Bool False = new Bool("false", (byte)0) {
 
-        final int rankBoolFalse = Term.opX(BOOL, (short) 1);
-
-        @Override
-        public final int opX() {
-            return rankBoolFalse;
-        }
 
         @Override
         public boolean equalsNeg(Term t) {
@@ -82,11 +69,6 @@ abstract public class Bool extends AbstractAtomic implements The {
     public static final Bool True = new Bool("true", (byte)1) {
 
         final int rankBoolTrue = Term.opX(BOOL, (short) 2);
-
-        @Override
-        public final int opX() {
-            return rankBoolTrue;
-        }
 
         @Override
         public Term neg() {

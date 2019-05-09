@@ -494,12 +494,6 @@ public interface Term extends Termlike, Termed, Comparable<Term> {
                 receiver);
     }
 
-    /**
-     * operator extended:
-     * operator << 8 | sub-operator type rank for determing compareTo ordering
-     */
-    int opX();
-
 
     default int compareTo(Term t) {
         if (this == t) return 0;

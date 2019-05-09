@@ -2,7 +2,6 @@ package nars.term.atom;
 
 import nars.Op;
 import nars.The;
-import nars.term.Term;
 
 import static nars.Op.*;
 
@@ -53,7 +52,6 @@ public class Atom extends AbstractAtomic implements The {
         return id;
     }
 
-    public final static int AtomString = Term.opX(ATOM, 1);
 
     public static boolean isValidAtomChar(char x) {
 
@@ -108,10 +106,6 @@ public class Atom extends AbstractAtomic implements The {
 
     public static int hashCode(int id, Op o) {
         return (id + o.id) * 31;
-    }
-
-    @Override public int opX() {
-        return AtomString;
     }
 
     @Override

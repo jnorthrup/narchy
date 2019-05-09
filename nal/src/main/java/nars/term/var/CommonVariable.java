@@ -146,11 +146,4 @@ public final class CommonVariable extends UnnormalizedVariable {
         //}
     }
 
-    @Override
-    public int opX() {
-        return Term.opX(op(), 1 /* different from normalized variables with a subOp of 0 */);
-    }
-
-
-
 }

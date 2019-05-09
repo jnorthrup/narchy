@@ -6,7 +6,6 @@ import jcog.data.byt.util.IntCoding;
 import nars.NAL;
 import nars.Op;
 import nars.The;
-import nars.io.IO;
 import nars.term.Term;
 
 import static nars.Op.INT;
@@ -29,10 +28,6 @@ public class Int implements Intlike, The {
     public static final Term ONE = Int.the(1);
     public static final Term TWO = Int.the(2);
     public static final Term NEG_ONE = Int.the(-1);
-    private final static int INT_ATOM = Term.opX(INT, 0);
-//    private final static int INT_RANGE = Term.opX(INT, 1);
-
-
 
     /*@Stable*/
     private final byte[] bytesCached;
@@ -47,7 +42,7 @@ public class Int implements Intlike, The {
 
         int intLen = IntCoding.variableByteLengthOfZigZagInt(i); //1 to 4 bytes
         this.bytesCached = new byte[1 + intLen];
-        bytesCached[0] = IO.opAndSubType(op(), (byte) (((opX() & 0xffff) & 0b111) >> 5));
+        bytesCached[0] = Op.INT.id;
         IntCoding.encodeZigZagVariableInt(i, bytesCached, 1);
     }
 
@@ -80,18 +75,14 @@ public class Int implements Intlike, The {
     }
 
     @Override
-    public int opX() {
-        return INT_ATOM;
-    }
-
-    @Override
     public /**/ Op op() {
         return INT;
     }
 
     @Override
-    public int hashCode() {
-        return Atom.hashCode(i, INT);
+    public final int hashCode() {
+        //return Atom.hashCode(i, INT);
+        return i;
     }
 
     @Override

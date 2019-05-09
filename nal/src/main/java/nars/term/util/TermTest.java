@@ -77,7 +77,6 @@ public enum TermTest { ;
 
         assertEquals(x.op(), y.op());
         assertEquals(x.opBit(), y.opBit());
-        assertEquals(x.opX(), y.opX());
         assertEquals(x.subs(), y.subs());
 
         Subterms xs = x.subterms();
@@ -251,5 +250,21 @@ public enum TermTest { ;
                 assertTrue(true);
             }
         }
+    }
+
+    @Deprecated public static void testParse(String expected, String input) {
+        Termed t = null;
+        try {
+            t = $.$(input);
+        } catch (Narsese.NarseseException e) {
+            fail(e);
+        }
+        if (expected == null)
+            expected = input;
+        assertEquals(expected, t.toString());
+    }
+
+    public static void testParse(String s) {
+        testParse(null, s);
     }
 }

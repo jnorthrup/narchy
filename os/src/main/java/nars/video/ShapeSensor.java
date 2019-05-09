@@ -165,9 +165,7 @@ public class ShapeSensor extends NARPart {
         filteredRGB = filteredTex.set(filteredShown, filteredRGB);
 
 
-        List<Contour> contours = BinaryImageOps.contour(filtered,
-                ConnectRule.FOUR,
-                null);
+        List<Contour> contours = BinaryImageOps.contour(filtered, ConnectRule.FOUR, null);
         Grid g = new Grid(id, 12, 12, w, h) {
 
 

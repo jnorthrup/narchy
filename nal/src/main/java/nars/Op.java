@@ -261,16 +261,7 @@ public enum Op {
 
     /** anonymous depvar */
     @Skill("Prolog") public static final Atomic VarAuto =
-            new UnnormalizedVariable(Op.VAR_DEP, String.valueOf(VarAutoSym)) {
-
-                final int RANK = Term.opX(VAR_PATTERN, (short) 20 /* different from normalized variables with a subOp of 0 */);
-
-                @Override
-                public int opX() {
-                    return RANK;
-                }
-            };
-
+        new UnnormalizedVariable(Op.VAR_DEP, String.valueOf(VarAutoSym));
 
     public static final char NullSym = '☢';
 

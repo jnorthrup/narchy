@@ -29,11 +29,6 @@ public final class Anom extends Intrin {
     }
 
     @Override
-    public int opX() {
-        return ANOM_OPX;
-    }
-
-    @Override
     public /**/ Op op() {
         return ATOM;
     }

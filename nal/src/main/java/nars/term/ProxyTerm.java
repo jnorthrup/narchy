@@ -49,11 +49,6 @@ public class ProxyTerm implements SameSubtermsCompound {
     }
 
     @Override
-    public int opX() {
-        return ref.opX();
-    }
-
-    @Override
     public Term unneg() {
         return ifDifferentElseThis(ref.unneg());
     }
