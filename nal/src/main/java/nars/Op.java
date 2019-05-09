@@ -34,6 +34,7 @@ import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import static nars.term.Terms.sorted;
+import static nars.term.atom.Bool.True;
 import static nars.time.Tense.DTERNAL;
 import static nars.time.Tense.XTERNAL;
 import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
@@ -326,7 +327,7 @@ public enum Op {
     /**
      * True wrapped in a subterm as the only element
      */
-    public static final Subterms TrueSubterm = HeapTermBuilder.the.subterms(Bool.True);
+    public static final Subterms TrueSubterm = HeapTermBuilder.the.subterms(True);
 
     /**
      * False wrapped in a subterm as the only element
@@ -579,9 +580,16 @@ public enum Op {
 
     /** build disjunction (consisting of negated conjunction of the negated subterms, ie. de morgan's boolean law ) */
     public static Term DISJ(TermBuilder b, Term... x) {
-        Term[] xx = x.clone();
-        $.neg(xx);
-        return CONJ.the(b, xx).neg();
+        switch (x.length) {
+            case 0:
+                return True;
+            case 1:
+                return x[0];
+            default:
+                Term[] xx = x.clone();
+                $.neg(xx);
+                return CONJ.the(b, xx).neg();
+        }
     }
 
     public static Term DISJ(Term... x) {

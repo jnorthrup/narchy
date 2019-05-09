@@ -222,7 +222,7 @@ public class LazyCompoundBuilder {
         Op op = Op.the(ctl);
 
         if (op.atomic)  //alignment error or something
-            throw new TermException(LazyCompoundBuilder.class + ": atomic expected where compound begins construction");
+            throw new TermException(LazyCompoundBuilder.class + ": atomic found where compound op expected: " + op.atomic);
 
         int dt = op.temporal ? dt(bytes, range) : DTERNAL;
 

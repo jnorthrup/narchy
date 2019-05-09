@@ -121,7 +121,7 @@ public class NARS {
             if (threadSafe)
                 index =
                         //() -> new CaffeineIndex(64 * 1024)
-                        () -> new SimpleMemory(64 * 1024, true)
+                        () -> new SimpleMemory(8 * 1024, true)
             ;
 
             if (nal > 0)
@@ -139,8 +139,8 @@ public class NARS {
 
                 n.beliefPriDefault.amp(0.1f);
                 n.goalPriDefault.amp(0.1f);
-                n.questionPriDefault.amp(0.02f);
-                n.questPriDefault.amp(0.02f);
+                n.questionPriDefault.amp(0.03f);
+                n.questPriDefault.amp(0.03f);
 
             });
         }

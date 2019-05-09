@@ -13,6 +13,7 @@ import nars.term.Compound;
 import nars.term.Term;
 import nars.term.Terms;
 import nars.term.atom.Bool;
+import nars.term.util.builder.HeapTermBuilder;
 import nars.term.util.builder.TermBuilder;
 import nars.term.util.map.ByteAnonMap;
 import nars.time.Tense;
@@ -993,17 +994,17 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
      * merge an incoming target with a disjunctive sub-expression (occurring at same event time) reductions applied:
      * ...
      */
-    private static Term disjunctify(Term existing, Term incoming, boolean eternal) {
+    private static Term disjunctify(TermBuilder B, Term existing, Term incoming, boolean eternal) {
         Term existingUnneg = existing.unneg();
         Term incomingUnneg = incoming.unneg();
         if (incoming.op() == NEG && incomingUnneg.op() == CONJ) {
-            return disjunctionVsDisjunction(existingUnneg, incomingUnneg, eternal);
+            return disjunctionVsDisjunction(B, existingUnneg, incomingUnneg, eternal);
         } else {
-            return disjunctionVsNonDisjunction(existingUnneg, incoming, eternal);
+            return disjunctionVsNonDisjunction(B, existingUnneg, incoming, eternal);
         }
     }
 
-    private static Term disjunctionVsNonDisjunction(Term conjUnneg, Term incoming, boolean eternal) {
+    private static Term disjunctionVsNonDisjunction(TermBuilder B, Term conjUnneg, Term incoming, boolean eternal) {
 //        if (incoming.op()==CONJ)
 //            throw new WTF(incoming + " should have been decomposed further");
 
@@ -1045,7 +1046,7 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
                 if (newConj.equals(incoming)) //quick test
                     return False;
 
-                return terms.conj(dt, newConj.neg(), incoming);
+                return B.conj(dt, newConj.neg(), incoming);
 
             } else {
                 ConjBuilder c = new Conj();
@@ -1073,7 +1074,7 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
                         return null; //compatible
                     }
                 }
-                Term newConjUnneg = c.term();
+                Term newConjUnneg = c.term(B);
                 long shift = c.shiftOrZero();
 
                 Term newConj = newConjUnneg.neg();
@@ -1084,10 +1085,10 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
                     ConjLazy d = new ConjLazy(2);
                     d.add((long) dt, incoming);
                     d.add(shift, newConj);
-                    return d.term();
+                    return d.term(B);
 
                 } else {
-                    return conjoin(terms, incoming, newConj, eternal);
+                    return conjoin(B, incoming, newConj, eternal);
                 }
 
             }
@@ -1099,7 +1100,7 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
 
     }
 
-    private static Term disjunctionVsDisjunction(Term a, Term b, boolean eternal) {
+    private static Term disjunctionVsDisjunction(TermBuilder builder, Term a, Term b, boolean eternal) {
         Conj aa = new Conj();
         if (eternal) aa.addAuto(a);
         else aa.add(0, a);
@@ -1125,14 +1126,14 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
                 return Null;
             long as = aa.shiftOrZero(), bs = bb.shiftOrZero();
             long abShift = Math.min(as, bs);
-            ConjBuilder dd = newConjSharingTermMap(cc);
+            Conj dd = newConjSharingTermMap(cc);
             if (eternal && as == 0 && bs == 0) {
                 as = bs = ETERNAL;
             }
             if (dd.add(as, A.neg()))
                 dd.add(bs, B.neg());
 
-            Term D = dd.term();
+            Term D = dd.term(builder);
             if (D == Null)
                 return Null;
 
@@ -1144,7 +1145,7 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
                 if (eternal && as == ETERNAL && bs == ETERNAL)
                     abShift = ETERNAL;
                 cc.add(abShift, D.neg());
-                return cc.term().neg();
+                return cc.term(builder).neg();
             }
         }
     }
@@ -1191,7 +1192,7 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
         return (!modified[0] && c.event.isEmpty()) ? null : c;
     }
 
-    private static Term conjoinify(Term existing /* conj */, Term incoming, boolean eternal, boolean create) {
+    private static Term conjoinify(TermBuilder B, Term existing /* conj */, Term incoming, boolean eternal, boolean create) {
 
         int existingDT = existing.dt();
         int incomingDT = incoming.dt();
@@ -1216,11 +1217,11 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
 
                 if (incomingDT == outerDT || existingDT == outerDT) {
                     //at least one of the terms has a DT matching the outer
-                    return terms.conj(outerDT, existing, incoming);
+                    return B.conj(outerDT, existing, incoming);
                 } else if (incomingDT == existing.dt()) {
                     if (outerDT == 0 && ((incomingDT == 0) || (incomingDT == DTERNAL))) {
                         //promote a parallel of two eternals or two parallels to one parallel
-                        return terms.conj(incomingDT, existing, incoming);
+                        return B.conj(incomingDT, existing, incoming);
                     }
                 }
             }
@@ -1249,7 +1250,7 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
         ConjBuilder c = new ConjLazy();
 
         boolean ok = existing.eventsWhile((whn, wht) -> {
-            Term ww = terms.conj(outerDT, wht, incoming);
+            Term ww = B.conj(outerDT, wht, incoming);
             if (ww == Null)
                 throw new WTF();
             else if (ww == False) {
@@ -1268,7 +1269,7 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
         if (!ok)
             return False;
 
-        Term d = c.term();
+        Term d = c.term(B);
         if (create)
             return d;
         else {
@@ -1290,7 +1291,7 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
      * @param create            - whether this is being used for testing potential construction, or to actually create the conjunction.
      *                          can be used as a hint whether to proceed with full conjunction construction or not.
      */
-    private static Term merge(Term existing, Term incoming, boolean eternalOrParallel, boolean create) {
+    @Nullable private static Term merge(TermBuilder B, Term existing, Term incoming, boolean eternalOrParallel, boolean create) {
 
 
         boolean incomingPolarity = incoming.op() != NEG;
@@ -1333,8 +1334,8 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
         Term x = base == existing ? incoming : existing;
 
         Term result = conjPolarity ?
-                conjoinify(base, x, eternalOrParallel, create) :
-                disjunctify(base, x, eternalOrParallel);
+                conjoinify(B, base, x, eternalOrParallel, create) :
+                disjunctify(B, base, x, eternalOrParallel);
 
         if (result != null && result.equals(existing))
             result = existing; //same value
@@ -1359,7 +1360,7 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
         if (x.equalsNeg(y))
             return False; //contradiction
 
-        Term xy = merge(x, y, eternalOrParallel, true);
+        Term xy = merge(B, x, y, eternalOrParallel, true);
 
         //decode result target
         if (xy == True) {
@@ -1870,7 +1871,7 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
                     return true;
                 } else {
 
-                    Term result = merge(unindex(bi), x, at == ETERNAL, false);
+                    Term result = merge(HeapTermBuilder.the, unindex(bi), x, at == ETERNAL, false);
 
                     if (result != null) {
                         if (result == True)
@@ -2276,20 +2277,22 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
 //                }
 
 
-                Term tu = temporal.unneg();
-                Term eu = eternal.unneg();
-                int tdt = tu.dt(), edt = eu.dt();
+//                Term tu = temporal.unneg();
+//                Term eu = eternal.unneg();
+//                int tdt = tu.dt(), edt = eu.dt();
 
 
-                //if ((temporal.unneg().op() == CONJ && (tdt == DTERNAL || tdt == 0)) || (eternal.op() == CONJ && (edt == DTERNAL || edt == 0)) || temporal.containsRecursively(eternal.unneg()))
-                if ((tu.op()==CONJ && (eu.op()==CONJ) && Term.commonStructure(eu, tu))) {
-
-
-                    Predicate<Term> tur = z -> tu.containsRecursively(z.unneg());
-                    if ((eu.subterms().OR(tur))) {
+//                //if ((temporal.unneg().op() == CONJ && (tdt == DTERNAL || tdt == 0)) || (eternal.op() == CONJ && (edt == DTERNAL || edt == 0)) || temporal.containsRecursively(eternal.unneg()))
+//                if ((tu.op()==CONJ && (eu.op()==CONJ) && Term.commonStructure(eu, tu))) {
+//
+//
+//                    Predicate<Term> tur =
+//                            //z -> tu.containsRecursively(z.unneg());
+//                            z -> Conj.containsEvent(tu, z.unneg());
+//                    if (tur.test(eu) || (eu.op()!=CONJ || eu.subterms().OR(tur))) {
                         //needs further flattening
                         return ConjCommutive.the(B, DTERNAL, true, true, temporal, eternal);
-                    }
+//                    }
 
 //                    if (y.op()==CONJ && dtSpecial(y.dt()) && y.dt()!=XTERNAL && !Conj.isSeq(y) && y.subterms().hasAny(CONJ)) {
 //                        y = ConjCommutive.the(B, y.dt(), true, true, y.subterms().arrayShared());
@@ -2303,11 +2306,11 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
 //                        throw new WTF();
 //                    }
 
-                }
-
-
-                return B.theCompound(CONJ, DTERNAL, sorted(temporal, eternal));
+//                }
 //
+//
+//                return B.theCompound(CONJ, DTERNAL, sorted(temporal, eternal));
+////
 //                    //TEMPORARY for debugging
 //                    if (y.anon().volume()!=y.volume()) {
 //                        System.out.println(y + "\n" + y.anon());

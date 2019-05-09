@@ -23,6 +23,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  */
 public class BoolTest {
 
+    private static final Term x = $$("x");
+    private static final Term y = $$("y");
+    private static final Term z = $$("z");
+
     @Test
     void testBoolType() {
         assertEquals("(true,false)", $.p(True, False).toString());
@@ -39,7 +43,8 @@ public class BoolTest {
         assertEquals(False, IO.bytesToTerm(False.bytes()));
     }
 
-    @Test void testBoolLabel() {
+    @Test
+    void testBoolLabel() {
         assertEquals(True, $$("true"));
         assertEquals(False, $$("false"));
         //assertEquals(Null, $$("null"));
@@ -59,17 +64,19 @@ public class BoolTest {
         assertEquals(Null, Null.unneg());
     }
 
-
-    /** same tautological assumptions should hold in equal(x,y) results */
-    @Test void testEqualOperatorTautologies() {
+    /**
+     * same tautological assumptions should hold in equal(x,y) results
+     */
+    @Test
+    void testEqualOperatorTautologies() {
         //TODO finish
         NAR n = NARS.shell();
-        assertEquals(True, Equal.the(True,True));
-        assertEquals(False, Equal.the(True,False));
-        assertEquals(Null, Equal.the(True,Null));
-        assertEquals(Null, Equal.the(False,Null));
-        assertEq("(y-->x)", Equal.the($$("x:y"),True));
-        assertEq("(--,(y-->x))", Equal.the($$("x:y"),False));
+        assertEquals(True, Equal.the(True, True));
+        assertEquals(False, Equal.the(True, False));
+        assertEquals(Null, Equal.the(True, Null));
+        assertEquals(Null, Equal.the(False, Null));
+        assertEq("(y-->x)", Equal.the($$("x:y"), True));
+        assertEq("(--,(y-->x))", Equal.the($$("x:y"), False));
 
 //        assertEquals("[equal(true,true)]", Evaluation.eval($$("equal(true,true)"), n).toString());
 //        assertEquals("[equal(false,false)]", Evaluation.eval($$("equal(false,false)"), n).toString());
@@ -78,7 +85,7 @@ public class BoolTest {
 
     @Test
     void testStatementTautologies() {
-        for (Op o: new Op[]{INH, SIM, IMPL}) {
+        for (Op o : new Op[]{INH, SIM, IMPL}) {
             assertEq(True, o.the(True, True));
             assertEq(True, o.the(False, False));
             assertEq(Null, o.the(Null, Null));
@@ -108,7 +115,6 @@ public class BoolTest {
 
     }
 
-
     @Test
     void testImplicationTautologies() {
 
@@ -124,8 +130,6 @@ public class BoolTest {
 
     }
 
-
-
     @Test
     void testDiffTautologies() {
 
@@ -139,7 +143,7 @@ public class BoolTest {
         assertEquals($.t(1, 0.81f), posDiff);
 
 
-        for (String o: new String[]{Op.DIFFe, Op.DIFFi}) {
+        for (String o : new String[]{Op.DIFFe, Op.DIFFi}) {
 
             String diff = o;
 
@@ -181,21 +185,20 @@ public class BoolTest {
         }
     }
 
-
     @Test
     void testIntersectionTautologies() {
-        for (Op o: new Op[]{ CONJ}) {
+        Op o = CONJ;
 
-            String sect = o.str;
+        String sect = o.str;
 
 
-            assertEquals(x, o.the(x, x));
-            assertEq(Null, o.the(x, x.neg()));
+        assertEquals(x, o.the(x, x));
+        assertEq(False, o.the(x, x.neg()));
 
-            assertEquals(x, o.the(x, True));
-            assertEquals(Null /* False ?  */, o.the(x, False));
-            assertEquals(Null, o.the(x, Null));
-        }
+        assertEquals(x, o.the(x, True));
+        assertEquals(False, o.the(x, False));
+        assertEquals(Null, o.the(x, Null));
+
     }
 
     @Test
@@ -203,13 +206,11 @@ public class BoolTest {
         //TODO
     }
 
-    private static final Term x = $$("x");
-    private static final Term y = $$("y");
-    private static final Term z = $$("z");
-
-
-    /** Huntington conj/disj tautologies */
-    @Test void testConjTautologies() {
+    /**
+     * Huntington conj/disj tautologies
+     */
+    @Test
+    void testConjTautologies() {
         //a∧true == a		# neutral element (Huntington axiom)
         assertEq(x, and(x, True));
         //a∨false == a		# neutral element (Huntington axiom)
@@ -235,12 +236,12 @@ public class BoolTest {
         assertEq(x, or(x, or(x, and(x, y))));
 
         //¬(a∧b) == ¬a∨¬b		# deMorgan
-        assertEq(or(x.neg(), y.neg()), and(x,y).neg());
+        assertEq(or(x.neg(), y.neg()), and(x, y).neg());
         //¬(a∨b) == ¬a∧¬b		# deMorgan
-        assertEq(and(x.neg(), y.neg()), or(x,y).neg());
+        assertEq(and(x.neg(), y.neg()), or(x, y).neg());
 
         //half deMorgan
-        assertEq(or(x, y.neg()), and(x.neg(),y).neg());
+        assertEq(or(x, y.neg()), and(x.neg(), y).neg());
 
         assertEq(False, and(False, True));
         assertEq(True, and(True, True));
@@ -251,65 +252,84 @@ public class BoolTest {
 
     }
 
-    @Test void wtfAndAnotherOne() {
-        assertEq(and(y, x.neg()), and(y, and(x,y).neg()));
+    @Test
+    void wtfAndAnotherOne() {
+        assertEq(and(y, x.neg()), and(y, and(x, y).neg()));
     }
 
-    @Test void testConjFactor2() {
+    @Test
+    void testConjFactor2() {
         assertEq(False, and(and(x, y), and(x, y.neg())));
     }
-    @Test void testConjFactor3() {
+
+    @Test
+    void testConjFactor3() {
         assertEq("(&&,x,y,z)", and(and(x, y), and(x, z)));
     }
 
-    @Test void testDisjFactor2() {
-        assertEq(x, or(and(x, y), and(x, y.neg())) );
-    }
-    @Test void testDisjFactor2_0() {
-        assertEq(x, or(x, and(x, y), and(x, y.neg())) );
+    @Test
+    void testDisjFactor2() {
+        assertEq(x, or(and(x, y), and(x, y.neg())));
     }
 
-    @Test void testDisjFactor2Neg() {
-        assertEq(x.neg(), or(and(x.neg(), y), and(x.neg(), y.neg())) );
+    @Test
+    void testDisjFactor2_0() {
+        assertEq(x, or(x, and(x, y), and(x, y.neg())));
+    }
+
+    @Test
+    void testDisjFactor2Neg() {
+        assertEq(x.neg(), or(and(x.neg(), y), and(x.neg(), y.neg())));
     }
 
 
-    @Test void testDisjFactor1PosPos() {
+    @Test
+    void testDisjFactor1PosPos() {
         assertEq(x,
                 or(x, and(x, y)));
     }
-    @Test void testDisjFactor1PosNeg() {
-        assertEq(or(x,y),
+
+    @Test
+    void testDisjFactor1PosNeg() {
+        assertEq(or(x, y),
                 or(x, and(x.neg(), y)));
     }
-    @Test void testDisjFactor1NegPos() {
+
+    @Test
+    void testDisjFactor1NegPos() {
         assertEq(or(x.neg(), y),
                 or(x.neg(), and(x, y)));
     }
-    @Test void testDisjFactor1NegNeg() {
+
+    @Test
+    void testDisjFactor1NegNeg() {
         assertEq(x.neg(),
                 or(x.neg(), and(x.neg(), y)));
     }
 
 
-    @Test void testDisjFactor3() {
-        assertEq(x, or(and(x, y), and(x, y.neg()), and(x,z)) );
+    @Test
+    void testDisjFactor3() {
+        assertEq(x, or(and(x, y), and(x, y.neg()), and(x, z)));
     }
 
 
-    @Test void testHuntington3() {
+    @Test
+    void testHuntington3() {
         //¬(¬a∨b) ∨ ¬(¬a∨¬b) == a	# Hungtington3
         assertEq(x, or(or(x.neg(), y).neg(), or(x.neg(), y.neg()).neg()));
     }
 
-    @Test void testRobbinsAxiom3a() {
+    @Test
+    void testRobbinsAxiom3a() {
         //¬(a∨b) ∨ ¬(a∨¬b) == ¬a	# Robbins Algebra axiom3
-        assertEq(x.neg(), or( or(x,y).neg(), or(x,y.neg()).neg() ) );
+        assertEq(x.neg(), or(or(x, y).neg(), or(x, y.neg()).neg()));
     }
 
-    @Test void testRobbinsAxiom3() {
+    @Test
+    void testRobbinsAxiom3() {
         //¬(¬(a∨b) ∨ ¬(a∨¬b)) == a	# Robbins Algebra axiom3
-        assertEq(x, or( or(x,y).neg(), or(x,y.neg()).neg() ).neg() );
+        assertEq(x, or(or(x, y).neg(), or(x, y.neg()).neg()).neg());
     }
 
 

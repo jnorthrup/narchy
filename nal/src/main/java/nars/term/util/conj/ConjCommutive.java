@@ -30,11 +30,11 @@ public enum ConjCommutive {;
     }
 
     public static Term the(TermBuilder B, int dt, Term... u) {
-        return the(Op.terms, dt, false, false, u);
+        return the(Op.terms, dt, true, false, u);
     }
 
     public static Term theSorted(TermBuilder B, int dt, Term... u) {
-        return the(Op.terms, dt, true, false, u);
+        return the(Op.terms, dt, false, false, u);
     }
 
     public static Term the(TermBuilder B, int dt, boolean sort, boolean direct, Term... u) {

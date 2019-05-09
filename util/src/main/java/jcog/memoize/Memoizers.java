@@ -3,6 +3,7 @@ package jcog.memoize;
 import jcog.memoize.byt.ByteHijackMemoize;
 import jcog.memoize.byt.ByteKeyExternal;
 
+import java.lang.ref.WeakReference;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Function;
 
@@ -36,7 +37,7 @@ public class Memoizers {
 
     private final CopyOnWriteArrayList<MemoizationStatistics> memoize = new CopyOnWriteArrayList<>();
 
-    public Memoizers() {
+    private Memoizers() {
         Runtime.getRuntime().addShutdownHook(new Thread(this::print));
     }
 
@@ -99,15 +100,19 @@ public class Memoizers {
 
     private static class MemoizationStatistics {
         public final String name;
-        public final Memoize memoize;
+        public final WeakReference<Memoize> memoize;
 
         MemoizationStatistics(String name, Memoize memoize) {
             this.name = name;
-            this.memoize = memoize;
+            this.memoize = new WeakReference<>(memoize);
         }
 
         public void print() {
-            System.out.println(name + '\n' + memoize.summary() + '\n');
+            Memoize m = memoize.get();
+            if (m!=null)
+                System.out.println(name + '\n' + m.summary() + '\n');
+            else
+                System.out.println(name + " DELETED");
         }
     }
 }
