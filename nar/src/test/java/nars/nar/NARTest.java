@@ -4,6 +4,7 @@ import com.google.common.primitives.Longs;
 import nars.*;
 import nars.concept.Concept;
 import nars.term.Termed;
+import nars.term.util.TermTest;
 import nars.test.TestNAR;
 import nars.util.RuleTest;
 import org.junit.jupiter.api.Disabled;
@@ -230,5 +231,11 @@ class NARTest {
                 "a:b?", "(--,a:b).",
                 "a:b.",
                 0, 0, 0.9f, 0.9f);
+    }
+
+    @Test void testImageConceptualize() throws Narsese.NarseseException {
+        NAR n = NARS.shell();
+        TermTest.assertEq("(x,z(y))", n.conceptualize("(x, (y --> (z,/)))").term());
+
     }
 }

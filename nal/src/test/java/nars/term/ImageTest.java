@@ -1,6 +1,8 @@
 package nars.term;
 
-import nars.*;
+import nars.$;
+import nars.NAL;
+import nars.Narsese;
 import nars.subterm.util.TermMetadata;
 import nars.term.atom.Bool;
 import nars.term.atom.Int;
@@ -127,9 +129,6 @@ class ImageTest {
         assertFalse(t.subterms().isNormalized());
         assertFalse(t.isNormalized());
 
-        NAR n = NARS.shell();
-
-        assertEq("(x,z(y))", n.conceptualize("(x, (y --> (z,/)))").term());
     }
     @Test void testRecursiveUnwrapping() {
         //assertEquals(

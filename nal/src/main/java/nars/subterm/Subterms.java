@@ -49,7 +49,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
 
     @Override
     default boolean hasXternal() {
-        return hasAny(Op.Temporal) && ORrecurse(Term::hasXternal);
+        return hasAny(Op.Temporal) && OR(Term::hasXternal);
     }
 
     default boolean contains(Term t) {

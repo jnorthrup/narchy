@@ -198,7 +198,7 @@ public abstract class SeparateSubtermsCompound implements Compound {
 
     @Override
     public boolean hasXternal() {
-        return dt()==XTERNAL || (hasAny(Op.Temporal) && subterms().hasXternal());
+        return dt()==XTERNAL || subterms().hasXternal();
     }
 
     @Override

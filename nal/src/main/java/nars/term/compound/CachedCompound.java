@@ -10,6 +10,7 @@ import org.eclipse.collections.api.block.predicate.primitive.LongObjectPredicate
 
 import static jcog.Util.hashCombine;
 import static nars.time.Tense.DTERNAL;
+import static nars.time.Tense.XTERNAL;
 
 
 /**
@@ -115,6 +116,7 @@ abstract public class CachedCompound extends SeparateSubtermsCompound implements
         public final boolean equalsRoot(Term x) {
             return equals(x) || equals(x.root());
         }
+
     }
 
 
@@ -139,6 +141,10 @@ abstract public class CachedCompound extends SeparateSubtermsCompound implements
             return dt;
         }
 
+        @Override
+        public boolean hasXternal() {
+            return dt()==XTERNAL || (hasAny(Op.Temporal) && subterms().hasXternal());
+        }
     }
 
 

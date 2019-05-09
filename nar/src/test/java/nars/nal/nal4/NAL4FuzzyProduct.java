@@ -26,9 +26,9 @@ public class NAL4FuzzyProduct extends NALTest {
     }
 
     private static void testUnionSect() {
-        assertEq("(x|y)",
+        assertEq("(x&&y)", //"(x|y)",
                 SetSectDiff.intersect(CONJ, false, $$("x"), $$("y")));
-        assertEq("(x&y)",
+        assertEq("(x||y)", //"(x&y)",
                 SetSectDiff.intersect(CONJ, true, $$("x"), $$("y")));
         assertEq("(x~y)",
                 SetSectDiff.intersect(CONJ, false, $$("x"), $$("y").neg()));

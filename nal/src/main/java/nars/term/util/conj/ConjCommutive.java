@@ -190,9 +190,15 @@ public enum ConjCommutive {;
 
                 if ((dt == DTERNAL) || (co.dt() == DTERNAL)) {
                     int indep = 0, elim = 0;
+                    int cos = co.structure();
                     for (int i = 0; i < u.length; i++) {
                         if (i == coi) continue;
                         Term x = u[i]; //assert (x.op() != CONJ);
+                        if (!Term.commonStructure(cos, x.structure())) {
+                            indep++;
+                            continue;
+                        }
+
                         if (!conflict(co, x)) {
                             if (absorbCompletelyByFirstLayer(co, x)) {
                                 elim++;
@@ -235,10 +241,7 @@ public enum ConjCommutive {;
             if (dd != -1) {
                 Term d = u[dd];
                 Term x = u[1 - dd];
-                Term cj = Conj.conjoin(B, d, x, dt == DTERNAL);
-                if (cj == null)
-                    throw new WTF();
-                return cj;
+                return Conj.conjoin(B, d, x, dt == DTERNAL);
             }
 
         }
@@ -255,7 +258,7 @@ public enum ConjCommutive {;
                 ConjBuilder c = new Conj(u.length);
                 //add the non-conj terms at ETERNAL last.
                 //then if the conjOther is a sequence, add it at zero
-                bsmain: for (boolean bs : new boolean[] { true, false }) {
+                bsmain: for (boolean bs : new boolean[] { false, true }) {
                     for (int i = u.length - 1; i >= 0; i--) {
                         if (bs == seq.get(i))
                             if (!c.add(sdt, u[i]))
@@ -298,8 +301,8 @@ public enum ConjCommutive {;
             return false;
         if (x.equalsNeg(incoming))
             return true;
-        if (!Term.commonStructure(x, incoming))
-            return false;
+//        if (!Term.commonStructure(x, incoming))
+//            return false;
 
         return x.op() == CONJ && x.subterms().ORwith(ConjCommutive::conflict, incoming);
 

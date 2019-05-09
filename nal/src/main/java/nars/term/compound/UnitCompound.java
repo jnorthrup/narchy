@@ -109,11 +109,6 @@ public abstract class UnitCompound implements SameSubtermsCompound {
     }
 
     @Override
-    public final boolean hasXternal() {
-        return dt()==XTERNAL || sub().hasXternal();
-    }
-
-    @Override
     public final Subterms subterms() {
         return new UniSubterm(sub());
     }
