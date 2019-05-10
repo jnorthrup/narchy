@@ -227,29 +227,30 @@ public enum ConjCommutive {;
 
         }
 
-        if (u.length == 2) {
-            //necessary for DISJ in direct mode
-
-            //TODO exclude the case with disj and conjOther
-            int dd;
-            if (disj != null && disj.cardinality() == 1 && seqCount == 0)
-                dd = disj.first(true);
-            else if (dt == DTERNAL && seqCount == 1)
-                dd = seq.first(true);
-            else
-                dd = -1;
-
-            if (dd != -1) {
-                Term d = u[dd];
-                Term x = u[1 - dd];
-                return Conj.conjoin(B, d, x, dt == DTERNAL);
-            }
-
-        }
-
         if (direct)
             return conjDirect(B, dt, u); //done
-        else {
+
+//        if (u.length == 2) {
+//            //necessary for DISJ in direct mode
+//
+//            //TODO exclude the case with disj and conjOther
+//            int dd;
+//            if (disj != null && disj.cardinality() == 1 && seqCount == 0)
+//                dd = disj.first(true);
+//            else if (dt == DTERNAL && seqCount == 1)
+//                dd = seq.first(true);
+//            else
+//                dd = -1;
+//
+//            if (dd != -1) {
+//                Term d = u[dd];
+//                Term x = u[1 - dd];
+//                return Conj.conjoin(B, d, x, dt == DTERNAL);
+//            }
+//
+//        }
+
+        {
 
             long sdt = dt == DTERNAL ? ETERNAL : 0;
 

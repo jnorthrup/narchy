@@ -1724,11 +1724,11 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
                         return 0; //absorbed
 
                     //Term xu = x.unneg();
-                    Term xy = CONJ.the(x, y);
-                    if (xy.equals(x))
-                        return 0; //absorbed
-                    if (xy.unneg().op() != CONJ || xy.volume() < x.volume())
-                        return -1; //something happened: bool or other interference
+//                    Term xy = CONJ.the(x, y);
+//                    if (xy.equals(x))
+//                        return 0; //absorbed
+//                    if (xy.unneg().op() != CONJ || xy.volume() < x.volume())
+//                        return -1; //something happened: bool or other interference
                 }
             }
         }

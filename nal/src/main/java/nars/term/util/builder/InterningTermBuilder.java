@@ -41,6 +41,7 @@ public class InterningTermBuilder extends HeapTermBuilder {
     static final boolean sortCanonically = true;
 //    private final static boolean internNegs = false;
     private final static boolean cacheSubtermKeyBytes = false;
+    private boolean resolveNeg = false;
     static final boolean deepDefault = true;
 
 
@@ -54,6 +55,7 @@ public class InterningTermBuilder extends HeapTermBuilder {
 
     /** used for quickly determining if op type is internable */
     private final MetalBitSet termsInterned;
+
 
 
     public InterningTermBuilder() {
@@ -314,7 +316,7 @@ public class InterningTermBuilder extends HeapTermBuilder {
     }
 
     @Override public Term neg(Term x) {
-        return super.neg(resolve(x));
+        return resolveNeg ? super.neg(resolve(x)) : super.neg(x);
     }
 
     @Override

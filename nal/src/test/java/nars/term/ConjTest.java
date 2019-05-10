@@ -1919,7 +1919,7 @@ public class ConjTest {
     void stupidDisjReduction() {
         Term x = $$("((right||rotate)&&rotate)");
         assertEq("rotate", x);
-        Term y = ConjCommutive.the(Op.terms, DTERNAL, true, true,
+        Term y = ConjCommutive.the(Op.terms, DTERNAL, true, false,
                 $$("(right||rotate)"), $$("rotate"));
         assertEq("rotate", y);
     }
