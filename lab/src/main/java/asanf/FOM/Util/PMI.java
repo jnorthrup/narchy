@@ -3,7 +3,7 @@ package asanf.FOM.Util;
 
 /*
  * Mutual Information
- * metodo che calcola la dipendenza tra due entit�
+ * metodo che calcola la dipendenza tra due entit
  */
 public class PMI implements CorrelationFunction{
 	private static final int num = 2048;

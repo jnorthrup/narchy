@@ -9,6 +9,7 @@ import nars.term.var.CommonVariable;
 import nars.term.var.ellipsis.Ellipsis;
 import nars.unify.Unify;
 
+import static nars.Op.FRAG;
 import static nars.term.atom.Bool.Null;
 
 /**
@@ -57,24 +58,29 @@ public interface Variable extends Atomic {
             return true;
 
         Term x = u.resolve(this);
-        if (x != this && x == y0 /*x.equals(y0)*/)
+        if (x != this && x.equals(y0))
             return true;
+
         Term y = u.resolvePosNeg(y0);
-        if (y != y0 && x == y /*x.equals(y)*/)
+        if (y != y0 && x.equals(y))
             return true;
 
         //unify variable negation mobius
-        boolean xn = x instanceof Neg, yn = y instanceof Neg;
-        if (xn) {
+
+        if (x instanceof Neg && y instanceof Neg) {
+            x = x.unneg();
+            y = y.unneg();
+        }
+
+        if (x instanceof Neg) {
             Term xu = x.unneg();
-            if (xu instanceof Variable && ((!(y instanceof Variable) || u.assigns(xu.op(), y.op())))) {
+            if (xu instanceof Variable && (!(y instanceof Variable) || u.assigns(xu.op(), y.op())) && !(y.op() == FRAG)) {
                 x = xu;
                 y = y.neg();
             }
-        }
-        if (yn) {
+        } else if (y instanceof Neg) {
             Term yu = y.unneg();
-            if (yu instanceof Variable && ((!(x instanceof Variable) || u.assigns(yu.op(), x.op())))) {
+            if (yu instanceof Variable && (!(x instanceof Variable) || u.assigns(yu.op(), x.op())) && !(x.op() == FRAG)) {
                 y = yu;
                 x = x.neg();
             }
