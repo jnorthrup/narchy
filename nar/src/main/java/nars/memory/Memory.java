@@ -1,6 +1,5 @@
 package nars.memory;
 
-import nars.NAL;
 import nars.NAR;
 import nars.concept.Concept;
 import nars.concept.PermanentConcept;
@@ -93,30 +92,27 @@ public abstract class Memory {
 
         Term xt = _x.term();
         if (!xt.op().conceptualizable) {
-            if (NAL.DEBUG)
+//            if (NAL.DEBUG)
                 throw new TermException("not conceptualizable", xt);
-            else
-                return null;
+//            else
+//                return null;
         }
 
-        if (NAL.DEBUG) { if (!xt.the()) throw new TermException("not immutable", xt); }
+//        if (NAL.DEBUG) { if (!xt.the()) throw new TermException("not immutable", xt); }
 
         if (xt instanceof Compound && !xt.isNormalized()) { //pre-test
             Term xtn = xt.normalize();
-            if (!xt.equals(xtn))
+            if (xt.op()!=xtn.op()) //if (!xt.equals(xtn))
                 throw new TermException("concept term not normalized", xt);
             xt = xtn;
         }
 
         Term x = xt.concept();
         if (!x.op().conceptualizable) {
-            if (NAL.DEBUG)
-                throw new TermException("not conceptualizable", xt);
-            else
-                return null;
+            throw new TermException("not conceptualizable", _x.term());
         }
 
-        if (NAL.DEBUG) { if (!x.the()) throw new TermException("not immutable", x); }
+//        if (NAL.DEBUG) { if (!x.the()) throw new TermException("not immutable", x); }
 
         return (Concept) get(x, createIfMissing);
     }

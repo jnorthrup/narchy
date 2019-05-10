@@ -185,15 +185,15 @@ public interface AbstractTermTransform extends TermTransform, nars.term.util.bui
     class NegObliviousTermTransform implements AbstractTermTransform {
 
         @Override
-        @Nullable
+//        @Nullable
         public final Term applyCompound(Compound c) {
 
             if (c.op() == NEG) {
                 Term xx = c.unneg();
                 Term yy = apply(xx);
-                if (yy == null)
-                    throw new NullPointerException(); //does this happen?
-                else
+//                if (yy == null)
+//                    throw new NullPointerException(); //does this happen?
+//                else
                     return (yy == xx) ? c : yy.neg();
 
             } else {

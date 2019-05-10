@@ -369,12 +369,7 @@ public class PremiseRule extends ProxyTerm {
                     if (negated) negationApplied = true;
                     break;
                 }
-                case "isOrIsUnneg": {
-                    Op o = Op.the($.unquote(Y));
-                    match(X, new TermMatcher.IsUnneg(o, false), !negated);
-                    if (negated) negationApplied = true;
-                    break;
-                }
+
 
                 case "has": {
                     //hasAny

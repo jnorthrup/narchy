@@ -8,12 +8,8 @@ import nars.term.Term;
 import nars.term.Terms;
 import nars.term.atom.Bool;
 import nars.term.util.builder.TermBuilder;
-import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 
 import static nars.Op.BOOL;
 import static nars.Op.CONJ;
@@ -94,7 +90,8 @@ public enum ConjCommutive {;
         MetalBitSet seq; //un-mergeable conj seq compounds
         MetalBitSet disj; //disjunctions
 
-        Set<Term> flatten = null;
+
+        SortedSet<Term> flatten = null;
         do {
             pos = neg = par = seq = disj = null;
 
@@ -148,8 +145,11 @@ public enum ConjCommutive {;
                     if (par.get(i)) {
                         Term x = u[i];
                         if (x == True) continue;
-                        if (flatten == null) flatten = new UnifiedSet(uLength * 2);
-                        x.subterms().forEach(flatten::add);
+                        if (flatten == null) flatten = new TreeSet();
+                        if (x.dt()!=XTERNAL)
+                            x.subterms().forEach(flatten::add);
+                        else
+                            flatten.add(x);
                     }
                 }
                 if (flatten != null) {

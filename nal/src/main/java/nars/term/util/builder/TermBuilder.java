@@ -149,6 +149,12 @@ public abstract class TermBuilder implements TermConstructor {
             default: y = ConjSeq.sequence(this, dt, u); break;
         }
 
+//        {
+//            //TEMPORARY FOR DEBUG
+//            Term ay = y.anon();
+//            if (y.volume()!=ay.volume())
+//                throw new WTF();
+//        }
         return y;
     }
 

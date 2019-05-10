@@ -18,26 +18,10 @@
          (M --> P), (M --> S), task("?@"), neqRCom(S,P), neqRoot(S,P), notSetsOrDifferentSets(S,P) |- (M --> interSect(P,polarizeRandom(S)))
 
 
-
-//intersection question formation
-//    (W --> S), (W --> B), task("?@"), is(S,"||"), neqRCom(S,B) |- (W --> (S | B)), (Time:Intersect)
-//    (W --> S), (W --> B), task("?@"), is(S,"&&"), neqRCom(S,B) |- (W --> (S & B)), (Time:Intersect)
-//    (S --> W), (B --> W), task("?@"), is(S,"&&"), neqRCom(S,B) |- ((S & B) --> W), (Time:Intersect)
-//    (S --> W), (B --> W), task("?@"), is(S,"||"), neqRCom(S,B) |- ((S | B) --> W), (Time:Intersect)
-
-//    (P --> M), (S --> M), notSetsOrDifferentSets(S,P), neqRCom(S,P) |- ((P ~ S) --> M), (Belief:Difference, Time:Intersect)
-//    (P --> M), (S --> M), notSetsOrDifferentSets(S,P), neqRCom(S,P) |- ((S ~ P) --> M), (Belief:DifferenceReverse, Time:Intersect)
-//
-//    (M --> P), (M --> S), notSetsOrDifferentSets(S,P), neqRCom(S,P) |- (M --> (P - S)), (Belief:Difference, Time:Intersect)
-//    (M --> P), (M --> S), notSetsOrDifferentSets(S,P), neqRCom(S,P) |- (M --> (S - P)), (Belief:DifferenceReverse, Time:Intersect)
-
-        //(P --> M), (S --> M), is(P,"+"), is(S,"+") |- (differ(P,S) --> M), (Belief:Difference)
-        //((A,B) --> M), ((X,Y) --> M), is(A,"+"), is(B,"+"), is(X,"+"), is(Y,"+") |- ((intersect(A,X),intersect(B,Y)) --> M), (Belief:Intersection)
-        //((A,B) --> M), ((X,Y) --> M), is(A,"+"), is(B,"+"), is(X,"+"), is(Y,"+") |- ((union(A,X),union(B,Y)) --> M), (Belief:Union)
-
-
 //component invert to question
-     (    M -->   I), M, isOrIsUnneg(I,"&&")  |- (M -->   negateRandomSubterm(I)), (Punctuation:AskAll)
-     (    I -->   M), M, isOrIsUnneg(I,"&&")  |- (  negateRandomSubterm(I)-->M),   (Punctuation:AskAll)
+     (    M -->   I), M, is(I,"&&")  |- (M -->   negateRandomSubterm(I)), (Punctuation:AskAll)
+     (    M --> --%I), M, is(%I,"&&")  |- (M --> --negateRandomSubterm(%I)), (Punctuation:AskAll)
+     (    I -->   M), M, is(I,"&&")  |- (  negateRandomSubterm(I)-->M),   (Punctuation:AskAll)
+     ( --%I -->   M), M, is(%I,"&&")  |- (  negateRandomSubterm(%I)-->M),   (Punctuation:AskAll)
 
 

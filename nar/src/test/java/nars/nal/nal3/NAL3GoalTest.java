@@ -191,7 +191,7 @@ class NAL3GoalTest {
         @Override
         protected NAR nar() {
             NAR n = NARS.tmp(3,3);
-            n.termVolumeMax.set(8);
+            n.termVolumeMax.set(12);
             return n;
         }
 
@@ -271,16 +271,17 @@ class NAL3GoalTest {
         }
         @Test
         void testNegIntersectionGoalSinglePremiseDecompose() {
+
             test
-                    .input("--((a|b)-->g)!")
-                    .mustGoal(cycles, "(a-->g)", 0f, 0.81f)
+                    .input("--((a&&b)-->g)!")
+                    .mustGoal(cycles, "(a-->g)", 1f, 0.81f)
                     .mustGoal(cycles, "(b-->g)", 0f, 0.81f)
             ;
         }
         @Test
         void testNegUnionBeliefSinglePremiseDecompose() {
             test
-                    .input("--((a&b)-->g).")
+                    .input("--((a||b)-->g).")
                     .mustBelieve(cycles, "(a-->g)", 0f, 0.81f)
                     .mustBelieve(cycles, "(b-->g)", 0f, 0.81f)
             ;
@@ -290,7 +291,7 @@ class NAL3GoalTest {
         @Test
         void testNegUnionGoalSinglePremiseDecompose() {
             test
-                    .input("--((a&b)-->g)!")
+                    .input("--((a||b)-->g)!")
                     .mustGoal(cycles, "(a-->g)", 0f, 0.45f)
                     .mustGoal(cycles, "(b-->g)", 0f, 0.45f)
             ;
@@ -305,17 +306,19 @@ class NAL3GoalTest {
 //        }
 
         @Test
-        void testIntersectionConditionalDecomposeGoalNeg() {
+        void intersectionConditionalDecomposeGoalNeg() {
             test
-                    .input("--((a|b)-->g)!")
+                    .input("--((a&&b)-->g)!")
                     .input("(a-->g).")
                     .mustGoal(cycles, "(b-->g)", 0f, 0.81f);
         }
 
+
+
         @Test
         void testIntersectionConditionalDecomposeGoalConfused() {
             test
-                    .input("--((a|b)-->g)!")
+                    .input("--((a&&b)-->g)!")
                     .input("(a-->g).")
                     .mustGoal(cycles, "(b-->g)", 0f, 0.81f);
         }

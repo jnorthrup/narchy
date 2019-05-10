@@ -1193,17 +1193,17 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
         return (!modified[0] && c.event.isEmpty()) ? null : c;
     }
 
-    private static Term conjoinify(TermBuilder B, Term existing /* conj */, Term incoming, boolean eternal, boolean create) {
+    private static Term conjoinify(TermBuilder B, final Term existing /* conj */, Term incoming, boolean eternal) {
+
 
         int existingDT = existing.dt();
         int incomingDT = incoming.dt();
 
-//        if (existingDT == XTERNAL || incomingDT == XTERNAL)
-//            return null; //one or two xternal's, no way to know how they combine or not
+        if (existingDT == XTERNAL || incomingDT == XTERNAL)
+            return null; //one or two xternal's, no way to know how they combine or not
 
 //        if (existingDT == 0 && incomingDT == 0) {
 //            assert(eternal);
-//            //promote to parallel
 //            eternal = false;
 //        }
 
@@ -1219,7 +1219,7 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
                 if (incomingDT == outerDT || existingDT == outerDT) {
                     //at least one of the terms has a DT matching the outer
                     return B.conj(outerDT, existing, incoming);
-                } else if (incomingDT == existing.dt()) {
+                } else if (incomingDT == existingDT) {
                     if (outerDT == 0 && ((incomingDT == 0) || (incomingDT == DTERNAL))) {
                         //promote a parallel of two eternals or two parallels to one parallel
                         return B.conj(incomingDT, existing, incoming);
@@ -1244,18 +1244,24 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
 //            }
 //        }
 
-
         if (!Conj.isSeq(existing))
             return null; //ok
 
-        ConjBuilder c = new ConjLazy();
+        if (incoming.unneg().op()!=CONJ && !existing.containsRecursively(incoming.unneg()))
+            return null; //no conflict possible
+
+        ConjBuilder c =
+                //new ConjLazy();
+                new Conj();
 
         boolean ok = existing.eventsWhile((whn, wht) -> {
-            Term ww = B.conj(outerDT, wht, incoming);
+            Term ww =
+                //B.conj(outerDT, wht, incoming);
+                ConjCommutive.the(B, outerDT, wht, incoming);
+
             if (ww == Null)
                 throw new WTF();
             else if (ww == False) {
-                //c.add(ETERNAL, False);
                 return false;
             } else if (ww == True)
                 return true;
@@ -1266,20 +1272,22 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
 //                throw new WTF(); //TEMPORARY
 //            }
 
-        }, 0, true, false, false);
+        }, 0, false, false, false);
         if (!ok)
             return False;
 
         Term d = c.term(B);
-        if (create)
-            return d;
-        else {
-//            if (d.op() != CONJ || d.volume() - 1 - incoming.volume() < existing.volume() /* something got reduced */)
-//                return d;
-//            else
-//                return null; //potentially factor
-            return d;
-        }
+        return d;
+
+//        if (create)
+//            return d;
+//        else {
+////            if (d.op() != CONJ || d.volume() - 1 - incoming.volume() < existing.volume() /* something got reduced */)
+////                return d;
+////            else
+////                return null; //potentially factor
+//            return d;
+//        }
     }
 
     /**
@@ -1289,10 +1297,8 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
      *                          * Null/False - short-circuit annihilation due to contradiction
      *                          * non-null - merged value.  if merged equals current item, as-if True returned. otherwise remove the current item, recurse and add the new merged one
      *                          * null - do nothing, no conflict.  add x to the event time
-     * @param create            - whether this is being used for testing potential construction, or to actually create the conjunction.
-     *                          can be used as a hint whether to proceed with full conjunction construction or not.
      */
-    @Nullable private static Term merge(TermBuilder B, Term existing, Term incoming, boolean eternalOrParallel, boolean create) {
+    @Nullable private static Term merge(TermBuilder B, Term existing, Term incoming, boolean eternalOrParallel) {
 
 
         boolean incomingPolarity = incoming.op() != NEG;
@@ -1335,7 +1341,7 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
         Term x = base == existing ? incoming : existing;
 
         Term result = conjPolarity ?
-                conjoinify(B, base, x, eternalOrParallel, create) :
+                conjoinify(B, base, x, eternalOrParallel) :
                 disjunctify(B, base, x, eternalOrParallel);
 
         if (result != null && result.equals(existing))
@@ -1361,7 +1367,7 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
         if (x.equalsNeg(y))
             return False; //contradiction
 
-        Term xy = merge(B, x, y, eternalOrParallel, true);
+        Term xy = merge(B, x, y, eternalOrParallel);
 
         //decode result target
         if (xy == True) {
@@ -1872,7 +1878,7 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
                     return true;
                 } else {
 
-                    Term result = merge(HeapTermBuilder.the, unindex(bi), x, at == ETERNAL, false);
+                    Term result = merge(HeapTermBuilder.the, unindex(bi), x, at == ETERNAL);
 
                     if (result != null) {
                         if (result == True)

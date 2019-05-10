@@ -15,7 +15,6 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 import static nars.$.$$;
 import static nars.Op.BELIEF;
-import static nars.Op.QUESTION;
 import static nars.time.Tense.ETERNAL;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -72,6 +71,31 @@ public class NAL3Test extends NALTest {
         test.mustBelieve(cycles, "<robin --> bird>", 0.81f, 0.66f);
 
     }
+
+    @Test
+    void goal_decomposition_1_intersection() {
+        test.termVolMax(8);
+
+        test.input("(x --> (bird & swimmer))! %0.9;0.9%");
+        test.input("(x --> swimmer). %0.9;0.9%");
+        test.mustGoal(cycles, "(x --> bird)", 0.81f, 0.66f);
+    }
+
+    @Test
+    void goal_decomposition_1_union() {
+        test.termVolMax(8);
+
+        test.input("(x --> (bird | swimmer))! %0.9;0.9%");
+        test.input("(x --> swimmer). %0.1;0.9%");
+        test.mustGoal(cycles, "(x --> bird)", 0.81f, 0.66f);
+    }
+//    @Test
+//    void goal_decomposition_1b() {
+//        test.termVolMax(8);
+//        test.input("(x --> (bird & swimmer)). %0.9;0.9%");
+//        test.input("(x --> swimmer)! %0.9;0.9%");
+//        test.mustGoal(cycles, "(x --> bird)", 0.81f, WEAK);
+//    }
 
     @ValueSource(floats = {0, 0.25f, 0.5f, 0.75f, 0.9f /* TODO 1f should produce no output, add special test case */})
     @ParameterizedTest
@@ -238,7 +262,6 @@ public class NAL3Test extends NALTest {
 
 
         test
-//                .logDebug()
                 .termVolMax(6)
                 .believe("--(x-->(RealNumber&ComplexNumber))")
                 .believe("(x-->RealNumber)")
@@ -359,24 +382,16 @@ public class NAL3Test extends NALTest {
         ;
     }
 
-    @Test
-    void questionDecomposition0() {
+    @ParameterizedTest @ValueSource(strings={"||","&&"})
+    void questionDecomposition0(String o) {
         test
                 .termVolMax(8)
-                .ask("((swan|swimmer) --> bird)")
+                .ask("((swan" + o + "swimmer) --> bird)")
                 .mustQuestion(cycles, "(swimmer --> bird)")
                 .mustQuestion(cycles, "(swan --> bird)")
         ;
     }
 
-    @Test
-    void questionDecomposition1() {
-        test
-                .termVolMax(8)
-                .ask("(swan --> bird)")
-                .believe("((swan|swimmer) --> bird)")
-                .mustOutput(cycles, "(swimmer --> bird)", QUESTION);
-    }
 
 }
 
