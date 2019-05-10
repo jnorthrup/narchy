@@ -137,9 +137,10 @@ public class Occurrify extends TimeGraph {
 
     static void temporalTask(Term x, OccurrenceSolver time, Taskify t, Derivation d) {
 
-        Term xx = x;
+
 
         boolean neg = false;
+//        Term xx = x;
 //        if (x.op()==NEG && (!d.taskTerm.hasAny(NEG) && !d.beliefTerm.hasAny(NEG))) {
 //            //HACK semi-auto-unneg to help occurrify
 //            x = x.unneg();

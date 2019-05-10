@@ -14,22 +14,17 @@ import java.util.function.Supplier;
 
 import static java.lang.System.nanoTime;
 
-/** N independent asynchronously looping worker threads */
+/**
+ * N independent asynchronously looping worker threads
+ */
 abstract public class ThreadedExec extends MultiExec {
 
     static final int inputQueueCapacityPerThread = 512;
-
-    final boolean affinity;
-    protected int workGranularity = Integer.MAX_VALUE;
     protected final MetalConcurrentQueue in;
-
-
-
+    final boolean affinity;
     final AffinityExecutor exe;
+    protected int workGranularity = Integer.MAX_VALUE;
 
-
-    public interface Worker extends Runnable, Off {
-    }
 
     public ThreadedExec(int threads) {
         this(threads, false);
@@ -45,7 +40,8 @@ abstract public class ThreadedExec extends MultiExec {
 
     }
 
-    @Override protected void execute(/*@NotNull */Object x) {
+    @Override
+    protected void execute(/*@NotNull */Object x) {
         in.add(x, this::executeBlocked);
     }
 
@@ -87,71 +83,65 @@ abstract public class ThreadedExec extends MultiExec {
         if (ci > 0) {
             int idealThreads = Util.clamp(
                     (int) Math.ceil((nar.loop.throttle.floatValue()) * concurrencyMax()),
-                1,
+                    1,
                     concurrencyMax());
 
             //TODO fix this
             if (idealThreads > currentThreads) {
                 //spawn more
                 int demand = idealThreads - currentThreads;
-                logger.atInfo().log("add {} worker threads (ideal={})", demand, idealThreads);
+                logger.atInfo().log("add {} worker threads (ideal: {} )", demand, idealThreads);
                 synchronized (exe) {
                     exe.execute(loop(), demand, affinity);
                 }
             } else if (currentThreads > idealThreads) {
                 //stop some
                 int excess = currentThreads - idealThreads;
-                logger.atInfo().log("stop {} worker threads (ideal={})", excess, idealThreads);
+                logger.atInfo().log("stop {} worker threads (ideal: {} )", excess, idealThreads);
                 synchronized (exe) {
-                    while (concurrency() > idealThreads)
-                        exe.remove(concurrency() - 1);
+                    int c;
+                    while ((c = concurrency()) > idealThreads)
+                        exe.remove(c - 1);
                 }
             }
         }
     }
 
     @Override
-    public int concurrency() {
+    public final int concurrency() {
         return exe.size();
     }
 
     protected long work(float responsibility, FasterList buffer) {
 
         int available;
-        boolean kontinue = true;
-        long workStart = Long.MIN_VALUE;
-        Consumer execNow = this::executeNow;
-        while (kontinue && (available = in.size()) > 0) {
 
+        Consumer execNow = this::executeNow;
+        if ((available = in.size()) > 0) {
+
+            long workStart = nanoTime();
             do {
 
-            if (workStart == Long.MIN_VALUE)
-                workStart = nanoTime();
 
-            int batchSize = //Util.lerp(throttle,
-                    //available, /* all of it if low throttle. this allows most threads to remains asleep while one awake thread takes care of it all */
-                    Math.max(1, (int) Math.floor(((responsibility * available) / workGranularity)));
-                    //)
+                int batchSize = //Util.lerp(throttle,
+                        //available, /* all of it if low throttle. this allows most threads to remains asleep while one awake thread takes care of it all */
+                        Math.max(1, (int) Math.floor(((responsibility * available) / workGranularity)));
 
 
-            int got = in.remove(buffer, batchSize);
-            if (got > 0) {
-                execute(buffer, 1, execNow);
-                kontinue = !queueSafe();
-            } else
-                kontinue = false;
+                int got = in.remove(buffer, batchSize);
+                if (got > 0) {
+                    execute(buffer, 1, execNow);
+                } else
+                    break;
 
-            } while (!queueSafe());
+            } while (!queueSafe((available=in.size())));
 
-        }
-        if (workStart!=Long.MIN_VALUE) {
             long workEnd = nanoTime();
             return workEnd - workStart;
-        } else {
-            return 0; //HACK
-        }
-    }
 
+        } else
+            return 0;
+    }
 
     @Override
     public void starting(NAR n) {
@@ -163,10 +153,7 @@ abstract public class ThreadedExec extends MultiExec {
 
     }
 
-
-
     abstract protected Supplier<Worker> loop();
-
 
     @Override
     public boolean delete() {
@@ -184,11 +171,18 @@ abstract public class ThreadedExec extends MultiExec {
         return false;
     }
 
-
     boolean queueSafe() {
         float a = alertness.floatValue();
         return a < 1 - Float.MIN_NORMAL ?
                 in.availablePct(inputQueueCapacityPerThread) >= a :
                 in.isEmpty();
+    }
+
+    boolean queueSafe(int size) {
+        return size > 0 && MetalConcurrentQueue.availablePct(size, inputQueueCapacityPerThread) >= alertness.floatValue();
+    }
+
+
+    public interface Worker extends Runnable, Off {
     }
 }

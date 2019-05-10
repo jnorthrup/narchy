@@ -80,6 +80,8 @@ public class WorkerExec extends ThreadedExec {
 
             do {
 
+                work(workResponsibility, schedule);
+
                 play(threadWorkTimePerCycle);
                 sleep();
 
@@ -97,10 +99,8 @@ public class WorkerExec extends ThreadedExec {
             AntistaticBag<What> W = nar.what;
 
             do {
-                if (!queueSafe()) {
 
-                    work(workResponsibility, schedule);
-                }
+
 
                 long now = nar.time();
 

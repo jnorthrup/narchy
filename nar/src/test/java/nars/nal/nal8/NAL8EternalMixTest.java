@@ -623,10 +623,10 @@ class NAL8EternalMixTest extends NALTest {
     void testPredictiveImplicationEternalTemporal() {
 
         test
-                .inputAt(0, "(out ==>-3 happy). :|:")
+                .logDebug()
+                .inputAt(0, "(out ==>-3 happy). |")
                 .inputAt(13, "happy!")
-                .mustGoal(cycles, "out", 1f, 0.81f, 3)
-                .mustNotOutput(cycles, "out", GOAL, 13);
+                .mustGoal(cycles, "out", 1f, 0.81f, t->t>=10); //13 as if it were present
     }
 
 

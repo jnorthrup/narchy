@@ -694,51 +694,42 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
     }
 
     private boolean solveDTAbsolutePair(Compound x, Predicate<Event> each, Term a, Term b, boolean aEqB) {
-        if (!a.hasXternal() && !b.hasXternal()) {
-            UnifiedSet<Event> ae = new UnifiedSet(2);
-            //solveExact(a, ax -> {
-            solveOccurrence(a, ax -> {
-                if (ax instanceof Absolute) ae.add(ax);
-                return true;
-            });
-            int aes = ae.size();
-            if (aes > 0) {
+        if (a.hasXternal() || b.hasXternal())
+            return true; //N/A
 
-                if (aEqB && aes > 1) {
+        UnifiedSet<Event> ae = new UnifiedSet(2);
+        //solveExact(a, ax -> {
+        solveOccurrence(a, ax -> {
+            if (ax instanceof Absolute) ae.add(ax);
+            return true;
+        });
+        int aes = ae.size();
+        if (aes > 0) {
+            Event[] aa = eventArray(ae);
 
-                    Event[] aa = eventArray(ae);
+            if (aEqB && aes > 1) {
 
-                    for (int i = 0; i < aa.length; i++) {
-                        Event ii = aa[i];
-                        for (int j = i + 1; j < aa.length; j++) {
-                            if (!solveDTAbsolutePair(x, ii, aa[j], each))
+
+                for (int i = 0; i < aa.length; i++) {
+                    Event ii = aa[i];
+                    for (int j = i + 1; j < aa.length; j++) {
+                        if (!solveDTAbsolutePair(x, ii, aa[j], each))
+                            return false;
+                    }
+                }
+
+
+            } else {
+                solveOccurrence(b, bx -> {
+                    if ((bx instanceof Absolute) && ae.add(bx)) {
+                        for (Event ax : aa) {
+                            if (!solveDTAbsolutePair(x, ax, bx, each))
                                 return false;
                         }
                     }
+                    return true;
+                });
 
-
-                } else {
-                    UnifiedSet<Event> be = new UnifiedSet(2);
-                    //solveExact(b, bx -> { //less exhaustive
-                    solveOccurrence(b, bx -> {
-                        if ((bx instanceof Absolute) && (!ae.contains(bx)))
-                            be.add(bx);
-                        return true;
-                    });
-
-
-                    if (!be.isEmpty()) {
-                        for (Event ax : (ae)) {
-                            for (Event bx : (be)) {
-                                if (ax != bx) {
-                                    if (!solveDTAbsolutePair(x, ax, bx, each))
-                                        return false;
-                                }
-                            }
-                        }
-
-                    }
-                }
             }
         }
         return true;
@@ -753,10 +744,10 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
     }
 
     private boolean solveDTAbsolutePair(Compound x, Event a, Event b, Predicate<Event> each) {
-        assert (!(a.equals(b)));
-        if (a.start() == b.start() && at(a.id, b.id))
-            return true; //same event
-        //TODO additional checking
+//        assert (!(a.equals(b)));
+//        if (a.start() == b.start() && at(a.id, b.id))
+//            return true; //same event
+//        //TODO additional checking
 
 
 
@@ -1236,7 +1227,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
         return true//solveExact(x, each) &&
                && bfsNew(List.of(x), new OccSolver(true, true, false, each))
                //&& bfsNew(List.of(x), new OccSolver(false, false, true, each))
-               && solveSelfLoop(x, each)
+               //&& solveSelfLoop(x, each)
                && (!autoneg || bfsNew(List.of(x.neg()), new OccSolver(true, false, true,
                     z -> each.test(z.neg()))))
                && solveLastResort(x, each)

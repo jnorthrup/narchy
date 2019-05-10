@@ -12,8 +12,6 @@ import nars.term.util.conj.ConjDiff;
 import nars.term.util.conj.ConjSeq;
 import nars.time.Tense;
 
-import java.util.function.Predicate;
-
 import static nars.Op.*;
 import static nars.term.atom.Bool.*;
 import static nars.time.Tense.*;
@@ -194,10 +192,7 @@ public class Statement {
                 || (dt == 0 && !Conj.isSeq(subject) && !Conj.isSeq(predicate))
         ) {
 
-            Predicate<Term> delim = (op == IMPL) ?
-                    recursiveCommonalityDelimeterStrong : Op.recursiveCommonalityDelimeterWeak;
-
-            if ((containEachOther(subject, predicate, delim)))
+            if ((statementLoopy(subject.unneg(), predicate.unneg())))
                 return Null;
         }
 

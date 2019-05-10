@@ -17,6 +17,7 @@ import static nars.$.$;
 import static nars.$.$$;
 import static nars.term.atom.Bool.Null;
 import static nars.term.util.TermTest.assertEq;
+import static nars.term.util.TermTest.assertInvalidTerms;
 import static org.junit.jupiter.api.Assertions.*;
 
 
@@ -42,6 +43,11 @@ class TemporalTermTest {
         assertEq("(a-->(" + o + ",x,y,z))", $$("(a-->(" + o + ",x,y,z))").concept());
     }
 
+
+    @Test void testInvalidInh() {
+        assertInvalidTerms("((x-->r)-->(r&&c))");
+        assertInvalidTerms("((x-->r)-->((--,r)&&c))");
+    }
 
     @Test
     void testInvalidInheritanceOfEternalTemporalNegated() throws Narsese.NarseseException {

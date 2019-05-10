@@ -294,16 +294,8 @@ public enum Op {
 
     public static final ImmutableMap<String, Op> stringToOperator;
 
-    /**
-     * ops across which reflexivity of terms is allowed
-     */
-    final static int statementDelimeter = Op.or(Op.PROD/*, Op.NEG*/);
 
-    public static final Predicate<Term> recursiveCommonalityDelimeterStrong =
-            c -> !c.isAny(statementDelimeter);
 
-    public static final Predicate<Term> recursiveCommonalityDelimeterWeak =
-            c -> !c.isAny(statementDelimeter);
     /**
      * specifier for any NAL level
      */
@@ -512,21 +504,44 @@ public enum Op {
         return bits;
     }
 
-    public static boolean containEachOther(Term x, Term y, Predicate<Term> delim) {
-        int xv = x.volume();
-        int yv = y.volume();
+
+    public static final Predicate<Term> statementLoopyContainer = (x) -> x.op()!=PROD;;
+
+    public static boolean statementLoopy(Term x, Term y) {
+        boolean xc = x instanceof Compound && x.op()==CONJ;
+        boolean yc = y instanceof Compound && y.op()==CONJ;
+        if (!xc && !yc) {
+            return _statementLoopy(x, y);
+        } else if (xc && !yc) {
+            return x.subterms().ORwith(Op::_statementLoopy, y);
+        } else if (yc && !xc) {
+            return y.subterms().ORwith(Op::_statementLoopy, x);
+        } else {
+            if (x.volume() >= y.volume())
+                return x.subterms().ORwith((xx,Y) -> Y.subterms().ORwith(Op::_statementLoopy, xx), y);
+            else
+                return y.subterms().ORwith((yy,X) -> X.subterms().ORwith(Op::_statementLoopy, yy), x);
+        }
+
+    }
+    private static boolean _statementLoopy(Term x, Term y) {
+
+        x = x.unneg(); y = y.unneg();
+
+        int xv = x.volume(), yv = y.volume();
         boolean root = false;
         if (xv == yv) {
-            return false; //probably impossible
+            return x.equals(y);
+            //probably impossible:
 //            boolean z = Term.commonStructure(x, y) &&
 //                    (x.containsRecursively(y, root, delim) || y.containsRecursively(x, root, delim));
 //            if (z)
 //                throw new WTF();
 //            return z;
         } else if (xv > yv)
-            return x.containsRecursively(y, root, delim);
+            return x.containsRecursively(y, root, statementLoopyContainer);
         else
-            return y.containsRecursively(x, root, delim);
+            return y.containsRecursively(x, root, statementLoopyContainer);
     }
 
 

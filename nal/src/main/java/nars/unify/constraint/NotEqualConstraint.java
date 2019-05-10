@@ -217,10 +217,7 @@ public final class NotEqualConstraint extends RelationConstraint {
 //            }
         }
 
-        final static Predicate<Term> limit =
-                Op.recursiveCommonalityDelimeterWeak;
-        //Op.recursiveCommonalityDelimeterStrong;
-
+        final static Predicate<Term> limit = Op.statementLoopyContainer;
 
         private static boolean test(Term a, boolean recurse, boolean excludeVariables, Term b) {
             if ((!excludeVariables || !(b instanceof Variable)) && !(b instanceof Img)) {
