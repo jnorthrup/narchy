@@ -9,7 +9,7 @@ import nars.term.Term;
 import nars.term.Variable;
 import nars.term.atom.Atomic;
 import nars.term.util.TermTest;
-import nars.term.var.ellipsis.EllipsisMatch;
+import nars.term.var.ellipsis.Fragment;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 
@@ -570,7 +570,7 @@ class NarseseBaseTest extends NarseseTest {
 
 
     @Test void testEllipsisMatch_Fragment() {
-        assertEq("`a,b,c`", EllipsisMatch.fragment($$("a"), $$("b"), $$("c")));
+        assertEq("`a,b,c`", Fragment.fragment($$("a"), $$("b"), $$("c")));
         assertEq("`a,b,c`", "`a,b,c`");
         assertEquals(FRAG, $$("`a,b,c`").op());
         assertEquals(3, $$("`a,b,c`").subs());

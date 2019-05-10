@@ -7,7 +7,7 @@ import nars.term.Term;
 import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
 import nars.term.compound.LazyCompoundBuilder;
-import nars.term.var.ellipsis.EllipsisMatch;
+import nars.term.var.ellipsis.Fragment;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Function;
@@ -42,7 +42,7 @@ public interface TermTransform extends Function<Term,Term> {
                         if (s2 != s) {
                             if (s2 == null)
                                 return false;
-                            y = new EllipsisMatch(s2);
+                            y = new Fragment(s2);
                         }
                     }
                 }

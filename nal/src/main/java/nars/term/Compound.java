@@ -42,7 +42,6 @@ import org.eclipse.collections.api.block.predicate.primitive.LongObjectPredicate
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
-import java.util.Collection;
 import java.util.SortedSet;
 import java.util.function.BiPredicate;
 import java.util.function.Predicate;
@@ -412,13 +411,6 @@ public interface Compound extends Term, IPair, Subterms {
         //Op op = op();
         return /*op == CONJ ? dtSpecial(dt()) : */op().commutative && subs() > 1;
     }
-
-
-    @Override
-    default void addAllTo(/*@NotNull*/ Collection<Term> set) {
-        subterms().addAllTo(set);
-    }
-
 
     /**
      * gets temporal relation value

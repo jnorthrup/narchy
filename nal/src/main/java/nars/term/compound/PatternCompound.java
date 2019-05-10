@@ -12,7 +12,7 @@ import nars.term.Term;
 import nars.term.Variable;
 import nars.term.util.conj.Conj;
 import nars.term.var.ellipsis.Ellipsis;
-import nars.term.var.ellipsis.EllipsisMatch;
+import nars.term.var.ellipsis.Fragment;
 import nars.term.var.ellipsis.Ellipsislike;
 import nars.unify.Unify;
 import nars.unify.mutate.Choose1;
@@ -134,7 +134,7 @@ abstract public class PatternCompound extends CachedCompound.TemporalCachedCompo
                             //the ellipsis is at the right edge so capture the remainder
                             return
                                     ellipsis.validSize(available) &&
-                                    ellipsis.unify(EllipsisMatch.fragment(Y, yi, yi + available), u);
+                                    ellipsis.unify(Fragment.fragment(Y, yi, yi + available), u);
 
 
                         } else {
@@ -143,7 +143,7 @@ abstract public class PatternCompound extends CachedCompound.TemporalCachedCompo
                         }
                     } else {
                         if (xResolved.op()==FRAG) {
-                            EllipsisMatch xe = (EllipsisMatch) xResolved;
+                            Fragment xe = (Fragment) xResolved;
                             if (!xe.linearMatch(Y, yi, u))
                                 return false;
                             yi += xe.subs();
@@ -318,11 +318,11 @@ abstract public class PatternCompound extends CachedCompound.TemporalCachedCompo
 
             switch (xs) {
                 case 0:
-                    return ellipsis.unify(ys > 0 ? EllipsisMatch.fragment(yFree) : EllipsisMatch.empty, u);
+                    return ellipsis.unify(ys > 0 ? Fragment.fragment(yFree) : Fragment.empty, u);
 
                 case 1:
                     if (xs == ys) {
-                        return xMatch.getFirst().unify(yFree.first(), u) && ellipsis.unify(EllipsisMatch.empty, u);
+                        return xMatch.getFirst().unify(yFree.first(), u) && ellipsis.unify(Fragment.empty, u);
                     } else {
                         //no matches possible but need one
                         return ys >= 1 && Choose1.choose1(ellipsis, xMatch, yFree, u);

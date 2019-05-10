@@ -10,7 +10,7 @@ import nars.term.Term;
 import nars.term.Variable;
 import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
-import nars.term.var.ellipsis.EllipsisMatch;
+import nars.term.var.ellipsis.Fragment;
 import nars.term.var.ellipsis.EllipsisOneOrMore;
 import nars.term.var.ellipsis.EllipsisZeroOrMore;
 import nars.unify.Unify;
@@ -80,8 +80,8 @@ public class EllipsisTest {
 
 
                         Term a = resolve(ellipsisTerm);
-                        if (a instanceof EllipsisMatch) {
-                            EllipsisMatch varArgs = (EllipsisMatch) a;
+                        if (a instanceof Fragment) {
+                            Fragment varArgs = (Fragment) a;
 
                             
 
@@ -93,8 +93,8 @@ public class EllipsisTest {
                             }
 
                             Set<Term> varArgTerms = new HashSet(1);
-                            if (u instanceof EllipsisMatch) {
-                                EllipsisMatch m = (EllipsisMatch) u;
+                            if (u instanceof Fragment) {
+                                Fragment m = (Fragment) u;
                                 m.forEach(varArgTerms::add);
                             } else {
                                 varArgTerms.add(u);

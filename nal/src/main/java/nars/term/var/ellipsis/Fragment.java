@@ -3,7 +3,9 @@ package nars.term.var.ellipsis;
 import jcog.util.ArrayUtil;
 import nars.Op;
 import nars.subterm.Subterms;
+import nars.term.Compound;
 import nars.term.Term;
+import nars.term.compound.CachedCompound;
 import nars.term.compound.LightCompound;
 import nars.term.util.transform.Retemporalize;
 import nars.unify.Unify;
@@ -14,29 +16,30 @@ import java.util.SortedSet;
 
 import static nars.Op.EmptySubterms;
 import static nars.Op.FRAG;
+import static nars.time.Tense.DTERNAL;
 
 /**
  * Holds results of an ellipsis match and
  */
-public final class EllipsisMatch extends LightCompound {
+public final class Fragment extends LightCompound {
 
-    public final static EllipsisMatch empty = new EllipsisMatch();
+    public final static Compound empty = CachedCompound.newCompound(Op.FRAG, DTERNAL, Op.EmptyProduct);
 
-    private EllipsisMatch() {
+    private Fragment() {
         super(FRAG.id, EmptySubterms);
     }
 
-    public EllipsisMatch(Subterms x) {
+    public Fragment(Subterms x) {
         super(FRAG.id, x);
         assert(x.subs() > 1 || (x.subs() == 0 && empty == null /* HACK */));
     }
 
-    private EllipsisMatch(Term[] x) {
+    private Fragment(Term[] x) {
         super(FRAG, x);
         assert(x.length > 1 || (x.length == 0 && empty == null /* HACK */));
     }
 
-    private EllipsisMatch(Collection<Term> x) {
+    private Fragment(Collection<Term> x) {
         this(x.toArray(Op.EmptyTermArray));
     }
 
@@ -53,7 +56,7 @@ public final class EllipsisMatch extends LightCompound {
             case 1:
                 return x[0];
             default:
-                return new EllipsisMatch(x);
+                return new Fragment(x);
         }
 
     }
@@ -68,7 +71,7 @@ public final class EllipsisMatch extends LightCompound {
             case 1:
                 return x.first();
             default:
-                return new EllipsisMatch(x);
+                return new Fragment(x);
         }
     }
 
@@ -120,7 +123,7 @@ public final class EllipsisMatch extends LightCompound {
         int len = to-from;
         switch (len) {
             case 0:
-                return EllipsisMatch.empty;
+                return Fragment.empty;
             case 1:
                 return y.sub(from);
             default:

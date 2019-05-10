@@ -11,7 +11,7 @@ import nars.term.Term;
 import nars.term.Terms;
 import nars.term.atom.Atom;
 import nars.term.var.ellipsis.Ellipsis;
-import nars.term.var.ellipsis.EllipsisMatch;
+import nars.term.var.ellipsis.Fragment;
 import nars.unify.Unify;
 import org.eclipse.collections.api.set.MutableSet;
 
@@ -101,7 +101,7 @@ public class Choose2 extends Termutator.AbstractTermutator {
                 Term y2 = yy.sub(c1);
 
                 if (x[1].unify(y2, f) &&
-                        xEllipsis.unify(EllipsisMatch.matchedExcept(yy, c0, c1), f)) {
+                        xEllipsis.unify(Fragment.matchedExcept(yy, c0, c1), f)) {
 
                     if (!f.tryMutate(chain, current))
                         break;

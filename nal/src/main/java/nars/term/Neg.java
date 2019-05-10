@@ -9,6 +9,7 @@ import nars.term.util.TermException;
 import org.jetbrains.annotations.Nullable;
 
 import static nars.Op.NEG;
+import static nars.term.atom.Bool.False;
 
 public interface Neg extends Term { ;
 
@@ -23,8 +24,16 @@ public interface Neg extends Term { ;
             case NEG:
                 return u.unneg();
 
-            case FRAG:
-                throw new TermException("fragment can not be negated", u);
+            case FRAG: {
+                switch (u.subs()) {
+                    case 0:
+                        return False; //Allow, assuming && superterm
+                    case 1:
+                        return u.sub(0).neg();
+                    default:
+                        throw new TermException("fragment with subs >1 can not be negated", u);
+                }
+            }
 
             case IMG:
                 return u; //return Null;

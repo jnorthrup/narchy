@@ -6,7 +6,7 @@ import nars.subterm.Subterms;
 import nars.term.Term;
 import nars.term.atom.Atom;
 import nars.term.var.ellipsis.Ellipsis;
-import nars.term.var.ellipsis.EllipsisMatch;
+import nars.term.var.ellipsis.Fragment;
 import nars.unify.Unify;
 
 import java.util.Arrays;
@@ -52,7 +52,7 @@ public class Choose1 extends Termutator.AbstractTermutator {
         switch (ys) {
             case 1:
                 assert (ellipsis.minArity == 0);
-                return x0.unify(yFree.first(), u) && ellipsis.unify(EllipsisMatch.empty, u);
+                return x0.unify(yFree.first(), u) && ellipsis.unify(Fragment.empty, u);
             case 2:
                 //check if both elements actually could match x0.  if only one can, then no need to termute.
                 //TODO generalize to n-terms
@@ -100,7 +100,7 @@ public class Choose1 extends Termutator.AbstractTermutator {
             int iy = (shuffle + l) % yy.length;
             Term y = yy[iy];
             if (x.unify(y, u)) {
-                if (xEllipsis.unify( EllipsisMatch.matchedExcept(yy, (byte) iy), u)) {
+                if (xEllipsis.unify( Fragment.matchedExcept(yy, (byte) iy), u)) {
                     if (!u.tryMutate(chain, current))
                         break;
                 }
