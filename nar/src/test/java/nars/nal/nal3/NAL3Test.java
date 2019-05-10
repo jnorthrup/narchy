@@ -314,9 +314,9 @@ public class NAL3Test extends NALTest {
     void testDifferenceQuestion() {
         test
                 .termVolMax(8)
-                .believe("((x|y)-->a)")
-                .mustQuestion(cycles, "((x~y)-->a)")
-                .mustQuestion(cycles, "((y~x)-->a)")
+                .believe("((x&&y)-->a)")
+                .mustQuestion(cycles, "((x&&--y)-->a)")
+                .mustQuestion(cycles, "((y&&--x)-->a)")
         ;
     }
 
@@ -324,9 +324,9 @@ public class NAL3Test extends NALTest {
     void testDifferenceQuest() {
         test
                 .termVolMax(8)
-                .goal("((x|y)-->a)")
-                .mustQuest(cycles, "((x~y)-->a)")
-                .mustQuest(cycles, "((y~x)-->a)")
+                .goal("((x&&y)-->a)")
+                .mustQuest(cycles, "((x&&--y)-->a)")
+                .mustQuest(cycles, "((y&&--x)-->a)")
         ;
     }
 

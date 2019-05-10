@@ -30,9 +30,9 @@ public abstract class Retemporalize extends AbstractTermTransform.NegObliviousTe
 
     protected Term transformTemporal(Compound x, int dtNext) {
         int xdt = x.dt();
-        if (xdt == dtNext && !requiresTransform(x.subterms()))
-            return x;
-        else {
+//        if (xdt == dtNext && !requiresTransform(x.subterms()))
+//            return x;
+//        else {
             Op xo = x.op();
             int n = xo.temporal ? dtNext : DTERNAL;
             if (n == xdt)
@@ -40,7 +40,7 @@ public abstract class Retemporalize extends AbstractTermTransform.NegObliviousTe
             else {
                 return applyCompound(x, xo, n);
             }
-        }
+//        }
     }
 
     /**
@@ -48,7 +48,7 @@ public abstract class Retemporalize extends AbstractTermTransform.NegObliviousTe
      * some implementations will have more specific cases that can elide the
      * need for descent. ex: isTemporal() is narrower than x.hasAny(Op.Temporal)
      */
-    protected static boolean requiresTransform(Termlike x) {
+    private static boolean requiresTransform(Termlike x) {
         return x.hasAny(Op.Temporal);
     }
 

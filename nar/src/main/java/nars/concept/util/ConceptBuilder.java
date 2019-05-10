@@ -201,19 +201,21 @@ public abstract class ConceptBuilder implements BiFunction<Term, Concept, Concep
 
     private static AbstractDynamicTruth dynamicInh(Term t) {
 
+        Term it = Image.imageNormalize(t);
+        if (it != t && !(it instanceof Bool))
+            return DynamicImageTruth.ImageDynamicTruthModel;
+
+
         Subterms tt = t.subterms();
+
         if (tt.hasAny(Op.CONJ /*| Op.PROD.bit*/)) {
 
             Term s = tt.sub(0), p = tt.sub(1);
 
-            {
-                Op so = s.op();
-                Term su = s.unneg();
-                if (so == Op.CONJ || (so == NEG && su.op() == CONJ)) {
-                    Subterms subjsubs = su.subterms();
-                    if (!subjsubs.AND(z -> validDynamicSubterm.test(INH.the(z, p))))
-                        return null;
-
+            Op so = s.op();
+            Term su = s.unneg();
+            if (so == Op.CONJ || (so == NEG && su.op() == CONJ)) {
+                if (su.subterms().AND(z -> validDynamicSubterm.test(z /*INH.the(z, p)*/))) {
                     switch (so) {
                         case CONJ:
                             return DynamicStatementTruth.SubjInter;
@@ -223,14 +225,10 @@ public abstract class ConceptBuilder implements BiFunction<Term, Concept, Concep
                 }
             }
 
-            {
-                Op po = p.op();
-                Term pu = p.unneg();
-                if (po == Op.CONJ || (po == NEG && pu.op() == CONJ)) {
-                    Subterms subjsubs = pu.subterms();
-                    if (!subjsubs.AND(z -> validDynamicSubterm.test(INH.the(s, z))))
-                        return null;
-
+            Op po = p.op();
+            Term pu = p.unneg();
+            if (po == Op.CONJ || (po == NEG && pu.op() == CONJ)) {
+                if (pu.subterms().AND(z -> validDynamicSubterm.test(z /*INH.the(s, z)*/))) {
                     switch (po) {
                         case CONJ:
                             return DynamicStatementTruth.PredInter;
@@ -241,9 +239,7 @@ public abstract class ConceptBuilder implements BiFunction<Term, Concept, Concep
             }
         }
 
-        Term it = Image.imageNormalize(t);
-        if (it != t && !(it instanceof Bool))
-            return DynamicImageTruth.ImageDynamicTruthModel;
+
 
         return null;
     }

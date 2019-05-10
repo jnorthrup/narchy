@@ -133,7 +133,7 @@ public class GoalDecompositionTest extends NALTest {
         test
                 .input("(||,--x,y).")
                 .input("--x!")
-                .mustGoal(cycles, "y", 0f, 0.45f);
+                .mustGoal(cycles, "y", 1f, 0.45f);
     }
     @Test
     void test_Pos_GoalInDisj3_AlternateSuppression_1() {

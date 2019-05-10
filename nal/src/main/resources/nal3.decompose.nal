@@ -1,12 +1,12 @@
 //NAL3 single premise belief/goal decompose
     (  M -->   I), X, is(I,"&&"), subOfPN(I,X)      |-   (M --> withoutPN(I,X)),   (Belief:StructuralDeduction,Goal:StructuralDeduction)
     (  I --> M),   X, is(I,"&&"), subOfPN(I,X)      |-   (withoutPN(I,X)-->M), (Belief:StructuralDeduction,Goal:StructuralDeduction)
-    (  M --> --%I), X, is(%I,"&&"), subOfPN(%I,X) |-   (M --> --withoutPN(%I,--X)),   (Belief:StructuralDeduction,Goal:StructuralDeduction)
-    (--%I --> M),   X, is(%I,"&&"), subOfPN(%I,X) |-   (--withoutPN(%I,--X)-->M), (Belief:StructuralDeduction,Goal:StructuralDeduction)
-      //(  M -->   I), X, is(I,"&&"), subOfPN(I,X)   |-   --(M --> withoutPN(I,X)),   (Belief:StructuralDeductionWeakN,Goal:StructuralDeductionWeakN)
-      //(  M --> --%I), X, is(%I,"&&"), subOfPN(%I,X)   |-   --(M --> --withoutPN(%I,X)),   (Belief:StructuralDeductionN,Goal:StructuralDeductionN)
-      //(  I --> M),   X, is(I,"&&"), subOfPN(I,X)   |-   --(withoutPN(I,X)-->M), (Belief:StructuralDeductionWeakN,Goal:StructuralDeductionWeakN)
-      //(--%I --> M),   X, is(%I,"&&"), subOfPN(%I,X)   |-   --(--withoutPN(%I,X)-->M), (Belief:StructuralDeductionN,Goal:StructuralDeductionN)
+    (  M --> --%I), X, is(%I,"&&"), subOfPN(%I,X) |-   (M --> --withoutPN(%I,X)),   (Belief:StructuralDeductionWeak,Goal:StructuralDeductionWeak)
+    (--%I --> M),   X, is(%I,"&&"), subOfPN(%I,X) |-   (--withoutPN(%I,X)-->M), (Belief:StructuralDeductionWeak,Goal:StructuralDeductionWeak)
+      (  M -->   I), X, is(I,"&&"), subOfPN(I,X)   |-   --(M --> withoutPN(I,X)),   (Belief:StructuralDeductionWeakN,Goal:StructuralDeductionWeakN)
+      (  M --> --%I), X, is(%I,"&&"), subOfPN(%I,X)   |-   --(M --> --withoutPN(%I,X)),   (Belief:StructuralDeductionN,Goal:StructuralDeductionN)
+      (  I --> M),   X, is(I,"&&"), subOfPN(I,X)   |-   --(withoutPN(I,X)-->M), (Belief:StructuralDeductionWeakN,Goal:StructuralDeductionWeakN)
+      (--%I --> M),   X, is(%I,"&&"), subOfPN(%I,X)   |-   --(--withoutPN(%I,X)-->M), (Belief:StructuralDeductionN,Goal:StructuralDeductionN)
 
 //NAL3 single premise question/quest decompose
     ( M --> I), X, is(I,"&&"), task("?@"), subOfPN(I,X) |- (M --> withoutPNRepolarized(I,X))
@@ -31,11 +31,14 @@
 
 //NAL3 double premise goal decompose
 //TODO other negations
-    (M -->    I), (M --> X),  is(I,"&&"), subOf(I,X)     |- (M -->   without( I,  X)),   (Goal:DecomposePP)
-      //? (M --> X), (M -->    I),  is(I,"&&"), subOf(I,X)   |- (M -->   without( I,  X)),   (Goal:DecomposeWeakPP)
-    (M --> --%I), (M --> X), is(%I,"&&"), subOf(%I,--X)  |- (M --> --without(%I,--X)), (Goal:DecomposePN)
+    (I --> M), (X --> M),  is(I,"&&"), subOf(I,X)     |-   (  without( I,  X) --> M),   (Goal:DecomposePN)
+      (I --> M), (X --> M),  is(I,"&&"), subOf(I,X)   |- --(  without( I,  X) --> M),   (Goal:DecomposeNP)
 
-        (I --> M), (X --> M),  is(I,"&&"), subOf(I,X)     |-   (  without( I,  X) --> M),   (Goal:DecomposePN)
-          (I --> M), (X --> M),  is(I,"&&"), subOf(I,X)   |- --(  without( I,  X) --> M),   (Goal:DecomposeNP)
+    (--%I --> M), (X --> M), is(%I,"&&"), subOf(%I,--X)  |- --(--without(%I,--X) --> M),   (Goal:DecomposeNP)
+      (--%I --> M), (X --> M), is(%I,"&&"), subOf(%I,--X)  |-   (--without(%I,--X) --> M),   (Goal:DecomposePN)
 
-     (--%I --> M), (X --> M), is(%I,"&&"), subOf(%I,--X)  |- --(--without(%I,--X) --> M),   (Goal:DecomposePP)
+    (M --> I), (M --> X),  is(I,"&&"), subOf(I,X)     |-   (M -->   without( I,  X)),   (Goal:DecomposePN)
+      (M --> I), (M --> X),  is(I,"&&"), subOf(I,X)   |- --(M -->   without( I,  X)),   (Goal:DecomposeNP)
+
+    (M --> --%I), (M --> X), is(%I,"&&"), subOf(%I,--X)  |- --(M --> --without(%I,--X)), (Goal:DecomposeNP)
+      (M --> --%I), (M --> X), is(%I,"&&"), subOf(%I,--X)  |-   (M --> --without(%I,--X)), (Goal:DecomposePN)

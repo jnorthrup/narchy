@@ -8,7 +8,7 @@ import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 
 import java.util.TreeSet;
 
-import static nars.Op.CONJ;
+import static nars.Op.*;
 import static nars.time.Tense.DTERNAL;
 import static nars.time.Tense.XTERNAL;
 
@@ -99,6 +99,11 @@ public class Conceptualization {
         @Override
         public final Term transformTemporal(Compound x, int dtNext) {
             Op xo = x.op();
+
+            if (xo == INH || xo == SIM) {
+                return Retemporalize.retemporalizeXTERNALToDTERNAL.applyPosCompound(x);
+            }
+
             int dt = xo.temporal ? XTERNAL : DTERNAL;
             Term y = applyCompound(x, xo, dt);
             if (y instanceof Compound && y.op() == CONJ) {

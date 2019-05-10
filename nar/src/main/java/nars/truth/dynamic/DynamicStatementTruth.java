@@ -1,7 +1,6 @@
 package nars.truth.dynamic;
 
 import jcog.Util;
-import jcog.WTF;
 import jcog.util.ObjectLongLongPredicate;
 import nars.NAR;
 import nars.Op;
@@ -16,7 +15,8 @@ import nars.term.util.conj.ConjBuilder;
 import nars.term.util.conj.ConjLazy;
 import nars.time.Tense;
 
-import static nars.Op.*;
+import static nars.Op.IMPL;
+import static nars.Op.NEG;
 import static nars.term.atom.Bool.Null;
 import static nars.time.Tense.*;
 
@@ -240,8 +240,8 @@ public class DynamicStatementTruth {
                 decomposed = decomposed.unneg();
             }
 
-            if (decomposed.op()!=CONJ)
-                throw new WTF("what is it?"); //assert (decomposed.op() == CONJ);
+
+            //assert (decomposed.op() == CONJ);
 
             //if (decomposed.op() == Op.CONJ) {
             Term common = stmtCommon(subjOrPred, superterm);
@@ -258,35 +258,21 @@ public class DynamicStatementTruth {
          * statement component
          */
         private static Term stmtDecomposeStructural(Op superOp, boolean subjOrPred, Term subterm, Term common) {
-            Term s, p;
-
-            boolean outerNegate = false;
-            if (subterm.op() == NEG) {
-                outerNegate = true;
+            boolean outerNegate;
+            if (outerNegate = (subterm.op() == NEG)) {
                 subterm = subterm.unneg();
             }
 
+            Term s, p;
             if (subjOrPred) {
-                s = subterm.negIf(false);
+                s = subterm;
                 p = common;
             } else {
                 s = common;
-                p = subterm.negIf(false);
-            }
-            assert (!(s == null || p == null));
-
-            Term y;
-            if (DTERNAL == DTERNAL) {
-                y = superOp.the(s, p);
-            } else {
-                assert (superOp == IMPL);
-                y = superOp.the(s, DTERNAL, p);
+                p = subterm;
             }
 
-            if (!y.op().conceptualizable)
-                return Null; //throw new WTF();
-
-            return y.negIf(outerNegate);
+            return superOp.the(s, p).negIf(outerNegate);
 
         }
 

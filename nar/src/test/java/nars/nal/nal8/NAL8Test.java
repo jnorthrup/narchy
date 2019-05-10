@@ -727,7 +727,7 @@ public class NAL8Test extends NALTest {
                 .inputAt(1, "(a &&+3 b). |")
                 .inputAt(5, "b! |")
 
-                .mustGoal(cycles, "a", 1f, 0.3f, t -> t >= 5)
+                .mustGoal(cycles, "a", 1f, 0.3f, t -> t == 2)
                 .mustNotOutput(cycles, "a", GOAL, ETERNAL);
     }
 
@@ -737,7 +737,7 @@ public class NAL8Test extends NALTest {
         test
                 .inputAt(1, "(a &&+3 --b).")
                 .inputAt(5, "b! |")
-                .mustGoal(cycles, "a", 0f, 0.3f, t -> t >= 5)
+                .mustGoal(cycles, "a", 0f, 0.3f, t -> t == 2)
                 .mustNotOutput(cycles, "a", GOAL, ETERNAL);
     }
     @Test
@@ -1053,8 +1053,9 @@ public class NAL8Test extends NALTest {
         test
                 .termVolMax(14)
                 .input("on({t002},{t003}).")
-                .input("--(on({t002},#1) &&+0 at(SELF,#1))!")
-                .mustGoal(cycles, "(on({t002},{t003}) &&+0 at(SELF,{t003}))", 0.0f, 0.81f, ETERNAL);
+                .input("--(on({t002},#1) && at(SELF,#1))!")
+                .mustGoal(cycles, "at(SELF,{t003})", 0.0f, 0.81f, ETERNAL);
+                //.mustGoal(cycles, "(on({t002},{t003}) && at(SELF,{t003}))", 0.0f, 0.81f, ETERNAL);
     }
 
     @Test
@@ -1066,7 +1067,7 @@ public class NAL8Test extends NALTest {
         test
             .termVolMax(12)
                 .input("on({t002},{t003})." + (eteBelief ? "" :" |"))
-                .input("(on({t002},#1) &&+0 at(SELF,#1))!")
+                .input("(on({t002},#1) && at(SELF,#1))!")
                 .mustGoal(cycles, "at(SELF,{t003})", 1.0f, 0.81f, eteBelief ? ETERNAL : 0);
     }
 

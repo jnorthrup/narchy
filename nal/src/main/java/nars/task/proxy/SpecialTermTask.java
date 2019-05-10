@@ -1,5 +1,6 @@
 package nars.task.proxy;
 
+import jcog.WTF;
 import nars.Task;
 import nars.task.ProxyTask;
 import nars.task.util.TaskException;
@@ -22,11 +23,11 @@ public class SpecialTermTask extends ProxyTask {
                 task);
 
 
+
         @Nullable ObjectBooleanPair<Term> z = Task.tryContent(term, task.punc(), false);
         this.term = z.getOne();
         if (z.getTwo())
             throw new TaskException(term, this + " can not support negated content target");
-
 
     }
 

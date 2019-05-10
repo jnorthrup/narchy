@@ -72,17 +72,22 @@ public interface Variable extends Atomic {
             y = y.unneg();
         }
 
+        //mobius neg-unification resolution
+        boolean done = false;
         if (x instanceof Neg) {
             Term xu = x.unneg();
             if (xu instanceof Variable && (!(y instanceof Variable) || u.assigns(xu.op(), y.op())) && !(y.op() == FRAG)) {
                 x = xu;
                 y = y.neg();
+                done = true;
             }
-        } else if (y instanceof Neg) {
+        }
+        if (!done && y instanceof Neg) {
             Term yu = y.unneg();
             if (yu instanceof Variable && (!(x instanceof Variable) || u.assigns(yu.op(), x.op())) && !(x.op() == FRAG)) {
                 y = yu;
                 x = x.neg();
+                done = true;
             }
         }
 

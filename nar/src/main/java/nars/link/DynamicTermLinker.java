@@ -12,9 +12,6 @@ import java.util.Random;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
-import static nars.Op.*;
-import static nars.time.Tense.DTERNAL;
-
 public abstract class DynamicTermLinker implements TermLinker {
 
     @Override
@@ -27,7 +24,7 @@ public abstract class DynamicTermLinker implements TermLinker {
         return sampleDynamic(t, t instanceof Compound ? depth((Compound)t, rng) : 1, rng);
     }
 
-    protected final Term sampleDynamic(Term t, int depthRemain, Random rng) {
+    private Term sampleDynamic(Term t, int depthRemain, Random rng) {
         if (depthRemain <= 0 || t.op().atomic)
             return t;
 
@@ -45,16 +42,9 @@ public abstract class DynamicTermLinker implements TermLinker {
         u = u.unneg();
         Op uo = u.op();
 
-        //HACK intersection &&
-        if (depthRemain <= 1 && uo==CONJ && (t.op()==INH || t.op()==SIM)) {
-            u = ((Compound)u).dt(DTERNAL);
-        }
-
         if (u instanceof Img)
             return t;
-
-
-        if (uo.atomic || !(uo.conceptualizable))
+        else if (depthRemain <= 1 || uo.atomic || !(uo.conceptualizable))
             return u; //end
         else
             return sampleDynamic(u, depthRemain-1, rng);

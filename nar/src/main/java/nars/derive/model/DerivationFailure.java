@@ -75,7 +75,7 @@ public enum DerivationFailure {
     }
 
     public static boolean failure(Term x, byte punc) {
-        return failure(x, punc, 0) == Success;
+        return failure(x, punc, 0) != Success;
     }
 
     /** default misc failure */
