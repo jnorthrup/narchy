@@ -33,7 +33,7 @@ import nars.term.anon.Anon;
 import nars.term.compound.UnitCompound;
 import nars.term.util.TermTransformException;
 import nars.term.util.builder.TermBuilder;
-import nars.term.util.conj.Conj;
+import nars.term.util.conj.ConjSeq;
 import nars.term.util.transform.AbstractTermTransform;
 import nars.term.util.transform.MapSubst;
 import nars.term.util.transform.Retemporalize;
@@ -541,12 +541,12 @@ public interface Compound extends Term, IPair, Subterms {
         switch (dt) {
 
             case DTERNAL:
-                if (Conj.isFactoredSeq(this)) {
+                if (ConjSeq.isFactoredSeq(this)) {
                     Subterms ss = subterms();
 
                     //distribute the factored inner sequence
-                    MetalBitSet eteComponents = Conj.seqEternalComponents(ss);
-                    Term seq = Conj.seqTemporal(ss, eteComponents);
+                    MetalBitSet eteComponents = ConjSeq.seqEternalComponents(ss);
+                    Term seq = ConjSeq.seqTemporal(ss, eteComponents);
                     boolean unfactor;
                     int sdt = seq.dt();
                     switch (sdt) {
@@ -561,7 +561,7 @@ public interface Compound extends Term, IPair, Subterms {
                             break;
                     }
                     if (unfactor) {
-                        Term factor = Conj.seqEternal(ss, eteComponents);
+                        Term factor = ConjSeq.seqEternal(ss, eteComponents);
 
                         return seq.eventsWhile((when, what) -> {
 
@@ -744,7 +744,7 @@ public interface Compound extends Term, IPair, Subterms {
 
 
     default Term eventFirst() {
-        if (Conj.isSeq(this)) {
+        if (ConjSeq.isSeq(this)) {
             final Term[] first = new Term[1];
             eventsWhile((when, what) -> {
                 first[0] = what;
@@ -759,7 +759,7 @@ public interface Compound extends Term, IPair, Subterms {
      * TODO optimize
      */
     default Term eventLast() {
-        if (Conj.isSeq(this)) {
+        if (ConjSeq.isSeq(this)) {
             final Term[] last = new Term[1];
             eventsWhile((when, what) -> {
                 last[0] = what;

@@ -11,6 +11,7 @@ import nars.term.Compound;
 import nars.term.Term;
 import nars.term.util.conj.Conj;
 import nars.term.util.conj.ConjBuilder;
+import nars.term.util.conj.ConjSeq;
 import nars.time.Tense;
 import nars.truth.Stamp;
 import org.eclipse.collections.api.block.predicate.primitive.LongObjectPredicate;
@@ -43,7 +44,7 @@ public class DynamicConjTruth {
                 range = ETERNAL;
             }
 
-            boolean factored = Conj.isFactoredSeq(superterm);
+            boolean factored = ConjSeq.isFactoredSeq(superterm);
 
 
             int n = d.size();
@@ -78,13 +79,13 @@ public class DynamicConjTruth {
             //try to evaluate the eternal component of factored sequence independently
             //but this can dilute its truth too much if the sequence is sparse. better to evaluate it
             //piecewise
-            boolean seqFactored = Conj.isFactoredSeq(conj);
+            boolean seqFactored = ConjSeq.isFactoredSeq(conj);
             if(seqFactored) {
                 //evaluate the eternal components first.
                 // this is more efficient than sequence distribution,
                 // and avoids the evidence overlap problem
-                Term eternal = Conj.seqEternal(conj);
-                Compound temporal = Conj.seqTemporal(conj);
+                Term eternal = ConjSeq.seqEternal(conj);
+                Compound temporal = ConjSeq.seqTemporal(conj);
                 if (each.accept(eternal, start, end + temporal.eventRange())) {
                     //now concentrate on the temporal component:
                     conj = temporal;
@@ -94,7 +95,7 @@ public class DynamicConjTruth {
             }
 
             int superDT = conj.dt();
-            boolean dternal = !Conj.isSeq(conj) && superDT == DTERNAL;
+            boolean dternal = !ConjSeq.isSeq(conj) && superDT == DTERNAL;
             boolean xternal = superDT == XTERNAL;
             boolean parallel = true; //superDT == 0;
 

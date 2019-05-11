@@ -32,7 +32,7 @@ import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
 import nars.term.atom.Int;
 import nars.term.compound.UnitCompound;
-import nars.term.util.conj.Conj;
+import nars.term.util.conj.ConjSeq;
 import nars.term.util.transform.MapSubst;
 import nars.term.util.transform.Retemporalize;
 import nars.time.Tense;
@@ -446,7 +446,7 @@ public interface Term extends Termlike, Termed, Comparable<Term> {
         }
 
         if (op() == CONJ) {
-            if (Conj.isSeq(this)) {
+            if (ConjSeq.isSeq(this)) {
 //                final int[] hits = {0};
                 eventsWhile((when, what) -> {
                     if (what.equals(match)) {

@@ -2,21 +2,18 @@ package nars.term.util.conj;
 
 import jcog.TODO;
 import jcog.WTF;
-import jcog.data.bit.MetalBitSet;
 import jcog.data.list.FasterList;
 import jcog.data.set.LongObjectArraySet;
 import jcog.util.ArrayUtil;
 import nars.NAL;
 import nars.Op;
 import nars.subterm.Subterms;
-import nars.term.Compound;
 import nars.term.Term;
 import nars.term.Terms;
 import nars.term.atom.Bool;
 import nars.term.util.builder.HeapTermBuilder;
 import nars.term.util.builder.TermBuilder;
 import nars.term.util.map.ByteAnonMap;
-import nars.time.Tense;
 import org.eclipse.collections.api.block.predicate.primitive.ByteObjectPredicate;
 import org.eclipse.collections.api.block.predicate.primitive.BytePredicate;
 import org.eclipse.collections.api.block.predicate.primitive.LongObjectPredicate;
@@ -36,16 +33,12 @@ import org.roaringbitmap.ImmutableBitmapDataProvider;
 import org.roaringbitmap.PeekableIntIterator;
 import org.roaringbitmap.RoaringBitmap;
 
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Predicate;
 
 import static java.lang.System.arraycopy;
 import static nars.Op.*;
-import static nars.term.Terms.commuted;
 import static nars.term.atom.Bool.*;
 import static nars.time.Tense.*;
 import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
@@ -70,8 +63,8 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
 //    private static final TermBuilder terms =
 //            //HeapTermBuilder.the;
 //            Op.terms;
-    private static final Predicate<Term> isTemporalComponent = Conj::isSeq;
-    private static final Predicate<Term> isEternalComponent = isTemporalComponent.negate();
+    static final Predicate<Term> isTemporalComponent = ConjSeq::isSeq;
+    static final Predicate<Term> isEternalComponent = isTemporalComponent.negate();
     public final LongObjectHashMap<Object> event;
     /**
      * state which will be set in a terminal condition, or upon target construction in non-terminal condition
@@ -114,10 +107,6 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
         return ConjLazy.events(t);
     }
 
-    public static MetalBitSet seqEternalComponents(Subterms x) {
-        return x.subsTrue(Conj.isEternalComponent);
-    }
-
     public static boolean containsOrEqualsEvent(Term container, Term x) {
         return container.equals(x) || containsEvent(container, x);
     }
@@ -128,7 +117,7 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
         if (container.contains(x))
             return true;
 
-        if (isSeq(container)) {
+        if (ConjSeq.isSeq(container)) {
             //check if the term exists when distributed factorized
 //            boolean xIsConj = x.op() == CONJ;
 //            int xdt = xIsConj ? x.dt() : DTERNAL;
@@ -141,18 +130,18 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
 
     }
 
-    public static boolean isEventFirstOrLast(Term container, Term x, boolean firstOrLast) {
-        if (!x.op().eventable || container.op() != CONJ || container.impossibleSubTerm(x))
-            return false;
-
-        boolean seq = isSeq(container);
-        if (!seq) {
-            return ConjCommutive.contains(container, x);
-        } else {
-            return ConjSeq.contains(container, x, firstOrLast);
-        }
-
-    }
+//    public static boolean isEventFirstOrLast(Term container, Term x, boolean firstOrLast) {
+//        if (!x.op().eventable || container.op() != CONJ || container.impossibleSubTerm(x))
+//            return false;
+//
+//        boolean seq = isSeq(container);
+//        if (!seq) {
+//            return ConjCommutive.contains(container, x);
+//        } else {
+//            return ConjSeq.contains(container, x, firstOrLast);
+//        }
+//
+//    }
 
     public static Term[] preSort(int dt, Term[] u) {
 
@@ -551,78 +540,6 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
 //        return y.negIf(negated);
 //    }
 
-    /**
-     * whether the conjunction is a sequence (includes check for factored inner sequence)
-     */
-    public static boolean isSeq(Term x) {
-        if (x.op() != CONJ)
-            return false;
-
-        int dt = x.dt();
-        if (dt == DTERNAL) {
-            return _isSeq(x);
-        } else
-            return !dtSpecial(dt);
-    }
-
-    private static boolean _isSeq(Term x) {
-        Subterms xx = x.subterms();
-        return xx.hasAny(CONJ) && //inner conjunction
-                xx.subs() == 2 &&
-                xx.count(Conj::isSeq) == 1
-                && (!xx.hasAny(NEG)
-                        ||
-                        /** TODO weird disjunctive seq cases */
-                        xx.count(xxx -> xxx.op() == NEG && xxx.unneg().op() == CONJ) == 0)
-                ;
-    }
-
-    public static boolean isFactoredSeq(Term x) {
-        return x.dt() == DTERNAL && _isSeq(x);
-    }
-
-    /**
-     * extracts the eternal components of a seq. assumes the conj actually has been determined to be a sequence
-     */
-    public static Term seqEternal(Term seq) {
-        assert (seq.op() == CONJ && seq.dt() == DTERNAL);
-        return seqEternal(seq.subterms());
-    }
-
-    private static Term seqEternal(Subterms ss) {
-        return seqEternal(ss, ss.subsTrue(isEternalComponent));
-    }
-
-    public static Term seqEternal(Subterms ss, MetalBitSet m) {
-        switch (m.cardinality()) {
-            case 0:
-                throw new WTF();
-            case 1:
-                return ss.sub(m.first(true));
-            default:
-                Term[] cc = ss.subsIncluding(m);
-                Term e = CONJ.the(cc);
-                if (e instanceof Bool)
-                    throw new WTF("&&(" + Arrays.toString(cc) + ") => " + e);
-                return e;
-        }
-    }
-
-    public static Compound seqTemporal(Term seq) {
-        assert (seq.op() == CONJ && seq.dt() == DTERNAL);
-        return seqTemporal(seq.subterms());
-    }
-
-    private static Compound seqTemporal(Subterms s) {
-        Compound t = (Compound) s.subFirst(isTemporalComponent);
-        assert (Conj.isSeq(t));
-        return t;
-    }
-
-    public static Term seqTemporal(Subterms s, MetalBitSet eternalComponents) {
-        return s.sub(eternalComponents.next(false, 0, s.subs()));
-    }
-
     public static Term diffOne(Term include, Term exclude) {
         return diffOne(include, exclude, false);
     }
@@ -675,7 +592,7 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
 //
 //        }
 
-        if (exclude.op()==CONJ || Conj.isSeq(include)) {
+        if (exclude.op()==CONJ || ConjSeq.isSeq(include)) {
 //            Conj xx = Conj.from(include);
 //            if (xx.removeEventsByTerm(exclude, true, excludeNeg)) {
 //                return xx.term();
@@ -689,7 +606,7 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
 
             boolean[] removedSomething = new boolean[]{false};
 
-            long offset = exclude.dt() == DTERNAL && !Conj.isSeq(exclude) ? ETERNAL : 0;
+            long offset = exclude.dt() == DTERNAL && !ConjSeq.isSeq(exclude) ? ETERNAL : 0;
 
             exclude.eventsWhile((when, what) -> {
                 removedSomething[0] |= when == ETERNAL ? x.removeAll(what) : x.remove(when, what);
@@ -851,97 +768,6 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
 
     //TODO public static ObjectIntPair<Term> diffX(Term include, Term exclude) { //returns the resulting dt shift, replacing ConjDiff class
 
-    private static Term conjSeq(TermBuilder B, LongObjectArraySet<Term> events) {
-        return conjSeq(B, events, 0, events.size());
-    }
-
-    /**
-     * constructs a correctly merged conjunction from a list of events, in the sublist specified by from..to (inclusive)
-     * assumes that all of the event terms have distinct occurrence times
-     */
-    private static Term conjSeq(TermBuilder B, LongObjectArraySet<Term> events, int start, int end) {
-
-        Term first = events.get(start);
-        long firstWhen = events.when(start);
-        int ee = end - start;
-        switch (ee) {
-            case 0:
-                throw new NullPointerException("should not be called with empty events list");
-            case 1:
-                return first;
-            case 2: {
-                Term second = events.get(end - 1);
-                long secondWhen = events.when(end - 1);
-                return conjSeqFinal(B,
-                        Tense.occToDT(secondWhen - firstWhen),
-                        /* left */ first, /* right */ second);
-            }
-        }
-
-        int center = start + (end - 1 - start) / 2;
-
-
-        Term left = conjSeq(B, events, start, center + 1);
-        if (left == Null) return Null;
-        if (left == False) return False;
-
-        Term right = conjSeq(B, events, center + 1, end);
-        if (right == Null) return Null;
-        if (right == False) return False;
-
-        int dt = (int) (events.when(center + 1) - firstWhen - left.eventRange());
-
-        return !dtSpecial(dt) ? conjSeqFinal(B, dt, left, right) : conjoin(B, left, right, dt == DTERNAL);
-    }
-
-    private static Term conjSeqFinal(TermBuilder b, int dt, Term left, Term right) {
-        assert (dt != XTERNAL);
-
-        if (left == Null) return Null;
-        if (right == Null) return Null;
-
-        if (left == False) return False;
-        if (right == False) return False;
-
-        if (left == True) return right;
-        if (right == True) return left;
-
-        if (!left.op().eventable || !right.op().eventable)
-            return Null;
-
-        if (dt == 0 || dt == DTERNAL) {
-            if (left.equals(right))
-                return left;
-            else if (left.equalsNeg(right))
-                return False;
-        } else {
-            if (left!=right && left.equals(right))
-                right = left;
-            //TODO equalsNeg identity?
-        }
-
-        if (left!=right && left.compareTo(right) > 0) {
-            if (dt != DTERNAL)
-                dt = -dt;
-            Term t = right;
-            right = left;
-            left = t;
-        }
-
-//        Term finalRight = right;
-//        //TODO optimize
-//        if (!left.equals(right) && left.op()==CONJ && right.op()==CONJ && left.dt()==DTERNAL && right.dt()==DTERNAL && left.OR(l-> finalRight.subterms().contains(l))) {
-//            //factorization may be possible
-//            Conj x = new Conj(2);
-//            if (x.add(0, left))
-//                x.add(dt, right);
-//            return x.term(b);
-//        } else {
-            Term t = b.theCompound(CONJ, dt, left, right);
-            return t;
-//        }
-    }
-
     private static int conflictOrSame(Object e, byte id) {
         if (e instanceof byte[]) {
             byte[] b = (byte[]) e;
@@ -1012,7 +838,7 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
             //then merge the incoming target
 
 
-            if (!isSeq(conjUnneg)) {
+            if (!ConjSeq.isSeq(conjUnneg)) {
                 Term newConj = Conj.diffAll(conjUnneg, incoming, false);
                 if (newConj.equals(conjUnneg))
                     return True; //no change
@@ -1204,7 +1030,7 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
 
             //two sequence-likes. maybe some preprocessing that can be applied here
             //otherwise just add the new event
-            if (!Conj.isSeq(existing) && !Conj.isSeq(incoming))
+            if (!ConjSeq.isSeq(existing) && !ConjSeq.isSeq(incoming))
                 return null;
 
         }
@@ -1218,7 +1044,7 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
 //            }
 //        }
 
-        if (!Conj.isSeq(existing))
+        if (!ConjSeq.isSeq(existing))
             return null; //ok
 
         if (incoming.unneg().op()!=CONJ && !existing.containsRecursively(incoming.unneg()))
@@ -2215,7 +2041,7 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
                             break;
                         default:
                             temporals.sortThis();
-                            temporal = conjSeq(B, temporals);
+                            temporal = ConjSeq.conjSeq(B, temporals);
                             break;
                     }
                 } else
@@ -2279,35 +2105,9 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
 //                    if (tur.test(eu) || (eu.op()!=CONJ || eu.subterms().OR(tur))) {
                         //needs further flattening
                         Term y = ConjCommutive.the(B, DTERNAL, true, true, temporal, eternal);
-
-
                         return y;
 //                    }
 
-//                    if (y.op()==CONJ && dtSpecial(y.dt()) && y.dt()!=XTERNAL && !Conj.isSeq(y) && y.subterms().hasAny(CONJ)) {
-//                        y = ConjCommutive.the(B, y.dt(), true, true, y.subterms().arrayShared());
-//                    }
-//
-//                    //TEMPORARY for debugging
-//                    if (y.anon().volume()!=y.volume()) {
-//                        System.out.println(y + "\n" + y.anon());
-//                        y.printRecursive();
-//                        y.anon().printRecursive();
-//                        throw new WTF();
-//                    }
-
-//                }
-//
-//
-//                return B.theCompound(CONJ, DTERNAL, sorted(temporal, eternal));
-////
-//                    //TEMPORARY for debugging
-//                    if (y.anon().volume()!=y.volume()) {
-//                        System.out.println(y + "\n" + y.anon());
-//                        y.printRecursive();
-//                        y.anon().printRecursive();
-//                        throw new WTF();
-//                    }
 
 
             }

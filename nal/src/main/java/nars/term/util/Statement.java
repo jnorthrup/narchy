@@ -189,7 +189,7 @@ public class Statement {
 
         if ((op != IMPL
                 || dt == DTERNAL /* allow parallel IMPL unless there is a sequence that could separate the events from overlap */)
-                || (dt == 0 && !Conj.isSeq(subject) && !Conj.isSeq(predicate))
+                || (dt == 0 && !ConjSeq.isSeq(subject) && !ConjSeq.isSeq(predicate))
         ) {
 
             if ((statementLoopy(subject.unneg(), predicate.unneg())))

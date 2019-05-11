@@ -8,7 +8,7 @@ import nars.term.Term;
 import nars.term.Variable;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
-import nars.term.util.conj.Conj;
+import nars.term.util.conj.ConjSeq;
 import nars.term.var.VarPattern;
 
 import javax.annotation.Nullable;
@@ -454,7 +454,7 @@ abstract public class TermMatcher {
             Term u = t.unneg();
             if (u.op()==CONJ) {
                 int i = u.dt();
-                return i == XTERNAL || i == 0 || (i == DTERNAL && !Conj.isSeq(u));
+                return i == XTERNAL || i == 0 || (i == DTERNAL && !ConjSeq.isSeq(u));
             }
             return false;
         }

@@ -254,13 +254,13 @@ public enum ConjCommutive {;
 
             long sdt = dt == DTERNAL ? ETERNAL : 0;
 
-            if (seq != null || disj!=null) {
+            if (seq != null) {
                 ConjBuilder c = new Conj(u.length);
                 //add the non-conj terms at ETERNAL first.
                 //iterate in reverse order to add smaller (by volume) items first
                 bsmain: for (boolean addingSeq : new boolean[] { false, true }) {
                     for (int i = u.length - 1; i >= 0; i--) {
-                        if (addingSeq == (seq!=null && seq.get(i)) || (disj!=null && disj.get(i)))
+                        if (addingSeq == seq.get(i))
                             if (!c.add(sdt, u[i]))
                                 break bsmain;
                     }
@@ -392,7 +392,7 @@ public enum ConjCommutive {;
 
 
     public static boolean contains(Term container, Term x) {
-        if (x.op() == CONJ && !Conj.isSeq(x)) {
+        if (x.op() == CONJ && !ConjSeq.isSeq(x)) {
             //test for containment of all x's components
             if (x.subterms().AND(container::contains))
                 return true;

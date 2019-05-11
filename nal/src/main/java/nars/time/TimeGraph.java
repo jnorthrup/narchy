@@ -509,7 +509,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
                         case DTERNAL:
                         default:
 
-                            if (edt == DTERNAL && !Conj.isSeq(eventTerm)) {
+                            if (edt == DTERNAL && !ConjSeq.isSeq(eventTerm)) {
 
                                 //commutive dternal: inherit event time simultaneously
                                 eventTerm.subterms().forEach(y -> know(y, eventStart, eventEnd));
@@ -682,7 +682,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 
     private static boolean atStart(Term subEvent, Term event) {
         if (event.op() == CONJ && event.dt() != XTERNAL) {
-            boolean seq = Conj.isSeq(event);
+            boolean seq = ConjSeq.isSeq(event);
             if (!seq) {
                 return event.contains(subEvent);
             } else if (seq) {

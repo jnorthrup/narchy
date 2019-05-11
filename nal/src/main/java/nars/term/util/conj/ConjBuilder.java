@@ -98,7 +98,7 @@ public interface ConjBuilder {
 
         if (xdt!=XTERNAL && (at != ETERNAL || (xdt == 0) || (xdt == DTERNAL))) {
 
-            if (at == ETERNAL && Conj.isSeq(x))
+            if (at == ETERNAL && ConjSeq.isSeq(x))
                 at = 0;
 
             return x.eventsWhile(this::addEvent, at,

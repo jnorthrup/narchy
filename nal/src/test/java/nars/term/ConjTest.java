@@ -1715,6 +1715,10 @@ public class ConjTest {
         assertEq("((--,(x&&y))&&z)",
                 CONJ.the(DTERNAL, $$("--(x&&y)"), $$("z")));
     }
+    @Test
+    void testSequentialFactor() {
+        assertEq("((y &&+1 z)&&x)", "((x&&y) &&+1 (x&&z))");
+    }
 
     @Test
     void testSequentialDisjunctionAbsorb() {

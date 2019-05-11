@@ -10,7 +10,7 @@ import nars.subterm.TermList;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.Variable;
-import nars.term.util.conj.Conj;
+import nars.term.util.conj.ConjSeq;
 import nars.term.var.ellipsis.Ellipsis;
 import nars.term.var.ellipsis.Fragment;
 import nars.term.var.ellipsis.Ellipsislike;
@@ -213,7 +213,7 @@ abstract public class PatternCompound extends CachedCompound.TemporalCachedCompo
             SortedSet<Term> yFree;
                     //uc==null ? y.toSetSorted() : y.toSetSorted(yy -> MatchConstraint.valid(yy, uc, u));
                     //y.toSetSorted();
-            boolean seq = op() == CONJ && dt() == XTERNAL && Conj.isSeq(Y);
+            boolean seq = op() == CONJ && dt() == XTERNAL && ConjSeq.isSeq(Y);
             if (seq) {
                 yFree = Y.eventSet();
             } else {
