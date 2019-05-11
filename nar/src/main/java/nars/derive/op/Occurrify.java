@@ -87,7 +87,7 @@ public class Occurrify extends TimeGraph {
         this.d = d;
     }
 
-    static boolean temporal(Truthify truth, Derivation d) {
+    @Deprecated static boolean temporal(Truthify truth, Derivation d) {
         if (!d.temporal)
             return false;
 
@@ -444,7 +444,9 @@ public class Occurrify extends TimeGraph {
         this.decomposeEvents = decomposeEvents;
 
         if (taskStart == ETERNAL && beliefStart != ETERNAL) {
-            taskStart = taskEnd = TIMELESS;
+            //taskStart = taskEnd = TIMELESS;
+            //taskStart = taskEnd = d.time();
+            long now = d.time(); int dur = d.dur(); taskStart = now - dur/2; taskEnd = now + dur/2;
         } else if (beliefStart!=TIMELESS && taskStart != ETERNAL) {
             //conditions for considering vs ignoring belief occurrence:
             boolean ignoreBeliefOcc = false;
@@ -584,76 +586,76 @@ public class Occurrify extends TimeGraph {
         },
 
 
-        TaskInBeliefPos() {
-            @Override
-            public Pair<Term, long[]> occurrence(Term x, Derivation d) {
-                return solveLocal(d, x);
-            }
-
-
-            @Override
-            long[] occurrence(Derivation d) {
-                return occTaskInBelief(d, true, true, true);
-            }
-
-        },
-        TaskInBeliefNeg() {
-            @Override
-            public Pair<Term, long[]> occurrence(Term x, Derivation d) {
-                return solveLocal(d, x);
-            }
-
-            @Override
-            long[] occurrence(Derivation d) {
-                return occTaskInBelief(d, true, true, false);
-            }
-
-        },
-        TaskLastInBeliefPos() {
-            @Override
-            public Pair<Term, long[]> occurrence(Term x, Derivation d) {
-                return (solveLocal(d, x));
-            }
-
-            @Override
-            long[] occurrence(Derivation d) {
-                return occTaskInBelief(d, true, false, true);
-            }
-        },
-        TaskLastInBeliefNeg() {
-            @Override
-            public Pair<Term, long[]> occurrence(Term x, Derivation d) {
-                return (solveLocal(d, x));
-            }
-
-            @Override
-            long[] occurrence(Derivation d) {
-                return occTaskInBelief(d, true, false, false);
-            }
-        },
-
-        AfterBeliefInTask() {
-            @Override
-            public Pair<Term, long[]> occurrence(Term x, Derivation d) {
-                @Nullable Pair<Term, long[]> p = solveLocal(d, x);
-                long[] pp = p.getTwo();
-                if (d.beliefStart == ETERNAL) {
-                    pp[0] = d.taskStart;
-                    pp[1] = d.taskEnd;
-                } else {
-                    int shift = d.taskTerm.eventRange() - x.eventRange();
-                    pp[0] = d.beliefStart + shift;
-                    pp[1] = d.beliefEnd + shift;
-                }
-                return p;
-            }
-
-            @Override
-            long[] occurrence(Derivation d) {
-                return new long[]{TIMELESS, TIMELESS};
-            }
-
-        },
+//        TaskInBeliefPos() {
+//            @Override
+//            public Pair<Term, long[]> occurrence(Term x, Derivation d) {
+//                return solveLocal(d, x);
+//            }
+//
+//
+//            @Override
+//            long[] occurrence(Derivation d) {
+//                return occTaskInBelief(d, true, true, true);
+//            }
+//
+//        },
+//        TaskInBeliefNeg() {
+//            @Override
+//            public Pair<Term, long[]> occurrence(Term x, Derivation d) {
+//                return solveLocal(d, x);
+//            }
+//
+//            @Override
+//            long[] occurrence(Derivation d) {
+//                return occTaskInBelief(d, true, true, false);
+//            }
+//
+//        },
+//        TaskLastInBeliefPos() {
+//            @Override
+//            public Pair<Term, long[]> occurrence(Term x, Derivation d) {
+//                return (solveLocal(d, x));
+//            }
+//
+//            @Override
+//            long[] occurrence(Derivation d) {
+//                return occTaskInBelief(d, true, false, true);
+//            }
+//        },
+//        TaskLastInBeliefNeg() {
+//            @Override
+//            public Pair<Term, long[]> occurrence(Term x, Derivation d) {
+//                return (solveLocal(d, x));
+//            }
+//
+//            @Override
+//            long[] occurrence(Derivation d) {
+//                return occTaskInBelief(d, true, false, false);
+//            }
+//        },
+//
+//        AfterBeliefInTask() {
+//            @Override
+//            public Pair<Term, long[]> occurrence(Term x, Derivation d) {
+//                @Nullable Pair<Term, long[]> p = solveLocal(d, x);
+//                long[] pp = p.getTwo();
+//                if (d.beliefStart == ETERNAL) {
+//                    pp[0] = d.taskStart;
+//                    pp[1] = d.taskEnd;
+//                } else {
+//                    int shift = d.taskTerm.eventRange() - x.eventRange();
+//                    pp[0] = d.beliefStart + shift;
+//                    pp[1] = d.beliefEnd + shift;
+//                }
+//                return p;
+//            }
+//
+//            @Override
+//            long[] occurrence(Derivation d) {
+//                return new long[]{TIMELESS, TIMELESS};
+//            }
+//
+//        },
 
 //        /**
 //         * used for single premise conjunction within conjunction result

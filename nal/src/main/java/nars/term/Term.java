@@ -576,7 +576,7 @@ public interface Term extends Termlike, Termed, Comparable<Term> {
 
     Term normalize(byte offset);
 
-    /* final */ @Nullable default /* final */ Term normalize() {
+    /* final */ default /* final */ Term normalize() {
         return normalize((byte) 0);
     }
 
