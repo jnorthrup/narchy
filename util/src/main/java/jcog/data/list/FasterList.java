@@ -288,7 +288,9 @@ public class FasterList<X> extends FastList<X> {
     public MutableList<X> shuffleThis(Random rnd) {
         return size > 1 ? super.shuffleThis(rnd) : this;
     }
-
+    public MutableList<X> shuffleThis(Supplier<Random> rnd) {
+        return size > 1 ? super.shuffleThis(rnd.get()) : this;
+    }
     /**
      * use with caution.
      * --this could become invalidated so use it as a snapshot

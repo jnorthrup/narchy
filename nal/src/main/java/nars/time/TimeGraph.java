@@ -596,7 +596,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 
             boolean aEqB = a.equals(b);
 
-            return solveDTpair(x, each, a, b, aEqB) && solveDTAbsolutePair(x, each, a, b, aEqB);
+            return solveDTpair(x, each, a, b, aEqB);
 
         } else {
             //TODO make this recursive for length n
@@ -655,11 +655,15 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
             }
         }
 
-        Iterable<Event> AB = sortEvents(ab);
+        //Iterable<Event> AB = sortEvents(ab);
+        ab.shuffleThis(this::random);
 
         //TODO re-use DTPairSolver
+        DTPairSolver s = new DTPairSolver(a, b, x, each, true, false, false);
         return true
-            && bfsNew(AB, new DTPairSolver(a, b, x, each, true, false, false))
+            && bfsNew(Iterables.filter(ab, aabb->aabb instanceof Absolute), s)
+            && solveDTAbsolutePair(x, each, a, b, aEqB)
+            && bfsNew(Iterables.filter(ab, aabb->!(aabb instanceof Absolute)), s)
 //            && bfsNew(AB, new DTPairSolver(a, b, x, each, false, true, false))
 //            && bfsNew(AB, new DTPairSolver(a, b, x, each, false, false, true))
         ;
@@ -1225,10 +1229,10 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 
     private boolean solveOccurrence(Event x, Predicate<Event> each) {
         return true//solveExact(x, each) &&
-               && bfsNew(List.of(x), new OccSolver(true, true, false, each))
+               && bfsNew(x, new OccSolver(true, true, false, each))
                //&& bfsNew(List.of(x), new OccSolver(false, false, true, each))
                //&& solveSelfLoop(x, each)
-               && (!autoneg || bfsNew(List.of(x.neg()), new OccSolver(true, false, true,
+               && (!autoneg || bfsNew(x.neg(), new OccSolver(true, false, true,
                     z -> each.test(z.neg()))))
                && solveLastResort(x, each)
                 ;

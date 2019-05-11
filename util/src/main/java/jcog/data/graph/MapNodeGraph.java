@@ -89,6 +89,11 @@ public class MapNodeGraph<N, E> extends NodeGraph<N, E> {
             return r;
         }), search);
     }
+    /** ensures each root node is added before searching */
+    public boolean bfsNew(N root, Search<N, E> search) {
+        addNewNode(root);
+        return bfs(List.of(root), search);
+    }
 
     public final MutableNode<N, E> addNode(N key) {
         return addNode(key, true);
