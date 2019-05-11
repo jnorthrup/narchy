@@ -18,8 +18,7 @@ import org.eclipse.collections.impl.map.mutable.primitive.LongObjectHashMap;
 
 import java.util.List;
 
-import static nars.Op.CONJ;
-import static nars.Op.VAR_DEP;
+import static nars.Op.*;
 import static nars.term.atom.Bool.*;
 import static nars.time.Tense.*;
 
@@ -37,8 +36,8 @@ public class ConjMatch {
         event = Image.imageNormalize(event);
 
         int varBits =
-                //VAR_DEP.bit | VAR_INDEP.bit;
-                VAR_DEP.bit;
+                VAR_DEP.bit | VAR_INDEP.bit;
+                //VAR_DEP.bit;
 
         if (event.volume() >= conj.volume() || !Term.commonStructure( (event.structure()&(~varBits)),(conj.structure()&(~varBits))))
             return Null;

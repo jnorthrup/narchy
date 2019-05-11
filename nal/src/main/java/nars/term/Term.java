@@ -441,9 +441,9 @@ public interface Term extends Termlike, Termed, Comparable<Term> {
      * TODO move down to Compound, provide streamlined Atomic impl
      */
     default boolean subTimesWhile(Term match, IntPredicate each) {
-        if (equals(match)) {
+        if (equals(match))
             return each.test(0);
-        }
+
 
         if (op() == CONJ) {
             if (ConjSeq.isSeq(this)) {
@@ -462,7 +462,7 @@ public interface Term extends Termlike, Termed, Comparable<Term> {
                         }
                     }
                     return true;
-                }, 0, false, false, false);
+                }, 0, match.dt()!=0, match.dt()!=DTERNAL, true);
                 return true;
             } else {
                 if (contains(match))
@@ -508,7 +508,6 @@ public interface Term extends Termlike, Termed, Comparable<Term> {
         if (oc != 0)
             return oc;
 
-
         if (this instanceof Atomic /* volume == 1 */) {
 
             if (this instanceof Int /*&& t instanceof Int*/) {
@@ -531,14 +530,12 @@ public interface Term extends Termlike, Termed, Comparable<Term> {
         }
     }
 
-
     Subterms subterms();
 
     /**
      * unwraps negation - only changes if this term is NEG
      */
     default Term unneg() {
-        //return op() == NEG ? sub(0) : this;
         return this;
     }
 

@@ -316,7 +316,7 @@ public abstract class Unify extends Versioning<Term> {
         tryMutate(t, -1);
     }
 
-    protected Termutator[] commitTermutes() {
+    private Termutator[] commitTermutes() {
         int ts = termutes.size();
         if (ts > 0) {
             Termutator[] t = termutes.toArray(new Termutator[ts]);
@@ -371,7 +371,7 @@ public abstract class Unify extends Versioning<Term> {
 
     /** can x be assigned to y (y <= x) */
     public final boolean assigns(Op target, Op value) {
-        return (!value.var || (target.id < value.id)) && var(target);
+        return (!value.var || (target.id <= value.id)) && var(target);
     }
 
 
@@ -379,7 +379,7 @@ public abstract class Unify extends Versioning<Term> {
         forEach(versionedToBiConsumer(each));
     }
 
-    public final void revert(int when, BiConsumer<Term,Term> each) {
+    private void revert(int when, BiConsumer<Term, Term> each) {
         if (each==null)
             revert(0);
         else
@@ -406,7 +406,7 @@ public abstract class Unify extends Versioning<Term> {
     }
 
 
-    public final void constrain(UnifyConstraint m) {
+    public final void constrain(UnifyConstraint<?> m) {
         Variable target = m.x;
         ConstrainedVersionedTerm targetVersioned = (ConstrainedVersionedTerm) xy.getOrCreateIfAbsent(target);
         targetVersioned.constrain(m);
@@ -422,19 +422,18 @@ public abstract class Unify extends Versioning<Term> {
 
     public final Term resolvePosNeg(Term x) {
         Op o = x.op();
-        boolean neg = o == NEG;
         Term xx;
+        boolean neg = o == NEG;
         if (neg) {
             xx = x.unneg();
             o = xx.op();
         } else
             xx = x;
 
-        if (o.var && var(o)) {
+        if (var(o)) {
             Term y = resolve((Variable) xx);
-            if (y != xx) {
-                return neg ? y.neg() : y;
-            }
+            if (y != xx)
+                return y.negIf(neg);
         }
 
         return x; //no change
@@ -487,12 +486,12 @@ public abstract class Unify extends Versioning<Term> {
         }
 
         void constrain(UnifyConstraint c) {
-            if (NAL.DEBUG) { assert(value==null && constraint == null); }
+            //if (NAL.DEBUG) { assert(value==null && constraint == null); }
             constraint = c;
         }
 
         void unconstrain() {
-            if (NAL.DEBUG) {  assert(constraint != null && value==null); }
+            //if (NAL.DEBUG) {  assert(constraint != null && value==null); }
             constraint = null;
         }
     }

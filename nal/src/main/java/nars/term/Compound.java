@@ -563,24 +563,24 @@ public interface Compound extends Term, IPair, Subterms {
                     if (unfactor) {
                         Term factor = ConjSeq.seqEternal(ss, eteComponents);
 
-                        return seq.eventsWhile((when, what) -> {
+                        return seq.eventsWhile(
+                            (!decomposeConjDTernal) ?
+                                (when, what) -> {
+                                 //combine the component with the eternal factor
+                                    Term distributed = CONJ.the(what, factor);
 
-                            if (!decomposeConjDTernal) {
-                                //combine the component with the eternal factor
-                                Term distributed = CONJ.the(what, factor);
+                                    if (distributed.op() != CONJ)
+                                        throw new TermTransformException(Compound.this, distributed,
+                                                "invalid conjunction factorization");
 
-                                if (distributed.op() != CONJ)
-                                    throw new TermTransformException(Compound.this, $.p($.p(what, factor), distributed),
-                                            "invalid conjunction factorization");
+                                    return each.accept(when, distributed);
+                                }
+                                :
+                                (when,what) ->
+                                    //provide the component and the eternal separately, at the appropriate time
+                                    each.accept(when, what) && each.accept(when, factor)
 
-//                                    assert (!(distributed instanceof Bool));
-                                return each.accept(when, distributed);
-                            } else {
-                                //provide the component and the eternal separately, at the appropriate time
-                                return each.accept(when, what) && each.accept(when, factor);
-                            }
-
-                        }, offset, decomposeConjParallel, decomposeConjDTernal, decomposeXternal);
+                        , offset, decomposeConjParallel, decomposeConjDTernal, decomposeXternal);
 
                     }
 

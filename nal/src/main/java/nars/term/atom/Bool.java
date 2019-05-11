@@ -32,10 +32,6 @@ abstract public class Bool extends AbstractAtomic implements The {
             return false;
         }
 
-        @Override
-        public Term unneg() {
-            return this;
-        }
     };
     /**
      * tautological absolute false
@@ -47,11 +43,6 @@ abstract public class Bool extends AbstractAtomic implements The {
         public boolean equalsNeg(Term t) {
             return t == True;
         }
-
-//        @Override
-//        public boolean equalsNegRoot(Term t) {
-//            return t == True;
-//        }
 
         @Override
         public Term neg() {
@@ -80,15 +71,6 @@ abstract public class Bool extends AbstractAtomic implements The {
             return t == False;
         }
 
-//        @Override
-//        public boolean equalsNegRoot(Term t) {
-//            return t == False;
-//        }
-
-        @Override
-        public Term unneg() {
-            return True;
-        }
     };
 
     public static final Term[] Null_Array = new Term[] { Null };

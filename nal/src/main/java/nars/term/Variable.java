@@ -94,13 +94,7 @@ public interface Variable extends Atomic {
 
 
         if ((x instanceof Variable || y instanceof Variable)) {
-            if (x instanceof Variable && u.assigns(x.op(), y.op()))
-                return unifyVar(u, (Variable) x, y);
-
-            if (y instanceof Variable && u.assigns(y.op(), x.op()))
-                return unifyVar(u, (Variable) y, x);
-
-            return false;
+            return unifyVar(u, x, y);
         } else {
             return unifyConst(u, x, y);
         }
@@ -120,12 +114,33 @@ public interface Variable extends Atomic {
             return false; //recursion limit exceeded
     }
 
-    private static boolean unifyVar(Unify u, Variable x, Term y) {
-        Op xOp = x.op(), yOp = y.op();
-        if (xOp == yOp && u.commonVariables && !(x instanceof Ellipsis) && !(y instanceof Ellipsis))
-            return CommonVariable.unify(x, (Variable) y, u);
-        else
-            return u.putXY(x, y);
+    private static boolean unifyVar(Unify u, Term x, Term y) {
+        Op xo = x.op(), yo = y.op();
+        if (xo == yo) {
+            if (u.commonVariables && !(x instanceof Ellipsis) && !(y instanceof Ellipsis))
+                return CommonVariable.unify((Variable)x, (Variable) y, u);
+            else {
+                if (x.compareTo(y) > 0) {
+                    //swap to natural ordering
+                    Term z = x;
+                    x = y;
+                    y = z;
+                    //continue below
+                }
+            }
+        }
+
+        if (x instanceof Variable && u.assigns(xo, yo)) {
+            if (u.putXY((Variable) x, y))
+                return true;
+        }
+
+        if (y instanceof Variable && u.assigns(yo, xo)) {
+            if (u.putXY((Variable) y, x))
+                return true;
+        }
+
+        return false;
     }
 
 
