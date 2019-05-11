@@ -3,6 +3,7 @@ package spacegraph.video;
 import com.github.sarxos.webcam.Webcam;
 import com.github.sarxos.webcam.WebcamEvent;
 import com.github.sarxos.webcam.WebcamListener;
+import com.github.sarxos.webcam.ds.buildin.WebcamDefaultDevice;
 import com.google.common.base.Joiner;
 import jcog.Log;
 import jcog.exe.Exe;
@@ -55,7 +56,7 @@ public class WebCam extends VideoSource implements WebcamListener {
     /**
      * returns the default webcam, or null if none exist
      */
-    public static VideoSource the() {
+    public static WebCam the() {
         logger.info("Webcam Devices:\n{} ", Joiner.on("\n").join(Webcam.getDriver().getDevices()));
         logger.info("Webcams:\n{} ", Joiner.on("\n").join(com.github.sarxos.webcam.Webcam.getWebcams().stream().map(
                 w->w.getName() + "\t" + Arrays.toString(w.getViewSizes())).iterator()));
@@ -66,6 +67,30 @@ public class WebCam extends VideoSource implements WebcamListener {
         return defaultf == null ? null : new WebCam(defaultf);
     }
 
+    public static WebCam[] theFirst(int n) {
+        assert(n > 0);
+        WebCam[] wc = new WebCam[n];
+        int j = 0;
+        synchronized (WebCam.class) {
+            com.github.sarxos.webcam.Webcam.setAutoOpenMode(true);
+            for (com.github.sarxos.webcam.Webcam w : com.github.sarxos.webcam.Webcam.getWebcams()) {
+                try {
+                    if (j == 0 || !deviceName(w).equals(deviceName(wc[j-1].webcam))) {
+                        wc[j++] = new WebCam(w);
+                    }
+                } catch (Throwable t) {
+                    //try next
+                }
+            }
+        }
+        if (j < wc.length)
+            wc = Arrays.copyOf(wc, j);
+        return wc;
+    }
+
+    public static String deviceName(Webcam w) {
+        return ((WebcamDefaultDevice)w.getDevice()).getDeviceRef().getNameStr();
+    }
 
     @Override
     public void webcamOpen(WebcamEvent we) {
