@@ -34,7 +34,7 @@ public class WebCam extends VideoSource implements WebcamListener {
 
     static final Logger logger = Log.logger(WebCam.class);
 
-    private final com.github.sarxos.webcam.Webcam webcam;
+    public final com.github.sarxos.webcam.Webcam webcam;
 
 
 

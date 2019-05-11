@@ -14,6 +14,7 @@ public enum SafeSurface {;
             r = s.get();
         } catch (Throwable e) {
             r = new ErrorPanel(e, s);
+            e.printStackTrace();
         }
 
         if (r == null)
