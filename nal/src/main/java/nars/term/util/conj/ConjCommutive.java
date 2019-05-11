@@ -147,7 +147,7 @@ public enum ConjCommutive {;
                         if (x == True) continue;
                         if (flatten == null) flatten = new TreeSet();
                         if (x.dt()!=XTERNAL)
-                            x.subterms().forEach(flatten::add);
+                            x.subterms().addAllTo(flatten);
                         else
                             flatten.add(x);
                     }
@@ -254,20 +254,18 @@ public enum ConjCommutive {;
 
             long sdt = dt == DTERNAL ? ETERNAL : 0;
 
-            //iterate in reverse order to add the smaller (by volume) items first
-
-            if (seq != null) {
+            if (seq != null || disj!=null) {
                 ConjBuilder c = new Conj(u.length);
-                //add the non-conj terms at ETERNAL last.
-                //then if the conjOther is a sequence, add it at zero
-                bsmain: for (boolean bs : new boolean[] { false, true }) {
+                //add the non-conj terms at ETERNAL first.
+                //iterate in reverse order to add smaller (by volume) items first
+                bsmain: for (boolean addingSeq : new boolean[] { false, true }) {
                     for (int i = u.length - 1; i >= 0; i--) {
-                        if (bs == seq.get(i))
+                        if (addingSeq == (seq!=null && seq.get(i)) || (disj!=null && disj.get(i)))
                             if (!c.add(sdt, u[i]))
                                 break bsmain;
                     }
                 }
-                return c.term();
+                return c.term(B);
 
             } else {
                 switch (u.length) {

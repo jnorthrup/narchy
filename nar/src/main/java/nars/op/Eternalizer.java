@@ -39,7 +39,7 @@ public class Eternalizer extends LinkProcessor<Task> {
     public boolean filter(Op op) {
         switch (op) {
             case IMPL:
-//            case SIM:
+            case SIM:
 //            case INH:
             case CONJ:
                 return true;

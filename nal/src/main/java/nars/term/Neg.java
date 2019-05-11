@@ -74,11 +74,6 @@ public interface Neg extends Term { ;
     }
 
     @Override
-    default Term negIf(boolean negate) {
-        return negate ? sub() : this;
-    }
-
-    @Override
     default Term unneg() {
         return sub();
     }

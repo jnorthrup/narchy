@@ -218,8 +218,8 @@ public class PremiseRule extends ProxyTerm {
                         neq(XX, Y);
 
                     if (Y.unneg() instanceof Variable) {
-                        constraints.add(new SubOfConstraint(XX, ((Variable) (Y.unneg())),
-                                Subterm, Y.op() == NEG ? -1 : +1).negIf(negated));
+                        constraints.add((UnifyConstraint)(new SubOfConstraint(XX, ((Variable) (Y.unneg())),
+                                Subterm, Y.op() == NEG ? -1 : +1).negIf(negated)));
                     } else {
                         match(XX, new TermMatcher.Contains(Y), !negated);
                     }
@@ -249,7 +249,7 @@ public class PremiseRule extends ProxyTerm {
                 case "eventOfNeg": {
                     neq(XX, YY);
                     boolean yNeg = pred.contains("Neg");
-                    constraints.add(new SubOfConstraint(XX, YY, Event, yNeg ? -1 : +1).negIf(negated));
+                    constraints.add((UnifyConstraint)(new SubOfConstraint(XX, YY, Event, yNeg ? -1 : +1).negIf(negated)));
 
                     if (!negated) {
                         is(XX, CONJ);

@@ -3,17 +3,23 @@ package spacegraph.video;
 import com.github.sarxos.webcam.Webcam;
 import com.github.sarxos.webcam.WebcamEvent;
 import com.github.sarxos.webcam.WebcamListener;
+import com.google.common.base.Joiner;
+import jcog.Log;
 import jcog.exe.Exe;
 import jcog.signal.Tensor;
 import jcog.signal.named.RGB;
 import jcog.signal.wave2d.RGBBufImgBitmap2D;
 import jcog.signal.wave2d.RGBToMonoBitmap2D;
+import org.slf4j.Logger;
 import spacegraph.SpaceGraph;
 import spacegraph.space2d.container.Splitting;
 import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.space2d.widget.meta.ObjectSurface;
 import spacegraph.space2d.widget.meter.BitmapMatrixView;
+
+import java.awt.*;
+import java.util.Arrays;
 
 
 /**
@@ -25,18 +31,20 @@ import spacegraph.space2d.widget.meter.BitmapMatrixView;
 
 public class WebCam extends VideoSource implements WebcamListener {
 
+    static final Logger logger = Log.logger(WebCam.class);
+
     private final com.github.sarxos.webcam.Webcam webcam;
 
 
-    /**
-     * TODO async load
-     */
+
     public WebCam(Webcam wc) {
 
         width = height = 1;
         webcam = wc;
 
         Exe.invokeLater(() -> {
+            Dimension[] sizes = webcam.getViewSizes();
+            webcam.setViewSize(sizes[sizes.length-1] /* assume largest is last */);
             if (!webcam.open(true))
                 throw new RuntimeException("webcam not open");
 
@@ -48,7 +56,12 @@ public class WebCam extends VideoSource implements WebcamListener {
      * returns the default webcam, or null if none exist
      */
     public static VideoSource the() {
-        //logger.info("Webcam Devices: {} ", com.github.sarxos.webcam.Webcam.getWebcams());
+        logger.info("Webcam Devices:\n{} ", Joiner.on("\n").join(Webcam.getDriver().getDevices()));
+        logger.info("Webcams:\n{} ", Joiner.on("\n").join(com.github.sarxos.webcam.Webcam.getWebcams().stream().map(
+                w->w.getName() + "\t" + Arrays.toString(w.getViewSizes())).iterator()));
+
+//        new WebcamViewer();
+
         Webcam defaultf = Webcam.getDefault();
         return defaultf == null ? null : new WebCam(defaultf);
     }

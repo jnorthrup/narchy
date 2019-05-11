@@ -1543,6 +1543,26 @@ public class ConjTest {
         );
     }
 
+    @Test void testDontFactorDisj() {
+        Conj c = new Conj();
+        c.add(0, $$("(a||b)"));
+        c.add(4, $$("(--a&&b)"));
+        Term cc = c.term();
+        assertEq("((a||b) &&+4 ((--,a)&&b))", cc);
+    }
+    @Test void testDistribute_seq_Complex() {
+        {
+            String s = "((--,(((_6(_1,((--,_4(_2,_3)) &&+60 (--,_5)))&&(--,_5)) &&+43 (--,_5)) &&+72 (--,_7)))||_8)";
+            Term x = $$(s);
+            assertEq(s, x);
+        }
+
+        {
+            Term x = $$("(_5 && ((--,(((_6(_1,((--,_4(_2,_3)) &&+60 (--,_5)))&&(--,_5)) &&+43 (--,_5)) &&+72 (--,_7)))||_8))");
+            assertEq("_5", x);
+        }
+    }
+
     @Test
     void testFactorizeEternalConj1() {
         Conj c = new Conj();

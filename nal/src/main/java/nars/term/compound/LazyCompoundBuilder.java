@@ -10,7 +10,6 @@ import nars.NAL;
 import nars.Op;
 import nars.subterm.Subterms;
 import nars.term.Compound;
-import nars.term.Neg;
 import nars.term.Term;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
@@ -305,12 +304,10 @@ public class LazyCompoundBuilder {
                 Term y = ((DeferredEval)x).eval();
                 if (y instanceof Bool)
                     return y;
-                else if (y instanceof Neg || y instanceof Atomic)
-                    return apply(y);
                 else
-                    x = (Compound) y; //recurse
-            }
-            return super.applyPosCompound(x);
+                    return apply(y); //recurse
+            } else
+                return super.applyPosCompound(x);
         }
 
         @Override
@@ -362,13 +359,14 @@ public class LazyCompoundBuilder {
         }
 
         public final Term eval() {
-            if (this.value!=null)
-                return this.value;
-
-            Term e = f.applyInline(args);
-            if (e == null)
-                e = Null; //HACK
-            return this.value = e;
+            if (this.value!=null) {
+                return this.value; //cached
+            } else {
+                Term e = f.applyInline(args);
+                if (e == null)
+                    e = Null; //HACK
+                return this.value = e;
+            }
         }
     }
 

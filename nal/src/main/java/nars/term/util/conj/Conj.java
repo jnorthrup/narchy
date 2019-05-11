@@ -914,9 +914,13 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
                 return left;
             else if (left.equalsNeg(right))
                 return False;
+        } else {
+            if (left!=right && left.equals(right))
+                right = left;
+            //TODO equalsNeg identity?
         }
 
-        if (left.compareTo(right) > 0) {
+        if (left!=right && left.compareTo(right) > 0) {
             if (dt != DTERNAL)
                 dt = -dt;
             Term t = right;
@@ -924,48 +928,18 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
             left = t;
         }
 
-//        if (left.op() == CONJ && right.op() == CONJ) {
-//            int ldt = left.dt(), rdt = right.dt();
-//            if (ldt != XTERNAL && !concurrent(ldt) && rdt != XTERNAL && !concurrent(rdt)) {
-//                int ls = left.subs(), rs = right.subs();
-//                if ((ls > 1 + rs) || (rs > ls)) {
-//
-//                    return terms.conj(dt, left, right);
-//                }
-//            }
+//        Term finalRight = right;
+//        //TODO optimize
+//        if (!left.equals(right) && left.op()==CONJ && right.op()==CONJ && left.dt()==DTERNAL && right.dt()==DTERNAL && left.OR(l-> finalRight.subterms().contains(l))) {
+//            //factorization may be possible
+//            Conj x = new Conj(2);
+//            if (x.add(0, left))
+//                x.add(dt, right);
+//            return x.term(b);
+//        } else {
+            Term t = b.theCompound(CONJ, dt, left, right);
+            return t;
 //        }
-
-        Term t = b.theCompound(CONJ, dt, left, right);
-        //HACK temporary
-//        if (((left instanceof Compound && right instanceof Compound && left.hasAny(CONJ) && right.hasAny(CONJ))
-//                )
-//                && t.anon().volume()!=t.volume()) {
-//            try {
-//                t = terms.conj(dt, left, right); //factorization, etc
-//            } catch (StackOverflowError e) {
-//                System.out.println("conj fail: (&&,dt, " + left + " , " + right + ')');
-//                if (Param.DEBUG)
-//                    throw new WTF(); //TEMPORARY
-//            }
-//        }
-
-
-//        if (t.op()==CONJ && t.OR(tt -> tt.op()==NEG && tt.unneg().op()==CONJ)) {
-//            //HACK verify
-//            Term u = t.anon();
-//            if (u!=t && (u.op()!=CONJ || u.volume()!=t.volume())) {
-//                t = terms.conj(dt, left, right);
-//            }
-//        }
-
-        //HACK sometimes this seems to happen
-        if (t.hasAny(BOOL)) {
-            if (t.contains(False))
-                return False;
-            if (t.contains(Null))
-                return Null;
-        }
-        return t;
     }
 
     private static int conflictOrSame(Object e, byte id) {
@@ -1310,11 +1284,17 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
         if (!eConj && !iConj)
             return null;  //OK neither a conj/disj
 
+
+        if (iConj && eConj) {
+            //both conj
+            if (!Term.commonStructure(existingUnneg.subterms().structure(), incomingUnneg.subterms().structure()))
+                return null; //OK no potential for interaction
+        } else {
+            if (!Term.commonStructure(existingUnneg.structure(), incomingUnneg.structure()))
+                return null; //OK no potential for interaction
+        }
+
         boolean existingPolarity = existing.op() != NEG;
-
-        if (!Term.commonStructure(existingUnneg.structure() & (~CONJ.bit), incomingUnneg.structure() & (~CONJ.bit)))
-            return null; //OK no potential for interaction
-
         Term base;
         if (eConj && !iConj)
             base = existing;
@@ -2298,7 +2278,10 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
 //                            z -> Conj.containsEvent(tu, z.unneg());
 //                    if (tur.test(eu) || (eu.op()!=CONJ || eu.subterms().OR(tur))) {
                         //needs further flattening
-                        return ConjCommutive.the(B, DTERNAL, true, true, temporal, eternal);
+                        Term y = ConjCommutive.the(B, DTERNAL, true, true, temporal, eternal);
+
+
+                        return y;
 //                    }
 
 //                    if (y.op()==CONJ && dtSpecial(y.dt()) && y.dt()!=XTERNAL && !Conj.isSeq(y) && y.subterms().hasAny(CONJ)) {

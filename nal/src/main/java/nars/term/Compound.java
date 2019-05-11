@@ -565,13 +565,13 @@ public interface Compound extends Term, IPair, Subterms {
 
                         return seq.eventsWhile((when, what) -> {
 
-                            int w = DTERNAL;
-                            if ((w == DTERNAL && !decomposeConjDTernal) || (w != DTERNAL && !decomposeConjParallel)) {
+                            if (!decomposeConjDTernal) {
                                 //combine the component with the eternal factor
-                                Term distributed = CONJ.the(w, what, factor);
+                                Term distributed = CONJ.the(what, factor);
 
                                 if (distributed.op() != CONJ)
-                                    throw new TermTransformException(Compound.this, distributed, "invalid conjunction factorization");
+                                    throw new TermTransformException(Compound.this, $.p($.p(what, factor), distributed),
+                                            "invalid conjunction factorization");
 
 //                                    assert (!(distributed instanceof Bool));
                                 return each.accept(when, distributed);

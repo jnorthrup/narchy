@@ -104,7 +104,7 @@ import static nars.Op.ImgInt;
         return term((short)i);
     }
 
-    public static Term term(short /* short */ i) {
+    public static Term term(short i) {
         boolean neg = i < 0;
         if (neg)
             i = (short) -i;
@@ -135,10 +135,6 @@ import static nars.Op.ImgInt;
 //            if (!Int.isAnon(i))
 //                return 0;
 //        }
-
-        if (t instanceof Intrin) {
-            return (short) ((Intrin)t).i;
-        }
         if (t instanceof Neg.NegIntrin) {
             return (short) -((Neg.NegIntrin)t).sub;
         }
@@ -146,7 +142,12 @@ import static nars.Op.ImgInt;
             t = t.unneg();
             if (t instanceof Intrin)
                 return (short) -((Intrin)t).i;
+            //else: continue
         }
+        if (t instanceof Intrin) {
+            return (short) ((Intrin)t).i;
+        }
+
         return 0;
     }
 

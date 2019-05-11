@@ -663,7 +663,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
          * whether timegraph should not return solutions with volume significantly less than the input's.
          * set 0 to disable the filter
          */
-        public static final float TIMEGRAPH_IGNORE_DEGENERATE_SOLUTIONS_FACTOR = 0.5f;
+        public static final float TIMEGRAPH_IGNORE_DEGENERATE_SOLUTIONS_FACTOR = 0.25f;
         /**
          * whether to dither events as they are represented internally.  output events are dithered for the NAR regardless.
          */
@@ -672,7 +672,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
 
 
         @Range(min = 1, max = 32)
-        public static final int TIMEGRAPH_ITERATIONS = 3;
+        public static final int TIMEGRAPH_ITERATIONS = 2;
         /**
          * TTL = 'time to live'
          */

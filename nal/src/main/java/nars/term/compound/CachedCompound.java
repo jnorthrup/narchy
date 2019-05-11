@@ -129,11 +129,14 @@ abstract public class CachedCompound extends SeparateSubtermsCompound implements
 
         protected final int dt;
 
-        public TemporalCachedCompound(Op op, int dt, Subterms subterms) {
+        TemporalCachedCompound(Op op, int dt, Subterms subterms) {
             super(op, dt, subterms);
 
-
             this.dt = dt;
+
+//            //HACK TEMPORARY for debug
+//            if (volume()!=anon().volume())
+//                throw new WTF();
         }
 
         @Override

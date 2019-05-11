@@ -20,17 +20,30 @@
 //  if (S --> M) is the case, and ((|,S,A..+) --> M) is not the case, then ((|,A..+) --> M) is not the case, hence Belief:DecomposePositiveNegativeNegative
 
      (M -->    I), (M --> X),  is(I,"&&"), subOf(I,X)     |- --(M -->   without( I,  X)),   (Belief:DecomposeNP)
+            (M --> X), (M -->    I), is(I,"&&"), subOf(I,X)     |- --(M -->   without( I,  X)),   (Belief:DecomposePN)
+
       (M -->    I), (M --> X),  is(I,"&&"), subOf(I,X)     |- --(M -->   without( I,  X)),   (Belief:DecomposePN)
+             (M --> X), (M -->    I),  is(I,"&&"), subOf(I,X)     |- --(M -->   without( I,  X)),   (Belief:DecomposeNP)
+
      (M --> --%I), (M --> X), is(%I,"&&"), subOf(%I,--X)  |-   (M --> --without(%I,--X)),   (Belief:DecomposePN)
+            (M --> X), (M --> --%I), is(%I,"&&"), subOf(%I,--X)  |-   (M --> --without(%I,--X)),   (Belief:DecomposeNP)
+
       (M --> --%I), (M --> X), is(%I,"&&"), subOf(%I,--X)  |-   (M --> --without(%I,--X)),   (Belief:DecomposeNP)
+             (M --> X), (M --> --%I), is(%I,"&&"), subOf(%I,--X)  |-   (M --> --without(%I,--X)),   (Belief:DecomposePN)
 
         (I --> M), (X --> M),  is(I,"&&"), subOf(I,X)     |-   (  without( I,  X) --> M),   (Belief:DecomposePN)
+             (X --> M),(I --> M),   is(I,"&&"), subOf(I,X)     |-   (  without( I,  X) --> M),   (Belief:DecomposeNP)
+
          (I --> M), (X --> M),  is(I,"&&"), subOf(I,X)     |-   (  without( I,  X) --> M),   (Belief:DecomposeNP)
+              (X --> M),(I --> M),   is(I,"&&"), subOf(I,X)     |-   (  without( I,  X) --> M),   (Belief:DecomposePN)
+
      (--%I --> M), (X --> M), is(%I,"&&"), subOf(%I,--X)  |- --(--without(%I,--X) --> M),   (Belief:DecomposeNP)
+             (X --> M),(--%I --> M),  is(%I,"&&"), subOf(%I,--X)  |- --(--without(%I,--X) --> M),   (Belief:DecomposePN)
+
       (--%I --> M), (X --> M), is(%I,"&&"), subOf(%I,--X)  |- --(--without(%I,--X) --> M),   (Belief:DecomposePN)
+              (X --> M),(--%I --> M),  is(%I,"&&"), subOf(%I,--X)  |- --(--without(%I,--X) --> M),   (Belief:DecomposeNP)
 
 //NAL3 double premise goal decompose
-//TODO other negations
     (I --> M), (X --> M),  is(I,"&&"), subOf(I,X)     |-   (  without( I,  X) --> M),   (Goal:DecomposePN)
       (I --> M), (X --> M),  is(I,"&&"), subOf(I,X)   |- --(  without( I,  X) --> M),   (Goal:DecomposeNP)
 
