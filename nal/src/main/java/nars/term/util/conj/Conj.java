@@ -11,7 +11,6 @@ import nars.subterm.Subterms;
 import nars.term.Term;
 import nars.term.Terms;
 import nars.term.atom.Bool;
-import nars.term.util.builder.HeapTermBuilder;
 import nars.term.util.builder.TermBuilder;
 import nars.term.util.map.ByteAnonMap;
 import org.eclipse.collections.api.block.predicate.primitive.ByteObjectPredicate;
@@ -1478,66 +1477,84 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
 //        return conflictOrSame(event.get(at), what);
 //    }
 
-    protected int conflictOrSame(long at, byte what) {
+    protected int conflictOrSame(long at, byte bWhat, Term what) {
         Object ee = event.get(at);
         if (ee == null) return 0;
-        int w = conflictOrSame(ee, what);
+
+        int w = conflictOrSame(ee, bWhat);
         if (w == -1) return -1;
         if (w == +1) return +1;
 
         if (at == ETERNAL) {
-            int x = conflictOrSameEternal(what, ee);
-            if (x != 0) return x;
+            return conflictOrSameEternalDisj(what, ee);
+        } else {
+            return 0;
         }
-
-        return 0;
     }
 
-    @Nullable
-    private int conflictOrSameEternal(byte what, Object ee) {
+    /** should be combined with disjunctify() */
+    @Nullable @Deprecated private int conflictOrSameEternalDisj(Term what, Object ee) {
         boolean absorbed = false;
-        Term y = unindex(what);
         if (ee instanceof byte[]) {
-            for (byte ix : (byte[]) ee) {
-                if (ix == 0) break;
-                int ce = conflictExhaustive(unindex(ix), y);
-                if (ce == -1) return -1;
-                else if (ce == +1) absorbed = true;
+            for (byte dui : (byte[]) ee) {
+                if (dui == 0) break;
+                if (dui < 0) {
+                    Term du = unindex((byte) -dui);
+                    int ce = conflictExhaustiveDisj(du, what);
+                    if (ce == -2) {
+                        remove(ETERNAL, dui);
+                        du = CONJ.the(du.dt(), du.subterms().subsExcluding(what)).neg();
+                        addEvent(ETERNAL, du);
+                        return 0;
+                    } else if (ce == +2) {
+                        //eliminated and replaces disj
+                        remove(ETERNAL, dui);
+                        return 0;
+                    }
+                }
             }
         } else {
             RoaringBitmap r = (RoaringBitmap)ee;
             PeekableIntIterator rr = r.getIntIterator();
             while (rr.hasNext()) {
                 byte ix = (byte) rr.next();
-                int ce = conflictExhaustive(unindex(ix), y);
-                if (ce == -1) return -1;
-                else if (ce == +1) absorbed = true;
+                if (ix < 0) {
+                    int ce = conflictExhaustiveDisj(unindex((byte) -ix), what);
+                    if (ce == -2) {
+                        throw new TODO(); //copy from above
+                    } else if (ce == +2) {
+                        //eliminated and replaces disj
+                        remove(ETERNAL, ix);
+                        return 0;
+                    }
+                }
             }
         }
         if (absorbed) return +1;
         return 0;
     }
 
-    private int conflictExhaustive(Term x, Term y) {
-        if (x.op()==NEG) {
-            Term xu = x.unneg();
-            if (xu.op() == CONJ) {
-                Subterms xus = xu.subterms();
-                if (Term.commonStructure(xus, y)) {
-                    if (xu.contains(y))
-                        return -1; //conflict
-                    if (xus.containsNeg(y))
-                        return 0; //absorbed
+    /** assumes xu is x.unneg() for some x */
+    private int conflictExhaustiveDisj(Term disjUnneg, Term incoming) {
+//        if (x.op()==NEG) {
+//            Term xu = x.unneg();
+            if (disjUnneg.op() == CONJ) {
+                Subterms xus = disjUnneg.subterms();
+                if (Term.commonStructure(xus, incoming)) {
+                    if (xus.contains(incoming))
+                        return -2; //TODO remove conflicting branch from disj but add the conj condition
+                    if (xus.containsNeg(incoming))
+                        return +2; //disjunction absorbed by incoming
 
                     //Term xu = x.unneg();
 //                    Term xy = CONJ.the(x, y);
 //                    if (xy.equals(x))
-//                        return 0; //absorbed
+//                        return +1; //absorbed
 //                    if (xy.unneg().op() != CONJ || xy.volume() < x.volume())
 //                        return -1; //something happened: bool or other interference
                 }
             }
-        }
+//        }
 
 //        if (x.op()==NEG && x.unneg().op()==CONJ) {
 //            Term xy = CONJ.the(x, y);
@@ -1629,12 +1646,11 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
         byte id = add(xUnneg);
         if (!polarity) id = (byte) -id;
 
-        //quick test for conflict with existing ETERNALs
-        int c = conflictOrSame(ETERNAL,  id);
+        //test for conflict with existing ETERNALs
+        int c = conflictOrSame(ETERNAL,  id, x);
         if (c > 0)
-            return true;
+            return true; //absorbed
         else if (c < 0) {
-            //remove(xUnneg) ?
             result = False;
             return false;
         }

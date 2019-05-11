@@ -63,14 +63,14 @@ public final class ConjDiff extends Conj {
         if (at == ETERNAL) {
             boolean hasAbsorb = false;
             for (long see : excludeEventsAt) {
-                int f = test(see, id);
+                int f = test(see, id, x);
                 if (f == -1) return -1;
                 if (f == +1) hasAbsorb = true; //but keep checking for contradictions first
             }
             if (hasAbsorb)
                 return +1; //ignore this target (dont repeat in the predicate)
         } else {
-            int f = test(at, id);
+            int f = test(at, id, x);
             if (f == -1) return -1;
             if (f == +1) return +1; //ignore this target (dont repeat in the predicate)
         }
@@ -102,7 +102,7 @@ public final class ConjDiff extends Conj {
 //        return 0;
 //    }
 
-    private int test(long at, byte id) {
-        return exc.conflictOrSame(at, (byte) (id * (invert ? -1 : +1)));
+    private int test(long at, byte id, Term x) {
+        return exc.conflictOrSame(at, (byte) (id * (invert ? -1 : +1)), x);
     }
 }

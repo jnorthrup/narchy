@@ -584,8 +584,16 @@ public enum Op {
         return allOrAny ? Op.hasAll(haystack, needle) : Op.hasAny(haystack, needle);
     }
 
-    /** build disjunction (consisting of negated conjunction of the negated subterms, ie. de morgan's boolean law ) */
+    public static Term DISJ(int dt, Term... x) {
+        return DISJ(Op.terms, dt, x);
+    }
+
     public static Term DISJ(TermBuilder b, Term... x) {
+        return DISJ(b, DTERNAL, x);
+    }
+
+    /** build disjunction (consisting of negated conjunction of the negated subterms, ie. de morgan's boolean law ) */
+    public static Term DISJ(TermBuilder b, int dt, Term... x) {
         switch (x.length) {
             case 0:
                 return True;
@@ -594,12 +602,12 @@ public enum Op {
             default:
                 Term[] xx = x.clone();
                 $.neg(xx);
-                return CONJ.the(b, xx).neg();
+                return CONJ.the(b, dt, xx).neg();
         }
     }
 
     public static Term DISJ(Term... x) {
-        return DISJ(Op.terms, x);
+        return DISJ(Op.terms, DTERNAL, x);
     }
 
     public static int unique() {

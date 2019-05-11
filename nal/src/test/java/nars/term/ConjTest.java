@@ -1640,7 +1640,7 @@ public class ConjTest {
         {
             //construction method 2:
             ConjBuilder c = new Conj();
-            c.add(ETERNAL, $$("(--,((--,y)&|x))"));
+            c.add(ETERNAL, $$("(--,((--,y)&&x))"));
             c.add(ETERNAL, $$("x"));
             assertEq("(x&&y)", c.term());
         }
@@ -1718,6 +1718,19 @@ public class ConjTest {
     @Test
     void testSequentialFactor() {
         assertEq("((y &&+1 z)&&x)", "((x&&y) &&+1 (x&&z))");
+    }
+
+    @Test void disjEteReduction_shouldReduce_Absorb() {
+        ConjLazy c = new ConjLazy();
+        c.add(ETERNAL, $$("(--x || y)"));
+        c.add(10L, $$("--x"));
+        assertEq("(--,x)", c.term());
+    }
+    @Test void disjEteReduction_shouldReduce_Conflict() {
+        ConjLazy c = new ConjLazy();
+        c.add(ETERNAL, $$("(--x || y)"));
+        c.add(10L, $$("x"));
+        assertEq("(x&&y)", c.term());
     }
 
     @Test
