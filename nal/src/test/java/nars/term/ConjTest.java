@@ -12,10 +12,11 @@ import nars.term.util.conj.*;
 import nars.term.util.transform.Retemporalize;
 import nars.term.var.ellipsis.Ellipsis;
 import org.eclipse.collections.api.tuple.primitive.LongObjectPair;
-import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.roaringbitmap.RoaringBitmap;
 
 import java.util.Random;
@@ -1720,17 +1721,29 @@ public class ConjTest {
         assertEq("((y &&+1 z)&&x)", "((x&&y) &&+1 (x&&z))");
     }
 
-    @Test void disjEteReduction_shouldReduce_Absorb() {
-        ConjLazy c = new ConjLazy();
-        c.add(ETERNAL, $$("(--x || y)"));
-        c.add(10L, $$("--x"));
-        assertEq("(--,x)", c.term());
+    @ParameterizedTest
+    @ValueSource(strings={"%" /* @ ETE */, "(a &&+1 %)" /* @+1 */, "(% &&+1 a)" /* @ 0 */})
+    void disjunctifyEliminate(String p) {
+        ConjBuilder c = new Conj();
+        c.add(p.length() > 1 ? 0 : ETERNAL, $$(p.replace("%", "(--x || y)")));
+        c.add(p.length() > 1 ? 0 : 1L, $$(p.replace("%", "--x")));
+        assertEq(p.replace("%", "(--,x)"), c.term());
     }
-    @Test void disjEteReduction_shouldReduce_Conflict() {
-        ConjLazy c = new ConjLazy();
-        c.add(ETERNAL, $$("(--x || y)"));
-        c.add(10L, $$("x"));
-        assertEq("(x&&y)", c.term());
+
+    void dusjunctifyInSeq(String p) {
+        assertEq("(a &&+1 x)", "(a &&+1 ((x || y)&&x))");
+        assertEq("(a &&+1 (--,x))", "(a &&+1 ((--x || y)&&--x))");
+        assertEq("(x &&+1 a)", "(((x || y)&&x) &&+1 a)");
+        assertEq("((--,x) &&+1 a)", "(((--x || y)&&--x) &&+1 a)");
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings={"%" /* @ ETE */, "(a &&+1 %)" /* @+1 */, "(% &&+1 a)" /* @ 0 */})
+    void disjunctifyReduce(String p) {
+        ConjBuilder c = new Conj();
+        c.add(p.length() > 1 ? 0 : ETERNAL, $$(p.replace("%", "(--x || y)")));
+        c.add(p.length() > 1 ? 0 : 1L, $$(p.replace("%", "x")));
+        assertEq(p.replace("%", "(x&&y)"), c.term());
     }
 
     @Test
