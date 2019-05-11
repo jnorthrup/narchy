@@ -139,6 +139,9 @@ public class Statement {
                         //subtract any common subject components from predicate
                         boolean subjNeg = subject.op() == NEG;
                         ConjBuilder newPredConj = ConjDiff.the(predicate, po, subject.negIf(subjNeg), so, subjNeg);
+                        if (newPredConj == null)
+                            return Null; //fail
+
                         Term newPred = newPredConj.term(B);
 
 
@@ -189,7 +192,7 @@ public class Statement {
 
         if ((op != IMPL
                 || dt == DTERNAL /* allow parallel IMPL unless there is a sequence that could separate the events from overlap */)
-                || (dt == 0 && !ConjSeq.isSeq(subject) && !ConjSeq.isSeq(predicate))
+                || (dt == 0 && !Conj.isSeq(subject) && !Conj.isSeq(predicate))
         ) {
 
             if ((statementLoopy(subject.unneg(), predicate.unneg())))

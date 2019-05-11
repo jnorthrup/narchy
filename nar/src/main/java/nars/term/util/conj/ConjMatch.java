@@ -228,7 +228,7 @@ public class ConjMatch {
 
     private static ConjLazy events(Term conj, boolean beforeOrAfter) {
         ConjLazy x;
-        if (ConjSeq.isSeq(conj)) {
+        if (Conj.isSeq(conj)) {
             x = ConjLazy.events(conj);
             if (!beforeOrAfter)
                 x.reverse(); //match from opposite direction

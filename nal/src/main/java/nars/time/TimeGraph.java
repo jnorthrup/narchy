@@ -8,7 +8,6 @@ import jcog.data.graph.MapNodeGraph;
 import jcog.data.graph.Node;
 import jcog.data.graph.path.FromTo;
 import jcog.data.graph.search.Search;
-import jcog.data.iterator.ArrayIterator;
 import jcog.data.list.FasterList;
 import jcog.data.set.ArrayHashSet;
 import jcog.math.LongInterval;
@@ -509,7 +508,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
                         case DTERNAL:
                         default:
 
-                            if (edt == DTERNAL && !ConjSeq.isSeq(eventTerm)) {
+                            if (edt == DTERNAL && !Conj.isSeq(eventTerm)) {
 
                                 //commutive dternal: inherit event time simultaneously
                                 eventTerm.subterms().forEach(y -> know(y, eventStart, eventEnd));
@@ -528,7 +527,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
                                         //chain the events to the absolute parent
                                         link(event, w - eventStart, Y);
                                         return true;
-                                    }, eventStart, edt == 0, false, false);
+                                    }, eventStart, false, false);
 
                                 } else {
                                     //chain the events together relatively.  chain to the parent event if it's absolute
@@ -558,7 +557,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
                                         prevTime[0] = w;
                                         prev[0] = next;
                                         return true;
-                                    }, 0, edt == 0, false, false);
+                                    }, 0, false, false);
                                 }
 
                             }
@@ -659,7 +658,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
         ab.shuffleThis(this::random);
 
         //TODO re-use DTPairSolver
-        DTPairSolver s = new DTPairSolver(a, b, x, each, true, false, false);
+        DTPairSolver s = new DTPairSolver(a, b, x, each, true, true, false);
         return true
             && bfsNew(Iterables.filter(ab, aabb->aabb instanceof Absolute), s)
             && solveDTAbsolutePair(x, each, a, b, aEqB)
@@ -686,7 +685,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 
     private static boolean atStart(Term subEvent, Term event) {
         if (event.op() == CONJ && event.dt() != XTERNAL) {
-            boolean seq = ConjSeq.isSeq(event);
+            boolean seq = Conj.isSeq(event);
             if (!seq) {
                 return event.contains(subEvent);
             } else if (seq) {
@@ -1460,25 +1459,25 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
             return Long.compare(adt, bdt);
     };
 
-    static final Comparator<? super Event> eventPreference = (a, b)->{
-        if (a == b) return 0;
-        boolean ar = a instanceof Relative, br = b instanceof Relative;
-        if (b instanceof Relative && !(ar)) return -1;
-        if (ar && !(b instanceof Relative)) return +1;
+//    static final Comparator<? super Event> eventPreference = (a, b)->{
+//        if (a == b) return 0;
+//        boolean ar = a instanceof Relative, br = b instanceof Relative;
+//        if (b instanceof Relative && !(ar)) return -1;
+//        if (ar && !(b instanceof Relative)) return +1;
+//
+//        if (!ar && !br) {
+//            //both absolute: prefer longer duration
+//            long ad = a.dur(), bd = b.dur();
+//            if (ad > bd)
+//                return -1;
+//            else if (bd > ad) return +1;
+//        }
+//
+//        //TODO shuffle?
+//        return a.compareTo(b);
+//    };
 
-        if (!ar && !br) {
-            //both absolute: prefer longer duration
-            long ad = a.dur(), bd = b.dur();
-            if (ad > bd)
-                return -1;
-            else if (bd > ad) return +1;
-        }
-
-        //TODO shuffle?
-        return a.compareTo(b);
-    };
-
-    public static Iterable<Event> sortEvents(Collection<Event> e) {
+    public Iterable<Event> sortEvents(Collection<Event> e) {
 
 //        int s = ab.size();
 //        assert (s > 0);
@@ -1492,9 +1491,10 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 //        }
 
         if (e.size() > 1) {
-            Event[] ee = e.toArray(Event.EmptyArray);
-            Arrays.sort(ee, eventPreference);
-            return ArrayIterator.iterable(ee);
+            FasterList ee = new FasterList(e);
+            ee.shuffleThis(this::random);
+            ee.sortThisByInt(x -> x instanceof Absolute ? -1 : 0);
+            return ee;
         } else
             return e;
     }
@@ -1539,7 +1539,9 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
                 return empty;
             } else {
 
-                Iterable<Event> eee = sortEvents(ee);
+                Iterable<Event> eee =
+                        //ee;
+                        sortEvents(ee);
 
                 return Iterables.transform(
                     Iterables.filter(

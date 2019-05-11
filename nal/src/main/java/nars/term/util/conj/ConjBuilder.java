@@ -98,11 +98,11 @@ public interface ConjBuilder {
 
         if (xdt!=XTERNAL && (at != ETERNAL || (xdt == 0) || (xdt == DTERNAL))) {
 
-            if (at == ETERNAL && ConjSeq.isSeq(x))
+            if (at == ETERNAL && Conj.isSeq(x))
                 at = 0;
 
             return x.eventsWhile(this::addEvent, at,
-                    at != ETERNAL, //unpack parallel except in DTERNAL root, allowing: ((a&|b) && (c&|d))
+                    //unpack parallel except in DTERNAL root, allowing: ((a&|b) && (c&|d))
                     true,
                     false);
         } else {

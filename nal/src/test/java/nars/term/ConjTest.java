@@ -1730,11 +1730,36 @@ public class ConjTest {
         assertEq(p.replace("%", "(--,x)"), c.term());
     }
 
-    void dusjunctifyInSeq(String p) {
+    @Test void dusjunctifyInSeq() {
         assertEq("(a &&+1 x)", "(a &&+1 ((x || y)&&x))");
         assertEq("(a &&+1 (--,x))", "(a &&+1 ((--x || y)&&--x))");
         assertEq("(x &&+1 a)", "(((x || y)&&x) &&+1 a)");
         assertEq("((--,x) &&+1 a)", "(((--x || y)&&--x) &&+1 a)");
+    }
+    @Test void disjunctifySeq2() {
+        Conj c = new Conj();
+        c.add(ETERNAL, $$("(--,(((--,(g-->input)) &&+40 (g-->forget))&&((g-->happy) &&+40 (g-->happy))))"));
+        c.add(1, $$("happy:g"));
+        assertEq("(((g-->input)||(--,(g-->forget)))&&(g-->happy))", c.term());
+        assertEq("(((_1-->_2)||(--,(_1-->_3)))&&(_1-->_4))", c.term().anon());
+    }
+
+    @Test void disjunctionSequenceReduce() {
+        String y = "((--,((--,tetris(1,11)) &&+330 (--,tetris(1,11))))&&(--,left))";
+
+        //by parsing
+        assertEq(y,
+                "((--,(((--,tetris(1,11)) &&+230 (--,left)) &&+100 ((--,tetris(1,11)) &&+230 (--,left)))) && --left)"
+        );
+
+        //by Conj construction
+        for (long w : new long[] { ETERNAL, 0, 1}) {
+            Conj c = new Conj();
+            c.add(ETERNAL, $$("(--,(((--,tetris(1,11)) &&+230 (--,left)) &&+100 ((--,tetris(1,11)) &&+230 (--,left))))") );
+            c.add(w, $$("--left"));
+            assertEq(y, c.term());
+        }
+
     }
 
     @ParameterizedTest

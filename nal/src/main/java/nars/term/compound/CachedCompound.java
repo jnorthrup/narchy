@@ -89,7 +89,7 @@ abstract public class CachedCompound extends SeparateSubtermsCompound implements
 
 
         /** @see Term.eventsWhile */
-        @Override public final boolean eventsWhile(LongObjectPredicate<Term> each, long offset, boolean decomposeConjParallel, boolean decomposeConjDTernal, boolean decomposeXternal) {
+        @Override public final boolean eventsWhile(LongObjectPredicate<Term> each, long offset, boolean decomposeConjDTernal, boolean decomposeXternal) {
             return each.accept(offset, this);
         }
 

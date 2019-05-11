@@ -15,41 +15,42 @@ public final class ConjDiff extends Conj {
     private final long[] excludeEventsAt;
     private final boolean excludeEventAtEternal;
 
-    public static ConjDiff the(Term include, long includeAt, Term exclude, long excludeAt) {
+    @Nullable public static ConjDiff the(Term include, long includeAt, Term exclude, long excludeAt) {
         return the(include, includeAt, exclude, excludeAt, false);
     }
 
 
-    public static ConjDiff the(Term include, long includeAt, Term exclude, long excludeAt, boolean invert) {
+    @Nullable public static ConjDiff the(Term include, long includeAt, Term exclude, long excludeAt, boolean invert) {
         return the(include, includeAt, exclude, excludeAt, invert, null);
 
     }
     /** warning: invert may not work the way you expect. it is designed for use in IMPL construction */
-    private static ConjDiff the(Term include, long includeAt, Term exclude, long excludeAt, boolean invert, @Nullable Conj seed) {
+    @Nullable private static ConjDiff the(Term include, long includeAt, Term exclude, long excludeAt, boolean invert, @Nullable Conj seed) {
         Conj e = seed == null ? new Conj() : Conj.newConjSharingTermMap(seed);
-        e.add(excludeAt, exclude);
 
-        return the(include, includeAt, invert, e);
+        return e.add(excludeAt, exclude) ? the(include, includeAt, invert, e) : null;
     }
 
-    private static ConjDiff the(Term include, long includeAt, boolean invert, Conj exclude) {
+    @Nullable private static ConjDiff the(Term include, long includeAt, boolean invert, Conj exclude) {
         if (exclude.eventCount(ETERNAL)>0 && exclude.event.size() > 1) {
             //has both eternal and temporal components;
             // mask the eternal components so they are not eliminated from the result
             exclude.removeAll(ETERNAL);
         }
 
-        return new ConjDiff(include, exclude, includeAt, invert);
+        ConjDiff c = new ConjDiff(include, exclude, invert);
+        if (!c.add(includeAt, include))
+            return null;
+        //distribute();
+        return c;
     }
 
-    private ConjDiff(Term include, Conj exclude, long offset, boolean invert) {
+    private ConjDiff(Term include, Conj exclude, boolean invert) {
         super(exclude.termToId, exclude.idToTerm);
         this.exc = exclude;
         this.excludeEventsAt = exc.event.keySet().toArray();
         this.excludeEventAtEternal = ArrayUtil.indexOf(excludeEventsAt, ETERNAL)!=-1;
         this.invert = invert;
-        add(offset, include);
-        //distribute();
     }
 
 //        @Override

@@ -135,7 +135,7 @@ public class ConjLazy extends LongObjectArraySet<Term> implements ConjBuilder {
     private static ConjLazy events(Term conj, long occOffset) {
         ConjLazy l = new ConjLazy();
         conj.eventsWhile(l::add,
-                occOffset, true, true, false);
+                occOffset, true, false);
         return l;
     }
 

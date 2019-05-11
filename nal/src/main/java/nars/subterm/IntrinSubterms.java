@@ -260,6 +260,32 @@ public class IntrinSubterms extends TermVector /*implements Subterms.SubtermsByt
     }
 
     @Override
+    public @Nullable Term[] subsExcluding(Term x) {
+        short tid = Intrin.id(x);
+        if (tid == 0) return null;
+        int count = 0;
+        int n = subterms.length;
+        for (int i = 0; i < n; i++) {
+            if (subterms[i] == tid)
+                count++;
+        }
+        if (count==0)
+            return null; //none found
+        else if (count == n){
+            return Op.EmptyTermArray;
+        } else {
+            Term[] y = new Term[n - count];
+            int j = 0;
+            for (int i = 0; i < n; i++) {
+                short s = subterms[i];
+                if (s != tid)
+                    y[j++] = Intrin.term(s);
+            }
+            return y;
+        }
+    }
+
+    @Override
     public boolean contains(Term x) {
         return indexOf(x) != -1;
     }

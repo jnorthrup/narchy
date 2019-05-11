@@ -33,6 +33,7 @@ import nars.term.anon.Anon;
 import nars.term.compound.UnitCompound;
 import nars.term.util.TermTransformException;
 import nars.term.util.builder.TermBuilder;
+import nars.term.util.conj.Conj;
 import nars.term.util.conj.ConjSeq;
 import nars.term.util.transform.AbstractTermTransform;
 import nars.term.util.transform.MapSubst;
@@ -530,11 +531,13 @@ public interface Compound extends Term, IPair, Subterms {
      * iterates contained events within a conjunction
      */
     @Override
-    default boolean eventsWhile(LongObjectPredicate<Term> each, long offset, boolean decomposeConjParallel, boolean decomposeConjDTernal, boolean decomposeXternal) {
+    default boolean eventsWhile(LongObjectPredicate<Term> each, long offset, boolean decomposeConjDTernal, boolean decomposeXternal) {
 
         Op o = op();
         if (o != CONJ)
             return each.accept(offset, this);
+
+//        boolean decomposeConjParallel = false;
 
         int dt = dt();
         boolean decompose;
@@ -550,9 +553,9 @@ public interface Compound extends Term, IPair, Subterms {
                     boolean unfactor;
                     int sdt = seq.dt();
                     switch (sdt) {
-                        case 0:
-                            unfactor = decomposeConjParallel;
-                            break;
+//                        case 0:
+//                            unfactor = decomposeConjParallel;
+//                            break;
                         case XTERNAL:
                             unfactor = decomposeXternal;
                             break;
@@ -580,7 +583,7 @@ public interface Compound extends Term, IPair, Subterms {
                                     //provide the component and the eternal separately, at the appropriate time
                                     each.accept(when, what) && each.accept(when, factor)
 
-                        , offset, decomposeConjParallel, decomposeConjDTernal, decomposeXternal);
+                        , offset, decomposeConjDTernal, decomposeXternal);
 
                     }
 
@@ -590,9 +593,9 @@ public interface Compound extends Term, IPair, Subterms {
                     dt = 0;
 
                 break;
-            case 0:
-                decompose = decomposeConjParallel;
-                break;
+//            case 0:
+//                decompose = decomposeConjParallel;
+//                break;
             case XTERNAL:
                 if (decompose = decomposeXternal)
                     dt = 0;
@@ -623,7 +626,7 @@ public interface Compound extends Term, IPair, Subterms {
             int s = ee.subs() - 1;
             for (int i = 0; i <= s; i++) {
                 Term ei = ee.sub(fwd ? i : s - i);
-                if (!ei.eventsWhile(each, t, decomposeConjParallel, decomposeConjDTernal, decomposeXternal))
+                if (!ei.eventsWhile(each, t, decomposeConjDTernal, decomposeXternal))
                     return false;
 
                 if (changeDT && i < s)
@@ -744,12 +747,12 @@ public interface Compound extends Term, IPair, Subterms {
 
 
     default Term eventFirst() {
-        if (ConjSeq.isSeq(this)) {
+        if (Conj.isSeq(this)) {
             final Term[] first = new Term[1];
             eventsWhile((when, what) -> {
                 first[0] = what;
                 return false; //done got first
-            }, 0, false, false, false);
+            }, 0, false, false);
             return first[0];
         }
         return this;
@@ -759,12 +762,12 @@ public interface Compound extends Term, IPair, Subterms {
      * TODO optimize
      */
     default Term eventLast() {
-        if (ConjSeq.isSeq(this)) {
+        if (Conj.isSeq(this)) {
             final Term[] last = new Term[1];
             eventsWhile((when, what) -> {
                 last[0] = what;
                 return true; //HACK keep going to end
-            }, 0, false, false, false);
+            }, 0, false, false);
             return last[0];
         }
         return this;

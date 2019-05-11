@@ -62,7 +62,7 @@ public final class CommonSubEventConstraint extends RelationConstraint {
     }
 
     private static boolean scan(Term xx, LongObjectPredicate<Term> adder) {
-        return xx.eventsWhile(adder, xx.dt() == DTERNAL ? ETERNAL : 0, true, xx.dt()==DTERNAL, false);
+        return xx.eventsWhile(adder, xx.dt() == DTERNAL ? ETERNAL : 0, xx.dt()==DTERNAL, false);
     }
 
     @Override

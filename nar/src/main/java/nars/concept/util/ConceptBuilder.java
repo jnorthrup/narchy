@@ -109,7 +109,7 @@ public abstract class ConceptBuilder implements BiFunction<Term, Concept, Concep
                                                                 varLocations.putIfAbsent(possiblyVar, event) == null
                                                 , null)
 
-                        , 0, true, true, true);
+                        , 0, true, true);
             }
             return true;
         }

@@ -32,7 +32,9 @@ import org.roaringbitmap.ImmutableBitmapDataProvider;
 import org.roaringbitmap.PeekableIntIterator;
 import org.roaringbitmap.RoaringBitmap;
 
-import java.util.*;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Predicate;
 
@@ -55,14 +57,14 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
 
     public static final int ROARING_UPGRADE_THRESH = 8;
 
-//    /**
+    //    /**
 //     * TermBuilder to use internally
 //     */
 //    @Deprecated
 //    private static final TermBuilder terms =
 //            //HeapTermBuilder.the;
 //            Op.terms;
-    static final Predicate<Term> isTemporalComponent = ConjSeq::isSeq;
+    static final Predicate<Term> isTemporalComponent = Conj::isSeq;
     static final Predicate<Term> isEternalComponent = isTemporalComponent.negate();
     public final LongObjectHashMap<Object> event;
     /**
@@ -110,22 +112,43 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
         return container.equals(x) || containsEvent(container, x);
     }
 
+    public static Term removeEvent(/*TermBuilder B, */ Term c, Term what) {
+//        if (!isSeq(c)) {
+//            return CONJ.the(c.dt(), c.subterms().subsExcluding(what));
+//        } else {
+            ConjBuilder x = Conj.fromLazy(c);
+            if (!x.removeAll(what))
+                return c;
+            else
+                return x.term();
+//        }
+    }
+
     public static boolean containsEvent(Term container, Term x) {
-        if (!x.op().eventable || container.op() != CONJ || container.impossibleSubTerm(x)) return false;
+        return containsEvent(container, x, +1);
+    }
+
+    /**
+     * @param polarity +1: unaffected input, -1: if contains input negated, 0: either as-is or negated
+     */
+    public static boolean containsEvent(Term container, Term x, int polarity) {
+        if (polarity != 1)
+            throw new TODO();
+
+        if (container.op() != CONJ || !x.op().eventable || container.impossibleSubTerm(x)) return false;
 
         if (container.contains(x))
             return true;
 
-        if (ConjSeq.isSeq(container)) {
+//        if (isSeq(container)) {
             //check if the term exists when distributed factorized
 //            boolean xIsConj = x.op() == CONJ;
 //            int xdt = xIsConj ? x.dt() : DTERNAL;
-            return !container.eventsWhile((when, cc) ->
-                    !cc.equals(x)
+            return !container.eventsWhile((when, cc) -> !cc.equals(x)
                     //cc == container || !containsOrEqualsEvent(cc, x) //recurse
-                    ,0, true /*!xIsConj || xdt != 0*/, true, true);
-        } else
-            return false;
+                    , 0, x.op()!=CONJ || x.dt() != DTERNAL, true);
+//        } else
+//            return false;
 
     }
 
@@ -260,14 +283,14 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
         return Terms.commuted(u);
     }
 
-    public static Term chooseEvent(Term conj, Random random, boolean decomposeDternal, boolean decomposeParallel, LongObjectPredicate<Term> valid) {
+    public static Term chooseEvent(Term conj, Random random, boolean decomposeParallel, LongObjectPredicate<Term> valid) {
 
         FasterList<Term> candidates = new FasterList();
         conj.eventsWhile((when, what) -> {
             if (valid.accept(when, what))
                 candidates.add(what);
             return true;
-        }, 0, decomposeDternal, decomposeParallel, true);
+        }, 0, decomposeParallel, true);
 
         if (candidates.isEmpty())
             return Null;
@@ -275,16 +298,18 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
             return candidates.get(random);
     }
 
-    /** TODO make a verison of this which iterates from a Conj instance */
-    public static List<LongObjectPair<Term>> match(Term conj, boolean decomposeDternal, boolean decomposeParallel, LongObjectPredicate<Term> valid) {
+    /**
+     * TODO make a verison of this which iterates from a Conj instance
+     */
+    public static List<LongObjectPair<Term>> match(Term conj, boolean decomposeParallel, LongObjectPredicate<Term> valid) {
 
         FasterList<LongObjectPair<Term>> candidates = new FasterList();
 
         conj.eventsWhile((when, what) -> {
             if (valid.accept(when, what))
-                candidates.add(pair(when,what));
+                candidates.add(pair(when, what));
             return true;
-        }, 0, decomposeDternal, decomposeParallel, true);
+        }, 0, decomposeParallel, true);
 
         if (candidates.isEmpty())
             return List.of();
@@ -553,9 +578,9 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
 
     public static Term diffAll(Term include, Term exclude, boolean autoNeg, boolean excludeNeg) {
 
-        if (autoNeg && include.op()==NEG) {
+        if (autoNeg && include.op() == NEG) {
             Term y = diffAll(include.unneg(), exclude, false, excludeNeg);
-            return y==True ? True : y.neg();
+            return y == True ? True : y.neg();
         }
 //        boolean eSeq = Conj.isSeq(exclude);
 //        Subterms ii = include.subterms();
@@ -591,7 +616,7 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
 //
 //        }
 
-        if (exclude.op()==CONJ || ConjSeq.isSeq(include)) {
+        if (exclude.op() == CONJ || isSeq(include)) {
 //            Conj xx = Conj.from(include);
 //            if (xx.removeEventsByTerm(exclude, true, excludeNeg)) {
 //                return xx.term();
@@ -605,21 +630,22 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
 
             boolean[] removedSomething = new boolean[]{false};
 
-            long offset = exclude.dt() == DTERNAL && !ConjSeq.isSeq(exclude) ? ETERNAL : 0;
+            long offset = exclude.dt() == DTERNAL && !isSeq(exclude) ? ETERNAL : 0;
 
             exclude.eventsWhile((when, what) -> {
                 removedSomething[0] |= when == ETERNAL ? x.removeAll(what) : x.remove(when, what);
                 //removedSomething[0] |= x.remove(when, what);
                 return true;
-            }, offset, true, true, false);
+            }, offset, true, false);
 
             return removedSomething[0] ? x.term() : include;
         } else {
             Subterms s = include.subterms();
             //try positive first
             Term[] ss = Terms.withoutOne(s, t -> t.equals(exclude), ThreadLocalRandom.current());
-                    //, s.subsExcluding(exclude);
-            if (ss != null) { int dt = include.dt();
+            //, s.subsExcluding(exclude);
+            if (ss != null) {
+                int dt = include.dt();
                 return ss.length > 1 ? terms.conj(dt, ss) : ss[0];
             } else {
                 //try negative next
@@ -637,7 +663,8 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
         }
     }
 
-    @Deprecated public static Term diffOne(Term include, Term exclude, @Deprecated boolean excludeNeg) {
+    @Deprecated
+    public static Term diffOne(Term include, Term exclude, @Deprecated boolean excludeNeg) {
         return diffOne(include, exclude, excludeNeg, ThreadLocalRandom.current());
     }
 
@@ -651,9 +678,9 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
         if (io == NEG) {
             //negated conjunction
             Term iu = include.unneg();
-            if (iu.op()==CONJ) {
+            if (iu.op() == CONJ) {
                 Term r = diffOne(iu, exclude, excludeNeg, rng); //TODO better
-                if (r==True)
+                if (r == True)
                     return True;
                 else
                     return r.neg();
@@ -682,30 +709,30 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
             return include;
 
 
-
-
 //        if (Conj.isSeq(include)) {
 
 
-        boolean decomposeDternal = eo!=CONJ && exclude.dt()!=DTERNAL;
-        boolean decomposeParallel = eo!=CONJ && exclude.dt()!=0;
-        List<LongObjectPair<Term>> ee = Conj.match(include, decomposeDternal, decomposeParallel,
+        boolean decomposeDternal = eo != CONJ && exclude.dt() != DTERNAL;
+        boolean decomposeParallel = eo != CONJ && exclude.dt() != 0;
+        List<LongObjectPair<Term>> ee = Conj.match(include, decomposeParallel,
                 !excludeNeg ?
-                    (when, what) -> what.equals(exclude)
-                    :
-                    (when, what) -> what.equalsPosOrNeg(exclude)
+                        (when, what) -> what.equals(exclude)
+                        :
+                        (when, what) -> what.equalsPosOrNeg(exclude)
         );
         LongObjectPair<Term> e;
         switch (ee.size()) {
-            case 0: return include; //nothing removed
-            case 1: e = ee.get(0); break;
+            case 0:
+                return include; //nothing removed
+            case 1:
+                e = ee.get(0);
+                break;
             default: {
-                e = ((FasterList<LongObjectPair<Term>>)ee).get(rng);
+                e = ((FasterList<LongObjectPair<Term>>) ee).get(rng);
                 break;
             }
         }
         return Conj.remove(include, e);
-
 
 
 //        } else { int dt = include.dt();
@@ -732,7 +759,7 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
 
     public static Term remove(Term include, LongObjectPair<Term> e) {
         int idt = include.dt();
-        if (dtSpecial(idt) && e.getTwo().op()!=CONJ) {
+        if (dtSpecial(idt) && e.getTwo().op() != CONJ) {
             //fast commutive remove
             @Nullable Term[] ss = include.subterms().subsExcluding(e.getTwo());
             if (ss == null)
@@ -823,7 +850,7 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
                 }
             }
             return eternal || when == 0;
-        }, 0, true, true, eternal);
+        }, 0, true, eternal);
 
 
         if (result[0] == True) {
@@ -837,7 +864,7 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
             //then merge the incoming target
 
 
-            if (!ConjSeq.isSeq(conjUnneg)) {
+            if (!isSeq(conjUnneg)) {
                 Term newConj = Conj.diffAll(conjUnneg, incoming, false);
                 if (newConj.equals(conjUnneg))
                     return True; //no change
@@ -1029,7 +1056,7 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
 
             //two sequence-likes. maybe some preprocessing that can be applied here
             //otherwise just add the new event
-            if (!ConjSeq.isSeq(existing) && !ConjSeq.isSeq(incoming))
+            if (!isSeq(existing) && !isSeq(incoming))
                 return null;
 
         }
@@ -1043,10 +1070,10 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
 //            }
 //        }
 
-        if (!ConjSeq.isSeq(existing))
+        if (!isSeq(existing))
             return null; //ok
 
-        if (incoming.unneg().op()!=CONJ && !existing.containsRecursively(incoming.unneg()))
+        if (incoming.unneg().op() != CONJ && !existing.containsRecursively(incoming.unneg()))
             return null; //no conflict possible
 
         ConjBuilder c =
@@ -1055,8 +1082,8 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
 
         boolean ok = existing.eventsWhile((whn, wht) -> {
             Term ww =
-                //B.conj(outerDT, wht, incoming);
-                ConjCommutive.the(B, outerDT, wht, incoming);
+                    //B.conj(outerDT, wht, incoming);
+                    ConjCommutive.the(B, outerDT, wht, incoming);
 
             if (ww == Null)
                 throw new WTF();
@@ -1071,7 +1098,7 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
 //                throw new WTF(); //TEMPORARY
 //            }
 
-        }, 0, false, false, false);
+        }, 0, false, false);
         if (!ok)
             return False;
 
@@ -1097,7 +1124,8 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
      *                          * non-null - merged value.  if merged equals current item, as-if True returned. otherwise remove the current item, recurse and add the new merged one
      *                          * null - do nothing, no conflict.  add x to the event time
      */
-    @Nullable private static Term merge(TermBuilder B, Term existing, Term incoming, boolean eternalOrParallel) {
+    @Nullable
+    private static Term merge(TermBuilder B, Term existing, Term incoming, boolean eternalOrParallel) {
 
 
         boolean incomingPolarity = incoming.op() != NEG;
@@ -1246,7 +1274,7 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
 
     private static <X> boolean eventsANDwith(Object events, ByteObjectPredicate<X> each, X x) {
         if (events instanceof byte[])
-            return eventsANDwith((byte[])events, each, x);
+            return eventsANDwith((byte[]) events, each, x);
         else
             throw new TODO();
     }
@@ -1289,6 +1317,20 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
             throw new TODO();
         else
             return false;
+    }
+
+    /**
+     * whether the conjunction is a sequence (includes check for factored inner sequence)
+     */
+    public static boolean isSeq(Term x) {
+        if (x.op() != CONJ)
+            return false;
+
+        int dt = x.dt();
+        if (dt == DTERNAL) {
+            return ConjSeq._isSeq(x);
+        } else
+            return !dtSpecial(dt);
     }
 
     @Override
@@ -1492,8 +1534,12 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
         }
     }
 
-    /** should be combined with disjunctify() */
-    @Nullable @Deprecated private int conflictOrSameEternalDisj(Term what, Object ee) {
+    /**
+     * should be combined with disjunctify()
+     */
+    @Nullable
+    @Deprecated
+    private int conflictOrSameEternalDisj(Term what, Object ee) {
         boolean absorbed = false;
         if (ee instanceof byte[]) {
             for (byte dui : (byte[]) ee) {
@@ -1503,7 +1549,7 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
                     int ce = conflictExhaustiveDisj(du, what);
                     if (ce == -2) {
                         remove(ETERNAL, dui);
-                        du = CONJ.the(du.dt(), du.subterms().subsExcluding(what)).neg();
+                        du = Conj.removeEvent(du, what).neg();
                         addEvent(ETERNAL, du);
                         return 0;
                     } else if (ce == +2) {
@@ -1514,7 +1560,7 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
                 }
             }
         } else {
-            RoaringBitmap r = (RoaringBitmap)ee;
+            RoaringBitmap r = (RoaringBitmap) ee;
             PeekableIntIterator rr = r.getIntIterator();
             while (rr.hasNext()) {
                 byte ix = (byte) rr.next();
@@ -1534,52 +1580,17 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
         return 0;
     }
 
-    /** assumes xu is x.unneg() for some x */
+
+    /**
+     * assumes xu is x.unneg() for some x
+     */
     private int conflictExhaustiveDisj(Term disjUnneg, Term incoming) {
-//        if (x.op()==NEG) {
-//            Term xu = x.unneg();
-            if (disjUnneg.op() == CONJ) {
-                Subterms xus = disjUnneg.subterms();
-                if (Term.commonStructure(xus, incoming)) {
-                    if (xus.contains(incoming))
-                        return -2; //TODO remove conflicting branch from disj but add the conj condition
-                    if (xus.containsNeg(incoming))
-                        return +2; //disjunction absorbed by incoming
-
-                    //Term xu = x.unneg();
-//                    Term xy = CONJ.the(x, y);
-//                    if (xy.equals(x))
-//                        return +1; //absorbed
-//                    if (xy.unneg().op() != CONJ || xy.volume() < x.volume())
-//                        return -1; //something happened: bool or other interference
-                }
-            }
-//        }
-
-//        if (x.op()==NEG && x.unneg().op()==CONJ) {
-//            Term xy = CONJ.the(x, y);
-//            Op xyo = xy.op();
-//            if (xyo == BOOL || xyo != CONJ)
-//                return -1; //TODO see if True means something
-//            if (xy.equals(x))
-//                return +1; //absorbed
-//        }
-
-//        if (x.op()==NEG && x.unneg().op()==CONJ) {
-//            x = x.unneg();
-//            if (x.op() == CONJ) {
-//                //disjunctive screening:  test for any conflict as
-//                Subterms xx = x.subterms();
-//                if (!xx.impossibleSubTerm(y.unneg())) {
-//                    //TODO recursive event scan?
-//                    if (xx.contains(y))
-//                        return -1; //disjunctive conflict
-//                    else if (xx.containsNeg(y))
-//                        return +1; //absorbed
-//                }
-//            }
-//        }
-
+        if (disjUnneg.op() == CONJ) {
+            if (Conj.containsEvent(disjUnneg, incoming))
+                return -2; //TODO remove conflicting branch from disj but add the conj condition
+            if (Conj.containsEvent(disjUnneg, incoming.neg()))
+                return +2; //disjunction absorbed by incoming
+        }
         return 0;
     }
 
@@ -1647,9 +1658,9 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
         if (!polarity) id = (byte) -id;
 
         //test for conflict with existing ETERNALs
-        int c = conflictOrSame(ETERNAL,  id, x);
+        int c = conflictOrSame(ETERNAL, id, x);
         if (c > 0)
-            return true; //absorbed
+            return result==null; //absorbed
         else if (c < 0) {
             result = False;
             return false;
@@ -1820,16 +1831,16 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
 
     @Override
     public boolean remove(long at, Term t) {
-        if (t.op()!=CONJ) {
+        if (t.op() != CONJ) {
             byte i = get(t);
             if (i == Byte.MIN_VALUE)
                 return false;
             return remove(at, i);
         } else {
-            return t.eventsWhile((when,what)->{
-                assert(!t.equals(what)); //prevent infinite recursion, hopefully this cant happen
+            return t.eventsWhile((when, what) -> {
+                assert (!t.equals(what)); //prevent infinite recursion, hopefully this cant happen
                 return remove(when, what); //fails on error
-            }, at, true, true, false);
+            }, at, true, false);
         }
     }
 
@@ -2119,11 +2130,10 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
 //                            //z -> tu.containsRecursively(z.unneg());
 //                            z -> Conj.containsEvent(tu, z.unneg());
 //                    if (tur.test(eu) || (eu.op()!=CONJ || eu.subterms().OR(tur))) {
-                        //needs further flattening
-                        Term y = ConjCommutive.the(B, DTERNAL, true, true, temporal, eternal);
-                        return y;
+                //needs further flattening
+                Term y = ConjCommutive.the(B, DTERNAL, true, true, temporal, eternal);
+                return y;
 //                    }
-
 
 
             }
@@ -2153,6 +2163,7 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
         if (ee <= 1)
             return false;
 
+        /** TODO use ConjLazy */
         List<LongObjectPair<Object>> events = event.keyValuesView().toList();
 
         int numTemporalCompoundEvents = 0, numTemporalEvents = 0;
@@ -2195,7 +2206,7 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
                         //done
                         if (common.isEmpty())
                             return false; //all are eliminated
-                                // break;
+                        // break;
                     }
                 }
 
@@ -2204,7 +2215,7 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
             }
         }
 
-        int commonCount = common!=null ? common.size() : 0;
+        int commonCount = common != null ? common.size() : 0;
         if (0 == commonCount)
             return false;
 
@@ -2238,7 +2249,8 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
                     boolean removed = remove(whenWhat.getOne(), f);
                     assert (removed);
                 }
-            }
+            } else
+                return false;
         }
 
         return true;
@@ -2285,7 +2297,7 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
     private void term(RoaringBitmap b, FasterList<Term> buffer) {
         PeekableIntIterator xx = b.getIntIterator();
         while (xx.hasNext()) {
-            buffer.add(unindex((byte)xx.next()));
+            buffer.add(unindex((byte) xx.next()));
         }
     }
 
@@ -2341,6 +2353,7 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
     public final void distribute() {
         distribute(Op.terms);
     }
+
     /**
      * opposite of factor; 'multiplies' all temporal components with any eternal components
      */

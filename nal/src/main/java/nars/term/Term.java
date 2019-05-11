@@ -32,7 +32,7 @@ import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
 import nars.term.atom.Int;
 import nars.term.compound.UnitCompound;
-import nars.term.util.conj.ConjSeq;
+import nars.term.util.conj.Conj;
 import nars.term.util.transform.MapSubst;
 import nars.term.util.transform.Retemporalize;
 import nars.time.Tense;
@@ -446,7 +446,7 @@ public interface Term extends Termlike, Termed, Comparable<Term> {
 
 
         if (op() == CONJ) {
-            if (ConjSeq.isSeq(this)) {
+            if (Conj.isSeq(this)) {
 //                final int[] hits = {0};
                 eventsWhile((when, what) -> {
                     if (what.equals(match)) {
@@ -462,7 +462,7 @@ public interface Term extends Termlike, Termed, Comparable<Term> {
                         }
                     }
                     return true;
-                }, 0, match.dt()!=0, match.dt()!=DTERNAL, true);
+                }, 0, match.op()!=CONJ || match.dt()!=DTERNAL, true);
                 return true;
             } else {
                 if (contains(match))
@@ -540,7 +540,7 @@ public interface Term extends Termlike, Termed, Comparable<Term> {
     }
 
     default boolean eventsWhile(LongObjectPredicate<Term> each, long offset,
-                                boolean decomposeConjParallel, boolean decomposeConjDTernal, boolean decomposeXternal) {
+                                boolean decomposeConjDTernal, boolean decomposeXternal) {
         return each.accept(offset, this);
     }
 
@@ -648,7 +648,7 @@ public interface Term extends Termlike, Termed, Comparable<Term> {
             if (what != Term.this)
                 s.add(what);
             return true;
-        }, 0, true, true, true);
+        }, 0, true, true);
         return s;
     }
 

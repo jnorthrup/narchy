@@ -52,25 +52,11 @@ public enum ConjSeq { ;
         return x.subsTrue(Conj.isEternalComponent);
     }
 
-    /**
-     * whether the conjunction is a sequence (includes check for factored inner sequence)
-     */
-    public static boolean isSeq(Term x) {
-        if (x.op() != CONJ)
-            return false;
-
-        int dt = x.dt();
-        if (dt == DTERNAL) {
-            return _isSeq(x);
-        } else
-            return !dtSpecial(dt);
-    }
-
-    private static boolean _isSeq(Term x) {
+    static boolean _isSeq(Term x) {
         Subterms xx = x.subterms();
         return xx.hasAny(CONJ) && //inner conjunction
                 xx.subs() == 2 &&
-                xx.count(ConjSeq::isSeq) == 1
+                xx.count(Conj::isSeq) == 1
                 && (!xx.hasAny(NEG)
                         ||
                         /** TODO weird disjunctive seq cases */
@@ -116,7 +102,7 @@ public enum ConjSeq { ;
 
     private static Compound seqTemporal(Subterms s) {
         Compound t = (Compound) s.subFirst(Conj.isTemporalComponent);
-        assert (isSeq(t));
+        assert (Conj.isSeq(t));
         return t;
     }
 

@@ -1206,8 +1206,6 @@ public interface Subterms extends Termlike, Iterable<Term> {
         return (index == -1) ? null : subsExcluding(index);
     }
 
-
-
     default Subterms replaceSub(Term from, Term to, Op superOp) {
         if (containsRecursively(from)) {
             return transformSubs(MapSubst.replace(from, to), superOp);

@@ -9,6 +9,7 @@ import nars.subterm.Subterms;
 import nars.task.util.TaskRegion;
 import nars.term.Compound;
 import nars.term.Term;
+import nars.term.util.conj.Conj;
 import nars.term.util.conj.ConjBuilder;
 import nars.term.util.conj.ConjLazy;
 import nars.term.util.conj.ConjSeq;
@@ -91,7 +92,7 @@ public class DynamicConjTruth {
             }
 
             int superDT = conj.dt();
-            boolean dternal = !ConjSeq.isSeq(conj) && superDT == DTERNAL;
+            boolean dternal = !Conj.isSeq(conj) && superDT == DTERNAL;
             boolean xternal = superDT == XTERNAL;
             boolean parallel = true; //superDT == 0;
 
@@ -163,7 +164,6 @@ public class DynamicConjTruth {
                     sub = (when, event) -> each.accept(event, when, when); //point-like
 
                 return conj.eventsWhile(sub, start,
-                        parallel,
                         dternal,
                         xternal);
             }

@@ -460,7 +460,7 @@ public class Builtin {
         @Override
         protected Term apply1(Term conj) {
             return Conj.chooseEvent(conj, nar.random(),
-                    true, true,
+                    true,
                     (when, what)->true);
         }
     });
@@ -485,7 +485,7 @@ public class Builtin {
 
                return Conj.chooseEvent(conj, nar.random(),
                        //(!econj || edt!=DTERNAL), (!econj || edt!=0),
-                       true,true,
+                       true,
                        (when, what)-> (!requireVars || what.hasVars())
                                && Terms.possiblyUnifiable(event, what, true, Op.Variable));
            }
