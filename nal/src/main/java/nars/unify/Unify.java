@@ -356,7 +356,7 @@ public abstract class Unify extends Versioning<Term> {
      * whether assignable variable terms
      */
     public final boolean var(Op var) {
-        return ((this.varBits & var.bit) != 0);
+        return var.var && ((this.varBits & var.bit) != 0);
     }
 
     /** whether is or contains assignable variable terms */
@@ -371,8 +371,6 @@ public abstract class Unify extends Versioning<Term> {
 
     /** can x be assigned to y (y <= x) */
     public final boolean assigns(Op target, Op value) {
-        assert(target.var);
-
         return (!value.var || (target.id < value.id)) && var(target);
     }
 

@@ -70,34 +70,44 @@ public interface Variable extends Atomic {
         if (x instanceof Neg && y instanceof Neg) {
             x = x.unneg();
             y = y.unneg();
-        }
+        } else {
 
-        //mobius neg-unification resolution
-        boolean done = false;
-        if (x instanceof Neg) {
-            Term xu = x.unneg();
-            if (xu instanceof Variable && (!(y instanceof Variable) || u.assigns(xu.op(), y.op())) && !(y.op() == FRAG)) {
-                x = xu;
-                y = y.neg();
-                done = true;
+            //mobius pos/neg unification resolution
+            boolean done = false;
+            if (x instanceof Neg) {
+                Term xu = x.unneg();
+                if (xu instanceof Variable && (!(y instanceof Variable) || u.assigns(xu.op(), y.op())) && neggable(y)) {
+                    x = xu;
+                    y = y.neg();
+                    done = true;
+                }
+            }
+            if (!done && y instanceof Neg) {
+                Term yu = y.unneg();
+                if (yu instanceof Variable && (!(x instanceof Variable) || u.assigns(yu.op(), x.op())) && neggable(x)) {
+                    y = yu;
+                    x = x.neg();
+                    done = true;
+                }
             }
         }
-        if (!done && y instanceof Neg) {
-            Term yu = y.unneg();
-            if (yu instanceof Variable && (!(x instanceof Variable) || u.assigns(yu.op(), x.op())) && !(x.op() == FRAG)) {
-                y = yu;
-                x = x.neg();
-                done = true;
-            }
+
+
+        if ((x instanceof Variable || y instanceof Variable)) {
+            if (x instanceof Variable && u.assigns(x.op(), y.op()))
+                return unifyVar(u, (Variable) x, y);
+
+            if (y instanceof Variable && u.assigns(y.op(), x.op()))
+                return unifyVar(u, (Variable) y, x);
+
+            return false;
+        } else {
+            return unifyConst(u, x, y);
         }
+    }
 
-
-        if (x instanceof Variable && u.assigns(x.op(), y.op()))
-            return unifyVar(u, (Variable) x, y);
-        else if (y instanceof Variable && u.assigns(y.op(), x.op()))
-            return unifyVar(u, (Variable) y, x);
-        else
-            return (!(x instanceof Variable)) && unifyConst(u, x, y);
+    private static boolean neggable(Term x) {
+        return (x.op() != FRAG) || (x.subs()==1); //allow 1-element fragments, since they can be neg safely
     }
 
     private static boolean unifyConst(Unify u, Term x, Term y) {
