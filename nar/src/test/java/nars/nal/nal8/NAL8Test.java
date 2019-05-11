@@ -21,7 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class NAL8Test extends NALTest {
 
-    public static final int cycles = 850;
+    public static final int cycles = 150;
 
     @BeforeEach
     void setTolerance() {
@@ -37,7 +37,7 @@ public class NAL8Test extends NALTest {
     void subsent_1_even_simpler_simplerBeliefTemporal() {
 
         test
-            .termVolMax(12)
+            .termVolMax(9)
                 .input("(open(t1) &&+5 (t1-->[opened])). |")
                 .mustBelieve(cycles, "open(t1)", 1.0f, 0.81f, 0)
                 .mustBelieve(cycles, "(t1-->[opened])", 1.0f, 0.81f, 5)
@@ -109,10 +109,10 @@ public class NAL8Test extends NALTest {
         }
 
         test
-                .termVolMax(19)
-                .input("(hold(SELF,{t002}) &&+2 (at(SELF,{t001}) &&+2 open({t001}))). |")
-                .mustBelieve(cycles, "hold(SELF,{t002})", 1.0f, 0.73f, 0)
-                .mustBelieve(cycles, "(at(SELF,{t001}) &&+2 open({t001}))", 1.0f, 0.81f, 2)
+                .termVolMax(5)
+                .input("(h &&+2 (a &&+2 o)). |")
+                .mustBelieve(cycles, "h", 1.0f, 0.73f, 0)
+                .mustBelieve(cycles, "(a &&+2 o)", 1.0f, 0.81f, 2)
         ;
     }
 
@@ -764,7 +764,7 @@ public class NAL8Test extends NALTest {
         test
                 .inputAt(0, "(--a ==>+1 b). |")
                 .inputAt(1, "b! |")
-                .mustGoal(cycles, "a", 0f, 0.81f, (t) -> t >= 0);
+                .mustGoal(cycles, "a", 0f, 0.81f, t -> t >= 0);
 
     }
 
@@ -772,10 +772,11 @@ public class NAL8Test extends NALTest {
     void conjDecomposeGoalAfterNegNeg() {
 
         test
+                .termVolMax(4)
                 .inputAt(3, "(a &&+3 --b). |")
                 .inputAt(6, "--b! |")
-                .mustGoal(cycles, "a", 1f, 0.5f, t -> t >= 6)
-                .mustNotOutput(cycles, "a", GOAL, ETERNAL);
+                .mustGoal(cycles, "a", 1f, 0.5f, t -> t == 3)
+                .mustNotOutput(cycles, "a", GOAL, t -> t!=3);
     }
 
     @Test

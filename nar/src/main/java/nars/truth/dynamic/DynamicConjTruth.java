@@ -9,8 +9,8 @@ import nars.subterm.Subterms;
 import nars.task.util.TaskRegion;
 import nars.term.Compound;
 import nars.term.Term;
-import nars.term.util.conj.Conj;
 import nars.term.util.conj.ConjBuilder;
+import nars.term.util.conj.ConjLazy;
 import nars.term.util.conj.ConjSeq;
 import nars.time.Tense;
 import nars.truth.Stamp;
@@ -46,11 +46,11 @@ public class DynamicConjTruth {
 
             boolean factored = ConjSeq.isFactoredSeq(superterm);
 
-
+            int dtDither = nar.dtDither();
             int n = d.size();
             ConjBuilder l =
-                    //new ConjLazy(n);
-                    new Conj(n);
+                    new ConjLazy(n);
+                    //new Conj(n);
             for (int i = 0; i < n; i++) {
                 TaskRegion t = d.get(i);
                 long s = t.start();
@@ -62,15 +62,11 @@ public class DynamicConjTruth {
                 else
                     when = s;
 
-
-                if (!l.add(when, ((Task) t).term().negIf(!d.componentPolarity.get(i))))
+                if (!l.add(Tense.dither(when, dtDither), ((Task) t).term().negIf(!d.componentPolarity.get(i))))
                     return null;
             }
 
-            Term y = l.term();
-
-
-            return y;
+            return l.term();
         }
 
         @Override

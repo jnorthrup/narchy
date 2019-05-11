@@ -432,7 +432,7 @@ public class ConjClustering extends How {
             final Truth t = Truth.theDithered(freq, e, nar);
             if (t != null) {
 
-                Term cj = ConjLazy.sequence(x);
+                Term cj = ConjLazy.sequence(x, nar.dtDither.intValue());
                 if (cj.volume() > 1) {
 
                     Term tt = Task.normalize(cj);

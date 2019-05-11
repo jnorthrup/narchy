@@ -166,16 +166,16 @@ public class NAL3Test extends NALTest {
     @Test
     void diff_compound_decomposition_single3_intersect() {
         test.termVolMax(8);
-        test.believe("<(dinosaur - ant) --> [strong]>", 0.9f, 0.9f);
+        test.believe("<(dinosaur && --ant) --> [strong]>", 0.9f, 0.9f);
         test.mustBelieve(cycles, "<dinosaur --> [strong]>", 0.90f, 0.73f);
         test.mustBelieve(cycles, "<ant --> [strong]>", 0.10f, 0.73f);
     }
     @Test
     void diff_compound_decomposition_single3_union() {
         test.termVolMax(8);
-        test.believe("<(dinosaur ~ ant) --> [strong]>", 0.9f, 0.9f);
-        test.mustBelieve(cycles, "<dinosaur --> [strong]>", 0.90f, 0.73f);
-        test.mustBelieve(cycles, "<ant --> [strong]>", 0.10f, 0.73f);
+        test.believe("<(dinosaur || --ant) --> [strong]>", 0.9f, 0.9f);
+        test.mustBelieve(cycles, "<dinosaur --> [strong]>", 0.90f, 0.42f);
+        test.mustBelieve(cycles, "<ant --> [strong]>", 0.10f, 0.42f);
     }
 
     @Test
@@ -224,7 +224,7 @@ public class NAL3Test extends NALTest {
 
         test
                 .believe("(a-->b)")
-                .believe("(a-->(b&c))", 0f, 0.9f)
+                .believe("(a-->(b&&c))", 0f, 0.9f)
                 .mustBelieve(cycles, "(a-->c)", 0f, 0.81f, ETERNAL);
 
     }
@@ -234,7 +234,7 @@ public class NAL3Test extends NALTest {
         test
                 .termVolMax(8)
                 .believe("(b-->a)", 0.25f, 0.9f)
-                .believe("((b&c)-->a)", 0.25f, 0.9f)
+                .believe("((b&&c)-->a)", 0.25f, 0.9f)
                 .mustBelieve(cycles, "(c-->a)", 0.19f, 0.15f, ETERNAL);
     }
 
@@ -245,7 +245,7 @@ public class NAL3Test extends NALTest {
         test
                 .termVolMax(8)
                 .believe("(a-->b)", 0.25f, 0.9f)
-                .believe("(a-->(b|c))", 0.25f, 0.9f)
+                .believe("(a-->(b||c))", 0.25f, 0.9f)
                 .mustBelieve(cycles, "(a-->c)", 0.19f, 0.15f, ETERNAL);
     }
 
@@ -255,7 +255,7 @@ public class NAL3Test extends NALTest {
 
         test
                 .termVolMax(6)
-                .believe("--(x-->(RealNumber&ComplexNumber))")
+                .believe("--(x-->(RealNumber&&ComplexNumber))")
                 .believe("(x-->RealNumber)")
                 .mustBelieve(cycles, "(x-->ComplexNumber)", 0f, 0.45f) //single decomposition
                 .mustBelieve(cycles, "(x-->ComplexNumber)", 0f, 0.81f); //double decomposition
@@ -281,7 +281,6 @@ public class NAL3Test extends NALTest {
                 .believe("--(x-->(&,RealNumber,ComplexNumber,Letter))")
                 .believe("(x-->RealNumber)")
                 .mustBelieve(cycles, "(x-->(ComplexNumber&&Letter))", 0f, 0.81f)
-                .mustNotOutput(cycles, "(x-->((&,RealNumber,ComplexNumber,Letter)|RealNumber))", BELIEF, ETERNAL)
         ;
 
     }

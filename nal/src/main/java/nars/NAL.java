@@ -635,7 +635,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
          * for NALTest's: extends the time all unit tests are allowed to run for.
          * normally be kept to 1 but for debugging this may be increased to find what tests need more time
          */
-        public static final float TIME_MULTIPLIER = 3f;
+        public static final float TIME_MULTIPLIER = 1f;
         /**
          * how precise unit test results must match expected values to pass
          */
@@ -663,7 +663,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
          * whether timegraph should not return solutions with volume significantly less than the input's.
          * set 0 to disable the filter
          */
-        public static final float TIMEGRAPH_IGNORE_DEGENERATE_SOLUTIONS_FACTOR = 0.25f;
+        public static final float TIMEGRAPH_IGNORE_DEGENERATE_SOLUTIONS_FACTOR = 0f;
         /**
          * whether to dither events as they are represented internally.  output events are dithered for the NAR regardless.
          */
@@ -740,7 +740,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
         /**
          * max variable unification recursion depth as a naive cyclic filter
          */
-        public static final int UNIFY_VAR_RECURSION_DEPTH_LIMIT = 5;
+        public static final int UNIFY_VAR_RECURSION_DEPTH_LIMIT = 3;
         public static final int UNIFY_COMMON_VAR_MAX = UNIFY_VAR_RECURSION_DEPTH_LIMIT;
         public static final int UNIFICATION_STACK_CAPACITY = 128;
     }

@@ -1684,7 +1684,7 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
                     return true;
                 } else {
 
-                    Term result = merge(HeapTermBuilder.the, unindex(bi), x, at == ETERNAL);
+                    Term result = merge(Op.terms, unindex(bi), x, at == ETERNAL);
 
                     if (result != null) {
                         if (result == True)

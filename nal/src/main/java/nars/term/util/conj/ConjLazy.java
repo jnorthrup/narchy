@@ -5,6 +5,7 @@ import jcog.data.set.LongObjectArraySet;
 import nars.Task;
 import nars.term.Term;
 import nars.term.util.builder.TermBuilder;
+import nars.time.Tense;
 import org.eclipse.collections.api.iterator.LongIterator;
 import org.eclipse.collections.impl.set.mutable.primitive.LongHashSet;
 
@@ -39,7 +40,7 @@ public class ConjLazy extends LongObjectArraySet<Term> implements ConjBuilder {
 
 
     /** TODO add support for supersampling to include task.end() features */
-    public static Term sequence(Task[] events) {
+    public static Term sequence(Task[] events, int ditherDT) {
         int eventsSize = events.length;
         switch (eventsSize) {
             case 0:
@@ -51,7 +52,7 @@ public class ConjLazy extends LongObjectArraySet<Term> implements ConjBuilder {
         ConjLazy ce = new ConjLazy(eventsSize);
 
         for (Task o : events) {
-            if (!ce.add(o.start(), sequenceTerm(o))) {
+            if (!ce.add(Tense.dither(o.start(), ditherDT), sequenceTerm(o))) {
                 break;
             }
         }
@@ -164,10 +165,7 @@ public class ConjLazy extends LongObjectArraySet<Term> implements ConjBuilder {
                 if (w0 == w1) {
                     //SAME TIME
                     Term a = items[0], b = items[1];
-                    if (a.equals(b))
-                        return a; //quick test
-                    else
-                        return CONJ.the(B, DTERNAL /*(w0 == ETERNAL) ? DTERNAL : 0*/, a, b);
+                    return CONJ.the(B, DTERNAL /*(w0 == ETERNAL) ? DTERNAL : 0*/, a, b);
                 }
 
                 break;
