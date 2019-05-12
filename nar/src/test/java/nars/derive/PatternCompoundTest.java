@@ -28,7 +28,7 @@ class PatternCompoundTest {
         Term r = PatternTermBuilder.patternify($$("(x || y)"));
         assertEquals(
                 //"(--,((--,x) &&+- (--,y)))",
-                "(||+- ,x,y)",
+                "(x ||+- y)",
                 //"(x ||+- y)", //TODO
                 r.toString());
     }

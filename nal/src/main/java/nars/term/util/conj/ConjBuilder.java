@@ -96,18 +96,20 @@ public interface ConjBuilder {
 //        }
 
 
-        if (xdt!=XTERNAL && (at != ETERNAL || (xdt == 0) || (xdt == DTERNAL))) {
+
+        if (xdt != XTERNAL) {
 
             if (at == ETERNAL && Conj.isSeq(x))
                 at = 0;
 
-            return x.eventsWhile(this::addEvent, at,
-                    //unpack parallel except in DTERNAL root, allowing: ((a&|b) && (c&|d))
-                    true,
-                    false);
-        } else {
-            return addEvent(at, x);
+            if (at != ETERNAL || (xdt == 0) || (xdt == DTERNAL)) {
+                return x.eventsWhile(this::addEvent, at,
+                        true,
+                        false);
+            }
         }
+
+        return addEvent(at, x);
     }
 
     default boolean addAuto(Term t) {

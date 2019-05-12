@@ -654,14 +654,11 @@ public class Derivation extends PreDerivation {
     public Term retransform(Term x) {
         Term y = x;
 
-        if (y.hasAny(VAR_DEP.bit | VAR_INDEP.bit | VAR_QUERY.bit))
-            y = transform().apply(y);
+//        if (y.hasAny(VAR_DEP.bit | VAR_INDEP.bit | VAR_QUERY.bit))
+//            y = transform().apply(y);
 
         if (!retransform.isEmpty())
-            y = y.replace(retransform); //retransforms only
-        //x.replace(xy).replace(retransform); //avoid functor eval
-        //transform(x).replace(retransform);
-        //x.replace(retransform);
+            y = y.replace(retransform); //substitution/unification derivation functors only
 
         if (y != x && !y.op().eventable)
             return x; //dont bother

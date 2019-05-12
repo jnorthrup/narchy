@@ -724,6 +724,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
 
         /**
          * attempt to create a question/quest task from an invalid belief/goal (probably due to missing or unsolved temporal information
+         * in some cases, forming the question may be answered by a dynamic truth calculation later
          */
         public static final boolean DERIVATION_FORM_QUESTION_FROM_AMBIGUOUS_BELIEF_OR_GOAL= configIs("DERIVATION_FORM_QUESTION_FROM_AMBIGUOUS_BELIEF_OR_GOAL");
 

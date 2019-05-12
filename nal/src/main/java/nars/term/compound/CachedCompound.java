@@ -140,6 +140,13 @@ abstract public class CachedCompound extends SeparateSubtermsCompound implements
 //                    throw new WTF();
 //                if (dt!=DTERNAL && dt!=XTERNAL && dt%10!=0)
 //                    throw new WTF();
+//                try {
+//                    eventsWhile((when, whta) -> {
+//                        return true;
+//                    }, 0, true, true);
+//                } catch (Throwable t) {
+//                    Util.nop();
+//                }
 //            }
         }
 

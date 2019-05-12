@@ -287,15 +287,18 @@ public class ConjTest {
     }
 
     @Test
-    void theDifferenceBetweenDTERNAL_and_Parallel() {
+    void theDifferenceBetweenDTERNAL_and_Parallel_parallel() {
         //"((a&|b)&&(a &&+1 b))",
         //"( (a&|b) && (a &&+1 b) )"
 
         Term t = assertEq("((a&&b) &&+1 b)", "( (a&&b) &| (a &&+1 b) )");
+        assertEquals(t.volume(), t.anon().volume());
+    }
+
+    @Test
+    void theDifferenceBetweenDTERNAL_and_Parallel_dternal() {
 
         Term u = assertEq("((a&&b) &&+1 (a&&b))", "( (a&&b) && (a &&+1 b) )"); //distributed, while sequence is preserved
-
-        assertEquals(t.volume(), t.anon().volume());
 
     }
 
@@ -1618,7 +1621,7 @@ public class ConjTest {
         //construction method 1
         Term x = $$("(((left-->g) &&+270 (--,(left-->g))) &&+1070 (right-->g))");
         Term y = $$("(&&,(up-->g),(left-->g),(destroy-->g))");
-        assertEq("(&&,(((left-->g) &&+270 (--,(left-->g))) &&+1070 (right-->g)),(up-->g),(left-->g),(destroy-->g))",
+        assertEq(False, //"(&&,(((left-->g) &&+270 (--,(left-->g))) &&+1070 (right-->g)),(up-->g),(left-->g),(destroy-->g))",
                 CONJ.the(DTERNAL, x, y));
 
         //construction method 2
@@ -1816,6 +1819,16 @@ public class ConjTest {
         c.add(p.length() > 1 ? 0 : 1L, $$(p.replace("%", "x")));
         assertEq(p.replace("%", "(x&&y)"), c.term());
     }
+    @Test void conjoinify_234u892342() {
+        Conj c = new Conj();
+        Term x = $$("(((--,right) &&+90 (--,rotate)) &&+50 ((--,tetris(1,7))&&(--,tetris(7,4))))");
+        assertEquals(CONJ, x.op());
+        Term y = $$("right");
+        c.add(ETERNAL, x);
+        assertEquals(3, c.eventOccurrences());
+        c.add(25360, y);
+        assertEq("(((--,right) &&+90 (--,rotate)) &&+50 (((--,tetris(1,7))&&(--,tetris(7,4))) &&+25220 right))", c.term());
+    }
 
     @Test
     void testSequentialDisjunctionAbsorb() {
@@ -1876,13 +1889,6 @@ public class ConjTest {
 
     }
 
-    @Test
-    void testDisjunctionParallelReduction3() {
-
-        assertEq(False,
-                $$("( &&, (--, (g, (1, 1),(18, 0))),(--, ((--, (right--> g))&&(down--> g))),(--, (right--> g)),(down--> g))")
-        );
-    }
 
     @Test
     void testCollapseEteParallel1() {

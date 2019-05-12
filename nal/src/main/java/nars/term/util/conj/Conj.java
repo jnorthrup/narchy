@@ -152,7 +152,7 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
                     when==ETERNAL ?
                         (w, cc) -> !(cc.equals(x)) :
                         (w, cc) -> !(w==when && cc.equals(x))
-                    , 0, x.op()!=CONJ || x.dt() != DTERNAL, true);
+                    , 0, x.op()!=CONJ || x.dt() != DTERNAL, false);
 //        } else
 //            return false;
 
@@ -1493,6 +1493,8 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
                     int ddt = d.dt();
                     if (ddt ==XTERNAL || (ddt ==DTERNAL && d.contains(incoming) /* HACK to split a sequence non-sequentially at the top-level */)) {
                         Term[] ee = d.subterms().removing(incoming);
+                        if (ee == null)
+                            throw new WTF();
                         if (ee.length > 1)
                             e = CONJ.the(ddt, ee);
                         else
@@ -1641,10 +1643,11 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
 
         if (at!=ETERNAL) {//ETERNAL already tested above
             int d = disjunctify2(at, events, incoming);
-            if (d == -1)
-                return false;
-            else if (d == +1)
+            if (d == +1)
                 return true; //absorb
+            else if (d == -1)
+                return false;
+
         }
 
         if (events instanceof byte[]) {
