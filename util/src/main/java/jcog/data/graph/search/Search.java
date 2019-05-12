@@ -25,13 +25,14 @@ import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
  * backtrack/cyclic prevention guaranteed to visit each vertex at most once.
  * - an instance may be recycled multiple times
  * - multiple instances may concurrently access the same graph
- *
+ * <p>
  * NOT multi-thread safe in any way.
  */
 abstract public class Search<N, E> {
 
+    private static final List empty = List.of();
     public final TraveLog log;
-    public List<BooleanObjectPair<FromTo<Node<N,E>,E>>> path = null;
+    public List<BooleanObjectPair<FromTo<Node<N, E>, E>>> path = null;
     private Node<N, E> at = null;
 
     protected Search() {
@@ -42,7 +43,25 @@ abstract public class Search<N, E> {
         this.log = log;
     }
 
-    abstract protected boolean next(BooleanObjectPair<FromTo<Node<N,E>,E>> move, Node<N,E> next);
+    public static <N, E> Node<N, E> pathStart(List<BooleanObjectPair<FromTo<Node<N, E>, E>>> path, int n) {
+        BooleanObjectPair<FromTo<Node<N, E>, E>> step = path.get(n);
+        return step.getTwo().from(step.getOne());
+    }
+
+    public static <N, E> Node<N, E> pathStart(List<BooleanObjectPair<FromTo<Node<N, E>, E>>> path) {
+        return pathStart(path, 0);
+    }
+
+    /**
+     * optimized for Cons usage
+     */
+    public static <N, E> Node<N, E> pathEnd(List<BooleanObjectPair<FromTo<Node<N, E>, E>>> path) {
+        BooleanObjectPair<FromTo<Node<N, E>, E>> step = path instanceof Cons ?
+                ((Cons<BooleanObjectPair<FromTo<Node<N, E>, E>>>) path).tail : path.get(path.size() - 1);
+        return step.getTwo().to(step.getOne());
+    }
+
+    abstract protected boolean next(BooleanObjectPair<FromTo<Node<N, E>, E>> move, Node<N, E> next);
 
     private void start() {
 
@@ -53,26 +72,8 @@ abstract public class Search<N, E> {
         path = null;
     }
 
-    public static <N,E> Node<N,E> pathStart(List<BooleanObjectPair<FromTo<Node<N,E>,E>>> path, int n) {
-        BooleanObjectPair<FromTo<Node<N,E>,E>> step = path.get(n);
-        return step.getTwo().from(step.getOne());
-    }
-
-    public static <N,E> Node<N,E> pathStart(List<BooleanObjectPair<FromTo<Node<N,E>,E>>> path) {
-        return pathStart(path, 0);
-    }
-
-    /** optimized for Cons usage */
-    public static <N,E> Node<N,E> pathEnd(List<BooleanObjectPair<FromTo<Node<N, E>, E>>> path) {
-        BooleanObjectPair<FromTo<Node<N,E>,E>> step = path instanceof Cons ?
-                ((Cons<BooleanObjectPair<FromTo<Node<N,E>,E>>>) path).tail : path.get(path.size() - 1);
-        return step.getTwo().to(step.getOne());
-    }
-
-    private static final List empty = List.of();
-
-    private boolean bfsNode(Node<N,E> start, Queue<Pair<List<BooleanObjectPair<FromTo<Node<N,E>,E>>>, Node<N,E>>> q) {
-        if (start==null)
+    private boolean bfsNode(Node<N, E> start, Queue<Pair<List<BooleanObjectPair<FromTo<Node<N, E>, E>>>, Node<N, E>>> q) {
+        if (start == null)
             return true;  //??
 
 
@@ -81,14 +82,14 @@ abstract public class Search<N, E> {
         if (!log.visit(start))
             return true; //reached a root via a previous root
 
-        Pair<List<BooleanObjectPair<FromTo<Node<N,E>,E>>>, Node<N,E>> current;
+        Pair<List<BooleanObjectPair<FromTo<Node<N, E>, E>>>, Node<N, E>> current;
         while ((current = q.poll()) != null) {
 
-            Node<N, E> at = this.at = current.getTwo();
+            final Node<N, E> at = this.at = current.getTwo();
 
             this.path = current.getOne();
 
-            for (FromTo<Node<N,E>,E> e : next(at)) {
+            for (FromTo<Node<N, E>, E> e : next(at)) {
                 Node<N, E> next = next(e, at);
                 if (next == null || !log.visit(next))
                     continue;
@@ -101,15 +102,14 @@ abstract public class Search<N, E> {
 
 
             if (!this.path.isEmpty()) {
-                Node<N, E> next = current.getTwo();
-                if (start != next) {
-                BooleanObjectPair<FromTo<Node<N, E>, E>> move =
-                        this.path instanceof Cons ? ((Cons<BooleanObjectPair<FromTo<Node<N, E>, E>>>) this.path).tail : this.path.get(this.path.size() - 1);
 
-                if (!next(move, next))
-                    return false;
+//                if (start != at) {
+                    BooleanObjectPair<FromTo<Node<N, E>, E>> move =
+                            this.path instanceof Cons ? ((Cons<BooleanObjectPair<FromTo<Node<N, E>, E>>>) this.path).tail : this.path.get(this.path.size() - 1);
 
-                }
+                    if (!next(move, at))
+                        return false;
+//                }
             }
 
         }
@@ -119,21 +119,20 @@ abstract public class Search<N, E> {
     }
 
 
-
-
-    /** can be overridden to hijack the determined next destination */
+    /**
+     * can be overridden to hijack the determined next destination
+     */
     @Nullable
     protected Node<N, E> next(FromTo<Node<N, E>, E> e, Node<N, E> at) {
         return e.other(at);
     }
 
 
-
-    public boolean dfs(Iterable<Node> startingNodes){
+    public boolean dfs(Iterable<Node> startingNodes) {
         return dfs(startingNodes, null);
     }
 
-    public boolean dfs(Iterable startingNodes, @Nullable NodeGraph g){
+    public boolean dfs(Iterable startingNodes, @Nullable NodeGraph g) {
 
         start();
 
@@ -144,10 +143,10 @@ abstract public class Search<N, E> {
             for (Object n : startingNodes) {
                 Node nn;
                 if (n instanceof Node)
-                    nn = (Node)n;
+                    nn = (Node) n;
                 else {
                     nn = g.node(n);
-                    if (nn==null)
+                    if (nn == null)
                         throw new WTF();
                 }
 
@@ -165,9 +164,9 @@ abstract public class Search<N, E> {
     private boolean dfsNode(Node<N, E> n) {
 
         if (!log.visit(n))
-            return true; 
+            return true;
 
-        Iterator<FromTo<Node<N,E>,E>> ii = next(n).iterator(); //Iterable?
+        Iterator<FromTo<Node<N, E>, E>> ii = next(n).iterator(); //Iterable?
         if (!ii.hasNext())
             return true;
 
@@ -175,21 +174,21 @@ abstract public class Search<N, E> {
 
         return Iterators.all(ii, e -> {
 
-            Node<N,E> next = next(e, at);
+            Node<N, E> next = next(e, at);
 
             if (next == null || log.hasVisited(next))
-                return true; 
+                return true;
 
-            BooleanObjectPair<FromTo<Node<N,E>,E>> move = pair(next == e.to(), e);
+            BooleanObjectPair<FromTo<Node<N, E>, E>> move = pair(next == e.to(), e);
 
-            
+
             path.add(move);
 
-            
-            if (!next(move, next) || !dfsNode(next))
-                return false; 
 
-            
+            if (!next(move, next) || !dfsNode(next))
+                return false;
+
+
             this.at = n;
             path.remove(path.size() - 1);
 
@@ -198,7 +197,7 @@ abstract public class Search<N, E> {
 
     }
 
-    protected Iterable<FromTo<Node<N,E>,E>> next(Node<N,E> n) {
+    protected Iterable<FromTo<Node<N, E>, E>> next(Node<N, E> n) {
         return n.edges(true, true);
     }
 
@@ -214,10 +213,10 @@ abstract public class Search<N, E> {
             for (Object n : startingNodes) {
                 Node nn;
                 if (n instanceof Node)
-                    nn = (Node)n;
+                    nn = (Node) n;
                 else {
                     nn = g.node(n);
-                    if (nn==null)
+                    if (nn == null)
                         continue; //assume it has been removed after invocation start
                 }
 

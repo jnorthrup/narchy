@@ -252,7 +252,7 @@ class ArithmeticTest {
     @Test void testNonConjArithmeticize() {
         assertArithmetic("x(1,1)", null); //nothing to do
         assertArithmetic("x(1,2)", "[(cmp(#1,#2,-1)&&x(#1,#2)), (x(#1,add(#1,1))&&equal(#1,1))]");
-        assertArithmetic("((1~2)-->x)", "[(((#1~add(#1,1))-->x)&&equal(#1,1)), (((#2~#1)-->x)&&cmp(#2,#1,-1))]");
+        //assertArithmetic("((1 && --2)-->x)", "[(((#1~add(#1,1))-->x)&&equal(#1,1)), (((#2~#1)-->x)&&cmp(#2,#1,-1))]");
         //assertArithmetic("(((1,1)~(2,3))-->x)", "4 of them");
     }
 

@@ -8,7 +8,6 @@ import nars.Op;
 import nars.subterm.Subterms;
 import nars.term.Compound;
 import nars.term.Term;
-import nars.term.util.conj.Conjterpolate;
 import nars.time.Tense;
 
 import static nars.Op.CONJ;
@@ -37,17 +36,16 @@ public enum Intermpolate {;
 
         Subterms aa = a.subterms(), bb = b.subterms();
 
-//        if (!aa.equalsRoot(bb))
-//            return Null;
 
         boolean subsEqual = aa.equals(bb);
 
         if (ao == CONJ && !subsEqual) {
-            return new Conjterpolate(a, b, aProp, nar).term(); //root only: conj sequence merge
+            //return new Conjterpolate(a, b, aProp, nar).term(); //root only: conj sequence merge
+            return Null;
         }
 
         if (aa.subs() != bb.subs())
-            return null;
+            return Null;
 
         int dt = ao.temporal ? chooseDT(a, b, aProp, nar) : DTERNAL;
 

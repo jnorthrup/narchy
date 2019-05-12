@@ -154,9 +154,10 @@ class DynamicImplTest extends AbstractDynamicTaskTest {
 
     static private String dtdt(String xy) {
         xy = xy.replace(" ==>+0 ", "=|>");
-        xy = xy.replace(" &&+0 ", "&|");
+        xy = xy.replace(" &&+0 ", "&&");
         xy = xy.replace("x && y", "x&&y");
         xy = xy.replace(" ==> ", "==>");
+        xy = xy.replace("(--,((--,x)&&(--,y)))", "(x||y)");
         xy = xy.replace("(--,((--,x) && (--,y)))", "(x||y)");
         xy = xy.replace("((--,x) && (--,y))", "((--,x)&&(--,y))");
         return xy;

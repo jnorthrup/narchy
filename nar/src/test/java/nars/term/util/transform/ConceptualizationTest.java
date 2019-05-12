@@ -213,16 +213,7 @@ class ConceptualizationTest {
         //TODO ((&|,(tetris-->curi),(--,left),(--,rotate))&&(--,((--,rotate) &&+819 (--,left))))
     }
 
-    @Test
-    void testConceptualizationWithoutConjReduction2() {
-        String s = "(((--,((--,(joy-->tetris))&|#1)) &&+30 #1) &&+60 (joy-->tetris))";
-        assertEq(
-                //"(((--,((--,(joy-->tetris))&&#1)) &&+- #1)&&(joy-->tetris))",
-                //"(((||+- ,(joy-->tetris),(--,#1)) &&+- #1) &&+- (joy-->tetris))",
-                "( &&+- ,(||+- ,(joy-->tetris),(--,#1)),(joy-->tetris),#1)",
 
-                $$(s).concept().toString());
-    }
     @Test
     void testConceptualizationWithoutConjReduction2a() {
         String s = "((x &&+1 y) &&+1 z)";
