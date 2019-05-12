@@ -34,7 +34,7 @@ public class ConjTest {
     static final Term y = $.the("y");
     static final Term z = $.the("z");
     static final Term a = $.the("a");
-//
+    //
 //    //WhenInXTERNAL?
 //    @Test
 //    void testParallelizeNegatedDTERNALWhenInSequence() {
@@ -1501,7 +1501,6 @@ public class ConjTest {
     }
 
 
-
     @Test
     void testConjOneEllipsisDontRepeat() {
         assertEq("(&&,%1..+)", "(&&,%1..+)");
@@ -1532,7 +1531,6 @@ public class ConjTest {
     }
 
 
-
     @Test
     void testConjEternalConjEternalConj() {
 
@@ -1544,14 +1542,17 @@ public class ConjTest {
         );
     }
 
-    @Test void testDontFactorDisj() {
+    @Test
+    void testDontFactorDisj() {
         Conj c = new Conj();
         c.add(0, $$("(a||b)"));
         c.add(4, $$("(--a&&b)"));
         Term cc = c.term();
         assertEq("((a||b) &&+4 ((--,a)&&b))", cc);
     }
-    @Test void testDistribute_seq_Complex() {
+
+    @Test
+    void testDistribute_seq_Complex() {
         {
             String s = "((--,(((_6(_1,((--,_4(_2,_3)) &&+60 (--,_5)))&&(--,_5)) &&+43 (--,_5)) &&+72 (--,_7)))||_8)";
             Term x = $$(s);
@@ -1716,13 +1717,14 @@ public class ConjTest {
         assertEq("((--,(x&&y))&&z)",
                 CONJ.the(DTERNAL, $$("--(x&&y)"), $$("z")));
     }
+
     @Test
     void testSequentialFactor() {
         assertEq("((y &&+1 z)&&x)", "((x&&y) &&+1 (x&&z))");
     }
 
     @ParameterizedTest
-    @ValueSource(strings={"%" /* @ ETE */, "(a &&+1 %)" /* @+1 */, "(% &&+1 a)" /* @ 0 */})
+    @ValueSource(strings = {"%" /* @ ETE */, "(a &&+1 %)" /* @+1 */, "(% &&+1 a)" /* @ 0 */})
     void disjunctifyEliminate(String p) {
         ConjBuilder c = new Conj();
         c.add(p.length() > 1 ? 0 : ETERNAL, $$(p.replace("%", "(--x || y)")));
@@ -1730,13 +1732,16 @@ public class ConjTest {
         assertEq(p.replace("%", "(--,x)"), c.term());
     }
 
-    @Test void dusjunctifyInSeq() {
+    @Test
+    void dusjunctifyInSeq() {
         assertEq("(a &&+1 x)", "(a &&+1 ((x || y)&&x))");
         assertEq("(a &&+1 (--,x))", "(a &&+1 ((--x || y)&&--x))");
         assertEq("(x &&+1 a)", "(((x || y)&&x) &&+1 a)");
         assertEq("((--,x) &&+1 a)", "(((--x || y)&&--x) &&+1 a)");
     }
-    @Test void disjunctifySeq2() {
+
+    @Test
+    void disjunctifySeq2() {
         Conj c = new Conj();
         c.add(ETERNAL, $$("(--,(((--,(g-->input)) &&+40 (g-->forget))&&((g-->happy) &&+40 (g-->happy))))"));
         c.add(1, $$("happy:g"));
@@ -1744,7 +1749,8 @@ public class ConjTest {
         assertEq("(((_1-->_2)||(--,(_1-->_3)))&&(_1-->_4))", c.term().anon());
     }
 
-    @Test void disjunctionSequenceReduce() {
+    @Test
+    void disjunctionSequenceReduce() {
         String y = "((--,((--,tetris(1,11)) &&+330 (--,tetris(1,11))))&&(--,left))";
 
         //by parsing
@@ -1753,32 +1759,57 @@ public class ConjTest {
         );
 
         //by Conj construction
-        for (long w : new long[] { ETERNAL, 0, 1}) {
+        for (long w : new long[]{ETERNAL, 0, 1}) {
             Conj c = new Conj();
-            c.add(ETERNAL, $$("(--,(((--,tetris(1,11)) &&+230 (--,left)) &&+100 ((--,tetris(1,11)) &&+230 (--,left))))") );
+            c.add(ETERNAL, $$("(--,(((--,tetris(1,11)) &&+230 (--,left)) &&+100 ((--,tetris(1,11)) &&+230 (--,left))))"));
             c.add(w, $$("--left"));
             assertEq(y, c.term());
         }
 
     }
 
-    @Test void disjunctionSequenceReduce_333432778293823() {
-        {
+    @Test
+    void disjunctionSequence_vs_Eternal_Cancellation() {
+
+        for (long t : new long[]{0, 1, ETERNAL}) {
             Conj c = new Conj();
-            c.add(10, $$("--(x &&+50 x)"));
-            c.add(10, $$("x"));
-            assertEq("(x &&+50 (--,x))", c.term());
+            c.add(t, $$("--(x &&+50 x)"));
+            c.add(t, $$("x"));
+            Term cc = c.term();
+            assertEq(t == ETERNAL ? False : $$("(x &&+50 (--,x))"), cc);
         }
-//        {
-//            Conj c = new Conj();
-//            c.add(10, $$("--(x &&+50 x)"));
-//            c.add(ETERNAL, $$("x"));
-//            assertEq("(x &&+50 (--,x))", c.term());
-//        }
+    }
+
+    @Test
+    void xternal_disjunctionSequence_Reduce() {
+        Conj c = new Conj();
+        c.add(ETERNAL, $$("--(x &&+- y)"));
+        c.add(ETERNAL, $$("x"));
+        assertEq("((--,y)&&x)", c.term());
+    }
+
+    @Test
+    void disjunctionSequence_vs_Eternal_Cancellation_mix() {
+        {
+            //disj first:
+            Conj c = new Conj();
+            c.add(1, $$("--(x &&+50 x)"));
+            c.add(ETERNAL, $$("x"));
+            assertEq(False, c.term());
+        }
+        {
+            //eternal first:
+            Conj c = new Conj();
+            c.add(ETERNAL, $$("x"));
+            c.add(1, $$("--(x &&+50 x)"));
+            assertEq(False, c.term());
+        }
+
+
     }
 
     @ParameterizedTest
-    @ValueSource(strings={"%" /* @ ETE */, "(a &&+1 %)" /* @+1 */, "(% &&+1 a)" /* @ 0 */})
+    @ValueSource(strings = {"%" /* @ ETE */, "(a &&+1 %)" /* @+1 */, "(% &&+1 a)" /* @ 0 */})
     void disjunctifyReduce(String p) {
         ConjBuilder c = new Conj();
         c.add(p.length() > 1 ? 0 : ETERNAL, $$(p.replace("%", "(--x || y)")));

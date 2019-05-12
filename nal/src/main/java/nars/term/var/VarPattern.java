@@ -1,7 +1,6 @@
 package nars.term.var;
 
 import nars.Op;
-import nars.term.Term;
 
 import static nars.Op.VAR_PATTERN;
 

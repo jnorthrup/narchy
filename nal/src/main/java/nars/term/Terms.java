@@ -408,12 +408,12 @@ public enum Terms {
 
     public static Term withoutAll(Term container, Predicate<Term> filter) {
         Subterms cs = container.subterms();
-        MetalBitSet match = cs.subsTrue(filter);
+        MetalBitSet match = cs.indicesOfBits(filter);
         int n = match.cardinality();
         if (n ==0) {
             return container; //no matches
         } else {
-            Term[] remain = cs.subsExcluding(match);
+            Term[] remain = cs.removing(match);
             if (remain == null)
                 return Null;
             else {
@@ -438,7 +438,7 @@ public enum Terms {
                 Term remain = cs.sub(1 - i);
                 return new Term[]{remain};
             default:
-                return cs.subsExcluding(i);
+                return cs.removing(i);
         }
     }
 

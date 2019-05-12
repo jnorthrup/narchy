@@ -154,7 +154,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 
     private Event event(Term t, long start, long end, boolean add) {
         if (!notExceedingNodes())
-            throw new IndexOutOfBoundsException("too many nodes");
+            throw new IndexOutOfBoundsException("node overflow");
 
         if (!t.op().eventable)
             throw new WTF();

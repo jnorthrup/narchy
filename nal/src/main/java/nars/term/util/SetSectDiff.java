@@ -463,7 +463,7 @@ public class SetSectDiff {
         } else if (retained == 0) {
             return Null;
         } else {
-            return o.the(Op.terms, aa.subsExcluding(removals));
+            return o.the(Op.terms, aa.removing(removals));
         }
 
     }

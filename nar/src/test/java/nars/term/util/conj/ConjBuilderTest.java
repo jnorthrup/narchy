@@ -1,8 +1,6 @@
 package nars.term.util.conj;
 
 import jcog.WTF;
-import nars.$;
-import nars.term.Term;
 import org.junit.jupiter.api.Test;
 
 import static nars.time.Tense.ETERNAL;

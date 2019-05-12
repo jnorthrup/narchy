@@ -39,7 +39,17 @@ public class DynamicConjTruth {
                     new Conj(n);
             for (int i = 0; i < n; i++) {
                 Task t = d.get(i);
-                long when = Tense.dither(t.start(), dtDither);
+                long s = t.start();
+                long when;
+//                //TODO see how well this works
+//                if (s == ETERNAL || (start!=ETERNAL && s<=start && t.end()>=end))
+//                    when = ETERNAL;
+//                else
+                if (s == ETERNAL)
+                    when = s;
+                else
+                    when = Tense.dither(s, dtDither);
+
                 if (!l.add(when, t.term().negIf(!d.componentPolarity.get(i))))
                     return null;
             }

@@ -1,6 +1,5 @@
 package nars.task.proxy;
 
-import jcog.WTF;
 import nars.Task;
 import nars.task.ProxyTask;
 import nars.task.util.TaskException;

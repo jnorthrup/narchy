@@ -518,11 +518,11 @@ public class TermReductionsTest extends NarseseTest {
 //        assertEq("(Y~X)", "((--,X)~(--,Y))");
 //        assertEq("(X~Y)", "((--,Y)~(--,X))");
 
-        assertEq("(A-->(Y-X))", "(A-->((--,X)~(--,Y)))");
-        assertEq("(A-->(Y-X))", "(A-->((--,X)-(--,Y)))");
-
-        assertEq("((Y-X)-->A)", "(((--,X)-(--,Y))-->A)");
-        assertEq("((Y~X)-->A)", "(((--,X)~(--,Y))-->A)");
+//        assertEq("(A-->(Y-X))", "(A-->((--,X)~(--,Y)))");
+//        assertEq("(A-->(Y-X))", "(A-->((--,X)-(--,Y)))");
+//
+//        assertEq("((Y-X)-->A)", "(((--,X)-(--,Y))-->A)");
+//        assertEq("((Y~X)-->A)", "(((--,X)~(--,Y))-->A)");
 
     }
 

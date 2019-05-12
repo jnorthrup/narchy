@@ -50,7 +50,7 @@ public enum ConjSeq { ;
     }
 
     public static MetalBitSet seqEternalComponents(Subterms x) {
-        return x.subsTrue(Conj.isEternalComponent);
+        return x.indicesOfBits(Conj.isEternalComponent);
     }
 
     static boolean _isSeq(Term x) {
@@ -78,7 +78,7 @@ public enum ConjSeq { ;
     }
 
     private static Term seqEternal(Subterms ss) {
-        return seqEternal(ss, ss.subsTrue(Conj.isEternalComponent));
+        return seqEternal(ss, ss.indicesOfBits(Conj.isEternalComponent));
     }
 
     public static Term seqEternal(Subterms ss, MetalBitSet m) {

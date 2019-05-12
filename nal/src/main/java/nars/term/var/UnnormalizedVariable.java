@@ -4,7 +4,6 @@ import nars.$;
 import nars.Op;
 import nars.The;
 import nars.io.IO;
-import nars.term.Term;
 import nars.term.Variable;
 import nars.term.atom.AbstractAtomic;
 

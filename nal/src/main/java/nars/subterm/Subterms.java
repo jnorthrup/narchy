@@ -942,7 +942,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
 //    }
 
     /** TODO write negating version of this that negates only up to subs() bits */
-    default MetalBitSet subsTrue(Predicate<Term> match) {
+    default MetalBitSet indicesOfBits(Predicate<Term> match) {
         int n = subs();
         MetalBitSet m = MetalBitSet.bits(n);
         for (int i = 0; i < n; i++) {
@@ -956,7 +956,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
     default Term[] subsIncluding(MetalBitSet toKeep) {
         return subsIncExc(toKeep, true);
     }
-    default Term[] subsExcluding(MetalBitSet toRemove) {
+    default Term[] removing(MetalBitSet toRemove) {
         return subsIncExc(toRemove, false);
     }
     default Term[] subsIncExc(MetalBitSet s, boolean includeOrExclude) {
@@ -967,7 +967,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
             if (c == 1) return new Term[] { sub(s.first(true))};
         } else {
             if (c == 0) return arrayShared();
-            if (c == 1) return subsExcluding(s.first(true));
+            if (c == 1) return removing(s.first(true));
         }
 
         int size = subs();
@@ -1176,7 +1176,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
     /**
      * removes first occurrence only
      */
-    default Term[] subsExcluding(int index) {
+    default Term[] removing(int index) {
         int s = subs();
         Term[] x = new Term[s - 1];
         int k = 0;
@@ -1197,13 +1197,10 @@ public interface Subterms extends Termlike, Iterable<Term> {
         return Util.hashCombine(this.hashCodeSubterms(), op);
     }
 
-    /**
-     * only removes the next found item. if this is for use in non-commutive target, you may need to call this repeatedly
-     */
     @Nullable
-    default Term[] subsExcluding(Term x) {
-        int index = indexOf(x);
-        return (index == -1) ? null : subsExcluding(index);
+    default Term[] removing(Term x) {
+        MetalBitSet m = indicesOfBits(x::equals);
+        return m.cardinality() == 0 ? null : removing(m);
     }
 
     default Subterms replaceSub(Term from, Term to, Op superOp) {

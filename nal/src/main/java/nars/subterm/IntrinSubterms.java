@@ -260,7 +260,7 @@ public class IntrinSubterms extends TermVector /*implements Subterms.SubtermsByt
     }
 
     @Override
-    public @Nullable Term[] subsExcluding(Term x) {
+    public @Nullable Term[] removing(Term x) {
         short tid = Intrin.id(x);
         if (tid == 0) return null;
         int count = 0;

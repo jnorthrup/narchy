@@ -112,40 +112,46 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
         return container.equals(x) || containsEvent(container, x);
     }
 
-    public static Term removeEvent(/*TermBuilder B, */ Term c, Term what) {
-//        if (!isSeq(c)) {
-//            return CONJ.the(c.dt(), c.subterms().subsExcluding(what));
-//        } else {
-            ConjBuilder x = Conj.fromLazy(c);
-            if (!x.removeAll(what))
-                return c;
-            else
-                return x.term();
-//        }
+    public static Term removeEvent(/*TermBuilder B, */ Term x, Term what) {
+        ConjBuilder y = Conj.fromLazy(x);
+        return y.removeAll(what) ? y.term() : x;
+    }
+
+    public static Term removeEvent(/*TermBuilder B, */ Term x, Term what, long when) {
+        ConjBuilder y = Conj.fromLazy(x);
+        return y.remove(when, what) ? y.term() : x;
     }
 
     public static boolean containsEvent(Term container, Term x) {
-        return containsEvent(container, x, +1);
+        return containsEvent(container, x, ETERNAL, +1);
     }
 
     /**
      * @param polarity +1: unaffected input, -1: if contains input negated, 0: either as-is or negated
+     * @param when if eternal, matches any time
      */
-    public static boolean containsEvent(Term container, Term x, int polarity) {
-        if (polarity != 1)
+    public static boolean containsEvent(Term container, Term _x, long when, int polarity) {
+        Term x;
+        if (polarity == 0)
             throw new TODO();
+        else if (polarity == -1)
+            x = _x.neg();
+        else //if (polarity == +1)
+            x = _x;
 
         if (container.op() != CONJ || !x.op().eventable || container.impossibleSubTerm(x)) return false;
 
-        if (container.contains(x))
+        if (when==ETERNAL && container.contains(x)) //quick test
             return true;
 
 //        if (isSeq(container)) {
             //check if the term exists when distributed factorized
 //            boolean xIsConj = x.op() == CONJ;
 //            int xdt = xIsConj ? x.dt() : DTERNAL;
-            return !container.eventsWhile((when, cc) -> !cc.equals(x)
-                    //cc == container || !containsOrEqualsEvent(cc, x) //recurse
+            return !container.eventsWhile(
+                    when==ETERNAL ?
+                        (w, cc) -> !(cc.equals(x)) :
+                        (w, cc) -> !(w==when && cc.equals(x))
                     , 0, x.op()!=CONJ || x.dt() != DTERNAL, true);
 //        } else
 //            return false;
@@ -761,7 +767,7 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
         int idt = include.dt();
         if (dtSpecial(idt) && e.getTwo().op() != CONJ) {
             //fast commutive remove
-            @Nullable Term[] ss = include.subterms().subsExcluding(e.getTwo());
+            @Nullable Term[] ss = include.subterms().removing(e.getTwo());
             if (ss == null)
                 return Null; //WTF?
 
@@ -1443,65 +1449,93 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
         if (w == -1) return -1;
         if (w == +1) return +1;
 
-        if (!disjunctify2(at, ee, what))
-            return -1;
-        return 0;
+        return disjunctify2(at, ee, what);
     }
 
     /**
      * cancels and eliminates disjunctive paths that interfere with an incoming event at its occurrence time
      * @return
      */
-    private boolean disjunctify2(long when, Object ee, Term incoming) {
+    private int disjunctify2(long when, Object ee, Term incoming) {
+        boolean absorb = false;
         if (ee instanceof byte[]) {
             for (byte dui : (byte[]) ee) {
                 if (dui == 0) break;
-                if (dui < 0) {
-                    Term du = unindex((byte) -dui);
-                    int ce = conflictExhaustiveDisj(du, incoming);
-                    if (ce == -2) {
-                        remove(when, dui);
-                        du = Conj.removeEvent(du, incoming).neg();
-                        if (!addEvent(when, du))
-                            return false;
-                    } else if (ce == +2) {
-                        //eliminated and replaces disj
-                        remove(when, dui);
-                    }
-                }
+                int d = disjunctifyReduce(when, incoming, dui);
+                if (d == -1) return -1;
+                else if (d == +1) absorb = true;
             }
         } else {
             RoaringBitmap r = (RoaringBitmap) ee;
             PeekableIntIterator rr = r.getIntIterator();
             while (rr.hasNext()) {
-                byte ix = (byte) rr.next();
-                if (ix < 0) {
-                    int ce = conflictExhaustiveDisj(unindex((byte) -ix), incoming);
-                    if (ce == -2) {
-                        throw new TODO(); //copy from above
-                    } else if (ce == +2) {
-                        //eliminated and replaces disj
-                        remove(when, ix);
+                byte dui = (byte) rr.next();
+                int d = disjunctifyReduce(when, incoming, dui);
+                if (d == -1) return -1;
+                else if (d == +1) absorb = true;
+            }
+        }
+        return absorb ? 1 : 0;
+    }
+
+    private int disjunctifyReduce(long when, Term incoming, byte dui) {
+        if (dui < 0) {
+            Term d = unindex((byte) -dui);
+            if (d.op() == CONJ) {
+                long offset = when == ETERNAL ? ETERNAL : 0 /* TODO sequence cancellation */;
+                if (Conj.containsEvent(d, incoming, offset, +1)) {
+                    //TODO remove conflicting branch from disj but add the conj condition
+                    remove(when, dui);
+
+                    Term e;
+                    long shift;
+
+                    if (d.dt()==XTERNAL) {
+                        assert(when == ETERNAL);
+                        Term[] ee = d.subterms().removing(incoming);
+                        if (ee.length > 1)
+                            e = CONJ.the(XTERNAL, ee);
+                        else
+                            e = ee[0];
+                        shift = 0;
+                    } else {
+
+                        Conj D = new Conj();
+                        if (when == ETERNAL) {
+                            D.addAuto(d);
+                            boolean removed = D.removeAll(incoming);
+                            if (!removed)
+                                throw new WTF();
+                        } else {
+                            D.add(0, d);
+                            boolean removed = D.remove(offset, incoming);
+                            if (!removed)
+                                throw new WTF();
+                        }
+
+                        //assert(removed);
+
+                        e = D.term();
+                        shift = D.shift();
                     }
+
+
+                    if (!addEvent(when + shift, e.neg()))
+                        return -1;
+
+                    add(when, incoming);
+                    return +1;
+                } else if (Conj.containsEvent(d, incoming.neg(), offset, -1)) {
+                    remove(when, dui);
+                    add(when, incoming);
+                    return +1;
                 }
             }
         }
-        return true;
-    }
-
-
-    /**
-     * assumes xu is x.unneg() for some x
-     */
-    private int conflictExhaustiveDisj(Term disjUnneg, Term incoming) {
-        if (disjUnneg.op() == CONJ) {
-            if (Conj.containsEvent(disjUnneg, incoming))
-                return -2; //TODO remove conflicting branch from disj but add the conj condition
-            if (Conj.containsEvent(disjUnneg, incoming.neg()))
-                return +2; //disjunction absorbed by incoming
-        }
         return 0;
     }
+
+
 
     public final ConjBuilder with(long at, Term x) {
         add(at, x);
@@ -1605,9 +1639,13 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
         Object events = event.getIfAbsentPut(at, () -> new byte[ROARING_UPGRADE_THRESH]);
 
 
-        if (at!=ETERNAL) //ETERNAL already tested above
-            if (!disjunctify2(at, events, incoming))
+        if (at!=ETERNAL) {//ETERNAL already tested above
+            int d = disjunctify2(at, events, incoming);
+            if (d == -1)
                 return false;
+            else if (d == +1)
+                return true; //absorb
+        }
 
         if (events instanceof byte[]) {
             byte[] b = (byte[]) events;
