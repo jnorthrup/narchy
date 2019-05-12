@@ -21,7 +21,6 @@ import nars.term.Term;
 import nars.term.util.conj.Conj;
 import nars.term.util.conj.ConjSeq;
 import nars.term.var.CommonVariable;
-import nars.unify.UnifyAny;
 import org.apache.commons.math3.exception.MathArithmeticException;
 import org.eclipse.collections.api.tuple.Pair;
 import org.eclipse.collections.api.tuple.primitive.BooleanObjectPair;
@@ -666,7 +665,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
         Iterable<Event> AB = sortEvents(ab);
 
         return true
-            && bfsNew(ab, new DTPairSolver(a, b, x, each, true, true, false))
+            && bfsAdd(ab, new DTPairSolver(a, b, x, each, true, false, false))
             && solveDTAbsolutePair(x, each, a, b, aEqB)
 //            && bfsNew(AB, new DTPairSolver(a, b, x, each, false, true, false))
 //            && bfsNew(AB, new DTPairSolver(a, b, x, each, false, false, true))
@@ -1231,7 +1230,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
     private boolean solveOccurrence(Event x, Predicate<Event> each) {
         return true
 //                solveExact(x, each) &&
-               && bfsNew(x, new OccSolver(true, true, autoneg, each))
+               && bfsAdd(x, new OccSolver(true, true, autoneg, each))
                //&& bfsNew(List.of(x), new OccSolver(false, false, true, each))
                //&& solveSelfLoop(x, each)
 //               && (!autoneg || bfsNew(x.neg(), new OccSolver(true, false, true,

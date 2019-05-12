@@ -83,16 +83,12 @@ public class MapNodeGraph<N, E> extends NodeGraph<N, E> {
     }
 
     /** ensures each root node is added before searching */
-    public boolean bfsNew(Iterable<N> roots, Search<N, E> search) {
-        return bfs(Iterables.transform(roots, r -> {
-            addNewNode(r);
-            return r;
-        }), search);
+    public boolean bfsAdd(Iterable<N> roots, Search<N, E> search) {
+        return bfs(Iterables.transform(roots, r -> addNode(r).id), search);
     }
     /** ensures each root node is added before searching */
-    public boolean bfsNew(N root, Search<N, E> search) {
-        addNewNode(root);
-        return bfs(List.of(root), search);
+    public boolean bfsAdd(N root, Search<N, E> search) {
+        return bfs(addNode(root).id, search);
     }
 
     public final MutableNode<N, E> addNode(N key) {
@@ -195,11 +191,11 @@ public class MapNodeGraph<N, E> extends NodeGraph<N, E> {
         return false;
     }
 
-    protected boolean edgeRemoveIn(FromTo<Node<N, E>, E> e) {
+    private boolean edgeRemoveIn(FromTo<Node<N, E>, E> e) {
         return ((MutableNode) e.to()).removeIn(e);
     }
 
-    protected boolean edgeRemoveOut(FromTo<Node<N, E>, E> e) {
+    private boolean edgeRemoveOut(FromTo<Node<N, E>, E> e) {
         return ((MutableNode) e.from()).removeOut(e);
     }
 

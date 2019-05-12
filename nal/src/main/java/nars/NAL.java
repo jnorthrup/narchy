@@ -635,7 +635,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
          * for NALTest's: extends the time all unit tests are allowed to run for.
          * normally be kept to 1 but for debugging this may be increased to find what tests need more time
          */
-        public static final float TIME_MULTIPLIER = 1f;
+        public static final float TIME_MULTIPLIER = 1.5f;
         /**
          * how precise unit test results must match expected values to pass
          */
@@ -678,7 +678,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
          */
         public static final int TermutatorSearchTTL = 4;
 
-        public static final int Termify_Forks = 2;
+        public static final int Termify_Forks = 1;
 
 
         public static final int TTL_UNISUBST_MAX = 5;
