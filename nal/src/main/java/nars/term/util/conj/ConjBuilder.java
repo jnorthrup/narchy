@@ -111,7 +111,7 @@ public interface ConjBuilder {
     }
 
     default boolean addAuto(Term t) {
-        return add(t.dt() == DTERNAL ? ETERNAL : 0, t);
+        return add(Conj.isSeq(t) ? 0 : ETERNAL, t);
     }
 
     default long shiftOrZero() {
