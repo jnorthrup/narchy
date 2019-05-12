@@ -2092,8 +2092,7 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
 
         for (Iterator<LongObjectPair<Object>> iterator = events.iterator(); iterator.hasNext(); ) {
             LongObjectPair<Object> l = iterator.next();
-            boolean temporal = l.getOne() != ETERNAL;
-            if (temporal) {
+            if (l.getOne() != ETERNAL) {
                 numTemporalEvents++;
 
                 if (eventCount(l.getTwo()) > 1)
@@ -2111,8 +2110,8 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
         //TODO if this is iterated in order of least # of events at each time first, it is optimal
         for (LongObjectPair<Object> whenWhat : events) {
             long when = whenWhat.getOne();
-            if (when == ETERNAL)
-                return true;
+//            if (when == ETERNAL)
+//                return true; //shouldnt happen
             Object what = whenWhat.getTwo();
             if (what instanceof byte[]) {
                 byte[] bWhat = (byte[]) what;

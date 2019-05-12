@@ -1,6 +1,5 @@
 package jcog.data.graph.search;
 
-import com.google.common.collect.Iterators;
 import jcog.WTF;
 import jcog.data.graph.Node;
 import jcog.data.graph.NodeGraph;
@@ -76,11 +75,12 @@ abstract public class Search<N, E> {
         if (start == null)
             return true;  //??
 
-
-        q.add(Tuples.pair(this.path = empty, start));
-
         if (!log.visit(start))
             return true; //reached a root via a previous root
+
+        q.clear();
+
+        q.add(Tuples.pair(this.path = empty, start));
 
         Pair<List<BooleanObjectPair<FromTo<Node<N, E>, E>>>, Node<N, E>> current;
         while ((current = q.poll()) != null) {
@@ -166,35 +166,28 @@ abstract public class Search<N, E> {
         if (!log.visit(n))
             return true;
 
-        Iterator<FromTo<Node<N, E>, E>> ii = next(n).iterator(); //Iterable?
-        if (!ii.hasNext())
-            return true;
+        Iterator<FromTo<Node<N, E>, E>> ii = next(this.at = n).iterator(); //Iterable?
 
-        this.at = n;
-
-        return Iterators.all(ii, e -> {
+        while (ii.hasNext()) {
+            FromTo<Node<N, E>, E> e = ii.next();
 
             Node<N, E> next = next(e, at);
 
             if (next == null || log.hasVisited(next))
-                return true;
+                continue;
 
             BooleanObjectPair<FromTo<Node<N, E>, E>> move = pair(next == e.to(), e);
 
-
             path.add(move);
-
 
             if (!next(move, next) || !dfsNode(next))
                 return false;
 
-
             this.at = n;
             path.remove(path.size() - 1);
+        }
 
-            return true;
-        });
-
+        return true;
     }
 
     protected Iterable<FromTo<Node<N, E>, E>> next(Node<N, E> n) {
@@ -220,7 +213,6 @@ abstract public class Search<N, E> {
                         continue; //assume it has been removed after invocation start
                 }
 
-                q.clear();
                 if (!bfsNode(nn, q))
                     return false;
             }
