@@ -508,25 +508,26 @@ public enum Op {
     public static final Predicate<Term> statementLoopyContainer = (x) -> x.op()!=PROD;;
 
     public static boolean statementLoopy(Term x, Term y) {
-        boolean xc = x instanceof Compound && x.op()==CONJ;
-        boolean yc = y instanceof Compound && y.op()==CONJ;
-        if (!xc && !yc) {
+        if (!(x instanceof Atomic) && !(y instanceof Atomic))
+            return false;
+
+//        boolean xByComponnet = x instanceof Compound && x.op()==CONJ;
+//        boolean yByComponent = y instanceof Compound && y.op()==CONJ;
+//        if (!xByComponnet && !yByComponent) {
             return _statementLoopy(x, y);
-        } else if (xc && !yc) {
-            return x.subterms().ORwith(Op::_statementLoopy, y);
-        } else if (yc && !xc) {
-            return y.subterms().ORwith(Op::_statementLoopy, x);
-        } else {
-            if (x.volume() >= y.volume())
-                return x.subterms().ORwith((xx,Y) -> Y.subterms().ORwith(Op::_statementLoopy, xx), y);
-            else
-                return y.subterms().ORwith((yy,X) -> X.subterms().ORwith(Op::_statementLoopy, yy), x);
-        }
+//        } else if (xByComponnet && !yByComponent) {
+//            return x.subterms().ORwith(Op::_statementLoopy, y);
+//        } else if (yByComponent && !xByComponnet) {
+//            return y.subterms().ORwith(Op::_statementLoopy, x);
+//        } else {
+//            if (x.volume() >= y.volume())
+//                return x.subterms().ORwith((xx,Y) -> Y.subterms().ORwith(Op::_statementLoopy, xx), y);
+//            else
+//                return y.subterms().ORwith((yy,X) -> X.subterms().ORwith(Op::_statementLoopy, yy), x);
+//        }
 
     }
     private static boolean _statementLoopy(Term x, Term y) {
-
-        x = x.unneg(); y = y.unneg();
 
         int xv = x.volume(), yv = y.volume();
         boolean root = false;

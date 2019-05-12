@@ -190,11 +190,10 @@ public class Statement {
         }
 
 
-        if ((op != IMPL
-                || dt == DTERNAL /* allow parallel IMPL unless there is a sequence that could separate the events from overlap */)
+        if ((op != IMPL)
+                || (dt == DTERNAL) /* allow parallel IMPL unless there is a sequence that could separate the events from overlap */
                 || (dt == 0 && !Conj.isSeq(subject) && !Conj.isSeq(predicate))
         ) {
-
             if ((statementLoopy(subject.unneg(), predicate.unneg())))
                 return Null;
         }
@@ -242,11 +241,8 @@ public class Statement {
             }
 
         if (op == SIM) {
-//            if (subject instanceof Bool || predicate instanceof Bool) {
-//
-//            }
             if (subject.compareTo(predicate) > 0) {
-                //swap order
+                //swap to natural order
                 Term x = predicate;
                 predicate = subject;
                 subject = x;

@@ -357,10 +357,10 @@ public class Occurrify extends TimeGraph {
 
         this.decomposeEvents = decomposeEvents;
 
-        if (taskStart == ETERNAL && beliefStart != ETERNAL) {
+        if (taskStart == ETERNAL && (beliefStart != TIMELESS && beliefStart != ETERNAL)) {
             //taskStart = taskEnd = TIMELESS;
             //taskStart = taskEnd = d.time();
-            long now = d.time(); int dur = d.dur(); taskStart = now - dur/2; taskEnd = now + dur/2;
+            long now = d.time(); int dur = d.dur(); taskStart = now - dur/2; taskEnd = now + dur/2; //eternal projected to present moment since belief is temporal
         } else if (beliefStart!=TIMELESS && taskStart != ETERNAL) {
             //conditions for considering vs ignoring belief occurrence:
             boolean ignoreBeliefOcc = false;

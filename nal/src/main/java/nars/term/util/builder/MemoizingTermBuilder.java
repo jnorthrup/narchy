@@ -59,7 +59,7 @@ public class MemoizingTermBuilder extends InterningTermBuilder {
         }
     }
 
-    protected boolean internable(Compound x) {
+    private boolean internable(Compound x) {
         return x.volume() < volInternedMax && x.the();
     }
 

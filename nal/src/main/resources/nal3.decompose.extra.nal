@@ -1,4 +1,4 @@
-//temporary file for suspecious and untested nal3 rules
+//temporary file for suspicious and untested nal3 rules
 
  //similarity coercion (S==P)! (symmetric: DecomposeNegative....)
  //maybe use ReduceConjunction
@@ -7,6 +7,7 @@
  (M --> (S - P)), (M --> S) |- (M --> P), (Goal:DecomposeDiff)
     ((S ~ P) --> M), (P --> M) |- (S --> M), (Goal:DecomposeDiff)
     (M --> (S - P)), (M --> P) |- (M --> S), (Goal:DecomposeDiff)
+
 
 
 

@@ -5,6 +5,12 @@
 (X --> S), X, is(S,"&&") |- (X-->(S && ?Z)), (Punctuation:Ask)
 
 
+//component invert to question
+     (    M -->   I), M, is(I,"&&")  |- (M -->   negateRandomSubterm(I)), (Punctuation:AskAll)
+     (    M --> --%I), M, is(%I,"&&")  |- (M --> --negateRandomSubterm(%I)), (Punctuation:AskAll)
+     (    I -->   M), M, is(I,"&&")  |- (  negateRandomSubterm(I)-->M),   (Punctuation:AskAll)
+     ( --%I -->   M), M, is(%I,"&&")  |- (  negateRandomSubterm(%I)-->M),   (Punctuation:AskAll)
+
 
 ////composition on both sides of a statement:
 

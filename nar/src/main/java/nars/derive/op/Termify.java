@@ -40,7 +40,9 @@ public final class Termify extends ProxyTerm {
         this.pattern = pattern;
 
         this.patternEternal = Retemporalize.retemporalizeXTERNALToDTERNAL.apply(pattern);
-        assert(pattern.equals(patternEternal) || pattern.root().equals(patternEternal.root()));
+
+        assert (pattern.equals(patternEternal) || pattern.root().equals(patternEternal.root()));
+
 
         this.truth = truth;
 

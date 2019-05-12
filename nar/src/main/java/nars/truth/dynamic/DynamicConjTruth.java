@@ -6,16 +6,12 @@ import nars.NAR;
 import nars.Op;
 import nars.Task;
 import nars.subterm.Subterms;
-import nars.task.util.TaskRegion;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.util.conj.Conj;
 import nars.term.util.conj.ConjBuilder;
-import nars.term.util.conj.ConjLazy;
 import nars.term.util.conj.ConjSeq;
 import nars.time.Tense;
-import nars.truth.Stamp;
-import org.eclipse.collections.api.block.predicate.primitive.LongObjectPredicate;
 
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -36,34 +32,15 @@ public class DynamicConjTruth {
         @Override
         public Term reconstruct(Compound superterm, DynTaskify d, NAR nar, long start, long end) {
 
-            long range;
-            if (start!=ETERNAL) {
-                //adjust end for the internal sequence range
-                end = d.maxValue(Stamp::end);
-                range = end - start;
-            } else {
-                range = ETERNAL;
-            }
-
-            boolean factored = ConjSeq.isFactoredSeq(superterm);
-
             int dtDither = nar.dtDither();
             int n = d.size();
             ConjBuilder l =
-                    new ConjLazy(n);
-                    //new Conj(n);
+                    //new ConjLazy(n);
+                    new Conj(n);
             for (int i = 0; i < n; i++) {
-                TaskRegion t = d.get(i);
-                long s = t.start();
-                long when;
-                if ((s == ETERNAL) || (range == ETERNAL))
-                    when = ETERNAL;
-                else if (factored && (range > 0 && s <= start && t.end() >= end))
-                    when = ETERNAL; //the component spans the entire range, so consider it an eternal factor
-                else
-                    when = s;
-
-                if (!l.add(Tense.dither(when, dtDither), ((Task) t).term().negIf(!d.componentPolarity.get(i))))
+                Task t = d.get(i);
+                long when = Tense.dither(t.start(), dtDither);
+                if (!l.add(when, t.term().negIf(!d.componentPolarity.get(i))))
                     return null;
             }
 
@@ -94,7 +71,6 @@ public class DynamicConjTruth {
             int superDT = conj.dt();
             boolean dternal = !Conj.isSeq(conj) && superDT == DTERNAL;
             boolean xternal = superDT == XTERNAL;
-            boolean parallel = true; //superDT == 0;
 
             if ((xternal || dternal)) {
                 Subterms ss = conj.subterms();
@@ -154,18 +130,16 @@ public class DynamicConjTruth {
                 return true;
             } else {
 
-                LongObjectPredicate<Term> sub;
-
                 //??subterm refrences a specific point as a result of event time within the target. so start/end range gets collapsed at this point
                 long range = (end - start);
-                if (range != 0)
-                    sub = (when, event) -> each.accept(event, when, when + range); //within range
-                else
-                    sub = (when, event) -> each.accept(event, when, when); //point-like
 
-                return conj.eventsWhile(sub, start,
-                        dternal,
-                        xternal);
+                return conj.eventsWhile(range != 0 ?
+                        //point-like
+                        (when, event) -> each.accept(event, when, when + range) :
+                        //within range
+                        (when, event) -> each.accept(event, when, when),
+                    start,
+                    dternal, xternal);
             }
 
 

@@ -379,9 +379,6 @@ public class ConjClustering extends How {
                                 Task[] x = trying.toArray(Task.EmptyArray);
                                 trying.clear();
 
-//                                //TEMPORARY
-//                                for (Task c : x) if (c == null) throw new WTF();
-
                                 Task y = conjoin(x, freq, conf, start);
                                 boolean conjoined = y != null;
                                 active = true;

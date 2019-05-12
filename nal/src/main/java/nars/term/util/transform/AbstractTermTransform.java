@@ -34,19 +34,6 @@ public interface AbstractTermTransform extends TermTransform, nars.term.util.bui
                     volMax
             );
 
-            //TEMPORARY for debugging
-//            {
-//                String xs = x.toString();
-//                if (!xs.contains("varIntro") && !xs.contains("andom") && !xs.contains("unisubst")) {
-//                    Term y2 = transform.apply(x);
-//                    if (!y.equals(y2)) {
-//                        System.err.println(transform + " diverged:\n\t" + x + "\ntransform:\t" + y + "\n\tlazy:\t" + y2);
-//                        Util.nop();
-//                    }
-//                }
-//            }
-
-
             return y;
 
         } else {

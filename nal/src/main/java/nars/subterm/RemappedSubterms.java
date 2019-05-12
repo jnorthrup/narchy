@@ -30,7 +30,6 @@ abstract public class RemappedSubterms<S extends Subterms> extends MappedSubterm
             int mi = base.indexOf(xi)+1;
 
             if (mi <= 0) {
-                //base.indexOf(xi); //temporary : >-1
                 throw new WTF(xi + "not found in " + base + ", base.class=" + base.getClass() + " target.xi.class=" + xi.getClass());
             }
 

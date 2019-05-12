@@ -27,9 +27,7 @@ import boofcv.gui.feature.AssociationPanel;
 import boofcv.gui.image.ShowImages;
 import boofcv.gui.image.VisualizeImageData;
 import boofcv.gui.stereo.RectifiedPairPanel;
-import boofcv.io.UtilIO;
 import boofcv.io.image.ConvertBufferedImage;
-import boofcv.io.image.UtilImageIO;
 import boofcv.struct.border.BorderType;
 import boofcv.struct.calib.CameraPinhole;
 import boofcv.struct.calib.CameraPinholeBrown;
@@ -52,7 +50,6 @@ import org.ddogleg.struct.FastQueue;
 import org.ejml.data.DMatrixRMaj;
 import org.ejml.data.FMatrixRMaj;
 import org.ejml.dense.row.CommonOps_DDRM;
-import org.ejml.dense.row.NormOps_DDRM;
 import org.ejml.ops.ConvertMatrixData;
 import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.widget.button.PushButton;
@@ -107,7 +104,7 @@ public class WebcamStereoTest {
 
         // Prune matches using the epipolar constraint. use a low threshold to prune more false matches
         List<AssociatedPair> inliers = new ArrayList<>();
-        DMatrixRMaj F = ExampleFundamentalMatrix.robustFundamental(matches, inliers, /*0.1*/ 0.25);
+        DMatrixRMaj F = ExampleFundamentalMatrix.robustFundamental(matches, inliers, /*0.1*/ 0.05);
 
         // Perform self calibration using the projective view extracted from F
         // Note that P1 = [I|0]
@@ -507,40 +504,6 @@ public class WebcamStereoTest {
             return matches;
         }
 
-        public static void main( String args[] ) {
-
-            String dir = UtilIO.pathExample("structure/");
-
-            BufferedImage imageA = UtilImageIO.loadImage(dir , "undist_cyto_01.jpg");
-            BufferedImage imageB = UtilImageIO.loadImage(dir , "undist_cyto_02.jpg");
-
-            List<AssociatedPair> matches = computeMatches(imageA,imageB);
-
-            // Where the fundamental matrix is stored
-            DMatrixRMaj F;
-            // List of matches that matched the model
-            List<AssociatedPair> inliers = new ArrayList<>();
-
-            // estimate and print the results using a robust and simple estimator
-            // The results should be difference since there are many false associations in the simple model
-            // Also note that the fundamental matrix is only defined up to a scale factor.
-            F = robustFundamental(matches, inliers, 0.5);
-            System.out.println("Robust");
-            CommonOps_DDRM.divide(F, NormOps_DDRM.normF(F)); // scale to make comparision easier
-            F.print();
-
-            F = simpleFundamental(matches);
-            System.out.println("Simple");
-            CommonOps_DDRM.divide(F, NormOps_DDRM.normF(F));
-            F.print();
-
-            // display the inlier matches found using the robust estimator
-            AssociationPanel panel = new AssociationPanel(20);
-            panel.setAssociation(inliers);
-            panel.setImages(imageA,imageB);
-
-            ShowImages.showWindow(panel, "Inlier Pairs");
-        }
     }
     /**
      * After interest points have been detected in two images the next step is to associate the two

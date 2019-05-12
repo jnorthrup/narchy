@@ -1092,11 +1092,7 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
             } else if (ww == True)
                 return true;
 
-//            try {
             return c.add(whn, ww);
-//            } catch(StackOverflowError e) {
-//                throw new WTF(); //TEMPORARY
-//            }
 
         }, 0, false, false);
         if (!ok)
@@ -1608,13 +1604,19 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
         if (this.result != null)
             throw new RuntimeException("already concluded: " + result);
 
-        return added(ConjBuilder.super.add(at, x));
+        boolean result = added(ConjBuilder.super.add(at, x));
+        return result;
     }
 
     private boolean added(boolean success) {
-        if (success)
+        if (success) {
+            if (this.result!=null) {
+                if (result instanceof Bool)
+                    return false; //HACK
+                throw new WTF();
+            }
             return true;
-        else {
+        } else {
             if (result == null)
                 result = False;
             return false;

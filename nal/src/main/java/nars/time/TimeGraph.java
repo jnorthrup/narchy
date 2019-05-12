@@ -87,11 +87,11 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 
     public boolean autoneg = true;
 
-    /** temporary unification context */
-    private final UnifyAny u = new UnifyAny();
-    {
-        u.commonVariables = false;
-    }
+//    /** temporary unification context */
+//    private final UnifyAny u = new UnifyAny();
+//    {
+//        u.commonVariables = false;
+//    }
 
     /**
      * since CONJ will be constructed with conjMerge, if x is conj the dt between events must be calculated from start-start. otherwise it is implication and this is measured internally
@@ -654,15 +654,11 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
             }
         }
 
-        //Iterable<Event> AB = sortEvents(ab);
-        ab.shuffleThis(this::random);
+        Iterable<Event> AB = sortEvents(ab);
 
-        //TODO re-use DTPairSolver
-        DTPairSolver s = new DTPairSolver(a, b, x, each, true, true, false);
         return true
-            && bfsNew(Iterables.filter(ab, aabb->aabb instanceof Absolute), s)
+            && bfsNew(ab, new DTPairSolver(a, b, x, each, true, true, false))
             && solveDTAbsolutePair(x, each, a, b, aEqB)
-            && bfsNew(Iterables.filter(ab, aabb->!(aabb instanceof Absolute)), s)
 //            && bfsNew(AB, new DTPairSolver(a, b, x, each, false, true, false))
 //            && bfsNew(AB, new DTPairSolver(a, b, x, each, false, false, true))
         ;
@@ -844,13 +840,9 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
                             @Nullable List<BooleanObjectPair<FromTo<Node<Event, TimeSpan>, TimeSpan>>> path, boolean dir, Predicate<Event> each) {
 
         return solveOccurrence(dt(x, dir, dt), start, dur, each);
-
-
     }
 
     private static boolean termsEvent(Term e) {
-        //Op eo = e.op();
-        //return eo.conceptualizable || eo.var;
         return e.op().eventable;
     }
 
@@ -1034,7 +1026,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
             for (Map.Entry<Term, Collection<Event>> e : byTerm.entrySet()) {
                 Term et = e.getKey();
 
-                if (xop == et.op() && (x.equals(et) || (!xVar && !et.op().var && x.unify(et, u.clear())))) {
+                if (xop == et.op() && (x.equals(et))) { //|| (!xVar && !et.op().var && x.unify(et, u.clear())))) {
 
                     for (Event z : e.getValue()) {
                         if (z instanceof Absolute || !z.id.equals(x)) {
@@ -1068,13 +1060,14 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
                     Set<Compound> s = new UnifiedSet(2);
 
 //                    int yv = yy.volume();
+                    Op yyo = yy.op();
                     solveDT(yy, z -> {
 //                        if (z.id.volume()<yv)
 //                            return true; //something probably collapsed
 
                         //TODO there could be multiple solutions for dt
                         Term zz = z.id;
-                        if (!(zz instanceof Compound))
+                        if (!(zz instanceof Compound) || zz.op()!=yyo)
                             return true; //skip non-compound result (degenerate?)
 
                         assert (zz.dt() != XTERNAL);

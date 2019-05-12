@@ -18,10 +18,3 @@
          (M --> P), (M --> S), task("?@"), neqRCom(S,P), neqRoot(S,P), notSetsOrDifferentSets(S,P) |- (M --> interSect(P,polarizeRandom(S)))
 
 
-//component invert to question
-     (    M -->   I), M, is(I,"&&")  |- (M -->   negateRandomSubterm(I)), (Punctuation:AskAll)
-     (    M --> --%I), M, is(%I,"&&")  |- (M --> --negateRandomSubterm(%I)), (Punctuation:AskAll)
-     (    I -->   M), M, is(I,"&&")  |- (  negateRandomSubterm(I)-->M),   (Punctuation:AskAll)
-     ( --%I -->   M), M, is(%I,"&&")  |- (  negateRandomSubterm(%I)-->M),   (Punctuation:AskAll)
-
-

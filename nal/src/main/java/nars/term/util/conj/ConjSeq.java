@@ -35,9 +35,10 @@ public enum ConjSeq { ;
     /** TODO TermBuilder */
     static public Term sequence(Term a, long aStart, Term b, long bStart, TermBuilder B) {
 
-        if (aStart == ETERNAL) {         assert(bStart == aStart); return CONJ.the(B, DTERNAL, a, b);
-        } else if (aStart == TIMELESS) { assert(bStart == aStart); return CONJ.the(B, XTERNAL, a, b);
-        } else if (aStart == bStart) {                             return CONJ.the(B, 0, a, b);
+        if (aStart == ETERNAL || aStart == bStart) {         /*assert(bStart == aStart);*/
+            return CONJ.the(B, DTERNAL, a, b);
+        } else if (aStart == TIMELESS) { /*assert(bStart == aStart);*/
+            return CONJ.the(B, XTERNAL, a, b);
         } else {
             assert (bStart != ETERNAL && bStart != TIMELESS);
 

@@ -220,7 +220,7 @@ public class InterningTermBuilder extends HeapTermBuilder {
             if (internableRoot(xo/*, x.dt()*/) && x.the()) {
                 Term y = terms[xo.id].apply(new Intermed.InternedCompoundByComponentsSubs(x));
                 if (y != null)
-                    return negate ? y.neg() : y;
+                    return y.negIf(negate);
             }
             return x;
         }
@@ -325,11 +325,9 @@ public class InterningTermBuilder extends HeapTermBuilder {
         if (dtSpecial(dt))
             u = Conj.preSort(dt, u);
 
-        if (u.length > 1 && internableRoot(CONJ, dt, u)) {
-            return terms[CONJ.id].apply(new Intermed.InternedCompoundByComponentsArray(CONJ, dt, u));
-        }
-
-        return super.conj(true, dt, u);
+        return u.length > 1 && internableRoot(CONJ, dt, u) ?
+                terms[CONJ.id].apply(new Intermed.InternedCompoundByComponentsArray(CONJ, dt, u)) :
+                super.conj(true, dt, u);
     }
 
 
