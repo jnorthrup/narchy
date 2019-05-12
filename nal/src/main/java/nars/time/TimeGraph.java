@@ -35,6 +35,8 @@ import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Predicate;
 
 import static nars.Op.*;
+import static nars.term.atom.Bool.False;
+import static nars.term.atom.Bool.Null;
 import static nars.time.Tense.*;
 import static nars.time.TimeSpan.TS_ZERO;
 import static org.eclipse.collections.impl.tuple.Tuples.pair;
@@ -610,7 +612,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
             int abs = 0;
             for (int i = 0; i < s; i++) {
                 List<Event> f = subEvents[i] = new FasterList();
-                solveOccurrence(xx.sub(i), true, (se)->{
+                solveOccurrence(xx.sub(i), false, (se)->{
                     if (se instanceof Absolute) {
                         f.add(se);
                         return false; //one should be enough
@@ -621,48 +623,95 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
                 if(!f.isEmpty())
                     abs++;
             }
-            //TODO allow solving subset >=2 not just all s
-            if (abs == s) {
-                //absolute value for each is known
-                //TODO permute these. this just takes the first of each
-                Conj cc = new Conj(s);
+            if (abs > 0) {
+                //TODO allow solving subset >=2 not just all s
+
+                Term unknown = null;
+                if (abs < s) {
+                    if (s - abs > 1) {
+                        Term[] unknowns = new Term[s - abs]; //assume in correct order
+                        int j = 0;
+                        for (int i = 0; i < s; i++)
+                            if (subEvents[i].isEmpty())
+                                unknowns[j++] = xx.sub(i);
+                        unknown = CONJ.the(XTERNAL, unknowns);
+                    } else {
+                        for (int i = 0; i < s; i++) {
+                            if (subEvents[i].isEmpty()) {
+                                unknown = xx.sub(i);
+                                break;
+                            }
+                        }
+                    }
+                    assert(unknown!=null);
+                }
+
                 long start = Long.MAX_VALUE, range = Long.MAX_VALUE;
-                for (int i = 0; i < s; i++) {
-                    Event e = subEvents[i].get(0);
-                    long es = e.start();
-                    start = Math.min(es, start);
-                    range = range > 0 ? Math.min(e.end() - es, range) : 0;
-                    cc.add(es, e.id);
+                Term nextKnown = null;
+                if (abs > 1) {
+                    //absolute value for each is known
+                    //TODO permute these. this just takes the first of each
+                    Conj cc = new Conj(s);
+                    for (int i = 0; i < s; i++) {
+                        if (!subEvents[i].isEmpty()) {
+                            Event e = subEvents[i].get(0);
+                            long es = e.start();
+                            start = Math.min(es, start);
+                            range = range > 0 ? Math.min(e.end() - es, range) : 0;
+                            if (!cc.add(es, e.id))
+                                break;
+                        }
+                    }
+
+                    nextKnown = cc.term();
+
+                } else {
+                    for (int i = 0; i < s; i++) {
+                        if (!subEvents[i].isEmpty()) {
+                            Event e = subEvents[i].get(0);
+                            nextKnown = e.id;
+                            start = e.start();
+                            range = e.end() - start;
+                            break;
+                        }
+                    }
                 }
-                Term t = cc.term();
-                if (validPotentialSolution(t)) {
-                    if (!each.test(event(t, start, start+range, false)))
-                        return false;
+
+                if (nextKnown != False && nextKnown != Null) {
+                    assert (nextKnown != null);
+                    if (unknown != null) {
+                        nextKnown = CONJ.the(XTERNAL, nextKnown, unknown);
+                    }
+
+                    if (validPotentialSolution(nextKnown)) {
+                        if (!each.test(event(nextKnown, start, start + range, false)))
+                            return false;
+                    }
+                }
+            } else {
+
+
+                if (s == 3) {
+
+                    Term a = xx.sub(0), b = xx.sub(1), c = xx.sub(2);
+
+                    return solveDT((Compound) CONJ.the(XTERNAL, c, b),
+                            bc -> solveDT((Compound) CONJ.the(XTERNAL, bc.id, a), each
+                            ));
+
+                } else if (s == 4) {
+
+                    Term a = xx.sub(0), b = xx.sub(1), c = xx.sub(2), d = xx.sub(3);
+
+                    return solveDT((Compound) CONJ.the(XTERNAL, d, c),
+                            cd -> solveDT((Compound) CONJ.the(XTERNAL, cd.id, b),
+                                    bc -> solveDT((Compound) CONJ.the(XTERNAL, bc.id, a), each
+                                    )
+                            )
+                    );
+
                 }
             }
-
-
-            if (s == 3) {
-
-                Term a = xx.sub(0), b = xx.sub(1), c = xx.sub(2);
-
-                return solveDT((Compound)CONJ.the(XTERNAL, c, b),
-                    bc -> solveDT((Compound)CONJ.the(XTERNAL, bc.id, a), each
-                ));
-
-            } else if (s == 4) {
-
-                Term a = xx.sub(0), b = xx.sub(1), c = xx.sub(2), d = xx.sub(3);
-
-                return solveDT( (Compound) CONJ.the(XTERNAL, d, c),
-                    cd -> solveDT( (Compound) CONJ.the(XTERNAL, cd.id, b),
-                        bc -> solveDT( (Compound) CONJ.the(XTERNAL, bc.id, a), each
-                        )
-                    )
-                );
-
-            }
-
 
             return true;
         }
@@ -1110,7 +1159,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
                         if (!(zz instanceof Compound) || zz.op()!=yyo)
                             return true; //skip non-compound result (degenerate?)
 
-                        assert (zz.dt() != XTERNAL);
+                        //assert (zz.dt() != XTERNAL);
                         s.add((Compound) zz);
                         return true;
                     });
@@ -1220,7 +1269,11 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
         if (!validPotentialSolution(x)) return true;
 
         return ((x instanceof Compound && x.dt() == XTERNAL)?
-            solveDT((Compound) x, y -> !validPotentialSolution(y.id) || solveOccurrence(y, true, each))
+            solveDT((Compound) x, y -> !validPotentialSolution(y.id) ||
+                    (y instanceof Absolute ?
+                            each.test(y)
+                            :
+                            solveOccurrence(y, true, each)))
         :
             //dont solve if more specific dt solved further in previous solveDT call
             solveOccurrence(x, true, each)
@@ -1260,10 +1313,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 //    }
 
     private boolean solveOccurrence(Event x, boolean finish, Predicate<Event> each) {
-        if (x instanceof Absolute) {
-//            assert(finish);
-            return each.test(x);
-        }
+        assert(!(x instanceof Absolute));
 
         return true
 //                solveExact(x, each) &&

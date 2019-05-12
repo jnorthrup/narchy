@@ -35,9 +35,6 @@ public class Gradius extends GameX {
     }
 
 
-//    private final boolean canPause = false;
-
-
     int lastScore;
 
     public static void main(String[] args) {
