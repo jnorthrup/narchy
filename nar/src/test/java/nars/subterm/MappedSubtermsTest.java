@@ -78,7 +78,7 @@ public class MappedSubtermsTest {
     @Test void testBiSubtermWeird() {
         Term allegedTarget = $$$("( &&+- ,(--,##2#4),_1,##2#4,$1)");
         Subterms base = new BiSubterm(allegedTarget, $$$("$1"));
-        assertEquals("(( &&+- ,(--,##2#4),_1,##2#4,$1),$1)", base.toString());
+        assertEquals("(( &&+- ,(--,##2#4),_1,$1,##2#4),$1)", base.toString());
 
         Term target = $$$("( &&+- ,(--,##2#4),_1,##2#4,$1)");
         assertEquals(0, base.indexOf(target));

@@ -57,21 +57,21 @@ class DynamicConjTest {
         {
             //temporal evaluated a specific point
             Task xy = n.belief($("(a:x && a:y)"), now);
-            assertEquals("((x-->a)&|(y-->a))", xy.term().toString());
+            assertEquals("((x-->a)&&(y-->a))", xy.term().toString());
             assertEquals($.t(1f, 0.81f), xy.truth());
         }
 
         {
             Task xAndNoty = n.belief($("(a:x && --a:y)"), now);
-            assertEquals("((--,(y-->a))&|(x-->a))", xAndNoty.term().toString());
+            assertEquals("((--,(y-->a))&&(x-->a))", xAndNoty.term().toString());
             assertEquals($.t(0f, 0.81f), xAndNoty.truth());
         }
 
         {
-            //remain eternal (&& not &|)
+            //remain eternal
             Task xy = n.belief($("(a:x && a:y)"), ETERNAL);
             assertEquals(0, xy.start()); //exact time since it was what was stored
-            assertEquals("((x-->a)&|(y-->a))", xy.term().toString());
+            assertEquals("((x-->a)&&(y-->a))", xy.term().toString());
             assertEquals($.t(1f, 0.81f), xy.truth());
         }
 
@@ -84,7 +84,7 @@ class DynamicConjTest {
             Task ttEte = n.answerBelief($("(a:x && a:y)"), now);
 //            assertEquals(1, ttEte.stamp().length);
 
-            //truths dont get merged since the dynamic belief will compute for &| and this asked for &&
+
             assertTrue(ttEte.toString().contains("((x-->a)&&(y-->a)). 0 %"));
 
             Truth tNow = n.beliefTruth($("(a:x && a:y)"), now);
@@ -96,25 +96,25 @@ class DynamicConjTest {
 
         }
         {
-            n.believe($$("--(a:x &| a:y)"), 0);
+            n.believe($$("--(a:x && a:y)"), 0);
             assertEquals(2, n.concept("(a:x && a:y)").beliefs().taskCount());
 
-            Task ttNow = n.answerBelief($("(a:x &| a:y)"), now);
+            Task ttNow = n.answerBelief($("(a:x && a:y)"), now);
             assertTrue(ttNow.isNegative());
-            assertTrue(ttNow.toString().contains("((x-->a)&|(y-->a)). 0"), ttNow.toString());
+            assertTrue(ttNow.toString().contains("((x-->a)&&(y-->a)). 0"), ttNow.toString());
         }
 
 
-        Task tAfterTask = n.belief($("(a:x &| a:y)"), now + 2);
+        Task tAfterTask = n.belief($("(a:x && a:y)"), now + 2);
         assertEquals(now + 2, tAfterTask.start());
         assertEquals(now + 2, tAfterTask.end());
 
-        Truth tAfter = n.beliefTruth($("(a:x &| a:y)"), now + 2);
+        Truth tAfter = n.beliefTruth($("(a:x && a:y)"), now + 2);
         assertNotNull(tAfter);
         assertTrue(tAfter.isNegative());
         //assertTrue($.t(0.19f, 0.88f).equalsIn(tAfter, n), () -> tAfter.toString());
 
-        Truth tLater = n.beliefTruth($("(a:x &| a:y)"), now + 5);
+        Truth tLater = n.beliefTruth($("(a:x && a:y)"), now + 5);
         assertTrue(tLater.isPositive() == tAfter.isPositive());
         assertTrue(tLater.conf() < tAfter.conf());
         //assertTrue($.t(0.19f, 0.79f).equalsIn(tLater, n), () -> tLater.toString());
@@ -123,8 +123,8 @@ class DynamicConjTest {
     @Test
     void testDynamicConjunctionEternalTemporalMix() throws Narsese.NarseseException {
 
-        String xx = "((e&&x)&|(e&&y))";
-//        assertEquals(xx, $$("((x&|y)&&e)").toString());
+//        String xx = "((e&&x)&&(e&&y))";
+//        assertEquals(xx, $$("((x&&y)&&e)").toString());
 
         NAR n = NARS.shell()
                 .believe($$("x"), 0)
@@ -134,13 +134,12 @@ class DynamicConjTest {
         Term xye = $("(&&,x,y,e)");
 
         Task atZero = n.belief(xye, 0);
+        assertNotNull(atZero);
 
         Task atOne = n.belief(xye, 1);
+        assertNotNull(atOne);
 
         Task atEte = n.belief(xye, ETERNAL);
-
-        assertNotNull(atZero);
-        assertNotNull(atOne);
         assertNotNull(atEte);
 
         assertEquals(0, atZero.start());
@@ -381,7 +380,7 @@ class DynamicConjTest {
         TaskConcept cc = (TaskConcept) n.conceptualize($("(&&, x, y, z)"));
         BeliefTable xtable = cc.beliefs();
         {
-            Term xyz = $("((x &| y) &&+2 (x &| z))");
+            Term xyz = $("((x && y) &&+2 (x && z))");
             assertEq("((y &&+2 z)&&x)", xyz);
             Task t = xtable.matchExact((long) 0, (long) 0, xyz, null, dur, n);
             assertEquals(1f, t.freq(), 0.05f);
@@ -404,12 +403,23 @@ class DynamicConjTest {
         n.believe($("z"), 2);
         n.time.dur(8);
 
-        Term xyz = $("(x && (y &&+2 z))");
-        Task t = n.answerBelief(xyz, 0);
-        assertNotNull(t);
-        assertEquals(1f, t.freq(), 0.05f);
-        assertEquals(0.81f, t.conf(), 0.4f);
-        assertEq("((y &&+2 z)&&x)", t.term());
+        {
+            Term xyz = $("((y &&+2 z)&&x)");
+            Task t = n.answerBelief(xyz, 0);
+            assertNotNull(t);
+            assertEquals(1f, t.freq(), 0.05f);
+            assertEquals(0.81f, t.conf(), 0.4f);
+            assertEq(xyz, t.term());
+        }
+        {
+            Term xyz = $("((x&&y) &&+2 z))");
+            Task t = n.answerBelief(xyz, 0);
+            assertNotNull(t);
+            assertEquals(1f, t.freq(), 0.05f);
+            assertEquals(0.81f, t.conf(), 0.4f);
+            assertEq(xyz, t.term());
+
+        }
     }
 
     static List<String> components(AbstractDynamicTruth model, Compound xyz, long s, long e) {

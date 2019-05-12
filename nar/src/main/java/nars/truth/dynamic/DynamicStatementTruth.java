@@ -213,10 +213,10 @@ public class DynamicStatementTruth {
             return subjOrPred ? op.the(sect, outerDT, common) : op.the(common, outerDT, sect);
         }
 
-        @Override
-        public boolean acceptComponent(Compound superTerm, Task componentTask) {
-            return componentTask.op() == superTerm.op();
-        }
+//        @Override
+//        public boolean acceptComponent(Compound superTerm, Task componentTask) {
+//            return componentTask.op() == superTerm.op();
+//        }
 
         @Override
         public Term reconstruct(Compound superterm, DynTaskify components, NAR nar, long start, long end) {

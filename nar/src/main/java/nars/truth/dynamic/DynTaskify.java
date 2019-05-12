@@ -144,18 +144,20 @@ public class DynTaskify extends TaskList {
         boolean absolute = model != ConjIntersection || s == LongInterval.ETERNAL || earliest == LongInterval.ETERNAL;
         for (int i = 0, dSize = size(); i < dSize; i++) {
             Task x = get(i);
-            long xStart = x.start();
-            long shift = absolute || (xStart==ETERNAL) ? 0 : xStart - earliest;
-            long ss = s + shift, ee = e + shift;
-            if (xStart != ss || x.end() != ee) {
-                Task tt = Task.project(x, ss, ee,
-                        NAL.truth.TRUTH_EVI_MIN, //minimal truth threshold for accumulating evidence
-                        false,
-                        false,
-                        nar);
-                if (tt == null)
-                    return null;
-                setFast(i, tt);
+            long xStart = x.start(); if (xStart!=ETERNAL) {
+                long shift = absolute || (xStart == ETERNAL) ? 0 : xStart - earliest;
+                long ss = s + shift, ee = e + shift;
+                if (xStart != ss || x.end() != ee) {
+                    Task tt = Task.project(x, ss, ee,
+                            NAL.truth.TRUTH_EVI_MIN, //minimal truth threshold for accumulating evidence
+                            false,
+                            1, //no need to dither truth or time here.  maybe in the final calculation though.
+                            a.dur,
+                            nar);
+                    if (tt == null)
+                        return null;
+                    setFast(i, tt);
+                }
             }
         }
 
@@ -246,7 +248,7 @@ public class DynTaskify extends TaskList {
                 throw new UnsupportedOperationException();
         }
 
-        if (bt != null && model.acceptComponent((Compound) template(), bt) && add(bt)) {
+        if (bt != null && /*model.acceptComponent((Compound) template(), bt) &&*/ add(bt)) {
             if (negated)
                 componentPolarity.clear(currentComponent);
             return true;

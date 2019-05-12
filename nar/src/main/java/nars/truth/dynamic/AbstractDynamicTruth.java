@@ -2,7 +2,6 @@ package nars.truth.dynamic;
 
 import jcog.util.ObjectLongLongPredicate;
 import nars.NAR;
-import nars.Task;
 import nars.concept.util.ConceptBuilder;
 import nars.table.BeliefTable;
 import nars.table.BeliefTables;
@@ -30,12 +29,12 @@ abstract public class AbstractDynamicTruth {
      */
     abstract public Term reconstruct(Compound superterm, DynTaskify d, NAR nar, long start, long end);
 
-    /**
-     * allow filtering of resolved Tasks
-     */
-    public boolean acceptComponent(Compound superTerm, Task componentTask) {
-        return true;
-    }
+//    /**
+//     * allow filtering of resolved Tasks
+//     */
+//    public boolean acceptComponent(Compound superTerm, Task componentTask) {
+//        return true;
+//    }
 
     public BeliefTable newTable(Term t, boolean beliefOrGoal, ConceptBuilder cb) {
         return new BeliefTables(

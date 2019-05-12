@@ -402,7 +402,7 @@ public final class Answer implements Timed {
             long ss = time.start;
             if (ss != ETERNAL) { //dont eternalize here
                 long ee = time.end;
-                @Nullable Task t2 = Task.project(t, ss, ee, eviMin, ditherTime, this.ditherTruth, nar);
+                @Nullable Task t2 = Task.project(t, ss, ee, eviMin, ditherTime, this.ditherTruth ? nar.dtDither() : 1, dur, nar);
                 if (t2 == null)
                     return null;
                 t = t2;

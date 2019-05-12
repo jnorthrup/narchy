@@ -597,20 +597,52 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 
         //assert(!xx.hasXternal()): "dont solveDTTrace if subterms have XTERNAL";
 
-        int subs = xx.subs();
-        if (subs == 2) {
+        int s = xx.subs();
+        if (s == 2) {
             Term a = xx.sub(0), b = xx.sub(1);
 
-            boolean aEqB = a.equals(b);
-
-            return solveDTpair(x, each, a, b, aEqB);
+            return solveDTAbsolutePair(x, each, a, b) && solveDTpair(x, each, a, b);
 
         } else {
-            //TODO make this recursive for length n
-            //TODO compute in an optimal order. currently uses the natural subterm ordering by volume
-
             assert (x.op() == CONJ);
-            if (subs == 3) {
+
+            List<Event>[] subEvents = new FasterList[s];
+            int abs = 0;
+            for (int i = 0; i < s; i++) {
+                List<Event> f = subEvents[i] = new FasterList();
+                solveOccurrence(xx.sub(i), true, (se)->{
+                    if (se instanceof Absolute) {
+                        f.add(se);
+                        return false; //one should be enough
+                    } else {
+                        return true;
+                    }
+                });
+                if(!f.isEmpty())
+                    abs++;
+            }
+            //TODO allow solving subset >=2 not just all s
+            if (abs == s) {
+                //absolute value for each is known
+                //TODO permute these. this just takes the first of each
+                Conj cc = new Conj(s);
+                long start = Long.MAX_VALUE, range = Long.MAX_VALUE;
+                for (int i = 0; i < s; i++) {
+                    Event e = subEvents[i].get(0);
+                    long es = e.start();
+                    start = Math.min(es, start);
+                    range = range > 0 ? Math.min(e.end() - es, range) : 0;
+                    cc.add(es, e.id);
+                }
+                Term t = cc.term();
+                if (validPotentialSolution(t)) {
+                    if (!each.test(event(t, start, start+range, false)))
+                        return false;
+                }
+            }
+
+
+            if (s == 3) {
 
                 Term a = xx.sub(0), b = xx.sub(1), c = xx.sub(2);
 
@@ -618,7 +650,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
                     bc -> solveDT((Compound)CONJ.the(XTERNAL, bc.id, a), each
                 ));
 
-            } else if (subs == 4) {
+            } else if (s == 4) {
 
                 Term a = xx.sub(0), b = xx.sub(1), c = xx.sub(2), d = xx.sub(3);
 
@@ -639,10 +671,11 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
     }
 
 
-    private boolean solveDTpair(Compound x, Predicate<Event> each, Term a, Term b, boolean aEqB) {
+    private boolean solveDTpair(Compound x, Predicate<Event> each, Term a, Term b) {
 
         FasterList<Event> ab = null;
 
+        boolean aEqB = a.equals(b);
         Collection<Event> aa = eventsOrNull(a);
         if (aa!=null)
             ab = new FasterList(aa);
@@ -662,11 +695,10 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
             }
         }
 
-        Iterable<Event> AB = sortEvents(ab);
+        Collection<Event> AB = sortEvents(ab);
 
         return true
-            && bfsAdd(ab, new DTPairSolver(a, b, x, each, true, false, false))
-            && solveDTAbsolutePair(x, each, a, b, aEqB)
+            && (AB.isEmpty() || bfsAdd(AB, new DTPairSolver(a, b, x, each, true, false, false)))
 //            && bfsNew(AB, new DTPairSolver(a, b, x, each, false, true, false))
 //            && bfsNew(AB, new DTPairSolver(a, b, x, each, false, false, true))
         ;
@@ -700,13 +732,13 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
         return false;
     }
 
-    private boolean solveDTAbsolutePair(Compound x, Predicate<Event> each, Term a, Term b, boolean aEqB) {
+    private boolean solveDTAbsolutePair(Compound x, Predicate<Event> each, Term a, Term b) {
         if (a.hasXternal() || b.hasXternal())
             return true; //N/A
 
         UnifiedSet<Event> ae = new UnifiedSet(2);
         //solveExact(a, ax -> {
-        solveOccurrence(a, ax -> {
+        solveOccurrence(a, false, ax -> {
             if (ax instanceof Absolute) ae.add(ax);
             return true;
         });
@@ -714,7 +746,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
         if (aes > 0) {
             Event[] aa = eventArray(ae);
 
-            if (aEqB && aes > 1) {
+            if (a.equals(b) && aes > 1) {
 
 
                 for (int i = 0; i < aa.length; i++) {
@@ -727,7 +759,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 
 
             } else {
-                solveOccurrence(b, bx -> {
+                solveOccurrence(b, false, bx -> {
                     if ((bx instanceof Absolute) && ae.add(bx)) {
                         for (Event ax : aa) {
                             if (!solveDTAbsolutePair(x, ax, bx, each))
@@ -861,7 +893,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
         return start != TIMELESS ?
                 each.test(event(y, start, (start != ETERNAL) ? start + dur : start, false))
                 :
-                solveOccurrence(y, each);
+                solveOccurrence(y, true, each);
     }
 
 
@@ -1009,7 +1041,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 
     private boolean solveAll(Term x, Predicate<Event> each) {
         if (!x.hasXternal()) {
-            return solveOccurrence(x, each);
+            return solveOccurrence(x, true, each);
         } else {
             if (!solveRootMatches(x, each))
                 return false;
@@ -1060,7 +1092,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 
         Map<Compound, Set<Compound>> subSolved = new UnifiedMap(4);
 
-        x.subterms().recurseTerms(Term::hasXternal, y -> {
+        x.recurseTerms(Term::hasXternal, y -> {
             if (y instanceof Compound && y.dt() == XTERNAL && !y.subterms().hasXternal()) {
 
                 subSolved.computeIfAbsent((Compound) y, (yy) -> {
@@ -1187,22 +1219,22 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
     private boolean solveDtAndOccTop(Term x, Predicate<Event> each) {
         if (!validPotentialSolution(x)) return true;
 
-        if (x instanceof Compound && x.dt() == XTERNAL) {
-            return solveDT((Compound) x, y -> !validPotentialSolution(y.id) || solveOccurrence(y, each));
-        } else {
+        return ((x instanceof Compound && x.dt() == XTERNAL)?
+            solveDT((Compound) x, y -> !validPotentialSolution(y.id) || solveOccurrence(y, true, each))
+        :
             //dont solve if more specific dt solved further in previous solveDT call
-            return solveOccurrence(x, each);
-        }
+            solveOccurrence(x, true, each)
+        );
     }
 
 
     /**
      * solves the start time for the given Unsolved event.  returns whether callee should continue iterating
      */
-    private boolean solveOccurrence(Term x, Predicate<Event> each) {
-        if (!termsEvent(x)) return true;
+    private boolean solveOccurrence(Term x, boolean finish, Predicate<Event> each) {
+        if (!validPotentialSolution(x)) return true;
 
-        return solveOccurrence(shadow(x), each);
+        return solveOccurrence(finish ? know(x) : shadow(x), finish, each);
     }
 
 //    final boolean bfsPush(Event root, Search<Event, TimeSpan> tv) {
@@ -1227,15 +1259,20 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 //        return result;
 //    }
 
-    private boolean solveOccurrence(Event x, Predicate<Event> each) {
+    private boolean solveOccurrence(Event x, boolean finish, Predicate<Event> each) {
+        if (x instanceof Absolute) {
+//            assert(finish);
+            return each.test(x);
+        }
+
         return true
 //                solveExact(x, each) &&
-               && bfsAdd(x, new OccSolver(true, true, autoneg, each))
+               && (x.id.hasXternal() || bfsAdd(x, new OccSolver(true, true, autoneg, each)))
                //&& bfsNew(List.of(x), new OccSolver(false, false, true, each))
                //&& solveSelfLoop(x, each)
 //               && (!autoneg || bfsNew(x.neg(), new OccSolver(true, false, true,
 //                    z -> each.test(z.neg()))))
-               && solveLastResort(x, each)
+               && (!finish || solveLastResort(x, each))
                 ;
     }
 
@@ -1479,7 +1516,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 //        return a.compareTo(b);
 //    };
 
-    public Iterable<Event> sortEvents(Collection<Event> e) {
+    public Collection<Event> sortEvents(Collection<Event> e) {
 
 //        int s = ab.size();
 //        assert (s > 0);

@@ -467,19 +467,20 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
      * start!=ETERNAL
      */
     @Nullable
-    static Task project(Task t, long start, long end, double eviMin, boolean ditherTruth, boolean ditherTime, NAL n) {
+    static Task project(Task t, long start, long end, double eviMin, boolean ditherTruth, int dtDither, int dur, NAL n) {
 
-        if (ditherTime) {
-            start = Tense.dither(start,n);
-            end = Tense.dither(end,n);
+        if (dtDither>1) {
+            start = Tense.dither(start,dtDither);
+            end = Tense.dither(end,dtDither);
         }
 
-        if (t.start() == start && t.end() == end || (t.isBeliefOrGoal() && t.isEternal()))
+        long ts = t.start();
+        if ((ts == ETERNAL) || (ts == start && t.end() == end))
             return t;
 
         Truth tt;
         if (t.isBeliefOrGoal()) {
-            tt = t.truth(start, end, 0); //0 dur
+            tt = t.truth(start, end, dur); //0 dur
             if (tt == null || tt.evi() < eviMin)
                 return null;
 

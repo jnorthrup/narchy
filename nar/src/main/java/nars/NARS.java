@@ -135,12 +135,12 @@ public class NARS {
 
                 n.termVolumeMax.set(22);
 
-                ((TaskLinkWhat) n.what()).links.decay.set(0.05f);
+                ((TaskLinkWhat) n.what()).links.decay.set(0.01f);
 
                 n.beliefPriDefault.amp(0.1f);
                 n.goalPriDefault.amp(0.1f);
-                n.questionPriDefault.amp(0.01f);
-                n.questPriDefault.amp(0.01f);
+                n.questionPriDefault.amp(0.02f);
+                n.questPriDefault.amp(0.02f);
 
             });
         }
@@ -175,7 +175,7 @@ public class NARS {
                 new ConceptAllocator(
                         //beliefs ete
                         curve(termVolume,
-                        1, 9,
+                        1, 8,
                                 16, 5,
                                 18, 3
                         ),
@@ -187,7 +187,7 @@ public class NARS {
                         ),
                         //goals ete
                         curve(termVolume,
-                                1, 9,
+                                1, 8,
                                 16, 5,
                                 32, 3
                         ),

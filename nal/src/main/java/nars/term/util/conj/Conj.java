@@ -1791,14 +1791,14 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
 
     @Override
     public boolean remove(long at, Term t) {
-        if (t.op() != CONJ) {
+        if (t.op() != CONJ || t.dt()==XTERNAL) {
             byte i = get(t);
             if (i == Byte.MIN_VALUE)
                 return false;
             return remove(at, i);
         } else {
             return t.eventsWhile((when, what) -> {
-                assert (!t.equals(what)); //prevent infinite recursion, hopefully this cant happen
+                //assert (!t.equals(what)); //prevent infinite recursion, hopefully this cant happen
                 return remove(when, what); //fails on error
             }, at, true, false);
         }
