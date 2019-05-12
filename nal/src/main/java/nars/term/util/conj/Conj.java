@@ -1490,11 +1490,11 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
                     Term e;
                     long shift;
 
-                    if (d.dt()==XTERNAL) {
-                        assert(when == ETERNAL);
+                    int ddt = d.dt();
+                    if (ddt ==XTERNAL || (ddt ==DTERNAL && d.contains(incoming) /* HACK to split a sequence non-sequentially at the top-level */)) {
                         Term[] ee = d.subterms().removing(incoming);
                         if (ee.length > 1)
-                            e = CONJ.the(XTERNAL, ee);
+                            e = CONJ.the(ddt, ee);
                         else
                             e = ee[0];
                         shift = 0;
@@ -1516,7 +1516,7 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
                         //assert(removed);
 
                         e = D.term();
-                        shift = D.shift();
+                        shift = when!=ETERNAL ? D.shift() : 0;
                     }
 
 

@@ -1,6 +1,5 @@
 package nars.truth.dynamic;
 
-import jcog.Util;
 import jcog.util.ArrayUtil;
 import jcog.util.ObjectLongLongPredicate;
 import nars.NAR;
@@ -52,9 +51,6 @@ public class DynamicConjTruth {
                     when = Tense.dither(s, dtDither);
 
                 Term x = t.term().negIf(!d.componentPolarity.get(i));
-
-                if (when == ETERNAL && Conj.isSeq(x)) //TEMPORARY for debug
-                    Util.nop();
 
                 if (!l.add(when, x))
                     return null;
