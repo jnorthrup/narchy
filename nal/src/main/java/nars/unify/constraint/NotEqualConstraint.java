@@ -129,7 +129,7 @@ public final class NotEqualConstraint extends RelationConstraint {
 
         @Override
         public boolean invalid(Term x, Term y, Unify context) {
-            return !x.equals(y) && !x.equalsNeg(y) ;
+            return !x.equals(y) && !x.equalsNeg(y);
         }
 
     }
@@ -165,12 +165,24 @@ public final class NotEqualConstraint extends RelationConstraint {
     public static final class NotEqualAndNotRecursiveSubtermOf extends RelationConstraint {
 
         public static final Atom neqRCom = Atomic.atom("neqRCom");
-
-        /** TODO move to subclass */
-        @Deprecated private static boolean root = false;
+        final static Predicate<Term> limit = Op.statementLoopyContainer;
+        /**
+         * TODO move to subclass
+         */
+        @Deprecated
+        private static boolean root = false;
 
         public NotEqualAndNotRecursiveSubtermOf(Variable x, Variable y) {
             super(neqRCom, x, y);
+        }
+
+        private static boolean test(Term a, boolean recurse, boolean excludeVariables, Term b) {
+            if ((!excludeVariables || !(b instanceof Variable)) && !(b instanceof Img)) {
+                return recurse ?
+                        a.containsRecursively(b, root, limit) :
+                        a.contains(root ? b.root() : b);
+            } else
+                return false;
         }
 
         @Override
@@ -191,59 +203,17 @@ public final class NotEqualConstraint extends RelationConstraint {
 
             int av = x.volume(), bv = y.volume();
 
+            if (av == bv)
+                return false; //both atomic or same size (cant contain each other)
 
             //a > b |- a contains b?
-
             if (av < bv) {
-
                 Term c = x;
                 x = y;
                 y = c;
             }
-
-            //Iterable<Term> bb = inhComponents(y);
-//            if (bb != null) {
-//                for (Term bbb : bb) {
-//                    if (test(x, true, false, bbb))
-//                        return true;
-//                }
-//                return false;
-//            } else {
-                if (av == bv) {
-                    return false;
-                } else {
-                    return test(x, true, false, y);
-                }
-//            }
+            return test(x, true, false, y);
         }
-
-        final static Predicate<Term> limit = Op.statementLoopyContainer;
-
-        private static boolean test(Term a, boolean recurse, boolean excludeVariables, Term b) {
-            if ((!excludeVariables || !(b instanceof Variable)) && !(b instanceof Img)) {
-                return recurse ?
-                        a.containsRecursively(b, root, limit) :
-                        a.contains(root ? b.root() : b);
-            } else
-                return false;
-        }
-
-//        @Nullable
-//        private static Iterable<Term> inhComponents(Term b) {
-//            switch (b.op()) {
-////                case SETe:
-////                case SETi:
-//                case SECTi:
-//                case SECTe: {
-//                    Iterable<Term> x = b.subterms();
-//                    if (b.hasAny(NEG))
-//                        x = Iterables.transform(x, Term::unneg);
-//                    return x;
-//                }
-//                default:
-//                    return null;
-//            }
-//        }
 
 
     }
@@ -274,6 +244,7 @@ public final class NotEqualConstraint extends RelationConstraint {
         }
 
     }
+
     public static final class SubCountEqual extends RelationConstraint {
 
         public SubCountEqual(Variable target, Variable other) {
@@ -292,10 +263,11 @@ public final class NotEqualConstraint extends RelationConstraint {
 
         @Override
         public boolean invalid(Term x, Term y, Unify context) {
-            return x!=y && x.subs()!=y.subs();
+            return x != y && x.subs() != y.subs();
         }
 
     }
+
     public static class NotSetsOrDifferentSets extends RelationConstraint {
         public NotSetsOrDifferentSets(Variable target, Variable other) {
             super("notSetsOrDifferentSets", target, other);

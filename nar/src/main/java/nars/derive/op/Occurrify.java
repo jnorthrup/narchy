@@ -424,6 +424,8 @@ public class Occurrify extends TimeGraph {
                 (int) Math.floor(NAL.derive.TIMEGRAPH_IGNORE_DEGENERATE_SOLUTIONS_FACTOR * pattern.volume());
         this.patternVolumeMax = d.termVolMax;
 
+        this.nodesMax = d.termVolMax * 2 + pattern.volume();  //should be plenty of event nodes
+
         solve(pattern,  /* take everything */ this::eachSolution);
 
         return solutions;

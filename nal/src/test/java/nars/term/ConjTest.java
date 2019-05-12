@@ -1689,7 +1689,7 @@ public class ConjTest {
         String a0 = "(((--,((--,_2(_1)) &&+710 (--,_2(_1))))&&(_3-->_1)) &&+710 _2(_1))";
         Term a = $$(a0);
         assertEq(a0, a);
-        Term b = $$("(--,(_2(_1)&|(_3-->_1)))");
+        Term b = $$("(--,(_2(_1)&&(_3-->_1)))");
         assertEq("((_3-->_1) &&+710 _2(_1))", CONJ.the(0, a, b));
 
     }
@@ -1697,7 +1697,7 @@ public class ConjTest {
     @Test
     void testAnotherComplexInvalidConj2() {
         //TODO check what this actually means
-        Term a = $$("((--,((--,_3) &&+190 (--,_3)))&|((_1,_2)&|_3))");
+        Term a = $$("((--,((--,_3) &&+190 (--,_3)))&&((_1,_2)&&_3))");
         assertEq("((_1,_2)&&_3)", a);
     }
 
@@ -1760,6 +1760,21 @@ public class ConjTest {
             assertEq(y, c.term());
         }
 
+    }
+
+    @Test void disjunctionSequenceReduce_333432778293823() {
+        {
+            Conj c = new Conj();
+            c.add(10, $$("--(x &&+50 x)"));
+            c.add(10, $$("x"));
+            assertEq("(x &&+50 (--,x))", c.term());
+        }
+//        {
+//            Conj c = new Conj();
+//            c.add(10, $$("--(x &&+50 x)"));
+//            c.add(ETERNAL, $$("x"));
+//            assertEq("(x &&+50 (--,x))", c.term());
+//        }
     }
 
     @ParameterizedTest
@@ -1834,7 +1849,7 @@ public class ConjTest {
     void testDisjunctionParallelReduction3() {
 
         assertEq(False,
-                $$("( &|, (--, (g, (1, 1),(18, 0))),(--, ((--, (right--> g))&|(down--> g))),(--, (right--> g)),(down--> g))")
+                $$("( &&, (--, (g, (1, 1),(18, 0))),(--, ((--, (right--> g))&&(down--> g))),(--, (right--> g)),(down--> g))")
         );
     }
 

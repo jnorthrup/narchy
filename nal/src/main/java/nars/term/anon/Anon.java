@@ -32,6 +32,7 @@ public class Anon extends AbstractTermTransform.NegObliviousTermTransform {
         this(1);
     }
 
+
     Anon(int estSize) {
         this.map = new ByteAnonMap(estSize);
     }

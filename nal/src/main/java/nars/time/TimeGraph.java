@@ -86,6 +86,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
     private Predicate<Event> target;
 
     public boolean autoneg = true;
+    protected int nodesMax = Integer.MAX_VALUE;
 
 //    /** temporary unification context */
 //    private final UnifyAny u = new UnifyAny();
@@ -153,6 +154,9 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 
 
     private Event event(Term t, long start, long end, boolean add) {
+        if (!notExceedingNodes())
+            throw new IndexOutOfBoundsException("too many nodes");
+
         if (!t.op().eventable)
             throw new WTF();
 
@@ -271,6 +275,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
         }
     }
 
+
     private Event addNodeRelinked(Event e, FasterList<FromTo<Node<Event, TimeSpan>, TimeSpan>> relinkIn, FasterList<FromTo<Node<Event, TimeSpan>, TimeSpan>> relinkOut) {
         MutableNode<Event, TimeSpan> E = addNode(e);
 
@@ -354,20 +359,24 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
         MutableNode<Event, TimeSpan> x = addNode(before);
         MutableNode<Event, TimeSpan> y = before.equals(after) ? x : addNode(after);
 
-        return addEdgeByNode(x, e, y);
+        return notExceedingNodes() && addEdgeByNode(x, e, y);
+    }
+
+    private boolean notExceedingNodes() {
+        return nodesMax == Integer.MAX_VALUE || nodes.size() < nodesMax;
     }
 
     private void link(Event x, long dt, Event y) {
 
-        if (dt == ETERNAL)
-            throw new WTF("maybe eliminate this case");
+//        if (dt == ETERNAL)
+//            throw new WTF("maybe eliminate this case");
 
-        if (NAL.DEBUG) {
-            if (dt == DTERNAL)
-                throw new WTF("probably meant to use ETERNAL"); //TEMPORARY
-            if (dt == XTERNAL)
-                throw new WTF("probably meant to use TIMELESS"); //TEMPORARY
-        }
+//        if (NAL.DEBUG) {
+//            if (dt == DTERNAL)
+//                throw new WTF("probably meant to use ETERNAL"); //TEMPORARY
+//            if (dt == XTERNAL)
+//                throw new WTF("probably meant to use TIMELESS"); //TEMPORARY
+//        }
 
         boolean parallel = dt == ETERNAL || dt == TIMELESS || dt == 0;
         int vc = x.compareTo(y);
@@ -539,7 +548,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 //                                        if (y.equals(eventTerm))
 //                                            return true;
 
-                                        Event next = know(y);
+                                        Event next = shadow(y); //know(y);
 
                                         Event p = prev[0];
                                         if (p != null) {
@@ -1220,12 +1229,13 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 //    }
 
     private boolean solveOccurrence(Event x, Predicate<Event> each) {
-        return true//solveExact(x, each) &&
-               && bfsNew(x, new OccSolver(true, true, false, each))
+        return true
+//                solveExact(x, each) &&
+               && bfsNew(x, new OccSolver(true, true, autoneg, each))
                //&& bfsNew(List.of(x), new OccSolver(false, false, true, each))
                //&& solveSelfLoop(x, each)
-               && (!autoneg || bfsNew(x.neg(), new OccSolver(true, false, true,
-                    z -> each.test(z.neg()))))
+//               && (!autoneg || bfsNew(x.neg(), new OccSolver(true, false, true,
+//                    z -> each.test(z.neg()))))
                && solveLastResort(x, each)
                 ;
     }
@@ -1484,12 +1494,24 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 //        }
 
         if (e.size() > 1) {
-            FasterList ee = new FasterList(e);
+            FasterList<Event> ee = new FasterList(e);
             ee.shuffleThis(this::random);
             ee.sortThisByInt(x -> x instanceof Absolute ? -1 : 0);
             return ee;
         } else
             return e;
+    }
+
+    public Iterable<FromTo<Node<Event, TimeSpan>, TimeSpan>> sortEdges(Iterable<FromTo<Node<Event, TimeSpan>, TimeSpan>> e) {
+        if ((e instanceof Collection && ((Collection)e).size() <= 1))
+            return e;
+
+        FasterList ee = new FasterList(e);
+        if (ee.size() <= 1)
+            return e;
+
+        ee.shuffleThis(this::random);
+        return ee;
     }
 
     private abstract class CrossTimeSolver extends Search<Event, TimeSpan> {
@@ -1521,8 +1543,10 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
         }
 
         private Iterable<FromTo<Node<Event, TimeSpan>, TimeSpan>> existing(Node<Event, TimeSpan> n) {
-            return n.edges(true, true,
-                    x -> log.hasNotVisited(x.other(n)));
+
+            //return n.edges(true, true, x -> log.hasNotVisited(x.other(n)));
+
+            return sortEdges(n.edges(true, true, x -> log.hasNotVisited(x.other(n))));
         }
 
         Iterable<FromTo<Node<Event, nars.time.TimeSpan>, TimeSpan>> tangent(Node<Event, TimeSpan> root, Term t) {
@@ -1839,9 +1863,9 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 
             }
 
-            return each.test(
-                    event(pathStart(path).id().id, startTime, endTime, false)
-            );
+            Event solution = event(pathStart(path).id().id, startTime, endTime, false);
+
+            return each.test(solution);
         }
 
     }
