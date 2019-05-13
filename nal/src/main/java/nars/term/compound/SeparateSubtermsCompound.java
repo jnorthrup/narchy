@@ -201,6 +201,10 @@ public abstract class SeparateSubtermsCompound implements Compound {
         return dt()==XTERNAL || subterms().hasXternal();
     }
 
+    public final boolean containsAll(Subterms ofThese) {
+        return subterms().containsAll(ofThese);
+    }
+
     @Override
     public final boolean containsAny(Subterms ofThese) {
         return subterms().containsAny(ofThese);

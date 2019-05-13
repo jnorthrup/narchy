@@ -360,7 +360,19 @@ public class Occurrify extends TimeGraph {
         if (taskStart == ETERNAL && (beliefStart != TIMELESS && beliefStart != ETERNAL)) {
             //taskStart = taskEnd = TIMELESS;
             //taskStart = taskEnd = d.time();
-            long now = d.time(); int dur = d.dur(); taskStart = now - dur/2; taskEnd = now + dur/2; //eternal projected to present moment since belief is temporal
+
+            if (time.beliefProjection()==BeliefProjection.Task) {
+                //eternal task projected to virtual present moment
+                long now = d.time();
+                int dur = d.dur();
+                taskStart = now - dur / 2;
+                taskEnd = now + dur / 2;
+            } else {
+                //eternal task projected to belief's time
+                taskStart = beliefStart;
+                taskEnd = beliefEnd;
+            }
+
         } else if (beliefStart!=TIMELESS && taskStart != ETERNAL) {
             //conditions for considering vs ignoring belief occurrence:
             boolean ignoreBeliefOcc = false;

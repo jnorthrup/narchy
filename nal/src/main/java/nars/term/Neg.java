@@ -48,6 +48,11 @@ public interface Neg extends Term { ;
     Term sub();
 
     @Override
+    default boolean equalsPosOrNeg(Term t) {
+        return t.op()==NEG ? equals(t) : equalsNeg(t);
+    }
+
+    @Override
     default Term root() {
         Term x = sub(), y = x.root();
         return y != x ? y.neg() : this;

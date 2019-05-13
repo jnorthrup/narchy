@@ -370,7 +370,15 @@ public class Builtin {
         nar.add(new AbstractInlineFunctor2("without") {
             @Override
             protected Term apply(Term container, Term content) {
-                Term y = Terms.withoutAll(container, x -> x.equals(content));
+                Term y = Terms.withoutAll(container, content::equals);
+                return y == container ? Null : y;
+            }
+        });
+        /** warning: this returns Null if unchanged */
+        nar.add(new AbstractInlineFunctor2("unsect") {
+            @Override
+            protected Term apply(Term container, Term content) {
+                Term y = Terms.withoutAll(container, content.op() != CONJ ? content::equals : content::contains);
                 return y == container ? Null : y;
             }
         });
@@ -379,8 +387,26 @@ public class Builtin {
             @Override
             protected Term apply(Term container, Term _content) {
                 Term content = _content.unneg();
-                Term y = Terms.withoutAll(container, x -> x.unneg().equals(content));
+                Term y = Terms.withoutAll(container, content::equalsPosOrNeg);
                 return y == container ? Null : y;
+            }
+        });
+        /** warning: this returns Null if unchanged */
+        nar.add(new AbstractInlineFunctor2("unsectPN") {
+            @Override
+            protected Term apply(Term container, Term _content) {
+                Term content = _content.unneg();
+                Term y = Terms.withoutAll(container, content.op()!=CONJ ? content::equalsPosOrNeg : content::containsPosOrNeg);
+                return y == container ? Null : y;
+            }
+        });
+        nar.add(new AbstractInlineFunctor2("unsectPNRepolarized") {
+            @Override
+            protected Term apply(Term container, Term _content) {
+                Term content = _content.unneg();
+                boolean neg = container.op()==NEG;
+                Term y = Terms.withoutAll(neg ? container.unneg() : container,  content::containsPosOrNeg);
+                return y == container ? Null : y.negIf(neg);
             }
         });
         nar.add(new AbstractInlineFunctor2("withoutPNRepolarized") {
@@ -388,7 +414,7 @@ public class Builtin {
             protected Term apply(Term container, Term _content) {
                 Term content = _content.unneg();
                 boolean neg = container.op()==NEG;
-                Term y = Terms.withoutAll(neg ? container.unneg() : container, x -> x.unneg().equals(content));
+                Term y = Terms.withoutAll(neg ? container.unneg() : container, content.op()!=CONJ ? content::equalsPosOrNeg : content::equalsPosOrNeg);
                 return y == container ? Null : y.negIf(neg);
             }
         });

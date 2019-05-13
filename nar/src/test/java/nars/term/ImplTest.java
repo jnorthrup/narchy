@@ -79,10 +79,10 @@ public class ImplTest {
 
     @Test
     void testReducibleImplConjCoNeg() {
-        assertEq(False, "((y &| --x) ==> x)");
+        assertEq(False, "((y && --x) ==> x)");
 
         for (String i : new String[]{"==>", "=|>"}) {
-            for (String c : new String[]{"&&", "&|"}) {
+            for (String c : new String[]{"&&"}) {
                 assertEq(False, "(x " + i + " (y " + c + " --x))");
                 assertEq(False, "(--x " + i + " (y " + c + " x))");
                 assertEq(False, "((y " + c + " --x) " + i + " x)");
@@ -94,8 +94,8 @@ public class ImplTest {
 
     @Test
     void testReducibleImplParallelNeg() {
-        assertEq("(--,((--,x)=|>y))", "(--x =|> (--y &| --x))");
-        assertEq(Bool.True, "((--y &| --x) =|> --x)");
+        assertEq("(--,((--,x)=|>y))", "(--x =|> (--y && --x))");
+        assertEq(Bool.True, "((--y && --x) =|> --x)");
 
     }
 

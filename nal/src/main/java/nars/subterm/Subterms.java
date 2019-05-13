@@ -79,13 +79,12 @@ public interface Subterms extends Termlike, Iterable<Term> {
         return (Term) ptr;
     }
 
+    default boolean containsAll(Subterms ofThese) {
+        return this.equals(ofThese) || (subs() >= ofThese.subs() && volume() >= ofThese.volume() && ofThese.AND(this::contains));
+    }
+
     default boolean containsAny(Subterms ofThese) {
-        //if (ofThese.subs() < 4 /* threshold */) {
-            return OR(ofThese::contains);
-//        } else {
-//            MutableSet<Term> xs = ofThese.toSet();
-//            return OR(xs::contains);
-//        }
+        return this.equals(ofThese) || (ofThese.OR(this::contains));
     }
 
     default <X> X[] array(Function<Term,X> map, IntFunction<X[]> arrayizer) {

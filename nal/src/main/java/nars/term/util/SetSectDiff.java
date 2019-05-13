@@ -451,10 +451,8 @@ public class SetSectDiff {
         MetalBitSet removals = MetalBitSet.bits(size);
 
         for (int i = 0; i < size; i++) {
-            Term x = aa.sub(i);
-            if (b.contains(x)) {
+            if (b.contains(aa.sub(i)))
                 removals.set(i);
-            }
         }
 
         int retained = size - removals.cardinality();

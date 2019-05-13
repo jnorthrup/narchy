@@ -20,6 +20,7 @@ import nars.derive.premise.PremiseTermAccessor;
 import nars.op.UniSubst;
 import nars.subterm.BiSubterm;
 import nars.subterm.Subterms;
+import nars.subterm.util.SubtermCondition;
 import nars.term.Variable;
 import nars.term.*;
 import nars.term.atom.Atom;
@@ -213,14 +214,38 @@ public class PremiseRule extends ProxyTerm {
                     constraints.add(new NotEqualConstraint.NotSetsOrDifferentSets(XX, YY));
                     break;
 
-                case "subOf": {
-                    if (!negated)
-                        neq(XX, Y);
+                case "subOf":
+                case "subOfPN":
+                case "sectOf":
+                case "sectOfPN":
+                    {
+                    if (!negated) {
+                        neq(XX,Y);
+                        if (Y instanceof Variable)
+                            bigger(XX,YY);
+                    }
+
+                    boolean sect = pred.startsWith("sect");
+                    if (sect) {
+                        if (!negated)
+                            is(XX, Op.CONJ);
+                    }
+
+                    int polarity;
+                    if (pred.endsWith("PN")) {
+                        polarity = 0;
+                        assert(Y.op()!=NEG);
+                    } else {
+                        polarity = Y.op() == NEG ? -1 : +1;
+                    }
 
                     if (Y.unneg() instanceof Variable) {
-                        constraints.add((UnifyConstraint)(new SubOfConstraint(XX, ((Variable) (Y.unneg())),
-                                Subterm, Y.op() == NEG ? -1 : +1).negIf(negated)));
+                        SubtermCondition mode = pred.startsWith("sect") ? Subsect : Subterm;
+                        SubOfConstraint c = new SubOfConstraint(XX, ((Variable) (Y.unneg())), mode, polarity);
+                        constraints.add((UnifyConstraint)(c.negIf(negated)));
                     } else {
+                        if (polarity == 0)
+                            throw new TODO(); //TODO contains(Y) || contains(--Y)
                         match(XX, new TermMatcher.Contains(Y), !negated);
                     }
 
@@ -229,11 +254,6 @@ public class PremiseRule extends ProxyTerm {
                     break;
                 }
 
-                case "subOfPN":
-                    //TODO handle negation
-                    neq(XX, YY);
-                    constraints.add(new SubOfConstraint(XX, YY, Subterm, 0));
-                    break;
 
                 case "in":
                     neq(XX, Y.unneg());
@@ -1120,6 +1140,9 @@ public class PremiseRule extends ProxyTerm {
 
     private void neqRoot(Variable x, Variable y) {
         constraints.add(new NotEqualConstraint.NotEqualRootConstraint(x, y));
+    }
+    private void bigger(Variable x, Variable y) {
+        constraints.add(new NotEqualConstraint.Bigger(x, y));
     }
 
     public static Term pathTerm(@Nullable byte[] path) {

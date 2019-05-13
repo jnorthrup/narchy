@@ -154,6 +154,16 @@ public interface Compound extends Term, IPair, Subterms {
     }
 
     @Override
+    default boolean containsAny(Subterms ofThese) {
+        return Subterms.super.containsAny(ofThese);
+    }
+
+    @Override
+    default boolean containsAll(Subterms ofThese) {
+        return Subterms.super.containsAll(ofThese);
+    }
+
+    @Override
     boolean recurseTerms(Predicate<Compound> aSuperCompoundMust, BiPredicate<Term, Compound> whileTrue, @Nullable Compound superterm);
 
     /**

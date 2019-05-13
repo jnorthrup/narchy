@@ -68,14 +68,13 @@ public enum DerivationFunctors {
                 (Functor) nar.concept("unneg"),
                 (Functor) nar.concept("negateEvents"),
                 //(Functor) nar.concept("eventOf"),
-                (Functor) nar.concept("conjWithout"),
-                (Functor) nar.concept("conjWithoutPN"),
                 (Functor) nar.concept("chooseAnySubEvent"),
                 (Functor) nar.concept("chooseUnifiableSubEvent"),
-//                (Functor) nar.concept("dropAnyEvent"),
-                (Functor) nar.concept("without"),
-                (Functor) nar.concept("withoutPN"),
-                (Functor) nar.concept("withoutPNRepolarized"),
+
+                (Functor) nar.concept("conjWithout"), (Functor) nar.concept("conjWithoutPN"),
+                (Functor) nar.concept("without"), (Functor) nar.concept("withoutPN"), (Functor) nar.concept("withoutPNRepolarized"),
+                (Functor) nar.concept("unsect"),(Functor) nar.concept("unsectPN"),(Functor) nar.concept("unsectPNRepolarized"),
+
                 new AbstractInlineFunctor2("conjBefore") {
                     @Override protected Term apply(Term conj, Term event) {
                         Term x = ConjMatch.beforeOrAfter(conj, event, true, d, NAL.derive.TTL_CONJ_BEFORE_AFTER);

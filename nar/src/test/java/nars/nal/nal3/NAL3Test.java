@@ -53,15 +53,6 @@ public class NAL3Test extends NALTest {
 
     }
 
-    @Test
-    void compound_decomposition_two_premises_union() {
-
-        test.termVolMax(8);
-        test.believe("<robin --> (bird | swimmer)>", 0.9f, 0.9f);
-        test.believe("<robin --> swimmer>", 0.9f, 0.9f);
-        test.mustBelieve(cycles, "<robin --> bird>", 0.09f, 0.07f); //TODO check
-
-    }
 
     public static class GoalDoublePremiseDecompose extends NALTest {
         @Override
@@ -222,7 +213,7 @@ public class NAL3Test extends NALTest {
     void diff_compound_decomposition_low_dynamic() {
         TestNAR tester = test;
         tester.termVolMax(8);
-        tester.believe("<(ant ~ spider) --> [strong]>", 0.1f, 0.9f);
+        tester.believe("<(ant && --spider) --> [strong]>", 0.1f, 0.9f);
         tester.mustBelieve(cycles, "<spider --> [strong]>", 0.90f, 0.08f);
         tester.mustBelieve(cycles, "<ant --> [strong]>", 0.10f, 0.08f);
     }
@@ -230,9 +221,7 @@ public class NAL3Test extends NALTest {
     @Test
     void diff_compound_decomposition_single() {
 
-
-
-        test.believe("(robin --> (bird - swimmer))", 0.9f, 0.9f);
+        test.believe("(robin --> (bird && --swimmer))", 0.9f, 0.9f);
         test.mustBelieve(cycles, "<robin --> bird>", 0.90f, 0.73f);
 
     }
@@ -260,12 +249,27 @@ public class NAL3Test extends NALTest {
 
     @Test
     void testArity1_Decomposition_IntersectExt() {
-
-
         test
-                .believe("(a-->b)")
                 .believe("(a-->(b&&c))", 0f, 0.9f)
-                .mustBelieve(cycles, "(a-->c)", 0f, 0.81f, ETERNAL);
+                .believe("(a-->b)")
+                .mustBelieve(cycles, "(a-->c)", 0f, 0.81f);
+    }
+
+    @Test
+    void testArity1_Decomposition_Intersect_3_2() {
+        test
+                .believe("(x-->(&&,a,b,c))", 0.9f, 0.9f)
+                .believe("(x-->(&&,a,b))", 0.9f, 0.9f)
+                .mustBelieve(cycles, "(x-->c)", 0.81f, 0.66f);
+    }
+
+    @Test
+    void compound_decomposition_two_premises_union() {
+
+        test.termVolMax(8);
+        test.believe("<robin --> (bird || swimmer)>", 0.9f, 0.9f);
+        test.believe("<robin --> swimmer>", 0.9f, 0.9f);
+        test.mustBelieve(cycles, "<robin --> bird>", 0.09f, 0.07f); //TODO check
 
     }
 
@@ -275,7 +279,7 @@ public class NAL3Test extends NALTest {
                 .termVolMax(8)
                 .believe("(b-->a)", 0.25f, 0.9f)
                 .believe("((b&&c)-->a)", 0.25f, 0.9f)
-                .mustBelieve(cycles, "(c-->a)", 0.19f, 0.15f, ETERNAL);
+                .mustBelieve(cycles, "(c-->a)", 0.19f, 0.15f);
     }
 
     @Test

@@ -325,6 +325,11 @@ public interface Atomic extends Term {
     }
 
     @Override
+    default boolean containsAny(Subterms ofThese) { return false; }
+    @Override
+    default boolean containsAll(Subterms ofThese) { return false; }
+
+    @Override
     default boolean containsInstance(Term t) { return false; }
 
     @Override

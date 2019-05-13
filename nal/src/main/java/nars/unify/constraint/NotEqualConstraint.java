@@ -109,7 +109,52 @@ public final class NotEqualConstraint extends RelationConstraint {
         }
 
     }
+    public static final class Smaller extends RelationConstraint {
 
+        public Smaller(Variable target, Variable other) {
+            super("smaller", target, other);
+        }
+
+
+        @Override
+        protected @Nullable RelationConstraint newMirror(Variable newX, Variable newY) {
+            return new Bigger(newX, newY);
+        }
+
+        @Override
+        public float cost() {
+            return 0.05f;
+        }
+
+        @Override
+        public boolean invalid(Term x, Term y, Unify context) {
+            return x.volume() >= y.volume();
+        }
+
+    }
+    public static final class Bigger extends RelationConstraint {
+
+        public Bigger(Variable target, Variable other) {
+            super("bigger", target, other);
+        }
+
+
+        @Override
+        protected @Nullable RelationConstraint newMirror(Variable newX, Variable newY) {
+            return new Smaller(newX, newY);
+        }
+
+        @Override
+        public float cost() {
+            return 0.05f;
+        }
+
+        @Override
+        public boolean invalid(Term x, Term y, Unify context) {
+            return x.volume() <= y.volume();
+        }
+
+    }
     public static final class EqualPosOrNeg extends RelationConstraint {
 
         public EqualPosOrNeg(Variable target, Variable other) {

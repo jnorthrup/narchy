@@ -158,6 +158,9 @@ public interface Term extends Termlike, Termed, Comparable<Term> {
 
     boolean recurseTermsOrdered(Predicate<Term> inSuperCompound, Predicate<Term> whileTrue, Compound parent);
 
+    boolean containsAll(Subterms ofThese);
+    boolean containsAny(Subterms ofThese);
+
     enum TermWalk {
         Left, //prev subterm
         Right, //next subterm
@@ -614,7 +617,7 @@ public interface Term extends Termlike, Termed, Comparable<Term> {
     boolean equalsRoot(Term x);
 
     default boolean equalsPosOrNeg(Term t) {
-        return equals(t) || equalsNeg(t);
+        return equals(t.unneg());
     }
 
     default boolean equalsNeg(Term t) {
