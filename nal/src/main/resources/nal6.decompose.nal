@@ -118,8 +118,8 @@
 
     C, X,  eventOf(C,X), conjParallel(C)       |-     conjWithout(C,X),   (Goal:DecomposePP)
       C, X,  eventOfNeg(C,X), conjParallel(C)  |-     conjWithout(C,--X), (Goal:DecomposePN)
-    C, X,  eventOfNeg(C,X), conjParallel(C)    |-   --conjWithout(C,--X), (Goal:DecomposeNP)
-      C, X,  eventOf(C,X), conjParallel(C)     |-   --conjWithout(C,X),   (Goal:DecomposeNN)
+    C, X,  eventOfNeg(C,X), conjParallel(C)    |-   --conjWithout(C,--X), (Goal:DecomposeNN)
+      C, X,  eventOf(C,X), conjParallel(C)     |-   --conjWithout(C,X),   (Goal:DecomposeNP)
 
 
 //Conditional implication decomposition

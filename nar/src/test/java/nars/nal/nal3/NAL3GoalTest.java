@@ -4,7 +4,6 @@ import nars.NAR;
 import nars.NARS;
 import nars.derive.BatchDeriver;
 import nars.derive.Derivers;
-import nars.nal.nal8.GoalDecompositionTest;
 import nars.test.NALTest;
 import nars.test.TestNAR;
 import org.junit.jupiter.api.Test;
@@ -159,7 +158,7 @@ class NAL3GoalTest {
                 .termVolMax(8)
                 .input("((X&Y) --> Z)!")
 //                .input("(X --> Z).")
-                .mustGoal(GoalDecompositionTest.cycles, "(Y --> Z)", 1, 0.81f) //via structural decomposition of intersection, at least
+                .mustGoal(nars.nal.nal8.DecompositionTest.cycles, "(Y --> Z)", 1, 0.81f) //via structural decomposition of intersection, at least
                 .run(0);
 
     }
@@ -170,7 +169,7 @@ class NAL3GoalTest {
                 .termVolMax(8)
                 .input("((X|Y) --> Z)!")
 //                .input("(X --> Z).")
-                .mustGoal(GoalDecompositionTest.cycles, "(Y --> Z)", 1, 0.45f /*0.81f*/) //via structural decomposition of union, at least
+                .mustGoal(nars.nal.nal8.DecompositionTest.cycles, "(Y --> Z)", 1, 0.45f /*0.81f*/) //via structural decomposition of union, at least
                 .run(0);
 
     }

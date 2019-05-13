@@ -1,5 +1,7 @@
 package nars.nal.nal8;
 
+import nars.NAR;
+import nars.NARS;
 import nars.nal.nal7.NAL7Test;
 import nars.test.NALTest;
 import org.junit.jupiter.api.BeforeEach;
@@ -11,10 +13,17 @@ import static nars.Op.GOAL;
 /**
  * tests goals involving &,|,~,-, etc..
  */
-public class GoalDecompositionTest extends NALTest {
+public class DecompositionTest extends NALTest {
 
     public static final int cycles = 1000;
 
+
+    @Override
+    protected NAR nar() {
+        NAR n = NARS.tmp(5,6);
+        n.termVolumeMax.set(12);
+        return n;
+    }
 
     @BeforeEach
     void setTolerance() {
@@ -23,11 +32,8 @@ public class GoalDecompositionTest extends NALTest {
     }
 
 
-
     @Test
-    void testConjBeliefPos() {
-//
-//        test.log();
+    void testConjBeliefWeak() {
         test
                 .termVolMax(5)
                 .input("(&&,a,b). %0.75;0.9%")
@@ -145,46 +151,75 @@ public class GoalDecompositionTest extends NALTest {
 
 
 
-    public static class GoalDoublePremiseDecompose extends NALTest {
+    public static class DoublePremiseDecompose extends NALTest {
 
-        public static final int cycles = 500;
+        public static final int cycles = 2500;
 
-        @BeforeEach
-        void setTolerance() {
-            test.nar.time.dur(3);
+
+        @Test
+        void decompose_ConjBeliefPosPos() {
+            test
+                    .termVolMax(5)
+                    .input("(a && b). %0.9;0.9%")
+                    .input("b. %0.9;0.9%")
+                    .mustBelieve(cycles, "a", 0.81f, 0.66f);
+        }
+        @Test
+        void decompose_ConjBeliefPosNeg() {
+            test
+                    .termVolMax(5)
+                    .input("(a && --b). %0.9;0.9%")
+                    .input("b. %0.1;0.9%")
+                    .mustBelieve(cycles, "a", 0.81f, 0.66f);
+        }
+        @Test
+        void decompose_ConjBeliefNegPos() {
+            test
+                    .termVolMax(5)
+                    .input("(a && b). %0.1;0.9%")
+                    .input("b. %0.9;0.9%")
+                    .mustBelieve(cycles, "a", 0.19f, 0.66f);
+        }
+        @Test
+        void decompose_ConjBeliefNegNeg() {
+            test
+                    .termVolMax(5)
+                    .input("(a && --b). %0.1;0.9%")
+                    .input("b. %0.1;0.9%")
+                    .mustBelieve(cycles, "a", 0.19f, 0.66f);
         }
 
         @Test
-        void testIntersectionGoal_pos_decompose_pos() {
+        void decompose_Conj_Goal_pos_decompose_pos() {
             //adapted form nal3 test
-            test.termVolMax(8);
+            test.termVolMax(6);
             test.input("(a && b)! %0.9;0.9%");
             test.input("b. %0.9;0.9%");
             test.mustGoal(cycles, "a", 0.81f, 0.66f);
         }
 
         @Test
-        void testIntersectionGoal_pos_decompose_neg() {
+        void decompose_Conj_Goal_pos_decompose_neg() {
             //adapted form nal3 test
-            test.termVolMax(8);
+            test.termVolMax(6);
             test.input("(a && --b)! %0.9;0.9%");
             test.input("b. %0.1;0.9%");
             test.mustGoal(cycles, "a", 0.81f, 0.66f);
         }
 
         @Test
-        void testIntersectionGoal_neg_decompose_pos() {
+        void decompose_Conj_Goal_neg_decompose_pos() {
             //adapted form nal3 test
-            test.termVolMax(8);
+            test.termVolMax(6);
             test.input("(a && b)! %0.1;0.9%");
             test.input("b. %0.9;0.9%");
             test.mustGoal(cycles, "a", 0.19f, 0.66f);
         }
 
         @Test
-        void testIntersectionGoal_neg_decompose_neg() {
+        void decompose_Conj_Goal_neg_decompose_neg() {
             //adapted form nal3 test
-            test.termVolMax(8);
+            test.termVolMax(6);
             test.input("(a && --b)! %0.1;0.9%");
             test.input("b. %0.1;0.9%");
             test.mustGoal(cycles, "a", 0.19f, 0.66f);
