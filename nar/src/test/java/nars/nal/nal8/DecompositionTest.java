@@ -157,7 +157,7 @@ public class DecompositionTest extends NALTest {
 
 
         @Test
-        void decompose_ConjBeliefPosPos() {
+        void decompose_Conj_BeliefPosPos() {
             test
                     .termVolMax(5)
                     .input("(a && b). %0.9;0.9%")
@@ -165,7 +165,7 @@ public class DecompositionTest extends NALTest {
                     .mustBelieve(cycles, "a", 0.81f, 0.66f);
         }
         @Test
-        void decompose_ConjBeliefPosNeg() {
+        void decompose_Conj_BeliefPosNeg() {
             test
                     .termVolMax(5)
                     .input("(a && --b). %0.9;0.9%")
@@ -173,7 +173,7 @@ public class DecompositionTest extends NALTest {
                     .mustBelieve(cycles, "a", 0.81f, 0.66f);
         }
         @Test
-        void decompose_ConjBeliefNegPos() {
+        void decompose_Conj_BeliefNegPos() {
             test
                     .termVolMax(5)
                     .input("(a && b). %0.1;0.9%")
@@ -181,7 +181,7 @@ public class DecompositionTest extends NALTest {
                     .mustBelieve(cycles, "a", 0.19f, 0.66f);
         }
         @Test
-        void decompose_ConjBeliefNegNeg() {
+        void decompose_Conj_BeliefNegNeg() {
             test
                     .termVolMax(5)
                     .input("(a && --b). %0.1;0.9%")
@@ -207,6 +207,7 @@ public class DecompositionTest extends NALTest {
             test.mustGoal(cycles, "a", 0.81f, 0.66f);
         }
 
+       
         @Test
         void decompose_Conj_Goal_neg_decompose_pos() {
             //adapted form nal3 test
