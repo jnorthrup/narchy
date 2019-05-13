@@ -5,7 +5,6 @@ import nars.NARS;
 import nars.test.NALTest;
 import nars.test.TestNAR;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import static nars.Op.BELIEF;
@@ -20,7 +19,7 @@ abstract public class NAL6DecomposeTest extends NALTest {
 
     @Override
     protected NAR nar() {
-        NAR n = NARS.tmp(6, 6);
+        NAR n = NARS.tmp(6, 8);
         n.termVolumeMax.set(10);
         n.confMin.set(0.02f);
         return n;
@@ -120,14 +119,21 @@ abstract public class NAL6DecomposeTest extends NALTest {
 
 
         @Test
-        void impl_conjunction_subj_decompose_conditional2() {
+        void impl_conjunction_subj_union_decompose_conditional_neg() {
             test
                     .believe("((a && b) ==> --x)")
-                    .input("(b ==> --x).")
-                    .mustBelieve(cycles, "(a ==> --x)", 1f, 0.81f) //via decompose
+                    .input("(--b ==> --x).")
+                    .mustBelieve(cycles, "(a ==> x)", 0f, 0.45f) //via decompose
             ;
         }
-
+        @Test
+        void impl_conjunction_subj_intersection_decompose_conditional_neg() {
+            test
+                    .believe("((a || b) ==> --x)")
+                    .input("(b ==> --x).")
+                    .mustBelieve(cycles, "(a ==> x)", 0f, 0.81f) //via decompose
+            ;
+        }
         @Test
         void impl_conjunction_subj_decompose_conditional2b() {
             test
@@ -296,34 +302,45 @@ abstract public class NAL6DecomposeTest extends NALTest {
         }
     }
 
-    @Disabled
     static class SinglePremise extends NAL6DecomposeTest {
         @Test
         void testDecomposeImplSubj1Conj() {
             test
+                    .termVolMax(5)
                     .believe("( (y && z) ==> x )")
-                    .mustBelieve(cycles, "( y ==> x )", 1f, 0.81f)
-                    .mustBelieve(cycles, "( z ==> x )", 1f, 0.81f)
+                    .mustBelieve(cycles, "( y ==> x )", 1f, 0.45f)
+                    .mustBelieve(cycles, "( z ==> x )", 1f, 0.45f)
             ;
         }
 
         @Test
         void testDecomposeImplSubj1Disj() {
             test
+                    .termVolMax(8)
                     .believe("( (y || z) ==> x )")
                     .mustBelieve(cycles, "( y ==> x )", 1f, 0.81f)
                     .mustBelieve(cycles, "( z ==> x )", 1f, 0.81f)
             ;
         }
-
         @Test
-        void testDecomposeImplPredDisjBelief() {
+        void testDecomposeImplSubj1Disj_neg_pos() {
             test
-                    .believe("( x ==> (y || z))")
-                    .mustBelieve(cycles, "( x ==> y )", 1f, 0.81f)
-                    .mustBelieve(cycles, "( x ==> z )", 1f, 0.81f)
+                    .termVolMax(8)
+                    .believe("( (--y || z) ==> x )")
+                    .mustBelieve(cycles, "( --y ==> x )", 1f, 0.81f)
+                    .mustBelieve(cycles, "( z ==> x )", 1f, 0.81f)
             ;
         }
+        @Test
+        void testDecomposeImplPredDisjBelief_pos_pos() {
+            test
+                    .termVolMax(9)
+                    .believe("( x ==> (y || z))")
+                    .mustBelieve(cycles, "( x ==> y )", 1f, 0.45f)
+                    .mustBelieve(cycles, "( x ==> z )", 1f, 0.45f)
+            ;
+        }
+
 
 
 //    @Test
@@ -351,46 +368,17 @@ abstract public class NAL6DecomposeTest extends NALTest {
         void testDecomposeImplsubjNeg() {
             test
                     .believe("( (&&, --y, --z ) ==> x )")
-                    .mustBelieve(cycles, "( --y ==> x )", 1f, 0.81f)
-                    .mustBelieve(cycles, "( --z ==> x )", 1f, 0.81f)
+                    .mustBelieve(cycles, "( --y ==> x )", 1f, 0.45f)
+                    .mustBelieve(cycles, "( --z ==> x )", 1f, 0.45f)
             ;
         }
 
 
-        @Disabled
-        @Test
-        void disjunction_decompose_one_premise_pos_neg() {
-            test
-                    .believe("(||, a, --b)")
-                    .mustBelieve(cycles, "a", 1f, 0.40f)
-                    .mustBelieve(cycles, "b", 0f, 0.40f)
-            ;
-        }
 
 
-        /**
-         * not sure this one makes logical sense
-         */
-        @Disabled
-        @Test
-        void compound_composition_one_premises() {
 
-            TestNAR tester = test;
-            tester.believe("(robin --> [flying])");
-            tester.ask("(||,(robin --> [flying]),(robin --> swimmer))");
-
-            tester.mustBelieve(cycles, " ((robin --> swimmer) || (robin --> [flying]))", 1.00f, 0.81f);
-        }
 
 
     }
-//
-//    @Disabled @Test
-//    void impl_conjunction_subj_decompose_conditional() {
-//        test
-//                .believe("((a && b) ==> x)")
-//                .input("--(b ==> x). %0.75;0.9%")
-//                .mustBelieve(cycles, "(a ==> x)", 0.75f, 0.61f) //via decompose
-//        ;
-//    }
+
 }

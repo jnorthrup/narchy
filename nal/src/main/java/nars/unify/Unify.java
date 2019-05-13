@@ -371,7 +371,7 @@ public abstract class Unify extends Versioning<Term> {
 
     /** can x be assigned to y (y <= x) */
     public final boolean assigns(Op target, Op value) {
-        return (!value.var || (target.id <= value.id)) && var(target);
+        return (!value.var || ((target.id <= value.id) || !var(value))) && var(target);
     }
 
 

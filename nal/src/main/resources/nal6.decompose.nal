@@ -5,18 +5,21 @@
     //free structural Conjunction/Disjunction decomposition
     C, X, eventOfPN(C,X), task("?@"), hasBelief()   |-   conjWithoutPN(C,X)
     C, X, eventOfPN(C,X)                            |-   conjWithoutPN(C,X), (Belief:StructuralDeduction, Goal:StructuralDeduction)
-    C, X, eventOfPN(C,X)                            |- --conjWithoutPN(C,X), (Belief:StructuralDeductionWeakN, Goal:StructuralDeductionWeakN)
+    D, X, eventOfPN(D,X)                            |- --conjWithoutPN(D,X), (Belief:StructuralDeductionWeakN, Goal:StructuralDeductionWeakN)
 //    D, X, eventOfPN(D,X)                            |- --conjWithoutPN(D,X), (Belief:StructuralDeductionN, Goal:StructuralDeductionN)
 //    D, X, eventOfPN(D,X)                            |-   conjWithoutPN(D,X), (Belief:StructuralDeductionWeak, Goal:StructuralDeductionWeak)
 
     //impl conj/disj pred belief and question free structural implication decomposition
     (A ==> C), X, eventOfPN(C,X), --isVar(A)   |-   (A ==> conjWithoutPN(C,  X)), (Belief:StructuralDeduction)
+      (A ==> D), X, eventOfPN(D,X), --isVar(A)   |-   (A ==> --conjWithoutPN(D,  X)), (Belief:StructuralDeductionWeakN)
     //(A ==> C), X, eventOfPN(C,X), --isVar(A)   |-   polarizeTask((A ==> conjWithoutPN(C,  X))), (Belief:StructuralDeductionDepolarized)
 
          (A ==> C), X, eventOfPN(C,X), task("?"), --isVar(A)   |- (A ==> conjWithoutPN(C,  X)), (Punctuation:Question)
 
     //impl conj subj belief and question free structural implication decomposition
-    //(  C ==> A), X, eventOfPN(C,X), --isVar(A)   |- polarizeTask((  conjWithoutPN(C,    X) ==> A)), (Belief:StructuralReductionDepolarized)
+    (  C ==> A), X, eventOfPN(C,X), --isVar(A)   |- polarizeTask((  conjWithoutPN(C,    X) ==> A)), (Belief:StructuralDeductionWeakDepolarized)
+      (  --D ==> A), X, eventOfPN(D,X), --isVar(A) |- polarizeTask((  --conjWithoutPN(D,    X) ==> A)), (Belief:StructuralDeductionDepolarized)
+       //(  C ==> A), X, eventOfPN(C,X), --isVar(A)   |- polarizeTask((  conjWithoutPN(C,    X) ==> A)), (Belief:StructuralReductionDepolarized)
 
         (C ==> A), X, eventOfPN(C,X), task("?"), --isVar(A)   |- (conjWithoutPN(C,  X) ==> A), (Punctuation:Question)
 
@@ -47,23 +50,25 @@
 
     //desire for sub-sequence leading to goal,  truth function may be Desire or Deduction
     G, C, is(C,"&&")                  |-      conjBefore(C,   G),  (Goal:DesirePP)
-      G, D, is(D,"&&"), has(D,"--")   |-    --conjBefore(D, --G),  (Goal:DesireWeakPN)
     G, C, is(C,"&&"), has(C,"--")     |-      conjBefore(C, --G),  (Goal:DesireNP)
-      G, D, is(D,"&&")                |-    --conjBefore(D,   G),  (Goal:DesireWeakNN)
+
+//probably wrong:
+//      G, D, is(D,"&&"), has(D,"--")   |-    --conjBefore(D, --G),  (Goal:DesireWeakPN)
+//      G, D, is(D,"&&")                |-    --conjBefore(D,   G),  (Goal:DesireWeakNN)
 
             //--eventOfNeg(C,G) , --eventOf(C,G) <- optional additional renovelion of anti-goal not present anywhere in the sequence
 
     //anti-desire for sub-sequence leading to anti-goal. truth function may be Desire or Deduction (option: __Weak, __WeakN)
-    G, C, is(C,"&&"), has(C,"--")       |-              --conjBefore(C, --G), (Goal:Desire)
-      G, C, is(C,"&&"), has(C,"--")     |-   negateEvents(conjBefore(C,--G)), (Goal:DesireWeak)
-    G, C, is(C,"&&")                    |-              --conjBefore(C,   G), (Goal:DesireN)
-      G, C, is(C,"&&")                  |-   negateEvents(conjBefore(C,  G)), (Goal:DesireWeakN)
+    G, C, is(C,"&&"), has(C,"--")       |-              --conjBefore(C, --G),  (Goal:Desire)
+      G, C, is(C,"&&"), has(C,"--")     |-   negateEvents(conjBefore(C, --G)), (Goal:DesireWeak)
+    G, C, is(C,"&&")                    |-              --conjBefore(C,   G),  (Goal:DesireN)
+      G, C, is(C,"&&")                  |-   negateEvents(conjBefore(C,   G)), (Goal:DesireWeakN)
 
     //conjunction belief decomposition
     C, X, is(C,"&&"), --isVar(X)                   |-   conjAfter(C,  X), (Belief:DeductionPP,Goal:DeductionPP)
-      D, X, is(D,"&&"), has(D,"--"), --isVar(X)    |- --conjAfter(D,--X), (Belief:DeductionWeakPP,Goal:DeductionWeakNP)
+//      D, X, is(D,"&&"), has(D,"--"), --isVar(X)    |- --conjAfter(D,--X), (Belief:DeductionWeakPP,Goal:DeductionWeakNP)
     C, X, is(C,"&&"), has(C,"--"), --isVar(X)      |-   conjAfter(C,--X), (Belief:DeductionPN,Goal:DeductionPN)
-      D, X, is(D,"&&"), --isVar(X)                 |- --conjAfter(D,  X), (Belief:DeductionWeakPN,Goal:DeductionWeakNN)
+//      D, X, is(D,"&&"), --isVar(X)                 |- --conjAfter(D,  X), (Belief:DeductionWeakPN,Goal:DeductionWeakNN)
 //
 //    //conjunction goal decomposition
 //    G, C, is(C,"&&")                   |-   conjAfter(C,  G), (Goal:DesirePP)
@@ -105,13 +110,6 @@
     //conditional goal disjunction decompose (alternate suppress by belief)
     D, X, eventOf(D,X), conjParallel(D), --isVar(X)      |-   --conjWithout(D,  X), (Goal:DeductionWeakNP)
     D, X, eventOfNeg(D,X), conjParallel(D), --isVar(X)   |-   --conjWithout(D,--X), (Goal:DeductionWeakNN)
-
-//    //specific deduction
-//    C, X, eventOf(C,X)           |-   conjWithout(C,  X), (Belief:DeductionPP)
-//    C, X, eventOfNeg(C,X)        |-   conjWithout(C,--X), (Belief:DeductionPN)
-//        //anti-specific deduction: "conjunction contraposition" (weak)
-//        C, X, eventOf(C,X)       |-   negateEvents(conjWithout(C,  X)), (Belief:DeductionWeakPN)
-//        C, X, eventOfNeg(C,X)    |-   negateEvents(conjWithout(C,--X)), (Belief:DeductionWeakPP)
 
 //// propositional decomposition ////////////////////////////////////////////////////////////////////////////////////
 //If S is the case, and (&&,S,A..+) is not the case, it can't be that (&&,A..+) is the case
@@ -193,3 +191,10 @@ C, Y, is(C,"&&"), has(C,"#"), neq(C,Y), --isVar(Y), has(C,"--")  |- unisubst(C,c
     //D, X, --is(X,"#"),conjParallel(D), eventOf(D,X)     |- --X,  (  Goal:StructuralDeductionWeakN, Time:TaskSubEventPos)
     //D, X, --is(X,"#"),                     eventOfNeg(D,X)  |-   X,  (Belief:StructuralDeductionWeakN, Time:TaskSubEventNeg)
     //D, X, --is(X,"#"),conjParallel(D), eventOfNeg(D,X)  |-   X,  (  Goal:StructuralDeductionWeakN, Time:TaskSubEventNeg)
+
+//    //specific deduction
+//    C, X, eventOf(C,X)           |-   conjWithout(C,  X), (Belief:DeductionPP)
+//    C, X, eventOfNeg(C,X)        |-   conjWithout(C,--X), (Belief:DeductionPN)
+//        //anti-specific deduction: "conjunction contraposition" (weak)
+//        C, X, eventOf(C,X)       |-   negateEvents(conjWithout(C,  X)), (Belief:DeductionWeakPN)
+//        C, X, eventOfNeg(C,X)    |-   negateEvents(conjWithout(C,--X)), (Belief:DeductionWeakPP)

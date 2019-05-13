@@ -934,7 +934,7 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
 
     }
 
-    private static Term disjunctionVsDisjunction(TermBuilder builder, Term a, Term b, boolean eternal) {
+    @Deprecated private static Term disjunctionVsDisjunction(TermBuilder builder, Term a, Term b, boolean eternal) {
         Conj aa = new Conj();
         if (eternal) aa.addAuto(a);
         else aa.add(0, a);
@@ -1850,9 +1850,9 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
             if (num == -1) num = b.length;
 
             int removals = 0;
-            for (int ii : i) {
+            for (byte ii : i) {
                 assert (ii != 0);
-                int bi = ArrayUtil.indexOf(b, (byte) ii, 0, num);
+                int bi = ArrayUtil.indexOf(b, ii, 0, num);
                 if (bi != -1) {
                     //if (b[bi] != 0) {
                     b[bi] = 0;
@@ -1914,7 +1914,7 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
 
 
         final boolean[] removed = {false};
-        LongArrayList eventsToRemove = new LongArrayList(4);
+        LongArrayList eventsToRemove = new LongArrayList(0);
         event.forEachKeyValue((when, o) -> {
             int result = removeFromEvent(when, o, false, ii);
             if (result == 2) {

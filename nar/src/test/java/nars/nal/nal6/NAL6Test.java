@@ -15,7 +15,7 @@ import static nars.time.Tense.ETERNAL;
 
 public class NAL6Test extends NALTest {
 
-    private static final int cycles = 500;
+    private static final int cycles = 1500;
 
     @BeforeEach
     void setup() {
@@ -24,8 +24,8 @@ public class NAL6Test extends NALTest {
 
     @Override
     protected NAR nar() {
-//        NAR n = NARS.tmp(6, 8);
-        NAR n = NARS.tmp(6);
+        NAR n = NARS.tmp(6, 8);
+        //NAR n = NARS.tmp(6);
 
         n.termVolumeMax.set(14);
         //n.freqResolution.setAt(0.1f);
@@ -974,8 +974,8 @@ public class NAL6Test extends NALTest {
     void testDecomposeImplSubjConjQuestion() {
         test
                 .ask("( (&&, y, z) ==> x )")
-                .mustOutput(cycles, "( y ==> x )", QUESTION)
-                .mustOutput(cycles, "( z ==> x )", QUESTION)
+                .mustOutput(cycles, "( y ==>+- x )", QUESTION)
+                .mustOutput(cycles, "( z ==>+- x )", QUESTION)
         ;
     }
 
@@ -983,8 +983,8 @@ public class NAL6Test extends NALTest {
     void testDecomposeImplSubjDisjQuestion() {
         test
                 .ask("( (||, y, z) ==> x )")
-                .mustOutput(cycles, "( y ==> x )", QUESTION)
-                .mustOutput(cycles, "( z ==> x )", QUESTION)
+                .mustOutput(cycles, "( y ==>+- x )", QUESTION)
+                .mustOutput(cycles, "( z ==>+- x )", QUESTION)
         ;
     }
 
@@ -993,8 +993,8 @@ public class NAL6Test extends NALTest {
     void testDecomposeImplPredConjQuestion() {
         test
                 .ask("( x ==> (&&, y, z) )")
-                .mustOutput(cycles, "( x ==> y )", QUESTION)
-                .mustOutput(cycles, "( x ==> z )", QUESTION)
+                .mustOutput(cycles, "( x ==>+- y )", QUESTION)
+                .mustOutput(cycles, "( x ==>+- z )", QUESTION)
         ;
     }
 
@@ -1002,8 +1002,8 @@ public class NAL6Test extends NALTest {
     void testDecomposeImplPredDisjQuestion() {
         test
                 .ask("( x ==> (||, y, z) )")
-                .mustOutput(cycles, "( x ==> y )", QUESTION)
-                .mustOutput(cycles, "( x ==> z )", QUESTION)
+                .mustOutput(cycles, "( x ==>+- y )", QUESTION)
+                .mustOutput(cycles, "( x ==>+- z )", QUESTION)
         ;
     }
 
@@ -1302,9 +1302,9 @@ public class NAL6Test extends NALTest {
     @Test
     void testImplPredQuestionUnification() {
         test
-                .believe("((&&,Sells($1,#2,#3),z)==>Criminal($1))")
+                .believe("((Sells($1,#2,#3) && z) ==> Criminal($1))")
                 .ask("Criminal(?x)")
-                .mustQuestion(cycles, "(&&,Sells(?1,#2,#3),z)")
+                .mustQuestion(cycles, "(Sells(?1,#2,#3) && z)")
         ;
     }
 

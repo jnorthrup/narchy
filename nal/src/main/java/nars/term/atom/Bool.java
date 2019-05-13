@@ -38,12 +38,6 @@ abstract public class Bool extends AbstractAtomic implements The {
      */
     public static final Bool False = new Bool("false", (byte)0) {
 
-
-        @Override
-        public boolean equalsNeg(Term t) {
-            return t == True;
-        }
-
         @Override
         public Term neg() {
             return True;
@@ -52,6 +46,12 @@ abstract public class Bool extends AbstractAtomic implements The {
         @Override
         public Term unneg() {
             return True;
+        }
+
+
+        @Override
+        public boolean equalsNeg(Term t) {
+            return t == True;
         }
     };
     /**

@@ -264,7 +264,7 @@ abstract public class TermMatcher {
         }
 
         private boolean testVol(Term term) {
-            return volMin <= 1 || term.volume() >= volMin;
+            return term instanceof Variable /*volMin <= 1*/ || term.volume() >= volMin;
         }
 
         @Override
