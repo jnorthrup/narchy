@@ -68,41 +68,88 @@ public class PremiseRule extends ProxyTerm {
 
     private static final Pattern ruleImpl = Pattern.compile("\\|-");
     private static final String BIDI_modifier = "bidi:";
-    public final String source;
-    final Truthify truthify;
+    private static final Term eteConj = $.the("eteConj");
+    private static final Map<Term, UnifyConstraint> constra =
+            new ConcurrentHashMap<>();
+    private final static PremiseTermAccessor TaskTerm = new PremiseTermAccessor(0, "taskTerm") {
+        @Override
+        public Term apply(PreDerivation d) {
+            return d.taskTerm;
+        }
+    };
+    private final static PremiseTermAccessor BeliefTerm = new PremiseTermAccessor(1, "beliefTerm") {
 
+        @Override
+        public Term apply(PreDerivation d) {
+            return d.beliefTerm;
+        }
+    };
+    public final String source;
+    public final Term taskPattern, beliefPattern;
+    protected final Occurrify.OccurrenceSolver time;
+
+
+    protected final Term beliefTruth, goalTruth;
+    final Truthify truthify;
+    final ImmutableSet<UnifyConstraint> CONSTRAINTS;
+    final PREDICATE[] PRE;
+    final Termify termify;
     /**
      * conditions which can be tested before unification
      */
 
     private final MutableSet<UnifyConstraint> constraints;
-    final ImmutableSet<UnifyConstraint> CONSTRAINTS;
     private final MutableSet<PREDICATE<? extends Unify>> pre;
-    final PREDICATE[] PRE;
-    protected final Occurrify.OccurrenceSolver time;
-
-
-    protected final Term beliefTruth, goalTruth;
-
-    public final Term taskPattern, beliefPattern;
-
-    final Termify termify;
-
     private final BytePredicate taskPunc;
+    /**
+     * conclusion post-processing
+     */
+    private final TermTransform ConcTransform = new AbstractTermTransform() {
+        @Override
+        public Term applyCompound(Compound c) {
 
+            c = apply(c, PremiseRule.this, pre);
+
+            return AbstractTermTransform.super.applyCompound(c);
+        }
+
+        private Compound apply(Compound c, PremiseRule p, MutableSet<PREDICATE<? extends Unify>> pre) {
+            Term concFunc = Functor.func(c);
+
+            if (concFunc.equals(UniSubst.unisubst)) {
+
+                Subterms a = Functor.args(c);
+
+                Term x = a.sub(1);
+
+                if (Unifiable.hasNoFunctor(x)) {
+
+                    Term y = a.sub(2);
+
+                    if (Unifiable.hasNoFunctor(y)) {
+
+                        //both x and y are constant
+
+                        int varBits = (a.contains(UniSubst.DEP_VAR)) ? VAR_DEP.bit : (VAR_INDEP.bit | VAR_DEP.bit);
+
+                        boolean strict = a.contains(UniSubst.NOVEL);
+
+                        Unifiable.tryAdd(x, y,
+                                p.taskPattern, p.beliefPattern,
+                                varBits, strict, pre);
+                    }
+                }
+
+
+                //TODO compile to 1-arg unisubst
+            }
+            return c;
+        }
+
+    };
 
     public PremiseRule(String ruleSrc) throws Narsese.NarseseException {
         this(ruleSrc, false);
-    }
-
-    private static Term rule(String ruleSrc) throws Narsese.NarseseException {
-        return new MyPremiseRuleNormalization().apply(
-            new UppercaseAtomsToPatternVariables().apply(
-                $.pFast(
-                    parseRuleComponents(ruleSrc)
-                )
-            )
-        );
     }
 
     private PremiseRule(String ruleSrc, boolean swap) throws Narsese.NarseseException {
@@ -219,33 +266,33 @@ public class PremiseRule extends ProxyTerm {
                 case "sectOf":
                 case "sectOfPN": {
 
-                        SubtermCondition mode = Subterm;
+                    SubtermCondition mode = Subterm;
 
-                        boolean sect = pred.startsWith("sect");
-                        if (sect) {
-                            assert(!negated): "TODO and test";
+                    boolean sect = pred.startsWith("sect");
+                    if (sect) {
+                        assert (!negated) : "TODO and test";
 
-                            if (Y.op()==NEG) {
-                                Y = Y.unneg();
-                                YY = (Variable)Y;
-                                mode = Subunion;
-                            } else
-                                mode = Subsect;
+                        if (Y.op() == NEG) {
+                            Y = Y.unneg();
+                            YY = (Variable) Y;
+                            mode = Subunion;
+                        } else
+                            mode = Subsect;
 
-                            if (!negated)
-                                is(XX, Op.CONJ);
-                        }
+                        if (!negated)
+                            is(XX, Op.CONJ);
+                    }
 
-                        if (!negated) {
-                        neq(XX,Y);
+                    if (!negated) {
+                        neq(XX, Y);
                         if (Y instanceof Variable)
-                            bigger(XX,YY);
+                            bigger(XX, YY);
                     }
 
                     int polarity;
                     if (pred.endsWith("PN")) {
                         polarity = 0;
-                        assert(Y.op()!=NEG);
+                        assert (Y.op() != NEG);
                     } else {
                         polarity = Y.op() == NEG ? -1 : +1;
                     }
@@ -253,7 +300,7 @@ public class PremiseRule extends ProxyTerm {
                     if (Y.unneg() instanceof Variable) {
 
                         SubOfConstraint c = new SubOfConstraint(XX, ((Variable) (Y.unneg())), mode, polarity);
-                        constraints.add((UnifyConstraint)(c.negIf(negated)));
+                        constraints.add((UnifyConstraint) (c.negIf(negated)));
                     } else {
                         if (polarity == 0)
                             throw new TODO(); //TODO contains(Y) || contains(--Y)
@@ -279,17 +326,17 @@ public class PremiseRule extends ProxyTerm {
                 case "eventOf":
                 case "eventOfNeg": {
                     neq(XX, YY);
-                    bigger(XX,YY);
+                    bigger(XX, YY);
                     boolean yNeg = pred.contains("Neg");
-                    constraints.add((UnifyConstraint)(new SubOfConstraint(XX, YY, Event, yNeg ? -1 : +1).negIf(negated)));
+                    constraints.add((UnifyConstraint) (new SubOfConstraint(XX, YY, Event, yNeg ? -1 : +1).negIf(negated)));
 
                     if (!negated) {
                         is(XX, CONJ);
                         if (yNeg &&
                                 (YY.equals(taskPattern) ||
-                                (YY.equals(beliefPattern) ||
-                                (XX.containsRecursively(YY) && !XX.containsRecursively(YY.neg())
-                                )))) {
+                                        (YY.equals(beliefPattern) ||
+                                                (XX.containsRecursively(YY) && !XX.containsRecursively(YY.neg())
+                                                )))) {
                             hasAny(XX, NEG); //taskPattern and beliefPattern themselves will always be unneg so it is safe to expect a negation
                         }
                         eventable(YY);
@@ -321,7 +368,7 @@ public class PremiseRule extends ProxyTerm {
 
                 case "eventOfPN":
                     neq(XX, YY);
-                    bigger(XX,YY);
+                    bigger(XX, YY);
                     is(X, CONJ);
 
                     eventable(YY);
@@ -658,7 +705,7 @@ public class PremiseRule extends ProxyTerm {
                 }
             }
 
-            if (doublePremiseMaybe && (beliefPattern.op()!=VAR_PATTERN && !beliefPattern.op().taskable))
+            if (doublePremiseMaybe && (beliefPattern.op() != VAR_PATTERN && !beliefPattern.op().taskable))
                 throw new TermException("double premise may be required and belief pattern is not taskable", beliefPattern);
         }
 
@@ -719,11 +766,106 @@ public class PremiseRule extends ProxyTerm {
 
     }
 
+    PremiseRule(PremiseRule raw) {
+        super((/*index.rule*/(raw.ref)));
+
+        this.termify = raw.termify;
+        this.PRE = raw.PRE.clone(); //because it gets modified when adding Branchify suffix
+        this.CONSTRAINTS = raw.CONSTRAINTS;
+        this.source = raw.source;
+        this.truthify = raw.truthify;
+        this.constraints = raw.constraints;
+        this.pre = raw.pre;
+        this.time = raw.time;
+        this.taskPunc = raw.taskPunc;
+        this.beliefTruth = raw.beliefTruth;
+        this.goalTruth = raw.goalTruth;
+        this.taskPattern = raw.taskPattern;
+        this.beliefPattern = raw.beliefPattern;
+//        this.constraintSet = raw.constraintSet;
+
+    }
+
+    private static Term rule(String ruleSrc) throws Narsese.NarseseException {
+        return new MyPremiseRuleNormalization().apply(
+                new UppercaseAtomsToPatternVariables().apply(
+                        $.pFast(
+                                parseRuleComponents(ruleSrc)
+                        )
+                )
+        );
+    }
+
+    private static UnifyConstraint intern(UnifyConstraint x) {
+        UnifyConstraint y = constra.putIfAbsent(x.term(), x);
+        return y != null ? y : x;
+    }
+
+    private static UnifyConstraint[] theInterned(MutableSet<UnifyConstraint> constraints) {
+        if (constraints.isEmpty())
+            return UnifyConstraint.EmptyUnifyConstraints;
+
+        UnifyConstraint[] mc = UnifyConstraint.the(constraints);
+        for (int i = 0, mcLength = mc.length; i < mcLength; i++)
+            mc[i] = intern(mc[i]);
+        return mc;
+    }
+
+    public static Stream<PremiseRule> parse(String src) {
+        try {
+            //bidi-rectional: swap premise components, and swap truth func param
+            if (src.startsWith(BIDI_modifier)) {
+                src = src.substring(BIDI_modifier.length());
+                PremiseRule a = new PremiseRule(src, false);
+                PremiseRule b = new PremiseRule(src, true);
+                return a.equals(b) ? Stream.of(a) : Stream.of(a, b);
+            } else {
+                return Stream.of(new PremiseRule(src));
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("rule parse:\n\t" + src + "\n\t" + e.getMessage(), e);
+        }
+    }
+
+    public static Stream<PremiseRule> parse(String... rawRules) {
+        return parse(Stream.of(rawRules));
+    }
+
+    public static Stream<PremiseRule> parse(Stream<String> rawRules) {
+        return rawRules.flatMap(PremiseRule::parse);
+    }
+
+    private static Subterms parseRuleComponents(String src) throws Narsese.NarseseException {
+
+
+        String[] ab = ruleImpl.split(src);
+        if (ab.length != 2)
+            throw new Narsese.NarseseException("Rule component must have arity=2, separated by \"|-\": " + src);
+
+        String A = '(' + ab[0].trim() + ')';
+        Term a = Narsese.term(A, false);
+        if (!(a instanceof Compound))
+            throw new Narsese.NarseseException("Left rule component must be compound: " + src);
+
+        String B = '(' + ab[1].trim() + ')';
+        Term b = Narsese.term(B, false);
+        if (!(b instanceof Compound))
+            throw new Narsese.NarseseException("Right rule component must be compound: " + src);
+
+        return new BiSubterm(a, b);
+    }
+
+    private static PremiseTermAccessor TaskOrBelief(boolean taskOrBelief) {
+        return taskOrBelief ? PremiseRule.TaskTerm : PremiseRule.BeliefTerm;
+    }
+
+    public static Term pathTerm(@Nullable byte[] path) {
+        return path == null ? $.the(-1) /* null */ : $.p(path);
+    }
+
     public final Term conclusion() {
         return termify.pattern;
     }
-
-
 
     private void isUnneg(Term x, Op o, boolean negated) {
         match(x, new TermMatcher.IsUnneg(o), !negated);
@@ -734,14 +876,14 @@ public class PremiseRule extends ProxyTerm {
         Variable x = cc.x;
 
         if (cc instanceof RelationConstraint.NegRelationConstraint) {
-            PREDICATE p = preFilter(((RelationConstraint.NegRelationConstraint)cc).r, taskPattern, beliefPattern);
+            PREDICATE p = preFilter(((RelationConstraint.NegRelationConstraint) cc).r, taskPattern, beliefPattern);
             return p != null ? p.neg() : null;
-        } else  if (cc instanceof RelationConstraint) {
+        } else if (cc instanceof RelationConstraint) {
 
-            Variable y = ((RelationConstraint)cc).y;
+            Variable y = ((RelationConstraint) cc).y;
             byte[] xInTask = Terms.pathConstant(taskPattern, x);
             byte[] xInBelief = Terms.pathConstant(beliefPattern, x);
-            if (xInTask!=null || xInBelief!=null) {
+            if (xInTask != null || xInBelief != null) {
                 byte[] yInTask = Terms.pathConstant(taskPattern, y);
                 byte[] yInBelief = Terms.pathConstant(beliefPattern, y);
                 if ((yInTask != null || yInBelief != null)) {
@@ -750,10 +892,10 @@ public class PremiseRule extends ProxyTerm {
             }
 
 
-        }  else if (cc instanceof UnaryConstraint) {
+        } else if (cc instanceof UnaryConstraint) {
             byte[] xInTask = Terms.pathConstant(taskPattern, x);
             byte[] xInBelief = Terms.pathConstant(beliefPattern, x);
-            if (xInTask!=null || xInBelief!=null) {
+            if (xInTask != null || xInBelief != null) {
                 return ConstraintAsPremisePredicate.the(cc, xInTask, xInBelief, null, null);
             }
 
@@ -769,6 +911,7 @@ public class PremiseRule extends ProxyTerm {
     private void is(Term x, int struct) {
         is(x, struct, false);
     }
+    //new CustomConcurrentHashMap<>(STRONG, EQUALS, WEAK, EQUALS, 1024);
 
     private void is(Term x, int struct, boolean negated) {
         match(x, new TermMatcher.Is(struct), !negated);
@@ -806,8 +949,6 @@ public class PremiseRule extends ProxyTerm {
         return PRE;
     }
 
-    private static final Term eteConj = $.the("eteConj");
-
     private Term conclusion(Term c) {
         //verify that all pattern variables in c are present in either taskTerm or beliefTerm
         assertConclusionVariablesPresent(c);
@@ -817,7 +958,7 @@ public class PremiseRule extends ProxyTerm {
             List<Term> subbedConj;
             ArrayHashSet<Term> savedConj;
 
-            if (c.hasAll(INH.bit|CONJ.bit)) {
+            if (c.hasAll(INH.bit | CONJ.bit)) {
                 subbedConj = new FasterList(0);
                 c = saveEteConj(c, subbedConj, savedConj = new ArrayHashSet(0));
             } else {
@@ -827,7 +968,7 @@ public class PremiseRule extends ProxyTerm {
 
             c = conclusionOptimize(ConcTransform.apply(patternify(c)));
 
-            if (savedConj!=null && !savedConj.isEmpty())
+            if (savedConj != null && !savedConj.isEmpty())
                 c = restoreEteConj(c, subbedConj, savedConj);
 
         }
@@ -844,8 +985,11 @@ public class PremiseRule extends ProxyTerm {
         return c;
     }
 
-    /** HACK preserve any && occurring in --> by substituting them then replacing them */
-    @Deprecated private Term saveEteConj(Term c, List<Term> subbedConj, ArrayHashSet<Term> savedConj) {
+    /**
+     * HACK preserve any && occurring in --> by substituting them then replacing them
+     */
+    @Deprecated
+    private Term saveEteConj(Term c, List<Term> subbedConj, ArrayHashSet<Term> savedConj) {
 
         c.recurseTerms(x -> x.hasAll(INH.bit | CONJ.bit), t -> {
             if (t.op() == INH) {
@@ -933,12 +1077,16 @@ public class PremiseRule extends ProxyTerm {
         return y;
     }
 
-    /** untested */
+    /**
+     * untested
+     */
     private void structureAndVolumeGuards(PremiseTermAccessor r, Term root) {
         structureAndVolumeGuards(r, root, new ByteArrayList(6));
     }
 
-    /** untested */
+    /**
+     * untested
+     */
     private void structureAndVolumeGuards(PremiseTermAccessor r, Term root, ByteArrayList p) {
         if (root.op() == VAR_PATTERN)
             return;
@@ -969,106 +1117,14 @@ public class PremiseRule extends ProxyTerm {
         }
     }
 
-
-    private static final Map<Term, UnifyConstraint> constra =
-            new ConcurrentHashMap<>();
-            //new CustomConcurrentHashMap<>(STRONG, EQUALS, WEAK, EQUALS, 1024);
-
-    private static UnifyConstraint intern(UnifyConstraint x) {
-        UnifyConstraint y = constra.putIfAbsent(x.term(), x);
-        return y != null ? y : x;
-    }
-
-    private static UnifyConstraint[] theInterned(MutableSet<UnifyConstraint> constraints) {
-        if (constraints.isEmpty())
-            return UnifyConstraint.EmptyUnifyConstraints;
-
-        UnifyConstraint[] mc = UnifyConstraint.the(constraints);
-        for (int i = 0, mcLength = mc.length; i < mcLength; i++)
-            mc[i] = intern(mc[i]);
-        return mc;
-    }
-
-    PremiseRule(PremiseRule raw) {
-        super((/*index.rule*/(raw.ref)));
-
-        this.termify = raw.termify;
-        this.PRE = raw.PRE.clone(); //because it gets modified when adding Branchify suffix
-        this.CONSTRAINTS = raw.CONSTRAINTS;
-        this.source = raw.source;
-        this.truthify = raw.truthify;
-        this.constraints = raw.constraints;
-        this.pre = raw.pre;
-        this.time = raw.time;
-        this.taskPunc = raw.taskPunc;
-        this.beliefTruth = raw.beliefTruth;
-        this.goalTruth = raw.goalTruth;
-        this.taskPattern = raw.taskPattern;
-        this.beliefPattern = raw.beliefPattern;
-//        this.constraintSet = raw.constraintSet;
-
-    }
-
-
-    public static Stream<PremiseRule> parse(String src) {
-        try {
-            //bidi-rectional: swap premise components, and swap truth func param
-            if (src.startsWith(BIDI_modifier)) {
-                src = src.substring(BIDI_modifier.length());
-                PremiseRule a = new PremiseRule(src, false);
-                PremiseRule b = new PremiseRule(src, true);
-                return a.equals(b) ? Stream.of(a) : Stream.of(a, b);
-            } else {
-                return Stream.of(new PremiseRule(src));
-            }
-        } catch (Exception e) {
-            throw new RuntimeException("rule parse:\n\t" + src + "\n\t" + e.getMessage(), e);
-        }
-    }
-
-    public static Stream<PremiseRule> parse(String... rawRules) {
-        return parse(Stream.of(rawRules));
-    }
-
-    public static Stream<PremiseRule> parse(Stream<String> rawRules) {
-        return rawRules.flatMap(PremiseRule::parse);
-    }
-
-    private static Subterms parseRuleComponents(String src) throws Narsese.NarseseException {
-
-
-        String[] ab = ruleImpl.split(src);
-        if (ab.length != 2)
-            throw new Narsese.NarseseException("Rule component must have arity=2, separated by \"|-\": " + src);
-
-        String A = '(' + ab[0].trim() + ')';
-        Term a = Narsese.term(A, false);
-        if (!(a instanceof Compound))
-            throw new Narsese.NarseseException("Left rule component must be compound: " + src);
-
-        String B = '(' + ab[1].trim() + ')';
-        Term b = Narsese.term(B, false);
-        if (!(b instanceof Compound))
-            throw new Narsese.NarseseException("Right rule component must be compound: " + src);
-
-        return new BiSubterm(a, b);
-    }
-
-
-    private static PremiseTermAccessor TaskOrBelief(boolean taskOrBelief) {
-        return taskOrBelief ? PremiseRule.TaskTerm : PremiseRule.BeliefTerm;
-    }
-
     private void matchSuper(boolean taskOrBelief, TermMatcher m, boolean trueOrFalse) {
         byte[] path = ArrayUtil.EMPTY_BYTE_ARRAY;
         pre.add(new TermMatch(m, trueOrFalse, false, TaskOrBelief(taskOrBelief).path(path), cost(path.length)));
     }
 
-
     private void match(boolean taskOrBelief, byte[] path, TermMatcher m, boolean trueOrFalse) {
         pre.add(new TermMatch(m, trueOrFalse, true, TaskOrBelief(taskOrBelief).path(path), cost(path.length)));
     }
-
 
     private void match(Term x,
                        BiConsumer<byte[], byte[]> preDerivationExactFilter,
@@ -1110,12 +1166,9 @@ public class PremiseRule extends ProxyTerm {
         }
     }
 
-
     private void match(Term x, TermMatcher m) {
         match(x, m, true);
     }
-
-
 
     private void match(Term x, TermMatcher m, boolean trueOrFalse) {
         match(x, (pathInTask, pathInBelief) -> {
@@ -1154,34 +1207,12 @@ public class PremiseRule extends ProxyTerm {
     private void neqRoot(Variable x, Variable y) {
         constraints.add(new NotEqualConstraint.NotEqualRootConstraint(x, y));
     }
+
     private void bigger(Variable x, Variable y) {
         constraints.add(new NotEqualConstraint.Bigger(x, y));
     }
 
-    public static Term pathTerm(@Nullable byte[] path) {
-        return path == null ? $.the(-1) /* null */ : $.p(path);
-    }
-
-
-    private final static PremiseTermAccessor TaskTerm = new PremiseTermAccessor(0, "taskTerm") {
-        @Override
-        public Term apply(PreDerivation d) {
-            return d.taskTerm;
-        }
-    };
-
-    private final static PremiseTermAccessor BeliefTerm = new PremiseTermAccessor(1, "beliefTerm") {
-
-        @Override
-        public Term apply(PreDerivation d) {
-            return d.beliefTerm;
-        }
-    };
-
-
     static class UppercaseAtomsToPatternVariables extends AbstractTermTransform.NegObliviousTermTransform {
-
-        final UnifiedMap<String, Term> map = new UnifiedMap<>(8);
 
         static final ImmutableSet<Atomic> reservedMetaInfoCategories = Sets.immutable.of(
                 Atomic.the("Belief"),
@@ -1189,7 +1220,7 @@ public class PremiseRule extends ProxyTerm {
                 Atomic.the("Punctuation"),
                 Atomic.the("Time")
         );
-
+        final UnifiedMap<String, Term> map = new UnifiedMap<>(8);
 
         @Override
         public Term applyAtomic(Atomic atomic) {
@@ -1206,49 +1237,6 @@ public class PremiseRule extends ProxyTerm {
         }
 
     }
-
-    /** conclusion post-processing */
-    private final TermTransform ConcTransform = new AbstractTermTransform() {
-        @Override
-        public Term applyCompound(Compound c) {
-
-            c = apply(c, PremiseRule.this, pre);
-
-            return AbstractTermTransform.super.applyCompound(c);
-        }
-
-        private Compound apply(Compound c, PremiseRule p, MutableSet<PREDICATE<? extends Unify>> pre) {
-            Term concFunc = Functor.func(c);
-
-            if (concFunc.equals(UniSubst.unisubst)) {
-
-                Subterms a = Functor.args(c);
-
-                Term x = a.sub(1);
-
-                if (Unifiable.hasNoFunctor(x)) {
-
-                    Term y = a.sub(2);
-
-                    if (Unifiable.hasNoFunctor(y)) {
-
-                        int varBits = (a.contains(UniSubst.DEP_VAR)) ? VAR_DEP.bit : (VAR_INDEP.bit | VAR_DEP.bit);
-
-                        boolean strict = a.contains(UniSubst.NOVEL);
-
-                        Unifiable.tryAdd(x, y,
-                                p.taskPattern, p.beliefPattern,
-                                varBits, strict, pre);
-                    }
-                }
-
-
-                //TODO compile to 1-arg unisubst
-            }
-            return c;
-        }
-
-    };
 
     private static class MyPremiseRuleNormalization extends PremiseRuleNormalization {
         @Override

@@ -744,7 +744,6 @@ public class NAL8Test extends NALTest {
     void conjDecomposeGoalAfterParallel() {
 
         test
-                .logDebug()
                 .inputAt(1, "(a &&+3 (b&&c)).")
                 .inputAt(5, "b! |")
                 .mustGoal(cycles, "(a &&+3 c)", 1f, 0.3f, t -> t == 2);

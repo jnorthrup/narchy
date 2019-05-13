@@ -30,9 +30,13 @@ public final class UnifyMatchFork extends LazyCompoundBuilder implements Predica
     @Override
     public boolean test(Derivation d) {
 
+        d.nar.emotion.deriveUnified.increment();
+
         Term x = taskify.pattern(d);
 
         Term y = AbstractTermTransform.transform(x, d.transform, this, workVolMax);
+
+        d.nar.emotion.deriveMatchTransformed.increment();
 
         if (!(y instanceof Bool) && y.unneg().op().taskable) {
 

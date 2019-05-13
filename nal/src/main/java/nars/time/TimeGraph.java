@@ -549,11 +549,11 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 //                                        if (y.equals(eventTerm))
 //                                            return true;
 
-                                        Event next = shadow(y); //know(y);
+                                        Event next = know(y);
 
                                         Event p = prev[0];
                                         if (p != null) {
-                                            if (p != event || (eventStart != ETERNAL && eventStart != TIMELESS)) {
+                                            if (p != event) {
                                                 //chain to previous, starting with parent
                                                 link(p, w - prevTime[0], next);
 
@@ -567,7 +567,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
                                         prevTime[0] = w;
                                         prev[0] = next;
                                         return true;
-                                    }, 0, true, false);
+                                    }, 0, false, false);
                                 }
 
                             }

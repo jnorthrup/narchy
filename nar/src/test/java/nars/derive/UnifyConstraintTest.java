@@ -26,7 +26,7 @@ class UnifyConstraintTest {
         assertFalse(
                 c.invalid($.$("X"), $.$("f(X,Y)"), null)
         );
-        assertFalse(
+        assertTrue(
                 c.invalid($.$("X"), $.$("(X && Y)"), null)
         );
         assertTrue(

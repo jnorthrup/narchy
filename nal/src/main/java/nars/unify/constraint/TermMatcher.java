@@ -254,7 +254,7 @@ abstract public class TermMatcher {
         @Override
         public boolean test(Term term) {
             return term instanceof Compound &&
-                    term.op().id == is && testVol(term) && term.subterms().hasAll(structSubs);
+                    term.op().id == is && testVol(term) && (structSubs == 0 || term.subterms().hasAll(structSubs));
         }
 
         @Override

@@ -443,11 +443,12 @@ public class SetSectDiff {
         assert (o.set && a.op() == o && b.op() == o);
 
         if (a.equals(b))
-            return Null;
+            return o==CONJ ? True : Null;
 
         Subterms aa = a.subterms();
 
         int size = aa.subs();
+
         MetalBitSet removals = MetalBitSet.bits(size);
 
         for (int i = 0; i < size; i++) {
@@ -459,7 +460,7 @@ public class SetSectDiff {
         if (retained == size) {
             return a;
         } else if (retained == 0) {
-            return Null;
+            return o==CONJ ? True : Null;
         } else {
             return o.the(Op.terms, aa.removing(removals));
         }

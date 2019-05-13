@@ -6,6 +6,7 @@ import jcog.WTF;
 import jcog.data.byt.DynBytes;
 import jcog.data.list.FasterList;
 import jcog.util.ArrayUtil;
+import nars.$;
 import nars.NAL;
 import nars.Op;
 import nars.subterm.Subterms;
@@ -301,7 +302,10 @@ public class LazyCompoundBuilder {
         @Override
         protected Term applyPosCompound(Compound x) {
             if (x instanceof DeferredEval) {
-                Term y = ((DeferredEval)x).eval();
+                DeferredEval e = (DeferredEval) x;
+
+
+                Term y = e.eval();
                 if (y instanceof Bool)
                     return y;
                 else
@@ -331,7 +335,7 @@ public class LazyCompoundBuilder {
         //final static String DeferredEvalPrefix = ("⚛");
 
         private final InlineFunctor f;
-        private final Subterms args;
+        private Subterms args;
 
         /** cached value, null if not computed yet */
         private transient Term value = null;
@@ -362,9 +366,16 @@ public class LazyCompoundBuilder {
             if (this.value!=null) {
                 return this.value; //cached
             } else {
-                Term e = f.applyInline(args);
-                if (e == null)
-                    e = Null; //HACK
+
+                Term argsY = DeferredEvaluator.apply($.pFast(args)); //recurse apply to arguments before eval
+                Term e;
+                if (argsY == Null)
+                    e = Null;
+                else {
+                    e = f.applyInline(this.args = ((Subterms)argsY));
+                    if (e == null)
+                        e = Null; //HACK
+                }
                 return this.value = e;
             }
         }

@@ -3,6 +3,7 @@ package nars.derive;
 import nars.$;
 import nars.NARS;
 import nars.Narsese;
+import nars.derive.premise.PatternTermBuilder;
 import nars.derive.rule.DeriverRules;
 import nars.derive.rule.PremiseRule;
 import nars.derive.rule.PremiseRuleCompiler;
@@ -12,7 +13,9 @@ import nars.term.Term;
 import nars.term.Terms;
 import org.junit.jupiter.api.Test;
 
+import static nars.$.$$;
 import static nars.term.util.TermTest.assertEq;
+import static nars.time.Tense.XTERNAL;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
@@ -20,6 +23,25 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 class PremiseRuleTest {
 
+    @Test
+    void testPatternCompoundWithXTERNAL() throws Narsese.NarseseException {
+        Compound p = (Compound) PatternTermBuilder.patternify($.$("((x) ==>+- (y))")).term();
+        assertEquals(XTERNAL, p.dt());
+
+    }
+
+    @Test
+    void testPatternTermConjHasXTERNAL() {
+        Term p = PatternTermBuilder.patternify($$("(x && y)"));
+        assertEquals("(x &&+- y)", p.toString());
+
+        Term r = PatternTermBuilder.patternify($$("(x || y)"));
+        assertEquals(
+                //"(--,((--,x) &&+- (--,y)))",
+                "(x ||+- y)",
+                //"(x ||+- y)", //TODO
+                r.toString());
+    }
 
     @Test
     void testNoNormalization() throws Exception {

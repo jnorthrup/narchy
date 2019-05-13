@@ -46,20 +46,31 @@
     //C is a sequence ending in it.  this forms a goal of the sequence minus the trailing
 
     //desire for sub-sequence leading to goal,  truth function may be Desire or Deduction
-    G, C, is(C,"&&")                  |-    conjBefore(C,  G),  (Goal:Desire)
-    G, C, is(C,"&&"),  has(C,"--")    |-    conjBefore(C,--G),  (Goal:DesireN)
+    G, C, is(C,"&&")                  |-      conjBefore(C,   G),  (Goal:DesirePP)
+      G, D, is(D,"&&"), has(D,"--")   |-    --conjBefore(D, --G),  (Goal:DesireWeakPN)
+    G, C, is(C,"&&"), has(C,"--")     |-      conjBefore(C, --G),  (Goal:DesireNP)
+      G, D, is(D,"&&")                |-    --conjBefore(D,   G),  (Goal:DesireWeakNN)
+
             //--eventOfNeg(C,G) , --eventOf(C,G) <- optional additional renovelion of anti-goal not present anywhere in the sequence
 
     //anti-desire for sub-sequence leading to anti-goal. truth function may be Desire or Deduction (option: __Weak, __WeakN)
-    G, C, is(C,"&&"), has(C,"--")     |-              --conjBefore(C,--G),  (Goal:Desire)
-      G, C, is(C,"&&"), has(C,"--")     |-   negateEvents(conjBefore(C,--G)),  (Goal:DesireWeak)
-    G, C, is(C,"&&")                  |-              --conjBefore(C,  G),  (Goal:DesireN)
-      G, C, is(C,"&&")                  |-   negateEvents(conjBefore(C,  G)),  (Goal:DesireWeakN)
+    G, C, is(C,"&&"), has(C,"--")       |-              --conjBefore(C, --G), (Goal:Desire)
+      G, C, is(C,"&&"), has(C,"--")     |-   negateEvents(conjBefore(C,--G)), (Goal:DesireWeak)
+    G, C, is(C,"&&")                    |-              --conjBefore(C,   G), (Goal:DesireN)
+      G, C, is(C,"&&")                  |-   negateEvents(conjBefore(C,  G)), (Goal:DesireWeakN)
 
+    //conjunction belief decomposition
+    C, X, is(C,"&&"), --isVar(X)                   |-   conjAfter(C,  X), (Belief:DeductionPP,Goal:DeductionPP)
+      D, X, is(D,"&&"), has(D,"--"), --isVar(X)    |- --conjAfter(D,--X), (Belief:DeductionWeakPP,Goal:DeductionWeakNP)
+    C, X, is(C,"&&"), has(C,"--"), --isVar(X)      |-   conjAfter(C,--X), (Belief:DeductionPN,Goal:DeductionPN)
+      D, X, is(D,"&&"), --isVar(X)                 |- --conjAfter(D,  X), (Belief:DeductionWeakPN,Goal:DeductionWeakNN)
+//
+//    //conjunction goal decomposition
+//    G, C, is(C,"&&")                   |-   conjAfter(C,  G), (Goal:DesirePP)
+//      G, D, is(D,"&&")                 |- --conjAfter(D,--G), (Goal:DesirePN)
+//    G, C, is(C,"&&"), has(C,"--")      |-   conjAfter(C,--G), (Goal:DesireWeakNP)
+//      G, D, is(D,"&&")                 |- --conjAfter(D,  G), (Goal:DesireWeakNN)
 
-    //conjunction belief and goal decomposition
-    C, X, is(C,"&&"), --isVar(X)                   |- conjAfter(C,  X), (Belief:DeductionPP)
-    C, X, is(C,"&&"), has(C,"--"), --isVar(X)      |- conjAfter(C,  --X), (Belief:DeductionPN)
 //      (C==>A), (X==>A), is(C,"&&"), --isVar(X)     |- (conjAfter(C,  X) ==> A), (Belief:Deduction)
 //      (C==>A), (X==>A), is(C,"&&"), --isVar(X)     |- (conjAfter(C,  X) ==> A), (Belief:DeductionNN)
       //(A==>C), (A==>X), is(C,"&&"), --isVar(X)     |- (A ==> conjAfter(C,  X)), (Belief:Deduction)
@@ -107,19 +118,19 @@
 // TODO these could be merged with NAL3 decompositions into a general decomposition rule
 
     //CONJ
-    X, C, eventOf(C,X)     |-     conjWithout(C,  X), (Belief:DecomposePP)
-     C, X, eventOf(C,X)     |-     conjWithout(C,  X), (Belief:DecomposePP)
-    X, C, eventOf(C,X)     |-   --conjWithout(C,  X), (Belief:DecomposePN)
-     C, X, eventOf(C,X)     |-   --conjWithout(C,  X), (Belief:DecomposeNP)
-    X, C, eventOfNeg(C,X)  |-     conjWithout(C,--X), (Belief:DecomposeNP)
-     C, X, eventOfNeg(C,X)  |-     conjWithout(C,--X), (Belief:DecomposePN)
-    X, C, eventOfNeg(C,X)  |-   --conjWithout(C,--X), (Belief:DecomposeNN)
-     C, X, eventOfNeg(C,X)  |-   --conjWithout(C,--X), (Belief:DecomposeNN)
+    X, C, eventOf(C,X), conjParallel(C)     |-     conjWithout(C,  X), (Belief:DecomposePP)
+     C, X, eventOf(C,X), conjParallel(C)     |-     conjWithout(C,  X), (Belief:DecomposePP)
+    X, C, eventOf(C,X), conjParallel(C)     |-   --conjWithout(C,  X), (Belief:DecomposePN)
+     C, X, eventOf(C,X), conjParallel(C)     |-   --conjWithout(C,  X), (Belief:DecomposeNP)
+    X, C, eventOfNeg(C,X), conjParallel(C)  |-     conjWithout(C,--X), (Belief:DecomposeNP)
+     C, X, eventOfNeg(C,X), conjParallel(C)  |-     conjWithout(C,--X), (Belief:DecomposePN)
+    X, C, eventOfNeg(C,X), conjParallel(C)  |-   --conjWithout(C,--X), (Belief:DecomposeNN)
+     C, X, eventOfNeg(C,X), conjParallel(C)  |-   --conjWithout(C,--X), (Belief:DecomposeNN)
 
-    C, X,  eventOf(C,X)       |-     conjWithout(C,X),   (Goal:DecomposePP)
-      C, X,  eventOfNeg(C,X)  |-     conjWithout(C,--X), (Goal:DecomposePN)
-    C, X,  eventOfNeg(C,X)    |-   --conjWithout(C,--X), (Goal:DecomposeNN)
-      C, X,  eventOf(C,X)     |-   --conjWithout(C,X),   (Goal:DecomposeNP)
+    C, X,  eventOf(C,X), conjParallel(C)       |-     conjWithout(C,X),   (Goal:DecomposePP)
+      C, X,  eventOfNeg(C,X), conjParallel(C)  |-     conjWithout(C,--X), (Goal:DecomposePN)
+    D, X,  eventOfNeg(D,X), conjParallel(D)    |-   --conjWithout(D,--X), (Goal:DecomposeNP)
+      D, X,  eventOf(D,X), conjParallel(D)     |-   --conjWithout(D,X),   (Goal:DecomposeNN)
 
 
 //Conditional implication decomposition
@@ -154,8 +165,8 @@
 //  originally this only unified depvar (dep var elimination)
 
 //TODO merge these 4 rules into one, requires a variation on unisubst that can apply chooseUnifiableSubEvent in 2 ways
-C, Y, is(C,"&&"), neq(C,Y), --isVar(Y)               |- unisubst(C,chooseUnifiableSubEvent(C,Y),Y,"#",novel), (Belief:AnonymousAnalogy)
-C, Y, is(C,"&&"), neq(C,Y), --isVar(Y), has(C,"--")  |- unisubst(C,chooseUnifiableSubEvent(C,--Y),--Y,"#",novel), (Belief:AnonymousAnalogyPN)
+C, Y, is(C,"&&"), has(C,"#"), neq(C,Y), --isVar(Y)               |- unisubst(C,chooseUnifiableSubEvent(C,Y),Y,"#",novel), (Belief:AnonymousAnalogy)
+C, Y, is(C,"&&"), has(C,"#"), neq(C,Y), --isVar(Y), has(C,"--")  |- unisubst(C,chooseUnifiableSubEvent(C,--Y),--Y,"#",novel), (Belief:AnonymousAnalogyPN)
     //Goal: ?
 
     //(&&,X,A..+), Y   |- unisubst((&&,A..+),X,Y,"#"), (Belief:AnonymousAnalogy)

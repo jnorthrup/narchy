@@ -538,8 +538,8 @@ import static nars.Op.BELIEF;
         AgentAction.MotorFunction motor = new UnipolarMotor(freqOrExp, ifGoalMissing, update,
             (feedbackFreq,goalConf) ->
                 $.t(feedbackFreq,
-                        //Math.max(nar().confMin.floatValue(), goalConf)
                         nar().confDefault(BELIEF)
+                        //Math.max(nar().confMin.floatValue(), goalConf)
                 )
         );
 

@@ -74,6 +74,8 @@ public class Emotion implements Meter, Consumer<NAR> {
     public final FastCounter premiseUnderivable = new FastCounter("premise underivable");
     public final FastCounter premiseUnbudgetable = new FastCounter("premise unbudgetable");
     public final FastCounter deriveTask = new FastCounter("derive task");
+    public final FastCounter deriveUnified = new FastCounter("derive unified");
+    public final FastCounter deriveMatchTransformed = new FastCounter("derive match transformed");
     public final FastCounter deriveTermify = new FastCounter("derive termify");
     public final ExplainedCounter deriveFailTemporal = new ExplainedCounter("derive fail temporal");
     public final ExplainedCounter deriveFail = new ExplainedCounter("derive fail eval");
