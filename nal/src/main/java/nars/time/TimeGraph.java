@@ -137,10 +137,10 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
     public final Event know(Term v) {
         //include the temporal information contained in a temporal-containing target;
         // otherwise it contributes no helpful information
-//        if (v.hasAny(Op.Temporal))
+        if (v.hasAny(Op.Temporal))
             return event(v, TIMELESS, TIMELESS, true);
-//        else
-//            return shadow(v);
+        else
+            return shadow(v);
     }
 
     public final Event know(Term t, long start) {
@@ -567,7 +567,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
                                         prevTime[0] = w;
                                         prev[0] = next;
                                         return true;
-                                    }, 0, false, false);
+                                    }, 0, true, false);
                                 }
 
                             }

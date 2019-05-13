@@ -719,9 +719,18 @@ public class NAL8Test extends NALTest {
 
         ;
     }
-
     @Test
-    void conjDecomposeGoalAfter() {
+    void conjDecomposeGoalAfter_ete_tmp() {
+
+        test
+                .inputAt(1, "(a &&+3 b).")
+                .inputAt(5, "b! |")
+
+                .mustGoal(cycles, "a", 1f, 0.3f, t -> t == 2)
+                .mustNotOutput(cycles, "a", GOAL, ETERNAL);
+    }
+    @Test
+    void conjDecomposeGoalAfter_tmp_tmp() {
 
         test
                 .inputAt(1, "(a &&+3 b). |")
@@ -729,6 +738,16 @@ public class NAL8Test extends NALTest {
 
                 .mustGoal(cycles, "a", 1f, 0.3f, t -> t == 2)
                 .mustNotOutput(cycles, "a", GOAL, ETERNAL);
+    }
+
+    @Test
+    void conjDecomposeGoalAfterParallel() {
+
+        test
+                .logDebug()
+                .inputAt(1, "(a &&+3 (b&&c)).")
+                .inputAt(5, "b! |")
+                .mustGoal(cycles, "(a &&+3 c)", 1f, 0.3f, t -> t == 2);
     }
 
     @Test

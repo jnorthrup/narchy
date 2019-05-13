@@ -36,6 +36,19 @@ public enum SubtermCondition implements BiPredicate<Term, Term> {
             return 0.7f;
         }
     },
+    /** intersect contents */
+    Subunion() {
+
+        @Override
+        public boolean test(Term container, Term x) {
+            x = x.unneg(); //HACK
+            return x.op()==CONJ ? container.containsAll(x.subterms()) : container.contains(x);
+        }
+
+        public float cost() {
+            return 0.71f;
+        }
+    },
 
     Recursive() {
         @Override

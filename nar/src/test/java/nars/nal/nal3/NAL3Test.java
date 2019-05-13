@@ -262,6 +262,21 @@ public class NAL3Test extends NALTest {
                 .believe("(x-->(&&,a,b))", 0.9f, 0.9f)
                 .mustBelieve(cycles, "(x-->c)", 0.81f, 0.66f);
     }
+    @Test
+    void testArity1_Decomposition_Intersect_3_2_neg() {
+        test
+                .believe("(x-->(&&,--a,--b,c))", 0.9f, 0.9f)
+                .believe("(x-->(&&,--a,--b))", 0.9f, 0.9f)
+                .mustBelieve(cycles, "(x-->c)", 0.81f, 0.66f);
+    }
+    @Test
+    void testArity1_Decomposition_Union_3_2() {
+        test
+                .termVolMax(10)
+                .believe("(x-->(||,a,b,c))", 0.9f, 0.9f)
+                .believe("(x-->(||,a,b))", 0.1f, 0.9f)
+                .mustBelieve(cycles, "(x-->c)", 0.81f, 0.66f);
+    }
 
     @Test
     void compound_decomposition_two_premises_union() {

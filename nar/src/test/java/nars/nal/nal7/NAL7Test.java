@@ -971,8 +971,8 @@ public class NAL7Test extends NALTest {
 
         test
 
-                .inputAt(0, "((I-->happy) &| (I-->neutral)). :|: %0.06;0.90%")
-                .inputAt(0, "(I-->sad). :|: %0.0;0.90%")
+                .inputAt(0, "((I-->happy) &| (I-->neutral)). | %0.06;0.90%")
+                .inputAt(0, "(I-->sad). | %0.0;0.90%")
 
 
                 .mustNotOutput(cycles, "(I-->sad)", BELIEF, 0.5f, 1f, 0.1f, 1f, 0)
@@ -995,11 +995,10 @@ public class NAL7Test extends NALTest {
                 .nar.believe($.parallel($("x"), $("y"), $("z")), 3, 1f, 0.9f);
 
         test
-                .mustBelieve(cycles, "(x &| y)", 1f, 0.81f, 3)
-                .mustBelieve(cycles, "(y &| z)", 1f, 0.81f, 3)
-                .mustBelieve(cycles, "(x &| z)", 1f, 0.81f, 3)
-                .mustNotOutput(cycles, "(x && z)", BELIEF, (t) -> t == 0 || t == 3 || t == ETERNAL)
-                .mustNotOutput(cycles, "(x &| z)", BELIEF, (t) -> t == 0 || t == ETERNAL);
+                .mustBelieve(cycles, "(x && y)", 1f, 0.81f, 3)
+                .mustBelieve(cycles, "(y && z)", 1f, 0.81f, 3)
+                .mustBelieve(cycles, "(x && z)", 1f, 0.81f, 3)
+                .mustNotOutput(cycles, "(x && z)", BELIEF, t -> t !=3);
 
     }
 

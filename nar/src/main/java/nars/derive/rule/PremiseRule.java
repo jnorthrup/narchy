@@ -217,18 +217,29 @@ public class PremiseRule extends ProxyTerm {
                 case "subOf":
                 case "subOfPN":
                 case "sectOf":
-                case "sectOfPN":
-                    {
-                    if (!negated) {
+                case "sectOfPN": {
+
+                        SubtermCondition mode = Subterm;
+
+                        boolean sect = pred.startsWith("sect");
+                        if (sect) {
+                            assert(!negated): "TODO and test";
+
+                            if (Y.op()==NEG) {
+                                Y = Y.unneg();
+                                YY = (Variable)Y;
+                                mode = Subunion;
+                            } else
+                                mode = Subsect;
+
+                            if (!negated)
+                                is(XX, Op.CONJ);
+                        }
+
+                        if (!negated) {
                         neq(XX,Y);
                         if (Y instanceof Variable)
                             bigger(XX,YY);
-                    }
-
-                    boolean sect = pred.startsWith("sect");
-                    if (sect) {
-                        if (!negated)
-                            is(XX, Op.CONJ);
                     }
 
                     int polarity;
@@ -240,7 +251,7 @@ public class PremiseRule extends ProxyTerm {
                     }
 
                     if (Y.unneg() instanceof Variable) {
-                        SubtermCondition mode = pred.startsWith("sect") ? Subsect : Subterm;
+
                         SubOfConstraint c = new SubOfConstraint(XX, ((Variable) (Y.unneg())), mode, polarity);
                         constraints.add((UnifyConstraint)(c.negIf(negated)));
                     } else {
