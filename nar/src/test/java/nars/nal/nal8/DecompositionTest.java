@@ -198,6 +198,7 @@ public class DecompositionTest extends NALTest {
             test.mustGoal(cycles, "a", 0.81f, 0.66f);
         }
 
+      
         @Test
         void decompose_Conj_Goal_pos_decompose_neg() {
             //adapted form nal3 test
@@ -207,7 +208,7 @@ public class DecompositionTest extends NALTest {
             test.mustGoal(cycles, "a", 0.81f, 0.66f);
         }
 
-       
+
         @Test
         void decompose_Conj_Goal_neg_decompose_pos() {
             //adapted form nal3 test

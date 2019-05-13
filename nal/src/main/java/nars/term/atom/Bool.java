@@ -59,8 +59,6 @@ abstract public class Bool extends AbstractAtomic implements The {
      */
     public static final Bool True = new Bool("true", (byte)1) {
 
-        final int rankBoolTrue = Term.opX(BOOL, (short) 2);
-
         @Override
         public Term neg() {
             return False;
@@ -112,8 +110,5 @@ abstract public class Bool extends AbstractAtomic implements The {
         throw new UnsupportedOperationException();
     }
 
-    @Override
-    public Term root() {
-        throw new UnsupportedOperationException();
-    }
+
 }

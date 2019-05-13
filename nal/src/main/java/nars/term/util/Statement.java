@@ -139,9 +139,6 @@ public class Statement {
                         //subtract any common subject components from predicate
                         boolean subjNeg = subject.op() == NEG;
                         ConjBuilder newPredConj = ConjDiff.the(predicate, po, subject.negIf(subjNeg), so, subjNeg);
-                        if (newPredConj == null)
-                            return Null; //fail
-
                         Term newPred = newPredConj.term(B);
 
 

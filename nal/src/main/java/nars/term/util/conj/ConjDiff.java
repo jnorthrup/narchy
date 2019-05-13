@@ -15,23 +15,23 @@ public final class ConjDiff extends Conj {
     private final long[] excludeEventsAt;
     private final boolean excludeEventAtEternal;
 
-    @Nullable public static ConjDiff the(Term include, long includeAt, Term exclude, long excludeAt) {
+    public static ConjBuilder the(Term include, long includeAt, Term exclude, long excludeAt) {
         return the(include, includeAt, exclude, excludeAt, false);
     }
 
 
-    @Nullable public static ConjDiff the(Term include, long includeAt, Term exclude, long excludeAt, boolean invert) {
+    public static ConjBuilder the(Term include, long includeAt, Term exclude, long excludeAt, boolean invert) {
         return the(include, includeAt, exclude, excludeAt, invert, null);
-
     }
+
     /** warning: invert may not work the way you expect. it is designed for use in IMPL construction */
-    @Nullable private static ConjDiff the(Term include, long includeAt, Term exclude, long excludeAt, boolean invert, @Nullable Conj seed) {
+    private static ConjBuilder the(Term include, long includeAt, Term exclude, long excludeAt, boolean invert, @Nullable Conj seed) {
         Conj e = seed == null ? new Conj() : Conj.newConjSharingTermMap(seed);
 
-        return e.add(excludeAt, exclude) ? the(include, includeAt, invert, e) : null;
+        return e.add(excludeAt, exclude) ? the(include, includeAt, invert, e) : e;
     }
 
-    @Nullable private static ConjDiff the(Term include, long includeAt, boolean invert, Conj exclude) {
+    private static ConjDiff the(Term include, long includeAt, boolean invert, Conj exclude) {
         if (exclude.eventCount(ETERNAL)>0 && exclude.event.size() > 1) {
             //has both eternal and temporal components;
             // mask the eternal components so they are not eliminated from the result
@@ -39,8 +39,7 @@ public final class ConjDiff extends Conj {
         }
 
         ConjDiff c = new ConjDiff(include, exclude, invert);
-        if (!c.add(includeAt, include))
-            return null;
+        c.add(includeAt, include);
         //distribute();
         return c;
     }

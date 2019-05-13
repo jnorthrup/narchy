@@ -18,19 +18,19 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 /**
  * tests specific to implication compounds TODO
  */
-public class ImplTest {
+class ImplTest {
     @Test
-    public void testInvalidImpl1() {
+    void testInvalidImpl1() {
         assertEq(False, "(--y =|> y)");
     }
 
     @Test
-    public void testInvalidImpl2() {
+    void testInvalidImpl2() {
         assertEq(False, "(--(x &| y) =|> y)");
     }
 
     @Test
-    public void testInvalidImpl3() {
+    void testInvalidImpl3() {
         assertEq(False, "(--(--x &| y) =|> y)");
     }
 
@@ -221,7 +221,7 @@ public class ImplTest {
     @Test
     void testElimination2() {
         assertEq(
-               Null,
+               False,
                 "((--,(left &&+2518 left))==>left)"
         );
     }
