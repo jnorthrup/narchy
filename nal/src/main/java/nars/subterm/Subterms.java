@@ -962,24 +962,20 @@ public interface Subterms extends Termlike, Iterable<Term> {
     default Term[] subsIncExc(MetalBitSet s, boolean includeOrExclude) {
 
         int c = s.cardinality();
+
+        if (c == 0) return includeOrExclude ? Op.EmptyTermArray : arrayShared();
+
+        int size = subs();
+        assert(c <= size): "bitset has extra bits setAt beyond the range of subterms";
+
         if (includeOrExclude) {
-            if (c == 0) return Op.EmptyTermArray;
+            if (c == size) return arrayShared();
             if (c == 1) return new Term[] { sub(s.first(true))};
         } else {
-            if (c == 0) return arrayShared();
+            if (c == size) return EmptyTermArray;
             if (c == 1) return removing(s.first(true));
         }
 
-        int size = subs();
-        if (c == size) {
-            if (includeOrExclude) {
-                return arrayShared();
-            } else {
-                return Op.EmptyTermArray;
-            }
-        }
-
-        assert(c <= size): "bitset has extra bits setAt beyond the range of subterms";
 
         int newSize = includeOrExclude ? c : size - c;
         Term[] t = new Term[newSize];
@@ -1199,8 +1195,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
 
     @Nullable
     default Term[] removing(Term x) {
-        MetalBitSet m = indicesOfBits(x::equals);
-        return m.cardinality() == 0 ? null : removing(m);
+        return removing(indicesOfBits(x::equals));
     }
 
     default Subterms replaceSub(Term from, Term to, Op superOp) {

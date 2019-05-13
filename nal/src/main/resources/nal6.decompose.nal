@@ -6,8 +6,8 @@
     C, X, eventOfPN(C,X), task("?@"), hasBelief()   |-   conjWithoutPN(C,X)
     C, X, eventOfPN(C,X)                            |-   conjWithoutPN(C,X), (Belief:StructuralDeduction, Goal:StructuralDeduction)
     C, X, eventOfPN(C,X)                            |- --conjWithoutPN(C,X), (Belief:StructuralDeductionWeakN, Goal:StructuralDeductionWeakN)
-    D, X, eventOfPN(D,X)                            |- --conjWithoutPN(D,X), (Belief:StructuralDeductionN, Goal:StructuralDeductionN)
-    D, X, eventOfPN(D,X)                            |-   conjWithoutPN(D,X), (Belief:StructuralDeductionWeak, Goal:StructuralDeductionWeak)
+//    D, X, eventOfPN(D,X)                            |- --conjWithoutPN(D,X), (Belief:StructuralDeductionN, Goal:StructuralDeductionN)
+//    D, X, eventOfPN(D,X)                            |-   conjWithoutPN(D,X), (Belief:StructuralDeductionWeak, Goal:StructuralDeductionWeak)
 
     //impl conj/disj pred belief and question free structural implication decomposition
     (A ==> C), X, eventOfPN(C,X), --isVar(A)   |-   (A ==> conjWithoutPN(C,  X)), (Belief:StructuralDeduction)
@@ -116,10 +116,10 @@
     X, C, eventOfNeg(C,X), conjParallel(C)  |-   --conjWithout(C,--X), (Belief:DecomposeNN)
      C, X, eventOfNeg(C,X), conjParallel(C)  |-   --conjWithout(C,--X), (Belief:DecomposeNN)
 
-    C, X,  eventOf(C,X), conjParallel(C)       |-     conjWithout(C,X),   (Goal:DecomposePN)
-      C, X,  eventOf(C,X), conjParallel(C)     |-   --conjWithout(C,X),   (Goal:DecomposeNP)
-    C, X,  eventOfNeg(C,X), conjParallel(C)    |-   --conjWithout(C,--X), (Goal:DecomposeNP)
+    C, X,  eventOf(C,X), conjParallel(C)       |-     conjWithout(C,X),   (Goal:DecomposePP)
       C, X,  eventOfNeg(C,X), conjParallel(C)  |-     conjWithout(C,--X), (Goal:DecomposePN)
+    C, X,  eventOfNeg(C,X), conjParallel(C)    |-   --conjWithout(C,--X), (Goal:DecomposeNP)
+      C, X,  eventOf(C,X), conjParallel(C)     |-   --conjWithout(C,X),   (Goal:DecomposeNN)
 
 
 //Conditional implication decomposition

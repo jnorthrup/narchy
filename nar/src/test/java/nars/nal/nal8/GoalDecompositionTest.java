@@ -144,13 +144,51 @@ public class GoalDecompositionTest extends NALTest {
     }
 
 
-    @Test
-    void testAndConj() {
-        test
-                .input("(&&,a,b)!")
-                .input("a.")
-                .mustGoal(cycles, "b", 1f, 0.81f);
+
+    public static class GoalDoublePremiseDecompose extends NALTest {
+
+        public static final int cycles = 500;
+
+        @BeforeEach
+        void setTolerance() {
+            test.nar.time.dur(3);
+        }
+
+        @Test
+        void testIntersectionGoal_pos_decompose_pos() {
+            //adapted form nal3 test
+            test.termVolMax(8);
+            test.input("(a && b)! %0.9;0.9%");
+            test.input("b. %0.9;0.9%");
+            test.mustGoal(cycles, "a", 0.81f, 0.66f);
+        }
+
+        @Test
+        void testIntersectionGoal_pos_decompose_neg() {
+            //adapted form nal3 test
+            test.termVolMax(8);
+            test.input("(a && --b)! %0.9;0.9%");
+            test.input("b. %0.1;0.9%");
+            test.mustGoal(cycles, "a", 0.81f, 0.66f);
+        }
+
+        @Test
+        void testIntersectionGoal_neg_decompose_pos() {
+            //adapted form nal3 test
+            test.termVolMax(8);
+            test.input("(a && b)! %0.1;0.9%");
+            test.input("b. %0.9;0.9%");
+            test.mustGoal(cycles, "a", 0.19f, 0.66f);
+        }
+
+        @Test
+        void testIntersectionGoal_neg_decompose_neg() {
+            //adapted form nal3 test
+            test.termVolMax(8);
+            test.input("(a && --b)! %0.1;0.9%");
+            test.input("b. %0.1;0.9%");
+            test.mustGoal(cycles, "a", 0.19f, 0.66f);
+        }
+
     }
-
-
 }

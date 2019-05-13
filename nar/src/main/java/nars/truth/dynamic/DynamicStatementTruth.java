@@ -95,9 +95,9 @@ public class DynamicStatementTruth {
                 innerDT = XTERNAL; //force XTERNAL since 0 or DTERNAL will collapse
 
             } else {
-                if (s == start && e - s >= decRange)
+                if (s == start && e - s >= decRange) {
                     innerDT = DTERNAL; //eternal component
-                else
+                } else
                     innerDT = Tense.occToDT(decRange - (s - start));
             }
 

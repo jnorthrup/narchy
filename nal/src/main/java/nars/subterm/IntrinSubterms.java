@@ -264,22 +264,22 @@ public class IntrinSubterms extends TermVector /*implements Subterms.SubtermsByt
         short tid = Intrin.id(x);
         if (tid == 0) return null;
         int count = 0;
-        int n = subterms.length;
-        for (int i = 0; i < n; i++) {
-            if (subterms[i] == tid)
+
+        for (short subterm : subterms) {
+            if (subterm == tid)
                 count++;
         }
         if (count==0)
             return null; //none found
-        else if (count == n){
+        int n = subterms.length;
+        if (count == n){
             return Op.EmptyTermArray;
         } else {
             Term[] y = new Term[n - count];
             int j = 0;
-            for (int i = 0; i < n; i++) {
-                short s = subterms[i];
+            for (short s : subterms) {
                 if (s != tid)
-                    y[j++] = Intrin.term(s);
+                    y[j++] = term(s);
             }
             return y;
         }

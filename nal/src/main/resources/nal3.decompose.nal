@@ -44,14 +44,23 @@
               (X --> M),(--%I --> M),  is(%I,"&&"), subOf(%I,--X)  |- --(--without(%I,--X) --> M),   (Belief:DecomposeNP)
 
 //NAL3 double premise goal decompose
-    (I --> M), (X --> M),  is(I,"&&"), subOf(I,X)     |-   (  without( I,  X) --> M),   (Goal:DecomposePN)
+    (I --> M), (X --> M),  is(I,"&&"), subOf(I,X)     |-   (  without( I,  X) --> M),   (Goal:DecomposePP)
+    (I --> M), (X --> M),  is(I,"&&"), subOf(I,--X)   |-   (  without( I,  --X) --> M),   (Goal:DecomposePN)
       (I --> M), (X --> M),  is(I,"&&"), subOf(I,X)   |- --(  without( I,  X) --> M),   (Goal:DecomposeNP)
+      (I --> M), (X --> M),  is(I,"&&"), subOf(I,--X) |- --(  without( I,  --X) --> M),   (Goal:DecomposeNN)
 
-    (--%I --> M), (X --> M), is(%I,"&&"), subOf(%I,--X)  |- --(--without(%I,--X) --> M),   (Goal:DecomposeNP)
-      (--%I --> M), (X --> M), is(%I,"&&"), subOf(%I,--X)  |-   (--without(%I,--X) --> M),   (Goal:DecomposePN)
-
-    (M --> I), (M --> X),  is(I,"&&"), subOf(I,X)     |-   (M -->   without( I,  X)),   (Goal:DecomposePN)
+    (M --> I), (M --> X),  is(I,"&&"), subOf(I,X)     |-   (M -->   without( I,  X)),   (Goal:DecomposePP)
+    (M --> I), (M --> X),  is(I,"&&"), subOf(I,--X)   |-   (M -->   without( I,  --X)),   (Goal:DecomposePN)
       (M --> I), (M --> X),  is(I,"&&"), subOf(I,X)   |- --(M -->   without( I,  X)),   (Goal:DecomposeNP)
+      (M --> I), (M --> X),  is(I,"&&"), subOf(I,--X) |- --(M -->   without( I,  --X)),   (Goal:DecomposeNN)
 
-    (M --> --%I), (M --> X), is(%I,"&&"), subOf(%I,--X)  |- --(M --> --without(%I,--X)), (Goal:DecomposeNP)
-      (M --> --%I), (M --> X), is(%I,"&&"), subOf(%I,--X)  |-   (M --> --without(%I,--X)), (Goal:DecomposePN)
+    (--%I --> M), (X --> M), is(%I,"&&"), subOf(%I,--X)  |-   (--without(%I,--X) --> M),   (Goal:DecomposePP)
+    (--%I --> M), (X --> M), is(%I,"&&"), subOf(%I,X)  |-   (--without(%I,X) --> M),   (Goal:DecomposePN)
+      (--%I --> M), (X --> M), is(%I,"&&"), subOf(%I,--X)  |- --(--without(%I,--X) --> M),   (Goal:DecomposeNP)
+      (--%I --> M), (X --> M), is(%I,"&&"), subOf(%I,X)  |- --(--without(%I,X) --> M),   (Goal:DecomposeNN)
+
+    (M --> --%I), (M --> X), is(%I,"&&"), subOf(%I,--X)  |-   (M --> --without(%I,--X)), (Goal:DecomposePP)
+    (M --> --%I), (M --> X), is(%I,"&&"), subOf(%I,X)  |-   (M --> --without(%I,X)), (Goal:DecomposePN)
+      (M --> --%I), (M --> X), is(%I,"&&"), subOf(%I,--X)  |- --(M --> --without(%I,--X)), (Goal:DecomposeNP)
+      (M --> --%I), (M --> X), is(%I,"&&"), subOf(%I,X)  |- --(M --> --without(%I,X)), (Goal:DecomposeNN)
+

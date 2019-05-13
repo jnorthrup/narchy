@@ -63,21 +63,61 @@ public class NAL3Test extends NALTest {
 
     }
 
+    public static class GoalDoublePremiseDecompose extends NALTest {
+        @Override
+        protected NAR nar() {
+            NAR n = NARS.tmp(3, 3);
+            n.termVolumeMax.set(8);
+            return n;
+        }
+        public static final int cycles = 900;
 
-    @Test
-    void goal_decomposition_1_intersection() {
-        test.termVolMax(8);
 
-        test.input("(x --> (bird & swimmer))! %0.9;0.9%");
-        test.input("(x --> swimmer). %0.9;0.9%");
-        test.mustGoal(cycles, "(x --> bird)", 0.81f, 0.66f);
+        @Test
+        void goal_decomposition_1_intersection_subj() {
+            test.termVolMax(8);
+            test.input("((bird && swimmer) --> x)! %0.9;0.9%");
+            test.input("(swimmer --> x). %0.9;0.9%");
+            test.mustGoal(cycles, "(bird --> x)", 0.81f, 0.66f);
+        }
+
+        @Test
+        void goal_decomposition_1_intersection_pred_pos_pos() {
+            test.termVolMax(8);
+            test.input("(x --> (bird && swimmer))! %0.9;0.9%");
+            test.input("(x --> swimmer). %0.9;0.9%");
+            test.mustGoal(cycles, "(x --> bird)", 0.81f, 0.66f);
+        }
+        @Test
+        void goal_decomposition_1_intersection_pred_pos_neg() {
+            test.termVolMax(8);
+            test.input("(x --> (bird && --swimmer))! %0.9;0.9%");
+            test.input("(x --> swimmer). %0.1;0.9%");
+            test.mustGoal(cycles, "(x --> bird)", 0.81f, 0.66f);
+        }
+        @Test
+        void goal_decomposition_1_intersection_pred_neg_pos() {
+            test.termVolMax(8);
+            test.input("(x --> (bird && swimmer))! %0.1;0.9%");
+            test.input("(x --> swimmer). %0.9;0.9%");
+            test.mustGoal(cycles, "(x --> bird)", 0.19f, 0.66f);
+        }
+        @Test
+        void goal_decomposition_1_intersection_pred_neg_neg() {
+            test.termVolMax(8);
+            test.input("(x --> (bird && --swimmer))! %0.1;0.9%");
+            test.input("(x --> swimmer). %0.1;0.9%");
+            test.mustGoal(cycles, "(x --> bird)", 0.19f, 0.66f);
+        }
+
     }
+
 
     @Test
     void goal_decomposition_1_union() {
         test.termVolMax(8);
 
-        test.input("(x --> (bird | swimmer))! %0.9;0.9%");
+        test.input("(x --> (bird || swimmer))! %0.9;0.9%");
         test.input("(x --> swimmer). %0.1;0.9%");
         test.mustGoal(cycles, "(x --> bird)", 0.81f, 0.66f);
     }
@@ -202,7 +242,7 @@ public class NAL3Test extends NALTest {
     void sect_compound_decomposition_single2() {
 
         TestNAR tester = test;
-        tester.believe("((dinosaur | ant) --> youth)", 0.9f, 0.9f);
+        tester.believe("((dinosaur && ant) --> youth)", 0.9f, 0.9f);
         tester.mustBelieve(cycles, "(dinosaur --> youth)", 0.9f, 0.73f);
 
     }
