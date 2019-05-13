@@ -268,6 +268,7 @@ public class PremiseRule extends ProxyTerm {
                 case "eventOf":
                 case "eventOfNeg": {
                     neq(XX, YY);
+                    bigger(XX,YY);
                     boolean yNeg = pred.contains("Neg");
                     constraints.add((UnifyConstraint)(new SubOfConstraint(XX, YY, Event, yNeg ? -1 : +1).negIf(negated)));
 
@@ -309,6 +310,7 @@ public class PremiseRule extends ProxyTerm {
 
                 case "eventOfPN":
                     neq(XX, YY);
+                    bigger(XX,YY);
                     is(X, CONJ);
 
                     eventable(YY);

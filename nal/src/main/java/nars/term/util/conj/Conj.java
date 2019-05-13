@@ -1495,6 +1495,8 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
                         Term[] ee = d.subterms().removing(incoming);
                         if (ee == null)
                             throw new WTF();
+                        if (ee.length == 0)
+                            e = False; //totally removed; when negated will become True and disappear
                         if (ee.length > 1)
                             e = CONJ.the(ddt, ee);
                         else
