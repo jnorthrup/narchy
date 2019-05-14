@@ -36,7 +36,6 @@ class ImplTest {
 
     @Test
     void testReducibleImplFactored() {
-        assertEq("((x&&y)=|>z)", "((x &| y) =|> (y &| z))");
         assertEq("((x&&y)==>z)", "((x &| y) ==> (y &| z))");
     }
 
@@ -52,7 +51,7 @@ class ImplTest {
     void testReducibleImplFactored2() {
         assertEq("((x&&y)==>z)", "((y && x) ==> (y && z))");
         assertEq("((&&,a,x,y)==>z)", "((&&, x, y, a) ==> (y && z))");
-        assertEq("((y &&+1 x)=|>(z &&+1 y))", "((y &&+1 x)=|>(z &&+1 y))");
+        assertEq("((y &&+1 x)==>(z &&+1 y))", "((y &&+1 x)==>(z &&+1 y))");
     }
 
     @Test
@@ -72,16 +71,16 @@ class ImplTest {
 
         assertEq("(--,((--,x)==>y))", "(--x ==> (--y && --x))");
 
-        assertEq("(x=|>y)", "(x ==>+0 (y &| x))");
-        assertEq(Bool.True, "((y &| x) =|> x)");
-        assertEq("(--,((--,$1)=|>#2))", "((--,$1)=|>((--,$1)&|(--,#2)))");
+        assertEq("(x==>y)", "(x ==> (y &| x))");
+        assertEq(Bool.True, "((y &| x) ==> x)");
+        assertEq("(--,((--,$1)==>#2))", "((--,$1)==>((--,$1)&|(--,#2)))");
     }
 
     @Test
     void testReducibleImplConjCoNeg() {
         assertEq(False, "((y && --x) ==> x)");
 
-        for (String i : new String[]{"==>", "=|>"}) {
+        for (String i : new String[]{"==>"/*, "=|>"*/}) {
             for (String c : new String[]{"&&"}) {
                 assertEq(False, "(x " + i + " (y " + c + " --x))");
                 assertEq(False, "(--x " + i + " (y " + c + " x))");
@@ -94,15 +93,15 @@ class ImplTest {
 
     @Test
     void testReducibleImplParallelNeg() {
-        assertEq("(--,((--,x)=|>y))", "(--x =|> (--y && --x))");
-        assertEq(Bool.True, "((--y && --x) =|> --x)");
+        assertEq("(--,((--,x)==>y))", "(--x ==> (--y && --x))");
+        assertEq(Bool.True, "((--y && --x) ==> --x)");
 
     }
 
     @Test
     void testInvalidCircularImpl() throws Narsese.NarseseException {
         assertNotEquals(Null, $("(x(intValue,(),1) ==>+10 ((--,x(intValue,(),0)) &| x(intValue,(),1)))"));
-        assertEq("(--,(x(intValue,(),1)=|>x(intValue,(),0)))", "(x(intValue,(),1) =|> ((--,x(intValue,(),0)) &| x(intValue,(),1)))");
+        assertEq("(--,(x(intValue,(),1)==>x(intValue,(),0)))", "(x(intValue,(),1) ==> ((--,x(intValue,(),0)) &| x(intValue,(),1)))");
     }
 
     @Test
@@ -161,9 +160,9 @@ class ImplTest {
 
     @Test
     void implSubjSimultaneousWithTemporalPred() {
-        Term x = $$("((--,(tetris-->happy))=|>(tetris(isRow,(2,true),true) &&+5 (tetris-->happy)))");
+        Term x = $$("((--,(tetris-->happy))==>(tetris(isRow,(2,true),true) &&+5 (tetris-->happy)))");
         assertEquals(
-                "((--,(tetris-->happy))=|>(tetris(isRow,(2,true),true) &&+5 (tetris-->happy)))",
+                "((--,(tetris-->happy))==>(tetris(isRow,(2,true),true) &&+5 (tetris-->happy)))",
                 x.toString());
     }
 
@@ -204,9 +203,9 @@ class ImplTest {
         assertEq("((x&&y)==>z)", "((x&&y)==>z)"); //unchanged
         assertEq("((x&&y) ==>+- z)", "((x&&y) ==>+- z)"); //unchanged
 
-        assertEq("((x&&y)=|>z)", "((x&&y)=|>z)");  //temporal now
+        assertEq("((x&&y)==>z)", "((x&&y)=|>z)");  //temporal now
         assertEq("((x&&y) ==>+1 z)", "((x&&y) ==>+1 z)");
-        assertEq("(z=|>(x&&y))", "(z=|>(x&&y))");
+        assertEq("(z==>(x&&y))", "(z=|>(x&&y))");
     }
 
 
@@ -237,8 +236,8 @@ class ImplTest {
         assertEquals($$("((c &&+1 d),x)").volume() + 2, $$("((x&|c),(x&|d))").volume()); //factored form results in 2 volume savings
 
         assertEq(
-                //"(((a &&+1 b)&&x)==>((c &&+1 d)&&x))", //same
-                "(((a &&+1 b)&&x)==>(c &&+1 d))",
+                "(((a &&+1 b)&&x)==>((c &&+1 d)&&x))", //same
+                //"(((a &&+1 b)&&x)==>(c &&+1 d))",
                 "((x&&(a &&+1 b)) ==> (x&&(c &&+1 d)))");
 
 
@@ -263,8 +262,9 @@ class ImplTest {
     void testElimination4() {
         Compound x2 = $$("((a &&+5 b) ==>+1 (b &&+5 c))");
         assertEq("((a &&+5 b) ==>+5 c)", x2.dt(0));
+        assertEq("((a &&+5 b) ==>+5 c)", x2.dt(DTERNAL));
         assertEq("((a &&+5 b) ==>+- (b &&+5 c))", x2.dt(XTERNAL));
-        assertEq("((a &&+5 b)==>c)", x2.dt(DTERNAL));
+
     }
 
 
@@ -311,7 +311,7 @@ class ImplTest {
     @Test
     void testCoNegatedImpl() {
         TermTestMisc.assertValidTermValidConceptInvalidTaskContent(("(--x ==> x)."));
-        TermTestMisc.assertValidTermValidConceptInvalidTaskContent(("(--x =|> x)."));
+//        TermTestMisc.assertValidTermValidConceptInvalidTaskContent(("(--x =|> x)."));
     }
 
     @Test

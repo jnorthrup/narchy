@@ -189,7 +189,7 @@ public enum ConjCommutive {;
                 int coi = seq.first(true);
                 Term co = u[coi];
 
-                if ((dt == DTERNAL) || (co.dt() == DTERNAL)) {
+                if ((dt == DTERNAL) || (co.dt() == DTERNAL) || (co.dt()==XTERNAL)) {
                     int indep = 0, elim = 0;
                     int cos = co.structure();
                     for (int i = 0; i < u.length; i++) {
@@ -217,12 +217,7 @@ public enum ConjCommutive {;
                         return co; //all absorbed
 
 
-                } /*else if (dt == 0 || dt == DTERNAL) {
-                    if (co.dt() == XTERNAL) {
-                        //allow because there is no way to know what the correspondence of timing is
-                        return conjDirect(dt, u);
-                    }
-                }*/
+                }
             }
 
         }

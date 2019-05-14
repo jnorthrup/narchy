@@ -311,7 +311,7 @@ class NarseseExtendedTest extends NarseseTest {
     void testParallelTemporals() throws Narsese.NarseseException {
 
         
-        Assertions.assertEquals("(a=|>b)", NarseseTest.term("(a =|> b)").toString());
+        Assertions.assertEquals("(a==>b)", NarseseTest.term("(a =|> b)").toString());
     }
 
     @Test

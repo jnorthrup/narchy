@@ -248,7 +248,7 @@ class TermLinkTest {
 
     @Test
     void testImplicateInhSet() {
-        testTemplates("(($1-->[melted])=|>($1-->[pliable]))",
+        testTemplates("(($1-->[melted])==>($1-->[pliable]))",
                 "[($1-->[melted]), ($1-->[pliable])]");
     }
     @Test

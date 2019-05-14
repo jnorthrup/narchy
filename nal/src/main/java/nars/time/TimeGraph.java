@@ -475,7 +475,9 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
                     Term subj = eventTerm.sub(0), pred = eventTerm.sub(1);
                     Event se = know(subj), pe = know(pred);
 
-                    if (edt == DTERNAL) {
+                    if (edt == DTERNAL)
+                        edt = 0;
+                    //if (edt == DTERNAL) {
 
                         //link(se, ETERNAL, pe);
 
@@ -494,7 +496,8 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 //                            return true;
 //                        }, 0, false, true, false);
 
-                    } else if (edt == XTERNAL) {
+
+                    if (edt == XTERNAL) {
                         /* without any absolute context */
                     } else {
                         link(se, edt + subj.eventRange(), pe);

@@ -313,7 +313,7 @@ class TimeGraphTest {
 
     @Test
     void testImplCross_Subj_DternalConj() throws Narsese.NarseseException {
-        for (String inner : new String[]{" ==>+1 ", " ==>-1 ", "=|>" }) {
+        for (String inner : new String[]{" ==>+1 ", " ==>-1 ", "==>" }) {
             TimeGraph C = newTimeGraph(1);
             C.know($("((a&&x)" + inner + "b)"), 1);
             assertSolved("(a ==>+- b)", C, "(a" + inner + "b)");
@@ -321,7 +321,7 @@ class TimeGraphTest {
     }
     @Test
     void testImplCross_Pred_DternalConj() throws Narsese.NarseseException {
-        for (String inner : new String[]{" ==>+1 ", " ==>-1 ", "=|>" }) {
+        for (String inner : new String[]{" ==>+1 ", " ==>-1 ", "==>" }) {
             TimeGraph C = newTimeGraph(1);
             C.know($("(b" + inner + "(a&&x))"), 1);
             C.print();

@@ -687,8 +687,8 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
 
             default: {
                 Op o = Op.stringToOperator.get(op);
-                if (o == null)
-                    throw new UnsupportedOperationException();
+//                if (o == null)
+//                    throw new UnsupportedOperationException();
                 return o.the(subs);
             }
         }

@@ -138,18 +138,7 @@ class NAL3GoalTest {
 //                .run(16);
 //    }
 
-    @Test
-    void intersectionGoalInduction() {
-        NAR n = NARS.tmp(3);
-        new BatchDeriver(Derivers.files(n, "induction.goal.nal"));
-        new TestNAR(n)
-                .termVolMax(8)
-                .input("(X --> Z)!")
-                .input("((X|Y) --> Z).")
-                .mustGoal(cycles, "((X|Y) --> Z)", 1, 0.81f)
-                .run(0);
-        //TODO other cases
-    }
+
 
     @Test
     void intersectionGoalDecomposition() {

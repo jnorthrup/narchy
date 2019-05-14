@@ -31,8 +31,6 @@ class DepIndepVarIntroductionTest {
         assertEquals("[((a-->$1)==>(b-->$1))]",
                 introduce("((a-->c)==>(b-->c))", 16).toString());
 
-        assertEquals("[((a-->$1)=|>(b-->$1))]",
-                introduce("((a-->c)=|>(b-->c))", 16).toString());
     }
 
     @Test
@@ -46,13 +44,13 @@ class DepIndepVarIntroductionTest {
         assertEq("x", r[1]);
 
 
-        assertEquals("[((a-->($_v,#1))=|>(b-->($_v,#1))), ((a-->$_v)=|>(b-->$_v))]",
+        assertEquals("[((a-->($_v,#1))==>(b-->($_v,#1))), ((a-->$_v)==>(b-->$_v))]",
                 introduce(x, 16).toString());
     }
 
     @Test
     void testDontIntroduceIndepVarInNeg() {
-        String x = "((a,--(x,#1))=|>(b,--(x,#1)))";
+        String x = "((a,--(x,#1))==>(b,--(x,#1)))";
         Term input = $$(x);
         @Nullable Term[] r = Terms.nextRepeat(input.subterms(), nonNegdepIndepFilter, 2);
         assertNotNull(r);

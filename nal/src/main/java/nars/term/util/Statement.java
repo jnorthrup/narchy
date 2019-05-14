@@ -22,9 +22,14 @@ import static nars.time.Tense.*;
 public class Statement {
 
 
+    static final int mobiusExcept = Op.or(/*CONJ, */VAR_PATTERN);
+
     public static Term statement(TermBuilder B, Op op, int dt, Term subject, Term predicate) {
         if (subject == Null || predicate == Null)
             return Null;
+
+        if (op == IMPL && dt == DTERNAL)
+            dt = 0; //temporarily use dt=0
 
         boolean dtConcurrent = dt != XTERNAL && Conj.concurrent(dt);
 
@@ -36,7 +41,7 @@ public class Statement {
 
 
             if (op == INH || op == SIM) {
-                  if (subject.unneg().equalsRoot(predicate.unneg()))
+                if (subject.unneg().equalsRoot(predicate.unneg()))
                     return Null; //dont support non-temporal statements where the root is equal because they cant be conceptualized
             }
         }
@@ -147,7 +152,7 @@ public class Statement {
                         if (predChange) {
 
                             if (newPred instanceof Bool)
-                                return newPred; //collapse
+                                return newPred.negIf(negate); //collapse
 
 
                             if (dt != DTERNAL) {
@@ -187,9 +192,10 @@ public class Statement {
         }
 
 
+
         if ((op != IMPL)
-                || (dt == DTERNAL) /* allow parallel IMPL unless there is a sequence that could separate the events from overlap */
-                || (dt == 0 && !Conj.isSeq(subject) && !Conj.isSeq(predicate))
+                || (dt == 0) /* allow parallel IMPL unless there is a sequence that could separate the events from overlap */
+                //|| (dt == 0 && !Conj.isSeq(subject) && !Conj.isSeq(predicate))
         ) {
             if ((statementLoopy(subject.unneg(), predicate.unneg())))
                 return Null;
@@ -213,29 +219,30 @@ public class Statement {
 //            }
 //            }
 
+        if (NAL.term.INH_CLOSED_BOOLEAN_DUALITY_MOBIUS_PARADIGM) {
             if (op == INH /*|| op == SIM*/) {
-                if (NAL.term.INH_CLOSED_BOOLEAN_DUALITY_MOBIUS_PARADIGM) {
-                    boolean sn = subject.op() == NEG && !subject.unneg().op().isAny(mobiusExcept);
-                    boolean pn = predicate.op() == NEG && !predicate.unneg().op().isAny(mobiusExcept);
-                    if (!sn && !pn) {
-                        //normal
-                    } else if (sn && pn) {
-                        //double-negative
-
-                        //return Null; // (--x --> --y) => (x --> y)??
-
-                        subject = subject.unneg();
-                        predicate = predicate.unneg();
-
-                    } else if (sn) {
-                        negate = !negate;
-                        subject = subject.unneg();
-                    } else /* pn */ {
-                        negate = !negate;
-                        predicate = predicate.unneg();
-                    }
+                //boolean sn = subject.op() == NEG && !subject.unneg().op().isAny(mobiusExcept);
+                boolean pn = predicate.op() == NEG && !predicate.unneg().op().isAny(mobiusExcept);
+//                if (!sn && !pn) {
+//                    //normal
+//                } else if (sn && pn) {
+//                    //double-negative
+//
+////                    subject = subject.unneg();
+////                    predicate = predicate.unneg();
+//
+//                } else
+//                    if (sn) {
+//                    negate = !negate;
+//                    subject = subject.unneg();
+//                } else /* pn */ {
+                if (pn) {
+                    //(a --> --b) |- --(a --> b)   but (--a --> b) != --(a --> b)
+                    negate = !negate;
+                    predicate = predicate.unneg();
                 }
             }
+        }
 
         if (op == SIM) {
             if (subject.compareTo(predicate) > 0) {
@@ -247,7 +254,6 @@ public class Statement {
         }
 
 
-
         if (op == INH && !NAL.term.INH_IMAGE_RECURSION) {
             Term inhCollapsed = Image.recursionFilter(subject, predicate);
             if (inhCollapsed instanceof Bool)
@@ -255,13 +261,13 @@ public class Statement {
         }
 
 
-        Term t = B.theCompound(op, dt, subject, predicate);
+        if (op == IMPL && dt == 0)
+            dt = DTERNAL; //generalize to DTERNAL ==>
 
+        Term t = B.theCompound(op, dt, subject, predicate);
 
 
         return t.negIf(negate);
     }
-
-    static final int mobiusExcept = Op.or(CONJ, VAR_PATTERN);
 
 }
