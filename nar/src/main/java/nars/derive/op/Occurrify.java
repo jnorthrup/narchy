@@ -67,6 +67,7 @@ public class Occurrify extends TimeGraph {
 
     private final Derivation d;
     int absolutePoints = 5;
+    int novelPoints = 2;
     int noXternalPoints = 3;
     int sameAsPatternRootPoints = 1;
     private transient boolean decomposeEvents;
@@ -290,8 +291,10 @@ public class Occurrify extends TimeGraph {
             Event s = solutions.get(i);
             Term st = s.id;
             int points = 0;
-            if (!occ || !(s instanceof Relative)) {
+            if (occ && s instanceof Absolute) {
                 points += absolutePoints;
+                if (node(s)==null)
+                    points += novelPoints;
             }
             if (st.equalsRoot(pattern)) {
                 points += sameAsPatternRootPoints;

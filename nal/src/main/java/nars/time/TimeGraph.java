@@ -1287,7 +1287,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
     private boolean solveOccurrence(Term x, boolean finish, Predicate<Event> each) {
         if (!validPotentialSolution(x)) return true;
 
-        return solveOccurrence(finish ? know(x) : shadow(x), finish, each);
+        return solveOccurrence(shadow(x), finish, each);
     }
 
 //    final boolean bfsPush(Event root, Search<Event, TimeSpan> tv) {
@@ -1319,7 +1319,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 //                solveExact(x, each) &&
                && (x.id.hasXternal() || bfsAdd(x, new OccSolver(true, true, autoneg, each)))
                //&& bfsNew(List.of(x), new OccSolver(false, false, true, each))
-               //&& solveSelfLoop(x, each)
+               && solveSelfLoop(x, each)
 //               && (!autoneg || bfsNew(x.neg(), new OccSolver(true, false, true,
 //                    z -> each.test(z.neg()))))
                && (!finish || solveLastResort(x, each))

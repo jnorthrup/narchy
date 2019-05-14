@@ -153,7 +153,14 @@ class TimeGraphTest {
         assertSolved("(a &&+- c)", cc1,
                 "(a &&+10 c)@1");
     }
+    @Test
+    void testImplSame() throws Narsese.NarseseException {
+        TimeGraph cc1 = newTimeGraph(1);
+        cc1.know($("(x ==>+1 x)"));
+        cc1.know($("x"), 0);
 
+        assertSolved("x", cc1, "x@-1", "x@0", "x@1");
+    }
     @Test
     void testExact() throws Narsese.NarseseException {
 

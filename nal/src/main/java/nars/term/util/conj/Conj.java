@@ -11,6 +11,7 @@ import nars.subterm.Subterms;
 import nars.term.Term;
 import nars.term.Terms;
 import nars.term.atom.Bool;
+import nars.term.util.TermException;
 import nars.term.util.builder.TermBuilder;
 import nars.term.util.map.ByteAnonMap;
 import org.eclipse.collections.api.block.predicate.primitive.ByteObjectPredicate;
@@ -1509,12 +1510,12 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
                             D.addAuto(d);
                             boolean removed = D.removeAll(incoming);
                             if (!removed)
-                                throw new WTF();
+                                throw new TermException("could not remove " + incoming, d);
                         } else {
                             D.add(0, d);
                             boolean removed = D.remove(offset, incoming);
                             if (!removed)
-                                throw new WTF();
+                                throw new TermException("could not remove " + incoming + " @ " + offset, d);
                         }
 
                         //assert(removed);
