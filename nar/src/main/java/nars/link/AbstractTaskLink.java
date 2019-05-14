@@ -31,7 +31,7 @@ public abstract class AbstractTaskLink implements TaskLink {
     private volatile float pri = 0;
 
     protected AbstractTaskLink(Term self) {
-        this(self.concept(), null);
+        this(self, null);
     }
 
     protected AbstractTaskLink(Term source, Term target) {
@@ -40,8 +40,8 @@ public abstract class AbstractTaskLink implements TaskLink {
         target = target != null ?
                 (target.op().conceptualizable ?
                         target.concept() : target
-                ) :
-                source; //loop
+                )
+                : source; //loop
 
         if (source instanceof Bool)
             throw new TermException("source bool", source);

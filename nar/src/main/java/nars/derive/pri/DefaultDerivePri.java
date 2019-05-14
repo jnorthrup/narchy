@@ -31,8 +31,12 @@ public class DefaultDerivePri implements DerivePri {
     /** occam's razor - increase this discriminate more heavily against more complex derivations */
     public final FloatRange simplicityImportance = new FloatRange(1f, 0f, 8f);
 
+
+    public final FloatRange simplicityExponent = new FloatRange(3f, 0f, 4f);
+
+
     /** importance of frequency polarity in result (distance from freq=0.5) */
-    public final FloatRange polarityImportance = new FloatRange(0.1f, 0f, 1f);
+    public final FloatRange polarityImportance = new FloatRange(0.25f, 0f, 1f);
 
     @Override
     public float pri(Task t, Derivation d) {
@@ -78,16 +82,19 @@ public class DefaultDerivePri implements DerivePri {
 //    }
 
     float factorComplexityRelative(Task t, Derivation d) {
-        float pCompl = d.parentVoluplexitySum;
-        float dCompl = t.voluplexity();
+        float pComplSum = d.parentVolumeSum;
+        float pCompl = pComplSum / 2; //average
+        float dCompl = t.volume();
         float f =
+                //pCompl / (pCompl + dCompl);
                 pCompl / (pCompl + dCompl);
                 //1f / (1f + Math.max(0, dCompl/(dCompl+pCompl)));
                 //1f / (1f + Math.max(0, (dCompl - pCompl)) / pCompl);
                 //1f-Util.unitize((dCompl - pCompl) / pCompl );
 
+        float ff = (float) Math.pow(f, simplicityExponent.floatValue());
 
-        return Util.lerp(simplicityImportance.floatValue(), 1f, f);
+        return Util.lerp(simplicityImportance.floatValue(), 1f, ff);
     }
 
     float factorPolarity(float freq) {

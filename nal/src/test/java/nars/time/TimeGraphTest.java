@@ -155,11 +155,10 @@ class TimeGraphTest {
     }
     @Test
     void testImplSame() throws Narsese.NarseseException {
-        TimeGraph cc1 = newTimeGraph(1);
-        cc1.know($("(x ==>+1 x)"));
-        cc1.know($("x"), 0);
-
-        assertSolved("x", cc1, "x@-1", "x@0", "x@1");
+        TimeGraph c = newTimeGraph(1);
+        c.know($("(x ==>+1 x)"));
+        c.know($("x"), 0);
+        assertSolved("x", c, "x@-1", "x@0", "x@1");
     }
     @Test
     void testExact() throws Narsese.NarseseException {
@@ -362,10 +361,7 @@ class TimeGraphTest {
         int NA = 1; //Not/Applicable
         C.know($("(x ==>+1 y)"), NA);
         C.know($("(x ==>+2 z)"), NA);
-        C.print();
-
-        assertSolved("(x ==>+- (y &&+- z))", C,
-                "(x ==>+1 (y &&+1 z))");
+        assertSolved("(x ==>+- (y &&+- z))", C, "(x ==>+1 (y &&+1 z))");
 
     }
 
