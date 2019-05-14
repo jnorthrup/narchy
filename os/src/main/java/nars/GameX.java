@@ -380,13 +380,13 @@ abstract public class GameX extends Game {
         );
 
         n.confMin.set(0.01f);
-        n.termVolumeMax.set(36);
+        n.termVolumeMax.set(30);
 
 
 
 
         n.beliefPriDefault.amp(0.05f);
-        n.goalPriDefault.amp(0.1f);
+        n.goalPriDefault.amp(0.2f);
         n.questionPriDefault.amp(0.01f);
         n.questPriDefault.amp(0.01f);
 
