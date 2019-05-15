@@ -8,6 +8,7 @@ import jcog.data.graph.MapNodeGraph;
 import jcog.data.graph.Node;
 import jcog.data.graph.path.FromTo;
 import jcog.data.graph.search.Search;
+import jcog.data.iterator.CartesianIterator;
 import jcog.data.list.FasterList;
 import jcog.data.set.ArrayHashSet;
 import jcog.math.LongInterval;
@@ -612,86 +613,11 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
             assert (x.op() == CONJ);
 
             List<Event>[] subEvents = new FasterList[s];
-            int abs = 0;
-            for (int i = 0; i < s; i++) {
-                FasterList<Event> f = new FasterList();
-                solveExact(xx.sub(i), (se)->{
-                    f.add(se);
-                    //return false; //one should be enough
-                    return true;
-                });
-                subEvents[i] = f;
-                if (!f.isEmpty()) {
-                    f.shuffleThis(this::random);
-                    abs++;
-                }
+            int abs = solveAbsolutes(xx, s, subEvents);
 
-            }
             if (abs > 0) {
-                //TODO allow solving subset >=2 not just all s
-
-                Term unknown = null;
-                if (abs < s) {
-                    if (s - abs > 1) {
-                        Term[] unknowns = new Term[s - abs]; //assume in correct order
-                        int j = 0;
-                        for (int i = 0; i < s; i++)
-                            if (subEvents[i].isEmpty())
-                                unknowns[j++] = xx.sub(i);
-                        unknown = CONJ.the(XTERNAL, unknowns);
-                    } else {
-                        for (int i = 0; i < s; i++) {
-                            if (subEvents[i].isEmpty()) {
-                                unknown = xx.sub(i);
-                                break;
-                            }
-                        }
-                    }
-                    assert(unknown!=null);
-                }
-
-                long start = Long.MAX_VALUE, range = Long.MAX_VALUE;
-                Term nextKnown = null;
-                if (abs > 1) {
-                    //absolute value for each is known
-                    //TODO permute these. this just takes the first of each
-                    Conj cc = new Conj(s);
-                    for (int i = 0; i < s; i++) {
-                        if (!subEvents[i].isEmpty()) {
-                            Event e = subEvents[i].get(0);
-                            long es = e.start();
-                            start = Math.min(es, start);
-                            range = range > 0 ? Math.min(e.end() - es, range) : 0;
-                            if (!cc.add(es, e.id))
-                                break;
-                        }
-                    }
-
-                    nextKnown = cc.term();
-
-                } else {
-                    for (int i = 0; i < s; i++) {
-                        if (!subEvents[i].isEmpty()) {
-                            Event e = subEvents[i].get(0);
-                            nextKnown = e.id;
-                            start = e.start();
-                            range = e.end() - start;
-                            break;
-                        }
-                    }
-                }
-
-                if (nextKnown != False && nextKnown != Null) {
-                    assert (nextKnown != null);
-                    if (unknown != null) {
-                        nextKnown = CONJ.the(XTERNAL, nextKnown, unknown);
-                    }
-
-                    if (validPotentialSolution(nextKnown)) {
-                        if (!each.test(event(nextKnown, start, start + range, false)))
-                            return false;
-                    }
-                }
+                if (!solveAbsolutePermutations(each, xx, s, subEvents, abs))
+                    return false;
             } else {
 
 
@@ -721,6 +647,98 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
         }
 
 
+    }
+
+    private int solveAbsolutes(Subterms xx, int s, List<Event>[] subEvents) {
+        int abs = 0;
+        for (int i = 0; i < s; i++) {
+            FasterList<Event> f = new FasterList();
+            solveExact(xx.sub(i), (se)->{
+                f.add(se);
+                //return false; //one should be enough
+                return true;
+            });
+            subEvents[i] = f;
+            if (!f.isEmpty()) {
+                f.shuffleThis(this::random);
+                abs++;
+            }
+
+        }
+        return abs;
+    }
+
+    private boolean solveAbsolutePermutations(Predicate<Event> each, Subterms xx, int s, List<Event>[] subEvents, int abs) {
+
+        Term unknown = unknownComponent(xx, s, subEvents, abs);
+
+        long start = Long.MAX_VALUE, range = Long.MAX_VALUE;
+
+        //CartesianIterator ci = new CartesianIterator(Event[]::new, subEvents);
+
+        Term nextKnown = null;
+        if (abs > 1) {
+            //absolute value for each is known
+            //TODO permute these. this just takes the first of each
+            Conj cc = new Conj(s);
+            for (int i = 0; i < s; i++) {
+                if (!subEvents[i].isEmpty()) {
+                    Event e = subEvents[i].get(0);
+                    long es = e.start();
+                    start = Math.min(es, start);
+                    range = range > 0 ? Math.min(e.end() - es, range) : 0;
+                    if (!cc.add(es, e.id))
+                        break;
+                }
+            }
+
+            nextKnown = cc.term();
+
+        } else {
+            for (int i = 0; i < s; i++) {
+                if (!subEvents[i].isEmpty()) {
+                    Event e = subEvents[i].get(0);
+                    nextKnown = e.id;
+                    start = e.start();
+                    range = e.end() - start;
+                    break;
+                }
+            }
+        }
+
+        if (nextKnown != False && nextKnown != Null) {
+
+            if (unknown != null) {
+                nextKnown = CONJ.the(XTERNAL, nextKnown, unknown);
+            }
+
+            if (validPotentialSolution(nextKnown)) {
+                if (!each.test(event(nextKnown, start, start + range, false)))
+                    return false;
+            }
+        }
+        return true;
+    }
+
+    static private Term unknownComponent(Subterms xx, int s, List<Event>[] subEvents, int abs) {
+        if (abs < s) {
+            if (s - abs > 1) {
+                Term[] unknowns = new Term[s - abs]; //assume in correct order
+                int j = 0;
+                for (int i = 0; i < s; i++)
+                    if (subEvents[i].isEmpty())
+                        unknowns[j++] = xx.sub(i);
+                return CONJ.the(XTERNAL, unknowns);
+            } else {
+                for (int i = 0; i < s; i++) {
+                    if (subEvents[i].isEmpty()) {
+                        return xx.sub(i);
+                    }
+                }
+                throw new UnsupportedOperationException();
+            }
+        } else
+            return null;
     }
 
 

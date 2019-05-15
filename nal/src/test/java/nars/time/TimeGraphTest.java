@@ -233,11 +233,30 @@ class TimeGraphTest {
         assertSolved("(&&+-, a,b,c)", C, "((a &&+1 b) &&+1 c)@1");
     }
     @Test
-    void testConj3b() throws Narsese.NarseseException {
+    void testConj3_parallel_seq() throws Narsese.NarseseException {
         TimeGraph C = newTimeGraph(1);
         C.know($("(a&&b)"), 1);
         C.know($("c"), 2);
         assertSolved("(&&+-, a,b,c)", C, "((a&&b) &&+1 c)@1");
+    }
+    @Test
+    void testConj3_multiple_solutions() throws Narsese.NarseseException {
+        TimeGraph C = newTimeGraph(1);
+        C.know($("a"), 1);
+        C.know($("a"), 0);
+        C.know($("b"), 2);
+        C.know($("c"), 3);
+        assertSolved("(&&+-, a,b,c)", C, "((a &&+1 b) &&+1 c)@1", "((a &&+2 b) &&+1 c)@0");
+    }
+
+    @Test
+    void testConj3_repeat() throws Narsese.NarseseException {
+        TimeGraph C = newTimeGraph(1);
+        C.know($("(a ==>+1 a)"));
+        C.know($("a"), 0);
+        C.know($("b"), 2);
+        C.know($("c"), 3);
+        assertSolved("(&&+-, (a &&+- a),b,c)", C, "(((a &&+1 a) &&+1 b) &&+1 c)@0");
     }
 
     @Test

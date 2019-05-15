@@ -29,26 +29,26 @@ public class CartesianIterator<X> implements Iterator<X[]> {
 
 		boolean empty = false;
 
-		
 		for (int i = 0; i < size; i++) {
 			Iterator<X> ii = iterables[i].iterator();
-			
 			if (!ii.hasNext()) {
 				empty = true;
 				break;
 			}
 			iterators[i] = ii;
 		}
-		this.iterators = iterators;
 
 		
 		if (!empty) {
+			this.iterators = iterators;
+			this.iterables = iterables;
 			values = arrayBuilder.apply(size);
-			for (int i = 0; i < size-1; i++) setNextValue(i);
+			setNextValues(0, size-1);
 		} else {
-			values = null;
+			this.values = null;
+			this.iterators = null;
+			this.iterables = null;
 		}
-		this.iterables = iterables;
 	}
 
 	@Override
@@ -67,26 +67,41 @@ public class CartesianIterator<X> implements Iterator<X[]> {
 		int cursor;
 		int size = iterables.length;
 		for (cursor = size-1; cursor >= 0; cursor--)
-			if (iterators[cursor].hasNext()) break;
+			if (iterators[cursor].hasNext())
+				break;
 		
 		for (int i = cursor+1; i < size; i++)
 			iterators[i] = iterables[i].iterator();
-		
-		
-		for (int i = cursor; i < size; i++) setNextValue(i);
-		return values.clone();
+
+		setNextValues(cursor, size);
+
+		return cloneNext() ? values.clone() : values;
 	}
+
+	private void setNextValues(int cursor, int size) {
+		for (int i = cursor; i < size; i++)
+			setNextValue(i);
+	}
+
+	/** if true, the value returned by next() will be cloned.  otherwise it is re-used in next iteration */
+	protected boolean cloneNext() {
+		return false;
+	}
+
 	/**
 	 * Gets the next value provided there is one from the iterator at the given index. 
 	 * @param index
 	 */
 	private void setNextValue(int index) {
 		Iterator<X> it = iterators[index];
+		//TODO elide singleton iterator replacement
 		if (it.hasNext())
 			values[index] = it.next();
 	}
+
 	@Override
 	public void remove() { throw new UnsupportedOperationException(); }
+
 }
   
 
