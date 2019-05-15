@@ -613,10 +613,10 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
             assert (x.op() == CONJ);
 
             List<Event>[] subEvents = new FasterList[s];
-            int abs = solveAbsolutes(xx, s, subEvents);
+            int abs = solveAbsolutes(xx, subEvents);
 
             if (abs > 0) {
-                if (!solveAbsolutePermutations(each, xx, s, subEvents, abs))
+                if (!solveAbsolutePermutations(xx, subEvents, abs, each))
                     return false;
             } else {
 
@@ -649,8 +649,9 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 
     }
 
-    private int solveAbsolutes(Subterms xx, int s, List<Event>[] subEvents) {
+    private int solveAbsolutes(Subterms xx, List<Event>[] subEvents) {
         int abs = 0;
+        int s = subEvents.length;
         for (int i = 0; i < s; i++) {
             FasterList<Event> f = new FasterList();
             solveExact(xx.sub(i), (se)->{
@@ -668,44 +669,68 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
         return abs;
     }
 
-    private boolean solveAbsolutePermutations(Predicate<Event> each, Subterms xx, int s, List<Event>[] subEvents, int abs) {
+    private boolean solveAbsolutePermutations(Subterms xx, List<Event>[] subEvents, int abs, Predicate<Event> each) {
 
-        Term unknown = unknownComponent(xx, s, subEvents, abs);
+        Term unknown = unknownComponent(xx, subEvents, abs);
 
         long start = Long.MAX_VALUE, range = Long.MAX_VALUE;
 
-        //CartesianIterator ci = new CartesianIterator(Event[]::new, subEvents);
 
-        Term nextKnown = null;
+        int s = subEvents.length;
         if (abs > 1) {
             //absolute value for each is known
-            //TODO permute these. this just takes the first of each
-            Conj cc = new Conj(s);
-            for (int i = 0; i < s; i++) {
-                if (!subEvents[i].isEmpty()) {
-                    Event e = subEvents[i].get(0);
-                    long es = e.start();
-                    start = Math.min(es, start);
-                    range = range > 0 ? Math.min(e.end() - es, range) : 0;
-                    if (!cc.add(es, e.id))
-                        break;
+
+            for (int i = 0, subEventsLength = subEvents.length; i < subEventsLength; i++) {
+                if (subEvents[i].isEmpty())
+                    subEvents[i] = null;
+            }
+            List<Event>[] subEvents2 = ArrayUtil.removeNulls(subEvents);
+
+            CartesianIterator<Event> ci = new CartesianIterator(Event[]::new, subEvents2);
+            while (ci.hasNext()) {
+
+                Event[] ss = ci.next();
+                Conj cc = new Conj(abs);
+                for (int i = 0; i < abs; i++) {
+                    Event e = ss[i];
+//                    if (!ii.isEmpty()) {
+//                        Event e = ii.get(0);
+                        long es = e.start();
+                        start = Math.min(es, start);
+                        range = range > 0 ? Math.min(e.end() - es, range) : 0;
+                        if (!cc.add(es, e.id))
+                            break;
+//                    }
                 }
+
+                Term nextKnown = cc.term();
+                if (!nextAbsolutePermutation(each, unknown, start, range, nextKnown))
+                    return false;
             }
 
-            nextKnown = cc.term();
-
         } else {
+
+            int w = -1;
             for (int i = 0; i < s; i++) {
                 if (!subEvents[i].isEmpty()) {
-                    Event e = subEvents[i].get(0);
-                    nextKnown = e.id;
-                    start = e.start();
-                    range = e.end() - start;
+                    w = i;
                     break;
                 }
             }
+            List<Event> ss = subEvents[w];
+            for (Event e : ss) {
+                Term nextKnown = e.id;
+                start = e.start();
+                range = e.end() - start;
+                if (!nextAbsolutePermutation(each, unknown, start, range, nextKnown))
+                    return false;
+            }
         }
 
+        return true;
+    }
+
+    private boolean nextAbsolutePermutation(Predicate<Event> each, Term unknown, long start, long range, Term nextKnown) {
         if (nextKnown != False && nextKnown != Null) {
 
             if (unknown != null) {
@@ -717,10 +742,11 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
                     return false;
             }
         }
-        return true;
+        return true; //continue
     }
 
-    static private Term unknownComponent(Subterms xx, int s, List<Event>[] subEvents, int abs) {
+    static private Term unknownComponent(Subterms xx, List<Event>[] subEvents, int abs) {
+        int s = subEvents.length;
         if (abs < s) {
             if (s - abs > 1) {
                 Term[] unknowns = new Term[s - abs]; //assume in correct order
@@ -1218,8 +1244,6 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
                 }
                 break;
             default:
-                //TODO cartesian product of terms. could be expensive
-                //for now randomize and start with first entry
                 List<Pair<Compound, Compound[]>> substs = new FasterList();
                 final int[] permutations = {1};
                 subSolved.forEach((h, w) -> {
