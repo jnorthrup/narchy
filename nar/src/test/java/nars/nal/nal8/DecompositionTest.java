@@ -63,7 +63,7 @@ public class DecompositionTest extends NALTest {
     void testDisjBeliefNeg() {
 
         test
-                .termVolMax(5)
+                .termVolMax(6)
                 .input("(||,--a,b).  %0.9;0.9%")
                 .input("a.  %0.9;0.9%")
                 .mustBelieve(cycles, "b", 0.81f, 0.66f);
@@ -139,7 +139,7 @@ public class DecompositionTest extends NALTest {
         test
                 .input("(||,--x,y).")
                 .input("--x!")
-                .mustGoal(cycles, "y", 1f, 0.45f);
+                .mustGoal(cycles, "y", 0f, 0.45f);
     }
     @Test
     void test_Pos_GoalInDisj3_AlternateSuppression_1() {
