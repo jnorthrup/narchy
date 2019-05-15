@@ -15,6 +15,7 @@
     //(A ==> C), X, eventOfPN(C,X), --isVar(A)   |-   polarizeTask((A ==> conjWithoutPN(C,  X))), (Belief:StructuralDeductionDepolarized)
 
          (A ==> C), X, eventOfPN(C,X), task("?"), --isVar(A)   |- (A ==> conjWithoutPN(C,  X)), (Punctuation:Question)
+         (A ==> C), C, task("?")   |- C, (Punctuation:Question)
 
     //impl conj subj belief and question free structural implication decomposition
     (  C ==> A), X, eventOfPN(C,X), --isVar(A)   |- polarizeTask((  conjWithoutPN(C,    X) ==> A)), (Belief:StructuralDeductionWeakDepolarized)
@@ -22,11 +23,13 @@
        //(  C ==> A), X, eventOfPN(C,X), --isVar(A)   |- polarizeTask((  conjWithoutPN(C,    X) ==> A)), (Belief:StructuralReductionDepolarized)
 
         (C ==> A), X, eventOfPN(C,X), task("?"), --isVar(A)   |- (conjWithoutPN(C,  X) ==> A), (Punctuation:Question)
+        (C ==> A), E, task("?")   |- C, (Punctuation:Question)
 
     //impl disj subj belief and question free structural implication decomposition
     //(--D ==> A), X, eventOfPN(D,X), --isVar(A)   |- polarizeTask((--conjWithoutPN(D,  --X) ==> A)), (Belief:StructuralReductionDepolarized)
 
         (--D ==> A), X, eventOfPN(D,X), task("?"), --isVar(A)   |- (--conjWithoutPN(D,  --X) ==> A), (Punctuation:Question)
+        (--D ==> A), D, task("?")   |- D, (Punctuation:Question)
 
 
 

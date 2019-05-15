@@ -141,7 +141,7 @@ public class IntermpolationTest {
     void testIntermpolationImplDirectionMismatch() throws Narsese.NarseseException {
         Compound a = $.$("(a ==>+1 b)");
         Compound b = $.$("(a ==>-1 b))");
-        RevisionTest.permuteChoose(a, b, "[(a ==>-1 b), (a==>b), (a ==>+1 b)]");
+        RevisionTest.permuteChoose(a, b, "[(a==>b), (a ==>-1 b), (a ==>+1 b)]");
     }
 
 
@@ -336,8 +336,9 @@ public class IntermpolationTest {
 
 
             String abpill = "((a==>b)-->[pill])";
-            assertEquals("((a ==>+- b)-->[pill])", $$("((a ==>+- b)-->[pill])").concept().toString());
-            assertEquals("((a ==>+- b)-->[pill])", $$(abpill).concept().toString());
+            assertEquals("(a ==>+- a)", $$("(a ==>+- a)").concept().toString());
+            assertEquals("((a==>b)-->[pill])", $$("((a ==>+- b)-->[pill])").concept().toString());
+            assertEquals("((a==>b)-->[pill])", $$(abpill).concept().toString());
 
             TaskConcept cc = (TaskConcept) n.conceptualize(abpill);
             assertNotNull(cc);
@@ -356,7 +357,7 @@ public class IntermpolationTest {
             cc.print();
 
 
-            assertEquals(correctMerge, cc.beliefs().match((long) 0, (long) 0, null, 0, n).term().toString());
+            assertEquals(correctMerge, cc.beliefs().match(0, 0, null, 0, n).term().toString());
         }
     }
 

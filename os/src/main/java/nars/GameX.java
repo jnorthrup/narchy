@@ -481,8 +481,7 @@ abstract public class GameX extends Game {
 
         //new StatementLinker(n);
         //new PuncNoise(n);
-        //n.add(Eternalizer.class);
-        n.start(new Eternalizer(n));
+        //n.start(new Eternalizer(n));
 
 //        new STMLinkage(n, 1);
 

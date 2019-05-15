@@ -1049,10 +1049,20 @@ public class NAL5Test extends NALTest {
         test
                 .ask("((x&&y)==>z)")
                 .mustQuestion(cycles, "(x&&y)")
-                .mustQuestion(cycles, "(x ==> z)")
-                .mustQuestion(cycles, "(y ==> z)")
+                .mustQuestion(cycles, "(x ==>+- z)")
+                .mustQuestion(cycles, "(y ==>+- z)")
 //                .mustQuestion(cycles, "(x==>(y&&z))")
 //                .mustQuestion(cycles, "(y==>(x&&z))")
+        ;
+    }
+
+    @Test
+    void conjPreconditionDecompositionToImpl_BackChaining_Question_neg() {
+        test
+                .ask("(--(x&&y)==>z)")
+                .mustQuestion(cycles, "(x&&y)")
+                .mustQuestion(cycles, "(x ==>+- z)")
+                .mustQuestion(cycles, "(y ==>+- z)")
         ;
     }
 
@@ -1060,9 +1070,9 @@ public class NAL5Test extends NALTest {
     void conjPostconditionDecompositionToImpl_BackChaining_Question() {
         test
                 .ask("(z==>(x&&y))")
-                .mustQuestion(cycles, "(x&&y)")
-                .mustQuestion(cycles, "(z ==> x)")
-                .mustQuestion(cycles, "(z ==> y)")
+                .mustQuestion(cycles, "(x &&+- y)")
+                .mustQuestion(cycles, "(z ==>+- x)")
+                .mustQuestion(cycles, "(z ==>+- y)")
         ;
     }
 

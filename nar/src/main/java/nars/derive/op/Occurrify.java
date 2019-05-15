@@ -92,47 +92,47 @@ public class Occurrify extends TimeGraph {
         if (!d.temporal)
             return false;
 
-        //HACK reset to the input
-        d.taskStart = d._task.start();
-        d.taskEnd = d._task.end();
-        if (d._belief != null && !d.concSingle) {
-            d.beliefStart = d._belief.start();
-            d.beliefEnd = d._belief.end();
-
-            boolean taskEternal = d.taskStart == ETERNAL;
-            if (truth.beliefProjection == BeliefProjection.Belief || taskEternal) {
-
-                //unchanged: d.beliefStart = d._belief.start();  d.beliefEnd = d._belief.end();
-
-            } else if (truth.beliefProjection == BeliefProjection.Task) {
-
-                boolean bothNonEternal = d.taskStart != ETERNAL && d._belief.start() != ETERNAL;
-                if (bothNonEternal && d.taskTerm.op().temporal && !d.beliefTerm.op().temporal) {
-
-                    //mask task's occurrence, focusing on belief's occ
-                    d.beliefStart = d.taskStart = d._belief.start();
-                    d.taskEnd = d.taskStart + (d._task.range() - 1);
-                    d.beliefEnd = d._belief.end();
-
-                } else {
-
-                    if (d._belief.isEternal()) {
-                        d.beliefStart = d.beliefEnd = ETERNAL; //keep eternal
-                    } else {
-                        //the temporal belief has been shifted to task in the truth computation
-                        long range = (taskEternal || d._belief.start() == ETERNAL) ? 0 : d._belief.range() - 1;
-                        d.beliefStart = d.taskStart;
-                        d.beliefEnd = d.beliefStart + range;
-                    }
-                }
-            } else {
-
-                throw new UnsupportedOperationException();
-            }
-
-        } else {
-            d.beliefStart = d.beliefEnd = TIMELESS;
-        }
+//        //HACK reset to the input
+//        d.taskStart = d._task.start();
+//        d.taskEnd = d._task.end();
+//        if (d._belief != null && !d.concSingle) {
+//            d.beliefStart = d._belief.start();
+//            d.beliefEnd = d._belief.end();
+//
+//            boolean taskEternal = d.taskStart == ETERNAL;
+//            if (truth.beliefProjection == BeliefProjection.Belief || taskEternal) {
+//
+//                //unchanged: d.beliefStart = d._belief.start();  d.beliefEnd = d._belief.end();
+//
+//            } else if (truth.beliefProjection == BeliefProjection.Task) {
+//
+//                boolean bothNonEternal = d.taskStart != ETERNAL && d._belief.start() != ETERNAL;
+//                if (bothNonEternal && d.taskTerm.op().temporal && !d.beliefTerm.op().temporal) {
+//
+//                    //mask task's occurrence, focusing on belief's occ
+//                    d.beliefStart = d.taskStart = d._belief.start();
+//                    d.taskEnd = d.taskStart + (d._task.range() - 1);
+//                    d.beliefEnd = d._belief.end();
+//
+//                } else {
+//
+//                    if (d._belief.isEternal()) {
+//                        d.beliefStart = d.beliefEnd = ETERNAL; //keep eternal
+//                    } else {
+//                        //the temporal belief has been shifted to task in the truth computation
+//                        long range = (taskEternal || d._belief.start() == ETERNAL) ? 0 : d._belief.range() - 1;
+//                        d.beliefStart = d.taskStart;
+//                        d.beliefEnd = d.beliefStart + range;
+//                    }
+//                }
+//            } else {
+//
+//                throw new UnsupportedOperationException();
+//            }
+//
+//        } else {
+//            d.beliefStart = d.beliefEnd = TIMELESS;
+//        }
         return d.temporalTerms || (d.taskStart != ETERNAL) || (d.beliefStart != ETERNAL && d.beliefStart != TIMELESS);
     }
 
@@ -238,9 +238,9 @@ public class Occurrify extends TimeGraph {
     private static long[] rangeCombine(Derivation d, OccIntersect mode) {
         long beliefStart = d.beliefStart;
         if (d.concSingle || (d._belief == null || d.beliefStart == ETERNAL))
-            return occ(d._task);
+            return new long[] { d.taskStart, d.taskEnd };
         else if (d.taskStart == ETERNAL)
-            return occ(d._belief);
+            return new long[] { d.beliefStart, d.beliefEnd };
         else {
             long taskStart = d.taskStart;
 
@@ -364,19 +364,23 @@ public class Occurrify extends TimeGraph {
             //taskStart = taskEnd = TIMELESS;
             //taskStart = taskEnd = d.time();
 
-            if (time.beliefProjection()==BeliefProjection.Task) {
-                //eternal task projected to virtual present moment
-                long now = d.time();
-                int dur = d.dur();
-                taskStart = now - dur / 2;
-                taskEnd = now + dur / 2;
-            } else {
+//            if (time.beliefProjection()==BeliefProjection.Task) {
+//                //eternal task projected to virtual present moment
+//                long now = d.time();
+//                int dur = d.dur();
+//                taskStart = now - dur / 2;
+//                taskEnd = now + dur / 2;
+//            } else {
                 //eternal task projected to belief's time
                 taskStart = beliefStart;
                 taskEnd = beliefEnd;
-            }
+//            }
 
-        } else if (beliefStart!=TIMELESS && taskStart != ETERNAL) {
+        } else if (beliefStart == ETERNAL && taskStart!=ETERNAL) {
+            beliefStart = taskStart;
+            beliefEnd = taskEnd;
+        }
+            /*else if (beliefStart!=TIMELESS && taskStart != ETERNAL) {
             //conditions for considering vs ignoring belief occurrence:
             boolean ignoreBeliefOcc = false;
             if (beliefStart == ETERNAL)
@@ -386,7 +390,7 @@ public class Occurrify extends TimeGraph {
 
             if (ignoreBeliefOcc)
                 beliefStart = beliefEnd = TIMELESS;
-        }
+        }*/
 
         final Term taskTerm = d.retransform(d.taskTerm);
         Term beliefTerm;
@@ -490,7 +494,7 @@ public class Occurrify extends TimeGraph {
 
                     if (r > 0 && d.concTruth != null) {
                         //HACK decrease evidence by proportion of time expanded
-                        float ratio = (float) (((double) d._task.range()) / (1 + o[1] - o[0]));
+                        float ratio = (float) (((double) (1 + d.taskEnd - d.taskStart)) / (1 + o[1] - o[0]));
                         if (!d.concTruthEviMul(ratio, false))
                             return null;
                     }
@@ -599,7 +603,7 @@ public class Occurrify extends TimeGraph {
                         y = ConjSeq.sequence(bb, 0, tt, Tense.dither(tTime - bTime, ditherDT), terms);
 
                     //dont dither occ[] here, since it will be done in Taskify
-                    long range = Math.max(Math.min(d._task.range(), d._belief.range()) - 1, 0);
+                    long range = Math.max(Math.min((1 + d.taskEnd - d.taskStart), (1 + d.beliefEnd - d.beliefStart)) - 1, 0);
                     occ = new long[]{earlyStart, earlyStart + range};
                 }
 

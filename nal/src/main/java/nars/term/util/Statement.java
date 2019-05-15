@@ -1,5 +1,6 @@
 package nars.term.util;
 
+import jcog.WTF;
 import nars.NAL;
 import nars.Op;
 import nars.term.Compound;
@@ -192,10 +193,9 @@ public class Statement {
         }
 
 
-
         if ((op != IMPL)
-                || (dt == 0) /* allow parallel IMPL unless there is a sequence that could separate the events from overlap */
-                //|| (dt == 0 && !Conj.isSeq(subject) && !Conj.isSeq(predicate))
+                //|| (dt == 0) /* allow parallel IMPL unless there is a sequence that could separate the events from overlap */
+                || (dt == 0 && !Conj.isSeq(subject) && !Conj.isSeq(predicate))
         ) {
             if ((statementLoopy(subject.unneg(), predicate.unneg())))
                 return Null;

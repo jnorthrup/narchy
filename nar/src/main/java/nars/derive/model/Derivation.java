@@ -320,6 +320,14 @@ public class Derivation extends PreDerivation {
 
                 boolean taskEternal = taskStart == ETERNAL;
 
+                if (taskEternal) {
+                    int dur = dur();
+                    long now = time();
+                    taskStart = now - dur/2;
+                    taskEnd = now + dur/2;
+                    taskEternal = false;
+                }
+
                 this.beliefTruthTask =
                         taskEternal ?
                                 beliefTruthBelief :
@@ -346,7 +354,10 @@ public class Derivation extends PreDerivation {
             this.beliefTerm = anon.putShift(this._beliefTerm = nextBelief.term(), taskTerm);
         } else {
             this.beliefTruthBelief = this.beliefTruthTask = null;
+
+            this.taskStart = _task.start(); this.taskEnd = _task.end(); //HACK reset task start in case it was changed
             this.beliefStart = this.beliefEnd = TIMELESS;
+
             this._beliefTerm = nextBeliefTerm;
             this.beliefTerm =
                     !(nextBeliefTerm instanceof Variable) ?
@@ -654,8 +665,8 @@ public class Derivation extends PreDerivation {
     public Term retransform(Term x) {
         Term y = x;
 
-//        if (y.hasAny(VAR_DEP.bit | VAR_INDEP.bit | VAR_QUERY.bit))
-//            y = transform().apply(y);
+        if (y.hasAny(VAR_DEP.bit | VAR_INDEP.bit | VAR_QUERY.bit))
+            y = transform().apply(y);
 
         if (!retransform.isEmpty())
             y = y.replace(retransform); //substitution/unification derivation functors only

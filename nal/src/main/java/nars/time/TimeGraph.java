@@ -614,17 +614,18 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
             List<Event>[] subEvents = new FasterList[s];
             int abs = 0;
             for (int i = 0; i < s; i++) {
-                List<Event> f = subEvents[i] = new FasterList();
-                solveOccurrence(xx.sub(i), false, (se)->{
-                    if (se instanceof Absolute) {
-                        f.add(se);
-                        return false; //one should be enough
-                    } else {
-                        return true;
-                    }
+                FasterList<Event> f = new FasterList();
+                solveExact(xx.sub(i), (se)->{
+                    f.add(se);
+                    //return false; //one should be enough
+                    return true;
                 });
-                if(!f.isEmpty())
+                subEvents[i] = f;
+                if (!f.isEmpty()) {
+                    f.shuffleThis(this::random);
                     abs++;
+                }
+
             }
             if (abs > 0) {
                 //TODO allow solving subset >=2 not just all s
@@ -1037,25 +1038,25 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
     }
 
 
-//    private boolean solveExact(Event f, Predicate<Event> each) {
-//        if (f instanceof Absolute && !f.id.hasXternal()) {
-//            return each.test(f);
-//        } else {
-//
-//            //try exact absolute solutions
-//
-//            for (Event e : events(f.id)) {
-//                if (e instanceof Absolute && ((!(f instanceof Absolute)) || !e.equals(f)) && !each.test(e))
-//                    return false;
-//            }
-//
-//            return true;
-//        }
-//    }
+    private boolean solveExact(Event f, Predicate<Absolute> each) {
+        if (f instanceof Absolute && !f.id.hasXternal()) {
+            return each.test((Absolute) f);
+        } else {
 
-//    private boolean solveExact(Term x, Predicate<Event> each) {
-//        return solveExact(null, each, x);
-//    }
+            //try exact absolute solutions
+
+            for (Event e : events(f.id)) {
+                if (e instanceof Absolute && !each.test((Absolute)e))
+                    return false;
+            }
+
+            return true;
+        }
+    }
+
+    private boolean solveExact(Term x, Predicate<Absolute> each) {
+        return solveExact(shadow(x), each);
+    }
 
     //    @Nullable
 //    private Event onlyAbsolute(Term x) {
