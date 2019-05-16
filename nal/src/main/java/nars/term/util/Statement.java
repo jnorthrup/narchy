@@ -1,6 +1,5 @@
 package nars.term.util;
 
-import jcog.WTF;
 import nars.NAL;
 import nars.Op;
 import nars.term.Compound;
@@ -11,6 +10,7 @@ import nars.term.util.conj.Conj;
 import nars.term.util.conj.ConjBuilder;
 import nars.term.util.conj.ConjDiff;
 import nars.term.util.conj.ConjSeq;
+import nars.term.var.ellipsis.Ellipsis;
 import nars.time.Tense;
 
 import static nars.Op.*;
@@ -103,93 +103,76 @@ public class Statement {
             //TODO simple case when no CONJ or IMPL are present
 
             if (dt != XTERNAL) {
-                int subjDT = subject.dt();
-                if (subjDT != XTERNAL && predicate.dt() != XTERNAL) { // && !subject.OR(x->x instanceof Ellipsis) && !predicate.OR(x->x instanceof Ellipsis) ) {
 
-                    if (!(subject instanceof Compound) && !(predicate instanceof Compound)) {
-                        //no validity test necessary
-                    } else if (!Term.commonStructure(subject, predicate)) {
-                        //no validity test necessary
-                    } else if (subject instanceof Compound && !(predicate instanceof Compound) && !subject.containsRecursively(predicate)) {
-                        //no validity test necessary
-                    } else if (predicate instanceof Compound && !(subject instanceof Compound) && !predicate.containsRecursively(subject)) {
-                        //no validity test necessary
-                    } else {
+                if (!(subject instanceof Compound) && !(predicate instanceof Compound)) {
+                    //no validity test necessary
+                } else if (!Term.commonStructure(subject, predicate)) {
+                    //no validity test necessary
+//                    } else if (subject instanceof Compound && !(predicate instanceof Compound) && !subject.containsRecursively(predicate)) {
+//                        //no validity test necessary
+//                    } else if (predicate instanceof Compound && !(subject instanceof Compound) && !predicate.containsRecursively(subject)) {
+//                        //no validity test necessary
+                } else if (subject.dt() == XTERNAL || predicate.dt() == XTERNAL) { // && !subject.OR(x->x instanceof Ellipsis) && !predicate.OR(x->x instanceof Ellipsis) ) {
+                    //do not reduce
+                } else if (Ellipsis.firstEllipsis(subject) != null || Ellipsis.firstEllipsis(predicate) != null) {
+                    //do not reduce
+                } else {
 
-                        long so, po; //subject and predicate occurrences
+                    int subjRange = subject.eventRange();
+                    long po = subjRange + dt; //predicate occurrence
 
-                        so = subjDT != DTERNAL ? 0 : (dt != DTERNAL ? 0 : ETERNAL);
-                        po = (subjDT != DTERNAL || predicate.dt() != DTERNAL) ?
-                                (dt != DTERNAL ? dt : 0)
-                                :
-                                (dt != DTERNAL ? dt : ETERNAL);
-
-                        int subjRange = subject.eventRange();
-                        if (po != ETERNAL) {
-                            po += subjRange;
-                            if (so == ETERNAL)
-                                so = 0;
-                        }
+                    //subtract any common subject components from predicate
+                    ConjBuilder newPredConj = ConjDiff.the(predicate, po, subject, 0);
+                    Term newPred = newPredConj.term(B);
 
 
-//                    //test for validity by creating the hypothetical conjunction analog of the implication
-//                    Conj x = new Conj();
-//                    if (!x.addAt(so, subject))
-//                        throw new WTF();
-//                    if (!x.addAt(po, predicate))
-//                        return False;
-//                    Term cx = x.target();
-//                    if (cx instanceof Bool)
-//                        return cx;
+                    boolean predChange = !predicate.equals(newPred);
 
-                        //subtract any common subject components from predicate
-                        boolean subjNeg = subject.op() == NEG;
-                        ConjBuilder newPredConj = ConjDiff.the(predicate, po, subject.negIf(subjNeg), so, subjNeg);
-                        Term newPred = newPredConj.term(B);
+                    if (predChange) {
+
+                        if (newPred instanceof Bool)
+                            return newPred.negIf(negate); //collapse
 
 
-                        boolean predChange = !predicate.equals(newPred);
-
-                        if (predChange) {
-
-                            if (newPred instanceof Bool)
-                                return newPred.negIf(negate); //collapse
-
-
-                            if (dt != DTERNAL) {
-                                long shift = newPredConj.shift();
-                                if (shift == ETERNAL) {
-                                    //??
-                                    dt = DTERNAL;
-                                } else {
+                        if (dt != DTERNAL) {
+                            long shift = newPredConj.shift();
+                            if (shift == ETERNAL) {
+                                //??
+                                dt = DTERNAL;
+                            } else {
 //
 
-                                    dt = Tense.occToDT(shift - subjRange);
+                                dt = Tense.occToDT(shift - subjRange);
 
-                                    if (newPred.dt() == 0 && predicate.dt() == DTERNAL && predicate.subterms().equals(newPred.subterms())) {
-                                        //HACK return to dternal
-                                        if (newPred instanceof Compound)
-                                            newPred = ((Compound) newPred).dt(DTERNAL, B);
+                                if (newPred.dt() == 0 && predicate.dt() == DTERNAL && predicate.subterms().equals(newPred.subterms())) {
+                                    //HACK return to dternal
+                                    if (newPred instanceof Compound)
+                                        newPred = ((Compound) newPred).dt(DTERNAL, B);
 
-                                    }
                                 }
-
                             }
 
-                            if (!newPred.equals(predicate)) { //HACK check again
+                        }
+
+                        if (newPred.op()==NEG) { //attempt to exit infinite loop of negations
+                            newPred = newPred.unneg();
+                            negate = !negate;
+                        }
+
+                        if (!newPred.equals(predicate)) { //HACK check again
 //                            try {
-                                return statement(B, IMPL, dt, subject, newPred).negIf(negate); //recurse
+                            return statement(B, IMPL, dt, subject, newPred).negIf(negate); //recurse
 //                            } catch (StackOverflowError e) {
 //                                System.out.println("stack overflow: ==> " + subject + ' ' + dt + ' ' + newPred + '<' + predicate);
 //                                throw new WTF("stack overflow: ==> " + subject + ' ' + dt + ' ' + newPred + '<' + predicate);
 //                            }
-                            }
-
                         }
 
                     }
+
                 }
             }
+
         }
 
 

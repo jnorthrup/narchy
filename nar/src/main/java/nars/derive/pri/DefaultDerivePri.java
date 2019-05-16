@@ -36,7 +36,7 @@ public class DefaultDerivePri implements DerivePri {
 
 
     /** importance of frequency polarity in result (distance from freq=0.5) */
-    public final FloatRange polarityImportance = new FloatRange(0.25f, 0f, 1f);
+    public final FloatRange polarityImportance = new FloatRange(0.1f, 0f, 1f);
 
     @Override
     public float pri(Task t, Derivation d) {

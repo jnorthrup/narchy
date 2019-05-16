@@ -54,13 +54,13 @@
       (M --> I), (M --> X),  sectOf(I,X)   |- --(M -->   unsect( I,  X)),   (Goal:DecomposeNP)
       (M --> I), (M --> X),  sectOf(I,--X) |- --(M -->   unsect( I,  --X)),   (Goal:DecomposeNN)
 
-    (--%I --> M), (X --> M), sectOf(%I,--X)  |-   (--unsect(%I,--X) --> M),   (Goal:DecomposePP)
-    (--%I --> M), (X --> M), sectOf(%I,X)  |-   (--unsect(%I,X) --> M),   (Goal:DecomposePN)
-      (--%I --> M), (X --> M), sectOf(%I,--X)  |- --(--unsect(%I,--X) --> M),   (Goal:DecomposeNP)
-      (--%I --> M), (X --> M), sectOf(%I,X)  |- --(--unsect(%I,X) --> M),   (Goal:DecomposeNN)
+    (--%I --> M), (X --> M), sectOf(%I,--X)  |-   (--unsect(%I,--X) --> M),   (Goal:DecomposePN)
+    (--%I --> M), (X --> M), sectOf(%I,X)  |-   (--unsect(%I,X) --> M),   (Goal:DecomposePP)
+      (--%I --> M), (X --> M), sectOf(%I,--X)  |- --(--unsect(%I,--X) --> M),   (Goal:DecomposeNN)
+      (--%I --> M), (X --> M), sectOf(%I,X)  |- --(--unsect(%I,X) --> M),   (Goal:DecomposeNP)
 
-    (M --> --%I), (M --> X), sectOf(%I,--X)  |-   (M --> --unsect(%I,--X)), (Goal:DecomposePP)
-    (M --> --%I), (M --> X), sectOf(%I,X)  |-   (M --> --unsect(%I,X)), (Goal:DecomposePN)
-      (M --> --%I), (M --> X), sectOf(%I,--X)  |- --(M --> --unsect(%I,--X)), (Goal:DecomposeNP)
-      (M --> --%I), (M --> X), sectOf(%I,X)  |- --(M --> --unsect(%I,X)), (Goal:DecomposeNN)
+    (M --> --%I), (M --> X), sectOf(%I,--X)  |-   (M --> --unsect(%I,--X)), (Goal:DecomposePN)
+    (M --> --%I), (M --> X), sectOf(%I,X)  |-   (M --> --unsect(%I,X)), (Goal:DecomposePP)
+      (M --> --%I), (M --> X), sectOf(%I,--X)  |- --(M --> --unsect(%I,--X)), (Goal:DecomposeNN)
+      (M --> --%I), (M --> X), sectOf(%I,X)  |- --(M --> --unsect(%I,X)), (Goal:DecomposeNP)
 

@@ -2,8 +2,6 @@ package nars.nal.nal3;
 
 import nars.NAR;
 import nars.NARS;
-import nars.derive.BatchDeriver;
-import nars.derive.Derivers;
 import nars.test.NALTest;
 import nars.test.TestNAR;
 import org.junit.jupiter.api.Test;

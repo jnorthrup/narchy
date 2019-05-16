@@ -452,7 +452,8 @@ public class TermReductionsTest extends NarseseTest {
         assertEq("(((x &&+1 y) &&+- z) ==>+1 w)",
                 "((x &&+1 y) ==>+- (z ==>+1 w))");
 
-        assertEq("(((x &&+1 y)&&z) ==>+1 w)",
+        assertEq(//"(((x &&+1 y)&&z) ==>+1 w)",
+                "((x &&+1 (y&&z)) ==>+1 w)",
                 "((x &&+1 y) ==> (z ==>+1 w))");
 
         assertEq("(((x &&+1 y) &&+1 z) ==>+1 w)",

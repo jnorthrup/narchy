@@ -784,12 +784,27 @@ public class UnifyTest {
     }
 
     @Test
-    void implXternal() {
+    void implXternal_pattern_var() {
         test(Op.VAR_PATTERN,
                 "((--,%1) ==>+- %2)",
                 "((--,(_1&&_2))==>_3)",
                 true);
     }
+    @Test
+    void implXternal() {
+        test(Op.VAR_PATTERN,
+                "(x ==>+- y)",
+                "(x ==>+1 y)",
+                true);
+    }
+    @Test
+    void conjXternal() {
+        test(Op.VAR_PATTERN,
+                "(x &&+- y)",
+                "(x &&+1 y)",
+                true);
+    }
+
     @Test void testConjInConjConstantFail() {
         test(Op.VAR_PATTERN,
                 "((_1&|_2) &&+5 ((--,_1)&|(--,_2)))",

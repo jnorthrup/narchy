@@ -577,21 +577,21 @@ public interface Compound extends Term, IPair, Subterms {
                         Term factor = ConjSeq.seqEternal(ss, eteComponents);
 
                         return seq.eventsWhile(
-                            (!decomposeConjDTernal) ?
+//                            (!decomposeConjDTernal) ?
                                 (when, what) -> {
                                  //combine the component with the eternal factor
                                     Term distributed = CONJ.the(what, factor);
 
                                     if (distributed.op() != CONJ)
-                                        throw new TermTransformException(Compound.this, distributed,
-                                                "invalid conjunction factorization");
+                                        throw new TermTransformException("invalid conjunction factorization", Compound.this, distributed
+                                        );
 
                                     return each.accept(when, distributed);
                                 }
-                                :
-                                (when,what) ->
-                                    //provide the component and the eternal separately, at the appropriate time
-                                    each.accept(when, what) && each.accept(when, factor)
+//                                :
+//                                (when,what) ->
+//                                    //provide the component and the eternal separately, at the appropriate time
+//                                    each.accept(when, what) && each.accept(when, factor)
 
                         , offset, decomposeConjDTernal, decomposeXternal);
 

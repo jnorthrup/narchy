@@ -1,15 +1,12 @@
 package nars.derive.op;
 
 import nars.$;
-import nars.derive.model.Derivation;
-import nars.derive.model.DerivationFailure;
 import nars.term.ProxyTerm;
 import nars.term.Term;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
+import nars.term.util.TermTransformException;
 import nars.term.util.transform.Retemporalize;
-
-import static nars.derive.model.DerivationFailure.Success;
 
 /**
  * Derivation target construction step of the derivation process that produces a derived task
@@ -41,7 +38,8 @@ public final class Termify extends ProxyTerm {
 
         this.patternEternal = Retemporalize.retemporalizeXTERNALToDTERNAL.apply(pattern);
 
-        assert (pattern.equals(patternEternal) || pattern.root().equals(patternEternal.root()));
+        if (!(pattern.equals(patternEternal) || pattern.root().equals(patternEternal.root())))
+            throw new TermTransformException("pattern eternalization mismatch", pattern, patternEternal);
 
 
         this.truth = truth;

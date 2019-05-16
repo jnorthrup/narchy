@@ -4,6 +4,7 @@ import jcog.util.ArrayUtil;
 import nars.term.Term;
 import org.jetbrains.annotations.Nullable;
 
+import static nars.Op.NEG;
 import static nars.time.Tense.ETERNAL;
 
 public final class ConjDiff extends Conj {
@@ -16,11 +17,12 @@ public final class ConjDiff extends Conj {
     private final boolean excludeEventAtEternal;
 
     public static ConjBuilder the(Term include, long includeAt, Term exclude, long excludeAt) {
-        return the(include, includeAt, exclude, excludeAt, false);
+        boolean eNeg = exclude.op() == NEG;
+        return the(include, includeAt, eNeg ? exclude.unneg() : exclude, excludeAt, eNeg);
     }
 
 
-    public static ConjBuilder the(Term include, long includeAt, Term exclude, long excludeAt, boolean invert) {
+    private static ConjBuilder the(Term include, long includeAt, Term exclude, long excludeAt, boolean invert) {
         return the(include, includeAt, exclude, excludeAt, invert, null);
     }
 
@@ -32,11 +34,11 @@ public final class ConjDiff extends Conj {
     }
 
     private static ConjDiff the(Term include, long includeAt, boolean invert, Conj exclude) {
-        if (exclude.eventCount(ETERNAL)>0 && exclude.event.size() > 1) {
-            //has both eternal and temporal components;
-            // mask the eternal components so they are not eliminated from the result
-            exclude.removeAll(ETERNAL);
-        }
+//        if (exclude.eventCount(ETERNAL)>0 && exclude.event.size() > 1) {
+//            //has both eternal and temporal components;
+//            // mask the eternal components so they are not eliminated from the result
+//            exclude.removeAll(ETERNAL);
+//        }
 
         ConjDiff c = new ConjDiff(include, exclude, invert);
         c.add(includeAt, include);

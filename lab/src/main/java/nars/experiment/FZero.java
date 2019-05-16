@@ -353,13 +353,14 @@ public class FZero extends GameX {
 
         float res = 0.05f;
         float powerScale = 0.1f;
-        float rotSpeed = 0.25f;
+        float rotSpeed = 0.75f;
         final float[] left = new float[1];
         final float[] right = new float[1];
         float fwdSpeed = 75;
 
         final Atom TANK = Atomic.atom("tank");
         actionUnipolar($.inh(id,$.p(TANK, NAct.NEG)), (x) -> {
+            if (x <= 0.5f) return 0;
             float power = 2*(x-0.5f) * powerScale;
             left[0] = power;
             fz.playerAngle += power * rotSpeed;
@@ -368,6 +369,7 @@ public class FZero extends GameX {
         }).resolution(res);
 
         actionUnipolar($.inh(id,$.p(TANK, NAct.PLUS)), (x) -> {
+            if (x <= 0.5f) return 0;
             float power = 2*(x-0.5f) * powerScale;
             right[0] = power;
             fz.playerAngle += -power * rotSpeed;
