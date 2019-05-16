@@ -88,53 +88,6 @@ public class Occurrify extends TimeGraph {
         this.d = d;
     }
 
-    @Deprecated static boolean temporal(Truthify truth, Derivation d) {
-        if (!d.temporal)
-            return false;
-
-//        //HACK reset to the input
-//        d.taskStart = d._task.start();
-//        d.taskEnd = d._task.end();
-//        if (d._belief != null && !d.concSingle) {
-//            d.beliefStart = d._belief.start();
-//            d.beliefEnd = d._belief.end();
-//
-//            boolean taskEternal = d.taskStart == ETERNAL;
-//            if (truth.beliefProjection == BeliefProjection.Belief || taskEternal) {
-//
-//                //unchanged: d.beliefStart = d._belief.start();  d.beliefEnd = d._belief.end();
-//
-//            } else if (truth.beliefProjection == BeliefProjection.Task) {
-//
-//                boolean bothNonEternal = d.taskStart != ETERNAL && d._belief.start() != ETERNAL;
-//                if (bothNonEternal && d.taskTerm.op().temporal && !d.beliefTerm.op().temporal) {
-//
-//                    //mask task's occurrence, focusing on belief's occ
-//                    d.beliefStart = d.taskStart = d._belief.start();
-//                    d.taskEnd = d.taskStart + (d._task.range() - 1);
-//                    d.beliefEnd = d._belief.end();
-//
-//                } else {
-//
-//                    if (d._belief.isEternal()) {
-//                        d.beliefStart = d.beliefEnd = ETERNAL; //keep eternal
-//                    } else {
-//                        //the temporal belief has been shifted to task in the truth computation
-//                        long range = (taskEternal || d._belief.start() == ETERNAL) ? 0 : d._belief.range() - 1;
-//                        d.beliefStart = d.taskStart;
-//                        d.beliefEnd = d.beliefStart + range;
-//                    }
-//                }
-//            } else {
-//
-//                throw new UnsupportedOperationException();
-//            }
-//
-//        } else {
-//            d.beliefStart = d.beliefEnd = TIMELESS;
-//        }
-        return d.temporalTerms || (d.taskStart != ETERNAL) || (d.beliefStart != ETERNAL && d.beliefStart != TIMELESS);
-    }
 
     static void temporalTask(Term x, OccurrenceSolver time, Taskify t, Derivation d) {
 
@@ -849,3 +802,50 @@ public class Occurrify extends TimeGraph {
 
 
 
+//    @Deprecated static boolean temporal(Truthify truth, Derivation d) {
+//        if (!d.temporal)
+//            return false;
+//
+////        //HACK reset to the input
+////        d.taskStart = d._task.start();
+////        d.taskEnd = d._task.end();
+////        if (d._belief != null && !d.concSingle) {
+////            d.beliefStart = d._belief.start();
+////            d.beliefEnd = d._belief.end();
+////
+////            boolean taskEternal = d.taskStart == ETERNAL;
+////            if (truth.beliefProjection == BeliefProjection.Belief || taskEternal) {
+////
+////                //unchanged: d.beliefStart = d._belief.start();  d.beliefEnd = d._belief.end();
+////
+////            } else if (truth.beliefProjection == BeliefProjection.Task) {
+////
+////                boolean bothNonEternal = d.taskStart != ETERNAL && d._belief.start() != ETERNAL;
+////                if (bothNonEternal && d.taskTerm.op().temporal && !d.beliefTerm.op().temporal) {
+////
+////                    //mask task's occurrence, focusing on belief's occ
+////                    d.beliefStart = d.taskStart = d._belief.start();
+////                    d.taskEnd = d.taskStart + (d._task.range() - 1);
+////                    d.beliefEnd = d._belief.end();
+////
+////                } else {
+////
+////                    if (d._belief.isEternal()) {
+////                        d.beliefStart = d.beliefEnd = ETERNAL; //keep eternal
+////                    } else {
+////                        //the temporal belief has been shifted to task in the truth computation
+////                        long range = (taskEternal || d._belief.start() == ETERNAL) ? 0 : d._belief.range() - 1;
+////                        d.beliefStart = d.taskStart;
+////                        d.beliefEnd = d.beliefStart + range;
+////                    }
+////                }
+////            } else {
+////
+////                throw new UnsupportedOperationException();
+////            }
+////
+////        } else {
+////            d.beliefStart = d.beliefEnd = TIMELESS;
+////        }
+//        return d.temporalTerms || (d.taskStart != ETERNAL) || (d.beliefStart != ETERNAL && d.beliefStart != TIMELESS);
+//    }

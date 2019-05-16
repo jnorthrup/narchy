@@ -4,6 +4,7 @@ import jcog.Util;
 import jcog.util.ArrayUtil;
 import nars.*;
 import nars.derive.model.Derivation;
+import nars.derive.model.DerivationFailure;
 import nars.derive.rule.PremiseRuleProto;
 import nars.task.DebugDerivedTask;
 import nars.task.DerivedTask;
@@ -17,6 +18,7 @@ import org.slf4j.LoggerFactory;
 
 import static nars.NAL.derive.DERIVE_FILTER_SIMILAR_TO_PARENTS;
 import static nars.Op.*;
+import static nars.derive.model.DerivationFailure.Success;
 import static nars.time.Tense.ETERNAL;
 
 public class Taskify extends ProxyTerm {
@@ -34,7 +36,20 @@ public class Taskify extends ProxyTerm {
     final Termify termify;
 
     public void apply(Term x, Derivation d) {
-        termify.apply(x, this, d);
+
+        d.nar.emotion.deriveTermify.increment();
+
+        DerivationFailure fail = DerivationFailure.failure(x,
+                (byte) 0 /* dont consider punc consequences until after temporalization */,
+                d);
+
+        if (fail == Success) {
+            if (d.temporal)
+                Occurrify.temporalTask(x, termify.time, this, d);
+            else
+                Occurrify.eternalTask(x, this, d);
+        }
+
     }
 
 
@@ -88,12 +103,13 @@ public class Taskify extends ProxyTerm {
             return;
         }
 
-        NAR nar = d.nar();
 
 
         final byte punc = d.concPunc;
         if (punc == 0)
             throw new RuntimeException("no punctuation assigned");
+
+        NAR nar = d.nar();
 
         Truth tru;
         if (punc == BELIEF || punc == GOAL) {
@@ -123,20 +139,30 @@ public class Taskify extends ProxyTerm {
             S = E = ETERNAL;
         }
 
-        /** compares taskTerm before un-anon */
-        if (same(x, punc, tru, S, E, d.taskTerm, d._task, nar)) {
-            parentDuplicate(d, nar);
-            return;
-        }
+//        /** compares taskTerm before un-anon */
+//        if (isSame(x, punc, tru, S, E, d.taskTerm, d._task, nar)) {
+//            same(d, nar);
+//            return;
+//        }
+//        /** compares beliefTerm before un-anon */
+//        if (d._belief != null && isSame(x, punc, tru, S, E, d.beliefTerm, d._belief, nar)) {
+//            same(d, nar);
+//            return;
+//        }
 
         /** un-anon */
         x = d.anon.get(x);
         if (x == null)
             throw new NullPointerException("could not un-anonymize " + x0 + " with " + d.anon);
 
+        /** compares taskTerm un-anon */
+        if (isSame(x, punc, tru, S, E, d._task.term(), d._task, nar)) {
+            same(d, nar);
+            return;
+        }
         /** compares beliefTerm un-anon */
-        if (d._belief != null && same(x, punc, tru, S, E, d._belief.term(), d._belief, nar)) {
-            parentDuplicate(d, nar);
+        if (d._belief != null && isSame(x, punc, tru, S, E, d._belief.term(), d._belief, nar)) {
+            same(d, nar);
             return;
         }
 
@@ -189,10 +215,6 @@ public class Taskify extends ProxyTerm {
         d.use(cost);
     }
 
-    private boolean parentDuplicate(Derivation d, NAR nar) {
-        nar.emotion.deriveFailParentDuplicate.increment();
-        return spam(d, NAL.derive.TTL_COST_DERIVE_TASK_SAME);
-    }
 
 
 
@@ -211,8 +233,12 @@ public class Taskify extends ProxyTerm {
         d.use(cost);
         return true;
     }
+    private boolean same(Derivation d, NAR nar) {
+        nar.emotion.deriveFailParentDuplicate.increment();
+        return spam(d, NAL.derive.TTL_COST_DERIVE_TASK_SAME);
+    }
 
-    protected boolean same(Term derived, byte punc, Truth truth, long start, long end, Term parentTerm, Task parent, NAR n) {
+    private boolean isSame(Term derived, byte punc, Truth truth, long start, long end, Term parentTerm, Task parent, NAR n) {
 
         if (DERIVE_FILTER_SIMILAR_TO_PARENTS) {
 

@@ -209,31 +209,15 @@ public class Tetris extends GameX {
         //$.inh("fall", id);
 
         actionPushButtonMutex(LEFT, RIGHT,
-                b -> {
-                    if (b) {
-                        return state.act(TetrisState.LEFT);
-                    } else return false;
-                },
-                b -> {
-                    if (b) {
-                        return state.act(TetrisState.RIGHT);
-                    } else return false;
-                }
+                b -> b && state.act(TetrisState.LEFT),
+                b -> b && state.act(TetrisState.RIGHT)
         );
 
         int debounceDurs = 1;
-        actionPushButton(ROT, debounce(b -> {
-            if (b) {
-                return state.act(TetrisState.CW);
-            } else return false;
-        }, debounceDurs));
+        actionPushButton(ROT, debounce(b -> b && state.act(TetrisState.CW), debounceDurs));
 
         if (canFall)
-            actionPushButton(FALL, debounce(b -> {
-                if (b) {
-                    return state.act(TetrisState.FALL);
-                } else return false;
-            }, debounceDurs * 2));
+            actionPushButton(FALL, debounce(b -> b && state.act(TetrisState.FALL), debounceDurs * 2));
 
     }
 

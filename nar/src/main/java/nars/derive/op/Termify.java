@@ -29,7 +29,7 @@ public final class Termify extends ProxyTerm {
     public final Term patternEternal;
 
     
-    private final Occurrify.OccurrenceSolver time;
+    final Occurrify.OccurrenceSolver time;
     private final Truthify truth;
 
     private static final Atom TERMIFY = Atomic.atom(Termify.class.getSimpleName());
@@ -47,23 +47,6 @@ public final class Termify extends ProxyTerm {
         this.truth = truth;
 
         this.time = time;
-    }
-
-    public final void apply(Term x, Taskify t, Derivation d) {
-
-        d.nar.emotion.deriveTermify.increment();
-
-        DerivationFailure fail = DerivationFailure.failure(x,
-                (byte) 0 /* dont consider punc consequences until after temporalization */,
-                d);
-
-        if (fail == Success) {
-            if (Occurrify.temporal(truth, d))
-                Occurrify.temporalTask(x, time, t, d);
-            else
-                Occurrify.eternalTask(x, t, d);
-        }
-
     }
 
 

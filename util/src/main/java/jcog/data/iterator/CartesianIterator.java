@@ -85,7 +85,8 @@ public class CartesianIterator<X> implements Iterator<X[]> {
 
 	/** if true, the value returned by next() will be cloned.  otherwise it is re-used in next iteration */
 	protected boolean cloneNext() {
-		return false;
+		return true;
+		//return false; //<- does this not work? TODO test
 	}
 
 	/**

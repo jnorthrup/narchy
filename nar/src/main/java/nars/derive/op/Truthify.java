@@ -2,6 +2,7 @@ package nars.derive.op;
 
 import jcog.data.list.FasterList;
 import nars.$;
+import nars.NAL;
 import nars.Op;
 import nars.derive.model.Derivation;
 import nars.derive.op.Occurrify.BeliefProjection;
@@ -53,7 +54,7 @@ public class Truthify extends AbstractPred<Derivation> {
         this.belief = belief;
         if (belief != null) {
             beliefMode = (byte) (belief.single() ? +1 : 0);
-            beliefOverlap = (belief.allowOverlap());
+            beliefOverlap = NAL.OVERLAP_ALLOW_BELIEF || belief.allowOverlap();
         } else {
             beliefMode = -1;
             beliefOverlap = false; //N/A
@@ -61,7 +62,7 @@ public class Truthify extends AbstractPred<Derivation> {
         this.goal = goal;
         if (goal != null) {
             goalMode = (byte) (goal.single() ? +1 : 0);
-            goalOverlap = goal.allowOverlap();
+            goalOverlap = NAL.OVERLAP_ALLOW_GOAL || goal.allowOverlap();
         } else {
             goalMode = -1;
             goalOverlap = false; //N/A
