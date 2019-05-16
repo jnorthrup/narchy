@@ -1194,15 +1194,15 @@ public class NAL6Test extends NALTest {
 //        ;
 //    }
 
-    @Test
-    void testMutexAbduction() {
-        test
-                .termVolMax(6)
-                .believe("(--(x && y) ==> z)")
-                .believe("(x && z)")
-                .mustBelieve(cycles, "y", 0f, 0.45f)
-        ;
-    }
+
+//        @Test
+//        void testMutexDiffGoal1NegNAary() {
+//            test
+//                    .logDebug()
+//                    .input("--((&,a,b,--c)-->g)!")
+//                    .input("((a&b)-->g).")
+//                    .mustGoal(cycles, "(c-->g)", 1f, 0.81f);
+//        }
 
     @Test
     void testMutexDissociation() {

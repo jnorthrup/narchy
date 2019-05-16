@@ -2,7 +2,6 @@ package nars.nal.nal8;
 
 import nars.NAR;
 import nars.NARS;
-import nars.nal.nal7.NAL7Test;
 import nars.test.NALTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
@@ -15,7 +14,7 @@ import static nars.Op.GOAL;
  */
 public class DecompositionTest extends NALTest {
 
-    public static final int cycles = 1000;
+    public static final int cycles = 500;
 
 
     @Override
@@ -27,7 +26,7 @@ public class DecompositionTest extends NALTest {
 
     @BeforeEach
     void setTolerance() {
-        test.confTolerance(NAL7Test.CONF_TOLERANCE_FOR_PROJECTIONS);
+        //test.confTolerance(NAL7Test.CONF_TOLERANCE_FOR_PROJECTIONS);
         test.nar.time.dur(3);
     }
 
@@ -54,11 +53,31 @@ public class DecompositionTest extends NALTest {
     void testDisjBeliefPos() {
 
         test
-                .termVolMax(5)
+                .termVolMax(6)
                 .input("(||,a,b). %0.9;0.9%")
                 .input("--a. %0.9;0.9%")
                 .mustBelieve(cycles, "b", 0.81f, 0.66f);
     }
+    @Test
+    void testDisjBeliefPos2() {
+
+        test
+                .termVolMax(9)
+                .input("(||,a,b,c). %0.9;0.9%")
+                .input("--(||,a,b). %0.9;0.9%")
+                .mustBelieve(cycles, "c", 0.81f, 0.66f);
+    }
+
+    @Test
+    void testDisjBeliefPosMix() {
+
+        test
+                .termVolMax(10)
+                .input("(||,--a,b,c). %0.9;0.9%")
+                .input("--(||,--a,b). %0.9;0.9%")
+                .mustBelieve(cycles, "c", 0.81f, 0.66f);
+    }
+
     @Test
     void testDisjBeliefNeg() {
 
@@ -72,7 +91,7 @@ public class DecompositionTest extends NALTest {
     @Test
     void testDisjConditionalDecompose() {
         test
-            .termVolMax(5)
+            .termVolMax(6)
             .input("(||,a,b)!")
             .input("--a.")
             .mustGoal(cycles, "b", 1f, 0.81f)
@@ -103,7 +122,13 @@ public class DecompositionTest extends NALTest {
 
         ;
     }
-
+    @Test
+    void testConjPos1() {
+        test
+                .input("(&&, a, --b)! %0.9%")
+                .input("a. %0.9%")
+                .mustGoal(cycles, "b", 0.19f, 0.66f);
+    }
     @Test
     void testDisjNeg2() {
         test
@@ -120,34 +145,34 @@ public class DecompositionTest extends NALTest {
                 .mustGoal(cycles, "b", 0f, 0.81f);
     }
 
-    @Test
-    void test_Pos_GoalInDisj2_AlternateSuppression_1() {
-        test
-                .input("(||,x,y).")
-                .input("x!")
-                .mustGoal(cycles, "y", 0f, 0.45f);
-    }
-    @Test
-    void test_Pos_AntiGoalInDisj2_AlternateSuppression_1() {
-        test
-                .input("(||,--x,y).")
-                .input("x!")
-                .mustGoal(cycles, "y", 1f, 0.45f);
-    }
-    @Test
-    void test_Neg_GoalInDisj2_AlternateSuppression_1() {
-        test
-                .input("(||,--x,y).")
-                .input("--x!")
-                .mustGoal(cycles, "y", 0f, 0.45f);
-    }
-    @Test
-    void test_Pos_GoalInDisj3_AlternateSuppression_1() {
-        test
-                .input("(||,x,y,z).")
-                .input("x!")
-                .mustGoal(cycles, "(||,y,z)" /* == (&&,--y,--z) */, 0f, 0.15f);
-    }
+//    @Test
+//    void test_Pos_GoalInDisj2_AlternateSuppression_1() {
+//        test
+//                .input("(||,x,y).")
+//                .input("x!")
+//                .mustGoal(cycles, "y", 0f, 0.45f);
+//    }
+//    @Test
+//    void test_Pos_AntiGoalInDisj2_AlternateSuppression_1() {
+//        test
+//                .input("(||,--x,y).")
+//                .input("x!")
+//                .mustGoal(cycles, "y", 1f, 0.45f);
+//    }
+//    @Test
+//    void test_Neg_GoalInDisj2_AlternateSuppression_1() {
+//        test
+//                .input("(||,--x,y).")
+//                .input("--x!")
+//                .mustGoal(cycles, "y", 0f, 0.45f);
+//    }
+//    @Test
+//    void test_Pos_GoalInDisj3_AlternateSuppression_1() {
+//        test
+//                .input("(||,x,y,z).")
+//                .input("x!")
+//                .mustGoal(cycles, "(||,y,z)" /* == (&&,--y,--z) */, 0f, 0.15f);
+//    }
 
 
 

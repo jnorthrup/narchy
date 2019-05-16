@@ -380,7 +380,7 @@ abstract public class GameX extends Game {
         );
 
         n.confMin.set(0.01f);
-        n.termVolumeMax.set(36);
+        n.termVolumeMax.set(34);
 
 
 

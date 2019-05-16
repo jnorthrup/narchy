@@ -106,13 +106,9 @@
         X, (X ==> V), task("?"), is(V,"#"), --isVar(X)      |- X,   (Belief:BeliefStructuralAbduction)
         X, (--X ==> V), task("?"), is(V,"#"), --isVar(X)    |- --X, (Belief:BeliefStructuralAbduction)
 
-    //conditional goal disjunction decompose (alternate suppress by goal)
-    G, D, eventOf(D,G), conjParallel(D), --isVar(G)      |- --conjWithout(D,  G), (Goal:DesireWeakPN)
-    G, D, eventOfNeg(D,G), conjParallel(D), --isVar(G)   |- --conjWithout(D,--G), (Goal:DesireWeakNN)
-
-    //conditional goal disjunction decompose (alternate suppress by belief)
-    D, X, eventOf(D,X), conjParallel(D), --isVar(X)      |-   --conjWithout(D,  X), (Goal:DeductionWeakNP)
-    D, X, eventOfNeg(D,X), conjParallel(D), --isVar(X)   |-   --conjWithout(D,--X), (Goal:DeductionWeakNN)
+//    //conditional goal disjunction decompose (alternate suppress by goal)
+//    G, D, sectOf(D,G), conjParallel(D)      |- --unsect(D,  G), (Goal:DesireWeakPN)
+//    G, D, sectOf(D,--G), conjParallel(D)   |- --unsect(D,--G), (Goal:DesireWeakNN)
 
 //// propositional decomposition ////////////////////////////////////////////////////////////////////////////////////
 //If S is the case, and (&&,S,A..+) is not the case, it can't be that (&&,A..+) is the case
@@ -120,14 +116,19 @@
 
     //CONJ
     X, C, sectOf(C,X), conjParallel(C)     |-     unsect(C,  X), (Belief:DecomposePP)
-     C, X, sectOf(C,X), conjParallel(C)     |-     unsect(C,  X), (Belief:DecomposePP)
+     C, X, sectOf(C,X), conjParallel(C)     |-     unsect(C,  X), (Belief:DecomposePP, Goal:DecomposePP)
     X, C, sectOf(C,X), conjParallel(C)     |-   --unsect(C,  X), (Belief:DecomposePN)
-     C, X, sectOf(C,X), conjParallel(C)     |-   --unsect(C,  X), (Belief:DecomposeNP)
+     C, X, sectOf(C,X), conjParallel(C)     |-   --unsect(C,  X), (Belief:DecomposeNP, Goal:DecomposeNP)
     X, C, sectOf(C,--X), conjParallel(C)  |-     unsect(C,--X), (Belief:DecomposeNP)
-     C, X, sectOf(C,--X), conjParallel(C)  |-     unsect(C,--X), (Belief:DecomposePN)
+     C, X, sectOf(C,--X), conjParallel(C)  |-     unsect(C,--X), (Belief:DecomposePN, Goal:DecomposePN)
     X, C, sectOf(C,--X), conjParallel(C)  |-   --unsect(C,--X), (Belief:DecomposeNN)
-     C, X, sectOf(C,--X), conjParallel(C)  |-   --unsect(C,--X), (Belief:DecomposeNN)
+     C, X, sectOf(C,--X), conjParallel(C)  |-   --unsect(C,--X), (Belief:DecomposeNN, Goal:DecomposeNN)
 
+
+    //this should be handled by the decompose above:
+    //conditional goal disjunction decompose (alternate suppress by belief)
+    //D, X, sectOf(D,X), conjParallel(D)      |-   --unsect(D,  X), (Goal:DeductionWeakNP)
+    //D, X, sectOf(D,--X), conjParallel(D)   |-   --unsect(D,--X), (Goal:DeductionWeakNN)
 
 
 //Conditional implication decomposition

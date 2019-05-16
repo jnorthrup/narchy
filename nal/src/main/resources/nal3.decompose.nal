@@ -22,26 +22,26 @@
      (M -->    I), (M --> X),  sectOf(I,X)     |- (M -->   unsect( I,  X)),   (Belief:DecomposePP)
             (M --> X), (M -->    I), sectOf(I,X)     |- (M -->   unsect( I,  X)),   (Belief:DecomposePP)
 
-      (M -->    I), (M --> X),  sectOf(I,X)     |- (M -->   unsect( I,  X)),   (Belief:DecomposeNP)
-             (M --> X), (M -->    I),  sectOf(I,X)     |- (M -->   unsect( I,  X)),   (Belief:DecomposePN)
+      (M -->    I), (M --> X),  sectOf(I,X)     |- --(M -->   unsect( I,  X)),   (Belief:DecomposeNP)
+             (M --> X), (M -->    I),  sectOf(I,X)     |- --(M -->   unsect( I,  X)),   (Belief:DecomposePN)
 
      (M --> --%I), (M --> X), sectOf(%I,--X)  |-   (M --> --unsect(%I,--X)),   (Belief:DecomposePN)
             (M --> X), (M --> --%I), sectOf(%I,--X)  |-   (M --> --unsect(%I,--X)),   (Belief:DecomposeNP)
 
-      (M --> --%I), (M --> X), sectOf(%I,--X)  |-   (M --> --unsect(%I,--X)),   (Belief:DecomposeNP)
-             (M --> X), (M --> --%I), sectOf(%I,--X)  |-   (M --> --unsect(%I,--X)),   (Belief:DecomposePN)
+      (M --> --%I), (M --> X), sectOf(%I,--X)  |-   --(M --> --unsect(%I,--X)),   (Belief:DecomposeNN)
+             (M --> X), (M --> --%I), sectOf(%I,--X)  |-   --(M --> --unsect(%I,--X)),   (Belief:DecomposeNN)
 
         (I --> M), (X --> M),  sectOf(I,X)     |-   (  unsect( I,  X) --> M),   (Belief:DecomposePP)
              (X --> M),(I --> M),   sectOf(I,X)     |-   (  unsect( I,  X) --> M),   (Belief:DecomposePP)
 
-         (I --> M), (X --> M),  sectOf(I,X)     |-   (  unsect( I,  X) --> M),   (Belief:DecomposeNP)
-              (X --> M),(I --> M),   sectOf(I,X)     |-   (  unsect( I,  X) --> M),   (Belief:DecomposePN)
+         (I --> M), (X --> M),  sectOf(I,X)     |-   --(  unsect( I,  X) --> M),   (Belief:DecomposeNP)
+              (X --> M),(I --> M),   sectOf(I,X)     |-   --(  unsect( I,  X) --> M),   (Belief:DecomposePN)
 
-     (--%I --> M), (X --> M), sectOf(%I,--X)  |- --(--unsect(%I,--X) --> M),   (Belief:DecomposeNP)
-             (X --> M),(--%I --> M),  sectOf(%I,--X)  |- --(--unsect(%I,--X) --> M),   (Belief:DecomposePN)
+      (--%I --> M), (X --> M), sectOf(%I,--X)  |- (--unsect(%I,--X) --> M),   (Belief:DecomposePN)
+              (X --> M),(--%I --> M),  sectOf(%I,--X)  |- (--unsect(%I,--X) --> M),   (Belief:DecomposeNP)
 
-      (--%I --> M), (X --> M), sectOf(%I,--X)  |- --(--unsect(%I,--X) --> M),   (Belief:DecomposePN)
-              (X --> M),(--%I --> M),  sectOf(%I,--X)  |- --(--unsect(%I,--X) --> M),   (Belief:DecomposeNP)
+      (--%I --> M), (X --> M), sectOf(%I,--X)  |- --(--unsect(%I,--X) --> M),   (Belief:DecomposeNN)
+              (X --> M),(--%I --> M),  sectOf(%I,--X)  |- --(--unsect(%I,--X) --> M),   (Belief:DecomposeNN)
 
 //NAL3 double premise goal decompose
     (I --> M), (X --> M),  sectOf(I,X)     |-   (  unsect( I,  X) --> M),   (Goal:DecomposePP)

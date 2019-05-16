@@ -20,7 +20,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class NAL3Test extends NALTest {
 
-    static final int cycles = 2550;
+    static final int cycles = 250;
 
     @Override
     protected NAR nar() {
@@ -292,8 +292,8 @@ public class NAL3Test extends NALTest {
     void testArity1_Decomposition_Union() {
         test
                 .termVolMax(8)
+                .believe("((b||c)-->a)", 0.25f, 0.9f)
                 .believe("(b-->a)", 0.25f, 0.9f)
-                .believe("((b&&c)-->a)", 0.25f, 0.9f)
                 .mustBelieve(cycles, "(c-->a)", 0.19f, 0.15f);
     }
 
@@ -309,7 +309,7 @@ public class NAL3Test extends NALTest {
     }
 
     @Test
-    void testDisjoint2() {
+    void testDisjoint2_int() {
 
 
         test
@@ -320,7 +320,19 @@ public class NAL3Test extends NALTest {
                 .mustBelieve(cycles, "(x-->ComplexNumber)", 0f, 0.81f); //double decomposition
 
     }
+    @Test
+    void testDisjoint2_ext() {
 
+
+        test
+                .termVolMax(6)
+                .logDebug()
+                .believe("--((RealNumber&&ComplexNumber)-->x)")
+                .believe("(RealNumber-->x)")
+                .mustBelieve(cycles, "(ComplexNumber-->x)", 0f, 0.45f) //single decomposition
+                .mustBelieve(cycles, "(ComplexNumber-->x)", 0f, 0.81f); //double decomposition
+
+    }
     @Test
     void testDisjoint2Learned() {
 

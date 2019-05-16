@@ -225,14 +225,14 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
      */
     public final FloatRange intermpolationRangeLimit = new FloatRange(
             //0.5f
-            //1f
-            2f
+            1f
+            //2f
             , 0, 4);
 
     @Deprecated
     public final FloatRange questionForgetRate = new FloatRange(0.5f, 0, 1);
     public final IntRange premiseUnifyTTL = new IntRange(8, 1, 32);
-    public final IntRange deriveBranchTTL = new IntRange(3 * NAL.derive.TTL_MIN, NAL.derive.TTL_MIN, 64 * NAL.derive.TTL_MIN);
+    public final IntRange deriveBranchTTL = new IntRange(4 * NAL.derive.TTL_MIN, NAL.derive.TTL_MIN, 64 * NAL.derive.TTL_MIN);
     /**
      * how many cycles above which to dither dt and occurrence time
      * TODO move this to Time class and cache the cycle value rather than dynamically computing it
@@ -737,10 +737,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
         public static final boolean DERIVATION_FORM_QUESTION_FROM_AMBIGUOUS_BELIEF_OR_GOAL= configIs("DERIVATION_FORM_QUESTION_FROM_AMBIGUOUS_BELIEF_OR_GOAL");
 
 
-        /**
-         * should be as close to 1 as possible
-         */
-        public static final float TERMIFY_TERM_VOLMAX_SCRATCH_FACTOR = 3f;
+        public static final float TERMIFY_LAZY_VOLMAX_SCRATCH_FACTOR = 5f;
     }
 
     public enum unify {

@@ -288,13 +288,13 @@
 
 
 // Mutex induction
-    (&&,X,--Y,A..*), (&&,Y,--X,A..*)                 |- (&&,--(X && Y),A..*), (Belief:Intersection)
-    (&&,X,--Y,A..+), (&&,Y,--X,B..+),neq(A..+,B..+)  |- (&&,--((&&,A..+) && (&&,B..+))), (Belief:Intersection)
-
-    (  (&&,X,--Y,A..*)==>Z), (  (&&,Y,--X,A..*)==>Z)     |- (  (&&,--(X && Y),A..*) ==>   Z), (Belief:IntersectionPP)
-    (  (&&,X,--Y,A..*)==>Z), (  (&&,Y,--X,A..*)==>Z)     |- (  (&&,--(X && Y),A..*) ==> --Z), (Belief:IntersectionNN)
-    (--(&&,X,--Y,A..*)==>Z), (--(&&,Y,--X,A..*)==>Z)     |- (--(&&,--(X && Y),A..*) ==>   Z), (Belief:IntersectionPP)
-    (--(&&,X,--Y,A..*)==>Z), (--(&&,Y,--X,A..*)==>Z)     |- (--(&&,--(X && Y),A..*) ==> --Z), (Belief:IntersectionNN)
+//    (&&,X,--Y,A..*), (&&,Y,--X,A..*)                 |- (&&,--(X && Y),A..*), (Belief:Intersection)
+//    (&&,X,--Y,A..+), (&&,Y,--X,B..+),neq(A..+,B..+)  |- (&&,--((&&,A..+) && (&&,B..+))), (Belief:Intersection)
+//
+//    (  (&&,X,--Y,A..*)==>Z), (  (&&,Y,--X,A..*)==>Z)     |- (  (&&,--(X && Y),A..*) ==>   Z), (Belief:IntersectionPP)
+//    (  (&&,X,--Y,A..*)==>Z), (  (&&,Y,--X,A..*)==>Z)     |- (  (&&,--(X && Y),A..*) ==> --Z), (Belief:IntersectionNN)
+//    (--(&&,X,--Y,A..*)==>Z), (--(&&,Y,--X,A..*)==>Z)     |- (--(&&,--(X && Y),A..*) ==>   Z), (Belief:IntersectionPP)
+//    (--(&&,X,--Y,A..*)==>Z), (--(&&,Y,--X,A..*)==>Z)     |- (--(&&,--(X && Y),A..*) ==> --Z), (Belief:IntersectionNN)
 
       (&&,X,--Y,A..*), (&&,Y,--X,A..*)               |-  --(X ==> Y), (Belief:AbductionPB)
       (&&,X,--Y,A..*), (&&,Y,--X,A..*)               |-  (--Y ==> X), (Belief:InductionPB)

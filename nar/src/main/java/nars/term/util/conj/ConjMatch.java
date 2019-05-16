@@ -52,7 +52,8 @@ public class ConjMatch {
         ConjLazy x = events(conj, beforeOrAfter);
 
         int n = x.size();
-        assert (n > 1);
+        if (n <= 1)
+            throw new WTF();  //assert (n > 1);
 
         long[] matchedTime = new long[] { Long.MAX_VALUE, Long.MIN_VALUE };
 
