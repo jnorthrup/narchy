@@ -363,7 +363,7 @@ public class FZero extends GameX {
             float power = 2*(x-0.5f) * powerScale;
             left[0] = power;
             fz.playerAngle += power * rotSpeed;
-            fz.vehicleMetrics[0][6] = (left[0] + right[0]) * fwdSpeed;
+            fz.vehicleMetrics[0][6] += (left[0] + right[0]) * fwdSpeed;
             return x;
         }).resolution(res);
 
@@ -371,7 +371,7 @@ public class FZero extends GameX {
             float power = 2*(x-0.5f) * powerScale;
             right[0] = power;
             fz.playerAngle += -power * rotSpeed;
-            fz.vehicleMetrics[0][6] = (left[0] + right[0]) * fwdSpeed;
+            fz.vehicleMetrics[0][6] += (left[0] + right[0]) * fwdSpeed;
             return x;
         }).resolution(res);
 

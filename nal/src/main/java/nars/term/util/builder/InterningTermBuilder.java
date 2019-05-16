@@ -243,12 +243,13 @@ public class InterningTermBuilder extends HeapTermBuilder {
 
     private boolean internableSubs(Term[] subterms) {
 
-        int volRemain = volInternedMax;
+        int volRemain = volInternedMax - subterms.length;
         for (Term x : subterms) {
             if ((volRemain -= x.volume()) < 0)
                 return false;
             if (!internableSub(x))
                 return false;
+            volRemain++;
         }
 
 

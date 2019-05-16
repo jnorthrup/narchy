@@ -38,7 +38,7 @@ public abstract class AbstractTaskLink implements TaskLink {
 
         source = source.concept();
         target = target != null ?
-                (target.op().conceptualizable ?
+                (NAL.TASKLINK_TARGET_CONCEPT && target.op().conceptualizable ?
                         target.concept() : target
                 )
                 : source; //loop

@@ -153,7 +153,7 @@ public class NARS {
     public NARS() {
 
         index = () ->
-                new SimpleMemory(16 * 1024)
+                new SimpleMemory(8 * 1024)
                 //new TemporaryConceptIndex()
         ;
 
@@ -161,7 +161,7 @@ public class NARS {
 
         exec = UniExec::new;
 
-        what = w -> new TaskLinkWhat(w, 64,
+        what = w -> new TaskLinkWhat(w, 96,
                        new PriBuffer.DirectPriBuffer()
                        //new PriBuffer.BagTaskBuffer(128, 8f)
                        //new PriBuffer.MapTaskBuffer()

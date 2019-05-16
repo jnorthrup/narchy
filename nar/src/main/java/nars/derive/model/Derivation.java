@@ -274,7 +274,10 @@ public class Derivation extends PreDerivation {
 
             @Override
             protected final Term putCompound(Compound x) {
-                return transform(x, directTermBuilder);
+                return transform(x,
+                        //directTermBuilder
+                        termBuilder
+                );
             }
 
             @Override

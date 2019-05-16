@@ -187,7 +187,8 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
     /** override to allow all goal evidence overlap */
     public static final boolean OVERLAP_ALLOW_GOAL = false;
 
-
+    /** if true then tasklink targets are named by the concept and not a raw term (which could be temporal) */
+    public static final boolean TASKLINK_TARGET_CONCEPT = false;
 
 
     protected static final boolean DYNAMIC_CONCEPT_TRANSIENT = false;
@@ -225,13 +226,13 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
     public final FloatRange intermpolationRangeLimit = new FloatRange(
             //0.5f
             //1f
-            1f
+            2f
             , 0, 4);
 
     @Deprecated
     public final FloatRange questionForgetRate = new FloatRange(0.5f, 0, 1);
     public final IntRange premiseUnifyTTL = new IntRange(8, 1, 32);
-    public final IntRange deriveBranchTTL = new IntRange(6 * NAL.derive.TTL_MIN, NAL.derive.TTL_MIN, 64 * NAL.derive.TTL_MIN);
+    public final IntRange deriveBranchTTL = new IntRange(3 * NAL.derive.TTL_MIN, NAL.derive.TTL_MIN, 64 * NAL.derive.TTL_MIN);
     /**
      * how many cycles above which to dither dt and occurrence time
      * TODO move this to Time class and cache the cycle value rather than dynamically computing it
@@ -642,7 +643,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
          * for NALTest's: extends the time all unit tests are allowed to run for.
          * normally be kept to 1 but for debugging this may be increased to find what tests need more time
          */
-        public static final float TIME_MULTIPLIER = 2f;
+        public static final float TIME_MULTIPLIER = 3f;
         /**
          * how precise unit test results must match expected values to pass
          */
