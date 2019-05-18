@@ -333,6 +333,11 @@ public class Occurrify extends TimeGraph {
             beliefStart = taskStart;
             beliefEnd = taskEnd;
         }
+        if ((d.concPunc==GOAL || d.concPunc==QUEST) && (d.taskPunc == GOAL || d.taskPunc == QUEST) && taskStart!=ETERNAL && (beliefStart!=ETERNAL && beliefStart!=TIMELESS)) {
+            //ignore belief occurrence in deriving goal/quest from goal/quest
+            beliefStart = beliefEnd = TIMELESS;
+        }
+
             /*else if (beliefStart!=TIMELESS && taskStart != ETERNAL) {
             //conditions for considering vs ignoring belief occurrence:
             boolean ignoreBeliefOcc = false;
@@ -346,11 +351,7 @@ public class Occurrify extends TimeGraph {
         }*/
 
         final Term taskTerm = d.retransform(d.taskTerm);
-        Term beliefTerm;
-        if (d.beliefTerm.equals(d.taskTerm))
-            beliefTerm = taskTerm;
-        else
-            beliefTerm = d.retransform(d.beliefTerm);
+        Term beliefTerm = d.beliefTerm.equals(d.taskTerm) ? taskTerm : d.retransform(d.beliefTerm);
 
         Event taskEvent = (taskStart != TIMELESS) ?
                 know(taskTerm, taskStart, taskEnd) :

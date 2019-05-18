@@ -522,10 +522,15 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
                         case DTERNAL:
                         default:
 
-                            if (edt == DTERNAL && !Conj.isSeq(eventTerm)) {
+                            if ((edt == 0 || (edt == DTERNAL && !Conj.isSeq(eventTerm)))) {
 
                                 //commutive dternal: inherit event time simultaneously
-                                eventTerm.subterms().forEach(y -> know(y, eventStart, eventEnd));
+                                eventTerm.subterms().forEach(
+                                    (eventStart!=ETERNAL && eventStart!=TIMELESS) ?
+                                        y -> know(y, eventStart, eventEnd)
+                                            :
+                                        y -> link(event, 0, know(y))
+                                );
 
                             } else {
 

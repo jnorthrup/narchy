@@ -310,7 +310,7 @@ abstract public class GameX extends Game {
 
     private static void initPlugins3(NAR n, Game a) {
 
-        MetaAgent meta = new MetaAgent(true,16f, a);
+        MetaAgent meta = new MetaAgent(false,16f, a);
         meta.what().pri(0.25f);
 
 //        RLBooster metaBoost = new RLBooster(meta, (i,o)->new HaiQae(i, 10,o),
@@ -385,11 +385,8 @@ abstract public class GameX extends Game {
         n.confMin.set(0.01f);
         n.termVolumeMax.set(34);
 
-
-
-
         n.beliefPriDefault.amp(0.05f);
-        n.goalPriDefault.amp(0.15f);
+        n.goalPriDefault.amp(0.2f);
         n.questionPriDefault.amp(0.01f);
         n.questPriDefault.amp(0.01f);
 

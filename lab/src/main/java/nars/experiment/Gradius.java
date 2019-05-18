@@ -141,7 +141,7 @@ public class Gradius extends GameX {
         initToggle();
         //initBipolar();
 
-        Reward alive = rewardNormalized("alive", 1f, -1, +1, ()->{
+        Reward alive = rewardNormalized("alive",  -1, +1, ()->{
             if (g.paused) return Float.NaN;
 
             if (g.playerDead > 1)
@@ -151,7 +151,7 @@ public class Gradius extends GameX {
         });
         alive.setDefault($.t(1, nar.beliefConfDefault.floatValue()/4f));
 
-        Reward destroy = rewardNormalized("destroy",0.8f, 0, 1, ()->{
+        Reward destroy = rewardNormalized("destroy", 0, 1, ()->{
 
             if (g.paused) return Float.NaN;
 

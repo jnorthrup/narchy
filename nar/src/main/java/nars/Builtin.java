@@ -74,6 +74,16 @@ public class Builtin {
             ListFunc.sub,
             ListFunc.subs,
 
+            new AbstractInlineFunctor2("nullIfContainsEvent") {
+                @Override
+                protected Term apply(Term c, Term e) {
+                    if (c.equals(e)) return Null;
+                    if (Conj.containsEvent(c, e))
+                        return Null;
+                    return c;
+                }
+            },
+
             new AbstractInlineFunctor1.AbstractInstantFunctor1("unneg") {
                 @Override protected Term apply1(Term x) { return x.unneg(); }
             },
@@ -463,6 +473,8 @@ public class Builtin {
 //
 //            return CONJ.the(t.dt(), s);
 //        }));
+
+
 
 
 

@@ -26,7 +26,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class NAL7Test extends NALTest {
 
     public static final float CONF_TOLERANCE_FOR_PROJECTIONS = 2f; //200%
-    private final static int cycles = 200;
+    private final static int cycles = 300;
 
     @Override
     protected NAR nar() {
@@ -1412,7 +1412,7 @@ public class NAL7Test extends NALTest {
         test.nar.confMin.set(0.5f);
         test
 
-                .input("((reshape(I,$1) &| ($1-->[pliable])) ==>+10 ($1-->[hardened])).")
+                .input("((reshape(I,$1) && ($1-->[pliable])) ==>+10 ($1-->[hardened])).")
                 .input("(($1-->[heated]) ==>+10 ($1-->[pliable])).")
 
 
@@ -1425,10 +1425,10 @@ public class NAL7Test extends NALTest {
 
         test.nar.termVolumeMax.set(15);
         test
-                .believe("( a =|> (&|, x, y, z ) )", Tense.Present, 1f, 0.9f)
-                .mustBelieve(cycles, "( a =|> x )", 1f, 0.73f, 0)
-                .mustBelieve(cycles, "( a =|> y )", 1f, 0.73f, 0)
-                .mustBelieve(cycles, "( a =|> z )", 1f, 0.73f, 0)
+                .believe("( a ==> (&&, x, y, z ) )", Tense.Present, 1f, 0.9f)
+                .mustBelieve(cycles, "( a ==> x )", 1f, 0.73f, 0)
+                .mustBelieve(cycles, "( a ==> y )", 1f, 0.73f, 0)
+                .mustBelieve(cycles, "( a ==> z )", 1f, 0.73f, 0)
         ;
     }
 
@@ -1438,10 +1438,10 @@ public class NAL7Test extends NALTest {
 
         test
                 .termVolMax(12)
-                .believe("( (a,$1) =|> (&|, (x,$1), y, z ) )", Tense.Present, 1f, 0.9f)
-                .mustBelieve(cycles, "( (a,$1) =|> (x,$1) )", 1f, 0.73f, 0)
-                .mustBelieve(cycles, "( (a,#1) =|> y )", 1f, 0.73f, 0)
-                .mustBelieve(cycles, "( (a,#1) =|> z )", 1f, 0.73f, 0)
+                .believe("( (a,$1) ==> (&&, (x,$1), y, z ) )", Tense.Present, 1f, 0.9f)
+                .mustBelieve(cycles, "( (a,$1) ==> (x,$1) )", 1f, 0.73f, 0)
+                .mustBelieve(cycles, "( (a,#1) ==> y )", 1f, 0.73f, 0)
+                .mustBelieve(cycles, "( (a,#1) ==> z )", 1f, 0.73f, 0)
         ;
     }
 
@@ -1450,10 +1450,10 @@ public class NAL7Test extends NALTest {
 
         test
                 .termVolMax(12)
-                .believe("( (a,#1) =|> (&|, (x,#1), y, z ) )", Tense.Present, 1f, 0.9f)
-                .mustBelieve(cycles, "( (a,#1) =|> (x,#1) )", 1f, 0.73f, 0)
-                .mustBelieve(cycles, "( (a,#1) =|> y )", 1f, 0.73f, 0)
-                .mustBelieve(cycles, "( (a,#1) =|> z )", 1f, 0.73f, 0)
+                .believe("( (a,#1) ==> (&&, (x,#1), y, z ) )", Tense.Present, 1f, 0.9f)
+                .mustBelieve(cycles, "( (a,#1) ==> (x,#1) )", 1f, 0.73f, 0)
+                .mustBelieve(cycles, "( (a,#1) ==> y )", 1f, 0.73f, 0)
+                .mustBelieve(cycles, "( (a,#1) ==> z )", 1f, 0.73f, 0)
         ;
     }
 
@@ -1462,10 +1462,10 @@ public class NAL7Test extends NALTest {
         test.nar.termVolumeMax.set(11);
 
         test
-                .believe("( a =|> (&|,x,y,z) )", Tense.Present, 1f, 0.9f)
-                .mustBelieve(cycles, "( a =|> x )", 1f, 0.73f, 0)
-                .mustBelieve(cycles, "( a =|> y )", 1f, 0.73f, 0)
-                .mustBelieve(cycles, "( a =|> z )", 1f, 0.73f, 0)
+                .believe("( a ==> (&&,x,y,z) )", Tense.Present, 1f, 0.9f)
+                .mustBelieve(cycles, "( a ==> x )", 1f, 0.73f, 0)
+                .mustBelieve(cycles, "( a ==> y )", 1f, 0.73f, 0)
+                .mustBelieve(cycles, "( a ==> z )", 1f, 0.73f, 0)
         ;
     }
 
@@ -1484,7 +1484,7 @@ public class NAL7Test extends NALTest {
 
         test.termVolMax(7);
         test.inputAt(1, "(x &&+5 y). |");
-        test.inputAt(1, "((x &&+5 y)=|>(b &&+5 c)). |");
+        test.inputAt(1, "((x &&+5 y)==>(b &&+5 c)). |");
         test.mustBelieve(cycles , "(b &&+5 c)", 1.00f, 0.45f, (t)->t==6);
         test.mustNotOutput(cycles , "(b &&+5 c)", BELIEF, 0f, 1f, 0.5f, 1f,
                 (t) -> t!=6);
@@ -1493,7 +1493,7 @@ public class NAL7Test extends NALTest {
 
         test.nar.termVolumeMax.set(12);
         test.inputAt(1, "(a &&+5 (--,a)). |");
-        test.inputAt(1, "((a &&+5 (--,a))=|>(b &&+3 (--,b))). |");
+        test.inputAt(1, "((a &&+5 (--,a))==>(b &&+3 (--,b))). |");
         test.mustBelieve(cycles , "(b &&+3 --b)", 1.00f, 0.45f, (t)->t==6);
 //        test.mustNotOutput(cycles , "(b &&+3 --b)", BELIEF, 0f, 1f, 0f, 1f,
 //                (t) -> t!=6);
@@ -1520,7 +1520,7 @@ public class NAL7Test extends NALTest {
     @Test void testBeliefShiftTiming() {
         test
             .inputAt(1, "(a-->c). |")
-            .inputAt(2, "(($1-->c) =|> ((a-->$1) &&+4 (c-->d))). |")
+            .inputAt(2, "(($1-->c) ==> ((a-->$1) &&+4 (c-->d))). |")
             .mustBelieve(cycles, "(c-->d)", 1f, 0.5f, t->t==5)
             .mustNotOutput(cycles, "(c-->d)", BELIEF, 0f, 1f, 0f, 1f, t->t<2);
     }
