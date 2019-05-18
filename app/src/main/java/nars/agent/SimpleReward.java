@@ -12,8 +12,8 @@ public class SimpleReward extends ScalarReward {
     private final FloatSupplier rewardFunc;
 
 
-    public SimpleReward(Term id, FloatSupplier r, Game a) {
-        super(id, a);
+    public SimpleReward(Term id, float freq, FloatSupplier r, Game a) {
+        super(id, freq, a);
 
         this.rewardFunc = r;
 //        TermLinker linker = new TemplateTermLinker((TemplateTermLinker) TemplateTermLinker.of(id)) {

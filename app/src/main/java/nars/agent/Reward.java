@@ -96,12 +96,12 @@ public abstract class Reward implements GameLoop, TermedDelegate, Iterable<Conce
         }
 
     }
-    public void alwaysWantEternally(Term goal) {
-        alwaysWantEternally(goal, nar().confDefault(GOAL));
+    public void alwaysWantEternally(Term goal, float freq) {
+        alwaysWantEternally(goal, freq, nar().confDefault(GOAL));
     }
 
-    public void alwaysWantEternally(Term goal, float conf) {
-        @Nullable Truth truth = $.t(goal.op()==NEG ? 0f : 1f, conf);
+    public void alwaysWantEternally(Term goal, float freq, float conf) {
+        @Nullable Truth truth = $.t(goal.op()==NEG ? 1-freq : freq, conf);
         long[] stamp = goalUnstamped ? Stamp.UNSTAMPED : nar().evidence();
         Task t = NALTask.the(goal.unneg(), GOAL, truth, nar().time(), ETERNAL, ETERNAL, stamp);
 

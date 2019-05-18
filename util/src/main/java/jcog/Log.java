@@ -50,7 +50,7 @@ public class Log {
 
     private static ch.qos.logback.classic.Logger root() {
         LoggerContext c = (LoggerContext) LoggerFactory.getILoggerFactory();
-        return c.getLogger(ch.qos.logback.classic.Logger.ROOT_LOGGER_NAME);
+        return c.getLogger(Logger.ROOT_LOGGER_NAME);
     }
 
     public static Logger logger(String c) {

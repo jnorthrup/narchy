@@ -15,6 +15,8 @@ import nars.term.functor.AbstractInlineFunctor1;
 import nars.term.functor.AbstractInlineFunctor2;
 import nars.term.util.conj.ConjMatch;
 import nars.term.util.transform.InlineFunctor;
+import nars.util.var.DepIndepVarIntroduction;
+import org.eclipse.collections.api.tuple.Pair;
 import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 
 import java.util.Map;
@@ -64,7 +66,6 @@ public enum DerivationFunctors {
                 SetFunc.intersect,
                 Equal.equal, Cmp.cmp,
 
-                (Functor) nar.concept("varIntro"),
                 (Functor) nar.concept("unneg"),
                 (Functor) nar.concept("negateEvents"),
                 //(Functor) nar.concept("eventOf"),
@@ -87,6 +88,17 @@ public enum DerivationFunctors {
                         return x == null ? Null : x;
                     }
                 },
+
+                /** applies # dep and $ indep variable introduction if possible. returns the input term otherwise  */
+                Functor.f1Inline("varIntro", x -> {
+                    Pair<Term, Map<Term, Term>> result = DepIndepVarIntroduction.the.apply(x, nar.random());
+                    if (result!=null && result.getOne().op().conceptualizable) {
+                        d.retransform.putAll(result.getTwo());
+                        return result.getOne();
+                    }
+                    return Null;
+                }),
+
                 new AbstractInlineFunctor1("negateRandomSubterm") {
 
                     @Override

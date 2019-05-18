@@ -18,7 +18,7 @@ public class Animating<X extends Surface> extends UnitContainer<X> implements An
     /** in seconds.  TODO adjustable */
     static final float maxLag = 0.01f;
 
-    private boolean async = true;
+    private final boolean async = true;
 
     public Animating(X the, Runnable each, float minUpdatePeriod) {
         this(the, (z)->each.run(), () -> minUpdatePeriod);

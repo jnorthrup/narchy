@@ -163,7 +163,7 @@ public class NARio extends GameX {
         window(new Gridding(new VectorSensorView(vx, this), new VectorSensorView(vy, this)), 100, 50);
 
 
-        Reward right = rewardNormalized("goRight", -1, +1, () -> {
+        Reward right = rewardNormalized("goRight", 0.75f,-1, +1, () -> {
 
             float reward;
             float curX = theMario != null && theMario.deathTime <= 0 ? theMario.x : Float.NaN;
@@ -181,7 +181,7 @@ public class NARio extends GameX {
         });
         right.setDefault($.t(0, 0.5f));
 
-        Reward getCoins = rewardNormalized("getCoins", -1, +1, () -> {
+        Reward getCoins = rewardNormalized("getCoins", 0.85f,-1, +1, () -> {
             int coins = Mario.coins;
             int deltaCoin = coins - lastCoins;
             if (deltaCoin <= 0)
@@ -194,7 +194,7 @@ public class NARio extends GameX {
         });
         getCoins.setDefault($.t(0, 0.5f));
 
-        Reward alive = rewardNormalized("alive", -1, +1, () -> {
+        Reward alive = rewardNormalized("alive", 1, -1, +1, () -> {
 //            if (dead)
 //                return -1;
 //

@@ -1,7 +1,10 @@
 package nars.op.mental;
 
 import jcog.math.FloatRange;
-import nars.*;
+import nars.$;
+import nars.NAL;
+import nars.NAR;
+import nars.Task;
 import nars.attention.What;
 import nars.op.TaskLeakTransform;
 import nars.task.signal.SignalTask;

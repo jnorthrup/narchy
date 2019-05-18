@@ -22,7 +22,6 @@ import nars.term.Functor;
 import nars.term.ProxyTerm;
 import nars.term.Term;
 import nars.term.atom.Atomic;
-import nars.term.functor.LambdaFunctor;
 import nars.time.part.DurLoop;
 import nars.truth.PreciseTruth;
 import nars.util.AtomicOperations;
@@ -248,7 +247,7 @@ public class Opjects extends DefaultTermizer {
      * registers an alias/binding shortcut target rewrite macro
      */
     public Concept alias(String op, Term instance, String method) {
-        return nar.add(LambdaFunctor.f(op, s ->
+        return nar.add(Functor.f(op, s ->
                 $.func(method, instance, s.subs() == 1 ? s.sub(0) : PROD.the(s))
         ));
     }

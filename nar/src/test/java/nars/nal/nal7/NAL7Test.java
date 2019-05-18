@@ -685,22 +685,29 @@ public class NAL7Test extends NALTest {
     @Test
     void variable_introduction_on_events() {
 
-        TestNAR tester = test;
-
-        tester.termVolMax(14);
-        tester.input("at(SELF,{t003}). :|:");
-        tester.inputAt(4, "on({t002},{t003}). :|:");
-
-        tester.mustBelieve(cycles,
+        test.termVolMax(14);
+        test.input("at(SELF,{t003}). |");
+        test.inputAt(4, "on({t002},{t003}). |");
+        test.mustBelieve(cycles,
                 "(at(SELF,{t003}) &&+4 on({t002},{t003}))",
                 1.0f, 0.81f,
                 0);
-        tester.mustBelieve(cycles,
+        test.mustBelieve(cycles,
                 "(at(SELF,{#1}) &&+4 on({t002},{#1}))",
                 1.0f, 0.81f,
                 0);
-        tester.mustNotOutput(cycles, "(at(SELF,{#1}) &&-4 on({t002},{#1}))", BELIEF, ETERNAL);
-
+        test.mustBelieve(cycles,
+                "(at(SELF,#1) &&+4 on({t002},#1))",
+                1.0f, 0.81f,
+                0);
+        test.mustBelieve(cycles,
+                "(at(SELF,{$1}) ==>+4 on({t002},{$1}))",
+                1.0f, 0.45f,
+                0);
+        test.mustBelieve(cycles,
+                "(on({t002},{$1}) ==>-4 at(SELF,{$1}))",
+                1.0f, 0.45f,
+                4);
     }
 
     @Test

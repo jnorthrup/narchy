@@ -60,8 +60,8 @@
             //--eventOfNeg(C,G) , --eventOf(C,G) <- optional additional renovelion of anti-goal not present anywhere in the sequence
 
     //anti-desire for sub-sequence leading to anti-goal. truth function may be Desire or Deduction (option: __Weak, __WeakN)
-    G, C, is(C,"&&"), has(C,"--")       |-              --conjBefore(C, --G),  (Goal:Desire)
-    G, C, is(C,"&&")                    |-              --conjBefore(C,   G),  (Goal:DesireN)
+    G, C, is(C,"&&"), has(C,"--")       |-              --conjBefore(C, --G),  (Goal:DesireWeak)
+    G, C, is(C,"&&")                    |-              --conjBefore(C,   G),  (Goal:DesireWeakN)
       //G, C, is(C,"&&"), has(C,"--")     |-   negateEvents(conjBefore(C, --G)), (Goal:DesireWeak)
       //G, C, is(C,"&&")                  |-   negateEvents(conjBefore(C,   G)), (Goal:DesireWeakN)
 

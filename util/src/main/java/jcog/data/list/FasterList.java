@@ -549,7 +549,7 @@ public class FasterList<X> extends FastList<X> {
     private void addAtIndex(int index, X element) {
         int oldSize = this.size++;
         if (this.items.length == oldSize) {
-            X[] newItems = newArray(this.sizePlusFiftyPercent(oldSize));
+            X[] newItems = newArray(sizePlusFiftyPercent(oldSize));
             if (index > 0) {
                 System.arraycopy(this.items, 0, newItems, 0, index);
             }

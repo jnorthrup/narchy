@@ -215,7 +215,7 @@ public final class NotEqualConstraint extends RelationConstraint {
          * TODO move to subclass
          */
         @Deprecated
-        private static boolean root = false;
+        private static final boolean root = false;
 
         public NotEqualAndNotRecursiveSubtermOf(Variable x, Variable y) {
             super(neqRCom, x, y);

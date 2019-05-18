@@ -85,7 +85,7 @@ public class SensorBeliefTables extends BeliefTables {
 
 
 
-    public void add(Truth value, long now, FloatSupplier pri, short cause[], int dur, What w) {
+    public void add(Truth value, long now, FloatSupplier pri, short[] cause, int dur, What w) {
         NAR n = w.nar;
 
         if (value!=null) {

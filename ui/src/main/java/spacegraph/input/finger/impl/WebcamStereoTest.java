@@ -88,8 +88,8 @@ public class WebcamStereoTest {
 
     static void stereo3d(VideoSource a, VideoSource b) {
 
-        BufferedImage buff01 = ((WebCam)a).webcam.getDevice().getImage();;
-        BufferedImage buff02 = ((WebCam)b).webcam.getDevice().getImage();;
+        BufferedImage buff01 = ((WebCam)a).webcam.getDevice().getImage();
+        BufferedImage buff02 = ((WebCam)b).webcam.getDevice().getImage();
         assert(buff01.getWidth() == buff02.getWidth());
         assert(buff01.getHeight() == buff02.getHeight());
 
@@ -208,11 +208,11 @@ public class WebcamStereoTest {
 
         System.out.println("\nCamera");
         for (int i = 0; i < structure.cameras.length; i++) {
-            System.out.println(structure.cameras[i].getModel().toString());
+            System.out.println(structure.cameras[i].getModel());
         }
         System.out.println("\n\nworldToView");
         for (int i = 0; i < structure.views.length; i++) {
-            System.out.println(structure.views[i].worldToView.toString());
+            System.out.println(structure.views[i].worldToView);
         }
 
         // display the inlier matches found using the robust estimator

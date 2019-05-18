@@ -33,8 +33,6 @@ public class Memoizers {
     /** static instance */
     public static final Memoizers the = new Memoizers();
 
-
-
     private final CopyOnWriteArrayList<MemoizationStatistics> memoize = new CopyOnWriteArrayList<>();
 
     private Memoizers() {
@@ -46,20 +44,10 @@ public class Memoizers {
             m.print();
     }
 
-//    public final <X,Y> Function<X,Y> memoizeByte(Function<X,Y> computation) {
-//        return memoizeByte(computation.toString(), computation);
-//    }
-//
-//    @Deprecated public <X,Y> Function<X,Y> memoizeByte(String id, Function<X,Y> computation) {
-//        return memoizeByte(id, DEFAULT_MEMOIZE_CAPACITY, computation);
-//    }
-
     public <X,B extends ByteKeyExternal,Y> Function<X,Y> memoizeByte(String id, Function<X,B> byter, Function<B,Y> computation, int capacity) {
         Function<B, Y> c = memoizeByte(id, capacity, computation::apply);
         return (X x) -> c.apply(byter.apply(x));
     }
-
-
 
     /** registers a new memoizer with a default memoization implementation */
     public <X,Y> Function<X,Y> memoize(String id, int capacity, Function<X,Y> computation) {
@@ -69,12 +57,9 @@ public class Memoizers {
     public <X, Y, M extends Memoize<X,Y>> Function<X, Y> add(String id, M m) {
         synchronized (memoize) {
             //HACK just use a map
-            int n = memoize.size();
-            for (int i = 0; i < n; i++) {
-                MemoizationStatistics ii = memoize.get(i);
-                if (ii.name.equals(id)) {
-                    return ((M)ii.memoize)::apply;
-                }
+            for (MemoizationStatistics ii : memoize) {
+                if (ii.name.equals(id))
+                    return ((M) ii.memoize)::apply;
             }
             memoize.add(new MemoizationStatistics(id, m));
             return m::apply;
@@ -111,8 +96,8 @@ public class Memoizers {
             Memoize m = memoize.get();
             if (m!=null)
                 System.out.println(name + '\n' + m.summary() + '\n');
-            else
-                System.out.println(name + " DELETED");
+//            else
+//                System.out.println(name + " DELETED");
         }
     }
 }

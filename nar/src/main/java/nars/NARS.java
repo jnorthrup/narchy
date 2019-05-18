@@ -121,7 +121,7 @@ public class NARS {
             if (threadSafe)
                 index =
                         //() -> new CaffeineIndex(64 * 1024)
-                        () -> new SimpleMemory(8 * 1024, true)
+                        () -> new SimpleMemory(4 * 1024, true)
             ;
 
             if (nal > 0)
@@ -153,7 +153,7 @@ public class NARS {
     public NARS() {
 
         index = () ->
-                new SimpleMemory(8 * 1024)
+                new SimpleMemory(4 * 1024)
                 //new TemporaryConceptIndex()
         ;
 
@@ -161,7 +161,7 @@ public class NARS {
 
         exec = UniExec::new;
 
-        what = w -> new TaskLinkWhat(w, 96,
+        what = w -> new TaskLinkWhat(w, 64,
                        new PriBuffer.DirectPriBuffer()
                        //new PriBuffer.BagTaskBuffer(128, 8f)
                        //new PriBuffer.MapTaskBuffer()
@@ -199,14 +199,14 @@ public class NARS {
                         ),
                         //questions
                         curve(termVolume,
-                          1, 16,
-                                12, 8,
+                          1, 8,
+                                12, 6,
                                 24, 4
                         ),
                         //quests
                         curve(termVolume,
-                                1, 16,
-                                12, 8,
+                                1, 8,
+                                12, 6,
                                 24, 4
                         )
                 )

@@ -25,7 +25,7 @@ public class ForkJoinExec extends MultiExec implements Thread.UncaughtExceptionH
     private static final int SYNCH_ITERATION_MS = 20;
     int granularity = 3;
 
-    private ForkJoinPool pool;
+    private final ForkJoinPool pool;
     volatile private List<PlayBatch> active = new FasterList();
 
     public ForkJoinExec() {

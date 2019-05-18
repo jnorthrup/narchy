@@ -298,11 +298,11 @@ public class Game extends NARPart implements NSense, NAct, Timed {
     }
 
     public Reward reward(FloatSupplier rewardfunc) {
-        return reward(rewardTerm("reward"), rewardfunc);
+        return reward(rewardTerm("reward"), 1, rewardfunc);
     }
 
-    public Reward reward(String reward, FloatSupplier rewardFunc) {
-        return reward(rewardTerm(reward), rewardFunc);
+    public Reward reward(String reward, float freq, FloatSupplier rewardFunc) {
+        return reward(rewardTerm(reward), freq, rewardFunc);
     }
 
     /**
@@ -314,11 +314,15 @@ public class Game extends NARPart implements NSense, NAct, Timed {
     }
 
     public Reward rewardNormalized(String reward, float min, float max, FloatSupplier rewardFunc) {
+        return rewardNormalized(reward, 1, min, max, rewardFunc);
+    }
+
+    public Reward rewardNormalized(String reward, float freq, float min, float max, FloatSupplier rewardFunc) {
         return rewardNormalized(rewardTerm(reward), min, max, rewardFunc);
     }
 
-    public Reward reward(Term reward, FloatSupplier rewardFunc) {
-        return reward(new SimpleReward(reward, rewardFunc, this));
+    public Reward reward(Term reward, float freq, FloatSupplier rewardFunc) {
+        return reward(new SimpleReward(reward, freq, rewardFunc, this));
     }
 
     /**
@@ -326,7 +330,7 @@ public class Game extends NARPart implements NSense, NAct, Timed {
      */
     public Reward rewardNormalized(Term reward, float min, float max, FloatSupplier rewardFunc) {
         //.relax(Param.HAPPINESS_RE_SENSITIZATION_RATE);
-        return reward(reward, normalize(rewardFunc, min, max));
+        return reward(reward, 1, normalize(rewardFunc, min, max));
     }
 
     public FloatSupplier normalize(FloatSupplier rewardFunc, float min, float max) {

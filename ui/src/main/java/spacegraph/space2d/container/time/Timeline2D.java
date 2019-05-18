@@ -203,6 +203,7 @@ public class Timeline2D extends Stacking implements Finger.ScrollWheelConsumer {
         synchronized (this) {
             this.startNext = start;
             this.endNext = end;
+            layout();
         }
         return this;
     }
@@ -292,11 +293,11 @@ public class Timeline2D extends Stacking implements Finger.ScrollWheelConsumer {
     }
 
     public static class SimpleEvent implements Comparable<SimpleEvent> {
-        public final String name;
+        public final Object name;
         final long start;
         public final long end;
 
-        public SimpleEvent(String name, long start, long end) {
+        public SimpleEvent(Object name, long start, long end) {
             this.name = name;
             this.start = start;
             this.end = end;
@@ -304,7 +305,7 @@ public class Timeline2D extends Stacking implements Finger.ScrollWheelConsumer {
 
         @Override
         public String toString() {
-            return name + '[' + start + ((start != end) ? (end + "]") : "]");
+            return name + "[" + start + ((start != end) ? (end + "]") : "]");
         }
 
         @Override
@@ -329,7 +330,7 @@ public class Timeline2D extends Stacking implements Finger.ScrollWheelConsumer {
         @Override
         public Iterable<SimpleEvent> events(long start, long end) {
 
-            return this.stream().filter(x -> intersects(x, start, end)).collect(Collectors.toList());
+            return this.stream().filter(x -> intersects(x, start, end))::iterator;
         }
 
         @Override

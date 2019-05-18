@@ -20,10 +20,8 @@ import nars.term.obj.QuantityTerm;
 import nars.term.util.Image;
 import nars.term.util.conj.Conj;
 import nars.time.Tense;
-import nars.util.var.DepIndepVarIntroduction;
 import org.eclipse.collections.api.map.ImmutableMap;
 import org.eclipse.collections.api.map.MutableMap;
-import org.eclipse.collections.api.tuple.Pair;
 import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 import org.jetbrains.annotations.Nullable;
 
@@ -322,12 +320,12 @@ public class Builtin {
 
         }));
 
-        /** applies # dep and $ indep variable introduction if possible. returns the input term otherwise  */
-        nar.add(Functor.f1Inline("varIntro", x -> {
-            Pair<Term, Map<Term, Term>> result = DepIndepVarIntroduction.the.apply(x, nar.random());
-            //return result != null ? result.getOne() : Null;
-            return result != null && result.getOne().op().conceptualizable ? result.getOne() : x;
-        }));
+//        /** applies # dep and $ indep variable introduction if possible. returns the input term otherwise  */
+//        nar.add(Functor.f1Inline("varIntro", x -> {
+//            Pair<Term, Map<Term, Term>> result = DepIndepVarIntroduction.the.apply(x, nar.random());
+//            //return result != null ? result.getOne() : Null;
+//            return result != null && result.getOne().op().conceptualizable ? result.getOne() : x;
+//        }));
 
         /** subterm, but specifically inside an ellipsis. otherwise pass through */
         nar.add(Functor.f("esubterm", (Subterms c) -> {

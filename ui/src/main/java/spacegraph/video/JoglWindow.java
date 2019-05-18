@@ -53,7 +53,7 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
     /**
      * factor to decrease FPS of unfocused windows
      */
-    private float renderFPSUnfocusedRate = 0.5f;
+    private final float renderFPSUnfocusedRate = 0.5f;
     private long lastRenderNS = System.nanoTime();
     private volatile int nx = -1, ny = -1, nw = -1, nh = -1;
 

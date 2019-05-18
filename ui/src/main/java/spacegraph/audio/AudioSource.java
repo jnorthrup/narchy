@@ -18,23 +18,18 @@ public class AudioSource implements DigitizedSignal {
 
     private static final Logger logger = LoggerFactory.getLogger(AudioSource.class);
     private static final float shortRange = Short.MAX_VALUE;
-    /**
-     * buffer time in milliseconds
-     */
-//    public final IntRange bufferSize;
-    public final int sampleRate;
-    public final AudioFormat audioFormat;
-    private final DataLine.Info dataLineInfo;
+
+
     private final int bytesPerSample;
     private final AtomicBoolean busy = new AtomicBoolean(false);
     volatile public int audioBytesRead;
-    private TargetDataLine line;
+    private final TargetDataLine line;
 
 
     //TODO parameterize with device
 
-    private byte[] preByteBuffer;
-    private short[] preShortBuffer;
+    private final byte[] preByteBuffer;
+    private final short[] preShortBuffer;
 
     public static List<AudioSource> all() {
 
@@ -46,10 +41,15 @@ public class AudioSource implements DigitizedSignal {
             Line.Info[] mm = mi.getTargetLineInfo();
             for (Line.Info M : mm) {
                 if (TargetDataLine.class.isAssignableFrom(M.getLineClass())) {
-                    System.out.println(I + " " + M + " " + M.getLineClass());
+                    //System.out.println(I + " " + M + " " + M.getLineClass());
                     try {
-                        AudioSource ss = new AudioSource((TargetDataLine) mi.getLine(M));
+                        TargetDataLine lm = (TargetDataLine) mi.getLine(M);
+
+                        lm.open(); //attempts to open, will fail if it can't
+
+                        AudioSource ss = new AudioSource(lm);
                         ll.add(ss);
+
                     } catch (Throwable e) {
                         e.printStackTrace();
                     }
@@ -63,25 +63,13 @@ public class AudioSource implements DigitizedSignal {
     /**
      * the constructor does not call start()
      * frameRate determines buffer size and frequency that events are emitted; can also be considered a measure of latency
+     *
+     * line may be already open or not.
      */
     public AudioSource(TargetDataLine line) {
 
-//        sampleRate = 44100;
-//        bytesPerSample = 2; /* 16-bit */
-//
-//        this.bufferSize = new IntRange(
-//                sampleRate * 4 /* ie. n seconds */,
-//                sampleRate, sampleRate * 128);
-//
-//        audioFormat = new AudioFormat(sampleRate, 8 * bytesPerSample, 1, true, false);
-//        dataLineInfo = new DataLine.Info(TargetDataLine.class, audioFormat, bufferSize.intValue());
-        //int numChannels = audioFormat.getChannels();
-        //int audioBufferSamples = (int) Math.ceil(numChannels * bufferSize.intValue());
-
         this.line = line;
-        this.sampleRate = (int) line.getFormat().getSampleRate();
-        this.audioFormat = line.getFormat();
-        this.dataLineInfo = (DataLine.Info) line.getLineInfo();
+
         int audioBufferSamples = line.getBufferSize();
         int numChannels = line.getFormat().getChannels();
         bytesPerSample = line.getFormat().getSampleSizeInBits()/8;
@@ -96,23 +84,27 @@ public class AudioSource implements DigitizedSignal {
 
         for (Mixer.Info i : minfoSet)
             System.out.println(i);
-
-
     }
 
     public int sampleRate() {
-        return sampleRate;
+        return (int) line.getFormat().getSampleRate();
     }
 
     public int channelsPerSample() {
-        return audioFormat.getChannels();
+        return line.getFormat().getChannels();
     }
 
     public final AudioSource start() throws LineUnavailableException {
-        logger.info("start {} {}", line, dataLineInfo);
+        logger.info("start {} {}", line, line.getLineInfo());
 
-        line.open(audioFormat/*, line.getBufferSize()*/);
-        line.start();
+        synchronized (this) {
+            if (!line.isOpen()) {
+                line.open();
+                //line.open(audioFormat/*, line.getBufferSize()*/);
+            }
+
+            line.start();
+        }
 
         //TODO
         //line.addLineListener();
@@ -123,20 +115,19 @@ public class AudioSource implements DigitizedSignal {
     }
 
     public void stop() {
-        logger.info("stop {} {}", line, dataLineInfo);
+        logger.info("stop {} {}", line, line.getLineInfo());
 
         synchronized (this) {
             if (line != null) {
+                line.stop();
                 line.close();
-                line = null;
             }
         }
     }
 
     @Override
     public boolean hasNext(int atleast) {
-        TargetDataLine l = this.line;
-        return l != null && l.available() >= atleast;
+        return line.available() >= atleast;
     }
 
     @Override

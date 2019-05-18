@@ -47,7 +47,8 @@ public class TaskCondition implements NARCondition, Predicate<Task>, Consumer<Ta
     private final float freqMax;
     public final float confMin;
     private final float confMax;
-    private long creationStart, creationEnd;
+    private final long creationStart;
+    private final long creationEnd;
 
     /*float tenseCost = 0.35f;
     float temporalityCost = 0.75f;*/
@@ -282,7 +283,7 @@ public class TaskCondition implements NARCondition, Predicate<Task>, Consumer<Ta
 
     @Override
     public void log(boolean condition, Logger logger) {
-        String msg = toString() + "\n" + (condition ? " OK" : "ERR" + '\t' + this);
+        String msg = this + "\n" + (condition ? " OK" : "ERR" + '\t' + this);
         if (condition) {
             logger.info(msg);
 

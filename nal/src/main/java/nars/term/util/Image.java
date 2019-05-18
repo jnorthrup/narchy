@@ -108,7 +108,7 @@ public enum Image {
                         ||
                         (x instanceof Compound && x.op() == INH &&
                                 x.hasAll(ImageBits) &&
-                                normalize((Compound) x, false, false) == null);
+                                normalize(x, false, false) == null);
     }
 
 

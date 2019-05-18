@@ -59,7 +59,7 @@ public class LazyCompoundBuilder {
      *  because that will just cause the same value to be assumed when it should not be.
      * */
     int volRemain;
-    private TermBuilder builder;
+    private final TermBuilder builder;
 
     public LazyCompoundBuilder() {
         this(Op.terms);

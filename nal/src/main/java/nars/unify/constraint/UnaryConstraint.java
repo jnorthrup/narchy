@@ -8,7 +8,7 @@ import nars.unify.Unify;
 
 public final class UnaryConstraint<U extends Unify> extends UnifyConstraint<U> {
 
-    private TermMatcher termMatcher;
+    private final TermMatcher termMatcher;
     private final boolean trueOrFalse;
 
     UnaryConstraint(TermMatcher termMatcher, Variable x, boolean trueOrFalse) {

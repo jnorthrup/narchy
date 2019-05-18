@@ -505,7 +505,7 @@ public enum Op {
     }
 
 
-    public static final Predicate<Term> statementLoopyContainer = (x) -> x.op()!=PROD;;
+    public static final Predicate<Term> statementLoopyContainer = (x) -> x.op()!=PROD;
 
     public static boolean statementLoopy(Term x, Term y) {
         if (!(x instanceof Atomic) && !(y instanceof Atomic))

@@ -23,7 +23,10 @@ import nars.derive.timing.ActionTiming;
 import nars.exe.impl.WorkerExec;
 import nars.gui.NARui;
 import nars.memory.CaffeineMemory;
-import nars.op.*;
+import nars.op.Arithmeticize;
+import nars.op.AutoencodedBitmap;
+import nars.op.Factorize;
+import nars.op.Introduction;
 import nars.op.mental.Inperience2;
 import nars.op.stm.ConjClustering;
 import nars.sensor.Bitmap2DSensor;
@@ -307,7 +310,7 @@ abstract public class GameX extends Game {
 
     private static void initPlugins3(NAR n, Game a) {
 
-        MetaAgent meta = new MetaAgent(false,16f, a);
+        MetaAgent meta = new MetaAgent(true,16f, a);
         meta.what().pri(0.25f);
 
 //        RLBooster metaBoost = new RLBooster(meta, (i,o)->new HaiQae(i, 10,o),
@@ -577,9 +580,7 @@ abstract public class GameX extends Game {
         });
     }
 
-    ;
-
-//    static void inputInjectionQ(NAR n) {
+    //    static void inputInjectionQ(NAR n) {
 //        //TODO
 //    }
 

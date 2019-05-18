@@ -11,7 +11,7 @@ import nars.time.part.DurLoop;
 /** model for timing a game */
 abstract public class GameTime {
 
-    private volatile Off on = null;
+    private final Off on = null;
 
     abstract protected NARPart clock(Game a);
 

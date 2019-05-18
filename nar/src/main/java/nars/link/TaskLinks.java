@@ -61,7 +61,7 @@ public class TaskLinks implements Sampler<TaskLink> {
 
 
 
-    private PriMerge merge = NAL.tasklinkMerge;
+    private final PriMerge merge = NAL.tasklinkMerge;
 
 
     public TaskLinks(/*TODO bag as parameter */) {

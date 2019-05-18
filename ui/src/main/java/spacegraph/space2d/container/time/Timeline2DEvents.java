@@ -108,22 +108,23 @@ public class Timeline2DEvents<E> extends Graph2D<E> implements Timeline2D.TimeRa
                     int j = ii.next();
                     NodeVis<E> jj = next.get(j);
                     long[] w = model.range(jj.id);
-                    float left = (w[0]), right = (w[1]);
+                    double left = (w[0]), right = (w[1]);
                     if (right-left < timeVisibleEpsilon) {
-                        float mid = (left + right)/2f;
+                        double mid = (left + right)/2f;
                         left = mid - timeVisibleEpsilon /2;
                         right = mid + timeVisibleEpsilon /2;
                     }
 
-                    jj.show();
+
                     RectFloat r = RectFloat.XYXY(x(left), Y + laneHeight * i, x(right), Y + laneHeight * (i + 1));
                     jj.pos(r);
+                    jj.show();
                 }
             }
         }
     }
 
-    protected float x(float t) {
+    protected float x(double t) {
         return Timeline2D.x(start, end, x(), w(), t );
     }
 

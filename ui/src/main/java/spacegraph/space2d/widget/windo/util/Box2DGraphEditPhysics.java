@@ -55,7 +55,7 @@ public class Box2DGraphEditPhysics extends GraphEditPhysics {
 
     private final int velIter = 4;
     private final int posIter = 4;
-    private float timeScale = 1f;
+    private final float timeScale = 1f;
     private static final float minDimension = 0.5f;
     private static final float scaling = 10f;
     private static final float SHAPE_SIZE_EPSILON = Settings.EPSILON;

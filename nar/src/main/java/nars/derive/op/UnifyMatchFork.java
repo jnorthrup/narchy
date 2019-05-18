@@ -44,8 +44,7 @@ public final class UnifyMatchFork extends LazyCompoundBuilder implements Predica
 
                 taskify.apply(y, d);
 
-                if (forkLimit == 1 || tried.size() >= forkLimit)
-                    return false; //CUT
+                return forkLimit != 1 && tried.size() < forkLimit; //CUT
             }
         }
 

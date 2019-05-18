@@ -197,12 +197,12 @@ public enum Perceive { ;
         boolean cmd = punc == COMMAND;
 
         Task e = null, r = null;
-        if (cmd || (t instanceof Task && (punc == GOAL && !((Task)t).isEternal()))) {
-            e = execute((Task)t, n, cmd);
+        if (cmd || (t instanceof Task && (punc == GOAL && !t.isEternal()))) {
+            e = execute(t, n, cmd);
         }
 
         if (!cmd) {
-            r = Remember.the((Task)t, n);
+            r = Remember.the(t, n);
         }
 
         if (e != null && r != null)

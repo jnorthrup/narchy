@@ -86,7 +86,7 @@ public class PrologCore extends PrologAgent implements Consumer<Task> {
 
     private final long timeoutMS = 50;
     private final CauseChannel<Task> in;
-    private What what;
+    private final What what;
 
 
     /*final ObjectBooleanHashMap<Term> beliefs = new ObjectBooleanHashMap() {

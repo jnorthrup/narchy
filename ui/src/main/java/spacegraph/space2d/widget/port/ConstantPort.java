@@ -4,7 +4,7 @@ public class ConstantPort<X> extends TypedPort<X> {
 
     private volatile X value = null;
 
-    private boolean outOnConnect = true;
+    private final boolean outOnConnect = true;
 
     public ConstantPort(X value, Class<? super X> klass) {
         super(klass);

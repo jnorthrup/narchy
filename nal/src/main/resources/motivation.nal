@@ -1,9 +1,9 @@
 
 
     //sustain goal
-    G, G, task("!") |-         ((  polarizeTask(G) && ?1) ==> G) , (Punctuation:Question)
+    //G, G, task("!") |-         ((  polarizeTask(G) && ?1) ==> G) , (Punctuation:Question)
     //correct goal
-    G, G, task("!") |-         ((--polarizeTask(G) && ?1) ==> G) , (Punctuation:Question)
+    //G, G, task("!") |-         ((--polarizeTask(G) && ?1) ==> G) , (Punctuation:Question)
 
     //how goal
     //G, Y, task("!") |-         (?1 ==> G) , (Punctuation:Question)
@@ -13,7 +13,7 @@
     //G, Y, task("!") |-        (--G ==> ?1), (Punctuation:Question)
 
     //result of achieving/non-achieving goal and current belief
-    G, B, task("!"), hasBelief() |-        ((polarizeRandom(G) && B) ==> ?1), (Punctuation:Question)
+    //G, B, task("!"), hasBelief() |-        ((polarizeRandom(G) && B) ==> ?1), (Punctuation:Question)
 
     //is what with goal
     //G, B, task("!") |-           (?1 && G), (Punctuation:Question)
@@ -54,8 +54,8 @@
 //    (&&,G,X,A..*), (&&,H,Y,B..*), eqNeg(G,H), neq(X,Y), hasBelief()  |- ((polarizeRandom(X) && polarizeRandom(Y)) --> ?1), (Punctuation:Ask)
 
 //anti-specific deduction: "conjunction contraposition" (weak)
-//C, X, eventOf(C,X)       |-   negateEvents(conjWithout(C,  X)), (Belief:DeductionWeakPN)
-//C, X, eventOfNeg(C,X)    |-   negateEvents(conjWithout(C,--X)), (Belief:DeductionWeakPP)
+//    C, X, eventOf(C,X)       |-   negateEvents(conjWithout(C,  X)), (Belief:DeductionWeakPN)
+//    C, X, eventOfNeg(C,X)    |-   negateEvents(conjWithout(C,--X)), (Belief:DeductionWeakPP)
 
 
 //inverted condition question/quest TODO: invertAll(C,X)..

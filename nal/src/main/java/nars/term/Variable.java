@@ -136,8 +136,7 @@ public interface Variable extends Atomic {
         }
 
         if (y instanceof Variable && u.assigns(yo, xo)) {
-            if (u.putXY((Variable) y, x))
-                return true;
+            return u.putXY((Variable) y, x);
         }
 
         return false;

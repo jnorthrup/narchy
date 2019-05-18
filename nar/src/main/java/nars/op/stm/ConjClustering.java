@@ -64,8 +64,8 @@ public class ConjClustering extends How {
 
     private volatile long lastLearn;
 
-    private int learningIterations = 1;
-    private int minDurationsPerLearning = 1;
+    private final int learningIterations = 1;
+    private final int minDurationsPerLearning = 1;
 
 
     public final FloatRange forgetRate = new FloatRange(0.5f, 0, 1);

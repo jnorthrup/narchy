@@ -150,14 +150,14 @@ public final class NodeConfig {
    @Nullable
    public static String get(@NotNull String s) {
       //Intrinsics.checkParameterIsNotNull(s, "s");
-      return get2(s, (String)null, false);
+      return get2(s, null, false);
    }
 
    /*@JvmStatic*/
    @Nullable
    public static String qget(@NotNull String s) {
       //Intrinsics.checkParameterIsNotNull(s, "s");
-      return qget2(s, (String)null);
+      return qget2(s, null);
    }
 
    private NodeConfig() {

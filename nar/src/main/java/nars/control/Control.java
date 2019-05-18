@@ -79,7 +79,7 @@ import java.util.Arrays;
 
 
 
-    private float updatePeriods =
+    private final float updatePeriods =
             1;
             //2;
 

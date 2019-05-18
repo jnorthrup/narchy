@@ -30,9 +30,9 @@ public class SignalInput extends Loop {
         super();
     }
 
-    public final SignalInput set(DigitizedSignal src, float bufferCycles) {
+    public final SignalInput set(DigitizedSignal src, float bufferSeconds) {
         int r = src.sampleRate();
-        return set(src, r, Math.round(bufferCycles * r));
+        return set(src, r, Math.round(bufferSeconds * r));
     }
 
     public synchronized SignalInput set(DigitizedSignal src, int sampleRate, int bufferSamples) {

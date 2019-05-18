@@ -15,7 +15,7 @@ abstract public class MiniTest extends Game {
         super(MiniTest.class.getSimpleName(), n);
         //statPrint = n.emotion.printer(System.out);
 
-        reward(the("reward"), () -> {
+        reward(the("reward"), 1f, () -> {
 //                System.out.println(this + " avgReward=" + avgReward() + " dexMean=" + dex.getMean() + " dexMax=" + dex.getMax());
 //                statPrint.run();
 //                nar.stats(System.out);
