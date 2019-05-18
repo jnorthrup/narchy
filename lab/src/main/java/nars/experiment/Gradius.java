@@ -118,8 +118,8 @@ public class Gradius extends GameX {
 
         float width = g.getWidth();
         float height = g.getHeight();
-        int gpsDigits = 8;
-        float gpsRes = 0.1f;
+        int gpsDigits = 4;
+        float gpsRes = 0.05f;
         senseNumber(level -> $.p($.the(level), $.p(id, $.the("y"))),
                 () -> g.player[OBJ_Y] / height,
                 gpsDigits, DigitizedScalar.FuzzyNeedle

@@ -3,6 +3,7 @@ package spacegraph.space2d.container.time;
 import jcog.Util;
 import jcog.math.v2;
 import jcog.pri.ScalarValue;
+import jcog.signal.tensor.ArrayTensor;
 import jcog.signal.wave1d.SignalInput;
 import spacegraph.input.finger.Finger;
 import spacegraph.input.finger.Fingering;
@@ -12,6 +13,7 @@ import spacegraph.space2d.ReSurface;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.space2d.widget.meter.Spectrogram;
+import spacegraph.space2d.widget.meter.WaveBitmap;
 import spacegraph.video.Draw;
 
 import static java.lang.Float.NaN;
@@ -37,17 +39,17 @@ public class SignalView extends Timeline2D {
         this.in = in;
 
 
-        Spectrogram g = new FreqSpectrogram(in, true,512, 2048);
+        Spectrogram g = new FreqSpectrogram(in, true,256, 512);
         add(g);
 
-//        WaveView w = new WaveView(in, 500, 250);
-//        add(w);
+        WaveBitmap w = new WaveBitmap(new ArrayTensor(in.data), in.sampleRate, in.data.length, 250);
+        add(w);
 
         addEvents(new SimpleTimelineEvents(), (nv)-> nv.set(new PushButton(nv.id.toString())));
 
-//        this.in.wave.on(raw->{
-//            w.updateLive();
-//        });
+        this.in.wave.on(raw->{
+            w.update();
+        });
     }
 
 

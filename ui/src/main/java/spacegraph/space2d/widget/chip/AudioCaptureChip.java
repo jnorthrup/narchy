@@ -15,7 +15,7 @@ public class AudioCaptureChip extends Bordering {
     private Off on;
 
     public AudioCaptureChip() {
-        AudioSource a = new AudioSource();
+        AudioSource a = null; ///TODO new AudioSource();
 //        au = new SignalSampling(c->a.writeTo(c), a.sampleRate, 4f);
 //
 //        set(new SignalView(au));

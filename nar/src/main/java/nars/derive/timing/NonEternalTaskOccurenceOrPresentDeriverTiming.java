@@ -10,7 +10,7 @@ import static nars.time.Tense.ETERNAL;
 
 public class NonEternalTaskOccurenceOrPresentDeriverTiming implements TriFunction<What, Task, Term, long[]> {
 
-    public final FloatRange durRadius = new FloatRange(0.5f, 0, 32);
+    public final FloatRange durRadius = new FloatRange(1f, 0, 32);
 
 
     public NonEternalTaskOccurenceOrPresentDeriverTiming() {

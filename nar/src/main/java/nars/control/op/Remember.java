@@ -318,20 +318,24 @@ public class Remember extends AbstractTask {
      *
      * @param dCreationDurs (creation(next) - creation(prev))/durCycles
      */
-    protected static boolean rememberFilter(Task prev, Task next, Task remembered, float dPri, NAR n) {
+    private static boolean rememberFilter(Task prev, Task next, Task remembered, float dPri, NAR n) {
 
-        long dDurCycles = Math.max(0, next.creation() - prev.creation());
-        float dCreationDurs = dDurCycles == 0 ? 0 : (dDurCycles / ((float) n.dur()));
-
-        if (next == remembered && next.isInput())
+        if (dPri >= NAL.belief.REMEMBER_REPEAT_PRI_THRESHOLD)
             return true;
 
-        if (dCreationDurs > NAL.belief.REMEMBER_REPEAT_THRESH_DURS) {
+        long dDurCycles = Math.max(0, next.creation() - prev.creation());
+        float dCreationDurs = dDurCycles == 0 ? 0 : (dDurCycles / ((float) n.dtDither()));
+
+        if (next == remembered) {
+            return next.isInput();
+        }
+
+        if (dCreationDurs > NAL.belief.REMEMBER_REPEAT_THRESH_DITHERS) {
             prev.setCreation(next.creation());
             return true;
         }
 
-        return dPri > NAL.belief.REMEMBER_REPEAT_PRI_THRESHOLD;
+        return false;
 
     }
 

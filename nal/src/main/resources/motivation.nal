@@ -47,11 +47,16 @@
      //(G && B), B, task("@") |-  (--G ==> B), (Punctuation:Question)
 
 //quest to 'how' impl question
-   B, X, task("@"), --is(B,"==>"), hasBelief() |- (polarizeBelief(X) ==> B), (Punctuation:Question)
+   B, X, task("@"), --is(B,"==>"), neq(X,B), hasBelief() |- (polarizeBelief(X) ==> B), (Punctuation:Question)
      //B, X, task("@"), --is(B,"==>"), hasBelief() |- (polarizeRandom(B) ==> X), (Punctuation:Question)
 
 //"what is the difference" between what co-occurrs with goal and non-goal
-    (&&,G,X,A..*), (&&,H,Y,B..*), eqNeg(G,H), neq(X,Y), hasBelief()  |- ((polarizeRandom(X) && polarizeRandom(Y)) --> ?1), (Punctuation:Ask)
+//    (&&,G,X,A..*), (&&,H,Y,B..*), eqNeg(G,H), neq(X,Y), hasBelief()  |- ((polarizeRandom(X) && polarizeRandom(Y)) --> ?1), (Punctuation:Ask)
+
+//anti-specific deduction: "conjunction contraposition" (weak)
+//C, X, eventOf(C,X)       |-   negateEvents(conjWithout(C,  X)), (Belief:DeductionWeakPN)
+//C, X, eventOfNeg(C,X)    |-   negateEvents(conjWithout(C,--X)), (Belief:DeductionWeakPP)
+
 
 //inverted condition question/quest TODO: invertAll(C,X)..
     //C, X, eventOfPN(C,X)   |- invertAll(C,X), (Punctuation:Ask)

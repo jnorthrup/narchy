@@ -132,13 +132,15 @@ public class TaskLinks implements Sampler<TaskLink> {
                 else {
                     //loopback
                     if (t instanceof Atom) {
-                        //why is this necessary
                         float probability =
                                 0.5f;
-                        //1f / (1 + link.from().volume()/2f);
-                        //1f / (1 + link.from().volume());
-                        //1 - 1f / (1 + s.volume());
-                        //1 - 1f / (1 + t.volume());
+                                //1f/Math.max(2,link.from().volume());
+                                //1-1f/Math.max(2,link.from().volume());
+                                //1-1f/(Math.max(1,link.from().volume()-1));
+                                //1f / (1 + link.from().volume()/2f);
+                                //1f / (1 + link.from().volume());
+                                //1 - 1f / (1 + s.volume());
+                                //1 - 1f / (1 + t.volume());
 
                         if (d.random.nextFloat() <= probability) {
                             //sample active tasklinks for a tangent match to the atom
@@ -146,8 +148,9 @@ public class TaskLinks implements Sampler<TaskLink> {
                             Predicate<TaskLink> filter = ((Predicate<TaskLink>)link::equals).negate();
 
                             Term z = links.atomTangent(T, punc, filter, d.time(),
-                                    d.dur() * NAL.belief.REMEMBER_REPEAT_THRESH_DURS /* repurposed */, d.random);
+                                   d.dur() * NAL.ATOM_TANGENT_REFRESH_DURS , d.random);
                             return z;
+
 
 //                        if (u!=null && u.equals(s)) {
 ////                            u = links.atomTangent(ct, ((TaskLink x)->!link.equals(x)), d.time, 1, d.random);//TEMPORARY

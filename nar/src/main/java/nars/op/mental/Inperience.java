@@ -1,10 +1,7 @@
 package nars.op.mental;
 
 import jcog.math.FloatRange;
-import nars.$;
-import nars.NAL;
-import nars.NAR;
-import nars.Task;
+import nars.*;
 import nars.attention.What;
 import nars.op.TaskLeakTransform;
 import nars.task.signal.SignalTask;
@@ -300,7 +297,12 @@ abstract public class Inperience extends TaskLeakTransform {
         if (!acceptTask(next))
             return false;
 
-
+        //HACK temporal filter
+        //this shouldnt name a concept with the temporal data:
+        //( &&+- ,believe("lÆåÍÕ7ÝSç",(((--,(g-->forget)) &&+20 x(g,-1)) &&+350 (--,x(g,-1)))),(g-->dex),(g-->amplify))
+        //until fixed, dont include any possibility of temporal data
+        if (next.term().hasAny(Temporal))
+            return false;
 
         Term nextTerm = Image.imageNormalize(next.term());
         if (nextTerm.op() == INH) {

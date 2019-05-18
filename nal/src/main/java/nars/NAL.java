@@ -46,6 +46,9 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
             ;
     public static final boolean SHUFFLE_TERMUTES= configIs("SHUFFLE_TERMUTES");
     public static final boolean DT_DITHER_LOGARITHMICALLY= configIs("DT_DITHER_LOGARITHMICALLY");
+
+    public static int ATOM_TANGENT_REFRESH_DURS = 1;
+
     /**
      * return <= 0 to disable
      */
@@ -548,7 +551,10 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
          * useful as a novelty threshold:
          * >=0, higher values decrease the rate at which repeated tasks can be reactivated
          */
-        public static int REMEMBER_REPEAT_THRESH_DURS = 1;
+        public static int REMEMBER_REPEAT_THRESH_DITHERS = 1;
+
+
+
         /**
          * maximum span of a Task, in cycles.
          * beyond a certain length, evidence integration precision suffers accuracy diminishes and may become infinite

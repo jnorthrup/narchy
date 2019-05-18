@@ -6,11 +6,16 @@ import nars.Op;
 import nars.subterm.Subterms;
 import nars.term.Compound;
 import nars.term.Term;
+import nars.term.atom.Atomic;
+import nars.term.util.conj.Conj;
+import nars.term.util.conj.ConjLazy;
 import nars.term.var.Img;
 
 import java.util.Random;
 import java.util.function.Function;
 import java.util.stream.Stream;
+
+import static nars.Op.CONJ;
 
 public abstract class DynamicTermLinker implements TermLinker {
 
@@ -21,12 +26,10 @@ public abstract class DynamicTermLinker implements TermLinker {
 
     @Override
     public final Term sample(Term t, Random rng) {
-        return sampleDynamic(t, t instanceof Compound ? depth((Compound)t, rng) : 1, rng);
+        return t instanceof Compound ? sampleDynamic((Compound)t, t instanceof Compound ? depth((Compound)t, rng) : 1, rng) : t;
     }
 
-    private Term sampleDynamic(Term t, int depthRemain, Random rng) {
-        if (depthRemain <= 0 || t.op().atomic)
-            return t;
+    private Term sampleDynamic(Compound t, int depthRemain, Random rng) {
 
         Subterms tt = t.subterms();
         int n = tt.subs();
@@ -39,15 +42,18 @@ public abstract class DynamicTermLinker implements TermLinker {
         else
             u = choose(tt, n, t, rng);
 
-        u = u.unneg();
-        Op uo = u.op();
-
         if (u instanceof Img)
-            return t;
-        else if (depthRemain <= 1 || uo.atomic || !(uo.conceptualizable))
-            return u; //end
-        else
-            return sampleDynamic(u, depthRemain-1, rng);
+            return t; //HACK
+
+        u = u.unneg();
+        if (depthRemain <= 1 || !(u instanceof Compound))
+            return u;
+
+        Op uo = u.op();
+        if (!uo.conceptualizable)
+            return u;
+
+        return sampleDynamic((Compound)u, depthRemain-1, rng);
     }
 
     abstract protected int depth(Compound root, Random rng);
@@ -95,7 +101,11 @@ public abstract class DynamicTermLinker implements TermLinker {
 
         @Override
         protected Term choose(Subterms tt, int n, Term parent, Random rng) {
-            return tt.sub(Roulette.selectRoulette(n, i-> _subValue(tt.sub(i)), rng));
+            if (parent.op()==CONJ && tt.hasAny(CONJ) && Conj.isSeq(parent) && rng.nextBoolean()) {
+                return ConjLazy.events(parent).get(rng); //TODO events -> subterms ? -v
+            } else {
+                return tt.sub(Roulette.selectRoulette(n, i -> _subValue(tt.sub(i)), rng));
+            }
         }
 
         private float _subValue(Term sub) {
@@ -106,8 +116,11 @@ public abstract class DynamicTermLinker implements TermLinker {
         }
 
         protected float subValue(Term sub) {
+            if (sub instanceof Atomic)
+                return 1;
+
             int v =
-                    sub.volume();
+                    sub.unneg().volume();
                     //sub.complexity();
             return
                     //Util.sqrt(v);

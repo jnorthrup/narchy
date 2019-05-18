@@ -5,7 +5,7 @@ import jcog.signal.tensor.ArrayTensor;
 import jcog.signal.tensor.TensorTopic;
 
 /**
- * an instance of a process of reading a signal
+ * buffering process for signal input
  * acts as a short-term memory and event dispatcher in reaction to a live-input 1D wave
  *
  * TODO enable/disable switch

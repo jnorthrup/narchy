@@ -1,6 +1,6 @@
 package spacegraph.audio;
 
-import jcog.math.IntRange;
+import jcog.data.list.FasterList;
 import jcog.signal.wave1d.DigitizedSignal;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import javax.sound.sampled.*;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -15,52 +16,80 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public class AudioSource implements DigitizedSignal {
 
+    private static final Logger logger = LoggerFactory.getLogger(AudioSource.class);
+    private static final float shortRange = Short.MAX_VALUE;
     /**
      * buffer time in milliseconds
      */
-    public final IntRange bufferSize;
-
+//    public final IntRange bufferSize;
     public final int sampleRate;
-    private TargetDataLine line;
-    private final DataLine.Info dataLineInfo;
     public final AudioFormat audioFormat;
-
-
+    private final DataLine.Info dataLineInfo;
     private final int bytesPerSample;
+    private final AtomicBoolean busy = new AtomicBoolean(false);
+    volatile public int audioBytesRead;
+    private TargetDataLine line;
 
 
-    private static final Logger logger = LoggerFactory.getLogger(AudioSource.class);
+    //TODO parameterize with device
 
     private byte[] preByteBuffer;
     private short[] preShortBuffer;
 
-    volatile public int audioBytesRead;
+    public static List<AudioSource> all() {
 
+        List<AudioSource> ll = new FasterList();
 
-    //TODO parameterize with device
+        Mixer.Info[] ii = AudioSystem.getMixerInfo();
+        for (Mixer.Info I : ii) {
+            Mixer mi = AudioSystem.getMixer(I);
+            Line.Info[] mm = mi.getTargetLineInfo();
+            for (Line.Info M : mm) {
+                if (TargetDataLine.class.isAssignableFrom(M.getLineClass())) {
+                    System.out.println(I + " " + M + " " + M.getLineClass());
+                    try {
+                        AudioSource ss = new AudioSource((TargetDataLine) mi.getLine(M));
+                        ll.add(ss);
+                    } catch (Throwable e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
+
+        return ll;
+    }
 
     /**
      * the constructor does not call start()
      * frameRate determines buffer size and frequency that events are emitted; can also be considered a measure of latency
      */
-    public AudioSource() {
+    public AudioSource(TargetDataLine line) {
 
-        sampleRate = 44100;
-        bytesPerSample = 2; /* 16-bit */
+//        sampleRate = 44100;
+//        bytesPerSample = 2; /* 16-bit */
+//
+//        this.bufferSize = new IntRange(
+//                sampleRate * 4 /* ie. n seconds */,
+//                sampleRate, sampleRate * 128);
+//
+//        audioFormat = new AudioFormat(sampleRate, 8 * bytesPerSample, 1, true, false);
+//        dataLineInfo = new DataLine.Info(TargetDataLine.class, audioFormat, bufferSize.intValue());
+        //int numChannels = audioFormat.getChannels();
+        //int audioBufferSamples = (int) Math.ceil(numChannels * bufferSize.intValue());
 
-        this.bufferSize = new IntRange(
-                sampleRate * 4 /* ie. n seconds */,
-                sampleRate, sampleRate * 128);
+        this.line = line;
+        this.sampleRate = (int) line.getFormat().getSampleRate();
+        this.audioFormat = line.getFormat();
+        this.dataLineInfo = (DataLine.Info) line.getLineInfo();
+        int audioBufferSamples = line.getBufferSize();
+        int numChannels = line.getFormat().getChannels();
+        bytesPerSample = line.getFormat().getSampleSizeInBits()/8;
 
-        audioFormat = new AudioFormat(sampleRate, 8 * bytesPerSample, 1, true, false);
-        dataLineInfo = new DataLine.Info(TargetDataLine.class, audioFormat, bufferSize.intValue());
+        preByteBuffer = new byte[audioBufferSamples * bytesPerSample];
+        preShortBuffer = new short[audioBufferSamples];
+
     }
-
-
-    public int sampleRate() {
-        return sampleRate;
-    }
-
 
     public static void print() {
         Mixer.Info[] minfoSet = AudioSystem.getMixerInfo();
@@ -71,43 +100,30 @@ public class AudioSource implements DigitizedSignal {
 
     }
 
+    public int sampleRate() {
+        return sampleRate;
+    }
+
     public int channelsPerSample() {
         return audioFormat.getChannels();
     }
 
-    public final AudioSource start() {
-        logger.info("start {} {}", this, dataLineInfo);
+    public final AudioSource start() throws LineUnavailableException {
+        logger.info("start {} {}", line, dataLineInfo);
 
-        synchronized (this) {
-            try {
+        line.open(audioFormat/*, line.getBufferSize()*/);
+        line.start();
+
+        //TODO
+        //line.addLineListener();
+
+        return this;
 
 
-                line = (TargetDataLine) AudioSystem.getLine(dataLineInfo);
-
-                int numChannels = audioFormat.getChannels();
-
-                int audioBufferSamples = (int) Math.ceil(numChannels * bufferSize.intValue());
-
-                preByteBuffer = new byte[audioBufferSamples * bytesPerSample];
-                preShortBuffer = new short[audioBufferSamples];
-
-                line.open(audioFormat, audioBufferSamples);
-                line.start();
-
-                //TODO
-                //line.addLineListener();
-
-                return this;
-
-            } catch (LineUnavailableException e) {
-                e.printStackTrace();
-                return null;
-            }
-        }
     }
 
     public void stop() {
-        logger.info("stopped {} {}", this, dataLineInfo);
+        logger.info("stop {} {}", line, dataLineInfo);
 
         synchronized (this) {
             if (line != null) {
@@ -117,12 +133,10 @@ public class AudioSource implements DigitizedSignal {
         }
     }
 
-    private final AtomicBoolean busy = new AtomicBoolean(false);
-
     @Override
     public boolean hasNext(int atleast) {
         TargetDataLine l = this.line;
-        return l !=null && l.available() >= atleast;
+        return l != null && l.available() >= atleast;
     }
 
     @Override
@@ -201,8 +215,6 @@ public class AudioSource implements DigitizedSignal {
 
 
     }
-
-    private static final float shortRange = Short.MAX_VALUE;
 
     public String name() {
         return line.getLineInfo().toString();

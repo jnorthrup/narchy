@@ -54,10 +54,8 @@
     //desire for sub-sequence leading to goal,  truth function may be Desire or Deduction
     G, C, is(C,"&&")                  |-      conjBefore(C,   G),  (Goal:DesirePP)
     G, C, is(C,"&&"), has(C,"--")     |-      conjBefore(C, --G),  (Goal:DesireNP)
-
-//probably wrong:
-//      G, D, is(D,"&&"), has(D,"--")   |-    --conjBefore(D, --G),  (Goal:DesireWeakPN)
-//      G, D, is(D,"&&")                |-    --conjBefore(D,   G),  (Goal:DesireWeakNN)
+      G, D, is(D,"&&"), has(D,"--")   |-    --conjBefore(D, --G),  (Goal:DesireWeakPN)
+      G, D, is(D,"&&")                |-    --conjBefore(D,   G),  (Goal:DesireWeakNN)
 
             //--eventOfNeg(C,G) , --eventOf(C,G) <- optional additional renovelion of anti-goal not present anywhere in the sequence
 
@@ -69,9 +67,9 @@
 
     //conjunction belief decomposition
     C, X, is(C,"&&"), --isVar(X)                   |-   conjAfter(C,  X), (Belief:DeductionPP,Goal:DeductionPP)
-//      D, X, is(D,"&&"), has(D,"--"), --isVar(X)    |- --conjAfter(D,--X), (Belief:DeductionWeakPP,Goal:DeductionWeakNP)
+      D, X, is(D,"&&"), has(D,"--"), --isVar(X)    |- --conjAfter(D,--X), (Belief:DeductionWeakNP,Goal:DeductionWeakNP)
     C, X, is(C,"&&"), has(C,"--"), --isVar(X)      |-   conjAfter(C,--X), (Belief:DeductionPN,Goal:DeductionPN)
-//      D, X, is(D,"&&"), --isVar(X)                 |- --conjAfter(D,  X), (Belief:DeductionWeakPN,Goal:DeductionWeakNN)
+      D, X, is(D,"&&"), --isVar(X)                 |- --conjAfter(D,  X), (Belief:DeductionWeakNN,Goal:DeductionWeakNN)
 //
 //    //conjunction goal decomposition
 //    G, C, is(C,"&&")                   |-   conjAfter(C,  G), (Goal:DesirePP)
@@ -195,6 +193,3 @@ C, Y, is(C,"&&"), has(C,"#"), neq(C,Y), --isVar(Y), has(C,"--")  |- unisubst(C,c
 //    //specific deduction
 //    C, X, eventOf(C,X)           |-   conjWithout(C,  X), (Belief:DeductionPP)
 //    C, X, eventOfNeg(C,X)        |-   conjWithout(C,--X), (Belief:DeductionPN)
-//        //anti-specific deduction: "conjunction contraposition" (weak)
-//        C, X, eventOf(C,X)       |-   negateEvents(conjWithout(C,  X)), (Belief:DeductionWeakPN)
-//        C, X, eventOfNeg(C,X)    |-   negateEvents(conjWithout(C,--X)), (Belief:DeductionWeakPP)

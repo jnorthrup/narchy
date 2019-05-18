@@ -8,11 +8,14 @@ import nars.NARS;
 import nars.agent.Game;
 import nars.concept.sensor.FreqVectorSensor;
 import nars.gui.sensor.VectorSensorView;
+import nars.term.Term;
 import spacegraph.SpaceGraph;
 import spacegraph.audio.AudioSource;
 import spacegraph.space2d.container.time.SignalView;
 import spacegraph.space2d.widget.meta.ObjectSurface;
 import spacegraph.space2d.widget.meter.WaveBitmap;
+
+import javax.sound.sampled.LineUnavailableException;
 
 import static spacegraph.space2d.container.grid.Gridding.grid;
 
@@ -23,7 +26,7 @@ public class NARAudio extends WaveIn {
 
     private final FreqVectorSensor hear;
 
-    public NARAudio(NAR nar, SignalInput src, float fps) {
+    public NARAudio(Term id, NAR nar, SignalInput src, float fps) {
         super($.quote(src.toString()/*HACK*/), src, fps);
 
         Game h = new Game("hear", nar);
@@ -36,7 +39,7 @@ public class NARAudio extends WaveIn {
 //        }
         CircularFloatBuffer hearBuf = new CircularFloatBuffer(in.data);
         hear = new FreqVectorSensor(hearBuf /* hack */,
-                f->$.inh($.the(f), /*src.id*/ "hear"), 512,16, nar);
+                f->$.inh(id, $.the(f)), 512,16, nar);
         h.addSensor(hear);
 
         //addSensor(hear);
@@ -52,17 +55,18 @@ public class NARAudio extends WaveIn {
 
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws LineUnavailableException {
 
-        NAR n = NARS.shell();
+        NAR n = NARS.tmp();//NARS.shell();
+        n.log();
 
-        AudioSource audio = new AudioSource();
+        AudioSource audio = AudioSource.all().get(0); //HACK
         SignalInput i = new SignalInput();
         i.set(audio, 1/30f);
 
         audio.start();
 
-        NARAudio na = new NARAudio(n, i, 30f);
+        NARAudio na = new NARAudio($.quote(audio.toString()), n, i, 30f);
 
         SpaceGraph.window(new SignalView(i).withControls(), 800, 800);
 

@@ -11,7 +11,7 @@ import java.util.Random;
 
 public class ActionTiming implements TriFunction<What, Task, Term, long[]> {
 
-    public final FloatRange horizonDurs = new FloatRange(8, 0, 32);
+    public final FloatRange horizonDurs = new FloatRange(16, 0, 32);
     //public final FloatRange widthDurs = new FloatRange(2, 0, 8);
 
     public ActionTiming() {
@@ -26,8 +26,8 @@ public class ActionTiming implements TriFunction<What, Task, Term, long[]> {
         long now = what.time();
         Random rng = what.random();
         long start, end;
-        long taskStart = task.start();
-        if (taskStart <= now - dur) {
+//        long taskStart = task.start();
+//        if (taskStart <= now - dur) {
 
             //gaussian
             long then = Math.round(now + rng.nextGaussian() * horizonDurs.floatValue() * dur);
@@ -43,10 +43,10 @@ public class ActionTiming implements TriFunction<What, Task, Term, long[]> {
             //end = Tense.dither(end, nar);
 
 
-        } else {
-            //non-eternal present or future
-            start = taskStart; end = task.end();
-        }
+//        } else {
+//            //non-eternal present or future
+//            start = taskStart; end = task.end();
+//        }
         return new long[]{start, end};
     }
 }
