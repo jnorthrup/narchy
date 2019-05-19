@@ -24,12 +24,24 @@ public enum SubtermCondition implements BiPredicate<Term, Term> {
         }
     },
 
+    SubtermNeg() {
+        @Override
+        public boolean test(Term container, Term x) {
+            return container.containsNeg(x);
+        }
+
+        public float cost() {
+            return 0.41f;
+        }
+    },
+
     /** intersect contents */
     Subsect() {
 
         @Override
         public boolean test(Term container, Term x) {
-            return x.op()==CONJ ? x.AND(container::contains) : container.contains(x);
+            //return x.op()==CONJ ? x.AND(container::contains) : container.contains(x);
+            return Conj.containsEvent(container, x);
         }
 
         public float cost() {
@@ -37,11 +49,12 @@ public enum SubtermCondition implements BiPredicate<Term, Term> {
         }
     },
     /** intersect contents */
-    Subunion() {
+    SubsectNeg() {
 
         @Override
         public boolean test(Term container, Term x) {
-            return x.op()==CONJ ? x.AND(container::containsNeg) : container.containsNeg(x);
+            //return x.op()==CONJ ? x.AND(container::containsNeg) : container.containsNeg(x);
+            return Conj.containsEvent(container, x.neg());
         }
 
         public float cost() {

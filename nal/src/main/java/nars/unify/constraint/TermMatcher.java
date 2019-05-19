@@ -210,7 +210,8 @@ abstract public class TermMatcher {
 
             if (volMin == 0 || superTerm.volume() >= 1 + volMin) {
                 Subterms subs = superTerm.subterms();
-                return (anyOrAll ? subs.hasAny(struct) : subs.hasAll(struct)) && subs.OR(x -> anyOrAll ? x.hasAny(struct) : x.hasAll(struct));
+                return (anyOrAll ? subs.hasAny(struct) : subs.hasAll(struct));
+                    //&& subs.OR(anyOrAll ? x -> x.hasAny(struct) : x-> x.hasAll(struct)); <- might be overly restrictive
             }
             return false;
         }
@@ -309,7 +310,7 @@ abstract public class TermMatcher {
 
         @Override
         public boolean testSuper(Term term) {
-            return term.hasAny(xStruct);
+            return term.hasAll(xStruct);
                     //containsRecursively(this.x);
         }
     }

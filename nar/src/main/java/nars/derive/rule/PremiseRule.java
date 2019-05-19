@@ -261,29 +261,35 @@ public class PremiseRule extends ProxyTerm {
                     constraints.add(new NotEqualConstraint.NotSetsOrDifferentSets(XX, YY));
                     break;
 
-                case "subOf":
-                case "subOfPN":
-                case "sectOf":
-                case "sectOfPN": {
+                case "subOf": case "subOfPN":
+                case "sectOf":  case "sectOfPN":
+                        {
 
-                    SubtermCondition mode = Subterm;
 
-                    boolean sect = pred.startsWith("sect");
-                    if (sect) {
-                        assert (!negated) : "TODO and test";
+                    SubtermCondition mode = null;
+
+                    if (pred.startsWith("sub"))
 
                         if (Y.op() == NEG) {
-                            Y = Y.unneg();
-                            YY = (Variable) Y;
-                            mode = Subunion;
+                            YY = (Variable) (Y = Y.unneg());
+                            mode = SubtermNeg;
+                        } else
+                            mode = Subterm;
+                    else {
+
+                        if (Y.op() == NEG) {
+                            YY = (Variable) (Y = Y.unneg());
+                            mode = SubsectNeg;
                         } else
                             mode = Subsect;
 
                         if (!negated)
                             is(XX, Op.CONJ);
+
                     }
 
                     if (!negated) {
+
                         neq(XX, Y);
                         if (Y instanceof Variable)
                             bigger(XX, YY);
@@ -294,12 +300,12 @@ public class PremiseRule extends ProxyTerm {
                         polarity = 0;
                         assert (Y.op() != NEG);
                     } else {
-                        polarity = Y.op() == NEG ? -1 : +1;
+                        polarity = 1; //negation already handled
                     }
 
-                    if (Y.unneg() instanceof Variable) {
+                    if (Y instanceof Variable) {
 
-                        SubOfConstraint c = new SubOfConstraint(XX, ((Variable) (Y.unneg())), mode, polarity);
+                        SubOfConstraint c = new SubOfConstraint(XX, (nars.term.Variable) Y, mode, polarity);
                         constraints.add((UnifyConstraint) (c.negIf(negated)));
                     } else {
                         if (polarity == 0)

@@ -21,13 +21,13 @@ import static nars.time.Tense.ETERNAL;
  */
 class NAL8EternalMixTest extends NALTest {
 
-    public static final LongPredicate ZERO = t -> t >= 0;
-    private final int cycles = 250;
+    private static final LongPredicate ZERO = t -> t >= 0;
+    private final int cycles = 200;
 
     @BeforeEach
     void setTolerance() {
         test.confTolerance(NAL7Test.CONF_TOLERANCE_FOR_PROJECTIONS);
-        test.nar.termVolumeMax.set(24);
+        test.nar.termVolumeMax.set(14);
     }
 
     @Test
@@ -44,7 +44,7 @@ class NAL8EternalMixTest extends NALTest {
 
     @Test
     void subsent_1() {
-
+        test.termVolMax(22);
         String x2 = "(hold({t002}) &&+5 at({t001}))";
         String x3 = "((hold({t002}) &&+5 at({t001})) &&+5 open({t001}))";
 
@@ -206,7 +206,7 @@ class NAL8EternalMixTest extends NALTest {
 
     @Test
     void condition_goal_deduction_eternal_belief() {
-
+        test.termVolMax(12);
         test
                 .input("reachable(SELF,{t002})! :|:")
                 .inputAt(5, "((on($1,#2) &&+0 at(SELF,#2)) =|> reachable(SELF,$1)).")
@@ -242,7 +242,7 @@ class NAL8EternalMixTest extends NALTest {
 
     @Test
     void further_detachment_2() {
-
+        test.termVolMax(12);
         test
                 .input("reachable(SELF,{t002}). | %1.0;0.7%")
                 .inputAt(3, "((reachable(SELF,{t002}) &&+5 pick({t002})) ==>+7 hold(SELF,{t002})).")
@@ -363,7 +363,7 @@ class NAL8EternalMixTest extends NALTest {
 
     @Test
     void detaching_condition0() {
-
+        test.termVolMax(9);
         TestNAR tester = test;
 
         int when = 2;
@@ -379,11 +379,12 @@ class NAL8EternalMixTest extends NALTest {
     void detaching_condition() {
 
         test
+                .termVolMax(24)
                 .input("( ( hold(SELF,{t002}) &&+5 (at(SELF,{t001}) &&+5 open({t001}))) ==>+5 opened:{t001}).")
                 .inputAt(10, "hold(SELF,{t002}). :|:")
-                .mustBelieve(cycles * 7, "opened:{t001}",
+                .mustBelieve(cycles * 1, "opened:{t001}",
                         1.0f, 0.45f, 25)
-                .mustBelieve(cycles * 7, "((at(SELF,{t001}) &&+5 open({t001})) ==>+5 opened:{t001})",
+                .mustBelieve(cycles * 1, "((at(SELF,{t001}) &&+5 open({t001})) ==>+5 opened:{t001})",
                         1.0f, 0.81f, t -> (t >= 10));
 
     }
@@ -391,12 +392,11 @@ class NAL8EternalMixTest extends NALTest {
     @Test
     void subgoal_1_abd() {
 
-        TestNAR tester = test;
+        test.termVolMax(19);
+        test.input("opened:{t001}. :|:");
+        test.input("((hold(SELF,{t002}) &&+5 ( at(SELF,{t001}) &&+5 open({t001}))) ==>+5 opened:{t001}).");
 
-        tester.input("opened:{t001}. :|:");
-        tester.input("((hold(SELF,{t002}) &&+5 ( at(SELF,{t001}) &&+5 open({t001}))) ==>+5 opened:{t001}).");
-
-        tester.mustBelieve(cycles, "( hold(SELF,{t002}) &&+5 ( at(SELF,{t001}) &&+5 open({t001})))",
+        test.mustBelieve(cycles, "( hold(SELF,{t002}) &&+5 ( at(SELF,{t001}) &&+5 open({t001})))",
                 1.0f, 0.45f,
                 -15);
 
@@ -405,7 +405,7 @@ class NAL8EternalMixTest extends NALTest {
     @Test
     void temporal_deduction_2() {
 
-
+        test.termVolMax(17);
         TestNAR tester = test;
         tester.input("((hold(SELF,{t002}) &&+5 (at(SELF,{t001}) &&+5 open({t001}))) ==>+5 opened:{t001}).");
         tester.inputAt(2, "hold(SELF,{t002}). | ");

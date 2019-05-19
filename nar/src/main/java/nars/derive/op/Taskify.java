@@ -104,6 +104,30 @@ public class Taskify extends ProxyTerm {
 
         Op xo = x.op();
 
+
+        NAR nar = d.nar();
+        final byte punc = d.concPunc;
+        if (punc == 0)
+            throw new RuntimeException("no punctuation assigned");
+
+
+
+        if (punc == GOAL && d.taskPunc == GOAL) {
+            //check for contradictory goal derivation
+            if (LongInterval.minTimeTo(d._task, start, end) < d.dur() + d.taskTerm.eventRange() + x.unneg().eventRange()) {
+                Term posTaskGoal = d.taskTerm.negIf(d.taskTruth.isNegative());
+                Term antiTaskGoal = posTaskGoal.neg();
+                Term cc = x.negIf(d.concTruth.isNegative());
+
+                if (cc.equals(antiTaskGoal) || (cc.op() == CONJ && Conj.containsEvent(cc, antiTaskGoal)) ||
+                        (posTaskGoal.op() == CONJ && Conj.containsEvent(posTaskGoal, cc.neg()))
+                ) {
+                    nar.emotion.deriveFailTaskifyGoalContradiction.increment();
+                    spam(d, NAL.derive.TTL_COST_DERIVE_TASK_UNPRIORITIZABLE);
+                    return;
+                }
+            }
+        }
         boolean neg = xo == NEG;
         if (neg) {
             x = x.unneg();
@@ -115,25 +139,8 @@ public class Taskify extends ProxyTerm {
         }
 
 
-        final byte punc = d.concPunc;
-        if (punc == 0)
-            throw new RuntimeException("no punctuation assigned");
 
-        NAR nar = d.nar();
 
-        if (punc == GOAL && d.taskPunc == GOAL) {
-            //check for contradictory goal derivation
-            if (LongInterval.minTimeTo(d._task, start, end) < d.dur() + d.taskTerm.eventRange() + x.unneg().eventRange()) {
-                Term antiTaskGoal = d.taskTerm.negIf(!d.taskTruth.isNegative());
-                Term cc = x.negIf(d.concTruth.isNegative());
-                if (cc.equals(antiTaskGoal) || (cc.op() == CONJ && Conj.containsEvent(cc, antiTaskGoal)) ||
-                        (d.taskTerm.op() == CONJ && Conj.containsEvent(d.taskTerm, cc.neg()))) {
-                    nar.emotion.deriveFailTaskifyGoalContradiction.increment();
-                    spam(d, NAL.derive.TTL_COST_DERIVE_TASK_UNPRIORITIZABLE);
-                    return;
-                }
-            }
-        }
 
 
         Truth tru;

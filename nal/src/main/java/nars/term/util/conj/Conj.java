@@ -142,10 +142,24 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
         else //if (polarity == +1)
             x = _x;
 
-        if (container.op() != CONJ || !x.op().eventable || container.impossibleSubTerm(x)) return false;
+        if (container.op() != CONJ || !x.op().eventable)
+            return false;
+
+        if (when == ETERNAL && x.op()==CONJ && x.dt()==DTERNAL) {
+            //decompose eternal (test before container.impossibleSubterm)
+
+            //TODO accelerated 'flat' case: if (when == ETERNAL && container.op()==CONJ && container.dt()==)
+
+            return x.subterms().AND(xx -> containsEvent(container, xx, when, polarity));
+        }
+
+        if (container.impossibleSubTerm(x))
+            return false;
 
         if (when==ETERNAL && container.contains(x)) //quick test
             return true;
+
+
 
 //        if (isSeq(container)) {
             //check if the term exists when distributed factorized

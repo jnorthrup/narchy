@@ -115,8 +115,9 @@
     //CONJ
     X, C, sectOf(C,X), conjParallel(C)     |-     unsect(C,  X), (Belief:DecomposePP)
      C, X, sectOf(C,X), conjParallel(C)     |-     unsect(C,  X), (Belief:DecomposePP, Goal:DecomposePP)
-    X, C, sectOf(C,X), conjParallel(C)     |-   --unsect(C,  X), (Belief:DecomposePN)
+    X, C, sectOf(C,X), conjParallel(C)     |-   unsect(C,  X), (Belief:DecomposePN)
      C, X, sectOf(C,X), conjParallel(C)     |-   --unsect(C,  X), (Belief:DecomposeNP, Goal:DecomposeNP)
+
     X, C, sectOf(C,--X), conjParallel(C)  |-     unsect(C,--X), (Belief:DecomposeNP)
      C, X, sectOf(C,--X), conjParallel(C)  |-     unsect(C,--X), (Belief:DecomposePN, Goal:DecomposePN)
     X, C, sectOf(C,--X), conjParallel(C)  |-   --unsect(C,--X), (Belief:DecomposeNN)

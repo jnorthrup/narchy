@@ -12,7 +12,7 @@ import static nars.Op.GOAL;
 /**
  * tests goals involving &,|,~,-, etc..
  */
-public class DecompositionTest extends NALTest {
+abstract public class DecompositionTest extends NALTest {
 
     public static final int cycles = 1500;
 
@@ -30,122 +30,132 @@ public class DecompositionTest extends NALTest {
         test.nar.time.dur(3);
     }
 
+    static class ConjBelief extends DecompositionTest {
 
-    @Test
-    void testConjBeliefWeak() {
-        test
-                .termVolMax(5)
-                .input("(&&,a,b). %0.75;0.9%")
-                .input("a. %0.80;0.9%")
-                .mustBelieve(cycles, "b", 0.60f, 0.49f);
+        @Test
+        void testConjBeliefWeak() {
+            test
+                    .termVolMax(5)
+                    .input("(&&,a,b). %0.75;0.9%")
+                    .input("a. %0.80;0.9%")
+                    .mustBelieve(cycles, "b", 0.60f, 0.49f);
+        }
+
+        @Test
+        void testConjBeliefNeg() {
+            test
+                    .termVolMax(5)
+                    .input("(&&,--a,b).")
+                    .input("--a.")
+                    .mustBelieve(cycles, "b", 1f, 0.81f);
+        }
     }
 
-    @Test
-    void testConjBeliefNeg() {
-        test
-                .termVolMax(5)
-                .input("(&&,--a,b).")
-                .input("--a.")
-                .mustBelieve(cycles, "b", 1f, 0.81f);
+    static class DisjBelief extends DecompositionTest  {
+
+        @Test
+        void testDisjBeliefPos() {
+
+            test
+                    .termVolMax(6)
+                    .input("(||,a,b). %0.9;0.9%")
+                    .input("--a. %0.9;0.9%")
+                    .mustBelieve(cycles, "b", 0.81f, 0.66f);
+        }
+
+        @Test
+        void testDisjBeliefPos2() {
+
+            test
+                    .termVolMax(9)
+                    .input("(||,a,b,c). %0.9;0.9%")
+                    .input("--(||,a,b). %0.9;0.9%")
+                    .mustBelieve(cycles, "c", 0.81f, 0.66f);
+        }
+
+        @Test
+        void testDisjBeliefPosMix() {
+
+            test
+                    .termVolMax(10)
+                    .input("(||,--a,b,c). %0.9;0.9%")
+                    .input("--(||,--a,b). %0.9;0.9%")
+                    .mustBelieve(cycles, "c", 0.81f, 0.66f);
+        }
+
+        @Test
+        void testDisjBeliefNeg() {
+
+            test
+                    .termVolMax(6)
+                    .input("(||,--a,b).  %0.9;0.9%")
+                    .input("a.  %0.9;0.9%")
+                    .mustBelieve(cycles, "b", 0.81f, 0.66f);
+        }
     }
+    static class DisjGoal extends DecompositionTest {
+        @Test
+        void testDisjConditionalDecompose() {
+            test
+                    .termVolMax(6)
+                    .input("(||,a,b)!")
+                    .input("--a.")
+                    .mustGoal(cycles, "b", 1f, 0.81f)
+                    .mustNotOutput(cycles, "b", GOAL, 0f, 0.5f, 0f, 1f, t -> true)
+            ;
+        }
 
-    @Test
-    void testDisjBeliefPos() {
-
-        test
-                .termVolMax(6)
-                .input("(||,a,b). %0.9;0.9%")
-                .input("--a. %0.9;0.9%")
-                .mustBelieve(cycles, "b", 0.81f, 0.66f);
-    }
-    @Test
-    void testDisjBeliefPos2() {
-
-        test
-                .termVolMax(9)
-                .input("(||,a,b,c). %0.9;0.9%")
-                .input("--(||,a,b). %0.9;0.9%")
-                .mustBelieve(cycles, "c", 0.81f, 0.66f);
-    }
-
-    @Test
-    void testDisjBeliefPosMix() {
-
-        test
-                .termVolMax(10)
-                .input("(||,--a,b,c). %0.9;0.9%")
-                .input("--(||,--a,b). %0.9;0.9%")
-                .mustBelieve(cycles, "c", 0.81f, 0.66f);
-    }
-
-    @Test
-    void testDisjBeliefNeg() {
-
-        test
-                .termVolMax(6)
-                .input("(||,--a,b).  %0.9;0.9%")
-                .input("a.  %0.9;0.9%")
-                .mustBelieve(cycles, "b", 0.81f, 0.66f);
-    }
-
-    @Test
-    void testDisjConditionalDecompose() {
-        test
-            .termVolMax(6)
-            .input("(||,a,b)!")
-            .input("--a.")
-            .mustGoal(cycles, "b", 1f, 0.81f)
-            .mustNotOutput(cycles, "b", GOAL, 0f, 0.5f, 0f, 1f, t->true)
-        ;
-    }
-
-    @Disabled
-    @Test
-    void testDisjOpposite() {
+        @Disabled
+        @Test
+        void testDisjOpposite() {
 //
 //        test.log();
-        //produces output from structural deduction
-        test
-                .termVolMax(5)
-                .input("(||,a,--b)!")
-                .input("a.")
-                .mustNotOutput(cycles, "b", GOAL, 0f, 1f, 0f, 1f, t->true)
-                ;
-    }
-    @Test
-    void testDisjNeg() {
-        test
-                .input("(||,a,--b)!")
-                .input("--a.")
-                .mustGoal(cycles, "b", 0f, 0.81f)
-                .mustNotOutput(cycles, "b", GOAL, 0.5f, 1f, 0f, 1f, t->true)
+            //produces output from structural deduction
+            test
+                    .termVolMax(5)
+                    .input("(||,a,--b)!")
+                    .input("a.")
+                    .mustNotOutput(cycles, "b", GOAL, 0f, 1f, 0f, 1f, t -> true)
+            ;
+        }
 
-        ;
-    }
-    @Test
-    void testConjPos1() {
-        test
-                .termVolMax(5)
-                .input("(&&, a, --b)! %0.9%")
-                .input("a. %0.9%")
-                .mustGoal(cycles, "b", 0.19f, 0.66f);
-    }
+        @Test
+        void testDisjNeg() {
+            test
+                    .input("(||,a,--b)!")
+                    .input("--a.")
+                    .mustGoal(cycles, "b", 0f, 0.81f)
+                    .mustNotOutput(cycles, "b", GOAL, 0.5f, 1f, 0f, 1f, t -> true)
 
-    @Test
-    void testDisjNeg2() {
-        test
-                .termVolMax(7)
-                .input("(||,--a, b)!")
-                .input("a.")
-                .mustGoal(cycles, "b", 1f, 0.81f);
-    }
+            ;
+        }
+        @Test
+        void testDisjNeg2() {
+            test
+                    .termVolMax(7)
+                    .input("(||,--a, b)!")
+                    .input("a.")
+                    .mustGoal(cycles, "b", 1f, 0.81f);
+        }
 
-    @Test
-    void testDisjNeg3() {
-        test
-                .input("(||,--a,--b)!")
-                .input("a.")
-                .mustGoal(cycles, "b", 0f, 0.81f);
+        @Test
+        void testDisjNeg3() {
+            test
+                    .input("(||,--a,--b)!")
+                    .input("a.")
+                    .mustGoal(cycles, "b", 0f, 0.81f);
+        }
+
+    }
+    static class ConjGoal extends DecompositionTest {
+        @Test
+        void testConjPos1() {
+            test
+                    .termVolMax(6)
+                    .input("(&&, a, --b)! %0.9%")
+                    .input("a. %0.9%")
+                    .mustGoal(cycles, "b", 0.19f, 0.66f);
+        }
     }
 
 //    @Test
@@ -181,13 +191,13 @@ public class DecompositionTest extends NALTest {
 
     public static class DoublePremiseDecompose extends NALTest {
 
-        public static final int cycles = 2500;
+        public static final int cycles = 500;
 
 
         @Test
         void decompose_Conj_BeliefPosPos() {
             test
-                    .termVolMax(5)
+                    .termVolMax(6)
                     .input("(a && b). %0.9;0.9%")
                     .input("b. %0.9;0.9%")
                     .mustBelieve(cycles, "a", 0.81f, 0.66f);
@@ -195,7 +205,7 @@ public class DecompositionTest extends NALTest {
         @Test
         void decompose_Conj_BeliefPosNeg() {
             test
-                    .termVolMax(5)
+                    .termVolMax(6)
                     .input("(a && --b). %0.9;0.9%")
                     .input("b. %0.1;0.9%")
                     .mustBelieve(cycles, "a", 0.81f, 0.66f);
@@ -203,7 +213,7 @@ public class DecompositionTest extends NALTest {
         @Test
         void decompose_Conj_BeliefNegPos() {
             test
-                    .termVolMax(5)
+                    .termVolMax(6)
                     .input("(a && b). %0.1;0.9%")
                     .input("b. %0.9;0.9%")
                     .mustBelieve(cycles, "a", 0.19f, 0.66f);
@@ -211,7 +221,7 @@ public class DecompositionTest extends NALTest {
         @Test
         void decompose_Conj_BeliefNegNeg() {
             test
-                    .termVolMax(5)
+                    .termVolMax(6)
                     .input("(a && --b). %0.1;0.9%")
                     .input("b. %0.1;0.9%")
                     .mustBelieve(cycles, "a", 0.19f, 0.66f);
