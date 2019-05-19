@@ -97,6 +97,8 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
         );
     }
 
+    public final Object[] items() { return table.items.array(); }
+
     @Override
     public final int size() {
         return table.items.size();
@@ -125,7 +127,7 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
         if (s == 0)
             return Stream.empty();
         else {
-            Object[] x = table.items.array();
+            Object[] x = items();
             return ArrayIterator.stream(x).filter(Objects::nonNull)
                     .map(o -> (Y) o)
                     .filter(y -> !y.isDeleted());
@@ -320,7 +322,7 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
         int s;
         int i;
 
-        while ((s = Math.min((ii = table.items.array()).length, size())) > 0) {
+        while ((s = Math.min((ii = items()).length, size())) > 0) {
 
             i = sampleNext(rng, s);
 
@@ -393,9 +395,7 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
             return 0;
         else {
             assert (size > 0);
-            ArrayHistogram h = ArrayBag.this.hist;
-
-            int index = (int) h.sample(rng);
+            int index = sampleHistogram(rng);
             if (index >= size)
                 index = size - 1; //HACK
             return index;
@@ -403,6 +403,10 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
             //return sampleNextLinear(rng, size);
             //return sampleNextBiLinear(rng, size);
         }
+    }
+
+    public final int sampleHistogram(Random rng) {
+        return (int)hist.sample(rng);
     }
 
 //    @Override public ArrayBag sample(Random rng, int max, Consumer<? super Y> each) {
@@ -806,7 +810,7 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
         if (s <= 0)
             return;
 
-        Object[] yy = table.items.array();
+        Object[] yy = items();
         s = Math.min(yy.length, s);
         for (int i = 0; i < s; i++) {
             Y y =

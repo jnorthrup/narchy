@@ -28,7 +28,9 @@ public class TaskLinkWhat extends What {
      *  specific to this What, and freely adjustable */
     public final IntRange dur = new IntRange(1, 1, 1000);
 
-    public final TaskLinks links = new TaskLinks.AtomTangentTaskLinks();
+    public final TaskLinks links =
+            new TaskLinks.DirectTangentTaskLinks();
+            //new TaskLinks.AtomCachingTangentTaskLinks();
 
     final PremiseBuffer premises = new PremiseBuffer();
 
