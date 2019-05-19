@@ -17,22 +17,34 @@ import java.io.ObjectInput;
 import java.io.ObjectOutput;
 import java.util.Iterator;
 import java.util.Random;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
-/** implements attention with a TaskLinks graph.
- *  the standard attention context design currently. */
+/**
+ * implements attention with a TaskLinks graph.
+ * the standard attention context design currently.
+ */
 public class TaskLinkWhat extends What {
 
-    /** present-moment perception duration, in global clock cycles,
-     *  specific to this What, and freely adjustable */
-    public final IntRange dur = new IntRange(1, 1, 1000);
+    /** measured in nar.dur()'s */
+    private static final int MIN_UPDATE_DURS = 1;
+
+    /**
+     * present-moment perception duration, in global clock cycles,
+     * specific to this What, and freely adjustable
+     */
+    public final IntRange dur = new IntRange(1, 1, 1024);
 
     public final TaskLinks links =
             new TaskLinks.DirectTangentTaskLinks();
+            //new TaskLinks.NullTangentTaskLinks();
             //new TaskLinks.AtomCachingTangentTaskLinks();
 
     final PremiseBuffer premises = new PremiseBuffer();
+
+    private final AtomicBoolean busy = new AtomicBoolean(false);
+    private volatile long lastUpdate;
 
     public TaskLinkWhat(Term id, int capacity, PriBuffer<Task> in) {
         super(id, in);
@@ -42,7 +54,10 @@ public class TaskLinkWhat extends What {
     @Override
     protected void starting(NAR nar) {
 
-        dur.set(nar.dur()); //initializes value
+        int narDUR = nar.dur();
+
+        lastUpdate = nar.time() - narDUR - 1;
+        this.dur.set(narDUR); //initializes value
 
         super.starting(nar);
     }
@@ -54,8 +69,21 @@ public class TaskLinkWhat extends What {
 
     @Override
     protected void commit(NAR nar) {
-        premises.commit();
-        links.commit();
+
+        if (busy.compareAndSet(false, true)) {
+            try {
+                long now = nar.time();
+                if (now - lastUpdate >= nar.dur() * MIN_UPDATE_DURS) {
+
+                    lastUpdate = now;
+                    premises.commit();
+                    links.commit();
+
+                }
+            } finally {
+                busy.set(false);
+            }
+        }
     }
 
     @Override

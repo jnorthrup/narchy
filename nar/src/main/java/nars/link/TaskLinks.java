@@ -1,5 +1,6 @@
 package nars.link;
 
+import jcog.Util;
 import jcog.data.NumberX;
 import jcog.data.list.FasterList;
 import jcog.data.list.table.Table;
@@ -22,6 +23,7 @@ import nars.concept.Concept;
 import nars.derive.model.Derivation;
 import nars.term.Term;
 import nars.term.atom.Atom;
+import nars.term.atom.Atomic;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.jetbrains.annotations.Nullable;
 
@@ -41,11 +43,11 @@ abstract public class TaskLinks implements Sampler<TaskLink> {
     /**
      * tasklink forget rate
      */
-    public final FloatRange decay = new FloatRange(0.5f, 0, 1f /* 2f */);
+    public final FloatRange decay = new FloatRange(1f, 0, 1f /* 2f */);
     /**
      * (post-)Amp: tasklink propagation rate
      */
-    public final FloatRange amp = new FloatRange(0.5f, 0, 2f /* 2f */);
+    public final FloatRange amp = new FloatRange(1f, 0, 2f /* 2f */);
     /**
      * tasklink retention rate:
      * 0 = deducts all propagated priority from source tasklink (full resistance)
@@ -53,10 +55,7 @@ abstract public class TaskLinks implements Sampler<TaskLink> {
      **/
     public final FloatRange sustain = new FloatRange(0.5f, 0, 1f);
     private final PriMerge merge = NAL.tasklinkMerge;
-    /**
-     * prevents multiple threads from commiting the bag at once
-     */
-    private final AtomicBoolean busy = new AtomicBoolean(false);
+
     /**
      * short target memory, TODO abstract and remove, for other forms of attention that dont involve TaskLinks or anything like them
      */
@@ -90,15 +89,9 @@ abstract public class TaskLinks implements Sampler<TaskLink> {
      * updates
      */
     public final void commit() {
-        if (busy.compareAndSet(false, true)) {
-            try {
-                links.commit(
-                        Forgetting.forget(links, decay.floatValue())
-                );
-            } finally {
-                busy.set(false);
-            }
-        }
+        links.commit(
+                Forgetting.forget(links, decay.floatValue())
+        );
     }
 
     @Override
@@ -116,7 +109,7 @@ abstract public class TaskLinks implements Sampler<TaskLink> {
         final Term t = link.to();
 
         Term r = reverse(t, link, task, d);
-        if (r != null)
+        if (r != null || r instanceof Atomic)
             return r;
 
         if (t.op().conceptualizable) {
@@ -193,12 +186,12 @@ abstract public class TaskLinks implements Sampler<TaskLink> {
     }
 
 
-
     /**
      * resolves reverse termlink
      * return null to avoid reversal
      */
-    @Nullable protected abstract Term reverse(Term t, TaskLink link, Task task, Derivation d);
+    @Nullable
+    protected abstract Term reverse(Term t, TaskLink link, Task task, Derivation d);
 
     private void link(Term s, Term u, byte punc, float p) {
         link(new AtomicTaskLink(s, u, punc, p));
@@ -252,43 +245,71 @@ abstract public class TaskLinks implements Sampler<TaskLink> {
      */
     public static class DirectTangentTaskLinks extends TaskLinks {
 
+        static Term tryReverse(Object[] ll, Term term, TaskLink link, int i) {
+            TaskLink t = (TaskLink) ll[i];
+            if (t != null && t != link) {
+//                Term f = t.other(term);
+//                if (f!=null)
+//                    return f;
+                if (t.to().equals(term)){
+                    Term f = t.from();
+//                    if (!f.equals(term))
+                        return f;
+                }
+            }
+            return null;
+        }
+
         @Override
         protected Term reverse(Term term, TaskLink link, Task task, Derivation d) {
-            if (!(term instanceof Atom)) return null;
-            if (d.random.nextFloat() < 0.5f)
-                return term; //atom itself
+            //ATOMS only
+//            if (!(term instanceof Atom)) return null;
+//            if (d.random.nextFloat() < 0.5f)
+//                return term; //atom itself
+
+            //all atoms and compounds eligible, inversely proportional to their volume
+            if (!term.op().conceptualizable) return null;
+            float probDirect =
+                    //0.5f * 1f / term.volume();
+                    0.5f * 1f / Util.sqr(term.volume());
+
+            if (d.random.nextFloat() >= probDirect)
+                return null; //term itself
 
 
+
+            //TODO add ArrayBag method: sampleRadially(Predicate<X> continue) ...
             ArrayBag<?, TaskLink> b = (ArrayBag<?, TaskLink>) (links.bag);
             int s = b.size();
             Object[] ll = b.items();
 
             //starting point, sampled from bag histogram
             int p = b.sampleHistogram(d.random);
+            if (p == s) p--;
 
             //scan radially around point
-            for (int j = 0; j < s/2+1; j++) {
+            for (int j = 0; j < s; j++) {
 
+                int done = 0;
                 int above = p - j;
                 if (above >= 0) {
                     Term t = tryReverse(ll, term, link, above);
                     if (t != null)
                         return t;
-                }
+                } else done++;
+
                 int below = p + j + 1;
                 if (below < s) {
                     Term t = tryReverse(ll, term, link, below);
                     if (t != null)
                         return t;
-                }
+                } else done++;
+
+                if (done == 2)
+                    break;
             }
 
             return term;
-        }
-
-        static Term tryReverse(Object[] ll, Term term, TaskLink link, int i) {
-            TaskLink t = (TaskLink)ll[i];
-            return t != null && t != link && t.to().equals(term) ? t.from() : null;
         }
     }
 

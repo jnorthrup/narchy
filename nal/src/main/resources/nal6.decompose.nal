@@ -52,8 +52,8 @@
     //C is a sequence ending in it.  this forms a goal of the sequence minus the trailing
 
     //desire for sub-sequence leading to goal,  truth function may be Desire or Deduction
-    G, C, is(C,"&&")                |-   nullIfContainsEvent( conjBefore(C,   G), --G),  (Goal:DesirePP)
-    G, C, is(C,"&&"), has(C,"--")   |-   nullIfContainsEvent( conjBefore(C, --G),   G),  (Goal:DesireNP)
+    G, C, is(C,"&&")                |-   conjBefore(C,   G),  (Goal:DesirePP)
+    G, C, is(C,"&&"), has(C,"--")   |-   conjBefore(C, --G),  (Goal:DesireNP)
       //G, D, is(D,"&&"), has(D,"--")   |-    --conjBefore(D, --G),  (Goal:DesireWeakPN)
       //G, D, is(D,"&&")                |-    --conjBefore(D,   G),  (Goal:DesireWeakNN)
 
@@ -121,6 +121,7 @@
      C, X, sectOf(C,--X), conjParallel(C)  |-     unsect(C,--X), (Belief:DecomposePN, Goal:DecomposePN)
     X, C, sectOf(C,--X), conjParallel(C)  |-   --unsect(C,--X), (Belief:DecomposeNN)
      C, X, sectOf(C,--X), conjParallel(C)  |-   --unsect(C,--X), (Belief:DecomposeNN, Goal:DecomposeNN)
+
 
 
     //this should be handled by the decompose above:

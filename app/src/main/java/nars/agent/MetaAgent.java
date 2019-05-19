@@ -137,7 +137,7 @@ public class MetaAgent extends Game {
 
 //        forgetAction = actionUnipolar($.inh(id, forget), (FloatConsumer) n.attn.forgetRate::set);
         actionCtl($.inh(gid, forget), ((TaskLinkWhat) w).links.decay);
-        actionCtl($.inh(gid, amplify), ((TaskLinkWhat) w).links.amp);
+        //actionCtl($.inh(gid, amplify), ((TaskLinkWhat) w).links.amp);
 
 
 //        float priFactorMin = 0.1f, priFactorMax = 4f;
@@ -157,7 +157,7 @@ public class MetaAgent extends Game {
         float priMin = 0.1f, priMax = 1;
         actionCtl($.inh(gid, PRI), w.priAsFloatRange());
 
-        float curiMin = 0.05f, curiMax = 0.1f;
+        float curiMin = 0.025f, curiMax = 0.09f;
         actionCtl($.inh(gid, curiosity), g.curiosity.rate.subRange(curiMin, curiMax));
 
         int initialDur = w.dur();

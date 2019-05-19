@@ -84,6 +84,7 @@ public class Emotion implements Meter, Consumer<NAR> {
     public final FastCounter deriveFailTaskify = new FastCounter("derive fail taskify");
     public final FastCounter deriveFailTaskifyTruthUnderflow = new FastCounter("derive fail taskify truth underflow");
 
+    public final FastCounter deriveFailTaskifyGoalContradiction = new FastCounter("derive fail taskify goal contradiction");
     public final FastCounter deriveFailPrioritize = new FastCounter("derive fail prioritize");
     public final FastCounter deriveFailParentDuplicate = new FastCounter("derive fail parent duplicate");
     public final FastCounter deriveFailDerivationDuplicate = new FastCounter("derive fail derivation duplicate");

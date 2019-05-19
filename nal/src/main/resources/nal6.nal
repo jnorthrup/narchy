@@ -4,8 +4,8 @@
 //      If after M, P usually happens, and M happens, it means P is expected to happen
 
 
-     B, (  X ==> C), --is(X,"--"), --is(C,"#"), --is(B,"==>") |- unisubst(C,X,B), (Belief:Pre, Goal:PreWeak)
-     (  X ==> C), B, --is(X,"--"), --is(C,"#"), --is(B,"==>") |- unisubst(C,X,B), (Belief:PreX)
+     B, (  X ==> C), --is(X,"--"), --is(C,"#"), --is(B,"==>") |- unisubst(C,X,B,"$"), (Belief:Pre, Goal:PreWeak)
+     (  X ==> C), B, --is(X,"--"), --is(C,"#"), --is(B,"==>") |- unisubst(C,X,B,"$"), (Belief:PreX)
 
         //--is(X,"#"),
 //         B, (X ==> (&&,  C,A..+))       |- unisubst(  (&&,X,A..+),C,B), (Belief:Pre)
@@ -15,31 +15,33 @@
         //B, (A ==> C), --is(A,"--"),--is(A,"#"),--is(C,"#"), --is(B,"==>") |- --unisubst(C,A,B), (Goal:PreWeakN, Time:TaskPlusBeliefDT)
 
        //questions
-          B, (A ==> C), task("?@"), --is(A,{"--","#"}), --is(C,"#"), --is(B,"==>") |- unisubst((A ==> C),A,B,novel), (Punctuation:Question)
-          B, (A ==> C), task("?@"), --is(A,{"--","#"}), --is(C,"#"), --is(B,"==>") |- unisubst(C,A,B)
+          B, (A ==> C), task("?@"), --is(A,{"--","#"}), --is(C,"#"), --is(B,"==>") |- unisubst((A ==> C),A,B,"$",novel), (Punctuation:Question)
+          B, (A ==> C), task("?@"), --is(A,{"--","#"}), --is(C,"#"), --is(B,"==>") |- unisubst(C,A,B,"$")
 
 
 
-     B, (--X ==> C), --is(C,"#"), --is(B,"==>") |- unisubst(C,X,B), (Belief:PreN, Goal:PreWeakN)
-     (--X ==> C), B, --is(C,"#"), --is(B,"==>") |- unisubst(C,X,B), (Belief:PreNX)
+     B, (--X ==> C), --is(C,"#"), --is(B,"==>") |- unisubst(C,X,B,"$"), (Belief:PreN, Goal:PreWeakN)
+     (--X ==> C), B, --is(C,"#"), --is(B,"==>") |- unisubst(C,X,B,"$"), (Belief:PreNX)
+
             //,--is(X,"--")
 
         //antigoal:
         //B, (--A ==> C), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- --unisubst(C,A,B), (Goal:PreWeak, Time:TaskPlusBeliefDT)
 
         //questions
-          B, (--A ==> C), task("?@"), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- unisubst((--A ==> C),A,B,novel), (Punctuation:Question)
-          B, (--A ==> C), task("?@"), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- unisubst(C,A,B)
+          B, (--A ==> C), task("?@"), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- unisubst((--A ==> C),A,B,"$",novel), (Punctuation:Question)
+          B, (--A ==> C), task("?@"), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- unisubst(C,A,B,"$")
 
-    B, (C ==> A), --is(C,"#"), --is(B,"==>") |- unisubst(C,A,B), (Belief:PostWeak, Goal:Post)
-    (C ==> A), B, --is(C,"#"), --is(B,"==>") |- unisubst(C,A,B), (Belief:PostWeakX)
+    B, (C ==> A), --is(C,"#"), --is(B,"==>") |- unisubst(C,A,B,"$"), (Belief:PostWeak, Goal:Post)
+    (C ==> A), B, --is(C,"#"), --is(B,"==>") |- unisubst(C,A,B,"$"), (Belief:PostWeakX)
+
 
         //antigoal:
         //B, (C ==> A), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- --unisubst(C,A,B), (Goal:PostStrongPN, Time:TaskMinusBeliefDT)
 
         //questions
-          B, (C ==> A), task("?@"), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- unisubst((C ==> A),A,B,novel), (Punctuation:Question)
-          B, (C ==> A), task("?@"), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- unisubst(C,A,B)
+          B, (C ==> A), task("?@"), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- unisubst((C ==> A),A,B,"$",novel), (Punctuation:Question)
+          B, (C ==> A), task("?@"), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- unisubst(C,A,B,"$")
 
 
 
@@ -63,10 +65,10 @@
 //        Y, (  C ==> Z), is(C,"&&"),eventOfNeg(C,Y)    |- (  conjWithout(C,--Y) ==> Z), (Belief:PreN)
 //        Y, (--C ==> Z), is(C,"&&"),eventOfNeg(C,Y)    |- (--conjWithout(C,--Y) ==> Z), (Belief:PreN)
                 //TODO eventsOf
-        Y, ((&&,X,A..+) ==> Z),  --isVar(X)      |- unisubst(((&&,A..+) ==> Z), X,Y), (Belief:Pre)
-        Y, ((&&,--X,A..+) ==> Z), --isVar(X)     |- unisubst(((&&,A..+) ==> Z), X,Y), (Belief:PreN)
-          Y, (--(&&,X,A..+) ==> Z), --isVar(X)   |- unisubst((--(&&,A..+) ==> Z), X,Y), (Belief:Pre)
-          Y, (--(&&,--X,A..+) ==> Z), --isVar(X) |- unisubst((--(&&,A..+) ==> Z), X,Y), (Belief:PreN)
+        Y, ((&&,X,A..+) ==> Z),  --isVar(X)      |- unisubst(((&&,A..+) ==> Z), X,Y,"$"), (Belief:Pre)
+        Y, ((&&,--X,A..+) ==> Z), --isVar(X)     |- unisubst(((&&,A..+) ==> Z), X,Y,"$"), (Belief:PreN)
+          Y, (--(&&,X,A..+) ==> Z), --isVar(X)   |- unisubst((--(&&,A..+) ==> Z), X,Y,"$"), (Belief:Pre)
+          Y, (--(&&,--X,A..+) ==> Z), --isVar(X) |- unisubst((--(&&,A..+) ==> Z), X,Y,"$"), (Belief:PreN)
         //Y, (  C ==> Z), isUnneg(C,"&&") |- unisubst((C ==> Z), chooseUnifiableSubEvent(C,Y),Y,novel), (Belief:Pre)
         //Y, (  C ==> Z), isUnneg(C,"&&") |- unisubst((C ==> Z), chooseUnifiableSubEvent(C,--Y),--Y,novel), (Belief:PreN)
           //Y, ((&&,X,A..+) ==> Z), neq(X,Y) |- unisubst(((&&,X,A..+) ==> Z), X,Y,novel), (Belief:Deduction)
@@ -83,9 +85,9 @@
             //    Y, (B ==> (&&,--X,A..+)) |- unisubst((B ==> (&&,A..+)),X,Y), (Belief:DeductionN)
 
         Y, (Z ==> C), is(C,"&&"),eventOf(C,Y)                 |- (Z ==> conjWithout(C,    Y)), (Belief:Abduction)
-        Y, (Z ==> C), is(C,"&&"),eventOfNeg(C,Y)  |- (Z ==> conjWithout(C,  --Y)), (Belief:AbductionN)
-        Y, (Z ==> C), is(C,"&&")                              |- unisubst((Z ==> C),chooseUnifiableSubEvent(C,Y),Y,novel), (Belief:Abduction)
-        Y, (Z ==> C), is(C,"&&"),has(C,"--")                  |- unisubst((Z ==> C),chooseUnifiableSubEvent(C,--Y),--Y,novel), (Belief:AbductionN)
+        Y, (Z ==> C), is(C,"&&"),eventOfNeg(C,Y)              |- (Z ==> conjWithout(C,  --Y)), (Belief:AbductionN)
+        Y, (Z ==> C), is(C,"&&")                              |- unisubst((Z ==> C),chooseUnifiableSubEvent(C,Y),Y,"$",novel), (Belief:Abduction)
+        Y, (Z ==> C), is(C,"&&"),has(C,"--")                  |- unisubst((Z ==> C),chooseUnifiableSubEvent(C,--Y),--Y,"$",novel), (Belief:AbductionN)
           //Y, (Z ==> (&&,X,A..+)), neq(X,Y),neq(Y,Z) |- unisubst((Z ==> (&&,X,A..+)), X,Y,novel), (Belief:Abduction)
             //Y, (Z ==> (&&,X,A..+)) |- unisubst((Z ==> (&&,X,Y,A..+)), X,Y), (Belief:Abduction)
           //Y, (Z ==> (&&,--X,A..+)), neq(X,Y),neq(Y,Z) |- unisubst((Z ==> (&&,--X,A..+)), X,Y,novel), (Belief:AbductionN)

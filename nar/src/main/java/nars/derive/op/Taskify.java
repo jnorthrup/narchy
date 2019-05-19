@@ -1,6 +1,7 @@
 package nars.derive.op;
 
 import jcog.Util;
+import jcog.math.LongInterval;
 import jcog.util.ArrayUtil;
 import nars.*;
 import nars.derive.model.Derivation;
@@ -11,6 +12,7 @@ import nars.task.DerivedTask;
 import nars.term.ProxyTerm;
 import nars.term.Term;
 import nars.term.atom.Atomic;
+import nars.term.util.conj.Conj;
 import nars.time.Tense;
 import nars.truth.Truth;
 import org.slf4j.Logger;
@@ -24,44 +26,24 @@ import static nars.time.Tense.ETERNAL;
 public class Taskify extends ProxyTerm {
 
     private final static Logger logger = LoggerFactory.getLogger(Taskify.class);
-
+    private static final Atomic TASKIFY = Atomic.the("Taskify");
     /**
      * destination of any derived tasks; also may be used to communicate backpressure
      * from the recipient.
      */
     public final PremiseRuleProto.RuleWhy channel;
-
-    private static final Atomic TASKIFY = Atomic.the("Taskify");
-
     final Termify termify;
 
-    public void apply(Term x, Derivation d) {
-
-        d.nar.emotion.deriveTermify.increment();
-
-        DerivationFailure fail = DerivationFailure.failure(x,
-                (byte) 0 /* dont consider punc consequences until after temporalization */,
-                d);
-
-        if (fail == Success) {
-            if (d.temporal)
-                Occurrify.temporalTask(x, termify.time, this, d);
-            else
-                Occurrify.eternalTask(x, this, d);
-        }
-
+    public Taskify(Termify termify, PremiseRuleProto.RuleWhy channel) {
+        this($.funcFast(TASKIFY, termify, $.the(channel.id)), termify, channel);
     }
 
 
-
-
-    /** use special eternal pattern if non-temporal belief or goal.  but questions always use the default temporal form (allowing, ex: (a ==>+- a)? */
-    Term pattern(Derivation d) {
-        return (d.temporal || (d.concPunc==QUESTION || d.concPunc==QUEST)) ? termify.pattern : termify.patternEternal;
+    private Taskify(Term id, Termify termify, PremiseRuleProto.RuleWhy channel) {
+        super(id);
+        this.termify = termify;
+        this.channel = channel;
     }
-
-
-
 
 
 //    /** applies variable introduction between Termify and Taskify step */
@@ -84,6 +66,35 @@ public class Taskify extends ProxyTerm {
 //
 //    }
 
+    static boolean spam(Derivation d, int cost) {
+        d.use(cost);
+        return true;
+    }
+
+    public void apply(Term x, Derivation d) {
+
+        d.nar.emotion.deriveTermify.increment();
+
+        DerivationFailure fail = DerivationFailure.failure(x,
+                (byte) 0 /* dont consider punc consequences until after temporalization */,
+                d);
+
+        if (fail == Success) {
+            if (d.temporal)
+                Occurrify.temporalTask(x, termify.time, this, d);
+            else
+                Occurrify.eternalTask(x, this, d);
+        }
+
+    }
+
+    /**
+     * use special eternal pattern if non-temporal belief or goal.  but questions always use the default temporal form (allowing, ex: (a ==>+- a)?
+     */
+    Term pattern(Derivation d) {
+        return (d.temporal || (d.concPunc == QUESTION || d.concPunc == QUEST)) ? termify.pattern : termify.patternEternal;
+    }
+
     /**
      * note: the return value here shouldnt matter so just return true anyway
      */
@@ -104,12 +115,26 @@ public class Taskify extends ProxyTerm {
         }
 
 
-
         final byte punc = d.concPunc;
         if (punc == 0)
             throw new RuntimeException("no punctuation assigned");
 
         NAR nar = d.nar();
+
+        if (punc == GOAL && d.taskPunc == GOAL) {
+            //check for contradictory goal derivation
+            if (LongInterval.minTimeTo(d._task, start, end) < d.dur() + d.taskTerm.eventRange() + x.unneg().eventRange()) {
+                Term antiTaskGoal = d.taskTerm.negIf(!d.taskTruth.isNegative());
+                Term cc = x.negIf(d.concTruth.isNegative());
+                if (cc.equals(antiTaskGoal) || (cc.op() == CONJ && Conj.containsEvent(cc, antiTaskGoal)) ||
+                        (d.taskTerm.op() == CONJ && Conj.containsEvent(d.taskTerm, cc.neg()))) {
+                    nar.emotion.deriveFailTaskifyGoalContradiction.increment();
+                    spam(d, NAL.derive.TTL_COST_DERIVE_TASK_UNPRIORITIZABLE);
+                    return;
+                }
+            }
+        }
+
 
         Truth tru;
         if (punc == BELIEF || punc == GOAL) {
@@ -129,7 +154,7 @@ public class Taskify extends ProxyTerm {
 
         long S, E;
         if (start != ETERNAL) {
-            assert(start <= end): "reversed occurrence: " + start + ".." + end;
+            assert (start <= end) : "reversed occurrence: " + start + ".." + end;
 
             int dither = d.ditherDT;
             S = Tense.dither(start, dither);
@@ -167,9 +192,9 @@ public class Taskify extends ProxyTerm {
         }
 
         DerivedTask t = Task.tryTask(x, punc, tru, (C, tr) ->
-            NAL.DEBUG ?
-                new DebugDerivedTask(C, punc, tr, S, E, d) :
-                new DerivedTask(C, punc, tr, d.time(), S, E, d.evidence())
+                NAL.DEBUG ?
+                        new DebugDerivedTask(C, punc, tr, S, E, d) :
+                        new DerivedTask(C, punc, tr, d.time(), S, E, d.evidence())
         );
 
         if (t == null) {
@@ -215,24 +240,6 @@ public class Taskify extends ProxyTerm {
         d.use(cost);
     }
 
-
-
-
-    public Taskify(Termify termify, PremiseRuleProto.RuleWhy channel) {
-        this($.funcFast(TASKIFY, termify, $.the(channel.id)), termify, channel);
-    }
-
-    private Taskify(Term id, Termify termify, PremiseRuleProto.RuleWhy channel) {
-        super(id);
-        this.termify = termify;
-        this.channel = channel;
-    }
-
-
-    static boolean spam(Derivation d, int cost) {
-        d.use(cost);
-        return true;
-    }
     private boolean same(Derivation d, NAR nar) {
         nar.emotion.deriveFailParentDuplicate.increment();
         return spam(d, NAL.derive.TTL_COST_DERIVE_TASK_SAME);

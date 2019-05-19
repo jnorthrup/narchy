@@ -326,7 +326,6 @@ public class NAL3Test extends NALTest {
 
         test
                 .termVolMax(6)
-                .logDebug()
                 .believe("--((RealNumber&&ComplexNumber)-->x)")
                 .believe("(RealNumber-->x)")
                 .mustBelieve(cycles, "(ComplexNumber-->x)", 0f, 0.45f) //single decomposition

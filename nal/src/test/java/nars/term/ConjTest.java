@@ -2239,4 +2239,30 @@ public class ConjTest {
 
     }
 
+    @Test void testContainsEventSimple() {
+        assertFalse(Conj.containsEvent($$("x"), $$("x")));
+        assertTrue(Conj.containsEvent($$("(x &&+1 --x)"), $$("x")));
+        assertTrue(Conj.containsEvent($$("(x &&+1 --x)"), $$("--x")));
+        assertTrue(Conj.containsEvent($$("(x && y)"), $$("x")));
+        assertTrue(Conj.containsEvent($$("(x &&+1 y)"), $$("x")));
+        assertTrue(Conj.containsEvent($$("((x && y) &&+1 z)"), $$("z")));
+        assertTrue(Conj.containsEvent($$("((x && y) &&+1 z)"), $$("(x&&y)")));
+    }
+    @Test void testContainsEventFactored() {
+        assertTrue(Conj.containsEvent($$("(z&&(x &&+1 y))"), $$("(x&&z)")));
+        assertTrue(Conj.containsEvent($$("(z&&(x &&+1 y))"), $$("(y&&z)")));
+        assertFalse(Conj.containsEvent($$("(z&&(x &&+1 y))"), $$("(x&&y)")));
+        assertTrue(Conj.containsEvent($$("(z&&(x &&+1 y))"), $$("z")));
+        assertTrue(Conj.containsEvent($$("(z&&(x &&+1 (y &&+1 w)))"), $$("(z&&w)")));
+    }
+
+    @Test void testContainsEventSubSeq() {
+        assertTrue(Conj.containsEvent($$("(z &&+1 (x &&+1 y))"), $$("(x &&+1 y)")));
+        assertTrue(Conj.containsEvent($$("(z &&+1 (x &&+1 y))"), $$("(z &&+1 x)")));
+        assertFalse(Conj.containsEvent($$("(z &&+1 (x &&+2 y))"), $$("(x &&+1 y)")));
+    }
+    @Test void testContainsEventXternal() {
+        assertTrue(Conj.containsEvent($$("(x &&+- y)"), $$("x")));
+        assertTrue(Conj.containsEvent($$("(x &&+- y)"), $$("y")));
+    }
 }

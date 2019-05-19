@@ -130,6 +130,8 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
     /**
      * @param polarity +1: unaffected input, -1: if contains input negated, 0: either as-is or negated
      * @param when if eternal, matches any time
+     *
+     * TODO test for subsequences
      */
     public static boolean containsEvent(Term container, Term _x, long when, int polarity) {
         Term x;
@@ -153,7 +155,7 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
                     when==ETERNAL ?
                         (w, cc) -> !(cc.equals(x)) :
                         (w, cc) -> !(w==when && cc.equals(x))
-                    , 0, x.op()!=CONJ || x.dt() != DTERNAL, false);
+                    , 0, x.op()!=CONJ || x.dt() != DTERNAL, container.dt()==XTERNAL);
 //        } else
 //            return false;
 

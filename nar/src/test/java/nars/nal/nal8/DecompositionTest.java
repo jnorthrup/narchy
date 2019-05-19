@@ -14,7 +14,7 @@ import static nars.Op.GOAL;
  */
 public class DecompositionTest extends NALTest {
 
-    public static final int cycles = 500;
+    public static final int cycles = 1500;
 
 
     @Override
@@ -125,13 +125,16 @@ public class DecompositionTest extends NALTest {
     @Test
     void testConjPos1() {
         test
+                .termVolMax(5)
                 .input("(&&, a, --b)! %0.9%")
                 .input("a. %0.9%")
                 .mustGoal(cycles, "b", 0.19f, 0.66f);
     }
+
     @Test
     void testDisjNeg2() {
         test
+                .termVolMax(7)
                 .input("(||,--a, b)!")
                 .input("a.")
                 .mustGoal(cycles, "b", 1f, 0.81f);
