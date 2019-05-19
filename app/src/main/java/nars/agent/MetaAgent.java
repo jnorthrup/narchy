@@ -52,9 +52,9 @@ public class MetaAgent extends Game {
 //    public final GoalActionConcept beliefPriAction;
 //    private final GoalActionConcept goalPriAction;
 //    private final GoalActionConcept dur;
-    static int curiStartupDurs = 5000;
-    static float curiMax = 0.2f;
-    static float curiMinOld = 0.01f, curiMinYoung = 0.04f;
+//    static int curiStartupDurs = 5000;
+//    static float curiMax = 0.2f;
+//    static float curiMinOld = 0.01f, curiMinYoung = 0.04f;
 
     /** in case it forgets to unpause */
     private final long autoResumePeriod = 256;
@@ -107,20 +107,26 @@ public class MetaAgent extends Game {
             add(ww);
     }
 
-    /**
-     * curiosity frequency -> probability mapping curve
-     */
-    static float curiosity(Game agent, long start, float c) {
-
-        float min;
-        float durs = (float) (((double) (agent.nar().time() - start)) / agent.dur());
-        if (durs < curiStartupDurs)
-            min = curiMinYoung;
-        else
-            min = curiMinOld;
-
-        return Util.lerp(c, min, curiMax);
+    @Override
+    protected void sense() {
+        ((TaskLinkWhat)what()).dur.set(durPhysical());
+        super.sense();
     }
+
+//    /**
+//     * curiosity frequency -> probability mapping curve
+//     */
+//    static float curiosity(Game agent, long start, float c) {
+//
+//        float min;
+//        float durs = (float) (((double) (agent.nar().time() - start)) / agent.dur());
+//        if (durs < curiStartupDurs)
+//            min = curiMinYoung;
+//        else
+//            min = curiMinOld;
+//
+//        return Util.lerp(c, min, curiMax);
+//    }
 
     private void add(Game g) {
 
@@ -151,9 +157,8 @@ public class MetaAgent extends Game {
         float priMin = 0.1f, priMax = 1;
         actionCtl($.inh(gid, PRI), w.priAsFloatRange());
 
-//        GoalActionConcept curiosityAction = actionUnipolar($.inh(a.id, curiosity), (c) -> {
-//            a.curiosity.rate.set(curiosity(a, start, c));
-//        });
+        float curiMin = 0.05f, curiMax = 0.1f;
+        actionCtl($.inh(gid, curiosity), g.curiosity.rate.subRange(curiMin, curiMax));
 
         int initialDur = w.dur();
         FloatRange durRange = new FloatRange(initialDur, initialDur / 4, initialDur * 4) {
@@ -271,7 +276,7 @@ public class MetaAgent extends Game {
     }
 
     GoalActionConcept actionCtl(Term t, FloatRange r) {
-        FloatAveraged f = new FloatAveraged(0.75f);
+        FloatAveraged f = new FloatAveraged(/*0.75*/ 0.9f);
         return actionUnipolar(t, true, (v)->v, (x)->{
             float y = f.valueOf(x);
             r.set(Util.lerp(y, r.min, r.max));

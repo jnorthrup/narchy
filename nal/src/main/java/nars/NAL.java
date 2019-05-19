@@ -47,6 +47,8 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
     public static final boolean SHUFFLE_TERMUTES= configIs("SHUFFLE_TERMUTES");
     public static final boolean DT_DITHER_LOGARITHMICALLY= configIs("DT_DITHER_LOGARITHMICALLY");
 
+    public static final float DEFAULT_CURIOSITY_RATE = 0.05f;
+
     public static int ATOM_TANGENT_REFRESH_DURS = 1;
 
     /**

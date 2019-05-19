@@ -214,7 +214,7 @@ public class AbstractGoalActionConcept extends AgentAction {
         updateCuriosity(g.curiosity);
 
         NAR n = g.nar();
-        int gameDur = g.time.dur();
+        int gameDur = g.durPhysical();
 
         int limit = Answer.BELIEF_MATCH_CAPACITY * 2; //high sensitivity
 

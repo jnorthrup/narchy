@@ -35,7 +35,7 @@ public class Curiosity {
     public final AtomicBoolean goal = new AtomicBoolean(true);
 
     /** activation probabilitiy */
-    public final FloatRange rate = new FloatRange(0, 0, 1f);
+    public final FloatRange rate = new FloatRange(0, 0, 0.5f);
 
 
     public enum CuriosityInjection {

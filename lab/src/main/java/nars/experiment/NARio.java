@@ -17,11 +17,9 @@ import nars.experiment.mario.Scene;
 import nars.experiment.mario.level.Level;
 import nars.experiment.mario.sprites.Mario;
 import nars.gui.NARui;
-import nars.gui.sensor.VectorSensorView;
 import nars.sensor.PixelBag;
 import nars.video.AutoclassifiedBitmap;
 import spacegraph.SpaceGraph;
-import spacegraph.space2d.container.grid.Gridding;
 
 import javax.swing.*;
 import java.util.List;
@@ -29,7 +27,6 @@ import java.util.List;
 import static nars.$.$$;
 import static nars.agent.GameTime.fps;
 import static nars.experiment.mario.level.Level.*;
-import static spacegraph.SpaceGraph.window;
 
 public class NARio extends GameX {
 
@@ -160,7 +157,8 @@ public class NARio extends GameX {
 
         DigitizedScalar vx = senseNumberDifferenceTri($$("vx"), 8, () -> theMario != null ? theMario.x : 0).resolution(0.02f);
         DigitizedScalar vy = senseNumberDifferenceTri($$("vy"), 8, () -> theMario != null ? theMario.y : 0).resolution(0.02f);
-        window(new Gridding(new VectorSensorView(vx, this), new VectorSensorView(vy, this)), 100, 50);
+
+        //window(new Gridding(new VectorSensorView(vx, this), new VectorSensorView(vy, this)), 100, 50);
 
 
         Reward right = rewardNormalized("goRight", -1, +1, () -> {
@@ -179,7 +177,7 @@ public class NARio extends GameX {
 
             return reward;
         });
-        right.setDefault($.t(0, 0.5f));
+        right.setDefault($.t(0, 0.75f));
 
         Reward getCoins = rewardNormalized("getCoins", -1, +1, () -> {
             int coins = Mario.coins;
@@ -192,7 +190,7 @@ public class NARio extends GameX {
             lastCoins = coins;
             return Math.max(0, reward);
         });
-        getCoins.setDefault($.t(0, 0.5f));
+        getCoins.setDefault($.t(0, 0.75f));
 
         Reward alive = rewardNormalized("alive",  -1, +1, () -> {
 //            if (dead)
@@ -214,7 +212,7 @@ public class NARio extends GameX {
 //            }
             return t;
         });
-        alive.setDefault($.t(1, 0.5f));
+        alive.setDefault($.t(1, 0.75f));
 
 //        game.paused = false;
         game.thread.start();
