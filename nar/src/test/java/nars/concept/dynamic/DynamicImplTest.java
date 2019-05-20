@@ -370,11 +370,23 @@ class DynamicImplTest extends AbstractDynamicTaskTest {
         n.time.dur(8);
 
         {
-
-            Compound xyz = $("((x && (y &&+2 z))=|>a)");
+            Compound xyz = $("((x &&+2 z)==>a)");
             assertEquals(
-                    //"[((x&&y) ==>+2 a) @ 0, ((x&&z)=|>a) @ 0]",
-                    "[(x==>a) @ 0..0, (y ==>+2 a) @ 0..0, (z=|>a) @ 0..0]",
+                    "[(x ==>+2 a) @ 0..0, (z==>a) @ 0..0]",
+                    components(DynamicStatementTruth.ImplSubjConj, xyz, 0, 0).toString());
+        }
+        {
+            Compound xyz = $("((x &&+2 z) ==>+- a)");
+            assertEquals(
+                    "[(x ==>+- a) @ 0..0, (z ==>+- a) @ 0..0]",
+                    components(DynamicStatementTruth.ImplSubjConj, xyz, 0, 0).toString());
+        }
+        {
+
+            Compound xyz = $("((x && (y &&+2 z))==>a)");
+            assertEquals(
+                    "[((x&&y) ==>+2 a) @ 0..0, ((x&&z)==>a) @ 0..0]",
+                    //"[(x ==>+2 a) @ 0..0, (y ==>+2 a) @ 0..0, (z==>a) @ 0..0]",
                     components(DynamicStatementTruth.ImplSubjConj, xyz, 0, 0).toString());
             Task t = n.answer(xyz, BELIEF, 0);
             assertNotNull(t);

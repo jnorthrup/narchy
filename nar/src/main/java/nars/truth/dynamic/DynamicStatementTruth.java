@@ -53,12 +53,14 @@ public class DynamicStatementTruth {
         @Override
         public boolean evalComponents(Compound superterm, long start, long end, ObjectLongLongPredicate<Term> each) {
             Subterms ss = superterm.subterms();
-            return decomposeImplConj(superterm, start, end, each, ss.sub(1), (Compound) ss.sub(0), true, false /* reconstruct as-is; union only applies to the truth calculation */);
+            return decomposeImplConj(superterm, start, end, each, ss.sub(1), (Compound) ss.sub(0), true,
+                    false /* reconstruct as-is; union only applies to the truth calculation */);
         }
 
         @Override
         public Term reconstruct(Compound superterm, DynTaskify components, NAR nar, long start, long end) {
-            return reconstruct(superterm, components, true, false /* reconstruct as-is; union only applies to the truth calculation */);
+            return reconstruct(superterm, components, true, false
+                    /* reconstruct as-is; union only applies to the truth calculation */);
         }
     };
 
@@ -85,20 +87,20 @@ public class DynamicStatementTruth {
 
     private static boolean decomposeImplConj(Compound superterm, long start, long end, ObjectLongLongPredicate<Term> each, Term common, Compound decomposed, boolean subjOrPred, boolean negateComponents) {
 
-        int superDT = superterm.dt();
+        int superDT = superterm.dt() == DTERNAL ? 0 : superterm.dt();
         int decRange = decomposed.eventRange();
         return DynamicConjTruth.ConjIntersection.evalComponents(decomposed, start, end, (what, s, e) -> {
 
             int innerDT;
-            if (superDT == DTERNAL || superDT == XTERNAL) {
+            if (superDT == XTERNAL) {
 
                 innerDT = XTERNAL; //force XTERNAL since 0 or DTERNAL will collapse
 
             } else {
-                if (s == start && e - s >= decRange) {
-                    innerDT = DTERNAL; //eternal component
-                } else
-                    innerDT = Tense.occToDT(decRange - (s - start));
+//                if (s == start && e - s >= decRange) {
+//                    innerDT = 0; //eternal/immediate component
+//                } else
+                    innerDT = Tense.occToDT(decRange - (s - start)) + superDT;
             }
 
             Term i = subjOrPred ?

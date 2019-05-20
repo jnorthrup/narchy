@@ -191,7 +191,7 @@ abstract public class DecompositionTest extends NALTest {
 
     public static class DoublePremiseDecompose extends NALTest {
 
-        public static final int cycles = 500;
+        public static final int cycles = 1500;
 
 
         @Test

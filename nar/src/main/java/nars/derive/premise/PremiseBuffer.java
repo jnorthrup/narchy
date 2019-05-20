@@ -24,7 +24,7 @@ public class PremiseBuffer implements Serializable {
 
     /** rate that priority from the novelty bag subtracts from potential premises.
      * may need to be divided by concurrency so that threads dont step on each other */
-    float notNovelCost = 0.25f;
+    float notNovelCost = 0.5f;
 
     /** search rate */
     public float fillRate = 1.5f;

@@ -178,10 +178,12 @@
 //classically: union/intersection assymmetry: union if subj, intersect if pred
 //TODO: ...Also:VarIntro)
 
-     (P ==> M), (S ==> M) |- ((P && S) ==> M), (Belief:UnionPT)
-         //(P ==> M), (S ==> M) |- --((P && S) ==> M), (Belief:IntersectionNN)
-       (P ==> M), (S ==> M) |- ((P || S) ==> M), (Belief:IntersectionPT)
-           //(P ==> M), (S ==> M) |- --((P || S) ==> M), (Belief:UnionNN)
+     (P ==> M), (S ==> M) |- ((P && S) ==> M), (Belief:Union)
+       (P ==> M), (S ==> M) |- ((P && S) ==> M), (Belief:UnionNN)
+
+       (P ==> M), (S ==> M) |- ((P || S) ==> M), (Belief:Intersection)
+         (P ==> M), (S ==> M) |- ((P || S) ==> M), (Belief:IntersectionNN)
+
 
         (P ==> M), (S ==> M), task("?")  |- ((P && S) ==> M), (Punctuation:Question)
         (P ==> M), (S ==> M), task("?")  |- ((P || S) ==> M), (Punctuation:Question)
@@ -204,13 +206,13 @@
         //(--(&&,P,A..+) ==> X), (--(&&,S,A..+) ==> X), neq(P,S) |- (--(&&,(P || S),A..+) ==> X), (Belief:UnionSym)
 
 
-    //Contradiction Neutralize
-    ((&&,Y,A..+) ==> X), ((&&,Z,A..+) ==> X), eqNeg(Y,Z), --is(X,"#")     |- ((&&,A..+) ==> X), (Belief:Intersection)
-      ((&&,Y,A..+) ==> X), ((&&,Z,A..+) ==> X), eqNeg(Y,Z), --is(X,"#")     |- --((&&,A..+) ==> X), (Belief:IntersectionNN)
-    (--(&&,Y,A..+) ==> X), (--(&&,Z,A..+) ==> X), eqNeg(Y,Z), --is(X,"#") |- (--(&&,A..+) ==> X), (Belief:Intersection)
-      (--(&&,Y,A..+) ==> X), (--(&&,Z,A..+) ==> X), eqNeg(Y,Z), --is(X,"#") |- --(--(&&,A..+) ==> X), (Belief:IntersectionNN)
-    (X ==> (&&,Y,A..+)), (X ==> (&&,Z,A..+)), eqNeg(Y,Z), --is(X,"#")     |- (X ==> (&&,A..+)), (Belief:Intersection)
-        (X ==> (&&,Y,A..+)), (X ==> (&&,Z,A..+)), eqNeg(Y,Z), --is(X,"#")     |- --(X ==> (&&,A..+)), (Belief:IntersectionNN)
+//    //Contradiction Neutralize
+//    ((&&,Y,A..+) ==> X), ((&&,Z,A..+) ==> X), eqNeg(Y,Z), --is(X,"#")     |- ((&&,A..+) ==> X), (Belief:Intersection)
+//      ((&&,Y,A..+) ==> X), ((&&,Z,A..+) ==> X), eqNeg(Y,Z), --is(X,"#")     |- --((&&,A..+) ==> X), (Belief:IntersectionNN)
+//    (--(&&,Y,A..+) ==> X), (--(&&,Z,A..+) ==> X), eqNeg(Y,Z), --is(X,"#") |- (--(&&,A..+) ==> X), (Belief:Intersection)
+//      (--(&&,Y,A..+) ==> X), (--(&&,Z,A..+) ==> X), eqNeg(Y,Z), --is(X,"#") |- --(--(&&,A..+) ==> X), (Belief:IntersectionNN)
+//    (X ==> (&&,Y,A..+)), (X ==> (&&,Z,A..+)), eqNeg(Y,Z), --is(X,"#")     |- (X ==> (&&,A..+)), (Belief:Intersection)
+//        (X ==> (&&,Y,A..+)), (X ==> (&&,Z,A..+)), eqNeg(Y,Z), --is(X,"#")     |- --(X ==> (&&,A..+)), (Belief:IntersectionNN)
 
 //      (Y ==> X), (Z ==> X), eqNeg(Y,Z), --is(X,"#")                       |- (#1 ==> X), (Belief:Intersection)
 //          (Y ==> X), (Z ==> X), eqNeg(Y,Z), --is(X,"#")                       |- --(#1 ==> X), (Belief:IntersectionNN)
@@ -247,9 +249,9 @@
 //         (Y ==> X), ((&&,--X,A..+) ==> Z)  |- ((&&,Y,A..+) ==> Z), (Belief:DeductionN)
 
     //Primary Inverting Sub-Condition (Equivalence emulation)
-    ((&&,X,A..+) ==> Z), ((&&,--X,A..+) ==> Z)    |- ((X ==> Z) && (--X ==> --Z)), (Belief:AbductionPN)
-    ((&&,X,A..+) ==> Z), ((&&,--X,A..+) ==> Z)    |- ((X ==> --Z) && (--X ==> Z)), (Belief:AbductionNP)
-       (Z ==> (&&,X,A..+)), (--Z ==> (&&,--X,A..+)) |- ((Z ==> X) && (--Z ==> --X)), (Belief:AbductionPB)
+//    ((&&,X,A..+) ==> Z), ((&&,--X,A..+) ==> Z)    |- ((X ==> Z) && (--X ==> --Z)), (Belief:AbductionPN)
+//    ((&&,X,A..+) ==> Z), ((&&,--X,A..+) ==> Z)    |- ((X ==> --Z) && (--X ==> Z)), (Belief:AbductionNP)
+//       (Z ==> (&&,X,A..+)), (--Z ==> (&&,--X,A..+)) |- ((Z ==> X) && (--Z ==> --X)), (Belief:AbductionPB)
 
 
     //conditional induction
@@ -261,10 +263,10 @@
         //TODO disj
 
     //Anti-conditional Abduction via Multi-conditional Syllogism
-    (C ==> X), (E ==> Y), eventOf(C,E)      |-    unisubst(--conjWithout(C,E),X,Y), (Belief:AbductionXOR)
+    //(C ==> X), (E ==> Y), eventOf(C,E)      |-    unisubst(--conjWithout(C,E),X,Y), (Belief:AbductionXOR)
         //TODO disj
 
-        ((&&,B,A..+) ==> X), (E ==> Y)          |-    unisubst((&&,A..+),(polarizeTask(X) && B),(polarizeBelief(Y) && E)), (Belief:AbductionDepolarized)
+        //((&&,B,A..+) ==> X), (E ==> Y)          |-    unisubst((&&,A..+),(polarizeTask(X) && B),(polarizeBelief(Y) && E)), (Belief:AbductionDepolarized)
 
 
 
@@ -290,7 +292,7 @@
 
 
 // Mutex induction
-//    (&&,X,--Y,A..*), (&&,Y,--X,A..*)                 |- (&&,--(X && Y),A..*), (Belief:Intersection)
+    (&&,X,--Y,A..*), (&&,Y,--X,A..*)                 |- (&&,--(X && Y),A..*), (Belief:Intersection)
 //    (&&,X,--Y,A..+), (&&,Y,--X,B..+),neq(A..+,B..+)  |- (&&,--((&&,A..+) && (&&,B..+))), (Belief:Intersection)
 //
 //    (  (&&,X,--Y,A..*)==>Z), (  (&&,Y,--X,A..*)==>Z)     |- (  (&&,--(X && Y),A..*) ==>   Z), (Belief:IntersectionPP)

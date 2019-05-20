@@ -1324,7 +1324,7 @@ public class NAL7Test extends NALTest {
     void testInductionIntervalMerge2() throws Narsese.NarseseException {
 
 
-        assertEquals("(a &&+2 (&|,b,c,d))",
+        assertEquals("(a &&+2 (&&,b,c,d))",
                 $("(a &&+2 ((b &| c) &| d) )").toString());
 
 
