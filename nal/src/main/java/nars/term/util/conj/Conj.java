@@ -36,6 +36,7 @@ import org.roaringbitmap.RoaringBitmap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
+import java.util.SortedSet;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Predicate;
 
@@ -114,11 +115,17 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
     }
 
     public static Term removeEvent(/*TermBuilder B, */ Term x, Term what) {
+        if (x.op()!=CONJ || !Term.commonStructure(x, what))
+            return x;
+
         ConjBuilder y = Conj.fromLazy(x);
         return y.removeAll(what) ? y.term() : x;
     }
 
     public static Term removeEvent(/*TermBuilder B, */ Term x, Term what, long when) {
+        if (x.op()!=CONJ || !Term.commonStructure(x, what))
+            return x;
+
         ConjBuilder y = Conj.fromLazy(x);
         return y.remove(when, what) ? y.term() : x;
     }
@@ -639,6 +646,17 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
 //
 //        }
 
+        if (exclude.op()==CONJ && exclude.dt()==include.dt() && (include.dt()==XTERNAL || (include.dt()==DTERNAL && !isSeq(include)))) {
+            SortedSet<Term> is = include.eventSet();
+            boolean rem = false;
+            for (Term x : exclude.subterms())
+                rem |= is.remove(x);
+            if (rem)
+                return CONJ.the(is);
+            else
+               return include; //unchanged
+        }
+
         if (exclude.op() == CONJ || isSeq(include)) {
 //            Conj xx = Conj.from(include);
 //            if (xx.removeEventsByTerm(exclude, true, excludeNeg)) {
@@ -653,13 +671,13 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
 
             boolean[] removedSomething = new boolean[]{false};
 
-            long offset = exclude.dt() == DTERNAL && !isSeq(exclude) ? ETERNAL : 0;
+            long offset = (include.dt()==XTERNAL || (exclude.dt() == DTERNAL && !isSeq(exclude))) ? ETERNAL : 0;
 
             exclude.eventsWhile((when, what) -> {
                 removedSomething[0] |= when == ETERNAL ? x.removeAll(what) : x.remove(when, what);
                 //removedSomething[0] |= x.remove(when, what);
                 return true;
-            }, offset, true, false);
+            }, offset, true, true);
 
             return removedSomething[0] ? x.term() : include;
         } else {

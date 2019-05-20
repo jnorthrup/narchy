@@ -208,12 +208,12 @@ abstract public class TermMatcher {
         @Override
         public boolean testSuper(Term superTerm) {
 
-            if (volMin == 0 || superTerm.volume() >= 1 + volMin) {
+//            if (volMin == 0 || superTerm.volume() >= 1 + volMin) {
                 Subterms subs = superTerm.subterms();
-                return (anyOrAll ? subs.hasAny(struct) : subs.hasAll(struct));
-                    //&& subs.OR(anyOrAll ? x -> x.hasAny(struct) : x-> x.hasAll(struct)); <- might be overly restrictive
-            }
-            return false;
+                return (anyOrAll ? subs.hasAny(struct) : subs.hasAll(struct))
+                    && subs.OR(anyOrAll ? x -> x.hasAny(struct) : x-> x.hasAll(struct));
+//            }
+//            return false;
         }
     }
 

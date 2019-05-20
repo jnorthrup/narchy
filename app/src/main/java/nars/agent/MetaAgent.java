@@ -2,7 +2,6 @@ package nars.agent;
 
 import jcog.TODO;
 import jcog.Util;
-import jcog.math.FloatAveraged;
 import jcog.math.FloatRange;
 import nars.$;
 import nars.NAR;
@@ -13,6 +12,7 @@ import nars.task.util.PriBuffer;
 import nars.term.Term;
 import nars.term.atom.Atomic;
 import nars.time.ScheduledTask;
+import org.eclipse.collections.api.block.function.primitive.FloatToFloatFunction;
 import org.eclipse.collections.api.block.procedure.primitive.BooleanProcedure;
 
 import static nars.$.$$;
@@ -135,7 +135,7 @@ public class MetaAgent extends Game {
         Term gid = w.id;
         //this.what().accept(new EternalTask($.inh(aid,this.id), BELIEF, $.t(1f, 0.9f), nar));
 
-//        forgetAction = actionUnipolar($.inh(id, forget), (FloatConsumer) n.attn.forgetRate::set);
+
         actionCtl($.inh(gid, forget), ((TaskLinkWhat) w).links.decay);
         //actionCtl($.inh(gid, amplify), ((TaskLinkWhat) w).links.amp);
 
@@ -275,13 +275,14 @@ public class MetaAgent extends Game {
 //        Reward enableReward = reward("enable", () -> enabled.getOpaque() ? +1 : 0f);
     }
 
-    GoalActionConcept actionCtl(Term t, FloatRange r) {
-        FloatAveraged f = new FloatAveraged(/*0.75*/ 0.9f);
-        return actionUnipolar(t, true, (v)->v, (x)->{
+    void actionCtl(Term t, FloatRange r) {
+        //FloatAveraged f = new FloatAveraged(/*0.75*/ 1);
+        FloatToFloatFunction f = (z)->z;
+        actionUnipolar(t, true, (v)->v, (x)->{
             float y = f.valueOf(x);
             r.set(Util.lerp(y, r.min, r.max));
             return y;
-        });
+        }).resolution(0.1f);
     }
 
 //    public GoalActionConcept[] dial(Game a, Atomic label, FloatRange var, int steps) {

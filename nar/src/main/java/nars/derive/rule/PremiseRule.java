@@ -331,20 +331,27 @@ public class PremiseRule extends ProxyTerm {
 
                 case "eventOf":
                 case "eventOfNeg": {
-                    neq(XX, YY);
-                    bigger(XX, YY);
-                    boolean yNeg = pred.contains("Neg");
+
+                    boolean yNeg = pred.endsWith("Neg");
+
+                    if (Y.op()==NEG) {
+                        Y = Y.unneg();
+                        YY = (Variable)Y;
+                        yNeg = !yNeg;
+                    }
+
                     constraints.add((UnifyConstraint) (new SubOfConstraint(XX, YY, Event, yNeg ? -1 : +1).negIf(negated)));
 
                     if (!negated) {
+                        bigger(XX, YY);
                         is(XX, CONJ);
-                        if (yNeg &&
-                                (YY.equals(taskPattern) ||
-                                        (YY.equals(beliefPattern) ||
-                                                (XX.containsRecursively(YY) && !XX.containsRecursively(YY.neg())
-                                                )))) {
-                            hasAny(XX, NEG); //taskPattern and beliefPattern themselves will always be unneg so it is safe to expect a negation
-                        }
+//                        if (yNeg &&
+//                                (YY.equals(taskPattern) ||
+//                                        (YY.equals(beliefPattern) ||
+//                                                (XX.containsRecursively(YY) && !XX.containsRecursively(YY.neg())
+//                                                )))) {
+//                            hasAny(XX, NEG); //taskPattern and beliefPattern themselves will always be unneg so it is safe to expect a negation
+//                        }
                         eventable(YY);
                     }
 

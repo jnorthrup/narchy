@@ -240,7 +240,7 @@ public class Occurrify extends TimeGraph {
 
         ObjectIntHashMap<Event> e = new ObjectIntHashMap(ss);
         int maxPoints = 0;
-        for (byte i = 0; i < ss; i++) {
+        for (int i = 0; i < ss; i++) {
             Event s = solutions.get(i);
             Term st = s.id;
             int points = 0;

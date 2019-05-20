@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test;
 import static nars.Op.BELIEF;
 
 abstract public class NAL6DecomposeTest extends NALTest {
-    private static final int cycles = 850;
+    private static final int cycles = 450;
 
     @BeforeEach
     void setup() {
@@ -20,7 +20,7 @@ abstract public class NAL6DecomposeTest extends NALTest {
     @Override
     protected NAR nar() {
         NAR n = NARS.tmp(6, 8);
-        n.termVolumeMax.set(10);
+        n.termVolumeMax.set(8);
         n.confMin.set(0.02f);
         return n;
     }
@@ -146,6 +146,7 @@ abstract public class NAL6DecomposeTest extends NALTest {
         @Test
         void impl_conjunction_pred_decompose_conditional() {
             test
+                    .termVolMax(6)
                     .believe("(x ==> --(a && b))")
                     .input("(x ==> b). %0.75;0.9%")
                     .mustBelieve(cycles, "(x ==> a)", 0.25f, 0.61f) //via decompose
@@ -163,12 +164,11 @@ abstract public class NAL6DecomposeTest extends NALTest {
 
         @Test
         void impl_disjunction_subj_decompose_conditional() {
-//        test.nar.onTask(t->{
-//           System.out.println( t.proof() );
-//        });
+
             test
+                    .termVolMax(6)
                     .believe("((a || b) ==> x)")
-                    .input("--(b ==> x). %0.75;0.9%")
+                    .input("(--b ==> x). %0.75;0.9%")
                     .mustBelieve(cycles, "(a ==> x)", 0.75f, 0.61f) //via decompose
             ;
         }
@@ -200,7 +200,7 @@ abstract public class NAL6DecomposeTest extends NALTest {
             tester.termVolMax(12);
             tester.believe("(bird:robin ==> --(animal:robin && (robin-->[flying])))", 1.0f, 0.9f);
             tester.believe("          (bird:robin ==> (robin-->[flying]))");
-            tester.mustBelieve(cycles, "--(bird:robin ==> animal:robin)", 1.00f, 0.81f);
+            tester.mustBelieve(cycles, "(bird:robin ==> animal:robin)", 0.00f, 0.81f);
 
         }
 
@@ -210,7 +210,7 @@ abstract public class NAL6DecomposeTest extends NALTest {
             TestNAR tester = test;
             tester.believe("(b ==> --(a && r))", 1.0f, 0.9f);
             tester.believe("          (b ==> r)");
-            tester.mustBelieve(cycles, "--(b ==> a)", 1.00f, 0.81f);
+            tester.mustBelieve(cycles, "(b ==> a)", 0.00f, 0.81f);
 
         }
 

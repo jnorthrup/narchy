@@ -230,8 +230,8 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
      */
     public final FloatRange intermpolationRangeLimit = new FloatRange(
             //0.5f
-            1f
-            //2f
+            //1f
+            2f
             , 0, 4);
 
     @Deprecated

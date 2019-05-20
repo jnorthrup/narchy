@@ -147,8 +147,8 @@ enum TruthFunctions2 {
                         bipolar ?
                             Util.lerp(bF, 1-goal.freq(), goal.freq())
                             :
-                            Util.lerp(bF, 0.5f, goal.freq());
-                //float f = goal.freq();
+                            //Util.lerp(bF, 0.5f, goal.freq());
+                            goal.freq();
 
                 return $.t(f, cc);
 

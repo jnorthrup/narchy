@@ -33,8 +33,9 @@ public class FORK<X> extends AbstractPred<X> {
     @Override
     public boolean test(X x) {
 
-        for (PREDICATE c: branch)
+        for (PREDICATE c: branch) {
             c.test(x);
+        }
 
         return true;
     }

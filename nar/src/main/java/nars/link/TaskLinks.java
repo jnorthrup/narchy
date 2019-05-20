@@ -43,7 +43,7 @@ abstract public class TaskLinks implements Sampler<TaskLink> {
     /**
      * tasklink forget rate
      */
-    public final FloatRange decay = new FloatRange(1f, 0, 1f /* 2f */);
+    public final FloatRange decay = new FloatRange(0.5f, 0, 1f /* 2f */);
     /**
      * (post-)Amp: tasklink propagation rate
      */
@@ -271,7 +271,8 @@ abstract public class TaskLinks implements Sampler<TaskLink> {
             if (!term.op().conceptualizable) return null;
             float probDirect =
                     //0.5f * 1f / term.volume();
-                    0.5f * 1f / Util.sqr(term.volume());
+                    //0.5f * 1f / Util.sqr(term.volume());
+                    0.5f * 1f / Util.sqr(Util.sqr(term.volume()));
 
             if (d.random.nextFloat() >= probDirect)
                 return null; //term itself

@@ -23,10 +23,7 @@ import nars.derive.timing.ActionTiming;
 import nars.exe.impl.WorkerExec;
 import nars.gui.NARui;
 import nars.memory.CaffeineMemory;
-import nars.op.Arithmeticize;
-import nars.op.AutoencodedBitmap;
-import nars.op.Factorize;
-import nars.op.Introduction;
+import nars.op.*;
 import nars.op.mental.Inperience2;
 import nars.op.stm.ConjClustering;
 import nars.sensor.Bitmap2DSensor;
@@ -310,7 +307,7 @@ abstract public class GameX extends Game {
 
     private static void initPlugins3(NAR n, Game a) {
 
-        MetaAgent meta = new MetaAgent(false,16f, a);
+        MetaAgent meta = new MetaAgent(false,8f, a);
         meta.what().pri(0.25f);
 
 //        RLBooster metaBoost = new RLBooster(meta, (i,o)->new HaiQae(i, 10,o),
@@ -388,15 +385,15 @@ abstract public class GameX extends Game {
         n.beliefPriDefault.amp(0.05f);
         n.goalPriDefault.amp(0.2f);
         n.questionPriDefault.amp(0.01f);
-        n.questPriDefault.amp(0.01f);
+        n.questPriDefault.amp(0.02f);
 
 //        n.beliefPriDefault.pri(0.01f);
 //        n.goalPriDefault.pri(0.01f);
 //        n.questionPriDefault.set(0.01f);
 //        n.questPriDefault.set(0.01f);
 
-        n.beliefConfDefault.set(0.85f);
-        n.goalConfDefault.set(0.85f);
+        n.beliefConfDefault.set(0.8f);
+        n.goalConfDefault.set(0.8f);
 
         n.emotion.want(MetaGoal.PerceiveCmplx, -0.0001f); //<- dont set negative unless sure there is some positive otherwise nothing happens
 
@@ -481,7 +478,7 @@ abstract public class GameX extends Game {
 
         //new StatementLinker(n);
         //new PuncNoise(n);
-        //n.start(new Eternalizer(n));
+        n.start(new Eternalizer(n));
 
 //        new STMLinkage(n, 1);
 
