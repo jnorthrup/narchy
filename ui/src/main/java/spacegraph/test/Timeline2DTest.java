@@ -58,7 +58,7 @@ public class Timeline2DTest {
 
         return new Timeline2DEvents<>(dummyModel,
                 (NodeVis<Timeline2D.SimpleEvent> e) ->
-                        e.set(new Scale(new PushButton(e.id.toString()), 0.8f)));
+                        e.set(new Scale(new PushButton(e.id.toString()), 0.8f)), new Timeline2DEvents.LaneTimelineUpdater());
     }
 
     protected static Timeline2DEvents<Pair<Longerval,Tensor>> waveEvents() {
@@ -74,7 +74,7 @@ public class Timeline2DTest {
 
         return new Timeline2DEvents<>(s, e ->
             e.set(
-                    new Widget(new WaveBitmap(e.id.getTwo(), 1, 128, 32)))
+                    new Widget(new WaveBitmap(e.id.getTwo(), 1, 128, 32))), new Timeline2DEvents.LaneTimelineUpdater()
         );
     }
 }

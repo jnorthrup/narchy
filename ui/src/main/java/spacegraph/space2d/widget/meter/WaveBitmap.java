@@ -41,7 +41,7 @@ public class WaveBitmap extends Surface implements BitmapMatrixView.BitmapPainte
     /**
      * visualization bounds
      */
-    public double start, end;
+    public long start, end;
 
     public WaveBitmap(int w, int h, BitmapEvaluator buffer) {
         this.w = w;
@@ -68,10 +68,10 @@ public class WaveBitmap extends Surface implements BitmapMatrixView.BitmapPainte
     }
 
     @Override
-    public void setTime(double tStart, double tEnd) {
+    public void setTime(long tStart, long tEnd) {
 
-        double start = (tStart);
-        double end = (tEnd);
+        long start = (tStart);
+        long end = (tEnd);
         synchronized (this) {
             if (update || !Util.equals(start, this.start) || !Util.equals(end, this.end)) {
                 this.start = start;

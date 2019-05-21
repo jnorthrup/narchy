@@ -13,6 +13,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Signal sampled from system sound devices (via Java Media)
+ * assume that internal timing refers to durations of ms (milliseconds)
  */
 public class AudioSource implements DigitizedSignal {
 
@@ -31,6 +32,9 @@ public class AudioSource implements DigitizedSignal {
     private final byte[] preByteBuffer;
     private final short[] preShortBuffer;
 
+    /** system ms time at start */
+    private long _start;
+
     public static List<AudioSource> all() {
 
         List<AudioSource> ll = new FasterList();
@@ -44,6 +48,7 @@ public class AudioSource implements DigitizedSignal {
                     //System.out.println(I + " " + M + " " + M.getLineClass());
                     try {
                         TargetDataLine lm = (TargetDataLine) mi.getLine(M);
+
 
                         lm.open(); //attempts to open, will fail if it can't
 
@@ -72,7 +77,7 @@ public class AudioSource implements DigitizedSignal {
 
         int audioBufferSamples = line.getBufferSize();
         int numChannels = line.getFormat().getChannels();
-        bytesPerSample = line.getFormat().getSampleSizeInBits()/8;
+        bytesPerSample = numChannels * line.getFormat().getSampleSizeInBits()/8;
 
         preByteBuffer = new byte[audioBufferSamples * bytesPerSample];
         preShortBuffer = new short[audioBufferSamples];
@@ -90,6 +95,11 @@ public class AudioSource implements DigitizedSignal {
         return (int) line.getFormat().getSampleRate();
     }
 
+    @Override
+    public long time() {
+        return _start + Math.round(line.getMicrosecondPosition()/1000.0);
+    }
+
     public int channelsPerSample() {
         return line.getFormat().getChannels();
     }
@@ -103,6 +113,7 @@ public class AudioSource implements DigitizedSignal {
                 //line.open(audioFormat/*, line.getBufferSize()*/);
             }
 
+            this._start = System.currentTimeMillis();
             line.start();
         }
 
@@ -165,20 +176,27 @@ public class AudioSource implements DigitizedSignal {
 //                        }
 //                    }
 //                }
+
+
             int toRead = Math.min(capacitySamples * bytesPerSample, availableBytes);
+            int toDrain = availableBytes - toRead;
+            if (toDrain > 0) {
+                //drain excess TODO optional
+                line.read(new byte[toDrain], 0, toDrain); //HACK TODO use line fast forward method if exist otherwise shared buffer
+            }
+
+            //pad to bytes per sample
             if (toRead < availableBytes) {
-                while (toRead % bytesPerSample != 0)
-                    toRead++;
+                while (toRead % bytesPerSample != 0) toRead++;
             } else {
-                while (toRead % bytesPerSample != 0)
-                    toRead--;
+                while (toRead % bytesPerSample != 0) toRead--;
             }
 
             //int availableBytes = Math.min(capacity, line.available());
             audioBytesRead = line.read(preByteBuffer, 0, toRead);
             if (audioBytesRead == 0)
                 return 0;
-            int nSamplesRead = audioBytesRead / 2;
+            int nSamplesRead = audioBytesRead / bytesPerSample;
 
             ByteBuffer.wrap(preByteBuffer).order(ByteOrder.LITTLE_ENDIAN).asShortBuffer().get(preShortBuffer);
 

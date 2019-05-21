@@ -27,14 +27,15 @@ public class Timeline2D extends Stacking implements Finger.ScrollWheelConsumer {
     /**
      * viewable range
      */
-    public double start, end, startNext, endNext;
+    public long start, end;
+    public long startNext, endNext;
 
 
     public interface TimeRangeAware {
-        void setTime(double tStart, double tEnd);
+        void setTime(long tStart, long tEnd);
     }
 
-    public Timeline2D(double start, double end) {
+    public Timeline2D(long start, long end) {
         this.setTime(this.start = start, this.end = end);
     }
 
@@ -52,7 +53,7 @@ public class Timeline2D extends Stacking implements Finger.ScrollWheelConsumer {
 
 
         synchronized (this) {
-            double width = endNext - startNext;
+            long width = endNext - startNext;
 //        int N = buffer.capacity();
 //        if (width < N) {
             double mid = ((startNext + endNext) / 2);
@@ -155,9 +156,8 @@ public class Timeline2D extends Stacking implements Finger.ScrollWheelConsumer {
         return b;
     }
 
-    public float x(float sample) {
-        double f = start;
-        return (float) ((sample - f) / (end - f) * w());
+    public float x(long sample) {
+        return (float) ((sample - start) / ((end - start) * (double)w()));
     }
 
     public Timeline2D timeShift(double dt) {
@@ -184,7 +184,7 @@ public class Timeline2D extends Stacking implements Finger.ScrollWheelConsumer {
     /**
      * keeps current range
      */
-    public Timeline2D setTime(double when) {
+    public Timeline2D setTime(long when) {
         synchronized (this) {
             double range = endNext - startNext;
             assert (range > 0);
@@ -200,6 +200,10 @@ public class Timeline2D extends Stacking implements Finger.ScrollWheelConsumer {
     }
 
     public Timeline2D setTime(double start, double end) {
+        return setTime(Math.round(start), Math.round(end));
+    }
+
+    public Timeline2D setTime(long start, long end) {
         synchronized (this) {
             this.startNext = start;
             this.endNext = end;
@@ -208,32 +212,30 @@ public class Timeline2D extends Stacking implements Finger.ScrollWheelConsumer {
         return this;
     }
 
-    private void _setTime(double start, double end) {
+    private void _setTime(long start, long end) {
         synchronized (this) {
-            if (!Util.equals(this.start, start) || !Util.equals(this.end, end)) {
+            if (this.start!=start || this.end!=end) {
                 this.start = start;
                 this.end = end;
-            } else
-                return;
+                forEach(x -> setLayerTime(x, this.start, this.end));
+            }
         }
-
-        forEach(x -> setLayerTime(x, start, end));
     }
 
-    private void setLayerTime(Surface x, double s, double e) {
+    private void setLayerTime(Surface x, long s, long e) {
         if (x instanceof TimeRangeAware)
             ((TimeRangeAware) x).setTime(s, e);
     }
 
     /**
-     * proportionizes time to an axis of given length
+     * projects time to a position axis of given length
      */
-    public static float x(double s, double e, float X, float W, double t) {
-        return (float) ((t - s) / (e - s) * W + X);
+    public static float x(long when, float X, float W, long s, long e) {
+        return (float) (((when - s) / (double)(e - s)) * W + X);
     }
 
     public <X> Timeline2D addEvents(TimelineEvents<X> e, Consumer<NodeVis<X>> r) {
-        add(new Timeline2DEvents<>(e, r));
+        add(new Timeline2DEvents<>(e, r, new Timeline2DEvents.LaneTimelineUpdater()));
         return this;
     }
 
@@ -311,16 +313,13 @@ public class Timeline2D extends Stacking implements Finger.ScrollWheelConsumer {
         @Override
         public int compareTo(Timeline2D.SimpleEvent x) {
             if (this == x) return 0;
-            int s = Long.compare(start, x.start);
+            int s = Long.compare((start+end)/2, (x.start+x.end)/2);
             if (s != 0)
                 return s;
-            int e = Long.compare(end, x.end);
-            if (e != 0)
-                return e;
             return Integer.compare(System.identityHashCode(this), System.identityHashCode(x));
         }
 
-        public double range() {
+        public long range() {
             return end - start;
         }
     }
@@ -386,11 +385,11 @@ public class Timeline2D extends Stacking implements Finger.ScrollWheelConsumer {
         int THICKNESS = 2;
         //int DIVISIONS = 10; //TODO
 
-        double start, end;
+        long start, end;
         private BiConsumer<GL2, ReSurface> paintGrid;
 
         @Override
-        public void setTime(double tStart, double tEnd) {
+        public void setTime(long tStart, long tEnd) {
             this.start = tStart; this.end = tEnd;
             paintGrid = null; //invalidate
         }
@@ -407,9 +406,9 @@ public class Timeline2D extends Stacking implements Finger.ScrollWheelConsumer {
                     gl.glColor4f(0.3f,0.3f,0.3f,0.9f);
 
                     gl.glLineWidth(THICKNESS);
-                    double x = start - phase;
+                    long x = Math.round(start - phase);
                     for (int i = 0; i <= iMax; i++) {
-                        float xx = Timeline2D.x(start, end, LEFT, W, x);
+                        float xx = Timeline2D.x(x, LEFT, W, start, end);
                         Draw.line(xx, BOTTOM, xx, BOTTOM + H, gl);
                         x += interval;
                     }

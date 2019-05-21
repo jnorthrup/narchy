@@ -16,7 +16,7 @@ import spacegraph.space2d.widget.meter.Spectrogram;
 import spacegraph.space2d.widget.meter.WaveBitmap;
 import spacegraph.video.Draw;
 
-import static java.lang.Float.NaN;
+import static jcog.math.LongInterval.ETERNAL;
 
 public class SignalView extends Timeline2D {
 
@@ -65,7 +65,7 @@ public class SignalView extends Timeline2D {
         }
     };
 
-    volatile private float selectStart = NaN, selectEnd = NaN;
+    volatile private long selectStart = ETERNAL, selectEnd = ETERNAL;
 
 
 
@@ -73,18 +73,22 @@ public class SignalView extends Timeline2D {
     final Fingering select = new Dragging(SELECT_BUTTON) {
 
         float sample(float x) {
-            return (float) (start + (end - start) * (x / w()));
+            return (x / w());
         }
 
         @Override
         protected boolean starting(Finger f) {
-            selectStart = sample(f.posGlobal().x);
+            selectStart = t(f.posGlobal().x);
             return true;
+        }
+
+        private long t(float f) {
+            return Util.lerp(sample(f), start, end);
         }
 
         @Override
         protected boolean drag(Finger f) {
-            selectEnd = sample(f.posGlobal().x);
+            selectEnd = t(f.posGlobal().x);
             return true;
         }
     };

@@ -1,13 +1,13 @@
 package spacegraph.test;
 
 import com.google.common.util.concurrent.RateLimiter;
-import jcog.exe.Loop;
 import jcog.random.XoRoShiRo128PlusRandom;
 import jcog.signal.wave1d.DigitizedSignal;
 import jcog.signal.wave1d.SignalInput;
 import spacegraph.SpaceGraph;
 import spacegraph.audio.AudioSource;
 import spacegraph.space2d.Surface;
+import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.container.time.Timeline2D;
 import spacegraph.space2d.widget.button.PushButton;
 
@@ -22,40 +22,47 @@ public class SignalViewTest {
     }
 
     public static Surface newSignalView() {
-        //Gridding g = Gridding.column();
-
-        long now = System.currentTimeMillis();
-        long before = now -  2* 1000;
-
-        Timeline2D g = new Timeline2D(before, now + 2 * 1000);
-        int capacity = 50;
-        Timeline2D.SimpleTimelineEvents ge = new Timeline2D.SimpleTimelineEvents();
-
-        Loop.of(()-> {
-            long e = System.currentTimeMillis();
-            g.setTime(e - 5 * 1000, e); //HACK force update
-
-            while (ge.size() > capacity)
-                ge.pollFirst();
-
-        }).setFPS(2);
-
-
+        Gridding cc = Gridding.column();
 
 
         AudioSource.all().forEach(in -> {
             try {
                 in.start();
+
+                long now = System.currentTimeMillis();
+                long before = now -  2* 1000;
+
+                int capacity = 256;
+                Timeline2D.SimpleTimelineEvents ge = new Timeline2D.SimpleTimelineEvents();
+
+                Timeline2D g = new Timeline2D(before, now + 2 * 1000) {
+                    @Override
+                    protected void starting() {
+                        super.starting();
+                        root().animate((dt)->{
+                            if (parent!=null) {
+
+
+                                long e = System.currentTimeMillis();
+                                setTime(e - Math.round(5f * 1000), e); //HACK force update
+
+
+
+                                return true;
+                            } else
+                                return false;
+                        });
+                    }
+
+                };
                 String src = Integer.toString(in.hashCode()); //i.toString();
 
                 SignalInput i = new SignalInput();
-                i.set(in, 0.2f);
+                i.set(in, 0.4f);
 //                g.add(new SignalView(i).withControls());
-                i.setFPS(8f);
+                i.setFPS(32f);
                 i.wave.on(a->{
-                    long e = System.currentTimeMillis();
-                    double bufferTimeMs = 1000*((double)a.volume())/i.sampleRate;
-                    long s = Math.round(e - bufferTimeMs);
+//                    long e = System.currentTimeMillis();
 
                     //System.out.println(bufferTimeMs + "ms " + Math.round(n-bufferTimeMs)/2 + ".." + n);
 
@@ -76,21 +83,30 @@ public class SignalViewTest {
                     PushButton p = new PushButton(src);
                     p.color.set(rms*4, 0, 0, 1);
 
-                    ge.add(new Timeline2D.SimpleEvent(p, s+1, e-1));
+//                    long s = e - Math.round( a.volume()/(float)i.sampleRate);
+
+                    SignalInput.RealTimeTensor ra = (SignalInput.RealTimeTensor) a;
+
+                    if (ge.size()+1 > capacity)
+                        ge.pollFirst();
+
+                    ge.add(new Timeline2D.SimpleEvent(p, ra.start, ra.end));
                 });
+
+                //g.setTime(before, now); //HACK force update
+                g.addEvents(ge, (nv)-> nv.set(((Surface)(nv.id.name)))); // new PushButton(nv.id.toString())));
 
 //                WaveBitmap w = new WaveBitmap(new ArrayTensor(i.data), i.sampleRate, i.data.length, 250);
 //                w.setTime(before, now);
                 //g.add(w);
 
+                cc.add(g);
 
             } catch (LineUnavailableException e) {
                 e.printStackTrace();
             }
         });
 
-        //g.setTime(before, now); //HACK force update
-        g.addEvents(ge, (nv)-> nv.set(((Surface)(nv.id.name)))); // new PushButton(nv.id.toString())));
 
 //        {
 //            SignalInput i = new SignalInput();
@@ -98,7 +114,7 @@ public class SignalViewTest {
 //            g.add(new SignalView(i).withControls());
 //            i.setFPS(20f);
 //        }
-        return g;
+        return cc;
     }
 //    public static LabeledPane newSignalView() {
 //        AudioSource audio = new AudioSource();
@@ -150,6 +166,11 @@ public class SignalViewTest {
         @Override
         public int sampleRate() {
             return sampleRate;
+        }
+
+        @Override
+        public long time() {
+            return System.currentTimeMillis();
         }
     }
 }

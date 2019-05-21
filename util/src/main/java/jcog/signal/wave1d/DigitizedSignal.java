@@ -10,4 +10,7 @@ public interface DigitizedSignal {
 
     /** samples per unit time (ex: second = hz) */
     int sampleRate();
+
+    /** provide an estimate of the absolute time */
+    long time();
 }

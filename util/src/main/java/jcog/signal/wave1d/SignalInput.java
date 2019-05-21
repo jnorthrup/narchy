@@ -19,18 +19,22 @@ public class SignalInput extends Loop {
 
     /** TODO make private */
     public float[] data;
-    private transient int dataPtr = 0;
+    private transient volatile int dataPtr = 0;
 
     /**
      * called when next sample (buffer) frame is ready
      */
     public final TensorTopic<ArrayTensor> wave = new TensorTopic<>(new ArrayTensor(0));
+    private long s, e;
 
     public SignalInput() {
         super();
     }
 
     public final SignalInput set(DigitizedSignal src, float bufferSeconds) {
+
+        this.s = this.e = src.time();
+
         int r = src.sampleRate();
         return set(src, r, Math.round(bufferSeconds * r));
     }
@@ -43,6 +47,16 @@ public class SignalInput extends Loop {
         return this;
     }
 
+    public static class RealTimeTensor extends ArrayTensor {
+
+        public final long start, end;
+
+        public RealTimeTensor(float[] oneD, long start, long end) {
+            super(oneD);
+            this.start = start; this.end = end;
+        }
+    }
+
     @Override
     public boolean next() {
         DigitizedSignal source = this.source;
@@ -51,13 +65,22 @@ public class SignalInput extends Loop {
             if (hasListeners) {
                 while (source.hasNext(data.length - dataPtr)) {
 
+
                     int read = source.next(data, dataPtr, data.length - dataPtr);
-                    dataPtr += read;
+
+                    dataPtr += read; assert(dataPtr <= data.length);
+
+                    this.e = Math.round(dataPtr/((double)sampleRate)*1000) + this.s;
+
 
                     if (dataPtr == data.length) {
                         //a complete buffer
-                        wave.emit(new ArrayTensor(data));
+
+                        wave.emit(new RealTimeTensor(data.clone(), s, e-1));
                         dataPtr = 0;
+
+                        //if (dataPtr==0)
+                            this.s = source.time();
                     }
                 }
             }
