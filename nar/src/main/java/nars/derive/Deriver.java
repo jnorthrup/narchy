@@ -110,36 +110,11 @@ abstract public class Deriver extends How {
     }
 
 
-    final short[] what(PreDerivation d) {
-        return rules.planner.apply(d);
+    public final short[] what(PreDerivation d) {
+        return rules.pre.apply(d);
     }
 
 
-    public final void derive(Premise p, Derivation d, int matchTTL, int deriveTTL) {
-
-        FastCounter result;
-
-        Emotion e = d.nar().emotion;
-
-        if (p.match(d, matchTTL)) {
-
-            short[] can = what(d);
-
-            if (can.length > 0) {
-
-                rules.run(d, can, deriveTTL);
-
-                result = e.premiseFire;
-
-            } else {
-                result = e.premiseUnderivable;
-            }
-        } else {
-            result = e.premiseUnbudgetable;
-        }
-
-        result.increment();
-    }
 
     @Nullable
     public TermLinker linker(Term t) {

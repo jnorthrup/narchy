@@ -7,10 +7,12 @@ import nars.NAR;
 import nars.Task;
 import org.eclipse.collections.api.tuple.primitive.ObjectBytePair;
 import org.eclipse.collections.impl.map.mutable.primitive.ObjectDoubleHashMap;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.PrintStream;
+import java.util.function.Consumer;
 
 import static jcog.Texts.n4;
 
@@ -30,7 +32,10 @@ import static jcog.Texts.n4;
 @Paper
 public enum MetaGoal {
 
-    PerceiveCmplx,  //by complexity
+    Futile,
+
+    //PerceiveCmplx,  //by complexity
+
     PerceivePri, //by priority
 
     /**
@@ -59,7 +64,7 @@ public enum MetaGoal {
      * learn that the given effects have a given value
      * note: requires that the FasterList's internal array is correct Cause[] type for direct un-casting access
      */
-    public void learn(short[] cause, float strength, FasterList<Why> whies) {
+    public void learn(float strength, FasterList<Why> whies, short... cause) {
 
         if (Math.abs(strength) < Float.MIN_NORMAL)
             return;
@@ -79,8 +84,9 @@ public enum MetaGoal {
         }
     }
 
+
     /** default linear adder */
-    @Deprecated static public void value(NAR n) {
+    @Deprecated static public void value(NAR n, @Nullable Consumer<FasterList<Why>> value) {
 
         FasterList<Why> why = n.control.why;
         int cc = why.size();
@@ -97,18 +103,28 @@ public enum MetaGoal {
 
             ci.commit();
 
-            float v = 0;
+            double v = 0;
+            boolean valued = false;
             Traffic[] cg = ci.credit;
             for (int j = 0; j < want.length; j++) {
-                v += want[j] * cg[j].current;
+                float c = cg[j].current;
+                if (Math.abs(c) > Float.MIN_NORMAL) {
+                    v += want[j] * ((double)c);
+                    valued = true;
+                }
             }
-            ci.setValue(v);
+
+            ci.setValue(valued ? (float)v : Float.NaN);
         }
+
+        if (value!=null)
+            value.accept(why);
 
 //        @Nullable Consumer<Why[]> g = this.governor;
 //        if (g!=null)
 //            g.accept(ccc);
     }
+
 //    /** implements value/pri feedback */
 //    @Nullable
 //    private Consumer<Why[]> governor = null;

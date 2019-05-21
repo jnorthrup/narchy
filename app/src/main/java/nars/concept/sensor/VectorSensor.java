@@ -1,6 +1,7 @@
 package nars.concept.sensor;
 
 import com.google.common.collect.Iterables;
+import jcog.Util;
 import jcog.math.FloatSupplier;
 import nars.$;
 import nars.NAR;
@@ -13,6 +14,8 @@ import nars.term.Term;
 import nars.term.Termed;
 import nars.truth.Truth;
 import org.eclipse.collections.api.block.function.primitive.FloatFloatToObjectFunction;
+
+import java.util.Random;
 
 import static nars.Op.BELIEF;
 
@@ -71,8 +74,11 @@ abstract public class VectorSensor extends AbstractSensor implements Iterable<Si
 
 
         FloatSupplier aPri = attn::pri;
+        float quality = Util.sqrt(attn.amp.floatValue());
+        Random rng = g.random();
         for (Signal s : this) {
-            s.update(truther, aPri, causeArray, g);
+            if (quality >= 1 || rng.nextFloat() < quality )
+                s.update(truther, aPri, causeArray, g);
         }
     }
 

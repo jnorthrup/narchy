@@ -30,7 +30,7 @@ public class TopN<X> extends SortedArray<X> implements Consumer<X>, FloatFunctio
     };
 
     public FloatRank<X> rank;
-    private float min= NEGATIVE_INFINITY;
+    float min= NEGATIVE_INFINITY;
     private int capacity;
 
     public TopN(X[] target) {

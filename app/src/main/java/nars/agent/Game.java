@@ -125,9 +125,9 @@ public class Game extends NARPart implements NSense, NAct, Timed {
         this.time = time;
 
         this.pri = new PriNode(this.id);
-        this.attnAction = new PriNode($.func(ACTION, id));
-        this.attnSensor = new PriNode($.func(SENSOR, id));
-        this.attnReward = new PriNode($.func(REWARD, id));
+        this.attnAction = new PriNode($.inh(id,ACTION));
+        this.attnSensor = new PriNode($.inh(id,SENSOR));
+        this.attnReward = new PriNode($.inh(id,REWARD));
 
         add(time.clock(this));
 

@@ -3,12 +3,10 @@ package nars.derive.rule;
 import jcog.Util;
 import jcog.data.bit.MetalBitSet;
 import jcog.decide.MutableRoulette;
-import jcog.util.ArrayUtil;
 import nars.NAL;
 import nars.control.Why;
 import nars.derive.model.Derivation;
 import nars.term.control.PREDICATE;
-import nars.unify.Unify;
 
 import java.io.PrintStream;
 import java.util.stream.Stream;
@@ -16,6 +14,7 @@ import java.util.stream.Stream;
 /**
  * compiled derivation rules
  * what -> can
+ * TODO subclass to Weighted deriver runner; and make a non-weighted subclass
  */
 public class DeriverRules {
 
@@ -31,19 +30,12 @@ public class DeriverRules {
      */
     private final DeriveAction[] could;
 
-    public final DerivationRunner planner;
+    public final PreDeriver pre;
 
-    /** structure vector of operator types which must not be anonymized in premise formation */
-    public final int mustAtomize;
+//    /** structure vector of operator types which must not be anonymized in premise formation */
+//    public final int mustAtomize;
 
-    static short[] what(Unify p) {
-        Derivation d = (Derivation)p;
-        d.canCollector.clear();
-        d.deriver.rules.what.test(d);
-        return d.canCollector.isEmpty() ? ArrayUtil.EMPTY_SHORT_ARRAY : d.canCollector.toArray();
-    }
-
-    DeriverRules(PREDICATE<Derivation> what, DeriveAction[] actions, int mustAtomize, DerivationRunner planner) {
+    DeriverRules(PREDICATE<Derivation> what, DeriveAction[] actions, PreDeriver pre) {
 
         this.what = what;
 
@@ -52,9 +44,9 @@ public class DeriverRules {
 
         this.why = Stream.of(actions).flatMap(b -> Stream.of(b.why)).toArray(Why[]::new);
 
-        this.planner = planner;
+        this.pre = pre;
 
-        this.mustAtomize = mustAtomize;
+//        this.mustAtomize = mustAtomize;
 
     }
 
@@ -82,16 +74,16 @@ public class DeriverRules {
 
         if (could.length > 1) {
 
-            float[] f = Util.map(choice -> this.could[could[choice]].value(d), new float[could.length]);
+            float[] f = Util.map(choice -> Math.max(Float.MIN_NORMAL, this.could[could[choice]].value(d)), new float[could.length]);
             int n = f.length;
 
             MetalBitSet toRemove = null;
-            for (int i = 0; i < n; i++) {
-                if (f[i] <= 0) {
-                    if (toRemove == null) toRemove = MetalBitSet.bits(n);
-                    toRemove.set(i);
-                }
-            }
+//            for (int i = 0; i < n; i++) {
+//                if (f[i] <= 0) {
+//                    if (toRemove == null) toRemove = MetalBitSet.bits(n);
+//                    toRemove.set(i);
+//                }
+//            }
 
             if (toRemove == null) {
                 maybeWhat = could; //no change
@@ -120,7 +112,7 @@ public class DeriverRules {
 
         } else {
 
-            if (could.length == 1 && this.could[could[0]].value(d) > 0) {
+            if (could.length == 1) {//{ && this.could[could[0]].value(d) > 0) {
                 maybeWhat = could;
             } else {
                 return;
@@ -134,8 +126,14 @@ public class DeriverRules {
         if (fanOut == 1) {
             test(d, maybeWhat[0]);
         } else {
+
+            Util.normalizeMargin(1f/maybePri.length, 0, maybePri);
+
+//            if (maybePri[0]!=maybePri[1])
+//                System.out.println(Arrays.toString(maybePri));
+
             //assert((can.length == maybe.length)):  Arrays.toString(could) + " " + Arrays.toString(can) + " " + Arrays.toString(maybe);
-            MutableRoulette.run(maybePri, d.random, wi -> 0, b -> test(d, maybeWhat[b]));
+            MutableRoulette.run(maybePri, d.random, wi -> 0, i -> test(d, maybeWhat[i]));
         }
 
         d.nar.emotion.premiseTTL_used.recordValue(Math.max(0, deriveTTL - d.ttl)); //TODO handle negative amounts, if this occurrs.  limitation of HDR histogram

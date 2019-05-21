@@ -4,6 +4,7 @@ import jcog.Util;
 import jcog.math.LongInterval;
 import jcog.util.ArrayUtil;
 import nars.*;
+import nars.control.MetaGoal;
 import nars.derive.model.Derivation;
 import nars.derive.model.DerivationFailure;
 import nars.derive.rule.PremiseRuleProto;
@@ -66,8 +67,11 @@ public class Taskify extends ProxyTerm {
 //
 //    }
 
-    static boolean spam(Derivation d, int cost) {
+    boolean spam(Derivation d, int cost) {
         d.use(cost);
+
+        MetaGoal.Futile.learn(cost, d.nar.control.why, channel.id);
+
         return true;
     }
 

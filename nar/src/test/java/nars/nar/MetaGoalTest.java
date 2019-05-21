@@ -19,7 +19,7 @@ class MetaGoalTest {
 
 
         n.emotion.want(MetaGoal.Believe, 0.01f);
-        n.emotion.want(MetaGoal.PerceiveCmplx, -0.01f);
+        n.emotion.want(MetaGoal.PerceivePri, -0.01f);
 
         DeductiveMeshTest m = new DeductiveMeshTest(n, new int[] { 3, 3 }, 3500);
         m.test.test();

@@ -1460,20 +1460,20 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
         tasks().filter(x -> Longs.contains(x.stamp(), stampComponent)).forEach(Task::delete);
     }
 
-    /**
-     * computes an evaluation amplifier factor, in range 0..2.0.
-     * VALUE -> AMP
-     * -Infinity -> amp=0
-     * 0     -> amp=1
-     * +Infinity -> amp=2
-     */
-    public float amp(short[] effect) {
-        return control.amp(effect);
-    }
+//    /**
+//     * computes an evaluation amplifier factor, in range 0..2.0.
+//     * VALUE -> AMP
+//     * -Infinity -> amp=0
+//     * 0     -> amp=1
+//     * +Infinity -> amp=2
+//     */
+//    public float amp(short[] effect) {
+//        return control.amp(effect);
+//    }
 
-    public final float amp(Task task) {
-        return control.amp(task);
-    }
+//    public final float amp(Task task) {
+//        return control.amp(task);
+//    }
 
     public float value(short[] effect) {
         return control.value(effect);

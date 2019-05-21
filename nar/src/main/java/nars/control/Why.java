@@ -52,7 +52,10 @@ public class Why extends WhenInternal implements Comparable<Why> {
      * current scalar utility estimate for this cause's support of the current MetaGoal's.
      * may be positive or negative, and is in relation to other cause's values
      */
-    private volatile float value = 0;
+    public volatile float value = 0;
+
+    /** an effective priority value */
+    public volatile float pri = 0;
 
     protected Why(short id) {
         this(id, null);
@@ -68,9 +71,26 @@ public class Why extends WhenInternal implements Comparable<Why> {
     }
 
     public float value() {
+        //return value;
+        return pri;
+    }
+    public float valueRaw() {
         return value;
     }
 
+
+    /** set NaN if no value actually accumulated during the last cycle */
+    public void setValue(float value) {
+        this.value = value;
+    }
+
+    /**
+     * value may be in any range (not normalized); 0 is neutral
+     */
+    public void setPri(float p) {
+        //assert(Float.isFinite(nextValue));
+        this.pri = p;
+    }
     /**
      * 0..+1
      */
@@ -82,16 +102,9 @@ public class Why extends WhenInternal implements Comparable<Why> {
      * 0..+2
      */
     private float gain() {
-        return Util.tanhFast(value) + 1f;
+        return Util.tanhFast(value()) + 1f;
     }
 
-    /**
-     * value may be in any range (not normalized); 0 is neutral
-     */
-    public void setValue(float nextValue) {
-        //assert(Float.isFinite(nextValue));
-        value = nextValue;
-    }
 
     @Override
     public Term term() {

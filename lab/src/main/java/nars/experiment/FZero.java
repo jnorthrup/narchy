@@ -110,7 +110,7 @@ public class FZero extends GameX {
         //        {
             int nx = 4;
             AutoclassifiedBitmap camAE = new AutoclassifiedBitmap(
-                    $.p($.the("cam"), id), vision, nx, nx, (subX, subY) -> {
+                    $.inh(id,$.the("cam")), vision, nx, nx, (subX, subY) -> {
                 return new float[]{/*cc.X, cc.Y*/};
             }, 8, this);
             camAE.setResolution(0.25f);

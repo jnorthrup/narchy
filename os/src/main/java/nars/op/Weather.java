@@ -110,6 +110,8 @@ public class Weather extends NARPart {
 
     private void updateWeatherGov() {
 
+        //TODO https://api.weather.gov/points/39.7456,-97.0892
+
         String url =
                 "https://marine.weather.gov/MapClick.php?lat=" +
                         lonLat.y + "&lon=" + lonLat.x +

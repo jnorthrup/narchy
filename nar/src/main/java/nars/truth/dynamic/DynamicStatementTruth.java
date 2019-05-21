@@ -15,9 +15,9 @@ import nars.term.util.conj.ConjBuilder;
 import nars.term.util.conj.ConjLazy;
 import nars.time.Tense;
 
-import static nars.Op.IMPL;
-import static nars.Op.NEG;
+import static nars.Op.*;
 import static nars.term.atom.Bool.Null;
+import static nars.term.atom.Bool.True;
 import static nars.time.Tense.*;
 
 public class DynamicStatementTruth {
@@ -147,7 +147,6 @@ public class DynamicStatementTruth {
                 if (superSect.op() == NEG) {
                         negOuter = true;
                         superSect = superSect.unneg();
-
                 }
 
 
@@ -161,21 +160,48 @@ public class DynamicStatementTruth {
                         //new Conj(d.size());
                         new ConjLazy(d.size());
 
+                Term constantCondition = null;
                 for (int i = 0, componentsSize = d.size(); i < componentsSize; i++) {
                     TaskRegion x = d.get(i);
                     Term xx = ((Task) x).term();
-
-                    Term xxu = xx.unneg();
-                    int tdt = xxu.dt();
-                    long tWhen = (tdt == DTERNAL || tdt == XTERNAL) ? ETERNAL :
-                            (subjOrPred ? (-tdt) : (+tdt));
+                    if (xx.op()==IMPL) {
 
 
-                    if (!c.add(tWhen, xx.sub(subjOrPred ? 0 : 1).negIf(!d.componentPolarity.get(i) ^ union)))
-                        return null;
+                        int tdt = xx.dt();
+
+                        if (tdt == XTERNAL)
+                            throw new TermException("xternal in dynamic impl reconstruction", xx);
+
+                        if (tdt == DTERNAL)
+                            tdt = 0;
+                        long tWhen = (subjOrPred ? (-tdt) : (+tdt));
+
+                        if (xx.subs() != 2)
+                            return null; //something invalid happened
+
+                        if (!c.add(tWhen, xx.sub(subjOrPred ? 0 : 1).negIf(!d.componentPolarity.get(i) ^ union)))
+                            return null;
+                    } else {
+                        //conjoin any constant conditions (which may precipitate from reductions)
+
+
+                        if (constantCondition != null)
+                            constantCondition = xx;
+                        else
+                            constantCondition = CONJ.the(constantCondition, xx);
+
+                        if (constantCondition == True)
+                            constantCondition = null;
+
+                        if (!xx.op().eventable || constantCondition == Null)
+                            return null;
+                    }
                 }
 
                 sect = c.term();
+
+                if (constantCondition!=null)
+                    sect = CONJ.the(constantCondition, sect);
 
                 if (sect == Null)
                     return null; //allow non-Null Bool's?
@@ -230,7 +256,7 @@ public class DynamicStatementTruth {
 
 
             Term decomposed = stmtCommon(!subjOrPred, superterm);
-            if (decomposed.unneg().op()!=Op.CONJ) {
+            if (decomposed.unneg().op()!= CONJ) {
                 //Image normalize
                 superterm = (Compound) Image.imageNormalize(superterm);
                 decomposed = stmtCommon(!subjOrPred, superterm);

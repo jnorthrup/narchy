@@ -202,12 +202,16 @@ class ImplicationNetworkTest {
 
         BeliefTable aBeliefs = n.concept(a).beliefs();
         aBeliefs.print();
-        
 
-        Truth bBelief = n.concept(b).beliefs().truth(ETERNAL, n);
+        {
+            BeliefTable bBeliefs = n.concept(b).beliefs();
+            bBeliefs.print();
+            Truth bBelief = bBeliefs.truth(ETERNAL, n);
+            assertEquals("%0.0;.81%", bBelief.toString());
+        }
+
         Truth cBelief = n.concept(c).beliefs().truth(ETERNAL, n);
 
-        assertEquals("%0.0;.81%" ,bBelief.toString());
         assertEquals("%1.0;.73%" ,cBelief.toString());
     }
 

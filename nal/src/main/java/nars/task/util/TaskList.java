@@ -22,6 +22,10 @@ public class TaskList extends FasterList<Task> implements TaskRegion {
         super(0, new Task[initialCap]);
     }
 
+    public TaskList(Task[] t, int n) {
+        super(n, t);
+    }
+
     public TaskList(Collection<Task> t) {
         super(0, new Task[t.size()]); t.forEach(this::addFast);
     }

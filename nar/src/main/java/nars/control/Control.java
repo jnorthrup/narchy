@@ -69,7 +69,7 @@ import java.util.Arrays;
             PriMap.newMap(false)
             //new ConcurrentFastIteratingHashMap<>(new Node[0])
     );
-    private final PriNode root = PriNode.mutable("root", 1);
+    private final PriNode root = PriNode.constant("root", 1);
     private final NodeGraph.MutableNode<PriNode,Object> rootNode = graph.addNode(root);
 
 
@@ -134,7 +134,7 @@ import java.util.Arrays;
                 //double cyclesUsed = ((double) tUsed) / cycleIdealNS;
                 //vr = (float) (v / (1 + cyclesUsed));
 
-                vr = v > Float.MIN_NORMAL ? (float) (v / ((1.0 + tUsed)/1.0E9)) : 0;
+                vr = (float) (v / ((1.0 + tUsed)/1.0E9));
                 assert (vr == vr);
             }
 

@@ -1068,6 +1068,11 @@ public enum Util {
         float[] minmax = minmax(x);
         return normalize(x, minmax[0], minmax[1]);
     }
+    public static float[] normalizeMargin(float lowerPct, float upperPct, float[] x) {
+        float[] minmax = minmax(x);
+        float range = minmax[1] - minmax[0];
+        return normalize(x, minmax[0] - lowerPct*range, minmax[1] + upperPct*range);
+    }
 
     public static float[] normalize(float[] x, float min, float max) {
         int n = x.length;
@@ -2152,32 +2157,32 @@ public enum Util {
         return map(num, build, null);
     }
 
-    /**
-     * builds a MarginMax weight array, which can be applied in a Roulette decision
-     * a lower margin > 0 controls the amount of exploration while values
-     * closer to zero prefer exploitation of provided probabilities
-     */
-    @Paper
-    public static float[] marginMax(int num, IntToFloatFunction build, float lower, float upper) {
-        float[] minmax = {Float.POSITIVE_INFINITY, Float.NEGATIVE_INFINITY};
-
-        float[] w = Util.map(num, i -> {
-            float v = build.valueOf(i);
-            if (v < minmax[0]) minmax[0] = v;
-            if (v > minmax[1]) minmax[1] = v;
-            return v;
-        });
-
-        if (Util.equals(minmax[0], minmax[1], Float.MIN_NORMAL * 2)) {
-            Arrays.fill(w, 0.5f);
-        } else {
-
-
-            Util.normalize(w, minmax[0], minmax[1]);
-            Util.normalize(w, 0 - lower, 1 + upper);
-        }
-        return w;
-    }
+//    /**
+//     * builds a MarginMax weight array, which can be applied in a Roulette decision
+//     * a lower margin > 0 controls the amount of exploration while values
+//     * closer to zero prefer exploitation of provided probabilities
+//     */
+//    @Paper
+//    public static float[] marginMax(int num, IntToFloatFunction build, float lower, float upper) {
+//        float[] minmax = {Float.POSITIVE_INFINITY, Float.NEGATIVE_INFINITY};
+//
+//        float[] w = Util.map(num, i -> {
+//            float v = build.valueOf(i);
+//            if (v < minmax[0]) minmax[0] = v;
+//            if (v > minmax[1]) minmax[1] = v;
+//            return v;
+//        });
+//
+//        if (Util.equals(minmax[0], minmax[1], Float.MIN_NORMAL * 2)) {
+//            Arrays.fill(w, 0.5f);
+//        } else {
+//
+//
+//            Util.normalize(w, minmax[0], minmax[1]);
+//            Util.normalize(w, 0 - lower, 1 + upper);
+//        }
+//        return w;
+//    }
 
 
     public static float softmax(float x, float temp) {

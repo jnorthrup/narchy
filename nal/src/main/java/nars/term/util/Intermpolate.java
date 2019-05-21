@@ -11,6 +11,7 @@ import nars.term.Term;
 import nars.time.Tense;
 
 import static nars.Op.CONJ;
+import static nars.Op.NEG;
 import static nars.term.atom.Bool.Null;
 import static nars.time.Tense.DTERNAL;
 import static nars.time.Tense.XTERNAL;
@@ -48,6 +49,8 @@ public enum Intermpolate {;
             return Null;
 
         int dt = ao.temporal ? chooseDT(a, b, aProp, nar) : DTERNAL;
+        if (dt == XTERNAL)
+            return Null;
 
         if (subsEqual) {
             return a.dt(dt);
@@ -97,6 +100,7 @@ public enum Intermpolate {;
 //        }
 //    }
 
+    /** if returns XTERNAL, it is not possible */
     static int chooseDT(Term a, Term b, float aProp, NAL nar) {
         return chooseDT(a.dt(), b.dt(), aProp, nar);
     }
@@ -104,22 +108,21 @@ public enum Intermpolate {;
     public static int chooseDT(int adt, int bdt, float aProp, NAL nar) {
         int dt;
 
-        if (adt == DTERNAL) adt = 0;
-        if (bdt == DTERNAL) bdt = 0;
+        if (adt == DTERNAL) adt = 0; if (bdt == DTERNAL) bdt = 0; //HACK
 
         if (adt == bdt) {
             dt = adt;
         } else if (adt == XTERNAL || bdt == XTERNAL) {
 
-            dt = adt == XTERNAL ? bdt : adt;
+            dt = adt == XTERNAL ? bdt : adt; //the other one
             //dt = choose(adt, bdt, aProp);
 
-        } else if (adt == DTERNAL || bdt == DTERNAL) {
-
-            dt = DTERNAL;
-            //dt = adt == DTERNAL ? bdt : adt;
-            //dt = choose(adt, bdt, aProp, nar.random());
-
+//        } else if (adt == DTERNAL || bdt == DTERNAL) {
+//
+//            dt = 0;
+//            //dt = adt == DTERNAL ? bdt : adt;
+//            //dt = choose(adt, bdt, aProp, nar.random());
+//
         } else {
             dt = merge(adt, bdt, aProp, nar);
         }
@@ -141,8 +144,9 @@ public enum Intermpolate {;
         if (ratio <= nar.intermpolationRangeLimit.floatValue()) {
             return ab;
         } else {
-            //discard temporal information by resorting to eternity
-            return DTERNAL;
+            //invalid
+            return XTERNAL;
+            //discard temporal information//return DTERNAL;
         }
     }
 
@@ -170,6 +174,11 @@ public enum Intermpolate {;
     private static float dtDiff(Term a, Term b, int depth) {
         if (a.equals(b))
             return 0f;
+        if (a.op()==NEG && b.op()==NEG) {
+            a = a.unneg();
+            b = b.unneg();
+        }
+
 
         if (!(a instanceof Compound) && !(b instanceof Compound) || !a.equalsRoot(b))
             return Float.POSITIVE_INFINITY;
@@ -221,23 +230,20 @@ public enum Intermpolate {;
 
         float dDT;
         int adt = a.dt(), bdt = b.dt();
+
+        if (adt == DTERNAL) adt = 0; if (bdt == DTERNAL) bdt = 0; //HACK
+
         if (adt != bdt) {
             if (adt == XTERNAL || bdt == XTERNAL) {
                 //dDT = 0.25f; //undercut the DTERNAL case
                 dDT = ScalarValue.EPSILONcoarse;
             } else {
 
-                boolean ad = adt == DTERNAL, bd = bdt == DTERNAL;
-                if (!ad && !bd) {
-                    float range = 1 + Math.abs(adt) + Math.abs(bdt);
-                    if (range <= 0)
-                        throw new WTF();
-                    dDT = Math.abs(adt - bdt) / (range);
-                } else {
-                    //dDT = 0.5f; //one is dternal the other is not, record at least some difference (half time unit)
-                    dDT = ScalarValue.EPSILONcoarse * 2;
-                }
 
+                float range = 1 + Math.abs(adt) + Math.abs(bdt);
+                if (range <= 0)
+                    throw new WTF();
+                dDT = Math.abs(adt - bdt) / (range);
             }
 
         } else {

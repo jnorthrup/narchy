@@ -185,7 +185,7 @@ public class DynTaskify extends TaskList {
             }
         }
 
-        return Answer.merge(this, term1, t, ()->stamp(nar::random), beliefOrGoal, s, e, nar);
+        return Answer.merge(this, term1, t, stamp(nar.random()), beliefOrGoal, s, e, nar);
     }
 
 
@@ -333,22 +333,22 @@ public class DynTaskify extends TaskList {
 
 
 
-    private long[] stamp(Supplier<Random> rng) {
+    private Supplier<long[]> stamp(Random rng) {
         if (evi == null) {
-
             switch(size) {
                 case 1:
-                    return get(0).stamp();
+                    return get(0)::stamp;
                 case 2:
-                    //lazy calculated stamp
-                    long[] a = get(0).stamp(), b = get(1).stamp();
-                    return Stamp.sample(NAL.STAMP_CAPACITY, Stamp.toSet(a.length + b.length, a, b), rng.get());
+                    return ()-> {
+                        long[] a = get(0).stamp(), b = get(1).stamp();
+                        return Stamp.sample(NAL.STAMP_CAPACITY, Stamp.toSet(a.length + b.length, a, b), rng);
+                    };
                 case 0:
                 default:
                     throw new UnsupportedOperationException();
             }
         } else {
-            return Stamp.sample(NAL.STAMP_CAPACITY, this.evi, rng.get());
+            return ()->Stamp.sample(NAL.STAMP_CAPACITY, this.evi, rng);
         }
     }
 

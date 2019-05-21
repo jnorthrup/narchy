@@ -164,7 +164,7 @@ public class Occurrify extends TimeGraph {
 
             if (!DerivationFailure.failure(x, d.concPunc)) {
                 d.nar.emotion.deriveFailTemporal.increment();
-                Taskify.spam(d, NAL.derive.TTL_COST_DERIVE_TASK_FAIL);
+                t.spam(d, NAL.derive.TTL_COST_DERIVE_TASK_FAIL);
                 return;
             }
         }
@@ -314,20 +314,20 @@ public class Occurrify extends TimeGraph {
         this.decomposeEvents = decomposeEvents;
 
         if (taskStart == ETERNAL && (beliefStart != TIMELESS && beliefStart != ETERNAL)) {
-            //taskStart = taskEnd = TIMELESS;
-            //taskStart = taskEnd = d.time();
 
-//            if (time.beliefProjection()==BeliefProjection.Task) {
+            if (time.beliefProjection()==BeliefProjection.Task) {
+                //taskStart = taskEnd = TIMELESS;
+
 //                //eternal task projected to virtual present moment
-//                long now = d.time();
-//                int dur = d.dur();
-//                taskStart = now - dur / 2;
-//                taskEnd = now + dur / 2;
-//            } else {
+                long now = d.time();
+                int dur = Math.max(d.dur(), Tense.occToDT(beliefEnd - beliefStart));
+                taskStart = now - dur / 2;
+                taskEnd = now + dur / 2;
+            } else {
                 //eternal task projected to belief's time
                 taskStart = beliefStart;
                 taskEnd = beliefEnd;
-//            }
+            }
 
         } else if (beliefStart == ETERNAL && taskStart!=ETERNAL) {
             beliefStart = taskStart;

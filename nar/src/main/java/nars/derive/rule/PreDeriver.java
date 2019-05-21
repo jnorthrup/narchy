@@ -2,11 +2,13 @@ package nars.derive.rule;
 
 import jcog.memoize.Memoizers;
 import jcog.memoize.byt.ByteHijackMemoize;
+import jcog.util.ArrayUtil;
 import nars.concept.Concept;
 import nars.derive.model.Derivation;
 import nars.derive.model.PreDerivation;
 import nars.derive.premise.PremiseKey;
 import nars.term.util.builder.InterningTermBuilder;
+import nars.unify.Unify;
 
 import java.util.function.Function;
 
@@ -14,20 +16,27 @@ import static jcog.memoize.Memoizers.DEFAULT_HIJACK_REPROBES;
 
 /** determines the valid conclusions of a particular Pre-derivation.
  * this is returned as a short[] of conclusions id's. */
-@FunctionalInterface public interface DerivationRunner extends Function<PreDerivation,short[]> {
+@FunctionalInterface public interface PreDeriver extends Function<PreDerivation,short[]> {
 
     /** memory-less, evaluated exhaustively each */
-    DerivationRunner DIRECT_DERIVATION_RUNNER = DeriverRules::what;
+    PreDeriver DIRECT_DERIVATION_RUNNER = PreDeriver::what;
+
+    static short[] what(Unify p) {
+        Derivation d = (Derivation)p;
+        d.canCollector.clear();
+        d.deriver.rules.what.test(d);
+        return d.canCollector.isEmpty() ? ArrayUtil.EMPTY_SHORT_ARRAY : d.canCollector.toArray();
+    }
 
 
-    final class CentralMemoizer implements DerivationRunner {
+    final class CentralMemoizer implements PreDeriver {
 
         final ByteHijackMemoize<PremiseKey, short[]> whats;
 
         CentralMemoizer() {
             whats = Memoizers.the.memoizeByte(this + "_what",
                     Memoizers.DEFAULT_MEMOIZE_CAPACITY*2,
-                    bd-> DeriverRules.what(bd.x));
+                    bd-> what(bd.x));
         }
 
         @Override
@@ -35,7 +44,7 @@ import static jcog.memoize.Memoizers.DEFAULT_HIJACK_REPROBES;
             if (intern(d)) {
                 return whats.apply(new PremiseKey(d));
             } else {
-                return DeriverRules.what(d);
+                return what(d);
             }
         }
 
@@ -50,7 +59,7 @@ import static jcog.memoize.Memoizers.DEFAULT_HIJACK_REPROBES;
 
     /** experimental: caches the memoizations in Concept meta maps.
      *  this is likely wasteful even though it attempts to use Soft ref's */
-    DerivationRunner ConceptMetaMemoizer = preDerivation -> {
+    PreDeriver ConceptMetaMemoizer = preDerivation -> {
         Derivation d = (Derivation) preDerivation;
 
 
@@ -64,7 +73,7 @@ import static jcog.memoize.Memoizers.DEFAULT_HIJACK_REPROBES;
 
                     int capacity = 512;
 
-                    return new ByteHijackMemoize<>(k-> DeriverRules.what(k.x),
+                    return new ByteHijackMemoize<>(k-> what(k.x),
                             capacity,
                             DEFAULT_HIJACK_REPROBES, false);
                 }
@@ -74,7 +83,7 @@ import static jcog.memoize.Memoizers.DEFAULT_HIJACK_REPROBES;
         }
 
         //failsafe:
-        return DeriverRules.what(preDerivation);
+        return what(preDerivation);
     };
 
 }

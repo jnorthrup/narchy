@@ -1,7 +1,6 @@
 package nars.derive.rule;
 
 import jcog.Util;
-import jcog.data.bit.MetalBitSet;
 import jcog.data.list.FasterList;
 import jcog.memoize.CaffeineMemoize;
 import jcog.tree.perfect.TrieNode;
@@ -49,14 +48,14 @@ public enum PremiseRuleCompiler {
          * */
         final List<Pair<PREDICATE<Derivation>[], DeriveAction>> pairs = new FasterList<>(n);
 
-        int o = Op.unique();
-        MetalBitSet mustAtomize = MetalBitSet.bits(o);
+//        int o = Op.unique();
+//        MetalBitSet mustAtomize = MetalBitSet.bits(o);
         r.forEach(rule -> {
-            mustAtomize.setAll(rule.taskPattern.structure(), o);
-            mustAtomize.setAll(rule.beliefPattern.structure(), o);
+//            mustAtomize.setAll(rule.taskPattern.structure(), o);
+//            mustAtomize.setAll(rule.beliefPattern.structure(), o);
             pairs.add(rule.rule);
         });
-        int mustAtomizableStructure = ((MetalBitSet.IntBitSet)mustAtomize).intValue() & ((1 << (o+1))-1);
+//        int mustAtomizableStructure = ((MetalBitSet.IntBitSet)mustAtomize).intValue() & ((1 << (o+1))-1);
         //int nonAtomizableStructure = (~((MetalBitSet.IntBitSet)mustAtomize).intValue()) & ((1 << (o+1))-1);
 
         final TermPerfectTrie<PREDICATE<Derivation>, DeriveAction> path = new TermPerfectTrie<>();
@@ -89,10 +88,10 @@ public enum PremiseRuleCompiler {
         return new DeriverRules(
                 PremiseRuleCompiler.compile(path),
                 rootBranches,
-                mustAtomizableStructure,
+//                mustAtomizableStructure,
 
                 //DeriverPlanner.DirectDeriverPlanner
-                new DerivationRunner.CentralMemoizer()
+                new PreDeriver.CentralMemoizer()
                 //DeriverPlanner.ConceptMetaMemoizer
         );
     }

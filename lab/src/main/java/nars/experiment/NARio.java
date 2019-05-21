@@ -161,16 +161,18 @@ public class NARio extends GameX {
         //window(new Gridding(new VectorSensorView(vx, this), new VectorSensorView(vy, this)), 100, 50);
 
 
-        Reward right = rewardNormalized("goRight", -1, +1, () -> {
+        Reward right = reward("goRight", 1, () -> {
 
             float reward;
             float curX = theMario != null && theMario.deathTime <= 0 ? theMario.x : Float.NaN;
-            if (lastX == lastX && lastX < curX) {
+            int thresh = 1;
+            if ((curX == curX && lastX == lastX) && lastX < curX - thresh) {
                 reward = //unitize(Math.max(0, (curX - lastX)) / 16f * MoveRight.floatValue());
                         1;
             } else {
                 reward =
-                        -1;
+                        0;
+                        //-1;
                         //Float.NaN;
             }
             lastX = curX;

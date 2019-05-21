@@ -45,8 +45,8 @@ public class BeliefTables extends FasterList<BeliefTable> implements BeliefTable
 
             t.match(a);
 
-            if (!a.active())
-                return;
+//            if (!a.active())
+//                return;
         }
     }
 

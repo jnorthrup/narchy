@@ -124,9 +124,10 @@ public class RankedN<X> extends TopN<X> {
         int s = this.size;
         if (s > 0) {
             Arrays.fill(items, 0, s, null);
+            super.clear();
             //Arrays.fill(ranked, Float.NEGATIVE_INFINITY);
         }
-        super.clear();
+        min = Float.NEGATIVE_INFINITY;
     }
 
 

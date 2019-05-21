@@ -392,7 +392,7 @@ class NAL8EternalMixTest extends NALTest {
     @Test
     void subgoal_1_abd() {
 
-        test.termVolMax(19);
+        test.termVolMax(24);
         test.input("opened:{t001}. :|:");
         test.input("((hold(SELF,{t002}) &&+5 ( at(SELF,{t001}) &&+5 open({t001}))) ==>+5 opened:{t001}).");
 
@@ -405,7 +405,7 @@ class NAL8EternalMixTest extends NALTest {
     @Test
     void temporal_deduction_2() {
 
-        test.termVolMax(17);
+        test.termVolMax(24);
         TestNAR tester = test;
         tester.input("((hold(SELF,{t002}) &&+5 (at(SELF,{t001}) &&+5 open({t001}))) ==>+5 opened:{t001}).");
         tester.inputAt(2, "hold(SELF,{t002}). | ");

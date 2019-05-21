@@ -2,9 +2,12 @@ package nars.agent;
 
 import jcog.TODO;
 import jcog.Util;
+import jcog.data.graph.MapNodeGraph;
+import jcog.data.graph.Node;
 import jcog.math.FloatRange;
 import nars.$;
 import nars.NAR;
+import nars.attention.PriNode;
 import nars.attention.TaskLinkWhat;
 import nars.attention.What;
 import nars.concept.action.GoalActionConcept;
@@ -87,6 +90,11 @@ public class MetaAgent extends Game {
         senseNumberDifference($.inh(SELF, $$("busy")), n.emotion.busyVol::asFloat);
         senseNumberDifference($.inh(SELF, $$("deriveTask")), n.emotion.deriveTask::get);
 
+//        float maxPri = Math.max(n.beliefPriDefault.amp.floatValue(), n.goalPriDefault.amp.floatValue());
+//        float dynamic = 10; //ratio max to min pri
+//        actionCtl($.inh(SELF, beliefPri), n.beliefPriDefault.amp.subRange(maxPri/dynamic, maxPri));
+//        actionCtl($.inh(SELF, goalPri), n.goalPriDefault.amp.subRange(maxPri/dynamic, maxPri));
+
 //        actionCtl($.inh(SELF, exact), new FloatRange(0.5f, 0, 1) {
 //            @Override
 //            public void set(float value) {
@@ -109,7 +117,7 @@ public class MetaAgent extends Game {
 
     @Override
     protected void sense() {
-        ((TaskLinkWhat)what()).dur.set(durPhysical());
+        ((TaskLinkWhat)what()).dur.set(durPhysical()*2 /* nyquist */);
         super.sense();
     }
 
@@ -136,7 +144,12 @@ public class MetaAgent extends Game {
         //this.what().accept(new EternalTask($.inh(aid,this.id), BELIEF, $.t(1f, 0.9f), nar));
 
 
+        actionCtlPriNodeRecursive(g.attnSensor, g.nar.control.graph);
+        actionCtlPriNode(g.attnAction); //non-recursive for now
+
+
         actionCtl($.inh(gid, forget), ((TaskLinkWhat) w).links.decay);
+
         //actionCtl($.inh(gid, amplify), ((TaskLinkWhat) w).links.amp);
 
 
@@ -180,7 +193,7 @@ public class MetaAgent extends Game {
         actionCtl($.inh(gid, duration), durRange);
 
         if (w.in instanceof PriBuffer.BagTaskBuffer)
-            actionCtl($.inh(gid, input), ((PriBuffer.BagTaskBuffer) (w.in)).valve);
+            actionCtl($.inh(gid, input), ((PriBuffer.BagTaskBuffer) (w.in)).valve.subRange(0.1f, 1f));
 
 
 //        this.dur = actionUnipolar($.inh(id, duration), (x) -> {
@@ -273,6 +286,18 @@ public class MetaAgent extends Game {
 
 
 //        Reward enableReward = reward("enable", () -> enabled.getOpaque() ? +1 : 0f);
+    }
+
+    private void actionCtlPriNodeRecursive(PriNode s, MapNodeGraph<PriNode,Object> g) {
+        actionCtlPriNode(s);
+        s.neighbors(g, false,true).forEach((Node<PriNode,Object> x) -> {
+            PriNode xid = x.id();
+            actionCtlPriNode(xid);//, $.p(base, s.get()));
+        });
+    }
+
+    private void actionCtlPriNode(PriNode attnSensor) {
+        actionCtl(attnSensor.get(), attnSensor.amp);
     }
 
     void actionCtl(Term t, FloatRange r) {

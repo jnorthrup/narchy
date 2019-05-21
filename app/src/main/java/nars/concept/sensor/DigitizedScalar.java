@@ -150,10 +150,11 @@ public class DigitizedScalar extends DemultiplexedScalarSensor {
     }
 
     public DigitizedScalar(FloatSupplier input, ScalarEncoder freqer, NAR nar, Term... states) {
-        super(input, $.func(DigitizedScalar.class.getSimpleName(),
-                SETe.the(states)
-                /*,$.quote(Util.toString(input))*/, $.the(freqer.getClass().getSimpleName())
-                    ),
+        super(input, //$.func(DigitizedScalar.class.getSimpleName(),
+                SETe.the(states) //TODO refine
+                ///*,$.quote(Util.toString(input))*/, $.the(freqer.getClass().getSimpleName())
+                 //   )
+                ,
             (prev, next) -> {
                 if (next < 0 || next > 1)
                     throw new OutOfRangeException(next, 0, 1);

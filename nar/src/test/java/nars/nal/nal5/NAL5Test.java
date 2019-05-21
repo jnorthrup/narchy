@@ -16,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class NAL5Test extends NALTest {
 
-    private final int cycles = 830;
+    private final int cycles = 1530;
 
     @Override
     protected NAR nar() {
@@ -536,7 +536,7 @@ public class NAL5Test extends NALTest {
     void conditional_abduction_viaMultiConditionalSyllogismSimple2() {
 
         test
-                .termVolMax(9).confMin(0.4f)
+                .termVolMax(7).confMin(0.4f)
                 .believe("((&&,x1,x2) ==> y)")
                 .believe("((&&,x1,x2,z) ==> y)")
                 .mustBelieve(cycles, "z", 1.00f, 0.45f);
@@ -664,7 +664,7 @@ public class NAL5Test extends NALTest {
 
     @Test
     void conditional_abduction() {
-        test.nar.termVolumeMax.set(6);
+        test.nar.termVolumeMax.set(5);
         test
                 .believe("((x&&y) ==> z)")
                 .believe("(a ==> y)", 0.9f, 0.9f)
@@ -673,7 +673,6 @@ public class NAL5Test extends NALTest {
 
     @Test
     void conditional_abduction2() {
-        test.nar.confMin.set(0.3);
         test.termVolMax(5);
         test
                 .believe("((x && y) ==> z)")

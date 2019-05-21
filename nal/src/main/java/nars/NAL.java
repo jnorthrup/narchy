@@ -230,13 +230,13 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
      */
     public final FloatRange intermpolationRangeLimit = new FloatRange(
             //0.5f
-            //1f
-            2f
+            1f
+            //2f
             , 0, 4);
 
     @Deprecated
     public final FloatRange questionForgetRate = new FloatRange(0.5f, 0, 1);
-    public final IntRange premiseUnifyTTL = new IntRange(8, 1, 32);
+    public final IntRange premiseUnifyTTL = new IntRange(16, 1, 32);
     public final IntRange deriveBranchTTL = new IntRange(4 * NAL.derive.TTL_MIN, NAL.derive.TTL_MIN, 64 * NAL.derive.TTL_MIN);
     /**
      * how many cycles above which to dither dt and occurrence time
@@ -248,7 +248,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
      * if this is exceeded it may indicate a recursively
      * malformed target due to a bug or unconstrained combinatorial explosion
      */
-    public final IntRange termVolumeMax = new IntRange(64, 0, 128 /*COMPOUND_VOLUME_MAX*/);
+    public final IntRange termVolumeMax = new IntRange(64, 0, 512 /*COMPOUND_VOLUME_MAX*/);
     /**
      * truth confidence threshold necessary to form tasks
      */
@@ -379,9 +379,9 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
         final double falloffDurs =
                 //0.5f;
                 //1;
-                //1.618f; //phi
+                1.618f; //phi
                 //2; //nyquist / horizon
-                4;
+                //4;
                 //dur;
                 //8;
                 //64;
@@ -651,7 +651,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
          * for NALTest's: extends the time all unit tests are allowed to run for.
          * normally be kept to 1 but for debugging this may be increased to find what tests need more time
          */
-        public static final float TIME_MULTIPLIER = 3f;
+        public static final float TIME_MULTIPLIER = 2f;
         /**
          * how precise unit test results must match expected values to pass
          */

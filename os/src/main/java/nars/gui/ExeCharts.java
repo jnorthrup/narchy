@@ -53,15 +53,15 @@ public class ExeCharts {
 
         int s = nar.control.why.size();
 
-        FloatRange gain = new FloatRange(1f, 0f, 5f);
+        FloatRange gain = new FloatRange(1f, 0f, 100f);
 
         BitmapMatrixView bmp = new BitmapMatrixView(i ->
-                Util.tanhFast(
+                //Util.tanhFast(
                     gain.floatValue() * nar.control.why.get(i).value()
-                ),
-                s, Draw::colorBipolar);
+                //)
+                , s, Draw::colorBipolar);
 
-        return Splitting.column(DurSurface.get(bmp, nar), 0.1f, new FloatSlider(gain, "Display Gain"));
+        return Splitting.column(DurSurface.get(bmp, nar), 0.05f, new FloatSlider(gain, "Display Gain"));
     }
 
     private static Surface metaGoalControls(NAR n) {

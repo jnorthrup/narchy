@@ -67,7 +67,7 @@ abstract public class DecompositionTest extends NALTest {
         void testDisjBeliefPos2() {
 
             test
-                    .termVolMax(9)
+                    .termVolMax(7)
                     .input("(||,a,b,c). %0.9;0.9%")
                     .input("--(||,a,b). %0.9;0.9%")
                     .mustBelieve(cycles, "c", 0.81f, 0.66f);
@@ -77,7 +77,7 @@ abstract public class DecompositionTest extends NALTest {
         void testDisjBeliefPosMix() {
 
             test
-                    .termVolMax(10)
+                    .termVolMax(7)
                     .input("(||,--a,b,c). %0.9;0.9%")
                     .input("--(||,--a,b). %0.9;0.9%")
                     .mustBelieve(cycles, "c", 0.81f, 0.66f);

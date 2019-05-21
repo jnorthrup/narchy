@@ -4,12 +4,11 @@
  */
 package nars.derive.premise;
 
-import nars.NAL;
-import nars.NAR;
-import nars.Op;
-import nars.Task;
+import jcog.signal.meter.FastCounter;
+import nars.*;
 import nars.concept.Concept;
 import nars.concept.TaskConcept;
+import nars.derive.Deriver;
 import nars.derive.model.Derivation;
 import nars.op.mental.AliasConcept;
 import nars.table.BeliefTable;
@@ -389,4 +388,33 @@ public class Premise implements Comparable<Premise> {
         return Integer.compare(System.identityHashCode(this), System.identityHashCode(premise));
     }
 
+    public void derive(Derivation d, int matchTTL, int deriveTTL) {
+
+        FastCounter result;
+
+        Emotion e = d.nar().emotion;
+
+        if (match(d, matchTTL)) {
+
+            Deriver D = d.deriver;
+
+            short[] can = D.what(d);
+
+            if (can.length > 0) {
+
+                D.rules.run(d, can, deriveTTL);
+
+
+                result = e.premiseFire;
+
+            } else {
+                result = e.premiseUnderivable;
+            }
+        } else {
+            result = e.premiseUnbudgetable;
+        }
+
+        result.increment();
+
+    }
 }

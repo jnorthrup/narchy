@@ -163,17 +163,21 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
                 return ((e == null) && needStamp) ? Stamp.toMutableSet(firstValid().task) : e;
             }
 
-            if (e == null) {
-                //optimized special case
-                if (activeRemain == 2 && !needStamp) {
-                    if (!Stamp.overlaps(get(0).task, get(1).task))
-                        break;
-                    else {
-                        //TODO prevent unnecessary MetalLongSet creation
-                    }
+            //optimized special case
+            //TODO generalize; prevent unnecessary MetalLongSet creation
+            if (activeRemain == 2 && minComponents >= 2 && !needStamp) {
+                if (!Stamp.overlaps(get(0).task, get(1).task))
+                    break;
+                else {
+                    //disable the weaker of the two
+                    removeFast(1);
+                    break;
                 }
+            }
+
+            if (e == null)
                 e = new MetalLongSet(NAL.STAMP_CAPACITY); //first iteration
-            } else
+            else
                 e.clear(); //2nd iteration, or after
 
 
@@ -200,8 +204,9 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
 
             ss = activeRemain;
 
-            //something must be removed:
-            double valueConflicting = eviSum(conflict::get);
+            //something must be removed
+            //sum the non-conflicting only if that subset is itself non-conflicting and thus revisable
+            double valueConflicting = unconflictedEviSum(conflict);
             double valueOK  = eviSum(conflict::getNot);
             if (valueOK > valueConflicting) {
                 if (ss - conflicts < minComponents)
@@ -209,17 +214,13 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
 
                 removeAll(conflict);
 
-                ss -= conflicts;
+                break; //done
             } else {
-                if (conflicts < minComponents)
-                    return null; //impossible: nothing else to remove
 
-                conflict.negate();
+                if (--ss < minComponents)
+                    return null;
 
-                //TODO this could be destructive, so try it only: disableAll(conflict)
-                removeAll(conflict);
-
-                ss = conflicts;
+                removeFast(0); //pop the top, and retry with remaining
             }
 
         }
@@ -230,6 +231,41 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
         }
 
         return e;
+    }
+
+    private double unconflictedEviSum(MetalBitSet x) {
+        int n = x.cardinality();
+        if (n < 2)
+            return eviSum(x);
+
+        if (n == 2) {
+            //optimized 2-ary case
+            int a = x.first(true);
+            int b = x.next(true, a, Integer.MAX_VALUE);
+            return Stamp.overlapsAny(
+                get(a).task.stamp(), get(b).task.stamp()
+            ) ? get(a).evi : eviSum(x);
+        }
+
+        double ee = 0;
+        MetalLongSet e = new MetalLongSet(NAL.STAMP_CAPACITY); //first iteration
+        for (int i = 0; i < size && n > 0; i++) {
+            if (x.get(i)) {
+                TaskComponent tti = get(i);
+                Task ti = tti.task;
+                long[] iis = ti.stamp();
+
+                if (i > 0 && Stamp.overlapsAny(e, iis)) {
+                    return ee;
+                } else {
+                    e.addAll(iis);
+                }
+                ee += tti.evi;
+                n--;
+            }
+        }
+
+        return eviSum(x); //all
     }
 
     private void removeAll(MetalBitSet x) {
@@ -286,6 +322,14 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
 //        }
 //    }
 
+
+    private double eviSum(MetalBitSet b) {
+        switch (b.cardinality()) {
+            case 0: return 0;
+            case 1: return get(b.first(true)).evi;
+            default: return eviSum(b::get);
+        }
+    }
 
     private double eviSum(IntPredicate each) {
         double e = 0;
@@ -526,14 +570,23 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
     }
 
     public Supplier<long[]> stamper(Supplier<Random> rng) {
-        @Nullable MetalLongSet s = Stamp.toMutableSet(
-                NAL.STAMP_CAPACITY,
-                i -> get(i).task.stamp(),
-                size()); //calculate stamp after filtering and after intermpolation filtering
-        if (s.size() > NAL.STAMP_CAPACITY) {
-            return ()->Stamp.sample(NAL.STAMP_CAPACITY, s, rng.get());
+        int ss = size();
+        if (ss == 1) {
+            return ()->get(0).task.stamp();
         } else {
-            return s::toSortedArray;
+            //TODO optimized 2-ary case?
+
+            return () -> {
+                @Nullable MetalLongSet s = Stamp.toMutableSet(
+                    NAL.STAMP_CAPACITY,
+                    i -> get(i).task.stamp(),
+                    ss); //calculate stamp after filtering and after intermpolation filtering
+                if (s.size() > NAL.STAMP_CAPACITY) {
+                    return Stamp.sample(NAL.STAMP_CAPACITY, s, rng.get());
+                } else {
+                    return s.toSortedArray();
+                }
+            };
         }
     }
 

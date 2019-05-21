@@ -335,7 +335,7 @@ abstract public class NAL6DecomposeTest extends NALTest {
         @Test
         void testDecomposeImplPredDisjBelief_pos_pos() {
             test
-                    .termVolMax(9)
+                    .termVolMax(7)
                     .believe("( x ==> (y || z))")
                     .mustBelieve(cycles, "( x ==> y )", 1f, 0.45f)
                     .mustBelieve(cycles, "( x ==> z )", 1f, 0.45f)

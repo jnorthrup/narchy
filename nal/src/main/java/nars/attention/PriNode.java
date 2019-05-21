@@ -17,7 +17,6 @@ public class PriNode extends PLink<Term> {
      * */
     public final FloatRange amp = new FloatRange(1f, 0.01f, 2f);
 
-    /** cached */
     @Deprecated transient private Node<PriNode, Object> _node;
 
     private int fanOut;
@@ -31,7 +30,7 @@ public class PriNode extends PLink<Term> {
         return id + " pri=" + pri();
     }
 
-    @Deprecated /* move to subclass */ public final float priComponent() {
+    @Deprecated /* move to subclass */ public float priComponent() {
         return priFraction() * pri();
     }
 
@@ -48,26 +47,28 @@ public class PriNode extends PLink<Term> {
 
     public void update(MapNodeGraph<PriNode,Object> graph) {
 
-        if (_node == null) {
-            _node = graph.node(this); //cache
-        }
-        fanOut = _node.edgeCount(false,true); //TODO cache
+        Node<PriNode, Object> node = node(graph);
+        fanOut = node.edgeCount(false,true); //TODO cache
 
-        final double[] factor = {this.amp.floatValue()};
+        final double[] pSum = {0};
 
-        if (_node.edgeCount(true,false) > 0) {
+        if (node.edgeCount(true,false) > 0) {
 
-            _node.nodes(true, false).forEach((Node<PriNode, Object> n) -> {
+            neighbors(graph, true,false).forEach((Node<PriNode, Object> n) -> {
                 PriNode nn = n.id();
                 float p = nn.priComponent();
                 if (p == p) {
-                    factor[0] *= p;
+                    pSum[0] += p;
                 }
             });
         }
 
-        float pri = (float) (factor[0]);
-        this.pri(pri);
+        float pri = (float) (pSum[0]);
+        this.pri(pri * amp.floatValue());
+    }
+
+    public Iterable<? extends Node<PriNode, Object>> neighbors(MapNodeGraph<PriNode,Object> graph, boolean in, boolean out) {
+        return node(graph).nodes(in, out);
     }
 
 //
@@ -101,6 +102,18 @@ public class PriNode extends PLink<Term> {
 
     public static PriNode mutable(String name, float initialValue) {
         return new Mutable(name, initialValue);
+    }
+    public static PriNode constant(String name, float value) {
+        return new Constant(name, value);
+    }
+
+    /** cached
+     * @param graph*/
+    public Node<PriNode, Object> node(MapNodeGraph<PriNode, Object> graph) {
+        if (_node == null) {
+            _node = graph.node(this); //cache
+        }
+        return _node;
     }
 
     private static class Mutable extends PriNode {
@@ -140,4 +153,22 @@ public class PriNode extends PLink<Term> {
 //        }
     }
 
+    private static class Constant extends Mutable {
+        private final float value;
+
+        public Constant(String name, float value) {
+            super(name, value);
+            this.value = value;
+        }
+
+        @Override
+        public float pri() {
+            return value;
+        }
+
+        @Override
+        public float priComponent() {
+            return value;
+        }
+    }
 }

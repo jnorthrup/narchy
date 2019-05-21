@@ -493,7 +493,7 @@ public final class Answer implements Timed {
     @Deprecated private TaskList taskList() {
         RankedN<Task> tasks = this.tasks;
         int t = tasks.size();
-        return t == 0 ? null : new TaskList(tasks, t);
+        return t == 0 ? null : new TaskList(tasks.itemsArray(), t);
     }
 
     /**

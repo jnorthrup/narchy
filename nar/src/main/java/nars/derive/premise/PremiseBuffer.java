@@ -3,7 +3,6 @@ package nars.derive.premise;
 import jcog.pri.PLink;
 import jcog.pri.PriReference;
 import jcog.pri.bag.Bag;
-import jcog.pri.bag.impl.PLinkArrayBag;
 import jcog.pri.bag.impl.hijack.PriLinkHijackBag;
 import jcog.pri.op.PriMerge;
 import nars.Task;
@@ -20,7 +19,7 @@ import java.io.Serializable;
  */
 public class PremiseBuffer implements Serializable {
 
-    static final int premiseBufferCapacity = 64;
+    static final int premiseBufferCapacity = 256;
 
     /** rate that priority from the novelty bag subtracts from potential premises.
      * may need to be divided by concurrency so that threads dont step on each other */
@@ -40,8 +39,8 @@ public class PremiseBuffer implements Serializable {
     public PremiseBuffer() {
 
         this.premise =
-                new PLinkArrayBag<>(PriMerge.max, premiseBufferCapacity);
-                //new PriLinkHijackBag<>(PriMerge.max, premiseBufferCapacity, 3);
+                //new PLinkArrayBag<>(PriMerge.max, premiseBufferCapacity);
+                new PriLinkHijackBag<>(PriMerge.max, premiseBufferCapacity, 3);
         this.premiseTried =
                 new PriLinkHijackBag<>(PriMerge.max, premiseBufferCapacity, 2);
     }
@@ -73,7 +72,7 @@ public class PremiseBuffer implements Serializable {
         if (existing!=null && existing!=pp)
             pp.priSub(existing.pri() * notNovelCost);
 
-        d.deriver.derive(P, d, matchTTL, deriveTTL);
+        P.derive(d, matchTTL, deriveTTL);
     }
 
     void hypothesize(TaskLink tasklink, Task task, int termlinksPerTaskLink, TaskLinks links, Derivation d) {

@@ -128,7 +128,7 @@ class DynamicImplTest extends AbstractDynamicTaskTest {
                 n.believe(y, yf, 0.9f);
 
                 assertTrue(((BeliefTables) n.conceptualizeDynamic(pt_p).beliefs()).tableFirst(DynamicTruthTable.class) != null);
-                ; //match first then concept(), tests if the match was enough to conceptualize
+                //match first then concept(), tests if the match was enough to conceptualize
 
                 Task task = n.answer(pt_p, BELIEF, 0);
                 assertNotNull(task);

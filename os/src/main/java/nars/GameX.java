@@ -2,6 +2,7 @@ package nars;
 
 import com.google.common.util.concurrent.AtomicDouble;
 import jcog.Util;
+import jcog.data.list.FasterList;
 import jcog.exe.Loop;
 import jcog.func.IntIntToObjectFunction;
 import jcog.learn.ql.HaiQae;
@@ -9,6 +10,7 @@ import jcog.math.FloatAveragedWindow;
 import jcog.signal.wave2d.Bitmap2D;
 import jcog.signal.wave2d.MonoBufImgBitmap2D;
 import jcog.signal.wave2d.ScaledBitmap2D;
+import jcog.util.ArrayUtil;
 import nars.agent.Game;
 import nars.agent.GameTime;
 import nars.agent.MetaAgent;
@@ -16,6 +18,7 @@ import nars.attention.TaskLinkWhat;
 import nars.concept.Concept;
 import nars.control.MetaGoal;
 import nars.control.NARPart;
+import nars.control.Why;
 import nars.derive.BatchDeriver;
 import nars.derive.Derivers;
 import nars.derive.rule.PremiseRuleSet;
@@ -46,6 +49,7 @@ import spacegraph.video.OrthoSurfaceGraph;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -96,7 +100,7 @@ abstract public class GameX extends Game {
     }
 
     public static NAR runRT(Function<NAR, Game> init, int threads, float narFPS) {
-        NAR n = baseNAR(narFPS, threads);
+        NAR n = baseNAR(narFPS/2 /* nyquist */, threads);
 
         Game g = init.apply(n);
 
@@ -309,6 +313,7 @@ abstract public class GameX extends Game {
 
         MetaAgent meta = new MetaAgent(false,8f, a);
         meta.what().pri(0.25f);
+        n.start(new SpaceGraphPart(() -> NARui.agent(meta), 500, 500));
 
 //        RLBooster metaBoost = new RLBooster(meta, (i,o)->new HaiQae(i, 10,o),
 //                8, 2,false);
@@ -380,10 +385,10 @@ abstract public class GameX extends Game {
         );
 
         n.confMin.set(0.01f);
-        n.termVolumeMax.set(34);
+        n.termVolumeMax.set(24);
 
-        n.beliefPriDefault.amp(0.05f);
-        n.goalPriDefault.amp(0.2f);
+        n.beliefPriDefault.amp(0.1f);
+        n.goalPriDefault.amp(0.1f);
         n.questionPriDefault.amp(0.01f);
         n.questPriDefault.amp(0.02f);
 
@@ -392,13 +397,14 @@ abstract public class GameX extends Game {
 //        n.questionPriDefault.set(0.01f);
 //        n.questPriDefault.set(0.01f);
 
-        n.beliefConfDefault.set(0.8f);
-        n.goalConfDefault.set(0.8f);
+        n.beliefConfDefault.set(0.9f);
+        n.goalConfDefault.set(0.9f);
 
-        n.emotion.want(MetaGoal.PerceiveCmplx, -0.0001f); //<- dont set negative unless sure there is some positive otherwise nothing happens
+        n.emotion.want(MetaGoal.Futile, -0.01f); //<- dont set negative unless sure there is some positive otherwise nothing happens
+        n.emotion.want(MetaGoal.PerceivePri, -0.0001f); //<- dont set negative unless sure there is some positive otherwise nothing happens
 
         n.emotion.want(MetaGoal.Believe, 0.01f);
-        n.emotion.want(MetaGoal.Desire, 0.75f);
+        n.emotion.want(MetaGoal.Desire, 0.5f);
 
         n.emotion.want(MetaGoal.Action, +1f);
 
@@ -551,26 +557,64 @@ abstract public class GameX extends Game {
     /** governor
      * TODO extract to class */
     private static void addGovernor(NAR n) {
-        int gHist = 16;
+        int gHist = 8;
+        float momentum = 0.75f;
         float explorationRate = 0.1f;
-        n.onDur((nn) -> {
-            MetaGoal.value(nn);
-            int numHow = nn.how.size();
-            nn.how.forEach(h -> {
-                FloatAveragedWindow g = (FloatAveragedWindow) h.governor;
-                if (g==null)
-                    h.governor = g = new FloatAveragedWindow(gHist, 0.5f, 0).mode(
-                            FloatAveragedWindow.Mode.Exponential
-                            //FloatAveragedWindow.Mode.Mean
-                    );
+        n.onDur(new Consumer<NAR>() {
 
-                float v = h.valueRateNormalized;
-                if (v != v) v = 0;
+            final Consumer<FasterList<Why>> reval = new Consumer<FasterList<Why>>() {
 
-                float vv = g.valueOf(v);
+                float[] f = ArrayUtil.EMPTY_FLOAT_ARRAY;
 
-                h.pri(Util.lerp(Util.clamp(vv, 0, 1), explorationRate / numHow, 1));
-            });
+                @Override
+                public void accept(FasterList<Why> whys) {
+                    int ww = whys.size();
+                    if (f.length != ww)
+                        f = new float[ww];
+                    int i = 0;
+                    for (Why w : whys) {
+                        float r = w.valueRaw();
+                        float v;
+                        if (r == r)
+                            f[i] = v = Util.lerp(momentum, r, f[i]);
+                        else
+                            v = f[i];
+
+                        w.setPri(valueToPri(v));
+                        i++;
+                    }
+
+                }
+
+                float valueToPri(float v) {
+                    return v;
+                    //return v * v * v;
+                }
+            };
+
+
+            @Override
+            public void accept(NAR nn) {
+                MetaGoal.value(nn, reval);
+
+                int numHow = nn.how.size();
+                nn.how.forEach(h -> {
+
+                    float v = h.valueRateNormalized;
+                    if (v != v) v = 0;
+
+                    float pri = Util.lerp(Util.clamp(v, 0, 1), explorationRate, 1);
+
+                    FloatAveragedWindow g = (FloatAveragedWindow) h.governor;
+                    if (g == null)
+                        h.governor = g = new FloatAveragedWindow(gHist, 1-momentum, 0).mode(
+                                FloatAveragedWindow.Mode.Exponential
+                                //FloatAveragedWindow.Mode.Mean
+                        );
+                    h.pri(g.valueOf(pri));
+                });
+                //            nn.how.forEach(h -> System.out.println(h + " "+ h.pri()));
+            }
         });
     }
 

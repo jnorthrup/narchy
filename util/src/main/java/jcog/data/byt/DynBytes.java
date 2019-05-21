@@ -148,7 +148,7 @@ public class DynBytes implements ByteArrayDataOutput, Appendable, AbstractBytes,
         this.len += len;
     }
 
-    private int ensureSized(int extra) {
+    protected int ensureSized(int extra) {
         byte[] x = this.bytes;
         int current = x.length;
         int p = this.len;

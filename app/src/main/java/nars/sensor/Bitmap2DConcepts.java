@@ -93,9 +93,6 @@ public class Bitmap2DConcepts<P extends Bitmap2D> implements Iterable<Signal> {
         return iter.iterator();
     }
 
-    public void update() {
-        src.updateBitmap();
-    }
 
     public Signal get(int i) {
         return iter.get(i);

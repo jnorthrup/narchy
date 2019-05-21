@@ -58,11 +58,8 @@ public enum Revision {;
         assert (tasks.length > 1);
 
         //quick 2-ary stamp pre-filter
-        //return Stamp.overlaps((Task) x, (Task) y) ? null : merge(nar, x, y);
-        if (tasks.length == 2) {
-            if (Stamp.overlapsAny(tasks[0].task(), tasks[1].task()))
-                return null;
-        }
+        if (tasks.length == 2 && Stamp.overlapsAny(tasks[0].task(), tasks[1].task()))
+            return null;
 
 
         long[] u = Tense.merge(dither ? nal.dtDither() : 0, tasks);

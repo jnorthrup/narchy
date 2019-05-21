@@ -16,16 +16,16 @@ import static java.lang.System.nanoTime;
 
 public class WorkerExec extends ThreadedExec {
 
-    private static final long subCycleMinNS = 400_000;
-    double granularity = 4;
+    private static final long subCycleMinNS = 1_000_000;
+    double granularity = 2;
 
     /**
      * value of 1 means it shares 1/N of the current work. >1 means it will take on more proportionally more-than-fair share of work, which might reduce jitter at expense of responsive
      */
     float workResponsibility =
             //1f;
-            1.5f;
-            //2f;
+            //1.5f;
+            2f;
 
     /**
      * process sub-timeslice divisor
@@ -104,7 +104,7 @@ public class WorkerExec extends ThreadedExec {
 
                 long now = nar.time();
 
-                subCycleMaxNS = (long) ((threadWorkTimePerCycle) / granularity);
+                subCycleMaxNS = Math.max(subCycleMinNS, (long) ((threadWorkTimePerCycle) / granularity));
 
                 int Hn = H.size();
                 if (Hn == 0) return;
