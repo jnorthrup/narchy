@@ -1,26 +1,37 @@
 package nars.agent.util;
 
+import com.google.common.collect.Streams;
 import jcog.Util;
 import jcog.data.list.FasterList;
 import jcog.func.IntIntToObjectFunction;
 import jcog.learn.Agent;
+import jcog.math.FloatNormalizer;
 import jcog.math.FloatRange;
+import jcog.pri.ScalarValue;
+import jcog.signal.tensor.ArrayTensor;
 import jcog.signal.tensor.TensorRing;
+import jcog.signal.tensor.WritableTensor;
 import nars.$;
 import nars.NAR;
 import nars.Task;
 import nars.agent.Game;
 import nars.attention.What;
+import nars.concept.Concept;
 import nars.concept.action.AgentAction;
+import nars.concept.sensor.GameLoop;
 import nars.control.channel.CauseChannel;
 import nars.task.signal.SignalTask;
 import nars.term.Term;
+import nars.term.Termed;
+import nars.time.Tense;
 import nars.truth.Truth;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
+import java.util.stream.Stream;
 
+import static java.util.stream.Collectors.toList;
 import static nars.Op.GOAL;
 
 /**
@@ -34,13 +45,13 @@ public class RLBooster  {
     public final Game env;
     public final Agent agent;
     public final FloatRange conf = new FloatRange(0.5f, 0f, 1f);
-    final float[] input;
+    public final float[] input;
     final int inD, outD;
     final AgentAction[] actions;
     private final CauseChannel<Task> in;
     private final List<Term> inputs;
     private final int actionDiscretization;
-    private final TensorRing history;
+    private final WritableTensor history;
 
     transient private float[] _in = null;
     public double lastReward = Float.NaN;
@@ -65,11 +76,15 @@ public class RLBooster  {
         this.env = g;
 
 
-        conf.set(Util.lerp(0f, 2 * g.nar().confMin.floatValue(), g.nar().confDefault(GOAL)));
+        conf.set(Util.lerp(conf.get() /* HACK */, 2 * g.nar().confMin.floatValue(), g.nar().confDefault(GOAL)));
 
-        List<Term> ii = $.newArrayList();
 
-        g.sensors.forEach(s -> s.components().forEach(t -> ii.add(t.term())));
+        boolean includeActions = true;
+        Stream<GameLoop> inputs =
+                Stream.concat(g.sensors.stream(), includeActions ? g.actions.stream() : Stream.empty());
+
+        List<Term> ii =
+            inputs.flatMap((GameLoop s) -> Streams.stream(s.components()) ).map(Termed::term).collect(toList());
         if (g.rewards.size() > 1)
             g.rewards.forEach(s -> s.forEach(t -> ii.add(t.term()))); //use individual rewards as sensors if > 1 reward
 
@@ -87,7 +102,7 @@ public class RLBooster  {
 
         in = g.nar().newChannel(this);
 
-        this.history = new TensorRing(inD, history);
+        this.history = history > 1 ? new TensorRing(inD, history) : new ArrayTensor(inD);
         this.agent = agent.apply(inD * history, outD);
 
         g.onFrame(()->accept(g.what()));
@@ -103,11 +118,16 @@ public class RLBooster  {
         NAR n = env.nar();
 
         for (Term s : inputs) {
-            Truth t = n.beliefTruth(s, start, end);
-            input[i++] = t!=null ? t.freq() : 0.5f;
+            Concept c = n.concept(s);
+            Truth t = c!=null ? c.beliefs().truth(start, end, Tense.occToDT((end-start)), n) : null;
+            input[i++] = t!=null ? t.freq() : valueMissing();
         }
 
         return input;
+    }
+
+    private float valueMissing() {
+        return 0.5f;
     }
 
     /** uniform [0,1] noise */
@@ -131,10 +151,13 @@ public class RLBooster  {
     }
 
 
+    final FloatNormalizer HAPPINESS = new FloatNormalizer();
+
     public void accept(What w) {
         NAR nar = env.nar();
 
-        double reward = (env.happiness() - 0.5)*2 /* polarize */;
+        double reward = HAPPINESS.valueOf(env.happiness() );
+        //System.out.println(reward);
         lastReward = reward;
 
 //        long start = env.last; //now() - dur/2;
@@ -150,33 +173,48 @@ public class RLBooster  {
 //        long end = now + dur/2;
 
 
-        int O = agent.act(feedback(env.prev, now), (float) reward,
-                _in = history.setSpin(input(start, end)).snapshot(_in) );
+        float[] ii = input(start, end);
+        _in = ii;
+        if (history instanceof TensorRing) {
+            ((TensorRing)history).setSpin(ii).snapshot(_in);
+        } else {
+            ((ArrayTensor)history).set(ii); //TODO just make ArrayTensor wrapping _in
+        }
+
+        int a = agent.act(feedback(env.prev, now), (float) (reward-0.5f)*2, _in);
 
         float OFFfreq =
-                0f;
-                //Float.NaN;
+                //0f;
+                Float.NaN;
         float ONfreq = 1f;
 
 
         float conf = this.conf.floatValue();
-        Truth off = OFFfreq == OFFfreq ? $.t(OFFfreq, conf) : null;
-        Truth on = $.t(ONfreq, conf);
+//        Truth off = OFFfreq == OFFfreq ? $.t(OFFfreq, conf) : null;
+//        long range = end-start;
+//        long nextStart = end;
+//        long nextEnd = nextStart + range;
+        long nextStart = start, nextEnd = end;
 
         List<Task> e = new FasterList(actions.length);
-        for (int o = 0; o < actions.length; o++) {
+        int aa = 0;
+        for (int o = 0; o < actions.length; o++ ) {
 
-            Truth t;
-            if (o == O) {
-                t = on;
-            } else {
-                t = off;
-            }
 
-            if (t !=null) {
-                Task tt = new SignalTask(actions[o].term(), GOAL, t, start, start, end, new long[] { nar.time.nextStamp() });
-                tt.pri(nar);
-                e.add(tt);
+            for (int d = 0; d < actionDiscretization; d++) {
+                if (aa++ != a) { //HACK
+                    continue;
+                }
+
+                float freq = (((float)d)/(actionDiscretization-1));
+                Truth t = $.t(freq, conf);
+
+
+                if (t != null) {
+                    Task tt = new SignalTask(actions[o].term(), GOAL, t, start, nextStart, nextEnd, new long[]{nar.time.nextStamp()});
+                    tt.pri(Math.max(ScalarValue.EPSILON, nar.priDefault(GOAL)));
+                    e.add(tt);
+                }
             }
         }
         in.acceptAll(e, w);

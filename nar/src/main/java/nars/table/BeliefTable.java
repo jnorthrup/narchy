@@ -36,7 +36,10 @@ public interface BeliefTable extends TaskTable {
         return truth(when, when, null, null, nar);
     }
     default Truth truth(long when, int dur, NAR nar) {
-        return truth(when, when, null, null, dur, nar);
+        return truth(when, when, dur, nar);
+    }
+    default Truth truth(long start, long end, int dur, NAR nar) {
+        return truth(start,end, null, null, dur, nar);
     }
 
     default Truth truth(long start, long end, NAR nar) {

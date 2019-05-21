@@ -14,6 +14,7 @@ import jcog.util.ArrayUtil;
 import nars.agent.Game;
 import nars.agent.GameTime;
 import nars.agent.MetaAgent;
+import nars.agent.util.RLBooster;
 import nars.attention.TaskLinkWhat;
 import nars.concept.Concept;
 import nars.control.MetaGoal;
@@ -312,15 +313,14 @@ abstract public class GameX extends Game {
     private static void initPlugins3(NAR n, Game a) {
 
         MetaAgent meta = new MetaAgent(false,8f, a);
-        meta.what().pri(0.25f);
+        meta.what().pri(0.1f);
         n.start(new SpaceGraphPart(() -> NARui.agent(meta), 500, 500));
 
-//        RLBooster metaBoost = new RLBooster(meta, (i,o)->new HaiQae(i, 10,o),
-//                8, 2,false);
-//
-////        meta.pri.amp.set(0.5f);
-////        window(NARui.agent(meta), 500, 500);
-//        SpaceGraph.surfaceWindow(NARui.rlbooster(metaBoost), 500, 500);
+        RLBooster metaBoost = new RLBooster(meta, (i, o)->new HaiQae(i, 32,o).alpha(0.04f),
+                2, 4,true);
+        meta.curiosity.rate.set(0);
+        SpaceGraph.window(NARui.rlbooster(metaBoost), 500, 500);
+
 
 
 //        window(AttentionUI.attentionGraph(n), 600, 600);

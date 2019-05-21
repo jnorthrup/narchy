@@ -194,5 +194,8 @@ public class HaiQ extends Agent {
 		return som.winnerx + (som.winnery * som.SomSize);
 	}*/
 
-
+    public HaiQ alpha(float a) {
+        this.Alpha.set(a);
+        return this;
+    }
 }

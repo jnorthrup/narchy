@@ -164,7 +164,7 @@ public class Game extends NARPart implements NSense, NAct, Timed {
     public final float happiness(int dur) {
         return (float) rewards.meanBy(rr -> {
             float r = rr.happiness(dur);
-            return r != r ? 0f : r;
+            return r != r ? 0.5f : r;
         });
     }
 
@@ -334,7 +334,7 @@ public class Game extends NARPart implements NSense, NAct, Timed {
     }
 
     public FloatSupplier normalize(FloatSupplier rewardFunc, float min, float max) {
-        return new FloatClamped(new FloatNormalized(rewardFunc, min, max, true), min, max);
+        return new FloatClamped(new FloatNormalized(rewardFunc, min, max, false), 0, 1);
     }
 
 //    @Deprecated

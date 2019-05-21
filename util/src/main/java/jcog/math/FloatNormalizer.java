@@ -3,19 +3,23 @@ package jcog.math;
 import jcog.Util;
 import org.eclipse.collections.api.block.function.primitive.FloatToFloatFunction;
 
-public class FloatNormalizer implements FloatToFloatFunction  {
-    /** precision threshold */
+public class FloatNormalizer implements FloatToFloatFunction {
+    /**
+     * precision threshold
+     */
     private static final float epsilon = Float.MIN_NORMAL;
     protected float min;
     protected float max;
-    /** relaxation rate: brings min and max closer to each other in proportion to the value. if == 0, disables */
-    private float relax = 0.01f;
+    /**
+     * relaxation rate: brings min and max closer to each other in proportion to the value. if == 0, disables
+     */
+    private float relax = 0.001f;
 
     public FloatNormalizer() {
-        this(Float.POSITIVE_INFINITY, Float.NEGATIVE_INFINITY);
+        this(0, 0);
     }
 
-    FloatNormalizer(float minStart, float maxStart) {
+    public FloatNormalizer(float minStart, float maxStart) {
         this.min = minStart;
         this.max = maxStart;
     }
@@ -30,7 +34,7 @@ public class FloatNormalizer implements FloatToFloatFunction  {
 
 
     public float valueOf(float raw) {
-        if (raw!=raw)
+        if (raw != raw)
             return Float.NaN;
 
         updateRange(raw);
@@ -39,11 +43,11 @@ public class FloatNormalizer implements FloatToFloatFunction  {
     }
 
     protected float normalize(float x, float min, float max) {
-        if (x!=x)
+        if (x != x)
             return Float.NaN;
 
         float r = max - min;
-        assert(r >= 0);
+        assert (r >= 0);
         if (r <= epsilon)
             return 0.5f;
         else
@@ -53,6 +57,7 @@ public class FloatNormalizer implements FloatToFloatFunction  {
     /**
      * decay rate = 1 means unaffected.  values less than 1 constantly
      * try to shrink the range to zero.
+     *
      * @param rate
      * @return
      */
@@ -64,11 +69,11 @@ public class FloatNormalizer implements FloatToFloatFunction  {
     FloatNormalizer updateRange(float raw) {
         if (relax > 0) {
             float range = max - min;
-            if (range > epsilon*2) {
-                float mid = (max+min)/2;
-                float rangeSensitized = Util.lerp(relax, range, epsilon*2); //shrunk
-                this.min = mid - rangeSensitized/2;
-                this.max = mid + rangeSensitized/2;
+            if (range > epsilon * 2) {
+                float mid = (max + min) / 2;
+                float rangeSensitized = Util.lerp(relax, range, epsilon * 2); //shrunk
+                this.min = mid - rangeSensitized / 2;
+                this.max = mid + rangeSensitized / 2;
             }
         }
 

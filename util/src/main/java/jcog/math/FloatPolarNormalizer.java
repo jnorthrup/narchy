@@ -1,11 +1,9 @@
 package jcog.math;
 
-import jcog.pri.ScalarValue;
-
 public class FloatPolarNormalizer extends FloatNormalizer {
 
     public FloatPolarNormalizer() {
-        this(ScalarValue.EPSILON);
+        this(Float.MIN_NORMAL*2);
     }
 
     public FloatPolarNormalizer(float radius) {

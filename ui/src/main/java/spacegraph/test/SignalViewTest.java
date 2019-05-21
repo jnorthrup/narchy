@@ -65,6 +65,8 @@ public class SignalViewTest {
         for (WebCam w : List.of(WebCam.the())) {
             Timeline2D g = cc.newTrack(w.webcam.getName());
             Timeline2D.SimpleTimelineEvents ge = new Timeline2D.SimpleTimelineEvents();
+
+            //TODO best synch / non-async webcam capture mode
             w.tensor.on((t)->{
                 if (Math.random() < 0.05f) {
                     long now = System.currentTimeMillis();
@@ -72,7 +74,7 @@ public class SignalViewTest {
                     if (ge.size() + 1 > capacity)
                         ge.pollFirst();
 
-                    ge.add(new Timeline2D.SimpleEvent(new AspectAlign(Tex.view(t.img), ((float)t.height())/t.width()), now - 500, now));
+                    ge.add(new Timeline2D.AnalyzedEvent(new AspectAlign(Tex.view(t.img), ((float)t.height())/t.width()), now - 500, now));
                 }
             });
 

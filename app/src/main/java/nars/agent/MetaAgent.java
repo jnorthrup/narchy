@@ -26,7 +26,7 @@ import static nars.Op.SETe;
  */
 public class MetaAgent extends Game {
 
-    static final Atomic curiosity =
+    static final Atomic CURIOSITY =
 
             /** curiosity rate */
             Atomic.the("curi"),
@@ -171,7 +171,7 @@ public class MetaAgent extends Game {
         actionCtl($.inh(gid, PRI), w.priAsFloatRange());
 
         float curiMin = 0.025f, curiMax = 0.09f;
-        actionCtl($.inh(gid, curiosity), g.curiosity.rate.subRange(curiMin, curiMax));
+        actionCtl($.inh(gid, CURIOSITY), g.curiosity.rate.subRange(curiMin, curiMax));
 
         int initialDur = w.dur();
         FloatRange durRange = new FloatRange(initialDur, initialDur / 4, initialDur * 4) {
@@ -201,13 +201,13 @@ public class MetaAgent extends Game {
 //            return x;
 //        });
 
-        Reward h = rewardNormalized($.inh(gid, happy), 0, 1, () -> {
+        Reward h = rewardNormalized($.inh(gid, happy),  0, Float.MIN_NORMAL, () -> {
             //new FloatFirstOrderDifference(nar::time, (() -> {
             return g.isOn() ? g.happiness(dur() /* supervisory dur of the meta-agent */) : Float.NaN;
         });
 
 
-        Reward d = rewardNormalized($.inh(gid, dex), 0, 1,
+        Reward d = rewardNormalized($.inh(gid, dex),0, nar.confMin.floatValue()/2,
                 () -> {
 ////            float p = a.proficiency();
 ////            float hp = Util.or(h, p);

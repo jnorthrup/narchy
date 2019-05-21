@@ -857,7 +857,7 @@ public class NARui {
         Gridding charts = new Gridding(
                 new ObjectSurface(q),
                 new Gridding(VERTICAL,
-                        new PaintUpdateMatrixView(q.ae.x),
+                        new PaintUpdateMatrixView(rlb.input),
                         new PaintUpdateMatrixView(q.ae.W),
                         new PaintUpdateMatrixView(q.ae.y)
                 ),
@@ -871,7 +871,7 @@ public class NARui {
         AtomicDouble rewardSum = new AtomicDouble();
         plot.add("Reward", ()->{
             return rewardSum.getAndSet(0); //clear
-        }, -1, +1);
+        }, 0, +1);
 
         rlb.env.onFrame(()->{
             rewardSum.addAndGet(rlb.lastReward);
