@@ -9,6 +9,7 @@ import spacegraph.space2d.ReSurface;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.graph.NodeVis;
 import spacegraph.space2d.container.time.Timeline2D;
+import spacegraph.space2d.container.time.Timeline2DEvents;
 import spacegraph.space2d.container.unit.Scale;
 import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.video.Draw;
@@ -53,7 +54,7 @@ public class TasksView implements Timeline2D.TimelineEvents<Task> {
         //TODO
         start = 0;
         end = 10;
-        return new Timeline2D(start, end).addEvents(new TasksView(tasks), TaskRenderer);
+        return new Timeline2D(start, end).addEvents(new TasksView(tasks), TaskRenderer, new Timeline2DEvents.LaneTimelineUpdater());
     }
 
     @Override

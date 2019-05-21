@@ -10,6 +10,7 @@ import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.Bordering;
 import spacegraph.space2d.container.Splitting;
 import spacegraph.space2d.container.Stacking;
+import spacegraph.space2d.container.graph.Graph2D;
 import spacegraph.space2d.container.graph.NodeVis;
 import spacegraph.space2d.container.unit.Clipped;
 import spacegraph.space2d.widget.slider.FloatSlider;
@@ -234,8 +235,8 @@ public class Timeline2D extends Stacking implements Finger.ScrollWheelConsumer {
         return (float) (((when - s) / (double)(e - s)) * W + X);
     }
 
-    public <X> Timeline2D addEvents(TimelineEvents<X> e, Consumer<NodeVis<X>> r) {
-        add(new Timeline2DEvents<>(e, r, new Timeline2DEvents.LaneTimelineUpdater()));
+    public <X> Timeline2D addEvents(TimelineEvents<X> e, Consumer<NodeVis<X>> r, Graph2D.Graph2DUpdater<X> u) {
+        add(new Timeline2DEvents<>(e, r, u));
         return this;
     }
 

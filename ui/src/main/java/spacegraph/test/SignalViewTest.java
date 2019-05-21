@@ -9,6 +9,7 @@ import spacegraph.audio.AudioSource;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.container.time.Timeline2D;
+import spacegraph.space2d.container.time.Timeline2DEvents;
 import spacegraph.space2d.widget.button.PushButton;
 
 import javax.sound.sampled.LineUnavailableException;
@@ -32,7 +33,7 @@ public class SignalViewTest {
                 long now = System.currentTimeMillis();
                 long before = now -  2* 1000;
 
-                int capacity = 256;
+                int capacity = 64;
                 Timeline2D.SimpleTimelineEvents ge = new Timeline2D.SimpleTimelineEvents();
 
                 Timeline2D g = new Timeline2D(before, now + 2 * 1000) {
@@ -58,9 +59,9 @@ public class SignalViewTest {
                 String src = Integer.toString(in.hashCode()); //i.toString();
 
                 SignalInput i = new SignalInput();
-                i.set(in, 0.4f);
+                i.set(in, 0.8f);
 //                g.add(new SignalView(i).withControls());
-                i.setFPS(32f);
+                i.setFPS(16f);
                 i.wave.on(a->{
 //                    long e = System.currentTimeMillis();
 
@@ -94,7 +95,9 @@ public class SignalViewTest {
                 });
 
                 //g.setTime(before, now); //HACK force update
-                g.addEvents(ge, (nv)-> nv.set(((Surface)(nv.id.name)))); // new PushButton(nv.id.toString())));
+                g.addEvents(ge, (nv)-> nv.set(((Surface)(nv.id.name))),
+                        new Timeline2DEvents.LinearTimelineUpdater<>()
+                ); // new PushButton(nv.id.toString())));
 
 //                WaveBitmap w = new WaveBitmap(new ArrayTensor(i.data), i.sampleRate, i.data.length, 250);
 //                w.setTime(before, now);

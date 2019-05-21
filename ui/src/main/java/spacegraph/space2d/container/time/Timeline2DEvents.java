@@ -20,7 +20,7 @@ public class Timeline2DEvents<E> extends Graph2D<E> implements Timeline2D.TimeRa
 
 
 
-    public Timeline2DEvents(Timeline2D.TimelineEvents<E> model, Consumer<NodeVis<E>> view, LaneTimelineUpdater<E> u) {
+    public Timeline2DEvents(Timeline2D.TimelineEvents<E> model, Consumer<NodeVis<E>> view, Graph2DUpdater<E> u) {
         super();
         this.model = model;
         build(view);
@@ -47,26 +47,47 @@ public class Timeline2DEvents<E> extends Graph2D<E> implements Timeline2D.TimeRa
         /** minimum displayed temporal width, for tasks less than this duration */
         protected final double minVisibleTime = 0; //0.5f;
 
-        FasterList<NodeVis<E>> next = new FasterList<>();
 
         @Override
         public void update(Graph2D<E> g, float dtS) {
-            next.clear();
+
+
+            Timeline2DEvents gg = (Timeline2DEvents) g;
+            Timeline2D.TimelineEvents model = gg.model;
+            float yl = g.bottom(), yh = g.top();
 
             g.forEachValue(t -> {
-                if (t.id != null) {
-                    next.add(t);
-                }
+                layout(t, gg, model, minVisibleWidth, yl, yh);
             });
-            if (next.isEmpty())
-                return;
         }
 
+        protected void layout(NodeVis<E> jj, Timeline2DEvents gg, Timeline2D.TimelineEvents model, float minVisibleWidth, float yl, float yh) {
+            long[] w = model.range(jj.id);
+            long left = (w[0]), right = (w[1]);
+            if (right-left < minVisibleTime) {
+                double mid = (left + right)/2f;
+                left = Math.round(mid - minVisibleTime /2);
+                right = Math.round(mid + minVisibleTime /2);
+            }
+
+
+            float xl = gg.x(left);
+            float xr = gg.x(right);
+            if (xr -xl < minVisibleWidth) {
+                float xc = (xl+xr);
+                xl = xc - minVisibleWidth/2;
+                xr = xc + minVisibleWidth/2;
+            }
+            RectFloat r = RectFloat.XYXY(xl, yl, xr, yh);
+            jj.pos(r);
+            jj.show();
+        }
     }
 
     /** staggered lane layout */
     public static class LaneTimelineUpdater<E> extends LinearTimelineUpdater<E> {
 
+        final FasterList<NodeVis<E>> next = new FasterList();
 
         @Override
         public void update(Graph2D<E> g, float dtS) {
@@ -83,8 +104,8 @@ public class Timeline2DEvents<E> extends Graph2D<E> implements Timeline2D.TimeRa
 
             Timeline2DEvents gg = (Timeline2DEvents) g;
             Timeline2D.TimelineEvents model = gg.model;
-            next.sortThis((x, y) -> model.compareDurThenStart(x.id, y.id));
 
+            next.sortThis((x, y) -> model.compareDurThenStart(x.id, y.id));
 
 
             List<RoaringBitmap> lanes = new FasterList();
@@ -138,27 +159,11 @@ public class Timeline2DEvents<E> extends Graph2D<E> implements Timeline2D.TimeRa
             while (ii.hasNext()) {
                 int j = ii.next();
                 NodeVis<E> jj = next.get(j);
-                long[] w = model.range(jj.id);
-                long left = (w[0]), right = (w[1]);
-                if (right-left < minVisibleTime) {
-                    double mid = (left + right)/2f;
-                    left = Math.round(mid - minVisibleTime /2);
-                    right = Math.round(mid + minVisibleTime /2);
-                }
-
-
-                float xl = gg.x(left);
-                float xr = gg.x(right);
-                if (xr -xl < minVisibleWidth) {
-                    float xc = (xl+xr);
-                    xl = xc - minVisibleWidth/2;
-                    xr = xc + minVisibleWidth/2;
-                }
-                RectFloat r = RectFloat.XYXY(xl, yl, xr, yh);
-                jj.pos(r);
-                jj.show();
+                layout(jj, gg, model, minVisibleWidth, yl, yh);
             }
         }
+
+
     }
 
     protected float x(long t) {

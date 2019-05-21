@@ -45,7 +45,7 @@ public class SignalView extends Timeline2D {
         WaveBitmap w = new WaveBitmap(new ArrayTensor(in.data), in.sampleRate, in.data.length, 250);
         add(w);
 
-        addEvents(new SimpleTimelineEvents(), (nv)-> nv.set(new PushButton(nv.id.toString())));
+        addEvents(new SimpleTimelineEvents(), (nv)-> nv.set(new PushButton(nv.id.toString())), new Timeline2DEvents.LaneTimelineUpdater());
 
         this.in.wave.on(raw->{
             w.update();
