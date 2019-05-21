@@ -34,12 +34,12 @@ public class BitmapMatrixView extends TexSurface {
 
     public final int w;
     public final int h;
-    private final BitmapPainter view;
+    protected BitmapPainter view;
     protected final v2 touchPos = new v2();
     protected final Point2i touchPixel = new Point2i();
     private BufferedImage buf;
     private int[] pix;
-    private boolean cellTouch = true;
+    public boolean cellTouch = true;
 
     /** the implementation must implement BitmapPainter */
     protected BitmapMatrixView(int w, int h) {
@@ -124,14 +124,19 @@ public class BitmapMatrixView extends TexSurface {
         });
     }
 
-    private static ViewFunction2D arrayRenderer(float[] ww) {
-        return (x, y) -> {
-            float v = ww[x];
-            return Draw.colorBipolar(v);
-        };
+    public static ViewFunction2D arrayRenderer(float[] ww) {
+        return arrayRendererX(ww);
     }
 
-    private static ViewFunction2D arrayRenderer(float[][] ww) {
+
+    public static BitmapMatrixView.ViewFunction2D arrayRendererX(float[] ww) {
+        return (x, y) -> Draw.colorBipolar(ww[x]);
+    }
+    public static BitmapMatrixView.ViewFunction2D arrayRendererY(float[] ww) {
+        return (x, y) -> Draw.colorBipolar(ww[y]);
+    }
+
+    public static ViewFunction2D arrayRenderer(float[][] ww) {
         return (x, y) -> {
             float v = ww[x][y];
             return Draw.colorBipolar(v);
@@ -262,6 +267,7 @@ public class BitmapMatrixView extends TexSurface {
         /** provides access to the bitmap in either BufferedImage or the raw int[] raster */
         void color(BufferedImage buf, int[] pix);
     }
+
 
     @FunctionalInterface
     public interface ViewFunction2D extends BitmapPainter {

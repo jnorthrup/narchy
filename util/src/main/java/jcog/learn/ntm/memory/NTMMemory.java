@@ -17,10 +17,10 @@ public class NTMMemory {
     private final Head[] heads;
     public final WeakReference<NTMMemory> parent;
     private final BetaSimilarity[][] oldSimilar;
-    public final double[][] erase;
+    private final double[][] erase;
     public final double[][] add;
-    public final int memoryHeight;
-    public final int memoryWidth;
+    final int memoryHeight;
+    final int memoryWidth;
 
     static final double EPSILON = 0.0001;
 
@@ -36,12 +36,11 @@ public class NTMMemory {
         return parent.get();
     }
 
-    
     public Head getHead(int index) {
         return heads[index];
     }
 
-    NTMMemory(HeadSetting[] heading, int memoryHeight, int memoryWidth, Head[] heads, Unit[][] data, NTMMemory parent) {
+    private NTMMemory(HeadSetting[] heading, int memoryHeight, int memoryWidth, Head[] heads, Unit[][] data, NTMMemory parent) {
         this.memoryHeight = memoryHeight;
         this.memoryWidth = memoryWidth;
         this.data = data;
@@ -56,11 +55,11 @@ public class NTMMemory {
     }
 
     /** number of heads, even if unallocated */
-    public int headNum() {
+    int headNum() {
         return erase.length;
     }
 
-    public NTMMemory(HeadSetting[] heading, Head[] heads, NTMMemory memory) {
+    NTMMemory(HeadSetting[] heading, Head[] heads, NTMMemory memory) {
         this(heading, memory.memoryHeight, memory.memoryWidth, memory.heads,
                 UnitFactory.getTensor2(memory.memoryHeight, memory.memoryWidth), memory);
 
@@ -84,9 +83,6 @@ public class NTMMemory {
         }
 
         final NTMMemory p = parent();
-
-
-
         for (int i = 0; i < memoryHeight; i++) {
 
             Unit[] oldRow = p.data[i];
@@ -97,8 +93,7 @@ public class NTMMemory {
                 double erase = 1.0;
                 double add = 0.0;
                 for (int k = 0; k < h; k++) {
-                    HeadSetting headSetting = this.heading[k];
-                    double addressingValue = headSetting.addressingVector.value[i];
+                    double addressingValue = this.heading[k].addressingVector.value[i];
                     erase *= (1.0 - (addressingValue * this.erase[k][j]));
                     add += addressingValue * this.add[k][j];
                 }
@@ -146,8 +141,6 @@ public class NTMMemory {
                 double gradient = 1.0;
 
                 for (int q = 0; q < h; q++) {
-
-
                     gradient *= 1.0 - (heading[q].addressingVector.value[i] * erase[q][j]);
                 }
                 oldDataVector[j].grad += gradient * newDataVector[j].grad;
@@ -173,17 +166,15 @@ public class NTMMemory {
                 
                 double gradientErase2 = p.data[k][j].value;
                 for (int q = 0; q < h; q++) {
-                    if (q == headIndex)
-                        continue;
+                    if (q != headIndex) {
+                        gradientErase2 *= 1.0 - (heading[q].addressingVector.value[k] * this.erase[q][j]);
+                    }
 
-                    gradientErase2 *= 1.0 - (heading[q].addressingVector.value[k] * this.erase[q][j]);
                 }
 
                 final double gradientAddressing = itemGradient * addressingVectorItemValue;
 
                 gradientErase += gradientAddressing * (-gradientErase2);
-
-                
                 gradientAdd += gradientAddressing;
             }
 
@@ -222,7 +213,7 @@ public class NTMMemory {
         }
     }
 
-    public ContentAddressing[] getContentAddressing() {
+    ContentAddressing[] getContentAddressing() {
         return ContentAddressing.getVector(headNum(), i -> oldSimilar[i]);
     }
 

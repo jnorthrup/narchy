@@ -1,40 +1,56 @@
 package spacegraph.space2d.container.time;
 
-import jcog.event.Off;
 import jcog.signal.Tensor;
 import jcog.signal.wave1d.FreqDomain;
-import jcog.signal.wave1d.SignalInput;
-import spacegraph.space2d.widget.meter.Spectrogram;
+import spacegraph.space2d.widget.meter.BitmapMatrixView;
 import spacegraph.video.Draw;
 
-class FreqSpectrogram extends Spectrogram {
-    private final SignalInput in;
-    final FreqDomain freqDomain;
-    private Off off;
+import java.awt.image.BufferedImage;
 
+public class FreqSpectrogram extends BitmapMatrixView implements BitmapMatrixView.BitmapPainter {
 
-    public FreqSpectrogram(SignalInput in, boolean leftOrDown, int T, int N) {
-        super(leftOrDown, T, N);
-        this.in = in;
-        this.freqDomain = new FreqDomain(in, N, T);
+    final FreqDomain data;
+
+    /** comptued frequency domain output for display */
+    private Tensor freq;
+
+    public FreqSpectrogram(int T, int N) {
+        super(T, N, null);
+        this.data = new FreqDomain(T, N);
+    }
+
+    public FreqSpectrogram set(Tensor x) {
+        freq = this.data.apply(x);
+        update();
+        return this;
     }
 
     @Override
-    protected void starting() {
-        super.starting();
-        off = this.in.wave.on(raw-> {
-            Tensor fft = freqDomain.next(raw);
-            next(i -> {
-                float v = fft.getAt(i);
-                return Draw.colorHSB(0.3f * (1 - v), 0.9f, v);
-            });
-        });
+    public void color(BufferedImage buf, int[] pix) {
+        int v = freq.volume();
+        for (int i = 0; i < v; i++) {
+            float x = freq.getAt(i);
+            pix[i] =
+                    //Draw.colorHSB(0.3f * (1 - x), 0.9f, x);
+                    Draw.rgbInt(x,x,x);
+        }
     }
 
-    @Override
-    protected void stopping() {
-        off.close();
-        off = null;
-        super.stopping();
-    }
+//    @Override
+//    protected void starting() {
+//        super.starting();
+//        off = this.in.wave.on(raw-> {
+//            fft = freqDomain.next(raw);
+//            updateIfShowing();
+//        });
+//    }
+
+
+//
+//    @Override
+//    protected void stopping() {
+//        off.close();
+//        off = null;
+//        super.stopping();
+//    }
 }

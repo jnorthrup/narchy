@@ -133,11 +133,8 @@ public class TensorRing extends AbstractShapedTensor implements WritableTensor {
         return buffer.addAt(x, idx(linearCell));
     }
 
-    public Tensor set(Tensor t) {
-
-        t.writeTo( ((ArrayTensor) buffer).data /* HACK */, targetSpin() * width);
-
-        return this;
+    @Override public void set(Tensor x) {
+        x.writeTo( ((ArrayTensor) buffer).data /* HACK */, targetSpin() * width);
     }
 
     public TensorRing set(float[] t) {

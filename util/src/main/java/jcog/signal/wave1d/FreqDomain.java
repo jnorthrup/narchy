@@ -3,51 +3,43 @@ package jcog.signal.wave1d;
 import jcog.signal.Tensor;
 import jcog.signal.tensor.ArrayTensor;
 import jcog.signal.tensor.TensorRing;
-
-import java.util.concurrent.atomic.AtomicBoolean;
+import jcog.signal.tensor.WritableTensor;
 
 /**
  * TODO extract RingBufferTensor to an extended impl.  this only needs to supply the next 1D vector of new freq information
  */
 public class FreqDomain {
     @Deprecated
-    public final TensorRing freq;
+    public final WritableTensor freq;
     final SlidingDFTTensor dft;
-    private final SignalInput in;
 
     private ArrayTensor next;
 
-    public FreqDomain(SignalInput in, int fftSize, int history) {
-        this.in = in;
+    public FreqDomain(int fftSize, int history) {
         dft = new SlidingDFTTensor( fftSize, true);
-        freq = new TensorRing(dft.volume(), history);
+        freq = history > 1 ? new TensorRing(dft.volume(), history) : dft;
 
         next = new ArrayTensor(1); //empty
 
-        in.wave.on((next)->{
-            this.next = next;
-            invalid.set(true);
-        });
     }
 
 
-    final AtomicBoolean invalid = new AtomicBoolean(false);
+//    final AtomicBoolean invalid = new AtomicBoolean(false);
 
 
-    public Tensor next(Tensor next) {
-        if (invalid.compareAndSet(true, false)) {
-            try {
-                dft.updateNormalized(next);
-            } finally {
-                invalid.set(false);
-            }
-        }
+    public Tensor apply(Tensor timeDomain) {
+//        if (invalid.compareAndSet(true, false)) {
+//            try {
+                dft.updateNormalized(timeDomain);
+//            } finally {
+//                invalid.set(false);
+//            }
+//        }
 
-        return dft;
+        if (freq!=dft)
+            freq.set(dft);
+        return freq;
     }
 
-    public boolean update(Tensor next) {
-        freq.set(next(next));
-        return true;
-    }
+
 }

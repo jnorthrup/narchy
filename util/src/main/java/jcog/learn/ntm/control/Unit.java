@@ -19,29 +19,26 @@ public class Unit {
         return "<" + value + ',' + grad + '>';
     }
 
-    public static Consumer<Unit[]> getVectorUpdateAction(Consumer<Unit> updateAction) {
+    private static Consumer<Unit[]> vectorUpdateAction(Consumer<Unit> updateAction) {
         return (units) -> {
-            for (Unit unit : units) {
+            for (Unit unit : units)
                 updateAction.accept(unit);
-            }
         };
     }
 
-    public static Consumer<Unit[][]> getTensor2UpdateAction(Consumer<Unit> updateAction) {
-        Consumer<Unit[]> vectorUpdateAction = getVectorUpdateAction(updateAction);
+    static Consumer<Unit[][]> tensor2UpdateAction(Consumer<Unit> updateAction) {
+        Consumer<Unit[]> vectorUpdateAction = vectorUpdateAction(updateAction);
         return (units) -> {
-            for (Unit[] unit : units) {
+            for (Unit[] unit : units)
                 vectorUpdateAction.accept(unit);
-            }
         };
     }
 
-    public static Consumer<Unit[][][]> getTensor3UpdateAction(Consumer<Unit> updateAction) {
-        Consumer<Unit[][]> tensor2UpdateAction = getTensor2UpdateAction(updateAction);
+    static Consumer<Unit[][][]> tensor3UpdateAction(Consumer<Unit> updateAction) {
+        Consumer<Unit[][]> tensor2UpdateAction = tensor2UpdateAction(updateAction);
         return (units) -> {
-            for (Unit[][] unit : units) {
+            for (Unit[][] unit : units)
                 tensor2UpdateAction.accept(unit);
-            }
         };
     }
 

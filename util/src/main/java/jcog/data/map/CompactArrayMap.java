@@ -7,6 +7,8 @@ import java.lang.invoke.MethodHandles;
 import java.lang.invoke.VarHandle;
 import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicReferenceFieldUpdater;
+import java.util.function.BiConsumer;
+import java.util.function.BiPredicate;
 import java.util.function.Function;
 
 
@@ -147,6 +149,24 @@ public class CompactArrayMap<K, V> {
 
     public Object[] clearPut(K key, V value) {
         return ITEMS.getAndSet(this, new Object[]{key, value});
+    }
+
+    public void forEach(BiConsumer<K, V> each) {
+        whileEach((k,v)->{
+            each.accept(k,v);
+            return true;
+        });
+    }
+
+    public boolean whileEach(BiPredicate<K, V> each) {
+        Object[] ii = ITEMS.get(this);
+        for (int i = 0, iiLength = ii.length; i < iiLength; ) {
+            K k = (K) ii[i++];
+            V v = (V) ii[i++];
+            if (!each.test(k,v))
+                return false;
+        }
+        return true;
     }
 
 //    public void clearExcept(K key) {

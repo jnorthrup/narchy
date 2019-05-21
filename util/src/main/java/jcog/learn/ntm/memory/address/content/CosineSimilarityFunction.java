@@ -1,40 +1,47 @@
 package jcog.learn.ntm.memory.address.content;
 
+import jcog.Util;
 import jcog.learn.ntm.control.Unit;
+import jcog.math.NumberException;
 
 public class CosineSimilarityFunction implements ISimilarityFunction
 {
 
-    double _uv;
-    double _normalizedU, _normalizedV;
+    double uv;
+    double uNorm, vNorm;
 
     @Override
     public Unit calculate(Unit[] u, Unit[] v) {
-        _uv = 0;
-        _normalizedU = _normalizedV = 0;
+        double _uv = 0;
+        double _normalizedU = 0, _normalizedV = 0;
 
         for (int i = 0;i < u.length;i++) {
             final double uV = u[i].value;
             final double vV = v[i].value;
             _uv += uV * vV;
-            _normalizedU += uV * uV;
-            _normalizedV += vV * vV;
+            _normalizedU += Util.sqr(uV);
+            _normalizedV += Util.sqr(vV);
         }
         _normalizedU = Math.sqrt(_normalizedU);
         _normalizedV = Math.sqrt(_normalizedV);
-        Unit data = new Unit(_uv / (_normalizedU * _normalizedV));
-        if (Double.isNaN(data.value)) {
-            throw new RuntimeException("Cosine similarity is nan -> error");
-        }
-         
+
+        double value = _uv / (_normalizedU * _normalizedV);
+        if (!Double.isFinite(value))
+            throw new NumberException("Cosine similarity is nan -> error", value);
+
+        this.uNorm = _normalizedU;
+        this.vNorm = _normalizedV;
+        this.uv = _uv;
+
+        Unit data = new Unit(value);
         return data;
     }
 
     @Override
     public void differentiate(Unit similarity, Unit[] uVector, Unit[] vVector) {
-        double uvuu = _uv / (_normalizedU * _normalizedU);
-        double uvvv = _uv / (_normalizedV * _normalizedV);
-        double uvg = similarity.grad / (_normalizedU * _normalizedV);
+        double uvuu = uv / (uNorm * uNorm);
+        double uvvv = uv / (vNorm * vNorm);
+        double uvg = similarity.grad / (uNorm * vNorm);
         for (int i = 0;i < uVector.length;i++) {
             double u = uVector[i].value;
             double v = vVector[i].value;

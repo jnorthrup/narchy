@@ -107,8 +107,8 @@ public class Tex {
 
     public boolean set(BufferedImage i) {
 
-        if (!ready())
-            return false;
+//        if (!ready())
+//            return false;
 
         DataBuffer b = i.getRaster().getDataBuffer();
 //        if (b instanceof DataBufferInt)

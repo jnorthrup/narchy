@@ -44,10 +44,15 @@ public class WebCam extends VideoSource implements WebcamListener {
         webcam = wc;
 
         Exe.invokeLater(() -> {
-            Dimension[] sizes = webcam.getViewSizes();
-            webcam.setViewSize(sizes[sizes.length-1] /* assume largest is last */);
-            if (!webcam.open(true))
-                throw new RuntimeException("webcam not open");
+
+            if (!webcam.isOpen()) {
+
+                Dimension[] sizes = webcam.getViewSizes();
+                webcam.setViewSize(sizes[sizes.length-1] /* assume largest is last */);
+
+                if (!webcam.open(true))
+                    throw new RuntimeException("webcam not open");
+            }
 
             webcam.addWebcamListener(this);
         });
@@ -72,7 +77,7 @@ public class WebCam extends VideoSource implements WebcamListener {
         WebCam[] wc = new WebCam[n];
         int j = 0;
         synchronized (WebCam.class) {
-            com.github.sarxos.webcam.Webcam.setAutoOpenMode(true);
+            com.github.sarxos.webcam.Webcam.setAutoOpenMode(false);
             for (com.github.sarxos.webcam.Webcam w : com.github.sarxos.webcam.Webcam.getWebcams()) {
                 try {
                     if (j == 0 || !deviceName(w).equals(deviceName(wc[j-1].webcam))) {

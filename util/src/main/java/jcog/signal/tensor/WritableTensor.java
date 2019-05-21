@@ -52,4 +52,7 @@ public interface WritableTensor extends Tensor {
             setAt(i, x);
     }
 
+    default void set(Tensor x) {
+        x.forEach(this::setAt);
+    }
 }

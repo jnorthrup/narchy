@@ -36,16 +36,14 @@ public class SequenceGenerator
         return new TrainingSequence(input, output);
     }
 
-    public static TrainingSequence generateSequenceXOR(int vectorSize) {
-        
+    public static TrainingSequence generateSequenceXOR(int length, int vectorSize) {
 
-        int length = (int) (vectorSize * (1.0 + rng.nextFloat()));
 
         double[][] input = new double[length][vectorSize];
         double[][] output = new double[length][vectorSize];
 
 
-        int j = (int)(rng.nextFloat() * 153) % (vectorSize/2) + vectorSize/2;
+        int j = (int)(rng.nextFloat() * 153) % Math.max(1,vectorSize/2) + vectorSize/2;
 
         for (int i = 0; i < length; i++) {
             int index = ((j)^(i)) % vectorSize;

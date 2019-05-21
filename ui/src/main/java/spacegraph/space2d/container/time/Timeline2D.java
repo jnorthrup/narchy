@@ -2,6 +2,7 @@ package spacegraph.space2d.container.time;
 
 import com.jogamp.opengl.GL2;
 import jcog.Util;
+import jcog.data.map.CompactArrayMap;
 import jcog.math.LongInterval;
 import jcog.tree.rtree.Spatialization;
 import spacegraph.input.finger.Finger;
@@ -34,6 +35,10 @@ public class Timeline2D extends Stacking implements Finger.ScrollWheelConsumer {
 
     public interface TimeRangeAware {
         void setTime(long tStart, long tEnd);
+    }
+
+    public Timeline2D() {
+        this(Long.MIN_VALUE, Long.MIN_VALUE);
     }
 
     public Timeline2D(long start, long end) {
@@ -428,5 +433,26 @@ public class Timeline2D extends Stacking implements Finger.ScrollWheelConsumer {
             else
                 return x / 10.0;
         }
+    }
+
+    public static class AnalyzedEvent<X,Y> extends SimpleEvent {
+
+        final CompactArrayMap<X,Y> map = new CompactArrayMap();
+
+        public AnalyzedEvent(Object x, long start, long end) {
+            super(x, start, end);
+        }
+
+        public Y get(X key) {
+            return map.get(key);
+        }
+        public void put(X key, Y value) {
+            map.put(key, value);
+        }
+        public void forEach(BiConsumer<X,Y> each) {
+            map.forEach(each);
+        }
+
+
     }
 }

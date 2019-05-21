@@ -25,4 +25,5 @@ public class Scale extends UnitContainer {
     protected RectFloat innerBounds() {
         return bounds.scale(scale);
     }
+
 }

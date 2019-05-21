@@ -1,6 +1,7 @@
 package spacegraph.audio;
 
 import javax.sound.sampled.AudioFormat;
+import javax.sound.sampled.Mixer;
 import javax.sound.sampled.TargetDataLine;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -17,6 +18,7 @@ public class AudioSourcePCM16 extends AudioSource {
     //TODO parameterize with device
 
     private final short[] preShortBuffer;
+    private final Mixer.Info mixer;
 
     /**
      * the constructor does not call start()
@@ -24,9 +26,10 @@ public class AudioSourcePCM16 extends AudioSource {
      *
      * line may be already open or not.
      */
-    public AudioSourcePCM16(TargetDataLine line) {
+    public AudioSourcePCM16(Mixer.Info m, TargetDataLine line) {
         super(line);
 
+        this.mixer = m;
         assert(line.getFormat().getEncoding()== AudioFormat.Encoding.PCM_SIGNED);
         assert(line.getFormat().getSampleSizeInBits() == 16);
 //        assert(line.getFormat().getChannels() == 1);
@@ -37,7 +40,10 @@ public class AudioSourcePCM16 extends AudioSource {
 
     }
 
-
+    @Override
+    public String name() {
+        return mixer.toString();// + " " + super.name();
+    }
 
     @Override protected void decode(float[] target, int nSamplesRead) {
         ByteBuffer.wrap(preByteBuffer).order(ByteOrder.LITTLE_ENDIAN).asShortBuffer().get(preShortBuffer);

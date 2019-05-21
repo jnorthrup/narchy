@@ -46,12 +46,12 @@ public abstract class AudioSource implements DigitizedSignal {
         List<AudioSource> ll = new FasterList();
 
         Mixer.Info[] ii = AudioSystem.getMixerInfo();
-        for (Mixer.Info I : ii) {
-            Mixer mi = AudioSystem.getMixer(I);
+        for (Mixer.Info mixerInfo : ii) {
+            Mixer mi = AudioSystem.getMixer(mixerInfo);
             Line.Info[] mm = mi.getTargetLineInfo();
             for (Line.Info M : mm) {
                 if (TargetDataLine.class.isAssignableFrom(M.getLineClass())) {
-                    //System.out.println(I + " " + M + " " + M.getLineClass());
+                    //System.out.println(mixerInfo + " " + M + " " + M.getLineClass());
                     try {
                         TargetDataLine lm = (TargetDataLine) mi.getLine(M);
 
@@ -69,7 +69,7 @@ public abstract class AudioSource implements DigitizedSignal {
 
 
                         AudioSource ss =
-                                new AudioSourcePCM16(lm);
+                                new AudioSourcePCM16( mixerInfo, lm);
                                 //new AudioSourcePCMFloat(lm);
                         ll.add(ss);
 

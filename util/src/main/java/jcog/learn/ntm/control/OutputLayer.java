@@ -164,8 +164,8 @@ public class OutputLayer {
     }
 
     public void updateWeights(Consumer<Unit> updateAction) {
-        Consumer<Unit[][]> tensor2UpdateAction = Unit.getTensor2UpdateAction(updateAction);
-        Consumer<Unit[][][]> tensor3UpdateAction = Unit.getTensor3UpdateAction(updateAction);
+        Consumer<Unit[][]> tensor2UpdateAction = Unit.tensor2UpdateAction(updateAction);
+        Consumer<Unit[][][]> tensor3UpdateAction = Unit.tensor3UpdateAction(updateAction);
         tensor2UpdateAction.accept(_hiddenToOutputLayerWeights);
         tensor3UpdateAction.accept(_hiddenToHeadsWeights);
     }

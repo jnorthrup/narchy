@@ -12,7 +12,6 @@ import spacegraph.input.finger.state.FingerMove;
 import spacegraph.space2d.ReSurface;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.widget.button.PushButton;
-import spacegraph.space2d.widget.meter.Spectrogram;
 import spacegraph.space2d.widget.meter.WaveBitmap;
 import spacegraph.video.Draw;
 
@@ -39,8 +38,8 @@ public class SignalView extends Timeline2D {
         this.in = in;
 
 
-        Spectrogram g = new FreqSpectrogram(in, true,256, 512);
-        add(g);
+//        FreqSpectrogram g = new FreqSpectrogram(256, 512);
+//        add(g);
 
         WaveBitmap w = new WaveBitmap(new ArrayTensor(in.data), in.sampleRate, in.data.length, 250);
         add(w);

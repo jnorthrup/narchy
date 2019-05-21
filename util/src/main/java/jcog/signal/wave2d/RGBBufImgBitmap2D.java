@@ -3,7 +3,7 @@ package jcog.signal.wave2d;
 import java.awt.image.BufferedImage;
 
 public class RGBBufImgBitmap2D extends PlanarBitmap2D {
-    private final BufferedImage img;
+    public final BufferedImage img;
 
     public RGBBufImgBitmap2D(BufferedImage i) {
         super(i.getWidth(), i.getHeight(), i.getRaster().getNumBands());
