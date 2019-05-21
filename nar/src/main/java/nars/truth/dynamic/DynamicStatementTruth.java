@@ -186,9 +186,9 @@ public class DynamicStatementTruth {
 
 
                         if (constantCondition != null)
-                            constantCondition = xx;
-                        else
                             constantCondition = CONJ.the(constantCondition, xx);
+                        else
+                            constantCondition = xx;
 
                         if (constantCondition == True)
                             constantCondition = null;

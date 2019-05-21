@@ -39,6 +39,10 @@ public class WebCam extends VideoSource implements WebcamListener {
 
 
     public WebCam(Webcam wc) {
+        this(wc, false);
+    }
+
+    public WebCam(Webcam wc, boolean auto) {
 
         width = height = 1;
         webcam = wc;
@@ -50,11 +54,12 @@ public class WebCam extends VideoSource implements WebcamListener {
                 Dimension[] sizes = webcam.getViewSizes();
                 webcam.setViewSize(sizes[sizes.length-1] /* assume largest is last */);
 
-                if (!webcam.open(true))
+                if (!webcam.open(auto))
                     throw new RuntimeException("webcam not open");
             }
 
-            webcam.addWebcamListener(this);
+            if (auto)
+                webcam.addWebcamListener(this);
         });
     }
 

@@ -19,6 +19,7 @@ import jcog.signal.meter.event.DoubleMeter;
 import java.lang.management.ManagementFactory;
 import java.lang.management.ThreadInfo;
 import java.lang.management.ThreadMXBean;
+import java.util.stream.LongStream;
 
 /**
  * CPU Time, in milliseconds
@@ -36,8 +37,10 @@ public class ThreadCPUTimeTracker extends DoubleMeter {
     }
 
     public static double getCPUTime() {
-        return getThreadMXBean().getCurrentThreadCpuTime();
+        return LongStream.of(getThreadMXBean().getAllThreadIds()).mapToDouble(getThreadMXBean()::getThreadUserTime).sum();
+                //.getCurrentThreadCpuTime();
     }
+
 
     @Override
     public Double getValue(Object key, int index) {

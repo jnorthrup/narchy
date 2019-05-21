@@ -198,4 +198,15 @@ public class HaiQ extends Agent {
         this.Alpha.set(a);
         return this;
     }
+
+    public HaiQ lambda(float a) {
+        this.Lambda.set(a);
+        return this;
+    }
+
+    public HaiQ gamma(float a) {
+        this.Gamma.set(a);
+        return this;
+    }
+
 }

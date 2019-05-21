@@ -1,7 +1,9 @@
 package spacegraph.test;
 
+import com.github.sarxos.webcam.Webcam;
 import com.google.common.util.concurrent.RateLimiter;
 import jcog.Util;
+import jcog.exe.Loop;
 import jcog.random.XoRoShiRo128PlusRandom;
 import jcog.signal.wave1d.DigitizedSignal;
 import jcog.signal.wave1d.FreqDomain;
@@ -21,6 +23,7 @@ import spacegraph.video.Tex;
 import spacegraph.video.WebCam;
 
 import javax.sound.sampled.LineUnavailableException;
+import java.awt.image.BufferedImage;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
@@ -57,27 +60,19 @@ public class SignalViewTest {
     public static Surface newSignalView() {
         RealTimeLine cc = new RealTimeLine();
 
-        int capacity = 128;
-        float fps = 8;
+        int capacity = 64;
+        float audioFPS = 10;
         float granularity = 2;
-        int freqs = 64;
+        int freqs = 128;
 
-        for (WebCam w : List.of(WebCam.the())) {
+        for (WebCam w : List.of(new WebCam(Webcam.getDefault(), false))) {
             Timeline2D g = cc.newTrack(w.webcam.getName());
             Timeline2D.SimpleTimelineEvents ge = new Timeline2D.SimpleTimelineEvents();
 
-            //TODO best synch / non-async webcam capture mode
-            w.tensor.on((t)->{
-                if (Math.random() < 0.05f) {
-                    long now = System.currentTimeMillis();
-
-                    if (ge.size() + 1 > capacity)
-                        ge.pollFirst();
-
-                    ge.add(new Timeline2D.AnalyzedEvent(new AspectAlign(Tex.view(t.img), ((float)t.height())/t.width()), now - 500, now));
-                }
-            });
-
+            float camFPS = 0.5f;
+            Loop.of(()->{
+                capture(capacity, ge, w.webcam.getImage(), Math.round(1000/camFPS));
+            }).setFPS(camFPS);
 
             g.addEvents(ge, v-> v.set(((Surface)(v.id.name))), new Timeline2DEvents.LinearTimelineUpdater<>());
         }
@@ -93,9 +88,9 @@ public class SignalViewTest {
 
 
                 SignalInput i = new SignalInput();
-                i.set(in, 1/fps);
+                i.set(in, 1/audioFPS);
 //                g.add(new SignalView(i).withControls());
-                i.setFPS(fps * granularity);
+                i.setFPS(audioFPS * granularity);
 
                 in.start();
 
@@ -164,6 +159,16 @@ public class SignalViewTest {
 //            i.setFPS(20f);
 //        }
         return cc;
+    }
+
+    public static void capture(int capacity, Timeline2D.SimpleTimelineEvents ge, BufferedImage t, long dur) {
+        if (ge.size() + 1 > capacity)
+            ge.pollFirst();
+
+        long now = System.currentTimeMillis();
+
+        ge.add(new Timeline2D.AnalyzedEvent(new AspectAlign(Tex.view(t),
+                ((float)t.getHeight())/t.getWidth()), now - dur, now));
     }
 //    public static LabeledPane newSignalView() {
 //        AudioSource audio = new AudioSource();

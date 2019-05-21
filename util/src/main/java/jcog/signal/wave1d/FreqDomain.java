@@ -28,13 +28,15 @@ public class FreqDomain {
 
 
     public Tensor apply(Tensor timeDomain) {
-//        if (invalid.compareAndSet(true, false)) {
-//            try {
-                dft.updateNormalized(timeDomain);
-//            } finally {
-//                invalid.set(false);
-//            }
-//        }
+
+            dft.update(timeDomain);
+            dft.transform((i,v)->{
+               //return 1;
+                //return v * (i > 10 ? 1 : 0.01f);
+                return (float) Math.exp(v);
+            });
+            dft.normalize();
+
 
         if (freq!=dft)
             freq.set(dft);

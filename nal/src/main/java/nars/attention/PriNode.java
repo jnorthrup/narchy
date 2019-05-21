@@ -15,7 +15,7 @@ public class PriNode extends PLink<Term> {
      * amplitude, factor, boost, relative priority among peers
      * TODO use separate PriNode as the factor
      * */
-    public final FloatRange amp = new FloatRange(1f, 0.01f, 2f);
+    public final FloatRange amp = new FloatRange(1f, 0.01f, 1f /* 2f */);
 
     @Deprecated transient private Node<PriNode, Object> _node;
 

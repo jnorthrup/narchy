@@ -312,12 +312,13 @@ abstract public class GameX extends Game {
 
     private static void initPlugins3(NAR n, Game a) {
 
-        MetaAgent meta = new MetaAgent(false,8f, a);
+        MetaAgent meta = new MetaAgent(false,16f, a);
         meta.what().pri(0.1f);
         n.start(new SpaceGraphPart(() -> NARui.agent(meta), 500, 500));
 
-        RLBooster metaBoost = new RLBooster(meta, (i, o)->new HaiQae(i, 32,o).alpha(0.04f),
-                2, 4,true);
+        RLBooster metaBoost = new RLBooster(meta, (i, o)->
+                new HaiQae(i, 12,o).alpha(0.05f).gamma(0.5f).lambda(0.5f),
+                2, 4,false);
         meta.curiosity.rate.set(0);
         SpaceGraph.window(NARui.rlbooster(metaBoost), 500, 500);
 

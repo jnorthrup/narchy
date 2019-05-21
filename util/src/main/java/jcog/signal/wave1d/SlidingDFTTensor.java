@@ -3,6 +3,7 @@ package jcog.signal.wave1d;
 import jcog.Util;
 import jcog.signal.Tensor;
 import jcog.signal.tensor.ArrayTensor;
+import org.eclipse.collections.api.block.function.primitive.IntFloatToFloatFunction;
 
 import java.util.Arrays;
 
@@ -35,10 +36,21 @@ public class SlidingDFTTensor extends ArrayTensor {
     }
 
     /** returns the intensity */
-    public float updateNormalized(Tensor src) {
+    public void updateNormalized(Tensor src) {
         update(src);
+        normalize();
+    }
+
+    public float normalize() {
         float max = this.maxValue();
         Util.normalize(data, 0, max);
         return max;
+    }
+
+    /** multiplicative filter, by freq index */
+    public void transform(IntFloatToFloatFunction f) {
+        for (int i = 0; i < data.length; i++) {
+            data[i] *= f.valueOf(i, data[i]);
+        }
     }
 }

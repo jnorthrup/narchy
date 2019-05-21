@@ -111,6 +111,11 @@ public class MetaAgent extends Game {
 //            }
 //        });
 
+//        ThreadCPUTimeTracker.getCPUTime()
+//        reward("lazy", 1, ()->{
+//            return 1-nar.loop.throttle.floatValue();
+//        });
+
         for (Game ww : w)
             add(ww);
     }
