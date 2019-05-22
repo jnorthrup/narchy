@@ -15,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class NAL2Test extends NALTest {
 
-    private static final int cycles = 1500;
+    private static final int cycles = 2500;
 
 
     @Override
@@ -71,6 +71,7 @@ public class NAL2Test extends NALTest {
     void setDefinition2() {
 
         TestNAR tester = test;
+        tester.termVolMax(7);
         tester.believe("<[smart] --> [bright]>");
         tester.mustBelieve(cycles, "<[bright] <-> [smart]>", 1.0f, 0.9f);
 
@@ -80,6 +81,7 @@ public class NAL2Test extends NALTest {
     void setDefinition3() {
 
         TestNAR tester = test;
+        tester.termVolMax(7);
         tester.believe("<{Birdie} <-> {Tweety}>");
         tester.mustBelieve(cycles, "<Birdie <-> Tweety>", 1.0f, 0.9f);
         tester.mustBelieve(cycles, "<{Tweety} --> {Birdie}>", 1.0f, 0.9f);
@@ -90,6 +92,7 @@ public class NAL2Test extends NALTest {
     void setDefinition4() {
 
         TestNAR tester = test;
+        tester.termVolMax(5);
         tester.believe("<[bright] <-> [smart]>");
         tester.mustBelieve(cycles, "<bright <-> smart>", 1.0f, 0.9f);
         tester.mustBelieve(cycles, "<[bright] --> [smart]>", 1.0f, 0.9f);
@@ -147,6 +150,7 @@ public class NAL2Test extends NALTest {
     void testUnion() {
 
         test
+                .termVolMax(5)
                 .believe("a:{x}.")
                 .believe("a:{y}.")
                 .mustBelieve(cycles, "a:{x,y}", 1.0f, 0.81f);
@@ -200,6 +204,7 @@ public class NAL2Test extends NALTest {
     @Test
     void testIntersectDiffUnionOfCommonSubtermsPre() {
         test
+                .termVolMax(5)
                 .believe("<{x,y}-->c>")
                 .mustBelieve(cycles, "<{x}-->c>", 1f, 0.81f)
                 .mustBelieve(cycles, "<{y}-->c>", 1f, 0.81f)
@@ -223,7 +228,7 @@ public class NAL2Test extends NALTest {
     void set_operations() {
 
         test
-                .termVolMax(7)
+                .termVolMax(8)
                 .confMin(0.7f)
                 .believe("<planetX --> {Mars,Pluto,Venus}>", 0.9f, 0.9f)
                 .believe("<planetX --> {Pluto,Saturn}>", 0.7f, 0.9f)

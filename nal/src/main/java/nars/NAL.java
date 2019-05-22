@@ -92,8 +92,8 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
      * should be monotonically increasing at most
      */
     public static final PriMerge tasklinkMerge =
-            //PriMerge.or;
-            PriMerge.plus;
+            PriMerge.or;
+            //PriMerge.plus;
 
 //    public static final boolean ETERNALIZE_BELIEF_PROJECTED_FOR_GOAL_DERIVATION= !configIs("DISABLE_ETERNALIZE_BELIEF_PROJECTED_FOR_GOAL_DERIVATION");
     /**
@@ -102,7 +102,8 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
      * priority calculation here currently depends on a commutive and associaive function
      */
     public static final FloatFloatToFloatFunction DerivationPri =
-            (t, b) -> Util.unitize(t + b); //plus, max=1
+            (t, b) -> Util.or(t , b); //plus, max=1
+            //(t, b) -> Util.unitize(t + b); //plus, max=1
 
 //    /** durs surrounding a derived temporal goal with one eternal (of two) parent tasks */
 //    public static final float GOAL_PROJECT_TO_PRESENT_RADIUS_DURS = 1;
@@ -192,7 +193,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
     /** override to allow all goal evidence overlap */
     public static final boolean OVERLAP_ALLOW_GOAL = false;
 
-    /** if true then tasklink targets are named by the concept and not a raw term (which could be temporal) */
+    /** if true then tasklink targets are named by the concept and not a raw term (which could be temporal or not normalized) */
     public static final boolean TASKLINK_TARGET_CONCEPT = true;
 
 
@@ -380,8 +381,8 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
                 //0.5f;
                 //1;
                 //1.618f; //phi
-                //2; //nyquist / horizon
-                4;
+                2; //nyquist / horizon
+                //4;
                 //dur;
                 //8;
                 //64;
@@ -651,7 +652,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
          * for NALTest's: extends the time all unit tests are allowed to run for.
          * normally be kept to 1 but for debugging this may be increased to find what tests need more time
          */
-        public static final float TIME_MULTIPLIER = 2f;
+        public static final float TIME_MULTIPLIER = 1.5f;
         /**
          * how precise unit test results must match expected values to pass
          */

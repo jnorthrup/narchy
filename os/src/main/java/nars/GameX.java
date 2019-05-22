@@ -101,7 +101,7 @@ abstract public class GameX extends Game {
     }
 
     public static NAR runRT(Function<NAR, Game> init, int threads, float narFPS) {
-        NAR n = baseNAR(narFPS/2 /* nyquist */, threads);
+        NAR n = baseNAR(narFPS, threads);
 
         Game g = init.apply(n);
 
@@ -391,10 +391,10 @@ abstract public class GameX extends Game {
         n.confMin.set(0.01f);
         n.termVolumeMax.set(32);
 
-        n.beliefPriDefault.amp(0.05f);
-        n.goalPriDefault.amp(0.25f);
-        n.questionPriDefault.amp(0.01f);
-        n.questPriDefault.amp(0.02f);
+        n.beliefPriDefault.amp(0.005f);
+        n.goalPriDefault.amp(0.025f);
+        n.questionPriDefault.amp(0.001f);
+        n.questPriDefault.amp(0.002f);
 
 //        n.beliefPriDefault.pri(0.01f);
 //        n.goalPriDefault.pri(0.01f);

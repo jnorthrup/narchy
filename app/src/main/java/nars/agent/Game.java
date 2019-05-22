@@ -298,7 +298,7 @@ public class Game extends NARPart implements NSense, NAct, Timed {
     }
 
     public Reward reward(FloatSupplier rewardfunc) {
-        return reward(rewardTerm("reward"), 1, rewardfunc);
+        return reward(rewardTerm("happy"), 1, rewardfunc);
     }
 
     public Reward reward(String reward, float freq, FloatSupplier rewardFunc) {

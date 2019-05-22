@@ -1,5 +1,6 @@
 package nars.nal.nal8;
 
+import jcog.Util;
 import nars.NAR;
 import nars.NARS;
 import nars.test.NALTest;
@@ -7,6 +8,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
+import static nars.Op.BELIEF;
 import static nars.Op.GOAL;
 
 /**
@@ -38,7 +40,14 @@ abstract public class DecompositionTest extends NALTest {
                     .termVolMax(5)
                     .input("(&&,a,b). %0.75;0.9%")
                     .input("a. %0.80;0.9%")
-                    .mustBelieve(cycles, "b", 0.60f, 0.49f);
+                    .mustBelieve(cycles, "b", 0.60f, 0.49f)
+                    .must(BELIEF, true, (t)->{
+                        if (t.term().toString().equals("b")) {
+                            float f = t.freq();
+                            return !Util.equals(f, 0.60f, 0.05f) || t.conf() < 0.2f;
+                        }
+                        return true;
+                    });
         }
 
         @Test

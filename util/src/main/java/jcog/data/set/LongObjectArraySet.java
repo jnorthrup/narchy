@@ -41,7 +41,7 @@ public class LongObjectArraySet<X> extends FasterList<X> {
 
 
     @Override
-    public FastList<X> sortThis() {
+    public LongObjectArraySet sortThis() {
         if (size <= 1)
             return this;
 

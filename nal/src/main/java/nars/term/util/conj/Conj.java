@@ -2,6 +2,7 @@ package nars.term.util.conj;
 
 import jcog.TODO;
 import jcog.WTF;
+import jcog.data.bit.MetalBitSet;
 import jcog.data.list.FasterList;
 import jcog.data.set.LongObjectArraySet;
 import jcog.util.ArrayUtil;
@@ -14,6 +15,7 @@ import nars.term.atom.Bool;
 import nars.term.util.TermException;
 import nars.term.util.builder.TermBuilder;
 import nars.term.util.map.ByteAnonMap;
+import nars.time.Tense;
 import org.eclipse.collections.api.block.predicate.primitive.ByteObjectPredicate;
 import org.eclipse.collections.api.block.predicate.primitive.BytePredicate;
 import org.eclipse.collections.api.block.predicate.primitive.LongObjectPredicate;
@@ -41,7 +43,8 @@ import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Predicate;
 
 import static java.lang.System.arraycopy;
-import static nars.Op.*;
+import static nars.Op.CONJ;
+import static nars.Op.NEG;
 import static nars.term.atom.Bool.*;
 import static nars.time.Tense.*;
 import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
@@ -100,47 +103,43 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
         return new Conj(x.termToId, x.idToTerm);
     }
 
-    public static Conj from(Term t) {
+    public static Conj events(Term t) {
         Conj c = new Conj();
         c.addAuto(t);
         return c;
     }
 
-    private static ConjLazy fromLazy(Term t) {
-        return ConjLazy.events(t);
-    }
-
     public static boolean containsOrEqualsEvent(Term container, Term x) {
-        return container.equals(x) || containsEvent(container, x);
+        return container.equals(x) || eventOf(container, x);
     }
 
     public static Term removeEvent(/*TermBuilder B, */ Term x, Term what) {
-        if (x.op()!=CONJ || !Term.commonStructure(x, what))
+        if (x.op() != CONJ || !Term.commonStructure(x, what))
             return x;
 
-        ConjBuilder y = Conj.fromLazy(x);
+        ConjBuilder y = ConjLazy.events(x);
         return y.removeAll(what) ? y.term() : x;
     }
 
     public static Term removeEvent(/*TermBuilder B, */ Term x, Term what, long when) {
-        if (x.op()!=CONJ || !Term.commonStructure(x, what))
+        if (x.op() != CONJ || !Term.commonStructure(x, what))
             return x;
 
-        ConjBuilder y = Conj.fromLazy(x);
+        ConjBuilder y = ConjLazy.events(x);
         return y.remove(when, what) ? y.term() : x;
     }
 
-    public static boolean containsEvent(Term container, Term x) {
-        return containsEvent(container, x, ETERNAL, +1);
+    public static boolean eventOf(Term container, Term x) {
+        return eventOf(container, x, ETERNAL, +1);
     }
 
     /**
      * @param polarity +1: unaffected input, -1: if contains input negated, 0: either as-is or negated
-     * @param when if eternal, matches any time
-     *
-     * TODO test for subsequences
+     * @param when     if eternal, matches any time
+     *                 <p>
+     *                 TODO test for subsequences
      */
-    public static boolean containsEvent(Term container, Term _x, long when, int polarity) {
+    public static boolean eventOf(Term container, Term _x, long when, int polarity) {
         Term x;
         if (polarity == 0)
             throw new TODO();
@@ -152,33 +151,44 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
         if (container.op() != CONJ || !x.op().eventable)
             return false;
 
-        if (when == ETERNAL && x.op()==CONJ && x.dt()==DTERNAL) {
+        if (container.equals(x))
+            return false;
+
+        if (when == ETERNAL && x.op() == CONJ && x.dt() == DTERNAL) {
             //decompose eternal (test before container.impossibleSubterm)
 
             //TODO accelerated 'flat' case: if (when == ETERNAL && container.op()==CONJ && container.dt()==)
 
-            return x.subterms().AND(xx -> containsEvent(container, xx, when, polarity));
+            return x.subterms().AND(xx -> eventOf(container, xx, when, polarity));
         }
 
         if (container.impossibleSubTerm(x))
             return false;
 
-        if (when==ETERNAL && container.contains(x)) //quick test
+        if (when == ETERNAL && container.contains(x)) //quick test
             return true;
 
+        if (isSeq(x)) {
+            //more exhaustive match necessary
+//            return x.eventsWhile((wwhe,wwha)->{
+//
+//                return eventOf(wwhe);
+//            },0,true,container.dt()==XTERNAL);
 
+            //TODO fast 2-ary case
 
-//        if (isSeq(container)) {
-            //check if the term exists when distributed factorized
-//            boolean xIsConj = x.op() == CONJ;
-//            int xdt = xIsConj ? x.dt() : DTERNAL;
+            return (when == ETERNAL || when == 0) ? !Conj.diffAll(container, x).equals(container)
+                    :
+                    false; //TODO
+
+        } else if (isSeq(container)) {
             return !container.eventsWhile(
-                    when==ETERNAL ?
-                        (w, cc) -> !(cc.equals(x)) :
-                        (w, cc) -> !(w==when && cc.equals(x))
-                    , 0, x.op()!=CONJ || x.dt() != DTERNAL, container.dt()==XTERNAL);
-//        } else
-//            return false;
+                    when == ETERNAL ?
+                            (w, cc) -> !(cc.equals(x)) :
+                            (w, cc) -> !(w == when && cc.equals(x))
+                    , when, true, container.dt() == XTERNAL);
+        } else
+            return false;
 
     }
 
@@ -504,7 +514,7 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
             case NEG:
                 return negateEvents(x.unneg()).neg();
             case CONJ: {
-                ConjBuilder c = Conj.fromLazy(x);
+                ConjBuilder c = ConjLazy.events(x);
                 c.negateEvents();
                 return c.term();
             }
@@ -594,9 +604,9 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
 //        return y.negIf(negated);
 //    }
 
-    public static Term diffOne(Term include, Term exclude) {
-        return diffOne(include, exclude, false);
-    }
+//    public static Term diffOne(Term include, Term exclude) {
+//        return diffOne(include, exclude, false);
+//    }
 
     public static Term diffAll(Term include, Term exclude) {
         return diffAll(include, exclude, false);
@@ -607,6 +617,9 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
     }
 
     public static Term diffAll(Term include, Term exclude, boolean autoNeg, boolean excludeNeg) {
+
+        if (include.equals(exclude) || (excludeNeg && include.equalsNeg(exclude)))
+            return True;
 
         if (autoNeg && include.op() == NEG) {
             Term y = diffAll(include.unneg(), exclude, false, excludeNeg);
@@ -646,157 +659,242 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
 //
 //        }
 
-        if (exclude.op()==CONJ && exclude.dt()==include.dt() && (include.dt()==XTERNAL || (include.dt()==DTERNAL && !isSeq(include)))) {
-            SortedSet<Term> is = include.eventSet();
-            boolean rem = false;
-            for (Term x : exclude.subterms())
-                rem |= is.remove(x);
-            if (rem)
-                return CONJ.the(is);
-            else
-               return include; //unchanged
-        }
+        boolean iSeq = isSeq(include);
+        boolean eSeq = isSeq(exclude);
+        if (iSeq && eSeq) {
+            Subterms iis = include.subterms();
 
-        if (exclude.op() == CONJ || isSeq(include)) {
-//            Conj xx = Conj.from(include);
-//            if (xx.removeEventsByTerm(exclude, true, excludeNeg)) {
-//                return xx.term();
-//            } else {
+            if (iis.contains(exclude))
+                return removeComm(include, exclude); //simple raw equality test
+
+            if (!iis.hasAny(CONJ)) {
+                return include; //neither are complex sequences so include can not contain exclude
+            }
+
+            //fast 2-ary test
+            ConjLazy ee = ConjLazy.events(exclude);
+            if (ee.size()==2 && ee.when(0)==0) {
+                //ee.sortThis();
+                boolean modified = false;
+                Term eeFirst = ee.get(0);
+                Term eeSecond = ee.get(1);
+                int dt = Tense.occToDT(ee.when(1) - ee.when(0));
+                ConjLazy ii = ConjLazy.events(include);
+                int clipStart = -1;
+                do {
+                    clipStart = ii.indexOf(clipStart, eeFirst::equals);
+                    if (clipStart!=-1) {
+
+                        long start = ii.when(clipStart);
+                        int clipEnd = ii.indexOf(clipStart+1, eeSecond::equals);
+                        if (clipEnd!=-1) {
+                            if (ii.when(clipEnd)-start==dt) {
+                                MetalBitSet mm = MetalBitSet.bits(ii.size());
+                                mm.set(clipStart); mm.set(clipEnd);
+                                ii.removeAll(mm, ii.size());
+                                modified = true;
+                            }
+                        }
+                        clipStart++;
+                    }
+
+                } while (clipStart!=-1 && !ii.isEmpty());
+
+                return modified ? ii.term() : include /* unchanged */;
+            }
+
+            //TODO exhaustive match
+            return Null;
+
+
+//
+
+//            ConjLazy ii =
+//                    //Conj.from(include);
+//                    Conj.fromLazy(include);
+//            MetalBitSet starts = MetalBitSet.bits(ii.size());
+//            ConjLazy ee =
+//                    //Conj.from(include);
+//                    Conj.fromLazy(include);
+//
+//
+//
+//            ii.forEachEvent((when,what)->{
+//
+//            });
+//
+//            if (ii.removeAll(ee))
+//                return ii.term();
+//            else
 //                return include;
-//            }
 
-            ConjBuilder x =
-                    //Conj.from(include);
-                    Conj.fromLazy(include);
+        } else if (iSeq && !eSeq) {
+
+            ConjBuilder ii =
+                    //Conj.events(include);
+                    ConjLazy.events(include);
 
             boolean[] removedSomething = new boolean[]{false};
 
-            long offset = (include.dt()==XTERNAL || (exclude.dt() == DTERNAL && !isSeq(exclude))) ? ETERNAL : 0;
+            long offset = (include.dt() == XTERNAL || (exclude.dt() == DTERNAL && !isSeq(exclude))) ? ETERNAL : 0;
 
             exclude.eventsWhile((when, what) -> {
-                removedSomething[0] |= when == ETERNAL ? x.removeAll(what) : x.remove(when, what);
+                removedSomething[0] |= when == ETERNAL ? ii.removeAll(what) : ii.remove(when, what);
                 //removedSomething[0] |= x.remove(when, what);
                 return true;
-            }, offset, true, true);
+            }, offset, true, exclude.dt() == XTERNAL);
 
-            return removedSomething[0] ? x.term() : include;
-        } else {
-            Subterms s = include.subterms();
-            //try positive first
-            Term[] ss = Terms.withoutOne(s, t -> t.equals(exclude), ThreadLocalRandom.current());
-            //, s.subsExcluding(exclude);
-            if (ss != null) {
-                int dt = include.dt();
-                return ss.length > 1 ? terms.conj(dt, ss) : ss[0];
-            } else {
-                //try negative next
-                if (excludeNeg) {
-                    Term excludeNegTerm = exclude.neg();
-                    ss = Terms.withoutOne(s, t -> t.equals(excludeNegTerm), ThreadLocalRandom.current());
-                    if (ss != null) {
-                        return terms.conj(include.dt(), ss);
-                    }
-                }
-
-                return include; //not found
-            }
-
-        }
-    }
-
-    @Deprecated
-    public static Term diffOne(Term include, Term exclude, @Deprecated boolean excludeNeg) {
-        return diffOne(include, exclude, excludeNeg, ThreadLocalRandom.current());
-    }
-
-    /**
-     * include may be a conjunction or a negation of a conjunction. the result will be polarized accordingly
-     */
-    public static Term diffOne(Term include, Term exclude, @Deprecated boolean excludeNeg, Random rng) {
-
-
-        final Op io = include.op();
-        if (io == NEG) {
-            //negated conjunction
-            Term iu = include.unneg();
-            if (iu.op() == CONJ) {
-                Term r = diffOne(iu, exclude, excludeNeg, rng); //TODO better
-                if (r == True)
-                    return True;
-                else
-                    return r.neg();
-            }
-        }
-
-        final Op eo = exclude.op();
-
-        boolean eitherNeg = io == NEG || eo == NEG;
-
-        if (excludeNeg && eitherNeg) {
-            if (include.unneg().equals(exclude.unneg()))
-                return True;
-        } else {
-            if (include.equals(exclude))
-                return True;
-        }
-        if (io != CONJ)
-            return include;
-
-
-//        if (!excludeNeg && eo == CONJ)
-//            return diffAll(include, exclude); //HACK
-
-        if (include.impossibleSubTerm(excludeNeg ? exclude.unneg() : exclude))
-            return include;
-
-
-//        if (Conj.isSeq(include)) {
-
-
-        boolean decomposeDternal = eo != CONJ && exclude.dt() != DTERNAL;
-        boolean decomposeParallel = eo != CONJ && exclude.dt() != 0;
-        List<LongObjectPair<Term>> ee = Conj.match(include, decomposeParallel,
-                !excludeNeg ?
-                        (when, what) -> what.equals(exclude)
-                        :
-                        (when, what) -> what.equalsPosOrNeg(exclude)
-        );
-        LongObjectPair<Term> e;
-        switch (ee.size()) {
-            case 0:
-                return include; //nothing removed
-            case 1:
-                e = ee.get(0);
-                break;
-            default: {
-                e = ((FasterList<LongObjectPair<Term>>) ee).get(rng);
-                break;
-            }
-        }
-        return Conj.remove(include, e);
-
-
-//        } else { int dt = include.dt();
+            return removedSomething[0] ? ii.term() : include;
+//        } else {
 //            Subterms s = include.subterms();
 //            //try positive first
-//            Term[] ss = s.subsExcluding(exclude);
+//            Term[] ss = Terms.withoutOne(s, t -> t.equals(exclude), ThreadLocalRandom.current());
+//            //, s.subsExcluding(exclude);
 //            if (ss != null) {
+//                int dt = include.dt();
 //                return ss.length > 1 ? terms.conj(dt, ss) : ss[0];
 //            } else {
 //                //try negative next
 //                if (excludeNeg) {
-//                    ss = s.subsExcluding(exclude.neg());
+//                    Term excludeNegTerm = exclude.neg();
+//                    ss = Terms.withoutOne(s, t -> t.equals(excludeNegTerm), ThreadLocalRandom.current());
 //                    if (ss != null) {
-//                        return terms.conj(dt, ss);
+//                        return terms.conj(include.dt(), ss);
 //                    }
 //                }
 //
 //                return include; //not found
 //            }
-//
-//        }
 
+        } else {
+            //if (exclude.op()==CONJ && exclude.dt()==include.dt() && (include.dt()==XTERNAL || (include.dt()==DTERNAL && !isSeq(include)))) {
+            return removeComm(include, exclude);
+            //}
+        }
     }
+
+    /** exclude must be a simple event */
+    public static Term removeComm(Term include, Term exclude) {
+
+        Subterms incSub = include.subterms();
+        if (incSub.subs()==2 && exclude.op()!=CONJ) {
+            int ei = incSub.indexOf(exclude);
+            if (ei == -1)
+                return include;
+            else
+                return incSub.sub(1-ei); //the other
+        }
+
+        SortedSet<Term> is = incSub.toSetSorted(
+                (exclude.op()==CONJ && exclude.dt()==DTERNAL) ?
+                        (Term x) -> !exclude.equals(x) && !exclude.contains(x) :
+                        (Term x) -> !exclude.equals(x)
+        );
+        if (is.size() == incSub.subs())
+            return include; //nothing removed
+
+//        boolean rem = false;
+//        for (Term x : exclude.subterms())
+//            rem |= is.remove(x);
+//        if (rem)
+            return CONJ.the(include.dt(), is);
+//        else
+//            return include; //unchanged
+    }
+
+//    @Deprecated
+//    public static Term diffOne(Term include, Term exclude, @Deprecated boolean excludeNeg) {
+//        return diffOne(include, exclude, excludeNeg, ThreadLocalRandom.current());
+//    }
+//
+//    /**
+//     * include may be a conjunction or a negation of a conjunction. the result will be polarized accordingly
+//     */
+//    public static Term diffOne(Term include, Term exclude, @Deprecated boolean excludeNeg, Random rng) {
+//
+//
+//        final Op io = include.op();
+//        if (io == NEG) {
+//            //negated conjunction
+//            Term iu = include.unneg();
+//            if (iu.op() == CONJ) {
+//                Term r = diffOne(iu, exclude, excludeNeg, rng); //TODO better
+//                if (r == True)
+//                    return True;
+//                else
+//                    return r.neg();
+//            }
+//        }
+//
+//        final Op eo = exclude.op();
+//
+//        boolean eitherNeg = io == NEG || eo == NEG;
+//
+//        if (excludeNeg && eitherNeg) {
+//            if (include.unneg().equals(exclude.unneg()))
+//                return True;
+//        } else {
+//            if (include.equals(exclude))
+//                return True;
+//        }
+//        if (io != CONJ)
+//            return include;
+//
+//
+////        if (!excludeNeg && eo == CONJ)
+////            return diffAll(include, exclude); //HACK
+//
+//        if (include.impossibleSubTerm(excludeNeg ? exclude.unneg() : exclude))
+//            return include;
+//
+//
+////        if (Conj.isSeq(include)) {
+//
+//
+//        boolean decomposeDternal = eo != CONJ && exclude.dt() != DTERNAL;
+//        boolean decomposeParallel = eo != CONJ && exclude.dt() != 0;
+//        List<LongObjectPair<Term>> ee = Conj.match(include, decomposeParallel,
+//                !excludeNeg ?
+//                        (when, what) -> what.equals(exclude)
+//                        :
+//                        (when, what) -> what.equalsPosOrNeg(exclude)
+//        );
+//        LongObjectPair<Term> e;
+//        switch (ee.size()) {
+//            case 0:
+//                return include; //nothing removed
+//            case 1:
+//                e = ee.get(0);
+//                break;
+//            default: {
+//                e = ((FasterList<LongObjectPair<Term>>) ee).get(rng);
+//                break;
+//            }
+//        }
+//        return Conj.remove(include, e);
+//
+//
+////        } else { int dt = include.dt();
+////            Subterms s = include.subterms();
+////            //try positive first
+////            Term[] ss = s.subsExcluding(exclude);
+////            if (ss != null) {
+////                return ss.length > 1 ? terms.conj(dt, ss) : ss[0];
+////            } else {
+////                //try negative next
+////                if (excludeNeg) {
+////                    ss = s.subsExcluding(exclude.neg());
+////                    if (ss != null) {
+////                        return terms.conj(dt, ss);
+////                    }
+////                }
+////
+////                return include; //not found
+////            }
+////
+////        }
+//
+//    }
 
     public static Term remove(Term include, LongObjectPair<Term> e) {
         int idt = include.dt();
@@ -812,7 +910,7 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
                 return ss[0];
         } else {
             //slow sequence remove
-            Conj f = Conj.from(include);
+            Conj f = Conj.events(include);
             if (f.remove(e))
                 return f.term();
             else
@@ -860,8 +958,8 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
     /**
      * merge an incoming target with a disjunctive sub-expression (occurring at same event time) reductions applied:
      * ...
-     //TODO this is only necessary for conjCommutive and conjSeq which invoke conjoin directly.
-     // adapt disjunctify2 to replace this:
+     * //TODO this is only necessary for conjCommutive and conjSeq which invoke conjoin directly.
+     * // adapt disjunctify2 to replace this:
      */
     private static Term disjunctify(TermBuilder B, Term existing, Term incoming, boolean eternal) {
         Term existingUnneg = existing.unneg();
@@ -873,7 +971,8 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
         }
     }
 
-    @Deprecated private static Term disjunctionVsNonDisjunction(TermBuilder B, Term conjUnneg, Term incoming, boolean eternal) {
+    @Deprecated
+    private static Term disjunctionVsNonDisjunction(TermBuilder B, Term conjUnneg, Term incoming, boolean eternal) {
 //        if (incoming.op()==CONJ)
 //            throw new WTF(incoming + " should have been decomposed further");
 
@@ -969,7 +1068,8 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
 
     }
 
-    @Deprecated private static Term disjunctionVsDisjunction(TermBuilder builder, Term a, Term b, boolean eternal) {
+    @Deprecated
+    private static Term disjunctionVsDisjunction(TermBuilder builder, Term a, Term b, boolean eternal) {
         Conj aa = new Conj();
         if (eternal) aa.addAuto(a);
         else aa.add(0, a);
@@ -1489,6 +1589,7 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
 
     /**
      * cancels and eliminates disjunctive paths that interfere with an incoming event at its occurrence time
+     *
      * @return
      */
     private int disjunctify2(long when, Object ee, Term incoming) {
@@ -1518,7 +1619,7 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
             Term d = unindex((byte) -dui);
             if (d.op() == CONJ) {
                 long offset = when == ETERNAL ? ETERNAL : 0 /* TODO sequence cancellation */;
-                if (Conj.containsEvent(d, incoming, offset, +1)) {
+                if (Conj.eventOf(d, incoming, offset, +1)) {
                     //TODO remove conflicting branch from disj but add the conj condition
                     remove(when, dui);
 
@@ -1526,7 +1627,7 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
                     long shift;
 
                     int ddt = d.dt();
-                    if (ddt ==XTERNAL || (ddt ==DTERNAL && d.contains(incoming) /* HACK to split a sequence non-sequentially at the top-level */)) {
+                    if (ddt == XTERNAL || (ddt == DTERNAL && d.contains(incoming) /* HACK to split a sequence non-sequentially at the top-level */)) {
                         Term[] ee = d.subterms().removing(incoming);
                         if (ee == null)
                             throw new WTF();
@@ -1555,7 +1656,7 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
                         //assert(removed);
 
                         e = D.term();
-                        shift = when!=ETERNAL ? D.shift() : 0;
+                        shift = when != ETERNAL ? D.shift() : 0;
                     }
 
 
@@ -1564,7 +1665,7 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
 
                     add(when, incoming);
                     return +1;
-                } else if (Conj.containsEvent(d, incoming.neg(), offset, -1)) {
+                } else if (Conj.eventOf(d, incoming.neg(), offset, -1)) {
                     remove(when, dui);
                     add(when, incoming);
                     return +1;
@@ -1573,7 +1674,6 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
         }
         return 0;
     }
-
 
 
     public final ConjBuilder with(long at, Term x) {
@@ -1596,7 +1696,7 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
 
     private boolean added(boolean success) {
         if (success) {
-            if (this.result!=null) {
+            if (this.result != null) {
                 if (result instanceof Bool)
                     return false; //HACK
                 throw new WTF();
@@ -1646,7 +1746,6 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
         if (!polarity) id = (byte) -id;
 
 
-
         switch (filterAdd(at, id, x)) {
             case +1:
                 return true; //ignore and continue
@@ -1678,7 +1777,7 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
         Object events = event.getIfAbsentPut(at, () -> new byte[ROARING_UPGRADE_THRESH]);
 
 
-        if (at!=ETERNAL) {//ETERNAL already tested above
+        if (at != ETERNAL) {//ETERNAL already tested above
             int d = disjunctify2(at, events, incoming);
             if (d == +1)
                 return true; //absorb
@@ -1831,7 +1930,7 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
 
     @Override
     public boolean remove(long at, Term t) {
-        if (t.op() != CONJ || t.dt()==XTERNAL) {
+        if (t.op() != CONJ || t.dt() == XTERNAL) {
             byte i = get(t);
             if (i == Byte.MIN_VALUE)
                 return false;

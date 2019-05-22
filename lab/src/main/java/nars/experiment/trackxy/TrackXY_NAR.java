@@ -2,8 +2,6 @@ package nars.experiment.trackxy;
 
 import com.jogamp.opengl.GL2;
 import jcog.Util;
-import jcog.learn.Agenterator;
-import jcog.learn.ql.HaiQae;
 import jcog.math.FloatAveragedWindow;
 import jcog.math.FloatNormalized;
 import jcog.math.FloatSupplier;
@@ -24,7 +22,6 @@ import nars.term.Term;
 import nars.time.clock.CycleTime;
 import org.eclipse.collections.impl.block.factory.Comparators;
 import spacegraph.space2d.ReSurface;
-import spacegraph.space2d.container.LogContainer;
 import spacegraph.space2d.container.Splitting;
 import spacegraph.space2d.container.graph.EditGraph2D;
 import spacegraph.space2d.widget.meta.ObjectSurface;
@@ -39,22 +36,22 @@ import static nars.Op.IMPL;
 public class TrackXY_NAR extends GameX {
 
     static boolean
-            sourceNumerics = true,
+            sourceNumerics = false,
             targetNumerics = false,
             targetCam = !targetNumerics,
             gui = true;
 
     //W = 3, H = 1;
     //W = 5, H = 1;
-    public static final int derivationStrength = 2;
+//    public static final int derivationStrength = 2;
 
 //    static float fps = 16;
 //    static int durMS = Math.round(1000/(fps));
 
-    static int dur = 16;
+    static int dur = 8;
 
     static float camResolution = 0.1f;
-    static int volMax = 11;
+    static int volMax = 20;
     final Bitmap2DSensor cam;
     private final TrackXY track;
 
@@ -112,7 +109,7 @@ public class TrackXY_NAR extends GameX {
         actionAccelerate();
 
 //        {
-//            curiosity.enable.setAt(false);
+//            curiosity.enable.set(false);
 //            GraphEdit w = new GraphEdit(RectFloat.X0Y0WH(0, 0, 256, 256));
 //
 //            w.addAt(new KeyboardChip.ArrowKeysChip() {
@@ -132,7 +129,7 @@ public class TrackXY_NAR extends GameX {
 //        }
 
 //        if (alwaysTrain) {
-//            curiosity.enable.setAt(false);
+//            curiosity.enable.set(false);
 //            onFrame(x -> {
 //                track.act();
 //            });
@@ -213,22 +210,22 @@ public class TrackXY_NAR extends GameX {
 //            }
 //        });
 
-//        n.beliefConfDefault.setAt(0.5f);
-//        n.goalConfDefault.setAt(0.5f);
+//        n.beliefConfDefault.set(0.5f);
+//        n.goalConfDefault.set(0.5f);
 
 //        n.attn.links.capacity(1024);
 
-        n.goalPriDefault.amp(0.5f);
+        n.goalPriDefault.amp(0.2f);
         n.beliefPriDefault.amp(0.1f);
         n.questionPriDefault.amp(0.05f);
         n.questPriDefault.amp(0.05f);
 
 
-//        n.freqResolution.setAt(0.1f);
-//        n.confResolution.setAt(0.05f);
+        n.freqResolution.set(0.1f);
+//        n.confResolution.set(0.05f);
 
 
-        //n.freqResolution.setAt(0.04f);
+        //n.freqResolution.set(0.04f);
 
         n.termVolumeMax.set(volMax);
         //n.dtDither.set(Math.max(1, durMS));
@@ -248,7 +245,7 @@ public class TrackXY_NAR extends GameX {
         };
 
 
-        ((BatchDeriver) d).premisesPerIteration.set(derivationStrength);
+//        ((BatchDeriver) d).premisesPerIteration.set(derivationStrength);
 
 
         new STMLinkage(n, 1) {
@@ -295,7 +292,7 @@ public class TrackXY_NAR extends GameX {
 //        }, GOAL);
 
         //final int W = 3, H = 1;
-        final int W = 5, H = 5;
+        final int W = 3, H = 3;
 
         TrackXY_NAR a = new TrackXY_NAR(n, new TrackXY(W, H));
 
@@ -309,7 +306,7 @@ public class TrackXY_NAR extends GameX {
 //                    //HaiQ::new,
 //
 //                    false);
-//            a.curiosity.enable.setAt(false);
+//            a.curiosity.enable.set(false);
 //
 //        }
 
@@ -336,29 +333,29 @@ public class TrackXY_NAR extends GameX {
 
 //                g.add(new PIDChip(new MiniPID(0.01, 0.01, 0.01))).sizeRel(0.1f, 0.1f);
 
-                {
-                    FloatAveragedWindow dexThrough = new FloatAveragedWindow(16, 0.1f);
-                    Agenterator aa = n.control.agent(
-                            () -> dexThrough.valueOf((float) (a.dexterity() + 0.01f * a.happiness())),
-                            (i, o) -> new HaiQae(i, 32, o));
-                    HaiQChip haiQChip = new HaiQChip((HaiQae) aa.agent) ;
-                    g.add(haiQChip).posRel(0.5f, 0.5f, 0.2f, 0.2f);
-
-
-                    haiQChip.getPlot().add("reward", aa::asFloat /* warning: THIS asFloat CALL ACTUALLY INVOKES THE AGENT */);
-
-//        n.onCycle(()->haiQChip.next(reward));
-                    n.onCycle(
-                    //DurService.on(n,
-                            ()->{  haiQChip.next(); });
-                }
-
-                g.add(new LogContainer(32) {
-                    {
-                        LogContainer z = this; //HACK
-                        n.onTask(t->z.append(t.toStringWithoutBudget()));
-                    }
-                }).sizeRel(0.25f, 0.25f);
+//                {
+//                    FloatAveragedWindow dexThrough = new FloatAveragedWindow(16, 0.1f);
+//                    Agenterator aa = n.control.agent(
+//                            () -> dexThrough.valueOf((float) (a.dexterity() + 0.01f * a.happiness())),
+//                            (i, o) -> new HaiQae(i, 32, o));
+//                    HaiQChip haiQChip = new HaiQChip((HaiQae) aa.agent) ;
+//                    g.add(haiQChip).posRel(0.5f, 0.5f, 0.2f, 0.2f);
+//
+//
+//                    haiQChip.getPlot().add("reward", aa::asFloat /* warning: THIS asFloat CALL ACTUALLY INVOKES THE AGENT */);
+//
+////        n.onCycle(()->haiQChip.next(reward));
+//                    n.onCycle(
+//                    //DurService.on(n,
+//                            ()->{  haiQChip.next(); });
+//                }
+//
+//                g.add(new LogContainer(32) {
+//                    {
+//                        LogContainer z = this; //HACK
+//                        n.onTask(t->z.append(t.toStringWithoutBudget()));
+//                    }
+//                }).sizeRel(0.25f, 0.25f);
 
 
                 //window.addAt(new ExpandingChip("x", ()->NARui.top(n))).posRel(0.8f,0.8f,0.25f,0.25f);

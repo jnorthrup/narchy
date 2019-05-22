@@ -36,6 +36,13 @@
 //    C, X, task("@"), eventOfPN(C,X) |-  (conjWithoutPN(C,X) && ?1), (Punctuation:Quest)
 
 
+    //conjunction goal induction from impl
+    C, (A==>B), task("!"), eventOf(C,B)    |- (C && A), (Goal:Desire)
+    C, (A==>B), task("!"), eventOf(C,B)    |- (--C && A), (Goal:DesireNP)
+    C, (A==>B), task("!"), eventOfNeg(C,B) |- (C && A), (Goal:DesirePN)
+    C, (A==>B), task("!"), eventOfNeg(C,B) |- (--C && A), (Goal:DesireNN)
+
+
     //avoidance TODO
 //    G, C, task("!"), eventOf(C,G)    |- (--C ==> ?1), (Punctuation:Question)
 //    G, C, task("!"), eventOfNeg(C,G) |- (--C ==> ?1), (Punctuation:Question)

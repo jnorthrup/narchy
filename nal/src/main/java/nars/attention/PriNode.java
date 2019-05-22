@@ -35,6 +35,11 @@ public class PriNode extends PLink<Term> {
         return priFraction() * pri();
     }
 
+    @Override
+    public float pri() {
+        return super.pri() * amp.floatValue();
+    }
+
     @Deprecated /* move to subclass */ protected float priFraction() {
         float i;
         int n = fanOut;
@@ -95,7 +100,7 @@ public class PriNode extends PLink<Term> {
         float pri;
         if (node.edgeCount(true,false) > 0) {
             Iterable<? extends Node<PriNode, Object>> in = neighbors(graph, true, false);
-            pri = (float) (merge.merge(in) * amp.floatValue());
+            pri = (float)merge.merge(in);
         } else {
             pri = 0; //disconnected
         }
@@ -121,6 +126,7 @@ public class PriNode extends PLink<Term> {
 
     /** re-parent */
     public void parent(PriNode[] parent, MapNodeGraph<PriNode, Object> g, NodeGraph.MutableNode<PriNode, Object> thisNode) {
+
 
         assert(parent.length > 0);
 
@@ -211,13 +217,13 @@ public class PriNode extends PLink<Term> {
         }
 
         @Override
-        public float pri() {
-            return value;
+        @Deprecated public float pri() {
+            return value * amp.floatValue();
         }
 
         @Override
-        public float priComponent() {
-            return value;
+        @Deprecated public float priComponent() {
+            return pri();
         }
     }
 }

@@ -48,7 +48,7 @@ public class SlidingDFTTensor extends ArrayTensor {
     }
 
     public void normalize() {
-        Util.normalize(data, 1 /* skip 0, dc offset */, data.length);
+        Util.normalize(data);
     }
 
     /** multiplicative filter, by freq index */

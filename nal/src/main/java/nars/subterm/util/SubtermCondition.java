@@ -41,7 +41,7 @@ public enum SubtermCondition implements BiPredicate<Term, Term> {
         @Override
         public boolean test(Term container, Term x) {
             //return x.op()==CONJ ? x.AND(container::contains) : container.contains(x);
-            return Conj.containsEvent(container, x);
+            return Conj.eventOf(container, x);
         }
 
         public float cost() {
@@ -54,7 +54,7 @@ public enum SubtermCondition implements BiPredicate<Term, Term> {
         @Override
         public boolean test(Term container, Term x) {
             //return x.op()==CONJ ? x.AND(container::containsNeg) : container.containsNeg(x);
-            return Conj.containsEvent(container, x.neg());
+            return Conj.eventOf(container, x.neg());
         }
 
         public float cost() {
@@ -76,7 +76,7 @@ public enum SubtermCondition implements BiPredicate<Term, Term> {
     Event() {
         @Override
         public final boolean test(Term container, Term x) {
-            return Conj.containsEvent(container, x);
+            return Conj.eventOf(container, x);
         }
 
         @Override

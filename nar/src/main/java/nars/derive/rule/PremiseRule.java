@@ -67,7 +67,7 @@ import static nars.time.Tense.DTERNAL;
 public class PremiseRule extends ProxyTerm {
 
     private static final Pattern ruleImpl = Pattern.compile("\\|-");
-    private static final String BIDI_modifier = "bidi:";
+
     private static final Term eteConj = $.the("eteConj");
     private static final Map<Term, UnifyConstraint> constra =
             new ConcurrentHashMap<>();
@@ -149,10 +149,6 @@ public class PremiseRule extends ProxyTerm {
     };
 
     public PremiseRule(String ruleSrc) throws Narsese.NarseseException {
-        this(ruleSrc, false);
-    }
-
-    private PremiseRule(String ruleSrc, boolean swap) throws Narsese.NarseseException {
         super(
                 rule(ruleSrc)
         );
@@ -169,17 +165,7 @@ public class PremiseRule extends ProxyTerm {
 
         Term a = patternify(precon[0]);
         Term b = patternify(precon[1]);
-        if (swap) {
-            String preconStr = ref.sub(0).toString().toLowerCase();
-            //if (preconStr.contains("task") || preconStr.contains("belief"))
-            //  throw new TODO();
-            String postconStr = ref.sub(1).toString()/*.toLowerCase()*/;
-            if (postconStr.contains("task") || postconStr.contains("belief"))
-                throw new TODO();
-            Term c = a;
-            a = b;
-            b = c;
-        }
+
         this.taskPattern = a;
         this.beliefPattern = b;
 
@@ -627,12 +613,7 @@ public class PremiseRule extends ProxyTerm {
         if (goalTruth != null && goalTruthOp == null)
             throw new RuntimeException("unknown GoalFunction: " + goalTruth);
 
-        if (swap) {
-            if (beliefTruthOp != null)
-                beliefTruthOp = new TruthFunc.SwappedTruth(beliefTruthOp);
-            if (goalTruthOp != null)
-                goalTruthOp = new TruthFunc.SwappedTruth(goalTruthOp);
-        }
+
 
         {
             CommutativeConstantPreFilter.tryFilter(true, taskPattern, beliefPattern, pre);
@@ -826,15 +807,15 @@ public class PremiseRule extends ProxyTerm {
 
     public static Stream<PremiseRule> parse(String src) {
         try {
-            //bidi-rectional: swap premise components, and swap truth func param
-            if (src.startsWith(BIDI_modifier)) {
-                src = src.substring(BIDI_modifier.length());
-                PremiseRule a = new PremiseRule(src, false);
-                PremiseRule b = new PremiseRule(src, true);
-                return a.equals(b) ? Stream.of(a) : Stream.of(a, b);
-            } else {
+//            //bidi-rectional: swap premise components, and swap truth func param
+//            if (src.startsWith(BIDI_modifier)) {
+//                src = src.substring(BIDI_modifier.length());
+//                PremiseRule a = new PremiseRule(src, false);
+//                PremiseRule b = new PremiseRule(src, true);
+//                return a.equals(b) ? Stream.of(a) : Stream.of(a, b);
+//            } else {
                 return Stream.of(new PremiseRule(src));
-            }
+//            }
         } catch (Exception e) {
             throw new RuntimeException("rule parse:\n\t" + src + "\n\t" + e.getMessage(), e);
         }

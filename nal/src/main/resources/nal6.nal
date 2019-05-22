@@ -5,7 +5,7 @@
 
 
      B, (  X ==> C), --is(X,"--"), --is(C,"#"), --is(B,"==>") |- unisubst(C,X,B,"$"), (Belief:Pre, Goal:PreWeak)
-     (  X ==> C), B, --is(X,"--"), --is(C,"#"), --is(B,"==>") |- unisubst(C,X,B,"$"), (Belief:PreX)
+     //(  X ==> C), B, --is(X,"--"), --is(C,"#"), --is(B,"==>") |- unisubst(C,X,B,"$"), (Belief:PreX)
 
         //--is(X,"#"),
 //         B, (X ==> (&&,  C,A..+))       |- unisubst(  (&&,X,A..+),C,B), (Belief:Pre)
@@ -21,7 +21,7 @@
 
 
      B, (--X ==> C), --is(C,"#"), --is(B,"==>") |- unisubst(C,X,B,"$"), (Belief:PreN, Goal:PreWeakN)
-     (--X ==> C), B, --is(C,"#"), --is(B,"==>") |- unisubst(C,X,B,"$"), (Belief:PreNX)
+     //(--X ==> C), B, --is(C,"#"), --is(B,"==>") |- unisubst(C,X,B,"$"), (Belief:PreNX)
 
             //,--is(X,"--")
 
@@ -33,7 +33,7 @@
           B, (--A ==> C), task("?@"), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- unisubst(C,A,B,"$")
 
     B, (C ==> A), --is(C,"#"), --is(B,"==>") |- unisubst(C,A,B,"$"), (Belief:PostWeak, Goal:Post)
-    (C ==> A), B, --is(C,"#"), --is(B,"==>") |- unisubst(C,A,B,"$"), (Belief:PostWeakX)
+    //(C ==> A), B, --is(C,"#"), --is(B,"==>") |- unisubst(C,A,B,"$"), (Belief:PostWeakX)
 
 
         //antigoal:
@@ -264,8 +264,8 @@
     //Conditional Abduction via Multi-conditional Syllogism
     (C ==> X), (E ==> Y), eventOf(C,E)      |-    conjWithout(C,E), (Belief:AbductionPB)
     (C ==> X), (--E ==> Y), eventOfNeg(C,E) |-    conjWithout(C,--E), (Belief:AbductionPB)
-      (E ==> Y), (C ==> X), eventOf(C,E)      |-    conjWithout(C,E), (Belief:AbductionPBX)
-      (--E ==> Y), (C ==> X), eventOfNeg(C,E)      |-    conjWithout(C,--E), (Belief:AbductionPBX)
+      //(E ==> Y), (C ==> X), eventOf(C,E)      |-    conjWithout(C,E), (Belief:AbductionPBX)
+      //(--E ==> Y), (C ==> X), eventOfNeg(C,E)      |-    conjWithout(C,--E), (Belief:AbductionPBX)
 
     (C ==> X), (E ==> Y), eventOf(C,E), has(C,"$")      |-    unisubst(conjWithout(C,E),X,Y,"$"), (Belief:AbductionPB)
 

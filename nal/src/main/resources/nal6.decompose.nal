@@ -66,8 +66,10 @@
 
     //conjunction belief decomposition
     C, X, is(C,"&&"), --isVar(X)                   |-  conjAfter(C,  X),       (Belief:DeductionPP,Goal:DeductionPP)
+      //X, C, is(C,"&&"), --isVar(X)                   |-  conjAfter(C,  X),       (Belief:DeductionPPX)
       //D, X, is(D,"&&"), has(D,"--"), --isVar(X)    |- --conjAfter(D,--X), (Belief:DeductionWeakNP,Goal:DeductionWeakNP)
     C, X, is(C,"&&"), has(C,"--"), --isVar(X)      |-  conjAfter(C,--X),       (Belief:DeductionPN,Goal:DeductionPN)
+      //X, C, is(C,"&&"), has(C,"--"), --isVar(X)      |-  conjAfter(C,--X),       (Belief:DeductionPNX)
       //D, X, is(D,"&&"), --isVar(X)                 |- --conjAfter(D,  X), (Belief:DeductionWeakNN,Goal:DeductionWeakNN)
 //
 //    //conjunction goal decomposition

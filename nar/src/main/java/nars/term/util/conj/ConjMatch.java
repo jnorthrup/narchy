@@ -10,7 +10,6 @@ import nars.op.UniSubst;
 import nars.subterm.Subterms;
 import nars.term.Term;
 import nars.term.atom.Bool;
-import nars.term.util.Image;
 import org.eclipse.collections.api.set.ImmutableSet;
 import org.eclipse.collections.api.tuple.primitive.LongObjectPair;
 import org.eclipse.collections.impl.factory.Sets;
@@ -22,7 +21,9 @@ import static nars.Op.*;
 import static nars.term.atom.Bool.*;
 import static nars.time.Tense.*;
 
-public class ConjMatch {
+public enum ConjMatch { ;
+
+
 
     /**
      * returns the prefix or suffix sequence of a specific matched subevent
@@ -33,7 +34,7 @@ public class ConjMatch {
         if (conj.op() != CONJ || conj.dt()==XTERNAL)
             return Null;
 
-        event = Image.imageNormalize(event);
+        //event = Image.imageNormalize(event);
 
         int varBits =
                 VAR_DEP.bit | VAR_INDEP.bit;

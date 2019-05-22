@@ -21,7 +21,7 @@ public class LogContainer extends RingContainer<AbstractLabel> {
     }
 
     public void append(String s) {
-        next((v)->v.text(s));
+        next(v->v.text(s));
     }
 
 }

@@ -13,7 +13,6 @@ import nars.task.DerivedTask;
 import nars.term.ProxyTerm;
 import nars.term.Term;
 import nars.term.atom.Atomic;
-import nars.term.util.conj.Conj;
 import nars.time.Tense;
 import nars.truth.Truth;
 import org.slf4j.Logger;
@@ -123,8 +122,10 @@ public class Taskify extends ProxyTerm {
                 Term antiTaskGoal = posTaskGoal.neg();
                 Term cc = x.negIf(d.concTruth.isNegative());
 
-                if (cc.equals(antiTaskGoal) || (cc.op() == CONJ && Conj.containsEvent(cc, antiTaskGoal)) ||
-                        (posTaskGoal.op() == CONJ && Conj.containsEvent(posTaskGoal, cc.neg()))
+                if (
+                    cc.equals(antiTaskGoal)
+                    //|| (cc.op() == CONJ && Conj.containsEvent(cc, antiTaskGoal))
+                    //|| (posTaskGoal.op() == CONJ && Conj.containsEvent(posTaskGoal, cc.neg()))
                 ) {
                     nar.emotion.deriveFailTaskifyGoalContradiction.increment();
                     spam(d, NAL.derive.TTL_COST_DERIVE_TASK_UNPRIORITIZABLE);
@@ -132,6 +133,7 @@ public class Taskify extends ProxyTerm {
                 }
             }
         }
+
         boolean neg = xo == NEG;
         if (neg) {
             x = x.unneg();

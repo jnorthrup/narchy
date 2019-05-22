@@ -53,8 +53,9 @@ public class NAL8Test extends NALTest {
                 .termVolMax(9)
                 .input("(open(t1) &&+5 opened(t1))! |")
                 .mustGoal(cycles, "open(t1)", 1.0f, 0.81f, 0)
+                .mustGoal(cycles, "opened(t1)", 1.0f, 0.81f, 5)
                 .mustNotOutput(cycles, "open(t1)", GOAL, t -> t != 0)
-                .mustNotOutput(cycles, "opened(t1)", GOAL)
+                .mustNotOutput(cycles, "opened(t1)", GOAL, t -> t!=5)
         ;
     }
 
@@ -942,6 +943,7 @@ public class NAL8Test extends NALTest {
     @Test
     void testGoalBeliefDecomposeTimeRangingDiffer() {
         test
+                .termVolMax(13)
                 .input("x! +0..+100")
                 .input("(y &&+5 x). +20..+30")
                 .mustGoal(cycles, "y", 1f, 0.1f, (a, b) ->

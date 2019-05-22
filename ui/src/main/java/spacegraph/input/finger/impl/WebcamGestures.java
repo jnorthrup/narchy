@@ -26,7 +26,6 @@ import spacegraph.input.finger.SubFinger;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.widget.meta.LazySurface;
-import spacegraph.test.SignalViewTest;
 import spacegraph.video.*;
 
 import java.awt.image.BufferedImage;
@@ -105,9 +104,9 @@ public class WebcamGestures extends Finger {
             );
         }), 1400, 800);
 
-        Finger f = g.fingers.get(0);
-        g.addFinger(new MyPolarSubFinger(f, new VideoSurface(in)));
-        g.addFinger(new MyPolarSubFinger(f, SignalViewTest.newSignalView()));
+//        Finger f = g.fingers.get(0);
+//        g.addFinger(new MyPolarSubFinger(f, new VideoSurface(in)));
+//        g.addFinger(new MyPolarSubFinger(f, SignalViewTest.newSignalView()));
     }
 
 

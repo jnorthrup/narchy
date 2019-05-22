@@ -36,10 +36,12 @@ public class WebCam extends VideoSource implements WebcamListener {
 
     public final com.github.sarxos.webcam.Webcam webcam;
 
-
+static {
+    com.github.sarxos.webcam.Webcam.setAutoOpenMode(false);
+}
 
     public WebCam(Webcam wc) {
-        this(wc, false);
+        this(wc, true);
     }
 
     public WebCam(Webcam wc, boolean auto) {
@@ -82,7 +84,6 @@ public class WebCam extends VideoSource implements WebcamListener {
         WebCam[] wc = new WebCam[n];
         int j = 0;
         synchronized (WebCam.class) {
-            com.github.sarxos.webcam.Webcam.setAutoOpenMode(false);
             for (com.github.sarxos.webcam.Webcam w : com.github.sarxos.webcam.Webcam.getWebcams()) {
                 try {
                     if (j == 0 || !deviceName(w).equals(deviceName(wc[j-1].webcam))) {

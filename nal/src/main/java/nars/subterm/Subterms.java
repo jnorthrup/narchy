@@ -337,11 +337,18 @@ public interface Subterms extends Termlike, Iterable<Term> {
             } else
                 return ArrayUnenforcedSortedSet.the(b);
         } else {
+
+
             List<Term> u = new FasterList<>(s);
             forEach(x -> {
                 if (t.test(x)) u.add(x);
             });
-            switch (u.size()) {
+            int us = u.size();
+            if (us == s) {
+                if (this instanceof TermVector)
+                    return ArrayUnenforcedSortedSet.the(this.arrayShared());
+            }
+            switch (us) {
                 case 0: return ArrayUnenforcedSortedSet.empty;
                 case 1: return ArrayUnenforcedSortedSet.the(u.get(0));
                 case 2: return ArrayUnenforcedSortedSet.the(u.get(0), u.get(1));

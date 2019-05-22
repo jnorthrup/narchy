@@ -249,7 +249,7 @@ public class FasterList<X> extends FastList<X> {
         int s = size;
         if (s > 0) {
             X[] items = this.items;
-            for (int i = atOrAfter; i < s; i++) {
+            for (int i = Math.max(0,atOrAfter); i < s; i++) {
                 if (p.test(items[i]))
                     return i;
             }

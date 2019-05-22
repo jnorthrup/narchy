@@ -14,30 +14,33 @@ public interface TruthFunc {
     static void permuteTruth(TruthFunc[] values, Map<Term, TruthFunc> table) {
         for (TruthFunc t : values) {
 
-            table.put(Atomic.the(t.toString() /*+ ""*/), t);
-            table.put(Atomic.the(t + "PP"), t); //alias
-
-            SwappedTruth swapped = new SwappedTruth(t);
             NegatedTaskTruth negatedTask = new NegatedTaskTruth(t);
 
-            table.put(Atomic.the(t + "X"), swapped);
+            add(table, t, "");
+            add(table, t, "PP");
 
-            table.put(Atomic.the(t + "NP"), negatedTask);
-            table.put(Atomic.the(t.toString() + 'N'), negatedTask); //@Deprecated, prefer NP variant
+            add(table, negatedTask, /*N*/ "");
+            add(table, negatedTask, /**/"P");
 
             if (!t.single()) {
-                table.put(Atomic.the(t + "PN"), new NegatedBeliefTruth(t));
-                table.put(Atomic.the(t + "PNX"), new NegatedBeliefTruth(swapped)); //HACK
-
-                table.put(Atomic.the(t + "NN"), new NegatedTruths(t));
-                table.put(Atomic.the(t + "NX"), new NegatedTaskTruth(swapped));
+                add(table, new NegatedBeliefTruth(t),"" /*PN*/);
+                add(table, new NegatedTaskBeliefTruth(t), "" /*NN*/);
             }
 
-            table.put(Atomic.the(t + "Depolarized"), new DepolarizedTruth(t));
+            DepolarizedTruth dpt = new DepolarizedTruth(t);
+            table.put(Atomic.the(t + "Depolarized"), dpt);
+//            table.put(Atomic.the(t + "DepolarizedX"), new SwappedTruth(dpt));
 
 
 
         }
+    }
+
+    /** addss it and the swapped */
+    static void add(Map<Term, TruthFunc> table, TruthFunc t, String postfix) {
+        String name = t + postfix;
+        table.put(Atomic.the(name), t);
+//        table.put(Atomic.the(name + "X"), new SwappedTruth(t));
     }
 
     /**
@@ -78,27 +81,27 @@ public interface TruthFunc {
 
     }
 
-    /** swaps the task truth and belief truth */
-    final class SwappedTruth extends ProxyTruthFunc {
-
-        public SwappedTruth(TruthFunc o) {
-            super(o);
-        }
-
-        @Override
-        public
-        @Nullable
-        Truth apply(@Nullable Truth task, @Nullable Truth belief, NAL n, float minConf) {
-            return o.apply(belief, task, n, minConf);
-        }
-
-
-        @Override
-        public String toString() {
-            return o.toString() + 'X';
-        }
-
-    }
+//    /** swaps the task truth and belief truth */
+//    final class SwappedTruth extends ProxyTruthFunc {
+//
+//        public SwappedTruth(TruthFunc o) {
+//            super(o);
+//        }
+//
+//        @Override
+//        public
+//        @Nullable
+//        Truth apply(@Nullable Truth task, @Nullable Truth belief, NAL n, float minConf) {
+//            return o.apply(belief, task, n, minConf);
+//        }
+//
+//
+//        @Override
+//        public String toString() {
+//            return o.toString() + 'X';
+//        }
+//
+//    }
 
     /** ____N , although more accurately it would be called: 'NP' */
     final class NegatedTaskTruth extends ProxyTruthFunc {
@@ -131,7 +134,21 @@ public interface TruthFunc {
         }
 
     }
+    final class NegatedTaskBeliefTruth extends ProxyTruthFunc {
 
+        NegatedTaskBeliefTruth(TruthFunc o) {
+            super(o);
+        }
+
+        @Override @Nullable public Truth apply(@Nullable Truth task, @Nullable Truth belief, NAL n, float minConf) {
+            return o.apply(task.neg(), belief.neg(), n, minConf);
+        }
+
+        @Override public final String toString() {
+            return o + "NN";
+        }
+
+    }
 
     /** for when a conclusion's subterms have already been negated accordingly, so that conclusion confidence is positive and maximum
             

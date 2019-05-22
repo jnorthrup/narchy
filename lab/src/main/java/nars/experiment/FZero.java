@@ -112,10 +112,10 @@ public class FZero extends GameX {
             AutoclassifiedBitmap camAE = new AutoclassifiedBitmap(
                     $.inh(id,$.the("cam")), vision, nx, nx, (subX, subY) -> {
                 return new float[]{/*cc.X, cc.Y*/};
-            }, 8, this);
-            camAE.setResolution(0.25f);
-            camAE.alpha(0.03f);
-            camAE.noise.set(0.05f);
+            }, 12, this);
+            camAE.setResolution(0.1f);
+            camAE.alpha(0.01f);
+            camAE.noise.set(0.0f);
 
             //SpaceGraph.(column(visionView, camAE.newChart()), 500, 500);
 //        }

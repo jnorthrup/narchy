@@ -11,6 +11,7 @@ import nars.test.condition.NARCondition;
 import nars.test.condition.TaskCondition;
 import nars.time.Tense;
 import org.eclipse.collections.api.block.predicate.primitive.LongLongPredicate;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,6 +19,7 @@ import java.io.Serializable;
 import java.io.StringWriter;
 import java.util.function.Consumer;
 import java.util.function.LongPredicate;
+import java.util.function.Predicate;
 
 import static java.lang.Float.NaN;
 import static nars.Op.*;
@@ -118,11 +120,11 @@ public class TestNAR {
             //auto-compute final cycle
             for (NARCondition oc : succeedsIfAll) {
                 long oce = oc.getFinalCycle();
-                if (oce > finalCycle) finalCycle = oce + 1;
+                if (oce >= 0 && oce > finalCycle) finalCycle = oce + 1;
             }
             for (NARCondition oc : failsIfAny) {
                 long oce = oc.getFinalCycle();
-                if (oce > finalCycle) finalCycle = oce + 1;
+                if (oce >= 0 && oce > finalCycle) finalCycle = oce + 1;
             }
         }
 
@@ -200,7 +202,7 @@ public class TestNAR {
                         t.log(false, logger);
 
                         //TODO move this to TaskCondition for negative-specific cases
-                        ((TaskCondition) t).matched.forEach(shouldntHave ->
+                        ((TaskCondition) t).matches.forEach(shouldntHave ->
                                 logger.warn("shouldNot: \t{}\n{}", shouldntHave.proof(), MetaGoal.proof(shouldntHave, nar))
                         );
                     }
@@ -417,13 +419,34 @@ public class TestNAR {
         }
 
         float hf = freqTolerance / 2.0f, hc = confTolerance / 2.0f;
-        TaskCondition tc =
-                new TaskCondition(nar,
-                        cycleStart, cycleEnd,
-                        term, punc,
-                        freqMin - hf, freqMax + hf,
-                        confMin - hc, confMax + hc, time);
 
+        return must(c, punc, mustOrMustNot,
+                new TaskCondition.DefaultTaskCondition(nar,
+                    cycleStart, cycleEnd,
+                    term, punc,
+                    freqMin - hf, freqMax + hf,
+                    confMin - hc, confMax + hc, time));
+
+
+    }
+
+
+    public TestNAR must(byte punc, TaskCondition tc) {
+        return must(punc, true, tc);
+    }
+    public TestNAR must(byte punc, boolean mustOrMustNot, Predicate<Task> tc) {
+        return must(punc, mustOrMustNot, new TaskCondition() {
+            @Override public boolean matches(@Nullable Task task) {
+                return tc.test(task);
+            }
+        });
+    }
+
+    public TestNAR must(byte punc, boolean mustOrMustNot, TaskCondition tc) {
+        return must(taskEvents, punc, mustOrMustNot, tc);
+    }
+
+    public TestNAR must(ByteTopic<Tasked>[] c, byte punc, boolean mustOrMustNot, TaskCondition tc) {
         for (ByteTopic<Tasked> cc: c)
             cc.on(tc, punc);
 
@@ -437,8 +460,6 @@ public class TestNAR {
         }
 
         return this;
-
-
     }
 
     public final long time() {

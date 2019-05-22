@@ -34,17 +34,10 @@ public class ConjTest {
     static final Term y = $.the("y");
     static final Term z = $.the("z");
     static final Term a = $.the("a");
-    //
-//    //WhenInXTERNAL?
-//    @Test
-//    void testParallelizeNegatedDTERNALWhenInSequence() {
-//        assertEq("((--,(a&|b)) &&+1 c)", "(--(a&&b) &&+1 c)");
-//        assertEq("(c &&+1 (--,(a&|b)))", "(c &&+1 --(a&&b))");
-//    }
     static final Term b = $.the("b");
 
     private static void assertConjDiff(String inc, String exc, String expect, boolean excludeNeg) {
-        assertEq(expect, Conj.diffOne($$(inc), $$(exc), excludeNeg));
+        assertEq(expect, Conj.diffAll($$(inc), $$(exc), excludeNeg));
     }
 
     public static Compound $$c(String s) {
@@ -236,7 +229,7 @@ public class ConjTest {
     @Test
     void testConjComplexAddRemove() {
         Term x = $$("(( ( (x,_3) &| (--,_4)) &| (_5 &| _6)) &&+8 ( ((x,_3) &| (--,_4)) &| (_5 &|_6))))");
-        Conj c = Conj.from(x);
+        Conj c = Conj.events(x);
         assertEquals(x, c.term());
         boolean removedLast = c.remove(c.event.keysView().max(), $$("(x,_3)"));
         assertTrue(removedLast);
@@ -1476,7 +1469,7 @@ public class ConjTest {
 
 
         Term x = $$("((x &&+1 --x) && --y)");
-        Conj xc = Conj.from(x);
+        Conj xc = Conj.events(x);
         assertEq(x, xc.term());
 
         assertEquals(1, xc.eventCount(0));
@@ -1931,12 +1924,12 @@ public class ConjTest {
     void testConjDistributeEteParallel1() {
         Term x = $$("((&|,_2(_1),_4(_3),_6(_5))&&(--,(_6(#1)&|_6(#2))))");
         {
-            ConjBuilder c = Conj.from(x);
+            ConjBuilder c = Conj.events(x);
             assertEq(x, c.term());
             assertEquals(4, c.eventCount(ETERNAL));
         }
         {
-            Conj c = Conj.from(x);
+            Conj c = Conj.events(x);
             c.distribute();
             assertEquals(4, c.eventCount(ETERNAL));
             assertEq(x, c.term());
@@ -2068,7 +2061,7 @@ public class ConjTest {
             Term y = $$("(&|,(b&&c),x)");
             assertEquals("(&&,b,c,x)", y.toString());
 
-            assertEquals("y", Conj.diffOne(x, y).toString());
+//            assertEquals("y", Conj.diffOne(x, y).toString());
 
             //ConjCommutive.the(DTERNAL, $$("(a&|b)"), $$("(b&|c)"));
 
@@ -2240,29 +2233,29 @@ public class ConjTest {
     }
 
     @Test void testContainsEventSimple() {
-        assertFalse(Conj.containsEvent($$("x"), $$("x")));
-        assertTrue(Conj.containsEvent($$("(x &&+1 --x)"), $$("x")));
-        assertTrue(Conj.containsEvent($$("(x &&+1 --x)"), $$("--x")));
-        assertTrue(Conj.containsEvent($$("(x && y)"), $$("x")));
-        assertTrue(Conj.containsEvent($$("(x &&+1 y)"), $$("x")));
-        assertTrue(Conj.containsEvent($$("((x && y) &&+1 z)"), $$("z")));
-        assertTrue(Conj.containsEvent($$("((x && y) &&+1 z)"), $$("(x&&y)")));
+        assertFalse(Conj.eventOf($$("x"), $$("x")));
+        assertTrue(Conj.eventOf($$("(x &&+1 --x)"), $$("x")));
+        assertTrue(Conj.eventOf($$("(x &&+1 --x)"), $$("--x")));
+        assertTrue(Conj.eventOf($$("(x && y)"), $$("x")));
+        assertTrue(Conj.eventOf($$("(x &&+1 y)"), $$("x")));
+        assertTrue(Conj.eventOf($$("((x && y) &&+1 z)"), $$("z")));
+        assertTrue(Conj.eventOf($$("((x && y) &&+1 z)"), $$("(x&&y)")));
     }
     @Test void testContainsEventFactored() {
-        assertTrue(Conj.containsEvent($$("(z&&(x &&+1 y))"), $$("(x&&z)")));
-        assertTrue(Conj.containsEvent($$("(z&&(x &&+1 y))"), $$("(y&&z)")));
-        assertFalse(Conj.containsEvent($$("(z&&(x &&+1 y))"), $$("(x&&y)")));
-        assertTrue(Conj.containsEvent($$("(z&&(x &&+1 y))"), $$("z")));
-        assertTrue(Conj.containsEvent($$("(z&&(x &&+1 (y &&+1 w)))"), $$("(z&&w)")));
+        assertTrue(Conj.eventOf($$("(z&&(x &&+1 y))"), $$("(x&&z)")));
+        assertTrue(Conj.eventOf($$("(z&&(x &&+1 y))"), $$("(y&&z)")));
+        assertFalse(Conj.eventOf($$("(z&&(x &&+1 y))"), $$("(x&&y)")));
+        assertTrue(Conj.eventOf($$("(z&&(x &&+1 y))"), $$("z")));
+        assertTrue(Conj.eventOf($$("(z&&(x &&+1 (y &&+1 w)))"), $$("(z&&w)")));
     }
 
     @Test void testContainsEventSubSeq() {
-        assertTrue(Conj.containsEvent($$("(z &&+1 (x &&+1 y))"), $$("(x &&+1 y)")));
-        assertTrue(Conj.containsEvent($$("(z &&+1 (x &&+1 y))"), $$("(z &&+1 x)")));
-        assertFalse(Conj.containsEvent($$("(z &&+1 (x &&+2 y))"), $$("(x &&+1 y)")));
+        assertTrue(Conj.eventOf($$("(z &&+1 (x &&+1 y))"), $$("(x &&+1 y)")));
+        assertTrue(Conj.eventOf($$("(z &&+1 (x &&+1 y))"), $$("(z &&+1 x)")));
+        assertFalse(Conj.eventOf($$("(z &&+1 (x &&+2 y))"), $$("(x &&+1 y)")));
     }
     @Test void testContainsEventXternal() {
-        assertTrue(Conj.containsEvent($$("(x &&+- y)"), $$("x")));
-        assertTrue(Conj.containsEvent($$("(x &&+- y)"), $$("y")));
+        assertTrue(Conj.eventOf($$("(x &&+- y)"), $$("x")));
+        assertTrue(Conj.eventOf($$("(x &&+- y)"), $$("y")));
     }
 }

@@ -9,8 +9,6 @@ import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Consumer;
 
-import static jcog.Util.unitize;
-
 /* 1D and 2D grid tracking */
 public class TrackXY  {
 
@@ -28,7 +26,7 @@ public class TrackXY  {
 
     public final FloatRange targetSpeed = new FloatRange(0.1f, 0, 0.25f);
 
-    public final FloatRange visionContrast = new FloatRange(0.98f, 0, 1f);
+    public final FloatRange visionContrast = new FloatRange(0.25f, 0, 1f);
 
     public final MutableEnum<TrackXYMode> mode =
             new MutableEnum<TrackXYMode>(TrackXYMode.CircleTarget);
@@ -62,8 +60,9 @@ public class TrackXY  {
 
 
             float distOther = (float) Math.sqrt(Util.sqr((tx - x)/((double)W)) + Util.sqr((ty - y)/((double)H)));
+            return distOther > visionContrast.floatValue() ? 0 : 1;
             //float distSelf = (float) Math.sqrt(Util.sqr(sx - x) + Util.sqr(sy - y));
-            return unitize(1 - distOther * 2 * visionContrast.floatValue());
+            //return unitize(1 - Math.max(1f/(Math.max(W,H)),distOther) * 8 * visionContrast.floatValue());
 //                return Util.unitize(
 //                        Math.max(1 - distOther * visionContrast,
 //                                1 - distSelf * visionContrast

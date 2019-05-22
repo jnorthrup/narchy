@@ -36,12 +36,18 @@ public abstract class AbstractTaskLink implements TaskLink {
 
     protected AbstractTaskLink(Term source, Term target) {
 
-        source = source.concept();
-        target = target != null ?
-                (NAL.TASKLINK_TARGET_CONCEPT && target.op().conceptualizable ?
-                        target.concept() : target
-                )
-                : source; //loop
+        source =
+                source.concept();
+                //Image.imageNormalize(source).concept();
+        target = //Image.imageNormalize(
+                (
+                    target != null ?
+                        (NAL.TASKLINK_TARGET_CONCEPT && target.op().conceptualizable ?
+                            target.concept() : target
+                    )
+                    : source //loop
+                 )
+        ;
 
         if (source instanceof Bool)
             throw new TermException("source bool", source);

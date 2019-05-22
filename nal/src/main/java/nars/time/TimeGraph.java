@@ -1012,7 +1012,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 
 
             } else {
-                solveOccurrence(b, false, bx -> {
+                solveOccurrence(b, true, bx -> {
                     if ((bx instanceof Absolute) && ae.add(bx)) {
                         for (Event ax : aa) {
                             if (!solveDTAbsolutePair(x, ax, bx, each))
