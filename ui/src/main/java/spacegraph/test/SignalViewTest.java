@@ -16,19 +16,18 @@ import spacegraph.space2d.container.time.Timeline2D;
 import spacegraph.space2d.container.time.Timeline2DEvents;
 import spacegraph.space2d.container.unit.Animating;
 import spacegraph.space2d.container.unit.AspectAlign;
-import spacegraph.space2d.container.unit.ScaleXY;
 import spacegraph.space2d.widget.meter.BitmapMatrixView;
+import spacegraph.space2d.widget.slider.FloatSlider;
 import spacegraph.space2d.widget.text.LabeledPane;
+import spacegraph.space2d.widget.text.VectorLabel;
+import spacegraph.video.Draw;
 import spacegraph.video.Tex;
 import spacegraph.video.WebCam;
 
 import javax.sound.sampled.LineUnavailableException;
 import java.awt.image.BufferedImage;
-import java.util.List;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
-
-import static spacegraph.space2d.widget.meter.BitmapMatrixView.arrayRendererY;
 
 public class SignalViewTest {
 
@@ -45,9 +44,13 @@ public class SignalViewTest {
         }
 
         public Timeline2D newTrack(String label) {
+            return newTrack(new VectorLabel(label));
+        }
+
+        public Timeline2D newTrack(Surface label) {
             Timeline2D g = new Timeline2D();
 
-            add(LabeledPane.the(label, new Animating(g, ()->{
+            add(new LabeledPane(label, new Animating(g, ()->{
 
                 long e = System.currentTimeMillis();
                 g.setTime(e - Math.round(viewWindowSeconds * 1000), e); //slide window
@@ -61,17 +64,24 @@ public class SignalViewTest {
         RealTimeLine cc = new RealTimeLine();
 
         int capacity = 64;
-        float audioFPS = 10;
+        float audioFPS = 5;
         float granularity = 2;
-        int freqs = 128;
+        int freqs = 1024;
 
-        for (WebCam w : List.of(new WebCam(Webcam.getDefault(), false))) {
-            Timeline2D g = cc.newTrack(w.webcam.getName());
+        for (Webcam ww : Webcam.getWebcams()) {
+            WebCam w = new WebCam(ww, false);
+            Timeline2D g = cc.newTrack(ww.getName());
             Timeline2D.SimpleTimelineEvents ge = new Timeline2D.SimpleTimelineEvents();
 
             float camFPS = 0.5f;
             Loop.of(()->{
-                capture(capacity, ge, w.webcam.getImage(), Math.round(1000/camFPS));
+                try {
+                    BufferedImage ii = w.webcam.getImage();
+                    if (ii != null)
+                        capture(capacity, ge, ii, Math.round(1000 / camFPS));
+                } catch (Exception e) {
+                    //ignore
+                }
             }).setFPS(camFPS);
 
             g.addEvents(ge, v-> v.set(((Surface)(v.id.name))), new Timeline2DEvents.LinearTimelineUpdater<>());
@@ -81,10 +91,10 @@ public class SignalViewTest {
             try {
 
 
-                Timeline2D g = cc.newTrack(in.name());
+                FloatSlider preAmp = new FloatSlider("preAmp", 1, 0, 16f);
+
+                Timeline2D g = cc.newTrack(new Gridding(new VectorLabel(in.name()), preAmp));
                 Timeline2D.SimpleTimelineEvents ge = new Timeline2D.SimpleTimelineEvents();
-
-
 
 
                 SignalInput i = new SignalInput();
@@ -106,6 +116,9 @@ public class SignalViewTest {
 //                    Plot2D p = new Plot2D(a.data.length, Plot2D.Line);
 //                    p.add(src, a.data);
 
+
+                    Util.mul(preAmp.asFloat(), a.data);
+
                     double rms = 0;
                     for (float x : a.data) {
                         rms += x*x;
@@ -117,12 +130,27 @@ public class SignalViewTest {
                     //Gridding p = new Gridding();
                     //p.color.set(rms*4, 0, 0, 1);
 
+                    float[] f = dft.apply(a).floatArray();
+
                     Surface p;
-                    BitmapMatrixView pp = new BitmapMatrixView( 1, freqs, arrayRendererY(dft.apply(a).floatArray()));
+                    float fRMS = (float)rms;
+                    BitmapMatrixView pp = new BitmapMatrixView( 1, freqs,
+                            //arrayRendererY(dft.apply(a).floatArray())
+                            (xIgnored, y) -> {
+                                float fy = (float) (f[y]);
+                                float fs = 0.5f + 0.5f * (fy * Util.unitize(fRMS));
+                                float fb = 0f + 1f * fy;
+                                return
+                                    Draw.colorHSB(fRMS*2, fs, fb);
+                                //Draw.colorBipolar(f[y])
+                            }
+                    );
+                    pp.tex.mipmap(true);
                     pp.cellTouch = false;
                     pp.update();
                     //p.add(ff);
-                    p = new ScaleXY(pp, 1, Util.lerp((float)Math.sqrt(rms), 0.8f, 1f));
+
+                    p = pp; //new ScaleXY(pp, 1, Util.lerp((float)Math.sqrt(rms), 0.8f, 1f));
 
 
 
@@ -160,6 +188,8 @@ public class SignalViewTest {
 //        }
         return cc;
     }
+
+
 
     public static void capture(int capacity, Timeline2D.SimpleTimelineEvents ge, BufferedImage t, long dur) {
         if (ge.size() + 1 > capacity)

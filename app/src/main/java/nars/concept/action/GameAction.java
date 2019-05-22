@@ -21,18 +21,18 @@ import java.util.List;
 import java.util.function.BiFunction;
 
 
-public abstract class AgentAction extends TaskConcept implements GameLoop, PermanentConcept {
+public abstract class GameAction extends TaskConcept implements GameLoop, PermanentConcept {
 
     public final AttnBranch attn;
 
-    protected AgentAction(Term term, NAR n) {
+    protected GameAction(Term term, NAR n) {
         this(term,
                 new SensorBeliefTables(term, true),
                 new RTreeBeliefTable(),
                 n);
     }
 
-    protected AgentAction(Term term, BeliefTable beliefs, BeliefTable goals, NAR n) {
+    protected GameAction(Term term, BeliefTable beliefs, BeliefTable goals, NAR n) {
         super(term, beliefs, goals, n.conceptBuilder);
 
         this.attn = new AttnBranch(term, List.of(term));
@@ -67,7 +67,7 @@ public abstract class AgentAction extends TaskConcept implements GameLoop, Perma
         }
     }
 
-    public AgentAction resolution(float v) {
+    public GameAction resolution(float v) {
         resolution().set(v);
         return this;
     }

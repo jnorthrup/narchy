@@ -20,7 +20,7 @@ import spacegraph.space2d.widget.text.VectorLabel;
  * Created by me on 11/18/16.
  * TODO extend Surface
  */
-public class FloatSlider extends Widget {
+public class FloatSlider extends Widget implements FloatSupplier {
 
     private final AbstractLabel label = new VectorLabel();
     FloatSupplier input;
@@ -32,7 +32,7 @@ public class FloatSlider extends Widget {
         this(new FloatRange(v, min, max));
     }
 
-    public FloatSlider(float v, float min, float max, String label) {
+    public FloatSlider(String label, float v, float min, float max) {
         this(v, min, max);
         text(label);
     }
@@ -132,6 +132,11 @@ public class FloatSlider extends Widget {
 
     public final FloatSlider on(FloatProcedure c) {
         return on((ObjectFloatProcedure<SliderModel>)(SliderModel x, float v)->c.value(v));
+    }
+
+    @Override
+    public final float asFloat() {
+        return get();
     }
 
     abstract public static class FloatSliderModel extends SliderModel {

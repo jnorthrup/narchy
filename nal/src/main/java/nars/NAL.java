@@ -282,10 +282,10 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
     public final ConfRange goalConfDefault = new ConfRange(0.9f);
 
     /** HACK use PriNode.amp(..) to set these.  will figure this out.  pri wont work right, as this is the actual value vs. the advised (user provided) */
-    public final PriNode beliefPriDefault = PriNode.mutable("pri.", 0.5f);
-    public final PriNode goalPriDefault = PriNode.mutable("pri!", 0.5f);
-    public final PriNode questionPriDefault = PriNode.mutable("pri?", 0.5f);
-    public final PriNode questPriDefault = PriNode.mutable("pri@", 0.5f);
+    public final PriNode beliefPriDefault = PriNode.constant("pri.", 1).amp(0.5f);
+    public final PriNode goalPriDefault = PriNode.constant("pri!", 1).amp(0.5f);
+    public final PriNode questionPriDefault = PriNode.constant("pri?", 1).amp( 0.5f);
+    public final PriNode questPriDefault = PriNode.constant("pri@", 1).amp( 0.5f);
 
     public final Time time;
 

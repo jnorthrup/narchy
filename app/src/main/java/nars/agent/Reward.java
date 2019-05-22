@@ -50,7 +50,7 @@ public abstract class Reward implements GameLoop, TermedDelegate, Iterable<Conce
 
         this.attn = new PriNode(id);
 
-        g.nar().control.parent(attn, new PriNode[]{g.attnReward});
+        g.nar().control.parent(attn, g.attnReward);
 
         in = g.nar().newChannel(id);
 
@@ -109,7 +109,7 @@ public abstract class Reward implements GameLoop, TermedDelegate, Iterable<Conce
 
         PriNode a = new MyAttnBranch(at, t);
 
-        nar().control.parent(a, new PriNode[]{attn});
+        nar().control.parent(a, attn);
     }
 
     private final class MyAttnBranch extends AttnBranch {

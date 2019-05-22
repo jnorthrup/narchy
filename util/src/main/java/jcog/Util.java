@@ -1075,8 +1075,17 @@ public enum Util {
     }
 
     public static float[] normalize(float[] x, float min, float max) {
-        int n = x.length;
-        for (int i = 0; i < n; i++) {
+        int e = x.length;
+        int s = 0;
+        return normalize(x, s, e, min, max);
+    }
+
+    public static float[] normalize(float[] x, int s, int e) {
+        return normalize(x, s, e, Util.min(s, e, x), Util.max(s, e, x));
+    }
+
+    public static float[] normalize(float[] x, int s, int e, float min, float max) {
+        for (int i = s; i < e; i++) {
             x[i] = normalize(x[i], min, max);
         }
         return x;
@@ -1430,6 +1439,24 @@ public enum Util {
         float y = Float.POSITIVE_INFINITY;
         for (float f : x) {
             if (f < y)
+                y = f;
+        }
+        return y;
+    }
+    public static float min(int s, int e, float... x) {
+        float y = Float.POSITIVE_INFINITY;
+        for (int i = s; i < e; i++) {
+            float f = x[i];
+            if (f < y)
+                y = f;
+        }
+        return y;
+    }
+    public static float max(int s, int e, float... x) {
+        float y = Float.NEGATIVE_INFINITY;
+        for (int i = s; i < e; i++) {
+            float f = x[i];
+            if (f > y)
                 y = f;
         }
         return y;

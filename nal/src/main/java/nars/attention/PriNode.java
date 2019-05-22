@@ -4,6 +4,7 @@ import jcog.data.graph.MapNodeGraph;
 import jcog.data.graph.Node;
 import jcog.data.graph.NodeGraph;
 import jcog.math.FloatRange;
+import jcog.math.FloatSupplier;
 import jcog.pri.PLink;
 import nars.$;
 import nars.term.Term;
@@ -45,27 +46,64 @@ public class PriNode extends PLink<Term> {
         return i;
     }
 
+    public enum Merge {
+        Sum {
+            @Override public double merge(Iterable<? extends Node<PriNode, Object>> in) {
+                final double[] pSum = {0};
+
+                in.forEach((Node<PriNode, Object> n) -> {
+                    PriNode nn = n.id();
+                    float p = nn.priComponent();
+                    if (p == p) {
+                        pSum[0] += p;
+                    }
+                });
+                return pSum[0];
+            }
+        },
+        Factor {
+            @Override public double merge(Iterable<? extends Node<PriNode, Object>> in) {
+                final double[] p = {1};
+
+                in.forEach((Node<PriNode, Object> n) -> {
+                    PriNode nn = n.id();
+                    float c = nn.priComponent();
+                    if (c == c) {
+                        p[0] *= c;
+                    }
+                });
+                return p[0];
+            }
+        };
+
+        abstract public double merge(Iterable<? extends Node<PriNode, Object>> in);
+    }
+
+    Merge merge = Merge.Sum;
+
+    public PriNode merge(Merge m) {
+        this.merge = m;
+        return this;
+    }
+
+
     public void update(MapNodeGraph<PriNode,Object> graph) {
 
         Node<PriNode, Object> node = node(graph);
         fanOut = node.edgeCount(false,true); //TODO cache
 
-        final double[] pSum = {0};
-
+        float pri;
         if (node.edgeCount(true,false) > 0) {
-
-            neighbors(graph, true,false).forEach((Node<PriNode, Object> n) -> {
-                PriNode nn = n.id();
-                float p = nn.priComponent();
-                if (p == p) {
-                    pSum[0] += p;
-                }
-            });
+            Iterable<? extends Node<PriNode, Object>> in = neighbors(graph, true, false);
+            pri = (float) (merge.merge(in) * amp.floatValue());
+        } else {
+            pri = 0; //disconnected
         }
 
-        float pri = (float) (pSum[0]);
-        this.pri(pri * amp.floatValue());
+        this.pri(pri );
     }
+
+
 
     public Iterable<? extends Node<PriNode, Object>> neighbors(MapNodeGraph<PriNode,Object> graph, boolean in, boolean out) {
         return node(graph).nodes(in, out);
@@ -96,8 +134,9 @@ public class PriNode extends PLink<Term> {
         }
     }
 
-    public final void amp(float v) {
+    public final PriNode amp(float v) {
         amp.set(v);
+        return this;
     }
 
     public static PriNode mutable(String name, float initialValue) {
@@ -114,6 +153,16 @@ public class PriNode extends PLink<Term> {
             _node = graph.node(this); //cache
         }
         return _node;
+    }
+
+    public PriNode amp(FloatSupplier a) {
+        return new PriNode($.p(this.id, $.func("amp", $.quote(a.toString())) )) {
+            @Override
+            public void update(MapNodeGraph<PriNode, Object> graph) {
+                amp.set(a.asFloat());
+                super.update(graph);
+            }
+        };
     }
 
     private static class Mutable extends PriNode {

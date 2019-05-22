@@ -36,7 +36,7 @@ public enum MetaGoal {
 
     //PerceiveCmplx,  //by complexity
 
-    PerceivePri, //by priority
+    Perceive, //by priority
 
     /**
      * pos: accepted as belief

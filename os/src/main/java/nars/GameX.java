@@ -115,15 +115,15 @@ abstract public class GameX extends Game {
 
         initPlugins(n);
         initPlugins2(n, g);
-        initPlugins3(n, g);
+        //initMeta(n, g, false);
 
         //new Gridding(n.parts(Game.class).map(NARui::agent).collect(toList())),
+        n.synch();
 
         n.start(new SpaceGraphPart(() -> NARui.agent(g), 500, 500));
         n.start(new SpaceGraphPart(() -> NARui.attentionUI(n), 600, 600));
         n.start(new SpaceGraphPart(() -> NARui.top(n), 700, 700));
 
-        n.synch();
 
         Loop loop = n.startFPS(narFPS);
 
@@ -245,8 +245,6 @@ abstract public class GameX extends Game {
 
                         //new RadixTreeMemory(64*1024)
 
-                        //CaffeineMemory.soft()
-
                         ramGB >= 0.5 ?
                             new CaffeineMemory(
                                 //8 * 1024
@@ -258,21 +256,21 @@ abstract public class GameX extends Game {
                             )
                             :
                             CaffeineMemory.soft()
+                )
 
                         //, c -> (int) Math.ceil(c.term().voluplexity()))
 
-//                        new HijackConceptIndex(
+                        //warning: not working right
+//                        new HijackMemory(
 //
 //                                //192 * 1024,
-//                                128 * 1024,
-//                                //64 * 1024,
+//                                //128 * 1024,
+//                                64 * 1024,
 //                                //32 * 1024,
 //                                //16 * 1024,
 //                                //8 * 1024,
 //                                4)
 
-
-                )
                 .get();
 
 
@@ -310,18 +308,23 @@ abstract public class GameX extends Game {
 
     }
 
-    private static void initPlugins3(NAR n, Game a) {
+    private static void initMeta(NAR n, Game a, boolean rl) {
 
+        Gridding g = new Gridding();
         MetaAgent meta = new MetaAgent(false,16f, a);
+        g.add(NARui.agent(meta));
         meta.what().pri(0.1f);
-        n.start(new SpaceGraphPart(() -> NARui.agent(meta), 500, 500));
 
-        RLBooster metaBoost = new RLBooster(meta, (i, o)->
-                new HaiQae(i, 12,o).alpha(0.05f).gamma(0.5f).lambda(0.5f),
-                2, 4,false);
-        meta.curiosity.rate.set(0);
-        SpaceGraph.window(NARui.rlbooster(metaBoost), 500, 500);
+        if(rl) {
+            meta.what().pri(0.05f);
+            RLBooster metaBoost = new RLBooster(meta, (i, o) ->
+                    new HaiQae(i, 24, o).alpha(0.05f).gamma(0.5f).lambda(0.5f),
+                    2, 5, false);
+            meta.curiosity.rate.set(0);
+            g.add(NARui.rlbooster(metaBoost));
+        }
 
+        n.start(new SpaceGraphPart(() -> g, 500, 500));
 
 
 //        window(AttentionUI.attentionGraph(n), 600, 600);
@@ -386,10 +389,10 @@ abstract public class GameX extends Game {
         );
 
         n.confMin.set(0.01f);
-        n.termVolumeMax.set(24);
+        n.termVolumeMax.set(32);
 
-        n.beliefPriDefault.amp(0.1f);
-        n.goalPriDefault.amp(0.1f);
+        n.beliefPriDefault.amp(0.05f);
+        n.goalPriDefault.amp(0.25f);
         n.questionPriDefault.amp(0.01f);
         n.questPriDefault.amp(0.02f);
 
@@ -398,11 +401,11 @@ abstract public class GameX extends Game {
 //        n.questionPriDefault.set(0.01f);
 //        n.questPriDefault.set(0.01f);
 
-        n.beliefConfDefault.set(0.9f);
-        n.goalConfDefault.set(0.9f);
+        n.beliefConfDefault.set(0.75f);
+        n.goalConfDefault.set(0.75f);
 
-        n.emotion.want(MetaGoal.Futile, -0.01f); //<- dont set negative unless sure there is some positive otherwise nothing happens
-        n.emotion.want(MetaGoal.PerceivePri, -0.0001f); //<- dont set negative unless sure there is some positive otherwise nothing happens
+        n.emotion.want(MetaGoal.Futile, -0.01f);
+        n.emotion.want(MetaGoal.Perceive, -0.0001f);
 
         n.emotion.want(MetaGoal.Believe, 0.01f);
         n.emotion.want(MetaGoal.Desire, 0.5f);

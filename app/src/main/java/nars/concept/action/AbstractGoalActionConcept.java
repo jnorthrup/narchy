@@ -34,7 +34,7 @@ import static org.eclipse.collections.impl.tuple.Tuples.pair;
 /**
  * ActionConcept which is driven by Goals that are interpreted into feedback Beliefs
  */
-public class AbstractGoalActionConcept extends AgentAction {
+public class AbstractGoalActionConcept extends GameAction {
 
 
     @Nullable private Curiosity curiosity = null;

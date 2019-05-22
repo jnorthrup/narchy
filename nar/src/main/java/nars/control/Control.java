@@ -230,7 +230,8 @@ import java.util.Arrays;
         }
     }
 
-    @Deprecated public PriNode parent(PriNode attn, PriNode[] parent) {
+    @Deprecated public PriNode parent(PriNode attn, PriNode... parent) {
+        assert(parent.length>0);
         //    public PriNode parent(NAR n, PriNode... parent) {
         MapNodeGraph<PriNode, Object> g = graph;
 

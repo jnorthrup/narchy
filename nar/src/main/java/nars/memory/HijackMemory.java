@@ -156,7 +156,7 @@ public class HijackMemory extends Memory {
     @Override
     public void set(Term key, Concept value) {
         PLink<Concept> existing = table.get(key);
-        if (existing==null || existing.get()!=value) {
+        if (existing==null || (existing.get()!=value && !(existing.get() instanceof PermanentConcept))) {
             remove(key);
             PLink<Concept> inserted = table.put(new PLinkHashCached<>(value, initialTask));
             if (inserted == null && value instanceof PermanentConcept) {

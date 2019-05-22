@@ -859,7 +859,8 @@ public class NARui {
                 new Gridding(VERTICAL,
                         new PaintUpdateMatrixView(rlb.input),
                         new PaintUpdateMatrixView(q.ae.W),
-                        new PaintUpdateMatrixView(q.ae.y)
+                        new PaintUpdateMatrixView(q.ae.y),
+                        new PaintUpdateMatrixView(rlb.actionFeedback)
                 ),
                 new Gridding(VERTICAL,
                         new PaintUpdateMatrixView(q.q),

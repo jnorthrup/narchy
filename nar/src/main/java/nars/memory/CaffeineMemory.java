@@ -7,6 +7,7 @@ import nars.concept.Concept;
 import nars.concept.PermanentConcept;
 import nars.term.Term;
 import nars.time.part.DurLoop;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
 import java.util.concurrent.Executor;
@@ -70,7 +71,7 @@ public class CaffeineMemory extends Memory implements CacheLoader<Term, Concept>
     }
 
     @Override
-    public @org.jetbrains.annotations.Nullable Concept remove(Term x) {
+    public @Nullable Concept remove(Term x) {
         return concepts.asMap().remove(x);
     }
 

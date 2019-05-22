@@ -4,19 +4,25 @@ import jcog.Util;
 import jcog.signal.Tensor;
 import jcog.signal.tensor.ArrayTensor;
 import org.eclipse.collections.api.block.function.primitive.IntFloatToFloatFunction;
+import org.eclipse.collections.api.block.function.primitive.IntToFloatFunction;
 
 import java.util.Arrays;
 
 public class SlidingDFTTensor extends ArrayTensor {
     final SlidingDFT dft;
 
-    private final boolean realOrComplex;
+    //private final boolean realOrComplex;
     float[] tmp;
 
-    public SlidingDFTTensor(int frequencies, boolean realOrComplex) {
-        super(realOrComplex ? frequencies : frequencies*2); //todo maybe 2 separate dims, amp/phase
-        this.dft = new SlidingDFT(frequencies*2, 1);
-        this.realOrComplex = realOrComplex;
+    public SlidingDFTTensor(int fftSize, IntToFloatFunction binFreq) {
+        super(fftSize); //todo maybe 2 separate dims, amp/phase
+        this.dft = new SlidingDFT(fftSize, 1) {
+            @Override
+            public float bin2Freq(int bin) {
+                return binFreq.valueOf(bin);
+            }
+        };
+        //this.realOrComplex = realOrComplex;
     }
 
     public void update(Tensor src) {
@@ -29,10 +35,10 @@ public class SlidingDFTTensor extends ArrayTensor {
 
         src.writeTo(tmp);
 
-        if (realOrComplex)
+        //if (realOrComplex)
             dft.nextFreq(tmp, 0, data);
-        else
-            dft.next(tmp, 0, data);
+//        else
+//            dft.next(tmp, 0, data);
     }
 
     /** returns the intensity */
@@ -41,10 +47,8 @@ public class SlidingDFTTensor extends ArrayTensor {
         normalize();
     }
 
-    public float normalize() {
-        float max = this.maxValue();
-        Util.normalize(data, 0, max);
-        return max;
+    public void normalize() {
+        Util.normalize(data, 1 /* skip 0, dc offset */, data.length);
     }
 
     /** multiplicative filter, by freq index */

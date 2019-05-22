@@ -49,15 +49,19 @@ public class SlidingDFT {
         timeBufIdx = new int[numChannels];
 
 
-        float d1 = (float) (Math.PI * 2 / fftSize);
+        double d1 = (Math.PI * 2 / fftSize);
         final int binsH = bins / 2;
-        for (int i = 0, j = bins, k = binsH, m = binsH; i < binsH; i++, j--, k--, m++) {
-            float d2 = (float) Math.cos(d1 * i);
-            cos[i] = d2;
+        for (int bin = 0, j = bins, k = binsH, m = binsH; bin < binsH; bin++, j--, k--, m++) {
+            float d2 = (float) Math.cos(d1 * bin2Freq(bin));
+            cos[bin] = d2;
             cos[j] = -d2;
             sin[k] = d2;
             sin[m] = d2;
         }
+    }
+
+    public float bin2Freq(int bin) {
+        return bin;
     }
 
     public void next(float[] inBuf, int chan, float[] fftBuf) {

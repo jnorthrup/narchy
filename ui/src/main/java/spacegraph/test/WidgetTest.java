@@ -74,8 +74,8 @@ public class WidgetTest {
                 ),
                 "Slider", () -> grid(
                         Splitting.row(
-                                grid(new FloatSlider(.25f, 0, 1, "solid slider"   /* pause */),
-                                        new FloatSlider(0.75f, 0, 1, "knob slider").type(SliderModel.KnobHoriz)),
+                                grid(new FloatSlider("solid slider", .25f, 0, 1    /* pause */),
+                                        new FloatSlider("knob slider", 0.75f, 0, 1).type(SliderModel.KnobHoriz)),
                                 0.9f,
                                 new FloatSlider(0.33f, 0, 1).type(SliderModel.KnobVert)
                         ),

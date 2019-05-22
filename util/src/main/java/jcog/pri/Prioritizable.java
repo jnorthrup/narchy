@@ -19,6 +19,7 @@ public interface Prioritizable extends Prioritized, ScalarValue {
         return this;
     }
 
+    /** set priority at-least this value */
     default void priMax(float p) {
         priMax(p, PriReturn.Post);
     }

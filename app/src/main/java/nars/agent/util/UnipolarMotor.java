@@ -1,12 +1,12 @@
 package nars.agent.util;
 
-import nars.concept.action.AgentAction;
+import nars.concept.action.GameAction;
 import nars.truth.Truth;
 import org.eclipse.collections.api.block.function.primitive.FloatFloatToObjectFunction;
 import org.eclipse.collections.api.block.function.primitive.FloatToFloatFunction;
 import org.jetbrains.annotations.Nullable;
 
-public class UnipolarMotor implements AgentAction.MotorFunction {
+public class UnipolarMotor implements GameAction.MotorFunction {
 
     private final boolean freqOrExp;
     private final FloatToFloatFunction ifGoalMissing;

@@ -17,7 +17,7 @@ import nars.Task;
 import nars.agent.Game;
 import nars.attention.What;
 import nars.concept.Concept;
-import nars.concept.action.AgentAction;
+import nars.concept.action.GameAction;
 import nars.concept.sensor.GameLoop;
 import nars.control.channel.CauseChannel;
 import nars.task.signal.SignalTask;
@@ -47,7 +47,7 @@ public class RLBooster  {
     public final FloatRange conf = new FloatRange(0.5f, 0f, 1f);
     public final float[] input;
     final int inD, outD;
-    final AgentAction[] actions;
+    final GameAction[] actions;
     private final CauseChannel<Task> in;
     private final List<Term> inputs;
     private final int actionDiscretization;
@@ -55,6 +55,7 @@ public class RLBooster  {
 
     transient private float[] _in = null;
     public double lastReward = Float.NaN;
+    public float[] actionFeedback = null;
 
 //    public RLBooster(NAgent env, IntIntToObjectFunc<Agent> rl, int actionDiscretization) {
 //        this(env, rl, true);
@@ -105,6 +106,8 @@ public class RLBooster  {
         this.history = history > 1 ? new TensorRing(inD, history) : new ArrayTensor(inD);
         this.agent = agent.apply(inD * history, outD);
 
+        actionFeedback(g.time()); //init
+
         g.onFrame(()->accept(g.what()));
     }
 
@@ -135,14 +138,14 @@ public class RLBooster  {
         return env.nar().random().nextFloat();
     }
 
-    private float[] feedback(long prev, long now) {
+    private float[] feedback(long prev, long now, float[] fb) {
         int i = 0;
         NAR n = env.nar();
 
-        float[] feedback = new float[actions()];
-        for (AgentAction s : actions) {
+        float[] feedback = fb == null ? new float[actions()] : fb;
+        for (GameAction s : actions) {
             Truth t = n.beliefTruth(s, prev, now);
-            feedback[i++] = t!=null ? t.freq() : noise();
+            feedback[i++] = ((t!=null ? t.freq() : noise())-0.5f)*2;
         }
 
         //Util.normalize(feedback); //needs shifted to mid0 and back to mid.5
@@ -181,7 +184,7 @@ public class RLBooster  {
             ((ArrayTensor)history).set(ii); //TODO just make ArrayTensor wrapping _in
         }
 
-        int a = agent.act(feedback(env.prev, now), (float) reward, _in);
+        int a = agent.act(actionFeedback(now), (float) reward, _in);
 
         float OFFfreq =
                 //0f;
@@ -191,10 +194,10 @@ public class RLBooster  {
 
         float conf = this.conf.floatValue();
 //        Truth off = OFFfreq == OFFfreq ? $.t(OFFfreq, conf) : null;
-//        long range = end-start;
-//        long nextStart = end;
-//        long nextEnd = nextStart + range;
-        long nextStart = start, nextEnd = end;
+        long range = end-start;
+        long nextStart = end;
+        long nextEnd = nextStart + range;
+        //long nextStart = start, nextEnd = end;
 
         List<Task> e = new FasterList(actions.length);
         int aa = 0;
@@ -220,7 +223,9 @@ public class RLBooster  {
         in.acceptAll(e, w);
     }
 
-
+    public float[] actionFeedback(long now) {
+        return actionFeedback = feedback(env.prev, now, actionFeedback);
+    }
 
 
 }

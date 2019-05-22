@@ -23,4 +23,5 @@ public class LabeledPane extends Splitting {
 
         return new LabeledPane(new BitmapLabel(label), content);
     }
+
 }

@@ -95,11 +95,11 @@ public class DynTaskify extends TaskList {
             if (model == ConjIntersection) {
                 //calculate the minimum range (ie. intersection of the ranges)
                 s = earliest;
-                long range = (minValue(t -> t.isEternal() ? 0 : t.range()-1));
+                //long range = (minValue(t -> t.isEternal() ? 0 : t.range()-1));
 
-                long ss = a.time.start;
+                long ss = a.time.start, ee = a.time.end;
+                long range = ee-ss;
                 if (ss != LongInterval.ETERNAL && ss != XTERNAL) {
-                    long ee = a.time.end;
                     s = Util.clampSafe(s, ss, ee); //project sequence to when asked
                 }
 

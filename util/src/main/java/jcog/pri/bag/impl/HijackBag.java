@@ -352,8 +352,8 @@ public abstract class HijackBag<K, V> extends Bag<K, V> {
                             }
                         }
 
-                        if (retriesRemain > 0)
-                            victimPri *= 1 - (1f / reprobes); //weaken
+//                        if (retriesRemain > 0)
+//                            victimPri *= 1 - (1f / reprobes); //weaken
 
                     } while (--retriesRemain > 0);
 
@@ -428,7 +428,10 @@ public abstract class HijackBag<K, V> extends Bag<K, V> {
     }
 
     protected boolean keyEquals(Object k, int kHash, V p) {
-        return k.equals(key(p));
+        if (k == p)
+            return true;
+        K key = key(p);
+        return key==k || k.equals(key);
     }
 
 

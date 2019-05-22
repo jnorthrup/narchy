@@ -41,12 +41,11 @@ public class DynamicConjTruth {
                 Task t = d.get(i);
                 long s = t.start();
                 long when;
-//                //TODO see how well this works
-//                if (s == ETERNAL || (start!=ETERNAL && s<=start && t.end()>=end))
-//                    when = ETERNAL;
-//                else
-                if (s == ETERNAL)
-                    when = s;
+
+                if (s == ETERNAL || (start!=ETERNAL && s<=start && t.end()>=end))
+                    when = ETERNAL; //spans entire event
+                else if (s == ETERNAL)
+                    when = ETERNAL;
                 else
                     when = Tense.dither(s, dtDither);
 

@@ -4,15 +4,14 @@ import jcog.Util;
 import jcog.math.FloatRange;
 import jcog.math.FloatSupplier;
 import jcog.math.LongInterval;
-import jcog.pri.op.PriMerge;
 import jcog.sort.FloatRank;
 import nars.NAL;
 import nars.NAR;
 import nars.Task;
 import nars.attention.TaskLinkWhat;
 import nars.attention.What;
+import nars.concept.Concept;
 import nars.control.op.Remember;
-import nars.link.AtomicTaskLink;
 import nars.table.BeliefTables;
 import nars.table.dynamic.SeriesBeliefTable.SeriesTask;
 import nars.table.temporal.RTreeBeliefTable;
@@ -36,10 +35,10 @@ public class SensorBeliefTables extends BeliefTables {
 
     @Deprecated public FloatRange res;
 
-    /**
-     * permanent tasklink "generator" anchored in eternity when inseted to the concept on new tasks, but clones currently-timed tasklinks for propagation
-     */
-    public final AtomicTaskLink tasklink;
+//    /**
+//     * permanent tasklink "generator" anchored in eternity when inseted to the concept on new tasks, but clones currently-timed tasklinks for propagation
+//     */
+//    public final AtomicTaskLink tasklink;
 
     public SensorBeliefTables(Term c, boolean beliefOrGoal) {
         this(c, beliefOrGoal,
@@ -55,12 +54,12 @@ public class SensorBeliefTables extends BeliefTables {
 
         add(new MyRTreeBeliefTable());
 
-        tasklink = newTaskLink(term);
+//        tasklink = newTaskLink(term);
     }
 
-    private AtomicTaskLink newTaskLink(Term term) {
-        return new AtomicTaskLink(term);
-    }
+//    private AtomicTaskLink newTaskLink(Term term) {
+//        return new AtomicTaskLink(term);
+//    }
 
     @Override
     public final void remember(Remember r) {
@@ -248,15 +247,20 @@ public class SensorBeliefTables extends BeliefTables {
         if (surprise!=surprise)
             return;
 
-        next.pri(surprise); //set the task's pri too
+        next.priMax(surprise); //set the task's pri too
 
-        float delta = tasklink.priMergeGetDelta(next.punc(), surprise, PriMerge.max);
+
+        ///float delta = tasklink.priMergeGetDelta(next.punc(), surprise, PriMerge.max);
 
 //        float delta = tasklink.priMax(next.punc(), p/2);
 //        delta += tasklink.priMax(QUESTION, p/4);
 //        delta += tasklink.priMax(QUEST, p/4);
 
-        ((TaskLinkWhat)w).links.link(tasklink);
+
+        Concept concept = w.nar.concept(next); //TODO cache or provide htis as parameter
+
+        ((TaskLinkWhat)w).links.link(next, concept, surprise, w.nar);
+
 
         //if (prev!=next)
             w.nar.eventTask.emit(next);

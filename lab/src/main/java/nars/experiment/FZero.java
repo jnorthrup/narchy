@@ -9,7 +9,7 @@ import nars.$;
 import nars.GameX;
 import nars.NAR;
 import nars.agent.NAct;
-import nars.concept.action.AgentAction;
+import nars.concept.action.GameAction;
 import nars.concept.action.BiPolarAction;
 import nars.concept.action.SwitchAction;
 import nars.concept.sensor.DigitizedScalar;
@@ -445,7 +445,7 @@ public class FZero extends GameX {
 
     }
 
-    public AgentAction initUnipolarLinear(float fwdFactor) {
+    public GameAction initUnipolarLinear(float fwdFactor) {
 //        final float[] _a = {0};
 //        final MiniPID fwdFilter = new MiniPID(0.5f, 0.3, 0.2f);
         float fwdSpeed = 7;

@@ -17,8 +17,8 @@ import nars.$;
 import nars.NAR;
 import nars.attention.PriNode;
 import nars.attention.What;
-import nars.concept.action.AgentAction;
 import nars.concept.action.BiPolarAction;
+import nars.concept.action.GameAction;
 import nars.concept.action.curiosity.Curiosity;
 import nars.concept.action.curiosity.DefaultCuriosity;
 import nars.concept.sensor.GameLoop;
@@ -68,7 +68,7 @@ public class Game extends NARPart implements NSense, NAct, Timed {
     private final static Atom ACTION = Atomic.atom("action"), SENSOR = Atomic.atom("sensor"), REWARD = Atomic.atom("reward");
 
     public final FastCoWList<GameLoop> sensors = new FastCoWList<>(GameLoop[]::new);
-    public final FastCoWList<AgentAction> actions = new FastCoWList<>(AgentAction[]::new);
+    public final FastCoWList<GameAction> actions = new FastCoWList<>(GameAction[]::new);
     public final FastCoWList<Reward> rewards = new FastCoWList<>(Reward[]::new);
 
     public final AtomicInteger iteration = new AtomicInteger(0);
@@ -125,9 +125,9 @@ public class Game extends NARPart implements NSense, NAct, Timed {
         this.time = time;
 
         this.pri = new PriNode(this.id);
-        this.attnAction = new PriNode($.inh(id,ACTION));
-        this.attnSensor = new PriNode($.inh(id,SENSOR));
-        this.attnReward = new PriNode($.inh(id,REWARD));
+        this.attnAction = new PriNode($.inh(id,ACTION)).merge(PriNode.Merge.Factor);
+        this.attnSensor = new PriNode($.inh(id,SENSOR)).merge(PriNode.Merge.Factor);
+        this.attnReward = new PriNode($.inh(id,REWARD)).merge(PriNode.Merge.Factor);
 
         add(time.clock(this));
 
@@ -145,7 +145,7 @@ public class Game extends NARPart implements NSense, NAct, Timed {
      */
     public double dexterity() {
         int a = actions.size();
-        double result = a == 0 ? 0 : actions.sumBy(AgentAction::dexterity);
+        double result = a == 0 ? 0 : actions.sumBy(GameAction::dexterity);
         return a > 0 ? result / a : 0;
     }
 
@@ -192,7 +192,7 @@ public class Game extends NARPart implements NSense, NAct, Timed {
     }
 
     @Override
-    public final <A extends AgentAction> A addAction(A c) {
+    public final <A extends GameAction> A addAction(A c) {
         actions.add(c);
 
         nar().add(c);
@@ -216,21 +216,21 @@ public class Game extends NARPart implements NSense, NAct, Timed {
     private void addAttention(PriNode target, Object s) {
         if (s instanceof VectorSensor) {
 
-            nar.control.parent(((VectorSensor) s).attn, new PriNode[]{target});
+            nar.control.parent(((VectorSensor) s).attn, target);
         } else if (s instanceof Signal) {
 
-            nar.control.parent(((Signal) s).attn, new PriNode[]{target});
+            nar.control.parent(((Signal) s).attn, target);
         } else if (s instanceof Reward) {
 
-            nar.control.parent(((Reward) s).attn, new PriNode[]{target});
-        } else if (s instanceof AgentAction) {
+            nar.control.parent(((Reward) s).attn, target);
+        } else if (s instanceof GameAction) {
 
-            nar.control.parent(((AgentAction) s).attn, new PriNode[]{target});
+            nar.control.parent(((GameAction) s).attn, target);
         } else if (s instanceof BiPolarAction) {
 
-            nar.control.parent(((BiPolarAction) s).attn, new PriNode[]{target});
+            nar.control.parent(((BiPolarAction) s).attn, target);
         } else if (s instanceof PriNode)
-            nar.control.parent(((PriNode) s), new PriNode[]{target});
+            nar.control.parent(((PriNode) s), target);
         else
             throw new TODO();
     }
@@ -264,13 +264,13 @@ public class Game extends NARPart implements NSense, NAct, Timed {
     protected void starting(NAR nar) {
         nar.control.add(pri);
 
-        nar.control.parent(attnAction, new PriNode[]{this.pri, nar.goalPriDefault});
+        nar.control.parent(attnAction, this.pri, nar.goalPriDefault);
 
-        nar.control.parent(attnSensor, new PriNode[]{this.pri, nar.beliefPriDefault});
+        nar.control.parent(attnSensor, this.pri, nar.beliefPriDefault);
 
         /* TODO avg */
 
-        nar.control.parent(attnReward, new PriNode[]{this.pri, nar.goalPriDefault});
+        nar.control.parent(attnReward, this.pri, nar.goalPriDefault);
 
         sensors.stream().filter(x -> x instanceof NARPart).forEach(s -> nar.start((NARPart) s));
 
@@ -500,11 +500,11 @@ public class Game extends NARPart implements NSense, NAct, Timed {
 
     protected void act() {
         //ActionConcept[] aaa = actions.array();
-        AgentAction[] aaa = actions.array().clone();
+        GameAction[] aaa = actions.array().clone();
         ArrayUtil.shuffle(aaa, random()); //HACK shuffle cloned copy for thread safety
 
         //TODO fork here
-        for (AgentAction a : aaa)
+        for (GameAction a : aaa)
             update(a);
     }
 
@@ -580,7 +580,7 @@ public class Game extends NARPart implements NSense, NAct, Timed {
 //    }
 
 
-    public FastCoWList<AgentAction> actions() {
+    public FastCoWList<GameAction> actions() {
         return actions;
     }
 
