@@ -91,10 +91,10 @@ public class HaiQ extends Agent {
     }
 
     int learn(float[] actionFeedback, int state, float reward) {
-        return learn(actionFeedback, state, reward, 1f, true);
+        return learn(actionFeedback, state, reward, true);
     }
 
-    int learn(float[] actionFeedback, int state, float reward, float learningFactor, boolean decide) {
+    int learn(float[] actionFeedback, int state, float reward, boolean decide) {
 
         if (reward != reward)
             reward = 0;
@@ -104,18 +104,22 @@ public class HaiQ extends Agent {
 
         final int lastState = this.lastState;
 
+        float alpha = Alpha.floatValue();
+        double deltaSum = 0;
         for (int lastAction = 0, actionFeedbackLength = actionFeedback.length; lastAction < actionFeedbackLength; lastAction++) {
-            float af = actionFeedback[lastAction];
-            if (af > 0) {
-                float f = af * learningFactor;
-                float lastQ = q[lastState][lastAction];
-                float delta = reward + (Gamma.floatValue() * q[state][action]) - lastQ;
-                q[state][action] = lastQ + (f * Alpha.floatValue()) * delta;
-                et[lastState][lastAction] += f;
-                update(delta, Alpha.floatValue() * f);
+            double f = actionFeedback[lastAction];
+            double ff = Math.abs(f);
+            if (ff > Float.MIN_NORMAL) {
+                double lastQ = q[lastState][lastAction];
+                double delta = reward + f * ((Gamma.floatValue() * q[state][action]) - lastQ);
+                deltaSum += delta;
+                double nextQ = lastQ + alpha * delta;
+                q[state][action] = (float) nextQ;
+                et[lastState][lastAction] += f * alpha;
             }
 
         }
+        update((float)deltaSum, alpha);
 
 
         if (decide) {

@@ -92,8 +92,8 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
      * should be monotonically increasing at most
      */
     public static final PriMerge tasklinkMerge =
-            PriMerge.or;
-            //PriMerge.plus;
+            PriMerge.plus;
+            //PriMerge.or;
 
 //    public static final boolean ETERNALIZE_BELIEF_PROJECTED_FOR_GOAL_DERIVATION= !configIs("DISABLE_ETERNALIZE_BELIEF_PROJECTED_FOR_GOAL_DERIVATION");
     /**
@@ -102,8 +102,8 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
      * priority calculation here currently depends on a commutive and associaive function
      */
     public static final FloatFloatToFloatFunction DerivationPri =
-            (t, b) -> Util.or(t , b); //plus, max=1
-            //(t, b) -> Util.unitize(t + b); //plus, max=1
+            //(t, b) -> Util.or(t , b); //plus, max=1
+            (t, b) -> Util.unitize(t + b); //plus, max=1
 
 //    /** durs surrounding a derived temporal goal with one eternal (of two) parent tasks */
 //    public static final float GOAL_PROJECT_TO_PRESENT_RADIUS_DURS = 1;

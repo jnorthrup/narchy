@@ -4,7 +4,6 @@ import jcog.Util;
 import jcog.signal.Tensor;
 import jcog.signal.tensor.ArrayTensor;
 import org.eclipse.collections.api.block.function.primitive.IntFloatToFloatFunction;
-import org.eclipse.collections.api.block.function.primitive.IntToFloatFunction;
 
 import java.util.Arrays;
 
@@ -14,14 +13,9 @@ public class SlidingDFTTensor extends ArrayTensor {
     //private final boolean realOrComplex;
     float[] tmp;
 
-    public SlidingDFTTensor(int fftSize, IntToFloatFunction binFreq) {
+    public SlidingDFTTensor(int fftSize) {
         super(fftSize); //todo maybe 2 separate dims, amp/phase
-        this.dft = new SlidingDFT(fftSize, 1) {
-            @Override
-            public float bin2Freq(int bin) {
-                return binFreq.valueOf(bin);
-            }
-        };
+        this.dft = new SlidingDFT(fftSize, 1);
         //this.realOrComplex = realOrComplex;
     }
 

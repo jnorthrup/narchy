@@ -11,13 +11,14 @@ import spacegraph.input.finger.state.Dragging;
 import spacegraph.input.finger.state.FingerMove;
 import spacegraph.space2d.ReSurface;
 import spacegraph.space2d.Surface;
+import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.space2d.widget.meter.WaveBitmap;
 import spacegraph.video.Draw;
 
 import static jcog.math.LongInterval.ETERNAL;
 
-public class SignalView extends Timeline2D {
+public class SignalView extends Gridding {
 
     final static int SELECT_BUTTON = 0;
     final static int PAN_BUTTON = 2;
@@ -34,113 +35,118 @@ public class SignalView extends Timeline2D {
     boolean paused = false;
 
     public SignalView(SignalInput in) {
-        super(0, 1);
+        super();
         this.in = in;
 
 
-//        FreqSpectrogram g = new FreqSpectrogram(256, 512);
-//        add(g);
+        FreqSpectrogram g = new FreqSpectrogram(128, 512);
+        add(g);
 
         WaveBitmap w = new WaveBitmap(new ArrayTensor(in.data), in.sampleRate, in.data.length, 250);
         add(w);
 
-        addEvents(new SimpleTimelineEvents(), (nv)-> nv.set(new PushButton(nv.id.toString())), new Timeline2DEvents.LaneTimelineUpdater());
+        Timeline2D t = new Timeline2D() {
+            final Fingering pan = new FingerMove(PAN_BUTTON) {
+                @Override
+                protected void move(float tx, float ty) {
+                    timeShiftPct(tx * PAN_SPEED);
+                }
+
+                @Override
+                public v2 pos(Finger finger) {
+                    return finger.posRelative(SignalView.this);
+                }
+            };
+
+            volatile private long selectStart = ETERNAL, selectEnd = ETERNAL;
+
+
+
+
+            final Fingering select = new Dragging(SELECT_BUTTON) {
+
+                float sample(float x) {
+                    return (x / w());
+                }
+
+                @Override
+                protected boolean starting(Finger f) {
+                    selectStart = t(f.posGlobal().x);
+                    return true;
+                }
+
+                private long t(float f) {
+                    return Util.lerp(sample(f), start, end);
+                }
+
+                @Override
+                protected boolean drag(Finger f) {
+                    selectEnd = t(f.posGlobal().x);
+                    return true;
+                }
+            };
+
+            @Override
+            public Surface finger(Finger finger) {
+                Surface x = super.finger(finger);
+                if (x!=null)
+                    return x;
+
+                //TODO if ctrl pressed or something
+
+                if (finger.pressedNow(2)) {
+                    float wheel;
+                    if ((wheel = finger.rotationY(true)) != 0) {
+                        timeScale(((1f + wheel * 0.1f)));
+                        //pan(+1);
+                        return this;
+                    }
+                }
+
+                if (finger.test(pan)) {
+                    return this;
+                }
+                if (finger.test(select)) {
+                    return this;
+                }
+
+                return null;
+            }
+
+            @Override
+            protected void renderContent(ReSurface r) {
+                super.renderContent(r);
+
+                float sStart = selectStart;
+                if (sStart == sStart) {
+                    float sEnd = selectEnd;
+                    if (sEnd == sEnd) {
+                        r.on((gl, rr) -> {
+                            float ss = Util.clamp(x(selectStart), left(), right());
+                            gl.glColor4f(1f, 0.8f, 0, selectorAlpha);
+                            float ee = Util.clamp(x(selectEnd), left(), right());
+                            if (ee - ss > ScalarValue.EPSILON) {
+                                Draw.rect(x() + ss, y(), ee - ss, h(), gl);
+                            }
+                        });
+                        //System.ouprintln("select: " + sStart + ".." + sEnd);
+                    }
+                }
+
+                //super.compileAbove(r);
+            }
+
+        };
+        t.addEvents(new Timeline2D.SimpleTimelineEvents(), (nv)-> nv.set(new PushButton(nv.id.toString())), new Timeline2DEvents.LaneTimelineUpdater());
+        add(t.withControls());
 
         this.in.wave.on(raw->{
             w.update();
+            g.set(raw);
         });
     }
 
 
-    final Fingering pan = new FingerMove(PAN_BUTTON) {
-        @Override
-        protected void move(float tx, float ty) {
-            timeShiftPct(tx * PAN_SPEED);
-        }
-
-        @Override
-        public v2 pos(Finger finger) {
-            return finger.posRelative(SignalView.this);
-        }
-    };
-
-    volatile private long selectStart = ETERNAL, selectEnd = ETERNAL;
-
-
-
-
-    final Fingering select = new Dragging(SELECT_BUTTON) {
-
-        float sample(float x) {
-            return (x / w());
-        }
-
-        @Override
-        protected boolean starting(Finger f) {
-            selectStart = t(f.posGlobal().x);
-            return true;
-        }
-
-        private long t(float f) {
-            return Util.lerp(sample(f), start, end);
-        }
-
-        @Override
-        protected boolean drag(Finger f) {
-            selectEnd = t(f.posGlobal().x);
-            return true;
-        }
-    };
-
-    @Override
-    public Surface finger(Finger finger) {
-        Surface x = super.finger(finger);
-        if (x!=null)
-            return x;
-
-        //TODO if ctrl pressed or something
-
-        if (finger.pressedNow(2)) {
-            float wheel;
-            if ((wheel = finger.rotationY(true)) != 0) {
-                timeScale(((1f + wheel * 0.1f)));
-                //pan(+1);
-                return this;
-            }
-        }
-
-        if (finger.test(pan)) {
-            return this;
-        }
-        if (finger.test(select)) {
-            return this;
-        }
-
-        return null;
-    }
-
-    @Override
-    protected void renderContent(ReSurface r) {
-        super.renderContent(r);
-
-        float sStart = selectStart;
-        if (sStart == sStart) {
-            float sEnd = selectEnd;
-            if (sEnd == sEnd) {
-                r.on((gl, rr) -> {
-                    float ss = Util.clamp(x(selectStart), left(), right());
-                    gl.glColor4f(1f, 0.8f, 0, selectorAlpha);
-                    float ee = Util.clamp(x(selectEnd), left(), right());
-                    if (ee - ss > ScalarValue.EPSILON) {
-                        Draw.rect(x() + ss, y(), ee - ss, h(), gl);
-                    }
-                });
-                //System.ouprintln("select: " + sStart + ".." + sEnd);
-            }
-        }
-
-        //super.compileAbove(r);
-    }
 
 }
 

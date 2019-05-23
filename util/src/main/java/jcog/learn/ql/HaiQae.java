@@ -65,11 +65,11 @@ public class HaiQae extends HaiQ {
 
     protected int act(float[] actionFeedback, float reward, float[] input, float pErr) {
         
-        float learningRate = 1f - (pErr);
+        //float learningRate = 1f - (pErr);
         int p = perceive(input);
 //        if (learningRate > 0) {
 
-        return learn(actionFeedback, p, reward, learningRate, true);
+        return learn(actionFeedback, p, reward, true);
 //        } else {
 //            return rng.nextInt(actions);
 //        }

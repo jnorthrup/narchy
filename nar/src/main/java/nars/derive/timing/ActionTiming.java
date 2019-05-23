@@ -11,6 +11,9 @@ import java.util.Random;
 
 public class ActionTiming implements TriFunction<What, Task, Term, long[]> {
 
+
+    public final FloatRange focusDurs = new FloatRange(1, 0, 32);
+
     public final FloatRange horizonDurs = new FloatRange(8, 0, 32);
     //public final FloatRange widthDurs = new FloatRange(2, 0, 8);
 
@@ -21,7 +24,7 @@ public class ActionTiming implements TriFunction<What, Task, Term, long[]> {
     @Override
     public long[] apply(What what, Task task, Term term) {
 
-        int dur = what.dur();
+        int dur = Math.round(what.dur() * focusDurs.floatValue());
 
         long now = what.time();
         Random rng = what.random();

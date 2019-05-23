@@ -5,6 +5,7 @@ import jcog.Util;
 import jcog.data.graph.MapNodeGraph;
 import jcog.data.graph.Node;
 import jcog.math.FloatRange;
+import jcog.pri.ScalarValue;
 import nars.$;
 import nars.NAR;
 import nars.attention.PriNode;
@@ -198,7 +199,7 @@ public class MetaAgent extends Game {
         actionCtl($.inh(gid, duration), durRange);
 
         if (w.in instanceof PriBuffer.BagTaskBuffer)
-            actionCtl($.inh(gid, input), ((PriBuffer.BagTaskBuffer) (w.in)).valve.subRange(0.1f, 1f));
+            actionCtl($.inh(gid, input), ((PriBuffer.BagTaskBuffer) (w.in)).valve.subRange(0f, 0.25f));
 
 
 //        this.dur = actionUnipolar($.inh(id, duration), (x) -> {
@@ -206,9 +207,10 @@ public class MetaAgent extends Game {
 //            return x;
 //        });
 
-        Reward h = rewardNormalized($.inh(gid, happy),  0, Float.MIN_NORMAL, () -> {
+        Reward h = rewardNormalized($.inh(gid, happy),  0, ScalarValue.EPSILON, () -> {
             //new FloatFirstOrderDifference(nar::time, (() -> {
-            return g.isOn() ? g.happiness(dur() /* supervisory dur of the meta-agent */) : Float.NaN;
+            return g.isOn() ? (float)((0.01f + g.dexterity()) *
+                    Math.max(0,g.happiness(dur() /* supervisory dur of the meta-agent */)-0.5f)) : Float.NaN;
         });
 
 

@@ -14,9 +14,9 @@ public class FreqSpectrogram extends BitmapMatrixView implements BitmapMatrixVie
     /** comptued frequency domain output for display */
     private Tensor freq;
 
-    public FreqSpectrogram(int T, int N) {
-        super(T, N, null);
-        this.data = new FreqDomain(T, N);
+    public FreqSpectrogram(int fftSize, int history) {
+        super(fftSize, history, null);
+        this.data = new FreqDomain(fftSize, history);
     }
 
     public FreqSpectrogram set(Tensor x) {

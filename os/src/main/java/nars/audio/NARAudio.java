@@ -68,7 +68,7 @@ public class NARAudio extends WaveIn {
 
         NARAudio na = new NARAudio($.quote(audio.toString()), n, i, 30f);
 
-        SpaceGraph.window(new SignalView(i).withControls(), 800, 800);
+        SpaceGraph.window(new SignalView(i), 800, 800);
 
         n.startFPS(15f);
 

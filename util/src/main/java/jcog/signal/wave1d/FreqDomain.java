@@ -4,7 +4,6 @@ import jcog.signal.Tensor;
 import jcog.signal.tensor.ArrayTensor;
 import jcog.signal.tensor.TensorRing;
 import jcog.signal.tensor.WritableTensor;
-import org.eclipse.collections.api.block.function.primitive.IntToFloatFunction;
 
 /**
  * TODO extract RingBufferTensor to an extended impl.  this only needs to supply the next 1D vector of new freq information
@@ -16,13 +15,10 @@ public class FreqDomain {
 
     private ArrayTensor next;
 
-    @Deprecated public FreqDomain(int fftSize, int history) {
-        this(fftSize, history, (x)->x);
-    }
 
-    public FreqDomain(int fftSize, int history, IntToFloatFunction binFreq) {
-        dft = new SlidingDFTTensor( fftSize, binFreq);
-        freq = history > 1 ? new TensorRing(dft.volume(), history) : dft;
+    public FreqDomain(int fftSize, int history) {
+        dft = new SlidingDFTTensor( fftSize);
+        freq = history > 1 ? new TensorRing(dft.volume(), history) : new ArrayTensor(dft.volume());
 
         next = new ArrayTensor(1); //empty
 
@@ -42,8 +38,8 @@ public class FreqDomain {
 //        });
         dft.normalize();
 
+        return commit();
 
-        return new ArrayTensor(dft.data);
     }
 
     public void normalize() {

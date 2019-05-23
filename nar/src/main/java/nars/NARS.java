@@ -161,7 +161,7 @@ public class NARS {
 
         exec = UniExec::new;
 
-        what = w -> new TaskLinkWhat(w, 128,
+        what = w -> new TaskLinkWhat(w, 64,
                        new PriBuffer.DirectPriBuffer()
                        //new PriBuffer.BagTaskBuffer(128, 8f)
                        //new PriBuffer.MapTaskBuffer()

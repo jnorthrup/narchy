@@ -38,7 +38,7 @@ public class Timeline2D extends Stacking implements Finger.ScrollWheelConsumer {
     }
 
     public Timeline2D() {
-        this(Long.MIN_VALUE, Long.MIN_VALUE);
+        this(0,1);
     }
 
     public Timeline2D(long start, long end) {

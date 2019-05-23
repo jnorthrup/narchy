@@ -40,8 +40,8 @@ public class SignalViewTest {
     public static Surface newSignalView() {
         RealTimeLine cc = new RealTimeLine();
 
-        int capacity = 64;
-        float audioFPS = 5;
+        int capacity = 128;
+        float audioFPS = 16;
         float granularity = 2;
 
         for (Webcam ww : Webcam.getWebcams()) {

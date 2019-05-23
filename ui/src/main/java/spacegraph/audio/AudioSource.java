@@ -100,12 +100,12 @@ public abstract class AudioSource implements DigitizedSignal {
         logger.info("start {} {}", line, line.getLineInfo());
 
         synchronized (this) {
+            this._start = System.currentTimeMillis();
             if (!line.isOpen()) {
                 line.open();
                 //line.open(audioFormat/*, line.getBufferSize()*/);
             }
 
-            this._start = System.currentTimeMillis();
             line.start();
         }
 
@@ -169,16 +169,18 @@ public abstract class AudioSource implements DigitizedSignal {
 //                    }
 //                }
 
-
-            int toRead = Math.min(capacitySamples * bytesPerSample, availableBytes);
-//            int toDrain = availableBytes - toRead;
-//            if (toDrain > 0) {
-//                //drain excess TODO optional
-//                line.read(new byte[toDrain], 0, toDrain); //HACK TODO use line fast forward method if exist otherwise shared buffer
-//            }
-
             //pad to bytes per sample
+            int toRead = Math.min(capacitySamples * bytesPerSample, availableBytes);
             while (toRead % bytesPerSample != 0) toRead--;
+
+            int toDrain = availableBytes - (toRead/* n buffers */)*2;
+            if (toDrain > 0) {
+                //drain excess TODO optional
+                //line.drain();
+                line.read(new byte[toDrain], 0, toDrain); //HACK TODO use line fast forward method if exist otherwise shared buffer
+            }
+
+
 
             if (!read(toRead)) return 0;
 

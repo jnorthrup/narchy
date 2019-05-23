@@ -115,7 +115,7 @@ abstract public class GameX extends Game {
 
         initPlugins(n);
         initPlugins2(n, g);
-        //initMeta(n, g, false);
+        initMeta(n, g, false);
 
         //new Gridding(n.parts(Game.class).map(NARui::agent).collect(toList())),
         n.synch();
@@ -318,8 +318,8 @@ abstract public class GameX extends Game {
         if(rl) {
             meta.what().pri(0.05f);
             RLBooster metaBoost = new RLBooster(meta, (i, o) ->
-                    new HaiQae(i, 24, o).alpha(0.05f).gamma(0.5f).lambda(0.5f),
-                    2, 5, false);
+                    new HaiQae(i, 12, o).alpha(0.01f).gamma(0.9f).lambda(0.9f),
+                    2, 3, false);
             meta.curiosity.rate.set(0);
             g.add(NARui.rlbooster(metaBoost));
         }
@@ -391,21 +391,21 @@ abstract public class GameX extends Game {
         n.confMin.set(0.01f);
         n.termVolumeMax.set(32);
 
-        n.beliefPriDefault.amp(0.005f);
-        n.goalPriDefault.amp(0.025f);
-        n.questionPriDefault.amp(0.001f);
-        n.questPriDefault.amp(0.002f);
+        n.beliefPriDefault.amp(0.1f);
+        n.goalPriDefault.amp(0.25f);
+        n.questionPriDefault.amp(0.01f);
+        n.questPriDefault.amp(0.02f);
 
 //        n.beliefPriDefault.pri(0.01f);
 //        n.goalPriDefault.pri(0.01f);
 //        n.questionPriDefault.set(0.01f);
 //        n.questPriDefault.set(0.01f);
 
-        n.beliefConfDefault.set(0.75f);
-        n.goalConfDefault.set(0.75f);
+        n.beliefConfDefault.set(0.85f);
+        n.goalConfDefault.set(0.85f);
 
-        n.emotion.want(MetaGoal.Futile, -0.01f);
-        n.emotion.want(MetaGoal.Perceive, -0.0001f);
+//        n.emotion.want(MetaGoal.Futile, -0.01f);
+//        n.emotion.want(MetaGoal.Perceive, -0.015f);
 
         n.emotion.want(MetaGoal.Believe, 0.01f);
         n.emotion.want(MetaGoal.Desire, 0.5f);

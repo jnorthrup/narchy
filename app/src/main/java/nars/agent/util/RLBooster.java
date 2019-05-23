@@ -139,18 +139,35 @@ public class RLBooster  {
     }
 
     private float[] feedback(long prev, long now, float[] fb) {
-        int i = 0;
+        int k = 0;
         NAR n = env.nar();
 
         float[] feedback = fb == null ? new float[actions()] : fb;
+
         for (GameAction s : actions) {
             Truth t = n.beliefTruth(s, prev, now);
-            feedback[i++] = ((t!=null ? t.freq() : noise())-0.5f)*2;
+            float tf = t!=null ? truthFeedback(t) : Float.NaN;
+            float y = tf != tf ? noise() : tf;
+            //y = (y - 0.5f) * 2; //polarize
+            if (actionDiscretization > 1) {
+                for (int d = 0; d < actionDiscretization; d++) {
+                    //float yd = ((((float)d)/(actionDiscretization-1)) - 0.5f)*2;
+                    float yd = ((float)d)/(actionDiscretization-1);
+                    feedback[k++] = y * Util.sqr(1 - Math.abs(yd - y)); //window
+                }
+            } else {
+                feedback[k++] = y;
+            }
         }
 
         //Util.normalize(feedback); //needs shifted to mid0 and back to mid.5
 
         return feedback;
+    }
+
+    private float truthFeedback(Truth t) {
+        //return t.freq();
+        return t.expectation();
     }
 
 

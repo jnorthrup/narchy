@@ -244,7 +244,7 @@ public class SensorBeliefTables extends BeliefTables {
             return; //?
 
         float surprise = NAL.signalSurprise(prev, next, pri, w.dur());
-        if (surprise!=surprise)
+        if (surprise!=surprise || surprise < Float.MIN_NORMAL)
             return;
 
         next.priMax(surprise); //set the task's pri too
