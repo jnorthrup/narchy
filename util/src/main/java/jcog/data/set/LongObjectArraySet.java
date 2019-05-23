@@ -11,7 +11,6 @@ import org.eclipse.collections.api.block.procedure.primitive.LongObjectProcedure
 import org.eclipse.collections.api.iterator.LongIterator;
 import org.eclipse.collections.api.iterator.MutableLongIterator;
 import org.eclipse.collections.impl.iterator.ImmutableEmptyLongIterator;
-import org.eclipse.collections.impl.list.mutable.FastList;
 
 import java.util.Arrays;
 import java.util.NoSuchElementException;

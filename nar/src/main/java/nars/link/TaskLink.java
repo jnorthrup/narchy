@@ -1,5 +1,6 @@
 package nars.link;
 
+import jcog.TODO;
 import jcog.Util;
 import jcog.data.graph.path.FromTo;
 import jcog.decide.Roulette;
@@ -253,11 +254,12 @@ public interface TaskLink extends UnitPrioritizable, FromTo<Term, TaskLink> {
 //            return get();
 //        }
 //
-//        @Override
-//        public TaskLink clone(float pri) {
+        //@Override
+        default TaskLink clone(float pri) {
 //            Task t = get();
 //            return t!=null ? new DirectTaskLink(t, pri) : null;
-//        }
+            throw new TODO();
+        }
 //    }
 
     //    public static class CompactTaskLink extends AtomicQuad16Vector implements TaskLink {

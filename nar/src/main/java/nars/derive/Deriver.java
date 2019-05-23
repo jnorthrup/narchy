@@ -2,8 +2,6 @@ package nars.derive;
 
 import jcog.Util;
 import jcog.func.TriFunction;
-import jcog.signal.meter.FastCounter;
-import nars.Emotion;
 import nars.NAR;
 import nars.Task;
 import nars.attention.What;
@@ -11,7 +9,6 @@ import nars.control.How;
 import nars.control.Why;
 import nars.derive.model.Derivation;
 import nars.derive.model.PreDerivation;
-import nars.derive.premise.Premise;
 import nars.derive.rule.DeriverRules;
 import nars.derive.rule.PremiseRuleCompiler;
 import nars.derive.rule.PremiseRuleProto;

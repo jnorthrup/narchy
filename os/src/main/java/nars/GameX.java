@@ -1,5 +1,7 @@
 package nars;
 
+import com.google.common.collect.Multimap;
+import com.google.common.collect.Streams;
 import com.google.common.util.concurrent.AtomicDouble;
 import jcog.Util;
 import jcog.data.list.FasterList;
@@ -26,6 +28,8 @@ import nars.derive.rule.PremiseRuleSet;
 import nars.derive.timing.ActionTiming;
 import nars.exe.impl.WorkerExec;
 import nars.gui.NARui;
+import nars.link.TaskLink;
+import nars.link.TaskLinks;
 import nars.memory.CaffeineMemory;
 import nars.op.*;
 import nars.op.mental.Inperience2;
@@ -50,14 +54,16 @@ import spacegraph.video.OrthoSurfaceGraph;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
 import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toSet;
 import static java.util.stream.StreamSupport.stream;
 import static nars.$.$$;
-import static nars.Op.BELIEF;
+import static nars.Op.*;
 import static spacegraph.space2d.container.grid.Gridding.grid;
 
 /**
@@ -115,7 +121,7 @@ abstract public class GameX extends Game {
 
         initPlugins(n);
         initPlugins2(n, g);
-        initMeta(n, g, false);
+        //initMeta(n, g, false);
 
         //new Gridding(n.parts(Game.class).map(NARui::agent).collect(toList())),
         n.synch();
@@ -306,6 +312,43 @@ abstract public class GameX extends Game {
 //        );
 //        senseReward.timing = new ActionTiming(n);
 
+        //action stim
+        a.onFrame(new Runnable() {
+
+            final Set<Termed> s = Streams.concat(
+                            a.rewards.stream().flatMap(r -> Streams.stream(r.components())),
+                            a.actions().stream().flatMap(x -> Streams.stream(x.components())))
+                                .map(Termed::term).collect(toSet());
+            float rate = 0.05f;
+
+            @Override
+            public void run() {
+                TaskLinks bag = ((TaskLinkWhat) a.what()).links;
+                @Nullable Multimap<Term, TaskLink> reverses = bag.get(s::contains, false);
+                if (reverses!=null) {
+                    reverses.forEach((t, l) -> {
+                        bag.link(l.clone(this.rate * (1 - l.pri())));
+//                        TaskLink m = l.clone(0f);
+////                        float p = l.pri();
+//                        float rate = this.rate * (1 - l.pri());
+//                        if (rate> Float.MIN_NORMAL) {
+//
+//                            if (m.from().op() != IMPL) {
+//                                m.getAndSetPriPunc(GOAL, rate * 0.5f);
+//                                m.getAndSetPriPunc(QUEST, rate * 0.125f);
+//                            } else {
+//                                rate *= 3; //to compensate TODO refine
+//                            }
+//
+//                            m.getAndSetPriPunc(BELIEF, rate * 0.25f);
+//                            m.getAndSetPriPunc(QUESTION, rate * 0.125f);
+//                            bag.link(m);
+//                        }
+                    });
+                    //System.out.println(reverses);
+                }
+            }
+        });
     }
 
     private static void initMeta(NAR n, Game a, boolean rl) {

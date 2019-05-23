@@ -1,5 +1,7 @@
 package nars.link;
 
+import com.google.common.collect.Multimap;
+import com.google.common.collect.Multimaps;
 import jcog.Util;
 import jcog.data.NumberX;
 import jcog.data.list.FasterList;
@@ -25,6 +27,7 @@ import nars.term.Term;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
+import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Iterator;
@@ -85,6 +88,26 @@ abstract public class TaskLinks implements Sampler<TaskLink> {
         links.setCapacity(c);
     }
 
+
+    @Nullable public Multimap<Term,TaskLink> get(Predicate<Term> f, boolean sourceOrTargetMatch) {
+        return get((t)->{
+            Term tgt = sourceOrTargetMatch ? t.from() : t.to();
+            return f.test(tgt) ? tgt : null;
+        });
+    }
+
+    @Nullable public Multimap<Term,TaskLink> get(Function<TaskLink,Term> f) {
+        Multimap<Term,TaskLink> m = null;
+        for (TaskLink x : links) {
+            @Nullable Term y = f.apply(x);
+            if (y!=null) {
+                if (m == null)
+                    m = Multimaps.newListMultimap(new UnifiedMap(1), ()-> new FasterList(1));
+                m.put(y, x);
+            }
+        }
+        return m;
+    }
     /**
      * updates
      */

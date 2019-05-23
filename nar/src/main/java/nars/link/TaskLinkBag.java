@@ -8,12 +8,8 @@ import jcog.pri.bag.impl.BufferedBag;
 import jcog.pri.op.PriMerge;
 import jcog.pri.op.PriReturn;
 import nars.NAL;
-import nars.concept.Concept;
-import nars.term.Term;
 
-import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Predicate;
 
 public class TaskLinkBag extends BufferedBag.SimpleBufferedBag<TaskLink, TaskLink> {
 

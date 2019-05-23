@@ -119,25 +119,34 @@ class ImplicationNetworkTest {
     void testEternal_A_NegBelief_ToBC() {
 
 
+//        NAL.DEBUG = true;
+        //n.log();
+//        n.onTask((t)->{
+//            System.err.println(t);
+//            System.out.println(MetaGoal.proof(t, n));
+//        });
 
         n.believe(IMPL.the(a, b));
         n.believe(IMPL.the(b, c));
         n.believe(a.neg());
+
+
         n.run(cycles);
 
         BeliefTable aBeliefs = n.concept(a).beliefs();
 
 
         Task bBelief = n.belief(b);
+        //System.out.println(MetaGoal.proof(bBelief, n));
         //System.out.println(bBelief.proof());
-        assertNull(bBelief); 
+        assertNull(bBelief == null || bBelief.conf() < 0.5f /* TODO refine thresh */);
 
     }
 
     @Test
     void testEternal_A_NegBelief_NegToBC_AB_only() {
 
-        n.termVolumeMax.set(16);
+        n.termVolumeMax.set(13);
 
 
 
@@ -158,7 +167,7 @@ class ImplicationNetworkTest {
         assertEquals("%1.0;.81%" , bBelief.toString());
 
     }
-    int cycles = 1000;
+    int cycles = 2000;
     @Test
     void testEternal_A_NegBelief_NegToBC() {
 

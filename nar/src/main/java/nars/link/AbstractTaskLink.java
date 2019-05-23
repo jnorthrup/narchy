@@ -11,6 +11,7 @@ import nars.Op;
 import nars.task.util.TaskException;
 import nars.term.Term;
 import nars.term.atom.Bool;
+import nars.term.util.Image;
 import nars.term.util.TermException;
 
 import static jcog.Util.assertFinite;
@@ -30,6 +31,13 @@ public abstract class AbstractTaskLink implements TaskLink {
      */
     private volatile float pri = 0;
 
+    @Override
+    @Deprecated public AtomicTaskLink clone(float priFactor) {
+        AtomicTaskLink l = new AtomicTaskLink(src, tgt/*, hash*/);
+        l.priMult(priFactor);
+        return l;
+    }
+
     protected AbstractTaskLink(Term self) {
         this(self, null);
     }
@@ -39,14 +47,14 @@ public abstract class AbstractTaskLink implements TaskLink {
         source =
                 source.concept();
                 //Image.imageNormalize(source).concept();
-        target = //Image.imageNormalize(
+        target = Image.imageNormalize(
                 (
                     target != null ?
                         (NAL.TASKLINK_TARGET_CONCEPT && target.op().conceptualizable ?
                             target.concept() : target
                     )
                     : source //loop
-                 )
+                 ))
         ;
 
         if (source instanceof Bool)

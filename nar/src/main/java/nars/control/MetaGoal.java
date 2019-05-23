@@ -7,6 +7,7 @@ import nars.NAR;
 import nars.Task;
 import org.eclipse.collections.api.tuple.primitive.ObjectBytePair;
 import org.eclipse.collections.impl.map.mutable.primitive.ObjectDoubleHashMap;
+import org.eclipse.collections.impl.set.mutable.primitive.ShortHashSet;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -281,11 +282,16 @@ public enum MetaGoal {
     }
 
     public static String proof(Task t, NAR nar) {
+
         short[] tc = t.why();
-        StringBuilder sb = new StringBuilder();
+
+        ShortHashSet seen = new ShortHashSet(tc.length);
+        StringBuilder sb = new StringBuilder(tc.length * 16);
         for (short s : tc) {
-            Why c = nar.control.why.get(s);
-            sb.append(c).append('\n');
+            if (seen.add(s)) {
+                Why c = nar.control.why.get(s);
+                sb.append(c).append('\n');
+            }
         }
         return sb.toString().trim();
     }

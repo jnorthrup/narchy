@@ -105,7 +105,7 @@ public class Gradius extends GameX {
                                     .crop(
                                             (float) i / dx, (float) j / dy,
                                             (float) (i + 1) / dx, (float) (j + 1) / dy))
-                            .resolution(0.02f);
+                            .resolution(0.01f);
 
                     cams.add(c);
                 }
@@ -118,7 +118,7 @@ public class Gradius extends GameX {
 
         float width = g.getWidth();
         float height = g.getHeight();
-        int gpsDigits = 4;
+        int gpsDigits = 3;
         float gpsRes = 0.05f;
         senseNumber(level -> $.p($.the(level), $.p(id, $.the("y"))),
                 () -> g.player[OBJ_Y] / height,
@@ -130,7 +130,7 @@ public class Gradius extends GameX {
         ).resolution(gpsRes);
 
 
-        actionToggle($.inh($$("fire"), id), b -> g.keys[VK_SHOOT] = b);
+        actionToggle($.inh(id,$$("fire")), b -> g.keys[VK_SHOOT] = b);
 
 //        if (canPause) {
 //            actionToggle($$("pause"),
@@ -149,7 +149,7 @@ public class Gradius extends GameX {
             else
                 return Float.NaN; //return +1;
         });
-        alive.setDefault($.t(1, nar.beliefConfDefault.floatValue()/4f));
+        alive.setDefault($.t(1, nar.beliefConfDefault.floatValue()/2f));
 
         Reward destroy = rewardNormalized("destroy", 0, 1, ()->{
 
@@ -164,7 +164,7 @@ public class Gradius extends GameX {
             //return Util.unitize(r);
             return r!=0 ? Util.unitize(r) : Float.NaN;
        });
-       destroy.setDefault($.t(0, nar.beliefConfDefault.floatValue()/4f));
+       destroy.setDefault($.t(0, nar.beliefConfDefault.floatValue()/2f));
 
 
     }

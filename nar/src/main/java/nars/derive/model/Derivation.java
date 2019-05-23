@@ -48,7 +48,8 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-import static nars.Op.*;
+import static nars.Op.BELIEF;
+import static nars.Op.GOAL;
 import static nars.time.Tense.ETERNAL;
 import static nars.time.Tense.TIMELESS;
 
