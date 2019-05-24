@@ -1,5 +1,6 @@
 package nars.util.var;
 
+import jcog.Util;
 import jcog.data.list.FasterList;
 import jcog.decide.Roulette;
 import jcog.memoize.Memoizers;
@@ -82,9 +83,9 @@ public class DepIndepVarIntroduction extends VarIntroduction {
     @Override protected Term choose(Term[] x, Random rng) {
         IntToFloatFunction curve =
                 //n -> 1f / Util.cube(x[n].volume());
-                //n -> 1f / Util.sqr(x[n].volume());
+                n -> 1f / Util.sqr(x[n].volume());
                 //n -> 1f / x[n].volume()
-                n -> (float) (1 / Math.sqrt(x[n].volume()))
+                //n -> (float) (1 / Math.sqrt(x[n].volume()))
                 ;
 
         return x[Roulette.selectRouletteCached(x.length, curve, rng)];
