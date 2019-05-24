@@ -183,7 +183,7 @@ class ArithmeticTest {
         TestNAR t = new TestNAR(n);
         t.confTolerance(0.8f);
         n.freqResolution.set(0.25f);
-        n.termVolumeMax.set(19);
+        n.termVolMax.set(19);
 
 
         for (int a = 1; a <= 2; a++) {

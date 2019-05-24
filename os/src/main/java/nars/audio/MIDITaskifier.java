@@ -34,7 +34,7 @@ public class MIDITaskifier {
 
     public MIDITaskifier() {
         NAR nar = NARS.threadSafe();
-        nar.termVolumeMax.set(16);
+        nar.termVolMax.set(16);
 
 
         nar.onTask(t -> {

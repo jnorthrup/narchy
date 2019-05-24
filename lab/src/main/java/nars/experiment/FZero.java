@@ -9,6 +9,7 @@ import nars.$;
 import nars.GameX;
 import nars.NAR;
 import nars.agent.NAct;
+import nars.agent.Reward;
 import nars.concept.action.BiPolarAction;
 import nars.concept.action.GameAction;
 import nars.concept.action.SwitchAction;
@@ -231,7 +232,7 @@ public class FZero extends GameX {
 //            //return Util.equals(damage, 0, 0.01f) ? Float.NaN : 0; //Math.max(0, 1 - damage);
 //            return Util.equals(damage, 0, 0.01f) ? 1 : 0;
 //        });
-        rewardNormalized("race", -1, +1, (() -> {
+        Reward race = rewardNormalized("race", -1, +1, (() -> {
 
 //            float bias =
 //                    //0.25f;
@@ -241,6 +242,7 @@ public class FZero extends GameX {
 
             return Util.clamp(progress * 0.5f, -1, +1);
         }));
+        race.resolution().set(0.1f);
 //        rewardNormalized("efficient", 0, +1, (() -> {
 //
 ////            float bias =

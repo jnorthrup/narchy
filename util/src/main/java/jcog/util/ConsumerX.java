@@ -87,8 +87,7 @@ import java.util.stream.Stream;
             FasterList batch = drainBuffer.get();
 
             if (b instanceof ArrayBag) {
-                boolean blocking = true;
-                ((ArrayBag) b).popBatch(max, blocking, batch::add);
+                ((ArrayBag) b).popBatch(max, true, batch::add);
             } else {
                 b.pop(null, max, batch::add); //per item.. may be slow
             }

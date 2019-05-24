@@ -198,7 +198,7 @@ abstract class ListFuncTest {
              */
 
             NAR n = NARS.tmp();
-            n.termVolumeMax.set(48);
+            n.termVolMax.set(48);
 
             int levels =
                     2;

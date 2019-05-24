@@ -5,13 +5,10 @@ import jcog.math.IntRange;
 import nars.NAR;
 import nars.Task;
 import nars.concept.Concept;
-import nars.derive.model.Derivation;
-import nars.derive.premise.PremiseBuffer;
 import nars.link.TaskLink;
 import nars.link.TaskLinks;
 import nars.task.util.PriBuffer;
 import nars.term.Term;
-import nars.time.event.WhenTimeIs;
 
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
@@ -41,15 +38,16 @@ public class TaskLinkWhat extends What {
             //new TaskLinks.NullTangentTaskLinks();
             //new TaskLinks.AtomCachingTangentTaskLinks();
 
-    final PremiseBuffer premises = new PremiseBuffer();
 
     private final AtomicBoolean busy = new AtomicBoolean(false);
     private volatile long lastUpdate;
+
 
     public TaskLinkWhat(Term id, int capacity, PriBuffer<Task> in) {
         super(id, in);
         links.linksMax.set(capacity);
     }
+
 
     @Override
     protected void starting(NAR nar) {
@@ -76,7 +74,7 @@ public class TaskLinkWhat extends What {
                 if (now - lastUpdate >= nar.dur() * MIN_UPDATE_DURS) {
 
                     lastUpdate = now;
-                    premises.commit();
+//                    premises.commit();
                     links.commit();
 
                 }
@@ -117,18 +115,6 @@ public class TaskLinkWhat extends What {
     }
 
 
-    /**
-     * samples premises
-     * thread-safe, for use by multiple threads
-     */
-    public final void derive(int premisesPerIteration, int termlinksPerTaskLink, int matchTTL, int deriveTTL, Derivation d) {
-        premises.derive(
-                WhenTimeIs.now(d),
-                premisesPerIteration,
-                termlinksPerTaskLink,
-                matchTTL, deriveTTL,
-                links, d);
-    }
 
 
 }

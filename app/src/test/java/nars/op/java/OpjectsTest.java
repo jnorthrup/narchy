@@ -177,7 +177,7 @@ public class OpjectsTest {
         n.questPriDefault.amp(0.05f);
         n.freqResolution.set(0.1f);
         n.time.dur(10);
-        n.termVolumeMax.set(30);
+        n.termVolMax.set(30);
 
         n.logPriMin(System.out, 0.02f);
 

@@ -8,6 +8,7 @@ import nars.term.Compound;
 import nars.term.Term;
 import nars.term.atom.Bool;
 import nars.term.compound.LazyCompoundBuilder;
+import nars.term.util.TermException;
 import org.jetbrains.annotations.Nullable;
 
 import static nars.Op.*;
@@ -26,19 +27,23 @@ public interface AbstractTermTransform extends TermTransform, nars.term.util.bui
 
     /** global default transform procedure: can decide semi-optimal transform implementation */
     static Term transform(Term x, AbstractTermTransform transform, LazyCompoundBuilder l, int volMax) {
-        if (x instanceof Compound && NAL.TERMIFY_TRANSFORM_LAZY) {
+        if (x instanceof Compound && NAL.TERMIFY_TRANSFORM_LAZY && x.volume() > NAL.TERMIFY_TRANSFORM_LAZY_VOL_MIN ) {
 
-            l.clear();
+            try {
+                l.clear();
+                return transform.applyCompoundLazy((Compound) x, l, volMax);
+            } catch (TermException t) {
+                if (NAL.DEBUG)
+                    throw t;
+                //continue below
+            } catch (RuntimeException e) {
+                throw new TermException(e.toString(), x);
+                //return Null;
+            }
 
-            Term y = transform.applyCompoundLazy((Compound)x, l,
-                    volMax
-            );
-
-            return y;
-
-        } else {
-            return transform.apply(x);
         }
+
+        return transform.apply(x);
     }
 
     /**

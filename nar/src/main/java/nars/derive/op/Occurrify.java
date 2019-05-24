@@ -320,7 +320,7 @@ public class Occurrify extends TimeGraph {
 
 //                //eternal task projected to virtual present moment
                 long now = d.time();
-                int dur = Math.max(d.dur(), Tense.occToDT(beliefEnd - beliefStart));
+                int dur = Math.min(d.nar.dtDither(), Tense.occToDT(beliefEnd - beliefStart));
                 taskStart = now - dur / 2;
                 taskEnd = now + dur / 2;
             } else {
@@ -333,22 +333,12 @@ public class Occurrify extends TimeGraph {
             beliefStart = taskStart;
             beliefEnd = taskEnd;
         }
-        if ((d.concPunc==GOAL || d.concPunc==QUEST) && (d.taskPunc == GOAL || d.taskPunc == QUEST) && taskStart!=ETERNAL && (beliefStart!=ETERNAL && beliefStart!=TIMELESS)) {
-            //ignore belief occurrence in deriving goal/quest from goal/quest
-            beliefStart = beliefEnd = TIMELESS;
-        }
+//        if ((d.concPunc==GOAL || d.concPunc==QUEST) && (d.taskPunc == GOAL || d.taskPunc == QUEST) && taskStart!=ETERNAL && (beliefStart!=ETERNAL && beliefStart!=TIMELESS)) {
+//            //ignore belief occurrence in deriving goal/quest from goal/quest
+//            beliefStart = beliefEnd = TIMELESS;
+//        }
 
-            /*else if (beliefStart!=TIMELESS && taskStart != ETERNAL) {
-            //conditions for considering vs ignoring belief occurrence:
-            boolean ignoreBeliefOcc = false;
-            if (beliefStart == ETERNAL)
-                ignoreBeliefOcc = true;
-            else if (d.concTruth!=null && time.beliefProjection()==BeliefProjection.Task)
-                ignoreBeliefOcc = true;
 
-            if (ignoreBeliefOcc)
-                beliefStart = beliefEnd = TIMELESS;
-        }*/
 
         final Term taskTerm = d.retransform(d.taskTerm);
         Term beliefTerm = d.beliefTerm.equals(d.taskTerm) ? taskTerm : d.retransform(d.beliefTerm);

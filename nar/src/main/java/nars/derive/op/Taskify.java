@@ -1,13 +1,13 @@
 package nars.derive.op;
 
 import jcog.Util;
-import jcog.math.LongInterval;
 import jcog.util.ArrayUtil;
 import nars.*;
 import nars.control.MetaGoal;
 import nars.derive.model.Derivation;
 import nars.derive.model.DerivationFailure;
 import nars.derive.rule.PremiseRuleProto;
+import nars.op.mental.Abbreviation;
 import nars.task.DebugDerivedTask;
 import nars.task.DerivedTask;
 import nars.term.ProxyTerm;
@@ -115,24 +115,24 @@ public class Taskify extends ProxyTerm {
 
 
 
-        if (punc == GOAL && d.taskPunc == GOAL) {
-            //check for contradictory goal derivation
-            if (LongInterval.minTimeTo(d._task, start, end) < d.dur() + d.taskTerm.eventRange() + x.unneg().eventRange()) {
-                Term posTaskGoal = d.taskTerm.negIf(d.taskTruth.isNegative());
-                Term antiTaskGoal = posTaskGoal.neg();
-                Term cc = x.negIf(d.concTruth.isNegative());
-
-                if (
-                    cc.equals(antiTaskGoal)
-                    //|| (cc.op() == CONJ && Conj.containsEvent(cc, antiTaskGoal))
-                    //|| (posTaskGoal.op() == CONJ && Conj.containsEvent(posTaskGoal, cc.neg()))
-                ) {
-                    nar.emotion.deriveFailTaskifyGoalContradiction.increment();
-                    spam(d, NAL.derive.TTL_COST_DERIVE_TASK_UNPRIORITIZABLE);
-                    return;
-                }
-            }
-        }
+//        if (punc == GOAL && d.taskPunc == GOAL) {
+//            //check for contradictory goal derivation
+//            if (LongInterval.minTimeTo(d._task, start, end) < d.dur() + d.taskTerm.eventRange() + x.unneg().eventRange()) {
+//                Term posTaskGoal = d.taskTerm.negIf(d.taskTruth.isNegative());
+//                Term antiTaskGoal = posTaskGoal.neg();
+//                Term cc = x.negIf(d.concTruth.isNegative());
+//
+//                if (
+//                    cc.equals(antiTaskGoal)
+//                    //|| (cc.op() == CONJ && Conj.containsEvent(cc, antiTaskGoal))
+//                    //|| (posTaskGoal.op() == CONJ && Conj.containsEvent(posTaskGoal, cc.neg()))
+//                ) {
+//                    nar.emotion.deriveFailTaskifyGoalContradiction.increment();
+//                    spam(d, NAL.derive.TTL_COST_DERIVE_TASK_UNPRIORITIZABLE);
+//                    return;
+//                }
+//            }
+//        }
 
         boolean neg = xo == NEG;
         if (neg) {
@@ -192,6 +192,9 @@ public class Taskify extends ProxyTerm {
         x = d.anon.get(x);
         if (x == null)
             throw new NullPointerException("could not un-anonymize " + x0 + " with " + d.anon);
+
+        //abbreviate TODO combine this with anon step by editing the substitution map
+        x = Abbreviation.apply(x, nar::concept);
 
         /** compares taskTerm un-anon */
         if (isSame(x, punc, tru, S, E, d._task.term(), d._task, nar)) {

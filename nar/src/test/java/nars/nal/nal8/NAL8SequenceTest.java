@@ -234,7 +234,7 @@ public class NAL8SequenceTest extends NALTest {
         List<Term> log = new FasterList();
 
         NAR n = NARS.tmp();
-        n.termVolumeMax.set(20);
+        n.termVolMax.set(20);
         n.time.dur(4);
 
         n.addOp1("f", (x, nar)->{

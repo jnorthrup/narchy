@@ -2,7 +2,6 @@ package nars.attention;
 
 import nars.NAR;
 import nars.concept.Concept;
-import nars.derive.model.Derivation;
 import nars.link.TaskLink;
 
 import java.io.IOException;
@@ -63,8 +62,4 @@ public class ProxyWhat extends What {
         what.sample(rng, each);
     }
 
-    @Override
-    public void derive(int premisesPerIteration, int termlinksPerTaskLink, int matchTTL, int deriveTTL, Derivation d) {
-        what.derive(premisesPerIteration, termlinksPerTaskLink,matchTTL,deriveTTL,d);
-    }
 }

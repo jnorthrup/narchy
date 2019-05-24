@@ -282,7 +282,7 @@ abstract public class Inperience extends TaskLeakTransform {
 
     @Override
     public void next(What w, BooleanSupplier kontinue) {
-        volMaxPre = (volMaxPost = w.nar.termVolumeMax.intValue()) - MIN_REIFICATION_OVERHEAD;
+        volMaxPre = (volMaxPost = w.nar.termVolMax.intValue()) - MIN_REIFICATION_OVERHEAD;
         super.next(w, kontinue);
     }
 

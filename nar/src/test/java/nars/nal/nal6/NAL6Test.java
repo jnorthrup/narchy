@@ -27,7 +27,7 @@ public class NAL6Test extends NALTest {
         NAR n = NARS.tmp(6, 8);
         //NAR n = NARS.tmp(6);
 
-        n.termVolumeMax.set(16);
+        n.termVolMax.set(16);
         //n.freqResolution.setAt(0.1f);
         n.confMin.set(0.3f);
         return n;
@@ -74,7 +74,7 @@ public class NAL6Test extends NALTest {
     void variable_unification4() {
 
         TestNAR tester = test;
-        tester.nar.termVolumeMax.set(14);
+        tester.nar.termVolMax.set(14);
 
         tester.believe("<<bird --> $x> ==> <robin --> $x>>");
         tester.believe("<<swimmer --> $y> ==> <robin --> $y>>", 0.70f, 0.90f);
@@ -91,7 +91,7 @@ public class NAL6Test extends NALTest {
     void variable_unification5() {
 
         TestNAR tester = test;
-        tester.nar.termVolumeMax.set(14);
+        tester.nar.termVolMax.set(14);
         tester.believe("<(&&,($x --> flyer),($x --> [chirping])) ==> ($x --> bird)>");
         tester.believe("<($y --> [withWings]) ==> ($y --> flyer)>");
         tester.mustBelieve(cycles, "((($1 --> [chirping]) && ($1 --> [withWings])) ==> ($1 --> bird))",
@@ -106,7 +106,7 @@ public class NAL6Test extends NALTest {
 
 
         TestNAR tester = test;
-        tester.nar.termVolumeMax.set(16);
+        tester.nar.termVolMax.set(16);
         tester.believe("<(&&,($x --> flyer),($x --> [chirping])) ==> --($x --> nonBird)>");
         tester.believe("<($y --> [withWings]) ==> ($y --> flyer)>");
         tester.mustBelieve(cycles, "((($1 --> [chirping]) && ($1 --> [withWings])) ==> --($1 --> nonBird))",
@@ -230,7 +230,7 @@ public class NAL6Test extends NALTest {
 
     @Test
     void variable_elimination_conj() {
-        test.nar.termVolumeMax.set(7);
+        test.nar.termVolMax.set(7);
 
         TestNAR tester = test;
 
@@ -272,7 +272,7 @@ public class NAL6Test extends NALTest {
 
     @Test
     void variable_elimination5_neg() {
-        test.nar.termVolumeMax.set(16);
+        test.nar.termVolMax.set(16);
 
         TestNAR tester = test;
         tester.believe("({Tweety} --> [withWings])");
@@ -290,7 +290,7 @@ public class NAL6Test extends NALTest {
     @Test
     void variable_elimination6_easier() {
 
-        test.nar.termVolumeMax.set(14);
+        test.nar.termVolMax.set(14);
 
         TestNAR tester = test;
 
@@ -305,7 +305,7 @@ public class NAL6Test extends NALTest {
     @Test
     void variable_elimination6simpler() {
 
-        test.nar.termVolumeMax.set(14);
+        test.nar.termVolMax.set(14);
         test.nar.confMin.set(0.5f);
         test
                 .believe("((&&, flyer:$x, chirping:$x, food:worms) ==> bird:$x)")
@@ -340,7 +340,7 @@ public class NAL6Test extends NALTest {
     void multiple_variable_elimination() {
 
         TestNAR tester = test;
-        tester.nar.termVolumeMax.set(16);
+        tester.nar.termVolMax.set(16);
         tester.believe("((($x --> key) && ($y --> lock)) ==> open($x, $y))");
         tester.believe("({lock1} --> lock)");
         tester.mustBelieve(cycles, "(($1 --> key) ==> open($1, {lock1}))", 1.00f,
@@ -353,7 +353,7 @@ public class NAL6Test extends NALTest {
     @Test
     void multiple_variable_elimination2() {
 
-        test.nar.termVolumeMax.set(16);
+        test.nar.termVolMax.set(16);
         TestNAR tester = test;
         tester.believe("(lock:$x ==> (key:#y && open(#y,$x)))");
         tester.believe("lock:{lock1}");
@@ -426,7 +426,7 @@ public class NAL6Test extends NALTest {
          */
 
         TestNAR tester = test;
-        tester.nar.termVolumeMax.set(13);
+        tester.nar.termVolMax.set(13);
         tester.believe("<gull --> swimmer>");
         tester.believe("(swan --> swimmer)", 0.80f, 0.9f);
         tester.mustBelieve(cycles, "<<gull --> $1> ==> <swan --> $1>>", 0.80f, 0.45f);
@@ -525,7 +525,7 @@ public class NAL6Test extends NALTest {
 
     @Test
     void second_level_variable_unificationNoImgAndAsPreconditionAllIndep() {
-        test.nar.termVolumeMax.set(15);
+        test.nar.termVolMax.set(15);
 
         TestNAR tester = test;
         tester.believe("((($1 --> lock)&&($2 --> key)) ==> open($1,$2))", 1.00f, 0.90f);
@@ -537,7 +537,7 @@ public class NAL6Test extends NALTest {
 
     @Test
     void second_level_variable_unificationNoImgAndAsPrecondition() {
-        test.nar.termVolumeMax.set(15);
+        test.nar.termVolMax.set(15);
 
         TestNAR tester = test;
         tester.believe("(((#1 --> lock)&&($2 --> key)) ==> open(#1,$2))", 1.00f, 0.90f);
@@ -569,7 +569,7 @@ public class NAL6Test extends NALTest {
 
     @Test
     void second_level_variable_unification2() {
-        test.nar.termVolumeMax.set(15);
+        test.nar.termVolMax.set(15);
 
         TestNAR tester = test;
         tester.believe("<($1 --> lock) ==> (&&,<#2 --> key>,open(#2,$1))>", 1.00f, 0.90f);
@@ -597,7 +597,7 @@ public class NAL6Test extends NALTest {
     void second_variable_introduction_induction() {
 
         TestNAR tester = test;
-        test.nar.termVolumeMax.set(17);
+        test.nar.termVolMax.set(17);
 
         tester.believe("(open($1,lock1) ==> key:$1)");
         tester.believe("open(lock,lock1)");
@@ -857,7 +857,7 @@ public class NAL6Test extends NALTest {
 
     @Test
     void strong_unification_neg() {
-        test.nar.termVolumeMax.set(12);
+        test.nar.termVolMax.set(12);
 
         TestNAR tester = test;
         tester.believe("( --sentence($a,is,$b) ==> ($a --> $b) )", 1.00f, 0.90f);
@@ -868,7 +868,7 @@ public class NAL6Test extends NALTest {
 
     @Test
     void strong_elimination() {
-        test.nar.termVolumeMax.set(18);
+        test.nar.termVolMax.set(18);
         test.nar.confMin.set(0.5f);
         TestNAR tester = test;
         tester.believe("((test($a,is,cat) && sentence($a,is,$b)) ==> ($a --> $b))");
@@ -1031,7 +1031,7 @@ public class NAL6Test extends NALTest {
     @Test
     void recursionSmall() {
 
-        test.nar.termVolumeMax.set(11);
+        test.nar.termVolMax.set(11);
         //test.nar.freqResolution.set(0.2f);
         test
                 .believe("num:x", 1.0f, 0.9f)
@@ -1048,7 +1048,7 @@ public class NAL6Test extends NALTest {
     void recursionSmall1() {
 
 
-        test.nar.termVolumeMax.set(10);
+        test.nar.termVolMax.set(10);
         test.nar.freqResolution.set(0.2f);
         test
                 .believe("num(x)", 1.0f, 0.9f)
@@ -1098,7 +1098,7 @@ public class NAL6Test extends NALTest {
 
     @Test
     void testHypothesizeSubconditionIdentityConj() {
-        test.nar.termVolumeMax.set(17);
+        test.nar.termVolMax.set(17);
         test
                 .believe("(&&,f(x),f(#1),g(#1))", 1f, 0.9f)
                 .mustBelieve(cycles, "(&&,f(x),g(x))", 1f, 0.81f)
@@ -1107,7 +1107,7 @@ public class NAL6Test extends NALTest {
 
     @Test
     void testHypothesizeSubconditionNeg_Conj_ShortCircuit() {
-        test.nar.termVolumeMax.set(13);
+        test.nar.termVolMax.set(13);
         test
                 .believe("(--(f(x) && --f(#1)) ==> a)", 1f, 0.9f)
                 .mustBelieve(cycles, "a", 1f, 0.43f)

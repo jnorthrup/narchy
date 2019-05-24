@@ -49,7 +49,7 @@ public class Inperience2 extends How {
         long end = /*Tense.dither*/((long)Math.ceil(now + window * dur/2));//, dither);
         When when = new When(start, end, dur, nar);
 
-        int volMax = n.termVolumeMax.intValue();
+        int volMax = n.termVolMax.intValue();
         int volMaxPre = (int) Math.max(1, Math.ceil(volMax * 0.5f));
         float beliefConf = n.confDefault(BELIEF);
         Random rng = w.random();

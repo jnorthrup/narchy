@@ -22,7 +22,9 @@ import nars.unify.Unify;
  */
 public final class AliasConcept extends TaskConcept {
 
-    /** the abbreviated (decompressed) concept that this abbreviates */
+    /**
+     * the abbreviated (decompressed) concept that this abbreviates
+     */
     public final Concept abbr;
 
 
@@ -40,11 +42,19 @@ public final class AliasConcept extends TaskConcept {
     @Override
     public void add(Remember t, NAR n) {
         Task x = t.input;
-        if (abbr.isDeleted()) {
-            t.forget(x);
-        } else {
-            ((TaskConcept) abbr).add(Remember.the(Task.clone(x, abbr.term()), n), n);
+        if (!abbr.isDeleted()) {
+            Remember r;
+            if (term().equals(x.term())) {
+                Task c = Task.clone(x, abbr.term());
+                if (c == null)
+                    throw new NullPointerException();
+                r = Remember.the(c, n);
+            } else {
+                r = t;
+            }
+            ((TaskConcept) abbr).add(r, n);
         }
+
 
     }
 
@@ -78,7 +88,6 @@ public final class AliasConcept extends TaskConcept {
             super(id);
             this.target = target;
         }
-
 
 
         @Override

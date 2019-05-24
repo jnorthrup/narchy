@@ -23,7 +23,7 @@ public class NAL2Test extends NALTest {
 
         NAR n = NARS.tmp(2);
         n.confMin.set(0.2f);
-        n.termVolumeMax.set(7);
+        n.termVolMax.set(7);
         return n;
     }
 
@@ -272,7 +272,7 @@ public class NAL2Test extends NALTest {
     void set_operationsSetInt_union1_1_2_3() {
 
         TestNAR tester = test;
-        tester.nar.termVolumeMax.set(6);
+        tester.nar.termVolMax.set(6);
         tester.believe("<planetX --> [marsy,venusy]>", 1.0f, 0.9f);
         tester.believe("<planetX --> [earthly]>", 0.1f, 0.9f);
         tester.mustBelieve(cycles, "<planetX --> [marsy,earthly,venusy]>", 0.1f, 0.81f);

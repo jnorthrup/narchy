@@ -27,7 +27,7 @@ class NAL8EternalMixTest extends NALTest {
     @BeforeEach
     void setTolerance() {
         test.confTolerance(NAL7Test.CONF_TOLERANCE_FOR_PROJECTIONS);
-        test.nar.termVolumeMax.set(14);
+        test.nar.termVolMax.set(14);
     }
 
     @Test

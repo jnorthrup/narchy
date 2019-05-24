@@ -62,7 +62,7 @@ public class Remember extends AbstractTask {
 
         if (NAL.VOLMAX_RESTRICTS || (NAL.VOLMAX_RESTRICTS_INPUT && isInput)) {
             int termVol = xTerm.volume();
-            int maxVol = n.termVolumeMax.intValue();
+            int maxVol = n.termVolMax.intValue();
             if (termVol > maxVol)
                 throw new TaskException(x, "target exceeds volume maximum: " + termVol + " > " + maxVol);
         }

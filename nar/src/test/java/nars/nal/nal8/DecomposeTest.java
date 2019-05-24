@@ -22,7 +22,7 @@ abstract public class DecomposeTest extends NALTest {
     @Override
     protected NAR nar() {
         NAR n = NARS.tmp(5,6);
-        n.termVolumeMax.set(12);
+        n.termVolMax.set(12);
         return n;
     }
 
@@ -165,6 +165,7 @@ abstract public class DecomposeTest extends NALTest {
                     .input("a. %0.9%")
                     .mustGoal(cycles, "b", 0.19f, 0.66f);
         }
+
     }
 
 //    @Test

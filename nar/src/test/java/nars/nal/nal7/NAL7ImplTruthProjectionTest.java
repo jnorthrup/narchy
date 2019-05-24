@@ -31,7 +31,7 @@ class NAL7ImplTruthProjectionTest {
 
                 NAR n = NARS.tmp();
 
-                n.termVolumeMax.set(10);
+                n.termVolMax.set(10);
                 n.time.dur(dur);
                 n.inputAt(eventTime, "x. :|:");
                 n.inputAt(implTime, "(x ==>+" + implDT + " y). :|:");

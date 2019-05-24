@@ -1,6 +1,5 @@
 package nars.term.var;
 
-import com.google.common.base.Joiner;
 import jcog.WTF;
 import nars.NAL;
 import nars.Op;
@@ -119,31 +118,21 @@ public final class CommonVariable extends UnnormalizedVariable {
         return new IntrinSubterms(vars);
     }
 
-    static String key(Op o, Iterable<Term> vars) {
-        return o + Joiner.on("").join(vars);
+    static String key(Op o, IntrinSubterms vars) {
+        int n = vars.subs();
+        StringBuilder sb = new StringBuilder(1 + n * 2);
+        sb.append(o.ch);
+        for (int i = 0; i < n; i++) {
+            sb.append(vars.sub(i));
+        }
+        return sb.toString();
     }
-//    static String key(Op o, Term[] vars) {
-//        return o + Joiner.on("").join(vars);
-//    }
 
     public static boolean unify(Variable X, Variable Y, Unify u) {
-
         //same op: common variable
         //TODO may be possible to "insert" the common variable between these and whatever result already exists, if only one in either X or Y's slot
         Variable common = CommonVariable.common(X,Y);
-        //rewrite any appearances of X or Y in already-assigned variables
-        //            if (u.xy.size() > 2) {
-        //                return u.xy.tryReplaceAll((var, val) -> {
-        //                    if (var.equals(X) || var.equals(Y) || !val.hasAny(X.op()))
-        //                        return val; //unchanged
-        //                    else
-        //                        return val.replace(X, common).replace(Y, common);
-        //                });
-        //            } else {
-        //                return true; //only the common variable components were asisgned
-        //            }
-        return u.putXY(X, common) && u.putXY(Y, common);
-        //}
+        return (common.equals(X) || u.putXY(X, common)) && (common.equals(Y) || u.putXY(Y, common));
     }
 
 }

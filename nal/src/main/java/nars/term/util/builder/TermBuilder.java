@@ -193,7 +193,12 @@ public abstract class TermBuilder implements TermConstructor {
     }
 
     protected Term statement(Op op, int dt, Term subject, Term predicate) {
-        return Statement.statement(this, op, dt, subject, predicate);
+        try {
+            return Statement.statement(this, op, dt, subject, predicate);
+        } catch (StackOverflowError e) {
+            throw new TermException("statement stack overflow", op, dt, subject, predicate);  //HACK
+        }
+
     }
 
     public final Term statement(Op op, int dt, Term[] u) {

@@ -60,10 +60,10 @@ public class Recog2D extends GameX {
 
 
     int image;
-    final int maxImages = 4;
+    final int maxImages = 2;
 
-    int imagePeriod = 8;
-
+    int imagePeriod = 64;
+    static final int FPS = 32;
 
     public Recog2D(NAR n) {
         super("x", n);
@@ -244,6 +244,7 @@ public class Recog2D extends GameX {
 
     public static void main(String[] arg) {
 
+
         GameX.runRT((n) -> {
 
             Recog2D a = new Recog2D(n);
@@ -251,7 +252,7 @@ public class Recog2D extends GameX {
 
             return a;
 
-        }, 15);
+        }, FPS);
     }
 
 //    public static class Training {

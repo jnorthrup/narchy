@@ -133,7 +133,7 @@ public class NARS {
 
             then((n)->{
 
-                n.termVolumeMax.set(22);
+                n.termVolMax.set(22);
 
                 ((TaskLinkWhat) n.what()).links.decay.set(0.01f);
 

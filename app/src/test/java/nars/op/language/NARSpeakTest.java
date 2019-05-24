@@ -38,7 +38,7 @@ public class NARSpeakTest {
     @Test
     public void testHearGoal() throws Narsese.NarseseException {
         NAR n = NARS.threadSafe();
-        n.termVolumeMax.set(16);
+        n.termVolMax.set(16);
         n.freqResolution.set(0.1f);
         n.dtDither.set(50);
 //        n.confMin.setAt(0.1f);

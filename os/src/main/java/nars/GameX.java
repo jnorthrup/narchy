@@ -1,6 +1,5 @@
 package nars;
 
-import com.google.common.collect.Multimap;
 import com.google.common.collect.Streams;
 import com.google.common.util.concurrent.AtomicDouble;
 import jcog.Util;
@@ -28,10 +27,9 @@ import nars.derive.rule.PremiseRuleSet;
 import nars.derive.timing.ActionTiming;
 import nars.exe.impl.WorkerExec;
 import nars.gui.NARui;
-import nars.link.TaskLink;
-import nars.link.TaskLinks;
 import nars.memory.CaffeineMemory;
 import nars.op.*;
+import nars.op.mental.Abbreviation;
 import nars.op.mental.Inperience2;
 import nars.op.stm.ConjClustering;
 import nars.sensor.Bitmap2DSensor;
@@ -42,6 +40,8 @@ import nars.term.Termed;
 import nars.time.clock.RealTime;
 import nars.video.SwingBitmap2D;
 import nars.video.WaveletBag;
+import org.eclipse.collections.api.factory.Sets;
+import org.eclipse.collections.api.set.ImmutableSet;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.SpaceGraph;
 import spacegraph.space2d.Surface;
@@ -54,7 +54,6 @@ import spacegraph.video.OrthoSurfaceGraph;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.List;
-import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -63,7 +62,7 @@ import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
 import static java.util.stream.StreamSupport.stream;
 import static nars.$.$$;
-import static nars.Op.*;
+import static nars.Op.BELIEF;
 import static spacegraph.space2d.container.grid.Gridding.grid;
 
 /**
@@ -107,7 +106,7 @@ abstract public class GameX extends Game {
     }
 
     public static NAR runRT(Function<NAR, Game> init, int threads, float narFPS) {
-        NAR n = baseNAR(narFPS, threads);
+        NAR n = baseNAR(narFPS/2, threads);
 
         Game g = init.apply(n);
 
@@ -312,43 +311,8 @@ abstract public class GameX extends Game {
 //        );
 //        senseReward.timing = new ActionTiming(n);
 
-        //action stim
-        a.onFrame(new Runnable() {
 
-            final Set<Termed> s = Streams.concat(
-                            a.rewards.stream().flatMap(r -> Streams.stream(r.components())),
-                            a.actions().stream().flatMap(x -> Streams.stream(x.components())))
-                                .map(Termed::term).collect(toSet());
-            float rate = 0.05f;
 
-            @Override
-            public void run() {
-                TaskLinks bag = ((TaskLinkWhat) a.what()).links;
-                @Nullable Multimap<Term, TaskLink> reverses = bag.get(s::contains, false);
-                if (reverses!=null) {
-                    reverses.forEach((t, l) -> {
-                        bag.link(l.clone(this.rate * (1 - l.pri())));
-//                        TaskLink m = l.clone(0f);
-////                        float p = l.pri();
-//                        float rate = this.rate * (1 - l.pri());
-//                        if (rate> Float.MIN_NORMAL) {
-//
-//                            if (m.from().op() != IMPL) {
-//                                m.getAndSetPriPunc(GOAL, rate * 0.5f);
-//                                m.getAndSetPriPunc(QUEST, rate * 0.125f);
-//                            } else {
-//                                rate *= 3; //to compensate TODO refine
-//                            }
-//
-//                            m.getAndSetPriPunc(BELIEF, rate * 0.25f);
-//                            m.getAndSetPriPunc(QUESTION, rate * 0.125f);
-//                            bag.link(m);
-//                        }
-                    });
-                    //System.out.println(reverses);
-                }
-            }
-        });
     }
 
     private static void initMeta(NAR n, Game a, boolean rl) {
@@ -432,23 +396,20 @@ abstract public class GameX extends Game {
         );
 
         n.confMin.set(0.01f);
-        n.termVolumeMax.set(32);
+        n.termVolMax.set(24);
+
 
         n.beliefPriDefault.amp(0.1f);
         n.goalPriDefault.amp(0.25f);
         n.questionPriDefault.amp(0.01f);
         n.questPriDefault.amp(0.02f);
 
-//        n.beliefPriDefault.pri(0.01f);
-//        n.goalPriDefault.pri(0.01f);
-//        n.questionPriDefault.set(0.01f);
-//        n.questPriDefault.set(0.01f);
 
-        n.beliefConfDefault.set(0.85f);
-        n.goalConfDefault.set(0.85f);
+        n.beliefConfDefault.set(0.8f);
+        n.goalConfDefault.set(0.9f);
 
-//        n.emotion.want(MetaGoal.Futile, -0.01f);
-//        n.emotion.want(MetaGoal.Perceive, -0.015f);
+        n.emotion.want(MetaGoal.Futile, -0.001f);
+        n.emotion.want(MetaGoal.Perceive, -0.002f);
 
         n.emotion.want(MetaGoal.Believe, 0.01f);
         n.emotion.want(MetaGoal.Desire, 0.5f);
@@ -576,7 +537,7 @@ abstract public class GameX extends Game {
 //        new Inperience.Wonder(8, n);
 //        new Inperience.Plan(8, n);
 
-        //new Abbreviation("z", 5, 9, n);
+        new Abbreviation("z", 5, 12, n);
 
 
 //        try {
@@ -601,12 +562,35 @@ abstract public class GameX extends Game {
 
     }
 
+    @Override
+    protected void starting(NAR nar) {
+        super.starting(nar);
+
+
+        //behavior overdrive
+        ImmutableSet<Term> stimSet = Sets.immutable.ofAll(Streams.concat(
+                rewards.stream().flatMap(r -> Streams.stream(r.components())),
+                actions().stream().flatMap(x -> Streams.stream(x.components())))
+                .map(Termed::term).collect(toSet()));
+
+
+//        float rate = 0.25f;
+//        ((TaskLinkWhat)what()).links.pri((tl)->{
+//            if (!stimSet.contains(tl.to()) && !stimSet.contains(tl.from()))
+//                tl.priMult(1/(1+rate));
+////            else
+////                tl.priMult(2f);
+//
+//            return true;
+//        });
+    }
+
     /** governor
      * TODO extract to class */
     private static void addGovernor(NAR n) {
         int gHist = 8;
-        float momentum = 0.75f;
-        float explorationRate = 0.1f;
+        float momentum = 0.95f;
+        float explorationRate = 0.05f;
         n.onDur(new Consumer<NAR>() {
 
             final Consumer<FasterList<Why>> reval = new Consumer<FasterList<Why>>() {

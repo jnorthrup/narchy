@@ -36,6 +36,11 @@ public final class UnifyMatchFork extends LazyCompoundBuilder implements Predica
 
         Term y = AbstractTermTransform.transform(x, d.transform, this, workVolMax);
 
+//        //TEMPORARY for debug
+//        if (y.hasAny(VAR_PATTERN)) {
+//            AbstractTermTransform.transform(x, d.transform, this, workVolMax);
+//        }
+
         d.nar.emotion.deriveMatchTransformed.increment();
 
         if (!(y instanceof Bool) && y.unneg().op().taskable) {

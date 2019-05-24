@@ -43,7 +43,7 @@ public class MultistepBenchmarks {
 
 
         n = NARS.tmp();
-        n.termVolumeMax.set(Integer.parseInt(termVolumeMax));
+        n.termVolMax.set(Integer.parseInt(termVolumeMax));
 
 
     }

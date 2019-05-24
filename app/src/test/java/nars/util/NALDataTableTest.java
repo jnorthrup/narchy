@@ -25,7 +25,7 @@ public class NALDataTableTest {
     public void validatePredictionXOR() throws Exception {
         n.beliefPriDefault.amp(0.02f);
         n.questionPriDefault.amp(0.5f);
-        n.termVolumeMax.set(16);
+        n.termVolMax.set(16);
         n.log();
         validatePrediction(n, xorARFF
                 //,"--(0<->1)."

@@ -34,7 +34,7 @@ class JsonTermTest {
     @Test
     void testBigJSON() {
         NAR d = NARS.tmp();
-        d.termVolumeMax.set(200);
+        d.termVolMax.set(200);
         d.log();
 
         int n = 0;

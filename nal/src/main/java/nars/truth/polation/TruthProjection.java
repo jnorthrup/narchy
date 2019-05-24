@@ -181,22 +181,32 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
                 e.clear(); //2nd iteration, or after
 
 
-            MetalBitSet conflict = MetalBitSet.bits(ss);
+            MetalBitSet conflict = null;
             for (int i = 0; i < ss; i++) {
                 TaskComponent c = get(i);
+                if (c == null) {
+                    if (NAL.DEBUG)
+                        throw new NullPointerException(); //HACK
+                    else
+                        continue;
+                }
                 if (!c.valid())
                     continue;
+
 
                 long[] iis = c.task.stamp();
 
                 if (i > 0 && Stamp.overlapsAny(e, iis)) {
+                    if (conflict == null)
+                        conflict = MetalBitSet.bits(ss);
+
                     conflict.set(i);
                 } else {
                     e.addAll(iis);
                 }
             }
 
-            int conflicts = conflict.cardinality();
+            int conflicts = conflict!=null ? conflict.cardinality() : 0;
 
             //1. test if they are all independent.  then all may be combined.
             if (conflicts == 0)
@@ -206,13 +216,13 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
 
             //something must be removed
             //sum the non-conflicting only if that subset is itself non-conflicting and thus revisable
-            double valueConflicting = unconflictedEviSum(conflict);
             double valueOK  = eviSum(conflict::getNot);
+            double valueConflicting = unconflictedEviSum(conflict);
             if (valueOK > valueConflicting) {
                 if (ss - conflicts < minComponents)
                     return null; //impossible: nothing else to remove
 
-                removeAll(conflict);
+                removeAll(conflict, true);
 
                 break; //done
             } else {
@@ -222,6 +232,8 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
 
                 removeFast(0); //pop the top, and retry with remaining
             }
+
+            removeNulls(); //HACK
 
         }
 
@@ -240,48 +252,75 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
 
         if (n == 2) {
             //optimized 2-ary case
-            int a = x.first(true);
-            int b = x.next(true, a, Integer.MAX_VALUE);
-            return Stamp.overlapsAny(
-                get(a).task.stamp(), get(b).task.stamp()
-            ) ? get(a).evi : eviSum(x);
-        }
+            int a, b;
+            if (n > 2) {
+                a = x.first(true);
+                b = x.next(true, a + 1, Integer.MAX_VALUE);
+            } else { a = 0; b = 1; }
 
-        double ee = 0;
-        MetalLongSet e = new MetalLongSet(NAL.STAMP_CAPACITY); //first iteration
-        for (int i = 0; i < size && n > 0; i++) {
-            if (x.get(i)) {
-                TaskComponent tti = get(i);
-                Task ti = tti.task;
-                long[] iis = ti.stamp();
-
-                if (i > 0 && Stamp.overlapsAny(e, iis)) {
-                    return ee;
-                } else {
-                    e.addAll(iis);
-                }
-                ee += tti.evi;
-                n--;
+            //assert(a!=b);
+            TaskComponent aa = get(a), bb = get(b);
+            if (Stamp.overlapsAny(aa.task.stamp(), bb.task.stamp())) {
+                x.clear(1);
+                set(1, null);
+                return aa.evi;
+            } else {
+                return aa.evi + bb.evi;
             }
-        }
+        } else {
 
-        return eviSum(x); //all
+            double ee = 0;
+            MetalLongSet inc = new MetalLongSet(NAL.STAMP_CAPACITY);
+            MetalBitSet exc = null; //first iteration
+            for (int i = 0; i < size && n > 0; i++) {
+                if (x.get(i)) {
+                    TaskComponent tti = get(i);
+                    long[] iis = tti.task.stamp();
+
+                    if (i > 0 && Stamp.overlapsAny(inc, iis)) {
+                        //overlaps
+                        //greedy:
+                        if (exc==null)
+                            exc = MetalBitSet.bits(NAL.STAMP_CAPACITY);
+                        x.clear(i);
+                        exc.set(i);
+                    } else {
+                        //include
+                        inc.addAll(iis);
+                        ee += tti.evi;
+                        n--;
+                    }
+
+                }
+            }
+
+            if(exc!=null)
+                removeAll(exc, false);
+
+            return ee;
+        }
+        //return eviSum(x); //all
     }
 
-    private void removeAll(MetalBitSet x) {
+    private void removeAll(MetalBitSet x, boolean removeNulls) {
         int c = x.cardinality();
         if (c == 0) {
 
         } else if (c == 1) {
-            removeFast(x.first(true));
+            int a = x.first(true);
+            if (removeNulls)
+                removeFast(a);
+            else
+                setFast(a, null);
         } else {
             int ss = size();
             for (int i = 0; i < ss; i++) {
                 if (x.get(i))
                     setFast(i, null);
             }
-            removeNulls();
         }
+        if (removeNulls)
+            removeNulls();
     }
 
     private boolean time(long bs, long be) {
@@ -337,6 +376,7 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
         for (int i = 0; i < n; i++) {
             if (each.test(i)) {
                 TaskComponent c = get(i);
+                if (c == null) continue; //HACK
                 double ce = c.evi;
                 if (ce == ce)
                     e += ce;

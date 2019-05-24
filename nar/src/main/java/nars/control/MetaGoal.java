@@ -81,7 +81,9 @@ public enum MetaGoal {
         int ordinal = ordinal();
         Why[] cc = whies.array();
         for (short c : cause) {
-            learn(cc[c].credit, ordinal, s);
+            Why why = cc[c];
+            if (why!=null) //HACK
+                learn(why.credit, ordinal, s);
         }
     }
 

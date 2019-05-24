@@ -20,7 +20,7 @@ abstract public class NAL6DecomposeTest extends NALTest {
     @Override
     protected NAR nar() {
         NAR n = NARS.tmp(6, 8);
-        n.termVolumeMax.set(8);
+        n.termVolMax.set(8);
         n.confMin.set(0.02f);
         return n;
     }
@@ -273,7 +273,7 @@ abstract public class NAL6DecomposeTest extends NALTest {
 
         @Test
         void testDecomposeImplPred2() {
-            test.nar.termVolumeMax.set(11);
+            test.nar.termVolMax.set(11);
             test.nar.confMin.set(0.3f);
             test
                     .believe("( (a,#b) ==> (&&, (x,#b), y, z ) )")

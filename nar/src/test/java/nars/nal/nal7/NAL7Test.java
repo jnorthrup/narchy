@@ -26,7 +26,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class NAL7Test extends NALTest {
 
     public static final float CONF_TOLERANCE_FOR_PROJECTIONS = 2f; //200%
-    private final static int cycles = 100;
+    private final static int cycles = 200;
 
     @Override
     protected NAR nar() {
@@ -218,8 +218,16 @@ public class NAL7Test extends NALTest {
     @Test
     void testShiftPlus() {
         test
+                .termVolMax(6)
                 .inputAt(1, "((x &&+1 y) ==>+1 z).")
                 .inputAt(3, "z. |")
+                .mustBelieve(cycles, "(x &&+1 y)", 1, 0.81f, 1)
+                .mustBelieve(cycles, "x", 1, 0.73f, 1)
+                .mustBelieve(cycles, "y", 1, 0.73f, 2)
+                .must(BELIEF, true, (x)->{
+                    return x.start() >= 1 && x.end() <= 3;
+                })
+                .mustNotOutput(cycles, "(x &&+1 y)", BELIEF, (t) -> t != 1)
                 .mustNotOutput(cycles, "x", BELIEF, (t) -> t != 1)
                 .mustNotOutput(cycles, "y", BELIEF, (t) -> t != 2)
                 .mustNotOutput(cycles, "z", BELIEF, (t) -> t != 3)
@@ -660,7 +668,7 @@ public class NAL7Test extends NALTest {
 
     private void compositionTest(int t, int dt) {
 
-        test.nar.termVolumeMax.set(11);
+        test.nar.termVolMax.set(11);
         test.inputAt(t, "hold(John,key). |");
         test.inputAt(t, "(open(John,door) ==>+" + dt + " enter(John,room)).");
 
@@ -1081,7 +1089,7 @@ public class NAL7Test extends NALTest {
 
 
         test.nar.questionPriDefault.amp(0.01f);
-        test.nar.termVolumeMax.set(14);
+        test.nar.termVolMax.set(14);
         test
                 .input("hold(key). |")
                 .input("((hold(#x) &| open(door)) =|> enter(room)). |")
@@ -1153,7 +1161,7 @@ public class NAL7Test extends NALTest {
     void preconImplyConjPostB() {
 
 
-        test.nar.termVolumeMax.set(10);
+        test.nar.termVolMax.set(10);
         test
                 .input("(a ==>+3 x). |")
                 .input("(a ==>+2 y). |")
@@ -1193,7 +1201,7 @@ public class NAL7Test extends NALTest {
     @Test
     void testPostConditionCombine() {
 
-        test.nar.termVolumeMax.set(5);
+        test.nar.termVolMax.set(5);
         test
                 .believe("(z ==>+5 x)")
                 .believe("(z ==>+5 y)")
@@ -1306,7 +1314,7 @@ public class NAL7Test extends NALTest {
         5: c
         */
 
-        test.nar.termVolumeMax.set(5);
+        test.nar.termVolMax.set(5);
         test
                 .inputAt(1, "(a &&+4 c). :|:")
                 .inputAt(3, "b. :|:")
@@ -1408,7 +1416,7 @@ public class NAL7Test extends NALTest {
          $.41;.81$ (($1-->[heated]) ==>+10 ($1-->[pliable])). %1.0;.81% {1: 3;4} ((%1,(%2<=>%3),neqCom(%1,%3),neq(%1,%2),time(beliefDTSimultaneous)),(substitute(%1,%2,%3,strict),((Intersection-->Belief),(Strong-->Goal))))
          */
 
-        test.nar.termVolumeMax.set(17);
+        test.nar.termVolMax.set(17);
         test.nar.confMin.set(0.5f);
         test
 
@@ -1423,7 +1431,7 @@ public class NAL7Test extends NALTest {
     @Test
     void testDecomposeImplPredNoVar() {
 
-        test.nar.termVolumeMax.set(15);
+        test.nar.termVolMax.set(15);
         test
                 .believe("( a ==> (&&, x, y, z ) )", Tense.Present, 1f, 0.9f)
                 .mustBelieve(cycles, "( a ==> x )", 1f, 0.73f, 0)
@@ -1459,7 +1467,7 @@ public class NAL7Test extends NALTest {
 
     @Test
     void testDecomposeImplPredSimpler() {
-        test.nar.termVolumeMax.set(11);
+        test.nar.termVolMax.set(11);
 
         test
                 .believe("( a ==> (&&,x,y,z) )", Tense.Present, 1f, 0.9f)
@@ -1491,7 +1499,7 @@ public class NAL7Test extends NALTest {
     }
     @Test public void occtestShiftWorkingRight2() {
 
-        test.nar.termVolumeMax.set(12);
+        test.nar.termVolMax.set(12);
         test.inputAt(1, "(a &&+5 (--,a)). |");
         test.inputAt(1, "((a &&+5 (--,a))==>(b &&+3 (--,b))). |");
         test.mustBelieve(cycles , "(b &&+3 --b)", 1.00f, 0.45f, (t)->t==6);

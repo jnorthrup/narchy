@@ -67,7 +67,7 @@ public class Arithmeticize {
             return
                     x.hasAny(Op.INT) &&
                             x.complexity() >= 3 &&
-                            nar.termVolumeMax.intValue() >= x.volume() + 6 /* for && equals(x,y)) */;
+                            nar.termVolMax.intValue() >= x.volume() + 6 /* for && equals(x,y)) */;
         }
 
         @Override
@@ -93,7 +93,7 @@ public class Arithmeticize {
         protected Term newTerm(Task xx) {
 
             Term xt = xx.term();
-            return Arithmeticize.apply(xt, null, nar.termVolumeMax.intValue(),
+            return Arithmeticize.apply(xt, null, nar.termVolMax.intValue(),
                     xx.isEternal() || (xt.op() == CONJ && xt.dt() != 0),
                     nar.random());
         }

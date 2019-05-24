@@ -43,7 +43,7 @@ class ImplicationTest {
                 for (boolean xx : B) {
                     for (boolean yy : B) {
                         NAR n = NARS.tmp(6);
-                        n.termVolumeMax.set(TERM_VOL_MAX);
+                        n.termVolMax.set(TERM_VOL_MAX);
 
 
                         Term impl = IMPL.the(x.negIf(!xx), y.negIf(!yy));
@@ -91,7 +91,7 @@ class ImplicationTest {
                 for (boolean xx : B) {
                     for (boolean yy : B) {
                         NAR n = NARS.tmp(6);
-                        n.termVolumeMax.set(TERM_VOL_MAX);
+                        n.termVolMax.set(TERM_VOL_MAX);
 
                         Term cond = z.negIf(!zz);
                         Term impl = IMPL.the(x.negIf(!xx), y.negIf(!yy));

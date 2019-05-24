@@ -66,7 +66,7 @@ public enum NALTruth implements TruthFunc {
         }
     },
 
-    PreWeak() {
+    @AllowOverlap PreWeak() {
         @Override
         public Truth apply(final Truth T, final Truth B, NAL n, float minConf) {
             return TruthFunctions2.pre(T, B, true, minConf);
@@ -80,7 +80,7 @@ public enum NALTruth implements TruthFunc {
         }
     },
 
-    PostWeak() {
+    @AllowOverlap PostWeak() {
         @Override
         public Truth apply(final Truth T, final Truth B, NAL n, float minConf) {
             return TruthFunctions2.post(T, B, false, minConf);
@@ -238,20 +238,38 @@ public enum NALTruth implements TruthFunc {
             return z != null ? z.neg() : null;
         }
     },
-
-    UnionPT() {
+    IntersectionPB() {
         @Override
-        public Truth apply(Truth T, Truth B, NAL n, float minConf) {
-            return NALTruth.pt(T, B, n, minConf, T.isNegative() ?  Intersection /* yes i know this is opposite but it works */ : Union);
+        public Truth apply(final Truth T, final Truth B, NAL n, float minConf) {
+            return B.isNegative() ?
+                    Intersection.apply(T.neg(), B.neg(), n, minConf)
+                    :
+                    Intersection.apply(T, B, n, minConf);
+        }
+    },
+    UnionPB() {
+        @Override
+        public Truth apply(final Truth T, final Truth B, NAL n, float minConf) {
+            return B.isNegative() ?
+                    Union.apply(T.neg(), B.neg(), n, minConf)
+                    :
+                    Union.apply(T, B, n, minConf);
         }
     },
 
-    IntersectionPT() {
-        @Override
-        public Truth apply(Truth T, Truth B, NAL n, float minConf) {
-            return NALTruth.pt(T, B, n, minConf, T.isNegative() ? Union /* yes i know this is opposite but it works */ : Intersection);
-        }
-    },
+//    UnionPT() {
+//        @Override
+//        public Truth apply(Truth T, Truth B, NAL n, float minConf) {
+//            return NALTruth.pt(T, B, n, minConf, T.isNegative() ?  Intersection /* yes i know this is opposite but it works */ : Union);
+//        }
+//    },
+//
+//    IntersectionPT() {
+//        @Override
+//        public Truth apply(Truth T, Truth B, NAL n, float minConf) {
+//            return NALTruth.pt(T, B, n, minConf, T.isNegative() ? Union /* yes i know this is opposite but it works */ : Intersection);
+//        }
+//    },
 
 
     Difference() {

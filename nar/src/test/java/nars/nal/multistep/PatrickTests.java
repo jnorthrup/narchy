@@ -38,7 +38,7 @@ public class PatrickTests extends NALTest {
 
         TestNAR tt = test;
         tt.nar.freqResolution.set(0.1f);
-        tt.nar.termVolumeMax.set(22);
+        tt.nar.termVolMax.set(22);
         tt
                 .believe("(( ($1-->(REPRESENT,/,$3)) && ($2-->(REPRESENT,/,$4))) ==> REPRESENT({$1,$2},{$3,$4}))")
                 .believe("(cat-->(REPRESENT,/,ANIMAL))")
@@ -57,7 +57,7 @@ public class PatrickTests extends NALTest {
 
         TestNAR tt = test;
         tt.nar.freqResolution.set(0.1f);
-        tt.nar.termVolumeMax.set(22);
+        tt.nar.termVolMax.set(22);
         tt.nar.confMin.set(0.2f);
         tt.confTolerance(0.8f);
         tt
@@ -96,7 +96,7 @@ public class PatrickTests extends NALTest {
 //        tt.nar.confResolution.set(0.02f);
 
         tt.nar.time.dur(100);
-        tt.nar.termVolumeMax.set(18);
+        tt.nar.termVolMax.set(18);
 
         tt.nar.dtDither.set(5);
 
@@ -143,7 +143,7 @@ public class PatrickTests extends NALTest {
 
 
         tt.nar.time.dur(100);
-        tt.nar.termVolumeMax.set(14);
+        tt.nar.termVolMax.set(14);
         tt.nar.dtDither.set(5);
 
         tt.input(
@@ -199,7 +199,7 @@ public class PatrickTests extends NALTest {
 
         NAR n = NARS.tmp();
         n.beliefPriDefault.pri(0.01f);
-        n.termVolumeMax.set(16);
+        n.termVolMax.set(16);
 
 
         n.inputAt(0, "  A:a. :|:    --B:b. :|:    --C:c. :|:");
@@ -240,7 +240,7 @@ public class PatrickTests extends NALTest {
         NAR n = NARS.tmp();
 
 
-        n.termVolumeMax.set(60);
+        n.termVolMax.set(60);
         n.beliefPriDefault.amp(0.05f);
         n.questionPriDefault.amp(0.9f);
 

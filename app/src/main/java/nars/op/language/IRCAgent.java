@@ -220,7 +220,7 @@ public class IRCAgent extends IRC {
 
         n.start(new ConjClustering(n, BELIEF, 4, 16));
 
-        n.termVolumeMax.set(24);
+        n.termVolMax.set(24);
 
 
 

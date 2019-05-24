@@ -13,7 +13,7 @@ public class NAL1MultistepTest extends NALTest {
 
     @Override protected NAR nar() {
         NAR n = NARS.tmp(6);
-        n.termVolumeMax.set(6);
+        n.termVolMax.set(6);
         n.freqResolution.set(0.2f);
         n.confResolution.set(0.1f);
         return n;

@@ -65,6 +65,8 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
 
     /** mostly tested */
     public static final boolean TERMIFY_TRANSFORM_LAZY = true;
+    public static final int TERMIFY_TRANSFORM_LAZY_VOL_MIN = 3;
+
     public static final boolean ANONIFY_TRANSFORM_LAZY = true;
 
     public static final boolean OVERLAP_DOUBLE_SET_CYCLIC= configIs("OVERLAP_DOUBLE_SET_CYCLIC");
@@ -249,7 +251,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
      * if this is exceeded it may indicate a recursively
      * malformed target due to a bug or unconstrained combinatorial explosion
      */
-    public final IntRange termVolumeMax = new IntRange(64, 0, 512 /*COMPOUND_VOLUME_MAX*/);
+    public final IntRange termVolMax = new IntRange(64, 0, 512 /*COMPOUND_VOLUME_MAX*/);
     /**
      * truth confidence threshold necessary to form tasks
      */
@@ -579,14 +581,14 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
              * <p>
              * TODO make this a per-sensor implementation cdecision
              */
-            public static final float SIGNAL_STRETCH_LIMIT_DURS = 8;
+            public static final float SIGNAL_STRETCH_LIMIT_DURS = 4;
             /**
              * maximum time between signal updates to stretch an equivalently-truthed data point across.
              * stretches perception across some amount of lag
              */
             public static final float SIGNAL_LATCH_LIMIT_DURS =/*0.5f;*/
                     //1f;
-                        2f;
+                    2f;
         }
     }
 
@@ -652,7 +654,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
          * for NALTest's: extends the time all unit tests are allowed to run for.
          * normally be kept to 1 but for debugging this may be increased to find what tests need more time
          */
-        public static final float TIME_MULTIPLIER = 1.5f;
+        public static final float TIME_MULTIPLIER = 1f;
         /**
          * how precise unit test results must match expected values to pass
          */
@@ -754,8 +756,9 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
 
         /**
          * max variable unification recursion depth as a naive cyclic filter
+         * includes indirections through common variables so should be at least 3.
          */
-        public static final int UNIFY_VAR_RECURSION_DEPTH_LIMIT = 3;
+        public static final int UNIFY_VAR_RECURSION_DEPTH_LIMIT = 6;
         public static final int UNIFY_COMMON_VAR_MAX = UNIFY_VAR_RECURSION_DEPTH_LIMIT;
         public static final int UNIFICATION_STACK_CAPACITY = 128;
     }

@@ -15,7 +15,7 @@ public class NAL1Test extends NALTest {
     protected NAR nar() {
 
         NAR n = NARS.tmp(1);
-        n.termVolumeMax.set(7);
+        n.termVolMax.set(7);
         return n;
     }
 

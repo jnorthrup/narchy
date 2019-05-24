@@ -125,7 +125,7 @@ public abstract class NormalizedVariable extends Intrin implements Variable {
     }
 
     public static Intrin the(/*@NotNull*/ byte op, byte id) {
-        assert(id > 0);
+        //assert(id > 0);
         if (id < NAL.term.MAX_INTERNED_VARS) {
             return varCache[NormalizedVariable.opToVarIndex(op)][id];
         } else {

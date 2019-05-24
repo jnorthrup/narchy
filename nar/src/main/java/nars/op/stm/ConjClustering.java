@@ -233,7 +233,7 @@ public class ConjClustering extends How {
         //Integer.MAX_VALUE;
         this.confMin = nar.confMin.floatValue();
         this.inputTermVolMax = Math.round(Math.max(1f,
-                (this.volMax = nar.termVolumeMax.intValue()) * termVolumeMaxPct.floatValue()) +
+                (this.volMax = nar.termVolMax.intValue()) * termVolumeMaxPct.floatValue()) +
                 -2 /* for the super-CONJ itself and another term of at least volume 1 */
         );
     }

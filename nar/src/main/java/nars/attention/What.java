@@ -8,7 +8,6 @@ import nars.Task;
 import nars.concept.Concept;
 import nars.control.NARPart;
 import nars.control.op.TaskEvent;
-import nars.derive.model.Derivation;
 import nars.derive.pri.DefaultDerivePri;
 import nars.derive.pri.DerivePri;
 import nars.exe.Exec;
@@ -92,6 +91,7 @@ abstract public class What extends NARPart implements Prioritizable, Sampler<Tas
     protected What(Term id, PriBuffer<Task> in) {
         super(id);
         this.pri = new PriNode(this.id);
+        this.pri.pri(0.5f);
         this.in = in;
 
         add(new DurLoop.DurNARConsumer(
@@ -159,7 +159,6 @@ abstract public class What extends NARPart implements Prioritizable, Sampler<Tas
         return nar.random();
     }
 
-    abstract public void derive(int premisesPerIteration, int termlinksPerTaskLink, int matchTTL, int deriveTTL, Derivation d);
 
 
     @Override

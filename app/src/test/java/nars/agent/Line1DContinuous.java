@@ -137,7 +137,7 @@ public class Line1DContinuous extends Game {
     public static void main(String[] args) {
 
         NAR nar = new NARS().get();
-        nar.termVolumeMax.set(32);
+        nar.termVolMax.set(32);
 
 
         nar.beliefConfDefault.set(0.9f);

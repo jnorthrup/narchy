@@ -72,10 +72,10 @@
 //        Y, (  C ==> Z), is(C,"&&"),eventOfNeg(C,Y)    |- (  conjWithout(C,--Y) ==> Z), (Belief:PreN)
 //        Y, (--C ==> Z), is(C,"&&"),eventOfNeg(C,Y)    |- (--conjWithout(C,--Y) ==> Z), (Belief:PreN)
                 //TODO eventsOf
-        Y, ((&&,X,A..+) ==> Z),  --isVar(X)      |- unisubst(((&&,A..+) ==> Z), X,Y,"$"), (Belief:Pre)
-        Y, ((&&,--X,A..+) ==> Z), --isVar(X)     |- unisubst(((&&,A..+) ==> Z), X,Y,"$"), (Belief:PreN)
-          Y, (--(&&,X,A..+) ==> Z), --isVar(X)   |- unisubst((--(&&,A..+) ==> Z), X,Y,"$"), (Belief:Pre)
-          Y, (--(&&,--X,A..+) ==> Z), --isVar(X) |- unisubst((--(&&,A..+) ==> Z), X,Y,"$"), (Belief:PreN)
+        Y, ((&&,X,A..+) ==> Z),  --isVar(X)      |- unisubst(((&&,A..+) ==> Z), X,Y), (Belief:Pre)
+        Y, ((&&,--X,A..+) ==> Z), --isVar(X)     |- unisubst(((&&,A..+) ==> Z), X,Y), (Belief:PreN)
+          Y, (--(&&,X,A..+) ==> Z), --isVar(X)   |- unisubst((--(&&,A..+) ==> Z), X,Y), (Belief:Pre)
+          Y, (--(&&,--X,A..+) ==> Z), --isVar(X) |- unisubst((--(&&,A..+) ==> Z), X,Y), (Belief:PreN)
         //Y, (  C ==> Z), isUnneg(C,"&&") |- unisubst((C ==> Z), chooseUnifiableSubEvent(C,Y),Y,novel), (Belief:Pre)
         //Y, (  C ==> Z), isUnneg(C,"&&") |- unisubst((C ==> Z), chooseUnifiableSubEvent(C,--Y),--Y,novel), (Belief:PreN)
           //Y, ((&&,X,A..+) ==> Z), neq(X,Y) |- unisubst(((&&,X,A..+) ==> Z), X,Y,novel), (Belief:Deduction)
@@ -93,8 +93,8 @@
 
         Y, (Z ==> C), is(C,"&&"),eventOf(C,Y)                 |- (Z ==> conjWithout(C,    Y)), (Belief:Abduction)
         Y, (Z ==> C), is(C,"&&"),eventOfNeg(C,Y)              |- (Z ==> conjWithout(C,  --Y)), (Belief:AbductionN)
-        Y, (Z ==> C), is(C,"&&")                              |- unisubst((Z ==> C),chooseUnifiableSubEvent(C,Y),Y,"$",novel), (Belief:Abduction)
-        Y, (Z ==> C), is(C,"&&"),has(C,"--")                  |- unisubst((Z ==> C),chooseUnifiableSubEvent(C,--Y),--Y,"$",novel), (Belief:AbductionN)
+        Y, (Z ==> C), is(C,"&&")                              |- unisubst((Z ==> C),chooseUnifiableSubEvent(C,Y),Y,novel), (Belief:Abduction)
+        Y, (Z ==> C), is(C,"&&"),has(C,"--")                  |- unisubst((Z ==> C),chooseUnifiableSubEvent(C,--Y),--Y,novel), (Belief:AbductionN)
           //Y, (Z ==> (&&,X,A..+)), neq(X,Y),neq(Y,Z) |- unisubst((Z ==> (&&,X,A..+)), X,Y,novel), (Belief:Abduction)
             //Y, (Z ==> (&&,X,A..+)) |- unisubst((Z ==> (&&,X,Y,A..+)), X,Y), (Belief:Abduction)
           //Y, (Z ==> (&&,--X,A..+)), neq(X,Y),neq(Y,Z) |- unisubst((Z ==> (&&,--X,A..+)), X,Y,novel), (Belief:AbductionN)
@@ -185,12 +185,8 @@
 //classically: union/intersection assymmetry: union if subj, intersect if pred
 //TODO: ...Also:VarIntro)
 
-     (P ==> M), (S ==> M) |- ((P && S) ==> M), (Belief:Union)
-       (P ==> M), (S ==> M) |- ((P && S) ==> M), (Belief:UnionNN)
-
-       (P ==> M), (S ==> M) |- ((P || S) ==> M), (Belief:Intersection)
-         (P ==> M), (S ==> M) |- ((P || S) ==> M), (Belief:IntersectionNN)
-
+     (P ==> M), (S ==> M) |- ((P && S) ==> M), (Belief:UnionPB)
+     (P ==> M), (S ==> M) |- ((P || S) ==> M), (Belief:IntersectionPB)
 
         (P ==> M), (S ==> M), task("?")  |- ((P && S) ==> M), (Punctuation:Question)
         (P ==> M), (S ==> M), task("?")  |- ((P || S) ==> M), (Punctuation:Question)
@@ -201,7 +197,7 @@
      (M ==> P), (M ==> S) |- (M ==> (polarizeTask(P) && polarizeBelief(S))), (Belief:IntersectionDepolarized)
      (M ==> P), (M ==> S) |- (M ==> (polarizeTask(P) || polarizeBelief(S))), (Belief:UnionDepolarized)
 
-        (M ==> P), (M ==> S), task("?") |- (M ==> (polarizeRandom(P) && polarizeRandom(S))), (Punctuation:Question)
+        (M ==> P), (M ==> S), task("?"), hasBelief() |- (M ==> (polarizeRandom(P) && polarizeBelief(S))), (Punctuation:Question)
             //(M ==> P), (M ==> S), task("?") |- (polarizeRandom(P) && polarizeRandom(S)), (Punctuation:Question)
 
         //TODO question variations
@@ -274,7 +270,7 @@
       //(E ==> Y), (C ==> X), eventOf(C,E)      |-    conjWithout(C,E), (Belief:AbductionPBX)
       //(--E ==> Y), (C ==> X), eventOfNeg(C,E)      |-    conjWithout(C,--E), (Belief:AbductionPBX)
 
-    (C ==> X), (E ==> Y), eventOf(C,E), has(C,"$")      |-    unisubst(conjWithout(C,E),X,Y,"$"), (Belief:AbductionPB)
+    (C ==> X), (E ==> Y), eventOf(C,E)      |-    unisubst(conjWithout(C,E),X,Y,"$"), (Belief:AbductionPB)
 
         //TODO disj
 
@@ -308,7 +304,7 @@
 
 
 // Mutex induction
-    (&&,X,--Y,A..*), (&&,Y,--X,A..*)                 |- (&&,--(X && Y),A..*), (Belief:Intersection)
+    (&&,X,--Y,A..*), (&&,Y,--X,A..*),neq(X,Y)                 |- (&&,--(X && Y),A..*), (Belief:Intersection)
 //    (&&,X,--Y,A..+), (&&,Y,--X,B..+),neq(A..+,B..+)  |- (&&,--((&&,A..+) && (&&,B..+))), (Belief:Intersection)
 //
 //    (  (&&,X,--Y,A..*)==>Z), (  (&&,Y,--X,A..*)==>Z)     |- (  (&&,--(X && Y),A..*) ==>   Z), (Belief:IntersectionPP)
@@ -316,27 +312,8 @@
 //    (--(&&,X,--Y,A..*)==>Z), (--(&&,Y,--X,A..*)==>Z)     |- (--(&&,--(X && Y),A..*) ==>   Z), (Belief:IntersectionPP)
 //    (--(&&,X,--Y,A..*)==>Z), (--(&&,Y,--X,A..*)==>Z)     |- (--(&&,--(X && Y),A..*) ==> --Z), (Belief:IntersectionNN)
 
-      (&&,X,--Y,A..*), (&&,Y,--X,A..*)               |-  --(X ==> Y), (Belief:AbductionPB)
-      (&&,X,--Y,A..*), (&&,Y,--X,A..*)               |-  (--Y ==> X), (Belief:InductionPB)
-
-        //TODO impl predicate mutex
-
-//mutex soft-swap
-//    Z, (&&,X,Y), in(Z,X)            |- (Z <-> substitute(Z,X,--Y,novel)), (Belief:BeliefStructuralAbductionPN)
-//    Z, (&&,X,Y), in(Z,--X)          |- (Z <-> substitute(Z,--X,Y,novel)), (Belief:BeliefStructuralAbductionPN)
-
-//mutex swap
-//    Z, (&&,X,Y), in(Z,X)            |- substitute(Z,X,--Y,novel), (Belief:AnalogyPN, Goal:AnalogyPN)
-//    Z, (&&,X,Y), in(Z,--X)          |- substitute(Z,--X,Y,novel), (Belief:AnalogyPN, Goal:AnalogyPN)
-
-//internal mutex chain:
-//  (&&,--(X && Y),X,A..+), X, neq(X,Y)          |- (&&,--Y,A..+), (Belief:StructuralDeduction, Goal:StructuralDeduction)
-
-
-
-
-
-
+      (&&,X,--Y,A..*), (&&,Y,--X,A..*),neq(X,Y)               |-  (  X ==> --Y), (Belief:AbductionPB)
+      (&&,X,--Y,A..*), (&&,Y,--X,A..*),neq(X,Y)               |-  (--Y ==>   X), (Belief:InductionPB)
 
 
 
@@ -382,9 +359,9 @@
 
 
     //Conjunction Anti-Contradiction: ((X&&A)==>C) and ((--X&&A)==>C)  |-  (A==>C), since X or --X doesnt make a difference
-    ((&&,X,A..+) ==> C), (D ==> C), eventOfNeg(D,X)  |- ((&&,A..+) ==> C), (Belief:InductionPB)
+    //((&&,X,A..+) ==> C), (D ==> C), eventOfNeg(D,X)  |- ((&&,A..+) ==> C), (Belief:InductionPB)
         //(--(&&,X,A..+) ==> C), (--D ==> C), eventOfNeg(D,X)  |- ((--,(&&,A..+)) ==> C), (Belief:InductionPB)
-    (C ==> (&&,X,A..+)), (C ==> D), eventOfNeg(D,X)  |- (C ==> (&&,A..+)), (Belief:AbductionPB)
+    //(C ==> (&&,X,A..+)), (C ==> D), eventOfNeg(D,X)  |- (C ==> (&&,A..+)), (Belief:AbductionPB)
 
 //precondition/post-condition combiner inference rule (variable_unification6):
 

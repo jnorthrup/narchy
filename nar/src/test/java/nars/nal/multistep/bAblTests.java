@@ -48,7 +48,7 @@ class bAblTests extends NALTest {
 
         
         t.nar.freqResolution.set(0.1f);
-        t.nar.termVolumeMax.set(17);
+        t.nar.termVolMax.set(17);
 
         t
                 .inputAt(0, "((holds(#who,$what) &&+1 inside(#who,$where)) ==>+1 inside($what,$where)).")
@@ -74,7 +74,7 @@ class bAblTests extends NALTest {
 
         TestNAR t = test;
         t.confTolerance(0.9f);
-        t.nar.termVolumeMax.set(35);
+        t.nar.termVolMax.set(35);
         t.nar.freqResolution.set(0.25f);
         t.nar.beliefPriDefault.amp(0.1f);
         t.nar.questionPriDefault.amp(0.8f);

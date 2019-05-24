@@ -178,7 +178,7 @@ class NAL3GoalTest {
         @Override
         protected NAR nar() {
             NAR n = NARS.tmp(3,3);
-            n.termVolumeMax.set(12);
+            n.termVolMax.set(12);
             return n;
         }
 

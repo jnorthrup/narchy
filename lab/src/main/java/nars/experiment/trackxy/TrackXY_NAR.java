@@ -36,7 +36,7 @@ import static nars.Op.IMPL;
 public class TrackXY_NAR extends GameX {
 
     static boolean
-            sourceNumerics = false,
+            sourceNumerics = true,
             targetNumerics = false,
             targetCam = !targetNumerics,
             gui = true;
@@ -227,7 +227,7 @@ public class TrackXY_NAR extends GameX {
 
         //n.freqResolution.set(0.04f);
 
-        n.termVolumeMax.set(volMax);
+        n.termVolMax.set(volMax);
         //n.dtDither.set(Math.max(1, durMS));
 
 

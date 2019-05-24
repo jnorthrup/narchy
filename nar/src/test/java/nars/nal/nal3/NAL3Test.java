@@ -25,7 +25,7 @@ public class NAL3Test extends NALTest {
     @Override
     protected NAR nar() {
         NAR n = NARS.tmp(3, 3);
-        n.termVolumeMax.set(8);
+        n.termVolMax.set(8);
         return n;
     }
 
@@ -58,7 +58,7 @@ public class NAL3Test extends NALTest {
         @Override
         protected NAR nar() {
             NAR n = NARS.tmp(3, 3);
-            n.termVolumeMax.set(8);
+            n.termVolMax.set(8);
             return n;
         }
         public static final int cycles = 900;
@@ -402,7 +402,7 @@ public class NAL3Test extends NALTest {
     @Test
     public void questPropagation() {
 
-        test.nar.termVolumeMax.set(8);
+        test.nar.termVolMax.set(8);
         test
                 .goal("x:a")
                 .goal("x:b")

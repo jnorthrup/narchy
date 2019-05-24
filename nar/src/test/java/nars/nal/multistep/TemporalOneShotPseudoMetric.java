@@ -55,7 +55,7 @@ public class TemporalOneShotPseudoMetric implements BiConsumer<ActiveQuestionTas
 
         //nar.log();
 
-        nar.termVolumeMax.set(10);
+        nar.termVolMax.set(10);
 
         float lowPri = 0.01f, hiPri = 0.9f;
         nar.beliefPriDefault.pri(hiPri);

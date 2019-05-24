@@ -52,10 +52,10 @@ public enum Revision {;
      * also cause merge is deferred in the same way
      * @return
      */
-    public static <T extends TaskRegion> Pair<Task, TruthProjection> merge(NAL nal, boolean dither, T[] tasks) {
+    public static <T extends TaskRegion> Pair<Task, TruthProjection> merge(NAL nal, boolean dither, int minComponents, T[] tasks) {
 
 
-        assert (tasks.length > 1);
+        assert (tasks.length >= minComponents);
 
         //quick 2-ary stamp pre-filter
         if (tasks.length == 2 && Stamp.overlapsAny(tasks[0].task(), tasks[1].task()))
@@ -68,7 +68,7 @@ public enum Revision {;
 
         TruthProjection p = nal.projection(u[0], u[1], 0).add(tasks);
 
-        MetalLongSet stamp = p.commit(true, 2, true);
+        MetalLongSet stamp = p.commit(true, minComponents, true);
         if (stamp == null)
             return null;
 

@@ -543,7 +543,22 @@ public class PremiseRule extends ProxyTerm {
                             concQuest = true;
                             break;
 
-
+                        /** belief -> question, goal -> quest */
+                        case "Answer":
+                            assert (taskPunc == null && concPunc == null);
+                            assert(beliefTruth != null && goalTruth != null);
+                            taskPunc = p -> p == QUESTION || p == QUEST;
+                            concPunc = p -> {
+                                switch (p) {
+                                    case QUESTION:
+                                        return BELIEF;
+                                    case QUEST:
+                                        return GOAL;
+                                    default:
+                                        return (byte) 0;
+                                }
+                            };
+                            break;
                         /** belief -> question, goal -> quest */
                         case "Ask":
                             assert (taskPunc == null && concPunc == null);

@@ -193,7 +193,7 @@ public class IRCNLP extends IRC {
         n.freqResolution.set(0.1f);
         n.confResolution.set(0.02f);
 
-        n.termVolumeMax.set(32);
+        n.termVolMax.set(32);
 
         BatchDeriver d = new BatchDeriver(Derivers.nal(n, 1, 8));
 //        d.timing = new ActionTiming(n);

@@ -14,7 +14,7 @@ public class NAL3GuessTest extends NALTest {
 
     @Override protected NAR nar() {
         NAR n= NARS.tmp(3);
-        n.termVolumeMax.set(9);
+        n.termVolMax.set(9);
         return n;
     }
 

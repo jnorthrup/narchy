@@ -30,7 +30,7 @@ class RuleInductionTest {
         int dutyPeriod = 1;
 
         NAR n = NARS.shell();
-        n.termVolumeMax.set(8);
+        n.termVolMax.set(8);
 
         BatchDeriver d = new BatchDeriver(new PremiseRuleSet(n,
 

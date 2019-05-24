@@ -13,6 +13,7 @@ import nars.control.CauseMerge;
 import nars.derive.Deriver;
 import nars.derive.op.Occurrify;
 import nars.derive.op.UnifyMatchFork;
+import nars.derive.premise.PremiseBuffer;
 import nars.derive.premise.PremiseUnify;
 import nars.eval.Evaluation;
 import nars.op.Replace;
@@ -91,6 +92,9 @@ public class Derivation extends PreDerivation {
             return HeapTermBuilder.the.theCompound(op, dt, subterms);
         }
     };
+
+    /** short-term premise buffer with novelty filter */
+    public final PremiseBuffer premises = new PremiseBuffer();
 
     private long timePrev = Long.MIN_VALUE;
 
@@ -585,7 +589,9 @@ public class Derivation extends PreDerivation {
             this.confMin = n.confMin.floatValue();
             this.eviMin = n.confMin.asEvi();
 
-            this.termVolMax = n.termVolumeMax.intValue();
+            this.termVolMax = n.termVolMax.intValue();
+
+            this.premises.commit();
         }
 
         this.deriver = d;
@@ -778,10 +784,10 @@ public class Derivation extends PreDerivation {
             return atomic;
         }
 
-//        @Override
-//        public final boolean evalInline() {
-//            return true;
-//        }
+        @Override
+        public final boolean evalInline() {
+            return true;
+        }
 
     }
 

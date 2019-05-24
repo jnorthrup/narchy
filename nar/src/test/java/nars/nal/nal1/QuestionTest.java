@@ -93,7 +93,7 @@ class QuestionTest {
         IntFunction<NAR> narProvider = (seed) -> {
             NAR d = NARS.tmp(1);
             //d.random().setSeed(seed);
-            d.termVolumeMax.set(8);
+            d.termVolMax.set(8);
             d.freqResolution.set(0.1f);
             return d;
         };
@@ -158,7 +158,7 @@ class QuestionTest {
             }
             return null;
         }));
-        n.termVolumeMax.set(24);
+        n.termVolMax.set(24);
         n.input(
                 "({1,2,3,4} --> number).",
                 "((({#x} --> number) && odd(#x)) ==> ({#x} --> ODD)).",

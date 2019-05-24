@@ -120,7 +120,7 @@ public abstract class TaskLeak extends How {
 
     @Override
     public void next(What w, BooleanSupplier kontinue) {
-        volMax = w.nar.termVolumeMax.intValue();
+        volMax = w.nar.termVolMax.intValue();
         source.next((next) -> leak(next, w), kontinue, w);
     }
 

@@ -1535,7 +1535,7 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
 
         Term ct = concept.term();
         if (ct instanceof Compound) {
-            if (ct.volume() > termVolumeMax.intValue())
+            if (ct.volume() > termVolMax.intValue())
                 return null; //too complex to analyze for dynamic
 
             if (ConceptBuilder.dynamicModel((Compound) ct) != null) { //HACK
@@ -1628,14 +1628,29 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
      * TODO persistent cache
      */
     public What the(Term id, boolean createAndStartIfMissing) {
-        What w = what.get(id);
-        if (w == null && createAndStartIfMissing) {
+        What w;
+        synchronized (what) {
+            w = what.get(id);
+            if (w!=null || !createAndStartIfMissing)
+                return w;
+
             w = what.put(this.whatBuilder.apply(id));
-            start(w);
-            w.pri(0.5f);
             w.nar = this; //HACK
         }
+        start(w);
         return w;
+    }
+
+    public NAR the(What w) {
+        synchronized (what) {
+            What existing = what.put(w);
+            if (existing!=null)
+                throw new RuntimeException(/*TODO*/);
+
+            w.nar = this; //HACK
+        }
+        start(w);
+        return this;
     }
 
 

@@ -24,7 +24,7 @@ class AIMATests {
     void testAIMAExample(double truthRes) throws Narsese.NarseseException {
         final NAR n = NARS.tmp(6);
 
-        n.termVolumeMax.set(5);
+        n.termVolMax.set(5);
         n.freqResolution.set((float) truthRes);
         n.confMin.set(0.05f);
 //        n.attn.decay.set(0.1f);
@@ -73,7 +73,7 @@ class AIMATests {
 
         assertEquals(20, $$("((&&,Weapon(#y),Sells($x,#y,#z),Hostile(#z)) ==> Criminal($x))").volume());
 
-        n.termVolumeMax.set(21);
+        n.termVolMax.set(21);
         //n.log();
 
         n.believe(

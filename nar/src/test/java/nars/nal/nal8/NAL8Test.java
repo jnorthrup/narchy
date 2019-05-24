@@ -401,7 +401,7 @@ public class NAL8Test extends NALTest {
 
     @Test
     void testInhibition0() {
-        test.nar.termVolumeMax.set(5);
+        test.nar.termVolMax.set(5);
 
         test
                 .goal("reward")
@@ -412,7 +412,7 @@ public class NAL8Test extends NALTest {
 
     @Test
     void testInhibition1() {
-        test.nar.termVolumeMax.set(5);
+        test.nar.termVolMax.set(5);
 
 
         test
@@ -428,7 +428,7 @@ public class NAL8Test extends NALTest {
 
     @Test
     void testInhibitionReverse() {
-        test.nar.termVolumeMax.set(5);
+        test.nar.termVolMax.set(5);
 
         test
                 .goal("reward")
@@ -442,7 +442,7 @@ public class NAL8Test extends NALTest {
 
     @Test
     void testGoalSimilaritySpreading() {
-        test.nar.termVolumeMax.set(5);
+        test.nar.termVolMax.set(5);
 
         test
                 .input("R!")
@@ -453,7 +453,7 @@ public class NAL8Test extends NALTest {
     @Disabled
     @Test
     void testGoalSimilaritySpreadingNeg() {
-        test.nar.termVolumeMax.set(5);
+        test.nar.termVolMax.set(5);
         test
                 .input("R!")
                 .input("--(G <-> R).")
@@ -462,7 +462,7 @@ public class NAL8Test extends NALTest {
 
     @Test
     void testGoalSimilaritySpreadingNegInside() {
-        test.nar.termVolumeMax.set(5);
+        test.nar.termVolMax.set(5);
 
         test
                 .input("--R!")
@@ -480,7 +480,7 @@ public class NAL8Test extends NALTest {
 
     @Test
     void testGoalSimilaritySpreadingParameter() {
-        test.nar.termVolumeMax.set(5);
+        test.nar.termVolMax.set(5);
         test
                 .input("R(x)!")
                 .input("(x <-> y).")
@@ -576,7 +576,7 @@ public class NAL8Test extends NALTest {
     @ParameterizedTest
     @ValueSource(strings = {"&|", "&&"})
     void testGoalImplComponentEternal(String conj) {
-        test.nar.termVolumeMax.set(6);
+        test.nar.termVolMax.set(6);
         test
                 .input("happy!")
                 .input("(in =|> (happy " + conj + " --out)).")
@@ -862,6 +862,7 @@ public class NAL8Test extends NALTest {
 
     @Test
     void testConjResultGoal() {
+        test.termVolMax(13);
         test.input("done!")
                 .input("((happy &&+20 y) &&+2 ((--,y) &&+1 done)). |")
                 .mustGoal(cycles, "((happy &&+20 y) &&+2 (--,y))", 1f, 0.4f, (t) -> t >= 0)

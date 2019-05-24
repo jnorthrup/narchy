@@ -413,7 +413,7 @@ public class TestNAR {
         Term term =
                 $.$(sentenceTerm);
         int tv = term.volume();
-        int tvMax = nar.termVolumeMax.intValue();
+        int tvMax = nar.termVolMax.intValue();
         if (tv > tvMax) {
             throw new TermException("condition term volume (" + tv + ") exceeds volume max (" + tvMax + ')', term);
         }
@@ -665,7 +665,7 @@ public class TestNAR {
     }
 
     public TestNAR termVolMax(int i) {
-        nar.termVolumeMax.set(i);
+        nar.termVolMax.set(i);
         return this;
     }
 

@@ -15,7 +15,7 @@ abstract class TemporalStabilityTest {
     public void test(int cycles, NAR n) {
 
 
-        n.termVolumeMax.set(16);
+        n.termVolMax.set(16);
         n.freqResolution.set(0.1f);
         n.confResolution.set(0.02f);
 

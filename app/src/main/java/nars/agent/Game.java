@@ -16,6 +16,7 @@ import jcog.util.ArrayUtil;
 import nars.$;
 import nars.NAR;
 import nars.attention.PriNode;
+import nars.attention.TaskLinkWhat;
 import nars.attention.What;
 import nars.concept.action.BiPolarAction;
 import nars.concept.action.GameAction;
@@ -78,7 +79,8 @@ public class Game extends NARPart implements NSense, NAct, Timed {
     public final PriNode attnReward, attnAction, attnSensor;
     private final PriNode pri;
 
-    private final What experience;
+    /** the context representing the experience of the game */
+    private final What what;
 
     public final Term id;
 
@@ -101,8 +103,26 @@ public class Game extends NARPart implements NSense, NAct, Timed {
     }
 
     public Game(Term id, GameTime time, NAR nar) {
-        this(time, nar.the(id,true));
+        super(env(id));
+
         this.nar = nar;
+//        this.nar = experience.nar;
+
+        this.id = id;
+
+        this.what = nar.the(id, true);
+        ((TaskLinkWhat)what()).links.decay.set(1f);
+
+        this.time = time;
+
+        this.pri = new PriNode(this.id);
+        this.attnAction = new PriNode($.inh(id,ACTION)).merge(PriNode.Merge.Factor);
+        this.attnSensor = new PriNode($.inh(id,SENSOR)).merge(PriNode.Merge.Factor);
+        this.attnReward = new PriNode($.inh(id,REWARD)).merge(PriNode.Merge.Factor);
+
+        add(time.clock(this));
+
+        //experience.add(this);
         nar.start(this);
     }
 
@@ -114,13 +134,13 @@ public class Game extends NARPart implements NSense, NAct, Timed {
     }
 
 
-    public Game(GameTime time, What experience) {
-        super(env(experience.id));
+    public Game(GameTime time, Term id, NAR nar) {
+        super(env(id));
 //        this.nar = experience.nar;
 
-        this.id = experience.id;
+        this.id = id;
 
-        this.experience = experience;
+        this.what = nar.the(id, true);
 
         this.time = time;
 
@@ -136,7 +156,7 @@ public class Game extends NARPart implements NSense, NAct, Timed {
 
     @Override
     public final What what() {
-        return experience;
+        return what;
     }
 
     /**

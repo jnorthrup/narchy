@@ -15,7 +15,7 @@ public class NAL4MultistepTest extends NALTest {
     protected NAR nar() {
         NAR n = NARS.tmp(4);
 //        n.confMin.setAt(0.25f);
-        n.termVolumeMax.set(16);
+        n.termVolMax.set(16);
         return n;
     }
 
@@ -27,7 +27,7 @@ public class NAL4MultistepTest extends NALTest {
 
         TestNAR tester = test;
 
-        tester.nar.termVolumeMax.set($$("(likes(cat,[blue]) <-> likes({tom},[blue]))").volume()+2);
+        tester.nar.termVolMax.set($$("(likes(cat,[blue]) <-> likes({tom},[blue]))").volume()+2);
 
         //tester.nar.freqResolution.setAt(0.05f);
         tester.nar.questionPriDefault.amp(0.5f);

@@ -59,6 +59,8 @@ abstract public class TaskLinks implements Sampler<TaskLink> {
     public final FloatRange sustain = new FloatRange(0.5f, 0, 1f);
     private final PriMerge merge = NAL.tasklinkMerge;
 
+    private Predicate<TaskLink> processor = (x) -> true;
+
     /**
      * short target memory, TODO abstract and remove, for other forms of attention that dont involve TaskLinks or anything like them
      */
@@ -88,6 +90,11 @@ abstract public class TaskLinks implements Sampler<TaskLink> {
         links.setCapacity(c);
     }
 
+
+    /** sets the tasklink processor/filter, applied before insert */
+    public void pri(Predicate<TaskLink> each) {
+        this.processor = each;
+    }
 
     @Nullable public Multimap<Term,TaskLink> get(Predicate<Term> f, boolean sourceOrTargetMatch) {
         return get((t)->{
@@ -220,8 +227,9 @@ abstract public class TaskLinks implements Sampler<TaskLink> {
         link(new AtomicTaskLink(s, u, punc, p));
     }
 
-    public void link(TaskLink x) {
-        links.putAsync(x);
+    public final void link(TaskLink x) {
+        if (processor.test(x))
+            links.putAsync(x);
     }
 
     public void link(TaskLink... xx) {
@@ -297,10 +305,13 @@ abstract public class TaskLinks implements Sampler<TaskLink> {
 
             //all atoms and compounds eligible, inversely proportional to their volume
             if (!term.op().conceptualizable) return null;
+            float probBase =
+                    0.5f;
+                    //0.33f;
             float probDirect =
                     //0.5f * 1f / term.volume();
                     //0.5f * 1f / Util.sqr(term.volume());
-                    0.5f * 1f / Util.sqr(Util.sqr(term.volume()));
+                    probBase * 1f / Util.sqr(Util.sqr(term.volume()));
 
             if (d.random.nextFloat() >= probDirect)
                 return null; //term itself

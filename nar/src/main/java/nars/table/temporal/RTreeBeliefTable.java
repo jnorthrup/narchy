@@ -169,7 +169,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
         Pair<Task, TruthProjection> AB;
         if (!mergeableLeaf.isEmpty()) {
             Leaf<TaskRegion> ab = mergeableLeaf.get();
-            AB = Revision.merge(nal, true, Arrays.copyOf(ab.data, ab.size)); //HACK type adaptation
+            AB = Revision.merge(nal, true, 2, Arrays.copyOf(ab.data, ab.size)); //HACK type adaptation
             if (AB != null) {
                 valueMergeLeaf = (float) (
                         +taskStrength.floatValueOf(AB.getOne())

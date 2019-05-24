@@ -27,7 +27,7 @@ public class EmbeddedNAgent extends Agent {
 
     private static final NAR defaultNAR() {
         NAR n = NARS.tmp();
-        n.termVolumeMax.set(10);
+        n.termVolMax.set(10);
         n.freqResolution.set(0.1f);
         return n;
     }

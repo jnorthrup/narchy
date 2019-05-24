@@ -5,30 +5,43 @@
     //free structural Conjunction/Disjunction decomposition
     C, X, eventOfPN(C,X), task("?@"), hasBelief()   |-   conjWithoutPN(C,X)
     C, X, eventOfPN(C,X)                            |-   conjWithoutPN(C,X), (Belief:StructuralDeduction, Goal:StructuralDeduction)
-    D, X, eventOfPN(D,X)                            |- --conjWithoutPN(D,X), (Belief:StructuralDeductionWeakN, Goal:StructuralDeductionWeakN)
+
+    //disjunction select
+    D, X, eventOfNeg(D,X)                            |-   X, (Belief:StructuralDeductionWeakN, Goal:StructuralDeductionWeakN)
+    D, X, eventOf(D,X)                               |- --X, (Belief:StructuralDeductionWeakN, Goal:StructuralDeductionWeakN)
+    //D, X, eventOfPN(D,X)                            |- --conjWithoutPN(D,X), (Belief:StructuralDeductionWeakN, Goal:StructuralDeductionWeakN)
 //    D, X, eventOfPN(D,X)                            |- --conjWithoutPN(D,X), (Belief:StructuralDeductionN, Goal:StructuralDeductionN)
 //    D, X, eventOfPN(D,X)                            |-   conjWithoutPN(D,X), (Belief:StructuralDeductionWeak, Goal:StructuralDeductionWeak)
 
+    //question short-circuit answer
+    C, X, task("?"), eventOf(C,X)    |- --C,  (Belief:BeliefStructuralDeductionPN, Punctuation:Belief)
+    C, X, task("?"), eventOfNeg(C,X) |-   C,  (Belief:BeliefStructuralDeductionPP, Punctuation:Belief)
+        //TODO other short-circuits, involving ==> etc
+
+    //implication short-circuit doubt TODO
+//    (--C==>Y), X, eventOf(C,X)    |- --(Y && C), (Belief:IntersectionPN)
+//    (Y==>C), X, eventOf(C,X)    |- --(Y && C), (Belief:IntersectionPN)
+//    (Y==>C), X, eventOfNeg(C,X) |-   (Y==>C), (Belief:IntersectionPP)
+
+
     //impl conj/disj pred belief and question free structural implication decomposition
-    (A ==> C), X, eventOfPN(C,X), --isVar(A)   |-   polarizeTask((A ==> conjWithoutPN(C,  X))), (Belief:StructuralDeductionDepolarized)
-    //(A ==> C), X, eventOfPN(C,X), --isVar(A)   |-   (A ==> conjWithoutPN(C,  X)), (Belief:StructuralDeduction)
-      //(A ==> D), X, eventOfPN(D,X), --isVar(A)   |-   (A ==> --conjWithoutPN(D,  X)), (Belief:StructuralDeductionWeakN)
     //(A ==> C), X, eventOfPN(C,X), --isVar(A)   |-   polarizeTask((A ==> conjWithoutPN(C,  X))), (Belief:StructuralDeductionDepolarized)
+        //(A ==> C), X, eventOfPN(C,X), --isVar(A)   |-   (A ==> conjWithoutPN(C,  X)), (Belief:StructuralDeduction)
+          //(A ==> D), X, eventOfPN(D,X), --isVar(A)   |-   (A ==> --conjWithoutPN(D,  X)), (Belief:StructuralDeductionWeakN)
+        //(A ==> C), X, eventOfPN(C,X), --isVar(A)   |-   polarizeTask((A ==> conjWithoutPN(C,  X))), (Belief:StructuralDeductionDepolarized)
 
          (A ==> C), X, eventOfPN(C,X), task("?"), --isVar(A)   |- (A ==> conjWithoutPN(C,  X)), (Punctuation:Question)
-         (A ==> C), C, task("?")   |- C, (Punctuation:Question)
+         (A ==> C), (A ==> C), task("?")   |- C, (Punctuation:Question)
 
     //impl conj subj belief and question free structural implication decomposition
-    (  C ==> A), X, eventOfPN(C,X), --isVar(A)   |- polarizeTask((  conjWithoutPN(C,    X) ==> A)), (Belief:StructuralDeductionWeakDepolarized)
-      (  --D ==> A), X, eventOfPN(D,X), --isVar(A) |- polarizeTask((  --conjWithoutPN(D,    X) ==> A)), (Belief:StructuralDeductionDepolarized)
+    //(  C ==> A), X, eventOfPN(C,X), --isVar(A)   |- polarizeTask((  conjWithoutPN(C,    X) ==> A)), (Belief:StructuralDeductionWeakDepolarized)
+      //(  --D ==> A), X, eventOfPN(D,X), --isVar(A) |- polarizeTask((  --conjWithoutPN(D,    X) ==> A)), (Belief:StructuralDeductionDepolarized)
 
         (  C ==> A), X, eventOfPN(C,X), task("?"), --isVar(A)   |- (  conjWithoutPN(C,  X) ==> A), (Punctuation:Question)
         (--D ==> A), X, eventOfPN(D,X), task("?"), --isVar(A)   |- (--conjWithoutPN(D,  X) ==> A), (Punctuation:Question)
-        (C ==> A), E, task("?")   |- C, (Punctuation:Question)
+        (C ==> A), (C ==> A), task("?")   |- C, (Punctuation:Question)
 
 
-        (--D ==> A), X, eventOfPN(D,X), task("?"), --isVar(A)   |- (--conjWithoutPN(D,  --X) ==> A), (Punctuation:Question)
-        //(--D ==> A), D, task("?")   |- D, (Punctuation:Question)
 
 
 
@@ -51,8 +64,8 @@
     //C is a sequence ending in it.  this forms a goal of the sequence minus the trailing
 
     //desire for sub-sequence leading to goal,  truth function may be Desire or Deduction
-    G, C, is(C,"&&")                |-   conjBefore(C,   G),  (Goal:DesirePP)
-    G, C, is(C,"&&"), has(C,"--")   |-   conjBefore(C, --G),  (Goal:DesireNP)
+    G, C, is(C,"&&")                |-   conjBefore(C,   G),  (Goal:DeductionPP)
+    G, C, is(C,"&&"), has(C,"--")   |-   conjBefore(C, --G),  (Goal:DeductionNP)
       //G, D, is(D,"&&"), has(D,"--")   |-    --conjBefore(D, --G),  (Goal:DesireWeakPN)
       //G, D, is(D,"&&")                |-    --conjBefore(D,   G),  (Goal:DesireWeakNN)
 

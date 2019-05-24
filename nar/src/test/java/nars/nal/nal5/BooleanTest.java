@@ -49,7 +49,7 @@ class BooleanTest {
 
         NAR d = NARS.tmp(6);
         d.freqResolution.set(0.05f);
-        d.termVolumeMax.set(7);
+        d.termVolMax.set(7);
 
 
         String[] outcomes = {
@@ -179,7 +179,7 @@ class BooleanTest {
 
         NAR n = NARS.tmp();
         //n.log();
-        n.termVolumeMax.set(8);
+        n.termVolMax.set(8);
         n.believe("--(  x &&   y)");
         n.believe("  (  x && --y)");
         n.believe("  (--x &&   y)");
@@ -228,7 +228,7 @@ class BooleanTest {
                 (i)->$.inh($.the(i),$.the("x"));
 
         NAR n = NARS.tmp(6,8);
-        n.termVolumeMax.set(8);
+        n.termVolMax.set(8);
         n.time.dur(d);
 
 

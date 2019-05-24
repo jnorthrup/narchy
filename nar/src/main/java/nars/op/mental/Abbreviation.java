@@ -10,6 +10,7 @@ import jcog.pri.bag.impl.PriReferenceArrayBag;
 import jcog.pri.op.PriMerge;
 import nars.$;
 import nars.NAR;
+import nars.Op;
 import nars.Task;
 import nars.attention.What;
 import nars.concept.Concept;
@@ -21,14 +22,17 @@ import nars.subterm.Subterms;
 import nars.task.NALTask;
 import nars.term.Compound;
 import nars.term.Term;
+import nars.term.Termed;
 import nars.term.Terms;
 import nars.term.atom.Atomic;
+import nars.term.util.transform.AbstractTermTransform;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BooleanSupplier;
+import java.util.function.Function;
 
 import static nars.Op.BELIEF;
 import static nars.time.Tense.ETERNAL;
@@ -48,6 +52,9 @@ public class Abbreviation/*<S extends Term>*/ extends How {
 
     private static final Logger logger = LoggerFactory.getLogger(Abbreviation.class);
     private static final AtomicInteger currentTermSerial = new AtomicInteger(0);
+
+    public static final String ABBREVIATION_META = "_";
+
     /**
      * generated abbreviation belief's confidence
      */
@@ -118,6 +125,37 @@ public class Abbreviation/*<S extends Term>*/ extends How {
         nar.start(this);
     }
 
+    final static class Abbreviating extends AbstractTermTransform.NegObliviousTermTransform {
+        final Function<Term /* Atomic */,Concept> resolver;
+
+        Abbreviating(Function<Term,Concept> resolver) {
+            this.resolver = resolver;
+        }
+
+        @Override
+        public Term applyCompound(Compound x, Op newOp, int newDT) {
+            Term a = super.applyCompound(x, newOp, newDT);
+
+            if (a instanceof Compound && !(a.hasAny(Op.Variable))) {
+                Term ac = a.concept();
+                if (a.equals(ac)) { //avoid temporals
+                    Concept aa = resolver.apply(ac);
+                    if (aa != null) {
+                        Termed aaa = aa.meta(ABBREVIATION_META);
+                        if (aaa != null)
+                            return apply(aaa.term()); //abbreviation
+                    }
+                }
+            }
+            return a;
+        }
+
+    }
+
+    public static Term apply(Term x, Function<Term,Concept> resolver) {
+        return new Abbreviating(resolver).apply(x);
+    }
+
     private void abbreviateNext(What w) {
         pending.pop(null, 1, t -> abbreviateNext(t, w));
     }
@@ -134,17 +172,22 @@ public class Abbreviation/*<S extends Term>*/ extends How {
 
 
         Concept abbreviable = nar.concept(t, true);
-        if (abbreviable != null &&
+        if (abbreviable != null && !abbreviable.isDeleted() &&
                 !(abbreviable instanceof PermanentConcept) &&
                 !(abbreviable instanceof AliasConcept) &&
                 abbreviable.term().equals(t)) /* identical to its conceptualize */ {
 
-            if (!abbreviable.isDeleted() && abbreviable.meta(Abbreviation.class.getName()) != null) {
-                return; //already abbreviated
+            Object a = abbreviable.meta(ABBREVIATION_META);
+            if (a != null) {
+                //already abbreviated
+                //TODO - add a forwarding similarity from old term to new term
+                // Concept c = nar.concept((Term)a);
+                return;
             }
+
             Term abbreviation;
             if ((abbreviation = abbreviate(pri, abbreviable, w)) != null) {
-                abbreviable.meta(Abbreviation.class.getName(), abbreviation);
+                abbreviable.meta(ABBREVIATION_META, abbreviation);
             }
 
         }
@@ -201,7 +244,7 @@ public class Abbreviation/*<S extends Term>*/ extends How {
 
             Term aliasTerm = Atomic.the(nextSerialTerm());
             AliasConcept a1 = new AliasConcept(aliasTerm, abbrConcept);
-            a1.meta(Abbreviation.class.getName(), a1);
+            a1.meta(ABBREVIATION_META, a1);
             //nar.on(a1);
 
             nar.memory.set(abbreviated, a1); //redirect reference from the original concept to the alias

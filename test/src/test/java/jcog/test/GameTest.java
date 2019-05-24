@@ -25,7 +25,7 @@ public class GameTest {
     static NAR nar(int dur) {
 
         NAR n = NARS.tmp();
-        n.termVolumeMax.set(4);
+        n.termVolMax.set(4);
         n.freqResolution.set(0.1f);
 //        n.confResolution.setAt(0.02f);
         n.time.dur(dur);
@@ -135,7 +135,7 @@ public class GameTest {
         int cycles = 2000;
 
         NAR n = nar(1);
-        n.termVolumeMax.set(6);
+        n.termVolMax.set(6);
 //        n.goalPriDefault.setAt(0.9f);
 //        n.beliefPriDefault.setAt(0.1f);
 //        n.time.dur(period/2);

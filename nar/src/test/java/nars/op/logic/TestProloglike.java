@@ -60,7 +60,7 @@ class TestProloglike {
         
         NAR n = NARS.tmp();
 
-        n.termVolumeMax.set(1024);
+        n.termVolMax.set(1024);
         n.log();
         n.inputNarsese(
                 TestProloglike.class.getResource("einsteinsRiddle.nal")
@@ -140,7 +140,7 @@ class TestProloglike {
         */
 
         NAR n = NARS.tmp();
-        n.termVolumeMax.set(100);
+        n.termVolMax.set(100);
         n.log();
         n.input("( perform(q0, (), $Ls, $Tape0, $Rs) ==> turing($Tape0, concat(reverse($Ls), $Rs))).");
         n.input("((&&, symbol($Rs0, #Sym, #RsRest),once(rule($Q0, #Sym, #Q1, #NewSym, #Action)),action(#Action, $Ls0, #Ls1, concat(#NewSym,#RsRest), #Rs1),perform(#Q1, #Ls1, $Ls, #Rs1, $Rs)) ==> perform($Q0, $Ls0, $Ls, $Rs0, $Rs)).");

@@ -36,7 +36,7 @@ public class NAgentOptimize {
             n.random();
 
             /* defaults TODO "learn" these from the experiments and reapply them in future experiments */
-            n.termVolumeMax.set(4);
+            n.termVolMax.set(4);
             n.goalPriDefault.pri(0.6f);
 
             return n;
@@ -47,7 +47,7 @@ public class NAgentOptimize {
 //                .var("attnCapacity", 4, 128, 8,
 //                        (NAR n, int i) -> n.attn.active.setCapacity(i))
                 .var("termVolMax", 3, 16, 2,
-                        (NAR n, int i) -> n.termVolumeMax.set(i))
+                        (NAR n, int i) -> n.termVolMax.set(i))
 //                .var("ttlMax", 6, 20, 3,
 //                        (NAR n, int i) -> n.deriveBranchTTL.setAt(i))
 //                .var("linkFanOut", 1, 16, 1,

@@ -3,6 +3,7 @@ package nars.derive.premise;
 import jcog.pri.PLink;
 import jcog.pri.PriReference;
 import jcog.pri.bag.Bag;
+import jcog.pri.bag.impl.PLinkArrayBag;
 import jcog.pri.bag.impl.hijack.PriLinkHijackBag;
 import jcog.pri.op.PriMerge;
 import nars.Task;
@@ -19,7 +20,7 @@ import java.io.Serializable;
  */
 public class PremiseBuffer implements Serializable {
 
-    static final int premiseBufferCapacity = 256;
+    static final int premiseBufferCapacity = 64;
 
     /** rate that priority from the novelty bag subtracts from potential premises.
      * may need to be divided by concurrency so that threads dont step on each other */
@@ -39,8 +40,8 @@ public class PremiseBuffer implements Serializable {
     public PremiseBuffer() {
 
         this.premise =
-                //new PLinkArrayBag<>(PriMerge.max, premiseBufferCapacity);
-                new PriLinkHijackBag<>(PriMerge.max, premiseBufferCapacity, 3);
+                new PLinkArrayBag<>(PriMerge.max, premiseBufferCapacity);
+                //new PriLinkHijackBag<>(PriMerge.max, premiseBufferCapacity, 3);
         this.premiseTried =
                 new PriLinkHijackBag<>(PriMerge.max, premiseBufferCapacity, 2);
     }
@@ -60,7 +61,7 @@ public class PremiseBuffer implements Serializable {
 
         });
 
-        premise.sample/*pop*/(d.random, premisesPerIteration, pp->{
+        premise.pop(null, premisesPerIteration, pp->{
             fire(pp, matchTTL, deriveTTL, d);
         });
 

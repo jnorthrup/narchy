@@ -34,7 +34,7 @@ public class ThermostatTest {
         n.dtDither.set(1);
 
 
-        n.termVolumeMax.set(18);
+        n.termVolMax.set(18);
         n.freqResolution.set(0.2f);
         n.confResolution.set(0.05f);
         //n.activateConceptRate.setAt(0.1f);

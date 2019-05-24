@@ -11,6 +11,7 @@ import nars.term.Term;
 import nars.term.Termlike;
 import nars.term.Variable;
 import nars.term.atom.Atomic;
+import nars.term.atom.Bool;
 import nars.term.util.map.TermHashMap;
 import nars.term.util.transform.AbstractTermTransform;
 import nars.term.util.transform.TermTransform;
@@ -196,7 +197,7 @@ public abstract class Unify extends Versioning<Term> {
             if (--safety == 0) {
                 if (NAL.DEBUG)
                     throw new WTF("var cycle detected");
-                return x;
+                return Bool.Null;
             }
 
         } while (z instanceof Variable);

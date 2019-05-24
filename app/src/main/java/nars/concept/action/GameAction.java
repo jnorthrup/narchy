@@ -15,6 +15,7 @@ import nars.table.temporal.RTreeBeliefTable;
 import nars.term.Term;
 import nars.term.Termed;
 import nars.truth.Truth;
+import nars.truth.polation.TruthIntegration;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -62,7 +63,11 @@ public abstract class GameAction extends TaskConcept implements GameLoop, Perman
             super.value(t, n);
 
             if (t.isGoal()) {
-                MetaGoal.Action.learn(t.priElseZero(), n.control.why, t.why());
+                MetaGoal.Action.learn(
+                        t.isEternal() ? t.conf() * n.dur()
+                            :
+                        (float) TruthIntegration.evi(t),
+                    n.control.why, t.why());
             }
         }
     }
