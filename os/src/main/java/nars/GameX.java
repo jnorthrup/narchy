@@ -537,7 +537,7 @@ abstract public class GameX extends Game {
 //        new Inperience.Wonder(8, n);
 //        new Inperience.Plan(8, n);
 
-        new Abbreviation("z", 5, 12, n);
+        new Abbreviation("z", 3, 7, n);
 
 
 //        try {

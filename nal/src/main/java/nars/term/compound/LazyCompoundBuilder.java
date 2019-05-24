@@ -214,12 +214,17 @@ public class LazyCompoundBuilder {
 
         int end = range[1];
         int start = range[0];
-        byte ctl = bytes[range[0]++];
+        byte ctl;
+        do {
+            ctl = bytes[range[0]++];
+            if (ctl >= MAX_CONTROL_CODES)
+                return nextAtom(ctl, bytes, range);
+            else if (ctl == NEG.id)
+                return nextSubterm(bytes, range).neg();
 
-        if (ctl >= MAX_CONTROL_CODES)
-            return nextAtom(ctl, bytes, range);
-        else if (ctl == NEG.id)
-            return nextSubterm(bytes, range).neg();
+        } while (ctl == 0);
+
+
 
         Op op = Op.the(ctl);
 

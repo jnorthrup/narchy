@@ -198,6 +198,9 @@ public class Abbreviation/*<S extends Term>*/ extends How {
         if (!(t instanceof Compound))
             return;
 
+        if (t.hasAny(Op.Variable) || !t.equals(t.root()))
+            return;
+
         int tv = t.volume();
         if (tv < Abbreviation.this.volume.lo())
             return;
@@ -206,7 +209,7 @@ public class Abbreviation/*<S extends Term>*/ extends How {
         Subterms ss = t.subterms();
         int ssn = ss.subs();
         for (Term s : ss)
-            tryEncode(s, pri / ssn);
+            tryEncode(s, pri );
 
         if (tv > Abbreviation.this.volume.hi())
             return;
