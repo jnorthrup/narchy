@@ -185,8 +185,8 @@
 //classically: union/intersection assymmetry: union if subj, intersect if pred
 //TODO: ...Also:VarIntro)
 
-     (P ==> M), (S ==> M) |- ((P && S) ==> M), (Belief:UnionPB)
-     (P ==> M), (S ==> M) |- ((P || S) ==> M), (Belief:IntersectionPB)
+     (P ==> M), (S ==> M) |- ((P && S) ==> M), (Belief:IntersectionPB)
+     (P ==> M), (S ==> M) |- ((P || S) ==> M), (Belief:UnionPB)
 
         (P ==> M), (S ==> M), task("?")  |- ((P && S) ==> M), (Punctuation:Question)
         (P ==> M), (S ==> M), task("?")  |- ((P || S) ==> M), (Punctuation:Question)

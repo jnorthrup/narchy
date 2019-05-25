@@ -35,12 +35,12 @@ public class DynamicStatementTruth {
             Term subj = ss.sub(0);
             assert (subj.op() == NEG);
             return decomposeImplConj(superterm, start, end, each, ss.sub(1),
-                    (Compound) (subj.unneg()), true, true);
+                    (Compound) (subj.unneg()), true, false);
         }
 
         @Override
         public Term reconstruct(Compound superterm, DynTaskify components, NAR nar, long start, long end) {
-            return reconstruct(superterm, components, true, true);
+            return reconstruct(superterm, components, true, false).neg();
         }
     };
 
