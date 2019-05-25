@@ -29,7 +29,13 @@ public interface TermTransform extends Function<Term,Term> {
     default boolean apply(Term x, LazyCompoundBuilder out) {
 
         if (x instanceof Compound) {
-            return transformCompound((Compound) x, out);
+            byte interned = out.term(x);
+            if (interned!=Byte.MIN_VALUE) {
+                out.appendInterned(interned);
+                return true;
+            } else {
+                return transformCompound((Compound) x, out);
+            }
         } else {
             @Nullable Term y = applyAtomic((Atomic) x);
             if (y == null || y == Bool.Null)

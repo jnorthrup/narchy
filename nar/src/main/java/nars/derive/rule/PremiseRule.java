@@ -69,15 +69,14 @@ public class PremiseRule extends ProxyTerm {
     private static final Pattern ruleImpl = Pattern.compile("\\|-");
 
     private static final Term eteConj = $.the("eteConj");
-    private static final Map<Term, UnifyConstraint> constra =
-            new ConcurrentHashMap<>();
-    private final static PremiseTermAccessor TaskTerm = new PremiseTermAccessor(0, "taskTerm") {
+    private static final Map<Term, UnifyConstraint> constra = new ConcurrentHashMap<>();
+    private final static PremiseTermAccessor TaskTerm = new PremiseTermAccessor(0, Derivation.TaskTerm) {
         @Override
         public Term apply(PreDerivation d) {
             return d.taskTerm;
         }
     };
-    private final static PremiseTermAccessor BeliefTerm = new PremiseTermAccessor(1, "beliefTerm") {
+    private final static PremiseTermAccessor BeliefTerm = new PremiseTermAccessor(1, Derivation.BeliefTerm) {
 
         @Override
         public Term apply(PreDerivation d) {

@@ -1,5 +1,6 @@
 package nars.term;
 
+import nars.NAL;
 import nars.Op;
 import nars.The;
 import nars.term.anon.Intrin;
@@ -42,7 +43,7 @@ public interface Neg extends Term { ;
         if (u instanceof Intrin)
             return new NegIntrin(((Intrin)u).i);
         else
-            return new NegCached(u);
+            return u.volume() > NAL.NEG_CACHE_VOL_THRESHOLD ? new NegLight(u) : new NegCached(u);
     }
 
     Term sub();

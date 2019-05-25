@@ -20,10 +20,10 @@
 
 
        //conjunction goal induction from impl (shortcut)
-        G, (A==>B), eventOf(B,G)    |- (A &&   conjWithout(B,G)), (Belief:PrePP, Goal:PreWeakPP)
-        G, (A==>B), eventOf(B,G)    |- (A && --conjWithout(B,G)), (Belief:PrePN, Goal:PreWeakPN)
-        G, (A==>B), eventOfNeg(B,G) |- (A &&   conjWithout(B,--G)), (Belief:PreNP, Goal:PreWeakNP)
-        G, (A==>B), eventOfNeg(B,G) |- (A && --conjWithout(B,--G)), (Belief:PreNN, Goal:PreWeakNN)
+//        G, (A==>B), eventOf(B,G)    |- (A &&   conjWithout(B,G)), (Belief:PrePP, Goal:PreWeakPP)
+//        G, (A==>B), eventOf(B,G)    |- (A && --conjWithout(B,G)), (Belief:PrePN, Goal:PreWeakPN)
+//        G, (A==>B), eventOfNeg(B,G) |- (A &&   conjWithout(B,--G)), (Belief:PreNP, Goal:PreWeakNP)
+//        G, (A==>B), eventOfNeg(B,G) |- (A && --conjWithout(B,--G)), (Belief:PreNN, Goal:PreWeakNN)
 
      B, (--X ==> C), --is(C,"#"), --is(B,"==>") |- unisubst(C,X,B,"$"), (Belief:PreN, Goal:PreWeakN)
      //(--X ==> C), B, --is(C,"#"), --is(B,"==>") |- unisubst(C,X,B,"$"), (Belief:PreNX)

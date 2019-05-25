@@ -36,7 +36,11 @@ public final class UnifyMatchFork extends LazyCompoundBuilder implements Predica
 
         Term y = AbstractTermTransform.transform(x, d.transform, this, workVolMax);
 
-//        //TEMPORARY for debug
+        //TEMPORARY for debug
+//        if (y.toString().contains("taskTerm")) {
+//            AbstractTermTransform.transform(x, d.transform, this, workVolMax);
+//            throw new WTF();
+//        }
 //        if (y.hasAny(VAR_PATTERN)) {
 //            AbstractTermTransform.transform(x, d.transform, this, workVolMax);
 //        }

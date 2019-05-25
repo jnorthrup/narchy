@@ -74,7 +74,7 @@ public class NAL6Test extends NALTest {
     void variable_unification4() {
 
         TestNAR tester = test;
-        tester.nar.termVolMax.set(14);
+        tester.termVolMax(13);
 
         tester.believe("<<bird --> $x> ==> <robin --> $x>>");
         tester.believe("<<swimmer --> $y> ==> <robin --> $y>>", 0.70f, 0.90f);
@@ -848,32 +848,28 @@ public class NAL6Test extends NALTest {
     @Test
     void strong_unification_pos() {
 
-        TestNAR tester = test;
-        tester.believe("(sentence($a,is,$b) ==> ($a --> $b))", 1.00f, 0.90f);
-        tester.believe("sentence(bmw,is,car)", 1.00f, 0.90f);
-        tester.mustBelieve(cycles, "car:bmw", 1.00f, 0.81f);
+        test.believe("(sentence($a,is,$b) ==> ($a --> $b))", 1.00f, 0.90f);
+        test.believe("sentence(bmw,is,car)", 1.00f, 0.90f);
+        test.mustBelieve(cycles, "car:bmw", 1.00f, 0.81f);
 
     }
 
     @Test
     void strong_unification_neg() {
-        test.nar.termVolMax.set(12);
-
-        TestNAR tester = test;
-        tester.believe("( --sentence($a,is,$b) ==> ($a --> $b) )", 1.00f, 0.90f);
-        tester.believe("sentence(bmw,is,car)", 0.00f, 0.90f);
-        tester.mustBelieve(cycles, "car:bmw", 1.00f, 0.81f);
+        test.termVolMax(12);
+        test.believe("( --sentence($a,is,$b) ==> ($a --> $b) )", 1.00f, 0.90f);
+        test.believe("sentence(bmw,is,car)", 0.00f, 0.90f);
+        test.mustBelieve(cycles, "car:bmw", 1.00f, 0.81f);
 
     }
 
     @Test
     void strong_elimination() {
-        test.nar.termVolMax.set(18);
+        test.termVolMax(18);
         test.nar.confMin.set(0.5f);
-        TestNAR tester = test;
-        tester.believe("((test($a,is,cat) && sentence($a,is,$b)) ==> ($a --> $b))");
-        tester.believe("test(tim,is,cat)");
-        tester.mustBelieve(cycles, "(sentence(tim,is,$1) ==> (tim --> $1))",
+        test.believe("((test($a,is,cat) && sentence($a,is,$b)) ==> ($a --> $b))");
+        test.believe("test(tim,is,cat)");
+        test.mustBelieve(cycles, "(sentence(tim,is,$1) ==> (tim --> $1))",
                 1.00f, 0.73f);
 
     }
@@ -881,19 +877,19 @@ public class NAL6Test extends NALTest {
     @Test
     void impliesUnbelievedYet() {
 
-        TestNAR tester = test;
-        tester.believe("(x:a ==> c:d).");
-        tester.believe("x:a.");
-        tester.mustBelieve(cycles, "c:d", 1.00f, 0.81f);
+        test.termVolMax(7);
+        test.believe("(x:a ==> c:d).");
+        test.believe("x:a.");
+        test.mustBelieve(cycles, "c:d", 1.00f, 0.81f);
     }
 
     @Test
     void implVariableSubst() {
 
-        TestNAR tester = test;
-        tester.believe("x:y.");
-        tester.believe("(x:$y==>$y:x).");
-        tester.mustBelieve(cycles, "y:x", 1.00f, 0.81f);
+        test.termVolMax(7);
+        test.believe("x:y.");
+        test.believe("(x:$y==>$y:x).");
+        test.mustBelieve(cycles, "y:x", 1.00f, 0.81f);
     }
 
 
@@ -901,6 +897,7 @@ public class NAL6Test extends NALTest {
     void testPropositionalDecompositionConjPos() {
         ////If S is the case, and (&&,S,A_1..n) is not the case, it can't be that (&&,A_1..n) is the case
         test
+                .termVolMax(5)
                 .believe("--(&&,x,y,z)")
                 .believe("x")
                 .mustBelieve(cycles, "(y&&z)", 0f, 0.81f)
@@ -911,7 +908,7 @@ public class NAL6Test extends NALTest {
     void testPropositionalDecompositionConjNeg() {
         ////If S is the case, and (&&,S,A_1..n) is not the case, it can't be that (&&,A_1..n) is the case
         test
-                .termVolMax(9)
+                .termVolMax(5)
                 .believe("--(&&,--x,y,z)")
                 .believe("--x")
                 .mustBelieve(cycles, "(y&&z)", 0f, 0.81f)

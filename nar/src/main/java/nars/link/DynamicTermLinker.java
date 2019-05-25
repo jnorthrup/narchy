@@ -100,12 +100,12 @@ public abstract class DynamicTermLinker implements TermLinker {
         }
 
         @Override
-        protected Term choose(Subterms tt, int n, Term parent, Random rng) {
-            if (parent.op()==CONJ && tt.hasAny(CONJ) && Conj.isSeq(parent) && rng.nextBoolean()) {
-                return ConjLazy.events(parent).get(rng); //TODO events -> subterms ? -v
-            } else {
-                return tt.sub(Roulette.selectRoulette(n, i -> _subValue(tt.sub(i)), rng));
+        protected Term choose(Subterms _s, int n, Term parent, Random rng) {
+            if (parent.op()==CONJ && _s.hasAny(CONJ) && Conj.isSeq(parent) && rng.nextBoolean()) {
+                _s = ConjLazy.events(parent).asSubterms(false);
             }
+            Subterms s = _s;
+            return s.sub(Roulette.selectRoulette(n, i -> s.subFloat(i, this::subValue) , rng));
         }
 
         private float _subValue(Term sub) {

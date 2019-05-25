@@ -198,7 +198,7 @@ public class FZero extends GameX {
 //        });
 
         //auto-restore health
-        FloatAveragedWindow progressFilter = new FloatAveragedWindow(8, 0.8f);
+//        FloatAveragedWindow progressFilter = new FloatAveragedWindow(8, 0.8f);
 
         onFrame(()-> {
 
@@ -210,7 +210,7 @@ public class FZero extends GameX {
 
             fz.update();
 
-            progress = progressFilter.valueOf(
+            progress = /*progressFilter.valueOf*/(
                     ((float)
                             //-(FZeroGame.FULL_POWER - ((float) fz.power)) / FZeroGame.FULL_POWER +
                             deltaDistance / (fps * 0.5f))

@@ -4,10 +4,6 @@ package nars.op.mental;
 import jcog.bloom.StableBloomFilter;
 import jcog.data.atomic.AtomicFloat;
 import jcog.math.MutableIntRange;
-import jcog.pri.PLink;
-import jcog.pri.bag.Bag;
-import jcog.pri.bag.impl.PriReferenceArrayBag;
-import jcog.pri.op.PriMerge;
 import nars.$;
 import nars.NAR;
 import nars.Op;
@@ -24,6 +20,7 @@ import nars.term.Compound;
 import nars.term.Term;
 import nars.term.Termed;
 import nars.term.Terms;
+import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
 import nars.term.util.transform.AbstractTermTransform;
 import org.jetbrains.annotations.Nullable;
@@ -67,18 +64,13 @@ public class Abbreviation/*<S extends Term>*/ extends How {
     private final StableBloomFilter<Term> stm;
     private final int stmSize;
 
-    /**
-     * pending codecs
-     */
-    private final Bag<Term, PLink<Term>> pending;
+
     private final String termPrefix;
     private final CauseChannel<Task> in;
 
 
     public Abbreviation(String termPrefix, int volMin, int volMax, NAR nar) {
         super();
-
-        pending = new PriReferenceArrayBag(PriMerge.plus, 32);
 
         stmSize = 512;
 
@@ -125,10 +117,13 @@ public class Abbreviation/*<S extends Term>*/ extends How {
         nar.start(this);
     }
 
-    final static class Abbreviating extends AbstractTermTransform.NegObliviousTermTransform {
+
+
+
+    final static class ABBREVIATE extends AbstractTermTransform.NegObliviousTermTransform {
         final Function<Term /* Atomic */,Concept> resolver;
 
-        Abbreviating(Function<Term,Concept> resolver) {
+        ABBREVIATE(Function<Term,Concept> resolver) {
             this.resolver = resolver;
         }
 
@@ -143,7 +138,8 @@ public class Abbreviation/*<S extends Term>*/ extends How {
                     if (aa != null) {
                         Termed aaa = aa.meta(ABBREVIATION_META);
                         if (aaa != null)
-                            return apply(aaa.term()); //abbreviation
+                            return aa.term();
+                            //return apply(aaa.term()); //abbreviation
                     }
                 }
             }
@@ -151,18 +147,50 @@ public class Abbreviation/*<S extends Term>*/ extends How {
         }
 
     }
+    final static class UNABBREVIATE extends AbstractTermTransform.NegObliviousTermTransform {
 
-    public static Term apply(Term x, Function<Term,Concept> resolver) {
-        return new Abbreviating(resolver).apply(x);
+        final Function<Term /* Atomic */,Concept> resolver;
+
+        UNABBREVIATE(Function<Term,Concept> resolver) {
+            this.resolver = resolver;
+        }
+
+        @Override
+        public Term applyAtomic(Atomic a) {
+
+            if (a instanceof Atom) {
+                Concept aa = resolver.apply(a);
+                if (aa != null) {
+                    Termed aaa = aa.meta(ABBREVIATION_META);
+                    if (aaa != null)
+                        return aaa.term(); //unabbreviation
+                }
+            }
+            return a;
+        }
+
+    }
+    public static Term abbreviate(Term x, NAR n) {
+        return abbreviate(x, n::concept);
+    }
+    public static Task unabbreviate(Task x, NAR n) {
+        return Task.clone(x, unabbreviate(x.term(), n));
+    }
+    public static Term unabbreviate(Term x, NAR n) {
+        return unabbreviate(x, n::concept);
     }
 
-    private void abbreviateNext(What w) {
-        pending.pop(null, 1, t -> abbreviateNext(t, w));
+    public static Term abbreviate(Term x, Function<Term,Concept> resolver) {
+        return AbstractTermTransform.transform(x, new ABBREVIATE(resolver));
     }
 
-    private void abbreviateNext(PLink<Term> p, What w) {
-        abbreviateNext(p.get(), p.priElseZero(), w);
+    public static Term unabbreviate(Term x, Function<Term,Concept> resolver) {
+        return AbstractTermTransform.transform(x, new UNABBREVIATE(resolver));
     }
+//
+//    private void abbreviateNext(What w) {
+//        pending.pop(null, 1, t -> abbreviateNext(t, w));
+//    }
 
     private void abbreviateNext(Term t, float pri, What w) {
 
@@ -194,40 +222,49 @@ public class Abbreviation/*<S extends Term>*/ extends How {
 
     }
 
-    private void tryEncode(Term t, float pri) {
-        if (!(t instanceof Compound))
-            return;
+    private boolean tryEncode(Term x, float pri, What w) {
 
-        if (t.hasAny(Op.Variable) || !t.equals(t.root()))
-            return;
+        if (stm.contains(x))
+            return false;
 
-        int tv = t.volume();
+        if (!(x instanceof Compound))
+            return false;
+
+        if (x.hasAny(Op.Variable) || !x.equals(x.root()))
+            return false;
+
+        int tv = x.volume();
         if (tv < Abbreviation.this.volume.lo())
-            return;
+            return false;
 
         //recurse
-        Subterms ss = t.subterms();
+        Subterms ss = x.subterms();
         int ssn = ss.subs();
-        for (Term s : ss)
-            tryEncode(s, pri );
+        for (Term s : ss) {
+            if (tryEncode(s, pri, w))
+                return true;
+        }
 
         if (tv > Abbreviation.this.volume.hi())
-            return;
+            return false;
 
-        if (stm.contains(t))
-            return;
 
-        Term tc = t.concept();
-        if (!tc.equals(t))
-            return;
+        Term y = unabbreviate(x, w.nar);
+        if (!y.equals(x)) {
+            return tryEncode(y, pri, w);
+        }
 
-        t = tc;
+        Term tc = x.concept();
+        if (!tc.equals(x))
+            return false;
 
-        int cap = pending.capacity();
-        pending.putAsync(new PLink<>(t, pri * (float) Math.log(tv) / (cap * cap)));
+        x = tc;
 
+        abbreviateNext(x, pri, w);
+        return true;
 
     }
+
 
 
     private String nextSerialTerm() {
@@ -247,7 +284,7 @@ public class Abbreviation/*<S extends Term>*/ extends How {
 
             Term aliasTerm = Atomic.the(nextSerialTerm());
             AliasConcept a1 = new AliasConcept(aliasTerm, abbrConcept);
-            a1.meta(ABBREVIATION_META, a1);
+            a1.meta(ABBREVIATION_META, abbreviated);
             //nar.on(a1);
 
             nar.memory.set(abbreviated, a1); //redirect reference from the original concept to the alias
@@ -264,10 +301,8 @@ public class Abbreviation/*<S extends Term>*/ extends How {
                     (te, tr) -> {
 
                         NALTask ta = NALTask.the(te, BELIEF, tr, nar.time(), ETERNAL, ETERNAL, nar.evidence());
-
-
                         ta.log("Abbreviate");
-                        ta.pri(pri);
+                        ta.pri(nar.priDefault(BELIEF));
 
                         return ta;
                     });
@@ -308,12 +343,8 @@ public class Abbreviation/*<S extends Term>*/ extends How {
                 break;
 
             Term at = a.from();
-            if (at instanceof Compound) {
-                tryEncode(at, a.priElseZero());
-            }
-
-            abbreviateNext(w);
-
+            if (at instanceof Compound)
+                tryEncode(at, a.priElseZero(), w);
 
         } while (kontinue.getAsBoolean());
     }

@@ -72,7 +72,7 @@ abstract public class Inperience extends TaskLeakTransform {
         private final Atomic dt = Atomic.the("dt");
         private final Atomic If = Atomic.the("if");
         private final Atomic inherits = Atomic.the("is");
-        private final Atomic similar = Atomic.the("alike"); //similarity
+        private final Atomic similar = Atomic.the("sim"); //similarity
 
         @Override
         protected Term applyPosCompound(Compound term) {

@@ -37,7 +37,11 @@ public class ConjTest {
     static final Term b = $.the("b");
 
     private static void assertConjDiff(String inc, String exc, String expect, boolean excludeNeg) {
-        assertEq(expect, Conj.diffAll($$(inc), $$(exc), excludeNeg));
+        Term exclude = $$(exc);
+        Term x = Conj.diffAll($$(inc), exclude, false);
+        if (excludeNeg)
+            x = Conj.diffAll(x, exclude.neg(), false);
+        assertEq(expect, x);
     }
 
     public static Compound $$c(String s) {
@@ -291,8 +295,11 @@ public class ConjTest {
     @Test
     void theDifferenceBetweenDTERNAL_and_Parallel_dternal() {
 
-        Term u = assertEq("((a&&b) &&+1 (a&&b))", "( (a&&b) && (a &&+1 b) )"); //distributed, while sequence is preserved
+        assertEq("(&&,(a &&+1 b),a,b)",
+                "( (a&&b) && (a &&+1 b) )"); //distributed, while sequence is preserved
 
+        assertEq("((a&&b) &&+1 (a&&b))",
+                "( ((a&&b) &&+1 (a&&b)) && (a &&+1 b) )"); //distributed, while sequence is preserved
     }
 
     @Test
@@ -1481,7 +1488,10 @@ public class ConjTest {
 //            assertTrue(xc.removeEventsByTerm($$("x"), true, false));
 //            assertEq("((--,x)&&(--,y))", xc.term());
         }
-
+    }
+    @Test
+    void testDisjunctionInnerDTERNALConj2() {
+        Term x = $$("((x &&+1 --x) && --y)");
         Term xn = x.neg();
         assertEq("((--,(x &&+1 (--,x)))||y)", xn);
 

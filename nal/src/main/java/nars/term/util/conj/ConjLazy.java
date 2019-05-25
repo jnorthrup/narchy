@@ -3,6 +3,8 @@ package nars.term.util.conj;
 import jcog.WTF;
 import jcog.data.set.LongObjectArraySet;
 import nars.Task;
+import nars.subterm.Subterms;
+import nars.subterm.TermList;
 import nars.term.Term;
 import nars.term.util.builder.TermBuilder;
 import nars.time.Tense;
@@ -197,4 +199,10 @@ public class ConjLazy extends LongObjectArraySet<Term> implements ConjBuilder {
     }
 
 
+    public final Subterms asSubterms(boolean commute) {
+        TermList terms = new TermList(this.items);
+        if (commute)
+            terms.sortAndDedup();
+        return terms;
+    }
 }

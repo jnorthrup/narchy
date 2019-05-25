@@ -281,11 +281,11 @@ public enum Murmur3Hash {
         int block = 0;
         switch (leftOverLength) {
             case 3:
-                block ^= buffer.get(length - 1) << 16;
+                block ^= buffer.get(length - 3) << 16;
             case 2:
                 block ^= buffer.get(length - 2) << 8;
             case 1:
-                block ^= buffer.get(length - 3);
+                block ^= buffer.get(length - 1);
                 block *= AVALANCHING_MULTIPLIER1;
                 block = Integer.rotateLeft(block, 15);
                 block *= AVALANCHING_MULTIPLIER2;

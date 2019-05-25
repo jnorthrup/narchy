@@ -27,6 +27,7 @@ import nars.derive.rule.PremiseRuleSet;
 import nars.derive.timing.ActionTiming;
 import nars.exe.impl.WorkerExec;
 import nars.gui.NARui;
+import nars.link.TaskLink;
 import nars.memory.CaffeineMemory;
 import nars.op.*;
 import nars.op.mental.Abbreviation;
@@ -56,6 +57,7 @@ import java.awt.image.BufferedImage;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 import static java.util.stream.Collectors.toList;
@@ -73,6 +75,10 @@ import static spacegraph.space2d.container.grid.Gridding.grid;
  */
 abstract public class GameX extends Game {
 
+    /**
+     * determines memory strength
+     */
+    static float DURATIONs = 4;
 
 //    static {
 //        try {
@@ -105,8 +111,10 @@ abstract public class GameX extends Game {
         return runRT(init, -1, narFPS);
     }
 
+
     public static NAR runRT(Function<NAR, Game> init, int threads, float narFPS) {
-        NAR n = baseNAR(narFPS/2, threads);
+
+        NAR n = baseNAR(narFPS / DURATIONs, threads);
 
         Game g = init.apply(n);
 
@@ -217,13 +225,13 @@ abstract public class GameX extends Game {
                 .exe(
                         //new UniExec()
 
-                new WorkerExec(
-                        threads,
-                        false/* affinity */)
+                        new WorkerExec(
+                                threads,
+                                false/* affinity */)
 
-                //new ForkJoinExec()
+                        //new ForkJoinExec()
 
-                //new ForkJoinExec(Math.max(1, Runtime.getRuntime().availableProcessors() - 1))
+                        //new ForkJoinExec(Math.max(1, Runtime.getRuntime().availableProcessors() - 1))
 
 //                new SuperExec(
 //                    new Valuator.DefaultValuator(0.9f), threads <= 0 ? Util.concurrencyExcept(1) : threads
@@ -251,21 +259,21 @@ abstract public class GameX extends Game {
                         //new RadixTreeMemory(64*1024)
 
                         ramGB >= 0.5 ?
-                            new CaffeineMemory(
-                                //8 * 1024
-                                //16*1024
-                                   //32*1024
-                                //64 * 1024
-                                //128*1024
-                                Math.round(ramGB * 128 * 1024)
-                            )
-                            :
-                            CaffeineMemory.soft()
+                                new CaffeineMemory(
+                                        //8 * 1024
+                                        //16*1024
+                                        //32*1024
+                                        //64 * 1024
+                                        //128*1024
+                                        Math.round(ramGB * 128 * 1024)
+                                )
+                                :
+                                CaffeineMemory.soft()
                 )
 
-                        //, c -> (int) Math.ceil(c.term().voluplexity()))
+                //, c -> (int) Math.ceil(c.term().voluplexity()))
 
-                        //warning: not working right
+                //warning: not working right
 //                        new HijackMemory(
 //
 //                                //192 * 1024,
@@ -312,17 +320,16 @@ abstract public class GameX extends Game {
 //        senseReward.timing = new ActionTiming(n);
 
 
-
     }
 
     private static void initMeta(NAR n, Game a, boolean rl) {
 
         Gridding g = new Gridding();
-        MetaAgent meta = new MetaAgent(false,16f, a);
+        MetaAgent meta = new MetaAgent(false, 16f, a);
         g.add(NARui.agent(meta));
         meta.what().pri(0.1f);
 
-        if(rl) {
+        if (rl) {
             meta.what().pri(0.05f);
             RLBooster metaBoost = new RLBooster(meta, (i, o) ->
                     new HaiQae(i, 12, o).alpha(0.01f).gamma(0.9f).lambda(0.9f),
@@ -405,7 +412,7 @@ abstract public class GameX extends Game {
         n.questPriDefault.amp(0.02f);
 
 
-        n.beliefConfDefault.set(0.8f);
+        n.beliefConfDefault.set(0.7f);
         n.goalConfDefault.set(0.9f);
 
         n.emotion.want(MetaGoal.Futile, -0.001f);
@@ -528,7 +535,7 @@ abstract public class GameX extends Game {
 
         Introduction arith = new Arithmeticize.ArithmeticIntroduction(n, 64);
 
-        Introduction factorizer = new Factorize.FactorIntroduction( n, 16);
+        Introduction factorizer = new Factorize.FactorIntroduction(n, 16);
 
 
         new Inperience2(n);
@@ -562,31 +569,10 @@ abstract public class GameX extends Game {
 
     }
 
-    @Override
-    protected void starting(NAR nar) {
-        super.starting(nar);
-
-
-        //behavior overdrive
-        ImmutableSet<Term> stimSet = Sets.immutable.ofAll(Streams.concat(
-                rewards.stream().flatMap(r -> Streams.stream(r.components())),
-                actions().stream().flatMap(x -> Streams.stream(x.components())))
-                .map(Termed::term).collect(toSet()));
-
-
-//        float rate = 0.25f;
-//        ((TaskLinkWhat)what()).links.pri((tl)->{
-//            if (!stimSet.contains(tl.to()) && !stimSet.contains(tl.from()))
-//                tl.priMult(1/(1+rate));
-////            else
-////                tl.priMult(2f);
-//
-//            return true;
-//        });
-    }
-
-    /** governor
-     * TODO extract to class */
+    /**
+     * governor
+     * TODO extract to class
+     */
     private static void addGovernor(NAR n) {
         int gHist = 8;
         float momentum = 0.95f;
@@ -638,13 +624,50 @@ abstract public class GameX extends Game {
 
                     FloatAveragedWindow g = (FloatAveragedWindow) h.governor;
                     if (g == null)
-                        h.governor = g = new FloatAveragedWindow(gHist, 1-momentum, 0).mode(
+                        h.governor = g = new FloatAveragedWindow(gHist, 1 - momentum, 0).mode(
                                 FloatAveragedWindow.Mode.Exponential
                                 //FloatAveragedWindow.Mode.Mean
                         );
                     h.pri(g.valueOf(pri));
                 });
                 //            nn.how.forEach(h -> System.out.println(h + " "+ h.pri()));
+            }
+        });
+    }
+
+    @Override
+    protected void starting(NAR nar) {
+        super.starting(nar);
+
+        ((TaskLinkWhat) what()).links.pri(new Predicate<TaskLink>() {
+
+            //behavior overdrive
+            ImmutableSet<Term> stimSet = Sets.immutable.ofAll(Streams.concat(
+                    rewards.stream().flatMap(r -> Streams.stream(r.components())),
+                    actions().stream().flatMap(x -> Streams.stream(x.components())))
+                    .map(Termed::term).collect(toSet()));
+
+            float drive = 0.5f;
+            float happiness;
+
+            {
+                happiness = 0.5f; //initial neutral
+                onFrame((a) -> {
+                    happiness = happiness();
+//                     System.out.println(happiness);
+                });
+            }
+
+            @Override
+            public boolean test(TaskLink tl) {
+                float d = (1 - happiness) * drive;
+
+                if (!stimSet.contains(tl.to())) //&& !stimSet.contains(tl.from()))
+                    tl.priMult(1 / (1 + d/2));
+//              else
+//                    tl.priMult(1/(1 - d/2));
+
+                return true;
             }
         });
     }
@@ -752,7 +775,6 @@ abstract public class GameX extends Game {
 ////        p.addAt(outDemultiplexer).pos(450, 450, 510, 510);
 //
 //    }
-
 
     /**
      * pixelTruth defaults to linear monochrome brightness -> frequency

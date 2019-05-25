@@ -17,14 +17,13 @@ import nars.term.util.conj.ConjMatch;
 import nars.term.util.transform.InlineFunctor;
 import nars.util.var.DepIndepVarIntroduction;
 import org.eclipse.collections.api.tuple.Pair;
+import org.eclipse.collections.impl.factory.Maps;
 import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 
 import java.util.Map;
 import java.util.function.Function;
 
 import static nars.Op.NEG;
-import static nars.derive.model.Derivation.BeliefTerm;
-import static nars.derive.model.Derivation.TaskTerm;
 import static nars.term.atom.Bool.Null;
 
 public enum DerivationFunctors {
@@ -32,18 +31,9 @@ public enum DerivationFunctors {
 
     public static Function<Atomic, Term> get(Derivation d) {
 
-        Map<Atomic, Term> m = new UnifiedMap<>(32, 1f) {
-            @Override
-            public Term get(Object key) {
-                if (key == TaskTerm) {
-                    return d.taskTerm;
-                } else if (key == BeliefTerm) {
-                    return d.beliefTerm;
-                } else {
-                    return super.get(key);
-                }
-            }
-        };
+        Map<Atomic, Term> m = new UnifiedMap<>(32, 1f);
+
+
 
         for (Term s : Builtin.statik)
             if (s instanceof InlineFunctor)
@@ -134,10 +124,8 @@ public enum DerivationFunctors {
 //            pre.addAt(x);
 //        }
 
-        ((UnifiedMap)m).trimToSize();
+        return Maps.immutable.ofMap(m)::get;
 
-        return //Maps.immutable.ofMap(m)::get;
-                m::get;
         //x -> pre.contains(x) ? m.get(x) : null;
     }
 

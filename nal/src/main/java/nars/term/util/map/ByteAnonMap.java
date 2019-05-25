@@ -42,6 +42,11 @@ public class ByteAnonMap {
         return b;
     }
 
+    /** returns Byte.MIN_VALUE if missing */
+    public final byte interned(Term x) {
+        return termToId.getIfAbsent(x, Byte.MIN_VALUE);
+    }
+
     /** get: accepts in range 1..Byte.MAX_VALUE (does not accept 0) */
     public final Term interned(byte id) {
         //assert(id > 0);

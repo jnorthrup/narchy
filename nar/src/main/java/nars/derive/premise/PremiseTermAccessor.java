@@ -5,7 +5,6 @@ import nars.$;
 import nars.derive.model.PreDerivation;
 import nars.term.Term;
 import nars.term.atom.Atom;
-import nars.term.atom.Atomic;
 
 import java.util.Arrays;
 import java.util.function.Function;
@@ -16,9 +15,9 @@ abstract public class PremiseTermAccessor implements Function<PreDerivation, Ter
     final int rootID;
     private final Atom term;
 
-    protected PremiseTermAccessor(int id, String term) {
+    protected PremiseTermAccessor(int id, Atom term) {
         this.rootID = id;
-        this.term = Atomic.atom(term);
+        this.term = term;
     }
 
     @Override

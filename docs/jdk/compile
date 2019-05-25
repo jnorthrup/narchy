@@ -1,8 +1,13 @@
+hg pull http://hg.openjdk.java.net/jdk/jdk/
+hg update
+
+echo 'pausing before make clean...' #a pause for user to cancel in case no or few updates
+sleep 2
+
+make dist-clean
+
 # https://stackoverflow.com/questions/15548023/clang-optimization-levels 
 # https://stackoverflow.com/questions/4365980/how-to-use-profile-guided-optimizations-in-g
-
-#make dist-clean
-
 
 #  TOOLCHAIN=clang
 CXX="/usr/bin/g++" CC="/usr/bin/gcc" BUILD_CC="/usr/bin/gcc" BUILD_CXX="/usr/bin/g++" JDK="/home/me/jdk12" ./configure \

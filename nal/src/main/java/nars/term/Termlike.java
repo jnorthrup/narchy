@@ -4,6 +4,7 @@ import jcog.TODO;
 import nars.Op;
 import nars.subterm.util.TermMetadata;
 import nars.term.atom.Bool;
+import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.eclipse.collections.api.block.function.primitive.IntObjectToIntFunction;
 import org.jetbrains.annotations.Nullable;
 
@@ -29,6 +30,11 @@ public interface Termlike {
      * throw runtime exception if there is a problem
      */
     Term sub(int i);
+
+    default float subFloat(int i, FloatFunction<Term> f) {
+        return f.floatValueOf(sub(i));
+    }
+
 
     /**
      * returns Null if the index is out of bounds;

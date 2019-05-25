@@ -43,9 +43,9 @@ import static nars.time.Tense.DTERNAL;
  */
 public class LazyCompoundBuilder {
     private final static int INITIAL_CODE_SIZE = 16;
-    private final static int INITIAL_ANON_SIZE = 8;
+    private final static int INITIAL_ANON_SIZE = 64 + 32;
 
-    final ByteAnonMap sub = new ByteAnonMap(INITIAL_ANON_SIZE);
+    public final ByteAnonMap sub = new ByteAnonMap(INITIAL_ANON_SIZE);
     final DynBytes code = new DynBytes(INITIAL_CODE_SIZE);
 
     private final FasterList<DeferredEval> eval = new FasterList();
@@ -69,11 +69,19 @@ public class LazyCompoundBuilder {
         this.builder = builder;
     }
 
-    public void clear() {
-        sub.clear();
-        code.clear();
-        eval.clear();
-        change = 0;
+    public final void clear() {
+        clear(true, true);
+    }
+
+    public void clear(boolean code, boolean uniques) {
+        if (uniques) {
+            sub.clear();
+        }
+        if (code) {
+            this.eval.clear();
+            this.code.clear();
+            change = 0;
+        }
     }
 
     public boolean updateMap(Function<Term, Term> m) {
@@ -165,7 +173,12 @@ public class LazyCompoundBuilder {
 
     /** interns the term as-is, encapsulated as an atomic symbol */
     public LazyCompoundBuilder appendAtomic(Term x) {
-        code.writeByte(MAX_CONTROL_CODES + intern(x));
+        return appendInterned(intern(x));
+    }
+
+    public LazyCompoundBuilder appendInterned(byte i) {
+        assert(i < Byte.MAX_VALUE);
+        code.writeByte(MAX_CONTROL_CODES + i);
         return this;
     }
 
@@ -190,6 +203,7 @@ public class LazyCompoundBuilder {
     public Term get() {
         return get(NAL.term.COMPOUND_VOLUME_MAX);
     }
+
     /**
      * run the construction process
      */
@@ -198,8 +212,9 @@ public class LazyCompoundBuilder {
 
         Term y = nextSubterm(code.arrayDirect(), new int[]{0, code.len});
 
-        if (y instanceof Compound && !eval.isEmpty())
+        if (y instanceof Compound && !eval.isEmpty()) {
             y = DeferredEvaluator.apply(y);
+        }
 
         return y;
     }
@@ -329,6 +344,10 @@ public class LazyCompoundBuilder {
         return this.sub.idToTerm.size();
     }
 
+    public final byte term(Term x) {
+        return sub.interned(x);
+    }
+
 
     private static final class DeferredEval extends LightCompound {
     //private static final class DeferredEval extends LighterCompound {
@@ -399,6 +418,7 @@ public class LazyCompoundBuilder {
             eval.add(e); //TODO check for duplicates?
             return e;
         } else {
+
             Term e = func.applyInline(args);
             if (e == null)
                 e = Null;
@@ -451,6 +471,20 @@ public class LazyCompoundBuilder {
     private void replaceAhead(byte[] ii, int[] range, int from, Term next) {
         int to = range[0];
         int end = range[1];
+        //remove trailing zeros
+        for (int i = end-1; i >= to+1; ) {
+            if (ii[i] == 0) {
+                if (ii[i-1] == 0) {
+                    end-=2;
+                    i-=2;
+                    continue;
+                }
+            }
+
+            break;
+        }
+
+
         int span = to - from;
         if (span <= NAL.term.LAZY_COMPOUND_MIN_REPLACE_AHEAD_SPAN)
             return;

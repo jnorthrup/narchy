@@ -372,7 +372,9 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
     }
 
     @Nullable
-    static NALTask clone(Task x, Term newContent) {
+    static Task clone(Task x, Term newContent) {
+        if (x.term().equals(newContent))
+            return x;
         return clone(x, newContent, x.truth(), x.punc());
     }
 

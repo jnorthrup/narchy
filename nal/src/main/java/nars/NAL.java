@@ -49,6 +49,8 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
 
     public static final float DEFAULT_CURIOSITY_RATE = 0.05f;
 
+    public static final int NEG_CACHE_VOL_THRESHOLD = 5;
+
     public static int ATOM_TANGENT_REFRESH_DURS = 1;
 
     /**
@@ -239,7 +241,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
 
     @Deprecated
     public final FloatRange questionForgetRate = new FloatRange(0.5f, 0, 1);
-    public final IntRange premiseUnifyTTL = new IntRange(16, 1, 32);
+    public final IntRange premiseUnifyTTL = new IntRange(8, 1, 32);
     public final IntRange deriveBranchTTL = new IntRange(4 * NAL.derive.TTL_MIN, NAL.derive.TTL_MIN, 64 * NAL.derive.TTL_MIN);
     /**
      * how many cycles above which to dither dt and occurrence time
@@ -581,7 +583,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
              * <p>
              * TODO make this a per-sensor implementation cdecision
              */
-            public static final float SIGNAL_STRETCH_LIMIT_DURS = 4;
+            public static final float SIGNAL_STRETCH_LIMIT_DURS = 16;
             /**
              * maximum time between signal updates to stretch an equivalently-truthed data point across.
              * stretches perception across some amount of lag
@@ -748,7 +750,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
         public static final boolean DERIVATION_FORM_QUESTION_FROM_AMBIGUOUS_BELIEF_OR_GOAL= configIs("DERIVATION_FORM_QUESTION_FROM_AMBIGUOUS_BELIEF_OR_GOAL");
 
 
-        public static final float TERMIFY_LAZY_VOLMAX_SCRATCH_FACTOR = 5f;
+        public static final float TERMIFY_LAZY_VOLMAX_SCRATCH_FACTOR = 10f;
     }
 
     public enum unify {

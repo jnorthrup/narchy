@@ -99,12 +99,6 @@ public enum ConjCommutive {;
                 Term x = u[i];
 
                 switch (x.op()) {
-//                    case BOOL:
-//                        if (x == False) return False;
-//                        if (x == Null) return Null;
-//                        if (x == True)
-//                            par = set(par, i, uLength); //??
-//                        break;
                     case CONJ:
                         int xdt = x.dt();
                         if //(xdt == dt || (dt == 0 && xdt == DTERNAL /* promote inner DTERNAL to parallel */)
@@ -221,8 +215,8 @@ public enum ConjCommutive {;
             }
 
         }
-        if (u.length == 2) {
-            //necessary for DISJ in direct mode
+        if (direct && u.length == 2) {
+            //HACK necessary for DISJ in direct mode
 
             //TODO exclude the case with disj and conjOther
             int dd;
@@ -247,39 +241,53 @@ public enum ConjCommutive {;
 
         {
 
-            long sdt = dt == DTERNAL ? ETERNAL : 0;
 
-            if (seq != null) {
-                ConjBuilder c = new Conj(u.length);
-                //add the non-conj terms at ETERNAL first.
-                //iterate in reverse order to add smaller (by volume) items first
-                bsmain: for (boolean addingSeq : new boolean[] { false, true }) {
-                    for (int i = u.length - 1; i >= 0; i--) {
-                        if (addingSeq == seq.get(i))
-                            if (!c.add(sdt, u[i]))
-                                break bsmain;
-                    }
-                }
-                return c.term(B);
 
-            } else {
+//            if (seq != null) {
+//                ConjBuilder c = new Conj(u.length);
+//                //add the non-conj terms at ETERNAL first.
+//                //iterate in reverse order to add smaller (by volume) items first
+//                bsmain: for (boolean addingSeq : new boolean[] { false, true }) {
+//                    for (int i = u.length - 1; i >= 0; i--) {
+//                        if (addingSeq == seq.get(i))
+//                            if (!c.add(sdt, u[i]))
+//                                break bsmain;
+//                    }
+//                }
+//                return c.term(B);
+//
+//            } else {
                 switch (u.length) {
                     case 0:
                         return True;
                     case 1:
                         return u[0];
                     case 2:
-                        return Conj.conjoin(B, u[0], u[1], dt == DTERNAL);
-                    default: {
+                        if (seq==null && disj==null)
+                            return Conj.conjoin(B, u[0], u[1], dt == DTERNAL);
+
+                    default:
+                        //TODO insertion ordering heuristic, combine with ConjLazy's construction
+                        long sdt = (dt == DTERNAL) ? ETERNAL : 0;
                         ConjBuilder c = new Conj(u.length);
-                        for (int i = u.length - 1; i >= 0; i--) {
-                            if (!c.add(sdt, u[i]))
-                                break;
+                        for (int i = 0; i < u.length; i++) {
+                            boolean special = ((seq!=null && seq.get(i)) || (disj!=null && disj.get(i)));
+                            if (!special) {
+                                if (!c.add(sdt, u[i]))
+                                    break;
+                            }
+                        }
+                        for (int i = 0; i < u.length; i++) {
+                            boolean special = ((seq!=null && seq.get(i)) || (disj!=null && disj.get(i)));
+                            if (special) {
+                                if (!c.add(sdt, u[i]))
+                                    break;
+                            }
                         }
                         return c.term(B);
-                    }
+
                 }
-            }
+            //}
 
         }
     }

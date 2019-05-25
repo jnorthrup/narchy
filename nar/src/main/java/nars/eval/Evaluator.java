@@ -53,34 +53,31 @@ public class Evaluator extends HeapTermTransform {
                 if (clauses[0] != null && clauses[0].contains(X))
                     return true;
 
-                try {
-                    LazyCompoundBuilder y = compoundBuilder.append(X);
-                    final int[] functors = {0};
-                    y.updateMap(g -> {
-                        if (g instanceof Functor)
+                compoundBuilder.clear(true, compoundBuilder.sub.termCount() >= 64 /* HACK */);
+                LazyCompoundBuilder y = compoundBuilder.append(X);
+                final int[] functors = {0};
+                y.updateMap(g -> {
+                    if (g instanceof Functor)
+                        functors[0]++;
+                    else if (g instanceof Atom) {
+                        Functor f = funcResolver.apply((Atom) g);
+                        if (f != null) {
                             functors[0]++;
-                        else if (g instanceof Atom) {
-                            Functor f = funcResolver.apply((Atom) g);
-                            if (f != null) {
-                                functors[0]++;
-                                return f;
-                            }
-                        }
-                        return g;
-                    });
-
-                    if (functors[0] > 0) {
-
-                        Term yy = y.get();
-                        if (yy.sub(1) instanceof Functor) {
-                            if (clauses[0] == null)
-                                clauses[0] = new ArrayHashSet<>(1);
-
-                            clauses[0].add(yy);
+                            return f;
                         }
                     }
-                } finally {
-                    compoundBuilder.clear();
+                    return g;
+                });
+
+                if (functors[0] > 0) {
+
+                    Term yy = y.get();
+                    if (yy.sub(1) instanceof Functor) {
+                        if (clauses[0] == null)
+                            clauses[0] = new ArrayHashSet<>(1);
+
+                        clauses[0].add(yy);
+                    }
                 }
 
             }

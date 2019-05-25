@@ -176,7 +176,7 @@ abstract public class TaskLinks implements Sampler<TaskLink> {
                         float p =
                                 link.priPunc(punc);
                         float pAmp = p * amp.floatValue();
-                        final Term s = link.from();
+                        Term s = link.from();
 
                         //CHAIN pattern
                         link(s, u, punc, pAmp); //forward (hop)
@@ -306,12 +306,14 @@ abstract public class TaskLinks implements Sampler<TaskLink> {
             //all atoms and compounds eligible, inversely proportional to their volume
             if (!term.op().conceptualizable) return null;
             float probBase =
+                    //1;
                     0.5f;
                     //0.33f;
             float probDirect =
-                    //0.5f * 1f / term.volume();
-                    //0.5f * 1f / Util.sqr(term.volume());
                     probBase * 1f / Util.sqr(Util.sqr(term.volume()));
+                    //probBase * 1f / term.volume();
+                    //probBase * 1f / Util.sqr(term.volume());
+                    //probBase *  1f / (term.volume() * Math.max(1,(link.from().volume() - term.volume())));
 
             if (d.random.nextFloat() >= probDirect)
                 return null; //term itself
@@ -325,9 +327,9 @@ abstract public class TaskLinks implements Sampler<TaskLink> {
 
             //starting point, sampled from bag histogram
             int p = b.sampleHistogram(d.random);
-            if (p == s) p--;
+            if (p >= ll.length) p = ll.length-1;
 
-            //scan radially around point
+            //scan radially around point, O(N)
             for (int j = 0; j < s; j++) {
 
                 int done = 0;

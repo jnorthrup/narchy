@@ -44,6 +44,7 @@ public abstract class AbstractTaskLink implements TaskLink {
 
     protected AbstractTaskLink(Term source, Term target) {
 
+
         source =
                 source.concept();
                 //Image.imageNormalize(source).concept();

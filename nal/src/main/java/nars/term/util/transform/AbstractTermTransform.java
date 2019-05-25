@@ -22,15 +22,18 @@ import static nars.time.Tense.XTERNAL;
 public interface AbstractTermTransform extends TermTransform, nars.term.util.builder.TermConstructor {
 
     static Term transform(Term x, AbstractTermTransform transform) {
-        return transform(x, transform, new LazyCompoundBuilder(), NAL.term.COMPOUND_VOLUME_MAX);
+        return transform(x, transform, null, NAL.term.COMPOUND_VOLUME_MAX);
     }
 
     /** global default transform procedure: can decide semi-optimal transform implementation */
-    static Term transform(Term x, AbstractTermTransform transform, LazyCompoundBuilder l, int volMax) {
+    public static Term transform(Term x, AbstractTermTransform transform, @Nullable LazyCompoundBuilder l, int volMax) {
         if (x instanceof Compound && NAL.TERMIFY_TRANSFORM_LAZY && x.volume() > NAL.TERMIFY_TRANSFORM_LAZY_VOL_MIN ) {
 
             try {
-                l.clear();
+                if (l == null)
+                    l = new LazyCompoundBuilder();
+                else
+                    l.clear(true, (l.sub.termCount() >= 64) /* HACK */);
                 return transform.applyCompoundLazy((Compound) x, l, volMax);
             } catch (TermException t) {
                 if (NAL.DEBUG)

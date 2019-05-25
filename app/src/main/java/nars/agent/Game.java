@@ -16,7 +16,6 @@ import jcog.util.ArrayUtil;
 import nars.$;
 import nars.NAR;
 import nars.attention.PriNode;
-import nars.attention.TaskLinkWhat;
 import nars.attention.What;
 import nars.concept.action.BiPolarAction;
 import nars.concept.action.GameAction;
@@ -111,7 +110,6 @@ public class Game extends NARPart implements NSense, NAct, Timed {
         this.id = id;
 
         this.what = nar.the(id, true);
-        ((TaskLinkWhat)what()).links.decay.set(1f);
 
         this.time = time;
 
