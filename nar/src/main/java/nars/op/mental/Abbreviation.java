@@ -13,6 +13,7 @@ import nars.concept.Concept;
 import nars.concept.PermanentConcept;
 import nars.control.How;
 import nars.control.channel.CauseChannel;
+import nars.derive.model.Derivation;
 import nars.link.TaskLink;
 import nars.subterm.Subterms;
 import nars.task.NALTask;
@@ -117,7 +118,15 @@ public class Abbreviation/*<S extends Term>*/ extends How {
         nar.start(this);
     }
 
+    /** whether to attempt unabbreviation of a premise  */
+    public static Task unabbreviate(Task task, Derivation d) {
 
+        float v = task.volume();
+        if (d.random.nextFloat() >= v / (d.termVolMax/2f))
+            return Abbreviation.unabbreviate(task, d.nar);
+        else
+            return task; //dont unabbreviate
+    }
 
 
     final static class ABBREVIATE extends AbstractTermTransform.NegObliviousTermTransform {

@@ -303,6 +303,8 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
         (this.time = time).reset();
     }
 
+
+
     /**
      * creates a new evidence stamp
      */

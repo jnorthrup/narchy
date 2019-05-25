@@ -1,4 +1,4 @@
-package nars.term.compound;
+package nars.term.buffer;
 
 import com.google.common.primitives.Ints;
 import jcog.Util;
@@ -16,6 +16,7 @@ import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
 import nars.term.atom.Int;
+import nars.term.compound.LightCompound;
 import nars.term.util.TermException;
 import nars.term.util.builder.TermBuilder;
 import nars.term.util.map.ByteAnonMap;
@@ -41,7 +42,7 @@ import static nars.time.Tense.DTERNAL;
  * consists of a tape flat linear tape of instructions which
  * when executed construct the target
  */
-public class LazyCompoundBuilder {
+public class TermBuffer {
     private final static int INITIAL_CODE_SIZE = 16;
     private final static int INITIAL_ANON_SIZE = 64 + 32;
 
@@ -61,11 +62,11 @@ public class LazyCompoundBuilder {
     int volRemain;
     private final TermBuilder builder;
 
-    public LazyCompoundBuilder() {
+    public TermBuffer() {
         this(Op.terms);
     }
 
-    public LazyCompoundBuilder(TermBuilder builder) {
+    public TermBuffer(TermBuilder builder) {
         this.builder = builder;
     }
 
@@ -88,7 +89,7 @@ public class LazyCompoundBuilder {
         return sub.updateMap(m);
     }
 
-    final LazyCompoundBuilder compoundStart(Op o) {
+    final TermBuffer compoundStart(Op o) {
         compoundStart(o, DTERNAL);
         return this;
     }
@@ -96,30 +97,30 @@ public class LazyCompoundBuilder {
     /**
      * append compound
      */
-    public final LazyCompoundBuilder appendCompound(Op o, Term... subs) {
+    public final TermBuffer appendCompound(Op o, Term... subs) {
         return appendCompound(o, DTERNAL, subs);
     }
 
     /**
      * append compound
      */
-    public LazyCompoundBuilder appendCompound(Op o, int dt, Term... subs) {
+    public TermBuffer appendCompound(Op o, int dt, Term... subs) {
         int n = subs.length;
         assert (n < Byte.MAX_VALUE);
         return compoundStart(o, dt).subsStart((byte) n).subs(subs).compoundEnd(o);
     }
 
-    public LazyCompoundBuilder compoundEnd(Op o) {
+    public TermBuffer compoundEnd(Op o) {
         return this;
     }
 
 
-    public LazyCompoundBuilder subsStart(byte subterms) {
+    public TermBuffer subsStart(byte subterms) {
         code.writeByte(subterms);
         return this;
     }
 
-    public LazyCompoundBuilder compoundStart(Op o, int dt) {
+    public TermBuffer compoundStart(Op o, int dt) {
         DynBytes c = this.code;
 
         byte oid = o.id;
@@ -138,7 +139,7 @@ public class LazyCompoundBuilder {
     private final static byte MAX_CONTROL_CODES = (byte) Op.unique();
 
 
-    public final LazyCompoundBuilder negStart() {
+    public final TermBuffer negStart() {
         compoundStart(NEG, DTERNAL);
         return this;
     }
@@ -147,7 +148,7 @@ public class LazyCompoundBuilder {
     /**
      * add an already existent sub
      */
-    public LazyCompoundBuilder append(Term x) {
+    public TermBuffer append(Term x) {
         if (x instanceof Atomic) {
             return appendAtomic(x);
         } else {
@@ -155,7 +156,7 @@ public class LazyCompoundBuilder {
         }
     }
 
-    private LazyCompoundBuilder append(Compound x) {
+    private TermBuffer append(Compound x) {
         Op o = x.op();
         switch (o) {
             case NEG:
@@ -167,16 +168,16 @@ public class LazyCompoundBuilder {
         }
     }
 
-    private LazyCompoundBuilder appendSubterms(Subterms s) {
+    private TermBuffer appendSubterms(Subterms s) {
         return subsStart((byte) s.subs()).subs(s).subsEnd();
     }
 
     /** interns the term as-is, encapsulated as an atomic symbol */
-    public LazyCompoundBuilder appendAtomic(Term x) {
+    public TermBuffer appendAtomic(Term x) {
         return appendInterned(intern(x));
     }
 
-    public LazyCompoundBuilder appendInterned(byte i) {
+    public TermBuffer appendInterned(byte i) {
         assert(i < Byte.MAX_VALUE);
         code.writeByte(MAX_CONTROL_CODES + i);
         return this;
@@ -187,12 +188,12 @@ public class LazyCompoundBuilder {
         return sub.intern(x);
     }
 
-    private LazyCompoundBuilder subs(Iterable<Term> subs) {
+    private TermBuffer subs(Iterable<Term> subs) {
         subs.forEach(this::append);
         return this;
     }
 
-    final LazyCompoundBuilder subs(Term... subs) {
+    final TermBuffer subs(Term... subs) {
         for (Term x : subs)
             append(x);
         return this;
@@ -229,22 +230,16 @@ public class LazyCompoundBuilder {
 
         int end = range[1];
         int start = range[0];
-        byte ctl;
-        do {
-            ctl = bytes[range[0]++];
-            if (ctl >= MAX_CONTROL_CODES)
-                return nextAtom(ctl, bytes, range);
-            else if (ctl == NEG.id)
-                return nextSubterm(bytes, range).neg();
-
-        } while (ctl == 0);
-
-
+        byte ctl = bytes[range[0]++];
+        if (ctl >= MAX_CONTROL_CODES)
+            return nextInterned(ctl, bytes, range);
+        else if (ctl == NEG.id)
+            return nextSubterm(bytes, range).neg();
 
         Op op = Op.the(ctl);
 
         if (op.atomic)  //alignment error or something
-            throw new TermException(LazyCompoundBuilder.class + ": atomic found where compound op expected: " + op.atomic);
+            throw new TermException(TermBuffer.class + ": atomic found where compound op expected: " + op.atomic);
 
         int dt = op.temporal ? dt(bytes, range) : DTERNAL;
 
@@ -305,7 +300,7 @@ public class LazyCompoundBuilder {
             Term next = compound(op, dt, subterms); //assert (next != null);
 
             if (next != Null) {
-                replaceAhead(bytes, range, start, next);
+                //replaceAhead(bytes, range, start, next);
             }
 
             return next;
@@ -427,21 +422,10 @@ public class LazyCompoundBuilder {
     }
 
 
-    private Term nextAtom(byte ctl, byte[] ii, int[] range) {
+    private Term nextInterned(byte ctl, byte[] ii, int[] range) {
         Term next = nextInterned(ctl);
         if(next==null)
             throw new NullPointerException();
-
-        int at = range[0];
-        int end = range[1];
-        if (at<end && ii[at] == 0) {
-            //skip trailing zero-padding
-            while ((ii[at]) == 0)
-                if (++at >= end)
-                    break;
-
-            range[0] = at;
-        }
 
         return next;
     }
@@ -470,24 +454,12 @@ public class LazyCompoundBuilder {
     /** constant propagate matching spans further ahead in the construction process */
     private void replaceAhead(byte[] ii, int[] range, int from, Term next) {
         int to = range[0];
-        int end = range[1];
-        //remove trailing zeros
-        for (int i = end-1; i >= to+1; ) {
-            if (ii[i] == 0) {
-                if (ii[i-1] == 0) {
-                    end-=2;
-                    i-=2;
-                    continue;
-                }
-            }
-
-            break;
-        }
-
 
         int span = to - from;
         if (span <= NAL.term.LAZY_COMPOUND_MIN_REPLACE_AHEAD_SPAN)
             return;
+
+        int end = range[1];
 
         if (end - to >= span) {
             //search for repeat occurrences of the start..end sequence after this
@@ -512,7 +484,7 @@ public class LazyCompoundBuilder {
 
     }
 
-    private Term nextInterned(byte ctl) {
+    public Term nextInterned(byte ctl) {
         return sub.interned((byte) (ctl - MAX_CONTROL_CODES));
     }
 
@@ -558,7 +530,7 @@ public class LazyCompoundBuilder {
         rewind(codePos);
     }
 
-    public LazyCompoundBuilder subsEnd() {
+    public TermBuffer subsEnd() {
         return this;
     }
 

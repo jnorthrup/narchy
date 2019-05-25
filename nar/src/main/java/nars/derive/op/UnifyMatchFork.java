@@ -3,14 +3,14 @@ package nars.derive.op;
 import nars.derive.model.Derivation;
 import nars.term.Term;
 import nars.term.atom.Bool;
-import nars.term.compound.LazyCompoundBuilder;
+import nars.term.buffer.TermBuffer;
 import nars.term.util.transform.AbstractTermTransform;
 
 import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Predicate;
 
-public final class UnifyMatchFork extends LazyCompoundBuilder implements Predicate<Derivation> {
+public final class UnifyMatchFork extends TermBuffer implements Predicate<Derivation> {
 
     private int forkLimit = -1;
     final Set<Term> tried = new HashSet(16, 0.99f);
@@ -35,15 +35,6 @@ public final class UnifyMatchFork extends LazyCompoundBuilder implements Predica
         Term x = taskify.pattern(d);
 
         Term y = AbstractTermTransform.transform(x, d.transform, this, workVolMax);
-
-        //TEMPORARY for debug
-//        if (y.toString().contains("taskTerm")) {
-//            AbstractTermTransform.transform(x, d.transform, this, workVolMax);
-//            throw new WTF();
-//        }
-//        if (y.hasAny(VAR_PATTERN)) {
-//            AbstractTermTransform.transform(x, d.transform, this, workVolMax);
-//        }
 
         d.nar.emotion.deriveMatchTransformed.increment();
 

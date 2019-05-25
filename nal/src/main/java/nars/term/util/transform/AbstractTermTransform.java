@@ -7,7 +7,7 @@ import nars.subterm.TermList;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.atom.Bool;
-import nars.term.compound.LazyCompoundBuilder;
+import nars.term.buffer.TermBuffer;
 import nars.term.util.TermException;
 import org.jetbrains.annotations.Nullable;
 
@@ -26,12 +26,12 @@ public interface AbstractTermTransform extends TermTransform, nars.term.util.bui
     }
 
     /** global default transform procedure: can decide semi-optimal transform implementation */
-    public static Term transform(Term x, AbstractTermTransform transform, @Nullable LazyCompoundBuilder l, int volMax) {
+    public static Term transform(Term x, AbstractTermTransform transform, @Nullable TermBuffer l, int volMax) {
         if (x instanceof Compound && NAL.TERMIFY_TRANSFORM_LAZY && x.volume() > NAL.TERMIFY_TRANSFORM_LAZY_VOL_MIN ) {
 
             try {
                 if (l == null)
-                    l = new LazyCompoundBuilder();
+                    l = new TermBuffer();
                 else
                     l.clear(true, (l.sub.termCount() >= 64) /* HACK */);
                 return transform.applyCompoundLazy((Compound) x, l, volMax);
@@ -165,10 +165,10 @@ public interface AbstractTermTransform extends TermTransform, nars.term.util.bui
 
 
     default Term applyCompoundLazy(Compound x) {
-        return applyCompoundLazy(x, new LazyCompoundBuilder(), NAL.term.COMPOUND_VOLUME_MAX);
+        return applyCompoundLazy(x, new TermBuffer(), NAL.term.COMPOUND_VOLUME_MAX);
     }
 
-    default Term applyCompoundLazy(Compound x, LazyCompoundBuilder l, int volMax) {
+    default Term applyCompoundLazy(Compound x, TermBuffer l, int volMax) {
         l = transformCompound(x, l) ? l : null;
         return l == null ? Null : l.get(volMax);
     }

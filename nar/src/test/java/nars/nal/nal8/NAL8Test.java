@@ -110,7 +110,7 @@ public class NAL8Test extends NALTest {
         }
 
         test
-                .termVolMax(5)
+                .termVolMax(7)
                 .input("(h &&+2 (a &&+2 o)). |")
                 .mustBelieve(cycles, "h", 1.0f, 0.73f, 0)
                 .mustBelieve(cycles, "(a &&+2 o)", 1.0f, 0.81f, 2)

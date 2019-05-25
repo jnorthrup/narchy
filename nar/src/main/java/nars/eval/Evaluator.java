@@ -7,7 +7,7 @@ import nars.term.Functor;
 import nars.term.Term;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
-import nars.term.compound.LazyCompoundBuilder;
+import nars.term.buffer.TermBuffer;
 import nars.term.util.builder.HeapTermBuilder;
 import nars.term.util.transform.HeapTermTransform;
 import org.jetbrains.annotations.Nullable;
@@ -25,7 +25,6 @@ public class Evaluator extends HeapTermTransform {
 
     final Function<Atom, Functor> funcResolver;
 
-    final LazyCompoundBuilder compoundBuilder = new NonEvalLazyCompoundBuilder();
 
     public Evaluator(Function<Atom, Functor> funcResolver) {
         this.funcResolver = funcResolver;
@@ -53,8 +52,9 @@ public class Evaluator extends HeapTermTransform {
                 if (clauses[0] != null && clauses[0].contains(X))
                     return true;
 
-                compoundBuilder.clear(true, compoundBuilder.sub.termCount() >= 64 /* HACK */);
-                LazyCompoundBuilder y = compoundBuilder.append(X);
+                final TermBuffer compoundBuilder = new NonEvalTermBuffer();
+                //compoundBuilder.clear(true, compoundBuilder.sub.termCount() >= 64 /* HACK */);
+                TermBuffer y = compoundBuilder.append(X);
                 final int[] functors = {0};
                 y.updateMap(g -> {
                     if (g instanceof Functor)
@@ -142,9 +142,9 @@ public class Evaluator extends HeapTermTransform {
         }
     }
 
-    private static class NonEvalLazyCompoundBuilder extends LazyCompoundBuilder {
+    private static class NonEvalTermBuffer extends TermBuffer {
 
-        public NonEvalLazyCompoundBuilder() {
+        public NonEvalTermBuffer() {
             super(HeapTermBuilder.the);
         }
 

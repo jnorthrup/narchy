@@ -27,7 +27,7 @@ import nars.term.anon.AnonWithVarShift;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
-import nars.term.compound.LazyCompoundBuilder;
+import nars.term.buffer.TermBuffer;
 import nars.term.functor.AbstractInlineFunctor1;
 import nars.term.util.TermTransformException;
 import nars.term.util.builder.HeapTermBuilder;
@@ -97,13 +97,13 @@ public class Derivation extends PreDerivation {
     /**
      * for anon and other misc usage (non-evaluating)
      */
-    final LazyCompoundBuilder termBuilder = new LazyCompoundBuilder() {
+    final TermBuffer termBuilder = new TermBuffer() {
         @Override
         protected boolean evalInline() {
             return false;
         }
     };
-    final LazyCompoundBuilder directTermBuilder = new LazyCompoundBuilder(null) {
+    final TermBuffer directTermBuilder = new TermBuffer(null) {
         @Override
         protected boolean evalInline() {
             return false;
@@ -258,7 +258,7 @@ public class Derivation extends PreDerivation {
                 return transform(x, termBuilder);
             }
 
-            private Term transform(Compound x, LazyCompoundBuilder termBuilder) {
+            private Term transform(Compound x, TermBuffer termBuilder) {
                 if (NAL.ANONIFY_TRANSFORM_LAZY) {
                     termBuilder.clear(true,termBuilder.sub.termCount() >= 64);
                     return applyCompoundLazy(x, termBuilder, NAL.term.COMPOUND_VOLUME_MAX);

@@ -1,4 +1,4 @@
-package nars.term.compound;
+package nars.term.buffer;
 
 import jcog.data.byt.DynBytes;
 import nars.Op;
@@ -11,11 +11,11 @@ import static nars.$.$$;
 import static nars.term.atom.Bool.Null;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-class LazyCompoundBuilderTest {
+class TermBufferTest {
 
     private static final Term A = $$("a"), B = $$("b"), C = $$("c");
 
-    private static class MyLazyCompoundBuilder extends LazyCompoundBuilder {
+    private static class MyTermBuffer extends TermBuffer {
         @Override
         public Term get(int volMax) {
 
@@ -32,13 +32,13 @@ class LazyCompoundBuilderTest {
 
     @Test
     void testSimple() {
-        assertEquals("(a,b)", new MyLazyCompoundBuilder()
+        assertEquals("(a,b)", new MyTermBuffer()
                 .appendCompound(Op.PROD, A, B).get().toString());
     }
     @Test
     void testNeg() {
-        LazyCompoundBuilder l0 = new MyLazyCompoundBuilder().appendCompound(Op.PROD, A, B, B);
-        LazyCompoundBuilder l1 = new MyLazyCompoundBuilder().appendCompound(Op.PROD, A, B, B.neg());
+        TermBuffer l0 = new MyTermBuffer().appendCompound(Op.PROD, A, B, B);
+        TermBuffer l1 = new MyTermBuffer().appendCompound(Op.PROD, A, B, B.neg());
 
         DynBytes code = l1.code;
         DynBytes code1 = l0.code;
@@ -47,15 +47,15 @@ class LazyCompoundBuilderTest {
         assertEquals(l0.sub.termToId, l1.sub.termToId);
 
         assertEquals("(a,b,(--,b))", l1.get().toString());
-        assertEquals("((--,a),(--,b))", new MyLazyCompoundBuilder()
+        assertEquals("((--,a),(--,b))", new MyTermBuffer()
                 .appendCompound(Op.PROD, A.neg(), B.neg()).get().toString());
     }
     @Test
     void testTemporal() {
-        assertEquals("(a==>b)", new MyLazyCompoundBuilder()
+        assertEquals("(a==>b)", new MyTermBuffer()
                 .appendCompound(Op.IMPL, A, B).get().toString());
 
-        assertEquals("(a ==>+1 b)", new MyLazyCompoundBuilder()
+        assertEquals("(a ==>+1 b)", new MyTermBuffer()
                 .appendCompound(Op.IMPL, 1, A, B).get().toString());
     }
 
@@ -85,7 +85,7 @@ class LazyCompoundBuilderTest {
 
     @Test
     void testCompoundInCompound() {
-        assertEquals("(a,{b,c})", new MyLazyCompoundBuilder()
+        assertEquals("(a,{b,c})", new MyTermBuffer()
                 .compoundStart(Op.PROD).subsStart((byte)2).append(A)
                     .compoundStart(Op.SETe).subsStart((byte)2).subs(B, C)
                         .get().toString());

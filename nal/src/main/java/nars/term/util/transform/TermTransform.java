@@ -6,7 +6,7 @@ import nars.term.Compound;
 import nars.term.Term;
 import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
-import nars.term.compound.LazyCompoundBuilder;
+import nars.term.buffer.TermBuffer;
 import nars.term.var.ellipsis.Fragment;
 import org.jetbrains.annotations.Nullable;
 
@@ -26,7 +26,7 @@ public interface TermTransform extends Function<Term,Term> {
                 applyAtomic((Atomic) x);
     }
 
-    default boolean apply(Term x, LazyCompoundBuilder out) {
+    default boolean apply(Term x, TermBuffer out) {
 
         if (x instanceof Compound) {
             byte interned = out.term(x);
@@ -65,7 +65,7 @@ public interface TermTransform extends Function<Term,Term> {
     }
     default Term applyCompound(Compound c) { return c; }
 
-    default boolean transformCompound(Compound x, LazyCompoundBuilder out) {
+    default boolean transformCompound(Compound x, TermBuffer out) {
         int c = out.change(), u = out.uniques();
         int p = out.pos();
 
@@ -96,7 +96,7 @@ public interface TermTransform extends Function<Term,Term> {
         return true;
     }
 
-    default boolean transformSubterms(Subterms s, LazyCompoundBuilder out) {
+    default boolean transformSubterms(Subterms s, TermBuffer out) {
         out.subsStart((byte) s.subs());
         if (s.ANDwithOrdered(this::apply, out)) {
             out.subsEnd();

@@ -122,7 +122,7 @@ abstract public class GameX extends Game {
 
         initPlugins(n);
         initPlugins2(n, g);
-        //initMeta(n, g, false);
+        initMeta(n, g, false);
 
         //new Gridding(n.parts(Game.class).map(NARui::agent).collect(toList())),
         n.synch();
@@ -538,7 +538,7 @@ abstract public class GameX extends Game {
 //        new Inperience.Wonder(8, n);
 //        new Inperience.Plan(8, n);
 
-        new Abbreviation("z", 3, 7, n);
+        new Abbreviation("z", 2, 5, n);
 
 
 //        try {

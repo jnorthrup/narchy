@@ -242,7 +242,7 @@ class NAL8EternalMixTest extends NALTest {
 
     @Test
     void further_detachment_2() {
-        test.termVolMax(12);
+        test.termVolMax(19);
         test
                 .input("reachable(SELF,{t002}). | %1.0;0.7%")
                 .inputAt(3, "((reachable(SELF,{t002}) &&+5 pick({t002})) ==>+7 hold(SELF,{t002})).")

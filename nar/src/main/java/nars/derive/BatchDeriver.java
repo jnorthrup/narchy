@@ -16,7 +16,7 @@ public class BatchDeriver extends Deriver {
 
     public final IntRange premisesPerIteration = new IntRange(6, 1, 32);
 
-    public final IntRange termLinksPerTaskLink = new IntRange(1, 1, 8);
+    public final IntRange termLinksPerTaskLink = new IntRange(2, 1, 8);
 
     public BatchDeriver(PremiseRuleSet rules) {
         super(rules, rules.nar);
@@ -43,13 +43,13 @@ public class BatchDeriver extends Deriver {
      */
     public final void derive(int premisesPerIteration, int termlinksPerTaskLink, int matchTTL, int deriveTTL, Derivation d) {
         PremiseBuffer p = d.premises;
-        p.commit();
         p.derive(
                 WhenTimeIs.now(d),
                 premisesPerIteration,
                 termlinksPerTaskLink,
                 matchTTL, deriveTTL,
                 ((TaskLinkWhat)d.what).links, d);
+        p.commit();
     }
 
 }

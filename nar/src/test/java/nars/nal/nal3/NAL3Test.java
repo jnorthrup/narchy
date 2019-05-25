@@ -20,11 +20,12 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class NAL3Test extends NALTest {
 
-    static final int cycles = 250;
+    static final int cycles = 450;
 
     @Override
     protected NAR nar() {
         NAR n = NARS.tmp(3, 3);
+        n.confMin.set(0.03f);
         n.termVolMax.set(8);
         return n;
     }
@@ -212,7 +213,7 @@ public class NAL3Test extends NALTest {
     @Test
     void diff_compound_decomposition_low_dynamic() {
         TestNAR tester = test;
-        tester.termVolMax(8);
+        tester.termVolMax(6);
         tester.believe("<(ant && --spider) --> [strong]>", 0.1f, 0.9f);
         tester.mustBelieve(cycles, "<spider --> [strong]>", 0.90f, 0.08f);
         tester.mustBelieve(cycles, "<ant --> [strong]>", 0.10f, 0.08f);
@@ -407,8 +408,8 @@ public class NAL3Test extends NALTest {
                 .goal("x:a")
                 .goal("x:b")
                 .quest("x:a")
-                .mustQuest(cycles*2, "x:(a|b)")
-                .mustGoal(cycles*2, "x:(a|b)", 1f, 0.81f)
+                .mustQuest(cycles, "x:(a|b)")
+                .mustGoal(cycles, "x:(a|b)", 1f, 0.81f)
         ;
     }
     @Test void testDecomposeWTF() {

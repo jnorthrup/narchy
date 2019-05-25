@@ -215,7 +215,7 @@ abstract public class DecomposeTest extends NALTest {
         @Test
         void decompose_Conj_BeliefPosNeg() {
             test
-                    .termVolMax(6)
+                    .termVolMax(4)
                     .input("(a && --b). %0.9;0.9%")
                     .input("b. %0.1;0.9%")
                     .mustBelieve(cycles, "a", 0.81f, 0.66f);

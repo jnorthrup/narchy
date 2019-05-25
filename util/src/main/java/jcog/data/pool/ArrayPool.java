@@ -216,8 +216,6 @@ public class ArrayPool<T> extends FasterList<T> {
      */
     @SuppressWarnings("unchecked")
     public void put(T array) {
-//        if (contains(array)) //temporary for debug
-//            throw new WTF();
 
         int s = this.size;
         if (s+1 > capacity) {

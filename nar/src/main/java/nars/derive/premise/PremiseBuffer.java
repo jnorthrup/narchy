@@ -21,7 +21,7 @@ import java.io.Serializable;
  */
 public class PremiseBuffer implements Serializable {
 
-    static final int premiseBufferCapacity = 64;
+    static final int premiseBufferCapacity = 32;
 
     /** rate that priority from the novelty bag subtracts from potential premises.
      * may need to be divided by concurrency so that threads dont step on each other */
@@ -80,7 +80,7 @@ public class PremiseBuffer implements Serializable {
     void hypothesize(TaskLink tasklink, Task task, int termlinksPerTaskLink, TaskLinks links, Derivation d) {
         Term prevTerm = null;
 
-        Task task2 = Abbreviation.unabbreviate(task, d.nar);
+        Task task2 = Abbreviation.unabbreviate(task, d);
         if (task!=task2 && task2!=null) {
             if (task2.term().volume() <= ((float)(d.termVolMax/2))) {
                 //System.out.println(task + " " + task2);

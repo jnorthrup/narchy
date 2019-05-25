@@ -4,11 +4,11 @@
 
     //free structural Conjunction/Disjunction decomposition
     C, X, eventOfPN(C,X), task("?@")   |-   conjWithoutPN(C,X)
-    //C, X, eventOfPN(C,X)                            |-   conjWithoutPN(C,X), (Belief:StructuralDeduction, Goal:StructuralDeduction)
+    C, X, eventOfPN(C,X)                            |-   conjWithoutPN(C,X), (Belief:StructuralDeduction, Goal:StructuralDeduction)
 
     //disjunction select
-    //D, X, eventOfNeg(D,X)                            |-   X, (Belief:StructuralDeductionN, Goal:StructuralDeductionN)
-    //D, X, eventOf(D,X)                               |- --X, (Belief:StructuralDeductionN, Goal:StructuralDeductionN)
+    D, X, eventOfNeg(D,X)                            |-   X, (Belief:StructuralDeductionN, Goal:StructuralDeductionN)
+    D, X, eventOf(D,X)                               |- --X, (Belief:StructuralDeductionN, Goal:StructuralDeductionN)
         //D, X, eventOfPN(D,X)                            |- --conjWithoutPN(D,X), (Belief:StructuralDeductionWeakN, Goal:StructuralDeductionWeakN)
         //D, X, eventOfPN(D,X)                            |- --conjWithoutPN(D,X), (Belief:StructuralDeductionN, Goal:StructuralDeductionN)
         //D, X, eventOfPN(D,X)                            |-   conjWithoutPN(D,X), (Belief:StructuralDeductionWeak, Goal:StructuralDeductionWeak)
@@ -135,14 +135,13 @@
 // TODO these could be merged with NAL3 decompositions into a general decomposition rule
 
     //CONJ
-    X, C, sectOf(C,X), conjParallel(C)     |-     unsect(C,  X), (Belief:DecomposePP)
+//    X, C, sectOf(C,X), conjParallel(C)     |-     unsect(C,  X), (Belief:DecomposePP)
      C, X, sectOf(C,X), conjParallel(C)     |-     unsect(C,  X), (Belief:DecomposePP, Goal:DecomposePP)
-    X, C, sectOf(C,X), conjParallel(C)     |-   unsect(C,  X), (Belief:DecomposePN)
-     C, X, sectOf(C,X), conjParallel(C)     |-   --unsect(C,  X), (Belief:DecomposeNP, Goal:DecomposeNP)
-
-    X, C, sectOf(C,--X), conjParallel(C)  |-     unsect(C,--X), (Belief:DecomposeNP)
+//    X, C, sectOf(C,X), conjParallel(C)     |-   unsect(C,  X), (Belief:DecomposePN)
      C, X, sectOf(C,--X), conjParallel(C)  |-     unsect(C,--X), (Belief:DecomposePN, Goal:DecomposePN)
-    X, C, sectOf(C,--X), conjParallel(C)  |-   --unsect(C,--X), (Belief:DecomposeNN)
+//    X, C, sectOf(C,--X), conjParallel(C)  |-     unsect(C,--X), (Belief:DecomposeNP)
+     C, X, sectOf(C,X), conjParallel(C)     |-   --unsect(C,  X), (Belief:DecomposeNP, Goal:DecomposeNP)
+//    X, C, sectOf(C,--X), conjParallel(C)  |-   --unsect(C,--X), (Belief:DecomposeNN)
      C, X, sectOf(C,--X), conjParallel(C)  |-   --unsect(C,--X), (Belief:DecomposeNN, Goal:DecomposeNN)
 
 
