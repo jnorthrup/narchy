@@ -25,7 +25,8 @@ public class WorkerExec extends ThreadedExec {
     float workResponsibility =
             //1f;
             //1.5f;
-            1f;
+            1.618f;
+            //1f;
 
     /**
      * process sub-timeslice divisor

@@ -3,15 +3,15 @@
 
 
     //free structural Conjunction/Disjunction decomposition
-    C, X, eventOfPN(C,X), task("?@"), hasBelief()   |-   conjWithoutPN(C,X)
-    C, X, eventOfPN(C,X)                            |-   conjWithoutPN(C,X), (Belief:StructuralDeduction, Goal:StructuralDeduction)
+    C, X, eventOfPN(C,X), task("?@")   |-   conjWithoutPN(C,X)
+    //C, X, eventOfPN(C,X)                            |-   conjWithoutPN(C,X), (Belief:StructuralDeduction, Goal:StructuralDeduction)
 
     //disjunction select
-    D, X, eventOfNeg(D,X)                            |-   X, (Belief:StructuralDeductionWeakN, Goal:StructuralDeductionWeakN)
-    D, X, eventOf(D,X)                               |- --X, (Belief:StructuralDeductionWeakN, Goal:StructuralDeductionWeakN)
-    //D, X, eventOfPN(D,X)                            |- --conjWithoutPN(D,X), (Belief:StructuralDeductionWeakN, Goal:StructuralDeductionWeakN)
-//    D, X, eventOfPN(D,X)                            |- --conjWithoutPN(D,X), (Belief:StructuralDeductionN, Goal:StructuralDeductionN)
-//    D, X, eventOfPN(D,X)                            |-   conjWithoutPN(D,X), (Belief:StructuralDeductionWeak, Goal:StructuralDeductionWeak)
+    //D, X, eventOfNeg(D,X)                            |-   X, (Belief:StructuralDeductionN, Goal:StructuralDeductionN)
+    //D, X, eventOf(D,X)                               |- --X, (Belief:StructuralDeductionN, Goal:StructuralDeductionN)
+        //D, X, eventOfPN(D,X)                            |- --conjWithoutPN(D,X), (Belief:StructuralDeductionWeakN, Goal:StructuralDeductionWeakN)
+        //D, X, eventOfPN(D,X)                            |- --conjWithoutPN(D,X), (Belief:StructuralDeductionN, Goal:StructuralDeductionN)
+        //D, X, eventOfPN(D,X)                            |-   conjWithoutPN(D,X), (Belief:StructuralDeductionWeak, Goal:StructuralDeductionWeak)
 
     //question short-circuit answer
     C, X, task("?"), eventOf(C,X)    |- --C,  (Belief:BeliefStructuralDeductionPN, Punctuation:Belief)

@@ -4,7 +4,7 @@ hg update
 echo 'pausing before make clean...' #a pause for user to cancel in case no or few updates
 sleep 2
 
-make dist-clean
+make clean
 
 # https://stackoverflow.com/questions/15548023/clang-optimization-levels 
 # https://stackoverflow.com/questions/4365980/how-to-use-profile-guided-optimizations-in-g

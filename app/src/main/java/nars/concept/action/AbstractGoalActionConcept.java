@@ -134,7 +134,7 @@ public class AbstractGoalActionConcept extends GameAction {
 
             int limit = componentsMax, tries = limit*2;
             Answer a = Answer.relevant(true, limit, ETERNAL, ETERNAL, term, withoutCuriosity, n).dur(organicDur);
-            for (int iter = 0; iter < 2; iter++) {
+            for (int iter = 0; iter < 1; iter++) {
 
                 long s, e;
 
