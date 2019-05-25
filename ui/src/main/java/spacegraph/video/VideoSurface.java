@@ -7,7 +7,7 @@ public class VideoSurface extends AspectAlign {
 
 
     private final Tex tex;
-    private final VideoSource in;
+    protected final VideoSource in;
     private Off on;
 
     public VideoSurface(VideoSource in) {
