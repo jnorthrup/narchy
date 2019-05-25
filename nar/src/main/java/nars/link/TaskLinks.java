@@ -50,7 +50,7 @@ abstract public class TaskLinks implements Sampler<TaskLink> {
     /**
      * (post-)Amp: tasklink propagation rate
      */
-    public final FloatRange amp = new FloatRange(1f, 0, 2f /* 2f */);
+    public final FloatRange amp = new FloatRange(0.5f, 0, 2f /* 2f */);
     /**
      * tasklink retention rate:
      * 0 = deducts all propagated priority from source tasklink (full resistance)

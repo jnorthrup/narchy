@@ -1,6 +1,5 @@
 package nars;
 
-import com.google.common.collect.Streams;
 import com.google.common.util.concurrent.AtomicDouble;
 import jcog.Util;
 import jcog.data.list.FasterList;
@@ -27,7 +26,6 @@ import nars.derive.rule.PremiseRuleSet;
 import nars.derive.timing.ActionTiming;
 import nars.exe.impl.WorkerExec;
 import nars.gui.NARui;
-import nars.link.TaskLink;
 import nars.memory.CaffeineMemory;
 import nars.op.*;
 import nars.op.mental.Abbreviation;
@@ -41,8 +39,6 @@ import nars.term.Termed;
 import nars.time.clock.RealTime;
 import nars.video.SwingBitmap2D;
 import nars.video.WaveletBag;
-import org.eclipse.collections.api.factory.Sets;
-import org.eclipse.collections.api.set.ImmutableSet;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.SpaceGraph;
 import spacegraph.space2d.Surface;
@@ -57,11 +53,9 @@ import java.awt.image.BufferedImage;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toSet;
 import static java.util.stream.StreamSupport.stream;
 import static nars.$.$$;
 import static nars.Op.BELIEF;
@@ -128,7 +122,7 @@ abstract public class GameX extends Game {
 
         initPlugins(n);
         initPlugins2(n, g);
-        //initMeta(n, g, false);
+        initMeta(n, g, false);
 
         //new Gridding(n.parts(Game.class).map(NARui::agent).collect(toList())),
         n.synch();
@@ -412,7 +406,7 @@ abstract public class GameX extends Game {
         n.questPriDefault.amp(0.02f);
 
 
-        n.beliefConfDefault.set(0.7f);
+        n.beliefConfDefault.set(0.9f);
         n.goalConfDefault.set(0.9f);
 
         n.emotion.want(MetaGoal.Futile, -0.001f);
@@ -499,7 +493,7 @@ abstract public class GameX extends Game {
 
         //new StatementLinker(n);
         //new PuncNoise(n);
-        n.start(new Eternalizer(n));
+        //n.start(new Eternalizer(n));
 
 //        new STMLinkage(n, 1);
 
@@ -639,37 +633,37 @@ abstract public class GameX extends Game {
     protected void starting(NAR nar) {
         super.starting(nar);
 
-        ((TaskLinkWhat) what()).links.pri(new Predicate<TaskLink>() {
-
-            //behavior overdrive
-            ImmutableSet<Term> stimSet = Sets.immutable.ofAll(Streams.concat(
-                    rewards.stream().flatMap(r -> Streams.stream(r.components())),
-                    actions().stream().flatMap(x -> Streams.stream(x.components())))
-                    .map(Termed::term).collect(toSet()));
-
-            float drive = 0.5f;
-            float happiness;
-
-            {
-                happiness = 0.5f; //initial neutral
-                onFrame((a) -> {
-                    happiness = happiness();
-//                     System.out.println(happiness);
-                });
-            }
-
-            @Override
-            public boolean test(TaskLink tl) {
-                float d = (1 - happiness) * drive;
-
-                if (!stimSet.contains(tl.to())) //&& !stimSet.contains(tl.from()))
-                    tl.priMult(1 / (1 + d/2));
-//              else
-//                    tl.priMult(1/(1 - d/2));
-
-                return true;
-            }
-        });
+//        ((TaskLinkWhat) what()).links.pri(new Predicate<TaskLink>() {
+//
+//            //behavior overdrive
+//            ImmutableSet<Term> stimSet = Sets.immutable.ofAll(Streams.concat(
+//                    rewards.stream().flatMap(r -> Streams.stream(r.components())),
+//                    actions().stream().flatMap(x -> Streams.stream(x.components())))
+//                    .map(Termed::term).collect(toSet()));
+//
+//            float drive = 0.5f;
+//            float happiness;
+//
+//            {
+//                happiness = 0.5f; //initial neutral
+//                onFrame((a) -> {
+//                    happiness = happiness();
+////                     System.out.println(happiness);
+//                });
+//            }
+//
+//            @Override
+//            public boolean test(TaskLink tl) {
+//                float d = (1 - happiness) * drive;
+//
+//                if (!stimSet.contains(tl.to())) //&& !stimSet.contains(tl.from()))
+//                    tl.priMult(1 / (1 + d/2));
+////              else
+////                    tl.priMult(1/(1 - d/2));
+//
+//                return true;
+//            }
+//        });
     }
 
     //    static void inputInjectionQ(NAR n) {

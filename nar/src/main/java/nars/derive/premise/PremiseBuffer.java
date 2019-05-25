@@ -25,7 +25,7 @@ public class PremiseBuffer implements Serializable {
 
     /** rate that priority from the novelty bag subtracts from potential premises.
      * may need to be divided by concurrency so that threads dont step on each other */
-    float notNovelCost = 0.9f;
+    float notNovelCost = 0.5f;
 
     /** search rate */
     public float fillRate = 1.5f;
@@ -82,7 +82,7 @@ public class PremiseBuffer implements Serializable {
 
         Task task2 = Abbreviation.unabbreviate(task, d.nar);
         if (task!=task2 && task2!=null) {
-            if (task2.term().volume() < ((float)(d.termVolMax*2/3))) {
+            if (task2.term().volume() <= ((float)(d.termVolMax/2))) {
                 //System.out.println(task + " " + task2);
                 task = task2; //use decompressed form if small enough
             } else {

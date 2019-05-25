@@ -20,7 +20,7 @@ public class Pacman extends GameX {
     private final PacmanGame g;
 
     public Pacman(NAR nar) {
-        super("Pac", GameTime.durs(2), nar);
+        super("Pac", GameTime.durs(0.5f), nar);
 
         this.g = new PacmanGame();
 

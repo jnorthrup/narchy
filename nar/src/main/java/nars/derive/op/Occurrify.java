@@ -329,7 +329,7 @@ public class Occurrify extends TimeGraph {
                 taskEnd = beliefEnd;
             }
 
-        } else if (beliefStart == ETERNAL && taskStart!=ETERNAL) {
+        } else if ((beliefStart == ETERNAL && taskStart!=ETERNAL) || time.beliefProjection()==BeliefProjection.Task) {
             beliefStart = taskStart;
             beliefEnd = taskEnd;
         }

@@ -168,13 +168,9 @@ public class MetaAgent extends Game {
 //                n.goalPriDefault.floatValue() /* current value */ * priFactorMax)::setProportionally);
 
 
-//        actionHemipolar($.inh(aid, PRI), (v)->{
-//            nar.what.pri(g.what(), v);
-//            return v;
-//        });
 
-        float priMin = 0.1f, priMax = 1;
-        actionCtl($.inh(gid, PRI), w.priAsFloatRange());
+//        float priMin = 0.1f, priMax = 1;
+//        actionCtl($.inh(gid, PRI), w.priAsFloatRange());
 
         float curiMin = 0.025f, curiMax = 0.09f;
         actionCtl($.inh(gid, CURIOSITY), g.curiosity.rate.subRange(curiMin, curiMax));
