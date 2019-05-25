@@ -363,7 +363,7 @@ class NAL8EternalMixTest extends NALTest {
 
     @Test
     void detaching_condition0() {
-        test.termVolMax(9);
+        test.termVolMax(13);
         TestNAR tester = test;
 
         int when = 2;

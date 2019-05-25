@@ -15,7 +15,10 @@ import jcog.tree.rtree.rect.RectFloat;
 import spacegraph.input.finger.Finger;
 import spacegraph.space2d.ReSurface;
 import spacegraph.space2d.Surface;
-import spacegraph.video.*;
+import spacegraph.video.Draw;
+import spacegraph.video.VideoSource;
+import spacegraph.video.VideoSurface;
+import spacegraph.video.WebCam;
 
 import java.awt.image.BufferedImage;
 
@@ -56,8 +59,8 @@ public class TrackerTest extends VideoSurface {
 //                        FactoryTrackerObjectQuad.sparseFlow(null, GrayU8.class, null);
 //                FactoryTrackerObjectQuad.tld(null,GrayU8.class);
 
-				FactoryTrackerObjectQuad.meanShiftComaniciu2003(new ConfigComaniciu2003(), ImageType.pl(3, GrayU8.class));
-//				FactoryTrackerObjectQuad.meanShiftComaniciu2003(new ConfigComaniciu2003(true),ImageType.pl(3,GrayU8.class));
+				//FactoryTrackerObjectQuad.meanShiftComaniciu2003(new ConfigComaniciu2003(), ImageType.pl(3, GrayU8.class));
+				FactoryTrackerObjectQuad.meanShiftComaniciu2003(new ConfigComaniciu2003(true),ImageType.pl(3,GrayU8.class));
                 // Mean-shift likelihood will fail in this video, but is excellent at tracking objects with
                 // a single unique color.  See ExampleTrackerMeanShiftLikelihood
 //				FactoryTrackerObjectQuad.meanShiftLikelihood(30,5,255, MeanShiftLikelihoodType.HISTOGRAM,ImageType.pl(3,GrayU8.class));
@@ -91,8 +94,8 @@ public class TrackerTest extends VideoSurface {
 
     @Override
     public Surface finger(Finger finger) {
-        float cw = 0.05f;
-        float ch = 0.05f;
+        float cw = 0.15f;
+        float ch = 0.15f;
         boolean reset ;
         if ((reset=finger.pressedNow(2)) || finger.pressedNow(0)) {
             v2 p = finger.posRelative(innerBounds());
@@ -141,8 +144,9 @@ public class TrackerTest extends VideoSurface {
 
     protected ImageBase frame() {
         BufferedImage ii = in.image;
-        if (ii != null)
+        if (ii != null) {
             ConvertBufferedImage.convertFrom(ii, true, frame);
+        }
         return frame;
     }
 }

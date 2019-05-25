@@ -452,6 +452,9 @@ abstract public class TermMatcher {
 
         @Override
         public boolean test(Term t) {
+            if (t == null)
+                return false;
+
             Term u = t.unneg();
             if (u.op()==CONJ) {
                 int i = u.dt();

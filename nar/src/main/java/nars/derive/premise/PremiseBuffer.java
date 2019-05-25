@@ -10,7 +10,6 @@ import nars.Task;
 import nars.derive.model.Derivation;
 import nars.link.TaskLink;
 import nars.link.TaskLinks;
-import nars.op.mental.Abbreviation;
 import nars.term.Term;
 import nars.time.When;
 
@@ -80,16 +79,16 @@ public class PremiseBuffer implements Serializable {
     void hypothesize(TaskLink tasklink, Task task, int termlinksPerTaskLink, TaskLinks links, Derivation d) {
         Term prevTerm = null;
 
-        Task task2 = Abbreviation.unabbreviate(task, d);
-        if (task!=task2 && task2!=null) {
-            if (task2.term().volume() <= ((float)(d.termVolMax/2))) {
-                //System.out.println(task + " " + task2);
-                task = task2; //use decompressed form if small enough
-            } else {
-                //remain compressed
-                //System.out.println(task + " " + task2);
-            }
-        }
+//        Task task2 = Abbreviation.unabbreviate(task, d);
+//        if (task!=task2 && task2!=null) {
+//            if (task2.term().volume() <= ((float)(d.termVolMax/2))) {
+//                //System.out.println(task + " " + task2);
+//                task = task2; //use decompressed form if small enough
+//            } else {
+//                //remain compressed
+//                //System.out.println(task + " " + task2);
+//            }
+//        }
 
         float linkPri = 0;
         for (int i = 0; i < termlinksPerTaskLink; i++) {

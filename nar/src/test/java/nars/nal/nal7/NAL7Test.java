@@ -137,7 +137,7 @@ public class NAL7Test extends NALTest {
         */
 
         test
-                .inputAt(1, "((a &&+5 b) &&+5 c). :|:")
+                .inputAt(1, "((a &&+5 b) &&+5 c). |")
                 .mustBelieve(cycles, "(b &&+5 c)", 1.00f, 0.81f, 6)
                 .mustNotOutput(cycles, "(b &&+5 c)", BELIEF, ETERNAL)
                 .mustNotOutput(cycles, "(b &&+5 c)", BELIEF, 16)

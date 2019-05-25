@@ -4,18 +4,18 @@
 
     //free structural Conjunction/Disjunction decomposition
     C, X, eventOfPN(C,X), task("?@")   |-   conjWithoutPN(C,X)
-    C, X, eventOfPN(C,X)                            |-   conjWithoutPN(C,X), (Belief:StructuralDeduction, Goal:StructuralDeduction)
+    C, X, eventOfPN(C,X)               |-   conjWithoutPN(C,X), (Belief:StructuralDeduction, Goal:StructuralDeduction)
 
-    //disjunction select
-    D, X, eventOfNeg(D,X)                            |-   X, (Belief:StructuralDeductionN, Goal:StructuralDeductionN)
-    D, X, eventOf(D,X)                               |- --X, (Belief:StructuralDeductionN, Goal:StructuralDeductionN)
+    //disjunction select (probably not valid)
+//    D, X, eventOfNeg(D,X), conjParallel(D)            |-   X, (Belief:StructuralDeductionN, Goal:StructuralDeductionN)
+//    D, X, eventOf(D,X), conjParallel(D)               |- --X, (Belief:StructuralDeductionN, Goal:StructuralDeductionN)
         //D, X, eventOfPN(D,X)                            |- --conjWithoutPN(D,X), (Belief:StructuralDeductionWeakN, Goal:StructuralDeductionWeakN)
         //D, X, eventOfPN(D,X)                            |- --conjWithoutPN(D,X), (Belief:StructuralDeductionN, Goal:StructuralDeductionN)
         //D, X, eventOfPN(D,X)                            |-   conjWithoutPN(D,X), (Belief:StructuralDeductionWeak, Goal:StructuralDeductionWeak)
 
     //question short-circuit answer
-    C, X, task("?"), eventOf(C,X)    |- --C,  (Belief:BeliefStructuralDeductionPN, Punctuation:Belief)
-    C, X, task("?"), eventOfNeg(C,X) |-   C,  (Belief:BeliefStructuralDeductionPP, Punctuation:Belief)
+    C, X, task("?"), conjParallel(C), eventOf(C,X)    |- --C,  (Belief:BeliefStructuralDeductionPN, Punctuation:Belief)
+    C, X, task("?"), conjParallel(C), eventOfNeg(C,X) |-   C,  (Belief:BeliefStructuralDeductionPP, Punctuation:Belief)
         //TODO other short-circuits, involving ==> etc
 
     //implication short-circuit doubt TODO
@@ -25,27 +25,27 @@
 
 
     //impl conj/disj pred belief and question free structural implication decomposition
-    (A ==> C), X, eventOfPN(C,X), --isVar(A), --isVar(X)   |-   (A ==> conjWithoutPN(C,  X)), (Belief:StructuralDeduction)
+    (A ==> C), X, conjParallel(C), eventOfPN(C,X), --isVar(A), --isVar(X)   |-   (A ==> conjWithoutPN(C,  X)), (Belief:StructuralDeduction)
 
-    (A ==> D), X, eventOf(D,X), --isVar(A), --isVar(X)      |-   (A ==>   X), (Belief:StructuralDeductionN)
-    (A ==> D), X, eventOfNeg(D,X), --isVar(A), --isVar(X)   |-   (A ==> --X), (Belief:StructuralDeductionN)
+    (A ==> D), X, conjParallel(D), eventOf(D,X), --isVar(A), --isVar(X)      |-   (A ==>   X), (Belief:StructuralDeductionN)
+    (A ==> D), X, conjParallel(D), eventOfNeg(D,X), --isVar(A), --isVar(X)   |-   (A ==> --X), (Belief:StructuralDeductionN)
 
 
         //(A ==> C), X, eventOfPN(C,X), --isVar(A)   |-   (A ==> conjWithoutPN(C,  X)), (Belief:StructuralDeduction)
           //(A ==> D), X, eventOfPN(D,X), --isVar(A)   |-   (A ==> --conjWithoutPN(D,  X)), (Belief:StructuralDeductionWeakN)
         //(A ==> C), X, eventOfPN(C,X), --isVar(A)   |-   polarizeTask((A ==> conjWithoutPN(C,  X))), (Belief:StructuralDeductionDepolarized)
 
-         (A ==> C), X, eventOfPN(C,X), task("?"), --isVar(A), --isVar(X)   |- (A ==> conjWithoutPN(C,  X)), (Punctuation:Question)
+         (A ==> C), X,  conjParallel(C), eventOfPN(C,X), task("?"), --isVar(A), --isVar(X)   |- (A ==> conjWithoutPN(C,  X)), (Punctuation:Question)
          (A ==> C), (A ==> C), task("?")   |- C, (Punctuation:Question)
 
     //impl conj subj belief and question free structural implication decomposition
-    (  C ==> A), X, eventOfPN(C,X), --isVar(A), --isVar(X)   |- polarizeTask((  conjWithoutPN(C,    X) ==> A)), (Belief:StructuralDeductionDepolarized)
-      (  --D ==> A), X, eventOfNeg(D,X), --isVar(A), --isVar(X) |- polarizeTask((  X ==> A)), (Belief:StructuralDeductionDepolarized)
-      (  --D ==> A), X, eventOf(D,X), --isVar(A), --isVar(X) |- polarizeTask((  --X ==> A)), (Belief:StructuralDeductionDepolarized)
+    (  C ==> A), X,  conjParallel(C),eventOfPN(C,X), --isVar(A), --isVar(X)   |- polarizeTask((  conjWithoutPN(C,    X) ==> A)), (Belief:StructuralDeductionDepolarized)
+      (  --D ==> A), X,  conjParallel(D), eventOfNeg(D,X), --isVar(A), --isVar(X) |- polarizeTask((  X ==> A)), (Belief:StructuralDeductionDepolarized)
+      (  --D ==> A), X, conjParallel(D), eventOf(D,X), --isVar(A), --isVar(X) |- polarizeTask((  --X ==> A)), (Belief:StructuralDeductionDepolarized)
 
-        (  C ==> A), X, eventOfPN(C,X), task("?"), --isVar(A), --isVar(X)   |- (  conjWithoutPN(C,  X) ==> A), (Punctuation:Question)
-          (  --D ==> A), X, eventOfNeg(D,X), task("?"), --isVar(A), --isVar(X) |- (  X ==> A), (Punctuation:Question)
-          (  --D ==> A), X, eventOf(D,X), task("?"), --isVar(A), --isVar(X)    |- (--X ==> A), (Punctuation:Question)
+        (  C ==> A), X, conjParallel(C),eventOfPN(C,X), task("?"), --isVar(A), --isVar(X)   |- (  conjWithoutPN(C,  X) ==> A), (Punctuation:Question)
+          (  --D ==> A), X, conjParallel(D), eventOfNeg(D,X), task("?"), --isVar(A), --isVar(X) |- (  X ==> A), (Punctuation:Question)
+          (  --D ==> A), X, conjParallel(D), eventOf(D,X), task("?"), --isVar(A), --isVar(X)    |- (--X ==> A), (Punctuation:Question)
 
         (C ==> A), (C ==> A), task("?")   |- C, (Punctuation:Question)
 

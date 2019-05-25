@@ -213,7 +213,7 @@ public class NAL3Test extends NALTest {
     @Test
     void diff_compound_decomposition_low_dynamic() {
         TestNAR tester = test;
-        tester.termVolMax(6);
+        tester.termVolMax(7);
         tester.believe("<(ant && --spider) --> [strong]>", 0.1f, 0.9f);
         tester.mustBelieve(cycles, "<spider --> [strong]>", 0.90f, 0.08f);
         tester.mustBelieve(cycles, "<ant --> [strong]>", 0.10f, 0.08f);

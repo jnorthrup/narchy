@@ -166,7 +166,7 @@ abstract public class NAL6DecomposeTest extends NALTest {
         void impl_disjunction_subj_decompose_conditional() {
 
             test
-                    .termVolMax(6)
+                    .termVolMax(8)
                     .believe("((a || b) ==> x)")
                     .input("(--b ==> x). %0.75;0.9%")
                     .mustBelieve(cycles, "(a ==> x)", 0.75f, 0.61f) //via decompose

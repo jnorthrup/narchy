@@ -7,7 +7,6 @@ import nars.control.MetaGoal;
 import nars.derive.model.Derivation;
 import nars.derive.model.DerivationFailure;
 import nars.derive.rule.PremiseRuleProto;
-import nars.op.mental.Abbreviation;
 import nars.task.DebugDerivedTask;
 import nars.task.DerivedTask;
 import nars.term.ProxyTerm;
@@ -207,7 +206,8 @@ public class Taskify extends ProxyTerm {
         }
 
         //abbreviate TODO combine this with anon step by editing the substitution map
-        x = Abbreviation.abbreviate(x, nar);
+//        if (x.volume() > d.termVolMax/2)
+//            x = Abbreviation.abbreviate(x, nar);
 
         DerivedTask t = Task.tryTask(x, punc, tru, (C, tr) ->
                 NAL.DEBUG ?

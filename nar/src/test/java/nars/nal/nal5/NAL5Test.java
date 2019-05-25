@@ -753,7 +753,7 @@ public class NAL5Test extends NALTest {
     @Test
     void conditional_induction0SimpleIndepVar() {
 
-        test.termVolMax(6);
+        test.termVolMax(8);
         test.believe("((x1 && $1) ==> (a,$1))");
         test.believe("((y1 && $1) ==> (a,$1))");
         test.mustBelieve(cycles, "(x1 ==> y1)", 1.00f, 0.45f);

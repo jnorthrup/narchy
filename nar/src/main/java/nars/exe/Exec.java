@@ -53,7 +53,7 @@ abstract public class Exec extends NARPart implements Executor, ConsumerX<Abstra
 
         Task x = t0;
 
-        try {
+//        try {
             while (x!=null && !(x instanceof AbstractTask)) {
                 Task y;
                 if (x instanceof UnevaluatedTask) {
@@ -77,9 +77,9 @@ abstract public class Exec extends NARPart implements Executor, ConsumerX<Abstra
             } else if (x != null) {
                 throw new WTF("unrecognized task type: " + x.getClass() + "\t" + x);
             }
-        } catch (Throwable e) {
-            logger.atSevere().withCause(e).log(t0.toString());
-        }
+//        } catch (Throwable e) {
+//            logger.atSevere().withCause(e).log(t0.toString());
+//        }
 
     }
 

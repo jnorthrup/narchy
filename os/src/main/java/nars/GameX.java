@@ -28,7 +28,6 @@ import nars.exe.impl.WorkerExec;
 import nars.gui.NARui;
 import nars.memory.CaffeineMemory;
 import nars.op.*;
-import nars.op.mental.Abbreviation;
 import nars.op.mental.Inperience2;
 import nars.op.stm.ConjClustering;
 import nars.sensor.Bitmap2DSensor;
@@ -493,7 +492,7 @@ abstract public class GameX extends Game {
 
         //new StatementLinker(n);
         //new PuncNoise(n);
-        //n.start(new Eternalizer(n));
+        n.start(new Eternalizer(n));
 
 //        new STMLinkage(n, 1);
 
@@ -538,7 +537,7 @@ abstract public class GameX extends Game {
 //        new Inperience.Wonder(8, n);
 //        new Inperience.Plan(8, n);
 
-        new Abbreviation("z", 2, 5, n);
+        //new Abbreviation("z", 2, 5, n);
 
 
 //        try {
@@ -569,8 +568,8 @@ abstract public class GameX extends Game {
      */
     private static void addGovernor(NAR n) {
         int gHist = 16;
-        float momentum = 0.75f;
-        float explorationRate = 0.1f;
+        float momentum = 0.9f;
+        float explorationRate = 0.2f;
         n.onDur(new Consumer<NAR>() {
 
             final Consumer<FasterList<Why>> reval = new Consumer<FasterList<Why>>() {
