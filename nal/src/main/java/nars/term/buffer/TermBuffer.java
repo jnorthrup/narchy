@@ -150,7 +150,7 @@ public class TermBuffer {
      */
     public TermBuffer append(Term x) {
         if (x instanceof Atomic) {
-            return appendAtomic(x);
+            return appendInterned(x);
         } else {
             return append((Compound) x);
         }
@@ -162,7 +162,7 @@ public class TermBuffer {
             case NEG:
                 return negStart().append(x.unneg()).compoundEnd(NEG);
             case FRAG:
-                return appendAtomic(x); //store atomically until construction
+                return appendInterned(x); //store atomically until construction
             default:
                 return compoundStart(o, x.dt()).appendSubterms(x.subterms()).compoundEnd(o);
         }
@@ -173,7 +173,7 @@ public class TermBuffer {
     }
 
     /** interns the term as-is, encapsulated as an atomic symbol */
-    public TermBuffer appendAtomic(Term x) {
+    public TermBuffer appendInterned(Term x) {
         return appendInterned(intern(x));
     }
 

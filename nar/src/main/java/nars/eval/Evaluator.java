@@ -25,6 +25,7 @@ public class Evaluator extends HeapTermTransform {
 
     final Function<Atom, Functor> funcResolver;
 
+    final TermBuffer compoundBuilder = new NonEvalTermBuffer();
 
     public Evaluator(Function<Atom, Functor> funcResolver) {
         this.funcResolver = funcResolver;
@@ -52,8 +53,7 @@ public class Evaluator extends HeapTermTransform {
                 if (clauses[0] != null && clauses[0].contains(X))
                     return true;
 
-                final TermBuffer compoundBuilder = new NonEvalTermBuffer();
-                //compoundBuilder.clear(true, compoundBuilder.sub.termCount() >= 64 /* HACK */);
+                compoundBuilder.clear(true, compoundBuilder.sub.termCount() >= 64 /* HACK */);
                 TermBuffer y = compoundBuilder.append(X);
                 final int[] functors = {0};
                 y.updateMap(g -> {

@@ -219,19 +219,15 @@ class BooleanTest {
     static void testSATRandom(boolean beliefOrGoal, boolean temporalOrEternal) {
 
 
-        int s = 4, c = 2000, cRemoveInputs = c*3/4;
+        int s = 4, c = 2500, cRemoveInputs = c*3/4;
 
-        int d = 1;
 
         IntFunction<Term> termizer =
                 //(i)->$$("x" + i);
                 (i)->$.inh($.the(i),$.the("x"));
 
         NAR n = NARS.tmp(6,8);
-        n.termVolMax.set(8);
-        n.time.dur(d);
-
-
+        n.termVolMax.set(9);
 
         Set<Task> inputs = new LinkedHashSet();
         boolean[] b = new boolean[s];
@@ -253,8 +249,9 @@ class BooleanTest {
             n.run();
 
             if (i == cRemoveInputs) {
+                float bConf = n.confDefault(BELIEF);
                 n.tasks().forEach(z->{
-                    if ((beliefOrGoal ? z.isBelief() : z.isGoal()) && z.conf() >= n.confDefault(BELIEF))
+                    if ((beliefOrGoal ? z.isBelief() : z.isGoal()) && z.conf() >= bConf)
                         inputs.add(z); //get all structural transformed inputs (ex: images)
                 });
                 inputs.forEach(z -> {

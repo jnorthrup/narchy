@@ -1028,8 +1028,9 @@ public class NAL6Test extends NALTest {
     @Test
     void recursionSmall() {
 
-        test.nar.termVolMax.set(11);
-        //test.nar.freqResolution.set(0.2f);
+        test.termVolMax(13);
+        test.confMin(0.25f);
+        test.nar.freqResolution.set(0.05f);
         test
                 .believe("num:x", 1.0f, 0.9f)
                 .believe("( num:$1 ==> num($1) )", 1.0f, 0.9f)

@@ -4,7 +4,9 @@ package nars;
 import jcog.Paper;
 import jcog.Skill;
 import nars.subterm.ArrayTermVector;
+import nars.subterm.DisposableTermList;
 import nars.subterm.Subterms;
+import nars.subterm.TermList;
 import nars.term.Compound;
 import nars.term.Neg;
 import nars.term.Term;
@@ -629,7 +631,7 @@ public enum Op {
     }
 
     public final Term the(TermBuilder b, int dt, Subterms s) {
-        return the(b, dt, s.arrayShared());
+        return the(b, dt, s instanceof DisposableTermList ? ((TermList)s).arrayKeep() : s.arrayShared());
     }
 
     public final Term the(/*@NotNull*/ Term... u) {

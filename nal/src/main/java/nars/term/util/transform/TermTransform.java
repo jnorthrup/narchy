@@ -12,7 +12,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Function;
 
-import static nars.NAL.term.LAZY_COMPOUND_MIN_CONSTANT_INTERN_SPAN;
+import static nars.NAL.term.LAZY_COMPOUND_MIN_INTERN_VOL;
 import static nars.Op.FRAG;
 import static nars.Op.NEG;
 import static nars.time.Tense.DTERNAL;
@@ -88,10 +88,10 @@ public interface TermTransform extends Function<Term,Term> {
             out.compoundEnd(o);
         }
 
-        if (out.change()==c && out.pos() - p >= LAZY_COMPOUND_MIN_CONSTANT_INTERN_SPAN) {
+        if (out.change()==c && x.volume() >= LAZY_COMPOUND_MIN_INTERN_VOL) {
             //unchanged constant; rewind and pack the exact Term as an interned symbol
             out.rewind(p, u);
-            out.appendAtomic(x);
+            out.appendInterned(x);
         }
         return true;
     }

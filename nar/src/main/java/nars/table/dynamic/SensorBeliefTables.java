@@ -89,8 +89,8 @@ public class SensorBeliefTables extends BeliefTables {
 
         if (value!=null) {
             value = value.dither(
-                    Math.max(n.freqResolution.asFloat(), res.asFloat()),
-                    n.confResolution.floatValue()
+                Math.max(w.nar.freqResolution.floatValue(), this.res.asFloat()),
+                n.confResolution.floatValue()
             );
         }
 
@@ -257,9 +257,7 @@ public class SensorBeliefTables extends BeliefTables {
 //        delta += tasklink.priMax(QUEST, p/4);
 
 
-        Concept concept = w.nar.concept(next); //TODO cache or provide htis as parameter
-
-        ((TaskLinkWhat)w).links.link(next, concept, surprise, w.nar);
+        ((TaskLinkWhat)w).links.link(next, surprise, w.nar);
 
 
         //if (prev!=next)

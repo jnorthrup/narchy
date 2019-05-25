@@ -242,12 +242,12 @@ abstract public class TaskLinks implements Sampler<TaskLink> {
      *
      * @return
      */
-    public void link(Task task, Concept tc, NAR n) {
+    public void link(Task task, NAR n) {
 
-        link(task, tc, task.pri(), n);
+        link(task, task.pri(), n);
 
     }
-    public void link(Task task, Concept tc, float pri, NAR n) {
+    public void link(Task task, float pri, NAR n) {
 
         link(new AtomicTaskLink(task.term(), task.punc(), pri));
 

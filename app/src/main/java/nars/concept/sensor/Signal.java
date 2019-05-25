@@ -108,21 +108,19 @@ public class Signal extends TaskConcept implements GameLoop, FloatFunction<Term>
 
         float nextValue = currentValue = source.asFloat();
 
-        long start = g.prev, end = g.now;
-
         ((SensorBeliefTables) beliefs()).add(
                 nextValue == nextValue ? truther.value(prevValue, nextValue) : null,
-                end,
+                g.now,
                 pri, cause,
                 g.durPhysical(),
                 g.what());
     }
 
 
-    public Signal resolution(float r) {
-        resolution().set(r);
-        return this;
-    }
+//    public Signal resolution(float r) {
+//        resolution().set(r);
+//        return this;
+//    }
     public Signal setResolution(FloatRange r) {
         ((SensorBeliefTables) beliefs()).resolution(r);
         return this;

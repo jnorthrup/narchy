@@ -647,7 +647,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
 
         public static final boolean INH_IMAGE_RECURSION = false;
         public static final int LAZY_COMPOUND_MIN_REPLACE_AHEAD_SPAN = 2;
-        public static final int LAZY_COMPOUND_MIN_CONSTANT_INTERN_SPAN = LAZY_COMPOUND_MIN_REPLACE_AHEAD_SPAN;
+        public static final int LAZY_COMPOUND_MIN_INTERN_VOL = 2;
 
 
         /** prevent variable introduction from erasing negative compounds,

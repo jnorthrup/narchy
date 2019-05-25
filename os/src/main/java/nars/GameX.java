@@ -72,7 +72,7 @@ abstract public class GameX extends Game {
     /**
      * determines memory strength
      */
-    static float DURATIONs = 4;
+    static float DURATIONs = 2;
 
 //    static {
 //        try {
@@ -321,7 +321,7 @@ abstract public class GameX extends Game {
         Gridding g = new Gridding();
         MetaAgent meta = new MetaAgent(false, 16f, a);
         g.add(NARui.agent(meta));
-        meta.what().pri(0.1f);
+        meta.what().pri(0.05f);
 
         if (rl) {
             meta.what().pri(0.05f);

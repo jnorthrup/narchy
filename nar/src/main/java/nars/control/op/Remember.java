@@ -199,13 +199,13 @@ public class Remember extends AbstractTask {
 
         if (c != null) {
 
-            if (link)
-                ((TaskLinkWhat) w).links.link(t, c, n);
 
             //if (value)
             c.value(t, n);
         }
 
+        if (link)
+            ((TaskLinkWhat) w).links.link(t, n);
 
 
         if (notify)

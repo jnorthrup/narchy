@@ -16,7 +16,6 @@ import org.eclipse.collections.impl.map.mutable.primitive.ObjectIntHashMap;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.PrintStream;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Random;
 import java.util.SortedSet;
@@ -54,8 +53,8 @@ public enum Terms {
             case 3:
                 return sorted3(x);
             default: {
-                Term[] y = new TermList(x.clone()).sortAndDedup();
-                if (y != x && Arrays.equals(x, y))
+                Term[] y = new TermList(x).sortAndDedup();
+                if (y != x && ArrayUtil.equalsIdentity(x, y))
                     return x; //unchanged
                 else
                     return y;

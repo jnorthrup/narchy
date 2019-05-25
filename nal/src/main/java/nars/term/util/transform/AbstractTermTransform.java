@@ -86,11 +86,13 @@ public interface AbstractTermTransform extends TermTransform, nars.term.util.bui
                 return Bool.True;
         }
 
+        if (newDT == DTERNAL)
+            newDT = 0; //HACK
         if (sameOpAndDT) {
             newDT = thisDT;
 
             //apply any shifts caused by range changes
-            if (yy != xx && targetOp.temporal && newDT != DTERNAL && newDT != XTERNAL && xx.subs() == 2 && yy.subs() == 2) {
+            if (yy != xx && newDT != DTERNAL && newDT != XTERNAL && xx.subs() == 2 && yy.subs() == 2) {
 
                 int subjRangeBefore = xx.subEventRange(0);
                 int predRangeBefore = xx.subEventRange(1);
@@ -100,6 +102,7 @@ public interface AbstractTermTransform extends TermTransform, nars.term.util.bui
 
             }
         }
+        if (newDT == 0)  newDT = DTERNAL; //HACK
 
         return appliedCompound(x, targetOp, newDT, xx, yy);
     }
