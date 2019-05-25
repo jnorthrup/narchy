@@ -3,6 +3,7 @@ package nars.op.mental;
 
 import jcog.bloom.StableBloomFilter;
 import jcog.data.atomic.AtomicFloat;
+import jcog.io.lz.QuickLZ;
 import jcog.math.MutableIntRange;
 import nars.$;
 import nars.NAR;
@@ -14,12 +15,12 @@ import nars.concept.PermanentConcept;
 import nars.control.How;
 import nars.control.channel.CauseChannel;
 import nars.derive.model.Derivation;
+import nars.io.IO;
 import nars.link.TaskLink;
 import nars.subterm.Subterms;
 import nars.task.NALTask;
 import nars.term.Compound;
 import nars.term.Term;
-import nars.term.Termed;
 import nars.term.Terms;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
@@ -28,7 +29,8 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.Arrays;
+import java.util.Base64;
 import java.util.function.BooleanSupplier;
 import java.util.function.Function;
 
@@ -49,9 +51,49 @@ public class Abbreviation/*<S extends Term>*/ extends How {
 
 
     private static final Logger logger = LoggerFactory.getLogger(Abbreviation.class);
-    private static final AtomicInteger currentTermSerial = new AtomicInteger(0);
+//    private static final AtomicInteger currentTermSerial = new AtomicInteger(0);
 
-    public static final String ABBREVIATION_META = "_";
+    //public static final byte ABBREVIATION_PREFIX = '=';
+    public static final byte ABBREVIATION_PREFIX = '=';
+    public static final byte[] ABBREVIATION_PREFIX_QUOTED = new byte[] { '"', ABBREVIATION_PREFIX };
+
+    public static Atom abbreviateTerm(Compound x) {
+        byte[] xx = IO.termToBytes(x);
+        xx = QuickLZ.compress(xx, 1);
+        //Deflater d = new Deflater(); d.read.deflate(xx);d.
+
+        return Atomic.atom("=" +
+                Base64.getEncoder().encodeToString(xx) //HACK use higher radix
+                //Base122.encode(xx)
+        );
+
+//        //HACK
+//        byte[] xxx = new byte[xx.length+1];
+//        xxx[0] = ABBREVIATION_PREFIX;
+//        System.arraycopy(xx, 0, xxx, 1, xx.length);
+//
+//        return new Atom(bytes(ATOM.id, xxx));
+
+        //return Atomic.atom(String.valueOf((char)ABBREVIATION_PREFIX) + x); //TODO use compressed byte[] serialization
+    }
+
+    public static Term unabbreviateTerm(Term x) {
+        if (x instanceof Atom) {
+            byte[] b = ((Atom) x).bytes();
+            if (((Atom)x).startsWith(ABBREVIATION_PREFIX_QUOTED)) {
+                b = Arrays.copyOfRange(b, 4+1, b.length-1); //HACK
+
+                b = QuickLZ.decompress(
+                        Base64.getDecoder().decode(b)
+                        //Base122.decode(new String(b))
+                );
+
+                return IO.bytesToTerm(b);
+            }
+        }
+
+        return x;
+    }
 
     /**
      * generated abbreviation belief's confidence
@@ -66,7 +108,6 @@ public class Abbreviation/*<S extends Term>*/ extends How {
     private final int stmSize;
 
 
-    private final String termPrefix;
     private final CauseChannel<Task> in;
 
 
@@ -108,7 +149,6 @@ public class Abbreviation/*<S extends Term>*/ extends How {
 
         this.in = nar.newChannel(this);
 
-        this.termPrefix = termPrefix;
         this.abbreviationConfidence =
                 new AtomicFloat(nar.confDefault(BELIEF));
 
@@ -130,10 +170,8 @@ public class Abbreviation/*<S extends Term>*/ extends How {
 
 
     final static class ABBREVIATE extends AbstractTermTransform.NegObliviousTermTransform {
-        final Function<Term /* Atomic */,Concept> resolver;
 
-        ABBREVIATE(Function<Term,Concept> resolver) {
-            this.resolver = resolver;
+        ABBREVIATE() {
         }
 
         @Override
@@ -141,16 +179,17 @@ public class Abbreviation/*<S extends Term>*/ extends How {
             Term a = super.applyCompound(x, newOp, newDT);
 
             if (a instanceof Compound && !(a.hasAny(Op.Variable))) {
-                Term ac = a.concept();
-                if (a.equals(ac)) { //avoid temporals
-                    Concept aa = resolver.apply(ac);
-                    if (aa != null) {
-                        Termed aaa = aa.meta(ABBREVIATION_META);
-                        if (aaa != null)
-                            return aa.term();
-                            //return apply(aaa.term()); //abbreviation
-                    }
-                }
+                return abbreviateTerm((Compound)a);
+//                Term ac = a.concept();
+//                if (a.equals(ac)) { //avoid temporals
+//                    Concept aa = resolver.apply(ac);
+//                    if (aa != null) {
+//                        Termed aaa = aa.meta(ABBREVIATION_META);
+//                        if (aaa != null)
+//                            return aa.term();
+//                            //return apply(aaa.term()); //abbreviation
+//                    }
+//                }
             }
             return a;
         }
@@ -168,19 +207,20 @@ public class Abbreviation/*<S extends Term>*/ extends How {
         public Term applyAtomic(Atomic a) {
 
             if (a instanceof Atom) {
-                Concept aa = resolver.apply(a);
-                if (aa != null) {
-                    Termed aaa = aa.meta(ABBREVIATION_META);
-                    if (aaa != null)
-                        return aaa.term(); //unabbreviation
-                }
+                return unabbreviateTerm(a);
+//                Concept aa = resolver.apply(a);
+//                if (aa != null) {
+//                    Termed aaa = aa.meta(ABBREVIATION_META);
+//                    if (aaa != null)
+//                        return aaa.term(); //unabbreviation
+//                }
             }
             return a;
         }
 
     }
     public static Term abbreviate(Term x, NAR n) {
-        return abbreviate(x, n::concept);
+        return abbreviate(x);
     }
     public static Task unabbreviate(Task x, NAR n) {
         return Task.clone(x, unabbreviate(x.term(), n));
@@ -189,8 +229,8 @@ public class Abbreviation/*<S extends Term>*/ extends How {
         return unabbreviate(x, n::concept);
     }
 
-    public static Term abbreviate(Term x, Function<Term,Concept> resolver) {
-        return AbstractTermTransform.transform(x, new ABBREVIATE(resolver));
+    public static Term abbreviate(Term x) {
+        return AbstractTermTransform.transform(x, new ABBREVIATE());
     }
 
     public static Term unabbreviate(Term x, Function<Term,Concept> resolver) {
@@ -214,17 +254,17 @@ public class Abbreviation/*<S extends Term>*/ extends How {
                 !(abbreviable instanceof AliasConcept) &&
                 abbreviable.term().equals(t)) /* identical to its conceptualize */ {
 
-            Object a = abbreviable.meta(ABBREVIATION_META);
-            if (a != null) {
-                //already abbreviated
-                //TODO - add a forwarding similarity from old term to new term
-                // Concept c = nar.concept((Term)a);
-                return;
-            }
+//            Object a = abbreviable.meta(ABBREVIATION_META);
+//            if (a != null) {
+//                //already abbreviated
+//                //TODO - add a forwarding similarity from old term to new term
+//                // Concept c = nar.concept((Term)a);
+//                return;
+//            }
 
             Term abbreviation;
             if ((abbreviation = abbreviate(pri, abbreviable, w)) != null) {
-                abbreviable.meta(ABBREVIATION_META, abbreviation);
+//                abbreviable.meta(ABBREVIATION_META, abbreviation);
             }
 
         }
@@ -276,24 +316,24 @@ public class Abbreviation/*<S extends Term>*/ extends How {
 
 
 
-    private String nextSerialTerm() {
-
-        return termPrefix + Integer.toString(currentTermSerial.incrementAndGet(), 36);
-
-
-    }
+//    private String nextSerialTerm() {
+//
+//        return termPrefix + Integer.toString(currentTermSerial.incrementAndGet(), 36);
+//
+//
+//    }
 
 
     private Term abbreviate(float pri, Concept abbrConcept, What w) {
 
-        Term abbreviated = abbrConcept.term();
+        Compound abbreviated = (Compound) abbrConcept.term();
 
         if (!(abbrConcept instanceof AliasConcept) && !(abbrConcept instanceof PermanentConcept)) {
 
 
-            Term aliasTerm = Atomic.the(nextSerialTerm());
+            Term aliasTerm = Abbreviation.abbreviateTerm(abbreviated); //Atomic.the(nextSerialTerm());
             AliasConcept a1 = new AliasConcept(aliasTerm, abbrConcept);
-            a1.meta(ABBREVIATION_META, abbreviated);
+//            a1.meta(ABBREVIATION_META, abbreviated);
             //nar.on(a1);
 
             nar.memory.set(abbreviated, a1); //redirect reference from the original concept to the alias

@@ -33,7 +33,7 @@ public interface AbstractTermTransform extends TermTransform, nars.term.util.bui
                 if (l == null)
                     l = new TermBuffer();
                 else
-                    l.clear(true, (l.sub.termCount() >= 64) /* HACK */);
+                    l.clear(); //true, (l.sub.termCount() >= 64) /* HACK */);
                 return transform.applyCompoundLazy((Compound) x, l, volMax);
             } catch (TermException t) {
                 if (NAL.DEBUG)

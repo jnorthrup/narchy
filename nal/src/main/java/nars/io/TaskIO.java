@@ -1,6 +1,5 @@
 package nars.io;
 
-import jcog.io.BytesInput;
 import nars.Op;
 import nars.Task;
 import nars.task.CommandTask;
@@ -65,10 +64,7 @@ public class TaskIO {
      * WARNING
      */
     public static Task bytesToTask(byte[] b) throws IOException {
-        return readTask(input(b));
+        return readTask(IO.input(b));
     }
 
-    static DataInput input(byte[] b) {
-        return new BytesInput(b);
-    }
 }

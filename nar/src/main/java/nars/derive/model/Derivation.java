@@ -260,7 +260,7 @@ public class Derivation extends PreDerivation {
 
             private Term transform(Compound x, TermBuffer termBuilder) {
                 if (NAL.ANONIFY_TRANSFORM_LAZY) {
-                    termBuilder.clear(true,termBuilder.sub.termCount() >= 64);
+                    termBuilder.clear();//true,termBuilder.sub.termCount() >= 64);
                     return applyCompoundLazy(x, termBuilder, NAL.term.COMPOUND_VOLUME_MAX);
                 } else {
                     return super.putCompound(x);

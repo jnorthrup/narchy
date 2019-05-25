@@ -310,7 +310,8 @@ public class MetaAgent extends Game {
             float y = f.valueOf(x);
             r.set(Util.lerp(y, r.min, r.max));
             return y;
-        }).resolution(0.1f);
+        });
+        //.resolution(0.1f);
     }
 
 //    public GoalActionConcept[] dial(Game a, Atomic label, FloatRange var, int steps) {

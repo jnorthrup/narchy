@@ -193,8 +193,7 @@ public class Taskify extends ProxyTerm {
         if (x == null)
             throw new NullPointerException("could not un-anonymize " + x0 + " with " + d.anon);
 
-        //abbreviate TODO combine this with anon step by editing the substitution map
-        x = Abbreviation.abbreviate(x, nar);
+
 
         /** compares taskTerm un-anon */
         if (isSame(x, punc, tru, S, E, d._task.term(), d._task, nar)) {
@@ -206,6 +205,9 @@ public class Taskify extends ProxyTerm {
             same(d, nar);
             return;
         }
+
+        //abbreviate TODO combine this with anon step by editing the substitution map
+        x = Abbreviation.abbreviate(x, nar);
 
         DerivedTask t = Task.tryTask(x, punc, tru, (C, tr) ->
                 NAL.DEBUG ?

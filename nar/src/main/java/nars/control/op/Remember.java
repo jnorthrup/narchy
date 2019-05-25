@@ -18,7 +18,6 @@ import nars.task.ProxyTask;
 import nars.task.proxy.SpecialTermTask;
 import nars.task.util.TaskException;
 import nars.term.Term;
-import nars.term.Termed;
 import nars.term.util.Image;
 import nars.time.Tense;
 import nars.truth.Truth;
@@ -194,14 +193,16 @@ public class Remember extends AbstractTask {
         NAR n = w.nar;
 
         /* 1. resolve */
-        Termed cc = c == null ? t : c;
-        c = (TaskConcept) n.conceptualize(cc);
+//        Termed cc = c == null ? t : c;
+//        c = (TaskConcept) n.conceptualize(cc);
 
+        //HACK TODO
         if (c != null) {
+            if (c.term().equals(t.term().concept())) {
 
-
-            //if (value)
-            c.value(t, n);
+                //if (value)
+                c.value(t, n);
+            }
         }
 
         if (link)

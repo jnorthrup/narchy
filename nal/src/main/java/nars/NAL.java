@@ -49,7 +49,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
 
     public static final float DEFAULT_CURIOSITY_RATE = 0.05f;
 
-    public static final int NEG_CACHE_VOL_THRESHOLD = 5;
+    public static final int NEG_CACHE_VOL_THRESHOLD = 16;
 
     public static int ATOM_TANGENT_REFRESH_DURS = 1;
 
@@ -662,7 +662,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
          * for NALTest's: extends the time all unit tests are allowed to run for.
          * normally be kept to 1 but for debugging this may be increased to find what tests need more time
          */
-        public static final float TIME_MULTIPLIER = 1f;
+        public static final float TIME_MULTIPLIER = 2f;
         /**
          * how precise unit test results must match expected values to pass
          */

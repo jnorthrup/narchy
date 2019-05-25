@@ -4,6 +4,7 @@ package nars.io;
 import com.google.common.io.ByteArrayDataOutput;
 import jcog.data.byt.DynBytes;
 import jcog.data.byt.RecycledDynBytes;
+import jcog.io.BytesInput;
 import jcog.pri.Prioritized;
 import nars.Op;
 import nars.Task;
@@ -198,12 +199,16 @@ public class IO {
     @Nullable
     public static Term bytesToTerm(byte[] b) {
         try {
-            return TermIO.the.read(TaskIO.input(b));
+            return TermIO.the.read(input(b));
         } catch (IOException e) {
             throw new RuntimeException(e);
         } /*catch (Term.InvalidTermException ignored) {
             return null;
         }*/
+    }
+
+    public static BytesInput input(byte[] b) {
+        return new BytesInput(b);
     }
 
 

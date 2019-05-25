@@ -28,15 +28,15 @@ public abstract class AbstractAtomic implements Atomic {
         this(bytes(op, s));
     }
 
-    private static byte[] bytes(Op op, String str) {
+    public static byte[] bytes(Op op, String str) {
         return bytes(op.id, str);
     }
 
-    protected static byte[] bytes(byte opID, String str) {
+    public static byte[] bytes(byte opID, String str) {
         return bytes(opID, str.getBytes());
     }
 
-    protected static byte[] bytes(byte opID, byte[] stringbytes) {
+    public static byte[] bytes(byte opID, byte[] stringbytes) {
         int slen = stringbytes.length;
 
         byte[] sbytes = new byte[slen + 3];

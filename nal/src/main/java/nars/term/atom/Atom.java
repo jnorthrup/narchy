@@ -12,7 +12,8 @@ import static nars.Op.*;
 public class Atom extends AbstractAtomic implements The {
 
 
-    private Atom(byte[] b) {
+    /** use with caution */
+    public Atom(byte[] b) {
         super(b);
     }
 
@@ -140,5 +141,18 @@ public class Atom extends AbstractAtomic implements The {
     }
 
 
+    public boolean startsWith(byte... prefix) {
+        byte[] b = bytes();
+        int o = 3; //skip op byte + 2 len bytes
+        int P = prefix.length;
+        if (b.length - o >= P) {
+            for (int i = 0; i < P; i++) {
+                if (b[i+o]!=prefix[i])
+                    return false;
+            }
+            return true;
+        }
+        return false;
+    }
 }
 
