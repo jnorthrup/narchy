@@ -568,9 +568,9 @@ abstract public class GameX extends Game {
      * TODO extract to class
      */
     private static void addGovernor(NAR n) {
-        int gHist = 8;
-        float momentum = 0.95f;
-        float explorationRate = 0.05f;
+        int gHist = 16;
+        float momentum = 0.75f;
+        float explorationRate = 0.1f;
         n.onDur(new Consumer<NAR>() {
 
             final Consumer<FasterList<Why>> reval = new Consumer<FasterList<Why>>() {
@@ -614,13 +614,13 @@ abstract public class GameX extends Game {
                     float v = h.valueRateNormalized;
                     if (v != v) v = 0;
 
-                    float pri = Util.lerp(Util.clamp(v, 0, 1), explorationRate, 1);
+                    float pri = Util.lerp(Util.clamp(v, 0, 1), explorationRate, (1-explorationRate));
 
                     FloatAveragedWindow g = (FloatAveragedWindow) h.governor;
                     if (g == null)
                         h.governor = g = new FloatAveragedWindow(gHist, 1 - momentum, 0).mode(
-                                FloatAveragedWindow.Mode.Exponential
-                                //FloatAveragedWindow.Mode.Mean
+                                //FloatAveragedWindow.Mode.Exponential
+                                FloatAveragedWindow.Mode.Mean
                         );
                     h.pri(g.valueOf(pri));
                 });

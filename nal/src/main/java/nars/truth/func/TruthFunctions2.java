@@ -239,8 +239,8 @@ enum TruthFunctions2 {
         float c = confCompose(X, XimplY);
         if (c < minConf) return null;
         float cc = c *
-                X.freq(); //soft polarity match (inverse bleed through)
-        //Math.max(0, 2 * (X.freq()-0.5f)); //hard polarity match
+                (NAL.truth.preSoft ? X.freq() //soft polarity match (inverse bleed through)
+                : Math.max(0, 2 * (X.freq()-0.5f))); //hard polarity match
         if (weak)
             cc = weak(cc);
         if (cc < minConf) return null;

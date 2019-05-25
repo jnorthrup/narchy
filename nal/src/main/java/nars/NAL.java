@@ -106,8 +106,9 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
      * priority calculation here currently depends on a commutive and associaive function
      */
     public static final FloatFloatToFloatFunction DerivationPri =
+            (t, b) -> Util.and(t , b); //plus, max=1
             //(t, b) -> Util.or(t , b); //plus, max=1
-            (t, b) -> Util.unitize(t + b); //plus, max=1
+            //(t, b) -> Util.unitize(t + b); //plus, max=1
 
 //    /** durs surrounding a derived temporal goal with one eternal (of two) parent tasks */
 //    public static final float GOAL_PROJECT_TO_PRESENT_RADIUS_DURS = 1;
@@ -508,6 +509,9 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
                 //ScalarValue.EPSILON;
                 //Float.MIN_NORMAL;
                 Double.MIN_NORMAL;
+
+        /** switch between soft and hard pre decision truth function */
+        public static final boolean preSoft = true;
     }
 
     /**
