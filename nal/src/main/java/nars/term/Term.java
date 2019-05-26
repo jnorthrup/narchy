@@ -23,6 +23,7 @@ package nars.term;
 
 import jcog.TODO;
 import jcog.Util;
+import nars.NAL;
 import nars.Op;
 import nars.The;
 import nars.subterm.Subterms;
@@ -31,9 +32,9 @@ import nars.term.anon.Intrin;
 import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
 import nars.term.atom.Int;
+import nars.term.buffer.TermBuffer;
 import nars.term.compound.UnitCompound;
 import nars.term.util.conj.Conj;
-import nars.term.util.transform.AbstractTermTransform;
 import nars.term.util.transform.MapSubst;
 import nars.term.util.transform.Retemporalize;
 import nars.term.util.transform.TermTransform;
@@ -164,8 +165,14 @@ public interface Term extends Termlike, Termed, Comparable<Term> {
     boolean containsAny(Subterms ofThese);
 
     default Term transform(TermTransform t) {
-        if (this instanceof Compound && t instanceof AbstractTermTransform) //HACK
-            return AbstractTermTransform.transform(this, (AbstractTermTransform)t);
+        if (this instanceof Compound && t instanceof TermTransform && volume() > NAL.TERMBUFFER_VOL_MIN) //HACK
+            return TermTransform.transform((Compound) this, t, null, NAL.term.COMPOUND_VOLUME_MAX);
+        else
+            return t.apply(this);
+    }
+    default Term transform(TermTransform t, TermBuffer b, int volMax) {
+        if (this instanceof Compound && t instanceof TermTransform && volume() > NAL.TERMBUFFER_VOL_MIN) //HACK
+            return TermTransform.transform((Compound)this, t, b, volMax);
         else
             return t.apply(this);
     }

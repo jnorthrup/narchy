@@ -4,7 +4,6 @@ import nars.Op;
 import nars.subterm.Subterms;
 import nars.term.Compound;
 import nars.term.Term;
-import nars.term.util.transform.TermTransform;
 import org.eclipse.collections.api.block.function.primitive.IntObjectToIntFunction;
 import org.eclipse.collections.api.block.predicate.primitive.ObjectIntPredicate;
 import org.eclipse.collections.api.block.procedure.primitive.ObjectIntProcedure;
@@ -12,10 +11,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.function.BiConsumer;
-import java.util.function.BiPredicate;
-import java.util.function.Consumer;
-import java.util.function.Predicate;
+import java.util.function.*;
 import java.util.stream.Stream;
 
 import static nars.time.Tense.XTERNAL;
@@ -275,7 +271,7 @@ public abstract class SeparateSubtermsCompound implements Compound {
     }
 
     @Override
-    public final @Nullable Subterms transformSubs(TermTransform f, Op superOp) {
+    public final @Nullable Subterms transformSubs(Function<Term,Term> f, Op superOp) {
         return subterms().transformSubs(f, superOp);
     }
 

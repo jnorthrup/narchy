@@ -1,13 +1,11 @@
 package nars.term.util.transform;
 
-import jcog.TODO;
 import jcog.WTF;
 import jcog.data.list.FasterList;
 import nars.NAL;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.atom.Atomic;
-import nars.term.buffer.TermBuffer;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Iterator;

@@ -1,17 +1,15 @@
 package nars.term.util.transform;
 
-import nars.NAL;
 import nars.Op;
 import nars.subterm.Subterms;
 import nars.subterm.TermList;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.atom.Bool;
-import nars.term.buffer.TermBuffer;
-import nars.term.util.TermException;
 import org.jetbrains.annotations.Nullable;
 
 import static nars.Op.*;
+import static nars.term.atom.Bool.Null;
 import static nars.time.Tense.DTERNAL;
 import static nars.time.Tense.XTERNAL;
 
@@ -19,36 +17,6 @@ import static nars.time.Tense.XTERNAL;
  * I = input target type, T = transformable subterm type
  */
 public interface AbstractTermTransform extends TermTransform, nars.term.util.builder.TermConstructor {
-
-    static Term transform(Term x, AbstractTermTransform transform) {
-        return transform(x, transform, null, NAL.term.COMPOUND_VOLUME_MAX);
-    }
-
-    /** global default transform procedure: can decide semi-optimal transform implementation */
-    public static Term transform(Term x, AbstractTermTransform transform, @Nullable TermBuffer l, int volMax) {
-        if (x instanceof Compound && NAL.TERMIFY_TRANSFORM_LAZY && x.volume() > NAL.TERMIFY_TRANSFORM_LAZY_VOL_MIN ) {
-
-            try {
-                if (l == null)
-                    l = new TermBuffer();
-                else
-                    l.clear(); //true, (l.sub.termCount() >= 64) /* HACK */);
-                l.volRemain = volMax;
-                l.appendCompound((Compound)x, transform);
-                return l.term();
-            } catch (TermException t) {
-                if (NAL.DEBUG)
-                    throw t;
-                //continue below
-            } catch (RuntimeException e) {
-                throw new TermException(e.toString(), x);
-                //return Null;
-            }
-
-        }
-
-        return transform.apply(x);
-    }
 
     /**
      * transform pathway for compounds
@@ -74,7 +42,7 @@ public interface AbstractTermTransform extends TermTransform, nars.term.util.bui
 //        }
 
         if (yy == null)
-            return Bool.Null;
+            return Null;
 
         int thisDT = x.dt();
         if (yy == xx && (sameOpAndDT || (xop == targetOp && thisDT == newDT)))

@@ -35,9 +35,9 @@ import nars.term.util.TermTransformException;
 import nars.term.util.builder.TermBuilder;
 import nars.term.util.conj.Conj;
 import nars.term.util.conj.ConjSeq;
-import nars.term.util.transform.AbstractTermTransform;
 import nars.term.util.transform.MapSubst;
 import nars.term.util.transform.Retemporalize;
+import nars.term.util.transform.TermTransform;
 import nars.unify.Unify;
 import org.eclipse.collections.api.block.predicate.primitive.LongObjectPredicate;
 import org.jetbrains.annotations.Nullable;
@@ -751,7 +751,7 @@ public interface Compound extends Term, IPair, Subterms {
     }
 
 
-    default Term transform(AbstractTermTransform f) {
+    default Term transform(TermTransform f) {
         return f.applyCompound(this);
     }
 

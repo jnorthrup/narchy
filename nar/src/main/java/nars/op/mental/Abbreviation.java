@@ -230,11 +230,11 @@ public class Abbreviation/*<S extends Term>*/ extends How {
     }
 
     public static Term abbreviate(Term x) {
-        return AbstractTermTransform.transform(x, new ABBREVIATE());
+        return x.transform(new ABBREVIATE());
     }
 
     public static Term unabbreviate(Term x, Function<Term,Concept> resolver) {
-        return AbstractTermTransform.transform(x, new UNABBREVIATE(resolver));
+        return x.transform(new UNABBREVIATE(resolver));
     }
 //
 //    private void abbreviateNext(What w) {

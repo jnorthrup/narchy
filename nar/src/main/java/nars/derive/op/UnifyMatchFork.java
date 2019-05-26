@@ -4,7 +4,6 @@ import nars.derive.model.Derivation;
 import nars.term.Term;
 import nars.term.atom.Bool;
 import nars.term.buffer.TermBuffer;
-import nars.term.util.transform.AbstractTermTransform;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -34,7 +33,7 @@ public final class UnifyMatchFork extends TermBuffer implements Predicate<Deriva
 
         Term x = taskify.pattern(d);
 
-        Term y = AbstractTermTransform.transform(x, d.transform, this, workVolMax);
+        Term y = x.transform(d.transform, this, workVolMax);
 
         d.nar.emotion.deriveMatchTransformed.increment();
 

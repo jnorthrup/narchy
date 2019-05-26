@@ -7,7 +7,6 @@ import jcog.memoize.QuickMemoize;
 import jcog.util.HashCachedPair;
 import nars.derive.model.Derivation;
 import nars.term.Term;
-import nars.term.util.transform.AbstractTermTransform;
 import nars.unify.Unification;
 import nars.unify.unification.DeterministicUnification;
 import nars.unify.unification.Termutifcation;
@@ -90,7 +89,7 @@ public class CachingPremisify extends Premisify {
 //            int start = d.size();
         d.transform.xy = xy::xy;
         d.retransform.clear();
-        Term y = AbstractTermTransform.transform(taskify.pattern(d), d.transform);
+        Term y = taskify.pattern(d).transform(d.transform);
 //      d.revert(start);
         d.transform.xy = null;
         taskify.apply(y, d);

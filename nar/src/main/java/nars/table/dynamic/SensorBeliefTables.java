@@ -10,7 +10,6 @@ import nars.NAR;
 import nars.Task;
 import nars.attention.TaskLinkWhat;
 import nars.attention.What;
-import nars.concept.Concept;
 import nars.control.op.Remember;
 import nars.table.BeliefTables;
 import nars.table.dynamic.SeriesBeliefTable.SeriesTask;

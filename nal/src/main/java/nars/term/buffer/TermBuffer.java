@@ -540,7 +540,7 @@ public class TermBuffer {
         return code.len==0 && (sub==null || sub.isEmpty());
     }
 
-    public boolean append(Term x, TermTransform f) {
+    public boolean append(Term x, Function<Term,Term> f) {
         if (x instanceof Compound) {
             byte interned = this.term(x);
             if (interned!=Byte.MIN_VALUE) {
@@ -550,7 +550,7 @@ public class TermBuffer {
                 return appendCompound((Compound) x, f);
             }
         } else {
-            @Nullable Term y = f.applyAtomic((Atomic) x);
+            @Nullable Term y = f.apply(x);
             if (y == null || y == Bool.Null)
                 return false;
             else {
@@ -574,12 +574,12 @@ public class TermBuffer {
     }
 
 
-    public boolean appendCompound(Compound x, TermTransform f, int volRemain) {
+    public boolean appendCompound(Compound x, Function<Term,Term> f, int volRemain) {
         this.volRemain = volRemain;
         return appendCompound(x, f);
     }
 
-    public boolean appendCompound(Compound x, TermTransform f) {
+    public boolean appendCompound(Compound x, Function<Term,Term> f) {
         int c = this.change(), u = this.uniques();
         int p = this.pos();
 
@@ -610,9 +610,9 @@ public class TermBuffer {
         return true;
     }
 
-    private boolean transformSubterms(Subterms s, TermTransform t) {
+    private boolean transformSubterms(Subterms s, Function<Term, Term> t) {
         this.subsStart((byte) s.subs());
-        if (s.ANDwithOrdered(this::append, t)) {
+        if (s.ANDwithOrdered((x,f)->append(x,f), t)) {
             this.subsEnd();
             return true;
         }

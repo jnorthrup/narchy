@@ -15,7 +15,6 @@ import nars.term.Variable;
 import nars.term.*;
 import nars.term.atom.Bool;
 import nars.term.util.transform.MapSubst;
-import nars.term.util.transform.TermTransform;
 import nars.unify.Unify;
 import nars.unify.mutate.CommutivePermutations;
 import org.eclipse.collections.api.block.function.primitive.IntObjectToIntFunction;
@@ -1241,7 +1240,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
      * providing a hint about the target operator the subterms is being constructed for
      * this allows certain fail-fast cases
      */
-    @Nullable default Subterms transformSubs(TermTransform f, Op superOp) {
+    @Nullable default Subterms transformSubs(Function<Term,Term> f, Op superOp) {
 
         TermList y = null;
 
@@ -1294,7 +1293,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
         return y != null ? y.commit(this, superOp) : this;
     }
 
-    static TermList transformSubInline(Subterms e, TermTransform f, TermList out, int subsTotal, int i) {
+    static TermList transformSubInline(Subterms e, Function<Term,Term> f, TermList out, int subsTotal, int i) {
         int xes = e.subs();
 
 

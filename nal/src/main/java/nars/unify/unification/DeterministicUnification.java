@@ -1,7 +1,6 @@
 package nars.unify.unification;
 
 import nars.term.Term;
-import nars.term.util.transform.AbstractTermTransform;
 import nars.unify.Unification;
 import nars.unify.Unify;
 import org.jetbrains.annotations.Nullable;
@@ -38,7 +37,7 @@ abstract public class DeterministicUnification implements Unification {
     }
 
     public final Term transform(Term x) {
-        return AbstractTermTransform.transform(x, transform());
+        return x.transform(transform());
     }
 
     protected Unify.UnifyTransform.LambdaUnifyTransform transform() {

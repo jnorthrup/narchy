@@ -4,10 +4,8 @@ import com.google.common.escape.Escapers;
 import org.HdrHistogram.AbstractHistogram;
 import org.HdrHistogram.DoubleHistogram;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.CharBuffer;
-import java.nio.charset.StandardCharsets;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;

@@ -144,7 +144,7 @@ public abstract class Unify extends Versioning<Term> {
     }
 
 
-    public static TermTransform transform(Function<Variable,Term> resolve) {
+    public static Function<Term, Term> transform(Function<Variable,Term> resolve) {
         return new UnifyTransform.LambdaUnifyTransform(resolve);
     }
 

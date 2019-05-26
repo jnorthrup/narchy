@@ -65,9 +65,8 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
     public static final boolean VOLMAX_RESTRICTS_INPUT= configIs("VOLMAX_RESTRICTS_INPUT"); //input tasks
     public static final boolean VOLMAX_RESTRICTS= configIs("VOLMAX_RESTRICTS"); //all tasks
 
-    /** mostly tested */
-    public static final boolean TERMIFY_TRANSFORM_LAZY = true;
-    public static final int TERMIFY_TRANSFORM_LAZY_VOL_MIN = 4;
+
+    public static final int TERMBUFFER_VOL_MIN = 3;
 
     public static final boolean ANONIFY_TRANSFORM_LAZY = true;
 
