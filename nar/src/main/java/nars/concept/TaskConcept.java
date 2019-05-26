@@ -5,7 +5,6 @@ import nars.NAL;
 import nars.NAR;
 import nars.Task;
 import nars.concept.util.ConceptBuilder;
-import nars.control.MetaGoal;
 import nars.control.op.Remember;
 import nars.table.BeliefTable;
 import nars.table.TaskTable;
@@ -16,9 +15,6 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
-
-import static nars.Op.BELIEF;
-import static nars.Op.GOAL;
 
 public class TaskConcept extends NodeConcept  {
 
@@ -94,16 +90,6 @@ public class TaskConcept extends NodeConcept  {
         //}
     }
 
-    public void value(Task t, NAR n) {
-
-        n.emotion.perceive(t);
-
-        byte punc = t.punc();
-        if (punc == BELIEF || punc == GOAL) {
-            (punc == BELIEF ? MetaGoal.Believe : MetaGoal.Desire)
-                    .learn(t.priElseZero(), n.control.why, t.why());
-        }
-    }
 
 
     public void forEachTask(boolean includeConceptBeliefs, boolean includeConceptQuestions, boolean includeConceptGoals, boolean includeConceptQuests, Consumer<Task> each) {

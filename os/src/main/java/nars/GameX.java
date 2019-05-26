@@ -492,7 +492,7 @@ abstract public class GameX extends Game {
 
         //new StatementLinker(n);
         //new PuncNoise(n);
-        n.start(new Eternalizer(n));
+        //n.start(new Eternalizer(n));
 
 //        new STMLinkage(n, 1);
 
@@ -568,8 +568,8 @@ abstract public class GameX extends Game {
      */
     private static void addGovernor(NAR n) {
         int gHist = 16;
-        float momentum = 0.9f;
-        float explorationRate = 0.2f;
+        float momentum = 0.5f;
+        float explorationRate = 0.1f;
         n.onDur(new Consumer<NAR>() {
 
             final Consumer<FasterList<Why>> reval = new Consumer<FasterList<Why>>() {

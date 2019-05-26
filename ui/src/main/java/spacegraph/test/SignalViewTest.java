@@ -4,10 +4,15 @@ import com.github.sarxos.webcam.Webcam;
 import com.google.common.util.concurrent.RateLimiter;
 import jcog.Util;
 import jcog.exe.Loop;
+import jcog.net.http.HttpConnection;
+import jcog.net.http.HttpModel;
+import jcog.net.http.HttpServer;
 import jcog.random.XoRoShiRo128PlusRandom;
 import jcog.signal.wave1d.DigitizedSignal;
 import jcog.signal.wave1d.FreqDomain;
 import jcog.signal.wave1d.SignalInput;
+import org.java_websocket.WebSocket;
+import org.java_websocket.handshake.ClientHandshake;
 import spacegraph.audio.AudioSource;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.grid.Gridding;
@@ -25,6 +30,7 @@ import spacegraph.video.WebCam;
 
 import javax.sound.sampled.LineUnavailableException;
 import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
@@ -41,7 +47,7 @@ public class SignalViewTest {
         RealTimeLine cc = new RealTimeLine();
 
         int capacity = 128;
-        float audioFPS = 16;
+        float audioFPS = 8;
         float granularity = 2;
 
         for (Webcam ww : Webcam.getWebcams()) {
@@ -77,6 +83,30 @@ public class SignalViewTest {
                 ((float) t.getHeight()) / t.getWidth()), now - dur, now));
     }
 
+    public static class TimeBuffer {
+        {
+            HttpServer server = null;
+            try {
+                server = new HttpServer("localhost", 8080, new HttpModel() {
+
+                    @Override
+                    public void wssOpen(WebSocket ws, ClientHandshake handshake) {
+                        ws.send("hi");
+                    }
+
+                    @Override
+                    public void response(HttpConnection h) {
+                        h.respond("");
+                    }
+                });
+                server.setFPS(20f);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+
+        }
+    }
     public static class RealTimeLine extends Gridding {
 
         float viewWindowSeconds = 8;

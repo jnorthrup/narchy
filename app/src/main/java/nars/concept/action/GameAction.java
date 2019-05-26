@@ -2,20 +2,16 @@ package nars.concept.action;
 
 import jcog.math.FloatRange;
 import nars.NAR;
-import nars.Task;
 import nars.attention.AttnBranch;
 import nars.concept.PermanentConcept;
 import nars.concept.TaskConcept;
-import nars.concept.action.curiosity.CuriosityTask;
 import nars.concept.sensor.GameLoop;
-import nars.control.MetaGoal;
 import nars.table.BeliefTable;
 import nars.table.dynamic.SensorBeliefTables;
 import nars.table.temporal.RTreeBeliefTable;
 import nars.term.Term;
 import nars.term.Termed;
 import nars.truth.Truth;
-import nars.truth.polation.TruthIntegration;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -56,21 +52,6 @@ public abstract class GameAction extends TaskConcept implements GameLoop, Perman
         return ((SensorBeliefTables) beliefs()).resolution();
     }
 
-    @Override
-    public void value(Task t, NAR n) {
-
-        if (!(t instanceof CuriosityTask)) {
-            super.value(t, n);
-
-            if (t.isGoal()) {
-                MetaGoal.Action.learn(
-                        t.isEternal() ? t.conf() * n.dur()
-                            :
-                        (float) TruthIntegration.evi(t),
-                    n.control.why, t.why());
-            }
-        }
-    }
 
     public GameAction resolution(float v) {
         resolution().set(v);

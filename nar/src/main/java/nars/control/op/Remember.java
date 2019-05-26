@@ -9,6 +9,7 @@ import nars.attention.TaskLinkWhat;
 import nars.attention.What;
 import nars.concept.Concept;
 import nars.concept.TaskConcept;
+import nars.control.MetaGoal;
 import nars.op.stm.ConjClustering;
 import nars.table.dynamic.ImageBeliefTable;
 import nars.task.AbstractTask;
@@ -22,6 +23,9 @@ import nars.term.util.Image;
 import nars.time.Tense;
 import nars.truth.Truth;
 import org.jetbrains.annotations.Nullable;
+
+import static nars.Op.BELIEF;
+import static nars.Op.GOAL;
 
 /**
  * conceptualize and attempt to insert/merge a task to belief table.
@@ -196,13 +200,20 @@ public class Remember extends AbstractTask {
 //        Termed cc = c == null ? t : c;
 //        c = (TaskConcept) n.conceptualize(cc);
 
-        //HACK TODO
-        if (c != null) {
-            if (c.term().equals(t.term().concept())) {
+        n.emotion.perceive(t);
 
-                //if (value)
-                c.value(t, n);
-            }
+        byte punc = t.punc();
+        if (punc == BELIEF || punc == GOAL) {
+            (punc == BELIEF ? MetaGoal.Believe : MetaGoal.Desire)
+                    .learn(t.priElseZero(), n.control.why, t.why());
+
+//            if (t.isGoal()) {
+//                MetaGoal.Action.learn(
+//                        t.isEternal() ? t.conf() * n.dur()
+//                                :
+//                                (float) TruthIntegration.evi(t),
+//                        n.control.why, t.why());
+//            }
         }
 
         if (link)
