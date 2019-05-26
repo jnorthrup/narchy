@@ -50,7 +50,6 @@ public class UDP extends Loop {
     private static final Logger logger = LoggerFactory.getLogger(UDP.class);
 
 
-    private final int port;
     protected final DatagramChannel c;
     public final InetSocketAddress addr;
 
@@ -93,7 +92,7 @@ public class UDP extends Loop {
         c.bind(aa);
 
 
-        port = this.port = ((InetSocketAddress)c.getLocalAddress()).getPort();
+        port = ((InetSocketAddress)c.getLocalAddress()).getPort();
         this.addr = new InetSocketAddress(a, port); //(InetSocketAddress) c.getLocalAddress();
 
 
@@ -114,9 +113,10 @@ public class UDP extends Loop {
 //    }
 
     public int port() {
-        return port;
+        return addr.getPort();
     }
 
+    public InetSocketAddress host() { return addr; }
 
     @Override
     protected void stopping() {

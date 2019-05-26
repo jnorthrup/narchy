@@ -265,8 +265,19 @@ enum TruthFunctions2 {
         float yFp = 2 * (yF - 0.5f);
         float impFp = 2 * (impF - 0.5f);
         float alignment = (((yFp * impFp) /*-1..+1*/) + 1) / 2;
-        c *= alignment;
-        f = alignment;
+        {
+            c *= alignment;
+            f = alignment;
+        }
+//        {
+//            c *= alignment;
+//            f = 1;
+//        }
+//        {
+//            float aSqrt = Util.sqrt(alignment); //split between conf and freq
+//            c *= aSqrt;
+//            f = aSqrt;
+//        }
 
         float cc = strong ? c : weak(c);
         return cc < minConf ? null : $.t(f, cc);

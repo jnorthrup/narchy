@@ -1,0 +1,52 @@
+//emulation of the <=> equivalence operator
+//  a way to emulate <=> with "==>" and "&":
+//  here NAL3 '&' is repurposed in a raw (un-inherited) form.
+//  temporality and negations from the parent implications which form it remain present (unlike <=>).
+
+
+
+//// implication to equivalence ////////////////////////////////////////////////////////////////////////////////////
+//If when S happens, P happens, and before P happens, S has happened, then they are truth-related equivalent
+
+//equivalent, and equivalent to negative cases
+ (X==>Y), (  Y==>X), neq(X,Y), --isVar(X), --isVar(Y)     |-    (  X ==>   Y), (Belief:IntersectionPP)
+  (X==>Y), (  Y==>X), neq(X,Y), --isVar(X), --isVar(Y)    |-    (  Y ==>   X), (Belief:IntersectionPP)
+ (X==>Y), (--Y==>X), neq(X,Y), --isVar(X), --isVar(Y)     |-    (  X ==> --Y), (Belief:IntersectionNP)
+  (X==>Y), (--Y==>X), neq(X,Y), --isVar(X), --isVar(Y)    |-    (--Y ==>   X), (Belief:IntersectionNP)
+ (--X==>Y), (  Y==>X), neq(X,Y), --isVar(X), --isVar(Y)   |-    (--X ==>   Y), (Belief:IntersectionPN)
+  (--X==>Y), (  Y==>X), neq(X,Y), --isVar(X), --isVar(Y)  |-    (  Y ==> --X), (Belief:IntersectionPN)
+ (--X==>Y), ( --Y==>X), neq(X,Y), --isVar(X), --isVar(Y)   |-   (--X ==> --Y), (Belief:IntersectionNN)
+  (--X==>Y), ( --Y==>X), neq(X,Y), --isVar(X), --isVar(Y)  |-   (--Y ==> --X), (Belief:IntersectionNN)
+
+    //(X==>Y), (Y==>X), neq(X,Y)     |-  varIntro((polarizeTask((X==>Y))&&polarizeBelief((Y==>X)))), (Belief:IntersectionDepolarized)
+
+//opposite / inequivalent
+ //(--X==>Y), (--Y==>X), neq(X,Y) |-  --(polarize((X==>Y),task)&polarize((Y==>X),belief)), (Belief:IntersectionDepolarized, Time:TimeRange)
+
+
+//// equivalence-based syllogism ////////////////////////////////////////////////////////////////////////////////////
+ (P==>M), (S==>M), neq(S,P), --isVar(S), --isVar(P) |- (S==>P), (Belief:Comparison)
+ (P==>M), (S==>M), neq(S,P), --isVar(S), --isVar(P) |- (P==>S), (Belief:Comparison)
+ (M==>P), (M==>S), neq(S,P), --isVar(S), --isVar(P) |- (S==>P), (Belief:Comparison)
+ (M==>P), (M==>S), neq(S,P), --isVar(S), --isVar(P) |- (P==>S), (Belief:Comparison)
+
+    //TODO negatives
+
+ (M==>P), ((S==>M)&&(M==>S)), neq(S,P), --isVar(S), --isVar(P) |- (S ==> P), (Belief:Analogy)
+ (P==>M), ((S==>M)&&(M==>S)), neq(S,P), --isVar(S), --isVar(P) |- (P ==> S), (Belief:Analogy)
+    //TODO negatives
+
+ //// conditional syllogism ////////////////////////////////////////////////////////////////////////////////////
+ //If after M, P usually happens, and M happens, it means P is expected to happen
+  B,     ((C==>A)&&(A==>C))   |- unisubst(C,A,B,"$"),   (Belief:AnalogyPP, Goal:Desire)
+  B,     ((C==>A)&&(A==>C))   |- --unisubst(C,A,B,"$"), (Belief:AnalogyPN, Goal:Desire)
+  B,   (--(C==>A)&&(--A==>C)) |- unisubst(C,A,B,"$"),   (Belief:AnalogyNP, Goal:Desire)
+  B,   (--(C==>A)&&(--A==>C)) |- --unisubst(C,A,B,"$"), (Belief:AnalogyNN, Goal:Desire)
+
+//  A,     ((C==>A)&&(A==>C))   |- C, (Belief:Analogy, Goal:Desire)
+//  A,     ((C==>A)&&(A==>C))   |- --C, (Belief:AnalogyPN, Goal:Desire)
+//  A,   (--(C==>A)&&(--A==>C)) |- C, (Belief:AnalogyN, Goal:Desire)
+//  A,   (--(C==>A)&&(--A==>C)) |- --C, (Belief:AnalogyNN, Goal:Desire)
+
+  //B, ((A==>C)&&(C==>A))  |- unisubst(C, A, B, "$"), (Belief:Deduction)
+       //TODO negatives

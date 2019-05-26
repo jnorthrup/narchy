@@ -8,7 +8,7 @@ final class EchoNegatedDerivedCuriosity extends CuriosityMode {
 
     @Override
     public @Nullable Truth get(AbstractGoalActionConcept action, Curiosity curiosity) {
-        Truth t = action.curiDex;
+        Truth t = action.lastNonNullActionDex;
         return t != null ? t.neg() : null;
     }
 }

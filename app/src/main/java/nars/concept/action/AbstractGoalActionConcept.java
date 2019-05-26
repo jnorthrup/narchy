@@ -60,7 +60,7 @@ public class AbstractGoalActionConcept extends GameAction {
      * latches the last non-null actionDex, used for echo/sustain
      * TODO make this more complex like a replay buffer in DQN
      */
-    public @Nullable Truth curiDex;
+    public @Nullable Truth lastNonNullActionDex;
 
     final short[] causeArray;
 
@@ -122,7 +122,7 @@ public class AbstractGoalActionConcept extends GameAction {
     public org.eclipse.collections.api.tuple.Pair<Truth, long[]> truth(boolean beliefsOrGoals, int componentsMax, long prev, long now, int gameDur, NAR n) {
         BeliefTable tables = (beliefsOrGoals ? beliefs() : goals());
 
-        long ss = TIMELESS, ee = TIMELESS;
+
 
         long s, e;
         s = now - gameDur/2;
@@ -189,7 +189,7 @@ public class AbstractGoalActionConcept extends GameAction {
                 if (nextP!=null) {
                     Truth next = nextP.truth(NAL.truth.TRUTH_EVI_MIN, false, true, n);
                     if (next!=null) {
-                        return pair(next, new long[]{ss = a.time.start, ss = a.time.end});
+                        return pair(next, new long[]{ a.time.start, a.time.end});
                     }
                 }
                 //TODO my truthpolation .stamp()'s and .cause()'s for clues
@@ -240,7 +240,7 @@ public class AbstractGoalActionConcept extends GameAction {
         Truth nextActionDex = gt == null ? null : gt.getOne();
         actionDex = nextActionDex;
         if (nextActionDex != null)
-            curiDex = actionDex;
+            lastNonNullActionDex = actionDex;
 
         long[] se = gt.getTwo();
         long s = se[0], e = se[1];

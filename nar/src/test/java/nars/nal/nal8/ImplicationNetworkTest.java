@@ -188,14 +188,11 @@ class ImplicationNetworkTest {
         bb.print();
         
         cc.forEachTask(x -> System.out.println(x.proof()));
-        
-
 
         Truth bBelief = bb.truth(ETERNAL, n);
+        assertEquals("%1.0;.81%" ,bBelief.toString());
 
         Truth cBelief = cc.truth(ETERNAL, n);
-
-        assertEquals("%1.0;.81%" ,bBelief.toString());
         assertEquals("%1.0;.73%" ,cBelief.toString());
     }
 

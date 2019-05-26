@@ -147,7 +147,7 @@ public class SignalViewTest {
 
             HttpServer server = null;
             try {
-                server = new HttpServer("localhost", port, new HttpModel() {
+                server = new HttpServer(u.host(), port, new HttpModel() {
 
                     @Override
                     public void wssOpen(WebSocket ws, ClientHandshake handshake) {
