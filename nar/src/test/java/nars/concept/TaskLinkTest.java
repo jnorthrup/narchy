@@ -1,14 +1,41 @@
 package nars.concept;
 
+import jcog.pri.op.PriMerge;
 import nars.NARS;
 import nars.Narsese;
+import nars.link.AtomicTaskLink;
 import org.junit.jupiter.api.Test;
 
 import static nars.$.$;
+import static nars.$.$$;
+import static nars.Op.BELIEF;
+import static nars.Op.GOAL;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class TaskLinkTest {
 
+    @Test void testTaskLinkComponentPriOverflow() {
+        AtomicTaskLink t = new AtomicTaskLink($$("x"));
+        assertEquals(0, t.pri(), 0.001f);
+
+        t.priMergeGetDelta(BELIEF, 0.9f, PriMerge.replace);
+        assertEquals((1*0.9f)/4f, t.pri(), 0.001f);
+
+        t.priMergeGetDelta(GOAL, 0.9f, PriMerge.replace);
+        assertEquals((2*0.9f)/4f, t.pri(), 0.001f);
+        t.priMergeGetDelta(GOAL, 0f, PriMerge.replace);
+
+        t.priMergeGetDelta(BELIEF, 0.1f, PriMerge.plus);
+        assertEquals(0.25f, t.pri(), 0.01f);
+        assertEquals(1, t.priPunc(BELIEF), 0.01f);
+
+        //no change:
+        t.priMergeGetDelta(BELIEF, 0.1f, PriMerge.plus);
+        assertEquals(0.25f, t.pri(), 0.01f);
+        assertEquals(1, t.priPunc(BELIEF), 0.01f);
+
+    }
     //    private final NAR n = new NARS().shell();
 
     @Test

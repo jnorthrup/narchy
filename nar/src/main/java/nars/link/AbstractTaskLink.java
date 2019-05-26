@@ -112,8 +112,12 @@ public abstract class AbstractTaskLink implements TaskLink {
     public float pri() {
         float p = this.pri;
         if (p != p)
-            return this.pri = priSum(); //update cached value
+            return this.pri = priMean(); //update cached value
         return p;
+    }
+
+    private float priMean() {
+        return priSum()/4;
     }
 
     protected void invalidate() {
