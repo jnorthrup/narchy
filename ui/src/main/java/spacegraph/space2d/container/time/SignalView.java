@@ -137,7 +137,7 @@ public class SignalView extends Gridding {
             }
 
         };
-        t.addEvents(new Timeline2D.SimpleTimelineEvents(), (nv)-> nv.set(new PushButton(nv.id.toString())), new Timeline2DEvents.LaneTimelineUpdater());
+        t.addEvents(new Timeline2D.SimpleEventBuffer(), (nv)-> nv.set(new PushButton(nv.id.toString())), new Timeline2DEvents.LaneTimelineUpdater());
         add(t.withControls());
 
         this.in.wave.on(raw->{

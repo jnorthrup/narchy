@@ -16,11 +16,11 @@ public class Timeline2DEvents<E> extends Graph2D<E> implements Timeline2D.TimeRa
 
     long start, end;
 
-    public final Timeline2D.TimelineEvents<E> model;
+    public final Timeline2D.EventBuffer<E> model;
 
 
 
-    public Timeline2DEvents(Timeline2D.TimelineEvents<E> model, Consumer<NodeVis<E>> view, Graph2DUpdater<E> u) {
+    public Timeline2DEvents(Timeline2D.EventBuffer<E> model, Consumer<NodeVis<E>> view, Graph2DUpdater<E> u) {
         super();
         this.model = model;
         build(view);
@@ -53,7 +53,7 @@ public class Timeline2DEvents<E> extends Graph2D<E> implements Timeline2D.TimeRa
 
 
             Timeline2DEvents gg = (Timeline2DEvents) g;
-            Timeline2D.TimelineEvents model = gg.model;
+            Timeline2D.EventBuffer model = gg.model;
             float yl = g.bottom(), yh = g.top();
 
             g.forEachValue(t -> {
@@ -61,7 +61,7 @@ public class Timeline2DEvents<E> extends Graph2D<E> implements Timeline2D.TimeRa
             });
         }
 
-        protected void layout(NodeVis<E> jj, Timeline2DEvents gg, Timeline2D.TimelineEvents model, float minVisibleWidth, float yl, float yh) {
+        protected void layout(NodeVis<E> jj, Timeline2DEvents gg, Timeline2D.EventBuffer model, float minVisibleWidth, float yl, float yh) {
             long[] w = model.range(jj.id);
             long left = (w[0]), right = (w[1]);
             if (right-left < minVisibleTime) {
@@ -103,7 +103,7 @@ public class Timeline2DEvents<E> extends Graph2D<E> implements Timeline2D.TimeRa
 
 
             Timeline2DEvents gg = (Timeline2DEvents) g;
-            Timeline2D.TimelineEvents model = gg.model;
+            Timeline2D.EventBuffer model = gg.model;
 
             next.sortThis((x, y) -> model.compareDurThenStart(x.id, y.id));
 
@@ -154,7 +154,7 @@ public class Timeline2DEvents<E> extends Graph2D<E> implements Timeline2D.TimeRa
             }
         }
 
-        void layout(Timeline2DEvents gg, Timeline2D.TimelineEvents model, RoaringBitmap ri, float minVisibleWidth, float yl, float yh) {
+        void layout(Timeline2DEvents gg, Timeline2D.EventBuffer model, RoaringBitmap ri, float minVisibleWidth, float yl, float yh) {
             PeekableIntIterator ii = ri.getIntIterator();
             while (ii.hasNext()) {
                 int j = ii.next();

@@ -37,7 +37,7 @@ public final class CommonVariable extends UnnormalizedVariable {
         boolean ac = A instanceof CommonVariable;
         boolean bc = B instanceof CommonVariable;
         if (!ac && !bc) {
-            z = new IntrinSubterms(Terms.commuted(A, B));
+            z = new IntrinSubterms(Terms.commute(A, B));
         } else {
             ShortHashSet t = new ShortHashSet();
 

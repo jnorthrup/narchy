@@ -41,7 +41,7 @@ public enum Terms {
     /**
      * sort and deduplicates the elements; returns new array if modifications to order or deduplication are necessary
      */
-    public static Term[] commuted(Term... x) {
+    public static Term[] commute(Term... x) {
         int len = x.length;
         switch (len) {
             case 0:
@@ -49,22 +49,26 @@ public enum Terms {
             case 1:
                 return x;
             case 2:
-                return sorted2(x);
+                return commute2(x);
             case 3:
-                return sorted3(x);
+                return commute3(x);
             default: {
-                Term[] y = new TermList(x).sortAndDedup();
-                if (y != x && ArrayUtil.equalsIdentity(x, y))
-                    return x; //unchanged
-                else
-                    return y;
+                return commuteN(x);
             }
         }
 
 
     }
 
-    public static Term[] sorted3(Term[] t) {
+    private static Term[] commuteN(Term[] x) {
+        Term[] y = new TermList(x.clone()).sortAndDedup();
+        if (ArrayUtil.equalsIdentity(x, y))
+            return x; //unchanged
+        else
+            return y;
+    }
+
+    private static Term[] commute3(Term[] t) {
     /*
     //https://stackoverflow.com/a/16612345
     if (el1 > el2) Swap(el1, el2)
@@ -76,7 +80,7 @@ public enum Terms {
         Term a = t[0], b = t[1], c = t[2];
         int ab = a.compareTo(b);
         if (ab == 0) {
-            return commuted(a, c); //a=b, so just combine a and c (recurse)
+            return commute(a, c); //a=b, so just combine a and c (recurse)
         } else if (ab > 0) {
             Term x = a;
             a = b;
@@ -106,7 +110,7 @@ public enum Terms {
     }
 
 
-    public static Term[] sorted2(Term[] t) {
+    private static Term[] commute2(Term[] t) {
         Term a = t[0], b = t[1];
         int ab = a.compareTo(b);
         if (ab < 0) return t;
@@ -267,10 +271,10 @@ public enum Terms {
     /**
      * a Set is already duplicate free, so just sort it
      */
-    public static Term[] commuted(Collection<Term> s) {
+    public static Term[] commute(Collection<Term> s) {
         Term[] x = s.toArray(Op.EmptyTermArray);
         if ((x.length >= 2) && (!(s instanceof SortedSet)))
-            return commuted(x);
+            return commute(x);
         else
             return x;
     }

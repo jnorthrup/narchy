@@ -44,7 +44,7 @@ public class SortedSubterms {
         }
 
         if (dedup)
-            y = Terms.commuted(y);
+            y = Terms.commute(y);
         else {
             Arrays.sort(y);
         }

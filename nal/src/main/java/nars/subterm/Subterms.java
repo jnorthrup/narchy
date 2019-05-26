@@ -259,7 +259,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
         if (isSorted())
             return this;
         else {
-            return new TermList(Terms.commuted(arrayShared()));
+            return new TermList(Terms.commute(arrayShared()));
         }
     }
 

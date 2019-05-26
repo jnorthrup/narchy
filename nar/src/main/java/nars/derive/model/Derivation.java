@@ -32,6 +32,7 @@ import nars.term.functor.AbstractInlineFunctor1;
 import nars.term.util.TermTransformException;
 import nars.term.util.builder.HeapTermBuilder;
 import nars.term.util.builder.TermBuilder;
+import nars.term.util.map.ByteAnonMap;
 import nars.term.util.transform.InstantFunctor;
 import nars.term.util.transform.TermTransform;
 import nars.time.Tense;
@@ -51,6 +52,7 @@ import java.util.function.Predicate;
 
 import static nars.Op.BELIEF;
 import static nars.Op.GOAL;
+import static nars.term.buffer.TermBuffer.INITIAL_ANON_SIZE;
 import static nars.time.Tense.ETERNAL;
 import static nars.time.Tense.TIMELESS;
 
@@ -103,7 +105,7 @@ public class Derivation extends PreDerivation {
             return false;
         }
     };
-    final TermBuffer directTermBuilder = new TermBuffer(null) {
+    final TermBuffer directTermBuilder = new TermBuffer(null, new ByteAnonMap(INITIAL_ANON_SIZE)) {
         @Override
         protected boolean evalInline() {
             return false;

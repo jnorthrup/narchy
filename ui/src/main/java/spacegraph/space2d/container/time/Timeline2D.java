@@ -240,13 +240,13 @@ public class Timeline2D extends Stacking implements Finger.ScrollWheelConsumer {
         return (float) (((when - s) / (double)(e - s)) * W + X);
     }
 
-    public <X> Timeline2D addEvents(TimelineEvents<X> e, Consumer<NodeVis<X>> r, Graph2D.Graph2DUpdater<X> u) {
+    public <X> Timeline2D addEvents(EventBuffer<X> e, Consumer<NodeVis<X>> r, Graph2D.Graph2DUpdater<X> u) {
         add(new Timeline2DEvents<>(e, r, u));
         return this;
     }
 
     /** model for discrete events to be materialized on the timeline */
-    public interface TimelineEvents<X> {
+    public interface EventBuffer<X> {
         /**
          * any events intersecting with the provided range
          */
@@ -330,7 +330,7 @@ public class Timeline2D extends Stacking implements Finger.ScrollWheelConsumer {
         }
     }
 
-    public static class SimpleTimelineEvents extends ConcurrentSkipListSet<SimpleEvent> implements TimelineEvents<SimpleEvent> {
+    public static class SimpleEventBuffer extends ConcurrentSkipListSet<SimpleEvent> implements EventBuffer<SimpleEvent> {
 
         @Override
         public Iterable<SimpleEvent> events(long start, long end) {
@@ -349,19 +349,19 @@ public class Timeline2D extends Stacking implements Finger.ScrollWheelConsumer {
         }
     }
 
-    public static class FixedSizeTimelineEvents extends ConcurrentSkipListSet<SimpleEvent> implements TimelineEvents<SimpleEvent> {
+    public static class FixedSizeEventBuffer<E extends SimpleEvent> extends ConcurrentSkipListSet<E> implements EventBuffer<E> {
 
         private final int cap;
 
-        public FixedSizeTimelineEvents(int cap) {
+        public FixedSizeEventBuffer(int cap) {
             this.cap = cap;
         }
 
         @Override
-        public boolean add(SimpleEvent simpleEvent) {
+        public boolean add(E simpleEvent) {
             if (super.add(simpleEvent)) {
                 while (size() > cap) {
-                    pollLast();
+                    pollFirst();
                 }
                 return true;
             }
@@ -369,18 +369,18 @@ public class Timeline2D extends Stacking implements Finger.ScrollWheelConsumer {
         }
 
         @Override
-        public Iterable<SimpleEvent> events(long start, long end) {
+        public Iterable<E> events(long start, long end) {
 
             return this.stream().filter(x -> intersects(x, start, end)).collect(Collectors.toList());
         }
 
         @Override
-        public boolean intersects(SimpleEvent simpleEvent, long start, long end) {
+        public boolean intersects(E simpleEvent, long start, long end) {
             return LongInterval.intersects(simpleEvent.start, simpleEvent.end, start, end);
         }
 
         @Override
-        public long[] range(SimpleEvent event) {
+        public long[] range(E event) {
             return new long[]{event.start, event.end};
         }
     }

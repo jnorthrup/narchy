@@ -28,8 +28,8 @@ public class SpaceLog {
     final Grok grok = Grok.all();
 
     /** time buffer */
-    final Timeline2D.FixedSizeTimelineEvents time =
-            new Timeline2D.FixedSizeTimelineEvents(512);
+    final Timeline2D.FixedSizeEventBuffer time =
+            new Timeline2D.FixedSizeEventBuffer(512);
 
     public SpaceLog() throws IOException {
         this(0);

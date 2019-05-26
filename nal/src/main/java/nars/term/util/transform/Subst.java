@@ -27,12 +27,17 @@ public interface Subst extends AbstractTermTransform {
 
     @Override
     @Nullable
-    default Term applyCompound(Compound c) {
-        Term y = xy(c);
-        if (y == null || y == c) {
-            return AbstractTermTransform.super.applyCompound(c);
-        } else
-            return y;
+    default Term applyCompound(Compound x) {
+        Term y = xy(x);
+        if (y!=null && y!=x)
+            return apply(y);
+        else
+            return AbstractTermTransform.super.applyCompound(x);
+
+//        if (y == null || y == x) {
+//            return AbstractTermTransform.super.applyCompound(x);
+//        } else
+//            return y;
     }
 
 //    @Override @Nullable

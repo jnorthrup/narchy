@@ -47,7 +47,7 @@ public class Arithmeticize {
 
     private static final int minInts = 2;
 
-    final static Variable A = $.varDep("A_"), B = $.varDep("B_");
+    private final static Variable A = $.varDep("A_"), B = $.varDep("B_");
 
     private static final Function<Atom, Functor> ArithFunctors = Map.of(
             MathFunc.add.term, MathFunc.add,
@@ -167,7 +167,7 @@ public class Arithmeticize {
     final static class IntArrayListCached extends FasterIntArrayList {
         private final int hash;
 
-        public IntArrayListCached(int[] ii) {
+        IntArrayListCached(int[] ii) {
             super(ii);
             int hash = ii[0];
             for (int i = 1; i < ii.length; i++)
@@ -185,17 +185,17 @@ public class Arithmeticize {
         }
     }
 
-    static final Function<IntArrayListCached, ArithmeticOp[]> cached;
+    private static final Function<IntArrayListCached, ArithmeticOp[]> cached;
 
     static {
         cached = Memoizers.the.memoize(Arithmeticize.class.getSimpleName() + "_mods", 8 * 1092, Arithmeticize::_mods);
     }
 
-    static ArithmeticOp[] mods(IntHashSet ii) {
+    private static ArithmeticOp[] mods(IntHashSet ii) {
         return cached.apply(new IntArrayListCached(ii.toSortedArray()));
     }
 
-    static ArithmeticOp[] _mods(IntArrayListCached iii) {
+    private static ArithmeticOp[] _mods(IntArrayListCached iii) {
 
 
         int[] ii = iii.toArray();
@@ -267,7 +267,7 @@ public class Arithmeticize {
         public static final ArithmeticOp[] EmptyArray = new ArithmeticOp[0];
         public final float score;
 
-        protected ArithmeticOp(float score) {
+        ArithmeticOp(float score) {
             this.score = score;
         }
 
@@ -319,7 +319,7 @@ public class Arithmeticize {
     private static class CompareOp extends ArithmeticOp {
         private final int a, b;
 
-        public CompareOp(int a, int b) {
+        CompareOp(int a, int b) {
             super(1);
             assert (a < b);
             this.a = a;
@@ -337,16 +337,16 @@ public class Arithmeticize {
 
     private static final class IntReplacer extends MapSubst.MapSubstN {
 
-        public IntReplacer(Map<? extends Term, Term> xy) {
+        IntReplacer(Map<? extends Term, Term> xy) {
             super(xy);
         }
 
         @Override
-        public @Nullable Term applyCompound(Compound c) {
-            if (c.hasAny(Op.INT))
-                return super.applyCompound(c);
+        public @Nullable Term applyCompound(Compound x) {
+            if (x.hasAny(Op.INT))
+                return super.applyCompound(x);
             else
-                return c;
+                return x;
         }
     }
 }

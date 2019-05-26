@@ -48,7 +48,7 @@ public class Timeline2DTest {
     }
 
     protected static Timeline2DEvents<Timeline2D.SimpleEvent> events(int range) {
-        Timeline2D.SimpleTimelineEvents dummyModel = new Timeline2D.SimpleTimelineEvents();
+        Timeline2D.SimpleEventBuffer dummyModel = new Timeline2D.SimpleEventBuffer();
         int events = 30;
         for (int i = 0; i < events; i++) {
             long start = (long) (Math.random() * range);

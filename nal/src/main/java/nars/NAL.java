@@ -446,13 +446,13 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
      */
     public TruthProjection projection(final long start, final long end, final int dur) {
         return new LinearTruthProjection(start, end, dur);
-        //return new FocusingLinearTruthPolation(start, end, dur);
+        //return new FocusingLinearTruthProjection(start, end, dur);
     }
 
     /**
      * number of time units (cycles) to dither into
      */
-    public int dtDither() {
+    public final int dtDither() {
         return this.dtDither.intValue();
     }
 

@@ -319,7 +319,7 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
                 }
             }
         }
-        return Terms.commuted(u);
+        return Terms.commute(u);
     }
 
     public static Term chooseEvent(Term conj, Random random, boolean decomposeParallel, LongObjectPredicate<Term> valid) {
@@ -1344,7 +1344,7 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
         if (xy == True) {
             return x; //x absorbs y
         } else if (xy == null) {
-            return B.theCompound(CONJ, DTERNAL /*eternalOrParallel ? DTERNAL : 0*/, Terms.commuted(x, y));
+            return B.theCompound(CONJ, DTERNAL /*eternalOrParallel ? DTERNAL : 0*/, Terms.commute(x, y));
         } else {
             //failure or some particular merge result
             return xy;

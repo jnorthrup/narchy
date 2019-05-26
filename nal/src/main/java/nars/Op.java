@@ -706,7 +706,7 @@ public enum Op {
     }
 
     public final Term[] sortedIfNecessary(int dt, Term[] u) {
-        return commutative && u.length > 1 && Conj.concurrentInternal(dt) ? Terms.commuted(u) : u;
+        return commutative && u.length > 1 && Conj.concurrentInternal(dt) ? Terms.commute(u) : u;
     }
     public final Subterms sortedIfNecessary(int dt, Subterms u) {
         return commutative && Conj.concurrentInternal(dt) && u.subs() > 1 ? u.commuted() : u;

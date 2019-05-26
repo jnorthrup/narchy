@@ -9,6 +9,7 @@ import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
 import nars.term.buffer.TermBuffer;
 import nars.term.util.builder.HeapTermBuilder;
+import nars.term.util.map.ByteAnonMap;
 import nars.term.util.transform.HeapTermTransform;
 import org.jetbrains.annotations.Nullable;
 
@@ -145,7 +146,7 @@ public class Evaluator extends HeapTermTransform {
     private static class NonEvalTermBuffer extends TermBuffer {
 
         public NonEvalTermBuffer() {
-            super(HeapTermBuilder.the);
+            super(HeapTermBuilder.the, new ByteAnonMap(INITIAL_ANON_SIZE));
         }
 
         @Override

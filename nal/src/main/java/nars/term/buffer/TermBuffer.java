@@ -45,10 +45,10 @@ import static nars.time.Tense.DTERNAL;
  * when executed construct the target
  */
 public class TermBuffer {
-    private final static int INITIAL_CODE_SIZE = 16;
-    private final static int INITIAL_ANON_SIZE = 64 + 32;
+    public final static int INITIAL_CODE_SIZE = 16;
+    public final static int INITIAL_ANON_SIZE = 64 + 32;
 
-    public final ByteAnonMap sub = new ByteAnonMap(INITIAL_ANON_SIZE);
+    public final ByteAnonMap sub;
     final DynBytes code = new DynBytes(INITIAL_CODE_SIZE);
 
     private final FasterList<DeferredEval> eval = new FasterList();
@@ -64,12 +64,21 @@ public class TermBuffer {
     public int volRemain;
     private final TermBuilder builder;
 
-    public TermBuffer() {
-        this(Op.terms);
+    public TermBuffer clone() {
+        TermBuffer b = new TermBuffer(builder, sub);
+        b.code.write(code);
+        //TODO volRemain ?
+        return b;
     }
 
-    public TermBuffer(TermBuilder builder) {
+    public TermBuffer() {
+        this(Op.terms, new ByteAnonMap(INITIAL_ANON_SIZE));
+    }
+
+    public TermBuffer(TermBuilder builder, ByteAnonMap sub) {
+
         this.builder = builder;
+        this.sub = sub;
     }
 
     public final void clear() {
@@ -213,7 +222,7 @@ public class TermBuffer {
     public Term get(int volMax) {
         this.volRemain = volMax;
 
-        Term y = nextSubterm(code.arrayDirect(), new int[]{0, code.len});
+        Term y = nextTerm(code.arrayDirect(), new int[]{0, code.len});
 
         if (y instanceof Compound && !eval.isEmpty()) {
             y = DeferredEvaluator.apply(y);
@@ -225,7 +234,7 @@ public class TermBuffer {
 
 
 
-    private Term nextSubterm(byte[] bytes, int[] range) {
+    protected Term nextTerm(byte[] bytes, int[] range) {
 
         if (range[0] >= range[1])
             throw new WTF();
@@ -236,7 +245,7 @@ public class TermBuffer {
         if (ctl >= MAX_CONTROL_CODES)
             return nextInterned(ctl, bytes, range);
         else if (ctl == NEG.id)
-            return nextSubterm(bytes, range).neg();
+            return nextTerm(bytes, range).neg();
 
         Op op = Op.the(ctl);
 
@@ -257,7 +266,7 @@ public class TermBuffer {
         for (int i = 0; i < len; ) {
             //assert(range[0] <= range[1]) //check if this is < or <=
 
-            Term nextSub = nextSubterm(bytes, range);
+            Term nextSub = nextTerm(bytes, range);
 
             if (nextSub == Null)
                 return Null;

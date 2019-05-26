@@ -25,7 +25,7 @@ import java.util.Collection;
 
 import static nars.Op.CONJ;
 import static nars.Op.NEG;
-import static nars.term.Terms.commuted;
+import static nars.term.Terms.commute;
 import static nars.time.Tense.*;
 
 /**
@@ -39,7 +39,7 @@ public abstract class TermBuilder implements TermConstructor {
 
     public final Term theSortedCompound(Op o, int dt, Collection<Term> u) {
         assert (Tense.dtSpecial(dt));
-        Term[] s = commuted(u);
+        Term[] s = commute(u);
         if (s.length == 1 && o == CONJ)
             return s[0];
 

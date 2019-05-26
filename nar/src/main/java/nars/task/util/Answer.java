@@ -421,7 +421,7 @@ public final class Answer implements Timed {
         if (n == 1) {
             return root;
         } else {
-            return newTask(truthpolation(taskList()), root.isBeliefOrGoal());
+            return newTask(truthProjection(), root.isBeliefOrGoal());
         }
     }
 
@@ -434,25 +434,7 @@ public final class Answer implements Timed {
      */
     @Nullable
     public Truth truth() {
-
-        //quick case: 1 item, and it's eternal => its truth
-//
-//        int s = tasks.size();
-//        if (s == 0)
-//            return null;
-
-//            if (s == 1) {
-//                //simple case where the projected time is exactly right
-//                //TODO dither if dither
-//                Task only = tasks.get(0);
-//                long onlyStart = only.start();
-//                if ((onlyStart==ETERNAL) || (onlyStart == time.start && only.end() == time.end)) {
-//                    Truth trEte = only.truth();
-//                    return (trEte.evi() < eviMin()) ? null : trEte;
-//                }
-//            }
-
-        TruthProjection tp = truthpolation(taskList());
+        TruthProjection tp = truthProjection();
         if (tp != null) {
             assert (!ditherTruth); assert (eviMin() <= NAL.truth.TRUTH_EVI_MIN);
 
@@ -460,6 +442,11 @@ public final class Answer implements Timed {
         }
 
         return null;
+    }
+
+    @Nullable
+    public TruthProjection truthProjection() {
+        return truthpolation(taskList());
     }
 
 

@@ -120,15 +120,15 @@ public class TermTestMisc {
         Term b = $.$("b").term();
         Term c = $.$("c").term();
 
-        assertEquals(3, Terms.commuted(a, b, c).length);
-        assertEquals(2, Terms.commuted(a, b, b).length);
-        assertEquals(1, Terms.commuted(a, a).length);
-        assertEquals(1, Terms.commuted(a).length);
-        assertEquals(a, Terms.commuted(a, b)[0], "correct natural ordering");
-        assertEquals(a, Terms.commuted(a, b, c)[0], "correct natural ordering");
-        assertEquals(b, Terms.commuted(a, b, c)[1], "correct natural ordering");
-        assertEquals(c, Terms.commuted(a, b, c)[2], "correct natural ordering");
-        assertEquals(b, Terms.commuted(a, a, b, b, c, c)[1], "correct natural ordering");
+        assertEquals(3, Terms.commute(a, b, c).length);
+        assertEquals(2, Terms.commute(a, b, b).length);
+        assertEquals(1, Terms.commute(a, a).length);
+        assertEquals(1, Terms.commute(a).length);
+        assertEquals(a, Terms.commute(a, b)[0], "correct natural ordering");
+        assertEquals(a, Terms.commute(a, b, c)[0], "correct natural ordering");
+        assertEquals(b, Terms.commute(a, b, c)[1], "correct natural ordering");
+        assertEquals(c, Terms.commute(a, b, c)[2], "correct natural ordering");
+        assertEquals(b, Terms.commute(a, a, b, b, c, c)[1], "correct natural ordering");
 
     }
 

@@ -456,6 +456,10 @@ public class DynBytes implements ByteArrayDataOutput, Appendable, AbstractBytes,
         bytes[n] = b;
     }
 
+    public void write(DynBytes b) {
+        write(b.arrayDirect(), 0, b.length());
+    }
+
 //    private final static int MIN_COMPRESSION_BYTES = 64;
 //    private final static float minCompressionRatio = 1f;
 //    public int compress() {

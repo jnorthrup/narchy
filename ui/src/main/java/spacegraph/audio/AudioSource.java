@@ -100,11 +100,12 @@ public abstract class AudioSource implements DigitizedSignal {
         logger.info("start {} {}", line, line.getLineInfo());
 
         synchronized (this) {
-            this._start = System.currentTimeMillis();
             if (!line.isOpen()) {
                 line.open();
                 //line.open(audioFormat/*, line.getBufferSize()*/);
             }
+
+            this._start = System.currentTimeMillis();
 
             line.start();
         }

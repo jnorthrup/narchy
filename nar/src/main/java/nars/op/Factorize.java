@@ -217,7 +217,7 @@ public class Factorize {
                 t.add(x[i]);
         t.add(rr.getOne() /* shadow */);
         t.add($.func(Member.member, f, $.sete(rr.getTwo().collect(ObjectBytePair::getOne))));
-        return Terms.commuted(t);
+        return Terms.commute(t);
     }
 
     public static Term applyAndNormalize(Term x) {

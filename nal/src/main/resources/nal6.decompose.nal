@@ -4,7 +4,9 @@
 
     //free structural Conjunction/Disjunction decomposition
     C, X, eventOfPN(C,X), task("?@")   |-   conjWithoutPN(C,X)
-    C, X, eventOfPN(C,X)               |-   conjWithoutPN(C,X), (Belief:StructuralDeduction, Goal:StructuralDeduction)
+    C, X, eventOfPN(C,X)                    |-   conjWithoutPN(C,X), (Belief:StructuralDeduction)
+    C, X, eventOfPN(C,X), conjParallel(C)   |-   conjWithoutPN(C,X), (Goal:StructuralDeduction)
+
 
     //disjunction select (probably not valid)
 //    D, X, eventOfNeg(D,X), conjParallel(D)            |-   X, (Belief:StructuralDeductionN, Goal:StructuralDeductionN)
@@ -14,8 +16,8 @@
         //D, X, eventOfPN(D,X)                            |-   conjWithoutPN(D,X), (Belief:StructuralDeductionWeak, Goal:StructuralDeductionWeak)
 
     //question short-circuit answer
-    C, X, task("?"), conjParallel(C), eventOf(C,X)    |- --C,  (Belief:BeliefStructuralDeductionPN, Punctuation:Belief)
-    C, X, task("?"), conjParallel(C), eventOfNeg(C,X) |-   C,  (Belief:BeliefStructuralDeductionPP, Punctuation:Belief)
+    C, X, task("?"), eventOf(C,X)    |- --C,  (Belief:BeliefStructuralDeductionPN, Punctuation:Belief)
+    C, X, task("?"), eventOfNeg(C,X) |-   C,  (Belief:BeliefStructuralDeductionPP, Punctuation:Belief)
         //TODO other short-circuits, involving ==> etc
 
     //implication short-circuit doubt TODO

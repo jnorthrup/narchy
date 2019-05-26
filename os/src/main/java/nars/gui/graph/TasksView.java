@@ -18,7 +18,7 @@ import java.util.function.Consumer;
 
 import static nars.Op.*;
 
-public class TasksView implements Timeline2D.TimelineEvents<Task> {
+public class TasksView implements Timeline2D.EventBuffer<Task> {
 
     private static final Consumer<NodeVis<Task>> TaskRenderer = (n) -> {
         n.set(new Scale(new TaskIcon(n.id), 0.9f));

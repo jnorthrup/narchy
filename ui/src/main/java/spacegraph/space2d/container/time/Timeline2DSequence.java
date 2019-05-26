@@ -10,7 +10,7 @@ import org.eclipse.collections.impl.tuple.Tuples;
 import java.util.List;
 
 /** ring-buffer sequence of (evenly-timed non-overlapping?) events */
-public class Timeline2DSequence implements Timeline2D.TimelineEvents<Pair<Longerval,Tensor>> {
+public class Timeline2DSequence implements Timeline2D.EventBuffer<Pair<Longerval,Tensor>> {
 
     public final TensorRing buffer;
 

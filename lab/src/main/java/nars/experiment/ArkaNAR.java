@@ -128,7 +128,7 @@ public class ArkaNAR extends GameX {
             //return dReward;
             return dReward != 0 ? dReward : Float.NaN;
         });
-        s.setDefault($.t(0.5f, 0.5f));
+        s.setDefault($.t(0.5f, 0.75f));
 
         /*actionTriState*/
 
@@ -181,8 +181,12 @@ public class ArkaNAR extends GameX {
     }
 
     private void initUnipolar() {
-        actionUnipolar($.inh(id,NAct.NEG), true, (prev)->0, (u) -> u > 0.5f && noid.paddle.move(-paddleSpeed * 2 * Util.sqr(2 * (u - 0.5f))) ? u : 0);
-        actionUnipolar($.inh(id,NAct.PLUS), true, (prev)->0, (u) -> u > 0.5f && noid.paddle.move(+paddleSpeed * 2 * Util.sqr(2 * (u - 0.5f))) ? u : 0);
+        actionUnipolar($.inh(id,NAct.NEG), true, (prev)->0,
+                //u -> u > 0.5f && noid.paddle.move(-paddleSpeed * 2 * Util.sqr(2 * (u - 0.5f))) ? u : 0);
+                u -> noid.paddle.move(-paddleSpeed * u) ? u : 0);
+        actionUnipolar($.inh(id,NAct.PLUS), true, (prev)->0,
+                //u -> u > 0.5f && noid.paddle.move(+paddleSpeed * 2 * Util.sqr(2 * (u - 0.5f))) ? u : 0);
+                u -> noid.paddle.move(+paddleSpeed * u) ? u : 0);
     }
 
 

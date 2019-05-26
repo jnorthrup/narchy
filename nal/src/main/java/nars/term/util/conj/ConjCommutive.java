@@ -13,7 +13,7 @@ import java.util.*;
 
 import static nars.Op.BOOL;
 import static nars.Op.CONJ;
-import static nars.term.Terms.commuted;
+import static nars.term.Terms.commute;
 import static nars.term.atom.Bool.*;
 import static nars.time.Tense.*;
 
@@ -55,7 +55,7 @@ public enum ConjCommutive {;
         }
 
         if (sort)
-            u = Terms.commuted(u);
+            u = Terms.commute(u);
 
         if (u.length == 0)
             return True;
@@ -151,7 +151,7 @@ public enum ConjCommutive {;
                         if (!par.get(i))
                             flatten.add(u[i]);
                     }
-                    u = commuted(flatten);
+                    u = commute(flatten);
                 } else {
                     //just True's, remove the array elements
                     u = ArrayUtil.removeAll(u, par);
@@ -416,7 +416,7 @@ public enum ConjCommutive {;
             case 2:
                 //special case: simple arity=2
                 if (!u[0].equals(u[1])) // && !unfoldableInneralXternalConj(u[0]) && !unfoldableInneralXternalConj(u[1])) {
-                    args = Terms.commuted(u);
+                    args = Terms.commute(u);
                 else
                     args = new Term[]{u[0], u[0]}; //repeat
                 break;
@@ -430,7 +430,7 @@ public enum ConjCommutive {;
                     Term only = uux.first();
                     args = new Term[]{only, only}; //repeat
                 } else {
-                    args = commuted(uux);
+                    args = commute(uux);
                 }
 
             }

@@ -4,6 +4,7 @@ import com.github.sarxos.webcam.Webcam;
 import com.google.common.util.concurrent.RateLimiter;
 import jcog.Util;
 import jcog.exe.Loop;
+import jcog.net.UDPeer;
 import jcog.net.http.HttpConnection;
 import jcog.net.http.HttpModel;
 import jcog.net.http.HttpServer;
@@ -31,7 +32,9 @@ import spacegraph.video.WebCam;
 import javax.sound.sampled.LineUnavailableException;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.Map;
 import java.util.Random;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
@@ -43,25 +46,32 @@ public class SignalViewTest {
         window(newSignalView(), 800, 800);
     }
 
-    public static Surface newSignalView() {
-        RealTimeLine cc = new RealTimeLine();
+    public static Surface newSignalView()  {
+        SensorNode n, n2;
+        try {
+            n = new SensorNode();
+            n2 = new SensorNode();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
 
-        int capacity = 128;
-        float audioFPS = 8;
-        float granularity = 2;
+        RealTimeLine cc = new RealTimeLine(n);
 
         for (Webcam ww : Webcam.getWebcams()) {
-            cc.add(ww, capacity);
+            VideoSensor v = n.add(ww);
+            cc.add(ww, v.events);
         }
 
         for (AudioSource in : AudioSource.all()) {
             try {
                 in.start();
-                cc.add(in, audioFPS, granularity, capacity);
+                AudioSensor a = n.add(in);
+                cc.add(a, a.events);
             } catch (LineUnavailableException e) {
                 e.printStackTrace();
             }
         }
+
 
 
 //        {
@@ -73,21 +83,71 @@ public class SignalViewTest {
         return cc;
     }
 
-    public static void capture(int capacity, Timeline2D.SimpleTimelineEvents ge, BufferedImage t, long dur) {
-        if (ge.size() + 1 > capacity)
-            ge.pollFirst();
+    public static Timeline2D.AnalyzedEvent capture(BufferedImage t, long dur) {
 
         long now = System.currentTimeMillis();
 
-        ge.add(new Timeline2D.AnalyzedEvent(new AspectAlign(Tex.view(t),
-                ((float) t.getHeight()) / t.getWidth()), now - dur, now));
+        return new Timeline2D.AnalyzedEvent(new AspectAlign(Tex.view(t),
+                ((float) t.getHeight()) / t.getWidth()), now - dur, now);
     }
 
-    public static class TimeBuffer {
-        {
+    abstract public static class Sensor {
+        public final String id;
+        //lat, lon
+
+        static final int capacity = 128;
+        public final Timeline2D.FixedSizeEventBuffer<Timeline2D.SimpleEvent> events = new Timeline2D.FixedSizeEventBuffer(capacity);
+
+        protected Sensor(String id) {
+            this.id = id;
+        }
+
+    }
+
+    public static class Sensor1D extends Sensor {
+
+        public final DigitizedSignal i;
+        public final SignalInput in;
+
+        public Sensor1D(String id, DigitizedSignal i) {
+            super(id);
+            this.i = i;
+
+            float audioFPS = 8;
+            float granularity = 2;
+
+            in = new SignalInput();
+            in.set(i, 1/audioFPS);
+            in.setFPS(audioFPS * granularity);
+
+        }
+    }
+    public static class AudioSensor extends Sensor1D {
+        public AudioSensor(String id, DigitizedSignal i) {
+            super(id, i);
+        }
+    }
+    public static class VideoSensor extends Sensor {
+
+        public VideoSensor(String id) {
+            super(id);
+        }
+    }
+
+    public static class SensorNode {
+        final Map<String,Sensor> sensors = new ConcurrentHashMap();
+
+        public SensorNode() throws IOException {
+            this(0);
+        }
+
+        public SensorNode(int port) throws IOException {
+            UDPeer u = new UDPeer(port);
+            u.setFPS(10);
+
             HttpServer server = null;
             try {
-                server = new HttpServer("localhost", 8080, new HttpModel() {
+                server = new HttpServer("localhost", port, new HttpModel() {
 
                     @Override
                     public void wssOpen(WebSocket ws, ClientHandshake handshake) {
@@ -99,20 +159,42 @@ public class SignalViewTest {
                         h.respond("");
                     }
                 });
-                server.setFPS(20f);
+                server.setFPS(10f);
             } catch (IOException e) {
                 e.printStackTrace();
             }
 
 
         }
+
+        public VideoSensor add(Webcam ww) {
+            return _add(new VideoSensor(ww.getName()));
+        }
+
+        public Sensor1D add(DigitizedSignal in) {
+            return _add(new Sensor1D(in.toString(), in));
+        }
+
+        public AudioSensor add(AudioSource in) {
+            return _add(new AudioSensor(in.name(), in));
+        }
+
+        private <S extends Sensor> S _add(S s) {
+            Sensor t = sensors.put(s.id, s);
+            assert(t==null);
+            return s;
+        }
+
     }
+
     public static class RealTimeLine extends Gridding {
 
+        private final SensorNode node;
         float viewWindowSeconds = 8;
 
-        public RealTimeLine() {
+        public RealTimeLine(SensorNode node) {
             super(VERTICAL);
+            this.node = node;
         }
 
         public Timeline2D newTrack(String label, Supplier<Surface> control) {
@@ -131,17 +213,22 @@ public class SignalViewTest {
             return g;
         }
 
-        public void add(Webcam ww, int capacity) {
-            WebCam w = new WebCam(ww, false);
-            Timeline2D g = newTrack(ww.getName(), () -> new VideoSurface(new WebCam(ww)));
-            Timeline2D.SimpleTimelineEvents ge = new Timeline2D.SimpleTimelineEvents();
+        public void add(VideoSensor v) {
 
+        }
+
+        @Deprecated public void add(Webcam ww, Timeline2D.FixedSizeEventBuffer<Timeline2D.SimpleEvent> ge) {
+            Timeline2D g = newTrack(ww.getName(), () -> new VideoSurface(new WebCam(ww)));
+
+
+            WebCam w = new WebCam(ww, false);
             float camFPS = 0.5f;
             Loop.of(() -> {
                 try {
                     BufferedImage ii = w.webcam.getImage();
                     if (ii != null)
-                        capture(capacity, ge, ii, Math.round(1000 / camFPS));
+                        ge.add(capture(ii, Math.round(1000 / camFPS)));
+
                 } catch (Exception e) {
                     //ignore
                 }
@@ -151,7 +238,7 @@ public class SignalViewTest {
 
         }
 
-        public void add(DigitizedSignal in, float buffersPerSecond, float granularity, int capacity) {
+        public void add(AudioSensor in, Timeline2D.FixedSizeEventBuffer<Timeline2D.SimpleEvent> ge) {
             int freqs = 256;
 
 
@@ -160,16 +247,10 @@ public class SignalViewTest {
             //new Gridding(new VectorLabel(in.name()), preAmp)
             Timeline2D g = newTrack(in.toString(), () -> new PushButton(in.toString()));
 
-            Timeline2D.SimpleTimelineEvents ge = new Timeline2D.SimpleTimelineEvents();
-
-
-            SignalInput i = new SignalInput();
-            i.set(in, 1 / buffersPerSecond);
-            i.setFPS(buffersPerSecond * granularity);
 
 
             FreqDomain dft = new FreqDomain(freqs, 1);
-            i.wave.on(a -> {
+            in.in.wave.on(a -> {
 //                    long e = System.currentTimeMillis();
 
                 //System.out.println(bufferTimeMs + "ms " + Math.round(n-bufferTimeMs)/2 + ".." + n);
@@ -223,9 +304,6 @@ public class SignalViewTest {
 
                 SignalInput.RealTimeTensor ra = (SignalInput.RealTimeTensor) a;
 
-                if (ge.size() + 1 > capacity)
-                    ge.pollFirst();
-
                 ge.add(new Timeline2D.AnalyzedEvent(p, ra.start, ra.end));
             });
 
@@ -239,30 +317,7 @@ public class SignalViewTest {
 
         }
     }
-//    public static LabeledPane newSignalView() {
-//        AudioSource audio = new AudioSource();
-//
-//        SignalInput i = new SignalInput();
-//
-////        i.set(audio,1f / 30f/* + tolerance? */);
-//
-//        ButtonSet<?> menu = MapSwitch.the(Map.of(
-//                "Audio", () -> {
-//                    i.set(audio, 2f / 30f/* + tolerance? */);
-//                    audio.start();
-//                },
-//                "Noise", () -> {
-//                    audio.stop(); //HACK
-//                    i.set(new NoiseSignal(), 5f / 30f);
-//                }
-//        ));
-//        menu.buttons.get(1).on(true);
-//
-//        LabeledPane s = new LabeledPane(menu, new SignalView(i).withControls());
-//
-//        i.setFPS(20f);
-//        return s;
-//    }
+
 
     public static class NoiseSignal implements DigitizedSignal {
 
@@ -273,7 +328,7 @@ public class SignalViewTest {
 
         @Override
         public int next(float[] target, int targetIndex, int samplesAtMost) {
-            int n = Math.min(sampleRate / frames, samplesAtMost);
+            int n = Math.round(Math.min(((float)sampleRate) / frames, samplesAtMost));
             for (int i = 0; i < n; i++) {
                 target[targetIndex++] = rng.nextFloat();
             }
@@ -282,7 +337,7 @@ public class SignalViewTest {
 
         @Override
         public boolean hasNext(int samplesAtLeast) {
-            return r.tryAcquire(1, 1, TimeUnit.MILLISECONDS);
+            return r.tryAcquire(1, 0, TimeUnit.MILLISECONDS);
         }
 
         @Override

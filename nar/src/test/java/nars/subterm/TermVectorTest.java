@@ -45,7 +45,7 @@ class TermVectorTest {
         assertTrue(a.isSorted());
         Subterms b = Op.terms.subterms(bb, aa);
         assertFalse(b.isSorted());
-        Subterms s = Op.terms.subterms(Terms.commuted(b.arrayShared()));
+        Subterms s = Op.terms.subterms(Terms.commute(b.arrayShared()));
         assertTrue(s.isSorted());
         assertEquals(a, s);
         assertNotEquals(b, s);

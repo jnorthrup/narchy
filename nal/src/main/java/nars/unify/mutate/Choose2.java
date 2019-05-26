@@ -36,7 +36,7 @@ public class Choose2 extends Termutator.AbstractTermutator {
 
     public Choose2(Ellipsis xEllipsis, Unify f, MutableSet<Term> x, SortedSet<Term> yFree) {
         this(xEllipsis, f,
-                Terms.commuted(x),
+                Terms.commute(x),
                 yFree);
     }
 
@@ -58,7 +58,7 @@ public class Choose2 extends Termutator.AbstractTermutator {
     }
 
     public static boolean choose2(Ellipsis ellipsis, List<Term> xFixed, SortedSet<Term> yFree, Unify u) {
-        return u.termutes.add(new Choose2(ellipsis, u, Terms.commuted(xFixed), yFree));
+        return u.termutes.add(new Choose2(ellipsis, u, Terms.commute(xFixed), yFree));
     }
 
     @Override

@@ -20,12 +20,12 @@ import nars.task.util.Answer;
 import nars.task.util.series.RingBufferTaskSeries;
 import nars.term.Term;
 import nars.truth.Truth;
+import nars.truth.polation.TruthProjection;
 import org.eclipse.collections.api.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Predicate;
 
-import static nars.time.Tense.ETERNAL;
 import static nars.time.Tense.TIMELESS;
 import static nars.truth.func.TruthFunctions.w2cSafeDouble;
 import static org.eclipse.collections.impl.tuple.Tuples.pair;
@@ -120,61 +120,61 @@ public class AbstractGoalActionConcept extends GameAction {
 //    }
 
     public org.eclipse.collections.api.tuple.Pair<Truth, long[]> truth(boolean beliefsOrGoals, int componentsMax, long prev, long now, int gameDur, NAR n) {
-        Truth next = null;
         BeliefTable tables = (beliefsOrGoals ? beliefs() : goals());
 
         long ss = TIMELESS, ee = TIMELESS;
 
+        long s, e;
+        s = now - gameDur/2;
+        e = now + gameDur/2;
+
         if (!tables.isEmpty()) {
             int dither = n.dtDither.intValue();
 
-            int organicDur =
-                    //Tense.occToDT(e-s);
-                    gameDur;
-
             int limit = componentsMax, tries = limit*2;
-            Answer a = Answer.relevant(true, limit, ETERNAL, ETERNAL, term, withoutCuriosity, n).dur(organicDur);
-            for (int iter = 0; iter < 1; iter++) {
 
-                long s, e;
 
-                switch (iter) {
-                    case 0:
-                        //duration-precision window
-                        s = now - gameDur / 2;
-                        e = now + gameDur / 2;
-                        //s = now - Math.max(narDur, agentDur);
-                        //e = now;
-                        //e = now;
-                        break;
-                    case 1:
-                    default:
-                        s = now - gameDur;
-                        e = now + gameDur;
+
+            Answer a = Answer.relevant(true, limit, s, e, term, withoutCuriosity, n).dur(gameDur);
+//            for (int iter = 0; iter < 1; iter++) {
+//
+//
+//                switch (iter) {
+//                    case 0:
+//                        //duration-precision window
+//                        s = now - gameDur / 2;
+//                        e = now + gameDur / 2;
+//                        //s = now - Math.max(narDur, agentDur);
+//                        //e = now;
+//                        //e = now;
+//                        break;
+//                    case 1:
+//                    default:
+
                         //s = now - Math.max(narDur, agentDur)*2;
                         //e = now;
                         //e = now;
-                        break;
-//                    default:
-//                        //frame-precision window
-//                        int frameDur = Tense.occToDT(now - prev);
-//                        int dn = 3;
-//                        //s = (long) (now - Math.max(narDur*dn/2f, frameDur/2));
-//                        //e = (long) (now + Math.max(narDur*dn/2f, frameDur/2));
-//                        s = now - Math.max(narDur * dn, frameDur);
-//                        e = now; //now + Math.max(dur * 2, 0);
 //                        break;
+////                    default:
+////                        //frame-precision window
+////                        int frameDur = Tense.occToDT(now - prev);
+////                        int dn = 3;
+////                        //s = (long) (now - Math.max(narDur*dn/2f, frameDur/2));
+////                        //e = (long) (now + Math.max(narDur*dn/2f, frameDur/2));
+////                        s = now - Math.max(narDur * dn, frameDur);
+////                        e = now; //now + Math.max(dur * 2, 0);
+////                        break;
+//
+//                }
 
-                }
-
-                //shift forward to include some immediate future desire as part of present moment desire
-                int shift =
-                        0;
-                        //dither/2;
-                        //Math.max(dither/2, narDur/2);
-
-                s += shift;
-                e += shift;
+//                //shift forward to include some immediate future desire as part of present moment desire
+//                int shift =
+//                        0;
+//                        //dither/2;
+//                        //Math.max(dither/2, narDur/2);
+//
+//                s += shift;
+//                e += shift;
 
                 a.clear(tries).time(s, e);
 
@@ -185,25 +185,27 @@ public class AbstractGoalActionConcept extends GameAction {
                     }
                 }
 
+                @Nullable TruthProjection nextP = a.truthProjection();
+                if (nextP!=null) {
+                    Truth next = nextP.truth(NAL.truth.TRUTH_EVI_MIN, false, true, n);
+                    if (next!=null) {
+                        return pair(next, new long[]{ss = a.time.start, ss = a.time.end});
+                    }
+                }
                 //TODO my truthpolation .stamp()'s and .cause()'s for clues
 
-                if ((next = Truth.stronger(a.truth(), next))!=next) {
-                    ss = s;
-                    ee = e;
-                }
+//                if ((next = Truth.stronger(a.truth(), next))!=next) {
+//                    ss = s;
+//                    ee = e;
+//                }
 
                 //HACK
 //                if (next!=null)
 //                    break; //early finish on first non-null
             }
-        }
+//        }
 
-        if (ss == TIMELESS) {
-            //default
-            ss = prev;
-            ee = now;
-        }
-        return pair(next, new long[]{ss, ee});
+        return pair(null, new long[] { s, e });
     }
 
 
@@ -214,7 +216,7 @@ public class AbstractGoalActionConcept extends GameAction {
         updateCuriosity(g.curiosity);
 
         NAR n = g.nar();
-        int gameDur = g.durPhysical();
+        int gameDur = g.dur(); //g.durPhysical();
 
         int limit = Answer.BELIEF_MATCH_CAPACITY * 2; //high sensitivity
 
@@ -230,7 +232,6 @@ public class AbstractGoalActionConcept extends GameAction {
 
     private Truth actionTruth(int limit, long prev, long now, int gameDur, What w) {
 
-        int curiDur = gameDur;
 
         NAR n = w.nar;
         Truth actionTruth;
@@ -240,7 +241,6 @@ public class AbstractGoalActionConcept extends GameAction {
         actionDex = nextActionDex;
         if (nextActionDex != null)
             curiDex = actionDex;
-
 
         long[] se = gt.getTwo();
         long s = se[0], e = se[1];
@@ -288,7 +288,7 @@ public class AbstractGoalActionConcept extends GameAction {
             //use existing curiosity
             Answer a = Answer.
                     relevant(true, 2, s, e, term, null, n)
-                    .dur(curiDur)
+                    .dur(gameDur)
                     .match(curiosityTable);
             actionCuri = a.truth();
         }

@@ -21,6 +21,7 @@ public class ByteAnonMap {
         this.idToTerm = idtoTerm;
     }
 
+
     public ByteAnonMap(int estSize) {
         this(new ObjectByteHashMap<>(estSize),new FasterList<>(estSize));
 
