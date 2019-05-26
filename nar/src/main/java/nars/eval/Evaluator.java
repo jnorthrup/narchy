@@ -53,7 +53,7 @@ public class Evaluator extends HeapTermTransform {
                 if (clauses[0] != null && clauses[0].contains(X))
                     return true;
 
-                compoundBuilder.clear(true, compoundBuilder.sub.termCount() >= 64 /* HACK */);
+                compoundBuilder.clear(); //true, compoundBuilder.sub.termCount() >= 64 /* HACK */);
                 TermBuffer y = compoundBuilder.append(X);
                 final int[] functors = {0};
                 y.updateMap(g -> {
@@ -71,7 +71,7 @@ public class Evaluator extends HeapTermTransform {
 
                 if (functors[0] > 0) {
 
-                    Term yy = y.get();
+                    Term yy = y.term();
                     if (yy.sub(1) instanceof Functor) {
                         if (clauses[0] == null)
                             clauses[0] = new ArrayHashSet<>(1);

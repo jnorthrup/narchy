@@ -12,7 +12,6 @@ import nars.term.util.TermException;
 import org.jetbrains.annotations.Nullable;
 
 import static nars.Op.*;
-import static nars.term.atom.Bool.Null;
 import static nars.time.Tense.DTERNAL;
 import static nars.time.Tense.XTERNAL;
 
@@ -34,7 +33,9 @@ public interface AbstractTermTransform extends TermTransform, nars.term.util.bui
                     l = new TermBuffer();
                 else
                     l.clear(); //true, (l.sub.termCount() >= 64) /* HACK */);
-                return transform.applyCompoundLazy((Compound) x, l, volMax);
+                l.volRemain = volMax;
+                l.appendCompound((Compound)x, transform);
+                return l.term();
             } catch (TermException t) {
                 if (NAL.DEBUG)
                     throw t;
@@ -132,10 +133,10 @@ public interface AbstractTermTransform extends TermTransform, nars.term.util.bui
                         return v;
                 }
             }
-//            if (op != x.op())
+            if (op != x.op())
                 return compound(op, dt, xx);
-//            else
-//                return x.dt(dt);
+            else
+                return x.dt(dt);
         }
 
     }
@@ -166,15 +167,6 @@ public interface AbstractTermTransform extends TermTransform, nars.term.util.bui
         return op.the(dt, subterms);
     }
 
-
-    default Term applyCompoundLazy(Compound x) {
-        return applyCompoundLazy(x, new TermBuffer(), NAL.term.COMPOUND_VOLUME_MAX);
-    }
-
-    default Term applyCompoundLazy(Compound x, TermBuffer l, int volMax) {
-        l = transformCompound(x, l) ? l : null;
-        return l == null ? Null : l.get(volMax);
-    }
 
 
     /**

@@ -83,10 +83,6 @@ abstract public class MapSubst implements Subst {
 
     }
 
-    @Override
-    public boolean transformCompound(Compound x, TermBuffer out) {
-        throw new TODO();
-    }
 
     private static final class MapSubst2 extends MapSubst {
         final Term ax, ay, bx, by;

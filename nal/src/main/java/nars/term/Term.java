@@ -33,8 +33,10 @@ import nars.term.atom.Bool;
 import nars.term.atom.Int;
 import nars.term.compound.UnitCompound;
 import nars.term.util.conj.Conj;
+import nars.term.util.transform.AbstractTermTransform;
 import nars.term.util.transform.MapSubst;
 import nars.term.util.transform.Retemporalize;
+import nars.term.util.transform.TermTransform;
 import nars.time.Tense;
 import nars.unify.Unify;
 import org.eclipse.collections.api.block.predicate.primitive.LongObjectPredicate;
@@ -160,6 +162,14 @@ public interface Term extends Termlike, Termed, Comparable<Term> {
 
     boolean containsAll(Subterms ofThese);
     boolean containsAny(Subterms ofThese);
+
+    default Term transform(TermTransform t) {
+        if (this instanceof Compound && t instanceof AbstractTermTransform) //HACK
+            return AbstractTermTransform.transform(this, (AbstractTermTransform)t);
+        else
+            return t.apply(this);
+    }
+
 
     enum TermWalk {
         Left, //prev subterm

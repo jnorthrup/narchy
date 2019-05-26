@@ -24,6 +24,7 @@ import nars.term.util.transform.AbstractTermTransform;
 import nars.term.util.transform.InlineFunctor;
 import nars.term.util.transform.InstantFunctor;
 import nars.term.util.transform.TermTransform;
+import nars.term.var.ellipsis.Fragment;
 import org.eclipse.collections.impl.map.mutable.primitive.ObjectByteHashMap;
 import org.jetbrains.annotations.Nullable;
 
@@ -31,6 +32,7 @@ import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 
+import static nars.NAL.term.LAZY_COMPOUND_MIN_INTERN_VOL;
 import static nars.Op.*;
 import static nars.term.atom.Bool.Null;
 import static nars.time.Tense.DTERNAL;
@@ -59,7 +61,7 @@ public class TermBuffer {
      *  if a non-deterministic functor evaluation occurrs, it must not propagate
      *  because that will just cause the same value to be assumed when it should not be.
      * */
-    int volRemain;
+    public int volRemain;
     private final TermBuilder builder;
 
     public TermBuffer() {
@@ -201,7 +203,7 @@ public class TermBuffer {
 
 
 
-    public Term get() {
+    public Term term() {
         return get(NAL.term.COMPOUND_VOLUME_MAX);
     }
 
@@ -538,5 +540,83 @@ public class TermBuffer {
         return code.len==0 && (sub==null || sub.isEmpty());
     }
 
+    public boolean append(Term x, TermTransform f) {
+        if (x instanceof Compound) {
+            byte interned = this.term(x);
+            if (interned!=Byte.MIN_VALUE) {
+                this.appendInterned(interned);
+                return true;
+            } else {
+                return appendCompound((Compound) x, f);
+            }
+        } else {
+            @Nullable Term y = f.applyAtomic((Atomic) x);
+            if (y == null || y == Bool.Null)
+                return false;
+            else {
+                if (y.op() == FRAG) {
+                    Subterms s = y.subterms();
+                    if (s.subs() > 0) {
+                        Subterms s2 = s.transformSubs(f, null);
+                        if (s2 != s) {
+                            if (s2 == null)
+                                return false;
+                            y = new Fragment(s2);
+                        }
+                    }
+                }
+                this.append(y);
+                if (y != x)
+                    this.changed();
+                return true;
+            }
+        }
+    }
+
+
+    public boolean appendCompound(Compound x, TermTransform f, int volRemain) {
+        this.volRemain = volRemain;
+        return appendCompound(x, f);
+    }
+
+    public boolean appendCompound(Compound x, TermTransform f) {
+        int c = this.change(), u = this.uniques();
+        int p = this.pos();
+
+        Op o = x.op();
+        if (o == NEG) {
+
+            this.negStart();
+
+            if (!append(x.sub(0), f))
+                return false;
+
+            this.compoundEnd(NEG);
+
+        } else {
+            this.compoundStart(o, o.temporal ? x.dt() : DTERNAL);
+
+            if (!transformSubterms(x.subterms(), f))
+                return false;
+
+            this.compoundEnd(o);
+        }
+
+        if (this.change()==c && x.volume() >= LAZY_COMPOUND_MIN_INTERN_VOL) {
+            //unchanged constant; rewind and pack the exact Term as an interned symbol
+            this.rewind(p, u);
+            this.appendInterned(x);
+        }
+        return true;
+    }
+
+    private boolean transformSubterms(Subterms s, TermTransform t) {
+        this.subsStart((byte) s.subs());
+        if (s.ANDwithOrdered(this::append, t)) {
+            this.subsEnd();
+            return true;
+        }
+        return false;
+    }
 
 }

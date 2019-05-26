@@ -33,7 +33,7 @@ class TermBufferTest {
     @Test
     void testSimple() {
         assertEquals("(a,b)", new MyTermBuffer()
-                .appendCompound(Op.PROD, A, B).get().toString());
+                .appendCompound(Op.PROD, A, B).term().toString());
     }
     @Test
     void testNeg() {
@@ -46,17 +46,17 @@ class TermBufferTest {
         assertEquals(l0.sub.termCount(), l1.sub.termCount());
         assertEquals(l0.sub.termToId, l1.sub.termToId);
 
-        assertEquals("(a,b,(--,b))", l1.get().toString());
+        assertEquals("(a,b,(--,b))", l1.term().toString());
         assertEquals("((--,a),(--,b))", new MyTermBuffer()
-                .appendCompound(Op.PROD, A.neg(), B.neg()).get().toString());
+                .appendCompound(Op.PROD, A.neg(), B.neg()).term().toString());
     }
     @Test
     void testTemporal() {
         assertEquals("(a==>b)", new MyTermBuffer()
-                .appendCompound(Op.IMPL, A, B).get().toString());
+                .appendCompound(Op.IMPL, A, B).term().toString());
 
         assertEquals("(a ==>+1 b)", new MyTermBuffer()
-                .appendCompound(Op.IMPL, 1, A, B).get().toString());
+                .appendCompound(Op.IMPL, 1, A, B).term().toString());
     }
 
     static final AbstractTermTransform nullTransform = new AbstractTermTransform() {
@@ -80,7 +80,8 @@ class TermBufferTest {
     @Test void testTransform2() {
         String x = "((_1) ==>+- _1)";
         assertEquals("(((x,y)) ==>+- (x,y))",
-                atomToCompoundTransform.applyCompoundLazy($$(x)).toString());
+                $$(x).transform(atomToCompoundTransform).toString());
+
     }
 
     @Test
@@ -88,7 +89,7 @@ class TermBufferTest {
         assertEquals("(a,{b,c})", new MyTermBuffer()
                 .compoundStart(Op.PROD).subsStart((byte)2).append(A)
                     .compoundStart(Op.SETe).subsStart((byte)2).subs(B, C)
-                        .get().toString());
+                        .term().toString());
     }
 
     @Test void testEmptyProd() {
@@ -99,7 +100,7 @@ class TermBufferTest {
     }
 
     static private void assertLazyTransforms(String x) {
-        assertEquals(x, nullTransform.applyCompoundLazy($$(x)).toString());
+        assertEquals(x, $$(x).transform(nullTransform).toString());
     }
 
 
