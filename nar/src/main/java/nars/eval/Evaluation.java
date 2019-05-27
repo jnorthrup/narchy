@@ -1,40 +1,32 @@
 package nars.eval;
 
-import com.google.common.collect.Iterables;
 import jcog.data.iterator.CartesianIterator;
 import jcog.data.list.FasterList;
 import jcog.data.set.ArrayHashSet;
 import jcog.version.VersionMap;
-import jcog.version.Versioning;
-import nars.NAL;
 import nars.NAR;
-import nars.Op;
 import nars.subterm.Subterms;
 import nars.term.Compound;
 import nars.term.Functor;
 import nars.term.Term;
-import nars.term.Termlike;
 import nars.term.atom.Atom;
 import nars.term.atom.Bool;
+import nars.term.buffer.Termerator;
 import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.util.Comparator;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
 import static nars.term.atom.Bool.Null;
 
-public class Evaluation {
+public class Evaluation extends Termerator {
 
     private final Predicate<Term> each;
-
-    transient private FasterList<Iterable<Predicate<VersionMap<Term, Term>>>> termutator = null;
-
-    transient private Versioning v = null;
-
-    protected transient VersionMap<Term, Term> subst = null;
-
 
     private static void eval(Term x, boolean includeTrues, boolean includeFalses, Function<Atom, Functor> resolver, Predicate<Term> each) {
 
@@ -54,14 +46,14 @@ public class Evaluation {
         this.each = each;
     }
 
-    private boolean termute(Evaluator e, Term y) {
+    @Deprecated private boolean termute(Evaluator e, Term y) {
 
         int before = v.size();
 
-        if (termutator.size() == 1) {
-            Iterable<Predicate<VersionMap<Term, Term>>> t = termutator.remove(0);
+        if (termutes.size() == 1) {
+            Iterable<Predicate<VersionMap<Term, Term>>> t = termutes.remove(0);
             for (Predicate tt : t) {
-                if (tt.test(subst)) {
+                if (tt.test(subs)) {
                     if (!recurse(e, y))
                         break;
                 }
@@ -70,8 +62,8 @@ public class Evaluation {
         } else {
             CartesianIterator<Predicate>/*<VersionMap<Term,Term>>>*/ ci =
                     new CartesianIterator(
-                            Predicate[]::new, termutator.toArrayRecycled(Iterable[]::new));
-            termutator.clear();
+                            Predicate[]::new, termutes.toArrayRecycled(Iterable[]::new));
+            termutes.clear();
             nextProduct:
             while (ci.hasNext()) {
 
@@ -82,7 +74,7 @@ public class Evaluation {
                 for (Predicate<VersionMap<Term, Term>> cc : c) {
                     if (cc == null)
                         break; //null target list
-                    if (!cc.test(subst))
+                    if (!cc.test(subs))
                         continue nextProduct;
                 }
 
@@ -97,7 +89,7 @@ public class Evaluation {
     }
 
     private boolean recurse(Evaluator e, Term y) {
-        Term z = y.replace(subst);
+        Term z = y.replace(subs);
         //recurse
         return z == y || (z instanceof Compound && eval(e, (Compound)z));  //CUT
     }
@@ -113,7 +105,7 @@ public class Evaluation {
      */
     protected boolean evalTry(Compound x, Evaluator e) {
         ArrayHashSet<Term> c = e.clauses(x, this);
-        if ((c == null || c.isEmpty()) && (termutator == null || termutator.isEmpty())) {
+        if ((c == null || c.isEmpty()) && (termutes == null || termutes.isEmpty())) {
             each.test(x);
             return true; //early exit
         }
@@ -217,7 +209,7 @@ public class Evaluation {
 
 
                         if (substing) {
-                            y = y.replace(subst);
+                            y = y.replace(subs);
 
                             if (!(y instanceof Compound && y.op().conceptualizable))
                                 break main;
@@ -238,7 +230,7 @@ public class Evaluation {
 
                                  Term q;
                                  if (substing) {
-                                     q = p.replace(subst);
+                                     q = p.replace(subs);
                                  } else
                                      q = p;
 
@@ -291,7 +283,7 @@ public class Evaluation {
     }
 
     private int termutators() {
-        return termutator != null ? termutator.size() : 0;
+        return termutes != null ? termutes.size() : 0;
     }
 
     private int now() {
@@ -329,14 +321,6 @@ public class Evaluation {
         return eval(x, includeTrues, includeFalses, n::axioms);
     }
 
-    private void ensureReady() {
-        if (v == null) {
-            v = new Versioning<>(NAL.unify.UNIFICATION_STACK_CAPACITY, NAL.TASK_EVALUATION_TTL);
-            subst = new VersionMap<>(v);
-            termutator = new FasterList(1);
-        }
-    }
-
     private static final class MyEvaluated extends UnifiedSet<Term> implements Predicate<Term> {
         protected MyEvaluated() {
             super(1, 0.99f);
@@ -369,102 +353,6 @@ public class Evaluation {
 
 
 
-    private Evaluation clear() {
-        if (v != null) {
-            termutator.clear();
-            v.clear();
-            subst.clear();
-        }
-        return this;
-    }
-
-
-    /**
-     * assign 1 variable
-     * returns false if it could not be assigned (enabling callee fast-fail)
-     */
-    public boolean is(Term x, Term y) {
-        if (x.equals(y))
-            return true;
-        else {
-            ensureReady();
-            return subst.set(x, y);
-        }
-
-    }
-
-    /**
-     * assign 2-variables at once.
-     * returns false if it could not be assigned (enabling callee fast-fail)
-     */
-    public boolean is(Term x, Term xx, Term y, Term yy) {
-        return is(x, xx) && is(y, yy);
-    }
-
-    /**
-     * 2-ary AND
-     */
-    public static Predicate<VersionMap<Term, Term>> assign(Term x, Term xx, Term y, Term yy) {
-        return m -> m.set(x, xx) && m.set(y, yy);
-    }
-
-    protected static Predicate<VersionMap<Term, Term>> assign(Term x, Term y) {
-        return (subst) -> subst.set(x, y);
-    }
-
-
-    /**
-     * OR, forked
-     * TODO limit when # termutators exceed limit
-     */
-    public void canBe(Iterable<Predicate<VersionMap<Term, Term>>> x) {
-        ensureReady();
-        termutator.add(x);
-    }
-
-    public void canBe(Predicate<VersionMap<Term, Term>> x) {
-        ensureReady();
-        termutator.add(List.of(x));
-    }
-
-    public void canBe(Term x, Term y) {
-        if (!x.equals(y))
-            canBe(assign(x, y));
-    }
-
-    public void canBe(Term x, Collection<Term> y) {
-        if (!y.isEmpty()) {
-            canBe(x, (Iterable)y);
-        }
-    }
-    public void canBePairs(List<Term> y) {
-        canBe((VersionMap<Term,Term> e)->{
-            int n = y.size();
-            for (int i = 0; i < n; ) {
-                if (!e.set(y.get(i++), y.get(i++)))
-                    return false;
-            }
-            return true;
-        });
-    }
-
-    public void canBe(Term x, Iterable<Term> y) {
-        canBe(Iterables.transform(y, yy -> assign(x, yy)));
-    }
-
-    public void canBe(Term a, Term b, Term x, Term y) {
-        if (x.equals(y)) {
-            canBe(a, b);
-        } else if (a.equals(b)) {
-            canBe(x, y);
-        } else {
-            canBe(assign(a, b, x, y));
-        }
-    }
-
-    public static boolean canEval(Termlike x) {
-        return x instanceof Compound && x.hasAll(Op.FuncBits);
-    }
 
 
 }

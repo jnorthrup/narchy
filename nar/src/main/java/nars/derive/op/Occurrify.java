@@ -667,7 +667,7 @@ public class Occurrify extends TimeGraph {
         Belief {
             @Override
             public Truth apply(Derivation d) {
-                return d.beliefTruthBelief;
+                return d.beliefTruth_at_Belief;
             }
         },
 
@@ -677,7 +677,7 @@ public class Occurrify extends TimeGraph {
         Task {
             @Override
             public Truth apply(Derivation d) {
-                return d.beliefTruthTask;
+                return d.beliefTruth_at_Task;
             }
         },
 

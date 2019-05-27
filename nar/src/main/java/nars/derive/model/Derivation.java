@@ -131,7 +131,7 @@ public class Derivation extends PreDerivation {
     final Functor polarizeBelief = new AbstractInstantFunctor1("polarizeBelief") {
         @Override
         protected Term apply1(Term arg) {
-            Truth b = Derivation.this.beliefTruthBelief;
+            Truth b = Derivation.this.beliefTruth_at_Belief;
 //            if (t == null)
 //                return Null;  //TODO WTF
             return arg.negIf(b.isNegative());
@@ -308,13 +308,15 @@ public class Derivation extends PreDerivation {
 
     private Task resetBelief(Task nextBelief, Term nextBeliefTerm) {
 
-        if (nextBelief != null) {
+        long nextBeliefStart, nextBeliefEnd;
 
+        if (nextBelief != null) {
+            nextBeliefStart = nextBelief.start(); nextBeliefEnd = nextBelief.end();
             if (nextBelief.isEternal()) {
-                beliefTruthTask = beliefTruthBelief = nextBelief.truth();
+                beliefTruth_at_Task = beliefTruth_at_Belief = nextBelief.truth();
             } else {
 
-                this.beliefTruthBelief = nextBelief.truth();
+                this.beliefTruth_at_Belief = nextBelief.truth();
 
                 boolean taskEternal = taskStart == ETERNAL;
 
@@ -326,33 +328,35 @@ public class Derivation extends PreDerivation {
                     taskEternal = false;
                 }
 
-                this.beliefTruthTask =
+                this.beliefTruth_at_Task =
                         taskEternal ?
-                                beliefTruthBelief :
+                                beliefTruth_at_Belief :
                                 nextBelief.truth(taskStart, taskEnd, dur());
 
-                if (NAL.ETERNALIZE_BELIEF_PROJECTED_IN_DERIVATION
-                        && !taskEternal
-                        && beliefTruthBelief != null
-                        && (beliefTruthTask == null || !beliefTruthTask.equals(beliefTruthBelief))) {
-                    this.beliefTruthTask = Truth.stronger(
-                            beliefTruthTask,
-                            beliefTruthBelief.eternalized(1, NAL.truth.TRUTH_EVI_MIN, null /* dont dither */)
-                    );
+                if (NAL.ETERNALIZE_BELIEF_PROJECTED_IN_DERIVATION && beliefTruth_at_Belief != null) {
+
+                    Truth beliefTruth_eternalized = beliefTruth_at_Belief.eternalized(1, NAL.truth.TRUTH_EVI_MIN, null /* dont dither */);
+                    if (beliefTruth_eternalized.evi() > beliefTruth_at_Task.evi()) {
+                        nextBeliefStart = nextBeliefEnd = ETERNAL;
+                        this.beliefTruth_at_Task = beliefTruth_eternalized;
+                    }
                 }
             }
 
-            if (beliefTruthTask == null && beliefTruthBelief == null)
+            if (beliefTruth_at_Task == null && beliefTruth_at_Belief == null)
                 nextBelief = null;
+
+        } else {
+            nextBeliefStart = nextBeliefEnd = TIMELESS;
         }
 
 
         if (nextBelief != null) {
-            this.beliefStart = nextBelief.start();
-            this.beliefEnd = nextBelief.end();
+            this.beliefStart = nextBeliefStart;
+            this.beliefEnd = nextBeliefEnd;
             this.beliefTerm = anon.putShift(this._beliefTerm = nextBelief.term(), taskTerm);
         } else {
-            this.beliefTruthBelief = this.beliefTruthTask = null;
+            this.beliefTruth_at_Belief = this.beliefTruth_at_Task = null;
 
             this.taskStart = _task.start();
             this.taskEnd = _task.end(); //HACK reset task start in case it was changed
@@ -587,7 +591,7 @@ public class Derivation extends PreDerivation {
             if (taskPunc == BELIEF || taskPunc == GOAL) {
 
                 te = taskTruth.evi();
-                be = beliefTruthBelief != null ? beliefTruthBelief.evi() : 0;
+                be = beliefTruth_at_Belief != null ? beliefTruth_at_Belief.evi() : 0;
                 tb = te / (te + be);
             } else {
 
@@ -625,7 +629,7 @@ public class Derivation extends PreDerivation {
         parentCause = null;
         concTruth = null;
         taskTerm = beliefTerm = null;
-        taskTruth = beliefTruthTask = beliefTruthBelief = null;
+        taskTruth = beliefTruth_at_Task = beliefTruth_at_Belief = null;
         canCollector.clear();
         ttl = 0;
         taskUniques = 0;

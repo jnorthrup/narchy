@@ -415,8 +415,6 @@ public class Graph2D<X> extends MutableMapContainer<X, NodeVis<X>> {
             cells.forEachValue(nv -> {
                 if (nv.visible())
                     node(nv, edit);
-//            else
-//                throw new WTF();
             });
         }
 

@@ -98,7 +98,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
             PriMerge.plus;
             //PriMerge.or;
 
-//    public static final boolean ETERNALIZE_BELIEF_PROJECTED_FOR_GOAL_DERIVATION= !configIs("DISABLE_ETERNALIZE_BELIEF_PROJECTED_FOR_GOAL_DERIVATION");
+
     /**
      * budget factor for combining 2 tasks in derivation
      * ex: double-premise derivations which depends on the task and belief budget
@@ -202,7 +202,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
 
 
     protected static final boolean DYNAMIC_CONCEPT_TRANSIENT = false;
-    public static boolean ETERNALIZE_BELIEF_PROJECTED_IN_DERIVATION;
+    public static boolean ETERNALIZE_BELIEF_PROJECTED_IN_DERIVATION = true;
     public static boolean STRONG_COMPOSITION;
     /**
      * use this for advanced error checking, at the expense of lower performance.
