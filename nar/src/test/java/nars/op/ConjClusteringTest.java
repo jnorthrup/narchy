@@ -25,7 +25,7 @@ class ConjClusteringTest {
 
         for (int i = 0; i < ccap; i++)
             n.believe($.the("x" + i), Tense.Present);
-        n.run(1);
+        n.run(2);
 
         BeliefTable b = n.concept($.$("(&&,x0,x1,x2,x3)")).beliefs();
         assertEquals(1, b.taskCount());
@@ -43,7 +43,7 @@ class ConjClusteringTest {
 
         for (int i = 0; i < ccap; i++)
             n.believe($.the("x" + i).neg(), Tense.Present);
-        n.run(1);
+        n.run(2);
         BeliefTable b = n.concept($.$("(&&,(--,x0),(--,x1),(--,x2),(--,x3))")).beliefs();
         assertEquals(1, b.taskCount());
 
@@ -72,7 +72,7 @@ class ConjClusteringTest {
         n.inputAt(3, "$0.1 w. |");
 
 
-        n.run(4);
+        n.run(2);
         //TODO
 //        assertEquals(1, n.concept($.$("")).beliefs().size());
 

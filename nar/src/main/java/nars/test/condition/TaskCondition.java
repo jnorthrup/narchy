@@ -81,7 +81,7 @@ abstract public class TaskCondition implements NARCondition, Predicate<Task>, Co
     @Override
     public final boolean test(Task t) {
 
-        if (/*!matched && */matches(t)) {
+        if (!matched && matches(t)) {
             matches.add(t);
             matched = true;
             return true;
@@ -128,7 +128,7 @@ abstract public class TaskCondition implements NARCondition, Predicate<Task>, Co
     }
 
     public static class DefaultTaskCondition extends TaskCondition {
-        private final static int maxSimilars = 4;
+        private final static int maxSimilars = 2;
         public final float confMin;
         @Deprecated
         protected final RankedN<Task> similar;
@@ -214,6 +214,12 @@ abstract public class TaskCondition implements NARCondition, Predicate<Task>, Co
             if (task == null)
                 return false;
 
+            if (task.punc() != punc)
+                return false;
+
+            if (!truthMatches(task))
+                return false;
+
             Term tt = task.term();
             if (!tt.equals(this.term)) {
                 if (tt.op() == term.op() && tt.volume() == this.term.volume() && tt.structure() == this.term.structure() && this.term.toString().equals(tt.toString())) {
@@ -221,12 +227,6 @@ abstract public class TaskCondition implements NARCondition, Predicate<Task>, Co
                 }
                 return false;
             }
-
-            if (task.punc() != punc)
-                return false;
-
-            if (!truthMatches(task))
-                return false;
 
             return creationTimeMatches() && occurrenceTimeMatches(task);
 

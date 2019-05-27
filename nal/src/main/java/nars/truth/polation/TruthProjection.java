@@ -216,8 +216,8 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
 
             //something must be removed
             //sum the non-conflicting only if that subset is itself non-conflicting and thus revisable
-            double valueOK  = eviSum(conflict::getNot);
-            double valueConflicting = unconflictedEviSum(conflict);
+            double valueOK  = eviSum(conflict, false);
+            double valueConflicting = conflictedEvi(conflict);
             if (valueOK > valueConflicting) {
                 if (ss - conflicts < minComponents)
                     return null; //impossible: nothing else to remove
@@ -245,15 +245,15 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
         return e;
     }
 
-    private double unconflictedEviSum(MetalBitSet x) {
+    private double conflictedEvi(MetalBitSet x) {
         int n = x.cardinality();
         if (n < 2)
-            return eviSum(x);
+            return eviSum(x, true);
 
         if (n == 2) {
             //optimized 2-ary case
             int a, b;
-            if (n > 2) {
+            if (size > 2) {
                 a = x.first(true);
                 b = x.next(true, a + 1, Integer.MAX_VALUE);
             } else { a = 0; b = 1; }
@@ -362,11 +362,14 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
 //    }
 
 
-    private double eviSum(MetalBitSet b) {
+    private double eviSum(MetalBitSet b, boolean what) {
         switch (b.cardinality()) {
             case 0: return 0;
-            case 1: return get(b.first(true)).evi;
-            default: return eviSum(b::get);
+            case 1: {
+                int a = b.first(what);
+                return a < size ? get(a).evi : 0;
+            }
+            default: return eviSum(what ? b::get : ((IntPredicate)b::get).negate());
         }
     }
 
@@ -376,7 +379,7 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
         for (int i = 0; i < n; i++) {
             if (each.test(i)) {
                 TaskComponent c = get(i);
-                if (c == null) continue; //HACK
+                //if (c == null) continue; //HACK
                 double ce = c.evi;
                 if (ce == ce)
                     e += ce;

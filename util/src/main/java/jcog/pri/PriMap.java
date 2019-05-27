@@ -61,8 +61,10 @@ public class PriMap<Y> {
         float load = 0.99f;
         if (Exe.concurrent()) {
             return linked ?
-                new java.util.concurrent.ConcurrentHashMap<>(0, load, Runtime.getRuntime().availableProcessors())
-                    :
+                new java.util.concurrent.ConcurrentHashMap<>()
+                :
+//                new java.util.concurrent.ConcurrentHashMap<>(0, load, Runtime.getRuntime().availableProcessors())
+//                    :
                 new org.eclipse.collections.impl.map.mutable.ConcurrentHashMapUnsafe<>(0);
                 //new NonBlockingHashMap();
                 //new java.util.concurrent.ConcurrentHashMap<>(0, load, Runtime.getRuntime().availableProcessors());

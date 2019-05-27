@@ -87,13 +87,15 @@
       //G, C, is(C,"&&")                  |-   negateEvents(conjBefore(C,   G)), (Goal:DesireWeakN)
 
     //conjunction belief decomposition
-    C, X, is(C,"&&"), --isVar(X)                   |-  conjAfter(C,  X),       (Belief:DeductionPP,Goal:DeductionPP)
+    C, X, is(C,"&&"), --isVar(X)                   |-  conjAfter(C,  X),       (Belief:DecomposePP,Goal:DecomposePP)
+
       //X, C, is(C,"&&"), --isVar(X)                   |-  conjAfter(C,  X),       (Belief:DeductionPPX)
       //D, X, is(D,"&&"), has(D,"--"), --isVar(X)    |- --conjAfter(D,--X), (Belief:DeductionWeakNP,Goal:DeductionWeakNP)
-    C, X, is(C,"&&"), has(C,"--"), --isVar(X)      |-  conjAfter(C,--X),       (Belief:DeductionPN,Goal:DeductionPN)
+    C, X, is(C,"&&"), has(C,"--"), --isVar(X)      |-  conjAfter(C,--X),       (Belief:DecomposePN,Goal:DecomposePN)
       //X, C, is(C,"&&"), has(C,"--"), --isVar(X)      |-  conjAfter(C,--X),       (Belief:DeductionPNX)
       //D, X, is(D,"&&"), --isVar(X)                 |- --conjAfter(D,  X), (Belief:DeductionWeakNN,Goal:DeductionWeakNN)
-//
+
+
 //    //conjunction goal decomposition
 //    G, C, is(C,"&&")                   |-   conjAfter(C,  G), (Goal:DesirePP)
 //      G, D, is(D,"&&")                 |- --conjAfter(D,--G), (Goal:DesirePN)
@@ -108,16 +110,6 @@
 
 
     //TODO nal3 shortcut - decompose trailing intersection/union event
-
-
-        //TODO chooseUnifiableSubterm
-          B, (   (&&,  C,A..+) ==> X), --isVar(C)     |- unisubst((&&,polarizeBelief(X),       A..+ ),C,polarizeTask(B)), (Belief:DeductionDepolarized)
-          B, ( --(&&,--C,A..+) ==> X), --isVar(C)     |- unisubst((&&,polarizeBelief(X),       A..+ ),C,polarizeTask(B)), (Belief:DeductionDepolarized)
-
-//          B, (--(&&,C,A..+) ==> X)     |- unisubst((&&,polarizeBelief(X), --(&&,A..+)),C,polarizeTask(B)), (Belief:DeductionDepolarized)
-//          B, ((&&,--C,A..+) ==> X)       |- unisubst((&&,--X,A..+),C,B), (Belief:DeductionNN, Goal:DesireNN)
-//              B, (--(&&,C,A..+) ==> X)   |- unisubst(--(&&,--X,A..+),C,B), (Belief:DeductionPN, Goal:DesirePN)
-//              B, (--(&&,--C,A..+) ==> X) |- unisubst(--(&&,--X,A..+),C,B), (Belief:DeductionNN, Goal:DesireNN)
 
 
 //Anonymous Deduction and Abduction
@@ -137,14 +129,21 @@
 
     //CONJ
 //    X, C, sectOf(C,X), conjParallel(C)     |-     unsect(C,  X), (Belief:DecomposePP)
-     C, X, sectOf(C,X), conjParallel(C)     |-     unsect(C,  X), (Belief:DecomposePP, Goal:DecomposePP)
+     C, X, eventOf(C,X), conjParallel(C), --isVar(X)     |-     conjBefore(C, X), (Belief:DecomposePP, Goal:DecomposePP)
 //    X, C, sectOf(C,X), conjParallel(C)     |-   unsect(C,  X), (Belief:DecomposePN)
-     C, X, sectOf(C,--X), conjParallel(C)  |-     unsect(C,--X), (Belief:DecomposePN, Goal:DecomposePN)
+     C, X, eventOf(C,--X), conjParallel(C), --isVar(X)  |-     conjBefore(C,--X), (Belief:DecomposePN, Goal:DecomposePN)
 //    X, C, sectOf(C,--X), conjParallel(C)  |-     unsect(C,--X), (Belief:DecomposeNP)
-     C, X, sectOf(C,X), conjParallel(C)     |-   --unsect(C,  X), (Belief:DecomposeNP, Goal:DecomposeNP)
+     C, X, eventOf(C,X), conjParallel(C), --isVar(X)     |-   --conjBefore(C,  X), (Belief:DecomposeNP, Goal:DecomposeNP)
 //    X, C, sectOf(C,--X), conjParallel(C)  |-   --unsect(C,--X), (Belief:DecomposeNN)
-     C, X, sectOf(C,--X), conjParallel(C)  |-   --unsect(C,--X), (Belief:DecomposeNN, Goal:DecomposeNN)
+     C, X, eventOf(C,--X), conjParallel(C), --isVar(X)  |-   --conjBefore(C,--X), (Belief:DecomposeNN, Goal:DecomposeNN)
 
+    //DISJ select
+    D, X, is(D,"&&"), --isVar(X) |- --unisubst(D,chooseUnifiableSubEvent(D,X),X,"#",novel), (Belief:DecomposeNP, Goal:DecomposeNP)
+    D, X, is(D,"&&"), --isVar(X) |- --unisubst(D,chooseUnifiableSubEvent(D,--X),--X,"#",novel), (Belief:DecomposeNN, Goal:DecomposeNN)
+
+    //TODO test and write predicate version:
+      //(C==>Y), X, is(C,"&&"), --isVar(X)           |-  polarizeTask((conjAfter(C,  polarizeBelief(X)) ==> Y)),       (Belief:DecomposeDepolarized,Goal:DecomposeDepolarized)
+     // (--D==>Y), X, is(D,"&&"), --isVar(X) |- polarizeTask((--unisubst(D,chooseUnifiableSubEvent(D,polarizeBelief(X)),polarizeBelief(X),"#") ==> Y)), (Belief:DecomposeDepolarized, Goal:DecomposeDepolarized)
 
 
     //this should be handled by the decompose above:

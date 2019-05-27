@@ -126,7 +126,7 @@ public class DynTaskify extends TaskList {
         NAR nar = a.nar;
         Compound template = (Compound) a.term();
         Term term1 = model.reconstruct(template, this, nar, s, e);
-        if (term1 == null || !term1.unneg().op().taskable) { //quick tests
+        if (term1==null || !term1.unneg().op().taskable) { //quick tests
             if (NAL.DEBUG) {
                 //TEMPORARY
 //                model.evalComponents(answer, (z,start,end)->{

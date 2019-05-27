@@ -35,13 +35,15 @@ public class UniExec extends Exec {
         /*
         simplest possible implementation: flat 1 work unit per each what
         */
-        for (How h : nar.how) {
-            if (h.isOn())
-                nar.what.forEach(w -> {
-                    if (w.isOn())
-                        h.next(w, ()->false);
-                });
-        }
+        nar.what.forEach(w -> {
+            if (w.isOn()) {
+                for (How h : nar.how) {
+                    if (h.isOn()) {
+                        h.next(w, () -> false);
+                    }
+                }
+            }
+        });
     }
 
 }

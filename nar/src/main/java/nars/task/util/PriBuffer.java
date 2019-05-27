@@ -19,6 +19,7 @@ import nars.control.CauseMerge;
 
 import java.util.Iterator;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Consumer;
 
 /**
@@ -143,6 +144,8 @@ abstract public class PriBuffer<T extends Prioritizable> implements Consumer<T> 
      */
     public static class MapTaskBuffer<X extends Task> extends PriBuffer<X> {
 
+        final AtomicLong hit = new AtomicLong(0), miss = new AtomicLong(0);
+
         private final Map<X, X> tasks;
 
         public MapTaskBuffer() {
@@ -174,9 +177,12 @@ abstract public class PriBuffer<T extends Prioritizable> implements Consumer<T> 
             X p = tasks.putIfAbsent(n, n);
             if (p != null) {
                 Task.merge(p, n);
+                hit.incrementAndGet();
                 return p;
-            } else
+            } else {
+                miss.incrementAndGet();
                 return n;
+            }
         }
 
         /**

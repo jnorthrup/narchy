@@ -331,10 +331,7 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
             return true;
         }, 0, decomposeParallel, true);
 
-        if (candidates.isEmpty())
-            return Null;
-        else
-            return candidates.get(random);
+        return candidates.isEmpty() ? Null : candidates.get(random);
     }
 
     /**

@@ -110,7 +110,6 @@ public class Builtin {
                 @Override
                 protected Term apply(Term conj, Term event) {
                     Term x = Conj.diffAll(conj, event, false);
-                    //Term x = Conj.removeEvent(conj, event);
                     return conj.equals(x) ? Null : x;
                 }
             },
@@ -518,15 +517,13 @@ public class Builtin {
                //choose a likely unifiable candiate sub-event.  do not choose an equal match
                if (conj.op()==NEG)
                    conj = conj.unneg();
+
                boolean requireVars = !event.hasVars();
                if (requireVars && !conj.hasVars())
                    return Null;
 
-               boolean econj = event.op()==CONJ;
-               int edt = event.dt();
-
-               if (event instanceof Compound && (conj.structure() & event.op().bit) == 0)
-                   return Null;
+//               boolean econj = event.op()==CONJ;
+//               int edt = event.dt();
 
                return Conj.chooseEvent(conj, nar.random(),
                        //(!econj || edt!=DTERNAL), (!econj || edt!=0),

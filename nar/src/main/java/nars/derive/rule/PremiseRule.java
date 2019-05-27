@@ -1,5 +1,6 @@
 package nars.derive.rule;
 
+import com.google.common.collect.Iterables;
 import it.unimi.dsi.fastutil.bytes.ByteArrayList;
 import jcog.TODO;
 import jcog.data.list.FasterList;
@@ -763,7 +764,7 @@ public class PremiseRule extends ProxyTerm {
         this.taskPunc = taskPunc;
         this.beliefTruth = beliefTruth;
         this.goalTruth = goalTruth;
-        this.CONSTRAINTS = Sets.immutable.of(theInterned(constraints));
+        this.CONSTRAINTS = theInterned(constraints);
 
 
         this.termify = new Termify(conclusion(postcon[0]), truthify, time);
@@ -804,19 +805,17 @@ public class PremiseRule extends ProxyTerm {
         );
     }
 
-    private static UnifyConstraint intern(UnifyConstraint x) {
-        UnifyConstraint y = constra.putIfAbsent(x.term(), x);
+    private static <X extends Unify> UnifyConstraint<X> intern(UnifyConstraint<X> x) {
+        UnifyConstraint<X> y = constra.putIfAbsent(x.term(), x);
         return y != null ? y : x;
     }
 
-    private static UnifyConstraint[] theInterned(MutableSet<UnifyConstraint> constraints) {
+    private static ImmutableSet<UnifyConstraint> theInterned(MutableSet<UnifyConstraint> constraints) {
         if (constraints.isEmpty())
-            return UnifyConstraint.EmptyUnifyConstraints;
-
-        UnifyConstraint[] mc = UnifyConstraint.the(constraints);
-        for (int i = 0, mcLength = mc.length; i < mcLength; i++)
-            mc[i] = intern(mc[i]);
-        return mc;
+            return Sets.immutable.empty();
+        else {
+            return Sets.immutable.ofAll(Iterables.transform(constraints, PremiseRule::intern));
+        }
     }
 
     public static Stream<PremiseRule> parse(String src) {

@@ -177,10 +177,10 @@ public class DynamicStatementTruth {
                         long tWhen = (subjOrPred ? (-tdt) : (+tdt));
 
                         if (xx.subs() != 2)
-                            return null; //something invalid happened
+                            return Null; //something invalid happened
 
                         if (!c.add(tWhen, xx.sub(subjOrPred ? 0 : 1).negIf(!d.componentPolarity.get(i) ^ union)))
-                            return null;
+                            return Null;
                     } else {
                         //conjoin any constant conditions (which may precipitate from reductions)
 
@@ -194,7 +194,7 @@ public class DynamicStatementTruth {
                             constantCondition = null;
 
                         if (!xx.op().eventable || constantCondition == Null)
-                            return null;
+                            return Null;
                     }
                 }
 
@@ -204,7 +204,7 @@ public class DynamicStatementTruth {
                     sect = CONJ.the(constantCondition, sect);
 
                 if (sect == Null)
-                    return null; //allow non-Null Bool's?
+                    return Null; //allow non-Null Bool's?
 
                 long cs = c.shift();
                 if (cs == ETERNAL) {

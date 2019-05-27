@@ -13,6 +13,7 @@ import nars.time.When;
 
 /** premise buffer with novelty filter
  *  thread-safe; for cooperative use by multiple threads
+ *  UNTESTED
  */
 public class PremiseBuffer extends PremiseSource {
 

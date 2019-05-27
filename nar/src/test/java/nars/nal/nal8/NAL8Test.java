@@ -21,7 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class NAL8Test extends NALTest {
 
-    public static final int cycles = 250;
+    public static final int cycles = 500;
 
     @BeforeEach
     void setTolerance() {
@@ -376,32 +376,35 @@ public class NAL8Test extends NALTest {
     void testInhibition() {
 
 
-        test.termVolMax(4).confMin(0.75f)
+        test.termVolMax(4).confMin(0.25f)
                 .goal("reward")
                 .believe("(good ==> reward)", 1, 0.9f)
                 .believe("(--bad ==> reward)", 1, 0.9f)
                 .mustGoal(cycles, "good", 1.0f, 0.81f)
-                .mustGoal(cycles, "bad", 0.0f, 0.81f);
+                .mustNotOutput(cycles, "good", GOAL, 0f, 0.9f, 0f, 1f, ETERNAL)
+                .mustGoal(cycles, "bad", 0.0f, 0.81f)
+                .mustNotOutput(cycles, "bad", GOAL, 0.1f, 1f, 0f, 1f, ETERNAL)
+                ;
 
     }
 
     @Test
     void testInhibitionInverse() {
 
-        test.termVolMax(5).confMin(0.75f)
+        test.termVolMax(3).confMin(0.25f)
                 .goal("--reward")
                 .believe("(good ==> reward)", 1, 0.9f)
                 .believe("(bad ==> reward)", 0, 0.9f)
                 .mustGoal(cycles, "bad", 1.0f, 0.81f)
         //mustGoal(cycles, "good", 0.0f, 0.81f)
-        //.mustNotOutput(cycles, "good", GOAL, 0f, 1f, 0.8f, 1f, ETERNAL)
+                .mustNotOutput(cycles, "bad", GOAL, 0f, 0.9f, 0f, 1f, ETERNAL)
         ;
     }
 
 
     @Test
     void testInhibition0() {
-        test.nar.termVolMax.set(5);
+        test.nar.termVolMax.set(3);
 
         test
                 .goal("reward")
@@ -1072,9 +1075,66 @@ public class NAL8Test extends NALTest {
 //    }
 
     @Test
+    void condition_goal_disjunction_2_neg_conj_no_var_simple() {
+        test
+                .termVolMax(10)
+                .input("on(t2,t3).")
+                .input("--(on(t2,t3) && at(t3))!")
+                .mustGoal(cycles, "at(t3)", 0.0f, 0.81f, ETERNAL)
+                .mustNotOutput(cycles, "at(t3)", GOAL, 0.1f, 1f, 0, 1, t->true)
+                .mustNotOutput(cycles, "on(t2,t3)", GOAL, 0f, 0.9f, 0, 1, t->true)
+                ;
+    }
+
+    @Test
+    void condition_goal_disjunction_2_neg_conj_var_simple() {
+        test
+                .termVolMax(10)
+                .input("on(t2,t3).")
+                .input("--(on(t2,#1) && at(#1))!")
+                .mustGoal(cycles, "at(t3)", 0.0f, 0.81f, ETERNAL)
+                //.mustGoal(cycles, "on(t2,t3)", 1.0f, 0.81f, ETERNAL)
+                .mustNotOutput(cycles, "at(t3)", GOAL, 0.1f, 1f, 0, 1, t->true)
+                .mustNotOutput(cycles, "on(t2,t3)", GOAL, 0f, 0.9f, 0, 1, t->true)
+        ;
+    }
+    @Test
+    void condition_goal_conjunction_2_neg_conj_var_simple_pos() {
+        test
+                .termVolMax(11)
+                .input("on(t2,t3).")
+                .input("(on(t2,#1) && at(#1))!")
+                .mustGoal(cycles, "at(t3)", 1.0f, 0.81f, ETERNAL)
+                .mustNotOutput(cycles, "at(t3)", GOAL, 0f, 0.9f, 0, 1, t->true)
+                .mustNotOutput(cycles, "on(t2,t3)", GOAL, 0.1f, 1f, 0, 1, t->true)
+        ;
+    }
+
+    @Test
+    void condition_goal_conjunction_2_neg_conj_var_simple_neg() {
+        test
+                .termVolMax(11)
+                .input("--on(t2,t3).")
+                .input("(--on(t2,#1) && at(#1))!")
+                .mustGoal(cycles, "at(t3)", 1.0f, 0.81f, ETERNAL)
+                .mustNotOutput(cycles, "at(t3)", GOAL, 0f, 0.9f, 0, 1, t->true)
+                .mustNotOutput(cycles, "on(t2,t3)", GOAL, 0.1f, 1f, 0, 1, t->true)
+        ;
+    }
+    @Test
+    void condition_goal_disjunction_2_neg_conj_var_simple_neg() {
+        test
+                .termVolMax(11)
+                .input("--on(t2,t3).")
+                .input("--(--on(t2,#1) && at(#1))!")
+                .mustGoal(cycles, "at(t3)", 0.0f, 0.81f, ETERNAL)
+                .mustNotOutput(cycles, "at(t3)", GOAL, 0.1f, 1f, 0, 1, t->true)
+        ;
+    }
+    @Test
     void condition_goal_deduction_2_neg_conj() {
         test
-                .termVolMax(14)
+                .termVolMax(12)
                 .input("on({t002},{t003}).")
                 .input("--(on({t002},#1) && at(SELF,#1))!")
                 .mustGoal(cycles, "at(SELF,{t003})", 0.0f, 0.81f, ETERNAL);

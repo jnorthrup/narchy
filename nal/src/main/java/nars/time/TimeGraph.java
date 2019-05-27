@@ -781,13 +781,16 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
             List<Event>[] subEvents = new FasterList[s];
             int abs = solveAbsolutes(xx, subEvents);
 
+
+            if (s == 2)
+                return solveDT2(x, xx, each);
+
             if (abs > 0) {
                 if (!solveAbsolutePermutations(xx, subEvents, abs, each))
                     return false;
-            } else if (s == 2)
-                return solveDT2(x, xx, each);
+            }
 
-            else if (s == 3) {
+            if (s == 3) {
 
                 Term a = xx.sub(0), b = xx.sub(1), c = xx.sub(2);
 
@@ -868,6 +871,8 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 //                    if (!ii.isEmpty()) {
 //                        Event e = ii.get(0);
                     long es = e.start();
+                    if (es == ETERNAL)
+                        continue; //does this happen?
                     start = Math.min(es, start);
                     range = range > 0 ? Math.min(e.end() - es, range) : 0;
                     if (!cc.add(es, e.id))
@@ -893,6 +898,8 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
             for (Event e : ss) {
                 Term nextKnown = e.id;
                 start = e.start();
+                if (start==ETERNAL)
+                    continue;
                 range = e.end() - start;
                 if (!nextAbsolutePermutation(each, unknown, start, range, nextKnown))
                     return false;
@@ -1238,7 +1245,23 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 
     private boolean solveAll(Term x, Predicate<Event> each) {
         if (!x.hasXternal()) {
+            if (Conj.isSeq(x)) {
+                //attempt solve by first event
+                Term x0 = x.eventFirst();
+                if (!x.equals(x0)) {
+                    if (!solveOccurrence(x0, true, xx0->{
+                        if (xx0 instanceof Absolute)
+                            if (!each.test(event(x, xx0.start(), xx0.end(), false)))
+                                return false;
+
+                        return true;
+                    }))
+                        return false;
+                }
+            }
+
             return solveOccurrence(x, true, each);
+
         } else {
             if (!solveRootMatches(x, each))
                 return false;

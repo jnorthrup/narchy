@@ -15,7 +15,6 @@ import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
-import java.util.Set;
 import java.util.stream.Stream;
 
 
@@ -60,18 +59,6 @@ public abstract class UnifyConstraint<U extends Unify> extends AbstractPred<U> {
      * @return true if match is INVALID, false if VALID (reversed)
      */
     abstract public boolean invalid(Term y, U f);
-
-    public static final UnifyConstraint[] EmptyUnifyConstraints = new UnifyConstraint[0];
-
-
-    public static UnifyConstraint[] the(Set<UnifyConstraint> c) {
-        if (c.size() < 2)
-            return c.toArray(EmptyUnifyConstraints);
-        else
-            return CompoundConstraint.the(c.stream()).toArray(UnifyConstraint[]::new);
-    }
-
-
 
     private static final class CompoundConstraint<U extends Unify> extends UnifyConstraint<U> {
         static final MultimapBuilder.ListMultimapBuilder matchConstraintMapBuilder = MultimapBuilder.hashKeys(4).arrayListValues(4);

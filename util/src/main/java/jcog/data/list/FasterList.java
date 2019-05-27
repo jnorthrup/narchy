@@ -85,6 +85,10 @@ public class FasterList<X> extends FastList<X> {
         //return result < oldSize ? (Integer.MAX_VALUE - 8) : result;
     }
 
+    public boolean isEmpty() {
+        return this.size == 0;
+    }
+
     /**
      * use with caution
      */

@@ -618,14 +618,19 @@ abstract public class GameX extends Game {
 
 
 
+
                     FloatAveragedWindow g = (FloatAveragedWindow) h.governor;
                     if (g == null)
                         h.governor = g = new FloatAveragedWindow(gHist, 1 - momentum, 0).mode(
-                                FloatAveragedWindow.Mode.Exponential
-                                //FloatAveragedWindow.Mode.Mean
+                                //FloatAveragedWindow.Mode.Exponential
+                                FloatAveragedWindow.Mode.Mean
                         );
-                    float pri = Util.unitize(explorationRate + Util.clamp(g.valueOf(v), 0, 1));
-                    h.pri(pri);
+
+
+
+                    float pri = Util.unitize(Math.max(explorationRate , v));
+                    float pp = g.valueOf(pri);
+                    h.pri(pp);
                 });
                 //            nn.how.forEach(h -> System.out.println(h + " "+ h.pri()));
             }
