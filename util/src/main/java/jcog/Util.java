@@ -1085,13 +1085,16 @@ public enum Util {
     }
 
     public static float[] normalize(float[] x, int s, int e, float min, float max) {
-        for (int i = s; i < e; i++) {
+        for (int i = s; i < e; i++)
             x[i] = normalize(x[i], min, max);
-        }
         return x;
     }
 
     public static double normalize(double x, double min, double max) {
+        if (x!=x)
+            return Float.NaN;
+        assertFinite(min);
+        assertFinite(max);
         assert (max >= min);
         if (max - min <= Double.MIN_NORMAL)
             return 0.5f;
@@ -1100,6 +1103,11 @@ public enum Util {
     }
 
     public static float normalize(float x, float min, float max) {
+        if (x!=x)
+            return Float.NaN;
+
+        assertFinite(min);
+        assertFinite(max);
         assert (max >= min);
         if (max - min <= Float.MIN_NORMAL)
             return 0.5f;

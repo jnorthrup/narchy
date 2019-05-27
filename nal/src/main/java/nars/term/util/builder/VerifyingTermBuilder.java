@@ -4,6 +4,7 @@ import jcog.WTF;
 import nars.Op;
 import nars.subterm.Subterms;
 import nars.term.Term;
+import nars.term.atom.Atom;
 import nars.term.util.TermTest;
 import org.jetbrains.annotations.Nullable;
 
@@ -14,9 +15,9 @@ import java.util.Arrays;
  */
 public class VerifyingTermBuilder extends TermBuilder {
 
-    private final TermConstructor a, b;
+    private final TermBuilder a, b;
 
-    public VerifyingTermBuilder(TermConstructor a, TermConstructor b) {
+    public VerifyingTermBuilder(TermBuilder a, TermBuilder b) {
         this.a = a;
         this.b = b;
     }
@@ -63,4 +64,12 @@ public class VerifyingTermBuilder extends TermBuilder {
         }
     }
 
+    @Override
+    public Atom atom(String id) {
+        Atom aa = a.atom(id);
+        Atom bb = b.atom(id);
+        if (!aa.equals(bb))
+            throw new WTF("atoms inequal: " + aa + " " + bb);
+        return aa;
+    }
 }

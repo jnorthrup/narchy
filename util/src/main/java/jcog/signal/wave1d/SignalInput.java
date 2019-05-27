@@ -36,7 +36,8 @@ public class SignalInput extends Loop {
         this.s = this.e = src.time();
 
         int r = src.sampleRate();
-        return set(src, r, Math.round(bufferSeconds * r));
+        int samples = Math.round(bufferSeconds * r);
+        return set(src, r, samples);
     }
 
     public synchronized SignalInput set(DigitizedSignal src, int sampleRate, int bufferSamples) {
@@ -63,24 +64,28 @@ public class SignalInput extends Loop {
         if (source!=null) {
             boolean hasListeners = !wave.isEmpty();
             if (hasListeners) {
-                while (source.hasNext(data.length - dataPtr)) {
+                if (source.hasNext((data.length - dataPtr))) {
 
 
                     int read = source.next(data, dataPtr, data.length - dataPtr);
 
                     dataPtr += read; assert(dataPtr <= data.length);
 
-                    this.e = Math.round(dataPtr/((double)sampleRate)*1000) + this.s;
+                    //this.e = Math.round(dataPtr/((double)sampleRate)*1000) + this.s;
 
+//                    System.out.println(Texts.timeStr(Math.round((e - s)*1.0E6)) + "  " + (System.currentTimeMillis() - source.time()) + " MS lag");
 
                     if (dataPtr == data.length) {
                         //a complete buffer
+
+                        this.e = source.time();
+                        this.s = this.e - Math.round(dataPtr/((double)sampleRate)*1000.0);
 
                         wave.emit(new RealTimeTensor(data.clone(), s, e-1));
                         dataPtr = 0;
 
                         //if (dataPtr==0)
-                            this.s = source.time();
+                            ///this.s = source.time();
                     }
                 }
             }

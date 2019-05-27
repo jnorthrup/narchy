@@ -65,7 +65,7 @@ public abstract class RingContainer<X extends Surface> extends EmptyContainer {
         float[] c = coords;
         int t = T.intValue();
 
-        float W = w(), H = h(), left = left(), right = right(), top = top(), bottom = bottom();
+        float W = w(), H = h(), left = left(), right = right(), top = bottom(), bottom = top();
         float di = (horizOrVert ? W : H)/t;
         int j = 0;
         for (int i = 0; i < t; i++) {

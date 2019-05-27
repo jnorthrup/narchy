@@ -2,9 +2,7 @@ package nars.derive;
 
 import jcog.math.IntRange;
 import nars.attention.TaskLinkWhat;
-import nars.attention.What;
 import nars.derive.model.Derivation;
-import nars.derive.premise.PremiseBuffer;
 import nars.derive.rule.PremiseRuleSet;
 import nars.time.event.WhenTimeIs;
 
@@ -29,8 +27,8 @@ public class BatchDeriver extends Deriver {
         int deriveTTL = d.nar().deriveBranchTTL.intValue();
         int premisesPerIteration = this.premisesPerIteration.intValue();
         int termLinksPerTaskLink = this.termLinksPerTaskLink.intValue();
-        What w = d.what;
 
+        d.premises.commit();
         do {
             derive(premisesPerIteration, termLinksPerTaskLink, matchTTL, deriveTTL, d);
         } while (kontinue.getAsBoolean());
@@ -42,14 +40,12 @@ public class BatchDeriver extends Deriver {
      * thread-safe, for use by multiple threads
      */
     public final void derive(int premisesPerIteration, int termlinksPerTaskLink, int matchTTL, int deriveTTL, Derivation d) {
-        PremiseBuffer p = d.premises;
-        p.derive(
+        d.premises.derive(
                 WhenTimeIs.now(d),
                 premisesPerIteration,
                 termlinksPerTaskLink,
                 matchTTL, deriveTTL,
                 ((TaskLinkWhat)d.what).links, d);
-        p.commit();
     }
 
 }

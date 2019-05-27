@@ -2,6 +2,7 @@ package nars.term.util.builder;
 
 import jcog.data.bit.MetalBitSet;
 import jcog.data.byt.DynBytes;
+import jcog.memoize.HijackMemoize;
 import jcog.memoize.Memoizers;
 import jcog.memoize.byt.ByteKeyExternal;
 import nars.Op;
@@ -10,6 +11,7 @@ import nars.subterm.SortedSubterms;
 import nars.subterm.Subterms;
 import nars.term.Term;
 import nars.term.anon.Intrin;
+import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
 import nars.term.util.cache.Intermed;
@@ -41,7 +43,10 @@ public class InterningTermBuilder extends HeapTermBuilder {
     static final boolean sortCanonically = true;
 //    private final static boolean internNegs = false;
     private final static boolean cacheSubtermKeyBytes = false;
-    private final boolean resolveNeg = false;
+
+    private static final int ATOM_LENGTH_MAX = 8;
+
+    private final boolean resolveNeg = true;
     static final boolean deepDefault = true;
 
 
@@ -56,6 +61,7 @@ public class InterningTermBuilder extends HeapTermBuilder {
     /** used for quickly determining if op type is internable */
     private final MetalBitSet termsInterned;
 
+    private final HijackMemoize<String, Atom> atoms;
 
 
     public InterningTermBuilder() {
@@ -73,6 +79,7 @@ public class InterningTermBuilder extends HeapTermBuilder {
         Op[] ops = values();
         terms = new Function[ops.length];
 
+        atoms = new HijackMemoize<>(super::atom, cacheSizePerOp, 3);
 
         subterms = newOpCache("subterms",
                 x -> TermConstructor.theSubterms(false, resolve(x.subs)), cacheSizePerOp * 2);
@@ -318,6 +325,11 @@ public class InterningTermBuilder extends HeapTermBuilder {
 
     @Override public Term neg(Term x) {
         return resolveNeg ? super.neg(resolve(x)) : super.neg(x);
+    }
+
+    @Override
+    public Atom atom(String id) {
+        return (id.length() < ATOM_LENGTH_MAX) ? atoms.apply(id) : super.atom(id);
     }
 
     @Override

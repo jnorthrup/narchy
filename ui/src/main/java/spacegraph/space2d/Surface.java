@@ -71,14 +71,14 @@ abstract public class Surface implements Surfacelike {
 
     @Deprecated
     public final float y() {
-        return top();
+        return bottom();
     }
 
     public final float left() {
         return bounds.left();
     }
 
-    public final float top() {
+    public final float bottom() {
         return bounds.bottom();
     }
 
@@ -86,9 +86,7 @@ abstract public class Surface implements Surfacelike {
         return bounds.right();
     }
 
-    public final float bottom() {
-        return bounds.top();
-    }
+    public final float top() { return bounds.top(); }
 
     @Override
     public final boolean equals(Object obj) {

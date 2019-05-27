@@ -55,7 +55,7 @@ public class HttpServer extends Loop implements WebSocketSelector.UpgradeWebSock
         this(new InetSocketAddress(host, port), model);
     }
 
-    private HttpServer(InetSocketAddress addr, HttpModel model) throws IOException {
+    public HttpServer(InetSocketAddress addr, HttpModel model) throws IOException {
         this(HttpServer.openServerChannel(addr), model);
     }
 

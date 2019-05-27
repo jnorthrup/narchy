@@ -30,9 +30,9 @@ public class MutableUnitContainer<S extends Surface> extends AbstractUnitContain
         if (next!=null) {
             if (parent != null) {
                 next.start(this);
+                layout();
             }
 
-            layout();
         }
 
         return this;

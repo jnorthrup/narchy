@@ -8,17 +8,13 @@ import jcog.pri.bag.impl.hijack.PriLinkHijackBag;
 import jcog.pri.op.PriMerge;
 import nars.Task;
 import nars.derive.model.Derivation;
-import nars.link.TaskLink;
 import nars.link.TaskLinks;
-import nars.term.Term;
 import nars.time.When;
-
-import java.io.Serializable;
 
 /** premise buffer with novelty filter
  *  thread-safe; for cooperative use by multiple threads
  */
-public class PremiseBuffer implements Serializable {
+public class PremiseBuffer extends PremiseSource {
 
     static final int premiseBufferCapacity = 32;
 
@@ -46,16 +42,17 @@ public class PremiseBuffer implements Serializable {
                 new PriLinkHijackBag<>(PriMerge.max, premiseBufferCapacity, 2);
     }
 
-    /**
-     * samples premises
-     */
-    public void derive(When when, int premisesPerIteration, int termlinksPerTaskLink, int matchTTL, int deriveTTL, TaskLinks links, Derivation d) {
+    @Override public void derive(When when, int premisesPerIteration, int termlinksPerTaskLink, int matchTTL, int deriveTTL, TaskLinks links, Derivation d) {
 
         d.what.sample(d.random, (int) Math.max(1, Math.ceil((fillRate * premisesPerIteration) / termlinksPerTaskLink)), tasklink -> {
 
             Task task = tasklink.get(when);
-            if (task != null && !task.isDeleted())
-                hypothesize(tasklink, task, termlinksPerTaskLink, links, d);
+            if (task != null && !task.isDeleted()) {
+                float linkPri = tasklink.priPunc(task.punc());
+                hypothesize(tasklink, task, termlinksPerTaskLink, links, d, (premise) -> {
+                    this.premise.put(new PLink<>(premise, linkPri));
+                });
+            }
 
             return true;
 
@@ -76,39 +73,6 @@ public class PremiseBuffer implements Serializable {
         P.derive(d, matchTTL, deriveTTL);
     }
 
-    void hypothesize(TaskLink tasklink, Task task, int termlinksPerTaskLink, TaskLinks links, Derivation d) {
-        Term prevTerm = null;
-
-//        Task task2 = Abbreviation.unabbreviate(task, d);
-//        if (task!=task2 && task2!=null) {
-//            if (task2.term().volume() <= ((float)(d.termVolMax/2))) {
-//                //System.out.println(task + " " + task2);
-//                task = task2; //use decompressed form if small enough
-//            } else {
-//                //remain compressed
-//                //System.out.println(task + " " + task2);
-//            }
-//        }
-
-        float linkPri = 0;
-        for (int i = 0; i < termlinksPerTaskLink; i++) {
-            Term term = links.term(tasklink, task, d);
-            if (term != null && (prevTerm == null || !term.equals(prevTerm))) {
-
-//                term = Abbreviation.unabbreviate(term, d.nar);
-//                if (term == null || term instanceof Bool)
-//                    continue;
-
-                if (i == 0)
-                    linkPri = tasklink.priPunc(task.punc());
-
-                Premise p = new Premise(task, term);
-
-                this.premise.put(new PLink<>(p, linkPri));
-            }
-            prevTerm = term;
-        }
-    }
 
     public void commit() {
         premise.commit();

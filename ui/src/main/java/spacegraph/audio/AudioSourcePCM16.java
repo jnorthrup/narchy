@@ -1,10 +1,13 @@
 package spacegraph.audio;
 
+import jcog.TODO;
+
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.Mixer;
 import javax.sound.sampled.TargetDataLine;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.nio.ShortBuffer;
 
 /**
  * Signal sampled from system sound devices (via Java Media)
@@ -15,9 +18,7 @@ public class AudioSourcePCM16 extends AudioSource {
     private static final float shortRange = Short.MAX_VALUE;
 
 
-    //TODO parameterize with device
-
-    private final short[] preShortBuffer;
+//    private final short[] preShortBuffer;
     private final Mixer.Info mixer;
 
     /**
@@ -35,8 +36,8 @@ public class AudioSourcePCM16 extends AudioSource {
 //        assert(line.getFormat().getChannels() == 1);
 
 
-        int audioBufferSamples = line.getBufferSize();
-        preShortBuffer = new short[audioBufferSamples];
+//        int audioBufferSamples = line.getBufferSize();
+//        preShortBuffer = new short[audioBufferSamples];
 
     }
 
@@ -45,22 +46,50 @@ public class AudioSourcePCM16 extends AudioSource {
         return mixer.toString();// + " " + super.name();
     }
 
-    @Override protected void decode(float[] target, int nSamplesRead) {
-        ByteBuffer.wrap(preByteBuffer).order(ByteOrder.LITTLE_ENDIAN).asShortBuffer().get(preShortBuffer);
+//    @Override protected void decode(float[] target, int nSamplesRead) {
+//        ByteBuffer.wrap(preByteBuffer).order(ByteOrder.LITTLE_ENDIAN).asShortBuffer().get(preShortBuffer);
+//
+//        int start = 0;
+//        int end = nSamplesRead;
+//        int j = 0;
+////                short min = Short.MAX_VALUE, max = Short.MIN_VALUE;
+//        double gain =
+//                1.0 / shortRange;
+//        //this.gain.floatValue() / shortRange;
+//        for (int i = start; i < end; ) {
+//            short s = preShortBuffer[i++];
+////                    if (s < min) min = s;
+////                    if (s > max) max = s;
+//            target[j++] = (float) (s * gain); //compute in double for exra precision
+//        }
+//
+//    }
 
-        int start = 0;
-        int end = nSamplesRead;
+    @Override protected void decode(float[] target, int samples) {
+
+        double gain = 1.0 / shortRange; //compute in double for exra precision
+
+        int channels = line.getFormat().getChannels();
+
+        ShortBuffer sb = ByteBuffer.wrap(preByteBuffer).order(ByteOrder.LITTLE_ENDIAN).asShortBuffer();
+
+        int r = samples;
         int j = 0;
-//                short min = Short.MAX_VALUE, max = Short.MIN_VALUE;
-        double gain =
-                1.0 / shortRange;
-        //this.gain.floatValue() / shortRange;
-        for (int i = start; i < end; ) {
-            short s = preShortBuffer[i++];
-//                    if (s < min) min = s;
-//                    if (s > max) max = s;
-            target[j++] = (float) (s * gain); //compute in double for exra precision
-        }
+        if (channels == 1) {
+            while (r > 0) {
+                short s = sb.get();
+                target[j++] = (float) (s * gain);
+                r--;
+            }
+        } else if(channels == 2) {
+            while (r > 0) {
+                short a = sb.get();
+                short b = sb.get();
+                target[j++] = (float) (((a * gain) +( b * gain)) /2);
+                r--;
+            }
+        } else
+            throw new TODO();
 
     }
 

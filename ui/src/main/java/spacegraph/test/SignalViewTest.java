@@ -1,8 +1,12 @@
 package spacegraph.test;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.github.sarxos.webcam.Webcam;
+import com.github.sarxos.webcam.WebcamException;
 import com.google.common.util.concurrent.RateLimiter;
 import jcog.Util;
+import jcog.exe.Every;
+import jcog.exe.Exe;
 import jcog.exe.Loop;
 import jcog.net.UDPeer;
 import jcog.net.http.HttpConnection;
@@ -24,20 +28,21 @@ import spacegraph.space2d.container.unit.AspectAlign;
 import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.space2d.widget.meter.BitmapMatrixView;
 import spacegraph.space2d.widget.text.LabeledPane;
-import spacegraph.video.Draw;
-import spacegraph.video.Tex;
-import spacegraph.video.VideoSurface;
-import spacegraph.video.WebCam;
+import spacegraph.video.*;
 
 import javax.sound.sampled.LineUnavailableException;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.io.Serializable;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Supplier;
 
+import static java.util.stream.Collectors.toList;
 import static spacegraph.SpaceGraph.window;
 
 public class SignalViewTest {
@@ -55,22 +60,13 @@ public class SignalViewTest {
             throw new RuntimeException(e);
         }
 
+        n.connectAll();
+
+        Util.sleepMS(2000); //HACK
+
         RealTimeLine cc = new RealTimeLine(n);
 
-        for (Webcam ww : Webcam.getWebcams()) {
-            VideoSensor v = n.add(ww);
-            cc.add(ww, v.events);
-        }
 
-        for (AudioSource in : AudioSource.all()) {
-            try {
-                in.start();
-                AudioSensor a = n.add(in);
-                cc.add(a, a.events);
-            } catch (LineUnavailableException e) {
-                e.printStackTrace();
-            }
-        }
 
 
 
@@ -90,18 +86,36 @@ public class SignalViewTest {
         return new Timeline2D.AnalyzedEvent(new AspectAlign(Tex.view(t),
                 ((float) t.getHeight()) / t.getWidth()), now - dur, now);
     }
+    static final int capacity = 128;
 
     abstract public static class Sensor {
         public final String id;
-        //lat, lon
-
-        static final int capacity = 128;
+        //TODO lat, lon
         public final Timeline2D.FixedSizeEventBuffer<Timeline2D.SimpleEvent> events = new Timeline2D.FixedSizeEventBuffer(capacity);
+        //TODO other metrics: last update, avg bps, etc
 
         protected Sensor(String id) {
             this.id = id;
         }
 
+        public SensorStatus status() {
+            return new SensorStatus(id);
+        }
+
+        abstract public boolean on();
+    }
+
+    public static class SensorStatus implements Serializable {
+        public String id;
+
+        public SensorStatus(String id) {
+            this.id = id;
+        }
+
+        @Override
+        public String toString() {
+            return id;
+        }
     }
 
     public static class Sensor1D extends Sensor {
@@ -113,15 +127,20 @@ public class SignalViewTest {
             super(id);
             this.i = i;
 
-            float audioFPS = 8;
+            float audioFPS = 4;
             float granularity = 2;
 
             in = new SignalInput();
             in.set(i, 1/audioFPS);
             in.setFPS(audioFPS * granularity);
+        }
 
+        @Override
+        public boolean on() {
+            return in.isRunning(); //TODO better
         }
     }
+
     public static class AudioSensor extends Sensor1D {
         public AudioSensor(String id, DigitizedSignal i) {
             super(id, i);
@@ -129,46 +148,143 @@ public class SignalViewTest {
     }
     public static class VideoSensor extends Sensor {
 
-        public VideoSensor(String id) {
+        public final VideoSource video;
+
+        public VideoSensor(String id, VideoSource v) {
             super(id);
+            this.video = v;
+        }
+        @Override
+        public boolean on() {
+            if (video instanceof WebCam) {
+                return ((WebCam)video).webcam.isOpen();
+            }
+            return true;
         }
     }
 
     public static class SensorNode {
+        final static int SHARE_PERIOD_MS = 500;
+        final static int MANIFEST_TTL = 2;
+
         final Map<String,Sensor> sensors = new ConcurrentHashMap();
+
+        final AtomicBoolean reshare = new AtomicBoolean(true);
+
+        private final UDPeer udp;
+        private final HttpServer tcp;
 
         public SensorNode() throws IOException {
             this(0);
         }
 
         public SensorNode(int port) throws IOException {
-            UDPeer u = new UDPeer(port);
-            u.setFPS(10);
+            udp = new UDPeer(port) {
 
-            HttpServer server = null;
-            try {
-                server = new HttpServer(u.host(), port, new HttpModel() {
+                private Every resharing;
 
-                    @Override
-                    public void wssOpen(WebSocket ws, ClientHandshake handshake) {
-                        ws.send("hi");
+                @Override
+                protected void starting() {
+                    super.starting();
+                    resharing = new Every(()->{
+                        if (reshare.compareAndSet(true,false)) {
+                            reshare();
+                        }
+                    }, SHARE_PERIOD_MS);
+                }
+
+                @Override
+                protected void stopping() {
+                    resharing = null;
+                    super.stopping();
+                }
+
+                @Override
+                public boolean next() {
+                    resharing.next();
+                    return super.next();
+                }
+
+                @Override
+                protected void accept(Msg m) {
+                    switch (m.cmd()) {
+                        case 'P':
+                            try {
+                                send((byte)'x', manifest(), m.origin()); //send manifest after pinged
+                            } catch (JsonProcessingException e) {
+                                e.printStackTrace();
+                            }
+                            break;
+//                        case 'p':
+//                            //pong
+//                            byte[] payload2 = sensors.toString().getBytes(); //HACK
+//                            send(new Msg((byte)'x', (byte)1, me, addr, payload2), m.origin());
+//                            break;
+                        case 'x':
+                            //receive manifest
+                            try {
+                                System.out.println("got: " + Util.fromBytes(m.data(), List.class)  + " from " + m.origin());
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                            break;
+//                        default:
+//                            System.out.println("recv: " + m);
+//                            break;
+
                     }
+                }
 
-                    @Override
-                    public void response(HttpConnection h) {
-                        h.respond("");
-                    }
-                });
-                server.setFPS(10f);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            };
 
+            HttpModel h = new HttpModel() {
+
+                @Override
+                public void wssOpen(WebSocket ws, ClientHandshake handshake) {
+                    ws.send("hi");
+                }
+
+                @Override
+                public void response(HttpConnection h) {
+                    h.respond("");
+                }
+            };
+
+
+            HttpServer tcp;
+                tcp = new HttpServer(udp.addr(), h);
+
+
+            this.tcp = tcp;
+            udp.setFPS(5);
+            tcp.setFPS(5f);
 
         }
 
+        private void reshare() {
+            if (udp.connected()) {
+                try {
+                    udp.tellSome((byte)'x', manifest(), MANIFEST_TTL);
+                } catch (JsonProcessingException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+
+        private List<SensorStatus> manifest() {
+            return sensors.values().stream().filter(Sensor::on).map(Sensor::status).collect(toList());
+        }
+
         public VideoSensor add(Webcam ww) {
-            return _add(new VideoSensor(ww.getName()));
+            try {
+                WebCam w = new WebCam(ww, false);
+                return _add(new VideoSensor(ww.getName(), w));
+            } catch (WebcamException e) {
+                //TODO logger.debug...
+                e.printStackTrace();
+                return null;
+            }
         }
 
         public Sensor1D add(DigitizedSignal in) {
@@ -181,20 +297,50 @@ public class SignalViewTest {
 
         private <S extends Sensor> S _add(S s) {
             Sensor t = sensors.put(s.id, s);
+            reshare.set(true);
             assert(t==null);
             return s;
         }
 
+        /** discover all available peripherals */
+        public void connectAll() {
+
+            for (AudioSource in : AudioSource.all()) {
+                Exe.invokeLater(()->{
+                    try {
+                        in.start();
+                        add(in);
+                    } catch (LineUnavailableException e) {
+                        e.printStackTrace();
+                    }
+                });
+            }
+
+            for (Webcam ww : Webcam.getWebcams()) {
+                Exe.invokeLater(()-> {
+                    add(ww);
+                });
+            }
+        }
     }
 
     public static class RealTimeLine extends Gridding {
 
         private final SensorNode node;
-        float viewWindowSeconds = 8;
+        float viewWindowSeconds = 4;
 
         public RealTimeLine(SensorNode node) {
             super(VERTICAL);
             this.node = node;
+
+            node.sensors.values().forEach(s -> {
+               if (s instanceof VideoSensor)
+                   add(((VideoSensor)s), s.events);
+               else if (s instanceof AudioSensor)
+                   add(((AudioSensor)s), s.events);
+               else
+                   throw new jcog.TODO();
+            });
         }
 
         public Timeline2D newTrack(String label, Supplier<Surface> control) {
@@ -217,11 +363,11 @@ public class SignalViewTest {
 
         }
 
-        @Deprecated public void add(Webcam ww, Timeline2D.FixedSizeEventBuffer<Timeline2D.SimpleEvent> ge) {
-            Timeline2D g = newTrack(ww.getName(), () -> new VideoSurface(new WebCam(ww)));
+        @Deprecated public void add(VideoSensor ww, Timeline2D.FixedSizeEventBuffer<Timeline2D.SimpleEvent> ge) {
+            WebCam w = ((WebCam)ww.video); //HACK
 
+            Timeline2D g = newTrack(ww.id, () -> new VideoSurface(w));
 
-            WebCam w = new WebCam(ww, false);
             float camFPS = 0.5f;
             Loop.of(() -> {
                 try {
@@ -239,7 +385,7 @@ public class SignalViewTest {
         }
 
         public void add(AudioSensor in, Timeline2D.FixedSizeEventBuffer<Timeline2D.SimpleEvent> ge) {
-            int freqs = 256;
+            int freqs = 128;
 
 
 //                FloatSlider preAmp = new FloatSlider("preAmp", 1, 0, 16f);
@@ -283,11 +429,21 @@ public class SignalViewTest {
                         //arrayRendererY(dft.apply(a).floatArray())
                         (xIgnored, y) -> {
                             float fy = (float) (f[y]);
-                            float fs = 0.5f + 0.5f * (fy * Util.unitize(fRMS));
-                            float fb = 0.05f + 0.95f * fy;
-                            return
-                                    Draw.colorHSB(fRMS * 2, fs, fb);
-                            //Draw.colorBipolar(f[y])
+                            if (fy == fy) {
+
+
+                                fy = (float) (fy < 0 ? -Math.sqrt(-fy) : Math.sqrt(fy));
+
+                                float fs = 0.5f + 0.5f * (fy * Util.unitize(fRMS));
+                                float fb = 0.05f + 0.95f * fy;
+                                return
+                                        Draw.colorHSB(fRMS * 2, fs, fb);
+                                //Draw.colorBipolar(f[y])
+                            } else {
+                                //"static" noise
+                                //return Draw.colorBipolar((ThreadLocalRandom.current().nextFloat()*2)-1);
+                                return 0;
+                            }
                         }
                 );
                 //pp.tex.mipmap(true);

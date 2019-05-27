@@ -12,16 +12,16 @@ import static nars.Op.*;
 public class Atom extends AbstractAtomic implements The {
 
 
-    /** use with caution */
-    public Atom(byte[] b) {
-        super(b);
+//    /** use with caution */
+//    public Atom(byte[] b) {
+//        super(b);
+//    }
+
+    public Atom(String id) {
+        super(ATOM, id);
     }
 
-    protected Atom(String id) {
-        super(ATOM, validateAtomID(id));
-    }
-
-    private static String validateAtomID(String id) {
+    static void validateAtomID(String id) {
         if (id.isEmpty())
             throw new UnsupportedOperationException("Empty Atom ID");
 
@@ -50,7 +50,7 @@ public class Atom extends AbstractAtomic implements The {
         }
 
         
-        return id;
+
     }
 
 

@@ -3,6 +3,7 @@ package nars.term.util.builder;
 import nars.Op;
 import nars.subterm.Subterms;
 import nars.term.Term;
+import nars.term.atom.Atom;
 
 /** stateless implementation */
 public class HeapTermBuilder extends TermBuilder {
@@ -20,5 +21,8 @@ public class HeapTermBuilder extends TermBuilder {
         return theCompound(o, dt, o.sortedIfNecessary(dt, u));
     }
 
-
+    @Override
+    public Atom atom(String id) {
+        return new Atom(id);
+    }
 }

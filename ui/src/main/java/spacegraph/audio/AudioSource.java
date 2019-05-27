@@ -13,7 +13,7 @@ public abstract class AudioSource implements DigitizedSignal {
     private static final Logger logger = LoggerFactory.getLogger(AudioSource.class);
     protected final int bytesPerSample;
     protected final AtomicBoolean busy = new AtomicBoolean(false);
-    protected final TargetDataLine line;
+    public final TargetDataLine line;
     volatile public int audioBytesRead;
     /** system ms time at start */
     private long _start;
@@ -22,8 +22,8 @@ public abstract class AudioSource implements DigitizedSignal {
     public AudioSource(TargetDataLine line) {
         this.line = line;
 
-        int numChannels = line.getFormat().getChannels();
-        bytesPerSample = numChannels * line.getFormat().getSampleSizeInBits()/8;
+        //int numChannels = line.getFormat().getChannels();
+        bytesPerSample = line.getFormat().getFrameSize();//line.getFormat().getSampleSizeInBits()/8;
 
         int audioBufferSamples = line.getBufferSize();
         preByteBuffer = new byte[audioBufferSamples * bytesPerSample];
@@ -31,9 +31,24 @@ public abstract class AudioSource implements DigitizedSignal {
     }
 
     @Override
-    public boolean hasNext(int atleast) {
-        return line.available() >= atleast;
+    public boolean hasNext(int atleastSamples) {
+
+        int availableBytes = line.available();
+
+
+        int toDrain = availableBytes - (atleastSamples /* n buffers */ * bytesPerSample);
+        if (toDrain > 0) {
+            while (toDrain % bytesPerSample > 0) toDrain--;
+
+            //drain excess TODO optional
+            //line.drain();
+            line.read(new byte[toDrain], 0, toDrain); //HACK TODO use line fast forward method if exist otherwise shared buffer
+            availableBytes = line.available();
+        }
+
+        return availableBytes >= atleastSamples * bytesPerSample;
     }
+
     public static void print() {
         Mixer.Info[] minfoSet = AudioSystem.getMixerInfo();
 
@@ -89,7 +104,8 @@ public abstract class AudioSource implements DigitizedSignal {
 
     @Override
     public long time() {
-        return _start + Math.round(line.getMicrosecondPosition()/1000.0);
+        //return _start + Math.round(line.getMicrosecondPosition()/1000.0);
+        return System.currentTimeMillis();
     }
 
     public int channelsPerSample() {
@@ -109,6 +125,7 @@ public abstract class AudioSource implements DigitizedSignal {
 
             line.start();
         }
+
 
         //TODO
         //line.addLineListener();
@@ -139,6 +156,7 @@ public abstract class AudioSource implements DigitizedSignal {
 
         if (!busy.compareAndSet(false, true))
             return 0;
+
 
         try {
 
@@ -171,24 +189,27 @@ public abstract class AudioSource implements DigitizedSignal {
 //                }
 
             //pad to bytes per sample
-            int toRead = Math.min(capacitySamples * bytesPerSample, availableBytes);
-            while (toRead % bytesPerSample != 0) toRead--;
-
-            int toDrain = availableBytes - (toRead/* n buffers */)*2;
-            if (toDrain > 0) {
-                //drain excess TODO optional
-                //line.drain();
-                line.read(new byte[toDrain], 0, toDrain); //HACK TODO use line fast forward method if exist otherwise shared buffer
-            }
 
 
+            int readAtMost = capacitySamples * bytesPerSample;
+
+
+
+            int toRead = Math.min(readAtMost, availableBytes);
+            if (toRead <= 0)
+                return 0;
+
+            while (toRead % bytesPerSample > 0) toRead--;
 
             if (!read(toRead)) return 0;
 
+            //synch time to realtime
+            this._start = ((System.currentTimeMillis()*1000L) - line.getMicrosecondPosition())/1000L;
 
             int nSamplesRead = audioBytesRead / bytesPerSample;
 
             decode(target, nSamplesRead);
+
 
             return nSamplesRead;
 

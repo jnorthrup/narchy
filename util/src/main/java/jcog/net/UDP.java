@@ -22,6 +22,21 @@ import java.util.Arrays;
  */
 public class UDP extends Loop {
 
+    /**
+     * in bytes
+     * https://www.quora.com/What-is-the-maximum-size-of-a-UDP-datagram?share=1
+     *
+     * TODO decide this based on LAN/WAN usage
+     */
+    private static final int MAX_PACKET_SIZE = 65500;
+
+
+    private static final Logger logger = LoggerFactory.getLogger(UDP.class);
+
+
+    protected final DatagramChannel c;
+    public final InetSocketAddress addr;
+
 
     static {
 
@@ -41,38 +56,15 @@ public class UDP extends Loop {
             System.arraycopy(address, 0, target, offset, 16);
         }
     }
-    /**
-     * in bytes
-     */
-    static final int MAX_PACKET_SIZE = 1024;
 
-
-    private static final Logger logger = LoggerFactory.getLogger(UDP.class);
-
-
-    protected final DatagramChannel c;
-    public final InetSocketAddress addr;
-
-
-    public UDP(@Nullable InetAddress a, int port) throws IOException {
+    UDP(@Nullable InetAddress a, int port) throws IOException {
         super();
 
         if (a instanceof Inet4Address) {
             byte[] target = new byte[16];
             ipv6(a.getAddress(), target, 0);
 
-            a = Inet6Address.getByAddress(a.getHostName(), target,
-                    null
-                    //NetworkInterface.getByInetAddress(a)
-//                    NetworkInterface.networkInterfaces().filter(x-> {
-//                        try {
-//                            return x.isUp();
-//                        } catch (SocketException e) {
-//                            //e.printStackTrace();
-//                            return false;
-//                        }
-//                    }).findFirst().get()
-            );
+            a = Inet6Address.getByAddress(a.getHostName(), target, null);
         }
 
 
@@ -82,11 +74,11 @@ public class UDP extends Loop {
         c.setOption(StandardSocketOptions.SO_RCVBUF, 1024 * 128);
         c.setOption(StandardSocketOptions.SO_SNDBUF, 1024 * 128);
 
-//        c.socket().setBroadcast(true);
-//        c.setOption(StandardSocketOptions.SO_BROADCAST, true);
+        c.socket().setBroadcast(true);
+        c.setOption(StandardSocketOptions.SO_BROADCAST, true);
 
-//        c.setOption(StandardSocketOptions.SO_REUSEADDR, true);
-//        c.setOption(StandardSocketOptions.SO_REUSEPORT, true);
+        c.setOption(StandardSocketOptions.SO_REUSEADDR, true);
+        c.setOption(StandardSocketOptions.SO_REUSEPORT, true);
 
         InetSocketAddress aa = new InetSocketAddress(a, port);
         c.bind(aa);
@@ -116,7 +108,7 @@ public class UDP extends Loop {
         return addr.getPort();
     }
 
-    public InetSocketAddress host() { return addr; }
+    public InetSocketAddress addr() { return addr; }
 
     @Override
     protected void stopping() {
@@ -133,7 +125,7 @@ public class UDP extends Loop {
     }
 
 
-    final ByteBuffer b = ByteBuffer.allocate(MAX_PACKET_SIZE);
+    private final ByteBuffer b = ByteBuffer.allocate(MAX_PACKET_SIZE);
 
     @Override
     public boolean next() {
@@ -151,7 +143,7 @@ public class UDP extends Loop {
         } catch (ClosedChannelException closed) {
             return false;
         } catch (Throwable t) {
-            logger.error("recv {}", t);
+            logger.error("recv", t);
         }
         return true;
     }
@@ -165,11 +157,11 @@ public class UDP extends Loop {
     }
 
     public boolean out(byte[] data, int port) {
-        return outBytes(data, new InetSocketAddress(port));
+        return sendRaw(data, new InetSocketAddress(port));
     }
 
     public boolean out(byte[] data, String host, int port) throws UnknownHostException {
-        return outBytes(data, new InetSocketAddress(InetAddress.getByName(host), port));
+        return sendRaw(data, new InetSocketAddress(InetAddress.getByName(host), port));
     }
 
     public boolean outJSON(Object x, InetSocketAddress addr) {
@@ -179,19 +171,19 @@ public class UDP extends Loop {
         try {
             b = Util.toBytes(x);
         } catch (JsonProcessingException e) {
-            logger.error("{} ", e);
+            logger.error("outJSON", e);
             return false;
         }
 
-        return outBytes(b, addr);
+        return sendRaw(b, addr);
     }
 
 
-    public boolean outBytes(byte[] data, InetSocketAddress to) {
-        return outBytes(data, 0, data.length, to);
+    boolean sendRaw(byte[] data, InetSocketAddress to) {
+        return sendRaw(data, 0, data.length, to);
     }
 
-    public boolean outBytes(byte[] data, int dataFrom, int dataTo, InetSocketAddress to) {
+    boolean sendRaw(byte[] data, int dataFrom, int dataTo, InetSocketAddress to) {
         try {
             //System.out.println(this.addr + " send " + to);
 
@@ -201,7 +193,7 @@ public class UDP extends Loop {
             }
             return true;
         } catch (Exception e) {
-            logger.error("send {} {} {}", to, e.getMessage());
+            logger.error("send {} {}", to, e.getMessage());
             return false;
         }
     }

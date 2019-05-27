@@ -163,7 +163,6 @@ public interface Atomic extends Term {
         if (l <= 0)
             throw new RuntimeException("attempted construction of zero-length Atomic id");
 
-        
         if (l == 1) {
             char c = id.charAt(0);
             switch (c) {
@@ -217,8 +216,10 @@ public interface Atomic extends Term {
                     }
 
                     return $.quote(id);
-                } else
-                    return new Atom(id);
+                } else {
+                    Atom.validateAtomID(id);
+                    return Op.terms.atom(id);
+                }
             }
         }
 

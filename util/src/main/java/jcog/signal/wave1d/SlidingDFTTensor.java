@@ -42,7 +42,12 @@ public class SlidingDFTTensor extends ArrayTensor {
     }
 
     public void normalize() {
-        Util.normalize(data);
+        float[] minmax = Util.minmax(data);
+        if (!(minmax[1] - minmax[0] < Float.MIN_NORMAL)) {
+            Util.normalize(data, minmax[0], minmax[1]);
+        } else {
+            Arrays.fill(data, 0);
+        }
     }
 
     /** multiplicative filter, by freq index */

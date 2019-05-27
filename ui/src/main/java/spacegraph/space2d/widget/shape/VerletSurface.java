@@ -121,9 +121,9 @@ public class VerletSurface extends PaintSurface implements Animated {
                 float distRight = Math.abs(px - R);
                 float distLR = Math.min(distLeft, distRight);
                 float py = p.y;
-                float T = ss.top();
+                float T = ss.bottom();
                 float distTop = Math.abs(py - T);
-                float B = ss.bottom();
+                float B = ss.top();
                 float distBottom = Math.abs(py - B);
                 float distTB = Math.min(distTop, distBottom);
 

@@ -144,7 +144,7 @@ public class Timeline2DEvents<E> extends Graph2D<E> implements Timeline2D.TimeRa
 
             int nlanes = lanes.size();
             float laneHeight = g.h() / nlanes;
-            float Y = g.top();
+            float Y = g.bottom();
             float minVisibleWidth = g.w() * this.minVisibleWidth;
             for (int i = 0; i < nlanes; i++) {
                 float yl = Y + laneHeight * i;

@@ -78,6 +78,9 @@ public class SlidingDFT {
             float real = f[i++];
             float imag = f[i++];
             float amp = real*real + imag*imag;
+            if (amp!=amp)
+                amp = 0; //HACK why
+
             fftBuf[k++] = amp;
         }
 
@@ -97,6 +100,10 @@ public class SlidingDFT {
 
         for (int i = 0, j = inOff; i < inLen; i++, j++) {
             f1 = inBuf[j];
+
+//            if (f1!=f1)
+//                throw new NumberException("NaN", f1); //TEMPORARY
+
             delta = f1 - timeBufC[timeBufIdxC];
 
             timeBufC[timeBufIdxC] = f1;
@@ -113,7 +120,7 @@ public class SlidingDFT {
             }
             if (++timeBufIdxC == fftSize) timeBufIdxC = 0;
         }
-        timeBufIdx[chan] = timeBufIdxC;
+        //timeBufIdx[chan] = timeBufIdxC;
 
         if (fftBuf!=null)
             System.arraycopy(fftBufDC, 0, fftBuf, 0, Math.min(fftBuf.length, fftSize));

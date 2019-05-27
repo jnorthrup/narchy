@@ -8,7 +8,6 @@ import nars.subterm.DisposableTermList;
 import nars.subterm.Subterms;
 import nars.subterm.TermList;
 import nars.term.Compound;
-import nars.term.Neg;
 import nars.term.Term;
 import nars.term.Terms;
 import nars.term.atom.Atom;
@@ -51,7 +50,7 @@ public enum Op {
 
     NEG("--", 1, Args.One) {
         public Term the(Term u) {
-            return Neg.neg(u);
+            return Op.terms.neg(u);
         }
 
         public Term the(TermBuilder b, int dt, Term[] u) {
@@ -282,11 +281,11 @@ public enum Op {
     public static final int Temporal = or(Op.CONJ, Op.IMPL);
     public static final int Variable = or(Op.VAR_PATTERN, Op.VAR_INDEP, Op.VAR_DEP, Op.VAR_QUERY);
 
-    public static final Atom Belief = (Atom) Atomic.the(String.valueOf((char) BELIEF));
-    public static final Atom Goal = (Atom) Atomic.the(String.valueOf((char) GOAL));
-    public static final Atom Question = (Atom) Atomic.the(String.valueOf((char) QUESTION));
-    public static final Atom Quest = (Atom) Atomic.the(String.valueOf((char) QUEST));
-    public static final Atom Que = (Atom) Atomic.the(String.valueOf((char) QUESTION) + (char) QUEST);
+    public static final Atom Belief = new Atom(String.valueOf((char) BELIEF));
+    public static final Atom Goal = new Atom(String.valueOf((char) GOAL));
+    public static final Atom Question = new Atom(String.valueOf((char) QUESTION));
+    public static final Atom Quest = new Atom(String.valueOf((char) QUEST));
+    public static final Atom Que = new Atom(String.valueOf((char) QUESTION) + (char) QUEST);
 
     public static final Term[] EmptyTermArray = new Term[0];
     public static final Subterms EmptySubterms = new ArrayTermVector(EmptyTermArray);
@@ -304,9 +303,6 @@ public enum Op {
     private static final int ANY_LEVEL = 0;
 
 
-
-    /** re-initialized in NAL */
-    public static TermBuilder terms = HeapTermBuilder.the;
 
 
     /**
@@ -395,6 +391,9 @@ public enum Op {
     public boolean eventable;
     public boolean set;
 
+    /** re-initialized in NAL */
+    public static TermBuilder terms = HeapTermBuilder.the;
+
 
     Op(char c, int minLevel) {
         this(c, minLevel, Args.Zero);
@@ -419,7 +418,7 @@ public enum Op {
         this.id = (byte) (ordinal());
         this.str = string;
         this.ch = string.length() == 1 ? string.charAt(0) : 0;
-        this.strAtom = ch != '.' ? (Atom) Atomic.the('"' + str + '"') : null /* dont compute for ATOM, infinite loops */;
+        this.strAtom = ch != '.' ? new Atom('"' + str + '"') : null /* dont compute for ATOM, infinite loops */;
 
         this.commutative = commutative;
         this.minLevel = minLevel;

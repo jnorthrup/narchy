@@ -7,6 +7,7 @@ import nars.subterm.Subterms;
 import nars.term.Compound;
 import nars.term.Neg;
 import nars.term.Term;
+import nars.term.atom.Atom;
 import nars.term.atom.Bool;
 import nars.term.compound.CachedCompound;
 import nars.term.compound.CachedUnitCompound;
@@ -294,4 +295,5 @@ public abstract class TermBuilder implements TermConstructor {
         return Neg.neg(x);
     }
 
+    public abstract Atom atom(String id);
 }

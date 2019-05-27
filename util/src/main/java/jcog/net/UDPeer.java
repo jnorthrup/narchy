@@ -17,7 +17,6 @@ import jcog.math.RecycledSummaryStatistics;
 import jcog.net.attn.HashMapTagSet;
 import jcog.pri.UnitPrioritizable;
 import jcog.pri.bag.Bag;
-import jcog.pri.bag.Sampler;
 import jcog.pri.bag.impl.HijackBag;
 import jcog.pri.bag.impl.hijack.PriHijackBag;
 import jcog.random.XoRoShiRo128PlusRandom;
@@ -36,10 +35,9 @@ import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.Random;
 import java.util.UUID;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Consumer;
-import java.util.function.Function;
+import java.util.function.Predicate;
 
 import static jcog.net.UDPeer.Command.*;
 import static jcog.net.UDPeer.Msg.ADDRESS_BYTES;
@@ -58,8 +56,7 @@ public class UDPeer extends UDP {
 
     protected static final Logger logger = Log.logger(UDPeer.class);
 
-//    public final HashMapTagSet can = new HashMapTagSet("C");
-//    public final HashMapTagSet need = new HashMapTagSet("N");
+
     /**
      * active routing table capacity
      * TODO make this IntParam mutable
@@ -70,16 +67,18 @@ public class UDPeer extends UDP {
      */
     private final static int SEEN_CAPACITY = 32 * 1024;
     private static final int UNKNOWN_ID = Integer.MIN_VALUE;
-    /**
-     * rate of sharing peer needs
-     */
-    //public final FloatRange empathy = new FloatRange(0.5f, 0f, 1f);
+
 
     private static final byte DEFAULT_PING_TTL = 2;
     private static final byte DEFAULT_ATTN_TTL = DEFAULT_PING_TTL;
+
     public final Bag<Integer, UDProfile> them;
+
     public final PriHijackBag<Msg, Msg> seen;
+
     public final UDiscover<Discoverability> discover;
+    private Every discoverEvery = Every.Never;
+
     /**
      * TODO use a variable size identifier, 32+ bit. ethereumj uses 512bits.
      * smaller id's will work better for closed networks with a known population
@@ -87,10 +86,14 @@ public class UDPeer extends UDP {
     public final int me;
     public final Topic<MsgReceived> receive = new ListTopic<>();
     private final Random rng;
-    private final AtomicBoolean needChanged = new AtomicBoolean(false);
-    private final AtomicBoolean canChanged = new AtomicBoolean(false);
-    private Every discoverEvery = Every.Never;
-
+//    private final AtomicBoolean needChanged = new AtomicBoolean(false);
+//    private final AtomicBoolean canChanged = new AtomicBoolean(false);
+//    public final HashMapTagSet can = new HashMapTagSet("C");
+//    public final HashMapTagSet need = new HashMapTagSet("N");
+    /**
+     * rate of sharing peer needs
+     */
+    //public final FloatRange empathy = new FloatRange(0.5f, 0f, 1f);
 
     public UDPeer() throws IOException {
         this(true);
@@ -117,14 +120,6 @@ public class UDPeer extends UDP {
 
     public UDPeer(InetAddress address, int port, boolean discovery) throws IOException {
         super(address, port);
-
-        
-
-        
-        /*this.me = new InetSocketAddress(
-                InetAddress.getByName("[0:0:0:0:0:0:0:0]"),
-                port);*/
-
 
         this.rng = new XoRoShiRo128PlusRandom(System.nanoTime());
 
@@ -242,11 +237,11 @@ public class UDPeer extends UDP {
             byte[] bytes = o.arrayCompactDirect();
 
             final int[] remain = {Math.round(them.size() * pri)};
-            them.sample(rng, (Function<UDProfile, Sampler.SampleReaction>) ((to) -> {
-                if (o.id() != to.id /*&& (pri >= 1 || rng.nextFloat() <= pri)*/) {
-                    outBytes(bytes, to.addr);
-                }
-                return ((remain[0]--) > 0) ? Sampler.SampleReaction.Next : Sampler.SampleReaction.Stop;
+            them.sample(rng, (Predicate<UDProfile>) ((to) -> {
+                if (o.id() != to.id /*&& (pri >= 1 || rng.nextFloat() <= pri)*/)
+                    sendRaw(bytes, to.addr);
+
+                return ((remain[0]--) > 0);
             }));
             return remain[0];
 
@@ -288,20 +283,28 @@ public class UDPeer extends UDP {
         tellSome(msg, ttl, false);
     }
 
-    public int tellSome(byte[] msg, int ttl, boolean onlyIfNotSeen) {
-        Msg x = new Msg(TELL.id, (byte) ttl, me, null, msg);
+    @Deprecated public int tellSome(byte[] msg, int ttl, boolean onlyIfNotSeen) {
+        return tellSome(TELL.id, msg, ttl, onlyIfNotSeen);
+    }
+
+    public int tellSome(byte cmd, byte[] msg, int ttl, boolean onlyIfNotSeen) {
+        Msg x = new Msg(cmd, (byte) ttl, me, null, msg);
         int y = tellSome(x, 1f, onlyIfNotSeen);
         seen(x, 1f);
         return y;
     }
 
-    public int tellSome(Object msg, int ttl) throws JsonProcessingException {
-        return tellSome(msg, ttl, false);
+    public int tellSome(byte cmd, Object msg, int ttl) throws JsonProcessingException {
+        return tellSome(cmd, msg, ttl, false);
     }
 
-    public int tellSome(Object msg, int ttl, boolean onlyIfNotSeen) throws JsonProcessingException {
+    @Deprecated public int tellSome(Object msg, int ttl, boolean onlyIfNotSeen) throws JsonProcessingException {
+        return tellSome(TELL.id, msg, ttl, onlyIfNotSeen);
+    }
+
+    public int tellSome(byte cmd, Object msg, int ttl, boolean onlyIfNotSeen) throws JsonProcessingException {
         byte[] b = Util.toBytes(msg, Object.class);
-        return tellSome(b, ttl, onlyIfNotSeen);
+        return tellSome(cmd, b, ttl, onlyIfNotSeen);
     }
 
     public int tellSome(JsonNode msg, int ttl, boolean onlyIfNotSeen) throws JsonProcessingException {
@@ -309,11 +312,16 @@ public class UDPeer extends UDP {
         return tellSome(b, ttl, onlyIfNotSeen);
     }
 
+    public void send(byte cmd, Object o, InetSocketAddress to) throws JsonProcessingException {
+        byte[] payload = Util.toBytes(o, Object.class);
+        send(new UDPeer.Msg(cmd, (byte) 1, me, addr, payload), to);
+    }
+
     /**
      * send to a specific known recipient
      */
     public void send(Msg o, InetSocketAddress to) {
-        outBytes(o.arrayDirect(), 0, o.len, to);
+        sendRaw(o.arrayDirect(), 0, o.len, to);
     }
 
     @Override
@@ -341,10 +349,6 @@ public class UDPeer extends UDP {
         return true;
     }
 
-//    protected void onUpdateNeed() {
-//
-//    }
-
 //    protected void tellSome(HashMapTagSet setAt) {
 //        tellSome(new Msg(ATTN.id, DEFAULT_ATTN_TTL, me, null,
 //                setAt.toBytes()), 1f, false);
@@ -362,50 +366,45 @@ public class UDPeer extends UDP {
     @Override
     protected void in(InetSocketAddress p, byte[] data, int len) {
 
-        final byte[] inputArray = data;
-
-
         Msg m = new Msg(data, len);
         if (/*m == null || */m.id() == me)
             return;
-
-        Command cmd = Command.get(m.cmd());
-        if (cmd == null)
-            return;
-
-
-        if (m.port() == 0) {
-
-            byte[] msgOriginBytes = bytes(p);
-            if (!m.originEquals(msgOriginBytes)) {
-                m = m.clone(cmd.id, msgOriginBytes);
-            }
-        }
-
-        m.compact(inputArray, false);
 
         boolean seen = seen(m, 1f);
         if (seen)
             return;
 
-        boolean survives = m.live();
+//        Command cmd = Command.get(m.cmd());
+//        if (cmd == null)
+//            return;
 
-        @Nullable UDProfile you = them.get(m.id());
+        if (m.port() == 0) {
+            byte[] msgOriginBytes = bytes(p);
+            if (!m.originEquals(msgOriginBytes))
+                m = m.clone(msgOriginBytes);
+        }
+
+        //m.compact(inputArray, false);
 
         long now = System.currentTimeMillis();
 
+        @Nullable UDProfile from = them.get(m.id());
+        if (from!=null)
+            from.lastMessage = now;
+
+
+        byte cmd = m.cmd();
         switch (cmd) {
-            case PONG:
-                you = onPong(p, m, you, now);
+            case 'p':
+                from = onPong(p, m, from, now);
                 break;
-            case PING:
+            case 'P':
                 sendPong(p, m);
                 break;
-
-
-            case TELL:
-                receive(you, m);
+            case 't':
+                receive(from, m);
                 break;
+
 //            case ATTN:
 //                if (you != null) {
 //                    HashMapTagSet h = HashMapTagSet.fromBytes(m.data());
@@ -428,30 +427,34 @@ public class UDPeer extends UDP {
 //                    }
 //                }
 //                break;
-            default:
-                return;
+
         }
 
+        accept(m);
 
-        if (you == null) {
-            if (them.size() < them.capacity()) {
-
+        if (from == null && m.cmd()!='p') {
+            //ping an unknown sender
+            if (them.size() < them.capacity())
                 ping(p);
-            }
-        } else {
-            you.lastMessage = now;
         }
 
-
-        if (survives) {
+        boolean live = m.live();
+        if (live && share(m,from))
             tellSome(m, 1f, false /* did a test locally already */);
-        }
+    }
+
+    /** handle additional message types */
+    protected void accept(Msg m) {
+        //nothing
+    }
+
+    protected boolean share(Msg m, @Nullable UDProfile from) {
+        return from!=null; //default: only share from known peers
     }
 
     protected void receive(@Nullable UDProfile from, Msg m) {
         receive.emit(() -> new MsgReceived(m, from));
     }
-
 
     private RecycledSummaryStatistics latencyAvg() {
         RecycledSummaryStatistics r = new RecycledSummaryStatistics();
@@ -746,6 +749,10 @@ public class UDPeer extends UDP {
             byte[] b = Arrays.copyOf(bytes, len);
             b[CMD_BYTE] = newCmd;
             return new Msg(b);
+        }
+
+        public Msg clone(@Nullable byte[] newOrigin) {
+            return clone(cmd(), newOrigin);
         }
 
         public Msg clone(byte newCmd, @Nullable byte[] newOrigin) {

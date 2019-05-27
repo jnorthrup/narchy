@@ -6,7 +6,6 @@ import com.github.sarxos.webcam.WebcamListener;
 import com.github.sarxos.webcam.ds.buildin.WebcamDefaultDevice;
 import com.google.common.base.Joiner;
 import jcog.Log;
-import jcog.exe.Exe;
 import jcog.signal.Tensor;
 import jcog.signal.named.RGB;
 import jcog.signal.wave2d.RGBBufImgBitmap2D;
@@ -34,35 +33,36 @@ public class WebCam extends VideoSource implements WebcamListener {
 
     static final Logger logger = Log.logger(WebCam.class);
 
-    public final com.github.sarxos.webcam.Webcam webcam;
+    static {
+        com.github.sarxos.webcam.Webcam.setAutoOpenMode(false);
+    }
 
-static {
-    com.github.sarxos.webcam.Webcam.setAutoOpenMode(false);
-}
+    public final com.github.sarxos.webcam.Webcam webcam;
 
     public WebCam(Webcam wc) {
         this(wc, true);
     }
 
-    public WebCam(Webcam wc, boolean auto) {
+    public WebCam(Webcam wc, boolean auto) /* throws WebcamException */ {
 
         width = height = 1;
         webcam = wc;
 
-        Exe.invokeLater(() -> {
+        //Exe.invokeLater(() -> {
 
-            if (!webcam.isOpen()) {
+        if (!webcam.isOpen()) {
 
-                Dimension[] sizes = webcam.getViewSizes();
-                webcam.setViewSize(sizes[sizes.length-1] /* assume largest is last */);
+            Dimension[] sizes = webcam.getViewSizes();
+            webcam.setViewSize(sizes[sizes.length - 1] /* assume largest is last */);
 
-                if (!webcam.open(auto))
-                    throw new RuntimeException("webcam not open");
-            }
+            if (!webcam.open(auto))
+                throw new RuntimeException("webcam not open");
+        }
 
-            if (auto)
-                webcam.addWebcamListener(this);
-        });
+
+        if (auto)
+            webcam.addWebcamListener(this);
+        //});
     }
 
     /**
@@ -71,7 +71,7 @@ static {
     public static WebCam the() {
         logger.info("Webcam Devices:\n{} ", Joiner.on("\n").join(Webcam.getDriver().getDevices()));
         logger.info("Webcams:\n{} ", Joiner.on("\n").join(com.github.sarxos.webcam.Webcam.getWebcams().stream().map(
-                w->w.getName() + "\t" + Arrays.toString(w.getViewSizes())).iterator()));
+                w -> w.getName() + "\t" + Arrays.toString(w.getViewSizes())).iterator()));
 
 //        new WebcamViewer();
 
@@ -80,13 +80,13 @@ static {
     }
 
     public static WebCam[] theFirst(int n) {
-        assert(n > 0);
+        assert (n > 0);
         WebCam[] wc = new WebCam[n];
         int j = 0;
         synchronized (WebCam.class) {
             for (com.github.sarxos.webcam.Webcam w : com.github.sarxos.webcam.Webcam.getWebcams()) {
                 try {
-                    if (j == 0 || !deviceName(w).equals(deviceName(wc[j-1].webcam))) {
+                    if (j == 0 || !deviceName(w).equals(deviceName(wc[j - 1].webcam))) {
                         wc[j++] = new WebCam(w);
                     }
                 } catch (Throwable t) {
@@ -100,7 +100,7 @@ static {
     }
 
     public static String deviceName(Webcam w) {
-        return ((WebcamDefaultDevice)w.getDevice()).getDeviceRef().getNameStr();
+        return ((WebcamDefaultDevice) w.getDevice()).getDeviceRef().getNameStr();
     }
 
     @Override

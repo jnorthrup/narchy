@@ -13,7 +13,7 @@ import nars.control.CauseMerge;
 import nars.derive.Deriver;
 import nars.derive.op.Occurrify;
 import nars.derive.op.UnifyMatchFork;
-import nars.derive.premise.PremiseBuffer;
+import nars.derive.premise.PremiseSource;
 import nars.derive.premise.PremiseUnify;
 import nars.eval.Evaluation;
 import nars.op.Replace;
@@ -75,7 +75,10 @@ public class Derivation extends PreDerivation {
     /**
      * short-term premise buffer with novelty filter
      */
-    public final PremiseBuffer premises = new PremiseBuffer();
+    public final PremiseSource premises =
+            //new PremiseBuffer();
+            new PremiseSource.DefaultPremiseSource();
+
     public final AnonWithVarShift anon;
     public final UniSubst uniSubstFunctor = new UniSubst(this);
     /**
@@ -562,7 +565,6 @@ public class Derivation extends PreDerivation {
 
             this.termVolMax = n.termVolMax.intValue();
 
-            this.premises.commit();
         }
 
         this.deriver = d;
