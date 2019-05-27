@@ -350,7 +350,6 @@ public class Abbreviation/*<S extends Term>*/ extends How {
                     (te, tr) -> {
 
                         NALTask ta = NALTask.the(te, BELIEF, tr, nar.time(), ETERNAL, ETERNAL, nar.evidence());
-                        ta.log("Abbreviate");
                         ta.pri(nar.priDefault(BELIEF));
 
                         return ta;

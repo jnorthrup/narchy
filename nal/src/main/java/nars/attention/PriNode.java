@@ -4,13 +4,11 @@ import jcog.data.graph.MapNodeGraph;
 import jcog.data.graph.Node;
 import jcog.data.graph.NodeGraph;
 import jcog.math.FloatRange;
-import jcog.math.FloatSupplier;
 import jcog.pri.PLink;
 import nars.$;
 import nars.term.Term;
 
 public class PriNode extends PLink<Term> {
-
 
     /**
      * amplitude, factor, boost, relative priority among peers
@@ -43,16 +41,16 @@ public class PriNode extends PLink<Term> {
     @Deprecated /* move to subclass */ protected float priFraction() {
         float i;
         int n = fanOut;
-        if (n == 0)
+        if (n <= 1)
             return 1;
         //i = 1; //each component important as a top level concept
-        i = (float) (1.0 / Math.sqrt((float)n)); //shared by sqrt of components
-        //i = 1f / n; //shared by all components
+        //i = (float) (1.0 / Math.sqrt((float)n)); //shared by sqrt of components
+        i = 1f / n; //shared by all components
         return i;
     }
 
     public enum Merge {
-        Sum {
+        Add {
             @Override public double merge(Iterable<? extends Node<PriNode, Object>> in) {
                 final double[] pSum = {0};
 
@@ -66,7 +64,7 @@ public class PriNode extends PLink<Term> {
                 return pSum[0];
             }
         },
-        Factor {
+        Multiply {
             @Override public double merge(Iterable<? extends Node<PriNode, Object>> in) {
                 final double[] p = {1};
 
@@ -84,7 +82,7 @@ public class PriNode extends PLink<Term> {
         abstract public double merge(Iterable<? extends Node<PriNode, Object>> in);
     }
 
-    Merge merge = Merge.Sum;
+    Merge merge = Merge.Add;
 
     public PriNode merge(Merge m) {
         this.merge = m;
@@ -108,21 +106,9 @@ public class PriNode extends PLink<Term> {
         this.pri(pri );
     }
 
-
-
     public Iterable<? extends Node<PriNode, Object>> neighbors(MapNodeGraph<PriNode,Object> graph, boolean in, boolean out) {
         return node(graph).nodes(in, out);
     }
-
-//
-//    public PriNode parent(NAR n, PriNode... parent) {
-//        MapNodeGraph<PriNode, Object> g = n.control.graph;
-//
-//        NodeGraph.MutableNode<PriNode,Object> thisNode = g.addNode(this);
-//        parent(parent, g, thisNode);
-//
-//        return this;
-//    }
 
     /** re-parent */
     public void parent(PriNode[] parent, MapNodeGraph<PriNode, Object> g, NodeGraph.MutableNode<PriNode, Object> thisNode) {
@@ -145,9 +131,6 @@ public class PriNode extends PLink<Term> {
         return this;
     }
 
-    public static PriNode mutable(String name, float initialValue) {
-        return new Mutable(name, initialValue);
-    }
     public static PriNode constant(String name, float value) {
         return new Constant(name, value);
     }
@@ -161,51 +144,12 @@ public class PriNode extends PLink<Term> {
         return _node;
     }
 
-    public PriNode amp(FloatSupplier a) {
-        return new PriNode($.p(this.id, $.func("amp", $.quote(a.toString())) )) {
-            @Override
-            public void update(MapNodeGraph<PriNode, Object> graph) {
-                amp.set(a.asFloat());
-                super.update(graph);
-            }
-        };
-    }
-
     private static class Mutable extends PriNode {
-
-//        @Essence
-//        public final FloatRange f;
-
-//        public ConstPriNode(Object id, float initialValue) {
-//            this(id, new FloatRange(initialValue, ScalarValue.EPSILON, 1f));
-//
-//        }
 
         private Mutable(Object id, float p) {
             super(id);
             pri(p);
-//            this.f = f;
-//            pri(f.floatValue());
         }
-
-
-        //
-//        @Override
-//        public float pri(float p) {
-//            f.set(p);
-//            return super.pri(p);
-//        }
-
-        @Override
-        protected float priFraction() {
-            return 1;
-        }
-//
-//        @Override
-//        public void update(MapNodeGraph<PriNode, Object> graph) {
-////            pri(f.floatValue());
-//            super.update(graph);
-//        }
     }
 
     private static class Constant extends Mutable {
@@ -222,8 +166,9 @@ public class PriNode extends PLink<Term> {
         }
 
         @Override
-        @Deprecated public float priComponent() {
-            return pri();
+        protected float priFraction() {
+            return 1;
         }
+
     }
 }

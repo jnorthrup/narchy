@@ -6,7 +6,6 @@ import jcog.data.set.UnenforcedConcatSet;
 import nars.term.Term;
 import nars.term.anon.Intrin;
 import org.eclipse.collections.api.tuple.primitive.ShortObjectPair;
-import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 import org.eclipse.collections.impl.map.mutable.primitive.ShortObjectHashMap;
 
 import java.util.*;
@@ -24,7 +23,10 @@ public class TermHashMap<X> extends AbstractMap<Term, X> {
     public final Map<Term, X> other;
 
     public TermHashMap() {
-        this(new ShortObjectHashMap<>(8), new UnifiedMap<>(8));
+        this(new ShortObjectHashMap<>(16),
+                //new UnifiedMap<>(16)
+                new HashMap<>(16, 0.99f)
+        );
     }
 
     public TermHashMap(ShortObjectHashMap<X> idMap, Map<Term, X> otherMap) {

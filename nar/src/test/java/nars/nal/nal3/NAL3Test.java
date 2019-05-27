@@ -20,7 +20,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class NAL3Test extends NALTest {
 
-    static final int cycles = 450;
+    static final int cycles = 150;
 
     @Override
     protected NAR nar() {
@@ -419,9 +419,9 @@ public class NAL3Test extends NALTest {
             $.19 ((2-1)-->x). 1⋈2 %1.0;.76% {84: 2;3}
          */
         String ii = "(((a2-a1)|(--,a0))-->x)";
-        Term iii = $$(ii);
-        assertEquals("((a2-a1),(--,a0))", iii.sub(0).subterms().toString());
-        assertEquals(ii, iii.toString());
+//        Term iii = $$(ii);
+//        assertEquals("((a2-a1),(--,a0))", iii.sub(0).subterms().toString());
+//        assertEquals(ii, iii.toString());
 
         Term cn = $$("((_2-_1)|(--,_3))");
         Term cp = $$("((_2-_1)|_3)");

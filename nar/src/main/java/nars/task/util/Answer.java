@@ -77,8 +77,8 @@ public final class Answer implements Timed {
                         // * dyn.originality() //HACK
         );
 
-        if (NAL.test.DEBUG_EXTRA)
-            dyn.log("Dynamic");
+        if (NAL.test.DEBUG_EXTRA) {
+        }
 
         return dyn;
     }

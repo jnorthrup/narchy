@@ -892,7 +892,7 @@ public class UDPeer extends UDP {
                 can = HashMapTagSet.EMPTY,
                 need = HashMapTagSet.EMPTY;
 
-        UDProfile(int id, InetSocketAddress addr, long initialPingTime) {
+        public UDProfile(int id, InetSocketAddress addr, long initialPingTime) {
             this.id = id;
             this.addr = addr;
             this.addrBytes = bytes(addr);
@@ -918,7 +918,7 @@ public class UDPeer extends UDP {
         /**
          * average ping time in ms
          */
-        long latency() {
+        public long latency() {
             return latency.get();
         }
 

@@ -146,9 +146,6 @@ public interface Concept extends Termed, MetaMap {
                 out.append(printIndent);
                 out.append(s.toString());
                 out.append(" ");
-                Object ll = s.lastLogged();
-                if (ll != null)
-                    out.append(ll.toString());
                 out.append('\n');
             } catch (IOException e) {
                 e.printStackTrace();

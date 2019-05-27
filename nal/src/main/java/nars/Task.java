@@ -872,18 +872,6 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
 
         stringLength += 1 + 6 + 1 + 6 + 1 + 6 + 1 + 1;
 
-        String finalLog;
-        if (showLog) {
-            Object ll = lastLogged();
-
-            finalLog = (ll != null ? ll.toString() : null);
-            if (finalLog != null)
-                stringLength += finalLog.length() + 1;
-            else
-                showLog = false;
-        } else
-            finalLog = null;
-
 
         if (buffer == null)
             buffer = new StringBuilder(stringLength);
@@ -910,11 +898,6 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
         if (showStamp) {
             buffer.append(' ').append(stampString);
         }
-
-        if (showLog) {
-            buffer.append(' ').append(finalLog);
-        }
-
         return buffer;
     }
 
@@ -959,36 +942,19 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
         return truth(when, when, dur);
     }
 
-    /**
-     * append an entry to this task's log history
-     * useful for debugging but can also be applied to meta-analysis
-     * ex: an entry might be a String describing a change in the story/history
-     * of the Task and the reason for it.
-     */
-    default Task log(Object entry) {
-        if (!NAL.DEBUG_TASK_LOG)
-            return this;
+//    @Nullable
+//    default List log(boolean createIfMissing) {
+//        return null;
+//    }
 
-        List ll = log(true);
-        if (ll != null)
-            ll.add(entry);
-
-        return this;
-    }
-
-    @Nullable
-    default List log(boolean createIfMissing) {
-        return null;
-    }
-
-    @Nullable
-    default Object lastLogged() {
-        List log = log(false);
-        if (log == null) return null;
-        int s = log.size();
-        if (s == 0) return null;
-        else return log.get(s - 1);
-    }
+//    @Nullable
+//    default Object lastLogged() {
+//        List log = log(false);
+//        if (log == null) return null;
+//        int s = log.size();
+//        if (s == 0) return null;
+//        else return log.get(s - 1);
+//    }
 
     default String proof() {
         StringBuilder sb = new StringBuilder(4096);

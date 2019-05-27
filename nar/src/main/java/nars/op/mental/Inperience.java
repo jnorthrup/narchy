@@ -369,8 +369,8 @@ abstract public class Inperience extends TaskLeakTransform {
 
             Task.merge(y, x);
 
-            if (NAL.DEBUG)
-                y.log("Inperience");
+            if (NAL.DEBUG) {
+            }
 
             y.priSet(x.priElseZero() * priFactor.floatValue());
 

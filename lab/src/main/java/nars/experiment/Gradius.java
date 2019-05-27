@@ -52,8 +52,8 @@ public class Gradius extends GameX {
                 //50; //20fps
                 //30;
                 //25; //40fps
-                //20;
-                10; //100fps
+                20;
+                //10; //100fps
                 //5; //200fps
         //10;
 
@@ -149,7 +149,7 @@ public class Gradius extends GameX {
             else
                 return Float.NaN; //return +1;
         });
-        alive.setDefault($.t(1, nar.beliefConfDefault.floatValue()/2f));
+        alive.setDefault($.t(1, nar.beliefConfDefault.floatValue()/4f));
 
         Reward destroy = rewardNormalized("destroy", 0, 1, ()->{
 

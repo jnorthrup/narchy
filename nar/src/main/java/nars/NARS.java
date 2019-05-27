@@ -135,10 +135,10 @@ public class NARS {
 
                 n.termVolMax.set(22);
 
-                ((TaskLinkWhat) n.what()).links.decay.set(0.02f);
+                ((TaskLinkWhat) n.what()).links.decay.set(0.01f);
 
-                n.beliefPriDefault.amp(0.5f);
-                n.goalPriDefault.amp(0.5f);
+                n.beliefPriDefault.amp(0.25f);
+                n.goalPriDefault.amp(0.25f);
                 n.questionPriDefault.amp(0.05f);
                 n.questPriDefault.amp(0.05f);
 
@@ -161,7 +161,7 @@ public class NARS {
 
         exec = UniExec::new;
 
-        what = w -> new TaskLinkWhat(w, 32,
+        what = w -> new TaskLinkWhat(w, 64,
                        new PriBuffer.DirectPriBuffer()
                        //new PriBuffer.BagTaskBuffer(128, 8f)
                        //new PriBuffer.MapTaskBuffer()

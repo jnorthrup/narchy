@@ -60,7 +60,7 @@ class STRIPSTest {
     @Test
     void testBanana1() throws Narsese.NarseseException {
         NAR n = new NARS().tmp();
-        n.termVolMax.set(36);
+        n.termVolMax.set(25);
         n.input(
                 /*
                 A monkey is at location A in a lab. There is a box in location C. The monkey wants the bananas that are hanging from the ceiling in location B, but it needs to move the box and climb onto it in order to reach them.
@@ -76,28 +76,28 @@ class STRIPSTest {
                 "Eat(bananas)!",
 
                 
-                "((At($X) &| Level(low)) ==>+1 (--At($X) &| At(#Y))).",
+                "((At($X) && Level(low)) ==>+1 (--At($X) && At(#Y))).",
 
-                "--(#x:(high) &| #x:(low)).", //mutually exclusive
-                "--(At(#x) &| At(#y)).",
-                "--(BoxAt(#x) &| BoxAt(#y)).",
+                "--(#x:(high) && #x:(low)).", //mutually exclusive
+                "--(At(#x) && At(#y)).",
+                "--(BoxAt(#x) && BoxAt(#y)).",
 
-                "(((At(#Location) &| BoxAt(#Location)) &| Level(low)) ==>+1 Level(high)).",
+                "(((At(#Location) && BoxAt(#Location)) && Level(low)) ==>+1 Level(high)).",
 
                 
-                "(((At(#Location) &| BoxAt(#Location)) &| Level(high)) ==>+1 Level(low)).",
+                "(((At(#Location) && BoxAt(#Location)) && Level(high)) ==>+1 Level(low)).",
 
 
                 
                /* Preconditions:  At(X), BoxAt(X), Level(low)
                Postconditions: BoxAt(Y), not BoxAt(X), At(Y), not At(X) */
-                "(((At(#X) &| BoxAt(#X)) &| Level(low)) ==>+1 (At(#Y) &| BoxAt(#Y))).",
+                "(((At(#X) && BoxAt(#X)) && Level(low)) ==>+1 (At(#Y) && BoxAt(#Y))).",
 
 
                 
                /* Preconditions:  At(Location), BananasAt(Location), Level(high)
                Postconditions: Eat(bananas) */
-                "(((At(#Location) &| BananasAt(#Location)) &| Level(high)) ==>+1 Eat(bananas))."
+                "(((At(#Location) && BananasAt(#Location)) && Level(high)) ==>+1 Eat(bananas))."
         );
         n.run(1000);
 

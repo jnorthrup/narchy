@@ -9,6 +9,7 @@ import jcog.util.ArrayUtil;
 import nars.NAL;
 import nars.Op;
 import nars.subterm.Subterms;
+import nars.term.Compound;
 import nars.term.Term;
 import nars.term.Terms;
 import nars.term.atom.Bool;
@@ -35,10 +36,7 @@ import org.roaringbitmap.ImmutableBitmapDataProvider;
 import org.roaringbitmap.PeekableIntIterator;
 import org.roaringbitmap.RoaringBitmap;
 
-import java.util.Iterator;
-import java.util.List;
-import java.util.Random;
-import java.util.SortedSet;
+import java.util.*;
 import java.util.function.Predicate;
 
 import static java.lang.System.arraycopy;
@@ -1458,7 +1456,7 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
      * whether the conjunction is a sequence (includes check for factored inner sequence)
      */
     public static boolean isSeq(Term x) {
-        if (x.op() != CONJ)
+        if (!(x instanceof Compound) || x.op() != CONJ)
             return false;
 
         int dt = x.dt();
@@ -1474,50 +1472,6 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
         return e != null ? Conj.eventCount(e) : 0;
     }
 
-    private boolean dropEvent(final Term event, boolean earlyOrLate, boolean filterContradiction) {
-    /* check that event.neg doesnt occurr in the result.
-        for use when deriving goals.
-         since it would be absurd to goal the opposite just to reach the desired later
-         */
-        byte id = get(event);
-        if (id == Byte.MIN_VALUE)
-            return false; //not found
-
-
-        long targetTime;
-        if (this.event.size() == 1) {
-
-            targetTime = this.event.keysView().longIterator().next();
-        } else if (earlyOrLate) {
-            Object eternalTemporarilyRemoved = this.event.remove(ETERNAL); //HACK
-            targetTime = this.event.keysView().min();
-            if (eternalTemporarilyRemoved != null) this.event.put(ETERNAL, eternalTemporarilyRemoved); //UNDO HACK
-        } else {
-            targetTime = this.event.keysView().max();
-        }
-        assert (targetTime != XTERNAL);
-
-        if (filterContradiction) {
-
-
-            byte idNeg = (byte) -id;
-
-            final boolean[] contradiction = {false};
-            this.event.forEachKeyValue((w, wh) -> {
-                if (w == targetTime || contradiction[0])
-                    return; //HACK should return early via predicate method
-
-                if ((wh instanceof byte[] && ArrayUtil.indexOf((byte[]) wh, idNeg) != -1)
-                        ||
-                        (wh instanceof RoaringBitmap && ((RoaringBitmap) wh).contains(idNeg)))
-                    contradiction[0] = true;
-            });
-            if (contradiction[0])
-                return false;
-        }
-
-        return this.remove(targetTime, event);
-    }
 
     @Override
     public void negateEvents() {
@@ -1551,7 +1505,7 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
     public boolean removeAll(Term what) {
         byte id = get(what);
         if (id != Byte.MIN_VALUE) {
-            long[] events = event.keySet().toArray(); //create an array because removal will interrupt direct iteration of the keySet
+            long[] events = event.keysView().toArray(); //create an array because removal will interrupt direct iteration of the keySet
             boolean removed = false;
             for (long e : events) {
                 removed |= remove(e, id);
@@ -1686,8 +1640,7 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
         if (this.result != null)
             throw new RuntimeException("already concluded: " + result);
 
-        boolean result = added(ConjBuilder.super.add(at, x));
-        return result;
+        return added(ConjBuilder.super.add(at, x));
     }
 
     private boolean added(boolean success) {
@@ -1869,17 +1822,20 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
         if (!(ee instanceof byte[]))
             throw new TODO();
         byte[] eee = (byte[]) ee;
-        int ec = eventCount(eee);
-        //assert (ec > 0);
+
+        int ec = eventCount(eee); //assert (ec > 0);
         if (ec == 1)
             return ByteSets.immutable.of(eee[0]);
         else if (ec == 2)
             return ByteSets.immutable.of(eee[0], eee[1]);
-        else {
-            ByteHashSet b = new ByteHashSet(ec);
-            events(eee, b::add);
-            return b;
-        }
+        else if (ec == 3)
+            return ByteSets.immutable.of(eee[0], eee[1], eee[2]);
+        else
+            return ByteSets.immutable.of(Arrays.copyOf(eee, ec));
+//            ByteHashSet b = new ByteHashSet(ec);
+//            events(eee, b::add);
+//            return b;
+
     }
 
     /**
@@ -1918,24 +1874,25 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
         if (index == -1)
             return Byte.MIN_VALUE;
 
-        if (neg)
-            index = (byte) (-index);
-
-        return index;
+        return neg ? (byte) (-index) : index;
     }
 
     @Override
     public boolean remove(long at, Term t) {
-        if (t.op() != CONJ || t.dt() == XTERNAL) {
+        int tdt = t.dt();
+        if (t.op() != CONJ || tdt == XTERNAL) {
             byte i = get(t);
-            if (i == Byte.MIN_VALUE)
-                return false;
-            return remove(at, i);
+            return (i == Byte.MIN_VALUE) ? false : remove(at, i);
         } else {
-            return t.eventsWhile((when, what) -> {
+            final boolean[] removed = {false};
+            boolean r = t.eventsWhile((when, what) -> {
                 //assert (!t.equals(what)); //prevent infinite recursion, hopefully this cant happen
-                return remove(when, what); //fails on error
-            }, at, true, false);
+                if (t == what)
+                    return false; //HACK find why
+                removed[0] |= remove(when, what);
+                return true; //keep going
+            }, at, tdt !=DTERNAL, tdt !=XTERNAL);
+            return removed[0];
         }
     }
 

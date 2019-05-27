@@ -347,7 +347,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
     }
 
     private Event event(Term t, long start, long end, boolean add) {
-        if (!notExceedingNodes())
+        if (add && !notExceedingNodes())
             throw new IndexOutOfBoundsException("node overflow");
 
         if (!t.op().eventable)
@@ -1244,29 +1244,31 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
     }
 
     private boolean solveAll(Term x, Predicate<Event> each) {
+        if (!solveRootMatches(x, each))
+            return false;
         if (!x.hasXternal()) {
-            if (Conj.isSeq(x)) {
-                //attempt solve by first event
-                Term x0 = x.eventFirst();
-                if (!x.equals(x0)) {
-                    if (!solveOccurrence(x0, true, xx0->{
-                        if (xx0 instanceof Absolute)
-                            if (!each.test(event(x, xx0.start(), xx0.end(), false)))
-                                return false;
-
-                        return true;
-                    }))
-                        return false;
-                }
-            }
+//            if (Conj.isSeq(x)) {
+//                //attempt solve by first event
+//                Term x0 = x.eventFirst();
+//                if (!x.equals(x0)) {
+//                    if (!solveOccurrence(x0, true, xx0->{
+//                        if (xx0 instanceof Absolute)
+//                            if (!each.test(event(x, xx0.start(), xx0.end(), false)))
+//                                return false;
+//
+//                        return true;
+//                    }))
+//                        return false;
+//                }
+//            }
 
             return solveOccurrence(x, true, each);
 
         } else {
-            if (!solveRootMatches(x, each))
-                return false;
+
 
             if (x.subterms().hasXternal()) {
+                //only internal XTERNAL
                 if (!solveDTAndOccRecursive(x, each))
                     return false;
             }
@@ -1500,9 +1502,11 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
     private boolean solveOccurrence(Event x, boolean finish, Predicate<Event> each) {
         assert (!(x instanceof Absolute));
 
+
+
         return true
 //                solveExact(x, each) &&
-                && (x.id.hasXternal() || bfsAdd(x, new OccSolver(true, true, autoneg, each)))
+                && (x.id.hasXternal() || (bfsAdd(x, new OccSolver(true, true, autoneg, each))))
                 //&& bfsNew(List.of(x), new OccSolver(false, false, true, each))
                 && solveSelfLoop(x, each)
 //               && (!autoneg || bfsNew(x.neg(), new OccSolver(true, false, true,

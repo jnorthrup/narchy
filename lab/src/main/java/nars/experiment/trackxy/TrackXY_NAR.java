@@ -2,7 +2,6 @@ package nars.experiment.trackxy;
 
 import com.jogamp.opengl.GL2;
 import jcog.Util;
-import jcog.math.FloatAveragedWindow;
 import jcog.math.FloatNormalized;
 import jcog.math.FloatSupplier;
 import jcog.test.control.TrackXY;
@@ -18,6 +17,7 @@ import nars.gui.sensor.VectorSensorView;
 import nars.memory.CaffeineMemory;
 import nars.op.stm.STMLinkage;
 import nars.sensor.Bitmap2DSensor;
+import nars.task.DerivedTask;
 import nars.term.Term;
 import nars.time.clock.CycleTime;
 import org.eclipse.collections.impl.block.factory.Comparators;
@@ -31,6 +31,8 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static java.util.stream.Collectors.toList;
+import static jcog.Texts.n2;
+import static nars.Op.GOAL;
 import static nars.Op.IMPL;
 
 public class TrackXY_NAR extends GameX {
@@ -176,11 +178,13 @@ public class TrackXY_NAR extends GameX {
 //            return true; //TODO check change
 //        });
 
-        FloatAveragedWindow _controlSpeed = new FloatAveragedWindow(8, 0.05f);
+        //FloatAveragedWindow _controlSpeed = new FloatAveragedWindow(8, 0.05f);
         actionUnipolar($.inh(id, $.the("speed")), (float a)->{
 //            System.out.println(a);
             //track.controlSpeed.add(Math.pow(((a-0.5)*2),3)/100f);
-            float c = _controlSpeed.valueOf((float) Math.pow(a, 2));
+            float cc = (float) Math.pow(a, 1f);
+            //float c = _controlSpeed.valueOf(cc);
+            float c = Util.lerp(cc, 0.01f, 0.2f);
             track.controlSpeed.set(c);
             return c;
             //TODO check change
@@ -195,7 +199,7 @@ public class TrackXY_NAR extends GameX {
                 //.time(new RealTime.MS().dur(durMS))
                 .time(new CycleTime().dur(dur))
                 .index(
-                        new CaffeineMemory(4 * 1024 * 10)
+                        new CaffeineMemory(8 * 1024 * 10)
                         //new HijackConceptIndex(4 * 1024, 4)
                 );
 
@@ -215,13 +219,13 @@ public class TrackXY_NAR extends GameX {
 
 //        n.attn.links.capacity(1024);
 
-        n.goalPriDefault.amp(0.2f);
+        n.goalPriDefault.amp(0.5f);
         n.beliefPriDefault.amp(0.1f);
         n.questionPriDefault.amp(0.05f);
         n.questPriDefault.amp(0.05f);
 
 
-        n.freqResolution.set(0.1f);
+        n.freqResolution.set(0.02f);
 //        n.confResolution.set(0.05f);
 
 
@@ -236,7 +240,7 @@ public class TrackXY_NAR extends GameX {
                 //"induction.goal.nal"
                 1, 8
                 //2, 8
-                , "motivation.nal"
+                //, "motivation.nal"
         )) {
 //                    @Override
 //                    public float puncFactor(byte conclusion) {
@@ -270,28 +274,8 @@ public class TrackXY_NAR extends GameX {
 
         //n.log();
 
-        //Param.DEBUG = true;
-//        n.onTask(tt -> {
-//                if (tt instanceof DerivedTask && tt.isGoal()) {
-//                    //if (n.concept(tt) instanceof ActionConcept)
-//                    System.out.println(tt.proof());
-////                    Term ttt = tt.target();
-////                    if (tt.expectation() > 0.5f && tt.start() > n.time()-n.dur() && tt.start() < n.time() + n.dur()) {
-////                        boolean l = ttt.toString().equals("left");
-////                        boolean r = ttt.toString().equals("right");
-////                        if (l || r) {
-////
-////                            float wantsDir = l ? -1 : +1;
-////                            float needsDir = a.track.tx - a.track.cx;
-////
-////                            String summary = (Math.signum(wantsDir)==Math.signum(needsDir)) ? "OK" : "WRONG";
-////                            System.err.println(ttt + " " + n2(wantsDir) + " ? " + n2(needsDir) + " " + summary);
-////                        }
-////                    }
-//                }
-//        }, GOAL);
 
-        //final int W = 3, H = 1;
+        //final int W = 5, H = 1;
         final int W = 3, H = 3;
 
         TrackXY_NAR a = new TrackXY_NAR(n, new TrackXY(W, H));
@@ -375,9 +359,32 @@ public class TrackXY_NAR extends GameX {
             //});
         }
 
-        n.synch();
 
+        //NAL.DEBUG = true;
+        n.onTask(tt -> {
+            if (tt instanceof DerivedTask) {
+                //if (n.concept(tt) instanceof ActionConcept)
+                if (tt.expectation() > 0.5f && tt.start() > n.time()-n.dur() && tt.start() < n.time() + n.dur()) {
+                    Term ttt = tt.term();
+                    boolean l = ttt.equals(a.actions.get(0).term());
+                    boolean r = ttt.equals(a.actions.get(1).term());
+                    if (l || r) {
+
+                        float wantsDir = l ? -1 : +1;
+                        float needsDir = a.track.tx - a.track.cx;
+
+                        String summary = (Math.signum(wantsDir)==Math.signum(needsDir)) ? "OK" : "WRONG";
+                        System.out.println(ttt + " " + n2(wantsDir) + " ? " + n2(needsDir) + " " + summary);
+                        System.out.println(tt.proof());
+                        System.out.println();
+                    }
+                }
+            }
+        }, GOAL);
+
+        n.synch();
         n.run(experimentTime);
+
 
 
         //printGoals(n);

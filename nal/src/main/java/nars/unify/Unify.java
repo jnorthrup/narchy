@@ -12,7 +12,6 @@ import nars.term.Termlike;
 import nars.term.Variable;
 import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
-import nars.term.util.map.TermHashMap;
 import nars.term.util.transform.AbstractTermTransform;
 import nars.term.util.transform.TermTransform;
 import nars.unify.constraint.UnifyConstraint;
@@ -23,6 +22,7 @@ import nars.unify.unification.OneTermUnification;
 import nars.unify.unification.Termutifcation;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 import java.util.function.BiConsumer;
@@ -98,7 +98,11 @@ public abstract class Unify extends Versioning<Term> {
 
 
     protected Unify(int varBits, Random random, int stackMax) {
-        this(varBits, random, stackMax, new TermHashMap<>());
+        this(varBits, random, stackMax,
+                //new TermHashMap<>()
+                //new UnifiedMap(32, 0.99f)
+                new HashMap(16, 0.99f)
+        );
     }
 
     protected Unify(int varBits, Random random, int stackMax, Map/*<Variable,Versioned<Term>>*/ termMap) {

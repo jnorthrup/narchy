@@ -319,7 +319,8 @@ public class Opjects extends DefaultTermizer {
 //                            uninvokeEvi
 //                    ), nar);
                     NALTask.the(nt, BELIEF, PreciseTruth.byEvi(invokeFreq, invokeEvi), start, start, end, nar.evidence());
-            if (NAL.DEBUG) feedback.log("Invoked");
+            if (NAL.DEBUG) {
+            }
             feedback.priMax(beliefPri);
             return feedback;
         }
@@ -343,7 +344,8 @@ public class Opjects extends DefaultTermizer {
 //                    nar);
                     NALTask.the(nt, BELIEF, PreciseTruth.byEvi(freq, beliefEvi), start, start, end, nar.evidence());
 
-            if (NAL.DEBUG) value.log("Invoke Result");
+            if (NAL.DEBUG) {
+            }
 
             value.priMax(beliefPri);
             return value;

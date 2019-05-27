@@ -3,6 +3,7 @@ package spacegraph.test;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.github.sarxos.webcam.Webcam;
 import com.github.sarxos.webcam.WebcamException;
+import com.google.common.collect.Iterators;
 import com.google.common.util.concurrent.RateLimiter;
 import jcog.Util;
 import jcog.exe.Every;
@@ -20,12 +21,17 @@ import org.java_websocket.WebSocket;
 import org.java_websocket.handshake.ClientHandshake;
 import spacegraph.audio.AudioSource;
 import spacegraph.space2d.Surface;
+import spacegraph.space2d.container.Bordering;
+import spacegraph.space2d.container.graph.Graph2D;
+import spacegraph.space2d.container.graph.NodeVis;
 import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.container.time.Timeline2D;
 import spacegraph.space2d.container.time.Timeline2DEvents;
 import spacegraph.space2d.container.unit.Animating;
 import spacegraph.space2d.container.unit.AspectAlign;
+import spacegraph.space2d.widget.button.CheckBox;
 import spacegraph.space2d.widget.button.PushButton;
+import spacegraph.space2d.widget.meter.BagChart;
 import spacegraph.space2d.widget.meter.BitmapMatrixView;
 import spacegraph.space2d.widget.text.LabeledPane;
 import spacegraph.video.*;
@@ -48,10 +54,6 @@ import static spacegraph.SpaceGraph.window;
 public class SignalViewTest {
 
     public static void main(String[] args) {
-        window(newSignalView(), 800, 800);
-    }
-
-    public static Surface newSignalView()  {
         SensorNode n, n2;
         try {
             n = new SensorNode();
@@ -64,11 +66,6 @@ public class SignalViewTest {
 
         Util.sleepMS(2000); //HACK
 
-        RealTimeLine cc = new RealTimeLine(n);
-
-
-
-
 
 //        {
 //            SignalInput i = new SignalInput();
@@ -76,7 +73,45 @@ public class SignalViewTest {
 //            g.add(new SignalView(i).withControls());
 //            i.setFPS(20f);
 //        }
-        return cc;
+        window(new RealTimeLine(n), 800, 800);
+        //window(new Dashboard(n), 800, 800);
+        window(new NetPanel(n.udp), 800, 800);
+    }
+
+    static class NetPanel extends Bordering {
+
+        public NetPanel(UDPeer udp) {
+
+            @Deprecated float fps = udp.getFPS();
+            east(new Gridding(new CheckBox("ON").on((t)->{
+                if (!t)
+                    udp.stop();
+                else
+                    udp.setFPS(fps);
+            }), new PushButton("?")));
+
+            BagChart<UDPeer.UDProfile> themChart = new BagChart<UDPeer.UDProfile>(
+                    ()->Iterators.concat(udp.them.iterator(), Iterators.singletonIterator(
+                        new UDPeer.UDProfile(udp.me, udp.addr(), 0)
+                    )),
+                    (NodeVis<UDPeer.UDProfile> t) -> {
+                        t.set(new PushButton(t.id.toString()));
+                        t.pri = 1f; //TODO 1/latency
+                    });
+            center(new Animating(themChart,
+                    ()->{
+                        themChart.update();
+                    },
+                    0.25f
+            ));
+        }
+
+    }
+
+    static class Dashboard extends Graph2D {
+        public Dashboard(SensorNode n) {
+            super();
+        }
     }
 
     public static Timeline2D.AnalyzedEvent capture(BufferedImage t, long dur) {

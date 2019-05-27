@@ -7,7 +7,6 @@ import nars.NAL;
 import nars.truth.Truth;
 import org.jetbrains.annotations.Nullable;
 
-import static jcog.Util.and;
 import static nars.$.t;
 import static nars.truth.func.TruthFunctions.confCompose;
 import static nars.truth.func.TruthFunctions.w2cSafe;
@@ -129,10 +128,12 @@ enum TruthFunctions2 {
 
 
 
-            float bF = belief.freq();
+            float bF =
+                    belief.freq();
+                    //(float) Math.sqrt(belief.freq());
 
             if (!bipolar)
-                cc = and(bF, cc); //in unipolar mode, attenuate confidence to zero as the low belief frequency pulls the output frequency to 0.5
+                cc = Util.and(bF, cc); //in unipolar mode, attenuate confidence to zero as the low belief frequency pulls the output frequency to 0.5
 
             if (!strong) {
                 cc = weak(cc);
@@ -145,9 +146,9 @@ enum TruthFunctions2 {
                 //float f =
                 float f =
                         bipolar ?
-                            Util.lerp(bF, 1-goal.freq(), goal.freq())
+                            Util.lerpSafe(bF, 1-goal.freq(), goal.freq())
                             :
-                            //Util.lerp(bF, 0.5f, goal.freq());
+                            //Util.lerpSafe(bF, 0.5f, goal.freq());
                             goal.freq();
 
                 return $.t(f, cc);

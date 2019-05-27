@@ -6,6 +6,7 @@ import jcog.sort.RankedN;
 import nars.NAR;
 import nars.Op;
 import nars.Task;
+import nars.control.MetaGoal;
 import nars.task.Tasked;
 import nars.term.Term;
 import nars.truth.Truth;
@@ -193,9 +194,13 @@ abstract public class TaskCondition implements NARCondition, Predicate<Task>, Co
 //            if(!condition) {
                 if (!similar.isEmpty()) {
                     similar.forEach(s -> {
-                        String pattern = "SIM\n{}";
-                        logger.info(pattern, s.proof());
+                        String pattern = "SIM {}\n{}";
 
+                        logger.info(pattern,
+                                s.proof(),
+                                MetaGoal.proof(s, nar)
+                                //s.proof()
+                        );
                     });
                 }
 //            }
@@ -211,6 +216,9 @@ abstract public class TaskCondition implements NARCondition, Predicate<Task>, Co
 
         @Override
         public boolean matches(@Nullable Task task) {
+
+            similar.add(task);
+
             if (task == null)
                 return false;
 
@@ -263,13 +271,13 @@ abstract public class TaskCondition implements NARCondition, Predicate<Task>, Co
 
             float difference = 0;
             if (task.punc() != punc)
-                difference += 4;
+                difference += 1000;
             if (difference >= worstDiff)
                 return NaN;
 
             Term tterm = task.term();
             difference +=
-                    3 * termDistance(tterm, term, worstDiff);
+                    100 * termDistance(tterm, term, worstDiff);
             if (difference >= worstDiff)
                 return NaN;
 
@@ -278,7 +286,7 @@ abstract public class TaskCondition implements NARCondition, Predicate<Task>, Co
                 float freqDiff = Math.min(
                         Math.abs(f - freqMin),
                         Math.abs(f - freqMax));
-                difference += 2 * freqDiff;
+                difference += 10 * freqDiff;
                 if (difference >= worstDiff)
                     return NaN;
 
@@ -294,7 +302,7 @@ abstract public class TaskCondition implements NARCondition, Predicate<Task>, Co
 //        if (difference >= worstDiff)
 //            return;
 
-            difference += 0.00001f * ((float) Math.abs(task.hashCode()) / (Integer.MAX_VALUE * 2)); //HACK differentiate by hashcode
+            difference += 0.00001f * ((float) Math.abs(task.hashCode()) / (Integer.MAX_VALUE * 2.0f)); //HACK differentiate by hashcode
 
             return -difference;
 

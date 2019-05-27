@@ -114,9 +114,9 @@ public class Game extends NARPart implements NSense, NAct, Timed {
         this.time = time;
 
         this.pri = new PriNode(this.id);
-        this.attnAction = new PriNode($.inh(id,ACTION)).merge(PriNode.Merge.Factor);
-        this.attnSensor = new PriNode($.inh(id,SENSOR)).merge(PriNode.Merge.Factor);
-        this.attnReward = new PriNode($.inh(id,REWARD)).merge(PriNode.Merge.Factor);
+        this.attnAction = new PriNode($.inh(id,ACTION)).merge(PriNode.Merge.Multiply);
+        this.attnSensor = new PriNode($.inh(id,SENSOR)).merge(PriNode.Merge.Multiply);
+        this.attnReward = new PriNode($.inh(id,REWARD)).merge(PriNode.Merge.Multiply);
 
         add(time.clock(this));
 
@@ -143,9 +143,9 @@ public class Game extends NARPart implements NSense, NAct, Timed {
         this.time = time;
 
         this.pri = new PriNode(this.id);
-        this.attnAction = new PriNode($.inh(id,ACTION)).merge(PriNode.Merge.Factor);
-        this.attnSensor = new PriNode($.inh(id,SENSOR)).merge(PriNode.Merge.Factor);
-        this.attnReward = new PriNode($.inh(id,REWARD)).merge(PriNode.Merge.Factor);
+        this.attnAction = new PriNode($.inh(id,ACTION)).merge(PriNode.Merge.Multiply);
+        this.attnSensor = new PriNode($.inh(id,SENSOR)).merge(PriNode.Merge.Multiply);
+        this.attnReward = new PriNode($.inh(id,REWARD)).merge(PriNode.Merge.Multiply);
 
         add(time.clock(this));
 

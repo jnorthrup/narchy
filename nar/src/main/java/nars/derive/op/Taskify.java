@@ -247,8 +247,8 @@ public class Taskify extends ProxyTerm {
 
         } else {
 
-            if (NAL.DEBUG)
-                t.log(channel.ruleString);
+            if (NAL.DEBUG) {
+            }
 
             nar.emotion.deriveTask.increment();
             cost = NAL.derive.TTL_COST_DERIVE_TASK_SUCCESS;

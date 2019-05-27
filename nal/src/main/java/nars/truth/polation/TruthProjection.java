@@ -185,9 +185,9 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
             for (int i = 0; i < ss; i++) {
                 TaskComponent c = get(i);
                 if (c == null) {
-                    if (NAL.DEBUG)
-                        throw new NullPointerException(); //HACK
-                    else
+//                    if (NAL.DEBUG)
+//                        throw new NullPointerException(); //HACK
+//                    else
                         continue;
                 }
                 if (!c.valid())

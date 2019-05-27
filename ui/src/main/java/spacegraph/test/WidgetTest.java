@@ -119,7 +119,7 @@ public class WidgetTest {
         );
         m.put("Timeline", Timeline2DTest::timeline2dTest);
         m.put("Tsne", TsneTest::testTsneModel);
-        m.put("Signal", SignalViewTest::newSignalView);
+//        m.put("Signal", SignalViewTest::newSignalView);
         m.put("Hover", HoverTest::hoverTest);
         menu = m;
     }
