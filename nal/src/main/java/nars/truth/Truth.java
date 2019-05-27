@@ -73,7 +73,7 @@ public interface Truth extends Truthed {
             throw new TruthException("invalid conf", conf);
 
         int freqHash = Util.toInt(freq, discreteness);
-        int confHash = Util.toInt(Math.min(NAL.truth.TRUTH_CONF_MAX, conf), discreteness);
+        int confHash = Util.toInt(Math.min(NAL.truth.CONF_MAX, conf), discreteness);
         return (freqHash << 16) | confHash;
     }
     static int truthToInt(double freq, double conf, short discreteness) {
@@ -85,7 +85,7 @@ public interface Truth extends Truthed {
             throw new TruthException("invalid conf", conf);
 
         int freqHash = (int) Util.toInt(freq, discreteness);
-        int confHash = (int) Util.toInt(Math.min(NAL.truth.TRUTH_CONF_MAX, conf), discreteness);
+        int confHash = (int) Util.toInt(Math.min(NAL.truth.CONF_MAX, conf), discreteness);
         return (freqHash << 16) | confHash;
     }
 

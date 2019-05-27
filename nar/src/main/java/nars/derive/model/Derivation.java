@@ -19,6 +19,7 @@ import nars.eval.Evaluation;
 import nars.op.Replace;
 import nars.op.UniSubst;
 import nars.subterm.Subterms;
+import nars.task.proxy.SpecialTruthAndOccurrenceTask;
 import nars.term.Compound;
 import nars.term.Functor;
 import nars.term.Term;
@@ -335,8 +336,14 @@ public class Derivation extends PreDerivation {
 
                 if (NAL.ETERNALIZE_BELIEF_PROJECTED_IN_DERIVATION && beliefTruth_at_Belief != null) {
 
-                    Truth beliefTruth_eternalized = beliefTruth_at_Belief.eternalized(1, NAL.truth.TRUTH_EVI_MIN, null /* dont dither */);
+                    Truth beliefTruth_eternalized = beliefTruth_at_Belief.eternalized(1, NAL.truth.EVI_MIN, null /* dont dither */);
                     if (beliefTruth_eternalized.evi() > beliefTruth_at_Task.evi()) {
+
+                        nextBelief = new SpecialTruthAndOccurrenceTask(nextBelief, ETERNAL, ETERNAL,
+                                false, beliefTruth_eternalized);
+                        //nextBelief = nars.Task.eternalized(nextBelief, 1, NAL.truth.EVI_MIN, nar);
+                        assert(nextBelief!=null);
+
                         nextBeliefStart = nextBeliefEnd = ETERNAL;
                         this.beliefTruth_at_Task = beliefTruth_eternalized;
                     }

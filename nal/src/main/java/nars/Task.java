@@ -521,7 +521,7 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
     /**
      * leave n null to avoid dithering
      */
-    static Task eternalized(Task x, float eviFactor, float eviMin, @Nullable NAL n) {
+    static Task eternalized(Task x, float eviFactor, double eviMin, @Nullable NAL n) {
         boolean isEternal = x.isEternal();
         boolean hasTruth = x.isBeliefOrGoal();
         if (isEternal) {
@@ -927,7 +927,7 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
 
             double eve = TruthIntegration.eviAvg(this, targetStart, targetEnd, dur);
 
-            if (eve > NAL.truth.TRUTH_EVI_MIN) {
+            if (eve > NAL.truth.EVI_MIN) {
                 return PreciseTruth.byEvi(
                         freq() /* TODO interpolate frequency wave */,
                         eve);

@@ -423,7 +423,7 @@ public class ConjClustering extends How {
         private Task conjoin(Task[] x, float freq, float conf, long start) {
 
             double e = c2wSafe((double)conf);
-            if (e < NAL.truth.TRUTH_EVI_MIN)
+            if (e < NAL.truth.EVI_MIN)
                 return null;
 
             final Truth t = Truth.theDithered(freq, e, nar);

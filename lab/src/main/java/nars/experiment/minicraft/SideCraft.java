@@ -50,6 +50,7 @@ public class SideCraft extends GameX {
 
 
         camAE = new AutoclassifiedBitmap("cra", cam.pixels, 8, 8, 32, this);
+        camAE.alpha.set(0.1f);
         SpaceGraph.window(camAE.newChart(), 500, 500);
 
 
@@ -91,7 +92,7 @@ public class SideCraft extends GameX {
 
             float nextScore = 0;
             for (int i = 0; i < gameFramesPerCycle; i++)
-                nextScore = craft.frame();
+                nextScore += craft.frame();
             float ds = nextScore - prevScore;
             this.prevScore = nextScore;
             return ds;

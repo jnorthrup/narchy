@@ -149,7 +149,7 @@ public class DynTaskify extends TaskList {
                 long ss = s + shift, ee = e + shift;
                 if (xStart != ss || x.end() != ee) {
                     Task tt = Task.project(x, ss, ee,
-                            NAL.truth.TRUTH_EVI_MIN, //minimal truth threshold for accumulating evidence
+                            NAL.truth.EVI_MIN, //minimal truth threshold for accumulating evidence
                             false,
                             1, //no need to dither truth or time here.  maybe in the final calculation though.
                             a.dur,

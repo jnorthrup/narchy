@@ -40,16 +40,16 @@ public final class PreciseTruth extends DiscreteTruth {
     /** use with caution, if you are calculating a precise evi and a dithered conf, they should correspond */
     static PreciseTruth byConfEvi(float freq, double conf, double evi) {
 
-        if (evi < NAL.truth.TRUTH_EVI_MIN)
+        if (evi < NAL.truth.EVI_MIN)
             return null;
 
-        if (conf >= NAL.truth.TRUTH_CONF_MAX || evi>= NAL.truth.TRUTH_EVI_MAX) {
+        if (conf >= NAL.truth.CONF_MAX || evi>= NAL.truth.EVI_MAX) {
             //upper limit on truth
-            conf = NAL.truth.TRUTH_CONF_MAX;
-            evi = NAL.truth.TRUTH_EVI_MAX;
+            conf = NAL.truth.CONF_MAX;
+            evi = NAL.truth.EVI_MAX;
         }
 
-        if (evi < NAL.truth.TRUTH_EVI_MIN || !Double.isFinite(evi))
+        if (evi < NAL.truth.EVI_MIN || !Double.isFinite(evi))
             throw new TruthException("non-positive evi", evi);
 
         return new PreciseTruth(freq, conf, evi);

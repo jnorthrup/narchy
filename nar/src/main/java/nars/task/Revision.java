@@ -75,7 +75,7 @@ public enum Revision {;
         assert(p.size()>=2);
 
         double eviMin =
-                NAL.belief.REVISION_MIN_EVI_FILTER ? nal.confMin.asEvi() : NAL.truth.TRUTH_EVI_MIN;
+                NAL.belief.REVISION_MIN_EVI_FILTER ? nal.confMin.asEvi() : NAL.truth.EVI_MIN;
                 //;
 
         Truth truth = p.truth(eviMin, dither, true, nal);

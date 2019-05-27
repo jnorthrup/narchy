@@ -505,9 +505,9 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
          * internal granularity which truth components are rounded to
          */
         public static final float TRUTH_EPSILON = 0.01f;
-        public static final float TRUTH_CONF_MAX = 1f - NAL.truth.TRUTH_EPSILON;
-        public static final float TRUTH_EVI_MAX = c2wSafe(NAL.truth.TRUTH_CONF_MAX);
-        public static final double TRUTH_EVI_MIN =
+        public static final float CONF_MAX = 1f - NAL.truth.TRUTH_EPSILON;
+        public static final float EVI_MAX = c2wSafe(NAL.truth.CONF_MAX);
+        public static final double EVI_MIN =
                 //c2wSafe(TRUTH_EPSILON);
                 //ScalarValue.EPSILON;
                 //Float.MIN_NORMAL;

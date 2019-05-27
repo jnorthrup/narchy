@@ -15,7 +15,7 @@ public final class ConfRange extends FloatRange {
     }
 
     public ConfRange(float initialValue) {
-        super(initialValue, TruthFunctions.w2cSafe(NAL.truth.TRUTH_EVI_MIN), NAL.truth.TRUTH_CONF_MAX);
+        super(initialValue, TruthFunctions.w2cSafe(NAL.truth.EVI_MIN), NAL.truth.CONF_MAX);
     }
 
     @Override

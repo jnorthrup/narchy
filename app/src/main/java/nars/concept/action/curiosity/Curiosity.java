@@ -25,7 +25,7 @@ public class Curiosity {
     public final AtomicBoolean enable = new AtomicBoolean(true);
 
     /** advised default or maximum confidence setting of generated goal */
-    public final FloatRange conf = new FloatRange(0, NAL.truth.TRUTH_EPSILON, NAL.truth.TRUTH_CONF_MAX);
+    public final FloatRange conf = new FloatRange(0, NAL.truth.TRUTH_EPSILON, NAL.truth.CONF_MAX);
 
     public final FasterList<CuriosityMode> curiosity = new FasterList<>(8); //new FastCoWList(8, CuriosityMode[]::new);
 
@@ -100,7 +100,7 @@ public class Curiosity {
                 //w2c(c2w(nar.confDefault(GOAL))/2);
                 //nar.confDefault(GOAL);
 
-        conf.set(Util.clamp(curiConf, nar.confMin.floatValue(), NAL.truth.TRUTH_CONF_MAX));
+        conf.set(Util.clamp(curiConf, nar.confMin.floatValue(), NAL.truth.CONF_MAX));
 
         int cc = curiosity.size();
 

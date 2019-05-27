@@ -98,7 +98,7 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
         } else {
             e = TruthIntegration.evi(task, start, end, dur);
         }
-        return e < NAL.truth.TRUTH_EVI_MIN ? Double.NaN : e;
+        return e < NAL.truth.EVI_MIN ? Double.NaN : e;
     }
 
 
@@ -542,7 +542,7 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
 
     @Nullable
     public final Truth truth() {
-        return truth(NAL.truth.TRUTH_EVI_MIN, false, false, null);
+        return truth(NAL.truth.EVI_MIN, false, false, null);
     }
 
 

@@ -304,7 +304,7 @@ public final class TruthFunctions {
         if (c < NAL.truth.TRUTH_EPSILON)
             throw new Truth.TruthException("confidence underflow", c);
 
-        if (c > NAL.truth.TRUTH_CONF_MAX) {
+        if (c > NAL.truth.CONF_MAX) {
             throw new Truth.TruthException("confidence overflow", c);
             //c = Param.TRUTH_CONF_MAX;
         }
@@ -354,14 +354,14 @@ public final class TruthFunctions {
      * @return The corresponding confidence, in [0, 1)
      */
     public static float w2c(float w) {
-        if (w < NAL.truth.TRUTH_EVI_MIN)
+        if (w < NAL.truth.EVI_MIN)
             throw new Truth.TruthException("insufficient evidence", w);
         if (!Float.isFinite(w))
             throw new Truth.TruthException("non-finite evidence", w);
         return w2cSafe(w);
     }
     public static float w2c(double w) {
-        if (w < NAL.truth.TRUTH_EVI_MIN)
+        if (w < NAL.truth.EVI_MIN)
             throw new Truth.TruthException("insufficient evidence", w);
         if (!Double.isFinite(w))
             throw new Truth.TruthException("non-finite evidence", w);

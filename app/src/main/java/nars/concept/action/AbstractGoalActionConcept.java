@@ -187,7 +187,7 @@ public class AbstractGoalActionConcept extends GameAction {
 
                 @Nullable TruthProjection nextP = a.truthProjection();
                 if (nextP!=null) {
-                    Truth next = nextP.truth(NAL.truth.TRUTH_EVI_MIN, false, true, n);
+                    Truth next = nextP.truth(NAL.truth.EVI_MIN, false, true, n);
                     if (next!=null) {
                         return pair(next, new long[]{ a.time.start, a.time.end});
                     }
