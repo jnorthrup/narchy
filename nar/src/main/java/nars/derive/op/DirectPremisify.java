@@ -30,7 +30,7 @@ public class DirectPremisify extends Premisify {
             UnifyMatchFork mf = d.termifier;
             d.forEachMatch = mf;
 
-            mf.reset(taskify, Termify_Forks, (int)Math.ceil(NAL.derive.TERMIFY_LAZY_VOLMAX_SCRATCH_FACTOR * d.termVolMax));
+            mf.reset(taskify, Termify_Forks, (int)Math.ceil(NAL.derive.TERMBUFFER_VOLMAX_SCRATCH_FACTOR * d.termVolMax));
 
             try {
 

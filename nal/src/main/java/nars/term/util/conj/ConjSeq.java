@@ -35,18 +35,19 @@ public enum ConjSeq { ;
     /** TODO TermBuilder */
     static public Term sequence(Term a, long aStart, Term b, long bStart, TermBuilder B) {
 
-        if (aStart == ETERNAL || aStart == bStart) {         /*assert(bStart == aStart);*/
-            return CONJ.the(B, DTERNAL, a, b);
-        } else if (aStart == TIMELESS) { /*assert(bStart == aStart);*/
+//        if (aStart == ETERNAL || aStart == bStart) {         /*assert(bStart == aStart);*/
+//            return CONJ.the(B, DTERNAL, a, b);
+        if (aStart == TIMELESS) { assert(bStart == aStart);
             return CONJ.the(B, XTERNAL, a, b);
-        } else {
-            assert (bStart != ETERNAL && bStart != TIMELESS);
-
-            ConjBuilder c = new Conj(2);
-            if (c.add(aStart, a))
-                c.add(bStart, b);
-            return c.term(B);
         }
+
+        assert (bStart != ETERNAL && bStart != TIMELESS);
+
+        ConjBuilder c = new Conj(2);
+        if (c.add(aStart, a))
+            c.add(bStart, b);
+        return c.term(B);
+
     }
 
     public static MetalBitSet seqEternalComponents(Subterms x) {

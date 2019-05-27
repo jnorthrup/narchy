@@ -21,7 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class NAL8Test extends NALTest {
 
-    public static final int cycles = 500;
+    public static final int cycles = 300;
 
     @BeforeEach
     void setTolerance() {
@@ -42,7 +42,7 @@ public class NAL8Test extends NALTest {
                 .mustBelieve(cycles, "open(t1)", 1.0f, 0.81f, 0)
                 .mustBelieve(cycles, "(t1-->[opened])", 1.0f, 0.81f, 5)
                 .mustNotOutput(cycles, "open(t1)", BELIEF, (t) -> t != 0)
-                .mustNotOutput(cycles, "(t1-->[opened])", BELIEF, (t) -> t != 5)
+                .mustNotOutput(cycles, "(t1-->[opened])", BELIEF, 0.5f, 1, 0, 0.8f, (t) -> t != 5)
         ;
     }
 
@@ -355,7 +355,7 @@ public class NAL8Test extends NALTest {
     @Test
     void conditionalDisjDecomposePos() {
 
-        test.termVolMax(6)
+        test.termVolMax(5)
                 .goal("(x || y)", Tense.Present, 1f, 0.9f)
                 .inputAt(2, "--x. |")
                 .mustGoal(cycles, "y", 1f, 0.45f, 2)
@@ -613,6 +613,7 @@ public class NAL8Test extends NALTest {
         */
 
         test
+                .termVolMax(6)
                 .inputAt(0, "((out) ==>-3 (happy)). |")
                 .inputAt(13, "(happy)! |")
                 .mustGoal(cycles, "(out)", 1f, 0.45f, (t) -> t > 13)
@@ -623,9 +624,10 @@ public class NAL8Test extends NALTest {
     void testPredictiveImplicationTemporalTemporalOpposite() {
 
         test
+                .termVolMax(3)
                 .inputAt(0, "(happy ==>-3 out). |")
                 .inputAt(2, "happy! |")
-                .mustGoal(cycles, "out", 1f, 0.45f, (t) -> t >=2);
+                .mustGoal(cycles, "out", 1f, 0.45f, (t) -> t == -1);
 
 
     }
@@ -947,7 +949,7 @@ public class NAL8Test extends NALTest {
     @Test
     void testGoalBeliefDecomposeTimeRangingDiffer() {
         test
-                .termVolMax(13)
+                .termVolMax(4)
                 .input("x! +0..+100")
                 .input("(y &&+5 x). +20..+30")
                 .mustGoal(cycles, "y", 1f, 0.1f, (a, b) ->
@@ -1129,6 +1131,7 @@ public class NAL8Test extends NALTest {
                 .input("--(--on(t2,#1) && at(#1))!")
                 .mustGoal(cycles, "at(t3)", 0.0f, 0.81f, ETERNAL)
                 .mustNotOutput(cycles, "at(t3)", GOAL, 0.1f, 1f, 0, 1, t->true)
+                .mustNotOutput(cycles, "on(t2,t3)", GOAL, 0f, 0.9f, 0, 1, t->true)
         ;
     }
     @Test

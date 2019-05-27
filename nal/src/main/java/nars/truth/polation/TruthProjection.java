@@ -125,12 +125,12 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
     }
 
     private int update(boolean force) {
-        if (force)
-            invalidate();
-
         int s = size();
         if (s <= 0)
             return 0;
+
+        if (force)
+            invalidate();
 
         int count = 0;
         for (int i = 0; i < s; i++) {
@@ -340,7 +340,7 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
 
     private void sortByEvidence() {
         if (size() > 1)
-            sortThisByDouble(tc -> (tc.evi==tc.evi) ? -tc.evi : Double.POSITIVE_INFINITY); //TODO also sort by occurrence and/or stamp to ensure oldest task is always preferred
+            sortThisByDouble(TaskComponent::eviDescending); //TODO also sort by occurrence and/or stamp to ensure oldest task is always preferred
     }
 
 //    /**
@@ -685,6 +685,11 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
 
         void invalidate() {
             evi = Double.NaN;
+        }
+
+        public final double eviDescending() {
+            double e = this.evi;
+            return (e == e) ? -e : Double.POSITIVE_INFINITY;
         }
     }
 

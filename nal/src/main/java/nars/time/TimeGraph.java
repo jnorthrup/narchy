@@ -771,20 +771,20 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
         //assert(!xx.hasXternal()): "dont solveDTTrace if subterms have XTERNAL";
 
         int s = xx.subs();
-        if (x.op() == IMPL || (s == 2 && xx.sub(0).unneg().equals(xx.sub(1).unneg()))) { //s == 2) {
+        if (s==2) { //x.op() == IMPL || (s == 2 && xx.sub(0).unneg().equals(xx.sub(1).unneg()))) { //s == 2) {
 
             return solveDT2(x, xx, each);
 
         } else {
             assert (x.op() == CONJ);
 
+//            if (s == 2) {
+//                if (!solveDT2(x, xx, each))
+//                    return false;
+//            }
+
             List<Event>[] subEvents = new FasterList[s];
             int abs = solveAbsolutes(xx, subEvents);
-
-
-            if (s == 2)
-                return solveDT2(x, xx, each);
-
             if (abs > 0) {
                 if (!solveAbsolutePermutations(xx, subEvents, abs, each))
                     return false;
@@ -1019,7 +1019,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 
 
             } else {
-                solveOccurrence(b, true, bx -> {
+                solveOccurrence(b, false, bx -> {
                     if ((bx instanceof Absolute) && ae.add(bx)) {
                         for (Event ax : aa) {
                             if (!solveDTAbsolutePair(x, ax, bx, each))

@@ -51,9 +51,9 @@ public class Gradius extends GameX {
         g.updateMS =
                 //50; //20fps
                 //30;
-                25; //40fps
+                //25; //40fps
                 //20;
-                //10; //100fps
+                10; //100fps
                 //5; //200fps
         //10;
 

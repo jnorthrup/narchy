@@ -2,8 +2,7 @@ package nars.perf;
 
 import nars.NARS;
 import nars.Op;
-import nars.nal.nal1.NAL1Test;
-import nars.nal.nal6.NAL6Test;
+import nars.nal.nal8.NAL8Test;
 import nars.term.util.builder.HeapTermBuilder;
 import nars.term.util.builder.InterningTermBuilder;
 import org.openjdk.jmh.annotations.*;
@@ -23,9 +22,14 @@ public class InterningTermBuilderBenchmark {
     private String termBuilderInterningSize;
 
     @Param({
-            //"6"
-            // "18"
-            "11"
+            "3",
+            "4",
+            "5",
+            "6",
+            "7",
+            "8",
+            "9",
+            "12"
     })
     private String termBuilderInterningVolume;
 
@@ -37,15 +41,15 @@ public class InterningTermBuilderBenchmark {
     )
     @Threads(1)
     @Warmup(iterations = 1)
-    @Measurement(iterations = 2)
+    @Measurement(iterations = 5)
     public void testInterning() {
 
         runTests(true, () -> NARS.tmp(),
-                NAL1Test.class,
+//                NAL1Test.class
 //                NAL2Test.class,
 //                NAL3Test.class
-                NAL6Test.class
-//                NAL8Test.class
+//                NAL6Test.class,
+                NAL8Test.class
         );
     }
 

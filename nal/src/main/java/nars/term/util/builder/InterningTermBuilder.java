@@ -270,6 +270,8 @@ public class InterningTermBuilder extends HeapTermBuilder {
     @Override
     public Term statement(Op op, int dt, Term subject, Term predicate) {
 
+        if (op==IMPL && dt == DTERNAL)
+            dt = 0; //HACK temporary normalize
 
         if (!(subject instanceof Bool) && !(predicate instanceof Bool) &&
                 (subject.volume() + predicate.volume() < volInternedMax) &&
@@ -279,7 +281,7 @@ public class InterningTermBuilder extends HeapTermBuilder {
 
             //quick preparations to reduce # of unique entries
 
-            if (!((op == INH || op == SIM) && (dt != DTERNAL || subject.equals(predicate)))) {
+            if (!((op == INH || op == SIM) && ((dt!=0) || subject.equals(predicate)))) {
 
                 if (op == IMPL) {
                     negate = (predicate.op() == NEG);

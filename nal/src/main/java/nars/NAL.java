@@ -241,8 +241,8 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
 
     @Deprecated
     public final FloatRange questionForgetRate = new FloatRange(0.5f, 0, 1);
-    public final IntRange premiseUnifyTTL = new IntRange(8, 1, 32);
-    public final IntRange deriveBranchTTL = new IntRange(4 * NAL.derive.TTL_MIN, NAL.derive.TTL_MIN, 64 * NAL.derive.TTL_MIN);
+    public final IntRange premiseUnifyTTL = new IntRange(6, 1, 32);
+    public final IntRange deriveBranchTTL = new IntRange(3 * NAL.derive.TTL_MIN, NAL.derive.TTL_MIN, 64 * NAL.derive.TTL_MIN);
     /**
      * how many cycles above which to dither dt and occurrence time
      * TODO move this to Time class and cache the cycle value rather than dynamically computing it
@@ -320,22 +320,24 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
             return NaN;
 
         final boolean NEW = prev == null;
+        if (!NEW) {
 
-        final boolean stretched = !NEW && prev == next;
+            final boolean stretched = prev == next;
 
-        final boolean latched = !NEW && !stretched &&
-                Math.abs(next.start() - prev.end()) < NAL.belief.signal.SIGNAL_LATCH_LIMIT_DURS * dur;
+            final boolean latched = !stretched &&
+                    Math.abs(next.start() - prev.end()) < NAL.belief.signal.SIGNAL_LATCH_LIMIT_DURS * dur;
 
-        //decrease priority by similarity to previous truth
-        if (prev != null && (stretched || latched)) {
+            //decrease priority by similarity to previous truth
+            if (stretched || latched) {
 
-            //TODO abstract this frequence response curve
-            final float deltaFreq = prev != next ? Math.abs(prev.freq() - next.freq()) : 0; //TODO use a moving average or other anomaly/surprise detection
-            if (deltaFreq > Float.MIN_NORMAL) {
-                final float perceived = 0.01f + 0.99f * (float) Math.pow(deltaFreq, 1 / 2f /* etc*/);
-                p *= perceived;
+                //TODO abstract this frequence response curve
+                final float deltaFreq = prev != next ? Math.abs(prev.freq() - next.freq()) : 0; //TODO use a moving average or other anomaly/surprise detection
+                if (deltaFreq > Float.MIN_NORMAL) {
+                    final float perceived = 0.01f + 0.99f * (float) Math.pow(deltaFreq, 1 / 2f /* etc*/);
+                    p *= perceived;
+                }
+                //p *= Util.lerp(deltaFreq, perceived, 1);
             }
-            //p *= Util.lerp(deltaFreq, perceived, 1);
         }
 
         return p;
@@ -444,7 +446,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
     /**
      * provides an instance of the default truthpolation implementation
      */
-    public TruthProjection projection(final long start, final long end, final int dur) {
+    public final TruthProjection projection(final long start, final long end, final int dur) {
         return new LinearTruthProjection(start, end, dur);
         //return new FocusingLinearTruthProjection(start, end, dur);
     }
@@ -755,7 +757,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
         public static final boolean DERIVATION_FORM_QUESTION_FROM_AMBIGUOUS_BELIEF_OR_GOAL= configIs("DERIVATION_FORM_QUESTION_FROM_AMBIGUOUS_BELIEF_OR_GOAL");
 
 
-        public static final float TERMIFY_LAZY_VOLMAX_SCRATCH_FACTOR = 10f;
+        public static final float TERMBUFFER_VOLMAX_SCRATCH_FACTOR = 4f;
     }
 
     public enum unify {

@@ -1,9 +1,12 @@
 package nars.derive;
 
 import jcog.math.IntRange;
+import nars.NAR;
 import nars.attention.TaskLinkWhat;
 import nars.derive.model.Derivation;
 import nars.derive.rule.PremiseRuleSet;
+import nars.link.TaskLinks;
+import nars.time.When;
 import nars.time.event.WhenTimeIs;
 
 import java.util.function.BooleanSupplier;
@@ -12,9 +15,9 @@ import java.util.function.BooleanSupplier;
 /** default deriver implementation */
 public class BatchDeriver extends Deriver {
 
-    public final IntRange premisesPerIteration = new IntRange(2, 1, 32);
+    public final IntRange premisesPerIteration = new IntRange(3, 1, 32);
 
-    public final IntRange termLinksPerTaskLink = new IntRange(1, 1, 8);
+    public final IntRange termLinksPerTaskLink = new IntRange(2, 1, 8);
 
     public BatchDeriver(PremiseRuleSet rules) {
         super(rules, rules.nar);
@@ -27,25 +30,24 @@ public class BatchDeriver extends Deriver {
         int deriveTTL = d.nar().deriveBranchTTL.intValue();
         int premisesPerIteration = this.premisesPerIteration.intValue();
         int termLinksPerTaskLink = this.termLinksPerTaskLink.intValue();
+        TaskLinks links = ((TaskLinkWhat) d.what).links;
 
         d.premises.commit();
+
         do {
-            derive(premisesPerIteration, termLinksPerTaskLink, matchTTL, deriveTTL, d);
+
+            When<NAR> now = WhenTimeIs.now(d);
+
+            d.premises.derive(
+                    now,
+                    premisesPerIteration,
+                    termLinksPerTaskLink,
+                    matchTTL, deriveTTL,
+                    links, d);
+
         } while (kontinue.getAsBoolean());
 
     }
 
-    /**
-     * samples premises
-     * thread-safe, for use by multiple threads
-     */
-    public final void derive(int premisesPerIteration, int termlinksPerTaskLink, int matchTTL, int deriveTTL, Derivation d) {
-        d.premises.derive(
-                WhenTimeIs.now(d),
-                premisesPerIteration,
-                termlinksPerTaskLink,
-                matchTTL, deriveTTL,
-                ((TaskLinkWhat)d.what).links, d);
-    }
 
 }

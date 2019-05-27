@@ -26,8 +26,20 @@ public class Statement {
     static final int mobiusExcept = Op.or(/*CONJ, */VAR_PATTERN);
 
     public static Term statement(TermBuilder B, Op op, int dt, Term subject, Term predicate) {
+        return statement(B, op, dt, subject, predicate, 3);
+    }
+
+    public static Term statement(TermBuilder B, Op op, int dt, Term subject, Term predicate, int depth) {
         if (subject == Null || predicate == Null)
             return Null;
+
+        if (depth <= 0) {
+            if (NAL.DEBUG) {
+                throw new TermException("statement recursion limit", op, dt, subject, predicate);
+            }
+            return Null; //TODO
+        }
+
 
         if (op == IMPL && dt == DTERNAL)
             dt = 0; //temporarily use dt=0
@@ -91,7 +103,12 @@ public class Statement {
                     } else {
                         newSubj = ConjSeq.sequence(subject, 0, inner, subject.eventRange() + dt, B);
                     }
-                    return statement(B, IMPL, predicate.dt(), newSubj, predicate.sub(1)).negIf(negate); //recurse
+                    int newDT = predicate.dt();
+                    if (newDT == DTERNAL)
+                        newDT = 0; //temporary
+                    Term newPred = predicate.sub(1);
+                    if (dt!=newDT || !newSubj.equals(subject) || !newPred.equals(predicate))
+                        return statement(B, IMPL, newDT, newSubj, newPred, depth-1).negIf(negate); //recurse
                 }
 
             }
@@ -138,7 +155,7 @@ public class Statement {
                             long shift = newPredConj.shift();
                             if (shift == ETERNAL) {
                                 //??
-                                dt = DTERNAL;
+                                dt = 0;
                             } else {
 //
 
@@ -160,7 +177,7 @@ public class Statement {
                         }
 
                         if (!newPred.equals(predicate)) { //HACK check again
-                            return statement(B, IMPL, dt, subject, newPred).negIf(negate); //recurse
+                            return statement(B, IMPL, dt, subject, newPred, depth-1).negIf(negate); //recurse
                         }
 
                     }
@@ -170,6 +187,8 @@ public class Statement {
 
         }
 
+
+        assert(op!=IMPL || dt!=DTERNAL); //HACK dt should ==0
 
         if ((op != IMPL)
                 //|| (dt == 0) /* allow parallel IMPL unless there is a sequence that could separate the events from overlap */
