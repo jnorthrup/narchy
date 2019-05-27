@@ -329,6 +329,9 @@ public class Occurrify extends TimeGraph {
                 taskEnd = beliefEnd;
             }
 
+        } else if ((beliefStart == ETERNAL && taskStart!=ETERNAL)) { //|| time.beliefProjection()==BeliefProjection.Task) {
+//            beliefStart = TIMELESS;
+//            beliefEnd = TIMELESS;
         }
 //        if ((d.concPunc==GOAL || d.concPunc==QUEST) && (d.taskPunc == GOAL || d.taskPunc == QUEST) && taskStart!=ETERNAL && (beliefStart!=ETERNAL && beliefStart!=TIMELESS)) {
 //            //ignore belief occurrence in deriving goal/quest from goal/quest
