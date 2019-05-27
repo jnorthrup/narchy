@@ -311,8 +311,8 @@ public interface NSense {
 
         //HACK until BipolarAction imjplemetns Action
         nar.start(pn);
-        g.actions.add(pn.pos);
-        g.actions.add(pn.neg);
+        g.addAction(pn.pos);
+        g.addAction(pn.neg);
         g.onFrame(aa->pn.update(g));
 
         nar.control.parent(pn.attn, new PriNode[]{g.attnAction});
