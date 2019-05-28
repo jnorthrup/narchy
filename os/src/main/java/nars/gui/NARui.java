@@ -852,23 +852,24 @@ public class NARui {
 //                        }
 //                ).collect(toList()));
 
-        HaiQae q = (HaiQae) rlb.agent;
-        Plot2D plot;
-        Gridding charts = new Gridding(
-                new ObjectSurface(q),
-                new Gridding(VERTICAL,
-                        new PaintUpdateMatrixView(rlb.input),
-                        new PaintUpdateMatrixView(q.ae.W),
-                        new PaintUpdateMatrixView(q.ae.y),
-                        new PaintUpdateMatrixView(rlb.actionFeedback)
-                ),
-                new Gridding(VERTICAL,
-                        new PaintUpdateMatrixView(q.q),
-                        new PaintUpdateMatrixView(q.et)
-                ),
-                plot = new Plot2D(200, Plot2D.Line)
-
-        );
+        Plot2D plot = new Plot2D(200, Plot2D.Line);
+        Gridding charts = new Gridding();
+        if (rlb.agent instanceof HaiQae) {
+            HaiQae q = (HaiQae) rlb.agent;
+            charts.add(
+                    new ObjectSurface(q),
+                    new Gridding(VERTICAL,
+                            new PaintUpdateMatrixView(rlb.input),
+                            new PaintUpdateMatrixView(q.ae.W),
+                            new PaintUpdateMatrixView(q.ae.y),
+                            new PaintUpdateMatrixView(rlb.actionFeedback)
+                    ),
+                    new Gridding(VERTICAL,
+                            new PaintUpdateMatrixView(q.q),
+                            new PaintUpdateMatrixView(q.et)
+                    )
+            );
+        }
         AtomicDouble rewardSum = new AtomicDouble();
         plot.add("Reward", ()->{
             return rewardSum.getAndSet(0); //clear
@@ -878,6 +879,8 @@ public class NARui {
             rewardSum.addAndGet(rlb.lastReward);
             plot.commit();
         });
+
+        charts.add(plot);
         return charts;
 
 

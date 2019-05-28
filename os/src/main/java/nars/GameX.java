@@ -6,6 +6,7 @@ import jcog.data.list.FasterList;
 import jcog.exe.Loop;
 import jcog.func.IntIntToObjectFunction;
 import jcog.learn.ql.HaiQae;
+import jcog.learn.ql.dqn3.DQN3;
 import jcog.math.FloatAveragedWindow;
 import jcog.signal.wave2d.Bitmap2D;
 import jcog.signal.wave2d.MonoBufImgBitmap2D;
@@ -27,7 +28,10 @@ import nars.derive.timing.ActionTiming;
 import nars.exe.impl.WorkerExec;
 import nars.gui.NARui;
 import nars.memory.CaffeineMemory;
-import nars.op.*;
+import nars.op.Arithmeticize;
+import nars.op.AutoencodedBitmap;
+import nars.op.Factorize;
+import nars.op.Introduction;
 import nars.op.mental.Inperience2;
 import nars.op.stm.ConjClustering;
 import nars.sensor.Bitmap2DSensor;
@@ -50,6 +54,7 @@ import spacegraph.video.OrthoSurfaceGraph;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -121,7 +126,7 @@ abstract public class GameX extends Game {
 
         initPlugins(n);
         initPlugins2(n, g);
-        initMeta(n, g, false);
+        initMeta(n, g, true);
 
         //new Gridding(n.parts(Game.class).map(NARui::agent).collect(toList())),
         n.synch();
@@ -325,7 +330,10 @@ abstract public class GameX extends Game {
         if (rl) {
             meta.what().pri(0.05f);
             RLBooster metaBoost = new RLBooster(meta, (i, o) ->
-                    new HaiQae(i, 12, o).alpha(0.01f).gamma(0.9f).lambda(0.9f),
+                    //new HaiQae(i, 12, o).alpha(0.01f).gamma(0.9f).lambda(0.9f),
+                    new DQN3(i, o, Map.of(
+
+                    )),
                     2, 3, false);
             meta.curiosity.rate.set(0);
             g.add(NARui.rlbooster(metaBoost));

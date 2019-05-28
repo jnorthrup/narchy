@@ -1,4 +1,4 @@
-package jcog.learn.ql;
+package jcog.learn.ql.dqn3;
 
 import jcog.Util;
 import jcog.decide.DecideEpsilonGreedy;
@@ -13,6 +13,7 @@ import java.util.Random;
 
 /** adapted from: https://github.com/nunomachado/nando-dql
  * TODO add replay buffer in subclass
+ * untested
  * */
 public class DQN2 extends Agent {
 
