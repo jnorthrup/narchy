@@ -1485,6 +1485,7 @@ public enum Util {
         return y;
     }
 
+    /** TODO fair random selection when exist equal values */
     public static int argmax(final double... vec) {
         int result = -1;
         double max = Double.NEGATIVE_INFINITY;
@@ -1498,6 +1499,7 @@ public enum Util {
         return result;
     }
 
+    /** TODO fair random selection when exist equal values */
     public static int argmax(final float... vec) {
         int result = -1;
         float max = Float.NEGATIVE_INFINITY;
