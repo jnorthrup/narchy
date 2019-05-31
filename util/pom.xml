@@ -133,7 +133,7 @@
         <dependency>
             <groupId>org.apache.lucene</groupId>
             <artifactId>lucene-core</artifactId>
-            <version>8.1.0</version>
+            <version>8.1.1</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
@@ -203,7 +203,7 @@
         <dependency>
             <groupId>tech.tablesaw</groupId>
             <artifactId>tablesaw-core</artifactId>
-            <version>0.33.2</version>
+            <version>0.33.5</version>
             <scope>compile</scope>
         </dependency>
         <dependency>

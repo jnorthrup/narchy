@@ -128,20 +128,20 @@ public class FZero extends GameX {
                 //new Bitmap2DConceptsView(c, this).withControls()
         ), 500, 500);
 
-        //initUnipolarLinear(5f);
 
 //        window(new Gridding(
 //                //new CameraSensorView(c, this).withControls(),
 //                NARui.beliefCharts(actions, nar)), 400, 400);
 
+        initUnipolarLinear(5f);
 
-        initPushButtonTank();
+        //initPushButtonTank();
         //initLeftRightPushButtonMutex();
         //initTankContinuous();
 
 
-//        BiPolarAction A =
-//            initBipolarRotateRelative(false, 0.75f);
+        BiPolarAction A =
+            initBipolarRotateRelative(false, 0.15f);
                 //initBipolarRotateRelative(true, 1f);
                 //initBipolarRotateAbsolute(true);
                 //initBipolarRotateDirect(false, 0.9f);
