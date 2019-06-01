@@ -8,6 +8,7 @@ import jcog.test.control.TrackXY;
 import jcog.tree.rtree.rect.RectFloat;
 import nars.*;
 import nars.agent.GameTime;
+import nars.control.MetaGoal;
 import nars.derive.BatchDeriver;
 import nars.derive.Deriver;
 import nars.derive.Derivers;
@@ -359,22 +360,23 @@ public class TrackXY_NAR extends GameX {
         }
 
 
-        //NAL.DEBUG = true;
+        NAL.DEBUG = true;
         n.onTask(tt -> {
             if (!tt.isInput()) /*if (tt instanceof DerivedTask)*/ {
                 //if (n.concept(tt) instanceof ActionConcept)
-                if (tt.expectation() > 0.5f && tt.start() > n.time()-n.dur() && tt.start() < n.time() + n.dur()) {
+                if (tt.start() > n.time()-n.dur() && tt.start() < n.time() + n.dur()) {
                     Term ttt = tt.term();
                     boolean l = ttt.equals(a.actions.get(0).term());
                     boolean r = ttt.equals(a.actions.get(1).term());
                     if (l || r) {
 
-                        float wantsDir = l ? -1 : +1;
+                        float wantsDir = (l ? -1 : +1) * (tt.freq() < 0.5f ? -1 : +1);
                         float needsDir = a.track.tx - a.track.cx;
 
                         String summary = (Math.signum(wantsDir)==Math.signum(needsDir)) ? "OK" : "WRONG";
                         System.out.println(ttt + " " + n2(wantsDir) + " ? " + n2(needsDir) + " " + summary);
                         System.out.println(tt.proof());
+                        System.out.println(MetaGoal.proof(tt, n));
                         System.out.println();
                     }
                 }

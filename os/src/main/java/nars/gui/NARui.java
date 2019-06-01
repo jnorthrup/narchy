@@ -432,10 +432,20 @@ public class NARui {
         Menu aa = new TabMenu(Map.of(
                 a.toString(), () -> new ObjectSurface<>(a, 4),
 
-                "dex", () -> new TriggeredSurface<>(
+                "stat", () -> new Gridding(
+                    new TriggeredSurface<>(
+                            new Plot2D(512, Plot2D.Line)
+                                    .add("Happy", a::happiness),
+                            a::onFrame, Plot2D::commit),
+                    new TriggeredSurface<>(
                         new Plot2D(512, Plot2D.Line)
                                 .add("Dex+0", a::dexterity),
                             a::onFrame, Plot2D::commit),
+                    new TriggeredSurface<>(
+                            new Plot2D(512, Plot2D.Line)
+                                    .add("Coh", ()->a.coherency()),
+                            a::onFrame, Plot2D::commit)
+                    ),
 
 //                        .addAt("Dex+2", () -> a.dexterity(a.now() + 2 * a.nar().dur()))
 //                        .addAt("Dex+4", () -> a.dexterity(a.now() + 4 * a.nar().dur())), a),

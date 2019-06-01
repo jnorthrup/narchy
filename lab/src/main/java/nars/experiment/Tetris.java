@@ -196,17 +196,21 @@ public class Tetris extends GameX {
 
     void actionsPushButton() {
         final Term LEFT =
-                $.the("left");
-        //$.inh("left", id);
+                //$.the("left");
+                //$.inh("left", id);
+                $.inh(id, "left");
         final Term RIGHT =
-                $.the("right");
-        //$.inh("right", id);
+                //$.the("right");
+                //$.inh("right", id);
+                $.inh(id,"right");
         final Term ROT =
-                $.the("rotate");
-        //$.inh("rotate", id);
+                //$.the("rotate");
+                //$.inh("rotate", id);
+                $.inh(id, "rotate");
         final Term FALL =
-                $.the("fall");
-        //$.inh("fall", id);
+                //$.the("fall");
+                //$.inh("fall", id);
+                $.inh(id,"fall");
 
         actionPushButtonMutex(LEFT, RIGHT,
                 b -> b && state.act(TetrisState.LEFT),

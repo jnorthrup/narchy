@@ -25,16 +25,16 @@
 
 
 //1-element product wrap
-   ((X)-->(Y)), (X-->Y), task("?") |- ((X)-->(Y)), (Belief:BeliefStructuralReduction, Punctuation:Belief)
-     ((X)<->(Y)), (X<->Y), task("?") |- ((X)<->(Y)), (Belief:BeliefStructuralReduction, Punctuation:Belief)
+   ((X)-->(Y)), (X-->Y), task("?") |- polarizeBelief(((X)-->(Y))), (Belief:BeliefStructuralReductionDepolarized, Punctuation:Belief)
+     ((X)<->(Y)), (X<->Y), task("?") |- polarizeBelief(((X)<->(Y))), (Belief:BeliefStructuralReductionDepolarized, Punctuation:Belief)
 //1-element product unwrap
-   (X-->Y), ((X)-->(Y)), task("?") |- (X-->Y), (Belief:BeliefStructuralReduction, Punctuation:Belief)
-     (X<->Y), ((X)<->(Y)), task("?") |- (X<->Y), (Belief:BeliefStructuralReduction, Punctuation:Belief)
+   (X-->Y), ((X)-->(Y)), task("?") |- polarizeBelief((X-->Y)), (Belief:BeliefStructuralReductionDepolarized, Punctuation:Belief)
+     (X<->Y), ((X)<->(Y)), task("?") |- polarizeBelief((X<->Y)), (Belief:BeliefStructuralReductionDepolarized, Punctuation:Belief)
 
 ////composition on both sides of a statement
     //((X,P) --> Z), (X --> Y), is(Z,"?"), task("?") |- ((X,P) --> (Y,P)), (Belief:BeliefStructuralDeduction, Punctuation:Belief)
-    (A --> B), (X --> Y), subsMin(A,2), subsMin(B,2), subCountEqual(A,B), is(A,"*"), is(B,"*"), subOf(A,X), subOf(B,Y), task("?") |- (A --> B), (Belief:BeliefStructuralReduction, Punctuation:Belief)
-    (A <-> B), (X <-> Y), subsMin(A,2), subsMin(B,2), subCountEqual(A,B), is(A,"*"), is(B,"*"), subOf(A,X), subOf(B,Y), task("?") |- (A <-> B), (Belief:BeliefStructuralReduction, Punctuation:Belief)
+    (A --> B), (X --> Y), subsMin(A,2), subsMin(B,2), subCountEqual(A,B), is(A,"*"), is(B,"*"), subOf(A,X), subOf(B,Y), task("?") |- polarizeBelief((A --> B)), (Belief:BeliefStructuralReductionDepolarized, Punctuation:Belief)
+    (A <-> B), (X <-> Y), subsMin(A,2), subsMin(B,2), subCountEqual(A,B), is(A,"*"), is(B,"*"), subOf(A,X), subOf(B,Y), task("?") |- polarizeBelief((A <-> B)), (Belief:BeliefStructuralReductionDepolarized, Punctuation:Belief)
 
     //((P,X) --> (P,Y)) , (X --> Y), neq(X,\), neq(Y,\), neq(X,/), neq(Y,/), task("?") |- ((P,X) --> (P,Y)), (Belief:BeliefStructuralReduction, Punctuation:Belief)
 

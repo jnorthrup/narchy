@@ -1,5 +1,6 @@
 package jcog.learn;
 
+import jcog.Util;
 import jcog.signal.Tensor;
 import org.jetbrains.annotations.Nullable;
 
@@ -38,8 +39,10 @@ public abstract class Agent {
     public final int act(@Nullable float[] actionFeedback, float reward, @Deprecated float[] input) {
         if (actionFeedback == null) {
             actionFeedback = new float[actions];
-            if (lastDecision > 0)
+            if (lastDecision >= 0)
                 actionFeedback[lastDecision] = +1.0f;
+        } else {
+            Util.normalize(actionFeedback);
         }
         int decided = decide(actionFeedback, reward, input);
         this.lastDecision = decided;

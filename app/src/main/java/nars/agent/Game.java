@@ -166,6 +166,11 @@ public class Game extends NARPart implements NSense, NAct, Timed {
         double result = a == 0 ? 0 : actions.sumBy(GameAction::dexterity);
         return a > 0 ? result / a : 0;
     }
+    public double coherency() {
+        int a = actions.size();
+        double result = a == 0 ? 0 : actions.sumBy(GameAction::coherency);
+        return a > 0 ? result / a : 0;
+    }
 
 
 

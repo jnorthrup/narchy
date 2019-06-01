@@ -97,18 +97,20 @@ public class Plot2D extends Widget {
                 for (int j = 0; j < histSize; j++) {
 
                     float v = s.get(j);
+                    if (v == v) {
 
-                    //gl.glColor3fv(color, 0);
-                    float a = ((v == v) ? ((v - minValue) / range) : 0) * 0.5f + 0.5f;
-                    gl.glColor4f(r, g, b, a);
+                        //gl.glColor3fv(color, 0);
+                        float a = ((v - minValue) / range) * 0.5f + 0.5f;
+                        gl.glColor4f(r, g, b, a);
 
-                    yy = yLane(ypos(v, minValue, range), i, laneHeight);
+                        yy = yLane(ypos(v, minValue, range), i, laneHeight);
 
-                    if (filled) {
-                        //TODO fill to an edge (barchart), or the center (waveform)
-                        gl.glRectf(x - dx, baseY, x, yy);
-                    } else {
-                        gl.glVertex2f(x, yy);
+                        if (filled) {
+                            //TODO fill to an edge (barchart), or the center (waveform)
+                            gl.glRectf(x - dx, baseY, x, yy);
+                        } else {
+                            gl.glVertex2f(x, yy);
+                        }
                     }
                     x += dx;
                 }

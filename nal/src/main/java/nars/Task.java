@@ -493,13 +493,15 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
                 tt = ttd;
             }
 
-            if (tt.evi() > t.evi()) {
-                double inflationPct = (tt.evi() - t.evi()) / (t.evi());
-                if (NAL.DEBUG || inflationPct >= NAL.PROJECTION_EVIDENCE_INFLATION_PCT_TOLERANCE) {
-                    throw new Truth.TruthException("inflation, %=", inflationPct);
-                } /* else {
+            if (NAL.PROJECTION_EVIDENCE_INFLATION_DETECT) {
+                if (tt.evi() > t.evi()) {
+                    double inflationPct = (tt.evi() - t.evi()) / (t.evi());
+                    if (inflationPct >= NAL.PROJECTION_EVIDENCE_INFLATION_PCT_TOLERANCE) {
+                        throw new Truth.TruthException("inflation, %=", inflationPct);
+                    } /* else {
                     //allow
                 }*/
+                }
             }
         } else {
             tt = null;

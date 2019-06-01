@@ -76,7 +76,7 @@ abstract public class GameX extends Game {
     /**
      * determines memory strength
      */
-    static float DURATIONs = 2;
+    static float DURATIONs = 1;
 
 //    static {
 //        try {
@@ -126,7 +126,7 @@ abstract public class GameX extends Game {
 
         initPlugins(n);
         initPlugins2(n, g);
-        initMeta(n, g, true);
+        //initMeta(n, g, true);
 
         //new Gridding(n.parts(Game.class).map(NARui::agent).collect(toList())),
         n.synch();
@@ -217,7 +217,7 @@ abstract public class GameX extends Game {
                 .what(
                         (w) -> new TaskLinkWhat(w,
                                 2048,
-                                new PriBuffer.BagTaskBuffer(512, 0.25f))
+                                new PriBuffer.BagTaskBuffer(512, 0.75f))
                 )
 //                .attention(() -> new ActiveConcepts(1024))
                 .exe(
@@ -407,10 +407,10 @@ abstract public class GameX extends Game {
         n.termVolMax.set(24);
 
 
-        n.beliefPriDefault.amp(0.5f);
+        n.beliefPriDefault.amp(0.1f);
         n.goalPriDefault.amp(0.5f);
-        n.questionPriDefault.amp(0.1f);
-        n.questPriDefault.amp(0.2f);
+        n.questionPriDefault.amp(0.02f);
+        n.questPriDefault.amp(0.05f);
 
 
         n.beliefConfDefault.set(0.9f);

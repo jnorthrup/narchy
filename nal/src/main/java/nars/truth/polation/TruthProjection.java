@@ -1,10 +1,7 @@
 package nars.truth.polation;
 
 import com.google.common.collect.Iterables;
-import jcog.Paper;
-import jcog.Skill;
-import jcog.TODO;
-import jcog.WTF;
+import jcog.*;
 import jcog.data.bit.MetalBitSet;
 import jcog.data.list.FasterList;
 import jcog.data.set.MetalLongSet;
@@ -696,9 +693,29 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
 
     /** Truth Coherency Metric
      *  inversely proportional to the statistical variance of the contained truth's frequency components
+     *
+     *  TODO refine, maybe weight by evi
      * */
     @Paper public double coherency() {
-        throw new TODO();
+        int s = size();
+        if (s == 0) return 0;
+        if (s == 1) return 1;
+
+        double avg = 0;
+        for (int i = 0, thisSize = this.size(); i < thisSize; i++) {
+            avg += this.get(i).task.freq();
+        }
+        avg /= s;
+
+        double variance = 0.0;
+        for (int i = 0; i < s; i++) {
+            double p = get(i).task.freq();
+            double d = p - avg;
+            variance += d * d;
+        }
+        variance /= s;
+
+        return 1 - variance;
     }
 
 }

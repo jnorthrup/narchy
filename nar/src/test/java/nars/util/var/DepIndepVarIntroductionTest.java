@@ -35,7 +35,7 @@ class DepIndepVarIntroductionTest {
 
     @Test
     void testIntroduceIndepVar2() {
-        String x = "((a-->(x,#1))=|>(b-->(x,#1)))";
+        String x = "((a-->(x,#1))==>(b-->(x,#1)))";
         Term input = $$(x);
         @Nullable Term[] r = Terms.nextRepeat(input.subterms(), depIndepFilter, 2);
         assertEquals(2, r.length);

@@ -151,7 +151,7 @@ public class NAL4Test extends NALTest {
                 .mustBelieve(cycles, "((neutralization,acid,\\) --> base)", 1.0f, 0.9f)
         ;
     }
-    @Test
+    @Disabled @Test
     void structural_transformationInt_neg() {
         test
                 .believe("(--(x && y) --> (acid,base))")
@@ -326,9 +326,9 @@ public class NAL4Test extends NALTest {
     void composition_on_both_sides_of_a_statement_2_neg() {
         test
                 .termVolMax(13)
-                .believe("((x||y)-->animal)",1.0f,0.9f) //en("Bird is a type of animal.");
-                .ask("(((x||y),plant) --> (animal,plant))")
-                .mustBelieve(cycles, "(((x||y),plant) --> (animal,plant))", 1.0f, 0.81f) //en("The relation between bird and plant is a type of relation between animal and plant.");
+                .believe("((x|y)-->animal)",1.0f,0.9f)
+                .ask("(((x|y),plant) --> (animal,plant))")
+                .mustBelieve(cycles, "(((x|y),plant) --> (animal,plant))", 1.0f, 0.81f)
         ;
     }
 

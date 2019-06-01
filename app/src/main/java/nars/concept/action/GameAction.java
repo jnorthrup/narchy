@@ -46,6 +46,7 @@ public abstract class GameAction extends TaskConcept implements GameLoop, Perman
 //     * TODO exclude input tasks from the calculation */
 //    abstract public float dexterity(long start, long end, NAR n);
     abstract public double dexterity();
+    abstract public double coherency();
 
     @Override
     public FloatRange resolution() {

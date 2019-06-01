@@ -75,11 +75,7 @@
 //// similarity from inheritance ////////////////////////////////////////////////////////////////////////////////////
 //If S is a special case of P, and P is a special case of S, then S and P are similar
 
-    (S --> P), (P --> S), --isVar(S), --isVar(P) |-   (S <-> P), (Belief:Intersection, Goal:Desire)
-//    (S --> P), (P --> S) |- --(S <-> P), (Belief:IntersectionNN, Goal:IntersectionNN)
 
-    //(S --> P), (P --> S) |- --(S <-> P), (Belief:ComparisonSymmetric, Time:Intersect)
-    //(S --> P), (P --> S) |- (S <-> P), (Belief:Comparison)
 
 //// inheritance from similarty
     //(S <-> P), P         |- (S --> P), (Belief:Identity)
@@ -93,6 +89,12 @@
 ////If P and S are a special case of M, then they might be similar (weak),
 ////also if P and S are a general case of M
 //
-    (P --> M), (S --> M), neqRCom(S,P), --isVar(S), --isVar(P) |- (S <-> P), (Belief:Comparison, Goal:DesireWeak)
 
-    (M --> P), (M --> S), neqRCom(S,P), --isVar(S), --isVar(P) |- (S <-> P), (Belief:Comparison, Goal:DesireWeak)
+    (S --> P), (P --> S), --isVar(S), --isVar(P) |-   (S <-> P), (Belief:Intersection, Goal:Desire)
+    //(S --> P), (P --> S), --isVar(S), --isVar(P) |- --(S <-> P), (Belief:IntersectionNN, Goal:DesireNN)
+
+    //(S --> P), (P --> S) |- --(S <-> P), (Belief:ComparisonSymmetric, Time:Intersect)
+    //(S --> P), (P --> S) |- (S <-> P), (Belief:Comparison)
+
+    //(P --> M), (S --> M), neqRCom(S,P), --isVar(S), --isVar(P) |- (S <-> P), (Belief:Comparison, Goal:DesireWeak)
+    //(M --> P), (M --> S), neqRCom(S,P), --isVar(S), --isVar(P) |- (S <-> P), (Belief:Comparison, Goal:DesireWeak)
