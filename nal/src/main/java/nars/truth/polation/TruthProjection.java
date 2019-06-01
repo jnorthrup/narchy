@@ -688,7 +688,7 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
             evi = Double.NaN;
         }
 
-        public final double eviDescending() {
+        final double eviDescending() {
             double e = this.evi;
             return (e == e) ? -e : Double.POSITIVE_INFINITY;
         }

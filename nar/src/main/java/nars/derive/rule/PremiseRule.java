@@ -271,6 +271,8 @@ public class PremiseRule extends ProxyTerm {
 
                         if (!negated)
                             is(XX, Op.CONJ);
+                        else
+                            throw new TODO();
 
                     }
 

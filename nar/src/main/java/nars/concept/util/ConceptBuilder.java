@@ -127,75 +127,69 @@ public abstract class ConceptBuilder implements BiFunction<Term, Concept, Concep
 
         switch (t.op()) {
 
-            case INH:
-                return dynamicInh(t);
-
-            case SIM:
-                //TODO NAL2 set identities?
-                break;
-
-//            //TODO not done yet
-            case IMPL: {
-                //TODO allow indep var if they are involved in (contained within) either but not both subj and pred
-                if (t.hasAny(Op.VAR_INDEP))
-                    return null;
-                if (!t.hasAny(Op.CONJ))
-                    return null;
-
-                Subterms tt = t.subterms();
-                Term su = tt.sub(0);
-//                if (su.hasAny(Op.VAR_INDEP))
-//                    return null;
-                Term pu = tt.sub(1);
-//                if (pu.hasAny(Op.VAR_INDEP))
-//                    return null;
-
-                Op suo = su.op();
-                //subject has special negation union case
-                boolean subjDyn = (
-                        suo == CONJ && validDynamicSubtermsAndNoSharedVars(su)
-                                ||
-                                suo == NEG && (su.unneg().op() == CONJ && validDynamicSubtermsAndNoSharedVars(su.unneg()))
-                );
-                boolean predDyn = (pu.op() == CONJ && validDynamicSubtermsAndNoSharedVars(pu));
-
-
-                if (subjDyn && predDyn) {
-                    //choose the simpler to dynamically calculate for
-                    if (su.volume() <= pu.volume()) {
-                        predDyn = false; //dyn subj
-                    } else {
-                        subjDyn = false; //dyn pred
-                    }
-                }
-
-                if (subjDyn) {
-                    //remember: these are reversed (NAL6)
-                    if (suo != NEG) {
-                        return DynamicStatementTruth.ImplSubjConj;
-                    } else {
-                        return DynamicStatementTruth.ImplSubjDisj;
-                    }
-                } else if (predDyn) {
-                    return DynamicStatementTruth.ImplPred;
-                }
-
-                break;
-            }
-
+            case INH: return dynamicInh(t);
+            case IMPL: return dynamicImpl(t);
             case CONJ:
                 if (validDynamicSubtermsAndNoSharedVars(t))
                     return DynamicConjTruth.ConjIntersection;
                 break;
 
-//            case SECTe:
-//                if (validDynamicSubterms(t.subterms()))
-//                    return DynamicTruthModel.DynamicSectTruth.SectRoot;
+//            case SIM:
+//                //TODO NAL2 set identities?
 //                break;
 
             case NEG:
                 throw new RuntimeException("negation terms can not be conceptualized as something separate from that which they negate");
         }
+        return null;
+    }
+
+    private static AbstractDynamicTruth dynamicImpl(Compound t) {
+
+        //TODO allow indep var if they are involved in (contained within) either but not both subj and pred
+        if (t.hasAny(Op.VAR_INDEP))
+            return null;
+        if (!t.hasAny(Op.CONJ))
+            return null;
+
+        Subterms tt = t.subterms();
+        Term su = tt.sub(0);
+//                if (su.hasAny(Op.VAR_INDEP))
+//                    return null;
+        Term pu = tt.sub(1);
+//                if (pu.hasAny(Op.VAR_INDEP))
+//                    return null;
+
+        Op suo = su.op();
+        //subject has special negation union case
+        boolean subjDyn = (
+                suo == CONJ && validDynamicSubtermsAndNoSharedVars(su)
+                        ||
+                        suo == NEG && (su.unneg().op() == CONJ && validDynamicSubtermsAndNoSharedVars(su.unneg()))
+        );
+        boolean predDyn = (pu.op() == CONJ && validDynamicSubtermsAndNoSharedVars(pu));
+
+
+        if (subjDyn && predDyn) {
+            //choose the simpler to dynamically calculate for
+            if (su.volume() <= pu.volume()) {
+                predDyn = false; //dyn subj
+            } else {
+                subjDyn = false; //dyn pred
+            }
+        }
+
+        if (subjDyn) {
+            //remember: these are reversed (NAL6)
+            if (suo != NEG) {
+                return DynamicStatementTruth.ImplSubjConj;
+            } else {
+                return DynamicStatementTruth.ImplSubjDisj;
+            }
+        } else if (predDyn) {
+            return DynamicStatementTruth.ImplPred;
+        }
+
         return null;
     }
 
@@ -238,8 +232,6 @@ public abstract class ConceptBuilder implements BiFunction<Term, Concept, Concep
                 }
             }
         }
-
-
 
         return null;
     }
