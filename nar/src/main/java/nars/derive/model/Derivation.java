@@ -312,7 +312,8 @@ public class Derivation extends PreDerivation {
         long nextBeliefStart, nextBeliefEnd;
 
         if (nextBelief != null) {
-            nextBeliefStart = nextBelief.start(); nextBeliefEnd = nextBelief.end();
+            nextBeliefStart = nextBelief.start();
+            nextBeliefEnd = nextBelief.end();
             if (nextBelief.isEternal()) {
                 beliefTruth_at_Task = beliefTruth_at_Belief = nextBelief.truth();
             } else {
@@ -334,19 +335,20 @@ public class Derivation extends PreDerivation {
                                 beliefTruth_at_Belief :
                                 nextBelief.truth(taskStart, taskEnd, dur());
 
-                if (NAL.ETERNALIZE_BELIEF_PROJECTED_IN_DERIVATION && beliefTruth_at_Belief != null) {
+                if (beliefTruth_at_Belief != null && NAL.ETERNALIZE_BELIEF_PROJECTED_IN_DERIVATION) {
 
                     Truth beliefTruth_eternalized = beliefTruth_at_Belief.eternalized(1, NAL.truth.EVI_MIN, null /* dont dither */);
                     if (beliefTruth_eternalized.evi() > beliefTruth_at_Task.evi()) {
 
-                        nextBelief = new SpecialTruthAndOccurrenceTask(nextBelief, ETERNAL, ETERNAL,
-                                false, beliefTruth_eternalized);
-                        //nextBelief = nars.Task.eternalized(nextBelief, 1, NAL.truth.EVI_MIN, nar);
                         assert(nextBelief!=null);
 
                         if (NAL.ETERNALIZE_BELIEF_PROJECTED_IN_DERIVATION_AND_ETERNALIZE_BELIEF_TIME)
                             nextBeliefStart = nextBeliefEnd = ETERNAL;
-                        this.beliefTruth_at_Task = beliefTruth_eternalized;
+
+                        nextBelief = new SpecialTruthAndOccurrenceTask(nextBelief, nextBeliefStart, nextBeliefEnd,
+                                false,
+                                this.beliefTruth_at_Task = beliefTruth_eternalized
+                        );
                     }
                 }
             }

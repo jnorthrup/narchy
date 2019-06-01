@@ -69,7 +69,7 @@ public class WorkerExec extends ThreadedExec {
         final Random rng;
         private final FasterList schedule = new FasterList(inputQueueCapacityPerThread);
         private final AtomicBoolean alive = new AtomicBoolean(true);
-        int i = 0;
+
 
         WorkPlayLoop() {
 
@@ -107,18 +107,14 @@ public class WorkerExec extends ThreadedExec {
 
                 subCycleMaxNS = Math.max(subCycleMinNS, (long) ((threadWorkTimePerCycle) / granularity));
 
-                int Hn = H.size();
-                if (Hn == 0) return;
-                if (i + 1 >= Hn) i = 0;
-                else i++;
-                How h = H.get(i);
-                if (!h.isOn()) continue; //HACK
+
+                How h = H.sample(rng);
+                if (h == null || !h.isOn()) continue; //HACK
 
                 //if (j + 1 >= Wn) j = 0; else j++;
                 int Wn = W.size();
                 if (Wn == 0) return;
-                What w = nar.what.sample(rng);
-                //What w = W.get(j);
+                What w = W.sample(rng);
                 if (!w.isOn()) continue; //HACK
 
                 boolean singleton = h.singleton();

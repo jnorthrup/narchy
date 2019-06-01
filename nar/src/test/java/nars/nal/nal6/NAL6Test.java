@@ -15,7 +15,7 @@ import static nars.time.Tense.ETERNAL;
 
 public class NAL6Test extends NALTest {
 
-    private static final int cycles = 2500;
+    private static final int cycles = 1000;
 
     @BeforeEach
     void setup() {
@@ -688,7 +688,7 @@ public class NAL6Test extends NALTest {
         test
                 .believe("(x($1)==>y($1))", 1.00f, 0.90f)
                 .goal("x(a)", Tense.Eternal, 1.00f, 0.90f)
-                .mustGoal(cycles, "y(a)", 1.00f, 0.45f);
+                .mustGoal(cycles, "y(a)", 1.00f, 0.81f);
     }
 
     @Test
@@ -696,7 +696,7 @@ public class NAL6Test extends NALTest {
         test
                 .believe("--(x($1)==>y($1))", 1.00f, 0.90f)
                 .goal("x(a)", Tense.Eternal, 1.00f, 0.90f)
-                .mustGoal(cycles, "--y(a)", 1.00f, 0.45f);
+                .mustGoal(cycles, "--y(a)", 1.00f, 0.81f);
     }
 
     @Test
@@ -704,7 +704,7 @@ public class NAL6Test extends NALTest {
         test
                 .believe("(x($1)==>y($1))", 1.00f, 0.90f)
                 .goal("y(a)", Tense.Eternal, 1.00f, 0.90f)
-                .mustGoal(cycles, "x(a)", 1.00f, 0.81f);
+                .mustGoal(cycles, "x(a)", 1.00f, 0.40f);
     }
 
     @Test

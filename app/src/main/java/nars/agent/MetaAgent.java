@@ -195,7 +195,7 @@ public class MetaAgent extends Game {
         actionCtl($.inh(gid, duration), durRange);
 
         if (w.in instanceof PriBuffer.BagTaskBuffer)
-            actionCtl($.inh(gid, input), ((PriBuffer.BagTaskBuffer) (w.in)).valve.subRange(0f, 0.25f));
+            actionCtl($.inh(gid, input), ((PriBuffer.BagTaskBuffer) (w.in)).valve);
 
 
 //        this.dur = actionUnipolar($.inh(id, duration), (x) -> {
