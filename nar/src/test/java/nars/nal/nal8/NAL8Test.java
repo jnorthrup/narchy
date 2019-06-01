@@ -1137,11 +1137,11 @@ public class NAL8Test extends NALTest {
     @Test
     void condition_goal_deduction_2_neg_conj() {
         test
-                .termVolMax(12)
+                .termVolMax(14)
                 .input("on({t002},{t003}).")
                 .input("--(on({t002},#1) && at(SELF,#1))!")
-                .mustGoal(cycles, "at(SELF,{t003})", 0.0f, 0.81f, ETERNAL);
-                //.mustGoal(cycles, "(on({t002},{t003}) && at(SELF,{t003}))", 0.0f, 0.81f, ETERNAL);
+                .mustGoal(cycles, "(on({t002},{t003}) && at(SELF,{t003}))", 0.0f, 0.81f, ETERNAL);
+                //.mustGoal(cycles, "at(SELF,{t003})", 0.0f, 0.81f, ETERNAL);
     }
 
     @Test

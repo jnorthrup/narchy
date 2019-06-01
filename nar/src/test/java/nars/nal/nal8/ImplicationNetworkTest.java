@@ -190,7 +190,7 @@ class ImplicationNetworkTest {
         cc.forEachTask(x -> System.out.println(x.proof()));
 
         Truth bBelief = bb.truth(ETERNAL, n);
-        assertEquals("%1.0;.81%" ,bBelief.toString());
+        assertEquals("%1.0;.82%" ,bBelief.toString());
 
         Truth cBelief = cc.truth(ETERNAL, n);
         assertEquals("%1.0;.73%" ,cBelief.toString());
@@ -213,7 +213,7 @@ class ImplicationNetworkTest {
             BeliefTable bBeliefs = n.concept(b).beliefs();
             bBeliefs.print();
             Truth bBelief = bBeliefs.truth(ETERNAL, n);
-            assertEquals("%0.0;.82%", bBelief.toString());
+            assertEquals("%0.0;.81%", bBelief.toString());
         }
 
         Truth cBelief = n.concept(c).beliefs().truth(ETERNAL, n);

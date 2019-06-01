@@ -653,6 +653,7 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
     static Term buildCompound(List<Term> subs, String op) {
         switch (op) {
             case "&":
+            case "&&":
                 return CONJ.the(subs);
             case "&|":
                 return CONJ.the(0, subs);
@@ -661,7 +662,7 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
 
             case "|": //TEMPORARY
             case DISJstr:
-                return CONJ.the($.neg(subs.toArray(EmptyTermArray))).neg();
+                return Op.DISJ(subs.toArray(EmptyTermArray));
 
             case "||+-":
                 return CONJ.the(XTERNAL, $.neg(subs.toArray(EmptyTermArray))).neg();

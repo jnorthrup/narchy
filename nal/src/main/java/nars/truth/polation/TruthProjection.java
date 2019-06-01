@@ -3,6 +3,7 @@ package nars.truth.polation;
 import com.google.common.collect.Iterables;
 import jcog.Paper;
 import jcog.Skill;
+import jcog.TODO;
 import jcog.WTF;
 import jcog.data.bit.MetalBitSet;
 import jcog.data.list.FasterList;
@@ -693,5 +694,11 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
         }
     }
 
+    /** Truth Coherency Metric
+     *  inversely proportional to the statistical variance of the contained truth's frequency components
+     * */
+    @Paper public double coherency() {
+        throw new TODO();
+    }
 
 }
