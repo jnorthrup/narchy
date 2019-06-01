@@ -1,6 +1,9 @@
 //NAL3 single premise belief/goal decompose
-    (  M -->   I), X, sectOfPN(I,X)      |-   (M --> unsectPN(I,X)),   (Belief:StructuralDeduction,Goal:StructuralDeduction)
-    (  I --> M),   X, sectOfPN(I,X)      |-   (unsectPN(I,X)-->M), (Belief:StructuralDeduction,Goal:StructuralDeduction)
+    (M --> I), X, sectOfPN(I,X)      |-   polarizeTask((M --> unsectPN(I,X))), (Belief:StructuralDeductionDepolarized,Goal:StructuralDeductionDepolarized)
+    (I --> M), X, sectOfPN(I,X)      |-   polarizeTask((unsectPN(I,X) --> M)), (Belief:StructuralDeductionDepolarized,Goal:StructuralDeductionDepolarized)
+//       (M --> I), X, sectOfPN(I,X)      |-   --(M --> unsectPN(I,X)), (Belief:StructuralDeductionN,Goal:StructuralDeductionN)
+//       (I --> M), X, sectOfPN(I,X)      |-   --(unsectPN(I,X) --> M), (Belief:StructuralDeductionN,Goal:StructuralDeductionN)
+
     //(  M --> --%I), X, is(%I,"&&"), sectOfPN(%I,X) |-   (M --> --unsectPN(%I,X)),   (Belief:StructuralDeductionWeak,Goal:StructuralDeductionWeak)
     //(--%I --> M),   X, is(%I,"&&"), sectOfPN(%I,X) |-   (--unsectPN(%I,X)-->M), (Belief:StructuralDeductionWeak,Goal:StructuralDeductionWeak)
 //      (  M -->   I), X, sectOfPN(I,X)   |-   --(M --> unsectPN(I,X)),   (Belief:StructuralDeductionWeakN,Goal:StructuralDeductionWeakN)

@@ -35,7 +35,7 @@ public class DQN3 extends Agent {
     private double lastReward;
     private Mat lastState;
     private Mat currentState;
-    private int lastAction;
+//    private int lastAction;
     private int currentAction;
     private Graph lastG;
 
@@ -66,14 +66,14 @@ public class DQN3 extends Agent {
         this.lastReward = Double.NaN;
         this.lastState = null;
         this.currentState = null;
-        this.lastAction = 0;
+//        this.lastAction = 0;
         this.currentAction = 0;
     }
 
     @Override
     protected synchronized int decide(float[] actionFeedback /* TODO */, float reward, float[] input) {
         //if (currentState!=null)
-        learn(reward);
+        learn(actionFeedback, reward);
         return act(Util.toDouble(input));
     }
 
@@ -95,7 +95,7 @@ public class DQN3 extends Agent {
         final int action = decide(state);
 
         this.lastState = this.currentState;
-        this.lastAction = this.currentAction;
+//        this.lastAction = this.currentAction;
         this.currentState = state;
         this.currentAction = action;
         return action;
@@ -108,13 +108,13 @@ public class DQN3 extends Agent {
                 Util.argmax(this.calcQ(state, false).w);
     }
 
-    public void learn(final double reward) {
+    public void learn(float[] actionFeedback, final double reward) {
         if (isFirstRun() || lastState==null) {
             this.lastReward = reward;
             return;
         }
 
-        Experience x = new Experience(this.lastState, this.lastAction, this.lastReward, this.currentState);
+        Experience x = new Experience(this.lastState, actionFeedback.clone(), this.lastReward, this.currentState);
         this.learn(x);
         if (this.t++ % this.experienceAddPeriod == 0) {
 
@@ -155,13 +155,12 @@ public class DQN3 extends Agent {
         final double qMax = exp.lastReward + this.gamma * (seen ? OptionalDouble.of(best) : OptionalDouble.empty()).orElseThrow();
 
         final Mat pred = this.calcQ(exp.lastState, true);
-        double tdError = pred.w[exp.lastAction] - qMax;
-        if (Math.abs(tdError) > this.tdErrorClamp) {
-            tdError = tdError > this.tdErrorClamp ?
-                    this.tdErrorClamp :
-                    -this.tdErrorClamp;
+
+        for (int i = 0; i < exp.lastAction.length; i++) {
+            double tdError = Util.clamp((pred.w[i] * exp.lastAction[i]) - qMax, -tdErrorClamp, tdErrorClamp);
+            pred.dw[i] = tdError;
         }
-        pred.dw[exp.lastAction] = tdError;
+
         this.lastG.backward();
 
         this.W1.update(this.alpha);
@@ -179,11 +178,11 @@ public class DQN3 extends Agent {
 
     static class Experience {
         public final Mat lastState;
-        public final int lastAction; //TODO vectorize
+        public final float[] lastAction;
         public final double lastReward;
         public final Mat currentState;
 
-        Experience(final Mat lastState, final int lastAction, final double lastReward, final Mat currentState) {
+        Experience(final Mat lastState, float[] lastAction, final double lastReward, final Mat currentState) {
             this.lastState = lastState;
             this.lastAction = lastAction;
             this.lastReward = lastReward;

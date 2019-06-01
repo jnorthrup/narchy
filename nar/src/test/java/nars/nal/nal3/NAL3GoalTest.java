@@ -157,7 +157,7 @@ class NAL3GoalTest {
                 .termVolMax(8)
                 .input("((X|Y) --> Z)!")
 //                .input("(X --> Z).")
-                .mustGoal(DecomposeTest.cycles, "(Y --> Z)", 1, 0.45f /*0.81f*/) //via structural decomposition of union, at least
+                .mustGoal(DecomposeTest.cycles, "(Y --> Z)", 1, 0.81f) //via structural decomposition of union, at least
                 .run(0);
 
     }
@@ -186,8 +186,8 @@ class NAL3GoalTest {
         void testUnionSinglePremiseDecomposeGoal1Pos() {
             test
                     .input("((a||b)-->g)!")
-                    .mustGoal(cycles, "(a-->g)", 1f, 0.45f)
-                    .mustGoal(cycles, "(b-->g)", 1f, 0.45f);
+                    .mustGoal(cycles, "(a-->g)", 1f, 0.81f)
+                    .mustGoal(cycles, "(b-->g)", 1f, 0.81f);
         }
 
         @Test
@@ -259,8 +259,8 @@ class NAL3GoalTest {
         void testNegIntersectionBeliefSinglePremiseDecompose() {
             test
                     .input("--((a&&b)-->g).")
-                    .mustBelieve(cycles, "(a-->g)", 0f, 0.45f)
-                    .mustBelieve(cycles, "(b-->g)", 0f, 0.45f)
+                    .mustBelieve(cycles, "(a-->g)", 0f, 0.81f)
+                    .mustBelieve(cycles, "(b-->g)", 0f, 0.81f)
             ;
         }
         @Test
@@ -268,8 +268,8 @@ class NAL3GoalTest {
 
             test
                     .input("--((a&&b)-->g)!")
-                    .mustGoal(cycles, "(a-->g)", 0f, 0.45f)
-                    .mustGoal(cycles, "(b-->g)", 0f, 0.45f)
+                    .mustGoal(cycles, "(a-->g)", 0f, 0.81f)
+                    .mustGoal(cycles, "(b-->g)", 0f, 0.81f)
             ;
         }
         @Test

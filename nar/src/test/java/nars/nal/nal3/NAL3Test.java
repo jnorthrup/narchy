@@ -317,7 +317,7 @@ public class NAL3Test extends NALTest {
                 .termVolMax(6)
                 .believe("--(x-->(RealNumber&&ComplexNumber))")
                 .believe("(x-->RealNumber)")
-                .mustBelieve(cycles, "(x-->ComplexNumber)", 0f, 0.45f) //single decomposition
+//                .mustBelieve(cycles, "(x-->ComplexNumber)", 0f, 0.45f) //single decomposition
                 .mustBelieve(cycles, "(x-->ComplexNumber)", 0f, 0.81f); //double decomposition
 
     }
@@ -329,7 +329,7 @@ public class NAL3Test extends NALTest {
                 .termVolMax(6)
                 .believe("--((RealNumber&&ComplexNumber)-->x)")
                 .believe("(RealNumber-->x)")
-                .mustBelieve(cycles, "(ComplexNumber-->x)", 0f, 0.45f) //single decomposition
+//                .mustBelieve(cycles, "(ComplexNumber-->x)", 0f, 0.45f) //single decomposition
                 .mustBelieve(cycles, "(ComplexNumber-->x)", 0f, 0.81f); //double decomposition
 
     }
@@ -340,7 +340,7 @@ public class NAL3Test extends NALTest {
         test
                 .believe("--(x-->ComplexNumber)")
                 .believe("(x-->RealNumber)")
-                .mustBelieve(cycles, "(x-->(RealNumber~ComplexNumber))", 1f, 0.81f);
+                .mustBelieve(cycles, "(x-->(RealNumber-ComplexNumber))", 1f, 0.81f);
 
     }
 

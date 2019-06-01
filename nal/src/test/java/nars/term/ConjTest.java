@@ -1835,18 +1835,22 @@ public class ConjTest {
 
     @Test
     void testSequentialDisjunctionAbsorb() {
-        {
+
             assertEq("((--,R)&&(--,jump))", "(--R && (R || --jump))");
             assertEq("((--,R) &&+600 (--,jump))", "(--R && --(--R &&+600 jump))");
-        }
+
+    }
+
+    @Test
+    void testSequentialDisjunctionAbsorb2() {
 
         Term t = CONJ.the(0,
                 $$("(--,((--,R) &&+600 jump))"),
                 $$("(--,L)"),
                 $$("(--,R)"));
         assertEq(
-                //"(((--,L)&&(--,R)) &&+600 (--,jump))"
-                "(&&,(--,((--,R) &&+600 jump)),(--,L),(--,R))"
+                "(((--,L)&&(--,R)) &&+600 (--,jump))"
+                //"(&&,(--,((--,R) &&+600 jump)),(--,L),(--,R))"
                 , t);
     }
 

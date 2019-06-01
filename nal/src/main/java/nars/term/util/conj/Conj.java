@@ -2361,14 +2361,16 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
         int ts = tmpBuffer.size();
         switch (ts) {
             case 0:
-                return null;
+                return True;
             case 1:
                 return tmpBuffer.get(0);
             default: {
 //                if (when==ETERNAL && ((FasterList<Term>)tmp).count(Conj::isSeq)>1)
 //                    return Null; //too complex
 
-                return b.theSortedCompound(CONJ, DTERNAL, tmpBuffer);
+                return ConjCommutive.the(b,when==ETERNAL ? DTERNAL : 0, true, true, tmpBuffer.toArray(Op.EmptyTermArray));
+                //return b.theSortedCompound(CONJ, DTERNAL, tmpBuffer);
+                //return CONJ.the(tmpBuffer);
             }
 
         }

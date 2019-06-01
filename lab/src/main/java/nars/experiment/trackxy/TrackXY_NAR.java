@@ -17,7 +17,6 @@ import nars.gui.sensor.VectorSensorView;
 import nars.memory.CaffeineMemory;
 import nars.op.stm.STMLinkage;
 import nars.sensor.Bitmap2DSensor;
-import nars.task.DerivedTask;
 import nars.term.Term;
 import nars.time.clock.CycleTime;
 import org.eclipse.collections.impl.block.factory.Comparators;
@@ -275,8 +274,8 @@ public class TrackXY_NAR extends GameX {
         //n.log();
 
 
-        //final int W = 5, H = 1;
-        final int W = 3, H = 3;
+        final int W = 4, H = 1;
+        //final int W = 3, H = 3;
 
         TrackXY_NAR a = new TrackXY_NAR(n, new TrackXY(W, H));
 
@@ -362,7 +361,7 @@ public class TrackXY_NAR extends GameX {
 
         //NAL.DEBUG = true;
         n.onTask(tt -> {
-            if (tt instanceof DerivedTask) {
+            if (!tt.isInput()) /*if (tt instanceof DerivedTask)*/ {
                 //if (n.concept(tt) instanceof ActionConcept)
                 if (tt.expectation() > 0.5f && tt.start() > n.time()-n.dur() && tt.start() < n.time() + n.dur()) {
                     Term ttt = tt.term();

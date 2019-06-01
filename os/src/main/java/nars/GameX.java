@@ -126,7 +126,7 @@ abstract public class GameX extends Game {
 
         initPlugins(n);
         initPlugins2(n, g);
-        initMeta(n, g, false);
+        initMeta(n, g, true);
 
         //new Gridding(n.parts(Game.class).map(NARui::agent).collect(toList())),
         n.synch();

@@ -141,7 +141,7 @@ public class FZero extends GameX {
 
 
         BiPolarAction A =
-            initBipolarRotateRelative(false, 0.15f);
+            initBipolarRotateRelative(false, 0.25f);
                 //initBipolarRotateRelative(true, 1f);
                 //initBipolarRotateAbsolute(true);
                 //initBipolarRotateDirect(false, 0.9f);

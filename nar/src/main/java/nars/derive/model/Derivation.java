@@ -344,7 +344,8 @@ public class Derivation extends PreDerivation {
                         //nextBelief = nars.Task.eternalized(nextBelief, 1, NAL.truth.EVI_MIN, nar);
                         assert(nextBelief!=null);
 
-                        nextBeliefStart = nextBeliefEnd = ETERNAL;
+                        if (NAL.ETERNALIZE_BELIEF_PROJECTED_IN_DERIVATION_AND_ETERNALIZE_BELIEF_TIME)
+                            nextBeliefStart = nextBeliefEnd = ETERNAL;
                         this.beliefTruth_at_Task = beliefTruth_eternalized;
                     }
                 }

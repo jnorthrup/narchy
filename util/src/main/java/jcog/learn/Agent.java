@@ -35,7 +35,7 @@ public abstract class Agent {
 
 
     /** TODO use tensor */
-    public final int act(@Deprecated @Nullable float[] actionFeedback, float reward, @Deprecated float[] input) {
+    public final int act(@Nullable float[] actionFeedback, float reward, @Deprecated float[] input) {
         if (actionFeedback == null) {
             actionFeedback = new float[actions];
             if (lastDecision > 0)
