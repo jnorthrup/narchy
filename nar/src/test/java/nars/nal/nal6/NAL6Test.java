@@ -1224,6 +1224,7 @@ public class NAL6Test extends NALTest {
     @Test
     void testImplSubjNegQuestion() {
         test
+                .confMin(0.9f)
                 .believe("(--x ==> y)")
                 .ask("x")
                 .mustQuestion(cycles, "y")
@@ -1233,6 +1234,7 @@ public class NAL6Test extends NALTest {
     @Test
     void testImplPredQuestion() {
         test
+                .confMin(0.9f)
                 .believe("((x&&y)==>z)")
                 .ask("z")
                 .mustQuestion(cycles, "(x&&y)")
@@ -1242,6 +1244,7 @@ public class NAL6Test extends NALTest {
     void testImplPredQuestionUnify() {
         test
                 .termVolMax(10)
+                .confMin(0.9f)
                 .believe("((x && $1)==>z($1))")
                 .ask("z(y)")
                 .mustQuestion(cycles, "(x && y)")
@@ -1251,6 +1254,7 @@ public class NAL6Test extends NALTest {
     void testImplPredQuest() {
         test
                 .termVolMax(7)
+                .confMin(0.9f)
                 .believe("((x&&y)==>z)")
                 .quest("z")
                 .mustQuest(cycles, "(x&&y)")
@@ -1261,6 +1265,8 @@ public class NAL6Test extends NALTest {
     @Test
     void testImplConjPredQuestion() {
         test
+                .termVolMax(7)
+                .confMin(0.9f)
                 .believe("((x&&y)==>z)")
                 .ask("z")
                 .mustQuestion(cycles, "x")

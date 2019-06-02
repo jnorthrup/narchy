@@ -498,6 +498,11 @@ public class ConjTest {
         assertEq("(y==>x)", "((&&,(||,((--,left) &&+120 (--,left)),left),y) ==> (x&&y))");
     }
 
+    @Test void testInvalidDisj() {
+        assertEq("((--,d)&&c)", "(&&, (--,(d&&c)), c)");
+        assertEq(False, "(&&, (--,((a &&+1 b)&&c)), c)");
+    }
+
     @Test
     void testMergedDisjunction1() {
         assertFalse(Conj.eventOf($$("(x &&+1 y)"), $$("(x&&y)")));

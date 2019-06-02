@@ -76,7 +76,7 @@ abstract public class GameX extends Game {
     /**
      * determines memory strength
      */
-    static float DURATIONs = 4;
+    static float DURATIONs = 2;
 
 //    static {
 //        try {

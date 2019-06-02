@@ -7,6 +7,7 @@ import nars.Op;
 import nars.term.Term;
 import nars.term.Terms;
 import nars.term.atom.Bool;
+import nars.term.util.TermException;
 import nars.term.util.builder.TermBuilder;
 
 import java.util.*;
@@ -225,7 +226,7 @@ public enum ConjCommutive {;
 
             }
 
-            if (direct) {
+            /*if (direct)*/ {
                 //test if direct mode has an opportunity to reduce disjunctions, requiring un-direct
                 int disjCount = disj != null ? disj.cardinality() : 0;
                 if (disjCount > 0) {
@@ -238,18 +239,26 @@ public enum ConjCommutive {;
                         Term dun = co.unneg();
                         if (dun.dt()==XTERNAL) continue;
 
-                        int cos = dun.subterms().structure();
-                        for (int i = u.length - 1; i >= 0; i--) {
-                            if (i == coi) continue;
-                            Term x = u[i]; //assert (x.op() != CONJ);
-                            if (!Term.commonStructure(cos, x.unneg().structure()))
-                                continue;
-                            if (Conj.eventOf(dun, x) || Conj.eventOf(dun, x.neg())) {
-                                direct = false;
-                                break;
+                        boolean dseq = Conj.isSeq(dun);
+                        if (direct || dseq) {
+
+                            int cos = dun.subterms().structure();
+                            for (int i = u.length - 1; i >= 0; i--) {
+                                if (i == coi) continue;
+                                Term x = u[i]; //assert (x.op() != CONJ);
+                                if (!Term.commonStructure(cos, x.unneg().structure()))
+                                    continue;
+                                if (Conj.eventOf(dun, x)) {
+                                    if (dseq)
+                                        return False; //invalidates entire factored seq
+                                    direct = false;
+                                }
+
+                                if (Conj.eventOf(dun, x.neg())) {
+                                    direct = false;
+                                }
                             }
                         }
-
                     }
                 }
             }
@@ -326,7 +335,16 @@ public enum ConjCommutive {;
                                     break;
                             }
                         }
-                        return c.term(B);
+
+                        try {
+                            return c.term(B);
+                        } catch (StackOverflowError e) {
+                            //TEMPORARY for debug
+                            //System.err.println("conjcommutive stack overflow: " + Arrays.toString(u));
+                            //return Null;
+
+                            throw new TermException("conj commutive stack overflow", CONJ, dt, u);
+                        }
 
                 }
             //}
