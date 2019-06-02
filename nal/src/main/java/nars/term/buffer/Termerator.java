@@ -179,10 +179,10 @@ public class Termerator extends TermBuffer implements Iterable<Term> {
     protected Term nextTerm(byte[] bytes, int[] range) {
 
         Term x = super.nextTerm(bytes, range);
-        Object y = subs.get(x);
+        Term  y = subs.get(x);
         if (y != null) {
             if (y instanceof Term) {
-                return (Term) y;
+                return y;
             } else {
                 //termutator
                 //TODO remove subs entry, rely on termutator cartesian iterator afterward

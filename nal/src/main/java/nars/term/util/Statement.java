@@ -4,6 +4,7 @@ import nars.NAL;
 import nars.Op;
 import nars.term.Compound;
 import nars.term.Term;
+import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
 import nars.term.util.builder.TermBuilder;
 import nars.term.util.conj.Conj;
@@ -109,6 +110,7 @@ public class Statement {
                     Term newPred = predicate.sub(1);
                     if (dt!=newDT || !newSubj.equals(subject) || !newPred.equals(predicate))
                         return statement(B, IMPL, newDT, newSubj, newPred, depth-1).negIf(negate); //recurse
+                    break;
                 }
 
             }
@@ -268,4 +270,41 @@ public class Statement {
         return t.negIf(negate);
     }
 
+    public static boolean statementLoopy(Term x, Term y) {
+        if (!(x instanceof Atomic) && !(y instanceof Atomic))
+            return false;
+
+//        boolean xByComponnet = x instanceof Compound && x.op()==CONJ;
+//        boolean yByComponent = y instanceof Compound && y.op()==CONJ;
+//        if (!xByComponnet && !yByComponent) {
+            return _statementLoopy(x, y);
+//        } else if (xByComponnet && !yByComponent) {
+//            return x.subterms().ORwith(Op::_statementLoopy, y);
+//        } else if (yByComponent && !xByComponnet) {
+//            return y.subterms().ORwith(Op::_statementLoopy, x);
+//        } else {
+//            if (x.volume() >= y.volume())
+//                return x.subterms().ORwith((xx,Y) -> Y.subterms().ORwith(Op::_statementLoopy, xx), y);
+//            else
+//                return y.subterms().ORwith((yy,X) -> X.subterms().ORwith(Op::_statementLoopy, yy), x);
+//        }
+
+    }
+    private static boolean _statementLoopy(Term x, Term y) {
+
+        int xv = x.volume(), yv = y.volume();
+        boolean root = false;
+        if (xv == yv) {
+            return x.equals(y);
+            //probably impossible:
+//            boolean z = Term.commonStructure(x, y) &&
+//                    (x.containsRecursively(y, root, delim) || y.containsRecursively(x, root, delim));
+//            if (z)
+//                throw new WTF();
+//            return z;
+        } else if (xv > yv)
+            return x.containsRecursively(y, root, statementLoopyContainer);
+        else
+            return y.containsRecursively(x, root, statementLoopyContainer);
+    }
 }

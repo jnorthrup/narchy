@@ -175,7 +175,7 @@ public enum TermTest { ;
     }
 
     public static void assertEq(Compound a, Compound b) {
-        assertEq(a, b);
+        assertEq((Subterms)a, (Subterms)b);
     }
 
     public static void assertEq(Subterms a, Subterms b) {

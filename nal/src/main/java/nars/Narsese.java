@@ -34,7 +34,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.Future;
-import java.util.function.Consumer;
 
 import static nars.Op.*;
 import static nars.term.Term.nullIfNull;
@@ -108,7 +107,7 @@ public final class Narsese {
 
             Task t = decodeTask(m, y);
 
-            ((Consumer<Task>) c::add).accept(t);
+            c.add(t);
             parsedTasks++;
 
         }

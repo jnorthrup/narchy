@@ -88,17 +88,7 @@ public final class TermMatch<X> extends AbstractTermMatchPred<X> {
 
 
     private AbstractTermMatchPred<X> merge(TermMatch a, TermMatch b) {
-        return new AbstractTermMatchPred<>(Op.SETe.the(a, b), resolve, resolveCost) {
-                    @Override
-                    protected boolean match(Term y) {
-                        return a.match(y) && b.match(y);
-                    }
-
-                    @Override
-                    public float cost() {
-                        return this.resolveCost + a.match.cost() + b.match.cost();
-                    }
-                };
+        return new Merge2TermMatch(a, b);
     }
 
     @Override
@@ -108,6 +98,26 @@ public final class TermMatch<X> extends AbstractTermMatchPred<X> {
 
     @Override protected boolean match(Term y) {
         return (exactOrSuper ? match.test(y) : match.testSuper(y)) == trueOrFalse;
+    }
+
+    private final class Merge2TermMatch extends AbstractTermMatchPred<X> {
+        private final TermMatch<X> a, b;
+
+        Merge2TermMatch(TermMatch<X> a, TermMatch<X> b) {
+            super(Op.SETe.the(a, b), TermMatch.this.resolve, TermMatch.this.resolveCost);
+            this.a = a;
+            this.b = b;
+        }
+
+        @Override
+        protected boolean match(Term y) {
+            return a.match(y) && b.match(y);
+        }
+
+        @Override
+        public float cost() {
+            return this.resolveCost + a.match.cost() + b.match.cost();
+        }
     }
 
 //    public static class Subterm<X> extends AbstractPred<X> {

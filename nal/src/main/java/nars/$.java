@@ -219,11 +219,11 @@ public enum $ {
     }
 
     public static Term p(String... t) {
-        return t.length == 0 ? Op.EmptyProduct : $.p((Term[]) $.the(t));
+        return t.length == 0 ? Op.EmptyProduct : $.p($.the(t));
     }
 
     public static Term p(int... t) {
-        return t.length == 0 ? Op.EmptyProduct : $.p((Term[]) $.the(t));
+        return t.length == 0 ? Op.EmptyProduct : $.p($.the(t));
     }
 
     /**
@@ -325,7 +325,7 @@ public enum $ {
     }
 
     public static <X> Term p(X[] x, Function<X, Term> toTerm) {
-        return $.p((Term[]) terms(x, toTerm));
+        return $.p(terms(x, toTerm));
     }
 
     public static <X> Term[] terms(X[] map, Function<X, Term> toTerm) {
@@ -910,7 +910,7 @@ public enum $ {
         //TODO use more reliable path parser
         List<String> pathComponents = Splitter.on('/').omitEmptyStrings().splitToList(pathStr);
 
-        Term path = p((String[])(pathComponents.toArray(ArrayUtil.EMPTY_STRING_ARRAY)));
+        Term path = p(pathComponents.toArray(ArrayUtil.EMPTY_STRING_ARRAY));
         return (authority == null || authority.isEmpty()) ?
                 inh(path, scheme) : inh( PROD.the(INH.the(path, /*TODO parse*/the(authority))), scheme);
     }

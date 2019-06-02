@@ -13,7 +13,7 @@ import static nars.Op.INT;
 /**
  * 32-bit signed integer
  */
-public class Int implements Intlike, The {
+public final class Int implements Intlike, The {
 
     static final Int[] pos = new Int[NAL.term.ANON_INT_MAX];
     private static final Int[] neg = new Int[NAL.term.ANON_INT_MAX];

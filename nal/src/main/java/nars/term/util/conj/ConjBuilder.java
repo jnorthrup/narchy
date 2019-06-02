@@ -34,9 +34,7 @@ public interface ConjBuilder {
     default boolean addAll(ConjLazy x) {
         if (x.isEmpty())
             return false;
-        x.forEachEvent((when,what)->{
-            add(when,what);
-        });
+        x.forEachEvent(this::add);
         return true;
     }
 

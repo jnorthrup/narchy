@@ -508,43 +508,7 @@ public enum Op {
 
     public static final Predicate<Term> statementLoopyContainer = (x) -> x.op()!=PROD;
 
-    public static boolean statementLoopy(Term x, Term y) {
-        if (!(x instanceof Atomic) && !(y instanceof Atomic))
-            return false;
 
-//        boolean xByComponnet = x instanceof Compound && x.op()==CONJ;
-//        boolean yByComponent = y instanceof Compound && y.op()==CONJ;
-//        if (!xByComponnet && !yByComponent) {
-            return _statementLoopy(x, y);
-//        } else if (xByComponnet && !yByComponent) {
-//            return x.subterms().ORwith(Op::_statementLoopy, y);
-//        } else if (yByComponent && !xByComponnet) {
-//            return y.subterms().ORwith(Op::_statementLoopy, x);
-//        } else {
-//            if (x.volume() >= y.volume())
-//                return x.subterms().ORwith((xx,Y) -> Y.subterms().ORwith(Op::_statementLoopy, xx), y);
-//            else
-//                return y.subterms().ORwith((yy,X) -> X.subterms().ORwith(Op::_statementLoopy, yy), x);
-//        }
-
-    }
-    private static boolean _statementLoopy(Term x, Term y) {
-
-        int xv = x.volume(), yv = y.volume();
-        boolean root = false;
-        if (xv == yv) {
-            return x.equals(y);
-            //probably impossible:
-//            boolean z = Term.commonStructure(x, y) &&
-//                    (x.containsRecursively(y, root, delim) || y.containsRecursively(x, root, delim));
-//            if (z)
-//                throw new WTF();
-//            return z;
-        } else if (xv > yv)
-            return x.containsRecursively(y, root, statementLoopyContainer);
-        else
-            return y.containsRecursively(x, root, statementLoopyContainer);
-    }
 
 
     @Nullable

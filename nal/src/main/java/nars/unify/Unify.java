@@ -111,7 +111,7 @@ public abstract class Unify extends Versioning<Term> {
         this.random = random;
         setVarBits(varBits);
 
-        this.xy = new ConstrainedVersionMap(this, termMap);
+        this.xy = new ConstrainedVersionMap( termMap);
     }
 
     public void setVarBits(int varBits) {
@@ -445,9 +445,9 @@ public abstract class Unify extends Versioning<Term> {
     }
 
 
-    private static final class ConstrainedVersionMap extends VersionMap<Variable, Term> {
-        ConstrainedVersionMap(Versioning<Term> versioning, Map<Variable, Versioned<Term>> termMap) {
-            super(versioning, termMap);
+    private final class ConstrainedVersionMap extends VersionMap<Variable, Term> {
+        ConstrainedVersionMap(Map<Variable, Versioned<Term>> termMap) {
+            super(Unify.this, termMap);
         }
 
         @Override

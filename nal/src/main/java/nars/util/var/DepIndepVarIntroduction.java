@@ -86,7 +86,7 @@ public class DepIndepVarIntroduction extends VarIntroduction {
                 n -> 1f / Util.sqr(x[n].volume());
                 //n -> 1f / x[n].volume()
                 //n -> (float) (1 / Math.sqrt(x[n].volume()))
-                ;
+
 
         return x[Roulette.selectRouletteCached(x.length, curve, rng)];
     }
