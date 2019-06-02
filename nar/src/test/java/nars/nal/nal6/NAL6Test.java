@@ -610,6 +610,7 @@ public class NAL6Test extends NALTest {
     @Test
     void deductionBeliefWithVariable() {
         test
+                .termVolMax(9)
                 .believe("(x($1)==>y($1))", 1.00f, 0.90f)
                 .believe("x(a)", 1.00f, 0.90f)
                 .mustBelieve(cycles, "y(a)", 1.00f, 0.81f);
@@ -1240,6 +1241,7 @@ public class NAL6Test extends NALTest {
     @Test
     void testImplPredQuestionUnify() {
         test
+                .termVolMax(10)
                 .believe("((x && $1)==>z($1))")
                 .ask("z(y)")
                 .mustQuestion(cycles, "(x && y)")
@@ -1248,6 +1250,7 @@ public class NAL6Test extends NALTest {
     @Test
     void testImplPredQuest() {
         test
+                .termVolMax(7)
                 .believe("((x&&y)==>z)")
                 .quest("z")
                 .mustQuest(cycles, "(x&&y)")
@@ -1269,7 +1272,7 @@ public class NAL6Test extends NALTest {
     void testImplSubjQuestionUnificationConst() {
         test
                 .termVolMax(13)
-                .confMin(0.8f)
+                .confMin(0.9f)
                 .believe("(Criminal($1) ==> (&&,Sells($1,#2,#3),z))")
                 .ask("Criminal(x)")
                 .mustQuestion(cycles, "(&&,Sells(x,#2,#3),z)")
@@ -1280,7 +1283,7 @@ public class NAL6Test extends NALTest {
     void testImplSubjQuestionUnificationQuery() {
         test
                 .termVolMax(13)
-                .confMin(0.8f)
+                .confMin(0.9f)
                 .believe("(Criminal($1) ==> (&&,Sells($1,#2,#3),z))")
                 .ask("Criminal(?x)")
                 .mustQuestion(cycles, "(&&,Sells(?1,#2,#3),z)")
@@ -1291,6 +1294,7 @@ public class NAL6Test extends NALTest {
     void testImplSubjNegQuestionUnificationConst() {
         test
                 .termVolMax(14)
+                .confMin(0.9f)
                 .believe("(--Criminal($1) ==> (&&,Sells($1,#2,#3),z))")
                 .ask("Criminal(x)")
                 .mustQuestion(cycles, "(&&,Sells(x,#2,#3),z)")
@@ -1300,6 +1304,7 @@ public class NAL6Test extends NALTest {
     @Test
     void testImplPredQuestionUnification() {
         test
+                .confMin(0.9f)
                 .believe("((Sells($1,#2,#3) && z) ==> Criminal($1))")
                 .ask("Criminal(?x)")
                 .mustQuestion(cycles, "(Sells(?1,#2,#3) && z)")

@@ -68,13 +68,12 @@ class AIMATests {
 //        n.confResolution.set(0.1f);
 //        n.confMin.set(0.1f);
 
-//        n.beliefPriDefault.set(0.5f);
-//        n.questionPriDefault.set(0.5f);
+        n.beliefPriDefault.amp(0.25f);
+        n.questionPriDefault.amp(0.5f);
 
         assertEquals(20, $$("((&&,Weapon(#y),Sells($x,#y,#z),Hostile(#z)) ==> Criminal($x))").volume());
 
         n.termVolMax.set(21);
-        //n.log();
 
         n.believe(
 

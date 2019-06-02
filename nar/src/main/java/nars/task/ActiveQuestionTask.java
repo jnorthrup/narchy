@@ -12,6 +12,7 @@ import nars.Op;
 import nars.Task;
 import nars.subterm.Subterms;
 import nars.term.Term;
+import nars.term.util.Image;
 import nars.unify.Unify;
 import org.jetbrains.annotations.Nullable;
 
@@ -79,13 +80,13 @@ public class ActiveQuestionTask extends NALTaskX implements Consumer<Task> {
                 this.test = t -> {
                     if (t.op() == o && Subterms.possiblyUnifiable(term, t, Op.Variable)) {
                         MySubUnify u = new MySubUnify(nar.random(), ttl); //TODO pool ThreadLocal
-                        u.unify(term(), t);
+                        u.unify(term(), Image.imageNormalize(t));
                         return u.match;
                     }
                     return false;
                 };
             else
-                this.test = term::equals;
+                this.test = t->term.equals(Image.imageNormalize(t));
         }
 
         this.ttl = nar.deriveBranchTTL.intValue();

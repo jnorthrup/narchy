@@ -22,7 +22,7 @@ import static nars.Op.GOAL;
 /** test precision of sequence execution (planning) */
 public class NAL8SequenceTest extends NALTest {
 
-    public static final int cycles = 850;
+    public static final int cycles = 1250;
 
     @BeforeEach void init() {
         test.termVolMax(26);
@@ -190,7 +190,7 @@ public class NAL8SequenceTest extends NALTest {
     @Test
     void testGoalDeduction_ParallelWithDepVar() {
         test
-                .input( "(x(#1,#2) &| y(#1,#2))!")
+                .input( "(x(#1,#2) && y(#1,#2))!")
                 .input( "x(1,1).")
                 .mustGoal(cycles, "y(1,1)", 1, 0.81f) //81% for one step
         ;
@@ -216,7 +216,7 @@ public class NAL8SequenceTest extends NALTest {
     @Test
     void testGoalDeduction_ParallelWithDepVar_and_Specific_Arithmetic() {
         test
-                .termVolMax(19)
+                .termVolMax(20)
                 .input( "(&&, x(#1,#2), y(#1,#2), --equal(#1,#2))!")
                 .input( "x(1,1).")
                 .input( "x(1,2).")

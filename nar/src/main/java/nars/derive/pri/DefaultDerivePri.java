@@ -26,17 +26,17 @@ public class DefaultDerivePri implements DerivePri {
      * how important is it to retain conf (evidence).
      * leniency towards uncertain derivations
      */
-    public final FloatRange eviImportance = new FloatRange(1f, 0f, 1f);
+    public final FloatRange eviImportance = new FloatRange(0.5f, 0f, 1f);
 
     /** occam's razor - increase this discriminate more heavily against more complex derivations */
     public final FloatRange simplicityImportance = new FloatRange(1f, 0f, 8f);
 
 
-    public final FloatRange simplicityExponent = new FloatRange(3f, 0f, 4f);
+    public final FloatRange simplicityExponent = new FloatRange(2f, 0f, 4f);
 
 
     /** importance of frequency polarity in result (distance from freq=0.5) */
-    public final FloatRange polarityImportance = new FloatRange(0.1f, 0f, 1f);
+    public final FloatRange polarityImportance = new FloatRange(0.05f, 0f, 1f);
 
     @Override
     public float pri(Task t, Derivation d) {
@@ -87,6 +87,7 @@ public class DefaultDerivePri implements DerivePri {
         float dCompl = t.volume();
         float f =
                 //pCompl / (pCompl + dCompl);
+                //1 - (dCompl - pCompl) / (pCompl+dCompl);
                 pCompl / (pCompl + dCompl);
                 //1f / (1f + Math.max(0, dCompl/(dCompl+pCompl)));
                 //1f / (1f + Math.max(0, (dCompl - pCompl)) / pCompl);

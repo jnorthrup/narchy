@@ -151,7 +151,7 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
         if (container.equals(x))
             return false;
 
-        if (when == ETERNAL && x.op() == CONJ && x.dt() == DTERNAL) {
+        if (when == ETERNAL && x.op() == CONJ && x.dt() == DTERNAL && container.dt()==DTERNAL && !Conj.isSeq(container)) {
             //decompose eternal (test before container.impossibleSubterm)
 
             //TODO accelerated 'flat' case: if (when == ETERNAL && container.op()==CONJ && container.dt()==)
@@ -1891,7 +1891,7 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
                     return false; //HACK find why
                 removed[0] |= remove(when, what);
                 return true; //keep going
-            }, at, tdt !=DTERNAL, tdt !=XTERNAL);
+            }, at, true, false);
             return removed[0];
         }
     }

@@ -96,7 +96,7 @@ public class SignalViewTest {
                     )),
                     (NodeVis<UDPeer.UDProfile> t) -> {
                         t.set(new PushButton(t.id.toString()));
-                        t.pri = 1f; //TODO 1/latency
+                        t.pri = 0.5f; //TODO 1/latency
                     });
             center(new Animating(themChart,
                     ()->{

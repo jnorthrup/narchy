@@ -274,7 +274,7 @@ class NAL8EternalMixTest extends NALTest {
 
         test
                 .input("on({t002},{t003}). :|:")
-                .inputAt(2, "(on({t002},#1) &&+0 at(SELF,#1)).")
+                .inputAt(2, "(on({t002},#1) && at(SELF,#1)).")
                 .mustBelieve(cycles, "at(SELF,{t003})", 1.0f, 0.23f, 0)
                 .mustNotOutput(cycles, "at(SELF,{t003})", BELIEF, 0, 1f, 0, 1f, ETERNAL);
     }
@@ -285,7 +285,7 @@ class NAL8EternalMixTest extends NALTest {
 
         test
                 .input("(--,on({t002},{t003})). :|:")
-                .inputAt(2, "((--,on({t002},#1)) &&+0 at(SELF,#1)).")
+                .inputAt(2, "((--,on({t002},#1)) && at(SELF,#1)).")
                 .mustBelieve(cycles, "at(SELF,{t003})", 1.0f, 0.43f, 0)
                 .mustNotOutput(cycles, "at(SELF,{t003})", BELIEF, 0, 1f, 0, 1f, ETERNAL);
     }
@@ -295,7 +295,7 @@ class NAL8EternalMixTest extends NALTest {
 
         test
                 .input("on(t002,t003). :|:")
-                .inputAt(2, "(on(t002,#1) &&+0 at(SELF,#1)).")
+                .inputAt(2, "(on(t002,#1) && at(SELF,#1)).")
                 .mustBelieve(cycles, "at(SELF,t003)", 1.0f, 0.43f, 0)
                 .mustNotOutput(cycles, "at(SELF,t003)", BELIEF, 0, 1f, 0, 1f, ETERNAL);
     }

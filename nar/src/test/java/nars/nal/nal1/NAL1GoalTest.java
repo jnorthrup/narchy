@@ -33,7 +33,7 @@ public class NAL1GoalTest extends NALTest {
         test
                 .input("(a-->b)!")
                 .input("(b-->c). %0.2%")
-                .mustGoal(cycles, "(a-->c)", 0.6f, 0.16f);//1f, 0.08f)
+                .mustGoal(cycles, "(a-->c)", 1f, 0.16f);//1f, 0.08f)
         ;
     }
 

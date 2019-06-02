@@ -1,6 +1,7 @@
 package nars.term.index;
 
 import nars.*;
+import nars.concept.Concept;
 import nars.memory.*;
 import nars.subterm.Subterms;
 import nars.term.Compound;
@@ -22,7 +23,8 @@ class MemoryTest {
 
     public static void testIndex(Memory i) throws Narsese.NarseseException {
 
-        NAR t = new NARS().index(i).withNAL(1,1).get();
+        NAR t = //new NARS().index(i).withNAL(1,1).get();
+                NARS.tmp();
 
         //testTermSharing(i);
         testTaskConceptSharing(t);
@@ -127,9 +129,11 @@ class MemoryTest {
         String x = "(a --> b).";
         Task t1 = n.inputTask(x);
         Task t2 = n.inputTask(x);
-        n.run();
+        n.run(3);
 
-        testShared(n.concept(t1), n.concept(t2));
+        Concept c1 = n.concept(t1);
+        Concept c2 = n.concept(t2);
+        testShared(c1, c2);
 
         String y = "(c --> b).";
         Task t3 = n.inputTask(y);

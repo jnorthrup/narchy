@@ -141,7 +141,7 @@ public class FZero extends GameX {
 
 
         BiPolarAction A =
-            initBipolarRotateRelative(false, 0.25f);
+            initBipolarRotateRelative(false, 0.15f);
                 //initBipolarRotateRelative(true, 1f);
                 //initBipolarRotateAbsolute(true);
                 //initBipolarRotateDirect(false, 0.9f);
@@ -384,11 +384,11 @@ public class FZero extends GameX {
     public BiPolarAction initBipolarRotateRelative(boolean fair, float rotFactor) {
         float rotSpeed = 0.25f;
         final float[] _r = {0};
-        final MiniPID rotFilter = new MiniPID(0.35f, 0.3, 0.2f);
-        return actionBipolarFrequencyDifferential($.p($.the("turn"), id), fair, (r0) -> {
+        //final MiniPID rotFilter = new MiniPID(0.35f, 0.3, 0.2f);
+        return actionBipolarFrequencyDifferential($.p(id,$.the("turn")), fair, (r0) -> {
 
-            float r = _r[0] = (float) rotFilter.out(_r[0], r0);
-            //float r = r0;
+            //float r = _r[0] = (float) rotFilter.out(_r[0], r0);
+            float r = r0;
 
             fz.playerAngle += r * rotSpeed * rotFactor;
 //            fz.playerAngle = rotFilter.out(fz.playerAngle, fz.playerAngle + r0 * rotSpeed * rotFactor);
@@ -458,17 +458,19 @@ public class FZero extends GameX {
                     //_a[0] = (float) fwdFilter.out(_a[0], a0);
                     a0;
 
-            //float thresh = nar.freqResolution.floatValue()*2;
-//            if (a > 0.5f + thresh) {
+            float thresh = nar.freqResolution.floatValue();
+            if (a > 0.5f + thresh) {
                 //float thrust = /*+=*/ (2 * (a - 0.5f)) * (fwdFactor * fwdSpeed);
                 float thrust = fwdFactor * fwdSpeed;
                 fz.vehicleMetrics[0][6] = thrust;
-//            } else if (a < 0.5f - thresh)
-//                fz.vehicleMetrics[0][6] *= Util.unitize(Math.max(0.5f, (1f - (0.5f - a) * 2f)));
-//            else
-//                return Float.NaN;
-//
-//            return a0;
+                return a0;
+            } else if (a < 0.5f - thresh) {
+                fz.vehicleMetrics[0][6] *= Util.unitize(Math.max(0.5f, (1f - (0.5f - a) * 2f)));
+                return a0;
+            } else
+                return Float.NaN;
+
+
         }).resolution(0.1f);
     }
 

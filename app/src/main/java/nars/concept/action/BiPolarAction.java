@@ -118,7 +118,7 @@ public class BiPolarAction extends AbstractSensor {
         if (y == y) {
 
             y = Util.clamp(y, -1, +1);
-            y = (y + 1)/2; //0...1 range
+            //y = (y + 1)/2; //0...1 range
 
             float yp, yn;
 //            yp = 0.5f + y / 2f;
@@ -141,7 +141,7 @@ public class BiPolarAction extends AbstractSensor {
 
             //balanced around 0.5
 
-            { yn = 0.5f - y/2; yp = 0.5f + y/2; }
+            yn = 0.5f - y/2; yp = 0.5f + y/2;
             //System.out.println(p + "," + n + "\t" + y + "\t" + yp + "," + yn);
 
 //            if ((p == null && n == null) /* curiosity */ || (p!=null && n!=null) /* both active */) {

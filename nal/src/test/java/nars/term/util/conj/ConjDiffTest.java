@@ -117,7 +117,7 @@ class ConjDiffTest {
         assertEventOf($$("(x && y)"), $$("y"));
         assertNotEventOf($$("(x && y)"), $$("(x&&y)")); //equal
 
-        assertEventOf($$("(x &&+- y)"), $$("(x&&y)")); //component-wise, this is contained
+        assertNotEventOf($$("(x &&+- y)"), $$("(x&&y)")); //component-wise, this is contained
 
         assertEventOf($$("(x &&+- y)"), $$("x"));
         assertEventOf($$("(x &&+- y)"), $$("y"));

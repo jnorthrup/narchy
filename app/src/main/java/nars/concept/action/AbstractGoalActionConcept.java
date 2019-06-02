@@ -281,8 +281,8 @@ public class AbstractGoalActionConcept extends GameAction {
                 if (curiosity.goal.getOpaque()) {
                     long lastCuriosity = curiosityTable.series.end();
                     long curiStart = lastCuriosity != TIMELESS ? Math.max(s, lastCuriosity + 1) : s;
-                    int dither = n.dtDither();
-                    long curiEnd = curiStart + Math.max(dither, Math.round((now - prev) * NAL.CURIOSITY_TASK_RANGE_DURS * n.random().nextFloat())); //(1 + (curiosity.Math.max(curiStart, e);
+//                    int dither = n.dtDither();
+                    long curiEnd = curiStart + gameDur * NAL.CURIOSITY_TASK_RANGE_DURS; //(1 + (curiosity.Math.max(curiStart, e);
 
                     //curiStart = Tense.dither(curiStart, dither);
                     //curiEnd = Tense.dither(curiEnd, dither);

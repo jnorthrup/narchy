@@ -175,65 +175,107 @@ public enum ConjCommutive {;
             return conjDirect(B, dt, u);
         }
 
-        int seqCount = seq != null ? seq.cardinality() : 0;
-        if (seqCount == 1) {
-            if (disj == null) {
 
-                //try simple cases
-                int coi = seq.first(true);
-                Term co = u[coi];
 
-                if ((dt == DTERNAL) || (co.dt() == DTERNAL) || (co.dt()==XTERNAL)) {
-                    int indep = 0, elim = 0;
-                    int cos = co.structure();
-                    for (int i = 0; i < u.length; i++) {
+        if (dt == DTERNAL) {
+            int seqCount = seq != null ? seq.cardinality() : 0;
+
+            if (seqCount > 0) {
+                int coi = -1;
+                while (seqCount-- > 0) {
+
+                    coi = seq.next(true, coi + 1, Integer.MAX_VALUE);
+                    Term co = u[coi];
+                    if (co.dt()==XTERNAL)
+                        continue;
+
+                    int cos = co.subterms().structure();
+                    for (int i = u.length - 1; i >= 0; i--) {
                         if (i == coi) continue;
                         Term x = u[i]; //assert (x.op() != CONJ);
-                        if (!Term.commonStructure(cos, x.structure())) {
-                            indep++;
+                        if (!Term.commonStructure(cos, x.unneg().structure()))
                             continue;
-                        }
 
-                        if (!conflict(co, x)) {
-                            if (absorbCompletelyByFirstLayer(co, x)) {
-                                elim++;
-                            } else if (!absorb(co, x)) {
-                                indep++;
-                            }
 
-                        }
+                        if (Conj.eventOf(co,x.neg()))
+                            return False;
+                        else if (direct && Conj.eventOf(co, x))
+                            direct = false;
+
+//                        if (conflict(co, x)) {
+//                            return False;
+//                        }
+
+//                        if (absorbCompletelyByFirstLayer(co, x)) {
+//                            elim++;
+//                        } else if (!absorb(co, x)) {
+//                            indep++;
+//                        }
+
                     }
 
-                    if (indep == u.length - 1)
-                        return conjDirect(B, dt, u); //all independent
+//                    if (indep == u.length - 1)
+//                        return conjDirect(B, dt, u); //all independent
+//
+//                    if (elim == u.length - 1)
+//                        return co; //all absorbed
 
-                    if (elim == u.length - 1)
-                        return co; //all absorbed
 
+                }
 
+            }
+
+            if (direct) {
+                //test if direct mode has an opportunity to reduce disjunctions, requiring un-direct
+                int disjCount = disj != null ? disj.cardinality() : 0;
+                if (disjCount > 0) {
+                    int coi = -1;
+                    while (disjCount-- > 0) {
+
+                        coi = disj.next(true, coi + 1, Integer.MAX_VALUE);
+
+                        Term co = u[coi];
+                        Term dun = co.unneg();
+                        if (dun.dt()==XTERNAL) continue;
+
+                        int cos = dun.subterms().structure();
+                        for (int i = u.length - 1; i >= 0; i--) {
+                            if (i == coi) continue;
+                            Term x = u[i]; //assert (x.op() != CONJ);
+                            if (!Term.commonStructure(cos, x.unneg().structure()))
+                                continue;
+                            if (Conj.eventOf(dun, x) || Conj.eventOf(dun, x.neg())) {
+                                direct = false;
+                                break;
+                            }
+                        }
+
+                    }
                 }
             }
 
         }
-        if (direct && u.length == 2) {
-            //HACK necessary for DISJ in direct mode
 
-            //TODO exclude the case with disj and conjOther
-            int dd;
-            if (disj != null && disj.cardinality() == 1 && seqCount == 0)
-                dd = disj.first(true);
-            else if (dt == DTERNAL && seqCount == 1)
-                dd = seq.first(true);
-            else
-                dd = -1;
-
-            if (dd != -1) {
-                Term d = u[dd];
-                Term x = u[1 - dd];
-                return Conj.conjoin(B, d, x, dt == DTERNAL);
-            }
-
-        }
+//        if (direct && u.length == 2) {
+//            //HACK necessary for DISJ in direct mode
+//            int seqCount = seq != null ? seq.cardinality() : 0;
+//
+//            //TODO exclude the case with disj and conjOther
+//            int dd;
+//            if (disj != null && disj.cardinality() == 1 && seqCount == 0)
+//                dd = disj.first(true);
+//            else if (dt == DTERNAL && seqCount == 1)
+//                dd = seq.first(true);
+//            else
+//                dd = -1;
+//
+//            if (dd != -1) {
+//                Term d = u[dd];
+//                Term x = u[1 - dd];
+//                return Conj.conjoin(B, d, x, dt == DTERNAL);
+//            }
+//
+//        }
         if (direct)
             return conjDirect(B, dt, u); //done
 

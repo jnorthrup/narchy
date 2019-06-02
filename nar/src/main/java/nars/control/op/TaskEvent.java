@@ -2,6 +2,7 @@ package nars.control.op;
 
 import nars.NAR;
 import nars.Task;
+import nars.attention.What;
 import nars.task.AbstractTask;
 
 /** emits the supplied task or tasks on the eventTask topic */
@@ -15,7 +16,7 @@ public final class TaskEvent extends AbstractTask {
 
     @Override
     public Task next(Object n) {
-        emit(task, (NAR)n);
+        emit(task, ((What)n).nar);
         return null;
     }
 

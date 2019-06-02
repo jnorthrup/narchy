@@ -239,14 +239,14 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
      */
     public final FloatRange intermpolationRangeLimit = new FloatRange(
             //0.5f
-            1f
-            //2f
+            //1f
+            4f
             , 0, 4);
 
     @Deprecated
     public final FloatRange questionForgetRate = new FloatRange(0.5f, 0, 1);
     public final IntRange premiseUnifyTTL = new IntRange(6, 1, 32);
-    public final IntRange deriveBranchTTL = new IntRange(3 * NAL.derive.TTL_MIN, NAL.derive.TTL_MIN, 64 * NAL.derive.TTL_MIN);
+    public final IntRange deriveBranchTTL = new IntRange(8 * NAL.derive.TTL_MIN, NAL.derive.TTL_MIN, 64 * NAL.derive.TTL_MIN);
     /**
      * how many cycles above which to dither dt and occurrence time
      * TODO move this to Time class and cache the cycle value rather than dynamically computing it
@@ -710,7 +710,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
          */
         public static final int TermutatorSearchTTL = 4;
 
-        public static final int Termify_Forks = 2;
+        public static final int Termify_Forks = 1;
 
 
         public static final int TTL_UNISUBST_MAX = 5;

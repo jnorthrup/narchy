@@ -256,7 +256,7 @@ public enum Murmur3Hash {
     public static int hash(byte[] data) {
         ByteBuffer buffer = ByteBuffer
                 .wrap(data)
-                .order(ByteOrder.LITTLE_ENDIAN); 
+                .order(ByteOrder.LITTLE_ENDIAN);
 
         
         int length = data.length;

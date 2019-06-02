@@ -23,5 +23,15 @@ class TermeratorTest {
 
         assertEq("[(a-->y),(b-->y)]", Lists.newArrayList(t.iterator()).toString());
     }
+    @Test
+    void substPermute2() {
+        Termerator t = new Termerator($$("(x-->y)"));
+        t.canBe($$("x"),
+                $$("a"), $$("b"));
+        t.canBe($$("y"),
+                $$("c"), $$("d"));
+
+        assertEq("[(a-->c),(a-->d),(b-->c),(b-->d)]", Lists.newArrayList(t.iterator()).toString());
+    }
 
 }

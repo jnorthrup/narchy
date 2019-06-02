@@ -330,12 +330,14 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
     }
 
     public final Event know(Term v) {
-        //include the temporal information contained in a temporal-containing target;
-        // otherwise it contributes no helpful information
-        if (v.hasAny(Op.Temporal))
-            return event(v, TIMELESS, TIMELESS, true);
-        else
-            return shadow(v);
+//        //include the temporal information contained in a temporal-containing target;
+//        // otherwise it contributes no helpful information
+//        if (v.hasAny(Op.Temporal))
+//            return event(v, TIMELESS, TIMELESS, true);
+//        else
+//            return shadow(v);
+
+        return know(v, TIMELESS);
     }
 
     public final Event know(Term t, long start) {
@@ -998,7 +1000,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 
         UnifiedSet<Event> ae = new UnifiedSet(2);
         //solveExact(a, ax -> {
-        solveOccurrence(a, false, ax -> {
+        solveOccurrence(shadow(a), false, ax -> {
             if (ax instanceof Absolute) ae.add(ax);
             return true;
         });
@@ -1019,7 +1021,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 
 
             } else {
-                solveOccurrence(b, false, bx -> {
+                solveOccurrence(shadow(b), false, bx -> {
                     if ((bx instanceof Absolute) && ae.add(bx)) {
                         for (Event ax : aa) {
                             if (!solveDTAbsolutePair(x, ax, bx, each))
@@ -1506,7 +1508,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 
         return true
 //                solveExact(x, each) &&
-                && (x.id.hasXternal() || (bfsAdd(x, new OccSolver(true, true, autoneg, each))))
+                && (bfsAdd(x, new OccSolver(true, true, autoneg, each)))
                 //&& bfsNew(List.of(x), new OccSolver(false, false, true, each))
                 && solveSelfLoop(x, each)
 //               && (!autoneg || bfsNew(x.neg(), new OccSolver(true, false, true,

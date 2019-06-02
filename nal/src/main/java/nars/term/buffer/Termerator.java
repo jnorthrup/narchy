@@ -4,6 +4,7 @@ import com.google.common.collect.Iterables;
 import com.google.common.collect.Iterators;
 import jcog.TODO;
 import jcog.data.iterator.ArrayIterator;
+import jcog.data.iterator.CartesianIterator;
 import jcog.data.list.FasterList;
 import jcog.version.VersionMap;
 import jcog.version.Versioning;
@@ -72,10 +73,7 @@ public class Termerator extends TermBuffer implements Iterable<Term> {
     public boolean isTry(Term x, Term y) {
         assert (!(x.equals(y)));
         Object y0 = subs.putIfAbsent(x, y);
-        if (y0 == null) {
-            return true;
-        }
-        return false;
+        return y0 == null;
     }
 
     /**
@@ -119,19 +117,19 @@ public class Termerator extends TermBuffer implements Iterable<Term> {
         return is(x, xx) && is(y, yy);
     }
 
+    public void canBe(Predicate<VersionMap<Term, Term>> x) {
+        canBe(List.of(x));
+    }
+
     /**
      * OR, forked
      * TODO limit when # termutators exceed limit
      */
-    public void canBe(Iterable<Predicate<VersionMap<Term, Term>>> x) {
+    public final void canBe(Iterable<Predicate<VersionMap<Term, Term>>> x) {
         ensureReady();
         termutes.add(x);
     }
 
-    public void canBe(Predicate<VersionMap<Term, Term>> x) {
-        ensureReady();
-        termutes.add(List.of(x));
-    }
 
     private void ensureReady() {
         if (v == null) {
@@ -196,20 +194,21 @@ public class Termerator extends TermBuffer implements Iterable<Term> {
 
     @Override
     public Iterator<Term> iterator() {
-        if (termutes == null) {
+        int nt = termutes == null ?  0 : termutes.size();
+        if (nt == 0) {
             return new MyLazySingletonIterator();
         } else {
 
             int before = v.size();
 
-            if (termutes.size() == 1) {
+            if (nt == 1) {
                 return Iterators.filter(Iterators.transform(termutes.remove(0).iterator(), tt -> {
                     Term y;
                     if (tt.test(subs)) {
+                        int during = v.size();
                         y = term();
-                        if (v.size()!=before) {
-                            //subs changed
-                            //TODO
+                        if (v.size() != during) {
+                            throw new TODO("recurse");
                         }
                     } else
                         y = null;
@@ -217,72 +216,52 @@ public class Termerator extends TermBuffer implements Iterable<Term> {
                     return y;
                 }), Objects::nonNull);
             } else {
-                throw new TODO();
-//                CartesianIterator<Predicate>/*<VersionMap<Term,Term>>>*/ ci =
-//                        new CartesianIterator(
-//                                Predicate[]::new, termutes.toArrayRecycled(Iterable[]::new));
-//                termutes.clear();
-//                nextProduct:
-//                while (ci.hasNext()) {
-//
-//                    v.revert(before);
-//
-//                    Predicate/*<VersionMap<Term,Term>>*/[] c = ci.next();
-//
-//                    for (Predicate<VersionMap<Term, Term>> cc : c) {
-//                        if (cc == null)
-//                            break; //null target list
-//                        if (!cc.test(subs))
-//                            continue nextProduct;
-//                    }
-//
-//                    //all components applied successfully
-//
-//                    if (!recurse(e, y))
-//                        return false;
-//
-//                }
+                CartesianIterator<Predicate>/*<VersionMap<Term,Term>>>*/ ci =
+                        new CartesianIterator(Predicate[]::new, termutes.toArrayRecycled(Iterable[]::new));
+                termutes.clear();
+                return Iterators.filter(Iterators.transform(ci, tt -> {
+                    Term y;
+                    boolean fail = false;
+                    for (Predicate p : tt) {
+                        if (!p.test(subs)) {
+                            fail = true;
+                            break;
+                        }
+                    }
+                    if (!fail) {
+                        int during = v.size();
+                        y = term();
+                        if (v.size() != during) {
+                            throw new TODO("recurse");
+                        }
+                    } else
+                        y = null;
+                    v.revert(before);
+                    return y;
+                }), Objects::nonNull);
             }
         }
-//        subs.entrySet().removeIf((e)->{
-//            Object v = e.getValue();
-//            if (v instanceof Term) {
-//                this.sub.interReplace()
-//                return true;
-//            }
-//
-//        });
-//        if (subs.isEmpty())
-//            return Iterators.singletonIterator(term());
-//        else {
-//
-//            return subs.entrySet().stream(x->{
-//               TermBuffer t = clone();
-//
-//
-//            });
-//        }
 
-}
+    }
 
 
-private final class MyLazySingletonIterator implements Iterator {
+    private final class MyLazySingletonIterator implements Iterator {
 
-    private Term n = null;
+        private Term n = null;
 
-    @Override
-    public boolean hasNext() {
-        if (n == null) {
-            n = term();
+        @Override
+        public boolean hasNext() {
+            if (n == null) {
+                n = term();
+            }
+            return (n != Null);
         }
-        return (n != Null);
-    }
 
-    @Override
-    public Object next() {
-        Term x = n;
-        this.n = Null;
-        return x;
+        @Override
+        public Object next() {
+            Term x = n;
+            this.n = Null;
+            return x;
+        }
     }
-}
 }

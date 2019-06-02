@@ -500,6 +500,8 @@ public class ConjTest {
 
     @Test
     void testMergedDisjunction1() {
+        assertFalse(Conj.eventOf($$("(x &&+1 y)"), $$("(x&&y)")));
+
         //simplest case: merge one of the sequence
         Term a = $$("(x &&+1 y)");
         Term b = $$("(x &| y)");
