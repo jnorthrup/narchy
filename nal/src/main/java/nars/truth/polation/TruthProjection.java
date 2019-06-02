@@ -1,7 +1,9 @@
 package nars.truth.polation;
 
 import com.google.common.collect.Iterables;
-import jcog.*;
+import jcog.Paper;
+import jcog.Skill;
+import jcog.WTF;
 import jcog.data.bit.MetalBitSet;
 import jcog.data.list.FasterList;
 import jcog.data.set.MetalLongSet;

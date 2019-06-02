@@ -22,7 +22,8 @@ import static nars.time.Tense.*;
 /**
  * utilities for working with commutive conjunctions (DTERNAL, parallel, and XTERNAL)
  */
-public enum ConjCommutive {;
+public enum ConjCommutive {
+    ;
 
     public static Term the(int dt, Term... u) {
         return the(Op.terms, dt, u);
@@ -37,11 +38,15 @@ public enum ConjCommutive {;
     }
 
     public static Term the(TermBuilder B, int dt, boolean sort, boolean direct, Term... u) {
+
+        if (dt != DTERNAL && dt != 0)
+            throw new WTF();
+
         //bool pre-filter
         boolean trueRemoved = false;
         for (int i = 0, uLength = u.length; i < uLength; i++) {
             Term x = u[i];
-            if(x.op()==BOOL) {
+            if (x.op() == BOOL) {
                 if (x == False)
                     return False;
                 if (x == Null)
@@ -61,24 +66,16 @@ public enum ConjCommutive {;
 
         if (u.length == 0)
             return True;
-        if (u.length == 1)
+        else if (u.length == 1)
             return u[0];
-
-        if (dt != DTERNAL && dt != 0)
-            throw new WTF();
-
-        if (u.length == 2) {
+        else if (u.length == 2) {
             //quick test
             Term a = u[0], b = u[1];
-            //if (Term.commonStructure(a, b)) {
             if (a.equals(b))
                 return u[0];
-            if (a.equalsNeg(b))
+            else if (a.equalsNeg(b))
                 return False;
-            //}
-
-
-            if (a.unneg().op() != CONJ && b.unneg().op() != CONJ) {
+            else if (a.unneg().op() != CONJ && b.unneg().op() != CONJ) {
                 //fast construct for simple case, verified above to not contradict itself
                 return conjDirect(B, dt, /*sorted*/u);
             }
@@ -104,14 +101,13 @@ public enum ConjCommutive {;
                     case CONJ:
                         int xdt = x.dt();
                         if //(xdt == dt || (dt == 0 && xdt == DTERNAL /* promote inner DTERNAL to parallel */)
-                            (
+                        (
                                 (xdt == 0 || xdt == DTERNAL)
 
 //                                (dt == DTERNAL && (xdt == 0 || xdt == DTERNAL))
 //                                ||
 //                                (dt == 0 && (xdt == DTERNAL))
-                            )
-                         {
+                        ) {
                             par = set(par, i, uLength);
                         } else {
                             seq = set(seq, i, uLength);
@@ -142,7 +138,7 @@ public enum ConjCommutive {;
                         Term x = u[i];
                         if (x == True) continue;
                         if (flatten == null) flatten = new TreeSet();
-                        if (x.dt()!=XTERNAL)
+                        if (x.dt() != XTERNAL)
                             x.subterms().addAllTo(flatten);
                         else
                             flatten.add(x);
@@ -166,210 +162,150 @@ public enum ConjCommutive {;
 
         } while (par != null);
 
-        if (pos != null && neg != null) {
+        int pc = pos == null ? 0 : pos.cardinality(), nc = neg == null ? 0 : neg.cardinality();
+        if (pc > 0 && nc > 0) {
             if (coNegate(pos, neg, u))
                 return False;
         }
 
-        int pc = pos==null ? 0 : pos.cardinality(), nc = neg == null ? 0 : neg.cardinality();
         if (pc + nc == u.length) {
-            //mix of pos and negative (no seq) - only needed to have checked for co-negation
+            //simple mix of pos and/or negative (no seq, no disj) - only needed to have checked for co-negation
             return conjDirect(B, dt, u);
         }
 
 
-
         if (dt == DTERNAL) {
+            //quick tests for seq and disj contradictions
+
             int seqCount = seq != null ? seq.cardinality() : 0;
+            int coi = -1;
+            while (seqCount > 0) {
 
-            if (seqCount > 0) {
-                int coi = -1;
-                while (seqCount-- > 0) {
+                seqCount--;
 
-                    coi = seq.next(true, coi + 1, Integer.MAX_VALUE);
-                    Term co = u[coi];
-                    if (co.dt()==XTERNAL)
+                coi = seq.next(true, coi + 1, Integer.MAX_VALUE);
+                Term co = u[coi];
+                if (co.dt() == XTERNAL)
+                    continue;
+
+                int cos = co.subterms().structure();
+                for (int i = u.length - 1; i >= 0; i--) {
+                    if (i == coi) continue;
+                    Term x = u[i]; //assert (x.op() != CONJ);
+                    if (!Term.commonStructure(cos, x.unneg().structure()))
                         continue;
 
-                    int cos = co.subterms().structure();
+
+                    if (Conj.eventOf(co, x.neg()))
+                        return False;
+                    else if (direct && Conj.eventOf(co, x))
+                        direct = false;
+
+                }
+            }
+
+
+            //test if direct mode has an opportunity to reduce disjunctions, requiring un-direct
+            int disjCount = disj != null ? disj.cardinality() : 0;
+
+            coi = -1;
+            while (disjCount > 0) {
+                disjCount--;
+
+                coi = disj.next(true, coi + 1, Integer.MAX_VALUE);
+
+                Term co = u[coi];
+                Term dun = co.unneg();
+                if (dun.dt() == XTERNAL) continue;
+
+                boolean dseq = Conj.isSeq(dun);
+                if (direct || dseq) {
+
+                    Subterms dus = dun.subterms();
+                    int dos = dus.structure();
                     for (int i = u.length - 1; i >= 0; i--) {
                         if (i == coi) continue;
                         Term x = u[i]; //assert (x.op() != CONJ);
-                        if (!Term.commonStructure(cos, x.unneg().structure()))
+                        if (!Term.commonStructure(dos, x.unneg().structure()))
                             continue;
 
-
-                        if (Conj.eventOf(co,x.neg()))
-                            return False;
-                        else if (direct && Conj.eventOf(co, x))
-                            direct = false;
-
-//                        if (conflict(co, x)) {
-//                            return False;
-//                        }
-
-//                        if (absorbCompletelyByFirstLayer(co, x)) {
-//                            elim++;
-//                        } else if (!absorb(co, x)) {
-//                            indep++;
-//                        }
-
-                    }
-
-//                    if (indep == u.length - 1)
-//                        return conjDirect(B, dt, u); //all independent
-//
-//                    if (elim == u.length - 1)
-//                        return co; //all absorbed
-
-
-                }
-
-            }
-
-            /*if (direct)*/ {
-                //test if direct mode has an opportunity to reduce disjunctions, requiring un-direct
-                int disjCount = disj != null ? disj.cardinality() : 0;
-                if (disjCount > 0) {
-                    int coi = -1;
-                    while (disjCount-- > 0) {
-
-                        coi = disj.next(true, coi + 1, Integer.MAX_VALUE);
-
-                        Term co = u[coi];
-                        Term dun = co.unneg();
-                        if (dun.dt()==XTERNAL) continue;
-
-                        boolean dseq = Conj.isSeq(dun);
-                        if (direct || dseq) {
-
-                            Subterms dus = dun.subterms();
-                            int dos = dus.structure();
-                            for (int i = u.length - 1; i >= 0; i--) {
-                                if (i == coi) continue;
-                                Term x = u[i]; //assert (x.op() != CONJ);
-                                if (!Term.commonStructure(dos, x.unneg().structure()))
-                                    continue;
-
-                                if (dseq && dun.dt() == DTERNAL) {
-                                    if (dus.contains(x)) {
-                                        //contradicts inseparable factored seq component
-                                        return False;
-                                    }
-                                    if (dus.containsNeg(x)) {
-                                        //absorbed
-                                        if (u.length == 2)
-                                            return co;
-                                        else {
-                                            u[i] = null;
-                                        }
-                                    }
-                                }
-
-                                if (Conj.eventOf(dun, x)) {
-                                    direct = false;
-                                }
-
-                                if (Conj.eventOf(dun, x.neg())) {
-                                    direct = false;
-                                }
+                        if (dseq && dun.dt() == DTERNAL) {
+                            if (dus.contains(x)) {
+                                //contradicts inseparable factored seq component
+                                return False;
                             }
-                            Term[] uu = ArrayUtil.removeNulls(u);
-                            if (uu.length < u.length) {
-                                return ConjCommutive.the(dt, uu);
+                            if (dus.containsNeg(x)) {
+                                //absorbed
+                                if (u.length == 2)
+                                    return co;
+                                else {
+                                    u = u.clone(); //HACK
+                                    u[i] = null;
+                                    direct = false;
+                                }
                             }
                         }
+
+                        if (Conj.eventOf(dun, x)) {
+                            direct = false;
+                        }
+
+                        if (Conj.eventOf(dun, x.neg())) {
+                            direct = false;
+                        }
+                    }
+                    Term[] uu = ArrayUtil.removeNulls(u);
+                    if (uu.length < u.length) {
+                        return ConjCommutive.the(B, dt, uu); //recurse
                     }
                 }
             }
-
         }
 
-//        if (direct && u.length == 2) {
-//            //HACK necessary for DISJ in direct mode
-//            int seqCount = seq != null ? seq.cardinality() : 0;
-//
-//            //TODO exclude the case with disj and conjOther
-//            int dd;
-//            if (disj != null && disj.cardinality() == 1 && seqCount == 0)
-//                dd = disj.first(true);
-//            else if (dt == DTERNAL && seqCount == 1)
-//                dd = seq.first(true);
-//            else
-//                dd = -1;
-//
-//            if (dd != -1) {
-//                Term d = u[dd];
-//                Term x = u[1 - dd];
-//                return Conj.conjoin(B, d, x, dt == DTERNAL);
-//            }
-//
-//        }
-        if (direct)
+
+        switch (u.length) {
+            case 0:
+                return True;
+            case 1:
+                return u[0];
+//            case 2:
+//                if (seq == null && disj == null)
+//                    return Conj.conjoin(B, u[0], u[1], dt == DTERNAL);
+//                else
+//                    break;
+        }
+
+        if (direct || (seq==null && disj==null))
             return conjDirect(B, dt, u); //done
 
-
-
-        {
-
-
-
-//            if (seq != null) {
-//                ConjBuilder c = new Conj(u.length);
-//                //add the non-conj terms at ETERNAL first.
-//                //iterate in reverse order to add smaller (by volume) items first
-//                bsmain: for (boolean addingSeq : new boolean[] { false, true }) {
-//                    for (int i = u.length - 1; i >= 0; i--) {
-//                        if (addingSeq == seq.get(i))
-//                            if (!c.add(sdt, u[i]))
-//                                break bsmain;
-//                    }
-//                }
-//                return c.term(B);
-//
-//            } else {
-                switch (u.length) {
-                    case 0:
-                        return True;
-                    case 1:
-                        return u[0];
-                    case 2:
-                        if (seq==null && disj==null)
-                            return Conj.conjoin(B, u[0], u[1], dt == DTERNAL);
-
-                    default:
-                        //TODO insertion ordering heuristic, combine with ConjLazy's construction
-                        long sdt = (dt == DTERNAL) ? ETERNAL : 0;
-                        ConjBuilder c = new Conj(u.length);
-                        for (int i = 0; i < u.length; i++) {
-                            boolean special = ((seq!=null && seq.get(i)) || (disj!=null && disj.get(i)));
-                            if (!special) {
-                                if (!c.add(sdt, u[i]))
-                                    break;
-                            }
-                        }
-                        for (int i = 0; i < u.length; i++) {
-                            boolean special = ((seq!=null && seq.get(i)) || (disj!=null && disj.get(i)));
-                            if (special) {
-                                if (!c.add(sdt, u[i]))
-                                    break;
-                            }
-                        }
-
-                        try {
-                            return c.term(B);
-                        } catch (StackOverflowError e) {
-                            //TEMPORARY for debug
-                            //System.err.println("conjcommutive stack overflow: " + Arrays.toString(u));
-                            //return Null;
-
-                            throw new TermException("conj commutive stack overflow", CONJ, dt, u);
-                        }
-
-                }
-            //}
-
+        //TODO insertion ordering heuristic, combine with ConjLazy's construction
+        long sdt = (dt == DTERNAL) ? ETERNAL : 0;
+        ConjBuilder c = new Conj(u.length);
+        for (int i = 0; i < u.length; i++) {
+            boolean special = ((seq != null && seq.get(i)) || (disj != null && disj.get(i)));
+            if (!special) {
+                if (!c.add(sdt, u[i]))
+                    break;
+            }
         }
+        for (int i = 0; i < u.length; i++) {
+            boolean special = ((seq != null && seq.get(i)) || (disj != null && disj.get(i)));
+            if (special) {
+                if (!c.add(sdt, u[i]))
+                    break;
+            }
+        }
+
+        try {
+            return c.term(B);
+        } catch (StackOverflowError e) {
+            //TEMPORARY for debug
+            //System.err.println("conjcommutive stack overflow: " + Arrays.toString(u));
+            //return Null;
+
+            throw new TermException("conj commutive stack overflow", CONJ, dt, u);
+        }
+
     }
 
     private static boolean absorbCompletelyByFirstLayer(Term co, Term x) {

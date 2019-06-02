@@ -16,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class NAL5Test extends NALTest {
 
-    private final int cycles = 230;
+    private final int cycles = 630;
 
     @Override
     protected NAR nar() {
@@ -1060,8 +1060,8 @@ public class NAL5Test extends NALTest {
         test
                 .ask("(--(x&&y)==>z)")
                 .mustQuestion(cycles, "(x&&y)")
-                .mustQuestion(cycles, "(x ==>+- z)")
-                .mustQuestion(cycles, "(y ==>+- z)")
+                .mustQuestion(cycles, "(--x ==>+- z)")
+                .mustQuestion(cycles, "(--y ==>+- z)")
         ;
     }
 

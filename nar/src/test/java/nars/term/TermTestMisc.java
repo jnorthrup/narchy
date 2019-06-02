@@ -29,6 +29,7 @@ import static org.junit.jupiter.api.Assertions.*;
 /** target tests to be organzied more specifically */
 public class TermTestMisc {
 
+
     private final NAR n = NARS.shell();
 
     @Test

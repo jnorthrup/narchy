@@ -76,7 +76,7 @@ abstract public class GameX extends Game {
     /**
      * determines memory strength
      */
-    static float DURATIONs = 2;
+    static float DURATIONs = 1;
 
 //    static {
 //        try {
@@ -408,9 +408,9 @@ abstract public class GameX extends Game {
 
 
         n.beliefPriDefault.amp(0.1f);
-        n.goalPriDefault.amp(0.5f);
+        n.goalPriDefault.amp(0.4f);
         n.questionPriDefault.amp(0.02f);
-        n.questPriDefault.amp(0.05f);
+        n.questPriDefault.amp(0.03f);
 
 
         n.beliefConfDefault.set(0.9f);

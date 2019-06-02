@@ -621,7 +621,7 @@ public class TermBuffer {
 
     private boolean transformSubterms(Subterms s, Function<Term, Term> t) {
         this.subsStart((byte) s.subs());
-        if (s.ANDwithOrdered((x,f)->append(x,f), t)) {
+        if (s.ANDwithOrdered(this::append, t)) {
             this.subsEnd();
             return true;
         }

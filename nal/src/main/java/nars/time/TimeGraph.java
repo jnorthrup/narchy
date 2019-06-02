@@ -766,6 +766,9 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 
         if (!termsEvent(x)) return true;
 
+        if (!addNewNode(shadow(x)))
+            return true; //already added, prevent recursion
+
         assert (x.dt() == XTERNAL);
 
         Subterms xx = x.subterms();
@@ -1008,19 +1011,25 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
         if (aes > 0) {
             Event[] aa = eventArray(ae);
 
-            if (a.equals(b) && aes > 1) {
+            boolean aEqB = a.equals(b);
+            if (aEqB) {
 
 
-                for (int i = 0; i < aa.length; i++) {
-                    Event ii = aa[i];
-                    for (int j = i + 1; j < aa.length; j++) {
-                        if (!solveDTAbsolutePair(x, ii, aa[j], each))
-                            return false;
+                if (aes > 1) {
+                    for (int i = 0; i < aa.length; i++) {
+                        Event ii = aa[i];
+                        for (int j = i + 1; j < aa.length; j++) {
+                            if (!solveDTAbsolutePair(x, ii, aa[j], each))
+                                return false;
+                        }
                     }
                 }
 
 
             } else {
+                if (!aEqB)
+                    ae.clear(); //don't need the previously accumulated
+
                 solveOccurrence(shadow(b), false, bx -> {
                     if ((bx instanceof Absolute) && ae.add(bx)) {
                         for (Event ax : aa) {
