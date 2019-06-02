@@ -12,13 +12,13 @@
     //result of non-goal
     //G, Y, task("!") |-        (--G ==> ?1), (Punctuation:Question)
 
-    //result of achieving/non-achieving goal and current belief
-    //G, B, task("!"), hasBelief() |-        ((polarizeRandom(G) && B) ==> ?1), (Punctuation:Question)
-
     //is what with goal
     //G, B, task("!") |-           (?1 && G), (Punctuation:Question)
     //is what with non-goal
     //G, B, task("!") |-         (?1 && --G), (Punctuation:Question)
+
+    //result of achieving/non-achieving goal and current belief
+    //G, B, task("!"), hasBelief() |-        ((polarizeRandom(G) && B) ==> ?1), (Punctuation:Question)
 
     //should what with goal/non-goal
     G, B, task("!"), neq(G,B), --is(B,"?"), hasBelief() |-    (&&,polarizeTask(G),polarizeBelief(B)), (Punctuation:Quest)
@@ -30,7 +30,8 @@
     (X==>Y), Y, task("."), --isVar(Y) |- ((X && polarizeTask(Y)) ==> ?1), (Punctuation:Question)
 
     //implication look-behind
-    (X==>Y), Y, task("."), --isVar(Y) |- (?1 ==> (X && polarizeTask(Y))), (Punctuation:Question)
+    (  X==>Y), X, task("."), --isVar(Y) |- (?1 ==> (  X && polarizeTask(Y))), (Punctuation:Question)
+    (--X==>Y), X, task("."), --isVar(Y) |- (?1 ==> (--X && polarizeTask(Y))), (Punctuation:Question)
 
 //    //sequence possibility quest
 //    C, X, task("@"), eventOfPN(C,X) |-  (conjWithoutPN(C,X) && ?1), (Punctuation:Quest)
@@ -56,8 +57,10 @@
 //    (&&,G,X,A..*), (&&,H,Y,B..*), eqNeg(G,H), neq(X,Y), hasBelief()  |- ((polarizeRandom(X) && polarizeRandom(Y)) --> ?1), (Punctuation:Ask)
 
 //anti-specific deduction: "conjunction contraposition" (weak)
-//    C, X, eventOf(C,X)       |-   negateEvents(conjWithout(C,  X)), (Belief:DeductionWeakPN)
-//    C, X, eventOfNeg(C,X)    |-   negateEvents(conjWithout(C,--X)), (Belief:DeductionWeakPP)
+//    C, X, eventOf(C,X), --isVar(X)       |-   negateEvents(conjWithout(C,  X)), (Belief:DeductionWeakPN)
+//    X, C, eventOf(C,X), --isVar(X)       |-   negateEvents(conjWithout(C,  X)), (Goal:DesireWeakNP)
+//    C, X, eventOfNeg(C,X), --isVar(X)    |-   negateEvents(conjWithout(C,--X)), (Belief:DeductionWeakPP)
+//    X, C, eventOfNeg(C,X), --isVar(X)    |-   negateEvents(conjWithout(C,--X)), (Goal:DesireWeakPP)
 
 
 //inverted condition question/quest TODO: invertAll(C,X)..

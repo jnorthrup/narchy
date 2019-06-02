@@ -1401,8 +1401,8 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
                 Random rng = random();
 
 
+                Map<Term, Term> m = new UnifiedMap(ns);
                 while (permutations[0]-- > 0) {
-                    Map<Term, Term> m = new UnifiedMap(ns);
                     for (Pair<Compound, Compound[]> si : substs) {
                         Compound[] ssi = si.getTwo();
                         Term sssi = ssi[ssi.length > 1 ? rng.nextInt(ssi.length) : 0];
@@ -1412,6 +1412,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 
                     if (!solveDtAndOccIfConceptualizable(x, z, each))
                         return false;
+                    m.clear();
                 }
                 //break;
         }

@@ -39,14 +39,16 @@ class DynamicDiffTest extends AbstractDynamicTaskTest {
         n.believe("c:x", 0.75f, 0.50f);
         n.believe("c:y", 0.25f, 0.50f);
         n.run(1);
-        Term xMinY = $("c:(x ~ y)"), yMinX = $("c:(y ~ x)");
+        //Term xMinY = $("c:(x - y)"), yMinX = $("c:(y - x)");
+        Term xMinY = $("c:(x & --y)"), yMinX = $("c:(y & --x)");
+
         assertNotNull(((BeliefTables) n.conceptualize(xMinY).beliefs()).tableFirst(DynamicTruthTable.class));
         assertNotNull(((BeliefTables) n.conceptualize(yMinX).beliefs()).tableFirst(DynamicTruthTable.class));
         assertEquals(
-                "%.94;.25%", n.beliefTruth(xMinY, n.time()).toString()
+                "%.06;.25%", n.beliefTruth(yMinX, n.time()).toString()
         );
         assertEquals(
-                "%.44;.25%", n.beliefTruth(yMinX, n.time()).toString()
+                "%.56;.25%", n.beliefTruth(xMinY, n.time()).toString()
         );
     }
     @Test void testDiffIntersection() throws Narsese.NarseseException {

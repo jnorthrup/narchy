@@ -4,6 +4,7 @@ import jcog.WTF;
 import jcog.data.bit.MetalBitSet;
 import jcog.util.ArrayUtil;
 import nars.Op;
+import nars.subterm.Subterms;
 import nars.term.Term;
 import nars.term.Terms;
 import nars.term.atom.Bool;
@@ -242,21 +243,40 @@ public enum ConjCommutive {;
                         boolean dseq = Conj.isSeq(dun);
                         if (direct || dseq) {
 
-                            int cos = dun.subterms().structure();
+                            Subterms dus = dun.subterms();
+                            int dos = dus.structure();
                             for (int i = u.length - 1; i >= 0; i--) {
                                 if (i == coi) continue;
                                 Term x = u[i]; //assert (x.op() != CONJ);
-                                if (!Term.commonStructure(cos, x.unneg().structure()))
+                                if (!Term.commonStructure(dos, x.unneg().structure()))
                                     continue;
+
+                                if (dseq && dun.dt() == DTERNAL) {
+                                    if (dus.contains(x)) {
+                                        //contradicts inseparable factored seq component
+                                        return False;
+                                    }
+                                    if (dus.containsNeg(x)) {
+                                        //absorbed
+                                        if (u.length == 2)
+                                            return co;
+                                        else {
+                                            u[i] = null;
+                                        }
+                                    }
+                                }
+
                                 if (Conj.eventOf(dun, x)) {
-                                    if (dseq)
-                                        return False; //invalidates entire factored seq
                                     direct = false;
                                 }
 
                                 if (Conj.eventOf(dun, x.neg())) {
                                     direct = false;
                                 }
+                            }
+                            Term[] uu = ArrayUtil.removeNulls(u);
+                            if (uu.length < u.length) {
+                                return ConjCommutive.the(dt, uu);
                             }
                         }
                     }
