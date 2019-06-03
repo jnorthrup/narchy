@@ -387,24 +387,22 @@ public enum TruthFunctions2 {
      *  http://www.math.sk/fsta2014/presentations/VemuriHareeshSrinath.pdf
      * */
     @Skill("Fuzzy_set") @Nullable public static Truth divide(Truth X, Truth XY, float minConf) {
-        float cxy = confCompose(X, XY);
-        if (cxy >= minConf) {
+        float c = confCompose(X, XY);
+        if (c < minConf)
+            return null;
 
-            float fxy = XY.freq();
-            float fx = Math.max(Util.sqr(NAL.truth.TRUTH_EPSILON), X.freq()); //prevent division by zero
-            float fy = fxy / fx;
+        float fx = Math.max(Util.sqr(NAL.truth.TRUTH_EPSILON), X.freq()); //prevent division by zero
+        float fxy = XY.freq();
+        float fy = fxy / fx;
 
-            float cFactor = 1;
-            if (fy > 1) {
-                cFactor = 1/fy;
-                fy = 1;
-            }
-            float c =
-                    cxy * cFactor;
-
-            if (c >= minConf)
-                return t(fy, c);
+        if (fy > 1) {
+            float doubt = 1/fy;
+            c *= doubt;
+            if (c < minConf)
+                return null;
+            fy = 1;
         }
-        return null;
+
+        return t(fy, c);
     }
 }

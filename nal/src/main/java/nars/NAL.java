@@ -200,8 +200,9 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
     /** override to allow all goal evidence overlap */
     public static final boolean OVERLAP_ALLOW_GOAL = false;
 
-    /** if true then tasklink targets are named by the concept and not a raw term (which could be temporal or not normalized) */
-    public static final boolean TASKLINK_TARGET_CONCEPT = true;
+    /** if true then tasklink targets are named by the concept and not a raw term (which could be temporal or not normalized)
+     * */
+    public static final boolean TASKLINK_TARGET_CONCEPT = false;
 
 
     protected static final boolean DYNAMIC_CONCEPT_TRANSIENT = false;
@@ -669,7 +670,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
          * for NALTest's: extends the time all unit tests are allowed to run for.
          * normally be kept to 1 but for debugging this may be increased to find what tests need more time
          */
-        public static final float TIME_MULTIPLIER = 3f;
+        public static final float TIME_MULTIPLIER = 2f;
         /**
          * how precise unit test results must match expected values to pass
          */

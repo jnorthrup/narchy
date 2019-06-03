@@ -7,6 +7,7 @@ import nars.subterm.Subterms;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.atom.Atomic;
+import nars.term.compound.SeparateSubtermsCompound;
 import nars.term.util.conj.Conj;
 import nars.term.util.conj.ConjLazy;
 import nars.term.var.Img;
@@ -31,7 +32,7 @@ public abstract class DynamicTermLinker implements TermLinker {
 
     private Term sampleDynamic(Compound t, int depthRemain, Random rng) {
 
-        Subterms tt = t.subterms();
+        Subterms tt = t instanceof SeparateSubtermsCompound ?  t.subterms() : t;
         int n = tt.subs();
 
         Term u;

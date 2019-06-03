@@ -288,7 +288,7 @@ public class Occurrify extends TimeGraph {
 
     @Override
     protected boolean decomposeAddedEvent(Event event) {
-        return decomposeEvents;
+        return super.decomposeAddedEvent(event) && decomposeEvents;
     }
 
     @Override
@@ -322,23 +322,23 @@ public class Occurrify extends TimeGraph {
 
         if (taskStart == ETERNAL && (beliefStart != TIMELESS && beliefStart != ETERNAL)) {
 
-            if (time.beliefProjection()==BeliefProjection.Task) {
-                //taskStart = taskEnd = TIMELESS;
-
-//                //eternal task projected to virtual present moment
-                long now = d.time();
-                int dur = Math.min(d.nar.dtDither(), Tense.occToDT(beliefEnd - beliefStart));
-                taskStart = now - dur / 2;
-                taskEnd = now + dur / 2;
-            } else {
+//            if (time.beliefProjection()==BeliefProjection.Task) {
+//                //taskStart = taskEnd = TIMELESS;
+//
+////                //eternal task projected to virtual present moment
+//                long now = d.time();
+//                int dur = Math.min(d.nar.dtDither(), Tense.occToDT(beliefEnd - beliefStart));
+//                taskStart = now - dur / 2;
+//                taskEnd = now + dur / 2;
+//            } else {
                 //eternal task projected to belief's time
-                taskStart = beliefStart;
-                taskEnd = beliefEnd;
-            }
+                //taskStart = beliefStart;
+                //taskEnd = beliefEnd;
+                taskStart = taskEnd = TIMELESS;
+//            }
 
         } else if ((beliefStart == ETERNAL && taskStart!=ETERNAL)) { //|| time.beliefProjection()==BeliefProjection.Task) {
-            beliefStart = taskStart;
-            beliefEnd = taskEnd;
+            beliefStart = beliefEnd = TIMELESS;
         }
 //        if ((d.concPunc==GOAL || d.concPunc==QUEST) && (d.taskPunc == GOAL || d.taskPunc == QUEST) && taskStart!=ETERNAL && (beliefStart!=ETERNAL && beliefStart!=TIMELESS)) {
 //            //ignore belief occurrence in deriving goal/quest from goal/quest

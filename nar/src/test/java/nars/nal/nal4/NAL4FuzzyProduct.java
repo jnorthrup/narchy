@@ -4,6 +4,8 @@ import nars.NAR;
 import nars.NARS;
 import nars.derive.BatchDeriver;
 import nars.derive.Derivers;
+import nars.term.Term;
+import nars.term.util.Image;
 import nars.term.util.SetSectDiff;
 import nars.test.NALTest;
 import org.junit.jupiter.api.Test;
@@ -95,8 +97,12 @@ public class NAL4FuzzyProduct extends NALTest {
     void testIntersectionOfProductSubterms2ReverseIntensional() {
         test.termVolMax(11);
 
+        String F = "f((x|y),z)";
+        Term f = $$(F);
+        assertEq("(--,(((--,x)&&(--,y))-->(f,/,z)))",Image.imageExt(f,$$("(x|y)")));
+
         test
-            .believe("f((x|y),z)", 1.0f, 0.9f)
+            .believe(F, 1.0f, 0.9f)
             .mustBelieve(cycles, "((x|y)-->(f,/,z))", 1.0f, 0.9f)
             .mustBelieve(cycles, "(x-->(f,/,z))", 1.0f, 0.81f)
             .mustBelieve(cycles, "(y-->(f,/,z))", 1.0f, 0.81f)

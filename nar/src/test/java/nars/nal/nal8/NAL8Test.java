@@ -21,7 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class NAL8Test extends NALTest {
 
-    public static final int cycles = 150;
+    public static final int cycles = 450;
 
     @BeforeEach
     void setTolerance() {
@@ -733,7 +733,7 @@ public class NAL8Test extends NALTest {
                 .inputAt(5, "b! |")
 
                 .mustGoal(cycles, "a", 1f, 0.3f, t -> t == 2)
-                .mustNotOutput(cycles, "a", GOAL, ETERNAL);
+                .mustNotOutput(cycles, "a", GOAL, t -> t!=2);
     }
     @Test
     void conjDecomposeGoalAfter_tmp_tmp() {

@@ -50,20 +50,20 @@ abstract public class PremiseSource {
 //            }
 //        }
 
-        float linkPri = 0;
+
         for (int i = 0; i < termlinksPerTaskLink; i++) {
             Term term = links.term(tasklink, task, d);
-            if (term != null && (prevTerm == null || !term.equals(prevTerm))) {
+            if (term != null) {
+                if (prevTerm == null || !term.equals(prevTerm)) {
 
 //                term = Abbreviation.unabbreviate(term, d.nar);
 //                if (term == null || term instanceof Bool)
 //                    continue;
 
-
-                Premise p = new Premise(task, term);
-                each.accept(p);
+                    each.accept(new Premise(task, term));
+                }
+                prevTerm = term;
             }
-            prevTerm = term;
         }
     }
 

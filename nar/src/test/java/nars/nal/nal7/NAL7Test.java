@@ -184,21 +184,24 @@ public class NAL7Test extends NALTest {
 //        Param.DEBUG = true;
 //        test.log();
         test
-                .termVolMax(7)
-                .inputAt(1, "a. :|:")
+                .termVolMax(5)
+                .confMin(0.5f)
+                .inputAt(1, "a. |")
                 .mustNotOutput(cycles, "a", BELIEF, (t) -> t != 1)
-                .inputAt(5, "b. :|:")
+                .inputAt(5, "b. |")
                 .mustNotOutput(cycles, "b", BELIEF, (t) -> t != 5)
-                .inputAt(10, "c. :|:")
+                .inputAt(10, "c. |")
                 .mustNotOutput(cycles, "c", BELIEF, (t) -> t != 10)
                 .mustBelieve(cycles * 2, "(a &&+9 c)", 1.00f, 0.81f, (t) -> t == 1)
                 .mustNotOutput(cycles * 2, "(a &&+9 c)", BELIEF, 0, 1.00f, 0, 1, (t) -> t != 1)
-                .mustBelieve(cycles, "((a &&+4 b) &&+5 c)", 1.00f, 0.81f, (t) -> t == 1)
-                .mustNotOutput(cycles, "((a &&+4 b) &&+5 c)", BELIEF, (t) -> t != 1)
+                .mustBelieve(cycles*2, "((a &&+4 b) &&+5 c)", 1.00f, 0.73f, (t) -> t == 1)
+                .mustNotOutput(cycles*2, "((a &&+4 b) &&+5 c)", BELIEF, (t) -> t != 1)
                 .mustBelieve(cycles, "(b &&+5 c)", 1.00f, 0.81f, (t) -> t == 5)
                 .mustNotOutput(cycles, "(b &&+5 c)", BELIEF, (t) -> t != 5)
                 .mustBelieve(cycles, "(a &&+4 b)", 1.00f, 0.81f, (t) -> t == 1)
                 .mustNotOutput(cycles, "(a &&+4 b)", BELIEF, (t) -> t != 1)
+                .mustNot(BELIEF,
+                        t->!t.hasVars() && (t.start() < 0 || t.start() > 10 || t.end() < 0 || t.end() > 10));
         ;
     }
 
@@ -224,9 +227,7 @@ public class NAL7Test extends NALTest {
                 .mustBelieve(cycles, "(x &&+1 y)", 1, 0.81f, 1)
                 .mustBelieve(cycles, "x", 1, 0.73f, 1)
                 .mustBelieve(cycles, "y", 1, 0.73f, 2)
-                .must(BELIEF, true, (x)->{
-                    return x.start() >= 1 && x.end() <= 3;
-                })
+                .must(BELIEF, x-> x.start() >= 1 && x.end() <= 3)
                 .mustNotOutput(cycles, "(x &&+1 y)", BELIEF, (t) -> t != 1)
                 .mustNotOutput(cycles, "x", BELIEF, (t) -> t != 1)
                 .mustNotOutput(cycles, "y", BELIEF, (t) -> t != 2)

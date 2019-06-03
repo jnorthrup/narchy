@@ -1,6 +1,7 @@
 package nars.time;
 
 import com.google.common.collect.Iterables;
+import com.google.common.collect.Sets;
 import jcog.Util;
 import jcog.WTF;
 import jcog.data.graph.ImmutableDirectedEdge;
@@ -19,7 +20,6 @@ import nars.Op;
 import nars.subterm.Subterms;
 import nars.term.Compound;
 import nars.term.Term;
-import nars.term.util.Image;
 import nars.term.util.conj.Conj;
 import nars.term.util.conj.ConjSeq;
 import nars.term.var.CommonVariable;
@@ -458,7 +458,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
                 }
             }
 
-            event = (end != start) ? new AbsoluteRange(t, start, end) : new Absolute(t, start);
+            event = event(t, start, end);
         }
 
 
@@ -469,6 +469,10 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
         } else {
             return event;
         }
+    }
+
+    private TimeGraph.Event event(Term t, long start, long end) {
+        return (end != start) ? new AbsoluteRange(t, start, end) : new Absolute(t, start);
     }
 
     private Event addNodeRelinked(Event e, FasterList<FromTo<Node<Event, TimeSpan>, TimeSpan>> relinkIn, FasterList<FromTo<Node<Event, TimeSpan>, TimeSpan>> relinkOut) {
@@ -754,7 +758,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
     }
 
     protected boolean decomposeAddedEvent(Event event) {
-        return true;
+        return event.id instanceof Compound;
     }
 
     private void onNewTerm(Term t) {
@@ -961,7 +965,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
             }
         }
 
-        Collection<Event> AB = sortEvents(ab);
+        Collection<Event> AB = shuffleAndSort(ab);
 
         return true
                 && (AB.isEmpty() || bfsAdd(AB, new DTPairSolver(a, b, x, each, true, false, false)))
@@ -1582,18 +1586,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
         return ThreadLocalRandom.current();
     }
 
-    public Collection<Event> sortEvents(Collection<Event> e) {
-
-//        int s = ab.size();
-//        assert (s > 0);
-//
-//        if (s > 1) {
-////            ab.shuffleThis(random());
-////
-////            //then sort the Absolute events to be tried first
-////            ab.sortThisByBoolean(e -> !(e instanceof Absolute));
-//
-//        }
+    Collection<Event> shuffleAndSort(Collection<Event> e) {
 
         if (e.size() > 1) {
             FasterList<Event> ee = new FasterList(e);
@@ -1602,6 +1595,18 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
             return ee;
         } else
             return e;
+    }
+
+    @Nullable Iterable<Event> shuffleAndSort(Iterable<Event> e) {
+        FasterList<Event> ee = new FasterList(e);
+        switch (ee.size()) {
+            case 0: return null;
+            case 1: return List.of(ee.get(0));
+            default:
+                ee.shuffleThis(this::random);
+                ee.sortThisByInt(x -> x instanceof Absolute ? -1 : 0);
+                return ee;
+        }
     }
 
     public Iterable<FromTo<Node<Event, TimeSpan>, TimeSpan>> sortEdges(Iterable<FromTo<Node<Event, TimeSpan>, TimeSpan>> e) {
@@ -1900,27 +1905,42 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 
         Iterable<FromTo<Node<Event, nars.time.TimeSpan>, TimeSpan>> tangent(Node<Event, TimeSpan> root, Term t) {
 
-            Collection<Event> ee = eventsOrNull(t);
+            Iterable<Event> ee = eventsOrNull(t);
             if (ee == null) {
                 return empty;
             } else {
 
+                if (root.id().id.equals(t)) {
+                    Event rootEvent = root.id();
+                    ee = Iterables.filter(ee, x -> !(x.equals(rootEvent)));
+                }
+
                 Iterable<Event> eee =
-                        //ee;
-                        sortEvents(ee);
+                        filterShuffleSort(root, ee);
+                        //shuffleAndSort(ee);
+                if (eee == null)
+                    return empty;
 
                 return Iterables.transform(
                         Iterables.filter(
                                 Iterables.transform(eee, TimeGraph.this::node),
                                 n -> n != null && n != root && log.hasNotVisited(n)
                         ),
-                        n -> new ImmutableDirectedEdge(root, TS_ZERO, n)
+                        n -> {
+                            return new ImmutableDirectedEdge(root, TS_ZERO, n);
+                        }
                 );
             }
 
         }
 
 
+    }
+
+    private Iterable<Event> filterShuffleSort(Node<Event, TimeSpan> root, Iterable<Event> ee) {
+        boolean rootAbsolute = root.id() instanceof Absolute;
+        return shuffleAndSort(Iterables.filter(ee,
+                z -> (z instanceof Absolute)!=rootAbsolute));
     }
 
     private class DTPairSolver extends CrossTimeSolver {
@@ -2052,9 +2072,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 
             }
 
-            Event solution = event(pathStart(path).id().id, startTime, endTime, false);
-
-            return each.test(solution);
+            return each.test(event(pathStart(path).id().id, startTime, endTime));
         }
 
     }

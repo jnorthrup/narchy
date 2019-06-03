@@ -7,11 +7,11 @@ import nars.control.MetaGoal;
 import nars.task.Tasked;
 import nars.term.Term;
 import nars.term.util.TermException;
+import nars.test.condition.LambdaTaskCondition;
 import nars.test.condition.NARCondition;
 import nars.test.condition.TaskCondition;
 import nars.time.Tense;
 import org.eclipse.collections.api.block.predicate.primitive.LongLongPredicate;
-import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -431,15 +431,16 @@ public class TestNAR {
     }
 
 
-    public TestNAR must(byte punc, TaskCondition tc) {
+    public TestNAR must(byte punc, Predicate<Task> tc) {
         return must(punc, true, tc);
     }
+
+    public TestNAR mustNot(byte punc, Predicate<Task> tc) {
+        return must(punc, false, tc);
+    }
+
     public TestNAR must(byte punc, boolean mustOrMustNot, Predicate<Task> tc) {
-        return must(punc, mustOrMustNot, new TaskCondition() {
-            @Override public boolean matches(@Nullable Task task) {
-                return tc.test(task);
-            }
-        });
+        return must(punc, mustOrMustNot, new LambdaTaskCondition(tc));
     }
 
     public TestNAR must(byte punc, boolean mustOrMustNot, TaskCondition tc) {
