@@ -68,7 +68,7 @@ public class ConjClustering extends How {
     private final int minDurationsPerLearning = 1;
 
 
-    public final FloatRange forgetRate = new FloatRange(0.5f, 0, 1);
+    public final FloatRange forgetRate = new FloatRange(1f, 0, 1);
 
     public ConjClustering(NAR nar, byte punc, int centroids, int capacity) {
         this(nar, punc, (t) -> true, centroids, capacity);

@@ -81,8 +81,9 @@
     //(S <-> P), P         |- (S --> P), (Belief:Identity)
     //(S <-> P), P, task("!")  |- (S --> P), (Goal:Identity)
 
-    //TODO maybe Comparison..
-    (S <-> P), (P --> S), --isVar(S), --isVar(P) |- (S --> P), (Belief:ReduceConjunction, Goal:Desire, Time:Compose)
+
+    //(S <-> P), (P --> S), --isVar(S), --isVar(P) |- (S --> P), (Belief:ReduceConjunction, Goal:Desire, Time:Compose)
+    (S <-> P), (P --> S), --isVar(S), --isVar(P) |- --(S --> P), (Belief:DecomposeNP, Goal:DesireWeak, Time:Compose)
 
 
 ////// similarity-based syllogism ////////////////////////////////////////////////////////////////////////////////////
@@ -90,7 +91,7 @@
 ////also if P and S are a general case of M
 //
 
-    //(S --> P), (P --> S), --isVar(S), --isVar(P) |-   (S <-> P), (Belief:Comparison, Goal:DesireWeak, Time:Compose)
+    (S --> P), (P --> S), --isVar(S), --isVar(P) |-   (S <-> P), (Belief:Comparison, Goal:DesireWeak, Time:Compose)
     //(S --> P), (P --> S), --isVar(S), --isVar(P) |- --(S <-> P), (Belief:IntersectionNN, Goal:DesireNN)
 
     //(S --> P), (P --> S) |- --(S <-> P), (Belief:ComparisonSymmetric, Time:Intersect)

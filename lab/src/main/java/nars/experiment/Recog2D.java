@@ -60,7 +60,7 @@ public class Recog2D extends GameX {
 
 
     int image;
-    final int maxImages = 2;
+    final int maxImages = 4;
 
     int imagePeriod = 64;
     static final int FPS = 32;
@@ -69,7 +69,7 @@ public class Recog2D extends GameX {
         super("x", n);
 
 
-        w = 10; h = 12;
+        w = 12; h = 14;
         int sw = 5, sh = 6;
 
         canvas = new BufferedImage(w, h, BufferedImage.TYPE_INT_BGR);

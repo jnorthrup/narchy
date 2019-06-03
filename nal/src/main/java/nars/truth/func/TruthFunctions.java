@@ -157,9 +157,9 @@ public final class TruthFunctions {
             f1 = 1 - f1;
             f2 = 1 - f2;
         }
-        final float c1 = a.conf(), c2 = b.conf();
+
         final float f0 = or(f1, f2);
-        final float w = and(f0, c1, c2);
+        final float w = and(f0, confCompose(a,b));
         final float c = w2cSafe(w);
         if (c < minConf)
             return null;
@@ -269,7 +269,7 @@ public final class TruthFunctions {
      * return neg(deduct(intersect(neg(v1), v2), 1f));
      */
     @Nullable
-    static Truth reduceConjunction(Truth a, Truth b, float minConf) {
+    @Deprecated static Truth reduceConjunction(Truth a, Truth b, float minConf) {
         Truth i12 = intersection(a, true, b, false, minConf);
         if (i12 == null) return null;
 

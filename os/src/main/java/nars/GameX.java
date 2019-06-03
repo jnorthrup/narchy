@@ -126,7 +126,7 @@ abstract public class GameX extends Game {
 
         initPlugins(n);
         initPlugins2(n, g);
-        initMeta(n, g, true);
+        //initMeta(n, g, false);
 
         //new Gridding(n.parts(Game.class).map(NARui::agent).collect(toList())),
         n.synch();
@@ -404,23 +404,22 @@ abstract public class GameX extends Game {
         );
 
         n.confMin.set(0.01f);
-        n.termVolMax.set(30);
+        n.termVolMax.set(36);
 
 
-        n.beliefPriDefault.amp(0.1f);
+        n.beliefPriDefault.amp(0.2f);
         n.goalPriDefault.amp(0.5f);
         n.questionPriDefault.amp(0.02f);
         n.questPriDefault.amp(0.03f);
-
 
         n.beliefConfDefault.set(0.9f);
         n.goalConfDefault.set(0.9f);
 
         n.emotion.want(MetaGoal.Futile, -0.001f);
-        n.emotion.want(MetaGoal.Perceive, -0.002f);
+//        n.emotion.want(MetaGoal.Perceive, -0.002f);
 
         n.emotion.want(MetaGoal.Believe, 0.01f);
-        n.emotion.want(MetaGoal.Desire, 0.5f);
+        n.emotion.want(MetaGoal.Desire, 0.75f);
 
         n.emotion.want(MetaGoal.Action, +1f);
 

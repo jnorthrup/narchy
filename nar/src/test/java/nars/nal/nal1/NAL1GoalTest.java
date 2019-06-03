@@ -75,14 +75,6 @@ public class NAL1GoalTest extends NALTest {
                 .mustGoal(cycles, "(human --> nars)", 0f, 0.45f);
     }
 
-    @Test
-    void similarityBelief() {
-        test
-                .input("(a-->c).")
-                .input("(c-->a).")
-                .mustBelieve(cycles, "(a<->c)", 1f, 0.81f)
-        ;
-    }
 //    @Test
 //    void similarityGoalUp() {
 //        test

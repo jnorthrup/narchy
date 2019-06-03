@@ -56,28 +56,28 @@ public class Pacman extends GameX {
         }
         SpaceGraph.window(gg, 300, 300);
 
-        actionPushButtonMutex($.inh(id,"left"), $.inh(id,"right"), ()->{
-            g.keys[1] = true;
-            g.keys[0] = false;
-        }, ()->{
-            g.keys[0] = true;
-            g.keys[1] = false;
-        });
-//        actionTriState($.the("x") /*$.p(id, Atomic.the("x"))*/, (dh) -> {
-//            switch (dh) {
-//                case +1:
-//                    g.keys[1] = true;
-//                    g.keys[0] = false;
-//                    break;
-//                case -1:
-//                    g.keys[0] = true;
-//                    g.keys[1] = false;
-//                    break;
-//                case 0:
-//                    g.keys[0] = g.keys[1] = false;
-//                    break;
-//            }
+//        actionPushButtonMutex($.inh(id,"left"), $.inh(id,"right"), ()->{
+//            g.keys[1] = true;
+//            g.keys[0] = false;
+//        }, ()->{
+//            g.keys[0] = true;
+//            g.keys[1] = false;
 //        });
+        actionTriState($.the("x") /*$.p(id, Atomic.the("x"))*/, (dh) -> {
+            switch (dh) {
+                case +1:
+                    g.keys[1] = true;
+                    g.keys[0] = false;
+                    break;
+                case -1:
+                    g.keys[0] = true;
+                    g.keys[1] = false;
+                    break;
+                case 0:
+                    g.keys[0] = g.keys[1] = false;
+                    break;
+            }
+        });
 
         actionTriState($.the("y") /*$.p(id, Atomic.the("y"))*/, (dh) -> {
             switch (dh) {

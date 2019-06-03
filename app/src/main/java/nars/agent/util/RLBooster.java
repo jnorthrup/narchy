@@ -1,6 +1,7 @@
 package nars.agent.util;
 
 import com.google.common.collect.Streams;
+import jcog.Paper;
 import jcog.Util;
 import jcog.data.list.FasterList;
 import jcog.func.IntIntToObjectFunction;
@@ -38,6 +39,7 @@ import static nars.Op.GOAL;
  * NAgent Reinforcement Learning Algorithm Accelerator
  * TODO use AgentBuilder
  */
+@Paper
 public class RLBooster  {
 
     public static final Logger logger = LoggerFactory.getLogger(RLBooster.class);
