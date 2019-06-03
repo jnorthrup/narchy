@@ -23,13 +23,13 @@ public class ConstraintParser {
         Expression resolveConstant(String name);
     }
 
-    public static ContinuousConstraint parseConstraint(String constraintString, CassowaryVariableResolver variableResolver) throws NonlinearExpressionException {
+    public static ContinuousConstraint parse(String constraintString, CassowaryVariableResolver variableResolver) throws NonlinearExpressionException {
 
         Matcher matcher = pattern.matcher(constraintString);
         matcher.find();
         if (matcher.matches()) {
             DoubleVar variable = variableResolver.resolveVariable(matcher.group(1));
-            RelationalOperator operator = parseOperator(matcher.group(2));
+            ScalarComparison operator = parseOperator(matcher.group(2));
             Expression expression = resolveExpression(matcher.group(3), variableResolver);
             double strength = parseStrength(matcher.group(4));
 
@@ -39,15 +39,15 @@ public class ConstraintParser {
         }
     }
 
-    private static RelationalOperator parseOperator(String operatorString) {
+    private static ScalarComparison parseOperator(String operatorString) {
 
-        RelationalOperator operator = null;
+        ScalarComparison operator = null;
         if ("EQ".equals(operatorString) || "==".equals(operatorString)) {
-            operator = RelationalOperator.OP_EQ;
+            operator = ScalarComparison.Equal;
         } else if ("GEQ".equals(operatorString) || ">=".equals(operatorString)) {
-            operator = RelationalOperator.OP_GE;
+            operator = ScalarComparison.GreaterThanOrEqual;
         } else if ("LEQ".equals(operatorString) || "<=".equals(operatorString)) {
-            operator = RelationalOperator.OP_LE;
+            operator = ScalarComparison.LessThanOrEqual;
         }
         return operator;
     }

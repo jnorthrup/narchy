@@ -1,19 +1,21 @@
 package jcog.constraint.continuous;
 
+import java.util.function.DoubleSupplier;
+
 /**
  * Created by alex on 30/01/15.
  */
-public class DoubleTerm {
+public class DoubleTerm implements DoubleSupplier {
 
-    public final DoubleVar var;
+    public final DoubleSupplier var;
     double coefficient;
 
-    public DoubleTerm(DoubleVar var, double coefficient) {
+    public DoubleTerm(DoubleSupplier var, double coefficient) {
         this.var = var;
         this.coefficient = coefficient;
     }
 
-    public DoubleTerm(DoubleVar var) {
+    public DoubleTerm(DoubleSupplier var) {
         this(var, 1.0);
     }
 
@@ -21,12 +23,17 @@ public class DoubleTerm {
         this.coefficient = coefficient;
     }
 
-    public double value() {
-        return coefficient * var.value();
-    }
-
     @Override
     public String toString() {
         return "variable: (" + var + ") coefficient: "  + coefficient;
+    }
+
+    @Override
+    public double getAsDouble() {
+         return coefficient * var.getAsDouble();
+    }
+
+    public boolean mutable() {
+        return var instanceof DoubleVar;
     }
 }

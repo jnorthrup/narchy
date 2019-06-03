@@ -1,7 +1,6 @@
 package nars.truth.dynamic;
 
 import jcog.Paper;
-import jcog.Util;
 import jcog.data.bit.MetalBitSet;
 import jcog.data.set.MetalLongSet;
 import jcog.math.LongInterval;
@@ -12,22 +11,24 @@ import nars.Task;
 import nars.concept.Concept;
 import nars.concept.TaskConcept;
 import nars.table.BeliefTable;
+import nars.task.NALTask;
 import nars.task.util.Answer;
 import nars.task.util.TaskList;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.util.TermException;
 import nars.time.Tense;
-import nars.time.event.WhenTimeIs;
+import nars.time.When;
 import nars.truth.Stamp;
 import nars.truth.Truth;
+import nars.util.Timed;
 
+import javax.annotation.Nullable;
 import java.util.Random;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 import static nars.Op.*;
-import static nars.time.Tense.XTERNAL;
 import static nars.truth.dynamic.DynamicConjTruth.ConjIntersection;
 
 /**
@@ -42,44 +43,71 @@ import static nars.truth.dynamic.DynamicConjTruth.ConjIntersection;
 @Paper
 public class DynTaskify extends TaskList {
 
-    private final AbstractDynamicTruth model;
+    public final AbstractDynamicTruth model;
 
-    private final Answer answer;
+    public  final NAR nar;
+    private final Compound template;
+
+    /** whether the result is intended for internal or external usage; determines precision settings */
+    final boolean ditherTruth, ditherTime;
     private final int dur;
-    public final Task result;
     private MetalLongSet evi = null;
 
     private final boolean beliefOrGoal;
     private final Predicate<Task> filter;
-    final MetalBitSet componentPolarity;
+    public final MetalBitSet componentPolarity;
 
-    public DynTaskify(AbstractDynamicTruth model, boolean beliefOrGoal, Answer a) {
-        super(4 /* estimate */);
-
-        this.answer = a;
-        this.beliefOrGoal = beliefOrGoal;
-        this.model = model;
-        this.dur = a.dur;
-        this.componentPolarity = MetalBitSet.bits(32);
-        componentPolarity.negate(); //all positive by default
-
-        Term template = a.term();
-        assert(template.op() != NEG);
-
-
-        Predicate<Task> answerfilter = a.filter;
-        this.filter = NAL.DYNAMIC_TRUTH_STAMP_OVERLAP_FILTER ?
-                        Answer.filter(answerfilter, this::doesntOverlap) :
-                        answerfilter;
-
-
-        result = model.evalComponents(a, this::evalComponent) ? taskify() : null;
+    public DynTaskify(AbstractDynamicTruth model, boolean beliefOrGoal, boolean ditherTruth, boolean ditherTime,int dur, NAR nar) {
+        this(model, beliefOrGoal, ditherTruth, ditherTime, null, dur, null, nar);
     }
 
-    private Task taskify() {
+    public DynTaskify(AbstractDynamicTruth model, boolean beliefOrGoal, boolean ditherTruth, boolean ditherTime, @Nullable Compound template, int dur, Predicate<Task> filter, NAR nar) {
+        super(8 /* estimate */);
+        this.model = model;
+        this.beliefOrGoal = beliefOrGoal;
+        this.ditherTruth = ditherTruth; this.ditherTime = ditherTime;
+
+        this.template = template;
+        assert(template==null || template.op() != NEG);
+
+        this.dur = dur;
+        this.nar = nar;
+        this.filter = NAL.DYNAMIC_TRUTH_STAMP_OVERLAP_FILTER ?
+                Answer.filter(filter, this::doesntOverlap) : filter;
+        this.componentPolarity = MetalBitSet.bits(32).negate(); //all positive by default
+    }
+
+    public DynTaskify(AbstractDynamicTruth model, boolean beliefOrGoal, Answer a) {
+        this(model, beliefOrGoal, a.ditherTruth, true, (Compound)a.term(), a.dur, a.filter, a.nar);
+    }
+
+    public static Task merge(TaskList tasks, Term content, Truth t, Supplier<long[]> stamp, boolean beliefOrGoal, long start, long end, Timed w) {
+
+        NALTask dyn = Answer.task(content, t, stamp, beliefOrGoal, start, end, w);
+        if(dyn==null)
+            return null;
+
+        dyn.cause( tasks.why() );
+
+        dyn.pri(
+                tasks.reapply(TaskList::pri, NAL.DerivationPri)
+                        // * dyn.originality() //HACK
+        );
+
+//        if (NAL.test.DEBUG_EXTRA) {
+//        }
+
+        return dyn;
+    }
+
+    @Nullable
+    public Task eval(long start, long end) {
+        return model.evalComponents(template, start, end, this::evalComponent) ? taskify() : null;
+    }
+
+    public Task taskify() {
         long s, e;
 
-        Answer a = answer;
 
         long earliest;
         long latest = maxValue(Stamp::end);
@@ -89,24 +117,24 @@ public class DynTaskify extends TaskList {
             earliest = LongInterval.ETERNAL;
         } else {
 
-            earliest = earliest();
+            earliest = earliestStart();
 
 
             if (model == ConjIntersection) {
                 //calculate the minimum range (ie. intersection of the ranges)
                 s = earliest;
-                //long range = (minValue(t -> t.isEternal() ? 0 : t.range()-1));
 
-                long ss = a.time.start, ee = a.time.end;
-                long range = ee-ss;
-                if (ss != LongInterval.ETERNAL && ss != XTERNAL) {
-                    s = Util.clampSafe(s, ss, ee); //project sequence to when asked
-                }
+                //long ss = a.time.start, ee = a.time.end;
+                //long range = ee-ss;
+//                if (ss != LongInterval.ETERNAL && ss != XTERNAL) {
+//                    s = Util.clampSafe(s, ss, ee); //project sequence to when asked
+//                }
 
-                if (s != LongInterval.ETERNAL) {
-                    e = s + range;
-                } else {
+                if (s == LongInterval.ETERNAL) {
                     e = LongInterval.ETERNAL;
+                } else {
+                    long range = (minValue(t -> t.isEternal() ? 0 : t.range()-1));
+                    e = s + range;
                 }
 
             } else {
@@ -123,19 +151,17 @@ public class DynTaskify extends TaskList {
         }
 
 
-        NAR nar = a.nar;
-        Compound template = (Compound) a.term();
-        Term term1 = model.reconstruct(template, this, nar, s, e);
+        Term term1 = model.reconstruct(template, this, s, e);
         if (term1==null || !term1.unneg().op().taskable) { //quick tests
             if (NAL.DEBUG) {
                 //TEMPORARY
-//                model.evalComponents(answer, (z,start,end)->{
-//                    System.out.println(z);
-//                    nar.conceptualizeDynamic(z).beliefs().match(answer);
-//                    return true;
-//                });
-//                model.reconstruct(template, this, nar, s, e);
-                throw new TermException("DynTaskify template not reconstructed: " + this, template);
+//                  model.evalComponents(answer, (z,start,end)->{
+//                      System.out.println(z);
+//                      nar.conceptualizeDynamic(z).beliefs().match(answer);
+//                      return true;
+//                  });
+//                  model.reconstruct(template, this, nar, s, e);
+//                throw new TermException("DynTaskify template not reconstructed: " + this, template);
             }
             return null;
         }
@@ -152,7 +178,7 @@ public class DynTaskify extends TaskList {
                             NAL.truth.EVI_MIN, //minimal truth threshold for accumulating evidence
                             false,
                             1, //no need to dither truth or time here.  maybe in the final calculation though.
-                            a.dur,
+                            dur,
                             nar);
                     if (tt == null)
                         return null;
@@ -162,7 +188,7 @@ public class DynTaskify extends TaskList {
         }
 
 
-        Truth t = model.truth(this, nar);
+        Truth t = model.truth(this);
         //t = (t != null && eviFactor != 1) ? PreciseTruth.byEvi(t.freq(), t.evi() * eviFactor) : t;
         if (t == null)
             return null;
@@ -170,22 +196,23 @@ public class DynTaskify extends TaskList {
         /** interpret the presence of truth dithering as an indication this is producng something for 'external' usage,
          *  and in which case, also dither time
          */
-        boolean internalOrExternal = !a.ditherTruth;
-        if (!internalOrExternal) {
+
+        if (ditherTruth) {
             //dither and limit truth
             t = t.dither(nar);
             if (t == null)
                 return null;
+        }
 
-            //dither time
+        if (ditherTime) {
             if (s!= LongInterval.ETERNAL) {
                 int dtDither = nar.dtDither();
-                s = Tense.dither(s, dtDither);
-                e = Tense.dither(e, dtDither);
+                s = Tense.dither(s, dtDither, -1);
+                e = Tense.dither(e, dtDither, +1);
             }
         }
 
-        return Answer.merge(this, term1, t, stamp(nar.random()), beliefOrGoal, s, e, nar);
+        return merge(this, term1, t, stamp(nar.random()), beliefOrGoal, s, e, nar);
     }
 
 
@@ -226,7 +253,6 @@ public class DynTaskify extends TaskList {
 //            //if (!subTermImgNorm.equals(subTerm))
 //        }
 
-        NAR nar = answer.nar;
         Concept subConcept = nar.conceptualizeDynamic(subTerm);
         if (!(subConcept instanceof TaskConcept))
             return false;
@@ -242,7 +268,7 @@ public class DynTaskify extends TaskList {
                 bt = table.match(subStart, subEnd, subTerm, filter, dur, nar);
                 break;
             case 2:
-                bt = table.sample(WhenTimeIs.range(subStart, subEnd, answer), subTerm, filter);
+                bt = table.sample(new When(subStart, subEnd, dur, nar), subTerm, filter);
                 break;
             default:
                 throw new UnsupportedOperationException();
@@ -362,15 +388,18 @@ public class DynTaskify extends TaskList {
         return false;
     }
 
-    private Term template() {
-        return answer.term();
-    }
-
-    /** excludes ETERNALs */
-    private long earliest() {
-        return minValue(t -> {
+    /** earliest start time, excluding ETERNALs.  returns ETERNAL if all ETERNAL */
+    public long earliestStart() {
+        long w = minValue(t -> {
             long ts = t.start();
             return ts != LongInterval.ETERNAL ? ts : LongInterval.TIMELESS;
         });
+        return w == TIMELESS ? ETERNAL : w;
     }
+
+    /** latest start time, excluding ETERNALs.  returns ETERNAL if all ETERNAL */
+    public long latestStart() {
+        return maxValue(Stamp::start);
+    }
+
 }

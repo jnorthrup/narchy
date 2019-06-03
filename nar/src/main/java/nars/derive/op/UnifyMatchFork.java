@@ -2,17 +2,16 @@ package nars.derive.op;
 
 import nars.derive.model.Derivation;
 import nars.term.Term;
-import nars.term.atom.Bool;
 import nars.term.buffer.TermBuffer;
+import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 
-import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Predicate;
 
 public final class UnifyMatchFork extends TermBuffer implements Predicate<Derivation> {
 
     private int forkLimit = -1;
-    final Set<Term> tried = new HashSet(16, 0.99f);
+    final Set<Term> tried = new UnifiedSet(4, 0.99f);
     private Taskify taskify;
     private int workVolMax;
 
@@ -35,16 +34,11 @@ public final class UnifyMatchFork extends TermBuffer implements Predicate<Deriva
 
         Term y = x.transform(d.transform, this, workVolMax);
 
-        d.nar.emotion.deriveMatchTransformed.increment();
+        if (y.unneg().op().taskable && tried.add(y)) {
 
-        if (!(y instanceof Bool) && y.unneg().op().taskable) {
+            taskify.apply(y, d);
 
-            if (forkLimit == 1 || tried.add(y)) {
-
-                taskify.apply(y, d);
-
-                return forkLimit != 1 && tried.size() < forkLimit; //CUT
-            }
+            return tried.size() < forkLimit; //CUT
         }
 
         return true; //CONTINUE

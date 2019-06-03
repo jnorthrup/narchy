@@ -9,7 +9,7 @@ import spacegraph.input.finger.Finger;
 import spacegraph.space2d.ReSurface;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.PaintSurface;
-import spacegraph.space2d.container.graph.EditGraph2D;
+import spacegraph.space2d.container.graph.GraphEdit2D;
 import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.space2d.widget.shape.VerletSurface;
 import spacegraph.util.animate.Animated;
@@ -182,7 +182,7 @@ class VerletSurfaceTest {
 
     }
 
-    public static class VerletLinkTest extends EditGraph2D {
+    public static class VerletLinkTest extends GraphEdit2D {
 
 //        @Override
 //        protected void starting() {

@@ -24,8 +24,8 @@ public class ContinuousConstraintSolver {
         Symbol other;
 
         public Tag() {
-            marker = new Symbol();
-            other = new Symbol();
+            marker = new Symbol(Symbol.Type.INVALID);
+            other = new Symbol(Symbol.Type.INVALID);
         }
     }
 
@@ -43,7 +43,7 @@ public class ContinuousConstraintSolver {
 
     protected final Map<ContinuousConstraint, Tag> cns = new LinkedHashMap<>();
     protected final Map<Symbol, Row> rows = new LinkedHashMap<>();
-    protected final Map<DoubleVar, Symbol> vars = new LinkedHashMap<>();
+    public final Map<DoubleVar, Symbol> vars = new LinkedHashMap<>();
     protected final List<Symbol> infeasibleRows = new ArrayList<>();
     protected final Row objective = new Row();
     private Row artificial;
@@ -75,9 +75,8 @@ public class ContinuousConstraintSolver {
         }
 
         if (subject.type == Symbol.Type.INVALID) {
-            if (!addWithArtificialVariable(row)) {
+            if (!addWithArtificialVariable(row))
                 throw new UnsatisfiableConstraintException(constraint);
-            }
         } else {
             row.solveFor(subject);
             substitute(subject, row);
@@ -91,25 +90,17 @@ public class ContinuousConstraintSolver {
 
     public void remove(ContinuousConstraint constraint) throws UnknownConstraintException, InternalSolverError {
         Tag tag = cns.get(constraint);
-        if (tag == null) {
+        if (tag == null)
             throw new UnknownConstraintException(constraint);
-        }
 
         cns.remove(constraint);
         removeConstraintEffects(constraint, tag);
 
-        Row row = rows.get(tag.marker);
-        if (row != null) {
-            rows.remove(tag.marker);
-        } else {
+        Row row = rows.remove(tag.marker);
+        if (row == null) {
             row = getMarkerLeavingRow(tag.marker);
-            if (row == null) {
+            if (row == null)
                 throw new InternalSolverError("internal solver error");
-            }
-
-            
-            
-            
 
             Symbol leaving = null;
             for (Map.Entry<Symbol, Row> s : rows.entrySet()) {
@@ -118,9 +109,8 @@ public class ContinuousConstraintSolver {
                     break;
                 }
             }
-            if (leaving == null) {
+            if (leaving == null)
                 throw new InternalSolverError("internal solver error");
-            }
 
             rows.remove(leaving);
             row.solveFor(leaving, tag.marker);
@@ -131,9 +121,9 @@ public class ContinuousConstraintSolver {
 
     void removeConstraintEffects(ContinuousConstraint constraint, Tag tag) {
         if (tag.marker.type == Symbol.Type.ERROR) {
-            removeMarkerEffects(tag.marker, constraint.getStrength());
+            removeMarkerEffects(tag.marker, constraint.strength());
         } else if (tag.other.type == Symbol.Type.ERROR) {
-            removeMarkerEffects(tag.other, constraint.getStrength());
+            removeMarkerEffects(tag.other, constraint.strength());
         }
     }
 
@@ -178,17 +168,12 @@ public class ContinuousConstraintSolver {
             }
         }
 
-        if (first != null) {
+        if (first != null)
             return first;
-        }
-        if (second != null) {
+        else if (second != null)
             return second;
-        }
-        return third;
-    }
-
-    public boolean hasConstraint(ContinuousConstraint constraint) {
-        return cns.containsKey(constraint);
+        else
+            return third;
     }
 
     /**
@@ -196,12 +181,11 @@ public class ContinuousConstraintSolver {
      */
     public void update() {
 
-        for (Map.Entry<DoubleVar, Symbol> varEntry : vars.entrySet()) {
-            DoubleVar variable = varEntry.getKey();
-            Row row = this.rows.get(varEntry.getValue());
-
-            variable.value(row == null ? 0 : row.getConstant());
-        }
+        vars.forEach((key, value) -> {
+            Row row = this.rows.get(value);
+            if (row!=null)
+                key.value(row.getConstant());
+        });
     }
 
 
@@ -232,24 +216,26 @@ public class ContinuousConstraintSolver {
             double coefficient = term.coefficient;
             if (!nearZero(coefficient)) {
 
-                Symbol symbol = getVarSymbol(term.var);
+                if (term.var instanceof DoubleVar) {
+                    Symbol symbol = getVarSymbol(((DoubleVar)term.var));
 
-                Row otherRow = rows.get(symbol);
+                    Row otherRow = rows.get(symbol);
 
-                if (otherRow == null) {
-                    row.insert(symbol, coefficient);
-                } else {
-                    row.insert(otherRow, coefficient);
+                    if (otherRow == null) {
+                        row.insert(symbol, coefficient);
+                    } else {
+                        row.insert(otherRow, coefficient);
+                    }
                 }
             }
         }
 
-        double str = constraint.getStrength();
+        double str = constraint.strength();
 
         switch (constraint.op) {
-            case OP_LE:
-            case OP_GE:
-                double coeff = constraint.op == RelationalOperator.OP_LE ? 1.0 : -1.0;
+            case LessThanOrEqual:
+            case GreaterThanOrEqual:
+                double coeff = constraint.op == ScalarComparison.LessThanOrEqual ? 1.0 : -1.0;
                 Symbol slack = new Symbol(Symbol.Type.SLACK);
                 tag.marker = slack;
                 row.insert(slack, coeff);
@@ -260,7 +246,7 @@ public class ContinuousConstraintSolver {
                     this.objective.insert(error, str);
                 }
                 break;
-            case OP_EQ:
+            case Equal:
                 if (str < Strength.REQUIRED) {
                     Symbol errplus = new Symbol(Symbol.Type.ERROR);
                     Symbol errminus = new Symbol(Symbol.Type.ERROR);
@@ -312,7 +298,7 @@ public class ContinuousConstraintSolver {
             if (row.coefficientFor(tag.other) < 0.0)
                 return tag.other;
         }
-        return new Symbol();
+        return new Symbol(Symbol.Type.INVALID);
     }
 
     /**
@@ -454,7 +440,7 @@ public class ContinuousConstraintSolver {
                 return k;
             }
         }
-        return new Symbol();
+        return new Symbol(Symbol.Type.INVALID);
 
     }
 
@@ -468,7 +454,7 @@ public class ContinuousConstraintSolver {
         Symbol symbol =
                 row.cells.keySet().stream()
                         .filter(k -> k.type == Symbol.Type.SLACK || k.type == Symbol.Type.ERROR)
-                        .findFirst().orElseGet(Symbol::new);
+                        .findFirst().orElseGet(() -> new Symbol(Symbol.Type.INVALID));
 
 
 

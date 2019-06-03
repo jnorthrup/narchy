@@ -9,7 +9,7 @@ import nars.Task;
 import nars.table.BeliefTable;
 import nars.table.TaskTable;
 import nars.table.eternal.EternalTable;
-import nars.task.signal.SignalTask;
+import nars.task.util.signal.SignalTask;
 import nars.task.util.Answer;
 import nars.task.util.series.AbstractTaskSeries;
 import nars.term.Compound;

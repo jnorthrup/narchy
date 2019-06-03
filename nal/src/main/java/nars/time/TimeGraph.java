@@ -19,6 +19,7 @@ import nars.Op;
 import nars.subterm.Subterms;
 import nars.term.Compound;
 import nars.term.Term;
+import nars.term.util.Image;
 import nars.term.util.conj.Conj;
 import nars.term.util.conj.ConjSeq;
 import nars.term.var.CommonVariable;
@@ -324,7 +325,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
      * creates an event for a hypothetical target which may not actually be an event;
      * but if it is there or becomes there, it will connect what it needs to
      */
-    private Event shadow(Term v) {
+    protected Event shadow(Term v) {
         //return event(v, TIMELESS, false);
         return new Relative(v);
     }
@@ -534,7 +535,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
         return nodesMax == Integer.MAX_VALUE || nodes.size() < nodesMax;
     }
 
-    private void link(Event x, long dt, Event y) {
+    protected void link(Event x, long dt, Event y) {
 
 //        if (dt == ETERNAL)
 //            throw new WTF("maybe eliminate this case");
@@ -760,14 +761,18 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 //        if (autoNeg != null && autoNeg.contains(t.unneg())) {
 //            link(shadow(t), 0, shadow(t.neg()));
 //        }
+
+//        Term i = Image.imageNormalize(t);
+//        if (!i.equals(t)) {
+//            link(shadow(t), 0, shadow(i));
+//        }
+
     }
 
     private boolean solveDT(Compound x, Predicate<Event> each) {
 
         if (!termsEvent(x)) return true;
 
-        if (!addNewNode(shadow(x)))
-            return true; //already added, prevent recursion
 
         assert (x.dt() == XTERNAL);
 
@@ -776,22 +781,25 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
         //assert(!xx.hasXternal()): "dont solveDTTrace if subterms have XTERNAL";
 
         int s = xx.subs();
-        if (s==2) { //x.op() == IMPL || (s == 2 && xx.sub(0).unneg().equals(xx.sub(1).unneg()))) { //s == 2) {
+        if (x.op()==IMPL) { //x.op() == IMPL || (s == 2 && xx.sub(0).unneg().equals(xx.sub(1).unneg()))) { //s == 2) {
 
             return solveDT2(x, xx, each);
 
         } else {
             assert (x.op() == CONJ);
 
-//            if (s == 2) {
-//                if (!solveDT2(x, xx, each))
-//                    return false;
-//            }
-
             List<Event>[] subEvents = new FasterList[s];
             int abs = solveAbsolutes(xx, subEvents);
             if (abs > 0) {
                 if (!solveAbsolutePermutations(xx, subEvents, abs, each))
+                    return false;
+
+                if (abs == s)
+                    return true; //done
+            }
+
+            if (s == 2) {
+                if (!solveDT2(x, xx, each))
                     return false;
             }
 

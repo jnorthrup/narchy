@@ -15,11 +15,7 @@ class Symbol {
 
     public final Type type;
 
-    public Symbol() {
-        this(Type.INVALID);
-    }
-
-    public Symbol(Type type) {
+    Symbol(Type type) {
         this.type = type;
     }
 

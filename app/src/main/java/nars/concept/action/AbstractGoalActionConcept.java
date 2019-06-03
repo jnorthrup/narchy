@@ -15,7 +15,7 @@ import nars.table.BeliefTables;
 import nars.table.dynamic.SensorBeliefTables;
 import nars.table.dynamic.SeriesBeliefTable;
 import nars.table.temporal.RTreeBeliefTable;
-import nars.task.signal.SignalTask;
+import nars.task.util.signal.SignalTask;
 import nars.task.util.Answer;
 import nars.task.util.series.RingBufferTaskSeries;
 import nars.term.Term;

@@ -3,21 +3,21 @@ package spacegraph.space2d.widget.menu.view;
 import jcog.tree.rtree.rect.RectFloat;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.ContainerSurface;
-import spacegraph.space2d.container.graph.EditGraph2D;
+import spacegraph.space2d.container.graph.GraphEdit2D;
 import spacegraph.space2d.container.unit.Clipped;
 import spacegraph.space2d.widget.menu.Menu;
 
 /** TODO */
 public class WallMenuView extends Menu.MenuView {
 
-    private final EditGraph2D wall;
+    private final GraphEdit2D wall;
 
     public WallMenuView() {
         super();
 //            setContent(new GraphEdit());
 //            setWrapper(x -> new Windo(new MetaFrame(x)).size(w()/2, h()/2));
 
-        this.wall = new EditGraph2D() {
+        this.wall = new GraphEdit2D() {
 //            @Override
 //            public void doLayout(int dtMS) {
 //                super.doLayout(dtMS);

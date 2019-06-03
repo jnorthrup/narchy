@@ -6,12 +6,13 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.DoubleSupplier;
 
 /** is this complete? */
 class EditSolver extends ContinuousConstraintSolver {
-    protected final Map<DoubleVar, EditInfo> edits = new LinkedHashMap<>();
+    protected final Map<DoubleSupplier, EditInfo> edits = new LinkedHashMap<>();
 
-    public void addEditVariable(DoubleVar variable, double strength) throws DuplicateEditVariableException, RequiredFailureException {
+    public void addEditVariable(DoubleSupplier variable, double strength) throws DuplicateEditVariableException, RequiredFailureException {
         if (edits.containsKey(variable)) {
             throw new DuplicateEditVariableException();
         }
@@ -24,7 +25,7 @@ class EditSolver extends ContinuousConstraintSolver {
 
         List<DoubleTerm> terms = new ArrayList<>();
         terms.add(new DoubleTerm(variable));
-        ContinuousConstraint constraint = new ContinuousConstraint(new Expression(terms), RelationalOperator.OP_EQ, strength);
+        ContinuousConstraint constraint = new ContinuousConstraint(new Expression(terms), ScalarComparison.Equal, strength);
 
         try {
             add(constraint);
@@ -37,7 +38,7 @@ class EditSolver extends ContinuousConstraintSolver {
         edits.put(variable, info);
     }
 
-    public void removeEditVariable(DoubleVar variable) throws UnknownEditVariableException {
+    public void removeEditVariable(DoubleSupplier variable) throws UnknownEditVariableException {
         EditInfo edit = edits.get(variable);
         if (edit == null) {
             throw new UnknownEditVariableException();
@@ -52,11 +53,11 @@ class EditSolver extends ContinuousConstraintSolver {
         edits.remove(variable);
     }
 
-    public boolean hasEditVariable(DoubleVar variable) {
+    public boolean hasEditVariable(DoubleSupplier variable) {
         return edits.containsKey(variable);
     }
 
-    public void suggestValue(DoubleVar variable, double value) throws UnknownEditVariableException {
+    public void suggestValue(DoubleSupplier variable, double value) throws UnknownEditVariableException {
         EditInfo info = edits.get(variable);
         if (info == null) {
             throw new UnknownEditVariableException();
@@ -67,7 +68,7 @@ class EditSolver extends ContinuousConstraintSolver {
 
         Row row = rows.get(info.tag.marker);
         if (row != null) {
-            if (row.add(-delta) < 0.0) {
+            if (row.addToConstant(-delta) < 0.0) {
                 infeasibleRows.add(info.tag.marker);
             }
             dualOptimize();
@@ -76,7 +77,7 @@ class EditSolver extends ContinuousConstraintSolver {
 
         row = rows.get(info.tag.other);
         if (row != null) {
-            if (row.add(delta) < 0.0) {
+            if (row.addToConstant(delta) < 0.0) {
                 infeasibleRows.add(info.tag.other);
             }
             dualOptimize();
@@ -87,7 +88,7 @@ class EditSolver extends ContinuousConstraintSolver {
             Row currentRow = symbolRowEntry.getValue();
             double coefficient = currentRow.coefficientFor(info.tag.marker);
             Symbol k = symbolRowEntry.getKey();
-            if (coefficient != 0.0 && currentRow.add(delta * coefficient) < 0.0 && k.type != Symbol.Type.EXTERNAL) {
+            if (coefficient != 0.0 && currentRow.addToConstant(delta * coefficient) < 0.0 && k.type != Symbol.Type.EXTERNAL) {
                 infeasibleRows.add(k);
             }
         }
@@ -129,7 +130,7 @@ class EditSolver extends ContinuousConstraintSolver {
             }
         }
 
-        return entering != null ? entering : new Symbol();
+        return entering != null ? entering : new Symbol(Symbol.Type.INVALID);
     }
 
 }

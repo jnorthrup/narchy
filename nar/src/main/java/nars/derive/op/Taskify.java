@@ -77,11 +77,7 @@ public class Taskify extends ProxyTerm {
 
         d.nar.emotion.deriveTermify.increment();
 
-        DerivationFailure fail = DerivationFailure.failure(x,
-                (byte) 0 /* dont consider punc consequences until after temporalization */,
-                d);
-
-        if (fail == Success) {
+        if (Success == DerivationFailure.failure(x, (byte) 0 /* dont consider punc consequences until after temporalization */, d)) {
             if (d.temporal)
                 Occurrify.temporalTask(x, termify.time, this, d);
             else

@@ -39,7 +39,7 @@ class Row {
      *
      * @return The new value of the constant
      */
-    double add(double value) {
+    double addToConstant(double value) {
         return this.constant += value;
     }
 

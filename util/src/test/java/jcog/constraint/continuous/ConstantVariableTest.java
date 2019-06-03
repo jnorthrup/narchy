@@ -4,6 +4,8 @@ import jcog.constraint.continuous.exceptions.DuplicateConstraintException;
 import jcog.constraint.continuous.exceptions.UnsatisfiableConstraintException;
 import org.junit.jupiter.api.Test;
 
+import java.util.function.DoubleSupplier;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
@@ -19,10 +21,10 @@ class ConstantVariableTest {
         ContinuousConstraintSolver solver = new ContinuousConstraintSolver();
         solver.add(C.lessThanOrEqualTo(100, x));
         solver.update();
-        assertTrue(100 <= x.value());
+        assertTrue(100 <= x.getAsDouble());
         solver.add(C.equals(x, 110));
         solver.update();
-        assertEquals(x.value(), 110, EPSILON);
+        assertEquals(x.getAsDouble(), 110, EPSILON);
     }
 
     @Test
@@ -32,7 +34,7 @@ class ConstantVariableTest {
             ContinuousConstraintSolver solver = new ContinuousConstraintSolver();
             solver.add(C.lessThanOrEqualTo(100, x));
             solver.update();
-            assertTrue(x.value() <= 100);
+            assertTrue(x.getAsDouble() <= 100);
             solver.add(C.equals(x, 10));
             solver.update();
 
@@ -46,10 +48,10 @@ class ConstantVariableTest {
         ContinuousConstraintSolver solver = new ContinuousConstraintSolver();
         solver.add(C.greaterThanOrEqualTo(100, x));
         solver.update();
-        assertTrue(100 >= x.value());
+        assertTrue(100 >= x.getAsDouble());
         solver.add(C.equals(x, 90));
         solver.update();
-        assertEquals(x.value(), 90, EPSILON);
+        assertEquals(x.getAsDouble(), 90, EPSILON);
     }
 
     @Test
@@ -59,7 +61,7 @@ class ConstantVariableTest {
             ContinuousConstraintSolver solver = new ContinuousConstraintSolver();
             solver.add(C.greaterThanOrEqualTo(100, x));
             solver.update();
-            assertTrue(100 >= x.value());
+            assertTrue(100 >= x.getAsDouble());
             solver.add(C.equals(x, 110));
             solver.update();
         });

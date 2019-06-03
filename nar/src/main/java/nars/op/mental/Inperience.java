@@ -7,7 +7,7 @@ import nars.NAR;
 import nars.Task;
 import nars.attention.What;
 import nars.op.TaskLeakTransform;
-import nars.task.signal.SignalTask;
+import nars.task.util.signal.SignalTask;
 import nars.term.Compound;
 import nars.term.Functor;
 import nars.term.Term;

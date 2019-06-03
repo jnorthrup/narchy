@@ -92,6 +92,7 @@ abstract public class MetalBitSet {
 
     /** modifies this instance by inverting all the bit values
      *  warning this may modify bits beyond the expected range, causing unexpected cardinality changes
+     *  returns this instance
      * */
     abstract public MetalBitSet negate();
 

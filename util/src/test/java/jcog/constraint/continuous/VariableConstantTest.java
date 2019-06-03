@@ -18,10 +18,10 @@ class VariableConstantTest {
         ContinuousConstraintSolver solver = new ContinuousConstraintSolver();
         solver.add(C.lessThanOrEqualTo(x, 100));
         solver.update();
-        assertTrue(x.value() <= 100);
+        assertTrue(x.getAsDouble() <= 100);
         solver.add(C.equals(x, 90));
         solver.update();
-        assertEquals(x.value(), 90, EPSILON);
+        assertEquals(x.getAsDouble(), 90, EPSILON);
     }
 
     @Test
@@ -31,7 +31,7 @@ class VariableConstantTest {
             ContinuousConstraintSolver solver = new ContinuousConstraintSolver();
             solver.add(C.lessThanOrEqualTo(x, 100));
             solver.update();
-            assertTrue(x.value() <= 100);
+            assertTrue(x.getAsDouble() <= 100);
             solver.add(C.equals(x, 110));
             solver.update();
 
@@ -44,10 +44,10 @@ class VariableConstantTest {
         ContinuousConstraintSolver solver = new ContinuousConstraintSolver();
         solver.add(C.greaterThanOrEqualTo(x, 100));
         solver.update();
-        assertTrue(x.value() >= 100);
+        assertTrue(x.getAsDouble() >= 100);
         solver.add(C.equals(x, 110));
         solver.update();
-        assertEquals(x.value(), 110, EPSILON);
+        assertEquals(x.getAsDouble(), 110, EPSILON);
     }
 
     @Test
@@ -57,7 +57,7 @@ class VariableConstantTest {
             ContinuousConstraintSolver solver = new ContinuousConstraintSolver();
             solver.add(C.greaterThanOrEqualTo(x, 100));
             solver.update();
-            assertTrue(x.value() >= 100);
+            assertTrue(x.getAsDouble() >= 100);
             solver.add(C.equals(x, 90));
             solver.update();
         });

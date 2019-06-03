@@ -3,6 +3,7 @@ package jcog.constraint.continuous;
 import jcog.data.list.FasterList;
 
 import java.util.List;
+import java.util.function.DoubleSupplier;
 
 /**
  * Created by alex on 30/01/15.
@@ -22,13 +23,13 @@ public class Expression {
         this.terms = new FasterList<>();
     }
 
-    public Expression(DoubleTerm term, double constant) {
-        this.terms = new FasterList<>();
-        terms.add(term);
+    public Expression(DoubleSupplier term, double constant) {
+        this.terms = new FasterList<>(1);
+        terms.add(term instanceof DoubleTerm ? ((DoubleTerm)term) : new DoubleTerm(term));
         this.constant = constant;
     }
 
-    public Expression(DoubleTerm term) {
+    public Expression(DoubleSupplier term) {
         this (term, 0.0);
     }
 
@@ -50,7 +51,7 @@ public class Expression {
         double result = this.constant;
 
         for (int i = 0, termsSize = terms.size(); i < termsSize; i++) {
-            result += terms.get(i).value();
+            result += terms.get(i).getAsDouble();
         }
         return result;
     }
@@ -65,7 +66,7 @@ public class Expression {
         sb.append("isConstant: ").append(isConstant()).append(" constant: ").append(constant);
         if (!isConstant()) {
             sb.append(" terms: [");
-            for (DoubleTerm term: terms) {
+            for (DoubleSupplier term: terms) {
                 sb.append('(').append(term).append(')');
             }
             sb.append("] ");

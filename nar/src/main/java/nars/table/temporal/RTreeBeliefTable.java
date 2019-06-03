@@ -8,11 +8,12 @@ import jcog.sort.Top;
 import jcog.tree.rtree.*;
 import jcog.tree.rtree.split.LinearSplitLeaf;
 import nars.NAL;
+import nars.NAR;
 import nars.Task;
 import nars.control.op.Remember;
 import nars.task.ProxyTask;
-import nars.task.Revision;
 import nars.task.util.Answer;
+import nars.task.util.Revision;
 import nars.task.util.TaskRegion;
 import nars.task.util.TimeRange;
 import nars.time.Tense;
@@ -142,7 +143,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
      * returns true if at least one net task has been removed from the table.
      */
     /*@NotNull*/
-    private static boolean compress(Space<TaskRegion> tree, FloatFunction<Task> taskStrength, FloatRank<TaskRegion> leafRegionWeakness, Remember remember, NAL nal) {
+    private static boolean compress(Space<TaskRegion> tree, FloatFunction<Task> taskStrength, FloatRank<TaskRegion> leafRegionWeakness, Remember remember) {
 
         Top<Leaf<TaskRegion>> mergeableLeaf = new Top<>((L, min1) ->
                 leafRegionWeakness.rank((TaskRegion) L.bounds(), min1));
@@ -151,15 +152,14 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 
         return !findEvictable(tree, tree.root(), /*closest, */weakest, mergeableLeaf)
                 ||
-                mergeOrDelete(tree, weakest, mergeableLeaf, taskStrength, remember, nal);
+                mergeOrDelete(tree, weakest, mergeableLeaf, taskStrength, remember);
     }
 
     private static boolean mergeOrDelete(Space<TaskRegion> treeRW,
                                          Top<Task> weakest,
                                          Top<Leaf<TaskRegion>> mergeableLeaf,
                                          FloatFunction<Task> taskStrength,
-                                         Remember r,
-                                         NAL nal) {
+                                         Remember r) {
 
         Task W = weakest.the;
 
@@ -169,17 +169,13 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
         Pair<Task, TruthProjection> AB;
         if (!mergeableLeaf.isEmpty()) {
             Leaf<TaskRegion> ab = mergeableLeaf.get();
-            AB = Revision.merge(nal, true, 2, Arrays.copyOf(ab.data, ab.size)); //HACK type adaptation
+            AB = Revision.merge(r.nar, true, 2, Arrays.copyOf(ab.data, ab.size)); //HACK type adaptation
             if (AB != null) {
-                valueMergeLeaf = (float) (
-                        +taskStrength.floatValueOf(AB.getOne())
-                                - AB.getTwo().sumOfFloat(t -> {
-                            if (!t.valid())
-                                return 0; //a task not included in revision
-                            else
-                                return taskStrength.floatValueOf(t.task());
-                        })
+                float mergeValue = taskStrength.floatValueOf(AB.getOne());
+                double mergeCost = AB.getTwo().sumOfFloat(t ->
+                    (!t.valid()) ? 0 : taskStrength.floatValueOf(t.task()) //0 for a task not included in revision
                 );
+                valueMergeLeaf = (float) (+mergeValue - mergeCost);
             }
         } else {
             AB = null;
@@ -324,10 +320,9 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
         FloatRank<TaskRegion> leafRegionWeakness = null;
         int e = 0, cap;
         long atStart;
-        NAL nar = remember.nar;
         while (treeRW.size() > (cap = capacity)) {
             if (taskStrength == null) {
-                atStart = nar.time();
+                atStart = remember.nar.time();
                 int tableDur = Tense.occToDT(tableDur(atStart));
                 int dur =
                         //nar.dur();
@@ -338,7 +333,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 
             if (!compress(treeRW,  /** only limit by inputRegion on first iter */
                     taskStrength, leafRegionWeakness,
-                    remember, nar))
+                    remember))
                 return false;
 
             e++;

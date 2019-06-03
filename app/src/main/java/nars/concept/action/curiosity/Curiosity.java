@@ -10,7 +10,7 @@ import nars.NAL;
 import nars.NAR;
 import nars.agent.Game;
 import nars.concept.action.AbstractGoalActionConcept;
-import nars.task.Revision;
+import nars.task.util.Revision;
 import nars.truth.Truth;
 import org.eclipse.collections.api.block.function.primitive.IntToFloatFunction;
 import org.jetbrains.annotations.Nullable;

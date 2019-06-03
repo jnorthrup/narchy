@@ -10,7 +10,7 @@ import spacegraph.audio.sample.SoundSample;
 import spacegraph.audio.speech.TinySpeech;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.Bordering;
-import spacegraph.space2d.container.graph.EditGraph2D;
+import spacegraph.space2d.container.graph.GraphEdit2D;
 import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.space2d.widget.chip.AudioOutPort;
@@ -53,7 +53,7 @@ public class GraphEditTest {
         public static void main(String[] args) {
 
 
-            EditGraph2D s = EditGraph2D.window(1000, 1000);
+            GraphEdit2D s = GraphEdit2D.window(1000, 1000);
 
             Surface mux = new Gridding(HORIZONTAL, LabeledPane.the("->", new Gridding(VERTICAL,
                     new Port(),
@@ -120,11 +120,11 @@ public class GraphEditTest {
 //        }
 //    }
 
-    public static class TinySpeechTest extends EditGraph2D {
+    public static class TinySpeechTest extends GraphEdit2D {
         {
             //Audio.the().play(TinySpeech.say("eee", 60, 1 ), 1, 1, 0 );
 
-            EditGraph2D g = window(1000, 1000);
+            GraphEdit2D g = window(1000, 1000);
 
             {
                 TextEdit e = new TextEdit(8, 1).text("a b c d e");
@@ -179,7 +179,7 @@ public class GraphEditTest {
 
     public static class StringSynthTest {
         public static void main(String[] args) {
-            EditGraph2D g = new EditGraph2D();
+            GraphEdit2D g = new GraphEdit2D();
             SpaceGraph.window(g, 1000, 1000);
 
 
@@ -258,7 +258,7 @@ public class GraphEditTest {
     public static class AutoAdaptTest {
 
         public static void main(String[] args) {
-            EditGraph2D w = EditGraph2D.window(1000, 1000);
+            GraphEdit2D w = GraphEdit2D.window(1000, 1000);
             w.add(new IntPort()).posRel(0.5f,0.5f,0.05f,0.05f);
             w.add(new IntPort()).posRel(0.5f,0.5f,0.05f,0.05f);
             w.add(new IntPort()).posRel(0.5f,0.5f,0.05f,0.05f);
@@ -271,7 +271,7 @@ public class GraphEditTest {
     public static class SproutPortTest {
 
         public static void main(String[] args) {
-            EditGraph2D w = EditGraph2D.window(1000, 1000);
+            GraphEdit2D w = GraphEdit2D.window(1000, 1000);
 
             //w.addBox(0f, 0f, 0.2f, 0.2f, 0.01f);
 

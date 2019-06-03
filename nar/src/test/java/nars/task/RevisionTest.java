@@ -8,6 +8,7 @@ import nars.concept.TaskConcept;
 import nars.table.BeliefTables;
 import nars.table.eternal.EternalTable;
 import nars.table.temporal.TemporalBeliefTable;
+import nars.task.util.Revision;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.util.Intermpolate;

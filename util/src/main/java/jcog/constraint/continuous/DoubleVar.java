@@ -1,27 +1,41 @@
 package jcog.constraint.continuous;
 
-/**
- * Created by alex on 30/01/15.
- */
-public class DoubleVar {
+
+import jcog.Util;
+
+import java.util.function.DoubleSupplier;
+
+public class DoubleVar implements DoubleSupplier {
 
     public final String name;
+    private final int hash;
 
     private double value;
 
     public DoubleVar(String name) {
-        this.name = name;
-    }
-
-    public double value() {
-        return value;
-    }
-    public float floatValue() {
-        return (float) value;
+        this.name = name; this.hash = name.hashCode();
     }
 
     public void value(double value) {
         this.value = value;
+    }
+
+    public boolean valueIfChanged(double next, double tolerance) {
+        double prev = this.value;
+        if (!Util.equals(prev, next, tolerance)) {
+            this.value = next;
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public double getAsDouble() {
+        return value;
+    }
+
+    public final float floatValue() {
+        return (float) getAsDouble();
     }
 
     @Override
@@ -31,11 +45,13 @@ public class DoubleVar {
 
     @Override
     public int hashCode() {
-        return name.hashCode();
+        return hash;
     }
 
     @Override
     public boolean equals(Object obj) {
         return this == obj;
     }
+
+
 }

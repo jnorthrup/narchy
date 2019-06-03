@@ -20,7 +20,6 @@
  */
 package nars.truth.func;
 
-import jcog.Util;
 import nars.$;
 import nars.NAL;
 import nars.truth.Truth;
@@ -151,35 +150,52 @@ public final class TruthFunctions {
 
     @Nullable
     public static Truth comparison(Truth a, Truth b, float minConf) {
-        return comparison(a, false, b, minConf);
-    }
-
-    /**
-     * {<M ==> S>, <M ==> P>} |- <S <=> P>
-     *
-     * @param a Truth value of the first premise
-     * @param b Truth value of the second premise
-     * @return Truth value of the conclusion
-     */
-    @Nullable
-    private static Truth comparison(Truth a, boolean negA, Truth b, float minConf) {
         float f1 = a.freq();
-        if (negA) f1 = 1 - f1;
-
         float f2 = b.freq();
-
-
-        float f0 =
-                //or(f1, f2);
-                Math.max(and(f1, f2), and(1 - f1, 1 - f2));
-        float c = w2cSafe(and(f0, TruthFunctions.confCompose(a, b)));
-        if (c >= minConf) {
-            float f = (Util.equals(f0, 0, NAL.truth.TRUTH_EPSILON)) ? 0 : (and(f1, f2) / f0);
-            return t(f, c);
+        if (f1 < 0.5f) {
+            //negative polarity
+            f1 = 1 - f1;
+            f2 = 1 - f2;
         }
+        final float c1 = a.conf(), c2 = b.conf();
+        final float f0 = or(f1, f2);
+        final float w = and(f0, c1, c2);
+        final float c = w2cSafe(w);
+        if (c < minConf)
+            return null;
 
-        return null;
+        final float f = (f0 < NAL.truth.TRUTH_EPSILON) ? 0 : (and(f1, f2) / f0);
+        return $.t(f,c);
     }
+
+//    /**
+//     * {<M ==> S>, <M ==> P>} |- <S <=> P>
+//     *
+//     * @param a Truth value of the first premise
+//     * @param b Truth value of the second premise
+//     * @return Truth value of the conclusion
+//     */
+//    @Nullable
+//    private static Truth comparison(Truth a, boolean negA, Truth b, float minConf) {
+//        float cc = TruthFunctions.confCompose(a, b);
+//        if (cc < minConf) return null;
+//
+//        float f1 = a.freq();
+//        if (negA) f1 = 1 - f1;
+//
+//        float f2 = b.freq();
+//
+//
+//        float f0 =
+//                //or(f1, f2);
+//                Math.max(and(f1, f2), and(1 - f1, 1 - f2));
+//        float c = w2cSafe(and(f0, cc));
+//        if (!(c >= minConf))
+//            return null;
+//
+//        //float f = (Util.equals(f0, 0, NAL.truth.TRUTH_EPSILON)) ? 0 : (and(f1, f2) / f0);
+//        return t(f0, c);
+//    }
 
 
 
@@ -291,6 +307,27 @@ public final class TruthFunctions {
             );
             float c =
                     fxy * cxy;
+
+            if (c >= minConf)
+                return t(z ? fxy : 1 - fxy, c);
+
+        }
+        return null;
+    }
+
+    /** soft "sqrt" variation */
+    @Nullable public static Truth decomposeSoft(Truth X, Truth Y, boolean x, boolean y, boolean z, float minConf) {
+        float cxy = confCompose(X, Y);
+        if (cxy >= minConf) {
+            float fx = X.freq(), fy = Y.freq();
+            float fxy = and(
+                    x ? fx : 1 - fx,
+                    y ? fy : 1 - fy
+            );
+            //float fxySqrt = (float)Math.sqrt(fxy);
+            float c =
+                    cxy;
+                    //fxySqrt * cxy;
 
             if (c >= minConf)
                 return t(z ? fxy : 1 - fxy, c);

@@ -13,16 +13,17 @@ abstract public class AbstractSectTruth extends AbstractDynamicTruth {
 
 
     @Override
-    public final Truth truth(DynTaskify l, NAR nar) {
-        return apply(l, nar, truthNegComponents(), negResult());
+    public final Truth truth(DynTaskify l) {
+        return apply(l, truthNegComponents(), negResult());
     }
 
     protected abstract boolean truthNegComponents();
     protected abstract boolean negResult();
 
     @Nullable
-    private Truth apply(DynTaskify d, NAR nar, boolean negComponents, boolean negResult) {
+    private Truth apply(DynTaskify d, boolean negComponents, boolean negResult) {
         Truth y = null;
+        final NAR nar = d.nar;
         for (int i = 0, dSize = d.size(); i < dSize; i++) {
             TaskRegion li = d.get(i);
             Truth x = (((Task) li)).truth();

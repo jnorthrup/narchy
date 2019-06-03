@@ -181,9 +181,9 @@ public class NARS {
                         ),
                         //beliefs tmp
                         curve(termVolume,
-                                1, 128,
-                                16, 64,
-                                32, 32
+                                1, 64,
+                                16, 32,
+                                32, 16
                         ),
                         //goals ete
                         curve(termVolume,
@@ -193,9 +193,9 @@ public class NARS {
                         ),
                         //goals tmp
                         curve(termVolume,
-                                1, 128,
-                                16, 64,
-                                32, 32
+                                1, 64,
+                                16, 32,
+                                32, 16
                         ),
                         //questions
                         curve(termVolume,

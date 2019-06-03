@@ -10,6 +10,7 @@ import nars.term.Compound;
 import nars.term.Term;
 import nars.term.atom.Atomic;
 import nars.term.control.PREDICATE;
+import nars.term.util.Image;
 import nars.term.util.conj.ConjSeq;
 import nars.term.util.transform.Retemporalize;
 import nars.time.Tense;
@@ -94,11 +95,12 @@ public class Occurrify extends TimeGraph {
 
 
         boolean neg = false;
-//        Term xx = x;
-//        if (x.op()==NEG && (!d.taskTerm.hasAny(NEG) && !d.beliefTerm.hasAny(NEG))) {
-//            //HACK semi-auto-unneg to help occurrify
-//            x = x.unneg();
-//        }
+        Term xx = x;
+        if (x.op()==NEG && (!d.taskTerm.hasAny(NEG) && !d.beliefTerm.hasAny(NEG))) {
+            //HACK semi-auto-unneg to help occurrify
+            x = x.unneg();
+            neg = true;
+        }
 
         Pair<Term, long[]> timing = time.occurrence(x, d);
         if (timing == null) {
@@ -112,8 +114,6 @@ public class Occurrify extends TimeGraph {
             return;
         }
 
-        if (neg)
-            y = y.neg();
 
         long[] occ = timing.getTwo();
 
@@ -122,6 +122,8 @@ public class Occurrify extends TimeGraph {
                 (occ[1] >= occ[0])) || (occ[0] == ETERNAL && !d.occ.validEternal()))
             throw new RuntimeException("bad occurrence result: " + Arrays.toString(occ));
 
+        if (neg)
+            y = y.neg();
 
         if (NAL.derive.DERIVATION_FORM_QUESTION_FROM_AMBIGUOUS_BELIEF_OR_GOAL && (d.concPunc == BELIEF || d.concPunc == GOAL)) {
             if (DerivationFailure.failure(y, d.concPunc)) {
@@ -192,9 +194,10 @@ public class Occurrify extends TimeGraph {
         long beliefStart = d.beliefStart;
         if (d.concSingle || (d._belief == null || d.beliefStart == ETERNAL))
             return new long[] { d.taskStart, d.taskEnd };
-        else if (d.taskStart == ETERNAL)
-            return new long[] { d.beliefStart, d.beliefEnd };
-        else {
+        else if (d.taskStart == ETERNAL) {
+            assert(d.beliefStart!=TIMELESS);
+            return new long[]{d.beliefStart, d.beliefEnd};
+        } else {
             long taskStart = d.taskStart;
 
 
@@ -213,7 +216,7 @@ public class Occurrify extends TimeGraph {
                     throw new UnsupportedOperationException();
             }
 
-            //minimum range = intersection
+            //minimum range
             return new long[]{
                     start,
                     start + Math.min(d.taskEnd - taskStart, d.beliefEnd - beliefStart)
@@ -308,8 +311,8 @@ public class Occurrify extends TimeGraph {
 
         long taskStart = d.taskStart,
                 taskEnd = d.taskEnd,
-                beliefStart = !d.concSingle ? d.beliefStart : TIMELESS,
-                beliefEnd = !d.concSingle ? d.beliefEnd : TIMELESS;
+                beliefStart = !d.concSingle || (d.concPunc==QUESTION || d.concPunc==QUEST) ? d.beliefStart : TIMELESS,
+                beliefEnd = !d.concSingle || (d.concPunc==QUESTION || d.concPunc==QUEST) ? d.beliefEnd : TIMELESS;
 
         this.decomposeEvents = decomposeEvents;
 
@@ -355,6 +358,12 @@ public class Occurrify extends TimeGraph {
         }
 
         autoneg = (taskTerm.hasAny(NEG) || beliefTerm.hasAny(NEG) || pattern.hasAny(NEG));
+
+        Term imgPattern = Image.imageNormalize(pattern);
+        if (!pattern.equals(imgPattern))
+            link(shadow(pattern), 0, shadow(imgPattern));
+
+
 
         //compact(); //TODO compaction removes self-loops which is bad, not sure if it does anything else either
 
@@ -454,8 +463,25 @@ public class Occurrify extends TimeGraph {
 
         Default() {
             @Override
-            public Pair<Term, long[]> occurrence(Term x, Derivation d) {
-                return solveOccDT(x, d.occ.set(x, true, this));
+            @Nullable public Pair<Term, long[]> occurrence(Term x, Derivation d) {
+                if (nonTemporal(x) && nonTemporal(d.taskTerm) && nonTemporal(d.beliefTerm))
+                    return pair(x, occurrence(d));
+
+                Occurrify o = d.occ.set(x, true, this);
+                Event e = o.selectSolution(true, o.solutions(x));
+                if (e == null) {
+                    if (d.concPunc==QUESTION || d.concPunc==QUEST)
+                        return pair(x, occurrence(d)); //fail-safe
+                    else
+                        return NAL.OCCURRIFY_STRICT ? null : pair(x, occurrence(d)); //fail-safe
+                } else {
+                    long es = e.start();
+                    return pair(e.id,
+                            es == TIMELESS ?
+                                occurrence(d) :
+                                new long[]{es, e.end()});
+                }
+
             }
 
             @Override
@@ -464,6 +490,18 @@ public class Occurrify extends TimeGraph {
             }
         },
 
+        /** composition of non-events to a single outcome event.  a simplified version of Default */
+        Compose() {
+            @Override
+            @Nullable public Pair<Term, long[]> occurrence(Term x, Derivation d) {
+                return pair(x, occurrence(d));
+            }
+
+            @Override
+            long[] occurrence(Derivation d) {
+                return rangeCombine(d, OccIntersect.Task);
+            }
+        },
 
 
         /**
@@ -610,18 +648,6 @@ public class Occurrify extends TimeGraph {
 
         abstract public Pair<Term, long[]> occurrence(Term x, Derivation d);
 
-        Pair<Term, long[]> solveOccDT(Term x, Occurrify o) {
-
-            Event e = o.selectSolution(true, o.solutions(x));
-            if (e == null) {
-                return pair(x, occurrence(o.d));
-            } else {
-                long es = e.start();
-                return pair(e.id, es == TIMELESS ?
-                                occurrence(o.d) :
-                                new long[]{es, e.end()});
-            }
-        }
 
 
         @Nullable
@@ -639,9 +665,12 @@ public class Occurrify extends TimeGraph {
 
         @Nullable Pair<Term, long[]> solveDT(Derivation d, Term x, boolean decomposeEvents) {
             long[] occ = occurrence(d);
-            //assert (occ != null);
+            assert (occ != null);
             return occ == null ? null : pair(
-                    x.hasXternal() ? d.occ.solveDT(x, d.occ.set(x, decomposeEvents, this).solutions(x)) : x,
+                    x.hasXternal() ?
+                            d.occ.solveDT(x, d.occ.set(x, decomposeEvents, this).solutions(x))
+                            :
+                            x,
                     occ);
         }
 
@@ -649,6 +678,18 @@ public class Occurrify extends TimeGraph {
         public BeliefProjection beliefProjection() {
             return BeliefProjection.Task;
         }
+    }
+
+    /** ignores temporal subterms ofof --> and <-> */
+    public static boolean nonTemporal(Term x) {
+        return !x.hasAny(Op.Temporal) ||
+                (!x.hasXternal() && x.recurseTerms(term->term.hasAny(Op.Temporal), (Term term,Compound suuper)->{
+                    if (term.op().temporal) {
+                        if (suuper == null || (suuper.op() != INH && suuper.op() != SIM))
+                            return false;
+                    }
+                    return true;
+                }, null));
     }
 
     private enum OccIntersect {

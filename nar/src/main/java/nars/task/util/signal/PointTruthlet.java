@@ -1,4 +1,4 @@
-package nars.task.signal;
+package nars.task.util.signal;
 
 public abstract class PointTruthlet extends Truthlet {
 

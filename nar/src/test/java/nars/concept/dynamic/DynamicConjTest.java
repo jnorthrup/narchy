@@ -408,7 +408,7 @@ class DynamicConjTest {
             Task t = n.answerBelief(xyz, 0, 2);
             assertNotNull(t);
             assertEquals(1f, t.freq(), 0.05f);
-            assertEquals(0.81f, t.conf(), 0.4f);
+            assertEquals(0.73f, t.conf(), 0.1f);
             assertEq(xyz, t.term());
         }
         {
@@ -417,9 +417,36 @@ class DynamicConjTest {
             Task t = n.answerBelief(xyz, 0);
             assertNotNull(t);
             assertEquals(1f, t.freq(), 0.05f);
-            assertEquals(0.81f, t.conf(), 0.4f);
-            assertEq(xyz, t.term());
+            assertEquals(0.73f, t.conf(), 0.1f);
+            assertEq("((y &&+2 z)&&x)", t.term());
 
+        }
+        {
+            //Term xyz = $("((x&&y) &&+2 z))");
+            Term xyz = $("(&&,x,--y,z)");
+            Task t = n.answerBelief(xyz, 0);
+            assertNotNull(t);
+            assertEquals(0f, t.freq(), 0.05f);
+            assertEquals(0.73f, t.conf(), 0.1f);
+            assertEq("(((--,y) &&+2 z)&&x)", t.term());
+
+        }
+    }
+
+    @Test
+    void testDynamicConjunction_revertToRevisionOnIntersect() throws Narsese.NarseseException {
+        NAR n = NARS.shell();
+        n.believe($("x"), 0, 2, 1f, 0.9f);
+        n.believe($("x"), 0, 2, 0.5f, 0.9f);
+        n.time.dur(8);
+
+        {
+            Term xyz = $("(x &&+1 x)");
+            Task t = n.answerBelief(xyz, 0, 2);
+            assertNotNull(t);
+            assertEquals(0.75f, t.freq(), 0.05f);
+            assertEquals(0.81f, t.conf(), 0.1f);
+            assertEq("x", t.term());
         }
     }
 

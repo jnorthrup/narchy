@@ -3,7 +3,7 @@ package spacegraph.space2d.widget.port.util;
 import spacegraph.input.finger.Finger;
 import spacegraph.input.finger.state.Dragging;
 import spacegraph.space2d.Surface;
-import spacegraph.space2d.container.graph.EditGraph2D;
+import spacegraph.space2d.container.graph.GraphEdit2D;
 import spacegraph.space2d.widget.port.Port;
 import spacegraph.space2d.widget.port.TypedPort;
 import spacegraph.space2d.widget.port.Wire;
@@ -63,7 +63,7 @@ public class Wiring extends Dragging {
     protected boolean drag(Finger f) {
         if (path == null) {
 
-            EditGraph2D g = graph();
+            GraphEdit2D g = graph();
             if (g!=null)
                 g.addRaw(pathVis = new PathSurface(path = new Path2D(64)));
             else
@@ -79,8 +79,8 @@ public class Wiring extends Dragging {
         return true;
     }
 
-    private EditGraph2D graph() {
-        return start.parentOrSelf(EditGraph2D.class);
+    private GraphEdit2D graph() {
+        return start.parentOrSelf(GraphEdit2D.class);
     }
 
     @Override
@@ -115,7 +115,7 @@ public class Wiring extends Dragging {
         return tryWire((Port)start, (Port)end, graph());
     }
 
-    static boolean tryWire(Port start, Port end, EditGraph2D g) {
+    static boolean tryWire(Port start, Port end, GraphEdit2D g) {
         if (Port.canConnect(start, end)) {
 
             if (start instanceof TypedPort && end instanceof TypedPort) {

@@ -11,7 +11,7 @@ import static nars.$.t;
 import static nars.truth.func.TruthFunctions.confCompose;
 import static nars.truth.func.TruthFunctions.w2cSafe;
 
-enum TruthFunctions2 {
+public enum TruthFunctions2 {
     ;
 
 //    /**
@@ -254,23 +254,42 @@ enum TruthFunctions2 {
      */
     public static Truth post(Truth Y, Truth XimplY, boolean strong, float minConf) {
 
-        float c = confCompose(Y, XimplY);
-        if (c < minConf) return null;
-
-        //frequency alignment
+        //test for matching frequency alignment
         float yF = Y.freq();
         float impF = XimplY.freq();
-        float f;
+        if (yF >= 0.5f != impF >= 0.5f)
+            return null; //opposite alignment
+
+        float c = confCompose(Y, XimplY);
+        c = strong ? c : weak(c);
+        if (c < minConf) return null;
+
+
 
         //polarized: -1..+1
-        float yFp = 2 * (yF - 0.5f);
-        float impFp = 2 * (impF - 0.5f);
-        float alignment = (((yFp * impFp) /*-1..+1*/) + 1) / 2;
-        {
-            c *= alignment;
-            f = alignment;
-        }
-//        {
+//        float yFp = 2 * (yF - 0.5f);
+//        float impFp = 2 * (impF - 0.5f);
+//        float preAlign = yFp * impFp;
+//        float preAlign = 1-Math.abs(yF - impF);
+        float dyf = Math.abs(yF - 0.5f);
+        float dimpl = Math.abs(impF - 0.5f);
+        //normalize to the maximum dynamic range
+//        float range = Math.max(dyf, dimpl);
+//
+//        dimpl = dimpl / range;
+//        dyf = dyf / range;
+
+        float preAlign = dyf*dimpl * 4;
+
+        float alignment = //preAlign; //(preAlign + 1) / 2;
+                (float)Math.sqrt(preAlign);
+        c *= alignment;
+        if (c < minConf)
+            return null;
+        //f = alignment;
+        float f;
+        f = Util.lerp(alignment, 0.5f, 1);
+        //        {
 //            c *= alignment;
 //            f = 1;
 //        }
@@ -280,8 +299,7 @@ enum TruthFunctions2 {
 //            f = aSqrt;
 //        }
 
-        float cc = strong ? c : weak(c);
-        return cc < minConf ? null : $.t(f, cc);
+        return $.t(f, c);
     }
 
 //    @Nullable public static Truth intersectionSym(Truth t, Truth b, float minConf) {

@@ -15,6 +15,7 @@ import nars.term.util.Intermpolate;
 import nars.term.util.TermException;
 import nars.time.Tense;
 import nars.truth.Truth;
+import nars.truth.dynamic.DynTaskify;
 import nars.truth.polation.TruthIntegration;
 import nars.truth.polation.TruthProjection;
 import nars.util.Timed;
@@ -63,25 +64,6 @@ public final class Answer implements Timed {
      * truthpolation duration in result evidence projection
      */
     public int dur = 0;
-
-    public static Task merge(TaskList tasks, Term content, Truth t, Supplier<long[]> stamp, boolean beliefOrGoal, long start, long end, Timed w) {
-
-        NALTask dyn = task(content, t, stamp, beliefOrGoal, start, end, w);
-        if(dyn==null)
-            return null;
-
-        dyn.cause( tasks.why() );
-
-        dyn.pri(
-                tasks.reapply(TaskList::pri, NAL.DerivationPri)
-                        // * dyn.originality() //HACK
-        );
-
-        if (NAL.test.DEBUG_EXTRA) {
-        }
-
-        return dyn;
-    }
 
     @Nullable
     public static NALTask task(Term content, Truth t, Supplier<long[]> stamp, boolean beliefOrGoal, long start, long end, Timed time) {
@@ -349,8 +331,9 @@ public final class Answer implements Timed {
         return this;
     }
 
-    public Task task(boolean topOrSample, boolean forceProject, boolean dither) {
-        return task(topOrSample, forceProject, dither, true);
+    public Task task(boolean topOrSample, boolean forceProject, boolean ditherTruth) {
+        boolean ditherTime = ditherTruth;
+        return task(topOrSample, forceProject, ditherTruth, ditherTime);
     }
 
     /**
@@ -402,7 +385,7 @@ public final class Answer implements Timed {
             long ss = time.start;
             if (ss != ETERNAL) { //dont eternalize here
                 long ee = time.end;
-                @Nullable Task t2 = Task.project(t, ss, ee, eviMin, ditherTime, this.ditherTruth ? nar.dtDither() : 1, dur, nar);
+                @Nullable Task t2 = Task.project(t, ss, ee, eviMin, ditherTruth, ditherTime ? nar.dtDither() : 1, dur, nar);
                 if (t2 == null)
                     return null;
                 t = t2;
@@ -470,7 +453,7 @@ public final class Answer implements Timed {
             else
                 return only; //as-is
         } else {
-            return merge(taskList(), tp.term, tt, tp.stamper(nar::random), beliefOrGoal, tp.start(), tp.end(), nar);
+            return DynTaskify.merge(taskList(), tp.term, tt, tp.stamper(nar::random), beliefOrGoal, tp.start(), tp.end(), nar);
         }
     }
 
@@ -524,9 +507,15 @@ public final class Answer implements Timed {
         long s = time.start, e = time.end;
         if (s == ETERNAL) {
             //auto-crop if currently eternal
-            s = tt.start();
-            e = tt.end();
+
+            boolean ditherTime = ditherTruth;
+            if (ditherTime) {
+                int dither = nar.dtDither();
+                s = Tense.dither(tt.start(), dither, -1);
+                e = Tense.dither(tt.end(), dither, +1);
+            }
         }
+
 
         TruthProjection tp = nar.projection(s, e, dur);
         tp.ensureCapacity(tt.size());

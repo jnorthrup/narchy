@@ -33,8 +33,8 @@ public class ImageBeliefTable extends DynamicTaskTable {
     }
 
     /** wraps resulting task as an Image proxy */
-    @Override public @Nullable Task match(long start, long end, boolean forceProject, @Nullable Term template, Predicate<Task> filter, int dur, NAR nar) {
-        Task t = super.match(start, end, forceProject, template, filter, dur, nar);
+    @Override public @Nullable Task match(long start, long end, boolean forceProject, @Nullable Term template, Predicate<Task> filter, int dur, NAR nar, boolean ditherTruth) {
+        Task t = super.match(start, end, forceProject, template, filter, dur, nar, ditherTruth);
         return t != null ? new ImageTermTask(this.term, t) : null;
     }
     /** wraps resulting task as an Image proxy */

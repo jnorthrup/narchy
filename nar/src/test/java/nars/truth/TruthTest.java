@@ -6,8 +6,9 @@ import jcog.random.XorShift128PlusRandom;
 import nars.NAL;
 import nars.NAR;
 import nars.NARS;
-import nars.task.Revision;
+import nars.task.util.Revision;
 import nars.truth.func.TruthFunctions;
+import nars.truth.func.TruthFunctions2;
 import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -210,5 +211,24 @@ class TruthTest {
         double eviABintersectRaw = eviA * eviB;
         float eviABintersectRawToConf = w2c(eviA * eviB);
         System.out.println();
+    }
+    @Test void testPostFn() {
+        /* bad
+        $ .02 (right-->trackXY)! 3492⋈3500 %.28;.09% {3492: 1;36;3 A;3 K;3N;3O}
+            $.17 (trackXY-->happy)! %1.0;.90% {0: 1}
+            $.01 ((right-->$1) ==>-4 ($1-->happy)). 3486⋈3494 %.28;.34% {3490: 36;3A;3K;3N;3O} */
+
+        assertNull(TruthFunctions2.post(t(1, 0.9f), t(0.28f, 0.34f), true, 0));
+
+        assertTrue(
+                TruthFunctions2.post(t(1, 0.9f), t(0.75f, 0.9f), true, 0).expectation()
+                >
+                TruthFunctions2.post(t(1, 0.9f), t(0.65f, 0.9f), true, 0).expectation()
+        );
+//        assertTrue(
+//                TruthFunctions2.post(t(0.75f, 0.9f), t(0.75f, 0.9f), true, 0).expectation()
+//                        >
+//                        TruthFunctions2.post(t(1, 0.9f), t(0.65f, 0.9f), true, 0).expectation()
+//        );
     }
 }

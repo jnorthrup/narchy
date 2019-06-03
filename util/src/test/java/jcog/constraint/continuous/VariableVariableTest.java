@@ -25,10 +25,10 @@ class VariableVariableTest {
         solver.add(C.lessThanOrEqualTo(x, y));
 
         solver.update();
-        assertTrue(x.value() <= 100);
+        assertTrue(x.getAsDouble() <= 100);
         solver.add(C.equals(x, 90));
         solver.update();
-        assertEquals(x.value(), 90, EPSILON);
+        assertEquals(x.getAsDouble(), 90, EPSILON);
     }
 
     @Test
@@ -43,7 +43,7 @@ class VariableVariableTest {
             solver.add(C.lessThanOrEqualTo(x, y));
 
             solver.update();
-            assertTrue(x.value() <= 100);
+            assertTrue(x.getAsDouble() <= 100);
             solver.add(C.equals(x, 110));
             solver.update();
 
@@ -61,10 +61,10 @@ class VariableVariableTest {
         solver.add(C.greaterThanOrEqualTo(x, y));
 
         solver.update();
-        assertTrue(x.value() >= 100);
+        assertTrue(x.getAsDouble() >= 100);
         solver.add(C.equals(x, 110));
         solver.update();
-        assertEquals(x.value(), 110, EPSILON);
+        assertEquals(x.getAsDouble(), 110, EPSILON);
     }
 
     @Test
@@ -79,7 +79,7 @@ class VariableVariableTest {
 
             solver.add(C.greaterThanOrEqualTo(x, y));
             solver.update();
-            assertTrue(x.value() >= 100);
+            assertTrue(x.getAsDouble() >= 100);
             solver.add(C.equals(x, 90));
             solver.update();
         });

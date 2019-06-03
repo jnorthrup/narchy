@@ -14,21 +14,21 @@
 
 //Set Composition
 
-    (C --> A), (C --> B), neqRoot(A,B),is(A,"{"),is(B,"{") |- (C --> union(A,B)), (Belief:Union)
-    (C --> A), (C --> B), neqRoot(A,B),is(A,"{"),is(B,"{") |- (C --> intersect(A,B)), (Belief:Intersection)
-    (C --> A), (C --> B), neqRoot(A,B),is(A,"{"),is(B,"{") |- (C --> differ(A,B)), (Belief:Difference)
+    (C --> A), (C --> B), neqRoot(A,B),is(A,"{"),is(B,"{") |- (C --> union(A,B)), (Belief:Union, Time:Compose)
+    (C --> A), (C --> B), neqRoot(A,B),is(A,"{"),is(B,"{") |- (C --> intersect(A,B)), (Belief:Intersection, Time:Compose)
+    (C --> A), (C --> B), neqRoot(A,B),is(A,"{"),is(B,"{") |- (C --> differ(A,B)), (Belief:Difference, Time:Compose)
 
-    (C --> A), (C --> B), neqRoot(A,B),is(A,"["),is(B,"[") |- (C --> union(A,B)), (Belief:Intersection)
-    (C --> A), (C --> B), neqRoot(A,B),is(A,"["),is(B,"[") |- (C --> intersect(A,B)), (Belief:Union)
-    (C --> A), (C --> B), neqRoot(A,B),is(A,"["),is(B,"[") |- (C --> differ(A,B)), (Belief:Difference)
+    (C --> A), (C --> B), neqRoot(A,B),is(A,"["),is(B,"[") |- (C --> union(A,B)), (Belief:Intersection, Time:Compose)
+    (C --> A), (C --> B), neqRoot(A,B),is(A,"["),is(B,"[") |- (C --> intersect(A,B)), (Belief:Union, Time:Compose)
+    (C --> A), (C --> B), neqRoot(A,B),is(A,"["),is(B,"[") |- (C --> differ(A,B)), (Belief:Difference, Time:Compose)
 
-    (A --> C), (B --> C), neqRoot(A,B),is(A,"{"),is(B,"{") |- (intersect(A,B) --> C), (Belief:Union)
-    (A --> C), (B --> C), neqRoot(A,B),is(A,"{"),is(B,"{") |- (union(A,B) --> C), (Belief:Intersection)
-    (A --> C), (B --> C), neqRoot(A,B),is(A,"{"),is(B,"{") |- (differ(A,B) --> C), (Belief:Difference)
+    (A --> C), (B --> C), neqRoot(A,B),is(A,"{"),is(B,"{") |- (intersect(A,B) --> C), (Belief:Union, Time:Compose)
+    (A --> C), (B --> C), neqRoot(A,B),is(A,"{"),is(B,"{") |- (union(A,B) --> C), (Belief:Intersection, Time:Compose)
+    (A --> C), (B --> C), neqRoot(A,B),is(A,"{"),is(B,"{") |- (differ(A,B) --> C), (Belief:Difference, Time:Compose)
 
-    (A --> C), (B --> C), neqRoot(A,B),is(A,"["),is(B,"[") |- (union(A,B) --> C), (Belief:Union)
-    (A --> C), (B --> C), neqRoot(A,B),is(A,"["),is(B,"[") |- (intersect(A,B) --> C), (Belief:Intersection)
-    (A --> C), (B --> C), neqRoot(A,B),is(A,"["),is(B,"[") |- (differ(A,B) --> C), (Belief:Difference)
+    (A --> C), (B --> C), neqRoot(A,B),is(A,"["),is(B,"[") |- (union(A,B) --> C), (Belief:Union, Time:Compose)
+    (A --> C), (B --> C), neqRoot(A,B),is(A,"["),is(B,"[") |- (intersect(A,B) --> C), (Belief:Intersection, Time:Compose)
+    (A --> C), (B --> C), neqRoot(A,B),is(A,"["),is(B,"[") |- (differ(A,B) --> C), (Belief:Difference, Time:Compose)
 
 //Set Goals
     //(A --> C), (B --> C), task("!"), neq(A,B),is(A,"{"),is(B,"{") |- (intersect(A,B) --> C), (Goal:Weak)

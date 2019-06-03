@@ -1,4 +1,4 @@
-package nars.task.signal;
+package nars.task.util.signal;
 
 public class ProxyTruthlet<T extends Truthlet> extends Truthlet {
 

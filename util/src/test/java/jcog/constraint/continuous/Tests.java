@@ -23,7 +23,7 @@ class Tests {
 
         solver.update();
 
-        assertEquals(x.value(), 18, EPSILON);
+        assertEquals(x.getAsDouble(), 18, EPSILON);
     }
 
     @Test
@@ -38,10 +38,10 @@ class Tests {
 
         solver.update();
 
-        System.out.println("x " + x.value() + " y " + y.value());
+        System.out.println("x " + x.getAsDouble() + " y " + y.getAsDouble());
 
-        assertEquals(y.value(), 12, EPSILON);
-        assertEquals(x.value(), 20, EPSILON);
+        assertEquals(y.getAsDouble(), 12, EPSILON);
+        assertEquals(x.getAsDouble(), 20, EPSILON);
     }
 
     @Test
@@ -51,7 +51,7 @@ class Tests {
         ContinuousConstraintSolver solver = new ContinuousConstraintSolver();
         solver.add(C.equals(x, y));
         solver.update();
-        assertEquals(x.value(), y.value(), EPSILON);
+        assertEquals(x.getAsDouble(), y.getAsDouble(), EPSILON);
     }
 
     @Test
@@ -67,12 +67,12 @@ class Tests {
 
         solver.update();
 
-        if (Math.abs(x.value() - 10.0) < EPSILON) {
-            assertEquals(10, x.value(), EPSILON);
-            assertEquals(13, y.value(), EPSILON);
+        if (Math.abs(x.getAsDouble() - 10.0) < EPSILON) {
+            assertEquals(10, x.getAsDouble(), EPSILON);
+            assertEquals(13, y.getAsDouble(), EPSILON);
         } else {
-            assertEquals(7, x.value(), EPSILON);
-            assertEquals(10, y.value(), EPSILON);
+            assertEquals(7, x.getAsDouble(), EPSILON);
+            assertEquals(10, y.getAsDouble(), EPSILON);
         }
     }
 
@@ -84,7 +84,7 @@ class Tests {
         solver.add(C.lessThanOrEqualTo(x, 100).setStrength(Strength.WEAK));
 
         solver.update();
-        assertEquals(100, x.value(), EPSILON);
+        assertEquals(100, x.getAsDouble(), EPSILON);
 
         ContinuousConstraint c10 = C.lessThanOrEqualTo(x, 10.0);
         ContinuousConstraint c20 = C.lessThanOrEqualTo(x, 20.0);
@@ -94,18 +94,18 @@ class Tests {
 
         solver.update();
 
-        assertEquals(10, x.value(), EPSILON);
+        assertEquals(10, x.getAsDouble(), EPSILON);
 
         solver.remove(c10);
 
         solver.update();
 
-        assertEquals(20, x.value(), EPSILON);
+        assertEquals(20, x.getAsDouble(), EPSILON);
 
         solver.remove(c20);
         solver.update();
 
-        assertEquals(100, x.value(), EPSILON);
+        assertEquals(100, x.getAsDouble(), EPSILON);
 
         ContinuousConstraint c10again = C.lessThanOrEqualTo(x, 10.0);
 
@@ -113,15 +113,15 @@ class Tests {
         solver.add(c10);
         solver.update();
 
-        assertEquals(10, x.value(), EPSILON);
+        assertEquals(10, x.getAsDouble(), EPSILON);
 
         solver.remove(c10);
         solver.update();
-        assertEquals(10, x.value(), EPSILON);
+        assertEquals(10, x.getAsDouble(), EPSILON);
 
         solver.remove(c10again);
         solver.update();
-        assertEquals(100, x.value(), EPSILON);
+        assertEquals(100, x.getAsDouble(), EPSILON);
     }
 
     @Test
@@ -140,33 +140,33 @@ class Tests {
         solver.add(c20);
         solver.update();
 
-        assertEquals(10, x.value(), EPSILON);
-        assertEquals(120, y.value(), EPSILON);
+        assertEquals(10, x.getAsDouble(), EPSILON);
+        assertEquals(120, y.getAsDouble(), EPSILON);
 
         solver.remove(c10);
         solver.update();
 
-        assertEquals(20, x.value(), EPSILON);
-        assertEquals(120, y.value(), EPSILON);
+        assertEquals(20, x.getAsDouble(), EPSILON);
+        assertEquals(120, y.getAsDouble(), EPSILON);
 
         ContinuousConstraint cxy = C.equals(C.multiply(x, 2.0), y);
         solver.add(cxy);
         solver.update();
 
-        assertEquals(20, x.value(), EPSILON);
-        assertEquals(40, y.value(), EPSILON);
+        assertEquals(20, x.getAsDouble(), EPSILON);
+        assertEquals(40, y.getAsDouble(), EPSILON);
 
         solver.remove(c20);
         solver.update();
 
-        assertEquals(60, x.value(), EPSILON);
-        assertEquals(120, y.value(), EPSILON);
+        assertEquals(60, x.getAsDouble(), EPSILON);
+        assertEquals(120, y.getAsDouble(), EPSILON);
 
         solver.remove(cxy);
         solver.update();
 
-        assertEquals(100, x.value(), EPSILON);
-        assertEquals(120, y.value(), EPSILON);
+        assertEquals(100, x.getAsDouble(), EPSILON);
+        assertEquals(120, y.getAsDouble(), EPSILON);
     }
 
     @Test

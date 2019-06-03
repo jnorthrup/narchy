@@ -4,7 +4,7 @@ import jcog.event.Off;
 import jcog.event.RunThese;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.ContainerSurface;
-import spacegraph.space2d.container.graph.EditGraph2D;
+import spacegraph.space2d.container.graph.GraphEdit2D;
 
 public class DependentWindow extends Windo {
 
@@ -22,7 +22,7 @@ public class DependentWindow extends Windo {
     protected void starting() {
         super.starting();
 
-        EditGraph2D g = parentOrSelf(EditGraph2D.class);
+        GraphEdit2D g = parentOrSelf(GraphEdit2D.class);
 
         this.on = new RunThese(()->{
             g.physics.remove(this);

@@ -13,7 +13,7 @@ import nars.control.op.Remember;
 import nars.table.BeliefTable;
 import nars.task.NALTask;
 import nars.task.ProxyTask;
-import nars.task.Revision;
+import nars.task.util.Revision;
 import nars.task.util.Answer;
 import nars.term.Compound;
 import nars.term.Term;

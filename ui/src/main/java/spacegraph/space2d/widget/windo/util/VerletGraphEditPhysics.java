@@ -8,7 +8,7 @@ import org.eclipse.collections.api.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.space2d.ReSurface;
 import spacegraph.space2d.Surface;
-import spacegraph.space2d.container.graph.EditGraph2D;
+import spacegraph.space2d.container.graph.GraphEdit2D;
 import spacegraph.space2d.container.graph.Link;
 import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.space2d.widget.meta.MetaFrame;
@@ -51,7 +51,7 @@ public class VerletGraphEditPhysics extends GraphEditPhysics {
     }
 
     @Override
-    protected void starting(EditGraph2D parent) {
+    protected void starting(GraphEdit2D parent) {
         physics.physics.setDrag(0.25f);
         physics.debugRender.set(false);
         physics.pos(parent.bounds);
@@ -97,7 +97,7 @@ public class VerletGraphEditPhysics extends GraphEditPhysics {
         return new VerletVisibleLink(w);
     }
 
-    class VerletVisibleLink extends EditGraph2D.VisibleLink {
+    class VerletVisibleLink extends GraphEdit2D.VisibleLink {
 
         public VerletVisibleLink(@Nullable Wire w) {
             super(w);
@@ -146,7 +146,7 @@ public class VerletGraphEditPhysics extends GraphEditPhysics {
             graph.addRaw(r);
         }
 
-        void bind(Surface gripWindow, VerletParticle2D particle, boolean surfaceOverrides, VerletSurface.VerletSurfaceBinding where, EditGraph2D g) {
+        void bind(Surface gripWindow, VerletParticle2D particle, boolean surfaceOverrides, VerletSurface.VerletSurfaceBinding where, GraphEdit2D g) {
             physics.bind(gripWindow, particle, surfaceOverrides, where);
             on(gripWindow);
         }

@@ -5,6 +5,7 @@ import jcog.constraint.continuous.exceptions.NonlinearExpressionException;
 import jcog.constraint.continuous.exceptions.UnsatisfiableConstraintException;
 
 import java.util.HashMap;
+import java.util.function.DoubleSupplier;
 
 /**
  * Created by alex on 27/11/2014.
@@ -14,7 +15,7 @@ public class Benchmarks {
     private static void testAddingLotsOfConstraints() throws DuplicateConstraintException, UnsatisfiableConstraintException, NonlinearExpressionException {
         ContinuousConstraintSolver solver = new ContinuousConstraintSolver();
 
-        final HashMap<String, DoubleVar> variables = new HashMap<String, DoubleVar>();
+        final HashMap<String, DoubleVar> variables = new HashMap<>();
 
         ConstraintParser.CassowaryVariableResolver variableResolver = new ConstraintParser.CassowaryVariableResolver() {
 
@@ -40,12 +41,12 @@ public class Benchmarks {
             }
         };
 
-        solver.add(ConstraintParser.parseConstraint("variable0 == 100", variableResolver));
+        solver.add(ConstraintParser.parse("variable0 == 100", variableResolver));
 
         for (int i = 1; i < 3000; i++) {
             String constraintString  = getVariableName(i) + " == 100 + " + getVariableName(i - 1);
 
-            ContinuousConstraint constraint = ConstraintParser.parseConstraint(constraintString, variableResolver);
+            ContinuousConstraint constraint = ConstraintParser.parse(constraintString, variableResolver);
 
             System.gc();
             long timeBefore = System.nanoTime();

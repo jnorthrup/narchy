@@ -2,7 +2,6 @@ package nars.truth.dynamic;
 
 import jcog.Util;
 import jcog.util.ObjectLongLongPredicate;
-import nars.NAR;
 import nars.Op;
 import nars.Task;
 import nars.subterm.Subterms;
@@ -39,7 +38,7 @@ public class DynamicStatementTruth {
         }
 
         @Override
-        public Term reconstruct(Compound superterm, DynTaskify components, NAR nar, long start, long end) {
+        public Term reconstruct(Compound superterm, DynTaskify components, long start, long end) {
             return reconstruct(superterm, components, true, false).neg();
         }
     };
@@ -58,7 +57,7 @@ public class DynamicStatementTruth {
         }
 
         @Override
-        public Term reconstruct(Compound superterm, DynTaskify components, NAR nar, long start, long end) {
+        public Term reconstruct(Compound superterm, DynTaskify components, long start, long end) {
             return reconstruct(superterm, components, true, false
                     /* reconstruct as-is; union only applies to the truth calculation */);
         }
@@ -247,7 +246,7 @@ public class DynamicStatementTruth {
 //        }
 
         @Override
-        public Term reconstruct(Compound superterm, DynTaskify components, NAR nar, long start, long end) {
+        public Term reconstruct(Compound superterm, DynTaskify components, long start, long end) {
             return reconstruct(superterm, components, subjOrPred, false);
         }
 

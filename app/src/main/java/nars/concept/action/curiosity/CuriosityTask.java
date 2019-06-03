@@ -1,6 +1,6 @@
 package nars.concept.action.curiosity;
 
-import nars.task.signal.SignalTask;
+import nars.task.util.signal.SignalTask;
 import nars.term.Term;
 import nars.truth.Truth;
 

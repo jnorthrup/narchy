@@ -55,6 +55,9 @@ public class BeliefTables extends FasterList<BeliefTable> implements BeliefTable
 
         for (int i = 0, thisSize = this.size(); i < thisSize; i++) {
             BeliefTable t = this.getSafe(i); //HACK items seem to get deleted very rarely.. find why
+            if (t==null) //HACK is this when the concept is being deleted while this traverse?
+                return;
+
             t.remember(r);
             if (!r.active())
                 return;

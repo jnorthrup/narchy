@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.function.DoubleSupplier;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -119,7 +120,7 @@ class RealWorldTests {
     };
 
 
-    private ConstraintParser.CassowaryVariableResolver createVariableResolver(final ContinuousConstraintSolver solver, final HashMap<String, HashMap<String, DoubleVar>> nodeHashMap) {
+    private ConstraintParser.CassowaryVariableResolver createVariableResolver(final ContinuousConstraintSolver solver, final Map<String, HashMap<String, DoubleVar>> nodeHashMap) {
         ConstraintParser.CassowaryVariableResolver variableResolver = new ConstraintParser.CassowaryVariableResolver() {
 
             private DoubleVar getVariableFromNode(HashMap<String, DoubleVar> node, String variableName) {
@@ -141,12 +142,10 @@ class RealWorldTests {
                         }
                         return variable;
                     }
-                } catch(DuplicateConstraintException e) {
-                    e.printStackTrace();
-                } catch (UnsatisfiableConstraintException e) {
+                } catch(DuplicateConstraintException | UnsatisfiableConstraintException e) {
                     e.printStackTrace();
                 }
-                
+
                 return null;
 
             }
@@ -201,43 +200,41 @@ class RealWorldTests {
     void testGridLayout() throws DuplicateConstraintException, UnsatisfiableConstraintException, NonlinearExpressionException {
 
         final ContinuousConstraintSolver solver = new ContinuousConstraintSolver();
-        final HashMap<String, HashMap<String, DoubleVar>> nodeHashMap = new HashMap<>();
+        final Map<String, HashMap<String, DoubleVar>> nodes = new HashMap<>();
 
-        ConstraintParser.CassowaryVariableResolver variableResolver = createVariableResolver(solver, nodeHashMap);
+        ConstraintParser.CassowaryVariableResolver r = createVariableResolver(solver, nodes);
 
-        for (String constraint : CONSTRAINTS) {
-            ContinuousConstraint con = ConstraintParser.parseConstraint(constraint, variableResolver);
-            solver.add(con);
-        }
+        for (String constraint : CONSTRAINTS)
+            solver.add(ConstraintParser.parse(constraint, r));
 
-        solver.add(ConstraintParser.parseConstraint("container.width == 300", variableResolver));
-        solver.add(ConstraintParser.parseConstraint("title0.intrinsicHeight == 100", variableResolver));
-        solver.add(ConstraintParser.parseConstraint("title1.intrinsicHeight == 110", variableResolver));
-        solver.add(ConstraintParser.parseConstraint("title2.intrinsicHeight == 120", variableResolver));
-        solver.add(ConstraintParser.parseConstraint("title3.intrinsicHeight == 130", variableResolver));
-        solver.add(ConstraintParser.parseConstraint("title4.intrinsicHeight == 140", variableResolver));
-        solver.add(ConstraintParser.parseConstraint("title5.intrinsicHeight == 150", variableResolver));
-        solver.add(ConstraintParser.parseConstraint("more.intrinsicHeight == 160", variableResolver));
+        solver.add(ConstraintParser.parse("container.width == 300", r));
+        solver.add(ConstraintParser.parse("title0.intrinsicHeight == 100", r));
+        solver.add(ConstraintParser.parse("title1.intrinsicHeight == 110", r));
+        solver.add(ConstraintParser.parse("title2.intrinsicHeight == 120", r));
+        solver.add(ConstraintParser.parse("title3.intrinsicHeight == 130", r));
+        solver.add(ConstraintParser.parse("title4.intrinsicHeight == 140", r));
+        solver.add(ConstraintParser.parse("title5.intrinsicHeight == 150", r));
+        solver.add(ConstraintParser.parse("more.intrinsicHeight == 160", r));
 
         solver.update();
 
-        assertEquals(20, nodeHashMap.get("thumb0").get("top").value(), EPSILON);
-        assertEquals(20, nodeHashMap.get("thumb1").get("top").value(), EPSILON);
+        assertEquals(20, nodes.get("thumb0").get("top").getAsDouble(), EPSILON);
+        assertEquals(20, nodes.get("thumb1").get("top").getAsDouble(), EPSILON);
 
-        assertEquals(85, nodeHashMap.get("title0").get("top").value(), EPSILON);
-        assertEquals(85, nodeHashMap.get("title1").get("top").value(), EPSILON);
+        assertEquals(85, nodes.get("title0").get("top").getAsDouble(), EPSILON);
+        assertEquals(85, nodes.get("title1").get("top").getAsDouble(), EPSILON);
 
-        assertEquals(210, nodeHashMap.get("thumb2").get("top").value(), EPSILON);
-        assertEquals(210, nodeHashMap.get("thumb3").get("top").value(), EPSILON);
+        assertEquals(210, nodes.get("thumb2").get("top").getAsDouble(), EPSILON);
+        assertEquals(210, nodes.get("thumb3").get("top").getAsDouble(), EPSILON);
 
-        assertEquals(275, nodeHashMap.get("title2").get("top").value(), EPSILON);
-        assertEquals(275, nodeHashMap.get("title3").get("top").value(), EPSILON);
+        assertEquals(275, nodes.get("title2").get("top").getAsDouble(), EPSILON);
+        assertEquals(275, nodes.get("title3").get("top").getAsDouble(), EPSILON);
 
-        assertEquals(420, nodeHashMap.get("thumb4").get("top").value(), EPSILON);
-        assertEquals(420, nodeHashMap.get("thumb5").get("top").value(), EPSILON);
+        assertEquals(420, nodes.get("thumb4").get("top").getAsDouble(), EPSILON);
+        assertEquals(420, nodes.get("thumb5").get("top").getAsDouble(), EPSILON);
 
-        assertEquals(485, nodeHashMap.get("title4").get("top").value(), EPSILON);
-        assertEquals(485, nodeHashMap.get("title5").get("top").value(), EPSILON);
+        assertEquals(485, nodes.get("title4").get("top").getAsDouble(), EPSILON);
+        assertEquals(485, nodes.get("title5").get("top").getAsDouble(), EPSILON);
     }
 
   /*  @Test
@@ -339,20 +336,20 @@ class RealWorldTests {
 
     }*/
 
-    static void printNodes(HashMap<String, HashMap<String, DoubleVar>> variableHashMap) {
-        Iterator<Map.Entry<String, HashMap<String, DoubleVar>>> it = variableHashMap.entrySet().iterator();
+    static void printNodes(HashMap<String, HashMap<String, DoubleSupplier>> variableHashMap) {
+        Iterator<Map.Entry<String, HashMap<String, DoubleSupplier>>> it = variableHashMap.entrySet().iterator();
         while (it.hasNext()) {
-            Map.Entry<String, HashMap<String, DoubleVar>> pairs = it.next();
+            Map.Entry<String, HashMap<String, DoubleSupplier>> pairs = it.next();
             System.out.println("node " + pairs.getKey());
             printVariables(pairs.getValue());
         }
     }
 
-    private static void printVariables(HashMap<String, DoubleVar> variableHashMap) {
-        Iterator<Map.Entry<String, DoubleVar>> it = variableHashMap.entrySet().iterator();
+    private static void printVariables(HashMap<String, DoubleSupplier> variableHashMap) {
+        Iterator<Map.Entry<String, DoubleSupplier>> it = variableHashMap.entrySet().iterator();
         while (it.hasNext()) {
-            Map.Entry<String, DoubleVar> pairs = it.next();
-            System.out.println(' ' + pairs.getKey() + " = " + pairs.getValue().value() + " (address:" + pairs.getValue().hashCode() + ')');
+            Map.Entry<String, DoubleSupplier> pairs = it.next();
+            System.out.println(' ' + pairs.getKey() + " = " + pairs.getValue().getAsDouble() + " (address:" + pairs.getValue().hashCode() + ')');
         }
     }
 

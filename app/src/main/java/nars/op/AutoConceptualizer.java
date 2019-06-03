@@ -12,7 +12,7 @@ import nars.concept.Concept;
 import nars.concept.sensor.AbstractSensor;
 import nars.control.channel.CauseChannel;
 import nars.table.BeliefTable;
-import nars.task.signal.SignalTask;
+import nars.task.util.signal.SignalTask;
 import nars.term.Term;
 import nars.term.Termed;
 import nars.truth.Truth;

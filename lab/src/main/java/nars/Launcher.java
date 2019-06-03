@@ -3,7 +3,7 @@ package nars;
 import org.reflections.Reflections;
 import spacegraph.SpaceGraph;
 import spacegraph.space2d.Surface;
-import spacegraph.space2d.container.graph.EditGraph2D;
+import spacegraph.space2d.container.graph.GraphEdit2D;
 import spacegraph.space2d.widget.meta.ObjectSurface;
 
 import java.util.List;
@@ -81,7 +81,7 @@ public class Launcher {
         );
 
 
-        EditGraph2D g = new EditGraph2D();
+        GraphEdit2D g = new GraphEdit2D();
         SpaceGraph.window(                 g, 800, 800        );
 
         g.add(m).posRel(0.5f, 0.5f, 0.75f);

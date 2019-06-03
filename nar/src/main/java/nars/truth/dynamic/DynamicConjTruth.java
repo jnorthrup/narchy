@@ -1,13 +1,15 @@
 package nars.truth.dynamic;
 
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Sets;
 import jcog.util.ArrayUtil;
 import jcog.util.ObjectLongLongPredicate;
-import nars.NAR;
 import nars.Op;
 import nars.Task;
 import nars.subterm.Subterms;
 import nars.term.Compound;
 import nars.term.Term;
+import nars.term.Termed;
 import nars.term.util.conj.Conj;
 import nars.term.util.conj.ConjBuilder;
 import nars.term.util.conj.ConjSeq;
@@ -30,10 +32,29 @@ public class DynamicConjTruth {
         protected boolean negResult() { return false; }
 
         @Override
-        public Term reconstruct(Compound superterm, DynTaskify d, NAR nar, long start, long end) {
+        public Term reconstruct(Compound superterm, DynTaskify d, long sequenceStart, long startEnd) {
 
-            int dtDither = nar.dtDither();
             int n = d.size();
+
+            long end;
+            if (sequenceStart==ETERNAL) {
+                end = ETERNAL;
+            } else {
+                long sequenceLatestStart = d.latestStart(); assert(sequenceLatestStart!=ETERNAL);
+                int dtDither = d.nar.dtDither();
+
+                if (sequenceLatestStart - sequenceStart < dtDither && Sets.newHashSet(Iterables.transform(d, Termed::term)).size() == 1) {
+                    //same starting time and all terms are the same.
+                    //TODO try revision (first 2)
+                    return null;
+                }
+
+                sequenceStart = sequenceStart; //dither now for comparisons in loop
+
+                long range = startEnd - sequenceStart;
+                end = sequenceLatestStart + range; //the actual total end of the sequence
+            }
+
             ConjBuilder l =
                     //new ConjLazy(n);
                     new Conj(n);
@@ -42,12 +63,12 @@ public class DynamicConjTruth {
                 long s = t.start();
                 long when;
 
-                if (s == ETERNAL || (start!=ETERNAL && s<=start && t.end()>=end))
+                if (s == ETERNAL || (sequenceStart!=ETERNAL && s<=sequenceStart && t.end()>=end))
                     when = ETERNAL; //spans entire event
                 else if (s == ETERNAL)
                     when = ETERNAL;
                 else
-                    when = Tense.dither(s, dtDither);
+                    when = s; //Tense.dither(s, dtDither);
 
                 Term x = t.term().negIf(!d.componentPolarity.get(i));
 

@@ -124,7 +124,7 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
         return count(TaskComponent::valid);
     }
 
-    private int update(boolean force) {
+    public int update(boolean force) {
         int s = size();
         if (s <= 0)
             return 0;

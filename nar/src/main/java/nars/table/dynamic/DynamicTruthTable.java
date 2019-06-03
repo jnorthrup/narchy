@@ -25,7 +25,7 @@ public final class DynamicTruthTable extends DynamicTaskTable {
         if (a.term() == null)
             a.template(term); //use default concept term
 
-        Task y = new DynTaskify(model, beliefOrGoal, a).result;
+        Task y = new DynTaskify(model, beliefOrGoal, a).eval(a.time.start, a.time.end);
         if (y!=null)
             a.tryAccept(y);
     }

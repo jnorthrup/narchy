@@ -887,114 +887,116 @@ public class Dynamics2D {
         joints(j -> j.islandFlag = false);
 
 
-        int stackSize = bodyCount;
-        Body2D[] stack = new Body2D[stackSize];
+        if (bodyCount > 0) {
+            int stackSize = bodyCount;
+            Body2D[] stack = new Body2D[stackSize];
 
-        bodies(seed -> {
-            if ((seed.flags & Body2D.e_islandFlag) == Body2D.e_islandFlag)
-                return;
+            bodies(seed -> {
+                if ((seed.flags & Body2D.e_islandFlag) == Body2D.e_islandFlag)
+                    return;
 
-            if (!seed.isAwake() || !seed.isActive())
-                return;
-
-
-            if (seed.getType() == BodyType.STATIC)
-                return;
+                if (!seed.isAwake() || !seed.isActive())
+                    return;
 
 
-            island.clear();
-            int stackCount = 0;
-            stack[stackCount++] = seed;
-            seed.flags |= Body2D.e_islandFlag;
+                if (seed.getType() == BodyType.STATIC)
+                    return;
 
 
-            while (stackCount > 0) {
-
-                Body2D b = stack[--stackCount];
-                if (!b.isActive())
-                    continue;
-
-                island.add(b);
+                island.clear();
+                int stackCount = 0;
+                stack[stackCount++] = seed;
+                seed.flags |= Body2D.e_islandFlag;
 
 
-                b.setAwake(true);
+                while (stackCount > 0) {
 
-
-                if (b.getType() == BodyType.STATIC)
-                    continue;
-
-
-                for (ContactEdge ce = b.contacts; ce != null; ce = ce.next) {
-                    Contact contact = ce.contact;
-
-
-                    if ((contact.m_flags & Contact.ISLAND_FLAG) == Contact.ISLAND_FLAG) {
+                    Body2D b = stack[--stackCount];
+                    if (!b.isActive())
                         continue;
+
+                    island.add(b);
+
+
+                    b.setAwake(true);
+
+
+                    if (b.getType() == BodyType.STATIC)
+                        continue;
+
+
+                    for (ContactEdge ce = b.contacts; ce != null; ce = ce.next) {
+                        Contact contact = ce.contact;
+
+
+                        if ((contact.m_flags & Contact.ISLAND_FLAG) == Contact.ISLAND_FLAG) {
+                            continue;
+                        }
+
+
+                        if (!contact.isEnabled() || !contact.isTouching()) {
+                            continue;
+                        }
+
+
+                        boolean sensorA = contact.aFixture.isSensor;
+                        boolean sensorB = contact.bFixture.isSensor;
+                        if (sensorA || sensorB) {
+                            continue;
+                        }
+
+                        island.add(contact);
+                        contact.m_flags |= Contact.ISLAND_FLAG;
+
+                        Body2D other = ce.other;
+
+
+                        if ((other.flags & Body2D.e_islandFlag) == Body2D.e_islandFlag) {
+                            continue;
+                        }
+
+                        assert (stackCount < stackSize);
+                        stack[stackCount++] = other;
+                        other.flags |= Body2D.e_islandFlag;
                     }
 
 
-                    if (!contact.isEnabled() || !contact.isTouching()) {
-                        continue;
+                    for (JointEdge je = b.joints; je != null; je = je.next) {
+                        if (je.joint.islandFlag) {
+                            continue;
+                        }
+
+                        Body2D other = je.other;
+
+
+                        if (!other.isActive()) {
+                            continue;
+                        }
+
+                        island.add(je.joint);
+                        je.joint.islandFlag = true;
+
+                        if ((other.flags & Body2D.e_islandFlag) == Body2D.e_islandFlag) {
+                            continue;
+                        }
+
+                        assert (stackCount < stackSize);
+                        stack[stackCount++] = other;
+                        other.flags |= Body2D.e_islandFlag;
                     }
-
-
-                    boolean sensorA = contact.aFixture.isSensor;
-                    boolean sensorB = contact.bFixture.isSensor;
-                    if (sensorA || sensorB) {
-                        continue;
-                    }
-
-                    island.add(contact);
-                    contact.m_flags |= Contact.ISLAND_FLAG;
-
-                    Body2D other = ce.other;
-
-
-                    if ((other.flags & Body2D.e_islandFlag) == Body2D.e_islandFlag) {
-                        continue;
-                    }
-
-                    assert (stackCount < stackSize);
-                    stack[stackCount++] = other;
-                    other.flags |= Body2D.e_islandFlag;
                 }
+                island.solve(profiler, step, gravity, allowSleep);
 
 
-                for (JointEdge je = b.joints; je != null; je = je.next) {
-                    if (je.joint.islandFlag) {
-                        continue;
+                for (int i = 0; i < island.m_bodyCount; ++i) {
+
+                    Body2D b = island.bodies[i];
+                    if (b.getType() == BodyType.STATIC) {
+                        b.flags &= ~Body2D.e_islandFlag;
                     }
-
-                    Body2D other = je.other;
-
-
-                    if (!other.isActive()) {
-                        continue;
-                    }
-
-                    island.add(je.joint);
-                    je.joint.islandFlag = true;
-
-                    if ((other.flags & Body2D.e_islandFlag) == Body2D.e_islandFlag) {
-                        continue;
-                    }
-
-                    assert (stackCount < stackSize);
-                    stack[stackCount++] = other;
-                    other.flags |= Body2D.e_islandFlag;
                 }
-            }
-            island.solve(profiler, step, gravity, allowSleep);
-
-
-            for (int i = 0; i < island.m_bodyCount; ++i) {
-
-                Body2D b = island.bodies[i];
-                if (b.getType() == BodyType.STATIC) {
-                    b.flags &= ~Body2D.e_islandFlag;
-                }
-            }
-        });
+            });
+        }
 
         profiler.solveInit.endAccum();
         profiler.solveVelocity.endAccum();
@@ -1002,14 +1004,16 @@ public class Dynamics2D {
 
         broadphaseTimer.reset();
 
-        bodies(b -> {
+        if (bodyCount > 0) {
+            bodies(b -> {
 
-            if ((b.flags & Body2D.e_islandFlag) == 0 || b.getType() == BodyType.STATIC) return;
+                if ((b.flags & Body2D.e_islandFlag) == 0 || b.getType() == BodyType.STATIC) return;
 
 
-            b.synchronizeFixtures();
-            b.postUpdate();
-        });
+                b.synchronizeFixtures();
+                b.postUpdate();
+            });
+        }
 
 
         contactManager.findNewContacts();

@@ -660,17 +660,6 @@ public class NAL6Test extends NALTest {
                 );
     }
 
-    @Test
-    void abductionBeliefPositiveNegativeButNotTotalFail() {
-
-        test.nar.confMin.set(0.1f);
-        test
-                .believe("(a==>b)", 0.55f, 0.90f)
-                .believe("b", 0.45f, 0.90f)
-                .mustBelieve(cycles, "a",
-                        0.5f, 0.29f
-                );
-    }
 
     @Test
     void abductionBeliefOffCenteredPositiveNegativeButNotTotalFail() {

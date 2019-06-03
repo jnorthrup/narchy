@@ -1,4 +1,4 @@
-package nars.task.signal;
+package nars.task.util.signal;
 
 import jcog.Paper;
 import jcog.Skill;

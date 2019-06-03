@@ -88,22 +88,22 @@ public interface TaskTable {
                 .match(this);
     }
 
-    @Nullable default Task match(long start, long end, boolean forceProject, @Nullable Term template, Predicate<Task> filter, int dur, NAR nar) {
+    @Nullable default Task match(long start, long end, boolean forceProject, @Nullable Term template, Predicate<Task> filter, int dur, NAR nar, boolean ditherTruth) {
         return !isEmpty() ? matching(start, end, template, filter, dur, nar)
-                .task(true, forceProject, false) : null;
+                .task(true, forceProject, ditherTruth) : null;
     }
 
-    @Nullable default /* final */ Task match(When<NAR> w, @Nullable Term template, Predicate<Task> filter) {
-        return match(w.start, w.end, template, filter, w.dur, w.x); }
+    @Nullable default /* final */ Task match(When<NAR> w, @Nullable Term template, Predicate<Task> filter, boolean ditherTruth) {
+        return match(w.start, w.end, false, template, filter, w.dur, w.x, ditherTruth); }
 
     @Nullable default /* final */ Task match(long start, long end, Term template, int dur, NAR nar) {
         return match(start, end, template, null, dur, nar); }
 
     @Nullable default /* final */ Task match(long start, long end, @Nullable Term template, Predicate<Task> filter, int dur, NAR nar) {
-        return match(start, end, false, template, filter, dur,nar);
+        return match(start, end, false, template, filter, dur,nar, false);
     }
     @Nullable default /* final */ Task matchExact(long start, long end, Term template, Predicate<Task> filter, int dur, NAR n) {
-        return match(start, end, true, template, filter, dur, n);
+        return match(start, end, true, template, filter, dur, n, false);
     }
 
     default Task sample(When<NAR> when, @Nullable Term template, @Nullable Predicate<Task> filter) {

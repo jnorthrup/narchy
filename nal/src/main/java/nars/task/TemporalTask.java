@@ -14,7 +14,7 @@ public class TemporalTask extends ActualNALTask {
 
     private final long start, end;
 
-    protected TemporalTask(Term term, byte punc, @Nullable Truth truth, long creation, long start, long end, long[] stamp) throws TaskException {
+    public TemporalTask(Term term, byte punc, @Nullable Truth truth, long creation, long start, long end, long[] stamp) throws TaskException {
         super(term, punc, truth, creation, start, end, stamp);
 
         this.start = start;

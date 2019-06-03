@@ -505,9 +505,9 @@ public class Derivation extends PreDerivation {
         }
 
 
-        boolean eternalComplete = (taskStart == ETERNAL) && (_belief == null || beliefStart == ETERNAL);
+        boolean eternalCompletely = (taskStart == ETERNAL) && (_belief == null || beliefStart == ETERNAL);
         this.temporalTerms = Occurrify.temporal(taskTerm) || Occurrify.temporal(beliefTerm);
-        this.temporal = !eternalComplete || temporalTerms;
+        this.temporal = !eternalCompletely || temporalTerms;
 //        if ((_belief == null) && (!temporal)) {
 //            if (Occurrify.temporal(beliefTerm)) {
 //                Term beliefTermEternal = Retemporalize.retemporalizeXTERNALToDTERNAL.transform(beliefTerm); //HACK

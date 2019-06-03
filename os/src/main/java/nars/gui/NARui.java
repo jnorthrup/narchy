@@ -261,7 +261,7 @@ public class NARui {
     }
 
     public static Surface memSave(NAR nar) {
-        TextEdit path = new TextEdit(20, 1);
+        TextEdit path = new TextEdit(40);
         try {
             path.text(Files.createTempFile(nar.self().toString(), "" + System.currentTimeMillis()).toAbsolutePath().toString());
         } catch (IOException e) {

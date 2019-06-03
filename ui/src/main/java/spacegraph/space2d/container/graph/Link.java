@@ -22,7 +22,7 @@ abstract public class Link {
         return on(hostage::delete);
     }
 
-    public final void remove(EditGraph2D g) {
+    public final void remove(GraphEdit2D g) {
         g.removeWire(id); //id.a, id.b);
     }
 

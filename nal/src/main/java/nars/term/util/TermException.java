@@ -32,7 +32,7 @@ public final class TermException extends SoftException {
     }
 
     public TermException(String reason, Op op, int dt, Termlike args) {
-        this(reason, op, dt, args.arrayShared());
+        this(reason, op, dt, args!=null ? args.arrayShared() : Op.EmptyTermArray);
     }
 
     public TermException(String reason, Op op, int dt, Term... args) {

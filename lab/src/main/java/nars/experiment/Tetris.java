@@ -1,6 +1,5 @@
 package nars.experiment;
 
-import jcog.math.FloatFirstOrderDifference;
 import jcog.math.FloatRange;
 import jcog.signal.wave2d.AbstractBitmap2D;
 import jcog.signal.wave2d.Bitmap2D;
@@ -90,10 +89,10 @@ public class Tetris extends GameX {
                 state::score
                 //new FloatFirstOrderDifference(n::time, state::score).nanIfZero()
         );
-        rewardNormalized("height", -1, 1, new FloatFirstOrderDifference(nar::time, () ->
+        reward("height", 1, () ->
                 1 - ((float) state.rowsFilled) / state.height
-        ));
-        rewardNormalized("density", 0, 1, () -> {
+        );
+        reward("density", 1, () -> {
 
             int filled = 0;
             for (float s : state.grid) {

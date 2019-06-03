@@ -15,7 +15,7 @@ import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.Bordering;
 import spacegraph.space2d.container.ContainerSurface;
 import spacegraph.space2d.container.PaintSurface;
-import spacegraph.space2d.container.graph.EditGraph2D;
+import spacegraph.space2d.container.graph.GraphEdit2D;
 import spacegraph.space2d.container.graph.Link;
 import spacegraph.space2d.phys.collision.AABB;
 import spacegraph.space2d.phys.collision.shapes.CircleShape;
@@ -200,7 +200,7 @@ public class Box2DGraphEditPhysics extends GraphEditPhysics {
     }
 
     @Override
-    public void starting(EditGraph2D g) {
+    public void starting(GraphEdit2D g) {
         below = new Dyn2DRenderer(false, true, false);
         above = new Dyn2DRenderer(true, false, true);
     }
@@ -211,7 +211,7 @@ public class Box2DGraphEditPhysics extends GraphEditPhysics {
     private float wMin, hMin;
 
     @Override
-    public void update(EditGraph2D g, float dt) {
+    public void update(GraphEdit2D g, float dt) {
         wMin = g.windoSizeMinRel.x * g.w();
         hMin = g.windoSizeMinRel.y * g.h();
         clamp = g.bounds;
@@ -268,7 +268,7 @@ public class Box2DGraphEditPhysics extends GraphEditPhysics {
         return w.get(x);
     }
 
-    abstract class Box2DLink extends EditGraph2D.VisibleLink {
+    abstract class Box2DLink extends GraphEdit2D.VisibleLink {
 
         Box2DLink(Wire wire) {
             super(wire);

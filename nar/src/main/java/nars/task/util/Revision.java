@@ -1,18 +1,23 @@
-package nars.task;
+package nars.task.util;
 
 import jcog.data.set.MetalLongSet;
 import nars.NAL;
+import nars.NAR;
 import nars.Task;
-import nars.task.util.TaskRegion;
-import nars.time.Tense;
+import nars.task.TemporalTask;
+import nars.term.Term;
+import nars.term.atom.Bool;
 import nars.truth.PreciseTruth;
 import nars.truth.Stamp;
 import nars.truth.Truth;
 import nars.truth.Truthed;
+import nars.truth.dynamic.DynTaskify;
+import nars.truth.dynamic.DynamicConjTruth;
 import nars.truth.polation.TruthProjection;
 import org.eclipse.collections.api.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
 
+import static nars.time.Tense.ETERNAL;
 import static org.eclipse.collections.impl.tuple.Tuples.pair;
 
 /**
@@ -52,21 +57,66 @@ public enum Revision {;
      * also cause merge is deferred in the same way
      * @return
      */
-    public static <T extends TaskRegion> Pair<Task, TruthProjection> merge(NAL nal, boolean dither, int minComponents, T[] tasks) {
-
+    public static <T extends TaskRegion> Pair<Task, TruthProjection> merge(NAR n, boolean dither, int minComponents, T[] tasks) {
 
         assert (tasks.length >= minComponents);
 
-        //quick 2-ary stamp pre-filter
-        if (tasks.length == 2 && Stamp.overlapsAny(tasks[0].task(), tasks[1].task()))
+        if (tasks.length == 2) {
+            Task a = tasks[0].task();
+            Task b = tasks[1].task();
+
+            //quick 2-ary stamp pre-filter
+            if (Stamp.overlapsAny(a, b))
+                return null;
+
+            if (a.minTimeTo(b.start(), b.end()) > n.dtDither()) {
+                @Nullable Pair<Task, TruthProjection> c = conjoin(n, dither, minComponents, tasks);
+                if (c!=null)
+                    return c;
+
+                //else: try default revise strategy (below)
+            }
+        }
+
+        return revise(n, dither, minComponents, tasks);
+    }
+
+    /** temporal-induction conjunction merge strategy */
+    @Nullable private static <T extends TaskRegion> Pair<Task, TruthProjection> conjoin(NAR nar, boolean dither, int minComponents, T[] x) {
+        final int dur = 0;
+
+        DynTaskify d = new DynTaskify(DynamicConjTruth.ConjIntersection, x[0].task().isBeliefOrGoal(), true, true, dur, nar);
+        for (int i = 0, xx = x.length; i < xx; i++) {
+            T t = x[i];
+            Task tt = t.task();
+            if (tt.isNegative()) {
+                d.componentPolarity.clear(i);
+            }
+            d.add(tt);
+        }
+
+        Task y = d.taskify();
+        if (y==null)
             return null;
 
-
-        long[] u = Tense.merge(dither ? nal.dtDither() : 0, tasks);
-        if (u == null)
+        Term term = y.term(); //d.model.reconstruct(null, d, ETERNAL, ETERNAL);
+        if (term instanceof Bool || term.volume() > d.nar.termVolMax.intValue())
             return null;
 
-        TruthProjection p = nal.projection(u[0], u[1], 0).add(tasks);
+        //HACK this tp is dummy
+        TruthProjection tp = d.nar.projection(y.start(), term.eventRange()+y.end(), dur);
+        d.forEach(tp::add);
+        int active = tp.update(true);
+        if (active!=x.length)
+            return null;
+
+        return pair(y, tp /* TODO */);
+    }
+
+    /** truth revision task merge strategy */
+    @Nullable static <T extends TaskRegion> Pair<Task, TruthProjection> revise(NAL nal, boolean dither, int minComponents, T[] tasks) {
+
+        TruthProjection p = nal.projection(ETERNAL, ETERNAL, 0).add(tasks);
 
         MetalLongSet stamp = p.commit(true, minComponents, true);
         if (stamp == null)
@@ -76,9 +126,8 @@ public enum Revision {;
 
         double eviMin =
                 NAL.belief.REVISION_MIN_EVI_FILTER ? nal.confMin.asEvi() : NAL.truth.EVI_MIN;
-                //;
 
-        Truth truth = p.truth(eviMin, dither, true, nal);
+        Truth truth = p.truth(eviMin, dither, false, nal);
         if (truth == null)
             return null;
 

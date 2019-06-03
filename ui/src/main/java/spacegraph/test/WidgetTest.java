@@ -5,7 +5,7 @@ import spacegraph.SpaceGraph;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.ContainerSurface;
 import spacegraph.space2d.container.Splitting;
-import spacegraph.space2d.container.graph.EditGraph2D;
+import spacegraph.space2d.container.graph.GraphEdit2D;
 import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.widget.button.CheckBox;
 import spacegraph.space2d.widget.button.HexButton;
@@ -137,7 +137,7 @@ public class WidgetTest {
         return Map.of(
                 "Empty", () -> wiringDemo((g) -> {
                 }),
-                "Intro", () -> wiringDemo((EditGraph2D g) -> {
+                "Intro", () -> wiringDemo((GraphEdit2D g) -> {
                     g.add(WidgetTest.widgetDemo()).posRel(1, 1, 0.5f, 0.25f);
                     for (int i = 1; i < 3; i++)
                         g.add(new WizardFrame(new ProtoWidget())).posRel(0.5f, 0.5f, 0.45f / i, 0.35f / i);
@@ -163,9 +163,9 @@ public class WidgetTest {
         );
     }
 
-    private static Surface wiringDemo(Consumer<EditGraph2D> o) {
-        EditGraph2D g;
-        g = new EditGraph2D() {
+    private static Surface wiringDemo(Consumer<GraphEdit2D> o) {
+        GraphEdit2D g;
+        g = new GraphEdit2D() {
             @Override
             protected void starting() {
                 super.starting();

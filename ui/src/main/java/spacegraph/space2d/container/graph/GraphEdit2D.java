@@ -16,6 +16,7 @@ import spacegraph.input.finger.Finger;
 import spacegraph.input.finger.state.DoubleClicking;
 import spacegraph.space2d.ReSurface;
 import spacegraph.space2d.Surface;
+import spacegraph.space2d.SurfaceConstraints;
 import spacegraph.space2d.Surfacelike;
 import spacegraph.space2d.container.ContainerSurface;
 import spacegraph.space2d.container.PaintSurface;
@@ -47,7 +48,7 @@ import java.util.function.Predicate;
  * TODO unify this with Graph2D
  * TODO remove all synchronized(links) with appropriate reliance on its ConcurrentHashMap and any additional per-node/per-edge locking
  */
-public class EditGraph2D extends MutableMapContainer<Surface, ContainerSurface> {
+public class GraphEdit2D extends MutableMapContainer<Surface, ContainerSurface> {
 
     public final GraphEditPhysics physics =
             //new VerletGraphEditPhysics();
@@ -73,13 +74,15 @@ public class EditGraph2D extends MutableMapContainer<Surface, ContainerSurface> 
     private final DoubleClicking doubleClicking = new DoubleClicking(0, this::doubleClick, this);
     private Off loop;
 
-    public EditGraph2D() {
+    public final SurfaceConstraints constraints = new SurfaceConstraints();
+
+    public GraphEdit2D() {
         super();
         clipBounds = false; //TODO only if fencing
     }
 
-    public static <X extends Surface> EditGraph2D window(int w, int h) {
-        EditGraph2D g = new EditGraph2D();
+    public static <X extends Surface> GraphEdit2D window(int w, int h) {
+        GraphEdit2D g = new GraphEdit2D();
         SpaceGraph.window(g, w, h).dev();
         return g;
     }
@@ -90,7 +93,8 @@ public class EditGraph2D extends MutableMapContainer<Surface, ContainerSurface> 
         physics.start(this);
 
         loop = root().animate(((float dt) -> {
-            this.physics.update(EditGraph2D.this, dt);
+            constraints.update();
+            this.physics.update(GraphEdit2D.this, dt);
             return true;
         }));
 
@@ -146,7 +150,7 @@ public class EditGraph2D extends MutableMapContainer<Surface, ContainerSurface> 
 
         forEach(w -> {
             if (w.parent == null)
-                w.start(EditGraph2D.this);
+                w.start(GraphEdit2D.this);
 
 //            if (fenceInside)
 //                w.pos(w.bounds.fenceInside(graphBounds));
@@ -182,11 +186,13 @@ public class EditGraph2D extends MutableMapContainer<Surface, ContainerSurface> 
         return w;
     }
 
-    public final ContainerSurface add(Surface x, float w, float h) {
-        ContainerSurface y = add(x);
+    public final Windo add(Surface x, float w, float h) {
+        Windo y = add(x);
         y.resize(w, h);
         return y;
     }
+
+
 //
 //    public void addBox(float cx, float cy, float wo, float ho, float thick) {
 //        //Draw.rectFrame();
@@ -418,9 +424,9 @@ public class EditGraph2D extends MutableMapContainer<Surface, ContainerSurface> 
             @Override
             protected void render(ReSurface r) {
                 if (a().parent == null || b().parent == null) {
-                    EditGraph2D graphParent = parentOrSelf(EditGraph2D.class);
+                    GraphEdit2D graphParent = parentOrSelf(GraphEdit2D.class);
                     if (graphParent != null) {
-                        EditGraph2D.VisibleLink.this.remove(graphParent);
+                        GraphEdit2D.VisibleLink.this.remove(graphParent);
                     }
                     delete();
                 }
@@ -442,10 +448,10 @@ public class EditGraph2D extends MutableMapContainer<Surface, ContainerSurface> 
         }
 
         void update() {
-            boundsInfo.text(EditGraph2D.this.bounds.toString());
+            boundsInfo.text(GraphEdit2D.this.bounds.toString());
 
             children.text(Joiner.on("\n").join(Iterables.transform(
-                    EditGraph2D.this.keySet(), t -> info(t, getValue(t)))));
+                    GraphEdit2D.this.keySet(), t -> info(t, getValue(t)))));
         }
 
         private String info(Surface x, ContainerSurface w) {

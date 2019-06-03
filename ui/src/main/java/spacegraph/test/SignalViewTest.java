@@ -3,7 +3,6 @@ package spacegraph.test;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.github.sarxos.webcam.Webcam;
 import com.github.sarxos.webcam.WebcamException;
-import com.google.common.collect.Iterators;
 import com.google.common.util.concurrent.RateLimiter;
 import jcog.Util;
 import jcog.exe.Every;
@@ -23,17 +22,19 @@ import spacegraph.audio.AudioSource;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.Bordering;
 import spacegraph.space2d.container.graph.Graph2D;
-import spacegraph.space2d.container.graph.NodeVis;
+import spacegraph.space2d.container.graph.GraphEdit2D;
 import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.container.time.Timeline2D;
 import spacegraph.space2d.container.time.Timeline2DEvents;
 import spacegraph.space2d.container.unit.Animating;
 import spacegraph.space2d.container.unit.AspectAlign;
+import spacegraph.space2d.container.unit.Clipped;
 import spacegraph.space2d.widget.button.CheckBox;
 import spacegraph.space2d.widget.button.PushButton;
-import spacegraph.space2d.widget.meter.BagChart;
 import spacegraph.space2d.widget.meter.BitmapMatrixView;
+import spacegraph.space2d.widget.port.Wire;
 import spacegraph.space2d.widget.text.LabeledPane;
+import spacegraph.space2d.widget.windo.Windo;
 import spacegraph.video.*;
 
 import javax.sound.sampled.LineUnavailableException;
@@ -52,6 +53,8 @@ import static java.util.stream.Collectors.toList;
 import static spacegraph.SpaceGraph.window;
 
 public class SignalViewTest {
+
+    static final int capacity = 128;
 
     public static void main(String[] args) {
         SensorNode n, n2;
@@ -73,45 +76,9 @@ public class SignalViewTest {
 //            g.add(new SignalView(i).withControls());
 //            i.setFPS(20f);
 //        }
-        window(new RealTimeLine(n), 800, 800);
+//        window(new RealTimeLine(n), 800, 800);
         //window(new Dashboard(n), 800, 800);
-        window(new NetPanel(n.udp), 800, 800);
-    }
-
-    static class NetPanel extends Bordering {
-
-        public NetPanel(UDPeer udp) {
-
-            @Deprecated float fps = udp.getFPS();
-            east(new Gridding(new CheckBox("ON").on((t)->{
-                if (!t)
-                    udp.stop();
-                else
-                    udp.setFPS(fps);
-            }), new PushButton("?")));
-
-            BagChart<UDPeer.UDProfile> themChart = new BagChart<UDPeer.UDProfile>(
-                    ()->Iterators.concat(udp.them.iterator(), Iterators.singletonIterator(
-                        new UDPeer.UDProfile(udp.me, udp.addr(), 0)
-                    )),
-                    (NodeVis<UDPeer.UDProfile> t) -> {
-                        t.set(new PushButton(t.id.toString()));
-                        t.pri = 0.5f; //TODO 1/latency
-                    });
-            center(new Animating(themChart,
-                    ()->{
-                        themChart.update();
-                    },
-                    0.25f
-            ));
-        }
-
-    }
-
-    static class Dashboard extends Graph2D {
-        public Dashboard(SensorNode n) {
-            super();
-        }
+        window(new GraphPanel(n), 800, 800);
     }
 
     public static Timeline2D.AnalyzedEvent capture(BufferedImage t, long dur) {
@@ -121,7 +88,55 @@ public class SignalViewTest {
         return new Timeline2D.AnalyzedEvent(new AspectAlign(Tex.view(t),
                 ((float) t.getHeight()) / t.getWidth()), now - dur, now);
     }
-    static final int capacity = 128;
+
+    static class GraphPanel extends Bordering {
+
+        public GraphPanel(SensorNode n) {
+
+            @Deprecated float fps = n.udp.getFPS();
+            east(new Gridding(new CheckBox("ON").on((t) -> {
+                if (!t)
+                    n.udp.stop();
+                else
+                    n.udp.setFPS(fps);
+            }), new PushButton("?")));
+
+            Exe.invokeLater(() -> {
+                GraphEdit2D g = new GraphEdit2D();
+                center(g);
+
+                Util.sleepMS(2000);
+
+                Exe.invokeLater(() -> {
+                    Surface local = new RealTimeLine(n);
+                    Windo ll = g.add(local).sizeRel(0.25f, 0.25f);
+
+
+                    n.sensors.values().forEach(s -> {
+                        PushButton ss = new PushButton(s.id);
+                        Windo w = g.add(ss).sizeRel(0.1f, 0.1f);
+                        g.addWire(new Wire(local, ss));
+                    });
+                });
+            });
+
+//            Graph2D<UDPeer.UDProfile> themChart = new Graph2D<UDPeer.UDProfile>(
+//                    ()->Iterators.concat(udp.them.iterator(), Iterators.singletonIterator(
+//                        new UDPeer.UDProfile(udp.me, udp.addr(), 0)
+//                    )),
+//                    (NodeVis<UDPeer.UDProfile> t) -> {
+//                        t.set(new PushButton(t.id.toString()));
+//                        t.pri = 0.5f; //TODO 1/latency
+//                    });
+        }
+
+    }
+
+    static class Dashboard extends Graph2D {
+        public Dashboard(SensorNode n) {
+            super();
+        }
+    }
 
     abstract public static class Sensor {
         public final String id;
@@ -166,7 +181,7 @@ public class SignalViewTest {
             float granularity = 2;
 
             in = new SignalInput();
-            in.set(i, 1/audioFPS);
+            in.set(i, 1 / audioFPS);
             in.setFPS(audioFPS * granularity);
         }
 
@@ -181,6 +196,7 @@ public class SignalViewTest {
             super(id, i);
         }
     }
+
     public static class VideoSensor extends Sensor {
 
         public final VideoSource video;
@@ -189,10 +205,11 @@ public class SignalViewTest {
             super(id);
             this.video = v;
         }
+
         @Override
         public boolean on() {
             if (video instanceof WebCam) {
-                return ((WebCam)video).webcam.isOpen();
+                return ((WebCam) video).webcam.isOpen();
             }
             return true;
         }
@@ -202,7 +219,7 @@ public class SignalViewTest {
         final static int SHARE_PERIOD_MS = 500;
         final static int MANIFEST_TTL = 2;
 
-        final Map<String,Sensor> sensors = new ConcurrentHashMap();
+        final Map<String, Sensor> sensors = new ConcurrentHashMap();
 
         final AtomicBoolean reshare = new AtomicBoolean(true);
 
@@ -221,8 +238,8 @@ public class SignalViewTest {
                 @Override
                 protected void starting() {
                     super.starting();
-                    resharing = new Every(()->{
-                        if (reshare.compareAndSet(true,false)) {
+                    resharing = new Every(() -> {
+                        if (reshare.compareAndSet(true, false)) {
                             reshare();
                         }
                     }, SHARE_PERIOD_MS);
@@ -245,7 +262,7 @@ public class SignalViewTest {
                     switch (m.cmd()) {
                         case 'P':
                             try {
-                                send((byte)'x', manifest(), m.origin()); //send manifest after pinged
+                                send((byte) 'x', manifest(), m.origin()); //send manifest after pinged
                             } catch (JsonProcessingException e) {
                                 e.printStackTrace();
                             }
@@ -258,7 +275,7 @@ public class SignalViewTest {
                         case 'x':
                             //receive manifest
                             try {
-                                System.out.println("got: " + Util.fromBytes(m.data(), List.class)  + " from " + m.origin());
+                                System.out.println("got: " + Util.fromBytes(m.data(), List.class) + " from " + m.origin());
                             } catch (IOException e) {
                                 e.printStackTrace();
                             }
@@ -287,7 +304,7 @@ public class SignalViewTest {
 
 
             HttpServer tcp;
-                tcp = new HttpServer(udp.addr(), h);
+            tcp = new HttpServer(udp.addr(), h);
 
 
             this.tcp = tcp;
@@ -299,7 +316,7 @@ public class SignalViewTest {
         private void reshare() {
             if (udp.connected()) {
                 try {
-                    udp.tellSome((byte)'x', manifest(), MANIFEST_TTL);
+                    udp.tellSome((byte) 'x', manifest(), MANIFEST_TTL);
                 } catch (JsonProcessingException e) {
                     e.printStackTrace();
                 }
@@ -333,15 +350,17 @@ public class SignalViewTest {
         private <S extends Sensor> S _add(S s) {
             Sensor t = sensors.put(s.id, s);
             reshare.set(true);
-            assert(t==null);
+            assert (t == null);
             return s;
         }
 
-        /** discover all available peripherals */
+        /**
+         * discover all available peripherals
+         */
         public void connectAll() {
 
             for (AudioSource in : AudioSource.all()) {
-                Exe.invokeLater(()->{
+                Exe.invokeLater(() -> {
                     try {
                         in.start();
                         add(in);
@@ -352,7 +371,7 @@ public class SignalViewTest {
             }
 
             for (Webcam ww : Webcam.getWebcams()) {
-                Exe.invokeLater(()-> {
+                Exe.invokeLater(() -> {
                     add(ww);
                 });
             }
@@ -369,12 +388,12 @@ public class SignalViewTest {
             this.node = node;
 
             node.sensors.values().forEach(s -> {
-               if (s instanceof VideoSensor)
-                   add(((VideoSensor)s), s.events);
-               else if (s instanceof AudioSensor)
-                   add(((AudioSensor)s), s.events);
-               else
-                   throw new jcog.TODO();
+                if (s instanceof VideoSensor)
+                    add(((VideoSensor) s), s.events);
+                else if (s instanceof AudioSensor)
+                    add(((AudioSensor) s), s.events);
+                else
+                    throw new jcog.TODO();
             });
         }
 
@@ -385,11 +404,11 @@ public class SignalViewTest {
         public Timeline2D newTrack(Surface label) {
             Timeline2D g = new Timeline2D();
 
-            add(new LabeledPane(label, new Animating(g, () -> {
+            add(new LabeledPane(label, new Clipped(new Animating(g, () -> {
 
                 long e = System.currentTimeMillis();
                 g.setTime(e - Math.round(viewWindowSeconds * 1000), e); //slide window
-            }, 0.04f)));
+            }, 0.04f))));
 
             return g;
         }
@@ -398,8 +417,9 @@ public class SignalViewTest {
 
         }
 
-        @Deprecated public void add(VideoSensor ww, Timeline2D.FixedSizeEventBuffer<Timeline2D.SimpleEvent> ge) {
-            WebCam w = ((WebCam)ww.video); //HACK
+        @Deprecated
+        public void add(VideoSensor ww, Timeline2D.FixedSizeEventBuffer<Timeline2D.SimpleEvent> ge) {
+            WebCam w = ((WebCam) ww.video); //HACK
 
             Timeline2D g = newTrack(ww.id, () -> new VideoSurface(w));
 
@@ -427,7 +447,6 @@ public class SignalViewTest {
 
             //new Gridding(new VectorLabel(in.name()), preAmp)
             Timeline2D g = newTrack(in.toString(), () -> new PushButton(in.toString()));
-
 
 
             FreqDomain dft = new FreqDomain(freqs, 1);
@@ -519,7 +538,7 @@ public class SignalViewTest {
 
         @Override
         public int next(float[] target, int targetIndex, int samplesAtMost) {
-            int n = Math.round(Math.min(((float)sampleRate) / frames, samplesAtMost));
+            int n = Math.round(Math.min(((float) sampleRate) / frames, samplesAtMost));
             for (int i = 0; i < n; i++) {
                 target[targetIndex++] = rng.nextFloat();
             }

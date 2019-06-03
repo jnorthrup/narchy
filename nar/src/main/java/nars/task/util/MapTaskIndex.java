@@ -1,4 +1,4 @@
-package nars.task;
+package nars.task.util;
 
 import nars.Task;
 import org.slf4j.Logger;

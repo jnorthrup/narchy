@@ -262,7 +262,7 @@ public abstract class TaskLeak extends How {
                         return false;
 
                     return taskFilter.test(t);
-                }).task();
+                }, false).task();
 
                 if (++nextPunc == p.length)
                     nextPunc = 0;

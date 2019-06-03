@@ -273,8 +273,8 @@ abstract public class NAL6DecomposeTest extends NALTest {
 
         @Test
         void testDecomposeImplPred2() {
-            test.nar.termVolMax.set(11);
-            test.nar.confMin.set(0.3f);
+            test.nar.termVolMax.set(13);
+            test.nar.confMin.set(0.7f);
             test
                     .believe("( (a,#b) ==> (&&, (x,#b), y, z ) )")
                     .mustBelieve(cycles, "( (a,#b) ==> (x,#b) )", 1f, 0.73f)

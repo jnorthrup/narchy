@@ -5,6 +5,7 @@ import jcog.data.list.FasterList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.DoubleSupplier;
 
 /**
  * Created by alex on 30/01/15.
@@ -12,14 +13,14 @@ import java.util.Map;
 public class ContinuousConstraint {
 
     public final Expression expression;
+    public final ScalarComparison op;
     private double strength;
-    public final RelationalOperator op;
 
-    public ContinuousConstraint(Expression expr, RelationalOperator op) {
+    public ContinuousConstraint(Expression expr, ScalarComparison op) {
         this(expr, op, Strength.REQUIRED);
     }
 
-    public ContinuousConstraint(Expression expr, RelationalOperator op, double strength) {
+    public ContinuousConstraint(Expression expr, ScalarComparison op, double strength) {
         this.expression = reduce(expr);
         this.op = op;
         this.strength = Strength.clip(strength);
@@ -31,20 +32,18 @@ public class ContinuousConstraint {
 
     private static Expression reduce(Expression expr){
 
-        Map<DoubleVar, Double> vars = new LinkedHashMap<>(expr.terms.size());
-        for(DoubleTerm term: expr.terms){
-            vars.merge(term.var, term.coefficient, (vv, val)-> val + vv);
-        }
+        Map<DoubleSupplier, Double> vars = new LinkedHashMap<>(expr.terms.size());
+        for(DoubleTerm term: expr.terms)
+            vars.merge(term.var, term.coefficient, Double::sum);
 
         List<DoubleTerm> reducedTerms = new FasterList<>(vars.size());
-        for(Map.Entry<DoubleVar, Double> variableDoubleEntry : vars.entrySet()){
+        for(Map.Entry<DoubleSupplier, Double> variableDoubleEntry : vars.entrySet())
             reducedTerms.add(new DoubleTerm(variableDoubleEntry.getKey(), variableDoubleEntry.getValue()));
-        }
 
         return new Expression(reducedTerms, expr.getConstant());
     }
 
-    public double getStrength() {
+    public double strength() {
         return strength;
     }
 

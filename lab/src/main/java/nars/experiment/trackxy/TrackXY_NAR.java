@@ -12,10 +12,12 @@ import nars.control.MetaGoal;
 import nars.derive.BatchDeriver;
 import nars.derive.Deriver;
 import nars.derive.Derivers;
+import nars.derive.timing.ActionTiming;
 import nars.exe.impl.UniExec;
 import nars.gui.NARui;
 import nars.gui.sensor.VectorSensorView;
 import nars.memory.CaffeineMemory;
+import nars.op.stm.ConjClustering;
 import nars.op.stm.STMLinkage;
 import nars.sensor.Bitmap2DSensor;
 import nars.term.Term;
@@ -23,7 +25,7 @@ import nars.time.clock.CycleTime;
 import org.eclipse.collections.impl.block.factory.Comparators;
 import spacegraph.space2d.ReSurface;
 import spacegraph.space2d.container.Splitting;
-import spacegraph.space2d.container.graph.EditGraph2D;
+import spacegraph.space2d.container.graph.GraphEdit2D;
 import spacegraph.space2d.widget.meta.ObjectSurface;
 import spacegraph.video.Draw;
 
@@ -32,8 +34,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import static java.util.stream.Collectors.toList;
 import static jcog.Texts.n2;
-import static nars.Op.GOAL;
-import static nars.Op.IMPL;
+import static nars.Op.*;
 
 public class TrackXY_NAR extends GameX {
 
@@ -53,7 +54,6 @@ public class TrackXY_NAR extends GameX {
     static int dur = 8;
 
     static float camResolution = 0.1f;
-    static int volMax = 20;
     final Bitmap2DSensor cam;
     private final TrackXY track;
 
@@ -68,7 +68,7 @@ public class TrackXY_NAR extends GameX {
     protected TrackXY_NAR(NAR nar, TrackXY xy) {
         super("trackXY",
                 //FrameTrigger.cycles(W*H*2),
-                GameTime.durs(1),
+                GameTime.durs(2),
                 //FrameTrigger.fps(fps),
                 nar);
 
@@ -108,7 +108,7 @@ public class TrackXY_NAR extends GameX {
         //actionSwitch();
         //actionTriState();
 
-        actionAccelerate();
+        //actionAccelerate();
 
 //        {
 //            curiosity.enable.set(false);
@@ -199,7 +199,7 @@ public class TrackXY_NAR extends GameX {
                 //.time(new RealTime.MS().dur(durMS))
                 .time(new CycleTime().dur(dur))
                 .index(
-                        new CaffeineMemory(8 * 1024 * 10)
+                        new CaffeineMemory(2 * 1024 * 10)
                         //new HijackConceptIndex(4 * 1024, 4)
                 );
 
@@ -221,7 +221,7 @@ public class TrackXY_NAR extends GameX {
 
         n.goalPriDefault.amp(0.5f);
         n.beliefPriDefault.amp(0.1f);
-        n.questionPriDefault.amp(0.05f);
+        n.questionPriDefault.amp(0.03f);
         n.questPriDefault.amp(0.05f);
 
 
@@ -231,7 +231,7 @@ public class TrackXY_NAR extends GameX {
 
         //n.freqResolution.set(0.04f);
 
-        n.termVolMax.set(volMax);
+        n.termVolMax.set(14);
         //n.dtDither.set(Math.max(1, durMS));
 
 
@@ -247,6 +247,7 @@ public class TrackXY_NAR extends GameX {
 //                        return conclusion == GOAL ? 1 : 0.01f; //super.puncFactor(conclusion);
 //                    }
         };
+        d.timing = new ActionTiming();
 
 
 //        ((BatchDeriver) d).premisesPerIteration.set(derivationStrength);
@@ -260,10 +261,10 @@ public class TrackXY_NAR extends GameX {
         };
 
 
-//            ConjClustering cjB = new ConjClustering(n, BELIEF,
-//                    //x -> true,
-//                    Task::isInput,
-//                    2, 8);
+            ConjClustering cjB = new ConjClustering(n, BELIEF,
+                    //x -> true,
+                    Task::isInput,
+                    2, 8);
 
 
 //            window(new Gridding(
@@ -275,7 +276,7 @@ public class TrackXY_NAR extends GameX {
         //n.log();
 
 
-        final int W = 4, H = 1;
+        final int W = 6, H = 1;
         //final int W = 3, H = 3;
 
         TrackXY_NAR a = new TrackXY_NAR(n, new TrackXY(W, H));
@@ -300,7 +301,7 @@ public class TrackXY_NAR extends GameX {
 
 
 
-                EditGraph2D g = EditGraph2D.window(800, 800);
+                GraphEdit2D g = GraphEdit2D.window(800, 800);
                 g.windoSizeMinRel(0.02f, 0.02f);
 
 

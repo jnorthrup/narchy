@@ -73,19 +73,43 @@ public enum Tense {
 
 
 
-    public static long dither(long t, int dither) {
+    /** @param x time */
+    public static long dither(long x, int dither) {
         if (dither > 1) {
             //if (Param.DEBUG) {
                 //HACK
 //                if (t == DTERNAL || t==XTERNAL)
 //                    throw new WTF("maybe you meant ETERNAL or TIMELESS");
             //}
-            if (t == ETERNAL) return ETERNAL;
-            else if (t == 0) return 0;
-            else if (t == TIMELESS) return TIMELESS;
-            else return _dither(t, false, dither);
+            if (x == ETERNAL) return ETERNAL;
+            else if (x == 0) return 0;
+            else if (x == TIMELESS) return TIMELESS;
+            else return _dither(x, false, dither);
         } else {
-            return t;
+            return x;
+        }
+    }
+    /** direction == -1 down, 0 = any, +1 = up */
+    public static long dither(long x, int dither, int direction) {
+        if (dither > 1) {
+            long y = dither(x, dither);
+            switch (direction) {
+                case -1:
+                    if (y > x)
+                        y -= dither; //grow backwrads
+                    break;
+                case +1:
+                    if (y < x)
+                        y += dither; //grow forwards
+                    break;
+                case 0:
+                default:
+                    break; //no change
+            }
+            return y;
+
+        } else {
+            return x;
         }
     }
 

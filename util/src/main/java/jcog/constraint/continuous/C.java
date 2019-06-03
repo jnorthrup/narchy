@@ -5,17 +5,14 @@ import jcog.data.list.FasterList;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.DoubleSupplier;
 
 /**
  * Created by alex on 31/01/15.
  */
-public class C {
+public enum C { ;
 
-    private C() {
-    }
-
-    
-    public static DoubleTerm multiply(DoubleVar variable, double coefficient) {
+    public static DoubleTerm multiply(DoubleSupplier variable, double coefficient) {
         return new DoubleTerm(variable, coefficient);
     }
 
@@ -27,7 +24,7 @@ public class C {
         return multiply(variable, -1.0);
     }
 
-    
+
     public static DoubleTerm multiply(DoubleTerm term, double coefficient) {
         return new DoubleTerm(term.var, term.coefficient * coefficient);
     }
@@ -40,16 +37,15 @@ public class C {
         return multiply(term, -1.0);
     }
 
-    
+
     public static Expression multiply(Expression expression, double coefficient) {
 
-        List<DoubleTerm> terms = new ArrayList<>();
+        List<DoubleTerm> terms = new FasterList<>(expression.terms.size());
 
         for (DoubleTerm term : expression.terms) {
             terms.add(multiply(term, coefficient));
         }
 
-        
         return new Expression(terms, expression.getConstant() * coefficient);
     }
 
@@ -62,7 +58,7 @@ public class C {
             throw new NonlinearExpressionException();
         }
     }
-    
+
     public static Expression divide(Expression expression, double denominator) {
         return multiply(expression, (1.0 / denominator));
     }
@@ -79,7 +75,7 @@ public class C {
         return multiply(expression, -1.0);
     }
 
-    
+
     public static Expression multiply(double coefficient, Expression expression) {
         return multiply(expression, coefficient);
     }
@@ -94,9 +90,9 @@ public class C {
         return multiply(variable, coefficient);
     }
 
-    
+
     public static Expression add(Expression first, Expression second) {
-        
+
         List<DoubleTerm> terms = new ArrayList<>(first.terms.size() + second.terms.size());
 
         terms.addAll(first.terms);
@@ -106,8 +102,8 @@ public class C {
     }
 
     public static Expression add(Expression first, DoubleTerm second) {
-        
-        List<DoubleTerm> terms = new ArrayList<>(first.terms.size() + 1);
+
+        List<DoubleTerm> terms = new FasterList<>(first.terms.size() + 1);
 
         terms.addAll(first.terms);
         terms.add(second);
@@ -139,7 +135,7 @@ public class C {
         return add(expression, -constant);
     }
 
-    
+
     public static Expression add(DoubleTerm term, Expression expression) {
         return add(expression, term);
     }
@@ -183,7 +179,7 @@ public class C {
         return add(term, -constant);
     }
 
-    
+
     public static Expression add(DoubleVar variable, Expression expression) {
         return add(expression, variable);
     }
@@ -216,7 +212,7 @@ public class C {
         return add(variable, -constant);
     }
 
-    
+
 
     public static Expression add(double constant, Expression expression) {
         return add(expression, constant);
@@ -242,9 +238,9 @@ public class C {
         return add(negate(variable), constant);
     }
 
-    
+
     public static ContinuousConstraint equals(Expression first, Expression second) {
-        return new ContinuousConstraint(subtract(first, second), RelationalOperator.OP_EQ);
+        return new ContinuousConstraint(subtract(first, second), ScalarComparison.Equal);
     }
 
     public static ContinuousConstraint equals(Expression expression, DoubleTerm term) {
@@ -260,7 +256,7 @@ public class C {
     }
 
     public static ContinuousConstraint lessThanOrEqualTo(Expression first, Expression second) {
-        return new ContinuousConstraint(subtract(first, second), RelationalOperator.OP_LE);
+        return new ContinuousConstraint(subtract(first, second), ScalarComparison.LessThanOrEqual);
     }
 
     public static ContinuousConstraint lessThanOrEqualTo(Expression expression, DoubleTerm term) {
@@ -276,7 +272,7 @@ public class C {
     }
 
     public static ContinuousConstraint greaterThanOrEqualTo(Expression first, Expression second) {
-        return new ContinuousConstraint(subtract(first, second), RelationalOperator.OP_GE);
+        return new ContinuousConstraint(subtract(first, second), ScalarComparison.GreaterThanOrEqual);
     }
 
     public static ContinuousConstraint greaterThanOrEqualTo(Expression expression, DoubleTerm term) {
@@ -291,7 +287,7 @@ public class C {
         return greaterThanOrEqualTo(expression, new Expression(constant));
     }
 
-    
+
     public static ContinuousConstraint equals(DoubleTerm term, Expression expression) {
         return equals(expression, term);
     }
@@ -340,7 +336,7 @@ public class C {
         return greaterThanOrEqualTo(new Expression(term), constant);
     }
 
-    
+
     public static ContinuousConstraint equals(DoubleVar variable, Expression expression) {
         return equals(expression, variable);
     }
@@ -389,7 +385,7 @@ public class C {
         return greaterThanOrEqualTo(new DoubleTerm(variable), constant);
     }
 
-    
+
     public static ContinuousConstraint equals(double constant, Expression expression) {
         return equals(expression, constant);
     }
@@ -422,7 +418,7 @@ public class C {
         return greaterThanOrEqualTo(constant, new DoubleTerm(variable));
     }
 
-    
+
     public static ContinuousConstraint modifyStrength(ContinuousConstraint constraint, double strength) {
         return new ContinuousConstraint(constraint, strength);
     }
