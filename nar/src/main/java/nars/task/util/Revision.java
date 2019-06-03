@@ -1,5 +1,6 @@
 package nars.task.util;
 
+import jcog.Util;
 import jcog.data.set.MetalLongSet;
 import nars.NAL;
 import nars.NAR;
@@ -69,7 +70,15 @@ public enum Revision {;
             if (Stamp.overlapsAny(a, b))
                 return null;
 
-            if (a.minTimeTo(b.start(), b.end()) > n.dtDither()) {
+            int dtDither = n.dtDither();
+            long sepThresh = Util.lerp(
+                    (Math.abs(a.freq()-b.freq())+Math.abs(a.conf()-b.conf()))/2,
+                    //low frequency difference: require large separation (relative to the task ranges)
+                    Math.max(dtDither, a.range() + b.range()),
+                    //high frequency difference: require only some separation
+                    dtDither);
+
+            if (a.minTimeTo(b.start(), b.end()) >= sepThresh) {
                 @Nullable Pair<Task, TruthProjection> c = conjoin(n, dither, minComponents, tasks);
                 if (c!=null)
                     return c;

@@ -47,15 +47,15 @@
               //(X --> M),(--%I --> M),  sectOf(%I,--X)  |- --(--unsect(%I,--X) --> M),   (Belief:DecomposeNN)
 
 //NAL3 double premise goal decompose
-    (I --> M), (X --> M),  sectOf(I,X)     |-   (  unsect( I,  X) --> M),   (Goal:DecomposePP)
-    (I --> M), (X --> M),  sectOf(I,--X)   |-   (  unsect( I,  --X) --> M),   (Goal:DecomposePN)
-      (I --> M), (X --> M),  sectOf(I,X)   |- --(  unsect( I,  X) --> M),   (Goal:DecomposeNP)
-      (I --> M), (X --> M),  sectOf(I,--X) |- --(  unsect( I,  --X) --> M),   (Goal:DecomposeNN)
+    (I --> M), (X --> M),  eventOf(I,X), --isVar(M)     |-   (  unsect( I,  X) --> M),   (Goal:DecomposePP, Time:Compose)
+    (I --> M), (X --> M),  eventOfNeg(I,X), --isVar(M)   |-   (  unsect( I,  --X) --> M),   (Goal:DecomposePN, Time:Compose)
+      (I --> M), (X --> M),  eventOf(I,X), --isVar(M)   |- --(  unsect( I,  X) --> M),   (Goal:DecomposeNP, Time:Compose)
+      (I --> M), (X --> M),  eventOfNeg(I,X), --isVar(M) |- --(  unsect( I,  --X) --> M),   (Goal:DecomposeNN, Time:Compose)
 
-    (M --> I), (M --> X),  sectOf(I,X)     |-   (M -->   unsect( I,  X)),   (Goal:DecomposePP)
-    (M --> I), (M --> X),  sectOf(I,--X)   |-   (M -->   unsect( I,  --X)),   (Goal:DecomposePN)
-      (M --> I), (M --> X),  sectOf(I,X)   |- --(M -->   unsect( I,  X)),   (Goal:DecomposeNP)
-      (M --> I), (M --> X),  sectOf(I,--X) |- --(M -->   unsect( I,  --X)),   (Goal:DecomposeNN)
+    (M --> I), (M --> X),  eventOf(I,X), --isVar(M)     |-   (M -->   unsect( I,  X)),   (Goal:DecomposePP, Time:Compose)
+    (M --> I), (M --> X),  eventOfNeg(I,X), --isVar(M)   |-   (M -->   unsect( I,  --X)),   (Goal:DecomposePN, Time:Compose)
+      (M --> I), (M --> X),  eventOf(I,X), --isVar(M)   |- --(M -->   unsect( I,  X)),   (Goal:DecomposeNP, Time:Compose)
+      (M --> I), (M --> X),  eventOfNeg(I,X), --isVar(M) |- --(M -->   unsect( I,  --X)),   (Goal:DecomposeNN, Time:Compose)
 
 //    (--%I --> M), (X --> M), sectOf(%I,--X)  |-   (--unsect(%I,--X) --> M),   (Goal:DecomposePN)
 //    (--%I --> M), (X --> M), sectOf(%I,X)  |-   (--unsect(%I,X) --> M),   (Goal:DecomposePP)

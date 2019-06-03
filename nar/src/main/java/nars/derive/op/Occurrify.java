@@ -312,10 +312,11 @@ public class Occurrify extends TimeGraph {
         long taskStart = d.taskStart,
                 taskEnd = d.taskEnd,
                 beliefStart =
-                        //!d.concSingle || (d.concPunc==QUESTION || d.concPunc==QUEST) ? d.beliefStart : TIMELESS,
-                        d.beliefStart,
-                beliefEnd = //!d.concSingle || (d.concPunc==QUESTION || d.concPunc==QUEST) ? d.beliefEnd : TIMELESS;
-                        d.beliefEnd;
+                        !d.concSingle || (d.concPunc==QUESTION || d.concPunc==QUEST) ? d.beliefStart : TIMELESS,
+                        //d.beliefStart,
+                beliefEnd =
+                        !d.concSingle || (d.concPunc==QUESTION || d.concPunc==QUEST) ? d.beliefEnd : TIMELESS;
+                        //d.beliefEnd;
 
         this.decomposeEvents = decomposeEvents;
 

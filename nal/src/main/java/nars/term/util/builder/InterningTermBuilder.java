@@ -35,18 +35,18 @@ public class InterningTermBuilder extends HeapTermBuilder {
 
 
     protected static final int sizeDefault = Memoizers.DEFAULT_MEMOIZE_CAPACITY;
-    public static final int volMaxDefault = 12;
+    public static final int volMaxDefault = 10;
 
     /**
      * memory-saving
      */
     static final boolean sortCanonically = true;
-//    private final static boolean internNegs = false;
     private final static boolean cacheSubtermKeyBytes = false;
 
     private static final int ATOM_LENGTH_MAX = 8;
 
     private static final boolean resolveNeg = true;
+    //    private final static boolean internNegs = false;
     static final boolean deepDefault = true;
 
 
@@ -83,7 +83,7 @@ public class InterningTermBuilder extends HeapTermBuilder {
 
         subterms = newOpCache("subterms",
                 x -> TermConstructor.theSubterms(false, resolve(x.subs)), cacheSizePerOp * 2);
-        anonSubterms = newOpCache("anonSubterms",
+        anonSubterms = newOpCache("intrinSubterms",
                 x -> new IntrinSubterms(x.subs), cacheSizePerOp);
 
         Function statements = newOpCache("statement", this::_statement, cacheSizePerOp * 3);
@@ -196,41 +196,34 @@ public class InterningTermBuilder extends HeapTermBuilder {
             Term y = (i == 0 || x!=px) ?
                     resolve(x) :
                     t[i-1] /* re-use previous if identical */;
-            if (y != x && y.equals(x))
+            if (y != x) // && y.equals(x))
                 t[i] = y;
             px = x;
         }
         return t;
     }
 
-    private Term resolve(Term x) {
-        if (x instanceof Atomic)
-            return x;
-        int v = x.volume();
-        if (v <= 1 || v > volInternedMax) {
-            return x;
+    private Term resolve(Term _x) {
+        if (_x instanceof Atomic)
+            return _x;
+        Op xo = _x.op();
+        boolean negate = xo == NEG;
+        Term xi;
+        if (negate) {
+            xi = _x.unneg();
+            if (xi instanceof Atomic)
+                return _x;
+            xo = xi.op();
         } else {
-            Op xo = x.op();
-            boolean negate;
-//            if (!internNegs) {
-                negate = xo == NEG;
-                if (negate) {
-                    Term xx = x.unneg();
-                    if (xx instanceof Atomic)
-                        return x; //HACK do this earlier
-                    x = xx;
-                    xo = x.op();
-                }
-//            } else {
-//                negate = false;
-//            }
-            if (internableRoot(xo/*, x.dt()*/) && x.the()) {
-                Term y = terms[xo.id].apply(new Intermed.InternedCompoundByComponentsSubs(x));
-                if (y != null)
-                    return y.negIf(negate);
-            }
-            return x;
+            xi = _x;
         }
+
+        if (internableRoot(xo/*, x.dt()*/) && xi.volume() <= volInternedMax && xi.the()) {
+            Term yi = terms[xo.id].apply(new Intermed.InternedCompoundByComponentsSubs(xi));
+            return yi.negIf(negate);
+        }
+
+        return _x;
     }
 
     private boolean internableRoot(Op op, int dt, Term[] u) {

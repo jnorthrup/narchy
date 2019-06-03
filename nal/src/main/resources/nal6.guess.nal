@@ -3,7 +3,7 @@
 // "If not smoking causes health, being not healthy may be the result of smoking"
 // "If smoking causes not health, being healthy may be the result of not smoking"
 
-    (--S ==> P), P |- (--P ==> --S), (Belief:Contraposition)
+    (--S ==> P), (--S ==> P) |- (--P ==> --S), (Belief:Contraposition)
 
 
 //TODO check
@@ -17,8 +17,9 @@
 //    (P ==> S),   (--S ==> P),  task("?"), neq(S,P), hasBelief() |-   --(polarizeBelief(P) ==> S),   (Belief:ConversionDepolarized, Punctuation:Belief)
 
 
-
-
+//Contraposition to Disjunction
+    (--S ==> P), (--S ==> P) |- (S || P), (Belief:StructuralDeduction)
+    (S ==> N),   (S ==> P)   |- (S || P), (Belief:StructuralDeductionN)
 
 
 

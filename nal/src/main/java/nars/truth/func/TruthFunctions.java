@@ -152,11 +152,11 @@ public final class TruthFunctions {
     public static Truth comparison(Truth a, Truth b, float minConf) {
         float f1 = a.freq();
         float f2 = b.freq();
-        if (f1 < 0.5f) {
-            //negative polarity
-            f1 = 1 - f1;
-            f2 = 1 - f2;
-        }
+//        if (f1 < 0.5f) {
+//            //negative polarity
+//            f1 = 1 - f1;
+//            f2 = 1 - f2;
+//        }
 
         final float f0 = or(f1, f2);
         final float w = and(f0, confCompose(a,b));

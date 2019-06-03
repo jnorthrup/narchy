@@ -1212,11 +1212,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
     private final boolean solution(Event y) {
         if (!(y.start() == TIMELESS && solving.equals(y.id)) && validPotentialSolution(y.id)) {
             if (solutions.add(y)) {
-                if (target.test(y)) {
-//                    if (y instanceof Absolute)
-//                        addNode(y);
-                    return true;
-                }
+                return target.test(y);
             }
         }
         return true;
