@@ -616,22 +616,24 @@ public class Occurrify extends TimeGraph {
         Task() {
             @Override
             public Pair<Term, long[]> occurrence(Term x, Derivation d) {
-                return solveDT(d, x, false);
+                return solveDT(d, x, true);
             }
 
             @Override
             long[] occurrence(Derivation d) {
-                long[] o = new long[2];
-                if (d.occ.validEternal()) {
-                    o[0] = o[1] = ETERNAL;
-                } else if (d.taskStart != ETERNAL) {
-                    o[0] = d.taskStart;
-                    o[1] = d.taskEnd;
-                } else {
-                    o[0] = d.beliefStart;
-                    o[1] = d.beliefEnd;
-                }
-                return o;
+                return rangeCombine(d, OccIntersect.Task);
+
+//                long[] o = new long[2];
+//                /*if (d.occ.validEternal()) {
+//                    o[0] = o[1] = ETERNAL;
+//                } else */if (d.taskStart != ETERNAL) {
+//                    o[0] = d.taskStart;
+//                    o[1] = d.taskEnd;
+//                } else {
+//                    o[0] = d.beliefStart;
+//                    o[1] = d.beliefEnd;
+//                }
+//                return o;
             }
 
         },
@@ -684,7 +686,7 @@ public class Occurrify extends TimeGraph {
     }
 
     /** ignores temporal subterms ofof --> and <-> */
-    public static boolean nonTemporal(Term x) {
+    static boolean nonTemporal(Term x) {
         return !x.hasAny(Op.Temporal) ||
                 (!x.hasXternal() && x.recurseTerms(term->term.hasAny(Op.Temporal), (Term term,Compound suuper)->{
                     if (term.op().temporal) {
@@ -697,6 +699,7 @@ public class Occurrify extends TimeGraph {
 
     private enum OccIntersect {
         Task, Belief, Earliest
+        //TODO Mid?
     }
 
 

@@ -26,7 +26,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class NAL7Test extends NALTest {
 
     public static final float CONF_TOLERANCE_FOR_PROJECTIONS = 2f; //200%
-    private final static int cycles = 200;
+    private final static int cycles = 300;
 
     @Override
     protected NAR nar() {
@@ -1107,12 +1107,12 @@ public class NAL7Test extends NALTest {
     void multiConditionSyllogismPost(String implSuffix) {
 
 //        long implTime = implSuffix.isEmpty() ? ETERNAL : 0;
-        String a = "(goto(door) =|> open(door))";
-        String b = "(goto(door) =|> hold(key))";
+        String a = "(goto(door) ==> open(door))";
+        String b = "(goto(door) ==> hold(key))";
         test
                 .termVolMax(14)
                 .input("hold(key). |")
-                .input("(goto(door) =|> (hold(key) &| open(door))). " + implSuffix)
+                .input("(goto(door) ==> (hold(key) &| open(door))). " + implSuffix)
                 //temporal via conditional (double premise)
                 .mustBelieve(cycles, a, 1f, 0.45f, 0)
                 //temporal via conditional (double premise)
