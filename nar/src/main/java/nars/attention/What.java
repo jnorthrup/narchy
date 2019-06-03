@@ -90,7 +90,7 @@ abstract public class What extends NARPart implements Prioritizable, Sampler<Tas
 
     protected What(Term id, PriBuffer<Task> in) {
         super(id);
-        this.pri = new PriNode(this.id);
+        this.pri = new PriNode(this.id).branch(PriNode.Branch.Equal);
         this.pri.pri(0.5f);
         this.in = in;
 
@@ -112,7 +112,8 @@ abstract public class What extends NARPart implements Prioritizable, Sampler<Tas
 
     @Override
     public float pri(float p) {
-        return pri.pri(p);
+        pri.amp(p);
+        return pri.amp.floatValue();
     }
 
     /** perceive the next batch of input, for synchronously (cycle/duration/realtime/etc)

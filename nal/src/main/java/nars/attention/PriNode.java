@@ -38,15 +38,39 @@ public class PriNode extends PLink<Term> {
         return super.pri() * amp.floatValue();
     }
 
-    @Deprecated /* move to subclass */ protected float priFraction() {
+    @Deprecated /* move to subclass */ protected final float priFraction() {
         float i;
         int n = fanOut;
-        if (n <= 1)
-            return 1;
-        //i = 1; //each component important as a top level concept
-        //i = (float) (1.0 / Math.sqrt((float)n)); //shared by sqrt of components
-        i = 1f / n; //shared by all components
-        return i;
+        return branch.priFraction(n); //TODO cache
+//        if (n <= 1)
+//            return 1;
+//        //i = 1; //each component important as a top level concept
+//        //i = (float) (1.0 / Math.sqrt((float)n)); //shared by sqrt of components
+//        i = 1f / n; //shared by all components
+//        return i;
+    }
+
+    public enum Branch {
+        Equal {
+            @Override
+            public float priFraction(int n) {
+                return 1;
+            }
+        },
+        One_Div_N {
+            @Override
+            public float priFraction(int n) {
+                return 1f/n;
+            }
+        },
+        One_div_sqrtN {
+            @Override
+            public float priFraction(int n) {
+                return (float)(1f/Math.sqrt(n));
+            }
+        };
+
+        abstract public float priFraction(int n);
     }
 
     public enum Merge {
@@ -83,12 +107,16 @@ public class PriNode extends PLink<Term> {
     }
 
     Merge merge = Merge.Add;
+    protected Branch branch = Branch.One_Div_N;
 
     public PriNode merge(Merge m) {
         this.merge = m;
         return this;
     }
-
+    public PriNode branch(Branch b) {
+        this.branch = b;
+        return this;
+    }
 
     public void update(MapNodeGraph<PriNode,Object> graph) {
 
@@ -158,16 +186,12 @@ public class PriNode extends PLink<Term> {
         public Constant(String name, float value) {
             super(name, value);
             this.value = value;
+            branch(Branch.Equal);
         }
 
         @Override
         @Deprecated public float pri() {
             return value * amp.floatValue();
-        }
-
-        @Override
-        protected float priFraction() {
-            return 1;
         }
 
     }

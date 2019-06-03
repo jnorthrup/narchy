@@ -1,5 +1,6 @@
 package nars.agent;
 
+import jcog.Log;
 import jcog.TODO;
 import jcog.Util;
 import jcog.data.graph.MapNodeGraph;
@@ -18,6 +19,7 @@ import nars.term.atom.Atomic;
 import nars.time.ScheduledTask;
 import org.eclipse.collections.api.block.function.primitive.FloatToFloatFunction;
 import org.eclipse.collections.api.block.procedure.primitive.BooleanProcedure;
+import org.slf4j.Logger;
 
 import static nars.$.$$;
 import static nars.Op.SETe;
@@ -26,6 +28,8 @@ import static nars.Op.SETe;
  * supraself agent metavisor
  */
 public class MetaAgent extends Game {
+
+    private static final Logger logger = Log.logger(MetaAgent.class);
 
     static final Atomic CURIOSITY =
 
@@ -188,6 +192,7 @@ public class MetaAgent extends Game {
                 super.set(value);
                 value = super.get();
                 int nextDur = Math.max(1, Math.round(value));
+                //logger.info("{} dur={}" , w.id, nextDur);
                 ((TaskLinkWhat) w).dur.set(nextDur);
                 //assert(nar.dur()==nextDur);
             }

@@ -215,6 +215,10 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
     /** update histogram, remove values until under capacity */
     private int update(@Nullable Consumer<Y> update) {
 
+        int s = size();
+        if (s == 0)
+            return 0;
+
         SortedArray<Y> items = table.items;
         final Object[] a = items.array();
 
@@ -224,7 +228,6 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
         float m = 0;
 
         int c = capacity();
-        int s = size();
 
         ArrayHistogram hist;
         int bins = histogramBins();
@@ -778,10 +781,10 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
 //        long l = lock.readLock();
         long l = lock.writeLock();
         try {
-            if (!isEmpty()) {
+            //if (!isEmpty()) {
 //                l = Util.readToWrite(l, lock);
                 update(update);
-            }
+            //}
         } finally {
             lock.unlockWrite(l);
         }

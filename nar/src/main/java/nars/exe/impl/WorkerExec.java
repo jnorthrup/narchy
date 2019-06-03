@@ -16,17 +16,17 @@ import static java.lang.System.nanoTime;
 
 public class WorkerExec extends ThreadedExec {
 
-    private static final long subCycleMinNS = 1_000_000;
-    double granularity = 4;
+    private static final long subCycleMinNS = 20L * 1_000_000;
+    double granularity = 8;
 
     /**
      * value of 1 means it shares 1/N of the current work. >1 means it will take on more proportionally more-than-fair share of work, which might reduce jitter at expense of responsive
      */
     float workResponsibility =
-            //1f;
+            1f;
             //1.5f;
             //1.618f;
-            2f;
+            //2f;
 
     /**
      * process sub-timeslice divisor
@@ -122,7 +122,8 @@ public class WorkerExec extends ThreadedExec {
 
                     long before = nanoTime();
 
-                    long useNS = Util.lerp(h.pri() * w.pri(), subCycleMinNS, subCycleMaxNS);
+                    long useNS = //Util.lerp(h.pri() * w.pri(), subCycleMinNS, subCycleMaxNS);
+                                subCycleMaxNS;
                     try {
                         h.runFor(w, useNS);
                     } finally {

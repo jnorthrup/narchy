@@ -76,7 +76,7 @@ abstract public class GameX extends Game {
     /**
      * determines memory strength
      */
-    static float DURATIONs = 1;
+    static float DURATIONs = 2;
 
 //    static {
 //        try {
@@ -126,7 +126,7 @@ abstract public class GameX extends Game {
 
         initPlugins(n);
         initPlugins2(n, g);
-        //initMeta(n, g, false);
+        initMeta(n, g, true);
 
         //new Gridding(n.parts(Game.class).map(NARui::agent).collect(toList())),
         n.synch();
@@ -217,7 +217,7 @@ abstract public class GameX extends Game {
                 .what(
                         (w) -> new TaskLinkWhat(w,
                                 2048,
-                                new PriBuffer.BagTaskBuffer(512, 1f))
+                                new PriBuffer.BagTaskBuffer(512, 0.5f))
                 )
 //                .attention(() -> new ActiveConcepts(1024))
                 .exe(
@@ -323,7 +323,7 @@ abstract public class GameX extends Game {
     private static void initMeta(NAR n, Game a, boolean rl) {
 
         Gridding g = new Gridding();
-        MetaAgent meta = new MetaAgent(false, 16f, a);
+        MetaAgent meta = new MetaAgent(false, 8f, a);
         g.add(NARui.agent(meta));
         meta.what().pri(0.05f);
 
@@ -627,15 +627,13 @@ abstract public class GameX extends Game {
                     FloatAveragedWindow g = (FloatAveragedWindow) h.governor;
                     if (g == null)
                         h.governor = g = new FloatAveragedWindow(gHist, 1 - momentum, 0).mode(
-                                //FloatAveragedWindow.Mode.Exponential
-                                FloatAveragedWindow.Mode.Mean
+                                FloatAveragedWindow.Mode.Exponential
+                                //FloatAveragedWindow.Mode.Mean
                         );
 
 
-
-                    float pri = Util.unitize(Math.max(explorationRate , v));
-                    float pp = g.valueOf(pri);
-                    h.pri(pp);
+                    float pp = g.valueOf(v);
+                    h.pri(Util.unitize(Math.max(explorationRate , pp)));
                 });
                 //            nn.how.forEach(h -> System.out.println(h + " "+ h.pri()));
             }

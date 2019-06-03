@@ -1,12 +1,14 @@
 package nars.concept.sensor;
 
 import com.google.common.collect.Iterables;
+import jcog.data.graph.MapNodeGraph;
 import jcog.math.FloatSupplier;
 import nars.$;
 import nars.NAR;
 import nars.Task;
 import nars.agent.Game;
 import nars.attention.AttnBranch;
+import nars.attention.PriNode;
 import nars.concept.Concept;
 import nars.control.channel.CauseChannel;
 import nars.term.Term;
@@ -24,6 +26,8 @@ abstract public class VectorSensor extends AbstractSensor implements Iterable<Si
 
     public final CauseChannel<Task> in;
     private final short[] causeArray;
+
+    /** used and shared by all components */
     public final AttnBranch attn;
 
 
@@ -43,7 +47,34 @@ abstract public class VectorSensor extends AbstractSensor implements Iterable<Si
     protected VectorSensor(Term rootID, NAR n) {
         super(rootID, n);
 
-        attn = new AttnBranch(this.id, this);
+        //HACK
+        attn = new AttnBranch(this.id, this) {
+
+            int size = -1;
+
+            float priComponent;
+
+            @Override
+            public void update(MapNodeGraph<PriNode, Object> graph) {
+                if (size <= 0) {
+                    //init size
+                    try {
+                        size = Iterables.size(components());
+                    } catch (Throwable t) {
+                        size = 0; //HACK
+                    }
+                }
+
+                super.update(graph);
+                priComponent = branch.priFraction(size) * pri();
+            }
+
+            @Override
+            public float priComponent() {
+                return priComponent;
+            }
+        };
+        attn.branch(PriNode.Branch.One_div_sqrtN);
 
         this.in = newChannelIn(n);
         this.causeArray = new short[] { in.id };
@@ -70,7 +101,7 @@ abstract public class VectorSensor extends AbstractSensor implements Iterable<Si
         };
 
 
-        FloatSupplier aPri = attn::pri;
+        FloatSupplier aPri = attn::priComponent;
         //float quality = Util.sqrt(attn.amp.floatValue());
         //Random rng = g.random();
         for (Signal s : this) {

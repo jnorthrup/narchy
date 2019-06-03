@@ -76,7 +76,7 @@ public class Game extends NARPart implements NSense, NAct, Timed {
     public final Curiosity curiosity = DefaultCuriosity.defaultCuriosity(this);
 
     public final PriNode attnReward, attnAction, attnSensor;
-    private final PriNode pri;
+    @Deprecated private final PriNode pri;
 
     /** the context representing the experience of the game */
     private final What what;
@@ -113,10 +113,10 @@ public class Game extends NARPart implements NSense, NAct, Timed {
 
         this.time = time;
 
-        this.pri = new PriNode(this.id);
-        this.attnAction = new PriNode($.inh(id,ACTION)).merge(PriNode.Merge.Multiply);
-        this.attnSensor = new PriNode($.inh(id,SENSOR)).merge(PriNode.Merge.Multiply);
-        this.attnReward = new PriNode($.inh(id,REWARD)).merge(PriNode.Merge.Multiply);
+        this.pri = what.pri;
+        this.attnAction = new PriNode($.inh(id,ACTION)).branch(PriNode.Branch.Equal).merge(PriNode.Merge.Multiply);
+        this.attnSensor = new PriNode($.inh(id,SENSOR)).branch(PriNode.Branch.Equal).merge(PriNode.Merge.Multiply);
+        this.attnReward = new PriNode($.inh(id,REWARD)).branch(PriNode.Branch.Equal).merge(PriNode.Merge.Multiply);
 
         add(time.clock(this));
 
@@ -142,7 +142,7 @@ public class Game extends NARPart implements NSense, NAct, Timed {
 
         this.time = time;
 
-        this.pri = new PriNode(this.id);
+        this.pri = new PriNode(this.id).branch(PriNode.Branch.Equal);
         this.attnAction = new PriNode($.inh(id,ACTION)).merge(PriNode.Merge.Multiply);
         this.attnSensor = new PriNode($.inh(id,SENSOR)).merge(PriNode.Merge.Multiply);
         this.attnReward = new PriNode($.inh(id,REWARD)).merge(PriNode.Merge.Multiply);
