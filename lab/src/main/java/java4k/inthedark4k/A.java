@@ -43,17 +43,45 @@ package java4k.inthedark4k;
 
 import java4k.GamePanel;
 
+import javax.swing.*;
 import java.awt.*;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
 import java.util.ArrayList;
 import java.util.Collections;
+
+import static java.awt.event.KeyEvent.*;
 
 @SuppressWarnings("serial")
 public class A extends GamePanel {
 
     final boolean[] keys = new boolean[65535];
 
+	public static void main(String[] args) throws Throwable {
+		javax.swing.JFrame frame = new javax.swing.JFrame("");
+		frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+		A applet = new A();
+		applet.setPreferredSize(new java.awt.Dimension(768, 600));
+		frame.add(applet, java.awt.BorderLayout.CENTER);
+		frame.pack();
+//		frame.setLocationRelativeTo(null);
+		frame.setVisible(true);
+//		Thread.sleep(250);
+		frame.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				applet.key(e,true);
+			}
+
+			@Override
+			public void keyReleased(KeyEvent e) {
+				applet.key(e,false);
+			}
+		});
+		applet.start();
+	}
 	public A() {
 		new Thread(this).start();
 	}
@@ -161,12 +189,12 @@ public class A extends GamePanel {
 		
 		final int KEY_ENTER = 10;
 		final int KEY_SPACE = 32;
-		final int KEY_P = 112;
-		final int KEY_W = 119;
-		final int KEY_UP = 1004;
-		final int KEY_DOWN = 1005;
-		final int KEY_LEFT = 1006;
-		final int KEY_RIGHT = 1007;
+		final int KEY_P = VK_Z;
+		final int KEY_W = VK_X;
+		final int KEY_UP = VK_UP;
+		final int KEY_DOWN = VK_DOWN;
+		final int KEY_LEFT = VK_LEFT;
+		final int KEY_RIGHT = VK_RIGHT;
 
 		
 		final int MODEL_BUZZ_ENEMY = 2;
@@ -294,7 +322,7 @@ public class A extends GamePanel {
 		int acc = 0;
 		int mazeWidth = 0;
 		int mazeHeight = 0;
-		int level = 1;
+		int level = 2;
 		int nbEnemies = 0;
 		int nbEnemiesToPop = 0;
 		int i = 0;
@@ -1450,8 +1478,8 @@ public class A extends GamePanel {
 		}
 	}
 
-	@Override
-	public boolean handleEvent(Event e) {
-		return keys[e.key] = (e.id == Event.KEY_PRESS || e.id == Event.KEY_ACTION);
+
+	public boolean key(KeyEvent e, boolean press) {
+		return keys[e.getKeyCode()] = press;
 	}
 }
