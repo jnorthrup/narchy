@@ -1,6 +1,5 @@
 package nars.term.util.conj;
 
-import com.google.common.cache.CacheLoader;
 import jcog.TODO;
 import jcog.WTF;
 import jcog.data.bit.MetalBitSet;
@@ -40,7 +39,6 @@ import org.roaringbitmap.RoaringBitmap;
 import java.util.*;
 import java.util.function.Predicate;
 
-import static java.lang.System.arraycopy;
 import static nars.Op.CONJ;
 import static nars.Op.NEG;
 import static nars.term.atom.Bool.*;
@@ -1247,7 +1245,8 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
         if (!ok)
             return False;
 
-        return c.term(B);
+        return null;
+        //return c.term(B);
 
 //        if (create)
 //            return d;
@@ -1260,73 +1259,73 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
 //        }
     }
 
-    /**
-     * @param existing
-     * @param incoming
-     * @param eternalOrParallel * True - absorb and ignore the incoming
-     *                          * Null/False - short-circuit annihilation due to contradiction
-     *                          * non-null - merged value.  if merged equals current item, as-if True returned. otherwise remove the current item, recurse and add the new merged one
-     *                          * null - do nothing, no conflict.  proceed to add x at the event time
-     */
-    @Nullable
-    @Deprecated
-    private static Term merge(TermBuilder B, Term existing, Term incoming, boolean eternalOrParallel) {
-
-
-        boolean incomingPolarity = incoming.op() != NEG;
-        Term incomingUnneg = incomingPolarity ? incoming : incoming.unneg();
-        Term existingUnneg = existing.unneg();
-        boolean iConj = incomingUnneg.op() == CONJ;
-        boolean eConj = existingUnneg.op() == CONJ;
-
-        if (!eConj && !iConj)
-            return null;  //OK neither a conj/disj
-
-
-        if (iConj && eConj) {
-            //both conj
-            if (!Term.commonStructure(existingUnneg.subterms().structure(), incomingUnneg.subterms().structure()))
-                return null; //OK no potential for interaction
-        } else {
-            if (!Term.commonStructure(existingUnneg.structure(), incomingUnneg.structure()))
-                return null; //OK no potential for interaction
-        }
-
-        boolean existingPolarity = existing.op() != NEG;
-        Term base;
-        if (eConj && !iConj)
-            base = existing;
-        else if (iConj && !eConj)
-            base = incoming;
-        else if (!existingPolarity && incomingPolarity)
-            base = existing; //forces disjunctify
-        else if (!incomingPolarity && existingPolarity)
-            base = incoming; //forces disjunctify
-        else { //if (eConj && iConj) {
-            assert (eConj && iConj && existingPolarity == incomingPolarity);
-            //decide which is larger, swap for efficiency
-            boolean swap = ((existingPolarity == incomingPolarity) && incoming.volume() > existing.volume());
-            base = swap ? incoming : existing;
-        }
-//        else if (eConj && !iConj) {
-//            base = existing;
-//        } else /*if (xConj && !eConj)*/ {
-//            base = incoming;
+//    /**
+//     * @param existing
+//     * @param incoming
+//     * @param eternalOrParallel * True - absorb and ignore the incoming
+//     *                          * Null/False - short-circuit annihilation due to contradiction
+//     *                          * non-null - merged value.  if merged equals current item, as-if True returned. otherwise remove the current item, recurse and add the new merged one
+//     *                          * null - do nothing, no conflict.  proceed to add x at the event time
+//     */
+//    @Nullable
+//    @Deprecated
+//    private static Term merge(TermBuilder B, Term existing, Term incoming, boolean eternalOrParallel) {
+//
+//
+//        boolean incomingPolarity = incoming.op() != NEG;
+//        Term incomingUnneg = incomingPolarity ? incoming : incoming.unneg();
+//        Term existingUnneg = existing.unneg();
+//        boolean iConj = incomingUnneg.op() == CONJ;
+//        boolean eConj = existingUnneg.op() == CONJ;
+//
+//        if (!eConj && !iConj)
+//            return null;  //OK neither a conj/disj
+//
+//
+//        if (iConj && eConj) {
+//            //both conj
+//            if (!Term.commonStructure(existingUnneg.subterms().structure(), incomingUnneg.subterms().structure()))
+//                return null; //OK no potential for interaction
+//        } else {
+//            if (!Term.commonStructure(existingUnneg.structure(), incomingUnneg.structure()))
+//                return null; //OK no potential for interaction
 //        }
-
-        boolean conjPolarity = base == existing ? existingPolarity : incomingPolarity;
-
-        Term x = base == existing ? incoming : existing;
-
-        Term result = conjPolarity ?
-                conjoinify(B, base, x, eternalOrParallel) :
-                null; //disjunctify(B, base, x, eternalOrParallel);
-
-        if (result != null && result.equals(existing))
-            result = existing; //same value
-
-        return result;
-    }
+//
+//        boolean existingPolarity = existing.op() != NEG;
+//        Term base;
+//        if (eConj && !iConj)
+//            base = existing;
+//        else if (iConj && !eConj)
+//            base = incoming;
+//        else if (!existingPolarity && incomingPolarity)
+//            base = existing; //forces disjunctify
+//        else if (!incomingPolarity && existingPolarity)
+//            base = incoming; //forces disjunctify
+//        else { //if (eConj && iConj) {
+//            assert (eConj && iConj && existingPolarity == incomingPolarity);
+//            //decide which is larger, swap for efficiency
+//            boolean swap = ((existingPolarity == incomingPolarity) && incoming.volume() > existing.volume());
+//            base = swap ? incoming : existing;
+//        }
+////        else if (eConj && !iConj) {
+////            base = existing;
+////        } else /*if (xConj && !eConj)*/ {
+////            base = incoming;
+////        }
+//
+//        boolean conjPolarity = base == existing ? existingPolarity : incomingPolarity;
+//
+//        Term x = base == existing ? incoming : existing;
+//
+//        Term result = conjPolarity ?
+//                conjoinify(B, base, x, eternalOrParallel) :
+//                null; //disjunctify(B, base, x, eternalOrParallel);
+//
+//        if (result != null && result.equals(existing))
+//            result = existing; //same value
+//
+//        return result;
+//    }
 
     /**
      * stateless/fast 2-ary conjunction in either eternity (dt=DTERNAL) or parallel(dt=0) modes
@@ -1550,7 +1549,32 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
         if (w == -1) return -1;
         if (w == +1) return +1;
 
-        return disjunctify2(at, ee, what);
+        return disjunctify(at, ee, what);
+    }
+
+    private int conjoinify(long when, Object ee, Term incoming) {
+        boolean absorb = false;
+        boolean incomingDisj = incoming.op() == NEG && incoming.unneg().op() == CONJ;
+        if (incomingDisj)
+            return 0; //not this stage
+        if (ee instanceof byte[]) {
+            for (byte dui : (byte[]) ee) {
+                if (dui == 0) break;
+                int d = conjoinifyReduce(when, incoming, dui);
+                if (d == -1) return -1;
+                else if (d == +1) absorb = true;
+            }
+        } else {
+            RoaringBitmap r = (RoaringBitmap) ee;
+            PeekableIntIterator rr = r.getIntIterator();
+            while (rr.hasNext()) {
+                byte dui = (byte) rr.next();
+                int d = conjoinifyReduce(when, incoming, dui);
+                if (d == -1) return -1;
+                else if (d == +1) absorb = true;
+            }
+        }
+        return absorb ? 1 : 0;
     }
 
     /**
@@ -1558,7 +1582,7 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
      *
      * @return
      */
-    private int disjunctify2(long when, Object ee, Term incoming) {
+    private int disjunctify(long when, Object ee, Term incoming) {
         boolean absorb = false;
         boolean incomingDisj = incoming.op() == NEG && incoming.unneg().op() == CONJ;
         if (ee instanceof byte[]) {
@@ -1581,6 +1605,33 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
         return absorb ? 1 : 0;
     }
 
+
+    private int conjoinifyReduce(long when, Term incoming, byte existing) {
+        boolean existingNeg = existing < 0;
+        Term existingTerm = unindex((byte) existing);
+        boolean existingDisj = existingNeg && existingTerm.unneg().op() == CONJ;
+        if (existingDisj)
+            return 0; //not this stage
+
+        if (!Term.commonStructure(incoming, existingTerm))
+            return 0; //no possible conflict
+
+        Term y = conjoinify(Op.terms, existingTerm, incoming, when==ETERNAL);
+        if (y == null)
+            return 0;
+        else if (y == False || y == Null){
+            result = y; //handle Null differently than False HACK
+            return -1;
+        } else {
+            //is this necessary?
+            remove(when,existing);
+            if (add(when, y))
+                return +1;
+            else
+                return -1;
+        }
+    }
+
     private int disjunctifyReduce(long when, boolean incomingDisj, Term incoming, byte existing) {
 
 
@@ -1592,7 +1643,7 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
         boolean existingDisj = existingNeg && existingTerm.unneg().op() == CONJ;
 
         if ((!existingDisj && !incomingDisj) || (!Term.commonStructure(incoming.unneg(), existingTerm.unneg())))
-            return 0; //no conflict
+            return 0; //no possible conflict
 
         if (existingDisj && incomingDisj) {
             Term y = disjunctionVsDisjunction(Op.terms, incoming.unneg(), existingTerm.unneg(), when == ETERNAL);
@@ -1782,17 +1833,16 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
     }
 
     private boolean addEvent(long at, byte id, Term incoming) {
-        //test for conflict with existing ETERNALs
 
         long[] compareTo = at == ETERNAL || (!event.containsKey(at)) ? new long[]{ETERNAL} : new long[]{ETERNAL, at};
+        Object[] compares = new Object[compareTo.length];
 
-        stages: for (int stage = 0; stage < 2; stage++) {
-            for (long wc : compareTo) {
-                Object ee = event.get(wc);
-                if (ee == null) {
+        stages: for (int stage = 0; stage < 3; stage++) {
+            for (int cci = 0, compareToLength = compareTo.length; cci < compareToLength; cci++) {
+                long wc = compareTo[cci];
+                Object ee = stage == 0 ? (compares[cci] = event.get(wc)) : compares[cci];
+                if (ee == null)
                     continue;
-                }
-
 
                 int w;
                 switch (stage) {
@@ -1800,15 +1850,22 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
                         w = conflictOrSame(ee, id);
                         break;
                     case 1:
-                        w = disjunctify2(wc, ee, incoming);
+                        w = conjoinify(wc, ee, incoming);
+                        break;
+                    case 2:
+                        w = disjunctify(wc, ee, incoming);
                         break;
                     default:
                         throw new UnsupportedOperationException();
                 }
-                if (w == -1) { result = False; return false; } //contradiction
-                if (w == +1) return true; //absorbed
+                if (w == -1) {
+                    if (result != Null || result != False) result = False;
+                    return false;
+                } //contradiction
+                if (w == +1) return true; //absorb = true;
             }
         }
+
 
         Object events = event.getIfAbsentPut(at, () -> new byte[ROARING_UPGRADE_THRESH]);
         if (events instanceof byte[]) {
@@ -1825,24 +1882,24 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
                     return true;
                 } else {
 
-                    Term result = merge(Op.terms, unindex(bi), incoming, at == ETERNAL);
+                    //Term result = merge(Op.terms, unindex(bi), incoming, at == ETERNAL);
 
-                    if (result != null) {
-                        if (result == True)
-                            return true; //absorbed input
-                        if (result == False || result == Null) {
-                            this.result = result; //failure
-                            return false;
-                        } else {
-                            if (i < b.length - 1) {
-                                arraycopy(b, i + 1, b, i, b.length - 1 - i);
-                                i--; //compactify
-                            } else
-                                b[i] = 0; //erase, continue comparing. the result remains eligible for add
-
-                            return add(at, result);
-                        }
-                    }
+//                    if (result != null) {
+//                        if (result == True)
+//                            return true; //absorbed input
+//                        if (result == False || result == Null) {
+//                            this.result = result; //failure
+//                            return false;
+//                        } else {
+//                            if (i < b.length - 1) {
+//                                arraycopy(b, i + 1, b, i, b.length - 1 - i);
+//                                i--; //compactify
+//                            } else
+//                                b[i] = 0; //erase, continue comparing. the result remains eligible for add
+//
+//                            return add(at, result);
+//                        }
+//                    }
                 }
             }
 
