@@ -87,12 +87,12 @@ public class ConjLazy extends LongObjectArraySet<Term> implements ConjBuilder {
             }
         }
 
-        return add(when, t);
+        return add(when, t, true);
     }
 
     @Override
     public final boolean add(long w, Term t) {
-        return add(w, t, true);
+        return ConjBuilder.super.add(w,t);
     }
 
     @Override

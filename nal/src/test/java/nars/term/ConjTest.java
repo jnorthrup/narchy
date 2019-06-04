@@ -499,7 +499,7 @@ public class ConjTest {
     }
 
     @Test void testInvalidDisj() {
-        assertEq("((--,d)&&c)", "(&&, (--,(d&&c)), c)");
+        assertEq("((--,d)&&c)", "((--,(d&&c)) && c)");
     }
     @Test void testInvalidDisjSeq() {
         Term a = $$("(--,((a &&+1 b)&&c))");
@@ -1733,6 +1733,7 @@ public class ConjTest {
 
     @Test
     void testParallelDisjunctionAbsorb() {
+        assertEq("((--,y)&&x)", CONJ.the(DTERNAL, $$("--(x&&y)"), $$("x")));
         assertEq("((--,y)&&x)", CONJ.the(0, $$("--(x&&y)"), $$("x")));
     }
 
@@ -1775,12 +1776,12 @@ public class ConjTest {
 
     @Test
     void disjunctionSequenceReduce() {
-        String y = "((--,((--,tetris(1,11)) &&+330 (--,tetris(1,11))))&&(--,left))";
-
-        //by parsing
-        assertEq(y,
-                "((--,(((--,tetris(1,11)) &&+230 (--,left)) &&+100 ((--,tetris(1,11)) &&+230 (--,left)))) && --left)"
-        );
+//        String y = "((--,((--,tetris(1,11)) &&+330 (--,tetris(1,11))))&&(--,left))";
+//
+//        //by parsing
+//        assertEq(y,
+//                "((--,(((--,tetris(1,11)) &&+230 (--,left)) &&+100 ((--,tetris(1,11)) &&+230 (--,left)))) && --left)"
+//        );
 
         //by Conj construction
         for (long w : new long[]{ETERNAL, 0, 1}) {

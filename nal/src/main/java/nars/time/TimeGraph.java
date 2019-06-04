@@ -892,7 +892,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
             List<Event>[] subEvents2 = ArrayUtil.removeNulls(subEvents);
 
             CartesianIterator<Event> ci = new CartesianIterator(Event[]::new, subEvents2);
-            while (ci.hasNext()) {
+            nextPermute: while (ci.hasNext()) {
 
                 Event[] ss = ci.next();
                 ConjBuilder cc = new ConjLazy(abs);
@@ -906,7 +906,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
                     start = Math.min(es, start);
                     range = range > 0 ? Math.min(e.end() - es, range) : 0;
                     if (!cc.add(es, e.id))
-                        break;
+                        break nextPermute;
 //                    }
                 }
 
