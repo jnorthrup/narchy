@@ -156,7 +156,7 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
 
             //TODO accelerated 'flat' case: if (when == ETERNAL && container.op()==CONJ && container.dt()==)
 
-            return x.subterms().AND(xx -> eventOf(container, xx, when, polarity));
+            return x.subterms().AND(xx -> eventOf(container, xx, when, 1));
         }
 
         if (container.impossibleSubTerm(x))
@@ -181,9 +181,10 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
         } else if (isSeq(container)) {
             return !container.eventsWhile(
                     when == ETERNAL ?
-                            (w, cc) -> !(cc.equals(x)) :
-                            (w, cc) -> !(w == when && cc.equals(x))
-                    , when, true, container.dt() == XTERNAL);
+                            (w, cc) -> !(x.equals(cc) || eventOf(cc, x, ETERNAL, 1)) :
+                            (w, cc) -> !(x.equals(cc) || (w == when && eventOf(cc, x, 0, 1)))
+                                            //!(w == when && cc.equals(x))
+                    , when, false, container.dt() == XTERNAL);
         } else
             return false;
 
@@ -1528,6 +1529,10 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
 
     protected int conflictOrSame(long at, byte bWhat, Term what) {
         Object ee = event.get(at);
+        return conflictOrSame(at, bWhat, what, ee);
+    }
+
+    private int conflictOrSame(long at, byte bWhat, Term what, Object ee) {
         if (ee == null) return 0;
 
         int w = conflictOrSame(ee, bWhat);
@@ -1564,65 +1569,100 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
         return absorb ? 1 : 0;
     }
 
-    private int disjunctifyReduce(long when, Term incoming, byte dui) {
-        if (dui < 0) {
-            Term d = unindex((byte) -dui);
-            if (d.op() == CONJ) {
-                long offset = when == ETERNAL ? ETERNAL : 0 /* TODO sequence cancellation */;
-                if (Conj.eventOf(d, incoming, offset, +1)) {
-                    //TODO remove conflicting branch from disj but add the conj condition
-                    remove(when, dui);
+    private int disjunctifyReduce(long when, Term incoming, byte existing) {
+        boolean incomingDisj = incoming.op()==NEG && incoming.unneg().op()==CONJ;
+        if (existing < 0  && incomingDisj)
+            return 0; //allow TODO check for contradiction
 
-                    Term e;
-                    long shift;
+        if (existing < 0) {
+            Term undisjunctified = unindex((byte) -existing);
+            return disjunctifyReduce(when, incoming, undisjunctified);
+        } else if (incomingDisj) {
+            return disjunctifyReduceExisting(when, unindex(existing), incoming.unneg()); //HACK
+        }
+        return 0;
+    }
 
-                    int ddt = d.dt();
-                    if (ddt == XTERNAL || (ddt == DTERNAL && d.contains(incoming) /* HACK to split a sequence non-sequentially at the top-level */)) {
-                        Term[] ee = d.subterms().removing(incoming);
-                        if (ee == null)
-                            throw new WTF();
-                        if (ee.length == 0)
-                            e = False; //totally removed; when negated will become True and disappear
-                        if (ee.length > 1)
-                            e = CONJ.the(ddt, ee);
-                        else
-                            e = ee[0];
-                        shift = 0;
-                    } else {
+    @Nullable
+    private int disjunctifyReduceExisting(long when, Term existing, Term undisjunctified) {
+        long offset = when == ETERNAL ? ETERNAL : 0 /* TODO sequence cancellation */;
+        if (Conj.eventOf(undisjunctified, existing, offset, +1)) {
+            return disjunctifyMergePruneAdd(when, existing, undisjunctified, offset);
+        } else if (Conj.eventOf(undisjunctified, existing, offset, -1)) {
+            return +1; //absorbed
+        }
+        return 0;
+    }
 
-                        Conj D = new Conj();
-                        if (when == ETERNAL) {
-                            D.addAuto(d);
-                            boolean removed = D.removeAll(incoming);
-                            if (!removed)
-                                throw new TermException("could not remove " + incoming, d);
-                        } else {
-                            D.add(0, d);
-                            boolean removed = D.remove(offset, incoming);
-                            if (!removed)
-                                throw new TermException("could not remove " + incoming + " @ " + offset, d);
-                        }
+    @Nullable
+    private int disjunctifyReduce(long when, Term incoming, Term undisjunctified) {
+        if (undisjunctified.op() == CONJ) {
+            long offset = when == ETERNAL ? ETERNAL : 0 /* TODO sequence cancellation */;
+            if (Conj.eventOf(undisjunctified, incoming, offset, +1)) {
 
-                        //assert(removed);
+                //TODO remove conflicting branch from disj but add the conj condition
+                remove(when, undisjunctified.neg());
 
-                        e = D.term();
-                        shift = when != ETERNAL ? D.shift() : 0;
-                    }
+                return disjunctifyMergePruneAdd(when, incoming, undisjunctified, offset);
 
+            } else if (Conj.eventOf(undisjunctified, incoming, offset, -1)) {
+                remove(when, undisjunctified.neg());
 
-                    if (!addEvent(when + shift, e.neg()))
-                        return -1;
-
-                    add(when, incoming);
-                    return +1;
-                } else if (Conj.eventOf(d, incoming.neg(), offset, -1)) {
-                    remove(when, dui);
-                    add(when, incoming);
-                    return +1;
-                }
+                if (!add(when, incoming))
+                    return -1;
+                return +1;
             }
         }
         return 0;
+    }
+
+    @Nullable
+    private int disjunctifyMergePruneAdd(long when, Term x, Term undisjunctified, long offset) {
+        Term e;
+        long shift;
+
+        int ddt = undisjunctified.dt();
+        if (ddt == XTERNAL || (ddt == DTERNAL && undisjunctified.contains(x) /* HACK to split a sequence non-sequentially at the top-level */)) {
+            Term[] ee = undisjunctified.subterms().removing(x);
+            if (ee == null)
+                throw new WTF();
+            if (ee.length == 0)
+                e = False; //totally removed; when negated will become True and disappear
+            if (ee.length > 1)
+                e = CONJ.the(ddt, ee);
+            else
+                e = ee[0];
+            shift = 0;
+        } else {
+
+            ConjLazy D;
+            if (when == ETERNAL) {
+                //D.add(ETERNAL, undisjunctified);
+                D = ConjLazy.events(undisjunctified);
+                boolean removed = D.removeAll(x);
+                if (!removed)
+                    throw new TermException("could not remove " + x, undisjunctified);
+            } else {
+                D = ConjLazy.events(undisjunctified, 0);
+                boolean removed = D.remove(offset, x);
+                if (!removed)
+                    throw new TermException("could not remove " + x + " @ " + offset, undisjunctified);
+            }
+
+            //assert(removed);
+
+            e = D.term();
+            shift = when != ETERNAL ? D.shift() : 0;
+        }
+
+
+        if (!add(when + shift, e.neg()))
+            return -1;
+
+        if (!add(when, x))
+            return -1;
+
+        return +1;
     }
 
 
@@ -1724,15 +1764,14 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
         }
 
         Object events = event.getIfAbsentPut(at, () -> new byte[ROARING_UPGRADE_THRESH]);
-
-
-        if (at != ETERNAL) {//ETERNAL already tested above
-            int d = disjunctify2(at, events, incoming);
-            if (d == +1)
+        if (at != ETERNAL && !(events instanceof byte[] && ((byte[])events)[0]==0)) {//ETERNAL already tested above
+            int d = conflictOrSame(at, id, incoming, events);
+            if (d > 0)
                 return true; //absorb
-            else if (d == -1)
+            else if (d < 0) {
+                result = False;
                 return false;
-
+            }
         }
 
         if (events instanceof byte[]) {

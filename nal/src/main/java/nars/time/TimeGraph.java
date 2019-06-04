@@ -682,29 +682,33 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 
                     long eventStart = event.start(), eventEnd = event.end();
 
+                    boolean absolute;
                     switch (edt) {
 
                         case XTERNAL:
-                            for (Term y : eventTerm.subterms())
-                                know(y);
+                            absolute = false;
+                            for (Term y : eventTerm.subterms()) {
+                                if (y.hasAny(Op.Temporal))
+                                    know(y);
+                            }
                             break;
 
                         case DTERNAL:
                         default:
-
+                            absolute = eventStart != ETERNAL && eventStart != TIMELESS;
                             if ((edt == 0 || (edt == DTERNAL && !Conj.isSeq(eventTerm)))) {
 
                                 //commutive dternal: inherit event time simultaneously
                                 eventTerm.subterms().forEach(
-                                        (eventStart != ETERNAL && eventStart != TIMELESS) ?
-                                                y -> know(y, eventStart, eventEnd)
-                                                :
+//                                        absolute ?
+//                                                y -> know(y, eventStart, eventEnd)
+//                                                :
                                                 y -> link(event, 0, know(y))
                                 );
 
                             } else {
 
-                                if (eventStart != ETERNAL && eventStart != TIMELESS) {
+                                if (absolute) {
 
                                     long range = eventEnd - eventStart;
                                     eventTerm.eventsWhile((w, y) -> {
@@ -716,7 +720,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
                                         //chain the events to the absolute parent
                                         link(event, w - eventStart, Y);
                                         return true;
-                                    }, eventStart, false, false);
+                                    }, eventStart, true, false);
 
                                 } else {
                                     //chain the events together relatively.  chain to the parent event if it's absolute
@@ -746,11 +750,16 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
                                         prevTime[0] = w;
                                         prev[0] = next;
                                         return true;
-                                    }, 0, false, false);
+                                    }, 0, true, false);
                                 }
 
                             }
                     }
+
+//                    if (absolute) {
+//                        //remove the parent node since components were resolved absolutely
+//                        removeNode(event);
+//                    }
                     break;
             }
         }
@@ -1912,7 +1921,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 
                 if (root.id().id.equals(t)) {
                     Event rootEvent = root.id();
-                    ee = Iterables.filter(ee, x -> !(x.equals(rootEvent)));
+                    ee = Iterables.filter(ee, x -> !x.equals(rootEvent));
                 }
 
                 Iterable<Event> eee =
@@ -1924,9 +1933,10 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
                 return Iterables.transform(
                         Iterables.filter(
                                 Iterables.transform(eee, TimeGraph.this::node),
-                                n -> n != null && n != root && log.hasNotVisited(n)
+                                n -> n != null && n != root// && log.hasNotVisited(n)
                         ),
                         n -> {
+                            //assert(root.id().start()root.id() instanceof Absolute != n.id() instanceof Absolute)
                             return new ImmutableDirectedEdge(root, TS_ZERO, n);
                         }
                 );

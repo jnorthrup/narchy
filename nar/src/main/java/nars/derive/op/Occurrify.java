@@ -288,7 +288,7 @@ public class Occurrify extends TimeGraph {
 
     @Override
     protected boolean decomposeAddedEvent(Event event) {
-        return super.decomposeAddedEvent(event) && decomposeEvents;
+        return decomposeEvents && super.decomposeAddedEvent(event);
     }
 
     @Override

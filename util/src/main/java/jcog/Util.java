@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.dataformat.cbor.CBORFactory;
 import com.google.common.base.Charsets;
 import com.google.common.base.Joiner;
 import com.google.common.io.CharStreams;
@@ -40,7 +41,6 @@ import org.eclipse.collections.impl.list.mutable.primitive.IntArrayList;
 import org.eclipse.collections.impl.map.mutable.primitive.ByteByteHashMap;
 import org.eclipse.collections.impl.set.mutable.primitive.IntHashSet;
 import org.jetbrains.annotations.Nullable;
-import org.msgpack.jackson.dataformat.MessagePackFactory;
 import org.slf4j.Logger;
 import sun.misc.Unsafe;
 
@@ -96,9 +96,6 @@ public enum Util {
 
     //public static final int MAX_CONCURRENCY = Runtime.getRuntime().availableProcessors();
     public static final ImmutableByteList EmptyByteList = ByteLists.immutable.empty();
-    public final static ObjectMapper msgPacker =
-            new ObjectMapper(new MessagePackFactory())
-                    .enable(JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES);
     public final static ObjectMapper jsonMapper =
             new ObjectMapper()
                     .enable(JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES)
@@ -112,6 +109,10 @@ public enum Util {
                     .enable(MapperFeature.AUTO_DETECT_GETTERS)
                     .enable(MapperFeature.AUTO_DETECT_IS_GETTERS)
                     .disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
+    public final static ObjectMapper cborMapper =
+
+            new ObjectMapper(new CBORFactory())
+                    .enable(JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES);
 
     public static final double log2 = Math.log(2);
 
@@ -2098,11 +2099,11 @@ public enum Util {
      * json/msgpack serialization
      */
     public static byte[] toBytes(Object x) throws JsonProcessingException {
-        return msgPacker.writeValueAsBytes(x);
+        return cborMapper.writeValueAsBytes(x);
     }
 
     public static byte[] toBytes(Object x, Class cl) throws JsonProcessingException {
-        return msgPacker.writerFor(cl).writeValueAsBytes(x);
+        return cborMapper.writerFor(cl).writeValueAsBytes(x);
     }
 
 
@@ -2110,25 +2111,24 @@ public enum Util {
      * msgpack deserialization
      */
     public static <X> X fromBytes(byte[] msgPacked, Class<? extends X> type) throws IOException {
-        return msgPacker/*.reader(type)*/.readValue(msgPacked, type);
+        return cborMapper/*.reader(type)*/.readValue(msgPacked, type);
     }
 
     public static <X> X fromBytes(byte[] msgPacked, int len, Class<? extends X> type) throws IOException {
-        return msgPacker/*.reader(type)*/.readValue(msgPacked, 0, len, type);
+        return cborMapper/*.reader(type)*/.readValue(msgPacked, 0, len, type);
     }
 
 
     public static JsonNode jsonNode(Object x) {
         if (x instanceof String) {
             try {
-                return msgPacker.readTree(x.toString());
+                return jsonMapper.readTree(x.toString());
             } catch (IOException e) {
                 e.printStackTrace();
 
             }
         }
-
-        return msgPacker.valueToTree(x);
+        return cborMapper.valueToTree(x);
     }
 
     /**

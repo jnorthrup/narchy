@@ -16,6 +16,7 @@
 
 package com.metamx.collections.spatial;
 
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Throwables;

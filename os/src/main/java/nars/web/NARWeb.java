@@ -300,7 +300,7 @@ abstract public class NARWeb extends WebServer {
 //                String s = buf.toString();
 //                w.send(s);
 
-                ArrayNode a = Util.msgPacker.createArrayNode();
+                ArrayNode a = Util.cborMapper.createArrayNode();
 
                 out.clear(t -> {
                     taskify(t, a.addArray());
@@ -308,7 +308,7 @@ abstract public class NARWeb extends WebServer {
 
                 if (a.size() > 0) {
                     try {
-                        w.send(Util.msgPacker.writeValueAsBytes(a));
+                        w.send(Util.cborMapper.writeValueAsBytes(a));
                     } catch (JsonProcessingException e) {
                         //logger.error("")
                         e.printStackTrace();

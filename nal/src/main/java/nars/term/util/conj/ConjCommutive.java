@@ -1,5 +1,6 @@
 package nars.term.util.conj;
 
+import jcog.TODO;
 import jcog.WTF;
 import jcog.data.bit.MetalBitSet;
 import jcog.util.ArrayUtil;
@@ -43,7 +44,7 @@ public enum ConjCommutive {
             throw new WTF();
 
         //bool pre-filter
-        boolean trueRemoved = false;
+        MetalBitSet trueRemoved = null;
         for (int i = 0, uLength = u.length; i < uLength; i++) {
             Term x = u[i];
             if (x.op() == BOOL) {
@@ -52,14 +53,12 @@ public enum ConjCommutive {
                 if (x == Null)
                     return Null;
                 if (x == True) {
-                    u[i] = null;
-                    trueRemoved = true;
+                    throw new TODO();
                 }
             }
         }
-        if (trueRemoved) {
-            u = ArrayUtil.removeNulls(u);
-        }
+        if (trueRemoved != null)
+            u = ArrayUtil.removeAll(u, trueRemoved);
 
         if (sort)
             u = Terms.commute(u);
@@ -206,20 +205,21 @@ public enum ConjCommutive {
 
 
             //test if direct mode has an opportunity to reduce disjunctions, requiring un-direct
-            int disjCount = disj != null ? disj.cardinality() : 0;
+            if (direct) {
+                int disjCount = disj != null ? disj.cardinality() : 0;
 
-            coi = -1;
-            while (disjCount > 0) {
-                disjCount--;
+                coi = -1;
+                while (disjCount > 0) {
+                    disjCount--;
 
-                coi = disj.next(true, coi + 1, Integer.MAX_VALUE);
+                    coi = disj.next(true, coi + 1, Integer.MAX_VALUE);
 
-                Term co = u[coi];
-                Term dun = co.unneg();
-                if (dun.dt() == XTERNAL) continue;
+                    Term co = u[coi];
+                    Term dun = co.unneg();
+                    if (dun.dt() == XTERNAL) continue;
 
-                boolean dseq = Conj.isSeq(dun);
-                if (direct || dseq) {
+                    //boolean dseq = Conj.isSeq(dun);
+
 
                     Subterms dus = dun.subterms();
                     int dos = dus.structure();
@@ -229,35 +229,14 @@ public enum ConjCommutive {
                         if (!Term.commonStructure(dos, x.unneg().structure()))
                             continue;
 
-                        if (dseq && dun.dt() == DTERNAL) {
-                            if (dus.contains(x)) {
-                                //contradicts inseparable factored seq component
-                                return False;
-                            }
-                            if (dus.containsNeg(x)) {
-                                //absorbed
-                                if (u.length == 2)
-                                    return co;
-                                else {
-                                    u = u.clone(); //HACK
-                                    u[i] = null;
-                                    direct = false;
-                                }
-                            }
-                        }
-
-                        if (Conj.eventOf(dun, x)) {
+                        if (Conj.eventOf(dun, x))
                             direct = false;
-                        }
 
-                        if (Conj.eventOf(dun, x.neg())) {
+                        if (Conj.eventOf(dun, x.neg()))
                             direct = false;
-                        }
+
                     }
-                    Term[] uu = ArrayUtil.removeNulls(u);
-                    if (uu.length < u.length) {
-                        return ConjCommutive.the(B, dt, uu); //recurse
-                    }
+
                 }
             }
         }
@@ -275,12 +254,13 @@ public enum ConjCommutive {
 //                    break;
         }
 
-        if (direct || (seq==null && disj==null))
+        if (direct || (seq == null && disj == null))
             return conjDirect(B, dt, u); //done
 
         //TODO insertion ordering heuristic, combine with ConjLazy's construction
         long sdt = (dt == DTERNAL) ? ETERNAL : 0;
         ConjBuilder c = new Conj(u.length);
+
         for (int i = 0; i < u.length; i++) {
             boolean special = ((seq != null && seq.get(i)) || (disj != null && disj.get(i)));
             if (!special) {
@@ -288,11 +268,18 @@ public enum ConjCommutive {
                     break;
             }
         }
-        for (int i = 0; i < u.length; i++) {
-            boolean special = ((seq != null && seq.get(i)) || (disj != null && disj.get(i)));
-            if (special) {
-                if (!c.add(sdt, u[i]))
-                    break;
+        if (disj!=null) {
+            for (int i = 0; i < u.length; i++) {
+                if (disj.get(i))
+                    if (!c.add(sdt, u[i]))
+                        break;
+            }
+        }
+        if (seq!=null) {
+            for (int i = 0; i < u.length; i++) {
+                if (seq.get(i))
+                    if (!c.add(0, u[i]))
+                        break;
             }
         }
 

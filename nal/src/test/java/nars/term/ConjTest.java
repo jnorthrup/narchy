@@ -500,7 +500,13 @@ public class ConjTest {
 
     @Test void testInvalidDisj() {
         assertEq("((--,d)&&c)", "(&&, (--,(d&&c)), c)");
-        assertEq(False, "(&&, (--,((a &&+1 b)&&c)), c)");
+    }
+    @Test void testInvalidDisjSeq() {
+        Term a = $$("(--,((a &&+1 b)&&c))");
+        Term c = $$("c");
+        assertEquals(False, CONJ.the(a, c));
+        assertEq(False, "(&&, --((a &&+1 b)&&c), c)");
+
     }
 
     @Test
@@ -1503,12 +1509,10 @@ public class ConjTest {
         assertEq("((--,(x &&+1 (--,x)))||y)", xn);
 
         assertEq(
-                //"((||,(--,(x &&+1 (--,x))),y)&&x)",
-                "x",
-                CONJ.the(
-                        xn,
-                        $$("x")
-                )
+                //"((||,(--,(x &&+1 (--,x)) ),y)&&x)",
+                //"x",
+                "(x&&y)",
+                CONJ.the(xn, $$("x"))
         );
 
     }

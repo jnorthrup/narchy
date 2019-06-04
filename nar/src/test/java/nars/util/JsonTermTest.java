@@ -14,7 +14,7 @@ class JsonTermTest {
 
     @Test
     void testJsonArray() throws Narsese.NarseseException {
-        NAR d = new NARS().get();
+        NAR d = NARS.shell();
         d.log();
 
         new TaskRule("(json,%1):{x(%2)}", "X(%1,%2)", d);
@@ -33,7 +33,7 @@ class JsonTermTest {
 
     @Test
     void testBigJSON() {
-        NAR d = NARS.tmp();
+        NAR d = NARS.shell();
         d.termVolMax.set(200);
         d.log();
 
@@ -65,7 +65,8 @@ class JsonTermTest {
                 "     \"title\": \"Wildfires\"\n" +
                 "    }\n" +
                 "   ] }";
-        NAR d = new NARS().get();
+        NAR d = NARS.shell();
+        d.termVolMax.set(25);
         d.log();
         d.believe($.inh($.fromJSON(j), "x"));
         d.run(16);
