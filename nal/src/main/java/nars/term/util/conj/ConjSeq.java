@@ -166,7 +166,9 @@ public enum ConjSeq { ;
 
         int dt = Tense.occToDT((events.when(center + 1) - firstWhen - left.eventRange()));
 
-        return dtSpecial(dt) ? Conj.conjoin(B, left, right, dt == DTERNAL) : conjSeqFinal(B, dt, left, right);
+        return dtSpecial(dt) ?
+                Conj.conjoin(B, left, right, dt == DTERNAL) :
+                conjSeqFinal(B, dt, left, right);
     }
 
     static Term conjSeqFinal(TermBuilder b, int dt, Term left, Term right) {

@@ -962,12 +962,13 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
      * // adapt disjunctify2 to replace this:
      */
     private static Term disjunctify(TermBuilder B, Term existing, Term incoming, boolean eternal) {
-        Term existingUnneg = existing.unneg();
+        Term existingUndisj = existing.unneg();
         Term incomingUnneg = incoming.unneg();
         if (incoming.op() == NEG && incomingUnneg.op() == CONJ) {
-            return disjunctionVsDisjunction(B, existingUnneg, incomingUnneg, eternal);
+            return disjunctionVsDisjunction(B, existingUndisj, incomingUnneg, eternal);
         } else {
-            return disjunctionVsNonDisjunction(B, existingUnneg, incoming, eternal);
+             //return disjunctifyReduceIncoming(incoming, existingUndisj);
+            return disjunctionVsNonDisjunction(B, existingUndisj, incoming, eternal);
         }
     }
 
@@ -1046,7 +1047,7 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
 
                 Term newConj = newConjUnneg.neg();
                 long shift = c.shiftOrZero();
-                if (shift != 0) {
+//                if (shift != 0) {
                     if (dt == DTERNAL)
                         dt = 0;
 
@@ -1055,9 +1056,9 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
                     d.add(shift, newConj);
                     return d.term(B);
 
-                } else {
-                    return conjoin(B, incoming, newConj, eternal);
-                }
+//                } else {
+//                    return conjoin(B, incoming, newConj, eternal);
+//                }
 
             }
 
@@ -1554,10 +1555,11 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
      */
     private int disjunctify2(long when, Object ee, Term incoming) {
         boolean absorb = false;
+        boolean incomingDisj = incoming.op()==NEG && incoming.unneg().op()==CONJ;
         if (ee instanceof byte[]) {
             for (byte dui : (byte[]) ee) {
                 if (dui == 0) break;
-                int d = disjunctifyReduce(when, incoming, dui);
+                int d = disjunctifyReduce(when, incomingDisj, incoming, dui);
                 if (d == -1) return -1;
                 else if (d == +1) absorb = true;
             }
@@ -1566,7 +1568,7 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
             PeekableIntIterator rr = r.getIntIterator();
             while (rr.hasNext()) {
                 byte dui = (byte) rr.next();
-                int d = disjunctifyReduce(when, incoming, dui);
+                int d = disjunctifyReduce(when, incomingDisj, incoming, dui);
                 if (d == -1) return -1;
                 else if (d == +1) absorb = true;
             }
@@ -1574,18 +1576,31 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
         return absorb ? 1 : 0;
     }
 
-    private int disjunctifyReduce(long when, Term incoming, byte existing) {
-        boolean incomingDisj = incoming.op()==NEG && incoming.unneg().op()==CONJ;
-        if (existing < 0  && incomingDisj)
-            return 0; //allow TODO check for contradiction
+    private int disjunctifyReduce(long when, boolean incomingDisj, Term incoming, byte existing) {
 
-        if (existing < 0) {
-            Term undisjunctified = unindex((byte) -existing);
-            return disjunctifyReduce(when, incoming, undisjunctified);
-        } else if (incomingDisj) {
-            return disjunctifyReduceExisting(when, unindex(existing), incoming.unneg()); //HACK
-        }
-        return 0;
+
+        boolean existingNeg = existing < 0;
+        if (!existingNeg && !incomingDisj)
+            return 0;
+
+        Term existingTerm = unindex((byte)existing);
+        boolean existingDisj = existingNeg && existingTerm.unneg().op()==CONJ;
+
+        if (existingDisj && incomingDisj) {
+            Term y = disjunctionVsDisjunction(Op.terms, incoming.unneg(), existingTerm.unneg(), when == ETERNAL);
+            if (y == null)
+                return 0;
+            else {
+                remove(when, existing);
+                add(when, y);
+                return +1;
+            }
+        } else if (existingDisj)
+            return disjunctifyReduceIncoming(when, incoming, existingTerm.unneg());
+        else if (incomingDisj)
+            return disjunctifyReduceExisting(when, existingTerm, incoming.unneg()); //HACK
+        else
+            return 0;
     }
 
     @Nullable
@@ -1600,24 +1615,24 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
     }
 
     @Nullable
-    private int disjunctifyReduce(long when, Term incoming, Term undisjunctified) {
-        if (undisjunctified.op() == CONJ) {
+    private int disjunctifyReduceIncoming(long when, Term incoming, Term undisj) {
+        assert(undisj.op() == CONJ);
             long offset = when == ETERNAL ? ETERNAL : 0 /* TODO sequence cancellation */;
-            if (Conj.eventOf(undisjunctified, incoming, offset, +1)) {
+            if (Conj.eventOf(undisj, incoming, offset, +1)) {
 
                 //TODO remove conflicting branch from disj but add the conj condition
-                remove(when, undisjunctified.neg());
+                remove(when, undisj.neg());
 
-                return disjunctifyMergePruneAdd(when, incoming, undisjunctified, offset);
+                return disjunctifyMergePruneAdd(when, incoming, undisj, offset);
 
-            } else if (Conj.eventOf(undisjunctified, incoming, offset, -1)) {
-                remove(when, undisjunctified.neg());
+            } else if (Conj.eventOf(undisj, incoming, offset, -1)) {
+                remove(when, undisj.neg());
 
                 if (!add(when, incoming))
                     return -1;
                 return +1;
             }
-        }
+
         return 0;
     }
 
@@ -1671,7 +1686,7 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
     }
 
 
-    public final ConjBuilder with(long at, Term x) {
+    @Deprecated public final ConjBuilder with(long at, Term x) {
         add(at, x);
         return this;
     }

@@ -133,15 +133,15 @@ public class FZero extends GameX {
 //                //new CameraSensorView(c, this).withControls(),
 //                NARui.beliefCharts(actions, nar)), 400, 400);
 
-        initUnipolarLinear(5f);
+        //initUnipolarLinear(5f);
 
-        //initPushButtonTank();
+        initPushButtonTank();
         //initLeftRightPushButtonMutex();
         //initTankContinuous();
 
 
-        BiPolarAction A =
-            initBipolarRotateRelative(false, 0.15f);
+//        BiPolarAction A =
+//            initBipolarRotateRelative(false, 0.15f);
                 //initBipolarRotateRelative(true, 1f);
                 //initBipolarRotateAbsolute(true);
                 //initBipolarRotateDirect(false, 0.9f);

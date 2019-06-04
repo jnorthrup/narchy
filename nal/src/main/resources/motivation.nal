@@ -1,3 +1,6 @@
+    //goal conjunction induction
+    G, C, eventOf(C,G), task("!")    |- C, (Goal:DesireWeak, Time:Compose)
+    G, C, eventOfNeg(C,G), task("!") |- C, (Goal:DesireWeakN, Time:Compose)
 
 
     //sustain goal
