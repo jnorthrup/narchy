@@ -236,9 +236,10 @@ class ImplTest {
         assertEquals($$("((c &&+1 d),x)").volume() + 2, $$("((x&|c),(x&|d))").volume()); //factored form results in 2 volume savings
 
         assertEq(
-                "(((a &&+1 b)&&x)==>((c &&+1 d)&&x))", //same
-                //"(((a &&+1 b)&&x)==>(c &&+1 d))",
-                "((x&&(a &&+1 b)) ==> (x&&(c &&+1 d)))");
+                //"(((a &&+1 b)&&x)==>((c &&+1 d)&&x))", //same
+                "(((a &&+1 b)&&x)==>(c &&+1 d))",
+                "((x&&(a &&+1 b)) ==> (x&&(c &&+1 d)))"
+        );
 
 
         assertEq("(((a &&+1 b)&&x)==>((c &&+1 d)&&x))", //same

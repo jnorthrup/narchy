@@ -86,16 +86,18 @@ public class LongObjectArraySet<X> extends FasterList<X> {
         throw new UnsupportedOperationException();
     }
 
-    /**
-     * returns true if duplicate found; returns
-     */
     public boolean add(long w, X t) {
+        return add(w, t, false);
+    }
 
-        //quick check for existing
+
+    protected  boolean add(long w, X t, boolean valueIfExists) {
+
+        //check for existing
         int n = size();
         for (int i = 0; i < n; i++) {
             if (when(i) == w && get(i).equals(t))
-                return false; //existing found
+                return valueIfExists; //existing found
         }
 
         int s = addAndGetSize(t);

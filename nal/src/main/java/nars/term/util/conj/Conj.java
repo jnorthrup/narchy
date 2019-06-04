@@ -137,6 +137,9 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
      *                 TODO test for subsequences
      */
     public static boolean eventOf(Term container, Term _x, long when, int polarity) {
+        if (container.op() != CONJ)
+            return false;
+
         Term x;
         if (polarity == 0)
             throw new TODO();
@@ -145,7 +148,7 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
         else //if (polarity == +1)
             x = _x;
 
-        if (container.op() != CONJ || !x.op().eventable)
+        if (!x.op().eventable)
             return false;
 
         if (container.equals(x))
@@ -181,10 +184,12 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
         } else if (isSeq(container)) {
             return !container.eventsWhile(
                     when == ETERNAL ?
-                            (w, cc) -> !(x.equals(cc) || eventOf(cc, x, ETERNAL, 1)) :
-                            (w, cc) -> !(x.equals(cc) || (w == when && eventOf(cc, x, 0, 1)))
-                                            //!(w == when && cc.equals(x))
-                    , when, false, container.dt() == XTERNAL);
+                            (w, cc) -> !(x.equals(cc) || eventOf(cc, x, ETERNAL, 1))
+                                       //     !x.equals(cc)
+                            :
+                            (w, cc) -> !(w == when && (x.equals(cc) || eventOf(cc, x, 0, 1)))
+                                        //    !(w == when && x.equals(cc))
+                    , when, true, container.dt() == XTERNAL);
         } else
             return false;
 
@@ -333,24 +338,24 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
         return candidates.isEmpty() ? Null : candidates.get(random);
     }
 
-    /**
-     * TODO make a verison of this which iterates from a Conj instance
-     */
-    public static List<LongObjectPair<Term>> match(Term conj, boolean decomposeParallel, LongObjectPredicate<Term> valid) {
-
-        FasterList<LongObjectPair<Term>> candidates = new FasterList();
-
-        conj.eventsWhile((when, what) -> {
-            if (valid.accept(when, what))
-                candidates.add(pair(when, what));
-            return true;
-        }, 0, decomposeParallel, true);
-
-        if (candidates.isEmpty())
-            return List.of();
-        else
-            return candidates;
-    }
+//    /**
+//     * TODO make a verison of this which iterates from a Conj instance
+//     */
+//    public static List<LongObjectPair<Term>> match(Term conj, boolean decomposeParallel, LongObjectPredicate<Term> valid) {
+//
+//        FasterList<LongObjectPair<Term>> candidates = new FasterList();
+//
+//        conj.eventsWhile((when, what) -> {
+//            if (valid.accept(when, what))
+//                candidates.add(pair(when, what));
+//            return true;
+//        }, 0, decomposeParallel, true);
+//
+//        if (candidates.isEmpty())
+//            return List.of();
+//        else
+//            return candidates;
+//    }
 
 //    /**
 //     * TODO impl levenshtein via byte-array ops
@@ -1012,9 +1017,9 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
                 return B.conj(dt, newConj.neg(), incoming);
 
             } else {
-                ConjBuilder c = new Conj();
-                if (eternal) c.addAuto(conjUnneg);
-                else c.add(0, conjUnneg);
+                ConjBuilder c;
+                if (eternal) c = ConjLazy.events(conjUnneg);
+                else c = ConjLazy.events(conjUnneg, 0);
                 //c.factor();
                 if (!eternal) {
                     boolean removed;
@@ -1045,7 +1050,7 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
                     if (dt == DTERNAL)
                         dt = 0;
 
-                    ConjLazy d = new ConjLazy(2);
+                    ConjBuilder d = new Conj(2);
                     d.add((long) dt, incoming);
                     d.add(shift, newConj);
                     return d.term(B);

@@ -35,20 +35,33 @@ public enum ConjSeq { ;
     /** TODO TermBuilder */
     static public Term sequence(Term a, long aStart, Term b, long bStart, TermBuilder B) {
 
-        if (aStart == TIMELESS) { /*assert(bStart == aStart);*/
+        /*assert(bStart == aStart);*/
+        if (aStart == TIMELESS) {
+            assert(bStart==TIMELESS);
             return CONJ.the(B, XTERNAL, a, b);
         }
 
-        if ((aStart == ETERNAL || aStart == bStart) && (!Conj.isSeq(a) && !Conj.isSeq(b))) {         /*assert(bStart == aStart);*/
+        /*assert(bStart == aStart);*/
+        if (aStart == ETERNAL || aStart==bStart) {// && (!Conj.isSeq(a) && !Conj.isSeq(b)))
             return CONJ.the(B, DTERNAL, a, b);
         }
 
         assert (bStart != ETERNAL && bStart != TIMELESS);
 
-        ConjBuilder c = new Conj(2);
-        if (c.add(aStart, a))
-            c.add(bStart, b);
-        return c.term(B);
+//        if (a.hasAny(Op.CONJ) || b.hasAny(Op.CONJ)) {
+            ConjBuilder c = new Conj(2);
+            if (c.add(aStart, a))
+                c.add(bStart, b);
+            return c.term(B);
+//        } else {
+//            if (aStart > bStart)
+//            assert (aStart < bStart);
+//            //simple construction
+//            LongObjectArraySet<Term> ab = new LongObjectArraySet(2);
+//            ab.add(0L, a);
+//            ab.add(bStart - aStart, b);
+//            return ConjSeq.conjSeq(B, ab);
+//        }
     }
 
     public static MetalBitSet seqEternalComponents(Subterms x) {

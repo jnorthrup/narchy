@@ -12,8 +12,10 @@ import static nars.Op.CONJ;
 import static nars.time.Tense.*;
 
 public interface ConjBuilder {
+
     /**
-     * returns false if contradiction occurred, in which case this
+     * different semantics than .add() -- returns true even if existing present.  returns false on conflict
+     * returns false only if contradiction occurred, in which case this
      * ConjEvents instance is
      * now corrupt and its result via .target() should be considered final
      */

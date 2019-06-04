@@ -259,27 +259,28 @@ public enum ConjCommutive {
 
         //TODO insertion ordering heuristic, combine with ConjLazy's construction
         long sdt = (dt == DTERNAL) ? ETERNAL : 0;
+
         ConjBuilder c = new Conj(u.length);
 
         for (int i = 0; i < u.length; i++) {
             boolean special = ((seq != null && seq.get(i)) || (disj != null && disj.get(i)));
             if (!special) {
                 if (!c.add(sdt, u[i]))
-                    break;
+                    return c.term();
             }
         }
         if (disj!=null) {
             for (int i = 0; i < u.length; i++) {
                 if (disj.get(i))
                     if (!c.add(sdt, u[i]))
-                        break;
+                        return c.term();
             }
         }
         if (seq!=null) {
             for (int i = 0; i < u.length; i++) {
                 if (seq.get(i))
                     if (!c.add(0, u[i]))
-                        break;
+                        return c.term();
             }
         }
 

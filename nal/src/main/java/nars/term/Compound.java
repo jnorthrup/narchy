@@ -621,7 +621,7 @@ public interface Compound extends Term, IPair, Subterms {
 
             long t = offset;
 
-            boolean changeDT = t != ETERNAL && t != TIMELESS && dt != 0 /* motionless in time */;
+            boolean changeDT = dt != 0 && t != ETERNAL && t != TIMELESS /* motionless in time */;
 
 
             boolean fwd;

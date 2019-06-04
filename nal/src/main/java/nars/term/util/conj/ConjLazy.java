@@ -31,12 +31,7 @@ public class ConjLazy extends LongObjectArraySet<Term> implements ConjBuilder {
         super(0, new Term[expectedSize]);
     }
 
-    @Override
-    public final boolean add(long when, Term t) {
-        if (when == TIMELESS)
-            throw new WTF("invalid time");
-        return super.add(when, t);
-    }
+
 
 
 
@@ -80,12 +75,24 @@ public class ConjLazy extends LongObjectArraySet<Term> implements ConjBuilder {
 
         if (t == False || t == Null) {
             clear(); //fail
-            result = false;
+            return false;
         }
 
-        super.add(when, t);
+        //quick chest for conflict
+        int n = size();
+        for (int i = 0; i < n; i++) {
+            if (when(i) == when && get(i).equalsNeg(t)) {
+                clear();
+                return false; //conflict
+            }
+        }
 
-        return result;
+        return add(when, t);
+    }
+
+    @Override
+    public final boolean add(long w, Term t) {
+        return add(w, t, true);
     }
 
     @Override

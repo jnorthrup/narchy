@@ -1516,6 +1516,13 @@ public class ConjTest {
         );
 
     }
+    @Test void testConjLazyEvents() {
+        Term t = $$("(((((--,(tetris-->left))&&(--,(tetris-->rotate))) &&+43 (tetris-->left))&&(--,(tetris-->right))) &&+217 (tetris-->left))");
+        ConjLazy c = ConjLazy.events(t);
+        System.out.println(c);
+        assertEquals(5, c.size());
+        assertEquals(260, c.when(4));
+    }
 
 
     @Test
