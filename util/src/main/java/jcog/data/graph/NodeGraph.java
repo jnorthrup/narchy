@@ -216,12 +216,12 @@ public abstract class NodeGraph<N, E> /* TODO merge with guava Graph: implements
             return c;
         }
 
-        boolean addIn(FromTo<Node<N, E>, E> e) {
+        public boolean addIn(FromTo<Node<N, E>, E> e) {
             return addSet(e, true);
 
         }
 
-        boolean addOut(FromTo<Node<N, E>, E> e) {
+        public boolean addOut(FromTo<Node<N, E>, E> e) {
             return addSet(e, false);
         }
 
@@ -252,12 +252,20 @@ public abstract class NodeGraph<N, E> /* TODO merge with guava Graph: implements
             return result;
         }
 
-        boolean removeIn(FromTo<Node<N, E>, E> e) {
+        public boolean removeIn(FromTo<Node<N, E>, E> e) {
             return removeSet(e, true);
         }
 
-        boolean removeOut(FromTo<Node<N, E>, E> e) {
+        public boolean removeOut(FromTo<Node<N, E>, E> e) {
             return removeSet(e, false);
+        }
+
+        public void removeIn(Node<N, E> src) {
+            edges(true, false, e->e.to()==src, null).forEach(e -> removeSet(e, true));
+        }
+
+        public void removeOut(Node<N, E> target) {
+            edges(false, true, e->e.to()==target, null).forEach(e -> removeSet(e, false));
         }
 
         private boolean removeSet(FromTo<Node<N,E>,E> e, boolean inOrOut) {

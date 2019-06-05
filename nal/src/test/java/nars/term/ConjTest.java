@@ -1440,15 +1440,20 @@ public class ConjTest {
 
     }
 
+    @Test void testDisjInSeqPartialReduction() {
+        assertEq("(((--,jump) &&+320 jump)&&(--,R))",
+                $$("(((--,jump) &&+320 (R||jump))&&(--,R))"));
+    }
+
     @Test
     void testValidConjDoubleNegativeWTF() {
         assertEq("(x &&+1 x)", "((x &&+1 x) && x)");
-        assertEquals(False, $.$$("((x &&+1 x) && --x)"));
+        assertEquals(False, $$("((x &&+1 x) && --x)"));
 
         assertEq("((--,x) &&+1 x)", "((--x &&+1 x) &| --x)"); //matches at zero
 
-        assertEquals(False, $.$$("((--x &&+1 x) && x)"));
-        assertEquals(False, $.$$("((x &&+1 --x) && --x)"));
+        assertEquals(False, $$("((--x &&+1 x) && x)"));
+        assertEquals(False, $$("((x &&+1 --x) && --x)"));
 
         assertEq("x", "(--(--x &&+1 x) &| x)");
         assertEq(False, "((--x &&+1 x) &| (--x &&+1 --x))");
@@ -1521,7 +1526,7 @@ public class ConjTest {
         ConjLazy c = ConjLazy.events(t);
         System.out.println(c);
         assertEquals(6, c.size());
-        assertEquals(260, c.when(4));
+        assertEquals(260, c.when(5));
     }
 
 

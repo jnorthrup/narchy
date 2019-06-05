@@ -380,9 +380,8 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
             if (add) {
 
                 Collection<Event> te = events(t);
-                int nte = te.size();
-                if (nte > 0) {
-
+                if (te != null) {
+                    int nte = te.size();
                     boolean hasNonEternalAbsolutes = false;
                     for (Event f : te) {
                         if (!(f instanceof Absolute))
@@ -455,6 +454,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 
                             }
                         } while (!stable);
+
                     }
                 }
             }
@@ -477,7 +477,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
     }
 
     private Event addNodeRelinked(Event e, FasterList<FromTo<Node<Event, TimeSpan>, TimeSpan>> relinkIn, FasterList<FromTo<Node<Event, TimeSpan>, TimeSpan>> relinkOut) {
-        MutableNode<Event, TimeSpan> E = addNode(e);
+        AbstractNode<nars.time.TimeGraph.Event, nars.time.TimeSpan> E = addNode(e);
 
         relinkIn.forEachWith((i, ee) -> {
             MutableNode src = (MutableNode) i.from();
@@ -493,7 +493,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 
             d -= stretch;
 
-            addEdgeByNode(src, TimeSpan.the(d), ee);
+            addEdgeByNode(src, TimeSpan.the(d), (MutableNode) ee);
 
         }, E);
 
@@ -511,29 +511,28 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 
             d += stretch;
 
-            addEdgeByNode(ee, TimeSpan.the(d), tgt);
+            addEdgeByNode((MutableNode) ee, TimeSpan.the(d), tgt);
 
         }, E);
 
         return E.id;
     }
 
-    private Collection<Event> events(Term t) {
-        Collection<Event> ee = eventsOrNull(t);
-        if (ee == null) return List.of();
-        else return ee;
-    }
+
 
     @Nullable
-    private Collection<Event> eventsOrNull(Term t) {
+    private Collection<Event> events(Term t) {
         return byTerm.get(t);
     }
 
-    protected boolean link(Event before, TimeSpan e, Event after) {
+    protected void link(Event before, TimeSpan e, Event after) {
+        if (!notExceedingNodes())
+            return;
+
         MutableNode<Event, TimeSpan> x = addNode(before);
         MutableNode<Event, TimeSpan> y = before.equals(after) ? x : addNode(after);
 
-        return notExceedingNodes() && addEdgeByNode(x, e, y);
+        addEdgeByNode(x, e, y);
     }
 
     private boolean notExceedingNodes() {
@@ -892,7 +891,8 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
             List<Event>[] subEvents2 = ArrayUtil.removeNulls(subEvents);
 
             CartesianIterator<Event> ci = new CartesianIterator(Event[]::new, subEvents2);
-            nextPermute: while (ci.hasNext()) {
+            nextPermute:
+            while (ci.hasNext()) {
 
                 Event[] ss = ci.next();
                 ConjBuilder cc = new ConjLazy(abs);
@@ -959,14 +959,14 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
         FasterList<Event> ab = null;
 
         boolean aEqB = a.equals(b);
-        Collection<Event> aa = eventsOrNull(a);
+        Collection<Event> aa = events(a);
         if (aa != null)
             ab = new FasterList(aa);
         else if (aEqB)
             return true; //nothing
 
         if (!aEqB) {
-            Collection<Event> bb = eventsOrNull(b);
+            Collection<Event> bb = events(b);
             if (bb != null) {
                 if (ab != null)
                     ab.addAll(bb);
@@ -1242,9 +1242,12 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 
             //try exact absolute solutions
 
-            for (Event e : events(f.id)) {
-                if (e instanceof Absolute && !each.test((Absolute) e))
-                    return false;
+            Collection<Event> ee = events(f.id);
+            if (ee!=null) {
+                for (Event e : ee) {
+                    if (e instanceof Absolute && !each.test((Absolute) e))
+                        return false;
+                }
             }
 
             return true;
@@ -1323,7 +1326,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
         //if (xop == et.op() && (x.equals(et))) { //|| (!xVar && !et.op().var && x.unify(et, u.clear())))) {
 
 
-        Collection<Event> s = eventsOrNull(x);
+        Collection<Event> s = events(x);
         if (s != null) {
             int ss = s.size();
             if (ss == 1) {
@@ -1558,31 +1561,33 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
                     (s instanceof Absolute && (s.start() != ETERNAL) && s.id.equals(t) && !s.equals(x)))
             ).allSatisfy(s -> {
 
-                Event[] et = events(t).toArray(Event.EmptyArray);
-                for (Event e : et) {
-                    //TODO shuffle found self-loops, there could be sevreal
-                    Node<Event, TimeSpan> ne = node(e);
-                    if (ne != null) {
-                        for (Iterator<FromTo<Node<Event, TimeSpan>, TimeSpan>> iterator = ne.edgeIterator(false, true); iterator.hasNext(); ) {
-                            FromTo<Node<Event, TimeSpan>, TimeSpan> ee = iterator.next();
-                            long dt = ee.id().dt;
-                            if (dt != 0 && dt != ETERNAL && dt != TIMELESS) {
-                                if (ee.loop()) {
+                Collection<Event> eee = events(t);
+                if (eee!=null) {
+                    Event[] et = eee.toArray(Event.EmptyArray);
+                    for (Event e : et) {
+                        //TODO shuffle found self-loops, there could be sevreal
+                        Node<Event, TimeSpan> ne = node(e);
+                        if (ne != null) {
+                            for (Iterator<FromTo<Node<Event, TimeSpan>, TimeSpan>> iterator = ne.edgeIterator(false, true); iterator.hasNext(); ) {
+                                FromTo<Node<Event, TimeSpan>, TimeSpan> ee = iterator.next();
+                                long dt = ee.id().dt;
+                                if (dt != 0 && dt != ETERNAL && dt != TIMELESS) {
+                                    if (ee.loop()) {
 //                                        if (random().nextBoolean())
 //                                            dt = -dt;
-                                    Absolute as = (Absolute) s;
-                                    if (!each.test(as.shift(+dt)))
-                                        return false;
-                                    if (!each.test(as.shift(-dt)))
-                                        return false;
+                                        Absolute as = (Absolute) s;
+                                        if (!each.test(as.shift(+dt)))
+                                            return false;
+                                        if (!each.test(as.shift(-dt)))
+                                            return false;
 
+                                    }
                                 }
                             }
                         }
+
                     }
-
                 }
-
                 return true;
             });
         }
@@ -1927,7 +1932,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 
         Iterable<FromTo<Node<Event, nars.time.TimeSpan>, TimeSpan>> tangent(Node<Event, TimeSpan> root, Term t) {
 
-            Iterable<Event> ee = eventsOrNull(t);
+            Iterable<Event> ee = events(t);
             if (ee == null) {
                 return empty;
             } else {

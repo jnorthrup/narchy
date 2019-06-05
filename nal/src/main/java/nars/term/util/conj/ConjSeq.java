@@ -126,7 +126,8 @@ public enum ConjSeq { ;
         return s.sub(eternalComponents.next(false, 0, s.subs()));
     }
 
-    static Term conjSeq(TermBuilder B, LongObjectArraySet<Term> events) {
+    public static Term conjSeq(TermBuilder B, LongObjectArraySet<Term> events) {
+        events.sortThis();
         return conjSeq(B, events, 0, events.size());
     }
 

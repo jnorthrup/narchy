@@ -29,6 +29,14 @@ public class TermList extends FasterList<Term> implements Subterms {
         copied.forEach(this::addFast);
     }
 
+    public final void addAllNegated(Iterable<Term> x) {
+        x.forEach(this::addNegated);
+    }
+
+    public final void addNegated(Term x) {
+        add(x.neg());
+    }
+
     @Override
     public int hashCode() {
         return Subterms.hash(items, size);
@@ -160,6 +168,13 @@ public class TermList extends FasterList<Term> implements Subterms {
         }
     }
 
+    public Term[] sort() {
+        int s = size();
+        Term[] ii = this.items;
+        Arrays.sort(ii, 0, s);
+        return arrayKeep();
+    }
+
     public Term[] sortAndDedup() {
 
 
@@ -172,6 +187,7 @@ public class TermList extends FasterList<Term> implements Subterms {
         int s = size();
         Term[] ii = this.items;
         Arrays.sort(ii, 0, s);
+
 
         Term prev = ii[0];
         boolean dedup = false;

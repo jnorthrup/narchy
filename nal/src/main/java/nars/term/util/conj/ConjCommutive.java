@@ -279,7 +279,7 @@ public enum ConjCommutive {
         if (seq!=null) {
             for (int i = 0; i < u.length; i++) {
                 if (seq.get(i))
-                    if (!c.add(0, u[i]))
+                    if (!c.add(sdt, u[i]))
                         return c.term();
             }
         }
@@ -334,7 +334,7 @@ public enum ConjCommutive {
 //            throw new WTF("why wasnt this simple case caught earlier");
 //    }
 
-    private static Term conjDirect(TermBuilder b, int dt, Term[] u) {
+    public static Term conjDirect(TermBuilder b, int dt, Term[] u) {
         if (dt == 0)
             dt = DTERNAL;
 

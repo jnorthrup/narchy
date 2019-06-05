@@ -1172,15 +1172,29 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
         int existingDT = existing.dt();
         int incomingDT = incoming.dt();
 
-        if (existingDT == XTERNAL || incomingDT == XTERNAL)
-            return null; //one or two xternal's, no way to know how they combine or not
+
+        if (existingDT == XTERNAL) {
+            if (incomingDT == XTERNAL)
+                return null; //two xternal's, no way to know how they combine or not
+
+            //distribute incoming to all xternal components
+            SortedSet<Term> c = new TreeSet();
+            for (Term x : existing.subterms()) {
+                Term y = CONJ.the(x, incoming);
+                if (y == True || y == Null || y == False)
+                    continue; //??
+                c.add(y);
+            }
+
+            return CONJ.the(XTERNAL, c);
+        }
 
 //        if (existingDT == 0 && incomingDT == 0) {
 //            assert(eternal);
 //            eternal = false;
 //        }
 
-        int outerDT = eternal ? DTERNAL : 0;
+//        int outerDT = eternal ? DTERNAL : 0;
 
 //        if (incoming.op() == CONJ) {
 //
@@ -1217,8 +1231,8 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
 //            }
 //        }
 
-        if (!isSeq(existing))
-            return null; //ok
+//        if (!isSeq(existing))
+//            return null; //ok
 
         if (incoming.unneg().op() != CONJ && !existing.containsRecursively(incoming.unneg()))
             return null; //no conflict possible
@@ -1539,17 +1553,29 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
 
     protected int conflictOrSame(long at, byte bWhat, Term what) {
         Object ee = event.get(at);
-        return conflictOrSame(at, bWhat, what, ee);
-    }
-
-    private int conflictOrSame(long at, byte bWhat, Term what, Object ee) {
         if (ee == null) return 0;
 
-        int w = conflictOrSame(ee, bWhat);
-        if (w == -1) return -1;
-        if (w == +1) return +1;
+        boolean absorb = false;
+        {
+            int w = conflictOrSame(ee, bWhat);
+            if (w == -1) return -1;
+            if (w == +1) absorb = true;
+        }
 
-        return disjunctify(at, ee, what);
+        {
+            int w = conjoinify(at, ee, what);
+            if (w == -1) return -1;
+            if (w == +1) absorb = true;
+        }
+
+        {
+            int w = disjunctify(at, ee, what);
+            if (w == -1) return -1;
+            if (w == +1) absorb = true;
+        }
+
+        if (absorb) return +1;
+        return 0;
     }
 
     private int conjoinify(long when, Object ee, Term incoming) {
@@ -1558,9 +1584,9 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
         if (incomingDisj)
             return 0; //not this stage
         if (ee instanceof byte[]) {
-            for (byte dui : (byte[]) ee) {
-                if (dui == 0) break;
-                int d = conjoinifyReduce(when, incoming, dui);
+            for (byte e : (byte[]) ee) {
+                if (e == 0) break;
+                int d = conjoinifyReduce(when, incoming, e);
                 if (d == -1) return -1;
                 else if (d == +1) absorb = true;
             }
@@ -1586,9 +1612,9 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
         boolean absorb = false;
         boolean incomingDisj = incoming.op() == NEG && incoming.unneg().op() == CONJ;
         if (ee instanceof byte[]) {
-            for (byte dui : (byte[]) ee) {
-                if (dui == 0) break;
-                int d = disjunctifyReduce(when, incomingDisj, incoming, dui);
+            for (byte e : (byte[]) ee) {
+                if (e == 0) break;
+                int d = disjunctifyReduce(when, incomingDisj, incoming, e);
                 if (d == -1) return -1;
                 else if (d == +1) absorb = true;
             }
@@ -1616,16 +1642,31 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
         if (!Term.commonStructure(incoming, existingTerm))
             return 0; //no possible conflict
 
-        Term y = conjoinify(Op.terms, existingTerm, incoming, when==ETERNAL);
+        Term a = existingTerm, b = incoming;
+        if ((incoming.op()==CONJ && existingTerm.op()!=CONJ) || (Conj.isSeq(incoming) && !Conj.isSeq(existingTerm))) {
+            //swap
+            a = incoming;
+            b = existingTerm;
+        } else {
+            a = existingTerm;
+            b = incoming;
+        }
+
+        Term y = conjoinify(Op.terms, a, b, when==ETERNAL);
         if (y == null)
             return 0;
         else if (y == False || y == Null){
             result = y; //handle Null differently than False HACK
             return -1;
         } else {
-            //is this necessary?
+
             remove(when,existing);
-            if (add(when, y))
+
+            if (y.equals(incoming))
+                return 0; //proceed
+
+
+            if (addEvent(when, y))
                 return +1;
             else
                 return -1;
@@ -1651,7 +1692,8 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
                 return 0;
             else {
                 remove(when, existing);
-                add(when, y);
+                if (!addEvent(when, y))
+                    return -1;
                 return +1;
             }
         } else if (existingDisj)
@@ -1665,6 +1707,7 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
     private int disjunctifyReduceExisting(long when, Term existing, Term undisjunctified) {
         long offset = when == ETERNAL ? ETERNAL : 0 /* TODO sequence cancellation */;
         if (Conj.eventOf(undisjunctified, existing, offset, +1)) {
+            remove(when, existing);
             return disjunctifyMergePruneAdd(when, existing, undisjunctified, offset);
         } else if (Conj.eventOf(undisjunctified, existing, offset, -1)) {
             return +1; //absorbed
@@ -1685,9 +1728,10 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
         } else if (Conj.eventOf(undisj, incoming, offset, -1)) {
             remove(when, undisj.neg());
 
-            if (!add(when, incoming))
-                return -1;
-            return +1;
+            return 0;
+//            if (!addEvent(when, incoming))
+//                return -1;
+//            return +1;
         }
 
         return 0;
@@ -1734,10 +1778,10 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
         }
 
 
-        if (!add(when + shift, e.neg()))
+        if (!addEvent(when + shift, e.neg()))
             return -1;
 
-        if (!add(when, x))
+        if (!addEvent(when, x))
             return -1;
 
         return +1;
@@ -1850,10 +1894,10 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
                         w = conflictOrSame(ee, id);
                         break;
                     case 1:
-                        w = conjoinify(wc, ee, incoming);
+                        w = conjoinify(at, ee, incoming);
                         break;
                     case 2:
-                        w = disjunctify(wc, ee, incoming);
+                        w = disjunctify(at, ee, incoming);
                         break;
                     default:
                         throw new UnsupportedOperationException();
@@ -2003,20 +2047,21 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
     @Override
     public boolean remove(long at, Term t) {
         int tdt = t.dt();
-        if (t.op() != CONJ || tdt == XTERNAL) {
-            byte i = get(t);
-            return (i == Byte.MIN_VALUE) ? false : remove(at, i);
-        } else {
-            final boolean[] removed = {false};
-            boolean r = t.eventsWhile((when, what) -> {
-                //assert (!t.equals(what)); //prevent infinite recursion, hopefully this cant happen
-                if (t == what)
-                    return false; //HACK find why
-                removed[0] |= remove(when, what);
-                return true; //keep going
-            }, at, true, false);
-            return removed[0];
-        }
+
+        byte i = get(t);
+        if ((i == Byte.MIN_VALUE) ? false : remove(at, i))
+            return true;
+
+        final boolean[] removed = {false};
+        boolean r = t.eventsWhile((when, what) -> {
+            //assert (!t.equals(what)); //prevent infinite recursion, hopefully this cant happen
+            if (t == what)
+                return false; //HACK find why
+            removed[0] |= remove(when, what);
+            return true; //keep going
+        }, at, true, false);
+        return removed[0];
+
     }
 
     private boolean remove(long at, byte... what) {
@@ -2242,7 +2287,7 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
                             temporal = temporals.get(0);
                             break;
                         default:
-                            temporals.sortThis();
+
                             temporal = ConjSeq.conjSeq(B, temporals);
                             break;
                     }

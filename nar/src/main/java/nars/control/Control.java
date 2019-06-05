@@ -3,6 +3,7 @@ package nars.control;
 import jcog.Skill;
 import jcog.Util;
 import jcog.data.graph.MapNodeGraph;
+import jcog.data.graph.Node;
 import jcog.data.graph.NodeGraph;
 import jcog.data.list.FasterList;
 import jcog.func.IntIntToObjectFunction;
@@ -199,7 +200,7 @@ import java.util.Arrays;
 
     /** attaches a priority node to the priority graph
      */
-    public NodeGraph.MutableNode<PriNode, Object> add(PriNode p) {
+    public Node<nars.attention.PriNode, Object> add(PriNode p) {
         NodeGraph.MutableNode<PriNode, Object> a = graph.addNode(p);
         graph.addEdgeByNode(rootNode, "pri", a);
         return a;
