@@ -2042,6 +2042,10 @@ public class ConjTest {
         assertEq("(((&&,b,c,d)||a)&&x)", "((( (a||b) && (a||c)) && x) && (a||d))");
     }
 
+    @Test void distributeCommonFactor() {
+        assertEq("((x &&+1 (x&&y)) &&+1 ((--,y)&&x))", "(((x &&+1 y) &&+1 --y) && x)");
+    }
+
     @Test
     void testFactorizeDNF() {
         //https://www.wolframalpha.com/input/?i=not+(a+and+b)++and+not+(a+and+c)

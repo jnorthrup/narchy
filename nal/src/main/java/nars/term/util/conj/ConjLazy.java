@@ -138,16 +138,30 @@ public class ConjLazy extends LongObjectArraySet<Term> implements ConjBuilder {
     }
 
     public static ConjLazy events(Term conj) {
-        return events(conj, Conj.isSeq(conj) ? 0 : ETERNAL);
+        return events(conj, TIMELESS);
+    }
+    public static ConjLazy subtract(ConjLazy from, Term conj) {
+        return subtract(from, conj, TIMELESS);
     }
 
     public static ConjLazy events(Term conj, long occOffset) {
+        occOffset = occAuto(conj, occOffset);
+
         ConjLazy l = new ConjLazy();
         conj.eventsWhile(l::add,
                 occOffset, true, false);
         return l;
     }
 
+    public static ConjLazy subtract(ConjLazy from, Term conj, long occOffset) {
+        conj.eventsWhile(from::remove,
+                occOffset, true, false);
+        return from;
+    }
+
+    private static long occAuto(Term conj, long occOffset) {
+        return occOffset == TIMELESS ? Conj.isSeq(conj) ? 0 : ETERNAL : occOffset;
+    }
 
 
 
@@ -214,5 +228,9 @@ public class ConjLazy extends LongObjectArraySet<Term> implements ConjBuilder {
         if (commute)
             terms.sortAndDedup();
         return terms;
+    }
+
+    public final boolean removeNeg(long at, Term t) {
+        return removeIf((when, what) -> at == when && t.equalsNeg(what));
     }
 }

@@ -6,6 +6,7 @@ import jcog.TODO;
 import jcog.data.bit.MetalBitSet;
 import jcog.data.list.FasterList;
 import jcog.util.ArrayUtil;
+import org.apache.lucene.index.Term;
 import org.eclipse.collections.api.block.predicate.primitive.LongObjectPredicate;
 import org.eclipse.collections.api.block.procedure.primitive.LongObjectProcedure;
 import org.eclipse.collections.api.iterator.LongIterator;
@@ -64,6 +65,16 @@ public class LongObjectArraySet<X> extends FasterList<X> {
 
         }
         return this;
+    }
+
+    public boolean contains(long w, X what) {
+        long[] longs = this.when;
+        for (int i = 0, longsLength = longs.length; i < longsLength; i++) {
+            long z = longs[i];
+            if (z == w && get(i).equals(what))
+                return true;
+        }
+        return false;
     }
 
     @Override
@@ -132,6 +143,7 @@ public class LongObjectArraySet<X> extends FasterList<X> {
     public boolean remove(long at, X t) {
         return removeIf((when, what) -> at == when && what.equals(t));
     }
+
 
     /**
      * removes the ith tuple

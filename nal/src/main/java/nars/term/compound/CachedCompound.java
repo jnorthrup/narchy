@@ -144,6 +144,9 @@ abstract public class CachedCompound extends SeparateSubtermsCompound implements
 //                    eventsWhile((when, whta) -> {
 //                        return true;
 //                    }, 0, true, true);
+//                    eventsWhile((when, whta) -> {
+//                        return true;
+//                    }, 0, false, true);
 //                } catch (Throwable t) {
 //                    Util.nop();
 //                }
