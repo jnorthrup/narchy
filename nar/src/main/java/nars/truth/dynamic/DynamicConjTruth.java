@@ -13,6 +13,7 @@ import nars.term.Termed;
 import nars.term.util.conj.Conj;
 import nars.term.util.conj.ConjBuilder;
 import nars.term.util.conj.ConjSeq;
+import nars.term.util.conj.ConjTree;
 import nars.time.Tense;
 
 import java.util.concurrent.ThreadLocalRandom;
@@ -44,12 +45,12 @@ public class DynamicConjTruth {
                 int dtDither = d.nar.dtDither();
 
                 if (sequenceLatestStart - sequenceStart < dtDither && Sets.newHashSet(Iterables.transform(d, Termed::term)).size() == 1) {
-                    //same starting time and all terms are the same.
+                    //collapsed to a point smaller than dither time:  same starting time and all terms are the same.
                     //TODO try revision (first 2)
                     return null;
                 }
 
-                sequenceStart = sequenceStart; //dither now for comparisons in loop
+                //sequenceStart = sequenceStart; //dither now for comparisons in loop
 
                 long range = startEnd - sequenceStart;
                 end = sequenceLatestStart + range; //the actual total end of the sequence
@@ -57,7 +58,8 @@ public class DynamicConjTruth {
 
             ConjBuilder l =
                     //new ConjLazy(n);
-                    new Conj(n);
+                    //new Conj(n);
+                    new ConjTree();
             for (int i = 0; i < n; i++) {
                 Task t = d.get(i);
                 long s = t.start();

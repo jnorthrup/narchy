@@ -134,6 +134,8 @@ abstract public class CachedCompound extends SeparateSubtermsCompound implements
 
             this.dt = dt;
 
+//            if (dt==DTERNAL && op==CONJ && subterms.sub(0).op()==CONJ && subterms.sub(0).dt()==DTERNAL)
+//                throw new WTF();
 //            //HACK TEMPORARY for debug
 //            {
 //                if (volume() != anon().volume())

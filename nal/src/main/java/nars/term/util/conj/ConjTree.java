@@ -22,6 +22,7 @@ import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.function.Predicate;
 
 import static nars.Op.CONJ;
 import static nars.Op.NEG;
@@ -82,8 +83,8 @@ public class ConjTree implements ConjBuilder {
             }
 
             if (neg == null) neg =
-                    //new UnifiedSet(1);
-                    new BoolSafeUnifiedSet();
+                    new UnifiedSet(1);
+                    //new MySafeUnifiedSet();
             else {
                 xu = reduceNegNeg(xu, neg);
                 if (xu == True) return true; //absorbed
@@ -105,7 +106,7 @@ public class ConjTree implements ConjBuilder {
 
             if (pos == null) pos =
                     //new UnifiedSet(1);
-                    new BoolSafeUnifiedSet();
+                    new MySafeUnifiedSet();
             pos.add(x);
         }
         return true;
@@ -321,6 +322,8 @@ public class ConjTree implements ConjBuilder {
                 if (!events.isEmpty()) {
 
                     factor(events);
+                    if (terminal!=null)
+                        return terminal;
 
                     s = ConjSeq.conjSeq(B, events);
                 }
@@ -342,12 +345,19 @@ public class ConjTree implements ConjBuilder {
         }
 
         if (s != null) {
-            if (!addParallelEvent(s))
-                return terminal;
+            if (s.op()!=CONJ || Conj.isSeq(s)) {
+                //add seq as if parallel component avoiding decompose what we just constructed
+                if (!addParallelEvent(s))
+                    return terminal;
+            } else {
+                //otherwise, flatten
+                if (!add(ETERNAL, s))
+                    return terminal;
+            }
         }
 
 //        if (s == null || !Conj.isSeq(s)) {
-        TermList p = new TermList(s != null ? 1 : 0);
+        TermList p = new TermList();
 
 
         if (pos != null) {
@@ -401,7 +411,8 @@ public class ConjTree implements ConjBuilder {
             if (t.op()==CONJ && t.dt()==DTERNAL) {
                 //assert(!Conj.isSeq(t)); //?
                 for (Term tt : t.subterms()) {
-                    count.addToValue(tt, 1);
+                    if (tt.op()!=CONJ)
+                        count.addToValue(tt, 1);
                 }
             }
         }
@@ -433,9 +444,11 @@ public class ConjTree implements ConjBuilder {
         if (factored.isEmpty())
             return;
 
+        Predicate<Term> isFactored = factored::contains;
+
         events.replaceAll(t->{
             Subterms ts = t.subterms();
-            MetalBitSet m = ts.indicesOfBits(factored::contains);
+            MetalBitSet m = ts.indicesOfBits(isFactored);
             int mc = m.cardinality();
             //TODO remove inner event that is fully factored. but not if it's a start or stop event?
             if (mc >0 && mc < ts.subs()) {
@@ -474,15 +487,18 @@ public class ConjTree implements ConjBuilder {
         throw new TODO();
     }
 
-    private static class BoolSafeUnifiedSet extends UnifiedSet {
-        public BoolSafeUnifiedSet() {
+    private static final class MySafeUnifiedSet extends UnifiedSet<Term> {
+        public MySafeUnifiedSet() {
             super(1);
         }
 
         @Override
-        public boolean add(Object key) {
+        public boolean add(Term key) {
             if (key instanceof Bool)
                 throw new WTF();
+//            if (key.op()==CONJ)
+//                throw new WTF();
+
             return super.add(key);
         }
     }

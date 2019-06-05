@@ -46,7 +46,9 @@ public class ConjLazy extends LongObjectArraySet<Term> implements ConjBuilder {
                 return sequenceTerm(events[0]);
         }
 
-        ConjLazy ce = new ConjLazy(eventsSize);
+        ConjBuilder ce =
+                //new ConjLazy(eventsSize);
+                new ConjTree();
 
         for (Task o : events) {
             if (!ce.add(Tense.dither(o.start(), ditherDT), sequenceTerm(o))) {
@@ -194,10 +196,10 @@ public class ConjLazy extends LongObjectArraySet<Term> implements ConjBuilder {
             }
         }
 
-        sortThis(); //puts eternals first, and organizes contiguously timed items
+        //sortThis(); //puts eternals first, and organizes contiguously timed items
 
         //failsafe impl:
-        ConjBuilder c = new Conj(n);
+        ConjBuilder c = new ConjTree();
         for (int i = 0; i < n; i++) {
             if (!c.add(when[i], this.get(i)))
                 break;
