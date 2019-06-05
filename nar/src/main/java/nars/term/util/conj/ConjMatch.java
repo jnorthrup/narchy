@@ -7,7 +7,6 @@ import jcog.util.ArrayUtil;
 import nars.NAL;
 import nars.derive.model.Derivation;
 import nars.op.UniSubst;
-import nars.subterm.Subterms;
 import nars.term.Term;
 import nars.term.atom.Bool;
 import org.eclipse.collections.api.set.ImmutableSet;
@@ -16,10 +15,12 @@ import org.eclipse.collections.impl.factory.Sets;
 import org.eclipse.collections.impl.map.mutable.primitive.LongObjectHashMap;
 
 import java.util.List;
+import java.util.Random;
 
 import static nars.Op.*;
 import static nars.term.atom.Bool.*;
-import static nars.time.Tense.*;
+import static nars.time.Tense.TIMELESS;
+import static nars.time.Tense.XTERNAL;
 
 public enum ConjMatch { ;
 
@@ -54,14 +55,14 @@ public enum ConjMatch { ;
 
         int n = x.size();
         if (n <= 1)
-            throw new WTF();  //assert (n > 1);
+            return Null; //throw new WTF();  //assert (n > 1);
 
         long[] matchedTime = new long[] { Long.MAX_VALUE, Long.MIN_VALUE };
 
         if (event.op()!=CONJ && event.dt()!=XTERNAL) {
             //simple event
             if (!conj.impossibleSubTerm(event)) {
-                remove(event, x, matchedTime);
+                removeAny(event, x, matchedTime, d.random);
             }
         } else {
             //remove matching parallel/sequence conjunctions
@@ -230,30 +231,38 @@ public enum ConjMatch { ;
 
     private static ConjLazy events(Term conj, boolean beforeOrAfter) {
         ConjLazy x;
-        if (Conj.isSeq(conj)) {
+//        if (Conj.isSeq(conj)) {
             x = ConjLazy.events(conj);
             if (!beforeOrAfter)
                 x.reverse(); //match from opposite direction
-        } else {
-            //conj.dt() == DTERNAL || conj.dt() == 0
-            Subterms ss = conj.subterms();
-            x = new ConjLazy(ss.subs());
-            long when = (conj.dt() == DTERNAL) ? ETERNAL : 0;
-            for (Term cc : ss)
-                x.add(when, cc);
-        }
+//        } else {
+//            //conj.dt() == DTERNAL || conj.dt() == 0
+//            Subterms ss = conj.subterms();
+//            x = new ConjLazy(ss.subs());
+//            long when = (conj.dt() == DTERNAL) ? ETERNAL : 0;
+//            for (Term cc : ss)
+//                x.add(when, cc);
+//        }
         return x;
     }
 
-    private static void remove(Term event, ConjLazy x, long[] matchedTime) {
-        x.removeIf((when, what) -> {
+    /** removes one matching event at random */
+    private static void removeAny(Term event, ConjLazy x, long[] matchedTime, Random random) {
+
+        int s = x.size();
+        int i = random.nextInt(s);
+        for (int j = 0; j < s; j++) {
+            Term what = x.get(i);
             if (what.equals(event)) {
+                long when = x.when(i);
                 matchedTime[0] = Math.min(matchedTime[0], when);
                 matchedTime[1] = Math.max(matchedTime[1], when);
-                return true;
+                x.removeThe(i);
+                return;
             }
-            return false;
-        });
+            if (++i == s) i = 0;
+        }
+
     }
 
 
