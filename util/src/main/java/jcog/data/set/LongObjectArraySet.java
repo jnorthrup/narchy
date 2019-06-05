@@ -6,7 +6,6 @@ import jcog.TODO;
 import jcog.data.bit.MetalBitSet;
 import jcog.data.list.FasterList;
 import jcog.util.ArrayUtil;
-import org.apache.lucene.index.Term;
 import org.eclipse.collections.api.block.predicate.primitive.LongObjectPredicate;
 import org.eclipse.collections.api.block.procedure.primitive.LongObjectProcedure;
 import org.eclipse.collections.api.iterator.LongIterator;
@@ -111,6 +110,11 @@ public class LongObjectArraySet<X> extends FasterList<X> {
                 return valueIfExists; //existing found
         }
 
+        addDirect(w, t);
+        return true;
+    }
+
+    protected void addDirect(long w, X t) {
         int s = addAndGetSize(t);
 
         //match long[] to the Object[] capacity
@@ -119,8 +123,6 @@ public class LongObjectArraySet<X> extends FasterList<X> {
         }
 
         this.when[s - 1] = w;
-
-        return true;
     }
 
     @Override

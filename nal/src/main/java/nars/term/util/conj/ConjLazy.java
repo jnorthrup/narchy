@@ -2,12 +2,12 @@ package nars.term.util.conj;
 
 import jcog.WTF;
 import jcog.data.set.LongObjectArraySet;
-import nars.Task;
+import nars.NAL;
 import nars.subterm.Subterms;
 import nars.subterm.TermList;
 import nars.term.Term;
+import nars.term.util.builder.InterningTermBuilder;
 import nars.term.util.builder.TermBuilder;
-import nars.time.Tense;
 import org.eclipse.collections.api.iterator.LongIterator;
 import org.eclipse.collections.impl.set.mutable.primitive.LongHashSet;
 
@@ -33,35 +33,6 @@ public class ConjLazy extends LongObjectArraySet<Term> implements ConjBuilder {
 
 
 
-
-
-    /** TODO add support for supersampling to include task.end() features */
-    public static Term sequence(Task[] events, int ditherDT) {
-        int eventsSize = events.length;
-        switch (eventsSize) {
-            case 0:
-                return True;
-            case 1:
-                return sequenceTerm(events[0]);
-        }
-
-        ConjBuilder ce =
-                new ConjLazy(eventsSize);
-                //new ConjTree();
-
-        for (Task o : events) {
-            if (!ce.add(Tense.dither(o.start(), ditherDT), sequenceTerm(o))) {
-                break;
-            }
-        }
-
-        return ce.term();
-    }
-
-    private static Term sequenceTerm(Task o) {
-        return o.term().negIf(o.isNegative());
-    }
-
     /**
      * consistent with ConjBuilder - semantics slightly different than superclass and List.addAt: returns true only if False or Null have been added; a duplicate value returns true
      */
@@ -75,20 +46,28 @@ public class ConjLazy extends LongObjectArraySet<Term> implements ConjBuilder {
             return true; //ignore
 
         if (t == False || t == Null) {
-            clear(); //fail
+//            clear(); //fail
             return false;
         }
 
-        //quick chest for conflict
+        //quick chest for absorb or conflict
         int n = size();
         for (int i = 0; i < n; i++) {
-            if (when(i) == when && get(i).equalsNeg(t)) {
-                clear();
-                return false; //conflict
+            long ww = when(i);
+            if (ww==ETERNAL || ww == when) {
+                Term ii = get(i);
+                if (ii.equals(t))
+                    return true; //exists
+
+                if (ii.equalsNeg(t)) {
+//                clear();
+                    return false; //conflict
+                }
             }
         }
 
-        return add(when, t, true);
+        addDirect(when, t);
+        return true;
     }
 
     @Override
@@ -173,40 +152,26 @@ public class ConjLazy extends LongObjectArraySet<Term> implements ConjBuilder {
     @Override
     public Term term(TermBuilder B) {
         int n = size();
-        switch (n) {
-            case 0:
-                return True;
-            case 1:
-                return get(0);
-            case 2: {
-                long w0 = when[0], w1 = when[1];
+        if (n == 0)
+            return True;
 
-//                if ((w0 == ETERNAL) ^ (w1 == ETERNAL)) {
-//                    w0 = w1 = ETERNAL; //auto collapse ot dternal
-//                    //w0 = w1 = 0; //auto promote to parallel
-//                }
+        if (n == 1)
+            return get(0);
 
-                if (w0 == w1) {
-                    //SAME TIME
-                    Term a = items[0], b = items[1];
-                    //return CONJ.the(B, DTERNAL /*(w0 == ETERNAL) ? DTERNAL : 0*/, a, b);
-                    return ConjCommutive.the(B, DTERNAL /*(w0 == ETERNAL) ? DTERNAL : 0*/, true, false, items[0], items[1]);
+
+        if (B instanceof InterningTermBuilder && NAL.CONJ_COMMUTIVE_LOOPBACK) {
+            long w0 = when[0];
+            boolean parallel = true;
+            for (int i = 1, whenLength = when.length; i < whenLength; i++) {
+                if (when[i] != w0) {
+                    parallel = false;
+                    break; //difference
                 }
-
-                break;
             }
-            default: {
-                long w0 = when[0];
-                boolean parallel = true;
-                for (int i = 1, whenLength = when.length; i < whenLength; i++) {
-                    if (when[i] != w0) {
-                        parallel = false;
-                        break; //difference
-                    }
-                }
-                //all same time
-                if (parallel)
-                    return ConjCommutive.the(B, DTERNAL /*(w0 == ETERNAL) ? DTERNAL : 0*/, true, false, toArrayRecycled(Term[]::new));
+            //all same time
+            if (parallel) {
+                return B.conj(DTERNAL, toArrayRecycled(Term[]::new));
+                //return ConjCommutive.the(B, DTERNAL /*(w0 == ETERNAL) ? DTERNAL : 0*/, true, false, toArrayRecycled(Term[]::new));
             }
         }
 

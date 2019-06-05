@@ -3,6 +3,7 @@ package nars.term.util.conj;
 import jcog.WTF;
 import jcog.data.bit.MetalBitSet;
 import jcog.data.set.LongObjectArraySet;
+import nars.Task;
 import nars.subterm.Subterms;
 import nars.term.Compound;
 import nars.term.Term;
@@ -40,18 +41,12 @@ public enum ConjSeq { ;
             return B.conj(XTERNAL, a, b);
         }
 
-        /*assert(bStart == aStart);*/
-        if (aStart == ETERNAL || aStart==bStart) {// && (!Conj.isSeq(a) && !Conj.isSeq(b)))
-            return B.conj(DTERNAL, a, b);
-        }
 
         assert (bStart != ETERNAL && bStart != TIMELESS);
 
 //        if (a.hasAny(Op.CONJ) || b.hasAny(Op.CONJ)) {
-            ConjBuilder c =
-                    //new Conj(2);
-                    //new ConjTree();
-                    new ConjLazy(2);
+            ConjBuilder c = new ConjTree();
+
             if (c.add(aStart, a))
                 c.add(bStart, b);
             return c.term(B);
@@ -231,6 +226,29 @@ public enum ConjSeq { ;
             }
         }
         return b.theCompound(CONJ, dt, left, right);
+    }
+
+    /** TODO add support for supersampling to include task.end() features */
+    public static Term sequence(Task[] events, int ditherDT) {
+        int eventsSize = events.length;
+        switch (eventsSize) {
+            case 0:
+                return True;
+            case 1:
+                return sequenceTerm(events[0]);
+        }
+
+        ConjBuilder ce = new ConjTree();
+        for (Task o : events) {
+            if (!ce.add(Tense.dither(o.start(), ditherDT), sequenceTerm(o))) {
+                break;
+            }
+        }
+
+        return ce.term();
+    }
+    private static Term sequenceTerm(Task o) {
+        return o.term().negIf(o.isNegative());
     }
 
 //    public static boolean contains(Term container, Term x, boolean firstOrLast) {

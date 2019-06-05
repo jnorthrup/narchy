@@ -53,6 +53,9 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
 
     public static final boolean OCCURRIFY_STRICT = true;
 
+    /** opportunity for interning term builder to memoize parallel conjunction terms */
+    public static final boolean CONJ_COMMUTIVE_LOOPBACK = true;
+
     public static int ATOM_TANGENT_REFRESH_DURS = 1;
 
     /**
@@ -670,7 +673,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
          * for NALTest's: extends the time all unit tests are allowed to run for.
          * normally be kept to 1 but for debugging this may be increased to find what tests need more time
          */
-        public static final float TIME_MULTIPLIER = 1f;
+        public static final float TIME_MULTIPLIER = 2f;
         /**
          * how precise unit test results must match expected values to pass
          */

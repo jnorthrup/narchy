@@ -23,7 +23,7 @@ import nars.task.util.TaskException;
 import nars.task.util.TaskList;
 import nars.term.Term;
 import nars.term.TermedDelegate;
-import nars.term.util.conj.ConjLazy;
+import nars.term.util.conj.ConjSeq;
 import nars.truth.Stamp;
 import nars.truth.Truth;
 import org.eclipse.collections.api.tuple.primitive.ObjectBooleanPair;
@@ -429,7 +429,7 @@ public class ConjClustering extends How {
             final Truth t = Truth.theDithered(freq, e, nar);
             if (t != null) {
 
-                Term cj = ConjLazy.sequence(x, nar.dtDither.intValue());
+                Term cj = ConjSeq.sequence(x, nar.dtDither.intValue());
                 if (cj.volume() > 1) {
 
                     Term tt = Task.normalize(cj);

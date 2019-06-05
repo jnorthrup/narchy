@@ -388,7 +388,7 @@ public class ConjTree implements ConjBuilder {
 
     @Override
     public Term term(TermBuilder B /* Iterable<Term> superconditionsToValidateAgainst */) {
-        return term(B, Integer.MAX_VALUE, Collections.EMPTY_LIST);
+        return term(B, Collections.EMPTY_LIST);
     }
 
     public int size() {
@@ -397,7 +397,7 @@ public class ConjTree implements ConjBuilder {
                 (seq!=null ? (int)seq.sumOfInt(ConjTree::size) : 0);
     }
 
-    private Term term(TermBuilder B, int prevSize, Iterable<Term> superConditions) {
+    private Term term(TermBuilder B, Iterable<Term> superConditions) {
         if (terminal != null)
             return terminal;
 
@@ -408,13 +408,13 @@ public class ConjTree implements ConjBuilder {
 
             if (ss == 1) {
                 //special case: degenerate sequence of 1 time point (probably @ 0)
-                s = seq.getOnly().term(B, Integer.MAX_VALUE, superConditions);
+                s = seq.getOnly().term(B, superConditions);
             } else {
                 //actual sequence
                 LongObjectArraySet<Term> events = new LongObjectArraySet<>(ss);
 
                 for (IntObjectPair<ConjTree> wc : seq.keyValuesView()) {
-                    Term w = wc.getTwo().term(B, Integer.MAX_VALUE, superConditions);
+                    Term w = wc.getTwo().term(B, superConditions);
                     if (w == True) continue;
                     if (w == False || w == Null) return w;
                     events.add((long) wc.getOne(), w);
@@ -442,31 +442,35 @@ public class ConjTree implements ConjBuilder {
             }
 
             if (s != null) {
-                if (s.op()!=CONJ || Conj.isSeq(s) || s.dt()==XTERNAL || (pos==null && neg==null)) {
+                //add seq as if parallel component avoiding decompose what we just constructed
 
-                    //add seq as if parallel component avoiding decompose what we just constructed
-                    if (!addParallel(s))
-                        return terminal;
+                if ((pos!=null || neg!=null) && Conj.isSeq(s)) {
+                    //check for sub-event conflicts that ordinarily wouldnt be tested on addParallel insert
 
-                } else {
-//                    //otherwise, flatten comm conj
-                    if (!add(ETERNAL, s))
-                        return terminal;
+                    if (!s.eventsWhile((when,what)-> {
+                        if (what.op() == NEG) {
+                            if (pos != null)
+                                if (pos.contains(what.unneg())) {
+                                    return false; //contradiction
+                                }
+                            //TODO detect reducible disjunction-in-sequence here to trigger recurse
+                        } else {
+                            if (neg != null)
+                                if (neg.contains(what)) {
+                                    return false; //contradiction
+                                }
+                        }
+                        return true;
+                    }, 0, true, true)) {
+                        return False; //contradiction
+                    }
+
                 }
-//
-////                    int curSize = size();
-////                    if (curSize !=prevSize)
-////                        return term(B, curSize, superConditions); //recurse
-////                    else {
-////                        seq.clear();
-////                        if (!addParallelEvent(s))
-////                            return terminal;
-////                    }
-//
-//                }
+
+                if (!addParallel(s))
+                    return terminal;
             }
         }
-
 
 
 //        if (s == null || !Conj.isSeq(s)) {
