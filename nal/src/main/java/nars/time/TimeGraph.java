@@ -21,8 +21,8 @@ import nars.term.Compound;
 import nars.term.Term;
 import nars.term.util.conj.Conj;
 import nars.term.util.conj.ConjBuilder;
-import nars.term.util.conj.ConjLazy;
 import nars.term.util.conj.ConjSeq;
+import nars.term.util.conj.ConjTree;
 import nars.term.var.CommonVariable;
 import org.apache.commons.math3.exception.MathArithmeticException;
 import org.eclipse.collections.api.tuple.Pair;
@@ -895,7 +895,9 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
             while (ci.hasNext()) {
 
                 Event[] ss = ci.next();
-                ConjBuilder cc = new ConjLazy(abs);
+                ConjBuilder cc =
+                        //new ConjLazy(abs);
+                        new ConjTree();
                 for (int i = 0; i < abs; i++) {
                     Event e = ss[i];
 //                    if (!ii.isEmpty()) {

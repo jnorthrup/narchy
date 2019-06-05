@@ -32,24 +32,26 @@ public enum ConjSeq { ;
                 sequence(u[1], 0, u[0], -dt + u[1].eventRange(), B);
     }
 
-    /** TODO TermBuilder */
     static public Term sequence(Term a, long aStart, Term b, long bStart, TermBuilder B) {
 
         /*assert(bStart == aStart);*/
         if (aStart == TIMELESS) {
             assert(bStart==TIMELESS);
-            return CONJ.the(B, XTERNAL, a, b);
+            return B.conj(XTERNAL, a, b);
         }
 
         /*assert(bStart == aStart);*/
         if (aStart == ETERNAL || aStart==bStart) {// && (!Conj.isSeq(a) && !Conj.isSeq(b)))
-            return CONJ.the(B, DTERNAL, a, b);
+            return B.conj(DTERNAL, a, b);
         }
 
         assert (bStart != ETERNAL && bStart != TIMELESS);
 
 //        if (a.hasAny(Op.CONJ) || b.hasAny(Op.CONJ)) {
-            ConjBuilder c = new Conj(2);
+            ConjBuilder c =
+                    //new Conj(2);
+                    //new ConjTree();
+                    new ConjLazy(2);
             if (c.add(aStart, a))
                 c.add(bStart, b);
             return c.term(B);

@@ -1,6 +1,7 @@
 package nars.link;
 
 import jcog.TODO;
+import jcog.WTF;
 import jcog.decide.Roulette;
 import nars.Op;
 import nars.subterm.Subterms;
@@ -117,6 +118,8 @@ public abstract class DynamicTermLinker implements TermLinker {
         }
 
         protected float subValue(Term sub) {
+            if (sub == null)
+                throw new WTF();
             if (sub instanceof Atomic)
                 return 1;
 

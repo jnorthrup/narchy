@@ -11,7 +11,6 @@ import nars.time.Tense;
 import org.eclipse.collections.api.iterator.LongIterator;
 import org.eclipse.collections.impl.set.mutable.primitive.LongHashSet;
 
-import static nars.Op.CONJ;
 import static nars.term.atom.Bool.*;
 import static nars.time.Tense.*;
 
@@ -47,8 +46,8 @@ public class ConjLazy extends LongObjectArraySet<Term> implements ConjBuilder {
         }
 
         ConjBuilder ce =
-                //new ConjLazy(eventsSize);
-                new ConjTree();
+                new ConjLazy(eventsSize);
+                //new ConjTree();
 
         for (Task o : events) {
             if (!ce.add(Tense.dither(o.start(), ditherDT), sequenceTerm(o))) {
@@ -176,7 +175,8 @@ public class ConjLazy extends LongObjectArraySet<Term> implements ConjBuilder {
                 if (w0 == w1) {
                     //SAME TIME
                     Term a = items[0], b = items[1];
-                    return CONJ.the(B, DTERNAL /*(w0 == ETERNAL) ? DTERNAL : 0*/, a, b);
+                    //return CONJ.the(B, DTERNAL /*(w0 == ETERNAL) ? DTERNAL : 0*/, a, b);
+                    return ConjCommutive.the(B, DTERNAL /*(w0 == ETERNAL) ? DTERNAL : 0*/, true, false, items[0], items[1]);
                 }
 
                 break;
@@ -192,11 +192,11 @@ public class ConjLazy extends LongObjectArraySet<Term> implements ConjBuilder {
                 }
                 //all same time
                 if (parallel)
-                    return CONJ.the(B, DTERNAL /*(w0 == ETERNAL) ? DTERNAL : 0*/, this);
+                    return ConjCommutive.the(B, DTERNAL /*(w0 == ETERNAL) ? DTERNAL : 0*/, true, false, toArrayRecycled(Term[]::new));
             }
         }
 
-        //sortThis(); //puts eternals first, and organizes contiguously timed items
+        sortThis(); //puts eternals first, and organizes contiguously timed items
 
         //failsafe impl:
         ConjBuilder c = new ConjTree();

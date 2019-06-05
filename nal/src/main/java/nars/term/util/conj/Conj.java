@@ -98,7 +98,7 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
         return new Conj(x.termToId, x.idToTerm);
     }
 
-    public static Conj events(Term t) {
+    @Deprecated public static Conj events(Term t) {
         Conj c = new Conj();
         c.addAuto(t);
         return c;
@@ -108,21 +108,21 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
         return container.equals(x) || eventOf(container, x);
     }
 
-    public static Term removeEvent(/*TermBuilder B, */ Term x, Term what) {
-        if (x.op() != CONJ || !Term.commonStructure(x, what))
-            return x;
-
-        ConjBuilder y = ConjLazy.events(x);
-        return y.removeAll(what) ? y.term() : x;
-    }
-
-    public static Term removeEvent(/*TermBuilder B, */ Term x, Term what, long when) {
-        if (x.op() != CONJ || !Term.commonStructure(x, what))
-            return x;
-
-        ConjBuilder y = ConjLazy.events(x);
-        return y.remove(when, what) ? y.term() : x;
-    }
+//    public static Term removeEvent(/*TermBuilder B, */ Term x, Term what) {
+//        if (x.op() != CONJ || !Term.commonStructure(x, what))
+//            return x;
+//
+//        ConjBuilder y = ConjLazy.events(x);
+//        return y.removeAll(what) ? y.term() : x;
+//    }
+//
+//    public static Term removeEvent(/*TermBuilder B, */ Term x, Term what, long when) {
+//        if (x.op() != CONJ || !Term.commonStructure(x, what))
+//            return x;
+//
+//        ConjBuilder y = ConjLazy.events(x);
+//        return y.remove(when, what) ? y.term() : x;
+//    }
 
     public static boolean eventOf(Term container, Term x) {
         return eventOf(container, x, ETERNAL, +1);
@@ -903,28 +903,28 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
 //
 //    }
 
-    public static Term remove(Term include, LongObjectPair<Term> e) {
-        int idt = include.dt();
-        if (dtSpecial(idt) && e.getTwo().op() != CONJ) {
-            //fast commutive remove
-            @Nullable Term[] ss = include.subterms().removing(e.getTwo());
-            if (ss == null)
-                return Null; //WTF?
-
-            if (ss.length > 1)
-                return CONJ.the(idt, ss);
-            else
-                return ss[0];
-        } else {
-            //slow sequence remove
-            Conj f = Conj.events(include);
-            if (f.remove(e))
-                return f.term();
-            else
-                return Null; //WTF?
-        }
-
-    }
+//    public static Term remove(Term include, LongObjectPair<Term> e) {
+//        int idt = include.dt();
+//        if (dtSpecial(idt) && e.getTwo().op() != CONJ) {
+//            //fast commutive remove
+//            @Nullable Term[] ss = include.subterms().removing(e.getTwo());
+//            if (ss == null)
+//                return Null; //WTF?
+//
+//            if (ss.length > 1)
+//                return CONJ.the(idt, ss);
+//            else
+//                return ss[0];
+//        } else {
+//            //slow sequence remove
+//            Conj f = Conj.events(include);
+//            if (f.remove(e))
+//                return f.term();
+//            else
+//                return Null; //WTF?
+//        }
+//
+//    }
 
 
     private static int indexOfZeroTerminated(byte[] b, byte val) {

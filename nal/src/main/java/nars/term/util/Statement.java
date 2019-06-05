@@ -125,14 +125,16 @@ public class Statement {
 
                 if (!(subject instanceof Compound) && !(predicate instanceof Compound)) {
                     //no validity test necessary
+                } else if (subject.dt() == XTERNAL || predicate.dt() == XTERNAL) { // && !subject.OR(x->x instanceof Ellipsis) && !predicate.OR(x->x instanceof Ellipsis) ) {
+                    //do not reduce
+                } else if (subject.unneg().op()!=CONJ && predicate.unneg().op()!=CONJ) {
+                    //both simple terms
                 } else if (!Term.commonStructure(subject, predicate)) {
                     //no validity test necessary
 //                    } else if (subject instanceof Compound && !(predicate instanceof Compound) && !subject.containsRecursively(predicate)) {
 //                        //no validity test necessary
 //                    } else if (predicate instanceof Compound && !(subject instanceof Compound) && !predicate.containsRecursively(subject)) {
 //                        //no validity test necessary
-                } else if (subject.dt() == XTERNAL || predicate.dt() == XTERNAL) { // && !subject.OR(x->x instanceof Ellipsis) && !predicate.OR(x->x instanceof Ellipsis) ) {
-                    //do not reduce
                 } else if (Ellipsis.firstEllipsis(subject) != null || Ellipsis.firstEllipsis(predicate) != null) {
                     //do not reduce
                 } else {
