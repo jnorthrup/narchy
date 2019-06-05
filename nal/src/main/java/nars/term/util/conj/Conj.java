@@ -730,6 +730,11 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
 
         } else if (iSeq && !eSeq) {
 
+            if (ConjSeq.isFactoredSeq(include) && include.contains(exclude)) {
+                //inseperable factored component - eliminate entirely
+                return True;
+            }
+
             ConjBuilder ii =
                     //Conj.events(include);
                     ConjLazy.events(include);

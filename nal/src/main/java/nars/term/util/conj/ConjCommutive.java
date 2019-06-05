@@ -38,7 +38,25 @@ public enum ConjCommutive {
         return the(Op.terms, dt, false, false, u);
     }
 
-    public static Term the(TermBuilder B, int dt, boolean sort, boolean direct, Term... u) {
+    public static Term the(TermBuilder B, int dt, boolean sort, boolean direct, Term... xx) {
+        ConjTree ct = new ConjTree();
+        long sdt = (dt == DTERNAL) ? ETERNAL : 0;
+        for (Term x : xx) {
+//            if (ConjSeq.isFactoredSeq(x)) {
+//                //add the components separately
+//                if (!ct.add(sdt, ConjSeq.seqEternal(x)))
+//                    break;
+//                if (!ct.add(sdt, ConjSeq.seqTemporal(x)))
+//                    break;
+//            } else {
+                if (!ct.add(sdt, x))
+                    break;
+//            }
+        }
+        return ct.term(B);
+    }
+
+    public static Term the_old(TermBuilder B, int dt, boolean sort, boolean direct, Term... u) {
 
         if (dt != DTERNAL && dt != 0)
             throw new WTF();

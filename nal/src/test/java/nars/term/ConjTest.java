@@ -199,7 +199,7 @@ public class ConjTest {
 
     @Test
     void testDisjConjElim() {
-        assertEq("(--,L)", "((||,R,(--,L))&&(--,L))");
+        assertEq("(--,L)", "((R || --L) && --L)");
     }
 
     @Test
@@ -502,9 +502,11 @@ public class ConjTest {
         assertEq("((--,d)&&c)", "((--,(d&&c)) && c)");
     }
     @Test void testInvalidDisjSeq() {
+        assertEq(True, Conj.diffAll($$("((a &&+1 b)&&c)"), $$("c")));
+
         Term a = $$("(--,((a &&+1 b)&&c))");
         Term c = $$("c");
-        assertEquals(False, CONJ.the(a, c));
+        assertEq(False, CONJ.the(a, c));
         assertEq(False, "(&&, --((a &&+1 b)&&c), c)");
 
     }
@@ -740,7 +742,7 @@ public class ConjTest {
 
         assertConjDiff("(x && y)", "x", "y", false);
 
-        assertConjDiff("--x", "x", "(--,x)", false);
+        assertConjDiff("--x", "x", "true" /*"(--,x)"*/, false);
         assertConjDiff("x", "--x", "x", false);
         assertConjDiff("--x", "x", "true", true);
         assertConjDiff("--x", "--x", "true", false);
@@ -1310,9 +1312,8 @@ public class ConjTest {
     @Test
     void testDisjunctionStackOverflow() {
         assertEq("(||,x,y,z)", "((x || y) || z)");
-        assertEq("((y||z)&&(--,x))", "((||,(x || y),z) && --x)");
-
         assertEq("((y||z)&&(--,x))", "((||,x,y,z) && --x)");
+
         assertEq("((y||z)&&(--,x))", "(--(&|, --x, --y, --z) && --x)");
         assertEq("x", "((||,x,y,z) && x)");
 
@@ -1841,7 +1842,9 @@ public class ConjTest {
     @ParameterizedTest
     @ValueSource(strings = {"%" /* @ ETE */, "(a &&+1 %)" /* @+1 */, "(% &&+1 a)" /* @ 0 */})
     void disjunctifyReduce(String p) {
-        ConjBuilder c = new Conj();
+        ConjBuilder c =
+                //new Conj();
+                new ConjTree();
         c.add(p.length() > 1 ? 0 : ETERNAL, $$(p.replace("%", "(--x || y)")));
         c.add(p.length() > 1 ? 0 : 1L, $$(p.replace("%", "x")));
         assertEq(p.replace("%", "(x&&y)"), c.term());

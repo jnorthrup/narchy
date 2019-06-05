@@ -33,20 +33,8 @@ public interface ConjBuilder {
         ;
     }
 
-    default boolean addAll(ConjLazy x) {
-        if (x.isEmpty())
-            return false;
-        x.forEachEvent(this::add);
-        return true;
-    }
 
-    default boolean addAll(Iterable<LongObjectPair<Term>> x) {
-        for (LongObjectPair<Term> xx : x) {
-            if (!add(xx))
-                return false;
-        }
-        return true;
-    }
+
 
     default boolean add(LongObjectPair<Term> whenWhat) {
         return add(whenWhat.getOne(), whenWhat.getTwo());

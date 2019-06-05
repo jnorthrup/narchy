@@ -4,6 +4,7 @@ import nars.term.Term;
 import org.junit.jupiter.api.Test;
 
 import static nars.$.$$;
+import static nars.term.atom.Bool.False;
 import static nars.term.util.TermTest.assertEq;
 import static nars.time.Tense.ETERNAL;
 
@@ -21,6 +22,7 @@ class ConjTreeTest {
         t.add(ETERNAL, y);
         assertEq("(x&&y)", t.term());
     }
+
     @Test
     void testSimpleWithNeg() {
         ConjTree t = new ConjTree();
@@ -28,6 +30,7 @@ class ConjTreeTest {
         t.add(ETERNAL, y);
         assertEq("((--,x)&&y)", t.term());
     }
+
     @Test
     void testSimpleSeq() {
         ConjTree t = new ConjTree();
@@ -36,6 +39,7 @@ class ConjTreeTest {
         t.add(2, z);
         assertEq("((y &&+1 z)&&x)", t.term());
     }
+
     @Test
     void testSimpleSeq2() {
         ConjTree t = new ConjTree();
@@ -45,4 +49,51 @@ class ConjTreeTest {
         t.add(2, z);
         assertEq("(&&,(y &&+1 z),(--,w),x)", t.term());
     }
+
+    @Test
+    void testContradict1() {
+        ConjTree t = new ConjTree();
+        t.add(ETERNAL, x);
+        t.add(ETERNAL, x.neg());
+        assertEq(False, t.term());
+    }
+
+    @Test
+    void testDisjReductionOutward() {
+        ConjTree t = new ConjTree();
+        t.add(ETERNAL, x);
+        t.add(ETERNAL, $$("(x||y)"));
+        assertEq(x, t.term());
+    }
+    @Test
+    void testDisjReductionOutwardSeq() {
+        ConjTree t = new ConjTree();
+        t.add(ETERNAL, x);
+        t.add(ETERNAL, $$("--(--y &&+1 --x)"));
+        assertEq(x, t.term());
+    }
+    @Test
+    void testDisjReductionOutwardCancel() {
+        ConjTree t = new ConjTree();
+        t.add(ETERNAL, x);
+        t.add(ETERNAL, $$("--(--y &&+1 x)"));
+        assertEq("(x&&y)", t.term());
+    }
+
+    @Test
+    void testContradictionInward() {
+        ConjTree t = new ConjTree();
+        t.add(ETERNAL, x);
+        t.add(1, x.neg());
+        assertEq(False, t.term());
+    }
+    @Test
+    void testContradictionInward2() {
+        ConjTree t = new ConjTree();
+        t.add(ETERNAL, x);
+        t.add(1, y);
+        t.add(2, x.neg());
+        assertEq(False, t.term());
+    }
+
 }
