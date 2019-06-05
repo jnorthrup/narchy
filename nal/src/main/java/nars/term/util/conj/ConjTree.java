@@ -491,10 +491,9 @@ public class ConjTree implements ConjBuilder {
             //TODO remove inner event that is fully factored. but not if it's a start or stop event?
             if (mc >0 && mc < ts.subs()) {
                 removals.add(m);
-            }
+            } else
+                return; //give up
         }
-        if (removals.size()<n)
-            return; //give up
 
         for (int i = 0, eventsSize = events.size(); i < eventsSize; i++) {
             Term x = events.get(i);
