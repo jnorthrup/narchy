@@ -17,9 +17,9 @@ class ConjDiffTest {
     @Test
     void testConjDiff_EliminateSeq() {
 
-        assertEq("c", ConjDiff.the(
+        assertEq("c", Conj.diff(
                 $$("(b &&+5 c)"), 5, $$("(a &&+5 b)"), 0).term());
-        assertEq("c", ConjDiff.the(
+        assertEq("c", Conj.diff(
                 $$("(--b &&+5 c)"), 5, $$("(a &&+5 --b)"), 0).term());
     }
 
@@ -44,28 +44,28 @@ class ConjDiffTest {
     @Test
     void testConjDiff_EternalComponents_Same_Masked() {
         //x && ... common to both
-        assertEq("z", ConjDiff.the(
+        assertEq("z", Conj.diff(
                 $$("(x&&z)"), 0, $$("(x&&y)"), 0).term());
 
-        assertEq("z", ConjDiff.the(
+        assertEq("z", Conj.diff(
                 $$("(x&&z)"), ETERNAL, $$("(x&&y)"), 0).term());
 //        assertEq("z", ConjDiff.the(
 //                $$("(x&&z)"), 0, $$("(x&&y)"), ETERNAL).target());
 
-        assertEq("z", ConjDiff.the(
+        assertEq("z", Conj.diff(
                 $$("(x&&z)"), 1, $$("(x&&y)"), 1).term());
-        assertEq("(x&&z)", ConjDiff.the(
+        assertEq("(x&&z)", Conj.diff(
                 $$("(x&&z)"), 1, $$("(x&&y)"), 0).term());
-        assertEq("(x&&z)", ConjDiff.the(
+        assertEq("(x&&z)", Conj.diff(
                 $$("(x&&z)"), 0, $$("(x&&y)"), 1).term());
 
-        assertEq("(c&&x)", ConjDiff.the(
+        assertEq("(c&&x)", Conj.diff(
                 $$("(x&&(b &&+5 c))"), 5, $$("(x&&(a &&+5 b))"), 0).term());
     }
 
     @Test
     void testConjDiff_EternalComponents_Diff_Masked_Ete() {
-        assertEq("(w&&z)", ConjDiff.the(
+        assertEq("(w&&z)", Conj.diff(
                 $$("(w && z)"), 5, $$("(x && y)"), 0).term());
     }
     @Test
@@ -75,7 +75,7 @@ class ConjDiffTest {
 
         assertEq("(((a &&+5 b)&&x)==>(y &&+5 (c&&y)))", "(((a &&+5 b)&&x)==>((b &&+5 c)&&y))");
 
-        assertEq("(y &&+5 (c&&y))", ConjDiff.the(
+        assertEq("(y &&+5 (c&&y))", Conj.diff(
                 $$("(y && (b &&+5 c))"), 5, $$("(x && (a &&+5 b))"), 0).term());
     }
 
@@ -157,7 +157,7 @@ class ConjDiffTest {
 
         Set<Term> results = new TreeSet();
         for (int i = 0; i < 16; i++)
-            results.add(ConjDiff.diffAll(xy, r));
+            results.add(Conj.diffAll(xy, r));
         assertEquals(s, results.toString());
     }
 

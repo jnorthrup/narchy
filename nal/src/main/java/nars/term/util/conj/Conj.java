@@ -1420,6 +1420,12 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
             return !dtSpecial(dt);
     }
 
+    public static ConjBuilder diff(Term include, long includeAt, Term exclude, long excludeAt) {
+        return ConjLazy.subtract(ConjLazy.events(include,includeAt), exclude, excludeAt);
+//        boolean eNeg = exclude.op() == NEG;
+//        return the(include, includeAt, eNeg ? exclude.unneg() : exclude, excludeAt, eNeg);
+    }
+
     @Override
     public int eventCount(long when) {
         Object e = event.get(when);

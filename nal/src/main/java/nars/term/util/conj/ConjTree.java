@@ -314,47 +314,55 @@ public class ConjTree implements ConjBuilder {
         if (at == ETERNAL) {
             return addParallel(x);
         } else {
-            if (x.op() != NEG) {
-                if (neg != null && neg.contains(x)) {
-                    terminate(False); //contradict
-                    return false;
-                }
+            return addSequential(at, x);
+        }
+    }
 
-            } else {
-                Term nu = x.unneg();
-                Term _nu = nu;
-                if (pos != null && pos.contains(nu)) {
-                    terminate(False); //contradict
-                    return false;
-                }
-
-                if (neg != null && !(nu instanceof Bool)) {
-                    nu = reduceNegNeg(nu, neg);
-                    if (nu.op() == NEG)
-                        return addEvent(at, nu.unneg()); //became positive
-                }
-
-                if (pos != null && !(nu instanceof Bool)) {
-                    nu = reducePN(nu, pos, true);
-                    if (nu.op() == NEG)
-                        return addEvent(at, nu.unneg()); //became positive
-                }
-
-
-                if (nu == True)
-                    return true; //absorbed
-                else if (nu == False || nu == Null) {
-                    terminate(nu);
-                    return false; /*conflict */
-
-                }
-                if (_nu != nu)
-                    x = nu.neg(); //HACK
+    private boolean addSequential(long at, Term x) {
+        if (x.op() != NEG) {
+            if (neg != null && neg.contains(x)) {
+                terminate(False); //contradict
+                return false;
+            }
+            if (neg != null && !(x instanceof Bool)) {
+                x = reducePN(x, neg, false);
+                if (x.op() == NEG)
+                    return addEvent(at, x); //became positive
+            }
+        } else {
+            Term nu = x.unneg();
+            Term _nu = nu;
+            if (pos != null && pos.contains(nu)) {
+                terminate(False); //contradict
+                return false;
             }
 
-            if (seq == null) seq = new IntObjectHashMap<>(4);
-            return seq.getIfAbsentPut(Tense.occToDT(at), ConjTree::new).addParallel(x);
+            if (neg != null && !(nu instanceof Bool)) {
+                nu = reduceNegNeg(nu, neg);
+                if (nu.op() == NEG)
+                    return addEvent(at, nu.unneg()); //became positive
+            }
+
+            if (pos != null && !(nu instanceof Bool)) {
+                nu = reducePN(nu, pos, true);
+                if (nu.op() == NEG)
+                    return addEvent(at, nu.unneg()); //became positive
+            }
+
+
+            if (nu == True)
+                return true; //absorbed
+            else if (nu == False || nu == Null) {
+                terminate(nu);
+                return false; /*conflict */
+
+            }
+            if (_nu != nu)
+                x = nu.neg(); //HACK
         }
+
+        if (seq == null) seq = new IntObjectHashMap<>(4);
+        return seq.getIfAbsentPut(Tense.occToDT(at), ConjTree::new).addParallel(x);
     }
 
     @Override

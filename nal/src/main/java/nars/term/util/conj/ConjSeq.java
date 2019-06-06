@@ -40,6 +40,11 @@ public enum ConjSeq { ;
             assert(bStart==TIMELESS);
             return B.conj(XTERNAL, a, b);
         }
+        if (aStart==bStart) {
+            //quick tests
+            if (a.equals(b)) return a;
+            else if (a.equalsNeg(b)) return False;
+        }
 
 //        if (a.hasAny(Op.CONJ) || b.hasAny(Op.CONJ)) {
             ConjBuilder c = new ConjTree();
