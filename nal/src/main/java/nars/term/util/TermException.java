@@ -27,7 +27,7 @@ public final class TermException extends SoftException {
         this(reason, null, DTERNAL, t);
     }
 
-    public TermException(String reason, Op op, Term[] args) {
+    public TermException(String reason, Op op, Term... args) {
         this(reason, op, DTERNAL, args);
     }
 

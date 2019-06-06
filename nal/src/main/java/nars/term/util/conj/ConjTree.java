@@ -3,7 +3,7 @@ package nars.term.util.conj;
 import jcog.TODO;
 import jcog.data.list.FasterList;
 import jcog.data.set.ArrayHashSet;
-import nars.subterm.TermList;
+import nars.subterm.DisposableTermList;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.atom.Bool;
@@ -80,22 +80,20 @@ public class ConjTree implements ConjBuilder {
             assert (p.op() != NEG);
 
             if (p.op() == CONJ) {
-                if (p.dt() != XTERNAL && !Conj.isSeq(p)) {
-                    return p.subterms().AND(this::addParallel); //decompose conj
-                } else if (p.dt() == XTERNAL) {
-                    for (Term what : p.subterms()) {
-                        if (what.op() == NEG) {
-                            if (pos != null && pos.contains(what.unneg())) {
-                                terminate(False);
-                                return false; //contradiction
-                            }
-                            //TODO detect reducible disjunction-in-sequence here to trigger recurse
-                        } else {
-                            if (neg != null && neg.contains(what)) {
-                                terminate(False);
-                                return false; //contradiction
-                            }
-                        }
+                if (p.dt() == XTERNAL || Conj.isSeq(p)) {
+//                    for (Term what : p.subterms()) {
+//                        if (validate(what))
+//                            return false; //contradiction
+//                    }
+                    if (pos!=null || neg!=null) {
+                        if (!p.eventsWhile((when, what) -> validatePosNeg(what), 0, true, true))
+                            return false;
+                    }
+                    //continue below
+                } else {
+                    //decompose parallel conj
+                    if (!Conj.isSeq(p)) {
+                        return p.subterms().AND(this::addParallel);
                     }
                 }
             }
@@ -119,6 +117,22 @@ public class ConjTree implements ConjBuilder {
 
         if (pos == null) pos = newSet();
         pos.add(p);
+        return true;
+    }
+
+    private boolean validatePosNeg(Term what) {
+        if (what.op() == NEG) {
+            if (pos != null && pos.contains(what.unneg())) {
+                terminate(False);
+                return false;
+            }
+            //TODO detect reducible disjunction-in-sequence here to trigger recurse
+        } else {
+            if (neg != null && neg.contains(what)) {
+                terminate(False);
+                return false;
+            }
+        }
         return true;
     }
 
@@ -330,11 +344,11 @@ public class ConjTree implements ConjBuilder {
         if (at == ETERNAL) {
             return addParallel(x);
         } else {
-            return addSequential(at, x);
+            return addAt(at, x);
         }
     }
 
-    private boolean addSequential(long at, Term x) {
+    private boolean addAt(long at, Term x) {
         if (x.op() != NEG) {
             if (neg != null && neg.contains(x)) {
                 terminate(False); //contradict
@@ -343,7 +357,7 @@ public class ConjTree implements ConjBuilder {
             if (neg != null && !(x instanceof Bool)) {
                 x = reducePN(x, neg, false);
                 if (x.op() == NEG)
-                    return addEvent(at, x); //became positive
+                    return add(at, x); //became positive
             }
         } else {
             Term nu = x.unneg();
@@ -356,13 +370,13 @@ public class ConjTree implements ConjBuilder {
             if (neg != null && !(nu instanceof Bool)) {
                 nu = reduceNegNeg(nu, neg);
                 if (nu.op() == NEG)
-                    return addEvent(at, nu.unneg()); //became positive
+                    return add(at, nu.unneg()); //became positive
             }
 
             if (pos != null && !(nu instanceof Bool)) {
                 nu = reducePN(nu, pos, true);
                 if (nu.op() == NEG)
-                    return addEvent(at, nu.unneg()); //became positive
+                    return add(at, nu.unneg()); //became positive
             }
 
 
@@ -520,12 +534,12 @@ public class ConjTree implements ConjBuilder {
                 }
                 if (!events.isEmpty()) {
 
-                    TermList f = events.factor(this);
-                    if (terminal != null)
-                        return terminal;
+//                    TermList f = events.factor(this);
+//                    if (terminal != null)
+//                        return terminal;
 
-                    if (f != null)
-                        f.forEach(this::addParallel);
+//                    if (f != null)
+//                        f.forEach(this::addParallel);
 
                     events.condense(B);
 
@@ -554,7 +568,7 @@ public class ConjTree implements ConjBuilder {
 
 
 //        if (s == null || !Conj.isSeq(s)) {
-        TermList p = new TermList(1);
+        DisposableTermList p = new DisposableTermList(0);
 
 
         if (pos != null) {
@@ -610,23 +624,23 @@ public class ConjTree implements ConjBuilder {
     }
 
 
-    private boolean addTo(TermList t, Term term) {
-        if (term == True)
-            return true;
-        else if (term == False || term == Null) {
-            terminate(term);
-            return false;
-        } else {
-
-            if (false) {
-                terminate(False);
-                return false;
-            } else {
-                t.add(term);
-                return true;
-            }
-        }
-    }
+//    private boolean addTo(TermList t, Term term) {
+//        if (term == True)
+//            return true;
+//        else if (term == False || term == Null) {
+//            terminate(term);
+//            return false;
+//        } else {
+//
+//            if (false) {
+//                terminate(False);
+//                return false;
+//            } else {
+//                t.add(term);
+//                return true;
+//            }
+//        }
+//    }
 
     @Override
     public LongIterator eventOccIterator() {

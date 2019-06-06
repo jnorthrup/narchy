@@ -6,18 +6,22 @@ import nars.term.Compound;
 import nars.term.Term;
 import nars.term.Terms;
 import nars.term.atom.Bool;
+import nars.term.util.Image;
+import nars.term.util.TermException;
 import nars.term.util.builder.TermBuilder;
 import org.eclipse.collections.api.iterator.LongIterator;
 import org.eclipse.collections.api.tuple.primitive.LongObjectPair;
-import org.eclipse.collections.impl.map.mutable.primitive.LongObjectHashMap;
 
 import java.util.function.Predicate;
 
-import static nars.Op.CONJ;
 import static nars.term.atom.Bool.Null_Array;
+import static nars.term.atom.Bool.True;
 import static nars.time.Tense.*;
 
 public interface ConjBuilder {
+
+    static final Predicate<Term> isTemporalComponent = Conj::isSeq;
+    static final Predicate<Term> isEternalComponent = isTemporalComponent.negate();
 
     static Term[] preSort(int dt, Term[] u) {
 
@@ -98,29 +102,41 @@ public interface ConjBuilder {
         if (at == TIMELESS)
             throw new WTF("invalid time");
 
-        return
-                (x instanceof Compound && x.op() == CONJ) ?
-                        addConjEvent(at, x)
-                        :
-                        addEvent(at, x)
-        ;
+        if (x == True)
+            return true; //ignore
+
+        if (!(x instanceof Bool) && !x.op().eventable)
+            throw new TermException("invalid Conj event", x);
+
+        if (x instanceof Compound) {
+
+            x = Image.imageNormalize(x);
+
+            if (x.op() == Op.CONJ)
+                return addConjEvent(at, x);
+        }
+
+        return addEvent(at, x);
+
     }
-
-
-
 
     default boolean add(LongObjectPair<Term> whenWhat) {
         return add(whenWhat.getOne(), whenWhat.getTwo());
     }
 
-
-    /** for internal use only */
+    /**
+     * for internal use only
+     */
     boolean addEvent(long at, Term x);
 
     int eventOccurrences();
 
-    default boolean remove(LongObjectPair<Term> e) { return remove(e.getOne(), e.getTwo()); }
+    default boolean remove(LongObjectPair<Term> e) {
+        return remove(e.getOne(), e.getTwo());
+    }
+
     boolean remove(long at, Term t);
+
     boolean removeAll(Term term);
 
     int eventCount(long when);
@@ -133,10 +149,11 @@ public interface ConjBuilder {
 
     Term term(TermBuilder b);
 
-
     LongIterator eventOccIterator();
 
-    /** private use only */
+    /**
+     * private use only
+     */
     default boolean addConjEvent(long at, Term x) {
 
         int xdt = x.dt();
@@ -157,14 +174,13 @@ public interface ConjBuilder {
 //        }
 
 
-
         if (xdt != XTERNAL) {
 
             if (at == ETERNAL && Conj.isSeq(x))
                 at = 0;
 
-            if (at != ETERNAL || (xdt == 0) || (xdt == DTERNAL)) {
-                return x.eventsWhile(this::addEvent, at,
+            if (xdt == DTERNAL || xdt == 0 || at != ETERNAL) {
+                return x.eventsWhile(this::add, at,
                         true,
                         false);
             }
@@ -182,7 +198,7 @@ public interface ConjBuilder {
         if (s == ETERNAL)
             return 0;
         else {
-            assert(s!=TIMELESS);
+            assert (s != TIMELESS);
             return s;
         }
     }
@@ -199,7 +215,4 @@ public interface ConjBuilder {
         }
         return min == Long.MAX_VALUE ? ETERNAL : min;
     }
-
-    static final Predicate<Term> isTemporalComponent = Conj::isSeq;
-    static final Predicate<Term> isEternalComponent = isTemporalComponent.negate();
 }

@@ -3,6 +3,7 @@ package nars.term.util.conj;
 import jcog.WTF;
 import jcog.data.set.LongObjectArraySet;
 import nars.NAL;
+import nars.subterm.DisposableTermList;
 import nars.subterm.Subterms;
 import nars.subterm.TermList;
 import nars.term.Term;
@@ -71,18 +72,11 @@ public class ConjLazy extends LongObjectArraySet<Term> implements ConjBuilder {
      */
     @Override
     public boolean addEvent(long when, Term t) {
-        if (when == TIMELESS)
-            throw new WTF();
-
-        if (t == True)
-            return true; //ignore
 
         if (t == False || t == Null)
 //            clear(); //fail
             return false;
 
-        if (!t.op().eventable)
-            throw new TermException("invalid Conj event", t);
 
         boolean result = true;
         //quick chest for absorb or conflict
@@ -196,7 +190,7 @@ public class ConjLazy extends LongObjectArraySet<Term> implements ConjBuilder {
 
 
     public final Subterms asSubterms(boolean commute) {
-        TermList terms = new TermList(this.items);
+        DisposableTermList terms = new DisposableTermList(this.items);
         if (commute)
             terms.sortAndDedup();
         return terms;
@@ -359,12 +353,24 @@ public class ConjLazy extends LongObjectArraySet<Term> implements ConjBuilder {
                 start = i;
             } else {
                 if (i > start) {
-                    set(start, subcommute(B, start, i+1));
+
+                    Term x = subcommute(B, start, i + 1);
+                    if (x == True) {
+                        //handled below HACK
+                    } else if (!x.op().eventable) {
+                        throw new TermException("conj collapse during condense", CONJ, x);
+                    } else {
+                        set(start, x);
+                    }
 
                     for (int r = 0; r < (i - start); r++) {
                         removeThe(start + 1);
                         s--;
                         i--;
+                    }
+
+                    if (x == True) {
+                        removeThe(start); s--; i--;
                     }
 
                 }
@@ -385,8 +391,6 @@ public class ConjLazy extends LongObjectArraySet<Term> implements ConjBuilder {
 
 
         Term tt = B.conj(true, DTERNAL, t);
-        if (tt.op()!=CONJ)
-            throw new TermException("conj collapse during condense", CONJ, t);
         return tt;
     }
 }
