@@ -233,7 +233,9 @@ public class ConjTest {
     @Test
     void testConjComplexAddRemove() {
         Term x = $$("(( ( (x,_3) &| (--,_4)) &| (_5 &| _6)) &&+8 ( ((x,_3) &| (--,_4)) &| (_5 &|_6))))");
-        Conj c = Conj.events(x);
+        Conj c1 = new Conj();
+        c1.addAuto(x);
+        Conj c = c1;
         assertEquals(x, c.term());
         boolean removedLast = c.remove(c.event.keysView().max(), $$("(x,_3)"));
         assertTrue(removedLast);
@@ -1442,6 +1444,7 @@ public class ConjTest {
     }
 
     @Test void testDisjInSeqPartialReduction() {
+
         assertEq("(((--,jump) &&+320 jump)&&(--,R))",
                 $$("(((--,jump) &&+320 (R||jump))&&(--,R))"));
     }
@@ -1495,7 +1498,9 @@ public class ConjTest {
 
 
         Term x = $$("((x &&+1 --x) && --y)");
-        Conj xc = Conj.events(x);
+        Conj c = new Conj();
+        c.addAuto(x);
+        Conj xc = c;
         assertEq(x, xc.term());
 
         assertEquals(1, xc.eventCount(0));
@@ -1965,12 +1970,16 @@ public class ConjTest {
     void testConjDistributeEteParallel1() {
         Term x = $$("((&|,_2(_1),_4(_3),_6(_5))&&(--,(_6(#1)&|_6(#2))))");
         {
-            ConjBuilder c = Conj.events(x);
+            Conj c1 = new Conj();
+            c1.addAuto(x);
+            ConjBuilder c = c1;
             assertEq(x, c.term());
             assertEquals(4, c.eventCount(ETERNAL));
         }
         {
-            Conj c = Conj.events(x);
+            Conj c1 = new Conj();
+            c1.addAuto(x);
+            Conj c = c1;
             c.distribute();
             assertEquals(4, c.eventCount(ETERNAL));
             assertEq(x, c.term());

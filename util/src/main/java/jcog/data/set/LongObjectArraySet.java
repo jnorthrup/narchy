@@ -68,9 +68,8 @@ public class LongObjectArraySet<X> extends FasterList<X> {
 
     public boolean contains(long w, X what) {
         long[] longs = this.when;
-        for (int i = 0, longsLength = longs.length; i < longsLength; i++) {
-            long z = longs[i];
-            if (z == w && get(i).equals(what))
+        for (int i = 0, n = size(); i < n; i++) {
+            if (longs[i] == w && get(i).equals(what))
                 return true;
         }
         return false;

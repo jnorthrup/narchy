@@ -86,10 +86,7 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
         event = new LongObjectHashMap<>(n);
     }
 
-    public Conj(long initialEventAt, Term initialEvent) {
-        this(1);
-        add(initialEventAt, initialEvent);
-    }
+
 
     /**
      * but events are unique
@@ -98,15 +95,9 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
         return new Conj(x.termToId, x.idToTerm);
     }
 
-    @Deprecated public static Conj events(Term t) {
-        Conj c = new Conj();
-        c.addAuto(t);
-        return c;
-    }
-
-    public static boolean containsOrEqualsEvent(Term container, Term x) {
-        return container.equals(x) || eventOf(container, x);
-    }
+//    public static boolean containsOrEqualsEvent(Term container, Term x) {
+//        return container.equals(x) || eventOf(container, x);
+//    }
 
 //    public static Term removeEvent(/*TermBuilder B, */ Term x, Term what) {
 //        if (x.op() != CONJ || !Term.commonStructure(x, what))
@@ -207,26 +198,6 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
 //
 //    }
 
-    public static Term[] preSort(int dt, Term[] u) {
-
-        switch (dt) {
-            case 0:
-            case DTERNAL:
-                return preSorted(u);
-
-            case XTERNAL:
-                Term[] v = preSorted(u);
-                if (v.length == 1 && !(v[0] instanceof Bool)) {
-                    if (/*!(v[0] instanceof Ellipsislike) || */(u.length > 1 && u[0].equals(u[1])))
-                        return new Term[]{v[0], v[0]};
-                }
-                return v;
-
-            default:
-                return u;
-        }
-    }
-
     //    private static boolean isEventSequence(Term container, Term subseq, boolean neg, boolean firstOrLast) {
 //        if (neg)
 //            throw new TODO(); //may not even make sense
@@ -277,53 +248,6 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
 //
 //        return true;
 //    }
-
-    private static Term[] preSorted(Term[] u) {
-
-        for (Term t : u)
-            if (t == Bool.Null)
-                return Bool.Null_Array;
-
-        int trues = 0;
-        for (Term t : u) {
-            if (t == Bool.False)
-                return Bool.False_Array;
-            if (t == Bool.True)
-                trues++;
-            else if (!t.op().eventable)
-                return Null_Array;
-        }
-        if (trues > 0) {
-
-
-            int sizeAfterTrueRemoved = u.length - trues;
-            switch (sizeAfterTrueRemoved) {
-                case 0:
-                    return Op.EmptyTermArray;
-                case 1: {
-
-                    for (Term uu : u) {
-                        if (uu != Bool.True) {
-                            //assert (!(uu instanceof Ellipsislike)) : "if this happens, TODO";
-                            return new Term[]{uu};
-                        }
-                    }
-                    throw new RuntimeException("should have found non-True target to return");
-                }
-                default: {
-                    Term[] y = new Term[sizeAfterTrueRemoved];
-                    int j = 0;
-                    for (int i = 0; j < y.length; i++) {
-                        Term uu = u[i];
-                        if (uu != Bool.True)
-                            y[j++] = uu;
-                    }
-                    u = y;
-                }
-            }
-        }
-        return Terms.commute(u);
-    }
 
     public static Term chooseEvent(Term conj, Random random, boolean decomposeParallel, LongObjectPredicate<Term> valid) {
 

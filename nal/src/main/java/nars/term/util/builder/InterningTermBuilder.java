@@ -17,7 +17,7 @@ import nars.term.atom.Bool;
 import nars.term.util.cache.Intermed;
 import nars.term.util.cache.Intermed.InternedCompoundByComponents;
 import nars.term.util.cache.Intermed.InternedSubterms;
-import nars.term.util.conj.Conj;
+import nars.term.util.conj.ConjBuilder;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
@@ -331,7 +331,7 @@ public class InterningTermBuilder extends HeapTermBuilder {
     public Term conj(int dt, Term[] u) {
 
         if (dtSpecial(dt))
-            u = Conj.preSort(dt, u);
+            u = ConjBuilder.preSort(dt, u);
 
         return u.length > 1 && internableRoot(CONJ, dt, u) ?
                 terms[CONJ.id].apply(new Intermed.InternedCompoundByComponentsArray(CONJ, dt, u)) :

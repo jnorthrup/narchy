@@ -7,10 +7,7 @@ import nars.term.Term;
 import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
 import nars.term.util.builder.TermBuilder;
-import nars.term.util.conj.Conj;
-import nars.term.util.conj.ConjBuilder;
-import nars.term.util.conj.ConjDiff;
-import nars.term.util.conj.ConjSeq;
+import nars.term.util.conj.*;
 import nars.term.var.ellipsis.Ellipsis;
 import nars.time.Tense;
 
@@ -143,11 +140,21 @@ public class Statement {
                     long po = subjRange + dt; //predicate occurrence
 
                     //subtract any common subject components from predicate
-                    ConjBuilder newPredConj = ConjDiff.the(predicate, po, subject, 0);
-                    Term newPred = newPredConj.term(B);
+                    Term newPred;
+                    ConjLazy newPredConj = ConjLazy.events(predicate, po);
+                    int removed =
+                        newPredConj.removeAll(subject.unneg(), 0, subject.op()!=NEG);
+                    switch (removed) {
+                        case -1: return False;
+                        case +1: newPred = newPredConj.term(B); break;
+                        default: newPred = null; break;
+                    }
+
+//                    ConjBuilder newPredConj = ConjDiff.the(predicate, po, subject, 0);
+//                    Term newPred = newPredConj.term(B);
 
 
-                    boolean predChange = !predicate.equals(newPred);
+                    boolean predChange = newPred!=null && !predicate.equals(newPred);
 
                     if (predChange) {
 

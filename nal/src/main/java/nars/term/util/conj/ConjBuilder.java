@@ -4,14 +4,84 @@ import jcog.WTF;
 import nars.Op;
 import nars.term.Compound;
 import nars.term.Term;
+import nars.term.Terms;
+import nars.term.atom.Bool;
 import nars.term.util.builder.TermBuilder;
 import org.eclipse.collections.api.iterator.LongIterator;
 import org.eclipse.collections.api.tuple.primitive.LongObjectPair;
 
 import static nars.Op.CONJ;
+import static nars.term.atom.Bool.Null_Array;
 import static nars.time.Tense.*;
 
 public interface ConjBuilder {
+
+    static Term[] preSort(int dt, Term[] u) {
+
+        switch (dt) {
+            case 0:
+            case DTERNAL:
+                return ConjBuilder.preSorted(u);
+
+            case XTERNAL:
+                Term[] v = ConjBuilder.preSorted(u);
+                if (v.length == 1 && !(v[0] instanceof Bool)) {
+                    if (/*!(v[0] instanceof Ellipsislike) || */(u.length > 1 && u[0].equals(u[1])))
+                        return new Term[]{v[0], v[0]};
+                }
+                return v;
+
+            default:
+                return u;
+        }
+    }
+
+    static Term[] preSorted(Term[] u) {
+
+        for (Term t : u)
+            if (t == Bool.Null)
+                return Bool.Null_Array;
+
+        int trues = 0;
+        for (Term t : u) {
+            if (t == Bool.False)
+                return Bool.False_Array;
+            if (t == Bool.True)
+                trues++;
+            else if (!t.op().eventable)
+                return Null_Array;
+        }
+        if (trues > 0) {
+
+
+            int sizeAfterTrueRemoved = u.length - trues;
+            switch (sizeAfterTrueRemoved) {
+                case 0:
+                    return Op.EmptyTermArray;
+                case 1: {
+
+                    for (Term uu : u) {
+                        if (uu != Bool.True) {
+                            //assert (!(uu instanceof Ellipsislike)) : "if this happens, TODO";
+                            return new Term[]{uu};
+                        }
+                    }
+                    throw new RuntimeException("should have found non-True target to return");
+                }
+                default: {
+                    Term[] y = new Term[sizeAfterTrueRemoved];
+                    int j = 0;
+                    for (int i = 0; j < y.length; i++) {
+                        Term uu = u[i];
+                        if (uu != Bool.True)
+                            y[j++] = uu;
+                    }
+                    u = y;
+                }
+            }
+        }
+        return Terms.commute(u);
+    }
 
     /**
      * different semantics than .add() -- returns true even if existing present.  returns false on conflict

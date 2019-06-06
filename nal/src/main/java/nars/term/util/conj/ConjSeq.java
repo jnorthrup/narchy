@@ -41,12 +41,8 @@ public enum ConjSeq { ;
             return B.conj(XTERNAL, a, b);
         }
 
-
-        assert (bStart != ETERNAL && bStart != TIMELESS);
-
 //        if (a.hasAny(Op.CONJ) || b.hasAny(Op.CONJ)) {
             ConjBuilder c = new ConjTree();
-
             if (c.add(aStart, a))
                 c.add(bStart, b);
             return c.term(B);

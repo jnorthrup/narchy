@@ -1,6 +1,5 @@
 package nars.term.util.conj;
 
-import com.google.common.collect.Iterables;
 import jcog.TODO;
 import jcog.data.bit.MetalBitSet;
 import jcog.data.list.FasterList;
@@ -19,7 +18,6 @@ import org.eclipse.collections.api.tuple.primitive.ObjectIntPair;
 import org.eclipse.collections.impl.map.mutable.primitive.IntObjectHashMap;
 import org.eclipse.collections.impl.map.mutable.primitive.ObjectIntHashMap;
 
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -39,22 +37,22 @@ public class ConjTree implements ConjBuilder {
     Set<Term> neg = null;
     Term terminal = null;
 
-    private static boolean validate(Term x, Iterable<Term> yy) {
-//        if (x.unneg().op()==CONJ)
-//            throw new TODO();
-
-
-        for (Term y : yy) {
-
-//            if (y.unneg().op()==CONJ)
-//                throw new TODO();
-
-            if (x.equalsNeg(y))
-                return false;
-
-        }
-        return true;
-    }
+    //        private static boolean validate(Term x, Iterable<Term> yy) {
+////        if (x.unneg().op()==CONJ)
+////            throw new TODO();
+//
+//
+//        for (Term y : yy) {
+//
+////            if (y.unneg().op()==CONJ)
+////                throw new TODO();
+//
+//            if (x.equalsNeg(y))
+//                return false;
+//
+//        }
+//        return true;
+//    }
 
     private boolean addParallelNeg(Term x) {
         return addParallel(x.neg());
@@ -82,22 +80,24 @@ public class ConjTree implements ConjBuilder {
     }
 
     private boolean addParallelP(Term p) {
-        assert(p.op()!=NEG);
+        assert (p.op() != NEG);
 
-        if (p.op() == CONJ)
-            if (p.dt() == DTERNAL || p.dt() == 0) {
-                return p.subterms().AND(this::addParallel); //decompose conj
-            }
+        if (p.op() == CONJ && p.dt() != XTERNAL && !Conj.isSeq(p))
+            return p.subterms().AND(this::addParallel); //decompose conj
 
-        if (pos!=null && pos.contains(p))
+        if (pos != null && pos.contains(p))
             return true;
 
         if (neg != null) {
-            int w = reducePosNeg(p);
-            if (w == +1) return true; //absorbed
-            if (w == -1) {
-                terminate(False);
-                return false; //conflict
+            p = reducePN(p, neg, false);
+            if (p.op() == NEG)
+                return addParallelN(p); //became positive
+
+            if (p == True)
+                return true; //absorbed
+            else if (p == False || p == Null) {
+                terminate(p);
+                return false; /*conflict */
             }
         }
 
@@ -107,20 +107,21 @@ public class ConjTree implements ConjBuilder {
     }
 
     private boolean addParallelN(Term n) {
-        assert(n.op()==NEG);
+        assert (n.op() == NEG);
         Term nu = n.unneg();
-
-        if (pos != null && !(nu instanceof Bool)) {
-            nu = reduceNegPos(nu, pos);
-            if (nu.op()==NEG)
-                return addParallelP(nu.unneg()); //became positive
-        }
 
         if (neg != null && !(nu instanceof Bool)) {
             nu = reduceNegNeg(nu, neg);
-            if (nu.op()==NEG)
+            if (nu.op() == NEG)
                 return addParallelP(nu.unneg()); //became positive
         }
+
+        if (pos != null && !(nu instanceof Bool)) {
+            nu = reducePN(nu, pos, true);
+            if (nu.op() == NEG)
+                return addParallelP(nu.unneg()); //became positive
+        }
+
 
         if (nu == True)
             return true; //absorbed
@@ -141,50 +142,14 @@ public class ConjTree implements ConjBuilder {
         //return new HashSet<>(4);
     }
 
-    private int reducePosNeg(Term x) {
-
-        if (neg.contains(x))
-            return -1; //conflict
-
-        FasterList<Term> toAdd = null;
-
-        //check for disj reductions
-        for (Iterator<Term> iterator = neg.iterator(); iterator.hasNext(); ) {
-            Term n = iterator.next();
-
-            if (n.op() == CONJ && n.containsRecursively(x)) {
-                //disj
-                if (Conj.eventOf(n, x.neg())) {
-                    iterator.remove();
-                } else if (Conj.eventOf(n, x)) {
-                    iterator.remove();
-                    if (toAdd == null) toAdd = new FasterList(1);
-                    Term z = Conj.diffAll(n, x);
-                    if (z == True) {
-                        //ignore
-                    } else if (z == False || z == Null)
-                        return -1;
-                    else
-                        toAdd.add(z);
-                }
-
-            }
-        }
-
-        if (toAdd != null) {
-            if (!toAdd.allSatisfy(this::addParallelNeg))
-                return -1;
-        }
-
-        return 0;
-    }
 
     /**
      * TODO
-     *         ¬( a||b) || ¬( a||¬b) == ¬a	# Robbins Algebra axiom3
-     *         (--a && b) || ( --a && --b) == --a
-     *         --(--a && b) && --(--a && --b) == a
-     *         --(a && b) && --(a && --b) == --a
+     * ¬( a||b) || ¬( a||¬b) == ¬a	# Robbins Algebra axiom3
+     * (--a && b) || ( --a && --b) == --a
+     * --(--a && b) && --(--a && --b) == a
+     * --(a && b) && --(a && --b) == --a
+     *
      * @param nx
      * @param neg
      * @return
@@ -193,7 +158,7 @@ public class ConjTree implements ConjBuilder {
         if (neg.contains(nx))
             return True;
 
-        boolean xConj = nx.op()==CONJ;
+        boolean xConj = nx.op() == CONJ;
 
         FasterList<Term> toAdd = null;
         for (Iterator<Term> nyi = neg.iterator(); nyi.hasNext(); ) {
@@ -206,7 +171,7 @@ public class ConjTree implements ConjBuilder {
                         //prune
                         nyi.remove();
                         if (toAdd == null) toAdd = new FasterList(1);
-                        Term z = ConjDiff.diffAll(ny, nx.neg());
+                        Term z = Conj.diffAll(ny, nx.neg());
                         if (z == True) {
                             //eliminated
                         } else if (z == False || z == Null)
@@ -221,7 +186,7 @@ public class ConjTree implements ConjBuilder {
                     }
                 }
                 //Robbins Algebra / Huntington Reduction
-                if (xConj && (nx.hasAny(NEG) || ny.hasAny(NEG)) && Term.commonStructure(nx.subterms().structure(), ny.subterms().structure()))  {
+                if (xConj && (nx.hasAny(NEG) || ny.hasAny(NEG)) && Term.commonStructure(nx.subterms().structure(), ny.subterms().structure())) {
                     ConjLazy nxe = ConjLazy.events(nx);
                     ConjLazy nye = ConjLazy.events(ny);
                     //symmetric difference
@@ -248,9 +213,18 @@ public class ConjTree implements ConjBuilder {
                     }
                 }
 
-            } /*else if (x.containsRecursively(n)) {
-                    //TODO
-                }*/
+            }
+            if (xConj && nx.containsRecursively(ny)) {
+                if (Conj.eventOf(nx, ny)) {
+                    return ny;
+                } else if (Conj.eventOf(nx, ny.neg())) {
+                    nx = Conj.diffAll(nx, ny.neg());
+                    if (nx instanceof Bool)
+                        return nx;
+                }
+
+            }
+
         }
         if (toAdd != null) {
             if (!toAdd.allSatisfy(this::addParallelNeg))
@@ -259,27 +233,70 @@ public class ConjTree implements ConjBuilder {
         return nx;
     }
 
-    private Term reduceNegPos(Term nu, Set<Term> pos) {
+    private Term reducePN(Term x, Set<Term> y, boolean nP_or_pN) {
 
-        if (pos.contains(nu))
+        if (y.contains(x))
             return False; //contradiction
 
-        for (Term p : pos) {
+        boolean xConj = x.op() == CONJ;
+        if (xConj) {
 
-            if (nu.op() == CONJ) {
-                if (Conj.eventOf(nu, p.neg())) {
-                    return True; //absorb
+            for (Term yy : y) {
+
+                if (nP_or_pN) {
+                    if (Conj.eventOf(x, yy.neg()))
+                        return True; //absorb
+
+                    if (Conj.eventOf(x, yy)) {
+                        x = Conj.diffAll(x, yy);
+                        if (x instanceof Bool) return x;
+                    }
+
+                } else {
+                    if (Conj.eventOf(x, yy)) {
+                        return False; //contradict
+                    } else if (Conj.eventOf(x, yy.neg())) {
+                        x = Conj.diffAll(yy, x);
+                        if (x instanceof Bool) return x;
+                    }
+
+                }
+            }
+
+        }
+
+
+        if (!nP_or_pN) {
+            FasterList<Term> toAdd = null;
+            for (Iterator<Term> iterator = y.iterator(); iterator.hasNext(); ) {
+                Term yy = iterator.next();
+                if (yy.op() == CONJ && yy.containsRecursively(x)) {
+
+                    if (Conj.eventOf(yy, x.neg())) {
+                        iterator.remove();
+                    } else if (Conj.eventOf(yy, x)) {
+                        iterator.remove();
+                        if (toAdd == null) toAdd = new FasterList(1);
+                        Term z = Conj.diffAll(yy, x);
+                        if (z == True) {
+                            //ignore
+                        } else if (z == False || z == Null)
+                            return z;
+                        else
+                            toAdd.add(z);
+                    }
+
                 }
 
-                //TODO remove from sequence
+            }
 
-                else if (Conj.eventOf(nu, p)) {
-                    nu = Conj.diffAll(nu, p);
-                }
+            if (toAdd != null) {
+                if (!toAdd.allSatisfy(nP_or_pN ? this::addParallel : this::addParallelNeg))
+                    return False;
             }
         }
 
-        return nu;
+        return x;
     }
 
     private void terminate(Term result) {
@@ -297,16 +314,42 @@ public class ConjTree implements ConjBuilder {
         if (at == ETERNAL) {
             return addParallel(x);
         } else {
-            if (x.op()!=NEG) {
-                if (neg!=null && !validate(x, neg)) {
-                    terminate(False);
+            if (x.op() != NEG) {
+                if (neg != null && neg.contains(x)) {
+                    terminate(False); //contradict
                     return false;
                 }
+
             } else {
-                if (pos!=null && !validate(x, pos)) {
-                    terminate(False);
+                Term nu = x.unneg();
+                Term _nu = nu;
+                if (pos != null && pos.contains(nu)) {
+                    terminate(False); //contradict
                     return false;
                 }
+
+                if (neg != null && !(nu instanceof Bool)) {
+                    nu = reduceNegNeg(nu, neg);
+                    if (nu.op() == NEG)
+                        return addEvent(at, nu.unneg()); //became positive
+                }
+
+                if (pos != null && !(nu instanceof Bool)) {
+                    nu = reducePN(nu, pos, true);
+                    if (nu.op() == NEG)
+                        return addEvent(at, nu.unneg()); //became positive
+                }
+
+
+                if (nu == True)
+                    return true; //absorbed
+                else if (nu == False || nu == Null) {
+                    terminate(nu);
+                    return false; /*conflict */
+
+                }
+                if (_nu != nu)
+                    x = nu.neg(); //HACK
             }
 
             if (seq == null) seq = new IntObjectHashMap<>(4);
@@ -333,15 +376,16 @@ public class ConjTree implements ConjBuilder {
     }
 
     private boolean posRemove(Term t) {
-        if (pos!=null && pos.remove(t)) {
+        if (pos != null && pos.remove(t)) {
             if (pos.isEmpty())
                 pos = null;
             return true;
         }
         return false;
     }
+
     private boolean negRemove(Term t) {
-        if (neg!=null && neg.remove(t)) {
+        if (neg != null && neg.remove(t)) {
             if (neg.isEmpty())
                 neg = null;
             return true;
@@ -356,6 +400,19 @@ public class ConjTree implements ConjBuilder {
 
     @Override
     public boolean removeAll(Term term) {
+        boolean removed = removeParallel(term);
+
+        if (seq != null) {
+            if (!removed)
+                removed |= seq.anySatisfyWith(ConjTree::removeAll, term);
+            else
+                seq.forEachWith(ConjTree::removeAll, term);
+        }
+
+        return removed;
+    }
+
+    private boolean removeParallel(Term term) {
         if (terminal != null)
             throw new UnsupportedOperationException();
 
@@ -365,14 +422,6 @@ public class ConjTree implements ConjBuilder {
         } else {
             removed |= posRemove(term);
         }
-
-        if (seq!=null) {
-            if (!removed)
-                removed |= seq.anySatisfyWith(ConjTree::removeAll, term);
-            else
-                seq.forEachWith(ConjTree::removeAll, term);
-        }
-
         return removed;
     }
 
@@ -386,35 +435,31 @@ public class ConjTree implements ConjBuilder {
         throw new TODO();
     }
 
-    @Override
-    public Term term(TermBuilder B /* Iterable<Term> superconditionsToValidateAgainst */) {
-        return term(B, Collections.EMPTY_LIST);
-    }
 
     public int size() {
-        return (pos!=null ? pos.size() : 0) +
-                (neg!=null ? neg.size() : 0) +
-                (seq!=null ? (int)seq.sumOfInt(ConjTree::size) : 0);
+        return (pos != null ? pos.size() : 0) +
+                (neg != null ? neg.size() : 0) +
+                (seq != null ? (int) seq.sumOfInt(ConjTree::size) : 0);
     }
 
-    private Term term(TermBuilder B, Iterable<Term> superConditions) {
+    @Override
+    public Term term(TermBuilder B) {
         if (terminal != null)
             return terminal;
 
-
         int ss;
-        if (seq!=null && ((ss=seq.size()) > 0)) {
+        if (seq != null && ((ss = seq.size()) > 0)) {
             Term s = null;
 
             if (ss == 1) {
                 //special case: degenerate sequence of 1 time point (probably @ 0)
-                s = seq.getOnly().term(B, superConditions);
+                s = seq.getOnly().term(B);
             } else {
                 //actual sequence
                 LongObjectArraySet<Term> events = new LongObjectArraySet<>(ss);
 
                 for (IntObjectPair<ConjTree> wc : seq.keyValuesView()) {
-                    Term w = wc.getTwo().term(B, superConditions);
+                    Term w = wc.getTwo().term(B);
                     if (w == True) continue;
                     if (w == False || w == Null) return w;
                     events.add((long) wc.getOne(), w);
@@ -422,7 +467,7 @@ public class ConjTree implements ConjBuilder {
                 if (!events.isEmpty()) {
 
                     factor(events);
-                    if (terminal!=null)
+                    if (terminal != null)
                         return terminal;
 
                     s = ConjSeq.conjSeq(B, events);
@@ -444,10 +489,10 @@ public class ConjTree implements ConjBuilder {
             if (s != null) {
                 //add seq as if parallel component avoiding decompose what we just constructed
 
-                if ((pos!=null || neg!=null) && Conj.isSeq(s)) {
+                if ((pos != null || neg != null) && Conj.isSeq(s)) {
                     //check for sub-event conflicts that ordinarily wouldnt be tested on addParallel insert
 
-                    if (!s.eventsWhile((when,what)-> {
+                    if (!s.eventsWhile((when, what) -> {
                         if (what.op() == NEG) {
                             if (pos != null)
                                 if (pos.contains(what.unneg())) {
@@ -478,8 +523,6 @@ public class ConjTree implements ConjBuilder {
 
 
         if (pos != null) {
-            if (superConditions != Collections.EMPTY_LIST && !Iterables.all(pos, z -> validate(z, superConditions)))
-                return False;
             int pp = pos.size();
             if (neg == null && pp == 1)
                 return pos.iterator().next();
@@ -489,8 +532,6 @@ public class ConjTree implements ConjBuilder {
             }
         }
         if (neg != null) {
-            if (superConditions != Collections.EMPTY_LIST && !Iterables.all(neg, z -> validate(z.neg(), superConditions)))
-                return False;
             int nn = neg.size();
             if (pos == null && nn == 1)
                 return neg.iterator().next().neg();
@@ -499,7 +540,6 @@ public class ConjTree implements ConjBuilder {
                 p.addAllNegated(neg);
             }
         }
-
 
 
         if (p.size() > 1)
@@ -565,7 +605,7 @@ public class ConjTree implements ConjBuilder {
             return;
 
         TermList newFactors = new TermList(), partialFactors = new TermList();
-        Set<Term> factorable = count.keyValuesView().select((xc)->{
+        Set<Term> factorable = count.keyValuesView().select((xc) -> {
             Term x = xc.getOne();
             int c = xc.getTwo();
             if (c < n) {
@@ -588,7 +628,7 @@ public class ConjTree implements ConjBuilder {
             }
         }).collect(ObjectIntPair::getOne).toSet();
 
-        if (terminal!=null)
+        if (terminal != null)
             return; //TODO find why if this happens as a reuslt of addParallel
 
         if (!factorable.isEmpty()) {
@@ -610,15 +650,14 @@ public class ConjTree implements ConjBuilder {
                     Term x = events.get(i);
                     MetalBitSet m = removals.get(i);
                     Term[] removing = x.subterms().removing(m);
-                    Term y;
-                    if (removing.length == 1)
-                        y = removing[0];
-                    else
-                        y = CONJ.the(x.dt(), removing);
+                    Term y = removing.length == 1 ? removing[0] : CONJ.the(x.dt(), removing);
                     events.set(i, y);
                 }
                 newFactors.forEach(this::addParallel);
+            } else {
+                newFactors.forEach(this::removeParallel);
             }
+
 
             int pf = partialFactors.size();
             if (pf > 0) {
@@ -628,9 +667,9 @@ public class ConjTree implements ConjBuilder {
                     if (pf == 1 && partialFactors.sub(0).equals(xf))
                         continue;
 
-                    Term[] t = new Term[pf+1];
+                    Term[] t = new Term[pf + 1];
                     partialFactors.arrayClone(t);
-                    t[t.length-1] = xf;
+                    t[t.length - 1] = xf;
                     Term xd = CONJ.the(t);
                     if (xd == False || xd == Null) {
                         terminate(xd);
@@ -639,7 +678,6 @@ public class ConjTree implements ConjBuilder {
                     events.set(i, xd);
                 }
             }
-
 
 
         } else {
@@ -656,7 +694,7 @@ public class ConjTree implements ConjBuilder {
             return false;
         } else {
 
-            if (!validate(term, t)) {
+            if (false) {
                 terminate(False);
                 return false;
             } else {

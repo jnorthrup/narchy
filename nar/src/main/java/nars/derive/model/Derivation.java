@@ -204,7 +204,7 @@ public class Derivation extends PreDerivation {
     /**
      * whether either the task or belief are events and thus need to be considered with respect to time
      */
-    public transient boolean temporal, temporalTerms;
+    public transient boolean temporal;
     public transient TruthFunc truthFunction;
     public transient int ditherDT;
     public Deriver deriver;
@@ -303,8 +303,8 @@ public class Derivation extends PreDerivation {
     public void reset(Task nextTask, final Task nextBelief, Term nextBeliefTerm) {
         this._task = resetTask(nextTask, this._task);
         this._belief = resetBelief(nextBelief, nextBeliefTerm);
-        this.termBuilder.clear(); //complete clear
-        this.occ.clear();
+        //this.termBuilder.clear(); //complete clear
+        //this.occ.clear();
     }
 
     private Task resetBelief(Task nextBelief, Term nextBeliefTerm) {
@@ -321,14 +321,14 @@ public class Derivation extends PreDerivation {
                 this.beliefTruth_at_Belief = nextBelief.truth();
 
                 boolean taskEternal = taskStart == ETERNAL;
-
-                if (taskEternal) {
-                    int dur = dur();
-                    long now = time();
-                    taskStart = now - dur / 2;
-                    taskEnd = now + dur / 2;
-                    taskEternal = false;
-                }
+//
+//                if (taskEternal) {
+//                    int dur = dur();
+//                    long now = time();
+//                    taskStart = now - dur / 2;
+//                    taskEnd = now + dur / 2;
+//                    taskEternal = false;
+//                }
 
                 this.beliefTruth_at_Task =
                         taskEternal ?
@@ -337,23 +337,28 @@ public class Derivation extends PreDerivation {
 
                 if (beliefTruth_at_Belief != null && NAL.ETERNALIZE_BELIEF_PROJECTED_IN_DERIVATION) {
 
-                    Truth beliefTruth_eternalized = beliefTruth_at_Belief.eternalized(1, NAL.truth.EVI_MIN, null /* dont dither */);
-                    if (beliefTruth_eternalized.evi() > beliefTruth_at_Task.evi()) {
+                    Truth beliefTruth_eternalized = beliefTruth_at_Belief.eternalized(1, eviMin, null /* dont dither */);
+                    if (beliefTruth_eternalized!=null) {
+                        double ee = beliefTruth_eternalized.evi();
+                        if (ee >= eviMin && ee > beliefTruth_at_Task.evi()) {
 
-                        assert(nextBelief!=null);
+                            assert (nextBelief != null);
 
-                        if (NAL.ETERNALIZE_BELIEF_PROJECTED_IN_DERIVATION_AND_ETERNALIZE_BELIEF_TIME)
-                            nextBeliefStart = nextBeliefEnd = ETERNAL;
+                            if (NAL.ETERNALIZE_BELIEF_PROJECTED_IN_DERIVATION_AND_ETERNALIZE_BELIEF_TIME)
+                                nextBeliefStart = nextBeliefEnd = ETERNAL;
 
-                        nextBelief = new SpecialTruthAndOccurrenceTask(nextBelief, nextBeliefStart, nextBeliefEnd,
-                                false,
-                                this.beliefTruth_at_Task = beliefTruth_eternalized
-                        );
+                            nextBelief = new SpecialTruthAndOccurrenceTask(nextBelief, nextBeliefStart, nextBeliefEnd,
+                                    false,
+                                    this.beliefTruth_at_Task = beliefTruth_eternalized
+                            );
+                        }
                     }
                 }
             }
 
-            if (beliefTruth_at_Task == null && beliefTruth_at_Belief == null)
+            if ((beliefTruth_at_Task == null   || beliefTruth_at_Task.evi() < eviMin)
+                    &&
+                (beliefTruth_at_Belief == null || beliefTruth_at_Belief.evi() < eviMin))
                 nextBelief = null;
 
         } else {
@@ -506,18 +511,8 @@ public class Derivation extends PreDerivation {
 
 
         boolean eternalCompletely = (taskStart == ETERNAL) && (_belief == null || beliefStart == ETERNAL);
-        this.temporalTerms = Occurrify.temporal(taskTerm) || Occurrify.temporal(beliefTerm);
-        this.temporal = !eternalCompletely || temporalTerms;
-//        if ((_belief == null) && (!temporal)) {
-//            if (Occurrify.temporal(beliefTerm)) {
-//                Term beliefTermEternal = Retemporalize.retemporalizeXTERNALToDTERNAL.transform(beliefTerm); //HACK
-//                if (Occurrify.temporal(beliefTermEternal)) {
-//                    temporal = true;
-//                } else {
-//                    beliefTerm = beliefTermEternal;
-//                }
-//            }
-//        }
+        this.temporal = !eternalCompletely || Occurrify.temporal(taskTerm) || Occurrify.temporal(beliefTerm);
+
 
         int causeCap = NAL.causeCapacity.intValue();
         this.parentCause =
@@ -643,7 +638,7 @@ public class Derivation extends PreDerivation {
         canCollector.clear();
         ttl = 0;
         taskUniques = 0;
-        temporal = temporalTerms = false;
+        temporal = false;
         taskBeliefTimeIntersects[0] = taskBeliefTimeIntersects[1] = TIMELESS;
         nar = null;
 

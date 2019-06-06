@@ -11,6 +11,7 @@ import nars.term.util.builder.TermBuilder;
 import org.eclipse.collections.api.iterator.LongIterator;
 import org.eclipse.collections.impl.set.mutable.primitive.LongHashSet;
 
+import static nars.Op.CONJ;
 import static nars.term.atom.Bool.*;
 import static nars.time.Tense.*;
 
@@ -198,4 +199,30 @@ public class ConjLazy extends LongObjectArraySet<Term> implements ConjBuilder {
     public final boolean removeNeg(long at, Term t) {
         return removeIf((when, what) -> at == when && t.equalsNeg(what));
     }
+
+    /** returns true if something removed */
+    public int removeAll(Term x, long offset, boolean polarity) {
+
+        if (x.op()==CONJ && x.dt()!=XTERNAL) {
+            //remove components
+            final boolean[] removed = {false};
+            if (!x.eventsWhile((when, what) -> {
+                if (contains(when, what.negIf(polarity)))
+                    return false; //contradiction
+
+                removed[0] |= remove(when, what.negIf(!polarity));
+                return true;
+            }, offset, true, false))
+                return -1;
+            return removed[0] ? +1 : 0;
+        } else {
+            if (remove(offset, x.negIf(polarity)))
+                return -1;
+            if (remove(offset, x.negIf(!polarity)))
+                return 1;
+            return 0;
+        }
+    }
+
+
 }

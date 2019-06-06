@@ -13,7 +13,7 @@ import nars.term.compound.CachedCompound;
 import nars.term.compound.CachedUnitCompound;
 import nars.term.util.Statement;
 import nars.term.util.TermException;
-import nars.term.util.conj.Conj;
+import nars.term.util.conj.ConjBuilder;
 import nars.term.util.conj.ConjCommutive;
 import nars.term.util.conj.ConjSeq;
 import nars.term.util.transform.CompoundNormalization;
@@ -123,7 +123,7 @@ public abstract class TermBuilder implements TermConstructor {
     protected final Term conj(boolean preSorted, int dt, Term... u) {
 
         if (!preSorted && u.length > 1)
-            u = Conj.preSort(dt, u);
+            u = ConjBuilder.preSort(dt, u);
 
         switch (u.length) {
             case 0:

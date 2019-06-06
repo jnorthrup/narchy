@@ -153,7 +153,7 @@ public class NARS {
     public NARS() {
 
         index = () ->
-                new SimpleMemory(4 * 1024)
+                new SimpleMemory(8 * 1024)
                 //new TemporaryConceptIndex()
         ;
 
@@ -181,9 +181,9 @@ public class NARS {
                         ),
                         //beliefs tmp
                         curve(termVolume,
-                                1, 64,
-                                16, 32,
-                                32, 16
+                                1, 128,
+                                16, 64,
+                                32, 32
                         ),
                         //goals ete
                         curve(termVolume,
@@ -193,9 +193,9 @@ public class NARS {
                         ),
                         //goals tmp
                         curve(termVolume,
-                                1, 64,
-                                16, 32,
-                                32, 16
+                                1, 128,
+                                16, 64,
+                                32, 32
                         ),
                         //questions
                         curve(termVolume,

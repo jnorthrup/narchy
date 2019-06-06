@@ -1,24 +1,24 @@
-// General Analogy
+// General Desire
 //   see:
 //      https://en.wikipedia.org/wiki/Fluid_Concepts_and_Creative_Analogies
 //      https://cogsci.indiana.edu/
-// the similarity beliefs here act as a sort of transistor switch in determining analogy result truth
+// the similarity beliefs here act as a sort of transistor switch in determining Desire result truth
 
-  X, (X <-> Y), --isVar(Y)                        |- Y, (Belief:Analogy)
+  X, (X <-> Y), --isVar(Y)                        |- Y, (Belief:Desire)
    X, (X <-> Y), task("?@"), --isVar(Y)            |- Y
 //    X, (X <-> Y), --isVar(Y)                         |-  --Y, (Goal:DesireWeakPN)
-  X, (--X <-> Y), --isVar(Y)                      |- Y, (Belief:AnalogyN)
+  X, (--X <-> Y), --isVar(Y)                      |- Y, (Belief:DesireN)
    X, (--X <-> Y), task("?@"), --isVar(Y)            |- Y
 //    X, (--X <-> Y), --isVar(Y)                       |-  --Y, (Goal:DesireWeakNN)
 
 
 
-  Z, (X <-> Y), in(Z,X), neq(Z,Y), --isVar(X), --isVar(Y)   |- substitute(Z, X, Y, novel), (Belief:Analogy)
+  Z, (X <-> Y), in(Z,X), neq(Z,Y), --isVar(X), --isVar(Y)   |- substitute(Z, X, Y, novel), (Belief:Desire)
   //Z, (X <-> Y), task("."), in(Z,X), neq(Z,Y)   |- substitute(Z, X, Y, novel), (Punctuation:Question, Time:Task)
     //Z, (X <-> Y), task("!"), in(Z,X), neq(Z,Y)   |- substitute(Z, X, Y, novel), (Punctuation:Question, Time:Task)
-        //  Belief:Analogy, Goal:DesireWeak)
-  Z, (X <-> Y), neq(Z,X), neq(Z,Y), --isVar(X), --isVar(Y)    |- unisubst(Y, X, Z, novel), (Belief:Analogy)
-  Z, (--X <-> Y), neq(Z,X), neq(Z,Y), --isVar(X), --isVar(Y)  |- unisubst(Y, X, Z, novel), (Belief:AnalogyN)
+        //  Belief:Desire, Goal:DesireWeak)
+  Z, (X <-> Y), neq(Z,X), neq(Z,Y), --isVar(X), --isVar(Y)    |- unisubst(Y, X, Z, novel), (Belief:Desire)
+  Z, (--X <-> Y), neq(Z,X), neq(Z,Y), --isVar(X), --isVar(Y)  |- unisubst(Y, X, Z, novel), (Belief:DesireN)
       //Z, (X <-> Y), task("."), neq(Z,X), neq(Z,Y)    |- unisubst(Y, X, Z, novel), (Punctuation:Question)
         //  Z, (X <-> Y), task("!"), neq(Z,X), neq(Z,Y)    |- unisubst(Y, X, Z, novel), (Punctuation:Quest)
       //Z, (--X <-> Y), task("."), neq(Z,X), neq(Z,Y)  |- unisubst(Y, X, Z, novel), (Punctuation:Question)
@@ -43,12 +43,12 @@
 
 
 
-  //(M --> P), (S <-> M), neqRCom(S,P) |- (S --> P), (Belief:Analogy, Goal:Desire)
-  //(P --> M), (S <-> M), neqRCom(S,P) |- (P --> S), (Belief:Analogy, Goal:Desire)
+  //(M --> P), (S <-> M), neqRCom(S,P) |- (S --> P), (Belief:Desire, Goal:Desire)
+  //(P --> M), (S <-> M), neqRCom(S,P) |- (P --> S), (Belief:Desire, Goal:Desire)
 
   //wantX and X similar Y then want Y
-    //X, (X<->Y)                          |- Y, (Belief:Analogy, Goal:Desire)
-    //Z, (X<->Y), in(Z,X), neq(Z,X), neq(Z,Y)  |- unisubst(Z, X, Y, novel), (Belief:Analogy, Goal:Weak)
+    //X, (X<->Y)                          |- Y, (Belief:Desire, Goal:Desire)
+    //Z, (X<->Y), in(Z,X), neq(Z,X), neq(Z,Y)  |- unisubst(Z, X, Y, novel), (Belief:Desire, Goal:Weak)
 
   //notWantX and notX similar Y then want Y
 
@@ -57,32 +57,32 @@
     //X, (--X<->Y)                        |- --Y, (Goal:WeakNN)
 
 
-    //Z, (X<->Y), inNeg(Z,X)             |- unisubst(Z, X, Y, novel, force), (Belief:AnalogyN, Goal:WeakN)
-    //Z, (X<->Y), neq(Z,X), neq(Z,Y)    |- unisubst(Y, --X, Z, novel), (Belief:AnalogyN, Goal:WeakN)
+    //Z, (X<->Y), inNeg(Z,X)             |- unisubst(Z, X, Y, novel, force), (Belief:DesireN, Goal:WeakN)
+    //Z, (X<->Y), neq(Z,X), neq(Z,Y)    |- unisubst(Y, --X, Z, novel), (Belief:DesireN, Goal:WeakN)
       //X, (X<->Y)                 |- (--,Y), (Goal:WeakPN)
       //X, (--X<->Y)               |- (--,Y), (Goal:WeakNN)
-      //(X-->A), (($1-->A)<->($1-->B)), neqRCom(X,B) |- (X-->B), (Belief:Analogy, Goal:Induction)
+      //(X-->A), (($1-->A)<->($1-->B)), neqRCom(X,B) |- (X-->B), (Belief:Desire, Goal:Induction)
 
 //Similarity in Conjunction spreading
- //   (&&,(X<->Y),A..+), (Y<->Z), neqRCom(X,Z) |- (&&,(X<->Z),A..+), (Belief:Analogy, Goal:Weak)
- //   (&&,--(X<->Y),A..+), (Y<->Z), neqRCom(X,Z) |- (&&,--(X<->Z),A..+), (Belief:Analogy, Goal:Weak)
+ //   (&&,(X<->Y),A..+), (Y<->Z), neqRCom(X,Z) |- (&&,(X<->Z),A..+), (Belief:Desire, Goal:Weak)
+ //   (&&,--(X<->Y),A..+), (Y<->Z), neqRCom(X,Z) |- (&&,--(X<->Z),A..+), (Belief:Desire, Goal:Weak)
     //TODO (&&,(X<->Y),A..+), (&&,(Y<->Z),A..+), neq(X,Z) |- (&&,(X<->Z),A..+), (Belief:...
 
  //suspect:
-// Z, (X<->Y), eqOrIn(X,Z), belief(negative)   |- (--, unisubst(Z, X, Y, novel, force)), (Belief:AnalogyPN, Goal:WeakPN)
-//Z, (--X<->Y), eqOrIn(X,Z), belief(positive) |- unisubst(Z, X, Y, novel, force), (Belief:AnalogyN, Goal:WeakN)
- //Z, (--X<->Y), eqOrIn(X,Z), belief(negative) |- (--, unisubst(Z, X, Y, novel, force)), (Belief:AnalogyNN, Goal:WeakNN)
+// Z, (X<->Y), eqOrIn(X,Z), belief(negative)   |- (--, unisubst(Z, X, Y, novel, force)), (Belief:DesirePN, Goal:WeakPN)
+//Z, (--X<->Y), eqOrIn(X,Z), belief(positive) |- unisubst(Z, X, Y, novel, force), (Belief:DesireN, Goal:WeakN)
+ //Z, (--X<->Y), eqOrIn(X,Z), belief(negative) |- (--, unisubst(Z, X, Y, novel, force)), (Belief:DesireNN, Goal:WeakNN)
 
 //these old rules are replaced by the above rules:
         //If M is a special case of P and S and M are similar, then S is also a special case of P (strong)
 
-            //(M --> P), (S <-> M), neqRCom(S,P) |- (S --> P), (Belief:Analogy, Goal:Desire)
+            //(M --> P), (S <-> M), neqRCom(S,P) |- (S --> P), (Belief:Desire, Goal:Desire)
                     //TODO write test case for this
-            //(P --> M), (S <-> M), neqRCom(S,P) |- (P --> S), (Belief:Analogy, Goal:Desire)
+            //(P --> M), (S <-> M), neqRCom(S,P) |- (P --> S), (Belief:Desire, Goal:Desire)
                     //TODO write test case for this
             //variable elimination 4b:
 
-        //    (X --> A),        ((Y --> A)<->(Y --> C)),  neqRCom(X,C), neq(X,Y)      |- (X-->C), (Belief:Analogy, Goal:Desire)
-         //       (X --> A),  (--(Y --> A)<->(Y --> C)),  neqRCom(X,C), neq(X,Y)      |- (X-->C), (Belief:AnalogyN, Goal:DesireN)
-          //  (A --> X),        ((A --> Y)<->(C --> Y)),  neqRCom(X,C), neq(X,Y)      |- (C-->X), (Belief:Analogy, Goal:Desire)
-          //      (A --> X),  (--(A --> Y)<->(C --> Y)),  neqRCom(X,C), neq(X,Y)      |- (C-->X), (Belief:AnalogyN, Goal:DesireN)
+        //    (X --> A),        ((Y --> A)<->(Y --> C)),  neqRCom(X,C), neq(X,Y)      |- (X-->C), (Belief:Desire, Goal:Desire)
+         //       (X --> A),  (--(Y --> A)<->(Y --> C)),  neqRCom(X,C), neq(X,Y)      |- (X-->C), (Belief:DesireN, Goal:DesireN)
+          //  (A --> X),        ((A --> Y)<->(C --> Y)),  neqRCom(X,C), neq(X,Y)      |- (C-->X), (Belief:Desire, Goal:Desire)
+          //      (A --> X),  (--(A --> Y)<->(C --> Y)),  neqRCom(X,C), neq(X,Y)      |- (C-->X), (Belief:DesireN, Goal:DesireN)

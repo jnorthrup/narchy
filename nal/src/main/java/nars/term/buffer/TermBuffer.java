@@ -237,7 +237,7 @@ public class TermBuffer {
     protected Term nextTerm(byte[] bytes, int[] range) {
 
         if (range[0] >= range[1])
-            throw new WTF();
+            throw new WTF("byte range overflow: " + range[0] + " >= " + range[1]);
 
         int end = range[1];
         int start = range[0];

@@ -37,18 +37,33 @@ public enum ConjCommutive {
     public static Term the(TermBuilder B, int dt, boolean sort, boolean direct, Term... xx) {
         ConjTree ct = new ConjTree();
         long sdt = (dt == DTERNAL) ? ETERNAL : 0;
-        for (Term x : xx) {
-//            if (ConjSeq.isFactoredSeq(x)) {
-//                //add the components separately
-//                if (!ct.add(sdt, ConjSeq.seqEternal(x)))
-//                    break;
-//                if (!ct.add(sdt, ConjSeq.seqTemporal(x)))
-//                    break;
-//            } else {
+        for (int i = xx.length - 1; i >= 0; i--) {
+            Term x = xx[i];
+            if (x.unneg().op() != CONJ)
                 if (!ct.add(sdt, x))
                     break;
-//            }
         }
+        if (ct.terminal==null) {
+            for (int i = xx.length - 1; i >= 0; i--) {
+                Term x = xx[i];
+                if (x.unneg().op() == CONJ)
+                    if (!ct.add(sdt, x))
+                        break;
+            }
+        }
+
+//        for (Term x : xx) {
+////            if (ConjSeq.isFactoredSeq(x)) {
+////                //add the components separately
+////                if (!ct.add(sdt, ConjSeq.seqEternal(x)))
+////                    break;
+////                if (!ct.add(sdt, ConjSeq.seqTemporal(x)))
+////                    break;
+////            } else {
+//                if (!ct.add(sdt, x))
+//                    break;
+////            }
+//        }
         return ct.term(B);
     }
 
