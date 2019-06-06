@@ -29,7 +29,6 @@ import org.eclipse.collections.api.tuple.primitive.LongObjectPair;
 import org.eclipse.collections.impl.factory.primitive.ByteSets;
 import org.eclipse.collections.impl.list.mutable.primitive.LongArrayList;
 import org.eclipse.collections.impl.map.mutable.primitive.LongObjectHashMap;
-import org.eclipse.collections.impl.map.mutable.primitive.ObjectByteHashMap;
 import org.eclipse.collections.impl.set.mutable.primitive.ByteHashSet;
 import org.jetbrains.annotations.Nullable;
 import org.roaringbitmap.ImmutableBitmapDataProvider;
@@ -52,47 +51,25 @@ import static nars.time.Tense.*;
  * https://en.wikipedia.org/wiki/Negation_normal_form
  * https://en.wikipedia.org/wiki/Conjunctive_normal_form
  */
-public class Conj extends ByteAnonMap implements ConjBuilder {
+public enum Conj  { ;
 
 
-    public static final int ROARING_UPGRADE_THRESH = 8;
 
-    //    /**
-//     * TermBuilder to use internally
-//     */
-//    @Deprecated
-//    private static final TermBuilder terms =
-//            //HeapTermBuilder.the;
-//            Op.terms;
-    static final Predicate<Term> isTemporalComponent = Conj::isSeq;
-    static final Predicate<Term> isEternalComponent = isTemporalComponent.negate();
-    public final LongObjectHashMap<Object> event;
-    /**
-     * state which will be set in a terminal condition, or upon target construction in non-terminal condition
-     */
-    private Term result = null;
 
-    public Conj() {
-        this(2);
-    }
+//    Conj(ObjectByteHashMap<Term> x, FasterList<Term> y) {
+//        super(x, y);
+//        event = new LongObjectHashMap<>(2);
+//    }
 
-    Conj(ObjectByteHashMap<Term> x, FasterList<Term> y) {
-        super(x, y);
-        event = new LongObjectHashMap<>(2);
-    }
-
-    public Conj(int n) {
-        super(n);
-        event = new LongObjectHashMap<>(n);
-    }
 
 
 
     /**
      * but events are unique
      */
-    static Conj newConjSharingTermMap(Conj x) {
-        return new Conj(x.termToId, x.idToTerm);
+    static Conj newConjSharingTermMap(ConjBuilder x) {
+        //return new Conj(x.termToId, x.idToTerm);
+        throw new UnsupportedOperationException();
     }
 
 //    public static boolean containsOrEqualsEvent(Term container, Term x) {
@@ -1002,205 +979,206 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
 
     @Deprecated
     private static Term disjunctionVsDisjunction(TermBuilder builder, Term a, Term b, boolean eternal) {
-        Conj aa = new Conj();
-        if (eternal) aa.addAuto(a);
-        else aa.add(0, a);
-        //aa.factor();
-        //aa.distribute();
-
-        Conj bb = newConjSharingTermMap(aa);
-        if (eternal) bb.addAuto(b);
-        else bb.add(0, b);
-        //bb.factor();
-        //bb.distribute();
-
-        Conj cc = intersect(aa, bb);
-        if (cc == null) {
-            //perfectly disjoint; OK
-            return null;
-        } else {
-            Term B = bb.term(builder);
-            if (b == Null)
-                return Null;
-            Term A = aa.term(builder);
-            if (a == Null)
-                return Null;
-
-            long as = aa.shiftOrZero(), bs = bb.shiftOrZero();
-            long abShift = Math.min(as, bs);
-            Conj dd = newConjSharingTermMap(cc);
-            if (eternal && as == 0 && bs == 0) {
-                as = bs = ETERNAL;
-            }
-            if (dd.add(as, A.neg()))
-                dd.add(bs, B.neg());
-
-            Term D = dd.term(builder);
-            if (D == Null)
-                return Null;
-
-            if (cc.eventOccurrences() == 0)
-                return D.neg();
-            else {
-//                if (cc.eventCount(ETERNAL) > 0 && !Conj.isSeq(A) && !Conj.isSeq(B))
+        throw new WTF();
+//        ConjBuilder aa = new ConjTree();
+//        if (eternal) aa.addAuto(a);
+//        else aa.add(0, a);
+//        //aa.factor();
+//        //aa.distribute();
+//
+//        Conj bb = newConjSharingTermMap(aa);
+//        if (eternal) bb.addAuto(b);
+//        else bb.add(0, b);
+//        //bb.factor();
+//        //bb.distribute();
+//
+//        ConjBuilder cc = intersect(aa, bb);
+//        if (cc == null) {
+//            //perfectly disjoint; OK
+//            return null;
+//        } else {
+//            Term B = bb.term(builder);
+//            if (b == Null)
+//                return Null;
+//            Term A = aa.term(builder);
+//            if (a == Null)
+//                return Null;
+//
+//            long as = aa.shiftOrZero(), bs = bb.shiftOrZero();
+//            long abShift = Math.min(as, bs);
+//            ConjBuilder dd = newConjSharingTermMap(cc);
+//            if (eternal && as == 0 && bs == 0) {
+//                as = bs = ETERNAL;
+//            }
+//            if (dd.add(as, A.neg()))
+//                dd.add(bs, B.neg());
+//
+//            Term D = dd.term(builder);
+//            if (D == Null)
+//                return Null;
+//
+//            if (cc.eventOccurrences() == 0)
+//                return D.neg();
+//            else {
+////                if (cc.eventCount(ETERNAL) > 0 && !Conj.isSeq(A) && !Conj.isSeq(B))
+////                    abShift = ETERNAL;
+//                if (eternal && as == ETERNAL && bs == ETERNAL)
 //                    abShift = ETERNAL;
-                if (eternal && as == ETERNAL && bs == ETERNAL)
-                    abShift = ETERNAL;
-                cc.add(abShift, D.neg());
-                return cc.term(builder).neg();
-            }
-        }
-    }
-
-    /**
-     * produces a Conj instance containing the intersecting events.
-     * null if no events in common and x and y were not modified.
-     * erases contradiction (both cases) between both so may modify X and Y.  probably should .distribute() x and y first
-     */
-    @Nullable
-    private static Conj intersect(Conj x, Conj y) {
-
-        assert (x.termToId == y.termToId) : "x and y should share target map";
-
-        MutableLongSet commonEvents = x.event.keySet().select(y.event::containsKey);
-        if (commonEvents.isEmpty())
-            return null;
-
-        Conj c = newConjSharingTermMap(x);
-        final boolean[] modified = {false};
-        commonEvents.forEach(e -> {
-            ByteSet xx = x.eventSet(e);
-            ByteSet yy = y.eventSet(e);
-            ByteSet common = xx.select(yy::contains);
-            ByteSet contra = xx.select(xxx -> yy.contains((byte) -xxx));
-            if (!common.isEmpty()) {
-                common.forEach(cc -> {
-                    c.add(e, x.unindex(cc));
-                    boolean xr = x.remove(e, cc);
-                    boolean yr = y.remove(e, cc);
-                    assert (xr && yr);
-                    modified[0] = true;
-                });
-            }
-            if (!contra.isEmpty()) {
-                contra.forEach(cc -> {
-                    boolean xr = x.remove(e, cc, (byte) -cc);
-                    boolean yr = y.remove(e, cc, (byte) -cc);
-                    assert (xr && yr);
-                    modified[0] = true;
-                });
-            }
-        });
-        return (!modified[0] && c.event.isEmpty()) ? null : c;
-    }
-
-    @Deprecated
-    private static Term conjoinify(TermBuilder B, final Term existing /* conj */, Term incoming, boolean eternal) {
-
-
-        int existingDT = existing.dt();
-        int incomingDT = incoming.dt();
-
-
-        if (existingDT == XTERNAL) {
-            if (incomingDT == XTERNAL)
-                return null; //two xternal's, no way to know how they combine or not
-
-            //distribute incoming to all xternal components
-            SortedSet<Term> c = new TreeSet();
-            for (Term x : existing.subterms()) {
-                Term y = CONJ.the(x, incoming);
-                if (y == True || y == Null || y == False)
-                    continue; //??
-                c.add(y);
-            }
-
-            return CONJ.the(XTERNAL, c);
-        }
-
-//        if (existingDT == 0 && incomingDT == 0) {
-//            assert(eternal);
-//            eternal = false;
-//        }
-
-//        int outerDT = eternal ? DTERNAL : 0;
-
-//        if (incoming.op() == CONJ) {
-//
-//            if (eternal && (incomingDT != DTERNAL && existingDT != DTERNAL))
-//                return null; //dont change non-DTERNAL components in eternity
-//
-//            if (incomingDT == DTERNAL || incomingDT == 0) {
-//
-//                if (incomingDT == outerDT || existingDT == outerDT) {
-//                    //at least one of the terms has a DT matching the outer
-//                    return B.conj(outerDT, existing, incoming);
-//                } else if (incomingDT == existingDT) {
-//                    if (outerDT == 0 && ((incomingDT == 0) || (incomingDT == DTERNAL))) {
-//                        //promote a parallel of two eternals or two parallels to one parallel
-//                        return B.conj(incomingDT, existing, incoming);
-//                    }
-//                }
-//            }
-//
-//
-//            //two sequence-likes. maybe some preprocessing that can be applied here
-//            //otherwise just add the new event
-//            if (!isSeq(existing) && !isSeq(incoming))
-//                return null;
-//
-//        }
-
-        //quick contradiction test
-//        if (eternal || existingDT == 0) {
-//            if (existing.containsNeg(incoming))
-//                return False;
-//            if (incoming.op() != CONJ && existing.contains(incoming)) {
-//                return existing;
+//                cc.add(abShift, D.neg());
+//                return cc.term(builder).neg();
 //            }
 //        }
-
-//        if (!isSeq(existing))
-//            return null; //ok
-
-        if (incoming.unneg().op() != CONJ && !existing.containsRecursively(incoming.unneg()))
-            return null; //no conflict possible
-
-        ConjBuilder c =
-                new ConjLazy();
-        //new Conj();
-
-        boolean ok = existing.eventsWhile((whn, wht) -> {
-//            Term ww =
-//                    //B.conj(outerDT, wht, incoming);
-//                    ConjCommutive.the(B, outerDT, wht, incoming);
-//
-//            if (ww == Null)
-//                throw new WTF();
-//            else if (ww == False) {
-//                return false;
-//            } else if (ww == True)
-//                return true;
-
-            return c.add(whn, wht) && c.add(whn, incoming);
-
-        }, 0, true, false);
-        if (!ok)
-            return False;
-
-        return null;
-        //return c.term(B);
-
-//        if (create)
-//            return d;
-//        else {
-////            if (d.op() != CONJ || d.volume() - 1 - incoming.volume() < existing.volume() /* something got reduced */)
-////                return d;
-////            else
-////                return null; //potentially factor
-//            return d;
-//        }
     }
+
+//    /**
+//     * produces a Conj instance containing the intersecting events.
+//     * null if no events in common and x and y were not modified.
+//     * erases contradiction (both cases) between both so may modify X and Y.  probably should .distribute() x and y first
+//     */
+//    @Nullable
+//    private static ConjBuilder intersect(Conj x, Conj y) {
+//
+//        assert (x.termToId == y.termToId) : "x and y should share target map";
+//
+//        MutableLongSet commonEvents = x.event.keySet().select(y.event::containsKey);
+//        if (commonEvents.isEmpty())
+//            return null;
+//
+//        Conj c = newConjSharingTermMap(x);
+//        final boolean[] modified = {false};
+//        commonEvents.forEach(e -> {
+//            ByteSet xx = x.eventSet(e);
+//            ByteSet yy = y.eventSet(e);
+//            ByteSet common = xx.select(yy::contains);
+//            ByteSet contra = xx.select(xxx -> yy.contains((byte) -xxx));
+//            if (!common.isEmpty()) {
+//                common.forEach(cc -> {
+//                    c.add(e, x.unindex(cc));
+//                    boolean xr = x.remove(e, cc);
+//                    boolean yr = y.remove(e, cc);
+//                    assert (xr && yr);
+//                    modified[0] = true;
+//                });
+//            }
+//            if (!contra.isEmpty()) {
+//                contra.forEach(cc -> {
+//                    boolean xr = x.remove(e, cc, (byte) -cc);
+//                    boolean yr = y.remove(e, cc, (byte) -cc);
+//                    assert (xr && yr);
+//                    modified[0] = true;
+//                });
+//            }
+//        });
+//        return (!modified[0] && c.event.isEmpty()) ? null : c;
+//    }
+
+//    @Deprecated
+//    private static Term conjoinify(TermBuilder B, final Term existing /* conj */, Term incoming, boolean eternal) {
+//
+//
+//        int existingDT = existing.dt();
+//        int incomingDT = incoming.dt();
+//
+//
+//        if (existingDT == XTERNAL) {
+//            if (incomingDT == XTERNAL)
+//                return null; //two xternal's, no way to know how they combine or not
+//
+//            //distribute incoming to all xternal components
+//            SortedSet<Term> c = new TreeSet();
+//            for (Term x : existing.subterms()) {
+//                Term y = CONJ.the(x, incoming);
+//                if (y == True || y == Null || y == False)
+//                    continue; //??
+//                c.add(y);
+//            }
+//
+//            return CONJ.the(XTERNAL, c);
+//        }
+//
+////        if (existingDT == 0 && incomingDT == 0) {
+////            assert(eternal);
+////            eternal = false;
+////        }
+//
+////        int outerDT = eternal ? DTERNAL : 0;
+//
+////        if (incoming.op() == CONJ) {
+////
+////            if (eternal && (incomingDT != DTERNAL && existingDT != DTERNAL))
+////                return null; //dont change non-DTERNAL components in eternity
+////
+////            if (incomingDT == DTERNAL || incomingDT == 0) {
+////
+////                if (incomingDT == outerDT || existingDT == outerDT) {
+////                    //at least one of the terms has a DT matching the outer
+////                    return B.conj(outerDT, existing, incoming);
+////                } else if (incomingDT == existingDT) {
+////                    if (outerDT == 0 && ((incomingDT == 0) || (incomingDT == DTERNAL))) {
+////                        //promote a parallel of two eternals or two parallels to one parallel
+////                        return B.conj(incomingDT, existing, incoming);
+////                    }
+////                }
+////            }
+////
+////
+////            //two sequence-likes. maybe some preprocessing that can be applied here
+////            //otherwise just add the new event
+////            if (!isSeq(existing) && !isSeq(incoming))
+////                return null;
+////
+////        }
+//
+//        //quick contradiction test
+////        if (eternal || existingDT == 0) {
+////            if (existing.containsNeg(incoming))
+////                return False;
+////            if (incoming.op() != CONJ && existing.contains(incoming)) {
+////                return existing;
+////            }
+////        }
+//
+////        if (!isSeq(existing))
+////            return null; //ok
+//
+//        if (incoming.unneg().op() != CONJ && !existing.containsRecursively(incoming.unneg()))
+//            return null; //no conflict possible
+//
+//        ConjBuilder c =
+//                new ConjLazy();
+//        //new Conj();
+//
+//        boolean ok = existing.eventsWhile((whn, wht) -> {
+////            Term ww =
+////                    //B.conj(outerDT, wht, incoming);
+////                    ConjCommutive.the(B, outerDT, wht, incoming);
+////
+////            if (ww == Null)
+////                throw new WTF();
+////            else if (ww == False) {
+////                return false;
+////            } else if (ww == True)
+////                return true;
+//
+//            return c.add(whn, wht) && c.add(whn, incoming);
+//
+//        }, 0, true, false);
+//        if (!ok)
+//            return False;
+//
+//        return null;
+//        //return c.term(B);
+//
+////        if (create)
+////            return d;
+////        else {
+//////            if (d.op() != CONJ || d.volume() - 1 - incoming.volume() < existing.volume() /* something got reduced */)
+//////                return d;
+//////            else
+//////                return null; //potentially factor
+////            return d;
+////        }
+//    }
 
 //    /**
 //     * @param existing
@@ -1421,1079 +1399,1080 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
     }
 
     public static ConjBuilder diff(Term include, long includeAt, Term exclude, long excludeAt) {
+
         return ConjLazy.subtract(ConjLazy.events(include,includeAt), exclude, excludeAt);
 //        boolean eNeg = exclude.op() == NEG;
 //        return the(include, includeAt, eNeg ? exclude.unneg() : exclude, excludeAt, eNeg);
     }
 
-    @Override
-    public int eventCount(long when) {
-        Object e = event.get(when);
-        return e != null ? Conj.eventCount(e) : 0;
-    }
-
-
-    @Override
-    public void negateEvents() {
-        event.forEachValue(x -> {
-            if (!(x instanceof byte[]))
-                throw new TODO();
-            byte[] bx = (byte[]) x;
-            for (int i = 0; i < bx.length; i++) {
-                byte b = bx[i];
-                if (b == 0) break; //null terminator
-                bx[i] = (byte) -b;
-            }
-        });
-    }
-
-    /**
-     * note this doesnt remove the terms which only appeared in the target time being removed
-     */
-    boolean removeAll(long when) {
-        if (event.remove(when) != null) {
-            this.result = null;
-            return true;
-        }
-        return false;
-    }
-
-
-    /**
-     * TODO batch Term... variant
-     */
-    public boolean removeAll(Term what) {
-        byte id = get(what);
-        if (id != Byte.MIN_VALUE) {
-            long[] events = event.keysView().toArray(); //create an array because removal will interrupt direct iteration of the keySet
-            boolean removed = false;
-            for (long e : events) {
-                removed |= remove(e, id);
-            }
-            if (removed)
-                this.result = null;
-            return removed;
-        }
-        return false;
-    }
-
-    public void clear() {
-        super.clear();
-        event.clear();
-        result = null;
-    }
-//    int conflictOrSame(long at, byte what) {
-//        return conflictOrSame(event.get(at), what);
+//    @Override
+//    public int eventCount(long when) {
+//        Object e = event.get(when);
+//        return e != null ? Conj.eventCount(e) : 0;
+//    }
+//
+//
+//    @Override
+//    public void negateEvents() {
+//        event.forEachValue(x -> {
+//            if (!(x instanceof byte[]))
+//                throw new TODO();
+//            byte[] bx = (byte[]) x;
+//            for (int i = 0; i < bx.length; i++) {
+//                byte b = bx[i];
+//                if (b == 0) break; //null terminator
+//                bx[i] = (byte) -b;
+//            }
+//        });
 //    }
 
-    protected int conflictOrSame(long at, byte bWhat, Term what) {
-        Object ee = event.get(at);
-        if (ee == null) return 0;
+//    /**
+//     * note this doesnt remove the terms which only appeared in the target time being removed
+//     */
+//    boolean removeAll(long when) {
+//        if (event.remove(when) != null) {
+//            this.result = null;
+//            return true;
+//        }
+//        return false;
+//    }
+//
+//
+//    /**
+//     * TODO batch Term... variant
+//     */
+//    public boolean removeAll(Term what) {
+//        byte id = get(what);
+//        if (id != Byte.MIN_VALUE) {
+//            long[] events = event.keysView().toArray(); //create an array because removal will interrupt direct iteration of the keySet
+//            boolean removed = false;
+//            for (long e : events) {
+//                removed |= remove(e, id);
+//            }
+//            if (removed)
+//                this.result = null;
+//            return removed;
+//        }
+//        return false;
+//    }
+//
+//    public void clear() {
+//        super.clear();
+//        event.clear();
+//        result = null;
+//    }
+////    int conflictOrSame(long at, byte what) {
+////        return conflictOrSame(event.get(at), what);
+////    }
+//
+//    protected int conflictOrSame(long at, byte bWhat, Term what) {
+//        Object ee = event.get(at);
+//        if (ee == null) return 0;
+//
+//        boolean absorb = false;
+//        {
+//            int w = conflictOrSame(ee, bWhat);
+//            if (w == -1) return -1;
+//            if (w == +1) absorb = true;
+//        }
+//
+//        {
+//            int w = conjoinify(at, ee, what);
+//            if (w == -1) return -1;
+//            if (w == +1) absorb = true;
+//        }
+//
+//        {
+//            int w = disjunctify(at, ee, what);
+//            if (w == -1) return -1;
+//            if (w == +1) absorb = true;
+//        }
+//
+//        if (absorb) return +1;
+//        return 0;
+//    }
 
-        boolean absorb = false;
-        {
-            int w = conflictOrSame(ee, bWhat);
-            if (w == -1) return -1;
-            if (w == +1) absorb = true;
-        }
-
-        {
-            int w = conjoinify(at, ee, what);
-            if (w == -1) return -1;
-            if (w == +1) absorb = true;
-        }
-
-        {
-            int w = disjunctify(at, ee, what);
-            if (w == -1) return -1;
-            if (w == +1) absorb = true;
-        }
-
-        if (absorb) return +1;
-        return 0;
-    }
-
-    private int conjoinify(long when, Object ee, Term incoming) {
-        boolean absorb = false;
-        boolean incomingDisj = incoming.op() == NEG && incoming.unneg().op() == CONJ;
-        if (incomingDisj)
-            return 0; //not this stage
-        if (ee instanceof byte[]) {
-            for (byte e : (byte[]) ee) {
-                if (e == 0) break;
-                int d = conjoinifyReduce(when, incoming, e);
-                if (d == -1) return -1;
-                else if (d == +1) absorb = true;
-            }
-        } else {
-            RoaringBitmap r = (RoaringBitmap) ee;
-            PeekableIntIterator rr = r.getIntIterator();
-            while (rr.hasNext()) {
-                byte dui = (byte) rr.next();
-                int d = conjoinifyReduce(when, incoming, dui);
-                if (d == -1) return -1;
-                else if (d == +1) absorb = true;
-            }
-        }
-        return absorb ? 1 : 0;
-    }
-
-    /**
-     * cancels and eliminates disjunctive paths that interfere with an incoming event at its occurrence time
-     *
-     * @return
-     */
-    private int disjunctify(long when, Object ee, Term incoming) {
-        boolean absorb = false;
-        boolean incomingDisj = incoming.op() == NEG && incoming.unneg().op() == CONJ;
-        if (ee instanceof byte[]) {
-            for (byte e : (byte[]) ee) {
-                if (e == 0) break;
-                int d = disjunctifyReduce(when, incomingDisj, incoming, e);
-                if (d == -1) return -1;
-                else if (d == +1) absorb = true;
-            }
-        } else {
-            RoaringBitmap r = (RoaringBitmap) ee;
-            PeekableIntIterator rr = r.getIntIterator();
-            while (rr.hasNext()) {
-                byte dui = (byte) rr.next();
-                int d = disjunctifyReduce(when, incomingDisj, incoming, dui);
-                if (d == -1) return -1;
-                else if (d == +1) absorb = true;
-            }
-        }
-        return absorb ? 1 : 0;
-    }
-
-
-    private int conjoinifyReduce(long when, Term incoming, byte existing) {
-        boolean existingNeg = existing < 0;
-        Term existingTerm = unindex((byte) existing);
-        boolean existingDisj = existingNeg && existingTerm.unneg().op() == CONJ;
-        if (existingDisj)
-            return 0; //not this stage
-
-        if (!Term.commonStructure(incoming, existingTerm))
-            return 0; //no possible conflict
-
-        Term a = existingTerm, b = incoming;
-        if ((incoming.op()==CONJ && existingTerm.op()!=CONJ) || (Conj.isSeq(incoming) && !Conj.isSeq(existingTerm))) {
-            //swap
-            a = incoming;
-            b = existingTerm;
-        } else {
-            a = existingTerm;
-            b = incoming;
-        }
-
-        Term y = conjoinify(Op.terms, a, b, when==ETERNAL);
-        if (y == null)
-            return 0;
-        else if (y == False || y == Null){
-            result = y; //handle Null differently than False HACK
-            return -1;
-        } else {
-
-            remove(when,existing);
-
-            if (y.equals(incoming))
-                return 0; //proceed
-
-
-            if (addEvent(when, y))
-                return +1;
-            else
-                return -1;
-        }
-    }
-
-    private int disjunctifyReduce(long when, boolean incomingDisj, Term incoming, byte existing) {
-
-
-        boolean existingNeg = existing < 0;
-        if (!existingNeg && !incomingDisj)
-            return 0;
-
-        Term existingTerm = unindex((byte) existing);
-        boolean existingDisj = existingNeg && existingTerm.unneg().op() == CONJ;
-
-        if ((!existingDisj && !incomingDisj) || (!Term.commonStructure(incoming.unneg(), existingTerm.unneg())))
-            return 0; //no possible conflict
-
-        if (existingDisj && incomingDisj) {
-            Term y = disjunctionVsDisjunction(Op.terms, incoming.unneg(), existingTerm.unneg(), when == ETERNAL);
-            if (y == null)
-                return 0;
-            else {
-                remove(when, existing);
-                if (!addEvent(when, y))
-                    return -1;
-                return +1;
-            }
-        } else if (existingDisj)
-            return disjunctifyReduceIncoming(when, incoming, existingTerm.unneg());
-        else //if (incomingDisj)
-            return disjunctifyReduceExisting(when, existingTerm, incoming.unneg()); //HACK
-
-    }
-
-    @Nullable
-    private int disjunctifyReduceExisting(long when, Term existing, Term undisjunctified) {
-        long offset = when == ETERNAL ? ETERNAL : 0 /* TODO sequence cancellation */;
-        if (Conj.eventOf(undisjunctified, existing, offset, +1)) {
-            remove(when, existing);
-            return disjunctifyMergePruneAdd(when, existing, undisjunctified, offset);
-        } else if (Conj.eventOf(undisjunctified, existing, offset, -1)) {
-            return +1; //absorbed
-        }
-        return 0;
-    }
-
-    @Nullable
-    private int disjunctifyReduceIncoming(long when, Term incoming, Term undisj) {
-        long offset = when == ETERNAL ? ETERNAL : 0 /* TODO sequence cancellation */;
-        if (Conj.eventOf(undisj, incoming, offset, +1)) {
-
-            //TODO remove conflicting branch from disj but add the conj condition
-            remove(when, undisj.neg());
-
-            return disjunctifyMergePruneAdd(when, incoming, undisj, offset);
-
-        } else if (Conj.eventOf(undisj, incoming, offset, -1)) {
-            remove(when, undisj.neg());
-
-            return 0;
-//            if (!addEvent(when, incoming))
+//    private int conjoinify(long when, Object ee, Term incoming) {
+//        boolean absorb = false;
+//        boolean incomingDisj = incoming.op() == NEG && incoming.unneg().op() == CONJ;
+//        if (incomingDisj)
+//            return 0; //not this stage
+//        if (ee instanceof byte[]) {
+//            for (byte e : (byte[]) ee) {
+//                if (e == 0) break;
+//                int d = conjoinifyReduce(when, incoming, e);
+//                if (d == -1) return -1;
+//                else if (d == +1) absorb = true;
+//            }
+//        } else {
+//            RoaringBitmap r = (RoaringBitmap) ee;
+//            PeekableIntIterator rr = r.getIntIterator();
+//            while (rr.hasNext()) {
+//                byte dui = (byte) rr.next();
+//                int d = conjoinifyReduce(when, incoming, dui);
+//                if (d == -1) return -1;
+//                else if (d == +1) absorb = true;
+//            }
+//        }
+//        return absorb ? 1 : 0;
+//    }
+//
+//    /**
+//     * cancels and eliminates disjunctive paths that interfere with an incoming event at its occurrence time
+//     *
+//     * @return
+//     */
+//    private int disjunctify(long when, Object ee, Term incoming) {
+//        boolean absorb = false;
+//        boolean incomingDisj = incoming.op() == NEG && incoming.unneg().op() == CONJ;
+//        if (ee instanceof byte[]) {
+//            for (byte e : (byte[]) ee) {
+//                if (e == 0) break;
+//                int d = disjunctifyReduce(when, incomingDisj, incoming, e);
+//                if (d == -1) return -1;
+//                else if (d == +1) absorb = true;
+//            }
+//        } else {
+//            RoaringBitmap r = (RoaringBitmap) ee;
+//            PeekableIntIterator rr = r.getIntIterator();
+//            while (rr.hasNext()) {
+//                byte dui = (byte) rr.next();
+//                int d = disjunctifyReduce(when, incomingDisj, incoming, dui);
+//                if (d == -1) return -1;
+//                else if (d == +1) absorb = true;
+//            }
+//        }
+//        return absorb ? 1 : 0;
+//    }
+//
+//
+//    private int conjoinifyReduce(long when, Term incoming, byte existing) {
+//        boolean existingNeg = existing < 0;
+//        Term existingTerm = unindex((byte) existing);
+//        boolean existingDisj = existingNeg && existingTerm.unneg().op() == CONJ;
+//        if (existingDisj)
+//            return 0; //not this stage
+//
+//        if (!Term.commonStructure(incoming, existingTerm))
+//            return 0; //no possible conflict
+//
+//        Term a = existingTerm, b = incoming;
+//        if ((incoming.op()==CONJ && existingTerm.op()!=CONJ) || (Conj.isSeq(incoming) && !Conj.isSeq(existingTerm))) {
+//            //swap
+//            a = incoming;
+//            b = existingTerm;
+//        } else {
+//            a = existingTerm;
+//            b = incoming;
+//        }
+//
+//        Term y = conjoinify(Op.terms, a, b, when==ETERNAL);
+//        if (y == null)
+//            return 0;
+//        else if (y == False || y == Null){
+//            result = y; //handle Null differently than False HACK
+//            return -1;
+//        } else {
+//
+//            remove(when,existing);
+//
+//            if (y.equals(incoming))
+//                return 0; //proceed
+//
+//
+//            if (addEvent(when, y))
+//                return +1;
+//            else
 //                return -1;
-//            return +1;
-        }
-
-        return 0;
-    }
-
-    @Nullable
-    private int disjunctifyMergePruneAdd(long when, Term x, Term undisjunctified, long offset) {
-        Term e;
-        long shift;
-
-        int ddt = undisjunctified.dt();
-        if (ddt == XTERNAL || (ddt == DTERNAL && !Conj.isSeq(undisjunctified) && undisjunctified.contains(x) /* HACK to split a sequence non-sequentially at the top-level */)) {
-
-            Term[] ee = undisjunctified.subterms().removing(x);
-            if (ee == null)
-                throw new WTF();
-            if (ee.length == 0)
-                e = False; //totally removed; when negated will become True and disappear
-            if (ee.length > 1)
-                e = CONJ.the(ddt, ee);
-            else
-                e = ee[0];
-            shift = 0;
-        } else {
-            if (ddt == DTERNAL && ConjSeq.isFactoredSeq(undisjunctified) && undisjunctified.contains(x))
-                return -1; //contradicts a component of an inseparable factored sequence
-
-            ConjLazy D;
-            if (when == ETERNAL) {
-                //D.add(ETERNAL, undisjunctified);
-                D = ConjLazy.events(undisjunctified);
-                boolean removed = D.removeAll(x);
-                if (!removed)
-                    throw new TermException("could not remove " + x, undisjunctified);
-            } else {
-                D = ConjLazy.events(undisjunctified, 0);
-                boolean removed = D.remove(offset, x);
-                if (!removed)
-                    throw new TermException("could not remove " + x + " @ " + offset, undisjunctified);
-            }
-
-            e = D.term(/*B*/);
-            shift = when != ETERNAL ? D.shift() : 0;
-        }
-
-
-        if (!addEvent(when + shift, e.neg()))
-            return -1;
-
-        if (!addEvent(when, x))
-            return -1;
-
-        return +1;
-    }
-
-
-    @Deprecated
-    public final ConjBuilder with(long at, Term x) {
-        add(at, x);
-        return this;
-    }
+//        }
+//    }
+//
+//    private int disjunctifyReduce(long when, boolean incomingDisj, Term incoming, byte existing) {
+//
+//
+//        boolean existingNeg = existing < 0;
+//        if (!existingNeg && !incomingDisj)
+//            return 0;
+//
+//        Term existingTerm = unindex((byte) existing);
+//        boolean existingDisj = existingNeg && existingTerm.unneg().op() == CONJ;
+//
+//        if ((!existingDisj && !incomingDisj) || (!Term.commonStructure(incoming.unneg(), existingTerm.unneg())))
+//            return 0; //no possible conflict
+//
+//        if (existingDisj && incomingDisj) {
+//            Term y = disjunctionVsDisjunction(Op.terms, incoming.unneg(), existingTerm.unneg(), when == ETERNAL);
+//            if (y == null)
+//                return 0;
+//            else {
+//                remove(when, existing);
+//                if (!addEvent(when, y))
+//                    return -1;
+//                return +1;
+//            }
+//        } else if (existingDisj)
+//            return disjunctifyReduceIncoming(when, incoming, existingTerm.unneg());
+//        else //if (incomingDisj)
+//            return disjunctifyReduceExisting(when, existingTerm, incoming.unneg()); //HACK
+//
+//    }
+//
+//    @Nullable
+//    private int disjunctifyReduceExisting(long when, Term existing, Term undisjunctified) {
+//        long offset = when == ETERNAL ? ETERNAL : 0 /* TODO sequence cancellation */;
+//        if (Conj.eventOf(undisjunctified, existing, offset, +1)) {
+//            remove(when, existing);
+//            return disjunctifyMergePruneAdd(when, existing, undisjunctified, offset);
+//        } else if (Conj.eventOf(undisjunctified, existing, offset, -1)) {
+//            return +1; //absorbed
+//        }
+//        return 0;
+//    }
+//
+//    @Nullable
+//    private int disjunctifyReduceIncoming(long when, Term incoming, Term undisj) {
+//        long offset = when == ETERNAL ? ETERNAL : 0 /* TODO sequence cancellation */;
+//        if (Conj.eventOf(undisj, incoming, offset, +1)) {
+//
+//            //TODO remove conflicting branch from disj but add the conj condition
+//            remove(when, undisj.neg());
+//
+//            return disjunctifyMergePruneAdd(when, incoming, undisj, offset);
+//
+//        } else if (Conj.eventOf(undisj, incoming, offset, -1)) {
+//            remove(when, undisj.neg());
+//
+//            return 0;
+////            if (!addEvent(when, incoming))
+////                return -1;
+////            return +1;
+//        }
+//
+//        return 0;
+//    }
+//
+//    @Nullable
+//    private int disjunctifyMergePruneAdd(long when, Term x, Term undisjunctified, long offset) {
+//        Term e;
+//        long shift;
+//
+//        int ddt = undisjunctified.dt();
+//        if (ddt == XTERNAL || (ddt == DTERNAL && !Conj.isSeq(undisjunctified) && undisjunctified.contains(x) /* HACK to split a sequence non-sequentially at the top-level */)) {
+//
+//            Term[] ee = undisjunctified.subterms().removing(x);
+//            if (ee == null)
+//                throw new WTF();
+//            if (ee.length == 0)
+//                e = False; //totally removed; when negated will become True and disappear
+//            if (ee.length > 1)
+//                e = CONJ.the(ddt, ee);
+//            else
+//                e = ee[0];
+//            shift = 0;
+//        } else {
+//            if (ddt == DTERNAL && ConjSeq.isFactoredSeq(undisjunctified) && undisjunctified.contains(x))
+//                return -1; //contradicts a component of an inseparable factored sequence
+//
+//            ConjLazy D;
+//            if (when == ETERNAL) {
+//                //D.add(ETERNAL, undisjunctified);
+//                D = ConjLazy.events(undisjunctified);
+//                boolean removed = D.removeAll(x);
+//                if (!removed)
+//                    throw new TermException("could not remove " + x, undisjunctified);
+//            } else {
+//                D = ConjLazy.events(undisjunctified, 0);
+//                boolean removed = D.remove(offset, x);
+//                if (!removed)
+//                    throw new TermException("could not remove " + x + " @ " + offset, undisjunctified);
+//            }
+//
+//            e = D.term(/*B*/);
+//            shift = when != ETERNAL ? D.shift() : 0;
+//        }
+//
+//
+//        if (!addEvent(when + shift, e.neg()))
+//            return -1;
+//
+//        if (!addEvent(when, x))
+//            return -1;
+//
+//        return +1;
+//    }
+//
+//
+//    @Deprecated
+//    public final ConjBuilder with(long at, Term x) {
+//        add(at, x);
+//        return this;
+//    }
 
 //    static boolean eventable(Term t) {
 //        return !t.op().isAny(BOOL.bit | INT.bit | IMG.bit | NEG.bit);
 //    }
 
-    @Override
-    public boolean add(long at, Term x) {
-        if (this.result != null)
-            throw new RuntimeException("already concluded: " + result);
-
-        return added(ConjBuilder.super.add(at, x));
-    }
-
-    private boolean added(boolean success) {
-        if (success) {
-            if (this.result != null) {
-                if (result instanceof Bool)
-                    return false; //HACK
-                throw new WTF();
-            }
-            return true;
-        } else {
-            if (result == null)
-                result = False;
-            return false;
-        }
-    }
-
-    @Override
-    public final boolean addEvent(long at, Term x) {
-//        if (Param.DEBUG) {
-//            if (at == DTERNAL) //HACK
-//                throw new WTF("probably meant at=ETERNAL not DTERNAL");
+//    @Override
+//    public boolean add(long at, Term x) {
+//        if (this.result != null)
+//            throw new RuntimeException("already concluded: " + result);
+//
+//        return added(ConjBuilder.super.add(at, x));
+//    }
+//
+//    private boolean added(boolean success) {
+//        if (success) {
+//            if (this.result != null) {
+//                if (result instanceof Bool)
+//                    return false; //HACK
+//                throw new WTF();
+//            }
+//            return true;
+//        } else {
+//            if (result == null)
+//                result = False;
+//            return false;
 //        }
-
-        if (x instanceof Bool) {
-            //short circuits
-            if (x == True)
-                return true;
-            else if (x == False) {
-                this.result = False;
-                return false;
-            } else if (x == Null) {
-                this.result = Null;
-                return false;
-            }
-        }
-
-//        if (x.op()==CONJ && x.dt()!=XTERNAL)
-//            throw new WTF("why adding entire CONJ as event. should be decomposed");
-
-        //test this first
-        boolean polarity = x.op() != NEG;
-        Term xUnneg = polarity ? x : x.unneg();
-
-//        if (at != ETERNAL && !polarity && xUnneg.op() == CONJ && xUnneg.dt() == DTERNAL) {
-//            //convert a sequenced negated eternal conjunction to parallel
-//            xUnneg = ((Compound) xUnneg).dt(0);
-//            x = xUnneg.neg();
+//    }
+//
+//    @Override
+//    public final boolean addEvent(long at, Term x) {
+////        if (Param.DEBUG) {
+////            if (at == DTERNAL) //HACK
+////                throw new WTF("probably meant at=ETERNAL not DTERNAL");
+////        }
+//
+//        if (x instanceof Bool) {
+//            //short circuits
+//            if (x == True)
+//                return true;
+//            else if (x == False) {
+//                this.result = False;
+//                return false;
+//            } else if (x == Null) {
+//                this.result = Null;
+//                return false;
+//            }
 //        }
-
-        byte id = add(xUnneg);
-        if (!polarity) id = (byte) -id;
-
-
-        switch (filterAdd(at, id, x)) {
-            case +1:
-                return true; //ignore and continue
-            case 0:
-                return addEvent(at, id, x); //continue
-            case -1:
-                return false; //reject and fail
-            default:
-                throw new UnsupportedOperationException();
-        }
-
-    }
-
-    private boolean addEvent(long at, byte id) {
-        Term xx = unindex(id);
-        return addEvent(at, id, xx);
-    }
-
-    private boolean addEvent(long at, byte id, Term incoming) {
-
-        long[] compareTo = at == ETERNAL || (!event.containsKey(at)) ? new long[]{ETERNAL} : new long[]{ETERNAL, at};
-        Object[] compares = new Object[compareTo.length];
-
-        stages: for (int stage = 0; stage < 3; stage++) {
-            for (int cci = 0, compareToLength = compareTo.length; cci < compareToLength; cci++) {
-                long wc = compareTo[cci];
-                Object ee = stage == 0 ? (compares[cci] = event.get(wc)) : compares[cci];
-                if (ee == null)
-                    continue;
-
-                int w;
-                switch (stage) {
-                    case 0:
-                        w = conflictOrSame(ee, id);
-                        break;
-                    case 1:
-                        w = conjoinify(at, ee, incoming);
-                        break;
-                    case 2:
-                        w = disjunctify(at, ee, incoming);
-                        break;
-                    default:
-                        throw new UnsupportedOperationException();
-                }
-                if (w == -1) {
-                    if (result != Null || result != False) result = False;
-                    return false;
-                } //contradiction
-                if (w == +1) return true; //absorb = true;
-            }
-        }
-
-
-        Object events = event.getIfAbsentPut(at, () -> new byte[ROARING_UPGRADE_THRESH]);
-        if (events instanceof byte[]) {
-            byte[] b = (byte[]) events;
-
-
-            for (int i = 0; i < b.length; i++) {
-                byte bi = b[i];
-                if (bi == 0) {
-                    //empty slot, take
-                    //  assert(ArrayUtils.indexOf(b, (byte)-id)==-1); basic verification test
-
-                    b[i] = id;
-                    return true;
-                } else {
-
-                    //Term result = merge(Op.terms, unindex(bi), incoming, at == ETERNAL);
-
-//                    if (result != null) {
-//                        if (result == True)
-//                            return true; //absorbed input
-//                        if (result == False || result == Null) {
-//                            this.result = result; //failure
-//                            return false;
-//                        } else {
-//                            if (i < b.length - 1) {
-//                                arraycopy(b, i + 1, b, i, b.length - 1 - i);
-//                                i--; //compactify
-//                            } else
-//                                b[i] = 0; //erase, continue comparing. the result remains eligible for add
 //
-//                            return add(at, result);
-//                        }
-//                    }
-                }
-            }
-
-            //no remaining capacity, upgrade to RoaringBitmap
-
-            RoaringBitmap rb = new RoaringBitmap();
-            for (byte bb : b)
-                rb.add(bb);
-            rb.add(id);
-            event.put(at, rb);
-
-
-            return true;
-        } else {
-            return todoOrFalse();
-        }
-    }
-
-    /**
-     * allows subclass implement different behavior.
-     * <p>
-     * return:
-     * -1: ignore and fail the conjunction
-     * 0: default, continue
-     * +1: ignore and continue
-     */
-    int filterAdd(long at, byte id, Term x) {
-        return 0;
-    }
-
-    /**
-     * # of unique event occurrence times
-     */
-    @Override
-    public int eventOccurrences() {
-        return event.size();
-    }
-
-    private ByteSet eventSet(long e) {
-        Object ee = event.get(e);
-        if (ee == null)
-            return ByteSets.immutable.empty();
-        if (!(ee instanceof byte[]))
-            throw new TODO();
-        byte[] eee = (byte[]) ee;
-
-        int ec = eventCount(eee); //assert (ec > 0);
-        if (ec == 1)
-            return ByteSets.immutable.of(eee[0]);
-        else if (ec == 2)
-            return ByteSets.immutable.of(eee[0], eee[1]);
-        else if (ec == 3)
-            return ByteSets.immutable.of(eee[0], eee[1], eee[2]);
-        else
-            return ByteSets.immutable.of(Arrays.copyOf(eee, ec));
-//            ByteHashSet b = new ByteHashSet(ec);
-//            events(eee, b::add);
-//            return b;
-
-    }
-
-    /**
-     * @return non-zero byte value
-     */
-    private byte add(Term t) {
-//        if (!(t != null && eventable(t))) //eventable
-//            throw new WTF(t + " is not valid event in " + Conj.class);
-
-        return termToId.getIfAbsentPutWithKey(t, tt -> {
-            int s = idToTerm.addAndGetSize(tt);
-            assert (s < Byte.MAX_VALUE);
-            return (byte) s;
-        });
-    }
-
-    /**
-     * returns index of an item if it is present, or -1 if not
-     */
-    private byte index(Term t) {
-        return termToId.getIfAbsent(t.unneg(), (byte) -1);
-    }
-
-    private Term unindex(byte id) {
-        Term x = idToTerm.get(Math.abs(id) - 1);
-//        if (x == null)
-//            throw new NullPointerException();
-        return x.negIf(id < 0);
-    }
-
-    private byte get(Term x) {
-        boolean neg;
-        if (neg = (x.op() == NEG))
-            x = x.unneg();
-        byte index = index(x);
-        if (index == -1)
-            return Byte.MIN_VALUE;
-
-        return neg ? (byte) (-index) : index;
-    }
-
-    @Override
-    public boolean remove(long at, Term t) {
-        int tdt = t.dt();
-
-        byte i = get(t);
-        if ((i == Byte.MIN_VALUE) ? false : remove(at, i))
-            return true;
-
-        final boolean[] removed = {false};
-        boolean r = t.eventsWhile((when, what) -> {
-            //assert (!t.equals(what)); //prevent infinite recursion, hopefully this cant happen
-            if (t == what)
-                return false; //HACK find why
-            removed[0] |= remove(when, what);
-            return true; //keep going
-        }, at, true, false);
-        return removed[0];
-
-    }
-
-    private boolean remove(long at, byte... what) {
-
-        Object o = event.get(at);
-        if (o == null)
-            return false;
-
-
-        if (removeFromEvent(at, o, true, what) != 0) {
-            result = null;
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * returns:
-     * +2 removed, and now this event time is empty
-     * +1 removed
-     * +0 not removed
-     */
-    private int removeFromEvent(long at, Object o, boolean autoRemoveIfEmpty, byte... i) {
-        if (o instanceof RoaringBitmap) {
-            boolean b = false;
-            RoaringBitmap oo = (RoaringBitmap) o;
-            for (int ii : i)
-                b |= oo.checkedRemove(ii);
-            if (!b) return 0;
-            if (oo.isEmpty()) {
-                if (autoRemoveIfEmpty)
-                    event.remove(at);
-                return 2;
-            } else {
-                return 1;
-            }
-        } else {
-            byte[] b = (byte[]) o;
-
-            int num = ArrayUtil.indexOf(b, (byte) 0);
-            if (num == -1) num = b.length;
-
-            int removals = 0;
-            for (byte ii : i) {
-                assert (ii != 0);
-                int bi = ArrayUtil.indexOf(b, ii, 0, num);
-                if (bi != -1) {
-                    //if (b[bi] != 0) {
-                    b[bi] = 0;
-                    removals++;
-                    //}
-                }
-            }
-
-            if (removals == 0)
-                return 0;
-            else if (removals == num) {
-                if (autoRemoveIfEmpty)
-                    event.remove(at);
-                return 2;
-            } else {
-
-
-                //sort all zeros to the end
-                ArrayUtil.sort(b, 0, num - 1, (byte x) -> x == 0 ? Byte.MIN_VALUE : x);
-
-//                MetalBitSet toRemove = MetalBitSet.bits(b.length);
+////        if (x.op()==CONJ && x.dt()!=XTERNAL)
+////            throw new WTF("why adding entire CONJ as event. should be decomposed");
 //
-//                for (int zeroIndex = 0; zeroIndex < b.length; zeroIndex++) {
-//                    if (b[zeroIndex] == 0)
-//                        toRemove.setAt(zeroIndex);
-//                }
+//        //test this first
+//        boolean polarity = x.op() != NEG;
+//        Term xUnneg = polarity ? x : x.unneg();
 //
-//                b = ArrayUtils.removeAll(b, toRemove);
-//                event.put(at, b);
-                return 1;
-            }
-        }
-    }
-
-    public boolean removeEventsByTerm(Term t, boolean pos, boolean neg) {
-
-        boolean negateInput;
-        if (t.op() == NEG) {
-            negateInput = true;
-            t = t.unneg();
-        } else {
-            negateInput = false;
-        }
-
-        byte i = get(t);
-        if (i == Byte.MIN_VALUE)
-            return false;
-
-        byte[] ii;
-        if (pos && neg) {
-            ii = new byte[]{i, (byte) -i};
-        } else if (pos) {
-            ii = new byte[]{negateInput ? (byte) -i : i};
-        } else if (neg) {
-            ii = new byte[]{negateInput ? i : (byte) -i};
-        } else {
-            throw new UnsupportedOperationException();
-        }
-
-
-        final boolean[] removed = {false};
-        LongArrayList eventsToRemove = new LongArrayList(0);
-        event.forEachKeyValue((when, o) -> {
-            int result = removeFromEvent(when, o, false, ii);
-            if (result == 2) {
-                eventsToRemove.add(when);
-            }
-            removed[0] |= result > 0;
-        });
-
-        if (!eventsToRemove.isEmpty()) {
-            eventsToRemove.forEach(event::remove);
-        }
-
-        if (removed[0]) {
-            result = null;
-            return true;
-        }
-        return false;
-    }
-
-    @Override
-    public Term term(TermBuilder B) {
-        if (result != null)
-            return result;
-
-        if (event.isEmpty())
-            return True;
-
-        factor();
-
-        int numOcc = eventOccurrences();
-        int numTmpOcc = numOcc;
-
-
-        FasterList<Term> tmp = new FasterList(2);
-        Term eternal;
-        if (event.containsKey(ETERNAL)) {
-            numTmpOcc--;
-            eternal = term(ETERNAL, B, tmp);
-            if (eternal != null) {
-                if (eternal == False || eternal == Null)
-                    return this.result = eternal;
-            }
-        } else {
-            eternal = null;
-        }
-
-        Term temporal;
-        Term ci;
-        switch (numTmpOcc) {
-            case 0:
-                temporal = null;
-                break;
-//            case 1:
-//                //one other non-eternal time
-//                LongObjectPair<Object> e = event.keyValuesView().select(x -> x.getOne() != ETERNAL).getFirst();
-//                Term t = target(e.getOne(), e.getTwo(), tmp);
-//                if (t == null || t == True) {
-//                    t = null;
-//                } else if (t == False) {
-//                    return this.result = False;
-//                } else if (t == Null) {
-//                    return this.result = Null;
-//                }
-//                if (t != null) {
-//                    if (eternal != null && e.getOne() == 0) {
-//                        boolean econj = eternal.op() == CONJ;
-//                        if (!econj || eternal.dt() == DTERNAL) {
-//                            //promote eternal to parallel
-//                            if (!econj) {
-//                                return ConjCommutive.the(0, eternal, t);
-//                            } else {
-//                                List<Term> ecl = new FasterList(eternal.subs() + 1);
-//                                eternal.subterms().addTo(ecl);
-//                                ecl.addAt(t);
-//                                return ConjCommutive.the(0, ecl);
-//                            }
-//                        }
-//                    }
-//                }
-//                temporal = t;
-//                break;
-            default:
-                LongObjectArraySet<Term> temporals = null;
-
-                int occSkipped = 0;
-                for (LongObjectPair<?> next : event.keyValuesView()) {
-                    long when = next.getOne();
-                    if (when == ETERNAL) {
-                        occSkipped++;
-                    } else {
-
-                        Term wt = term(when, next.getTwo(), B, tmp);
-                        if (wt == False || wt == Null) {
-                            return this.result = wt;
-                        } else if (wt != True && wt != null) {
-
-                            if (temporals == null)
-                                temporals = new LongObjectArraySet<Term>(0, new Term[(numOcc - occSkipped) * 2 /* estimate */]);
-
-                            temporals.add(when, wt);
-
-                        } else {
-                            occSkipped++;
-                        }
-                    }
-                }
-                if (temporals != null) {
-
-                    int ee = temporals.size();
-                    switch (ee) {
-                        case 0:
-                            temporal = null;
-                            break;
-                        case 1:
-                            temporal = temporals.get(0);
-                            break;
-                        default:
-
-                            temporal = ConjSeq.conjSeq(B, temporals);
-                            break;
-                    }
-                } else
-                    temporal = null;
-                break;
-        }
-
-
-        if (eternal != null && temporal != null) {
-            if (eternal == True)
-                ci = temporal;
-            else {
-
-                if (temporal.equals(eternal))
-                    return eternal;
-
-                if (temporal.equalsNeg(eternal))
-                    return False;
-
-//                //both conj or disj sequences?
-//                if (((eternal.op()==CONJ && eternal.dt()!=DTERNAL) && Conj.isSeq(temporal.unneg())))
-//                    return Null; //too complex
-
-                //temporal disjunction sequence AND eternal component?
-//                if (Conj.isSeq(temporal.unneg()) && (eternal.unneg().op()==CONJ || temporal.containsRecursively(eternal.unneg())))
-//                    return Null; //too complex
-
-//                if (temporal.op() == CONJ && Term.commonStructure(eternal, temporal)) {
-//                    if (Conj.isSeq(temporal) || eternal.op() == CONJ) {
+////        if (at != ETERNAL && !polarity && xUnneg.op() == CONJ && xUnneg.dt() == DTERNAL) {
+////            //convert a sequenced negated eternal conjunction to parallel
+////            xUnneg = ((Compound) xUnneg).dt(0);
+////            x = xUnneg.neg();
+////        }
 //
-//                        if (!eternal.eventsWhile((ewhen, ewhat) -> {
-//                            //exhaustively check events for conflict
-//                            Term nEternal = ewhat.neg();
-//                            return temporal.eventsWhile((when, what) -> {
-//                                return !what.equals(nEternal);
-//                            }, 0, true, true, true);
-//                        }, 0, true, true, true))
-//                            return False;
-//
-//                    } else {
-//                        if (temporal.containsNeg(eternal))
-//                            return False; //HACK
-//                        else if (temporal.contains(eternal))
-//                            return temporal;  //HACK
-//                    }
-//                }
-
-
-//                Term tu = temporal.unneg();
-//                Term eu = eternal.unneg();
-//                int tdt = tu.dt(), edt = eu.dt();
-
-
-//                //if ((temporal.unneg().op() == CONJ && (tdt == DTERNAL || tdt == 0)) || (eternal.op() == CONJ && (edt == DTERNAL || edt == 0)) || temporal.containsRecursively(eternal.unneg()))
-//                if ((tu.op()==CONJ && (eu.op()==CONJ) && Term.commonStructure(eu, tu))) {
+//        byte id = add(xUnneg);
+//        if (!polarity) id = (byte) -id;
 //
 //
-//                    Predicate<Term> tur =
-//                            //z -> tu.containsRecursively(z.unneg());
-//                            z -> Conj.containsEvent(tu, z.unneg());
-//                    if (tur.test(eu) || (eu.op()!=CONJ || eu.subterms().OR(tur))) {
-                //needs further flattening
-                Term y = ConjCommutive.the(B, DTERNAL, true, true, temporal, eternal);
-                return y;
-//                    }
-
-
-            }
-        } else if (eternal == null) {
-            ci = temporal;
-        } else /*if (temporal == null)*/ {
-            ci = eternal;
-        }
-
-        return ci == null ? True : ci;
-    }
+//        switch (filterAdd(at, id, x)) {
+//            case +1:
+//                return true; //ignore and continue
+//            case 0:
+//                return addEvent(at, id, x); //continue
+//            case -1:
+//                return false; //reject and fail
+//            default:
+//                throw new UnsupportedOperationException();
+//        }
 //
-//    private static void flattenInto(Collection<Term> ee, Term ex, int dt) {
-//        if (ex.op() == CONJ && ex.dt() == dt)
-//            ex.subterms().forEach(eee -> flattenInto(ee, eee, dt));
-//        else
-//            ee.addAt(ex);
 //    }
 
-    /**
-     * factor common temporal event components to an ETERNAL component
-     * returns true if possibly changed
-     */
-    public boolean factor() {
+//    private boolean addEvent(long at, byte id) {
+//        Term xx = unindex(id);
+//        return addEvent(at, id, xx);
+//    }
+//
+//    private boolean addEvent(long at, byte id, Term incoming) {
+//
+//        long[] compareTo = at == ETERNAL || (!event.containsKey(at)) ? new long[]{ETERNAL} : new long[]{ETERNAL, at};
+//        Object[] compares = new Object[compareTo.length];
+//
+//        stages: for (int stage = 0; stage < 3; stage++) {
+//            for (int cci = 0, compareToLength = compareTo.length; cci < compareToLength; cci++) {
+//                long wc = compareTo[cci];
+//                Object ee = stage == 0 ? (compares[cci] = event.get(wc)) : compares[cci];
+//                if (ee == null)
+//                    continue;
+//
+//                int w;
+//                switch (stage) {
+//                    case 0:
+//                        w = conflictOrSame(ee, id);
+//                        break;
+//                    case 1:
+//                        w = conjoinify(at, ee, incoming);
+//                        break;
+//                    case 2:
+//                        w = disjunctify(at, ee, incoming);
+//                        break;
+//                    default:
+//                        throw new UnsupportedOperationException();
+//                }
+//                if (w == -1) {
+//                    if (result != Null || result != False) result = False;
+//                    return false;
+//                } //contradiction
+//                if (w == +1) return true; //absorb = true;
+//            }
+//        }
+//
+//
+//        Object events = event.getIfAbsentPut(at, () -> new byte[ROARING_UPGRADE_THRESH]);
+//        if (events instanceof byte[]) {
+//            byte[] b = (byte[]) events;
+//
+//
+//            for (int i = 0; i < b.length; i++) {
+//                byte bi = b[i];
+//                if (bi == 0) {
+//                    //empty slot, take
+//                    //  assert(ArrayUtils.indexOf(b, (byte)-id)==-1); basic verification test
+//
+//                    b[i] = id;
+//                    return true;
+//                } else {
+//
+//                    //Term result = merge(Op.terms, unindex(bi), incoming, at == ETERNAL);
+//
+////                    if (result != null) {
+////                        if (result == True)
+////                            return true; //absorbed input
+////                        if (result == False || result == Null) {
+////                            this.result = result; //failure
+////                            return false;
+////                        } else {
+////                            if (i < b.length - 1) {
+////                                arraycopy(b, i + 1, b, i, b.length - 1 - i);
+////                                i--; //compactify
+////                            } else
+////                                b[i] = 0; //erase, continue comparing. the result remains eligible for add
+////
+////                            return add(at, result);
+////                        }
+////                    }
+//                }
+//            }
+//
+//            //no remaining capacity, upgrade to RoaringBitmap
+//
+//            RoaringBitmap rb = new RoaringBitmap();
+//            for (byte bb : b)
+//                rb.add(bb);
+//            rb.add(id);
+//            event.put(at, rb);
+//
+//
+//            return true;
+//        } else {
+//            return todoOrFalse();
+//        }
+//    }
 
-        int ee = eventOccurrences();
-        if (ee <= 1)
-            return false;
-
-        /** TODO use ConjLazy */
-        List<LongObjectPair<Object>> events = event.keyValuesView().toList();
-
-        int numTemporalCompoundEvents = 0, numTemporalEvents = 0;
-
-        for (Iterator<LongObjectPair<Object>> iterator = events.iterator(); iterator.hasNext(); ) {
-            LongObjectPair<Object> l = iterator.next();
-            if (l.getOne() != ETERNAL) {
-                numTemporalEvents++;
-
-                if (eventCount(l.getTwo()) > 1)
-                    numTemporalCompoundEvents++;
-            } else {
-                iterator.remove();
-            }
-        }
-        if ((numTemporalCompoundEvents <= 1) || (numTemporalCompoundEvents != numTemporalEvents))
-            return false;
-
-
-        ByteHashSet common = null;
-        ByteProcedure commonsAdd = null;
-        //TODO if this is iterated in order of least # of events at each time first, it is optimal
-        for (LongObjectPair<Object> whenWhat : events) {
-            long when = whenWhat.getOne();
-//            if (when == ETERNAL)
-//                return true; //shouldnt happen
-            Object what = whenWhat.getTwo();
-            if (what instanceof byte[]) {
-                byte[] bWhat = (byte[]) what;
-                if (common == null || common.isEmpty()) {
-                    //add the first set of events
-                    if (common == null) {
-                        common = new ByteHashSet(bWhat.length);
-                        commonsAdd = common::add;
-                    }
-                    events(bWhat, commonsAdd);
-                } else {
-                    if (common.removeIf(c -> !eventsContains(bWhat, c))) {
-                        //done
-                        if (common.isEmpty())
-                            return false; //all are eliminated
-                        // break;
-                    }
-                }
-
-            } else {
-                throw new TODO();
-            }
-        }
-
-        int commonCount = common != null ? common.size() : 0;
-        if (0 == commonCount)
-            return false;
-
-        BytePredicate commonContains = common::contains;
-
-
-        int e = 0;
-        for (LongObjectPair<Object> whenWhat : events) {
-            long when = whenWhat.getOne();  //assert(when!=ETERNAL);
-            Object what = whenWhat.getTwo();
-
-            if (what instanceof byte[]) {
-                if (eventsAND(((byte[]) what), commonContains)) {
-                    return false; //all would be eliminated at this time slot
-                }
-            } else
-                throw new TODO();
-        }
-
-
-        MutableByteIterator ii = common.byteIterator();
-        while (ii.hasNext()) {
-            byte f = ii.next();
-            boolean added = addEvent(ETERNAL, f);
-            /*if (!added)
-                throw new WTF(); assert(added);*/
-
-            if (added) {
-                //component successfully factored
-                for (LongObjectPair<Object> whenWhat : events) {
-                    boolean removed = remove(whenWhat.getOne(), f);
-                    assert (removed);
-                }
-            } else
-                return false;
-        }
-
-        return true;
-    }
-
-    @Override
-    public LongIterator eventOccIterator() {
-        return event.keysView().longIterator();
-    }
-
-    public final Term term(long when) {
-        return term(when, Op.terms);
-    }
-
-    public Term term(long when, TermBuilder b) {
-        return term(when, b, new FasterList(2));
-    }
-
-    private Term term(long when, TermBuilder b, FasterList<Term> tmp) {
-        return term(when, event.get(when), b, tmp);
-    }
-
-    private void term(Object what, FasterList<Term> buffer) {
-        if (what == null)
-            return;
-        else if (what instanceof byte[]) {
-            term((byte[]) what, buffer);
-        } else if (what instanceof RoaringBitmap) {
-            term((RoaringBitmap) what, buffer);
-        } else {
-            throw new TODO();
-        }
-
-    }
-
-    private void term(byte[] b, FasterList<Term> buffer) {
-        for (byte x : b) {
-            if (x == 0)
-                break; //null-terminator reached
-            buffer.add(unindex(x));
-        }
-    }
-
-    private void term(RoaringBitmap b, FasterList<Term> buffer) {
-        PeekableIntIterator xx = b.getIntIterator();
-        while (xx.hasNext()) {
-            buffer.add(unindex((byte) xx.next()));
-        }
-    }
-
-    private Term term(long when, Object what, TermBuilder b, FasterList<Term> tmpBuffer) {
-
-        tmpBuffer.clear();
-
-        term(what, tmpBuffer);
-
-        int ts = tmpBuffer.size();
-        switch (ts) {
-            case 0:
-                return True;
-            case 1:
-                return tmpBuffer.get(0);
-            default: {
-//                if (when==ETERNAL && ((FasterList<Term>)tmp).count(Conj::isSeq)>1)
-//                    return Null; //too complex
-
-                return ConjCommutive.the(b, when == ETERNAL ? DTERNAL : 0, true, true, tmpBuffer.toArray(Op.EmptyTermArray));
-                //return b.theSortedCompound(CONJ, DTERNAL, tmpBuffer);
-                //return CONJ.the(tmpBuffer);
-            }
-
-        }
-    }
-
-    private Term unindex(int termIndex, @Nullable boolean[] negatives) {
-        assert (termIndex != 0);
-
-        boolean neg = termIndex < 0;
-        if (neg)
-            termIndex = -termIndex;
-
-        Term c = idToTerm.get(termIndex - 1);
-        if (neg) {
-            c = c.neg();
-            if (negatives != null)
-                negatives[0] = true;
-        }
-        return c;
-    }
+//    /**
+//     * allows subclass implement different behavior.
+//     * <p>
+//     * return:
+//     * -1: ignore and fail the conjunction
+//     * 0: default, continue
+//     * +1: ignore and continue
+//     */
+//    int filterAdd(long at, byte id, Term x) {
+//        return 0;
+//    }
+//
+//    /**
+//     * # of unique event occurrence times
+//     */
+//    @Override
+//    public int eventOccurrences() {
+//        return event.size();
+//    }
+//
+//    private ByteSet eventSet(long e) {
+//        Object ee = event.get(e);
+//        if (ee == null)
+//            return ByteSets.immutable.empty();
+//        if (!(ee instanceof byte[]))
+//            throw new TODO();
+//        byte[] eee = (byte[]) ee;
+//
+//        int ec = eventCount(eee); //assert (ec > 0);
+//        if (ec == 1)
+//            return ByteSets.immutable.of(eee[0]);
+//        else if (ec == 2)
+//            return ByteSets.immutable.of(eee[0], eee[1]);
+//        else if (ec == 3)
+//            return ByteSets.immutable.of(eee[0], eee[1], eee[2]);
+//        else
+//            return ByteSets.immutable.of(Arrays.copyOf(eee, ec));
+////            ByteHashSet b = new ByteHashSet(ec);
+////            events(eee, b::add);
+////            return b;
+//
+//    }
+//
+//    /**
+//     * @return non-zero byte value
+//     */
+//    private byte add(Term t) {
+////        if (!(t != null && eventable(t))) //eventable
+////            throw new WTF(t + " is not valid event in " + Conj.class);
+//
+//        return termToId.getIfAbsentPutWithKey(t, tt -> {
+//            int s = idToTerm.addAndGetSize(tt);
+//            assert (s < Byte.MAX_VALUE);
+//            return (byte) s;
+//        });
+//    }
+//
+//    /**
+//     * returns index of an item if it is present, or -1 if not
+//     */
+//    private byte index(Term t) {
+//        return termToId.getIfAbsent(t.unneg(), (byte) -1);
+//    }
+//
+//    private Term unindex(byte id) {
+//        Term x = idToTerm.get(Math.abs(id) - 1);
+////        if (x == null)
+////            throw new NullPointerException();
+//        return x.negIf(id < 0);
+//    }
+//
+//    private byte get(Term x) {
+//        boolean neg;
+//        if (neg = (x.op() == NEG))
+//            x = x.unneg();
+//        byte index = index(x);
+//        if (index == -1)
+//            return Byte.MIN_VALUE;
+//
+//        return neg ? (byte) (-index) : index;
+//    }
+//
+//    @Override
+//    public boolean remove(long at, Term t) {
+//        int tdt = t.dt();
+//
+//        byte i = get(t);
+//        if ((i == Byte.MIN_VALUE) ? false : remove(at, i))
+//            return true;
+//
+//        final boolean[] removed = {false};
+//        boolean r = t.eventsWhile((when, what) -> {
+//            //assert (!t.equals(what)); //prevent infinite recursion, hopefully this cant happen
+//            if (t == what)
+//                return false; //HACK find why
+//            removed[0] |= remove(when, what);
+//            return true; //keep going
+//        }, at, true, false);
+//        return removed[0];
+//
+//    }
+//
+//    private boolean remove(long at, byte... what) {
+//
+//        Object o = event.get(at);
+//        if (o == null)
+//            return false;
+//
+//
+//        if (removeFromEvent(at, o, true, what) != 0) {
+//            result = null;
+//            return true;
+//        }
+//        return false;
+//    }
+//
+//    /**
+//     * returns:
+//     * +2 removed, and now this event time is empty
+//     * +1 removed
+//     * +0 not removed
+//     */
+//    private int removeFromEvent(long at, Object o, boolean autoRemoveIfEmpty, byte... i) {
+//        if (o instanceof RoaringBitmap) {
+//            boolean b = false;
+//            RoaringBitmap oo = (RoaringBitmap) o;
+//            for (int ii : i)
+//                b |= oo.checkedRemove(ii);
+//            if (!b) return 0;
+//            if (oo.isEmpty()) {
+//                if (autoRemoveIfEmpty)
+//                    event.remove(at);
+//                return 2;
+//            } else {
+//                return 1;
+//            }
+//        } else {
+//            byte[] b = (byte[]) o;
+//
+//            int num = ArrayUtil.indexOf(b, (byte) 0);
+//            if (num == -1) num = b.length;
+//
+//            int removals = 0;
+//            for (byte ii : i) {
+//                assert (ii != 0);
+//                int bi = ArrayUtil.indexOf(b, ii, 0, num);
+//                if (bi != -1) {
+//                    //if (b[bi] != 0) {
+//                    b[bi] = 0;
+//                    removals++;
+//                    //}
+//                }
+//            }
+//
+//            if (removals == 0)
+//                return 0;
+//            else if (removals == num) {
+//                if (autoRemoveIfEmpty)
+//                    event.remove(at);
+//                return 2;
+//            } else {
+//
+//
+//                //sort all zeros to the end
+//                ArrayUtil.sort(b, 0, num - 1, (byte x) -> x == 0 ? Byte.MIN_VALUE : x);
+//
+////                MetalBitSet toRemove = MetalBitSet.bits(b.length);
+////
+////                for (int zeroIndex = 0; zeroIndex < b.length; zeroIndex++) {
+////                    if (b[zeroIndex] == 0)
+////                        toRemove.setAt(zeroIndex);
+////                }
+////
+////                b = ArrayUtils.removeAll(b, toRemove);
+////                event.put(at, b);
+//                return 1;
+//            }
+//        }
+//    }
+//
+//    public boolean removeEventsByTerm(Term t, boolean pos, boolean neg) {
+//
+//        boolean negateInput;
+//        if (t.op() == NEG) {
+//            negateInput = true;
+//            t = t.unneg();
+//        } else {
+//            negateInput = false;
+//        }
+//
+//        byte i = get(t);
+//        if (i == Byte.MIN_VALUE)
+//            return false;
+//
+//        byte[] ii;
+//        if (pos && neg) {
+//            ii = new byte[]{i, (byte) -i};
+//        } else if (pos) {
+//            ii = new byte[]{negateInput ? (byte) -i : i};
+//        } else if (neg) {
+//            ii = new byte[]{negateInput ? i : (byte) -i};
+//        } else {
+//            throw new UnsupportedOperationException();
+//        }
+//
+//
+//        final boolean[] removed = {false};
+//        LongArrayList eventsToRemove = new LongArrayList(0);
+//        event.forEachKeyValue((when, o) -> {
+//            int result = removeFromEvent(when, o, false, ii);
+//            if (result == 2) {
+//                eventsToRemove.add(when);
+//            }
+//            removed[0] |= result > 0;
+//        });
+//
+//        if (!eventsToRemove.isEmpty()) {
+//            eventsToRemove.forEach(event::remove);
+//        }
+//
+//        if (removed[0]) {
+//            result = null;
+//            return true;
+//        }
+//        return false;
+//    }
+//
+//    @Override
+//    public Term term(TermBuilder B) {
+//        if (result != null)
+//            return result;
+//
+//        if (event.isEmpty())
+//            return True;
+//
+//        factor();
+//
+//        int numOcc = eventOccurrences();
+//        int numTmpOcc = numOcc;
+//
+//
+//        FasterList<Term> tmp = new FasterList(2);
+//        Term eternal;
+//        if (event.containsKey(ETERNAL)) {
+//            numTmpOcc--;
+//            eternal = term(ETERNAL, B, tmp);
+//            if (eternal != null) {
+//                if (eternal == False || eternal == Null)
+//                    return this.result = eternal;
+//            }
+//        } else {
+//            eternal = null;
+//        }
+//
+//        Term temporal;
+//        Term ci;
+//        switch (numTmpOcc) {
+//            case 0:
+//                temporal = null;
+//                break;
+////            case 1:
+////                //one other non-eternal time
+////                LongObjectPair<Object> e = event.keyValuesView().select(x -> x.getOne() != ETERNAL).getFirst();
+////                Term t = target(e.getOne(), e.getTwo(), tmp);
+////                if (t == null || t == True) {
+////                    t = null;
+////                } else if (t == False) {
+////                    return this.result = False;
+////                } else if (t == Null) {
+////                    return this.result = Null;
+////                }
+////                if (t != null) {
+////                    if (eternal != null && e.getOne() == 0) {
+////                        boolean econj = eternal.op() == CONJ;
+////                        if (!econj || eternal.dt() == DTERNAL) {
+////                            //promote eternal to parallel
+////                            if (!econj) {
+////                                return ConjCommutive.the(0, eternal, t);
+////                            } else {
+////                                List<Term> ecl = new FasterList(eternal.subs() + 1);
+////                                eternal.subterms().addTo(ecl);
+////                                ecl.addAt(t);
+////                                return ConjCommutive.the(0, ecl);
+////                            }
+////                        }
+////                    }
+////                }
+////                temporal = t;
+////                break;
+//            default:
+//                LongObjectArraySet<Term> temporals = null;
+//
+//                int occSkipped = 0;
+//                for (LongObjectPair<?> next : event.keyValuesView()) {
+//                    long when = next.getOne();
+//                    if (when == ETERNAL) {
+//                        occSkipped++;
+//                    } else {
+//
+//                        Term wt = term(when, next.getTwo(), B, tmp);
+//                        if (wt == False || wt == Null) {
+//                            return this.result = wt;
+//                        } else if (wt != True && wt != null) {
+//
+//                            if (temporals == null)
+//                                temporals = new LongObjectArraySet<Term>(0, new Term[(numOcc - occSkipped) * 2 /* estimate */]);
+//
+//                            temporals.add(when, wt);
+//
+//                        } else {
+//                            occSkipped++;
+//                        }
+//                    }
+//                }
+//                if (temporals != null) {
+//
+//                    int ee = temporals.size();
+//                    switch (ee) {
+//                        case 0:
+//                            temporal = null;
+//                            break;
+//                        case 1:
+//                            temporal = temporals.get(0);
+//                            break;
+//                        default:
+//
+//                            temporal = ConjSeq.conjSeq(B, temporals);
+//                            break;
+//                    }
+//                } else
+//                    temporal = null;
+//                break;
+//        }
+//
+//
+//        if (eternal != null && temporal != null) {
+//            if (eternal == True)
+//                ci = temporal;
+//            else {
+//
+//                if (temporal.equals(eternal))
+//                    return eternal;
+//
+//                if (temporal.equalsNeg(eternal))
+//                    return False;
+//
+////                //both conj or disj sequences?
+////                if (((eternal.op()==CONJ && eternal.dt()!=DTERNAL) && Conj.isSeq(temporal.unneg())))
+////                    return Null; //too complex
+//
+//                //temporal disjunction sequence AND eternal component?
+////                if (Conj.isSeq(temporal.unneg()) && (eternal.unneg().op()==CONJ || temporal.containsRecursively(eternal.unneg())))
+////                    return Null; //too complex
+//
+////                if (temporal.op() == CONJ && Term.commonStructure(eternal, temporal)) {
+////                    if (Conj.isSeq(temporal) || eternal.op() == CONJ) {
+////
+////                        if (!eternal.eventsWhile((ewhen, ewhat) -> {
+////                            //exhaustively check events for conflict
+////                            Term nEternal = ewhat.neg();
+////                            return temporal.eventsWhile((when, what) -> {
+////                                return !what.equals(nEternal);
+////                            }, 0, true, true, true);
+////                        }, 0, true, true, true))
+////                            return False;
+////
+////                    } else {
+////                        if (temporal.containsNeg(eternal))
+////                            return False; //HACK
+////                        else if (temporal.contains(eternal))
+////                            return temporal;  //HACK
+////                    }
+////                }
+//
+//
+////                Term tu = temporal.unneg();
+////                Term eu = eternal.unneg();
+////                int tdt = tu.dt(), edt = eu.dt();
+//
+//
+////                //if ((temporal.unneg().op() == CONJ && (tdt == DTERNAL || tdt == 0)) || (eternal.op() == CONJ && (edt == DTERNAL || edt == 0)) || temporal.containsRecursively(eternal.unneg()))
+////                if ((tu.op()==CONJ && (eu.op()==CONJ) && Term.commonStructure(eu, tu))) {
+////
+////
+////                    Predicate<Term> tur =
+////                            //z -> tu.containsRecursively(z.unneg());
+////                            z -> Conj.containsEvent(tu, z.unneg());
+////                    if (tur.test(eu) || (eu.op()!=CONJ || eu.subterms().OR(tur))) {
+//                //needs further flattening
+//                Term y = ConjCommutive.the(B, DTERNAL, true, true, temporal, eternal);
+//                return y;
+////                    }
+//
+//
+//            }
+//        } else if (eternal == null) {
+//            ci = temporal;
+//        } else /*if (temporal == null)*/ {
+//            ci = eternal;
+//        }
+//
+//        return ci == null ? True : ci;
+//    }
+////
+////    private static void flattenInto(Collection<Term> ee, Term ex, int dt) {
+////        if (ex.op() == CONJ && ex.dt() == dt)
+////            ex.subterms().forEach(eee -> flattenInto(ee, eee, dt));
+////        else
+////            ee.addAt(ex);
+////    }
+//
+//    /**
+//     * factor common temporal event components to an ETERNAL component
+//     * returns true if possibly changed
+//     */
+//    public boolean factor() {
+//
+//        int ee = eventOccurrences();
+//        if (ee <= 1)
+//            return false;
+//
+//        /** TODO use ConjLazy */
+//        List<LongObjectPair<Object>> events = event.keyValuesView().toList();
+//
+//        int numTemporalCompoundEvents = 0, numTemporalEvents = 0;
+//
+//        for (Iterator<LongObjectPair<Object>> iterator = events.iterator(); iterator.hasNext(); ) {
+//            LongObjectPair<Object> l = iterator.next();
+//            if (l.getOne() != ETERNAL) {
+//                numTemporalEvents++;
+//
+//                if (eventCount(l.getTwo()) > 1)
+//                    numTemporalCompoundEvents++;
+//            } else {
+//                iterator.remove();
+//            }
+//        }
+//        if ((numTemporalCompoundEvents <= 1) || (numTemporalCompoundEvents != numTemporalEvents))
+//            return false;
+//
+//
+//        ByteHashSet common = null;
+//        ByteProcedure commonsAdd = null;
+//        //TODO if this is iterated in order of least # of events at each time first, it is optimal
+//        for (LongObjectPair<Object> whenWhat : events) {
+//            long when = whenWhat.getOne();
+////            if (when == ETERNAL)
+////                return true; //shouldnt happen
+//            Object what = whenWhat.getTwo();
+//            if (what instanceof byte[]) {
+//                byte[] bWhat = (byte[]) what;
+//                if (common == null || common.isEmpty()) {
+//                    //add the first set of events
+//                    if (common == null) {
+//                        common = new ByteHashSet(bWhat.length);
+//                        commonsAdd = common::add;
+//                    }
+//                    events(bWhat, commonsAdd);
+//                } else {
+//                    if (common.removeIf(c -> !eventsContains(bWhat, c))) {
+//                        //done
+//                        if (common.isEmpty())
+//                            return false; //all are eliminated
+//                        // break;
+//                    }
+//                }
+//
+//            } else {
+//                throw new TODO();
+//            }
+//        }
+//
+//        int commonCount = common != null ? common.size() : 0;
+//        if (0 == commonCount)
+//            return false;
+//
+//        BytePredicate commonContains = common::contains;
+//
+//
+//        int e = 0;
+//        for (LongObjectPair<Object> whenWhat : events) {
+//            long when = whenWhat.getOne();  //assert(when!=ETERNAL);
+//            Object what = whenWhat.getTwo();
+//
+//            if (what instanceof byte[]) {
+//                if (eventsAND(((byte[]) what), commonContains)) {
+//                    return false; //all would be eliminated at this time slot
+//                }
+//            } else
+//                throw new TODO();
+//        }
+//
+//
+//        MutableByteIterator ii = common.byteIterator();
+//        while (ii.hasNext()) {
+//            byte f = ii.next();
+//            boolean added = addEvent(ETERNAL, f);
+//            /*if (!added)
+//                throw new WTF(); assert(added);*/
+//
+//            if (added) {
+//                //component successfully factored
+//                for (LongObjectPair<Object> whenWhat : events) {
+//                    boolean removed = remove(whenWhat.getOne(), f);
+//                    assert (removed);
+//                }
+//            } else
+//                return false;
+//        }
+//
+//        return true;
+//    }
+//
+//    @Override
+//    public LongIterator eventOccIterator() {
+//        return event.keysView().longIterator();
+//    }
+//
+//    public final Term term(long when) {
+//        return term(when, Op.terms);
+//    }
+//
+//    public Term term(long when, TermBuilder b) {
+//        return term(when, b, new FasterList(2));
+//    }
+//
+//    private Term term(long when, TermBuilder b, FasterList<Term> tmp) {
+//        return term(when, event.get(when), b, tmp);
+//    }
+//
+//    private void term(Object what, FasterList<Term> buffer) {
+//        if (what == null)
+//            return;
+//        else if (what instanceof byte[]) {
+//            term((byte[]) what, buffer);
+//        } else if (what instanceof RoaringBitmap) {
+//            term((RoaringBitmap) what, buffer);
+//        } else {
+//            throw new TODO();
+//        }
+//
+//    }
+//
+//    private void term(byte[] b, FasterList<Term> buffer) {
+//        for (byte x : b) {
+//            if (x == 0)
+//                break; //null-terminator reached
+//            buffer.add(unindex(x));
+//        }
+//    }
+//
+//    private void term(RoaringBitmap b, FasterList<Term> buffer) {
+//        PeekableIntIterator xx = b.getIntIterator();
+//        while (xx.hasNext()) {
+//            buffer.add(unindex((byte) xx.next()));
+//        }
+//    }
+//
+//    private Term term(long when, Object what, TermBuilder b, FasterList<Term> tmpBuffer) {
+//
+//        tmpBuffer.clear();
+//
+//        term(what, tmpBuffer);
+//
+//        int ts = tmpBuffer.size();
+//        switch (ts) {
+//            case 0:
+//                return True;
+//            case 1:
+//                return tmpBuffer.get(0);
+//            default: {
+////                if (when==ETERNAL && ((FasterList<Term>)tmp).count(Conj::isSeq)>1)
+////                    return Null; //too complex
+//
+//                return ConjCommutive.the(b, when == ETERNAL ? DTERNAL : 0, true, true, tmpBuffer.toArray(Op.EmptyTermArray));
+//                //return b.theSortedCompound(CONJ, DTERNAL, tmpBuffer);
+//                //return CONJ.the(tmpBuffer);
+//            }
+//
+//        }
+//    }
+//
+//    private Term unindex(int termIndex, @Nullable boolean[] negatives) {
+//        assert (termIndex != 0);
+//
+//        boolean neg = termIndex < 0;
+//        if (neg)
+//            termIndex = -termIndex;
+//
+//        Term c = idToTerm.get(termIndex - 1);
+//        if (neg) {
+//            c = c.neg();
+//            if (negatives != null)
+//                negatives[0] = true;
+//        }
+//        return c;
+//    }
 
 //    public boolean addDithered(Term target, long start, long end, int maxSamples, int minSegmentLength, NAR nar) {
 //        if (start != ETERNAL) {
@@ -2506,42 +2485,42 @@ public class Conj extends ByteAnonMap implements ConjBuilder {
 //        return addAt(target, start, end, maxSamples, minSegmentLength);
 //    }
 
-    public final void distribute() {
-        distribute(Op.terms);
-    }
-
-    /**
-     * opposite of factor; 'multiplies' all temporal components with any eternal components
-     */
-    public void distribute(TermBuilder b) {
-
-        int occ = eventOccurrences();
-        if (occ <= 1)
-            return;
-
-        if (eventCount(ETERNAL) == 0)
-            return;
-
-        Term ete = term(ETERNAL, b);
-
-        removeAll(ETERNAL);
-
-        //replace all terms (except the eternal components removed) with the distributed forms
-
-        this.idToTerm.replaceAll((x) -> {
-            if (!x.equals(ete)) {
-                Term y = CONJ.the(x, ete);
-                if (!y.equals(x)) {
-                    byte id = termToId.removeKeyIfAbsent(x, Byte.MIN_VALUE);
-                    assert (id != Byte.MIN_VALUE);
-                    termToId.put(y, id);
-                    return y;
-                }
-            }
-            return x;
-        });
-    }
-
+//    public final void distribute() {
+//        distribute(Op.terms);
+//    }
+//
+//    /**
+//     * opposite of factor; 'multiplies' all temporal components with any eternal components
+//     */
+//    public void distribute(TermBuilder b) {
+//
+//        int occ = eventOccurrences();
+//        if (occ <= 1)
+//            return;
+//
+//        if (eventCount(ETERNAL) == 0)
+//            return;
+//
+//        Term ete = term(ETERNAL, b);
+//
+//        removeAll(ETERNAL);
+//
+//        //replace all terms (except the eternal components removed) with the distributed forms
+//
+//        this.idToTerm.replaceAll((x) -> {
+//            if (!x.equals(ete)) {
+//                Term y = CONJ.the(x, ete);
+//                if (!y.equals(x)) {
+//                    byte id = termToId.removeKeyIfAbsent(x, Byte.MIN_VALUE);
+//                    assert (id != Byte.MIN_VALUE);
+//                    termToId.put(y, id);
+//                    return y;
+//                }
+//            }
+//            return x;
+//        });
+//    }
+//
 
 //    /**
 //     * inverse of addAt

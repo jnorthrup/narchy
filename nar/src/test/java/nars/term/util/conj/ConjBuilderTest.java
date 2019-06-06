@@ -13,7 +13,7 @@ class ConjBuilderTest {
 
     @Test
     void testSimpleEternalsNeg() {
-        ConjBuilder c = new Conj();
+        ConjBuilder c = new ConjTree();
         c.add(ETERNAL, ConjTest2.x);
         c.add(ETERNAL, ConjTest2.y.neg());
         assertEquals("((--,y)&&x)", c.term().toString());
@@ -21,26 +21,26 @@ class ConjBuilderTest {
 
     @Test
     void testSimpleEvents() {
-        for (ConjBuilder c : new ConjBuilder[]{new Conj(), new ConjLazy()}) {
+        for (ConjBuilder c : new ConjBuilder[]{new ConjTree(), new ConjLazy()}) {
             c.add(1, ConjTest2.x);
             c.add(2, ConjTest2.y);
             assertEquals("(x &&+1 y)", c.term().toString());
             assertEquals(1, c.shift());
             assertEquals(1, c.shiftOrZero());
 
-            if (c instanceof Conj)
-                assertEquals(2, ((Conj) c).event.size());
+//            if (c instanceof ConjBuilder)
+//                assertEquals(2, ((Conj) c).event.size());
         }
     }
 
     @Test
     void testEventShiftEternal() {
-        for (ConjBuilder c : new ConjBuilder[]{new Conj(), new ConjLazy()}) {
+        for (ConjBuilder c : new ConjBuilder[]{new ConjTree(), new ConjLazy()}) {
             c.add(ETERNAL, ConjTest2.x);
             c.add(1, ConjTest2.y);
             assertEquals(1, c.shift());
         }
-        for (ConjBuilder c : new ConjBuilder[]{new Conj(), new ConjLazy()}) {
+        for (ConjBuilder c : new ConjBuilder[]{new ConjTree(), new ConjLazy()}) {
             c.add(ETERNAL, ConjTest2.x);
             c.add(ETERNAL, ConjTest2.y);
             assertEquals(ETERNAL, c.shift());
@@ -50,7 +50,7 @@ class ConjBuilderTest {
 
     @Test
     void testConjBuilder_DontAccept_TIMELESS() {
-        for (ConjBuilder c : new ConjBuilder[]{new Conj(), new ConjLazy()}) {
+        for (ConjBuilder c : new ConjBuilder[]{new ConjTree(), new ConjLazy()}) {
             assertThrows(WTF.class, ()->c.add(TIMELESS, ConjTest2.x), ()->c.getClass().getSimpleName());
         }
     }

@@ -63,7 +63,7 @@ public enum ConjSeq { ;
     }
 
     public static MetalBitSet seqEternalComponents(Subterms x) {
-        return x.indicesOfBits(Conj.isEternalComponent);
+        return x.indicesOfBits(ConjBuilder.isEternalComponent);
     }
 
     static boolean _isSeq(Term x) {
@@ -91,7 +91,7 @@ public enum ConjSeq { ;
     }
 
     private static Term seqEternal(Subterms ss) {
-        return seqEternal(ss, ss.indicesOfBits(Conj.isEternalComponent));
+        return seqEternal(ss, ss.indicesOfBits(ConjBuilder.isEternalComponent));
     }
 
     public static Term seqEternal(Subterms ss, MetalBitSet m) {
@@ -115,7 +115,7 @@ public enum ConjSeq { ;
     }
 
     private static Compound seqTemporal(Subterms s) {
-        Compound t = (Compound) s.subFirst(Conj.isTemporalComponent);
+        Compound t = (Compound) s.subFirst(ConjBuilder.isTemporalComponent);
         assert (Conj.isSeq(t));
         return t;
     }

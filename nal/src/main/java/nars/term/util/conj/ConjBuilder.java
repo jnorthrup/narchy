@@ -9,6 +9,9 @@ import nars.term.atom.Bool;
 import nars.term.util.builder.TermBuilder;
 import org.eclipse.collections.api.iterator.LongIterator;
 import org.eclipse.collections.api.tuple.primitive.LongObjectPair;
+import org.eclipse.collections.impl.map.mutable.primitive.LongObjectHashMap;
+
+import java.util.function.Predicate;
 
 import static nars.Op.CONJ;
 import static nars.term.atom.Bool.Null_Array;
@@ -196,4 +199,7 @@ public interface ConjBuilder {
         }
         return min == Long.MAX_VALUE ? ETERNAL : min;
     }
+
+    static final Predicate<Term> isTemporalComponent = Conj::isSeq;
+    static final Predicate<Term> isEternalComponent = isTemporalComponent.negate();
 }

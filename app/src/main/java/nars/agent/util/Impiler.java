@@ -25,8 +25,8 @@ import nars.task.util.TaskList;
 import nars.term.Term;
 import nars.term.Termed;
 import nars.term.atom.Bool;
-import nars.term.util.conj.Conj;
 import nars.term.util.conj.ConjBuilder;
+import nars.term.util.conj.ConjTree;
 import nars.time.Tense;
 import nars.truth.PreciseTruth;
 import nars.truth.Truth;
@@ -138,7 +138,7 @@ public class Impiler {
                             int n = path.size();
                             //DynTruth d = new DynTruth(n); //<- for tracking evidence?
 
-                            ConjBuilder cc = new Conj();
+                            ConjBuilder cc = new ConjTree();
                             long when = 0;
 
                             Truth t = null;
@@ -180,7 +180,7 @@ public class Impiler {
                                             cc.add(ETERNAL, A);
                                         } else {
                                             Term f = cc.term();
-                                            cc = new Conj();
+                                            cc = new ConjTree();
                                             cc.add(ETERNAL, f); //add existing accumulated sequence DTERNALly
                                         }
                                         if (s!=n-1) {

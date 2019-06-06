@@ -134,13 +134,15 @@ public class ConjLazy extends LongObjectArraySet<Term> implements ConjBuilder {
     }
 
     public static ConjLazy subtract(ConjLazy from, Term conj, long occOffset) {
-        conj.eventsWhile(from::remove,
-                occOffset, true, false);
+        conj.eventsWhile((when,what)->{
+            from.remove(when,what);
+            return true;
+        }, occOffset, true, false);
         return from;
     }
 
     private static long occAuto(Term conj, long occOffset) {
-        return occOffset == TIMELESS ? Conj.isSeq(conj) ? 0 : ETERNAL : occOffset;
+        return occOffset == TIMELESS ? (Conj.isSeq(conj) ? 0 : ETERNAL) : occOffset;
     }
 
 

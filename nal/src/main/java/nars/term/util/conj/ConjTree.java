@@ -36,6 +36,7 @@ public class ConjTree implements ConjBuilder {
     Set<Term> pos = null;
     Set<Term> neg = null;
     Term terminal = null;
+    private long shift = TIMELESS;
 
     //        private static boolean validate(Term x, Iterable<Term> yy) {
 ////        if (x.unneg().op()==CONJ)
@@ -362,7 +363,10 @@ public class ConjTree implements ConjBuilder {
         }
 
         if (seq == null) seq = new IntObjectHashMap<>(4);
-        return seq.getIfAbsentPut(Tense.occToDT(at), ConjTree::new).addParallel(x);
+        return seq.getIfAbsentPut(Tense.occToDT(at), () -> {
+            shift = TIMELESS; //invalidate
+            return new ConjTree();
+        }).addParallel(x);
     }
 
     @Override
@@ -372,15 +376,25 @@ public class ConjTree implements ConjBuilder {
             return n ? negRemove(t.unneg()) : posRemove(t);
 
         } else {
-            ConjTree s = seq.get(Tense.occToDT(at));
+            int aat = occToDT(at);
+            ConjTree s = seq.get(aat);
             if (s == null) return false;
             if (s.remove(ETERNAL, t)) {
-                if (seq.isEmpty())
-                    seq = null;
+                if (s.isEmpty()) {
+                    seq.remove(aat);
+                    shift = TIMELESS; //invalidate
+                    if (seq.isEmpty()) {
+                        seq = null;
+                    }
+                }
                 return true;
             }
             return false;
         }
+    }
+
+    private boolean isEmpty() {
+        return size()==0;
     }
 
     private boolean posRemove(Term t) {
@@ -403,7 +417,28 @@ public class ConjTree implements ConjBuilder {
 
     @Override
     public int eventOccurrences() {
-        throw new TODO();
+        return eventCount(ETERNAL) + (seq!=null ? seq.size() : 0);
+    }
+
+    @Override public int eventCount(long when) {
+        if (when == ETERNAL)
+            return ((pos!=null || neg!=null) ? 1 : 0);
+        else {
+            if (seq!=null) {
+                ConjTree s = seq.get(occToDT(when));
+                if (s!=null)
+                    return s.size();
+            }
+            return 0;
+        }
+    }
+
+    @Override
+    public long shift() {
+        if (shift == TIMELESS) {
+            shift = (seq == null || seq.isEmpty()) ? 0 :seq.keysView().min();
+        }
+        return shift;
     }
 
     @Override
@@ -431,11 +466,6 @@ public class ConjTree implements ConjBuilder {
             removed |= posRemove(term);
         }
         return removed;
-    }
-
-    @Override
-    public int eventCount(long when) {
-        throw new TODO();
     }
 
     @Override
@@ -483,7 +513,9 @@ public class ConjTree implements ConjBuilder {
 
             }
 
-            seq.clear();
+            shift(); //cache shift before clearing seq
+            seq = null;
+            //seq.clear();
 
             if (s == True)
                 s = null;
@@ -550,10 +582,12 @@ public class ConjTree implements ConjBuilder {
         }
 
 
-        if (p.size() > 1)
-            return ConjCommutive.conjDirect(B, DTERNAL, p.sortAndDedup());
-        else
-            return p.get(0);
+        switch (p.size()) {
+            case 0: return True;
+            case 1: return p.get(0);
+            default: return ConjCommutive.conjDirect(B, DTERNAL, p.sortAndDedup());
+        }
+
 //        } else {
 //            //distribute
 //            ConjTree c = new ConjTree();
