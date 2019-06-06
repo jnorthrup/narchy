@@ -49,7 +49,8 @@ public class DynTaskify extends TaskList {
     private final Compound template;
 
     /** whether the result is intended for internal or external usage; determines precision settings */
-    final boolean ditherTruth, ditherTime;
+    final boolean ditherTruth;
+    //, ditherTime;
     private final int dur;
     private MetalLongSet evi = null;
 
@@ -65,7 +66,7 @@ public class DynTaskify extends TaskList {
         super(8 /* estimate */);
         this.model = model;
         this.beliefOrGoal = beliefOrGoal;
-        this.ditherTruth = ditherTruth; this.ditherTime = ditherTime;
+        this.ditherTruth = ditherTruth;
 
         this.template = template;
         assert(template==null || template.op() != NEG);
@@ -204,13 +205,13 @@ public class DynTaskify extends TaskList {
                 return null;
         }
 
-        if (ditherTime) {
-            if (s!= LongInterval.ETERNAL) {
-                int dtDither = nar.dtDither();
-                s = Tense.dither(s, dtDither, -1);
-                e = Tense.dither(e, dtDither, +1);
-            }
-        }
+//        if (ditherTime) {
+//            if (s!= LongInterval.ETERNAL) {
+//                int dtDither = nar.dtDither();
+//                s = Tense.dither(s, dtDither, -1);
+//                e = Tense.dither(e, dtDither, +1);
+//            }
+//        }
 
         return merge(this, term1, t, stamp(nar.random()), beliefOrGoal, s, e, nar);
     }

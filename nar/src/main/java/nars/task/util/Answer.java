@@ -474,36 +474,6 @@ public final class Answer implements Timed {
         if (tt == null)
             return null;
 
-//        long s = tt.start(), e;
-//        if (s != ETERNAL) {
-//            e = tt.end();
-//            TimeRangeFilter t = this.time;
-//            long ts = t.start;
-//            if (ts != ETERNAL) {
-////                if (!trim) {
-//                //project to the question time range
-//                s = t.start;
-//                e = t.end;
-////                } else {
-////
-////                    //shrinkwrap
-////                    if (Longerval.contains(t.start, t.end, s, e)) {
-////                        //long s0 = s, e0 = e;
-////                        s = Math.max(ts, s);
-////                        e = Math.min(Math.max(s, t.end), e);
-//////                        if (s0 != s || e0 != e) {
-//////                            if (e == s)
-//////                                System.out.println(s0 + ".." + e0 + " -> " + s + ".." + e + "\td=" + ((e - s) - (e0 - s0)));
-//////                        }
-////                    }
-////                }
-//
-//            } else {
-//                //use the answered time range
-//            }
-//        } else {
-//            e = ETERNAL;
-//        }
         long s = time.start, e = time.end;
         if (s == ETERNAL) {
             //auto-crop if currently eternal
@@ -530,27 +500,6 @@ public final class Answer implements Timed {
         t.match(this);
         return this;
     }
-
-    //    final static ThreadLocal<DequePool<CachedFloatRank<Task>>> pool =
-//            //HEAP
-//            //() -> new CachedFloatRank<>(64);
-//
-//            ThreadLocal.withInitial(()->
-//                    new DequePool<CachedFloatRank<Task>>() {
-//                        @Override
-//                        public CachedFloatRank<Task> create() {
-//                            return new CachedFloatRank<>(64);
-//                        }
-//                    }
-//            );
-//
-//    static protected CachedFloatRank<Task> start(FloatRank<Task> rank) {
-//        //return new CachedFloatFunction<>(4, 256, rank);
-//        CachedFloatRank<Task> x = pool.get().get().value(rank);
-//        assert (x.isEmpty());
-//        //System.out.println(Thread.currentThread() + " got " + System.identityHashCode(x));
-//        return x;
-//    }
 
 
     public Answer time(TimeRangeFilter time) {
@@ -613,7 +562,18 @@ public final class Answer implements Timed {
         return nar.time();
     }
 
-    public Answer time(long start, long end) {
+    public final Answer time(long start, long end) {
+        return time(start, end, true);
+    }
+
+    public final Answer time(long start, long end, boolean dither) {
+        if (dither && start!=ETERNAL) {
+            int dtDither = nar.dtDither();
+            if (dtDither > 1) {
+                start = Tense.dither(start, dtDither);
+                end = Tense.dither(end, dtDither);
+            }
+        }
         return time(TimeRangeFilter.the(start, end,
                 TimeRangeFilter.Mode.Near
                 //start!=ETERNAL && dur == 0 ? TimeRangeFilter.Mode.Intersects : TimeRangeFilter.Mode.Near

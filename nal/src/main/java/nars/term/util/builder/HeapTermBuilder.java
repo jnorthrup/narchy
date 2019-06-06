@@ -15,10 +15,10 @@ public class HeapTermBuilder extends TermBuilder {
     }
 
     @Override public Term compound(Op o, int dt, Subterms t) {
-        return theCompound(o, dt, o.sortedIfNecessary(dt, t).arrayShared());
+        return newCompound(o, dt, o.sortedIfNecessary(dt, t).arrayShared());
     }
     @Override public Term compound(Op o, int dt, Term... u) {
-        return theCompound(o, dt, o.sortedIfNecessary(dt, u));
+        return newCompound(o, dt, o.sortedIfNecessary(dt, u));
     }
 
     @Override

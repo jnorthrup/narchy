@@ -1,12 +1,10 @@
 package nars.term.util.conj;
 
 import jcog.TODO;
-import jcog.data.bit.MetalBitSet;
 import jcog.data.list.FasterList;
 import jcog.data.set.ArrayHashSet;
-import jcog.data.set.LongObjectArraySet;
-import nars.subterm.Subterms;
 import nars.subterm.TermList;
+import nars.term.Compound;
 import nars.term.Term;
 import nars.term.atom.Bool;
 import nars.term.util.builder.TermBuilder;
@@ -14,14 +12,10 @@ import nars.time.Tense;
 import org.eclipse.collections.api.block.predicate.primitive.LongObjectPredicate;
 import org.eclipse.collections.api.iterator.LongIterator;
 import org.eclipse.collections.api.tuple.primitive.IntObjectPair;
-import org.eclipse.collections.api.tuple.primitive.ObjectIntPair;
 import org.eclipse.collections.impl.map.mutable.primitive.IntObjectHashMap;
-import org.eclipse.collections.impl.map.mutable.primitive.ObjectIntHashMap;
 
 import java.util.Iterator;
-import java.util.List;
 import java.util.Set;
-import java.util.function.Predicate;
 
 import static nars.Op.CONJ;
 import static nars.Op.NEG;
@@ -55,9 +49,6 @@ public class ConjTree implements ConjBuilder {
 //        return true;
 //    }
 
-    private boolean addParallelNeg(Term x) {
-        return addParallel(x.neg());
-    }
 
     private boolean addParallel(Term x) {
 
@@ -80,11 +71,35 @@ public class ConjTree implements ConjBuilder {
 
     }
 
-    private boolean addParallelP(Term p) {
-        assert (p.op() != NEG);
+    private boolean addParallelNeg(Term x) {
+        return addParallel(x.neg());
+    }
 
-        if (p.op() == CONJ && p.dt() != XTERNAL && !Conj.isSeq(p))
-            return p.subterms().AND(this::addParallel); //decompose conj
+    private boolean addParallelP(Term p) {
+        if (p instanceof Compound) {
+            assert (p.op() != NEG);
+
+            if (p.op() == CONJ) {
+                if (p.dt() != XTERNAL && !Conj.isSeq(p)) {
+                    return p.subterms().AND(this::addParallel); //decompose conj
+                } else if (p.dt() == XTERNAL) {
+                    for (Term what : p.subterms()) {
+                        if (what.op() == NEG) {
+                            if (pos != null && pos.contains(what.unneg())) {
+                                terminate(False);
+                                return false; //contradiction
+                            }
+                            //TODO detect reducible disjunction-in-sequence here to trigger recurse
+                        } else {
+                            if (neg != null && neg.contains(what)) {
+                                terminate(False);
+                                return false; //contradiction
+                            }
+                        }
+                    }
+                }
+            }
+        }
 
         if (pos != null && pos.contains(p))
             return true;
@@ -300,7 +315,7 @@ public class ConjTree implements ConjBuilder {
         return x;
     }
 
-    private void terminate(Term result) {
+    void terminate(Term result) {
 //        if (pos != null) pos.clear();
 //        if (neg != null) neg.clear();
 //        if (seq != null) seq.clear();
@@ -394,10 +409,10 @@ public class ConjTree implements ConjBuilder {
     }
 
     private boolean isEmpty() {
-        return size()==0;
+        return size() == 0;
     }
 
-    private boolean posRemove(Term t) {
+    boolean posRemove(Term t) {
         if (pos != null && pos.remove(t)) {
             if (pos.isEmpty())
                 pos = null;
@@ -406,7 +421,7 @@ public class ConjTree implements ConjBuilder {
         return false;
     }
 
-    private boolean negRemove(Term t) {
+    boolean negRemove(Term t) {
         if (neg != null && neg.remove(t)) {
             if (neg.isEmpty())
                 neg = null;
@@ -417,16 +432,17 @@ public class ConjTree implements ConjBuilder {
 
     @Override
     public int eventOccurrences() {
-        return eventCount(ETERNAL) + (seq!=null ? seq.size() : 0);
+        return eventCount(ETERNAL) + (seq != null ? seq.size() : 0);
     }
 
-    @Override public int eventCount(long when) {
+    @Override
+    public int eventCount(long when) {
         if (when == ETERNAL)
-            return ((pos!=null || neg!=null) ? 1 : 0);
+            return ((pos != null || neg != null) ? 1 : 0);
         else {
-            if (seq!=null) {
+            if (seq != null) {
                 ConjTree s = seq.get(occToDT(when));
-                if (s!=null)
+                if (s != null)
                     return s.size();
             }
             return 0;
@@ -436,7 +452,7 @@ public class ConjTree implements ConjBuilder {
     @Override
     public long shift() {
         if (shift == TIMELESS) {
-            shift = (seq == null || seq.isEmpty()) ? 0 :seq.keysView().min();
+            shift = (seq == null || seq.isEmpty()) ? 0 : seq.keysView().min();
         }
         return shift;
     }
@@ -486,15 +502,15 @@ public class ConjTree implements ConjBuilder {
             return terminal;
 
         int ss;
+        Term s = null;
         if (seq != null && ((ss = seq.size()) > 0)) {
-            Term s = null;
 
             if (ss == 1) {
                 //special case: degenerate sequence of 1 time point (probably @ 0)
                 s = seq.getOnly().term(B);
             } else {
                 //actual sequence
-                LongObjectArraySet<Term> events = new LongObjectArraySet<>(ss);
+                ConjLazy events = new ConjLazy(ss);
 
                 for (IntObjectPair<ConjTree> wc : seq.keyValuesView()) {
                     Term w = wc.getTwo().term(B);
@@ -504,9 +520,14 @@ public class ConjTree implements ConjBuilder {
                 }
                 if (!events.isEmpty()) {
 
-                    factor(events);
+                    TermList f = events.factor(this);
                     if (terminal != null)
                         return terminal;
+
+                    if (f != null)
+                        f.forEach(this::addParallel);
+
+                    events.condense(B);
 
                     s = ConjSeq.conjSeq(B, events);
                 }
@@ -527,39 +548,13 @@ public class ConjTree implements ConjBuilder {
             }
 
             if (s != null) {
-                //add seq as if parallel component avoiding decompose what we just constructed
-
-                if ((pos != null || neg != null) && Conj.isSeq(s)) {
-                    //check for sub-event conflicts that ordinarily wouldnt be tested on addParallel insert
-
-                    if (!s.eventsWhile((when, what) -> {
-                        if (what.op() == NEG) {
-                            if (pos != null)
-                                if (pos.contains(what.unneg())) {
-                                    return false; //contradiction
-                                }
-                            //TODO detect reducible disjunction-in-sequence here to trigger recurse
-                        } else {
-                            if (neg != null)
-                                if (neg.contains(what)) {
-                                    return false; //contradiction
-                                }
-                        }
-                        return true;
-                    }, 0, true, true)) {
-                        return False; //contradiction
-                    }
-
-                }
-
-                if (!addParallel(s))
-                    return terminal;
+                addParallel(s);
             }
         }
 
 
 //        if (s == null || !Conj.isSeq(s)) {
-        TermList p = new TermList();
+        TermList p = new TermList(1);
 
 
         if (pos != null) {
@@ -583,9 +578,13 @@ public class ConjTree implements ConjBuilder {
 
 
         switch (p.size()) {
-            case 0: return True;
-            case 1: return p.get(0);
-            default: return ConjCommutive.conjDirect(B, DTERNAL, p.sortAndDedup());
+            case 0:
+                return True;
+            case 1:
+                return p.get(0);
+            default: {
+                return B.newCompound(CONJ, DTERNAL, p.sortAndDedup());
+            }
         }
 
 //        } else {
@@ -610,123 +609,6 @@ public class ConjTree implements ConjBuilder {
 
     }
 
-    private void factor(LongObjectArraySet<Term> events) {
-        int n = events.size();
-        if (n < 2)
-            return;
-
-
-        //HACK pure repeating sequence - quick test to see whether all terms are equal in which case factorization will be impossible
-        if (pos == null && neg == null) {
-            boolean someDifference = false;
-            for (int i = 1, eventsSize = n; i < eventsSize; i++) {
-                Term t = events.get(i);
-                if (!t.equals(events.get(i - 1))) {
-                    someDifference = true;
-                    break;
-                }
-            }
-            if (!someDifference)
-                return;
-        }
-
-
-        ObjectIntHashMap<Term> count = new ObjectIntHashMap(n); //estimate
-        for (int i = 0, eventsSize = n; i < eventsSize; i++) {
-            Term t = events.get(i);
-            if (t.op() == CONJ && t.dt() == DTERNAL) {
-                //assert(!Conj.isSeq(t)); //?
-                for (Term tt : t.subterms()) {
-                    if (tt.op() != CONJ)
-                        count.addToValue(tt, 1);
-                }
-            } else
-                count.addToValue(t, 1);
-        }
-        if (count.isEmpty())
-            return;
-
-        TermList newFactors = new TermList(), partialFactors = new TermList();
-        Set<Term> factorable = count.keyValuesView().select((xc) -> {
-            Term x = xc.getOne();
-            int c = xc.getTwo();
-            if (c < n) {
-                if (x.op() != NEG) {
-                    if (pos != null && posRemove(x)) {
-                        partialFactors.add(x);
-                        return true;
-                    }
-                } else {
-                    if (neg != null && negRemove(x.unneg())) {
-                        partialFactors.add(x);
-                        return true;
-                    }
-                }
-                return false;
-            } else {
-                //new factor component
-                newFactors.add(x);
-                return true;
-            }
-        }).collect(ObjectIntPair::getOne).toSet();
-
-        if (terminal != null)
-            return; //TODO find why if this happens as a reuslt of addParallel
-
-        if (!factorable.isEmpty()) {
-            Predicate<Term> isFactored = factorable::contains;
-
-            List<MetalBitSet> removals = new FasterList(n);
-            for (Term t : events) {
-                Subterms ts = t.subterms();
-                MetalBitSet m = ts.indicesOfBits(isFactored);
-                int mc = m.cardinality();
-                //TODO remove inner event that is fully factored. but not if it's a start or stop event?
-                if (mc > 0 && mc < ts.subs()) {
-                    removals.add(m);
-                }
-            }
-
-            if (removals.size() == n) {
-                for (int i = 0; i < n; i++) {
-                    Term x = events.get(i);
-                    MetalBitSet m = removals.get(i);
-                    Term[] removing = x.subterms().removing(m);
-                    Term y = removing.length == 1 ? removing[0] : CONJ.the(x.dt(), removing);
-                    events.set(i, y);
-                }
-                newFactors.forEach(this::addParallel);
-            } else {
-                newFactors.forEach(this::removeParallel);
-            }
-
-
-            int pf = partialFactors.size();
-            if (pf > 0) {
-                //distribute partial factors
-                for (int i = 0; i < n; i++) {
-                    Term xf = events.get(i);
-                    if (pf == 1 && partialFactors.sub(0).equals(xf))
-                        continue;
-
-                    Term[] t = new Term[pf + 1];
-                    partialFactors.arrayClone(t);
-                    t[t.length - 1] = xf;
-                    Term xd = CONJ.the(t);
-                    if (xd == False || xd == Null) {
-                        terminate(xd);
-                        return;
-                    }
-                    events.set(i, xd);
-                }
-            }
-
-
-        } else {
-            return;
-        }
-
-    }
 
     private boolean addTo(TermList t, Term term) {
         if (term == True)

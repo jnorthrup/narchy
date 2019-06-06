@@ -363,13 +363,6 @@ public enum ConjCommutive {
 //            throw new WTF("why wasnt this simple case caught earlier");
 //    }
 
-    public static Term conjDirect(TermBuilder b, int dt, Term[] u) {
-        if (dt == 0)
-            dt = DTERNAL;
-
-        return b.theCompound(CONJ, dt, u);
-    }
-
     private static boolean coNegate(MetalBitSet pos, MetalBitSet neg, Term[] u) {
         int P = pos.cardinality();
         if (P == 1) {
@@ -470,7 +463,7 @@ public enum ConjCommutive {
 
         }
 
-        return b.theCompound(CONJ, XTERNAL, args);
+        return b.newCompound(CONJ, XTERNAL, args);
 
     }
 }

@@ -438,7 +438,7 @@ public class FasterList<X> extends FastList<X> {
 
 
     @Override
-    public final boolean removeIf(Predicate<? super X> filter) {
+    public boolean removeIf(Predicate<? super X> filter) {
         int s = size();
         int ps = s;
         X[] a = this.items;
@@ -866,27 +866,29 @@ public class FasterList<X> extends FastList<X> {
     }
 
     @Override
-    public boolean removeIf(org.eclipse.collections.api.block.predicate.Predicate<? super X> predicate) {
-        int nowFilled = 0;
-        int s0 = this.size;
-        if (s0 == 0)
-            return false;
-        X[] xx = this.items;
-        for (int i = 0; i < s0; i++) {
-            X x = xx[i];
-            if (!predicate.accept(x)) {
-                if (nowFilled != i) {
-                    xx[nowFilled] = x;
-                }
-                nowFilled++;
-            }
-        }
-
-        if (nowFilled < s0) {
-            Arrays.fill(items, this.size = nowFilled, s0, null);
-            return true;
-        }
-        return false;
+    public final boolean removeIf(org.eclipse.collections.api.block.predicate.Predicate<? super X> predicate) {
+        return removeIf((Predicate<X>)predicate::test);
+//
+//        int nowFilled = 0;
+//        int s0 = this.size;
+//        if (s0 == 0)
+//            return false;
+//        X[] xx = this.items;
+//        for (int i = 0; i < s0; i++) {
+//            X x = xx[i];
+//            if (!predicate.accept(x)) {
+//                if (nowFilled != i) {
+//                    xx[nowFilled] = x;
+//                }
+//                nowFilled++;
+//            }
+//        }
+//
+//        if (nowFilled < s0) {
+//            Arrays.fill(items, this.size = nowFilled, s0, null);
+//            return true;
+//        }
+//        return false;
     }
 
     public boolean removeInstance(X x) {

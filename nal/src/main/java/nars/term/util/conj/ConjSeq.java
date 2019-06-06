@@ -3,6 +3,7 @@ package nars.term.util.conj;
 import jcog.WTF;
 import jcog.data.bit.MetalBitSet;
 import jcog.data.set.LongObjectArraySet;
+import nars.Op;
 import nars.Task;
 import nars.subterm.Subterms;
 import nars.term.Compound;
@@ -13,7 +14,6 @@ import nars.term.util.builder.TermBuilder;
 import nars.time.Tense;
 
 import java.util.Arrays;
-import java.util.TreeSet;
 
 import static nars.Op.CONJ;
 import static nars.Op.NEG;
@@ -33,6 +33,7 @@ public enum ConjSeq { ;
                 sequence(u[1], 0, u[0], -dt + u[1].eventRange(), B);
     }
 
+    /** TODO make method of B: TermBuilder.conjSequence(..) */
     static public Term sequence(Term a, long aStart, Term b, long bStart, TermBuilder B) {
 
         /*assert(bStart == aStart);*/
@@ -46,20 +47,21 @@ public enum ConjSeq { ;
             else if (a.equalsNeg(b)) return False;
         }
 
-//        if (a.hasAny(Op.CONJ) || b.hasAny(Op.CONJ)) {
+        if (a.hasAny(Op.CONJ) || b.hasAny(Op.CONJ)) {
             ConjBuilder c = new ConjTree();
             if (c.add(aStart, a))
                 c.add(bStart, b);
             return c.term(B);
-//        } else {
+        } else {
+//            //simple construction
+            return conjSeqFinal(B, Tense.occToDT(bStart-aStart), a, b);
 //            if (aStart > bStart)
 //            assert (aStart < bStart);
-//            //simple construction
 //            LongObjectArraySet<Term> ab = new LongObjectArraySet(2);
 //            ab.add(0L, a);
 //            ab.add(bStart - aStart, b);
 //            return ConjSeq.conjSeq(B, ab);
-//        }
+        }
     }
 
     public static MetalBitSet seqEternalComponents(Subterms x) {
@@ -124,8 +126,7 @@ public enum ConjSeq { ;
         return s.sub(eternalComponents.next(false, 0, s.subs()));
     }
 
-    public static Term conjSeq(TermBuilder B, LongObjectArraySet<Term> events) {
-        events.sortThis();
+    public static Term conjSeq(TermBuilder B, ConjLazy events) {
         return conjSeq(B, events, 0, events.size());
     }
 
@@ -144,11 +145,9 @@ public enum ConjSeq { ;
             case 1:
                 return first;
             case 2: {
-                Term second = events.get(end - 1);
-                long secondWhen = events.when(end - 1);
                 return conjSeqFinal(B,
-                        Tense.occToDT(secondWhen - firstWhen),
-                        /* left */ first, /* right */ second);
+                        Tense.occToDT(events.when(end - 1) - firstWhen),
+                        first, events.get(end - 1));
             }
         }
 
@@ -163,6 +162,11 @@ public enum ConjSeq { ;
         if (right == Null) return Null;
         if (right == False) return False;
 
+        if (left == True)
+            return right;
+        else if (right == True)
+            return left;
+
         int dt = Tense.occToDT((events.when(center + 1) - firstWhen - left.eventRange()));
 
         return dtSpecial(dt) ?
@@ -171,62 +175,54 @@ public enum ConjSeq { ;
     }
 
     static Term conjSeqFinal(TermBuilder b, int dt, Term left, Term right) {
-        assert (dt != XTERNAL);
+//        assert (dt != XTERNAL);
 
-        if (left == Null) return Null;
-        if (right == Null) return Null;
+//        if (left == Null) return Null;
+//        if (right == Null) return Null;
+//
+//        if (left == False) return False;
+//        if (right == False) return False;
+//
+//        if (left == True) return right;
+//        if (right == True) return left;
 
-        if (left == False) return False;
-        if (right == False) return False;
+//        if (!left.op().eventable || !right.op().eventable)
+//            return Null;
 
-        if (left == True) return right;
-        if (right == True) return left;
 
-        if (!left.op().eventable || !right.op().eventable)
-            return Null;
+        int lr = left.compareTo(right);
 
-        if (dt == 0 || dt == DTERNAL) {
-            if (left.equals(right))
-                return left;
-            else if (left.equalsNeg(right))
-                return False;
-        } else {
-            if (left!=right && left.equals(right))
-                right = left;
-            //TODO equalsNeg identity?
+        if (lr!=0) {
+            //not equal
+            if (dt == 0 || dt == DTERNAL) {
+                if (left.equalsNeg(right))
+                    return False; //contradiction
+            }
         }
 
-        if (left.compareTo(right) > 0) {
+        if (lr > 0) {
             if (dt != DTERNAL)
                 dt = -dt;
             Term t = right;
             right = left;
             left = t;
-        }
-
-        if (left.op()==CONJ && right.op()==CONJ && dtSpecial(left.dt()) && left.dt()==right.dt() && !left.equals(right)) {
-            //factorize any comment subevents
-            Subterms ll = left.subterms();
-            Subterms rr = right.subterms();
-            if (Term.commonStructure(ll, rr)) {
-                java.util.Set<Term> common = null;
-                java.util.Set<Term> l = ll.toSetSorted(), r = new TreeSet();
-                for (Term x : rr) {
-                    if (l.remove(x)) {
-                        if (common == null) common = new TreeSet();
-                        common.add(x);
-                    } else
-                        r.add(x);
-                }
-                if (common != null && !r.isEmpty() /*&& !l.isEmpty()*/) {
-                    Term c = CONJ.the(b, common);
-                    left = CONJ.the(l);
-                    right = CONJ.the(r);
-                    return b.conj(DTERNAL, c, b.theCompound(CONJ, dt, left, right));
-                }
+        } else if (lr == 0) {
+            //equal
+            if (dt == 0 || dt == DTERNAL) {
+                //parallel duplicate
+                return left;
+            } else {
+                //sequence of repeating terms
+                right = left; //share identity
+                if (dt < 0)
+                    dt = Math.abs(dt); //use positive dt only
             }
         }
-        return b.theCompound(CONJ, dt, left, right);
+        if (dt == 0)
+            dt = DTERNAL; //HACK
+
+
+        return b.newCompound(CONJ, dt, left, right);
     }
 
     /** TODO add support for supersampling to include task.end() features */

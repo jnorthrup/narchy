@@ -38,20 +38,20 @@ import static nars.time.Tense.*;
 public abstract class TermBuilder implements TermConstructor {
 
 
-    public final Term theSortedCompound(Op o, int dt, Collection<Term> u) {
+    public final Term newSortedCompound(Op o, int dt, Collection<Term> u) {
         assert (Tense.dtSpecial(dt));
         Term[] s = commute(u);
         if (s.length == 1 && o == CONJ)
             return s[0];
 
-        return theCompound(o, dt, s);
+        return newCompound(o, dt, s);
     }
 
-    public final Term theCompound(Op o, int dt, Term... u) {
-        return theCompound(o, dt, u, null);
+    public final Term newCompound(Op o, int dt, Term... u) {
+        return newCompound(o, dt, u, null);
     }
 
-    final Term theCompound(Op o, int dt, Term[] t, @Nullable DynBytes key) {
+    final Term newCompound(Op o, int dt, Term[] t, @Nullable DynBytes key) {
 
         int s = t.length;
         if (o.maxSubs < s)
@@ -120,7 +120,7 @@ public abstract class TermBuilder implements TermConstructor {
         return conj(false, dt, u);
     }
 
-    protected final Term conj(boolean preSorted, int dt, Term... u) {
+    public final Term conj(boolean preSorted, int dt, Term... u) {
 
         if (!preSorted && u.length > 1)
             u = ConjBuilder.preSort(dt, u);
@@ -135,7 +135,7 @@ public abstract class TermBuilder implements TermConstructor {
 //                    return conj(dt, only.arrayShared());
 //                else
                     return only instanceof Ellipsislike ?
-                            theCompound(CONJ, dt, only) //special case
+                            newCompound(CONJ, dt, only) //special case
                             :
                             only;
         }

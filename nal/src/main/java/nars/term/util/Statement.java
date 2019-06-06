@@ -273,7 +273,7 @@ public class Statement {
         if (op == IMPL && dt == 0)
             dt = DTERNAL; //generalize to DTERNAL ==>
 
-        Term t = B.theCompound(op, dt, subject, predicate);
+        Term t = B.newCompound(op, dt, subject, predicate);
 
 
         return t.negIf(negate);

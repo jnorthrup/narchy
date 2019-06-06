@@ -6,12 +6,18 @@ import nars.NAL;
 import nars.subterm.Subterms;
 import nars.subterm.TermList;
 import nars.term.Term;
+import nars.term.util.TermException;
 import nars.term.util.builder.InterningTermBuilder;
 import nars.term.util.builder.TermBuilder;
 import org.eclipse.collections.api.iterator.LongIterator;
+import org.eclipse.collections.impl.map.mutable.primitive.ObjectIntHashMap;
 import org.eclipse.collections.impl.set.mutable.primitive.LongHashSet;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.Arrays;
 
 import static nars.Op.CONJ;
+import static nars.Op.NEG;
 import static nars.term.atom.Bool.*;
 import static nars.time.Tense.*;
 
@@ -31,8 +37,34 @@ public class ConjLazy extends LongObjectArraySet<Term> implements ConjBuilder {
         super(0, new Term[expectedSize]);
     }
 
+    public static ConjLazy events(Term conj) {
+        return events(conj, TIMELESS);
+    }
 
+    public static ConjLazy subtract(ConjLazy from, Term conj) {
+        return subtract(from, conj, TIMELESS);
+    }
 
+    public static ConjLazy events(Term conj, long occOffset) {
+        occOffset = occAuto(conj, occOffset);
+
+        ConjLazy l = new ConjLazy();
+        conj.eventsWhile(l::add,
+                occOffset, true, false);
+        return l;
+    }
+
+    public static ConjLazy subtract(ConjLazy from, Term conj, long occOffset) {
+        conj.eventsWhile((when, what) -> {
+            from.remove(when, what);
+            return true;
+        }, occOffset, true, false);
+        return from;
+    }
+
+    private static long occAuto(Term conj, long occOffset) {
+        return occOffset == TIMELESS ? (Conj.isSeq(conj) ? 0 : ETERNAL) : occOffset;
+    }
 
     /**
      * consistent with ConjBuilder - semantics slightly different than superclass and List.addAt: returns true only if False or Null have been added; a duplicate value returns true
@@ -42,20 +74,22 @@ public class ConjLazy extends LongObjectArraySet<Term> implements ConjBuilder {
         if (when == TIMELESS)
             throw new WTF();
 
-        boolean result = true;
         if (t == True)
             return true; //ignore
 
-        if (t == False || t == Null) {
+        if (t == False || t == Null)
 //            clear(); //fail
             return false;
-        }
 
+        if (!t.op().eventable)
+            throw new TermException("invalid Conj event", t);
+
+        boolean result = true;
         //quick chest for absorb or conflict
         int n = size();
         for (int i = 0; i < n; i++) {
             long ww = when(i);
-            if (ww==ETERNAL || ww == when) {
+            if (ww == ETERNAL || ww == when) {
                 Term ii = get(i);
                 if (ii.equals(t))
                     return true; //exists
@@ -73,7 +107,7 @@ public class ConjLazy extends LongObjectArraySet<Term> implements ConjBuilder {
 
     @Override
     public final boolean add(long w, Term t) {
-        return ConjBuilder.super.add(w,t);
+        return ConjBuilder.super.add(w, t);
     }
 
     @Override
@@ -116,36 +150,6 @@ public class ConjLazy extends LongObjectArraySet<Term> implements ConjBuilder {
     public final LongIterator eventOccIterator() {
         return longIterator();
     }
-
-    public static ConjLazy events(Term conj) {
-        return events(conj, TIMELESS);
-    }
-    public static ConjLazy subtract(ConjLazy from, Term conj) {
-        return subtract(from, conj, TIMELESS);
-    }
-
-    public static ConjLazy events(Term conj, long occOffset) {
-        occOffset = occAuto(conj, occOffset);
-
-        ConjLazy l = new ConjLazy();
-        conj.eventsWhile(l::add,
-                occOffset, true, false);
-        return l;
-    }
-
-    public static ConjLazy subtract(ConjLazy from, Term conj, long occOffset) {
-        conj.eventsWhile((when,what)->{
-            from.remove(when,what);
-            return true;
-        }, occOffset, true, false);
-        return from;
-    }
-
-    private static long occAuto(Term conj, long occOffset) {
-        return occOffset == TIMELESS ? (Conj.isSeq(conj) ? 0 : ETERNAL) : occOffset;
-    }
-
-
 
     @Override
     public void negateEvents() {
@@ -202,10 +206,12 @@ public class ConjLazy extends LongObjectArraySet<Term> implements ConjBuilder {
         return removeIf((when, what) -> at == when && t.equalsNeg(what));
     }
 
-    /** returns true if something removed */
+    /**
+     * returns true if something removed
+     */
     public int removeAll(Term x, long offset, boolean polarity) {
 
-        if (x.op()==CONJ && x.dt()!=XTERNAL) {
+        if (x.op() == CONJ && x.dt() != XTERNAL) {
             //remove components
             final boolean[] removed = {false};
             if (!x.eventsWhile((when, what) -> {
@@ -227,4 +233,160 @@ public class ConjLazy extends LongObjectArraySet<Term> implements ConjBuilder {
     }
 
 
+    @Nullable
+    public TermList factor(ConjTree T) {
+
+        int n = size();
+        if (n < 2)
+            return null;
+
+        int u = eventOccurrences();
+        if (n <= u)
+            return null;
+
+        ObjectIntHashMap<Term> count = new ObjectIntHashMap(n); //estimate
+        for (int i = 0; i < n; i++) {
+            Term t = get(i);
+//            if (t.op() == CONJ && t.dt() == DTERNAL) {
+//                //assert(!Conj.isSeq(t)); //?
+//                for (Term tt : t.subterms()) {
+//                    if (tt.op() != CONJ)
+//                        count.addToValue(tt, 1);
+//                }
+//            } else
+                count.addToValue(t, 1);
+        }
+        if (count.isEmpty())
+            return null;
+
+        TermList toFactor = new TermList(), toDistribute = new TermList();
+        count.forEachKeyValue((x, c) -> {
+            if (c < u) {
+                if (x.op() != NEG) {
+                    if (T.pos != null && T.posRemove(x)) {
+                        toDistribute.add(x);
+                    }
+                } else {
+                    if (T.neg != null && T.negRemove(x.unneg())) {
+                        toDistribute.add(x);
+                    }
+                }
+            } else {
+                //new factor component
+                toFactor.add(x);
+            }
+        });
+
+//        if (terminal != null)
+//            return; //TODO find why if this happens as a reuslt of addParallel
+
+        int ff = toFactor.size();
+        if (ff * u >= n)
+            return null; //that would factor everything
+
+        if (ff > 0) {
+            removeIf(toFactor.containing());
+            return toFactor;
+        }
+
+//
+//            MetalBitSet removals = MetalBitSet.bits(n);
+//            for (int i = 0, eventsSize = events.size(); i < eventsSize; i++) {
+//                Term t = events.get(i);
+//                if (isFactored.test(t))
+//                    removals.set(i);
+////                MetalBitSet m = ts.indicesOfBits(isFactored);
+////                int mc = m.cardinality();
+////                //TODO remove inner event that is fully factored. but not if it's a start or stop event?
+////                if (mc > 0 && mc < ts.subs()) {
+////                    removals.add(m);
+////                }
+//            }
+//
+//            if (removals.size() == n) {
+//                for (int i = 0; i < n; i++) {
+//                    Term x = events.get(i);
+//                    MetalBitSet m = removals.get(i);
+//                    Term[] removing = x.subterms().removing(m);
+//                    Term y = removing.length == 1 ? removing[0] : CONJ.the(x.dt(), removing);
+//                    events.set(i, y);
+//                }
+//                toFactor.forEach(this::addParallel);
+//            } else {
+//                toFactor.forEach(this::removeParallel);
+//            }
+
+
+        int dd = toDistribute.size();
+        if (dd > 0) {
+            //distribute partial factors
+            for (int i = 0; i < n; i++) {
+                Term xf = get(i);
+                if (dd == 1 && toDistribute.sub(0).equals(xf))
+                    continue;
+
+                Term[] t = new Term[dd + 1];
+                toDistribute.arrayClone(t);
+                t[t.length - 1] = xf;
+                Term xd = CONJ.the(t);
+                if (xd == False || xd == Null) {
+                    T.terminate(xd);
+                    return null;
+                }
+                set(i, xd);
+            }
+        }
+
+        return null;
+
+    }
+
+    /** combine events at the same time into parallel conjunctions
+     * @param b*/
+    public void condense(TermBuilder B) {
+        int s = size();
+        if (s <= 1) return;
+
+        sortThis();
+
+
+        int start = 0;
+        long last = when(0);
+        for (int i = 1; i < s; i++) {
+            long wi = when(i);
+            if (i < s && last!= wi) {
+                last = wi;
+                start = i;
+            } else {
+                if (i > start) {
+                    set(start, subcommute(B, start, i+1));
+
+                    for (int r = 0; r < (i - start); r++) {
+                        removeThe(start + 1);
+                        s--;
+                        i--;
+                    }
+
+                }
+
+            }
+        }
+
+
+    }
+
+    private Term subcommute(TermBuilder B, int from, int to) {
+        if (to <= from+1)
+            throw new WTF(); //assert(to > from+1);
+        //next time
+        Term[] t = Arrays.copyOfRange(array(), from, to);
+        Arrays.sort(t); //items will be unique, so this is faster than ordinary Term commute which must deduplicate also
+
+
+
+        Term tt = B.conj(true, DTERNAL, t);
+        if (tt.op()!=CONJ)
+            throw new TermException("conj collapse during condense", CONJ, t);
+        return tt;
+    }
 }

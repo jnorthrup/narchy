@@ -104,7 +104,7 @@ public class InterningTermBuilder extends HeapTermBuilder {
                 c = statements;
             } else {
                 c = newOpCache(o.str,
-                        x -> theCompound(ops[x.op], x.dt, x.subs(), x.key), s);
+                        x -> newCompound(ops[x.op], x.dt, x.subs(), x.key), s);
             }
             terms[i] = c;
         }
@@ -123,18 +123,7 @@ public class InterningTermBuilder extends HeapTermBuilder {
                 capacity, f);
     }
 
-    @Override
-    protected Subterms subterms(Op o, Term[] t, int dt, @Nullable DynBytes key) {
-        Subterms subs = super.subterms(o, t, dt, key);
 
-        if (key != null && cacheSubtermKeyBytes) {
-            if (dt == DTERNAL) //HACK TODO if temporal then the final bytes are for dt should be excluded from what the subterms gets.
-                if (subs instanceof Subterms.SubtermsBytesCached)
-                    ((Subterms.SubtermsBytesCached) subs).acceptBytes(key);
-        }
-
-        return subs;
-    }
 
     private static Subterms subsInterned(Function<InternedSubterms, Subterms> m, Term[] t) {
         return m.apply(new InternedSubterms(t));
@@ -161,15 +150,23 @@ public class InterningTermBuilder extends HeapTermBuilder {
 
 
     @Override
-    public final Subterms subterms(@Nullable Op inOp, Term... t) {
+    protected Subterms subterms(Op o, Term[] t, int dt, @Nullable DynBytes key) {
+        Subterms subs;
         if (t.length == 0)
-            return EmptySubterms;
+            subs = EmptySubterms;
         else if (internableSubs(t))
-            return subtermsInterned(t);
+            subs =subtermsInterned(t);
         else
-            return super.subterms(inOp, t);
-    }
+            subs = super.subterms(o, t);
 
+        if (key != null && cacheSubtermKeyBytes) {
+            if (dt == DTERNAL) //HACK TODO if temporal then the final bytes are for dt should be excluded from what the subterms gets.
+                if (subs instanceof Subterms.SubtermsBytesCached)
+                    ((Subterms.SubtermsBytesCached) subs).acceptBytes(key);
+        }
+
+        return subs;
+    }
     private Subterms subtermsInterned(Term[] t) {
         //TODO separate cache for anon's
         if (Intrin.intrinsic(t))

@@ -49,6 +49,14 @@ public interface Subterms extends Termlike, Iterable<Term> {
         return hasAny(Op.Temporal) && OR(Term::hasXternal);
     }
 
+    default Predicate<Term> containing() {
+        switch(subs()) {
+            case 0: return (x)->false;
+            case 1: return sub(0)::equals;
+            default: return this::contains;
+        }
+    }
+
     default boolean contains(Term t) {
         return ORwith(Term::equals, t);
     }

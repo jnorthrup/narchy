@@ -21,8 +21,9 @@ import java.util.function.Supplier;
 import static nars.$.$;
 import static nars.$.$$;
 import static nars.Op.CONJ;
+import static nars.term.util.TermTest.assertEq;
 import static nars.time.Tense.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 class TimeGraphTest {
 
@@ -340,9 +341,13 @@ class TimeGraphTest {
     }
     @Test
     void testImplCross_Pred_DternalConj() throws Narsese.NarseseException {
+
         for (String inner : new String[]{" ==>+1 ", " ==>-1 ", "==>" }) {
             TimeGraph C = newTimeGraph(1);
-            C.know($("(b" + inner + "(a&&x))"), 1);
+            String i = "(b" + inner + "(a&&x))";
+            Term ii = $(i);
+            assertTrue(ii.op().eventable, ()->i);
+            C.know(ii, 1);
             C.print();
             assertSolved("(b ==>+- a)", C, "(b" + inner + "a)");
         }

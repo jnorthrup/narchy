@@ -4,39 +4,22 @@ import jcog.TODO;
 import jcog.WTF;
 import jcog.data.bit.MetalBitSet;
 import jcog.data.list.FasterList;
-import jcog.data.set.LongObjectArraySet;
 import jcog.util.ArrayUtil;
 import nars.NAL;
-import nars.Op;
 import nars.subterm.Subterms;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.Terms;
-import nars.term.atom.Bool;
-import nars.term.util.TermException;
 import nars.term.util.builder.TermBuilder;
-import nars.term.util.map.ByteAnonMap;
 import nars.time.Tense;
 import org.eclipse.collections.api.block.predicate.primitive.ByteObjectPredicate;
 import org.eclipse.collections.api.block.predicate.primitive.BytePredicate;
 import org.eclipse.collections.api.block.predicate.primitive.LongObjectPredicate;
 import org.eclipse.collections.api.block.procedure.primitive.ByteProcedure;
-import org.eclipse.collections.api.iterator.LongIterator;
-import org.eclipse.collections.api.iterator.MutableByteIterator;
-import org.eclipse.collections.api.set.primitive.ByteSet;
-import org.eclipse.collections.api.set.primitive.MutableLongSet;
-import org.eclipse.collections.api.tuple.primitive.LongObjectPair;
-import org.eclipse.collections.impl.factory.primitive.ByteSets;
-import org.eclipse.collections.impl.list.mutable.primitive.LongArrayList;
-import org.eclipse.collections.impl.map.mutable.primitive.LongObjectHashMap;
-import org.eclipse.collections.impl.set.mutable.primitive.ByteHashSet;
-import org.jetbrains.annotations.Nullable;
 import org.roaringbitmap.ImmutableBitmapDataProvider;
-import org.roaringbitmap.PeekableIntIterator;
 import org.roaringbitmap.RoaringBitmap;
 
 import java.util.*;
-import java.util.function.Predicate;
 
 import static nars.Op.CONJ;
 import static nars.Op.NEG;
@@ -1271,7 +1254,7 @@ public enum Conj  { ;
 //        if (xy == True) {
 //            return x; //x absorbs y
 //        } else if (xy == null) {
-        return B.theCompound(CONJ, DTERNAL /*eternalOrParallel ? DTERNAL : 0*/, Terms.commute(x, y));
+        return B.newCompound(CONJ, DTERNAL /*eternalOrParallel ? DTERNAL : 0*/, Terms.commute(x, y));
 //        } else {
 //            //failure or some particular merge result
 //            return xy;

@@ -3,7 +3,6 @@ package nars;
 import jcog.Log;
 import jcog.TODO;
 import jcog.Util;
-import jcog.data.list.FasterList;
 import jcog.math.LongInterval;
 import jcog.pri.Prioritizable;
 import jcog.pri.UnitPrioritizable;
@@ -11,7 +10,6 @@ import jcog.pri.op.PriMerge;
 import jcog.pri.op.PriReturn;
 import jcog.tree.rtree.HyperRegion;
 import nars.control.CauseMerge;
-import nars.subterm.Subterms;
 import nars.task.DerivedTask;
 import nars.task.EternalTask;
 import nars.task.NALTask;
@@ -33,17 +31,12 @@ import nars.truth.Truth;
 import nars.truth.Truthed;
 import nars.truth.polation.TruthIntegration;
 import nars.truth.util.EvidenceEvaluator;
-import org.eclipse.collections.api.PrimitiveIterable;
-import org.eclipse.collections.api.list.primitive.ByteList;
 import org.eclipse.collections.api.tuple.primitive.ObjectBooleanPair;
-import org.eclipse.collections.impl.map.mutable.primitive.ByteByteHashMap;
-import org.eclipse.collections.impl.map.mutable.primitive.ByteObjectHashMap;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
 import java.util.Arrays;
 import java.util.Comparator;
-import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
@@ -253,7 +246,7 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
      * these can all be tested prenormalization, because normalization will not affect the result
      */
     static boolean validTaskCompound(Compound x, boolean safe) {
-        return validIndep(x, safe);
+        return VarIndep.validIndep(x, safe);
     }
 
 //    static StableBloomFilter<Task> newBloomFilter(int cap, Random rng) {
@@ -262,109 +255,7 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
 //                new BytesHashProvider<>(IO::taskToBytes));
 //    }
 
-    private static boolean validIndep(Term x, boolean safe) {
-        /* A statement sentence is not allowed to have a independent variable as subj or pred"); */
-        switch (x.varIndep()) {
-            case 0:
-                return true;
-            case 1:
-                return fail(x, "singular independent variable", safe);
-            default:
-                if (!x.hasAny(Op.StatementBits)) {
-                    return fail(x, "InDep variables must be subterms of statements", safe);
-                } else {
-                    Subterms xx = x.subterms();
-                    if (x.op().statement && xx.AND(Termlike::hasVarIndep)) {
-                        return validIndepBalance(x, safe); //indep appearing in both, test for balance
-                    } else {
-                        return xx.AND(s -> validIndep(s, safe));
-                    }
-                }
-        }
-
-    }
-
-    static boolean validIndepBalance(Term t, boolean safe) {
-
-
-        FasterList</* length, */ ByteList> statements = new FasterList<>(4);
-        ByteObjectHashMap<List<ByteList>> indepVarPaths = new ByteObjectHashMap<>(4);
-
-        t.pathsTo(
-                (Term x) -> {
-                    Op xo = x.op();
-                    return (xo.statement && x.varIndep() > 0) || (xo == VAR_INDEP);
-                },
-                x -> x.hasAny(Op.StatementBits | Op.VAR_INDEP.bit),
-                (ByteList path, Term indepVarOrStatement) -> {
-                    if (!path.isEmpty()) {
-                        if (indepVarOrStatement.op() == VAR_INDEP) {
-                            indepVarPaths.getIfAbsentPut(((VarIndep) indepVarOrStatement).id(),
-                                    () -> new FasterList<>(2))
-                                    .add(path.toImmutable());
-                        } else {
-                            statements.add(path.toImmutable());
-                        }
-                    }
-                    return true;
-                });
-
-        if (indepVarPaths.anySatisfy(p -> p.size() < 2))
-            return false;
-
-        if (statements.size() > 1) {
-            statements.sortThisByInt(PrimitiveIterable::size);
-
-        }
-
-
-        boolean rootIsStatement = t.op().statement;
-        if (!indepVarPaths.allSatisfy((varPaths) -> {
-
-            ByteByteHashMap count = new ByteByteHashMap();
-
-            for (ByteList p : varPaths) {
-
-
-                if (rootIsStatement) {
-                    byte branch = p.get(0);
-                    if (Util.branchOr((byte) -1, count, branch) == 3)
-                        return true;
-                }
-
-                int pSize = p.size();
-                byte statementNum = -1;
-
-
-                nextStatement:
-                for (ByteList statement : statements) {
-                    statementNum++;
-                    int statementPathLength = statement.size();
-                    if (statementPathLength > pSize)
-                        break;
-
-                    for (int i = 0; i < statementPathLength; i++) {
-                        if (p.get(i) != statement.get(i))
-                            break nextStatement;
-                    }
-
-                    byte lastBranch = p.get(statementPathLength);
-                    assert (lastBranch == 0 || lastBranch == 1) : lastBranch + " for path " + p + " while validating target: " + t;
-
-
-                    if (Util.branchOr(statementNum, count, lastBranch) == 3) {
-                        return true;
-                    }
-                }
-            }
-            return false;
-        })) {
-            return fail(t, "InDep variables must be balanced across a statement", safe);
-        }
-        return true;
-    }
-
-    private static boolean fail(@Nullable Term t, String reason, boolean safe) {
+    static boolean fail(@Nullable Term t, String reason, boolean safe) {
         if (safe)
             return false;
         else

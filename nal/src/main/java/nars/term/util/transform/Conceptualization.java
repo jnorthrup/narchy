@@ -51,7 +51,7 @@ public class Conceptualization {
                 }
                 if (yy.subs() != 1 && t.size() == 1) {
                     Term tf = t.getFirst();
-                    return Op.terms.theCompound(CONJ, XTERNAL, tf, tf);
+                    return Op.terms.newCompound(CONJ, XTERNAL, tf, tf);
                 } else
                     return CONJ.the(XTERNAL, t);
             }
@@ -82,7 +82,7 @@ public class Conceptualization {
 //                }
                 if (t.size() == 1 && yy.subs() != 1) {
                     Term tf = t.first();
-                    return Op.terms.theCompound(CONJ, XTERNAL, tf, tf);
+                    return Op.terms.newCompound(CONJ, XTERNAL, tf, tf);
                 } else
                     return CONJ.the(XTERNAL, t);
             }

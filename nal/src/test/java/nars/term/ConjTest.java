@@ -17,7 +17,6 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
-import org.roaringbitmap.RoaringBitmap;
 
 import java.util.Random;
 
@@ -499,10 +498,13 @@ public class ConjTest {
         assertEq("(y==>x)", "((&&,(||,((--,left) &&+120 (--,left)),left),y) ==> (x&&y))");
     }
 
-    @Test void testInvalidDisj() {
+    @Test
+    void testInvalidDisj() {
         assertEq("((--,d)&&c)", "((--,(d&&c)) && c)");
     }
-    @Test void testInvalidDisjSeq() {
+
+    @Test
+    void testInvalidDisjSeq() {
         assertEq(True, Conj.diffAll($$("((a &&+1 b)&&c)"), $$("c")));
 
         Term a = $$("(--,((a &&+1 b)&&c))");
@@ -586,9 +588,34 @@ public class ConjTest {
     void testConjParallelsMixture() {
 
         assertEq(False, "(((b &&+4 a)&|(--,b))&|((--,c) &&+6 a))");
+    }
+    @Test
+    void testConjParallelsMixture2() {
+        assertEq("(b ==>+1 (a&&x))", $$("(b ==>+1 (a&&x))"));
+
+        ConjLazy c = new ConjLazy();
+
+        c.add(0L, x);
+
+        c.add(1L, x);
+        c.add(1L, y);
+
+        c.add(2L, x);
+        c.add(2L, y);
+        c.add(2L, z);
+        assertEquals(6, c.size());
+        assertEquals(3, c.eventOccurrences());
+
+        c.condense(Op.terms);
+        assertEquals(3, c.size());
+        assertEquals(3, c.eventOccurrences());
 
         assertEq("((&&,a,b2,b3) &&+1 (c&&b1))",
                 "(((a &&+1 b1)&|b2)&|(b3 &&+1 c))");
+    }
+    @Test
+    void testConjParallelsMixture3() {
+
         assertEq("((a &&+1 (b1&&b2)) &&+1 c)", "((a &&+1 (b1&|b2)) &&+1 c)");
 
 
@@ -1442,7 +1469,8 @@ public class ConjTest {
 
     }
 
-    @Test void testDisjInSeqPartialReduction() {
+    @Test
+    void testDisjInSeqPartialReduction() {
 
         assertEq("(((--,jump) &&+320 jump)&&(--,R))",
                 $$("(((--,jump) &&+320 (R||jump))&&(--,R))"));
@@ -1502,8 +1530,8 @@ public class ConjTest {
         ConjBuilder xc = c;
         assertEq(x, xc.term());
 
-        assertEquals(1, xc.eventCount(0));
-        assertEquals(1, xc.eventCount(1));
+//        assertEquals(1, xc.eventCount(0));
+//        assertEquals(1, xc.eventCount(1));
 //        assertEquals(1, xc.eventCount(ETERNAL));
 
 
@@ -1512,6 +1540,7 @@ public class ConjTest {
 //            assertEq("((--,x)&&(--,y))", xc.term());
         }
     }
+
     @Test
     void testDisjunctionInnerDTERNALConj2() {
         Term x = $$("((x &&+1 --x) && --y)");
@@ -1526,7 +1555,9 @@ public class ConjTest {
         );
 
     }
-    @Test void testConjLazyEvents() {
+
+    @Test
+    void testConjLazyEvents() {
         Term t = $$("(((((--,(tetris-->left))&&(--,(tetris-->rotate))) &&+43 (tetris-->left))&&(--,(tetris-->right))) &&+217 (tetris-->left))");
         ConjLazy c = ConjLazy.events(t);
         System.out.println(c);
@@ -1684,17 +1715,20 @@ public class ConjTest {
 
     @Test
     void testSequenceInnerConj_Normalize_to_Ete() {
-        {
-            Term xy_wz = $$("((x &| y) &&+1 (w &| z))");
-            assertEq("((x&&y) &&+1 (w&&z))", xy_wz);
-        }
+
+        Term xy_wz = $$("((x &| y) &&+1 (w &| z))");
+        assertEq("((x&&y) &&+1 (w&&z))", xy_wz);
+
+    }
+
+    @Test
+    void testSequenceInnerConj_Normalize_to_Ete_factored() {
 
 
-        {
-            //factored due to repeat x
-            Term xy_xz = $$("((x &| y) &&+1 (x &| z))");
-            assertEq("((y &&+1 z)&&x)", xy_xz);
-        }
+        //factored due to repeat x
+        Term xy_xz = $$("((x &| y) &&+1 (x &| z))");
+        assertEq("((y &&+1 z)&&x)", xy_xz);
+
 
     }
 
@@ -1853,7 +1887,9 @@ public class ConjTest {
         c.add(p.length() > 1 ? 0 : 1L, $$(p.replace("%", "x")));
         assertEq(p.replace("%", "(x&&y)"), c.term());
     }
-    @Test void conjoinify_234u892342() {
+
+    @Test
+    void conjoinify_234u892342() {
         ConjBuilder c = new ConjTree();
         Term x = $$("(((--,right) &&+90 (--,rotate)) &&+50 ((--,tetris(1,7))&&(--,tetris(7,4))))");
         assertEquals(CONJ, x.op());
@@ -1867,8 +1903,8 @@ public class ConjTest {
     @Test
     void testSequentialDisjunctionAbsorb() {
 
-            assertEq("((--,R)&&(--,jump))", "(--R && (R || --jump))");
-            assertEq("((--,R) &&+600 (--,jump))", "(--R && --(--R &&+600 jump))");
+        assertEq("((--,R)&&(--,jump))", "(--R && (R || --jump))");
+        assertEq("((--,R) &&+600 (--,jump))", "(--R && --(--R &&+600 jump))");
 
     }
 
@@ -2049,7 +2085,8 @@ public class ConjTest {
         assertEq("(((&&,b,c,d)||a)&&x)", "((( (a||b) && (a||c)) && x) && (a||d))");
     }
 
-    @Test void distributeCommonFactor() {
+    @Test
+    void distributeCommonFactor() {
         assertEq("((x &&+1 (x&&y)) &&+1 ((--,y)&&x))", "(((x &&+1 y) &&+1 --y) && x)");
     }
 
@@ -2094,6 +2131,39 @@ public class ConjTest {
         Term y = ConjCommutive.the(Op.terms, DTERNAL, true, false,
                 $$("(right||rotate)"), $$("rotate"));
         assertEq("rotate", y);
+    }
+
+    @Test
+    void testContainsEventSimple() {
+        assertFalse(Conj.eventOf($$("x"), $$("x")));
+        assertTrue(Conj.eventOf($$("(x &&+1 --x)"), $$("x")));
+        assertTrue(Conj.eventOf($$("(x &&+1 --x)"), $$("--x")));
+        assertTrue(Conj.eventOf($$("(x && y)"), $$("x")));
+        assertTrue(Conj.eventOf($$("(x &&+1 y)"), $$("x")));
+        assertTrue(Conj.eventOf($$("((x && y) &&+1 z)"), $$("z")));
+        assertTrue(Conj.eventOf($$("((x && y) &&+1 z)"), $$("(x&&y)")));
+    }
+
+    @Test
+    void testContainsEventFactored() {
+        assertTrue(Conj.eventOf($$("(z&&(x &&+1 y))"), $$("(x&&z)")));
+        assertTrue(Conj.eventOf($$("(z&&(x &&+1 y))"), $$("(y&&z)")));
+        assertFalse(Conj.eventOf($$("(z&&(x &&+1 y))"), $$("(x&&y)")));
+        assertTrue(Conj.eventOf($$("(z&&(x &&+1 y))"), $$("z")));
+        assertTrue(Conj.eventOf($$("(z&&(x &&+1 (y &&+1 w)))"), $$("(z&&w)")));
+    }
+
+    @Test
+    void testContainsEventSubSeq() {
+        assertTrue(Conj.eventOf($$("(z &&+1 (x &&+1 y))"), $$("(x &&+1 y)")));
+        assertTrue(Conj.eventOf($$("(z &&+1 (x &&+1 y))"), $$("(z &&+1 x)")));
+        assertFalse(Conj.eventOf($$("(z &&+1 (x &&+2 y))"), $$("(x &&+1 y)")));
+    }
+
+    @Test
+    void testContainsEventXternal() {
+        assertTrue(Conj.eventOf($$("(x &&+- y)"), $$("x")));
+        assertTrue(Conj.eventOf($$("(x &&+- y)"), $$("y")));
     }
 
     @Disabled
@@ -2282,32 +2352,5 @@ public class ConjTest {
             assertEq("((--,((X,x)&&#1))&|(--,((X,x)&|#1)))", "( (--,((X,x)&&#1)) &| (--,((X,x)&|#1)) )");
         }
 
-    }
-
-    @Test void testContainsEventSimple() {
-        assertFalse(Conj.eventOf($$("x"), $$("x")));
-        assertTrue(Conj.eventOf($$("(x &&+1 --x)"), $$("x")));
-        assertTrue(Conj.eventOf($$("(x &&+1 --x)"), $$("--x")));
-        assertTrue(Conj.eventOf($$("(x && y)"), $$("x")));
-        assertTrue(Conj.eventOf($$("(x &&+1 y)"), $$("x")));
-        assertTrue(Conj.eventOf($$("((x && y) &&+1 z)"), $$("z")));
-        assertTrue(Conj.eventOf($$("((x && y) &&+1 z)"), $$("(x&&y)")));
-    }
-    @Test void testContainsEventFactored() {
-        assertTrue(Conj.eventOf($$("(z&&(x &&+1 y))"), $$("(x&&z)")));
-        assertTrue(Conj.eventOf($$("(z&&(x &&+1 y))"), $$("(y&&z)")));
-        assertFalse(Conj.eventOf($$("(z&&(x &&+1 y))"), $$("(x&&y)")));
-        assertTrue(Conj.eventOf($$("(z&&(x &&+1 y))"), $$("z")));
-        assertTrue(Conj.eventOf($$("(z&&(x &&+1 (y &&+1 w)))"), $$("(z&&w)")));
-    }
-
-    @Test void testContainsEventSubSeq() {
-        assertTrue(Conj.eventOf($$("(z &&+1 (x &&+1 y))"), $$("(x &&+1 y)")));
-        assertTrue(Conj.eventOf($$("(z &&+1 (x &&+1 y))"), $$("(z &&+1 x)")));
-        assertFalse(Conj.eventOf($$("(z &&+1 (x &&+2 y))"), $$("(x &&+1 y)")));
-    }
-    @Test void testContainsEventXternal() {
-        assertTrue(Conj.eventOf($$("(x &&+- y)"), $$("x")));
-        assertTrue(Conj.eventOf($$("(x &&+- y)"), $$("y")));
     }
 }

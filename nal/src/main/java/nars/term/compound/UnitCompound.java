@@ -102,7 +102,7 @@ public abstract class UnitCompound implements SameSubtermsCompound {
         if (nextDT == XTERNAL) {
             //only case it's allowed
             assert(op()==CONJ);
-            return builder.theCompound(CONJ, XTERNAL, sub());
+            return builder.newCompound(CONJ, XTERNAL, sub());
         }
         assert(nextDT == DTERNAL);
         return this;

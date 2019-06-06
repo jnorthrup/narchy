@@ -6,6 +6,7 @@ import jcog.TODO;
 import jcog.data.bit.MetalBitSet;
 import jcog.data.list.FasterList;
 import jcog.util.ArrayUtil;
+import org.eclipse.collections.api.block.predicate.Predicate2;
 import org.eclipse.collections.api.block.predicate.primitive.LongObjectPredicate;
 import org.eclipse.collections.api.block.procedure.primitive.LongObjectProcedure;
 import org.eclipse.collections.api.iterator.LongIterator;
@@ -14,6 +15,7 @@ import org.eclipse.collections.impl.iterator.ImmutableEmptyLongIterator;
 
 import java.util.Arrays;
 import java.util.NoSuchElementException;
+import java.util.function.Predicate;
 
 
 /**
@@ -186,6 +188,16 @@ public class LongObjectArraySet<X> extends FasterList<X> {
         });
     }
 
+    @Override
+    public final boolean removeIf(Predicate<? super X> predicate) {
+        return removeIf((when,what)->predicate.test(what));
+    }
+
+    @Override
+    public final <P> boolean removeIfWith(Predicate2<? super X, ? super P> predicate, P parameter) {
+        return removeIf((when,what)->predicate.test(what, parameter));
+    }
+
     public boolean removeIf(LongObjectPredicate<X> iff) {
         int s = size();
         if (s == 0)
@@ -208,25 +220,23 @@ public class LongObjectArraySet<X> extends FasterList<X> {
 
     }
 
-    public boolean removeAll(MetalBitSet m, int s) {
-        int toRemove = m.cardinality();
+    public final boolean removeAll(MetalBitSet m, int s) {
+        int toRemove = Math.min(m.cardinality(),s);
         if (toRemove == 0)
             return false;
-
-        int firstRemoved = m.first(true);
-        if (toRemove == 1) {
-            removeThe(firstRemoved);
-        } else {
-            for (int i = firstRemoved; i < s;  /* TODO iterate bitset better */) {
-                if (m.get(i)) {
-                    removeThe(i);
-                    s--;
-                } else {
-                    i++;
-                }
-            }
+        int next = -1, removed = 0;
+        while (toRemove > 0) {
+             next = m.next(true, next + 1, s);
+             removeThe(next - removed);
+             removed++;
+             toRemove--;
         }
         return true;
+    }
+
+    @Override
+    public final void removeNulls() {
+        removeIf((when,what)->what==null);
     }
 
     @Override

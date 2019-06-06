@@ -117,7 +117,7 @@ public class Derivation extends PreDerivation {
 
         @Override
         protected Term compound(Op op, int dt, Term[] subterms) {
-            return HeapTermBuilder.the.theCompound(op, dt, subterms);
+            return HeapTermBuilder.the.newCompound(op, dt, subterms);
         }
     };
     final Functor polarizeTask = new AbstractInstantFunctor1("polarizeTask") {
