@@ -965,7 +965,9 @@ public interface Subterms extends Termlike, Iterable<Term> {
         return m;
     }
 
-
+    default Term[] subsIncluding(Predicate<Term> toKeep) {
+        return subsIncExc(indicesOfBits(toKeep), true);
+    }
     default Term[] subsIncluding(MetalBitSet toKeep) {
         return subsIncExc(toKeep, true);
     }

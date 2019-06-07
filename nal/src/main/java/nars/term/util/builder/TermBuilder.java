@@ -134,16 +134,19 @@ public abstract class TermBuilder implements TermConstructor {
 //                if (only instanceof EllipsisMatch)
 //                    return conj(dt, only.arrayShared());
 //                else
-                    return only instanceof Ellipsislike ?
-                            newCompound(CONJ, dt, only) //special case
-                            :
-                            only;
+                //special case
+                if (only instanceof Ellipsislike){
+                    assert(dt==DTERNAL);
+                    return newCompound(CONJ, dt, only);
+                } else
+                    return only;
         }
 
         Term y;
         switch (dt) {
             case DTERNAL:
-            case 0:  y = ConjCommutive.theSorted(this, dt, u); break;
+            case 0:
+                y = ConjCommutive.the(Op.terms, dt, false, u); break;
 
             case XTERNAL: y = ConjCommutive.theXternal(this, u); break;
 

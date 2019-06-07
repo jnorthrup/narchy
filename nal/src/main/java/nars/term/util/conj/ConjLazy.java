@@ -10,10 +10,13 @@ import nars.term.Term;
 import nars.term.util.TermException;
 import nars.term.util.builder.InterningTermBuilder;
 import nars.term.util.builder.TermBuilder;
+import nars.time.Tense;
 import org.eclipse.collections.api.iterator.LongIterator;
-import org.eclipse.collections.impl.map.mutable.primitive.ObjectIntHashMap;
+import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 import org.eclipse.collections.impl.set.mutable.primitive.LongHashSet;
 import org.jetbrains.annotations.Nullable;
+import org.roaringbitmap.PeekableIntIterator;
+import org.roaringbitmap.RoaringBitmap;
 
 import java.util.Arrays;
 
@@ -227,18 +230,18 @@ public class ConjLazy extends LongObjectArraySet<Term> implements ConjBuilder {
     }
 
 
-    @Nullable
-    public TermList factor(ConjTree T) {
+    @Nullable TermList preDistribute(ConjTree T) {
 
         int n = size();
         if (n < 2)
             return null;
 
         int u = eventOccurrences();
-        if (n <= u)
+        if (u < 2)
             return null;
 
-        ObjectIntHashMap<Term> count = new ObjectIntHashMap(n); //estimate
+
+        UnifiedMap<Term, RoaringBitmap> count = new UnifiedMap(n); //estimate
         for (int i = 0; i < n; i++) {
             Term t = get(i);
 //            if (t.op() == CONJ && t.dt() == DTERNAL) {
@@ -248,13 +251,13 @@ public class ConjLazy extends LongObjectArraySet<Term> implements ConjBuilder {
 //                        count.addToValue(tt, 1);
 //                }
 //            } else
-                count.addToValue(t, 1);
+             count.getIfAbsentPut(t, RoaringBitmap::new).add(Tense.occToDT(when(i)));
         }
-        if (count.isEmpty())
-            return null;
+
 
         TermList toFactor = new TermList(), toDistribute = new TermList();
-        count.forEachKeyValue((x, c) -> {
+        count.forEachKeyValue((x, cc) -> {
+            int c = cc.getCardinality();
             if (c < u) {
                 if (x.op() != NEG) {
                     if (T.pos != null && T.posRemove(x)) {
@@ -266,6 +269,11 @@ public class ConjLazy extends LongObjectArraySet<Term> implements ConjBuilder {
                     }
                 }
             } else {
+                PeekableIntIterator ei = cc.getIntIterator();
+                while (ei.hasNext()) {
+                    if (eventCount(ei.next()) == 1)
+                        return; //factoring would erase this event
+                }
                 //new factor component
                 toFactor.add(x);
             }
@@ -275,12 +283,8 @@ public class ConjLazy extends LongObjectArraySet<Term> implements ConjBuilder {
 //            return; //TODO find why if this happens as a reuslt of addParallel
 
         int ff = toFactor.size();
-        if (ff * u >= n)
-            return null; //that would factor everything
-
         if (ff > 0) {
             removeIf(toFactor.containing());
-            return toFactor;
         }
 
 //
@@ -331,7 +335,7 @@ public class ConjLazy extends LongObjectArraySet<Term> implements ConjBuilder {
             }
         }
 
-        return null;
+        return ff > 0 ? toFactor : null;
 
     }
 
@@ -392,5 +396,11 @@ public class ConjLazy extends LongObjectArraySet<Term> implements ConjBuilder {
 
         Term tt = B.conj(true, DTERNAL, t);
         return tt;
+    }
+
+    @Nullable
+    public Term seq(TermBuilder B) {
+        int s = size();
+        return s > 0 ? ConjSeq.conjSeq(B, this, 0, s) : null;
     }
 }

@@ -196,9 +196,16 @@ class ImageTest {
 
     @Test void testConjNegatedNormalizeWTF() {
         assertEq("((--,(delta-->vel)) &&+280 (--,vel(fz,y)))", "((--,(delta-->vel)) &&+280 (--,(y-->(vel,fz,/))))");
+    }
+    @Test void testConjNegatedNormalizeWTF2() {
+        assertEq("(((--,v(fz,x)) &&+2 (--,v(fz,y))) &&+1 z)",
+                "(((--,(x-->(v,fz,/))) &&+2 (--,(y-->(v,fz,/)))) &&+1 z)");
 
-        assertEq("(((&&,(--,vel(fz,x)),(--,vel(fz,y)),(efficient-->fz)) &&+140 (--,vel(fz,y))) &&+80 (fwd-->fz))",
-                "(((&|,(--,(x-->(vel,fz,/))),(--,(y-->(vel,fz,/))),(efficient-->fz)) &&+140 (--,(y-->(vel,fz,/)))) &&+80 (fwd-->fz))");
+        assertEq("((((--,v(fz,x))&&(--,v(fz,y))) &&+2 (--,v(fz,y))) &&+1 z)",
+                "(((&&,(--,(x-->(v,fz,/))),(--,(y-->(v,fz,/)))) &&+2 (--,(y-->(v,fz,/)))) &&+1 z)");
+
+        assertEq("(((&&,(--,v(fz,x)),(--,v(fz,y)),w) &&+2 (--,v(fz,y))) &&+1 z)",
+                "(((&&,(--,(x-->(v,fz,/))),(--,(y-->(v,fz,/))),w) &&+2 (--,(y-->(v,fz,/)))) &&+1 z)");
     }
     @Test void testImageProductNormalized() throws Narsese.NarseseException {
         Term x = Narsese.term("(y,\\,x)", false);

@@ -2023,6 +2023,15 @@ public enum Util {
         return 1.0f - ((1.0f - a) * (1.0f - b));
     }
 
+
+    public static <X> int count(Predicate<X> p, X... xx) {
+        int i = 0;
+        for (X x : xx)
+            if (p.test(x))
+                i++;
+        return i;
+    }
+
     public static <X> boolean and(X[] xx, Predicate<X> p) {
         for (X x : xx)
             if (!p.test(x))

@@ -446,12 +446,12 @@ public class FasterList<X> extends FastList<X> {
             if (filter.test(a[i])) {
                 s--;
                 System.arraycopy(a, i + 1, a, i, s - i);
-                Arrays.fill(a, s, ps, null);
             } else {
                 i++;
             }
         }
         if (ps != s) {
+            Arrays.fill(a, s, size, null);
             this.size = s;
             return true;
         }
@@ -459,27 +459,27 @@ public class FasterList<X> extends FastList<X> {
         return false;
     }
 
-    public final boolean removeIf(Predicate<? super X> filter, List<X> displaced) {
-        int s = size();
-        int ps = s;
-        X[] a = this.items;
-        for (int i = 0; i < s; ) {
-            X ai = a[i];
-            if (ai == null || (filter.test(ai) && displaced.add(ai))) {
-                s--;
-                System.arraycopy(a, i + 1, a, i, s - i);
-                Arrays.fill(a, s, ps, null);
-            } else {
-                i++;
-            }
-        }
-        if (ps != s) {
-            this.size = s;
-            return true;
-        }
-
-        return false;
-    }
+//    public final boolean removeIf(Predicate<? super X> filter, List<X> displaced) {
+//        int s = size();
+//        int ps = s;
+//        X[] a = this.items;
+//        for (int i = 0; i < s; ) {
+//            X ai = a[i];
+//            if (ai == null || (filter.test(ai) && displaced.add(ai))) {
+//                s--;
+//                System.arraycopy(a, i + 1, a, i, s - i);
+//                Arrays.fill(a, s, ps, null);
+//            } else {
+//                i++;
+//            }
+//        }
+//        if (ps != s) {
+//            this.size = s;
+//            return true;
+//        }
+//
+//        return false;
+//    }
 
     //    public final X[] fillArrayNullPadded(X[] array) {
 //        int s = size;

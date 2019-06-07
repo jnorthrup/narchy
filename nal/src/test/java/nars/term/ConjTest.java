@@ -1569,7 +1569,7 @@ public class ConjTest {
     @Test
     void testConjOneEllipsisDontRepeat() {
         assertEq("(&&,%1..+)", "(&&,%1..+)");
-        assertEq("( &&+- ,%1..+)", $$c("(&&,%1..+)").dt(XTERNAL));
+//        assertEq("( &&+- ,%1..+)", $$c("(&&,%1..+)").dt(XTERNAL));
 
     }
 
@@ -1985,7 +1985,7 @@ public class ConjTest {
     void testCollapseEteParallel3() {
 
         {
-            assertEq("(&&,(--,(c&&d)),a,b)", ConjCommutive.the(DTERNAL, $$("(--,(c&|d))"), $$("(a&|b)")));
+            assertEq("(&&,(--,(c&&d)),a,b)", CONJ.the(DTERNAL,$$("(--,(c&|d))"), $$("(a&|b)")));
         }
         assertEq("(&&,(--,(c&&d)),a,b)", "((&|,a,b) && --(&|,c,d))"); //NOT collapse
 
@@ -2035,14 +2035,41 @@ public class ConjTest {
 //    }
 
     @Test
-    void testDisj1() {
+    void testDisj_Factorize_2() {
 
         assertEq("((x||y)&&a)", "(||,(a && x),(a && y))");
-        assertEq("((x||y)&&a)", "--(--(a && x) && --(a && y))");
         assertEq("(--,((x||y)&&a))", "(--(a && x) && --(a && y))");
+    }
+    @Test
+    void testDisj_Factorize_2a() {
+        assertEq("(&&,(a||b),x,y)", "(||,(&&,x,y,a),(&&,x,y,b))");
+    }
+
+    @Test
+    void testDisj_Factorize_2b() {
+        assertEq("", "((a&&b)||(c&&d))");
+        assertEq("(((a&&b)||(c&&d))&&x)", "(||,(&&,x,a,b),(&&,x,c,d))");
+    }
+
+    @Test
+    void testDisj_Factorize_3() {
+        assertEq("((||,x,y,z)&&a)", "(||,(a&&x),(a&&y),(a&&z))");
+    }
+    @Test
+    void testDisj_Factorize_3_inSeq() {
+        assertEq("(w &&+1 ((||,x,y,z)&&a))", "(w &&+1 (||,(a&&x),(a&&y),(a&&z)))");
+    }
+
+    @Test
+    void testDisj2() {
 
         assertEq("x", "((a && x)||(--a && x))");
         assertEq("x", "--(--(a && x) && --(--a && x))");
+    }
+    @Test
+    void testDisj3() {
+
+        assertEq("TODO", "(||,(a && x),(a && y), --(a&&z))");
     }
 
     @Test
@@ -2090,11 +2117,6 @@ public class ConjTest {
         assertEq("((x &&+1 (x&&y)) &&+1 ((--,y)&&x))", "(((x &&+1 y) &&+1 --y) && x)");
     }
 
-    @Test
-    void testFactorizeDNF() {
-        //https://www.wolframalpha.com/input/?i=not+(a+and+b)++and+not+(a+and+c)
-        assertEq("(--,((b||c)&&a))", "(--(a && b) && --(a && c))");
-    }
 
     @Test
     void test_Not_A_Sequence() {
@@ -2128,7 +2150,7 @@ public class ConjTest {
     void stupidDisjReduction() {
         Term x = $$("((right||rotate)&&rotate)");
         assertEq("rotate", x);
-        Term y = ConjCommutive.the(Op.terms, DTERNAL, true, false,
+        Term y = ConjCommutive.the(Op.terms, DTERNAL, true,
                 $$("(right||rotate)"), $$("rotate"));
         assertEq("rotate", y);
     }

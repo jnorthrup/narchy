@@ -130,14 +130,16 @@ public class InterningTermBuilder extends HeapTermBuilder {
     }
 
 
+    @Override public final Term compound(Op o, int dt, Subterms u) {
+        boolean internable = internable(o, dt, u);
+        return internable ?
+                compoundInterned(o, dt, o.sortedIfNecessary(dt, u).arrayShared()) :
+                super.compound(o, dt, u);
+    }
+
     @Override
     public final Term compound(Op o, int dt, Term[] u) {
-        boolean internable = internableRoot(o, dt, u);
-//        if (!internable) {
-//            //internable(op, dt, u);
-//            System.out.println("why: " + op + " " + dt + " " + Arrays.toString(u));
-//        }
-
+        boolean internable = internable(o, dt, u);
         return internable ?
                 compoundInterned(o, dt, o.sortedIfNecessary(dt, u)) :
                 super.compound(o, dt, u);
@@ -154,7 +156,7 @@ public class InterningTermBuilder extends HeapTermBuilder {
         Subterms subs;
         if (t.length == 0)
             subs = EmptySubterms;
-        else if (internableSubs(t))
+        else if (internable(t))
             subs =subtermsInterned(t);
         else
             subs = super.subterms(o, t);
@@ -215,7 +217,7 @@ public class InterningTermBuilder extends HeapTermBuilder {
             xi = _x;
         }
 
-        if (internableRoot(xo/*, x.dt()*/) && xi.volume() <= volInternedMax && xi.the()) {
+        if (internable(xo/*, x.dt()*/) && xi.volume() <= volInternedMax && xi.the()) {
             Term yi = terms[xo.id].apply(new Intermed.InternedCompoundByComponentsSubs(xi));
             return yi.negIf(negate);
         }
@@ -223,23 +225,24 @@ public class InterningTermBuilder extends HeapTermBuilder {
         return _x;
     }
 
-    private boolean internableRoot(Op op, int dt, Term[] u) {
-        boolean i = internableRoot(op) && internableSubs(u);
-//        if (!i) {
-//            System.out.println(op + " " + dt + " " + Arrays.toString(u));
-//        }
-        return i;
+    private boolean internable(Op op, int dt, Term[] u) {
+        return internable(op) && internable(u);
+    }
+    private boolean internable(Op op, int dt, Subterms u) {
+        return internable(op) && internable(u);
     }
 
-    private boolean internableRoot(Op op) {
-//        return !op.atomic && (internNegs || op != NEG)
-//                //&& Tense.dtSpecial(dt)
-//                ;
+    private boolean internable(Op op) {
         return termsInterned.get(op.id);
     }
 
-    private boolean internableSubs(Term[] subterms) {
+    private boolean internable(Subterms subterms) {
+        if (subterms.volume() > volInternedMax)
+            return false;
+        return subterms.AND(InterningTermBuilder::internableSub);
+    }
 
+    private boolean internable(Term[] subterms) {
         int volRemain = volInternedMax - subterms.length;
         for (Term x : subterms) {
             if ((volRemain -= x.volume()) < 0)
@@ -248,8 +251,6 @@ public class InterningTermBuilder extends HeapTermBuilder {
                 return false;
             volRemain++;
         }
-
-
         return true;
     }
 
@@ -265,7 +266,9 @@ public class InterningTermBuilder extends HeapTermBuilder {
 
         if (!(subject instanceof Bool) && !(predicate instanceof Bool) &&
                 (subject.volume() + predicate.volume() < volInternedMax) &&
-                internableSub(subject) && internableSub(predicate)) {
+                internableSub(subject) && internableSub(predicate) &&
+                ((op==IMPL) || !subject.equals(predicate))
+        ) {
 
             boolean negate = false;
 
@@ -330,7 +333,7 @@ public class InterningTermBuilder extends HeapTermBuilder {
         if (dtSpecial(dt))
             u = ConjBuilder.preSort(dt, u);
 
-        return u.length > 1 && internableRoot(CONJ, dt, u) ?
+        return u.length > 1 && internable(CONJ, dt, u) ?
                 terms[CONJ.id].apply(new Intermed.InternedCompoundByComponentsArray(CONJ, dt, u)) :
                 super.conj(true, dt, u);
     }

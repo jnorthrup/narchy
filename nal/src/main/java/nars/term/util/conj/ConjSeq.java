@@ -126,15 +126,12 @@ public enum ConjSeq { ;
         return s.sub(eternalComponents.next(false, 0, s.subs()));
     }
 
-    public static Term conjSeq(TermBuilder B, ConjLazy events) {
-        return conjSeq(B, events, 0, events.size());
-    }
 
     /**
      * constructs a correctly merged conjunction from a list of events, in the sublist specified by from..to (inclusive)
      * assumes that all of the event terms have distinct occurrence times
      */
-    private static Term conjSeq(TermBuilder B, LongObjectArraySet<Term> events, int start, int end) {
+    static Term conjSeq(TermBuilder B, LongObjectArraySet<Term> events, int start, int end) {
 
         Term first = events.get(start);
         long firstWhen = events.when(start);

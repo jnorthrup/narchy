@@ -4,6 +4,7 @@ import jcog.TODO;
 import jcog.data.list.FasterList;
 import jcog.data.set.ArrayHashSet;
 import nars.subterm.DisposableTermList;
+import nars.subterm.TermList;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.atom.Bool;
@@ -32,22 +33,6 @@ public class ConjTree implements ConjBuilder {
     Term terminal = null;
     private long shift = TIMELESS;
 
-    //        private static boolean validate(Term x, Iterable<Term> yy) {
-////        if (x.unneg().op()==CONJ)
-////            throw new TODO();
-//
-//
-//        for (Term y : yy) {
-//
-////            if (y.unneg().op()==CONJ)
-////                throw new TODO();
-//
-//            if (x.equalsNeg(y))
-//                return false;
-//
-//        }
-//        return true;
-//    }
 
 
     private boolean addParallel(Term x) {
@@ -264,6 +249,7 @@ public class ConjTree implements ConjBuilder {
     }
 
     private Term reducePN(Term x, Set<Term> y, boolean nP_or_pN) {
+        assert(x.op()!=NEG);
 
         if (y.contains(x))
             return False; //contradiction
@@ -301,20 +287,22 @@ public class ConjTree implements ConjBuilder {
             for (Iterator<Term> iterator = y.iterator(); iterator.hasNext(); ) {
                 Term yy = iterator.next();
                 if (yy.op() == CONJ && yy.containsRecursively(x)) {
-
-                    if (Conj.eventOf(yy, x.neg())) {
+                    if (Conj.eventOf(yy, x.negIf(!nP_or_pN))) {
                         iterator.remove();
                     } else if (Conj.eventOf(yy, x)) {
                         iterator.remove();
                         if (toAdd == null) toAdd = new FasterList(1);
-                        Term z = Conj.diffAll(yy, x);
+                        Term z = Conj.diffAll(yy, x.negIf(nP_or_pN));
                         if (z == True) {
                             //ignore
                         } else if (z == False || z == Null)
                             return z;
                         else
                             toAdd.add(z);
+
                     }
+
+
 
                 }
 
@@ -534,21 +522,21 @@ public class ConjTree implements ConjBuilder {
                 }
                 if (!events.isEmpty()) {
 
-//                    TermList f = events.factor(this);
-//                    if (terminal != null)
-//                        return terminal;
+                    TermList f = events.preDistribute(this);
+                    if (terminal != null)
+                        return terminal;
 
-//                    if (f != null)
-//                        f.forEach(this::addParallel);
+                    if (f != null)
+                        f.forEach(this::addParallel);
 
                     events.condense(B);
 
-                    s = ConjSeq.conjSeq(B, events);
+                    s = events.seq(B);
                 }
 
             }
 
-            shift(); //cache shift before clearing seq
+            shift(); //cache the shift before clearing seq
             seq = null;
             //seq.clear();
 
