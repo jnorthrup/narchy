@@ -1893,7 +1893,7 @@ public class ConjTest {
         Term x = $$("(((--,right) &&+90 (--,rotate)) &&+50 ((--,tetris(1,7))&&(--,tetris(7,4))))");
         assertEquals(CONJ, x.op());
         Term y = $$("right");
-        c.add(ETERNAL, x);
+        c.add(0, x);
         assertEquals(3, c.eventOccurrences());
         c.add(25360, y);
         assertEq("(((--,right) &&+90 (--,rotate)) &&+50 (((--,tetris(1,7))&&(--,tetris(7,4))) &&+25220 right))", c.term());

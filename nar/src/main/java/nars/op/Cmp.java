@@ -1,5 +1,6 @@
 package nars.op;
 
+import nars.$;
 import nars.eval.Evaluation;
 import nars.term.Functor;
 import nars.term.Term;
@@ -53,22 +54,36 @@ public class Cmp extends SimpleBinaryFunctor {
 
             int c = x.compareTo(y);
             if (e.is(xy, Int.the(c))) {
-//                    if (c > 0) {
-//                        return reverse(x, y, c);
-//                    } else {
-                    return null;
-//                    }
+                    if (c > 0) {
+                        return swap(x, y, c);
+                    } else {
+                  return null;
+                    }
             } else {
                 return Null; //conflict with the correct value
             }
         }
 
+        if (!x.hasVars() && !y.hasVars() && !xy.hasVars()) {
+                //check for truth, and canonical ordering
+                int c = x.compareTo(y);
+                if (((Int) xy).i != c)
+                    return Null;
+                if (c > 0) {
+                    //swap parameters
+                    return swap(x, y, c);
+                } else
+                    return null;
+
+        }
+
+
         return super.apply3(e, x, y, xy);
     }
 
-//    private Term reverse(Term x, Term y, int c) {
-//        return $.func(cmp, y, x, Int.the(-c));
-//    }
+    private static Term swap(Term x, Term y, int c) {
+        return $.func(cmp, y, x, Int.the(-c));
+    }
 
     @Override
     protected Term compute(Evaluation e, Term x, Term y) {

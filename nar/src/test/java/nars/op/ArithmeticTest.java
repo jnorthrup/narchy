@@ -74,25 +74,24 @@ class ArithmeticTest {
     
     @Test
     void test1() throws Narsese.NarseseException {
-        assertEquals(
-                "((#1,add(#1,1))&&equal(#1,2))",
-                Arithmeticize.apply($.$("(2,3)"), true, rng).toString());
+        assertArith("(2,3)", "((#1,add(#1,1))&&equal(#1,2))", "(cmp(#1,#2,-1)&&(#1,#2))");
     }
+
+    private void assertArith(String q, String... p) {
+        Set<String> each = new TreeSet();
+        Set<String> s = Set.of(p);
+        for (int i = 0; i < p.length*4; i++) {
+            each.add(Arithmeticize.apply($$(q), rng).toString());
+        }
+        assertEquals(each, s);
+    }
+
 
     @Test
     void test2() {
-        assertEquals(
-                "(x(#1,add(#1,1))&&equal(#1,2))",
-                Arithmeticize.apply($.$$("x(2,3)"), true, rng).toString());
-    }
-    @Test
-    void test2b() {
-        assertEquals(
-                "(x(#1,add(#1,1))&|equal(#1,2))",
-                Arithmeticize.apply($.$$("x(2,3)"), false, rng).toString());
+        assertArith("x(2,3)", "(x(#1,add(#1,1))&&equal(#1,2))", "(cmp(#1,#2,-1)&&x(#1,#2))");
 
     }
-
     @Test
     void testContradictionResultsInFalse() {
         assertEval(Null, "(add(1,1,#2) && add(#2,1,1))");
@@ -221,6 +220,9 @@ class ArithmeticTest {
     @Test
     void testComparatorOrdering1() {
         TermTest.assertEq("cmp(1,2,-1)", n.eval($$("cmp(2,1,#x)")));
+    }
+    @Test
+    void testComparatorOrderingConstant() {
 
         TermTest.assertEq("cmp(1,2,-1)", n.eval($$("cmp(2,1,1)")));
     }
@@ -265,7 +267,7 @@ class ArithmeticTest {
     private void assertArithmetic(String x, String y) {
         Set<String> solutions = new TreeSet();
         for (int i = 0; i < 10; i++) {
-            Term s = Arithmeticize.apply($$(x), true, rng);
+            Term s = Arithmeticize.apply($$(x), rng);
             if (s == null) {
                 assertNull(y);
                 return;

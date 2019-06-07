@@ -91,25 +91,17 @@ public class Arithmeticize {
         @Override
         @Nullable
         protected Term newTerm(Task xx) {
-
-            Term xt = xx.term();
-            return Arithmeticize.apply(xt, null, nar.termVolMax.intValue(),
-                    xx.isEternal() || (xt.op() == CONJ && xt.dt() != 0),
-                    nar.random());
+            return Arithmeticize.apply(xx.term(), null, nar.termVolMax.intValue(), nar.random());
         }
     }
 
-    public static Term apply(Term x, Random random) {
-        return apply(x, true, random);
-    }
-
     @Deprecated
-    public static Term apply(Term x, boolean eternal, Random random) {
-        return apply(x, null, NAL.term.COMPOUND_VOLUME_MAX, eternal, random);
+    public static Term apply(Term x, Random random) {
+        return apply(x, null, NAL.term.COMPOUND_VOLUME_MAX, random);
     }
 
 
-    public static Term apply(Term x, @Nullable Anon anon, int volMax, boolean eternal, Random random) {
+    public static Term apply(Term x, @Nullable Anon anon, int volMax, Random random) {
         if (anon == null && !x.hasAny(INT))
             return null;
 
