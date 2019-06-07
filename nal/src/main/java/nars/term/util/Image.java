@@ -70,6 +70,10 @@ public enum Image {
         return Bool.Null;
     }
 
+    public static Term[] imageNormalize(Term[] u) {
+        return Util.mapIfChanged(Image::imageNormalize, u);
+    }
+
     public static Term imageNormalize(Term x) {
 
         if (!(x instanceof Compound) || !x.hasAll(ImageBits))
@@ -183,4 +187,6 @@ public enum Image {
                 new LighterCompound(INH, subj, pred),
         true, true);
     }
+
+
 }

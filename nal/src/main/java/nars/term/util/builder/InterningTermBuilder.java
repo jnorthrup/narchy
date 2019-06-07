@@ -14,6 +14,7 @@ import nars.term.anon.Intrin;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
+import nars.term.util.Image;
 import nars.term.util.cache.Intermed;
 import nars.term.util.cache.Intermed.InternedCompoundByComponents;
 import nars.term.util.cache.Intermed.InternedSubterms;
@@ -334,7 +335,8 @@ public class InterningTermBuilder extends HeapTermBuilder {
             u = ConjBuilder.preSort(dt, u);
 
         return u.length > 1 && internable(CONJ, dt, u) ?
-                terms[CONJ.id].apply(new Intermed.InternedCompoundByComponentsArray(CONJ, dt, u)) :
+                terms[CONJ.id].apply(
+                        new Intermed.InternedCompoundByComponentsArray(CONJ, dt, Image.imageNormalize(u))) :
                 super.conj(true, dt, u);
     }
 

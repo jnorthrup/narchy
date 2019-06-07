@@ -34,7 +34,7 @@ public interface PREDICATE<X> extends Term, Predicate<X> {
 
 
     static <X> PREDICATE<X>[] transform(Function<PREDICATE<X>, PREDICATE<X>> f, PREDICATE[] cache) {
-        return Util.map(x -> x.transform(f), new PREDICATE[cache.length], cache);
+        return Util.mapIfChanged(x -> x.transform(f), cache);
     }
 
     static <X> PREDICATE<X> compileAnd(PREDICATE<X>[] p) {

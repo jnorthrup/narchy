@@ -1293,6 +1293,23 @@ public enum Util {
         }
         return target;
     }
+    public static <X> X[] mapIfChanged(Function<X, X> f, X... src) {
+        X[] target = null;
+        for (int i = 0, srcLength = src.length; i < srcLength; i++) {
+            X x = src[i];
+            X y = f.apply(x);
+            if (y != x) {
+                if (target == null)
+                    target = src.clone();
+
+                target[i] = y;
+            }
+        }
+        if (target == null)
+            return src;
+        else
+            return target;
+    }
 
     public static <X> float sum(FloatFunction<X> value, X... xx) {
         float y = 0;
