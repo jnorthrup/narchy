@@ -9,6 +9,7 @@ import nars.subterm.Subterms;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.atom.Bool;
+import nars.term.util.Image;
 import nars.term.util.TermException;
 import nars.term.util.builder.TermBuilder;
 import nars.time.Tense;
@@ -36,6 +37,20 @@ public enum ConjSeq { ;
     /** TODO make method of B: TermBuilder.conjSequence(..) */
     static public Term sequence(Term a, long aStart, Term b, long bStart, TermBuilder B) {
 
+        if (a==Null || b == Null)
+            return Null;
+
+        if (!a.op().eventable || !b.op().eventable)
+            return Null;
+
+        if (a == False || b == False) return False;
+
+        if (a == True) return b;
+        if (b == True) return a;
+
+        a = Image.imageNormalize(a);
+        b = Image.imageNormalize(b);
+
         /*assert(bStart == aStart);*/
         if (aStart == TIMELESS) {
             assert(bStart==TIMELESS);
@@ -54,6 +69,7 @@ public enum ConjSeq { ;
             return c.term(B);
         } else {
 //            //simple construction
+
             return conjSeqFinal(B, Tense.occToDT(bStart-aStart), a, b);
 //            if (aStart > bStart)
 //            assert (aStart < bStart);

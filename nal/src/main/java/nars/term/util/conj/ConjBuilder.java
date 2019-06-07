@@ -45,12 +45,16 @@ public interface ConjBuilder {
 
     static Term[] preSorted(Term[] u) {
 
-        for (Term t : u)
+        for (Term t : u) {
             if (t == Bool.Null)
                 return Bool.Null_Array;
+            if (t == null)
+                throw new NullPointerException();
+        }
 
         int trues = 0;
         for (Term t : u) {
+
             if (t == Bool.False)
                 return Bool.False_Array;
             if (t == Bool.True)

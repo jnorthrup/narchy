@@ -230,93 +230,57 @@ public class ConjLazy extends LongObjectArraySet<Term> implements ConjBuilder {
     }
 
 
-    @Nullable TermList preDistribute(ConjTree T) {
+    @Nullable void preDistribute(ConjTree T) {
 
         int n = size();
         if (n < 2)
-            return null;
+            return;
 
         int u = eventOccurrences();
         if (u < 2)
-            return null;
+            return;
 
-
-        UnifiedMap<Term, RoaringBitmap> count = new UnifiedMap(n); //estimate
+        UnifiedMap<Term, RoaringBitmap> count = new UnifiedMap(n);
         for (int i = 0; i < n; i++) {
-            Term t = get(i);
-//            if (t.op() == CONJ && t.dt() == DTERNAL) {
-//                //assert(!Conj.isSeq(t)); //?
-//                for (Term tt : t.subterms()) {
-//                    if (tt.op() != CONJ)
-//                        count.addToValue(tt, 1);
-//                }
-//            } else
-             count.getIfAbsentPut(t, RoaringBitmap::new).add(Tense.occToDT(when(i)));
+            count.getIfAbsentPut(get(i), RoaringBitmap::new).add(Tense.occToDT(when(i)));
         }
 
 
-        TermList toFactor = new TermList(), toDistribute = new TermList();
-        count.forEachKeyValue((x, cc) -> {
+        TermList toDistribute = new TermList();
+        if (!count.keyValuesView().allSatisfy((xcc) -> {
+            Term x = xcc.getOne();
+            RoaringBitmap cc = xcc.getTwo();
             int c = cc.getCardinality();
             if (c < u) {
                 if (x.op() != NEG) {
-                    if (T.pos != null && T.posRemove(x)) {
+                    if (T.pos != null && T.posRemove(x))
                         toDistribute.add(x);
-                    }
                 } else {
-                    if (T.neg != null && T.negRemove(x.unneg())) {
+                    if (T.neg != null && T.negRemove(x.unneg()))
                         toDistribute.add(x);
-                    }
                 }
             } else {
                 PeekableIntIterator ei = cc.getIntIterator();
                 while (ei.hasNext()) {
                     if (eventCount(ei.next()) == 1)
-                        return; //factoring would erase this event
+                        return true; //factoring would erase this event so ignore it
                 }
                 //new factor component
-                toFactor.add(x);
+                if (!T.addParallel(x))
+                    return false;
+                removeAll(x);
             }
-        });
-
-//        if (terminal != null)
-//            return; //TODO find why if this happens as a reuslt of addParallel
-
-        int ff = toFactor.size();
-        if (ff > 0) {
-            removeIf(toFactor.containing());
+            return true;
+        })) {
+            T.terminate(False);
+            return;
         }
-
-//
-//            MetalBitSet removals = MetalBitSet.bits(n);
-//            for (int i = 0, eventsSize = events.size(); i < eventsSize; i++) {
-//                Term t = events.get(i);
-//                if (isFactored.test(t))
-//                    removals.set(i);
-////                MetalBitSet m = ts.indicesOfBits(isFactored);
-////                int mc = m.cardinality();
-////                //TODO remove inner event that is fully factored. but not if it's a start or stop event?
-////                if (mc > 0 && mc < ts.subs()) {
-////                    removals.add(m);
-////                }
-//            }
-//
-//            if (removals.size() == n) {
-//                for (int i = 0; i < n; i++) {
-//                    Term x = events.get(i);
-//                    MetalBitSet m = removals.get(i);
-//                    Term[] removing = x.subterms().removing(m);
-//                    Term y = removing.length == 1 ? removing[0] : CONJ.the(x.dt(), removing);
-//                    events.set(i, y);
-//                }
-//                toFactor.forEach(this::addParallel);
-//            } else {
-//                toFactor.forEach(this::removeParallel);
-//            }
 
 
         int dd = toDistribute.size();
         if (dd > 0) {
+            n = size();
+
             //distribute partial factors
             for (int i = 0; i < n; i++) {
                 Term xf = get(i);
@@ -329,13 +293,12 @@ public class ConjLazy extends LongObjectArraySet<Term> implements ConjBuilder {
                 Term xd = CONJ.the(t);
                 if (xd == False || xd == Null) {
                     T.terminate(xd);
-                    return null;
+                    return;
                 }
                 set(i, xd);
             }
         }
 
-        return ff > 0 ? toFactor : null;
 
     }
 

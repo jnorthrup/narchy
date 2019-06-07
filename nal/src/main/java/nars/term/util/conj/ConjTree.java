@@ -4,7 +4,6 @@ import jcog.TODO;
 import jcog.data.list.FasterList;
 import jcog.data.set.ArrayHashSet;
 import nars.subterm.DisposableTermList;
-import nars.subterm.TermList;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.atom.Bool;
@@ -35,7 +34,7 @@ public class ConjTree implements ConjBuilder {
 
 
 
-    private boolean addParallel(Term x) {
+    boolean addParallel(Term x) {
 
 
         if (terminal != null)
@@ -71,8 +70,10 @@ public class ConjTree implements ConjBuilder {
 //                            return false; //contradiction
 //                    }
                     if (pos!=null || neg!=null) {
-                        if (!p.eventsWhile((when, what) -> validatePosNeg(what), 0, true, true))
+                        if (!p.eventsWhile((when, what) -> validatePosNeg(what), 0, true, true)) {
+                            terminate(False);
                             return false;
+                        }
                     }
                     //continue below
                 } else {
@@ -84,8 +85,12 @@ public class ConjTree implements ConjBuilder {
             }
         }
 
-        if (pos != null && pos.contains(p))
+        if (pos!=null && pos.contains(p))
             return true;
+        if (neg!=null && neg.contains(p)) {
+            terminate(False);
+            return false;
+        }
 
         if (neg != null) {
             p = reducePN(p, neg, false);
@@ -101,6 +106,7 @@ public class ConjTree implements ConjBuilder {
         }
 
         if (pos == null) pos = newSet();
+        assert(p.op()!=NEG);
         pos.add(p);
         return true;
     }
@@ -108,13 +114,11 @@ public class ConjTree implements ConjBuilder {
     private boolean validatePosNeg(Term what) {
         if (what.op() == NEG) {
             if (pos != null && pos.contains(what.unneg())) {
-                terminate(False);
                 return false;
             }
             //TODO detect reducible disjunction-in-sequence here to trigger recurse
         } else {
             if (neg != null && neg.contains(what)) {
-                terminate(False);
                 return false;
             }
         }
@@ -124,6 +128,13 @@ public class ConjTree implements ConjBuilder {
     private boolean addParallelN(Term n) {
         assert (n.op() == NEG);
         Term nu = n.unneg();
+
+        if (neg!=null && neg.contains(nu))
+            return true;
+        if (pos!=null && pos.contains(nu)) {
+            terminate(False);
+            return false;
+        }
 
         if (neg != null && !(nu instanceof Bool)) {
             nu = reduceNegNeg(nu, neg);
@@ -145,6 +156,7 @@ public class ConjTree implements ConjBuilder {
             return false; /*conflict */
         } else {
             if (neg == null) neg = newSet();
+            assert(nu.op()!=NEG);
             neg.add(nu);
             return true;
         }
@@ -170,8 +182,6 @@ public class ConjTree implements ConjBuilder {
      * @return
      */
     private Term reduceNegNeg(Term nx, Set<Term> neg) {
-        if (neg.contains(nx))
-            return True;
 
         boolean xConj = nx.op() == CONJ;
 
@@ -338,45 +348,42 @@ public class ConjTree implements ConjBuilder {
 
     private boolean addAt(long at, Term x) {
         if (x.op() != NEG) {
-            if (neg != null && neg.contains(x)) {
-                terminate(False); //contradict
-                return false;
-            }
+            if (pos!=null && pos.contains(x))
+                return true;
+
             if (neg != null && !(x instanceof Bool)) {
                 x = reducePN(x, neg, false);
-                if (x.op() == NEG)
-                    return add(at, x); //became positive
             }
+
         } else {
-            Term nu = x.unneg();
-            Term _nu = nu;
-            if (pos != null && pos.contains(nu)) {
+            Term _xu = x.unneg();
+            Term xu = _xu;
+
+            if (neg!=null && neg.contains(xu))
+                return true;
+
+            if (pos != null && pos.contains(xu)) {
                 terminate(False); //contradict
                 return false;
             }
 
-            if (neg != null && !(nu instanceof Bool)) {
-                nu = reduceNegNeg(nu, neg);
-                if (nu.op() == NEG)
-                    return add(at, nu.unneg()); //became positive
+            if (neg != null && !(xu instanceof Bool)) {
+                xu = reduceNegNeg(xu, neg);
             }
 
-            if (pos != null && !(nu instanceof Bool)) {
-                nu = reducePN(nu, pos, true);
-                if (nu.op() == NEG)
-                    return add(at, nu.unneg()); //became positive
+            if (pos != null && !(xu instanceof Bool)) {
+                xu = reducePN(xu, pos, true);
             }
 
+            if (_xu != xu)
+                x = xu.neg(); //HACK
+        }
 
-            if (nu == True)
-                return true; //absorbed
-            else if (nu == False || nu == Null) {
-                terminate(nu);
-                return false; /*conflict */
-
-            }
-            if (_nu != nu)
-                x = nu.neg(); //HACK
+        if (x == True)
+            return true; //absorbed
+        else if (x == False || x == Null) {
+            terminate(x);
+            return false; /*conflict */
         }
 
         if (seq == null) seq = new IntObjectHashMap<>(4);
@@ -522,12 +529,9 @@ public class ConjTree implements ConjBuilder {
                 }
                 if (!events.isEmpty()) {
 
-                    TermList f = events.preDistribute(this);
+                    events.preDistribute(this);
                     if (terminal != null)
                         return terminal;
-
-                    if (f != null)
-                        f.forEach(this::addParallel);
 
                     events.condense(B);
 

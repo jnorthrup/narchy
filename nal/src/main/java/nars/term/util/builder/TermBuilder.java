@@ -136,7 +136,6 @@ public abstract class TermBuilder implements TermConstructor {
 //                else
                 //special case
                 if (only instanceof Ellipsislike){
-                    assert(dt==DTERNAL);
                     return newCompound(CONJ, dt, only);
                 } else
                     return only;

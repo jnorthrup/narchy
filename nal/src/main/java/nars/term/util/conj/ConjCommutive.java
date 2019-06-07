@@ -87,6 +87,7 @@ public enum ConjCommutive {
                     if (factor instanceof Bool)
                         return factor;
 
+                    xx = xx.clone(); //dont modify input array
                     j = -1;
                     for (int k = 0; k < d; k++) {
                         j = cond.next(true, j+1, n);
