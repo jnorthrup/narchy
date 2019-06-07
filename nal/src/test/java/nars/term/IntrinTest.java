@@ -9,7 +9,6 @@ import nars.subterm.*;
 import nars.term.anon.Anom;
 import nars.term.anon.Anon;
 import nars.term.anon.AnonWithVarShift;
-import nars.term.util.TermTest;
 import nars.term.util.builder.HeapTermBuilder;
 import nars.term.util.builder.InterningTermBuilder;
 import nars.term.util.builder.TermConstructor;
@@ -23,6 +22,7 @@ import static nars.$.$;
 import static nars.$.$$;
 import static nars.Op.CONJ;
 import static nars.Op.PROD;
+import static nars.term.util.TermTest.assertEq;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class IntrinTest {
@@ -141,14 +141,14 @@ public class IntrinTest {
 
         Term[] x = {Anom.the(3), Anom.the(1), Anom.the(2)};
 
-        TermTest.assertEq(new UniSubterm(x[0]), new IntrinSubterms(x[0]));
-        TermTest.assertEq(new UniSubterm(x[0]), new TermList(x[0]));
+        assertEq(new UniSubterm(x[0]), new IntrinSubterms(x[0]));
+        assertEq(new UniSubterm(x[0]), new TermList(x[0]));
 
-        TermTest.assertEq(new BiSubterm(x[0], x[1]), new IntrinSubterms(x[0], x[1]));
-        TermTest.assertEq(new BiSubterm(x[0], x[1]), new TermList(x[0], x[1]));
+        assertEq(new BiSubterm(x[0], x[1]), new IntrinSubterms(x[0], x[1]));
+        assertEq(new BiSubterm(x[0], x[1]), new TermList(x[0], x[1]));
 
-        TermTest.assertEq(new ArrayTermVector(x), new IntrinSubterms(x));
-        TermTest.assertEq(new ArrayTermVector(x), new TermList(x));
+        assertEq(new ArrayTermVector(x), new IntrinSubterms(x));
+        assertEq(new ArrayTermVector(x), new TermList(x));
 
     }
 
@@ -159,7 +159,7 @@ public class IntrinTest {
 
         IntrinSubterms av = new IntrinSubterms(x);
         ArrayTermVector bv = new ArrayTermVector(x);
-        TermTest.assertEq(bv, av);
+        assertEq(bv, av);
 
         assertFalse(av.contains(x[0].neg()));
         assertFalse(av.containsRecursively(x[0].neg()));
@@ -186,9 +186,9 @@ public class IntrinTest {
 
             ArrayUtil.shuffle(x, rng);
 
-            TermTest.assertEq(new UniSubterm(x[0]), new IntrinSubterms(x[0]));
-            TermTest.assertEq(new BiSubterm(x[0], x[1]), new IntrinSubterms(x[0], x[1]));
-            TermTest.assertEq(new ArrayTermVector(x), new IntrinSubterms(x));
+            assertEq(new UniSubterm(x[0]), new IntrinSubterms(x[0]));
+            assertEq(new BiSubterm(x[0], x[1]), new IntrinSubterms(x[0], x[1]));
+            assertEq(new ArrayTermVector(x), new IntrinSubterms(x));
         }
     }
 
@@ -332,4 +332,11 @@ public class IntrinTest {
         assertEquals("(_2(_1) ==>+1 ((--,_3(#3))&&_3(#4)))", y.toString());
     }
 
+    @Test void testConjSeq() {
+        //0:((--,(tetris-->rotate))&&#_f),690:((--,(tetris-->right))&&(--,(tetris-->rotate))),800:(tetris-->left),3520:left(#1,#2)
+        String t = "((((--,x)&&#_f) &&+690 ((--,x)&&(--,y))) &&+800 (z &&+3520 w))";
+        Term T = $$(t);
+        //assertEq(t, T);
+        assertEquals(T.volume(), T.anon().volume(), ()->"difference:\n" + T + "\n" + T.anon());
+    }
 }

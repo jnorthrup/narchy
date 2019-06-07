@@ -543,10 +543,6 @@ public enum Conj  { ;
             if (iis.contains(exclude))
                 return removeComm(include, exclude); //simple raw equality test
 
-            if (!iis.hasAny(CONJ)) {
-                return include; //neither are complex sequences so include can not contain exclude
-            }
-
             //fast 2-ary test
             ConjLazy ee = ConjLazy.events(exclude);
             if (ee.size() == 2 && ee.when(0) == 0) {
@@ -565,10 +561,7 @@ public enum Conj  { ;
                         int clipEnd = ii.indexOf(clipStart + 1, eeSecond::equals);
                         if (clipEnd != -1) {
                             if (ii.when(clipEnd) - start == dt) {
-                                MetalBitSet mm = MetalBitSet.bits(ii.size());
-                                mm.set(clipStart);
-                                mm.set(clipEnd);
-                                ii.removeAll(mm, ii.size());
+                                ii.removeAll(clipStart, clipEnd);
                                 modified = true;
                             }
                         }
@@ -619,13 +612,12 @@ public enum Conj  { ;
 
             boolean[] removedSomething = new boolean[]{false};
 
-            long offset = (include.dt() == XTERNAL || (exclude.dt() == DTERNAL && !isSeq(exclude))) ? ETERNAL : 0;
+
 
             exclude.eventsWhile((when, what) -> {
-                removedSomething[0] |= when == ETERNAL ? ii.removeAll(what) : ii.remove(when, what);
-                //removedSomething[0] |= x.remove(when, what);
+                removedSomething[0] |= ii.removeAll(what);
                 return true;
-            }, offset, true, exclude.dt() == XTERNAL);
+            }, ETERNAL, true, exclude.dt() == XTERNAL);
 
             return removedSomething[0] ? ii.term() : include;
 //        } else {

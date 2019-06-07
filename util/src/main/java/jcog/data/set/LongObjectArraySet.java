@@ -225,7 +225,7 @@ public class LongObjectArraySet<X> extends FasterList<X> {
         return removeAll(MetalBitSet.bits(s).set(indices), s);
     }
 
-    public final boolean removeAll(MetalBitSet m, int s) {
+    private final boolean removeAll(MetalBitSet m, int s) {
         int toRemove = Math.min(m.cardinality(),s);
         if (toRemove == 0)
             return false;

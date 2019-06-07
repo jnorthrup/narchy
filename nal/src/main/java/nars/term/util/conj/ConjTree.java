@@ -144,17 +144,18 @@ public class ConjTree implements ConjBuilder {
             return false;
         }
 
+        if (pos != null && !(nu instanceof Bool)) {
+            nu = reducePN(nu, pos, true);
+            if (nu instanceof Neg)
+                return addParallelP(nu.unneg()); //became positive
+        }
+
         if (neg != null && !(nu instanceof Bool)) {
             nu = reduceNegNeg(nu, neg);
             if (nu instanceof Neg)
                 return addParallelP(nu.unneg()); //became positive
         }
 
-        if (pos != null && !(nu instanceof Bool)) {
-            nu = reducePN(nu, pos, true);
-            if (nu instanceof Neg)
-                return addParallelP(nu.unneg()); //became positive
-        }
 
 
         if (nu == True)
@@ -191,12 +192,15 @@ public class ConjTree implements ConjBuilder {
      */
     private Term reduceNegNeg(Term nx, Set<Term> neg) {
 
+        int nxs = nx.structure();
         boolean xConj = nx.op() == CONJ;
 
         FasterList<Term> toAdd = null;
         for (Iterator<Term> nyi = neg.iterator(); nyi.hasNext(); ) {
             Term ny = nyi.next();
             boolean yConj = ny.op() == CONJ;
+            if (!Term.commonStructure(nxs, ny.structure()))
+                continue;
             if (yConj) {
                 //disj
                 if (ny.containsRecursively(nx)) {
@@ -233,12 +237,12 @@ public class ConjTree implements ConjBuilder {
                             if (nx == False || nx == Null)
                                 return nx; //shouldnt happen
 
-                            long nxs = nxe.shift();
-                            if (nxs == ETERNAL || nxs == 0) {
+                            long nxshift = nxe.shift();
+                            if (nxs == ETERNAL || nxshift == 0) {
                                 //continue, adding at present time
                             } else {
                                 //add at shifted time
-                                if (!add(nxs, nx))
+                                if (!add(nxshift, nx))
                                     return False;
                                 break;
                             }
@@ -249,7 +253,7 @@ public class ConjTree implements ConjBuilder {
             }
             if (xConj && nx.containsRecursively(ny)) {
                 if (Conj.eventOf(nx, ny)) {
-                    return ny;
+                    return True; //absorbed
                 } else if (Conj.eventOf(nx, ny.neg())) {
                     nx = Conj.diffAll(nx, ny.neg());
                     if (nx instanceof Bool)
@@ -496,9 +500,9 @@ public class ConjTree implements ConjBuilder {
         boolean removed = removeParallel(term);
 
         if (seq != null) {
-            if (!removed)
-                removed |= seq.anySatisfyWith(ConjTree::removeAll, term);
-            else
+            if (!removed) {
+                removed |= seq.countWith(ConjTree::removeAll, term) > 0;
+            } else
                 seq.forEachWith(ConjTree::removeAll, term);
         }
 

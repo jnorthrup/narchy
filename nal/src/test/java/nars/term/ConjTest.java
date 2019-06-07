@@ -487,15 +487,14 @@ public class ConjTest {
 
     @Test
     void testCoNegatedDisjunction() {
+        assertEq(True, Conj.diffAll($$("((--,left) &&+120 (--,left))"), $$("--left")));
 
         assertEq(Bool.True, "(||,x,a:b,(--,a:b))");
 
         assertEq(Bool.True, "(||,x,y,a:b,(--,a:b))");
 
-        assertEq(Bool.True, "(||,((--,left) &&+120 (--,left)),left)");
-        assertEq("x", "((||,((--,left) &&+120 (--,left)),left) ==> x)");
-        assertEq("x", "((||,((--,left) &&+120 (--,left)),left) =|> x)");
-        assertEq("(y==>x)", "((&&,(||,((--,left) &&+120 (--,left)),left),y) ==> (x&&y))");
+        assertEq("left", "(||,((--,left) &&+120 (--,left)),left)");
+        assertEq("((y&&left)==>x)", "((&&,(||,((--,left) &&+120 (--,left)),left),y) ==> (x&&y))");
     }
 
     @Test
