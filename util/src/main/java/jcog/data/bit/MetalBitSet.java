@@ -24,6 +24,12 @@ abstract public class MetalBitSet {
 
     public abstract void set(int i);
 
+    public final MetalBitSet set(int... ii) {
+        for (int i : ii)
+            set(i);
+        return this;
+    }
+
     public abstract void clear(int i);
 
     public abstract void clear();

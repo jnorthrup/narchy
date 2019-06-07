@@ -48,10 +48,17 @@ public class ConjTree implements ConjBuilder {
             return false;
         }
 
-        if (x instanceof Neg) {
-            return addParallelN(x);
-        } else {
-            return addParallelP(x);
+        try {
+            if (x instanceof Neg) {
+                return addParallelN(x);
+            } else {
+                return addParallelP(x);
+            }
+        } finally {
+            if (pos!=null && pos.isEmpty())
+                pos = null; //HACK
+            if (neg!=null && neg.isEmpty())
+                neg = null; //HACK
         }
 
     }
@@ -96,7 +103,7 @@ public class ConjTree implements ConjBuilder {
         if (neg != null) {
             p = reducePN(p, neg, false);
             if (p instanceof Neg)
-                return addParallelN(p); //became positive
+                return addParallelN(p); //became negative
 
             if (p == True)
                 return true; //absorbed
@@ -265,61 +272,70 @@ public class ConjTree implements ConjBuilder {
         if (y.contains(x))
             return False; //contradiction
 
-        Term a = x.negIf(!nP_or_pN);
-        Term b = x.negIf(nP_or_pN);
 
         boolean xConj = x.op() == CONJ;
-        if (xConj) {
+        if (xConj && nP_or_pN) {
 
             for (Term yy : y) {
 
-                if (nP_or_pN) {
                     if (Conj.eventOf(x, yy.neg()))
                         return True; //absorb
-
-                    if (Conj.eventOf(x, yy)) {
-                        x = Conj.diffAll(x, yy);
-                        if (x instanceof Bool)
-                            return x;
+                    else {
+                        Term z = Conj.diffAll(x, yy);
+                        if (!z.equals(x)) {
+                            if (z instanceof Bool)
+                                return z;
+                            x = z;
+                        }
                     }
 
-                } else {
-                    if (Conj.eventOf(x, yy)) {
-                        return False; //contradict
-                    } else if (Conj.eventOf(x, yy.neg())) {
-                        x = Conj.diffAll(x,  yy.neg());
-                        if (x instanceof Bool)
-                            return x;
-                    }
-
-                }
+//                } else {
+//                    if (Conj.eventOf(x, yy)) {
+//                        return False; //contradict
+//                    } else if (Conj.eventOf(x, yy.neg())) {
+//                        x = Conj.diffAll(x,  yy.neg());
+//                        if (x instanceof Bool)
+//                            return x;
+//                    }
+//
+//                }
             }
 
         }
 
 
-        {
+        if (!nP_or_pN) {
 
-            FasterList<Term> toAdd = null;
+            Term xn = x.neg();
+
+            FasterList<Term> add = null;
             for (Iterator<Term> iterator = y.iterator(); iterator.hasNext(); ) {
                 Term yy = iterator.next();
                 if (yy.op() == CONJ) {// && yy.containsRecursively(x)) {
-//                    if (Conj.eventOf(yy, a)) {
-//                        iterator.remove();
-//                    } else {
-                        if (Conj.eventOf(yy, b)) {
+                    if (Conj.eventOf(yy, xn)) {
+                        //short-circuit
+                        iterator.remove();
+                    } else {
+                        //impossibility
+                        Term z = Conj.diffAll(yy, x);
+                        if (!z.equals(yy)) {
+
+                            //if (Conj.eventOf(yy, b)) {
                             iterator.remove();
-                            if (toAdd == null) toAdd = new FasterList(1);
-                            Term z = Conj.diffAll(yy, b);
+                            //Term z = Conj.diffAll(yy, b);
                             if (z == True) {
                                 //only remove
                             } else if (z == False || z == Null)
                                 return z;
-                            else
-                                toAdd.add(z);
+                            else {
+                                if (add == null) add = new FasterList(1);
+                                add.add(z);
+                            }
 
                         }
+                    }
 //                    }
+
 
 
 
@@ -327,8 +343,8 @@ public class ConjTree implements ConjBuilder {
 
             }
 
-            if (toAdd != null) {
-                if (!toAdd.allSatisfy(nP_or_pN ? this::addParallel : this::addParallelNeg))
+            if (add != null) {
+                if (!add.allSatisfy(this::addParallelNeg))
                     return False;
             }
         }

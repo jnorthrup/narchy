@@ -576,7 +576,7 @@ abstract public class GameX extends Game {
     private static void addGovernor(NAR n) {
         int gHist = 8;
         float momentum = 0.5f;
-        float explorationRate = 0.05f;
+        float explorationRate = 0.2f;
         n.onDur(new Consumer<NAR>() {
 
             final Consumer<FasterList<Why>> reval = new Consumer<FasterList<Why>>() {

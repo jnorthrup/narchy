@@ -8,7 +8,6 @@ import jcog.util.ArrayUtil;
 import nars.NAL;
 import nars.subterm.Subterms;
 import nars.term.Compound;
-import nars.term.Neg;
 import nars.term.Term;
 import nars.term.Terms;
 import nars.term.util.builder.TermBuilder;
@@ -496,19 +495,12 @@ public enum Conj  { ;
         return diffAll(include, exclude, false);
     }
 
-    public static Term diffAll(Term include, Term exclude, boolean autoNeg) {
-        return diffAll(include, exclude, autoNeg, false);
-    }
-
-    public static Term diffAll(Term include, Term exclude, boolean autoNeg, boolean excludeNeg) {
+    public static Term diffAll(Term include, Term exclude, boolean excludeNeg) {
 
         if (include.equals(exclude) || (excludeNeg && include.equalsNeg(exclude)))
             return True;
 
-        if (autoNeg && include instanceof Neg) {
-            Term y = diffAll(include.unneg(), exclude, false, excludeNeg);
-            return y == True ? True : y.neg();
-        }
+
 //        boolean eSeq = Conj.isSeq(exclude);
 //        Subterms ii = include.subterms();
 //        if (!eSeq && !Conj.isSeq(include)) {
@@ -590,6 +582,7 @@ public enum Conj  { ;
 
             //TODO exhaustive match
             return Null;
+            //return include;
 
 
 //

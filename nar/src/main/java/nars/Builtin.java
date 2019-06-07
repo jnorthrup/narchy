@@ -129,14 +129,6 @@ public class Builtin {
                 }
             },
 
-            /** like conjWithout, but auto-unneg and re-neg --(&&, , ie for: (|| */
-            new AbstractInlineFunctor2("conjDisjWithout") {
-                @Override
-                protected Term apply(Term conj, Term event) {
-                    Term x = Conj.diffAll(conj, event, true);
-                    return conj.equals(x) ? Null : x;
-                }
-            },
 
             /** applies the changes in structurally similar terms "from" and "to" to the target target */
             Functor.f3((Atom) $.the("substDiff"), (target, from, to) -> {

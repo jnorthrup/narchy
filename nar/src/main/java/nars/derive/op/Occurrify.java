@@ -9,6 +9,7 @@ import nars.derive.model.DerivationFailure;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.atom.Atomic;
+import nars.term.atom.Bool;
 import nars.term.control.PREDICATE;
 import nars.term.util.Image;
 import nars.term.util.conj.ConjSeq;
@@ -562,14 +563,19 @@ public class Occurrify extends TimeGraph {
             public Pair<Term, long[]> occurrence(Term x, Derivation d) {
 
 
-                Term tt = d.taskTerm.negIf(d.taskTruth.isNegative());
-                Term bb = d.beliefTerm.negIf(d._belief.isNegative());
+                Term tt = d.taskTerm;
+                Term bb = d.beliefTerm;
 
                 if (!d.retransform.isEmpty()) {
                     //HACK re-apply variable introduction
                     tt = tt.replace(d.retransform);
+                    if (tt instanceof Bool) return null;
                     bb = bb.replace(d.retransform);
+                    if (bb instanceof Bool) return null;
                 }
+
+                tt = tt.negIf(d.taskTruth.isNegative());
+                bb = bb.negIf(d._belief.isNegative());
 
                 long tTime = d.taskStart, bTime = d.beliefStart;
 

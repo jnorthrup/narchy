@@ -745,8 +745,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 
                                             } else {
                                                 //chain to parent
-                                                if (eventStart != ETERNAL)
-                                                    link(p, w, next);
+                                                link(p, w, next);
                                             }
 
                                         }

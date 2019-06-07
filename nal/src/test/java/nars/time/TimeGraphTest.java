@@ -21,9 +21,9 @@ import java.util.function.Supplier;
 import static nars.$.$;
 import static nars.$.$$;
 import static nars.Op.CONJ;
-import static nars.term.util.TermTest.assertEq;
 import static nars.time.Tense.*;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class TimeGraphTest {
 
@@ -300,12 +300,22 @@ class TimeGraphTest {
         C.know($$("x"), 1); //C.autoNeg.add($$("x"));
         C.know($$("y"), 2);
 
-        System.out.println();
         assertSolved("(--x ==>+- y)", C,
                 "((--,x) ==>+1 y)");
 
     }
+    @Test
+    void testComponentInTwoConjunctionSequences() {
 
+        TimeGraph C = newTimeGraph(1);
+        C.know($$("(_1 &&+1 _2)"), ETERNAL);
+        C.know($$("((_4 &&+1 _1) &&+1 (_2 &&+1 _3))"), ETERNAL);
+
+        System.out.println();
+        assertSolved("_4", C,
+                "_4@ETE");
+
+    }
     @Test
     void testConjSimpleOccurrences() throws Narsese.NarseseException {
         TimeGraph C = newTimeGraph(1);
@@ -455,9 +465,9 @@ class TimeGraphTest {
         C.know($$("b"), 2); //C.autoNeg.add($$("b"));
 
         assertSolved("(x-->(a &&+- b))", C, "(x-->(a &&+1 b))");
-        assertSolved("(x--> --(a &&+- b))", C, "(x-->(--,(a &&+1 b)))");
+        //assertSolved("(x--> --(a &&+- b))", C, "(x-->(--,(a &&+1 b)))");
         assertSolved("(x-->(a &&+- --b))", C, "(x-->(a &&+1 (--,b)))");
-        assertSolved("(x--> --(a &&+- --b))", C, "(x-->(--,(a &&+1 (--,b))))");
+        //assertSolved("(x--> --(a &&+- --b))", C, "(x-->(--,(a &&+1 (--,b))))");
         assertSolved("(x, (a ==>+- b))", C, "(x,(a ==>+1 b))");
     }
 

@@ -186,7 +186,7 @@ public enum TermAppender {
             int dt;
             if ((((dt = sub.dt()) == DTERNAL) || (dt == XTERNAL))) {
                 Subterms cxx = sub.subterms();
-                if (Terms.negatedCount(cxx) >= cxx.subs() / 2f) {
+                if (Terms.negatedNonConjCount(cxx) >= cxx.subs() / 2) {
                     disjAppend(cxx, dt, p);
                     return;
                 }

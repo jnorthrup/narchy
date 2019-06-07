@@ -793,9 +793,6 @@ public class ConjTest {
                 $$("(&&,a,b,c)"),
                 $$("(&&,c,d,e)")));
 
-        assertEq("(--,(a&&b))", Conj.diffAll(
-                $$("--(&&,a,b,c)"),
-                $$("(&&,c,d,e)"), true));
 
         assertEq("(a&&b)", Conj.diffAll(
                 $$("(&|,a,b,c)"),

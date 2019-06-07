@@ -41,7 +41,7 @@ public enum ConjMatch { ;
                 VAR_DEP.bit | VAR_INDEP.bit;
                 //VAR_DEP.bit;
 
-        if (event.volume() >= conj.volume() || !Term.commonStructure( (event.structure()&(~varBits)),(conj.structure()&(~varBits))))
+        if (event.volume() >= conj.volume() || !Term.commonStructure( (event.structure()&(~varBits)),(conj.subterms().structure()&(~varBits))))
             return Null;
 
         return beforeOrAfterSeq(conj, event, beforeOrAfter, varBits, d, ttl);
@@ -56,14 +56,15 @@ public enum ConjMatch { ;
         int n = x.size();
         if (n <= 1)
             return Null; //throw new WTF();  //assert (n > 1);
+        int n0 = n; //save for comparison below
 
         long[] matchedTime = new long[] { Long.MAX_VALUE, Long.MIN_VALUE };
 
         if (event.op()!=CONJ && event.dt()!=XTERNAL) {
             //simple event
-            if (!conj.impossibleSubTerm(event)) {
-                removeAny(event, x, matchedTime, d.random);
-            }
+
+            removeAny(event, x, matchedTime, d.random);
+
         } else {
             //remove matching parallel/sequence conjunctions
             ConjLazy y = events(event, beforeOrAfter);
@@ -129,7 +130,7 @@ public enum ConjMatch { ;
 
                                 //exact time match, but here a dur tolerance could be allowed
                                 if (x.when(j) == bWhen && x.get(j).equals(b)) {
-                                    x.removeThe(i); x.removeThe(j);
+                                    x.removeAll(i, j);
                                     found = true;
                                     matchedTime[0] = Math.min(aWhen, bWhen);
                                     matchedTime[1] = Math.max(aWhen, bWhen);
@@ -147,7 +148,6 @@ public enum ConjMatch { ;
         }
 
 
-        int n0 = n;
         n = x.size();
         if (n0!=n && matchedTime[0]!=TIMELESS) {
             //something removed;
@@ -230,24 +230,14 @@ public enum ConjMatch { ;
     }
 
     private static ConjLazy events(Term conj, boolean beforeOrAfter) {
-        ConjLazy x;
-//        if (Conj.isSeq(conj)) {
-            x = ConjLazy.events(conj);
-            if (!beforeOrAfter)
-                x.reverse(); //match from opposite direction
-//        } else {
-//            //conj.dt() == DTERNAL || conj.dt() == 0
-//            Subterms ss = conj.subterms();
-//            x = new ConjLazy(ss.subs());
-//            long when = (conj.dt() == DTERNAL) ? ETERNAL : 0;
-//            for (Term cc : ss)
-//                x.add(when, cc);
-//        }
+        ConjLazy x = ConjLazy.events(conj);
+        if (!beforeOrAfter)
+            x.reverse(); //match from opposite direction
         return x;
     }
 
     /** removes one matching event at random */
-    private static void removeAny(Term event, ConjLazy x, long[] matchedTime, Random random) {
+    private static boolean removeAny(Term event, ConjLazy x, long[] matchedTime, Random random) {
 
         int s = x.size();
         int i = random.nextInt(s);
@@ -258,11 +248,11 @@ public enum ConjMatch { ;
                 matchedTime[0] = Math.min(matchedTime[0], when);
                 matchedTime[1] = Math.max(matchedTime[1], when);
                 x.removeThe(i);
-                return;
+                return true;
             }
             if (++i == s) i = 0;
         }
-
+        return false;
     }
 
 

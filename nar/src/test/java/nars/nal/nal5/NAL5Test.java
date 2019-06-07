@@ -16,13 +16,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class NAL5Test extends NALTest {
 
-    private final int cycles = 630;
+    private final int cycles = 930;
 
     @Override
     protected NAR nar() {
         NAR n = NARS.tmp(6,6);
         n.termVolMax.set(8);
-        n.confMin.set(0.1f);
+        n.confMin.set(0.2f);
         return n;
     }
 
@@ -104,7 +104,7 @@ public class NAL5Test extends NALTest {
          OUT: <(robin --> [flying]) ==> a>. %0.80;0.45%
          */
         
-        test.termVolMax(7);
+        test.termVolMax(6);
         test.confMin(0.3f);
         test.believe("(a ==> b)", 1f, 0.9f);
         test.believe("<(robin --> [flying]) ==> b>", 0.8f, 0.9f);
@@ -1069,7 +1069,7 @@ public class NAL5Test extends NALTest {
     void conjPostconditionDecompositionToImpl_BackChaining_Question() {
         test
                 .ask("(z==>(x&&y))")
-                .mustQuestion(cycles, "(x &&+- y)")
+                .mustQuestion(cycles, "(x&&y)")
                 .mustQuestion(cycles, "(z ==>+- x)")
                 .mustQuestion(cycles, "(z ==>+- y)")
         ;
