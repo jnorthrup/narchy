@@ -116,13 +116,17 @@ public abstract class TermBuilder implements TermConstructor {
 
     }
 
+    public final Term conj(Term... u) {
+        return conj(DTERNAL, u);
+    }
+
     public Term conj(final int dt, Term... u) {
         return conj(false, dt, u);
     }
 
-    public final Term conj(boolean preSorted, int dt, Term... u) {
+    protected Term conj(boolean preSorted, int dt, Term... u) {
 
-        if (!preSorted && u.length > 1)
+        if (!preSorted)
             u = ConjBuilder.preSort(dt, u);
 
         switch (u.length) {

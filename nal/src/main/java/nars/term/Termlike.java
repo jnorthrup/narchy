@@ -199,7 +199,7 @@ public interface Termlike {
     }
 
     default boolean containsNeg(Term x) {
-        if (x.op() == NEG)
+        if (x instanceof Neg)
             return contains(x.unneg());
         else {
             return !(this instanceof TermMetadata && !(hasAny(NEG) && !impossibleSubTerm(x)))

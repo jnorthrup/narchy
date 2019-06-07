@@ -7,6 +7,7 @@ import nars.Task;
 import nars.subterm.Subterms;
 import nars.task.util.TaskRegion;
 import nars.term.Compound;
+import nars.term.Neg;
 import nars.term.Term;
 import nars.term.util.Image;
 import nars.term.util.TermException;
@@ -32,7 +33,7 @@ public class DynamicStatementTruth {
         public boolean evalComponents(Compound superterm, long start, long end, ObjectLongLongPredicate<Term> each) {
             Subterms ss = superterm.subterms();
             Term subj = ss.sub(0);
-            assert (subj.op() == NEG);
+            assert (subj instanceof Neg);
             return decomposeImplConj(superterm, start, end, each, ss.sub(1),
                     (Compound) (subj.unneg()), true, false);
         }
@@ -143,7 +144,7 @@ public class DynamicStatementTruth {
             Term superSect = superterm.sub(subjOrPred ? 0 : 1);
             Op op = superterm.op();
             boolean negOuter = false;
-                if (superSect.op() == NEG) {
+                if (superSect instanceof Neg) {
                         negOuter = true;
                         superSect = superSect.unneg();
                 }
@@ -262,7 +263,7 @@ public class DynamicStatementTruth {
             }
 
             //if (unionOrIntersection) {
-            if (decomposed.op() == NEG) {
+            if (decomposed instanceof Neg) {
 
                 decomposed = decomposed.unneg();
             }

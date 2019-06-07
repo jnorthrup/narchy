@@ -4,6 +4,7 @@ import nars.Op;
 import nars.subterm.Subterms;
 import nars.subterm.TermList;
 import nars.term.Compound;
+import nars.term.Neg;
 import nars.term.Term;
 import nars.term.atom.Bool;
 import org.jetbrains.annotations.Nullable;
@@ -145,7 +146,7 @@ public interface AbstractTermTransform extends TermTransform, nars.term.util.bui
         @Override
         public final Term applyCompound(Compound c) {
 
-            if (c.op() == NEG) {
+            if (c instanceof Neg) {
                 Term xx = c.unneg();
                 Term yy = apply(xx);
                 return (yy == xx) ? c : yy.neg();

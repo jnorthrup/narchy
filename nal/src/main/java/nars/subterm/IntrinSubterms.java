@@ -2,6 +2,7 @@ package nars.subterm;
 
 import jcog.util.ArrayUtil;
 import nars.Op;
+import nars.term.Neg;
 import nars.term.Term;
 import nars.term.anon.AnonArrayIterator;
 import nars.term.anon.Intrin;
@@ -38,7 +39,7 @@ public class IntrinSubterms extends TermVector /*implements Subterms.SubtermsByt
         short[] t = subterms = new short[s.length];
         for (int i = 0, sLength = s.length; i < sLength; i++) {
             Term ss = s[i];
-            boolean neg = hasNeg && ss.op() == NEG;
+            boolean neg = hasNeg && ss instanceof Neg;
             if (neg)
                 ss = ss.unneg();
             short tt = (short) ((Intrin) ss).i;
@@ -297,7 +298,7 @@ public class IntrinSubterms extends TermVector /*implements Subterms.SubtermsByt
 
     @Override
     public boolean containsRecursively(Term x, boolean root, Predicate<Term> inSubtermsOf) {
-        if (x.op() == NEG) {
+        if (x instanceof Neg) {
             if (hasNeg()) {
                 Term tt = x.unneg();
                 if (tt instanceof Intrin) {

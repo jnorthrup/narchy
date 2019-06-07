@@ -589,6 +589,7 @@ public class ConjTest {
 
         assertEq(False, "(((b &&+4 a)&|(--,b))&|((--,c) &&+6 a))");
     }
+
     @Test
     void testConjParallelsMixture2() {
         assertEq("(b ==>+1 (a&&x))", $$("(b ==>+1 (a&&x))"));
@@ -613,6 +614,7 @@ public class ConjTest {
         assertEq("((&&,a,b2,b3) &&+1 (c&&b1))",
                 "(((a &&+1 b1)&|b2)&|(b3 &&+1 c))");
     }
+
     @Test
     void testConjParallelsMixture3() {
 
@@ -1985,7 +1987,7 @@ public class ConjTest {
     void testCollapseEteParallel3() {
 
         {
-            assertEq("(&&,(--,(c&&d)),a,b)", CONJ.the(DTERNAL,$$("(--,(c&|d))"), $$("(a&|b)")));
+            assertEq("(&&,(--,(c&&d)),a,b)", CONJ.the(DTERNAL, $$("(--,(c&|d))"), $$("(a&|b)")));
         }
         assertEq("(&&,(--,(c&&d)),a,b)", "((&|,a,b) && --(&|,c,d))"); //NOT collapse
 
@@ -2004,20 +2006,12 @@ public class ConjTest {
     @Test
     void testConjDistributeEteParallel1() {
         Term x = $$("((&|,_2(_1),_4(_3),_6(_5))&&(--,(_6(#1)&|_6(#2))))");
-        {
-            ConjBuilder c1 = new ConjTree();
-            c1.addAuto(x);
-            ConjBuilder c = c1;
-            assertEq(x, c.term());
-            assertEquals(4, c.eventCount(ETERNAL));
-        }
-        {
-            ConjBuilder c = new ConjTree();
-            c.addAuto(x);
-//            c.distribute();
-//            assertEquals(4, c.eventCount(ETERNAL));
-            assertEq(x, c.term());
-        }
+
+        ConjBuilder c = new ConjTree();
+        c.addAuto(x);
+        assertEquals(4, c.eventCount(ETERNAL));
+        assertEq(x, c.term());
+
     }
 
 
@@ -2040,6 +2034,7 @@ public class ConjTest {
         assertEq("((x||y)&&a)", "(||,(a && x),(a && y))");
         assertEq("(--,((x||y)&&a))", "(--(a && x) && --(a && y))");
     }
+
     @Test
     void testDisj_Factorize_2a() {
         assertEq("(&&,(a||b),x,y)", "(||,(&&,x,y,a),(&&,x,y,b))");
@@ -2047,7 +2042,7 @@ public class ConjTest {
 
     @Test
     void testDisj_Factorize_2b() {
-        assertEq("", "((a&&b)||(c&&d))");
+        assertEq("((a&&b)||(c&&d))", "((a&&b)||(c&&d))");
         assertEq("(((a&&b)||(c&&d))&&x)", "(||,(&&,x,a,b),(&&,x,c,d))");
     }
 
@@ -2055,6 +2050,7 @@ public class ConjTest {
     void testDisj_Factorize_3() {
         assertEq("((||,x,y,z)&&a)", "(||,(a&&x),(a&&y),(a&&z))");
     }
+
     @Test
     void testDisj_Factorize_3_inSeq() {
         assertEq("(w &&+1 ((||,x,y,z)&&a))", "(w &&+1 (||,(a&&x),(a&&y),(a&&z)))");
@@ -2066,10 +2062,34 @@ public class ConjTest {
         assertEq("x", "((a && x)||(--a && x))");
         assertEq("x", "--(--(a && x) && --(--a && x))");
     }
+
     @Test
     void testDisj3() {
 
-        assertEq("TODO", "(||,(a && x),(a && y), --(a&&z))");
+        assertEq("((||,x,y,z)&&a)", "(||,(a && x),(a && y), (a&&z))");
+        assertEq("(||,(a&&x),(a&&y),z)", "(||,(a && x),(a && y), z)");
+        assertEq("a", "(||,(a && x),(a && y), a)");
+        assertEq("((||,x,y,(--,z))&&a)", "(||,(a && x),(a && y), (a&&--z))");
+    }
+    @Test
+    void testDisj4() {
+        {
+            /*
+            0 = {Neg$NegCached@3442} "(--,(a&&x))"
+            1 = {Neg$NegCached@3443} "(--,(a&&y))"
+            2 = {CachedCompound$TemporalCachedCompound@3437} "(a&&z)"
+            */
+        }
+        /* (a and x) or (a and y) or not(a and z) */
+        assertEq("(||,x,y,(--,a),(--,z))", "(||,(a && x),(a && y), --(a&&z))");
+    }
+    @Test
+    void testDisj5() {
+        /* (a and x) or (a and y) or (not (a) and z) =
+              (¬a ∨ x ∨ y) ∧ (a ∨ z)
+              ((||,x,y,(--,a))&&(a||z))
+        * */
+        assertEq("((||,x,y,(--,a))&&(a||z))", "(||,(a && x),(a && y), (--a&&z))");
     }
 
     @Test

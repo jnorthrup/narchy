@@ -1,6 +1,7 @@
 package nars.term.util.conj;
 
 import jcog.data.bit.MetalBitSet;
+import nars.Op;
 import nars.term.Neg;
 import nars.term.Term;
 import nars.term.Terms;
@@ -31,13 +32,16 @@ public enum ConjCommutive {
 
         ConjTree ct = new ConjTree();
         long sdt = (dt == DTERNAL) ? ETERNAL : 0;
+        int remain = xx.length;
         for (int i = xx.length - 1; i >= 0; i--) {
             Term x = xx[i];
-            if (x.unneg().op() != CONJ)
+            if (x.unneg().op() != CONJ) {
+                remain--;
                 if (!ct.add(sdt, x))
                     break;
+            }
         }
-        if (ct.terminal==null) {
+        if (remain > 0 && ct.terminal==null) {
             for (int i = xx.length - 1; i >= 0; i--) {
                 Term x = xx[i];
                 if (x.unneg().op() == CONJ)
@@ -55,7 +59,7 @@ public enum ConjCommutive {
 
     @Nullable
     public static Term disjunctiveFactor(Term[] xx, TermBuilder B) {
-        MetalBitSet cond = null;
+        @Deprecated MetalBitSet cond = null;
         int n = xx.length;
         for (int i = 0, xxLength = n; i < xxLength; i++) {
             Term x = xx[i];
@@ -69,7 +73,8 @@ public enum ConjCommutive {
         }
         if (cond != null) {
             int d = cond.cardinality();
-            if (d > 1) {
+            if (d == n) {
+            //if (d > 1) {
                 ObjectByteHashMap<Term> i = new ObjectByteHashMap(d);
                 int j = -1;
                 for (int k = 0; k < d; k++) {
@@ -82,7 +87,7 @@ public enum ConjCommutive {
                 i.values().removeIf(b -> b < d);
                 if (!i.isEmpty()) {
                     Set<Term> common = i.keySet();
-                    Term factor = CONJ.the(B, DTERNAL, common);
+                    Term factor = B.conj( common.toArray(Op.EmptyTermArray));
 
                     if (factor instanceof Bool)
                         return factor;
@@ -91,10 +96,9 @@ public enum ConjCommutive {
                     j = -1;
                     for (int k = 0; k < d; k++) {
                         j = cond.next(true, j+1, n);
-                        Term dc = xx[j];
-                        xx[j] = B.conj(true, DTERNAL, dc.unneg().subterms().subsIncluding(s -> !common.contains(s))).neg();
+                        xx[j] = B.conj(  xx[j].unneg().subterms().subsIncluding(s -> !common.contains(s))).neg();
                     }
-                    return B.conj(DTERNAL, factor, B.conj(DTERNAL, xx).neg()).neg();
+                    return B.conj( factor, B.conj( xx).neg()).neg();
                 }
             }
         }

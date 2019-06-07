@@ -5,6 +5,7 @@ import jcog.data.list.FasterList;
 import jcog.data.set.ArrayHashSet;
 import nars.subterm.DisposableTermList;
 import nars.term.Compound;
+import nars.term.Neg;
 import nars.term.Term;
 import nars.term.atom.Bool;
 import nars.term.util.builder.TermBuilder;
@@ -47,7 +48,7 @@ public class ConjTree implements ConjBuilder {
             return false;
         }
 
-        if (x.op() == NEG) {
+        if (x instanceof Neg) {
             return addParallelN(x);
         } else {
             return addParallelP(x);
@@ -94,7 +95,7 @@ public class ConjTree implements ConjBuilder {
 
         if (neg != null) {
             p = reducePN(p, neg, false);
-            if (p.op() == NEG)
+            if (p instanceof Neg)
                 return addParallelN(p); //became positive
 
             if (p == True)
@@ -112,7 +113,7 @@ public class ConjTree implements ConjBuilder {
     }
 
     private boolean validatePosNeg(Term what) {
-        if (what.op() == NEG) {
+        if (what instanceof Neg) {
             if (pos != null && pos.contains(what.unneg())) {
                 return false;
             }
@@ -126,7 +127,7 @@ public class ConjTree implements ConjBuilder {
     }
 
     private boolean addParallelN(Term n) {
-        assert (n.op() == NEG);
+        assert (n instanceof Neg);
         Term nu = n.unneg();
 
         if (neg!=null && neg.contains(nu))
@@ -138,13 +139,13 @@ public class ConjTree implements ConjBuilder {
 
         if (neg != null && !(nu instanceof Bool)) {
             nu = reduceNegNeg(nu, neg);
-            if (nu.op() == NEG)
+            if (nu instanceof Neg)
                 return addParallelP(nu.unneg()); //became positive
         }
 
         if (pos != null && !(nu instanceof Bool)) {
             nu = reducePN(nu, pos, true);
-            if (nu.op() == NEG)
+            if (nu instanceof Neg)
                 return addParallelP(nu.unneg()); //became positive
         }
 
@@ -264,6 +265,9 @@ public class ConjTree implements ConjBuilder {
         if (y.contains(x))
             return False; //contradiction
 
+        Term a = x.negIf(!nP_or_pN);
+        Term b = x.negIf(nP_or_pN);
+
         boolean xConj = x.op() == CONJ;
         if (xConj) {
 
@@ -275,15 +279,17 @@ public class ConjTree implements ConjBuilder {
 
                     if (Conj.eventOf(x, yy)) {
                         x = Conj.diffAll(x, yy);
-                        if (x instanceof Bool) return x;
+                        if (x instanceof Bool)
+                            return x;
                     }
 
                 } else {
                     if (Conj.eventOf(x, yy)) {
                         return False; //contradict
                     } else if (Conj.eventOf(x, yy.neg())) {
-                        x = Conj.diffAll(yy, x);
-                        if (x instanceof Bool) return x;
+                        x = Conj.diffAll(x,  yy.neg());
+                        if (x instanceof Bool)
+                            return x;
                     }
 
                 }
@@ -292,25 +298,28 @@ public class ConjTree implements ConjBuilder {
         }
 
 
-        if (!nP_or_pN) {
+        {
+
             FasterList<Term> toAdd = null;
             for (Iterator<Term> iterator = y.iterator(); iterator.hasNext(); ) {
                 Term yy = iterator.next();
-                if (yy.op() == CONJ && yy.containsRecursively(x)) {
-                    if (Conj.eventOf(yy, x.negIf(!nP_or_pN))) {
-                        iterator.remove();
-                    } else if (Conj.eventOf(yy, x)) {
-                        iterator.remove();
-                        if (toAdd == null) toAdd = new FasterList(1);
-                        Term z = Conj.diffAll(yy, x.negIf(nP_or_pN));
-                        if (z == True) {
-                            //ignore
-                        } else if (z == False || z == Null)
-                            return z;
-                        else
-                            toAdd.add(z);
+                if (yy.op() == CONJ) {// && yy.containsRecursively(x)) {
+//                    if (Conj.eventOf(yy, a)) {
+//                        iterator.remove();
+//                    } else {
+                        if (Conj.eventOf(yy, b)) {
+                            iterator.remove();
+                            if (toAdd == null) toAdd = new FasterList(1);
+                            Term z = Conj.diffAll(yy, b);
+                            if (z == True) {
+                                //only remove
+                            } else if (z == False || z == Null)
+                                return z;
+                            else
+                                toAdd.add(z);
 
-                    }
+                        }
+//                    }
 
 
 
@@ -396,7 +405,7 @@ public class ConjTree implements ConjBuilder {
     @Override
     public boolean remove(long at, Term t) {
         if (at == ETERNAL) {
-            boolean n = t.op() == NEG;
+            boolean n = t instanceof Neg;
             return n ? negRemove(t.unneg()) : posRemove(t);
 
         } else {
@@ -441,13 +450,13 @@ public class ConjTree implements ConjBuilder {
 
     @Override
     public int eventOccurrences() {
-        return eventCount(ETERNAL) + (seq != null ? seq.size() : 0);
+        return ((pos!=null || neg!=null) ? 1 : 0) + (seq != null ? seq.size() : 0);
     }
 
     @Override
     public int eventCount(long when) {
         if (when == ETERNAL)
-            return ((pos != null || neg != null) ? 1 : 0);
+            return (pos != null ? pos.size() : 0) + (neg!=null ? neg.size() : 0);
         else {
             if (seq != null) {
                 ConjTree s = seq.get(occToDT(when));
@@ -485,7 +494,7 @@ public class ConjTree implements ConjBuilder {
             throw new UnsupportedOperationException();
 
         boolean removed = false;
-        if (term.op() == NEG) {
+        if (term instanceof Neg) {
             removed |= negRemove(term);
         } else {
             removed |= posRemove(term);

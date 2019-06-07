@@ -9,12 +9,12 @@ import nars.Op;
 import nars.subterm.IntrinSubterms;
 import nars.subterm.SortedSubterms;
 import nars.subterm.Subterms;
+import nars.term.Neg;
 import nars.term.Term;
 import nars.term.anon.Intrin;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
-import nars.term.util.Image;
 import nars.term.util.cache.Intermed;
 import nars.term.util.cache.Intermed.InternedCompoundByComponents;
 import nars.term.util.cache.Intermed.InternedSubterms;
@@ -26,7 +26,6 @@ import java.util.function.Function;
 
 import static nars.Op.*;
 import static nars.time.Tense.DTERNAL;
-import static nars.time.Tense.dtSpecial;
 
 /**
  * intern subterms and compounds.
@@ -278,7 +277,7 @@ public class InterningTermBuilder extends HeapTermBuilder {
             if (!((op == INH || op == SIM) && ((dt!=0) || subject.equals(predicate)))) {
 
                 if (op == IMPL) {
-                    negate = (predicate.op() == NEG);
+                    negate = (predicate instanceof Neg);
                     if (negate)
                         predicate = predicate.unneg();
                 }
@@ -331,13 +330,10 @@ public class InterningTermBuilder extends HeapTermBuilder {
     @Override
     public Term conj(int dt, Term[] u) {
 
-        if (dtSpecial(dt))
-            u = ConjBuilder.preSort(dt, u);
-
         return u.length > 1 && internable(CONJ, dt, u) ?
                 terms[CONJ.id].apply(
-                        new Intermed.InternedCompoundByComponentsArray(CONJ, dt, Image.imageNormalize(u))) :
-                super.conj(true, dt, u);
+                        new Intermed.InternedCompoundByComponentsArray(CONJ, dt, ConjBuilder.preSort(dt,u))) :
+                super.conj(dt, u);
     }
 
 

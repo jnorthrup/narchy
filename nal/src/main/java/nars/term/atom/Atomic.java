@@ -5,6 +5,7 @@ import nars.$;
 import nars.Op;
 import nars.subterm.Subterms;
 import nars.term.Compound;
+import nars.term.Neg;
 import nars.term.Term;
 import nars.term.Termlike;
 import nars.term.util.transform.Retemporalize;
@@ -20,7 +21,6 @@ import java.util.function.Predicate;
 
 import static java.lang.Integer.MIN_VALUE;
 import static nars.Op.EmptySubterms;
-import static nars.Op.NEG;
 import static nars.term.atom.Bool.Null;
 
 
@@ -102,7 +102,7 @@ public interface Atomic extends Term {
 
     @Override
     default boolean equalsNeg(Term t) {
-        return t.op() == NEG && equals(t.unneg());
+        return t instanceof Neg && equals(t.unneg());
     }
 
     @Override

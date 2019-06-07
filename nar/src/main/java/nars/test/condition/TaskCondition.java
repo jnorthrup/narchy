@@ -8,6 +8,7 @@ import nars.Op;
 import nars.Task;
 import nars.control.MetaGoal;
 import nars.task.Tasked;
+import nars.term.Neg;
 import nars.term.Term;
 import nars.truth.Truth;
 import nars.truth.Truthed;
@@ -21,7 +22,6 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 import static java.lang.Float.NaN;
-import static nars.Op.NEG;
 
 /**
  * TODO evolve this into a generic tool for specifying constraints and conditions
@@ -169,7 +169,7 @@ abstract public class TaskCondition implements NARCondition, Predicate<Task>, Co
 
             this.similar = new RankedN<>(new Task[maxSimilars], this::value);
 
-            if (term.op() == NEG) {
+            if (term instanceof Neg) {
                 term = term.unneg();
                 freqMax = 1f - freqMax;
                 freqMin = 1f - freqMin;

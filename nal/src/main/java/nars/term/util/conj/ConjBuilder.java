@@ -25,6 +25,8 @@ public interface ConjBuilder {
 
     static Term[] preSort(int dt, Term[] u) {
 
+        u = Image.imageNormalize(u);
+
         switch (dt) {
             case 0:
             case DTERNAL:

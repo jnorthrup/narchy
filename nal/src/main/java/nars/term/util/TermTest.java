@@ -20,12 +20,10 @@ import com.google.common.collect.Iterators;
 import jcog.data.list.FasterList;
 import nars.$;
 import nars.Narsese;
+import nars.Op;
 import nars.io.IO;
 import nars.subterm.Subterms;
-import nars.term.Compound;
-import nars.term.Term;
-import nars.term.Termed;
-import nars.term.Termlike;
+import nars.term.*;
 import nars.term.atom.Bool;
 import nars.term.util.builder.TermBuilder;
 import org.jetbrains.annotations.NotNull;
@@ -34,6 +32,7 @@ import org.junit.jupiter.api.Assertions;
 import java.util.List;
 
 import static nars.$.$$;
+import static nars.Op.NEG;
 import static nars.Op.PROD;
 import static nars.time.Tense.DTERNAL;
 import static org.junit.jupiter.api.Assertions.*;
@@ -66,6 +65,7 @@ public enum TermTest { ;
 
     public static Term assertEq(Term x, Term y) {
 
+
         //noinspection RedundantCast
         assertEq((Termlike)x, ((Termlike)y));
 
@@ -75,7 +75,13 @@ public enum TermTest { ;
         assertEquals(0, y.compareTo(y));
 
 
-        assertEquals(x.op(), y.op());
+        Op xo = x.op();
+        assertEquals(xo, y.op());
+        if (xo ==NEG) {
+            assertTrue(x instanceof Neg);
+            assertTrue(y instanceof Neg);
+        }
+
         assertEquals(x.opBit(), y.opBit());
         assertEquals(x.subs(), y.subs());
 

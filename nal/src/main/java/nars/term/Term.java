@@ -640,9 +640,9 @@ public interface Term extends Termlike, Termed, Comparable<Term> {
     default boolean equalsNeg(Term t) {
         if (this == t) {
             return false;
-        } else if (t.op() == NEG) {
+        } else if (t instanceof Neg) {
             return equals(t.unneg());
-        } else if (op() == NEG) {
+        } else if (this instanceof Neg) {
             return unneg().equals(t);
         } else {
             return false;

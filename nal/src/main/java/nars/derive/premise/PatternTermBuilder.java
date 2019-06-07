@@ -1,6 +1,7 @@
 package nars.derive.premise;
 
 import nars.term.Compound;
+import nars.term.Neg;
 import nars.term.Term;
 import nars.term.compound.PatternCompound;
 import nars.term.util.transform.AbstractTermTransform;
@@ -9,7 +10,6 @@ import nars.term.var.ellipsis.Ellipsis;
 import nars.term.var.ellipsis.Ellipsislike;
 import org.jetbrains.annotations.Nullable;
 
-import static nars.Op.NEG;
 import static nars.term.var.ellipsis.Ellipsis.firstEllipsis;
 
 /**
@@ -70,7 +70,7 @@ public enum PatternTermBuilder /* implements TermBuilder ? */ { ;
             x = (Compound) _x;
 
             Term xx;
-            boolean neg = x.op() == NEG;
+            boolean neg = x instanceof Neg;
             if (neg)
                 xx = x.unneg();
             else xx = x;

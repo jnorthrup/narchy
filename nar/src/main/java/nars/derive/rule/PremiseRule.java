@@ -169,11 +169,11 @@ public class PremiseRule extends ProxyTerm {
         this.taskPattern = a;
         this.beliefPattern = b;
 
-        if (taskPattern.op() == NEG)
+        if (taskPattern instanceof Neg)
             throw new TermException("task pattern can never be NEG", taskPattern);
         if (taskPattern.op() != VAR_PATTERN && !taskPattern.op().taskable)
             throw new TermException("task pattern is not taskable", taskPattern);
-        if (beliefPattern.op() == NEG)
+        if (beliefPattern instanceof Neg)
             throw new TermException("belief pattern can never be NEG", beliefPattern);
         if (beliefPattern.op() == Op.ATOM)
             throw new TermException("belief target must contain no atoms", beliefPattern);
@@ -189,7 +189,7 @@ public class PremiseRule extends ProxyTerm {
 
             Term p = precon[i];
 
-            boolean negated = p.op() == NEG;
+            boolean negated = p instanceof Neg;
             boolean negationApplied = false; //safety check to make sure semantic of negation was applied by the handler
             if (negated)
                 p = p.unneg();
@@ -256,14 +256,14 @@ public class PremiseRule extends ProxyTerm {
 
                     if (pred.startsWith("sub"))
 
-                        if (Y.op() == NEG) {
+                        if (Y instanceof Neg) {
                             YY = (Variable) (Y = Y.unneg());
                             mode = SubtermNeg;
                         } else
                             mode = Subterm;
                     else {
 
-                        if (Y.op() == NEG) {
+                        if (Y instanceof Neg) {
                             YY = (Variable) (Y = Y.unneg());
                             mode = SubsectNeg;
                         } else
@@ -309,7 +309,7 @@ public class PremiseRule extends ProxyTerm {
 
                 case "in":
                     neq(XX, Y.unneg());
-                    constraints.add(new SubOfConstraint(XX, ((Variable) Y.unneg()), Recursive, Y.op() == NEG ? -1 : +1));
+                    constraints.add(new SubOfConstraint(XX, ((Variable) Y.unneg()), Recursive, Y instanceof Neg ? -1 : +1));
                     break;
 
                 case "conjParallel":
@@ -1204,7 +1204,7 @@ public class PremiseRule extends ProxyTerm {
 
     private void neq(Variable x, Term y) {
 
-        if (y.op() == NEG && y.unneg() instanceof Variable) {
+        if (y instanceof Neg && y.unneg() instanceof Variable) {
             constraints.add(new NotEqualConstraint.EqualNegConstraint(x, (Variable) (y.unneg())).neg());
         } else if (y instanceof Variable) {
             constraints.add(new NotEqualConstraint(x, (Variable) y));

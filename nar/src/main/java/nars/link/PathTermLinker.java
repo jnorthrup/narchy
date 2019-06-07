@@ -4,6 +4,7 @@ import jcog.data.list.FasterList;
 import nars.NAL;
 import nars.Op;
 import nars.term.Compound;
+import nars.term.Neg;
 import nars.term.Term;
 import nars.term.var.Img;
 import org.eclipse.collections.impl.list.mutable.primitive.ByteArrayList;
@@ -12,7 +13,6 @@ import java.util.Random;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
-import static nars.Op.NEG;
 import static nars.link.TemplateTermLinker.layers;
 
 
@@ -72,7 +72,7 @@ public final class PathTermLinker extends FasterList<byte[]> implements TermLink
 
         path.add(index);
 
-        boolean neg = x.op() == NEG;
+        boolean neg = x instanceof Neg;
         if (neg) {
             x = x.unneg();
             path.add((byte) 0);

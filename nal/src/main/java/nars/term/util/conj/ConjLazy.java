@@ -1,6 +1,5 @@
 package nars.term.util.conj;
 
-import jcog.WTF;
 import jcog.data.set.LongObjectArraySet;
 import nars.NAL;
 import nars.subterm.DisposableTermList;
@@ -240,13 +239,16 @@ public class ConjLazy extends LongObjectArraySet<Term> implements ConjBuilder {
         if (u < 2)
             return;
 
+
         UnifiedMap<Term, RoaringBitmap> count = new UnifiedMap(n);
-        for (int i = 0; i < n; i++) {
+        for (int i = 0; i < n; i++)
             count.getIfAbsentPut(get(i), RoaringBitmap::new).add(Tense.occToDT(when(i)));
-        }
+
+        if (count.allSatisfy(t->t.getCardinality()==u))
+            return; //completely annihilates everything
 
 
-        TermList toDistribute = new TermList();
+        TermList toDistribute = new TermList(n);
         if (!count.keyValuesView().allSatisfy((xcc) -> {
             Term x = xcc.getOne();
             RoaringBitmap cc = xcc.getTwo();
@@ -321,7 +323,7 @@ public class ConjLazy extends LongObjectArraySet<Term> implements ConjBuilder {
             } else {
                 if (i > start) {
 
-                    Term x = subcommute(B, start, i + 1);
+                    Term x = B.conj(Arrays.copyOfRange(array(), start, i + 1));
                     if (x == True) {
                         //handled below HACK
                     } else if (!x.op().eventable) {
@@ -346,19 +348,6 @@ public class ConjLazy extends LongObjectArraySet<Term> implements ConjBuilder {
         }
 
 
-    }
-
-    private Term subcommute(TermBuilder B, int from, int to) {
-        if (to <= from+1)
-            throw new WTF(); //assert(to > from+1);
-        //next time
-        Term[] t = Arrays.copyOfRange(array(), from, to);
-        Arrays.sort(t); //items will be unique, so this is faster than ordinary Term commute which must deduplicate also
-
-
-
-        Term tt = B.conj(true, DTERNAL, t);
-        return tt;
     }
 
     @Nullable

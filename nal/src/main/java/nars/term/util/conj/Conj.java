@@ -8,6 +8,7 @@ import jcog.util.ArrayUtil;
 import nars.NAL;
 import nars.subterm.Subterms;
 import nars.term.Compound;
+import nars.term.Neg;
 import nars.term.Term;
 import nars.term.Terms;
 import nars.term.util.builder.TermBuilder;
@@ -19,10 +20,10 @@ import org.eclipse.collections.api.block.procedure.primitive.ByteProcedure;
 import org.roaringbitmap.ImmutableBitmapDataProvider;
 import org.roaringbitmap.RoaringBitmap;
 
-import java.util.*;
+import java.util.Random;
+import java.util.SortedSet;
 
 import static nars.Op.CONJ;
-import static nars.Op.NEG;
 import static nars.term.atom.Bool.*;
 import static nars.time.Tense.*;
 
@@ -504,7 +505,7 @@ public enum Conj  { ;
         if (include.equals(exclude) || (excludeNeg && include.equalsNeg(exclude)))
             return True;
 
-        if (autoNeg && include.op() == NEG) {
+        if (autoNeg && include instanceof Neg) {
             Term y = diffAll(include.unneg(), exclude, false, excludeNeg);
             return y == True ? True : y.neg();
         }

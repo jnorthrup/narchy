@@ -3,11 +3,14 @@ package nars.term.util;
 import nars.NAL;
 import nars.Op;
 import nars.term.Compound;
+import nars.term.Neg;
 import nars.term.Term;
 import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
 import nars.term.util.builder.TermBuilder;
-import nars.term.util.conj.*;
+import nars.term.util.conj.Conj;
+import nars.term.util.conj.ConjLazy;
+import nars.term.util.conj.ConjSeq;
 import nars.term.var.ellipsis.Ellipsis;
 import nars.time.Tense;
 
@@ -79,7 +82,7 @@ public class Statement {
         boolean negate = false;
 
         if (op == IMPL) {
-            if (predicate.op() == NEG) {
+            if (predicate instanceof Neg) {
                 predicate = predicate.unneg();
                 negate = !negate;
             }
@@ -229,8 +232,8 @@ public class Statement {
 
         if (NAL.term.INH_CLOSED_BOOLEAN_DUALITY_MOBIUS_PARADIGM) {
             if (op == INH /*|| op == SIM*/) {
-                boolean sn = subject.op() == NEG && !subject.unneg().op().isAny(mobiusExcept);
-                boolean pn = predicate.op() == NEG && !predicate.unneg().op().isAny(mobiusExcept);
+                boolean sn = subject instanceof Neg && !subject.unneg().op().isAny(mobiusExcept);
+                boolean pn = predicate instanceof Neg && !predicate.unneg().op().isAny(mobiusExcept);
 //                if (!sn && !pn) {
 //                    //normal
 //                } else if (sn && pn) {

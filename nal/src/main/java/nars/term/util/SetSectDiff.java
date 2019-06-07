@@ -6,6 +6,7 @@ import nars.$;
 import nars.Op;
 import nars.subterm.Subterms;
 import nars.subterm.TermList;
+import nars.term.Neg;
 import nars.term.Term;
 import nars.term.atom.Bool;
 import nars.term.util.builder.TermBuilder;
@@ -156,7 +157,7 @@ public class SetSectDiff {
         if (x.equals(y))
             return x;
 
-        boolean xNeg = x.op() == NEG, yNeg = y.op() == NEG;
+        boolean xNeg = x instanceof Neg, yNeg = y instanceof Neg;
         if ((xNeg ^ yNeg) && x.unneg().equals(y.unneg()))
             return union ? x : Null;
 
