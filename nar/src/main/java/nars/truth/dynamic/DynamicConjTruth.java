@@ -10,10 +10,7 @@ import nars.subterm.Subterms;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.Termed;
-import nars.term.util.conj.Conj;
-import nars.term.util.conj.ConjBuilder;
-import nars.term.util.conj.ConjSeq;
-import nars.term.util.conj.ConjTree;
+import nars.term.util.conj.*;
 import nars.time.Tense;
 
 import java.util.concurrent.ThreadLocalRandom;
@@ -57,9 +54,8 @@ public class DynamicConjTruth {
             }
 
             ConjBuilder l =
-                    //new ConjLazy(n);
-                    //new Conj(n);
-                    new ConjTree();
+                    new ConjList(n);
+
             for (int i = 0; i < n; i++) {
                 Task t = d.get(i);
                 long s = t.start();

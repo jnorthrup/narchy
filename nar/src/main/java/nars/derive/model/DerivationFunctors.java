@@ -9,6 +9,7 @@ import nars.op.SetFunc;
 import nars.subterm.Subterms;
 import nars.term.Compound;
 import nars.term.Functor;
+import nars.term.Neg;
 import nars.term.Term;
 import nars.term.atom.Atomic;
 import nars.term.functor.AbstractInlineFunctor1;
@@ -23,7 +24,6 @@ import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 import java.util.Map;
 import java.util.function.Function;
 
-import static nars.Op.NEG;
 import static nars.term.atom.Bool.Null;
 
 public enum DerivationFunctors {
@@ -94,7 +94,7 @@ public enum DerivationFunctors {
                     @Override
                     protected Term apply1(Term _arg) {
 
-                        boolean neg = (_arg.op()==NEG);
+                        boolean neg = _arg instanceof Neg;
                         Term arg = neg ? _arg.unneg() : _arg;
 
                         if(!(arg instanceof Compound))

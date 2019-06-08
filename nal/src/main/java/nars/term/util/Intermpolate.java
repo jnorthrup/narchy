@@ -7,11 +7,11 @@ import nars.NAL;
 import nars.Op;
 import nars.subterm.Subterms;
 import nars.term.Compound;
+import nars.term.Neg;
 import nars.term.Term;
 import nars.time.Tense;
 
 import static nars.Op.CONJ;
-import static nars.Op.NEG;
 import static nars.term.atom.Bool.Null;
 import static nars.time.Tense.DTERNAL;
 import static nars.time.Tense.XTERNAL;
@@ -174,7 +174,7 @@ public enum Intermpolate {;
     private static float dtDiff(Term a, Term b, int depth) {
         if (a.equals(b))
             return 0f;
-        if (a.op()==NEG && b.op()==NEG) {
+        if (a instanceof Neg && b instanceof Neg) {
             a = a.unneg();
             b = b.unneg();
         }

@@ -9,7 +9,7 @@ import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
 import nars.term.util.builder.TermBuilder;
 import nars.term.util.conj.Conj;
-import nars.term.util.conj.ConjLazy;
+import nars.term.util.conj.ConjList;
 import nars.term.util.conj.ConjSeq;
 import nars.term.var.ellipsis.Ellipsis;
 import nars.time.Tense;
@@ -144,7 +144,7 @@ public class Statement {
 
                     //subtract any common subject components from predicate
                     Term newPred;
-                    ConjLazy newPredConj = ConjLazy.events(predicate, po);
+                    ConjList newPredConj = ConjList.events(predicate, po);
                     int removed =
                         newPredConj.removeAll(subject.unneg(), 0, subject.op()!=NEG);
                     switch (removed) {
@@ -185,7 +185,7 @@ public class Statement {
 
                         }
 
-                        if (newPred.op()==NEG) { //attempt to exit infinite loop of negations
+                        if (newPred instanceof Neg) { //attempt to exit infinite loop of negations
                             newPred = newPred.unneg();
                             negate = !negate;
                         }

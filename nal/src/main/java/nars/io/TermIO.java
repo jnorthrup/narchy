@@ -10,6 +10,7 @@ import nars.subterm.IntrinSubterms;
 import nars.subterm.RemappedSubterms;
 import nars.subterm.Subterms;
 import nars.term.Compound;
+import nars.term.Neg;
 import nars.term.Term;
 import nars.term.anon.Anom;
 import nars.term.atom.Atomic;
@@ -29,6 +30,7 @@ import static nars.Op.NEG;
 import static nars.io.IO.SPECIAL_BYTE;
 import static nars.io.IO.subType;
 import static nars.term.anon.Intrin._term;
+import static nars.term.atom.Bool.Null;
 import static nars.time.Tense.DTERNAL;
 import static nars.time.Tense.XTERNAL;
 
@@ -95,7 +97,7 @@ public interface TermIO {
                     byte code = in.readByte();
                     switch (code) {
                         case -1:
-                            return Bool.Null;
+                            return Null;
                         case 0:
                             return Bool.False;
                         case 1:
@@ -152,12 +154,14 @@ public interface TermIO {
 
         @Override
         public void write(Term t, ByteArrayDataOutput out) {
-            if (t.op()==NEG) {
+            if (t instanceof Neg) {
                 out.writeByte(NEG.id);
                 t = t.unneg();
             }
 
             if (t instanceof Atomic) {
+                if (t == Null)
+                    throw new NullPointerException("null");
                 out.write(((Atomic) t).bytes());
             } else {
                 Op o = t.op();

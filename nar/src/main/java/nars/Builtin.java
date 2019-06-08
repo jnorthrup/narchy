@@ -120,7 +120,7 @@ public class Builtin {
                 protected Term apply(Term conj, Term event) {
                     Term x = Conj.diffAll(conj, event);
                     if (!(x instanceof Bool)) {
-                        if (event.op()==NEG || x.hasAny(NEG))
+                        if (event instanceof Neg || x.hasAny(NEG))
                             x = Conj.diffAll(x, event.neg());
                     }
 

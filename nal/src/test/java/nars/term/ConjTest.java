@@ -449,8 +449,17 @@ public class ConjTest {
         for (int i : new int[]{XTERNAL, 0, DTERNAL}) {
             assertEquals("x", CONJ.the(i, $.the("x"), Bool.True).toString());
             assertEquals(False, CONJ.the(i, $.the("x"), False));
-            assertEquals(Null, CONJ.the(i, $.the("x"), Null));
+            assertThrows(Throwable.class, ()-> CONJ.the(i, $.the("x"), Null));
         }
+    }
+
+    @Test void testParallelValid3() {
+        /*  (a or not(z)) and not(a and x) and not(a and y)
+        *   DNF | (a ∧ ¬x ∧ ¬y) ∨ (¬a ∧ ¬z)
+            CNF | (¬a ∨ ¬x) ∧ (¬a ∨ ¬y) ∧ (a ∨ ¬z)
+        *  */
+        assertEq("(&&,(a||(--,z)),(--,(a&&x)),(--,(a&&y)))",
+                $$("(&&,(a||(--,z)),(--,(a&&x)),(--,(a&&y)))"));
     }
 
     @Test
@@ -593,7 +602,7 @@ public class ConjTest {
     void testConjParallelsMixture2() {
         assertEq("(b ==>+1 (a&&x))", $$("(b ==>+1 (a&&x))"));
 
-        ConjLazy c = new ConjLazy();
+        ConjList c = new ConjList();
 
         c.add(0L, x);
 
@@ -820,7 +829,7 @@ public class ConjTest {
 
     @Test
     void testConjLazyRemoveIf() {
-        ConjLazy c = ConjLazy.events($$("((&|,c,f) &&+1 g)"));
+        ConjList c = ConjList.events($$("((&|,c,f) &&+1 g)"));
         assertEquals(3, c.size());
 
         assertFalse(
@@ -1557,7 +1566,7 @@ public class ConjTest {
     @Test
     void testConjLazyEvents() {
         Term t = $$("(((((--,(tetris-->left))&&(--,(tetris-->rotate))) &&+43 (tetris-->left))&&(--,(tetris-->right))) &&+217 (tetris-->left))");
-        ConjLazy c = ConjLazy.events(t);
+        ConjList c = ConjList.events(t);
         System.out.println(c);
         assertEquals(6, c.size());
         assertEquals(260, c.when(5));
@@ -2166,7 +2175,7 @@ public class ConjTest {
     void stupidDisjReduction() {
         Term x = $$("((right||rotate)&&rotate)");
         assertEq("rotate", x);
-        Term y = ConjCommutive.the(Op.terms, DTERNAL, true,
+        Term y = CONJ.the(DTERNAL,
                 $$("(right||rotate)"), $$("rotate"));
         assertEq("rotate", y);
     }

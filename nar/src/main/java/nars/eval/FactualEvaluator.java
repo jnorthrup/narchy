@@ -7,6 +7,7 @@ import nars.NAR;
 import nars.Narsese;
 import nars.term.Compound;
 import nars.term.Functor;
+import nars.term.Neg;
 import nars.term.Term;
 import nars.term.atom.Atom;
 import nars.unify.Unify;
@@ -18,7 +19,8 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
-import static nars.Op.*;
+import static nars.Op.CONJ;
+import static nars.Op.IMPL;
 import static nars.time.Tense.DTERNAL;
 import static nars.time.Tense.XTERNAL;
 
@@ -244,7 +246,7 @@ public class FactualEvaluator extends Evaluator {
         u.commonVariables = false;
         factResolver.apply(x.normalize()).forEach(y -> {
 
-            boolean neg = y.op()==NEG;
+            boolean neg = y instanceof Neg;
             if (neg) y = y.unneg();
 
             //TODO neg, temporal

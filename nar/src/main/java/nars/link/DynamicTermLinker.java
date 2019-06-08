@@ -9,7 +9,7 @@ import nars.term.Term;
 import nars.term.atom.Atomic;
 import nars.term.compound.SeparateSubtermsCompound;
 import nars.term.util.conj.Conj;
-import nars.term.util.conj.ConjLazy;
+import nars.term.util.conj.ConjList;
 import nars.term.var.Img;
 
 import java.util.Random;
@@ -103,7 +103,7 @@ public abstract class DynamicTermLinker implements TermLinker {
         @Override
         protected Term choose(Subterms _s, int n, Term parent, Random rng) {
             if (parent.op()==CONJ && _s.hasAny(CONJ) && Conj.isSeq(parent) && rng.nextBoolean()) {
-                _s = ConjLazy.events(parent).asSubterms(false);
+                _s = ConjList.events(parent).asSubterms(false);
             }
             Subterms s = _s;
             return s.sub(Roulette.selectRoulette(n, i -> s.subFloat(i, this::subValue) , rng));

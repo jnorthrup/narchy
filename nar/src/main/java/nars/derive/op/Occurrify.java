@@ -7,6 +7,7 @@ import nars.Task;
 import nars.derive.model.Derivation;
 import nars.derive.model.DerivationFailure;
 import nars.term.Compound;
+import nars.term.Neg;
 import nars.term.Term;
 import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
@@ -97,7 +98,7 @@ public class Occurrify extends TimeGraph {
 
         boolean neg = false;
         Term xx = x;
-        if (x.op()==NEG && (!d.taskTerm.hasAny(NEG) && !d.beliefTerm.hasAny(NEG))) {
+        if (x instanceof Neg && (!d.taskTerm.hasAny(NEG) && !d.beliefTerm.hasAny(NEG))) {
             //HACK semi-auto-unneg to help occurrify
             x = x.unneg();
             neg = true;

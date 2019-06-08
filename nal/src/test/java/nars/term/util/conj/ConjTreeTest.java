@@ -72,12 +72,21 @@ class ConjTreeTest {
         t.add(ETERNAL, $$("--(--y &&+1 --x)"));
         assertEq(x, t.term());
     }
+
     @Test
     void testDisjReductionOutwardCancel() {
-        ConjTree t = new ConjTree();
-        t.add(ETERNAL, x);
-        t.add(ETERNAL, $$("--(--y &&+1 x)"));
-        assertEq("(x&&y)", t.term());
+
+        /* (not(not(y) and x) and x) */
+        assertEq("(x&&y)", "(--(--y && x) && x)");
+
+        assertEq("(x&&y)", "(--(--y &&+1 x) && x)");
+
+        {
+            ConjTree t = new ConjTree();
+            t.add(ETERNAL, x);
+            t.add(ETERNAL, $$("--(--y &&+1 x)"));
+            assertEq("(x&&y)", t.term());
+        }
     }
 
     @Test

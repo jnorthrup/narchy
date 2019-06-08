@@ -2,6 +2,7 @@ package nars.unify.constraint;
 
 import jcog.WTF;
 import nars.$;
+import nars.term.Neg;
 import nars.term.Term;
 import nars.term.Variable;
 import nars.term.atom.Atom;
@@ -22,7 +23,7 @@ abstract public class RelationConstraint<U extends Unify> extends UnifyConstrain
         super(id, x);
         assert(!x.equals(y));
         this.y = y;
-        this.yNeg = y.op()==NEG;
+        this.yNeg = y instanceof Neg;
     }
 
     @Deprecated RelationConstraint(String func, Variable x, Variable y, Term... args) {

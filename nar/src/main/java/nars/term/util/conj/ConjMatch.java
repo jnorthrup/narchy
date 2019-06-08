@@ -51,7 +51,7 @@ public enum ConjMatch { ;
 
         //sequence or commutive
 
-        ConjLazy x = events(conj, beforeOrAfter);
+        ConjList x = events(conj, beforeOrAfter);
 
         int n = x.size();
         if (n <= 1)
@@ -67,7 +67,7 @@ public enum ConjMatch { ;
 
         } else {
             //remove matching parallel/sequence conjunctions
-            ConjLazy y = events(event, beforeOrAfter);
+            ConjList y = events(event, beforeOrAfter);
 
             if (NAL.DEBUG && y.size() <= 1)
                 throw new WTF(); //??? what does this mean
@@ -197,7 +197,7 @@ public enum ConjMatch { ;
                             boolean includeMatched = false; //TODO can be a parameter
                             long xTime = x.when(matchUnify);
 
-                            ConjLazy y = new ConjLazy(x.size());
+                            ConjList y = new ConjList(x.size());
                             for (int j = 0; j < n; j++) {
                                 if (matchUnify == j && !includeMatched) continue; //skip the matched event
                                 long jw = x.when(j);
@@ -229,15 +229,15 @@ public enum ConjMatch { ;
         return Null;
     }
 
-    private static ConjLazy events(Term conj, boolean beforeOrAfter) {
-        ConjLazy x = ConjLazy.events(conj);
+    private static ConjList events(Term conj, boolean beforeOrAfter) {
+        ConjList x = ConjList.events(conj);
         if (!beforeOrAfter)
             x.reverse(); //match from opposite direction
         return x;
     }
 
     /** removes one matching event at random */
-    private static boolean removeAny(Term event, ConjLazy x, long[] matchedTime, Random random) {
+    private static boolean removeAny(Term event, ConjList x, long[] matchedTime, Random random) {
 
         int s = x.size();
         int i = random.nextInt(s);

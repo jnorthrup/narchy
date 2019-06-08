@@ -322,7 +322,7 @@ public class PremiseRule extends ProxyTerm {
 
                     boolean yNeg = pred.endsWith("Neg");
 
-                    if (Y.op()==NEG) {
+                    if (Y instanceof Neg) {
                         Y = Y.unneg();
                         YY = (Variable)Y;
                         yNeg = !yNeg;

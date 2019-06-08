@@ -3,7 +3,7 @@ package nars.unify.constraint;
 import nars.term.Term;
 import nars.term.Variable;
 import nars.term.util.conj.Conj;
-import nars.term.util.conj.ConjLazy;
+import nars.term.util.conj.ConjList;
 import nars.unify.Unify;
 import org.jetbrains.annotations.Nullable;
 
@@ -39,7 +39,7 @@ public final class CommonSubEventConstraint extends RelationConstraint {
             return y.subterms().containsAny(x.subterms());
         } else {
 
-            ConjLazy xe = ConjLazy.events(x);
+            ConjList xe = ConjList.events(x);
 
             //return !scan(yy, (when, what) -> !xe.remove(when, what));
             return !y.eventsWhile((when,what)->!xe.remove(when,what),

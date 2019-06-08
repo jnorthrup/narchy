@@ -3,6 +3,7 @@ package nars.subterm;
 import jcog.WTF;
 import jcog.util.ArrayUtil;
 import nars.term.Compound;
+import nars.term.Neg;
 import nars.term.Term;
 
 import java.util.Arrays;
@@ -24,14 +25,14 @@ abstract public class RemappedSubterms<S extends Subterms> extends MappedSubterm
         byte[] m = new byte[target.length];
         for (int i = 0, xLength = target.length; i < xLength; i++) {
             Term xi = target[i];
-            boolean neg = (xi.op()==NEG);
+            boolean neg = (xi instanceof Neg);
             if (neg) xi = xi.unneg();
 
             int mi = base.indexOf(xi)+1;
 
-            if (mi <= 0) {
+            if (mi <= 0)
                 throw new WTF(xi + "not found in " + base + ", base.class=" + base.getClass() + " target.xi.class=" + xi.getClass());
-            }
+
 
             m[i] = (byte) (neg ? -mi : mi);
         }

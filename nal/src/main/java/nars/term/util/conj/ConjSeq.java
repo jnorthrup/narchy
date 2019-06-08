@@ -11,7 +11,6 @@ import nars.term.Neg;
 import nars.term.Term;
 import nars.term.atom.Bool;
 import nars.term.util.Image;
-import nars.term.util.TermException;
 import nars.term.util.builder.TermBuilder;
 import nars.time.Tense;
 
@@ -25,15 +24,6 @@ import static nars.time.Tense.*;
 /** utilities for working with conjunction sequences (raw sequences, and factored sequences) */
 public enum ConjSeq { ;
 
-    /** TODO TermBuilder */
-    public static Term sequence(TermBuilder B, int dt, Term[] u) {
-        if (u.length != 2)
-            throw new TermException("temporal conjunction with n!=2 subterms", CONJ, dt, u);
-
-        return (dt >= 0) ?
-                sequence(u[0], 0, u[1], +dt + u[0].eventRange(), B) :
-                sequence(u[1], 0, u[0], -dt + u[1].eventRange(), B);
-    }
 
     /** TODO make method of B: TermBuilder.conjSequence(..) */
     static public Term sequence(Term a, long aStart, Term b, long bStart, TermBuilder B) {

@@ -2,7 +2,6 @@ package nars.term.util.conj;
 
 import jcog.TODO;
 import jcog.WTF;
-import jcog.data.bit.MetalBitSet;
 import jcog.data.list.FasterList;
 import jcog.util.ArrayUtil;
 import nars.NAL;
@@ -397,7 +396,7 @@ public enum Conj  { ;
             case NEG:
                 return negateEvents(x.unneg()).neg();
             case CONJ: {
-                ConjBuilder c = ConjLazy.events(x);
+                ConjBuilder c = ConjList.events(x);
                 c.negateEvents();
                 return c.term();
             }
@@ -544,14 +543,14 @@ public enum Conj  { ;
                 return removeComm(include, exclude); //simple raw equality test
 
             //fast 2-ary test
-            ConjLazy ee = ConjLazy.events(exclude);
+            ConjList ee = ConjList.events(exclude);
             if (ee.size() == 2 && ee.when(0) == 0) {
                 //ee.sortThis();
                 boolean modified = false;
                 Term eeFirst = ee.get(0);
                 Term eeSecond = ee.get(1);
                 int dt = Tense.occToDT(ee.when(1) - ee.when(0));
-                ConjLazy ii = ConjLazy.events(include);
+                ConjList ii = ConjList.events(include);
                 int clipStart = -1;
                 do {
                     clipStart = ii.indexOf(clipStart, eeFirst::equals);
@@ -608,7 +607,7 @@ public enum Conj  { ;
 
             ConjBuilder ii =
                     //Conj.events(include);
-                    ConjLazy.events(include);
+                    ConjList.events(include);
 
             boolean[] removedSomething = new boolean[]{false};
 
@@ -1369,7 +1368,7 @@ public enum Conj  { ;
 
     public static ConjBuilder diff(Term include, long includeAt, Term exclude, long excludeAt) {
 
-        return ConjLazy.subtract(ConjLazy.events(include,includeAt), exclude, excludeAt);
+        return ConjList.subtract(ConjList.events(include,includeAt), exclude, excludeAt);
 //        boolean eNeg = exclude.op() == NEG;
 //        return the(include, includeAt, eNeg ? exclude.unneg() : exclude, excludeAt, eNeg);
     }

@@ -13,18 +13,28 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Set;
 
 import static nars.Op.CONJ;
-import static nars.term.atom.Bool.True;
+import static nars.term.atom.Bool.*;
 import static nars.time.Tense.*;
 
 /**
  * utilities for working with commutive conjunctions (DTERNAL, parallel, and XTERNAL)
  */
-public enum ConjCommutive {
+public enum ConjPar {
     ;
 
     public static Term the(TermBuilder B, int dt, boolean sort, Term... xx) {
         if (xx.length == 1)
             return xx[0];
+        else if (xx.length == 2) {
+            //fast 2-ary non-conj case
+            Term a = xx[0], b = xx[1];
+            if (a == Null || b == Null) return Null;
+            if (!a.hasAny(CONJ.bit) && !b.hasAny(CONJ.bit)) {
+                if (a.equals(b)) return a;
+                if (a.equalsNeg(b)) return False;
+                return B.newCompound(CONJ, DTERNAL, Terms.commute(xx));
+            }
+        }
 
         Term d = disjunctiveFactor(xx, B);
         if (d!=null)
@@ -80,8 +90,16 @@ public enum ConjCommutive {
                 for (int k = 0; k < d; k++) {
                     j = cond.next(true, j+1, n);
                     Term dc = xx[j];
-                    for (Term ct : dc.unneg().subterms())
-                        i.addToValue(ct, (byte)1);
+                    for (Term ct : dc.unneg().subterms()) {
+                        Term ctn = ct.neg();
+                        if (i.containsKey(ctn)) {
+                            //disqualify both permanently since factoring them would cancel each other out
+                            i.put(ct, Byte.MIN_VALUE);
+                            i.put(ctn, Byte.MIN_VALUE);
+                        } else {
+                            i.updateValue(ct, (byte) 0, (v) -> (v >= 0) ? (byte) (v + 1) : v);
+                        }
+                    }
 
                 }
                 i.values().removeIf(b -> b < d);

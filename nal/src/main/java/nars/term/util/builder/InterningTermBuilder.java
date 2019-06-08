@@ -25,6 +25,7 @@ import java.util.UUID;
 import java.util.function.Function;
 
 import static nars.Op.*;
+import static nars.term.atom.Bool.Null;
 import static nars.time.Tense.DTERNAL;
 
 /**
@@ -243,6 +244,11 @@ public class InterningTermBuilder extends HeapTermBuilder {
     }
 
     private boolean internable(Term[] subterms) {
+        for (Term x : subterms) {
+            if (x == Null)
+                return false;
+        }
+
         int volRemain = volInternedMax - subterms.length;
         for (Term x : subterms) {
             if ((volRemain -= x.volume()) < 0)
@@ -330,10 +336,12 @@ public class InterningTermBuilder extends HeapTermBuilder {
     @Override
     public Term conj(int dt, Term[] u) {
 
+        u = ConjBuilder.preSort(dt,u);
+
         return u.length > 1 && internable(CONJ, dt, u) ?
                 terms[CONJ.id].apply(
-                        new Intermed.InternedCompoundByComponentsArray(CONJ, dt, ConjBuilder.preSort(dt,u))) :
-                super.conj(dt, u);
+                        new Intermed.InternedCompoundByComponentsArray(CONJ, dt, u)) :
+                super.conj(true, dt, u);
     }
 
 

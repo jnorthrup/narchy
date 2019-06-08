@@ -14,7 +14,7 @@ import nars.term.compound.CachedUnitCompound;
 import nars.term.util.Statement;
 import nars.term.util.TermException;
 import nars.term.util.conj.ConjBuilder;
-import nars.term.util.conj.ConjCommutive;
+import nars.term.util.conj.ConjPar;
 import nars.term.util.conj.ConjSeq;
 import nars.term.util.transform.CompoundNormalization;
 import nars.term.var.ellipsis.Ellipsislike;
@@ -145,24 +145,28 @@ public abstract class TermBuilder implements TermConstructor {
                     return only;
         }
 
-        Term y;
         switch (dt) {
             case DTERNAL:
             case 0:
-                y = ConjCommutive.the(Op.terms, dt, false, u); break;
+                return ConjPar.the(this, dt, false, u);
 
-            case XTERNAL: y = ConjCommutive.theXternal(this, u); break;
+            case XTERNAL: {
+                return ConjPar.theXternal(this, u);
+            }
 
-            default: y = ConjSeq.sequence(this, dt, u); break;
+            default: {
+                if (u.length != 2)
+                    throw new TermException("temporal conjunction with n!=2 subterms", CONJ, dt, u);
+                return conjSeq( dt, u[0], u[1]);
+            }
         }
 
-//        {
-//            //TEMPORARY FOR DEBUG
-//            Term ay = y.anon();
-//            if (y.volume()!=ay.volume())
-//                throw new WTF();
-//        }
-        return y;
+    }
+
+    public Term conjSeq(int dt, Term a, Term b) {
+        return (dt >= 0) ?
+                ConjSeq.sequence(a, 0, b, +dt + a.eventRange(), this) :
+                ConjSeq.sequence(b, 0, a, -dt + b.eventRange(), this);
     }
 
 

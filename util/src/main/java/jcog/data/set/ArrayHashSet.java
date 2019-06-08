@@ -175,16 +175,16 @@ public class ArrayHashSet<X> extends AbstractSet<X> implements ArraySet<X> {
     }
 
     @Override
-    public boolean add(X element) {
+    public boolean add(X x) {
         switch (list.size()) {
             case 0:
                 set = newSet(DEFAULT_SET_CAPACITY /*list.capacity()*/);
-                set.add(element);
-                addedUnique(element);
+                set.add(x);
+                addedUnique(x);
                 return true;
             default:
-                if (set.add(element)) {
-                    addedUnique(element);
+                if (set.add(x)) {
+                    addedUnique(x);
                     return true;
                 }
                 return false;
@@ -192,8 +192,8 @@ public class ArrayHashSet<X> extends AbstractSet<X> implements ArraySet<X> {
 
     }
 
-    protected void addedUnique(X element) {
-        list.add(element);
+    protected void addedUnique(X x) {
+        list.add(x);
     }
 
     protected Set<X> newSet(int cap) {
@@ -379,7 +379,7 @@ public class ArrayHashSet<X> extends AbstractSet<X> implements ArraySet<X> {
 
     public static ArrayHashSet EMPTY = new ArrayHashSet(0) {
         @Override
-        public boolean add(Object element) {
+        public boolean add(Object x) {
             throw new UnsupportedOperationException();
         }
 

@@ -146,25 +146,25 @@
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-engine</artifactId>
-            <version>5.5.0-M1</version>
+            <version>5.5.0-RC1</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-params</artifactId>
-            <version>5.5.0-M1</version>
+            <version>5.5.0-RC1</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.junit.platform</groupId>
             <artifactId>junit-platform-engine</artifactId>
-            <version>1.5.0-M1</version>
+            <version>1.5.0-RC1</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.junit.platform</groupId>
             <artifactId>junit-platform-launcher</artifactId>
-            <version>1.5.0-M1</version>
+            <version>1.5.0-RC1</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
@@ -210,7 +210,7 @@
         <dependency>
             <groupId>tech.tablesaw</groupId>
             <artifactId>tablesaw-core</artifactId>
-            <version>0.33.5</version>
+            <version>0.34.0</version>
             <scope>compile</scope>
         </dependency>
         <dependency>

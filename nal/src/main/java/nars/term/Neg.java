@@ -50,7 +50,7 @@ public interface Neg extends Term { ;
 
     @Override
     default boolean equalsPosOrNeg(Term t) {
-        return t.op()==NEG ? equals(t) : equalsNeg(t);
+        return t instanceof Neg ? equals(t) : equalsNeg(t);
     }
 
     @Override

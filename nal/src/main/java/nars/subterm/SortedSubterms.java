@@ -1,5 +1,6 @@
 package nars.subterm;
 
+import nars.term.Neg;
 import nars.term.Term;
 import nars.term.Terms;
 
@@ -37,7 +38,7 @@ public class SortedSubterms {
         Term[] y = x.clone();
         //int negs = 0;
         for (int j = 0; j < y.length; j++) {
-            if (y[j].op()==NEG) {
+            if (y[j] instanceof Neg) {
                 y[j] = y[j].unneg();
                 //negs++;
             }

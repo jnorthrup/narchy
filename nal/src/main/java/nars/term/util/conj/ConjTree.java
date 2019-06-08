@@ -10,7 +10,6 @@ import nars.term.Term;
 import nars.term.atom.Bool;
 import nars.term.util.builder.TermBuilder;
 import nars.time.Tense;
-import org.eclipse.collections.api.block.predicate.primitive.LongObjectPredicate;
 import org.eclipse.collections.api.iterator.LongIterator;
 import org.eclipse.collections.api.tuple.primitive.IntObjectPair;
 import org.eclipse.collections.impl.map.mutable.primitive.IntObjectHashMap;
@@ -173,6 +172,19 @@ public class ConjTree implements ConjBuilder {
 
     private Set<Term> newSet() {
         return new ArrayHashSet<>(4);
+//        return new ArrayHashSet<>(4) {
+//            @Override
+//            public boolean add(Term x) {
+//                System.out.println("+ " + x);
+//                return super.add(x);
+//            }
+//
+//            /** incomplete */
+//            @Override public boolean remove(Object x) {
+//                System.out.println("- " + x);
+//                return super.remove(x);
+//            }
+//        };
         //return new LinkedHashSet<>(4);
         //return new UnifiedSet<>(1, 0.99f);
         //return new HashSet<>(4);
@@ -197,9 +209,10 @@ public class ConjTree implements ConjBuilder {
 
         FasterList<Term> toAdd = null;
         for (Iterator<Term> nyi = neg.iterator(); nyi.hasNext(); ) {
-            Term ny = nyi.next();
+            final Term ny = nyi.next();
             boolean yConj = ny.op() == CONJ;
-            if (!Term.commonStructure(nxs, ny.structure()))
+            int nys = ny.structure();
+            if (!Term.commonStructure(nxs, nys))
                 continue;
             if (yConj) {
                 //disj
@@ -222,34 +235,35 @@ public class ConjTree implements ConjBuilder {
                         continue;
                     }
                 }
-                //Robbins Algebra / Huntington Reduction
-                if (xConj && (nx.hasAny(NEG) || ny.hasAny(NEG)) && Term.commonStructure(nx.subterms().structure(), ny.subterms().structure())) {
-                    ConjLazy nxe = ConjLazy.events(nx);
-                    ConjLazy nye = ConjLazy.events(ny);
-                    //symmetric difference
-                    if (nxe.removeIf((LongObjectPredicate<Term>) nye::removeNeg)) {
-                        if (nxe.isEmpty()) {
-                            //XOR ??? TODO check that this shouldnt be eliminated
-                        } else {
-                            nyi.remove();
-
-                            nx = nxe.term(); //the intersection
-                            if (nx == False || nx == Null)
-                                return nx; //shouldnt happen
-
-                            long nxshift = nxe.shift();
-                            if (nxs == ETERNAL || nxshift == 0) {
-                                //continue, adding at present time
-                            } else {
-                                //add at shifted time
-                                if (!add(nxshift, nx))
-                                    return False;
-                                break;
-                            }
-                        }
-                    }
-                }
-
+//                //Robbins Algebra / Huntington Reduction
+//                if (xConj && (nx.hasAny(NEG) || ny.hasAny(NEG)) && Term.commonStructure(nx.subterms().structure(), ny.subterms().structure())) {
+//                    ConjList nxe = ConjList.events(nx);
+//                    ConjList nye = ConjList.events(ny);
+//                    //symmetric difference
+//                    if (nxe.removeIf((LongObjectPredicate<Term>) nye::removeNeg)) {
+//                        if (nxe.isEmpty()) {
+//                            //XOR ??? TODO check that this shouldnt be eliminated
+//                        } else {
+//                            nyi.remove();
+//
+//                            nx = nxe.term();  nxs = nx.structure(); //the intersection
+//
+//                            if (nx == False || nx == Null)
+//                                return nx; //shouldnt happen
+//
+//                            long nxshift = nxe.shift();
+//                            if (nxs == ETERNAL || nxshift == 0) {
+//                                //continue, adding at present time
+//                            } else {
+//                                //add at shifted time
+//                                if (!add(nxshift, nx))
+//                                    return False;
+//                                break;
+//                            }
+//                        }
+//                    }
+//                }
+//
             }
             if (xConj && nx.containsRecursively(ny)) {
                 if (Conj.eventOf(nx, ny)) {
@@ -258,6 +272,7 @@ public class ConjTree implements ConjBuilder {
                     nx = Conj.diffAll(nx, ny.neg());
                     if (nx instanceof Bool)
                         return nx;
+                    nxs = nx.structure();
                 }
 
             }
@@ -282,9 +297,9 @@ public class ConjTree implements ConjBuilder {
 
             for (Term yy : y) {
 
-                    if (Conj.eventOf(x, yy.neg()))
-                        return True; //absorb
-                    else {
+                    if (Conj.eventOf(x, yy.neg())) {
+                        return True;
+                    } else {
                         Term z = Conj.diffAll(x, yy);
                         if (!z.equals(x)) {
                             if (z instanceof Bool)
@@ -293,16 +308,6 @@ public class ConjTree implements ConjBuilder {
                         }
                     }
 
-//                } else {
-//                    if (Conj.eventOf(x, yy)) {
-//                        return False; //contradict
-//                    } else if (Conj.eventOf(x, yy.neg())) {
-//                        x = Conj.diffAll(x,  yy.neg());
-//                        if (x instanceof Bool)
-//                            return x;
-//                    }
-//
-//                }
             }
 
         }
@@ -356,11 +361,15 @@ public class ConjTree implements ConjBuilder {
         return x;
     }
 
-    void terminate(Term result) {
-//        if (pos != null) pos.clear();
-//        if (neg != null) neg.clear();
-//        if (seq != null) seq.clear();
-        terminal = result;
+    Term terminate(Term y) {
+        Term x = terminal;
+        if (x == null || x == True || y == Null) {
+            return terminal = y;
+        } else if (x == False) {
+            if (y == Null)
+                return terminal = Null;
+        }
+        return terminal;
     }
 
     @Override
@@ -547,15 +556,20 @@ public class ConjTree implements ConjBuilder {
                 //special case: degenerate sequence of 1 time point (probably @ 0)
                 s = seq.getOnly().term(B);
             } else {
+
                 //actual sequence
-                ConjLazy events = new ConjLazy(ss);
+                ConjList events = new ConjList(ss);
 
                 for (IntObjectPair<ConjTree> wc : seq.keyValuesView()) {
                     Term w = wc.getTwo().term(B);
-                    if (w == True) continue;
-                    if (w == False || w == Null) return w;
-                    events.add((long) wc.getOne(), w);
+                    if (w == False || w == Null) {
+                        return terminate(w);
+                    }
+                    if (!events.add((long) wc.getOne(), w)) {
+                        return terminate(False);
+                    }
                 }
+
                 if (!events.isEmpty()) {
 
                     events.preDistribute(this);
@@ -563,6 +577,8 @@ public class ConjTree implements ConjBuilder {
                         return terminal;
 
                     events.condense(B);
+                    if (terminal != null)
+                        return terminal;
 
                     s = events.seq(B);
                 }
@@ -583,13 +599,19 @@ public class ConjTree implements ConjBuilder {
             }
 
             if (s != null) {
-                addParallel(s);
+                if (!addParallel(s)) {
+                    return terminate(False);
+                }
             }
         }
 
 
 //        if (s == null || !Conj.isSeq(s)) {
-        DisposableTermList p = new DisposableTermList(0);
+        int c = eventCount(ETERNAL);
+        if (c == 0)
+            return True;
+
+        DisposableTermList p = c > 1 ? new DisposableTermList(c) : null;
 
 
         if (pos != null) {
@@ -597,7 +619,6 @@ public class ConjTree implements ConjBuilder {
             if (neg == null && pp == 1)
                 return pos.iterator().next();
             else {
-                p.ensureCapacityForAdditional(pp);
                 p.addAll(pos);
             }
         }
@@ -606,40 +627,21 @@ public class ConjTree implements ConjBuilder {
             if (pos == null && nn == 1)
                 return neg.iterator().next().neg();
             else {
-                p.ensureCapacityForAdditional(nn);
                 p.addAllNegated(neg);
             }
         }
 
 
-        switch (p.size()) {
+        Term[] q = p.sortAndDedup();
+        switch (q.length) {
             case 0:
                 return True;
             case 1:
-                return p.get(0);
+                return q[0];
             default: {
-                return B.newCompound(CONJ, DTERNAL, p.sortAndDedup());
+                return B.newCompound(CONJ, DTERNAL, q);
             }
         }
-
-//        } else {
-//            //distribute
-//            ConjTree c = new ConjTree();
-//            c.add(ETERNAL, s);
-//
-//
-//            if (pos != null) {
-//                if (!c.seq.allSatisfy(cc -> pos.allSatisfy(cc::addParallelEvent))) {
-//                    return False;
-//                }
-//            }
-//            if (neg != null) {
-//                if (!c.seq.allSatisfy(cc -> neg.allSatisfy(cc::addParallelEventNegated))) {
-//                    return False;
-//                }
-//            }
-//            return c.term(B);
-//        }
 
 
     }

@@ -30,34 +30,34 @@ import static nars.time.Tense.*;
  * it is lighter weight than Conj.java in buffering / accumulating
  * events prior to complete construction.
  */
-public class ConjLazy extends LongObjectArraySet<Term> implements ConjBuilder {
+public class ConjList extends LongObjectArraySet<Term> implements ConjBuilder {
 
-    public ConjLazy() {
+    public ConjList() {
         this(4);
     }
 
-    public ConjLazy(int expectedSize) {
+    public ConjList(int expectedSize) {
         super(0, new Term[expectedSize]);
     }
 
-    public static ConjLazy events(Term conj) {
+    public static ConjList events(Term conj) {
         return events(conj, TIMELESS);
     }
 
-    public static ConjLazy subtract(ConjLazy from, Term conj) {
+    public static ConjList subtract(ConjList from, Term conj) {
         return subtract(from, conj, TIMELESS);
     }
 
-    public static ConjLazy events(Term conj, long occOffset) {
+    public static ConjList events(Term conj, long occOffset) {
         occOffset = occAuto(conj, occOffset);
 
-        ConjLazy l = new ConjLazy();
+        ConjList l = new ConjList();
         conj.eventsWhile(l::add,
                 occOffset, true, false);
         return l;
     }
 
-    public static ConjLazy subtract(ConjLazy from, Term conj, long occOffset) {
+    public static ConjList subtract(ConjList from, Term conj, long occOffset) {
         conj.eventsWhile((when, what) -> {
             from.remove(when, what);
             return true;
@@ -162,6 +162,8 @@ public class ConjLazy extends LongObjectArraySet<Term> implements ConjBuilder {
             return get(0);
 
 
+
+
         if (B instanceof InterningTermBuilder && NAL.CONJ_COMMUTIVE_LOOPBACK) {
             long w0 = when[0];
             boolean parallel = true;
@@ -173,8 +175,22 @@ public class ConjLazy extends LongObjectArraySet<Term> implements ConjBuilder {
             }
             //all same time
             if (parallel) {
-                return B.conj(DTERNAL, toArrayRecycled(Term[]::new));
+                return B.conj( toArrayRecycled(Term[]::new));
                 //return ConjCommutive.the(B, DTERNAL /*(w0 == ETERNAL) ? DTERNAL : 0*/, true, false, toArrayRecycled(Term[]::new));
+            }
+        }
+
+        if (n == 2) {
+            //sequence shortcut
+            long wa = when[0], wb = when[1];
+            if (wa !=ETERNAL && wb !=ETERNAL && when[0]!=when[1]) {
+                Term a = get(0);
+                Term b = get(1);
+                if (!a.hasAny(CONJ) && !b.hasAny(CONJ)) {
+                    if (!a.equals(b)) {
+                        return B.conjSeq(Tense.occToDT(wb-wa), a, b);
+                    }
+                }
             }
         }
 
@@ -229,7 +245,7 @@ public class ConjLazy extends LongObjectArraySet<Term> implements ConjBuilder {
     }
 
 
-    @Nullable void preDistribute(ConjTree T) {
+    void preDistribute(ConjTree T) {
 
         int n = size();
         if (n < 2)

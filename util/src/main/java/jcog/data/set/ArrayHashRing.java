@@ -21,9 +21,9 @@ public class ArrayHashRing<X> extends ArrayHashSet<X> {
     }
 
     @Override
-    protected void addedUnique(X element) {
+    protected void addedUnique(X x) {
         pop(size()+1-capacity);
-        super.addedUnique(element);
+        super.addedUnique(x);
     }
 
     public void pop(int n) {

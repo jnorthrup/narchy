@@ -4,6 +4,7 @@ import nars.$;
 import nars.Op;
 import nars.subterm.Subterms;
 import nars.term.Compound;
+import nars.term.Neg;
 import nars.term.Term;
 import nars.term.Variable;
 import nars.term.atom.Atom;
@@ -151,7 +152,7 @@ abstract public class TermMatcher {
 
         @Override
         public boolean test(Term x) {
-            return (!requireNegation || x.op()==NEG) && super.test(x.unneg());
+            return (!requireNegation || x instanceof Neg) && super.test(x.unneg());
         }
 
         @Override
