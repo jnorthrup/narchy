@@ -16,6 +16,7 @@ import nars.bag.BagClustering;
 import nars.control.CauseMerge;
 import nars.control.How;
 import nars.control.channel.CauseChannel;
+import nars.table.dynamic.ImageBeliefTable;
 import nars.task.NALTask;
 import nars.task.TemporalTask;
 import nars.task.UnevaluatedTask;
@@ -135,7 +136,8 @@ public class ConjClustering extends How {
 
 
         whenDeleted(nar.onTask(t -> {
-            if (!t.isEternal()
+            if (!(t instanceof ImageBeliefTable.ImageTermTask)
+                    && !t.isEternal()
                     && !t.hasVars() //<-- TODO requires multi-normalization (shifting offsets)
                     && (stampLenMax == Integer.MAX_VALUE || (t.stamp().length <= stampLenMax))
                     && t.volume() <= inputTermVolMax
