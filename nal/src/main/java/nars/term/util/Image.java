@@ -7,7 +7,7 @@ import nars.term.Compound;
 import nars.term.Term;
 import nars.term.atom.Bool;
 import nars.term.compound.LighterCompound;
-import nars.term.var.Img;
+import nars.term.Img;
 import org.jetbrains.annotations.Nullable;
 
 import static nars.Op.*;

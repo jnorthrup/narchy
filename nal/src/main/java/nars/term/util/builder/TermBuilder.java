@@ -157,18 +157,22 @@ public abstract class TermBuilder implements TermConstructor {
             default: {
                 if (u.length != 2)
                     throw new TermException("temporal conjunction with n!=2 subterms", CONJ, dt, u);
-                return conjSeq( dt, u[0], u[1]);
+                return conjSeq(u[0], dt, u[1]);
             }
         }
 
     }
 
-    public Term conjSeq(int dt, Term a, Term b) {
+    /** attaches two events together with dt separation */
+    public Term conjSeq(Term a, int dt, Term b) {
         return (dt >= 0) ?
                 ConjSeq.sequence(a, 0, b, +dt + a.eventRange(), this) :
                 ConjSeq.sequence(b, 0, a, -dt + b.eventRange(), this);
     }
-
+    /** merges two events with a dt offset applied to 'b' relative to a */
+    public Term conjMerge(Term a, int dt, Term b) {
+        return ConjSeq.sequence(a, 0, b, dt, this);
+    }
 
     public Term root(Compound x) {
         if (!x.hasAny(Op.Temporal))

@@ -17,7 +17,7 @@ import nars.table.eternal.DefaultOnlyEternalTable;
 import nars.task.NALTask;
 import nars.term.Term;
 import nars.term.Termed;
-import nars.term.TermedDelegate;
+import nars.term.util.TermedDelegate;
 import nars.truth.PreciseTruth;
 import nars.truth.Stamp;
 import nars.truth.Truth;

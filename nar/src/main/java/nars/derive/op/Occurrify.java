@@ -13,7 +13,6 @@ import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
 import nars.term.control.PREDICATE;
 import nars.term.util.Image;
-import nars.term.util.conj.ConjSeq;
 import nars.term.util.transform.Retemporalize;
 import nars.time.Tense;
 import nars.time.TimeGraph;
@@ -595,14 +594,21 @@ public class Occurrify extends TimeGraph {
 
                     long earlyStart = Math.min(tTime, bTime);
 
-                    int ditherDT = d.ditherDT;
-                    if (tTime == earlyStart)
-                        y = ConjSeq.sequence(tt, 0, bb, Tense.dither(bTime - tTime, ditherDT), terms);
-                    else
-                        y = ConjSeq.sequence(bb, 0, tt, Tense.dither(tTime - bTime, ditherDT), terms);
+                    Term a, b;
+                    long  dt;
+                    if (tTime == earlyStart) {
+                        a = tt; b = bb; dt = bTime - tTime;
+                    } else {
+                        a = bb; b = tt; dt = tTime - bTime;
+                    }
+
+                    if (NAL.derive.TIMEGRAPH_DITHER_EVENTS_INTERNALLY)
+                        dt = Tense.dither(dt, d.ditherDT);
+
+                    y = terms.conjMerge(a, Tense.occToDT(dt), b);
 
                     //dont dither occ[] here, since it will be done in Taskify
-                    long range = Math.max(Math.min((1 + d.taskEnd - d.taskStart), (1 + d.beliefEnd - d.beliefStart)) - 1, 0);
+                    long range = Math.max(Math.min((1 + d.taskEnd - tTime), (1 + d.beliefEnd - bTime)) - 1, 0);
                     occ = new long[]{earlyStart, earlyStart + range};
                 }
 
@@ -611,7 +617,8 @@ public class Occurrify extends TimeGraph {
 
             @Override
             long[] occurrence(Derivation d) {
-                return rangeCombine(d, OccIntersect.Earliest);
+                //return rangeCombine(d, OccIntersect.Earliest);
+                throw new UnsupportedOperationException();
             }
 
             @Override

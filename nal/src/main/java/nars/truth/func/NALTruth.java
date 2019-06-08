@@ -212,7 +212,12 @@ public enum NALTruth implements TruthFunc {
             return TruthFunctions.conversion(B, minConf);
         }
     },
-
+    Resemblance() {
+        @Override
+        public Truth apply(final Truth T, final Truth B, NAL n, float minConf) {
+            return TruthFunctions.resemblance(T, B, minConf);
+        }
+    },
 
     @SinglePremise
     Contraposition() {

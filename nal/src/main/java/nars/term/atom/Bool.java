@@ -1,5 +1,6 @@
 package nars.term.atom;
 
+import jcog.Skill;
 import nars.Op;
 import nars.The;
 import nars.term.Term;
@@ -14,8 +15,10 @@ import static nars.Op.BOOL;
  *
  *  these represent an intrinsic level of truth that exist within the context of
  *  an individual target.  not to be confused with Task-level Truth
+ *
+ *  Implements "Unknown-state logic" (https://en.wikipedia.org/wiki/Ternary_computer)
  */
-abstract public class Bool extends AbstractAtomic implements The {
+@Skill("Ternary_computer") abstract public class Bool extends AbstractAtomic implements The {
 
     /**
      * absolutely nonsense

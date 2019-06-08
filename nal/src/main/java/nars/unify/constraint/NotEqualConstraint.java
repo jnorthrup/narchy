@@ -5,7 +5,7 @@ import nars.term.Term;
 import nars.term.Variable;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
-import nars.term.var.Img;
+import nars.term.Img;
 import nars.unify.Unify;
 import org.jetbrains.annotations.Nullable;
 

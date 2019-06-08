@@ -7,7 +7,7 @@ import nars.NAL;
 import nars.Op;
 import nars.term.Compound;
 import nars.term.Term;
-import nars.term.var.Img;
+import nars.term.Img;
 import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 
 import java.util.Collections;

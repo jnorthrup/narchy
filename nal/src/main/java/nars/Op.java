@@ -19,7 +19,7 @@ import nars.term.util.builder.HeapTermBuilder;
 import nars.term.util.builder.TermBuilder;
 import nars.term.util.builder.TermConstructor;
 import nars.term.util.conj.Conj;
-import nars.term.var.Img;
+import nars.term.Img;
 import nars.term.var.UnnormalizedVariable;
 import nars.time.Tense;
 import org.apache.lucene.util.MathUtil;

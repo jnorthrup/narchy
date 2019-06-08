@@ -16,7 +16,8 @@ import org.junit.jupiter.params.provider.ValueSource;
 import static nars.$.$$;
 import static nars.Op.BELIEF;
 import static nars.time.Tense.ETERNAL;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class NAL3Test extends NALTest {
 

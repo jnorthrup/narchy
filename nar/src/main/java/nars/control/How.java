@@ -78,7 +78,7 @@ abstract public class How extends NARPart implements Prioritizable {
     private volatile boolean sleeping;
 
     /** for miscellaneous external controller use */
-    public volatile Object governor = null;
+    @Deprecated public volatile Object governor = null;
 
     protected How() {
         this(null, null);

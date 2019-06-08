@@ -21,7 +21,6 @@ import nars.term.Compound;
 import nars.term.Term;
 import nars.term.util.conj.Conj;
 import nars.term.util.conj.ConjBuilder;
-import nars.term.util.conj.ConjSeq;
 import nars.term.util.conj.ConjTree;
 import nars.term.var.CommonVariable;
 import org.apache.commons.math3.exception.MathArithmeticException;
@@ -272,9 +271,11 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
         assert (!aa.equals(bb));
 
         long aWhen = aa.start();
-        long bWhen;
-        if (aWhen == ETERNAL || (bWhen = bb.start()) == ETERNAL)
-            return DTERNAL;
+        long bWhen = bb.start();
+        if (aWhen == ETERNAL && bWhen == ETERNAL)
+            return 0;
+        else if (aWhen == ETERNAL || bWhen == ETERNAL)
+            return 0; //??
         else {
             assert (aWhen != TIMELESS && bWhen != TIMELESS);
             long d;
@@ -632,8 +633,8 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
                             if (!s.op().temporal)
                                 return true;
                             else {
-//                                /* absolute context for inner compound is ignored/erased unless the root is temporal compound (handled in cases below) */
-//                                know(s);
+                                /* absolute context for temporal subterm of non-temporal */
+                                know(s);
                                 return false;
                             }
                         }, (t) -> true, null);
@@ -1095,7 +1096,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
     }
 
     /**
-     * solution vector for 2-ary CONJ
+     * solution vector for 2-ary CONJ absolutely timed
      */
     private boolean solveConj2DT(Predicate<Event> each, Event a, int dt, Event b) {
 
@@ -1110,7 +1111,8 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
             }
         }
 
-        Term c = ConjSeq.sequence(a.id, dt == DTERNAL ? ETERNAL : 0, b.id, dt == DTERNAL ? ETERNAL : dt, terms);
+        Term c = //ConjSeq.sequence(a.id, dt == DTERNAL ? ETERNAL : 0, b.id, dt == DTERNAL ? ETERNAL : dt, terms);
+                 terms.conjMerge(a.id, dt, b.id);
 
 
         return solveOccurrence(c, a.start(), durMerge(a, b), each);
@@ -1164,31 +1166,32 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 
         assert (dt != XTERNAL);
 
-        if (dt == DTERNAL)
+        if (dt == DTERNAL || dt == 0)
             return x.dt(DTERNAL);
-
-        Subterms xx = x.subterms();
-//        assert (!xx.hasXternal());
 
         Op xo = x.op();
 
-        Term x0 = xx.sub(0);
         if (xo == IMPL) {
             return x.dt(dt);
         } else if (xo == CONJ) {
-            if (dt == 0) {
-                return x.dt(dt);
-            } else {
+//            if (dt == 0) {
+//                return x.dt(dt);
+//            } else {
+            {
 
+                Subterms xx = x.subterms();
+                Term xEarly, xLate;
                 if (x.dt() == XTERNAL) {
 
                     //use the provided 'path' and 'dir'ection, if non-null, to correctly order the sequence, which may be length>2 subterms
+                    Term x0 = xx.sub(0);
                     Term x1 = xx.sub(1);
 
                     if (dir) {
-                        return ConjSeq.sequence(x0, 0, x1, dt, terms);
+                        xEarly = x0; xLate = x1;
                     } else {
-                        return ConjSeq.sequence(x1, 0, x0, -dt, terms);
+                        xEarly = x1; xLate = x0;
+                        dt = -dt;
                     }
 
 
@@ -1198,15 +1201,11 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
                     if (early == 1)
                         dt = -dt;
 
-
-                    Term xEarly = xx.sub(early);
-                    Term xLate = xx.sub(1 - early);
-
-                    return ConjSeq.sequence(
-                            xEarly, 0,
-                            xLate, dt, terms);
+                    xEarly = xx.sub(early);
+                    xLate = xx.sub(1 - early);
                 }
 
+                return terms.conjSeq(xEarly, dt, xLate);
             }
         }
 
@@ -1236,10 +1235,11 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
         return true;
     }
 
-    private boolean solveExact(Event f, Predicate<Absolute> each) {
-        if (f instanceof Absolute && !f.id.hasXternal()) {
-            return each.test((Absolute) f);
-        } else {
+    private boolean solveExact(Term x, Predicate<Absolute> each) {
+        Event f = shadow(x);
+//        if (f instanceof Absolute && !f.id.hasXternal()) {
+//            return each.test((Absolute) f);
+//        } else {
 
             //try exact absolute solutions
 
@@ -1252,11 +1252,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
             }
 
             return true;
-        }
-    }
-
-    private boolean solveExact(Term x, Predicate<Absolute> each) {
-        return solveExact(shadow(x), each);
+//        }
     }
 
     /**
@@ -1673,11 +1669,11 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
         }
     }
 
-    private Iterable<Event> filterShuffleSort(Node<Event, TimeSpan> root, Iterable<Event> ee) {
-        boolean rootAbsolute = root.id() instanceof Absolute;
-        return shuffleAndSort(Iterables.filter(ee,
-                z -> (z instanceof Absolute) != rootAbsolute));
-    }
+//    private Iterable<Event> filterShuffleSort(Node<Event, TimeSpan> root, Iterable<Event> ee) {
+//        boolean rootAbsolute = root.id() instanceof Absolute;
+//        return shuffleAndSort(Iterables.filter(ee,
+//                z -> (z instanceof Absolute) != rootAbsolute));
+//    }
 
     /**
      * absolutely specified event
@@ -1916,12 +1912,15 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 
             Iterable<FromTo<Node<Event, TimeSpan>, TimeSpan>> existing = this.existing ? existing(n) : empty;
 
-            Term nid = n.id().id;
+            @Deprecated Term nid = n.id().id;
             Iterable<FromTo<Node<Event, TimeSpan>, TimeSpan>> tangent = this.tangent ? tangent(n, nid) : empty;
-            Iterable<FromTo<Node<Event, TimeSpan>, TimeSpan>> tangentNeg = this.tangentNeg ? tangent(n, nid.neg()) : empty;
 
-            //TODO elide concat() if only one selected
-            return Iterables.concat(existing, tangent, tangentNeg);
+            Iterable<FromTo<Node<Event, TimeSpan>, TimeSpan>> tangentNeg = empty;
+            if (this.tangentNeg) {
+                tangentNeg = tangent(n, nid.neg());
+            }
+
+            return (tangent==empty && tangentNeg == empty) ? existing : Iterables.concat(existing, tangent, tangentNeg);
         }
 
         private Iterable<FromTo<Node<Event, TimeSpan>, TimeSpan>> existing(Node<Event, TimeSpan> n) {
@@ -1938,14 +1937,13 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
                 return empty;
             } else {
 
-                if (root.id().id.equals(t)) {
-                    Event rootEvent = root.id();
-                    ee = Iterables.filter(ee, x -> !x.equals(rootEvent));
-                }
+//                if (root.id().id.equals(t)) {
+//                    Event rootEvent = root.id();
+//                    ee = Iterables.filter(ee, x -> !x.equals(rootEvent));
+//                }
 
                 Iterable<Event> eee =
-                        filterShuffleSort(root, ee);
-                //shuffleAndSort(ee);
+                        shuffleAndSort(ee);
                 if (eee == null)
                     return empty;
 
@@ -1956,7 +1954,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
                         ),
                         n -> {
                             //assert(root.id().start()root.id() instanceof Absolute != n.id() instanceof Absolute)
-                            return new ImmutableDirectedEdge(root, TS_ZERO, n);
+                            return new ImmutableDirectedEdge(root, TS_ZERO,n);
                         }
                 );
             }

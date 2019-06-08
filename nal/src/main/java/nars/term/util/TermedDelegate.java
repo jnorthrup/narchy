@@ -1,6 +1,10 @@
-package nars.term;
+package nars.term.util;
 
 import nars.Op;
+import nars.term.Compound;
+import nars.term.Term;
+import nars.term.Termed;
+import nars.term.Termlike;
 import org.eclipse.collections.api.block.function.primitive.IntObjectToIntFunction;
 
 import java.util.function.BiPredicate;

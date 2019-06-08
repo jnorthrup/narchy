@@ -26,7 +26,7 @@ public enum ConjSeq { ;
 
 
     /** TODO make method of B: TermBuilder.conjSequence(..) */
-    static public Term sequence(Term a, long aStart, Term b, long bStart, TermBuilder B) {
+    public static Term sequence(Term a, long aStart, Term b, long bStart, TermBuilder B) {
 
         if (a==Null || b == Null)
             return Null;
@@ -143,26 +143,34 @@ public enum ConjSeq { ;
         Term first = events.get(start);
         long firstWhen = events.when(start);
         int ee = end - start;
+
+        int dt;
+        Term left, right;
         switch (ee) {
             case 0:
                 throw new NullPointerException("should not be called with empty events list");
             case 1:
                 return first;
             case 2: {
-                return conjSeqFinal(B,
-                        Tense.occToDT(events.when(end - 1) - firstWhen),
-                        first, events.get(end - 1));
+                left = first;
+                right = events.get(end - 1);
+                dt = Tense.occToDT(events.when(end - 1) - firstWhen);
+                break;
             }
+            default: {
+                int center = start + (end - 1 - start) / 2;
+                left = conjSeq(B, events, start, center + 1);
+                right = conjSeq(B, events, center + 1, end);
+                dt = Tense.occToDT((events.when(center + 1) - firstWhen - left.eventRange()));
+                break;
+            }
+
         }
 
-        int center = start + (end - 1 - start) / 2;
-
-
-        Term left = conjSeq(B, events, start, center + 1);
         if (left == Null) return Null;
         if (left == False) return False;
 
-        Term right = conjSeq(B, events, center + 1, end);
+
         if (right == Null) return Null;
         if (right == False) return False;
 
@@ -171,14 +179,11 @@ public enum ConjSeq { ;
         else if (right == True)
             return left;
 
-        int dt = Tense.occToDT((events.when(center + 1) - firstWhen - left.eventRange()));
-
-        return dtSpecial(dt) ?
-                Conj.conjoin(B, left, right, dt == DTERNAL) :
-                conjSeqFinal(B, dt, left, right);
+        assert(!dtSpecial(dt));
+        return conjSeqFinal(B, dt, left, right);
     }
 
-    static Term conjSeqFinal(TermBuilder b, int dt, Term left, Term right) {
+    private static Term conjSeqFinal(TermBuilder b, int dt, Term left, Term right) {
 //        assert (dt != XTERNAL);
 
 //        if (left == Null) return Null;

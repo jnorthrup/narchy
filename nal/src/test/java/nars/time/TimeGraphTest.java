@@ -473,15 +473,20 @@ class TimeGraphTest {
 
     @Test void testTemporalInRelation2() {
         TimeGraph C = newTimeGraph(1);
-
-        C.know($$("(a &&+1 b)"), ETERNAL); //C.autoNeg.add($$("a")); C.autoNeg.add($$("b"));
-
+        C.know($$("(a &&+1 b)")/*, ETERNAL*/);
 
         assertSolved("(x-->(a &&+- b))", C, "(x-->(a &&+1 b))");
-        assertSolved("(x--> --(a &&+- b))", C, "(x-->(--,(a &&+1 b)))");
-        assertSolved("(x-->(a &&+- --b))", C, "(x-->(a &&+1 (--,b)))");
-        assertSolved("(x--> --(a &&+- --b))", C, "(x-->(--,(a &&+1 (--,b))))");
         assertSolved("(x, (a ==>+- b))", C, "(x,(a ==>+1 b))");
+    }
+
+    @Test void testTemporalInRelation2_neg() {
+        TimeGraph C = newTimeGraph(1);
+        C.know($$("(a &&+1 b)")/*, ETERNAL*/);
+
+        assertSolved("(x-->(a &&+- --b))", C, "(x-->(a &&+1 (--,b)))");
+        //assertSolved("(x--> --(a &&+- b))", C, "(x-->(--,(a &&+1 b)))");
+        //assertSolved("(x--> --(a &&+- --b))", C, "(x-->(--,(a &&+1 (--,b))))");
+
     }
     private class ExpectSolutions extends ConcurrentSkipListSet<String> implements Predicate<TimeGraph.Event> {
 

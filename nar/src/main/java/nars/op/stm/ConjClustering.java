@@ -23,7 +23,7 @@ import nars.task.UnevaluatedTask;
 import nars.task.util.TaskException;
 import nars.task.util.TaskList;
 import nars.term.Term;
-import nars.term.TermedDelegate;
+import nars.term.util.TermedDelegate;
 import nars.term.util.conj.ConjSeq;
 import nars.truth.Stamp;
 import nars.truth.Truth;

@@ -185,10 +185,12 @@ public class ConjList extends LongObjectArraySet<Term> implements ConjBuilder {
             long wa = when[0], wb = when[1];
             if (wa !=ETERNAL && wb !=ETERNAL && when[0]!=when[1]) {
                 Term a = get(0);
-                Term b = get(1);
-                if (!a.hasAny(CONJ) && !b.hasAny(CONJ)) {
-                    if (!a.equals(b)) {
-                        return B.conjSeq(Tense.occToDT(wb-wa), a, b);
+                if (!a.hasAny(CONJ)) {
+                    Term b = get(1);
+                    if (!b.hasAny(CONJ)) {
+                        if (!a.equals(b)) {
+                            return B.conjSeq(a, Tense.occToDT(wb - wa), b);
+                        }
                     }
                 }
             }

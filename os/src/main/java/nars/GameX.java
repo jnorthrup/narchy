@@ -575,7 +575,7 @@ abstract public class GameX extends Game {
      */
     private static void addGovernor(NAR n) {
         int gHist = 8;
-        float momentum = 0.5f;
+        float momentum = 0.25f;
         float explorationRate = 0.1f;
         n.onDur(new Consumer<NAR>() {
 
@@ -632,9 +632,11 @@ abstract public class GameX extends Game {
 
 
                     float pp = g.valueOf(v);
-                    h.pri(Util.unitize(Math.max(explorationRate , pp)));
+                    //float pp = v;
+                    h.pri(Util.lerp(pp, explorationRate, 1));
                 });
-                //            nn.how.forEach(h -> System.out.println(h + " "+ h.pri()));
+//                nn.how.forEach(h -> System.out.println(n4(h.pri()) + " " + n4(h.valueRateNormalized) + "\t" + h));
+//                System.out.println();
             }
         });
     }

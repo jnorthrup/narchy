@@ -120,16 +120,11 @@ public class ConjTree implements ConjBuilder {
 
     private boolean validatePosNeg(Term what) {
         if (what instanceof Neg) {
-            if (pos != null && pos.contains(what.unneg())) {
-                return false;
-            }
+            return pos == null || !pos.contains(what.unneg());
             //TODO detect reducible disjunction-in-sequence here to trigger recurse
         } else {
-            if (neg != null && neg.contains(what)) {
-                return false;
-            }
+            return neg == null || !neg.contains(what);
         }
-        return true;
     }
 
     private boolean addParallelN(Term n) {
@@ -212,11 +207,9 @@ public class ConjTree implements ConjBuilder {
             final Term ny = nyi.next();
             boolean yConj = ny.op() == CONJ;
             int nys = ny.structure();
-            if (!Term.commonStructure(nxs, nys))
-                continue;
             if (yConj) {
                 //disj
-                if (ny.containsRecursively(nx)) {
+                {
                     if (Conj.eventOf(ny, nx.neg())) {
                         //prune
                         nyi.remove();
@@ -265,7 +258,7 @@ public class ConjTree implements ConjBuilder {
 //                }
 //
             }
-            if (xConj && nx.containsRecursively(ny)) {
+            if (xConj) {
                 if (Conj.eventOf(nx, ny)) {
                     return True; //absorbed
                 } else if (Conj.eventOf(nx, ny.neg())) {

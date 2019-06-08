@@ -1216,35 +1216,35 @@ public enum Conj  { ;
 //        return result;
 //    }
 
-    /**
-     * stateless/fast 2-ary conjunction in either eternity (dt=DTERNAL) or parallel(dt=0) modes
-     */
-    public static Term conjoin(TermBuilder B, Term x, Term y, boolean eternalOrParallel) {
-
-        if (x == Null || y == Null) return Null;
-
-        if (x == False || y == False) return False;
-
-        if (x == True) return y;
-        if (y == True) return x;
-
-        if (x.equals(y))
-            return x; //exact same
-        if (x.equalsNeg(y))
-            return False; //contradiction
-
-//        Term xy = merge(B, x, y, eternalOrParallel);
+//    /**
+//     * stateless/fast 2-ary conjunction in either eternity (dt=DTERNAL) or parallel(dt=0) modes
+//     */
+//    public static Term conjoin(TermBuilder B, Term x, Term y, boolean eternalOrParallel) {
 //
-//        //decode result target
-//        if (xy == True) {
-//            return x; //x absorbs y
-//        } else if (xy == null) {
-        return B.newCompound(CONJ, DTERNAL /*eternalOrParallel ? DTERNAL : 0*/, Terms.commute(x, y));
-//        } else {
-//            //failure or some particular merge result
-//            return xy;
-//        }
-    }
+//        if (x == Null || y == Null) return Null;
+//
+//        if (x == False || y == False) return False;
+//
+//        if (x == True) return y;
+//        if (y == True) return x;
+//
+//        if (x.equals(y))
+//            return x; //exact same
+//        if (x.equalsNeg(y))
+//            return False; //contradiction
+//
+////        Term xy = merge(B, x, y, eternalOrParallel);
+////
+////        //decode result target
+////        if (xy == True) {
+////            return x; //x absorbs y
+////        } else if (xy == null) {
+//        return B.newCompound(CONJ, DTERNAL /*eternalOrParallel ? DTERNAL : 0*/, Terms.commute(x, y));
+////        } else {
+////            //failure or some particular merge result
+////            return xy;
+////        }
+//    }
 
     private static boolean eventsContains(byte[] events, byte b) {
         return ArrayUtil.contains(events, b);

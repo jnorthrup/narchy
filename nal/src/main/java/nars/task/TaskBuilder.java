@@ -10,7 +10,7 @@ import nars.Task;
 import nars.task.util.TaskException;
 import nars.term.Compound;
 import nars.term.Term;
-import nars.term.TermedDelegate;
+import nars.term.util.TermedDelegate;
 import nars.truth.Truth;
 import nars.truth.Truthed;
 import nars.util.Timed;

@@ -1,7 +1,6 @@
-package nars.term.var;
+package nars.term;
 
 import nars.Op;
-import nars.term.Term;
 import nars.term.anon.Intrin;
 import nars.unify.Unify;
 

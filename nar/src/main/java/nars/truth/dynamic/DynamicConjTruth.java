@@ -10,7 +10,10 @@ import nars.subterm.Subterms;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.Termed;
-import nars.term.util.conj.*;
+import nars.term.util.conj.Conj;
+import nars.term.util.conj.ConjBuilder;
+import nars.term.util.conj.ConjList;
+import nars.term.util.conj.ConjSeq;
 import nars.time.Tense;
 
 import java.util.concurrent.ThreadLocalRandom;

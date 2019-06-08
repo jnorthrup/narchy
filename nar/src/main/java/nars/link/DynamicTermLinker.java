@@ -10,7 +10,7 @@ import nars.term.atom.Atomic;
 import nars.term.compound.SeparateSubtermsCompound;
 import nars.term.util.conj.Conj;
 import nars.term.util.conj.ConjList;
-import nars.term.var.Img;
+import nars.term.Img;
 
 import java.util.Random;
 import java.util.function.Function;

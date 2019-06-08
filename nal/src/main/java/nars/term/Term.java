@@ -54,7 +54,6 @@ import java.util.TreeSet;
 import java.util.function.*;
 
 import static nars.Op.CONJ;
-import static nars.Op.NEG;
 import static nars.time.Tense.DTERNAL;
 
 

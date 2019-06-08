@@ -6,7 +6,7 @@ import nars.Op;
 import nars.term.Compound;
 import nars.term.Neg;
 import nars.term.Term;
-import nars.term.var.Img;
+import nars.term.Img;
 import org.eclipse.collections.impl.list.mutable.primitive.ByteArrayList;
 
 import java.util.Random;

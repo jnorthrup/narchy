@@ -21,7 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class NAL8Test extends NALTest {
 
-    public static final int cycles = 475;
+    public static final int cycles = 255;
 
     @BeforeEach
     void setTolerance() {
@@ -465,7 +465,7 @@ public class NAL8Test extends NALTest {
 
     @Test
     void testGoalSimilaritySpreadingNegInside() {
-        test.nar.termVolMax.set(5);
+        test.nar.termVolMax.set(4);
 
         test
                 .input("--R!")
@@ -483,7 +483,7 @@ public class NAL8Test extends NALTest {
 
     @Test
     void testGoalSimilaritySpreadingParameter() {
-        test.nar.termVolMax.set(5);
+        test.nar.termVolMax.set(4);
         test
                 .input("R(x)!")
                 .input("(x <-> y).")
@@ -729,16 +729,19 @@ public class NAL8Test extends NALTest {
     void conjDecomposeGoalAfter_ete_tmp() {
 
         test
+                .termVolMax(3)
                 .inputAt(1, "(a &&+3 b).")
                 .inputAt(5, "b! |")
 
-                .mustGoal(cycles, "a", 1f, 0.3f, t -> t == 2)
-                .mustNotOutput(cycles, "a", GOAL, t -> t!=2);
+                .mustGoal(cycles, "a", 1f, 0.81f, t -> t == 2)
+//                .mustNotOutput(cycles, "a", GOAL, t -> t!=2)
+        ;
     }
     @Test
     void conjDecomposeGoalAfter_tmp_tmp() {
 
         test
+                .termVolMax(3)
                 .inputAt(1, "(a &&+3 b). |")
                 .inputAt(5, "b! |")
 
@@ -750,6 +753,7 @@ public class NAL8Test extends NALTest {
     void conjDecomposeGoalAfterParallel() {
 
         test
+                .termVolMax(6)
                 .inputAt(1, "(a &&+3 (b&&c)).")
                 .inputAt(5, "b! |")
                 .mustGoal(cycles, "(a &&+3 c)", 1f, 0.3f, t -> t == 2);
@@ -876,14 +880,14 @@ public class NAL8Test extends NALTest {
 
     @Test
     void testSimilarityGoalPosBelief() {
-        test.goal("(it<->here)")
+        test.termVolMax(3).goal("(it<->here)")
                 .believe("(here<->near)")
                 .mustGoal(cycles, "(it<->near)", 1f, 0.45f);
     }
 
     @Test
     void testSimilarityGoalNegBelief() {
-        test.goal("--(it<->here)")
+        test.termVolMax(3).goal("--(it<->here)")
                 .believe("(here<->near)")
                 .mustGoal(cycles, "(it<->near)", 0f, 0.45f);
     }
@@ -949,7 +953,7 @@ public class NAL8Test extends NALTest {
     @Test
     void testGoalBeliefDecomposeTimeRangingDiffer() {
         test
-                .termVolMax(4)
+                .termVolMax(3)
                 .input("x! +0..+100")
                 .input("(y &&+5 x). +20..+30")
                 .mustGoal(cycles, "y", 1f, 0.1f, (a, b) ->

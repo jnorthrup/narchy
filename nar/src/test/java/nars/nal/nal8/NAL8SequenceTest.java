@@ -41,7 +41,6 @@ public class NAL8SequenceTest extends NALTest {
     void testSubSequence2_mid() {
 
         test
-                .logDebug()
                 .input( "(x &&+1 y)!")
                 .input( "(z &&+1 ((x &&+1 y) &&+1 w)).")
                 .mustGoal(cycles, "z", 1, 0.81f) //81% for one step

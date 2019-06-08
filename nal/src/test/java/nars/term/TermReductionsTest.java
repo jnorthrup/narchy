@@ -638,7 +638,7 @@ public class TermReductionsTest extends NarseseTest {
                 "((((a,b) ==>+1 (b,c)) &&+4 c) &&+1 d)",
                 x.toString());
 
-        Term x2 = ConjSeq.sequence(a, 0, b, 4, terms);
+        Term x2 = Op.terms.conjSeq(a, 4, b);
         assertEquals(x, x2);
     }
 

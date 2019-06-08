@@ -39,7 +39,7 @@ public class NAL7Test extends NALTest {
     @BeforeEach
     void setTolerance() {
         test.confTolerance(CONF_TOLERANCE_FOR_PROJECTIONS);
-        test.termVolMax(12);
+        test.termVolMax(13);
         test.confMin(0.3f);
         test.nar.freqResolution.set(0.1f);
         test.nar.confResolution.set(0.05f);
@@ -1350,10 +1350,10 @@ public class NAL7Test extends NALTest {
 
 
         test
-                .inputAt(1, "((a &&+3 c) &&+4 (e)). :|:")
-                .inputAt(4, "b. :|:")
+                .inputAt(1, "((a &&+3 c) &&+4 e). |")
+                .inputAt(4, "b. |")
                 .mustBelieve(cycles,
-                        "((a &&+3 (b &| c)) &&+4 (e))",
+                        "((a &&+3 (b &| c)) &&+4 e)",
                         1f, 0.81f, 1);
     }
 

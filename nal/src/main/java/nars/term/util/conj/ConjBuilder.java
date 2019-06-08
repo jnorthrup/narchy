@@ -20,8 +20,8 @@ import static nars.time.Tense.*;
 
 public interface ConjBuilder {
 
-    static final Predicate<Term> isTemporalComponent = Conj::isSeq;
-    static final Predicate<Term> isEternalComponent = isTemporalComponent.negate();
+    Predicate<Term> isTemporalComponent = Conj::isSeq;
+    Predicate<Term> isEternalComponent = isTemporalComponent.negate();
 
     static Term[] preSort(int dt, Term[] u) {
 

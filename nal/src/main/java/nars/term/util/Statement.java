@@ -10,7 +10,6 @@ import nars.term.atom.Bool;
 import nars.term.util.builder.TermBuilder;
 import nars.term.util.conj.Conj;
 import nars.term.util.conj.ConjList;
-import nars.term.util.conj.ConjSeq;
 import nars.term.var.ellipsis.Ellipsis;
 import nars.time.Tense;
 
@@ -102,7 +101,7 @@ public class Statement {
                     if (dt == DTERNAL || dt == XTERNAL) {
                         newSubj = CONJ.the(B, dt, subject, inner);
                     } else {
-                        newSubj = ConjSeq.sequence(subject, 0, inner, subject.eventRange() + dt, B);
+                        newSubj = B.conjSeq(subject, dt, inner);
                     }
                     int newDT = predicate.dt();
                     if (newDT == DTERNAL)

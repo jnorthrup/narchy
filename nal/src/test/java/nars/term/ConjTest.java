@@ -307,7 +307,7 @@ public class ConjTest {
         assertEq("((x&&y) &&+1 w)", "((x && y) &&+1 w)");
         assertEq("(w &&+1 (x&&y))", "(w &&+1 (x && y))");
         assertEq("((a&&b) &&+1 (x&&y))", "((a && b) &&+1 (x && y))");
-        assertEq("((a&&b) &&+1 (c&&d))", ConjSeq.sequence($$("(a&&b)"), 0, $$("(c&&d)"), 1, Op.terms));
+        assertEq("((a&&b) &&+1 (c&&d))", Op.terms.conjSeq($$("(a&&b)"), 1, $$("(c&&d)")));
     }
 
     @Test
@@ -1451,7 +1451,7 @@ public class ConjTest {
         */
         Term a = $.$("(a &&+5 (--,a))");
         Term b = $.$("((b &&+5 (--,b)) &&+5 (--,c))");
-        assertEq("((a &&+5 ((--,a)&&b)) &&+5 ((--,b) &&+5 (--,c)))", ConjSeq.sequence(a, 0, b, 5, Op.terms));
+        assertEq("((a &&+5 ((--,a)&&b)) &&+5 ((--,b) &&+5 (--,c)))", Op.terms.conjSeq(a, 5, b));
     }
 
     @Test
