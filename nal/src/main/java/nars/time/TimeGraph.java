@@ -259,33 +259,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
         return new long[]{dt, dur};
     }
 
-    /**
-     * since CONJ will be constructed with conjMerge, if x is conj the dt between events must be calculated from start-start. otherwise it is implication and this is measured internally
-     */
-    private int dt(Event aa, Event bb, boolean absolute) {
-
-        assert (!aa.equals(bb));
-
-        long aWhen = aa.start();
-        long bWhen = bb.start();
-        if (aWhen == ETERNAL && bWhen == ETERNAL)
-            return 0;
-        else if (aWhen == ETERNAL || bWhen == ETERNAL)
-            return 0; //??
-        else {
-            assert (aWhen != TIMELESS && bWhen != TIMELESS);
-            long d;
-            if (!absolute || aWhen <= bWhen)
-                d = (bWhen - aWhen) - (absolute ? 0 : aa.id.eventRange());
-            else
-                d = (aWhen - bWhen) - (absolute ? 0 : bb.id.eventRange());
-
-            return occToDT(d);
-        }
-
-    }
-
-//    private int absoluteCount(Term t) {
+    //    private int absoluteCount(Term t) {
 //        Collection<Event> tt = byTerm.get(t);
 //        return absoluteCount(tt);
 //    }
@@ -814,7 +788,6 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 
         //assert(!xx.hasXternal()): "dont solveDTTrace if subterms have XTERNAL";
 
-        int s = xx.subs();
         if (x.op() == IMPL) { //x.op() == IMPL || (s == 2 && xx.sub(0).unneg().equals(xx.sub(1).unneg()))) { //s == 2) {
 
             return solveDT2(x, xx, each);
@@ -822,13 +795,17 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
         } else {
             assert (x.op() == CONJ);
 
+            int s0 = xx.subs();
+            xx = x.subterms().commuted();
+            int s = xx.subs();
+
             List<Event>[] subEvents = new FasterList[s];
             int abs = solveAbsolutes(xx, subEvents);
             if (abs > 0) {
                 if (!solveAbsolutePermutations(xx, subEvents, abs, each))
                     return false;
 
-                if (abs == s)
+                if (abs == s0)
                     return true; //done
             }
 
@@ -1097,43 +1074,49 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
     }
 
     private boolean solveDTAbsolutePair(Compound x, Event a, Event b, Predicate<Event> each) {
-//        assert (!(a.equals(b)));
-//        if (a.start() == b.start() && at(a.id, b.id))
-//            return true; //same event
-//        //TODO additional checking
 
+        Op o = x.op();
 
-        if (x.op() == CONJ) {
-            int dt = dt(a, b, true);
-            return solveConj2DT(each, a, dt, b);
-        } else {
-            //for impl and other types cant assume occurrence corresponds with subject
-            int dt = dt(a, b, false);
-            return solveDT(x, TIMELESS, dt, durMerge(a, b), null, true, each);
-        }
-    }
+        int dt;
 
-    /**
-     * solution vector for 2-ary CONJ absolutely timed
-     */
-    private boolean solveConj2DT(Predicate<Event> each, Event a, int dt, Event b) {
-
-        if (dt != DTERNAL && dt != 0) {
-            assert (dt != XTERNAL);
+        if (o == CONJ) {
             //swap to correct sequence order
             if (a.start() > b.start()) {
                 Event z = a;
                 a = b;
                 b = z;
-//                dt = -dt;
             }
         }
+//        assert (!a.equals(b));
 
-        Term c = //ConjSeq.sequence(a.id, dt == DTERNAL ? ETERNAL : 0, b.id, dt == DTERNAL ? ETERNAL : dt, terms);
-                 terms.conjMerge(a.id, dt, b.id);
+        long aWhen = a.start(), bWhen = b.start();
+        if (aWhen == ETERNAL && bWhen == ETERNAL)
+            dt = 0;
+        else if (aWhen == ETERNAL || bWhen == ETERNAL)
+            dt = 0;
+        else {
+            assert (aWhen != TIMELESS && bWhen != TIMELESS);
+            long d;
+            if (o == IMPL || aWhen <= bWhen)
+                d = (bWhen - aWhen) - a.id.eventRange();
+            else {
+                d = (aWhen - bWhen) - b.id.eventRange();
+            }
+
+            dt = occToDT(d);
+        }
 
 
-        return solveOccurrence(c, a.start(), durMerge(a, b), each);
+        long dur = durMerge(a, b);
+
+        if (o == CONJ) {
+            Term c = terms.conjMerge(a.id, dt, b.id);
+            return solveOccurrence(c, aWhen, dur, each);
+        } else {
+            //for impl and other types cant assume occurrence corresponds with subject
+
+            return solveDT(x, TIMELESS, dt, dur, null, true, each);
+        }
     }
 
     /**
@@ -1183,15 +1166,13 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
     private Term dt(Compound x, boolean dir, int dt) {
 
         assert (dt != XTERNAL);
-
-        if (dt == DTERNAL || dt == 0)
-            return x.dt(DTERNAL);
-
         Op xo = x.op();
 
-        if (xo == IMPL) {
+        if (xo == IMPL || dt == DTERNAL || dt == 0 ) {
             return x.dt(dt);
         } else if (xo == CONJ) {
+
+
 //            if (dt == 0) {
 //                return x.dt(dt);
 //            } else {

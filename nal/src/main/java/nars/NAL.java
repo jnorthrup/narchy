@@ -96,7 +96,8 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
      */
     public static final float ANSWER_COMPLETENESS =
             //0.5f;
-            1f;
+            0.75f;
+            //1f;
             //2f;
 
     public static final boolean DEBUG_SIMILAR_DERIVATIONS= false;
