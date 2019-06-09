@@ -58,7 +58,7 @@ public class SeriesBeliefTable<T extends Task> extends DynamicTaskTable {
             e = t.time.end;
         }
 
-        int seriesTTL = NAL.SERIES_MATCH_MIN + (int)Math.ceil(NAL.SERIES_MATCH_LIMIT_RATE_PER_DUR / dur * (e-s));
+        int seriesTTL = NAL.SERIES_MATCH_MIN + Math.round(NAL.SERIES_MATCH_ADDITIONAL_RATE_PER_DUR / dur * (e-s));
         if (seriesTTL < t.ttl)
             each = Util.limit(t::tryAccept, seriesTTL);
         else

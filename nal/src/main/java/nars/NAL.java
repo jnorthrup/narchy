@@ -57,7 +57,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
     public static final boolean CONJ_COMMUTIVE_LOOPBACK = true;
 
     /** max tasked matched by series table, in case the answer limit is higher.  this reduces the number of redundant non-exact matches freeing evidential capacity for non-signal tasks from other tables of the concept */
-    public static final float SERIES_MATCH_LIMIT_RATE_PER_DUR = 0.5f;
+    public static final float SERIES_MATCH_ADDITIONAL_RATE_PER_DUR = 0.25f;
     public static final int SERIES_MATCH_MIN = 1;
 
 
@@ -95,8 +95,8 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
      * >= 1  - maximum # of Answer attempts per Answer capacity.  so 2 means 2 tasks are tried for each Answer task slot in its capacity
      */
     public static final float ANSWER_COMPLETENESS =
-            0.5f;
-            //1f;
+            //0.5f;
+            1f;
             //2f;
 
     public static final boolean DEBUG_SIMILAR_DERIVATIONS= false;
