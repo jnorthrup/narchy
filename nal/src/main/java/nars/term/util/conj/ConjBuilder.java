@@ -6,7 +6,6 @@ import nars.term.Compound;
 import nars.term.Term;
 import nars.term.Terms;
 import nars.term.atom.Bool;
-import nars.term.util.Image;
 import nars.term.util.TermException;
 import nars.term.util.builder.TermBuilder;
 import org.eclipse.collections.api.iterator.LongIterator;
@@ -24,8 +23,6 @@ public interface ConjBuilder {
     Predicate<Term> isEternalComponent = isTemporalComponent.negate();
 
     static Term[] preSort(int dt, Term[] u) {
-
-        u = Image.imageNormalize(u);
 
         switch (dt) {
             case 0:
@@ -115,8 +112,6 @@ public interface ConjBuilder {
             throw new TermException("invalid Conj event", x);
 
         if (x instanceof Compound) {
-
-            x = Image.imageNormalize(x);
 
             if (x.op() == Op.CONJ)
                 return addConjEvent(at, x);

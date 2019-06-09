@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 
 import static nars.$.$;
 import static nars.Op.GOAL;
+import static nars.term.util.TermTest.assertEq;
 
 /**
  * see Natural_Language_Processing2.md
@@ -35,6 +36,8 @@ public class PatrickTests extends NALTest {
         <(*,(*,cat,eats),?what) --> REPRESENT>?
         
          */
+
+
 
         TestNAR tt = test;
         tt.nar.freqResolution.set(0.1f);

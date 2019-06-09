@@ -1,5 +1,6 @@
 package nars.unify.constraint;
 
+import jcog.WTF;
 import nars.$;
 import nars.Op;
 import nars.term.Term;
@@ -16,6 +17,8 @@ public final class UnaryConstraint<U extends Unify> extends UnifyConstraint<U> {
                         termMatcher.getClass().getSimpleName() :
                         termMatcher.getClass().toString(),
                 ($.p(termMatcher.param() != null ? termMatcher.param() : Op.EmptyProduct).negIf(!trueOrFalse)));
+        if (this.toString().contains("$1\""))
+            throw new WTF();
         this.termMatcher = termMatcher;
         this.trueOrFalse = trueOrFalse;
     }

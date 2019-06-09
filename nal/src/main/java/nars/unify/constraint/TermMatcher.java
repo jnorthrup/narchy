@@ -412,36 +412,6 @@ abstract public class TermMatcher {
 
     }
 
-    /** the term can appear as an event (condition) in a conjunction compound */
-    public static final TermMatcher Eventable = new TermMatcher() {
-
-        @Override
-        public String toString() {
-            return "Eventable";
-        }
-
-        @Override
-        public Term param() {
-            return null;
-        }
-
-        @Override
-        public boolean test(Term term) {
-            return term.unneg().op().eventable;
-        }
-
-        @Override
-        public boolean testSuper(Term x) {
-            //TODO: Op.Eventables
-            return true;
-        }
-
-        @Override
-        public float cost() {
-            return 0.015f;
-        }
-
-    };
 
     public static final class ConjParallel extends TermMatcher {
 
@@ -479,5 +449,42 @@ abstract public class TermMatcher {
         public float cost() {
             return 0.1f;
         }
+    }
+
+    /** the term can appear as an event (condition) in a conjunction compound */
+    public static class Eventable extends TermMatcher {
+
+        public static final Eventable the = new Eventable();
+
+        private Eventable() {
+            super();
+        }
+
+        @Override
+        public String toString() {
+            return "Eventable";
+        }
+
+        @Override
+        public Term param() {
+            return null;
+        }
+
+        @Override
+        public boolean test(Term term) {
+            return term.unneg().op().eventable;
+        }
+
+        @Override
+        public boolean testSuper(Term x) {
+            //TODO: Op.Eventables
+            return true;
+        }
+
+        @Override
+        public float cost() {
+            return 0.015f;
+        }
+
     }
 }

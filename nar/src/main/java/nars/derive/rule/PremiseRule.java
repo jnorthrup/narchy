@@ -927,7 +927,7 @@ public class PremiseRule extends ProxyTerm {
     }
 
     private void eventable(Variable YY) {
-        constraints.add(TermMatcher.Eventable.constraint(YY, true));
+        constraints.add(TermMatcher.Eventable.the.constraint(YY, true));
     }
 
     private void hasAny(Term x, Op o) {

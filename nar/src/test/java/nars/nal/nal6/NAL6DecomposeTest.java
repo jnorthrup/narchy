@@ -121,19 +121,21 @@ abstract public class NAL6DecomposeTest extends NALTest {
         @Test
         void impl_conjunction_subj_union_decompose_conditional_neg() {
             test
+//                    .logDebug()
                     .believe("((a && b) ==> --x)")
                     .input("(--b ==> --x).")
                     .mustBelieve(cycles, "(a ==> x)", 0f, 0.81f) //via decompose
                     .mustNotOutput(cycles,"(a ==> x)", BELIEF, 0.1f, 1f, 0.1f, 1f, t->true)
+                    .mustNotOutput(cycles,"(--b ==> x)", BELIEF, 0.1f, 1f, 0.1f, 1f, t->true)
+                    .mustNotOutput(cycles, "a", BELIEF)
+                    .mustNotOutput(cycles, "b", BELIEF)
+                    .mustNotOutput(cycles, "x", BELIEF)
 //                    .mustNot(BELIEF, (x)->{
 //                        if (x.volume()==1) {
 //                            return true;
 //                        }
 //                        return false;
 //                    })
-                    .mustNotOutput(cycles, "a", BELIEF)
-                    .mustNotOutput(cycles, "b", BELIEF)
-                    .mustNotOutput(cycles, "x", BELIEF)
             ;
         }
         @Test

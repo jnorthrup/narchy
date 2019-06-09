@@ -51,15 +51,15 @@ public enum NALTruth implements TruthFunc {
         }
     },
 
-    @AllowOverlap DeductionRecursive() {
-        @Override
-        public Truth apply(Truth T, Truth B, NAL n, float minConf) {
-            return Deduction.apply(T, B, n, minConf);
-        }
-    },
+//    @AllowOverlap DeductionRecursive() {
+//        @Override
+//        public Truth apply(Truth T, Truth B, NAL n, float minConf) {
+//            return Deduction.apply(T, B, n, minConf);
+//        }
+//    },
 
 
-    @AllowOverlap Pre() {
+    Pre() {
         @Override
         public Truth apply(final Truth T, final Truth B, NAL n, float minConf) {
             return TruthFunctions2.pre(T, B, false, minConf);
@@ -73,7 +73,7 @@ public enum NALTruth implements TruthFunc {
         }
     },
 
-    @AllowOverlap Post() {
+    Post() {
         @Override
         public Truth apply(final Truth T, final Truth B, NAL n, float minConf) {
             return TruthFunctions2.post(T, B, true, minConf);
@@ -91,7 +91,7 @@ public enum NALTruth implements TruthFunc {
     /**
      * similar to structural deduction but keeps the same input frequency, only reducing confidence
      */
-    @SinglePremise @AllowOverlap StructuralReduction() {
+    @SinglePremise StructuralReduction() {
         @Override
         public Truth apply(final Truth T, final Truth Bignored, NAL n, float minConf) {
             float c = confCompose(T.conf(), NALTruth.confDefault(n));
@@ -99,13 +99,13 @@ public enum NALTruth implements TruthFunc {
             return c >= minConf ? $.t(T.freq(), c) : null;
         }
     },
-    @SinglePremise @AllowOverlap StructuralDeduction() {
+    @SinglePremise StructuralDeduction() {
         @Override
         public Truth apply(final Truth T, final Truth Bignored, NAL n, float minConf) {
             return T != null ? Deduction.apply(T, $.t(1f, confDefault(n)), n, minConf) : null;
         }
     },
-    @SinglePremise @AllowOverlap StructuralDeductionWeak() {
+    @SinglePremise StructuralDeductionWeak() {
         @Override
         public Truth apply(final Truth T, final Truth Bignored, NAL n, float minConf) {
             return T != null ? weak(Deduction.apply(T, $.t(1f, confDefault(n)), n, minConf), minConf) : null;

@@ -559,6 +559,14 @@ public class ConjTest {
         assertEq("((--,(y&&z))&&x)", "(x &| --(y && z))");
     }
 
+    @Test void testConjImageIndepVar() {
+        String r = "(($1-->(REPRESENT,/,$3))&&($2-->(REPRESENT,/,$4)))";
+        assertEq(r, $$$(r));
+        String s = "((($1-->(REPRESENT,/,$3))&&($2-->(REPRESENT,/,$4)))==>REPRESENT({$1,$2},{$3,$4}))";
+        assertEq(s, $$$(s));
+        assertEq("((REPRESENT($1,$2)&&REPRESENT($3,$4))==>REPRESENT({$1,$3},{$2,$4}))", s);
+    }
+
     @Test
     void testConegatedConjunctionTerms1not() {
 

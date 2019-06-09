@@ -32,7 +32,7 @@ public enum ConjPar {
             if (!a.hasAny(CONJ.bit) && !b.hasAny(CONJ.bit)) {
                 if (a.equals(b)) return a;
                 if (a.equalsNeg(b)) return False;
-                return B.newCompound(CONJ, DTERNAL, Terms.commute(xx));
+                return B.newCompound(CONJ, DTERNAL, sort ? Terms.commute(xx) : xx);
             }
         }
 

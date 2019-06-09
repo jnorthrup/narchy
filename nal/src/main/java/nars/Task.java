@@ -248,7 +248,10 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
      * these can all be tested prenormalization, because normalization will not affect the result
      */
     static boolean validTaskCompound(Compound x, boolean safe) {
-        return VarIndep.validIndep(x, safe);
+        if (!VarIndep.validIndep(x, safe)) {
+            return fail(x, "invalid independent variable usage", safe);
+        }
+        return true;
     }
 
 //    static StableBloomFilter<Task> newBloomFilter(int cap, Random rng) {

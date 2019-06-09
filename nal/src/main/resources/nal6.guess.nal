@@ -1,3 +1,14 @@
+((&&,B,A..+) ==> X), (E ==> Y)          |-    unisubst((&&,A..+),(polarizeTask(X) && B),(polarizeBelief(Y) && E)), (Belief:AbductionDepolarized)
+
+    //Conditional Abduction via Multi-conditional Syllogism
+    (C ==> X), (E ==> Y), eventOf(C,E)      |-    conjWithout(C,E), (Belief:AbductionPB, Time:Task)
+    (C ==> X), (--E ==> Y), eventOfNeg(C,E) |-    conjWithout(C,--E), (Belief:AbductionPB, Time:Task)
+      //(E ==> Y), (C ==> X), eventOf(C,E)      |-    conjWithout(C,E), (Belief:AbductionPBX)
+      //(--E ==> Y), (C ==> X), eventOfNeg(C,E)      |-    conjWithout(C,--E), (Belief:AbductionPBX)
+
+    (C ==> X), (E ==> Y), eventOf(C,E)      |-    unisubst(conjWithout(C,E),X,Y,"$"), (Belief:AbductionPB, Time:Task)
+
+
 // Contraposition (structural)
 //    a→b == ¬b→¬a		# contra positition [Lex contrapositionis]
 // "If not smoking causes health, being not healthy may be the result of smoking"
@@ -13,11 +24,11 @@
 //
 //    (P ==> S),   (S ==> P),  task("?"), neq(S,P), hasBelief()   |-     (P ==> S),   (Belief:ConversionPP, Punctuation:Belief)
 //    (--P ==> S),   (S ==> P),  task("?"), neq(S,P), hasBelief()   |-   (--P ==> S),   (Belief:ConversionPN, Punctuation:Belief)
-//    (--P ==> S), (S ==> P),  task("?"), neq(S,P), hasBelief()   |-     (polarizeBelief(P) ==> S),   (Belief:ConversionDepolarized, Punctuation:Belief)
-//    (P ==> S),   (--S ==> P),  task("?"), neq(S,P), hasBelief() |-   --(polarizeBelief(P) ==> S),   (Belief:ConversionDepolarized, Punctuation:Belief)
-
-
-//Contraposition to Disjunction
+////    (--P ==> S), (S ==> P),  task("?"), neq(S,P), hasBelief()   |-     (polarizeBelief(P) ==> S),   (Belief:ConversionDepolarized, Punctuation:Belief)
+////    (P ==> S),   (--S ==> P),  task("?"), neq(S,P), hasBelief() |-   --(polarizeBelief(P) ==> S),   (Belief:ConversionDepolarized, Punctuation:Belief)
+//
+//
+////Contraposition to Disjunction
 //    (--S ==> P), (--S ==> P) |- (S || P), (Belief:StructuralDeduction)
 //    (S ==> N),   (S ==> P)   |- (S || P), (Belief:StructuralDeductionN)
 

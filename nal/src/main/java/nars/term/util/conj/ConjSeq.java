@@ -10,7 +10,6 @@ import nars.term.Compound;
 import nars.term.Neg;
 import nars.term.Term;
 import nars.term.atom.Bool;
-import nars.term.util.Image;
 import nars.term.util.builder.TermBuilder;
 import nars.time.Tense;
 
@@ -39,8 +38,6 @@ public enum ConjSeq { ;
         if (a == True) return b;
         if (b == True) return a;
 
-        a = Image.imageNormalize(a);
-        b = Image.imageNormalize(b);
 
         /*assert(bStart == aStart);*/
         if (aStart == TIMELESS) {

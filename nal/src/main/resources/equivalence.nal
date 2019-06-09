@@ -39,9 +39,9 @@
  //// conditional syllogism ////////////////////////////////////////////////////////////////////////////////////
  //If after M, P usually happens, and M happens, it means P is expected to happen
   B,     ((C==>A)&&(A==>C))   |- unisubst(C,A,B,"$"),   (Belief:AnalogyPP, Goal:Desire)
-  B,     ((C==>A)&&(A==>C))   |- --unisubst(C,A,B,"$"), (Belief:AnalogyPN, Goal:Desire)
+  B,     ((C==>A)&&(A==>C))   |- --unisubst(C,A,B,"$"), (Belief:AnalogyPN)
   B,   (--(C==>A)&&(--A==>C)) |- unisubst(C,A,B,"$"),   (Belief:AnalogyNP, Goal:Desire)
-  B,   (--(C==>A)&&(--A==>C)) |- --unisubst(C,A,B,"$"), (Belief:AnalogyNN, Goal:Desire)
+  B,   (--(C==>A)&&(--A==>C)) |- --unisubst(C,A,B,"$"), (Belief:AnalogyNN)
 
 //  A,     ((C==>A)&&(A==>C))   |- C, (Belief:Analogy, Goal:Desire)
 //  A,     ((C==>A)&&(A==>C))   |- --C, (Belief:AnalogyPN, Goal:Desire)

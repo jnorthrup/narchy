@@ -632,7 +632,8 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
                         "&|", "&&+-", "||+-",
                         "&", "|", //TEMPORARY
                         Op.DIFFe, Op.DIFFi //??
-                ), push(match()),
+                ),
+                push(match()),
 
                 push(Compound.class),
                 push(Op.PROD),
