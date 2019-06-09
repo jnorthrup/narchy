@@ -157,14 +157,14 @@ public abstract class TermBuilder implements TermConstructor {
             default: {
                 if (u.length != 2)
                     throw new TermException("temporal conjunction with n!=2 subterms", CONJ, dt, u);
-                return conjSeq(u[0], dt, u[1]);
+                return conjAppend(u[0], dt, u[1]);
             }
         }
 
     }
 
     /** attaches two events together with dt separation */
-    public Term conjSeq(Term a, int dt, Term b) {
+    public Term conjAppend(Term a, int dt, Term b) {
         return (dt >= 0) ?
                 ConjSeq.sequence(a, 0, b, +dt + a.eventRange(), this) :
                 ConjSeq.sequence(b, 0, a, -dt + b.eventRange(), this);
@@ -175,36 +175,22 @@ public abstract class TermBuilder implements TermConstructor {
     }
 
     public Term root(Compound x) {
-        if (!x.hasAny(Op.Temporal))
-            return x;
-        return x.temporalize(
-                NAL.conceptualization
-        );
+        return !x.hasAny(Op.Temporal) ?
+                x
+                :
+                x.temporalize(
+                    NAL.conceptualization
+                );
     }
 
     public Term concept(Compound x) {
-        Term term = x.unneg().root();
+        Term term = x.unneg().root().normalize();
 
         Op op = term.op();
-        if (op==NEG)
-            throw new TermException("TermBuilder.concept(): x.unneg().root() is NEG", x);
-        if (!op.conceptualizable)
-            return Bool.Null;
+        if (op==NEG || !op.conceptualizable)
+            throw new TermException("not conceptualizable", x);
 
-
-        return term.normalize();
-//        Term term2 = target.normalize();
-//        if (term2 != target) {
-//            if (term2 == null)
-//                return Bool.Null;
-//
-//            //assert (term2.op() == op): term2 + " not a normal normalization of " + target; //<- allowed to happen when image normalization is involved
-//
-//            target = term2.unneg();
-//        }
-//
-//
-//        return target;
+        return term;
     }
 
     protected Term statement(Op op, int dt, Term subject, Term predicate) {

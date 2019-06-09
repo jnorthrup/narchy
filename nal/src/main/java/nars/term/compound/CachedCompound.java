@@ -93,7 +93,6 @@ abstract public class CachedCompound extends SeparateSubtermsCompound implements
             return each.accept(offset, this);
         }
 
-
     }
 
     public final static class SimpleCachedCompound extends UnnormalizedCachedCompound {
@@ -111,10 +110,9 @@ abstract public class CachedCompound extends SeparateSubtermsCompound implements
         public final Term concept() {
             return this;
         }
-
         @Override
         public final boolean equalsRoot(Term x) {
-            return equals(x) || equals(x.root());
+            return equals(x);
         }
 
     }

@@ -355,24 +355,30 @@ public class Occurrify extends TimeGraph {
                 know(taskTerm, taskStart, taskEnd) :
                 know(taskTerm);
 
+        imageNormalize(pattern);
+        imageNormalize(taskTerm);
+
         if (beliefTerm.op().eventable) {
             boolean equalBT = beliefTerm.equals(taskTerm);
             Event beliefEvent = (beliefStart != TIMELESS) ?
                     know(beliefTerm, beliefStart, beliefEnd) :
                     ((!equalBT) ? know(beliefTerm) : taskEvent) /* same target, reuse the same event */;
+            if (!equalBT)
+                imageNormalize(beliefTerm);
         }
 
         autoneg = (taskTerm.hasAny(NEG) || beliefTerm.hasAny(NEG) || pattern.hasAny(NEG));
-
-        Term imgPattern = Image.imageNormalize(pattern);
-        if (!pattern.equals(imgPattern))
-            link(shadow(pattern), 0, shadow(imgPattern));
-
 
 
         //compact(); //TODO compaction removes self-loops which is bad, not sure if it does anything else either
 
         return this;
+    }
+
+    private void imageNormalize(Term p) {
+        Term ip = Image.imageNormalize(p);
+        if (!p.equals(ip))
+            link(shadow(p), 0, shadow(ip));
     }
 
     /**

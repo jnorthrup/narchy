@@ -9,7 +9,6 @@ import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
 import nars.term.util.SetSectDiff;
 import nars.term.util.TermTest;
-import nars.term.util.conj.ConjSeq;
 import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -638,7 +637,7 @@ public class TermReductionsTest extends NarseseTest {
                 "((((a,b) ==>+1 (b,c)) &&+4 c) &&+1 d)",
                 x.toString());
 
-        Term x2 = Op.terms.conjSeq(a, 4, b);
+        Term x2 = Op.terms.conjAppend(a, 4, b);
         assertEquals(x, x2);
     }
 

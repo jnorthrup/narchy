@@ -1,11 +1,14 @@
 package nars.table.eternal;
 
+import jcog.math.LongInterval;
 import nars.$;
+import nars.NAR;
 import nars.Task;
-import nars.attention.What;
 import nars.concept.Concept;
 import nars.table.BeliefTables;
+import nars.table.dynamic.SeriesBeliefTable;
 import nars.task.EternalTask;
+import nars.task.util.Answer;
 import nars.truth.Truth;
 
 import static nars.Op.BELIEF;
@@ -14,22 +17,42 @@ import static nars.Op.BELIEF;
  *  should be added only to the end of BeliefTables */
 public class DefaultOnlyEternalTable extends EternalTable {
 
-    public DefaultOnlyEternalTable(Concept c, Truth t, What w) {
+    private DefaultOnlyEternalTable(Concept c, Truth t, NAR n) {
         super(1);
 
-        BeliefTables tables = (BeliefTables) c.beliefs();
-        assert(!tables.isEmpty()): "other tables should precede this in BeliefTables chain";
-
-        tables.add(this);
 
         //TODO just direct insert
-        Task belief = new EternalTask(c.term(), BELIEF, $.t(t.freq(), t.conf()), w.nar);
-        w.in.put(belief);
+        Task tt = new EternalTask(c.term(), BELIEF, $.t(t.freq(), t.conf()), n);
+        tt.pri(n.priDefault(BELIEF));
+        addEnd(tt, 1);
+
+        //n.input(belief);
+        //w.in.put(belief);
 //        assert(!belief.isDeleted());
 //        assert(!isEmpty());
     }
 
-//    @Override
+    public static DefaultOnlyEternalTable add(Concept c, Truth t, NAR n) {
+        DefaultOnlyEternalTable tb = new DefaultOnlyEternalTable(c, t, n);
+
+        BeliefTables tables = (BeliefTables) c.beliefs();
+        assert(!tables.isEmpty()): "other tables should precede this in BeliefTables chain";
+
+        tables.add(tb);
+
+        return tb;
+    }
+
+    @Override
+    public void match(Answer a) {
+        for (Task x : a.tasks)
+            if (x instanceof SeriesBeliefTable.SeriesTask && a.time.contains((LongInterval)x))
+                return; //dont match if no other signal task has been matched
+
+        super.match(a);
+    }
+
+    //    @Override
 //    public void match(Answer a) {
 //        if (preFilter(a))
 //            super.match(a);

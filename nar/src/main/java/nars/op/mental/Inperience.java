@@ -60,11 +60,20 @@ abstract public class Inperience extends TaskLeakTransform {
             believe, want, wonder, evaluate, reflect);
 
 
+    private static Term describe(Term x) {
+        x = x.temporalize(Retemporalize.retemporalizeXTERNALToDTERNAL);
+        x = x.hasAny(VAR_QUERY) ? VariableTransform.queryToDepVar.apply(x) : x;
+        if (x instanceof Bool) return Bool.Null;
+        Term y = Image.imageNormalize(x);
+
+        //return Described.apply(y);
+        return y;
+    }
 
     /** semanticize, as much as possible, a target so it can enter higher order
      * TODO merge with NLPGen stuff
      * */
-    final static TermTransform Described = new AbstractTermTransform.NegObliviousTermTransform() {
+    @Deprecated final static TermTransform Described = new AbstractTermTransform.NegObliviousTermTransform() {
 
         private final Atomic and = Atomic.the("and");
         //private final Atomic so = Atomic.the("so"); //so, then, thus
@@ -132,46 +141,23 @@ abstract public class Inperience extends TaskLeakTransform {
     };
 
     public static Term reifyQuestion(Term x, byte punc, NAR nar) {
-        x = x.temporalize(Retemporalize.retemporalizeXTERNALToDTERNAL);
-        x = x.hasAny(VAR_QUERY) ? VariableTransform.queryToDepVar.apply(x) : x;
-        if (x instanceof Bool) return Bool.Null;
-
-        x = Image.imageNormalize(x);
-
-        return $.funcImg(punc == QUESTION ? wonder : evaluate, nar.self(), Described.apply(x));
+        return $.funcImg(punc == QUESTION ? wonder : evaluate, nar.self(), describe(x));
     }
+
+
 
     static Term reifyBeliefOrGoal(Task t, NAR nar) {
 
-        Term x = Image.imageNormalize(t.term());
-//        Concept c = nar.conceptualizeDynamic(tt.unneg());
-//        if (c == null)
-//            return Bool.Null;
-
         Term self = nar.self();
 
-        Atomic verb;
-        Term y;
-        if (t.punc() == BELIEF) {
-//                Task belief =
-//                        t;
-//                        //c.table(BELIEF).answer(t.start(), t.end(), tt, null, nar);
+        Term y = describe(t.term());
 
-            y = //belief != null ? Described.transform(belief.target().negIf(belief.isNegative())) :
-                    Described.apply(x);
+        Atomic verb;
+
+        if (t.punc() == BELIEF) {
             verb = believe;
         } else {
-//                Task goal = t;
-//                        //c.table(GOAL).answer(t.start(), t.end(), tt.unneg(), null, nar);
-
-            y = //goal!=null ? Described.transform(goal.target().negIf(goal.isNegative())) :
-                    Described.apply(x);
-
             verb = want;
-//                else {
-//
-//                    return CONJ.the(want, 0, $.func(believe, self, bb.negIf(belief.isNegative())));
-//                }
         }
         return $.funcImg(verb, self, y.negIf(t.isNegative()));
     }

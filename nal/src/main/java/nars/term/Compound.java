@@ -725,29 +725,25 @@ public interface Compound extends Term, IPair, Subterms {
 
     @Override
     @Nullable
-    default Term temporalize(Retemporalize r) {
+    @Deprecated default Term temporalize(Retemporalize r) {
         return r.applyCompound(this);
     }
 
 
     @Override
     default boolean equalsRoot(Term x) {
+        if (!(x instanceof Compound))
+            return false;
+
         if (this.equals(x))
             return true;
 
-        Op o = op();
-        if (o != x.op())
+        if (op() != x.op() || !hasAny(Op.Temporal)
+                || structure()!=x.structure())
             return false;
 
-        if (!o.temporal && !hasAny(Op.Temporal))
-            return false;
-
-        if (structure() == x.structure()) {
-            Term root = root(), xRoot;
-            return (root != this && root.equals(x)) || (((xRoot = x.root())) != x && root.equals(xRoot));
-        }
-
-        return false;
+        Term root = root(), xRoot;
+        return (root != this && root.equals(x)) || (((xRoot = x.root())) != x && root.equals(xRoot));
     }
 
 

@@ -77,10 +77,6 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 
 
     private static final Event[] EMPTY_EVENT_ARRAY = new Event[0];
-    //protected final MutableSet<Term> autoNeg = new UnifiedSet();
-    /**
-     * floating, but potentially related to one or more absolute event
-     */
 
 
     private static final Iterable empty = List.of();
@@ -110,7 +106,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
      */
 
     final Map<Term, Collection<Event>> byTerm = new UnifiedMap<>();
-    public boolean autoneg = true;
+    public boolean autoneg = false;
 
     //    /** temporary unification context */
 //    private final UnifyAny u = new UnifyAny();
@@ -352,11 +348,24 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
     }
 
     private Event event(Term t, long start, long end, boolean add) {
-        if (add && !notExceedingNodes())
-            throw new IndexOutOfBoundsException("node overflow");
 
         if (!t.op().eventable)
             throw new WTF();
+
+        if (add) {
+            if (!notExceedingNodes()) {
+                Node<Event, TimeSpan> existing = node(t);
+                if (existing!=null)
+                    return existing.id();
+                else {
+                    if (NAL.DEBUG)
+                        throw new IndexOutOfBoundsException("node overflow");
+                    add = false;
+                }
+            }
+        }
+
+
 
         boolean mayRelink = add && start != TIMELESS &&
                 (NAL.derive.TIMEGRAPH_ABSORB_CONTAINED_EVENT ||
@@ -368,7 +377,6 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 
         Event event;
         if (start == TIMELESS) {
-            assert (add) : "use shadow(t) if not adding";
             event = shadow(t);
         } else {
 
@@ -627,6 +635,13 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 
 
             switch (eventTerm.op()) {
+                case NEG: {
+                    Term u = eventTerm.unneg();
+                    if (u.op()!=CONJ)
+                        link(event, 0, shadow(u));
+                    break;
+                }
+
                 default: {
                     if (eventTerm.hasAny(Op.Temporal)) {
                         eventTerm.recurseTerms(s -> {
@@ -674,6 +689,9 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
                     } else {
                         link(se, edt + subj.eventRange(), pe);
                     }
+
+
+                    link(pe, 0, shadow(pred.neg())); //softlink to the pred neg
 
                     break;
 
@@ -1205,7 +1223,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
                     xLate = xx.sub(1 - early);
                 }
 
-                return terms.conjSeq(xEarly, dt, xLate);
+                return terms.conjAppend(xEarly, dt, xLate);
             }
         }
 

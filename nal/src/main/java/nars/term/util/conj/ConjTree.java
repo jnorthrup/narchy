@@ -198,6 +198,7 @@ public class ConjTree implements ConjBuilder {
      * @return
      */
     private Term reduceNegNeg(Term nx, Set<Term> neg) {
+        assert(nx.op()!=NEG);
 
         int nxs = nx.structure();
         boolean xConj = nx.op() == CONJ;
@@ -398,13 +399,16 @@ public class ConjTree implements ConjBuilder {
                 return false;
             }
 
+            if (pos != null && !(xu instanceof Bool)) {
+                xu = reducePN(xu, pos, true);
+                if (xu.op()==NEG)
+                    return addAt(at, xu.unneg()); //inverted
+            }
+
             if (neg != null && !(xu instanceof Bool)) {
                 xu = reduceNegNeg(xu, neg);
             }
 
-            if (pos != null && !(xu instanceof Bool)) {
-                xu = reducePN(xu, pos, true);
-            }
 
             if (_xu != xu)
                 x = xu.neg(); //HACK

@@ -1,9 +1,11 @@
 package nars.concept.sensor;
 
+import jcog.Util;
 import jcog.data.list.FasterList;
 import jcog.math.FloatSupplier;
 import nars.$;
 import nars.NAR;
+import nars.table.eternal.DefaultOnlyEternalTable;
 import nars.term.Term;
 import nars.truth.Truth;
 import org.apache.commons.math3.exception.OutOfRangeException;
@@ -38,6 +40,10 @@ public class DigitizedScalar extends DemultiplexedScalarSensor {
     @FunctionalInterface
     public interface ScalarEncoder {
         float truth(float x, int digit, int maxDigits);
+
+        default float defaultTruth() {
+            return 0f;
+        }
     }
 
     public final List<Signal> sensors;
@@ -167,14 +173,25 @@ public class DigitizedScalar extends DemultiplexedScalarSensor {
         this.input = input;
 
 
+        float defaultFreq = freqer.defaultTruth();
+
         assert (states.length > 1);
         this.sensors = new FasterList(states.length);
         int i = 0;
         for (Term s : states) {
             final int ii = i++;
             Signal sc = new Signal(s, in.id,
-                () -> freqer.truth(asFloat(), ii, states.length),
+                () -> {
+                    float x = freqer.truth(asFloat(), ii, states.length);
+                    if (Util.equals(x, defaultFreq))
+                        return Float.NaN;
+                    return x;
+                },
                 nar);
+
+            if (defaultFreq==defaultFreq)
+                DefaultOnlyEternalTable.add(sc, $.t(defaultFreq, nar.beliefConfDefault.eviEte()), nar);
+
             sensors.add(sc);
         }
 

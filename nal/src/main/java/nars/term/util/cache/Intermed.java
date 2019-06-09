@@ -21,8 +21,6 @@ public enum Intermed  { ;
         }
 
         public abstract Term[] subs();
-
-
     }
 
     public static final class InternedCompoundByComponentsArray extends InternedCompoundByComponents {
@@ -31,13 +29,28 @@ public enum Intermed  { ;
         public InternedCompoundByComponentsArray(Op o, int dt, Term... subs) {
             super(o, dt);
             this.subs = subs;
-            TermIO.the.writeSubterms(subs, key);
+            TermIO.the.writeSubterms(key, subs);
             commit();
         }
 
         @Override
         public Term[] subs() {
             return subs;
+        }
+    }
+    public static final class InternedCompoundByComponentPair extends InternedCompoundByComponents {
+        public final transient Term x, y;
+
+        public InternedCompoundByComponentPair(Op o, int dt, Term x, Term y) {
+            super(o, dt);
+            this.x = x; this.y = y;
+            TermIO.the.writeSubterms(key, x, y);
+            commit();
+        }
+
+        @Override
+        public Term[] subs() {
+            return new Term[] { x, y };
         }
     }
 
@@ -64,7 +77,7 @@ public enum Intermed  { ;
         public InternedSubterms(Term[] s) {
             super();
             this.subs = s;
-            TermIO.the.writeSubterms(subs, key);
+            TermIO.the.writeSubterms(key, subs);
             commit();
         }
     }

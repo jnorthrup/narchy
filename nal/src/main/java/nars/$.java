@@ -436,6 +436,9 @@ public enum $ {
     public static PreciseTruth t(float f, float c) {
         return PreciseTruth.byConf(f, c);
     }
+    public static PreciseTruth t(float f, double c) {
+        return PreciseTruth.byConf(f, c);
+    }
 
     /**
      * negates each entry in the array

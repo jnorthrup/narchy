@@ -91,11 +91,10 @@ public abstract class Reward implements GameLoop, TermedDelegate, Iterable<Conce
     public void setDefault(PreciseTruth t) {
         for (Concept c : this) {
             //TODO assert that it has no eternal tables already
-            new DefaultOnlyEternalTable(c,t,game.what());
-
+            DefaultOnlyEternalTable.add(c,t,game.what().nar);
         }
-
     }
+
     public void alwaysWantEternally(Term goal, float freq) {
         alwaysWantEternally(goal, freq, nar().confDefault(GOAL));
     }

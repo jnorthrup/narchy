@@ -229,15 +229,16 @@ public class AbstractGoalActionConcept extends GameAction {
         NAR n = g.nar();
         int gameDur = g.dur(); //g.durPhysical();
 
-        int limit = Answer.BELIEF_MATCH_CAPACITY * 2; //high sensitivity
+        int limitBelief = Answer.BELIEF_MATCH_CAPACITY; //high sensitivity
+        int limitGoal = limitBelief * 2;
 
         if (prev == TIMELESS)
-            prev = now - n.dur(); //HACK
+            prev = now - gameDur; //HACK
 
-        Pair<TruthProjection, long[]> bt = truth(true, limit, prev, now, gameDur, n);
+        Pair<TruthProjection, long[]> bt = truth(true, limitBelief, prev, now, gameDur, n);
         this.beliefTruth = bt.getOne() != null ? bt.getOne().truth() : null;
 
-        this.actionTruth = actionTruth(limit, prev, now, gameDur, g.what());
+        this.actionTruth = actionTruth(limitGoal, prev, now, gameDur, g.what());
 
     }
 

@@ -43,7 +43,7 @@ public class SerialCompound extends DynBytes implements SameSubtermsCompound, Th
         this.volume = (byte) v;
 
         TermIO.the.writeCompoundPrefix(o, dt, this);
-        TermIO.the.writeSubterms(subterms, this);
+        TermIO.the.writeSubterms(this, subterms);
     }
 
 

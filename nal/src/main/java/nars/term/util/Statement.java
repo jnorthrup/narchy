@@ -33,12 +33,6 @@ public class Statement {
         if (subject == Null || predicate == Null)
             return Null;
 
-        if (depth <= 0) {
-            if (NAL.DEBUG) {
-                throw new TermException("statement recursion limit", op, dt, subject, predicate);
-            }
-            return Null; //TODO
-        }
 
 
         if (op == IMPL && dt == DTERNAL)
@@ -59,6 +53,13 @@ public class Statement {
             }
         }
 
+
+        if (depth <= 0) {
+            if (NAL.DEBUG) {
+                throw new TermException("statement recursion limit", op, dt, subject, predicate);
+            }
+            return Null; //TODO
+        }
 
         if (op == IMPL) {
 
@@ -101,7 +102,7 @@ public class Statement {
                     if (dt == DTERNAL || dt == XTERNAL) {
                         newSubj = CONJ.the(B, dt, subject, inner);
                     } else {
-                        newSubj = B.conjSeq(subject, dt, inner);
+                        newSubj = B.conjAppend(subject, dt, inner);
                     }
                     int newDT = predicate.dt();
                     if (newDT == DTERNAL)

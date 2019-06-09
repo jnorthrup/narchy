@@ -179,10 +179,23 @@ public enum Util {
 
     }
 
+
     public static int hash(byte[] bytes) {
         return hash(bytes, 0, bytes.length);
     }
 
+    public static <X> Predicate<X> limit(Predicate<X> x, int max) {
+        assert(max > 0);
+        if (max == 1) {
+            return (z) -> { x.test(z); return false; };
+        } else {
+            final int[] remain = {max};
+            return (z) -> {
+                boolean next = (--remain[0] > 0);
+                return x.test(z) && next;
+            };
+        }
+    }
 
 //    /**
 //     * untested custom byte[] hash function

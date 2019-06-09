@@ -18,6 +18,7 @@ import nars.truth.Truth;
 
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import static jcog.math.LongInterval.TIMELESS;
@@ -46,16 +47,25 @@ public class SeriesBeliefTable<T extends Task> extends DynamicTaskTable {
     @Override
     public final void match(Answer t) {
         long s = t.time.start, e;
+        Predicate<Task> each;
         if (t.time.start == ETERNAL) {
             //choose now as the default origin time
             long now = t.nar.time();
             int dur = t.dur;
             s = now - dur/2;
             e = now + dur/2;
+            each = Util.limit(t::tryAccept, 1);
         } else {
             e = t.time.end;
+
+            int seriesTTL = (int)Math.ceil(NAL.SERIES_MATCH_LIMIT_RATE_PER_DUR / t.dur * t.time.range());
+            if (seriesTTL < t.ttl)
+                each = Util.limit(t::tryAccept, seriesTTL);
+            else
+                each = t::tryAccept;
         }
-        series.whileEach(s, e, false, t::tryAccept);
+
+        series.whileEach(s, e, false, each);
     }
 
 

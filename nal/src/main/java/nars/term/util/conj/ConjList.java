@@ -189,7 +189,7 @@ public class ConjList extends LongObjectArraySet<Term> implements ConjBuilder {
                     Term b = get(1);
                     if (!b.hasAny(CONJ)) {
                         if (!a.equals(b)) {
-                            return B.conjSeq(a, Tense.occToDT(wb - wa), b);
+                            return B.conjAppend(a, Tense.occToDT(wb - wa), b);
                         }
                     }
                 }

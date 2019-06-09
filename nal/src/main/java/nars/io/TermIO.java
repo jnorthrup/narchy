@@ -45,7 +45,7 @@ public interface TermIO {
 
     void writeSubterms(Subterms subs, ByteArrayDataOutput out);
 
-    default void writeSubterms(Term[] subs, ByteArrayDataOutput out) {
+    default void writeSubterms(ByteArrayDataOutput out, Term... subs) {
         int n = subs.length;
         //assert(n < Byte.MAX_VALUE);
         out.writeByte(n);
