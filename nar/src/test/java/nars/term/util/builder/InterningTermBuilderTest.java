@@ -19,10 +19,10 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class InterningTermBuilderTest {
 
-    final static Term a = Atomic.the("a"), b = Atomic.the("b");
+    private final static Term a = Atomic.the("a"), b = Atomic.the("b");
 
     @Test
-    public void test1() {
+    void test1() {
         InterningTermBuilder t = new InterningTermBuilder();
         Term pab = t.compound(PROD, a, b);
         assertEquals( "(a,b)", pab.toString());
@@ -52,7 +52,8 @@ class InterningTermBuilderTest {
         assertEquals("((--,x),y)", s.toString());
     }
 
-    @Test public void testImplicationComplexEndToEnd() {
+    @Test
+    void testImplicationComplexEndToEnd() {
         //InterningTermBuilder t = new InterningTermBuilder();
         if (Op.terms instanceof InterningTermBuilder) {
 

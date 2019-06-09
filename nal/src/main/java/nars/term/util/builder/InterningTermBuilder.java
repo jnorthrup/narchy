@@ -151,6 +151,10 @@ public class InterningTermBuilder extends HeapTermBuilder {
         return terms[x.op].apply(x);
     }
 
+    @Override
+    public final Subterms subterms(@Nullable Op o, Term... u) {
+        return subterms(o, u, DTERNAL, null);
+    }
 
     @Override
     protected Subterms subterms(Op o, Term[] t, int dt, @Nullable DynBytes key) {
@@ -158,7 +162,7 @@ public class InterningTermBuilder extends HeapTermBuilder {
         if (t.length == 0)
             subs = EmptySubterms;
         else if (internable(t))
-            subs =subtermsInterned(t);
+            subs = subtermsInterned(t);
         else
             subs = super.subterms(o, t);
 

@@ -1306,22 +1306,22 @@ public class NAL6Test extends NALTest {
         ;
     }
 
-    @Test
-    void testImplToDisj_Subj() {
-        //reverse of: https://github.com/opencog/opencog/blob/master/opencog/pln/rules/wip/or-transformation.scm
-        test
-                .believe("(--x ==> y)")
-                .mustBelieve(cycles, "(||,x,y)", 1f, 0.81f)
-        ;
-    }
-    @Test
-    void testImplToDisj_Pred() {
-        //reverse of: https://github.com/opencog/opencog/blob/master/opencog/pln/rules/wip/or-transformation.scm
-        test
-                .believe("(x ==> --y)")
-                .mustBelieve(cycles, "(||,x,y)", 1f, 0.81f)
-        ;
-    }
+//    @Test
+//    void testImplToDisj_Subj() {
+//        //reverse of: https://github.com/opencog/opencog/blob/master/opencog/pln/rules/wip/or-transformation.scm
+//        test
+//                .believe("(--x ==> y)")
+//                .mustBelieve(cycles, "(||,x,y)", 1f, 0.81f)
+//        ;
+//    }
+//    @Test
+//    void testImplToDisj_Pred() {
+//        //reverse of: https://github.com/opencog/opencog/blob/master/opencog/pln/rules/wip/or-transformation.scm
+//        test
+//                .believe("(x ==> --y)")
+//                .mustBelieve(cycles, "(||,x,y)", 1f, 0.81f)
+//        ;
+//    }
 
 //    @Test void testMutexSwapPos() {
 //        test.nar.termVolumeMax.setAt(14);

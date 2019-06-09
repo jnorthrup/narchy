@@ -96,7 +96,7 @@ public enum Conj  { ;
         else //if (polarity == +1)
             x = _x;
 
-        if (!x.op().eventable)
+        if (!x.op().eventable || !Term.commonStructure(container.structure() & ~(CONJ.bit), x.structure() & ~(CONJ.bit)))
             return false;
 
         if (container.equals(x))

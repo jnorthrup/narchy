@@ -64,7 +64,7 @@ public class Statement {
         if (op == IMPL) {
 
             if (subject == True)
-                return predicate;
+                return Null; //return predicate;
             if (subject == False)
                 return Null;
             if (!NAL.IMPLICATION_SUBJECT_CAN_CONTAIN_IMPLICATION && subject.hasAny(IMPL)) {
@@ -89,12 +89,12 @@ public class Statement {
 
             switch (predicate.op()) {
                 case BOOL:
-                    //reduce to the subject as a general condition for the superclass to utilize
-                    if (predicate == True)
-                        return subject;
-                    else if (predicate == False)
-                        return subject.neg();
-                    else
+//                    //reduce to the subject as a general condition for the superclass to utilize
+//                    if (predicate == True)
+//                        return subject;
+//                    else if (predicate == False)
+//                        return subject.neg();
+//                    else
                         return Null;
 
                 case IMPL: {

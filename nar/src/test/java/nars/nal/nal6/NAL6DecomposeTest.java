@@ -123,7 +123,17 @@ abstract public class NAL6DecomposeTest extends NALTest {
             test
                     .believe("((a && b) ==> --x)")
                     .input("(--b ==> --x).")
-                    .mustBelieve(cycles, "(a ==> x)", 0f, 0.45f) //via decompose
+                    .mustBelieve(cycles, "(a ==> x)", 0f, 0.81f) //via decompose
+                    .mustNotOutput(cycles,"(a ==> x)", BELIEF, 0.1f, 1f, 0.1f, 1f, t->true)
+//                    .mustNot(BELIEF, (x)->{
+//                        if (x.volume()==1) {
+//                            return true;
+//                        }
+//                        return false;
+//                    })
+                    .mustNotOutput(cycles, "a", BELIEF)
+                    .mustNotOutput(cycles, "b", BELIEF)
+                    .mustNotOutput(cycles, "x", BELIEF)
             ;
         }
         @Test

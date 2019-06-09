@@ -18,8 +18,8 @@
 
 
 //Contraposition to Disjunction
-    (--S ==> P), (--S ==> P) |- (S || P), (Belief:StructuralDeduction)
-    (S ==> N),   (S ==> P)   |- (S || P), (Belief:StructuralDeductionN)
+//    (--S ==> P), (--S ==> P) |- (S || P), (Belief:StructuralDeduction)
+//    (S ==> N),   (S ==> P)   |- (S || P), (Belief:StructuralDeductionN)
 
 
 

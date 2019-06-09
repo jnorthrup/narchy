@@ -635,12 +635,12 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 
 
             switch (eventTerm.op()) {
-//                case NEG: {
-//                    Term u = eventTerm.unneg();
-//                    if (u.op()!=CONJ)
-//                        link(event, 0, shadow(u));
-//                    break;
-//                }
+                case NEG: {
+                    Term u = eventTerm.unneg();
+                    if (u.op().eventable && !u.op().temporal)
+                        link(event, 0, know(u));
+                    break;
+                }
 
                 default: {
                     if (eventTerm.hasAny(Op.Temporal)) {
