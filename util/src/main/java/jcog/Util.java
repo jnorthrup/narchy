@@ -185,7 +185,9 @@ public enum Util {
     }
 
     public static <X> Predicate<X> limit(Predicate<X> x, int max) {
-        assert(max > 0);
+        if (max<=0)
+            throw new WTF();
+
         if (max == 1) {
             return (z) -> { x.test(z); return false; };
         } else {

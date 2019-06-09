@@ -360,6 +360,8 @@ abstract public class TaskLinks implements Sampler<TaskLink> {
      */
     public static class AtomCachingTangentTaskLinks extends TaskLinks {
 
+        int ATOM_TANGENT_REFRESH_DURS = 1;
+
         @Override
         protected Term reverse(Term term, TaskLink link, Task task, Derivation d) {
             if (!(term instanceof Atom)) return null;
@@ -382,7 +384,7 @@ abstract public class TaskLinks implements Sampler<TaskLink> {
                     Predicate<TaskLink> filter = ((Predicate<TaskLink>) link::equals).negate();
 
                     Term z = atomTangent(T, task.punc(), filter, d.time(),
-                            d.dur() * NAL.ATOM_TANGENT_REFRESH_DURS, d.random);
+                            d.dur() * ATOM_TANGENT_REFRESH_DURS, d.random);
                     return z;
                 }
 

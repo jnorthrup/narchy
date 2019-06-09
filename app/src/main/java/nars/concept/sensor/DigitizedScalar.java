@@ -42,7 +42,7 @@ public class DigitizedScalar extends DemultiplexedScalarSensor {
         float truth(float x, int digit, int maxDigits);
 
         default float defaultTruth() {
-            return 0f;
+            return Float.NaN;
         }
     }
 
@@ -90,18 +90,26 @@ public class DigitizedScalar extends DemultiplexedScalarSensor {
         return f;
 
     };
-    public final static ScalarEncoder Mirror = (v, i, indices) -> {
-        assert (indices == 2);
-        return i == 0 ? v : 1 - v;
-    };
+//    public final static ScalarEncoder Mirror = (v, i, indices) -> {
+//        assert (indices == 2);
+//        return i == 0 ? v : 1 - v;
+//    };
 
     /**
      * hard
      */
-    public final static ScalarEncoder Needle = (v, i, indices) -> {
-        float vv = v * indices;
-        int which = (int) Math.floor(vv);
-        return i == which ? 1 : 0;
+    public final static ScalarEncoder Needle = new ScalarEncoder() {
+
+        public final float defaultTruth() {
+            return 0;
+        }
+
+        @Override
+        public float truth(float v, int i, int indices) {
+            float vv = v * indices;
+            int which = (int) Math.floor(vv);
+            return i == which ? 1 : 0;
+        }
     };
 
     /**
@@ -112,11 +120,15 @@ public class DigitizedScalar extends DemultiplexedScalarSensor {
      * + + +    + + +     + + +
      * TODO need to analyze the interaction of the produced frequency values being reported by all concepts.
      */
-    public final static ScalarEncoder FuzzyNeedle = (v, i, indices) -> {
+    public final static ScalarEncoder FuzzyNeedle = new ScalarEncoder() {
 
-        float dr = 1f / (indices - 1);
+        @Override
+        public float truth(float v, int i, int indices) {
 
-        return Math.max(0, (1f - Math.abs((i * dr) - v) / dr));
+            float dr = 1f / (indices - 1);
+
+            return Math.max(0, (1f - Math.abs((i * dr) - v) / dr));
+        }
     };
 
 
@@ -125,7 +137,7 @@ public class DigitizedScalar extends DemultiplexedScalarSensor {
      */
     public final static ScalarEncoder FuzzyBinary = (v, i, indices) -> {
 
-        
+
 
         float b = v;
         float dv = 1f;
@@ -134,7 +146,7 @@ public class DigitizedScalar extends DemultiplexedScalarSensor {
             b = Math.max(0, b - dv);
         }
 
-        
+
 
         return b / (dv);
     };

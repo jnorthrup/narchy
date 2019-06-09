@@ -517,8 +517,8 @@ public class ConjTest {
 
         Term a = $$("(--,((a &&+1 b)&&c))");
         Term c = $$("c");
-        assertEq(False, CONJ.the(a, c));
-        assertEq(False, "(&&, --((a &&+1 b)&&c), c)");
+        assertEq("c", CONJ.the(a, c));
+        assertEq("c", "(&&, --((a &&+1 b)&&c), c)");
 
     }
 
@@ -860,6 +860,10 @@ public class ConjTest {
         assertEq("(y &&+1 z)", Conj.diffAll(
                 $$("((x &&+1 y) &&+1 z)"),
                 $$("(x &&+2 y)")));
+    }
+
+    @Test
+    void testConjWithoutAllParallel4() {
 
         assertEq("z", Conj.diffAll(
                 $$("((x &&+1 y) &&+1 z)"),
@@ -1079,9 +1083,12 @@ public class ConjTest {
 //    }
 
     @Test
-    void testRetemporalization1() throws Narsese.NarseseException {
+    void testRetemporalization1a() throws Narsese.NarseseException {
 
         assertEq(False /*"x"*/, $$("((--,(x &&+1 x))&&x)"));
+    }
+    @Test
+    void testRetemporalization1b() throws Narsese.NarseseException {
 
         assertEq(
                 "a(x,true)",
@@ -1696,7 +1703,7 @@ public class ConjTest {
         //construction method 2
         ConjBuilder xy = new ConjTree();
         assertTrue(xy.add(ETERNAL, x));
-        assertFalse(xy.add(ETERNAL, y));
+        /*assertFalse(*/xy.add(ETERNAL, y)/*)*/;
         assertEquals(False, xy.term());
 
 
@@ -1820,7 +1827,7 @@ public class ConjTest {
     void disjunctifySeq2() {
         ConjBuilder c = new ConjTree();
         c.add(ETERNAL, $$("(--,(((--,(g-->input)) &&+40 (g-->forget))&&((g-->happy) &&+40 (g-->happy))))"));
-        c.add(1, $$("happy:g"));
+        c.add(1, $$("happy:g")); //shouldnt cancel since it's temporal, only at 1
         assertEq("((--,((--,(g-->input)) &&+40 (g-->forget)))&&(g-->happy))", c.term());
         assertEq("((--,((--,(_1-->_2)) &&+40 (_1-->_3)))&&(_1-->_4))", c.term().anon());
     }
@@ -1964,6 +1971,7 @@ public class ConjTest {
     @Test
     void testDisjunctionParallelReduction2() {
 
+        /* and( not(and(y,x)),z,x) = x ∧ ¬y ∧ z */
         assertEq("(&&,(--,y),x,z)",
                 $$("(&&,(--,(y&&x)),z,x)")
         );
@@ -2094,7 +2102,10 @@ public class ConjTest {
               (¬a ∨ x ∨ y) ∧ (a ∨ z)
               ((||,x,y,(--,a))&&(a||z))
         * */
+
         assertEq("((||,x,y,(--,a))&&(a||z))", "(||,(a && x),(a && y), (--a&&z))");
+
+        assertEq("((||,x,y,(--,a))&&(a||z))", "((||,x,y,(--,a))&&(a||z))"); //pre-test
     }
 
     @Test

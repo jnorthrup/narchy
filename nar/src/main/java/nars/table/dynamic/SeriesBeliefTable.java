@@ -48,22 +48,21 @@ public class SeriesBeliefTable<T extends Task> extends DynamicTaskTable {
     public final void match(Answer t) {
         long s = t.time.start, e;
         Predicate<Task> each;
+        int dur = Math.max(1, t.dur);
         if (t.time.start == ETERNAL) {
             //choose now as the default origin time
             long now = t.nar.time();
-            int dur = t.dur;
             s = now - dur/2;
             e = now + dur/2;
-            each = Util.limit(t::tryAccept, 1);
         } else {
             e = t.time.end;
-
-            int seriesTTL = (int)Math.ceil(NAL.SERIES_MATCH_LIMIT_RATE_PER_DUR / t.dur * t.time.range());
-            if (seriesTTL < t.ttl)
-                each = Util.limit(t::tryAccept, seriesTTL);
-            else
-                each = t::tryAccept;
         }
+
+        int seriesTTL = NAL.SERIES_MATCH_MIN + (int)Math.ceil(NAL.SERIES_MATCH_LIMIT_RATE_PER_DUR / dur * (e-s));
+        if (seriesTTL < t.ttl)
+            each = Util.limit(t::tryAccept, seriesTTL);
+        else
+            each = t::tryAccept;
 
         series.whileEach(s, e, false, each);
     }

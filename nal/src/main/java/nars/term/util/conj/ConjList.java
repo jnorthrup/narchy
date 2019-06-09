@@ -12,12 +12,14 @@ import nars.term.util.builder.TermBuilder;
 import nars.time.Tense;
 import org.eclipse.collections.api.iterator.LongIterator;
 import org.eclipse.collections.impl.map.mutable.UnifiedMap;
+import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 import org.eclipse.collections.impl.set.mutable.primitive.LongHashSet;
 import org.jetbrains.annotations.Nullable;
 import org.roaringbitmap.PeekableIntIterator;
 import org.roaringbitmap.RoaringBitmap;
 
 import java.util.Arrays;
+import java.util.Set;
 
 import static nars.Op.CONJ;
 import static nars.Op.NEG;
@@ -259,11 +261,28 @@ public class ConjList extends LongObjectArraySet<Term> implements ConjBuilder {
 
 
         UnifiedMap<Term, RoaringBitmap> count = new UnifiedMap(n);
-        for (int i = 0; i < n; i++)
-            count.getIfAbsentPut(get(i), RoaringBitmap::new).add(Tense.occToDT(when(i)));
+        Set<Term> uncount = null;
+        for (int i = 0; i < n; i++) {
+            Term xi = get(i);
+            if (count.containsKey(xi.neg())) {
+                if (uncount == null) uncount = new UnifiedSet(n);
+                uncount.add(xi.unneg());
+                continue;
+            }
+            count.getIfAbsentPut(xi, RoaringBitmap::new).add(Tense.occToDT(when(i)));
+        }
 
         if (count.allSatisfy(t->t.getCardinality()==u))
             return; //completely annihilates everything
+
+        if (uncount!=null) {
+            for (Term uc : uncount) {
+                count.removeKey(uc);
+                count.removeKey(uc.neg());
+            }
+            if (count.isEmpty())
+                return;
+        }
 
 
         TermList toDistribute = new TermList(n);

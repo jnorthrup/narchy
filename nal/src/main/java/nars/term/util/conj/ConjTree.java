@@ -131,11 +131,14 @@ public class ConjTree implements ConjBuilder {
         assert (n instanceof Neg);
         Term nu = n.unneg();
 
+
         if (neg!=null && neg.contains(nu))
             return true;
-        if (pos!=null && pos.contains(nu)) {
-            terminate(False);
-            return false;
+        if (pos != null) {
+            if (pos.contains(nu)) {
+                terminate(False);
+                return false;
+            }
         }
 
         if (pos != null && !(nu instanceof Bool)) {
@@ -149,7 +152,6 @@ public class ConjTree implements ConjBuilder {
             if (nu instanceof Neg)
                 return addParallelP(nu.unneg()); //became positive
         }
-
 
 
         if (nu == True)

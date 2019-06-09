@@ -87,6 +87,7 @@ public enum ConjPar {
             //if (d > 1) {
                 ObjectByteHashMap<Term> i = new ObjectByteHashMap(d);
                 int j = -1;
+                boolean anyFull = false;
                 for (int k = 0; k < d; k++) {
                     j = cond.next(true, j+1, n);
                     Term dc = xx[j];
@@ -97,26 +98,29 @@ public enum ConjPar {
                             i.put(ct, Byte.MIN_VALUE);
                             i.put(ctn, Byte.MIN_VALUE);
                         } else {
-                            i.updateValue(ct, (byte) 0, (v) -> (v >= 0) ? (byte) (v + 1) : v);
+                            byte z = i.updateValue(ct, (byte) 0, (v) -> (v >= 0) ? (byte) (v + 1) : v);
+                            anyFull |= (z == d);
                         }
                     }
 
                 }
-                i.values().removeIf(b -> b < d);
-                if (!i.isEmpty()) {
-                    Set<Term> common = i.keySet();
-                    Term factor = B.conj( common.toArray(Op.EmptyTermArray));
+                if (anyFull) {
+                    i.values().removeIf(b -> b < d);
+                    if (!i.isEmpty()) {
+                        Set<Term> common = i.keySet();
+                        Term factor = B.conj(common.toArray(Op.EmptyTermArray));
 
-                    if (factor instanceof Bool)
-                        return factor;
+                        if (factor instanceof Bool)
+                            return factor;
 
-                    xx = xx.clone(); //dont modify input array
-                    j = -1;
-                    for (int k = 0; k < d; k++) {
-                        j = cond.next(true, j+1, n);
-                        xx[j] = B.conj(  xx[j].unneg().subterms().subsIncluding(s -> !common.contains(s))).neg();
+                        xx = xx.clone(); //dont modify input array
+                        j = -1;
+                        for (int k = 0; k < d; k++) {
+                            j = cond.next(true, j + 1, n);
+                            xx[j] = B.conj(xx[j].unneg().subterms().subsIncluding(s -> !common.contains(s))).neg();
+                        }
+                        return B.conj(factor, B.conj(xx).neg()).neg();
                     }
-                    return B.conj( factor, B.conj( xx).neg()).neg();
                 }
             }
         }
