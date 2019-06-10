@@ -22,6 +22,9 @@ public class LivePredictor {
 
     /** TODO use or rewrite with Tensor api */
     @Deprecated public interface Framer {
+        //TODO int inputCount();
+        int outputCount();
+
         /** computes training vector from current observations */
         double[] inputs(long now);
 
@@ -56,11 +59,15 @@ public class LivePredictor {
             this.dur = sampleDur;
         }
 
+        @Override public int outputCount() {
+            return outs.length;
+        }
+
         @Override
         public double[] inputs(long now) {
             if (pastVector == null || pastVector.length!=(past * ins.length)) {
                 pastVector = new double[past * ins.length];
-                present = new double[1 * outs.length];
+                present = new double[outs.length];
             }
 
             int i = 0;

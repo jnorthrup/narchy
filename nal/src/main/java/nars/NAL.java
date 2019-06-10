@@ -259,7 +259,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
     @Deprecated
     public final FloatRange questionForgetRate = new FloatRange(0.5f, 0, 1);
     public final IntRange premiseUnifyTTL = new IntRange(8, 1, 32);
-    public final IntRange deriveBranchTTL = new IntRange(4 * NAL.derive.TTL_MIN, NAL.derive.TTL_MIN, 64 * NAL.derive.TTL_MIN);
+    public final IntRange deriveBranchTTL = new IntRange(3 * NAL.derive.TTL_MIN, NAL.derive.TTL_MIN, 64 * NAL.derive.TTL_MIN);
     /**
      * how many cycles above which to dither dt and occurrence time
      * TODO move this to Time class and cache the cycle value rather than dynamically computing it
@@ -683,7 +683,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
          * for NALTest's: extends the time all unit tests are allowed to run for.
          * normally be kept to 1 but for debugging this may be increased to find what tests need more time
          */
-        public static final float TIME_MULTIPLIER = 2f;
+        public static final float TIME_MULTIPLIER = 3f;
         /**
          * how precise unit test results must match expected values to pass
          */
@@ -716,11 +716,11 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
          * whether to dither events as they are represented internally.  output events are dithered for the NAR regardless.
          */
         public static final boolean TIMEGRAPH_DITHER_EVENTS_INTERNALLY= configIs("TIMEGRAPH_DITHER_EVENTS_INTERNALLY");
-        public static final int TTL_CONJ_BEFORE_AFTER = Math.max(1,NAL.derive.TTL_UNISUBST_MAX/2);
+        public static final int TTL_CONJ_BEFORE_AFTER = NAL.derive.TTL_UNISUBST_MAX;
 
 
         @Range(min = 1, max = 32)
-        public static final int TIMEGRAPH_ITERATIONS = 2;
+        public static final int TIMEGRAPH_ITERATIONS = 4;
         /**
          * TTL = 'time to live'
          */
@@ -729,7 +729,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
         public static final int Termify_Forks = 1;
 
 
-        public static final int TTL_UNISUBST_MAX = 5;
+        public static final int TTL_UNISUBST_MAX = 8;
 
 
         @Range(min = 0, max = 64)

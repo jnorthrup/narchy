@@ -54,18 +54,18 @@ public class BeliefPredict extends NARPart {
 
 
     int projections = 0;
-    private final List<Task> predictions = new FasterList();
+    private List<PredictionTask> predictions = new FasterList();
 
 
     /** if the past and present set of monitored concepts are equal, then iterative projections
      * into the future are possible to compute each cycle.
      */
-    public BeliefPredict(Iterable<Termed> concepts, int history, int sampleDur, int extraProjections, Predictor m, What target) {
+    public BeliefPredict(Iterable<? extends Termed> concepts, int history, int sampleDur, int extraProjections, Predictor m, What target) {
         this(concepts, history, sampleDur, concepts, m, target);
         this.projections = extraProjections;
     }
 
-    public BeliefPredict(Iterable<Termed> inConcepts, int history, int sampleDur, Iterable<Termed> outConcepts, Predictor m, What target) {
+    public BeliefPredict(Iterable<? extends Termed> inConcepts, int history, int sampleDur, Iterable<? extends Termed> outConcepts, Predictor m, What target) {
         this(Iterables.toArray(inConcepts, Termed.class),
                 history, sampleDur,
                 Iterables.toArray(outConcepts, Termed.class), m, target);
@@ -97,34 +97,39 @@ public class BeliefPredict extends NARPart {
         whenDeleted(nar.onDur(this::predict));
     }
 
-    protected void predict() {
+    protected synchronized void predict() {
 
-        synchronized (this) {
-            predictions.forEach(x -> {
-                x.delete();
-                //TODO also directly remove from table?
-            });
-            predictions.clear();
 
-            long now = nar.time();
 
-            double[] p = null;
+        long now = nar.time();
 
-            float c = conf.floatValue() * nar.beliefConfDefault.floatValue();
-            float fade = confFadeFactor.floatValue();
-            for (int i = 0; i < projections + 1; i++) {
+        double[] p = null;
 
-                p = (i == 0) ? predictor.next(now-sampleDur) : predictor.project(p);
+        float c = conf.floatValue() * nar.beliefConfDefault.floatValue();
+        float fade = confFadeFactor.floatValue();
+        List<PredictionTask> nextPred = new FasterList((projections+1)*predictor.framer.outputCount());
 
-                believe(now + (i ) * sampleDur, p, c);
+        for (int i = 0; i < projections + 1; i++) {
 
-                c *= fade;
-            }
-            //System.out.println(); System.out.println();
+            p = (i == 0) ? predictor.next(now-sampleDur) : predictor.project(p);
 
+            believe(now + (i ) * sampleDur, p, c, nextPred);
+
+            c *= fade;
         }
 
-//        currentPredictions.forEach(ITask::delete); //disarm last cycles predictions
+        List<PredictionTask> oldPred = this.predictions;
+        oldPred.forEach(x -> {
+            x.delete(); //TODO also directly remove from table?
+        });
+        oldPred.clear();
+
+        predict.acceptAll(this.predictions = nextPred, target);
+
+
+        //System.out.println(); System.out.println();
+
+        //        currentPredictions.forEach(ITask::delete); //disarm last cycles predictions
 //        currentPredictions.clear();
 //
 //        predict.input(currentPredictions);
@@ -133,11 +138,14 @@ public class BeliefPredict extends NARPart {
 
     }
 
-    private void believe(long when, double[] predFreq, float conf) {
+    private void believe(long when, double[] predFreq, float conf, List<PredictionTask> predictions) {
+
 
         float evi = c2w(conf );
 
-        long eShared = nar.evidence()[0];
+        //long eShared = nar.evidence()[0];
+        long start = Tense.dither(when , nar);
+        long end = Tense.dither(when+sampleDur, nar);
 
         for (int i = 0; i < predFreq.length; i++) {
 
@@ -151,15 +159,12 @@ public class BeliefPredict extends NARPart {
             if (t == null)
                 continue;
 
-
-            long start = Tense.dither(when , nar);
-            long end = Tense.dither(when+sampleDur, nar);
             //System.out.println("-> " + start + " " + end);
-            Task p = new PredictionTask(predicted[i].term(), t, start, end, eShared).pri(nar);
+            PredictionTask p = new PredictionTask(predicted[i].term(), t, start, end, nar.evidence());
+            p.pri(nar);
 
             predictions.add(p);
 
-            predict.accept(p, target);
         }
     }
 
@@ -179,8 +184,8 @@ public class BeliefPredict extends NARPart {
     }
 
     private static class PredictionTask extends SignalTask {
-        public PredictionTask(Term term, PreciseTruth t, long start, long end, long eShared) {
-            super(term, Op.BELIEF, t, start, end, eShared);
+        public PredictionTask(Term term, PreciseTruth t, long start, long end, long[] evi) {
+            super(term, Op.BELIEF, t, start, start, end, evi);
         }
     }
 

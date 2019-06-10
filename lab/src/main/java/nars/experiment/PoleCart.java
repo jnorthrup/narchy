@@ -1,8 +1,10 @@
 package nars.experiment;
 
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Streams;
 import jcog.Util;
 import jcog.exe.Exe;
+import jcog.learn.LivePredictor;
 import jcog.math.FloatNormalized;
 import jcog.math.FloatRange;
 import nars.$;
@@ -12,9 +14,10 @@ import nars.agent.Reward;
 import nars.concept.action.BiPolarAction;
 import nars.concept.sensor.DigitizedScalar;
 import nars.gui.NARui;
+import nars.op.BeliefPredict;
 import nars.term.Term;
+import nars.term.Termed;
 import nars.term.atom.Atomic;
-import spacegraph.SpaceGraph;
 
 import javax.swing.*;
 import java.awt.*;
@@ -24,6 +27,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import static java.util.stream.Collectors.toList;
 import static nars.agent.GameTime.fps;
+import static spacegraph.SpaceGraph.window;
 
 /**
  * adapted from:
@@ -283,21 +287,25 @@ public class PoleCart extends GameX {
 
         //new RewardBooster(r);
 
-//        new BeliefPredict(
+        Iterable<? extends Termed> predicting = Iterables.concat(
+                angX.sensors, angY.sensors, angVel.sensors, xVel.sensors, x.sensors
+        );
+        new BeliefPredict(
+                predicting,
 //                java.util.List.of(
 //                        x, xVel,
 //                        angVel, angX, angY),
-//                8,
-//                4 * nar.dur(),
-//                4,
-//                new LivePredictor.LSTMPredictor(0.1f, 1),
-//                //new LivePredictor.MLPPredictor(0.1f),
-//                nar
-//        );
-//        window(NARui.beliefCharts(nar, x, xVel, angVel, angX, angY), 700, 700);
+                8,
+                8 * nar.dur(),
+                4,
+                //new LivePredictor.LSTMPredictor(0.1f, 1),
+                new LivePredictor.MLPPredictor(0.01f),
+                what()
+        );
+        window(NARui.beliefCharts(predicting, nar)/*x, xVel, angVel, angX, angY)*/, 700, 700);
 
         Exe.invokeLater(()->
-            SpaceGraph.window(NARui.beliefCharts(sensors.stream()
+            window(NARui.beliefCharts(this.sensors.stream()
                     .flatMap(s-> Streams.stream(s.components()))
                     .collect(toList()), nar), 900, 900)
         );

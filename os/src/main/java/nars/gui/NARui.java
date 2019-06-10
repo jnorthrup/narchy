@@ -99,7 +99,7 @@ public class NARui {
     public static Surface beliefChart(Termed x, NAR nar) {
         return new Widget(new MetaFrame(new BeliefTableChart(x, nar)));
      }
-    public static Surface beliefChart(NAR nar, Termed... x) {
+    public static Surface beliefCharts(NAR nar, Termed... x) {
         return beliefCharts(ArrayIterator.iterable(x), nar);
     }
 
