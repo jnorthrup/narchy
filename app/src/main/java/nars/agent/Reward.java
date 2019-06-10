@@ -13,7 +13,7 @@ import nars.concept.Concept;
 import nars.concept.sensor.GameLoop;
 import nars.control.channel.CauseChannel;
 import nars.op.mental.Inperience;
-import nars.table.eternal.DefaultOnlyEternalTable;
+import nars.table.eternal.EternalDefaultTable;
 import nars.task.NALTask;
 import nars.term.Term;
 import nars.term.Termed;
@@ -91,7 +91,7 @@ public abstract class Reward implements GameLoop, TermedDelegate, Iterable<Conce
     public void setDefault(PreciseTruth t) {
         for (Concept c : this) {
             //TODO assert that it has no eternal tables already
-            DefaultOnlyEternalTable.add(c,t,game.what().nar);
+            EternalDefaultTable.add(c,t,game.what().nar);
         }
     }
 

@@ -251,6 +251,8 @@ public interface LongInterval {
      *  returned time distance is zero, regardless of how far it may extend before or after it */
     default long minTimeTo(long a, long b) {
 
+        //return minTimeTo(this, a, b);
+
         //assert (b >= a): a + " > " + b;
 
         if (a == ETERNAL)
@@ -260,9 +262,10 @@ public interface LongInterval {
         if (s == ETERNAL)
             return 0;
 
+        assert(a!=TIMELESS && s!=TIMELESS);
         long e = end();
-        if (intersects(a, b, s, e)) {
-            return 0; 
+        if (intersectsRaw(a, b, s, e)) {
+            return 0;
         } else {
             long sa = Math.abs(s - a);
             if (a == b) {
@@ -274,6 +277,7 @@ public interface LongInterval {
             }
         }
     }
+
     static long minTimeTo(LongInterval x, long a, long b) {
 
         //assert (b >= a): a + " > " + b;
@@ -286,7 +290,8 @@ public interface LongInterval {
             return 0;
 
         long e = x.end();
-        if (intersectsSafe(a, b, s, e)) {
+        assert(a!=TIMELESS && s!=TIMELESS);
+        if (intersectsRaw(a, b, s, e)) {
             return 0;
         } else {
             long sa = Math.abs(s - a);

@@ -16,7 +16,7 @@ import static java.lang.System.nanoTime;
 
 public class WorkerExec extends ThreadedExec {
 
-    private static final long subCycleMinNS = 4L * 1_000_000;
+    private static final long subCycleMinNS = 10L * 1_000_000;
     double granularity = 8;
 
     /**
@@ -100,35 +100,33 @@ public class WorkerExec extends ThreadedExec {
             AntistaticBag<What> W = nar.what;
             subCycleMaxNS = Math.max(subCycleMinNS, (long) ((threadWorkTimePerCycle) / granularity));
 
-            do {
+            H.sample(rng, (How h)->{
+                if (h != null && h.isOn()) {
 
-                How h = H.sample(rng);
-                if (h == null || !h.isOn()) continue; //HACK
+                    int Wn = W.size();
+                    if (Wn == 0) return false;
+                    What w = W.sample(rng);
+                    if (w.isOn()) {
 
-                //if (j + 1 >= Wn) j = 0; else j++;
-                int Wn = W.size();
-                if (Wn == 0) return;
-                What w = W.sample(rng);
-                if (!w.isOn()) continue; //HACK
+                        boolean singleton = h.singleton();
+                        if (!singleton || h.busy.compareAndSet(false, true)) {
 
-                boolean singleton = h.singleton();
-                if (!singleton || h.busy.compareAndSet(false, true)) {
+                            long before = nanoTime();
 
-                    long before = nanoTime();
+                            long useNS = //Util.lerp(h.pri() * w.pri(), subCycleMinNS, subCycleMaxNS);
+                                    subCycleMaxNS;
+                            try {
+                                h.runFor(w, useNS);
+                            } finally {
+                                if (singleton)
+                                    h.busy.set(false);
+                            }
 
-                    long useNS = //Util.lerp(h.pri() * w.pri(), subCycleMinNS, subCycleMaxNS);
-                                subCycleMaxNS;
-                    try {
-                        h.runFor(w, useNS);
-                    } finally {
-                        if (singleton)
-                            h.busy.set(false);
+                        }
                     }
-
-                    after = nanoTime();
                 }
-
-            } while (until > after);
+                return (until > nanoTime());
+            });
 
 //                System.out.println(
 //                    this + "\tplaytime=" + Texts.timeStr(playTime) + " " +

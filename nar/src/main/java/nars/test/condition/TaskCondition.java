@@ -107,26 +107,6 @@ abstract public class TaskCondition implements NARCondition, Predicate<Task>, Co
         return matched;
     }
 
-    @Override
-    public void log(boolean condition, Logger logger) {
-        String msg = this + "\n" + (condition ? " OK" : "ERR" + '\t' + this);
-        if (condition) {
-            logger.info(msg);
-
-            if (matches != null && logger.isTraceEnabled()) {
-                matches.forEach(s -> logger.trace("\t{}", s));
-            }
-        } else {
-            //assert (matched.isEmpty());
-
-            logger.error(msg);
-
-
-
-        }
-
-
-    }
 
     public static class DefaultTaskCondition extends TaskCondition {
         private final static int maxSimilars = 2;
@@ -188,22 +168,18 @@ abstract public class TaskCondition implements NARCondition, Predicate<Task>, Co
         }
 
         @Override
-        public void log(boolean condition, Logger logger) {
-            super.log(condition, logger);
+        public void log(String label, boolean condition, Logger logger) {
+            super.log(label, condition, logger);
 
-//            if(!condition) {
-                if (!similar.isEmpty()) {
-                    similar.forEach(s -> {
-                        String pattern = "SIM {}\n{}";
+            if (!similar.isEmpty() && logger.isInfoEnabled()) {
+                StringBuilder sb = new StringBuilder(similar.size()*256);
+                similar.forEach(s -> {
+                    sb.append(s.proof()).append('\n').append(MetaGoal.proof(s, nar)).append('\n');
+                });
+                sb.trimToSize();
+                logger.info("Similar:\n{}\n", sb);
+            }
 
-                        logger.info(pattern,
-                                s.proof(),
-                                MetaGoal.proof(s, nar)
-                                //s.proof()
-                        );
-                    });
-                }
-//            }
         }
 
         @Override

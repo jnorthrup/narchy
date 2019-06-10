@@ -265,7 +265,7 @@ public class Derivation extends PreDerivation {
             }
 
             private Term transform(Compound x, TermBuffer buffer) {
-                if (NAL.ANONIFY_TRANSFORM_LAZY) {
+                if (NAL.ANONIFY_TRANSFORM_TERMBUFFER) {
                     buffer.clear();//true,termBuilder.sub.termCount() >= 64);
                     buffer.appendCompound(x, this, NAL.term.COMPOUND_VOLUME_MAX);
                     return buffer.term();
@@ -500,9 +500,9 @@ public class Derivation extends PreDerivation {
 
             this.overlapDouble =
                     Stamp.overlaps(this._task, _belief)
-                            ||
                             //auto-filter double-premise, with same target and same time
-                            taskStart == beliefStart && taskPunc == _belief.punc() && taskTerm.equals(beliefTerm);
+                            //|| (taskStart == beliefStart && taskPunc == _belief.punc() && taskTerm.equals(beliefTerm))
+            ;
 
 
         } else {

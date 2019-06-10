@@ -59,7 +59,7 @@ public enum NALTruth implements TruthFunc {
 //    },
 
 
-    @AllowOverlap Pre() {
+    /*@AllowOverlap*/ Pre() {
         @Override
         public Truth apply(final Truth T, final Truth B, NAL n, float minConf) {
             return TruthFunctions2.pre(T, B, false, minConf);
@@ -73,7 +73,7 @@ public enum NALTruth implements TruthFunc {
         }
     },
 
-    @AllowOverlap Post() {
+    /*@AllowOverlap*/ Post() {
         @Override
         public Truth apply(final Truth T, final Truth B, NAL n, float minConf) {
             return TruthFunctions2.post(T, B, true, minConf);

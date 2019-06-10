@@ -66,11 +66,13 @@ public interface Stamp {
     /** applies a fair, random-removal merge of input stamps */
     static long[] merge(long[] a, long[] b, Random rng, float aToB, int capacity) {
         if (Arrays.equals(a, b) || b.length == 0) {
-            if (a.length > capacity)
-                throw new TODO();
+            if (a.length > capacity) throw new TODO();
             return a;
         }
-        if (a.length == 0) return b;
+        if (a.length == 0) {
+            if (b.length > capacity) throw new TODO();
+            return b;
+        }
 
         int abLength = a.length + b.length;
         if (abLength <= capacity) {
@@ -80,9 +82,9 @@ public interface Stamp {
                 //simple case: direct sequential merge with no contention
                 long[] ab = new long[abLength];
                 int ia = 0, ib = 0;
-                for (int i = 0; i < ab.length; i++) {
-                    long an = ia >= a.length ? Long.MAX_VALUE : a[ia];
-                    long bn = ib >= b.length ? Long.MAX_VALUE : b[ib];
+                for (int i = 0; i < abLength; i++) {
+                    long an = ia < a.length ? a[ia] : Long.MAX_VALUE;
+                    long bn = ib < b.length ? b[ib] : Long.MAX_VALUE;
                     long abn;
                     if (an < bn) {
                         abn = an; ia++;

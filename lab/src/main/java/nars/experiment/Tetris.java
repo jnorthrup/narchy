@@ -88,7 +88,6 @@ public class Tetris extends GameX {
                 (x, y) -> $.inh($.p(x, y), id),
                 //(x, y) -> $.p(GRID,$.the(x), $.the(y)),
                 grid, /*0,*/ n));
-        //pixels.resolution(0.05f);
 
 
 

@@ -11,7 +11,6 @@ import nars.task.DebugDerivedTask;
 import nars.task.DerivedTask;
 import nars.term.ProxyTerm;
 import nars.term.Term;
-import nars.term.atom.Atomic;
 import nars.time.Tense;
 import nars.truth.Truth;
 import org.slf4j.Logger;
@@ -25,7 +24,6 @@ import static nars.time.Tense.ETERNAL;
 public class Taskify extends ProxyTerm {
 
     private final static Logger logger = LoggerFactory.getLogger(Taskify.class);
-    private static final Atomic TASKIFY = Atomic.the("Taskify");
     /**
      * destination of any derived tasks; also may be used to communicate backpressure
      * from the recipient.
@@ -34,15 +32,12 @@ public class Taskify extends ProxyTerm {
     final Termify termify;
 
     public Taskify(Termify termify, PremiseRuleProto.RuleWhy channel) {
-        this($.funcFast(TASKIFY, termify, $.the(channel.id)), termify, channel);
-    }
-
-
-    private Taskify(Term id, Termify termify, PremiseRuleProto.RuleWhy channel) {
-        super(id);
+        super($.pFast(termify, $.the(channel.id)));
         this.termify = termify;
         this.channel = channel;
     }
+
+
 
 
 //    /** applies variable introduction between Termify and Taskify step */

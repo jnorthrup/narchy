@@ -350,6 +350,10 @@ public interface Truth extends Truthed {
     }
 
 
+    default /* final */Truth eternalized(float factor, @Nullable NAL n) {
+        return eternalized(factor, NAL.truth.EVI_MIN, n);
+    }
+
     default Truth eternalized(float factor, double eviMin, @Nullable NAL n) {
         float f = freq();
         double e = factor * eviEternalized();

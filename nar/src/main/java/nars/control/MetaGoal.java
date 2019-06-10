@@ -284,17 +284,18 @@ public enum MetaGoal {
     }
 
     public static String proof(Task t, NAR nar) {
-
         short[] tc = t.why();
-
-        ShortHashSet seen = new ShortHashSet(tc.length);
-        StringBuilder sb = new StringBuilder(tc.length * 16);
-        for (short s : tc) {
-            if (seen.add(s)) {
-                Why c = nar.control.why.get(s);
-                sb.append(c).append('\n');
+        if (tc.length > 0) {
+            ShortHashSet seen = tc.length > 1 ? new ShortHashSet(tc.length) : null;
+            StringBuilder sb = new StringBuilder(tc.length * 256);
+            for (int i = tc.length - 1; i >= 0; i--) {
+                short s = tc[i];
+                if (seen == null || seen.add(s)) {
+                    Why c = nar.control.why.get(s);
+                    sb.append(c).append('\n');
+                }
             }
-        }
-        return sb.toString().trim();
+            return sb.charAt(sb.length() - 1) == '\n' ? sb.substring(0, sb.length() - 1) : sb.toString();
+        } else return "";
     }
 }

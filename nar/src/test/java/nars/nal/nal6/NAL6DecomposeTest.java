@@ -119,14 +119,14 @@ abstract public class NAL6DecomposeTest extends NALTest {
 
 
         @Test
-        void impl_conjunction_subj_union_decompose_conditional_neg() {
+        void impl_conjunction_subj_conj_decompose_conditional_neg() {
             test
 //                    .logDebug()
                     .believe("((a && b) ==> --x)")
                     .input("(--b ==> --x).")
                     .mustBelieve(cycles, "(a ==> x)", 0f, 0.81f) //via decompose
-                    .mustNotOutput(cycles,"(a ==> x)", BELIEF, 0.1f, 1f, 0.1f, 1f, t->true)
-                    .mustNotOutput(cycles,"(--b ==> x)", BELIEF, 0.1f, 1f, 0.1f, 1f, t->true)
+                    .mustNotOutput(cycles,"(a ==> x)", BELIEF, 0.1f, 1f, 0.1f, 1f)
+                    .mustNotOutput(cycles,"(--b ==> x)", BELIEF, 0.1f, 1f, 0.1f, 1f)
                     .mustNotOutput(cycles, "a", BELIEF)
                     .mustNotOutput(cycles, "b", BELIEF)
                     .mustNotOutput(cycles, "x", BELIEF)
@@ -180,8 +180,10 @@ abstract public class NAL6DecomposeTest extends NALTest {
             test
                     .termVolMax(8)
                     .believe("((a || b) ==> x)")
-                    .input("(--b ==> x). %0.75;0.9%")
-                    .mustBelieve(cycles, "(a ==> x)", 0.75f, 0.61f) //via decompose
+                    .input("(b ==> x). %0.1;0.9%")
+                    .mustBelieve(cycles, "(a ==> x)", 0.9f, 0.73f) //via decompose
+                    .mustNotOutput(cycles,"(b ==> x)", BELIEF, 0.15f, 1f, 0, 1f)
+                    .mustNotOutput(cycles,"(a ==> x)", BELIEF, 0f, 0.7f, 0, 1f)
             ;
         }
 

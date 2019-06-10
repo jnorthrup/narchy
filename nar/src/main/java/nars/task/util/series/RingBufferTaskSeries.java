@@ -28,9 +28,26 @@ public class RingBufferTaskSeries<T extends Task> extends AbstractTaskSeries<T> 
         return q.isEmpty();
     }
 
-    @Override
-    public final boolean isEmpty(LongInterval l) {
-        return !q.isEmpty() && super.isEmpty(l);
+    /** TODO HACK
+     *  use a better testing for containment which may span multiple signals,
+     *  rather than this naive intersection could still match if only, ex: 1% is covered by signal and the non-signal would be discarded */
+    @Override public final boolean isEmpty(LongInterval l) {
+        if (q.isEmpty())
+            return true;
+
+        long ls = l.start();
+        if (ls!=ETERNAL) {
+            int head = q.head();
+
+            int mid = indexNear(head, (ls + l.end()) / 2);
+            if (mid != -1) {
+                Task t = q.get(mid);
+                if (t != null && t.intersects(l))
+                    return false;
+            }
+        }
+
+        return super.isEmpty(l);
     }
 
     @Override
@@ -161,25 +178,11 @@ public class RingBufferTaskSeries<T extends Task> extends AbstractTaskSeries<T> 
                 return true; //nothing
         }
 
-        int head = q.head();
         if (minT != ETERNAL && minT != TIMELESS) {
-            boolean point = maxT == minT;
+            int head = q.head();
+            long T = (minT+maxT)/2;
 
-            int center;
-            int b = indexNear(head, Math.min(e, maxT));
-            if (b == -1)
-                return true; //b = size() - 1;
-
-            if (!point) {
-                int a = indexNear(head, Math.max(s, minT));
-                if (a == -1)
-                    return true; //a = 0;
-
-                center = (a + b) / 2;
-            } else {
-                center = b;
-            }
-
+            int center = indexNear(head, T);
 
             int size = this.size();
             int r = 0, rad = size / 2 + 1;
@@ -188,29 +191,34 @@ public class RingBufferTaskSeries<T extends Task> extends AbstractTaskSeries<T> 
 
                 int vv = center + r;
                 T v = vv < size ? q.peek(head, vv) : null;
-                if (v!=null && (!exactRange || v.intersectsRaw(minT, maxT))) {
-                    if (!whle.test(v))
-                        return false;
-                } else {
-                    v = null;
-                }
-
 
                 r++;
 
                 int uu = center - r; //if (uu < 0) uu += cap; //HACK prevent negative value
                 T u = uu >= 0 ? q.peek(head, uu) : null;
-                if (u!=null && (!exactRange || u.intersectsRaw(minT, maxT))) {
-                    if (!whle.test(u))
-                        return false;
-                } else {
-                    u = null;
-                }
-//                if (!exactRange && supplied > 0)
-//                    break; //early exit heuristic
 
-                if (u == null && v == null)
+                if (exactRange) {
+                    if (u != null && !u.intersectsRaw(minT, maxT))
+                        u = null;
+                    if (v != null && !v.intersectsRaw(minT, maxT))
+                        v = null;
+                }
+
+                if (u!=null && v!=null) {
+                    //swap to the closest one to try first because it may be the last
+                    if (v.meanTimeTo(T) < u.meanTimeTo(T)) {
+                        T uv = u;
+                        u = v;
+                        v = uv;
+                    }
+                } else if (u == null && v == null)
                     break;
+
+                if (u!=null && !whle.test(u))
+                    return false;
+                if (v!=null && !whle.test(v))
+                    return false;
+
 
             } while (r < rad);
 
@@ -220,7 +228,9 @@ public class RingBufferTaskSeries<T extends Task> extends AbstractTaskSeries<T> 
             //just return the latest items while it keeps asking
             //TODO iterate from oldest to newest if the target time is before or near series start
             int qs = q.size();
+//            int offset = ThreadLocalRandom.current().nextInt(qs);
             for (int i = qs - 1; i >= 0; i--) {
+//                T qi = q.get((i + offset)%qs);
                 T qi = q.get(i);
                 if (qi!=null && !whle.test(qi))
                     return false;

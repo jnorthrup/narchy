@@ -21,12 +21,13 @@ public interface NARCondition extends Serializable {
     /** max possible cycle time in which this condition could possibly be satisfied. */
     long getFinalCycle();
 
-    default void log(boolean condition, Logger logger) {
-        String s = toString();
-        if (condition)
-            logger.info(s);
-        else
-            logger.warn(s);
+    default void log(String label, boolean condition, Logger logger) {
+        String msg = (condition ? " OK" : "ERR");
+        if (condition) {
+            logger.info("{} {} {}", label, this, msg);
+        } else {
+            logger.error("{} {} {}", label, this, msg);
+        }
     }
 
 

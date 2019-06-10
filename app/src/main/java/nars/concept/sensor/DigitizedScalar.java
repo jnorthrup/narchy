@@ -5,7 +5,7 @@ import jcog.data.list.FasterList;
 import jcog.math.FloatSupplier;
 import nars.$;
 import nars.NAR;
-import nars.table.eternal.DefaultOnlyEternalTable;
+import nars.table.eternal.EternalDefaultTable;
 import nars.term.Term;
 import nars.truth.Truth;
 import org.apache.commons.math3.exception.OutOfRangeException;
@@ -202,7 +202,7 @@ public class DigitizedScalar extends DemultiplexedScalarSensor {
                 nar);
 
             if (defaultFreq==defaultFreq)
-                DefaultOnlyEternalTable.add(sc, defaultFreq, nar);
+                EternalDefaultTable.add(sc, defaultFreq, nar);
 
             sensors.add(sc);
         }

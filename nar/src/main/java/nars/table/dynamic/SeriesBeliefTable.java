@@ -50,7 +50,7 @@ public class SeriesBeliefTable<T extends Task> extends DynamicTaskTable {
         Predicate<Task> each;
         int dur = Math.max(1, t.dur);
         if (t.time.start == ETERNAL) {
-            //choose now as the default origin time
+            //choose now as the default focus time
             long now = t.nar.time();
             s = now - dur/2;
             e = now + dur/2;
@@ -58,7 +58,7 @@ public class SeriesBeliefTable<T extends Task> extends DynamicTaskTable {
             e = t.time.end;
         }
 
-        int seriesTTL = NAL.SERIES_MATCH_MIN + Math.round(NAL.SERIES_MATCH_ADDITIONAL_RATE_PER_DUR / dur * (e-s));
+        int seriesTTL = (int) (NAL.belief.signal.SERIES_MATCH_MIN + Math.ceil(NAL.belief.signal.SERIES_MATCH_ADDITIONAL_RATE_PER_DUR / dur * (e-s)));
         if (seriesTTL < t.ttl)
             each = Util.limit(t::tryAccept, seriesTTL);
         else

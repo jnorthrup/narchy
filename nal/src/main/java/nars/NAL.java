@@ -56,11 +56,6 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
     /** opportunity for interning term builder to memoize parallel conjunction terms */
     public static final boolean CONJ_COMMUTIVE_LOOPBACK = true;
 
-    /** max tasked matched by series table, in case the answer limit is higher.  this reduces the number of redundant non-exact matches freeing evidential capacity for non-signal tasks from other tables of the concept */
-    public static final float SERIES_MATCH_ADDITIONAL_RATE_PER_DUR = 1f;
-    public static final int SERIES_MATCH_MIN = 1;
-
-
 
     /**
      * return <= 0 to disable
@@ -81,7 +76,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
 
     public static final int TERMBUFFER_VOL_MIN = 3;
 
-    public static final boolean ANONIFY_TRANSFORM_LAZY = true;
+    public static final boolean ANONIFY_TRANSFORM_TERMBUFFER = true;
 
     public static final boolean OVERLAP_DOUBLE_SET_CYCLIC= configIs("OVERLAP_DOUBLE_SET_CYCLIC");
 
@@ -612,7 +607,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
              * <p>
              * TODO make this a per-sensor implementation cdecision
              */
-            public static final float SIGNAL_STRETCH_LIMIT_DURS = 16;
+            public static final float SIGNAL_STRETCH_LIMIT_DURS = 8;
             /**
              * maximum time between signal updates to stretch an equivalently-truthed data point across.
              * stretches perception across some amount of lag
@@ -620,6 +615,9 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
             public static final float SIGNAL_LATCH_LIMIT_DURS =/*0.5f;*/
                     //1f;
                     2f;
+            /** max tasked matched by series table, in case the answer limit is higher.  this reduces the number of redundant non-exact matches freeing evidential capacity for non-signal tasks from other tables of the concept */
+            public static final float SERIES_MATCH_ADDITIONAL_RATE_PER_DUR = 1f/SIGNAL_LATCH_LIMIT_DURS;
+            public static final int SERIES_MATCH_MIN = 1;
         }
     }
 
@@ -718,7 +716,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
          * whether to dither events as they are represented internally.  output events are dithered for the NAR regardless.
          */
         public static final boolean TIMEGRAPH_DITHER_EVENTS_INTERNALLY= configIs("TIMEGRAPH_DITHER_EVENTS_INTERNALLY");
-        public static final int TTL_CONJ_BEFORE_AFTER = NAL.derive.TTL_UNISUBST_MAX;
+        public static final int TTL_CONJ_BEFORE_AFTER = Math.max(1,NAL.derive.TTL_UNISUBST_MAX/2);
 
 
         @Range(min = 1, max = 32)
@@ -776,10 +774,10 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
          * attempt to create a question/quest task from an invalid belief/goal (probably due to missing or unsolved temporal information
          * in some cases, forming the question may be answered by a dynamic truth calculation later
          */
-        public static final boolean DERIVATION_FORM_QUESTION_FROM_AMBIGUOUS_BELIEF_OR_GOAL= configIs("DERIVATION_FORM_QUESTION_FROM_AMBIGUOUS_BELIEF_OR_GOAL");
+        public static final boolean DERIVE_QUESTION_FROM_AMBIGUOUS_BELIEF_OR_GOAL = configIs("DERIVE_QUESTION_FROM_AMBIGUOUS_BELIEF_OR_GOAL");
 
 
-        public static final float TERMBUFFER_VOLMAX_SCRATCH_FACTOR = 6f;
+        public static final float TERMBUFFER_VOLMAX_SCRATCH_FACTOR = 8f;
     }
 
     public enum unify {

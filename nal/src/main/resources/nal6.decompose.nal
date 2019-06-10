@@ -113,8 +113,7 @@
 
 
 //Anonymous Deduction and Abduction
-    X, (V ==> X), task("?"), is(V,"#"), --isVar(X)      |- X, (Belief:BeliefStructuralReduction)
-    X, (--V ==> X), task("?"), is(V,"#"), --isVar(X)    |- X, (Belief:BeliefStructuralReduction)
+    X, (V ==> X), task("?"), isUnneg(V,"#"), --isVar(X)      |- X, (Belief:BeliefStructuralReduction)
 
         X, (X ==> V), task("?"), is(V,"#"), --isVar(X)      |- X,   (Belief:BeliefStructuralAbduction)
         X, (--X ==> V), task("?"), is(V,"#"), --isVar(X)    |- --X, (Belief:BeliefStructuralAbduction)
@@ -163,14 +162,10 @@
     //conj
     (  S ==> M), (C ==> M), eventOf(C,S)                |-      (  conjWithout(C, S) ==> M), (Belief:DecomposePP)
      (  S ==> M), (C ==> M), eventOf(C,S)                |-   --(  conjWithout(C, S) ==> M), (Belief:DecomposeNN)
-       (  --S ==> M), (C ==> M), eventOfNeg(C,S)         |-   (  conjWithout(C, --S) ==> M), (Belief:DecomposePP)
-         ( --S ==> M), (C ==> M), eventOfNeg(C,S)       |- --(  conjWithout(C, --S) ==> M), (Belief:DecomposeNN)
 
     //disj
-    (  S ==> M), (--C ==> M), eventOfNeg(C,S)          |- --(  --conjWithout(C, --S) ==> M), (Belief:DecomposeNP)
-       ( S ==> M), (--C ==> M), eventOfNeg(C,S)        |-   (  --conjWithout(C, --S) ==> M), (Belief:DecomposePN)
-           ( --S ==> M), (--C ==> M), eventOf(C,S)     |- --(  --conjWithout(C, S) ==> M), (Belief:DecomposeNP)
-        (  --S ==> M), (--C ==> M), eventOf(C,S)       |-   (  --conjWithout(C, S) ==> M), (Belief:DecomposePN)
+    (  S ==> M), (--C ==> M), eventOfNeg(C,S)          |-   (  --conjWithout(C, --S) ==> M), (Belief:DecomposeNP)
+       ( S ==> M), (--C ==> M), eventOfNeg(C,S)        |- --(  --conjWithout(C, --S) ==> M), (Belief:DecomposePN)
 
 //conj pred
 

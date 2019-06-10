@@ -181,13 +181,13 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
 
 
         if (task instanceof DerivedTask) {
-            Task pt = ((DerivedTask) task).getParentTask();
+            Task pt = ((DerivedTask) task).parentTask();
             if (pt != null) {
 
                 proof(pt, indent + 1, sb);
             }
 
-            Task pb = ((DerivedTask) task).getParentBelief();
+            Task pb = ((DerivedTask) task).parentBelief();
             if (pb != null) {
 
                 proof(pb, indent + 1, sb);
@@ -330,7 +330,7 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
         if (punc == BELIEF || punc == GOAL) {
             if (tr == null)
                 throw new TaskException(t, "null truth but required for belief or goal");
-            if (tr.evi() < Float.MIN_NORMAL /*Truth.EVI_MIN*/)
+            if (tr.evi() < NAL.truth.EVI_MIN)
                 throw new TaskException(t, "insufficient evidence");
         }
 
@@ -870,7 +870,7 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
 //    }
 
     default String proof() {
-        StringBuilder sb = new StringBuilder(4096);
+        StringBuilder sb = new StringBuilder(1024);
         return proof(sb).toString().trim();
     }
 

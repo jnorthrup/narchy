@@ -510,7 +510,7 @@ abstract public class GameX extends Game {
 
         List<ConjClustering> conjClusters = List.of(
                 new ConjClustering(n, BELIEF, 32, 256)
-                //new ConjClustering(n, GOAL, 4, 16)
+                //,new ConjClustering(n, GOAL, 16, 64)
         );
         conjClusters.forEach(c -> n.start(c));
 
@@ -828,6 +828,11 @@ abstract public class GameX extends Game {
 
     protected <C extends Bitmap2D> Bitmap2DSensor<C> senseCamera(@Nullable IntIntToObjectFunction<nars.term.Term> id, C bc) {
         Bitmap2DSensor c = new Bitmap2DSensor(id, bc, nar());
+        addSensor(c);
+        return c;
+    }
+    protected <C extends Bitmap2D> Bitmap2DSensor<C> senseCamera(@Nullable IntIntToObjectFunction<nars.term.Term> id, C bc, float defaultFreq) {
+        Bitmap2DSensor c = new Bitmap2DSensor(id, bc, defaultFreq, nar());
         addSensor(c);
         return c;
     }

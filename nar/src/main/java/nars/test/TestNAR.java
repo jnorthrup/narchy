@@ -3,7 +3,6 @@ package nars.test;
 import jcog.data.list.FasterList;
 import jcog.event.ByteTopic;
 import nars.*;
-import nars.control.MetaGoal;
 import nars.task.Tasked;
 import nars.term.Term;
 import nars.term.util.TermException;
@@ -199,12 +198,7 @@ public class TestNAR {
                 if (t.isTrue()) {
 
                     if (!quiet) {
-                        t.log(false, logger);
-
-                        //TODO move this to TaskCondition for negative-specific cases
-                        ((TaskCondition) t).matches.forEach(shouldntHave ->
-                                logger.warn("shouldNot: \t{}\n{}", shouldntHave.proof(), MetaGoal.proof(shouldntHave, nar))
-                        );
+                        t.log("mustNot", false, logger);
                     }
 
                 }
@@ -213,7 +207,7 @@ public class TestNAR {
             if (!quiet) {
                 succeedsIfAll.forEach(t -> {
                     if (!t.isTrue())
-                        t.log(false, logger);
+                        t.log("must", false, logger);
                 });
 
 
@@ -527,6 +521,10 @@ public class TestNAR {
         return this;
     }
 
+
+    public TestNAR mustNotOutput(long cyclesAhead, String term, byte punc, float freqMin, float freqMax, float confMin, float confMax) {
+        return mustNotOutput(cyclesAhead, term, punc, freqMin, freqMax, confMin,confMax, t->true);
+    }
 
     public TestNAR mustNotOutput(long cyclesAhead, String term, byte punc, float freqMin, float freqMax, float confMin, float confMax, long occ) {
         LongPredicate badTime = (l) -> l == occ;

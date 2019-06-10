@@ -126,7 +126,7 @@ public class Occurrify extends TimeGraph {
         if (neg)
             y = y.neg();
 
-        if (NAL.derive.DERIVATION_FORM_QUESTION_FROM_AMBIGUOUS_BELIEF_OR_GOAL && (d.concPunc == BELIEF || d.concPunc == GOAL)) {
+        if (NAL.derive.DERIVE_QUESTION_FROM_AMBIGUOUS_BELIEF_OR_GOAL && (d.concPunc == BELIEF || d.concPunc == GOAL)) {
             if (DerivationFailure.failure(y, d.concPunc)) {
 
                 //as a last resort, try forming a question from the remains

@@ -18,13 +18,13 @@ public class DebugDerivedTask extends DerivedTask {
     }
 
     @Override
-    public final Task getParentTask() {
+    public final Task parentTask() {
         return parentTask;
     }
 
     @Override
     @Nullable
-    public final Task getParentBelief() {
+    public final Task parentBelief() {
         return parentBelief;
     }
 

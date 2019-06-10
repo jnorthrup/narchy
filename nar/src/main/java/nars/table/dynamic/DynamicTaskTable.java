@@ -9,7 +9,7 @@ public abstract class DynamicTaskTable extends EmptyBeliefTable {
 
     public final boolean beliefOrGoal;
 
-    protected final Term term;
+    @Deprecated protected final Term term;
 
     protected DynamicTaskTable(Term c, boolean beliefOrGoal) {
         this.beliefOrGoal = beliefOrGoal;

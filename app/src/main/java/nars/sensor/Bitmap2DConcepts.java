@@ -10,7 +10,7 @@ import nars.NAL;
 import nars.NAR;
 import nars.concept.Concept;
 import nars.concept.sensor.Signal;
-import nars.table.eternal.DefaultOnlyEternalTable;
+import nars.table.eternal.EternalDefaultTable;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.PrintStream;
@@ -79,7 +79,7 @@ public class Bitmap2DConcepts<P extends Bitmap2D> implements Iterable<Signal> {
 
                 Signal sc = new Signal(pixelTerm.apply(x, y), cause, f, n).setResolution(res);
                 if (defaultFreq==defaultFreq) {
-                    DefaultOnlyEternalTable.add(sc, defaultFreq, n);
+                    EternalDefaultTable.add(sc, defaultFreq, n);
                 }
 
                 matrix[x][y] = sc;

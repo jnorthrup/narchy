@@ -20,7 +20,7 @@ public class DerivedTask extends TemporalTask {
      * provided in DebugDerivedTask subclass
      */
     @Nullable
-    public Task getParentTask() {
+    public Task parentTask() {
         return null;
     }
 
@@ -28,7 +28,7 @@ public class DerivedTask extends TemporalTask {
      * provided in DebugDerivedTask subclass
      */
     @Nullable
-    public Task getParentBelief() {
+    public Task parentBelief() {
         return null;
     }
 
