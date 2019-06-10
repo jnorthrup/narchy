@@ -11,6 +11,7 @@ import nars.Task;
 import nars.concept.Concept;
 import nars.concept.TaskConcept;
 import nars.table.BeliefTable;
+import nars.task.DynamicTruthTask;
 import nars.task.NALTask;
 import nars.task.util.Answer;
 import nars.task.util.TaskList;
@@ -22,6 +23,7 @@ import nars.time.When;
 import nars.truth.Stamp;
 import nars.truth.Truth;
 import nars.util.Timed;
+import org.eclipse.collections.api.tuple.primitive.ObjectBooleanPair;
 
 import javax.annotation.Nullable;
 import java.util.Random;
@@ -82,11 +84,25 @@ public class DynTaskify extends TaskList {
         this(model, beliefOrGoal, a.ditherTruth, true, (Compound)a.term(), a.dur, a.filter, a.nar);
     }
 
-    public static Task merge(TaskList tasks, Term content, Truth t, Supplier<long[]> stamp, boolean beliefOrGoal, long start, long end, Timed w) {
+    @Nullable public static Task merge(TaskList tasks, Term content, Truth t, Supplier<long[]> stamp, boolean beliefOrGoal, long start, long end, Timed w) {
+        boolean neg = content.op() == NEG;
+        if (neg) {
+            content = content.unneg();
+        }
 
-        NALTask dyn = Answer.task(content, t, stamp, beliefOrGoal, start, end, w);
-        if(dyn==null)
+        ObjectBooleanPair<Term> r = Task.tryContent(
+                content,
+                beliefOrGoal ? BELIEF : GOAL, !NAL.test.DEBUG_EXTRA);
+        if (r==null)
             return null;
+        if (r.getTwo())
+            neg = !neg;
+
+        NALTask dyn = new DynamicTruthTask(
+                r.getOne(), beliefOrGoal,
+                t.negIf(neg),
+                w, start, end,
+                stamp.get());
 
         dyn.cause( tasks.why() );
 
@@ -94,10 +110,6 @@ public class DynTaskify extends TaskList {
                 tasks.reapply(TaskList::pri, NAL.DerivationPri)
                         // * dyn.originality() //HACK
         );
-
-//        if (NAL.test.DEBUG_EXTRA) {
-//        }
-
         return dyn;
     }
 
@@ -152,16 +164,16 @@ public class DynTaskify extends TaskList {
         }
 
 
-        Term term1 = model.reconstruct(template, this, s, e);
-        if (term1==null || !term1.unneg().op().taskable) { //quick tests
+        Term y = model.reconstruct(template, this, s, e);
+        if (y==null || !y.unneg().op().taskable || y.hasXternal()) { //quick tests
             if (NAL.DEBUG) {
-                //TEMPORARY
+                //TEMPORARY for debug
 //                  model.evalComponents(answer, (z,start,end)->{
 //                      System.out.println(z);
 //                      nar.conceptualizeDynamic(z).beliefs().match(answer);
 //                      return true;
 //                  });
-//                  model.reconstruct(template, this, nar, s, e);
+                  model.reconstruct(template, this, s, e);
 //                throw new TermException("DynTaskify template not reconstructed: " + this, template);
             }
             return null;
@@ -213,7 +225,7 @@ public class DynTaskify extends TaskList {
 //            }
 //        }
 
-        return merge(this, term1, t, stamp(nar.random()), beliefOrGoal, s, e, nar);
+        return merge(this, y, t, stamp(nar.random()), beliefOrGoal, s, e, nar);
     }
 
 
@@ -310,7 +322,7 @@ public class DynTaskify extends TaskList {
     }
 
     private boolean doesntOverlap(Task t) {
-        return size ==0 || doesntOverlap(t.stamp());
+        return size < capacity() || doesntOverlap(t.stamp());
     }
 
     private boolean doesntOverlap(long[] stamp) {

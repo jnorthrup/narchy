@@ -1080,9 +1080,9 @@ public class PremiseRule extends ProxyTerm {
 //                System.out.println("belf paste possible: " + y + " -> " + y0);
 
 
-        if (y0 != y) {
+//        if (y0 != y) {
 //                System.out.println(y + " -> " + y0);
-        }
+//        }
         return y;
     }
 

@@ -1,13 +1,16 @@
 package nars.sensor;
 
+import jcog.Util;
 import jcog.data.iterator.Array2DIterable;
 import jcog.func.IntIntToObjectFunction;
 import jcog.math.FloatRange;
 import jcog.math.FloatSupplier;
 import jcog.signal.wave2d.Bitmap2D;
+import nars.NAL;
 import nars.NAR;
 import nars.concept.Concept;
 import nars.concept.sensor.Signal;
+import nars.table.eternal.DefaultOnlyEternalTable;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.PrintStream;
@@ -31,7 +34,8 @@ public class Bitmap2DConcepts<P extends Bitmap2D> implements Iterable<Signal> {
     /** TODO abstract pixel neighbor linking strategies */
     @Deprecated private final boolean linkNESW = false;
 
-    protected Bitmap2DConcepts(P src, @Nullable IntIntToObjectFunction<nars.term.Term> pixelTerm, FloatRange res, NAR n) {
+
+    protected Bitmap2DConcepts(P src, @Nullable IntIntToObjectFunction<nars.term.Term> pixelTerm, FloatRange res, float defaultFreq, NAR n) {
 
         this.width = src.width();
         this.height = src.height();
@@ -51,11 +55,34 @@ public class Bitmap2DConcepts<P extends Bitmap2D> implements Iterable<Signal> {
 
                 int xx = x, yy = y;
 
-                FloatSupplier f = () -> src.brightness(xx, yy);
+                FloatSupplier f =
+                        defaultFreq != defaultFreq ?
+                            () -> src.brightness(xx, yy)
+                                :
+                                new FloatSupplier() {
 
-                Signal sss = new Signal(pixelTerm.apply(x, y), cause, f, n).setResolution(res);
+//                                    float prev = Float.NaN;
 
-                matrix[x][y] = sss;
+                                    @Override
+                                    public float asFloat() {
+
+                                        float ff = src.brightness(xx, yy);
+//                                        float prev = this.prev;
+//                                        this.prev = ff;
+//                                        if (Util.equals(ff, prev) && Util.equals(prev, defaultFreq))
+//                                            return Float.NaN;
+//                                        return ff;
+                                        return Util.equals(ff, defaultFreq, NAL.truth.TRUTH_EPSILON)
+                                                ? Float.NaN : ff;
+                                    }
+                                };
+
+                Signal sc = new Signal(pixelTerm.apply(x, y), cause, f, n).setResolution(res);
+                if (defaultFreq==defaultFreq) {
+                    DefaultOnlyEternalTable.add(sc, defaultFreq, n);
+                }
+
+                matrix[x][y] = sc;
             }
         }
 

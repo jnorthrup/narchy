@@ -193,18 +193,24 @@ public abstract class ConceptBuilder implements BiFunction<Term, Concept, Concep
         return null;
     }
 
-    private static AbstractDynamicTruth dynamicInh(Term t) {
+    private static AbstractDynamicTruth dynamicInh(Term i) {
 
-        Term it = Image.imageNormalize(t);
-        if (!(it instanceof Bool) && !t.equals(it))
-            return DynamicImageTruth.ImageDynamicTruthModel;
+        Subterms ii = i.subterms();
+
+        if (!ii.hasAny(Temporal)) {
+            //HACK this is until ImageDynamicTruthModel can support dynamic transformation and untransformation of temporal-containing INH, like:
+            //  ((believe("-ÈÛWédxÚñB",(y-->$1)) ==>+- (y-->$1))-->(believe,"-ÈÛWédxÚñB",/))
+            Term it = Image.imageNormalize(i);
+            if (!(it instanceof Bool) && !i.equals(it))
+                return DynamicImageTruth.ImageDynamicTruthModel;
+        }
 
 
-        Subterms tt = t.subterms();
 
-        if (tt.hasAny(Op.CONJ /*| Op.PROD.bit*/)) {
 
-            Term s = tt.sub(0), p = tt.sub(1);
+        if (ii.hasAny(Op.CONJ /*| Op.PROD.bit*/)) {
+
+            Term s = ii.sub(0), p = ii.sub(1);
 
             Op so = s.op();
             Term su = s.unneg();

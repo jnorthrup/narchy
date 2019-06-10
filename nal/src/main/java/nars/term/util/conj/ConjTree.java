@@ -498,7 +498,7 @@ public class ConjTree implements ConjBuilder {
     @Override
     public long shift() {
         if (shift == TIMELESS) {
-            shift = (seq == null || seq.isEmpty()) ? 0 : seq.keysView().min();
+            shift = (seq == null || seq.isEmpty()) ? (pos!=null || neg!=null ? ETERNAL : TIMELESS) : seq.keysView().min();
         }
         return shift;
     }

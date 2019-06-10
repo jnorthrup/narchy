@@ -7,8 +7,6 @@ import nars.NAL;
 import nars.NAR;
 import nars.Task;
 import nars.table.TaskTable;
-import nars.task.DynamicTruthTask;
-import nars.task.NALTask;
 import nars.task.proxy.SpecialTruthAndOccurrenceTask;
 import nars.term.Term;
 import nars.term.util.Intermpolate;
@@ -20,12 +18,10 @@ import nars.truth.polation.TruthIntegration;
 import nars.truth.polation.TruthProjection;
 import nars.util.Timed;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
-import org.eclipse.collections.api.tuple.primitive.ObjectBooleanPair;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Random;
 import java.util.function.Predicate;
-import java.util.function.Supplier;
 
 import static nars.Op.*;
 import static nars.time.Tense.ETERNAL;
@@ -64,24 +60,6 @@ public final class Answer implements Timed {
      * truthpolation duration in result evidence projection
      */
     public int dur = 0;
-
-    @Nullable
-    public static NALTask task(Term content, Truth t, Supplier<long[]> stamp, boolean beliefOrGoal, long start, long end, Timed time) {
-        boolean neg = content.op() == NEG;
-        if (neg) {
-            content = content.unneg();
-        }
-
-        ObjectBooleanPair<Term> r = Task.tryContent(
-                content,
-                beliefOrGoal ? BELIEF : GOAL, !NAL.test.DEBUG_EXTRA);
-
-        return r!=null ? new DynamicTruthTask(
-                r.getOne(), beliefOrGoal,
-                t.negIf(neg ^ r.getTwo()),
-                time, start, end,
-                stamp.get()) : null;
-    }
 
 
     public Answer clear(int ttl) {
@@ -404,7 +382,8 @@ public final class Answer implements Timed {
         if (n == 1) {
             return root;
         } else {
-            return newTask(truthProjection(), root.isBeliefOrGoal());
+            TruthProjection tp = truthProjection();
+            return tp!=null ? newTask(tp, root.isBeliefOrGoal()) : null;
         }
     }
 
@@ -434,10 +413,7 @@ public final class Answer implements Timed {
 
 
     @Nullable
-    private Task newTask(@Nullable TruthProjection tp, boolean beliefOrGoal) {
-
-        if (tp == null)
-            return null;
+    private Task newTask(TruthProjection tp, boolean beliefOrGoal) {
 
         @Nullable Truth tt = tp.truth(eviMin(), ditherTruth, true, nar);
         if (tt == null)

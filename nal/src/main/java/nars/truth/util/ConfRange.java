@@ -45,4 +45,7 @@ public final class ConfRange extends FloatRange {
         return w2cSafe(eviEte());
     }
 
+    public final float conf() {
+        return floatValue();
+    }
 }

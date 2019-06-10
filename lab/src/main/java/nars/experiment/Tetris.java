@@ -84,6 +84,13 @@ public class Tetris extends GameX {
                 return state.seen[y * w + x] > 0 ? 1f : 0f;
             }
         };
+        Bitmap2DSensor<Bitmap2D> vision = addSensor(pixels = new Bitmap2DSensor<>(
+                (x, y) -> $.inh($.p(x, y), id),
+                //(x, y) -> $.p(GRID,$.the(x), $.the(y)),
+                grid, /*0,*/ n));
+        //pixels.resolution(0.05f);
+
+
 
         rewardNormalized("score", 0 /* ignore decrease */, 1,
                 state::score
@@ -111,11 +118,7 @@ public class Tetris extends GameX {
         //                    return $.t(v, p!=v || v > 0.5f ? c : c/2);
         //                })
 
-        addSensor(pixels = new Bitmap2DSensor<>(
-                (x, y) -> $.inh($.p(x, y), id),
-                //(x, y) -> $.p(GRID,$.the(x), $.the(y)),
-                grid, n));
-        //pixels.resolution(0.05f);
+
 
         actionsPushButton();
         //actionsToggle();

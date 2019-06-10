@@ -202,7 +202,7 @@ public class DigitizedScalar extends DemultiplexedScalarSensor {
                 nar);
 
             if (defaultFreq==defaultFreq)
-                DefaultOnlyEternalTable.add(sc, $.t(defaultFreq, nar.beliefConfDefault.eviEte()), nar);
+                DefaultOnlyEternalTable.add(sc, defaultFreq, nar);
 
             sensors.add(sc);
         }

@@ -101,6 +101,43 @@ class ConceptualizationTest {
         assertEquals("(a ==>+- ( &&+- ,b,c,d))", x.root().toString());
     }
 
+    @Test void testConceptualizeSequence() {
+        assertEq("((2,(g,y)) &&+- (2,(g,y)))",
+                $$("((2,(g,y)) &&+260 (2,(g,y)))").root());
+
+        assertEq("((--,(2,(g,y))) &&+- (--,(2,(g,y))))",
+                $$("(--(2,(g,y)) &&+260 --(2,(g,y)))").root());
+
+        assertEq("((2,(g,y)) &&+- (2,(g,y)))",
+                $$("(((2,(g,y)) &&+260 (2,(g,y))) &&+710 (2,(g,y)))").root());
+
+        assertEq("((--,(2,(g,y))) &&+- (--,(2,(g,y))))",
+                $$("(((--,(2,(g,y))) &&+260 (--,(2,(g,y)))) &&+710 (--,(2,(g,y))))").root());
+    }
+    @Test void testConceptualizeNAL3() {
+        //direct inh subterm
+        assertEq("(x-->(a&&b))", $$("(x-->(a&&b))").root());
+        assertEq("(x-->(a&&b))", $$("(x-->(a&&b))").concept());
+
+        assertEq("(x-->(&&,a,b,c))", $$("(x-->(&&,a,b,c))").root());
+
+        //direct sim subterm
+        assertEq("((a&&b)<->x)", $$("(x<->(a&&b))").root());
+        assertEq("((a&&b)<->x)", $$("(x<->(a&&b))").concept());
+        assertEq("((a&&b)<->(c&&d))", $$("((c&&d)<->(a&&b))").root());
+    }
+
+    @Test void testConceptualize_Not_NAL3() {
+
+        //indirect inh subterm (thru product)
+        assertEq("x((a &&+- b))", $$("x((a&&b))").root());
+        assertEq("x((a ||+- b))", $$("x((a||b))").root());
+        assertEq(//"x(( &&+- ,(--,b),(--,c),a))",
+                "x(((b ||+- c) &&+- a))",
+                $$("x((a&&(b||c)))").root());
+
+    }
+
     @Test
     void testStableNormalizationAndConceptualizationComplex() {
         String s = "(((--,checkScore(#1))&&#1) &&+14540 ((--,((#1)-->$2)) ==>+17140 (isRow(#1,(0,false),true)&&((#1)-->$2))))";

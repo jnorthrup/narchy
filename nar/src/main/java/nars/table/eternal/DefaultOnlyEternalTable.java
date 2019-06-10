@@ -22,7 +22,7 @@ public class DefaultOnlyEternalTable extends EternalTable {
 
 
         //TODO just direct insert
-        Task tt = new EternalTask(c.term(), BELIEF, $.t(t.freq(), t.conf()), n);
+        Task tt = new EternalTask(c.term(), BELIEF, t, n);
         tt.pri(n.priDefault(BELIEF));
         addEnd(tt, 1);
 
@@ -30,6 +30,10 @@ public class DefaultOnlyEternalTable extends EternalTable {
         //w.in.put(belief);
 //        assert(!belief.isDeleted());
 //        assert(!isEmpty());
+    }
+
+    public static DefaultOnlyEternalTable add(Concept c, float freq, NAR n) {
+        return add(c, $.t(freq, n.beliefConfDefault.conf()), n);
     }
 
     public static DefaultOnlyEternalTable add(Concept c, Truth t, NAR n) {
@@ -46,7 +50,7 @@ public class DefaultOnlyEternalTable extends EternalTable {
     @Override
     public void match(Answer a) {
         for (Task x : a.tasks)
-            if (x instanceof SeriesBeliefTable.SeriesTask && a.time.contains((LongInterval)x))
+            if (x instanceof SeriesBeliefTable.SeriesTask && a.time./*intersects*/ contains((LongInterval)x))
                 return; //dont match if no other signal task has been matched
 
         super.match(a);

@@ -214,6 +214,6 @@ public interface ConjBuilder {
                     min = t;
             }
         }
-        return min == Long.MAX_VALUE ? ETERNAL : min;
+        return min == TIMELESS ? ETERNAL : min;
     }
 }

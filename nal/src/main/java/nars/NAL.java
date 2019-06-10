@@ -40,9 +40,9 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
 
     public static final Retemporalize conceptualization =
             Conceptualization.FlattenAndDeduplicateConj
+            //Conceptualization.FlattenAndDeduplicateAndUnnegateConj //untested
             //Conceptualization.DirectXternal;
             //Conceptualization.PreciseXternal;
-            //Conceptualization.FlattenAndDeduplicateAndUnnegateConj //untested
             ;
     public static final boolean SHUFFLE_TERMUTES= configIs("SHUFFLE_TERMUTES");
     public static final boolean DT_DITHER_LOGARITHMICALLY= configIs("DT_DITHER_LOGARITHMICALLY");
@@ -57,7 +57,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
     public static final boolean CONJ_COMMUTIVE_LOOPBACK = true;
 
     /** max tasked matched by series table, in case the answer limit is higher.  this reduces the number of redundant non-exact matches freeing evidential capacity for non-signal tasks from other tables of the concept */
-    public static final float SERIES_MATCH_ADDITIONAL_RATE_PER_DUR = 0.25f;
+    public static final float SERIES_MATCH_ADDITIONAL_RATE_PER_DUR = 1f;
     public static final int SERIES_MATCH_MIN = 1;
 
 
@@ -69,8 +69,12 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
     public static final float TASKLINK_GENERATED_QUESTION_PRI_RATE =
             0;
     public static final boolean REVISION_ALLOW_OVERLAP_IF_DISJOINT_TIME= configIs("REVISION_ALLOW_OVERLAP_IF_DISJOINT_TIME");
+
+
+    /** can be unfair to new inputs if true, so for fairness leave false */
     public static final boolean DYNAMIC_TRUTH_STAMP_OVERLAP_FILTER= configIs("DYNAMIC_TRUTH_STAMP_OVERLAP_FILTER");
-    //0.75f;
+
+
     public static final boolean VOLMAX_RESTRICTS_INPUT= configIs("VOLMAX_RESTRICTS_INPUT"); //input tasks
     public static final boolean VOLMAX_RESTRICTS= configIs("VOLMAX_RESTRICTS"); //all tasks
 
@@ -91,13 +95,16 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
     //    /** can produce varieties of terms with dt below the dithered threshold time */
 //    public static final boolean ALLOW_UNDITHERED_DT_IF_DITHERED_FAILS= !configIs("DISABLE_ALLOW_UNDITHERED_DT_IF_DITHERED_FAILS");
     public static final int TASK_EVAL_FORK_ATTEMPT_LIMIT = NAL.TASK_EVAL_FORK_LIMIT * 2;
+
     /**
-     * >= 1  - maximum # of Answer attempts per Answer capacity.  so 2 means 2 tasks are tried for each Answer task slot in its capacity
+     * >= 1  - maximum # of Answer attempts per Answer capacity.
+     * so 2 means 2 tasks are tried for each Answer task slot in its capacity
+     * lower values will result in less confident but slower evidential stamp capacity consumption
      */
     public static final float ANSWER_COMPLETENESS =
             //0.5f;
-            0.75f;
-            //1f;
+            //0.75f;
+            1f;
             //2f;
 
     public static final boolean DEBUG_SIMILAR_DERIVATIONS= false;

@@ -39,19 +39,25 @@ public class Conceptualization {
         @Override
         protected  Term transformConj(Compound y) {
             Subterms yy = y.subterms();
-            if (yy.hasAny(CONJ) && yy.OR(yyy -> yyy.op() == CONJ)) {
+            if (yy.hasAny(CONJ) && yy.OR(yyy -> yyy/*.unneg()*/.op() == CONJ)) {
                 //collapse any embedded CONJ which will inevitably have dt=XTERNAL
                 UnifiedSet<Term> t = new UnifiedSet(yy.subs());
                 for (Term yyy : yy) {
+//                    yyy = yyy.unneg();
                     if (yyy.op() == CONJ) {
-                        yyy.subterms().forEach(t::add);
+                        yyy.eventsWhile((when,what)->{
+                            t.add(what);
+                            return true;
+                        }, 0, true, true);
+                        ///yyy.subterms().forEach(t::add);
                     } else {
                         t.add(yyy);
                     }
                 }
+
                 if (yy.subs() != 1 && t.size() == 1) {
                     Term tf = t.getFirst();
-                    return Op.terms.newCompound(CONJ, XTERNAL, tf, tf);
+                    return CONJ.the(XTERNAL, tf, tf);
                 } else
                     return CONJ.the(XTERNAL, t);
             }
@@ -73,16 +79,10 @@ public class Conceptualization {
                     return true;
                 }, y);
 
-//                for (Term yyy : yy) {
-//                    if (yyy.unneg().op() == CONJ) {
-//                        yyy.subterms().forEach(z -> t.addAt(z));
-//                    } else {
-//                        t.addAt(yyy);
-//                    }
-//                }
+
                 if (t.size() == 1 && yy.subs() != 1) {
                     Term tf = t.first();
-                    return Op.terms.newCompound(CONJ, XTERNAL, tf, tf);
+                    return CONJ.the(XTERNAL, tf, tf);
                 } else
                     return CONJ.the(XTERNAL, t);
             }
@@ -100,7 +100,8 @@ public class Conceptualization {
         public final Term transformTemporal(Compound x, int dtNext) {
             Op xo = x.op();
 
-            if (xo == INH || xo == SIM) {
+            if ((xo == INH || xo == SIM) && ((x.subterms().structureSurface()&CONJ.bit)!=0)) {
+                //HACK
                 return Retemporalize.retemporalizeXTERNALToDTERNAL.applyPosCompound(x);
             }
 

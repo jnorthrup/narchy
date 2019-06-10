@@ -43,6 +43,10 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends VectorSensor {
     }
 
     public Bitmap2DSensor(@Nullable IntIntToObjectFunction<nars.term.Term> pixelTerm, P src, NAR n) {
+        this(pixelTerm, src, Float.NaN, n);
+    }
+
+    public Bitmap2DSensor(@Nullable IntIntToObjectFunction<nars.term.Term> pixelTerm, P src, float defaultFreq, NAR n) {
         super(pixelTerm.apply(0,1)
                     .replace(Map.of(
                         Int.the(0), $.varDep(1),
@@ -50,7 +54,7 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends VectorSensor {
         ), n);
         this.width = src.width();
         this.height = src.height();
-        this.concepts = new Bitmap2DConcepts<>(src, pixelTerm, res, n);
+        this.concepts = new Bitmap2DConcepts<>(src, pixelTerm, res, defaultFreq, n);
         this.src = concepts.src;
 
 
