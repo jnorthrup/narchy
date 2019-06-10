@@ -14,16 +14,18 @@ import nars.task.DerivedTask;
 import nars.task.EternalTask;
 import nars.task.NALTask;
 import nars.task.UnevaluatedTask;
-import nars.task.proxy.SpecialNegatedTermTask;
+import nars.task.proxy.SpecialNegatedTask;
+import nars.task.proxy.SpecialPuncTermAndTruthTask;
+import nars.task.proxy.SpecialTermTask;
 import nars.task.proxy.SpecialTruthAndOccurrenceTask;
 import nars.task.util.TaskException;
 import nars.task.util.TaskRegion;
 import nars.task.util.TasksRegion;
 import nars.term.Compound;
 import nars.term.Term;
-import nars.term.util.TermedDelegate;
 import nars.term.Variable;
 import nars.term.atom.Bool;
+import nars.term.util.TermedDelegate;
 import nars.term.util.transform.VariableTransform;
 import nars.term.var.VarIndep;
 import nars.time.Tense;
@@ -410,10 +412,23 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
      * creates negated proxy of a task
      */
     static Task negated(@Nullable Task t) {
-        if (t instanceof SpecialNegatedTermTask)
-            return ((SpecialNegatedTermTask) t).task;
+        if (t instanceof SpecialNegatedTask)
+            return ((SpecialNegatedTask) t).task;
         else
-            return new SpecialNegatedTermTask(t);
+            return new SpecialNegatedTask(t);
+    }
+
+    static Task withContent(Task task, Term t) {
+        if (task.term().equals(t)) return task;
+
+        boolean negated = t.op()==NEG;
+        if (negated) {
+            t = t.unneg();
+            if (task.isBeliefOrGoal())
+                return new SpecialPuncTermAndTruthTask(t, task.punc(), task.truth().neg(), task);
+        }
+
+        return new SpecialTermTask(t, task);
     }
 
     /**

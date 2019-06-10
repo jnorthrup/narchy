@@ -139,7 +139,7 @@ class ImplicationNetworkTest {
         Task bBelief = n.belief(b);
         //System.out.println(MetaGoal.proof(bBelief, n));
         //System.out.println(bBelief.proof());
-        assertNull(bBelief == null || bBelief.conf() < 0.5f /* TODO refine thresh */);
+        assertTrue(bBelief == null || bBelief.conf() < 0.5f /* TODO refine thresh */);
 
     }
 
@@ -190,7 +190,7 @@ class ImplicationNetworkTest {
         cc.forEachTask(x -> System.out.println(x.proof()));
 
         Truth bBelief = bb.truth(ETERNAL, n);
-        assertEquals("%1.0;.82%" ,bBelief.toString());
+        assertEquals("%1.0;.81%" ,bBelief.toString());
 
         Truth cBelief = cc.truth(ETERNAL, n);
         assertEquals("%1.0;.73%" ,cBelief.toString());

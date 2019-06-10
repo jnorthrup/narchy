@@ -19,8 +19,6 @@ import org.eclipse.collections.api.set.MutableSet;
 
 import java.util.Arrays;
 
-import static nars.term.util.Image.imageNormalize;
-
 public class Unifiable extends AbstractPred<PreDerivation> {
 
     private final byte[] xpInT, xpInB, ypInT, ypInB;
@@ -94,7 +92,7 @@ public class Unifiable extends AbstractPred<PreDerivation> {
         if (y == null)
             return false; //ex: seeking a negation but wasnt negated
 
-        return Terms.possiblyUnifiable( imageNormalize(x), imageNormalize(y), isStrict, varBits);
+        return Terms.possiblyUnifiable( x, y, isStrict, varBits);
     }
 
 

@@ -157,7 +157,7 @@ public class Remember extends AbstractTask {
                 if (input instanceof ImageBeliefTable.ImageTermTask)
                     input = ((ImageBeliefTable.ImageTermTask)input).task; //unwrap existing
                 else {
-                    input = new SpecialTermTask(imgNormal, input);
+                    input = Task.withContent(input, imgNormal);
                     input.pri(0); //prevent the product task from being activated significantly, because the image task will be emitted at its priority also.
 
                     boolean cyclic = input.isCyclic();

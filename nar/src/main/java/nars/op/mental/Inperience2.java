@@ -94,7 +94,7 @@ public class Inperience2 extends How {
     }
 
     private static class InperienceTask extends SpecialPuncTermAndTruthTask {
-        public InperienceTask(Term r, @Nullable Truth tr, Task t) {
+        InperienceTask(Term r, @Nullable Truth tr, Task t) {
             super(r, Op.BELIEF, tr, t);
         }
 

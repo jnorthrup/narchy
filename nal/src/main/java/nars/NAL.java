@@ -102,9 +102,9 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
      * lower values will result in less confident but slower evidential stamp capacity consumption
      */
     public static final float ANSWER_COMPLETENESS =
-            //0.5f;
+            0.5f;
             //0.75f;
-            1f;
+            //1f;
             //2f;
 
     public static final boolean DEBUG_SIMILAR_DERIVATIONS= false;
@@ -122,9 +122,9 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
      * priority calculation here currently depends on a commutive and associaive function
      */
     public static final FloatFloatToFloatFunction DerivationPri =
-            //(t, b) -> Util.and(t , b); //plus, max=1
-            (t, b) -> Util.or(t , b); //plus, max=1
-            //(t, b) -> Util.unitize(t + b); //plus, max=1
+            //(t, b) -> Util.and(t , b);
+            //(t, b) -> Util.or(t , b);
+            (t, b) -> Util.unitize(t + b); //plus, max=1
 
 //    /** durs surrounding a derived temporal goal with one eternal (of two) parent tasks */
 //    public static final float GOAL_PROJECT_TO_PRESENT_RADIUS_DURS = 1;

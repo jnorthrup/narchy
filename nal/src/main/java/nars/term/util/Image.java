@@ -4,10 +4,11 @@ import jcog.Util;
 import nars.Op;
 import nars.subterm.Subterms;
 import nars.term.Compound;
+import nars.term.Img;
 import nars.term.Term;
 import nars.term.atom.Bool;
 import nars.term.compound.LighterCompound;
-import nars.term.Img;
+import nars.term.util.builder.TermBuilder;
 import org.jetbrains.annotations.Nullable;
 
 import static nars.Op.*;
@@ -116,11 +117,15 @@ public enum Image {
     }
 
 
+    @Deprecated public static Term normalize(Term x, boolean actuallyNormalize, boolean onlyRecursionTest) {
+        return normalize(x, actuallyNormalize, onlyRecursionTest, Op.terms);
+    }
+
     /**
      * assumes that input is INH op has been tested for all image bits
      */
     @Nullable
-    public static Term normalize(Term x, boolean actuallyNormalize, boolean onlyRecursionTest) {
+    public static Term normalize(Term x, boolean actuallyNormalize, boolean onlyRecursionTest, TermBuilder B) {
 
         //assert(x.op()==INH);
 
@@ -134,10 +139,7 @@ public enum Image {
         Subterms pp = null;
         boolean isExt = p.op() == PROD && (pp = p.subterms()).contains(Op.ImgExt);// && !pp.contains(Op.ImgInt);
 
-
-        boolean normalizable = isInt ^ isExt;
-
-        if (!normalizable)
+        if (isInt == isExt)
             return x;
 
         if (actuallyNormalize || onlyRecursionTest) {
@@ -146,11 +148,11 @@ public enum Image {
             if (isInt) {
 
                 subj = ss.sub(0);
-                pred = PROD.the(Util.replaceDirect(ss.subRangeArray(1, ss.subs()), Op.ImgInt, p));
+                pred = PROD.the(B, Util.replaceDirect(ss.subRangeArray(1, ss.subs()), Op.ImgInt, p));
 
             } else {
 
-                subj = PROD.the(Util.replaceDirect(pp.subRangeArray(1, pp.subs()), Op.ImgExt, s));
+                subj = PROD.the(B, Util.replaceDirect(pp.subRangeArray(1, pp.subs()), Op.ImgExt, s));
                 pred = pp.sub(0);
 
             }
@@ -162,7 +164,7 @@ public enum Image {
                     return null;
             }
 
-            return imageNormalize(INH.the(subj, pred));
+            return imageNormalize(INH.the(B, subj, pred));
 
         } else {
             return null;
@@ -182,10 +184,10 @@ public enum Image {
      * @return Bool term if collapsed, otherwise null
      */
     @Nullable
-    public static Term recursionFilter(Term subj, Term pred) {
+    public static Term recursionFilter(Term subj, Term pred, TermBuilder B) {
         return Image.normalize(
                 new LighterCompound(INH, subj, pred),
-        true, true);
+        true, true, B);
     }
 
 
