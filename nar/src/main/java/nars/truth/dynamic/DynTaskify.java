@@ -165,7 +165,7 @@ public class DynTaskify extends TaskList {
 
 
         Term y = model.reconstruct(template, this, s, e);
-        if (y==null || !y.unneg().op().taskable || y.hasXternal()) { //quick tests
+        if (y==null || !y.unneg().op().taskable /*|| y.hasXternal()*/) { //quick tests
             if (NAL.DEBUG) {
                 //TEMPORARY for debug
 //                  model.evalComponents(answer, (z,start,end)->{
@@ -173,7 +173,7 @@ public class DynTaskify extends TaskList {
 //                      nar.conceptualizeDynamic(z).beliefs().match(answer);
 //                      return true;
 //                  });
-                  model.reconstruct(template, this, s, e);
+//                  model.reconstruct(template, this, s, e);
 //                throw new TermException("DynTaskify template not reconstructed: " + this, template);
             }
             return null;
@@ -261,10 +261,6 @@ public class DynTaskify extends TaskList {
 //        }
 
 
-//        if (subTerm.op()==INH) {
-//            subTerm = Image.imageNormalize(subTerm);
-//            //if (!subTermImgNorm.equals(subTerm))
-//        }
 
         Concept subConcept = nar.conceptualizeDynamic(subTerm);
         if (!(subConcept instanceof TaskConcept))

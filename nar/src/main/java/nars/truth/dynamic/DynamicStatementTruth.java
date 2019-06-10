@@ -9,7 +9,6 @@ import nars.task.util.TaskRegion;
 import nars.term.Compound;
 import nars.term.Neg;
 import nars.term.Term;
-import nars.term.util.Image;
 import nars.term.util.TermException;
 import nars.term.util.conj.ConjBuilder;
 import nars.term.util.conj.ConjList;
@@ -257,8 +256,7 @@ public class DynamicStatementTruth {
 
             Term decomposed = stmtCommon(!subjOrPred, superterm);
             if (decomposed.unneg().op()!= CONJ) {
-                //Image normalize
-                superterm = (Compound) Image.imageNormalize(superterm);
+                //superterm = (Compound) Image.imageNormalize(superterm);
                 decomposed = stmtCommon(!subjOrPred, superterm);
             }
 

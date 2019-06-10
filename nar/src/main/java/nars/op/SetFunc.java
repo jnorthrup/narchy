@@ -19,7 +19,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.function.Predicate;
 
 import static nars.term.atom.Bool.Null;
 
@@ -82,33 +81,23 @@ public class SetFunc {
 
     };
 
-    static @Nullable Set<Term> intersect(/*@NotNull*/ Subterms a, /*@NotNull*/ Subterms b) {
-        if ((a.structure() & b.structure()) != 0) {
-
-            Predicate<Term> contains = a.subs() > 2 ? (a.toSet()::contains) : a::contains;
-            Set<Term> ab = b.toSet(contains);
-            return ab;
-        }
-        return null;
-    }
-
     public static Term intersect(/*@NotNull*/ Op o, Subterms a, Subterms b) {
         if (a instanceof Term && a.equals(b))
             return (Term) a;
 
-        Set<Term> cc = intersect(b, a);
-        if (cc == null)
+        if (Term.commonStructure(a,b)) {
+
+            Set<Term> ab = a.toSet(b.subs() > 2 ? (b.toSet()::contains) : b::contains);
+            int ssi = ab == null ? 0 : ab.size();
+            switch (ssi) {
+                case 0: return Null;
+                case 1: return ab.iterator().next();
+                default:
+                    return o.the(ab.toArray(Op.EmptyTermArray));
+            }
+
+        } else
             return Null;
-
-        int ssi = cc.size();
-        switch (ssi) {
-            case 0: return Null;
-            case 1: return cc.iterator().next();
-            default:
-                return Op.compound(o, cc.toArray(Op.EmptyTermArray));
-        }
-
-
     }
 
     public static Term union(/*@NotNull*/ Op o, Subterms a, Subterms b) {
@@ -120,12 +109,9 @@ public class SetFunc {
         a.addAllTo(t);
         b.addAllTo(t);
         if (bothTerms) {
-            int as = a.subs();
-            int bs = b.subs();
+            int as = a.subs(), bs = b.subs();
             int maxSize = Math.max(as, bs);
             if (t.size() == maxSize) {
-                
-                
                 return (Term) (as > bs ? a : b);
             }
         }

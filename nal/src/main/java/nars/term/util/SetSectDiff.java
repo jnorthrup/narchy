@@ -10,7 +10,6 @@ import nars.term.Neg;
 import nars.term.Term;
 import nars.term.atom.Bool;
 import nars.term.util.builder.TermBuilder;
-import nars.term.util.builder.TermConstructor;
 import org.eclipse.collections.api.block.predicate.Predicate2;
 import org.eclipse.collections.impl.map.mutable.primitive.ObjectByteHashMap;
 import org.eclipse.collections.impl.set.mutable.UnifiedSet;
@@ -129,7 +128,7 @@ public class SetSectDiff {
 
             Term[] yyyy = yyy.arrayKeep();
             if (o == SETe || o == SETi || !union) {
-                return Op.compound(B, o, yyyy);
+                return B.compound(o, yyyy);
             } else {
                 return DISJ(B, yyyy);
             }
@@ -144,8 +143,8 @@ public class SetSectDiff {
     }
 
     /** result for a 1-ary set/sect */
-    private static Term single(Term only, Op o, TermConstructor b) {
-        return (o.set) ? Op.compound(b, o, only) /* wrapped */ : only  /* raw */;
+    private static Term single(Term only, Op o, TermBuilder b) {
+        return (o.set) ? b.compound(o, only) /* wrapped */ : only  /* raw */;
     }
 
     public static Term intersectProd(Op o, boolean union, Term x, Term y) {

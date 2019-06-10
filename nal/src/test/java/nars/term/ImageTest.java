@@ -29,6 +29,15 @@ class ImageTest {
         t.isNormalized();
     }
 
+    @Test void testCompoundSubtermsNormalized() {
+        assertEq("(x,reaction(acid,base))", "(x,(acid --> (reaction,/,base)))");
+        assertEq("(x,reaction(#1,#2))", "(x,(#1 --> (reaction,/,#2)))");
+        assertEq("(reaction(#1,#2)&&x)", "(x && (#1 --> (reaction,/,#2)))");
+        assertEq("(x &&+1 reaction(#1,#2))", "(x &&+1 (#1 --> (reaction,/,#2)))");
+        assertEq("((x &&+1 y) &&+1 reaction(#1,#2))", "(x &&+1 (y &&+1 (#1 --> (reaction,/,#2))))");
+        assertEq("((x &&+1 (y||(--,x))) &&+1 reaction(#1,#2))", "(x &&+1 ((y||--x) &&+1 (#1 --> (reaction,/,#2))))");
+    }
+
     @Test
     void testNormlizeExt() {
         assertEq(

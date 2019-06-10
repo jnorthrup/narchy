@@ -8,6 +8,7 @@ import nars.subterm.DisposableTermList;
 import nars.subterm.Subterms;
 import nars.subterm.TermList;
 import nars.term.Compound;
+import nars.term.Img;
 import nars.term.Term;
 import nars.term.Terms;
 import nars.term.atom.Atom;
@@ -17,9 +18,7 @@ import nars.term.util.SetSectDiff;
 import nars.term.util.TermException;
 import nars.term.util.builder.HeapTermBuilder;
 import nars.term.util.builder.TermBuilder;
-import nars.term.util.builder.TermConstructor;
 import nars.term.util.conj.Conj;
-import nars.term.Img;
 import nars.term.var.UnnormalizedVariable;
 import nars.time.Tense;
 import org.apache.lucene.util.MathUtil;
@@ -115,16 +114,16 @@ public enum Op {
 
     /**
      * conjunction
-     *   &&   parallel                (a && b)          <= (b && a)
-     *   &&+  sequence forward        (a &&+1 b)
-     *   &&-  sequence reverse        (a &&-1 b)        =>      (b &&+1 a)
-     *   &&+- variable                (a &&+- b)        <=      (b &&+- a)
-     *   &|   joined at the start     (x &| (a &&+1 b)) => ((a&&x) &&+1 b)
-     *   |&   joined at the end       (x |& (a &&+1 b)) => (     a &&+1 (b&&x))   //TODO
-     *
+     * &&   parallel                (a && b)          <= (b && a)
+     * &&+  sequence forward        (a &&+1 b)
+     * &&-  sequence reverse        (a &&-1 b)        =>      (b &&+1 a)
+     * &&+- variable                (a &&+- b)        <=      (b &&+- a)
+     * &|   joined at the start     (x &| (a &&+1 b)) => ((a&&x) &&+1 b)
+     * |&   joined at the end       (x |& (a &&+1 b)) => (     a &&+1 (b&&x))   //TODO
+     * <p>
      * disjunction
-     *   ||   parallel                (a || b)          => --(--a &&   --b)
-     *   ||+- variable                (a ||+- b)        => --(--a &&+- --b)
+     * ||   parallel                (a || b)          => --(--a &&   --b)
+     * ||+- variable                (a ||+- b)        => --(--a &&+- --b)
      */
     CONJ("&&", true, 5, Args.GTETwo) {
         @Override
@@ -138,7 +137,6 @@ public enum Op {
      * intensional setAt
      */
     SETi("[", true, 2, Args.GTEOne) {
-
         @Override
         public Term the(TermBuilder b, int dt, Term... u) {
             return SetSectDiff.intersectSet(b, SETi, u);
@@ -154,7 +152,6 @@ public enum Op {
      * extensional setAt
      */
     SETe("{", true, 2, Args.GTEOne) {
-
         @Override
         public Term the(TermBuilder b, int dt, Term... u) {
             return SetSectDiff.intersectSet(b, SETe, u);
@@ -187,8 +184,6 @@ public enum Op {
     VAR_DEP('#', 5),
 
 
-
-
     /**
      * % least specific, most globbing
      */
@@ -213,29 +208,22 @@ public enum Op {
     ;
 
 
-    /**
-     * does this help?  Op.values() bytecode = INVOKESTATIC
-     * but accessing this is GETSTATIC
-     */
-    private static final Op[] ops = Op.values();
-
     public static final String DISJstr = "||";
     public static final int StatementBits = Op.or(Op.INH, Op.SIM, Op.IMPL);
     public static final int FuncBits = Op.or(Op.ATOM, Op.INH, Op.PROD);
     public static final int FuncInnerBits = Op.or(Op.ATOM, Op.PROD);
     public static final byte BELIEF = '.';
     public static final byte QUESTION = '?';
-
-    /** https://en.wikipedia.org/wiki/Is%E2%80%93ought_problem
-     *  "But how exactly can an "ought" be derived from an "is"?"
-     * */
+    /**
+     * https://en.wikipedia.org/wiki/Is%E2%80%93ought_problem
+     * "But how exactly can an "ought" be derived from an "is"?"
+     */
     @Paper
     public static final byte GOAL = '!';
-
     public static final byte QUEST = '@';
     public static final byte COMMAND = ';';
     public static final byte[] Punctuation = new byte[]{BELIEF, QUESTION, GOAL, QUEST, COMMAND};
-//    public static final String TENSE_PAST = ":\\:";
+    //    public static final String TENSE_PAST = ":\\:";
 //    public static final String TENSE_PRESENT = ":|:";
 //    public static final String TENSE_FUTURE = ":/:";
 //    public static final String TENSE_ETERNAL = ":-:";
@@ -257,66 +245,61 @@ public enum Op {
     public static final char STAMP_SEPARATOR = ';';
     public static final char STAMP_STARTER = ':';
     public static final int varBits = Op.or(VAR_PATTERN, VAR_DEP, VAR_QUERY, VAR_INDEP);
-
     public final static char VarAutoSym = '_';
-
-    /** anonymous depvar */
-    @Skill("Prolog") public static final Atomic VarAuto =
-        new UnnormalizedVariable(Op.VAR_DEP, String.valueOf(VarAutoSym));
-
+    /**
+     * anonymous depvar
+     */
+    @Skill("Prolog")
+    public static final Atomic VarAuto =
+            new UnnormalizedVariable(Op.VAR_DEP, String.valueOf(VarAutoSym));
     public static final char NullSym = '☢';
-
     public static final char imIntSym = '\\';
     public static final char imExtSym = '/';
-
     public static final int AtomicConstant = Op.ATOM.bit | Op.INT.bit | Op.BOOL.bit;
-
     public static final Img ImgInt = new Img((byte) '\\');
     public static final Img ImgExt = new Img((byte) '/');
     public static final int Set = or(Op.SETe, Op.SETi);
-
     /**
      * events are defined as the non-conjunction sub-components of conjunctions, or the target itself if it is not a conj
      */
     public static final int Temporal = or(Op.CONJ, Op.IMPL);
     public static final int Variable = or(Op.VAR_PATTERN, Op.VAR_INDEP, Op.VAR_DEP, Op.VAR_QUERY);
-
     public static final Atom Belief = new Atom(String.valueOf((char) BELIEF));
     public static final Atom Goal = new Atom(String.valueOf((char) GOAL));
     public static final Atom Question = new Atom(String.valueOf((char) QUESTION));
     public static final Atom Quest = new Atom(String.valueOf((char) QUEST));
     public static final Atom Que = new Atom(String.valueOf((char) QUESTION) + (char) QUEST);
-
     public static final Term[] EmptyTermArray = new Term[0];
     public static final Subterms EmptySubterms = new ArrayTermVector(EmptyTermArray);
     public static final Compound EmptyProduct = TermBuilder.newCompound(Op.PROD, EmptySubterms);
-    private static final int[] NALLevelEqualAndAbove = new int[8 + 1];
-
-
     public static final ImmutableMap<String, Op> stringToOperator;
-
-
-
-    /**
-     * specifier for any NAL level
-     */
-    private static final int ANY_LEVEL = 0;
-
-
-
-
     /**
      * True wrapped in a subterm as the only element
      */
     public static final Subterms TrueSubterm = HeapTermBuilder.the.subterms(True);
-
     /**
      * False wrapped in a subterm as the only element
      */
     public static final Subterms FalseSubterm = HeapTermBuilder.the.subterms(Bool.False);
-
     public static final Compound[] EmptyCompoundArray = new Compound[0];
-
+    public static final Predicate<Term> statementLoopyContainer = (x) -> x.op() != PROD;
+    @Deprecated
+    public static final String DIFFe = "~";
+    public static final String DIFFi = "-";
+    /**
+     * does this help?  Op.values() bytecode = INVOKESTATIC
+     * but accessing this is GETSTATIC
+     */
+    private static final Op[] ops = Op.values();
+    private static final int[] NALLevelEqualAndAbove = new int[8 + 1];
+    /**
+     * specifier for any NAL level
+     */
+    private static final int ANY_LEVEL = 0;
+    /**
+     * re-initialized in NAL
+     */
+    public static TermBuilder terms = HeapTermBuilder.the;
 
     static {
         for (Op o : Op.values()) {
@@ -356,7 +339,6 @@ public enum Op {
      * character representation if symbol has length 1; else ch = 0
      */
     public final char ch;
-
     /**
      * arity limits, range is inclusive >= <=
      * TODO replace with an IntPredicate
@@ -379,26 +361,21 @@ public enum Op {
      * whether this involves an additional numeric component: 'dt' (for temporals) or 'relation' (for images)
      */
     public final boolean hasNumeric;
-
     /*
     used only by Termlike.hasAny
     public static boolean hasAny(int existing, int possiblyIncluded) {
         return (existing & possiblyIncluded) != 0;
     }*/
     public final byte id;
-
-    /** whether the target of this op is valid, by tiself, as an event or condition */
+    /**
+     * whether the target of this op is valid, by tiself, as an event or condition
+     */
     public boolean eventable;
     public boolean set;
-
-    /** re-initialized in NAL */
-    public static TermBuilder terms = HeapTermBuilder.the;
-
 
     Op(char c, int minLevel) {
         this(c, minLevel, Args.Zero);
     }
-
 
     Op(char c, int minLevel, IntIntPair size) {
         this(Character.toString(c), minLevel, size);
@@ -412,6 +389,23 @@ public enum Op {
     Op(String string, int minLevel, IntIntPair size) {
         this(string, false /* non-commutive */, minLevel, size);
     }
+
+//    public static boolean isTrueOrFalse(Term x) {
+//        return x == Bool.True || x == Bool.False;
+//    }
+
+
+//    public static boolean hasNull(Term[] t) {
+//        for (Term x : t)
+//            if (x == Bool.Null)
+//                return true;
+//        return false;
+//    }
+
+
+//    static boolean in(int needle, int haystack) {
+//        return (needle & haystack) == needle;
+//    }
 
     Op(String string, boolean commutative, int minLevel, IntIntPair size) {
 
@@ -471,8 +465,6 @@ public enum Op {
         set = str.equals("{") || str.equals("[");
     }
 
-
-
     public static boolean hasAny(int existing, int possiblyIncluded) {
         return (existing & possiblyIncluded) != 0;
     }
@@ -481,35 +473,12 @@ public enum Op {
         return ((existing | possiblyIncluded) == existing);
     }
 
-//    public static boolean isTrueOrFalse(Term x) {
-//        return x == Bool.True || x == Bool.False;
-//    }
-
-
-//    public static boolean hasNull(Term[] t) {
-//        for (Term x : t)
-//            if (x == Bool.Null)
-//                return true;
-//        return false;
-//    }
-
-
-//    static boolean in(int needle, int haystack) {
-//        return (needle & haystack) == needle;
-//    }
-
     public static int or(/*@NotNull*/ Op... o) {
         int bits = 0;
         for (Op n : o)
             bits |= n.bit;
         return bits;
     }
-
-
-    public static final Predicate<Term> statementLoopyContainer = (x) -> x.op()!=PROD;
-
-
-
 
     @Nullable
     public static Op the(String s) {
@@ -523,7 +492,6 @@ public enum Op {
         Op x = stringToOperator.get(s);
         return x != null ? x : s;
     }
-
 
     /**
      * encodes a structure vector as a human-readable target.
@@ -558,7 +526,9 @@ public enum Op {
         return DISJ(b, DTERNAL, x);
     }
 
-    /** build disjunction (consisting of negated conjunction of the negated subterms, ie. de morgan's boolean law ) */
+    /**
+     * build disjunction (consisting of negated conjunction of the negated subterms, ie. de morgan's boolean law )
+     */
     public static Term DISJ(TermBuilder b, int dt, Term... x) {
         switch (x.length) {
             case 0:
@@ -584,6 +554,9 @@ public enum Op {
         return Stream.of(ops);
     }
 
+    public static Op the(int id) {
+        return ops[id];
+    }
 
     public final Term the(Subterms s) {
         return the(DTERNAL, s);
@@ -594,7 +567,7 @@ public enum Op {
     }
 
     public final Term the(TermBuilder b, int dt, Subterms s) {
-        return the(b, dt, s instanceof DisposableTermList ? ((TermList)s).arrayKeep() : s.arrayShared());
+        return the(b, dt, s instanceof DisposableTermList ? ((TermList) s).arrayKeep() : s.arrayShared());
     }
 
     public final Term the(/*@NotNull*/ Term... u) {
@@ -671,6 +644,7 @@ public enum Op {
     public final Term[] sortedIfNecessary(int dt, Term[] u) {
         return commutative && u.length > 1 && Conj.concurrentInternal(dt) ? Terms.commute(u) : u;
     }
+
     public final Subterms sortedIfNecessary(int dt, Subterms u) {
         return commutative && Conj.concurrentInternal(dt) && u.subs() > 1 ? u.commuted() : u;
     }
@@ -705,53 +679,22 @@ public enum Op {
      * - reduction to another target or True/False/Null
      */
     public final Term the(int dt, Term... u) {
-        return the(terms,dt, u);
+        return the(terms, dt, u);
     }
 
     public final Term the(TermBuilder b, Term... u) {
         return the(b, DTERNAL, u);
     }
 
+
     public Term the(TermBuilder b, int dt, Term... u) {
-        return compound(b, this, dt, u);
-    }
-
-    public static Term compound(TermConstructor b, Op o, int dt, Subterms u) {
-        return compound(b, o, dt, u.arrayShared());
-    }
-
-    public static Term compound(Op o, int dt, Subterms u) {
-        return compound(o, dt, u.arrayShared());
-    }
-
-    public static Op the(int id) {
-        return ops[id];
-    }
-
-    /**
-     * direct constructor
-     * no reductions or validations applied
-     * use with caution
-     */
-    public static Term compound(Op o, int dt, Term... u) {
-        return compound(terms, o, dt, u);
-    }
-
-    public static Term compound(TermConstructor b, Op o, Term... u) {
-        return compound(b, o, DTERNAL, u);
-    }
-
-    public static Term compound(TermConstructor b, Op o, int dt, Term... u) {
-        return b.compound(o, dt, u);
-    }
-
-    public static Term compound(Op o, Term... u) {
-        return compound(o, DTERNAL, u);
+        return b.compound(this, dt, u);
     }
 
     public boolean isAny(int bits) {
         return ((bit & bits) != 0);
     }
+
 
     enum Args {
         ;
@@ -770,8 +713,4 @@ public enum Op {
             super("Invalid punctuation: " + c);
         }
     }
-
-
-    @Deprecated public static final String DIFFe = "~";
-    public static final String DIFFi = "-";
 }

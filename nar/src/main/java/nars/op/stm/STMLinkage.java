@@ -8,6 +8,7 @@ import nars.attention.TaskLinkWhat;
 import nars.concept.Concept;
 import nars.control.NARPart;
 import nars.link.AtomicTaskLink;
+import nars.table.dynamic.ImageBeliefTable;
 import org.eclipse.collections.api.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
 
@@ -94,7 +95,7 @@ public class STMLinkage extends NARPart {
     }
 
     public boolean filter(Task x) {
-        return x.isInput();
+        return x.isInput() && !(x instanceof ImageBeliefTable.ImageTask);
     }
 
 

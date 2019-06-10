@@ -355,8 +355,8 @@ public class Occurrify extends TimeGraph {
                 know(taskTerm, taskStart, taskEnd) :
                 know(taskTerm);
 
-        imageNormalize(pattern);
-        imageNormalize(taskTerm);
+        imageNormalize(shadow(pattern));
+        imageNormalize(taskEvent);
 
         if (beliefTerm.op().eventable) {
             boolean equalBT = beliefTerm.equals(taskTerm);
@@ -364,7 +364,7 @@ public class Occurrify extends TimeGraph {
                     know(beliefTerm, beliefStart, beliefEnd) :
                     ((!equalBT) ? know(beliefTerm) : taskEvent) /* same target, reuse the same event */;
             if (!equalBT)
-                imageNormalize(beliefTerm);
+                imageNormalize(beliefEvent);
         }
 
         autoneg = (taskTerm.hasAny(NEG) || beliefTerm.hasAny(NEG) || pattern.hasAny(NEG));
@@ -375,10 +375,10 @@ public class Occurrify extends TimeGraph {
         return this;
     }
 
-    private void imageNormalize(Term p) {
-        Term ip = Image.imageNormalize(p);
-        if (!p.equals(ip))
-            link(shadow(p), 0, shadow(ip));
+    private void imageNormalize(Event p) {
+        Term ip = Image.imageNormalize(p.id);
+        if (!p.id.equals(ip))
+            link(p, 0, shadow(ip));
     }
 
     /**

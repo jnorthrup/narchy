@@ -136,7 +136,7 @@ public class ConjClustering extends How {
 
 
         whenDeleted(nar.onTask(t -> {
-            if (!(t instanceof ImageBeliefTable.ImageTermTask)
+            if (!(t instanceof ImageBeliefTable.ImageTask)
                     && !t.isEternal()
                     && !t.hasVars() //<-- TODO requires multi-normalization (shifting offsets)
                     && (stampLenMax == Integer.MAX_VALUE || (t.stamp().length <= stampLenMax))

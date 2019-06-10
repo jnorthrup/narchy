@@ -28,6 +28,8 @@ public class ImageBeliefTable extends DynamicTaskTable {
         super(image, beliefOrGoal);
 
         Term imageNormalized = Image.imageNormalize(image);
+        if (image.isNormalized())
+            imageNormalized = imageNormalized.normalize();
         assert(!image.equals(imageNormalized) && imageNormalized.op()==INH);
         this.normal = imageNormalized;
     }
@@ -35,12 +37,12 @@ public class ImageBeliefTable extends DynamicTaskTable {
     /** wraps resulting task as an Image proxy */
     @Override public @Nullable Task match(long start, long end, boolean forceProject, @Nullable Term template, Predicate<Task> filter, int dur, NAR nar, boolean ditherTruth) {
         Task t = super.match(start, end, forceProject, template, filter, dur, nar, ditherTruth);
-        return t != null ? new ImageTermTask(this.term, t) : null;
+        return t != null ? new ImageTask(this.term, t) : null;
     }
     /** wraps resulting task as an Image proxy */
     @Override public Task sample(When<NAR> when, @Nullable Term template, @Nullable Predicate<Task> filter) {
         Task t = super.sample(when, template, filter);
-        return t != null ? new ImageTermTask(this.term, t) : null;
+        return t != null ? new ImageTask(this.term, t) : null;
     }
 
     @Override
@@ -69,8 +71,8 @@ public class ImageBeliefTable extends DynamicTaskTable {
         return n.concept(normal, conceptualize);
     }
 
-    public static class ImageTermTask extends SpecialTermTask {
-        public ImageTermTask(Term t, Task x) {
+    public static class ImageTask extends SpecialTermTask {
+        public ImageTask(Term t, Task x) {
             super(t, x);
         }
 

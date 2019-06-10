@@ -69,7 +69,7 @@ abstract public class TermMetadata implements Termlike {
         if (Image.imageNormalizable(x))
             return false;
 
-        if (x.vars()==0)
+        if (!x.hasVars())
             return true;
 
         //depth first traversal, determine if variables encountered are monotonically increasing

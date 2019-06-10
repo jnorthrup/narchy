@@ -143,7 +143,7 @@ public class Remember extends AbstractTask {
         boolean the = (input == this.input);
         boolean commitProxyOrigin = false;
         if (store) {
-            Term imgNormal = Image.imageNormalize(inputTerm);
+            Term imgNormal = Image.imageNormalize(inputTerm).normalize();
 
             if (!inputTerm.equals(imgNormal)) {
                 //transparently normalize image tasks
@@ -154,8 +154,8 @@ public class Remember extends AbstractTask {
                 if (c == null)
                     return;
 
-                if (input instanceof ImageBeliefTable.ImageTermTask)
-                    input = ((ImageBeliefTable.ImageTermTask)input).task; //unwrap existing
+                if (input instanceof ImageBeliefTable.ImageTask)
+                    input = ((ImageBeliefTable.ImageTask)input).task; //unwrap existing
                 else {
                     input = Task.withContent(input, imgNormal);
                     input.pri(0); //prevent the product task from being activated significantly, because the image task will be emitted at its priority also.

@@ -5,6 +5,7 @@ import nars.Op;
 import nars.subterm.Subterms;
 import nars.term.Compound;
 import nars.term.Img;
+import nars.term.Neg;
 import nars.term.Term;
 import nars.term.atom.Bool;
 import nars.term.compound.LighterCompound;
@@ -75,24 +76,21 @@ public enum Image {
         return Util.mapIfChanged(Image::imageNormalize, u);
     }
 
-    public static Term imageNormalize(Term x) {
+    public static Term imageNormalize(Term _x) {
+
+        boolean neg = _x instanceof Neg;
+        Term x = neg ? _x.unneg() : _x;
 
         if (!(x instanceof Compound) || !x.hasAll(ImageBits))
-            return x;
+            return _x;
 
-        Op xo = x.op();
-        if (xo == NEG) {
-            Term u = x.unneg();
-            if (u instanceof Compound && u.op() == INH) {
-                Term y = _imgNormalize((Compound) u).normalize();
-                if (!y.equals(u))
-                    return y.neg();
-            }
-        } else if (xo == INH) {
-            return _imgNormalize((Compound) x).normalize();
+        if (x.op() == INH) {
+            Term y = _imgNormalize((Compound) x);//.normalize();
+            if (x!=y)
+                return y.negIf(neg);
         }
 
-        return x;
+        return _x; //unchanged
     }
 
 
@@ -104,7 +102,7 @@ public enum Image {
     /** tests the term and its subterms recursively for an occurrence of a normalizeable image */
     public static boolean imageNormalizable(Subterms x) {
         return x.hasAll(Image.ImageBits)
-                 && !x.AND(Image::imageSubtermNormalizable);
+                 && x.OR(Image::imageSubtermNormalizable);
     }
 
     private static boolean imageSubtermNormalizable(Term x) {
@@ -125,13 +123,12 @@ public enum Image {
      * assumes that input is INH op has been tested for all image bits
      */
     @Nullable
-    public static Term normalize(Term x, boolean actuallyNormalize, boolean onlyRecursionTest, TermBuilder B) {
+    private static Term normalize(Term x, boolean transform, boolean testOnly, TermBuilder B) {
 
         //assert(x.op()==INH);
 
         Subterms xx = x.subterms();
-        Term s = xx.sub(0);
-        Term p = xx.sub(1);
+        Term s = xx.sub(0), p = xx.sub(1);
 
         Subterms ss = null;
         boolean isInt = s.op() == PROD && (ss = s.subterms()).contains(Op.ImgInt);// && !ss.contains(Op.ImgExt);
@@ -142,29 +139,29 @@ public enum Image {
         if (isInt == isExt)
             return x;
 
-        if (actuallyNormalize || onlyRecursionTest) {
+        if (transform || testOnly) {
 
             Term subj, pred;
             if (isInt) {
 
                 subj = ss.sub(0);
+                if (testOnly && subj.op()!=PROD)
+                    return null;
                 pred = PROD.the(B, Util.replaceDirect(ss.subRangeArray(1, ss.subs()), Op.ImgInt, p));
 
             } else {
 
-                subj = PROD.the(B, Util.replaceDirect(pp.subRangeArray(1, pp.subs()), Op.ImgExt, s));
                 pred = pp.sub(0);
-
-            }
-
-            if (onlyRecursionTest) {
-                if (subj.equals(pred))
-                    return True;
-                else
+                if (testOnly && pred.op()!=PROD)
                     return null;
+                subj = PROD.the(B, Util.replaceDirect(pp.subRangeArray(1, pp.subs()), Op.ImgExt, s));
+
             }
 
-            return imageNormalize(INH.the(B, subj, pred));
+            if (testOnly)
+                return subj.equals(pred) ? True : null;
+            else
+                return imageNormalize(INH.the(B, subj, pred));
 
         } else {
             return null;

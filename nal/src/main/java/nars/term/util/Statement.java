@@ -278,7 +278,6 @@ public class Statement {
 
         Term t = B.newCompound(op, dt, subject, predicate);
 
-
         return t.negIf(negate);
     }
 
