@@ -222,6 +222,7 @@ public enum Terms {
      * returns the most optimal subterm that can be replaced with a variable, or null if one does not meet the criteria
      * when there is a chocie, it prefers least aggressive introduction. and then random choice if
      * multiple equals are introducible
+     *
      * @param superterm filter applies to the immediate superterm of a potential subterm
      */
     @Nullable
@@ -252,7 +253,7 @@ public enum Terms {
         ObjectIntHashMap<Term> uniques = new ObjectIntHashMap(0); //c.volume());
 
         c.forEach(cc ->
-                cc.recurseTermsOrdered(z->true, (subterm) -> {
+                cc.recurseTermsOrdered(z -> true, (subterm) -> {
                     int s = score.applyAsInt(subterm);
                     if (s > 0)
                         uniques.addToValue(subterm, s);
@@ -418,7 +419,7 @@ public enum Terms {
         Subterms cs = container.subterms();
         MetalBitSet match = cs.indicesOfBits(filter);
         int n = match.cardinality();
-        if (n ==0) {
+        if (n == 0) {
             return container; //no matches
         } else {
             Term[] remain = cs.removing(match);
@@ -429,7 +430,6 @@ public enum Terms {
             }
         }
     }
-
 
 
     @Nullable
@@ -450,36 +450,47 @@ public enum Terms {
         }
     }
 
-    public static boolean eqRCom(Term a, Term b, boolean recurse, boolean excludeVariables) {
+    private static boolean rCom(Term a, Term b, boolean recurse, boolean excludeVariables) {
         if ((!excludeVariables || !(b instanceof Variable)) && !(b instanceof Img)) {
             return recurse ?
-                    a.containsRecursively(b, NotEqualConstraint.NotEqualAndNotRecursiveSubtermOf.root, NotEqualConstraint.NotEqualAndNotRecursiveSubtermOf.limit) :
+                    a.containsRecursively(b, NotEqualConstraint.NotEqualAndNotRecursiveSubtermOf.root, Op.statementLoopyContainer) :
                     a.contains(NotEqualConstraint.NotEqualAndNotRecursiveSubtermOf.root ? b.root() : b);
         } else
             return false;
     }
 
-    public static  boolean eqRCom(Term x, Term y) {
+    public static boolean eqRCom(Term _x, Term _y) {
+        if (_x == _y) return true;  //fast test
+        Term x = _x.unneg(), y = _y.unneg();
         if (x.equals(y))
             return true;
 
-        int av = x.volume(), bv = y.volume();
+        if (x instanceof Compound || y instanceof Compound) {
 
-        //a > b |- a contains b?
-        if (av < bv) {
-            Term c = x;
-            x = y;
-            y = c;
+            if (y.op() == CONJ) {
+                return y.subterms().ORwith((Y, X) -> eqRCom(X, Y.unneg()), x); //AND?
+            } else if (x.op() == CONJ) {
+                return x.subterms().ORwith((X, Y) -> eqRCom(X.unneg(), Y), y); //AND?
+            } else {
+
+                int av = x.volume(), bv = y.volume();
+
+                //a > b |- a contains b?
+                if (av < bv) {
+                    Term c = x;
+                    x = y;
+                    y = c;
+                }
+
+
+                if (av == bv)
+                    return false; //both atomic or same size (cant contain each other)
+
+                return rCom(x, y, true, false);
+            }
         }
-        if (y.op()==CONJ) {
-            return y.subterms().ORwith((Y,X)->eqRCom(X.unneg(), Y,true, true), x); //AND?
-        } else {
 
-            if (av == bv)
-                return false; //both atomic or same size (cant contain each other)
-
-            return eqRCom(x, y, true, false);
-        }
+        return false;
     }
 }
 

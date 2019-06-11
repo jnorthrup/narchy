@@ -3,6 +3,7 @@ package nars.nal.nal1;
 import nars.NAR;
 import nars.NARS;
 import nars.test.NALTest;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import static nars.Op.GOAL;
@@ -58,6 +59,7 @@ public class NAL1GoalTest extends NALTest {
         ;
     }
 
+    @Disabled
     @Test
     void abductionNegativeGoalPositiveBelief()  {
         test
@@ -66,7 +68,7 @@ public class NAL1GoalTest extends NALTest {
                 .mustGoal(cycles, "(nars --> human)", 0f, 0.45f)
                 .mustGoal(cycles, "(human --> nars)", 0f, 0.45f);
     }
-    @Test
+    @Disabled  @Test
     void inductionNegativeGoalPositiveBelief()  {
         test
                 .goal("--(human --> stupid)")

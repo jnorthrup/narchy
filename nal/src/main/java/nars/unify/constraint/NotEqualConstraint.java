@@ -9,8 +9,6 @@ import nars.term.atom.Atomic;
 import nars.unify.Unify;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.function.Predicate;
-
 import static nars.Op.INH;
 
 
@@ -210,7 +208,6 @@ public final class NotEqualConstraint extends RelationConstraint {
     public static final class NotEqualAndNotRecursiveSubtermOf extends RelationConstraint {
 
         public static final Atom neqRCom = Atomic.atom("neqRCom");
-        public final static Predicate<Term> limit = Op.statementLoopyContainer;
         /**
          * TODO move to subclass
          */
@@ -233,8 +230,7 @@ public final class NotEqualConstraint extends RelationConstraint {
 
         @Override
         public boolean invalid(Term x, Term y, Unify context) {
-
-            return Terms.eqRCom(x.unneg(), y.unneg());
+            return Terms.eqRCom(x, y);
         }
 
 

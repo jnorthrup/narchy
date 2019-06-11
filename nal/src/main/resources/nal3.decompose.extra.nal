@@ -14,8 +14,8 @@
 
 //  union of opposites (coincidentia oppositorum)
 //    necessary as its own rule if neqRCom is used to exclude common subterms in the composition rules (above)
-    ((&,X,Y,A..*) --> M), ((&,--X,Z,A..*) --> M), neqRCom(Y,Z), neqRoot(Y,Z) |- ((&,Y,Z,A..*) --> M), (Belief:Union)
-    (M --> (|,X,Y,A..*)), (M --> (|,--X,Z,A..*)), neqRCom(Y,Z), neqRoot(Y,Z) |- (M --> (|,Y,Z,A..*)), (Belief:Union)
+    ((&,X,Y,A..*) --> M), ((&,--X,Z,A..*) --> M), neq(Y,Z) |- ((&,Y,Z,A..*) --> M), (Belief:Union)
+    (M --> (|,X,Y,A..*)), (M --> (|,--X,Z,A..*)), neq(Y,Z) |- (M --> (|,Y,Z,A..*)), (Belief:Union)
 
 
 ////     //difference --(S==P)! (asymmetric: DecomposePositive... )

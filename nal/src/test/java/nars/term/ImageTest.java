@@ -216,6 +216,7 @@ class ImageTest {
         assertEq("(((&&,(--,v(fz,x)),(--,v(fz,y)),w) &&+2 (--,v(fz,y))) &&+1 z)",
                 "(((&&,(--,(x-->(v,fz,/))),(--,(y-->(v,fz,/))),w) &&+2 (--,(y-->(v,fz,/)))) &&+1 z)");
     }
+
     @Test void testImageProductNormalized() throws Narsese.NarseseException {
         Term x = Narsese.term("(y,\\,x)", false);
         assertTrue(x.isNormalized());
@@ -228,9 +229,7 @@ class ImageTest {
         assertEq("((cat,_ANIMAL)-->(cat,ANIMAL))", imageNormalize(x0)); //to see what would happen
 
         Term x = $$("(ANIMAL-->((cat,ANIMAL),cat,/))");
-        Term y = imageNormalize(x);
-        assertEquals(True, y);
-        assertEquals(True, x); //detect earlier
+        assertEquals(True, x);
 
         assertEq(Bool.True, Image.normalize(new LighterCompound(INH, $$("ANIMAL"), $$("((cat,ANIMAL),cat,/)")), true, true));
 

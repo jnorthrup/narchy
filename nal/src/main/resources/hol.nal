@@ -2,7 +2,7 @@
 
 //impl/sim
   (X ==> Z), (Y ==> Z), neqRCom(X,Y) |- (X <-> Y), (Belief:ComparisonSymmetric)
-    (X ==> Z), (Y ==> Z), neqRCom(X,Y) |- ((X,polarizeTask(Z)) <-> (Y,polarizeBelief(Z))), (Belief:ComparisonSymmetricDepolarized)
+    (X ==> Z), (Y ==> Z), neq(X,Y) |- ((X,polarizeTask(Z)) <-> (Y,polarizeBelief(Z))), (Belief:ComparisonSymmetricDepolarized)
 
   (Z ==> X), (Z ==> Y),   neqRCom(X,Y) |-   (polarizeTask(X) <-> polarizeBelief(Y)), (Belief:ComparisonSymmetricDepolarized)
   //(Z ==> X), (--Z ==> Y), neqRCom(X,Y) |- --(polarize(X,task) <-> polarize(Y,belief)), (Belief:ComparisonSymmetricDepolarized, Time:Intersect)

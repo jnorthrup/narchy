@@ -444,24 +444,24 @@ public class EllipsisTest {
     @Test
     void testMatchAll2() throws Narsese.NarseseException {
         testCombinations(
-                $("((|,%1,%2) --> (|,%2,%3))"),
-                $("((|,bird,swimmer)-->(|,animal,swimmer))"),
+                $("((|,%1,%2),(|,%2,%3))"),
+                $("((|,bird,swimmer),(|,animal,swimmer))"),
                 1);
     }
 
     @Test
     void testMatchAll3() throws Narsese.NarseseException {
         testCombinations(
-                $("((|,%X,%Z,%A) --> (|,%Y,%Z,%A))"),
-                $("((|,bird,man, swimmer)-->(|,man, animal,swimmer))"),
+                $("((|,%X,%Z,%A) , (|,%Y,%Z,%A))"),
+                $("((|,bird,man, swimmer),(|,man, animal,swimmer))"),
                 2);
     }
 
     @Test
     void testRepeatEllipsisAWithoutEllipsis() throws Narsese.NarseseException {
         testCombinations(
-                $("((|,%X,%Y) --> (|,%Y,%Z))"),
-                $("((|,bird,swimmer)-->(|,animal,swimmer))"),
+                $("((|,%X,%Y) ,(|,%Y,%Z))"),
+                $("((|,bird,swimmer),(|,animal,swimmer))"),
                 1);
     }
 
@@ -470,8 +470,8 @@ public class EllipsisTest {
 
         
         testCombinations(
-                $("((|,%X,%A..+) --> (|,%Y,%A..+))"),
-                $("((|,x,common)-->(|,y,common))"),
+                $("((|,%X,%A..+) , (|,%Y,%A..+))"),
+                $("((|,x,common),(|,y,common))"),
                 1);
     }
 
@@ -479,8 +479,8 @@ public class EllipsisTest {
     void testRepeatEllipsisA2() throws Narsese.NarseseException {
 
         testCombinations(
-                $("((%X,%A..+) --> (%Y,%A..+))"),
-                $("((bird,swimmer)-->(animal,swimmer))"),
+                $("((%X,%A..+) , (%Y,%A..+))"),
+                $("((bird,swimmer),(animal,swimmer))"),
                 1);
     }
 
@@ -497,8 +497,8 @@ public class EllipsisTest {
 
         
         testCombinations(
-                $("((|,%X,%A..+) --> (|,%X,%B..+))"),
-                $("((|,bird,swimmer)-->(|,animal,swimmer))"),
+                $("((|,%X,%A..+) ,(|,%X,%B..+))"),
+                $("((|,bird,swimmer),(|,animal,swimmer))"),
                 1);
     }
 

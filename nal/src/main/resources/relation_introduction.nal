@@ -12,19 +12,19 @@
    //         #R[(A --> C) (B --> [C]) |- ((* A B) --> (* C [C])) :post (:t/intersection)]
 
 //TODO make a conj factoring predicate to reduce this to single rule
-   ((A-->X) && (B-->X)), X        |-       (    polarizeTask((  (A-->X) &&   (B-->X)))-->X), (Belief:StructuralDeductionDepolarized)
-     (  (A-->X) && --(B-->X)), X        |- (    polarizeTask((  (A-->X) && --(B-->X)))-->X), (Belief:StructuralDeductionDepolarized)
-     (--(A-->X) && --(B-->X)), X        |- (    polarizeTask((--(A-->X) && --(B-->X)))-->X), (Belief:StructuralDeductionDepolarized)
-   ((X-->A) && (X-->B)), X              |- (X-->polarizeTask((  (X-->A) &&   (X-->B)))),     (Belief:StructuralDeductionDepolarized)
-     (  (X-->A) && --(X-->B)), X        |- (X-->polarizeTask((  (X-->A) && --(X-->B)))),     (Belief:StructuralDeductionDepolarized)
-     (--(X-->A) && --(X-->B)), X        |- (X-->polarizeTask((--(X-->A) && --(X-->B)))),     (Belief:StructuralDeductionDepolarized)
-   ((A<->X) && (B<->X)), X              |- (polarizeTask((  (A<->X) &&   (B<->X)))<->X), (Belief:StructuralDeductionDepolarized)
-     (  (A<->X) && --(B<->X)), X        |- (polarizeTask((  (A<->X) && --(B<->X)))<->X), (Belief:StructuralDeductionDepolarized)
-     (--(A<->X) && --(B<->X)), X        |- (polarizeTask((--(A<->X) && --(B<->X)))<->X), (Belief:StructuralDeductionDepolarized)
-   ((X-->A) && (B-->X)), X              |- (polarizeTask((  (X-->A) &&   (B-->X)))<->X), (Belief:StructuralDeductionDepolarized)
-     (  (X-->A) && --(B-->X)), X        |- (polarizeTask((  (X-->A) && --(B-->X)))<->X), (Belief:StructuralDeductionDepolarized)
-     (--(X-->A) &&   (B-->X)), X        |- (polarizeTask((--(X-->A) &&   (B-->X)))<->X), (Belief:StructuralDeductionDepolarized)
-     (--(X-->A) && --(B-->X)), X        |- (polarizeTask((--(X-->A) && --(B-->X)))<->X), (Belief:StructuralDeductionDepolarized)
+//   ((A-->X) && (B-->X)), X        |-       (    polarizeTask((  (A-->X) &&   (B-->X)))-->X), (Belief:StructuralDeductionDepolarized)
+//     (  (A-->X) && --(B-->X)), X        |- (    polarizeTask((  (A-->X) && --(B-->X)))-->X), (Belief:StructuralDeductionDepolarized)
+//     (--(A-->X) && --(B-->X)), X        |- (    polarizeTask((--(A-->X) && --(B-->X)))-->X), (Belief:StructuralDeductionDepolarized)
+//   ((X-->A) && (X-->B)), X              |- (X-->polarizeTask((  (X-->A) &&   (X-->B)))),     (Belief:StructuralDeductionDepolarized)
+//     (  (X-->A) && --(X-->B)), X        |- (X-->polarizeTask((  (X-->A) && --(X-->B)))),     (Belief:StructuralDeductionDepolarized)
+//     (--(X-->A) && --(X-->B)), X        |- (X-->polarizeTask((--(X-->A) && --(X-->B)))),     (Belief:StructuralDeductionDepolarized)
+//   ((A<->X) && (B<->X)), X              |- (polarizeTask((  (A<->X) &&   (B<->X)))<->X), (Belief:StructuralDeductionDepolarized)
+//     (  (A<->X) && --(B<->X)), X        |- (polarizeTask((  (A<->X) && --(B<->X)))<->X), (Belief:StructuralDeductionDepolarized)
+//     (--(A<->X) && --(B<->X)), X        |- (polarizeTask((--(A<->X) && --(B<->X)))<->X), (Belief:StructuralDeductionDepolarized)
+//   ((X-->A) && (B-->X)), X              |- (polarizeTask((  (X-->A) &&   (B-->X)))<->X), (Belief:StructuralDeductionDepolarized)
+//     (  (X-->A) && --(B-->X)), X        |- (polarizeTask((  (X-->A) && --(B-->X)))<->X), (Belief:StructuralDeductionDepolarized)
+//     (--(X-->A) &&   (B-->X)), X        |- (polarizeTask((--(X-->A) &&   (B-->X)))<->X), (Belief:StructuralDeductionDepolarized)
+//     (--(X-->A) && --(B-->X)), X        |- (polarizeTask((--(X-->A) && --(B-->X)))<->X), (Belief:StructuralDeductionDepolarized)
 
 
 //NAL Specification Table 11.9 - Product Equivalences

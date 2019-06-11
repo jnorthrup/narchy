@@ -197,17 +197,6 @@ public abstract class ConceptBuilder implements BiFunction<Term, Concept, Concep
 
         Subterms ii = i.subterms();
 
-        if (!ii.hasAny(Temporal)) {
-            //HACK this is until ImageDynamicTruthModel can support dynamic transformation and untransformation of temporal-containing INH, like:
-            //  ((believe("-ÈÛWédxÚñB",(y-->$1)) ==>+- (y-->$1))-->(believe,"-ÈÛWédxÚñB",/))
-            Term it = Image.imageNormalize(i);
-            if (!(it instanceof Bool) && !i.equals(it))
-                return DynamicImageTruth.ImageDynamicTruthModel;
-        }
-
-
-
-
         if (ii.hasAny(Op.CONJ /*| Op.PROD.bit*/)) {
 
             Term s = ii.sub(0), p = ii.sub(1);
@@ -238,6 +227,16 @@ public abstract class ConceptBuilder implements BiFunction<Term, Concept, Concep
                 }
             }
         }
+
+
+        if (!ii.hasAny(Temporal)) {
+            //HACK this is until ImageDynamicTruthModel can support dynamic transformation and untransformation of temporal-containing INH, like:
+            //  ((believe("-ÈÛWédxÚñB",(y-->$1)) ==>+- (y-->$1))-->(believe,"-ÈÛWédxÚñB",/))
+            Term it = Image.imageNormalize(i);
+            if (!(it instanceof Bool) && !i.equals(it))
+                return DynamicImageTruth.ImageDynamicTruthModel;
+        }
+
 
         return null;
     }
