@@ -384,7 +384,7 @@ public class ConjTree implements ConjBuilder {
     @Override
     public boolean addEvent(long at, Term x) {
         if (terminal != null)
-            throw new UnsupportedOperationException();
+            return false;
 
         if (at == ETERNAL) {
             return addParallel(x);
@@ -709,5 +709,13 @@ public class ConjTree implements ConjBuilder {
     }
 
 
-
+    public boolean removeParallel(Iterable<Term> t) {
+        boolean b = false;
+        for (Term x : t) {
+            if (terminal!=null)
+                return b;
+            b |= removeParallel(x);
+        }
+        return b;
+    }
 }

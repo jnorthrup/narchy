@@ -58,7 +58,7 @@ public class FZero extends GameX {
 //                }
 //            }, GOAL);
 
-            n.freqResolution.set(0.02f);
+
             return new FZero($.the("fz"), n);
 
 

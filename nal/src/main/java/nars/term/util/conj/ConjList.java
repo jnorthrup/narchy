@@ -272,7 +272,7 @@ public class ConjList extends LongObjectArraySet<Term> implements ConjBuilder {
         if (count.allSatisfy(t->t.getCardinality()==u)) {
             //completely annihilates everything
             //so also remove any occurring in the parallel events
-            count.keySet().forEach(T::removeParallel);
+            T.removeParallel(count.keySet());
             return;
         }
 

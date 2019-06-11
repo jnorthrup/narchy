@@ -23,7 +23,7 @@ import static nars.time.Tense.*;
 public class Statement {
 
 
-    static final int mobiusExcept = Op.or(/*CONJ, */VAR_PATTERN);
+    private static final int mobiusExcept = Op.or(/*CONJ, */VAR_PATTERN);
 
     public static Term statement(TermBuilder B, Op op, int dt, Term subject, Term predicate) {
         return statement(B, op, dt, subject, predicate, 3);
@@ -204,13 +204,7 @@ public class Statement {
 
         assert(op!=IMPL || dt!=DTERNAL); //HACK dt should ==0
 
-        if ((op != IMPL)
-                //|| (dt == 0) /* allow parallel IMPL unless there is a sequence that could separate the events from overlap */
-                || (dt == 0 && !Conj.isSeq(subject) && !Conj.isSeq(predicate))
-        ) {
-            if ((statementLoopy(subject.unneg(), predicate.unneg())))
-                return Null;
-        }
+
 
 //            boolean sa = subject instanceof AliasConcept.AliasAtom;
 //            if (sa) {
@@ -256,6 +250,14 @@ public class Statement {
             }
         }
 
+        if ((op != IMPL)
+                || (dt == 0) /* allow parallel IMPL unless there is a sequence that could separate the events from overlap */
+                //|| (dt == 0 && !Conj.isSeq(subject) && !Conj.isSeq(predicate))
+        ) {
+            if ((statementLoopy(subject.unneg(), predicate.unneg())))
+                return Null;
+        }
+
         if (op == SIM) {
             if (subject.compareTo(predicate) > 0) {
                 //swap to natural order
@@ -281,7 +283,7 @@ public class Statement {
         return t.negIf(negate);
     }
 
-    public static boolean statementLoopy(Term x, Term y) {
+    private static boolean statementLoopy(Term x, Term y) {
         if (!(x instanceof Atomic) && !(y instanceof Atomic))
             return false;
 

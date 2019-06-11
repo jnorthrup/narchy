@@ -872,7 +872,6 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 
         Term unknown = unknownComponent(xx, subEvents, abs);
 
-        long start = Long.MAX_VALUE, range = Long.MAX_VALUE;
 
 
         int s = subEvents.length;
@@ -888,6 +887,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
             CartesianIterator<Event> ci = new CartesianIterator(Event[]::new, subEvents2);
             nextPermute:
             while (ci.hasNext()) {
+                long start = Long.MAX_VALUE, range = Long.MAX_VALUE;
 
                 Event[] ss = ci.next();
                 ConjBuilder cc =
@@ -898,8 +898,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 //                    if (!ii.isEmpty()) {
 //                        Event e = ii.get(0);
                     long es = e.start();
-
-                        start = Math.min(es, start);
+                    start = Math.min(es, start);
                     if (es!=ETERNAL) {
                         range = range > 0 ? Math.min(e.end() - es, range) : 0;
                     }
@@ -920,15 +919,19 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
             for (int i = 0; i < s; i++) {
                 if (!subEvents[i].isEmpty()) {
                     w = i;
-                    break;
+                    break; //found
                 }
             }
             List<Event> ss = subEvents[w];
             for (Event e : ss) {
+                long start = Long.MAX_VALUE, range = Long.MAX_VALUE;
                 Term nextKnown = e.id;
                 start = e.start();
-                if (start != ETERNAL)
+                if (start != ETERNAL) {
                     range = e.end() - start;
+                } else {
+                    range = 0;
+                 }
                 if (!nextAbsolutePermutation(each, unknown, start, range, nextKnown))
                     return false;
             }

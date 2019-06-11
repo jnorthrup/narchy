@@ -10,6 +10,7 @@ import nars.subterm.Subterms;
 import nars.subterm.TermList;
 import nars.term.atom.Atom;
 import nars.term.compound.PatternCompound;
+import nars.unify.constraint.NotEqualConstraint;
 import org.eclipse.collections.api.LazyIterable;
 import org.eclipse.collections.api.iterator.MutableIntIterator;
 import org.eclipse.collections.impl.map.mutable.primitive.ObjectIntHashMap;
@@ -449,6 +450,37 @@ public enum Terms {
         }
     }
 
+    public static boolean eqRCom(Term a, Term b, boolean recurse, boolean excludeVariables) {
+        if ((!excludeVariables || !(b instanceof Variable)) && !(b instanceof Img)) {
+            return recurse ?
+                    a.containsRecursively(b, NotEqualConstraint.NotEqualAndNotRecursiveSubtermOf.root, NotEqualConstraint.NotEqualAndNotRecursiveSubtermOf.limit) :
+                    a.contains(NotEqualConstraint.NotEqualAndNotRecursiveSubtermOf.root ? b.root() : b);
+        } else
+            return false;
+    }
+
+    public static  boolean eqRCom(Term x, Term y) {
+        if (x.equals(y))
+            return true;
+
+        int av = x.volume(), bv = y.volume();
+
+        //a > b |- a contains b?
+        if (av < bv) {
+            Term c = x;
+            x = y;
+            y = c;
+        }
+        if (y.op()==CONJ) {
+            return y.subterms().ORwith((Y,X)->eqRCom(X.unneg(), Y,true, true), x); //AND?
+        } else {
+
+            if (av == bv)
+                return false; //both atomic or same size (cant contain each other)
+
+            return eqRCom(x, y, true, false);
+        }
+    }
 }
 
 

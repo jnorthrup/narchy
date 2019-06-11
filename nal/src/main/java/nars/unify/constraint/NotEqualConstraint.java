@@ -2,10 +2,10 @@ package nars.unify.constraint;
 
 import nars.Op;
 import nars.term.Term;
+import nars.term.Terms;
 import nars.term.Variable;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
-import nars.term.Img;
 import nars.unify.Unify;
 import org.jetbrains.annotations.Nullable;
 
@@ -210,24 +210,15 @@ public final class NotEqualConstraint extends RelationConstraint {
     public static final class NotEqualAndNotRecursiveSubtermOf extends RelationConstraint {
 
         public static final Atom neqRCom = Atomic.atom("neqRCom");
-        final static Predicate<Term> limit = Op.statementLoopyContainer;
+        public final static Predicate<Term> limit = Op.statementLoopyContainer;
         /**
          * TODO move to subclass
          */
         @Deprecated
-        private static final boolean root = false;
+        public static final boolean root = false;
 
         public NotEqualAndNotRecursiveSubtermOf(Variable x, Variable y) {
             super(neqRCom, x, y);
-        }
-
-        private static boolean test(Term a, boolean recurse, boolean excludeVariables, Term b) {
-            if ((!excludeVariables || !(b instanceof Variable)) && !(b instanceof Img)) {
-                return recurse ?
-                        a.containsRecursively(b, root, limit) :
-                        a.contains(root ? b.root() : b);
-            } else
-                return false;
         }
 
         @Override
@@ -243,21 +234,7 @@ public final class NotEqualConstraint extends RelationConstraint {
         @Override
         public boolean invalid(Term x, Term y, Unify context) {
 
-            if (x.equals(y))
-                return true;
-
-            int av = x.volume(), bv = y.volume();
-
-            if (av == bv)
-                return false; //both atomic or same size (cant contain each other)
-
-            //a > b |- a contains b?
-            if (av < bv) {
-                Term c = x;
-                x = y;
-                y = c;
-            }
-            return test(x, true, false, y);
+            return Terms.eqRCom(x.unneg(), y.unneg());
         }
 
 

@@ -42,11 +42,14 @@ public abstract class Reward implements GameLoop, TermedDelegate, Iterable<Conce
     final static boolean goalUnstamped = false;
 
     final PriNode attn;
+    private FloatRange resolution;
 
     public Reward(Term id, Game g) {
     //TODO
     //public Reward(NAgent a, FloatSupplier r, float confFactor) {
         this.game = g;
+
+        this.resolution = new FloatRange(g.nar().freqResolution.floatValue(), 0, 1);
 
         this.attn = new PriNode(id);
 
@@ -64,7 +67,7 @@ public abstract class Reward implements GameLoop, TermedDelegate, Iterable<Conce
 
     @Override
     public FloatRange resolution() {
-        return nar().freqResolution;
+        return resolution;
     }
 
     /** estimated current happiness/satisfaction of this reward

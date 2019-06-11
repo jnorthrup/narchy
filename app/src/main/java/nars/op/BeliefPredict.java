@@ -109,6 +109,14 @@ public class BeliefPredict extends NARPart {
         float fade = confFadeFactor.floatValue();
         List<PredictionTask> nextPred = new FasterList((projections+1)*predictor.framer.outputCount());
 
+
+        List<PredictionTask> oldPred = this.predictions;
+        oldPred.forEach(x -> {
+            x.delete(); //TODO also directly remove from table?
+        });
+        oldPred.clear();
+
+
         for (int i = 0; i < projections + 1; i++) {
 
             p = (i == 0) ? predictor.next(now-sampleDur) : predictor.project(p);
@@ -118,11 +126,6 @@ public class BeliefPredict extends NARPart {
             c *= fade;
         }
 
-        List<PredictionTask> oldPred = this.predictions;
-        oldPred.forEach(x -> {
-            x.delete(); //TODO also directly remove from table?
-        });
-        oldPred.clear();
 
         predict.acceptAll(this.predictions = nextPred, target);
 
