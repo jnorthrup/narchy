@@ -256,9 +256,6 @@ public class ConjList extends LongObjectArraySet<Term> implements ConjBuilder {
             return;
 
         int u = eventOccurrences();
-        if (u < 2)
-            return;
-
 
         UnifiedMap<Term, RoaringBitmap> count = new UnifiedMap(n);
         Set<Term> uncount = null;

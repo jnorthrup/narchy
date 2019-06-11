@@ -1,5 +1,6 @@
 package nars.term.util.conj;
 
+import com.google.common.collect.Sets;
 import jcog.WTF;
 import jcog.data.bit.MetalBitSet;
 import jcog.data.set.LongObjectArraySet;
@@ -14,6 +15,7 @@ import nars.term.util.builder.TermBuilder;
 import nars.time.Tense;
 
 import java.util.Arrays;
+import java.util.Set;
 
 import static nars.Op.CONJ;
 import static nars.Op.NEG;
@@ -58,7 +60,7 @@ public enum ConjSeq { ;
         } else {
 //            //simple construction
 
-            return conjSeqFinal(B, Tense.occToDT(bStart-aStart), a, b);
+            return conjSeqFinal(Tense.occToDT(bStart-aStart), a, b, B);
 //            if (aStart > bStart)
 //            assert (aStart < bStart);
 //            LongObjectArraySet<Term> ab = new LongObjectArraySet(2);
@@ -177,10 +179,10 @@ public enum ConjSeq { ;
             return left;
 
         assert(!dtSpecial(dt));
-        return conjSeqFinal(B, dt, left, right);
+        return conjSeqFinal(dt, left, right, B);
     }
 
-    private static Term conjSeqFinal(TermBuilder b, int dt, Term left, Term right) {
+    private static Term conjSeqFinal(int dt, Term left, Term right, TermBuilder B) {
 //        assert (dt != XTERNAL);
 
 //        if (left == Null) return Null;
@@ -224,11 +226,23 @@ public enum ConjSeq { ;
                     dt = Math.abs(dt); //use positive dt only
             }
         }
+
+        if (!left.equals(right) && left.op()==CONJ && right.op()==CONJ && !Conj.isSeq(left) && !Conj.isSeq(right)) {
+            Set<Term> LR = Sets.intersection(left.subterms().toSet(), right.subterms().toSet());
+            if (!LR.isEmpty()) {
+                //attempt reconsolidation if possible because factorization can be necessary
+                ConjTree c = new ConjTree();
+                c.addConjEvent(0, left);
+                c.addConjEvent(dt, right);
+                return c.term(B);
+            }
+        }
+
         if (dt == 0)
             dt = DTERNAL; //HACK
 
+        return B.newCompound(CONJ, dt, left, right);
 
-        return b.newCompound(CONJ, dt, left, right);
     }
 
     /** TODO add support for supersampling to include task.end() features */

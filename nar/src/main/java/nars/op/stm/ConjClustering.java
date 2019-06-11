@@ -25,6 +25,7 @@ import nars.task.util.TaskList;
 import nars.term.Term;
 import nars.term.util.TermedDelegate;
 import nars.term.util.conj.ConjSeq;
+import nars.time.Tense;
 import nars.truth.Stamp;
 import nars.truth.Truth;
 import org.eclipse.collections.api.tuple.primitive.ObjectBooleanPair;
@@ -431,7 +432,8 @@ public class ConjClustering extends How {
             final Truth t = Truth.theDithered(freq, e, nar);
             if (t != null) {
 
-                Term cj = ConjSeq.sequence(x, nar.dtDither.intValue());
+                int ditherDT = nar.dtDither.intValue();
+                Term cj = ConjSeq.sequence(x, ditherDT);
                 if (cj.volume() > 1) {
 
                     Term tt = Task.normalize(cj);
@@ -442,7 +444,7 @@ public class ConjClustering extends How {
                         long range = Util.min(LongInterval::range, x) - 1;
                         long tEnd = start + range;
                         NALTask y = new STMClusterTask(cp, t,
-                                start, tEnd,
+                                Tense.dither(start, ditherDT), Tense.dither(tEnd, ditherDT),
                                 Stamp.sample(NAL.STAMP_CAPACITY, actualStamp, nar.random()), punc, now);
                         y.cause(CauseMerge.AppendUnique.merge(NAL.causeCapacity.intValue(), x));
 
