@@ -124,7 +124,7 @@ public class DynamicConjTruth {
                             Term a = ss.sub(0), b = ss.sub(1);
                             conegOrEquiv = a.equalsNeg(b);
                         } else {
-                            conegOrEquiv = !conj.equals(conj.root()) && conj.dt(DTERNAL).volume() < conj.volume(); //collapses will result in reduced volume
+                            conegOrEquiv = conj.dt(DTERNAL).volume() < conj.volume(); //collapses will result in reduced volume
                         }
                     }
                     if (conegOrEquiv) {

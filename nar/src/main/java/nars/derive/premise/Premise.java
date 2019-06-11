@@ -12,6 +12,7 @@ import nars.derive.Deriver;
 import nars.derive.model.Derivation;
 import nars.op.mental.AliasConcept;
 import nars.table.BeliefTable;
+import nars.table.dynamic.ImageBeliefTable;
 import nars.term.Term;
 import nars.time.Tense;
 import org.jetbrains.annotations.Nullable;
@@ -51,11 +52,17 @@ public class Premise implements Comparable<Premise> {
     public Premise(Task task, Term beliefTerm) {
         super();
 
+        if (task instanceof ImageBeliefTable.ImageTask && !task.term().containsRecursively(beliefTerm) && !beliefTerm.op().isAny(Op.INH.bit | Op.SIM.bit)) {
+            //HACK normalize the image if premise doesnt involve Image-specific derivation
+            task = ((ImageBeliefTable.ImageTask)task).task;
+        }
+
         this.task = task;
 
         this.beliefTerm = beliefTerm;
 
         this.hash = premiseHash(task, beliefTerm);
+
     }
 
     /**

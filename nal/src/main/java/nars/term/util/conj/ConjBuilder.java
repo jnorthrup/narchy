@@ -13,6 +13,7 @@ import org.eclipse.collections.api.tuple.primitive.LongObjectPair;
 
 import java.util.function.Predicate;
 
+import static nars.Op.CONJ;
 import static nars.term.atom.Bool.Null_Array;
 import static nars.term.atom.Bool.True;
 import static nars.time.Tense.*;
@@ -113,8 +114,9 @@ public interface ConjBuilder {
 
         if (x instanceof Compound) {
 
-            if (x.op() == Op.CONJ)
+            if (x.op() == CONJ)
                 return addConjEvent(at, x);
+
         }
 
         return addEvent(at, x);

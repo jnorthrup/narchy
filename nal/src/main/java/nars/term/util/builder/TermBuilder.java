@@ -148,7 +148,7 @@ public abstract class TermBuilder implements TermConstructor {
         switch (dt) {
             case DTERNAL:
             case 0:
-                return ConjPar.the(this, dt, false, u);
+                return ConjPar.the(this, dt,false, u);
 
             case XTERNAL: {
                 return ConjPar.theXternal(this, u);

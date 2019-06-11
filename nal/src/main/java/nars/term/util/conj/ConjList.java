@@ -272,8 +272,12 @@ public class ConjList extends LongObjectArraySet<Term> implements ConjBuilder {
             count.getIfAbsentPut(xi, RoaringBitmap::new).add(Tense.occToDT(when(i)));
         }
 
-        if (count.allSatisfy(t->t.getCardinality()==u))
-            return; //completely annihilates everything
+        if (count.allSatisfy(t->t.getCardinality()==u)) {
+            //completely annihilates everything
+            //so also remove any occurring in the parallel events
+            count.keySet().forEach(T::removeParallel);
+            return;
+        }
 
         if (uncount!=null) {
             for (Term uc : uncount) {
@@ -341,19 +345,33 @@ public class ConjList extends LongObjectArraySet<Term> implements ConjBuilder {
 
     }
 
+    /** counts # of unique occurrence times, assuming that the events have already been sorted by them */
+    private int eventOccurrences_if_sorted() {
+        int c = 1;
+        long x = when[0];
+        for (int i = 1; i < size; i++) {
+            long y = when[i];
+            if (y != x) {
+                c++;
+                x = y;
+            }
+        }
+        return c;
+    }
+
     /** combine events at the same time into parallel conjunctions
      * @param b*/
     public void condense(TermBuilder B) {
         int s = size();
-        if (s <= 1) return;
+        if (s <= 1)
+            return;
 
         sortThis();
 
-
         int start = 0;
-        long last = when(0);
+        long last = when[0];
         for (int i = 1; i < s; i++) {
-            long wi = when(i);
+            long wi = when[i];
             if (i < s && last!= wi) {
                 last = wi;
                 start = i;

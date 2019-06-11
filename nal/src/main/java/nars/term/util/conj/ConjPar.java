@@ -36,12 +36,12 @@ public enum ConjPar {
             }
         }
 
-        Term d = disjunctiveFactor(xx, B);
+        Term d = disjunctiveFactor(xx, dt, B);
         if (d!=null)
             return d;
 
         ConjTree ct = new ConjTree();
-        long sdt = (dt == DTERNAL) ? ETERNAL : 0;
+        long sdt = dt==DTERNAL ? ETERNAL : 0;
         int remain = xx.length;
         for (int i = xx.length - 1; i >= 0; i--) {
             Term x = xx[i];
@@ -60,15 +60,11 @@ public enum ConjPar {
             }
         }
 
-//        for (Term x : xx) {
-//            if (!ct.add(sdt, x))
-//                break;
-//        }
         return ct.term(B);
     }
 
     @Nullable
-    public static Term disjunctiveFactor(Term[] xx, TermBuilder B) {
+    public static Term disjunctiveFactor(Term[] xx, int dt, TermBuilder B) {
         @Deprecated MetalBitSet cond = null;
         int n = xx.length;
         for (int i = 0, xxLength = n; i < xxLength; i++) {
@@ -117,9 +113,14 @@ public enum ConjPar {
                         j = -1;
                         for (int k = 0; k < d; k++) {
                             j = cond.next(true, j + 1, n);
-                            xx[j] = B.conj(xx[j].unneg().subterms().subsIncluding(s -> !common.contains(s))).neg();
+                            Term[] xxj = xx[j].unneg().subterms().subsIncluding(s -> !common.contains(s));
+                            if (xxj.length == 0)
+                                return null; //eliminated TODO detect sooner
+                            xx[j] = (xxj.length == 1 ? xxj[0] :
+                                            B.conj(xxj)
+                                                ).neg();
                         }
-                        return B.conj(factor, B.conj(xx).neg()).neg();
+                        return B.conj(dt, factor, B.conj(xx).neg()).neg();
                     }
                 }
             }

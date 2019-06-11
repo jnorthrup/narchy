@@ -698,7 +698,6 @@ public class ConjTest {
     }
 
     @Test
-    @Disabled
     void testWrappingCommutiveConjunctionX() {
 
         Term xFactored = $$("((x&&y) &&+1 (y&&z))");
@@ -709,11 +708,16 @@ public class ConjTest {
         assertEquals(False,
                 xAndContradict);
 
+    }
 
+    @Test
+    void testWrappingCommutiveConjunctionX_2() {
         Term xAndRedundant = $$("((x &&+1 x)&&x)");
         assertEquals("(x &&+1 x)",
                 xAndRedundant.toString());
-
+    }
+    @Test
+    void testWrappingCommutiveConjunctionX_3() {
 
         Term xAndRedundantParallel = $$("(((x &| y) &| z)&&x)");
         assertEquals("(&|,x,y,z)",
@@ -1388,7 +1392,10 @@ public class ConjTest {
     @Test
     void testConjParallelWithSeq() {
         assertEq("(a &&+5 b)", "((a &&+5 b)&|a)");
-
+        assertEq("(a &&+5 (a&&b))", "((a &&+5 b)&&a)");
+    }
+    @Test
+    void testConjParallelWithSeq2() {
         assertEq(False, "((--a &&+5 b)&|a)");
     }
 
@@ -1842,7 +1849,7 @@ public class ConjTest {
 
     @Test
     void disjunctionSequenceReduce() {
-//        String y = "((--,((--,tetris(1,11)) &&+330 (--,tetris(1,11))))&&(--,left))";
+        String y = "((--,((--,tetris(1,11)) &&+330 (--,tetris(1,11))))&&(--,left))";
 //
 //        //by parsing
 //        assertEq(y,
@@ -1923,15 +1930,18 @@ public class ConjTest {
     }
 
     @Test
-    void testSequentialDisjunctionAbsorb() {
-
+    void testParallelDisjunctionAbsorb0() {
+        /* and(not(x), or(x, not(y))) = ¬x ∧ ¬y */
         assertEq("((--,R)&&(--,jump))", "(--R && (R || --jump))");
-        assertEq("((--,R) &&+600 (--,jump))", "(--R && --(--R &&+600 jump))");
-
     }
 
     @Test
     void testSequentialDisjunctionAbsorb2() {
+        assertEq("((--,R)&&(--,jump))", "(--R && --(--R &&+600 jump))");
+    }
+
+    @Test
+    void testSequentialDisjunctionAbsorb3() {
 
         Term t = CONJ.the(0,
                 $$("(--,((--,R) &&+600 jump))"),
