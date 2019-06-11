@@ -24,7 +24,6 @@ import jcog.Util;
 import jcog.data.bit.MetalBitSet;
 import jcog.data.sexpression.IPair;
 import jcog.data.sexpression.Pair;
-import nars.$;
 import nars.Op;
 import nars.The;
 import nars.io.TermAppender;
@@ -35,6 +34,7 @@ import nars.term.util.TermTransformException;
 import nars.term.util.builder.TermBuilder;
 import nars.term.util.conj.Conj;
 import nars.term.util.conj.ConjSeq;
+import nars.term.util.conj.ConjUnify;
 import nars.term.util.transform.MapSubst;
 import nars.term.util.transform.Retemporalize;
 import nars.term.util.transform.TermTransform;
@@ -43,12 +43,10 @@ import org.eclipse.collections.api.block.predicate.primitive.LongObjectPredicate
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
-import java.util.SortedSet;
 import java.util.function.BiPredicate;
 import java.util.function.Predicate;
 
 import static nars.Op.CONJ;
-import static nars.Op.EmptyTermArray;
 import static nars.time.Tense.*;
 
 /**
@@ -253,51 +251,19 @@ public interface Compound extends Term, IPair, Subterms {
         if (xs == 1)
             return xx.sub(0).unify(yy.sub(0), u);
 
+        if (!Subterms.possiblyUnifiable(xx, yy, u))
+            return false;
+
         Op o = op();
 
-        int ys = yy.subs();
-
-        if (xs != ys) {
-            if (o == CONJ) {
-                int xdt = dt(), ydt = y.dt();
-
-                if ((xdt != ydt) && (xdt == XTERNAL || ydt == XTERNAL) && Subterms.possiblyUnifiable(x, y, u.varBits)) {
-
-                    if (xdt == XTERNAL) {
-                        SortedSet<Term> yyy = y.eventSet();
-                        if ((yyy.size()) != xs)
-                            return false; //TODO permute if possiblyUnifiable
-
-
-                        Term[] yyya = yyy.toArray(EmptyTermArray);
-                        if (xx.equalTerms(yyya))
-                            return true;
-
-                        yy = $.vFast(yyya);
-                    } else /*if (ydt == XTERNAL)*/ {
-                        SortedSet<Term> xxx = x.eventSet();
-                        if ((xxx.size()) != ys)
-                            return false; //TODO permute if possiblyUnifiable
-
-                        Term[] xxxa = xxx.toArray(EmptyTermArray);
-                        if (yy.equalTerms(xxxa))
-                            return true;
-
-                        xx = $.vFast(xxxa);
-                    }
-
-                    return Subterms.unifyCommute(xx, yy, u);
-
-                } else
-                    return false;
-
-            } else {
+        if (o == CONJ) {
+            return ConjUnify.unifyConj(x, y, xx, yy, u);
+        } else {
+            int ys = yy.subs();
+            if (xs != ys) {
                 return false;
             }
         }
-
-        if (!Subterms.possiblyUnifiable(xx, yy, u))
-            return false;
 
         if (o.temporal) {
             int xdt = x.dt(), ydt = y.dt();
@@ -326,45 +292,12 @@ public interface Compound extends Term, IPair, Subterms {
 
         if (o.commutative /* subs>1 */) {
             return Subterms.unifyCommute(xx, yy, u);
-        } else { //TODO if temporal, compare in the correct order
+        } else {
             return Subterms.unifyLinear(xx, yy, u);
         }
 
-//            if (result) {
-//                if (xSpecific^ySpecific && u instanceof Derivation) {
-//                    //one is not specified.  specify via substitution
-//                    Derivation du = (Derivation) u;
-//                    if (!xSpecific) {
-//                        du.refinements.put(x, x.dt(ydt));
-//                    } else {
-//                        du.refinements.put(y, y.dt(xdt));
-//                    }
-//                }
-//
-//                return true;
-//            }
-//            return false;
 
     }
-
-//
-//    static boolean unifyXternal(Subterms xx, Subterms yy, Unify u) {
-//        if (xx.equals(yy))
-//            return true;
-//
-//        int n = xx.subs();
-//        if (yy.subs()!=n)
-//            return false;
-//
-//        for (int i = 0; i < n; i++) {
-//            if (!xx.sub(i).unify(yy.sub(i), u))
-//                return false;
-//        }
-//        return true;
-////        Term xr = x.root();
-////        return xr.equals(x) && (xr.equals(y) || xr.equals(y.root()));
-//    }
-
 
     @Override
     default void appendTo(/*@NotNull*/ Appendable p) throws IOException {
@@ -374,7 +307,6 @@ public interface Compound extends Term, IPair, Subterms {
     @Nullable
     @Override
     default Object _car() {
-
         return sub(0);
     }
 

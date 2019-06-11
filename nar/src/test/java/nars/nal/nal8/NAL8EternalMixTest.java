@@ -644,8 +644,8 @@ class NAL8EternalMixTest extends NALTest {
     void testStrongUnificationDeductionPP() {
 
         test
-                .input("(Y ==>+1 x).")
-                .input("Y. |")
+                .input("(y ==>+1 x).")
+                .input("y. |")
                 .mustBelieve(cycles, "x", 1f, 0.81f, 1)
                 .mustNotOutput(cycles, "x", BELIEF, (t)->t!=1)
         ;

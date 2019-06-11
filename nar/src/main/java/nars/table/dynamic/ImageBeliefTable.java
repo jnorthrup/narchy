@@ -4,7 +4,7 @@ import nars.NAR;
 import nars.Task;
 import nars.concept.Concept;
 import nars.concept.TaskConcept;
-import nars.task.proxy.SpecialTermTask;
+import nars.task.proxy.ImageTask;
 import nars.task.util.Answer;
 import nars.term.Term;
 import nars.term.util.Image;
@@ -71,14 +71,4 @@ public class ImageBeliefTable extends DynamicTaskTable {
         return n.concept(normal, conceptualize);
     }
 
-    public static class ImageTask extends SpecialTermTask {
-        public ImageTask(Term t, Task x) {
-            super(t, x);
-        }
-
-        @Override
-        protected boolean inheritCyclic() {
-            return true; //cyclic propagation is fine here but only here
-        }
-    }
 }

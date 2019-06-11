@@ -11,7 +11,7 @@ import nars.concept.Concept;
 import nars.concept.TaskConcept;
 import nars.control.MetaGoal;
 import nars.op.stm.ConjClustering;
-import nars.table.dynamic.ImageBeliefTable;
+import nars.task.proxy.ImageTask;
 import nars.task.AbstractTask;
 import nars.task.DynamicTruthTask;
 import nars.task.NALTask;
@@ -154,8 +154,8 @@ public class Remember extends AbstractTask {
                 if (c == null)
                     return;
 
-                if (input instanceof ImageBeliefTable.ImageTask)
-                    input = ((ImageBeliefTable.ImageTask)input).task; //unwrap existing
+                if (input instanceof ImageTask)
+                    input = ((ImageTask)input).task; //unwrap existing
                 else {
                     input = Task.withContent(input, imgNormal);
                     input.pri(0); //prevent the product task from being activated significantly, because the image task will be emitted at its priority also.

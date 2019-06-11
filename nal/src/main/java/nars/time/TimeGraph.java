@@ -898,18 +898,20 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 //                    if (!ii.isEmpty()) {
 //                        Event e = ii.get(0);
                     long es = e.start();
-                    if (es == ETERNAL)
-                        continue; //does this happen?
-                    start = Math.min(es, start);
-                    range = range > 0 ? Math.min(e.end() - es, range) : 0;
+
+                        start = Math.min(es, start);
+                    if (es!=ETERNAL) {
+                        range = range > 0 ? Math.min(e.end() - es, range) : 0;
+                    }
                     if (!cc.add(es, e.id))
-                        break nextPermute;
+                        continue nextPermute;
 //                    }
                 }
 
                 Term nextKnown = cc.term();
-                if (!nextAbsolutePermutation(each, unknown, start, range, nextKnown))
-                    return false;
+                if (termsEvent(nextKnown))
+                    if (!nextAbsolutePermutation(each, unknown, start, range, nextKnown))
+                        return false;
             }
 
         } else {
@@ -925,9 +927,8 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
             for (Event e : ss) {
                 Term nextKnown = e.id;
                 start = e.start();
-                if (start == ETERNAL)
-                    continue;
-                range = e.end() - start;
+                if (start != ETERNAL)
+                    range = e.end() - start;
                 if (!nextAbsolutePermutation(each, unknown, start, range, nextKnown))
                     return false;
             }
@@ -1656,17 +1657,17 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 //        return a.compareTo(b);
 //    };
 
-    /**
-     * TODO fair sampling
-     */
-    @Deprecated
-    private int choose(int[] subTimes) {
-        if (subTimes == null)
-            return DTERNAL;
-        else {
-            return subTimes[subTimes.length == 1 ? 0 : random().nextInt(subTimes.length)];
-        }
-    }
+//    /**
+//     * TODO fair sampling
+//     */
+//    @Deprecated
+//    private int choose(int[] subTimes) {
+//        if (subTimes == null)
+//            return DTERNAL;
+//        else {
+//            return subTimes[subTimes.length == 1 ? 0 : random().nextInt(subTimes.length)];
+//        }
+//    }
 
 //    private Iterable<Event> filterShuffleSort(Node<Event, TimeSpan> root, Iterable<Event> ee) {
 //        boolean rootAbsolute = root.id() instanceof Absolute;

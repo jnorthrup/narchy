@@ -907,21 +907,16 @@ public interface Subterms extends Termlike, Iterable<Term> {
             return true; //Y contains only vars
 
         if (XSc == XS && YSc == YS) {
-            //no variables:
-            //cheap constant case invariant tests
+            boolean noTemporal = (XS & Op.Temporal) == 0 && ((YS & Op.Temporal) == 0);
+            if (noTemporal)
+                return xx.equals(yy);
 
-            //differing constant structure (excluding CONJ)
-            if (XS != YS || ((XS & Op.CONJ.bit) == 0) && xx.volume()!=yy.volume())
-                return false;
+            boolean noConjs = noTemporal || ((XS & CONJ.bit) == 0 && ((YS & CONJ.bit) == 0));
+            if (noConjs) {
+                if (XS!=YS || xx.volume() != yy.volume())
+                    return false;
+            }
 
-            return ((XS & Op.Temporal) != 0) /*&& ((YS & Op.Temporal) == 0)*/ || xx.equals(yy); //constant, inequal
-
-//            //if volume differs (and no recursive conjunction subterms)
-//            if ((xx.volume() != yy.volume()) &&
-//                    (((XS & CONJ.bit) == 0) || !xx.hasXternal()) &&
-//                    (((YS & CONJ.bit) == 0) || !yy.hasXternal())
-//            )
-//                return false;
         }
 
         return true;

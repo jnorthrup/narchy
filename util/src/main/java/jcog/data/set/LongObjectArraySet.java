@@ -24,7 +24,7 @@ import java.util.function.Predicate;
  */
 public class LongObjectArraySet<X> extends FasterList<X> {
 
-    protected long[] when;
+    public long[] when;
 
     public LongObjectArraySet() {
         this(0);

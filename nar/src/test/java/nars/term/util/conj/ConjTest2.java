@@ -85,10 +85,15 @@ public class ConjTest2 {
 
     @Test
     void unifyXternalParallel() {
-        assertUnifies("(&&+-, x, y, z)", "(&|, x, y, z)", true);
-        assertUnifies("(&&+-, --x, y, z)", "(&|, --x, y, z)", true);
-        assertUnifies("(&&+-, --x, y, z)", "(&|, x, y, z)", false);
-        assertUnifies("(&&+-, x, y, z)", "(&|, --x, y, z)", false);
+        assertUnifies("(&&+-, x, y, z)", "(&&, x, y, z)", true);
+        assertUnifies("(&&+-, --x, y, z)", "(&&, --x, y, z)", true);
+        assertUnifies("(&&+-, --x, y, z)", "(&&, x, y, z)", false);
+        assertUnifies("(&&+-, x, y, z)", "(&&, --x, y, z)", false);
+    }
+    @Test
+    void unifyXternalParallelWithVars() {
+        assertUnifies("(&&+-, x, y, z)", "(&&, #x, y, z)", true);
+        assertUnifies("(&&+-, x, y, z)", "(&&, #x, %y, z)", true);
     }
 
     @Test
@@ -106,11 +111,29 @@ public class ConjTest2 {
     }
 
     @Test
-    void unifyXternalSequence3() {
+    void unifyXternalXternal_vs_Sequence() {
+
         assertUnifies("(&&+-, x, y, z)", "(x &&+1 (y &&+1 z))", true);
         assertUnifies("(&&+-, x, y, z)", "(z &&+1 (x &&+1 y))", true);
         assertUnifies("(&&+-, x, --y, z)", "(x &&+1 (--y &&+1 z))", true);
         assertUnifies("(&&+-, x, y, z)", "(x &&+1 (--y &&+1 z))", false);
     }
+    @Test
+    void unifyXternalSequence_repeats() {
+
+        assertUnifies("(x &&+- x)", "(x &&+1 (x &&+1 x))", true);
+        assertUnifies("(&&+-, x, y, z)", "(x &&+1 (y &&+1 (x &&+1 z)))", true);
+        assertUnifies("(&&+-, x, y, z)", "(x &&+1 (#y &&+1 (x &&+1 z)))", true);
+
+        assertUnifies("(x &&+- x)", "(x &&+1 x)", true);
+    }
+
+    @Test
+    void unifySequence_Sequence_with_vars() {
+        assertUnifies("(x &&+1 (%y &&+1 z))", "(x &&+1 (y &&+1 z))", true);
+        assertUnifies("(%a,(x &&+1 (y &&+1 z)))", "((a,b,c),(x &&+1 (y &&+1 z)))", true); //constant, for sanity test
+        assertUnifies("(x &&+1 (%y &&+1 z))", "(x &&+1 ((y,w) &&+1 z))", true);
+    }
+
 }
 

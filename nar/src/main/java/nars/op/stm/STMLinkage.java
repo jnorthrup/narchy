@@ -8,7 +8,8 @@ import nars.attention.TaskLinkWhat;
 import nars.concept.Concept;
 import nars.control.NARPart;
 import nars.link.AtomicTaskLink;
-import nars.table.dynamic.ImageBeliefTable;
+import nars.task.proxy.ImageTask;
+import nars.term.util.Image;
 import org.eclipse.collections.api.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
 
@@ -95,14 +96,16 @@ public class STMLinkage extends NARPart {
     }
 
     public boolean filter(Task x) {
-        return x.isInput() && !(x instanceof ImageBeliefTable.ImageTask);
+        return x.isInput() && !(x instanceof ImageTask);
     }
 
 
-    public final void accept(Task y) {
+    public final void accept(Task _y) {
 
 
-        if (filter(y)) {
+        if (filter(_y)) {
+            Task y = Image.imageNormalizeTask(_y);
+
             @Nullable Concept yc;
             yc = nar.concept(y);
             if (yc == null)
@@ -122,7 +125,7 @@ public class STMLinkage extends NARPart {
 
 
             float factor = this.strength.floatValue();
-            stm.forEach(x -> link(y, yc, x, factor, nar));
+            stm.forEach(z -> link(y, yc, z, factor, nar));
 
             if (keep(y)) {
                 if (stm.isFull(1))

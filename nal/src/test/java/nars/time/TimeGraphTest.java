@@ -429,13 +429,20 @@ class TimeGraphTest {
 
     }
     @Test
+    void testConjPartiallyEternal() {
+        TimeGraph C = newTimeGraph(1);
+        C.know($$("x"), ETERNAL);
+        C.know($$("y"), 0);
+        assertSolved("(x &&+- y)", C, "(x&&y)@0");
+    }
+
+    @Test
     void testImplicationPartiallyEternal() {
         TimeGraph C = newTimeGraph(1);
         C.know($$("x"), ETERNAL);
         C.know($$("y"), 0);
         assertSolved("(x ==>+- y)", C, "(x==>y)");
     }
-
     @Test
     void testImplicationPartiallyEternalReverse() {
         TimeGraph C = newTimeGraph(1);

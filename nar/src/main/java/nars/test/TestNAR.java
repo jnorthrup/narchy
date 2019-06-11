@@ -154,20 +154,16 @@ public class TestNAR {
         }
 
         boolean success = !error;
-        if (success) {
-            for (NARCondition t : succeedsIfAll) {
-                if (!t.isTrue()) {
-                    success = false;
-                    break;
-                }
+        for (NARCondition t : succeedsIfAll) {
+            if (!t.isTrue()) {
+                success = false;
+                break;
             }
         }
-        if (success) {
-            for (NARCondition t : failsIfAny) {
-                if (t.isTrue()) {
-                    success = false;
-                    break;
-                }
+        for (NARCondition t : failsIfAny) {
+            if (t.isTrue()) {
+                success = false;
+                break;
             }
         }
 
@@ -533,7 +529,7 @@ public class TestNAR {
 
 
     public TestNAR mustNotOutput(long cyclesAhead, String term, byte punc, float freqMin, float freqMax, float confMin, float confMax, LongPredicate badTimes) {
-        return mustNotOutput(cyclesAhead, term, punc, freqMin, freqMax, confMin, confMax, (s,e)->badTimes.test(s) || badTimes.test(e));
+        return mustNotOutput(cyclesAhead, term, punc, freqMin, freqMax, confMin, confMax, (s,e)->badTimes.test(s) || (s!=e && badTimes.test(e)));
     }
     public TestNAR mustNotOutput(long cyclesAhead, String term, byte punc, float freqMin, float freqMax, float confMin, float confMax, LongLongPredicate timeFilter) {
         if (freqMin < 0 || freqMin > 1f || freqMax < 0 || freqMax > 1f || confMin < 0 || confMin > 1f || confMax < 0 || confMax > 1f || freqMin != freqMin || freqMax != freqMax)
