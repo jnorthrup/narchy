@@ -86,14 +86,16 @@ public class Termerator extends TermBuffer implements Iterable<Term> {
             canBe(x, ArrayIterator.iterable(y));
     }
 
-    public void clear() {
-        super.clear();
+    @Override
+    public void clear(boolean code, boolean uniques) {
+        super.clear(code, uniques);
         if (v != null) {
             termutes.clear();
             v.clear();
             subs.clear();
         }
     }
+
 
     /**
      * assign 1 variable

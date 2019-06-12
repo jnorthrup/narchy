@@ -148,8 +148,8 @@ abstract public class CachedCompound extends SeparateSubtermsCompound implements
 //                    Util.nop();
 //                }
 //            }
-////                if (dt!=DTERNAL && dt!=XTERNAL && dt%10!=0) //DITHERING TEST
-////                    throw new WTF();
+//                if (dt!=DTERNAL && dt!=XTERNAL && dt%10!=0) //DITHERING TEST
+//                    throw new WTF();
         }
 
         @Override

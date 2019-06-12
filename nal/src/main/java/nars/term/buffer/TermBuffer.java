@@ -81,7 +81,7 @@ public class TermBuffer {
         this.sub = sub;
     }
 
-    public void clear() {
+    public final void clear() {
         clear(true, true);
     }
 

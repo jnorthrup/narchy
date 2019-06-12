@@ -679,9 +679,9 @@ public interface Compound extends Term, IPair, Subterms {
     }
 
 
-    default Term transform(TermTransform f) {
-        return f.applyCompound(this);
-    }
+//    default Term transform(TermTransform f) {
+//        return f.applyCompound(this);
+//    }
 
 
     default Term eventFirst() {

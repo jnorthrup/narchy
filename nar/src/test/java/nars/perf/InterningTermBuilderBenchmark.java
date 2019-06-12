@@ -3,7 +3,7 @@ package nars.perf;
 import nars.NARS;
 import nars.Op;
 import nars.nal.nal1.NAL1Test;
-import nars.nal.nal2.NAL2Test;
+import nars.nal.nal6.NAL6Test;
 import nars.nal.nal8.NAL8Test;
 import nars.term.util.builder.HeapTermBuilder;
 import nars.term.util.builder.InterningTermBuilder;
@@ -23,7 +23,7 @@ public class InterningTermBuilderBenchmark {
     private String termBuilderInterningSize;
 
     @Param({
-//            "0",
+            "0",
 //            "3",
 //            "4",
 //            "5",
@@ -39,7 +39,7 @@ public class InterningTermBuilderBenchmark {
     @BenchmarkMode(Mode.SingleShotTime)
     @Fork(value = 1
             //, jvmArgsPrepend = "-Xint"
-
+//            ,jvmArgsPrepend = {"-XX:+UnlockDiagnosticVMOptions", "-XX:+UseMulAddIntrinsic"}
     )
     @Threads(1)
     @Warmup(iterations = 1)
@@ -48,9 +48,9 @@ public class InterningTermBuilderBenchmark {
 
         runTests(true, () -> NARS.tmp(),
                 NAL1Test.class,
-                NAL2Test.class,
+//                NAL2Test.class,
 //                NAL3Test.class,
-//                NAL6Test.class,
+                NAL6Test.class,
                 NAL8Test.class
         );
     }

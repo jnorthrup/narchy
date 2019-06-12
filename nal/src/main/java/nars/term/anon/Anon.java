@@ -124,6 +124,7 @@ public class Anon extends AbstractTermTransform.NegObliviousTermTransform {
     }
 
     protected Term putCompound(Compound x) {
+
         Term x0 = applyCompound(x);
         return x0;
 

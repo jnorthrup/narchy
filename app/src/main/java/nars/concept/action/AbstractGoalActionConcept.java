@@ -15,10 +15,11 @@ import nars.table.BeliefTables;
 import nars.table.dynamic.SensorBeliefTables;
 import nars.table.dynamic.SeriesBeliefTable;
 import nars.table.temporal.RTreeBeliefTable;
-import nars.task.util.signal.SignalTask;
 import nars.task.util.Answer;
 import nars.task.util.series.RingBufferTaskSeries;
+import nars.task.util.signal.SignalTask;
 import nars.term.Term;
+import nars.time.Tense;
 import nars.truth.Truth;
 import nars.truth.polation.TruthProjection;
 import org.eclipse.collections.api.tuple.Pair;
@@ -282,11 +283,11 @@ public class AbstractGoalActionConcept extends GameAction {
                 if (curiosity.goal.getOpaque()) {
                     long lastCuriosity = curiosityTable.series.end();
                     long curiStart = lastCuriosity != TIMELESS ? Math.max(s, lastCuriosity + 1) : s;
-//                    int dither = n.dtDither();
                     long curiEnd = curiStart + gameDur * NAL.CURIOSITY_TASK_RANGE_DURS; //(1 + (curiosity.Math.max(curiStart, e);
 
-                    //curiStart = Tense.dither(curiStart, dither);
-                    //curiEnd = Tense.dither(curiEnd, dither);
+                    int dither = n.dtDither();
+                    curiStart = Tense.dither(curiStart, dither);
+                    curiEnd = Tense.dither(curiEnd, dither);
 
                     w.accept(
                             curiosity(actionCuri /*goal*/, curiStart, curiEnd, n)

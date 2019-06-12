@@ -244,7 +244,7 @@ public enum Op {
     public static final char STAMP_CLOSER = '}';
     public static final char STAMP_SEPARATOR = ';';
     public static final char STAMP_STARTER = ':';
-    public static final int varBits = Op.or(VAR_PATTERN, VAR_DEP, VAR_QUERY, VAR_INDEP);
+    public static final int Variables = Op.or(VAR_PATTERN, VAR_DEP, VAR_QUERY, VAR_INDEP);
     public final static char VarAutoSym = '_';
     /**
      * anonymous depvar

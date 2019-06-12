@@ -74,9 +74,9 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
     public static final boolean VOLMAX_RESTRICTS= configIs("VOLMAX_RESTRICTS"); //all tasks
 
 
-    public static final int TERMBUFFER_VOL_MIN = 3;
+    public static final int TERMBUFFER_VOL_MIN = 4;
 
-    public static final boolean ANONIFY_TRANSFORM_TERMBUFFER = true;
+
 
     public static final boolean OVERLAP_DOUBLE_SET_CYCLIC= configIs("OVERLAP_DOUBLE_SET_CYCLIC");
 
@@ -215,6 +215,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
     public static final boolean TASKLINK_TARGET_CONCEPT = false;
 
 
+
     protected static final boolean DYNAMIC_CONCEPT_TRANSIENT = false;
 
     public static boolean ETERNALIZE_BELIEF_PROJECTED_IN_DERIVATION = true;
@@ -252,13 +253,13 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
      */
     public final FloatRange intermpolationRangeLimit = new FloatRange(
             //0.5f
-            //1f
-            2f
+            1f
+            //2f
             , 0, 4);
 
     @Deprecated
     public final FloatRange questionForgetRate = new FloatRange(0.5f, 0, 1);
-    public final IntRange premiseUnifyTTL = new IntRange(8, 1, 32);
+    public final IntRange premiseUnifyTTL = new IntRange(6, 1, 32);
     public final IntRange deriveBranchTTL = new IntRange(4 * NAL.derive.TTL_MIN, NAL.derive.TTL_MIN, 64 * NAL.derive.TTL_MIN);
     /**
      * how many cycles above which to dither dt and occurrence time
@@ -618,6 +619,8 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
             /** max tasked matched by series table, in case the answer limit is higher.  this reduces the number of redundant non-exact matches freeing evidential capacity for non-signal tasks from other tables of the concept */
             public static final float SERIES_MATCH_ADDITIONAL_RATE_PER_DUR = 1f/SIGNAL_LATCH_LIMIT_DURS;
             public static final int SERIES_MATCH_MIN = 1;
+
+            public static final boolean SIGNAL_TASK_OCC_DITHER = true;
         }
     }
 

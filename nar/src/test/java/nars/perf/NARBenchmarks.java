@@ -1,8 +1,10 @@
 package nars.perf;
 
 import nars.NAR;
-import nars.perf.util.StackProfiler2;
 import nars.test.TestNARSuite;
+import org.openjdk.jmh.profile.LinuxPerfAsmProfiler;
+import org.openjdk.jmh.profile.LinuxPerfNormProfiler;
+import org.openjdk.jmh.profile.LinuxPerfProfiler;
 import org.openjdk.jmh.results.RunResult;
 import org.openjdk.jmh.results.format.ResultFormatType;
 import org.openjdk.jmh.runner.Runner;
@@ -43,7 +45,9 @@ public enum NARBenchmarks { ;
 
                 .resultFormat(ResultFormatType.TEXT)
                 //.verbosity(VerboseMode.EXTRA) //VERBOSE OUTPUT
-                .addProfiler(StackProfiler2.class)
+                //.addProfiler(StackProfiler2.class)
+//                .addProfiler(CompilerProfiler.class)
+//                .addProfiler(LinuxPerfAsmProfiler.class)
 
 //			    .addProfiler(PausesProfiler.class, "period=10" /*uS */)
 //        		.addProfiler(SafepointsProfiler.class)
@@ -63,11 +67,9 @@ public enum NARBenchmarks { ;
                 // .addProfiler(HotspotClassloadingProfiler.class)
 
                 // sudo sysctl kernel.perf_event_paranoid=0
-//				.addProfiler(LinuxPerfProfiler.class)
-//			    .addProfiler(LinuxPerfAsmProfiler.class)
-//				.addProfiler(LinuxPerfNormProfiler.class)
-
-                //.addProfiler(CompilerProfiler.class)
+				.addProfiler(LinuxPerfProfiler.class)
+			    .addProfiler(LinuxPerfAsmProfiler.class)
+				.addProfiler(LinuxPerfNormProfiler.class)
 
 
                 .timeout(TimeValue.seconds(500))

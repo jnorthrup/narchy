@@ -28,9 +28,9 @@ abstract public class PremiseSource {
             d.what.sample(d.random, (int) Math.max(1, Math.ceil(((float)premisesPerIteration) / termlinksPerTaskLink)), tasklink -> {
                 Task task = tasklink.get(when);
                 if (task != null && !task.isDeleted()) {
-                    hypothesize(tasklink, task, termlinksPerTaskLink, links, d, (premise) -> {
-                        premise.derive(d, matchTTL, deriveTTL);
-                    });
+                    hypothesize(tasklink, task, termlinksPerTaskLink, links, d, premise ->
+                        premise.derive(d, matchTTL, deriveTTL)
+                    );
                 }
             });
         }

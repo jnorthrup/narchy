@@ -13,7 +13,10 @@ import nars.derive.model.Derivation;
 import nars.op.mental.AliasConcept;
 import nars.table.BeliefTable;
 import nars.task.proxy.ImageTask;
+import nars.term.Compound;
 import nars.term.Term;
+import nars.term.atom.Atomic;
+import nars.term.util.Image;
 import nars.time.Tense;
 import org.jetbrains.annotations.Nullable;
 
@@ -52,10 +55,24 @@ public class Premise implements Comparable<Premise> {
     public Premise(Task task, Term beliefTerm) {
         super();
 
-        if (task instanceof ImageTask && !task.term().containsRecursively(beliefTerm) && !beliefTerm.op().isAny(Op.INH.bit | Op.SIM.bit)) {
-            //HACK normalize the image if premise doesnt involve Image-specific derivation
+        //normalize the image if premise doesnt involve Image-specific derivation
+        //TODO check for non-ImageTask images
+        if (task instanceof ImageTask &&
+                ((beliefTerm instanceof Compound && !beliefTerm.op().isAny(Op.INH.bit | Op.SIM.bit))
+                ||
+                (beliefTerm instanceof Atomic && task.term().containsRecursively(beliefTerm))
+                )
+        ) {
             task = ((ImageTask)task).task;
         }
+        if (beliefTerm instanceof Compound) {
+            if (!task.term().op().isAny(Op.INH.bit | Op.SIM.bit)) {
+                Term ib = Image.imageNormalize(beliefTerm);
+                if (ib!=beliefTerm)
+                    beliefTerm = ib;
+            }
+        }
+
 
         this.task = task;
 

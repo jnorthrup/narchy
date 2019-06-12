@@ -187,7 +187,7 @@ public class NAL1Test extends NALTest {
         test
                 .believe("<swan --> swimmer>")
                 .believe("<gull <-> swan>")
-                .mustBelieve(cycles, "<gull --> swimmer>", 1.0f, 0.81f);
+                .mustBelieve(cycles, "<gull --> swimmer>", 1.0f, 0.45f);
     }
 
     @Test
@@ -196,7 +196,7 @@ public class NAL1Test extends NALTest {
         TestNAR tester = test;
         tester.believe("<gull --> swimmer>");
         tester.believe("<gull <-> swan>");
-        tester.mustBelieve(cycles, "<swan --> swimmer>", 1.0f, 0.81f);
+        tester.mustBelieve(cycles, "<swan --> swimmer>", 1.0f, 0.45f);
     }
 
 
@@ -259,7 +259,7 @@ public class NAL1Test extends NALTest {
         tester.believe("(($x --> bird) <-> ($x --> swimmer))");
         tester.believe("(swan --> bird)", 0.90f, 0.9f);
         tester.mustBelieve(cycles, "(swan --> swimmer)", 0.90f,
-                0.81f);
+                0.45f);
 
     }
     @Test
@@ -269,7 +269,7 @@ public class NAL1Test extends NALTest {
         tester.believe("((bird --> $x) <-> (swimmer --> $x))");
         tester.believe("(bird --> swan)", 0.80f, 0.9f);
         tester.mustBelieve(cycles, "(swimmer --> swan)", 0.80f,
-                0.81f);
+                0.45f);
 
     }
 
@@ -280,7 +280,7 @@ public class NAL1Test extends NALTest {
         tester.believe("((bird --> $x) <-> (swimmer --> $x))");
         tester.believe("(swimmer --> swan)", 0.80f, 0.9f);
         tester.mustBelieve(cycles, "(bird --> swan)", 0.80f,
-                0.81f);
+                0.45f);
 
     }
 
@@ -292,7 +292,7 @@ public class NAL1Test extends NALTest {
         tester.believe("(--(x --> $1) <-> (z --> $1))");
         tester.believe("(x --> y)", 0.10f, 0.9f);
         tester.mustBelieve(cycles, "(z --> y)", 0.9f,
-                0.81f);
+                0.45f);
 
     }
 
@@ -305,7 +305,7 @@ public class NAL1Test extends NALTest {
         tester.believe("<p1 --> p2>");
         tester.believe("<p2 <-> p3>");
         tester.mustBelieve(cycles, "<p1 --> p3>",
-                1.0f, 0.81f);
+                1.0f, 0.45f);
 
     }
 
@@ -316,7 +316,7 @@ public class NAL1Test extends NALTest {
                 .believe("--(p1 --> p2)")
                 .believe("(p2 <-> p3)")
                 .mustBelieve(cycles, "(p1 --> p3)",
-                        0f, 0.81f);
+                        0f, 0.45f);
 
     }
 }

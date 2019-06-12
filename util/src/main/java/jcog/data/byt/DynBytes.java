@@ -387,7 +387,7 @@ public class DynBytes implements ByteArrayDataOutput, Appendable, AbstractBytes,
         writeByte(i & 0xff);
     }
 
-    public DynBytes clear() {
+    public final DynBytes clear() {
         len = 0;
         return this;
     }

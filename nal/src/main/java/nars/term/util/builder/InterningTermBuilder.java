@@ -139,11 +139,12 @@ public class InterningTermBuilder extends HeapTermBuilder {
     }
 
     @Override
-    public final Term compound(Op o, int dt, Term[] u) {
+    public final Term compound(Op o, int dt, Term[] _u) {
+        Term[] u = o.sortedIfNecessary(dt, _u);
         boolean internable = internable(o, dt, u);
         return internable ?
-                compoundInterned(o, dt, o.sortedIfNecessary(dt, u)) :
-                super.compound(o, dt, u);
+                compoundInterned(o, dt, u) :
+                newCompound(o, dt, u);
     }
 
     private Term compoundInterned(Op op, int dt, Term[] u) {

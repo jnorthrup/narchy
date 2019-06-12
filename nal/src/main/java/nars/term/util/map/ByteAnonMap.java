@@ -32,7 +32,8 @@ public class ByteAnonMap {
     }
 
     public void clear() {
-        if (!termToId.isEmpty()) termToId.clear();
+        if (!termToId.isEmpty())
+            termToId.clear();
         idToTerm.clear();
     }
 

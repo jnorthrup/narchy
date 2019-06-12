@@ -235,16 +235,15 @@ class ImplTest {
         assertEq("((c &&+1 d)&&x)", "((x&|c) &&+1 (x&|d))"); //sanity pre-test
         assertEquals($$("((c &&+1 d),x)").volume() + 2, $$("((x&|c),(x&|d))").volume()); //factored form results in 2 volume savings
 
-        assertEq(
-                //"(((a &&+1 b)&&x)==>((c &&+1 d)&&x))", //same
-                "(((a &&+1 b)&&x)==>(c &&+1 d))",
+
+        //the (c&&x) case reduces to 'c' because it occurs at the same time point as (b&&x)
+        assertEq("(((a &&+1 b)&&x)==>(c &&+1 (d&&x)))",
                 "((x&&(a &&+1 b)) ==> (x&&(c &&+1 d)))"
         );
 
 
-        assertEq("(((a &&+1 b)&&x)==>((c &&+1 d)&&x))", //same
-                //"(((a &&+1 b)&&x)==>(c &&+1 d))",
-                "((x&&(a &&+1 b)) ==> ((x&|c) &&+1 (x&|d)))");
+        assertEq("(((a &&+1 b)&&x)==>(c &&+1 (d&&x)))",
+                "((x&&(a &&+1 b)) ==> ((x&&c) &&+1 (x&&d)))");
     }
 
 

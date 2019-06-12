@@ -121,7 +121,7 @@ public enum ListFunc {
                     }
                 }
             }
-            return y.hasAny(Op.varBits) || xy.hasAny(Op.varBits) ? null : Bool.Null;
+            return y.hasAny(Op.Variables) || xy.hasAny(Op.Variables) ? null : Bool.Null;
         }
 
         @Override
@@ -145,7 +145,7 @@ public enum ListFunc {
                     }
                 }
             }
-            return x.hasAny(Op.varBits) || xy.hasAny(Op.varBits) ? null : Bool.Null;
+            return x.hasAny(Op.Variables) || xy.hasAny(Op.Variables) ? null : Bool.Null;
         }
     };
 

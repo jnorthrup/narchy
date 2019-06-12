@@ -15,7 +15,7 @@ import static nars.perf.NARBenchmarks.perf;
 public class MultistepBenchmarks {
 
 
-    @Param("8000")
+    @Param("4000")
     private
     String cycles;
 
@@ -30,7 +30,7 @@ public class MultistepBenchmarks {
     public static void main(String[] args) throws RunnerException {
         perf(MultistepBenchmarks.class, (o) -> {
             o.warmupIterations(1);
-            o.measurementIterations(2);
+            o.measurementIterations(1);
 
             o.forks(1);
 

@@ -56,6 +56,11 @@
    B, X, task("@"), --is(B,"==>"), neq(X,B), hasBelief() |- (polarizeBelief(X) ==> B), (Punctuation:Question)
      //B, X, task("@"), --is(B,"==>"), hasBelief() |- (polarizeRandom(B) ==> X), (Punctuation:Question)
 
+//contrasting conjunction to implication
+//TODO test
+//    (A&&B),      (A && --B)  |- (A ==> B), (Belief:IntersectionPN)
+//    (A && --B),  (A && B)    |- (A ==> B), (Belief:IntersectionNP)
+
 //"what is the difference" between what co-occurrs with goal and non-goal
 //    (&&,G,X,A..*), (&&,H,Y,B..*), eqNeg(G,H), neq(X,Y), hasBelief()  |- ((polarizeRandom(X) && polarizeRandom(Y)) --> ?1), (Punctuation:Ask)
 

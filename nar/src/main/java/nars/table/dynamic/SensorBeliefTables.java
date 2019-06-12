@@ -17,6 +17,7 @@ import nars.table.temporal.RTreeBeliefTable;
 import nars.task.util.series.AbstractTaskSeries;
 import nars.task.util.series.RingBufferTaskSeries;
 import nars.term.Term;
+import nars.time.Tense;
 import nars.truth.Truth;
 import org.jetbrains.annotations.Nullable;
 
@@ -186,11 +187,11 @@ public class SensorBeliefTables extends BeliefTables {
             evi = nar.evidence(); //unique
 //        }
 
-//        if (Param.SIGNAL_TASK_OCC_DITHER) {
-//            int dither = nar.dtDither();
-//            s = Tense.dither(s, dither);
-//            e = Tense.dither(e, dither);
-//        }
+        if (NAL.belief.signal.SIGNAL_TASK_OCC_DITHER) {
+            int dither = nar.dtDither();
+            s = Tense.dither(s, dither);
+            e = Tense.dither(e, dither);
+        }
 
         return new SeriesTask(term, punc, next, s, e, evi);
     }

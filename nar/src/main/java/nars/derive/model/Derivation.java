@@ -46,6 +46,7 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.function.Function;
@@ -253,25 +254,12 @@ public class Derivation extends PreDerivation {
 
             @Override
             protected final Term putCompound(Compound x) {
-                return transform(x,
-                        //directTermBuilder
-                        termBuilder
-                );
+                return x.transform(this, termBuilder, NAL.term.COMPOUND_VOLUME_MAX);
             }
 
             @Override
             protected final Term getCompound(Compound x) {
-                return transform(x, termBuilder);
-            }
-
-            private Term transform(Compound x, TermBuffer buffer) {
-                if (NAL.ANONIFY_TRANSFORM_TERMBUFFER) {
-                    buffer.clear();//true,termBuilder.sub.termCount() >= 64);
-                    buffer.appendCompound(x, this, NAL.term.COMPOUND_VOLUME_MAX);
-                    return buffer.term();
-                } else {
-                    return super.putCompound(x);
-                }
+                return x.transform(this, termBuilder, NAL.term.COMPOUND_VOLUME_MAX);
             }
 
         };
