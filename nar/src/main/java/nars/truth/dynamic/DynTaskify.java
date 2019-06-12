@@ -269,10 +269,7 @@ public class DynTaskify extends TaskList {
             return false;
 
 
-        Predicate<Task> f = null;
-        Predicate<Task> mf = model.filter(subTerm, this);
-        if (mf!=null)
-            f = Answer.filter(mf, f);
+        Predicate<Task> f = filter;
 
         BeliefTable table = (BeliefTable) subConcept.table(beliefOrGoal ? BELIEF : GOAL);
         Task bt;

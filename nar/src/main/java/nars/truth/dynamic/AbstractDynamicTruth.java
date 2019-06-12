@@ -44,9 +44,4 @@ abstract public class AbstractDynamicTruth {
     }
 
 
-    /** override to implement a subterm-specific task filter */
-    @Nullable  Predicate<Task> filter(Term subTerm, DynTaskify d) {
-        return null;
-    }
-
 }
