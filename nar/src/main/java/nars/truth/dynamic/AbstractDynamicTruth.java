@@ -1,6 +1,7 @@
 package nars.truth.dynamic;
 
 import jcog.util.ObjectLongLongPredicate;
+import nars.Task;
 import nars.concept.util.ConceptBuilder;
 import nars.table.BeliefTable;
 import nars.table.BeliefTables;
@@ -8,6 +9,9 @@ import nars.table.dynamic.DynamicTruthTable;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.truth.Truth;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.function.Predicate;
 
 /**
  * Created by me on 12/4/16.
@@ -37,6 +41,12 @@ abstract public class AbstractDynamicTruth {
                 cb.newTemporalTable(t, beliefOrGoal),
                 cb.newEternalTable(t)
         );
+    }
+
+
+    /** override to implement a subterm-specific task filter */
+    @Nullable  Predicate<Task> filter(Term subTerm, DynTaskify d) {
+        return null;
     }
 
 }

@@ -21,6 +21,8 @@ import static nars.time.Tense.*;
 
 public class DynamicStatementTruth {
 
+    public static final AbstractDynamicTruth Impl = new DynamicImplTruth();
+
     public static final AbstractDynamicTruth SubjUnion = new AbstractInhImplSectTruth(true, true);
     public static final AbstractDynamicTruth SubjInter = new AbstractInhImplSectTruth(true, false);
     public static final AbstractDynamicTruth PredUnion = new AbstractInhImplSectTruth(false, true);

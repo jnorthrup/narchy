@@ -12,22 +12,23 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class AbstractDynamicTaskTest {
     protected final NAR n = NARS.shell();
 
-    protected boolean isDynamicTable(String t) {
+    protected final boolean isDynamicTable(String t) {
         return isDynamicTable($$(t));
     }
 
-    protected boolean isDynamicTable(Term $$) {
+    protected final boolean isDynamicTable(Term $$) {
         return isDynamicTable(n, $$);
     }
 
     public static boolean isDynamicTable(NAR n, Term $$) {
         return ((BeliefTables)n.conceptualize($$).beliefs()).tableFirst(DynamicTruthTable.class) != null;
     }
-    protected void assertDynamicTable(String s) {
+    protected final void assertDynamicTable(String s) {
         assertTrue(isDynamicTable(s));
     }
 
     public static void assertDynamicTable(NAR n, Term t) {
         assertTrue(isDynamicTable(n, t));
     }
+
 }

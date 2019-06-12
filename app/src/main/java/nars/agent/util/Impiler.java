@@ -151,7 +151,7 @@ public class Impiler {
                                 if (t == null) {
                                     t = tt;
                                 } else {
-                                    t = NALTruth.Deduction.apply(t, tt, nar, minConf);
+                                    t = NALTruth.Deduction.apply(t, tt, minConf, nar);
                                     if (t == null)
                                         return false;
                                 }

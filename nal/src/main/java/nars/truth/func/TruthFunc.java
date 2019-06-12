@@ -47,12 +47,12 @@ public interface TruthFunc {
      *
      * @param task
      * @param belief
-     * @param n
      * @param minConf if confidence is less than minConf, it can return null without creating the Truth instance;
      *                if confidence is equal to or greater, then it is valid
+     * @param n
      * @return
      */
-    @Nullable Truth apply(@Nullable Truth task, @Nullable Truth belief, NAL n, float minConf);
+    @Nullable Truth apply(@Nullable Truth task, @Nullable Truth belief, float minConf, NAL n);
 
    
 
@@ -110,8 +110,8 @@ public interface TruthFunc {
             super(o);
         }
 
-        @Override @Nullable public Truth apply(@Nullable Truth task, @Nullable Truth belief, NAL n, float minConf) {
-            return o.apply(task.neg(), belief, n, minConf);
+        @Override @Nullable public Truth apply(@Nullable Truth task, @Nullable Truth belief, float minConf, NAL n) {
+            return o.apply(task.neg(), belief, minConf, n);
         }
 
         @Override public final String toString() {
@@ -125,8 +125,8 @@ public interface TruthFunc {
             super(o);
         }
 
-        @Override @Nullable public Truth apply(@Nullable Truth task, @Nullable Truth belief, NAL n, float minConf) {
-            return o.apply(task, belief.neg(), n, minConf);
+        @Override @Nullable public Truth apply(@Nullable Truth task, @Nullable Truth belief, float minConf, NAL n) {
+            return o.apply(task, belief.neg(), minConf, n);
         }
 
         @Override public final String toString() {
@@ -140,8 +140,8 @@ public interface TruthFunc {
             super(o);
         }
 
-        @Override @Nullable public Truth apply(@Nullable Truth task, @Nullable Truth belief, NAL n, float minConf) {
-            return o.apply(task.neg(), belief.neg(), n, minConf);
+        @Override @Nullable public Truth apply(@Nullable Truth task, @Nullable Truth belief, float minConf, NAL n) {
+            return o.apply(task.neg(), belief.neg(), minConf, n);
         }
 
         @Override public final String toString() {
@@ -163,8 +163,8 @@ public interface TruthFunc {
             super(o);
         }
 
-        @Override @Nullable public Truth apply(@Nullable Truth T, @Nullable Truth B, NAL n, float minConf) {
-            return o.apply(unnegIfNotNull(T), unnegIfNotNull(B), n, minConf);
+        @Override @Nullable public Truth apply(@Nullable Truth T, @Nullable Truth B, float minConf, NAL n) {
+            return o.apply(unnegIfNotNull(T), unnegIfNotNull(B), minConf, n);
         }
 
         @Override public final String toString() {
@@ -201,8 +201,8 @@ public interface TruthFunc {
             super(o);
         }
 
-        @Override @Nullable public Truth apply(@Nullable Truth task, @Nullable Truth belief, NAL n, float minConf) {
-            return task == null ? null : o.apply(task.neg(), belief!=null ? belief.neg() : null, n, minConf);
+        @Override @Nullable public Truth apply(@Nullable Truth task, @Nullable Truth belief, float minConf, NAL n) {
+            return task == null ? null : o.apply(task.neg(), belief!=null ? belief.neg() : null, minConf, n);
         }
 
         @Override public final String toString() {

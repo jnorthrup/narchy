@@ -248,6 +248,7 @@ public class DynTaskify extends TaskList {
         if (negated) {
             subTerm = subTerm.unneg();
             so = subTerm.op();
+            componentPolarity.clear(currentComponent);
         }
 
         if (!so.taskable)
@@ -267,25 +268,28 @@ public class DynTaskify extends TaskList {
             return false;
 
 
+        Predicate<Task> f = filter;
+        Predicate<Task> mf = model.filter(subTerm, this);
+        if (mf!=null)
+            f = Answer.filter(mf, f);
+
         BeliefTable table = (BeliefTable) subConcept.table(beliefOrGoal ? BELIEF : GOAL);
         Task bt;
         switch (NAL.DYN_TASK_MATCH_MODE) {
             case 0:
-                bt = table.matchExact(subStart, subEnd, subTerm, filter, dur, nar);
+                bt = table.matchExact(subStart, subEnd, subTerm, f, dur, nar);
                 break;
             case 1:
-                bt = table.match(subStart, subEnd, subTerm, filter, dur, nar);
+                bt = table.match(subStart, subEnd, subTerm, f, dur, nar);
                 break;
             case 2:
-                bt = table.sample(new When(subStart, subEnd, dur, nar), subTerm, filter);
+                bt = table.sample(new When(subStart, subEnd, dur, nar), subTerm, f);
                 break;
             default:
                 throw new UnsupportedOperationException();
         }
 
         if (bt != null && /*model.acceptComponent((Compound) template(), bt) &&*/ add(bt)) {
-            if (negated)
-                componentPolarity.clear(currentComponent);
             return true;
         }
         return false;
