@@ -707,7 +707,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
                                 if (absolute) {
 
                                     long range = eventEnd - eventStart;
-                                    eventTerm.eventsWhile((w, y) -> {
+                                    eventTerm.eventsAND((w, y) -> {
 //                                        if (y.equals(eventTerm))
 //                                            return true;
 
@@ -724,7 +724,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
                                             //{ eventStart!=ETERNAL && eventStart!=TIMELESS ? event : null };
                                             {event};
                                     final long[] prevTime = {0};
-                                    eventTerm.eventsWhile((w, y) -> {
+                                    eventTerm.eventsAND((w, y) -> {
 //                                        if (y.equals(eventTerm))
 //                                            return true;
 

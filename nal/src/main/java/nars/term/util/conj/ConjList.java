@@ -54,13 +54,13 @@ public class ConjList extends LongObjectArraySet<Term> implements ConjBuilder {
         occOffset = occAuto(conj, occOffset);
 
         ConjList l = new ConjList();
-        conj.eventsWhile(l::add,
+        conj.eventsAND(l::add,
                 occOffset, true, false);
         return l;
     }
 
     public static ConjList subtract(ConjList from, Term conj, long occOffset) {
-        conj.eventsWhile((when, what) -> {
+        conj.eventsAND((when, what) -> {
             from.remove(when, what);
             return true;
         }, occOffset, true, false);
@@ -230,7 +230,7 @@ public class ConjList extends LongObjectArraySet<Term> implements ConjBuilder {
         if (x.op() == CONJ && x.dt() != XTERNAL) {
             //remove components
             final boolean[] removed = {false};
-            if (!x.eventsWhile((when, what) -> {
+            if (!x.eventsAND((when, what) -> {
                 if (contains(when, what.negIf(polarity)))
                     return false; //contradiction
 

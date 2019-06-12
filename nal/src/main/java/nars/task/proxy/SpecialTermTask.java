@@ -23,7 +23,7 @@ public class SpecialTermTask extends ProxyTask {
 
 
 
-        @Nullable ObjectBooleanPair<Term> z = Task.tryContent(term, task.punc(), false);
+        @Nullable ObjectBooleanPair<Term> z = Task.tryTaskTerm(term, task.punc(), false);
         if (z.getTwo())
             throw new TaskException(term, "SpecialTermTask does not support NEG target"); //use Task.withContent it will unwrap neg
         this.term = z.getOne();

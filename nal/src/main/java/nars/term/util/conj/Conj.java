@@ -8,7 +8,6 @@ import nars.NAL;
 import nars.subterm.Subterms;
 import nars.term.Compound;
 import nars.term.Term;
-import nars.term.Terms;
 import nars.term.util.builder.TermBuilder;
 import nars.time.Tense;
 import org.eclipse.collections.api.block.predicate.primitive.ByteObjectPredicate;
@@ -103,12 +102,18 @@ public enum Conj  { ;
             return false;
 
         boolean containerSeq = Conj.isSeq(container);
-        if (when == ETERNAL && x.op() == CONJ && x.dt() == DTERNAL && container.dt() == DTERNAL && !containerSeq) {
+        if (when == ETERNAL && x.op() == CONJ && x.dt() == DTERNAL && container.dt() == DTERNAL) {
             //decompose eternal (test before container.impossibleSubterm)
 
             //TODO accelerated 'flat' case: if (when == ETERNAL && container.op()==CONJ && container.dt()==)
 
-            return x.subterms().AND(xx -> eventOf(container, xx, when, 1));
+             if (!containerSeq)
+                return x.subterms().AND(xx -> eventOf(container, xx, when, 1));
+             else {
+                 return container.eventsOR((when2, what)->{
+                     return (when==ETERNAL || when2==when) && (x.equals(what) || eventOf(what, x, ETERNAL, 1));
+                 }, 0, false, true);
+             }
         }
 
         if (container.impossibleSubTerm(x))
@@ -131,7 +136,7 @@ public enum Conj  { ;
                     false; //TODO
 
         } else if (containerSeq) {
-            return !container.eventsWhile(
+            return !container.eventsAND(
                     when == ETERNAL ?
                             (w, cc) -> !(x.equals(cc) || eventOf(cc, x, ETERNAL, 1))
                             //     !x.equals(cc)
@@ -211,7 +216,7 @@ public enum Conj  { ;
     public static Term chooseEvent(Term conj, Random random, boolean decomposeParallel, LongObjectPredicate<Term> valid) {
 
         FasterList<Term> candidates = new FasterList();
-        conj.eventsWhile((when, what) -> {
+        conj.eventsAND((when, what) -> {
             if (valid.accept(when, what))
                 candidates.add(what);
             return true;
@@ -613,7 +618,7 @@ public enum Conj  { ;
 
 
 
-            exclude.eventsWhile((when, what) -> {
+            exclude.eventsAND((when, what) -> {
                 removedSomething[0] |= ii.removeAll(what);
                 return true;
             }, ETERNAL, true, exclude.dt() == XTERNAL);

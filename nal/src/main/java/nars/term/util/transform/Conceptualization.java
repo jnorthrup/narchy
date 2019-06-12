@@ -45,7 +45,7 @@ public class Conceptualization {
                 for (Term yyy : yy) {
 //                    yyy = yyy.unneg();
                     if (yyy.op() == CONJ) {
-                        yyy.eventsWhile((when,what)->{
+                        yyy.eventsAND((when, what)->{
                             t.add(what);
                             return true;
                         }, 0, true, true);

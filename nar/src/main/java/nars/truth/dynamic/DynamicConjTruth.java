@@ -166,7 +166,7 @@ public class DynamicConjTruth {
                 //??subterm refrences a specific point as a result of event time within the target. so start/end range gets collapsed at this point
                 long range = (end - start);
 
-                return conj.eventsWhile(range != 0 ?
+                return conj.eventsAND(range != 0 ?
                         //point-like
                         (when, event) -> each.accept(event, when, when + range) :
                         //within range

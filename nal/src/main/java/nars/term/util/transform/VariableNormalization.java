@@ -25,7 +25,7 @@ public class VariableNormalization extends VariableTransform {
      */
     private final int offset;
 
-    protected int count;
+    public int count;
 
     /*@NotNull*/
     public final Map<Variable /* Input Variable */, Variable /*Variable*/> map;

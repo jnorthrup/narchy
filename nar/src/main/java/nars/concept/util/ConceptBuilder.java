@@ -13,7 +13,6 @@ import nars.table.question.QuestionTable;
 import nars.table.temporal.TemporalBeliefTable;
 import nars.term.Compound;
 import nars.term.Term;
-import nars.term.Variable;
 import nars.term.atom.Bool;
 import nars.term.util.Image;
 import nars.truth.dynamic.AbstractDynamicTruth;
@@ -102,7 +101,7 @@ public abstract class ConceptBuilder implements BiFunction<Term, Concept, Concep
 
                 Map<Term, Term> varLocations = new UnifiedMap(conjSubterms.subs());
 
-                return conj.eventsWhile((when, event) ->
+                return conj.eventsAND((when, event) ->
                                 !event.hasAny(VAR_DEP) ||
                                         event.recurseTerms(x -> x.hasAny(VAR_DEP),
                                                 (possiblyVar, parent) ->
@@ -148,10 +147,11 @@ public abstract class ConceptBuilder implements BiFunction<Term, Concept, Concep
     private static AbstractDynamicTruth dynamicImpl(Compound t) {
 
         //TODO allow indep var if they are involved in (contained within) either but not both subj and pred
-        if (t.hasAny(Op.VAR_INDEP) ||
-                t.sub(0).unneg() instanceof nars.term.Variable ||
-                t.sub(1) instanceof Variable)
+        if (t.hasAny(Op.VAR_INDEP.bit | Op.VAR_QUERY.bit))
             return null;
+
+        if (t.sub(0).unneg() instanceof nars.term.Variable|| t.sub(1) instanceof nars.term.Variable)
+            return null; //TODO this may be decomposable if the other term is && or ||
 
 //        if (t.hasAny(Op.CONJ)) {
 //

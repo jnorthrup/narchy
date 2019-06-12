@@ -1,21 +1,20 @@
 package nars.term.util.conj;
 
-import com.google.common.collect.Sets;
 import jcog.WTF;
 import jcog.data.bit.MetalBitSet;
 import jcog.data.set.LongObjectArraySet;
-import nars.Op;
+import nars.$;
 import nars.Task;
 import nars.subterm.Subterms;
 import nars.term.Compound;
 import nars.term.Neg;
 import nars.term.Term;
 import nars.term.atom.Bool;
+import nars.term.util.TermException;
 import nars.term.util.builder.TermBuilder;
 import nars.time.Tense;
 
 import java.util.Arrays;
-import java.util.Set;
 
 import static nars.Op.CONJ;
 import static nars.Op.NEG;
@@ -52,7 +51,7 @@ public enum ConjSeq { ;
             else if (a.equalsNeg(b)) return False;
         }
 
-        if (a.hasAny(Op.CONJ) || b.hasAny(Op.CONJ)) {
+        if (a.unneg().op() == CONJ || b.unneg().op()==CONJ) {
             ConjBuilder c = new ConjTree();
             if (c.add(aStart, a))
                 c.add(bStart, b);
@@ -183,6 +182,9 @@ public enum ConjSeq { ;
     }
 
     private static Term conjSeqFinal(int dt, Term left, Term right, TermBuilder B) {
+        if (dt == 0 || dt == DTERNAL) {
+            return B.conj(DTERNAL, left, right);
+        }
 //        assert (dt != XTERNAL);
 
 //        if (left == Null) return Null;
@@ -194,8 +196,8 @@ public enum ConjSeq { ;
 //        if (left == True) return right;
 //        if (right == True) return left;
 
-//        if (!left.op().eventable || !right.op().eventable)
-//            return Null;
+        if (!left.op().eventable || !right.op().eventable)
+            return Null;
 
 
         int lr = left.compareTo(right);
@@ -227,14 +229,19 @@ public enum ConjSeq { ;
             }
         }
 
-        if (!left.equals(right) && left.op()==CONJ && right.op()==CONJ && !Conj.isSeq(left) && !Conj.isSeq(right)) {
-            Set<Term> LR = Sets.intersection(left.subterms().toSet(), right.subterms().toSet());
-            if (!LR.isEmpty()) {
-                //attempt reconsolidation if possible because factorization can be necessary
-                ConjTree c = new ConjTree();
-                c.addConjEvent(0, left);
-                c.addConjEvent(dt, right);
-                return c.term(B);
+        if (!left.equals(right) && (left.op()==CONJ && right.op()==CONJ)) {
+            if (!Conj.isSeq(left) || !Conj.isSeq(right)) {
+                if (Subterms.common(left.subterms(), right.subterms())) {
+                    //attempt reconsolidation if possible because factorization can be necessary
+                    ConjTree c = new ConjTree();
+                    c.addConjEvent(0, left);
+                    c.addConjEvent(dt, right);
+                    try {
+                        return c.term(B);
+                    } catch (StackOverflowError ee) {
+                        throw new TermException("conj seq stack overflow",$.p(left,right));
+                    }
+                }
             }
         }
 

@@ -9,7 +9,7 @@ import nars.truth.Truth;
 import nars.truth.polation.TruthIntegration;
 
 import static nars.time.Tense.ETERNAL;
-import static nars.truth.func.TruthFunctions.w2cSafe;
+import static nars.truth.func.TruthFunctions.w2cSafeDouble;
 
 /**
  * TODO parameterize, modularize, refactor etc
@@ -27,6 +27,8 @@ public class DefaultDerivePri implements DerivePri {
      * leniency towards uncertain derivations
      */
     public final FloatRange eviImportance = new FloatRange(1f, 0f, 1f);
+
+
 
     /** occam's razor - increase this discriminate more heavily against more complex derivations */
     public final FloatRange simplicityImportance = new FloatRange(1f, 0f, 8f);
@@ -127,7 +129,9 @@ public class DefaultDerivePri implements DerivePri {
                         : 0;
 
             if (!d.concSingle)
-                eParentBelief = d._belief.isEternal() ? TruthIntegration.evi(d._belief, ts, te, 0) : TruthIntegration.evi(d._belief);
+                eParentBelief =
+                    d._belief.isEternal() ? TruthIntegration.evi(d._belief, ts, te, 0) : TruthIntegration.evi(d._belief)
+                ;
             else
                 eParentBelief = Float.NaN;
 
@@ -141,17 +145,21 @@ public class DefaultDerivePri implements DerivePri {
         double eParent =
                 //Math.max(eParentTask, eParentBelief);
                 eParentTask + eParentBelief;
-        if (eParent < eDerived)
+        if (eParent <= eDerived)
 //            throw new WTF("spontaneous belief inflation"); //not actually
             return 1;
         else {
-            float cDerived = w2cSafe(eDerived);
-            float cParent = w2cSafe(eParent);
-            float lossFactor = 1 - ((cParent - cDerived) / cParent);
+            double cDerived = w2cSafeDouble(eDerived);
+            double cParent = w2cSafeDouble(eParent);
+            double lossFactor = 1 - ((cParent - cDerived) / cParent);
 
-            //float lossFactor = 1 - ((eParent - eDerived) / eParent);
+            //float lossFactor = (float)(1 - ((eParent - eDerived) / eParent));
 
-            return Util.lerp(eviImportance.floatValue(), 1f, lossFactor);
+
+
+            Util.assertUnitized(lossFactor);
+            return (float) Util.lerp(eviImportance.floatValue(), 1f, lossFactor);
+
         }
     }
 

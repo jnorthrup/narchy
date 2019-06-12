@@ -2613,6 +2613,11 @@ public enum Util {
             throw new UnsupportedOperationException("non-unitized value: " + x);
         return x;
     }
+    public static double assertUnitized(double x) {
+        if (!Double.isFinite(x) || x < 0 || x > 1)
+            throw new UnsupportedOperationException("non-unitized value: " + x);
+        return x;
+    }
 
     /**
      * a number, or... (otherwise)

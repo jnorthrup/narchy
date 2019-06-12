@@ -91,7 +91,7 @@ public class DynTaskify extends TaskList {
             content = content.unneg();
         }
 
-        ObjectBooleanPair<Term> r = Task.tryContent(
+        ObjectBooleanPair<Term> r = Task.tryTaskTerm(
                 content,
                 beliefOrGoal ? BELIEF : GOAL, !NAL.test.DEBUG_EXTRA);
         if (r==null)

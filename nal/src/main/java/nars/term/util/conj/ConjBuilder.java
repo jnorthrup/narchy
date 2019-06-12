@@ -183,7 +183,7 @@ public interface ConjBuilder {
                 at = 0;
 
             if (xdt == DTERNAL || xdt == 0 || at != ETERNAL) {
-                return x.eventsWhile(this::add, at,
+                return x.eventsAND(this::add, at,
                         true,
                         false);
             }

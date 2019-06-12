@@ -295,7 +295,7 @@ public class ConjTest {
     @Test
     void theDifferenceBetweenDTERNAL_and_Parallel_dternal() {
 
-        assertEq("(&&,(a &&+1 b),a,b)",
+        assertEq("((a&&b) &&+1 (a&&b))",//"(&&,(a &&+1 b),a,b)",
                 "( (a&&b) && (a &&+1 b) )"); //distributed, while sequence is preserved
 
         assertEq("((a&&b) &&+1 (a&&b))",
@@ -1873,7 +1873,7 @@ public class ConjTest {
             c.add(t, $$("--(x &&+50 x)"));
             c.add(t, $$("x"));
             Term cc = c.term();
-            assertEq(t == ETERNAL ? False : $$("(x &&+50 (--,x))"), cc);
+            assertEquals(t == ETERNAL ? False : $$("(x &&+50 (--,x))"), cc, ()->t + " = " + cc);
         }
     }
 

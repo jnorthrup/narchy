@@ -43,6 +43,10 @@ import static nars.Op.*;
 public interface Subterms extends Termlike, Iterable<Term> {
 
 
+    static boolean common(Subterms x, Subterms y) {
+        //if (x.volume() < y.volume()) ...
+        return x.OR(y::contains);
+    }
 
     @Override
     default boolean hasXternal() {

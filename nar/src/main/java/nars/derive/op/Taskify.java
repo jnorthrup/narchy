@@ -13,6 +13,8 @@ import nars.term.ProxyTerm;
 import nars.term.Term;
 import nars.time.Tense;
 import nars.truth.Truth;
+import org.eclipse.collections.api.tuple.primitive.ObjectBooleanPair;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -93,15 +95,28 @@ public class Taskify extends ProxyTerm {
      */
     protected void taskify(Term x0, long start, long end, Derivation d) {
 
-        Term x = Task.normalize(x0);
-
-        Op xo = x.op();
-
-
-        NAR nar = d.nar();
         final byte punc = d.concPunc;
         if (punc == 0)
             throw new RuntimeException("no punctuation assigned");
+
+        /** un-anon */
+        Term x1 = d.anon.get(x0);
+        if (x1 == null)
+            throw new NullPointerException("could not un-anonymize " + x0 + " with " + d.anon);
+
+        NAR nar = d.nar();
+
+        @Nullable ObjectBooleanPair<Term> xn = Task.tryTaskTerm(x1, punc, !NAL.test.DEBUG_EXTRA);
+        if (xn == null) {
+            nar.emotion.deriveFailTaskify.increment();
+            spam(d, NAL.derive.TTL_COST_DERIVE_TASK_FAIL);
+            return;
+        }
+        Term x = xn.getOne();
+        Op xo = x.op();
+
+
+
 
 
 
@@ -124,20 +139,7 @@ public class Taskify extends ProxyTerm {
 //            }
 //        }
 
-        boolean neg = xo == NEG;
-        if (neg) {
-            x = x.unneg();
-            xo = x.op();
-        }
-        if (!xo.taskable) {
-            spam(d, NAL.derive.TTL_COST_DERIVE_TASK_FAIL);
-            return;
-        }
-
-
-
-
-
+        boolean neg = xn.getTwo();
 
         Truth tru;
         if (punc == BELIEF || punc == GOAL) {
@@ -167,22 +169,6 @@ public class Taskify extends ProxyTerm {
             S = E = ETERNAL;
         }
 
-//        /** compares taskTerm before un-anon */
-//        if (isSame(x, punc, tru, S, E, d.taskTerm, d._task, nar)) {
-//            same(d, nar);
-//            return;
-//        }
-//        /** compares beliefTerm before un-anon */
-//        if (d._belief != null && isSame(x, punc, tru, S, E, d.beliefTerm, d._belief, nar)) {
-//            same(d, nar);
-//            return;
-//        }
-
-        /** un-anon */
-        x = d.anon.get(x);
-        if (x == null)
-            throw new NullPointerException("could not un-anonymize " + x0 + " with " + d.anon);
-
 
 
         /** compares taskTerm un-anon */
@@ -200,17 +186,15 @@ public class Taskify extends ProxyTerm {
 //        if (x.volume() > d.termVolMax/2)
 //            x = Abbreviation.abbreviate(x, nar);
 
-        DerivedTask t = Task.tryTask(x, punc, tru, (C, tr) ->
+        DerivedTask t = //Task.tryTask(x, punc, tru, (C, tr) -> {
+                //return
                 NAL.DEBUG ?
-                        new DebugDerivedTask(C, punc, tr, S, E, d) :
-                        new DerivedTask(C, punc, tr, d.time(), S, E, d.evidence())
-        );
+                            new DebugDerivedTask(x, punc, tru, S, E, d) :
+                            new DerivedTask(x, punc, tru, d.time(), S, E, d.evidence());
+                //};
+        //);
 
-        if (t == null) {
-            nar.emotion.deriveFailTaskify.increment();
-            spam(d, NAL.derive.TTL_COST_DERIVE_TASK_FAIL);
-            return;
-        }
+
 
 
         float priority = d.what.derivePri.pri(t, d);

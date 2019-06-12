@@ -1,6 +1,8 @@
 package nars.term.var;
 
+import nars.$;
 import nars.Op;
+import nars.term.Term;
 
 import static nars.Op.VAR_DEP;
 
@@ -8,6 +10,9 @@ import static nars.Op.VAR_DEP;
  * normalized dep var
  */
 public final class VarDep extends NormalizedVariable {
+
+
+
 
     VarDep(byte id) {
         super(VAR_DEP, id);

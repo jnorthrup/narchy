@@ -88,11 +88,15 @@ abstract public class CachedCompound extends SeparateSubtermsCompound implements
         }
 
 
-        /** @see Term.eventsWhile */
-        @Override public final boolean eventsWhile(LongObjectPredicate<Term> each, long offset, boolean decomposeConjDTernal, boolean decomposeXternal) {
+        /** @see Term.eventsAND */
+        @Override public final boolean eventsAND(LongObjectPredicate<Term> each, long offset, boolean decomposeConjDTernal, boolean decomposeXternal) {
             return each.accept(offset, this);
         }
 
+        @Override
+        public boolean eventsOR(LongObjectPredicate<Term> each, long offset, boolean decomposeConjDTernal, boolean decomposeXternal) {
+            return each.accept(offset, this);
+        }
     }
 
     public final static class SimpleCachedCompound extends UnnormalizedCachedCompound {

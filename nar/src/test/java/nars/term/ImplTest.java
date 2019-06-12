@@ -320,5 +320,17 @@ class ImplTest {
         TermTestMisc.assertValid($("((--,a) ==>+1 a)"));
     }
 
+    @Test
+    void testImplNormalizationSubjNegDepVar() {
+
+        assertEq("((--,#1)==>(x,#1))", "(--#1 ==> (x, #1))"); //cant unnegate subj
+        assertEq("(((--,#1)==>x),#1)", "((--#1 ==> x),#1)"); //cant unnegate subj
+
+        assertEq("(#1 ==> x)", "(--#1 ==> x)"); //unnegate possible at top level
+    }
+    @Test
+    void testImplNormalizationPredDepVar_TaskNeg() {
+            //TODO
+    }
 
 }

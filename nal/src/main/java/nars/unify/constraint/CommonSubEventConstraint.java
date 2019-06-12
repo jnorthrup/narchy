@@ -42,7 +42,7 @@ public final class CommonSubEventConstraint extends RelationConstraint {
             ConjList xe = ConjList.events(x);
 
             //return !scan(yy, (when, what) -> !xe.remove(when, what));
-            return !y.eventsWhile((when,what)->!xe.remove(when,what),
+            return !y.eventsAND((when, what)->!xe.remove(when,what),
                     Conj.isSeq(y) ? ETERNAL : 0, true, false);
         }
 

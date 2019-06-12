@@ -809,8 +809,12 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
      */
     @Nullable
     public final Truth truth(Termed concept, byte punc, long start, long end) {
+        boolean neg = concept.term().op()==NEG;
+        if (neg)
+            concept = concept.term().unneg();
+
         @Nullable BeliefTable table = table(concept, punc);
-        return table != null ? table.truth(start, end, concept instanceof Term ? ((Term) concept) : null, null, this) : null;
+        return table != null ? Truth.negIf(table.truth(start, end, concept instanceof Term ? ((Term) concept) : null, null, this),neg) : null;
     }
 
     @Nullable

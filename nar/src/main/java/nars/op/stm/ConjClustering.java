@@ -436,9 +436,11 @@ public class ConjClustering extends How {
                 Term cj = ConjSeq.sequence(x, ditherDT);
                 if (cj.volume() > 1) {
 
-                    Term tt = Task.normalize(cj);
+                    Term x1 = cj;
+                    x1 = x1.normalize();
+                    Term tt = x1;
 
-                    ObjectBooleanPair<Term> cp = Task.tryContent(tt, punc, true);
+                    ObjectBooleanPair<Term> cp = Task.tryTaskTerm(tt, punc, true);
                     if (cp != null) {
 
                         long range = Util.min(LongInterval::range, x) - 1;

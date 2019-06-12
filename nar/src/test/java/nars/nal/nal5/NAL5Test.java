@@ -16,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class NAL5Test extends NALTest {
 
-    private final int cycles = 930;
+    private final int cycles = 130;
 
     @Override
     protected NAR nar() {
@@ -76,7 +76,7 @@ public class NAL5Test extends NALTest {
         
         test.believe("<(robin --> [flying]) ==> a>");
         test.believe("(a ==> b)");
-        test.mustBelieve(cycles, "<b ==> (robin --> [flying])>.", 1.00f, 0.45f);
+        test.mustBelieve(cycles, "<b ==> (robin --> [flying])>", 1.00f, 0.45f);
 
     }
 
@@ -938,7 +938,7 @@ public class NAL5Test extends NALTest {
                 .termVolMax(3)
                 .input("(x==>y)?")
                 .input("(y==>x).")
-                .mustBelieve(cycles, "(x==>y).", 1.0f, 0.47f)
+                .mustBelieve(cycles, "(x==>y)", 1.0f, 0.47f)
         ;
     }
 
@@ -949,7 +949,7 @@ public class NAL5Test extends NALTest {
                 .termVolMax(4).confMin(0.4f)
                 .input("(x ==> y)?")
                 .input("(--y ==> x).")
-                .mustBelieve(cycles, "(x ==> y).", 0.0f, 0.47f)
+                .mustBelieve(cycles, "(x ==> y)", 0.0f, 0.47f)
         ;
     }
 
@@ -960,7 +960,7 @@ public class NAL5Test extends NALTest {
                 .termVolMax(5).confMin(0.4f)
                 .input("(--x ==> y)?")
                 .input("(y ==> --x).")
-                .mustBelieve(cycles, "(--x ==> y).", 1f, 0.47f)
+                .mustBelieve(cycles, "(--x ==> y)", 1f, 0.47f)
         ;
     }
 

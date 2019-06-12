@@ -37,7 +37,6 @@ import nars.term.util.conj.ConjSeq;
 import nars.term.util.conj.ConjUnify;
 import nars.term.util.transform.MapSubst;
 import nars.term.util.transform.Retemporalize;
-import nars.term.util.transform.TermTransform;
 import nars.unify.Unify;
 import org.eclipse.collections.api.block.predicate.primitive.LongObjectPredicate;
 import org.jetbrains.annotations.Nullable;
@@ -469,11 +468,24 @@ public interface Compound extends Term, IPair, Subterms {
 //    }
 
 
+    @Override
+    default boolean eventsOR(LongObjectPredicate<Term> each, long offset, boolean decomposeConjDTernal, boolean decomposeXternal) {
+        final boolean[] cond = {false};
+        eventsAND((when,what)->{
+            if (each.accept(when,what)) {
+                cond[0] = true;
+                return false;
+            }
+            return true;
+        }, offset, decomposeConjDTernal, decomposeConjDTernal);
+        return cond[0];
+    }
+
     /**
      * iterates contained events within a conjunction
      */
     @Override
-    default boolean eventsWhile(LongObjectPredicate<Term> each, long offset, boolean decomposeConjDTernal, boolean decomposeXternal) {
+    default boolean eventsAND(LongObjectPredicate<Term> each, long offset, boolean decomposeConjDTernal, boolean decomposeXternal) {
 
         Op o = op();
         if (o != CONJ)
@@ -508,7 +520,7 @@ public interface Compound extends Term, IPair, Subterms {
                     if (unfactor) {
                         Term factor = ConjSeq.seqEternal(ss, eteComponents);
 
-                        return seq.eventsWhile(
+                        return seq.eventsAND(
                             (!decomposeConjDTernal) ?
                                 (when, what) -> {
                                  //combine the component with the eternal factor
@@ -568,7 +580,7 @@ public interface Compound extends Term, IPair, Subterms {
             int s = ee.subs() - 1;
             for (int i = 0; i <= s; i++) {
                 Term ei = ee.sub(fwd ? i : s - i);
-                if (!ei.eventsWhile(each, t, decomposeConjDTernal, decomposeXternal))
+                if (!ei.eventsAND(each, t, decomposeConjDTernal, decomposeXternal))
                     return false;
 
                 if (changeDT && i < s)
@@ -687,7 +699,7 @@ public interface Compound extends Term, IPair, Subterms {
     default Term eventFirst() {
         if (Conj.isSeq(this)) {
             final Term[] first = new Term[1];
-            eventsWhile((when, what) -> {
+            eventsAND((when, what) -> {
                 first[0] = what;
                 return false; //done got first
             }, 0, false, false);
@@ -702,7 +714,7 @@ public interface Compound extends Term, IPair, Subterms {
     default Term eventLast() {
         if (Conj.isSeq(this)) {
             final Term[] last = new Term[1];
-            eventsWhile((when, what) -> {
+            eventsAND((when, what) -> {
                 last[0] = what;
                 return true; //HACK keep going to end
             }, 0, false, false);

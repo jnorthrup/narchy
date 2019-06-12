@@ -22,11 +22,11 @@ import nars.task.util.TaskException;
 import nars.task.util.TaskRegion;
 import nars.task.util.TasksRegion;
 import nars.term.Compound;
+import nars.term.Neg;
 import nars.term.Term;
 import nars.term.Variable;
 import nars.term.atom.Bool;
 import nars.term.util.TermedDelegate;
-import nars.term.util.transform.VariableTransform;
 import nars.term.var.VarIndep;
 import nars.time.Tense;
 import nars.truth.PreciseTruth;
@@ -334,7 +334,7 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
                 throw new TaskException(t, "insufficient evidence");
         }
 
-        ObjectBooleanPair<Term> x = tryContent(t, punc, safe);
+        ObjectBooleanPair<Term> x = tryTaskTerm(t, punc, safe);
         return x != null ? withResult.apply(x.getOne(), tr != null ? tr.negIf(x.getTwo()) : null) : null;
     }
 
@@ -346,19 +346,17 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
      * necessitating an inversion of truth when constructing a Task with the input target
      */
     @Nullable
-    static ObjectBooleanPair<Term> tryContent(/*@NotNull*/Term t, byte punc, boolean safe) {
-
-        t = t.normalize();
-
-        Op o = t.op();
+    static ObjectBooleanPair<Term> tryTaskTerm(/*@NotNull*/Term t, byte punc, boolean safe) {
 
         boolean negated;
-        if (o == NEG) {
+        if (t instanceof Neg) {
             t = t.unneg();
             negated = true;
         } else {
             negated = false;
         }
+
+        t = t.normalize();
 
         return Task.validTaskTerm(t/*.the()*/, punc, safe) ? pair(t, negated) : null;
     }
@@ -471,17 +469,7 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
         return y;
     }
 
-    static Term normalize(Term x) {
-        x = x.normalize();
-
-        if (x instanceof Compound && !validTaskCompound((Compound) x, true)) {
-            x = VariableTransform.indepToDepVar(x).normalize();
-        }
-
-        return x;
-    }
-
-//    @Deprecated
+    //    @Deprecated
 //    @Nullable
 //    static Task project(Task t, long start, long end, boolean ditherTruth, boolean negated, float eviMin, NAR n) {
 //        if (!negated && t.start() == start && t.end() == end || (t.isBeliefOrGoal() && t.isEternal()))

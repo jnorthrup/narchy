@@ -38,13 +38,16 @@ class DynamicSectTest {
 
         {
             Task k = n.answer($("((x|y)-->a)"), BELIEF, 0);
-            assertEquals("((x||y)-->a)", k.term().toString());
             assertEquals(1f, k.truth().freq());
+            assertEquals("(--,(((--,x)&&(--,y))-->a))", k.term().toString());
+//            assertEquals(0f, k.truth().freq());
+//            assertEquals("(((--,x)&&(--,y))-->a)", k.term().toString());
+
         }
 
         {
             Task k = n.answer($("((x~y)-->a)"), BELIEF, 0);
-            assertEquals("((x||(--,y))-->a)", k.term().toString());
+            assertEquals("(--,(((--,x)&&y)-->a))", k.term().toString());
             assertEquals(1f, k.truth().freq());
         }
 

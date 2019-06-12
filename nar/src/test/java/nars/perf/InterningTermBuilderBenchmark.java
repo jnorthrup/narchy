@@ -41,9 +41,9 @@ public class InterningTermBuilderBenchmark {
             //, jvmArgsPrepend = "-Xint"
 //            ,jvmArgsPrepend = {"-XX:+UnlockDiagnosticVMOptions", "-XX:+UseMulAddIntrinsic"}
     )
-    @Threads(1)
+    @Threads(3)
     @Warmup(iterations = 1)
-    @Measurement(iterations = 10)
+    @Measurement(iterations = 4)
     public void testInterning() {
 
         runTests(true, () -> NARS.tmp(),

@@ -122,7 +122,7 @@ public enum Perceive { ;
     }
 
     private static Task rememberTransformed(Task input, Term y, byte punc) {
-        @Nullable ObjectBooleanPair<Term> yy = Task.tryContent(y, punc,
+        @Nullable ObjectBooleanPair<Term> yy = Task.tryTaskTerm(y, punc,
                 !input.isInput() // || !Param.DEBUG
         );
         if (yy == null)

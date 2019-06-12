@@ -467,7 +467,7 @@ public interface Term extends Termlike, Termed, Comparable<Term> {
         if (op() == CONJ) {
             if (Conj.isSeq(this)) {
 //                final int[] hits = {0};
-                eventsWhile((when, what) -> {
+                eventsAND((when, what) -> {
                     if (what.equals(match)) {
 //                        hits[0]++;
                         return each.test(Tense.occToDT(when));
@@ -558,9 +558,13 @@ public interface Term extends Termlike, Termed, Comparable<Term> {
         return this;
     }
 
-    default boolean eventsWhile(LongObjectPredicate<Term> each, long offset,
-                                boolean decomposeConjDTernal, boolean decomposeXternal) {
+    default boolean eventsAND(LongObjectPredicate<Term> each, long offset,
+                              boolean decomposeConjDTernal, boolean decomposeXternal) {
         return each.accept(offset, this);
+    }
+    default boolean eventsOR(LongObjectPredicate<Term> each, long offset,
+                              boolean decomposeConjDTernal, boolean decomposeXternal) {
+        return eventsAND(each, offset, decomposeConjDTernal, decomposeXternal);
     }
 
     default void printRecursive() {
@@ -663,7 +667,7 @@ public interface Term extends Termlike, Termed, Comparable<Term> {
     default SortedSet<Term> eventSet() {
         assert (op() == CONJ);
         TreeSet<Term> s = new TreeSet();
-        eventsWhile((when, what) -> {
+        eventsAND((when, what) -> {
             if (what != Term.this)
                 s.add(what);
             return true;

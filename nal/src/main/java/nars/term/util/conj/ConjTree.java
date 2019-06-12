@@ -79,7 +79,7 @@ public class ConjTree implements ConjBuilder {
 //                            return false; //contradiction
 //                    }
                     if (pos != null || neg != null) {
-                        if (!p.eventsWhile((when, what) -> validatePosNeg(what), 0, true, true)) {
+                        if (!p.eventsAND((when, what) -> validatePosNeg(what), 0, true, true)) {
                             terminate(False);
                             return false;
                         }
@@ -569,9 +569,10 @@ public class ConjTree implements ConjBuilder {
         if (terminal != null)
             return terminal;
 
+        Term s;
         if (seq != null) {
 
-            Term s = termSeq(B);
+            s = termSeq(B);
 
             shift(); //cache the shift before clearing seq
             seq = null;
@@ -594,10 +595,18 @@ public class ConjTree implements ConjBuilder {
                     return terminate(False);
                 }
             }
-        }
+        } else
+            s = null;
 
 
-//        if (s == null || !Conj.isSeq(s)) {
+        return term(pos, neg, s, B);
+
+    }
+
+    protected Term term(Set<Term> pos, Set<Term> neg, Term seq, TermBuilder B) {
+
+
+        //        if (s == null || !Conj.isSeq(s)) {
 
         Collection<Term> PN = null;
 
@@ -638,7 +647,6 @@ public class ConjTree implements ConjBuilder {
                 return B.newCompound(CONJ, DTERNAL, q);
             }
         }
-
 
     }
 

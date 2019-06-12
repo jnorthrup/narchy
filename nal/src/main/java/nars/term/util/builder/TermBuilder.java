@@ -27,7 +27,8 @@ import java.util.Collection;
 import static nars.Op.CONJ;
 import static nars.Op.NEG;
 import static nars.term.Terms.commute;
-import static nars.time.Tense.*;
+import static nars.time.Tense.DTERNAL;
+import static nars.time.Tense.XTERNAL;
 
 /**
  * interface for target and subterm builders
@@ -100,13 +101,27 @@ public abstract class TermBuilder implements TermConstructor {
     public static Compound newCompound(Op op, int dt, Subterms subterms) {
         return CachedCompound.newCompound(op, dt, subterms);
     }
-    public Term normalize(Compound x, byte varOffset) {
-        Term y = new CompoundNormalization(x, varOffset).applyCompound(x);
 
-//        LazyCompound yy = new LazyCompound();
-//        new nars.util.target.transform.CompoundNormalization(this, varOffset)
-//                .transform(this, yy);
-//        Term y = yy.get();
+
+//    private static final Term VAR_DEP_1 = $.varDep(1);
+//    private static final Term VAR_DEP_1_NEG = VAR_DEP_1.neg();
+
+    public Term normalize(Compound x, byte varOffset) {
+        CompoundNormalization n = new CompoundNormalization(x, varOffset);
+        Term y = n.applyCompound(x);
+
+//        if (n.count == 1 && y.hasAll(Op.VAR_DEP.bit | Op.NEG.bit) ) {
+//            //invert (--,#1) with #1
+//            final int[] count = {0};
+//            y.recurseTerms(yy -> yy.hasAll(Op.VAR_DEP.bit | Op.NEG.bit), (Term yy)-> {
+//                if (yy.equals(VAR_DEP_1_NEG))
+//                    count[0]++;
+//                return true;
+//            }, null);
+//            if (count[0] == y.vars())
+//                y = y.replace(VAR_DEP_1_NEG,VAR_DEP_1);
+//        }
+
 
         if (varOffset == 0 && y instanceof Compound) {
             y.subterms().setNormalized();

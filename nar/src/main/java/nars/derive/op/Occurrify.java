@@ -569,8 +569,8 @@ public class Occurrify extends TimeGraph {
             public Pair<Term, long[]> occurrence(Term x, Derivation d) {
 
 
-                Term tt = d.taskTerm;
-                Term bb = d.beliefTerm;
+                Term tt = Image.imageNormalize(d.taskTerm);
+                Term bb = Image.imageNormalize(d.beliefTerm);
 
                 if (!d.retransform.isEmpty()) {
                     //HACK re-apply variable introduction
