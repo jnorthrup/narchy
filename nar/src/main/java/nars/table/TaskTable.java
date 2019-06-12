@@ -1,5 +1,6 @@
 package nars.table;
 
+import jcog.sort.RankedN;
 import nars.NAR;
 import nars.Task;
 import nars.control.op.Remember;
@@ -106,7 +107,7 @@ public interface TaskTable {
         return match(start, end, true, template, filter, dur, n, false);
     }
 
-    default Task sample(When<NAR> when, @Nullable Term template, @Nullable Predicate<Task> filter) {
+    @Nullable default Task sample(When<NAR> when, @Nullable Term template, @Nullable Predicate<Task> filter) {
 
         if (isEmpty())
             return null;
@@ -117,7 +118,8 @@ public interface TaskTable {
                 isBeliefOrGoal ? Answer.BELIEF_SAMPLE_CAPACITY : Answer.QUESTION_SAMPLE_CAPACITY,
                 when.start, when.end, template, filter, when.x);
 
-        return answer.match(this).tasks.getRoulette(answer.random());
+        RankedN<Task> tt = answer.match(this).tasks;
+        return tt.isEmpty() ? null : tt.getRoulette(answer.random());
     }
 
     /** clear and fully deallocate if possible */

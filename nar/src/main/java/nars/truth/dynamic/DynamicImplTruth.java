@@ -3,6 +3,7 @@ package nars.truth.dynamic;
 import jcog.util.ObjectLongLongPredicate;
 import nars.Task;
 import nars.term.Compound;
+import nars.term.Neg;
 import nars.term.Term;
 import nars.time.Tense;
 import nars.truth.Truth;
@@ -34,7 +35,14 @@ class DynamicImplTruth extends AbstractDynamicTruth {
     }
 
     @Override @Nullable Predicate<Task> filter(Term subTerm, DynTaskify d) {
-        return d.size() == 0 ? (!d.componentPolarity.get(0) ? Task::isNegative : Task::isPositive) : null;
+        if (d.size() == 0) {
+            //HACK check that this filter is being used for an impl to avoid it being applied globally as it will propagate recursively, currently
+            if (d.model == this) {
+                return d.template.sub(0) instanceof Neg ? Task::isNegative : Task::isPositive;
+            }
+        }
+
+        return null;
     }
 
     @Override

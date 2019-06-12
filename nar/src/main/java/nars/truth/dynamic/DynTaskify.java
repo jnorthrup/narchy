@@ -32,6 +32,7 @@ import java.util.function.Supplier;
 
 import static nars.Op.*;
 import static nars.truth.dynamic.DynamicConjTruth.ConjIntersection;
+import static nars.truth.dynamic.DynamicStatementTruth.Impl;
 
 /**
  * Dynamic Taskify
@@ -48,7 +49,7 @@ public class DynTaskify extends TaskList {
     public final AbstractDynamicTruth model;
 
     public  final NAR nar;
-    private final Compound template;
+    public final Compound template;
 
     /** whether the result is intended for internal or external usage; determines precision settings */
     final boolean ditherTruth;
@@ -133,7 +134,7 @@ public class DynTaskify extends TaskList {
             earliest = earliestStart();
 
 
-            if (model == ConjIntersection) {
+            if (model == ConjIntersection || model == Impl) {
                 //calculate the minimum range (ie. intersection of the ranges)
                 s = earliest;
 
@@ -180,7 +181,7 @@ public class DynTaskify extends TaskList {
         }
 
 
-        boolean absolute = model != ConjIntersection || s == LongInterval.ETERNAL || earliest == LongInterval.ETERNAL;
+        boolean absolute = (model!=Impl && model != ConjIntersection) || s == LongInterval.ETERNAL || earliest == LongInterval.ETERNAL;
         for (int i = 0, dSize = size(); i < dSize; i++) {
             Task x = get(i);
             long xStart = x.start(); if (xStart!=ETERNAL) {
@@ -268,7 +269,7 @@ public class DynTaskify extends TaskList {
             return false;
 
 
-        Predicate<Task> f = filter;
+        Predicate<Task> f = null;
         Predicate<Task> mf = model.filter(subTerm, this);
         if (mf!=null)
             f = Answer.filter(mf, f);
