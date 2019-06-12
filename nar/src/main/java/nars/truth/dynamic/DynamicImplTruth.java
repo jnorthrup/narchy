@@ -29,9 +29,10 @@ class DynamicImplTruth extends AbstractDynamicTruth {
         assert(d.componentPolarity.get(1));
 
         //try both induction and abduction and choose the stronger
-        Truth i = NALTruth.Induction.apply(subjTruth, predTruth, 0, null);
-        Truth a = NALTruth.Abduction.apply(predTruth, subjTruth, 0, null);
-        return Truth.stronger(i, a);
+        Truth i = NALTruth.Abduction.apply(subjTruth, predTruth, 0, null);
+        //Truth a = NALTruth.Induction.apply(predTruth, subjTruth, 0, null);
+        //return Truth.stronger(i, a);
+        return i;
     }
 
     @Override @Nullable Predicate<Task> filter(Term subTerm, DynTaskify d) {

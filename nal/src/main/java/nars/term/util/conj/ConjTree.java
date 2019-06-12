@@ -40,7 +40,7 @@ public class ConjTree implements ConjBuilder {
 
 
         if (terminal != null)
-            throw new UnsupportedOperationException();
+            return false;//throw new UnsupportedOperationException();
 
         if (x == True)
             return true;

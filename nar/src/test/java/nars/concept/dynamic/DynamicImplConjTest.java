@@ -5,19 +5,15 @@ import jcog.data.list.FasterList;
 import nars.*;
 import nars.table.BeliefTables;
 import nars.table.dynamic.DynamicTruthTable;
-import nars.term.Compound;
 import nars.term.Term;
 import nars.time.Tense;
 import nars.truth.Truth;
-import nars.truth.dynamic.DynamicStatementTruth;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
-import static nars.$.$;
 import static nars.$.$$;
 import static nars.Op.BELIEF;
-import static nars.concept.dynamic.DynamicConjTest.components;
 import static nars.time.Tense.*;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -360,39 +356,39 @@ class DynamicImplConjTest extends AbstractDynamicTaskTest {
         //DONT produce: ((((left-right)-->fz) &&+6555 (left-->fz))&&(--,(left-->fz)))
     }
 
-
-    @Test
-    void testDynamicConjunctionFactoredInImpl() throws Narsese.NarseseException {
-        NAR n = NARS.shell();
-        n.believe($("(x==>a)"), ETERNAL);
-        n.believe($("(y ==>+2 a)"), 0);
-        n.believe($("(z =|> a)"), 2);
-        n.time.dur(8);
-
-        {
-            Compound xyz = $("((x &&+2 z)==>a)");
-            assertEquals(
-                    "[(x ==>+2 a) @ 0..0, (z==>a) @ 0..0]",
-                    components(DynamicStatementTruth.ImplSubjConj, xyz, 0, 0).toString());
-        }
-        {
-            Compound xyz = $("((x &&+2 z) ==>+- a)");
-            assertEquals(
-                    "[(x ==>+- a) @ 0..0, (z ==>+- a) @ 0..0]",
-                    components(DynamicStatementTruth.ImplSubjConj, xyz, 0, 0).toString());
-        }
-        {
-
-            Compound xyz = $("((x && (y &&+2 z))==>a)");
-            assertEquals(
-                    "[((x&&y) ==>+2 a) @ 0..0, ((x&&z)==>a) @ 0..0]",
-                    //"[(x ==>+2 a) @ 0..0, (y ==>+2 a) @ 0..0, (z==>a) @ 0..0]",
-                    components(DynamicStatementTruth.ImplSubjConj, xyz, 0, 0).toString());
-            Task t = n.answer(xyz, BELIEF, 0);
-            assertNotNull(t);
-            assertEquals(xyz, t.term());
-        }
-    }
+//
+//    @Test
+//    void testDynamicConjunctionFactoredInImpl() throws Narsese.NarseseException {
+//        NAR n = NARS.shell();
+//        n.believe($("(x==>a)"), ETERNAL);
+//        n.believe($("(y ==>+2 a)"), 0);
+//        n.believe($("(z =|> a)"), 2);
+//        n.time.dur(8);
+//
+//        {
+//            Compound xyz = $("((x &&+2 z)==>a)");
+//            assertEquals(
+//                    "[(x ==>+2 a) @ 0..0, (z==>a) @ 0..0]",
+//                    components(DynamicStatementTruth.ImplSubjConj, xyz, 0, 0).toString());
+//        }
+//        {
+//            Compound xyz = $("((x &&+2 z) ==>+- a)");
+//            assertEquals(
+//                    "[(x ==>+- a) @ 0..0, (z ==>+- a) @ 0..0]",
+//                    components(DynamicStatementTruth.ImplSubjConj, xyz, 0, 0).toString());
+//        }
+//        {
+//
+//            Compound xyz = $("((x && (y &&+2 z))==>a)");
+//            assertEquals(
+//                    "[((x&&y) ==>+2 a) @ 0..0, ((x&&z)==>a) @ 0..0]",
+//                    //"[(x ==>+2 a) @ 0..0, (y ==>+2 a) @ 0..0, (z==>a) @ 0..0]",
+//                    components(DynamicStatementTruth.ImplSubjConj, xyz, 0, 0).toString());
+//            Task t = n.answer(xyz, BELIEF, 0);
+//            assertNotNull(t);
+//            assertEquals(xyz, t.term());
+//        }
+//    }
 
     /**
      * subject: &&=union, ||=intersection

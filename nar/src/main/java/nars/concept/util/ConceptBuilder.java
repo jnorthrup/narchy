@@ -13,6 +13,7 @@ import nars.table.question.QuestionTable;
 import nars.table.temporal.TemporalBeliefTable;
 import nars.term.Compound;
 import nars.term.Term;
+import nars.term.Variable;
 import nars.term.atom.Bool;
 import nars.term.util.Image;
 import nars.truth.dynamic.AbstractDynamicTruth;
@@ -147,7 +148,9 @@ public abstract class ConceptBuilder implements BiFunction<Term, Concept, Concep
     private static AbstractDynamicTruth dynamicImpl(Compound t) {
 
         //TODO allow indep var if they are involved in (contained within) either but not both subj and pred
-        if (t.hasAny(Op.VAR_INDEP))
+        if (t.hasAny(Op.VAR_INDEP) ||
+                t.sub(0).unneg() instanceof nars.term.Variable ||
+                t.sub(1) instanceof Variable)
             return null;
 
 //        if (t.hasAny(Op.CONJ)) {
