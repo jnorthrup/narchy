@@ -183,6 +183,7 @@
 //classically: union/intersection assymmetry: union if subj, intersect if pred
 //TODO: ...Also:VarIntro)
 
+    //TODO DynamicImplTruth
      (P ==> M), (S ==> M)  |- ((P && S) ==> M), (Belief:IntersectionPB, Time:Compose)
        (P ==> M), (S ==> M)  |- ((P || S) ==> M), (Belief:UnionPB, Time:Compose)
 
@@ -192,6 +193,7 @@
             //(P ==> M), (S ==> M), task("?")  |- (P && S), (Punctuation:Question)
 
 
+    //TODO DynamicImplTruth
      (M ==> P), (M ==> S)  |- (M ==> (polarizeTask(P) && polarizeBelief(S))), (Belief:IntersectionDepolarized, Time:Compose)
        (M ==> P), (M ==> S)  |- (M ==> (polarizeTask(P) || polarizeBelief(S))), (Belief:UnionDepolarized, Time:Compose)
 

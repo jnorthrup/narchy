@@ -20,11 +20,34 @@ class DynamicImplTest extends AbstractDynamicTaskTest {
     }
 
     @Test
-    void testEternalPos() throws Narsese.NarseseException {
+    void testEternalPosPos() throws Narsese.NarseseException {
         n.input("x.");
         n.input("y.");
         assertNull(n.beliefTruth("(--x==>y)", ETERNAL)); //no evidence
         assertEquals($.t(1, 0.45f), n.beliefTruth("(x==>y)", ETERNAL));
+    }
+
+    @Test
+    void testEternalNegPos() throws Narsese.NarseseException {
+        n.input("--x.");
+        n.input("y.");
+        assertEquals($.t(1, 0.45f), n.beliefTruth("(--x==>y)", ETERNAL));
+        assertNull(n.beliefTruth("(x==>y)", ETERNAL)); //no evidence
+    }
+
+    @Test
+    void testEternalPosNeg() throws Narsese.NarseseException {
+        n.input("x.");
+        n.input("--y.");
+        assertEquals($.t(0, 0.45f), n.beliefTruth("(x==>y)", ETERNAL));
+        assertNull(n.beliefTruth("(--x==>y)", ETERNAL)); //no evidence
+    }
+    @Test
+    void testEternalNegNeg() throws Narsese.NarseseException {
+        n.input("--x.");
+        n.input("--y.");
+        assertEquals($.t(0, 0.45f), n.beliefTruth("(--x==>y)", ETERNAL));
+        assertNull(n.beliefTruth("(x==>y)", ETERNAL)); //no evidence
     }
 
     @Test
@@ -42,13 +65,6 @@ class DynamicImplTest extends AbstractDynamicTaskTest {
         assertEquals($.t(1, 0.42f), n.beliefTruth("((x1 && --x2)==>y)", ETERNAL));
     }
 
-    @Test
-    void testEternalNeg() throws Narsese.NarseseException {
-        n.input("--x.");
-        n.input("y.");
-        assertEquals($.t(1, 0.45f), n.beliefTruth("(--x==>y)", ETERNAL));
-        assertNull(n.beliefTruth("(x==>y)", ETERNAL)); //no evidence
-    }
 
     @Test
     void testTemporal1() throws Narsese.NarseseException {

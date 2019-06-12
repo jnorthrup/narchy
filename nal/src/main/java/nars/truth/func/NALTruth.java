@@ -183,10 +183,11 @@ public enum NALTruth implements TruthFunc {
     AbductionPB() {
         @Override
         public Truth apply(final Truth T, final Truth B, float minConf, NAL n) {
-            if (B.isNegative())
-                return Abduction.apply(T.neg(), B.neg(), minConf, n);
-            else
-                return Abduction.apply(T, B, minConf, n);
+            return InductionPB.apply(B, T, minConf, n);
+//            if (B.isNegative())
+//                return Abduction.apply(T.neg(), B.neg(), minConf, n);
+//            else
+//                return Abduction.apply(T, B, minConf, n);
         }
     },
     AbductionXOR() {
@@ -247,7 +248,7 @@ public enum NALTruth implements TruthFunc {
         @Override
         public Truth apply(final Truth T, final Truth B, float minConf, NAL n) {
             return B.isNegative() ?
-                    Intersection.apply(T.neg(), B.neg(), minConf, n)
+                    negIfNonNull(Intersection.apply(T.neg(), B.neg(), minConf, n))
                     :
                     Intersection.apply(T, B, minConf, n);
         }
@@ -256,7 +257,7 @@ public enum NALTruth implements TruthFunc {
         @Override
         public Truth apply(final Truth T, final Truth B, float minConf, NAL n) {
             return B.isNegative() ?
-                    Union.apply(T.neg(), B.neg(), minConf, n)
+                    negIfNonNull(Union.apply(T.neg(), B.neg(), minConf, n))
                     :
                     Union.apply(T, B, minConf, n);
         }
@@ -483,6 +484,11 @@ public enum NALTruth implements TruthFunc {
     final public @Nullable Truth apply(@Nullable Truth task, @Nullable Truth belief, NAL m) {
         return apply(task, belief, NAL.truth.TRUTH_EPSILON, m);
     }
+
+    private static @Nullable Truth negIfNonNull(@Nullable Truth t) {
+        return t == null ? null : t.neg();
+    }
+
 }
 //    IntersectionSym() {
 //        @Override

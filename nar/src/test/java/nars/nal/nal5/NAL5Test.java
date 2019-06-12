@@ -293,6 +293,7 @@ public class NAL5Test extends NALTest {
         test.believe("--(y ==> z)", 0.9f, 0.81f);
         test.mustBelieve(cycles, "((x && y) ==> z)", 0.1f, 0.73f);
         test.mustBelieve(cycles, "((x || y) ==> z)", 0f, 0.73f);
+
     }
     @Test
     void compound_composition_Subj() {
