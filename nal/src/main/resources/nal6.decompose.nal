@@ -37,18 +37,18 @@
         //(A ==> C), X, eventOfPN(C,X), --isVar(A)   |-   polarizeTask((A ==> conjWithoutPN(C,  X))), (Belief:StructuralDeductionDepolarized)
 
          (A ==> C), X,  conjParallel(C), eventOfPN(C,X), task("?"), --isVar(A), --isVar(X)   |- (A ==> conjWithoutPN(C,  X)), (Punctuation:Question)
-         (A ==> C), (A ==> C), task("?")   |- C, (Punctuation:Question)
+         //(A ==> C), (A ==> C), task("?")   |- C, (Punctuation:Question)
 
-    //impl conj subj belief and question free structural implication decomposition
-    (  C ==> A), X,  conjParallel(C),eventOfPN(C,X), --isVar(A), --isVar(X)   |- polarizeTask((  conjWithoutPN(C,    X) ==> A)), (Belief:StructuralDeductionDepolarized)
-      (  --D ==> A), X,  conjParallel(D), eventOfNeg(D,X), --isVar(A), --isVar(X) |- polarizeTask((  X ==> A)), (Belief:StructuralDeductionDepolarized)
-      (  --D ==> A), X, conjParallel(D), eventOf(D,X), --isVar(A), --isVar(X) |- polarizeTask((  --X ==> A)), (Belief:StructuralDeductionDepolarized)
+//    //impl conj subj belief and question free structural implication decomposition
+//    (  C ==> A), X,  conjParallel(C),eventOfPN(C,X), --isVar(A), --isVar(X)   |- polarizeTask((  conjWithoutPN(C,    X) ==> A)), (Belief:StructuralDeductionDepolarized)
+//      (  --D ==> A), X,  conjParallel(D), eventOfNeg(D,X), --isVar(A), --isVar(X) |- polarizeTask((  X ==> A)), (Belief:StructuralDeductionDepolarized)
+//      (  --D ==> A), X, conjParallel(D), eventOf(D,X), --isVar(A), --isVar(X) |- polarizeTask((  --X ==> A)), (Belief:StructuralDeductionDepolarized)
+//
+//        (  C ==> A), X, conjParallel(C),eventOfPN(C,X), task("?"), --isVar(A), --isVar(X)   |- (  conjWithoutPN(C,  X) ==> A), (Punctuation:Question)
+//          (  --D ==> A), X, conjParallel(D), eventOfNeg(D,X), task("?"), --isVar(A), --isVar(X) |- (  X ==> A), (Punctuation:Question)
+//          (  --D ==> A), X, conjParallel(D), eventOf(D,X), task("?"), --isVar(A), --isVar(X)    |- (--X ==> A), (Punctuation:Question)
 
-        (  C ==> A), X, conjParallel(C),eventOfPN(C,X), task("?"), --isVar(A), --isVar(X)   |- (  conjWithoutPN(C,  X) ==> A), (Punctuation:Question)
-          (  --D ==> A), X, conjParallel(D), eventOfNeg(D,X), task("?"), --isVar(A), --isVar(X) |- (  X ==> A), (Punctuation:Question)
-          (  --D ==> A), X, conjParallel(D), eventOf(D,X), task("?"), --isVar(A), --isVar(X)    |- (--X ==> A), (Punctuation:Question)
-
-        (C ==> A), (C ==> A), task("?")   |- C, (Punctuation:Question)
+        //(C ==> A), (C ==> A), task("?")   |- C, (Punctuation:Question)
 
 
 

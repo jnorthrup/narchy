@@ -135,11 +135,10 @@ public abstract class ConceptBuilder implements BiFunction<Term, Concept, Concep
             }
 
             if (subjDyn) {
-                //remember: these are reversed (NAL6)
-                if (suo != NEG) {
-                    c = DynamicImplConjTruth.ImplSubjConj;
+                if (suo == NEG) {
+                    //c = DynamicImplConjTruth.ImplSubjDisj;
                 } else {
-                    c = DynamicImplConjTruth.ImplSubjDisj;
+                    //c = DynamicImplConjTruth.ImplSubjConj;
                 }
             } else if (predDyn) {
                 c = DynamicImplConjTruth.ImplPred;

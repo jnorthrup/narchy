@@ -29,28 +29,28 @@ public class DynamicImplConjTruth {
 
         @Override
         public Term reconstruct(Compound superterm, DynTaskify components, long start, long end) {
-            return reconstruct(superterm, components, true, true);
+            return reconstruct(superterm, components, true, false);
         }
     };
-    public static final AbstractDynamicTruth ImplSubjConj = new DynamicStatementTruth.AbstractInhImplSectTruth(true, false) {
-        @Override
-        protected boolean truthNegComponents() {
-            return false;
-        }
-
-        @Override
-        public boolean evalComponents(Compound superterm, long start, long end, ObjectLongLongPredicate<Term> each) {
-            Subterms ss = superterm.subterms();
-            return decomposeImplConj(superterm, start, end, each, ss.sub(1), (Compound) ss.sub(0), true,
-                    false /* reconstruct as-is; union only applies to the truth calculation */);
-        }
-
-        @Override
-        public Term reconstruct(Compound superterm, DynTaskify components, long start, long end) {
-            return reconstruct(superterm, components, true, false
-                    /* reconstruct as-is; union only applies to the truth calculation */);
-        }
-    };
+//    public static final AbstractDynamicTruth ImplSubjConj = new DynamicStatementTruth.AbstractInhImplSectTruth(true, false) {
+//        @Override
+//        protected boolean truthNegComponents() {
+//            return false;
+//        }
+//
+//        @Override
+//        public boolean evalComponents(Compound superterm, long start, long end, ObjectLongLongPredicate<Term> each) {
+//            Subterms ss = superterm.subterms();
+//            return decomposeImplConj(superterm, start, end, each, ss.sub(1), (Compound) ss.sub(0), true,
+//                    false /* reconstruct as-is; union only applies to the truth calculation */);
+//        }
+//
+//        @Override
+//        public Term reconstruct(Compound superterm, DynTaskify components, long start, long end) {
+//            return reconstruct(superterm, components, true, false
+//                    /* reconstruct as-is; union only applies to the truth calculation */);
+//        }
+//    };
     public static final AbstractDynamicTruth ImplPred = new DynamicStatementTruth.AbstractInhImplSectTruth(false, false) {
         @Override
         public boolean evalComponents(Compound superterm, long start, long end, ObjectLongLongPredicate<Term> each) {

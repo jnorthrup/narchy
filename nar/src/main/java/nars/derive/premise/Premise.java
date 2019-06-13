@@ -244,18 +244,8 @@ public class Premise implements Comparable<Premise> {
                 Task answered = tryAnswer(beliefTerm, answerTable, d);
                 if (answered != null) {
                     if (answered.evi() >= d.eviMin) {
-
-//                        d.addAt(answered); //TODO determine if inputting here is really only useful if revised or dynamic
-
-//                        n.input(answered);
-
-//                        if (answerGoal) {
-//                            //store goals
-//                            //d.add(answered);
-//                        } else {
-//                            //just emit if belief
-                        n.eventTask.emit(answered);
-//                        }
+                        n.input(answered);
+                        //.eventTask.emit(answered);
                     }
 
                 }

@@ -184,18 +184,18 @@
 //TODO: ...Also:VarIntro)
 
     //TODO DynamicImplTruth
-    (P ==> M), (S ==> M)  |- ((P && S) ==> M), (Belief:IntersectionPB)
-       (P ==> M), (S ==> M)  |- ((P || S) ==> M), (Belief:UnionPB)
+    //(P ==> M), (S ==> M)  |- ((P && S) ==> M), (Belief:IntersectionPB)
+       //(P ==> M), (S ==> M)  |- ((P || S) ==> M), (Belief:UnionPB)
 
-        (P ==> M), (S ==> M), task("?")  |- ((P && S) ==> M), (Punctuation:Question)
-          (P ==> M), (S ==> M), task("?")  |- ((P || S) ==> M), (Punctuation:Question)
+        //(P ==> M), (S ==> M), task("?")  |- ((P && S) ==> M), (Punctuation:Question)
+          //(P ==> M), (S ==> M), task("?")  |- ((P || S) ==> M), (Punctuation:Question)
             //(P ==> M), (S ==> M), task("?")  |- (P || S), (Punctuation:Question)
             //(P ==> M), (S ==> M), task("?")  |- (P && S), (Punctuation:Question)
 
 
     //TODO DynamicImplTruth
      (M ==> P), (M ==> S)  |- (M ==> (polarizeTask(P) && polarizeBelief(S))), (Belief:IntersectionDepolarized)
-       (M ==> P), (M ==> S)  |- (M ==> (polarizeTask(P) || polarizeBelief(S))), (Belief:UnionDepolarized)
+       //(M ==> P), (M ==> S)  |- (M ==> (polarizeTask(P) || polarizeBelief(S))), (Belief:UnionDepolarized)
 
         (M ==> P), (M ==> S), task(".?") |- (M ==> (polarizeRandom(P) && polarizeRandom(S))), (Punctuation:Question)
             //(M ==> P), (M ==> S), task("?") |- (polarizeRandom(P) && polarizeRandom(S)), (Punctuation:Question)
@@ -217,8 +217,8 @@
 //    (X ==> (&&,Y,A..+)), (X ==> (&&,Z,A..+)), eqNeg(Y,Z), --is(X,"#")     |- (X ==> (&&,A..+)), (Belief:Intersection)
 //        (X ==> (&&,Y,A..+)), (X ==> (&&,Z,A..+)), eqNeg(Y,Z), --is(X,"#")     |- --(X ==> (&&,A..+)), (Belief:IntersectionNN)
 
-//      (Y ==> X), (Z ==> X), eqNeg(Y,Z), --is(X,"#")                       |- (#1 ==> X), (Belief:Intersection)
-//          (Y ==> X), (Z ==> X), eqNeg(Y,Z), --is(X,"#")                       |- --(#1 ==> X), (Belief:IntersectionNN)
+      (Y ==> X), (Z ==> X), eqNeg(Y,Z), --is(X,"#")                       |- (#1 ==> X), (Belief:IntersectionPB)
+          //(Y ==> X), (Z ==> X), eqNeg(Y,Z), --is(X,"#")                       |- --(#1 ==> X), (Belief:IntersectionNN)
 
 
 //            B, ((&&,C,A..+) ==> X), neq(B,C) |- unisubst(((&&,A..+) ==> X),C,B), (Belief:Deduction)
