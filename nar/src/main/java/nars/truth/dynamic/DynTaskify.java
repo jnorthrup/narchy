@@ -255,14 +255,7 @@ public class DynTaskify extends TaskList {
         if (!so.taskable)
             throw new TermException("non-taskable component of supposed dynamic compound", subTerm);
 
-//        if (!subTerm.isNormalized()) {
-//            //seems ok for images
-//            //if (NAL.DEBUG)
-//                throw new TermException("unnormalized component of supposed dynamic compound", subTerm);
-//            //return false;
-//        }
-
-
+        subTerm = subTerm.normalize();
 
         Concept subConcept = nar.conceptualizeDynamic(subTerm);
         if (!(subConcept instanceof TaskConcept))

@@ -152,7 +152,7 @@ public class FZero extends GameX {
 //                NARui.beliefCharts(nar, F, A.pos, A.neg)), 400, 400);
 
 
-        float r = 0.05f;
+        float r = 0.1f;
 //        senseNumberBi($.funcImg("vel", $$("x")), compose(() -> (float) fz.vehicleMetrics[0][7],
 //                new FloatAveragedWindow(8,0.5f, false))).resolution(r);
 //        senseNumberBi($.funcImg("vel", $$("y")), compose(() -> (float) fz.vehicleMetrics[0][8],

@@ -114,14 +114,14 @@
     //nature of such a rule."
 
     //If after S M happens, and after M then P happens, so S then P happens
-    (S ==> M),   (M ==> P)    |-   (S ==> P),   (Belief:DeductionPP)
-      (M ==> P), (S ==> M)    |-   (S ==> P),     (Belief:DeductionPP)
-    (S ==> M),   (M ==> P)    |-   (S ==> --P), (Belief:DeductionPN)
-      (M ==> P), (S ==> M)    |-   (S ==> --P),   (Belief:DeductionNP)
-    (S ==> M), (--M ==> P)    |-   (S ==> P),   (Belief:DeductionNP)
-      (--M ==> P), (S ==> M)  |-   (S ==> P),     (Belief:DeductionPN)
-    (S ==> M), (--M ==> P)    |-   (S ==> --P), (Belief:DeductionNN)
-      (--M ==> P), (S ==> M)  |-   (S ==> --P),   (Belief:DeductionNN)
+    (S ==> M),   (M ==> P)    |-   (S ==> P),   (Belief:DeductionPP, Time:TaskRelative)
+      (M ==> P), (S ==> M)    |-   (S ==> P),     (Belief:DeductionPP, Time:BeliefRelative)
+    (S ==> M),   (M ==> P)    |-   (S ==> --P), (Belief:DeductionPN, Time:TaskRelative)
+      (M ==> P), (S ==> M)    |-   (S ==> --P),   (Belief:DeductionNP, Time:BeliefRelative)
+    (S ==> M), (--M ==> P)    |-   (S ==> P),   (Belief:DeductionNP, Time:TaskRelative)
+      (--M ==> P), (S ==> M)  |-   (S ==> P),     (Belief:DeductionPN, Time:BeliefRelative)
+    (S ==> M), (--M ==> P)    |-   (S ==> --P), (Belief:DeductionNN, Time:TaskRelative)
+      (--M ==> P), (S ==> M)  |-   (S ==> --P),   (Belief:DeductionNN, Time:BeliefRelative)
 
 
         //(S ==> M), (M ==> P), task("?") |- ((S ==> P) || (P ==> S)), (Punctuation:Question)
@@ -140,22 +140,22 @@
 
     //TODO reversals for Abduction, Induction, Exemplification
 
-    (M ==> S), (M ==> P) |- (S ==> P), (Belief:Abduction)
-        (M ==> S), (M ==> P) |- (--S ==> --P), (Belief:AbductionNN)
-    (M ==> P), (M ==> S) |- (S ==> P), (Belief:Induction)
-        (M ==> P), (M ==> S) |- (--S ==> --P), (Belief:InductionNN)
+    (M ==> S), (M ==> P) |- (S ==> P), (Belief:Abduction, Time:TaskRelative)
+        (M ==> S), (M ==> P) |- (--S ==> --P), (Belief:AbductionNN, Time:TaskRelative)
+    (M ==> P), (M ==> S) |- (S ==> P), (Belief:Induction, Time:TaskRelative)
+        (M ==> P), (M ==> S) |- (--S ==> --P), (Belief:InductionNN, Time:TaskRelative)
 
                 //(X ==> S), (Y ==> P), eqPN(X,Y), task("?") |- (polarizeRandom(S) ==> P), (Punctuation:Question)
 
-    (S ==> M), (P ==> M) |- (S ==> P), (Belief:InductionPB)
-    (P ==> M), (S ==> M) |- (S ==> P), (Belief:AbductionPB)
+    (S ==> M), (P ==> M) |- (S ==> P), (Belief:InductionPB, Time:TaskRelative)
+    (P ==> M), (S ==> M) |- (S ==> P), (Belief:AbductionPB, Time:TaskRelative)
 
             //(S ==> X), (P ==> X), task("?") |- (S ==> P), (Punctuation:Question)
 
-    (  M ==> S), (P ==> M)       |- (  S ==> P), (Belief:Exemplification)
-    (  M ==> S), (P ==> M)       |- (--S ==> P), (Belief:ExemplificationN)
-    (--M ==> S), (P ==> M)       |- (  S ==> P), (Belief:ExemplificationPN)
-    (--M ==> S), (P ==> M)       |- (--S ==> P), (Belief:ExemplificationNN)
+    (  M ==> S), (P ==> M)       |- (  S ==> P), (Belief:Exemplification, Time:TaskRelative)
+    (  M ==> S), (P ==> M)       |- (--S ==> P), (Belief:ExemplificationN, Time:TaskRelative)
+    (--M ==> S), (P ==> M)       |- (  S ==> P), (Belief:ExemplificationPN, Time:TaskRelative)
+    (--M ==> S), (P ==> M)       |- (--S ==> P), (Belief:ExemplificationNN, Time:TaskRelative)
 
             //(X ==> S), (P ==> Y), task("?"), eqPN(X,Y) |- (polarizeRandom(S) ==> P), (Punctuation:Question)
 
@@ -194,10 +194,10 @@
 
 
     //TODO DynamicImplTruth
-     (M ==> P), (M ==> S)  |- (M ==> (polarizeTask(P) && polarizeBelief(S))), (Belief:IntersectionDepolarized)
+     (M ==> P), (M ==> S)  |- (M ==> (polarizeTask(P) && polarizeBelief(S))), (Belief:IntersectionDepolarized, Time:TaskRelative)
        //(M ==> P), (M ==> S)  |- (M ==> (polarizeTask(P) || polarizeBelief(S))), (Belief:UnionDepolarized)
 
-        (M ==> P), (M ==> S), task(".?") |- (M ==> (polarizeRandom(P) && polarizeRandom(S))), (Punctuation:Question)
+        (M ==> P), (M ==> S), task(".?") |- (M ==> (polarizeRandom(P) && polarizeRandom(S))), (Punctuation:Question, Time:TaskRelative)
             //(M ==> P), (M ==> S), task("?") |- (polarizeRandom(P) && polarizeRandom(S)), (Punctuation:Question)
 
         //TODO question variations
@@ -233,16 +233,16 @@
 
 
     //Conj/Impl Chain Deduction
-    (X ==> Y), (C ==> Z), eventOf(C,Y)      |-   ((X && conjWithout(C,  Y)) ==> Z), (Belief:DeductionPP)
-      (X ==> Y), (C ==> Z), eventOf(C,Y)    |- --((X && conjWithout(C,  Y)) ==> Z), (Belief:DeductionPN)
-    (X ==> Y), (C ==> Z), eventOfNeg(C,Y)   |-   ((X && conjWithout(C,--Y)) ==> Z), (Belief:DeductionNP)
-      (X ==> Y), (C ==> Z), eventOfNeg(C,Y) |- --((X && conjWithout(C,--Y)) ==> Z), (Belief:DeductionNN)
+    (X ==> Y), (C ==> Z), eventOf(C,Y)      |-   ((X && conjWithout(C,  Y)) ==> Z), (Belief:DeductionPP, Time:TaskRelative)
+      (X ==> Y), (C ==> Z), eventOf(C,Y)    |- --((X && conjWithout(C,  Y)) ==> Z), (Belief:DeductionPN, Time:TaskRelative)
+    (X ==> Y), (C ==> Z), eventOfNeg(C,Y)   |-   ((X && conjWithout(C,--Y)) ==> Z), (Belief:DeductionNP, Time:TaskRelative)
+      (X ==> Y), (C ==> Z), eventOfNeg(C,Y) |- --((X && conjWithout(C,--Y)) ==> Z), (Belief:DeductionNN, Time:TaskRelative)
 
     //Disj/Impl Chain Deduction
-    (X ==> Y), (--D ==> Z), eventOfNeg(D,Y)     |-   (X ==> Z), (Belief:DeductionPP)
-      (X ==> Y), (--D ==> Z), eventOfNeg(D,Y)   |- --(X ==> Z), (Belief:DeductionPN)
-    (X ==> Y), (--D ==> Z), eventOf(D,Y)        |-   (X ==> Z), (Belief:DeductionNP)
-      (X ==> Y), (--D ==> Z), eventOf(D,Y)      |- --(X ==> Z), (Belief:DeductionNN)
+    (X ==> Y), (--D ==> Z), eventOfNeg(D,Y)     |-   (X ==> Z), (Belief:DeductionPP, Time:TaskRelative)
+      (X ==> Y), (--D ==> Z), eventOfNeg(D,Y)   |- --(X ==> Z), (Belief:DeductionPN, Time:TaskRelative)
+    (X ==> Y), (--D ==> Z), eventOf(D,Y)        |-   (X ==> Z), (Belief:DeductionNP, Time:TaskRelative)
+      (X ==> Y), (--D ==> Z), eventOf(D,Y)      |- --(X ==> Z), (Belief:DeductionNN, Time:TaskRelative)
 
     //Conj/Impl Chain Swap Deduction
 //    //TODO use conj ops
@@ -305,8 +305,8 @@
 //    (--(&&,X,--Y,A..*)==>Z), (--(&&,Y,--X,A..*)==>Z)     |- (--(&&,--(X && Y),A..*) ==>   Z), (Belief:IntersectionPP)
 //    (--(&&,X,--Y,A..*)==>Z), (--(&&,Y,--X,A..*)==>Z)     |- (--(&&,--(X && Y),A..*) ==> --Z), (Belief:IntersectionNN)
 
-      (&&,X,--Y,A..*), (&&,Y,--X,A..*),neq(X,Y)               |-  (  X ==> --Y), (Belief:AbductionPB)
-      (&&,X,--Y,A..*), (&&,Y,--X,A..*),neq(X,Y)               |-  (--Y ==>   X), (Belief:InductionPB)
+      (&&,X,--Y,A..*), (&&,Y,--X,A..*),neq(X,Y)               |-  (  X ==> --Y), (Belief:AbductionPB, Time:TaskRelative)
+      (&&,X,--Y,A..*), (&&,Y,--X,A..*),neq(X,Y)               |-  (--Y ==>   X), (Belief:InductionPB, Time:BeliefRelative)
 
 
 
@@ -366,15 +366,15 @@
 //        if two different precondition conjunctions, with a common element lead to the same conclusion,
 //        it might be that these different preconditions in the specific conjunctions imply each other
 //        because the premises can be swapped for this rule and it is still valid
-    (A ==> X), (B ==> X), eventCommon(A,B), neq(A,B) |- (conjWithout(A,B) ==> conjWithout(B,A)), (Belief:InductionPB)
+    (A ==> X), (B ==> X), eventCommon(A,B), neq(A,B) |- (conjWithout(A,B) ==> conjWithout(B,A)), (Belief:InductionPB, Time:TaskRelative)
       //? (--A ==> X), (--B ==> X), eventCommon(A,B) |- (conjWithout(A,B) ==> conjWithout(B,A)), (Belief:InductionPB)
-    (A ==> X), (B ==> X), eventCommon(A,B), neq(A,B) |- (conjWithout(B,A) ==> conjWithout(A,B)), (Belief:InductionPB)
+    (A ==> X), (B ==> X), eventCommon(A,B), neq(A,B) |- (conjWithout(B,A) ==> conjWithout(A,B)), (Belief:InductionPB, Time:BeliefRelative)
       //? (--A ==> X), (--B ==> X), eventCommon(A,B) |- (conjWithout(B,A) ==> conjWithout(A,B)), (Belief:InductionPB)
 
         //((&&,X,A..+) ==> C), ((&&,Y,A..+) ==> C)   |- ((X ==> Y) && (Y ==> X)), (Bel4ief:InductionPB)
 
-    (X ==> A), (X ==> B), eventCommon(A,B), neq(A,B) |- (conjWithout(A,B) ==> conjWithout(B,A)), (Belief:AbductionPB)
-    (X ==> A), (X ==> B), eventCommon(A,B), neq(A,B) |- (conjWithout(B,A) ==> conjWithout(A,B)), (Belief:AbductionPB)
+    (X ==> A), (X ==> B), eventCommon(A,B), neq(A,B) |- (conjWithout(A,B) ==> conjWithout(B,A)), (Belief:AbductionPB, Time:TaskRelative)
+    (X ==> A), (X ==> B), eventCommon(A,B), neq(A,B) |- (conjWithout(B,A) ==> conjWithout(A,B)), (Belief:AbductionPB, Time:BeliefRelative)
 
 
 

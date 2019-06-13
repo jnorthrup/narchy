@@ -244,8 +244,8 @@ public class Premise implements Comparable<Premise> {
                 Task answered = tryAnswer(beliefTerm, answerTable, d);
                 if (answered != null) {
                     if (answered.evi() >= d.eviMin) {
-                        n.input(answered);
-                        //.eventTask.emit(answered);
+                        //n.input(answered);
+                        n.eventTask.emit(answered);
                     }
 
                 }

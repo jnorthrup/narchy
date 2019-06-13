@@ -108,14 +108,14 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
      * @param needStamp whether a stamp result should be returned, or if this can be elided if not necessary
      */
     @Nullable
-    public final MetalLongSet commit(boolean tCrop, int minResults, boolean needStamp) {
+    public final MetalLongSet commit(boolean shrink, int minResults, boolean needStamp) {
         int s = size();
         if (s < minResults) {
             return null;
         } else if (s == 1) {
-            return only(tCrop, needStamp);
+            return only(shrink, needStamp);
         } else {
-            MetalLongSet e = filterCyclicN(minResults, tCrop || start==ETERNAL, needStamp);
+            MetalLongSet e = filterCyclicN(minResults, shrink, needStamp);
             return needStamp ? e : null;
         }
     }
@@ -129,31 +129,40 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
         if (s <= 0)
             return 0;
 
-        if (force)
-            invalidate();
-
         int count = 0;
         for (int i = 0; i < s; i++) {
             if (update(get(i), force))
                 count++;
         }
-        if (count > 0)
-            sortByEvidence();
+        if (size() > 1)
+            sortThisByDouble(TaskComponent::eviDescending); //TODO also sort by occurrence and/or stamp to ensure oldest task is always preferred
         return count;
     }
 
- @Nullable private MetalLongSet filterCyclicN(int minComponents, boolean tCrop, boolean needStamp) {
+ @Nullable private MetalLongSet filterCyclicN(int minComponents, boolean shrink, boolean needStamp) {
 
         assert (minComponents >= 1);
 
         int ss = size();
+        if (ss == 0) return null;
 
-        long bs = this.start, be = this.end;
+        final long bs = this.start, be = this.end;
+        int activeRemain = refocus(shrink, true);
+        if (activeRemain < minComponents) {
+            clear(); return null; }
 
+        int iter = 0;
         MetalLongSet e = null;
         while (ss > 1) {
-            int activeRemain = refocus(tCrop, true);
+            if (size() < minComponents) {
+                clear() ;return null; } //HACK why
+
+            if (iter++ > 0 && shrink)
+                activeRemain = refocus(shrink, false);
+
+
             if (activeRemain < minComponents) {
+                clear();
                 //OOPS
                 // TODO undo
                 return null;
@@ -165,7 +174,7 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
 
             //optimized special case
             //TODO generalize; prevent unnecessary MetalLongSet creation
-            if (activeRemain == 2 && minComponents >= 2 && !needStamp) {
+            if (!needStamp && activeRemain == 2 && minComponents >= 2) {
                 if (!Stamp.overlaps(get(0).task, get(1).task))
                     break;
                 else {
@@ -190,8 +199,10 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
 //                    else
                         continue;
                 }
-                if (!c.valid())
+                if (!c.valid()) {
+                    set(i, null);
                     continue;
+                }
 
 
                 long[] iis = c.task.stamp();
@@ -219,28 +230,39 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
             double valueOK  = eviSum(conflict, false);
             double valueConflicting = conflictedEvi(conflict);
             if (valueOK > valueConflicting) {
-                if (ss - conflicts < minComponents)
+                if (ss - conflicts < minComponents) {
+                    clear();
                     return null; //impossible: nothing else to remove
+                } else {
+                    removeAll(conflict, true);
+                    if (!needStamp)
+                        break; //done
 
-                removeAll(conflict, true);
-
-                break; //done
+                    e = null;
+                    //done but recycle to get the stamp
+                }
             } else {
+                if (--activeRemain < minComponents) {
+                    clear();
+                    return null;  //impossible: nothing else to remove
+                } else {
+                    removeFast(0); //pop the top, and retry with remaining
+                    removeNulls(); //HACK
+                    if (size() < minComponents) {
+                        clear() ;return null; }
 
-                if (--ss < minComponents)
-                    return null;
+                    e = null;
 
-                removeFast(0); //pop the top, and retry with remaining
+                }
             }
 
-            removeNulls(); //HACK
 
         }
 
-        if (this.time(bs, be)) {
-            int sss = refocus(tCrop, false);
-            assert(sss >= minComponents);
-        }
+//        if (this.time(bs, be)) {
+//            int sss = refocus(tCrop, false);
+//            assert(sss >= minComponents);
+//        }
 
         return e;
     }
@@ -338,12 +360,7 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
 //            removeFast(conflict);
 //    }
 
-    private void sortByEvidence() {
-        if (size() > 1)
-            sortThisByDouble(TaskComponent::eviDescending); //TODO also sort by occurrence and/or stamp to ensure oldest task is always preferred
-    }
-
-//    /**
+    //    /**
 //     * a one-for-all and all-for-one decision
 //     */
 //    private void resolve(int conflict) {
@@ -388,8 +405,8 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
         return e;
     }
 
-    private MetalLongSet only(boolean tCrop, boolean provideStamp) {
-        refocus(tCrop, true);
+    private MetalLongSet only(boolean shrink, boolean provideStamp) {
+        refocus(shrink, true);
         return provideStamp ? Stamp.toMutableSet(firstValid().task) : null;
     }
 
@@ -566,8 +583,8 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
      * returns the number of active tasks
      * @param all - true if applying to the entire set of tasks; false if applying only to those remaining active
      */
-    private int refocus(boolean tCrop, boolean all) {
-        if (tCrop || start == ETERNAL) {
+    private int refocus(boolean shrink, boolean all) {
+        if (shrink || start == ETERNAL) {
             final long u0, u1;
             if ((all ? size() : active()) > 1) {
                 long[] union = Tense.union(Iterables.transform(this,
@@ -606,10 +623,6 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
         }
 
         return update(false);
-    }
-
-    private void invalidate() {
-        forEach(TaskComponent::invalidate);
     }
 
     public Supplier<long[]> stamper(Supplier<Random> rng) {

@@ -54,16 +54,11 @@ public class TrackXY_NAR extends GameX {
     static int dur = 8;
 
     static float camResolution = 0.1f;
+    static int experimentTime = 3000000;
+    final public AtomicBoolean trainer = new AtomicBoolean(false);
+    final public AtomicBoolean log = new AtomicBoolean(true);
     final Bitmap2DSensor cam;
     private final TrackXY track;
-
-
-    static int experimentTime = 3000000;
-
-
-    final public AtomicBoolean trainer = new AtomicBoolean(false);
-
-    final public AtomicBoolean log = new AtomicBoolean(true);
 
     protected TrackXY_NAR(NAR nar, TrackXY xy) {
         super("trackXY",
@@ -167,31 +162,6 @@ public class TrackXY_NAR extends GameX {
         });
     }
 
-
-    private void actionAccelerate() {
-//        actionDial($.inh($.p(id, $.the("speed")), $.the(-1)),
-//                $.inh($.p(id, $.the("speed")), $.the(+1)),
-//                        track.controlSpeed, 100);
-//        actionTriStateContinuous($.inh(id, $.the("speed")), (a)->{
-////            System.out.println(a);
-//            track.controlSpeed.add(a/100f);
-//            return true; //TODO check change
-//        });
-
-        //FloatAveragedWindow _controlSpeed = new FloatAveragedWindow(8, 0.05f);
-        actionUnipolar($.inh(id, $.the("speed")), (float a)->{
-//            System.out.println(a);
-            //track.controlSpeed.add(Math.pow(((a-0.5)*2),3)/100f);
-            float cc = (float) Math.pow(a, 1f);
-            //float c = _controlSpeed.valueOf(cc);
-            float c = Util.lerp(cc, 0.01f, 0.2f);
-            track.controlSpeed.set(c);
-            return c;
-            //TODO check change
-        });
-    }
-
-
     public static void main(String[] args) {
 
         NARS nb = new NARS.DefaultNAR(0, true)
@@ -261,10 +231,10 @@ public class TrackXY_NAR extends GameX {
         };
 
 
-            ConjClustering cjB = new ConjClustering(n, BELIEF,
-                    //x -> true,
-                    Task::isInput,
-                    2, 8);
+        ConjClustering cjB = new ConjClustering(n, BELIEF,
+                //x -> true,
+                Task::isInput,
+                2, 8);
 
 
 //            window(new Gridding(
@@ -300,14 +270,13 @@ public class TrackXY_NAR extends GameX {
             //n.runLater(() -> {
 
 
+            GraphEdit2D g = GraphEdit2D.window(800, 800);
+            g.windoSizeMinRel(0.02f, 0.02f);
 
-                GraphEdit2D g = GraphEdit2D.window(800, 800);
-                g.windoSizeMinRel(0.02f, 0.02f);
 
-
-                g.add(NARui.agent(a)).posRel(0.5f, 0.5f, 0.4f, 0.3f);
-                g.add(NARui.top(n)).posRel(0.5f, 0.5f, 0.2f, 0.1f);
-                g.add(NARui.attentionUI(n)).sizeRel(0.25f, 0.25f);
+            g.add(NARui.agent(a)).posRel(0.5f, 0.5f, 0.4f, 0.3f);
+            g.add(NARui.top(n)).posRel(0.5f, 0.5f, 0.2f, 0.1f);
+            g.add(NARui.attentionUI(n)).sizeRel(0.25f, 0.25f);
 
 
 //                g.build(a, new AutoBuilder<>(2, (context, features, obj) -> {
@@ -343,20 +312,20 @@ public class TrackXY_NAR extends GameX {
 //                }).sizeRel(0.25f, 0.25f);
 
 
-                //window.addAt(new ExpandingChip("x", ()->NARui.top(n))).posRel(0.8f,0.8f,0.25f,0.25f);
+            //window.addAt(new ExpandingChip("x", ()->NARui.top(n))).posRel(0.8f,0.8f,0.25f,0.25f);
 //            window.addAt(new HubMenuChip(new PushButton("NAR"), NARui.menu(n))).posRel(0.8f,0.8f,0.25f,0.25f);
 
-                if (a.cam != null) {
-                    g.add(Splitting.column(new VectorSensorView(a.cam, a) {
-                        @Override
-                        protected void paint(GL2 gl, ReSurface reSurface) {
-                            super.paint(gl, reSurface);
-                            RectFloat at = cellRect(a.track.cx, a.track.cy, 0.5f, 0.5f);
-                            gl.glColor4f(1, 0, 0, 0.9f);
-                            Draw.rect(at.move(x(), y(), 0.01f), gl);
-                        }
-                    }.withControls(), 0.1f, new ObjectSurface<>(a.track))).posRel(0.5f, 0.5f, 0.3f, 0.3f);
-                }
+            if (a.cam != null) {
+                g.add(Splitting.column(new VectorSensorView(a.cam, a) {
+                    @Override
+                    protected void paint(GL2 gl, ReSurface reSurface) {
+                        super.paint(gl, reSurface);
+                        RectFloat at = cellRect(a.track.cx, a.track.cy, 0.5f, 0.5f);
+                        gl.glColor4f(1, 0, 0, 0.9f);
+                        Draw.rect(at.move(x(), y(), 0.01f), gl);
+                    }
+                }.withControls(), 0.1f, new ObjectSurface<>(a.track))).posRel(0.5f, 0.5f, 0.3f, 0.3f);
+            }
             //});
         }
 
@@ -364,17 +333,21 @@ public class TrackXY_NAR extends GameX {
         NAL.DEBUG = true;
         n.onTask(tt -> {
             if (!tt.isInput()) /*if (tt instanceof DerivedTask)*/ {
-                //if (n.concept(tt) instanceof ActionConcept)
-                if (tt.start() > n.time()-n.dur() && tt.start() < n.time() + n.dur()) {
-                    Term ttt = tt.term();
-                    boolean l = ttt.equals(a.actions.get(0).term());
-                    boolean r = ttt.equals(a.actions.get(1).term());
-                    if (l || r) {
+                Term ttt = tt.term();
+                boolean l = ttt.equals(a.actions.get(0).term());
+                boolean r = ttt.equals(a.actions.get(1).term());
+                if (l || r) {
+
+                    //if (n.concept(tt) instanceof ActionConcept)
+                    float window = 4;
+                    int dur = n.dur();
+                    long now = n.time();
+                    if (tt.start() > now - window / 2 * dur && tt.start() < now + window / 2 * dur) {
 
                         float wantsDir = (l ? -1 : +1) * (tt.freq() < 0.5f ? -1 : +1);
                         float needsDir = a.track.tx - a.track.cx;
 
-                        String summary = (Math.signum(wantsDir)==Math.signum(needsDir)) ? "OK" : "WRONG";
+                        String summary = (Math.signum(wantsDir) == Math.signum(needsDir)) ? "OK" : "WRONG";
                         System.out.println(ttt + " " + n2(wantsDir) + " ? " + n2(needsDir) + " " + summary);
                         System.out.println(tt.proof());
                         System.out.println(MetaGoal.proof(tt, n));
@@ -388,7 +361,6 @@ public class TrackXY_NAR extends GameX {
         n.run(experimentTime);
 
 
-
         //printGoals(n);
         //printImpls(n);
 
@@ -397,7 +369,6 @@ public class TrackXY_NAR extends GameX {
 
         //n.tasks().forEach(System.out::println);
     }
-
 
     public static void printGoals(NAR n) {
         int dur = n.dur();
@@ -418,6 +389,29 @@ public class TrackXY_NAR extends GameX {
                 .collect(toList());
         l.forEach(System.out::println);
         System.out.println();
+    }
+
+    private void actionAccelerate() {
+//        actionDial($.inh($.p(id, $.the("speed")), $.the(-1)),
+//                $.inh($.p(id, $.the("speed")), $.the(+1)),
+//                        track.controlSpeed, 100);
+//        actionTriStateContinuous($.inh(id, $.the("speed")), (a)->{
+////            System.out.println(a);
+//            track.controlSpeed.add(a/100f);
+//            return true; //TODO check change
+//        });
+
+        //FloatAveragedWindow _controlSpeed = new FloatAveragedWindow(8, 0.05f);
+        actionUnipolar($.inh(id, $.the("speed")), (float a) -> {
+//            System.out.println(a);
+            //track.controlSpeed.add(Math.pow(((a-0.5)*2),3)/100f);
+            float cc = (float) Math.pow(a, 1f);
+            //float c = _controlSpeed.valueOf(cc);
+            float c = Util.lerp(cc, 0.01f, 0.2f);
+            track.controlSpeed.set(c);
+            return c;
+            //TODO check change
+        });
     }
 
 

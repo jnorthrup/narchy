@@ -100,9 +100,8 @@ public abstract class ConceptBuilder implements BiFunction<Term, Concept, Concep
         //TODO allow indep var if they are involved in (contained within) either but not both subj and pred
         if (t.hasAny(Op.VAR_INDEP.bit | Op.VAR_QUERY.bit))
             return null;
-
-        if (t.sub(0).unneg() instanceof nars.term.Variable || t.sub(1) instanceof nars.term.Variable)
-            return null; //TODO this may be decomposable if the other term is && or ||
+        if (!t.hasAny(AtomicConstant))
+            return null;
 
         AbstractDynamicTruth c = null;
         if (t.hasAny(Op.CONJ)) {
@@ -145,7 +144,16 @@ public abstract class ConceptBuilder implements BiFunction<Term, Concept, Concep
             }
         }
 
-        return c == null ? table(DynamicStatementTruth.Impl) : table(DynamicStatementTruth.Impl, c);
+
+
+        AbstractDynamicTruth i = null;
+        if (!(t.sub(0).unneg() instanceof nars.term.Variable || t.sub(1) instanceof nars.term.Variable)) {
+            //TODO this may be decomposable if the other term is && or ||
+            i = DynamicStatementTruth.Impl;
+        }
+
+        if (i == null) return c == null ? null : table(c);
+        return c == null ? table(i) : table(i, c);
     }
 
     private static @Nullable ObjectBooleanToObjectFunction<Term, BeliefTable[]> dynamicInh(Term i) {

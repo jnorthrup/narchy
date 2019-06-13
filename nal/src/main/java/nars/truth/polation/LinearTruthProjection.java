@@ -23,12 +23,12 @@ public class LinearTruthProjection extends TruthProjection {
 
     @Override
     @Nullable
-    public Truth truth(double eviMin, boolean dither, boolean tCrop, NAL nar) {
+    public Truth truth(double eviMin, boolean dither, boolean shrink, NAL nar) {
 
         if (size()==0)
             return null;
         else {
-            commit(tCrop, 1, false);
+            commit(shrink, 1, false);
             if (active()==0)
                 return null;
         }
