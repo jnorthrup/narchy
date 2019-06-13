@@ -232,11 +232,8 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 
     @Override
     public final void match(Answer a) {
-
-        HyperIterator.iterate(this,
-                a::temporalDistanceFn,
-                x -> a.tryAccept((Task) x)
-        );
+        if (!isEmpty())
+            HyperIterator.iterate(this, a.temporalDistanceFn(), a);
     }
 
     @Override

@@ -92,7 +92,7 @@ public class EternalDefaultTable extends DynamicTaskTable {
         }
 
 
-        a.tryAccept(weak ? this.weak : strong);
+        a.test(weak ? this.weak : strong);
     }
 
     //    @Override

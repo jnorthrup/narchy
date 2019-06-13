@@ -27,7 +27,7 @@ public final class DynamicTruthTable extends DynamicTaskTable {
 
         Task y = new DynTaskify(model, beliefOrGoal, a).eval(a.time.start, a.time.end);
         if (y!=null)
-            a.tryAccept(y);
+            a.test(y);
     }
 
 

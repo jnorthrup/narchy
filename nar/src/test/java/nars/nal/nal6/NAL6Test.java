@@ -656,7 +656,7 @@ public class NAL6Test extends NALTest {
                 .believe("(a==>b)", 0.1f, 0.90f)
                 .believe("b", 0.1f, 0.90f)
                 .mustBelieve(cycles, "a",
-                        0.82f, 0.40f
+                        0.9f, 0.36f
                 );
     }
 
@@ -1072,6 +1072,7 @@ public class NAL6Test extends NALTest {
     void testHypothesizeSubconditionIdentityPre() {
         test
                 .believe("((f(x) && f($1)) ==> g($1))", 1f, 0.9f)
+                .mustBelieve(cycles, "(f($1) ==> g($1))", 1f, 0.81f)
                 .mustBelieve(cycles, "(f(x) ==> g(x))", 1f, 0.81f)
         ;
     }
@@ -1080,6 +1081,7 @@ public class NAL6Test extends NALTest {
     void testHypothesizeSubconditionIdentityPost() {
         test
                 .believe("(g($1) ==> (f(x) && f($1)))", 1f, 0.9f)
+                .mustBelieve(cycles, "(g($1) ==> f($1))", 1f, 0.81f)
                 .mustBelieve(cycles, "(g(x) ==> f(x))", 1f, 0.81f)
         ;
     }

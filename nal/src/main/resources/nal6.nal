@@ -184,20 +184,20 @@
 //TODO: ...Also:VarIntro)
 
     //TODO DynamicImplTruth
-     (P ==> M), (S ==> M)  |- ((P && S) ==> M), (Belief:IntersectionPB, Time:Compose)
-       (P ==> M), (S ==> M)  |- ((P || S) ==> M), (Belief:UnionPB, Time:Compose)
+    (P ==> M), (S ==> M)  |- ((P && S) ==> M), (Belief:IntersectionPB)
+       (P ==> M), (S ==> M)  |- ((P || S) ==> M), (Belief:UnionPB)
 
-        (P ==> M), (S ==> M), task("?")  |- ((P && S) ==> M), (Punctuation:Question, Time:Compose)
-          (P ==> M), (S ==> M), task("?")  |- ((P || S) ==> M), (Punctuation:Question, Time:Compose)
+        (P ==> M), (S ==> M), task("?")  |- ((P && S) ==> M), (Punctuation:Question)
+          (P ==> M), (S ==> M), task("?")  |- ((P || S) ==> M), (Punctuation:Question)
             //(P ==> M), (S ==> M), task("?")  |- (P || S), (Punctuation:Question)
             //(P ==> M), (S ==> M), task("?")  |- (P && S), (Punctuation:Question)
 
 
     //TODO DynamicImplTruth
-     (M ==> P), (M ==> S)  |- (M ==> (polarizeTask(P) && polarizeBelief(S))), (Belief:IntersectionDepolarized, Time:Compose)
-       (M ==> P), (M ==> S)  |- (M ==> (polarizeTask(P) || polarizeBelief(S))), (Belief:UnionDepolarized, Time:Compose)
+     (M ==> P), (M ==> S)  |- (M ==> (polarizeTask(P) && polarizeBelief(S))), (Belief:IntersectionDepolarized)
+       (M ==> P), (M ==> S)  |- (M ==> (polarizeTask(P) || polarizeBelief(S))), (Belief:UnionDepolarized)
 
-        (M ==> P), (M ==> S), task("?") |- (M ==> (polarizeRandom(P) && polarizeRandom(S))), (Punctuation:Question, Time:Compose)
+        (M ==> P), (M ==> S), task(".?") |- (M ==> (polarizeRandom(P) && polarizeRandom(S))), (Punctuation:Question)
             //(M ==> P), (M ==> S), task("?") |- (polarizeRandom(P) && polarizeRandom(S)), (Punctuation:Question)
 
         //TODO question variations
@@ -233,16 +233,16 @@
 
 
     //Conj/Impl Chain Deduction
-    (X ==> Y), (C ==> Z), eventOf(C,Y)      |-   ((X && conjWithout(C,  Y)) ==> Z), (Belief:DeductionPP, Time:Compose)
-      (X ==> Y), (C ==> Z), eventOf(C,Y)    |- --((X && conjWithout(C,  Y)) ==> Z), (Belief:DeductionPN, Time:Compose)
-    (X ==> Y), (C ==> Z), eventOfNeg(C,Y)   |-   ((X && conjWithout(C,--Y)) ==> Z), (Belief:DeductionNP, Time:Compose)
-      (X ==> Y), (C ==> Z), eventOfNeg(C,Y) |- --((X && conjWithout(C,--Y)) ==> Z), (Belief:DeductionNN, Time:Compose)
+    (X ==> Y), (C ==> Z), eventOf(C,Y)      |-   ((X && conjWithout(C,  Y)) ==> Z), (Belief:DeductionPP)
+      (X ==> Y), (C ==> Z), eventOf(C,Y)    |- --((X && conjWithout(C,  Y)) ==> Z), (Belief:DeductionPN)
+    (X ==> Y), (C ==> Z), eventOfNeg(C,Y)   |-   ((X && conjWithout(C,--Y)) ==> Z), (Belief:DeductionNP)
+      (X ==> Y), (C ==> Z), eventOfNeg(C,Y) |- --((X && conjWithout(C,--Y)) ==> Z), (Belief:DeductionNN)
 
     //Disj/Impl Chain Deduction
-    (X ==> Y), (--D ==> Z), eventOfNeg(D,Y)     |-   (X ==> Z), (Belief:DeductionPP, Time:Compose)
-      (X ==> Y), (--D ==> Z), eventOfNeg(D,Y)   |- --(X ==> Z), (Belief:DeductionPN, Time:Compose)
-    (X ==> Y), (--D ==> Z), eventOf(D,Y)        |-   (X ==> Z), (Belief:DeductionNP, Time:Compose)
-      (X ==> Y), (--D ==> Z), eventOf(D,Y)      |- --(X ==> Z), (Belief:DeductionNN, Time:Compose)
+    (X ==> Y), (--D ==> Z), eventOfNeg(D,Y)     |-   (X ==> Z), (Belief:DeductionPP)
+      (X ==> Y), (--D ==> Z), eventOfNeg(D,Y)   |- --(X ==> Z), (Belief:DeductionPN)
+    (X ==> Y), (--D ==> Z), eventOf(D,Y)        |-   (X ==> Z), (Belief:DeductionNP)
+      (X ==> Y), (--D ==> Z), eventOf(D,Y)      |- --(X ==> Z), (Belief:DeductionNN)
 
     //Conj/Impl Chain Swap Deduction
 //    //TODO use conj ops

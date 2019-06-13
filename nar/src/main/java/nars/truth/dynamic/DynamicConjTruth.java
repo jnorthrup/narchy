@@ -4,10 +4,10 @@ import com.google.common.collect.Iterables;
 import com.google.common.collect.Sets;
 import jcog.util.ArrayUtil;
 import jcog.util.ObjectLongLongPredicate;
-import nars.Op;
 import nars.Task;
 import nars.subterm.Subterms;
 import nars.term.Compound;
+import nars.term.Neg;
 import nars.term.Term;
 import nars.term.Termed;
 import nars.term.util.conj.Conj;
@@ -18,6 +18,7 @@ import nars.time.Tense;
 
 import java.util.concurrent.ThreadLocalRandom;
 
+import static nars.Op.NEG;
 import static nars.time.Tense.*;
 
 public class DynamicConjTruth {
@@ -86,7 +87,8 @@ public class DynamicConjTruth {
             //try to evaluate the eternal component of factored sequence independently
             //but this can dilute its truth too much if the sequence is sparse. better to evaluate it
             //piecewise
-            boolean seqFactored = ConjSeq.isFactoredSeq(conj);
+            int superDT = conj.dt();
+            boolean seqFactored = superDT == DTERNAL && ConjSeq.isFactoredSeq(conj);
             if(seqFactored) {
                 //evaluate the eternal components first.
                 // this is more efficient than sequence distribution,
@@ -101,8 +103,7 @@ public class DynamicConjTruth {
                 }
             }
 
-            int superDT = conj.dt();
-            boolean dternal = !Conj.isSeq(conj) && superDT == DTERNAL;
+            boolean dternal = !seqFactored && superDT == DTERNAL && !Conj.isSeq(conj);
             boolean xternal = superDT == XTERNAL;
 
             if ((xternal || dternal)) {
@@ -118,13 +119,13 @@ public class DynamicConjTruth {
                             conegOrEquiv = true;
                         }
                     }
-                    if (!conegOrEquiv && ss.hasAny(Op.NEG)) {
+                    if (!conegOrEquiv && ss.hasAny(NEG)) {
                         //quick test
                         if (sss ==2) {
                             Term a = ss.sub(0), b = ss.sub(1);
                             conegOrEquiv = a.equalsNeg(b);
                         } else {
-                            conegOrEquiv = conj.dt(DTERNAL).volume() < conj.volume(); //collapses will result in reduced volume
+                            conegOrEquiv = ss.OR(x -> x instanceof Neg && ss.contains(x.unneg())); //conj.dt(DTERNAL).volume() < conj.volume(); //collapses will result in reduced volume
                         }
                     }
                     if (conegOrEquiv) {

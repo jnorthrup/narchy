@@ -1,17 +1,14 @@
 package nars.truth.dynamic;
 
+import jcog.Util;
 import jcog.util.ObjectLongLongPredicate;
-import nars.Task;
-import nars.concept.util.ConceptBuilder;
 import nars.table.BeliefTable;
-import nars.table.BeliefTables;
 import nars.table.dynamic.DynamicTruthTable;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.truth.Truth;
+import org.eclipse.collections.api.block.function.primitive.ObjectBooleanToObjectFunction;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.function.Predicate;
 
 /**
  * Created by me on 12/4/16.
@@ -35,12 +32,11 @@ abstract public class AbstractDynamicTruth {
 //        return true;
 //    }
 
-    public BeliefTable newTable(Term t, boolean beliefOrGoal, ConceptBuilder cb) {
-        return new BeliefTables(
-                new DynamicTruthTable(t, this, beliefOrGoal),
-                cb.newTemporalTable(t, beliefOrGoal),
-                cb.newEternalTable(t)
-        );
+
+    @Nullable
+    public static ObjectBooleanToObjectFunction<Term, BeliefTable[]> table(AbstractDynamicTruth... models) {
+        return (Term t, boolean beliefOrGoal) ->
+                Util.map(m -> new DynamicTruthTable(t, m, beliefOrGoal), new BeliefTable[models.length], models);
     }
 
 

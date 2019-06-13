@@ -60,9 +60,9 @@ public class SeriesBeliefTable<T extends Task> extends DynamicTaskTable {
 
         int seriesTTL = (int) (NAL.belief.signal.SERIES_MATCH_MIN + Math.ceil(NAL.belief.signal.SERIES_MATCH_ADDITIONAL_RATE_PER_DUR / dur * (e-s)));
         if (seriesTTL < t.ttl)
-            each = Util.limit(t::tryAccept, seriesTTL);
+            each = Util.limit(t::test, seriesTTL);
         else
-            each = t::tryAccept;
+            each = t::test;
 
         series.whileEach(s, e, false, each);
     }

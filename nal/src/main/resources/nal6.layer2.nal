@@ -1,5 +1,12 @@
 //this needs some cleanup
 
+
+//conditional abduction by dependent variable
+
+    ((X --> R) ==> Z), ((&&,(#Y --> B),(#Y --> R),A..*) ==> Z)  |- (X --> B), (Belief:AbductionPB)
+        (--(X --> R) ==> Z), ((&&,(#Y --> B),--(#Y --> R),A..*) ==> Z) |- (X --> B), (Belief:AbductionPB)
+
+
 //// second level variable handling rules ////////////////////////////////////////////////////////////////////////////////////
 //second level variable elimination (termlink level2 growth needed in order for these rules to work)
 
@@ -35,11 +42,6 @@
       //(P --> Y), (Z ==> (&&,(P-->X),A..+)),neq(X,Y) |- unisubst((Z ==> (&&,(P-->X),A..+)), X,Y,novel), (Belief:Deduction)
         //(P --> Y), (Z ==> (&&,--(P-->X),A..+)),neq(X,Y) |- unisubst((Z ==> (&&,--(P-->X),A..+)), X,Y,novel), (Belief:DeductionN)
 
-
-//conditional abduction by dependent variable
-
-    ((X --> R) ==> Z), ((&&,(#Y --> B),(#Y --> R),A..*) ==> Z)  |- (X --> B), (Belief:AbductionPB)
-        (--(X --> R) ==> Z), ((&&,(#Y --> B),--(#Y --> R),A..*) ==> Z) |- (X --> B), (Belief:AbductionPB)
 
 
 // conditional deduction "An inverse inference has been implemented as a form of deduction" https://code.google.com/p/open-nars/issues/detail?id=40&can=1

@@ -302,7 +302,7 @@ public class PoleCart extends GameX {
                 new LivePredictor.MLPPredictor(0.01f),
                 what()
         );
-        window(NARui.beliefCharts(predicting, nar)/*x, xVel, angVel, angX, angY)*/, 700, 700);
+//        window(NARui.beliefCharts(predicting, nar)/*x, xVel, angVel, angX, angY)*/, 700, 700);
 
         Exe.invokeLater(()->
             window(NARui.beliefCharts(this.sensors.stream()

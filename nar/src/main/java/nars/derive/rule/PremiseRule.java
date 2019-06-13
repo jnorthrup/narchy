@@ -466,8 +466,7 @@ public class PremiseRule extends ProxyTerm {
 
 
                         case "\"?\"":
-                            BytePredicate QUESTION_QUESTION = t -> t == QUESTION; //TODO toString() all of these
-                            taskPunc = QUESTION_QUESTION;
+                            taskPunc = t -> t == QUESTION;
                             break;
                         case "\"@\"":
                             taskPunc = t -> t == QUEST;
@@ -477,6 +476,11 @@ public class PremiseRule extends ProxyTerm {
                             break;
                         case "\"!\"":
                             taskPunc = t -> t == GOAL;
+                            break;
+
+                        case "\".?\"":
+                            assert (taskPunc == null);
+                            taskPunc = t -> t == BELIEF || t == QUESTION;
                             break;
 
                         case "\"?@\"":

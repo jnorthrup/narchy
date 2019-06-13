@@ -131,7 +131,8 @@ public interface Term extends Termlike, Termed, Comparable<Term> {
     }
 
     static boolean commonStructure(int xStruct, int yStruct) {
-        return (xStruct==yStruct) || ((xStruct & yStruct) != 0);
+        assert(xStruct != 0 && yStruct!= 0);
+        return /*(xStruct==yStruct) || */((xStruct & yStruct) != 0);
     }
 
     default Term term() {

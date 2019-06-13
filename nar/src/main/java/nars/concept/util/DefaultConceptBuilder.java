@@ -47,14 +47,16 @@ public class DefaultConceptBuilder extends ConceptBuilder {
 
 
     @Override
-    public BeliefTable newTable(Term c, boolean beliefOrGoal) {
+    public BeliefTable newTable(Term c, boolean beliefOrGoal, BeliefTable... overlay) {
         if (c.op().beliefable && !c.hasAny(Op.VAR_QUERY) && (beliefOrGoal || !c.hasAny(Op.IMPL))) {
-            return new BeliefTables(
-                //(Supplier)()->
-                        newEternalTable(c),
-                //(Supplier)()->
-                        newTemporalTable(c, beliefOrGoal)
-            );
+            BeliefTables b = new BeliefTables(overlay.length + 2);
+            for (BeliefTable o : overlay) {
+                if (o!=null)
+                    b.add(o);
+            }
+            b.add(newEternalTable(c));
+            b.add(newTemporalTable(c, beliefOrGoal));
+            return b;
         } else {
             return BeliefTable.Empty;
         }

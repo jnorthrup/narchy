@@ -657,9 +657,9 @@ public class NAL7Test extends NALTest {
         test.termVolMax(17);
 
         int t = 0;
-        String component = "(open(John,door) &| hold(John,key))";
-        tester.inputAt(t, component + ". :|:");
-        tester.inputAt(t + dt, "enter(John,room). :|:");
+        String component = "(open(John,door) && hold(John,key))";
+        tester.inputAt(t, component + ". |");
+        tester.inputAt(t + dt, "enter(John,room). |");
 
         tester.mustBelieve((12 * (t + Math.max(3, dt)) + Math.max(3, dt) + 1) /** approx */,
                 '(' + component + " ==>+" + dt + " enter(John,room))",
@@ -740,8 +740,8 @@ public class NAL7Test extends NALTest {
 
         test
                 .termVolMax(11)
-                .inputAt(0, "((y,#1) &| (x,#1)). |")
-                .inputAt(1, "((($1,#2) &| (x,#2)) =|> (x,$1)).")
+                .inputAt(0, "((y,#1) && (x,#1)). |")
+                .inputAt(1, "((($1,#2) && (x,#2)) ==> (x,$1)).")
                 .mustBelieve(cycles, "(x,y)",
                         1.0f, 0.81f, 0);
 
@@ -770,8 +770,8 @@ public class NAL7Test extends NALTest {
 
         test
                 .confTolerance(0.1f)
-                .inputAt(0, "a. :|:")
-                .inputAt(0, "(a ==>+1 b). :|:")
+                .inputAt(0, "a. |")
+                .inputAt(0, "(a ==>+1 b). |")
                 .mustNotOutput(cycles, "b", BELIEF, ETERNAL)
                 .mustBelieve(cycles, "b", 1f, 0.81f, 1 /* occ */);
 
@@ -864,7 +864,7 @@ public class NAL7Test extends NALTest {
                 .input("a:x.")
                 .input("a:y. |")
                 .mustBelieve(cycles, "(a:x ==> a:y)", 1f, 0.45f, 0)
-                .mustNotOutput(cycles, "(a:x =|> a:y)", BELIEF, 0f, 1, 0f, 1, (t) -> true);
+                .mustNotOutput(cycles, "(a:x ==> a:y)", BELIEF, 0f, 1, 0f, 1, (t) -> true);
     }
 
     @Test
@@ -1113,16 +1113,16 @@ public class NAL7Test extends NALTest {
         test
                 .termVolMax(14)
                 .input("hold(key). |")
-                .input("(goto(door) ==> (hold(key) &| open(door))). " + implSuffix)
+                .input("(goto(door) ==> (hold(key) && open(door))). " + implSuffix)
                 //temporal via conditional (double premise)
                 .mustBelieve(cycles, a, 1f, 0.45f, 0)
                 //temporal via conditional (double premise)
                 .mustBelieve(cycles, b, 1f, 0.45f, 0)
 
                 //implication belief's time, via structural decomposition
-                .mustBelieve(cycles, a, 1f, 0.81f, 0 /*implTime*/)
+                .mustBelieve(cycles, a, 1f, 0.81f, implSuffix.isEmpty() ? ETERNAL : 0)
                 //implication belief's time, via structural decomposition
-                .mustBelieve(cycles, b, 1f, 0.81f, 0 /*implTime*/)
+                .mustBelieve(cycles, b, 1f, 0.81f, implSuffix.isEmpty() ? ETERNAL : 0)
                 ;
 
 
@@ -1151,6 +1151,7 @@ public class NAL7Test extends NALTest {
 
 
         test
+                .logDebug()
                 .input("(a ==>+2 x). |")
                 .input("(a ==>+3 y). |")
                 .mustBelieve(cycles, "(a ==>+2 (x &&+1 y))", 1.00f, 0.81f, 0)

@@ -16,6 +16,10 @@ import java.util.stream.Stream;
  */
 public class BeliefTables extends FasterList<BeliefTable> implements BeliefTable {
 
+    public BeliefTables(int capacity) {
+        super(0, new BeliefTable[capacity]);
+    }
+
     public BeliefTables(BeliefTable... b) {
         super(b);
     }

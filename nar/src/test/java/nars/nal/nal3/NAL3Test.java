@@ -16,7 +16,6 @@ import org.junit.jupiter.params.provider.ValueSource;
 import static nars.$.$$;
 import static nars.Op.BELIEF;
 import static nars.time.Tense.ETERNAL;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class NAL3Test extends NALTest {
@@ -425,13 +424,13 @@ public class NAL3Test extends NALTest {
 //        assertEquals(ii, iii.toString());
 
         Term cn = $$("((_2-_1)|(--,_3))");
-        Term cp = $$("((_2-_1)|_3)");
+//        Term cp = $$("((_2-_1)|_3)");
         Term xp = $$("_3");
-        Term xn = $$("(--,_3)");
-        assertFalse(cn.contains(xp));
-        assertFalse(cp.contains(xn));
-        assertTrue(cn.contains(xn));
-        assertTrue(cp.contains(xp));
+//        Term xn = $$("(--,_3)");
+//        assertFalse(cn.contains(xp));
+//        assertFalse(cp.contains(xn));
+//        assertTrue(cn.contains(xn));
+//        assertTrue(cp.contains(xp));
 
         assertTrue(
             new SubOfConstraint($.varDep(1), $.varDep(2), SubtermCondition.Subterm)

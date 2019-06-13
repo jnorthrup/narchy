@@ -3,7 +3,6 @@ package nars.term.util.transform;
 import nars.Op;
 import nars.term.Compound;
 import nars.term.Term;
-import nars.term.Termlike;
 import org.jetbrains.annotations.Nullable;
 
 import static nars.time.Tense.DTERNAL;
@@ -24,7 +23,7 @@ public abstract class Retemporalize extends AbstractTermTransform.NegObliviousTe
     @Nullable
     @Override
     protected final Term applyPosCompound(final Compound x) {
-        return requiresTransform(x) ? transformTemporal(x, dt(x)) : x;
+        return x.hasAny(Op.Temporal) ? transformTemporal(x, dt(x)) : x;
     }
 
 
@@ -41,15 +40,6 @@ public abstract class Retemporalize extends AbstractTermTransform.NegObliviousTe
                 return applyCompound(x, xo, n);
             }
 //        }
-    }
-
-    /**
-     * conditions on which recursive descent is required; this is the most general case.
-     * some implementations will have more specific cases that can elide the
-     * need for descent. ex: isTemporal() is narrower than x.hasAny(Op.Temporal)
-     */
-    private static boolean requiresTransform(Termlike x) {
-        return x.hasAny(Op.Temporal);
     }
 
     public final static class RetemporalizeAll extends Retemporalize {

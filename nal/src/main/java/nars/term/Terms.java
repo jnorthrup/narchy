@@ -450,13 +450,12 @@ public enum Terms {
         }
     }
 
-    private static boolean rCom(Term a, Term b, boolean recurse, boolean excludeVariables) {
-        if ((!excludeVariables || !(b instanceof Variable)) && !(b instanceof Img)) {
-            return recurse ?
-                    a.containsRecursively(b, NotEqualConstraint.NotEqualAndNotRecursiveSubtermOf.root, Op.statementLoopyContainer) :
-                    a.contains(NotEqualConstraint.NotEqualAndNotRecursiveSubtermOf.root ? b.root() : b);
-        } else
-            return false;
+    private static boolean rCom(Term a, Term b, boolean recurse) {
+
+        return recurse ?
+                a.containsRecursively(b, NotEqualConstraint.NotEqualAndNotRecursiveSubtermOf.root, Op.statementLoopyContainer) :
+                a.contains(NotEqualConstraint.NotEqualAndNotRecursiveSubtermOf.root ? b.root() : b);
+
     }
 
     public static boolean eqRCom(Term _x, Term _y) {
@@ -465,14 +464,16 @@ public enum Terms {
         if (x.equals(y))
             return true;
 
-        if (x instanceof Compound || y instanceof Compound) {
+        if (!Term.commonStructure(x, y))
+            return false;
 
-            if (y.op() == CONJ) {
-                return y.subterms().ORwith((Y, X) -> eqRCom(X, Y.unneg()), x); //AND?
-            } else if (x.op() == CONJ) {
-                return x.subterms().ORwith((X, Y) -> eqRCom(X.unneg(), Y), y); //AND?
-            } else {
+        if (y instanceof Compound && y.op() == CONJ) {
+            return y.subterms().ORwith((Y, X) -> eqRCom(X, Y.unneg()), x); //AND?
+        } else if (x instanceof Compound && x.op() == CONJ) {
+            return x.subterms().ORwith((X, Y) -> eqRCom(X.unneg(), Y), y); //AND?
+        } else {
 
+            if (x instanceof Compound || y instanceof Compound) {
                 int av = x.volume(), bv = y.volume();
 
                 //a > b |- a contains b?
@@ -486,11 +487,12 @@ public enum Terms {
                 if (av == bv)
                     return false; //both atomic or same size (cant contain each other)
 
-                return rCom(x, y, true, false);
-            }
+                return rCom(x, y, true);
+            } else
+                return false;
         }
 
-        return false;
+
     }
 }
 

@@ -48,7 +48,7 @@
 
 
     //conj quest to impl question
-    (G && C), B, eqNeg(C,B), task("@") |-  (polarizeBelief(B) ==> G), (Punctuation:Question)
+    (G && C), B, eqNeg(C,B), task("@"), hasBelief() |-  (polarizeBelief(B) ==> G), (Punctuation:Question)
      //(G && B), B, task("@") |-  (G ==> B), (Punctuation:Question)
      //(G && B), B, task("@") |-  (--G ==> B), (Punctuation:Question)
 

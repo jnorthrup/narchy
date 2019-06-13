@@ -282,7 +282,7 @@ public enum Op {
      */
     public static final Subterms FalseSubterm = HeapTermBuilder.the.subterms(Bool.False);
     public static final Compound[] EmptyCompoundArray = new Compound[0];
-    public static final Predicate<Term> statementLoopyContainer = (x) -> x.op() != PROD;
+    public static final Predicate<Term> statementLoopyContainer = (x) -> !x.op().isAny(Op.PROD.bit | Op.INH.bit | Op.SIM.bit | Op.IMPL.bit);
     @Deprecated
     public static final String DIFFe = "~";
     public static final String DIFFi = "-";

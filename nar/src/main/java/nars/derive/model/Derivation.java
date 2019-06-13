@@ -46,7 +46,6 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.function.Function;
@@ -134,8 +133,8 @@ public class Derivation extends PreDerivation {
         @Override
         protected Term apply1(Term arg) {
             Truth b = Derivation.this.beliefTruth_at_Belief;
-//            if (t == null)
-//                return Null;  //TODO WTF
+            if (b == null)
+                throw new NullPointerException();
             return arg.negIf(b.isNegative());
         }
     };

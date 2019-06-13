@@ -56,6 +56,7 @@ class DynamicImplTest extends AbstractDynamicTaskTest {
         n.input("x2.");
         n.input("y.");
         assertEquals($.t(1, 0.42f), n.beliefTruth("((x1&&x2)==>y)", ETERNAL));
+        assertEquals($.t(1, 0.42f), n.beliefTruth("(y==>(x1&&x2))", ETERNAL));
     }
     @Test
     void testEternalPosConjPosNeg() throws Narsese.NarseseException {
@@ -63,6 +64,8 @@ class DynamicImplTest extends AbstractDynamicTaskTest {
         n.input("--x2.");
         n.input("y.");
         assertEquals($.t(1, 0.42f), n.beliefTruth("((x1 && --x2)==>y)", ETERNAL));
+        assertEquals($.t(1, 0.42f), n.beliefTruth("(y==>(x1 && --x2))", ETERNAL));
+        assertEquals($.t(0, 0.42f), n.beliefTruth("(y==>(x1 &&   x2))", ETERNAL));
     }
 
 

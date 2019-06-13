@@ -229,8 +229,8 @@ public enum ConjSeq { ;
             }
         }
 
-        if (!left.equals(right) && (left.op()==CONJ && right.op()==CONJ)) {
-            if (!Conj.isSeq(left) || !Conj.isSeq(right)) {
+        if ((left.op() == CONJ && right.op() == CONJ) && !left.equals(right)) {
+            if (!Conj.isSeq(left) && !Conj.isSeq(right)) {
                 if (Subterms.common(left.subterms(), right.subterms())) {
                     //attempt reconsolidation if possible because factorization can be necessary
                     ConjTree c = new ConjTree();

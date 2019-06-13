@@ -114,7 +114,6 @@ public class Truthify extends AbstractPred<Derivation> {
             case BELIEF:
             case GOAL:
                 single = (punc == BELIEF ? beliefMode : goalMode) == 1;
-                TruthFunc f = punc == BELIEF ? belief : goal;
                 Truth beliefTruth;
                 if (single) {
                     beliefTruth = null;
@@ -123,6 +122,7 @@ public class Truthify extends AbstractPred<Derivation> {
                         return false;
                 }
 
+                TruthFunc f = punc == BELIEF ? belief : goal;
                 if ((t = f.apply(
                         d.taskTruth,
                         beliefTruth,

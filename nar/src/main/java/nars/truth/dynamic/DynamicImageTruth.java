@@ -12,10 +12,6 @@ public class DynamicImageTruth {
 
     public static final AbstractDynamicTruth ImageDynamicTruthModel = new AbstractDynamicTruth() {
 
-        @Override
-        public BeliefTable newTable(Term t, boolean beliefOrGoal, ConceptBuilder cb) {
-            return new ImageBeliefTable(t, beliefOrGoal);
-        }
 
         @Override
         public Truth truth(DynTaskify d) {

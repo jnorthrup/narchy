@@ -29,7 +29,7 @@ public class HyperIterator<X>  {
      */
     private final RankedN plan;
 
-    public static <X> void iterate(ConcurrentRTree<X> tree, Supplier<FloatFunction<X>> rank, Predicate<X> whle) {
+    public static <X> void iterate(ConcurrentRTree<X> tree, FloatFunction<X> rank, Predicate/*<X>*/ whle) {
 
 
         tree.read(t -> {
@@ -43,7 +43,7 @@ public class HyperIterator<X>  {
                 default: {
                     int cursorCapacity = s; //TODO determine if this can safely be smaller like log(s)/branching or something
 
-                    HyperIterator<X> h = new HyperIterator(tree.model(), new Object[cursorCapacity], rank.get());
+                    HyperIterator<X> h = new HyperIterator(tree.model(), new Object[cursorCapacity], rank);
                     h.start(t.root());
                     while (h.hasNext() && whle.test(h.next())) {
                     }

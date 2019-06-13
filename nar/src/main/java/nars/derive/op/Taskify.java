@@ -87,7 +87,8 @@ public class Taskify extends ProxyTerm {
      * use special eternal pattern if non-temporal belief or goal.  but questions always use the default temporal form (allowing, ex: (a ==>+- a)?
      */
     Term pattern(Derivation d) {
-        return (d.temporal || (d.concPunc == QUESTION || d.concPunc == QUEST)) ? termify.pattern : termify.patternEternal;
+        return (d.temporal || (d.concPunc == QUESTION || d.concPunc == QUEST)) ?
+                termify.pattern : termify.patternEternal;
     }
 
     /**

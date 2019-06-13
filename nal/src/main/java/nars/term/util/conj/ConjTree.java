@@ -665,7 +665,7 @@ public class ConjTree implements ConjBuilder {
         } else if (ss > 1) {
 
             //actual sequence
-            ConjList events = new ConjList(ss);
+            ConjList events = null;
 
             for (IntObjectPair<ConjTree> wc : seq.keyValuesView()) {
                 Term w = wc.getTwo().term(B);
@@ -673,13 +673,17 @@ public class ConjTree implements ConjBuilder {
                     terminate(w);
                     break;
                 }
+                if (events == null) events = new ConjList(ss);
+
                 if (!events.add((long) wc.getOne(), w)) {
                     terminate(False);
                     break;
                 }
             }
+            if (terminal!=null)
+                return terminal;
 
-            if (!events.isEmpty()) {
+            if (events!=null && !events.isEmpty()) {
 
                 events.preDistribute(this);
 

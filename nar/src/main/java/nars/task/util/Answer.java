@@ -30,7 +30,7 @@ import static nars.time.Tense.ETERNAL;
  * heuristic task ranking for matching of evidence-aware truth values may be computed in various ways.
  * designed to be reusable
  */
-public final class Answer implements Timed {
+public final class Answer implements Timed, Predicate<Task> {
 
     public final static int BELIEF_MATCH_CAPACITY =
             //Param.STAMP_CAPACITY - 1;
@@ -497,27 +497,19 @@ public final class Answer implements Timed {
      * consume a limited 'tries' iteration. also applies the filter.
      * a false return value should signal a stop to any iteration supplying results
      */
-    public final boolean tryAccept(Task t) {
+    public final boolean test(Task t) {
+        assert (t != null);
         if (time.accept(t)) {
             int remain = --ttl;
             if (remain >= 0) {
                 if (filter == null || filter.test(t)) {
-                    accept(t);
+                    tasks.add(t);
                 }
             }
             return remain > 0;
         } else {
             return true;
         }
-    }
-
-    private void accept(Task task) {
-        assert (task != null);
-
-        //if (tasks.capacity() == 1 || !(((CachedFloatFunction)(tasks.rank)).containsKey(task))) {
-        //if (time == null || time.accept(task.start(), task.end())) {
-        tasks.add(task);
-        //}
     }
 
     public boolean active() {
