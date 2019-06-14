@@ -46,6 +46,7 @@ import java.util.function.BiPredicate;
 import java.util.function.Predicate;
 
 import static nars.Op.CONJ;
+import static nars.Op.NEG;
 import static nars.time.Tense.*;
 
 /**

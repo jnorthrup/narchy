@@ -3,9 +3,7 @@ package nars.perf;
 import nars.NARS;
 import nars.Op;
 import nars.nal.nal1.NAL1Test;
-import nars.nal.nal2.NAL2Test;
 import nars.nal.nal3.NAL3Test;
-import nars.nal.nal6.NAL6Test;
 import nars.nal.nal8.NAL8Test;
 import nars.term.util.builder.HeapTermBuilder;
 import nars.term.util.builder.InterningTermBuilder;
@@ -45,14 +43,14 @@ public class InterningTermBuilderBenchmark {
     )
     @Threads(3)
     @Warmup(iterations = 1)
-    @Measurement(iterations = 4)
+    @Measurement(iterations = 3)
     public void testInterning() {
 
         runTests(true, () -> NARS.tmp(),
                 NAL1Test.class,
-                NAL2Test.class,
+//                NAL2Test.class,
                 NAL3Test.class,
-                NAL6Test.class,
+//                NAL6Test.class,
                 NAL8Test.class
         );
     }

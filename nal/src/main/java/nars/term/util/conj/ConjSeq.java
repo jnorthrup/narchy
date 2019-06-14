@@ -2,7 +2,6 @@ package nars.term.util.conj;
 
 import jcog.WTF;
 import jcog.data.bit.MetalBitSet;
-import jcog.data.set.LongObjectArraySet;
 import nars.Task;
 import nars.subterm.Subterms;
 import nars.term.Compound;
@@ -136,10 +135,9 @@ public enum ConjSeq { ;
      * constructs a correctly merged conjunction from a list of events, in the sublist specified by from..to (inclusive)
      * assumes that all of the event terms have distinct occurrence times
      */
-    static Term conjSeq(TermBuilder B, LongObjectArraySet<Term> events, int start, int end) {
+    static Term conjSeq(TermBuilder B, ConjList events, int start, int end) {
 
         Term first = events.get(start);
-        long firstWhen = events.when(start);
         int ee = end - start;
 
         int dt;
@@ -152,18 +150,33 @@ public enum ConjSeq { ;
             case 2: {
                 left = first;
                 right = events.get(end - 1);
+                long firstWhen = events.when(start);
                 dt = Tense.occToDT(events.when(end - 1) - firstWhen);
                 break;
             }
             default: {
-                int center = start + (end - 1 - start) / 2;
+                //int center = start + (end - 1 - start) / 2;
+                int center = events.centerByVolume(start, end);
                 left = conjSeq(B, events, start, center + 1);
+                if (left == Null) return Null;
                 right = conjSeq(B, events, center + 1, end);
+                long firstWhen = events.when(start);
                 dt = Tense.occToDT((events.when(center + 1) - firstWhen - left.eventRange()));
                 break;
             }
 
         }
+
+
+
+        return conjSeqFinal(dt, left, right, B);
+    }
+
+    private static Term conjSeqFinal(int dt, Term left, Term right, TermBuilder B) {
+        if (dt == 0 || dt == DTERNAL) {
+            return B.conj(DTERNAL, left, right);
+        }
+//        assert (dt != XTERNAL);
 
         if (left == Null) return Null;
         if (left == False) return False;
@@ -177,29 +190,24 @@ public enum ConjSeq { ;
         else if (right == True)
             return left;
 
-        assert(!dtSpecial(dt));
-        return conjSeqFinal(dt, left, right, B);
-    }
-
-    private static Term conjSeqFinal(int dt, Term left, Term right, TermBuilder B) {
-        if (dt == 0 || dt == DTERNAL) {
-            return B.conj(DTERNAL, left, right);
-        }
-//        assert (dt != XTERNAL);
-
-//        if (left == Null) return Null;
-//        if (right == Null) return Null;
-//
-//        if (left == False) return False;
-//        if (right == False) return False;
-//
-//        if (left == True) return right;
-//        if (right == True) return left;
-
         if (!left.op().eventable || !right.op().eventable)
             return Null;
 
-
+        if ((left.op() == CONJ && right.op() == CONJ) && !left.equals(right)) {
+            if (!Conj.isSeq(left) && !Conj.isSeq(right)) {
+                if (eventsCommon(left, right)) {
+                    //attempt reconsolidation if possible because factorization can be necessary
+                    ConjTree c = new ConjTree();
+                    c.addConjEvent(0, left);
+                    c.addConjEvent(dt, right);
+                    try {
+                        return c.term(B);
+                    } catch (StackOverflowError ee) {
+                        throw new TermException("conj seq stack overflow", CONJ, dt, left, right);
+                    }
+                }
+            }
+        }
         int lr = left.compareTo(right);
 
         if (lr!=0) {
@@ -229,23 +237,7 @@ public enum ConjSeq { ;
             }
         }
 
-        if ((left.op() == CONJ && right.op() == CONJ) && !left.equals(right)) {
-            if (eventsCommon(left,right)) {
-//            if (!Conj.isSeq(left) && !Conj.isSeq(right)) {
-//                if (Subterms.common(left.subterms(), right.subterms()))
-                {
-                    //attempt reconsolidation if possible because factorization can be necessary
-                    ConjTree c = new ConjTree();
-                    c.addConjEvent(0, left);
-                    c.addConjEvent(dt, right);
-                    try {
-                        return c.term(B);
-                    } catch (StackOverflowError ee) {
-                        throw new TermException("conj seq stack overflow",CONJ, dt, left, right);
-                    }
-                }
-            }
-        }
+
 
         if (dt == 0)
             dt = DTERNAL; //HACK

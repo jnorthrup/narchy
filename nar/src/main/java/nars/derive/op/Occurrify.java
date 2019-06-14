@@ -717,7 +717,7 @@ public class Occurrify extends TimeGraph {
             if (nonTemporal(x) && nonTemporal(d.taskTerm) && nonTemporal(d.beliefTerm))
                 return pair(x, occurrence(d));
 
-            if (!taskOccurr && beliefOccurr && (d.concSingle || d._belief == null || d.beliefStart == ETERNAL || d.beliefStart == TIMELESS) && d.taskStart != ETERNAL)
+            if (!taskOccurr && beliefOccurr && (d.concSingle || d._belief == null || d.beliefStart == ETERNAL || d.beliefStart == TIMELESS))
                 taskOccurr = true; //allow task occurrence
             if (!beliefOccurr && taskOccurr && (d.taskStart == ETERNAL) && (d.beliefStart != ETERNAL && d.beliefStart != TIMELESS))
                 beliefOccurr = true; //allow belief occurrence

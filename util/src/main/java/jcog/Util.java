@@ -1447,6 +1447,13 @@ public enum Util {
             y += f;
         return y;
     }
+    public static int sum(int[] x, int from, int to) {
+        int y = 0;
+        for (int i = from; i < to; i++) {
+            y += x[i];
+        }
+        return y;
+    }
 
     public static double max(double... x) {
         double y = Double.NEGATIVE_INFINITY;

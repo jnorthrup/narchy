@@ -72,11 +72,14 @@ public interface AbstractTermTransform extends TermTransform, nars.term.util.bui
 
 
         if (yOp.temporal) {
-            if (sameOpAndDT)
+            if (sameOpAndDT) {
                 ydt = xdt;
+            }
 
             if (ydt != XTERNAL)
                 ydt = realign(ydt, xx, yy);
+
+            if (ydt == 0) ydt = DTERNAL; //HACK
 
         } else
             ydt = DTERNAL;
@@ -112,7 +115,6 @@ public interface AbstractTermTransform extends TermTransform, nars.term.util.bui
 
         }
 
-        if (ydt == 0) ydt = DTERNAL; //HACK
         return ydt;
     }
 

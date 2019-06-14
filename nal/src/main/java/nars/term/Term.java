@@ -27,6 +27,7 @@ import nars.NAL;
 import nars.Op;
 import nars.The;
 import nars.subterm.Subterms;
+import nars.subterm.util.TermMetadata;
 import nars.term.anon.Anom;
 import nars.term.anon.Intrin;
 import nars.term.atom.Atomic;
@@ -54,6 +55,7 @@ import java.util.TreeSet;
 import java.util.function.*;
 
 import static nars.Op.CONJ;
+import static nars.Op.NEG;
 import static nars.time.Tense.DTERNAL;
 
 
@@ -176,6 +178,8 @@ public interface Term extends Termlike, Termed, Comparable<Term> {
         else
             return t.apply(this);
     }
+
+
 
 
     enum TermWalk {

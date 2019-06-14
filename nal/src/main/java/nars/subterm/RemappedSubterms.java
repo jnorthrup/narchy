@@ -1,10 +1,10 @@
 package nars.subterm;
 
-import jcog.WTF;
 import jcog.util.ArrayUtil;
 import nars.term.Compound;
 import nars.term.Neg;
 import nars.term.Term;
+import nars.term.util.TermException;
 
 import java.util.Arrays;
 import java.util.function.BiPredicate;
@@ -31,7 +31,7 @@ abstract public class RemappedSubterms<S extends Subterms> extends MappedSubterm
             int mi = base.indexOf(xi)+1;
 
             if (mi <= 0)
-                throw new WTF(xi + "not found in " + base + ", base.class=" + base.getClass() + " target.xi.class=" + xi.getClass());
+                throw new TermException(xi + "not found in " + base + ", base.class=" + base.getClass() + " target.xi.class=" + xi.getClass());
 
 
             m[i] = (byte) (neg ? -mi : mi);

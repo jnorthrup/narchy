@@ -1333,4 +1333,19 @@ public interface Subterms extends Termlike, Iterable<Term> {
         return AND(Term::the);
     }
 
+    default boolean containsPosOrNeg(Term x) {
+        //TODO optimize
+        return contains(x) || containsNeg(x);
+    }
+
+    default boolean containsNeg(Term x) {
+        if (x instanceof Neg)
+            return contains(x.unneg());
+        else {
+            return hasAny(NEG) && !impossibleSubTerm(x)
+                    &&
+                    ORwith((z,xx) -> z instanceof Neg && xx.equals(z.unneg()), x);
+        }
+    }
+
 }

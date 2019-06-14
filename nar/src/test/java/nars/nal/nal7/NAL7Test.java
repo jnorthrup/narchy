@@ -358,7 +358,7 @@ public class NAL7Test extends NALTest {
         test
 
 
-                .termVolMax(7)
+                .termVolMax(11)
                 .inputAt(1, "(X:x &&+1 (Y:y &&+2 Z:z)). :|:")
                 .mustBelieve(cycles, "X:x.", 1.00f, 0.73f, 1)
                 .mustBelieve(cycles, "(Y:y &&+2 Z:z).", 1.00f, 0.81f, 2)

@@ -2,7 +2,6 @@ package nars.term;
 
 import jcog.TODO;
 import nars.Op;
-import nars.subterm.util.TermMetadata;
 import nars.term.atom.Bool;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.eclipse.collections.api.block.function.primitive.IntObjectToIntFunction;
@@ -195,18 +194,9 @@ public interface Termlike {
     }
 
     default boolean containsPosOrNeg(Term x) {
-        return contains(x) || containsNeg(x);
+        return false;
     }
-
-    default boolean containsNeg(Term x) {
-        if (x instanceof Neg)
-            return contains(x.unneg());
-        else {
-            return !(this instanceof TermMetadata && !(hasAny(NEG) && !impossibleSubTerm(x)))
-                    &&
-                    contains(x.neg());
-        }
-    }
+    default boolean containsNeg(Term x) { return false; }
 
     /**
      * if root is true, the root()'s of the terms will be compared

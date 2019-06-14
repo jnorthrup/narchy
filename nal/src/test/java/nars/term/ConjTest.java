@@ -720,7 +720,7 @@ public class ConjTest {
     void testWrappingCommutiveConjunctionX_3() {
 
         Term xAndRedundantParallel = $$("(((x &| y) &| z)&&x)");
-        assertEquals("(&|,x,y,z)",
+        assertEquals("(&&,x,y,z)",
                 xAndRedundantParallel.toString());
 
 

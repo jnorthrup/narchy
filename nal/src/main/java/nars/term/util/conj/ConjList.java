@@ -1,5 +1,6 @@
 package nars.term.util.conj;
 
+import jcog.Util;
 import jcog.data.set.LongObjectArraySet;
 import nars.NAL;
 import nars.subterm.DisposableTermList;
@@ -14,7 +15,6 @@ import org.eclipse.collections.api.iterator.LongIterator;
 import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 import org.eclipse.collections.impl.set.mutable.primitive.LongHashSet;
-import org.jetbrains.annotations.Nullable;
 import org.roaringbitmap.PeekableIntIterator;
 import org.roaringbitmap.RoaringBitmap;
 
@@ -249,7 +249,7 @@ public class ConjList extends LongObjectArraySet<Term> implements ConjBuilder {
     }
 
 
-    void preDistribute(ConjTree T) {
+    void factor(ConjTree T, TermBuilder B) {
 
         int n = size();
         if (n < 2)
@@ -257,6 +257,10 @@ public class ConjList extends LongObjectArraySet<Term> implements ConjBuilder {
 
         sortThis();
         int u = eventOccurrences_if_sorted();
+//        if (u == n) {
+//            condense(B);
+//            return;
+//        }
 
         UnifiedMap<Term, RoaringBitmap> count = new UnifiedMap(n);
         Set<Term> uncount = null;
@@ -270,78 +274,80 @@ public class ConjList extends LongObjectArraySet<Term> implements ConjBuilder {
             count.getIfAbsentPut(xi, RoaringBitmap::new).add(Tense.occToDT(when(i)));
         }
 
+
         if (count.allSatisfy(t->t.getCardinality()==u)) {
             //completely annihilates everything
             //so also remove any occurring in the parallel events
             T.removeParallel(count.keySet());
-            return;
-        }
+        } else {
 
-        if (uncount!=null) {
-            for (Term uc : uncount) {
-                count.removeKey(uc);
-                count.removeKey(uc.neg());
+            if (uncount != null) {
+                for (Term uc : uncount) {
+                    count.removeKey(uc);
+                    count.removeKey(uc.neg());
+                }
+                if (count.isEmpty())
+                    return;
             }
-            if (count.isEmpty())
-                return;
-        }
 
-
-        TermList toDistribute = new TermList(n);
-        if (!count.keyValuesView().toSortedList().allSatisfy((xcc) -> {
-            Term x = xcc.getOne();
-            RoaringBitmap cc = xcc.getTwo();
-            int c = cc.getCardinality();
-            if (c < u) {
-                if (x.op() != NEG) {
-                    if (T.pos != null && T.posRemove(x))
-                        toDistribute.add(x);
+            TermList toDistribute = new TermList(n);
+            if (!count.keyValuesView().toSortedList().allSatisfy((xcc) -> {
+                Term x = xcc.getOne();
+                RoaringBitmap cc = xcc.getTwo();
+                int c = cc.getCardinality();
+                if (c < u) {
+                    if (x.op() != NEG) {
+                        if (T.pos != null && T.posRemove(x))
+                            toDistribute.add(x);
+                    } else {
+                        if (T.neg != null && T.negRemove(x.unneg()))
+                            toDistribute.add(x);
+                    }
                 } else {
-                    if (T.neg != null && T.negRemove(x.unneg()))
-                        toDistribute.add(x);
+                    PeekableIntIterator ei = cc.getIntIterator();
+                    while (ei.hasNext()) {
+                        if (eventCount(ei.next()) == 1)
+                            return true; //factoring would erase this event so ignore it
+                    }
+                    //new factor component
+                    if (!T.addParallel(x))
+                        return false;
+                    removeAll(x);
                 }
-            } else {
-                PeekableIntIterator ei = cc.getIntIterator();
-                while (ei.hasNext()) {
-                    if (eventCount(ei.next()) == 1)
-                        return true; //factoring would erase this event so ignore it
-                }
-                //new factor component
-                if (!T.addParallel(x))
-                    return false;
-                removeAll(x);
+                return true;
+            })) {
+                T.terminate(False);
+                return;
             }
-            return true;
-        })) {
-            T.terminate(False);
-            return;
-        }
 
 
-        int dd = toDistribute.size();
-        if (dd > 0) {
+            int dd = toDistribute.size();
+            if (dd > 0) {
 //            if(dd > 1)
 //                toDistribute.sortAndDedup();
 
-            n = size();
+                n = size();
 
-            //distribute partial factors
-            for (int i = 0; i < n; i++) {
-                Term xf = get(i);
-                if (dd == 1 && toDistribute.sub(0).equals(xf))
-                    continue;
+                //distribute partial factors
+                for (int i = 0; i < n; i++) {
+                    Term xf = get(i);
+                    if (dd == 1 && toDistribute.sub(0).equals(xf))
+                        continue;
 
-                Term[] t = new Term[dd + 1];
-                toDistribute.arrayClone(t);
-                t[t.length - 1] = xf;
-                Term xd = CONJ.the(t);
-                if (xd == False || xd == Null) {
-                    T.terminate(xd);
-                    return;
+                    Term[] t = new Term[dd + 1];
+                    toDistribute.arrayClone(t);
+                    t[t.length - 1] = xf;
+                    Term xd = CONJ.the(t);
+                    if (xd == False || xd == Null) {
+                        T.terminate(xd);
+                        return;
+                    }
+                    set(i, xd);
                 }
-                set(i, xd);
             }
         }
+
+        condense(B);
 
 
     }
@@ -367,7 +373,7 @@ public class ConjList extends LongObjectArraySet<Term> implements ConjBuilder {
         if (s <= 1)
             return;
 
-        sortThis();
+//        sortThis();
 
         int start = 0;
         long last = when[0];
@@ -406,11 +412,31 @@ public class ConjList extends LongObjectArraySet<Term> implements ConjBuilder {
 
     }
 
-    @Nullable
-    public Term seq(TermBuilder B) {
-        int s = size();
-        return s > 0 ? ConjSeq.conjSeq(B, this, 0, s) : null;
+
+    public int centerByVolume(int startIndex, int endIndex) {
+        int n= endIndex - startIndex;
+        int midIndex = centerByIndex(startIndex, endIndex);
+        if (n <= 2)
+            return midIndex;
+        int v[] = new int[n];
+
+        for (int i = 0; i < n; i++) {
+            v[i] = get(startIndex + i).volume();
+        }
+        int bestSplit = 1, bestSplitDiff = Integer.MAX_VALUE;
+        for (int i = 1; i < n-1; i++) {
+            int pd = Math.abs(Util.sum(v, 0, i) - Util.sum(v, i, n));
+            if (pd < bestSplitDiff) {
+                bestSplit = i;
+                bestSplitDiff = pd;
+            }
+        }
+
+        return bestSplit + startIndex;
+
     }
 
-
+    public int centerByIndex(int startIndex, int endIndex) {
+        return startIndex + (endIndex - 1 - startIndex) / 2;
+    }
 }

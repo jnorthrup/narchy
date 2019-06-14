@@ -685,11 +685,18 @@ public class ConjTree implements ConjBuilder {
 
             if (events!=null && !events.isEmpty()) {
 
-                events.preDistribute(this);
+                events.factor(this, B);
+                if (terminal!=null)
+                    return terminal;
 
-                events.condense(B);
 
-                s = events.seq(B);
+                int s1 = events.size();
+                switch (s1) {
+                    case 0: return null;
+                    case 1: return events.get(0);
+                    default: return ConjSeq.conjSeq(B, events, 0, s1);
+                }
+
             }
 
         }
