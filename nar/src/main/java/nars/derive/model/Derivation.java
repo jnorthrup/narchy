@@ -1,6 +1,7 @@
 package nars.derive.model;
 
 import jcog.Util;
+import jcog.WTF;
 import jcog.data.set.MetalLongSet;
 import jcog.math.Longerval;
 import jcog.pri.ScalarValue;
@@ -47,10 +48,10 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-import static nars.Op.BELIEF;
-import static nars.Op.GOAL;
+import static nars.Op.*;
 import static nars.term.buffer.TermBuffer.INITIAL_ANON_SIZE;
-import static nars.time.Tense.*;
+import static nars.time.Tense.ETERNAL;
+import static nars.time.Tense.TIMELESS;
 
 
 /**
@@ -105,6 +106,8 @@ public class Derivation extends PreDerivation {
         }
 
     };
+    
+    /** sort of only works if no conj seq involved */
     final TermBuffer directTermBuilder = new TermBuffer(HeapTermBuilder.the, new ByteAnonMap(INITIAL_ANON_SIZE)) {
         @Override
         protected boolean evalInline() {
@@ -115,16 +118,24 @@ public class Derivation extends PreDerivation {
         protected Term newCompound(Op o, int dt, Term[] subterms) {
             //return super.newCompound(op, dt, subterms);
 
-            if (o.commutative && Tense.dtSpecial(dt)) {
+            if (o.commutative) {
+//                if (!Tense.dtSpecial(dt)) {
+//                    Term y = o.the(HeapTermBuilder.the, dt, subterms); //construct carefully, dt may change
+//                    if (y.op()!=o) {
+//                        //TEMPORARY for debug
+//                        o.the(HeapTermBuilder.the, dt, subterms);
+//                        throw new WTF(); //assert(y.op()==o);
+//                    }
+//                    return y;
+//                }
+
                 subterms = Terms.sort(subterms);
-//                if (dt!=XTERNAL)
-////                    subterms = Terms.commute(subterms);
-////                else
-//                    Terms.commute()
-//                    Arrays.sort(subterms = subterms.clone() /* to be safe */);
             }
 
-            return HeapTermBuilder.the.newCompound(o, dt, subterms);
+            Term y = HeapTermBuilder.the.newCompound(o, dt, subterms);
+            if (y.op()!=o)
+                throw new WTF(); //assert(y.op()==o);
+            return y;
         }
     };
     final Functor polarizeTask = new AbstractInstantFunctor1("polarizeTask") {
@@ -259,7 +270,7 @@ public class Derivation extends PreDerivation {
 
             @Override
             protected final Term putCompound(Compound x) {
-                return x.transform(this, directTermBuilder, NAL.term.COMPOUND_VOLUME_MAX);
+                return x.transform(this, x.hasAny(CONJ) ? termBuilder : directTermBuilder, NAL.term.COMPOUND_VOLUME_MAX);
             }
 
             @Override

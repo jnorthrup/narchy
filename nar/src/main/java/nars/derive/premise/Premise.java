@@ -12,6 +12,7 @@ import nars.derive.Deriver;
 import nars.derive.model.Derivation;
 import nars.op.mental.AliasConcept;
 import nars.table.BeliefTable;
+import nars.task.DynamicTruthTask;
 import nars.task.proxy.ImageTask;
 import nars.term.Compound;
 import nars.term.Term;
@@ -244,8 +245,11 @@ public class Premise implements Comparable<Premise> {
                 Task answered = tryAnswer(beliefTerm, answerTable, d);
                 if (answered != null) {
                     if (answered.evi() >= d.eviMin) {
-                        n.input(answered);
-                        //n.eventTask.emit(answered);
+
+                        if (answered instanceof DynamicTruthTask)
+                            d.what.accept(answered);
+                        else
+                            n.eventTask.emit(answered);
                     }
 
                 }

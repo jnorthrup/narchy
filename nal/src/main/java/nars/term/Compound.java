@@ -46,7 +46,6 @@ import java.util.function.BiPredicate;
 import java.util.function.Predicate;
 
 import static nars.Op.CONJ;
-import static nars.Op.NEG;
 import static nars.time.Tense.*;
 
 /**
@@ -365,7 +364,7 @@ public interface Compound extends Term, IPair, Subterms {
     @Override
     boolean isNormalized();
 
-    default int structureSub() {
+    default int subStructure() {
         return Subterms.super.structure();
     }
 
@@ -657,7 +656,7 @@ public interface Compound extends Term, IPair, Subterms {
 
     @Override
     default int structure() {
-        return structureSub() | opBit();
+        return subStructure() | opBit();
     }
 
     default Term dt(int dt) {
@@ -724,6 +723,8 @@ public interface Compound extends Term, IPair, Subterms {
         }
         return this;
     }
+
+
 
 }
 

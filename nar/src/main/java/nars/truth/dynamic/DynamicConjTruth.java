@@ -12,8 +12,8 @@ import nars.term.Term;
 import nars.term.Termed;
 import nars.term.util.conj.Conj;
 import nars.term.util.conj.ConjBuilder;
-import nars.term.util.conj.ConjList;
 import nars.term.util.conj.ConjSeq;
+import nars.term.util.conj.ConjTree;
 import nars.time.Tense;
 
 import java.util.concurrent.ThreadLocalRandom;
@@ -58,7 +58,7 @@ public class DynamicConjTruth {
             }
 
             ConjBuilder l =
-                    new ConjList(n);
+                    new ConjTree();
 
             for (int i = 0; i < n; i++) {
                 Task t = d.get(i);

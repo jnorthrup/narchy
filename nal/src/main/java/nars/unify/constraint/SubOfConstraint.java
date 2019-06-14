@@ -59,8 +59,6 @@ public class SubOfConstraint extends RelationConstraint<Unify> {
         SubtermCondition c = this.containment;
 
         Term container = forward ? xx : yy;
-        if (!c.testContainer(container))
-            return true;
 
         Term content = forward ? yy : xx;
         switch (polarityCompare) {

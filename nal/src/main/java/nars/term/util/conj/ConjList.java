@@ -61,7 +61,10 @@ public class ConjList extends LongObjectArraySet<Term> implements ConjBuilder {
 
     public static ConjList subtract(ConjList from, Term conj, long occOffset) {
         conj.eventsAND((when, what) -> {
-            from.remove(when, what);
+            if (when == ETERNAL)
+                from.removeAll(what);
+            else
+                from.remove(when, what);
             return true;
         }, occOffset, true, false);
         return from;
@@ -111,27 +114,35 @@ public class ConjList extends LongObjectArraySet<Term> implements ConjBuilder {
     @Override
     public int eventOccurrences() {
         int s = size();
-        if (s == 0) return 0;
-        else if (s == 1) return 1;
-        else if (s == 2) {
-            //quick tests
-            if (when[0] == when[1]) return 1;
-            else return 2;
-        } else if (s == 3) {
-            //quick tests
-            boolean a01 = when[0] == when[1];
-            if (a01) {
-                if (when[1] == when[2]) return 1;
-                else return 2;
+        switch (s) {
+            case 0:
+                return 0;
+            case 1:
+                return 1;
+            case 2:
+                //quick tests
+                return when[0] == when[1] ? 1 : 2;
+            case 3:
+                //quick tests
+                if (when[0] == when[1])
+                    return when[1] == when[2] ? 1 : 2;
+                return when[1] == when[2] ? 2 : 3;
+            default: {
+                LongHashSet h = null;
+                long first = when[0];
+                for (int i = 1; i < s; i++) {
+                    if (h == null) {
+                        if (when[i] != first) {
+                            h = new LongHashSet(s - i + 1);
+                            h.add(first);
+                        }
+                    }
+                    if (h!=null)
+                        h.add(when[i]);
+                }
+                return h!=null ? h.size() : 1;
             }
-            return when[1] == when[2] ? 2 : 3;
         }
-
-        LongHashSet h = new LongHashSet(s);
-        for (int i = 0; i < s; i++) {
-            h.add(when[i]);
-        }
-        return h.size();
     }
 
     @Override
@@ -426,7 +437,7 @@ public class ConjList extends LongObjectArraySet<Term> implements ConjBuilder {
         int bestSplit = 1, bestSplitDiff = Integer.MAX_VALUE;
         for (int i = 1; i < n-1; i++) {
             int pd = Math.abs(Util.sum(v, 0, i) - Util.sum(v, i, n));
-            if (pd < bestSplitDiff) {
+            if (pd <= bestSplitDiff) {
                 bestSplit = i;
                 bestSplitDiff = pd;
             }

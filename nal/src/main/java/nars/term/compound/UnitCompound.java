@@ -26,6 +26,7 @@ public abstract class UnitCompound implements SameSubtermsCompound {
     }
 
 
+
     @Override
     public final Term sub(int i) {
         if (i!=0)
@@ -152,7 +153,7 @@ public abstract class UnitCompound implements SameSubtermsCompound {
     }
 
     @Override
-    public int structureSub() {
+    public final int subStructure() {
         return sub().structure();
     }
 

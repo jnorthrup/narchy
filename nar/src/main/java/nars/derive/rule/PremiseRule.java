@@ -247,34 +247,31 @@ public class PremiseRule extends ProxyTerm {
                     constraints.add(new NotEqualConstraint.NotSetsOrDifferentSets(XX, YY));
                     break;
 
-                case "subOf": case "subOfPN":
-                case "sectOf":  case "sectOfPN":
-                        {
-
+                case "subOf": case "subOfPN": {
 
                     SubtermCondition mode = null;
 
-                    if (pred.startsWith("sub"))
+//                    if (pred.startsWith("sub"))
 
                         if (Y instanceof Neg) {
                             YY = (Variable) (Y = Y.unneg());
                             mode = SubtermNeg;
                         } else
                             mode = Subterm;
-                    else {
-
-                        if (Y instanceof Neg) {
-                            YY = (Variable) (Y = Y.unneg());
-                            mode = SubsectNeg;
-                        } else
-                            mode = Subsect;
-
-                        if (!negated)
-                            is(XX, Op.CONJ);
-                        else
-                            throw new TODO();
-
-                    }
+//                    else {
+//
+//                        if (Y instanceof Neg) {
+//                            YY = (Variable) (Y = Y.unneg());
+//                            mode = SubsectNeg;
+//                        } else
+//                            mode = Subsect;
+//
+//                        if (!negated)
+//                            is(XX, Op.CONJ);
+//                        else
+//                            throw new TODO();
+//
+//                    }
 
                     if (!negated) {
 

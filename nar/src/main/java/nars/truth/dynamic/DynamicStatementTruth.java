@@ -10,7 +10,7 @@ import nars.term.Neg;
 import nars.term.Term;
 import nars.term.util.TermException;
 import nars.term.util.conj.ConjBuilder;
-import nars.term.util.conj.ConjList;
+import nars.term.util.conj.ConjTree;
 import nars.time.Tense;
 
 import static nars.Op.*;
@@ -84,8 +84,7 @@ public class DynamicStatementTruth {
 
                 //IMPL: compute innerDT for the conjunction
                 ConjBuilder c =
-                        //new Conj(d.size());
-                        new ConjList(d.size());
+                        new ConjTree();
 
                 Term constantCondition = null;
                 for (int i = 0, componentsSize = d.size(); i < componentsSize; i++) {

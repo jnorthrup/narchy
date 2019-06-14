@@ -155,8 +155,8 @@ public enum ConjSeq { ;
                 break;
             }
             default: {
-                //int center = start + (end - 1 - start) / 2;
-                int center = events.centerByVolume(start, end);
+                int center = events.centerByIndex(start, end);
+                //int center = events.centerByVolume(start, end);
                 left = conjSeq(B, events, start, center + 1);
                 if (left == Null) return Null;
                 right = conjSeq(B, events, center + 1, end);

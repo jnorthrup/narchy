@@ -5,8 +5,6 @@ import nars.term.util.conj.Conj;
 
 import java.util.function.BiPredicate;
 
-import static nars.Op.CONJ;
-
 /**
  * tests various potential relations between a containing target and a subterm
  */
@@ -34,33 +32,33 @@ public enum SubtermCondition implements BiPredicate<Term, Term> {
             return 0.41f;
         }
     },
-
-    /** intersect contents */
-    Subsect() {
-
-        @Override
-        public boolean test(Term container, Term x) {
-            //return x.op()==CONJ ? x.AND(container::contains) : container.contains(x);
-            return Conj.eventOf(container, x);
-        }
-
-        public float cost() {
-            return 0.7f;
-        }
-    },
-    /** intersect contents */
-    SubsectNeg() {
-
-        @Override
-        public boolean test(Term container, Term x) {
-            //return x.op()==CONJ ? x.AND(container::containsNeg) : container.containsNeg(x);
-            return Conj.eventOf(container, x.neg());
-        }
-
-        public float cost() {
-            return 0.71f;
-        }
-    },
+//
+//    /** intersect contents */
+//    Subsect() {
+//
+//        @Override
+//        public boolean test(Term container, Term x) {
+//            //return x.op()==CONJ ? x.AND(container::contains) : container.contains(x);
+//            return Conj.eventOf(container, x);
+//        }
+//
+//        public float cost() {
+//            return 0.7f;
+//        }
+//    },
+//    /** intersect contents */
+//    SubsectNeg() {
+//
+//        @Override
+//        public boolean test(Term container, Term x) {
+//            //return x.op()==CONJ ? x.AND(container::containsNeg) : container.containsNeg(x);
+//            return Conj.eventOf(container, x.neg());
+//        }
+//
+//        public float cost() {
+//            return 0.71f;
+//        }
+//    },
 
     Recursive() {
         @Override
@@ -77,11 +75,6 @@ public enum SubtermCondition implements BiPredicate<Term, Term> {
         @Override
         public final boolean test(Term container, Term x) {
             return Conj.eventOf(container, x);
-        }
-
-        @Override
-        public boolean testContainer(Term container) {
-            return container.op()==CONJ;
         }
 
         public float cost() {
@@ -170,8 +163,5 @@ public enum SubtermCondition implements BiPredicate<Term, Term> {
 
     abstract public float cost();
 
-    public boolean testContainer(Term container) {
-        //default impl
-        return true;
-    }
+
 }

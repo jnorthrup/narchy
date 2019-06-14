@@ -138,14 +138,10 @@ abstract public class CachedCompound extends SeparateSubtermsCompound implements
 
             //HACK TEMPORARY for debug
 
-//            if (op==CONJ && dt == XTERNAL && subterms.subs()==2) {
-//                if (subterms.sub(0).compareTo(subterms.sub(1))>0)
-//                    throw new WTF();
-//            }
 
 //            {
 //                if (volume() != anon().volume())
-//                    throw new WTF();
+//                    throw new WTF("anon differ: "+toString()+'\n'+anon());
 //                try {
 //                    eventsAND((when, whta) -> {
 //                        return true;

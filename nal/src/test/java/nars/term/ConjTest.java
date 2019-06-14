@@ -730,7 +730,7 @@ public class ConjTest {
 
 
         Term xAndContradictParallelMultiple = $$("(&&,x,y,((x &| y) &| z))");
-        assertEquals("(&|,x,y,z)",
+        assertEquals("(&&,x,y,z)",
                 xAndContradictParallelMultiple.toString());
 
 
@@ -1098,7 +1098,12 @@ public class ConjTest {
     void testRetemporalization1a() throws Narsese.NarseseException {
 
         assertEq("((--,y)&&x)", $$("((--,(x&&y))&&x)"));
-        assertEq("x", $$("((--,(x &&+1 x))&&x)"));
+        assertEq("((--,y)&&x)", $$("((--,(x &&+1 y))&&x)"));
+    }
+    @Test
+    void testRetemporalization1c() throws Narsese.NarseseException {
+
+        assertEq(False, $$("((--,(x &&+1 x))&&x)"));
         assertEq(False, $$("((--,x)&&x)"));
     }
     @Test
@@ -1857,7 +1862,8 @@ public class ConjTest {
     void disjunctifySeq2() {
         ConjBuilder c = new ConjTree();
         c.add(ETERNAL, $$("(--,(((--,(g-->input)) &&+40 (g-->forget))&&((g-->happy) &&+40 (g-->happy))))"));
-        c.add(1, $$("happy:g")); //shouldnt cancel since it's temporal, only at 1
+        boolean addTemporal = c.add(1, $$("happy:g")); //shouldnt cancel since it's temporal, only at 1
+        assertTrue(addTemporal);
         assertEq("((--,((--,(g-->input)) &&+40 (g-->forget)))&&(g-->happy))", c.term());
         assertEq("((--,((--,(_1-->_2)) &&+40 (_1-->_3)))&&(_1-->_4))", c.term().anon());
     }

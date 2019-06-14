@@ -45,7 +45,7 @@ public final class Fragment extends LightCompound {
 
     /** the ellipsis itself contributes no op */
     @Override public final int structure() {
-        return subterms().structure();
+        return subStructure();
     }
 
     public static Term fragment(Term... x) {

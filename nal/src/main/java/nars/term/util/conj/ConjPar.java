@@ -54,9 +54,10 @@ public enum ConjPar {
         if (remain > 0 && ct.terminal==null) {
             for (int i = xx.length - 1; i >= 0; i--) {
                 Term x = xx[i];
-                if (x.unneg().op() == CONJ)
+                if (x.unneg().op() == CONJ) {
                     if (!ct.add(sdt, x))
                         break;
+                }
             }
         }
 

@@ -811,17 +811,18 @@ public class UnifyTest {
                 "(_1 &&+5 ((--,_1)&|_2))",
                 false);
     }
-    @Test void testConjInConjConstantFail2() {
-        for (int a : new int[] { 5 }) {
-            for (int b : new int[]{0, 5}) {
-                Term x = $$("((_1 &&+5 ((--,_1)&|_2)) &&+5 (((--,_2)&|_3) &&+" + a + " (--,_3)))");
-                Term y = $$("(_1 &&+" + b + " ((--,_1)&|_2))");
-                UnifyAny u = new UnifyAny();
-                boolean r = x.unify(y, u);
-                assertFalse(r, ()->x + " " + y);
-            }
-        }
-    }
+//    @Disabled
+//    @Test void testConjInConjConstantFail2() {
+//        for (int a : new int[] { 5 }) {
+//            for (int b : new int[]{1, 5}) {
+//                Term x = $$("((_1 &&+5 ((--,_1)&&_2)) &&+5 (((--,_2)&&_3) &&+" + a + " (--,_3)))");
+//                Term y = $$("(_1 &&+" + b + " ((--,_1)&&_2))");
+//                UnifyAny u = new UnifyAny();
+//                boolean r = x.unify(y, u);
+//                assertTrue(r==(b==5), ()->x + " " + y);
+//            }
+//        }
+//    }
 
     @Test
     void testConjInConj() {

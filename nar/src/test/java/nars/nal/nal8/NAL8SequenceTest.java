@@ -154,7 +154,7 @@ public class NAL8SequenceTest extends NALTest {
     }
 
     @Test
-    void testGoalDeduction_MidSequence() {
+    void testGoalDeduction_MidSequence_Conj() {
 
         test
                 .input( "(a &&+1 ((b(x)&&c) &&+1 ((c(#1) && d(x,#1)) &&+1 (d &&+1 e(#1)))))!")
@@ -163,7 +163,15 @@ public class NAL8SequenceTest extends NALTest {
                 .mustGoal(cycles, "(((d(x,#1)&&c(#1)) &&+1 d) &&+1 e(#1))", 1, 0.81f) //81% for one step
         ;
     }
+    @Test
+    void testGoalDeduction_MidSequence_Disj() {
 
+        test
+                .input( "(a &&+1 ((b(x)||c) &&+1 ((c(#1) && d(x,#1)) &&+1 (d &&+1 e(#1)))))!")
+                .input( "c.")
+                .mustGoal(cycles, "(((d(x,#1)&&c(#1)) &&+1 d) &&+1 e(#1))", 1, 0.81f) //81% for one step
+        ;
+    }
     @Test
     void testGoalDeduction_MidSequenceDTernalComponentWithUnification() {
 

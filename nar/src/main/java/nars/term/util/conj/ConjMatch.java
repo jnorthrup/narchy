@@ -7,6 +7,7 @@ import jcog.util.ArrayUtil;
 import nars.NAL;
 import nars.derive.model.Derivation;
 import nars.op.UniSubst;
+import nars.term.Compound;
 import nars.term.Term;
 import nars.term.atom.Bool;
 import nars.term.util.Image;
@@ -30,13 +31,14 @@ public enum ConjMatch { ;
     /**
      * returns the prefix or suffix sequence of a specific matched subevent
      */
-    public static Term beforeOrAfter(Term conj, Term x, boolean beforeOrAfter, Derivation d, int ttl /*, unifyOrEquals, includeMatchedEvent */) {
+    public static Term beforeOrAfter(Compound conj, Term x, boolean beforeOrAfter, Derivation d, int ttl /*, unifyOrEquals, includeMatchedEvent */) {
         if (conj.op() != CONJ || conj.dt()==XTERNAL)
             return Null;
 
-        x = Image.imageNormalize(x);
         if (!x.op().eventable)
             return Null;
+
+        x = Image.imageNormalize(x);
 
         int varBits =
                 VAR_DEP.bit | VAR_INDEP.bit;
@@ -44,7 +46,7 @@ public enum ConjMatch { ;
 
         if (x.volume() >= conj.volume()-1)
             return Null;
-        if (!Term.commonStructure( (x.structure()&(~varBits)),(conj.subterms().structure()&(~varBits))))
+        if (!Term.commonStructure( (x.structure()&(~varBits)),(conj.subStructure()&(~varBits))))
             return Null;
 
         return beforeOrAfterSeq(conj, x, beforeOrAfter, varBits, d, ttl);

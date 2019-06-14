@@ -74,8 +74,11 @@ public class ConjTree implements ConjBuilder {
             if (p.dt() != XTERNAL && !Conj.isSeq(p)) {
                 return p.AND(this::addParallel); //decompose parallel conj
             } else {
-                if ((neg != null) &&
-                        !p.eventsAND((when, what) -> !neg.contains(what), 0, true, true)) {
+                if ((neg != null || (p.hasAny(NEG) && pos!=null)) &&
+                        !p.eventsAND((when, what) ->
+                                !(((!(what instanceof Neg) && neg!=null && neg.contains(what))) &&
+                                ((what instanceof Neg && pos!=null && pos.contains(what.unneg())))),
+                            0, true, true)) {
                     terminate(False);
                     return false;
                 }
@@ -121,11 +124,6 @@ public class ConjTree implements ConjBuilder {
     private boolean addParallelN(Term n) {
         assert (n instanceof Neg);
         Term nu = n.unneg();
-
-        if (pos != null && pos.contains(nu)) {
-            terminate(False);
-            return false;
-        }
 
         if (neg != null && neg.contains(nu))
             return true;
@@ -301,7 +299,7 @@ public class ConjTree implements ConjBuilder {
                     Term z = Conj.diffAll(x, yy);
                     if (!z.equals(x)) {
                         if (z instanceof Bool)
-                            return z;
+                            return z.negIf(nP_or_pN);
                         x = z;
                     }
                 }
@@ -625,6 +623,7 @@ public class ConjTree implements ConjBuilder {
             return True;
 
         Term[] q = PN instanceof DisposableTermList ? ((DisposableTermList) PN).sortAndDedup() : Terms.commute(PN);
+        Term pn;
         switch (q.length) {
             case 0:
                 return True;

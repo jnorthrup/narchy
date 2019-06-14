@@ -24,7 +24,7 @@ abstract public class TermMatcher {
         Op o = x.op();
         assert (o != VAR_PATTERN);
 
-        int xs = x.subterms().structure() & (~VAR_PATTERN.bit);
+        int xs = x.subStructure() & (~VAR_PATTERN.bit);
 
         int v = x.volume();
         return (xs != 0 || v > 1) ? new IsHas(o, xs, v, depth) : new Is(o);

@@ -536,10 +536,10 @@ public interface Subterms extends Termlike, Iterable<Term> {
 
     default /* final */ boolean impossibleSubStructure(int structure) {
         //return !hasAll(structure);
-        return !Op.has(structureSub(), structure, true);
+        return !Op.has(subStructure(), structure, true);
     }
 
-    default int structureSub() {
+    default int subStructure() {
         assert(!(this instanceof Compound));
         return structure();
     }

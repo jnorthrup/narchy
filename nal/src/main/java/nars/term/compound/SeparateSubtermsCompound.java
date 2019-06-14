@@ -38,7 +38,7 @@ public abstract class SeparateSubtermsCompound implements Compound {
         return subterms().isNormalized();
     }
 
-    public final int structureSub() {
+    public final int subStructure() {
         return subterms().structure();
     }
 
@@ -208,7 +208,7 @@ public abstract class SeparateSubtermsCompound implements Compound {
 
     @Override
     public int structure() {
-        return subterms().structure() | opBit();
+        return subStructure() | opBit();
     }
 
     @Override

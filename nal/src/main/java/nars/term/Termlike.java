@@ -366,5 +366,8 @@ public interface Termlike {
         return s;
     }
 
+    default int subStructure() {
+        return 0;
+    }
 }
 

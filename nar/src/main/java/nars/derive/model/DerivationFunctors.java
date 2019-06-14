@@ -68,13 +68,17 @@ public enum DerivationFunctors {
 
                 new AbstractInlineFunctor2("conjBefore") {
                     @Override protected Term apply(Term conj, Term event) {
-                        Term x = ConjMatch.beforeOrAfter(conj, event, true, d, NAL.derive.TTL_CONJ_BEFORE_AFTER);
+                        if (!(conj instanceof Compound))
+                            return Null;
+                        Term x = ConjMatch.beforeOrAfter((Compound)conj, event, true, d, NAL.derive.TTL_CONJ_BEFORE_AFTER);
                         return x == null ? Null : x;
                     }
                 },
                 new AbstractInlineFunctor2("conjAfter") {
                     @Override protected Term apply(Term conj, Term event) {
-                        Term x = ConjMatch.beforeOrAfter(conj, event, false, d, NAL.derive.TTL_CONJ_BEFORE_AFTER);
+                        if (!(conj instanceof Compound))
+                            return Null;
+                        Term x = ConjMatch.beforeOrAfter((Compound)conj, event, false, d, NAL.derive.TTL_CONJ_BEFORE_AFTER);
                         return x == null ? Null : x;
                     }
                 },

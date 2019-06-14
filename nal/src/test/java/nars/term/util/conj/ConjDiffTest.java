@@ -6,10 +6,10 @@ import org.junit.jupiter.api.Test;
 import java.util.Set;
 import java.util.TreeSet;
 
-import static jcog.math.LongInterval.ETERNAL;
 import static nars.$.$$;
 import static nars.term.atom.Bool.False;
 import static nars.term.util.TermTest.assertEq;
+import static nars.time.Tense.ETERNAL;
 import static org.junit.jupiter.api.Assertions.*;
 
 class ConjDiffTest {
@@ -48,7 +48,7 @@ class ConjDiffTest {
                 $$("(x&&z)"), 0, $$("(x&&y)"), 0).term());
 
         assertEq("z", Conj.diff(
-                $$("(x&&z)"), ETERNAL, $$("(x&&y)"), 0).term());
+                $$("(x&&z)"), 0, $$("(x&&y)"), ETERNAL).term());
 //        assertEq("z", ConjDiff.the(
 //                $$("(x&&z)"), 0, $$("(x&&y)"), ETERNAL).target());
 
