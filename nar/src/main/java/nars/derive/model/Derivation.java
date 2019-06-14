@@ -21,6 +21,7 @@ import nars.op.Replace;
 import nars.op.UniSubst;
 import nars.subterm.Subterms;
 import nars.task.proxy.SpecialTruthAndOccurrenceTask;
+import nars.term.Variable;
 import nars.term.*;
 import nars.term.anon.AnonWithVarShift;
 import nars.term.atom.Atom;
@@ -30,6 +31,7 @@ import nars.term.buffer.TermBuffer;
 import nars.term.functor.AbstractInlineFunctor1;
 import nars.term.util.TermTransformException;
 import nars.term.util.builder.HeapTermBuilder;
+import nars.term.util.conj.Conj;
 import nars.term.util.map.ByteAnonMap;
 import nars.term.util.transform.InstantFunctor;
 import nars.term.util.transform.TermTransform;
@@ -270,7 +272,7 @@ public class Derivation extends PreDerivation {
 
             @Override
             protected final Term putCompound(Compound x) {
-                return x.transform(this, x.hasAny(CONJ) ? termBuilder : directTermBuilder, NAL.term.COMPOUND_VOLUME_MAX);
+                return x.transform(this, Conj.isSeq(x) ? termBuilder : directTermBuilder, NAL.term.COMPOUND_VOLUME_MAX);
             }
 
             @Override

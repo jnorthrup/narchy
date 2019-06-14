@@ -24,13 +24,13 @@
     //G, B, task("!"), hasBelief() |-        ((polarizeRandom(G) && B) ==> ?1), (Punctuation:Question)
 
     //should what with goal/non-goal
-    G, B, task("!"), neq(G,B), --is(B,"?"), hasBelief() |-    (&&,polarizeTask(G),polarizeBelief(B)), (Punctuation:Quest)
+    G, B, task("!"), neq(G,B), --is(B,"?"), hasBelief() |-    (&&,polarizeTask(G),polarizeBelief(B)), (Punctuation:Quest, Time:Task)
 
     //bifurcate plan
-    G, B, task("@"), neq(G,B), --is(B,"?"), hasBelief()   |-  (&&,polarizeRandom(G),polarizeBelief(B)), (Punctuation:Quest)
+    G, B, task("@"), neq(G,B), --is(B,"?"), hasBelief()   |-  (&&,polarizeRandom(G),polarizeBelief(B)), (Punctuation:Quest, Time:Task)
 
     //implication look-ahead
-    (X==>Y), Y, task("."), --isVar(Y) |- ((X && polarizeTask(Y)) ==> ?1), (Punctuation:Question)
+    (X==>Y), Y, task("."), --isVar(Y) |- ((X && polarizeTask(Y)) ==> ?1), (Punctuation:Question, Time:BeliefEvent)
 
     //implication look-behind
     (  X==>Y), X, task("."), --isVar(Y) |- (?1 ==> (  X && polarizeTask(Y))), (Punctuation:Question)
@@ -48,12 +48,12 @@
 
 
     //conj quest to impl question
-    (G && C), B, eqNeg(C,B), task("@"), hasBelief() |-  (polarizeBelief(B) ==> G), (Punctuation:Question)
+    (G && C), B, eqNeg(C,B), task("@"), hasBelief() |-  (polarizeBelief(B) ==> G), (Punctuation:Question, Time:Task)
      //(G && B), B, task("@") |-  (G ==> B), (Punctuation:Question)
      //(G && B), B, task("@") |-  (--G ==> B), (Punctuation:Question)
 
 //quest to 'how' impl question
-   B, X, task("@"), --is(B,"==>"), neq(X,B), hasBelief() |- (polarizeBelief(X) ==> B), (Punctuation:Question)
+   B, X, task("@"), --is(B,"==>"), neq(X,B), hasBelief() |- (polarizeBelief(X) ==> B), (Punctuation:Question, Time:Task)
      //B, X, task("@"), --is(B,"==>"), hasBelief() |- (polarizeRandom(B) ==> X), (Punctuation:Question)
 
 //contrasting conjunction to implication
@@ -65,10 +65,10 @@
 //    (&&,G,X,A..*), (&&,H,Y,B..*), eqNeg(G,H), neq(X,Y), hasBelief()  |- ((polarizeRandom(X) && polarizeRandom(Y)) --> ?1), (Punctuation:Ask)
 
 //anti-specific deduction: "conjunction contraposition" (weak)
-//    C, X, eventOf(C,X), --isVar(X)       |-   negateEvents(conjWithout(C,  X)), (Belief:DeductionWeakPN)
-//    X, C, eventOf(C,X), --isVar(X)       |-   negateEvents(conjWithout(C,  X)), (Goal:DesireWeakNP)
-//    C, X, eventOfNeg(C,X), --isVar(X)    |-   negateEvents(conjWithout(C,--X)), (Belief:DeductionWeakPP)
-//    X, C, eventOfNeg(C,X), --isVar(X)    |-   negateEvents(conjWithout(C,--X)), (Goal:DesireWeakPP)
+    X, C, eventOf(C,X), --isVar(X)       |-   negateEvents(conjWithout(C,  X)), (Goal:DesireWeakNP, Time:TaskEvent)
+    X, C, eventOfNeg(C,X), --isVar(X)    |-   negateEvents(conjWithout(C,--X)), (Goal:DesireWeakPP, Time:TaskEvent)
+    //C, X, eventOf(C,X), --isVar(X)       |-   negateEvents(conjWithout(C,  X)), (Belief:DeductionWeakPN)
+    //C, X, eventOfNeg(C,X), --isVar(X)    |-   negateEvents(conjWithout(C,--X)), (Belief:DeductionWeakPP)
 
 
 //inverted condition question/quest TODO: invertAll(C,X)..

@@ -167,9 +167,9 @@ public class NAL8SequenceTest extends NALTest {
     void testGoalDeduction_MidSequence_Disj() {
 
         test
-                .input( "(a &&+1 ((b(x)||c) &&+1 ((c(#1) && d(x,#1)) &&+1 (d &&+1 e(#1)))))!")
+                .input( "(a &&+1 ((b(x)||c) &&+1 (c(#1) &&+1 (d &&+1 e))))!")
                 .input( "c.")
-                .mustGoal(cycles, "(((d(x,#1)&&c(#1)) &&+1 d) &&+1 e(#1))", 1, 0.81f) //81% for one step
+                .mustGoal(cycles, "((c(#1) &&+1 d) &&+1 e)", 1, 0.81f) //81% for one step
         ;
     }
     @Test

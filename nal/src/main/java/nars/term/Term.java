@@ -134,7 +134,11 @@ public interface Term extends Termlike, Termed, Comparable<Term> {
 
     static boolean commonStructure(int xStruct, int yStruct) {
         assert(xStruct != 0 && yStruct!= 0);
-        return /*(xStruct==yStruct) || */((xStruct & yStruct) != 0);
+        return ((xStruct & yStruct) != 0);
+    }
+
+    static boolean coRecursiveStructure(int xStructure, int yStructure) {
+        return Op.hasAll(xStructure, yStructure) || Op.hasAll(yStructure, xStructure);
     }
 
     default Term term() {

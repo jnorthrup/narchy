@@ -268,7 +268,7 @@ public class Statement {
         }
 
 
-        if (op == INH && !NAL.term.INH_IMAGE_RECURSION) {
+        if (op == INH && (subject.hasAny(Op.IMG) || predicate.hasAny(Op.IMG)) && !NAL.term.INH_IMAGE_RECURSION) {
             Term inhCollapsed = Image.recursionFilter(subject, predicate, B);
             if (inhCollapsed instanceof Bool)
                 return inhCollapsed;

@@ -18,7 +18,6 @@ import tech.tablesaw.api.Row;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.IntStream;
@@ -163,10 +162,10 @@ public class NALData {
 
     /** any (query) variables are qualified by wrapping in conjunction specifying their type in the data model */
     public static Function<Term[], Term> typed(Function<Term[], Term> pointGenerator, DataTable dataset) {
-        return (x) -> {
+        return x -> {
             Term y = pointGenerator.apply(x);
             if (y.hasAny(Op.VAR_QUERY)) {
-                Set<Term> qVar = y.subterms().toSet(s -> s.op()==VAR_QUERY);
+                FasterList<Term> qVar = y.subterms().collect(s -> s.op()==VAR_QUERY, new FasterList());
 
                 Term[] typing = qVar.stream().map(q -> {
                     if (q instanceof UnnormalizedVariable) {

@@ -17,7 +17,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Comparator;
 import java.util.List;
-import java.util.Set;
 import java.util.TreeSet;
 
 import static nars.term.atom.Bool.Null;
@@ -87,13 +86,13 @@ public class SetFunc {
 
         if (Term.commonStructure(a,b)) {
 
-            Set<Term> ab = a.toSet(b.subs() > 2 ? (b.toSet()::contains) : b::contains);
+            TreeSet<Term> ab = a.collect(b.subs() > 3 ? (b.toSet()::contains) : b::contains, new TreeSet());
             int ssi = ab == null ? 0 : ab.size();
             switch (ssi) {
                 case 0: return Null;
-                case 1: return ab.iterator().next();
+                case 1: return ab.first();
                 default:
-                    return o.the(ab.toArray(Op.EmptyTermArray));
+                    return o.the(ab);
             }
 
         } else

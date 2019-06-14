@@ -1,3 +1,8 @@
+//conj/impl question decomposition
+    (A ==> B), B, task("?")             |- A, (Punctuation:Question)
+    (C ==> B), A, task("?"), eqPN(A,C)  |- B, (Punctuation:Question)
+
+
 ((&&,B,A..+) ==> X), (E ==> Y)          |-    unisubst((&&,A..+),(polarizeTask(X) && B),(polarizeBelief(Y) && E)), (Belief:AbductionDepolarized)
 
     //Conditional Abduction via Multi-conditional Syllogism
@@ -32,6 +37,21 @@
 //    (--S ==> P), (--S ==> P) |- (S || P), (Belief:StructuralDeduction)
 //    (S ==> N),   (S ==> P)   |- (S || P), (Belief:StructuralDeductionN)
 
+
+//Anonymous Analogy (NAL5)
+//  originally this only unified depvar (dep var elimination)
+
+//TODO merge these ules into one, requires a variation on unisubst that can apply chooseUnifiableSubEvent in 2 ways
+C, Y, is(C,"&&"), has(C,"#"), neq(C,Y), --isVar(Y)               |- unisubst(C,chooseUnifiableSubEvent(C,Y),Y,"#",novel), (Belief:AnonymousAnalogy)
+C, Y, is(C,"&&"), has(C,"#"), neq(C,Y), --isVar(Y), has(C,"--")  |- unisubst(C,chooseUnifiableSubEvent(C,--Y),--Y,"#",novel), (Belief:AnonymousAnalogyPN)
+    //Goal: ?
+
+    //(&&,X,A..+), Y   |- unisubst((&&,A..+),X,Y,"#"), (Belief:AnonymousAnalogy)
+      //accelerated version requiring no second-level unification and allows the general case unisubst to be 'novel'
+      //C, X, eventOf(C,X)    |- conjWithout(C,X), (Belief:AnonymousAnalogy)
+    //(&&,--X,A..+), Y   |- unisubst((&&,A..+),X,Y,"#"), (Belief:AnonymousAnalogyPN)
+      //accelerated version requiring no second-level unification and allows the general case unisubst to be 'novel'
+      //C, X, eventOfNeg(C,X) |- conjWithout(C,--X), (Belief:AnonymousAnalogyPN)
 
 
 //Hypothesize Subcondition Identity

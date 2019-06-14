@@ -74,7 +74,7 @@ public class ConjTree implements ConjBuilder {
             if (p.dt() != XTERNAL && !Conj.isSeq(p)) {
                 return p.AND(this::addParallel); //decompose parallel conj
             } else {
-                if (!validSeq(p)) {
+                if (!validConj(p)) {
                     terminate(False);
                     return false;
                 }
@@ -104,10 +104,10 @@ public class ConjTree implements ConjBuilder {
         return true;
     }
 
-    private boolean validSeq(Term p) {
+    private boolean validConj(Term conj) {
 
-        return !(neg != null || (p.hasAny(NEG) && pos!=null)) ||
-                p.eventsAND((when, what) -> {
+        return !(neg != null || (conj.hasAny(NEG) && pos!=null)) ||
+                conj.eventsAND((when, what) -> {
                             if (what instanceof Neg) {
                                 if (pos!=null && pos.contains(what.unneg()))
                                     return false;
@@ -392,12 +392,17 @@ public class ConjTree implements ConjBuilder {
      * otherwise it could erase the sequence before it even becomes factorable.
      */
     private boolean addAt(long at, Term x) {
-        if (x.op() != NEG) {
+        if (!(x instanceof Neg)) {
 
             if (neg != null && neg.contains(x)) {
-                terminate(False); //contradict
+                terminate(False); //contradicted
                 return false;
             }
+            if (x.op() == CONJ)
+                if (!validConj(x)) {
+                    terminate(False); //contradicted
+                    return false;
+                }
 //            if (neg != null && !(x instanceof Bool)) {
 //                x = reducePN(x, neg, false);
 //            }

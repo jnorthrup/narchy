@@ -386,25 +386,20 @@ public interface Subterms extends Termlike, Iterable<Term> {
         return u;
     }
 
-    default @Nullable MutableSet<Term> toSet(Predicate<Term> ifTrue) {
+    default @Nullable <C extends Collection<Term>> C collect(Predicate<Term> ifTrue, C c) {
         int s = subs();
-        if (s > 0) {
-            UnifiedSet<Term> u = null;
-            for (int i = 0; i < s; i++) {
-                /*@NotNull*/
-                Term x = sub(i);
-                if (ifTrue.test(x)) {
-                    if (u == null)
-                        u = new UnifiedSet<>((s - i) * 2);
-                    u.add(x);
-                }
+        //UnifiedSet<Term> u = null;
+        for (int i = 0; i < s; i++) {
+            /*@NotNull*/
+            Term x = sub(i);
+            if (ifTrue.test(x)) {
+//                    if (c == null)
+//                        c = new UnifiedSet<>((s - i) * 2);
+                c.add(x);
             }
-            return u;
         }
 
-        return null;
-
-
+        return c;
     }
 
     /**

@@ -25,7 +25,7 @@
 //        G, (A==>B), eventOfNeg(B,G) |- (A &&   conjWithout(B,--G)), (Belief:PreNP, Goal:PreWeakNP)
 //        G, (A==>B), eventOfNeg(B,G) |- (A && --conjWithout(B,--G)), (Belief:PreNN, Goal:PreWeakNN)
 
-     B, (--X ==> C), --is(C,"#"), --is(B,"==>") |- unisubst(C,X,B,"$"), (Belief:PreN, Goal:PreN)
+     B, (--X ==> C), --is(C,"#"), --is(B,"==>") |- unisubst(C,X,B,"$"), (Belief:PreN, Goal:PreN, Time:TaskEvent)
      //(--X ==> C), B, --is(C,"#"), --is(B,"==>") |- unisubst(C,X,B,"$"), (Belief:PreNX)
 
 
@@ -39,7 +39,7 @@
           B, (--A ==> C), task("?@"), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- unisubst((--A ==> C),A,B,"$",novel), (Punctuation:Question, Time:TaskEvent)
           B, (--A ==> C), task("?@"), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- unisubst(C,A,B,"$"), (Time:TaskEvent)
 
-    B, (C ==> A), --is(C,"#"), --is(B,"==>") |- unisubst(C,A,B,"$"), (Belief:PostWeak, Goal:PostWeak)
+    B, (C ==> A), --is(C,"#"), --is(B,"==>") |- unisubst(C,A,B,"$"), (Belief:PostWeak, Goal:PostWeak, Time:TaskEvent)
 
         //antigoal:
         //B, (C ==> A), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- --unisubst(C,A,B), (Goal:PostStrongPN, Time:TaskMinusBeliefDT)
@@ -60,9 +60,6 @@
 
 
 
-//conj/impl question decomposition
-    (A ==> B), B, task("?")             |- A, (Punctuation:Question)
-    (C ==> B), A, task("?"), eqPN(A,C)  |- B, (Punctuation:Question)
 
         //conditional deduction, but using Desire which is similar but preserves Task impl freq
         ((&&,X,A..+) ==> Z), Y,  --isVar(X)      |- unisubst(((&&,A..+) ==> Z), X,Y), (Belief:Desire, Time:Task)
@@ -290,7 +287,7 @@
 
   (&&,(X<->Y),A..+), (X<->Y)         |- substitute((&&,A..+),X,Y,novel), (Belief:StructuralDeduction, Goal:StructuralDeduction)
   //chain:
-  (&&,(X<->Y),A..+), (Y<->Z)         |- substitute((&&,A..+),X,Z,novel), (Belief:Desire, Goal:Desire)
+  (&&,(X<->Y),A..+), (Y<->Z)         |- substitute((&&,A..+),X,Z,novel), (Belief:Desire, Goal:Desire, Time:TaskEvent)
   (&&,(X<->Y),(Y<->Z),A..+), (X<->Y) |- substitute(substitute((&&,A..+),X,Z,novel),Y,Z,novel), (Belief:StructuralDeduction, Goal:StructuralDeduction)
 
 

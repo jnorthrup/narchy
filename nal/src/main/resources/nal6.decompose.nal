@@ -130,11 +130,11 @@
 //    X, C, sectOf(C,X), conjParallel(C)     |-     unsect(C,  X), (Belief:DecomposePP)
      C, X, eventOf(C,X), conjParallel(C), --isVar(X)     |-     conjBefore(C, X), (Belief:DecomposePP, Goal:DecomposePP, Time:BeliefEvent)
 //    X, C, sectOf(C,X), conjParallel(C)     |-   unsect(C,  X), (Belief:DecomposePN)
-     C, X, eventOf(C,--X), conjParallel(C), --isVar(X)  |-     conjBefore(C,--X), (Belief:DecomposePN, Goal:DecomposePN, Time:BeliefEvent)
+     C, X, eventOfNeg(C,X), conjParallel(C), --isVar(X)  |-     conjBefore(C,--X), (Belief:DecomposePN, Goal:DecomposePN, Time:BeliefEvent)
 //    X, C, sectOf(C,--X), conjParallel(C)  |-     unsect(C,--X), (Belief:DecomposeNP)
      C, X, eventOf(C,X), conjParallel(C), --isVar(X)     |-   --conjBefore(C,  X), (Belief:DecomposeNP, Goal:DecomposeNP, Time:BeliefEvent)
 //    X, C, sectOf(C,--X), conjParallel(C)  |-   --unsect(C,--X), (Belief:DecomposeNN)
-     C, X, eventOf(C,--X), conjParallel(C), --isVar(X)  |-   --conjBefore(C,--X), (Belief:DecomposeNN, Goal:DecomposeNN, Time:BeliefEvent)
+     C, X, eventOfNeg(C,X), conjParallel(C), --isVar(X)  |-   --conjBefore(C,--X), (Belief:DecomposeNN, Goal:DecomposeNN, Time:BeliefEvent)
 
     //DISJ select
     D, X, is(D,"&&"), --isVar(X) |- --unisubst(D,chooseUnifiableSubEvent(D,X),X,"#",novel), (Belief:DecomposeNP, Goal:DecomposeNP, Time:BeliefEvent)
@@ -181,20 +181,6 @@
 
 
 
-//Anonymous Analogy (NAL5)
-//  originally this only unified depvar (dep var elimination)
-
-//TODO merge these 4 rules into one, requires a variation on unisubst that can apply chooseUnifiableSubEvent in 2 ways
-C, Y, is(C,"&&"), has(C,"#"), neq(C,Y), --isVar(Y)               |- unisubst(C,chooseUnifiableSubEvent(C,Y),Y,"#",novel), (Belief:AnonymousAnalogy)
-C, Y, is(C,"&&"), has(C,"#"), neq(C,Y), --isVar(Y), has(C,"--")  |- unisubst(C,chooseUnifiableSubEvent(C,--Y),--Y,"#",novel), (Belief:AnonymousAnalogyPN)
-    //Goal: ?
-
-    //(&&,X,A..+), Y   |- unisubst((&&,A..+),X,Y,"#"), (Belief:AnonymousAnalogy)
-      //accelerated version requiring no second-level unification and allows the general case unisubst to be 'novel'
-      //C, X, eventOf(C,X)    |- conjWithout(C,X), (Belief:AnonymousAnalogy)
-    //(&&,--X,A..+), Y   |- unisubst((&&,A..+),X,Y,"#"), (Belief:AnonymousAnalogyPN)
-      //accelerated version requiring no second-level unification and allows the general case unisubst to be 'novel'
-      //C, X, eventOfNeg(C,X) |- conjWithout(C,--X), (Belief:AnonymousAnalogyPN)
 
 //    Y, (&&,X,A..+)                  |- unisubst((&&,  X,A..+),X,Y,"#",novel), (Belief:Deduction)
 //    Y, (&&,--X,A..+)                |- unisubst((&&,--X,A..+),X,Y,"#",novel), (Belief:DeductionN)

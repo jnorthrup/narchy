@@ -486,7 +486,10 @@ public enum Terms {
         if (x.equals(y))
             return true;
 
-        if (!Term.commonStructure(x, y))
+//        if (Term.coRecursiveStructure(x.structure(), y.structure()) != Term.commonStructure(x, y))
+//            Util.nop();
+
+        if (!Term.coRecursiveStructure(x.structure() & ~(Op.CONJ.bit), y.structure() & ~(Op.CONJ.bit)))
             return false;
 
         if (y instanceof Compound && y.op() == CONJ) {

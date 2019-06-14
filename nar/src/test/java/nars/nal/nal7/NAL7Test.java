@@ -723,7 +723,7 @@ public class NAL7Test extends NALTest {
     void variable_introduction_on_events_with_negation() {
 
         test
-                .input("(--,a:x). | %0.9;0.8% ")
+                .input("a:x. | %0.1;0.8% ")
                 .inputAt(2, "b:x. | %0.8;0.9% ")
 
                 .mustBelieve(cycles,
