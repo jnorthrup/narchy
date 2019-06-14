@@ -61,12 +61,26 @@ public enum Terms {
 
     }
 
+    /** doesnt deduplicate */
+    public static Term[] sort(Term[] x) {
+        switch (x.length) {
+            case 0: return Op.EmptyTermArray;
+            case 1: return x;
+            case 2: return sort2(x);
+            default: return ifDifferent(x,new TermList(x.clone()).sort());
+        }
+    }
+
     private static Term[] commuteN(Term[] x) {
         Term[] y = new TermList(x.clone()).sortAndDedup();
-        if (ArrayUtil.equalsIdentity(x, y))
-            return x; //unchanged
+        return ifDifferent(x, y);
+    }
+
+    private static Term[] ifDifferent(Term[] a, Term[] b) {
+        if (ArrayUtil.equalsIdentity(a, b))
+            return a; //unchanged
         else
-            return y;
+            return b;
     }
 
     private static Term[] commute3(Term[] t) {
@@ -117,6 +131,14 @@ public enum Terms {
         if (ab < 0) return t;
         else if (ab > 0) return new Term[]{b, a};
         else /*if (c == 0)*/ return new Term[]{a};
+    }
+
+    private static Term[] sort2(Term[] t) {
+        Term a = t[0], b = t[1];
+        int ab = a.compareTo(b);
+        if (ab < 0) return t;
+        else if (ab > 0) return new Term[]{b, a};
+        else /*if (c == 0)*/ return new Term[]{a, a};
     }
 
     public static void printRecursive(PrintStream out, Term x) {

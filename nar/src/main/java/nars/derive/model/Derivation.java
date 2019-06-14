@@ -116,10 +116,12 @@ public class Derivation extends PreDerivation {
             //return super.newCompound(op, dt, subterms);
 
             if (o.commutative && Tense.dtSpecial(dt)) {
-                if (dt!=XTERNAL)
-                    subterms = Terms.commute(subterms);
-                else
-                    Arrays.sort(subterms.clone() /* to be safe */);
+                subterms = Terms.sort(subterms);
+//                if (dt!=XTERNAL)
+////                    subterms = Terms.commute(subterms);
+////                else
+//                    Terms.commute()
+//                    Arrays.sort(subterms = subterms.clone() /* to be safe */);
             }
 
             return HeapTermBuilder.the.newCompound(o, dt, subterms);
