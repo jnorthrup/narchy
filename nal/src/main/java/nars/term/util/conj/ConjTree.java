@@ -74,24 +74,16 @@ public class ConjTree implements ConjBuilder {
             if (p.dt() != XTERNAL && !Conj.isSeq(p)) {
                 return p.AND(this::addParallel); //decompose parallel conj
             } else {
-                if ((neg != null || (p.hasAny(NEG) && pos!=null)) &&
-                        !p.eventsAND((when, what) ->
-                                !(((!(what instanceof Neg) && neg!=null && neg.contains(what))) &&
-                                ((what instanceof Neg && pos!=null && pos.contains(what.unneg())))),
-                            0, true, true)) {
+                if (!validSeq(p)) {
                     terminate(False);
                     return false;
                 }
                 //continue below
             }
         }
-        if (neg != null && neg.contains(p)) {
-            terminate(False);
-            return false;
-        }
+
         if (pos != null && pos.contains(p))
             return true;
-
 
         if (neg != null) {
             p = reducePN(p, neg, false);
@@ -110,6 +102,22 @@ public class ConjTree implements ConjBuilder {
         assert (p.op() != NEG);
         pos.add(p);
         return true;
+    }
+
+    private boolean validSeq(Term p) {
+
+        return !(neg != null || (p.hasAny(NEG) && pos!=null)) ||
+                p.eventsAND((when, what) -> {
+                            if (what instanceof Neg) {
+                                if (pos!=null && pos.contains(what.unneg()))
+                                    return false;
+                            } else {
+                                if (neg!=null && neg.contains(what))
+                                    return false;
+                            }
+                            return true;
+                },
+                    0, true, true);
     }
 
     private boolean validatePosNeg(Term what) {

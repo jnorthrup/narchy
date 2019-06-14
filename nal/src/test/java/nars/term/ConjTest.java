@@ -1866,6 +1866,11 @@ public class ConjTest {
         assertTrue(addTemporal);
         assertEq("((--,((--,(g-->input)) &&+40 (g-->forget)))&&(g-->happy))", c.term());
         assertEq("((--,((--,(_1-->_2)) &&+40 (_1-->_3)))&&(_1-->_4))", c.term().anon());
+
+    }
+
+    @Test void testContradictionWTF() {
+        assertEq(False, $$("((x(g,1) &&+49 (--,((g,(g,-1))-->((x,/,-1),x))))&&(--,x(g,1)))"));
     }
 
     @Test

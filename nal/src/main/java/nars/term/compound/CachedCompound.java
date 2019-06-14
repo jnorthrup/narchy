@@ -142,6 +142,7 @@ abstract public class CachedCompound extends SeparateSubtermsCompound implements
 //            {
 //                if (volume() != anon().volume())
 //                    throw new WTF("anon differ: "+toString()+'\n'+anon());
+
 //                try {
 //                    eventsAND((when, whta) -> {
 //                        return true;
@@ -152,9 +153,11 @@ abstract public class CachedCompound extends SeparateSubtermsCompound implements
 //                } catch (Throwable t) {
 //                    Util.nop();
 //                }
+
 //            }
 //                if (dt!=DTERNAL && dt!=XTERNAL && dt%10!=0) //DITHERING TEST
 //                    throw new WTF();
+
         }
 
         @Override
