@@ -17,6 +17,8 @@ import java.util.Arrays;
 import java.util.NoSuchElementException;
 import java.util.function.Predicate;
 
+import static jcog.math.LongInterval.TIMELESS;
+
 
 /**
  * a set of (long,object) pairs as 2 array lists
@@ -42,7 +44,7 @@ public class LongObjectArraySet<X> extends FasterList<X> {
 
 
     @Override
-    public LongObjectArraySet sortThis() {
+    public LongObjectArraySet<X> sortThis() {
         if (size <= 1)
             return this;
 
@@ -65,6 +67,24 @@ public class LongObjectArraySet<X> extends FasterList<X> {
 
 
         }
+
+        if (get(0) instanceof Comparable) {
+            //sort the items within each timeslot
+            int a = 0;
+            long x = when[0];
+            for (int i = 1; i <= size; i++) {
+                long y = i<size ? when[i] : TIMELESS;
+                if (y != x) {
+                    if ((i - 1) - a > 0) {
+                        Arrays.sort(items, a, i);
+                    }
+                    x = y;
+                    a = i;
+                }
+            }
+        }
+
+
         return this;
     }
 

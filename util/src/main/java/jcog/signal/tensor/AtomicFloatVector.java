@@ -69,7 +69,7 @@ public class AtomicFloatVector extends AbstractVector implements WritableTensor 
             nextI = floatToIntBits(next);
         } while(prevI!=nextI && data.compareAndExchangeRelease(linearCell, prevI, nextI)!=prevI);
 
-        return returning.apply(Float.NaN, prev, next);
+        return returning.apply(arg, prev, next);
     }
 
     @Override

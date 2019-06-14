@@ -228,7 +228,10 @@ public class AbstractGoalActionConcept extends GameAction {
         updateCuriosity(g.curiosity);
 
         NAR n = g.nar();
-        int gameDur = g.dur(); //g.durPhysical();
+        int gameDur =
+                //0;
+                //g.dur();
+                g.durPhysical();
 
         int limitBelief = Answer.BELIEF_MATCH_CAPACITY; //high sensitivity
         int limitGoal = limitBelief * 2;
@@ -250,7 +253,7 @@ public class AbstractGoalActionConcept extends GameAction {
         Truth actionTruth;
         Pair<TruthProjection, long[]> gt = truth(false, limit, prev, now, gameDur, n);
 
-        Truth nextActionDex = gt.getOne() == null ? null : gt.getOne().truth();
+        Truth nextActionDex = gt.getOne() == null ? null : gt.getOne().truth(0,false,false,null);
         actionDex = nextActionDex;
         actionCoh = nextActionDex != null ? gt.getOne().coherency() : 0;
         if (nextActionDex != null)

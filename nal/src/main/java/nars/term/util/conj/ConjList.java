@@ -255,7 +255,8 @@ public class ConjList extends LongObjectArraySet<Term> implements ConjBuilder {
         if (n < 2)
             return;
 
-        int u = eventOccurrences();
+        sortThis();
+        int u = eventOccurrences_if_sorted();
 
         UnifiedMap<Term, RoaringBitmap> count = new UnifiedMap(n);
         Set<Term> uncount = null;
@@ -287,7 +288,7 @@ public class ConjList extends LongObjectArraySet<Term> implements ConjBuilder {
 
 
         TermList toDistribute = new TermList(n);
-        if (!count.keyValuesView().allSatisfy((xcc) -> {
+        if (!count.keyValuesView().toSortedList().allSatisfy((xcc) -> {
             Term x = xcc.getOne();
             RoaringBitmap cc = xcc.getTwo();
             int c = cc.getCardinality();
@@ -319,6 +320,9 @@ public class ConjList extends LongObjectArraySet<Term> implements ConjBuilder {
 
         int dd = toDistribute.size();
         if (dd > 0) {
+//            if(dd > 1)
+//                toDistribute.sortAndDedup();
+
             n = size();
 
             //distribute partial factors

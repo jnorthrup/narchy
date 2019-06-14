@@ -253,8 +253,8 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
      */
     public final FloatRange intermpolationRangeLimit = new FloatRange(
             //0.5f
-            //1f
-            2f
+            1f
+            //2f
             , 0, 4);
 
     @Deprecated
@@ -608,7 +608,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
              * <p>
              * TODO make this a per-sensor implementation cdecision
              */
-            public static final float SIGNAL_STRETCH_LIMIT_DURS = 8;
+            public static final float SIGNAL_STRETCH_LIMIT_DURS = 16;
             /**
              * maximum time between signal updates to stretch an equivalently-truthed data point across.
              * stretches perception across some amount of lag
@@ -618,7 +618,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
                     2f;
             /** max tasked matched by series table, in case the answer limit is higher.  this reduces the number of redundant non-exact matches freeing evidential capacity for non-signal tasks from other tables of the concept */
             public static final float SERIES_MATCH_ADDITIONAL_RATE_PER_DUR = 1f/SIGNAL_LATCH_LIMIT_DURS;
-            public static final int SERIES_MATCH_MIN = 1;
+            public static final int SERIES_MATCH_MIN = 2;
 
             //public static final boolean SIGNAL_TASK_OCC_DITHER = true;
         }
@@ -781,6 +781,10 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
 
 
         public static final float TERMBUFFER_VOLMAX_SCRATCH_FACTOR = 8f;
+
+        /** tasklink belief/goal resolution strategy */
+        public static final boolean TASKLINK_MATCH_OR_SAMPLE = false;
+
     }
 
     public enum unify {

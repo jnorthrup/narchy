@@ -244,8 +244,8 @@ public class Premise implements Comparable<Premise> {
                 Task answered = tryAnswer(beliefTerm, answerTable, d);
                 if (answered != null) {
                     if (answered.evi() >= d.eviMin) {
-                        //n.input(answered);
-                        n.eventTask.emit(answered);
+                        n.input(answered);
+                        //n.eventTask.emit(answered);
                     }
 
                 }
@@ -262,27 +262,17 @@ public class Premise implements Comparable<Premise> {
 
     }
 
-    private boolean beliefFilter(Task t) {
-//        if (task.stamp().length == 0) {
-//            return t -> !t.equals(task) && t.stamp().length > 0; //dont allow derivation of 2 unstamped tasks - infinite feedback - dont cross the streams
-//        } else {
-        //return t -> !t.equals(task);//null; //stampFilter(d);
-        return !t.equals(task);
-//        }
-
-    }
-
     private Task tryMatch(Term beliefTerm, BeliefTable bb, Derivation d) {
 
         Predicate<Task> beliefFilter =
-                beliefTerm.equalsRoot(task.term()) ?
-                        this::beliefFilter :
+//                task.punc() == BELIEF && beliefTerm.equalsRoot(task.term()) ?
+//                        t -> !t.equals(task) :
                         null;
 
         long[] focus = timeFocus(beliefTerm, d);
 
         return bb.matching(focus[0], focus[1], beliefTerm, beliefFilter, d.dur(), d.nar())
-                .task(true, false, true);
+                .task(true, false, false);
     }
 
 

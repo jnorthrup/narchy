@@ -1,6 +1,7 @@
 package nars.derive.op;
 
 import jcog.data.set.ArrayHashSet;
+import jcog.math.LongInterval;
 import nars.NAL;
 import nars.Op;
 import nars.Task;
@@ -213,6 +214,8 @@ public class Occurrify extends TimeGraph {
                 case Belief:
                     start = beliefStart;
                     break;
+                case Union:
+                    return LongInterval.union(taskStart, d.taskEnd, beliefStart, d.beliefEnd).toArray();
                 default:
                     throw new UnsupportedOperationException();
             }
@@ -305,18 +308,18 @@ public class Occurrify extends TimeGraph {
         solutions.clear();
     }
 
-    private Occurrify set(Term pattern, boolean decomposeEvents, OccurrenceSolver time) {
+    private Occurrify set(Term pattern, boolean taskOccurr, boolean beliefOccurr, boolean decomposeEvents, OccurrenceSolver time) {
 
         clear();
         //clearSolutions(); //<- is this safe?  accumulates timegraph over multiple derived tasks within before being cleared on new premise
 
-        long taskStart = d.taskStart,
-                taskEnd = d.taskEnd,
+        long taskStart = taskOccurr ? d.taskStart : TIMELESS,
+                taskEnd = taskOccurr ? d.taskEnd : TIMELESS,
                 beliefStart =
-                        !d.concSingle || (d.concPunc==QUESTION || d.concPunc==QUEST) ? d.beliefStart : TIMELESS,
+                        beliefOccurr && (!d.concSingle || (d.concPunc==QUESTION || d.concPunc==QUEST)) ? d.beliefStart : TIMELESS,
                         //d.beliefStart,
                 beliefEnd =
-                        !d.concSingle || (d.concPunc==QUESTION || d.concPunc==QUEST) ? d.beliefEnd : TIMELESS;
+                        beliefOccurr && (!d.concSingle || (d.concPunc==QUESTION || d.concPunc==QUEST)) ? d.beliefEnd : TIMELESS;
                         //d.beliefEnd;
 
         this.decomposeEvents = decomposeEvents;
@@ -475,24 +478,7 @@ public class Occurrify extends TimeGraph {
         Default() {
             @Override
             @Nullable public Pair<Term, long[]> occurrence(Term x, Derivation d) {
-                if (nonTemporal(x) && nonTemporal(d.taskTerm) && nonTemporal(d.beliefTerm))
-                    return pair(x, occurrence(d));
-
-                Occurrify o = d.occ.set(x, true, this);
-                Event e = o.selectSolution(true, o.solutions(x));
-                if (e == null) {
-                    if (d.concPunc==QUESTION || d.concPunc==QUEST)
-                        return pair(x, occurrence(d)); //fail-safe
-                    else
-                        return NAL.OCCURRIFY_STRICT ? null : pair(x, occurrence(d)); //fail-safe
-                } else {
-                    long es = e.start();
-                    return pair(e.id,
-                            es == TIMELESS ?
-                                occurrence(d) :
-                                new long[]{es, e.end()});
-                }
-
+                return solve(x, d, true, true);
             }
 
             @Override
@@ -510,7 +496,7 @@ public class Occurrify extends TimeGraph {
 
             @Override
             long[] occurrence(Derivation d) {
-                return rangeCombine(d, OccIntersect.Task);
+                return rangeCombine(d, OccIntersect.Union);
             }
         },
 
@@ -536,6 +522,33 @@ public class Occurrify extends TimeGraph {
             }
 
         },
+        /** belief modulates the truth but the occurrence time to be solved should center around the task */
+        TaskEvent() {
+
+            @Override
+            @Nullable public Pair<Term, long[]> occurrence(Term x, Derivation d) {
+                return solve(x, d, true, false);
+            }
+
+            @Override
+            long[] occurrence(Derivation d) {
+                return rangeCombine(d, OccIntersect.Task);
+            }
+        },
+        /** task modulates the truth but the occurrence time to be solved should center around the belief */
+        BeliefEvent() {
+
+            @Override
+            @Nullable public Pair<Term, long[]> occurrence(Term x, Derivation d) {
+                return solve(x, d, false, true);
+            }
+
+            @Override
+            long[] occurrence(Derivation d) {
+                return rangeCombine(d, OccIntersect.Belief);
+            }
+        },
+
         /**
          * for unprojected truth rules;
          * result should be left-aligned (relative) to the task's start time
@@ -694,12 +707,36 @@ public class Occurrify extends TimeGraph {
             assert (occ != null);
             return occ == null ? null : pair(
                     x.hasXternal() ?
-                            d.occ.solveDT(x, d.occ.set(x, decomposeEvents, this).solutions(x))
+                            d.occ.solveDT(x, d.occ.set(x, decomposeEvents, true,true,this).solutions(x))
                             :
                             x,
                     occ);
         }
 
+        protected @Nullable Pair<Term, long[]> solve(Term x, Derivation d, boolean taskOccurr, boolean beliefOccurr) {
+            if (nonTemporal(x) && nonTemporal(d.taskTerm) && nonTemporal(d.beliefTerm))
+                return pair(x, occurrence(d));
+
+            if (!taskOccurr && beliefOccurr && (d.concSingle || d._belief == null || d.beliefStart == ETERNAL || d.beliefStart == TIMELESS) && d.taskStart != ETERNAL)
+                taskOccurr = true; //allow task occurrence
+            if (!beliefOccurr && taskOccurr && (d.taskStart == ETERNAL) && (d.beliefStart != ETERNAL && d.beliefStart != TIMELESS))
+                beliefOccurr = true; //allow belief occurrence
+
+            Occurrify o = d.occ.set(x, taskOccurr, beliefOccurr, true, this);
+            Event e = o.selectSolution(true, o.solutions(x));
+            if (e == null) {
+                if (d.concPunc==QUESTION || d.concPunc==QUEST)
+                    return pair(x, occurrence(d)); //fail-safe
+                else
+                    return NAL.OCCURRIFY_STRICT ? null : pair(x, occurrence(d)); //fail-safe
+            } else {
+                long es = e.start();
+                return pair(e.id,
+                        es == TIMELESS ?
+                                occurrence(d) :
+                                new long[]{es, e.end()});
+            }
+        }
 
         public BeliefProjection beliefProjection() {
             return BeliefProjection.Task;
@@ -719,7 +756,8 @@ public class Occurrify extends TimeGraph {
     }
 
     private enum OccIntersect {
-        Task, Belief, Earliest
+        Task, Belief, Earliest,
+        Union
         //TODO Mid?
     }
 

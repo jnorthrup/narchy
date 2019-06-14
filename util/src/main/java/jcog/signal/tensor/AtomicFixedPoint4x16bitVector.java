@@ -102,7 +102,7 @@ public class AtomicFixedPoint4x16bitVector implements WritableTensor {
 
         } while(!X.compareAndSet(this, _x, _y));
 
-        return returning.apply(Float.NaN, x, y);
+        return returning.apply(arg, x, y);
     }
 
     @Override

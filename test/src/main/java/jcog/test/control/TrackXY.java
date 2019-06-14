@@ -26,7 +26,7 @@ public class TrackXY  {
 
     public final FloatRange targetSpeed = new FloatRange(0.1f, 0, 0.25f);
 
-    public final FloatRange visionContrast = new FloatRange(0.25f, 0, 1f);
+    public final FloatRange visionContrast = new FloatRange(0.1f, 0, 1f);
 
     public final MutableEnum<TrackXYMode> mode =
             new MutableEnum<TrackXYMode>(TrackXYMode.CircleTarget);

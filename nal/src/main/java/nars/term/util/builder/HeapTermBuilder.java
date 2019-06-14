@@ -10,6 +10,8 @@ public class HeapTermBuilder extends TermBuilder {
 
     public final static HeapTermBuilder the = new HeapTermBuilder();
 
+
+
     protected HeapTermBuilder() {
 
     }

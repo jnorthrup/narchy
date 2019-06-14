@@ -10,6 +10,8 @@ import nars.time.Tense;
 import nars.truth.Truth;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.List;
 
@@ -175,9 +177,10 @@ class DynamicImplConjTest extends AbstractDynamicTaskTest {
     }
 
     static private Task assertBelief(String inputTerm, long when, String answerTermExpected, float freqExpected, float confExpected, NAR n) {
-        assertDynamicTable(n, $$(inputTerm));
-        Task t = n.answer($$(inputTerm), BELIEF, when);
-        assertNotNull(t);
+        Term x = $$(inputTerm);
+        assertDynamicTable(n, x);
+        Task t = n.answer(x, BELIEF, when);
+        assertNotNull(t, ()->x + " gave return null answer @ " + when);
         assertEquals(answerTermExpected, t.term().toString());
         assertEquals(when, t.start());
         int stampLen = 2;
@@ -318,25 +321,24 @@ class DynamicImplConjTest extends AbstractDynamicTaskTest {
         testDynamicImplSubjPredTemporalExact(-2, false);
     }
 
-    @Test
-    public void testXternalSubj() throws Narsese.NarseseException {
+    @ParameterizedTest
+    @ValueSource(strings = {
+            "((a || b) ==>+- x)",
+            "((a ||+- b) ==> x)",
+            "((a ||+- b) ==>+- x)"
+    })
+    void testXternalSubj(String s) throws Narsese.NarseseException {
 
-        for (String s : new String[]{
-                "((a && b) ==>+- x)",
-                "((a &&+- b) ==> x)",
-                "((a &&+- b) ==>+- x)"
-        }) {
+        assertBelief(s,
+                ETERNAL, "((a||b)==>x)", 1, 0.81f, NARS.shell()
+                        .believe("(a ==> x)")
+                        .believe("(b ==> x)")
+        );
 
-            assertBelief(s,
-                    ETERNAL, "((a&&b)==>x)", 1, 0.81f, NARS.shell()
-                            .believe("(a ==> x)")
-                            .believe("(b ==> x)")
-            );
-        }
     }
 
     @Test
-    public void testXternalPred() throws Narsese.NarseseException {
+    void testXternalPred() throws Narsese.NarseseException {
 
 
         for (String s : new String[]{

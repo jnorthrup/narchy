@@ -119,7 +119,7 @@ public class SensorBeliefTables extends BeliefTables {
 
         SeriesTask nextT = null, last = series.series.last();
         long lastEnd = last!=null ? last.end() : Long.MIN_VALUE;
-        long nextStart = Math.max(lastEnd+1, now - dur /* /2 */);
+        long nextStart = Math.max(lastEnd+1, now - dur/2);
         long nextEnd = Math.max(nextStart+1, now + dur/2);
         if (last != null) {
             long lastStart = last.start();

@@ -106,8 +106,10 @@ public interface TaskLink extends UnitPrioritizable, FromTo<Term, TaskLink> {
             TaskTable table = c.table(punc);
             Task y;
             if (beliefOrGoal) {
-                y = table.match(when, null, filter, false);
-                //y = table.sample(when, null, filter);
+                if (NAL.derive.TASKLINK_MATCH_OR_SAMPLE)
+                    y = table.match(when, null, filter, false);
+                else
+                    y = table.sample(when, null, filter);
             } else {
                 y = table.sample(when, null, filter);
             }

@@ -308,7 +308,7 @@ public class TermBuffer {
 
         } else {
 
-            Term next = compound(op, dt, subterms); //assert (next != null);
+            Term next = newCompound(op, dt, subterms); //assert (next != null);
 
             if (next != Null) {
                 //replaceAhead(bytes, range, start, next);
@@ -319,7 +319,7 @@ public class TermBuffer {
     }
 
     /** constructs a new compound term */
-    protected Term compound(Op op, int dt, Term[] subterms) {
+    protected Term newCompound(Op op, int dt, Term[] subterms) {
         return op.the(builder, dt, subterms);
     }
 

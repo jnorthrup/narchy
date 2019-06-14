@@ -2,12 +2,10 @@ package nars.term.util.transform;
 
 import nars.Op;
 import nars.subterm.Subterms;
-import nars.subterm.TermList;
 import nars.term.Compound;
 import nars.term.Neg;
 import nars.term.Term;
 import nars.term.atom.Bool;
-import org.jetbrains.annotations.Nullable;
 
 import static nars.Op.*;
 import static nars.term.atom.Bool.Null;
@@ -19,6 +17,19 @@ import static nars.time.Tense.XTERNAL;
  */
 public interface AbstractTermTransform extends TermTransform, nars.term.util.builder.TermConstructor {
 
+    private static Term eval(Subterms yy) {
+        Term p = yy.sub(1);
+        if (p instanceof InlineFunctor) {
+            Term s = yy.sub(0);
+            if (s.op() == PROD) {
+                Term v = ((InlineFunctor) p /* pred */).applyInline(s /* args */);
+                if (v != null)
+                    return v;
+            }
+        }
+        return null;
+    }
+
     /**
      * transform pathway for compounds
      */
@@ -26,88 +37,83 @@ public interface AbstractTermTransform extends TermTransform, nars.term.util.bui
         return applyCompound(c, null, XTERNAL);
     }
 
-    default Term applyCompound(Compound x, Op newOp, int newDT) {
+    default Term applyCompound(Compound x, Op newOp, int ydt) {
 
         boolean sameOpAndDT = newOp == null;
         Op xop = x.op();
 
 
-        Op targetOp = sameOpAndDT ? xop : newOp;
-        Subterms xx = x.subterms(), yy;
+        Op yOp = sameOpAndDT ? xop : newOp;
+        Subterms xx = x.subterms();
 
-        //try {
-        yy = xx.transformSubs(this, targetOp);
-
-//        } catch (StackOverflowError e) {
-//            System.err.println("TermTransform stack overflow: " + this + " " + xx + " " + targetOp);
-//        }
+        Subterms yy = xx.transformSubs(this, yOp);
 
         if (yy == null)
             return Null;
 
-        int thisDT = x.dt();
-        if (yy == xx && (sameOpAndDT || (xop == targetOp && thisDT == newDT)))
+        int xdt = x.dt();
+        if (yy == xx && (sameOpAndDT || (xop == yOp && xdt == ydt)))
             return x; //no change
 
-        if (targetOp == CONJ) {
+        if (yOp == CONJ) {
             if (yy == Op.FalseSubterm)
                 return Bool.False;
             if (yy.subs() == 0)
                 return Bool.True;
         }
 
-        if (newDT == DTERNAL)
-            newDT = 0; //HACK
-        if (sameOpAndDT) {
-            newDT = thisDT;
+        if (yOp == INH && evalInline()) {
+            Term v = eval(yy);
+            if (v != null)
+                return v;
+        }
 
-            //apply any shifts caused by range changes
-            if (yy != xx && newDT != DTERNAL && newDT != XTERNAL && xx.subs() == 2 && yy.subs() == 2) {
 
-                int subjRangeBefore = xx.subEventRange(0);
-                int predRangeBefore = xx.subEventRange(1);
-                int subjRangeAfter = yy.subEventRange(0);
-                int predRangeAfter = yy.subEventRange(1);
-                newDT += (subjRangeBefore - subjRangeAfter) + (predRangeBefore - predRangeAfter);
 
+
+        if (yOp.temporal) {
+            if (sameOpAndDT)
+                ydt = xdt;
+
+            if (ydt != XTERNAL)
+                ydt = realign(ydt, xx, yy);
+
+        } else
+            ydt = DTERNAL;
+
+
+        if (yy != xx) {
+            //transformed subterms
+            return compound(yOp, ydt, yy);
+        } else {
+            if (yOp == xop) {
+                //same op and same subterms, maybe different dt
+                return xdt != ydt ? x.dt(ydt) : x;
+            } else {
+                //same subterms, different op
+                return compound(yOp, ydt, xx);
             }
         }
-        if (newDT == 0)  newDT = DTERNAL; //HACK
 
-        return appliedCompound(x, targetOp, newDT, xx, yy);
     }
 
+    private static int realign(int ydt, Subterms xx, Subterms yy) {
+        if (ydt == DTERNAL)
+            ydt = 0; //HACK
 
+        //apply any shifts caused by internal range changes
+        if (!yy.equals(xx) && xx.subs() == 2 && yy.subs() == 2) {
 
-    /**
-     * called after subterms transform has been applied
-     */
-    @Nullable
-    default Term appliedCompound(Compound x, Op op, int dt, Subterms xx, Subterms yy) {
-        if (yy != xx) {
-            Term[] a = yy instanceof TermList ? ((TermList) yy).arrayKeep() : yy.arrayShared();
-            if (op == INH && a[1] instanceof InlineFunctor && evalInline() && a[0].op() == PROD) {
-                Term v = ((InlineFunctor) a[1] /* pred */).applyInline(a[0] /* args */);
-                if (v != null)
-                    return v;
-            }
-            return compound(op, dt, a); //transformed subterms
-        } else {
-            //same subterms
-            if (op == INH && evalInline()) {
-                Term p = xx.sub(1), s;
-                if (p instanceof InlineFunctor && (s = xx.sub(0)).op() == PROD) {
-                    Term v = ((InlineFunctor) p /* pred */).applyInline(s /* subj = args */);
-                    if (v != null)
-                        return v;
-                }
-            }
-            if (op != x.op())
-                return compound(op, dt, xx);
-            else
-                return x.dt(dt);
+            int subjRangeBefore = xx.subEventRange(0);
+            int predRangeBefore = xx.subEventRange(1);
+            int subjRangeAfter = yy.subEventRange(0);
+            int predRangeAfter = yy.subEventRange(1);
+            ydt += (subjRangeBefore - subjRangeAfter) + (predRangeBefore - predRangeAfter);
+
         }
 
+        if (ydt == 0) ydt = DTERNAL; //HACK
+        return ydt;
     }
 
     /**
@@ -135,7 +141,6 @@ public interface AbstractTermTransform extends TermTransform, nars.term.util.bui
     default Term compound(Op op, int dt, Term[] subterms) {
         return op.the(dt, subterms);
     }
-
 
 
     /**

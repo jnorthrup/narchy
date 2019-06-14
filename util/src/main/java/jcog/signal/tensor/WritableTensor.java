@@ -43,7 +43,7 @@ public interface WritableTensor extends Tensor {
 
         setAt(linearCell, next);
 
-        return returning.apply(Float.NaN, prev, next);
+        return returning.apply(arg, prev, next);
     }
 
     default void fill(float x) {

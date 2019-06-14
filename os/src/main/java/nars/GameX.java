@@ -216,8 +216,8 @@ abstract public class GameX extends Game {
 
                 .what(
                         (w) -> new TaskLinkWhat(w,
-                                2048,
-                                new PriBuffer.BagTaskBuffer(512, 0.5f))
+                                1024,
+                                new PriBuffer.BagTaskBuffer(128, 0.5f))
                 )
 //                .attention(() -> new ActiveConcepts(1024))
                 .exe(
@@ -412,8 +412,8 @@ abstract public class GameX extends Game {
         n.questionPriDefault.amp(0.05f);
         n.questPriDefault.amp(0.05f);
 
-        n.beliefConfDefault.set(0.9f);
-        n.goalConfDefault.set(0.9f);
+        n.beliefConfDefault.set(0.75f);
+        n.goalConfDefault.set(0.75f);
 
         n.emotion.want(MetaGoal.Futile, -0.001f);
         n.emotion.want(MetaGoal.Perceive, -0.002f);

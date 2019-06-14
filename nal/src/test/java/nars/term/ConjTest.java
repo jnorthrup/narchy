@@ -1473,7 +1473,21 @@ public class ConjTest {
         */
         Term a = $.$("(a &&+5 (--,a))");
         Term b = $.$("((b &&+5 (--,b)) &&+5 (--,c))");
-        assertEq("((a &&+5 ((--,a)&&b)) &&+5 ((--,b) &&+5 (--,c)))", Op.terms.conjAppend(a, 5, b));
+        assertEq("((a &&+5 ((--,a)&&b)) &&+5 ((--,b) &&+5 (--,c)))", Op.terms.conjMerge(a, 5, b));
+        assertEq("(((a &&+5 (--,a)) &&+5 b) &&+5 ((--,b) &&+5 (--,c)))", Op.terms.conjAppend(a, 5, b));
+    }
+
+    @Test void testConjSeqWtf() {
+        Term t = CONJ.the(606,
+                $$$("((tetris(#1,13) &&+42 (tetris(#1,13)&&(tetris-->#2)))&&(--,tetris(#3,#_f)))"),
+                $$$("(tetris-->#2)"));
+        assertEq("(((tetris(#1,13) &&+42 (tetris(#1,13)&&(tetris-->#2)))&&(--,tetris(#3,#_f))) &&+606 (tetris-->#2))",
+                t);
+
+        Term u = t.anon();
+        assertEq("(((_2(#1,_1) &&+42 (_2(#1,_1)&&(_2-->#2)))&&(--,_2(#3,#_f))) &&+606 (_2-->#2))", u);
+        assertEquals(t.volume(), u.volume());
+
     }
 
     @Test

@@ -191,15 +191,11 @@ public abstract class AbstractTaskLink implements TaskLink {
         if (incoming instanceof AtomicTaskLink) {
             switch (returning) {
                 case Overflow:
+                case Delta:
                     float o = 0;
                     for (byte i = 0; i < 4; i++)
-                        o += merge(i, incoming.priIndex(i), merge, Overflow);
+                        o += merge(i, incoming.priIndex(i), merge, returning);
                     return o/4;
-                case Delta:
-                    float delta = 0;
-                    for (byte i = 0; i < 4; i++)
-                        delta += merge(i, incoming.priIndex(i), merge, Delta);
-                    return delta/4;
                 case Void:
                     for (byte i = 0; i < 4; i++)
                         merge(i, incoming.priIndex(i), merge, Void);

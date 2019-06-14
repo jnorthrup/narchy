@@ -95,11 +95,16 @@ public enum Conj  { ;
         else //if (polarity == +1)
             x = _x;
 
+        if (container.equals(x))
+            return false;
+
+        return _eventOf(container, when, x);
+    }
+
+    public static boolean _eventOf(Term container, long when, Term x) {
         if (!x.op().eventable || !Term.commonStructure(container.structure() & ~(CONJ.bit), x.structure() & ~(CONJ.bit)))
             return false;
 
-        if (container.equals(x))
-            return false;
 
         boolean containerSeq = Conj.isSeq(container);
         if (when == ETERNAL && x.op() == CONJ && x.dt() == DTERNAL && container.dt() == DTERNAL) {
@@ -146,7 +151,6 @@ public enum Conj  { ;
                     , when, true, container.dt() == XTERNAL);
         } else
             return false;
-
     }
 
 //    public static boolean isEventFirstOrLast(Term container, Term x, boolean firstOrLast) {

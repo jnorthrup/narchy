@@ -20,10 +20,7 @@ import nars.op.Replace;
 import nars.op.UniSubst;
 import nars.subterm.Subterms;
 import nars.task.proxy.SpecialTruthAndOccurrenceTask;
-import nars.term.Compound;
-import nars.term.Functor;
-import nars.term.Term;
-import nars.term.Variable;
+import nars.term.*;
 import nars.term.anon.AnonWithVarShift;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
@@ -32,7 +29,6 @@ import nars.term.buffer.TermBuffer;
 import nars.term.functor.AbstractInlineFunctor1;
 import nars.term.util.TermTransformException;
 import nars.term.util.builder.HeapTermBuilder;
-import nars.term.util.builder.TermBuilder;
 import nars.term.util.map.ByteAnonMap;
 import nars.term.util.transform.InstantFunctor;
 import nars.term.util.transform.TermTransform;
@@ -54,8 +50,7 @@ import java.util.function.Predicate;
 import static nars.Op.BELIEF;
 import static nars.Op.GOAL;
 import static nars.term.buffer.TermBuffer.INITIAL_ANON_SIZE;
-import static nars.time.Tense.ETERNAL;
-import static nars.time.Tense.TIMELESS;
+import static nars.time.Tense.*;
 
 
 /**
@@ -108,16 +103,26 @@ public class Derivation extends PreDerivation {
         protected boolean evalInline() {
             return false;
         }
+
     };
-    final TermBuffer directTermBuilder = new TermBuffer(null, new ByteAnonMap(INITIAL_ANON_SIZE)) {
+    final TermBuffer directTermBuilder = new TermBuffer(HeapTermBuilder.the, new ByteAnonMap(INITIAL_ANON_SIZE)) {
         @Override
         protected boolean evalInline() {
             return false;
         }
 
         @Override
-        protected Term compound(Op op, int dt, Term[] subterms) {
-            return HeapTermBuilder.the.newCompound(op, dt, subterms);
+        protected Term newCompound(Op o, int dt, Term[] subterms) {
+            //return super.newCompound(op, dt, subterms);
+
+            if (o.commutative && Tense.dtSpecial(dt)) {
+                if (dt!=XTERNAL)
+                    subterms = Terms.commute(subterms);
+                else
+                    Arrays.sort(subterms.clone() /* to be safe */);
+            }
+
+            return HeapTermBuilder.the.newCompound(o, dt, subterms);
         }
     };
     final Functor polarizeTask = new AbstractInstantFunctor1("polarizeTask") {
@@ -133,8 +138,8 @@ public class Derivation extends PreDerivation {
         @Override
         protected Term apply1(Term arg) {
             Truth b = Derivation.this.beliefTruth_at_Belief;
-            if (b == null)
-                throw new NullPointerException();
+//            if (b == null)
+//                throw new NullPointerException();
             return arg.negIf(b.isNegative());
         }
     };
@@ -248,12 +253,11 @@ public class Derivation extends PreDerivation {
                 , null, NAL.unify.UNIFICATION_STACK_CAPACITY
         );
 
-        TermBuilder b = Op.terms;
         this.anon = new AnonWithVarShift(ANON_INITIAL_CAPACITY, Op.VAR_DEP.bit | Op.VAR_QUERY.bit) {
 
             @Override
             protected final Term putCompound(Compound x) {
-                return x.transform(this, termBuilder, NAL.term.COMPOUND_VOLUME_MAX);
+                return x.transform(this, directTermBuilder, NAL.term.COMPOUND_VOLUME_MAX);
             }
 
             @Override

@@ -9,6 +9,8 @@ import nars.unify.Unify;
 import java.util.Arrays;
 import java.util.SortedSet;
 
+import static nars.Op.CONJ;
+import static nars.time.Tense.ETERNAL;
 import static nars.time.Tense.XTERNAL;
 
 public class ConjUnify {
@@ -75,5 +77,40 @@ public class ConjUnify {
                     return xl.get(0).unify(yl.get(0), u);
             }
         }
+    }
+
+    /** xx smaller */
+    public static boolean eventsCommon(Term x, Term y) {
+        if (x.op()!=CONJ || y.op()!=CONJ || !Term.commonStructure(x.subterms(), y.subterms()))
+            return false;
+
+        if (x.volume() > y.volume()) {
+            //swap
+            Term z = y;
+            y = x;
+            x = z;
+        }
+
+        Term Y = y;
+        return !x.eventsAND((when, xx) -> {
+            if (Conj._eventOf(Y, ETERNAL, xx))
+                return false;
+            else
+                return true;
+        }, 0, true, true);
+
+
+//        if (y.subterms().containsAny(x.subterms()))
+//        if (!Conj.isSeq(x) && !Conj.seq(y)) {
+//            return ;
+//        } else {
+//
+//            ConjList xe = ConjList.events(x);
+//
+//            //return !scan(yy, (when, what) -> !xe.remove(when, what));
+//            return !y.eventsAND((when, what)->!xe.remove(when,what),
+//                    Conj.isSeq(y) ? ETERNAL : 0, true, false);
+//        }
+
     }
 }

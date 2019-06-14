@@ -3,7 +3,6 @@ package nars.term.util.conj;
 import jcog.WTF;
 import jcog.data.bit.MetalBitSet;
 import jcog.data.set.LongObjectArraySet;
-import nars.$;
 import nars.Task;
 import nars.subterm.Subterms;
 import nars.term.Compound;
@@ -19,6 +18,7 @@ import java.util.Arrays;
 import static nars.Op.CONJ;
 import static nars.Op.NEG;
 import static nars.term.atom.Bool.*;
+import static nars.term.util.conj.ConjUnify.eventsCommon;
 import static nars.time.Tense.*;
 
 /** utilities for working with conjunction sequences (raw sequences, and factored sequences) */
@@ -230,8 +230,10 @@ public enum ConjSeq { ;
         }
 
         if ((left.op() == CONJ && right.op() == CONJ) && !left.equals(right)) {
-            if (!Conj.isSeq(left) && !Conj.isSeq(right)) {
-                if (Subterms.common(left.subterms(), right.subterms())) {
+            if (eventsCommon(left,right)) {
+//            if (!Conj.isSeq(left) && !Conj.isSeq(right)) {
+//                if (Subterms.common(left.subterms(), right.subterms()))
+                {
                     //attempt reconsolidation if possible because factorization can be necessary
                     ConjTree c = new ConjTree();
                     c.addConjEvent(0, left);
@@ -239,7 +241,7 @@ public enum ConjSeq { ;
                     try {
                         return c.term(B);
                     } catch (StackOverflowError ee) {
-                        throw new TermException("conj seq stack overflow",$.p(left,right));
+                        throw new TermException("conj seq stack overflow",CONJ, dt, left, right);
                     }
                 }
             }
