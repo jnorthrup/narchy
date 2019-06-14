@@ -85,11 +85,11 @@ abstract public class MapSubst implements Subst {
     private static final class MapSubst2 extends MapSubst {
         final Term ax, ay, bx, by;
 
-        public MapSubst2(Map.Entry<? extends Term, Term> a, Map.Entry<? extends Term, Term> b){
+        MapSubst2(Map.Entry<? extends Term, Term> a, Map.Entry<? extends Term, Term> b){
             this(a.getKey(), a.getValue(), b.getKey(), b.getValue());
         }
 
-        public MapSubst2(Term ax, Term ay, Term bx, Term by) {
+        MapSubst2(Term ax, Term ay, Term bx, Term by) {
             this.ax = ax;
             this.ay = ay;
             this.bx = bx;

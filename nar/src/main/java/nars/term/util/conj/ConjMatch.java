@@ -9,6 +9,7 @@ import nars.derive.model.Derivation;
 import nars.op.UniSubst;
 import nars.term.Term;
 import nars.term.atom.Bool;
+import nars.term.util.Image;
 import org.eclipse.collections.api.set.ImmutableSet;
 import org.eclipse.collections.api.tuple.primitive.LongObjectPair;
 import org.eclipse.collections.impl.factory.Sets;
@@ -29,22 +30,24 @@ public enum ConjMatch { ;
     /**
      * returns the prefix or suffix sequence of a specific matched subevent
      */
-    public static Term beforeOrAfter(Term conj, Term event, boolean beforeOrAfter, Derivation d, int ttl /*, unifyOrEquals, includeMatchedEvent */) {
-
-
+    public static Term beforeOrAfter(Term conj, Term x, boolean beforeOrAfter, Derivation d, int ttl /*, unifyOrEquals, includeMatchedEvent */) {
         if (conj.op() != CONJ || conj.dt()==XTERNAL)
             return Null;
 
-        //event = Image.imageNormalize(event);
+        x = Image.imageNormalize(x);
+        if (!x.op().eventable)
+            return Null;
 
         int varBits =
                 VAR_DEP.bit | VAR_INDEP.bit;
                 //VAR_DEP.bit;
 
-        if (event.volume() >= conj.volume() || !Term.commonStructure( (event.structure()&(~varBits)),(conj.subterms().structure()&(~varBits))))
+        if (x.volume() >= conj.volume()-1)
+            return Null;
+        if (!Term.commonStructure( (x.structure()&(~varBits)),(conj.subterms().structure()&(~varBits))))
             return Null;
 
-        return beforeOrAfterSeq(conj, event, beforeOrAfter, varBits, d, ttl);
+        return beforeOrAfterSeq(conj, x, beforeOrAfter, varBits, d, ttl);
     }
 
     private static Term beforeOrAfterSeq(Term conj, Term event, boolean beforeOrAfter, int varBits, Derivation d, int ttl) {

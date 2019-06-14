@@ -108,8 +108,8 @@ public class Anon extends AbstractTermTransform.NegObliviousTermTransform {
             if (x instanceof Anom) {
                 return map.interned(((Anom) x).id());
             }
+            return x;
         }
-        return x;
     }
 
     protected Term getCompound(Compound x) {

@@ -7,6 +7,7 @@ import jcog.util.ArrayUtil;
 import nars.NAL;
 import nars.subterm.Subterms;
 import nars.term.Compound;
+import nars.term.Neg;
 import nars.term.Term;
 import nars.term.util.builder.TermBuilder;
 import nars.time.Tense;
@@ -21,7 +22,8 @@ import java.util.Random;
 import java.util.SortedSet;
 
 import static nars.Op.CONJ;
-import static nars.term.atom.Bool.*;
+import static nars.term.atom.Bool.Null;
+import static nars.term.atom.Bool.True;
 import static nars.time.Tense.*;
 
 /**
@@ -95,36 +97,40 @@ public enum Conj  { ;
         else //if (polarity == +1)
             x = _x;
 
-        if (container.equals(x))
+        if (!x.op().eventable || container.equals(x))
             return false;
 
         return _eventOf(container, when, x);
     }
 
-    public static boolean _eventOf(Term container, long when, Term x) {
-        if (!x.op().eventable || !Term.commonStructure(container.structure() & ~(CONJ.bit), x.structure() & ~(CONJ.bit)))
+    public static boolean _eventOf(Term conj, long when, Term x) {
+
+//        if (!Term.commonStructure(container.structure() & ~(CONJ.bit), x.structure() & ~(CONJ.bit)))
+//            return false;
+        if (!conj.hasAll(x.structure() & ~(CONJ.bit)))
+            return false;
+        if (conj.volume() < x.volume())
             return false;
 
-
-        boolean containerSeq = Conj.isSeq(container);
-        if (when == ETERNAL && x.op() == CONJ && x.dt() == DTERNAL && container.dt() == DTERNAL) {
+        boolean containerSeq = Conj.isSeq(conj);
+        if (when == ETERNAL && x.op() == CONJ && x.dt() == DTERNAL && conj.dt() == DTERNAL) {
             //decompose eternal (test before container.impossibleSubterm)
 
             //TODO accelerated 'flat' case: if (when == ETERNAL && container.op()==CONJ && container.dt()==)
 
              if (!containerSeq)
-                return x.subterms().AND(xx -> eventOf(container, xx, when, 1));
+                return x.subterms().AND(xx -> eventOf(conj, xx, when, 1));
              else {
-                 return container.eventsOR((when2, what)->{
+                 return conj.eventsOR((when2, what)->{
                      return (when==ETERNAL || when2==when) && (x.equals(what) || eventOf(what, x, ETERNAL, 1));
                  }, 0, false, true);
              }
         }
 
-        if (container.impossibleSubTerm(x))
+        if (conj.impossibleSubTerm(x))
             return false;
 
-        if ((when == ETERNAL || (when == 0 && !containerSeq)) && container.contains(x)) //quick test
+        if ((when == ETERNAL || (when == 0 && !containerSeq)) && conj.contains(x)) //quick test
             return true;
 
         if (isSeq(x)) {
@@ -136,19 +142,19 @@ public enum Conj  { ;
 
             //TODO fast 2-ary case
 
-            return (when == ETERNAL || when == 0) ? !Conj.diffAll(container, x).equals(container)
+            return (when == ETERNAL || when == 0) ? !Conj.diffAll(conj, x).equals(conj)
                     :
                     false; //TODO
 
         } else if (containerSeq) {
-            return !container.eventsAND(
+            return !conj.eventsAND(
                     when == ETERNAL ?
                             (w, cc) -> !(x.equals(cc) || eventOf(cc, x, ETERNAL, 1))
                             //     !x.equals(cc)
                             :
                             (w, cc) -> !(w == when && (x.equals(cc) || eventOf(cc, x, 0, 1)))
                     //    !(w == when && x.equals(cc))
-                    , when, true, container.dt() == XTERNAL);
+                    , when, true, conj.dt() == XTERNAL);
         } else
             return false;
     }

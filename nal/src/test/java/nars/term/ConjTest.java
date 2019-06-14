@@ -1097,7 +1097,9 @@ public class ConjTest {
     @Test
     void testRetemporalization1a() throws Narsese.NarseseException {
 
-        assertEq(False /*"x"*/, $$("((--,(x &&+1 x))&&x)"));
+        assertEq("((--,y)&&x)", $$("((--,(x&&y))&&x)"));
+        assertEq("x", $$("((--,(x &&+1 x))&&x)"));
+        assertEq(False, $$("((--,x)&&x)"));
     }
     @Test
     void testRetemporalization1b() throws Narsese.NarseseException {

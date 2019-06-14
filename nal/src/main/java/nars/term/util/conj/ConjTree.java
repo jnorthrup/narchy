@@ -69,37 +69,26 @@ public class ConjTree implements ConjBuilder {
     }
 
     private boolean addParallelP(Term p) {
-        if (p instanceof Compound) {
-            assert (p.op() != NEG);
-
-            if (p.op() == CONJ) {
-                if (p.dt() == XTERNAL || Conj.isSeq(p)) {
-//                    for (Term what : p.subterms()) {
-//                        if (validate(what))
-//                            return false; //contradiction
-//                    }
-                    if (pos != null || neg != null) {
-                        if (!p.eventsAND((when, what) -> validatePosNeg(what), 0, true, true)) {
-                            terminate(False);
-                            return false;
-                        }
-                    }
-                    //continue below
-                } else {
-                    //decompose parallel conj
-                    if (!Conj.isSeq(p)) {
-                        return p.subterms().AND(this::addParallel);
-                    }
+        assert(!(p instanceof Neg));
+        if (p instanceof Compound && p.op() == CONJ) {
+            if (p.dt() != XTERNAL && !Conj.isSeq(p)) {
+                return p.AND(this::addParallel); //decompose parallel conj
+            } else {
+                if ((neg != null) &&
+                        !p.eventsAND((when, what) -> !neg.contains(what), 0, true, true)) {
+                    terminate(False);
+                    return false;
                 }
+                //continue below
             }
         }
-
-        if (pos != null && pos.contains(p))
-            return true;
         if (neg != null && neg.contains(p)) {
             terminate(False);
             return false;
         }
+        if (pos != null && pos.contains(p))
+            return true;
+
 
         if (neg != null) {
             p = reducePN(p, neg, false);
@@ -133,17 +122,15 @@ public class ConjTree implements ConjBuilder {
         assert (n instanceof Neg);
         Term nu = n.unneg();
 
+        if (pos != null && pos.contains(nu)) {
+            terminate(False);
+            return false;
+        }
 
         if (neg != null && neg.contains(nu))
             return true;
-        if (pos != null) {
-            if (pos.contains(nu)) {
-                terminate(False);
-                return false;
-            }
-        }
 
-        if (pos != null && !(nu instanceof Bool)) {
+        if (pos != null) {
             nu = reducePN(nu, pos, true);
             if (nu instanceof Neg)
                 return addParallelP(nu.unneg()); //became positive
