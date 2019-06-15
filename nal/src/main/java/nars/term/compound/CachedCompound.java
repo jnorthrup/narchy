@@ -6,7 +6,6 @@ import nars.subterm.Subterms;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.atom.Interval;
-import nars.term.util.conj.ConjSeq;
 import nars.term.util.transform.Retemporalize;
 import org.eclipse.collections.api.block.predicate.primitive.LongObjectPredicate;
 
@@ -47,7 +46,7 @@ abstract public class CachedCompound extends SeparateSubtermsCompound implements
         } else {
 //            if (op==CONJ && dt == DTERNAL) Util.nop(); //TEMPORARY for debugging
             if (subterms.sub(subterms.subs() - 1) instanceof Interval) {
-                c = new ConjSeq.ConjSequence(subterms);
+                c = new Sequence(subterms);
             } else {
                 c = new TemporalCachedCompound(op, dt, subterms);
             }

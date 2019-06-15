@@ -63,7 +63,7 @@ public class Inperience2 extends How {
             if (tl!=null && tasklinkTried.add(tl.from())) {
 
                 Task t = tl.get(when);
-                if (t != null && t.term().volume() <= volMaxPre && !(t instanceof SeriesBeliefTable.SeriesTask)) {
+                if (t != null && accept(volMaxPre, t)) {
 
                     Task u = null;
                     if (t.isBeliefOrGoal()) {
@@ -90,6 +90,20 @@ public class Inperience2 extends How {
             return kontinue.getAsBoolean();
         });
 
+    }
+
+    private boolean accept(int volMax, Task t) {
+        if (t instanceof SeriesBeliefTable.SeriesTask)
+            return false;
+
+        Term tt = t.term();
+        if (tt.volume() > volMax)
+            return false;
+
+        if (tt.hasAny(Op.CONJ))
+            return false; //HACK temporary
+
+        return true;
     }
 
     private boolean validReification(Term r, int volMax) {

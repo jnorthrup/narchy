@@ -615,7 +615,10 @@ public interface Subterms extends Termlike, Iterable<Term> {
         return -1;
     }
     default boolean impossibleSubTerm(Termlike target) {
-        return impossibleSubStructure(target.structure()) || impossibleSubVolume(target.volume());
+        return impossibleSubTerm(target.structure(), target.volume());
+    }
+    default boolean impossibleSubTerm(int structure, int volume) {
+        return impossibleSubStructure(structure) || impossibleSubVolume(volume);
     }
 
 
@@ -1219,11 +1222,10 @@ public interface Subterms extends Termlike, Iterable<Term> {
         Term x = sub(which);
         Term y = f.apply(x);
         if (x!=y) {
-            Term[] xx = arrayClone();
-            xx[which] = y;
-            return Op.terms.subterms(xx);
-        }
-        else
+            Term[] yy = arrayClone();
+            yy[which] = y;
+            return Op.terms.subterms(yy);
+        } else
             return this;
     }
 
@@ -1271,14 +1273,14 @@ public interface Subterms extends Termlike, Iterable<Term> {
                         return EmptySubterms; //the empty ellipsis is the only subterm
                 }
 
-                if (s == 1) {
-                    //it is only this ellipsis match so inline it by transforming directly and returning it (tail-call)
-                    return ee.transformSubs(f, superOp);
-                } else {
+//                if (s == 1) {
+//                    //it is only this ellipsis match so inline it by transforming directly and returning it (tail-call)
+//                    return ee.transformSubs(f, superOp);
+//                } else {
                     y = transformSubInline(ee, f, y, s, i);
                     if (y == null)
                         return null;
-                }
+//                }
 
 
             } else {

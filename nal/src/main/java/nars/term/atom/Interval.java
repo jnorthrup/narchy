@@ -126,6 +126,10 @@ public final class Interval extends AbstractAtomic implements The, Iterable<Byte
     public Term key(int i, Subterms subterms) {
         return subterms.sub(this.key[i]);
     }
+    public Term key(int i, Term[] subterms) {
+        return subterms[this.key[i]];
+    }
+
     public int value(int i) {
         return value[i];
     }

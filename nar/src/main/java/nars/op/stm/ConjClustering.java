@@ -10,16 +10,17 @@ import jcog.pri.Prioritized;
 import jcog.util.ArrayUtil;
 import nars.NAL;
 import nars.NAR;
+import nars.Op;
 import nars.Task;
 import nars.attention.What;
 import nars.bag.BagClustering;
 import nars.control.CauseMerge;
 import nars.control.How;
 import nars.control.channel.CauseChannel;
-import nars.task.proxy.ImageTask;
 import nars.task.NALTask;
 import nars.task.TemporalTask;
 import nars.task.UnevaluatedTask;
+import nars.task.proxy.ImageTask;
 import nars.task.util.TaskException;
 import nars.task.util.TaskList;
 import nars.term.Term;
@@ -433,7 +434,7 @@ public class ConjClustering extends How {
             if (t != null) {
 
                 int ditherDT = nar.dtDither.intValue();
-                Term cj = ConjSeq.sequence(x, ditherDT);
+                Term cj = ConjSeq.sequence(x, ditherDT, Op.terms);
                 if (cj.volume() > 1) {
 
                     Term x1 = cj;

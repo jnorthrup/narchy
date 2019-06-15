@@ -513,7 +513,7 @@ public class ConjTest {
 
     @Test
     void testInvalidDisjSeq() {
-        assertEq(True, Conj.diffAll($$("((a &&+1 b)&&c)"), $$("c")));
+        assertEq("(a &&+1 b)", Conj.diffAll($$("((a &&+1 b)&&c)"), $$("c")));
 
         Term a = $$("(--,((a &&+1 b)&&c))");
         Term c = $$("c");
@@ -1963,6 +1963,7 @@ public class ConjTest {
 
     @Test
     void testSequentialDisjunctionAbsorb2() {
+        assertFalse(Conj.eventOf($$("(--R &&+600 jump)"), $$("R")));
         assertEq("((--,R)&&(--,jump))", "(--R && --(--R &&+600 jump))");
     }
 

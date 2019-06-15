@@ -688,13 +688,20 @@ public class ConjTree implements ConjBuilder {
                 if (terminal!=null)
                     return terminal;
 
-
-                int s1 = events.size();
-                switch (s1) {
+                int es = events.size();
+                switch (es) {
                     case 0: return null;
                     case 1: return events.get(0);
-                    default:
-                        return ConjSeq.conjSeq(B, events, 0, s1);
+                    default: {
+                        final int SEQ_THRESH =
+                                //2;
+                                //3;
+                                4;
+                        if (es > SEQ_THRESH)
+                            return ConjSeq.sequenceFlat(events);
+                        else
+                            return ConjSeq.sequenceBalancedTree(B, events, 0, es);
+                    }
                 }
 
             }

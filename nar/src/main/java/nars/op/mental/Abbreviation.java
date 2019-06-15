@@ -175,24 +175,12 @@ public class Abbreviation/*<S extends Term>*/ extends How {
         }
 
         @Override
-        public Term applyCompound(Compound x, Op newOp, int ydt) {
-            Term a = super.applyCompound(x, newOp, ydt);
+        public Term apply(Term x) {
+            Term a = super.apply(x);
 
-            if (a instanceof Compound && !(a.hasAny(Op.Variable))) {
-                return abbreviateTerm((Compound)a);
-//                Term ac = a.concept();
-//                if (a.equals(ac)) { //avoid temporals
-//                    Concept aa = resolver.apply(ac);
-//                    if (aa != null) {
-//                        Termed aaa = aa.meta(ABBREVIATION_META);
-//                        if (aaa != null)
-//                            return aa.term();
-//                            //return apply(aaa.term()); //abbreviation
-//                    }
-//                }
-            }
-            return a;
+            return a instanceof Compound && !a.hasAny(Op.Variable) ? abbreviateTerm((Compound) a) : a;
         }
+
 
     }
     final static class UNABBREVIATE extends AbstractTermTransform.NegObliviousTermTransform {

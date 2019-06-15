@@ -8,6 +8,7 @@ import nars.NAL;
 import nars.subterm.Subterms;
 import nars.term.Compound;
 import nars.term.Term;
+import nars.term.compound.Sequence;
 import nars.term.util.builder.TermBuilder;
 import nars.time.Tense;
 import org.eclipse.collections.api.block.predicate.primitive.ByteObjectPredicate;
@@ -99,128 +100,65 @@ public enum Conj  { ;
         if (!x.op().eventable || container.equals(x))
             return false;
 
-        return _eventOf(container, when, x);
+        return _eventOf(container, x, when);
     }
 
-    public static boolean _eventOf(Term conj, long when, Term x) {
+    private static boolean _eventOf(Term conj, Term x, long when) {
 
 //        if (!Term.commonStructure(container.structure() & ~(CONJ.bit), x.structure() & ~(CONJ.bit)))
 //            return false;
         if (!conj.hasAll(x.structure() & ~(CONJ.bit)))
             return false;
-        if (conj.volume() < x.volume())
+        if (conj.volume() <= x.volume())
             return false;
 
         boolean containerSeq = Conj.isSeq(conj);
-        if (when == ETERNAL && x.op() == CONJ && x.dt() == DTERNAL && conj.dt() == DTERNAL) {
-            //decompose eternal (test before container.impossibleSubterm)
-
-            //TODO accelerated 'flat' case: if (when == ETERNAL && container.op()==CONJ && container.dt()==)
-
-             if (!containerSeq)
-                return x.subterms().AND(xx -> eventOf(conj, xx, when, 1));
-             else {
-                 return conj.eventsOR((when2, what)->{
-                     return (when==ETERNAL || when2==when) && (x.equals(what) || eventOf(what, x, ETERNAL, 1));
-                 }, 0, false, true);
-             }
-        }
-
-        if (conj.impossibleSubTerm(x))
-            return false;
-
-        if ((when == ETERNAL || (when == 0 && !containerSeq)) && conj.contains(x)) //quick test
-            return true;
-
-        if (isSeq(x)) {
-            //more exhaustive match necessary
-//            return x.eventsWhile((wwhe,wwha)->{
+//        if (when == ETERNAL && x.op() == CONJ && x.dt() == DTERNAL && conj.dt() == DTERNAL) {
+//            //decompose eternal (test before container.impossibleSubterm)
 //
-//                return eventOf(wwhe);
-//            },0,true,container.dt()==XTERNAL);
+//            //TODO accelerated 'flat' case: if (when == ETERNAL && container.op()==CONJ && container.dt()==)
+//
+//             if (!containerSeq)
+//             else {
+//                 return conj.eventsOR((when2, what)->{
+//                     return (when==ETERNAL || when2==when) && (x.equals(what) || eventOf(what, x, ETERNAL, 1));
+//                 }, 0, false, true);
+//             }
+//        }
 
-            //TODO fast 2-ary case
 
-            return (when == ETERNAL || when == 0) ? !Conj.diffAll(conj, x).equals(conj)
-                    :
-                    false; //TODO
+        if (isSeq(x) ) {
 
-        } else if (containerSeq) {
-            return !conj.eventsAND(
-                    when == ETERNAL ?
-                            (w, cc) -> !(x.equals(cc) || eventOf(cc, x, ETERNAL, 1))
-                            //     !x.equals(cc)
-                            :
-                            (w, cc) -> !(w == when && (x.equals(cc) || eventOf(cc, x, 0, 1)))
-                    //    !(w == when && x.equals(cc))
-                    , when, true, conj.dt() == XTERNAL);
-        } else
-            return false;
+            if (!containerSeq)
+                return false;
+
+            if (conj.eventRange() < x.eventRange())
+                return false;
+
+            return ConjList.events(conj).contains(ConjList.events(x));
+
+        } else {
+
+            if (x.op()==CONJ && x.dt()==DTERNAL) {
+                //parallel
+                return x.subterms().AND(xx -> _eventOf(conj, xx, when));
+            } else {
+
+
+                if (conj.impossibleSubTerm(x))
+                    return false;
+
+                return conj.eventsOR(
+                        when == ETERNAL ?
+                                (w, cc) -> x.equals(cc) || (cc.op() == CONJ && _eventOf(cc, x, ETERNAL))
+                                :
+                                (w, cc) -> w == when && (x.equals(cc) || (cc.op() == CONJ && _eventOf(cc, x, 0)))
+                        //    !(w == when && x.equals(cc))
+                        , when, true, conj.dt() == XTERNAL);
+            }
+        }
     }
 
-//    public static boolean isEventFirstOrLast(Term container, Term x, boolean firstOrLast) {
-//        if (!x.op().eventable || container.op() != CONJ || container.impossibleSubTerm(x))
-//            return false;
-//
-//        boolean seq = isSeq(container);
-//        if (!seq) {
-//            return ConjCommutive.contains(container, x);
-//        } else {
-//            return ConjSeq.contains(container, x, firstOrLast);
-//        }
-//
-//    }
-
-    //    private static boolean isEventSequence(Term container, Term subseq, boolean neg, boolean firstOrLast) {
-//        if (neg)
-//            throw new TODO(); //may not even make sense
-//
-//        for (Term s : subseq.subterms())
-//            if (!container.containsRecursively(s))
-//                return false;
-//
-//        int containerDT = container.dt();
-//        if (containerDT ==0 || containerDT ==DTERNAL || containerDT ==XTERNAL)
-//            return true; //already met requirements since the container is unordered
-//
-//
-//        //compare the correct order and whether it appears in prefix or suffix as appropriate
-////        int range = container.eventRange();
-//        long elimStart = Long.MAX_VALUE, elimEnd = Long.MIN_VALUE;
-//        FasterList<LongObjectPair<Term>> events = container.eventList();
-//        elimNext: for (Term s : subseq.subterms()) {
-//            int n = events.size();
-//            int start = firstOrLast ? 0 : n-1, inc = firstOrLast ? +1 : -1;
-//            int k = start;
-//            for (int i = 0; i < n; i++) {
-//                LongObjectPair<Term> e = events.get(k);
-//                if (e.getTwo().equals(s)) {
-//                    long ew = e.getOne();
-//                    elimStart = Math.min(elimStart, ew);
-//                    elimEnd = Math.max(elimEnd, ew);
-//                    events.remove(k);
-//                    continue elimNext;
-//                }
-//                k += inc;
-//            }
-//            return false; //event not found
-//        }
-//
-//        if (events.isEmpty()) {
-//            //fully eliminated
-//            return false;
-//        }
-//
-//        for (LongObjectPair<Term> remain : events) {
-//            long w = remain.getOne();
-//            if (firstOrLast && w < elimStart)
-//                return false;//there is a prior event
-//            else if (!firstOrLast && w > elimEnd)
-//                return false;//there is a later event
-//        }
-//
-//        return true;
-//    }
 
     public static Term chooseEvent(Term conj, Random random, boolean decomposeParallel, LongObjectPredicate<Term> valid) {
 
@@ -514,52 +452,14 @@ public enum Conj  { ;
             return True;
 
 
-//        boolean eSeq = Conj.isSeq(exclude);
-//        Subterms ii = include.subterms();
-//        if (!eSeq && !Conj.isSeq(include)) {
-//
-//            Subterms es = exclude.subterms();
-//            MetalBitSet iei = ii.subsTrue(i -> !es.contains(i));
-//            int in = iei.cardinality();
-//            if (in < include.subs()) {
-//                if (in == 1)
-//                    return ii.sub(iei.first(true));
-//                else
-//                    return terms.conj(include.dt(), ii.subsIncluding(iei));
-//            } else {
-//                return include; //no change
-//            }
-//
-//        } else {
-//
-//
-//            ConjBuilder x = Conj.fromLazy(include);
-//            boolean[] removedSomething = new boolean[]{false};
-//
-//            long offset = exclude.dt() == DTERNAL && !Conj.isSeq(exclude) ? ETERNAL : 0;
-//
-//            exclude.eventsWhile((when, what) -> {
-//                removedSomething[0] |= when == ETERNAL ? x.removeAll(what) : x.remove(when, what);
-//                return true;
-//            }, offset, true, true, false);
-//
-//            return removedSomething[0] ? x.term() : include;
-//
-//
-//        }
-
         boolean iSeq = isSeq(include);
         boolean eSeq = isSeq(exclude);
         if (iSeq && eSeq) {
-            Subterms iis = include.subterms();
 
-            if (iis.contains(exclude))
-                return removeComm(include, exclude); //simple raw equality test
 
             //fast 2-ary test
             ConjList ee = ConjList.events(exclude);
             if (ee.size() == 2 && ee.when(0) == 0) {
-                //ee.sortThis();
                 boolean modified = false;
                 Term eeFirst = ee.get(0);
                 Term eeSecond = ee.get(1);
@@ -612,27 +512,18 @@ public enum Conj  { ;
 //            else
 //                return include;
 
-        } else if (iSeq && !eSeq) {
+        } else if (iSeq) {
 
-            if (ConjSeq.isFactoredSeq(include) && include.contains(exclude)) {
-                //inseperable factored component - eliminate entirely
-                return True;
-            }
-
-            ConjBuilder ii =
-                    //Conj.events(include);
-                    ConjList.events(include);
+            ConjBuilder ii = ConjList.events(include);
 
             boolean[] removedSomething = new boolean[]{false};
-
-
-
             exclude.eventsAND((when, what) -> {
                 removedSomething[0] |= ii.removeAll(what);
                 return true;
             }, ETERNAL, true, exclude.dt() == XTERNAL);
 
             return removedSomething[0] ? ii.term() : include;
+
 //        } else {
 //            Subterms s = include.subterms();
 //            //try positive first
@@ -655,9 +546,7 @@ public enum Conj  { ;
 //            }
 
         } else {
-            //if (exclude.op()==CONJ && exclude.dt()==include.dt() && (include.dt()==XTERNAL || (include.dt()==DTERNAL && !isSeq(include)))) {
             return removeComm(include, exclude);
-            //}
         }
     }
 
@@ -665,6 +554,7 @@ public enum Conj  { ;
      * exclude must be a simple event
      */
     public static Term removeComm(Term include, Term exclude) {
+
 
         Subterms incSub = include.subterms();
         if (incSub.subs() == 2 && exclude.op() != CONJ) {
@@ -1373,7 +1263,7 @@ public enum Conj  { ;
      * whether the conjunction is a sequence (includes check for factored inner sequence)
      */
     public static boolean isSeq(Term x) {
-        if (x instanceof ConjSeq.ConjSequence)
+        if (x instanceof Sequence)
             return true;
         if (!(x instanceof Compound) || x.op() != CONJ)
             return false;

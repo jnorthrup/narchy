@@ -10,6 +10,7 @@ import nars.Task;
 import nars.subterm.Subterms;
 import nars.subterm.TermList;
 import nars.term.*;
+import nars.term.compound.Sequence;
 import nars.term.util.cache.Intermed;
 import nars.time.Tense;
 import org.eclipse.collections.api.RichIterable;
@@ -52,6 +53,9 @@ import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
 public class Factorize {
 
     public static Term apply(Term x, int volMax) {
+        if (x instanceof Sequence)
+            return x; //HACK incompatible with sequences for now
+
         Op xo = x.op();
         if (xo == NEG) {
             Term xu = x.unneg();

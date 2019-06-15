@@ -5,10 +5,8 @@ import nars.subterm.Subterms;
 import nars.term.Compound;
 import nars.term.Neg;
 import nars.term.Term;
-import nars.term.atom.Bool;
 
-import static nars.Op.*;
-import static nars.term.atom.Bool.Null;
+import static nars.Op.PROD;
 import static nars.time.Tense.DTERNAL;
 import static nars.time.Tense.XTERNAL;
 
@@ -17,10 +15,10 @@ import static nars.time.Tense.XTERNAL;
  */
 public interface AbstractTermTransform extends TermTransform, nars.term.util.builder.TermConstructor {
 
-    private static Term eval(Subterms yy) {
-        Term p = yy.sub(1);
+    public static Term evalInhSubs(Subterms inhSubs) {
+        Term p = inhSubs.sub(1);
         if (p instanceof InlineFunctor) {
-            Term s = yy.sub(0);
+            Term s = inhSubs.sub(0);
             if (s.op() == PROD) {
                 Term v = ((InlineFunctor) p /* pred */).applyInline(s /* args */);
                 if (v != null)
@@ -38,69 +36,10 @@ public interface AbstractTermTransform extends TermTransform, nars.term.util.bui
     }
 
     default Term applyCompound(Compound x, Op newOp, int ydt) {
-
-        boolean sameOpAndDT = newOp == null;
-        Op xop = x.op();
-
-
-        Op yOp = sameOpAndDT ? xop : newOp;
-        Subterms xx = x.subterms();
-
-        Subterms yy = xx.transformSubs(this, yOp);
-
-        if (yy == null)
-            return Null;
-
-        int xdt = x.dt();
-        if (yy == xx && (sameOpAndDT || (xop == yOp && xdt == ydt)))
-            return x; //no change
-
-        if (yOp == CONJ) {
-            if (yy == Op.FalseSubterm)
-                return Bool.False;
-            if (yy.subs() == 0)
-                return Bool.True;
-        }
-
-        if (yOp == INH && evalInline()) {
-            Term v = eval(yy);
-            if (v != null)
-                return v;
-        }
-
-
-
-
-        if (yOp.temporal) {
-            if (sameOpAndDT) {
-                ydt = xdt;
-            }
-
-            if (ydt != XTERNAL)
-                ydt = realign(ydt, xx, yy);
-
-            if (ydt == 0) ydt = DTERNAL; //HACK
-
-        } else
-            ydt = DTERNAL;
-
-
-        if (yy != xx) {
-            //transformed subterms
-            return compound(yOp, ydt, yy);
-        } else {
-            if (yOp == xop) {
-                //same op and same subterms, maybe different dt
-                return xdt != ydt ? x.dt(ydt) : x;
-            } else {
-                //same subterms, different op
-                return compound(yOp, ydt, xx);
-            }
-        }
-
+        return x.transform(this, newOp, ydt);
     }
 
-    private static int realign(int ydt, Subterms xx, Subterms yy) {
+    static int realign(int ydt, Subterms xx, Subterms yy) {
         if (ydt == DTERNAL)
             ydt = 0; //HACK
 
@@ -128,12 +67,6 @@ public interface AbstractTermTransform extends TermTransform, nars.term.util.bui
     }
 
 
-    /**
-     * constructs a new target for a result
-     */
-//    default Term the(Op op, int dt, TermList t) {
-//        return the(op, dt, (Subterms)t);
-//    }
     @Override
     default Term compound(Op op, int dt, Subterms t) {
         return op.the(dt, t);

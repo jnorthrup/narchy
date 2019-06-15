@@ -29,12 +29,14 @@ import nars.The;
 import nars.io.TermAppender;
 import nars.subterm.Subterms;
 import nars.term.anon.Anon;
+import nars.term.atom.Bool;
 import nars.term.compound.UnitCompound;
 import nars.term.util.TermTransformException;
 import nars.term.util.builder.TermBuilder;
 import nars.term.util.conj.Conj;
 import nars.term.util.conj.ConjSeq;
 import nars.term.util.conj.ConjUnify;
+import nars.term.util.transform.AbstractTermTransform;
 import nars.term.util.transform.MapSubst;
 import nars.term.util.transform.Retemporalize;
 import nars.unify.Unify;
@@ -46,6 +48,8 @@ import java.util.function.BiPredicate;
 import java.util.function.Predicate;
 
 import static nars.Op.CONJ;
+import static nars.Op.INH;
+import static nars.term.atom.Bool.Null;
 import static nars.time.Tense.*;
 
 /**
@@ -372,12 +376,12 @@ public interface Compound extends Term, IPair, Subterms {
      * replaces the 'from' target with 'to', recursively
      */
     default Term replace(Term from, Term to) {
-        if (this.equals(from))
-            return to;
-        else if (impossibleSubTerm(from))
-            return this;
-        else
-            return MapSubst.replace(from, to).apply(this);
+//        if (this.equals(from))
+//            return to;
+//        else if (impossibleSubTerm(from))
+//            return this;
+//        else
+            return MapSubst.replace(from, to).applyCompound(this);
 
 //
 //        Subterms oldSubs = subterms();
@@ -688,9 +692,58 @@ public interface Compound extends Term, IPair, Subterms {
     }
 
 
-//    default Term transform(TermTransform f) {
-//        return f.applyCompound(this);
-//    }
+    default Term transform(AbstractTermTransform f, Op newOp, int ydt) {
+
+        Compound x = this;
+        int xdt = x.dt();
+        Op xOp = x.op();
+        Op yOp;
+        if (newOp == null) {
+            yOp = xOp;
+            ydt = xdt;
+        } else {
+            yOp = newOp;
+        }
+
+
+        Subterms xx = x.subterms();
+
+        Subterms yy = xx.transformSubs(f, yOp);
+        if (yy == null)
+            return Null;
+
+        //try eval first (even if untransformed)
+        if (yOp == INH && f.evalInline()) {
+            Term v = AbstractTermTransform.evalInhSubs(yy);
+            if (v != null)
+                return v;
+        }
+
+        if (yy == xx && xOp == yOp && xdt == ydt)
+            return x; //no change
+
+        //inline reductions
+        if (yOp == CONJ) {
+            if (yy == Op.FalseSubterm)
+                return Bool.False;
+            if (yy.subs() == 0)
+                return Bool.True;
+        }
+
+        //dt adjust
+        if (yOp.temporal) {
+
+            if (ydt != XTERNAL)
+                ydt = AbstractTermTransform.realign(ydt, xx, yy);
+
+            if (ydt == 0) ydt = DTERNAL; //HACK
+
+            if (xx == yy && yOp == xOp && xdt == ydt)
+                return x; //remains unchanged
+        }
+
+        return f.compound(yOp, ydt, yy);
+    }
 
 
     default Term eventFirst() {

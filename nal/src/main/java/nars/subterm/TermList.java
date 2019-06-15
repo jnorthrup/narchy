@@ -28,6 +28,10 @@ public class TermList extends FasterList<Term> implements Subterms {
         super(0, new Term[copied.subs()]);
         copied.forEach(this::addFast);
     }
+    public TermList(Subterms copied, int from, int to) {
+        super(0, new Term[to-from]);
+        copied.forEach(this::addFast, from, to);
+    }
 
     public final void addAllNegated(Iterable<Term> x) {
         x.forEach(this::addNegated);

@@ -92,12 +92,7 @@ public class ConjUnify {
         }
 
         Term Y = y;
-        return !x.eventsAND((when, xx) -> {
-            if (Conj._eventOf(Y, ETERNAL, xx))
-                return false;
-            else
-                return true;
-        }, 0, true, true);
+        return x.eventsOR((when, xx) -> Conj.eventOf(Y, xx, ETERNAL, 1), ETERNAL, true, true);
 
 
 //        if (y.subterms().containsAny(x.subterms()))

@@ -10,9 +10,9 @@ import nars.term.Term;
 import nars.term.atom.Atomic;
 import nars.term.atom.Interval;
 import nars.term.compound.SeparateSubtermsCompound;
+import nars.term.compound.Sequence;
 import nars.term.util.conj.Conj;
 import nars.term.util.conj.ConjList;
-import nars.term.util.conj.ConjSeq;
 
 import java.util.Random;
 import java.util.function.Function;
@@ -104,7 +104,7 @@ public abstract class DynamicTermLinker implements TermLinker {
 
         @Override
         protected Term choose(Subterms _s, int n, Term parent, Random rng) {
-            if (parent instanceof ConjSeq.ConjSequence) {
+            if (parent instanceof Sequence) {
 
             } else if (parent.op()==CONJ && _s.hasAny(CONJ) && Conj.isSeq(parent) && rng.nextBoolean()) {
                 _s = ConjList.events(parent).asSubterms(false);

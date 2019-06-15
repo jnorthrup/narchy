@@ -2,25 +2,21 @@ package nars.term.util.conj;
 
 import jcog.WTF;
 import jcog.data.bit.MetalBitSet;
-import jcog.util.ArrayUtil;
 import nars.Task;
-import nars.subterm.ArrayTermVector;
 import nars.subterm.Subterms;
 import nars.term.Compound;
 import nars.term.Neg;
 import nars.term.Term;
 import nars.term.atom.Bool;
 import nars.term.atom.Interval;
-import nars.term.compound.CachedCompound;
+import nars.term.compound.Sequence;
 import nars.term.util.TermException;
 import nars.term.util.builder.TermBuilder;
 import nars.term.util.map.ByteAnonMap;
 import nars.time.Tense;
-import org.eclipse.collections.api.block.predicate.primitive.LongObjectPredicate;
 
 import java.util.Arrays;
 import java.util.TreeSet;
-import java.util.function.IntPredicate;
 
 import static nars.Op.CONJ;
 import static nars.Op.NEG;
@@ -32,7 +28,7 @@ import static nars.time.Tense.*;
 public enum ConjSeq { ;
 
 
-    public static ConjSequence the(ConjList list) {
+    public static Sequence sequenceFlat(ConjList list) {
 
 
         int n = list.size();
@@ -62,82 +58,7 @@ public enum ConjSeq { ;
 
         Interval times = Interval.the(subterm, value);
 
-        return new ConjSequence(oa, times);
-    }
-
-    public static class ConjSequence extends CachedCompound.TemporalCachedCompound {
-
-
-        @Deprecated private final Interval times;
-
-        public ConjSequence(Subterms s) {
-            super(CONJ, XTERNAL, s);
-            this.times = (Interval) s.sub(s.subs()-1);
-            if (times.keyCount()+1!=s.subs()-1)
-                throw new TermException("interval subterm mismatch", this);
-        }
-
-        /** expects unique to be sorted in the final canonical unique ordering */
-        private ConjSequence(Term[] unique, Interval times) {
-            this(new ArrayTermVector(ArrayUtil.add(unique, times)) /* TODO use better facade/wrapper */);
-        }
-
-        @Override
-        public Term eventFirst() {
-            return times.key(0, subterms());
-        }
-        @Override
-        public Term eventLast() {
-            return times.key(times.size()-1, subterms());
-        }
-
-        @Override
-        public boolean subTimesWhile(Term match, IntPredicate each) {
-            int n = times.size();
-            Subterms ss = subterms();
-            for (int i = 0; i < n; i++) {
-                if (times.key(i, ss).equals(match))
-                    if (!each.test(Tense.occToDT(times.value(i))))
-                        return false;
-            }
-            return true;
-        }
-
-        @Override
-        public int eventRange() {
-            return Tense.occToDT(times.valueLast()-times.valueFirst());
-        }
-
-        @Override
-        public boolean hasXternal() {
-            return false; //TODO test that subterms do not
-        }
-
-        @Override
-        public boolean eventsAND(LongObjectPredicate<Term> each, long offset, boolean decomposeConjDTernal, boolean decomposeXternal) {
-            int n = times.size();
-            Subterms ss = subterms();
-            for (int i = 0; i < n; i++) {
-                long o = offset != ETERNAL ? times.value(i) + offset : ETERNAL;
-                Term x = times.key(i, ss);
-                if (x instanceof Compound && (decomposeConjDTernal || decomposeXternal) && x.op()==CONJ) {
-                    int xdt = x.dt();
-                    if ((decomposeConjDTernal && xdt ==DTERNAL) || (decomposeXternal && xdt == XTERNAL)) {
-                        for (Term xx : x.subterms()) {
-                            if (!each.accept(o, xx))
-                                return false;
-                        }
-                        continue;
-                    }
-
-                }
-
-                if (!each.accept(o, x))
-                    return false;
-            }
-            return true;
-        }
-
+        return new Sequence(oa, times);
     }
 
 
@@ -176,7 +97,7 @@ public enum ConjSeq { ;
         } else {
 //            //simple construction
 
-            return conjSeqFinal(Tense.occToDT(bStart-aStart), a, b, B);
+            return sequenceLeafPair(Tense.occToDT(bStart-aStart), a, b, B);
 //            if (aStart > bStart)
 //            assert (aStart < bStart);
 //            LongObjectArraySet<Term> ab = new LongObjectArraySet(2);
@@ -253,13 +174,7 @@ public enum ConjSeq { ;
      * constructs a correctly merged conjunction from a list of events, in the sublist specified by from..to (inclusive)
      * assumes that all of the event terms have distinct occurrence times
      */
-    static Term conjSeq(TermBuilder B, ConjList events, int start, int end) {
-        final int SEQ_THRESH =
-                //2;
-                4;
-        if (start==0 && end == events.size() && (end-start) > SEQ_THRESH && events.eventOccurrences()>SEQ_THRESH)
-            return ConjSeq.the(events);
-
+    static Term sequenceBalancedTree(TermBuilder B, ConjList events, int start, int end) {
 
         Term first = events.get(start);
         int ee = end - start;
@@ -281,9 +196,9 @@ public enum ConjSeq { ;
             default: {
                 int center = events.centerByIndex(start, end);
                 //int center = events.centerByVolume(start, end);
-                left = conjSeq(B, events, start, center + 1);
+                left = sequenceBalancedTree(B, events, start, center + 1);
                 if (left == Null) return Null;
-                right = conjSeq(B, events, center + 1, end);
+                right = sequenceBalancedTree(B, events, center + 1, end);
                 long firstWhen = events.when(start);
                 dt = Tense.occToDT((events.when(center + 1) - firstWhen - left.eventRange()));
                 break;
@@ -293,10 +208,42 @@ public enum ConjSeq { ;
 
 
 
-        return conjSeqFinal(dt, left, right, B);
+        return sequenceLeafPair(dt, left, right, B);
     }
 
-    private static Term conjSeqFinal(int dt, Term left, Term right, TermBuilder B) {
+
+    /** TODO add support for supersampling to include task.end() features */
+    public static Term sequence(Task[] events, int ditherDT, TermBuilder B) {
+        int eventsSize = events.length;
+        switch (eventsSize) {
+            case 0:
+                return True;
+            case 1:
+                return sequenceTerm(events[0]);
+            case 2: {
+                //optimized 2-ary case
+                Task a = events[0];
+                Task b = events[1];
+                if (a.op() != CONJ && b.op() != CONJ) {
+                    return sequence(sequenceTerm(a), 0, sequenceTerm(b), b.start()-a.start(), B);
+                }
+                break;
+            }
+        }
+
+        ConjBuilder ce = new ConjTree();
+        for (Task o : events)
+            if (!ce.add(Tense.dither(o.start(), ditherDT), sequenceTerm(o))) {
+                break;
+        }
+
+        return ce.term(B);
+    }
+    private static Term sequenceTerm(Task o) {
+        return o.term().negIf(o.isNegative());
+    }
+
+    private static Term sequenceLeafPair(int dt, Term left, Term right, TermBuilder B) {
         if (dt == 0 || dt == DTERNAL) {
             return B.conj(DTERNAL, left, right);
         }
@@ -361,8 +308,6 @@ public enum ConjSeq { ;
             }
         }
 
-
-
         if (dt == 0)
             dt = DTERNAL; //HACK
 
@@ -370,54 +315,4 @@ public enum ConjSeq { ;
 
     }
 
-    /** TODO add support for supersampling to include task.end() features */
-    public static Term sequence(Task[] events, int ditherDT) {
-        int eventsSize = events.length;
-        switch (eventsSize) {
-            case 0:
-                return True;
-            case 1:
-                return sequenceTerm(events[0]);
-        }
-
-        ConjBuilder ce = new ConjTree();
-        for (Task o : events) {
-            if (!ce.add(Tense.dither(o.start(), ditherDT), sequenceTerm(o))) {
-                break;
-            }
-        }
-
-        return ce.term();
-    }
-    private static Term sequenceTerm(Task o) {
-        return o.term().negIf(o.isNegative());
-    }
-
-//    public static boolean contains(Term container, Term x, boolean firstOrLast) {
-//        final long[] last = {-1}, found = {-1};
-//
-//        int xdt = x.dt();
-//        container.eventsWhile((when, subEvent) -> {
-//
-//            if (subEvent == container) return true; //HACK
-//
-//            if (Conj.containsOrEqualsEvent(subEvent, x)) { //recurse
-//
-//                if (!firstOrLast || when == 0) {
-//                    found[0] = when; //a later event was found
-//
-//                    if (firstOrLast) {
-//                        assert (when == 0);
-//                        return false; //done
-//                    }
-//                }
-//
-//            }
-//            last[0] = when;
-//            return true; //continue looking for last event
-//        }, 0, xdt!=0, xdt!=DTERNAL, false);
-//
-//        return firstOrLast ? found[0] == 0 : found[0] == last[0];
-//
-//    }
 }

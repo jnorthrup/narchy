@@ -20,6 +20,7 @@ import org.roaringbitmap.RoaringBitmap;
 
 import java.util.Arrays;
 import java.util.Set;
+import java.util.function.BiPredicate;
 
 import static nars.Op.CONJ;
 import static nars.Op.NEG;
@@ -59,6 +60,11 @@ public class ConjList extends LongObjectArraySet<Term> implements ConjBuilder {
         return l;
     }
 
+    @Override
+    public boolean removeAll(Term x) {
+        return removeIf(x::equals);
+    }
+
     public static ConjList subtract(ConjList from, Term conj, long occOffset) {
         conj.eventsAND((when, what) -> {
             if (when == ETERNAL)
@@ -73,6 +79,47 @@ public class ConjList extends LongObjectArraySet<Term> implements ConjBuilder {
     private static long occAuto(Term conj, long occOffset) {
         return occOffset == TIMELESS ? (Conj.isSeq(conj) ? 0 : ETERNAL) : occOffset;
     }
+
+    public long _startIfSorted() {
+        return when[0];
+    }
+    public long _endIfSorted() {
+        return when[size()-1];
+    }
+
+    public boolean contains(ConjList other) {
+        return contains(other, Term::equals);
+    }
+
+    /** assumes they are both sorted and/or expanded/condensed in the same way */
+    public boolean contains(ConjList other, BiPredicate<Term,Term> equal) {
+        if (this == other) return true;
+        int s = size();
+        int os = other.size();
+        if (os > s) return false;
+        if (other._startIfSorted() < _startIfSorted() || other._endIfSorted() > _endIfSorted()) return false;
+        Term otherFirst = other.get(0);
+        for (int i = 0; i <= s - os; i++) {
+            if (equal.test(otherFirst, get(i))) {
+                return containsRemainder(other, i, equal);
+            }
+        }
+        return false;
+    }
+    private boolean containsRemainder(ConjList other, int at, BiPredicate<Term,Term> equal) {
+        int os = other.size();
+        long shift = when(at);
+        for (int i = 1; i < os; i++) {
+            if (when(at + i) - shift != other.when(i))
+                return false; //different times
+        }
+        for (int i = 1; i < os; i++) {
+            if (!equal.test(get(at+i),other.get(i)))
+                return false; //different items
+        }
+        return true;
+    }
+
 
     /**
      * consistent with ConjBuilder - semantics slightly different than superclass and List.addAt: returns true only if False or Null have been added; a duplicate value returns true

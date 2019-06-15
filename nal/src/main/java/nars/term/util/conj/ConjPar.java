@@ -6,6 +6,7 @@ import nars.term.Neg;
 import nars.term.Term;
 import nars.term.Terms;
 import nars.term.atom.Bool;
+import nars.term.compound.Sequence;
 import nars.term.util.builder.TermBuilder;
 import org.eclipse.collections.impl.map.mutable.primitive.ObjectByteHashMap;
 import org.jetbrains.annotations.Nullable;
@@ -72,7 +73,7 @@ public enum ConjPar {
             Term x = xx[i];
             if (x instanceof Neg) {
                 Term xu = x.unneg();
-                if (!(xu instanceof ConjSeq.ConjSequence) && xu.op() == CONJ && xu.dt()==DTERNAL) {
+                if (!(xu instanceof Sequence) && xu.op() == CONJ && xu.dt()==DTERNAL) {
                     if (cond == null) cond = MetalBitSet.bits(n);
                     cond.set(i);
                 }

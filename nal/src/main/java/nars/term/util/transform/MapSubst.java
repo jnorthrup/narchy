@@ -154,12 +154,16 @@ abstract public class MapSubst implements Subst {
 
         private final Compound from;
         private final Term to;
+        private final int fromStructure;
+        private final int fromVolume;
 
         /**
          * creates a substitution of one variable; more efficient than supplying a Map
          */
         SubstCompound(Compound from, Term to) {
             this.from = from;
+            this.fromStructure = from.structure();
+            this.fromVolume = from.volume();
             this.to = to;
         }
 
@@ -168,7 +172,7 @@ abstract public class MapSubst implements Subst {
         public @Nullable Term applyCompound(Compound c) {
             if (c.equals(from))
                 return to;
-            if (c.impossibleSubTerm(from))
+            if (c.impossibleSubTerm(fromStructure, fromVolume))
                 return c;
             return AbstractTermTransform.super.applyCompound(c);
         }
@@ -179,12 +183,14 @@ abstract public class MapSubst implements Subst {
 
         private final Atomic from;
         private final Term to;
+        private final int fromStructure;
 
         /**
          * creates a substitution of one variable; more efficient than supplying a Map
          */
         SubstAtomic(Atomic from, Term to) {
             this.from = from;
+            this.fromStructure = from.structure();
             this.to = to;
         }
 
@@ -195,7 +201,7 @@ abstract public class MapSubst implements Subst {
 
         @Override
         protected @Nullable Term applyPosCompound(Compound x) {
-            return x.impossibleSubTerm(from) ? x : super.applyPosCompound(x);
+            return x.impossibleSubStructure(fromStructure) ? x : super.applyPosCompound(x);
         }
 
     }
