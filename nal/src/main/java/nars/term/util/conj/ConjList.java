@@ -411,7 +411,7 @@ public class ConjList extends LongObjectArraySet<Term> implements ConjBuilder {
             }
         }
 
-        condense(B);
+
 
 
     }

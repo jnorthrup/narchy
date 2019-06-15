@@ -186,12 +186,18 @@ public abstract class TermBuilder implements TermConstructor {
 
     /** attaches two events together with dt separation */
     public Term conjAppend(Term a, int dt, Term b) {
+        if ((dt == 0 && a.eventRange()==0 && b.eventRange()==0) || dt == XTERNAL)
+            return conj(dt, a, b);
+
         return (dt >= 0) ?
                 ConjSeq.sequence(a, 0, b, +dt + a.eventRange(), this) :
                 ConjSeq.sequence(b, 0, a, -dt + b.eventRange(), this);
     }
     /** merges two events with a dt offset applied to 'b' relative to a */
     public Term conjMerge(Term a, int dt, Term b) {
+        if ((dt == 0 && a.eventRange()==0 && b.eventRange()==0) || dt == XTERNAL)
+            return conj(dt, a, b);
+
         return ConjSeq.sequence(a, 0, b, dt, this);
     }
 

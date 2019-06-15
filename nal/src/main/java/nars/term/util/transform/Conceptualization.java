@@ -1,11 +1,11 @@
 package nars.term.util.transform;
 
-import jcog.Util;
 import nars.Op;
 import nars.subterm.Subterms;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.atom.Interval;
+import nars.term.compound.Sequence;
 import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 
 import java.util.TreeSet;
@@ -40,7 +40,12 @@ public class Conceptualization {
     public final static Retemporalize FlattenAndDeduplicateConj = new Untemporalization() {
         @Override
         protected  Term transformConj(Compound y) {
-            Subterms yy = y.subterms();
+            Subterms yy;
+            if (y instanceof Sequence)
+                yy = ((Sequence)y).events();
+            else
+                yy = y.subterms();
+
             if (yy.hasAny(CONJ) && yy.OR(yyy -> yyy/*.unneg()*/.op() == CONJ)) {
                 //collapse any embedded CONJ which will inevitably have dt=XTERNAL
                 UnifiedSet<Term> t = new UnifiedSet(yy.subs());
@@ -48,12 +53,9 @@ public class Conceptualization {
 //                    yyy = yyy.unneg();
                     if (yyy.op() == CONJ) {
                         yyy.eventsAND((when, what)->{
-                            if (what instanceof Interval) {
-                                //strip interval in concept
-                                Util.nop();
-                            } else {
-                                t.add(what);
-                            }
+
+                            t.add(what);
+
                             return true;
                         }, 0, true, true);
                         ///yyy.subterms().forEach(t::add);
@@ -69,6 +71,10 @@ public class Conceptualization {
                 } else
                     return CONJ.the(XTERNAL, t);
             }
+
+            if (y instanceof Sequence)
+                return CONJ.the(XTERNAL, yy);
+
             return null;
         }
     };

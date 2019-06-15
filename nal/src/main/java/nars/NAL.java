@@ -794,7 +794,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
          * max variable unification recursion depth as a naive cyclic filter
          * includes indirections through common variables so should be at least 3.
          */
-        public static final int UNIFY_VAR_RECURSION_DEPTH_LIMIT = 3;
+        public static final int UNIFY_VAR_RECURSION_DEPTH_LIMIT = 4;
         public static final int UNIFY_COMMON_VAR_MAX = UNIFY_VAR_RECURSION_DEPTH_LIMIT;
         public static final int UNIFICATION_STACK_CAPACITY = 128;
     }

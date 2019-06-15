@@ -10,7 +10,6 @@ import nars.op.UniSubst;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.atom.Bool;
-import nars.term.util.Image;
 import org.eclipse.collections.api.set.ImmutableSet;
 import org.eclipse.collections.api.tuple.primitive.LongObjectPair;
 import org.eclipse.collections.impl.factory.Sets;
@@ -32,13 +31,13 @@ public enum ConjMatch { ;
      * returns the prefix or suffix sequence of a specific matched subevent
      */
     public static Term beforeOrAfter(Compound conj, Term x, boolean beforeOrAfter, Derivation d, int ttl /*, unifyOrEquals, includeMatchedEvent */) {
-        if (conj.op() != CONJ || conj.dt()==XTERNAL)
+        if (conj.op() != CONJ || conj.dt()==XTERNAL || conj.equals(x))
             return Null;
 
         if (!x.op().eventable)
             return Null;
 
-        x = Image.imageNormalize(x);
+        //x = Image.imageNormalize(x);
 
         int varBits =
                 VAR_DEP.bit | VAR_INDEP.bit;

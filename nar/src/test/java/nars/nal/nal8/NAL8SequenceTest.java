@@ -22,7 +22,7 @@ import static nars.Op.GOAL;
 /** test precision of sequence execution (planning) */
 public class NAL8SequenceTest extends NALTest {
 
-    public static final int cycles = 250;
+    public static final int cycles = 750;
 
     @BeforeEach void init() {
         test.termVolMax(26);

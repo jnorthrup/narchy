@@ -414,6 +414,13 @@ public enum NALTruth implements TruthFunc {
         }
     },
 
+    /** bipolar form of desire - belief truth can invert goal truth */
+    Need() {
+        @Override
+        public Truth apply(final Truth T, final Truth B, float minConf, NAL n) {
+            return TruthFunctions2.desire(T, B, minConf, true,true);
+        }
+    },
 
 
 //    @SinglePremise @AllowOverlap Curiosity() {

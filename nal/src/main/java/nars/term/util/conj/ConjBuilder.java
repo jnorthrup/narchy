@@ -47,7 +47,8 @@ public interface ConjBuilder {
 
         for (Term t : u) {
             if (t == Bool.Null)
-                return Bool.Null_Array;
+                throw new NullPointerException();
+                //return Bool.Null_Array;
             if (t == null)
                 throw new NullPointerException();
         }

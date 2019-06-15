@@ -39,7 +39,7 @@
           B, (--A ==> C), task("?@"), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- unisubst((--A ==> C),A,B,"$",novel), (Punctuation:Question, Time:TaskEvent)
           B, (--A ==> C), task("?@"), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- unisubst(C,A,B,"$"), (Time:TaskEvent)
 
-    B, (C ==> A), --is(C,"#"), --is(B,"==>") |- unisubst(C,A,B,"$"), (Belief:PostWeak, Goal:PostWeak, Time:TaskEvent)
+    B, (C ==> A), --is(C,"#"), --is(B,"==>") |- unisubst(C,A,B,"$"), (Belief:Post, Goal:Post, Time:TaskEvent)
 
         //antigoal:
         //B, (C ==> A), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- --unisubst(C,A,B), (Goal:PostStrongPN, Time:TaskMinusBeliefDT)
@@ -58,14 +58,6 @@
 //       B, (--(&&,  C,A..+) ==> X)       |- --unisubst((&&,X,A..+),C,B), (Belief:Abduction)
 //       B, (--(&&,--C,A..+) ==> X)       |- --unisubst((&&,X,A..+),C,B), (Belief:AbductionN)
 
-
-
-
-        //conditional deduction, but using Desire which is similar but preserves Task impl freq
-        ((&&,X,A..+) ==> Z), Y,  --isVar(X)      |- unisubst(((&&,A..+) ==> Z), X,Y), (Belief:Desire, Time:Task)
-        ((&&,--X,A..+) ==> Z), Y, --isVar(X)     |- unisubst(((&&,A..+) ==> Z), X,Y), (Belief:DesirePN, Time:Task)
-        (--(&&,X,A..+) ==> Z), Y, --isVar(X)   |- unisubst((--(&&,A..+) ==> Z), X,Y), (Belief:Desire, Time:Task)
-        (--(&&,--X,A..+) ==> Z), Y, --isVar(X) |- unisubst((--(&&,A..+) ==> Z), X,Y), (Belief:DesirePN, Time:Task)
 
         //TODO more question variations
 //        Y, (  C ==> Z), is(C,"&&"),eventOf(C,Y)    |- (  conjWithout(C,  Y) ==> Z), (Belief:Pre)
@@ -114,13 +106,13 @@
 
     //If after S M happens, and after M then P happens, so S then P happens
     (S ==> M),   (M ==> P)    |-   (S ==> P),   (Belief:DeductionPP, Time:Task)
-      (M ==> P), (S ==> M)    |-   (S ==> P),     (Belief:DeductionPP, Time:Task)
+//      (M ==> P), (S ==> M)    |-   (S ==> P),     (Belief:DeductionPP, Time:Task)
     (S ==> M),   (M ==> P)    |-   (S ==> --P), (Belief:DeductionPN, Time:Task)
-      (M ==> P), (S ==> M)    |-   (S ==> --P),   (Belief:DeductionNP, Time:Task)
+//      (M ==> P), (S ==> M)    |-   (S ==> --P),   (Belief:DeductionNP, Time:Task)
     (S ==> M), (--M ==> P)    |-   (S ==> P),   (Belief:DeductionNP, Time:Task)
-      (--M ==> P), (S ==> M)  |-   (S ==> P),     (Belief:DeductionPN, Time:Task)
+//      (--M ==> P), (S ==> M)  |-   (S ==> P),     (Belief:DeductionPN, Time:Task)
     (S ==> M), (--M ==> P)    |-   (S ==> --P), (Belief:DeductionNN, Time:Task)
-      (--M ==> P), (S ==> M)  |-   (S ==> --P),   (Belief:DeductionNN, Time:Task)
+//      (--M ==> P), (S ==> M)  |-   (S ==> --P),   (Belief:DeductionNN, Time:Task)
 
 
         //(S ==> M), (M ==> P), task("?") |- ((S ==> P) || (P ==> S)), (Punctuation:Question)
@@ -151,8 +143,8 @@
 
             //(S ==> X), (P ==> X), task("?") |- (S ==> P), (Punctuation:Question)
 
-    (  M ==> S), (P ==> M)       |- (  S ==> P), (Belief:Exemplification, Time:Task)
-    (  M ==> S), (P ==> M)       |- (--S ==> P), (Belief:ExemplificationN, Time:Task)
+    (  M ==> S), (P ==> M)       |- (  S ==> P), (Belief:ExemplificationPP, Time:Task)
+    (  M ==> S), (P ==> M)       |- (--S ==> P), (Belief:ExemplificationNP, Time:Task)
     (--M ==> S), (P ==> M)       |- (  S ==> P), (Belief:ExemplificationPN, Time:Task)
     (--M ==> S), (P ==> M)       |- (--S ==> P), (Belief:ExemplificationNN, Time:Task)
 
@@ -208,12 +200,12 @@
         //(--(&&,P,A..+) ==> X), (--(&&,S,A..+) ==> X), neq(P,S) |- (--(&&,(P || S),A..+) ==> X), (Belief:UnionSym)
 
 
-//    //Contradiction Neutralize
-    ((&&,Y,A..+) ==> X), ((&&,Z,A..+) ==> X), eqNeg(Y,Z), --is(X,"#")     |- ((&&,A..+) ==> X), (Belief:IntersectionPB, Time:Task)
-    (--(&&,Y,A..+) ==> X), (--(&&,Z,A..+) ==> X), eqNeg(Y,Z), --is(X,"#") |- (--(&&,A..+) ==> X), (Belief:IntersectionPB, Time:Task)
-    (X ==> (&&,Y,A..+)), (X ==> (&&,Z,A..+)), eqNeg(Y,Z), --is(X,"#")     |- (X ==> (&&,A..+)), (Belief:IntersectionPB, Time:Task)
+    //Contradiction Neutralize
+    ((&&,Y,A..+) ==> X), ((&&,Z,A..+) ==> X), eqNeg(Y,Z), --is(X,"#")     |- ((&&,A..+) ==> X), (Belief:IntersectionPB, Time:Compose)
+    (--(&&,Y,A..+) ==> X), (--(&&,Z,A..+) ==> X), eqNeg(Y,Z), --is(X,"#") |- (--(&&,A..+) ==> X), (Belief:IntersectionPB, Time:Compose)
+    (X ==> (&&,Y,A..+)), (X ==> (&&,Z,A..+)), eqNeg(Y,Z), --is(X,"#")     |- (X ==> (&&,A..+)), (Belief:IntersectionPB, Time:Compose)
 
-    (Y ==> X), (Z ==> X), eqNeg(Y,Z), --is(X,"#")                       |- (#1 ==> X), (Belief:IntersectionPB, Time:Task)
+    (Y ==> X), (Z ==> X), eqNeg(Y,Z), --is(X,"#")                       |- (#1 ==> X), (Belief:IntersectionPB, Time:Compose)
 
 
 
@@ -229,16 +221,16 @@
 
 
     //Conj/Impl Chain Deduction
-    (X ==> Y), (C ==> Z), eventOf(C,Y)      |-   ((X && conjWithout(C,  Y)) ==> Z), (Belief:DeductionPP, Time:Task)
-      (X ==> Y), (C ==> Z), eventOf(C,Y)    |- --((X && conjWithout(C,  Y)) ==> Z), (Belief:DeductionPN, Time:Task)
-    (X ==> Y), (C ==> Z), eventOfNeg(C,Y)   |-   ((X && conjWithout(C,--Y)) ==> Z), (Belief:DeductionNP, Time:Task)
-      (X ==> Y), (C ==> Z), eventOfNeg(C,Y) |- --((X && conjWithout(C,--Y)) ==> Z), (Belief:DeductionNN, Time:Task)
+    (X ==> Y), (C ==> Z), eventOf(C,Y)      |-   ((X && conjWithout(C,  Y)) ==> Z), (Belief:DeductionPP, Time:Compose)
+      (X ==> Y), (C ==> Z), eventOf(C,Y)    |- --((X && conjWithout(C,  Y)) ==> Z), (Belief:DeductionPN, Time:Compose)
+    (X ==> Y), (C ==> Z), eventOfNeg(C,Y)   |-   ((X && conjWithout(C,--Y)) ==> Z), (Belief:DeductionNP, Time:Compose)
+      (X ==> Y), (C ==> Z), eventOfNeg(C,Y) |- --((X && conjWithout(C,--Y)) ==> Z), (Belief:DeductionNN, Time:Compose)
 
     //Disj/Impl Chain Deduction
-    (X ==> Y), (--D ==> Z), eventOfNeg(D,Y)     |-   (X ==> Z), (Belief:DeductionPP, Time:Task)
-      (X ==> Y), (--D ==> Z), eventOfNeg(D,Y)   |- --(X ==> Z), (Belief:DeductionPN, Time:Task)
-    (X ==> Y), (--D ==> Z), eventOf(D,Y)        |-   (X ==> Z), (Belief:DeductionNP, Time:Task)
-      (X ==> Y), (--D ==> Z), eventOf(D,Y)      |- --(X ==> Z), (Belief:DeductionNN, Time:Task)
+    (X ==> Y), (--D ==> Z), eventOfNeg(D,Y)     |-   (X ==> Z), (Belief:DeductionPP, Time:Compose)
+      (X ==> Y), (--D ==> Z), eventOfNeg(D,Y)   |- --(X ==> Z), (Belief:DeductionPN, Time:Compose)
+    (X ==> Y), (--D ==> Z), eventOf(D,Y)        |-   (X ==> Z), (Belief:DeductionNP, Time:Compose)
+      (X ==> Y), (--D ==> Z), eventOf(D,Y)      |- --(X ==> Z), (Belief:DeductionNN, Time:Compose)
 
     //Conj/Impl Chain Swap Deduction
 //    //TODO use conj ops
@@ -254,11 +246,11 @@
 
 
     //conditional induction
-    ((&&,Y,A..+) ==> X), (Y ==> Z) |- ((&&,  Z,A..+) ==> X), (Belief:InductionPP, Time:Task)
-    ((&&,Y,A..+) ==> X), (Y ==> Z) |- ((&&,--Z,A..+) ==> X), (Belief:InductionPN, Time:Task)
+    ((&&,Y,A..+) ==> X), (Y ==> Z) |- ((&&,  Z,A..+) ==> X), (Belief:InductionPP, Time:Compose)
+    ((&&,Y,A..+) ==> X), (Y ==> Z) |- ((&&,--Z,A..+) ==> X), (Belief:InductionPN, Time:Compose)
 
-    ((&&,X,A..+) ==> Z), ((&&,Y,A..+) ==> Z) |- (Y ==> X), (Belief:InductionPB, Time:Task)
-      (--(&&,X,A..+) ==> Z), (--(&&,Y,A..+) ==> Z) |- (Y ==> X), (Belief:InductionPB, Time:Task)
+    ((&&,X,A..+) ==> Z), ((&&,Y,A..+) ==> Z) |- (Y ==> X), (Belief:InductionPB, Time:Compose)
+      (--(&&,X,A..+) ==> Z), (--(&&,Y,A..+) ==> Z) |- (Y ==> X), (Belief:InductionPB, Time:Compose)
 
 
         //TODO disj
@@ -284,11 +276,6 @@
     //general implication induction
 //    (A ==> B), X, neq(A,X), neq(A,--X), --is(X,"==>"), --eventOf(A,X)      |- ((A && X) ==> B), (Belief:Induction)
 //    (A ==> B), X, neq(A,X), neq(A,--X), --is(X,"==>"), --eventOfNeg(A,X)   |- ((A && --X) ==> B), (Belief:InductionPN)
-
-  (&&,(X<->Y),A..+), (X<->Y)         |- substitute((&&,A..+),X,Y,novel), (Belief:StructuralDeduction, Goal:StructuralDeduction)
-  //chain:
-  (&&,(X<->Y),A..+), (Y<->Z)         |- substitute((&&,A..+),X,Z,novel), (Belief:Desire, Goal:Desire, Time:TaskEvent)
-  (&&,(X<->Y),(Y<->Z),A..+), (X<->Y) |- substitute(substitute((&&,A..+),X,Z,novel),Y,Z,novel), (Belief:StructuralDeduction, Goal:StructuralDeduction)
 
 
 

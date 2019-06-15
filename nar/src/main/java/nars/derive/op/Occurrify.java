@@ -496,7 +496,10 @@ public class Occurrify extends TimeGraph {
 
             @Override
             long[] occurrence(Derivation d) {
-                return rangeCombine(d, OccIntersect.Union);
+                return rangeCombine(d,
+                        OccIntersect.Task
+                        //OccIntersect.Union
+                );
             }
         },
 

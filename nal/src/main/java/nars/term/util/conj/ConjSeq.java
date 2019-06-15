@@ -225,7 +225,9 @@ public enum ConjSeq { ;
                 Task a = events[0];
                 Task b = events[1];
                 if (a.op() != CONJ && b.op() != CONJ) {
-                    return sequence(sequenceTerm(a), 0, sequenceTerm(b), b.start()-a.start(), B);
+                    long as = a.start(), bs = b.start();
+                    assert(bs!=ETERNAL && as!=ETERNAL);
+                    return B.conjAppend(sequenceTerm(a), Tense.occToDT(bs - as), sequenceTerm(b));
                 }
                 break;
             }
@@ -242,6 +244,7 @@ public enum ConjSeq { ;
     private static Term sequenceTerm(Task o) {
         return o.term().negIf(o.isNegative());
     }
+
 
     private static Term sequenceLeafPair(int dt, Term left, Term right, TermBuilder B) {
         if (dt == 0 || dt == DTERNAL) {

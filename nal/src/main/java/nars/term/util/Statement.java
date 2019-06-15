@@ -98,12 +98,8 @@ public class Statement {
                         return Null;
 
                 case IMPL: {
-                    Term newSubj, inner = predicate.sub(0);
-                    if (dt == DTERNAL || dt == XTERNAL) {
-                        newSubj = CONJ.the(B, dt, subject, inner);
-                    } else {
-                        newSubj = B.conjAppend(subject, dt, inner);
-                    }
+                    Term inner = predicate.sub(0);
+                    Term newSubj = B.conjAppend(subject, dt, inner);
                     int newDT = predicate.dt();
                     if (newDT == DTERNAL)
                         newDT = 0; //temporary

@@ -1,5 +1,6 @@
 package nars.term.compound;
 
+import jcog.data.bit.MetalBitSet;
 import jcog.util.ArrayUtil;
 import nars.Op;
 import nars.subterm.ArrayTermVector;
@@ -10,13 +11,16 @@ import nars.term.Term;
 import nars.term.atom.Interval;
 import nars.term.buffer.TermBuffer;
 import nars.term.util.TermException;
+import nars.term.util.builder.TermBuilder;
 import nars.term.util.conj.ConjList;
 import nars.term.util.transform.AbstractTermTransform;
 import nars.term.util.transform.TermTransform;
 import nars.time.Tense;
 import nars.unify.Unify;
 import org.eclipse.collections.api.block.predicate.primitive.LongObjectPredicate;
+import org.jetbrains.annotations.Nullable;
 
+import java.util.function.Function;
 import java.util.function.IntPredicate;
 
 import static nars.Op.CONJ;
@@ -30,7 +34,7 @@ public class Sequence extends CachedCompound.TemporalCachedCompound {
     private final Interval times;
 
     public Sequence(Subterms s) {
-        super(CONJ, XTERNAL, s);
+        super(CONJ, DTERNAL, s);
         this.times = (Interval) s.sub(s.subs()-1);
         if (times.keyCount()+1!=s.subs()-1)
             throw new TermException("interval subterm mismatch", this);
@@ -38,7 +42,40 @@ public class Sequence extends CachedCompound.TemporalCachedCompound {
 
     /** expects unique to be sorted in the final canonical unique ordering */
     public Sequence(Term[] unique, Interval times) {
-        this(new ArrayTermVector(ArrayUtil.add(unique, times)) /* TODO use better facade/wrapper */);
+        this(new ArrayTermVector(ArrayUtil.add(unique, times)) /* TODO use better facade/wrapper */ {
+            @Override
+            public Subterms replaceSub(Term from, Term to, Op superOp) {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public @Nullable Subterms transformSubs(Function<Term, Term> f, Op superOp) {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public Subterms transformSub(int which, Function<Term, Term> f) {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public Term[] removing(MetalBitSet toRemove) {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public Term[] removing(int index) {
+                throw new UnsupportedOperationException();
+            }
+        });
+    }
+
+    @Override
+    public Term dt(int nextDT, TermBuilder b) {
+        if (nextDT == XTERNAL)
+            return CONJ.the(XTERNAL, events());
+        else
+            throw new UnsupportedOperationException();
     }
 
     @Override
@@ -60,7 +97,7 @@ public class Sequence extends CachedCompound.TemporalCachedCompound {
         return Subterms.unifyCommute(events(), ((Sequence)y).events(), u);
     }
 
-    private Subterms events() {
+    public Subterms events() {
         Subterms ss = subterms();
         return new TermList(ss, 0, ss.subs()-1);
     }
