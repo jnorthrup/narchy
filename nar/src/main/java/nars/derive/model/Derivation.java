@@ -21,6 +21,7 @@ import nars.op.Replace;
 import nars.op.UniSubst;
 import nars.subterm.Subterms;
 import nars.task.proxy.SpecialTruthAndOccurrenceTask;
+import nars.term.Variable;
 import nars.term.*;
 import nars.term.anon.AnonWithVarShift;
 import nars.term.atom.Atom;
@@ -30,7 +31,6 @@ import nars.term.buffer.TermBuffer;
 import nars.term.functor.AbstractInlineFunctor1;
 import nars.term.util.TermTransformException;
 import nars.term.util.builder.HeapTermBuilder;
-import nars.term.util.conj.Conj;
 import nars.term.util.map.ByteAnonMap;
 import nars.term.util.transform.InstantFunctor;
 import nars.term.util.transform.TermTransform;
@@ -49,8 +49,7 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-import static nars.Op.BELIEF;
-import static nars.Op.GOAL;
+import static nars.Op.*;
 import static nars.term.buffer.TermBuffer.INITIAL_ANON_SIZE;
 import static nars.time.Tense.ETERNAL;
 import static nars.time.Tense.TIMELESS;
@@ -272,7 +271,11 @@ public class Derivation extends PreDerivation {
 
             @Override
             protected final Term putCompound(Compound x) {
-                return x.transform(this, Conj.isSeq(x) ? termBuilder : directTermBuilder, NAL.term.COMPOUND_VOLUME_MAX);
+                //return apply(x);
+
+                return x.transform(this,
+                        x.hasAny(CONJ) /*Conj.isSeq(x)*/ ? termBuilder : directTermBuilder,
+                        NAL.term.COMPOUND_VOLUME_MAX);
             }
 
             @Override
@@ -287,12 +290,13 @@ public class Derivation extends PreDerivation {
         TermTransformException e = null;
         if (y == null)
             e = new TermTransformException("invalid Derivation Anon: null", x, y);
-        if (y instanceof Bool)
+        else if (y instanceof Bool)
             e = new TermTransformException("invalid Derivation Anon: Bool", x, y);
-        if (x instanceof Compound && x.op() != y.op())
+        else if (x instanceof Compound && x.op() != y.op())
             e = new TermTransformException("invalid Derivation Anon: Op changed", x, y);
-        if (x.volume() != y.volume())
+        else if (x.volume() != y.volume())
             e = new TermTransformException("invalid Derivation Anon: Volume Changed", x, y);
+
         if (e != null) {
             if (cause != null)
                 cause.delete();
@@ -309,8 +313,6 @@ public class Derivation extends PreDerivation {
     public void reset(Task nextTask, final Task nextBelief, Term nextBeliefTerm) {
         this._task = resetTask(nextTask, this._task);
         this._belief = resetBelief(nextBelief, nextBeliefTerm);
-        //this.termBuilder.clear(); //complete clear
-        //this.occ.clear();
     }
 
     private Task resetBelief(Task nextBelief, Term nextBeliefTerm) {
@@ -399,7 +401,10 @@ public class Derivation extends PreDerivation {
 
         Term nextTaskTerm = nextTask.term();
 
-        if (currentTask != null && currentTask.term().equals(nextTaskTerm)) {
+        boolean sameTask = currentTask != null && currentTask.equals(nextTask);
+        boolean sameTerm = sameTask || (currentTask != null && currentTask.term().equals(nextTaskTerm));
+
+        if (sameTerm) {
 
             //roll back only as far as the unique task terms. we can re-use them as-is
             anon.rollback(taskUniques);
@@ -416,9 +421,7 @@ public class Derivation extends PreDerivation {
         }
 
 
-        if (currentTask == null || currentTask != nextTask) {
-
-
+        if (!sameTask) {
             this.taskStamp.clear(); //force (re-)compute in post-derivation stage
 
             this.taskPunc = nextTask.punc();

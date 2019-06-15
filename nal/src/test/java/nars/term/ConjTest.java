@@ -37,9 +37,9 @@ public class ConjTest {
 
     private static void assertConjDiff(String inc, String exc, String expect, boolean excludeNeg) {
         Term exclude = $$(exc);
-        Term x = Conj.diffAll($$(inc), exclude, false);
+        Term x = Conj.diffAll($$(inc), exclude);
         if (excludeNeg)
-            x = Conj.diffAll(x, exclude.neg(), false);
+            x = Conj.diffAll(x, exclude.neg());
         assertEq(expect, x);
     }
 

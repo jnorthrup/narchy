@@ -1273,14 +1273,14 @@ public interface Subterms extends Termlike, Iterable<Term> {
                         return EmptySubterms; //the empty ellipsis is the only subterm
                 }
 
-//                if (s == 1) {
-//                    //it is only this ellipsis match so inline it by transforming directly and returning it (tail-call)
-//                    return ee.transformSubs(f, superOp);
-//                } else {
+                if (s == 1) {
+                    //it is only this ellipsis match so inline it by transforming directly and returning it (tail-call)
+                    return ee.transformSubs(f, superOp);
+                } else {
                     y = transformSubInline(ee, f, y, s, i);
                     if (y == null)
                         return null;
-//                }
+                }
 
 
             } else {

@@ -128,6 +128,21 @@ public interface ConjBuilder {
         return add(whenWhat.getOne(), whenWhat.getTwo());
     }
 
+    default boolean addAll(long w, Iterable<Term> tt) {
+        for (Term t : tt) {
+            if (!add(w, t))
+                return false;
+        }
+        return true;
+    }
+    default boolean addAllNeg(long w, Iterable<Term> tt) {
+        for (Term t : tt) {
+            if (!add(w, t.neg()))
+                return false;
+        }
+        return true;
+    }
+
     /**
      * for internal use only
      */

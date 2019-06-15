@@ -109,7 +109,7 @@ public class Builtin {
             new AbstractInlineFunctor2("conjWithout") {
                 @Override
                 protected Term apply(Term conj, Term event) {
-                    Term x = Conj.diffAll(conj, event, false);
+                    Term x = Conj.diffAll(conj, event);
                     return conj.equals(x) ? Null : x;
                 }
             },

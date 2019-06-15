@@ -442,15 +442,14 @@ public enum Conj  { ;
 //        return diffOne(include, exclude, false);
 //    }
 
+
     public static Term diffAll(Term include, Term exclude) {
-        return diffAll(include, exclude, false);
-    }
 
-    public static Term diffAll(Term include, Term exclude, boolean excludeNeg) {
-
-        if (include.equals(exclude) || (excludeNeg && include.equalsNeg(exclude)))
+        if (include.equals(exclude))
             return True;
 
+        if (!Term.commonStructure(include,exclude))
+            return include;
 
         boolean iSeq = isSeq(include);
         boolean eSeq = isSeq(exclude);
