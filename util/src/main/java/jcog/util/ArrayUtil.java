@@ -9117,4 +9117,8 @@ public enum ArrayUtil {
         }
         return s;
     }
+
+    public static boolean containsIdentity(Object[] xx, Object x) {
+        return indexOfIdentity(xx,x)!=-1;
+    }
 }

@@ -386,8 +386,9 @@ public enum TruthFunctions2 {
      *
      *  http://www.math.sk/fsta2014/presentations/VemuriHareeshSrinath.pdf
      * */
-    @Skill("Fuzzy_set") @Nullable public static Truth divide(Truth X, Truth XY, float minConf) {
-        float c = confCompose(X, XY);
+    @Skill("Fuzzy_set") @Nullable public static Truth divide(Truth XY, Truth X, float minConf) {
+        //float c = confCompose(X, XY);
+        float c = Math.min(XY.conf(), X.conf());
         if (c < minConf)
             return null;
 

@@ -70,10 +70,11 @@ public class Sequence extends CachedCompound.TemporalCachedCompound {
         });
     }
 
+
     @Override
     public Term dt(int nextDT, TermBuilder b) {
         if (nextDT == XTERNAL)
-            return CONJ.the(XTERNAL, events());
+            return CONJ.the(b, XTERNAL, events());
         else
             throw new UnsupportedOperationException();
     }

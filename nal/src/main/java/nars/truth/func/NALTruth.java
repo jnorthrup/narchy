@@ -327,15 +327,13 @@ public enum NALTruth implements TruthFunc {
         }
     },
 
-//    /**
-//     * experimental
-//     */
-//    Divide() {
-//        @Override
-//        public Truth apply(final Truth X, final Truth XY, NAR n, float minConf) {
-//            return TruthFunctions2.divide(X, XY, minConf);
-//        }
-//    },
+
+    Divide() {
+        @Override
+        public Truth apply(final Truth XY, final Truth X, float minConf, NAL n) {
+            return TruthFunctions2.divide(XY, X, minConf);
+        }
+    },
 
     @SinglePremise
     Identity() {

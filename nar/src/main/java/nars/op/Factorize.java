@@ -30,6 +30,7 @@ import java.util.function.Function;
 
 import static nars.Op.CONJ;
 import static nars.Op.NEG;
+import static nars.term.atom.Bool.Null;
 import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
 
 /**
@@ -72,6 +73,8 @@ public class Factorize {
         if (y.length == 0)
             return x; //unchanged
 
+//        if (ArrayUtil.containsIdentity(y, Null))
+//            return x; //invalid
         if (Util.sum(Term::volume, y) > volMax)
             return x; //excessively complex result
 
@@ -177,7 +180,7 @@ public class Factorize {
      * returns the subterms, as a sorted target array setAt, for the new conjunction.  or null if there was nothing factorable
      */
     @Nullable
-    protected static Term[] applyConj(Term[] x, Variable f) {
+    private static Term[] applyConj(Term[] x, Variable f) {
 
         /** shadow target -> replacements */
         final UnifiedSetMultimap<Term, ObjectBytePair<Term>>[] pp = new UnifiedSetMultimap[]{null};
@@ -219,8 +222,12 @@ public class Factorize {
         for (byte i = 0; i < n; i++)
             if (!masked.contains(i))
                 t.add(x[i]);
+        Term m = $.func(Member.member, f, $.sete(rr.getTwo().collect(ObjectBytePair::getOne)));
+        if (m == Null)
+            return null;
+
         t.add(rr.getOne() /* shadow */);
-        t.add($.func(Member.member, f, $.sete(rr.getTwo().collect(ObjectBytePair::getOne))));
+        t.add(m);
         return Terms.commute(t);
     }
 
