@@ -19,7 +19,7 @@ import jcog.math.FloatSupplier;
 import jcog.math.NumberException;
 import jcog.pri.ScalarValue;
 import jcog.util.ArrayUtil;
-import net.openhft.hashing.LongHashFunction;
+
 import org.apache.commons.math3.fitting.PolynomialCurveFitter;
 import org.apache.commons.math3.fitting.WeightedObservedPoint;
 import org.apache.commons.math3.stat.Frequency;
@@ -145,11 +145,11 @@ public enum Util {
     }
 
 
-    static final LongHashFunction _hashFn = LongHashFunction.xx();
+//    static final LongHashFunction _hashFn = LongHashFunction.xx();
 
-    public static int hash(long[] longs) {
-        return Long.hashCode(_hashFn.hashLongs(longs));
-    }
+//    public static int hash(long[] longs) {
+//        return Long.hashCode(_hashFn.hashLongs(longs));
+//    }
 
     public static int hash(byte[] x, int from, int to) {
 
@@ -160,7 +160,9 @@ public enum Util {
             case 2: return Shorts.fromBytes(x[from], x[from+1]);
             case 3: return Ints.fromBytes(x[from], x[from+1], x[from+2], (byte)0);
             case 4: return Ints.fromBytes(x[from], x[from+1], x[from+2], x[from+3]);
-            default: return Long.hashCode(_hashFn.hashBytes(x, from, len));
+            default: return
+                    //Long.hashCode(_hashFn.hashBytes(x, from, len));
+                    hashFNV(x, from, to);
         }
 
         //return hashFNV(bytes, from, to);
