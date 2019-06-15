@@ -2,17 +2,26 @@ package nars.term.util.conj;
 
 import jcog.WTF;
 import jcog.data.bit.MetalBitSet;
+import nars.Op;
 import nars.Task;
 import nars.subterm.Subterms;
 import nars.term.Compound;
 import nars.term.Neg;
 import nars.term.Term;
+import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
+import nars.term.buffer.TermBuffer;
+import nars.term.compound.SeparateSubtermsCompound;
 import nars.term.util.TermException;
 import nars.term.util.builder.TermBuilder;
+import nars.term.util.map.ByteAnonMap;
+import nars.term.util.transform.TermTransform;
 import nars.time.Tense;
+import org.eclipse.collections.api.block.predicate.primitive.LongObjectPredicate;
 
 import java.util.Arrays;
+import java.util.TreeSet;
+import java.util.function.IntPredicate;
 
 import static nars.Op.CONJ;
 import static nars.Op.NEG;
@@ -22,6 +31,160 @@ import static nars.time.Tense.*;
 
 /** utilities for working with conjunction sequences (raw sequences, and factored sequences) */
 public enum ConjSeq { ;
+
+
+    public static class ConjSequence extends SeparateSubtermsCompound {
+
+        private final ConjList list;
+        private final Subterms subs;
+        private final Term root;
+
+        public static ConjSequence the(ConjList list) {
+
+
+            int n = list.size();
+            assert(n > 2);
+
+            list.trimToSize();
+            list.sortThis();
+            list.shift(0);
+
+
+            TreeSet<Term> ordered = new TreeSet();
+            for (Term x : list)
+                ordered.add(x);
+
+            ByteAnonMap m = new ByteAnonMap(n);
+            for (Term x : ordered)
+                m.intern(x);
+
+            //TODO optimal compressed encoding
+            StringBuilder os = new StringBuilder(n * 4);
+            long[] when = list.when;
+            for (int i = 0, whenLength = when.length; i < whenLength; i++) {
+                byte x = m.intern(list.get(i));
+                long l = when[i];
+                os.append(x).append('@').append(l);
+                if (i < when.length-1)
+                    os.append(' ');
+            }
+
+            Term[] oa = ordered.size() > 1 ? ordered.toArray(new Term[ordered.size()]) : new Term[] { ordered.first(), ordered.first() };
+            Term root = Op.terms.newCompound(CONJ, XTERNAL, oa);
+
+            Term[] v = Arrays.copyOf(oa, oa.length+1);
+            v[v.length-1] = Atomic.the(os.toString());
+
+            return new ConjSequence(list, Op.terms.subterms(v), root);
+        }
+
+        private ConjSequence(ConjList list, Subterms subs, Term root) {
+            super(CONJ, subs);
+            this.subs = subs;
+            this.list = list;
+            this.root = root;
+        }
+
+        @Override
+        public Term transform(TermTransform t) {
+
+            //HACK temporary
+            Subterms s = root.subterms();
+            Subterms r = s.transformSubs(t, null);
+            if (r == null)
+                return Null;
+            if (s == r)
+                return this; //no change
+
+            int ee = list.size();
+            ConjList l = new ConjList(ee);
+            for (int i = 0; i < ee; i++) {
+                l.add(list.when(i), r.sub(s.indexOf(list.get(i)))); //HACK
+            }
+            return l.term();
+        }
+
+        @Override
+        public Term transform(TermTransform t, TermBuffer b, int volMax) {
+            return transform(t);
+        }
+
+        @Override
+        public Term eventFirst() {
+            return list.getFirst();
+        }
+
+        @Override
+        public boolean subTimesWhile(Term match, IntPredicate each) {
+            int n = list.size();
+            for (int i = 0; i < n; i++) {
+                if (list.get(i).equals(match))
+                    if (!each.test(Tense.occToDT(list.when(i))))
+                        return false;
+            }
+            return true;
+        }
+
+        @Override
+        public Term eventLast() {
+            return list.getLast();
+        }
+
+        @Override
+        public int eventRange() {
+            return Tense.occToDT(list.when(list.size()-1));
+        }
+
+        @Override
+        public Term root() {
+            return root;
+        }
+
+        @Override
+        public Term concept() {
+            return root;
+        }
+
+        @Override
+        public boolean eventsAND(LongObjectPredicate<Term> each, long offset, boolean decomposeConjDTernal, boolean decomposeXternal) {
+            int n = list.size();
+            long[] ww = list.when;
+            for (int i = 0; i < n; i++) {
+                long o = offset != ETERNAL ? ww[i] + offset : ETERNAL;
+                Term x = list.get(i);
+                if (x instanceof Compound && (decomposeConjDTernal || decomposeXternal) && x.op()==CONJ) {
+                    int xdt = x.dt();
+                    if ((decomposeConjDTernal && xdt ==DTERNAL) || (decomposeXternal && xdt == XTERNAL)) {
+                        for (Term xx : x.subterms()) {
+                            if (!each.accept(o, xx))
+                                return false;
+                        }
+                        continue;
+                    }
+
+                }
+
+                if (!each.accept(o, x))
+                    return false;
+            }
+            return true;
+        }
+
+        @Override
+        public Subterms subterms() {
+            return subs;
+        }
+
+        @Override
+        public int dt() {
+            return DTERNAL; //TODO
+        }
+
+        @Override
+        public Op op() {
+            return CONJ;
+        }
+    }
 
 
     /** TODO make method of B: TermBuilder.conjSequence(..) */
@@ -136,6 +299,10 @@ public enum ConjSeq { ;
      * assumes that all of the event terms have distinct occurrence times
      */
     static Term conjSeq(TermBuilder B, ConjList events, int start, int end) {
+
+        if (end-start > 2 && start == 0 && end == events.size() && events.eventOccurrences()>2) { //HACK
+            return events.term(B);
+        }
 
         Term first = events.get(start);
         int ee = end - start;

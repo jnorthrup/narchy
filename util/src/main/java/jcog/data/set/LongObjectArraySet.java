@@ -88,6 +88,13 @@ public class LongObjectArraySet<X> extends FasterList<X> {
         return this;
     }
 
+    @Override
+    public void trimToSize() {
+        super.trimToSize();
+        if (when.length > size)
+            when = Arrays.copyOf(when, size);
+    }
+
     public boolean contains(long w, X what) {
         long[] longs = this.when;
         for (int i = 0, n = size(); i < n; i++) {

@@ -7,7 +7,6 @@ import jcog.util.ArrayUtil;
 import nars.NAL;
 import nars.subterm.Subterms;
 import nars.term.Compound;
-import nars.term.Neg;
 import nars.term.Term;
 import nars.term.util.builder.TermBuilder;
 import nars.time.Tense;
@@ -1373,6 +1372,8 @@ public enum Conj  { ;
     public static boolean isSeq(Term x) {
         if (!(x instanceof Compound) || x.op() != CONJ)
             return false;
+        if (x instanceof ConjSeq.ConjSequence)
+            return true;
 
         int dt = x.dt();
         if (dt == DTERNAL) {

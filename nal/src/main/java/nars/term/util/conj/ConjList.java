@@ -174,24 +174,27 @@ public class ConjList extends LongObjectArraySet<Term> implements ConjBuilder {
         if (n == 1)
             return get(0);
 
+        sortThis(); //puts eternals first, and organizes contiguously timed items
 
-
+        condense(B);
+        n = size();
 
         if (B instanceof InterningTermBuilder && NAL.CONJ_COMMUTIVE_LOOPBACK) {
             long w0 = when[0];
-            boolean parallel = true;
+            boolean allParallel = true;
             for (int i = 1, whenLength = when.length; i < whenLength; i++) {
                 if (when[i] != w0) {
-                    parallel = false;
+                    allParallel = false;
                     break; //difference
                 }
             }
             //all same time
-            if (parallel) {
+            if (allParallel) {
                 return B.conj( toArrayRecycled(Term[]::new));
                 //return ConjCommutive.the(B, DTERNAL /*(w0 == ETERNAL) ? DTERNAL : 0*/, true, false, toArrayRecycled(Term[]::new));
             }
         }
+
 
         if (n == 2) {
             //sequence shortcut
@@ -209,7 +212,10 @@ public class ConjList extends LongObjectArraySet<Term> implements ConjBuilder {
             }
         }
 
-        sortThis(); //puts eternals first, and organizes contiguously timed items
+
+        if (n > 2 && when(0)!=ETERNAL && eventOccurrences()>2)
+            return ConjSeq.ConjSequence.the(this);
+
 
         //failsafe impl:
         ConjBuilder c = new ConjTree();
@@ -219,6 +225,7 @@ public class ConjList extends LongObjectArraySet<Term> implements ConjBuilder {
         }
 
         return c.term(B);
+
     }
 
 
@@ -449,5 +456,15 @@ public class ConjList extends LongObjectArraySet<Term> implements ConjBuilder {
 
     public int centerByIndex(int startIndex, int endIndex) {
         return startIndex + (endIndex - 1 - startIndex) / 2;
+    }
+
+    /** shifts everything so that the initial when is zero. assumes it is non-empty & sorted already */
+    public void shift(long shiftFrom) {
+        long currentShift = shift();
+        long delta = shiftFrom - currentShift;
+        if (delta == 0)
+            return;
+        for (int k = 0; k < size; k++)
+            when[k] += delta;
     }
 }

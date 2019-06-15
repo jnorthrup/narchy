@@ -693,7 +693,8 @@ public class ConjTree implements ConjBuilder {
                 switch (s1) {
                     case 0: return null;
                     case 1: return events.get(0);
-                    default: return ConjSeq.conjSeq(B, events, 0, s1);
+                    default:
+                        return ConjSeq.conjSeq(B, events, 0, s1);
                 }
 
             }

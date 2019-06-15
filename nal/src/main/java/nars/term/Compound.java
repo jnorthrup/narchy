@@ -471,15 +471,11 @@ public interface Compound extends Term, IPair, Subterms {
 
     @Override
     default boolean eventsOR(LongObjectPredicate<Term> each, long offset, boolean decomposeConjDTernal, boolean decomposeXternal) {
-        final boolean[] cond = {false};
-        eventsAND((when,what)->{
-            if (each.accept(when,what)) {
-                cond[0] = true;
+        return !eventsAND((when,what)->{
+            if (each.accept(when,what))
                 return false;
-            }
             return true;
         }, offset, decomposeConjDTernal, decomposeConjDTernal);
-        return cond[0];
     }
 
     /**
