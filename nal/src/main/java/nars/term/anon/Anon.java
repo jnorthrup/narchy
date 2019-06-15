@@ -4,6 +4,7 @@ import jcog.data.list.FasterList;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.atom.Atomic;
+import nars.term.atom.Interval;
 import nars.term.util.map.ByteAnonMap;
 import nars.term.util.transform.AbstractTermTransform;
 import nars.term.var.UnnormalizedVariable;
@@ -70,7 +71,7 @@ public class Anon extends AbstractTermTransform.NegObliviousTermTransform {
     public final Term put(Term x) {
         if (x instanceof Intrin) {
             return putAnon(x);
-        } else if (x instanceof UnnormalizedVariable) {
+        } else if (x instanceof UnnormalizedVariable || x instanceof Interval) {
             return x; //HACK is this necessary?
         } else if (intern(x)) {
             return putIntern(x);

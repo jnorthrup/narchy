@@ -198,8 +198,9 @@ public enum Op {
      * used for direct term/subterm construction.  supporting ellipsis and other macro transforms.
      * functions like a PROD
      */
-    FRAG("`", Op.ANY_LEVEL, Args.GTEZero)
+    FRAG("`", Op.ANY_LEVEL, Args.GTEZero),
 
+    INTERVAL("‡", Op.ANY_LEVEL, Args.GTEZero)
 
     /**
      * for ellipsis, when seen as a target

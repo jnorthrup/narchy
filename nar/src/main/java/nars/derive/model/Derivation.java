@@ -21,7 +21,6 @@ import nars.op.Replace;
 import nars.op.UniSubst;
 import nars.subterm.Subterms;
 import nars.task.proxy.SpecialTruthAndOccurrenceTask;
-import nars.term.Variable;
 import nars.term.*;
 import nars.term.anon.AnonWithVarShift;
 import nars.term.atom.Atom;
@@ -50,7 +49,8 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-import static nars.Op.*;
+import static nars.Op.BELIEF;
+import static nars.Op.GOAL;
 import static nars.term.buffer.TermBuffer.INITIAL_ANON_SIZE;
 import static nars.time.Tense.ETERNAL;
 import static nars.time.Tense.TIMELESS;

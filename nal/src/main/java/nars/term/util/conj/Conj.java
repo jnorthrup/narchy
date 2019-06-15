@@ -1370,10 +1370,11 @@ public enum Conj  { ;
      * whether the conjunction is a sequence (includes check for factored inner sequence)
      */
     public static boolean isSeq(Term x) {
-        if (!(x instanceof Compound) || x.op() != CONJ)
-            return false;
         if (x instanceof ConjSeq.ConjSequence)
             return true;
+        if (!(x instanceof Compound) || x.op() != CONJ)
+            return false;
+
 
         int dt = x.dt();
         if (dt == DTERNAL) {

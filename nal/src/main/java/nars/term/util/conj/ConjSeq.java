@@ -2,20 +2,19 @@ package nars.term.util.conj;
 
 import jcog.WTF;
 import jcog.data.bit.MetalBitSet;
-import nars.Op;
+import jcog.util.ArrayUtil;
 import nars.Task;
+import nars.subterm.ArrayTermVector;
 import nars.subterm.Subterms;
 import nars.term.Compound;
 import nars.term.Neg;
 import nars.term.Term;
-import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
-import nars.term.buffer.TermBuffer;
-import nars.term.compound.SeparateSubtermsCompound;
+import nars.term.atom.Interval;
+import nars.term.compound.CachedCompound;
 import nars.term.util.TermException;
 import nars.term.util.builder.TermBuilder;
 import nars.term.util.map.ByteAnonMap;
-import nars.term.util.transform.TermTransform;
 import nars.time.Tense;
 import org.eclipse.collections.api.block.predicate.primitive.LongObjectPredicate;
 
@@ -33,125 +32,94 @@ import static nars.time.Tense.*;
 public enum ConjSeq { ;
 
 
-    public static class ConjSequence extends SeparateSubtermsCompound {
-
-        private final ConjList list;
-        private final Subterms subs;
-        private final Term root;
-
-        public static ConjSequence the(ConjList list) {
+    public static ConjSequence the(ConjList list) {
 
 
-            int n = list.size();
-            assert(n > 2);
+        int n = list.size();
+        assert(n > 2);
 
-            list.trimToSize();
-            list.sortThis();
-            list.shift(0);
+        list.trimToSize();
+        list.sortThis();
+        list.shift(0);
 
 
-            TreeSet<Term> ordered = new TreeSet();
-            for (Term x : list)
-                ordered.add(x);
+        TreeSet<Term> ordered = new TreeSet();
+        for (Term x : list)
+            ordered.add(x);
 
-            ByteAnonMap m = new ByteAnonMap(n);
-            for (Term x : ordered)
-                m.intern(x);
+        ByteAnonMap m = new ByteAnonMap(n);
+        for (Term x : ordered)
+            m.intern(x);
 
-            //TODO optimal compressed encoding
-            StringBuilder os = new StringBuilder(n * 4);
-            long[] when = list.when;
-            for (int i = 0, whenLength = when.length; i < whenLength; i++) {
-                byte x = m.intern(list.get(i));
-                long l = when[i];
-                os.append(x).append('@').append(l);
-                if (i < when.length-1)
-                    os.append(' ');
-            }
+        Term[] oa = ordered.toArray(new Term[ordered.size()]);
 
-            Term[] oa = ordered.size() > 1 ? ordered.toArray(new Term[ordered.size()]) : new Term[] { ordered.first(), ordered.first() };
-            Term root = Op.terms.newCompound(CONJ, XTERNAL, oa);
-
-            Term[] v = Arrays.copyOf(oa, oa.length+1);
-            v[v.length-1] = Atomic.the(os.toString());
-
-            return new ConjSequence(list, Op.terms.subterms(v), root);
+        byte[] subterm = new byte[n];
+        int[] value = new int[n];
+        for (int i= 0; i < n; i++) {
+            subterm[i] = (byte) (m.interned(list.get(i))-1);
+            value[i] = Tense.occToDT(list.when(i));
         }
 
-        private ConjSequence(ConjList list, Subterms subs, Term root) {
-            super(CONJ, subs);
-            this.subs = subs;
-            this.list = list;
-            this.root = root;
+        Interval times = Interval.the(subterm, value);
+
+        return new ConjSequence(oa, times);
+    }
+
+    public static class ConjSequence extends CachedCompound.TemporalCachedCompound {
+
+
+        @Deprecated private final Interval times;
+
+        public ConjSequence(Subterms s) {
+            super(CONJ, XTERNAL, s);
+            this.times = (Interval) s.sub(s.subs()-1);
+            if (times.keyCount()+1!=s.subs()-1)
+                throw new TermException("interval subterm mismatch", this);
         }
 
-        @Override
-        public Term transform(TermTransform t) {
-
-            //HACK temporary
-            Subterms s = root.subterms();
-            Subterms r = s.transformSubs(t, null);
-            if (r == null)
-                return Null;
-            if (s == r)
-                return this; //no change
-
-            int ee = list.size();
-            ConjList l = new ConjList(ee);
-            for (int i = 0; i < ee; i++) {
-                l.add(list.when(i), r.sub(s.indexOf(list.get(i)))); //HACK
-            }
-            return l.term();
-        }
-
-        @Override
-        public Term transform(TermTransform t, TermBuffer b, int volMax) {
-            return transform(t);
+        /** expects unique to be sorted in the final canonical unique ordering */
+        private ConjSequence(Term[] unique, Interval times) {
+            this(new ArrayTermVector(ArrayUtil.add(unique, times)) /* TODO use better facade/wrapper */);
         }
 
         @Override
         public Term eventFirst() {
-            return list.getFirst();
+            return times.key(0, subterms());
+        }
+        @Override
+        public Term eventLast() {
+            return times.key(times.size()-1, subterms());
         }
 
         @Override
         public boolean subTimesWhile(Term match, IntPredicate each) {
-            int n = list.size();
+            int n = times.size();
+            Subterms ss = subterms();
             for (int i = 0; i < n; i++) {
-                if (list.get(i).equals(match))
-                    if (!each.test(Tense.occToDT(list.when(i))))
+                if (times.key(i, ss).equals(match))
+                    if (!each.test(Tense.occToDT(times.value(i))))
                         return false;
             }
             return true;
         }
 
         @Override
-        public Term eventLast() {
-            return list.getLast();
-        }
-
-        @Override
         public int eventRange() {
-            return Tense.occToDT(list.when(list.size()-1));
+            return Tense.occToDT(times.valueLast()-times.valueFirst());
         }
 
         @Override
-        public Term root() {
-            return root;
-        }
-
-        @Override
-        public Term concept() {
-            return root;
+        public boolean hasXternal() {
+            return false; //TODO test that subterms do not
         }
 
         @Override
         public boolean eventsAND(LongObjectPredicate<Term> each, long offset, boolean decomposeConjDTernal, boolean decomposeXternal) {
-            int n = list.size();
-            long[] ww = list.when;
+            int n = times.size();
+            Subterms ss = subterms();
             for (int i = 0; i < n; i++) {
-                long o = offset != ETERNAL ? ww[i] + offset : ETERNAL;
-                Term x = list.get(i);
+                long o = offset != ETERNAL ? times.value(i) + offset : ETERNAL;
+                Term x = times.key(i, ss);
                 if (x instanceof Compound && (decomposeConjDTernal || decomposeXternal) && x.op()==CONJ) {
                     int xdt = x.dt();
                     if ((decomposeConjDTernal && xdt ==DTERNAL) || (decomposeXternal && xdt == XTERNAL)) {
@@ -170,20 +138,6 @@ public enum ConjSeq { ;
             return true;
         }
 
-        @Override
-        public Subterms subterms() {
-            return subs;
-        }
-
-        @Override
-        public int dt() {
-            return DTERNAL; //TODO
-        }
-
-        @Override
-        public Op op() {
-            return CONJ;
-        }
     }
 
 
@@ -300,9 +254,9 @@ public enum ConjSeq { ;
      */
     static Term conjSeq(TermBuilder B, ConjList events, int start, int end) {
 
-        if (end-start > 2 && start == 0 && end == events.size() && events.eventOccurrences()>2) { //HACK
-            return events.term(B);
-        }
+//        if (end-start > 2 && start == 0 && end == events.size() && events.eventOccurrences()>2) { //HACK
+//            return events.term(B);
+//        }
 
         Term first = events.get(start);
         int ee = end - start;

@@ -5,6 +5,8 @@ import nars.The;
 import nars.subterm.Subterms;
 import nars.term.Compound;
 import nars.term.Term;
+import nars.term.atom.Interval;
+import nars.term.util.conj.ConjSeq;
 import nars.term.util.transform.Retemporalize;
 import org.eclipse.collections.api.block.predicate.primitive.LongObjectPredicate;
 
@@ -44,7 +46,11 @@ abstract public class CachedCompound extends SeparateSubtermsCompound implements
                 c = new UnnormalizedCachedCompound(op, subterms);
         } else {
 //            if (op==CONJ && dt == DTERNAL) Util.nop(); //TEMPORARY for debugging
-            c = new TemporalCachedCompound(op, dt, subterms);
+            if (subterms.sub(subterms.subs() - 1) instanceof Interval) {
+                c = new ConjSeq.ConjSequence(subterms);
+            } else {
+                c = new TemporalCachedCompound(op, dt, subterms);
+            }
         }
 
         return c;
@@ -131,7 +137,7 @@ abstract public class CachedCompound extends SeparateSubtermsCompound implements
 
         protected final int dt;
 
-        TemporalCachedCompound(Op op, int dt, Subterms subterms) {
+        protected TemporalCachedCompound(Op op, int dt, Subterms subterms) {
             super(op, dt, subterms);
 
             this.dt = dt;
@@ -161,7 +167,7 @@ abstract public class CachedCompound extends SeparateSubtermsCompound implements
         }
 
         @Override
-        public int dt() {
+        public final int dt() {
             return dt;
         }
 
@@ -236,7 +242,7 @@ abstract public class CachedCompound extends SeparateSubtermsCompound implements
     }
 
     @Override
-    public Op op() {
+    public final Op op() {
         return Op.the(op);
     }
 }

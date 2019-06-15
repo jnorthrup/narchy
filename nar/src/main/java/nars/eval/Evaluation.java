@@ -339,6 +339,8 @@ public class Evaluation extends Termerator {
      * TODO add limit
      */
     public static Set<Term> eval(Term x, boolean includeTrues, boolean includeFalses, Function<Atom, Functor> resolver) {
+
+
         MyEvaluated ee = new MyEvaluated();
 
         Evaluation.eval(x, includeTrues, includeFalses, resolver, ee);

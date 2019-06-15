@@ -1464,7 +1464,14 @@ public enum Util {
         return y;
     }
 
-
+    public static byte max(byte... x) {
+        byte y = Byte.MIN_VALUE;
+        for (byte f : x) {
+            if (f > y)
+                y = f;
+        }
+        return y;
+    }
     public static float max(float... x) {
         float y = Float.NEGATIVE_INFINITY;
         for (float f : x) {

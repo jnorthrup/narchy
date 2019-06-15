@@ -45,7 +45,7 @@ import static nars.time.Tense.DTERNAL;
  * when executed construct the target
  */
 public class TermBuffer {
-    public final static int INITIAL_CODE_SIZE = 16;
+    private final static int INITIAL_CODE_SIZE = 16;
     public final static int INITIAL_ANON_SIZE = 64 + 32;
 
     public final ByteAnonMap sub;
@@ -61,7 +61,7 @@ public class TermBuffer {
      *  if a non-deterministic functor evaluation occurrs, it must not propagate
      *  because that will just cause the same value to be assumed when it should not be.
      * */
-    public int volRemain;
+    int volRemain;
     private final TermBuilder builder;
 
     public TermBuffer clone() {
@@ -108,30 +108,30 @@ public class TermBuffer {
     /**
      * append compound
      */
-    public final TermBuffer appendCompound(Op o, Term... subs) {
+    final TermBuffer appendCompound(Op o, Term... subs) {
         return appendCompound(o, DTERNAL, subs);
     }
 
     /**
      * append compound
      */
-    public TermBuffer appendCompound(Op o, int dt, Term... subs) {
+    TermBuffer appendCompound(Op o, int dt, Term... subs) {
         int n = subs.length;
         assert (n < Byte.MAX_VALUE);
         return compoundStart(o, dt).subsStart((byte) n).subs(subs).compoundEnd(o);
     }
 
-    public TermBuffer compoundEnd(Op o) {
+    private TermBuffer compoundEnd(Op o) {
         return this;
     }
 
 
-    public TermBuffer subsStart(byte subterms) {
+    TermBuffer subsStart(byte subterms) {
         code.writeByte(subterms);
         return this;
     }
 
-    public TermBuffer compoundStart(Op o, int dt) {
+    private TermBuffer compoundStart(Op o, int dt) {
         DynBytes c = this.code;
 
         byte oid = o.id;
@@ -150,7 +150,7 @@ public class TermBuffer {
     private final static byte MAX_CONTROL_CODES = (byte) Op.unique();
 
 
-    public final TermBuffer negStart() {
+    private final TermBuffer negStart() {
         compoundStart(NEG, DTERNAL);
         return this;
     }
@@ -184,11 +184,11 @@ public class TermBuffer {
     }
 
     /** interns the term as-is, encapsulated as an atomic symbol */
-    public TermBuffer appendInterned(Term x) {
+    private TermBuffer appendInterned(Term x) {
         return appendInterned(intern(x));
     }
 
-    public TermBuffer appendInterned(byte i) {
+    private TermBuffer appendInterned(byte i) {
         assert(i < Byte.MAX_VALUE);
         code.writeByte(MAX_CONTROL_CODES + i);
         return this;
@@ -346,7 +346,7 @@ public class TermBuffer {
         }
     };
 
-    public int uniques() {
+    private int uniques() {
         return this.sub.idToTerm.size();
     }
 
@@ -495,7 +495,7 @@ public class TermBuffer {
 
     }
 
-    public Term nextInterned(byte ctl) {
+    private Term nextInterned(byte ctl) {
         return sub.interned((byte) (ctl - MAX_CONTROL_CODES));
     }
 
@@ -525,11 +525,11 @@ public class TermBuffer {
         return code.len;
     }
 
-    public void rewind(int codePos) {
+    private void rewind(int codePos) {
         code.len = codePos;
     }
 
-    public void rewind(int codePos, int uniques) {
+    private void rewind(int codePos, int uniques) {
         FasterList<Term> id2Term = sub.idToTerm;
         int s = id2Term.size();
         if (uniques > s) {
@@ -541,7 +541,7 @@ public class TermBuffer {
         rewind(codePos);
     }
 
-    public TermBuffer subsEnd() {
+    private TermBuffer subsEnd() {
         return this;
     }
 
@@ -588,7 +588,7 @@ public class TermBuffer {
         return appendCompound(x, f);
     }
 
-    public boolean appendCompound(Compound x, Function<Term,Term> f) {
+    private boolean appendCompound(Compound x, Function<Term, Term> f) {
         int c = this.change(), u = this.uniques();
         int p = this.pos();
 

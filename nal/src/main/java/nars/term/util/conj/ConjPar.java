@@ -72,7 +72,7 @@ public enum ConjPar {
             Term x = xx[i];
             if (x instanceof Neg) {
                 Term xu = x.unneg();
-                if (xu.op() == CONJ && xu.dt()==DTERNAL) {
+                if (!(xu instanceof ConjSeq.ConjSequence) && xu.op() == CONJ && xu.dt()==DTERNAL) {
                     if (cond == null) cond = MetalBitSet.bits(n);
                     cond.set(i);
                 }

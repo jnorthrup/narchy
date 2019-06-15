@@ -14,7 +14,7 @@ class ConjSeqTest {
         l.add(2L, $$("z"));
         l.add(4L, $$("x"));
         assertEquals("((x &&+1 (y&&z)) &&+2 x)", l.term().toString());
-        ConjSeq.ConjSequence s = ConjSeq.ConjSequence.the(l);
+        ConjSeq.ConjSequence s = ConjSeq.the(l);
 
         assertEquals(3, s.eventRange());
 

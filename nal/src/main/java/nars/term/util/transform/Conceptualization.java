@@ -1,9 +1,11 @@
 package nars.term.util.transform;
 
+import jcog.Util;
 import nars.Op;
 import nars.subterm.Subterms;
 import nars.term.Compound;
 import nars.term.Term;
+import nars.term.atom.Interval;
 import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 
 import java.util.TreeSet;
@@ -46,12 +48,18 @@ public class Conceptualization {
 //                    yyy = yyy.unneg();
                     if (yyy.op() == CONJ) {
                         yyy.eventsAND((when, what)->{
-                            t.add(what);
+                            if (what instanceof Interval) {
+                                //strip interval in concept
+                                Util.nop();
+                            } else {
+                                t.add(what);
+                            }
                             return true;
                         }, 0, true, true);
                         ///yyy.subterms().forEach(t::add);
                     } else {
-                        t.add(yyy);
+                        if (!(yyy instanceof Interval))
+                            t.add(yyy);
                     }
                 }
 
@@ -61,7 +69,7 @@ public class Conceptualization {
                 } else
                     return CONJ.the(XTERNAL, t);
             }
-            return y;
+            return null;
         }
     };
 
@@ -106,12 +114,16 @@ public class Conceptualization {
             }
 
             int dt = xo.temporal ? XTERNAL : DTERNAL;
-            Term y = applyCompound(x, xo, dt);
-            if (y instanceof Compound && y.op() == CONJ) {
-                return transformConj((Compound) y);
-            } else {
-                return y;
+
+            if (x instanceof Compound && x.op() == CONJ) {
+                Term c = transformConj(x);
+                if (c!=null)
+                    return c;
             }
+
+            Term y = applyCompound(x, xo, dt);
+            return y;
+
         }
 
         @Override

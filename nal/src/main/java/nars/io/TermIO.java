@@ -16,6 +16,7 @@ import nars.term.anon.Anom;
 import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
 import nars.term.atom.Int;
+import nars.term.atom.Interval;
 import nars.term.compound.SeparateSubtermsCompound;
 import nars.term.util.TermException;
 import nars.time.Tense;
@@ -116,6 +117,8 @@ public interface TermIO {
                     }
                 case INT:
                     return Int.the(IntCoding.readZigZagInt(in));
+                case INTERVAL:
+                    return Interval.read(in);
                 case NEG:
                     return read(in).neg();
                 default: {

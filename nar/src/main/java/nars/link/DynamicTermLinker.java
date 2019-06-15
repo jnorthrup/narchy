@@ -5,12 +5,14 @@ import jcog.decide.Roulette;
 import nars.Op;
 import nars.subterm.Subterms;
 import nars.term.Compound;
+import nars.term.Img;
 import nars.term.Term;
 import nars.term.atom.Atomic;
+import nars.term.atom.Interval;
 import nars.term.compound.SeparateSubtermsCompound;
 import nars.term.util.conj.Conj;
 import nars.term.util.conj.ConjList;
-import nars.term.Img;
+import nars.term.util.conj.ConjSeq;
 
 import java.util.Random;
 import java.util.function.Function;
@@ -102,7 +104,9 @@ public abstract class DynamicTermLinker implements TermLinker {
 
         @Override
         protected Term choose(Subterms _s, int n, Term parent, Random rng) {
-            if (parent.op()==CONJ && _s.hasAny(CONJ) && Conj.isSeq(parent) && rng.nextBoolean()) {
+            if (parent instanceof ConjSeq.ConjSequence) {
+
+            } else if (parent.op()==CONJ && _s.hasAny(CONJ) && Conj.isSeq(parent) && rng.nextBoolean()) {
                 _s = ConjList.events(parent).asSubterms(false);
             }
             Subterms s = _s;
@@ -110,7 +114,7 @@ public abstract class DynamicTermLinker implements TermLinker {
         }
 
         private float _subValue(Term sub) {
-            if (sub instanceof Img)
+            if (sub instanceof Img || sub instanceof Interval /* HACK */)
                 return 0;
             else
                 return subValue(sub);

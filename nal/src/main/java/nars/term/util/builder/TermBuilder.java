@@ -9,6 +9,7 @@ import nars.term.Neg;
 import nars.term.Term;
 import nars.term.atom.Atom;
 import nars.term.atom.Bool;
+import nars.term.atom.Interval;
 import nars.term.compound.CachedCompound;
 import nars.term.compound.CachedUnitCompound;
 import nars.term.util.Statement;
@@ -140,6 +141,10 @@ public abstract class TermBuilder implements TermConstructor {
     }
 
     protected Term conj(boolean preSorted, int dt, Term... u) {
+
+        if (u[u.length-1] instanceof Interval) {
+            return new ConjSeq.ConjSequence(subterms(u));
+        }
 
         if (!preSorted)
             u = ConjBuilder.preSort(dt, u);

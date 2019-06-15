@@ -475,7 +475,7 @@ public interface Compound extends Term, IPair, Subterms {
             if (each.accept(when,what))
                 return false;
             return true;
-        }, offset, decomposeConjDTernal, decomposeConjDTernal);
+        }, offset, decomposeConjDTernal, decomposeXternal);
     }
 
     /**

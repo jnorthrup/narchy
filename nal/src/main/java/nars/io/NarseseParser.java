@@ -228,6 +228,7 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
 
                         seq(oper, Function()),
 
+                        seq(temporal, TemporalRelation()),
 
                         seq(COMPOUND_TERM_OPENER, s(),
                                 firstOf(
@@ -251,7 +252,6 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
 
                         ),
 
-                        seq(temporal, TemporalRelation()),
 
                         seq(oper, temporal, ColonReverseInheritance()),
 
@@ -628,9 +628,8 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
         return sequence(
 
                 firstOf(
-                        "&&+-", "||+-",
                         Op.DISJstr,
-                        "&|",
+                        "&|", "&&+-", "||+-",
                         "&", "|", //TEMPORARY
                         Op.DIFFe, Op.DIFFi //??
                 ),
@@ -709,7 +708,6 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
                 s(),
                 firstOf(
                         Op.DISJstr,
-                        "||+-",
                         "&", "|",
                         Op.INH.str,
                         Op.SIM.str,

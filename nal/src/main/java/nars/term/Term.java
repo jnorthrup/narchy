@@ -573,7 +573,7 @@ public interface Term extends Termlike, Termed, Comparable<Term> {
     }
     default boolean eventsOR(LongObjectPredicate<Term> each, long offset,
                               boolean decomposeConjDTernal, boolean decomposeXternal) {
-        return eventsAND(each, offset, decomposeConjDTernal, decomposeXternal);
+        return each.accept(offset, this);
     }
 
     default void printRecursive() {

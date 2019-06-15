@@ -20,16 +20,21 @@ public abstract class AbstractAtomic implements Atomic {
 
     protected AbstractAtomic(byte[] raw) {
         this.bytesCached = raw;
-        this.hash = //Util.hashByteString(raw);
-                    Util.hash(raw);
+        this.hash = Util.hash(raw);
     }
 
     AbstractAtomic(Op op, String s) {
-        this(bytes(op, s));
+        this(op.id, s);
     }
 
-    public static byte[] bytes(Op op, String str) {
-        return bytes(op.id, str);
+    protected AbstractAtomic(Op op, byte[] s) {
+        this(op.id, s);
+    }
+    protected AbstractAtomic(byte opID, String s) {
+        this(opID, s.getBytes());
+    }
+    protected AbstractAtomic(byte opID, byte[] s) {
+        this(bytes(opID, s));
     }
 
     public static byte[] bytes(byte opID, String str) {

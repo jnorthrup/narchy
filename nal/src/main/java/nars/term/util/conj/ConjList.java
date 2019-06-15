@@ -174,10 +174,7 @@ public class ConjList extends LongObjectArraySet<Term> implements ConjBuilder {
         if (n == 1)
             return get(0);
 
-        sortThis(); //puts eternals first, and organizes contiguously timed items
 
-        condense(B);
-        n = size();
 
         if (B instanceof InterningTermBuilder && NAL.CONJ_COMMUTIVE_LOOPBACK) {
             long w0 = when[0];
@@ -212,9 +209,15 @@ public class ConjList extends LongObjectArraySet<Term> implements ConjBuilder {
             }
         }
 
+//        sortThis(); //puts eternals first, and organizes contiguously timed items
+//        condense(B);
+//        n = size();
 
-        if (n > 2 && when(0)!=ETERNAL && eventOccurrences()>2)
-            return ConjSeq.ConjSequence.the(this);
+        final int SEQ_THRESH =
+                //2;
+                3;
+        if (n > SEQ_THRESH && when(0)!=ETERNAL && eventOccurrences()>SEQ_THRESH)
+            return ConjSeq.the(this);
 
 
         //failsafe impl:
