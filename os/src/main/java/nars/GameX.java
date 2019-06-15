@@ -76,7 +76,7 @@ abstract public class GameX extends Game {
     /**
      * determines memory strength
      */
-    static float DURATIONs = 2;
+    static float DURATIONs = 1;
 
 //    static {
 //        try {
@@ -412,8 +412,8 @@ abstract public class GameX extends Game {
         n.questionPriDefault.amp(0.05f);
         n.questPriDefault.amp(0.05f);
 
-        n.beliefConfDefault.set(0.75f);
-        n.goalConfDefault.set(0.75f);
+        n.beliefConfDefault.set(0.9f);
+        n.goalConfDefault.set(0.9f);
 
         n.emotion.want(MetaGoal.Futile, -0.001f);
         n.emotion.want(MetaGoal.Perceive, -0.002f);

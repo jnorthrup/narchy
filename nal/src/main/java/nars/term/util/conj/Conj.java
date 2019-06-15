@@ -5,6 +5,7 @@ import jcog.WTF;
 import jcog.data.list.FasterList;
 import jcog.util.ArrayUtil;
 import nars.NAL;
+import nars.Op;
 import nars.subterm.Subterms;
 import nars.term.Compound;
 import nars.term.Term;
@@ -443,7 +444,11 @@ public enum Conj  { ;
 //    }
 
 
-    public static Term diffAll(Term include, Term exclude) {
+    @Deprecated public static Term diffAll(Term include, Term exclude) {
+        return diffAll(include, exclude, Op.terms);
+    }
+
+    public static Term diffAll(Term include, Term exclude, TermBuilder B) {
 
         if (include.equals(exclude))
             return True;
@@ -482,7 +487,7 @@ public enum Conj  { ;
 
                 } while (clipStart != -1 && !ii.isEmpty());
 
-                return modified ? ii.term() : include /* unchanged */;
+                return modified ? ii.term(B) : include /* unchanged */;
             }
 
             //TODO exhaustive match
@@ -511,7 +516,7 @@ public enum Conj  { ;
 //            else
 //                return include;
 
-        } else if (iSeq) {
+        } else if (iSeq || eSeq) {
 
             ConjBuilder ii = ConjList.events(include);
 
@@ -521,7 +526,7 @@ public enum Conj  { ;
                 return true;
             }, ETERNAL, true, exclude.dt() == XTERNAL);
 
-            return removedSomething[0] ? ii.term() : include;
+            return removedSomething[0] ? ii.term(B) : include;
 
 //        } else {
 //            Subterms s = include.subterms();
@@ -545,14 +550,14 @@ public enum Conj  { ;
 //            }
 
         } else {
-            return removeComm(include, exclude);
+            return removeComm(include, exclude, B);
         }
     }
 
     /**
      * exclude must be a simple event
      */
-    public static Term removeComm(Term include, Term exclude) {
+    public static Term removeComm(Term include, Term exclude, TermBuilder B) {
 
 
         Subterms incSub = include.subterms();
@@ -579,7 +584,7 @@ public enum Conj  { ;
 //        for (Term x : exclude.subterms())
 //            rem |= is.remove(x);
 //        if (rem)
-        return CONJ.the(include.dt(), is);
+        return CONJ.the(B, include.dt(), is);
 //        else
 //            return include; //unchanged
     }

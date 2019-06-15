@@ -1,6 +1,7 @@
 package nars.term.util.conj;
 
 import jcog.TODO;
+import jcog.Util;
 import jcog.data.list.FasterList;
 import jcog.data.set.ArrayHashSet;
 import nars.subterm.DisposableTermList;
@@ -8,21 +9,20 @@ import nars.term.Compound;
 import nars.term.Neg;
 import nars.term.Term;
 import nars.term.atom.Bool;
+import nars.term.util.builder.HeapTermBuilder;
 import nars.term.util.builder.TermBuilder;
 import nars.time.Tense;
 import org.eclipse.collections.api.iterator.LongIterator;
 import org.eclipse.collections.api.tuple.primitive.IntObjectPair;
 import org.eclipse.collections.impl.map.mutable.primitive.IntObjectHashMap;
-import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Collection;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Set;
 
 import static nars.Op.CONJ;
 import static nars.Op.NEG;
-import static nars.term.Terms.commute;
 import static nars.term.atom.Bool.*;
 import static nars.time.Tense.*;
 
@@ -110,13 +110,10 @@ public class ConjTree implements ConjBuilder {
         return !(neg != null || (conj.hasAny(NEG) && pos != null)) ||
                 conj.eventsAND((when, what) -> {
                             if (what instanceof Neg) {
-                                if (pos != null && pos.contains(what.unneg()))
-                                    return false;
+                                return pos == null || !pos.contains(what.unneg());
                             } else {
-                                if (neg != null && neg.contains(what))
-                                    return false;
+                                return neg == null || !neg.contains(what);
                             }
-                            return true;
                         },
                         0, true, true);
     }
@@ -214,7 +211,7 @@ public class ConjTree implements ConjBuilder {
                         //prune
                         nyi.remove();
                         if (toAdd == null) toAdd = new FasterList(1);
-                        Term z = Conj.diffAll(ny, nxn);
+                        Term z = Conj.diffAll(ny, nxn, HeapTermBuilder.the);
                         if (z == True) {
                             //eliminated y
                         } else if (z == False || z == Null) {
@@ -307,7 +304,7 @@ public class ConjTree implements ConjBuilder {
                 if (Conj.eventOf(x, yy.neg())) {
                     return True;
                 } else {
-                    Term z = Conj.diffAll(x, yy);
+                    Term z = Conj.diffAll(x, yy, HeapTermBuilder.the);
                     if (!z.equals(x)) {
                         if (z instanceof Bool)
                             return z.negIf(nP_or_pN);
@@ -333,7 +330,7 @@ public class ConjTree implements ConjBuilder {
                         iterator.remove();
                     } else {
                         //impossibility
-                        Term z = Conj.diffAll(yy, x);
+                        Term z = Conj.diffAll(yy, x, HeapTermBuilder.the);
                         if (!z.equals(yy)) {
 
                             //if (Conj.eventOf(yy, b)) {
@@ -599,7 +596,7 @@ public class ConjTree implements ConjBuilder {
 
         //        if (s == null || !Conj.isSeq(s)) {
 
-        Collection<Term> PN = null;
+        DisposableTermList PN = null;
 
 
         if (pos != null) {
@@ -628,7 +625,10 @@ public class ConjTree implements ConjBuilder {
         if (PN == null)
             return True;
 
-        Term[] q = PN instanceof DisposableTermList ? ((DisposableTermList) PN).sortAndDedup() : commute(PN);
+        Term[] q = PN.arrayKeep();
+
+
+
         Term pn;
         switch (q.length) {
             case 0:
@@ -636,7 +636,18 @@ public class ConjTree implements ConjBuilder {
             case 1:
                 return q[0];
             default: {
-                return B.newCompound(CONJ, DTERNAL, q);
+//                if (neg != null) {
+//                    Term d = ConjPar.disjunctiveFactor(q, DTERNAL, B);
+//                    if (d!=null)
+//                        return d; //specially disjunctive reduction
+//                }
+                if (Util.and(qq -> qq.op()!=CONJ || Conj.isSeq(qq) || qq.dt()==XTERNAL, q)) {
+                    Arrays.sort(q);
+                    return B.newCompound(CONJ, DTERNAL, q);
+                } else {
+                    //flatten
+                    return B.conj(q);
+                }
             }
         }
 
@@ -727,8 +738,8 @@ public class ConjTree implements ConjBuilder {
             return s;
         } else {
             if (s != null) {
-                if (pos==null) pos = new UnifiedSet(1);
-                pos.add(s);
+                if (!addParallel(s))
+                    return terminal;
             }
             return termCom(B);
         }

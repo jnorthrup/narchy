@@ -10,7 +10,6 @@ import nars.term.Term;
 import nars.term.atom.Bool;
 import nars.term.atom.Interval;
 import nars.term.compound.Sequence;
-import nars.term.util.TermException;
 import nars.term.util.builder.TermBuilder;
 import nars.term.util.map.ByteAnonMap;
 import nars.time.Tense;
@@ -21,7 +20,6 @@ import java.util.TreeSet;
 import static nars.Op.CONJ;
 import static nars.Op.NEG;
 import static nars.term.atom.Bool.*;
-import static nars.term.util.conj.ConjUnify.eventsCommon;
 import static nars.time.Tense.*;
 
 /** utilities for working with conjunction sequences (raw sequences, and factored sequences) */
@@ -267,21 +265,21 @@ public enum ConjSeq { ;
         if (!left.op().eventable || !right.op().eventable)
             return Null;
 
-        if ((left.op() == CONJ && right.op() == CONJ) && !left.equals(right)) {
-            if (!Conj.isSeq(left) && !Conj.isSeq(right)) {
-                if (eventsCommon(left, right)) {
-                    //attempt reconsolidation if possible because factorization can be necessary
-                    ConjTree c = new ConjTree();
-                    c.addConjEvent(0, left);
-                    c.addConjEvent(dt, right);
-                    try {
-                        return c.term(B);
-                    } catch (StackOverflowError ee) {
-                        throw new TermException("conj seq stack overflow", CONJ, dt, left, right);
-                    }
-                }
-            }
-        }
+//        if ((left.op() == CONJ && right.op() == CONJ) && !left.equals(right)) {
+//            if (!Conj.isSeq(left) && !Conj.isSeq(right)) {
+//                if (eventsCommon(left, right) && !(Conj.eventOf(left,right) || Conj.eventOf(right,left)) ) {
+//                    //attempt reconsolidation if possible because factorization can be necessary
+//                    ConjTree c = new ConjTree();
+//                    c.addConjEvent(0, left);
+//                    c.addConjEvent(dt, right);
+//                    try {
+//                        return c.term(B);
+//                    } catch (StackOverflowError ee) {
+//                        throw new TermException("conj seq stack overflow", CONJ, dt, left, right);
+//                    }
+//                }
+//            }
+//        }
         int lr = left.compareTo(right);
 
         if (lr!=0) {
