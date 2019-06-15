@@ -689,6 +689,9 @@ public class ConjTree implements ConjBuilder {
                     return terminal;
 
                 events.condense(B);
+                if (terminal!=null)
+                    return terminal;
+
 
                 int es = events.size();
                 switch (es) {
@@ -699,7 +702,8 @@ public class ConjTree implements ConjBuilder {
                                 //2;
                                 //3;
                                 //4;
-                                5;
+                                //5;
+                                8;
                         if (es >= SEQ_THRESH)
                             return ConjSeq.sequenceFlat(events);
                         else

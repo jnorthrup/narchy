@@ -71,7 +71,7 @@ public class Anon extends AbstractTermTransform.NegObliviousTermTransform {
     public final Term put(Term x) {
         if (x instanceof Intrin) {
             return putAnon(x);
-        } else if (x instanceof UnnormalizedVariable || x instanceof Interval) {
+        } else if (x instanceof UnnormalizedVariable || x instanceof Interval /* HACK */) {
             return x; //HACK is this necessary?
         } else if (intern(x)) {
             return putIntern(x);

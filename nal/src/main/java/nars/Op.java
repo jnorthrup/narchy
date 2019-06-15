@@ -435,25 +435,26 @@ public enum Op {
 
         this.bit = (1 << ordinal());
 
-        this.atomic = var || java.util.Set.of(".", "+", "B", "/").contains(str);
+        this.atomic = var || java.util.Set.of(".", "+", "B", "/", "‡").contains(str);
 
         boolean isBool = str.equals("B");
         boolean isInt = str.equals("+");
         boolean isNeg = str.equals("--");
         boolean isImg = str.equals("/");
-        boolean isSect = str.equals("|") || str.equals("&");
+        //boolean isSect = str.equals("|") || str.equals("&");
         boolean isFrag = str.equals("`");
+        boolean isInterval = str.equals("‡");
 
-        conceptualizable =
-                !var &&
+        conceptualizable = !var &&
                         !isBool &&
                         !isImg &&
                         !isFrag &&
+                        !isInterval &&
                         (!isInt || NAL.term.INT_CONCEPTUALIZABLE)
         //!isNeg && //<- HACK technically NEG cant be conceptualized but in many cases this is assumed. so NEG must not be included in conceptualizable for it to work currently
         ;
 
-        taskable = conceptualizable && !isInt && !isNeg && !isSect;
+        taskable = conceptualizable && !isInt && !isNeg;
 
         eventable = taskable || isNeg || var;
 

@@ -4,7 +4,7 @@
 //      If after M, P usually happens, and M happens, it means P is expected to happen
 
 
-     B, (  X ==> C), --is(X,"--"), --is(C,"#"), --is(B,"==>") |- unisubst(C,X,B,"$"), (Belief:Pre, Goal:Pre, Time:TaskEvent)
+     B, (  X ==> C), --is(X,"--"), --is(C,"#"), --is(B,"==>") |- unisubst(C,X,B,"$"), (Belief:Pre, Goal:PreWeak, Time:TaskEvent)
      //(  X ==> C), B, --is(X,"--"), --is(C,"#"), --is(B,"==>") |- unisubst(C,X,B,"$"), (Belief:PreX)
 
         //--is(X,"#"),
@@ -25,7 +25,7 @@
 //        G, (A==>B), eventOfNeg(B,G) |- (A &&   conjWithout(B,--G)), (Belief:PreNP, Goal:PreWeakNP)
 //        G, (A==>B), eventOfNeg(B,G) |- (A && --conjWithout(B,--G)), (Belief:PreNN, Goal:PreWeakNN)
 
-     B, (--X ==> C), --is(C,"#"), --is(B,"==>") |- unisubst(C,X,B,"$"), (Belief:PreN, Goal:PreN, Time:TaskEvent)
+     B, (--X ==> C), --is(C,"#"), --is(B,"==>") |- unisubst(C,X,B,"$"), (Belief:PreN, Goal:PreWeakN, Time:TaskEvent)
      //(--X ==> C), B, --is(C,"#"), --is(B,"==>") |- unisubst(C,X,B,"$"), (Belief:PreNX)
 
 
@@ -39,7 +39,7 @@
           B, (--A ==> C), task("?@"), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- unisubst((--A ==> C),A,B,"$",novel), (Punctuation:Question, Time:TaskEvent)
           B, (--A ==> C), task("?@"), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- unisubst(C,A,B,"$"), (Time:TaskEvent)
 
-    B, (C ==> A), --is(C,"#"), --is(B,"==>") |- unisubst(C,A,B,"$"), (Belief:Post, Goal:Post, Time:TaskEvent)
+    B, (C ==> A), --is(C,"#"), --is(B,"==>") |- unisubst(C,A,B,"$"), (Belief:PostWeak, Goal:Post, Time:TaskEvent)
 
         //antigoal:
         //B, (C ==> A), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- --unisubst(C,A,B), (Goal:PostStrongPN, Time:TaskMinusBeliefDT)

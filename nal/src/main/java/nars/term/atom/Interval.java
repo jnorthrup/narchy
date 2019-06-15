@@ -28,7 +28,7 @@ import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
  *
  *  used for conjunction sequences
   */
-public final class Interval extends AbstractAtomic implements The, Iterable<ByteIntPair> {
+public final class Interval extends AbstractAtomic implements /*The, */Iterable<ByteIntPair> {
 
     /** the subterm index column */
     private final byte[] key;

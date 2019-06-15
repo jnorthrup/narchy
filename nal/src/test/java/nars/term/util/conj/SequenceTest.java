@@ -1,17 +1,28 @@
 package nars.term.util.conj;
 
+import nars.Op;
 import nars.term.Term;
 import nars.term.compound.Sequence;
 import org.junit.jupiter.api.Test;
 
 import static nars.$.$$;
+import static nars.Op.CONJ;
+import static nars.term.atom.Bool.False;
 import static org.junit.jupiter.api.Assertions.*;
 
-class ConjSeqTest {
+class SequenceTest {
 
+    public static final Term A = $$("a");
     public static final Term Z = $$("z");
     public static final Term X = $$("x");
     public static final Term Y = $$("y");
+
+    @Test void testIntervalOp() {
+        assertFalse(Op.INTERVAL.taskable);
+        assertFalse(Op.INTERVAL.conceptualizable);
+        assertFalse(Op.INTERVAL.eventable);
+        assertTrue(Op.INTERVAL.atomic);
+    }
 
     @Test void test1() {
         ConjList l = new ConjList();
@@ -19,7 +30,7 @@ class ConjSeqTest {
         l.add(2L, $$("y"));
         l.add(2L, $$("z"));
         l.add(4L, $$("x"));
-        assertEquals("((x &&+1 (y&&z)) &&+2 x)", l.term().toString());
+        //assertEquals("((x &&+1 (y&&z)) &&+2 x)", l.term().toString());
         Sequence s = ConjSeq.sequenceFlat(l);
 
         assertEquals(3, s.eventRange());
@@ -53,12 +64,30 @@ class ConjSeqTest {
         l.add(2L, Y);
         l.add(2L, Z);
         l.add(4L, X);
-        assertEquals("((x &&+1 (y&&z)) &&+2 x)", l.term().toString());
+//        assertEquals("((x &&+1 (y&&z)) &&+2 x)", l.term().toString());
         Sequence x = ConjSeq.sequenceFlat(l);
-        Term y = x.replace(Z,X);
-        assertNotEquals(x, y);
-        assertTrue(y instanceof Sequence);
-        assertEquals("", y.toString());
+        {
+            Term contradicted = CONJ.the(X.neg(),x);
+            assertEquals(False, contradicted);
+        }
+        {
+            Term y = x.replace(Z, X);
+            assertNotEquals(x, y);
+            assertTrue(y instanceof Sequence);
+        }
+
+        {
+            assertTrue(x.anon() instanceof Sequence);
+        }
+
+        {
+            Term wrapped = CONJ.the(A, x);
+            assertTrue(wrapped.op() == CONJ, () -> x + " -> " + wrapped);
+        }
+
+
+//        assertEquals("", y.toString());
+
 
 
     }
