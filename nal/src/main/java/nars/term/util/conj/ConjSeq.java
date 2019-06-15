@@ -144,6 +144,7 @@ public enum ConjSeq { ;
     /** TODO make method of B: TermBuilder.conjSequence(..) */
     public static Term sequence(Term a, long aStart, Term b, long bStart, TermBuilder B) {
 
+
         if (a==Null || b == Null)
             return Null;
 
@@ -253,10 +254,12 @@ public enum ConjSeq { ;
      * assumes that all of the event terms have distinct occurrence times
      */
     static Term conjSeq(TermBuilder B, ConjList events, int start, int end) {
+        final int SEQ_THRESH =
+                //2;
+                4;
+        if (start==0 && end == events.size() && (end-start) > SEQ_THRESH && events.eventOccurrences()>SEQ_THRESH)
+            return ConjSeq.the(events);
 
-//        if (end-start > 2 && start == 0 && end == events.size() && events.eventOccurrences()>2) { //HACK
-//            return events.term(B);
-//        }
 
         Term first = events.get(start);
         int ee = end - start;

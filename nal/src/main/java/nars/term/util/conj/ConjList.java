@@ -213,11 +213,7 @@ public class ConjList extends LongObjectArraySet<Term> implements ConjBuilder {
 //        condense(B);
 //        n = size();
 
-        final int SEQ_THRESH =
-                //2;
-                3;
-        if (n > SEQ_THRESH && when(0)!=ETERNAL && eventOccurrences()>SEQ_THRESH)
-            return ConjSeq.the(this);
+
 
 
         //failsafe impl:

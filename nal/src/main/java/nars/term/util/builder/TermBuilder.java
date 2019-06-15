@@ -142,7 +142,7 @@ public abstract class TermBuilder implements TermConstructor {
 
     protected Term conj(boolean preSorted, int dt, Term... u) {
 
-        if (u[u.length-1] instanceof Interval) {
+        if (u.length>0 && u[u.length-1] instanceof Interval) {
             return new ConjSeq.ConjSequence(subterms(u));
         }
 

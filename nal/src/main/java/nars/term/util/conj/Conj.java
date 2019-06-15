@@ -680,8 +680,11 @@ public enum Conj  { ;
                         (Term x) -> !exclude.equals(x) && !exclude.contains(x) :
                         (Term x) -> !exclude.equals(x)
         );
-        if (is.size() == incSub.subs())
+        int ii = is.size();
+        if (ii == incSub.subs())
             return include; //nothing removed
+        if (ii == 0)
+            return True;
 
 //        boolean rem = false;
 //        for (Term x : exclude.subterms())

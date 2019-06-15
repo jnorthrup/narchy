@@ -65,8 +65,8 @@
 //    (&&,G,X,A..*), (&&,H,Y,B..*), eqNeg(G,H), neq(X,Y), hasBelief()  |- ((polarizeRandom(X) && polarizeRandom(Y)) --> ?1), (Punctuation:Ask)
 
 //anti-specific deduction: "conjunction contraposition" (weak)
-    X, C, eventOf(C,X), --isVar(X)       |-   negateEvents(conjWithout(C,  X)), (Goal:DesireWeakNP, Time:TaskEvent)
-    X, C, eventOfNeg(C,X), --isVar(X)    |-   negateEvents(conjWithout(C,--X)), (Goal:DesireWeakPP, Time:TaskEvent)
+//    X, C, eventOf(C,X), --isVar(X)       |-   negateEvents(conjWithout(C,  X)), (Goal:DesireWeakNP, Time:TaskEvent)
+//    X, C, eventOfNeg(C,X), --isVar(X)    |-   negateEvents(conjWithout(C,--X)), (Goal:DesireWeakPP, Time:TaskEvent)
     //C, X, eventOf(C,X), --isVar(X)       |-   negateEvents(conjWithout(C,  X)), (Belief:DeductionWeakPN)
     //C, X, eventOfNeg(C,X), --isVar(X)    |-   negateEvents(conjWithout(C,--X)), (Belief:DeductionWeakPP)
 
