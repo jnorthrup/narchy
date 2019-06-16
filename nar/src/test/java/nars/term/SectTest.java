@@ -49,7 +49,12 @@ public class SectTest {
 
 
         assertEq("((x-->(&&,a,b,c))&&z)", "(&&, (x-->a), (x-->b), (x --> c), z)"); //with non-inh
+        assertEq("((x-->(&&,a,b,c))&&(z-->w))", "(&&, (x-->a), (x-->b), (x --> c), (z-->w))"); //with other inh
         assertEq("((x-->(&&,a,b,c))&&(z &&+1 w))", "(&&, (x-->a), (x-->b), (x --> c), (z &&+1 w))"); //with non-inh CONJ
+    }
+
+    @Test void reduce_ConjToSect_subj_intersection_4ary_split() {
+        assertEq("((x-->(a&&b))&&(y-->(c&&d)))", "(&&, (x-->a), (x-->b), (y --> c), (y --> d))"); //intersection
     }
 
     @Test void reduce_ConjToSect_pred_union_1() {

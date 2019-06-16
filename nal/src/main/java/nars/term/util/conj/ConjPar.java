@@ -2,20 +2,30 @@ package nars.term.util.conj;
 
 import jcog.Util;
 import jcog.data.bit.MetalBitSet;
+import jcog.data.list.FasterList;
 import jcog.util.ArrayUtil;
 import nars.Op;
+import nars.subterm.Subterms;
 import nars.term.Neg;
 import nars.term.Term;
 import nars.term.Terms;
 import nars.term.atom.Bool;
 import nars.term.compound.Sequence;
 import nars.term.util.builder.TermBuilder;
+import org.eclipse.collections.api.list.MutableList;
+import org.eclipse.collections.api.tuple.primitive.ObjectIntPair;
 import org.eclipse.collections.impl.map.mutable.primitive.ObjectByteHashMap;
+import org.eclipse.collections.impl.map.mutable.primitive.ObjectIntHashMap;
+import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.IntStream;
 
-import static nars.Op.*;
+import static nars.Op.CONJ;
+import static nars.Op.INH;
 import static nars.term.atom.Bool.*;
 import static nars.time.Tense.*;
 
@@ -141,10 +151,66 @@ public enum ConjPar {
                 return INH.the(B, subj, CONJ.the(B, a.sub(1).negIf(aa instanceof Neg), b.sub(1).negIf(bb instanceof Neg)));
             }
         }
-        //TODO:
-        //ObjectIntHashMap<Term> counts = new ObjectIntHashMap(inhCount);
 
-        return null;
+        Term other = inhCount < xx.length ? CONJ.the(B, IntStream.range(0, xx.length).filter(r -> !ii.get(r)).mapToObj(r -> xx[r]).toArray(Term[]::new)) : null;
+        if (other == False || other == Null)
+            return other;
+        List<Term> all = new FasterList(4);
+        if (other!=null)
+            all.add(other);
+
+        //counts are stored as follows: subj are stored as normal, pred are stored as negated
+        ObjectIntHashMap<Term> counts = new ObjectIntHashMap(inhCount);
+        for (int i = 0, xxLength = xx.length; i < xxLength; i++) {
+            if (ii.get(i)) {
+                Subterms sp = xx[i].unneg().subterms();
+                counts.addToValue(sp.sub(0), +1);
+                counts.addToValue(sp.sub(1).neg(), +1);
+            }
+        }
+        MutableList<ObjectIntPair<Term>> sp = counts.keyValuesView().select(t -> t.getTwo() > 1).toList();
+        if (sp.isEmpty())
+            return null;
+
+        FasterList<Term> xxx = new FasterList();
+        for (int i = 0; i < xx.length; i++) {
+            if (ii.get(i))
+                xxx.add(xx[i]);
+        }
+
+        if (sp.size()>1)
+            sp.sortThisByInt(i -> -i.getTwo()); //reverse
+
+
+        for (ObjectIntPair<Term> j : sp) {
+            if (xxx.size() < 2)
+                break; //done
+            Term jj = j.getOne();
+            int subjOrPred = !(jj instanceof Neg) ? 0 :1;
+            jj = jj.unneg();
+            Set<Term> components = new UnifiedSet();
+            Iterator<Term> xxxxi = xxx.iterator();
+            while (xxxxi.hasNext()) {
+                Term xxxi = xxxxi.next();
+                Subterms xxi = xxxi.unneg().subterms();
+                if (xxi.sub(subjOrPred).equals(jj)) {
+                    xxxxi.remove();
+                    Term c = xxi.sub(1 - subjOrPred).negIf(xxxi instanceof Neg);
+                    if (components.contains(c.neg()))
+                        return False; //contradiction detected
+                    components.add(c);
+                }
+            }
+            assert(components.size() > 1);
+
+            if (subjOrPred==0) {
+                all.add(INH.the(B, jj, CONJ.the(B, components)));
+            } else {
+                all.add(INH.the(B, Op.DISJ(B, components.toArray(Op.EmptyTermArray)), jj));
+            }
+        }
+        all.addAll(xxx);
+        return CONJ.the(all);
     }
 
     @Nullable

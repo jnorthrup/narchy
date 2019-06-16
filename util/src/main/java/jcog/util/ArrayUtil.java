@@ -7297,7 +7297,10 @@ public enum ArrayUtil {
         }
     }
 
-    public static <X> X[] removeAll(final X[] x, final MetalBitSet indices) {
+    public static <X> X[] removeAll(final X[] x, final MetalBitSet keep) {
+        return removeAll(x, keep, false);
+    }
+    public static <X> X[] removeAll(final X[] x, final MetalBitSet indices, boolean iff) {
         int toRemove = indices.cardinality();
         if (toRemove == 0)
             return x;
@@ -7307,14 +7310,14 @@ public enum ArrayUtil {
                 return (X[]) ArrayUtil.EMPTY_OBJECT_ARRAY;
             case 1: {
                 X[] y = Arrays.copyOf(x, 1);
-                y[0] = x[indices.next(false, 0, srcLength)];
+                y[0] = x[indices.next(iff, 0, srcLength)];
                 return y;
             }
             default: {
                 final X[] y = Arrays.copyOf(x, remain);
                 int j = 0;
                 for (int i = 0; i < srcLength; i++)
-                    if (!indices.get(i))
+                    if (iff == indices.get(i))
                         y[j++] = x[i];
                 return y;
             }
