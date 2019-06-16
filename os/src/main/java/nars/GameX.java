@@ -483,11 +483,11 @@ abstract public class GameX extends Game {
                 "motivation.nal"));
         bd6_act.timing = new ActionTiming();
 
-        BatchDeriver bdExtra = new BatchDeriver(Derivers.files(n,
-                "nal4.sect.nal",
-                "relation_introduction.nal", "motivation.nal"
-                //, "nal6.to.nal3.nal"
-        ));
+//        BatchDeriver bdExtra = new BatchDeriver(Derivers.files(n,
+//                "motivation.nal"
+//                "nal4.sect.nal",
+//                //, "nal6.to.nal3.nal"
+//        ));
 
 
 //        inputInjectionPID(injection, n);

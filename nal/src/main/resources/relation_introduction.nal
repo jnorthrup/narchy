@@ -1,7 +1,7 @@
 //Relation introduction
-   (A --> C), (B --> D), neq(A,B), neq(C,D) |- ((A,B) --> (C,D)), (Belief:Intersection)
-   (A --> C), (A --> D), neq(C,D)           |- ((A,A) --> {C,D}), (Belief:Intersection)
-   (C --> A), (D --> A), neq(C,D)           |- ({C,D} --> (A,A)), (Belief:Intersection)
+   (A --> C), (B --> D), neq(A,B), neq(C,D) |- ((A,B) --> (C,D)), (Belief:Intersection, Time:Compose)
+   (A --> C), (A --> D), neq(C,D)           |- ((A,A) --> {C,D}), (Belief:Intersection, Time:Compose)
+   (C --> A), (D --> A), neq(C,D)           |- ({C,D} --> (A,A)), (Belief:Intersection, Time:Compose)
 
    //          #_#R[(A --> C) (B --> D) |- ((* A B) --> (* C D)) :post (:t/intersection)] //            ;this one cant be allowed due to control reasons:
    //          #R[(A --> C) (A --> D) |- ((* A A) --> (* C D)) :post (:t/intersection)]

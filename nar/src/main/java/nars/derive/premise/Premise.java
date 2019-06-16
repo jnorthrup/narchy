@@ -249,8 +249,11 @@ public class Premise implements Comparable<Premise> {
 //                        if (answered instanceof DynamicTruthTask)
 //                            d.what.accept(answered);
 //                        else
-                        if (beliefConceptUnifiesTaskConcept && task.isQuestionOrQuest())
-                            n.eventTask.emit(answered);
+                        if (beliefConceptUnifiesTaskConcept && task.isQuestionOrQuest()) {
+                            d.what.accept(answered);
+                            //n.eventTask.emit(answered);
+                        }
+
                     }
 
                 }
