@@ -97,6 +97,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
      * lower values will result in less confident but slower evidential stamp capacity consumption
      */
     public static final float ANSWER_COMPLETENESS =
+            //0.25f;
             0.5f;
             //0.75f;
             //1f;
@@ -405,10 +406,10 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
         //inverse linear decay
         final double falloffDurs =
                 //0.5f;
-                //1;
+                1;
                 //1.618f; //phi
                 //2; //nyquist / horizon
-                4;
+                //4;
                 //dur;
                 //8;
                 //64;
@@ -794,7 +795,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
          * max variable unification recursion depth as a naive cyclic filter
          * includes indirections through common variables so should be at least 3.
          */
-        public static final int UNIFY_VAR_RECURSION_DEPTH_LIMIT = 4;
+        public static final int UNIFY_VAR_RECURSION_DEPTH_LIMIT = 6;
         public static final int UNIFY_COMMON_VAR_MAX = UNIFY_VAR_RECURSION_DEPTH_LIMIT;
         public static final int UNIFICATION_STACK_CAPACITY = 128;
     }

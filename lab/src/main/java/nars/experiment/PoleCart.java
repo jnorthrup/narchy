@@ -150,7 +150,7 @@ public class PoleCart extends GameX {
          */
 
 
-        this.x = senseNumberBi($.inh("x", id),() -> ((float) (pos - posMin)/(posMax-posMin)));
+        this.x = senseNumberBi($.p("x", id),() -> ((float) (pos - posMin)/(posMax-posMin)));
         this.xVel = senseNumberBi($.inh("dx", id),
                 new FloatNormalized(() -> (float) posDot)
         );
@@ -158,13 +158,13 @@ public class PoleCart extends GameX {
 
 //        angX.resolution(0.02f);
 //        angY.resolution(0.02f);
-        this.angX = senseNumberBi($.inh("angX",id),
+        this.angX = senseNumberBi($.p("angX",id),
                 () -> (float) (0.5f + 0.5f * (Math.sin(angle))));
-        this.angY = senseNumberBi($.inh("angY",id),
+        this.angY = senseNumberBi($.p("angY",id),
                 () -> (float) (0.5f + 0.5f * (Math.cos(angle))));
 
 
-        this.angVel = senseNumberBi($.inh("angVel",id),
+        this.angVel = senseNumberBi($.p("angVel",id),
                 new FloatNormalized(() -> (float) angleDot)
         );
 
@@ -297,7 +297,7 @@ public class PoleCart extends GameX {
 //                        angVel, angX, angY),
                 8,
                 8 * nar.dur(),
-                4,
+                1,
                 //new LivePredictor.LSTMPredictor(0.1f, 1),
                 new LivePredictor.MLPPredictor(0.01f),
                 what()

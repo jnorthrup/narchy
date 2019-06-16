@@ -77,6 +77,11 @@ abstract class AbstractUnitSubterm implements Subterms {
     }
 
     @Override
+    public final <X> boolean ANDwithOrdered(BiPredicate<Term, X> p, X param) {
+        return ANDwith(p, param);
+    }
+
+    @Override
     public @Nullable Term subSub(int start, int end, byte[] path) {
         byte a = path[start];
         if (a != 0)

@@ -1118,8 +1118,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
     default <X> boolean ANDwithOrdered(/*@NotNull*/ BiPredicate<Term,X> p, X param) {
         int s = subs();
         for (int i = 0; i < s; i++) {
-            Term ii = sub(i);
-            if (!p.test(ii, param))
+            if (!p.test(sub(i), param))
                 return false;
         }
         return true;

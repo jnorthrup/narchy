@@ -265,6 +265,8 @@ public abstract class HijackBag<K, V> extends Bag<K, V> {
                         if (v != null && keyEquals(k, kHash, v)) {
                             return v;
                         }
+                        if (++i == c)
+                            i = 0;
                     }
                     return null; //not found
                 case REMOVE:
@@ -277,6 +279,8 @@ public abstract class HijackBag<K, V> extends Bag<K, V> {
                             }
                             //else: this actually shouldnt happen if access to the hashes has been correctly restricted by the mutex
                         }
+                        if (++i == c)
+                            i = 0;
                     }
                     break;
                 case PUT:

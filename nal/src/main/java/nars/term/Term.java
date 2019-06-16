@@ -203,7 +203,7 @@ public interface Term extends Termlike, Termed, Comparable<Term> {
     /**
      * convenience, do not override (except in Atomic)
      */
-    default boolean recurseTermsOrdered(Predicate<Term> whileTrue) {
+    default /* final */ boolean recurseTermsOrdered(Predicate<Term> whileTrue) {
         return recurseTermsOrdered(x->true, whileTrue, null);
     }
 

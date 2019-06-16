@@ -111,7 +111,7 @@ public class Occurrify extends TimeGraph {
         }
 
         Term y = timing.getOne();
-        if (y.op()!=x.op()) {
+        if (!y.op().taskable || /*y.op()!=x.op() || */y.volume() > d.termVolMax) {
             d.nar.emotion.deriveFailTemporal.increment();
             return;
         }

@@ -1,6 +1,5 @@
 package nars.link;
 
-import jcog.pri.op.PriMerge;
 import jcog.pri.op.PriReturn;
 import jcog.signal.tensor.AtomicFixedPoint4x16bitVector;
 import jcog.signal.tensor.WritableTensor;
@@ -14,24 +13,12 @@ public final class AtomicTaskLink extends AbstractTaskLink {
             new AtomicFixedPoint4x16bitVector();
             //new AtomicFloatArray(4);
 
-    AtomicTaskLink(Term source, Term target) {
+    public AtomicTaskLink(Term source, Term target) {
         super(source, target);
     }
 
     public AtomicTaskLink(Term self) {
         super(self);
-    }
-
-    public AtomicTaskLink(Term self, byte punc, float puncPri) {
-        super(self);
-        if (puncPri==puncPri && puncPri > Float.MIN_NORMAL)
-            priMerge(punc, puncPri, PriMerge.replace);
-    }
-
-    public AtomicTaskLink(Term source, Term target, byte punc, float puncPri) {
-        this(source, target);
-        if (puncPri > Float.MIN_NORMAL)
-            priMerge(punc, puncPri, PriMerge.replace);
     }
 
     @Override protected float priSum() {

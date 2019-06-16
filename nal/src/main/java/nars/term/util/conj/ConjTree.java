@@ -3,7 +3,7 @@ package nars.term.util.conj;
 import jcog.TODO;
 import jcog.Util;
 import jcog.data.list.FasterList;
-import jcog.data.set.ArrayHashSet;
+import nars.Op;
 import nars.subterm.DisposableTermList;
 import nars.term.Compound;
 import nars.term.Neg;
@@ -15,6 +15,7 @@ import nars.time.Tense;
 import org.eclipse.collections.api.iterator.LongIterator;
 import org.eclipse.collections.api.tuple.primitive.IntObjectPair;
 import org.eclipse.collections.impl.map.mutable.primitive.IntObjectHashMap;
+import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
@@ -22,7 +23,8 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Set;
 
-import static nars.Op.*;
+import static nars.Op.CONJ;
+import static nars.Op.NEG;
 import static nars.term.atom.Bool.*;
 import static nars.time.Tense.*;
 
@@ -31,8 +33,8 @@ import static nars.time.Tense.*;
  */
 public class ConjTree implements ConjBuilder {
     private IntObjectHashMap<ConjTree> seq = null;
-    Set<Term> pos = null;
-    Set<Term> neg = null;
+    final Set<Term> pos = newSet();
+    final Set<Term> neg = newSet();
     Term terminal = null;
     private long shift = TIMELESS;
 
@@ -71,11 +73,11 @@ public class ConjTree implements ConjBuilder {
             }
         }
 
-        if (pos != null && pos.contains(p))
+        if (!pos.isEmpty() && pos.contains(p))
             return true;
 
-        if (neg != null) {
-            p = reducePN(p, neg, false);
+        if (!neg.isEmpty()) {
+            p = reducePN(p, neg, false); 
             if (p instanceof Neg)
                 return addParallelN(p); //became negative
 
@@ -87,7 +89,6 @@ public class ConjTree implements ConjBuilder {
             }
         }
 
-        if (pos == null) pos = newSet();
         assert (p.op() != NEG);
         pos.add(p);
         return true;
@@ -107,10 +108,10 @@ public class ConjTree implements ConjBuilder {
             neg = this.neg;
         }
 
-        return !(neg != null || (conj.hasAny(NEG) && pos != null)) ||
+        return !(!neg.isEmpty() || (conj.hasAny(NEG) && !pos.isEmpty())) ||
                 conj.eventsAND((when, what) -> {
-                            if (what instanceof Neg) return pos == null || !pos.contains(what.unneg());
-                            else return neg == null || !neg.contains(what);
+                            if (what instanceof Neg) return pos.isEmpty() || !pos.contains(what.unneg());
+                            else return neg.isEmpty() || !neg.contains(what);
                         },
                         0, true, true);
     }
@@ -119,17 +120,18 @@ public class ConjTree implements ConjBuilder {
         assert (n instanceof Neg);
         Term nu = n.unneg();
 
-        if (neg != null && neg.contains(nu))
+        if (!neg.isEmpty() && neg.contains(nu))
             return true;
 
-        if (pos != null) {
-            nu = reducePN(nu, pos, true);
+        if (!pos.isEmpty()) {
+            nu = reducePN(nu, pos, true); 
             if (nu instanceof Neg)
                 return addParallelP(nu.unneg()); //became positive
         }
 
-        if (neg != null && !(nu instanceof Bool)) {
-            nu = reduceNegNeg(nu, neg);
+        if (!neg.isEmpty() && !(nu instanceof Bool)) {
+            nu = reduceNegNeg(nu);
+
             if (nu instanceof Neg)
                 return addParallelP(nu.unneg()); //became positive
         }
@@ -141,15 +143,14 @@ public class ConjTree implements ConjBuilder {
             terminate(nu);
             return false; /*conflict */
         } else {
-            if (neg == null) neg = newSet();
             assert (nu.op() != NEG);
             neg.add(nu);
             return true;
         }
     }
 
-    private Set<Term> newSet() {
-        return new ArrayHashSet<>(4);
+    private static Set<Term> newSet() {
+    //    return new ArrayHashSet<>(4);
 //        return new ArrayHashSet<>(4) {
 //            @Override
 //            public boolean add(Term x) {
@@ -163,24 +164,19 @@ public class ConjTree implements ConjBuilder {
 //                return super.remove(x);
 //            }
 //        };
-        //return new LinkedHashSet<>(4);
-        //return new UnifiedSet<>(1, 0.99f);
+
+        //return new LinkedHashSet<>(4, 0.99f);
+        return new UnifiedSet<>(2, 0.99f);
         //return new HashSet<>(4);
     }
 
 
     /**
-     * TODO
-     * ¬( a||b) || ¬( a||¬b) == ¬a	# Robbins Algebra axiom3
-     * (--a && b) || ( --a && --b) == --a
-     * --(--a && b) && --(--a && --b) == a
-     * --(a && b) && --(a && --b) == --a
-     *
      * @param nx
      * @param neg
      * @return
      */
-    private Term reduceNegNeg(Term nx, Collection<Term> neg) {
+    private Term reduceNegNeg(Term nx) {
         assert (nx.op() != NEG);
 
 
@@ -255,12 +251,16 @@ public class ConjTree implements ConjBuilder {
                         return nx;
                     long nxshift = nxe.shift();
                     //add at shifted time
-                    if (nxshift == ETERNAL) {
+                    if (nxshift == ETERNAL || nxshift == 0) {
                         //continue, adding at present parallel time
-                    } else if (!addEvent(nxshift, nx.neg()))
-                        return False;
-                    else
-                        return True;
+                    } else {
+                        if (!addEvent(nxshift, nx.neg()))
+                            return False;
+                        else {
+                            assert(toAdd == null): "TODO";
+                            return True;
+                        }
+                    }
                 }
 
             }
@@ -272,6 +272,7 @@ public class ConjTree implements ConjBuilder {
     }
 
     private Term reducePN(Term x, Collection<Term> y, boolean nP_or_pN) {
+
         assert (x.op() != NEG);
 
         if (y.contains(x))
@@ -356,7 +357,7 @@ public class ConjTree implements ConjBuilder {
     private boolean addAt(long at, Term x) {
         if (!(x instanceof Neg)) {
 
-            if (neg != null && neg.contains(x)) {
+            if (!neg.isEmpty() && neg.contains(x)) {
                 terminate(False); //contradicted
                 return false;
             }
@@ -364,7 +365,7 @@ public class ConjTree implements ConjBuilder {
                     terminate(False); //contradicted
                     return false;
                 }
-//            if (neg != null && !(x instanceof Bool)) {
+//            if (!neg.isEmpty() && !(x instanceof Bool)) {
 //                x = reducePN(x, neg, false);
 //            }
 
@@ -372,7 +373,7 @@ public class ConjTree implements ConjBuilder {
             Term _xu = x.unneg();
             Term xu = _xu;
 //
-            if (pos != null && pos.contains(xu)) {
+            if (!pos.isEmpty() && pos.contains(xu)) {
                 terminate(False); //contradict
                 return false;
             }
@@ -384,14 +385,16 @@ public class ConjTree implements ConjBuilder {
 
             //                if (xu.op()==NEG)
             //                    return addAt(at, xu.unneg()); //inverted
-            if (pos != null && !(xu instanceof Bool)) {
-                xu = reducePN(xu, pos, true);
+            if (!pos.isEmpty() && !(xu instanceof Bool)) {
+                xu = reducePN(xu, pos, true); 
                 if (xu instanceof Neg) {
                     return addAt(at,xu.unneg());
                 }
             }
 
-            if (neg != null && !(xu instanceof Bool)) xu = reduceNegNeg(xu, neg);
+            if (!neg.isEmpty() && !(xu instanceof Bool)) {
+                xu = reduceNegNeg(xu);
+            }
 
             if (_xu != xu)
                 x = xu.neg(); //HACK
@@ -416,12 +419,7 @@ public class ConjTree implements ConjBuilder {
         if (!result) {
             terminate(False);
         }
-
-        if (pos != null && pos.isEmpty())
-            pos = null; //HACK
-        if (neg != null && neg.isEmpty())
-            neg = null; //HACK
-
+        
         return result;
     }
 
@@ -457,32 +455,22 @@ public class ConjTree implements ConjBuilder {
     }
 
     boolean posRemove(Term t) {
-        if (pos != null && pos.remove(t)) {
-            if (pos.isEmpty())
-                pos = null;
-            return true;
-        }
-        return false;
+        return pos.remove(t);
     }
 
     boolean negRemove(Term t) {
-        if (neg != null && neg.remove(t)) {
-            if (neg.isEmpty())
-                neg = null;
-            return true;
-        }
-        return false;
+        return neg.remove(t);
     }
 
     @Override
     public int eventOccurrences() {
-        return ((pos != null || neg != null) ? 1 : 0) + (seq != null ? seq.size() : 0);
+        return ((!pos.isEmpty() || !neg.isEmpty()) ? 1 : 0) + (seq != null ? seq.size() : 0);
     }
 
     @Override
     public int eventCount(long when) {
         if (when == ETERNAL)
-            return (pos != null ? pos.size() : 0) + (neg != null ? neg.size() : 0);
+            return (!pos.isEmpty() ? pos.size() : 0) + (!neg.isEmpty() ? neg.size() : 0);
         else {
             if (seq != null) {
                 ConjTree s = seq.get(occToDT(when));
@@ -496,7 +484,7 @@ public class ConjTree implements ConjBuilder {
     @Override
     public long shift() {
         if (shift == TIMELESS)
-            shift = (seq == null || seq.isEmpty()) ? (pos != null || neg != null ? ETERNAL : TIMELESS) : seq.keysView().min();
+            shift = (seq == null || seq.isEmpty()) ? (!pos.isEmpty() || !neg.isEmpty() ? ETERNAL : TIMELESS) : seq.keysView().min();
         return shift;
     }
 
@@ -528,8 +516,8 @@ public class ConjTree implements ConjBuilder {
 
 
     private int size() {
-        return (pos != null ? pos.size() : 0) +
-                (neg != null ? neg.size() : 0) +
+        return pos.size() +
+                neg.size() +
                 (seq != null ? (int) seq.sumOfInt(ConjTree::size) : 0);
     }
 
@@ -558,27 +546,24 @@ public class ConjTree implements ConjBuilder {
 
     private Term termCom(TermBuilder B) {
 
-        if (pos!=null && pos.isEmpty()) pos = null; //HACK
-        if (neg!=null && neg.isEmpty()) neg = null; //HACK
-
 
         //        if (s == null || !Conj.isSeq(s)) {
 
         DisposableTermList PN = null;
 
 
-        if (pos != null) {
+        if (!pos.isEmpty()) {
             int pp = pos.size();
-            if (neg == null && pp == 1)
+            if (neg.isEmpty() && pp == 1)
                 return pos.iterator().next();
             else {
-                PN = new DisposableTermList(pos.size() + (neg != null ? neg.size() : 0));
+                PN = new DisposableTermList(pos.size() + (!neg.isEmpty() ? neg.size() : 0));
                 PN.addAll(pos);
             }
         }
-        if (neg != null) {
+        if (!neg.isEmpty()) {
             int nn = neg.size();
-            if (pos == null && nn == 1)
+            if (pos.isEmpty() && nn == 1)
                 return neg.iterator().next().neg();
             else {
                 if (PN == null) PN = new DisposableTermList(neg.size());
@@ -602,18 +587,54 @@ public class ConjTree implements ConjBuilder {
             case 1:
                 return q[0];
             default: {
-//                if (neg != null) {
+//                if (!neg.isEmpty()) {
 //                    Term d = ConjPar.disjunctiveFactor(q, DTERNAL, B);
 //                    if (d!=null)
 //                        return d; //specially disjunctive reduction
 //                }
 
+                Arrays.sort(q);
 
-                //flatten
-                if (Util.and(qq -> qq.op()!=CONJ || Conj.isSeq(qq) || qq.dt()==XTERNAL, q)) {
-                    Arrays.sort(q);
+                boolean simple;
+                if (Util.and(qq -> !qq.isAny(Op.CONJ.bit | Op.NEG.bit), q))
+                    simple = true;
+                else {
+                    for (Term x : q) {
+                        if (x instanceof Neg) {
+                            for (Term y : q)
+                                if (y!=x && !(y instanceof Neg) && y.equals(x.unneg()))
+                                    return False; //simple conflict avoided
+                        }
+                    }
+                    boolean inSeq = false;
+                    ready: for (Term x : q) {
+                        if (x.op()==CONJ) {
+                            int xv = x.volume();
+                            for (Term y : q)
+                                if (y!=x && y.volume() < xv) {
+                                    if (Conj.eventOf(x, y, ETERNAL, -1)) {
+                                        return False; //conflict in sequence avoided
+                                    }
+                                    if (Conj.eventOf(x, y, ETERNAL, +1)) {
+                                        inSeq = true;
+                                        break ready;
+                                    }
+                                }
+                        }
+                    }
+
+                    if (!inSeq && Util.and(qq -> qq.op()!=CONJ || Conj.isSeq(qq) || qq.dt()==XTERNAL, q)) {
+                        simple= true; //TODO refine
+                    } else {
+                        //flatten
+                        simple = false;
+                    }
+                }
+
+                if (simple) {
                     return B.newCompound(CONJ, DTERNAL, q);
-                } else return B.conj(q);
+                } else
+                    return ConjPar.the(B, DTERNAL, false, q);
             }
         }
 
@@ -635,7 +656,7 @@ public class ConjTree implements ConjBuilder {
             IntObjectPair<ConjTree> only = seq.keyValuesView().getOnly();
             ConjTree x = only.getTwo();
 
-            seq = null;
+            shift = seq.keySet().min();
 
             if (x.seq==null) {
                 //flatten point
@@ -645,7 +666,8 @@ public class ConjTree implements ConjBuilder {
                 }
                 s = null;
 
-            } else s = x.term(B);
+            } else
+                s = x.term(B);
 
 
 
@@ -654,8 +676,9 @@ public class ConjTree implements ConjBuilder {
 
         } else {
 
+            boolean pp = !pos.isEmpty(), nn = !neg.isEmpty();
             //actual sequence
-            ConjList events = new ConjList(ss * (2 + (pos != null ? pos.size() : 0) + (neg != null ? neg.size() : 0)));
+            ConjList events = new ConjList(ss * (1 + (pp ? pos.size() : 0) + (nn ? neg.size() : 0)));
 
             for (IntObjectPair<ConjTree> wc : seq.keyValuesView()) {
                 Term x = wc.getTwo().term(B);
@@ -665,16 +688,17 @@ public class ConjTree implements ConjBuilder {
                 }
 
                 long W = wc.getOne();
-                if (!events.add(W, x) || (pos != null && !events.addAll(W, pos)) || (neg != null && !events.addAllNeg(W, neg))) {
+                if (!events.add(W, x) || (pp && !events.addAll(W, pos)) || (nn && !events.addAllNeg(W, neg))) {
                     terminate(False);
                     break;
                 }
             }
+
+            if (pp) pos.clear();
+            if (nn) neg.clear();
+
             if (terminal != null)
                 return terminal;
-
-            if (pos!=null) pos.clear();
-            if (neg!=null) neg.clear();
 
             if (!events.isEmpty()) {
 
@@ -682,10 +706,12 @@ public class ConjTree implements ConjBuilder {
                 if (terminal != null)
                     return terminal;
 
-                if (!events.condense(B)) terminate(False);
-                if (terminal != null)
+                if (!events.condense(B)) {
+                    terminate(False);
                     return terminal;
+                }
 
+                assert(terminal == null);
 
                 int es = events.size();
                 switch (es) {
@@ -694,15 +720,15 @@ public class ConjTree implements ConjBuilder {
                     case 1:
                         s = events.get(0); break;
                     default: {
-                        final int SEQ_THRESH =
-                                //2;
-                                //3;
-                                //4;
-                                //5;
-                                8;
-                        if (es >= SEQ_THRESH)
-                            s = ConjSeq.sequenceFlat(events);
-                        else
+//                        final int SEQ_THRESH =
+//                                //2;
+//                                //3;
+//                                //4;
+//                                //5;
+//                                8;
+//                        if (es >= SEQ_THRESH)
+//                            s = ConjSeq.sequenceFlat(events);
+//                        else
                             s =  ConjSeq.sequenceBalancedTree(B, events, 0, es);
                         break;
                     }
@@ -719,7 +745,7 @@ public class ConjTree implements ConjBuilder {
         if (s == True)
             s = null;
 
-        if (pos == null && neg == null) return s;
+        if (pos.isEmpty() && neg.isEmpty()) return s;
         else {
             if (s != null) if (!addParallel(s))
                 return terminal;
@@ -734,13 +760,13 @@ public class ConjTree implements ConjBuilder {
         if (x.seq!=null)
             return addAt(at, x.term());
         else {
-            if (x.pos != null) {
+            if (!x.pos.isEmpty()) {
                 for (Term p : x.pos) {
                     if (!addParallel(p))
                         return false;
                 }
             }
-            if (x.neg != null) {
+            if (!x.neg.isEmpty()) {
                 for (Term n : x.neg) {
                     if (!addParallelNeg(n))
                         return false;

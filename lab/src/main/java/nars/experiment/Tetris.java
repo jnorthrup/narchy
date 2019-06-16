@@ -1,5 +1,6 @@
 package nars.experiment;
 
+import jcog.Util;
 import jcog.math.FloatRange;
 import jcog.signal.wave2d.AbstractBitmap2D;
 import jcog.signal.wave2d.Bitmap2D;
@@ -7,21 +8,20 @@ import nars.$;
 import nars.GameX;
 import nars.NAR;
 import nars.NARS;
-import nars.agent.BeliefReward;
 import nars.agent.GameTime;
 import nars.gui.sensor.VectorSensorView;
 import nars.op.java.Opjects;
 import nars.sensor.Bitmap2DSensor;
 import nars.term.Term;
 import nars.term.atom.Atomic;
+import org.eclipse.collections.api.block.function.primitive.FloatToFloatFunction;
 
 import java.util.Arrays;
 import java.util.Random;
 import java.util.Vector;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import static nars.$.$$;
-import static nars.experiment.Tetris.TetrisState.*;
+import static nars.experiment.Tetris.TetrisState.CW;
 import static spacegraph.SpaceGraph.window;
 
 /**
@@ -95,9 +95,9 @@ public class Tetris extends GameX {
                 state::score
                 //new FloatFirstOrderDifference(n::time, state::score).nanIfZero()
         );
-        reward("height", 1, () ->
-                1 - ((float) state.rowsFilled) / state.height
-        );
+//        reward("height", 1, new FloatFirstOrderDifference(n::time, () ->
+//                1 - ((float) state.rowsFilled) / state.height
+//        ));
         reward("density", 1, () -> {
 
             int filled = 0;
@@ -119,7 +119,9 @@ public class Tetris extends GameX {
 
 
 
-        actionsPushButton();
+        //actionPushButtonLR();
+        actionPushButtonLR_proportional();
+        actionPushButtonRotateFall();
         //actionsToggle();
         //actionsTriState();
 
@@ -133,7 +135,7 @@ public class Tetris extends GameX {
         window(new VectorSensorView(pixels, this).withControls(), 400, 900);
 
         //if a pixel is on, pixels above it should be off
-        reward(new BeliefReward($$("(&&,tetris(#x,#yBelow),--tetris(#x,#yAbove),cmp(#yBelow,#yAbove,1))"), this));
+//        reward(new BeliefReward($$("(&&,tetris(#x,#yBelow),--tetris(#x,#yAbove),cmp(#yBelow,#yAbove,1))"), this));
 
         //pixels on same row should be the same color TODO
         //reward(new BeliefReward($$("--xor(tetris(#x1,#y), tetris(#x2,#y))"), this));
@@ -195,30 +197,59 @@ public class Tetris extends GameX {
         return oo.a("tetris", TetrisState.class, tetris_width, tetris_height, 2);
     }
 
-    void actionsPushButton() {
-        final Term LEFT =
-                //$.the("left");
-                //$.inh("left", id);
-                $.inh(id, "left");
-        final Term RIGHT =
-                //$.the("right");
-                //$.inh("right", id);
-                $.inh(id,"right");
-        final Term ROT =
-                //$.the("rotate");
-                //$.inh("rotate", id);
-                $.inh(id, "rotate");
-        final Term FALL =
-                //$.the("fall");
-                //$.inh("fall", id);
-                $.inh(id,"fall");
+    final Term LEFT =
+            //$.the("left");
+            //$.inh("left", id);
+            $.inh(id, "left");
+    final Term RIGHT =
+            //$.the("right");
+            //$.inh("right", id);
+            $.inh(id,"right");
+    final Term ROT =
+            //$.the("rotate");
+            //$.inh("rotate", id);
+            $.inh(id, "rotate");
+    final Term FALL =
+            //$.the("fall");
+            //$.inh("fall", id);
+            $.inh(id,"fall");
 
+    void actionPushButtonLR() {
         actionPushButtonMutex(LEFT, RIGHT,
                 b -> b && state.act(TetrisState.LEFT),
                 b -> b && state.act(TetrisState.RIGHT)
         );
+    }
+    void actionPushButtonLR_proportional() {
+        actionBipolarFrequencyDifferential($.the("x"), true, new FloatToFloatFunction() {
 
-        int debounceDurs = 1;
+            float speed = 2f;
+            float tx = state.currentX;
+
+            @Override
+            public float valueOf(float v) {
+                tx  = Util.clamp(tx + v * speed, -1f, state.width-1 + 0.5f);
+
+                if (Util.equals(state.currentX, tx, 0.5f))
+                    return 0; //no motion
+                else {
+                    boolean moved;
+                    if (state.currentX > tx)
+                        moved = state.act(TetrisState.LEFT);
+                    else if (state.currentX < tx)
+                        moved = state.act(TetrisState.RIGHT);
+                    else
+                        moved = true;
+
+                    return moved ? v : 0;
+                }
+            }
+        });
+    }
+
+    void actionPushButtonRotateFall() {
+
+        int debounceDurs = 2;
         actionPushButton(ROT, debounce(b -> b && state.act(TetrisState.CW), debounceDurs));
 
         if (canFall)
@@ -233,9 +264,9 @@ public class Tetris extends GameX {
         actionTriState($.func("X", id), i -> {
             switch (i) {
                 case -1:
-                    return state.act(LEFT);
+                    return state.act(TetrisState.LEFT);
                 case +1:
-                    return state.act(RIGHT);
+                    return state.act(TetrisState.RIGHT);
                 default:
                 case 0:
                     return true;

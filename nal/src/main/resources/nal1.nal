@@ -15,22 +15,22 @@
 //                (A --> C)
 
     (A --> B), (B --> C), neqRCom(A,C)     |- (A --> C), (Belief:Deduction, Goal:Desire, Time:Compose)
-    (B --> C), (A --> B), neqRCom(A,C)     |- (A --> C), (Belief:Deduction, Goal:Desire, Time:Compose)
+    //(B --> C), (A --> B), neqRCom(A,C)     |- (A --> C), (Belief:DeductionX, Goal:DesireX, Time:Compose)
 
 //        (A --> B), (B --> C), task("!"), neqRCom(A,C)      |- (A --> C), (Punctuation:Quest)
 
         (A --> B), (B --> C), task("?@"), neqRCom(A,C)  |- (A --> C), (Time:Compose)
-        (A --> B), (B --> C), task("?@"), neqRCom(A,C)  |- (C --> A), (Time:Compose)
+        //(A --> B), (B --> C), task("?@"), neqRCom(A,C)  |- (C --> A), (Time:Compose)
         //(B --> C), (A --> B), task("?@"), neqRCom(A,C)  |- (A --> C)
 
     (A --> B), (A --> C), neqRCom(B,C)      |- (C --> B), (Belief:Abduction, Time:Compose)
-    (A --> B), (A --> C), neqRCom(B,C)      |- (B --> C), (Belief:Abduction, Time:Compose)
+//    (A --> B), (A --> C), neqRCom(B,C)      |- (B --> C), (Belief:Abduction, Time:Compose)
 
 //        (A --> B), (A --> C), task("!"), neqRCom(B,C)      |- (C --> B), (Punctuation:Quest)
 //        (A --> B), (A --> C), task("!"), neqRCom(B,C)      |- (B --> C), (Punctuation:Quest)
 
         (A --> B), (A --> C), task("?@"), neqRCom(B,C)  |- (B --> C), (Time:Compose)
-        (A --> B), (A --> C), task("?@"), neqRCom(B,C)  |- (C --> B), (Time:Compose)
+        //(A --> B), (A --> C), task("?@"), neqRCom(B,C)  |- (C --> B), (Time:Compose)
             //(A --> B), (A --> C), task("@"), neqRCom(B,C)  |- (C --> B), (Punctuation:Quest)
             //(A --> B), (A --> C), task("@"), neqRCom(B,C)  |- (B --> C), (Punctuation:Quest)
         //(A --> B), (A --> C), task("?"), neqRCom(B,C) |- (C <-> B), (Punctuation:Question)
@@ -39,13 +39,13 @@
             //(A --> B), (A --> C), task("@"), neqRCom(B,C)  |- (B --> C), (Punctuation:Quest)
 
     (A --> C), (B --> C), neqRCom(A,B)      |- (A --> B), (Belief:Induction, Time:Compose)
-    (A --> C), (B --> C), neqRCom(A,B)      |- (B --> A), (Belief:Induction, Time:Compose)
+//    (A --> C), (B --> C), neqRCom(A,B)      |- (B --> A), (Belief:Induction, Time:Compose)
 
 //        (A --> C), (B --> C), task("!"), neqRCom(A,B)      |- (B --> C), (Punctuation:Quest)
 //        (A --> C), (B --> C), task("!"), neqRCom(A,B)      |- (C --> B), (Punctuation:Quest)
 
         (A --> C), (B --> C), task("?@"), neqRCom(A,B) |- (A --> B), (Time:Compose)
-        (A --> C), (B --> C), task("?@"), neqRCom(A,B) |- (B --> A), (Time:Compose)
+        //(A --> C), (B --> C), task("?@"), neqRCom(A,B) |- (B --> A), (Time:Compose)
             //(A --> C), (B --> C), task("@"), neqRCom(A,B)  |- (A --> B), (Punctuation:Quest)
             //(A --> C), (B --> C), task("@"), neqRCom(A,B)  |- (B --> A), (Punctuation:Quest)
         //(A --> C), (B --> C), task("?"), belief(negative), neqRCom(A,B) |- (A --> --B), (Punctuation:Question)
@@ -55,15 +55,15 @@
 
             //(A --> C), (B --> C), task("@"), neqRCom(A,B)  |- (B --> A), (Punctuation:Quest)
 
-    (B --> A), (C --> B), neqRCom(A,C)      |- (A --> C), (Belief:Exemplification, Time:Compose)
-    (C --> B), (A --> C), neqRCom(A,C)      |- (A --> C), (Belief:Exemplification, Time:Compose)
+    (B --> A), (C --> B), neqRCom(A,C)      |- (A --> C), (Belief:Exemplification, Goal:DesireWeak, Time:Compose)
+//    (C --> B), (A --> C), neqRCom(A,C)      |- (A --> C), (Belief:Exemplification, Goal:DesireWeak, Time:Compose)
                                                                                 //, Goal:DesireWeak)
     //(C --> B), (A --> C), neqRCom(A,C)      |- (A --> C), (Belief:Exemplification, Goal:DesireWeak)
 
         //(A --> B), (B --> C), task("!"), neqRCom(A,C)      |- (C --> A), (Punctuation:Quest)
 
         (B --> A), (C --> B), task("?@"), neqRCom(A,C)  |- (C --> A), (Time:Compose)
-        (B --> A), (C --> B), task("?@"), neqRCom(A,C)  |- (A --> C), (Time:Compose)
+        //(B --> A), (C --> B), task("?@"), neqRCom(A,C)  |- (A --> C), (Time:Compose)
 
 
      //(B --> C), (A --> B), neqRCom(A,C)      |- (C --> A), (Belief:ExemplificationX, Goal:DesireWeak)

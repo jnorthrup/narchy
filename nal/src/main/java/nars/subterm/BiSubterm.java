@@ -45,12 +45,14 @@ public final class BiSubterm extends TermVector {
         if (this == obj) return true;
 
         if (obj instanceof Subterms) {
-            boolean avoidDynamicHashing = obj instanceof TermList; //TODO marker interface
             Subterms t = ((Subterms) obj);
-            if (avoidDynamicHashing || hash == t.hashCodeSubterms()) {
-                //                    if (t instanceof TermVector)
-                //                        equivalentTo((TermVector) t);
-                return t.subs() == 2 && t.sub(0).equals(x) && t.sub(1).equals(y);
+            if (t instanceof BiSubterm || t.subs()==2) {
+                boolean avoidDynamicHashing = obj instanceof TermList; //TODO marker interface
+                if (avoidDynamicHashing || hash == t.hashCodeSubterms()) {
+                    //                    if (t instanceof TermVector)
+                    //                        equivalentTo((TermVector) t);
+                    return x.equals(t.sub(0)) && y.equals(t.sub(1));
+                }
             }
         }
         return false;
@@ -74,7 +76,7 @@ public final class BiSubterm extends TermVector {
                 switch (stop) {
                     case 0: return;
                     case 1: a.accept(x); return;
-                    case 2: a.accept(x); a.accept(y); return;
+                    case 2: forEach(a); return;
                 }
                 break;
             case 1:
@@ -88,9 +90,9 @@ public final class BiSubterm extends TermVector {
     }
 
     @Override
-    public final void forEach(Consumer<? super Term> action) {
-        action.accept(x);
-        action.accept(y);
+    public final void forEach(Consumer<? super Term> a) {
+        a.accept(x);
+        a.accept(y);
     }
 
 }

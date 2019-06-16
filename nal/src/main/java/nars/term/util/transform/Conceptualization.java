@@ -8,8 +8,6 @@ import nars.term.atom.Interval;
 import nars.term.compound.Sequence;
 import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 
-import java.util.TreeSet;
-
 import static nars.Op.*;
 import static nars.time.Tense.DTERNAL;
 import static nars.time.Tense.XTERNAL;
@@ -50,15 +48,11 @@ public class Conceptualization {
                 //collapse any embedded CONJ which will inevitably have dt=XTERNAL
                 UnifiedSet<Term> t = new UnifiedSet(yy.subs());
                 for (Term yyy : yy) {
-//                    yyy = yyy.unneg();
                     if (yyy.op() == CONJ) {
                         yyy.eventsAND((when, what)->{
-
                             t.add(what);
-
                             return true;
                         }, 0, true, true);
-                        ///yyy.subterms().forEach(t::add);
                     } else {
                         if (!(yyy instanceof Interval))
                             t.add(yyy);
@@ -85,22 +79,37 @@ public class Conceptualization {
         protected  Term transformConj(Compound y) {
             Subterms yy = y.subterms();
             if (yy.hasAny(CONJ) /*&& yy.OR(yyy -> yyy.unneg().op() == CONJ)*/) {
-                TreeSet<Term> t = new TreeSet();
-                yy.recurseTerms(x -> true, (yyy,parent)->{
-                    if (parent.unneg().op()==CONJ && yyy.unneg().op()!=CONJ)
-                        t.add(yyy);
-
-                    return true;
-                }, y);
-
+//                TreeSet<Term> t = new TreeSet();
+//                yy.recurseTerms(x -> true, (yyy,parent)->{
+//                    if (parent.unneg().op()==CONJ && yyy.unneg().op()!=CONJ)
+//                        t.add(yyy);
+//
+//                    return true;
+//                }, y);
+                UnifiedSet<Term> t = new UnifiedSet(yy.subs());
+                for (Term yyy : yy) {
+                    if (yyy.unneg().op() == CONJ) {
+                        yyy.unneg().eventsAND((when, what)->{
+                            t.add(what.unneg());
+                            return true;
+                        }, 0, true, true);
+                    } else {
+                        if (!(yyy instanceof Interval))
+                            t.add(yyy.unneg());
+                    }
+                }
 
                 if (t.size() == 1 && yy.subs() != 1) {
-                    Term tf = t.first();
+                    Term tf = t.getFirst();
                     return CONJ.the(XTERNAL, tf, tf);
                 } else
                     return CONJ.the(XTERNAL, t);
             }
-            return y;
+
+            if (y instanceof Sequence)
+                return CONJ.the(XTERNAL, yy);
+
+            return null;
         }
 
 

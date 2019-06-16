@@ -111,6 +111,18 @@ class ConjTest {
 
     }
 
+    @Test void disjunctionInSeqElim1() {
+        assertEq("(((--,speed) &&+110 (--,(vy-->1)))&&(--,z))",
+                "(((--speed||z) &&+110 (--,(vy-->1))) && --z)");
+        assertEq("(c &&+110 (c&&d))",
+                "((((--,(a &&+43 b))||c) &&+110 d)&& c))");
+    }
+    @Test void disjunctionInSeqElim2() {
+
+        assertEq("(((--,(a &&+43 b)) &&+110 d)&&(--,c))",
+                "((((--,(a &&+43 b))||c) &&+110 d)&& --c))");
+    }
+
     @Test void testContradictionWTF() {
         assertEq(False, $$("((x(g,1) &&+49 (--,((g,(g,-1))-->((x,/,-1),x))))&&(--,x(g,1)))"));
     }

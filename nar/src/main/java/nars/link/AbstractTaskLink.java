@@ -133,7 +133,7 @@ public abstract class AbstractTaskLink implements TaskLink {
 
     @Override
     public void delete(byte punc) {
-        priSet(i(punc), 0);
+        priSet(punc, 0);
     }
 
     @Override
@@ -146,6 +146,8 @@ public abstract class AbstractTaskLink implements TaskLink {
     public final boolean isDeleted() {
         return false;
     }
+
+
 
     public final TaskLink priMerge(byte punc, float pri) {
         mergeComponent(punc, pri, NAL.tasklinkMerge);
@@ -178,11 +180,18 @@ public abstract class AbstractTaskLink implements TaskLink {
 
     @Override abstract public String toString();
 
-    private void priSet(byte index, float next) {
-        float before = merge(index, next, PriMerge.replace, Post);
-        if (Math.abs(before-next) >= Float.MIN_NORMAL)
-            invalidate();
+
+    public final AbstractTaskLink priSet(byte punc, float puncPri) {
+        if (puncPri==puncPri && puncPri > Float.MIN_NORMAL)
+            priMerge(punc, puncPri, PriMerge.replace);
+        return this;
     }
+
+//    private void priSet(byte index, float next) {
+//        float before = merge(index, next, PriMerge.replace, Post);
+//        if (Math.abs(before-next) >= Float.MIN_NORMAL)
+//            invalidate();
+//    }
 
     @Override
     public float merge(TaskLink incoming, PriMerge merge, PriReturn returning) {

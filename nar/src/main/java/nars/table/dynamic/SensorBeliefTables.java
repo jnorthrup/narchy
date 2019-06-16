@@ -11,6 +11,8 @@ import nars.Task;
 import nars.attention.TaskLinkWhat;
 import nars.attention.What;
 import nars.control.op.Remember;
+import nars.link.AbstractTaskLink;
+import nars.link.AtomicTaskLink;
 import nars.table.BeliefTables;
 import nars.table.dynamic.SeriesBeliefTable.SeriesTask;
 import nars.table.temporal.RTreeBeliefTable;
@@ -20,6 +22,7 @@ import nars.term.Term;
 import nars.truth.Truth;
 import org.jetbrains.annotations.Nullable;
 
+import static nars.Op.*;
 import static nars.time.Tense.TIMELESS;
 
 /**
@@ -252,7 +255,13 @@ public class SensorBeliefTables extends BeliefTables {
 //        delta += tasklink.priMax(QUEST, p/4);
 
 
-        ((TaskLinkWhat)w).links.link(next, surprise, w.nar);
+        TaskLinkWhat ww = (TaskLinkWhat) w;
+        AbstractTaskLink tl = new AtomicTaskLink(next.term());
+        tl.priSet(BELIEF, surprise);
+//        tl.priSet(BELIEF, surprise*2f/3f);
+////        tl.priSet(GOAL, surprise/3);
+//        tl.priSet(QUEST, surprise*1f/3f);
+        ww.links.link(tl);
 
 
         //if (prev!=next)

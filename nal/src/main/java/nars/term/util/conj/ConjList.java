@@ -389,8 +389,8 @@ public class ConjList extends LongObjectArraySet<Term> implements ConjBuilder {
                 return true;
             })) {
                 T.terminate(False);
-                return;
             }
+
 
 
 //            int dd = toDistribute.size();
@@ -421,7 +421,6 @@ public class ConjList extends LongObjectArraySet<Term> implements ConjBuilder {
 
 
 
-
     }
 
     /** counts # of unique occurrence times, assuming that the events have already been sorted by them */
@@ -440,13 +439,14 @@ public class ConjList extends LongObjectArraySet<Term> implements ConjBuilder {
     }
 
     /** combine events at the same time into parallel conjunctions
+     * assumes the list is already sorted
      * @param b*/
     public boolean condense(TermBuilder B) {
         int s = size();
         if (s <= 1)
             return true;
 
-        sortThis();
+        //sortThis();
 
         int start = 0;
         long last = when[0];

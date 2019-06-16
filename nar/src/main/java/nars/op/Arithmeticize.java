@@ -29,6 +29,7 @@ import java.util.function.Function;
 
 import static nars.Op.CONJ;
 import static nars.Op.INT;
+import static nars.term.atom.Bool.Null;
 import static nars.time.Tense.DTERNAL;
 import static org.eclipse.collections.impl.tuple.Tuples.pair;
 
@@ -169,6 +170,11 @@ public class Arithmeticize {
 
         public int[] toArray() {
             return items;
+        }
+
+        @Override
+        public boolean equals(Object otherList) {
+            return this==otherList || (hash==((IntArrayListCached)otherList).hash && super.equals(otherList));
         }
 
         @Override
@@ -321,9 +327,12 @@ public class Arithmeticize {
         @Override
         Term apply(Term x, int cdt, @Nullable Anon anon) {
             //TODO anon
+            Term cmp = Equal.cmp(A, B, -1);
+            if (cmp == Null) return null;
             Int aaa = Int.the(a), bbb = Int.the(b);
             Term xx = new IntReplacer(Map.of(aaa, A, bbb, B)).apply(x);
-            return CONJ.the(cdt, xx, Equal.cmp(A, B, -1));
+            if (xx == Null) return null; //HACK
+            return CONJ.the(cdt, xx, cmp);
         }
     }
 

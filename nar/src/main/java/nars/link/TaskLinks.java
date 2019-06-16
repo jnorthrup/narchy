@@ -224,7 +224,7 @@ abstract public class TaskLinks implements Sampler<TaskLink> {
     protected abstract Term reverse(Term t, TaskLink link, Task task, Derivation d);
 
     private void link(Term s, Term u, byte punc, float p) {
-        link(new AtomicTaskLink(s, u, punc, p));
+        link(new AtomicTaskLink(s, u).priSet(punc, p));
     }
 
     public final void link(TaskLink x) {
@@ -232,25 +232,18 @@ abstract public class TaskLinks implements Sampler<TaskLink> {
             links.putAsync(x);
     }
 
-    public void link(TaskLink... xx) {
-        for (TaskLink x : xx)
-            link(x);
-    }
 
     /**
      * initial tasklink activation for an input task
      *
      * @return
      */
-    public void link(Task task, NAR n) {
-
-        link(task, task.pri(), n);
-
+    public void link(Task task) {
+        link(task, task.pri());
     }
-    public void link(Task task, float pri, NAR n) {
 
-        link(new AtomicTaskLink(task.term(), task.punc(), pri));
-
+    public void link(Task task, float pri) {
+        link(new AtomicTaskLink(task.term()).priSet(task.punc(), pri));
     }
 
     @Deprecated

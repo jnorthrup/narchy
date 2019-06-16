@@ -296,6 +296,12 @@ public abstract class SeparateSubtermsCompound implements Compound {
     }
 
     @Override
+    public <X> boolean ANDwithOrdered(BiPredicate<Term, X> p, X param) {
+        return subterms().ANDwithOrdered(p, param);
+    }
+
+
+    @Override
     public boolean ANDith(ObjectIntPredicate<Term> p) {
         return subterms().ANDith(p);
     }
