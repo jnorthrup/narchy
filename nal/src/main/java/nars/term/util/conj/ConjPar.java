@@ -56,9 +56,9 @@ public enum ConjPar {
         if (xt!=null)
             return xt;
 
-        Term h = inhBundle(t, B);
-        if (h!=null)
-            return h;
+//        Term h = inhBundle(t, B);
+//        if (h!=null)
+//            return h;
 
         Term d = disjunctiveFactor(t, dt, B);
         if (d!=null)
@@ -129,7 +129,7 @@ public enum ConjPar {
         return null;
     }
 
-    @Nullable private static Term inhBundle(Term[] xx, TermBuilder B) {
+    @Nullable public static Term inhBundle(Term[] xx, TermBuilder B) {
         //NAL3 bundle
         MetalBitSet ii = MetalBitSet.bits(xx.length);
         for (int i = 0, xxLength = xx.length; i < xxLength; i++) {

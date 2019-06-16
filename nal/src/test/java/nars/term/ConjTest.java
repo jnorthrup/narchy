@@ -584,7 +584,7 @@ public class ConjTest {
     @Test
     void testConegatedConjunctionTerms2() {
 
-        assertEq("((--,(robin-->swimmer))&&#1)", "(#1 && --(#1&&(robin-->swimmer)))");
+        assertEq("((--,(robin-->swimmer))&&#1)", "(#1 && --(#1&&(robin-->swimmer)))"); //and(x, not(and(x,y))) = x and not y
     }
 
     @Test
@@ -798,7 +798,7 @@ public class ConjTest {
 
         assertConjDiff("(x && y)", "x", "y", false);
 
-        assertConjDiff("--x", "x", "true" /*"(--,x)"*/, false);
+        assertConjDiff("--x", "x", "(--,x)", false);
         assertConjDiff("x", "--x", "x", false);
         assertConjDiff("--x", "x", "true", true);
         assertConjDiff("--x", "--x", "true", false);
@@ -1414,6 +1414,21 @@ public class ConjTest {
         assertEquals(x, CONJ.the(DTERNAL, x.neg(), x.neg()).neg());
     }
 
+    @Test void disj_in_conj_reduction() {
+        assertEq("L", "((L||R)&&L)");
+        assertEq("R", "((L||R)&&R)");
+        assertEq("((--,L)&&(--,R))", "((L||(--,R))&&(--,L))"); //and(or(L,not(R)),not(L)) = not(L) and not(R)
+        assertEq("(--,R)", "((L||(--,R))&&(--,R))"); //and(or(L,not(R)),not(R)) = not(R)
+        assertEq("((--,R)&&L)", "((L||R)&&(--,R))");
+        assertEq("((--,R)&&X)", "(((L||(--,R)) && X)&&(--,R))");
+    }
+    @Test void disj_in_conj_seq_reduction2() {
+        assertEq("((--,R) &&+561 ((--,R)&&(--,speed)))", "(((L||(--,R)) &&+561 (--,speed))&&(--,R))");
+    }
+    @Test void disj_in_conj_seq_reduction3() {
+        assertEq("(L &&+561 ((--,speed)&&L))", "(((L||(--,R)) &&+561 (--,speed))&&L)");
+    }
+
     @Test
     void testConjParallelWithSeq() {
         assertEq("(a &&+5 b)", "((a &&+5 b)&|a)");
@@ -1523,7 +1538,7 @@ public class ConjTest {
     @Test
     void testConjunctionNormal() throws Narsese.NarseseException {
         Term x = $("(&&, <#1 --> lock>, <#1 --> (/, open, #2, _)>, <#2 --> key>)");
-        assertEquals(3, x.subs());
+        assertEquals(2, x.subs());
         assertEquals(CONJ, x.op());
     }
 
@@ -1607,6 +1622,19 @@ public class ConjTest {
 //            assertTrue(xc.removeEventsByTerm($$("x"), true, false));
 //            assertEq("((--,x)&&(--,y))", xc.term());
         }
+    }
+
+    @Test
+    void testDisjunctionInnerDTERNALConj2_simple() {
+
+        assertEq("(x&&y)", "(x && (y||--x))");
+        assertEq("(x&&y)", "(x && (y||(--x &&+1 --x)))");
+
+        assertEq("(x&&y)", "(x && (y||--(x &&+1 x)))");
+
+        assertEq("((--,y)&&(--,z))", Conj.diffAll($$("((x||(--,z))&&(--,y))"),$$("x")));
+        assertEq("((y||z)&&x)", "(x && (y||(--x && z)))"); //and(x, or(y,and(not(x), z)))) = x & y
+
     }
 
     @Test

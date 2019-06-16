@@ -49,9 +49,9 @@ public class ConjList extends LongObjectArraySet<Term> implements ConjBuilder {
         return events(conj, TIMELESS);
     }
 
-    public static ConjList subtract(ConjList from, Term conj) {
-        return subtract(from, conj, TIMELESS);
-    }
+//    public static ConjList subtract(ConjList from, Term conj) {
+//        return subtract(from, conj, TIMELESS);
+//    }
 
     public static ConjList events(Term conj, long occOffset) {
         occOffset = occAuto(conj, occOffset);
@@ -440,12 +440,12 @@ public class ConjList extends LongObjectArraySet<Term> implements ConjBuilder {
 
     /** combine events at the same time into parallel conjunctions
      * @param b*/
-    public void condense(TermBuilder B) {
+    public boolean condense(TermBuilder B) {
         int s = size();
         if (s <= 1)
-            return;
+            return true;
 
-//        sortThis();
+        sortThis();
 
         int start = 0;
         long last = when[0];
@@ -460,6 +460,8 @@ public class ConjList extends LongObjectArraySet<Term> implements ConjBuilder {
                     Term x = B.conj(Arrays.copyOfRange(array(), start, i + 1));
                     if (x == True) {
                         //handled below HACK
+                    } else if (x == False || x == Null) {
+                        return false;
                     } else if (!x.op().eventable) {
                         throw new TermException("conj collapse during condense", CONJ, x);
                     } else {
@@ -481,6 +483,7 @@ public class ConjList extends LongObjectArraySet<Term> implements ConjBuilder {
             }
         }
 
+        return true;
 
     }
 

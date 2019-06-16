@@ -147,7 +147,7 @@ abstract public class CachedCompound extends SeparateSubtermsCompound implements
 //            {
 //                if (volume() != anon().volume())
 //                    throw new WTF("anon differ: "+toString()+'\n'+anon());
-
+//
 //                try {
 //                    eventsAND((when, whta) -> {
 //                        return true;

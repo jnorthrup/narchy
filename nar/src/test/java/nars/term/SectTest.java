@@ -8,6 +8,7 @@ import static nars.Op.CONJ;
 import static nars.term.atom.Bool.False;
 import static nars.term.atom.Bool.Null;
 import static nars.term.util.TermTest.assertEq;
+import static nars.time.Tense.DTERNAL;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /** intersection / diff terms */
@@ -43,6 +44,9 @@ public class SectTest {
     @Test void reduce_ConjToSect_subj_intersection_2ary() {
         assertEq("(x-->(a&&b))", "((x-->a) && (x-->b))"); //intersection
         assertEq("(x-->((--,b)&&a))", "((x-->a) && --(x-->b))"); //diff
+    }
+    @Test void reduce_ConjToSect_subj_intersection_2ary_ok_also() {
+        assertEq("(vy-->((--,0)&&-1))", CONJ.the(DTERNAL, $$("(--,(vy-->0))"), $$("(vy-->-1)")));
     }
 
     @Test void reduce_ConjToSect_subj_intersection_2ary_contradiction() {

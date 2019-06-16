@@ -81,8 +81,10 @@
     //C is a sequence ending in it.  this forms a goal of the sequence minus the trailing
 
     //desire for sub-sequence leading to goal,  truth function may be Desire or Deduction
-    G, C, is(C,"&&")                |-   conjBefore(C,   G),  (Goal:DesirePP, Time:TaskEvent)
-    G, C, is(C,"&&"), has(C,"--")   |-   conjBefore(C, --G),  (Goal:DesireNP, Time:TaskEvent)
+    G, C, is(C,"&&")                |-   conjBefore(C,   G),  (Goal:DeductionPP, Time:TaskEvent)
+    G, C, is(C,"&&"), has(C,"--")   |-   conjBefore(C, --G),  (Goal:DeductionNP, Time:TaskEvent)
+     G, C, is(C,"&&")                |-   --conjBefore(C, --G), (Goal:DeductionPP, Time:TaskEvent)
+     G, C, is(C,"&&"), has(C,"--")   |-   --conjBefore(C, G),   (Goal:DeductionNP, Time:TaskEvent)
       //G, D, is(D,"&&"), has(D,"--")   |-    --conjBefore(D, --G),  (Goal:DesireWeakPN)
       //G, D, is(D,"&&")                |-    --conjBefore(D,   G),  (Goal:DesireWeakNN)
 

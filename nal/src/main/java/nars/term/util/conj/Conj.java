@@ -8,10 +8,10 @@ import nars.NAL;
 import nars.Op;
 import nars.subterm.Subterms;
 import nars.term.Compound;
+import nars.term.Neg;
 import nars.term.Term;
 import nars.term.compound.Sequence;
 import nars.term.util.builder.TermBuilder;
-import nars.time.Tense;
 import org.eclipse.collections.api.block.predicate.primitive.ByteObjectPredicate;
 import org.eclipse.collections.api.block.predicate.primitive.BytePredicate;
 import org.eclipse.collections.api.block.predicate.primitive.LongObjectPredicate;
@@ -459,8 +459,7 @@ public enum Conj  { ;
 
         boolean iSeq = isSeq(include);
         boolean eSeq = isSeq(exclude);
-        if (iSeq && eSeq) {
-
+        if (eSeq) {
 
 
             ConjList cc = ConjList.events(include);
@@ -527,15 +526,24 @@ public enum Conj  { ;
 //            else
 //                return include;
 
-        } else if (iSeq || eSeq) {
+//        } else if (iSeq || eSeq) {
+        } else {
 
-            ConjBuilder ii = ConjList.events(include);
-
+            ConjList ii = ConjList.events(include);
             boolean[] removedSomething = new boolean[]{false};
             exclude.eventsAND((when, what) -> {
                 removedSomething[0] |= ii.removeAll(what);
                 return true;
             }, ETERNAL, true, exclude.dt() == XTERNAL);
+
+//            //remove components from disjunctions (TODO optional)
+//            ii.replaceAll(t -> {
+//                if (t instanceof Neg && t.unneg().op()==CONJ && t.unneg().contains(exclude.neg())) {
+//                    removedSomething[0] = true;
+//                    return diffAll(t.unneg(), exclude.neg(), B).neg();
+//                }
+//                return t;
+//            });
 
             return removedSomething[0] ? ii.term(B) : include;
 
@@ -560,8 +568,8 @@ public enum Conj  { ;
 //                return include; //not found
 //            }
 
-        } else {
-            return removeComm(include, exclude, B);
+//        } else {
+//            return removeComm(include, exclude, B);
         }
     }
 

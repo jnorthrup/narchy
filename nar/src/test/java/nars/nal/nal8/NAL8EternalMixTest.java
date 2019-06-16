@@ -27,7 +27,7 @@ class NAL8EternalMixTest extends NALTest {
     @BeforeEach
     void setTolerance() {
         test.confTolerance(NAL7Test.CONF_TOLERANCE_FOR_PROJECTIONS);
-        test.nar.termVolMax.set(14);
+        test.nar.termVolMax.set(31);
     }
 
     @Test
@@ -44,7 +44,6 @@ class NAL8EternalMixTest extends NALTest {
 
     @Test
     void subsent_1() {
-        test.termVolMax(22);
         String x2 = "(hold({t002}) &&+5 at({t001}))";
         String x3 = "((hold({t002}) &&+5 at({t001})) &&+5 open({t001}))";
 
@@ -206,7 +205,7 @@ class NAL8EternalMixTest extends NALTest {
 
     @Test
     void condition_goal_deduction_eternal_belief() {
-        test.termVolMax(12);
+        test.termVolMax(18);
         test
                 .input("reachable(SELF,{t002})! :|:")
                 .inputAt(5, "((on($1,#2) &&+0 at(SELF,#2)) =|> reachable(SELF,$1)).")

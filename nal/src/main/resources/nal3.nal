@@ -9,14 +9,16 @@
     //(P --> M), (S --> M), --isVar(M),  neq(S,P), notSetsOrDifferentSets(S,P) |- (unionSect(polarizeTask(P),polarizeBelief(S)) --> M), (Belief:UnionDepolarized, Time:Compose)
 
         //(P --> M), (S --> M), task("!"),  --isVar(M),  neq(S,P), notSetsOrDifferentSets(S,P) |- (interSect(polarizeTask(P),polarizeRandom(S)) --> M), (Punctuation:Quest, Time:Compose)
-        (P --> M), (S --> M), task("?@"),  --isVar(M),neq(S,P), notSetsOrDifferentSets(S,P) |- (interSect(P,S) --> M), (Time:Compose)
+        //(P --> M), (S --> M), task("?@"),  --isVar(M),neq(S,P), notSetsOrDifferentSets(S,P) |- (interSect(P,S) --> M), (Time:Compose)
+        (P --> M), (S --> M), task("?@"),  --isVar(M),neq(S,P), notSetsOrDifferentSets(S,P) |- (interSect(polarizeRandom(P),polarizeRandom(S)) --> M), (Time:Compose)
         //(P --> M), (S --> M), task("?@"),  --isVar(M),neq(S,P), notSetsOrDifferentSets(S,P) |- (interSect(P,polarizeRandom(S)) --> M), (Time:Compose)
 
 
     //(M --> P), (M --> S), --isVar(M), neq(S,P), notSetsOrDifferentSets(S,P) |- (M --> interSect(polarizeTask(P),polarizeBelief(S))), (Belief:IntersectionDepolarized, Time:Compose)
     //(M --> P), (M --> S), --isVar(M), neq(S,P), notSetsOrDifferentSets(S,P) |- (M --> unionSect(polarizeTask(P),polarizeBelief(S))), (Belief:UnionDepolarized, Time:Compose)
         //(M --> P), (M --> S), task("!"), --isVar(M),   neq(S,P), notSetsOrDifferentSets(S,P) |- (M --> interSect(polarizeTask(P),polarizeRandom(S))), (Punctuation:Quest, Time:Compose)
-        (M --> P), (M --> S), task("?@"), --isVar(M), neq(S,P), notSetsOrDifferentSets(S,P) |- (M --> interSect(P,S)), (Time:Compose)
+        //(M --> P), (M --> S), task("?@"), --isVar(M), neq(S,P), notSetsOrDifferentSets(S,P) |- (M --> interSect(P,S)), (Time:Compose)
+        (M --> P), (M --> S), task("?@"), --isVar(M), neq(S,P), notSetsOrDifferentSets(S,P) |- (M --> interSect(polarizeRandom(P),polarizeRandom(S))), (Time:Compose)
         //(M --> P), (M --> S), task("?@"), --isVar(M), neq(S,P), notSetsOrDifferentSets(S,P) |- (M --> interSect(P,polarizeRandom(S))), (Time:Compose)
 
 

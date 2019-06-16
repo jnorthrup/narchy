@@ -3,6 +3,7 @@ package nars.op;
 import jcog.Paper;
 import jcog.Util;
 import jcog.memoize.Memoizers;
+import jcog.util.ArrayUtil;
 import nars.$;
 import nars.NAR;
 import nars.Op;
@@ -73,8 +74,8 @@ public class Factorize {
         if (y.length == 0)
             return x; //unchanged
 
-//        if (ArrayUtil.containsIdentity(y, Null))
-//            return x; //invalid
+        if (ArrayUtil.containsIdentity(y, Null))
+            return x; //invalid HACK
         if (Util.sum(Term::volume, y) > volMax)
             return x; //excessively complex result
 

@@ -76,7 +76,7 @@ public class ConjTree implements ConjBuilder {
             if (pdt != XTERNAL && !Conj.isSeq(p)) {
                 return p.AND(this::addParallel); //decompose parallel conj
             } else {
-                if (!validConj(p)) {
+                if (!validConj(p, false)) {
                     terminate(False);
                     return false;
                 }
@@ -106,7 +106,19 @@ public class ConjTree implements ConjBuilder {
         return true;
     }
 
-    private boolean validConj(Term conj) {
+    private boolean validConj(Term conj, boolean invert) {
+
+        if (conj.op()!=CONJ)
+            return true;
+
+        Set<Term> pos, neg;
+        if (invert) {
+            pos = this.neg;
+            neg = this.pos;
+        } else {
+            pos = this.pos;
+            neg = this.neg;
+        }
 
         return !(neg != null || (conj.hasAny(NEG) && pos != null)) ||
                 conj.eventsAND((when, what) -> {
@@ -117,15 +129,6 @@ public class ConjTree implements ConjBuilder {
                             }
                         },
                         0, true, true);
-    }
-
-    private boolean validatePosNeg(Term what) {
-        if (what instanceof Neg) {
-            return pos == null || !pos.contains(what.unneg());
-            //TODO detect reducible disjunction-in-sequence here to trigger recurse
-        } else {
-            return neg == null || !neg.contains(what);
-        }
     }
 
     private boolean addParallelN(Term n) {
@@ -259,7 +262,8 @@ public class ConjTree implements ConjBuilder {
             }
             if (xConj) {
                 if (Conj.eventOf(nx, ny)) {
-                    return True; //absorbed contradictory
+                    return ny; //reduce nx to ny, so that it can be added at the correct sequence position.  for parallel this isnt needed and could return True?
+                    ///return True; //absorbed necessary
                 }
                 Term nyn = ny.neg();
                 if (Conj.eventOf(nx, nyn)) {
@@ -303,7 +307,7 @@ public class ConjTree implements ConjBuilder {
             for (Term yy : y) {
 
                 if (Conj.eventOf(x, yy.neg())) {
-                    return True;
+                    return yy.neg();
                 } else {
                     Term z = Conj.diffAll(x, yy, HeapTermBuilder.the);
                     if (!z.equals(x)) {
@@ -399,8 +403,7 @@ public class ConjTree implements ConjBuilder {
                 terminate(False); //contradicted
                 return false;
             }
-            if (x.op() == CONJ)
-                if (!validConj(x)) {
+                if (!validConj(x,false)) {
                     terminate(False); //contradicted
                     return false;
                 }
@@ -417,16 +420,20 @@ public class ConjTree implements ConjBuilder {
                 return false;
             }
 
-//            if (pos != null && !(xu instanceof Bool)) {
-//                xu = reducePN(xu, pos, true);
+//            if (!validConj(xu,true)) {
+//                terminate(False); //contradicted
+//                return false;
+//            }
+
+            if (pos != null && !(xu instanceof Bool)) {
+                xu = reducePN(xu, pos, true);
 //                if (xu.op()==NEG)
 //                    return addAt(at, xu.unneg()); //inverted
-//            }
+            }
 
             if (neg != null && !(xu instanceof Bool)) {
                 xu = reduceNegNeg(xu, neg);
             }
-
 
             if (_xu != xu)
                 x = xu.neg(); //HACK
@@ -642,6 +649,8 @@ public class ConjTree implements ConjBuilder {
 //                    if (d!=null)
 //                        return d; //specially disjunctive reduction
 //                }
+
+
                 if (Util.and(qq -> qq.op()!=CONJ || Conj.isSeq(qq) || qq.dt()==XTERNAL, q)) {
                     Arrays.sort(q);
                     return B.newCompound(CONJ, DTERNAL, q);
@@ -719,7 +728,9 @@ public class ConjTree implements ConjBuilder {
                 if (terminal != null)
                     return terminal;
 
-                events.condense(B);
+                if (!events.condense(B)) {
+                    terminate(False);
+                }
                 if (terminal != null)
                     return terminal;
 

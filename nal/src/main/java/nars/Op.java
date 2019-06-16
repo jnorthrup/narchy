@@ -456,7 +456,7 @@ public enum Op {
 
         taskable = conceptualizable && !isInt && !isNeg;
 
-        eventable = taskable || isNeg || var;
+        eventable = taskable || isNeg || isInt || var;
 
         beliefable = taskable;
         goalable = taskable && !isImpl;
@@ -527,6 +527,7 @@ public enum Op {
     public static Term DISJ(TermBuilder b, Term... x) {
         return DISJ(b, DTERNAL, x);
     }
+
 
     /**
      * build disjunction (consisting of negated conjunction of the negated subterms, ie. de morgan's boolean law )
