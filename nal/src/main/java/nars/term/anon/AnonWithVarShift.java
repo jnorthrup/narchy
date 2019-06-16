@@ -17,21 +17,21 @@ public class AnonWithVarShift extends CachedAnon {
     /** offsets */
     int indepShift = 0, depShift = 0, queryShift = 0;
 
-    private int mustAtomize = Integer.MAX_VALUE;
+//    private int mustAtomize = Integer.MAX_VALUE;
 
     public AnonWithVarShift(int cap, int variableStructure) {
         super(cap);
         this.mask = variableStructure;
     }
 
-    public void mustAtomize(int mustAtomize) {
-        this.mustAtomize = mustAtomize;
-    }
+//    public void mustAtomize(int mustAtomize) {
+//        this.mustAtomize = mustAtomize;
+//    }
 
-    @Override
-    protected boolean intern(Term x) {
-        return super.intern(x) || (mustAtomize!=Integer.MAX_VALUE && !x.hasAny(mustAtomize));
-    }
+//    @Override
+//    protected boolean intern(Term x) {
+//        return super.intern(x) || (mustAtomize!=Integer.MAX_VALUE && !x.hasAny(mustAtomize));
+//    }
 
     @Override
     protected void invalidate() {
@@ -44,7 +44,6 @@ public class AnonWithVarShift extends CachedAnon {
         if (shifting && (x instanceof NormalizedVariable)) {
             Op o = x.op();
             if (o.isAny(mask)) {
-                NormalizedVariable v = ((NormalizedVariable) x);
                 int shift;
                 switch (o) {
                     case VAR_DEP:
@@ -60,6 +59,7 @@ public class AnonWithVarShift extends CachedAnon {
                         throw new UnsupportedOperationException();
                 }
                 if (shift != 0) {
+                    NormalizedVariable v = ((NormalizedVariable) x);
                     int newID = v.id() + shift;
                     assert (newID < Byte.MAX_VALUE - 3); //to be safe
                     x = v.normalizedVariable((byte) newID);
@@ -71,11 +71,11 @@ public class AnonWithVarShift extends CachedAnon {
 
 
 
-    nars.term.anon.AnonWithVarShift shift(Term base) {
+    nars.term.anon.AnonWithVarShift shift(Term t) {
 
 
-        if (base.hasAny(mask)) {
-            base.recurseTermsOrdered(b-> b.hasAny(mask), s -> {
+        if (t.hasAny(mask)) {
+            t.recurseTermsOrdered(b-> b.hasAny(mask), s -> {
                 if (s instanceof NormalizedVariable) {
                     byte serial = ((NormalizedVariable) s).id();
                         switch (s.op()) {

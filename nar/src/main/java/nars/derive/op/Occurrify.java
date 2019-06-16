@@ -525,7 +525,28 @@ public class Occurrify extends TimeGraph {
             }
         },
 
+        /**
+         * for unprojected truth rules;
+         * result should be left-aligned (relative) to the task's start time
+         * used by temporal induction rules
+         */
+        TaskRelative() {
+            @Override
+            public Pair<Term, long[]> occurrence(Term x, Derivation d) {
+                return solveDT(d, x, false);
+            }
 
+            @Override
+            long[] occurrence(Derivation d) {
+                return rangeCombine(d, OccIntersect.Task);
+            }
+
+            @Override
+            public BeliefProjection beliefProjection() {
+                return BeliefProjection.Belief;
+            }
+
+        },
         /**
          * for unprojected truth rules;
          * result should be left-aligned (relative) to the belief's start time
@@ -574,28 +595,7 @@ public class Occurrify extends TimeGraph {
             }
         },
 
-        /**
-         * for unprojected truth rules;
-         * result should be left-aligned (relative) to the task's start time
-         * used by temporal induction rules
-         */
-        TaskRelative() {
-            @Override
-            public Pair<Term, long[]> occurrence(Term x, Derivation d) {
-                return solveDT(d, x, false);
-            }
 
-            @Override
-            long[] occurrence(Derivation d) {
-                return rangeCombine(d, OccIntersect.Task);
-            }
-
-            @Override
-            public BeliefProjection beliefProjection() {
-                return BeliefProjection.Belief;
-            }
-
-        },
         /**
          * specificially for conjunction induction
          * <p>
@@ -732,7 +732,7 @@ public class Occurrify extends TimeGraph {
             assert (occ != null);
             return occ == null ? null : pair(
                     x.hasXternal() ?
-                            d.occ.solveDT(x, d.occ.set(x, decomposeEvents, true,true,this).solutions(x))
+                            d.occ.solveDT(x, d.occ.set(x,  true,true,decomposeEvents,this).solutions(x))
                             :
                             x,
                     occ);

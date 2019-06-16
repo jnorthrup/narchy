@@ -36,7 +36,7 @@ public class InterningTermBuilder extends HeapTermBuilder {
 
 
     protected static final int sizeDefault = Memoizers.DEFAULT_MEMOIZE_CAPACITY;
-    public static final int volMaxDefault = 10;
+    public static final int volMaxDefault = 16;
 
     /**
      * memory-saving
@@ -44,7 +44,7 @@ public class InterningTermBuilder extends HeapTermBuilder {
     static final boolean sortCanonically = true;
     private final static boolean cacheSubtermKeyBytes = false;
 
-    private static final int ATOM_LENGTH_MAX = 8;
+    private static final int ATOM_INTERNING_LENGTH_MAX = 8;
 
     private static final boolean resolveNeg = true;
     //    private final static boolean internNegs = false;
@@ -335,7 +335,7 @@ public class InterningTermBuilder extends HeapTermBuilder {
 
     @Override
     public Atom atom(String id) {
-        return (id.length() < ATOM_LENGTH_MAX) ? atoms.apply(id) : super.atom(id);
+        return (id.length() < ATOM_INTERNING_LENGTH_MAX) ? atoms.apply(id) : super.atom(id);
     }
 
     @Override

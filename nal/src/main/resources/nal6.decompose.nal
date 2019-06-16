@@ -9,7 +9,10 @@
     C, X,                    eventOfPN(C,X), task("?")   |-   conjWithoutPN(C,X), (Punctuation:Question)
       C, X, conjParallel(C), eventOfPN(C,X), task("@")   |-   conjWithoutPN(C,X), (Punctuation:Quest)
 
-    //disjunction select (probably not valid)
+    //disjunction select
+    D, X, eventOfNeg(D,X), conjParallel(D)            |-   X, (Goal:StructuralDeductionN)
+    D, X, eventOf(D,X), conjParallel(D)               |- --X, (Goal:StructuralDeductionN)
+
 //    D, X, eventOfNeg(D,X), conjParallel(D)            |-   X, (Belief:StructuralDeductionN, Goal:StructuralDeductionN)
 //    D, X, eventOf(D,X), conjParallel(D)               |- --X, (Belief:StructuralDeductionN, Goal:StructuralDeductionN)
         //D, X, eventOfPN(D,X)                            |- --conjWithoutPN(D,X), (Belief:StructuralDeductionWeakN, Goal:StructuralDeductionWeakN)

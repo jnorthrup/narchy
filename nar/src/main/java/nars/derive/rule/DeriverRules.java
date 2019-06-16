@@ -74,16 +74,16 @@ public class DeriverRules {
 
         if (could.length > 1) {
 
-            float[] f = Util.map(choice -> Math.max(Float.MIN_NORMAL, this.could[could[choice]].value(d)), new float[could.length]);
+            float[] f = Util.map(choice -> this.could[could[choice]].value(d), new float[could.length]);
             int n = f.length;
 
             MetalBitSet toRemove = null;
-//            for (int i = 0; i < n; i++) {
-//                if (f[i] <= 0) {
-//                    if (toRemove == null) toRemove = MetalBitSet.bits(n);
-//                    toRemove.set(i);
-//                }
-//            }
+            for (int i = 0; i < n; i++) {
+                if (f[i] <= 0) {
+                    if (toRemove == null) toRemove = MetalBitSet.bits(n);
+                    toRemove.set(i);
+                }
+            }
 
             if (toRemove == null) {
                 maybeWhat = could; //no change

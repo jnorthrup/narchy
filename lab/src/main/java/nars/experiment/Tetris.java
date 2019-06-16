@@ -119,8 +119,8 @@ public class Tetris extends GameX {
 
 
 
-        //actionPushButtonLR();
-        actionPushButtonLR_proportional();
+        actionPushButtonLR();
+        //actionPushButtonLR_proportional();
         actionPushButtonRotateFall();
         //actionsToggle();
         //actionsTriState();

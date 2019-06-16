@@ -42,8 +42,10 @@ public interface Neg extends Term { ;
 
         if (u instanceof Intrin)
             return new NegIntrin(((Intrin)u).i);
-        else
-            return u.volume() > NAL.NEG_CACHE_VOL_THRESHOLD ? new NegLight(u) : new NegCached(u);
+        else {
+            return NAL.NEG_CACHE_VOL_THRESHOLD <= 0 || (u.volume() > NAL.NEG_CACHE_VOL_THRESHOLD) ?
+                    new NegLight(u) : new NegCached(u);
+        }
     }
 
     Term sub();
@@ -179,6 +181,20 @@ public interface Neg extends Term { ;
         public NegLight(Term negated) {
             this.sub = negated;
         }
+
+//        /** warning: promiscuous reference re-sharing implementation */
+//        @Override public boolean equals(@Nullable Object that) {
+//            if (this == that)
+//                return true;
+//            if (Compound.equals(this, that, false)) {
+//                Term x = ((Compound)that).sub(0);
+//                if (x!=sub && System.identityHashCode(x) < System.identityHashCode(sub)) {
+//                    sub = x;
+//                }
+//                return true;
+//            }
+//            return false;
+//        }
 
         @Override
         public Term sub() {

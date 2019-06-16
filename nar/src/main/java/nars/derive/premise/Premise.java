@@ -22,6 +22,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Predicate;
 
+import static nars.Op.BELIEF;
 import static nars.term.atom.Bool.Null;
 import static nars.time.Tense.ETERNAL;
 
@@ -273,8 +274,8 @@ public class Premise implements Comparable<Premise> {
     private Task tryMatch(Term beliefTerm, BeliefTable bb, Derivation d) {
 
         Predicate<Task> beliefFilter =
-//                task.punc() == BELIEF && beliefTerm.equalsRoot(task.term()) ?
-//                        t -> !t.equals(task) :
+                task.punc() == BELIEF && beliefTerm.equalsRoot(task.term()) ?
+                        t -> !t.equals(task) :
                         null;
 
         long[] focus = timeFocus(beliefTerm, d);

@@ -132,10 +132,10 @@ public interface Compound extends Term, IPair, Subterms {
         return Subterms.super.OR(p);
     }
 
-    @Override
-    default Op op() {
-        return null;
-    }
+//    @Override
+//    default Op op() {
+//        return null;
+//    }
 
     @Override
     boolean equals(Object o);

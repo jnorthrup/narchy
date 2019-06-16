@@ -224,7 +224,7 @@ public class NAL8SequenceTest extends NALTest {
     @Test
     void testGoalDeduction_ParallelWithDepVar_and_Specific_Arithmetic() {
         test
-                .termVolMax(20)
+                .termVolMax(17)
                 .input( "(&&, x(#1,#2), y(#1,#2), --equal(#1,#2))!")
                 .input( "x(1,1).")
                 .input( "x(1,2).")

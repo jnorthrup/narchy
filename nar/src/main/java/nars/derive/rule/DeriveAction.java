@@ -56,8 +56,8 @@ public final class DeriveAction  /*implements ThrottledAction<Derivation>*/ {
             return 0f; //entirely disabled by deriver
 
         float causeValue =
-                //why.amp();
-                why.value();
+                why.amp();
+                //why.value();
 
         return causeValue * puncFactor;
     }

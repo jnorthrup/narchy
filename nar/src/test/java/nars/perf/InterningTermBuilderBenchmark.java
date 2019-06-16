@@ -26,14 +26,14 @@ public class InterningTermBuilderBenchmark {
 
     @Param({
             "0",
-            "3",
+//            "3",
 //            "4",
-//            "5",
-//            "6",
+            "5",
+            "6",
             "7",
 //            "8",
-            "9",
-//            "12"
+//            "9",
+//            "15"
     })
     private String termBuilderInterningVolume;
 
@@ -43,9 +43,9 @@ public class InterningTermBuilderBenchmark {
             //, jvmArgsPrepend = "-Xint"
 //            ,jvmArgsPrepend = {"-XX:+UnlockDiagnosticVMOptions", "-XX:+UseMulAddIntrinsic"}
     )
-    @Threads(3)
+    @Threads(1)
     @Warmup(iterations = 1)
-    @Measurement(iterations = 3)
+    @Measurement(iterations = 2)
     public void testInterning() {
 
         runTests(true, () -> NARS.tmp(),
