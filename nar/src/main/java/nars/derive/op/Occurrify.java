@@ -216,6 +216,17 @@ public class Occurrify extends TimeGraph {
                     break;
                 case Union:
                     return LongInterval.union(taskStart, d.taskEnd, beliefStart, d.beliefEnd).toArray();
+                case UnionDilute: {
+                    long[] u = LongInterval.union(taskStart, d.taskEnd, beliefStart, d.beliefEnd).toArray();
+                    if (d.concPunc == BELIEF || d.concPunc == GOAL) {
+                        long iRange = LongInterval.intersectLength(taskStart, d.taskEnd, beliefStart, d.beliefEnd);
+                        long uRange = u[1] - u[0];
+                        double pct = (1 + iRange) / (1.0 + uRange);
+                        if (!d.concTruthEviMul((float) pct, false))
+                            return null;
+                    }
+                    return u;
+                }
                 default:
                     throw new UnsupportedOperationException();
             }
@@ -489,17 +500,28 @@ public class Occurrify extends TimeGraph {
 
         /** composition of non-events to a single outcome event.  a simplified version of Default */
         Compose() {
+            BeliefProjection PROJ =
+                    BeliefProjection.Belief;
+                    //BeliefProjection.Task;
+
             @Override
             @Nullable public Pair<Term, long[]> occurrence(Term x, Derivation d) {
-                return pair(x, occurrence(d));
+                long[] o = occurrence(d);
+                return o!=null ? pair(x, o) : null;
             }
 
             @Override
             long[] occurrence(Derivation d) {
                 return rangeCombine(d,
-                        OccIntersect.Task
-                        //OccIntersect.Union
+                        PROJ == BeliefProjection.Task ?
+                                OccIntersect.Task :
+                                OccIntersect.UnionDilute
                 );
+            }
+
+            @Override
+            public final BeliefProjection beliefProjection() {
+                return PROJ;
             }
         },
 
@@ -760,7 +782,7 @@ public class Occurrify extends TimeGraph {
 
     private enum OccIntersect {
         Task, Belief, Earliest,
-        Union
+        Union, UnionDilute
         //TODO Mid?
     }
 

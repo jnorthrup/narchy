@@ -2,6 +2,7 @@ package nars.term.util.conj;
 
 import jcog.Util;
 import jcog.data.set.LongObjectArraySet;
+import jcog.util.ArrayUtil;
 import nars.NAL;
 import nars.subterm.DisposableTermList;
 import nars.subterm.Subterms;
@@ -12,6 +13,7 @@ import nars.term.util.builder.InterningTermBuilder;
 import nars.term.util.builder.TermBuilder;
 import nars.time.Tense;
 import org.eclipse.collections.api.iterator.LongIterator;
+import org.eclipse.collections.impl.list.mutable.primitive.IntArrayList;
 import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 import org.eclipse.collections.impl.set.mutable.primitive.LongHashSet;
@@ -80,42 +82,46 @@ public class ConjList extends LongObjectArraySet<Term> implements ConjBuilder {
         return occOffset == TIMELESS ? (Conj.isSeq(conj) ? 0 : ETERNAL) : occOffset;
     }
 
-    public long _startIfSorted() {
+    private long _startIfSorted() {
         return when[0];
     }
-    public long _endIfSorted() {
+    private long _endIfSorted() {
         return when[size()-1];
     }
 
     public boolean contains(ConjList other) {
-        return contains(other, Term::equals);
+        return contains(other, Term::equals).length > 0;
     }
 
     /** assumes they are both sorted and/or expanded/condensed in the same way */
-    public boolean contains(ConjList other, BiPredicate<Term,Term> equal) {
-        if (this == other) return true;
+    public int[] contains(ConjList other, BiPredicate<Term,Term> equal) {
+        if (this == other) return new int[] { 0 };
+
         int s = size();
         int os = other.size();
-        if (os > s) return false;
-        if (other._startIfSorted() < _startIfSorted() || other._endIfSorted() > _endIfSorted()) return false;
+
+        if (os > s) return ArrayUtil.EMPTY_INT_ARRAY;
+        if (other._startIfSorted() < _startIfSorted() || other._endIfSorted() > _endIfSorted()) return ArrayUtil.EMPTY_INT_ARRAY;
+
         Term otherFirst = other.get(0);
+        IntArrayList locations = null;
         for (int i = 0; i <= s - os; i++) {
             if (equal.test(otherFirst, get(i))) {
-                return containsRemainder(other, i, equal);
+                if (containsRemainder(other, i, equal)) {
+                    if (locations == null)
+                        locations = new IntArrayList(1);
+                    locations.add(Tense.occToDT(when[i]));
+                }
             }
         }
-        return false;
+        return locations==null ? ArrayUtil.EMPTY_INT_ARRAY : locations.toArray();
     }
     private boolean containsRemainder(ConjList other, int at, BiPredicate<Term,Term> equal) {
         int os = other.size();
         long shift = when(at);
         for (int i = 1; i < os; i++) {
-            if (when(at + i) - shift != other.when(i))
-                return false; //different times
-        }
-        for (int i = 1; i < os; i++) {
-            if (!equal.test(get(at+i),other.get(i)))
-                return false; //different items
+            if (!contains(other.when(i)+shift, other.get(i)))
+                return false;
         }
         return true;
     }
@@ -514,5 +520,14 @@ public class ConjList extends LongObjectArraySet<Term> implements ConjBuilder {
             return;
         for (int k = 0; k < size; k++)
             when[k] += delta;
+    }
+
+    public boolean removeAllAt(int f, ConjList x) {
+        int xn = x.size();
+        boolean removed = false;
+        for (int i = 0; i < xn; i++) {
+            removed |= remove(f!=ETERNAL ? x.when(i) + f : ETERNAL, x.get(i));
+        }
+        return removed;
     }
 }

@@ -22,6 +22,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Predicate;
 
+import static nars.term.atom.Bool.Null;
 import static nars.time.Tense.ETERNAL;
 
 /**
@@ -204,7 +205,7 @@ public class Premise implements Comparable<Premise> {
 
         d.reset(task, belief, nextBeliefTerm);
 
-        return true;
+        return d.taskTerm!=Null;
     }
 
     private @Nullable Task match(Derivation d, Term beliefTerm, boolean beliefConceptUnifiesTaskConcept) {

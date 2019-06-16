@@ -292,9 +292,9 @@ public class Derivation extends PreDerivation {
             e = new TermTransformException("invalid Derivation Anon: null", x, y);
         else if (y instanceof Bool)
             e = new TermTransformException("invalid Derivation Anon: Bool", x, y);
-        else if (x instanceof Compound && x.op() != y.op())
+        else if (NAL.DEBUG && x instanceof Compound && x.op() != y.op())
             e = new TermTransformException("invalid Derivation Anon: Op changed", x, y);
-        else if (x.volume() != y.volume())
+        else if (NAL.DEBUG && x.volume() != y.volume())
             e = new TermTransformException("invalid Derivation Anon: Volume Changed", x, y);
 
         if (e != null) {
@@ -679,6 +679,12 @@ public class Derivation extends PreDerivation {
     }
 
     public boolean concTruthEviMul(float ratio, boolean eternalize) {
+//        if (concTruth == null)
+//            return true; //not belief/goal
+
+        if (Util.equals(ratio, 1f))
+            return true; //no change
+
         double e = ratio * concTruth.evi();
         if (eternalize)
             e = Math.max(concTruth.eviEternalized(), e);

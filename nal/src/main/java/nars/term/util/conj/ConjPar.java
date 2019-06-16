@@ -1,6 +1,8 @@
 package nars.term.util.conj;
 
+import jcog.Util;
 import jcog.data.bit.MetalBitSet;
+import jcog.util.ArrayUtil;
 import nars.Op;
 import nars.term.Neg;
 import nars.term.Term;
@@ -13,7 +15,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Set;
 
-import static nars.Op.CONJ;
+import static nars.Op.*;
 import static nars.term.atom.Bool.*;
 import static nars.time.Tense.*;
 
@@ -26,11 +28,75 @@ public enum ConjPar {
     public static Term the(TermBuilder B, int dt, boolean sort, Term... xx) {
         if (xx.length == 1)
             return xx[0];
-        else if (xx.length == 2) {
+
+        if (dt == DTERNAL) {
+            int xternalCount = 0;
+            int lastXternal = -1;
+            int inhCount = 0;
+            for (int i = 0, xxLength = xx.length; i < xxLength; i++) {
+                Term t = xx[i];
+                Op to = t.op();
+                if (to == CONJ && t.dt() == XTERNAL) {
+                    lastXternal = i;
+                    xternalCount++;
+                } else if (to == INH) {
+                    inhCount++;
+                } else if (to == NEG) {
+                    if (t.unneg().op()==INH)
+                        inhCount++; //include negated events for inh's
+                }
+            }
+
+            //distribute to XTERNAL
+            {
+
+                if (xternalCount == 1) {
+                    //distribute to xternal components
+                    Term x = xx[lastXternal];
+                    Term[] y = ArrayUtil.remove(xx, lastXternal);
+                    Term Y = the(B, dt, sort, y);
+                    if (Y == True) return x;
+                    int xs = x.subs();
+                    return B.conj(XTERNAL, Util.map(xxx -> B.conj(dt, xxx, Y), new Term[xs], x.subterms().arrayShared()));
+                }
+            }
+
+            {
+                //NAL3 bundle
+                if (inhCount > 1) {
+                    if (inhCount == xx.length) {
+                        //fast case
+                        if (inhCount == 2) {
+                            Term aa = xx[0];
+                            Term bb = xx[1];
+                            Term a = aa.unneg();
+                            Term b = bb.unneg();
+                            Term pred = a.sub(1);
+                            if (pred.equals(b.sub(1))) {
+                                //common pred: union
+                                Term i = INH.the(B, Op.DISJ(B, a.sub(0).negIf(aa instanceof Neg), b.sub(0).negIf(bb instanceof Neg)) , pred);
+                                //TODO test for invalid
+                                return i;
+                            }
+                            Term subj = a.sub(0);
+                            if (subj.equals(b.sub(0))) {
+                                //common subj: intersection
+                                return INH.the(B, subj, CONJ.the(B, a.sub(1).negIf(aa instanceof Neg), b.sub(1).negIf(bb instanceof Neg)));
+                            }
+                        }
+                    }
+                    //TODO:
+                    //ObjectIntHashMap<Term> counts = new ObjectIntHashMap(inhCount);
+
+                }
+            }
+        }
+
+        if (xx.length == 2) {
             //fast 2-ary non-conj case
             Term a = xx[0], b = xx[1];
             if (a == Null || b == Null) return Null;
-            if (!a.hasAny(CONJ.bit) && !b.hasAny(CONJ.bit)) {
+            if (a.dt()!=XTERNAL && b.dt()!=XTERNAL && !a.hasAny(CONJ.bit) && !b.hasAny(CONJ.bit)) {
                 if (a.equals(b)) return a;
                 if (a.equalsNeg(b)) return False;
                 return B.newCompound(CONJ, DTERNAL, sort ? Terms.commute(xx) : xx);

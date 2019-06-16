@@ -456,7 +456,7 @@ public enum Op {
 
         taskable = conceptualizable && !isInt && !isNeg;
 
-        eventable = taskable || isNeg || var;
+        eventable = taskable || isNeg || isInt || var;
 
         beliefable = taskable;
         goalable = taskable && !isImpl;

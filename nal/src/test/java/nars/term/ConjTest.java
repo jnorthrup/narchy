@@ -513,12 +513,18 @@ public class ConjTest {
 
     @Test
     void testInvalidDisjSeq() {
-        assertEq("(a &&+1 b)", Conj.diffAll($$("((a &&+1 b)&&c)"), $$("c")));
+
+        assertEq("((--,(a&&b))&&c)", "(--(&&,a,b,c) && c)");
 
         Term a = $$("(--,((a &&+1 b)&&c))");
-        Term c = $$("c");
-        assertEq("c", CONJ.the(a, c));
-        assertEq("c", "(&&, --((a &&+1 b)&&c), c)");
+        assertEq("((--,(a &&+1 b))&&c)", CONJ.the(a, $$("c")));
+
+        assertEq("((--,(a &&+1 b))&&c)", "(&&, --((a &&+1 b)&&c), c)");
+
+        assertEq("(a &&+1 b)", Conj.diffAll($$("((a &&+1 b)&&c)"), $$("c")));
+
+
+
 
     }
 
@@ -800,7 +806,7 @@ public class ConjTest {
         assertConjDiff("x", "--x", "true", true);
     }
 
-    @Test
+    @Disabled @Test
     void testConjDiffOfNegatedConj() {
         assertConjDiff("--(x && y)", "x", "(--,y)", false);
         assertConjDiff("--(x && --y)", "x", "y", false);
@@ -869,9 +875,21 @@ public class ConjTest {
 
     @Test
     void testConjWithoutAllSequence() {
-        assertEq("(y &&+1 z)", Conj.diffAll(
-                $$("((x &&+1 y) &&+1 z)"),
-                $$("(x &&+2 y)")));
+        assertEq("(y &&+1 z)", Conj.diffAll($$("((x &&+1 y) &&+1 z)"),
+                $$("x")));
+        assertEq("(x &&+2 z)", Conj.diffAll($$("((x &&+1 y) &&+1 z)"),
+                $$("y")));
+        assertEq("z", Conj.diffAll($$("((x &&+1 y) &&+1 z)"),
+                $$("(x &&+1 y)")));
+    }
+    @Test
+    void testConjWithoutAllSequence2() {
+        Term a = $$("((x &&+1 y) &&+1 z)");
+        Term b = $$("(x &&+2 z)");
+        assertTrue(ConjList.events(a).contains(ConjList.events(b)));
+        assertArrayEquals(new int[] { 0 } , ConjList.events(a).contains(ConjList.events(b), Term::equals));
+        assertEq("y", Conj.diffAll(a, b));
+
     }
 
     @Test

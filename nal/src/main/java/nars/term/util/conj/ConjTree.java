@@ -72,7 +72,8 @@ public class ConjTree implements ConjBuilder {
     private boolean addParallelP(Term p) {
         assert (!(p instanceof Neg));
         if (p instanceof Compound && p.op() == CONJ) {
-            if (p.dt() != XTERNAL && !Conj.isSeq(p)) {
+            int pdt = p.dt();
+            if (pdt != XTERNAL && !Conj.isSeq(p)) {
                 return p.AND(this::addParallel); //decompose parallel conj
             } else {
                 if (!validConj(p)) {
@@ -664,8 +665,29 @@ public class ConjTree implements ConjBuilder {
         Term s;
         if (ss == 1) {
             //special case: degenerate sequence of 1 time point (probably @ 0)
-            s = seq.getOnly().term(B);
 
+
+            IntObjectPair<ConjTree> only = seq.keyValuesView().getOnly();
+            ConjTree x = only.getTwo();
+
+            seq = null;
+
+            if (x.seq==null) {
+                //flatten point
+                if (!addAllAt(only.getOne(), x)) {
+                    terminate(False);
+                    return terminal;
+                }
+                s = null;
+
+            } else {
+                s = x.term(B);
+            }
+
+
+
+
+//            s = (seq!=null && !seq.isEmpty()) ? termSeq(B) /* recurse */ : null;
 
         } else {
 
@@ -746,6 +768,31 @@ public class ConjTree implements ConjBuilder {
 
 
 
+    }
+
+    private boolean addAllAt(int at, ConjTree x) {
+        if (x.seq!=null) {
+            return addAt(at, x.term());
+        } else {
+            if (x.pos != null) {
+                x.pos.forEach(this::addParallel);
+                if (terminal != null) return false;
+            }
+            if (x.neg != null) {
+                x.neg.forEach(this::addParallelNeg);
+                if (terminal != null) return false;
+            }
+        }
+//        if (x.seq!=null) {
+//
+//            if (!x.seq.keyValuesView().allSatisfy(ww -> {
+//                return addAt(ww.getOne() + at, ww.getTwo());
+//            })) {
+//                terminate(False);
+//                return false;
+//            }
+//        }
+        return true;
     }
 
 

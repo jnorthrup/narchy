@@ -136,7 +136,8 @@ public enum Conj  { ;
             if (conj.eventRange() < x.eventRange())
                 return false;
 
-            return ConjList.events(conj).contains(ConjList.events(x));
+            ConjList cc = ConjList.events(conj);
+            return cc.contains(ConjList.events(x));
 
         } else {
 
@@ -461,38 +462,48 @@ public enum Conj  { ;
         if (iSeq && eSeq) {
 
 
-            //fast 2-ary test
-            ConjList ee = ConjList.events(exclude);
-            if (ee.size() == 2 && ee.when(0) == 0) {
-                boolean modified = false;
-                Term eeFirst = ee.get(0);
-                Term eeSecond = ee.get(1);
-                int dt = Tense.occToDT(ee.when(1) - ee.when(0));
-                ConjList ii = ConjList.events(include);
-                int clipStart = -1;
-                do {
-                    clipStart = ii.indexOf(clipStart, eeFirst::equals);
-                    if (clipStart != -1) {
 
-                        long start = ii.when(clipStart);
-                        int clipEnd = ii.indexOf(clipStart + 1, eeSecond::equals);
-                        if (clipEnd != -1) {
-                            if (ii.when(clipEnd) - start == dt) {
-                                ii.removeAll(clipStart, clipEnd);
-                                modified = true;
-                            }
-                        }
-                        clipStart++;
-                    }
-
-                } while (clipStart != -1 && !ii.isEmpty());
-
-                return modified ? ii.term(B) : include /* unchanged */;
+            ConjList cc = ConjList.events(include);
+            ConjList xx = ConjList.events(exclude);
+            int[] found = cc.contains(xx, Term::equals);
+            if (found.length > 0) {
+                for (int f : found)
+                    cc.removeAllAt(f, xx);
+                return cc.term();
+            } else {
+                return include;
             }
 
-            //TODO exhaustive match
-            return Null;
-            //return include;
+//            if (ee.size() == 2 && ee.when(0) == 0) {
+//                boolean modified = false;
+//                Term eeFirst = ee.get(0);
+//                Term eeSecond = ee.get(1);
+//                int dt = Tense.occToDT(ee.when(1) - ee.when(0));
+//                ConjList ii = ConjList.events(include);
+//                int clipStart = -1;
+//                do {
+//                    clipStart = ii.indexOf(clipStart, eeFirst::equals);
+//                    if (clipStart != -1) {
+//
+//                        long start = ii.when(clipStart);
+//                        int clipEnd = ii.indexOf(clipStart + 1, eeSecond::equals);
+//                        if (clipEnd != -1) {
+//                            if (ii.when(clipEnd) - start == dt) {
+//                                ii.removeAll(clipStart, clipEnd);
+//                                modified = true;
+//                            }
+//                        }
+//                        clipStart++;
+//                    }
+//
+//                } while (clipStart != -1 && !ii.isEmpty());
+//
+//                return modified ? ii.term(B) : include /* unchanged */;
+//            }
+//
+//            //TODO exhaustive match
+//            return Null;
+//            //return include;
 
 
 //
