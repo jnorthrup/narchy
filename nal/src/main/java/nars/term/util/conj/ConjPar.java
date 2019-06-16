@@ -13,15 +13,17 @@ import nars.term.atom.Bool;
 import nars.term.compound.Sequence;
 import nars.term.util.builder.TermBuilder;
 import org.eclipse.collections.api.list.MutableList;
+import org.eclipse.collections.api.set.MutableSet;
 import org.eclipse.collections.api.tuple.primitive.ObjectIntPair;
 import org.eclipse.collections.impl.map.mutable.primitive.ObjectByteHashMap;
 import org.eclipse.collections.impl.map.mutable.primitive.ObjectIntHashMap;
 import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Iterator;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.stream.IntStream;
 
 import static nars.Op.CONJ;
@@ -38,6 +40,17 @@ public enum ConjPar {
     public static Term the(TermBuilder B, int dt, boolean sort, Term... t) {
         if (t.length == 1)
             return t[0];
+        if (t.length == 2) {
+            //fast 2-ary tests
+            Term a = t[0], b = t[1];
+            if (a == Null || b == Null) return Null;
+            if (a == False) return False;
+            if (b == False) return False;
+            if (a == True) return b;
+            if (b == True) return a;
+            if (a.equals(b)) return a;
+            if (a.equalsNeg(b)) return False;
+        }
 
         Term xt = xternalDistribute(dt, t, B);
         if (xt!=null)
@@ -51,13 +64,11 @@ public enum ConjPar {
         if (d!=null)
             return d;
 
+
         if (t.length == 2) {
             //fast 2-ary non-conj case
             Term a = t[0], b = t[1];
-            if (a == Null || b == Null) return Null;
             if (a.dt()!=XTERNAL && b.dt()!=XTERNAL && !a.hasAny(CONJ.bit) && !b.hasAny(CONJ.bit)) {
-                if (a.equals(b)) return a;
-                if (a.equalsNeg(b)) return False;
                 return B.newCompound(CONJ, DTERNAL, sort ? Terms.commute(t) : t);
             }
         }
@@ -179,35 +190,44 @@ public enum ConjPar {
         }
 
         if (sp.size()>1)
-            sp.sortThisByInt(i -> -i.getTwo()); //reverse
+            sp.sortThis(Comparator.comparingInt((ObjectIntPair<Term> i) -> -i.getTwo()).thenComparing(ObjectIntPair::getOne));
 
 
         for (ObjectIntPair<Term> j : sp) {
-            if (xxx.size() < 2)
+            int xxxn = xxx.size();
+            if (xxxn < 2)
                 break; //done
             Term jj = j.getOne();
             int subjOrPred = !(jj instanceof Neg) ? 0 :1;
             jj = jj.unneg();
-            Set<Term> components = new UnifiedSet();
-            Iterator<Term> xxxxi = xxx.iterator();
-            while (xxxxi.hasNext()) {
-                Term xxxi = xxxxi.next();
+            MutableSet<Term> components = new UnifiedSet(xxxn);
+            for (Term xxxi : xxx) {
                 Subterms xxi = xxxi.unneg().subterms();
                 if (xxi.sub(subjOrPred).equals(jj)) {
-                    xxxxi.remove();
-                    Term c = xxi.sub(1 - subjOrPred).negIf(xxxi instanceof Neg);
+                    Term c = xxxi;
                     if (components.contains(c.neg()))
                         return False; //contradiction detected
                     components.add(c);
                 }
             }
-            assert(components.size() > 1);
+            if (components.size() <= 1)
+                continue;
 
+            components.forEach(xxx::removeInstance);
+            TreeSet<Term> c2 = new TreeSet();
+            components.forEach(z -> c2.add(z.unneg().sub(1 - subjOrPred).negIf(z instanceof Neg)));
+
+
+            Term cc;
             if (subjOrPred==0) {
-                all.add(INH.the(B, jj, CONJ.the(B, components)));
+                cc = INH.the(B, jj, CONJ.the(B, c2));
             } else {
-                all.add(INH.the(B, Op.DISJ(B, components.toArray(Op.EmptyTermArray)), jj));
+                cc = INH.the(B, Op.DISJ(B, c2.toArray(Op.EmptyTermArray)), jj);
             }
+            if (cc == False || cc == Null)
+                return cc;
+            if (cc!=True)
+                all.add(cc);
         }
         all.addAll(xxx);
         return CONJ.the(all);
