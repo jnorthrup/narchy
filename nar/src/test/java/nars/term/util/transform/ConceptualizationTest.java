@@ -119,6 +119,14 @@ class ConceptualizationTest {
         assertEq("(x-->(a&&b))", $$("(x-->(a&&b))").root());
         assertEq("(x-->(a&&b))", $$("(x-->(a&&b))").concept());
 
+        assertEq(//TODO "(x-->(a||b))",
+                "(--,(x-->((--,a)&&(--,b))))",
+                $$("(x-->(a||b))").root());
+        assertEq(//TODO "(x-->(a||b))",
+                "(x-->((--,a)&&(--,b)))",
+                $$("(x-->(a||b))").concept());
+
+
         assertEq("(x-->(&&,a,b,c))", $$("(x-->(&&,a,b,c))").root());
 
         //direct sim subterm

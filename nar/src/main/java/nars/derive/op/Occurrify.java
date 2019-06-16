@@ -501,8 +501,8 @@ public class Occurrify extends TimeGraph {
         /** composition of non-events to a single outcome event.  a simplified version of Default */
         Compose() {
             BeliefProjection PROJ =
-                    BeliefProjection.Belief;
-                    //BeliefProjection.Task;
+                    BeliefProjection.Task;
+                    //BeliefProjection.Belief; //<- experimental dilute
 
             @Override
             @Nullable public Pair<Term, long[]> occurrence(Term x, Derivation d) {

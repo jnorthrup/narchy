@@ -52,21 +52,21 @@ class InterningTermBuilderTest {
         assertEquals("((--,x),y)", s.toString());
     }
 
-    @Test
-    void testImplicationComplexEndToEnd() {
-        //InterningTermBuilder t = new InterningTermBuilder();
-        if (Op.terms instanceof InterningTermBuilder) {
-
-            InterningTermBuilder i = (InterningTermBuilder) Op.terms;
-//        System.out.println("impl/conj:");
-//        i.terms[Op.IMPL.id].print();
-//        i.terms[CONJ.id].print();
-            IMPL.the(a, CONJ.the(b.neg(), CONJ.the(a, 1, CONJ.the(b.neg(), b)).neg()));
-//        System.out.println("impl/conj:");
-//        i.terms[Op.IMPL.id].print();
-//        i.terms[CONJ.id].print();
-        }
-    }
+//    @Test
+//    void testImplicationComplexEndToEnd() {
+//        //InterningTermBuilder t = new InterningTermBuilder();
+//        if (Op.terms instanceof InterningTermBuilder) {
+//
+//            InterningTermBuilder i = (InterningTermBuilder) Op.terms;
+////        System.out.println("impl/conj:");
+////        i.terms[Op.IMPL.id].print();
+////        i.terms[CONJ.id].print();
+//            IMPL.the(a, CONJ.the(b.neg(), CONJ.the(a, 1, CONJ.the(b.neg(), b)).neg()));
+////        System.out.println("impl/conj:");
+////        i.terms[Op.IMPL.id].print();
+////        i.terms[CONJ.id].print();
+//        }
+//    }
 
     @Test void testKeyConstructionEquivalence() {
         byte[] a = new Intermed.InternedCompoundByComponentsArray(CONJ, 1, this.a.neg(), this.b).key.arrayCopy();

@@ -1151,7 +1151,6 @@ public class NAL7Test extends NALTest {
 
 
         test
-                .logDebug()
                 .input("(a ==>+2 x). |")
                 .input("(a ==>+3 y). |")
                 .mustBelieve(cycles, "(a ==>+2 (x &&+1 y))", 1.00f, 0.81f, 0)

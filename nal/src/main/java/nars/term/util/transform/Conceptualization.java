@@ -123,8 +123,14 @@ public class Conceptualization {
 
             if (x instanceof Compound && x.op() == CONJ) {
                 Term c = transformConj(x);
-                if (c!=null)
-                    return c;
+                //if (c!=null)
+                    //return c;
+                if (c!=null) {
+                    if (c instanceof Compound && c.subterms().hasAny(Op.Temporal))
+                        x = (Compound) c;
+                    else
+                        return c;
+                }
             }
 
             Term y = applyCompound(x, xo, dt);

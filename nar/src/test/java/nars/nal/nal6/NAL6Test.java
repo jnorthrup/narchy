@@ -324,6 +324,7 @@ public class NAL6Test extends NALTest {
         test.termVolMax(14);
         test.nar.confMin.set(0.35f);
         test
+
                 .believe("(bird:$x ==> (&&, flyer:$x, chirping:$x, food:worms))")
                 .believe("flyer:Tweety")
                 .mustBelieve(cycles, "(bird:Tweety ==> (chirping:Tweety && food:worms))",

@@ -49,7 +49,10 @@
           B, (C ==> A), task("?@"), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- unisubst(C,A,B,"$"), (Time:TaskEvent)
 
 
-
+    (B ==> (&&,X,A..+)), Y, --isVar(X),--isVar(Y)  |- polarizeTask(unisubst((B ==> (&&,X,A..+)),X,polarizeBelief(Y)),novel), (Belief:DeductionDepolarized, Time:BeliefEvent)
+      (B ==> (&&,X,A..+)), Y, --isVar(X),--isVar(Y)  |- polarizeTask(unisubst((B ==> (&&,A..+)),X,polarizeBelief(Y))), (Belief:DeductionDepolarized, Time:BeliefEvent)
+    ((&&,X,A..+) ==> B), Y, --isVar(X),--isVar(Y)  |- polarizeTask(unisubst(((&&,X,A..+) ==> B),X,polarizeBelief(Y)),novel), (Belief:DeductionDepolarized, Time:BeliefEvent)
+      ((&&,X,A..+) ==> B), Y, --isVar(X),--isVar(Y)  |- polarizeTask(unisubst(((&&,A..+) ==> B),X,polarizeBelief(Y))), (Belief:DeductionDepolarized, Time:BeliefEvent)
 
 
 //            //--is(A,"#"),
@@ -77,8 +80,8 @@
                 //Y, (--(&&,--X,A..+) ==> Z), neq(X,Y) |- unisubst((--(&&,--X,A..+) ==> Z), X,Y,novel), (Belief:DeductionN)
                  //Y, (--(&&,--X,A..+) ==> Z) |- unisubst((--(&&,--X,--Y,A..+) ==> Z), X,Y), (Belief:DeductionN)
 
-            //    Y, (B ==> (&&,X,A..+)) |- unisubst((B ==> (&&,A..+)),X,Y), (Belief:Deduction)
-            //    Y, (B ==> (&&,--X,A..+)) |- unisubst((B ==> (&&,A..+)),X,Y), (Belief:DeductionN)
+
+
 
 //        (Z ==> C), Y, is(C,"&&"),eventOf(C,Y)                 |- (Z ==> conjWithout(C,    Y)), (Belief:Induction, Time:Task)
 //        (Z ==> C), Y, is(C,"&&"),eventOfNeg(C,Y)              |- (Z ==> conjWithout(C,  --Y)), (Belief:InductionPN, Time:Task)

@@ -63,7 +63,7 @@ public class DynamicImplConjTruth {
     private static boolean decomposeImplConj(Compound superterm, long start, long end, ObjectLongLongPredicate<Term> each, Term common, Compound decomposed, boolean subjOrPred, boolean negateConjComponents) {
 
         int superDT = superterm.dt() == DTERNAL ? 0 : superterm.dt();
-        int decRange = decomposed.eventRange();
+        int decRange = subjOrPred ? decomposed.eventRange() : 0;
         return DynamicConjTruth.ConjIntersection.evalComponents(decomposed, start, end, (what, s, e) -> {
 
             int innerDT;
@@ -75,7 +75,8 @@ public class DynamicImplConjTruth {
 //                if (s == start && e - s >= decRange) {
 //                    innerDT = 0; //eternal/immediate component
 //                } else
-                    innerDT = Tense.occToDT(decRange - (s - start)) + superDT;
+                long d = s - start;
+                innerDT = Tense.occToDT(subjOrPred ? decRange - d : d) + superDT;
             }
 
             Term i = subjOrPred ?
@@ -83,7 +84,7 @@ public class DynamicImplConjTruth {
                     :
                     IMPL.the(common, innerDT, what).negIf(negateConjComponents);
 
-            return each.accept(i, start, end);
+            return i.op()==IMPL && each.accept(i, start, end);
         });
     }
 }

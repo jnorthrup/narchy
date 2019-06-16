@@ -48,8 +48,8 @@ public enum ConjPar {
             if (b == False) return False;
             if (a == True) return b;
             if (b == True) return a;
-            if (a.equals(b)) return a;
             if (a.equalsNeg(b)) return False;
+            if (a.equals(b)) return a;
         }
 
         Term xt = xternalDistribute(dt, t, B);
@@ -112,18 +112,16 @@ public enum ConjPar {
         }
 
         //distribute to XTERNAL
-        {
 
-            if (xternalCount == 1) {
-                //distribute to xternal components
-                Term x = xx[lastXternal];
-                Term[] y = ArrayUtil.remove(xx, lastXternal);
-                Term Y = the(B, dt, true, y);
-                if (Y == True) return x;
-                int xs = x.subs();
-                return B.conj(XTERNAL, Util.map(xxx -> B.conj(dt, xxx, Y), new Term[xs],
-                        x.subterms().arrayShared()));
-            }
+        if (xternalCount == 1) {
+            //distribute to xternal components
+            Term x = xx[lastXternal];
+            Term[] y = ArrayUtil.remove(xx, lastXternal);
+            Term Y = the(B, dt, true, y);
+            if (Y == True) return x;
+            return B.conj(XTERNAL, Util.map(xxx -> B.conj(dt, xxx, Y),
+                    new Term[x.subs()],
+                    x.subterms().arrayShared()));
         }
 
         return null;

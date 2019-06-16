@@ -3,7 +3,6 @@ package nars.op;
 import jcog.Paper;
 import jcog.Util;
 import jcog.memoize.Memoizers;
-import jcog.util.ArrayUtil;
 import nars.$;
 import nars.NAR;
 import nars.Op;
@@ -11,6 +10,7 @@ import nars.Task;
 import nars.subterm.Subterms;
 import nars.subterm.TermList;
 import nars.term.*;
+import nars.term.atom.Bool;
 import nars.term.compound.Sequence;
 import nars.term.util.cache.Intermed;
 import nars.time.Tense;
@@ -74,8 +74,6 @@ public class Factorize {
         if (y.length == 0)
             return x; //unchanged
 
-        if (ArrayUtil.containsIdentity(y, Null))
-            return x; //invalid HACK
         if (Util.sum(Term::volume, y) > volMax)
             return x; //excessively complex result
 
@@ -198,7 +196,9 @@ public class Factorize {
                         if (path.size() >= pathMin) {
                             if (pp[0] == null)
                                 pp[0] = UnifiedSetMultimap.newMultimap();
-                            pp[0].put(shadow(s, path, f), pair(what, (byte)ii));
+                            Term v1 = shadow(s, path, f);
+                            if (!(v1 instanceof Bool))
+                                pp[0].put(v1, pair(what, (byte)ii));
                         }
                     }
                     return true;
@@ -229,6 +229,10 @@ public class Factorize {
 
         t.add(rr.getOne() /* shadow */);
         t.add(m);
+
+//        if (t.contains(Null))
+//            return null; //invalid HACK detect earlier
+
         return Terms.commute(t);
     }
 

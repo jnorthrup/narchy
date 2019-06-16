@@ -128,16 +128,16 @@ public enum Conj  { ;
 //        }
 
 
-        if (isSeq(x) ) {
+        boolean xSeq = isSeq(x);
+        if (xSeq || containerSeq) {
 
-            if (!containerSeq)
+            if (xSeq && !containerSeq)
                 return false;
 
             if (conj.eventRange() < x.eventRange())
                 return false;
 
-            ConjList cc = ConjList.events(conj);
-            return cc.contains(ConjList.events(x));
+            return ConjList.events(conj).contains(ConjList.events(x, 0));
 
         } else {
 

@@ -6,7 +6,6 @@ import jcog.util.ArrayUtil;
 import nars.NAL;
 import nars.subterm.DisposableTermList;
 import nars.subterm.Subterms;
-import nars.subterm.TermList;
 import nars.term.Term;
 import nars.term.util.TermException;
 import nars.term.util.builder.InterningTermBuilder;
@@ -15,19 +14,17 @@ import nars.time.Tense;
 import org.eclipse.collections.api.iterator.LongIterator;
 import org.eclipse.collections.impl.list.mutable.primitive.IntArrayList;
 import org.eclipse.collections.impl.map.mutable.UnifiedMap;
-import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 import org.eclipse.collections.impl.set.mutable.primitive.LongHashSet;
 import org.roaringbitmap.PeekableIntIterator;
 import org.roaringbitmap.RoaringBitmap;
 
 import java.util.Arrays;
-import java.util.Set;
 import java.util.function.BiPredicate;
 
 import static nars.Op.CONJ;
-import static nars.Op.NEG;
 import static nars.term.atom.Bool.*;
-import static nars.time.Tense.*;
+import static nars.time.Tense.ETERNAL;
+import static nars.time.Tense.TIMELESS;
 
 /**
  * prepares construction of a conjunction target from components,
@@ -99,8 +96,9 @@ public class ConjList extends LongObjectArraySet<Term> implements ConjBuilder {
 
         int s = size();
         int os = other.size();
-
         if (os > s) return ArrayUtil.EMPTY_INT_ARRAY;
+
+        sortThis();
         if (other._startIfSorted() < _startIfSorted() || other._endIfSorted() > _endIfSorted()) return ArrayUtil.EMPTY_INT_ARRAY;
 
         Term otherFirst = other.get(0);
@@ -133,9 +131,11 @@ public class ConjList extends LongObjectArraySet<Term> implements ConjBuilder {
     @Override
     public boolean addEvent(long when, Term t) {
 
-        if (t == False || t == Null)
-//            clear(); //fail
+        if (t == False || t == Null) {
+            //throw new UnsupportedOperationException();
+            clear(); //fail
             return false;
+        }
 
 
         boolean result = true;
@@ -149,7 +149,7 @@ public class ConjList extends LongObjectArraySet<Term> implements ConjBuilder {
                     return true; //exists
 
                 if (ii.equalsNeg(t)) {
-//                clear();
+                    clear();
                     return false; //conflict
                 }
             }
@@ -290,16 +290,16 @@ public class ConjList extends LongObjectArraySet<Term> implements ConjBuilder {
         return terms;
     }
 
-    public final boolean removeNeg(long at, Term t) {
-        return removeIf((when, what) -> at == when && t.equalsNeg(what));
-    }
+//    public final boolean removeNeg(long at, Term t) {
+//        return removeIf((when, what) -> at == when && t.equalsNeg(what));
+//    }
 
     /**
      * returns true if something removed
      */
     public int removeAll(Term x, long offset, boolean polarity) {
 
-        if (x.op() == CONJ && x.dt() != XTERNAL) {
+//        if (x.op() == CONJ && x.dt() != XTERNAL) {
             //remove components
             final boolean[] removed = {false};
             if (!x.eventsAND((when, what) -> {
@@ -311,13 +311,13 @@ public class ConjList extends LongObjectArraySet<Term> implements ConjBuilder {
             }, offset, true, false))
                 return -1;
             return removed[0] ? +1 : 0;
-        } else {
-            if (remove(offset, x.negIf(polarity)))
-                return -1;
-            if (remove(offset, x.negIf(!polarity)))
-                return 1;
-            return 0;
-        }
+//        } else {
+//            if (remove(offset, x.negIf(polarity)))
+//                return -1;
+//            if (remove(offset, x.negIf(!polarity)))
+//                return 1;
+//            return 0;
+//        }
     }
 
 
@@ -335,14 +335,14 @@ public class ConjList extends LongObjectArraySet<Term> implements ConjBuilder {
 //        }
 
         UnifiedMap<Term, RoaringBitmap> count = new UnifiedMap(n);
-        Set<Term> uncount = null;
+//        Set<Term> uncount = null;
         for (int i = 0; i < n; i++) {
             Term xi = get(i);
-            if (count.containsKey(xi.neg())) {
-                if (uncount == null) uncount = new UnifiedSet(n);
-                uncount.add(xi.unneg());
-                continue;
-            }
+//            if (count.containsKey(xi.neg())) {
+//                if (uncount == null) uncount = new UnifiedSet(n);
+//                uncount.add(xi.unneg());
+//                continue;
+//            }
             count.getIfAbsentPut(xi, RoaringBitmap::new).add(Tense.occToDT(when(i)));
         }
 
@@ -350,37 +350,37 @@ public class ConjList extends LongObjectArraySet<Term> implements ConjBuilder {
         if (count.allSatisfy(t->t.getCardinality()==u)) {
             //completely annihilates everything
             //so also remove any occurring in the parallel events
-            T.removeParallel(count.keySet());
+            //T.removeParallel(count.keySet());
         } else {
 
-            if (uncount != null) {
-                for (Term uc : uncount) {
-                    count.removeKey(uc);
-                    count.removeKey(uc.neg());
-                }
-                if (count.isEmpty())
-                    return;
-            }
+//            if (uncount != null) {
+//                for (Term uc : uncount) {
+//                    count.removeKey(uc);
+//                    count.removeKey(uc.neg());
+//                }
+//                if (count.isEmpty())
+//                    return;
+//            }
 
-            TermList toDistribute = new TermList(n);
+//            TermList toDistribute = new TermList(n);
             if (!count.keyValuesView().toSortedList().allSatisfy((xcc) -> {
-                Term x = xcc.getOne();
                 RoaringBitmap cc = xcc.getTwo();
                 int c = cc.getCardinality();
                 if (c < u) {
-                    if (x.op() != NEG) {
-                        if (T.pos != null && T.posRemove(x))
-                            toDistribute.add(x);
-                    } else {
-                        if (T.neg != null && T.negRemove(x.unneg()))
-                            toDistribute.add(x);
-                    }
+//                    if (x.op() != NEG) {
+//                        if (T.pos != null && T.posRemove(x))
+//                            toDistribute.add(x);
+//                    } else {
+//                        if (T.neg != null && T.negRemove(x.unneg()))
+//                            toDistribute.add(x);
+//                    }
                 } else {
                     PeekableIntIterator ei = cc.getIntIterator();
                     while (ei.hasNext()) {
                         if (eventCount(ei.next()) == 1)
                             return true; //factoring would erase this event so ignore it
                     }
+                    Term x = xcc.getOne();
                     //new factor component
                     if (!T.addParallel(x))
                         return false;
@@ -393,30 +393,30 @@ public class ConjList extends LongObjectArraySet<Term> implements ConjBuilder {
             }
 
 
-            int dd = toDistribute.size();
-            if (dd > 0) {
-//            if(dd > 1)
-//                toDistribute.sortAndDedup();
-
-                n = size();
-
-                //distribute partial factors
-                for (int i = 0; i < n; i++) {
-                    Term xf = get(i);
-                    if (dd == 1 && toDistribute.sub(0).equals(xf))
-                        continue;
-
-                    Term[] t = new Term[dd + 1];
-                    toDistribute.arrayClone(t);
-                    t[t.length - 1] = xf;
-                    Term xd = CONJ.the(t);
-                    if (xd == False || xd == Null) {
-                        T.terminate(xd);
-                        return;
-                    }
-                    set(i, xd);
-                }
-            }
+//            int dd = toDistribute.size();
+//            if (dd > 0) {
+////            if(dd > 1)
+////                toDistribute.sortAndDedup();
+//
+//                n = size();
+//
+//                //distribute partial factors
+//                for (int i = 0; i < n; i++) {
+//                    Term xf = get(i);
+//                    if (dd == 1 && toDistribute.sub(0).equals(xf))
+//                        continue;
+//
+//                    Term[] t = new Term[dd + 1];
+//                    toDistribute.arrayClone(t);
+//                    t[t.length - 1] = xf;
+//                    Term xd = CONJ.the(t);
+//                    if (xd == False || xd == Null) {
+//                        T.terminate(xd);
+//                        return;
+//                    }
+//                    set(i, xd);
+//                }
+//            }
         }
 
 
@@ -431,6 +431,7 @@ public class ConjList extends LongObjectArraySet<Term> implements ConjBuilder {
         for (int i = 1; i < size; i++) {
             long y = when[i];
             if (y != x) {
+                assert(y > x);
                 c++;
                 x = y;
             }

@@ -178,7 +178,7 @@ public abstract class ConceptBuilder implements BiFunction<Term, Concept, Concep
             }
         }
 
-        return null;
+        return s;
     }
 
 //    public void on(Conceptor c) {

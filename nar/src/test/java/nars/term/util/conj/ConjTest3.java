@@ -23,7 +23,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * tests specific to conjunction (and disjunction) compounds
  * TODO use assertEq() where possible for target equality test (not junit assertEquals). it applies more rigorous testing
  */
-public class ConjTest2 {
+public class ConjTest3 {
     private final NAR n = NARS.shell();
 
     static final Term x = $.the("x");
