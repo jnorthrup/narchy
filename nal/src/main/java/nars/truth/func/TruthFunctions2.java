@@ -257,8 +257,8 @@ public enum TruthFunctions2 {
         //test for matching frequency alignment
         float yF = Y.freq();
         float impF = XimplY.freq();
-        if (yF >= 0.5f != impF >= 0.5f)
-            return null; //opposite alignment
+        boolean opposite = (yF >= 0.5f != impF >= 0.5f);
+
 
         float c = confCompose(Y, XimplY);
         c = strong ? c : weak(c);
@@ -279,16 +279,22 @@ public enum TruthFunctions2 {
 //        dimpl = dimpl / range;
 //        dyf = dyf / range;
 
-        float preAlign = dyf*dimpl * 4;
+        float preAlign = //dyf*dimpl * 4;
+                dyf * dimpl * 2 + 0.5f;
+        if(opposite)
+            preAlign = 1 - preAlign;
 
-        float alignment = //preAlign; //(preAlign + 1) / 2;
-                (float)Math.sqrt(preAlign);
+        float alignment =
+                preAlign;
+                // (preAlign + 1) / 2;
+                //(float)Math.sqrt(preAlign);
         c *= alignment;
         if (c < minConf)
             return null;
         //f = alignment;
-        float f;
-        f = Util.lerp(alignment, 0.5f, 1);
+        float f =
+                //Util.lerp(alignment, 0.5f, 1);
+                1f;
         //        {
 //            c *= alignment;
 //            f = 1;
