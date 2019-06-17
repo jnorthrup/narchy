@@ -33,8 +33,8 @@
     //impl conj/disj pred belief and question free structural implication decomposition
     (A ==> C), X, eventOfPN(C,X), --isVar(X)   |-   (A ==> conjWithoutPN(C,  X)), (Belief:StructuralDeduction)
 
-      (A ==> D), X, conjParallel(D), eventOf(D,X), --isVar(X)      |-   (A ==>   X), (Belief:StructuralDeductionN)
-      (A ==> D), X, conjParallel(D), eventOfNeg(D,X), --isVar(X)   |-   (A ==> --X), (Belief:StructuralDeductionN)
+      //(A ==> D), X, conjParallel(D), eventOf(D,X), --isVar(X)      |-   (A ==>   X), (Belief:StructuralDeductionN)
+      //(A ==> D), X, conjParallel(D), eventOfNeg(D,X), --isVar(X)   |-   (A ==> --X), (Belief:StructuralDeductionN)
 
 
         //(A ==> C), X, eventOfPN(C,X)   |-   (A ==> conjWithoutPN(C,  X)), (Belief:StructuralDeduction)
@@ -80,8 +80,8 @@
     //C is a sequence ending in it.  this forms a goal of the sequence prefix (minus the trailing)
 
     //desire for sub-sequence leading to goal,  truth function may be Desire or Deduction
-    G, C, is(C,"&&"), neq(G,C)                  |-    conjBefore(C,   G),  (Goal:DesirePP, Time:TaskEvent)
-    G, C, is(C,"&&"), has(C,"--"), neq(G,C)     |-    conjBefore(C, --G),  (Goal:DesireNP, Time:TaskEvent)
+    G, C, is(C,"&&"), neq(G,C)                  |-    conjBefore(C,   G),  (Goal:DeductionPP, Time:TaskEvent)
+    G, C, is(C,"&&"), has(C,"--"), neq(G,C)     |-    conjBefore(C, --G),  (Goal:DeductionNP, Time:TaskEvent)
 //     G, C, is(C,"&&"), has(C,"--")  |-   --conjBefore(C, --G), (Goal:DecomposePP, Time:TaskEvent)
 //     G, C, is(C,"&&")               |-   --conjBefore(C, G),   (Goal:DecomposeNP, Time:TaskEvent)
       //G, D, is(D,"&&"), has(D,"--"), neq(G,D)   |-    conjBefore(D, --G),  (Goal:DeductionWeakPN, Time:TaskEvent)
@@ -100,10 +100,10 @@
     //      DesirePP, DesireNN
     //      DeductionPP, DeductionPN
     //      DividePP, DividePN
-    C, X, is(C,"&&"), --isVar(X), neq(C,X)                   |-  conjAfter(C,  X),       (Belief:DividePP,Goal:DividePP, Time:BeliefEvent)
+    C, X, is(C,"&&"), --isVar(X), neq(C,X)                   |-  conjAfter(C,  X),       (Belief:DesirePP,Goal:DesirePP, Time:BeliefEvent)
        //D, X, is(D,"&&"), has(D,"--"), --isVar(X), neq(D,X)    |- conjAfter(D,--X), (Belief:DeductionWeakPN,Goal:DeductionWeakPN, Time:BeliefEvent)
       //D, X, is(D,"&&"), has(D,"--"), --isVar(X)    |- --conjAfter(D,--X), (Belief:DeductionWeakNP,Goal:DeductionWeakNP)
-    C, X, is(C,"&&"), has(C,"--"), --isVar(X), neq(C,X)      |-  conjAfter(C,--X),       (Belief:DividePN,Goal:DividePN, Time:BeliefEvent)
+    C, X, is(C,"&&"), has(C,"--"), --isVar(X), neq(C,X)      |-  conjAfter(C,--X),       (Belief:DesirePN,Goal:DesirePN, Time:BeliefEvent)
        //D, X, is(D,"&&"), --isVar(X), neq(D,X)                 |- conjAfter(D,  X), (Belief:DeductionWeakPP,Goal:DeductionWeakPP, Time:BeliefEvent)
       //D, X, is(D,"&&"), --isVar(X)                 |- --conjAfter(D,  X), (Belief:DeductionWeakNN,Goal:DeductionWeakNN)
 

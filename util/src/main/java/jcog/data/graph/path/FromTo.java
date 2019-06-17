@@ -1,5 +1,7 @@
 package jcog.data.graph.path;
 
+import jcog.Util;
+import jcog.data.graph.Node;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -7,6 +9,10 @@ import org.jetbrains.annotations.Nullable;
  * X represents the edge type
  */
 public interface FromTo<N, E> /* extends Triple<F,X,F> */ {
+
+    static <N, E> int hash(Node<N, E> from, E id, Node<N, E> to) {
+        return Util.hashCombine((id!=null ? id.hashCode() : 0), from.hashCode(), to.hashCode());
+    }
 
     N from();
     E id();

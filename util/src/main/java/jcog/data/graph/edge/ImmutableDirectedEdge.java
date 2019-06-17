@@ -1,6 +1,6 @@
-package jcog.data.graph;
+package jcog.data.graph.edge;
 
-import jcog.Util;
+import jcog.data.graph.Node;
 import jcog.data.graph.path.FromTo;
 import org.jetbrains.annotations.Nullable;
 
@@ -16,7 +16,7 @@ public class ImmutableDirectedEdge<N, E> implements FromTo<Node<N,E>, E> {
     private final int hash;
 
     public ImmutableDirectedEdge(Node<N, E> from, @Nullable E id, Node<N, E> to) {
-        this.hash = Util.hashCombine((id!=null ? id.hashCode() : 0), from.hashCode(), to.hashCode());
+        this.hash = FromTo.hash(from, id, to);
         this.id = id;
         this.from = from;
         this.to = to;
@@ -46,8 +46,8 @@ public class ImmutableDirectedEdge<N, E> implements FromTo<Node<N,E>, E> {
     public boolean equals(Object obj) {
         if (this == obj) return true;
         if (!(obj instanceof FromTo) || hash != obj.hashCode()) return false;
-        ImmutableDirectedEdge ee = (ImmutableDirectedEdge) obj;
-        return from.equals(ee.from) && to.equals(ee.to) && Objects.equals(id, ee.id);
+        FromTo ee = (FromTo) obj;
+        return from.equals(ee.from()) && to.equals(ee.to()) && Objects.equals(id, ee.id());
     }
 
     public boolean isSelfLoop() {

@@ -3,6 +3,7 @@ package jcog.data.graph;
 import com.google.common.base.Function;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Streams;
+import jcog.data.graph.edge.ImmutableDirectedEdge;
 import jcog.data.graph.path.FromTo;
 import jcog.data.list.FasterList;
 import org.jetbrains.annotations.Nullable;

@@ -2,6 +2,7 @@ package jcog.data.graph;
 
 import com.google.common.collect.Iterables;
 import com.google.common.graph.SuccessorsFunction;
+import jcog.data.graph.edge.ImmutableDirectedEdge;
 import jcog.data.graph.path.FromTo;
 import jcog.data.graph.search.Search;
 import jcog.data.list.FasterList;

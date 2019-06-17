@@ -214,7 +214,7 @@ abstract public class DurLoop extends NARPart {
             if (lag > 0) {
                 /** LAG - compute a correctional shift period, so that it attempts to maintain a steady rhythm and re-synch even if a frame is lagged*/
 
-                nar.emotion.durLoopLag.increment(lag);
+                nar.emotion.durLoopLag.add(lag);
 
 //            if (Param.DEBUG) {
 //                long earliest = started + durCycles;

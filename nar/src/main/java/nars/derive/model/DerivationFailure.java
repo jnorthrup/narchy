@@ -45,14 +45,14 @@ public enum DerivationFailure {
 
         x = x.unneg();
 
+        if (!x.op().taskable)
+            return Taskable;
+
         if (x.hasAny(Op.VAR_PATTERN))
             throw new TermException("Termify result contains VAR_PATTERN", x);
 
         if (volMax > 0 && x.volume() > volMax)
             return VolMax;
-
-        if (!x.op().taskable)
-            return Taskable;
 
         if (punc == BELIEF || punc == GOAL) {
             if(x.hasVarQuery())

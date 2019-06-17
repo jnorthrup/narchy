@@ -8,8 +8,6 @@ import nars.time.Tense;
 import nars.truth.Truth;
 import nars.truth.func.NALTruth;
 
-import java.util.concurrent.ThreadLocalRandom;
-
 import static nars.Op.IMPL;
 import static nars.time.Tense.*;
 
@@ -41,13 +39,15 @@ class DynamicImplTruth extends AbstractDynamicTruth {
         if (start == end && start!=ETERNAL) {
             int sdt = superterm.dt();
             if (sdt != XTERNAL && sdt != DTERNAL && sdt != 0) {
+
+                sdt += subj.eventRange();
+
                 //stretch the range to the template's dt
                 if (sdt > 0)
                     end = start + sdt;
                 else {
-                    long s = start;
-                    end = s;
-                    start = end + sdt;
+                    end = start;
+                    start = start + sdt /* it's negative */;
                 }
             }
         }
@@ -58,37 +58,43 @@ class DynamicImplTruth extends AbstractDynamicTruth {
         } else if (start == end) {
             as = bs = ae = be = start;
         } else {
-             switch (ThreadLocalRandom.current().nextInt(subj.unneg().equals(pred) ? 3 : 4)) {
-                 case 0: {
-                     as = ae = start;
-                     bs = be = end;
-                     break;
-                 }
-                 case 1: {
-                     //reverse
-                     long mid = start == ETERNAL ? ETERNAL : (start + end) / 2;
-                     as = start;
-                     ae = mid;
-                     bs = mid;
-                     be = end;
-                     break;
-                 }
-                 case 2: {
-                     //reverse
-                     long mid = start == ETERNAL ? ETERNAL : (start + end) / 2;
-                     bs = start;
-                     be = mid;
-                     as = mid;
-                     ae = end;
-                     break;
-                 }
-                 default:
-                 case 3: {
-                     //shared
-                     as = bs = start; ae = be = end;
-                     break;
-                 }
+//             switch (ThreadLocalRandom.current().nextInt(subj.unneg().equals(pred) ? 3 : 4)) {
+//                 case 0: {
+//                     as = ae = start;
+//                     bs = be = end;
+//                     break;
+//                 }
+//                 case 1: {
+            long mid = (start + end) / 2;
+            if (start <= end) {
+                as = start;
+                ae = mid;
+                bs = mid;
+                be = end;
+            } else {
+                as = end;
+                ae = mid;
+                bs = mid;
+                be = start;
             }
+//                     break;
+//                 }
+//                 case 2: {
+//                     //reverse
+//                     long mid = start == ETERNAL ? ETERNAL : (start + end) / 2;
+//                     bs = start;
+//                     be = mid;
+//                     as = mid;
+//                     ae = end;
+//                     break;
+//                 }
+//                 default:
+//                 case 3: {
+//                     //shared
+//                     as = bs = start; ae = be = end;
+//                     break;
+//                 }
+//            }
         }
 
 

@@ -93,7 +93,7 @@ public class MetaAgent extends Game {
 
         Term SELF = n.self();
         senseNumberDifference($.inh(SELF, $$("busy")), n.emotion.busyVol::asFloat);
-        senseNumberDifference($.inh(SELF, $$("deriveTask")), n.emotion.deriveTask::get);
+        senseNumberDifference($.inh(SELF, $$("deriveTask")), n.emotion.deriveTask::longValue);
 
 //        float maxPri = Math.max(n.beliefPriDefault.amp.floatValue(), n.goalPriDefault.amp.floatValue());
 //        float dynamic = 10; //ratio max to min pri
@@ -176,7 +176,7 @@ public class MetaAgent extends Game {
 //        float priMin = 0.1f, priMax = 1;
 //        actionCtl($.inh(gid, PRI), w.priAsFloatRange());
 
-        float curiMin = 0.025f, curiMax = 0.09f;
+        float curiMin = 0.005f, curiMax = 0.05f;
         actionCtl($.inh(gid, CURIOSITY), g.curiosity.rate.subRange(curiMin, curiMax));
 
         int initialDur = w.dur();

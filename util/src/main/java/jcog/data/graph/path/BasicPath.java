@@ -23,7 +23,7 @@
  */
 package jcog.data.graph.path;
 
-import jcog.data.graph.ImmutableDirectedEdge;
+import jcog.data.graph.edge.ImmutableDirectedEdge;
 import jcog.data.graph.MapNodeGraph;
 import jcog.data.graph.Node;
 import jcog.data.list.FasterList;

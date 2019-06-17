@@ -113,22 +113,29 @@ class TimeGraphTest {
             assertSolved("x", cc1, "x@1", "x@2", "x@0" /* .. */);
         }
     }
-
     @Test
-    void testSimpleImplWithOneKnownAbsoluteSubEventNeg() {
-
+    void implInvert1() {
         TimeGraph cc1 = newTimeGraph(1);
-        cc1.know($$("(--x ==>+1 y)"), 1);
-        cc1.know($$("x"), 1);  //        cc1.autoNeg.add($$("x"));
-        assertSolved("y", cc1, "y@2");
+        cc1.know($$("(--x ==>+1 x)"));
+        cc1.know($$("x"), 1);
+        assertSolved("--x", cc1, "(--,x)@0");
     }
+    @Test
+    void implInvert2() {
+        TimeGraph cc1 = newTimeGraph(1);
+        cc1.know($$("(--x ==>+1 x)"));
+        cc1.know($$("--x"), 1);
+        assertSolved("x", cc1, "x@2");
+    }
+
+
     @Test
     void testSimpleImplWithOneKnownAbsoluteSubEventNegOpposite() {
 
         TimeGraph cc1 = newTimeGraph(1);
 //        cc1.autoNeg.add($$("x"));
         cc1.know($$("(x ==>+1 y)"), 1);
-        cc1.know($$("--x"), 1);
+        cc1.know($$("x"), 1);
         assertSolved("y", cc1, "y@2");
     }
 

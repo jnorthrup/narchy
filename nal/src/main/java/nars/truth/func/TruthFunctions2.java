@@ -279,31 +279,15 @@ public enum TruthFunctions2 {
 //        dimpl = dimpl / range;
 //        dyf = dyf / range;
 
-        float preAlign = //dyf*dimpl * 4;
+        float alignment = //dyf*dimpl * 4;
                 dyf * dimpl * 2 + 0.5f;
         if(opposite)
-            preAlign = 1 - preAlign;
+            alignment = 1 - alignment;
 
-        float alignment =
-                preAlign;
-                // (preAlign + 1) / 2;
-                //(float)Math.sqrt(preAlign);
-        c *= alignment;
-        if (c < minConf)
-            return null;
-        //f = alignment;
+        //c *= alignment; if (c < minConf)  return null;
         float f =
-                //Util.lerp(alignment, 0.5f, 1);
-                1f;
-        //        {
-//            c *= alignment;
-//            f = 1;
-//        }
-//        {
-//            float aSqrt = Util.sqrt(alignment); //split between conf and freq
-//            c *= aSqrt;
-//            f = aSqrt;
-//        }
+                Util.lerp(alignment, 0.5f, 1);  //vanish toward maybe
+                //1;
 
         return $.t(f, c);
     }

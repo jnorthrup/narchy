@@ -111,11 +111,6 @@ public class Occurrify extends TimeGraph {
         }
 
         Term y = timing.getOne();
-        if (!y.op().taskable || /*y.op()!=x.op() || */y.volume() > d.termVolMax) {
-            d.nar.emotion.deriveFailTemporal.increment();
-            return;
-        }
-
 
         long[] occ = timing.getTwo();
 
@@ -123,9 +118,6 @@ public class Occurrify extends TimeGraph {
                 (occ[0] == ETERNAL) == (occ[1] == ETERNAL) &&
                 (occ[1] >= occ[0])) || (occ[0] == ETERNAL && !d.occ.validEternal()))
             throw new RuntimeException("bad occurrence result: " + Arrays.toString(occ));
-
-        if (neg)
-            y = y.neg();
 
         if (NAL.derive.DERIVE_QUESTION_FROM_AMBIGUOUS_BELIEF_OR_GOAL && (d.concPunc == BELIEF || d.concPunc == GOAL)) {
             if (DerivationFailure.failure(y, d.concPunc)) {
@@ -149,12 +141,10 @@ public class Occurrify extends TimeGraph {
             }
         }
 
-
-
         if (NAL.test.DEBUG_ENSURE_DITHERED_DT)
             assertDithered(y, d.ditherDT);
 
-        t.taskify(y, occ[0], occ[1], d);
+        t.taskify(y.negIf(neg), occ[0], occ[1], d);
     }
 
     static void eternalTask(Term x, Taskify t, Derivation d) {
