@@ -217,6 +217,10 @@ public interface Termlike {
     default /* final */ boolean hasAny(/*@NotNull*/ Op op) {
         return hasAny(op.bit);
     }
+    default /* final */ boolean hasAllAny(/*@NotNull*/ int all, int any) {
+        int s = structure();
+        return Op.has(s, all, true) && Op.has(s, any, false);
+    }
 
     default boolean hasVarIndep() { return hasAny(Op.VAR_INDEP.bit); }
 

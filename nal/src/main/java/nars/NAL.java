@@ -47,7 +47,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
     public static final boolean SHUFFLE_TERMUTES= configIs("SHUFFLE_TERMUTES");
     public static final boolean DT_DITHER_LOGARITHMICALLY= configIs("DT_DITHER_LOGARITHMICALLY");
 
-    public static final float DEFAULT_CURIOSITY_RATE = 0.02f;
+    public static final float DEFAULT_CURIOSITY_RATE = 0.05f;
 
     public static final int NEG_CACHE_VOL_THRESHOLD = 2;
 
@@ -215,6 +215,8 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
      * */
     public static final boolean TASKLINK_TARGET_CONCEPT = false;
 
+    /** various post-processing of contained variables prior to use in Task content */
+    public static final boolean TASK_COMPOUND_POST_NORMALIZE = true;
 
 
     protected static final boolean DYNAMIC_CONCEPT_TRANSIENT = false;
@@ -409,16 +411,16 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
                 //1;
                 //1.618f; //phi
                 //2; //nyquist / horizon
-                4;
+                //4;
                 //dur;
-                //8;
+                8;
                 //64;
 
         final double decayTime = falloffDurs * dur;
 
         //quadratic decay: integral finite from to infinity, see: https://en.wikipedia.org/wiki/List_of_definite_integrals
-        e = (evi / (1.0 + Util.sqr(dt / decayTime)));
-        //e = (float)(evi / (1.0 + Util.sqr(((double)dt) / dur ) / falloffDurs));
+        //e = (evi / (1.0 + Util.sqr(dt / decayTime)));
+        e = (float)(evi / (1.0 + Util.sqr(((double)dt) / dur ) / falloffDurs));
 
         //exponential decay: see https://en.wikipedia.org/wiki/Exponential_integral
         //TODO

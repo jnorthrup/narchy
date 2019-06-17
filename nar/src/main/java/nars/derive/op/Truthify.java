@@ -9,10 +9,11 @@ import nars.derive.op.Occurrify.BeliefProjection;
 import nars.term.Term;
 import nars.term.atom.Atomic;
 import nars.term.control.AbstractPred;
-import nars.term.control.PREDICATE;
 import nars.truth.Truth;
 import nars.truth.func.TruthFunc;
 import org.eclipse.collections.api.block.function.primitive.ByteToByteFunction;
+
+import java.util.function.Predicate;
 
 import static nars.Op.*;
 
@@ -43,7 +44,7 @@ public class Truthify extends AbstractPred<Derivation> {
      */
     private final ByteToByteFunction punc;
 
-    private final PREDICATE<Derivation> timeFilter;
+    private final Predicate<Derivation> timeFilter;
 
 
     public Truthify(Term id, ByteToByteFunction punc, TruthFunc belief, TruthFunc goal, Occurrify.OccurrenceSolver time) {
@@ -206,7 +207,6 @@ public class Truthify extends AbstractPred<Derivation> {
         }
 
         if (timeFilter != null) {
-            d.concSingle = single; //HACK set this temporarily because timeFilter needs it
             if (!timeFilter.test(d)) {
                 return 0;
             }

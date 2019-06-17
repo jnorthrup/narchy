@@ -226,7 +226,7 @@ public abstract class UnitCompound implements SameSubtermsCompound {
 
     @Override
     public int intifyRecurse(IntObjectToIntFunction<Term> reduce, int v) {
-        return sub().intifyRecurse(reduce, v);
+        return reduce.intValueOf(sub().intifyRecurse(reduce, v), this);
     }
 
     @Override

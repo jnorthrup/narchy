@@ -40,6 +40,7 @@ import nars.term.util.transform.AbstractTermTransform;
 import nars.term.util.transform.MapSubst;
 import nars.term.util.transform.Retemporalize;
 import nars.unify.Unify;
+import org.eclipse.collections.api.block.function.primitive.IntObjectToIntFunction;
 import org.eclipse.collections.api.block.predicate.primitive.LongObjectPredicate;
 import org.jetbrains.annotations.Nullable;
 
@@ -142,6 +143,11 @@ public interface Compound extends Term, IPair, Subterms {
 
     @Override
     int hashCode();
+
+    @Override
+    default int intifyRecurse(IntObjectToIntFunction<Term> reduce, int v) {
+        return reduce.intValueOf(subterms().intifyRecurse(reduce, v), this);
+    }
 
     @Override
     boolean recurseTerms(Predicate<Term> inSuperCompound, Predicate<Term> whileTrue, @Nullable Compound superterm);

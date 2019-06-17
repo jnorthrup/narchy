@@ -105,24 +105,13 @@ public abstract class TermBuilder implements TermConstructor {
     }
 
 
-//    private static final Term VAR_DEP_1 = $.varDep(1);
-//    private static final Term VAR_DEP_1_NEG = VAR_DEP_1.neg();
+
 
     public Term normalize(Compound x, byte varOffset) {
         CompoundNormalization n = new CompoundNormalization(x, varOffset);
         Term y = n.applyCompound(x);
 
-//        if (n.count == 1 && y.hasAll(Op.VAR_DEP.bit | Op.NEG.bit) ) {
-//            //invert (--,#1) with #1
-//            final int[] count = {0};
-//            y.recurseTerms(yy -> yy.hasAll(Op.VAR_DEP.bit | Op.NEG.bit), (Term yy)-> {
-//                if (yy.equals(VAR_DEP_1_NEG))
-//                    count[0]++;
-//                return true;
-//            }, null);
-//            if (count[0] == y.vars())
-//                y = y.replace(VAR_DEP_1_NEG,VAR_DEP_1);
-//        }
+
 
 
         if (varOffset == 0 && y instanceof Compound) {

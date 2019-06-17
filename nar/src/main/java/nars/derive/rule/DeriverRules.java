@@ -58,86 +58,89 @@ public class DeriverRules {
         return d.use(NAL.derive.TTL_COST_BRANCH);
     }
 
-    public void run(Derivation d, short[] can, final int deriveTTL) {
-        d.ready(
-                can, deriveTTL
-                //Util.lerp(Math.max(d.priDouble, d.priSingle), Param.TTL_MIN, deriveTTL)
-        );
+    public boolean run(Derivation d, final int deriveTTL) {
+
+        short[] maybe = d.deriver.what(d);
+
+        if (maybe.length == 0)
+            return false;
+
+        d.preReady();
+
 
         /**
          * weight vector generation
          */
-        short[] could = can;
+        float[] pri;
+        short[] can;
 
-        float[] maybePri;
-        short[] maybeWhat;
+        if (maybe.length == 1) {
+            if (this.could[maybe[0]].value(d) <= 0)
+                return false;
 
-        if (could.length > 1) {
+            can = maybe;
+            pri = null; //not used
 
-            float[] f = Util.map(choice -> this.could[could[choice]].value(d), new float[could.length]);
-            int n = f.length;
+        } else /* could.length > 1 */ {
 
+            int n = maybe.length;
+            float[] f = new float[n];
             MetalBitSet toRemove = null;
-            for (int i = 0; i < n; i++) {
-                if (f[i] <= 0) {
+            for (int choice = 0; choice < n; choice++) {
+                float fc = this.could[maybe[choice]].value(d);
+                if (fc <= 0) {
                     if (toRemove == null) toRemove = MetalBitSet.bits(n);
-                    toRemove.set(i);
+                    toRemove.set(choice);
                 }
+                f[choice] = fc;
             }
 
             if (toRemove == null) {
-                maybeWhat = could; //no change
-                maybePri = maybeWhat.length > 1 ? f : null /* not necessary */;
-
+                can = maybe; //all
+                pri = maybe.length > 1 ? f : null;
             } else {
                 int r = toRemove.cardinality();
-                if (r == n) {
-                    return; //all removed; nothing remains
-                } /*else if (r == n-1) {
+                if (r == n)
+                    return false; //all removed; nothing remains
+                 /*else if (r == n-1) {*/
                     //TODO all but one
-                } */ else {
-                    int fanOut = n - r;
 
-                    maybePri = new float[fanOut];
-                    maybeWhat = new short[fanOut];
-                    int xx = 0;
-                    for (int i = 0; i < n; i++) {
-                        if (toRemove.getNot(i)) {
-                            maybePri[xx] = f[i];
-                            maybeWhat[xx++] = could[i];
-                        }
+                int nn = n - r;
+
+                pri = new float[nn];
+                can = new short[nn];
+                int nc = 0;
+                for (int i = 0; i < n; i++) {
+                    if (toRemove.getNot(i)) {
+                        pri[nc] = f[i];
+                        can[nc++] = maybe[i];
                     }
                 }
             }
 
-        } else {
-
-            if (could.length == 1) {//{ && this.could[could[0]].value(d) > 0) {
-                maybeWhat = could;
-            } else {
-                return;
-            }
-            maybePri = null; //unnecessary
         }
 
+        d.ready(maybe,
+            deriveTTL
+            //Util.lerp(Math.max(d.priDouble, d.priSingle), Param.TTL_MIN, deriveTTL)
+        );
 
-        int fanOut = maybeWhat.length; //assert(fanOut > 0);
+        int fanOut = can.length; //assert(fanOut > 0);
 
         if (fanOut == 1) {
-            test(d, maybeWhat[0]);
+            test(d, can[0]);
         } else {
 
-            Util.normalizeMargin(1f/maybePri.length, 0, maybePri);
+            Util.normalizeMargin(1f / pri.length, 0, pri);
 
 //            if (maybePri[0]!=maybePri[1])
 //                System.out.println(Arrays.toString(maybePri));
 
             //assert((can.length == maybe.length)):  Arrays.toString(could) + " " + Arrays.toString(can) + " " + Arrays.toString(maybe);
-            MutableRoulette.run(maybePri, d.random, wi -> 0, i -> test(d, maybeWhat[i]));
+            MutableRoulette.run(pri, d.random, wi -> 0, i -> test(d, can[i]));
         }
 
-        d.nar.emotion.premiseTTL_used.recordValue(Math.max(0, deriveTTL - d.ttl)); //TODO handle negative amounts, if this occurrs.  limitation of HDR histogram
-
+        return true;
     }
 
     /**

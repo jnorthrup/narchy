@@ -171,7 +171,7 @@ public class Derivation extends PreDerivation {
             }
         }
     };
-    private final long[] taskBeliefTimeIntersects = new long[2];
+    public final long[] taskBelief_TimeIntersection = new long[2];
 
 //    @Deprecated
 //    final Functor polarizeFunc = new AbstractInlineFunctor2("polarize") {
@@ -447,35 +447,23 @@ public class Derivation extends PreDerivation {
     /**
      * called after protoderivation has returned some possible Try's
      */
-    public void ready(short[] can, int ttl) {
+    public void preReady() {
 
         boolean eternalCompletely = (taskStart == ETERNAL) && (_belief == null || beliefStart == ETERNAL);
         if (eternalCompletely) {
-            this.taskBeliefTimeIntersects[0] = this.taskBeliefTimeIntersects[1] = ETERNAL;
+            this.taskBelief_TimeIntersection[0] = this.taskBelief_TimeIntersection[1] = ETERNAL;
         } else if ((_belief != null) && taskStart == ETERNAL) {
-            this.taskBeliefTimeIntersects[0] = beliefStart;
-            this.taskBeliefTimeIntersects[1] = beliefEnd;
+            this.taskBelief_TimeIntersection[0] = beliefStart;
+            this.taskBelief_TimeIntersection[1] = beliefEnd;
         } else if ((_belief == null) || beliefStart == ETERNAL) {
-            this.taskBeliefTimeIntersects[0] = taskStart;
-            this.taskBeliefTimeIntersects[1] = taskEnd;
+            this.taskBelief_TimeIntersection[0] = taskStart;
+            this.taskBelief_TimeIntersection[1] = taskEnd;
         } else if (_belief != null) {
-            if (null == Longerval.intersectionArray(taskStart, taskEnd, beliefStart, beliefEnd, this.taskBeliefTimeIntersects)) {
-                this.taskBeliefTimeIntersects[0] = this.taskBeliefTimeIntersects[1] = TIMELESS; //no intersection
+            if (null == Longerval.intersectionArray(taskStart, taskEnd, beliefStart, beliefEnd, this.taskBelief_TimeIntersection)) {
+                this.taskBelief_TimeIntersection[0] = this.taskBelief_TimeIntersection[1] = TIMELESS; //no intersection
             }
         }
         this.temporal = !eternalCompletely || Occurrify.temporal(taskTerm) || Occurrify.temporal(beliefTerm);
-
-        this.forEachMatch = null;
-        this.concTruth = null;
-        this.concPunc = 0;
-        this.concSingle = false;
-        this.truthFunction = null;
-        this.evidenceDouble = evidenceSingle = null;
-
-        this.parentVolumeSum =
-                Util.sum(
-                        taskTerm.volume(), beliefTerm.volume()
-                );
 
 
         this.overlapSingle = _task.isCyclic();
@@ -493,8 +481,8 @@ public class Derivation extends PreDerivation {
 
             this.overlapDouble =
                     Stamp.overlaps(this._task, _belief)
-                            //auto-filter double-premise, with same target and same time
-                            //|| (taskStart == beliefStart && taskPunc == _belief.punc() && taskTerm.equals(beliefTerm))
+            //auto-filter double-premise, with same target and same time
+            //|| (taskStart == beliefStart && taskPunc == _belief.punc() && taskTerm.equals(beliefTerm))
             ;
 
 
@@ -502,21 +490,28 @@ public class Derivation extends PreDerivation {
             this.overlapDouble = false;
         }
 
+    }
 
+    public void ready(short[] can, int ttl) {
 
         this.parentCause = null; //invalidate
 
+        this.forEachMatch = null;
+        this.concTruth = null;
+        this.concPunc = 0;
+        this.concSingle = false;
+        this.truthFunction = null;
+        this.evidenceDouble = evidenceSingle = null;
+
+        this.parentVolumeSum =
+                Util.sum(
+                        taskTerm.volume(), beliefTerm.volume()
+                );
 
         setTTL(ttl);
 
-
         what.derivePri.premise(this);
 
-//        try {
-//        } catch (Exception e) {
-//            reset();
-//            throw e;
-//        }
 
     }
 
@@ -609,7 +604,7 @@ public class Derivation extends PreDerivation {
         ttl = 0;
         taskUniques = 0;
         temporal = false;
-        taskBeliefTimeIntersects[0] = taskBeliefTimeIntersects[1] = TIMELESS;
+        taskBelief_TimeIntersection[0] = taskBelief_TimeIntersection[1] = TIMELESS;
         nar = null;
 
         //clear();

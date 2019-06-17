@@ -8,7 +8,6 @@ import jcog.signal.meter.FastCounter;
 import nars.*;
 import nars.concept.Concept;
 import nars.concept.TaskConcept;
-import nars.derive.Deriver;
 import nars.derive.model.Derivation;
 import nars.op.mental.AliasConcept;
 import nars.table.BeliefTable;
@@ -418,20 +417,11 @@ public class Premise implements Comparable<Premise> {
 
         if (match(d, matchTTL)) {
 
-            Deriver D = d.deriver;
+            result = d.deriver.rules.run(d, deriveTTL) ?
+                e.premiseFire : e.premiseUnderivable;
 
-            short[] can = D.what(d);
+            d.nar.emotion.premiseTTL_used.recordValue(Math.max(0, deriveTTL - d.ttl)); //TODO handle negative amounts, if this occurrs.  limitation of HDR histogram
 
-            if (can.length > 0) {
-
-                D.rules.run(d, can, deriveTTL);
-
-
-                result = e.premiseFire;
-
-            } else {
-                result = e.premiseUnderivable;
-            }
         } else {
             result = e.premiseUnbudgetable;
         }

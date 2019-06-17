@@ -18,9 +18,6 @@ public interface SameSubtermsCompound extends Compound {
         return TermMetadata.normalized(this);
     }
 
-
-
-
     @Override
     default boolean recurseTerms(Predicate<Term> inSuperCompound, Predicate<Term> whileTrue, @Nullable Compound superterm) {
         //copied from Subterms.java

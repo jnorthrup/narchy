@@ -51,7 +51,7 @@ public enum NALTruth implements TruthFunc {
         }
     },
 
-    @AllowOverlap Pre() {
+    /*@AllowOverlap*/ Pre() {
         @Override
         public Truth apply(final Truth T, final Truth B, float minConf, NAL n) {
             return TruthFunctions2.pre(T, B, false, minConf);
@@ -139,11 +139,12 @@ public enum NALTruth implements TruthFunc {
 
     InductionPB() {
         @Override
-        public Truth apply(final Truth T, final Truth B, float minConf, NAL n) {
-            if (B.isNegative())
-                return Induction.apply(T.neg(), B.neg(), minConf, n);
-            else
-                return Induction.apply(T, B, minConf, n);
+        public Truth apply(Truth T, Truth B, float minConf, NAL n) {
+            if (B.isNegative()) {
+                B = B.neg();
+                T = T.neg();
+            }
+            return Induction.apply(T, B, minConf, n);
         }
     },
 
@@ -236,7 +237,18 @@ public enum NALTruth implements TruthFunc {
             return z != null ? z.neg() : null;
         }
     },
-    IntersectionPB() {
+
+    IntersectionSym() {
+        @Override
+        public Truth apply(final Truth T, final Truth B, float minConf, NAL n) {
+            return B.isNegative() ?
+                    Intersection.apply(T.neg(), B.neg(), minConf, n)
+                    :
+                    Intersection.apply(T, B, minConf, n);
+        }
+    },
+
+    @Deprecated IntersectionPB() {
         @Override
         public Truth apply(final Truth T, final Truth B, float minConf, NAL n) {
             return B.isNegative() ?
@@ -245,7 +257,7 @@ public enum NALTruth implements TruthFunc {
                     Intersection.apply(T, B, minConf, n);
         }
     },
-    UnionPB() {
+    @Deprecated UnionPB() {
         @Override
         public Truth apply(final Truth T, final Truth B, float minConf, NAL n) {
             return B.isNegative() ?
@@ -258,7 +270,7 @@ public enum NALTruth implements TruthFunc {
 //    UnionPT() {
 //        @Override
 //        public Truth apply(Truth T, Truth B, NAL n, float minConf) {
-//            return NALTruth.pt(T, B, n, minConf, T.isNegative() ?  Intersection /* yes i know this is opposite but it works */ : Union);
+//            return NALTruth.pt(T, B, n, minConf, T.isNegative() ?  Intersection /* yes i know this is opposite but it works */ : com.sun.jna.Union);
 //        }
 //    },
 //

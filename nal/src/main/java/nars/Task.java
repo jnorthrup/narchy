@@ -358,7 +358,37 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
 
         t = t.normalize();
 
-        return Task.validTaskTerm(t/*.the()*/, punc, safe) ? pair(t, negated) : null;
+        if (t instanceof Compound && NAL.TASK_COMPOUND_POST_NORMALIZE)
+            t = Task.postNormalize(t);
+
+        if (Task.validTaskTerm(t/*.the()*/, punc, safe)) {
+
+            return pair(t, negated);
+        } else
+            return null;
+    }
+
+    static final Term VAR_DEP_1 = $.varDep(1);
+    static final Term VAR_DEP_1_NEG = VAR_DEP_1.neg();
+
+    static Term postNormalize(Term t) {
+
+        int v = t.vars();
+        //TODO VAR_QUERY and VAR_INDEP, including non-0th variable id
+        if (v > 0 && t.hasAll(NEG.bit | VAR_DEP.bit)) {
+            if (t.vars()==1) {
+                //simple case: only one instance
+                t = t.replace(VAR_DEP_1_NEG, VAR_DEP_1);
+            } else {
+                int negs = t.intifyRecurse((i,z)->z instanceof Neg && z.unneg()==VAR_DEP_1 ? 1+i : i, 0);
+                if (negs == v) {
+                    t = t.replace(VAR_DEP_1_NEG, VAR_DEP_1);
+                } else {
+                    //TODO if # negs > # pos, swap them
+                }
+            }
+        }
+        return t;
     }
 
     /**

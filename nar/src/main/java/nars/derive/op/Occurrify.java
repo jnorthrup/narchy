@@ -12,7 +12,6 @@ import nars.term.Neg;
 import nars.term.Term;
 import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
-import nars.term.control.PREDICATE;
 import nars.term.util.Image;
 import nars.term.util.transform.Retemporalize;
 import nars.time.Tense;
@@ -30,6 +29,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Arrays;
 import java.util.Random;
 import java.util.function.Function;
+import java.util.function.Predicate;
 
 import static nars.Op.*;
 import static nars.derive.model.DerivationFailure.Success;
@@ -206,6 +206,19 @@ public class Occurrify extends TimeGraph {
                     break;
                 case Union:
                     return LongInterval.union(taskStart, d.taskEnd, beliefStart, d.beliefEnd).toArray();
+                case Intersect: {
+                    long[] i = d.taskBelief_TimeIntersection;
+//                    if (i[0] == TIMELESS)
+//                        throw new WTF("intersection filter failure");
+
+//                    if (d.concPunc == BELIEF || d.concPunc == GOAL) {
+//                        long iRange = LongInterval.intersectLength(taskStart, d.taskEnd, beliefStart, d.beliefEnd);
+//                        long uRange = i[1] - i[0];
+//                        double pct = (1 + iRange) / (1.0 + uRange);
+//
+//                    }
+                    return i;
+                }
                 case UnionDilute: {
                     long[] u = LongInterval.union(taskStart, d.taskEnd, beliefStart, d.beliefEnd).toArray();
                     if (d.concPunc == BELIEF || d.concPunc == GOAL) {
@@ -490,9 +503,12 @@ public class Occurrify extends TimeGraph {
 
         /** composition of non-events to a single outcome event.  a simplified version of Default */
         Compose() {
-            BeliefProjection PROJ =
-                    BeliefProjection.Task;
-                    //BeliefProjection.Belief; //<- experimental dilute
+            final BeliefProjection PROJ =
+                    //BeliefProjection.Task;
+                    BeliefProjection.Belief; //<- experimental dilute union or concentrated intersection
+            final OccIntersect combine = PROJ == BeliefProjection.Task ?
+                    OccIntersect.Task :
+                    OccIntersect.UnionDilute;
 
             @Override
             @Nullable public Pair<Term, long[]> occurrence(Term x, Derivation d) {
@@ -503,10 +519,15 @@ public class Occurrify extends TimeGraph {
             @Override
             long[] occurrence(Derivation d) {
                 return rangeCombine(d,
-                        PROJ == BeliefProjection.Task ?
-                                OccIntersect.Task :
-                                OccIntersect.UnionDilute
+                        combine
+                                    //OccIntersect.Intersect
+
                 );
+            }
+
+            @Override
+            public @Nullable Predicate<Derivation> filter() {
+                return (Derivation d) -> d.taskBelief_TimeIntersection[0] != TIMELESS;
             }
 
             @Override
@@ -713,7 +734,7 @@ public class Occurrify extends TimeGraph {
          * gets the optional premise pre-filter for this consequence.
          */
         @Nullable
-        public PREDICATE<Derivation> filter() {
+        public Predicate<Derivation> filter() {
             return null;
         }
 
@@ -772,7 +793,7 @@ public class Occurrify extends TimeGraph {
 
     private enum OccIntersect {
         Task, Belief, Earliest,
-        Union, UnionDilute
+        Union, UnionDilute, Intersect
         //TODO Mid?
     }
 

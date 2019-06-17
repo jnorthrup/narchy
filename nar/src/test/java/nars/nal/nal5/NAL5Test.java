@@ -1081,7 +1081,7 @@ public class NAL5Test extends NALTest {
         test.termVolMax(10)
                 .believe("((x && y) ==> z)")
                 .believe("((x && --y) ==> --z)")
-                .mustBelieve(cycles, "((y ==> z) && (--y ==> --z))", 1f, 0.45f)
+                .mustBelieve(cycles, "((y ==> z) && (--y ==> --z))", 1f, 0.81f)
         ;
     }
 

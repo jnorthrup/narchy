@@ -2,6 +2,7 @@ package nars.term;
 
 import nars.$;
 import nars.Narsese;
+import nars.Task;
 import nars.term.atom.Bool;
 import org.junit.jupiter.api.Test;
 
@@ -326,7 +327,12 @@ class ImplTest {
         assertEq("((--,#1)==>(x,#1))", "(--#1 ==> (x, #1))"); //cant unnegate subj
         assertEq("(((--,#1)==>x),#1)", "((--#1 ==> x),#1)"); //cant unnegate subj
 
-        assertEq("(#1 ==> x)", "(--#1 ==> x)"); //unnegate possible at top level
+        assertEq("(#1==>x)", Task.postNormalize($$("(--#1 ==> x)")));
+        assertEq("((--,#1),#1)", Task.postNormalize($$("((--,#1),#1)"))); //can't
+        assertEq("(#1,x)", Task.postNormalize($$("((--,#1),x)")));
+
+        //multiple:
+        assertEq("((#1,#1)==>x)", Task.postNormalize($$("((--#1,--#1) ==> x)")));
     }
     @Test
     void testImplNormalizationPredDepVar_TaskNeg() {
