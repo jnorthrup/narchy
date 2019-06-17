@@ -23,27 +23,25 @@
 //      https://cogsci.indiana.edu/
 // the similarity beliefs here act as a sort of transistor switch in determining Desire result truth
 
-  X, (X <-> Y), --isVar(Y)                        |- Y, (Belief:DesireWeak, Goal:DesireWeak, Time:Task)
+  X, (X <-> Y), --isVar(Y)                        |- Y, (Belief:DesireWeak, Goal:DesireWeak, Time:TaskEvent)
     //X, (X <-> Y), task("?@"), --isVar(Y)            |- Y
-   X, (--X <-> Y), --isVar(Y)                      |- Y, (Belief:DesireWeakN, Goal:DesireWeakN, Time:Task)
+   X, (--X <-> Y), --isVar(Y)                      |- Y, (Belief:DesireWeakN, Goal:DesireWeakN, Time:TaskEvent)
     //X, (--X <-> Y), task("?@"), --isVar(Y)            |- Y
 
 
 
-  Z, (X <-> Y), in(Z,X), neq(Z,Y), --isVar(X), --isVar(Y)   |- substitute(Z, X, Y, "$", novel), (Belief:DesireWeak, Time:Task)
-   Z, (--X <-> Y), in(Z,X), neq(Z,Y), --isVar(X), --isVar(Y)   |- substitute(Z, X, Y, "$", novel), (Belief:DesireWeakN, Time:Task)
-  Z, (X <-> Y), neq(Z,X), neq(Z,Y), --isVar(X), --isVar(Y)    |- unisubst(Y, X, Z, "$", novel), (Belief:DesireWeak, Time:Task)
-   Z, (--X <-> Y), neq(Z,X), neq(Z,Y), --isVar(X), --isVar(Y)  |- unisubst(Y, X, Z, "$", novel), (Belief:DesireWeakN, Time:Task)
+  Z, (X <-> Y), in(Z,X), neq(Z,Y), --isVar(X), --isVar(Y)   |- substitute(Z, X, Y, "$", novel), (Belief:DesireWeak, Goal:DesireWeak, Time:TaskEvent)
+   Z, (--X <-> Y), in(Z,X), neq(Z,Y), --isVar(X), --isVar(Y)   |- substitute(Z, X, Y, "$", novel), (Belief:DesireWeakN, Goal:DesireWeakN, Time:TaskEvent)
+//  Z, (X <-> Y), neq(Z,X), neq(Z,Y), --isVar(X), --isVar(Y)    |- unisubst(Y, X, Z, "$", novel), (Belief:DesireWeak, Time:TaskEvent)
+//   Z, (--X <-> Y), neq(Z,X), neq(Z,Y), --isVar(X), --isVar(Y)  |- unisubst(Y, X, Z, "$", novel), (Belief:DesireWeakN, Time:TaskEvent)
       //Z, (X <-> Y), task("."), neq(Z,X), neq(Z,Y)    |- unisubst(Y, X, Z, novel), (Punctuation:Question)
         //  Z, (X <-> Y), task("!"), neq(Z,X), neq(Z,Y)    |- unisubst(Y, X, Z, novel), (Punctuation:Quest)
       //Z, (--X <-> Y), task("."), neq(Z,X), neq(Z,Y)  |- unisubst(Y, X, Z, novel), (Punctuation:Question)
     //    Z, (--X <-> Y), task("!"), neq(Z,X), neq(Z,Y)  |- unisubst(Y, X, Z, novel), (Punctuation:Quest)
 
-
+//chain:
   (&&,(X<->Y),A..+), (X<->Y)         |- substitute((&&,A..+),X,Y,novel), (Belief:StructuralDeduction, Goal:StructuralDeduction)
-  //chain:
-  //(&&,(X<->Y),A..+), (Y<->Z)         |- substitute((&&,A..+),X,Z,novel), (Belief:Desire, Goal:Desire, Time:TaskEvent)
-  (&&,(X<->Y),(Y<->Z),A..+), (X<->Y) |- substitute(substitute((&&,A..+),X,Z,novel),Y,Z,novel), (Belief:StructuralDeduction, Goal:StructuralDeduction)
+  (&&,(X<->Y),(Y<->Z),A..+), (X<->Y) |- substitute((&&,A..+),X,Z,novel), (Belief:StructuralDeduction, Goal:StructuralDeduction)
 
 
 

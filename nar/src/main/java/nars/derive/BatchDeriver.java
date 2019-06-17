@@ -17,7 +17,7 @@ public class BatchDeriver extends Deriver {
 
     public final IntRange premisesPerIteration = new IntRange(3, 1, 32);
 
-    public final IntRange termLinksPerTaskLink = new IntRange(1, 1, 8);
+    public final IntRange termLinksPerTaskLink = new IntRange(2, 1, 8);
 
     public BatchDeriver(PremiseRuleSet rules) {
         super(rules, rules.nar);
