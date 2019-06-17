@@ -1,9 +1,7 @@
 package nars.derive.rule;
 
-import jcog.Util;
 import jcog.data.bit.MetalBitSet;
 import jcog.decide.MutableRoulette;
-import nars.NAL;
 import nars.control.Why;
 import nars.derive.model.Derivation;
 import nars.term.control.PREDICATE;
@@ -28,7 +26,7 @@ public class DeriverRules {
     /**
      * repertoire
      */
-    private final DeriveAction[] could;
+    private final DeriveAction[] branch;
 
     public final PreDeriver pre;
 
@@ -39,23 +37,11 @@ public class DeriverRules {
 
         this.what = what;
 
-        assert (actions.length > 0);
-        this.could = actions;
+        this.branch = actions; assert (actions.length > 0);
 
         this.why = Stream.of(actions).flatMap(b -> Stream.of(b.why)).toArray(Why[]::new);
 
         this.pre = pre;
-
-//        this.mustAtomize = mustAtomize;
-
-    }
-
-    /**
-     * choice id to branch id mapping
-     */
-    private boolean test(Derivation d, int branch) {
-        could[branch].run.test(d);
-        return d.use(NAL.derive.TTL_COST_BRANCH);
     }
 
     public boolean run(Derivation d, final int deriveTTL) {
@@ -68,14 +54,11 @@ public class DeriverRules {
         d.preReady();
 
 
-        /**
-         * weight vector generation
-         */
         float[] pri;
         short[] can;
 
         if (maybe.length == 1) {
-            if (this.could[maybe[0]].value(d) <= 0)
+            if (this.branch[maybe[0]].value(d) <= 0)
                 return false;
 
             can = maybe;
@@ -87,7 +70,7 @@ public class DeriverRules {
             float[] f = new float[n];
             MetalBitSet toRemove = null;
             for (int choice = 0; choice < n; choice++) {
-                float fc = this.could[maybe[choice]].value(d);
+                float fc = this.branch[maybe[choice]].value(d);
                 if (fc <= 0) {
                     if (toRemove == null) toRemove = MetalBitSet.bits(n);
                     toRemove.set(choice);
@@ -117,27 +100,15 @@ public class DeriverRules {
                     }
                 }
             }
-
         }
 
-        d.ready(maybe,
-            deriveTTL
-            //Util.lerp(Math.max(d.priDouble, d.priSingle), Param.TTL_MIN, deriveTTL)
-        );
+        d.ready(maybe, deriveTTL);
 
-        int fanOut = can.length; //assert(fanOut > 0);
-
-        if (fanOut == 1) {
-            test(d, can[0]);
+        if (can.length == 1) {
+            branch[can[0]].test(d);
         } else {
-
-            Util.normalizeMargin(1f / pri.length, 0, pri);
-
-//            if (maybePri[0]!=maybePri[1])
-//                System.out.println(Arrays.toString(maybePri));
-
-            //assert((can.length == maybe.length)):  Arrays.toString(could) + " " + Arrays.toString(can) + " " + Arrays.toString(maybe);
-            MutableRoulette.run(pri, d.random, wi -> 0, i -> test(d, can[i]));
+            //Util.normalizeMargin(1f / pri.length, 0, pri);
+            MutableRoulette.run(pri, d.random, wi -> 0, i -> branch[can[i]].test(d));
         }
 
         return true;
@@ -156,7 +127,7 @@ public class DeriverRules {
 
     public void printRecursive(PrintStream p) {
         PremiseRuleCompiler.print(what, p);
-        for (Object x : could)
+        for (Object x : branch)
             PremiseRuleCompiler.print(x, p);
     }
 
@@ -167,7 +138,7 @@ public class DeriverRules {
 
     public void print(PrintStream p, int indent) {
         PremiseRuleCompiler.print(what, p, indent);
-        for (Object x : could)
+        for (Object x : branch)
             PremiseRuleCompiler.print(x, p, indent);
     }
 

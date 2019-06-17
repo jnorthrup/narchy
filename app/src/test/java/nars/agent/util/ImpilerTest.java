@@ -15,7 +15,7 @@ class ImpilerTest {
     @Test
     public void test1() throws Narsese.NarseseException {
         NAR n = NARS.tmp();
-        n.log();
+        //n.log();
 
         Impiler.ImpilerTracker t = new Impiler.ImpilerTracker(32, 2, n);
         Impiler.ImpilerSolver s = new Impiler.ImpilerSolver(32, 2, n);

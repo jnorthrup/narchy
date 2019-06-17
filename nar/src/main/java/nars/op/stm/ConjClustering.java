@@ -38,6 +38,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.BooleanSupplier;
 import java.util.function.Predicate;
 
+import static nars.Op.CONJ;
 import static nars.truth.func.TruthFunctions.c2wSafe;
 import static nars.truth.func.TruthFunctions.confCompose;
 
@@ -383,12 +384,11 @@ public class ConjClustering extends How {
                                 Task[] x = trying.toArray(Task.EmptyArray);
                                 trying.clear();
 
-                                Task y = conjoin(x, freq, conf, start);
-                                boolean conjoined = y != null;
                                 active = true;
 
+                                Task y = conjoin(x, freq, conf, start);
 
-                                if (conjoined) {
+                                if (y != null) {
 
 
                                     s -= x.length;
@@ -431,37 +431,35 @@ public class ConjClustering extends How {
                 return null;
 
             final Truth t = Truth.theDithered(freq, e, nar);
-            if (t != null) {
-
-                int ditherDT = nar.dtDither.intValue();
-                Term cj = ConjSeq.sequence(x, ditherDT, Op.terms);
-                if (cj.volume() > 1) {
-
-                    Term x1 = cj;
-                    x1 = x1.normalize();
-                    Term tt = x1;
-
-                    ObjectBooleanPair<Term> cp = Task.tryTaskTerm(tt, punc, true);
-                    if (cp != null) {
-
-                        long range = Util.min(LongInterval::range, x) - 1;
-                        long tEnd = start + range;
-                        NALTask y = new STMClusterTask(cp, t,
-                                Tense.dither(start, ditherDT), Tense.dither(tEnd, ditherDT),
-                                Stamp.sample(NAL.STAMP_CAPACITY, actualStamp, nar.random()), punc, now);
-                        y.cause(CauseMerge.AppendUnique.merge(NAL.causeCapacity.intValue(), x));
+            if (t == null)
+                return null;
 
 
-                        budget(y, x);
+            int ditherDT = nar.dtDither.intValue();
+            Term cj = ConjSeq.sequence(x, ditherDT, Op.terms);
+            if (cj.op() != CONJ)
+                return null;
 
-                        return y;
-
-                    }
-                }
-            }
+            ObjectBooleanPair<Term> cp = Task.tryTaskTerm(cj, punc, true);
+            if (cp == null)
+                return null;
 
 
-            return null;
+            long range = Util.min(LongInterval::range, x) - 1;
+            long tEnd = start + range;
+            NALTask y = new STMClusterTask(cp, t,
+                    Tense.dither(start, ditherDT), Tense.dither(tEnd, ditherDT),
+                    Stamp.sample(NAL.STAMP_CAPACITY, actualStamp, nar.random()), punc, now);
+            y.cause(CauseMerge.AppendUnique.merge(NAL.causeCapacity.intValue(), x));
+
+            if (Util.and(Task::isCyclic, x))
+                y.setCyclic(true);
+
+            budget(y, x);
+
+            return y;
+
+
         }
     }
 

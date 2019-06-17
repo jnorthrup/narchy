@@ -32,13 +32,8 @@ public class DirectPremisify extends Premisify {
 
             mf.reset(taskify, Termify_Forks, (int)Math.ceil(NAL.derive.TERMBUFFER_VOLMAX_SCRATCH_FACTOR * d.termVolMax));
 
-            try {
+            boolean unified = unify(d, !fwd, true);
 
-                boolean unified = unify(d, !fwd, true);
-
-            } finally {
-                d.forEachMatch = null;
-            }
         }
         return true;
     }

@@ -63,6 +63,7 @@ public class TermBuffer {
      * */
     int volRemain;
     private final TermBuilder builder;
+    public boolean evalInline = true;
 
     public TermBuffer clone() {
         TermBuffer b = new TermBuffer(builder, sub);
@@ -354,6 +355,11 @@ public class TermBuffer {
         return sub.interned(x);
     }
 
+    public final TermBuffer evalInline(boolean b) {
+        this.evalInline = b;
+        return this;
+    }
+
 
     private static final class DeferredEval extends LightCompound {
     //private static final class DeferredEval extends LighterCompound {
@@ -459,7 +465,7 @@ public class TermBuffer {
     }
 
     protected boolean evalInline() {
-        return true;
+        return evalInline;
     }
 
     /** constant propagate matching spans further ahead in the construction process */

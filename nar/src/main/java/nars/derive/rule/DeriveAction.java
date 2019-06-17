@@ -1,44 +1,24 @@
 package nars.derive.rule;
 
 import jcog.pri.ScalarValue;
+import nars.NAL;
 import nars.control.Why;
 import nars.derive.model.Derivation;
 import nars.derive.op.Truthify;
-import nars.term.control.AND;
 import nars.term.control.PREDICATE;
 
-/** branch in the derivation fork */
+/** branch in the derivation fork.  first runs truth.test() before conclusion.test() */
 public final class DeriveAction  /*implements ThrottledAction<Derivation>*/ {
 
     public final Why why;
     private final Truthify truth;
-    public final PREDICATE<Derivation> run;
+    private final PREDICATE<Derivation> conclusion;
 
-    private DeriveAction(PREDICATE<Derivation> procedure, PremiseRuleProto.RuleWhy cause, Truthify t) {
-        this.run = procedure;
+    DeriveAction(PremiseRuleProto.RuleWhy cause, Truthify pre, PREDICATE<Derivation> post) {
         this.why = cause;
-        this.truth = t;
+        this.conclusion = post;
+        this.truth = pre;
     }
-
-
-    public static DeriveAction action(PremiseRuleProto.RuleWhy cause, PREDICATE<Derivation> POST) {
-
-        Truthify t = (Truthify) AND.first((AND<Derivation>)POST, x -> x instanceof Truthify);
-        if (t == null)
-            throw new NullPointerException();
-
-
-        return new DeriveAction(POST, cause, t);
-    }
-
-
-//    @Override
-//    public boolean test(Derivation d, float power) {
-//        //d.use(power) //d's own powerToTTL function, temporarily subtract TTL for the fork
-//        test(d);
-//        //return the remaining TTL change or quit
-//        return false;
-//    }
 
 
     /**
@@ -61,4 +41,12 @@ public final class DeriveAction  /*implements ThrottledAction<Derivation>*/ {
 
         return causeValue * puncFactor;
     }
+
+    public final boolean test(Derivation d) {
+        if (truth.test(d))
+            conclusion.test(d);
+
+        return d.use(NAL.derive.TTL_COST_BRANCH);
+    }
+
 }

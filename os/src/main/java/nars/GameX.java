@@ -404,7 +404,7 @@ abstract public class GameX extends Game {
         );
 
         n.confMin.set(0.01f);
-        n.termVolMax.set(34);
+        n.termVolMax.set(20);
 
 
         n.beliefPriDefault.amp(0.1f);
@@ -412,8 +412,8 @@ abstract public class GameX extends Game {
         n.questionPriDefault.amp(0.05f);
         n.questPriDefault.amp(0.05f);
 
-        n.beliefConfDefault.set(0.8f);
-        n.goalConfDefault.set(0.8f);
+        n.beliefConfDefault.set(0.75f);
+        n.goalConfDefault.set(0.75f);
 
         n.emotion.want(MetaGoal.Futile, -0.001f);
         n.emotion.want(MetaGoal.Perceive, -0.002f);

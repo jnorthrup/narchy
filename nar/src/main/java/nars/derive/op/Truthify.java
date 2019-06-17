@@ -73,7 +73,7 @@ public class Truthify extends AbstractPred<Derivation> {
     private static final Atomic TRUTH = Atomic.the("truth");
 
     public static Truthify the(ByteToByteFunction punc, TruthFunc beliefTruthOp, TruthFunc goalTruthOp, Occurrify.OccurrenceSolver time) {
-        Term truthMode;
+        Term id;
 
         FasterList<Term> args = new FasterList(4);
 
@@ -91,10 +91,10 @@ public class Truthify extends AbstractPred<Derivation> {
 
         args.add(Atomic.the(time.name()));
 
-        truthMode = $.func(TRUTH, args.toArrayRecycled(Term[]::new));
+        id = $.func(TRUTH, args.toArrayRecycled(Term[]::new));
 
 
-        return new Truthify(truthMode,
+        return new Truthify(id,
                 punc,
                 beliefTruthOp, goalTruthOp, time);
     }
@@ -138,10 +138,15 @@ public class Truthify extends AbstractPred<Derivation> {
 
             case QUEST:
             case QUESTION:
-                if (d.overlapSingle)
-                    return false;
+//                if (questionDouble) {
+//                    if (d.overlapDouble)
+//                        return false
+//                } else {
+                    if (d.overlapSingle)
+                        return false;
 
-                single = true;
+                    single = true;
+//                }
                 t = null;
                 break;
 

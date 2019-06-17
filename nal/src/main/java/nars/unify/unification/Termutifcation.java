@@ -126,10 +126,10 @@ public class Termutifcation extends ArrayHashSet<DeterministicUnification> imple
             return size > 0 ? super.resolve(x) : x;
         }
 
-        @Override
-        public boolean live() {
-            return super.live() && discoveriesRemain > 0;
-        }
+//        @Override
+//        public boolean live() {
+//            return super.live() && discoveriesRemain > 0;
+//        }
 
         @Override
         protected boolean match() {

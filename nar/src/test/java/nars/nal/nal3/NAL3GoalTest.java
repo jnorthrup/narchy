@@ -7,6 +7,7 @@ import nars.test.NALTest;
 import nars.test.TestNAR;
 import org.junit.jupiter.api.Test;
 
+import static nars.Op.GOAL;
 import static nars.nal.nal3.NAL3Test.cycles;
 
 class NAL3GoalTest {
@@ -287,7 +288,9 @@ class NAL3GoalTest {
             test
                     .input("--((a||b)-->g)!")
                     .mustGoal(cycles, "(a-->g)", 0f, 0.81f)
+                    .mustNotOutput(cycles, "(a-->g)", GOAL, 0.1f, 1f, 0, 1)
                     .mustGoal(cycles, "(b-->g)", 0f, 0.81f)
+                    .mustNotOutput(cycles, "(b-->g)", GOAL, 0.1f, 1f, 0, 1)
             ;
         }
 

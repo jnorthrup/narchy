@@ -323,20 +323,24 @@ public class PoleCart extends GameX {
         });
     }
 
+    float power(float a) {
+        return Util.sqr(a);
+    }
+
     public void initUnipolar() {
-        actionHemipolar(
+        actionUnipolar(
             //$.funcImg("mx", id, $.the(-1))
-            $.inh("L", id), (a) -> {
+            $.inh(id,"L"), (a) -> {
             if (!manualOverride) {
-                actionLeft = a; //Util.clampBi((float) (action + a));
+                actionLeft = power(a); //Util.clampBi((float) (action + a));
                 //action = Util.clampBi((float) (action + a * a));
             }
         });
-        actionHemipolar(
+        actionUnipolar(
             //$.funcImg("mx", id, $.the(+1))
-            $.inh("R", id), (a) -> {
+            $.inh(id,"R"), (a) -> {
             if (!manualOverride) {
-                actionRight = a;//Util.clampBi((float) (action - a));
+                actionRight = power(a);//Util.clampBi((float) (action - a));
                 //action = Util.clampBi((float) (action - a * a));
             }
         });

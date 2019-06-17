@@ -70,19 +70,21 @@ public class Remember extends AbstractTask {
                 throw new TaskException(x, "target exceeds volume maximum: " + termVol + " > " + maxVol);
         }
 
-        if (x.isBeliefOrGoal() && x.conf() < n.confMin.floatValue()) {
-            if (!(x instanceof ProxyTask)) {
-                if (NAL.DEBUG)
-                    throw new TaskException(x, "insufficient evidence for non-input Task");
-                else
-                    return null;
+        if (x.isBeliefOrGoal()) {
+            if (x.conf() < n.confMin.floatValue()) {
+                if (!(x instanceof ProxyTask)) {
+                    if (NAL.DEBUG)
+                        throw new TaskException(x, "insufficient evidence for non-input Task");
+                    else
+                        return null;
+                }
+            }
+
+            if (NAL.test.DEBUG_ENSURE_DITHERED_TRUTH) {
+                Truth.assertDithered(x.truth(), n);
             }
         }
 
-
-        if (NAL.test.DEBUG_ENSURE_DITHERED_TRUTH) {
-            Truth.assertDithered(x.truth(), n);
-        }
 
         if (NAL.test.DEBUG_ENSURE_DITHERED_DT || NAL.test.DEBUG_ENSURE_DITHERED_OCCURRENCE) {
             int d = n.dtDither();

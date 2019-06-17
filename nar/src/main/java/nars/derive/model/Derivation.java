@@ -4,6 +4,7 @@ import jcog.Util;
 import jcog.data.set.MetalLongSet;
 import jcog.math.Longerval;
 import jcog.pri.ScalarValue;
+import jcog.util.ArrayUtil;
 import nars.NAL;
 import nars.NAR;
 import nars.Op;
@@ -28,17 +29,17 @@ import nars.term.anon.AnonWithVarShift;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
+import nars.term.buffer.DirectTermBuffer;
 import nars.term.buffer.TermBuffer;
 import nars.term.functor.AbstractInlineFunctor1;
 import nars.term.util.TermTransformException;
-import nars.term.util.builder.HeapTermBuilder;
-import nars.term.util.map.ByteAnonMap;
 import nars.term.util.transform.InstantFunctor;
 import nars.term.util.transform.TermTransform;
 import nars.truth.PreciseTruth;
 import nars.truth.Stamp;
 import nars.truth.Truth;
 import nars.truth.func.TruthFunc;
+import org.eclipse.collections.impl.map.mutable.MapAdapter;
 import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -51,7 +52,6 @@ import java.util.function.Predicate;
 
 import static nars.Op.BELIEF;
 import static nars.Op.GOAL;
-import static nars.term.buffer.TermBuffer.INITIAL_ANON_SIZE;
 import static nars.time.Tense.ETERNAL;
 import static nars.time.Tense.TIMELESS;
 
@@ -83,49 +83,18 @@ public class Derivation extends PreDerivation {
     /**
      * second layer additional substitutions
      */
-    public final Map<Term, Term> retransform = new UnifiedMap<>() {
+    public final Map<Term, Term> retransform = new MapAdapter<>(new UnifiedMap<>()) {
         @Override
         public Term put(Term key, Term value) {
-            if (key.equals(value))
-                return null;
-
-            return super.put(key, value);
+            return key.equals(value) ? null : delegate.put(key, value);
         }
-
     };
     public final Occurrify occ = new Occurrify(this);
 
-
-//    @Deprecated public final ArrayHashSet<Term> atomMatches = new ArrayHashSet();
-//    @Deprecated public TopN<TaskLink> atomTangent = new TopN<>(new TaskLink[64], (FloatFunction<TaskLink>) ScalarValue::pri);
-    /**
-     * for anon and other misc usage (non-evaluating)
-     */
-    final TermBuffer termBuilder = new TermBuffer() {
-        @Override
-        protected boolean evalInline() {
-            return false;
-        }
-
-    };
+    final TermBuffer termBuilder = new TermBuffer().evalInline(false);
     
-    /** sort of only works if no conj seq involved */
-    final TermBuffer directTermBuilder = new TermBuffer(HeapTermBuilder.the, new ByteAnonMap(INITIAL_ANON_SIZE)) {
-        @Override
-        protected boolean evalInline() {
-            return false;
-        }
+    final TermBuffer directTermBuilder = new DirectTermBuffer().evalInline(false);
 
-        @Override
-        protected Term newCompound(Op o, int dt, Term[] subterms) {
-
-            Term y = HeapTermBuilder.the.
-                    //newCompound(o, dt, subterms);
-                    newCompoundN(o, dt, subterms,null); //more direct
-            assert(y.op()==o);
-            return y;
-        }
-    };
     final Functor polarizeTask = new AbstractInstantFunctor1("polarizeTask") {
         @Override
         protected Term apply1(Term arg) {
@@ -716,6 +685,12 @@ public class Derivation extends PreDerivation {
 //            throw new WTF();
         }
         return parentCause;
+    }
+
+    @Override public short[] preDerive() {
+        if (!canCollector.isEmpty()) canCollector.clear();
+        deriver.rules.what.test(this);
+        return canCollector.isEmpty() ? ArrayUtil.EMPTY_SHORT_ARRAY : canCollector.toArray();
     }
 
     abstract static class AbstractInstantFunctor1 extends AbstractInlineFunctor1 implements InstantFunctor<Evaluation> {

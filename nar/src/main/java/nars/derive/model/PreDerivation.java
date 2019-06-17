@@ -35,4 +35,5 @@ public abstract class PreDerivation extends Unify {
         return beliefTruth_at_Belief !=null || beliefTruth_at_Task !=null;
     }
 
+    public abstract short[] preDerive();
 }

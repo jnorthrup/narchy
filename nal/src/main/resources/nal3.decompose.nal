@@ -1,6 +1,7 @@
 //NAL3 single premise belief/goal decompose
-    (M --> I), X, eventOfPN(I,X)      |-    (M --> unsectPN(I,X)), (Belief:StructuralDeduction,Goal:StructuralDeduction, Time:Compose)
-    (I --> M), X, eventOfPN(I,X)      |-  --(unsectPN(I,X) --> M), (Belief:StructuralDeductionN,Goal:StructuralDeductionN, Time:Compose)
+    (M --> I), X, eventOfPN(I,X)   |-   polarizeTask((M --> conjWithoutPN(I,X))),   (Belief:StructuralDeductionDepolarized,Goal:StructuralDeductionDepolarized)
+    (I --> M), X, eventOfPN(I,X)   |-   polarizeTask((conjWithoutPN(I,X) --> M)),   (Belief:StructuralDeductionDepolarized,Goal:StructuralDeductionDepolarized)
+
 //       (M --> I), X, sectOfPN(I,X)      |-   --(M --> unsectPN(I,X)), (Belief:StructuralDeductionN,Goal:StructuralDeductionN)
 //       (I --> M), X, sectOfPN(I,X)      |-   --(unsectPN(I,X) --> M), (Belief:StructuralDeductionN,Goal:StructuralDeductionN)
 
@@ -12,10 +13,12 @@
       //(--%I --> M),   X, is(%I,"&&"), sectOfPN(%I,X)   |-   --(--unsectPN(%I,X)-->M), (Belief:StructuralDeductionN,Goal:StructuralDeductionN)
 
 //NAL3 single premise question/quest decompose
-    ( M --> I), X, task("?@"), eventOfPN(I,X) |- (M --> unsectPNRepolarized(I,X)), (Time:Compose)
-    //( M --> --%I), X, is(%I,"&&"), task("?@"), sectOfPN(%I,X) |- (M --> unsectPNRepolarized(%I,X))
-    ( I --> M), X, task("?@"), eventOfPN(I,X) |- (unsectPNRepolarized(I,X) --> M), (Time:Compose)
-    //( --%I --> M), X, is(%I,"&&"), task("?@"), sectOfPN(%I,X) |- (unsectPNRepolarized(%I,X) --> M)
+( M --> I), X, eventOfPN(I,X) |- (M --> unsectPNRepolarized(I,X)), (Punctuation:AskAll)
+( I --> M), X, eventOfPN(I,X) |- (unsectPNRepolarized(I,X) --> M), (Punctuation:AskAll)
+    //( M --> I), X, task("?@"), eventOfPN(I,X) |- (M --> unsectPNRepolarized(I,X))
+    //( I --> M), X, task("?@"), eventOfPN(I,X) |- (unsectPNRepolarized(I,X) --> M)
+        //( M --> --%I), X, is(%I,"&&"), task("?@"), sectOfPN(%I,X) |- (M --> unsectPNRepolarized(%I,X))
+        //( --%I --> M), X, is(%I,"&&"), task("?@"), sectOfPN(%I,X) |- (unsectPNRepolarized(%I,X) --> M)
 
 
 

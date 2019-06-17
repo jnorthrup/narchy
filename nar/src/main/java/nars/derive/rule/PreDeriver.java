@@ -2,13 +2,11 @@ package nars.derive.rule;
 
 import jcog.memoize.Memoizers;
 import jcog.memoize.byt.ByteHijackMemoize;
-import jcog.util.ArrayUtil;
 import nars.concept.Concept;
 import nars.derive.model.Derivation;
 import nars.derive.model.PreDerivation;
 import nars.derive.premise.PremiseKey;
 import nars.term.util.builder.InterningTermBuilder;
-import nars.unify.Unify;
 
 import java.util.function.Function;
 
@@ -19,14 +17,7 @@ import static jcog.memoize.Memoizers.DEFAULT_HIJACK_REPROBES;
 @FunctionalInterface public interface PreDeriver extends Function<PreDerivation,short[]> {
 
     /** memory-less, evaluated exhaustively each */
-    PreDeriver DIRECT_DERIVATION_RUNNER = PreDeriver::what;
-
-    static short[] what(Unify p) {
-        Derivation d = (Derivation)p;
-        d.canCollector.clear();
-        d.deriver.rules.what.test(d);
-        return d.canCollector.isEmpty() ? ArrayUtil.EMPTY_SHORT_ARRAY : d.canCollector.toArray();
-    }
+    PreDeriver DIRECT_DERIVATION_RUNNER = PreDerivation::preDerive;
 
 
     final class CentralMemoizer implements PreDeriver {
@@ -36,7 +27,7 @@ import static jcog.memoize.Memoizers.DEFAULT_HIJACK_REPROBES;
         CentralMemoizer() {
             whats = Memoizers.the.memoizeByte(this + "_what",
                     Memoizers.DEFAULT_MEMOIZE_CAPACITY*2,
-                    bd-> what(bd.x));
+                    bd -> ((PreDerivation) bd.x).preDerive());
         }
 
         @Override
@@ -44,7 +35,7 @@ import static jcog.memoize.Memoizers.DEFAULT_HIJACK_REPROBES;
             if (intern(d)) {
                 return whats.apply(new PremiseKey(d));
             } else {
-                return what(d);
+                return d.preDerive();
             }
         }
 
@@ -73,7 +64,7 @@ import static jcog.memoize.Memoizers.DEFAULT_HIJACK_REPROBES;
 
                     int capacity = 512;
 
-                    return new ByteHijackMemoize<>(k-> what(k.x),
+                    return new ByteHijackMemoize<>(k -> ((PreDerivation) k.x).preDerive(),
                             capacity,
                             DEFAULT_HIJACK_REPROBES, false);
                 }
@@ -83,7 +74,7 @@ import static jcog.memoize.Memoizers.DEFAULT_HIJACK_REPROBES;
         }
 
         //failsafe:
-        return what(preDerivation);
+        return preDerivation.preDerive();
     };
 
 }

@@ -11,6 +11,7 @@ import java.util.Random;
 
 public class ActionTiming implements TriFunction<What, Task, Term, long[]> {
 
+    //TODO parametr for shifting focus balance toward past, present or future
 
     public final FloatRange focusDurs = new FloatRange(1, 0, 32);
 

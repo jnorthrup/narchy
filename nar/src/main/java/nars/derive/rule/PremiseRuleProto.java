@@ -5,7 +5,6 @@ import nars.NAR;
 import nars.control.Why;
 import nars.derive.model.Derivation;
 import nars.derive.op.DirectPremisify;
-import nars.derive.op.Premisify;
 import nars.derive.op.Taskify;
 import nars.term.Term;
 import nars.term.control.AND;
@@ -33,10 +32,7 @@ public class PremiseRuleProto extends PremiseRule {
         super(raw);
 
         int k = 0;
-        PREDICATE<Derivation>[] y = new PREDICATE[3 + CONSTRAINTS.size() ];
-
-        y[k++] = this.truthify;
-        y[k++] = Premisify.preUnify;
+        PREDICATE<Derivation>[] y = new PREDICATE[1 + CONSTRAINTS.size() ];
 
         for (PREDICATE p : CONSTRAINTS)
             y[k++] = p;
@@ -48,7 +44,7 @@ public class PremiseRuleProto extends PremiseRule {
             //new CachingPremisify
                 (taskPattern, beliefPattern, isFwd(), taskify);
 
-        this.rule = pair(PRE, DeriveAction.action(cause, AND.the(y)));
+        this.rule = pair(PRE, new DeriveAction(cause, truthify, AND.the(y)));
     }
 
     /** task,belief or belief,task ordering heuristic */

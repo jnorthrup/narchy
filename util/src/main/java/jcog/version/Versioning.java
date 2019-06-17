@@ -88,7 +88,7 @@ public class Versioning<X> {
     }
 
 
-    public final boolean revert(int when, Consumer<Versioned<X>> each) {
+    protected final boolean revert(int when, Consumer<Versioned<X>> each) {
 
         final int sizePrev;
         if ((sizePrev = size) <= when)
@@ -129,11 +129,11 @@ public class Versioning<X> {
     /**
      * whether the unifier should continue: if TTL is non-zero.
      */
-    public boolean live() {
+    public final boolean live() {
         return ttl > 0;
     }
 
-    public void setTTL(int ttl) {
+    public final void setTTL(int ttl) {
         assert (ttl > 0);
         this.ttl = ttl;
     }

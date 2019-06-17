@@ -71,6 +71,7 @@ public class PremiseRule extends ProxyTerm {
 
     private static final Term eteConj = $.the("eteConj");
     private static final Map<Term, UnifyConstraint> constra = new ConcurrentHashMap<>();
+    private static final Map<Term, Truthify> truthifies = new ConcurrentHashMap<>();
     private final static PremiseTermAccessor TaskTerm = new PremiseTermAccessor(0, Derivation.TaskTerm) {
         @Override
         public Term apply(PreDerivation d) {
@@ -761,7 +762,7 @@ public class PremiseRule extends ProxyTerm {
 
         pre.add(new TaskPunc(taskPunc));
 
-        this.truthify = Truthify.the(concPunc, beliefTruthOp, goalTruthOp, time);
+        this.truthify = intern(Truthify.the(concPunc, beliefTruthOp, goalTruthOp, time));
         this.time = time;
 
         this.taskPunc = taskPunc;
@@ -810,6 +811,10 @@ public class PremiseRule extends ProxyTerm {
 
     private static <X extends Unify> UnifyConstraint<X> intern(UnifyConstraint<X> x) {
         UnifyConstraint<X> y = constra.putIfAbsent(x.term(), x);
+        return y != null ? y : x;
+    }
+    private static Truthify intern(Truthify x) {
+        Truthify y = truthifies.putIfAbsent(x.term(), x);
         return y != null ? y : x;
     }
 

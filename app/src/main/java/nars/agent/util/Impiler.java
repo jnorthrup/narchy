@@ -103,18 +103,20 @@ public class Impiler {
      */
     public static class ImpilerDeduction extends TaskLeak {
 
+        private final CauseChannel<Task> in;
+
         public ImpilerDeduction(int capacity, NAR n) {
             super(capacity, n);
+            in = n.newChannel(this);
         }
 
         @Override
         protected float leak(Task next, What what) {
-            return deduce(next.term());
-
+            return deduce(next.term(), what);
         }
 
-        public float deduce(Term root) {
-            if (root.op()==IMPL)
+        public float deduce(Term root, What what) {
+            if (root.op() == IMPL)
                 root = root.sub(0); //subj
 
             Concept c = nar.conceptualizeDynamic(root.unneg());
@@ -155,7 +157,7 @@ public class Impiler {
                                     if (t == null)
                                         return false;
                                 }
-                                if (stamp==null)
+                                if (stamp == null)
                                     stamp = new LongHashSet(e.stamp);
                                 else {
                                     if (stamp.size() + e.stamp.length > stampLimit)
@@ -183,7 +185,7 @@ public class Impiler {
                                             cc = new ConjTree();
                                             cc.add(ETERNAL, f); //add existing accumulated sequence DTERNALly
                                         }
-                                        if (s!=n-1) {
+                                        if (s != n - 1) {
                                             if (!cc.add(ETERNAL, Z))
                                                 return false;
                                         }
@@ -198,9 +200,9 @@ public class Impiler {
                                             cc.add(0, A);
                                         }
                                         zDT = e.dt;
-                                        if (when!=ETERNAL)
+                                        if (when != ETERNAL)
                                             when += zDT;
-                                        if (s!=n-1) {
+                                        if (s != n - 1) {
                                             if (!cc.add(when, Z))
                                                 return false;
                                         }
@@ -213,15 +215,15 @@ public class Impiler {
                             }
 
                             Term ee = IMPL.the(cc.term(), zDT, Z);
-                                LongHashSet ss = stamp;
-                                Task z = Task.tryTask(ee, BELIEF, t, (ttt, tr) -> NALTask.the(ttt, BELIEF, tr, nar.time(), ETERNAL, ETERNAL, ss.toArray())
-                                );
-                                if (z!=null) {
-                                    System.out.println(z);
-                                    z.pri(nar);
-                                    nar.input(z);
-                                    return true;
-                                }
+                            LongHashSet ss = stamp;
+                            Task z = Task.tryTask(ee, BELIEF, t, (ttt, tr) ->
+                                    NALTask.the(ttt, BELIEF, tr, nar.time(), ETERNAL, ETERNAL, ss.toArray()));
+                            if (z != null) {
+//                                System.out.println(z);
+                                z.pri(nar);
+                                in.accept(z,what);
+                                return true;
+                            }
 
                             return false;
                         }
@@ -243,7 +245,7 @@ public class Impiler {
 
                             Term et = edge.id().getTwo();
                             Concept c = nar.conceptualizeDynamic(et);
-                            if (c!=null) {
+                            if (c != null) {
                                 ImplNode m = c.meta(IMPILER_NODE);
                                 if (m != null) {
                                     if (!m.out.isEmpty()) {
@@ -267,18 +269,20 @@ public class Impiler {
             return 0;
         }
 
-        /** creates graph snapshot */
-        public AdjGraph<Term,ImplEdge> graph() {
+        /**
+         * creates graph snapshot
+         */
+        public AdjGraph<Term, ImplEdge> graph() {
             AdjGraph g = new AdjGraph(true);
 
-            nar.concepts().forEach(c->{
+            nar.concepts().forEach(c -> {
 
 
                 ImplNode m = c.meta(IMPILER_NODE);
                 if (m != null) {
                     g.addNode(c.term());
                     m.out.stream().forEach(e -> {
-                       g.setEdge(e.getOne().concept(), e.getTwo().concept(), e); //TODO check if multiedge
+                        g.setEdge(e.getOne().concept(), e.getTwo().concept(), e); //TODO check if multiedge
                     });
                 }
             });
@@ -289,7 +293,7 @@ public class Impiler {
 
         @Override
         public float value() {
-            return 0;
+            return in.value();
         }
     }
 
@@ -322,7 +326,8 @@ public class Impiler {
             Task t = next;
             //table.sample(ETERNAL, ETERNAL, null, nar);
             //Task it = table.answer(whenStart, whenEnd, i, null, nar);
-            /*if (it != null) */{
+            /*if (it != null) */
+            {
                 if (t != null) {
                     //TODO for now dont consider the implication/etc.. as its own event although NARS does
                     //  just represent it as transitions
@@ -338,10 +343,10 @@ public class Impiler {
 
                     Concept sc =
                             nar.conceptualize(subj.unneg());
-                            //nar.conceptualizeDynamic(subj.unneg());
+                    //nar.conceptualizeDynamic(subj.unneg());
                     Concept pc =
                             nar.conceptualize(pred);
-                            //nar.conceptualizeDynamic(pred/*.unneg()*/);
+                    //nar.conceptualizeDynamic(pred/*.unneg()*/);
                     if (sc != null && pc != null) {
                         edge(new ImplEdge(subj, pred), t, sc, pc);
                     }
@@ -461,23 +466,18 @@ public class Impiler {
 
     abstract static class ImplBeam extends FasterList<ImplEdge> {
         public final static int MAX_DEPTH = 3;
+        public final List<Task> result = new FasterList();
         protected final Concept source;
-
         /**
          * belief cache
          */
         protected final Map<Term, Truth> belief = new HashMap();
-
         protected final long start, end;
         protected final NAR nar;
-
         /**
          * stored separately in case it contains temporal information
          */
         protected final Term sourceTerm;
-
-
-        public final List<Task> result = new FasterList();
 
         public ImplBeam(NAR n, Task t, Concept c) {
             this.sourceTerm = t.term();
@@ -580,7 +580,7 @@ public class Impiler {
                     if (conf < confMin)
                         return false;
                     freq *= Math.max(1f - e.freq, e.freq); //these can be consiered virtually positive since we already selected based on current truth
-                    if (stamp==null)
+                    if (stamp == null)
                         stamp = new LongHashSet(e.stamp);
                     else {
                         if (stamp.size() + e.stamp.length > stampLimit)

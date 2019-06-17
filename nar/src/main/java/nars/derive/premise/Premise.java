@@ -210,8 +210,7 @@ public class Premise implements Comparable<Premise> {
 
     private @Nullable Task match(Derivation d, Term beliefTerm, boolean beliefConceptUnifiesTaskConcept) {
 
-        boolean conceptualizable = beliefTerm.op().taskable && beliefTerm.isNormalized();
-        if (!conceptualizable)
+        if (!(beliefTerm.op().taskable && beliefTerm.isNormalized()))
             return null;
 
         NAR n = d.nar();
@@ -288,8 +287,12 @@ public class Premise implements Comparable<Premise> {
 
         long[] focus = timeFocus(beliefTerm, d);
 
+        boolean topOrSample =
+                true;
+                //false;
+
         return bb.matching(focus[0], focus[1], beliefTerm, beliefFilter, d.dur(), d.nar())
-                .task(true, false, false);
+                .task(topOrSample, false, false);
     }
 
 
@@ -410,7 +413,6 @@ public class Premise implements Comparable<Premise> {
     }
 
     public void derive(Derivation d, int matchTTL, int deriveTTL) {
-
         FastCounter result;
 
         Emotion e = d.nar().emotion;
