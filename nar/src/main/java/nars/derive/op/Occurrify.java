@@ -149,10 +149,10 @@ public class Occurrify extends TimeGraph {
             }
         }
 
-        if (y != null) {
-            if (NAL.test.DEBUG_ENSURE_DITHERED_DT)
-                assertDithered(y, d.ditherDT);
-        }
+
+
+        if (NAL.test.DEBUG_ENSURE_DITHERED_DT)
+            assertDithered(y, d.ditherDT);
 
         t.taskify(y, occ[0], occ[1], d);
     }

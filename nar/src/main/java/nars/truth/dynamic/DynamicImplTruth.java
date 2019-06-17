@@ -11,7 +11,7 @@ import nars.truth.func.NALTruth;
 import java.util.concurrent.ThreadLocalRandom;
 
 import static nars.Op.IMPL;
-import static nars.time.Tense.ETERNAL;
+import static nars.time.Tense.*;
 
 class DynamicImplTruth extends AbstractDynamicTruth {
 
@@ -38,14 +38,33 @@ class DynamicImplTruth extends AbstractDynamicTruth {
 
         ///TODO ensure non-collapsing dt if collapse imminent
 
+        if (start == end && start!=ETERNAL) {
+            int sdt = superterm.dt();
+            if (sdt != XTERNAL && sdt != DTERNAL && sdt != 0) {
+                //stretch the range to the template's dt
+                if (sdt > 0)
+                    end = start + sdt;
+                else {
+                    long s = start;
+                    end = s;
+                    start = end + sdt;
+                }
+            }
+        }
+
         long as, ae, bs, be;
         if (start == ETERNAL) {
             as = ae = bs = be = ETERNAL;
         } else if (start == end) {
             as = bs = ae = be = start;
         } else {
-             switch (ThreadLocalRandom.current().nextInt(subj.unneg().equals(pred) ? 2 : 3)) {
+             switch (ThreadLocalRandom.current().nextInt(subj.unneg().equals(pred) ? 3 : 4)) {
                  case 0: {
+                     as = ae = start;
+                     bs = be = end;
+                     break;
+                 }
+                 case 1: {
                      //reverse
                      long mid = start == ETERNAL ? ETERNAL : (start + end) / 2;
                      as = start;
@@ -54,7 +73,7 @@ class DynamicImplTruth extends AbstractDynamicTruth {
                      be = end;
                      break;
                  }
-                 case 1: {
+                 case 2: {
                      //reverse
                      long mid = start == ETERNAL ? ETERNAL : (start + end) / 2;
                      bs = start;
@@ -64,7 +83,7 @@ class DynamicImplTruth extends AbstractDynamicTruth {
                      break;
                  }
                  default:
-                 case 2: {
+                 case 3: {
                      //shared
                      as = bs = start; ae = be = end;
                      break;

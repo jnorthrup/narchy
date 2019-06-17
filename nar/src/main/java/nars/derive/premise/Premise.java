@@ -243,6 +243,10 @@ public class Premise implements Comparable<Premise> {
                 if (!answerGoal)
                     return null; //no belief
             } else {
+
+                if (beliefConceptUnifiesTaskConcept && beliefTerm.hasXternal())
+                    beliefTerm = task.term();
+
                 Task answered = tryAnswer(beliefTerm, answerTable, d);
                 if (answered != null) {
                     if (answered.evi() >= d.eviMin) {
