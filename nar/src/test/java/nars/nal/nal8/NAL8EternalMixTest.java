@@ -165,7 +165,7 @@ class NAL8EternalMixTest extends NALTest {
         test
 
                 .input("a:b! |")
-                .inputAt(10, "(( c:d &&+5 e:f ) =|> a:b).")
+                .inputAt(10, "(( c:d &&+5 e:f ) ==> a:b).")
                 .mustGoal(cycles, "( c:d &&+5 e:f)", 1.0f, 0.45f, -5)
                 .mustNotOutput(cycles, "( c:d &&+5 e:f)", GOAL, ETERNAL)
         ;
@@ -208,7 +208,7 @@ class NAL8EternalMixTest extends NALTest {
         test.termVolMax(18);
         test
                 .input("reachable(SELF,{t002})! :|:")
-                .inputAt(5, "((on($1,#2) &&+0 at(SELF,#2)) =|> reachable(SELF,$1)).")
+                .inputAt(5, "((on($1,#2) &&+0 at(SELF,#2)) ==> reachable(SELF,$1)).")
                 .mustGoal(cycles, "(on({t002},#1) &| at(SELF,#1))", 1.0f, 0.45f, 0)
                 .mustNotOutput(cycles, "(at(SELF,#1) &| on({t002},#1))", GOAL, t -> t == ETERNAL || t == 5);
 
@@ -487,9 +487,10 @@ class NAL8EternalMixTest extends NALTest {
     void testNegatedImplicationS() {
 
         test
+                
                 .goal("R")
-                .input("((--,a:b) =|> R). |")
-                .mustGoal(cycles, "a:b", 0.0f, 0.43f, ZERO);
+                .input("((--,a:b) ==> R). |")
+                .mustGoal(cycles, "a:b", 0.0f, 0.81f, ZERO);
     }
 
 //    @Test
@@ -498,7 +499,7 @@ class NAL8EternalMixTest extends NALTest {
 //        test
 //
 //                .input("--S! |")
-//                .input("(S =|> R).")
+//                .input("(S ==> R).")
 //                .mustGoal(cycles, "R", 0.0f, 0.45f, 0);
 //    }
 //    @Test
@@ -507,7 +508,7 @@ class NAL8EternalMixTest extends NALTest {
 //        test
 //
 //                .input("--S! |")
-//                .input("--(S =|> R).")
+//                .input("--(S ==> R).")
 //                .mustGoal(cycles, "R", 1.0f, 0.45f, 0);
 //    }
 //    @Test
@@ -516,7 +517,7 @@ class NAL8EternalMixTest extends NALTest {
 //        test
 //
 //                .input("S! |")
-//                .input("(--S =|> R).")
+//                .input("(--S ==> R).")
 //                .mustGoal(cycles, "R", 0.0f, 0.45f, 0);
 //    }
 //    @Test
@@ -525,7 +526,7 @@ class NAL8EternalMixTest extends NALTest {
 //        test
 //
 //                .input("S! |")
-//                .input("--(--S =|> R).")
+//                .input("--(--S ==> R).")
 //                .mustGoal(cycles, "R", 1.0f, 0.45f, 0);
 //    }
 //
@@ -535,7 +536,7 @@ class NAL8EternalMixTest extends NALTest {
 //        test
 //
 //                .input("R! |")
-//                .input("(S =|> --R).")
+//                .input("(S ==> --R).")
 //                .mustGoal(cycles, "S", 0.0f, 0.81f, 0);
 //    }
 //
@@ -545,7 +546,7 @@ class NAL8EternalMixTest extends NALTest {
 //        test
 //
 //                .input("--R! |")
-//                .input("(S =|> R).")
+//                .input("(S ==> R).")
 //                .mustGoal(cycles, "S", 0.0f, 0.81f, 0);
 //    }
 
@@ -554,7 +555,7 @@ class NAL8EternalMixTest extends NALTest {
 
         test
                 .input("R! |")
-                .input("(--S =|> R).")
+                .input("(--S ==> R).")
                 .mustGoal(cycles, "S", 0.0f, 0.81f, 0);
 
     }

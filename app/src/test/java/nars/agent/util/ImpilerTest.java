@@ -34,6 +34,7 @@ class ImpilerTest {
         n.run(10);
 
     }
+
     @Test
     public void testDeductionChainPositive() throws Narsese.NarseseException {
         NAR n = NARS.tmp(1);

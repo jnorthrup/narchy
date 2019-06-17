@@ -69,7 +69,7 @@ abstract public class DecomposeTest extends NALTest {
                     .termVolMax(6)
                     .input("(||,a,b). %0.9;0.9%")
                     .input("--a. %0.9;0.9%")
-                    .mustBelieve(cycles, "b", 0.81f, 0.66f);
+                    .mustBelieve(cycles, "b", 0.81f, 0.59f);
         }
 
         @Test
@@ -79,7 +79,7 @@ abstract public class DecomposeTest extends NALTest {
                     .termVolMax(7)
                     .input("(||,a,b,c). %0.9;0.9%")
                     .input("--(||,a,b). %0.9;0.9%")
-                    .mustBelieve(cycles, "c", 0.81f, 0.66f);
+                    .mustBelieve(cycles, "c", 0.81f, 0.59f);
         }
 
         @Test
@@ -89,7 +89,7 @@ abstract public class DecomposeTest extends NALTest {
                     .termVolMax(7)
                     .input("(||,--a,b,c). %0.9;0.9%")
                     .input("--(||,--a,b). %0.9;0.9%")
-                    .mustBelieve(cycles, "c", 0.81f, 0.66f);
+                    .mustBelieve(cycles, "c", 0.81f, 0.59f);
         }
 
         @Test
@@ -99,7 +99,7 @@ abstract public class DecomposeTest extends NALTest {
                     .termVolMax(6)
                     .input("(||,--a,b).  %0.9;0.9%")
                     .input("a.  %0.9;0.9%")
-                    .mustBelieve(cycles, "b", 0.81f, 0.66f);
+                    .mustBelieve(cycles, "b", 0.81f, 0.59f);
         }
     }
     static class DisjGoal extends DecomposeTest {

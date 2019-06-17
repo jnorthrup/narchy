@@ -338,6 +338,7 @@ public class Occurrify extends TimeGraph {
 
         this.decomposeEvents = decomposeEvents;
 
+
         if (taskStart == ETERNAL && (beliefStart != TIMELESS && beliefStart != ETERNAL)) {
 
 //            if (time.beliefProjection()==BeliefProjection.Task) {
@@ -350,9 +351,8 @@ public class Occurrify extends TimeGraph {
 //                taskEnd = now + dur / 2;
 //            } else {
                 //eternal task projected to belief's time
-                //taskStart = beliefStart;
-                //taskEnd = beliefEnd;
-                taskStart = taskEnd = TIMELESS;
+                taskStart = beliefStart;
+                taskEnd = beliefEnd;
 //            }
 
         } else if ((beliefStart == ETERNAL && taskStart!=ETERNAL)) { //|| time.beliefProjection()==BeliefProjection.Task) {
@@ -372,7 +372,7 @@ public class Occurrify extends TimeGraph {
                 know(taskTerm, taskStart, taskEnd) :
                 know(taskTerm);
 
-        imageNormalize(shadow(pattern));
+        imageNormalize(pattern);
         imageNormalize(taskEvent);
 
         if (beliefTerm.op().eventable) {
@@ -396,6 +396,11 @@ public class Occurrify extends TimeGraph {
         Term ip = Image.imageNormalize(p.id);
         if (!p.id.equals(ip))
             link(p, 0, shadow(ip));
+    }
+    private void imageNormalize(Term p) {
+        Term ip = Image.imageNormalize(p);
+        if (!p.equals(ip))
+            link(shadow(p), 0, shadow(ip));
     }
 
     /**

@@ -49,7 +49,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
 
     public static final float DEFAULT_CURIOSITY_RATE = 0.05f;
 
-    public static final int NEG_CACHE_VOL_THRESHOLD = 2;
+    public static final int NEG_CACHE_VOL_THRESHOLD = 3;
 
     public static final boolean OCCURRIFY_STRICT = true;
 
@@ -411,16 +411,16 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
                 //1;
                 //1.618f; //phi
                 //2; //nyquist / horizon
-                //4;
+                4;
                 //dur;
-                8;
+                //8;
                 //64;
 
         final double decayTime = falloffDurs * dur;
 
         //quadratic decay: integral finite from to infinity, see: https://en.wikipedia.org/wiki/List_of_definite_integrals
-        //e = (evi / (1.0 + Util.sqr(dt / decayTime)));
-        e = (float)(evi / (1.0 + Util.sqr(((double)dt) / dur ) / falloffDurs));
+        e = (evi / (1.0 + Util.sqr(dt / decayTime)));
+        //e = (float)(evi / (1.0 + Util.sqr(((double)dt) / dur ) / falloffDurs));
 
         //exponential decay: see https://en.wikipedia.org/wiki/Exponential_integral
         //TODO

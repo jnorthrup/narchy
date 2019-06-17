@@ -8,6 +8,7 @@ import nars.term.Term;
 import nars.term.util.Image;
 import nars.term.util.SetSectDiff;
 import nars.test.NALTest;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import static nars.$.$$;
@@ -16,6 +17,7 @@ import static nars.term.atom.Bool.Null;
 import static nars.term.util.TermTest.assertEq;
 
 /** recursive NAL3 operations within inner products */
+@Disabled
 public class NAL4FuzzyProduct extends NALTest {
     static final int cycles = 300;
 

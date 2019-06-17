@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test;
 import static nars.Op.BELIEF;
 
 abstract public class NAL6DecomposeTest extends NALTest {
-    private static final int cycles = 450;
+    private static final int cycles = 750;
 
     @BeforeEach
     void setup() {
@@ -121,15 +121,16 @@ abstract public class NAL6DecomposeTest extends NALTest {
         @Test
         void impl_conjunction_subj_conj_decompose_conditional_neg() {
             test
-//                    .logDebug()
-                    .believe("((a && b) ==> --x)")
+
+                    .termVolMax(6)
+                    .input("((a && b) ==> --x).")
                     .input("(--b ==> --x).")
                     .mustBelieve(cycles, "(a ==> x)", 0f, 0.81f) //via decompose
-                    .mustNotOutput(cycles,"(a ==> x)", BELIEF, 0.1f, 1f, 0.1f, 1f)
-                    .mustNotOutput(cycles,"(--b ==> x)", BELIEF, 0.1f, 1f, 0.1f, 1f)
-                    .mustNotOutput(cycles, "a", BELIEF)
-                    .mustNotOutput(cycles, "b", BELIEF)
-                    .mustNotOutput(cycles, "x", BELIEF)
+//                    .mustNotOutput(cycles,"(a ==> x)", BELIEF, 0.1f, 1f, 0.1f, 1f)
+//                    .mustNotOutput(cycles,"(--b ==> x)", BELIEF, 0.1f, 1f, 0.1f, 1f)
+//                    .mustNotOutput(cycles, "a", BELIEF)
+//                    .mustNotOutput(cycles, "b", BELIEF)
+//                    .mustNotOutput(cycles, "x", BELIEF)
 //                    .mustNot(BELIEF, (x)->{
 //                        if (x.volume()==1) {
 //                            return true;

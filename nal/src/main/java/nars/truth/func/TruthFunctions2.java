@@ -284,10 +284,10 @@ public enum TruthFunctions2 {
         if(opposite)
             alignment = 1 - alignment;
 
-        //c *= alignment; if (c < minConf)  return null;
+        c *= alignment; if (c < minConf)  return null;
         float f =
-                Util.lerp(alignment, 0.5f, 1);  //vanish toward maybe
-                //1;
+                //Util.lerp(alignment, 0.5f, 1);  //vanish toward maybe
+                1;
 
         return $.t(f, c);
     }

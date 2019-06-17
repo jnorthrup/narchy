@@ -39,7 +39,7 @@ B, A, --is(A,"==>"), --is(B,"==>")  |- varIntro((polarizeTask(B) && polarizeBeli
 
 //question + quest form:
 B, A, --is(A,"==>"), --is(B,"==>"), hasBelief()  |-          (polarizeTask(B) && polarizeBelief(A)), (Punctuation:Ask, Time:Sequence)
-B, A, --is(A,"==>"), --is(B,"==>"), hasBelief()  |- varIntro((polarizeTask(B) && polarizeBelief(A))), (Punctuation:Ask, Time:Sequence)
+//B, A, --is(A,"==>"), --is(B,"==>"), hasBelief()  |- varIntro((polarizeTask(B) && polarizeBelief(A))), (Punctuation:Ask, Time:Sequence)
 
     //B, A, --is(A,"==>"), --is(B,"==>")  |- (polarizeTask(B) && polarizeBelief(A)), (Goal:IntersectionDepolarized, Time:Sequence)
 

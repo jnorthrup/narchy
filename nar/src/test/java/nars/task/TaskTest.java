@@ -15,6 +15,7 @@ import java.util.Arrays;
 
 import static nars.$.*;
 import static nars.Op.BELIEF;
+import static nars.term.util.TermTest.assertEq;
 import static nars.time.Tense.DTERNAL;
 import static nars.time.Tense.ETERNAL;
 import static org.junit.jupiter.api.Assertions.*;
@@ -76,7 +77,22 @@ public class TaskTest {
 
     }
 
+    @Test
+    void testTaskPostNormalize() {
 
+        assertEq("((--,#1)==>(x,#1))", "(--#1 ==> (x, #1))"); //cant unnegate subj
+        assertEq("(((--,#1)==>x),#1)", "((--#1 ==> x),#1)"); //cant unnegate subj
+
+        assertEq("(#1==>x)", Task.postNormalize($$("(--#1 ==> x)")));
+        assertEq("((--,#1),#1)", Task.postNormalize($$("((--,#1),#1)"))); //can't
+        assertEq("(#1,x)", Task.postNormalize($$("((--,#1),x)")));
+
+        //multiple:
+        assertEq("((#1,#1)==>x)", Task.postNormalize($$("((--#1,--#1) ==> x)")));
+
+
+        assertEq("(($1,x)==>a($1))", Task.postNormalize($$("((--$1,x) ==> a(--$1))")));
+    }
 
 
 

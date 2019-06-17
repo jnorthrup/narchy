@@ -52,11 +52,21 @@ import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
  */
 public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPrioritizable {
 
-    @Deprecated Task next(Object w);
-
-
     Task[] EmptyArray = new Task[0];
     Logger logger = Log.logger(Task.class);
+    static final Term VAR_DEP_1 = $.varDep(1);
+    static final Term VAR_DEP_1_NEG = VAR_DEP_1.neg();
+    static final Term VAR_INDEP_1 = $.varIndep(1);
+    static final Term VAR_INDEP_1_NEG = VAR_INDEP_1.neg();
+    /**
+     * fast, imprecise sort.  for cache locality and concurrency purposes
+     */
+    Comparator<Task> sloppySorter = Comparator
+            .comparingInt((Task x) ->
+                    //x.term()
+                    x.term().concept()
+                            .hashCode())
+            .thenComparing((Task x) -> -x.priElseZero());
 
     static boolean equal(Task thiz, Object that) {
         return (thiz == that) ||
@@ -172,6 +182,12 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
         return h;
     }
 
+//    static StableBloomFilter<Task> newBloomFilter(int cap, Random rng) {
+//        return new StableBloomFilter<>(
+//                cap, 1, 0.0005f, rng,
+//                new BytesHashProvider<>(IO::taskToBytes));
+//    }
+
     static void proof(/*@NotNull*/Task task, int indent, /*@NotNull*/StringBuilder sb) {
 
 
@@ -255,12 +271,6 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
         }
         return true;
     }
-
-//    static StableBloomFilter<Task> newBloomFilter(int cap, Random rng) {
-//        return new StableBloomFilter<>(
-//                cap, 1, 0.0005f, rng,
-//                new BytesHashProvider<>(IO::taskToBytes));
-//    }
 
     static boolean fail(@Nullable Term t, String reason, boolean safe) {
         if (safe)
@@ -368,26 +378,37 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
             return null;
     }
 
-    static final Term VAR_DEP_1 = $.varDep(1);
-    static final Term VAR_DEP_1_NEG = VAR_DEP_1.neg();
-
     static Term postNormalize(Term t) {
 
         int v = t.vars();
         //TODO VAR_QUERY and VAR_INDEP, including non-0th variable id
-        if (v > 0 && t.hasAll(NEG.bit | VAR_DEP.bit)) {
-            if (t.vars()==1) {
-                //simple case: only one instance
-                t = t.replace(VAR_DEP_1_NEG, VAR_DEP_1);
+        if (v > 0 && t.hasAll(NEG.bit)) {
+            t = postNormalizeVar(t, VAR_DEP_1_NEG, VAR_DEP_1);
+            t = postNormalizeVar(t, VAR_INDEP_1_NEG, VAR_INDEP_1);
+        }
+        return t;
+    }
+
+    static Term postNormalizeVar(Term t, Term vn, Term vp) {
+
+        Term y;
+        int v = (vp instanceof VarIndep) ? t.varIndep() : t.varDep();
+        if (v == 1) {
+            //simple case: only one instance
+            y = t.replace(vn, vp);
+        } else {
+            int negs = t.intifyRecurse((i, z) -> z instanceof Neg && z.unneg() == vp ? 1 + i : i, 0);
+            if (negs == v) {
+                y = t.replace(vn, vp);
             } else {
-                int negs = t.intifyRecurse((i,z)->z instanceof Neg && z.unneg()==VAR_DEP_1 ? 1+i : i, 0);
-                if (negs == v) {
-                    t = t.replace(VAR_DEP_1_NEG, VAR_DEP_1);
-                } else {
-                    //TODO if # negs > # pos, swap them
-                }
+                //TODO if # negs > # pos, swap them
+                return t;
             }
         }
+        if ((!(y instanceof Bool)) && (y.op() == t.op()))
+            return y;
+        //else: ? why might this happen
+
         return t;
     }
 
@@ -397,9 +418,9 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
     @Nullable
     static Task project(Task t, long start, long end, double eviMin, boolean ditherTruth, int dtDither, int dur, NAL n) {
 
-        if (dtDither>1) {
-            start = Tense.dither(start,dtDither);
-            end = Tense.dither(end,dtDither);
+        if (dtDither > 1) {
+            start = Tense.dither(start, dtDither);
+            end = Tense.dither(end, dtDither);
         }
 
         long ts = t.start();
@@ -449,7 +470,7 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
     static Task withContent(Task task, Term t) {
         if (task.term().equals(t)) return task;
 
-        boolean negated = t.op()==NEG;
+        boolean negated = t.op() == NEG;
         if (negated) {
             t = t.unneg();
             if (task.isBeliefOrGoal())
@@ -573,8 +594,11 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
         }
     }
 
-    /** TODO rewrite as ForkJoin recursive task */
-    @Deprecated static <W> void run(Task t, W w) {
+    /**
+     * TODO rewrite as ForkJoin recursive task
+     */
+    @Deprecated
+    static <W> void run(Task t, W w) {
         Task x = t;
         do {
             x = x.next(w);
@@ -588,7 +612,12 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
             Task.logger.error("{}->{} {}", t, x, ee);
     }
 
-    /** Causal trace */
+    @Deprecated
+    Task next(Object w);
+
+    /**
+     * Causal trace
+     */
     short[] why();
 
     @Override
@@ -645,7 +674,9 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
     }
 
     @Override
-    default float freqMin() { return freqMean(); }
+    default float freqMin() {
+        return freqMean();
+    }
 
     @Override
     default float freqMax() {
@@ -700,11 +731,9 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
         return (punc() == QUESTION);
     }
 
-
     default boolean isBelief() {
         return (punc() == BELIEF);
     }
-
 
     default boolean isGoal() {
         return (punc() == GOAL);
@@ -722,7 +751,6 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
     default Appendable toString(boolean showStamp) {
         return appendTo(new StringBuilder(128), showStamp);
     }
-
 
     default boolean isQuestionOrQuest() {
         byte c = punc();
@@ -753,7 +781,6 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
         return answer;
     }
 
-
     default @Nullable StringBuilder appendTo(@Nullable StringBuilder sb) {
         return appendTo(sb, false);
     }
@@ -766,7 +793,6 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
 
     }
 
-
     @Deprecated
     default StringBuilder appendTo(StringBuilder buffer, boolean showStamp) {
         boolean notCommand = punc() != Op.COMMAND;
@@ -775,7 +801,6 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
                 showStamp
         );
     }
-
 
     default StringBuilder appendTo(@Nullable StringBuilder buffer, boolean term, boolean showStamp, boolean showBudget, boolean showLog) {
 
@@ -848,7 +873,6 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
         return term().dt();
     }
 
-
     @Nullable
     default Truth truth(long targetStart, long targetEnd, int dur) {
 
@@ -868,11 +892,6 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
         }
     }
 
-    @Nullable
-    default Truth truth(long when, int dur) {
-        return truth(when, when, dur);
-    }
-
 //    @Nullable
 //    default List log(boolean createIfMissing) {
 //        return null;
@@ -887,11 +906,17 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
 //        else return log.get(s - 1);
 //    }
 
+    @Nullable
+    default Truth truth(long when, int dur) {
+        return truth(when, when, dur);
+    }
+
     default String proof() {
         StringBuilder sb = new StringBuilder(1024);
         return proof(sb).toString().trim();
     }
-//    default String proof(NAR n) {
+
+    //    default String proof(NAR n) {
 //    }
     default StringBuilder proof(/*@NotNull*/StringBuilder temporary) {
         temporary.setLength(0);
@@ -946,18 +971,9 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
         return truth().freq();
     }
 
-
     default boolean isBeliefOrGoal(boolean beliefOrGoal) {
         return beliefOrGoal ? isBelief() : isGoal();
     }
-
-    /** fast, imprecise sort.  for cache locality and concurrency purposes */
-    Comparator<Task> sloppySorter = Comparator
-            .comparingInt((Task x) ->
-                    //x.term()
-                    x.term().concept()
-                        .hashCode())
-            .thenComparing((Task x) -> -x.priElseZero());
 
     final class EternalizedTask extends EternalTask implements UnevaluatedTask {
 
