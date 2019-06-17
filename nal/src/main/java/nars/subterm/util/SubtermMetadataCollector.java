@@ -17,7 +17,7 @@ public final class SubtermMetadataCollector {
 
     }
 
-    public SubtermMetadataCollector(Term... terms) {
+    public SubtermMetadataCollector(Term[] terms) {
         //assert (terms.length <= Param.COMPOUND_SUBTERMS_MAX);
         for (Term x : terms)
             collectMetadata(x);

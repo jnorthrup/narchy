@@ -42,7 +42,7 @@ public abstract class Reward implements GameLoop, TermedDelegate, Iterable<Conce
     final static boolean goalUnstamped = false;
 
     final PriNode attn;
-    private FloatRange resolution;
+    protected FloatRange resolution;
 
     public Reward(Term id, Game g) {
     //TODO

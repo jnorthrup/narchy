@@ -97,7 +97,7 @@ public class Pacman extends GameX {
 
 
         //TODO multiple reward signals: eat, alive, dist->ghost (cheat)
-        reward("score", 1, ()->{
+        reward("score", ()->{
             g.update();
 
             int nextScore = g.score;

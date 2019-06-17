@@ -20,6 +20,7 @@ import nars.memory.CaffeineMemory;
 import nars.op.stm.ConjClustering;
 import nars.op.stm.STMLinkage;
 import nars.sensor.Bitmap2DSensor;
+import nars.task.DerivedTask;
 import nars.term.Term;
 import nars.time.clock.CycleTime;
 import org.eclipse.collections.impl.block.factory.Comparators;
@@ -51,7 +52,7 @@ public class TrackXY_NAR extends GameX {
 //    static float fps = 16;
 //    static int durMS = Math.round(1000/(fps));
 
-    static int dur = 8;
+    static int dur = 4;
 
     static float camResolution = 0.1f;
     static int experimentTime = 3000000;
@@ -63,7 +64,7 @@ public class TrackXY_NAR extends GameX {
     protected TrackXY_NAR(NAR nar, TrackXY xy) {
         super("trackXY",
                 //FrameTrigger.cycles(W*H*2),
-                GameTime.durs(1),
+                GameTime.durs(2),
                 //FrameTrigger.fps(fps),
                 nar);
 
@@ -74,21 +75,20 @@ public class TrackXY_NAR extends GameX {
         assert (sourceNumerics | targetNumerics | targetCam);
 
         if (sourceNumerics) {
-            senseNumberBi($.the("sx"), new FloatNormalized(() -> track.cx, 0, W - 1));
+            senseNumberBi($.inh(id,"sx"), new FloatNormalized(() -> track.cx, 0, W - 1));
             if (H > 1)
-                senseNumberBi($.the("sy"), new FloatNormalized(() -> track.cy, 0, H - 1));
+                senseNumberBi($.inh(id,"sy"), new FloatNormalized(() -> track.cy, 0, H - 1));
         }
 
 
         if (targetNumerics) {
-            senseNumberBi($.the("tx"), new FloatNormalized(() -> track.tx, 0, W));
+            senseNumberBi($.inh(id,"tx"), new FloatNormalized(() -> track.tx, 0, W));
             if (H > 1)
-                senseNumberBi($.the("ty"), new FloatNormalized(() -> track.ty, 0, H));
+                senseNumberBi($.inh(id,"ty"), new FloatNormalized(() -> track.ty, 0, H));
         }
 
         if (targetCam) {
-            Bitmap2DSensor<jcog.signal.wave2d.ArrayBitmap2D> c = new Bitmap2DSensor<>(/*id*/  (Term) null,
-                    track.grid, nar);
+            Bitmap2DSensor<jcog.signal.wave2d.ArrayBitmap2D> c = new Bitmap2DSensor<>(id, track.grid, nar);
             c.resolution(camResolution);
             addSensor(c);
             /*id*/
@@ -98,8 +98,8 @@ public class TrackXY_NAR extends GameX {
             this.cam = null;
         }
 
-        actionPushButton();
-        //actionPushButtonMutex();
+        //actionPushButton();
+        actionPushButtonMutex();
         //actionSwitch();
         //actionTriState();
 
@@ -131,17 +131,30 @@ public class TrackXY_NAR extends GameX {
 //                track.act();
 //            });
 //        } else {
-        onFrame(track::act);
 
         FloatSupplier nearness = () -> 1f - (track.dist() / track.distMax());
+        reward("near",nearness).resolution().set(0.1f);
 
-        reward(nearness);
+        FloatSupplier notLeft  = () -> ( 1f - Util.max(0,track.tx - track.cx) / track.W );
+        FloatSupplier notRight = () -> ( 1f - Util.max(0,track.cx - track.tx) / track.W );
+        reward("notLeft", notLeft).resolution().set(0.1f);
+        reward("notRight", notRight).resolution().set(0.1f);
+
+        if (track.H > 1) {
+            FloatSupplier notBelow  = () -> ( 1f - Util.max(0,track.ty - track.cy) / track.H );
+            FloatSupplier notAbove = () -> ( 1f - Util.max(0,track.cy - track.ty) / track.H );
+            reward("notBelow", notBelow).resolution().set(0.1f);
+            reward("notAbove", notAbove).resolution().set(0.1f);
+        }
+
+
         //rewardNormalized($.the("better"), -0.1f,  +0.1f, new FloatFirstOrderDifference(nar::time, nearness) );
 
 //        }
 
         track.randomize();
 
+        onFrame(track::act);
 
         onFrame(() -> {
 
@@ -332,28 +345,38 @@ public class TrackXY_NAR extends GameX {
 
         NAL.DEBUG = true;
         n.onTask(tt -> {
-            if (!tt.isInput()) /*if (tt instanceof DerivedTask)*/ {
+
+
+
+            if (tt instanceof DerivedTask) {
                 Term ttt = tt.term();
                 boolean l = ttt.equals(a.actions.get(0).term());
                 boolean r = ttt.equals(a.actions.get(1).term());
                 if (l || r) {
 
+                    System.out.println(tt.proof());
+                    System.out.println(MetaGoal.proof(tt, n));
+
                     //if (n.concept(tt) instanceof ActionConcept)
-                    float window = 4;
+                    long window = 16;
                     int dur = n.dur();
                     long now = n.time();
-                    if (tt.start() > now - window / 2 * dur && tt.start() < now + window / 2 * dur) {
+                    if (tt.intersects(now - window / 2 * dur, now + window / 2 * dur)) {
 
                         float wantsDir = (l ? -1 : +1) * (tt.freq() < 0.5f ? -1 : +1);
                         float needsDir = a.track.tx - a.track.cx;
 
+
+
                         String summary = (Math.signum(wantsDir) == Math.signum(needsDir)) ? "OK" : "WRONG";
                         System.out.println(ttt + " " + n2(wantsDir) + " ? " + n2(needsDir) + " " + summary);
-                        System.out.println(tt.proof());
-                        System.out.println(MetaGoal.proof(tt, n));
-                        System.out.println();
+
                     }
+
+                    System.out.println();
+
                 }
+
             }
         }, GOAL);
 

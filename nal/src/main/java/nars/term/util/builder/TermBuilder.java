@@ -81,7 +81,7 @@ public abstract class TermBuilder implements TermConstructor {
         }
     }
 
-    private Compound newCompoundN(Op o, int dt, Term[] t, @Nullable DynBytes key) {
+    public Compound newCompoundN(Op o, int dt, Term[] t, @Nullable DynBytes key) {
         return newCompound(o, dt, subterms(o, t, dt, key));
     }
 

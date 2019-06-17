@@ -12,8 +12,8 @@ import static nars.time.Tense.DTERNAL;
 @FunctionalInterface public interface TermConstructor {
 
 
-    default Subterms subterms(@Nullable Op inOp, Term... u) {
-        return TermConstructor.theSubterms(true, u);
+    default Subterms subterms(@Nullable Op inOp, Term... t) {
+        return TermConstructor.theSubterms(true, t);
     }
 
     default /*final*/ Subterms subterms(Term... s) {
@@ -58,7 +58,7 @@ import static nars.time.Tense.DTERNAL;
 
                     return different ?
                         new ArrayTermVector(t) :
-                        new RemappedSubterms.RepeatedSubterms<>(t[0], t.length);
+                        new RemappedSubterms.RepeatedSubterms<>(t0, t.length);
                 }
             }
         }

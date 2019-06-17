@@ -153,8 +153,8 @@ public class InterningTermBuilder extends HeapTermBuilder {
     }
 
     @Override
-    public final Subterms subterms(@Nullable Op o, Term... u) {
-        return subterms(o, u, DTERNAL, null);
+    public final Subterms subterms(@Nullable Op o, Term... t) {
+        return subterms(o, t, DTERNAL, null);
     }
 
     @Override
@@ -192,40 +192,54 @@ public class InterningTermBuilder extends HeapTermBuilder {
 
 
 
+    /** input array is not modified */
     private Term[] resolve(Term[] t) {
         if (!deep)
             return t;
         Term px = null;
+        Term[] u = t;
         for (int i = 0, tLength = t.length; i < tLength; i++) {
             Term x = t[i];
             Term y = (i == 0 || x!=px) ?
                     resolve(x) :
                     t[i-1] /* re-use previous if identical */;
-            if (y != x) // && y.equals(x))
-                t[i] = y;
+            if (y != x) { // && y.equals(x))
+                if (u == t)
+                    u = t.clone();
+                u[i] = y;
+            }
             px = x;
         }
-        return t;
+        return u!=null ? u : t;
     }
 
     private Term resolve(Term _x) {
         if (_x instanceof Atomic)
             return _x;
-        Op xo = _x.op();
-        boolean negate = xo == NEG;
+
+        boolean negate = _x instanceof Neg;
         Term xi;
+        Op xo;
         if (negate) {
             xi = _x.unneg();
             if (xi instanceof Atomic)
                 return _x;
+
             xo = xi.op();
         } else {
-            xi = _x;
+            xo = (xi = _x).op();
         }
 
         if (internable(xo/*, x.dt()*/) && xi.volume() <= volInternedMax && xi.the()) {
             Term yi = terms[xo.id].apply(new Intermed.InternedCompoundByComponentsSubs(xi));
-            return yi.negIf(negate);
+            if(negate) {
+                if (yi == xi)
+                    return _x; //use original
+                else
+                    return yi.neg();
+            } else
+                return yi;
+
         }
 
         return _x;

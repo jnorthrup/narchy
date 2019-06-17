@@ -337,6 +337,16 @@ public final class TruthFunctions {
         return null;
     }
 
+    /** original OpenNARS desire function */
+    public static Truth desire(final Truth a, final Truth b, float minConf, boolean strong) {
+        final float f1 = a.freq();
+        final float f2 = b.freq();
+        final float f = and(f1, f2);
+        final float c1 = a.conf();
+        final float c2 = b.conf();
+        final float c = and(c1, c2, f2) * (strong ? 1 : w2c(1));
+        return c > minConf ? t(f, c) : null;
+    }
 
     public static float c2w(float c) {
         if (c < NAL.truth.TRUTH_EPSILON)

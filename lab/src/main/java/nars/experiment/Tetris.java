@@ -98,7 +98,7 @@ public class Tetris extends GameX {
 //        reward("height", 1, new FloatFirstOrderDifference(n::time, () ->
 //                1 - ((float) state.rowsFilled) / state.height
 //        ));
-        reward("density", 1, () -> {
+        reward("density", () -> {
 
             int filled = 0;
             for (float s : state.grid) {

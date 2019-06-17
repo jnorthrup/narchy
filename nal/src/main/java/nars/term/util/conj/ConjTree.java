@@ -2,11 +2,13 @@ package nars.term.util.conj;
 
 import jcog.TODO;
 import jcog.data.list.FasterList;
+import nars.NAL;
 import nars.subterm.DisposableTermList;
 import nars.term.Compound;
 import nars.term.Neg;
 import nars.term.Term;
 import nars.term.atom.Bool;
+import nars.term.util.TermTransformException;
 import nars.term.util.builder.TermBuilder;
 import nars.time.Tense;
 import org.eclipse.collections.api.iterator.LongIterator;
@@ -653,11 +655,31 @@ public class ConjTree implements ConjBuilder {
 //                    simple = false;
 //                }
 
+                Term y = Null;
                 if (simple) {
                     Arrays.sort(q);
-                    return B.newCompound(CONJ, DTERNAL, q);
-                } else
-                    return ConjPar.the(B, DTERNAL, true, q);
+                    y = B.newCompound(CONJ, DTERNAL, q);
+
+                    //post-verify HACK
+                    if (y.op()==CONJ && (y.subStructure()&CONJ.bit)!=0) {
+                        try {
+                            y.eventsAND((when, whta) -> {
+                                return true;
+                            }, 0, false, true);
+                        } catch (TermTransformException tte) {
+                            if (NAL.DEBUG)
+                                throw tte;
+                            //return Null;
+                            simple = false;
+                        }
+                    }
+
+                }
+
+                if (!simple)
+                    y = ConjPar.the(B, DTERNAL, true, q);
+
+                return y;
             }
         }
 

@@ -1,7 +1,6 @@
 package nars.derive.model;
 
 import jcog.Util;
-import jcog.WTF;
 import jcog.data.set.MetalLongSet;
 import jcog.math.Longerval;
 import jcog.pri.ScalarValue;
@@ -21,8 +20,10 @@ import nars.op.Replace;
 import nars.op.UniSubst;
 import nars.subterm.Subterms;
 import nars.task.proxy.SpecialTruthAndOccurrenceTask;
+import nars.term.Compound;
+import nars.term.Functor;
+import nars.term.Term;
 import nars.term.Variable;
-import nars.term.*;
 import nars.term.anon.AnonWithVarShift;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
@@ -34,7 +35,6 @@ import nars.term.util.builder.HeapTermBuilder;
 import nars.term.util.map.ByteAnonMap;
 import nars.term.util.transform.InstantFunctor;
 import nars.term.util.transform.TermTransform;
-import nars.time.Tense;
 import nars.truth.PreciseTruth;
 import nars.truth.Stamp;
 import nars.truth.Truth;
@@ -49,7 +49,8 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-import static nars.Op.*;
+import static nars.Op.BELIEF;
+import static nars.Op.GOAL;
 import static nars.term.buffer.TermBuffer.INITIAL_ANON_SIZE;
 import static nars.time.Tense.ETERNAL;
 import static nars.time.Tense.TIMELESS;
@@ -117,25 +118,11 @@ public class Derivation extends PreDerivation {
 
         @Override
         protected Term newCompound(Op o, int dt, Term[] subterms) {
-            //return super.newCompound(op, dt, subterms);
 
-            if (o.commutative) {
-//                if (!Tense.dtSpecial(dt)) {
-//                    Term y = o.the(HeapTermBuilder.the, dt, subterms); //construct carefully, dt may change
-//                    if (y.op()!=o) {
-//                        //TEMPORARY for debug
-//                        o.the(HeapTermBuilder.the, dt, subterms);
-//                        throw new WTF(); //assert(y.op()==o);
-//                    }
-//                    return y;
-//                }
-
-                subterms = Terms.sort(subterms);
-            }
-
-            Term y = HeapTermBuilder.the.newCompound(o, dt, subterms);
-            if (y.op()!=o)
-                throw new WTF(); //assert(y.op()==o);
+            Term y = HeapTermBuilder.the.
+                    //newCompound(o, dt, subterms);
+                    newCompoundN(o, dt, subterms,null); //more direct
+            assert(y.op()==o);
             return y;
         }
     };
@@ -240,8 +227,7 @@ public class Derivation extends PreDerivation {
     public transient byte concPunc;
     public transient Task _task, _belief;
     public DerivationTransform transform;
-    private long timePrev = Long.MIN_VALUE;
-    private transient Term _beliefTerm;
+//    private transient Term _beliefTerm;
     private transient long[] evidenceDouble, evidenceSingle;
     private transient int taskUniques;
     /**
@@ -271,12 +257,7 @@ public class Derivation extends PreDerivation {
 
             @Override
             protected final Term putCompound(Compound x) {
-                //return apply(x);
-
-                return x.transform(this,
-
-                        x.hasAny(CONJ) /*Conj.isSeq(x)*/ ? termBuilder : directTermBuilder,
-                        NAL.term.COMPOUND_VOLUME_MAX);
+                return x.transform(this, directTermBuilder, NAL.term.COMPOUND_VOLUME_MAX);
             }
 
             @Override
@@ -316,14 +297,14 @@ public class Derivation extends PreDerivation {
         this._belief = resetBelief(nextBelief, nextBeliefTerm);
     }
 
-    private Task resetBelief(Task nextBelief, Term nextBeliefTerm) {
+    private Task resetBelief(Task nextBelief, final Term nextBeliefTerm) {
 
-        long nextBeliefStart, nextBeliefEnd;
+        long nextBeliefEnd = TIMELESS;
 
         if (nextBelief != null) {
-            nextBeliefStart = nextBelief.start();
-            nextBeliefEnd = nextBelief.end();
-            if (nextBelief.isEternal()) {
+            long nextBeliefStart = nextBelief.start();
+            if (nextBeliefStart == ETERNAL) {
+                nextBeliefEnd = ETERNAL;
                 beliefTruth_at_Task = beliefTruth_at_Belief = nextBelief.truth();
             } else {
 
@@ -355,6 +336,8 @@ public class Derivation extends PreDerivation {
 
                             if (NAL.ETERNALIZE_BELIEF_PROJECTED_IN_DERIVATION_AND_ETERNALIZE_BELIEF_TIME)
                                 nextBeliefStart = nextBeliefEnd = ETERNAL;
+                            else
+                                nextBeliefEnd = nextBelief.end();
 
                             nextBelief = new SpecialTruthAndOccurrenceTask(nextBelief, nextBeliefStart, nextBeliefEnd,
                                     false,
@@ -365,40 +348,38 @@ public class Derivation extends PreDerivation {
                 }
             }
 
-            if ((beliefTruth_at_Task == null   || beliefTruth_at_Task.evi() < eviMin)
-                    &&
-                (beliefTruth_at_Belief == null || beliefTruth_at_Belief.evi() < eviMin))
+            if (beliefTruth_at_Task == null && beliefTruth_at_Belief == null)
                 nextBelief = null;
 
-        } else {
-            nextBeliefStart = nextBeliefEnd = TIMELESS;
         }
 
 
+        Term _beliefTerm;
         if (nextBelief != null) {
-            this.beliefStart = nextBeliefStart;
-            this.beliefEnd = nextBeliefEnd;
-            this.beliefTerm = anon.putShift(this._beliefTerm = nextBelief.term(), taskTerm);
+            this.beliefStart = nextBelief.start();
+            this.beliefEnd = nextBelief.end();
+            this.beliefTerm = anon.putShift(_beliefTerm = nextBelief.term(), taskTerm);
         } else {
             this.beliefTruth_at_Belief = this.beliefTruth_at_Task = null;
 
-            this.taskStart = _task.start();
-            this.taskEnd = _task.end(); //HACK reset task start in case it was changed
+//            this.taskStart = _task.start();
+//            this.taskEnd = _task.end(); //HACK reset task start in case it was changed
             this.beliefStart = this.beliefEnd = TIMELESS;
 
-            this._beliefTerm = nextBeliefTerm;
+            _beliefTerm = nextBeliefTerm;
             this.beliefTerm =
                     !(nextBeliefTerm instanceof Variable) ?
                             anon.putShift(nextBeliefTerm, taskTerm) :
                             anon.put(nextBeliefTerm); //unshifted, since the target may be structural
         }
+
         assertAnon(_beliefTerm, beliefTerm, nextBelief);
 
 
         return nextBelief;
     }
 
-    private Task resetTask(Task nextTask, Task currentTask) {
+    private Task resetTask(final Task nextTask, Task currentTask) {
 
         Term nextTaskTerm = nextTask.term();
 
@@ -468,7 +449,8 @@ public class Derivation extends PreDerivation {
      */
     public void ready(short[] can, int ttl) {
 
-        if (taskStart == ETERNAL && (_belief == null || beliefStart == ETERNAL)) {
+        boolean eternalCompletely = (taskStart == ETERNAL) && (_belief == null || beliefStart == ETERNAL);
+        if (eternalCompletely) {
             this.taskBeliefTimeIntersects[0] = this.taskBeliefTimeIntersects[1] = ETERNAL;
         } else if ((_belief != null) && taskStart == ETERNAL) {
             this.taskBeliefTimeIntersects[0] = beliefStart;
@@ -481,6 +463,7 @@ public class Derivation extends PreDerivation {
                 this.taskBeliefTimeIntersects[0] = this.taskBeliefTimeIntersects[1] = TIMELESS; //no intersection
             }
         }
+        this.temporal = !eternalCompletely || Occurrify.temporal(taskTerm) || Occurrify.temporal(beliefTerm);
 
         this.forEachMatch = null;
         this.concTruth = null;
@@ -520,18 +503,8 @@ public class Derivation extends PreDerivation {
         }
 
 
-        boolean eternalCompletely = (taskStart == ETERNAL) && (_belief == null || beliefStart == ETERNAL);
-        this.temporal = !eternalCompletely || Occurrify.temporal(taskTerm) || Occurrify.temporal(beliefTerm);
 
-
-        int causeCap = NAL.causeCapacity.intValue();
-        this.parentCause =
-                CauseMerge.limit(
-                        _belief != null ?
-                                CauseMerge.Append.merge(causeCap - 1 /* for channel to be appended */, _task, _belief) :
-                                _task.why(), causeCap - 1);
-//        if (parentCause.length >= causeCap)
-//            throw new WTF();
+        this.parentCause = null; //invalidate
 
 
         setTTL(ttl);
@@ -558,10 +531,8 @@ public class Derivation extends PreDerivation {
      * update some cached values that will be used for one or more derivation iterations
      */
     public Derivation next(Deriver d, What w) {
-        this.what = w;
-        //if (this.what!=w) { .. }
 
-        NAR p = this.nar(), n = w.nar;
+        NAR p = this.nar, n = w.nar;
         if (p != n) {
             this.reset();
             this.nar = n;
@@ -570,24 +541,18 @@ public class Derivation extends PreDerivation {
             this.transform = new DerivationTransform();
         }
 
-        long now = Tense.dither(n.time(), n);
-        if (now != this.timePrev) {
-            this.timePrev = now;
-            this.ditherDT = n.dtDither();
+        this.what = w;
+        //if (this.what!=w) { .. }
 
-            uniSubstFunctor.u.dtTolerance = premiseUnify.dtTolerance = this.dtTolerance =
-                    //Math.round(Param.UNIFY_DT_TOLERANCE_DUR_FACTOR * dur);
-                    n.dtDither();
+        int ditherDT = n.dtDither();
+        uniSubstFunctor.u.dtTolerance = premiseUnify.dtTolerance = this.dtTolerance =
+                //Math.round(Param.UNIFY_DT_TOLERANCE_DUR_FACTOR * dur);
+                ditherDT;
 
-            this.confMin = n.confMin.floatValue();
-            this.eviMin = n.confMin.asEvi();
-
-            this.termVolMax = n.termVolMax.intValue();
-
-        }
-
+        this.confMin = n.confMin.floatValue();
+        this.eviMin = n.confMin.asEvi();
+        this.termVolMax = n.termVolMax.intValue();
         this.deriver = d;
-        //this.anon.mustAtomize(deriver.rules.mustAtomize | Op.Variable); //<- not ready yet
         return this;
     }
 
@@ -626,7 +591,7 @@ public class Derivation extends PreDerivation {
 
     @Override
     public String toString() {
-        return _task + " " + (_belief != null ? _belief : _beliefTerm)
+        return _task + " " + (_belief != null ? _belief : beliefTerm)
                 + ' ' + super.toString();
     }
 
@@ -635,24 +600,24 @@ public class Derivation extends PreDerivation {
      */
 
     private Derivation reset() {
-        anon.clear();
-        timePrev = Long.MIN_VALUE;
-        retransform.clear();
-        occ.clear();
         _task = _belief = null;
-        taskStamp.clear();
         parentCause = null;
         concTruth = null;
         taskTerm = beliefTerm = null;
         taskTruth = beliefTruth_at_Task = beliefTruth_at_Belief = null;
-        canCollector.clear();
+
         ttl = 0;
         taskUniques = 0;
         temporal = false;
         taskBeliefTimeIntersects[0] = taskBeliefTimeIntersects[1] = TIMELESS;
         nar = null;
 
-        clear();
+        //clear();
+        //anon.clear();
+        //retransform.clear();
+        //occ.clear();
+        //taskStamp.clear();
+        //canCollector.clear();
 
         return this;
     }
@@ -740,6 +705,22 @@ public class Derivation extends PreDerivation {
 
     public long[] evidence() {
         return concSingle ? evidenceSingle() : evidenceDouble();
+    }
+
+    public short[] parentCause() {
+        if (parentCause==null) {
+
+
+            int causeCap = NAL.causeCapacity.intValue();
+            this.parentCause =
+                    CauseMerge.limit(
+                            _belief != null ?
+                                    CauseMerge.Append.merge(causeCap - 1 /* for channel to be appended */, _task, _belief) :
+                                    _task.why(), causeCap - 1);
+//        if (parentCause.length >= causeCap)
+//            throw new WTF();
+        }
+        return parentCause;
     }
 
     abstract static class AbstractInstantFunctor1 extends AbstractInlineFunctor1 implements InstantFunctor<Evaluation> {

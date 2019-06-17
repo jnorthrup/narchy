@@ -2197,22 +2197,6 @@ public enum Util {
     }
 
 
-    /**
-     * doesnt do null tests
-     */
-    public static boolean equalArraysDirect(Object[] a, Object[] b) {
-        int len = a.length;
-        if (b.length != len)
-            return false;
-
-        for (int i = 0; i < len; i++) {
-            if (!a[i].equals(b[i]))
-                return false;
-        }
-
-        return true;
-    }
-
     public static float[] toFloat(double[] a, int from, int to, DoubleToFloatFunction df) {
         float[] result = new float[to - from];
         for (int j = 0, i = from; i < to; i++, j++) {

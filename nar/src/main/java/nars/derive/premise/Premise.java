@@ -244,8 +244,13 @@ public class Premise implements Comparable<Premise> {
                     return null; //no belief
             } else {
 
-                if (beliefConceptUnifiesTaskConcept && beliefTerm.hasXternal())
-                    beliefTerm = task.term();
+                if (beliefConceptUnifiesTaskConcept) {
+                    Term taskTerm = task.term();
+                    if (!taskTerm.hasVars() && beliefTerm.hasXternal() && !taskTerm.hasXternal()) {
+                        //use more temporally-specific form of belief term (from Task)
+                        beliefTerm = taskTerm;
+                    }
+                }
 
                 Task answered = tryAnswer(beliefTerm, answerTable, d);
                 if (answered != null) {

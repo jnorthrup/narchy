@@ -1771,7 +1771,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 
         AbsoluteRange(Term t, long start, long end) {
             super(t, start, end);
-            if (end <= start || start == ETERNAL || start == TIMELESS)
+            if (end <= start || start == ETERNAL || start == TIMELESS || end == TIMELESS)
                 throw new RuntimeException("invalid AbsoluteRange start/end times: " + start + ".." + end);
             this.end = end;
         }

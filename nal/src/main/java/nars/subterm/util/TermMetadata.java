@@ -37,7 +37,7 @@ abstract public class TermMetadata implements Termlike {
     private final byte varQuery;
     private final byte varIndep;
 
-    protected TermMetadata(Term... terms) {
+    protected TermMetadata(Term[] terms) {
         this(new SubtermMetadataCollector(terms));
     }
 

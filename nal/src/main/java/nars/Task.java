@@ -861,7 +861,8 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
         StringBuilder sb = new StringBuilder(1024);
         return proof(sb).toString().trim();
     }
-
+//    default String proof(NAR n) {
+//    }
     default StringBuilder proof(/*@NotNull*/StringBuilder temporary) {
         temporary.setLength(0);
         proof(this, 0, temporary);

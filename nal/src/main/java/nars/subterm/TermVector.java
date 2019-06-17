@@ -18,23 +18,19 @@ public abstract class TermVector extends TermMetadata implements Subterms, The /
     transient boolean normalized;
     private final boolean the;
 
-    /** called by AnonVector */
-    TermVector(SubtermMetadataCollector s) {
-        super(s);
+    /** called by IntrinSubterms */
+    TermVector(SubtermMetadataCollector intrinMetadata) {
+        super(intrinMetadata);
         the = true;
     }
 
     protected TermVector(Term... terms) {
         super(terms);
-        the = isThe(terms);
+        the = Util.and(terms, Term::the);
     }
 
     public int indexOf(/*@NotNull*/ Term t) {
         return impossibleSubTerm(t) ? -1 : Subterms.super.indexOf(t);
-    }
-
-    private static boolean isThe(Term[] terms) {
-        return Util.and(terms, Term::the);
     }
 
     @Override

@@ -9124,4 +9124,20 @@ public enum ArrayUtil {
     public static boolean containsIdentity(Object[] xx, Object x) {
         return indexOfIdentity(xx,x)!=-1;
     }
+
+    /**
+     * doesnt do null tests
+     */
+    public static boolean equalArraysDirect(Object[] a, Object[] b) {
+        int len = a.length;
+        if (b.length != len)
+            return false;
+
+        for (int i = 0; i < len; i++) {
+            if (!a[i].equals(b[i]))
+                return false;
+        }
+
+        return true;
+    }
 }

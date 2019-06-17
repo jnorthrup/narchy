@@ -36,11 +36,11 @@ public class VerifyingTermBuilder extends TermBuilder {
     }
 
     @Override
-    public Subterms subterms(@Nullable Op inOp, Term... u) {
-        Subterms aa = a.subterms(inOp, u);
-        Subterms bb = b.subterms(inOp, u);
+    public Subterms subterms(@Nullable Op inOp, Term... t) {
+        Subterms aa = a.subterms(inOp, t);
+        Subterms bb = b.subterms(inOp, t);
         if (!equals(aa, bb))
-            throw new WTF(Arrays.toString(u) + (inOp != null ? " (inOp=" + inOp + ") " : "") + " inequal:\n" + aa + '\n' + bb);
+            throw new WTF(Arrays.toString(t) + (inOp != null ? " (inOp=" + inOp + ") " : "") + " inequal:\n" + aa + '\n' + bb);
         return aa;
     }
 

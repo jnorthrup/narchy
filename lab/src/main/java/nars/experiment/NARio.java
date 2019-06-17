@@ -161,7 +161,7 @@ public class NARio extends GameX {
         //window(new Gridding(new VectorSensorView(vx, this), new VectorSensorView(vy, this)), 100, 50);
 
 
-        Reward right = reward("goRight", 1, () -> {
+        Reward right = reward("goRight", () -> {
 
             float reward;
             float curX = theMario != null && theMario.deathTime <= 0 ? theMario.x : Float.NaN;

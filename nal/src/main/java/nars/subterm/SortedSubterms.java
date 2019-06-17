@@ -1,13 +1,12 @@
 package nars.subterm;
 
+import jcog.util.ArrayUtil;
 import nars.term.Neg;
 import nars.term.Term;
 import nars.term.Terms;
 
 import java.util.Arrays;
 import java.util.function.Function;
-
-import static nars.Op.NEG;
 
 /** canonical subterm sorting and permutation wrapping for advanced interning */
 public class SortedSubterms {
@@ -23,7 +22,7 @@ public class SortedSubterms {
                 return b.apply(x);
 
             case 2:
-                if (x[0].op()!=NEG && x[1].op()!=NEG) {
+                if (!(x[0] instanceof Neg) && (!(x[1] instanceof Neg))) {
                     int i = x[0].compareTo(x[1]);
                     if (dedup && i == 0)
                         return b.apply(new Term[]{x[0]});
@@ -35,22 +34,27 @@ public class SortedSubterms {
                 break;
         }
 
-        Term[] y = x.clone();
-        //int negs = 0;
+        Term[] y = x;
+        boolean hadNegs = false;
         for (int j = 0; j < y.length; j++) {
             if (y[j] instanceof Neg) {
+                if (y == x)
+                    y = x.clone();
                 y[j] = y[j].unneg();
-                //negs++;
+                hadNegs = true;
             }
         }
 
         if (dedup)
             y = Terms.commute(y);
         else {
-            Arrays.sort(y);
+            if (x == y)
+                y = Terms.sort(y);
+            else
+                Arrays.sort(y);
         }
 
-        if (Arrays.equals(x,y)) {
+        if (hadNegs || ArrayUtil.equalsIdentity(x,y)) {
             //already sorted and has no negatives
             return b.apply(x);
         } else {
