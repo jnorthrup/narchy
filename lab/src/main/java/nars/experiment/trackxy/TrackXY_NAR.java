@@ -256,11 +256,8 @@ public class TrackXY_NAR extends GameX {
 //
 //            ), 400, 300);
 
-        //n.log();
-
-
-        final int W = 6, H = 1;
-        //final int W = 3, H = 3;
+        //final int W = 6, H = 1;
+        final int W = 3, H = 3;
 
         TrackXY_NAR a = new TrackXY_NAR(n, new TrackXY(W, H));
 
@@ -354,8 +351,6 @@ public class TrackXY_NAR extends GameX {
                 boolean r = ttt.equals(a.actions.get(1).term());
                 if (l || r) {
 
-                    System.out.println(tt.proof());
-                    System.out.println(MetaGoal.proof(tt, n));
 
                     //if (n.concept(tt) instanceof ActionConcept)
                     long window = 16;
@@ -370,10 +365,12 @@ public class TrackXY_NAR extends GameX {
 
                         String summary = (Math.signum(wantsDir) == Math.signum(needsDir)) ? "OK" : "WRONG";
                         System.out.println(ttt + " " + n2(wantsDir) + " ? " + n2(needsDir) + " " + summary);
+                        System.out.println(tt.proof());
+                        System.out.println(MetaGoal.proof(tt, n));
+                        System.out.println();
 
                     }
 
-                    System.out.println();
 
                 }
 

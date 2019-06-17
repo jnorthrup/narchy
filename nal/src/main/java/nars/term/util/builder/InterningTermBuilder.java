@@ -46,7 +46,7 @@ public class InterningTermBuilder extends HeapTermBuilder {
 
     private static final int ATOM_INTERNING_LENGTH_MAX = 8;
 
-    private static final boolean resolveNeg = true;
+    private static final boolean resolveNeg = false;
     //    private final static boolean internNegs = false;
     static final boolean deepDefault = true;
 
