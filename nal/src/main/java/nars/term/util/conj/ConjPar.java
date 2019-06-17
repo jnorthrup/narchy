@@ -245,51 +245,52 @@ public enum ConjPar {
                 }
             }
         }
-        if (cond != null) {
-            int d = cond.cardinality();
-            if (d == n) {
-            //if (d > 1) {
-                ObjectByteHashMap<Term> i = new ObjectByteHashMap(d);
-                int j = -1;
-                boolean anyFull = false;
-                for (int k = 0; k < d; k++) {
-                    j = cond.next(true, j+1, n);
-                    Term dc = xx[j];
-                    for (Term ct : dc.unneg().subterms()) {
-                        Term ctn = ct.neg();
-                        if (i.containsKey(ctn)) {
-                            //disqualify both permanently since factoring them would cancel each other out
-                            i.put(ct, Byte.MIN_VALUE);
-                            i.put(ctn, Byte.MIN_VALUE);
-                        } else {
-                            byte z = i.updateValue(ct, (byte) 0, (v) -> (v >= 0) ? (byte) (v + 1) : v);
-                            anyFull |= (z == d);
-                        }
-                    }
+        if (cond == null)
+            return null;
 
+        int d = cond.cardinality();
+        if (d == n) {
+        //if (d > 1) {
+            ObjectByteHashMap<Term> i = new ObjectByteHashMap(d);
+            int j = -1;
+            boolean anyFull = false;
+            for (int k = 0; k < d; k++) {
+                j = cond.next(true, j+1, n);
+                Term dc = xx[j];
+                for (Term ct : dc.unneg().subterms()) {
+                    Term ctn = ct.neg();
+                    if (i.containsKey(ctn)) {
+                        //disqualify both permanently since factoring them would cancel each other out
+                        i.put(ct, Byte.MIN_VALUE);
+                        i.put(ctn, Byte.MIN_VALUE);
+                    } else {
+                        byte z = i.updateValue(ct, (byte) 0, (v) -> (v >= 0) ? (byte) (v + 1) : v);
+                        anyFull |= (z == d);
+                    }
                 }
-                if (anyFull) {
-                    i.values().removeIf(b -> b < d);
-                    if (!i.isEmpty()) {
-                        Set<Term> common = i.keySet();
-                        Term factor = B.conj(common.toArray(Op.EmptyTermArray));
 
-                        if (factor instanceof Bool)
-                            return factor;
+            }
+            if (anyFull) {
+                i.values().removeIf(b -> b < d);
+                if (!i.isEmpty()) {
+                    Set<Term> common = i.keySet();
+                    Term factor = B.conj(common.toArray(Op.EmptyTermArray));
 
-                        xx = xx.clone(); //dont modify input array
-                        j = -1;
-                        for (int k = 0; k < d; k++) {
-                            j = cond.next(true, j + 1, n);
-                            Term[] xxj = xx[j].unneg().subterms().subsIncluding(s -> !common.contains(s));
-                            if (xxj.length == 0)
-                                return null; //eliminated TODO detect sooner
-                            xx[j] = (xxj.length == 1 ? xxj[0] :
-                                            B.conj(xxj)
-                                                ).neg();
-                        }
-                        return B.conj(dt, factor, B.conj(xx).neg()).neg();
+                    if (factor instanceof Bool)
+                        return factor;
+
+                    xx = xx.clone(); //dont modify input array
+                    j = -1;
+                    for (int k = 0; k < d; k++) {
+                        j = cond.next(true, j + 1, n);
+                        Term[] xxj = xx[j].unneg().subterms().subsIncluding(s -> !common.contains(s));
+                        if (xxj.length == 0)
+                            return null; //eliminated TODO detect sooner
+                        xx[j] = (xxj.length == 1 ? xxj[0] :
+                                        B.conj(xxj)
+                                            ).neg();
                     }
+                    return B.conj(dt, factor, B.conj(xx).neg()).neg();
                 }
             }
         }

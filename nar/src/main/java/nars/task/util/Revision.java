@@ -63,8 +63,7 @@ public enum Revision {;
         assert (tasks.length >= minComponents);
 
         if (tasks.length == 2) {
-            Task a = tasks[0].task();
-            Task b = tasks[1].task();
+            Task a = tasks[0].task(), b = tasks[1].task();
 
             //quick 2-ary stamp pre-filter
             if (Stamp.overlapsAny(a, b))

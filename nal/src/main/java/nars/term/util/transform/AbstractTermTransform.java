@@ -32,11 +32,7 @@ public interface AbstractTermTransform extends TermTransform, nars.term.util.bui
      * transform pathway for compounds
      */
     default Term applyCompound(Compound c) {
-        return applyCompound(c, null, XTERNAL);
-    }
-
-    default Term applyCompound(Compound x, Op newOp, int ydt) {
-        return x.transform(this, newOp, ydt);
+        return c.transform(this, (Op)null, XTERNAL);
     }
 
     static int realign(int ydt, Subterms xx, Subterms yy) {

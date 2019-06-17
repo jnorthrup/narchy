@@ -254,19 +254,19 @@ public enum Conj  { ;
 //
 //        return null; //TODO
 //    }
-
-    private static int eventCount(Object what) {
-        if (what instanceof byte[]) {
-            byte[] b = (byte[]) what;
-            int i = indexOfZeroTerminated(b, (byte) 0);
-            return i == -1 ? b.length : i;
-        } else {
-            if (what instanceof RoaringBitmap)
-                return ((ImmutableBitmapDataProvider) what).getCardinality();
-            else
-                return 0;
-        }
-    }
+//
+//    private static int eventCount(Object what) {
+//        if (what instanceof byte[]) {
+//            byte[] b = (byte[]) what;
+//            int i = indexOfZeroTerminated(b, (byte) 0);
+//            return i == -1 ? b.length : i;
+//        } else {
+//            if (what instanceof RoaringBitmap)
+//                return ((ImmutableBitmapDataProvider) what).getCardinality();
+//            else
+//                return 0;
+//        }
+//    }
 
 //    /**
 //     * returns null if wasnt contained, True if nothing remains after removal
@@ -725,41 +725,41 @@ public enum Conj  { ;
 //
 //    }
 
-
-    private static int indexOfZeroTerminated(byte[] b, byte val) {
-        for (int i = 0; i < b.length; i++) {
-            byte bi = b[i];
-            if (val == bi)
-                return i;
-            else if (bi == 0)
-                return -1;
-        }
-        return -1;
-    }
-
-    //TODO public static ObjectIntPair<Term> diffX(Term include, Term exclude) { //returns the resulting dt shift, replacing ConjDiff class
-
-    private static int conflictOrSame(Object e, byte id) {
-        if (e instanceof byte[]) {
-            byte[] b = (byte[]) e;
-            for (byte bi : b) {
-                if (bi == -id)
-                    return -1;
-                else if (bi == id)
-                    return +1;
-                else if (bi == 0)
-                    break; //null terminator
-            }
-        } else if (e instanceof RoaringBitmap) {
-            RoaringBitmap r = (RoaringBitmap) e;
-            if (r.contains(-id))
-                return -1;
-            else if (r.contains(id))
-                return +1;
-        }
-
-        return 0;
-    }
+//
+//    private static int indexOfZeroTerminated(byte[] b, byte val) {
+//        for (int i = 0; i < b.length; i++) {
+//            byte bi = b[i];
+//            if (val == bi)
+//                return i;
+//            else if (bi == 0)
+//                return -1;
+//        }
+//        return -1;
+//    }
+//
+//    //TODO public static ObjectIntPair<Term> diffX(Term include, Term exclude) { //returns the resulting dt shift, replacing ConjDiff class
+//
+//    private static int conflictOrSame(Object e, byte id) {
+//        if (e instanceof byte[]) {
+//            byte[] b = (byte[]) e;
+//            for (byte bi : b) {
+//                if (bi == -id)
+//                    return -1;
+//                else if (bi == id)
+//                    return +1;
+//                else if (bi == 0)
+//                    break; //null terminator
+//            }
+//        } else if (e instanceof RoaringBitmap) {
+//            RoaringBitmap r = (RoaringBitmap) e;
+//            if (r.contains(-id))
+//                return -1;
+//            else if (r.contains(id))
+//                return +1;
+//        }
+//
+//        return 0;
+//    }
 
 //    /**
 //     * merge an incoming target with a disjunctive sub-expression (occurring at same event time) reductions applied:

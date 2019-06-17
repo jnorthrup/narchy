@@ -1,5 +1,6 @@
 package nars.term.util.transform;
 
+import nars.Op;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.util.Image;
@@ -11,10 +12,10 @@ import static nars.time.Tense.XTERNAL;
 public final class CompoundNormalization extends VariableNormalization {
 
     private final Term root;
-    final boolean imgPossible;
+    private final boolean imgPossible;
 
     /** TODO check */
-    static final int MIN_IMAGE_VOL = 4;
+    private static final int MIN_IMAGE_VOL = 4;
 
     public CompoundNormalization(Term x, byte varOffset) {
         super(x.vars() /* estimate */, varOffset);
@@ -39,7 +40,7 @@ public final class CompoundNormalization extends VariableNormalization {
                 hasImg = x.hasAll(Image.ImageBits); //check if image bits remain
             }
         }
-        return hasImg || x.hasVars() ? super.applyCompound(x, null, XTERNAL) : x;
+        return hasImg || x.hasVars() ? x.transform(this, (Op)null, XTERNAL) : x;
     }
 
 

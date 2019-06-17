@@ -23,14 +23,14 @@
         //(A --> B), (B --> C), task("?@"), neqRCom(A,C)  |- (C --> A), (Time:Compose)
         //(B --> C), (A --> B), task("?@"), neqRCom(A,C)  |- (A --> C)
 
-    (A --> B), (A --> C), neqRCom(B,C)      |- (B --> C), (Belief:Abduction, Time:Compose)
-    //(A --> B), (A --> C), neqRCom(B,C)      |- (C --> B), (Belief:Abduction, Time:Compose)
+    (A --> B), (A --> C), neqRCom(B,C)      |- (B --> C), (Belief:Abduction, Goal:DesireWeak, Time:Compose)
+    (A --> B), (A --> C), neqRCom(B,C)      |- (C --> B), (Belief:Abduction, Goal:DesireWeak, Time:Compose)
 
 //        (A --> B), (A --> C), task("!"), neqRCom(B,C)      |- (C --> B), (Punctuation:Quest)
 //        (A --> B), (A --> C), task("!"), neqRCom(B,C)      |- (B --> C), (Punctuation:Quest)
 
         (A --> B), (A --> C), task("?@"), neqRCom(B,C)  |- (C --> B), (Time:Compose)
-        //(A --> B), (A --> C), task("?@"), neqRCom(B,C)  |- (B --> C), (Time:Compose)
+        (A --> B), (A --> C), task("?@"), neqRCom(B,C)  |- (B --> C), (Time:Compose)
             //(A --> B), (A --> C), task("@"), neqRCom(B,C)  |- (C --> B), (Punctuation:Quest)
             //(A --> B), (A --> C), task("@"), neqRCom(B,C)  |- (B --> C), (Punctuation:Quest)
         //(A --> B), (A --> C), task("?"), neqRCom(B,C) |- (C <-> B), (Punctuation:Question)
@@ -38,14 +38,14 @@
                     //(A --> B), (A --> C), task("?"), belief(negative), neqRCom(B,C) |- (--C --> B), (Punctuation:Question)
             //(A --> B), (A --> C), task("@"), neqRCom(B,C)  |- (B --> C), (Punctuation:Quest)
 
-    (A --> C), (B --> C), neqRCom(A,B)      |- (A --> B), (Belief:Induction, Time:Compose)
-//    (A --> C), (B --> C), neqRCom(A,B)      |- (B --> A), (Belief:Induction, Time:Compose)
+    (A --> C), (B --> C), neqRCom(A,B)      |- (A --> B), (Belief:Induction, Goal:DesireWeak, Time:Compose)
+    (A --> C), (B --> C), neqRCom(A,B)      |- (B --> A), (Belief:Induction, Goal:DesireWeak, Time:Compose)
 
 //        (A --> C), (B --> C), task("!"), neqRCom(A,B)      |- (B --> C), (Punctuation:Quest)
 //        (A --> C), (B --> C), task("!"), neqRCom(A,B)      |- (C --> B), (Punctuation:Quest)
 
         (A --> C), (B --> C), task("?@"), neqRCom(A,B) |- (A --> B), (Time:Compose)
-        //(A --> C), (B --> C), task("?@"), neqRCom(A,B) |- (B --> A), (Time:Compose)
+        (A --> C), (B --> C), task("?@"), neqRCom(A,B) |- (B --> A), (Time:Compose)
             //(A --> C), (B --> C), task("@"), neqRCom(A,B)  |- (A --> B), (Punctuation:Quest)
             //(A --> C), (B --> C), task("@"), neqRCom(A,B)  |- (B --> A), (Punctuation:Quest)
         //(A --> C), (B --> C), task("?"), belief(negative), neqRCom(A,B) |- (A --> --B), (Punctuation:Question)
@@ -84,6 +84,7 @@
 
 
     //(S <-> P), (P --> S), --isVar(S), --isVar(P) |- (S --> P), (Belief:ReduceConjunction, Goal:Desire, Time:Compose)
-    (S <-> P), (P --> S), --isVar(S), --isVar(P) |- --(S --> P), (Belief:DecomposeNP, Goal:DesireWeak, Time:Compose)
+    (S <-> P), (P --> S), --isVar(S), --isVar(P) |- --(S --> P), (Belief:DecomposeNP, Time:Compose)
+    (S <-> P), (P --> S), --isVar(S), --isVar(P) |-   (S --> P), (Goal:Desire, Time:Compose)
 
 

@@ -37,7 +37,7 @@ public abstract class Retemporalize extends AbstractTermTransform.NegObliviousTe
             if (n == xdt)
                 return super.applyPosCompound(x); //fast fail if dt doesnt change
             else {
-                return applyCompound(x, xo, n);
+                return x.transform(this, xo, n);
             }
 //        }
     }

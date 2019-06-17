@@ -142,7 +142,7 @@ public class Conceptualization {
                 }
             }
 
-            Term y = applyCompound(x, xo, dt);
+            Term y = x.transform(this, xo, dt);
             return y;
 
         }

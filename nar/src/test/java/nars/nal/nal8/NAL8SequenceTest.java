@@ -41,6 +41,8 @@ public class NAL8SequenceTest extends NALTest {
     void testSubSequence2_mid() {
 
         test
+                .termVolMax(14)
+                .confMin(0.75f)
                 .input( "(x &&+1 y)!")
                 .input( "(z &&+1 ((x &&+1 y) &&+1 w)).")
                 .mustGoal(cycles, "z", 1, 0.81f) //81% for one step
@@ -163,6 +165,7 @@ public class NAL8SequenceTest extends NALTest {
                 .mustGoal(cycles, "(((d(x,#1)&&c(#1)) &&+1 d) &&+1 e(#1))", 1, 0.81f) //81% for one step
         ;
     }
+
     @Test
     void testGoalDeduction_MidSequence_Disj() {
 

@@ -1,15 +1,12 @@
 package nars.term.util.conj;
 
 import jcog.TODO;
-import jcog.Util;
 import jcog.data.list.FasterList;
-import nars.Op;
 import nars.subterm.DisposableTermList;
 import nars.term.Compound;
 import nars.term.Neg;
 import nars.term.Term;
 import nars.term.atom.Bool;
-import nars.term.util.builder.HeapTermBuilder;
 import nars.term.util.builder.TermBuilder;
 import nars.time.Tense;
 import org.eclipse.collections.api.iterator.LongIterator;
@@ -223,7 +220,7 @@ public class ConjTree implements ConjBuilder {
                     //prune
                     nyi.remove();
                     if (toAdd == null) toAdd = new FasterList(1);
-                    Term z = Conj.diffAll(ny, nxn, HeapTermBuilder.the);
+                    Term z = Conj.diffAll(ny, nxn);
                     if (z == True) {
                         //eliminated y
                     } else if (z == False || z == Null) {
@@ -283,7 +280,7 @@ public class ConjTree implements ConjBuilder {
         if (xConj && nP_or_pN) for (Term yy : y)
             if (Conj.eventOf(x, yy.neg())) return yy.neg();
             else {
-                Term z = Conj.diffAll(x, yy, HeapTermBuilder.the);
+                Term z = Conj.diffAll(x, yy);
                 if (!z.equals(x)) {
                     if (z instanceof Bool)
                         return z.negIf(nP_or_pN);
@@ -302,24 +299,27 @@ public class ConjTree implements ConjBuilder {
                 // && yy.containsRecursively(x)) {
                 //short-circuit
                 //                    }
-                if (yy.op() == CONJ) if (Conj.eventOf(yy, xn)) iterator.remove();
-                else {
-                    //impossibility
-                    Term z = Conj.diffAll(yy, x, HeapTermBuilder.the);
-                    if (!z.equals(yy)) {
-
-                        //if (Conj.eventOf(yy, b)) {
+                if (yy.op() == CONJ) {
+                    if (Conj.eventOf(yy, xn))
                         iterator.remove();
-                        //Term z = Conj.diffAll(yy, b);
-                        if (z == True) {
-                            //only remove
-                        } else if (z == False || z == Null)
-                            return z;
-                        else {
-                            if (add == null) add = new FasterList(1);
-                            add.add(z);
-                        }
+                    else {
+                        //impossibility
+                        Term z = Conj.diffAll(yy, x);
+                        if (!z.equals(yy)) {
 
+                            //if (Conj.eventOf(yy, b)) {
+                            iterator.remove();
+                            //Term z = Conj.diffAll(yy, b);
+                            if (z == True) {
+                                //only remove
+                            } else if (z == False || z == Null)
+                                return z;
+                            else {
+                                if (add == null) add = new FasterList(1);
+                                add.add(z);
+                            }
+
+                        }
                     }
                 }
 
@@ -544,6 +544,16 @@ public class ConjTree implements ConjBuilder {
 
     }
 
+    @Override
+    public void clear() {
+        pos.clear();
+        neg.clear();
+        seq = null;
+        terminal = null;
+        shift = TIMELESS;
+    }
+
+
     private Term termCom(TermBuilder B) {
 
 
@@ -593,48 +603,61 @@ public class ConjTree implements ConjBuilder {
 //                        return d; //specially disjunctive reduction
 //                }
 
-                Arrays.sort(q);
+                boolean hasConj = false, hasDisj = false;
 
-                boolean simple;
-                if (Util.and(qq -> !qq.isAny(Op.CONJ.bit | Op.NEG.bit), q))
-                    simple = true;
-                else {
-                    for (Term x : q) {
+                for (Term x : q) {
+                    if (x instanceof Compound) {
                         if (x instanceof Neg) {
-                            for (Term y : q)
-                                if (y!=x && !(y instanceof Neg) && y.equals(x.unneg()))
+                            Term xu = x.unneg();
+                            if (xu.op()==CONJ) hasDisj = true;
+                            for (Term y : q) {
+                                if (y != x && !(y instanceof Neg) && y.equals(xu))
                                     return False; //simple conflict avoided
-                        }
+                            }
+                        } else if (x.op() == CONJ)
+                            hasConj = true;
                     }
-                    boolean inSeq = false;
-                    ready: for (Term x : q) {
-                        if (x.op()==CONJ) {
+                }
+                boolean simple = true;
+
+                if (hasConj) {
+                    ready:
+                    for (Term x : q) {
+                        if (x.op() == CONJ) {
                             int xv = x.volume();
                             for (Term y : q)
-                                if (y!=x && y.volume() < xv) {
+                                if (y != x && y.volume() < xv) {
                                     if (Conj.eventOf(x, y, ETERNAL, -1)) {
                                         return False; //conflict in sequence avoided
                                     }
                                     if (Conj.eventOf(x, y, ETERNAL, +1)) {
-                                        inSeq = true;
+                                        simple = false;
                                         break ready;
                                     }
                                 }
                         }
                     }
-
-                    if (!inSeq && Util.and(qq -> qq.op()!=CONJ || Conj.isSeq(qq) || qq.dt()==XTERNAL, q)) {
-                        simple= true; //TODO refine
-                    } else {
-                        //flatten
-                        simple = false;
-                    }
                 }
 
+                if (hasDisj) {
+                    @Nullable Term qd = ConjPar.disjunctiveFactor(q, DTERNAL, B);
+                    if (qd != null)
+                        return qd;
+                }
+
+
+//                if (!inSeq && Util.and(qq -> qq.op()!=CONJ || Conj.isSeq(qq) || qq.dt()==XTERNAL, q)) {
+//                    simple= true; //TODO refine
+//                } else {
+//                    //flatten
+//                    simple = false;
+//                }
+
                 if (simple) {
+                    Arrays.sort(q);
                     return B.newCompound(CONJ, DTERNAL, q);
                 } else
-                    return ConjPar.the(B, DTERNAL, false, q);
+                    return ConjPar.the(B, DTERNAL, true, q);
             }
         }
 

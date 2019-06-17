@@ -103,10 +103,10 @@ class ConceptualizationTest {
             assertEquals("(a ==>+- ( &&+- ,b,c,d))", x.root().toString());
         }
 
-        {
-            Term x = $("(a ==> (b &&+1 --(c &&+1 d)))");
-            assertEquals("(a ==>+- ( &&+- ,b,c,d))", x.root().toString());
-        }
+//        {
+//            Term x = $("(a ==> (b &&+1 --(c &&+1 d)))");
+//            assertEquals("(a ==>+- ( &&+- ,b,c,d))", x.root().toString());
+//        }
 
     }
 

@@ -43,7 +43,7 @@ public enum ConjMatch { ;
                 VAR_DEP.bit | VAR_INDEP.bit;
                 //VAR_DEP.bit;
 
-        if (x.volume() >= conj.volume()-1)
+        if (x.volume() >= conj.volume()-1 || x.eventRange() > conj.eventRange())
             return Null;
         if (!Term.commonStructure( (x.structure()&(~varBits)),(conj.subStructure()&(~varBits))))
             return Null;
@@ -175,6 +175,9 @@ public enum ConjMatch { ;
         if (eVar || (conj.hasAny(varBits) /*&& x.anySatisfy(1, n, z -> z.getTwo().hasAny(varBits)))*/)) {
             //TODO use SubUnify correctly (ie. termutes via tryMatch )
             UniSubst.MySubUnify s = d.uniSubstFunctor.u;
+            ConjBuilder y =
+                    //new ConjTree();
+                    null;
             nextUnifiable: for (int matchUnify = 0; matchUnify < n; matchUnify++) {
                 Term xx = x.get(matchUnify);
                 if (eVar || xx.hasAny(varBits)) {
@@ -201,21 +204,24 @@ public enum ConjMatch { ;
                             boolean includeMatched = false; //TODO can be a parameter
                             long xTime = x.when(matchUnify);
 
-                            ConjList y = new ConjList(x.size());
+                            if (y == null)
+                                y = new ConjList(x.size());
+                            else
+                                y.clear();
+
+                            if (includeMatched)
+                                y.add(xTime, yy);
+
                             for (int j = 0; j < n; j++) {
                                 if (matchUnify == j && !includeMatched) continue; //skip the matched event
                                 long jw = x.when(j);
                                 if (beforeOrAfter && jw > xTime) continue;
                                 if (!beforeOrAfter && jw < xTime) continue;
                                 Term jj = x.get(j).replace(s.xy);
-                                if (jj == Null || jj == False) {
+                                if (jj == Null || jj == False || !y.add(jw, jj)) {
                                     continue nextUnifiable;
                                 }
-                                y.add(jw, jj);
                             }
-
-                            if (includeMatched)
-                                y.add(x.when(matchUnify), yy);
 
                             z = y.term();
                         }
@@ -242,6 +248,7 @@ public enum ConjMatch { ;
 
     /** removes one matching event at random */
     private static boolean removeAny(Term event, ConjList x, long[] matchedTime, Random random) {
+
 
         int s = x.size();
         int i = random.nextInt(s);

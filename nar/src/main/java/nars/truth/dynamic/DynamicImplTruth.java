@@ -78,8 +78,7 @@ class DynamicImplTruth extends AbstractDynamicTruth {
 
     @Override
     public Term reconstruct(Compound superterm, DynTaskify d, long start, long end) {
-        Task subj = d.get(0);
-        Task pred = d.get(1);
+        Task subj = d.get(0), pred = d.get(1);
         int dt = (subj.isEternal() || pred.isEternal()) ? 0 : Tense.occToDT(pred.start() - subj.start() - subj.term().eventRange());
         return IMPL.the(dt,
                 subj.term().negIf(!d.componentPolarity.get(0)), pred.term());

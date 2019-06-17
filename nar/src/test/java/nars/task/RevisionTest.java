@@ -38,6 +38,65 @@ public class RevisionTest {
     public final static Term x = $.the("x");
     private final NAR n = NARS.shell();
 
+    private static TaskBuilder t(float freq, float conf, long occ) throws Narsese.NarseseException {
+        return new TaskBuilder("a:b", BELIEF, $.t(freq, conf)).time(0, occ, occ);
+    }
+
+    static TaskBuilder t(float freq, float conf, long start, long end) throws Narsese.NarseseException {
+        return new TaskBuilder("a:b", BELIEF, $.t(freq, conf)).time(0, start, end);
+    }
+
+    static NAR newNAR(int fixedNumBeliefs) {
+        //TODO
+//
+//        ConceptAllocator cb = new ConceptAllocator(fixedNumBeliefs, fixedNumBeliefs, 1);
+//        cb.beliefsMaxEte = (fixedNumBeliefs);
+//        cb.beliefsMaxTemp = (fixedNumBeliefs);
+//        cb.beliefsMinTemp = (fixedNumBeliefs);
+//        cb.goalsMaxEte = (fixedNumBeliefs);
+//        cb.goalsMaxTemp = (fixedNumBeliefs);
+//        cb.goalsMinTemp = (fixedNumBeliefs);
+
+        return new NARS()/*.concepts(new DefaultConceptBuilder(cb))*/.get();
+
+    }
+
+    protected static void permuteChoose(Compound a, Compound b, String expected) {
+        assertEquals(expected, permuteIntermpolations(a, b).toString());
+    }
+
+    protected static Set<Term> permuteIntermpolations(Compound a, Compound b) {
+
+        {
+            float ab = Intermpolate.dtDiff(a, b);
+            assertTrue(Float.isFinite(ab));
+            assertEquals(ab, Intermpolate.dtDiff(b, a), ScalarValue.EPSILON); //commutative
+        }
+
+        NAR s = NARS.shell();
+
+        Term concept = a.concept();
+        assertEquals(concept, b.concept(), "concepts differ: " + a + ' ' + b);
+
+
+        Set<Term> ss = new TreeSet();
+
+        int n = 10 * (a.volume() + b.volume());
+        for (int i = 0; i < n; i++) {
+            Term ab = Intermpolate.intermpolate(a, b, s.random().nextFloat(), s);
+            ss.add(ab);
+        }
+
+        System.out.println(ss);
+
+        return ss;
+    }
+
+    private static void p(Task aa) {
+        System.out.println(aa.toString(true));
+        System.out.println("\tevi=" + aa.evi());
+    }
+
     @Test
     void testRevisionEquivalence() throws Narsese.NarseseException {
         TaskBuilder a = t(1f, 0.5f, 0);
@@ -52,32 +111,37 @@ public class RevisionTest {
                         .truth());
     }
 
-    @Test void testCoincidentTasks() throws Narsese.NarseseException {
+    @Test
+    void testCoincidentTasks() throws Narsese.NarseseException {
         Task t01 = merge(t(1, 0.9f, 0, 0).apply(n), t(1, 0.9f, 0, 0).apply(n), n);
         assertNotNull(t01);
         assertEquals("(b-->a). 0 %1.0;.95%", t01.toStringWithoutBudget());
         assertEquals("[1, 2]", Arrays.toString(t01.stamp()));
     }
 
-    @Test void testPartiallyCoincidentTasks() throws Narsese.NarseseException {
+    @Test
+    void testPartiallyCoincidentTasks() throws Narsese.NarseseException {
         Task t01 = merge(t(1, 0.9f, 0, 0).apply(n), t(1, 0.9f, 0, 1).apply(n), n);
         assertNotNull(t01);
         assertEquals("(b-->a). 0⋈1 %1.0;.93%", t01.toStringWithoutBudget());
         assertEquals("[1, 2]", Arrays.toString(t01.stamp()));
     }
 
-    @Test void testAdjacentTasks() throws Narsese.NarseseException {
+    @Test
+    void testAdjacentTasks() throws Narsese.NarseseException {
         Task t01 = merge(t(1, 0.9f, 0, 0).apply(n), t(1, 0.9f, 1, 1).apply(n), n);
         assertNotNull(t01);
         assertEquals("(b-->a). 0⋈1 %1.0;.90%", t01.toStringWithoutBudget());
         assertEquals("[1, 2]", Arrays.toString(t01.stamp()));
     }
 
-    /** test solutions are optimal in cases where one or more tasks have
+    /**
+     * test solutions are optimal in cases where one or more tasks have
      * overlapping evidence.  including cases where the top ranked merge
      * result is best excluded.
      */
-    @Test void testOverlapConflict() throws Narsese.NarseseException {
+    @Test
+    void testOverlapConflict() throws Narsese.NarseseException {
         Pair<Task, TruthProjection> rr = Revision.merge(n, true, 2,
                 new Task[]{
                         t(0, 0.71f, 0, 0).evidence(1, 2).apply(n),
@@ -92,39 +156,58 @@ public class RevisionTest {
 
     }
 
-    @Test void testNonAdjacentTasks() throws Narsese.NarseseException {
+    @Test
+    void testNonAdjacentTasks() throws Narsese.NarseseException {
 //        if (Param.REVISION_ALLOW_DILUTE_UNION) { //HACK requires truth dilution to be enabled, which ideally will be controlled on a per-revision basis. not statically
-            NAR n = NARS.shell();
+        NAR n = NARS.shell();
 
-            Task t01 = t(1, 0.9f, 0, 1).apply(n);
-            Task t02 = t(1, 0.9f, 0, 2).apply(n);
-            Task t03 = t(1, 0.9f, 0, 3).apply(n);
-            Task t35 = t(1, 0.9f, 3, 5).apply(n);
-            Task t45 = t(1, 0.9f, 4, 5).apply(n);
-            Task t100_102 = t(1, 0.9f, 100, 102).apply(n);
+        Task t01 = t(1, 0.9f, 0, 1).apply(n);
+        Task t02 = t(1, 0.9f, 0, 2).apply(n);
+        Task t03 = t(1, 0.9f, 0, 3).apply(n);
+        Task t35 = t(1, 0.9f, 3, 5).apply(n);
+        Task t45 = t(1, 0.9f, 4, 5).apply(n);
+        Task t100_105 = t(1, 0.9f, 100, 105).apply(n);
 
-            //evidence density
-            Task a = merge(t01, t45, n);
-            Task b = merge(t02, t45, n);
-            Task c = merge(t03, t45, n);
-            assertNotNull(a);
-            assertNotNull(b);
-            assertTrue(a.evi() < b.evi());
-            assertNotNull(c);
-            assertTrue(b.evi() < c.evi());
+        //evidence density
+        Task a = merge(t01, t45, n);
+        Task b = merge(t02, t45, n);
+        Task c = merge(t03, t45, n);
+        assertNotNull(a);
+        assertNotNull(b);
+        assertTrue(a.evi() < b.evi());
+        assertNotNull(c);
+        assertTrue(b.evi() < c.evi());
 
-            assertEquals("(b-->a). 0⋈102 %1.0;.41%", merge(t02, t100_102, n).toStringWithoutBudget());
+        assertTrue(merge(t03, t35, n).toStringWithoutBudget().startsWith("(b-->a). 0⋈5 %1.0;.9"));
+        assertTrue(merge(t02, t35, n).toStringWithoutBudget().startsWith("(b-->a). 0⋈5 %1.0;.9"));
 
-            assertTrue(merge(t03, t35, n).toStringWithoutBudget().startsWith("(b-->a). 0⋈5 %1.0;.9"));
-            assertTrue(merge(t02, t35, n).toStringWithoutBudget().startsWith("(b-->a). 0⋈5 %1.0;.9"));
+        assertEquals("((b-->a) &&+100 (b-->a)). 0⋈2 %1.0;.81%", merge(t02, t100_105, n).toStringWithoutBudget());
+
 //        }
 
     }
 
     private Task merge(Task t01, Task t45, NAR n) {
-        return Revision.merge(n, false, 2, new Task[] { t01, t45 }).getOne();
+        return Revision.merge(n, false, 2, new Task[]{t01, t45}).getOne();
     }
 
+
+//
+//    static void print(@NotNull List<Task> l, int start, int end) {
+//
+//        System.out.println("INPUT");
+//        for (Task t : l) {
+//            System.out.println(t);
+//        }
+//
+//        System.out.println();
+//
+//        System.out.println("TRUTHPOLATION");
+//        for (long d = start; d < end; d++) {
+//            Truth a1 = new FocusingLinearTruthPolation(d, d, 1).addAt(l).truth();
+//            System.out.println(d + ": " + a1);
+//        }
+//    }
 
     @Test
     void testRevisionInequivalenceDueToTemporalSeparation() throws Narsese.NarseseException {
@@ -139,7 +222,6 @@ public class RevisionTest {
         assertTrue(pt.conf() < rt.conf());
 
     }
-
 
     @Test
     void testRevisionEquivalence2Instant() throws Narsese.NarseseException {
@@ -187,33 +269,6 @@ public class RevisionTest {
         }
 
     }
-
-    private static TaskBuilder t(float freq, float conf, long occ) throws Narsese.NarseseException {
-        return new TaskBuilder("a:b", BELIEF, $.t(freq, conf)).time( 0, occ, occ);
-    }
-
-    static TaskBuilder t(float freq, float conf, long start, long end) throws Narsese.NarseseException {
-        return new TaskBuilder("a:b", BELIEF, $.t(freq, conf)).time(0, start, end);
-    }
-
-
-//
-//    static void print(@NotNull List<Task> l, int start, int end) {
-//
-//        System.out.println("INPUT");
-//        for (Task t : l) {
-//            System.out.println(t);
-//        }
-//
-//        System.out.println();
-//
-//        System.out.println("TRUTHPOLATION");
-//        for (long d = start; d < end; d++) {
-//            Truth a1 = new FocusingLinearTruthPolation(d, d, 1).addAt(l).truth();
-//            System.out.println(d + ": " + a1);
-//        }
-//    }
-
 
     @Test
     void testTemporalProjectionInterpolation() throws Narsese.NarseseException {
@@ -298,7 +353,6 @@ public class RevisionTest {
         testConfidenceAccumulation(3, 1f, 0.9f);
     }
 
-
     private void testConfidenceAccumulation(int repeats, float freq, float inConf) {
         int maxBeliefs = repeats * 4;
 
@@ -328,7 +382,6 @@ public class RevisionTest {
         assertEquals(freq, result.freq(), 0.25f);
         assertEquals(outConf, result.conf(), 0.25f);
     }
-
 
     @Test
     void testTemporalRevection() throws Narsese.NarseseException {
@@ -428,52 +481,6 @@ public class RevisionTest {
         $.31 ((--,(dx-->noid)) &&+15 (bx-->noid)). 0⋈15 %1.0;.81% {1: 1;;}
          */
 
-    }
-
-    static NAR newNAR(int fixedNumBeliefs) {
-        //TODO
-//
-//        ConceptAllocator cb = new ConceptAllocator(fixedNumBeliefs, fixedNumBeliefs, 1);
-//        cb.beliefsMaxEte = (fixedNumBeliefs);
-//        cb.beliefsMaxTemp = (fixedNumBeliefs);
-//        cb.beliefsMinTemp = (fixedNumBeliefs);
-//        cb.goalsMaxEte = (fixedNumBeliefs);
-//        cb.goalsMaxTemp = (fixedNumBeliefs);
-//        cb.goalsMinTemp = (fixedNumBeliefs);
-
-        return new NARS()/*.concepts(new DefaultConceptBuilder(cb))*/.get();
-
-    }
-
-    protected static void permuteChoose(Compound a, Compound b, String expected) {
-        assertEquals(expected, permuteIntermpolations(a, b).toString());
-    }
-
-    protected static Set<Term> permuteIntermpolations(Compound a, Compound b) {
-
-        {
-            float ab = Intermpolate.dtDiff(a, b);
-            assertTrue(Float.isFinite(ab));
-            assertEquals(ab, Intermpolate.dtDiff(b, a), ScalarValue.EPSILON); //commutative
-        }
-
-        NAR s = NARS.shell();
-
-        Term concept = a.concept();
-        assertEquals(concept, b.concept(), "concepts differ: " + a + ' ' + b);
-
-
-        Set<Term> ss = new TreeSet();
-
-        int n = 10 * (a.volume() + b.volume());
-        for (int i = 0; i < n; i++) {
-            Term ab = Intermpolate.intermpolate(a, b, s.random().nextFloat(), s);
-            ss.add(ab);
-        }
-
-        System.out.println(ss);
-
-        return ss;
     }
 
     @Test
@@ -657,24 +664,6 @@ public class RevisionTest {
         assertEquals(0.947f, t.conf(), 0.01f);
     }
 
-    @Test
-    void testRevision2TemporalImpl() throws Narsese.NarseseException {
-        NAR n = newNAR(3)
-                .input("(x ==> y). :|: %1.0;0.9%",
-                        "(x ==> y). :|: %0.0;0.9%");
-
-        n.run(1);
-
-        Concept c = n.concept($.$("(x ==> y)"));
-        assertEquals(2, c.beliefs().taskCount());
-
-        Task tt = n.belief($.$("(x ==> y)"), 0);
-        assertNotNull(tt);
-        Truth t = tt.truth();
-        assertEquals(0.5f, t.freq(), 0.01f);
-        assertEquals(0.947f, t.conf(), 0.01f);
-    }
-
 //    /**
 //     * test that budget is conserved during a revision between
 //     * the input tasks and the result
@@ -729,6 +718,24 @@ public class RevisionTest {
 //    }
 
     @Test
+    void testRevision2TemporalImpl() throws Narsese.NarseseException {
+        NAR n = newNAR(3)
+                .input("(x ==> y). :|: %1.0;0.9%",
+                        "(x ==> y). :|: %0.0;0.9%");
+
+        n.run(1);
+
+        Concept c = n.concept($.$("(x ==> y)"));
+        assertEquals(2, c.beliefs().taskCount());
+
+        Task tt = n.belief($.$("(x ==> y)"), 0);
+        assertNotNull(tt);
+        Truth t = tt.truth();
+        assertEquals(0.5f, t.freq(), 0.01f);
+        assertEquals(0.947f, t.conf(), 0.01f);
+    }
+
+    @Test
     public void testMergeTruthDilution() {
         //presence or increase of empty space in the union of between merged tasks reduces truth proportionally
 
@@ -749,18 +756,13 @@ public class RevisionTest {
         p(ab);
         assertTrue(ab.conf() == a.conf());
 //        if (Param.REVISION_ALLOW_DILUTE_UNION) {
-            Task ac = merge(a, c, n);
-            p(ac);
-            assertTrue(ac.conf() < ab.conf(), () -> ac + " must have less conf than " + ab);
+        Task ac = merge(a, c, n);
+        p(ac);
+        assertTrue(ac.conf() < ab.conf(), () -> ac + " must have less conf than " + ab);
 //        }
 //        Task ad = Revision.merge(a, d, n);
 //        p(ad);
 //        assertTrue(ad.conf() < ac.conf());
-    }
-
-    private static void p(Task aa) {
-        System.out.println(aa.toString(true));
-        System.out.println("\tevi=" + aa.evi());
     }
 
 

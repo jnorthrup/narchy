@@ -485,21 +485,21 @@ public class TrackXY_NAR extends GameX {
     private void actionPushButton() {
 
 
-        actionPushButton($.inh("right", id), (b) -> {
+        actionPushButton($.inh(id,"right"), (b) -> {
             if (b)
                 track.cx = Util.clamp(track.cx + track.controlSpeed.floatValue(), 0, track.grid.width() - 1);
         });
-        actionPushButton($.inh("left", id), (b) -> {
+        actionPushButton($.inh(id,"left"), (b) -> {
             if (b)
                 track.cx = Util.clamp(track.cx - track.controlSpeed.floatValue(), 0, track.grid.width() - 1);
         });
 
         if (track.grid.height() > 1) {
-            actionPushButton($.inh("up", id), (b) -> {
+            actionPushButton($.inh(id,"up"), (b) -> {
                 if (b)
                     track.cy = Util.clamp(track.cy + track.controlSpeed.floatValue(), 0, track.grid.height() - 1);
             });
-            actionPushButton($.inh("down", id), (b) -> {
+            actionPushButton($.inh(id,"down"), (b) -> {
                 if (b)
                     track.cy = Util.clamp(track.cy - track.controlSpeed.floatValue(), 0, track.grid.height() - 1);
             });

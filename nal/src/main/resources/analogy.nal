@@ -2,7 +2,7 @@
 ////If P and S are a special case of M, then they might be similar (weak),
 ////also if P and S are a general case of M
 
-    (S --> P), (P --> S), --isVar(S), --isVar(P) |- (S <-> P), (Belief:Intersection, Time:Compose)
+    (S --> P), (P --> S), --isVar(S), --isVar(P) |- (S <-> P), (Belief:Intersection, Goal:Desire, Time:Compose)
 
     //(M --> P), (S <-> M), neqRCom(S,P) |- (S --> P), (Belief:Analogy, Goal:Desire, Time:Compose)
     //(P --> M), (S <-> M), neqRCom(S,P) |- (P --> S), (Belief:Analogy, Goal:Desire, Time:Compose)

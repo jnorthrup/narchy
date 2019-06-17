@@ -51,15 +51,17 @@ public class Gradius extends GameX {
         g.updateMS =
                 //50; //20fps
                 //30;
-                25; //40fps
-                //20;
+                //25; //40fps
+                20; //50fps
                 //10; //100fps
                 //5; //200fps
         //10;
 
 
-        int dx = 2, dy = 2;
-        int px = 24, py = 24;
+//        int dx = 2, dy = 2;
+//        int px = 24, py = 24;
+        int dx = 4, dy = 4;
+        int px = 12, py = 12;
 
         assert px % dx == 0 && py % dy == 0;
 

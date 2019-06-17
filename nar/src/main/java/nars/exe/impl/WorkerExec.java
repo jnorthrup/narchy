@@ -17,7 +17,7 @@ import static java.lang.System.nanoTime;
 public class WorkerExec extends ThreadedExec {
 
     private static final long subCycleMinNS = 10L * 1_000_000;
-    double granularity = 8;
+    double granularity = 4;
 
     /**
      * value of 1 means it shares 1/N of the current work. >1 means it will take on more proportionally more-than-fair share of work, which might reduce jitter at expense of responsive

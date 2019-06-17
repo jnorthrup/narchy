@@ -127,6 +127,10 @@ class ConjTest {
         assertEq(False, $$("((x(g,1) &&+49 (--,((g,(g,-1))-->((x,/,-1),x))))&&(--,x(g,1)))"));
     }
 
+    @Test void testDisjCancellation() {
+        assertEq("b", "((b||c)&&(b||(--,c)))");
+    }
+
     @Test
     void disjunctionSequenceReduce() {
         String y = "((--,((--,tetris(1,11)) &&+330 (--,tetris(1,11))))&&(--,left))";

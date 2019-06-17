@@ -234,4 +234,6 @@ public interface ConjBuilder {
         }
         return min == TIMELESS ? ETERNAL : min;
     }
+
+    void clear();
 }
