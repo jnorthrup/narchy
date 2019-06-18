@@ -251,9 +251,12 @@ public class RevisionTest {
         assertTrue(abneg1.freq() > 0.51f);
         assertTrue(abneg1.conf() >= 0.5f);
 
-        Truth ab5 = new LinearTruthProjection(6, 6, dur).add(List.of(a, b)).truth();
-        assertTrue(ab5.freq() < 0.35f);
-        assertTrue(ab5.conf() >= 0.5f);
+        {
+            TruthProjection p5 = new LinearTruthProjection(6, 6, dur).add(List.of(a, b));
+            Truth ab5 = p5.truth();
+            assertTrue(ab5.freq() < 0.4f);
+            assertTrue(ab5.conf() >= 0.5f);
+        }
     }
 
     @Test

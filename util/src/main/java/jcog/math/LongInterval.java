@@ -83,6 +83,12 @@ public interface LongInterval {
             throw new ArithmeticException("ETERNAL range calculated");
         return 1 + (end() - s);
     }
+    default long rangeIfNotEternalElse(long what) {
+        long s = start();
+        if (s == ETERNAL)
+            return what;
+        return 1 + (end() - s);
+    }
 
 
     /**

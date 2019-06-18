@@ -16,11 +16,13 @@ import nars.table.dynamic.SensorBeliefTables;
 import nars.table.dynamic.SeriesBeliefTable;
 import nars.table.temporal.RTreeBeliefTable;
 import nars.task.util.Answer;
+import nars.task.util.TaskList;
 import nars.task.util.series.RingBufferTaskSeries;
 import nars.task.util.signal.SignalTask;
 import nars.term.Term;
 import nars.time.Tense;
 import nars.truth.Truth;
+import nars.truth.polation.FocusingLinearTruthProjection;
 import nars.truth.polation.TruthProjection;
 import org.eclipse.collections.api.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
@@ -127,18 +129,18 @@ public class AbstractGoalActionConcept extends GameAction {
 //        return truth(beliefsOrGoals, componentsMax, prev, now, n.dur(), n);
 //    }
 
-    public org.eclipse.collections.api.tuple.Pair<TruthProjection, long[]> truth(boolean beliefsOrGoals, int componentsMax, long prev, long now, int gameDur, NAR n) {
+    public org.eclipse.collections.api.tuple.Pair<TruthProjection, long[]> truth(boolean beliefsOrGoals, int componentsMax, long now, int dur, NAR n) {
         BeliefTable tables = (beliefsOrGoals ? beliefs() : goals());
 
 
-        float sensitivityRange = 1;
+        float sensitivityRange = 2;
 
         long s, e;
-        s = Math.round(now - gameDur/2 * sensitivityRange);
-        e = Math.round(now + gameDur/2 * sensitivityRange);
+        s = Math.round(now - dur/2 * sensitivityRange);
+        e = Math.round(now + dur/2 * sensitivityRange);
 
         if (!tables.isEmpty()) {
-            int dither = n.dtDither.intValue();
+//            int dither = n.dtDither.intValue();
 
             int limit = componentsMax, tries = limit*2;
 
@@ -147,7 +149,7 @@ public class AbstractGoalActionConcept extends GameAction {
             Answer a = Answer.relevant(true, limit, s, e, term,
                     withoutCuriosity
                     //null
-                    , n).dur(gameDur);
+                    , n).dur(dur);
 //            for (int iter = 0; iter < 1; iter++) {
 //
 //
@@ -197,11 +199,15 @@ public class AbstractGoalActionConcept extends GameAction {
                     }
                 }
 
-                @Nullable TruthProjection nextP = a.truthProjection();
-                if (nextP!=null) {
+                TaskList atl = a.taskList();
+
+                if (atl!=null) {
+                    FocusingLinearTruthProjection p = new FocusingLinearTruthProjection(a.time.start, a.time.end, dur);
+                    p.add(atl);
+
                     //Truth next = nextP.truth(NAL.truth.EVI_MIN, false, true, n);
                     //if (next!=null) {
-                        return pair(nextP, new long[]{ a.time.start, a.time.end});
+                    return pair(p, new long[]{ a.time.start, a.time.end});
                     //}
                 }
                 //TODO my truthpolation .stamp()'s and .cause()'s for clues
@@ -223,7 +229,7 @@ public class AbstractGoalActionConcept extends GameAction {
 
     @Override
     public void update( Game g) {
-        long prev = g.prev, now = g.now;
+        long now = g.now;
 
         updateCuriosity(g.curiosity);
 
@@ -236,24 +242,25 @@ public class AbstractGoalActionConcept extends GameAction {
         int limitBelief = Answer.BELIEF_MATCH_CAPACITY; //high sensitivity
         int limitGoal = limitBelief * 2;
 
-        if (prev == TIMELESS)
-            prev = now - gameDur; //HACK
+        Pair<TruthProjection, long[]> bt = truth(true, limitBelief, now, gameDur, n);
+        this.beliefTruth = bt.getOne() != null ? truth(bt) : null;
 
-        Pair<TruthProjection, long[]> bt = truth(true, limitBelief, prev, now, gameDur, n);
-        this.beliefTruth = bt.getOne() != null ? bt.getOne().truth() : null;
-
-        this.actionTruth = actionTruth(limitGoal, prev, now, gameDur, g.what());
+        this.actionTruth = actionTruth(limitGoal, now, gameDur, g.what());
 
     }
 
-    private Truth actionTruth(int limit, long prev, long now, int gameDur, What w) {
+    public @Nullable Truth truth(Pair<TruthProjection, long[]> bt) {
+        return bt.getOne().truth(0, false, false, null);
+    }
+
+    private Truth actionTruth(int limit, long now, int gameDur, What w) {
 
 
         NAR n = w.nar;
         Truth actionTruth;
-        Pair<TruthProjection, long[]> gt = truth(false, limit, prev, now, gameDur, n);
+        Pair<TruthProjection, long[]> gt = truth(false, limit, now, gameDur, n);
 
-        Truth nextActionDex = gt.getOne() == null ? null : gt.getOne().truth(0,false,false,null);
+        Truth nextActionDex = gt.getOne() == null ? null : truth(gt);
         actionDex = nextActionDex;
         actionCoh = nextActionDex != null ? gt.getOne().coherency() : 0;
         if (nextActionDex != null)

@@ -408,7 +408,8 @@ public final class Answer implements Timed, Predicate<Task> {
 
     @Nullable
     public TruthProjection truthProjection() {
-        return truthpolation(taskList());
+        TaskList tl = taskList();
+        return tl!=null ? project(tl) : null;
     }
 
 
@@ -436,7 +437,8 @@ public final class Answer implements Timed, Predicate<Task> {
 
     /** produces a modifiable copy of the tasks ranked here */
     @Nullable
-    @Deprecated private TaskList taskList() {
+    @Deprecated
+    public TaskList taskList() {
         RankedN<Task> tasks = this.tasks;
         int t = tasks.size();
         return t == 0 ? null : new TaskList(tasks.itemsArray(), t);
@@ -445,10 +447,7 @@ public final class Answer implements Timed, Predicate<Task> {
     /**
      * this does not filter cyclic; do that separately
      */
-    private TruthProjection truthpolation(@Nullable TaskList tt) {
-
-        if (tt == null)
-            return null;
+    private TruthProjection project(TaskList tt) {
 
         long s = time.start, e = time.end;
         if (s == ETERNAL) {
@@ -462,11 +461,8 @@ public final class Answer implements Timed, Predicate<Task> {
             }
         }
 
-
         TruthProjection tp = nar.projection(s, e, dur);
-        tp.ensureCapacity(tt.size());
-        tt.forEach(tp::add);
-
+        tp.add(tt);
         return tp;
     }
 

@@ -36,7 +36,6 @@ import java.util.ListIterator;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.BooleanSupplier;
 import java.util.function.Predicate;
-import java.util.function.ToLongFunction;
 
 import static nars.Op.CONJ;
 import static nars.truth.func.TruthFunctions.c2wSafe;
@@ -472,11 +471,11 @@ public class ConjClustering extends How {
         double confMax = Util.max(Task::conf, x);
         double confFactor = (conf / (conf + confMax));
 
-        long rangeMax = Util.max((ToLongFunction<Task>)Task::range, x);
+        long rangeMax = Util.max((Task t)->t.rangeIfNotEternalElse(1), x);
         long range = y.range();
-        double rangeFactor = ((double)range)/rangeMax;
+        double rangeFactor = Math.min(1, ((double)range)/rangeMax);
 
-        float p = (float)(Util.sum(Task::priElseZero, x) * /*cmplFactor * */ confFactor);
+        float p = (float)(Util.sum(Task::priElseZero, x) /* * cmplFactor */ * confFactor * rangeFactor);
 
         y.pri(Prioritizable.fund(p, priCopyOrMove, x));
 
