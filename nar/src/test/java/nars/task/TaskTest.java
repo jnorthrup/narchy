@@ -77,6 +77,13 @@ public class TaskTest {
 
     }
 
+    @Test void testInvalidIndepOnlyTask() {
+        assertFalse(Task.validTaskTerm($$("((--,$1) ==>-2 $1)")));
+        assertFalse(Task.validTaskTerm($$("($1 ==>-2 $1)")));
+        assertFalse(Task.validTaskTerm($$("(#1 ==>-2 #1)")));
+        assertFalse(Task.validTaskTerm($$("(#1,#2)")));
+    }
+
     @Test
     void testTaskPostNormalize() {
 

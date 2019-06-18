@@ -11,6 +11,7 @@ import nars.$;
 import nars.GameX;
 import nars.NAR;
 import nars.agent.Reward;
+import nars.agent.util.Impiler;
 import nars.concept.action.BiPolarAction;
 import nars.concept.sensor.DigitizedScalar;
 import nars.gui.NARui;
@@ -53,10 +54,14 @@ public class PoleCart extends GameX {
         //int instances = 2; int threadsEach = 1;
         int instances = 1; int threadsEach = 4;
         for (int i = 0; i < instances; i++)
-            runRTNet((n)->new PoleCart(
-                    instances > 1 ?
-                            $.p(Atomic.the(PoleCart.class.getSimpleName()), n.self()) :
-                            $.the(PoleCart.class.getSimpleName()), n),
+            runRTNet((n)-> {
+                        Impiler.init(n);
+
+                        return new PoleCart(
+                                instances > 1 ?
+                                        $.p(Atomic.the(PoleCart.class.getSimpleName()), n.self()) :
+                                        $.the(PoleCart.class.getSimpleName()), n);
+                    },
                     threadsEach, fps*2, 8);
     }
 

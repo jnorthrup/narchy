@@ -17,9 +17,7 @@ class ImpilerTest {
         NAR n = NARS.tmp();
         //n.log();
 
-        Impiler.ImpilerTracker t = new Impiler.ImpilerTracker(32, 2, n);
-        Impiler.ImpilerSolver s = new Impiler.ImpilerSolver(32, 2, n);
-        Impiler.ImpilerDeduction d = new Impiler.ImpilerDeduction(32, n);
+        Impiler.init(n);
 
         n.input("(a ==> b).");
         n.input("(--a ==> c). %0.9;0.5%");

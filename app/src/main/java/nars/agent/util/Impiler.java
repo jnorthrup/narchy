@@ -58,6 +58,12 @@ public class Impiler {
      */
     static final String IMPILER_NODE = ImpilerTracker.class.getSimpleName();
 
+    public static void init(NAR n) {
+        Impiler.ImpilerTracker t = new Impiler.ImpilerTracker(32, 2, n);
+        Impiler.ImpilerSolver s = new Impiler.ImpilerSolver(32, 2, n);
+        Impiler.ImpilerDeduction d = new Impiler.ImpilerDeduction(32, n);
+    }
+
     public static class ImpilerSolver extends TaskLeak {
 
         private final CauseChannel<Task> in;
@@ -116,6 +122,14 @@ public class Impiler {
         }
 
         @Override
+        protected boolean filter(Term term) {
+            if (term.op()==IMPL && !term.sub(0).unneg().op().conceptualizable)
+                return false;
+
+            return true;
+        }
+
+        @Override
         protected float leak(Task next, What what) {
             return deduce(next.term(), what);
         }
@@ -128,146 +142,13 @@ public class Impiler {
             if (c == null)
                 return 0;
 
+
             ImplNode m = c.meta(IMPILER_NODE);
             if (m != null) {
                 if (!m.out.isEmpty()) {
                     //TODO handle negations correctly
                     Term A = root;
-                    new Search<Term, ImplEdge>() {
-
-                        final static int recursionMin = 2;
-                        final static int recursionMax = 4;
-                        final float minConf = nar.confMin.floatValue();
-
-                        /** fails if: excessive volume, insufficient conf, time range, or overlap */
-                        protected boolean truth(List<BooleanObjectPair<FromTo<Node<Term, ImplEdge>, ImplEdge>>> path) {
-
-                            int n = path.size();
-                            //DynTruth d = new DynTruth(n); //<- for tracking evidence?
-
-                            ConjBuilder cc = new ConjTree();
-                            long when = 0;
-
-                            Truth t = null;
-                            LongHashSet stamp = null;
-                            final int stampLimit = NAL.STAMP_CAPACITY;
-                            for (int s = 0; s < n; s++) {
-                                ImplEdge e = path.get(s).getTwo().id();
-                                float ff = e.freq;
-                                PreciseTruth tt = $.t(Math.max(ff, 1 - ff), e.conf);
-                                if (t == null) {
-                                    t = tt;
-                                } else {
-                                    t = NALTruth.Deduction.apply(t, tt, minConf, nar);
-                                    if (t == null)
-                                        return false;
-                                }
-                                if (stamp == null)
-                                    stamp = new LongHashSet(e.stamp);
-                                else {
-                                    if (stamp.size() + e.stamp.length > stampLimit)
-                                        return false; //stamp exceeds limit
-
-                                    for (long es : e.stamp) {
-                                        if (!stamp.add(es))
-                                            return false; //overlap TODO just cancel at this point
-                                    }
-                                }
-                            }
-
-
-                            Term Z = Bool.Null;
-                            int zDT = DTERNAL;
-                            for (int s = 0; s < n; s++) {
-                                ImplEdge e = path.get(s).getTwo().id();
-                                Z = e.getTwo().negIf(e.freq < 0.5f);
-                                switch (e.dt) {
-                                    case DTERNAL: {
-                                        if (s == 0) {
-                                            cc.add(ETERNAL, A);
-                                        } else {
-                                            Term f = cc.term();
-                                            cc = new ConjTree();
-                                            cc.add(ETERNAL, f); //add existing accumulated sequence DTERNALly
-                                        }
-                                        if (s != n - 1) {
-                                            if (!cc.add(ETERNAL, Z))
-                                                return false;
-                                        }
-                                        when = ETERNAL; //shortcircuit
-                                        zDT = DTERNAL;
-                                        break;
-                                    }
-                                    case XTERNAL:
-                                        throw new UnsupportedOperationException();
-                                    default: {
-                                        if (s == 0) {
-                                            cc.add(0, A);
-                                        }
-                                        zDT = e.dt;
-                                        if (when != ETERNAL)
-                                            when += zDT;
-                                        if (s != n - 1) {
-                                            if (!cc.add(when, Z))
-                                                return false;
-                                        }
-
-                                        break;
-                                    }
-                                }
-
-
-                            }
-
-                            Term ee = IMPL.the(cc.term(), zDT, Z);
-                            LongHashSet ss = stamp;
-                            Task z = Task.tryTask(ee, BELIEF, t, (ttt, tr) ->
-                                    NALTask.the(ttt, BELIEF, tr, nar.time(), ETERNAL, ETERNAL, ss.toArray()));
-                            if (z != null) {
-//                                System.out.println(z);
-                                z.pri(nar);
-                                in.accept(z,what);
-                                return true;
-                            }
-
-                            return false;
-                        }
-
-
-                        @Override
-                        protected boolean next(BooleanObjectPair<FromTo<Node<Term, ImplEdge>, ImplEdge>> move, Node<Term, ImplEdge> next) {
-//                            int d = path.size();
-//                            if (d >= recursionMin && d <= recursionMax) {
-//                                truth(path);
-//                            }
-                            return true; //continue
-                        }
-
-                        @Override
-                        protected Node<Term, ImplEdge> next(FromTo<Node<Term, ImplEdge>, ImplEdge> edge, Node<Term, ImplEdge> at) {
-                            if (path.size() > recursionMax)
-                                return null; //end this probe
-
-                            Term et = edge.id().getTwo();
-                            Concept c = nar.conceptualizeDynamic(et);
-                            if (c != null) {
-                                ImplNode m = c.meta(IMPILER_NODE);
-                                if (m != null) {
-                                    if (!m.out.isEmpty()) {
-                                        int d = path.size();
-                                        if (d >= recursionMin && d <= recursionMax) {
-                                            if (log.visit(m)) {
-                                                truth(path);
-                                                //return null;
-                                            }
-                                        }
-                                        return m;
-                                    }
-                                }
-                            }
-                            return null;
-                        }
-                    }.dfs(List.of(m));
+                    new ImpilerDeductionSearch(A, what).dfs(List.of(m));
                 }
             }
 
@@ -299,6 +180,150 @@ public class Impiler {
         @Override
         public float value() {
             return in.value();
+        }
+
+        private class ImpilerDeductionSearch extends Search<Term, ImplEdge> {
+
+            final static int recursionMin = 2;
+            final static int recursionMax = 4;
+            final float minConf;
+            private final Term a;
+            private final What what;
+
+            public ImpilerDeductionSearch(Term a, What what) {
+                this.a = a;
+                this.what = what;
+                minConf = nar.confMin.floatValue();
+            }
+
+            /** fails if: excessive volume, insufficient conf, time range, or overlap */
+            protected boolean truth(List<BooleanObjectPair<FromTo<Node<Term, ImplEdge>, ImplEdge>>> path) {
+
+                int n = path.size();
+                //DynTruth d = new DynTruth(n); //<- for tracking evidence?
+
+                ConjBuilder cc = new ConjTree();
+                long when = 0;
+
+                Truth t = null;
+                LongHashSet stamp = null;
+                final int stampLimit = NAL.STAMP_CAPACITY;
+                for (int s = 0; s < n; s++) {
+                    ImplEdge e = path.get(s).getTwo().id();
+                    float ff = e.freq;
+                    PreciseTruth tt = $.t(Math.max(ff, 1 - ff), e.conf);
+                    if (t == null) {
+                        t = tt;
+                    } else {
+                        t = NALTruth.Deduction.apply(t, tt, minConf, nar);
+                        if (t == null)
+                            return false;
+                    }
+                    if (stamp == null)
+                        stamp = new LongHashSet(e.stamp);
+                    else {
+                        if (stamp.size() + e.stamp.length > stampLimit)
+                            return false; //stamp exceeds limit
+
+                        for (long es : e.stamp) {
+                            if (!stamp.add(es))
+                                return false; //overlap TODO just cancel at this point
+                        }
+                    }
+                }
+
+
+                Term Z = Bool.Null;
+                int zDT = DTERNAL;
+                for (int s = 0; s < n; s++) {
+                    ImplEdge e = path.get(s).getTwo().id();
+                    Z = e.getTwo().negIf(e.freq < 0.5f);
+                    switch (e.dt) {
+                        case DTERNAL: {
+                            if (s == 0) {
+                                cc.add(ETERNAL, a);
+                            } else {
+                                Term f = cc.term();
+                                cc = new ConjTree();
+                                cc.add(ETERNAL, f); //add existing accumulated sequence DTERNALly
+                            }
+                            if (s != n - 1) {
+                                if (!cc.add(ETERNAL, Z))
+                                    return false;
+                            }
+                            when = ETERNAL; //shortcircuit
+                            zDT = DTERNAL;
+                            break;
+                        }
+                        case XTERNAL:
+                            throw new UnsupportedOperationException();
+                        default: {
+                            if (s == 0) {
+                                cc.add(0, a);
+                            }
+                            zDT = e.dt;
+                            if (when != ETERNAL)
+                                when += zDT;
+                            if (s != n - 1) {
+                                if (!cc.add(when, Z))
+                                    return false;
+                            }
+
+                            break;
+                        }
+                    }
+
+
+                }
+
+                Term ee = IMPL.the(cc.term(), zDT, Z);
+                LongHashSet ss = stamp;
+                Task z = Task.tryTask(ee, BELIEF, t, (ttt, tr) ->
+                        NALTask.the(ttt, BELIEF, tr, nar.time(), ETERNAL, ETERNAL, ss.toArray()));
+                if (z != null) {
+//                                System.out.println(z);
+                    z.pri(nar);
+                    in.accept(z, what);
+                    return true;
+                }
+
+                return false;
+            }
+
+
+            @Override
+            protected boolean next(BooleanObjectPair<FromTo<Node<Term, ImplEdge>, ImplEdge>> move, Node<Term, ImplEdge> next) {
+//                            int d = path.size();
+//                            if (d >= recursionMin && d <= recursionMax) {
+//                                truth(path);
+//                            }
+                return true; //continue
+            }
+
+            @Override
+            protected Node<Term, ImplEdge> next(FromTo<Node<Term, ImplEdge>, ImplEdge> edge, Node<Term, ImplEdge> at) {
+                if (path.size() > recursionMax)
+                    return null; //end this probe
+
+                Term et = edge.id().getTwo();
+                Concept c = nar.conceptualizeDynamic(et);
+                if (c != null) {
+                    ImplNode m = c.meta(IMPILER_NODE);
+                    if (m != null) {
+                        if (!m.out.isEmpty()) {
+                            int d = path.size();
+                            if (d >= recursionMin && d <= recursionMax) {
+                                if (log.visit(m)) {
+                                    truth(path);
+                                    //return null;
+                                }
+                            }
+                            return m;
+                        }
+                    }
+                }
+                return null;
+            }
         }
     }
 

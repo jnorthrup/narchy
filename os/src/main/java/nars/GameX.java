@@ -91,12 +91,6 @@ abstract public class GameX extends Game {
         this(id, GameTime.durs(1), nar);
     }
 
-    @Deprecated
-    public GameX(Term id, NAR nar) {
-        this(id, GameTime.durs(1), nar);
-    }
-
-
     public GameX(String id, GameTime gameTime, NAR nar) {
         super(id, gameTime, nar);
     }
