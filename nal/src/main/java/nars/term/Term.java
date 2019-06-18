@@ -27,7 +27,6 @@ import nars.NAL;
 import nars.Op;
 import nars.The;
 import nars.subterm.Subterms;
-import nars.subterm.util.TermMetadata;
 import nars.term.anon.Anom;
 import nars.term.anon.Intrin;
 import nars.term.atom.Atomic;
@@ -55,7 +54,6 @@ import java.util.TreeSet;
 import java.util.function.*;
 
 import static nars.Op.CONJ;
-import static nars.Op.NEG;
 import static nars.time.Tense.DTERNAL;
 
 
@@ -171,13 +169,13 @@ public interface Term extends Termlike, Termed, Comparable<Term> {
     boolean containsAny(Subterms ofThese);
 
     default Term transform(TermTransform t) {
-        if (this instanceof Compound && volume() > NAL.TERMBUFFER_VOL_MIN) //HACK
+        if (this instanceof Compound && volume() > NAL.TERM_BUFFER_VOL_MIN) //HACK
             return TermTransform.transform((Compound) this, t, null, NAL.term.COMPOUND_VOLUME_MAX);
         else
             return t.apply(this);
     }
     default Term transform(TermTransform t, TermBuffer b, int volMax) {
-        if (this instanceof Compound && volume() > NAL.TERMBUFFER_VOL_MIN) //HACK
+        if (this instanceof Compound && volume() > NAL.TERM_BUFFER_VOL_MIN) //HACK
             return TermTransform.transform((Compound)this, t, b, volMax);
         else
             return t.apply(this);

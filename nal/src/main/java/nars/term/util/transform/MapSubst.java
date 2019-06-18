@@ -18,6 +18,13 @@ abstract public class MapSubst implements Subst {
 
     public static Term replace(Term x, Map<? extends Term, Term> m) {
 
+        Term y = m.get(x);
+        if (y!=null) {
+            return y;
+        } else if (x instanceof Atomic)
+            return x; //no subterms that could be changed
+
+
         int ms = m.size();
         switch (ms) {
             case 0:
@@ -25,56 +32,56 @@ abstract public class MapSubst implements Subst {
             case 1: {
                 Map.Entry<? extends Term, Term> e = m.entrySet().iterator().next();
                 Term src = e.getKey(), target = e.getValue();
-                if (x.equals(src))
-                    return target;
-                else if (src.equals(target) || x.impossibleSubTerm(src))
+                if (x.impossibleSubTerm(src))
                     return x; //no change
                 else
-                    return replace(src, target).apply(x);
+                    return x.transform(replace(src, target));
             }
             case 2: {
                 Iterator<? extends Map.Entry<? extends Term, Term>> ii = m.entrySet().iterator();
                 Map.Entry<? extends Term, Term> e1 = ii.next(), e2 = ii.next();
-                Term a = e1.getKey();
-                if (x.equals(a))
-                    return e1.getValue();
+                Term a = e1.getKey(), b = e2.getKey();
 
-                Term b = e2.getKey();
-                if (x.equals(b))
-                    return e2.getValue();
                 if (x.impossibleSubTerm(a)) {
                     return x.impossibleSubTerm(b) ?
                             x
                             :
-                            replace(b, e2.getValue()).apply(x);
+                            x.transform(replace(b, e2.getValue()));
                 } else {
                     if (x.impossibleSubTerm(b))
-                        return replace(a, e1.getValue()).apply(x);
+                        return x.transform(replace(a, e1.getValue()));
                     else
-                        return new MapSubst2(e1, e2).apply(x);
+                        return x.transform(new MapSubst2(e1, e2));
                 }
             }
             default: {
-                List<Term> valid = new FasterList<>(ms);
+                List<Term> valid = null;
+                int kStruct = 0;
                 for (Map.Entry<? extends Term,? extends Term> e : m.entrySet()) {
                     Term k = e.getKey();
-                    if (!x.impossibleSubTerm(k))
+
+                    int ks = k.structure();
+                    if (!x.impossibleSubStructure(ks) && !x.impossibleSubVolume(k.volume())) {
+                        if (valid == null) valid = new FasterList<>(ms);
                         valid.add(k);
+                        kStruct |= ks;
+                    }
+                    ms--;
                 }
+                if (valid==null)
+                    return x;
                 int validN = valid.size();
                 switch (validN) {
-                    case 0:
-                        return x;
                     case 1: {
                         Term a = valid.get(0);
-                        return replace(a, m.get(a)).apply(x);
+                        return x.transform(replace(a, m.get(a)));
                     } case 2: {
                         Term a = valid.get(0), b = valid.get(1);
-                        return new MapSubst2(a, m.get(a), b, m.get(b)).apply(x);
+                        return x.transform(new MapSubst2(a, m.get(a), b, m.get(b), kStruct));
                     }
                     default:
                         //TODO build key filter to sub-map only the applicable keys
-                        return new MapSubstN(m).apply(x);
+                        return x.transform(new MapSubstN(m, kStruct));
                 }
             }
         }
@@ -82,7 +89,7 @@ abstract public class MapSubst implements Subst {
     }
 
 
-    private static final class MapSubst2 extends MapSubst {
+    private static final class MapSubst2 extends MapSubstWithStructFilter {
         final Term ax, ay, bx, by;
 
         MapSubst2(Map.Entry<? extends Term, Term> a, Map.Entry<? extends Term, Term> b){
@@ -90,6 +97,11 @@ abstract public class MapSubst implements Subst {
         }
 
         MapSubst2(Term ax, Term ay, Term bx, Term by) {
+            this(ax, ay, bx, by, ax.structure() | bx.structure());
+        }
+
+        MapSubst2(Term ax, Term ay, Term bx, Term by, int structure) {
+            super(structure);
             this.ax = ax;
             this.ay = ay;
             this.bx = bx;
@@ -112,12 +124,16 @@ abstract public class MapSubst implements Subst {
         }
     }
 
-    public static class MapSubstN extends MapSubst {
+    public static class MapSubstN extends MapSubstWithStructFilter {
         private final Map<? extends Term, Term> xy;
+        private final int xStruct;
 
-        public MapSubstN(Map < ? extends Term, Term > xy){
+        public MapSubstN(Map < ? extends Term, Term > xy, int structure){
+            super(structure);
             this.xy = xy;
+            this.xStruct = structure;
         }
+
 
         /**
          * gets the substitute

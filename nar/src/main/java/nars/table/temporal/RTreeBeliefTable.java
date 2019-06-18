@@ -211,6 +211,9 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 //                }
 //                treeRW.remove(W);
 //            }
+                if(treeRW.isEmpty())
+                    return true; //got deleted while compressing
+
                 throw new
                         WTF();
                 //UnsupportedOperationException();

@@ -32,7 +32,7 @@ import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 
-import static nars.NAL.term.LAZY_COMPOUND_MIN_INTERN_VOL;
+import static nars.NAL.term.TERM_BUFFER_MIN_INTERN_VOL;
 import static nars.Op.*;
 import static nars.term.atom.Bool.Null;
 import static nars.time.Tense.DTERNAL;
@@ -473,7 +473,7 @@ public class TermBuffer {
         int to = range[0];
 
         int span = to - from;
-        if (span <= NAL.term.LAZY_COMPOUND_MIN_REPLACE_AHEAD_SPAN)
+        if (span <= NAL.term.TERM_BUFFER_MIN_REPLACE_AHEAD_SPAN)
             return;
 
         int end = range[1];
@@ -617,7 +617,7 @@ public class TermBuffer {
             this.compoundEnd(o);
         }
 
-        if (this.change()==c && x.volume() >= LAZY_COMPOUND_MIN_INTERN_VOL) {
+        if (this.change()==c && x.volume() >= TERM_BUFFER_MIN_INTERN_VOL) {
             //unchanged constant; rewind and pack the exact Term as an interned symbol
             this.rewind(p, u);
             this.appendInterned(x);

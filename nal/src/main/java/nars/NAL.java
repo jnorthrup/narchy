@@ -74,11 +74,11 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
     public static final boolean VOLMAX_RESTRICTS= configIs("VOLMAX_RESTRICTS"); //all tasks
 
 
-    public static final int TERMBUFFER_VOL_MIN = 4;
+    public static final int TERM_BUFFER_VOL_MIN = 20;
 
 
 
-    public static final boolean OVERLAP_DOUBLE_SET_CYCLIC= configIs("OVERLAP_DOUBLE_SET_CYCLIC");
+    public static final boolean OVERLAP_DOUBLE_SET_CYCLIC = configIs("OVERLAP_DOUBLE_SET_CYCLIC");
 
 
     /**
@@ -673,8 +673,8 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
         public static final int ANON_INT_MAX = Byte.MAX_VALUE;
 
         public static final boolean INH_IMAGE_RECURSION = false;
-        public static final int LAZY_COMPOUND_MIN_REPLACE_AHEAD_SPAN = 2;
-        public static final int LAZY_COMPOUND_MIN_INTERN_VOL = 2;
+        public static final int TERM_BUFFER_MIN_REPLACE_AHEAD_SPAN = 2;
+        public static final int TERM_BUFFER_MIN_INTERN_VOL = 2;
 
 
         /** prevent variable introduction from erasing negative compounds,
@@ -783,7 +783,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
         public static final boolean DERIVE_QUESTION_FROM_AMBIGUOUS_BELIEF_OR_GOAL = configIs("DERIVE_QUESTION_FROM_AMBIGUOUS_BELIEF_OR_GOAL");
 
 
-        public static final float TERMBUFFER_VOLMAX_SCRATCH_FACTOR = 8f;
+        public static final float TERM_BUFFER_VOLMAX_SCRATCH_FACTOR = 8f;
 
         /** tasklink belief/goal resolution strategy */
         public static final boolean TASKLINK_MATCH_OR_SAMPLE = false;

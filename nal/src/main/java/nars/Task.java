@@ -55,6 +55,7 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
     Task[] EmptyArray = new Task[0];
     Logger logger = Log.logger(Task.class);
     static final Term VAR_DEP_1 = $.varDep(1);
+    static final Term VAR_DEP_2 = $.varDep(2);
     static final Term VAR_DEP_1_NEG = VAR_DEP_1.neg();
     static final Term VAR_INDEP_1 = $.varIndep(1);
     static final Term VAR_INDEP_1_NEG = VAR_INDEP_1.neg();

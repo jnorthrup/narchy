@@ -13,7 +13,6 @@ import org.eclipse.collections.api.block.function.primitive.IntObjectToIntFuncti
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
-import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.BiPredicate;
 import java.util.function.Consumer;
@@ -131,11 +130,6 @@ public interface Atomic extends Term {
     @Override
     default Term root() { return this; }
 
-    @Override
-    default Term replace(Map<? extends Term, Term> m) {
-        Term y = m.get(this); 
-        return y != null ? y : this;
-    }
 
     @Override
     default Term replace(Term from, Term to) {

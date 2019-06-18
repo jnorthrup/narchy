@@ -8,7 +8,6 @@ import jcog.decide.Roulette;
 import jcog.memoize.Memoizers;
 import nars.*;
 import nars.eval.Evaluation;
-import nars.term.Compound;
 import nars.term.Functor;
 import nars.term.Term;
 import nars.term.Variable;
@@ -330,24 +329,10 @@ public class Arithmeticize {
             Term cmp = Equal.cmp(A, B, -1);
             if (cmp == Null) return null;
             Int aaa = Int.the(a), bbb = Int.the(b);
-            Term xx = new IntReplacer(Map.of(aaa, A, bbb, B)).apply(x);
+            Term xx = new MapSubst.MapSubstN(Map.of(aaa, A, bbb, B), INT.bit).apply(x);
             if (xx == Null) return null; //HACK
             return CONJ.the(cdt, xx, cmp);
         }
     }
 
-    private static final class IntReplacer extends MapSubst.MapSubstN {
-
-        IntReplacer(Map<? extends Term, Term> xy) {
-            super(xy);
-        }
-
-        @Override
-        public @Nullable Term applyCompound(Compound x) {
-            if (x.hasAny(Op.INT))
-                return super.applyCompound(x);
-            else
-                return x;
-        }
-    }
 }

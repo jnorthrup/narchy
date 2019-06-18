@@ -216,8 +216,8 @@ abstract public class GameX extends Game {
 
                 .what(
                         (w) -> new TaskLinkWhat(w,
-                                1024,
-                                new PriBuffer.BagTaskBuffer(384, 0.5f))
+                                2048,
+                                new PriBuffer.BagTaskBuffer(1024, 0.25f))
                 )
 //                .attention(() -> new ActiveConcepts(1024))
                 .exe(
@@ -404,7 +404,7 @@ abstract public class GameX extends Game {
         );
 
         n.confMin.set(0.01f);
-        n.termVolMax.set(20);
+        n.termVolMax.set(30);
 
 
         n.beliefPriDefault.amp(0.1f);

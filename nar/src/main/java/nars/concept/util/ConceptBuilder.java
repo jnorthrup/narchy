@@ -71,7 +71,7 @@ public abstract class ConceptBuilder implements BiFunction<Term, Concept, Concep
     @Nullable
     public static ObjectBooleanToObjectFunction<Term, BeliefTable[]> dynamicModel(Compound t) {
 
-        if (t.hasAny(Op.VAR_QUERY.bit))
+        if (!dynamicPreFilter(t))
             return null; //TODO maybe this can answer query questions by index query
 
         switch (t.op()) {
@@ -93,6 +93,22 @@ public abstract class ConceptBuilder implements BiFunction<Term, Concept, Concep
                 throw new RuntimeException("negation terms can not be conceptualized as something separate from that which they negate");
         }
         return null;
+    }
+
+    private static boolean dynamicPreFilter(Compound t) {
+        int vars = t.vars();
+        if (vars > 0) {
+            if (t.hasAny(Op.VAR_QUERY.bit | Op.VAR_INDEP.bit))
+                return false; //TODO maybe some Indep cases can work
+            if (vars == 1)
+                return true; //only one variable appearance, ok
+            else {
+                //verify that there is only one unique variable, or some other constraint that can allow it
+                if (t.containsRecursively(Task.VAR_DEP_2))
+                    return false;
+            }
+        }
+        return true;
     }
 
     private static @Nullable ObjectBooleanToObjectFunction<Term, BeliefTable[]> dynamicImpl(Compound t) {

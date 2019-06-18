@@ -77,17 +77,14 @@ public class DefaultConceptBuilder extends ConceptBuilder {
 
     @Override
     public TemporalBeliefTable newTemporalTable(Term c, boolean beliefOrGoal) {
-        return //c.hasXternal() ?
-                new RTreeBeliefTable()
-                //: new RTreeBeliefTable.EternalizingRTreeBeliefTable(beliefOrGoal)
-        ;
+        return new RTreeBeliefTable();
     }
 
     @Override
     public QuestionTable questionTable(Term term, boolean questionOrQuest) {
         Op o = term.op();
         if (questionOrQuest ? o.beliefable : o.goalable) {
-            return new HijackQuestionTable(0, 3);
+            return new HijackQuestionTable(0, 2);
         } else {
             return QuestionTable.Empty;
         }
