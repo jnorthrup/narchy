@@ -11,6 +11,7 @@ import org.eclipse.collections.api.tuple.primitive.BooleanObjectPair;
 import org.eclipse.collections.impl.tuple.Tuples;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayDeque;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Queue;
@@ -31,8 +32,7 @@ abstract public class Search<N, E> {
 
     private static final List empty = List.of();
     public final TraveLog log;
-    public List<BooleanObjectPair<FromTo<Node<N, E>, E>>> path = null;
-    private Node<N, E> at = null;
+
 
     protected Search() {
         this(new TraveLog.IntHashTraveLog());
@@ -60,15 +60,14 @@ abstract public class Search<N, E> {
         return step.getTwo().to(step.getOne());
     }
 
-    abstract protected boolean next(BooleanObjectPair<FromTo<Node<N, E>, E>> move, Node<N, E> next);
+    abstract protected boolean next(List<BooleanObjectPair<FromTo<Node<N, E>, E>>> path, Node<N, E> next);
 
     private void start() {
 
     }
 
     private void stop() {
-        at = null;
-        path = null;
+
     }
 
     private boolean bfsNode(Node<N, E> start, Queue<Pair<List<BooleanObjectPair<FromTo<Node<N, E>, E>>>, Node<N, E>>> q) {
@@ -80,34 +79,35 @@ abstract public class Search<N, E> {
 
         q.clear();
 
-        q.add(Tuples.pair(this.path = empty, start));
+        q.add(Tuples.pair(empty, start));
 
+        List<BooleanObjectPair<FromTo<Node<N, E>, E>>> path;
         Pair<List<BooleanObjectPair<FromTo<Node<N, E>, E>>>, Node<N, E>> current;
         while ((current = q.poll()) != null) {
 
-            final Node<N, E> at = this.at = current.getTwo();
+            final Node<N, E> at = current.getTwo();
 
-            this.path = current.getOne();
+            path = current.getOne();
 
             for (FromTo<Node<N, E>, E> e : next(at)) {
-                Node<N, E> next = next(e, at);
+                Node<N, E> next = next(e, at, path);
                 if (next == null || !log.visit(next))
                     continue;
 
 
                 q.add(Tuples.pair(
-                        Cons.the(this.path, pair(next == e.to(), e)),
+                        Cons.the(path, pair(next == e.to(), e)),
                         next));
             }
 
 
-            if (!this.path.isEmpty()) {
+            if (!path.isEmpty()) {
 
 //                if (start != at) {
-                    BooleanObjectPair<FromTo<Node<N, E>, E>> move =
-                            this.path instanceof Cons ? ((Cons<BooleanObjectPair<FromTo<Node<N, E>, E>>>) this.path).tail : this.path.get(this.path.size() - 1);
+//                    BooleanObjectPair<FromTo<Node<N, E>, E>> move =
+//                            path instanceof Cons ? ((Cons<BooleanObjectPair<FromTo<Node<N, E>, E>>>) path).tail : path.get(path.size() - 1);
 
-                    if (!next(move, at))
+                    if (!next(path, at))
                         return false;
 //                }
             }
@@ -123,7 +123,7 @@ abstract public class Search<N, E> {
      * can be overridden to hijack the determined next destination
      */
     @Nullable
-    protected Node<N, E> next(FromTo<Node<N, E>, E> e, Node<N, E> at) {
+    protected Node<N, E> next(FromTo<Node<N, E>, E> e, Node<N, E> at, List<BooleanObjectPair<FromTo<Node<N, E>, E>>> path) {
         return e.other(at);
     }
 
@@ -131,14 +131,18 @@ abstract public class Search<N, E> {
     public boolean dfs(Iterable<Node> startingNodes) {
         return dfs(startingNodes, null);
     }
+    public boolean bfs(Iterable<Node> startingNodes) {
+        return bfs(startingNodes, new ArrayDeque(), null);
+    }
 
     public boolean dfs(Iterable startingNodes, @Nullable NodeGraph g) {
 
         start();
 
+
         try {
 
-            path = new FasterList(8);
+            List<BooleanObjectPair<FromTo<Node<N, E>, E>>> path = new FasterList(8);
 
             for (Object n : startingNodes) {
                 Node nn;
@@ -150,7 +154,7 @@ abstract public class Search<N, E> {
                         throw new WTF();
                 }
 
-                if (!dfsNode(nn))
+                if (!dfsNode(nn, path))
                     return false;
             }
 
@@ -161,17 +165,18 @@ abstract public class Search<N, E> {
     }
 
 
-    private boolean dfsNode(Node<N, E> n) {
+    private boolean dfsNode(Node<N, E> n, List<BooleanObjectPair<FromTo<Node<N, E>, E>>> path) {
 
         if (!log.visit(n))
             return true;
 
-        Iterator<FromTo<Node<N, E>, E>> ii = next(this.at = n).iterator(); //Iterable?
+        Node<N, E> at;
+        Iterator<FromTo<Node<N, E>, E>> ii = next(at = n).iterator(); //Iterable?
 
         while (ii.hasNext()) {
             FromTo<Node<N, E>, E> e = ii.next();
 
-            Node<N, E> next = next(e, at);
+            Node<N, E> next = next(e, at, path);
 
             if (next == null || log.hasVisited(next))
                 continue;
@@ -180,10 +185,11 @@ abstract public class Search<N, E> {
 
             path.add(move);
 
-            if (!next(move, next) || !dfsNode(next))
+            if (!next(path, next) || !dfsNode(next, path))
                 return false;
 
-            this.at = n;
+            at = n;
+
             path.remove(path.size() - 1);
         }
 

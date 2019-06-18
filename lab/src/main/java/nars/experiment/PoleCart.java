@@ -55,7 +55,7 @@ public class PoleCart extends GameX {
         int instances = 1; int threadsEach = 4;
         for (int i = 0; i < instances; i++)
             runRTNet((n)-> {
-                        Impiler.init(n);
+
 
                         return new PoleCart(
                                 instances > 1 ?

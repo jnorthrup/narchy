@@ -24,11 +24,9 @@ import nars.task.NALTask;
 import nars.task.util.TaskList;
 import nars.term.Term;
 import nars.term.Termed;
-import nars.term.atom.Bool;
 import nars.term.util.conj.ConjBuilder;
 import nars.term.util.conj.ConjTree;
 import nars.time.Tense;
-import nars.truth.PreciseTruth;
 import nars.truth.Truth;
 import nars.truth.func.NALTruth;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
@@ -41,6 +39,8 @@ import java.util.List;
 import java.util.Map;
 
 import static nars.Op.*;
+import static nars.term.atom.Bool.False;
+import static nars.term.atom.Bool.Null;
 import static nars.time.Tense.*;
 
 /**
@@ -56,10 +56,10 @@ public class Impiler {
     /**
      * concept metadata field key storing impiler node instances
      */
-    static final String IMPILER_NODE = ImpilerTracker.class.getSimpleName();
+    static final String IMPILER_NODE = ImplGrapher.class.getSimpleName();
 
     public static void init(NAR n) {
-        Impiler.ImpilerTracker t = new Impiler.ImpilerTracker(32, 2, n);
+        ImplGrapher t = new ImplGrapher(32, 2, n);
         Impiler.ImpilerSolver s = new Impiler.ImpilerSolver(32, 2, n);
         Impiler.ImpilerDeduction d = new Impiler.ImpilerDeduction(32, n);
     }
@@ -73,9 +73,10 @@ public class Impiler {
             in = n.newChannel(this);
         }
 
+
         @Override
         protected boolean filter(Task next) {
-            return (next.isGoal() || next.isQuestionOrQuest()) && !next.term().hasVars() && !next.hasXternal();
+            return (next.isGoal() || next.isQuestionOrQuest()) && !next.term().hasVars();
         }
 
         @Override
@@ -144,12 +145,12 @@ public class Impiler {
 
 
             ImplNode m = c.meta(IMPILER_NODE);
-            if (m != null) {
-                if (!m.out.isEmpty()) {
-                    //TODO handle negations correctly
-                    Term A = root;
-                    new ImpilerDeductionSearch(A, what).dfs(List.of(m));
-                }
+            if (m != null && !m.out.isEmpty()) {
+                //TODO handle negations correctly
+                List<Node> targets = List.of(m);
+                new ImpilerDeductionSearch(root, what)
+                        //.dfs(targets);
+                        .bfs(targets);
             }
 
             return 0;
@@ -185,7 +186,7 @@ public class Impiler {
         private class ImpilerDeductionSearch extends Search<Term, ImplEdge> {
 
             final static int recursionMin = 2;
-            final static int recursionMax = 4;
+            final static int recursionMax = 5;
             final float minConf;
             private final Term a;
             private final What what;
@@ -211,7 +212,7 @@ public class Impiler {
                 for (int s = 0; s < n; s++) {
                     ImplEdge e = path.get(s).getTwo().id();
                     float ff = e.freq;
-                    PreciseTruth tt = $.t(Math.max(ff, 1 - ff), e.conf);
+                    Truth tt = $.t(Math.max(ff, 1 - ff), e.conf);
                     if (t == null) {
                         t = tt;
                     } else {
@@ -233,7 +234,7 @@ public class Impiler {
                 }
 
 
-                Term Z = Bool.Null;
+                Term Z = Null;
                 int zDT = DTERNAL;
                 for (int s = 0; s < n; s++) {
                     ImplEdge e = path.get(s).getTwo().id();
@@ -244,7 +245,9 @@ public class Impiler {
                                 cc.add(ETERNAL, a);
                             } else {
                                 Term f = cc.term();
-                                cc = new ConjTree();
+                                if (f == False || f == Null)
+                                    return false;
+                                cc.clear();
                                 cc.add(ETERNAL, f); //add existing accumulated sequence DTERNALly
                             }
                             if (s != n - 1) {
@@ -281,8 +284,8 @@ public class Impiler {
                 Task z = Task.tryTask(ee, BELIEF, t, (ttt, tr) ->
                         NALTask.the(ttt, BELIEF, tr, nar.time(), ETERNAL, ETERNAL, ss.toArray()));
                 if (z != null) {
-//                                System.out.println(z);
                     z.pri(nar);
+                    System.out.println(z);
                     in.accept(z, what);
                     return true;
                 }
@@ -292,7 +295,9 @@ public class Impiler {
 
 
             @Override
-            protected boolean next(BooleanObjectPair<FromTo<Node<Term, ImplEdge>, ImplEdge>> move, Node<Term, ImplEdge> next) {
+            protected boolean next(List<BooleanObjectPair<FromTo<Node<Term, ImplEdge>, ImplEdge>>> path, Node<Term, ImplEdge> next) {
+                if (path.size() > recursionMax)
+                    return false; //end this probe
 //                            int d = path.size();
 //                            if (d >= recursionMin && d <= recursionMax) {
 //                                truth(path);
@@ -301,9 +306,8 @@ public class Impiler {
             }
 
             @Override
-            protected Node<Term, ImplEdge> next(FromTo<Node<Term, ImplEdge>, ImplEdge> edge, Node<Term, ImplEdge> at) {
-                if (path.size() > recursionMax)
-                    return null; //end this probe
+            protected Node<Term, ImplEdge> next(FromTo<Node<Term, ImplEdge>, ImplEdge> edge, Node<Term, ImplEdge> at, List<BooleanObjectPair<FromTo<Node<Term, ImplEdge>, ImplEdge>>> path) {
+
 
                 Term et = edge.id().getTwo();
                 Concept c = nar.conceptualizeDynamic(et);
@@ -331,18 +335,18 @@ public class Impiler {
      * builds the implication graph in concept metadata fields
      * TODO configurable trigger, dont just extend TaskLeak
      */
-    public static class ImpilerTracker extends TaskLeak {
+    public static class ImplGrapher extends TaskLeak {
 
-        final static boolean beliefOrGoal = true;
+
 //        final static long whenStart = ETERNAL, whenEnd = ETERNAL;
 
-        public ImpilerTracker(int capacity, float ratePerDuration, NAR n) {
+        public ImplGrapher(int capacity, float ratePerDuration, NAR n) {
             super(capacity, n);
         }
 
         @Override
         protected boolean filter(Task next) {
-            return next.op() == IMPL && next.punc() == (beliefOrGoal ? BELIEF : GOAL) && !next.hasVars();
+            return next.op() == IMPL && next.punc() == BELIEF && !next.hasVars();
         }
 
         @Override
@@ -357,7 +361,7 @@ public class Impiler {
             //table.sample(ETERNAL, ETERNAL, null, nar);
             //Task it = table.answer(whenStart, whenEnd, i, null, nar);
             /*if (it != null) */
-            {
+
                 if (t != null) {
                     //TODO for now dont consider the implication/etc.. as its own event although NARS does
                     //  just represent it as transitions
@@ -372,17 +376,19 @@ public class Impiler {
 //                    float cn = (conf * (1 - f));
 
                     Concept sc =
-                            nar.conceptualize(subj.unneg());
-                    //nar.conceptualizeDynamic(subj.unneg());
-                    Concept pc =
-                            nar.conceptualize(pred);
-                    //nar.conceptualizeDynamic(pred/*.unneg()*/);
-                    if (sc != null && pc != null) {
-                        edge(new ImplEdge(subj, pred), t, sc, pc);
+                            //nar.conceptualize(subj.unneg());
+                            nar.conceptualizeDynamic(subj.unneg());
+                    if (sc!=null) {
+                        Concept pc =
+                                //nar.conceptualize(pred);
+                                nar.conceptualizeDynamic(pred/*.unneg()*/);
+                        if (pc != null) {
+                            edge(new ImplEdge(subj, pred), t, sc, pc);
+                        }
                     }
 
                 }
-            }
+
             return 1;
         }
 
@@ -396,7 +402,8 @@ public class Impiler {
         }
 
         private ImplNode node(Concept sc) {
-            return sc.meta(IMPILER_NODE, (s) -> new ImplNode(sc.term()));
+            Term sct = sc.term();
+            return sc.meta(IMPILER_NODE, s -> new ImplNode(sct));
         }
 
         @Override
@@ -409,8 +416,7 @@ public class Impiler {
 
         final static int CAP = 8; //TODO parameterize
 
-        final ImplBag
-                out = new ImplBag(CAP),
+        final ImplBag out = new ImplBag(CAP),
         //TODO separate outPos and outNeg?
         //outNeg = new ImplBag(CAP),
         in = new ImplBag(CAP);
@@ -418,6 +424,7 @@ public class Impiler {
         public ImplNode(Term id) {
             super(id);
         }
+
 
         public final void addSource(ImplEdge e) {
             add(out, e);
@@ -440,7 +447,7 @@ public class Impiler {
 
         @Override
         public String toString() {
-            return in + " " + out;
+            return id + ":" + "in=" + in + ", out=" + out;
         }
 
         @Override

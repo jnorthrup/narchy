@@ -182,6 +182,7 @@ public class ConjTree implements ConjBuilder {
         boolean xConj = nx.op() == CONJ;
 
         FasterList<Term> toAdd = null;
+        Term nxn = null;
         for (Iterator<Term> nyi = neg.iterator(); nyi.hasNext(); ) {
             final Term ny = nyi.next();
             boolean yConj = ny.op() == CONJ;
@@ -217,7 +218,9 @@ public class ConjTree implements ConjBuilder {
             //                }
             //
             if (yConj) {
-                Term nxn = nx.neg();
+
+                if (nxn == null) nxn = nx.neg();
+
                 if (Conj.eventOf(ny, nxn)) {
                     //prune
                     nyi.remove();
@@ -246,6 +249,7 @@ public class ConjTree implements ConjBuilder {
                     ConjList nxe = ConjList.events(nx);
                     nxe.removeAll(nyn);
                     nx = nxe.term();
+                    nxn = null; //invalidate
                     if (nx instanceof Bool)
                         return nx;
                     long nxshift = nxe.shift();
@@ -253,7 +257,7 @@ public class ConjTree implements ConjBuilder {
                     if (nxshift == ETERNAL || nxshift == 0) {
                         //continue, adding at present parallel time
                     } else {
-                        if (!addEvent(nxshift, nx.neg()))
+                        if (!addEvent(nxshift, nxn = nx.neg()))
                             return False;
                         else {
                             assert(toAdd == null): "TODO";
@@ -280,7 +284,7 @@ public class ConjTree implements ConjBuilder {
 
         boolean xConj = x.op() == CONJ;
         if (xConj && nP_or_pN) for (Term yy : y)
-            if (Conj.eventOf(x, yy.neg())) return yy.neg();
+            if (Conj.eventOf(x, yy, -1)) return yy.neg();
             else {
                 Term z = Conj.diffAll(x, yy);
                 if (!z.equals(x)) {
@@ -625,17 +629,38 @@ public class ConjTree implements ConjBuilder {
                 if (hasConj) {
                     ready:
                     for (Term x : q) {
-                        if (x.op() == CONJ) {
+                        if (x instanceof Compound && x.op() == CONJ) {
                             int xv = x.volume();
                             for (Term y : q)
-                                if (y != x && y.volume() < xv) {
-                                    if (Conj.eventOf(x, y, ETERNAL, -1)) {
+                                if (y != x && y.volume() < xv && x.hasAll(y.unneg().structure())) {
+                                    //TODO test for disjunctive sequence contradictions
+                                    final boolean[] fail = {false};
+                                    simple = !x.eventsOR((when,xx) -> {
+                                        if (xx.equalsNeg(y)) {
+                                            fail[0] = true;
+                                            return true;
+                                        }
+                                        if (xx.equals(y))
+                                            return true;
+                                        if (xx instanceof Neg) {
+                                            Term xu = xx.unneg();
+                                            if (xu.op() == CONJ) {
+                                                if (Conj.eventOf(xu, y, +1) || Conj.eventOf(xu, y, -1)) {
+                                                    return true;
+                                                }
+                                            }
+                                        }
+                                        return false;
+                                    }, ETERNAL, true, true);
+                                    if (fail[0])
                                         return False; //conflict in sequence avoided
-                                    }
-                                    if (Conj.eventOf(x, y, ETERNAL, +1)) {
-                                        simple = false;
+                                    if (!simple)
                                         break ready;
-                                    }
+
+//                                    if (Conj.eventOf(x, y, ETERNAL, +1)) {
+//                                        simple = false;
+//                                        break ready;
+//                                    }
                                 }
                         }
                     }
@@ -662,6 +687,7 @@ public class ConjTree implements ConjBuilder {
 
                     //post-verify HACK
                     if (y.op()==CONJ && (y.subStructure()&CONJ.bit)!=0) {
+                        //test factorization exhaustively
                         try {
                             y.eventsAND((when, whta) -> {
                                 return true;

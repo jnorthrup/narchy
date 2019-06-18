@@ -6,7 +6,6 @@ import jcog.data.graph.NodeGraph;
 import jcog.data.graph.ObjectGraph;
 import jcog.data.list.FasterList;
 import org.eclipse.collections.api.tuple.Pair;
-import org.eclipse.collections.api.tuple.primitive.BooleanObjectPair;
 import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Field;
@@ -23,7 +22,7 @@ class NodeGraphTest {
         n.dfs("a", new Search() {
 
             @Override
-            protected boolean next(BooleanObjectPair move, Node next) {
+            protected boolean next(List path, Node next) {
                 trace.add(path.toString());
                 return true;
             }
@@ -37,7 +36,7 @@ class NodeGraphTest {
         NodeGraph n = g1();
         List<String> trace = new FasterList();
         n.bfs("a", new Search() {
-            @Override protected boolean next(BooleanObjectPair move, Node next) {
+            @Override protected boolean next(List path, Node next) {
                 trace.add(path.toString());
                 return true;
             }

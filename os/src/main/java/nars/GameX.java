@@ -15,6 +15,7 @@ import jcog.util.ArrayUtil;
 import nars.agent.Game;
 import nars.agent.GameTime;
 import nars.agent.MetaAgent;
+import nars.agent.util.Impiler;
 import nars.agent.util.RLBooster;
 import nars.attention.TaskLinkWhat;
 import nars.concept.Concept;
@@ -311,7 +312,7 @@ abstract public class GameX extends Game {
 //        );
 //        senseReward.timing = new ActionTiming(n);
 
-
+        Impiler.init(n);
     }
 
     private static void initMeta(NAR n, Game a, boolean rl) {

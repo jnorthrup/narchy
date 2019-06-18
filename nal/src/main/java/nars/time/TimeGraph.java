@@ -4,7 +4,6 @@ import com.google.common.collect.Iterables;
 import com.google.common.collect.Iterators;
 import jcog.Util;
 import jcog.WTF;
-import jcog.data.graph.edge.ImmutableDirectedEdge;
 import jcog.data.graph.MapNodeGraph;
 import jcog.data.graph.Node;
 import jcog.data.graph.edge.LazyMutableDirectedEdge;
@@ -202,7 +201,10 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 
         //compute the maximum duration first
         int i = 0;
+        long dt = 0;
+
         for (BooleanObjectPair<FromTo<Node<Event, nars.time.TimeSpan>, TimeSpan>> span : path) {
+
             FromTo<Node<Event, nars.time.TimeSpan>, TimeSpan> event = span.getTwo();
 
             if (i++ == 0) {
@@ -228,17 +230,6 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
                 }
             }
 
-        }
-
-        boolean allImpl = durEventMin == Long.MAX_VALUE && durImplMin != Long.MAX_VALUE;
-
-
-        long dt = 0, dur = allImpl ? durImplMin : durEventMin;
-
-
-        for (BooleanObjectPair<FromTo<Node<Event, nars.time.TimeSpan>, TimeSpan>> span : path) {
-
-            FromTo<Node<Event, nars.time.TimeSpan>, TimeSpan> event = span.getTwo();
 
             long spanDT = event.id().dt;
 
@@ -256,7 +247,8 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
             }
         }
 
-
+        boolean allImpl = durEventMin == Long.MAX_VALUE && durImplMin != Long.MAX_VALUE;
+        long dur = allImpl ? durImplMin : durEventMin;
         if (dur == Long.MAX_VALUE)
             dur = 0; //all relative events, shrink to point
 
@@ -889,7 +881,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
             CartesianIterator<Event> ci = new CartesianIterator(Event[]::new, subEvents2);
             nextPermute:
             while (ci.hasNext()) {
-                long start = Long.MAX_VALUE, range = Long.MAX_VALUE;
+                long start = Long.MAX_VALUE, range = 0;
 
                 Event[] ss = ci.next();
                 ConjBuilder cc =
@@ -1988,7 +1980,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
         }
 
         @Override
-        protected boolean next(BooleanObjectPair<FromTo<Node<Event, TimeSpan>, TimeSpan>> move, Node<Event, TimeSpan> next) {
+        protected boolean next(List<BooleanObjectPair<FromTo<Node<Event, TimeSpan>, TimeSpan>>> path, Node<Event, TimeSpan> next) {
 
             Node<Event, TimeSpan> s = pathStart(path);
             Node<Event, TimeSpan> e = pathEnd(path);
@@ -2074,7 +2066,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
         }
 
         @Override
-        protected boolean next(BooleanObjectPair<FromTo<Node<Event, TimeSpan>, TimeSpan>> move, Node<Event, TimeSpan> n) {
+        protected boolean next(List<BooleanObjectPair<FromTo<Node<Event, TimeSpan>, TimeSpan>>> path, Node<Event, TimeSpan> n) {
 
             Event end = n.id();
 

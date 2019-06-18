@@ -56,7 +56,7 @@ public abstract class NodeGraph<N, E> /* TODO merge with guava Graph: implements
         each.accept(root);
         bfs(List.of(root), new Search<>() {
             @Override
-            protected boolean next(BooleanObjectPair<FromTo<Node<N, E>, E>> move, Node<N, E> next) {
+            protected boolean next(List<BooleanObjectPair<FromTo<Node<N, E>, E>>> path, Node<N, E> next) {
                 each.accept(next.id());
                 return true;
             }

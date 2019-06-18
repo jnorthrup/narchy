@@ -245,7 +245,7 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
         if (t.hasAny(Op.VAR_PATTERN))
             return fail(t, "target has pattern variables", safe);
 
-        if (!t.hasAny(Op.ATOM.bit | Op.INT.bit | Op.Variables))
+        if (!t.hasAny(Op.ATOM.bit | Op.INT.bit))
             return fail(t, "target has no substance", safe);
 
         if (punc == Op.BELIEF || punc == Op.GOAL) {

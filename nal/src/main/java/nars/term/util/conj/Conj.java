@@ -77,7 +77,10 @@ public enum Conj  { ;
 //    }
 
     public static boolean eventOf(Term container, Term x) {
-        return eventOf(container, x, ETERNAL, +1);
+        return eventOf(container, x, 1);
+    }
+    public static boolean eventOf(Term container, Term x, int polarity) {
+        return eventOf(container, x, ETERNAL, polarity);
     }
 
     /**
@@ -93,9 +96,11 @@ public enum Conj  { ;
         Term x;
         if (polarity == 0)
             throw new TODO();
-        else if (polarity == -1)
+        else if (polarity == -1) {
+            if (!container.hasAny(Op.NEG))
+                return false;
             x = _x.neg();
-        else //if (polarity == +1)
+        } else
             x = _x;
 
         if (!x.op().eventable || container.equals(x))
