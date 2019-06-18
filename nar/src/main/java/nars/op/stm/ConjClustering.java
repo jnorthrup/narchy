@@ -24,7 +24,6 @@ import nars.task.proxy.ImageTask;
 import nars.task.util.TaskException;
 import nars.task.util.TaskList;
 import nars.term.Term;
-import nars.term.util.TermedDelegate;
 import nars.term.util.conj.ConjSeq;
 import nars.time.Tense;
 import nars.truth.Stamp;
@@ -37,6 +36,7 @@ import java.util.ListIterator;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.BooleanSupplier;
 import java.util.function.Predicate;
+import java.util.function.ToLongFunction;
 
 import static nars.Op.CONJ;
 import static nars.truth.func.TruthFunctions.c2wSafe;
@@ -455,7 +455,7 @@ public class ConjClustering extends How {
             if (Util.and(Task::isCyclic, x))
                 y.setCyclic(true);
 
-            budget(y, x);
+            fund(y, x);
 
             return y;
 
@@ -463,22 +463,22 @@ public class ConjClustering extends How {
         }
     }
 
-    private void budget(NALTask y, Task[] x) {
-        int xVolMax = Util.max(TermedDelegate::volume, x);
-        float cmplFactor =
-                ((float)xVolMax) / y.volume();
+    public static void fund(Task y, Task[] x) {
+//        int xVolMax = Util.max(TermedDelegate::volume, x);
+//        double cmplFactor =
+//                ((double)xVolMax) / y.volume();
 
-//                                float freqFactor =
-//                                        t.freq();
-//                                float confFactor =
-//                                        (conf / (conf + confMax));
+        double conf = y.conf();
+        double confMax = Util.max(Task::conf, x);
+        double confFactor = (conf / (conf + confMax));
 
-        float p = Util.max(Task::priElseZero, x) * cmplFactor;
+        long rangeMax = Util.max((ToLongFunction<Task>)Task::range, x);
+        long range = y.range();
+        double rangeFactor = ((double)range)/rangeMax;
 
-        y.pri(
-            Prioritizable.fund(p, priCopyOrMove,
-            x)
-        );
+        float p = (float)(Util.sum(Task::priElseZero, x) * /*cmplFactor * */ confFactor);
+
+        y.pri(Prioritizable.fund(p, priCopyOrMove, x));
 
         assert(!y.isDeleted());
     }

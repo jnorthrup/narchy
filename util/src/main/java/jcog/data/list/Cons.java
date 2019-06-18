@@ -47,12 +47,14 @@ public class Cons<T> extends AbstractList<T> {
 
     @Override
     public T get(int index) {
-        if (index == 0)
-            return head.get(0);
-        else if (index == head.size())
-            return tail;
+        if (index < head.size())
+            return head.get(index);
         else
-            throw new TODO();
+            return tail;
+//        else if (index == head.size())
+//            return tail;
+//        else
+//            throw new TODO();
     }
 
     public boolean isEmpty() { return false; }

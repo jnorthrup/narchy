@@ -1897,7 +1897,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
         }
 
         @Override
-        protected Iterable<FromTo<Node<Event, nars.time.TimeSpan>, TimeSpan>> next(Node<Event, TimeSpan> n) {
+        protected Iterable<FromTo<Node<Event, nars.time.TimeSpan>, TimeSpan>> find(Node<Event, TimeSpan> n, List<BooleanObjectPair<FromTo<Node<Event, TimeSpan>, TimeSpan>>> path) {
 
 
             Iterable<FromTo<Node<Event, TimeSpan>, TimeSpan>> existing = this.existing ? existing(n) : empty;
@@ -1980,7 +1980,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
         }
 
         @Override
-        protected boolean next(List<BooleanObjectPair<FromTo<Node<Event, TimeSpan>, TimeSpan>>> path, Node<Event, TimeSpan> next) {
+        protected boolean go(List<BooleanObjectPair<FromTo<Node<Event, TimeSpan>, TimeSpan>>> path, Node<Event, TimeSpan> next) {
 
             Node<Event, TimeSpan> s = pathStart(path);
             Node<Event, TimeSpan> e = pathEnd(path);
@@ -2066,7 +2066,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
         }
 
         @Override
-        protected boolean next(List<BooleanObjectPair<FromTo<Node<Event, TimeSpan>, TimeSpan>>> path, Node<Event, TimeSpan> n) {
+        protected boolean go(List<BooleanObjectPair<FromTo<Node<Event, TimeSpan>, TimeSpan>>> path, Node<Event, TimeSpan> n) {
 
             Event end = n.id();
 

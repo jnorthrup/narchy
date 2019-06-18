@@ -374,7 +374,7 @@ public abstract class Bag<X, Y> implements Table<X, Y>, Sampler<Y>, jcog.pri.Pre
             onCapacityChange(capBefore, capNext);
     }
 
-    public final <B extends Bag> B capacity(int c) {
+    public final <B extends Bag<X,Y>> B capacity(int c) {
         setCapacity(c);
         return (B) this;
     }

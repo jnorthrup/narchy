@@ -22,7 +22,7 @@ class NodeGraphTest {
         n.dfs("a", new Search() {
 
             @Override
-            protected boolean next(List path, Node next) {
+            protected boolean go(List path, Node next) {
                 trace.add(path.toString());
                 return true;
             }
@@ -36,7 +36,7 @@ class NodeGraphTest {
         NodeGraph n = g1();
         List<String> trace = new FasterList();
         n.bfs("a", new Search() {
-            @Override protected boolean next(List path, Node next) {
+            @Override protected boolean go(List path, Node next) {
                 trace.add(path.toString());
                 return true;
             }

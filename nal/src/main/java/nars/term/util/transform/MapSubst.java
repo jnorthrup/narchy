@@ -63,6 +63,7 @@ abstract public class MapSubst implements Subst {
                     int ks = k.structure();
                     if (!x.impossibleSubStructure(ks) && !x.impossibleSubVolume(k.volume())) {
                         if (valid == null) valid = new FasterList<>(ms);
+                        //TODO else if (valid.size() >=2) //.. the list wont be used for MapN
                         valid.add(k);
                         kStruct |= ks;
                     }
