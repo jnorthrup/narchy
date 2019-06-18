@@ -1,17 +1,28 @@
 package nars.truth.dynamic;
 
 import jcog.util.ObjectLongLongPredicate;
+import nars.NAL;
 import nars.Task;
+import nars.concept.TaskConcept;
+import nars.task.util.Answer;
 import nars.term.Compound;
+import nars.term.Neg;
 import nars.term.Term;
 import nars.time.Tense;
 import nars.truth.Truth;
 import nars.truth.func.NALTruth;
 
+import java.util.function.Predicate;
+
 import static nars.Op.IMPL;
 import static nars.time.Tense.*;
 
 class DynamicImplTruth extends AbstractDynamicTruth {
+
+    private static final Predicate<Task> POSITIVE_FILTER =
+            (t-> t.freq() >= 2/3f);
+    private static final Predicate<Task> NEGATIVE_FILTER =
+            (t-> t.freq() <= 1/3f);
 
     /**
      *     B, A, --is(A,"==>") |-          polarizeTask((polarizeBelief(A) ==> B)), (Belief:InductionDepolarized, Time:BeliefRelative)
@@ -19,15 +30,35 @@ class DynamicImplTruth extends AbstractDynamicTruth {
      */
     @Override  public Truth truth(DynTaskify d) {
         Truth subjTruth = d.get(0).truth();
-        Truth predTruth = d.get(1).truth();
         if (!d.componentPolarity.get(0)) {
             subjTruth = subjTruth.neg();
         }
         assert(d.componentPolarity.get(1));
 
+        Truth predTruth = d.get(1).truth();
         return NALTruth.Abduction.apply(subjTruth, predTruth, 0, null);
     }
 
+    @Override
+    public Task subTask(TaskConcept subConcept, Term subTerm, long subStart, long subEnd, Predicate<Task> filter, DynTaskify d) {
+        int currentComponent = d.size();
+        if (currentComponent == 0) {
+
+            //use a wrapper filter to try to provide a task matching the target polarity first.
+            // if that returns nothing then redo without extra filter
+
+            assert(NAL.DYN_TASK_MATCH_MODE==1): "match mode (not sampled) highly recommended";
+
+            boolean subjPolarity = !(subTerm instanceof Neg);
+            Predicate<Task> specificFilter = Answer.filter(subjPolarity ? POSITIVE_FILTER : NEGATIVE_FILTER, filter);
+            Task specific =
+                    super.subTask(subConcept, subTerm, subStart, subEnd, specificFilter, d);
+            if (specific!=null)
+                return specific;
+        }
+
+        return super.subTask(subConcept, subTerm, subStart, subEnd, filter, d);
+    }
 
     @Override
     public boolean evalComponents(Compound superterm, long start, long end, ObjectLongLongPredicate<Term> each) {
@@ -47,7 +78,7 @@ class DynamicImplTruth extends AbstractDynamicTruth {
                     end = start + sdt;
                 else {
                     end = start;
-                    start = start + sdt /* it's negative */;
+                    start = start + sdt;
                 }
             }
         }

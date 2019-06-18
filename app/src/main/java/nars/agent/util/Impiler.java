@@ -44,7 +44,12 @@ import static nars.Op.*;
 import static nars.time.Tense.*;
 
 /**
- * implication compiler
+ * Implication Graph / Compiler
+ * a set of plugins that empower and accelerate causal reasoning
+ *
+ * see: https://github.com/opennars/opennars-archived/blob/1.6.1_Plugins/nars_java/nars/plugin/app/plan
+ * see: https://github.com/opennars/opennars-archived/blob/1.6.1_Plugins/nars_java/nars/plugin/app/plan/GraphExecutive.java
+ *
  */
 public class Impiler {
 

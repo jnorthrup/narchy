@@ -3,6 +3,7 @@ package nars.concept.dynamic;
 import nars.$;
 import nars.Narsese;
 import nars.Task;
+import org.eclipse.collections.impl.bag.mutable.HashBag;
 import org.junit.jupiter.api.Test;
 
 import static nars.$.$$;
@@ -84,7 +85,36 @@ class DynamicImplTest extends AbstractDynamicTaskTest {
             assertEq("(x ==>+2 y)", t.term());
             assertEquals($.t(1, 0.41f), t.truth());
         }
-        assertEquals("$.50 (x ==>+2 y). 0 %1.0;.45%", n.belief($$("(x==>y)"), 0, 0).toString());
-        assertEquals("$.50 (x ==>+1 y). 0 %1.0;.34%", n.belief($$("(x ==>+1 y)"), 0, 0).toString());
+        assertEquals("(x ==>+2 y). 0 %1.0;.45%", n.belief($$("(x==>y)"), 0, 0).toStringWithoutBudget());
+        assertEquals("(x ==>+1 y). 0 %1.0;.34%", n.belief($$("(x ==>+1 y)"), 0, 0).toStringWithoutBudget());
+    }
+
+    @Test void testWeakPolarity() throws Narsese.NarseseException {
+        n.input("x. %0.2%");
+        n.input("y.");
+        {
+            Task t = n.belief($$("(x==>y)"));
+            System.out.println(t);
+            assertEquals("(x==>y). %1.0;.14%",t.toStringWithoutBudget());
+        }
+        {
+            Task t = n.belief($$("(--x==>y)"));
+            System.out.println(t);
+            assertEquals("((--,x)==>y). %1.0;.39%",t.toStringWithoutBudget());
+        }
+    }
+
+    @Test
+    void testPolarityPreference() throws Narsese.NarseseException {
+        n.input("x. %0.05%");
+        n.input("x. %0.95%");
+        n.input("y.");
+
+        HashBag<String> results = new HashBag();
+        for (int i = 0; i < 100; i++) {
+            Task t = n.belief($$("(x==>y)"));
+            results.add(t.toStringWithoutBudget());
+        }
+        System.out.println(results.toStringOfItemToCount());
     }
 }

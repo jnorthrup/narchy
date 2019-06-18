@@ -10,7 +10,6 @@ import nars.Op;
 import nars.Task;
 import nars.concept.Concept;
 import nars.concept.TaskConcept;
-import nars.table.BeliefTable;
 import nars.task.DynamicTruthTask;
 import nars.task.NALTask;
 import nars.task.util.Answer;
@@ -19,7 +18,6 @@ import nars.term.Compound;
 import nars.term.Term;
 import nars.term.util.TermException;
 import nars.time.Tense;
-import nars.time.When;
 import nars.truth.Stamp;
 import nars.truth.Truth;
 import nars.util.Timed;
@@ -54,11 +52,11 @@ public class DynTaskify extends TaskList {
     /** whether the result is intended for internal or external usage; determines precision settings */
     final boolean ditherTruth;
     //, ditherTime;
-    private final int dur;
+    final int dur;
     private MetalLongSet evi = null;
 
-    private final boolean beliefOrGoal;
-    private final Predicate<Task> filter;
+    final boolean beliefOrGoal;
+    final Predicate<Task> filter;
     public final MetalBitSet componentPolarity;
 
     public DynTaskify(AbstractDynamicTruth model, boolean beliefOrGoal, boolean ditherTruth, boolean ditherTime,int dur, NAR nar) {
@@ -247,8 +245,8 @@ public class DynTaskify extends TaskList {
     private boolean evalComponent(Term subTerm, long subStart, long subEnd) {
         Op so = subTerm.op();
 
-        int currentComponent = size;
         boolean negated = so == Op.NEG;
+        int currentComponent = size;
         if (negated) {
             subTerm = subTerm.unneg();
             so = subTerm.op();
@@ -258,35 +256,22 @@ public class DynTaskify extends TaskList {
         if (!so.taskable)
             throw new TermException("non-taskable component of supposed dynamic compound", subTerm);
 
-        subTerm = subTerm.normalize();
+//        Term subTerm2 = subTerm.normalize();
+//        if (!subTerm2.equals(subTerm)) {
+//            //HACK TODO detect earlier
+//            if (NAL.DEBUG)
+//                throw new TermTransformException("unnormalized dynamic task component)", subTerm, subTerm2);
+//            return false;
+//        }
+
 
         Concept subConcept = nar.conceptualizeDynamic(subTerm);
         if (!(subConcept instanceof TaskConcept))
             return false;
 
+        Task t = model.subTask((TaskConcept)subConcept, subTerm, subStart, subEnd, filter, this);
 
-        Predicate<Task> f = filter;
-
-        BeliefTable table = (BeliefTable) subConcept.table(beliefOrGoal ? BELIEF : GOAL);
-        Task bt;
-        switch (NAL.DYN_TASK_MATCH_MODE) {
-            case 0:
-                bt = table.matchExact(subStart, subEnd, subTerm, f, dur, nar);
-                break;
-            case 1:
-                bt = table.match(subStart, subEnd, subTerm, f, dur, nar);
-                break;
-            case 2:
-                bt = table.sample(new When(subStart, subEnd, dur, nar), subTerm, f);
-                break;
-            default:
-                throw new UnsupportedOperationException();
-        }
-
-        if (bt != null && /*model.acceptComponent((Compound) template(), bt) &&*/ add(bt)) {
-            return true;
-        }
-        return false;
+        return t != null && add(t);
     }
 
 

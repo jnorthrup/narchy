@@ -396,7 +396,7 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
         for (int i = 0; i < n; i++) {
             if (each.test(i)) {
                 TaskComponent c = get(i);
-                //if (c == null) continue; //HACK
+                if (c == null) continue; //HACK
                 double ce = c.evi;
                 if (ce == ce)
                     e += ce;

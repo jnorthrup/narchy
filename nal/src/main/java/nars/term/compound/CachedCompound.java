@@ -30,11 +30,6 @@ abstract public class CachedCompound extends SeparateSubtermsCompound implements
     private final int _structure;
 
     public static Compound newCompound(Op op, int dt, Subterms subterms) {
-//        if (subterms instanceof DisposableTermList)
-//            throw new WTF();
-//        boolean hasTemporal = op.temporal || subterms.hasAny(Op.Temporal);
-//        boolean isNormalized = subterms.isNormalized();
-
 
         Compound c;
         if (!op.temporal && !subterms.hasAny(Op.Temporal)) {
@@ -44,12 +39,11 @@ abstract public class CachedCompound extends SeparateSubtermsCompound implements
             else
                 c = new UnnormalizedCachedCompound(op, subterms);
         } else {
-//            if (op==CONJ && dt == DTERNAL) Util.nop(); //TEMPORARY for debugging
-            if (subterms.sub(subterms.subs() - 1) instanceof Interval) {
-                c = new Sequence(subterms);
-            } else {
+//            if (subterms.sub(subterms.subs() - 1) instanceof Interval) {
+//                c = new Sequence(subterms);
+//            } else {
                 c = new TemporalCachedCompound(op, dt, subterms);
-            }
+//            }
         }
 
         return c;
