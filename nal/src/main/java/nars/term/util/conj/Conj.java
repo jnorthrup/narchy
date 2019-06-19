@@ -2,13 +2,13 @@ package nars.term.util.conj;
 
 import jcog.TODO;
 import jcog.WTF;
+import jcog.data.bit.MetalBitSet;
 import jcog.data.list.FasterList;
 import jcog.util.ArrayUtil;
 import nars.NAL;
 import nars.Op;
 import nars.subterm.Subterms;
 import nars.term.Compound;
-import nars.term.Neg;
 import nars.term.Term;
 import nars.term.compound.Sequence;
 import nars.term.util.builder.TermBuilder;
@@ -16,11 +16,9 @@ import org.eclipse.collections.api.block.predicate.primitive.ByteObjectPredicate
 import org.eclipse.collections.api.block.predicate.primitive.BytePredicate;
 import org.eclipse.collections.api.block.predicate.primitive.LongObjectPredicate;
 import org.eclipse.collections.api.block.procedure.primitive.ByteProcedure;
-import org.roaringbitmap.ImmutableBitmapDataProvider;
-import org.roaringbitmap.RoaringBitmap;
 
 import java.util.Random;
-import java.util.SortedSet;
+import java.util.function.Predicate;
 
 import static nars.Op.CONJ;
 import static nars.term.atom.Bool.Null;
@@ -459,13 +457,13 @@ public enum Conj  { ;
         if (include.equals(exclude))
             return True;
 
-        if (!Term.commonStructure(include,exclude))
+        Subterms incSubs = include.subterms();
+        if (!Term.commonStructure(incSubs,exclude))
             return include;
 
         boolean iSeq = isSeq(include);
         boolean eSeq = isSeq(exclude);
-        if (eSeq) {
-
+        if (eSeq && iSeq) {
 
             ConjList cc = ConjList.events(include);
             ConjList xx = ConjList.events(exclude);
@@ -478,68 +476,14 @@ public enum Conj  { ;
                 return include;
             }
 
-//            if (ee.size() == 2 && ee.when(0) == 0) {
-//                boolean modified = false;
-//                Term eeFirst = ee.get(0);
-//                Term eeSecond = ee.get(1);
-//                int dt = Tense.occToDT(ee.when(1) - ee.when(0));
-//                ConjList ii = ConjList.events(include);
-//                int clipStart = -1;
-//                do {
-//                    clipStart = ii.indexOf(clipStart, eeFirst::equals);
-//                    if (clipStart != -1) {
-//
-//                        long start = ii.when(clipStart);
-//                        int clipEnd = ii.indexOf(clipStart + 1, eeSecond::equals);
-//                        if (clipEnd != -1) {
-//                            if (ii.when(clipEnd) - start == dt) {
-//                                ii.removeAll(clipStart, clipEnd);
-//                                modified = true;
-//                            }
-//                        }
-//                        clipStart++;
-//                    }
-//
-//                } while (clipStart != -1 && !ii.isEmpty());
-//
-//                return modified ? ii.term(B) : include /* unchanged */;
-//            }
-//
-//            //TODO exhaustive match
-//            return Null;
-//            //return include;
-
-
-//
-
-//            ConjLazy ii =
-//                    //Conj.from(include);
-//                    Conj.fromLazy(include);
-//            MetalBitSet starts = MetalBitSet.bits(ii.size());
-//            ConjLazy ee =
-//                    //Conj.from(include);
-//                    Conj.fromLazy(include);
-//
-//
-//
-//            ii.forEachEvent((when,what)->{
-//
-//            });
-//
-//            if (ii.removeAll(ee))
-//                return ii.term();
-//            else
-//                return include;
-
-//        } else if (iSeq || eSeq) {
-        } else {
+        } else if (iSeq||eSeq) {
 
             ConjList ii = ConjList.events(include);
             boolean[] removedSomething = new boolean[]{false};
             exclude.eventsAND((when, what) -> {
                 removedSomething[0] |= ii.removeAll(what);
                 return true;
-            }, ETERNAL, true, exclude.dt() == XTERNAL);
+            }, ETERNAL, true, false /*exclude.dt() == XTERNAL*/);
 
 //            //remove components from disjunctions (TODO optional)
 //            ii.replaceAll(t -> {
@@ -549,10 +493,10 @@ public enum Conj  { ;
 //                }
 //                return t;
 //            });
-
+//
             return removedSomething[0] ? ii.term(B) : include;
 
-//        } else {
+        } else {
 //            Subterms s = include.subterms();
 //            //try positive first
 //            Term[] ss = Terms.withoutOne(s, t -> t.equals(exclude), ThreadLocalRandom.current());
@@ -572,46 +516,62 @@ public enum Conj  { ;
 //
 //                return include; //not found
 //            }
-
 //        } else {
+            MetalBitSet y;
+            Predicate<Term> p;
+            if (exclude.op()==CONJ && exclude.dt()!=XTERNAL) {
+                assert(exclude.dt()==DTERNAL);
+                Subterms excludeSubs = exclude.subterms();
+                p = t -> !excludeSubs.contains(t);
+            } else {
+                p = t -> !t.equals(exclude);
+            }
+            y = incSubs.indicesOfBits(p);
+            if (y.cardinality()==incSubs.subs())
+                return include; //unchanged
+            else
+                return CONJ.the(include.dt(), incSubs.subsIncExc(y,true));
+
+
+
 //            return removeComm(include, exclude, B);
         }
     }
 
-    /**
-     * exclude must be a simple event
-     */
-    public static Term removeComm(Term include, Term exclude, TermBuilder B) {
-
-
-        Subterms incSub = include.subterms();
-        if (incSub.subs() == 2 && exclude.op() != CONJ) {
-            int ei = incSub.indexOf(exclude);
-            if (ei == -1)
-                return include;
-            else
-                return incSub.sub(1 - ei); //the other
-        }
-
-        SortedSet<Term> is = incSub.toSetSorted(
-                (exclude.op() == CONJ && exclude.dt() == DTERNAL) ?
-                        (Term x) -> !exclude.equals(x) && !exclude.contains(x) :
-                        (Term x) -> !exclude.equals(x)
-        );
-        int ii = is.size();
-        if (ii == incSub.subs())
-            return include; //nothing removed
-        if (ii == 0)
-            return True;
-
-//        boolean rem = false;
-//        for (Term x : exclude.subterms())
-//            rem |= is.remove(x);
-//        if (rem)
-        return CONJ.the(B, include.dt(), is);
-//        else
-//            return include; //unchanged
-    }
+//    /**
+//     * exclude must be a simple event
+//     */
+//    public static Term removeComm(Term include, Term exclude, TermBuilder B) {
+//
+//
+//        Subterms incSub = include.subterms();
+//        if (incSub.subs() == 2 && exclude.op() != CONJ) {
+//            int ei = incSub.indexOf(exclude);
+//            if (ei == -1)
+//                return include;
+//            else
+//                return incSub.sub(1 - ei); //the other
+//        }
+//
+//        SortedSet<Term> is = incSub.toSetSorted(
+//                (exclude.op() == CONJ && exclude.dt() == DTERNAL) ?
+//                        (Term x) -> !exclude.equals(x) && !exclude.contains(x) :
+//                        (Term x) -> !exclude.equals(x)
+//        );
+//        int ii = is.size();
+//        if (ii == incSub.subs())
+//            return include; //nothing removed
+//        if (ii == 0)
+//            return True;
+//
+////        boolean rem = false;
+////        for (Term x : exclude.subterms())
+////            rem |= is.remove(x);
+////        if (rem)
+//        return CONJ.the(B, include.dt(), is);
+////        else
+////            return include; //unchanged
+//    }
 
 //    @Deprecated
 //    public static Term diffOne(Term include, Term exclude, @Deprecated boolean excludeNeg) {

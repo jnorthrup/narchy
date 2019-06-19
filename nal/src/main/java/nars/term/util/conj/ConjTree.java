@@ -71,9 +71,7 @@ public class ConjTree implements ConjBuilder {
                 terminate(False);
                 return false;
             }
-        }
-
-        if (!pos.isEmpty() && pos.contains(p))
+        } else if (pos.contains(p))
             return true;
 
         if (!neg.isEmpty()) {
@@ -96,8 +94,7 @@ public class ConjTree implements ConjBuilder {
 
     private boolean validConj(Term conj, boolean invert) {
 
-        if (conj.op()!=CONJ)
-            return true;
+        //assert(conj.op()==CONJ);
 
         Set<Term> pos, neg;
         if (invert) {
@@ -258,7 +255,7 @@ public class ConjTree implements ConjBuilder {
                     if (nxshift == ETERNAL || nxshift == 0) {
                         //continue, adding at present parallel time
                     } else {
-                        if (!addEvent(nxshift, nxn = nx.neg()))
+                        if (!addEvent(nxshift, nx.neg()))
                             return False;
                         else {
                             assert(toAdd == null): "TODO";
@@ -284,22 +281,26 @@ public class ConjTree implements ConjBuilder {
 
 
         boolean xConj = x.op() == CONJ;
-        if (xConj && nP_or_pN) for (Term yy : y)
-            if (Conj.eventOf(x, yy, -1)) return yy.neg();
-            else {
-                Term z = Conj.diffAll(x, yy);
-                if (!z.equals(x)) {
-                    if (z instanceof Bool)
-                        return z.negIf(nP_or_pN);
-                    x = z;
+        if (xConj && nP_or_pN) {
+            for (Term yy : y)
+                if (Conj.eventOf(x, yy, -1))
+                    return yy.neg();
+                else {
+                    Term z = Conj.diffAll(x, yy);
+                    if (!z.equals(x)) {
+                        if (z instanceof Bool)
+                            return z.negIf(nP_or_pN);
+                        x = z;
+                        if (x.op()!=CONJ)
+                            break;
+                    }
                 }
-            }
+        }
 
 
         if (!nP_or_pN) {
 
-            Term xn = x.neg();
-
+            Term xn = null;
             FasterList<Term> add = null;
             for (Iterator<Term> iterator = y.iterator(); iterator.hasNext(); ) {
                 Term yy = iterator.next();
@@ -307,6 +308,7 @@ public class ConjTree implements ConjBuilder {
                 //short-circuit
                 //                    }
                 if (yy.op() == CONJ) {
+                    if (xn == null) xn = x.neg();
                     if (Conj.eventOf(yy, xn))
                         iterator.remove();
                     else {

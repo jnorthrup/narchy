@@ -66,8 +66,9 @@ public class Impiler {
     }
 
     static public float implValue(Task t) {
+        return t.priElseZero();
         //return (float) t.evi();
-        return (1f + (float) t.evi()) * (1 + t.priElseZero());
+        //return (1f + (float) t.evi()) * (1 + t.priElseZero());
     }
 
     /**

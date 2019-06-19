@@ -9,14 +9,14 @@
 //If when S happens, P happens, and before P happens, S has happened, then they are truth-related equivalent
 
 //equivalent, and equivalent to negative cases
- (X==>Y), (  Y==>X), neq(X,Y), --isVar(X), --isVar(Y)     |-    (  X ==>   Y), (Belief:IntersectionPP)
-  (X==>Y), (  Y==>X), neq(X,Y), --isVar(X), --isVar(Y)    |-    (  Y ==>   X), (Belief:IntersectionPP)
- (X==>Y), (--Y==>X), neq(X,Y), --isVar(X), --isVar(Y)     |-    (  X ==> --Y), (Belief:IntersectionNP)
-  (X==>Y), (--Y==>X), neq(X,Y), --isVar(X), --isVar(Y)    |-    (--Y ==>   X), (Belief:IntersectionNP)
- (--X==>Y), (  Y==>X), neq(X,Y), --isVar(X), --isVar(Y)   |-    (--X ==>   Y), (Belief:IntersectionPN)
-  (--X==>Y), (  Y==>X), neq(X,Y), --isVar(X), --isVar(Y)  |-    (  Y ==> --X), (Belief:IntersectionPN)
- (--X==>Y), ( --Y==>X), neq(X,Y), --isVar(X), --isVar(Y)   |-   (--X ==> --Y), (Belief:IntersectionNN)
-  (--X==>Y), ( --Y==>X), neq(X,Y), --isVar(X), --isVar(Y)  |-   (--Y ==> --X), (Belief:IntersectionNN)
+ (X==>Y), (  Y==>X), neq(X,Y), --isVar(X), --isVar(Y)     |-    (  X ==>   Y), (Belief:IntersectionPP, Time:Compose)
+  (X==>Y), (  Y==>X), neq(X,Y), --isVar(X), --isVar(Y)    |-    (  Y ==>   X), (Belief:IntersectionPP, Time:Compose)
+ (X==>Y), (--Y==>X), neq(X,Y), --isVar(X), --isVar(Y)     |-    (  X ==> --Y), (Belief:IntersectionNP, Time:Compose)
+  (X==>Y), (--Y==>X), neq(X,Y), --isVar(X), --isVar(Y)    |-    (--Y ==>   X), (Belief:IntersectionNP, Time:Compose)
+ (--X==>Y), (  Y==>X), neq(X,Y), --isVar(X), --isVar(Y)   |-    (--X ==>   Y), (Belief:IntersectionPN, Time:Compose)
+  (--X==>Y), (  Y==>X), neq(X,Y), --isVar(X), --isVar(Y)  |-    (  Y ==> --X), (Belief:IntersectionPN, Time:Compose)
+ (--X==>Y), ( --Y==>X), neq(X,Y), --isVar(X), --isVar(Y)   |-   (--X ==> --Y), (Belief:IntersectionNN, Time:Compose)
+  (--X==>Y), ( --Y==>X), neq(X,Y), --isVar(X), --isVar(Y)  |-   (--Y ==> --X), (Belief:IntersectionNN, Time:Compose)
 
     //(X==>Y), (Y==>X), neq(X,Y)     |-  varIntro((polarizeTask((X==>Y))&&polarizeBelief((Y==>X)))), (Belief:IntersectionDepolarized)
 
@@ -25,23 +25,23 @@
 
 
 //// equivalence-based syllogism ////////////////////////////////////////////////////////////////////////////////////
- (P==>M), (S==>M), neq(S,P), --isVar(S), --isVar(P) |- (S==>P), (Belief:Comparison)
- (P==>M), (S==>M), neq(S,P), --isVar(S), --isVar(P) |- (P==>S), (Belief:Comparison)
- (M==>P), (M==>S), neq(S,P), --isVar(S), --isVar(P) |- (S==>P), (Belief:Comparison)
- (M==>P), (M==>S), neq(S,P), --isVar(S), --isVar(P) |- (P==>S), (Belief:Comparison)
+ (P==>M), (S==>M), neq(S,P), --isVar(S), --isVar(P) |- (S==>P), (Belief:Comparison, Time:Compose)
+ (P==>M), (S==>M), neq(S,P), --isVar(S), --isVar(P) |- (P==>S), (Belief:Comparison, Time:Compose)
+ (M==>P), (M==>S), neq(S,P), --isVar(S), --isVar(P) |- (S==>P), (Belief:Comparison, Time:Compose)
+ (M==>P), (M==>S), neq(S,P), --isVar(S), --isVar(P) |- (P==>S), (Belief:Comparison, Time:Compose)
 
     //TODO negatives
 
- (M==>P), ((S==>M)&&(M==>S)), neq(S,P), --isVar(S), --isVar(P) |- (S ==> P), (Belief:Analogy)
- (P==>M), ((S==>M)&&(M==>S)), neq(S,P), --isVar(S), --isVar(P) |- (P ==> S), (Belief:Analogy)
+ (M==>P), ((S==>M)&&(M==>S)), neq(S,P), --isVar(S), --isVar(P) |- (S ==> P), (Belief:Analogy, Time:TaskEvent)
+ (P==>M), ((S==>M)&&(M==>S)), neq(S,P), --isVar(S), --isVar(P) |- (P ==> S), (Belief:Analogy, Time:TaskEvent)
     //TODO negatives
 
  //// conditional syllogism ////////////////////////////////////////////////////////////////////////////////////
  //If after M, P usually happens, and M happens, it means P is expected to happen
-  B,     ((C==>A)&&(A==>C))   |- unisubst(C,A,B,"$"),   (Belief:AnalogyPP, Goal:Desire)
-  B,     ((C==>A)&&(A==>C))   |- --unisubst(C,A,B,"$"), (Belief:AnalogyPN)
-  B,   (--(C==>A)&&(--A==>C)) |- unisubst(C,A,B,"$"),   (Belief:AnalogyNP, Goal:Desire)
-  B,   (--(C==>A)&&(--A==>C)) |- --unisubst(C,A,B,"$"), (Belief:AnalogyNN)
+  B,     ((C==>A)&&(A==>C))   |- unisubst(C,A,B,"$"),   (Belief:AnalogyPP, Goal:Desire, Time:TaskEvent)
+  B,     ((C==>A)&&(A==>C))   |- --unisubst(C,A,B,"$"), (Belief:AnalogyPN, Time:TaskEvent)
+  B,   (--(C==>A)&&(--A==>C)) |- unisubst(C,A,B,"$"),   (Belief:AnalogyNP, Goal:Desire, Time:TaskEvent)
+  B,   (--(C==>A)&&(--A==>C)) |- --unisubst(C,A,B,"$"), (Belief:AnalogyNN, Time:TaskEvent)
 
 //  A,     ((C==>A)&&(A==>C))   |- C, (Belief:Analogy, Goal:Desire)
 //  A,     ((C==>A)&&(A==>C))   |- --C, (Belief:AnalogyPN, Goal:Desire)

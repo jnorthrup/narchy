@@ -503,11 +503,11 @@ public class Derivation extends PreDerivation {
         if (p != n) {
             this.reset();
             this.nar = n;
-            this.random = n.random();
-            this.premiseUnify.random(this.random);
+            this.premiseUnify.random(this.random = n.random());
             this.transform = new DerivationTransform();
         }
 
+        this.deriver = d;
         this.what = w;
         //if (this.what!=w) { .. }
 
@@ -519,7 +519,6 @@ public class Derivation extends PreDerivation {
         this.confMin = n.confMin.floatValue();
         this.eviMin = n.confMin.asEvi();
         this.termVolMax = n.termVolMax.intValue();
-        this.deriver = d;
         return this;
     }
 
@@ -728,23 +727,21 @@ public class Derivation extends PreDerivation {
         public final Term applyAtomic(Atomic a) {
 
 
+            Term b;
             if (a instanceof Variable) {
-                return super.applyAtomic(a);
+                b = resolve((Variable)a);
             } else if (a instanceof Atom) {
 
-                if (a.equals(TaskTerm)) {
+                if (a==TaskTerm) //a.equals(TaskTerm))
                     return taskTerm;
-                } else if (a.equals(BeliefTerm)) {
+                else if (a == BeliefTerm) // a.equals(BeliefTerm))
                     return beliefTerm;
-                }
 
-                Term f = derivationFunctors.apply(a);
-                if (f != null)
-                    return f;
+                b = derivationFunctors.apply(a);
+            } else
+                return a;
 
-            }
-
-            return a;
+            return b!=null ? b : a;
         }
 
         @Override

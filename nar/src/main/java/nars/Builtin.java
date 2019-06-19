@@ -105,7 +105,7 @@ public class Builtin {
                 }
             },
 
-            /** similar to without() but for (possibly-recursive) CONJ sub-events. removes all instances of the positive event */
+            /** similar to without() but for any (but not necessarily ALL) (possibly-recursive) CONJ sub-events. removes all instances of the positive event */
             new AbstractInlineFunctor2("conjWithout") {
                 @Override
                 protected Term apply(Term conj, Term event) {
@@ -114,7 +114,7 @@ public class Builtin {
                 }
             },
 
-            /** similar to without() but for (possibly-recursive) CONJ sub-events. removes all instances of the positive or negative of event */
+            /** similar to without() but for any (but not necessarily ALL) (possibly-recursive) CONJ sub-events. removes all instances of the positive or negative of event */
             new AbstractInlineFunctor2("conjWithoutPN") {
                 @Override
                 protected Term apply(Term conj, Term event) {
@@ -409,33 +409,16 @@ public class Builtin {
                 return y == container ? Null : y;
             }
         });
-        /** warning: this returns Null if unchanged */
-        nar.add(new AbstractInlineFunctor2("unsectPN") {
-            @Override
-            protected Term apply(Term container, Term _content) {
-                Term content = _content.unneg();
-                Term y = Terms.withoutAll(container, content.op()!=CONJ ? content::equalsPosOrNeg : content::containsPosOrNeg);
-                return y == container ? Null : y;
-            }
-        });
-        nar.add(new AbstractInlineFunctor2("unsectPNRepolarized") {
-            @Override
-            protected Term apply(Term container, Term _content) {
-                Term content = _content.unneg();
-                boolean neg = container.op()==NEG;
-                Term y = Terms.withoutAll(neg ? container.unneg() : container,  content::containsPosOrNeg);
-                return y == container ? Null : y.negIf(neg);
-            }
-        });
-        nar.add(new AbstractInlineFunctor2("withoutPNRepolarized") {
-            @Override
-            protected Term apply(Term container, Term _content) {
-                Term content = _content.unneg();
-                boolean neg = container.op()==NEG;
-                Term y = Terms.withoutAll(neg ? container.unneg() : container, content.op()!=CONJ ? content::equalsPosOrNeg : content::equalsPosOrNeg);
-                return y == container ? Null : y.negIf(neg);
-            }
-        });
+//        /** warning: this returns Null if unchanged */
+//        nar.add(new AbstractInlineFunctor2("unsectPN") {
+//            @Override
+//            protected Term apply(Term container, Term _content) {
+//                Term content = _content.unneg();
+//                Term y = Terms.withoutAll(container, content.op()!=CONJ ? content::equalsPosOrNeg : content::containsPosOrNeg);
+//                return y == container ? Null : y;
+//            }
+//        });
+
 
 //        /**
 //         * TODO rename this to 'dropAnyCommutive'

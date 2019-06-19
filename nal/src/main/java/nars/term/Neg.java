@@ -1,5 +1,6 @@
 package nars.term;
 
+import jcog.Skill;
 import nars.NAL;
 import nars.Op;
 import nars.The;
@@ -12,7 +13,7 @@ import org.jetbrains.annotations.Nullable;
 import static nars.Op.NEG;
 import static nars.term.atom.Bool.False;
 
-public interface Neg extends Term { ;
+@Skill("Negativity_bias") public interface Neg extends Term { ;
 
 
     static Term neg(Term u) {

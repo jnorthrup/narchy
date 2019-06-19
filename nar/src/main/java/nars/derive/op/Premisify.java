@@ -20,7 +20,7 @@ abstract public class Premisify extends AbstractPred<Derivation> {
     public final Taskify taskify;
 
     public Premisify(Term taskPat, Term beliefPat, boolean fwd, Taskify taskify) {
-        super($.funcFast(UNIFY, $.pFast(taskPat, beliefPat), fwd ? FWD : REV));
+        super($.func(UNIFY, $.p(taskPat, beliefPat), fwd ? FWD : REV));
         this.taskPat = taskPat;
         this.beliefPat = beliefPat;
         this.fwd = fwd;

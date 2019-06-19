@@ -366,7 +366,7 @@ public interface LongInterval {
         if (start == ETERNAL)
             return true; //eternal contains itself
         else
-            return s!=ETERNAL && (s >= start && e <= end());
+            return /*s!=ETERNAL &&*/ (s >= start && e <= end());
     }
 
     /** eternal contains itself */
@@ -377,7 +377,7 @@ public interface LongInterval {
             return true;
         else {
             long bs = b.start();
-            return bs != ETERNAL && bs >= as && b.end() <= end();
+            return /*bs != ETERNAL &&*/ bs >= as && b.end() <= end();
         }
     }
 

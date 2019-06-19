@@ -8,6 +8,7 @@ import jcog.test.control.TrackXY;
 import jcog.tree.rtree.rect.RectFloat;
 import nars.*;
 import nars.agent.GameTime;
+import nars.attention.TaskLinkWhat;
 import nars.control.MetaGoal;
 import nars.derive.BatchDeriver;
 import nars.derive.Deriver;
@@ -52,7 +53,7 @@ public class TrackXY_NAR extends GameX {
 //    static float fps = 16;
 //    static int durMS = Math.round(1000/(fps));
 
-    static int dur = 4;
+    static int dur = 16;
 
     static float camResolution = 0.1f;
     static int experimentTime = 3000000;
@@ -64,7 +65,7 @@ public class TrackXY_NAR extends GameX {
     protected TrackXY_NAR(NAR nar, TrackXY xy) {
         super("trackXY",
                 //FrameTrigger.cycles(W*H*2),
-                GameTime.durs(2),
+                GameTime.durs(1),
                 //FrameTrigger.fps(fps),
                 nar);
 
@@ -260,7 +261,7 @@ public class TrackXY_NAR extends GameX {
         final int W = 3, H = 3;
 
         TrackXY_NAR a = new TrackXY_NAR(n, new TrackXY(W, H));
-
+        ((TaskLinkWhat)a.what()).links.linksMax.set(256);
 
 //        //if (rl) {
 //        {
@@ -346,35 +347,36 @@ public class TrackXY_NAR extends GameX {
 
 
 
-            if (tt instanceof DerivedTask) {
-                Term ttt = tt.term();
-                boolean l = ttt.equals(a.actions.get(0).term());
-                boolean r = ttt.equals(a.actions.get(1).term());
-                if (l || r) {
+            if (!tt.isInput()) {
+                if (tt instanceof DerivedTask) {
+                    Term ttt = tt.term();
+                    boolean l = ttt.equals(a.actions.get(0).term());
+                    boolean r = ttt.equals(a.actions.get(1).term());
+                    if (l || r) {
 
 
-                    //if (n.concept(tt) instanceof ActionConcept)
-                    long window = 16;
-                    int dur = n.dur();
-                    long now = n.time();
-                    if (tt.intersects(now - window / 2 * dur, now + window / 2 * dur)) {
+                        //if (n.concept(tt) instanceof ActionConcept)
+                        long window = 64;
+                        int dur = n.dur();
+                        long now = n.time();
+                        if (tt.intersects(now - window / 2 * dur, now + window / 2 * dur)) {
 
-                        float wantsDir = (l ? -1 : +1) * (tt.freq() < 0.5f ? -1 : +1);
-                        float needsDir = a.track.tx - a.track.cx;
+                            float wantsDir = (l ? -1 : +1) * (tt.freq() < 0.5f ? -1 : +1);
+                            float needsDir = a.track.tx - a.track.cx;
 
 
+                            String summary = (Math.signum(wantsDir) == Math.signum(needsDir)) ? "OK" : "WRONG";
+                            System.out.println(ttt + " " + n2(wantsDir) + " ? " + n2(needsDir) + " " + summary);
+                            System.out.println(tt.proof());
+                            System.out.println(MetaGoal.proof(tt, n));
+                            System.out.println();
 
-                        String summary = (Math.signum(wantsDir) == Math.signum(needsDir)) ? "OK" : "WRONG";
-                        System.out.println(ttt + " " + n2(wantsDir) + " ? " + n2(needsDir) + " " + summary);
-                        System.out.println(tt.proof());
-                        System.out.println(MetaGoal.proof(tt, n));
-                        System.out.println();
+                        }
+
 
                     }
 
-
                 }
-
             }
         }, GOAL);
 

@@ -13,5 +13,5 @@
     ({A} --> {B}), (A --> B), task("?") |- ({A} --> {B}), (Belief:BeliefStructuralDeduction, Punctuation:Belief)
 
 //2-element set choice unwrap to disjunction (dichotomy)
-    (X-->Y),  ({A,B}-->Y), task("?@")   |- ((A-->Y) || (B-->Y))
-    (Y-->X),  (Y-->[A,B]), task("?@")   |- ((Y-->A) || (Y-->B))
+//    (X-->Y),  ({A,B}-->Y), task("?@")   |- ((A-->Y) || (B-->Y))
+//    (Y-->X),  (Y-->[A,B]), task("?@")   |- ((Y-->A) || (Y-->B))

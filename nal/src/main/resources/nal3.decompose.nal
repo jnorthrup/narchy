@@ -13,8 +13,8 @@
       //(--%I --> M),   X, is(%I,"&&"), sectOfPN(%I,X)   |-   --(--unsectPN(%I,X)-->M), (Belief:StructuralDeductionN,Goal:StructuralDeductionN)
 
 //NAL3 single premise question/quest decompose
-( M --> I), X, eventOfPN(I,X) |- (M --> unsectPNRepolarized(I,X)), (Punctuation:AskAll)
-( I --> M), X, eventOfPN(I,X) |- (unsectPNRepolarized(I,X) --> M), (Punctuation:AskAll)
+( M --> I), X, eventOfPN(I,X) |- (M --> conjWithoutPN(I,X)), (Punctuation:AskAll)
+( I --> M), X, eventOfPN(I,X) |- (conjWithoutPN(I,X) --> M), (Punctuation:AskAll)
     //( M --> I), X, task("?@"), eventOfPN(I,X) |- (M --> unsectPNRepolarized(I,X))
     //( I --> M), X, task("?@"), eventOfPN(I,X) |- (unsectPNRepolarized(I,X) --> M)
         //( M --> --%I), X, is(%I,"&&"), task("?@"), sectOfPN(%I,X) |- (M --> unsectPNRepolarized(%I,X))
@@ -25,11 +25,11 @@
 //NAL3 double premise belief decompose
 //  if (S --> M) is the case, and ((|,S,A..+) --> M) is not the case, then ((|,A..+) --> M) is not the case, hence Belief:DecomposePositiveNegativeNegative
 
-     (M -->    I), (M --> X),  eventOf(I,X)     |- (M -->   unsect( I,  X)),   (Belief:DecomposePP, Time:Compose)
-            (M --> X), (M -->    I), eventOf(I,X)     |- (M -->   unsect( I,  X)),   (Belief:DecomposePP, Time:Compose)
+     (M -->    I), (M --> X),  eventOf(I,X)     |- (M -->   conjWithout( I,  X)),   (Belief:DecomposePP, Time:Compose)
+//            (M --> X), (M -->    I), eventOf(I,X)     |- (M -->   conjWithout( I,  X)),   (Belief:DecomposePP, Time:Compose)
 
-      (M -->    I), (M --> X),  eventOf(I,X)     |- --(M -->   unsect( I,  X)),   (Belief:DecomposeNP, Time:Compose)
-             (M --> X), (M -->    I),  eventOf(I,X)     |- --(M -->   unsect( I,  X)),   (Belief:DecomposePN, Time:Compose)
+      (M -->    I), (M --> X),  eventOf(I,X)     |- --(M -->   conjWithout( I,  X)),   (Belief:DecomposeNP, Time:Compose)
+//             (M --> X), (M -->    I),  eventOf(I,X)     |- --(M -->   conjWithout( I,  X)),   (Belief:DecomposePN, Time:Compose)
 
      //(M --> --%I), (M --> X), sectOf(%I,--X)  |-   (M --> --unsect(%I,--X)),   (Belief:DecomposePN)
             //(M --> X), (M --> --%I), sectOf(%I,--X)  |-   (M --> --unsect(%I,--X)),   (Belief:DecomposeNP)
@@ -37,11 +37,11 @@
       //(M --> --%I), (M --> X), sectOf(%I,--X)  |-   --(M --> --unsect(%I,--X)),   (Belief:DecomposeNN)
              //(M --> X), (M --> --%I), sectOf(%I,--X)  |-   --(M --> --unsect(%I,--X)),   (Belief:DecomposeNN)
 
-        (I --> M), (X --> M),  eventOf(I,X)     |-   (  unsect( I,  X) --> M),   (Belief:DecomposePP, Time:Compose)
-             (X --> M),(I --> M),   eventOf(I,X)     |-   (  unsect( I,  X) --> M),   (Belief:DecomposePP, Time:Compose)
+        (I --> M), (X --> M),  eventOf(I,X)     |-   (  conjWithout( I,  X) --> M),   (Belief:DecomposePP, Time:Compose)
+//             (X --> M),(I --> M),   eventOf(I,X)     |-   (  conjWithout( I,  X) --> M),   (Belief:DecomposePP, Time:Compose)
 
-         (I --> M), (X --> M),  eventOf(I,X)     |-   --(  unsect( I,  X) --> M),   (Belief:DecomposeNP, Time:Compose)
-              (X --> M),(I --> M),   eventOf(I,X)     |-   --(  unsect( I,  X) --> M),   (Belief:DecomposePN, Time:Compose)
+         (I --> M), (X --> M),  eventOf(I,X)     |-   --(  conjWithout( I,  X) --> M),   (Belief:DecomposeNP, Time:Compose)
+//              (X --> M),(I --> M),   eventOf(I,X)     |-   --(  conjWithout( I,  X) --> M),   (Belief:DecomposePN, Time:Compose)
 
       //(--%I --> M), (X --> M), sectOf(%I,--X)  |- (--unsect(%I,--X) --> M),   (Belief:DecomposePN)
               //(X --> M),(--%I --> M),  sectOf(%I,--X)  |- (--unsect(%I,--X) --> M),   (Belief:DecomposeNP)
@@ -50,15 +50,15 @@
               //(X --> M),(--%I --> M),  sectOf(%I,--X)  |- --(--unsect(%I,--X) --> M),   (Belief:DecomposeNN)
 
 //NAL3 double premise goal decompose
-    (I --> M), (X --> M),  eventOf(I,X), --isVar(M)     |-   (  unsect( I,  X) --> M),   (Goal:DecomposePP, Time:Compose)
-    (I --> M), (X --> M),  eventOfNeg(I,X), --isVar(M)   |-   (  unsect( I,  --X) --> M),   (Goal:DecomposePN, Time:Compose)
-      (I --> M), (X --> M),  eventOf(I,X), --isVar(M)   |- --(  unsect( I,  X) --> M),   (Goal:DecomposeNP, Time:Compose)
-      (I --> M), (X --> M),  eventOfNeg(I,X), --isVar(M) |- --(  unsect( I,  --X) --> M),   (Goal:DecomposeNN, Time:Compose)
+    (I --> M), (X --> M),  eventOf(I,X), --isVar(M)     |-   (  conjWithout( I,  X) --> M),   (Goal:DecomposePP, Time:Compose)
+    (I --> M), (X --> M),  eventOfNeg(I,X), --isVar(M)   |-   (  conjWithout( I,  --X) --> M),   (Goal:DecomposePN, Time:Compose)
+      (I --> M), (X --> M),  eventOf(I,X), --isVar(M)   |- --(  conjWithout( I,  X) --> M),   (Goal:DecomposeNP, Time:Compose)
+      (I --> M), (X --> M),  eventOfNeg(I,X), --isVar(M) |- --(  conjWithout( I,  --X) --> M),   (Goal:DecomposeNN, Time:Compose)
 
-    (M --> I), (M --> X),  eventOf(I,X), --isVar(M)     |-   (M -->   unsect( I,  X)),   (Goal:DecomposePP, Time:Compose)
-    (M --> I), (M --> X),  eventOfNeg(I,X), --isVar(M)   |-   (M -->   unsect( I,  --X)),   (Goal:DecomposePN, Time:Compose)
-      (M --> I), (M --> X),  eventOf(I,X), --isVar(M)   |- --(M -->   unsect( I,  X)),   (Goal:DecomposeNP, Time:Compose)
-      (M --> I), (M --> X),  eventOfNeg(I,X), --isVar(M) |- --(M -->   unsect( I,  --X)),   (Goal:DecomposeNN, Time:Compose)
+    (M --> I), (M --> X),  eventOf(I,X), --isVar(M)     |-   (M -->   conjWithout( I,  X)),   (Goal:DecomposePP, Time:Compose)
+    (M --> I), (M --> X),  eventOfNeg(I,X), --isVar(M)   |-   (M -->   conjWithout( I,  --X)),   (Goal:DecomposePN, Time:Compose)
+      (M --> I), (M --> X),  eventOf(I,X), --isVar(M)   |- --(M -->   conjWithout( I,  X)),   (Goal:DecomposeNP, Time:Compose)
+      (M --> I), (M --> X),  eventOfNeg(I,X), --isVar(M) |- --(M -->   conjWithout( I,  --X)),   (Goal:DecomposeNN, Time:Compose)
 
 //    (--%I --> M), (X --> M), sectOf(%I,--X)  |-   (--unsect(%I,--X) --> M),   (Goal:DecomposePN)
 //    (--%I --> M), (X --> M), sectOf(%I,X)  |-   (--unsect(%I,X) --> M),   (Goal:DecomposePP)

@@ -1181,12 +1181,12 @@ class ConjTest {
 
         assertConjDiff("(x && y)", "x", "y", false);
 
-        assertConjDiff("--x", "x", "(--,x)", false);
-        assertConjDiff("x", "--x", "x", false);
-        assertConjDiff("--x", "x", "true", true);
-        assertConjDiff("--x", "--x", "true", false);
-        assertConjDiff("--x", "--x", "true", true);
-        assertConjDiff("x", "--x", "true", true);
+//        assertConjDiff("--x", "x", "(--,x)", false);
+//        assertConjDiff("x", "--x", "x", false);
+//        assertConjDiff("--x", "x", "true", true);
+//        assertConjDiff("--x", "--x", "true", false);
+//        assertConjDiff("--x", "--x", "true", true);
+//        assertConjDiff("x", "--x", "true", true);
     }
 
     @Disabled @Test
@@ -1265,6 +1265,11 @@ class ConjTest {
         assertEq("z", Conj.diffAll($$("((x &&+1 y) &&+1 z)"),
                 $$("(x &&+1 y)")));
     }
+    @Test
+    void testWithoutSome() {
+        assertEq("(a&&c)", Conj.diffAll($$("(&&,a,b,c)"), $$("(b&&w)")));
+    }
+
     @Test
     void testConjWithoutAllSequence2() {
         Term a = $$("((x &&+1 y) &&+1 z)");
