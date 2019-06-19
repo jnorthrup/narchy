@@ -4,7 +4,6 @@ import jcog.Skill;
 import jcog.Util;
 import jcog.math.FloatRange;
 import jcog.math.FloatRangeRounded;
-import jcog.math.FloatSupplier;
 import jcog.math.IntRange;
 import jcog.pri.ScalarValue;
 import jcog.pri.op.PriMerge;
@@ -28,7 +27,6 @@ import java.util.concurrent.Executor;
 import java.util.function.Supplier;
 
 import static fucknutreport.config.NodeConfig.configIs;
-import static java.lang.Float.NaN;
 import static nars.Op.*;
 import static nars.truth.func.TruthFunctions.c2wSafe;
 
@@ -334,11 +332,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
     /**
      * priority of sensor task, with respect to how significantly it changed from a previous value
      */
-    public static float signalSurprise(final Task prev, final Task next, final FloatSupplier pri, int dur) {
-
-        float p = pri.asFloat();
-        if (p != p)
-            return NaN;
+    public static float signalSurprise(final Task prev, final Task next, int dur) {
 
         final boolean NEW = prev == null;
         if (!NEW) {
@@ -355,13 +349,13 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
                 final float deltaFreq = prev != next ? Math.abs(prev.freq() - next.freq()) : 0; //TODO use a moving average or other anomaly/surprise detection
                 if (deltaFreq > Float.MIN_NORMAL) {
                     final float perceived = 0.01f + 0.99f * (float) Math.pow(deltaFreq, 1 / 2f /* etc*/);
-                    p *= perceived;
+                    return perceived;
                 }
                 //p *= Util.lerp(deltaFreq, perceived, 1);
             }
         }
 
-        return p;
+        return 0;
     }
 
     static Atom randomSelf() {
@@ -409,8 +403,8 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
                 //0.5f;
                 //1;
                 //1.618f; //phi
-                //2; //nyquist / horizon
-                4;
+                2; //nyquist / horizon
+                //4;
                 //dur;
                 //8;
                 //64;
@@ -606,7 +600,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
              * <p>
              * TODO make this a per-sensor implementation cdecision
              */
-            public static final float SIGNAL_STRETCH_LIMIT_DURS = 16;
+            public static final float SIGNAL_STRETCH_LIMIT_DURS = 8;
             /**
              * maximum time between signal updates to stretch an equivalently-truthed data point across.
              * stretches perception across some amount of lag
@@ -616,7 +610,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
                     //2f;
             /** max tasked matched by series table, in case the answer limit is higher.  this reduces the number of redundant non-exact matches freeing evidential capacity for non-signal tasks from other tables of the concept */
             public static final float SERIES_MATCH_ADDITIONAL_RATE_PER_DUR = 1f/SIGNAL_STRETCH_LIMIT_DURS;
-            public static final int SERIES_MATCH_MIN = 1;
+            public static final int SERIES_MATCH_MIN = 2;
 
             //public static final boolean SIGNAL_TASK_OCC_DITHER = true;
         }
@@ -629,7 +623,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
         /**
          * whether INT atoms can name a concept directly
          */
-        public static final boolean INT_CONCEPTUALIZABLE= configIs("INT_CONCEPTUALIZABLE");
+        public static final boolean INT_CONCEPTUALIZABLE = configIs("INT_CONCEPTUALIZABLE");
 
         /**
          * EXPERIMENTAL logical closure for relations of negations

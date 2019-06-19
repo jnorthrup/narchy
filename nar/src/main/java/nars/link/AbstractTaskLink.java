@@ -186,6 +186,11 @@ public abstract class AbstractTaskLink implements TaskLink {
             priMerge(punc, puncPri, PriMerge.replace);
         return this;
     }
+    public final AbstractTaskLink priMax(byte punc, float puncPri) {
+        if (puncPri==puncPri && puncPri > Float.MIN_NORMAL)
+            priMerge(punc, puncPri, PriMerge.max);
+        return this;
+    }
 
 //    private void priSet(byte index, float next) {
 //        float before = merge(index, next, PriMerge.replace, Post);

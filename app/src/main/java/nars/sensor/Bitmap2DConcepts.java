@@ -11,11 +11,13 @@ import nars.NAR;
 import nars.concept.Concept;
 import nars.concept.sensor.Signal;
 import nars.table.eternal.EternalDefaultTable;
+import nars.term.Term;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.PrintStream;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Random;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -77,7 +79,13 @@ public class Bitmap2DConcepts<P extends Bitmap2D> implements Iterable<Signal> {
                                     }
                                 };
 
-                Signal sc = new Signal(pixelTerm.apply(x, y), cause, f, n).setResolution(res);
+                Term sid = pixelTerm.apply(x, y);
+                Signal sc = new Signal(sid, cause, f, n) {
+                    @Override
+                    protected boolean autoTaskLink() {
+                        return false;
+                    }
+                }.setResolution(res);
                 if (defaultFreq==defaultFreq) {
                     EternalDefaultTable.add(sc, defaultFreq, n);
                 }
@@ -183,6 +191,12 @@ public class Bitmap2DConcepts<P extends Bitmap2D> implements Iterable<Signal> {
     public final List<? extends Concept> order() {
         return iter.order;
     }
+
+    public Signal get(Random random) {
+        return get(random.nextInt(this.area));
+    }
+
+    public final int size() { return area; }
 
 //    public Bitmap2DReader newReader(CauseChannel<ITask> in, FloatFloatToObjectFunction<Truth> mode, BooleanSupplier enable, NAR nar) {
 //        return new Bitmap2DReader(in, mode, nar) {

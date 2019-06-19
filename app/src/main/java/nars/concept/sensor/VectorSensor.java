@@ -76,12 +76,8 @@ abstract public class VectorSensor extends AbstractSensor implements Iterable<Si
         };
         attn.branch(PriNode.Branch.One_div_sqrtN);
 
-        this.in = newChannelIn(n);
+        this.in = n.newChannel(id != null ? id : this);
         this.causeArray = new short[] { in.id };
-    }
-
-    protected CauseChannel<Task> newChannelIn(NAR nar) {
-        return nar.newChannel(id != null ? id : this);
     }
 
     /**

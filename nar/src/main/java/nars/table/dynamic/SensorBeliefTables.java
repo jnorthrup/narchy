@@ -36,6 +36,7 @@ public class SensorBeliefTables extends BeliefTables {
     public final SeriesBeliefTable<SeriesTask> series;
 
     @Deprecated public FloatRange res;
+    private Task current = null;
 
 //    /**
 //     * permanent tasklink "generator" anchored in eternity when inseted to the concept on new tasks, but clones currently-timed tasklinks for propagation
@@ -86,7 +87,7 @@ public class SensorBeliefTables extends BeliefTables {
 
 
 
-    public void add(Truth value, long now, FloatSupplier pri, short[] cause, int dur, What w) {
+    public SeriesTask update(Truth value, long now, short[] cause, int dur, What w) {
         NAR n = w.nar;
 
         if (value!=null) {
@@ -107,9 +108,16 @@ public class SensorBeliefTables extends BeliefTables {
         if (x!=null) {
             series.clean(this, n);
             x.cause(cause);
-            remember(x, pri, w);
         } else {
-            this.prev = null;
+            this.current = null;
+        }
+        return x;
+    }
+
+    public void input(Truth value, long now, FloatSupplier pri, short[] cause, int dur, What w, @Deprecated boolean link) {
+        SeriesTask x = update(value, now, cause, dur, w);
+        if(x!=null) {
+            remember(x, w, pri, link, dur);
         }
     }
 
@@ -219,40 +227,55 @@ public class SensorBeliefTables extends BeliefTables {
 
 
 
-    private Task prev = null;
 
 
     /** link and emit */
-    private void remember(Task next, FloatSupplier pri, What w) {
+    private void remember(Task next, What w, FloatSupplier pri, boolean link, int dur) {
         //if (y==prev)
 
-        Task prev = this.prev;
-        this.prev = next;
+        Task prev = this.current;
+        this.current = next;
 
         if (next == null)
             return; //?
 
-        float surprise = NAL.signalSurprise(prev, next, pri, w.dur());
-        if (surprise!=surprise || surprise < Float.MIN_NORMAL)
+        float p;
+        if (prev!=next) {
+            p = pri.asFloat(); //initialize
+        } else {
+            p = next.priElseZero();
+        }
+
+        float surprise = NAL.signalSurprise(prev, next, dur);
+        float decay = Util.lerp(surprise, 0.5f, 1f);
+        next.priSet(p * decay); //decay rate control
+        if (surprise < Float.MIN_NORMAL)
             return;
 
-        next.priMax(surprise); //set the task's pri too
 
-        TaskLinkWhat ww = (TaskLinkWhat) w;
-        AbstractTaskLink tl = new AtomicTaskLink(next.term());
-        tl.priSet(BELIEF, surprise);
+        if (link) {
+            TaskLinkWhat ww = (TaskLinkWhat) w;
+            AbstractTaskLink tl = new AtomicTaskLink(next.term());
+            tl.priSet(BELIEF, surprise);
 //        tl.priSet(BELIEF, surprise*2f/3f);
 ////        tl.priSet(GOAL, surprise/3);
 //        tl.priSet(QUEST, surprise*1f/3f);
-        ww.links.link(tl);
+            ww.links.link(tl);
+        }
 
         if (next!=prev)
             w.nar.eventTask.emit(next);
 
     }
 
+    public float surprise() {
+        Task n = current;
+        return (n!=null) ? n.priElseZero() : 0;
+    }
 
-
+    public final Task current() {
+        return current;
+    }
 
     /**
      * adjusted compression task value to exclude regions where the series belief table is defined.

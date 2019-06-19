@@ -49,7 +49,7 @@ public class Pacman extends GameX {
 //            c.resolution(0.1f);
 //        }
         {
-            Bitmap2DSensor c = senseCamera((x,y)->$.inh($.p(x,y),id), camScale, 0);
+            Bitmap2DSensor c = senseCamera((x,y)->$.inh($.p(x,y),id), camScale/*, 0*/);
             VectorSensorView v = new VectorSensorView(c, this);
             gg.add(v/*.withControls()*/);
             c.resolution(0.02f);

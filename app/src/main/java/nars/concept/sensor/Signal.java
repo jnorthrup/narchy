@@ -9,6 +9,7 @@ import nars.agent.Game;
 import nars.attention.AttnBranch;
 import nars.concept.PermanentConcept;
 import nars.concept.TaskConcept;
+import nars.table.BeliefTable;
 import nars.table.dynamic.SensorBeliefTables;
 import nars.term.Term;
 import nars.term.Termed;
@@ -56,14 +57,18 @@ public class Signal extends TaskConcept implements GameLoop, FloatFunction<Term>
     }
 
     public Signal(Term term, short cause, FloatSupplier signal, NAR n) {
-        this(term, cause, BELIEF, signal, n);
+        this(term, cause, signal,
+                        BELIEF == BELIEF ? new SensorBeliefTables(term, true) : n.conceptBuilder.newTable(term, true),
+                        BELIEF == GOAL ? new SensorBeliefTables(term, false) : n.conceptBuilder.newTable(term, false),
+                n);
     }
 
-    private Signal(Term term, short cause, byte punc, FloatSupplier signal, NAR n) {
-        super(term,
-                punc == BELIEF ? new SensorBeliefTables(term, true) : n.conceptBuilder.newTable(term, true),
-                punc == GOAL ? new SensorBeliefTables(term, false) : n.conceptBuilder.newTable(term, false),
-                n.conceptBuilder);
+    protected Signal(Term term, FloatSupplier signal, BeliefTable beliefTable, BeliefTable goalTable, NAR n) {
+        this(term, n.newCause(term).id, signal, beliefTable, goalTable, n);
+    }
+
+    public Signal(Term term, short cause, FloatSupplier signal, BeliefTable beliefTable, BeliefTable goalTable, NAR n) {
+        super(term, beliefTable, goalTable, n.conceptBuilder);
 
         this.source = signal;
         this.cause = cause;
@@ -106,16 +111,22 @@ public class Signal extends TaskConcept implements GameLoop, FloatFunction<Term>
 
         float prevValue = currentValue;
 
-        float nextValue = currentValue = source.asFloat();
+        float nextValue = (currentValue = source.asFloat());
 
-        ((SensorBeliefTables) beliefs()).add(
-                nextValue == nextValue ? truther.value(prevValue, nextValue) : null,
+        Truth nextTruth = nextValue == nextValue ? truther.value(prevValue, nextValue) : null;
+
+        ((SensorBeliefTables) beliefs()).input(
+                nextTruth,
                 g.now,
                 pri, cause,
                 g.durPhysical(),
-                g.what());
+                g.what(), autoTaskLink());
     }
 
+    /** whether to tasklink on change; returns false in batch signal cases */
+    protected boolean autoTaskLink() {
+        return true;
+    }
 
 //    public Signal resolution(float r) {
 //        resolution().set(r);

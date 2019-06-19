@@ -5,23 +5,33 @@ import jcog.func.IntIntToObjectFunction;
 import jcog.signal.wave2d.Bitmap2D;
 import nars.$;
 import nars.NAR;
+import nars.Task;
 import nars.agent.Game;
 import nars.attention.PriNode;
+import nars.attention.TaskLinkWhat;
 import nars.concept.Concept;
 import nars.concept.TaskConcept;
 import nars.concept.sensor.Signal;
 import nars.concept.sensor.VectorSensor;
+import nars.link.AbstractTaskLink;
+import nars.link.AtomicTaskLink;
+import nars.subterm.Subterms;
+import nars.subterm.TermList;
+import nars.table.dynamic.SensorBeliefTables;
 import nars.term.Term;
 import nars.term.Termed;
 import nars.term.atom.Int;
+import nars.time.When;
 import nars.truth.Truth;
 import org.eclipse.collections.api.block.function.primitive.FloatFloatToObjectFunction;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Random;
+import java.util.function.Predicate;
 
-import static nars.Op.BELIEF;
+import static nars.Op.*;
 
 /**
  * manages reading a camera to a pixel grid of SensorConcepts
@@ -203,10 +213,29 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends VectorSensor {
         return this;
     }
 
+    final AbstractTaskLink tl =
+            new PixelSelectorTaskLink();
+            //new ConjunctionSuperPixelTaskLink(2, 2);
+
     @Override
     public void update(Game g) {
         src.updateBitmap();
         super.update(g);
+        link(g);
+    }
+
+    public void link(Game g) {
+        float surprise = (float)(surprise())
+                // / concepts.area
+                ;
+
+        //System.out.println(this + " " + surprise);
+        if (surprise > Float.MIN_NORMAL) {
+            tl.priMax(BELIEF, surprise);
+//            tl.priMax(QUEST, surprise);
+//            tl.priMax(GOAL, surprise*(1/4f));
+            ((TaskLinkWhat) (g.what())).links.link(tl);
+        }
     }
 
     public final TaskConcept get(int x, int y) {
@@ -214,95 +243,59 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends VectorSensor {
     }
 
 
+    protected double surprise() {
+        double s = 0;
+        for (Signal c : concepts)
+            s += ((SensorBeliefTables)c.beliefs()).surprise();
+        return s;
+    }
+
     @Override
     public final Iterator<Signal> iterator() {
         return concepts.iterator();
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    /*private long nextStamp() {
+    private class PixelSelectorTaskLink extends AtomicTaskLink {
+        PixelSelectorTaskLink() {
+            super(Bitmap2DSensor.this.term());
+        }
+
+        @Override
+        public @Nullable Task get(byte punc, When<NAR> when, Predicate<Task> filter) {
+            return concepts.get(when.x.random()).beliefs().match(when, null, filter, false);
+        }
+    }
+    private class ConjunctionSuperPixelTaskLink extends AtomicTaskLink {
+
+        private final int batchX, batchY;
+
+        ConjunctionSuperPixelTaskLink(int batchX, int batchY) {
+            super(Bitmap2DSensor.this.term());
+            this.batchX = batchX; this.batchY = batchY;
+        }
+
+        @Override
+        public @Nullable Task get(byte punc, When<NAR> when, Predicate<Task> filter) {
+
+            Random random = when.x.random();
+            int px = random.nextInt(concepts.width - batchX);
+            int py = random.nextInt(concepts.height - batchY);
+            TermList subterms = new TermList(batchX * batchY);
+            for (int i = px; i < px+batchX; i++) {
+                for (int j = py; j < py+batchY; j++) {
+                    Signal ij = concepts.get(i, j);
+                    Task current = ((SensorBeliefTables) (ij.beliefs())).current();
+                    if (current!=null)
+                        subterms.add(ij.term().negIf(current.isNegative()));
+                }
+            }
+            if (subterms.isEmpty())
+                return null;
+            return when.x.belief(CONJ.the(0, (Subterms)subterms), when.start, when.end);
+
+        }
+    }
+   /*private long nextStamp() {
         return stamp;
     }*/
 

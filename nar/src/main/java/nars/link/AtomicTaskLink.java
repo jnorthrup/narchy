@@ -7,7 +7,7 @@ import jcog.util.FloatFloatToFloatFunction;
 import nars.term.Term;
 
 
-public final class AtomicTaskLink extends AbstractTaskLink {
+public class AtomicTaskLink extends AbstractTaskLink {
 
     private final WritableTensor punc =
             new AtomicFixedPoint4x16bitVector();
