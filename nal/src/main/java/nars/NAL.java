@@ -263,7 +263,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
     @Deprecated
     public final FloatRange questionForgetRate = new FloatRange(0.5f, 0, 1);
     public final IntRange premiseUnifyTTL = new IntRange(8, 1, 32);
-    public final IntRange deriveBranchTTL = new IntRange(16 * NAL.derive.TTL_MIN, NAL.derive.TTL_MIN, 64 * NAL.derive.TTL_MIN);
+    public final IntRange deriveBranchTTL = new IntRange(8 * NAL.derive.TTL_MIN, NAL.derive.TTL_MIN, 64 * NAL.derive.TTL_MIN);
     /**
      * how many cycles above which to dither dt and occurrence time
      * TODO move this to Time class and cache the cycle value rather than dynamically computing it
@@ -403,24 +403,24 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
         //assert(dur > 0);
         assert (dur > 0 && dt > 0);
 
-        final double e;
 
         //inverse linear decay
         final double falloffDurs =
                 //0.5f;
-                //1;
+                1;
                 //1.618f; //phi
                 //2; //nyquist / horizon
-                4;
+                //4;
                 //dur;
                 //8;
                 //64;
 
         final double decayTime = falloffDurs * dur;
+        double e;
 
         //quadratic decay: integral finite from to infinity, see: https://en.wikipedia.org/wiki/List_of_definite_integrals
         e = (evi / (1.0 + Util.sqr(dt / decayTime)));
-        //e = (float)(evi / (1.0 + Util.sqr(((double)dt) / dur ) / falloffDurs));
+            //e = (float)(evi / (1.0 + Util.sqr(((double)dt) / dur ) / falloffDurs));
 
         //exponential decay: see https://en.wikipedia.org/wiki/Exponential_integral
         //TODO
@@ -440,8 +440,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
         //---------
 
         //eternal noise floor (post-filter)
-        //float ee = TruthFunctions.eternalize(evi);
-        //     // / STAMP_CAPACITY;
+        //double ee = TruthFunctions.eternalize(evi);
         //e = ee + ((e - ee) / (1.0 + (((float)dt) / (falloffDurs * dur))));
 
         return e;

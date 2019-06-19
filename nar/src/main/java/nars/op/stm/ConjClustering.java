@@ -5,7 +5,6 @@ import jcog.data.list.FasterList;
 import jcog.data.set.MetalLongSet;
 import jcog.math.FloatRange;
 import jcog.math.LongInterval;
-import jcog.pri.Prioritizable;
 import jcog.pri.Prioritized;
 import jcog.util.ArrayUtil;
 import nars.NAL;
@@ -454,7 +453,7 @@ public class ConjClustering extends How {
             if (Util.and(Task::isCyclic, x))
                 y.setCyclic(true);
 
-            fund(y, x);
+            Task.fund(y, x, priCopyOrMove);
 
             return y;
 
@@ -462,23 +461,4 @@ public class ConjClustering extends How {
         }
     }
 
-    public static void fund(Task y, Task[] x) {
-//        int xVolMax = Util.max(TermedDelegate::volume, x);
-//        double cmplFactor =
-//                ((double)xVolMax) / y.volume();
-
-        double conf = y.conf();
-        double confMax = Util.max(Task::conf, x);
-        double confFactor = (conf / (conf + confMax));
-
-        long rangeMax = Util.max((Task t)->t.rangeIfNotEternalElse(1), x);
-        long range = y.range();
-        double rangeFactor = Math.min(1, ((double)range)/rangeMax);
-
-        float p = (float)(Util.sum(Task::priElseZero, x) /* * cmplFactor */ * confFactor * rangeFactor);
-
-        y.pri(Prioritizable.fund(p, priCopyOrMove, x));
-
-        assert(!y.isDeleted());
-    }
 }

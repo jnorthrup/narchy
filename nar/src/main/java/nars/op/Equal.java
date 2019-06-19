@@ -124,10 +124,6 @@ public final class Equal extends InlineCommutiveBinaryBidiFunctor implements The
         if (x == Null || y == Null) return Null;
         if (x.equals(y)) return True;
         if (x.equalsNeg(y)) return False;
-        if (x == True) return y;
-        if (y == True) return x;
-        if (x == False) return y.neg();
-        if (y == False) return x.neg();
         if (!x.hasVars() && !y.hasVars()) return False; //constant in-equal
         return null;
     }

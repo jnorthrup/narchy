@@ -15,6 +15,7 @@ import nars.task.NALTask;
 import nars.task.util.Answer;
 import nars.task.util.TaskList;
 import nars.term.Compound;
+import nars.term.Neg;
 import nars.term.Term;
 import nars.term.util.TermException;
 import nars.time.Tense;
@@ -84,35 +85,34 @@ public class DynTaskify extends TaskList {
     }
 
     @Nullable public static Task merge(TaskList tasks, Term content, Truth t, Supplier<long[]> stamp, boolean beliefOrGoal, long start, long end, Timed w) {
-        boolean neg = content.op() == NEG;
-        if (neg) {
+        boolean neg = content instanceof Neg;
+        if (neg)
             content = content.unneg();
-        }
 
         ObjectBooleanPair<Term> r = Task.tryTaskTerm(
                 content,
                 beliefOrGoal ? BELIEF : GOAL, !NAL.test.DEBUG_EXTRA);
         if (r==null)
             return null;
-        if (r.getTwo())
-            neg = !neg;
 
-        NALTask dyn = new DynamicTruthTask(
+        NALTask y = new DynamicTruthTask(
                 r.getOne(), beliefOrGoal,
-                t.negIf(neg),
+                t.negIf(neg != r.getTwo()),
                 w, start, end,
                 stamp.get());
 
         if (tasks.allSatisfy(Stamp::isCyclic))
-            dyn.setCyclic(true);
+            y.setCyclic(true);
 
-        dyn.cause( tasks.why() );
+        y.cause( tasks.why() );
 
-        dyn.pri(
-                tasks.reapply(TaskList::pri, NAL.DerivationPri)
-                        // * dyn.originality() //HACK
-        );
-        return dyn;
+//        y.pri(
+//              tasks.reapply(TaskList::pri, NAL.DerivationPri)
+//                        // * dyn.originality() //HACK
+//        );
+        Task.fund(y, tasks.toArrayRecycled(), true);
+
+        return y;
     }
 
     @Nullable

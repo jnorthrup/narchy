@@ -30,11 +30,11 @@
     G, B, task("@"), neq(G,B), --is(B,"?"), hasBelief()   |-  (&&,polarizeRandom(G),polarizeBelief(B)), (Punctuation:Quest, Time:Task)
 
     //implication look-ahead
-    (X==>Y), Y, task("."), --isVar(Y) |- ((X && polarizeTask(Y)) ==> ?1), (Punctuation:Question, Time:BeliefEvent)
+//    (X==>Y), Y, task("."), --isVar(Y) |- ((X && polarizeTask(Y)) ==> ?1), (Punctuation:Question, Time:BeliefEvent)
 
     //implication look-behind
-    (  X==>Y), X, task("."), --isVar(Y) |- (?1 ==> (  X && polarizeTask(Y))), (Punctuation:Question)
-    (--X==>Y), X, task("."), --isVar(Y) |- (?1 ==> (--X && polarizeTask(Y))), (Punctuation:Question)
+//    (  X==>Y), X, task("."), --isVar(Y) |- (?1 ==> (  X && polarizeTask(Y))), (Punctuation:Question)
+//    (--X==>Y), X, task("."), --isVar(Y) |- (?1 ==> (--X && polarizeTask(Y))), (Punctuation:Question)
 
 //    //sequence possibility quest
 //    C, X, task("@"), eventOfPN(C,X) |-  (conjWithoutPN(C,X) && ?1), (Punctuation:Quest)
@@ -64,11 +64,10 @@
 //"what is the difference" between what co-occurrs with goal and non-goal
 //    (&&,G,X,A..*), (&&,H,Y,B..*), eqNeg(G,H), neq(X,Y), hasBelief()  |- ((polarizeRandom(X) && polarizeRandom(Y)) --> ?1), (Punctuation:Ask)
 
-//anti-specific deduction: "conjunction contraposition" (weak)
-//    X, C, eventOf(C,X), --isVar(X)       |-   negateEvents(conjWithout(C,  X)), (Goal:DesireWeakNP, Time:TaskEvent)
-//    X, C, eventOfNeg(C,X), --isVar(X)    |-   negateEvents(conjWithout(C,--X)), (Goal:DesireWeakPP, Time:TaskEvent)
-    //C, X, eventOf(C,X), --isVar(X)       |-   negateEvents(conjWithout(C,  X)), (Belief:DeductionWeakPN)
-    //C, X, eventOfNeg(C,X), --isVar(X)    |-   negateEvents(conjWithout(C,--X)), (Belief:DeductionWeakPP)
+//anti-specific deduction: "conjunction contraposition"
+    X, C, eventOf(C,X), --isVar(X)       |-   (--X && negateEvents(conjWithout(C,  X))), (Goal:DeductionWeakNP, Time:TaskEvent)
+    X, C, eventOfNeg(C,X), --isVar(X)    |-   (  X && negateEvents(conjWithout(C,--X))), (Goal:DeductionWeakPP, Time:TaskEvent)
+
 
 
 //inverted condition question/quest TODO: invertAll(C,X)..

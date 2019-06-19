@@ -613,6 +613,31 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
             Task.logger.error("{}->{} {}", t, x, ee);
     }
 
+    public static void fund(Task y, Task[] x, boolean priCopyOrMove) {
+        int volSum = Util.sum(TermedDelegate::volume, x);
+        double xVolSum =
+                Math.min(1, ((double)volSum) / y.volume() );
+
+        double yConf = y.conf();
+        double xConfMax = Util.max(Task::conf, x);
+        double confFactor = Math.min(1, (yConf / xConfMax));
+
+        double rangeFactor;
+        if (y.isEternal())
+            rangeFactor = 1;
+        else {
+            long xRangeMax = Util.max((Task t) -> t.rangeIfNotEternalElse(1), x);
+            long yRange = y.range();
+            rangeFactor = Math.min(1, ((double) yRange) / xRangeMax);
+        }
+
+        float p = (float)(Util.sum(Task::priElseZero, x) * xVolSum * confFactor * rangeFactor);
+
+        y.pri(Prioritizable.fund(p, priCopyOrMove, x));
+
+        assert(!y.isDeleted());
+    }
+
     @Deprecated
     Task next(Object w);
 

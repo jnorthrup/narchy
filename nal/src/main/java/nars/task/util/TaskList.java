@@ -95,6 +95,10 @@ public class TaskList extends FasterList<Task> implements TaskRegion {
         return true;
     }
 
+    public Task[] toArrayRecycled() {
+        return toArrayRecycled(Task[]::new);
+    }
+
 
     //    protected float pri(long start, long end) {
 //

@@ -7,7 +7,6 @@ import nars.NAL;
 import nars.NAR;
 import nars.Task;
 import nars.table.TaskTable;
-import nars.task.proxy.SpecialTruthAndOccurrenceTask;
 import nars.term.Term;
 import nars.term.util.Intermpolate;
 import nars.term.util.TermException;
@@ -421,17 +420,17 @@ public final class Answer implements Timed, Predicate<Task> {
             return null;
 
         //HACK TODO do this without creating a temporary TaskList
-        if (tp.size() == 1) {
-            //proxy to the individual task being projected
-            Task only = tp.get(0).task();
-            if (!only.isEternal() && (only.start() != tp.start() || only.end() != tp.end()))
-                return new SpecialTruthAndOccurrenceTask(only,
-                        tp.start(), tp.end(), false, tt);
-            else
-                return only; //as-is
-        } else {
+//        if (tp.size() == 1) {
+//            //proxy to the individual task being projected
+//            Task only = tp.get(0).task();
+//            if (!only.isEternal() && (only.start() != tp.start() || only.end() != tp.end()))
+//                return new SpecialTruthAndOccurrenceTask(only,
+//                        tp.start(), tp.end(), false, tt);
+//            else
+//                return only; //as-is
+//        } else {
             return DynTaskify.merge(taskList(), tp.term, tt, tp.stamper(nar::random), beliefOrGoal, tp.start(), tp.end(), nar);
-        }
+//        }
     }
 
 

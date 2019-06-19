@@ -1,6 +1,7 @@
 package nars.derive.model;
 
 import jcog.Util;
+import jcog.WTF;
 import jcog.data.set.MetalLongSet;
 import jcog.math.Longerval;
 import jcog.pri.ScalarValue;
@@ -273,11 +274,12 @@ public class Derivation extends PreDerivation {
         if (nextBelief != null) {
             long nextBeliefStart = nextBelief.start();
             if (nextBeliefStart == ETERNAL) {
-                nextBeliefEnd = ETERNAL;
                 beliefTruth_at_Task = beliefTruth_at_Belief = nextBelief.truth();
             } else {
 
                 this.beliefTruth_at_Belief = nextBelief.truth();
+                if (beliefTruth_at_Belief==null)
+                    throw new WTF();
 
                 boolean taskEternal = taskStart == ETERNAL;
 //
@@ -294,26 +296,27 @@ public class Derivation extends PreDerivation {
                                 beliefTruth_at_Belief :
                                 nextBelief.truth(taskStart, taskEnd, dur());
 
-                if (beliefTruth_at_Belief != null && NAL.ETERNALIZE_BELIEF_PROJECTED_IN_DERIVATION) {
+                    if (beliefTruth_at_Belief != null && NAL.ETERNALIZE_BELIEF_PROJECTED_IN_DERIVATION) {
 
-                    Truth beliefTruth_eternalized = beliefTruth_at_Belief.eternalized(1, eviMin, null /* dont dither */);
-                    if (beliefTruth_eternalized!=null) {
-                        double ee = beliefTruth_eternalized.evi();
-                        if (ee >= eviMin && ee > beliefTruth_at_Task.evi()) {
+                        Truth beliefTruth_eternalized = beliefTruth_at_Belief.eternalized(1, eviMin, null /* dont dither */);
+                        if (beliefTruth_eternalized != null) {
+                            double ee = beliefTruth_eternalized.evi();
+                            if (ee >= eviMin && (beliefTruth_at_Task == null || ee > beliefTruth_at_Task.evi())) {
 
-                            assert (nextBelief != null);
+                                assert (nextBelief != null);
 
-                            if (NAL.ETERNALIZE_BELIEF_PROJECTED_IN_DERIVATION_AND_ETERNALIZE_BELIEF_TIME)
-                                nextBeliefStart = nextBeliefEnd = ETERNAL;
-                            else
-                                nextBeliefEnd = nextBelief.end();
+                                if (NAL.ETERNALIZE_BELIEF_PROJECTED_IN_DERIVATION_AND_ETERNALIZE_BELIEF_TIME)
+                                    nextBeliefStart = nextBeliefEnd = ETERNAL;
+                                else
+                                    nextBeliefEnd = nextBelief.end();
 
-                            nextBelief = new SpecialTruthAndOccurrenceTask(nextBelief, nextBeliefStart, nextBeliefEnd,
-                                    false,
-                                    this.beliefTruth_at_Task = beliefTruth_eternalized
-                            );
+                                nextBelief = new SpecialTruthAndOccurrenceTask(nextBelief, nextBeliefStart, nextBeliefEnd,
+                                        false,
+                                        this.beliefTruth_at_Task = beliefTruth_eternalized
+                                );
+                            }
                         }
-                    }
+
                 }
             }
 

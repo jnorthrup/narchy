@@ -8,6 +8,7 @@ import nars.term.Compound;
 import nars.term.Neg;
 import nars.term.Term;
 import nars.term.atom.Bool;
+import nars.term.util.TermException;
 import nars.term.util.TermTransformException;
 import nars.term.util.builder.TermBuilder;
 import nars.time.Tense;
@@ -700,10 +701,14 @@ public class ConjTree implements ConjBuilder {
                         }
                     }
 
+                } else {
+                    try {
+                        y = ConjPar.the(B, DTERNAL, true, q);
+                    } catch (StackOverflowError e) {
+                        throw new TermException("non-simple conjunction stack overflow", CONJ, q);
+                        //return Null;
+                    }
                 }
-
-                if (!simple)
-                    y = ConjPar.the(B, DTERNAL, true, q);
 
                 return y;
             }
