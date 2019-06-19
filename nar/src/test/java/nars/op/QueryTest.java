@@ -91,7 +91,8 @@ public class QueryTest {
         public void test2() throws Narsese.NarseseException {
 
             FactualEvaluator e = FactualEvaluator.query("father(?Father, ?Child)", n);
-            e.print();
+
+
             //"[father(mike,tom), father(tom,sally), father(tom,erica)]",
 //            assertEquals("{father(tom,sally)=[true], father(tom,erica)=[true], father(mike,tom)=[true]}",
 //                    e.nodes.toString());
@@ -105,15 +106,17 @@ public class QueryTest {
             //        "[wonder(sibling(sally,erica))]",
             {
                 FactualEvaluator e = FactualEvaluator.query("sibling(sally,erica)", n);
-                e.print();
+
+
             }
 
             n.believe("mother(trude,erica)"); //becomes true only after this missing information
 
             {
                 FactualEvaluator e = FactualEvaluator.query("sibling(sally,erica)", n);
-                e.print();
-//            assertEquals(
+
+
+                //            assertEquals(
 //                    "[sibling(sally,erica)]",
 //                    ee.toString()
 //            );

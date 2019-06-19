@@ -34,7 +34,7 @@ public class DynamicConjTruth {
         protected boolean negResult() { return false; }
 
         @Override
-        public Term reconstruct(Compound superterm, DynTaskify d, long sequenceStart, long startEnd) {
+        public Term reconstruct(Compound superterm, long sequenceStart, long startEnd, DynTaskify d) {
 
             int n = d.size();
 

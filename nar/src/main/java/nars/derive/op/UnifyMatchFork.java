@@ -2,13 +2,13 @@ package nars.derive.op;
 
 import nars.derive.model.Derivation;
 import nars.term.Term;
-import nars.term.buffer.TermBuffer;
+import nars.term.buffer.EvalTermBuffer;
 import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 
 import java.util.Set;
 import java.util.function.Predicate;
 
-public final class UnifyMatchFork extends TermBuffer implements Predicate<Derivation> {
+public final class UnifyMatchFork extends EvalTermBuffer implements Predicate<Derivation> {
 
     private int forkLimit = -1;
     final Set<Term> tried = new UnifiedSet(4, 0.99f);

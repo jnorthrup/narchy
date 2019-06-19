@@ -1,11 +1,13 @@
 package nars.term.compound;
 
+import nars.Op;
 import nars.The;
 import nars.subterm.Subterms;
 import nars.subterm.UniSubterm;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.util.builder.TermBuilder;
+import nars.term.util.transform.AbstractTermTransform;
 import nars.unify.Unify;
 import org.eclipse.collections.api.block.function.primitive.IntObjectToIntFunction;
 import org.jetbrains.annotations.Nullable;
@@ -14,6 +16,7 @@ import java.util.function.BiPredicate;
 import java.util.function.Predicate;
 
 import static nars.Op.CONJ;
+import static nars.term.atom.Bool.Null;
 import static nars.time.Tense.DTERNAL;
 import static nars.time.Tense.XTERNAL;
 
@@ -251,5 +254,18 @@ public abstract class UnitCompound implements SameSubtermsCompound {
     @Override
     public boolean isSorted() {
         return true;
+    }
+
+    @Override
+    public Term transform(AbstractTermTransform f, Op newOp, int ydt) {
+        Term x = sub();
+        Term y = x.transform(f);
+        if (y!=x) {
+            if (y == Null)
+                 return Null;
+            else
+                return (newOp == null ? op() : newOp).the(y);
+        } else
+            return this;
     }
 }

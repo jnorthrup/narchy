@@ -28,7 +28,7 @@ public class DynamicImplConjTruth {
         }
 
         @Override
-        public Term reconstruct(Compound superterm, DynTaskify components, long start, long end) {
+        public Term reconstruct(Compound superterm, long start, long end, DynTaskify components) {
             return reconstruct(superterm, components, true, false);
         }
     };

@@ -6,30 +6,21 @@ import jcog.WTF;
 import jcog.data.byt.DynBytes;
 import jcog.data.list.FasterList;
 import jcog.util.ArrayUtil;
-import nars.$;
 import nars.NAL;
 import nars.Op;
 import nars.subterm.Subterms;
 import nars.term.Compound;
 import nars.term.Term;
-import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
-import nars.term.atom.Int;
-import nars.term.compound.LightCompound;
 import nars.term.util.TermException;
 import nars.term.util.builder.TermBuilder;
 import nars.term.util.map.ByteAnonMap;
-import nars.term.util.transform.AbstractTermTransform;
-import nars.term.util.transform.InlineFunctor;
-import nars.term.util.transform.InstantFunctor;
-import nars.term.util.transform.TermTransform;
 import nars.term.var.ellipsis.Fragment;
 import org.eclipse.collections.impl.map.mutable.primitive.ObjectByteHashMap;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 
 import static nars.NAL.term.TERM_BUFFER_MIN_INTERN_VOL;
@@ -51,7 +42,6 @@ public class TermBuffer {
     public final ByteAnonMap sub;
     final DynBytes code = new DynBytes(INITIAL_CODE_SIZE);
 
-    private final FasterList<DeferredEval> eval = new FasterList();
 
     /** incremental mutation counter to detect unmodified segments that can be inlined / interned atomically */
     private int change = 0;
@@ -63,7 +53,6 @@ public class TermBuffer {
      * */
     int volRemain;
     private final TermBuilder builder;
-    public boolean evalInline = true;
 
     public TermBuffer clone() {
         TermBuffer b = new TermBuffer(builder, sub);
@@ -91,7 +80,6 @@ public class TermBuffer {
             sub.clear();
         }
         if (code) {
-            this.eval.clear();
             this.code.clear();
             change = 0;
         }
@@ -225,9 +213,6 @@ public class TermBuffer {
 
         Term y = nextTerm(code.arrayDirect(), new int[]{0, code.len});
 
-        if (y instanceof Compound && !eval.isEmpty()) {
-            y = DeferredEvaluator.apply(y);
-        }
 
         return y;
     }
@@ -302,13 +287,7 @@ public class TermBuffer {
         return nextCompound(op, dt, subterms, bytes, range, start);
     }
 
-    private Term nextCompound(Op op, int dt, Term[] subterms, byte[] bytes, int[] range, int start) {
-        if (op==INH && evalInline() && subterms[1] instanceof InlineFunctor && subterms[0].op()==PROD) {
-
-            return eval(subterms);
-
-        } else {
-
+    protected Term nextCompound(Op op, int dt, Term[] subterms, byte[] bytes, int[] range, int start) {
             Term next = newCompound(op, dt, subterms); //assert (next != null);
 
             if (next != Null) {
@@ -316,7 +295,7 @@ public class TermBuffer {
             }
 
             return next;
-        }
+
     }
 
     /** constructs a new compound term */
@@ -325,27 +304,6 @@ public class TermBuffer {
     }
 
 
-    private static final TermTransform DeferredEvaluator = new AbstractTermTransform.NegObliviousTermTransform() {
-        @Override
-        protected Term applyPosCompound(Compound x) {
-            if (x instanceof DeferredEval) {
-                DeferredEval e = (DeferredEval) x;
-
-
-                Term y = e.eval();
-                if (y instanceof Bool)
-                    return y;
-                else
-                    return apply(y); //recurse
-            } else
-                return super.applyPosCompound(x);
-        }
-
-        @Override
-        public boolean evalInline() {
-            return true;
-        }
-    };
 
     private int uniques() {
         return this.sub.idToTerm.size();
@@ -355,88 +313,7 @@ public class TermBuffer {
         return sub.interned(x);
     }
 
-    public final TermBuffer evalInline(boolean b) {
-        this.evalInline = b;
-        return this;
-    }
 
-
-    private static final class DeferredEval extends LightCompound {
-    //private static final class DeferredEval extends LighterCompound {
-
-        final static AtomicInteger serial = new AtomicInteger(0);
-
-        /** https://unicode-table.com/en/1F47E/ */
-        final static Atom DeferredEvalPrefix = Atomic.atom("⚛");
-        //final static String DeferredEvalPrefix = ("⚛");
-
-        private final InlineFunctor f;
-        private Subterms args;
-
-        /** cached value, null if not computed yet */
-        private transient Term value = null;
-
-        DeferredEval(InlineFunctor f, Subterms args) {
-            super(PROD, DeferredEvalPrefix , Int.the(serial.incrementAndGet()));
-            this.f = f;
-            this.args = args;
-        }
-
-
-        @Override
-        public @Nullable Term normalize(byte varOffset) {
-            return null;
-        }
-
-        @Override
-        public boolean isNormalized() {
-            return true;
-        }
-
-        @Override
-        public String toString() {
-            return "(" + sub(0) + "=" + f + "(" + args + "))";
-        }
-
-        public final Term eval() {
-            if (this.value!=null) {
-                return this.value; //cached
-            } else {
-
-                Term argsY = DeferredEvaluator.apply($.pFast(args)); //recurse apply to arguments before eval
-                Term e;
-                if (argsY == Null)
-                    e = Null;
-                else {
-                    e = f.applyInline(this.args = ((Subterms)argsY));
-                    if (e == null)
-                        e = Null; //HACK
-                }
-                return this.value = e;
-            }
-        }
-    }
-
-    /** adds a deferred evaluation */
-    private Term eval(Term[] s) {
-
-        InlineFunctor func = (InlineFunctor) s[1];
-        Subterms args = s[0].subterms();
-
-        boolean deferred = !(func instanceof InstantFunctor);
-
-        if (deferred) {
-            DeferredEval e = new DeferredEval(func, args);
-            eval.add(e); //TODO check for duplicates?
-            return e;
-        } else {
-
-            Term e = func.applyInline(args);
-            if (e == null)
-                e = Null;
-            return e;
-        }
-    }
 
 
     private Term nextInterned(byte ctl, byte[] ii, int[] range) {
@@ -462,10 +339,6 @@ public class TermBuffer {
         range[0] += 4;
         dt = Ints.fromBytes(ii[p++], ii[p++], ii[p++], ii[p/*++*/]);
         return dt;
-    }
-
-    protected boolean evalInline() {
-        return evalInline;
     }
 
     /** constant propagate matching spans further ahead in the construction process */

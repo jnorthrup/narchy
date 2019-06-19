@@ -20,15 +20,12 @@ import nars.term.util.conj.ConjPar;
 import nars.term.util.conj.ConjSeq;
 import nars.term.util.transform.CompoundNormalization;
 import nars.term.var.ellipsis.Ellipsislike;
-import nars.time.Tense;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
-import java.util.Collection;
 
 import static nars.Op.CONJ;
 import static nars.Op.NEG;
-import static nars.term.Terms.commute;
 import static nars.time.Tense.DTERNAL;
 import static nars.time.Tense.XTERNAL;
 
@@ -41,14 +38,7 @@ import static nars.time.Tense.XTERNAL;
 public abstract class TermBuilder implements TermConstructor {
 
 
-    public final Term newSortedCompound(Op o, int dt, Collection<Term> u) {
-        assert (Tense.dtSpecial(dt));
-        Term[] s = commute(u);
-        if (s.length == 1 && o == CONJ)
-            return s[0];
 
-        return newCompound(o, dt, s);
-    }
 
     public final Term newCompound(Op o, int dt, Term... u) {
         return newCompound(o, dt, u, null);
@@ -108,18 +98,15 @@ public abstract class TermBuilder implements TermConstructor {
 
 
     public Term normalize(Compound x, byte varOffset) {
-        CompoundNormalization n = new CompoundNormalization(x, varOffset);
-        Term y = n.applyCompound(x);
 
-
-
+        CompoundNormalization c = new CompoundNormalization(x, varOffset);
+        Term y = c.apply(x); //x.transform();
 
         if (varOffset == 0 && y instanceof Compound) {
             y.subterms().setNormalized();
         }
 
         return y;
-
     }
 
     public final Term conj(Term... u) {

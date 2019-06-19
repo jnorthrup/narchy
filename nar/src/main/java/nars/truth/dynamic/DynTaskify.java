@@ -154,7 +154,7 @@ public class DynTaskify extends TaskList {
 
             } else {
 
-                long[] u = Tense.merge(0, this);
+                long[] u = Tense.union(0, this);
                 if (u == null)
                     return null;
 
@@ -166,7 +166,7 @@ public class DynTaskify extends TaskList {
         }
 
 
-        Term y = model.reconstruct(template, this, s, e);
+        Term y = model.reconstruct(template, s, e, this);
         if (y==null || !y.unneg().op().taskable /*|| y.hasXternal()*/) { //quick tests
             if (NAL.DEBUG) {
                 //TEMPORARY for debug
@@ -204,7 +204,6 @@ public class DynTaskify extends TaskList {
 
 
         Truth t = model.truth(this);
-        //t = (t != null && eviFactor != 1) ? PreciseTruth.byEvi(t.freq(), t.evi() * eviFactor) : t;
         if (t == null)
             return null;
 

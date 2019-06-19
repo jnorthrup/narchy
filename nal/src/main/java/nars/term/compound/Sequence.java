@@ -194,10 +194,5 @@ public class Sequence extends CachedCompound.TemporalCachedCompound {
         return true;
     }
 
-    public final Term transform(TermTransform t) {
-        return t.apply(this); //force unbuffered transform
-    }
-    public final Term transform(TermTransform t, TermBuffer b, int volMax) {
-        return t.apply(this); //force unbuffered transform
-    }
+
 }

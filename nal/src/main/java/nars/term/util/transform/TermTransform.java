@@ -14,7 +14,7 @@ import static nars.term.atom.Bool.Null;
 
 public interface TermTransform extends Function<Term,Term> {
 
-    @Override default Term apply(Term x) {
+    @Override default /* final */ Term apply(Term x) {
         return (x instanceof Compound) ?
                 applyCompound((Compound) x)
                 :

@@ -27,7 +27,7 @@ import static nars.term.atom.Bool.Null;
  * term combination iterator
  * TODO finish and test
  */
-public class Termerator extends TermBuffer implements Iterable<Term> {
+public class Termerator extends EvalTermBuffer implements Iterable<Term> {
 
     /**
      * TODO Set?

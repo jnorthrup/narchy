@@ -8,7 +8,9 @@ import nars.term.Compound;
 import nars.term.Neg;
 import nars.term.Term;
 import nars.term.Termlike;
+import nars.term.buffer.TermBuffer;
 import nars.term.util.transform.Retemporalize;
+import nars.term.util.transform.TermTransform;
 import org.eclipse.collections.api.block.function.primitive.IntObjectToIntFunction;
 import org.jetbrains.annotations.Nullable;
 
@@ -390,5 +392,10 @@ public interface Atomic extends Term {
 
     default int height() { return 1; }
 
-
+    default Term transform(TermTransform t) {
+        return t.apply(this); //force unbuffered transform
+    }
+    default Term transform(TermTransform t, TermBuffer b, int volMax) {
+        return t.apply(this); //force unbuffered transform
+    }
 }

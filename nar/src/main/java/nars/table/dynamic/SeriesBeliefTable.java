@@ -178,6 +178,7 @@ public class SeriesBeliefTable<T extends Task> extends DynamicTaskTable {
             return Util.hashCombine(term().hashCode(), Util.hashCombine(stamp[0], start));
         }
 
+
         /** series tasks can be assumed to be universally unique */
         @Override
         public boolean equals(Object x) {

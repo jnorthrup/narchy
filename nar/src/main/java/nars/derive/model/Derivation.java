@@ -92,9 +92,9 @@ public class Derivation extends PreDerivation {
     };
     public final Occurrify occ = new Occurrify(this);
 
-    final TermBuffer termBuilder = new TermBuffer().evalInline(false);
+    final TermBuffer termBuilder = new TermBuffer();
     
-    final TermBuffer directTermBuilder = new DirectTermBuffer().evalInline(false);
+    final TermBuffer directTermBuilder = new DirectTermBuffer();
 
     final Functor polarizeTask = new AbstractInstantFunctor1("polarizeTask") {
         @Override
@@ -114,12 +114,10 @@ public class Derivation extends PreDerivation {
             return arg.negIf(b.isNegative());
         }
     };
-    final Functor polarizeRandom = new AbstractInlineFunctor1("polarizeRandom") {
-        @Override
-        protected Term apply1(Term arg) {
-            return random.nextBoolean() ? arg : arg.neg();
-        }
-    };
+
+    /** cant be inline since the value will be cached and repeated */
+    final Functor polarizeRandom = Functor.f1("polarizeRandom", (arg)->random.nextBoolean() ? arg : arg.neg());
+
     /**
      * populates retransform map
      */

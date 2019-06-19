@@ -22,7 +22,7 @@ import nars.term.Term;
 import nars.truth.Truth;
 import org.jetbrains.annotations.Nullable;
 
-import static nars.Op.*;
+import static nars.Op.BELIEF;
 import static nars.time.Tense.TIMELESS;
 
 /**
@@ -43,10 +43,14 @@ public class SensorBeliefTables extends BeliefTables {
 //    public final AtomicTaskLink tasklink;
 
     public SensorBeliefTables(Term c, boolean beliefOrGoal) {
+        this(c, beliefOrGoal, NAL.belief.signal.SIGNAL_BELIEF_TABLE_SERIES_SIZE);
+    }
+
+    public SensorBeliefTables(Term c, boolean beliefOrGoal, int capacity) {
         this(c, beliefOrGoal,
                 //TODO impl time series with concurrent ring buffer from gluegen
                 //new ConcurrentSkiplistTaskSeries<>(Param.SIGNAL_BELIEF_TABLE_SERIES_SIZE)
-                new RingBufferTaskSeries<>(  NAL.belief.signal.SIGNAL_BELIEF_TABLE_SERIES_SIZE));
+                new RingBufferTaskSeries<>(  capacity ));
     }
 
     private SensorBeliefTables(Term term, boolean beliefOrGoal, AbstractTaskSeries<Task> s) {
@@ -56,12 +60,7 @@ public class SensorBeliefTables extends BeliefTables {
 
         add(new MyRTreeBeliefTable());
 
-//        tasklink = newTaskLink(term);
     }
-
-//    private AtomicTaskLink newTaskLink(Term term) {
-//        return new AtomicTaskLink(term);
-//    }
 
     @Override
     public final void remember(Remember r) {
@@ -78,7 +77,8 @@ public class SensorBeliefTables extends BeliefTables {
                         }
                     }
                 }
-            }
+            } else
+                return; //?
         }
 
         super.remember(r);
@@ -117,7 +117,7 @@ public class SensorBeliefTables extends BeliefTables {
 
     /** @param dur can be either a perceptual duration which changes, or a 'physical duration' determined by
      *             the interface itself (ex: clock rate) */
-    private SeriesTask add(@Nullable Truth next, long now, Term term, byte punc, int dur, NAR nar) {
+    private SeriesTask add(@Nullable Truth next, long now, Term term, byte punc, int dur, NAL nar) {
 
 
         SeriesTask nextT = null, last = series.series.last();
@@ -178,20 +178,11 @@ public class SensorBeliefTables extends BeliefTables {
         return nextT;
     }
 
-    private SeriesTask newTask(Term term, byte punc, long s, long e, Truth next, NAR nar) {
+    private SeriesTask newTask(Term term, byte punc, long s, long e, Truth truth, NAL nar) {
         long[] evi;
-
-//        if (Param.REVISION_ALLOW_OVERLAP_IF_DISJOINT_TIME) {
-//            if (eviShared == null)
-//                eviShared = nar.evidence();
-//            evi = eviShared;
-//        } else {
             evi = nar.evidence(); //unique
-//        }
 
-
-
-        return new SeriesTask(term, punc, next, s, e, evi);
+        return new SeriesTask(term, punc, truth, s, e, evi);
     }
 
     static private void stretch(SeriesTask t, long e) {
@@ -247,14 +238,6 @@ public class SensorBeliefTables extends BeliefTables {
 
         next.priMax(surprise); //set the task's pri too
 
-
-        ///float delta = tasklink.priMergeGetDelta(next.punc(), surprise, PriMerge.max);
-
-//        float delta = tasklink.priMax(next.punc(), p/2);
-//        delta += tasklink.priMax(QUESTION, p/4);
-//        delta += tasklink.priMax(QUEST, p/4);
-
-
         TaskLinkWhat ww = (TaskLinkWhat) w;
         AbstractTaskLink tl = new AtomicTaskLink(next.term());
         tl.priSet(BELIEF, surprise);
@@ -263,8 +246,7 @@ public class SensorBeliefTables extends BeliefTables {
 //        tl.priSet(QUEST, surprise*1f/3f);
         ww.links.link(tl);
 
-
-        //if (prev!=next)
+        if (next!=prev)
             w.nar.eventTask.emit(next);
 
     }

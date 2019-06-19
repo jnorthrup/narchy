@@ -1,9 +1,6 @@
 package nars.truth.dynamic;
 
 import jcog.util.ObjectLongLongPredicate;
-import nars.concept.util.ConceptBuilder;
-import nars.table.BeliefTable;
-import nars.table.dynamic.ImageBeliefTable;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.truth.Truth;
@@ -24,7 +21,7 @@ public class DynamicImageTruth {
         }
 
         @Override
-        public Term reconstruct(Compound superterm, DynTaskify d, long start, long end) {
+        public Term reconstruct(Compound superterm, long start, long end, DynTaskify d) {
             throw new UnsupportedOperationException();
         }
 

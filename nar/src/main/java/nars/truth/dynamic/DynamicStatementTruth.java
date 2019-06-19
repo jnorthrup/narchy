@@ -173,7 +173,7 @@ public class DynamicStatementTruth {
 //        }
 
         @Override
-        public Term reconstruct(Compound superterm, DynTaskify components, long start, long end) {
+        public Term reconstruct(Compound superterm, long start, long end, DynTaskify components) {
             return reconstruct(superterm, components, subjOrPred, false);
         }
 

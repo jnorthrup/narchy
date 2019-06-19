@@ -1,5 +1,6 @@
 package nars.term.util.transform;
 
+import nars.term.Compound;
 import nars.term.Term;
 import org.jetbrains.annotations.Nullable;
 
@@ -11,8 +12,8 @@ public abstract class MapSubstWithStructFilter extends MapSubst {
     }
 
     @Override
-    public Term apply(Term x) {
-        return !x.hasAny(structure) ? x : super.apply(x);
+    public @Nullable Term applyCompound(Compound x) {
+        return !x.hasAny(structure) ? x : super.applyCompound(x);
     }
 
     @Nullable

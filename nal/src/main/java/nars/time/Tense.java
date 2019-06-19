@@ -2,7 +2,6 @@ package nars.time;
 
 import jcog.Util;
 import jcog.WTF;
-import jcog.data.iterator.ArrayIterator;
 import jcog.math.LongInterval;
 import jcog.math.Longerval;
 import nars.NAL;
@@ -245,23 +244,20 @@ public enum Tense {
 
     /** safely transform occ (64-bit) to dt (32-bit) */
     public static int occToDT(long occ) {
+
         if (occ == ETERNAL)
             return DTERNAL; //HACK
-        if (occ == TIMELESS)
+        else if (occ == TIMELESS)
             return XTERNAL; //HACK
-        return Util.longToInt(occ);
+        else
+            return Util.longToInt(occ);
     }
 
-    @Nullable
-    public static long[] merge(int dtDither, TaskRegion[] tasks) {
-        return merge(dtDither, ArrayIterator.iterable(tasks));
-    }
 
     /** computes an ideal range of time for a merge or revision of tasks.
      * assumes that at least one of the items is non-eternal.
      * */
-    @Nullable
-    public static long[] merge(int dtDither, Iterable<? extends TaskRegion> tasks) {
+    public static long[] union(int dtDither, Iterable<? extends TaskRegion> tasks) {
         long[] u = Tense.union(tasks);
 //        long unionRange = u[1] - u[0];
 //        float rangeThreshold = Param.REVISION_UNION_THRESHOLD;

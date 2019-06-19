@@ -12,6 +12,7 @@ import nars.attention.What;
 import nars.control.NARPart;
 import nars.control.op.Perceive;
 import nars.control.op.Remember;
+import nars.table.dynamic.SeriesBeliefTable;
 import nars.task.AbstractTask;
 import nars.task.UnevaluatedTask;
 import nars.time.ScheduledTask;
@@ -57,7 +58,11 @@ abstract public class Exec extends NARPart implements Executor, ConsumerX<Abstra
             while (x!=null && !(x instanceof AbstractTask)) {
                 Task y;
                 if (x instanceof UnevaluatedTask) {
-                    y = Remember.the(x, w.nar);
+                    if (x instanceof SeriesBeliefTable.SeriesTask) {
+                        y = null; //already added directly by the table to itself
+                    } else {
+                        y = Remember.the(x, w.nar);
+                    }
                 } else {
                     y = Perceive.perceive(x, w);
                 }

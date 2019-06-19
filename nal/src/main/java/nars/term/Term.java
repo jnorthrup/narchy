@@ -168,18 +168,9 @@ public interface Term extends Termlike, Termed, Comparable<Term> {
     boolean containsAll(Subterms ofThese);
     boolean containsAny(Subterms ofThese);
 
-    default Term transform(TermTransform t) {
-        if (this instanceof Compound && volume() > NAL.TERM_BUFFER_VOL_MIN) //HACK
-            return TermTransform.transform((Compound) this, t, null, NAL.term.COMPOUND_VOLUME_MAX);
-        else
-            return t.apply(this);
-    }
-    default Term transform(TermTransform t, TermBuffer b, int volMax) {
-        if (this instanceof Compound && volume() > NAL.TERM_BUFFER_VOL_MIN) //HACK
-            return TermTransform.transform((Compound)this, t, b, volMax);
-        else
-            return t.apply(this);
-    }
+    Term transform(TermTransform t);
+    Term transform(TermTransform t, @Nullable TermBuffer b, int volMax);
+
 
 
 

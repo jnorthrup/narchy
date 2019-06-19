@@ -17,6 +17,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 import static nars.term.atom.Bool.Null;
+import static nars.term.buffer.TermBuffer.INITIAL_ANON_SIZE;
 
 /**
  * discovers functors within the provided target, or the target itself.
@@ -26,7 +27,7 @@ public class Evaluator extends HeapTermTransform {
 
     final Function<Atom, Functor> funcResolver;
 
-    final TermBuffer compoundBuilder = new NonEvalTermBuffer();
+    final TermBuffer compoundBuilder = new TermBuffer(HeapTermBuilder.the, new ByteAnonMap(INITIAL_ANON_SIZE));
 
     public Evaluator(Function<Atom, Functor> funcResolver) {
         this.funcResolver = funcResolver;
@@ -96,10 +97,10 @@ public class Evaluator extends HeapTermTransform {
 
         if (x instanceof Atom) {
             Functor f = funcResolver.apply((Atom) x);
-            if (f != null) {
+            if (f != null)
                 return f;
-            }
         }
+
         return x;
     }
 
@@ -115,11 +116,6 @@ public class Evaluator extends HeapTermTransform {
             if (x instanceof Compound) //HACK
                 e.evalTry((Compound)x, this);
         }
-
-    }
-
-    public void print() {
-
 
     }
 
@@ -143,15 +139,4 @@ public class Evaluator extends HeapTermTransform {
         }
     }
 
-    private static class NonEvalTermBuffer extends TermBuffer {
-
-        public NonEvalTermBuffer() {
-            super(HeapTermBuilder.the, new ByteAnonMap(INITIAL_ANON_SIZE));
-        }
-
-        @Override
-        protected boolean evalInline() {
-            return false; //TEMPORARY
-        }
-    }
 }

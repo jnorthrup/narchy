@@ -33,7 +33,7 @@ abstract public class AbstractDynamicTruth {
     /**
      * used to reconstruct a dynamic target from some or all components
      */
-    abstract public Term reconstruct(Compound superterm, DynTaskify d, long start, long end);
+    abstract public Term reconstruct(Compound superterm, long start, long end, DynTaskify d);
 
 
     /** default subconcept Task resolver */

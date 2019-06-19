@@ -24,12 +24,14 @@ import jcog.Util;
 import jcog.data.bit.MetalBitSet;
 import jcog.data.sexpression.IPair;
 import jcog.data.sexpression.Pair;
+import nars.NAL;
 import nars.Op;
 import nars.The;
 import nars.io.TermAppender;
 import nars.subterm.Subterms;
 import nars.term.anon.Anon;
 import nars.term.atom.Bool;
+import nars.term.buffer.TermBuffer;
 import nars.term.compound.UnitCompound;
 import nars.term.util.TermTransformException;
 import nars.term.util.builder.TermBuilder;
@@ -39,6 +41,7 @@ import nars.term.util.conj.ConjUnify;
 import nars.term.util.transform.AbstractTermTransform;
 import nars.term.util.transform.MapSubst;
 import nars.term.util.transform.Retemporalize;
+import nars.term.util.transform.TermTransform;
 import nars.unify.Unify;
 import org.eclipse.collections.api.block.function.primitive.IntObjectToIntFunction;
 import org.eclipse.collections.api.block.predicate.primitive.LongObjectPredicate;
@@ -698,18 +701,30 @@ public interface Compound extends Term, IPair, Subterms {
     }
 
 
+    default Term transform(TermTransform t) {
+        return transform(t, null, NAL.term.COMPOUND_VOLUME_MAX);
+    }
+
+    default Term transform(TermTransform t, @Nullable TermBuffer b, int volMax) {
+//        if (this instanceof Compound && volume() > NAL.TERM_BUFFER_VOL_MIN) //HACK
+//            return TermTransform.transform(this, t, b, volMax);
+//        else
+            return t.applyCompound(this);
+
+//        Term x = TermTransform.transform((Compound)this, t, b, volMax);
+//        Term y = t.apply(this);
+//        if (!x.equals(y)) {
+//            if (!x.hasAny(Op.CONJ.bit | Op.Set | Op.SIM.bit))
+//                Util.nop();
+//        }
+//        return x;
+    }
+
     default Term transform(AbstractTermTransform f, Op newOp, int ydt) {
 
         Compound x = this;
-        int xdt = x.dt();
         Op xOp = x.op();
-        Op yOp;
-        if (newOp == null) {
-            yOp = xOp;
-            ydt = xdt;
-        } else {
-            yOp = newOp;
-        }
+        Op yOp = newOp == null ? xOp : newOp;
 
 
         Subterms xx = x.subterms();
@@ -725,19 +740,30 @@ public interface Compound extends Term, IPair, Subterms {
                 return v;
         }
 
+        int xdt = x.dt();
+        if (newOp == null)
+            ydt = xdt;
         if (yy == xx && xOp == yOp && xdt == ydt)
             return x; //no change
 
-        //inline reductions
-        if (yOp == CONJ) {
-            if (yy == Op.FalseSubterm)
-                return Bool.False;
-            if (yy.subs() == 0)
-                return Bool.True;
-        }
 
-        //dt adjust
+//        if (yOp.commutative) {
+//            if (yy.subs() == 1) {
+//                Term y0 = yy.sub(0);
+//                if (!(y0 instanceof Ellipsislike) && y0.op()!=FRAG)
+//                    return y0;
+//            }
+//        }
+
         if (yOp.temporal) {
+
+            //inline reductions
+            if (yOp == CONJ) {
+                if (yy == Op.FalseSubterm)
+                    return Bool.False;
+                if (yy.subs() == 0)
+                    return Bool.True;
+            }
 
             if (ydt != XTERNAL)
                 ydt = AbstractTermTransform.realign(ydt, xx, yy);

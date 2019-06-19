@@ -74,7 +74,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
     public static final boolean VOLMAX_RESTRICTS= configIs("VOLMAX_RESTRICTS"); //all tasks
 
 
-    public static final int TERM_BUFFER_VOL_MIN = 20;
+    public static final int TERM_BUFFER_VOL_MIN = Integer.MAX_VALUE;
 
 
 
@@ -616,7 +616,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
                     //2f;
             /** max tasked matched by series table, in case the answer limit is higher.  this reduces the number of redundant non-exact matches freeing evidential capacity for non-signal tasks from other tables of the concept */
             public static final float SERIES_MATCH_ADDITIONAL_RATE_PER_DUR = 1f/SIGNAL_STRETCH_LIMIT_DURS;
-            public static final int SERIES_MATCH_MIN = 2;
+            public static final int SERIES_MATCH_MIN = 1;
 
             //public static final boolean SIGNAL_TASK_OCC_DITHER = true;
         }
