@@ -247,7 +247,7 @@ public class SensorBeliefTables extends BeliefTables {
         }
 
         float surprise = NAL.signalSurprise(prev, next, dur);
-        float decay = Util.lerp(surprise, 0.5f, 1f);
+        float decay = Util.lerp(surprise, 0.9f, 1f);
         next.priSet(p * decay); //decay rate control
         if (surprise < Float.MIN_NORMAL)
             return;

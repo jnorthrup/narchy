@@ -141,18 +141,14 @@
 // TODO these could be merged with NAL3 decompositions into a general decomposition rule
 
     //CONJ
-//    X, C, sectOf(C,X), conjParallel(C)     |-     unsect(C,  X), (Belief:DecomposePP)
-     C, X, eventOf(C,X), conjParallel(C), --isVar(X)     |-     conjBefore(C, X), (Belief:DecomposePP, Time:BeliefEvent)
-//    X, C, sectOf(C,X), conjParallel(C)     |-   unsect(C,  X), (Belief:DecomposePN)
+     C, X, eventOf(C,X), conjParallel(C), --isVar(X)     |-     conjBefore(C,  X), (Belief:DecomposePP, Time:BeliefEvent)
      C, X, eventOfNeg(C,X), conjParallel(C), --isVar(X)  |-     conjBefore(C,--X), (Belief:DecomposePN, Time:BeliefEvent)
-//    X, C, sectOf(C,--X), conjParallel(C)  |-     unsect(C,--X), (Belief:DecomposeNP)
-     C, X, eventOf(C,X), conjParallel(C), --isVar(X)     |-   --conjBefore(C,  X), (Belief:DecomposeNN, Time:BeliefEvent)
-//    X, C, sectOf(C,--X), conjParallel(C)  |-   --unsect(C,--X), (Belief:DecomposeNN)
-     C, X, eventOfNeg(C,X), conjParallel(C), --isVar(X)  |-   --conjBefore(C,--X), (Belief:DecomposeNP, Time:BeliefEvent)
+     C, X, eventOf(C,X), conjParallel(C), --isVar(X)     |-   --conjBefore(C,  X), (Belief:DecomposeNP, Time:BeliefEvent)
+     C, X, eventOfNeg(C,X), conjParallel(C), --isVar(X)  |-   --conjBefore(C,--X), (Belief:DecomposeNN, Time:BeliefEvent)
 
     //DISJ select
-    D, X, is(D,"&&"), --isVar(X) |- --unisubst(D,chooseUnifiableSubEvent(D,X),X,"#",novel), (Belief:DecomposeNP, Goal:DecomposeNP, Time:BeliefEvent)
-    D, X, is(D,"&&"), --isVar(X) |- --unisubst(D,chooseUnifiableSubEvent(D,--X),--X,"#",novel), (Belief:DecomposeNN, Goal:DecomposeNN, Time:BeliefEvent)
+    D, X, is(D,"&&"), --isVar(X) |- --unisubst(D,chooseUnifiableSubEvent(D,X),X,"#",novel), (Belief:DecomposeNP, Goal:DecomposeNN, Time:BeliefEvent)
+    D, X, is(D,"&&"), --isVar(X) |- --unisubst(D,chooseUnifiableSubEvent(D,--X),--X,"#",novel), (Belief:DecomposeNN, Goal:DecomposeNP, Time:BeliefEvent)
 
     //TODO test and write predicate version:
       //(C==>Y), X, is(C,"&&"), --isVar(X)           |-  polarizeTask((conjAfter(C,  polarizeBelief(X)) ==> Y)),       (Belief:DecomposeDepolarized,Goal:DecomposeDepolarized)

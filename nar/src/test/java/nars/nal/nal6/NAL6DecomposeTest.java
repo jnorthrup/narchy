@@ -26,13 +26,13 @@ abstract public class NAL6DecomposeTest extends NALTest {
     }
 
     static class Unsorted extends NAL6DecomposeTest {
-        private void assertDecomposeSubjConjAandB(float fAB, float fA, float fB, float cB) {
-            assertDecomposeSubjAB(fAB, fA, 0.9f, fB, cB, true);
-        }
-
-        private void assertDecomposeSubjDisjAandB(float fAB, float fA, float fB, float cB) {
-            assertDecomposeSubjAB(fAB, fA, 0.9f, fB, cB, false);
-        }
+//        private void assertDecomposeSubjConjAandB(float fAB, float fA, float fB, float cB) {
+//            assertDecomposeSubjAB(fAB, fA, 0.9f, fB, cB, true);
+//        }
+//
+//        private void assertDecomposeSubjDisjAandB(float fAB, float fA, float fB, float cB) {
+//            assertDecomposeSubjAB(fAB, fA, 0.9f, fB, cB, false);
+//        }
 
         private void assertDecomposeSubjAB(float fAB, float fA, float c, float fB, float cB, boolean conjOrDisj) {
 
@@ -67,56 +67,56 @@ abstract public class NAL6DecomposeTest extends NALTest {
 
         }
 
-        @Test
-        void testDecomposeSubjConjPosPos() {
-            assertDecomposeSubjConjAandB(1f, 1f, 1f, 0.81f);
-        }
-
-        @Test
-        void testDecomposeSubjConjPosWeakPos() {
-            assertDecomposeSubjConjAandB(0.9f, 1f, 0.9f, 0.73f);
-        }
-
-        @Test
-        void testDecomposeSubjDisjPosPos() {
-            assertDecomposeSubjDisjAandB(1f, 0.9f, 0.1f, 0.08f);
-        }
-
-        @Test
-        void testDecomposeSubjDisjPosPosWeak() {
-            assertDecomposeSubjDisjAandB(1f, 0.5f, 0.5f /*0.1f*/, 0.08f);
-        }
-
-        @Test
-        void testDecomposeSubjDisjNegPos() {
-            assertDecomposeSubjDisjAandB(1f, 0f, 1f, 0.81f);
-        }
-
-        @Test
-        void testDecomposeSubjDisjPosPosOppositeWeaker() {
-            assertDecomposeSubjDisjAandB(0.75f, 0.1f, 0.78f, 0.66f);
-        }
-
-
-        @Test
-        void testDecomposeSubjConjPosWeakPosWeak() {
-            assertDecomposeSubjConjAandB(0.7f, 0.6f, .42f, 0.3f);
-        }
-
-        @Test
-        void testDecomposeSubjConjNegNeg() {
-            assertDecomposeSubjConjAandB(0f, 0f, 0f, 0.81f);
-        }
+//        @Test
+//        void testDecomposeSubjConjPosPos() {
+//            assertDecomposeSubjConjAandB(1f, 1f, 1f, 0.81f);
+//        }
+//
+//        @Test
+//        void testDecomposeSubjConjPosWeakPos() {
+//            assertDecomposeSubjConjAandB(0.9f, 1f, 0.9f, 0.73f);
+//        }
+//
+//        @Test
+//        void testDecomposeSubjDisjPosPos() {
+//            assertDecomposeSubjDisjAandB(1f, 0.9f, 0.1f, 0.08f);
+//        }
+//
+//        @Test
+//        void testDecomposeSubjDisjPosPosWeak() {
+//            assertDecomposeSubjDisjAandB(1f, 0.5f, 0.5f /*0.1f*/, 0.08f);
+//        }
+//
+//        @Test
+//        void testDecomposeSubjDisjNegPos() {
+//            assertDecomposeSubjDisjAandB(1f, 0f, 1f, 0.81f);
+//        }
+//
+//        @Test
+//        void testDecomposeSubjDisjPosPosOppositeWeaker() {
+//            assertDecomposeSubjDisjAandB(0.75f, 0.1f, 0.78f, 0.66f);
+//        }
+//
+//
+//        @Test
+//        void testDecomposeSubjConjPosWeakPosWeak() {
+//            assertDecomposeSubjConjAandB(0.7f, 0.6f, .42f, 0.3f);
+//        }
+//
+//        @Test
+//        void testDecomposeSubjConjNegNeg() {
+//            assertDecomposeSubjConjAandB(0f, 0f, 0f, 0.81f);
+//        }
 
         //    @Test void testDecomposeSubjConjNegWeakNeg() {
 //        test.logDebug();
 //        assertDecomposeSubjConjAandB(0.1f, 0.75f, 0.63f, 0.3f);
 //    }
-        @Test
-        void testDecomposeSubjConjNegWeakNeg2() {
-            assertDecomposeSubjConjAandB(0.25f, 0.5f, 0.63f, 0.3f);
-        }
-
+//        @Test
+//        void testDecomposeSubjConjNegWeakNeg2() {
+//            assertDecomposeSubjConjAandB(0.25f, 0.5f, 0.63f, 0.3f);
+//        }
+//
 
         @Test
         void impl_conjunction_subj_conj_decompose_conditional_neg() {

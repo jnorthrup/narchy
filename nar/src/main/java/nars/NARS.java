@@ -135,7 +135,7 @@ public class NARS {
 
                 n.termVolMax.set(22);
 
-                ((TaskLinkWhat) n.what()).links.decay.set(0.5f);
+                ((TaskLinkWhat) n.what()).links.decay.set(0.75f);
 
                 n.beliefPriDefault.amp(0.1f);
                 n.goalPriDefault.amp(0.1f);
