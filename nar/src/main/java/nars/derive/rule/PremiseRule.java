@@ -314,6 +314,10 @@ public class PremiseRule extends ProxyTerm {
                     is(X, CONJ);
                     match(X, TermMatcher.ConjParallel.the);
                     break;
+                case "conjSequence":
+                    is(X, CONJ);
+                    match(X, TermMatcher.ConjSequence.the);
+                    break;
 
                 case "eventOf":
                 case "eventOfNeg": {

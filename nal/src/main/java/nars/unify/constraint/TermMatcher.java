@@ -15,8 +15,6 @@ import nars.term.var.VarPattern;
 import javax.annotation.Nullable;
 
 import static nars.Op.*;
-import static nars.time.Tense.DTERNAL;
-import static nars.time.Tense.XTERNAL;
 
 abstract public class TermMatcher {
 
@@ -412,7 +410,36 @@ abstract public class TermMatcher {
 
     }
 
+    public static final class ConjSequence extends TermMatcher {
 
+        public static final ConjSequence the = new ConjSequence();
+
+        private ConjSequence() {
+            super();
+        }
+
+        @Override
+        public boolean test(Term t) {
+            return Conj.isSeq(t);
+        }
+
+        @Override
+        public boolean testSuper(Term x) {
+            return true;
+            //return x.hasAny(CONJ);
+        }
+
+        @Nullable
+        @Override
+        public Term param() {
+            return null;
+        }
+
+        @Override
+        public float cost() {
+            return 0.1f;
+        }
+    }
     public static final class ConjParallel extends TermMatcher {
 
         public static final ConjParallel the = new ConjParallel();
@@ -423,20 +450,13 @@ abstract public class TermMatcher {
 
         @Override
         public boolean test(Term t) {
-            if (t == null)
-                return false;
-
-            Term u = t.unneg();
-            if (u.op()==CONJ) {
-                int i = u.dt();
-                return i == XTERNAL || i == 0 || (i == DTERNAL && !Conj.isSeq(u));
-            }
-            return false;
+            return !Conj.isSeq(t);
         }
 
         @Override
         public boolean testSuper(Term x) {
-            return x.hasAny(CONJ);
+            //return x.hasAny(CONJ);
+            return true;
         }
 
         @Nullable
