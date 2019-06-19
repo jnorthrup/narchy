@@ -181,8 +181,8 @@
     //(P ==> M), (S ==> M)  |- ((P && S) ==> M), (Belief:IntersectionPB)
        //(P ==> M), (S ==> M)  |- ((P || S) ==> M), (Belief:UnionPB)
 
-        (P ==> M), (S ==> M), task("?")  |- ((P && S) ==> M), (Punctuation:Question, Time:Compose)
-          (P ==> M), (S ==> M), task("?")  |- ((P || S) ==> M), (Punctuation:Question, Time:Compose)
+        (P ==> M), (S ==> M), neq(P,S), task("?")  |- ((P && S) ==> M), (Punctuation:Question, Time:Compose)
+          (P ==> M), (S ==> M), neq(P,S), task("?")  |- ((P || S) ==> M), (Punctuation:Question, Time:Compose)
             //(P ==> M), (S ==> M), task("?")  |- (P || S), (Punctuation:Question)
             //(P ==> M), (S ==> M), task("?")  |- (P && S), (Punctuation:Question)
 
@@ -191,7 +191,7 @@
      (M ==> P), (M ==> S)  |- (M ==> (polarizeTask(P) && polarizeBelief(S))), (Belief:IntersectionDepolarized, Time:Compose)
        //(M ==> P), (M ==> S)  |- (M ==> (polarizeTask(P) || polarizeBelief(S))), (Belief:UnionDepolarized)
 
-        (M ==> P), (M ==> S), task(".?") |- (M ==> (polarizeRandom(P) && polarizeRandom(S))), (Punctuation:Question, Time:Compose)
+        (M ==> P), (M ==> S), neq(P,S), task(".?") |- (M ==> (polarizeRandom(P) && polarizeRandom(S))), (Punctuation:Question, Time:Compose)
             //(M ==> P), (M ==> S), task("?") |- (polarizeRandom(P) && polarizeRandom(S)), (Punctuation:Question)
 
         //TODO question variations

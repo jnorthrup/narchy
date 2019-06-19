@@ -301,7 +301,7 @@ public class DynTaskify extends TaskList {
     }
 
     private boolean doesntOverlap(Task t) {
-        return size < capacity() || doesntOverlap(t.stamp());
+        return size == 0 /*size < capacity()*/ || doesntOverlap(t.stamp());
     }
 
     private boolean doesntOverlap(long[] stamp) {

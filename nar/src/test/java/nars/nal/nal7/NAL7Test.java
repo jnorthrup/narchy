@@ -1265,7 +1265,7 @@ public class NAL7Test extends NALTest {
 
 
         test
-
+                .termVolMax(3)
                 .believe("(b ==>+10 c)")
                 .believe("(e ==>-20 c)")
                 .mustBelieve(cycles, "(e ==>-30 b)", 1f, 0.45f)
