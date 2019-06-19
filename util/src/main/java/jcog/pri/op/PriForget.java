@@ -1,5 +1,6 @@
 package jcog.pri.op;
 
+import jcog.Util;
 import jcog.pri.Prioritizable;
 import jcog.pri.ScalarValue;
 import org.jetbrains.annotations.Nullable;
@@ -60,17 +61,17 @@ public enum PriForget { ;
     }
 
     @Nullable
-    public static Consumer<? extends Prioritizable> forgetIdeal(float rate, float idealPri, int size, int cap, float pressure, float mass) {
-        float excess = pressure +
+    public static Consumer<? extends Prioritizable> forgetIdeal(double rate, double idealPri, int size, int cap, double pressure, double mass) {
+        double excess = pressure +
                 Math.max(0,
-                    mass - (/*cap*/size * idealPri)
+                    mass - (cap /*size*/ * idealPri)
                 )
         ;
-        float eachMustForgetPct =
+        double eachMustForgetPct =
                 rate * (excess / (mass+excess));
 
-            if (eachMustForgetPct * mass / size >= ScalarValue.EPSILONcoarse) {
-                return new PriMult<>(1-eachMustForgetPct);
+            if (eachMustForgetPct >= ScalarValue.EPSILONcoarse) {
+                return new PriMult<>((float)Util.unitize(1-eachMustForgetPct));
             }
 
         return null;

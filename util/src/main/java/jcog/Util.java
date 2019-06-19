@@ -1334,7 +1334,12 @@ public enum Util {
             y += value.floatValueOf(x);
         return y;
     }
-
+    public static <X> double sumDouble(FloatFunction<X> value, X... xx) {
+        double y = 0;
+        for (X x : xx)
+            y += value.floatValueOf(x);
+        return y;
+    }
     public static <X> double sum(ToDoubleFunction<X> value, X... xx) {
         double y = 0;
         for (X x : xx)

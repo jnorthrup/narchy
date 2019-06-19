@@ -255,8 +255,8 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
      * probably values less than 0.5 are safe
      */
     public final FloatRange intermpolationRangeLimit = new FloatRange(
-            0.5f
-            //1f
+            //0.5f
+            1f
             //2f
             , 0, 4);
 
@@ -612,10 +612,10 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
              * stretches perception across some amount of lag
              */
             public static final float SIGNAL_LATCH_LIMIT_DURS =/*0.5f;*/
-                    //1f;
-                    2f;
+                    1f;
+                    //2f;
             /** max tasked matched by series table, in case the answer limit is higher.  this reduces the number of redundant non-exact matches freeing evidential capacity for non-signal tasks from other tables of the concept */
-            public static final float SERIES_MATCH_ADDITIONAL_RATE_PER_DUR = 1f/SIGNAL_LATCH_LIMIT_DURS;
+            public static final float SERIES_MATCH_ADDITIONAL_RATE_PER_DUR = 1f/SIGNAL_STRETCH_LIMIT_DURS;
             public static final int SERIES_MATCH_MIN = 2;
 
             //public static final boolean SIGNAL_TASK_OCC_DITHER = true;

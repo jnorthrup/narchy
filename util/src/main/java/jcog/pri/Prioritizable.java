@@ -1,11 +1,12 @@
 package jcog.pri;
 
-import com.google.common.base.Function;
 import jcog.Texts;
 import jcog.Util;
-import jcog.math.FloatRange;
 import jcog.pri.op.PriMerge;
 import jcog.pri.op.PriReturn;
+import org.checkerframework.checker.nullness.qual.Nullable;
+
+import java.util.function.Function;
 
 /**
  * Mutable Prioritized
@@ -135,11 +136,11 @@ public interface Prioritizable extends Prioritized, ScalarValue {
      * X[] may contain nulls
      */
     @SafeVarargs
-    static <X> UnitPri fund(float maxPri, boolean copyOrTransfer, Function<X, Prioritizable> getPri, X... src) {
+    static <X> UnitPri fund(float maxPri, boolean copyOrTransfer, Function<X, @Nullable Prioritizable> getPri, X... src) {
 
         assert (src.length > 0);
 
-        float priTarget = Math.min(maxPri, Util.sum((X s) -> {
+        double priTarget = Math.min(maxPri, Util.sumDouble((X s) -> {
             if (s == null) return 0;
             return getPri.apply(s).priElseZero();
         }, src));
@@ -147,7 +148,8 @@ public interface Prioritizable extends Prioritized, ScalarValue {
         UnitPri u = new UnitPri();
 
         if (priTarget > ScalarValue.EPSILON) {
-            float perSrc = priTarget / src.length;
+            float perSrc = (float) (priTarget / src.length);
+            //TODO random visit order if not copying (transferring)
             for (X t: src) {
                 if (t != null) {
                     float v = u.take(getPri.apply(t), perSrc, true, copyOrTransfer);
@@ -160,20 +162,20 @@ public interface Prioritizable extends Prioritized, ScalarValue {
         return u;
     }
 
-    default FloatRange priAsFloatRange() {
-        return new FloatRange(pri(), 0, 1) {
-            @Override
-            public void set(float value) {
-                super.set(value);
-                Prioritizable.this.pri(value);
-            }
-
-            @Override
-            public float getAndSet(float r) {
-                throw new UnsupportedOperationException();
-            }
-        };
-    }
+//    default FloatRange priAsFloatRange() {
+//        return new FloatRange(pri(), 0, 1) {
+//            @Override
+//            public void set(float value) {
+//                super.set(value);
+//                Prioritizable.this.pri(value);
+//            }
+//
+//            @Override
+//            public float getAndSet(float r) {
+//                throw new UnsupportedOperationException();
+//            }
+//        };
+//    }
 
 
 }

@@ -615,7 +615,7 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
 
     public static void fund(Task y, Task[] x, boolean priCopyOrMove) {
         int volSum = Util.sum(TermedDelegate::volume, x);
-        double xVolSum =
+        double volFactor =
                 Math.min(1, ((double)volSum) / y.volume() );
 
         double yConf = y.conf();
@@ -631,7 +631,11 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
             rangeFactor = Math.min(1, ((double) yRange) / xRangeMax);
         }
 
-        float p = (float)(Util.sum(Task::priElseZero, x) * xVolSum * confFactor * rangeFactor);
+        //int Xn = x.length;
+        //double priSum = Util.sumDouble(Task::priElseZero, x);
+        //double priAvg = priSum / Xn;
+        double priMax = Util.max(Task::priElseZero, x);
+        float p = (float)(priMax * volFactor * confFactor * rangeFactor);
 
         y.pri(Prioritizable.fund(p, priCopyOrMove, x));
 

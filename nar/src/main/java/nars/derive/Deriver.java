@@ -101,9 +101,9 @@ abstract public class Deriver extends How {
     @Override
     public float value() {
         //TODO cache this between cycles
-        float v = Util.sum(Why::value, rules.causes());
+        double  v = Util.sumDouble(Why::value, rules.causes());
         //System.out.println(this + " " + v);
-        return v;
+        return (float) v;
     }
 
 
