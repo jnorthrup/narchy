@@ -20,8 +20,8 @@
         //D, X, eventOfPN(D,X)                            |-   conjWithoutPN(D,X), (Belief:StructuralDeductionWeak, Goal:StructuralDeductionWeak)
 
     //question short-circuit answer
-    C, X, task("?"), eventOf(C,X)    |- --C,  (Belief:BeliefStructuralDeductionPN, Punctuation:Belief, Time:BeliefRelative)
-    C, X, task("?"), eventOfNeg(C,X) |-   C,  (Belief:BeliefStructuralDeductionPP, Punctuation:Belief, Time:BeliefRelative)
+    C, X, task("?"), eventOf(C,X)    |- --C,  (Belief:BeliefStructuralDeductionPN, Punctuation:Belief)
+    C, X, task("?"), eventOfNeg(C,X) |-   C,  (Belief:BeliefStructuralDeductionPP, Punctuation:Belief)
         //TODO other short-circuits, involving ==> etc
 
     //implication short-circuit doubt TODO

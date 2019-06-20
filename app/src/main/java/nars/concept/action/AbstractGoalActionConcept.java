@@ -133,8 +133,8 @@ public class AbstractGoalActionConcept extends GameAction {
 
         float sensitivityRange = 1;
 
-        long s = Math.round(now - dur/2 * sensitivityRange), e = Math.round(now + dur/2 * sensitivityRange);
-        //long s = Math.round(now - dur * sensitivityRange), e = now;
+        //long s = Math.round(now - dur/2 * sensitivityRange), e = Math.round(now + dur/2 * sensitivityRange);
+        long s = Math.round(now - dur * sensitivityRange), e = now;
 
         if (!tables.isEmpty()) {
 //            int dither = n.dtDither.intValue();

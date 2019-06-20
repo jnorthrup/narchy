@@ -45,7 +45,7 @@
         //B, (C ==> A), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- --unisubst(C,A,B), (Goal:PostStrongPN, Time:TaskMinusBeliefDT)
 
         //questions
-          B, (C ==> A), task("?@"), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- unisubst((C ==> A),A,B,"$",novel), (Punctuation:Question, Time:TaskEvent)
+          //B, (C ==> A), task("?@"), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- unisubst((C ==> A),A,B,"$",novel), (Punctuation:Question, Time:TaskEvent)
           B, (C ==> A), task("?@"), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- unisubst(C,A,B,"$"), (Time:TaskEvent)
 
 
@@ -191,8 +191,9 @@
      (M ==> P), (M ==> S)  |- (M ==> (polarizeTask(P) && polarizeBelief(S))), (Belief:IntersectionDepolarized, Time:Compose)
        //(M ==> P), (M ==> S)  |- (M ==> (polarizeTask(P) || polarizeBelief(S))), (Belief:UnionDepolarized)
 
-        (M ==> P), (M ==> S), neq(P,S), task(".?") |- (M ==> (polarizeRandom(P) && polarizeRandom(S))), (Punctuation:Question, Time:Compose)
-            //(M ==> P), (M ==> S), task("?") |- (polarizeRandom(P) && polarizeRandom(S)), (Punctuation:Question)
+        (M ==> P), (M ==> S), neq(P,S), task("?") |- (M ==> (polarizeRandom(P) && polarizeRandom(S))), (Punctuation:Question, Time:Compose)
+
+
 
         //TODO question variations
         //((&&,P,A..+) ==> X), ((&&,S,A..+) ==> X), neq(P,S) |- ((&&,(P && S),A..+) ==> X), (Belief:IntersectionSym)

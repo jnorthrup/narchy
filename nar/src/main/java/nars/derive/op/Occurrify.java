@@ -551,7 +551,7 @@ public class Occurrify extends TimeGraph {
         TaskRelative() {
             @Override
             public Pair<Term, long[]> occurrence(Term x, Derivation d) {
-                return solveDT(d, x, true);
+                return solveDT(d, x, false);
             }
 
             @Override
@@ -572,7 +572,7 @@ public class Occurrify extends TimeGraph {
         BeliefRelative() {
             @Override
             public Pair<Term, long[]> occurrence(Term x, Derivation d) {
-                return solveDT(d, x, true);
+                return solveDT(d, x, false);
             }
 
             @Override

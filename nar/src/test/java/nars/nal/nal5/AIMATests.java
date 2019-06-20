@@ -28,9 +28,9 @@ class AIMATests {
         n.freqResolution.set((float) truthRes);
         n.confMin.set(0.05f);
 //        n.attn.decay.set(0.1f);
-        n.confResolution.set(0.1f);
+//        n.confResolution.set(0.05f);
 
-//        n.questPriDefault.set(0.8f);
+//        n.questionPriDefault.amp(0.8f);
 //        n.log();
 
         ObjectIntHashMap<Term> terms = new ObjectIntHashMap();
