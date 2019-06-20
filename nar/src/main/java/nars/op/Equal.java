@@ -27,10 +27,30 @@ public final class Equal extends InlineCommutiveBinaryBidiFunctor implements The
 
     public static Term the(Term x, Term y) {
         @Nullable Term p = pretest(x, y);
-        if (p!=null)
+        if (p != null)
             return p;
         else
             return $.func(equal, commute(x, y));
+    }
+
+    @Nullable
+    private static Term pretest(Term x, Term y) {
+        if (x == Null || y == Null) return Null;
+        if (x.equals(y)) return True;
+        if (x.equalsNeg(y)) return False;
+        if (!x.hasVars() && !y.hasVars()) return False; //constant in-equal
+        return null;
+    }
+
+    public static Term cmp(Term a, Term b, int c) {
+        if (a.compareTo(b) > 0) {
+            c *= -1;
+            Term x = a;
+            a = b;
+            b = x;
+        }
+
+        return $.func(Cmp.cmp, a, b, Int.the(c));
     }
 
     @Override
@@ -50,7 +70,6 @@ public final class Equal extends InlineCommutiveBinaryBidiFunctor implements The
         return null;
     }
 
-
     @Override
     protected Term compute(Evaluation e, Term x, Term y) {
         Term p = pretest(x, y);
@@ -60,20 +79,11 @@ public final class Equal extends InlineCommutiveBinaryBidiFunctor implements The
         Op xOp = x.op(), yOp = y.op();
         boolean xIsVar = xOp.var, yIsVar = yOp.var;
 
-        if (xIsVar ^ yIsVar) {
 
-            if (xIsVar) {
-//                if (e != null) {
-                    return e.is(x, y) ? True : Null;
-//                }
-            } else {
-//                if (e != null) {
-                    return e.is(y, x) ? True : Null;
-//                }
-            }
-
-            //indeterminable in non-evaluation context
-//            return null;
+        if (xIsVar && !yIsVar) {
+            return e.is(x, y) ? True : Null;
+        } else if (yIsVar && !xIsVar) {
+            return e.is(y, x) ? True : Null;
         }
 
 
@@ -91,21 +101,21 @@ public final class Equal extends InlineCommutiveBinaryBidiFunctor implements The
         }
 
 
-        if (xHasVar && xOp == INH && yOp==INT) {
+        if (xHasVar && xOp == INH && yOp == INT) {
             //algebraic solutions TODO use symbolic algebra system
             Term xf = Functor.func(x);
             if (xf.equals(MathFunc.add)) {
-                Subterms xa = Functor.args((Compound)x, 2);
+                Subterms xa = Functor.args((Compound) x, 2);
                 Term xa0 = xa.sub(0), xa1 = xa.sub(1);
                 if (xa0.op().var && xa1.op() == INT)
                     return e.is(xa0, Int.the(((Int) y).i - ((Int) xa1).i)) ? True : Null; //"equal(add(#x,a),b)"
                 else if (xa1.op().var && xa0.op() == INT)
                     throw new TODO();
             } else if (xf.equals(MathFunc.mul)) {
-                Subterms xa = Functor.args((Compound)x, 2);
+                Subterms xa = Functor.args((Compound) x, 2);
                 Term xa0 = xa.sub(0), xa1 = xa.sub(1);
                 if (xa0.op().var && xa1.op() == INT)
-                    return e.is(xa0, $.the(((double)((Int) y).i) / ((Int) xa1).i)) ? True : Null; //"equal(mul(#x,a),b)"
+                    return e.is(xa0, $.the(((double) ((Int) y).i) / ((Int) xa1).i)) ? True : Null; //"equal(mul(#x,a),b)"
             }
         }
 
@@ -119,15 +129,6 @@ public final class Equal extends InlineCommutiveBinaryBidiFunctor implements The
 
     }
 
-    @Nullable
-    private static Term pretest(Term x, Term y) {
-        if (x == Null || y == Null) return Null;
-        if (x.equals(y)) return True;
-        if (x.equalsNeg(y)) return False;
-        if (!x.hasVars() && !y.hasVars()) return False; //constant in-equal
-        return null;
-    }
-
     @Override
     protected Term computeFromXY(Evaluation e, Term x, Term y, Term xy) {
         return null;
@@ -136,17 +137,6 @@ public final class Equal extends InlineCommutiveBinaryBidiFunctor implements The
     @Override
     protected Term computeXfromYandXY(Evaluation e, Term x, Term y, Term xy) {
         return xy == True ? y : null;
-    }
-
-    public static Term cmp(Term a, Term b, int c) {
-        if (a.compareTo(b) > 0) {
-            c *= -1;
-            Term x = a;
-            a = b;
-            b = x;
-        }
-
-        return $.func(Cmp.cmp, a, b, Int.the(c));
     }
 
 

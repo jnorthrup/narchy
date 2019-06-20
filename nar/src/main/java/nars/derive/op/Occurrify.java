@@ -8,7 +8,6 @@ import nars.Task;
 import nars.derive.model.Derivation;
 import nars.derive.model.DerivationFailure;
 import nars.term.Compound;
-import nars.term.Neg;
 import nars.term.Term;
 import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
@@ -26,13 +25,11 @@ import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 import org.eclipse.collections.impl.map.mutable.primitive.ObjectIntHashMap;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Arrays;
 import java.util.Random;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
 import static nars.Op.*;
-import static nars.derive.model.DerivationFailure.Success;
 import static nars.time.Tense.*;
 import static org.eclipse.collections.impl.tuple.Tuples.pair;
 
@@ -92,79 +89,9 @@ public class Occurrify extends TimeGraph {
     }
 
 
-    static void temporalTask(Term x, OccurrenceSolver time, Taskify t, Derivation d) {
 
 
 
-        boolean neg = false;
-        Term xx = x;
-        if (x instanceof Neg && (!d.taskTerm.hasAny(NEG) && !d.beliefTerm.hasAny(NEG))) {
-            //HACK semi-auto-unneg to help occurrify
-            x = x.unneg();
-            neg = true;
-        }
-
-        Pair<Term, long[]> timing = time.occurrence(x, d);
-        if (timing == null) {
-            d.nar.emotion.deriveFailTemporal.increment();
-            return;
-        }
-
-        Term y = timing.getOne();
-
-        long[] occ = timing.getTwo();
-
-        if (!((occ[0] != TIMELESS) && (occ[1] != TIMELESS) &&
-                (occ[0] == ETERNAL) == (occ[1] == ETERNAL) &&
-                (occ[1] >= occ[0])) || (occ[0] == ETERNAL && !d.occ.validEternal()))
-            throw new RuntimeException("bad occurrence result: " + Arrays.toString(occ));
-
-        if (NAL.derive.DERIVE_QUESTION_FROM_AMBIGUOUS_BELIEF_OR_GOAL && (d.concPunc == BELIEF || d.concPunc == GOAL)) {
-            if (DerivationFailure.failure(y, d.concPunc)) {
-
-                //as a last resort, try forming a question from the remains
-                byte qPunc = d.concPunc == BELIEF ? QUESTION : QUEST;
-                d.concPunc = qPunc;
-                if (DerivationFailure.failure(y, d) == Success) {
-                    d.concPunc = qPunc;
-                    d.concTruth = null;
-                } else {
-                    d.nar.emotion.deriveFailTemporal.increment();
-                    return; //fail
-                }
-
-            } //else: ok
-        } else {
-            if (DerivationFailure.failure(y, d) != Success) {
-                d.nar.emotion.deriveFailTemporal.increment();
-                return;
-            }
-        }
-
-        if (NAL.test.DEBUG_ENSURE_DITHERED_DT)
-            assertDithered(y, d.ditherDT);
-
-        t.taskify(y.negIf(neg), occ[0], occ[1], d);
-    }
-
-    static void eternalTask(Term x, Taskify t, Derivation d) {
-        //assert(d.taskStart == ETERNAL && d.taskEnd == ETERNAL);
-        //assert((d.beliefStart == ETERNAL && d.beliefEnd == ETERNAL)||(d.beliefStart == TIMELESS && d.beliefEnd == TIMELESS));
-        byte punc = d.concPunc;
-        if ((punc == BELIEF || punc == GOAL) && x.hasXternal()) { // && !d.taskTerm.hasXternal() && !d.beliefTerm.hasXternal()) {
-            //HACK this is for deficiencies in the temporal solver that can be fixed
-
-            x = Retemporalize.retemporalizeXTERNALToDTERNAL.apply(x);
-
-            if (!DerivationFailure.failure(x, d.concPunc)) {
-                d.nar.emotion.deriveFailTemporal.increment();
-                t.spam(d, NAL.derive.TTL_COST_DERIVE_TASK_FAIL);
-                return;
-            }
-        }
-
-        t.taskify(x, ETERNAL, ETERNAL, d);
-    }
 
     /**
      * whether a term is 'temporal' and its derivations need analyzed by the temporal solver:

@@ -700,31 +700,52 @@ public interface Subterms extends Termlike, Iterable<Term> {
     }
 
     static boolean unifyLinear2_complexityHeuristic(Subterms x, Subterms y, Unify u) {
-        Term x0 = x.sub(0), x1 = x.sub(1);
-        Term y0 = y.sub(0), y1 = y.sub(1);
-        boolean xv = u.var(x0), yv = u.var(x1);
-        boolean forward;
-        if (xv == yv) {
-            if (!xv) {
-                boolean dx = !u.var(y0), dy = !u.var(y1);
-                if (dx && dy)
-                    forward = choose(1f/y0.volume(), 1f/y1.volume(), u);
-                else
-                    forward = dx;
-            } else {
-                forward = choose(
-                        1f/(x0.voluplexity() + y0.voluplexity()),
-                        1f/(x1.voluplexity() + y1.voluplexity()),
-                        u);
-            }
-        } else {
-            forward = xv;
-        }
+        Term x0 = x.sub(0), y0 = y.sub(0);
+        if (x0==y0)
+            return x.sub(1).unify(y.sub(1), u);
 
-        return forward ?
-                x0.unify(y0, u) && x1.unify(y1, u) :
-                x1.unify(y1, u) && x0.unify(y0, u);
+        int v0 = (u.var(x0) ? 1 : 0) + (u.var(y0) ? 1 : 0);
+        if (v0 == 0) {
+            return x0.unify(y0, u) && x.sub(1).unify(y.sub(1), u);
+        } else {
+            Term x1 = x.sub(1), y1 = y.sub(1);
+            if (x1==y1)
+                return x.sub(0).unify(y.sub(0), u);
+
+            int v1 = (u.var(x1) ? 1 : 0) + (u.var(y1) ? 1 : 0);
+            boolean forward = v1 >= v0;
+            return forward ?
+                    x0.unify(y0, u) && x1.unify(y1, u) :
+                    x1.unify(y1, u) && x0.unify(y0, u);
+        }
     }
+
+//    @Deprecated static boolean unifyLinear2_complexityHeuristic0(Subterms x, Subterms y, Unify u) {
+//        Term x0 = x.sub(0), x1 = x.sub(1);
+//        Term y0 = y.sub(0), y1 = y.sub(1);
+//        boolean xv = u.var(x0), yv = u.var(x1);
+//        boolean forward;
+//        if (xv == yv) {
+//            if (!xv) {
+//                boolean dx = !u.var(y0), dy = !u.var(y1);
+//                if (dx && dy)
+//                    forward = choose(1f/y0.volume(), 1f/y1.volume(), u);
+//                else
+//                    forward = dx;
+//            } else {
+//                forward = choose(
+//                        1f/(x0.voluplexity() + y0.voluplexity()),
+//                        1f/(x1.voluplexity() + y1.voluplexity()),
+//                        u);
+//            }
+//        } else {
+//            forward = xv;
+//        }
+//
+//        return forward ?
+//                x0.unify(y0, u) && x1.unify(y1, u) :
+//                x1.unify(y1, u) && x0.unify(y0, u);
+//    }
 
 
     static boolean unifyLinearN_Simple(Subterms x, Subterms y, /*@NotNull*/ Unify u) {
@@ -737,73 +758,103 @@ public interface Subterms extends Termlike, Iterable<Term> {
     }
 
     static boolean unifyLinearN_TwoPhase(Subterms x, Subterms y, int n, Unify u) {
-        Term[] p = null;
-        int dynPairs = 0;
+        MetalBitSet m = null;
         for (int i = 0; i < n; i++) {
-            Term xi = x.sub(i);
-            Term yi = y.sub(i);
+            Term xi = x.sub(i), yi = y.sub(i);
 
             if (xi == yi)
                 continue;
 
-            boolean now = (i == n - 1) || ((u.var(xi) && u.var(yi)));
-
+            boolean now = (i==n-1) || (!u.var(xi) && !u.var(yi));
             if (now) {
-
                 if (!xi.unify(yi, u))
                     return false;
             } else {
-                if (p == null)
-                    p = new Term[(n - i - 1) * 2];
-
-                //backwards order
-                p[dynPairs++] = yi;
-                p[dynPairs++] = xi;
+                if(m==null) m = MetalBitSet.bits(n);
+                m.set(i);
             }
         }
-
-
-        if (p != null) {
-            int pairs = dynPairs/2;
-            if (pairs == 1) {
-                return p[1].unify(p[0], u);
-            } else {
-
-                //TODO sort deferredPairs so that smaller non-commutive subterms are tried first
-                if (pairs ==2 ) {
-                    boolean forward = choose(1f/(p[0].voluplexity() + p[1].voluplexity()), 1f/(p[2].voluplexity() + p[3].voluplexity()), u
-                    );
-
-                    if (forward) {
-                        return p[1].unify(p[0], u) && p[3].unify(p[2], u);
-                    } else {
-                        return p[3].unify(p[2], u) && p[1].unify(p[0], u);
-                    }
-                } else {
-
-                    do {
-                        if (!p[--dynPairs].unify(p[--dynPairs], u))
-                            return false;
-                    } while (dynPairs > 0);
+        if (m!=null) {
+            //process remaining non-constant subterms
+            //TODO process in an ideal order, maybe use a bitset of length 2*n for 2 phases
+            for (int i = n - 1; i >= 0; i--) {
+                if (m.get(i)) {
+                    if (!x.sub(i).unify(y.sub(i), u))
+                        return false;
                 }
             }
         }
-
         return true;
     }
 
-    static boolean choose(float forwardWeight, float reverseWeight, Unify u) {
-        return u.random.nextFloat() < (forwardWeight /(forwardWeight + reverseWeight));
-
-//                    if (v01 < v23) {
-//                        //try 01 first
-//                        forward = true;
-//                    } else if (v01 > v23) {
-//                        forward = false;
+//    static boolean unifyLinearN_TwoPhase0(Subterms x, Subterms y, int n, Unify u) {
+//        Term[] p = null;
+//        int dynPairs = 0;
+//        for (int i = 0; i < n; i++) {
+//            Term xi = x.sub(i);
+//            Term yi = y.sub(i);
+//
+//            if (xi == yi)
+//                continue;
+//
+//            boolean now = (i == n - 1) || ((u.var(xi) && u.var(yi)));
+//
+//            if (now) {
+//
+//                if (!xi.unify(yi, u))
+//                    return false;
+//            } else {
+//                if (p == null)
+//                    p = new Term[(n - i - 1) * 2];
+//
+//                //backwards order
+//                p[dynPairs++] = yi;
+//                p[dynPairs++] = xi;
+//            }
+//        }
+//
+//
+//        if (p != null) {
+//            int pairs = dynPairs/2;
+//            if (pairs == 1) {
+//                return p[1].unify(p[0], u);
+//            } else {
+//
+//                //TODO sort deferredPairs so that smaller non-commutive subterms are tried first
+//                if (pairs ==2 ) {
+//                    boolean forward = choose(1f/(p[0].voluplexity() + p[1].voluplexity()), 1f/(p[2].voluplexity() + p[3].voluplexity()), u
+//                    );
+//
+//                    if (forward) {
+//                        return p[1].unify(p[0], u) && p[3].unify(p[2], u);
 //                    } else {
-//                        forward = u.random.nextBoolean();
+//                        return p[3].unify(p[2], u) && p[1].unify(p[0], u);
 //                    }
-    }
+//                } else {
+//
+//                    do {
+//                        if (!p[--dynPairs].unify(p[--dynPairs], u))
+//                            return false;
+//                    } while (dynPairs > 0);
+//                }
+//            }
+//        }
+//
+//        return true;
+//    }
+
+//    static boolean choose(float forwardWeight, float reverseWeight, Unify u) {
+//        return u.random.nextFloat() < (forwardWeight /(forwardWeight + reverseWeight));
+//
+////                    if (v01 < v23) {
+////                        //try 01 first
+////                        forward = true;
+////                    } else if (v01 > v23) {
+////                        forward = false;
+////                    } else {
+////                        forward = u.random.nextBoolean();
+////                    }
+//    }
 
     /**
      * first layer operator scan

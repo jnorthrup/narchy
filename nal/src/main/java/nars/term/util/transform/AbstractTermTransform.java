@@ -15,7 +15,7 @@ import static nars.time.Tense.XTERNAL;
  */
 public interface AbstractTermTransform extends TermTransform, nars.term.util.builder.TermConstructor {
 
-    public static Term evalInhSubs(Subterms inhSubs) {
+    static Term evalInhSubs(Subterms inhSubs) {
         Term p = inhSubs.sub(1);
         if (p instanceof InlineFunctor) {
             Term s = inhSubs.sub(0);

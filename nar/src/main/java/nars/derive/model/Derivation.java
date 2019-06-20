@@ -116,7 +116,13 @@ public class Derivation extends PreDerivation {
     };
 
     /** cant be inline since the value will be cached and repeated */
-    final Functor polarizeRandom = Functor.f1("polarizeRandom", (arg)->random.nextBoolean() ? arg : arg.neg());
+//    final Functor polarizeRandom = Functor.f1("polarizeRandom", (arg)->random.nextBoolean() ? arg : arg.neg());
+    final Functor polarizeRandom = new AbstractInlineFunctor1("polarizeRandom") {
+        @Override
+        protected Term apply1(Term arg) {
+            return arg.negIf(random.nextBoolean());
+        }
+    };
 
     /**
      * populates retransform map

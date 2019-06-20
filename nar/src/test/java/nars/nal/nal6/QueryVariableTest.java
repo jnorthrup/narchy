@@ -43,15 +43,19 @@ class QueryVariableTest {
     void testQueryVariableMatchesIndepVar() throws Narsese.NarseseException {
         testQuestionAnswer("(?x ==> y(?x))", "($x ==> y($x))");
     }
+    @Test
+    void testQueryVariableMatchesIndepVarXternal() throws Narsese.NarseseException {
+        testQuestionAnswer("(?x ==>+- y(?x))", "($x ==>+1 y($x))");
+    }
 
     @Test
     void testQueryVariableMatchesTemporally() throws Narsese.NarseseException {
-        testQuestionAnswer("(?x && y)", "(x &&+1 y)");
+        testQuestionAnswer("(?x &&+- y)", "(x &&+1 y)");
     }
 
     @Test
     void testQueryVariableMatchesTemporally2() throws Narsese.NarseseException {
-        testQuestionAnswer("(e ==> (?x && y))", "(e ==> (x &&+1 y))");
+        testQuestionAnswer("(e ==> (?x &&+- y))", "(e ==> (x &&+1 y))");
     }
 
     @Test

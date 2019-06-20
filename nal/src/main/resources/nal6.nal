@@ -189,7 +189,7 @@
 
     //TODO DynamicImplTruth
      (M ==> P), (M ==> S)  |- (M ==> (polarizeTask(P) && polarizeBelief(S))), (Belief:IntersectionDepolarized, Time:Compose)
-       //(M ==> P), (M ==> S)  |- (M ==> (polarizeTask(P) || polarizeBelief(S))), (Belief:UnionDepolarized)
+       (M ==> P), (M ==> S)  |- (M ==> (polarizeTask(P) || polarizeBelief(S))), (Belief:UnionDepolarized, Time:Compose)
 
         (M ==> P), (M ==> S), neq(P,S), task("?") |- (M ==> (polarizeRandom(P) && polarizeRandom(S))), (Punctuation:Question, Time:Compose)
 
@@ -205,11 +205,11 @@
 
 
     //Contradiction Neutralize
-    ((&&,Y,A..+) ==> X), ((&&,Z,A..+) ==> X), eqNeg(Y,Z), --is(X,"#")     |- ((&&,A..+) ==> X), (Belief:IntersectionPB, Time:Compose)
-    (--(&&,Y,A..+) ==> X), (--(&&,Z,A..+) ==> X), eqNeg(Y,Z), --is(X,"#") |- (--(&&,A..+) ==> X), (Belief:IntersectionPB, Time:Compose)
+    (  (&&,Y,A..+) ==> X), (  (&&,Z,A..+) ==> X), eqNeg(Y,Z), --is(X,"#")     |- (  (&&,A..+) ==> X), (Belief:IntersectionPB, Time:Compose)
+    (--(&&,Y,A..+) ==> X), (--(&&,Z,A..+) ==> X), eqNeg(Y,Z), --is(X,"#")     |- (--(&&,A..+) ==> X), (Belief:IntersectionPB, Time:Compose)
     (X ==> (&&,Y,A..+)), (X ==> (&&,Z,A..+)), eqNeg(Y,Z), --is(X,"#")     |- (X ==> (&&,A..+)), (Belief:IntersectionPB, Time:Compose)
 
-    (Y ==> X), (Z ==> X), eqNeg(Y,Z), --is(X,"#")                       |- (#1 ==> X), (Belief:IntersectionPB, Time:Compose)
+    //(Y ==> X), (Z ==> X), eqNeg(Y,Z), --is(X,"#")                       |- (#1 ==> X), (Belief:IntersectionPB, Time:Compose)
 
 
 

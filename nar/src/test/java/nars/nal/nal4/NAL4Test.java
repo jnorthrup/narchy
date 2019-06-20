@@ -213,7 +213,7 @@ public class NAL4Test extends NALTest {
         test
                 .believe("happy(L)", 1f, 0.9f)
                 .believe("((L)-->(o-(i-happy)))", 1f, 0.9f)
-                .mustNotOutput(cycles * 2, "((o-(i-happy))-->happy)", BELIEF, ETERNAL);
+                .mustNotOutput(cycles, "((o-(i-happy))-->happy)", BELIEF, ETERNAL);
     }
 
 
@@ -221,7 +221,8 @@ public class NAL4Test extends NALTest {
     @ParameterizedTest
     void testTransformQuestionSubj(byte punc) {
         test
-                .input("((a,b)-->?4)" + Character.valueOf((char) punc))
+                .termVolMax(6)
+                .input("((a,b)-->?4)" + (char) punc)
                 .mustOutput(cycles, "(b-->(?1,a,/))", punc)
                 .mustOutput(cycles, "(a-->(?1,/,b))", punc)
         ;
@@ -231,8 +232,8 @@ public class NAL4Test extends NALTest {
     @ParameterizedTest
     void testTransformQuestionPred(byte punc) {
         test
-                .termVolMax(8)
-                .input("(x --> (a,b))" + Character.valueOf((char) punc))
+                .termVolMax(6)
+                .input("(x --> (a,b))" + (char) punc)
                 .mustOutput(cycles, "b(x,a,\\)", punc)
                 .mustOutput(cycles, "a(x,\\,b)", punc)
         ;
@@ -307,7 +308,7 @@ public class NAL4Test extends NALTest {
     @Disabled
     void testTransformRawQuestionSubj(byte punc) {
         test
-                .input("(a,b)" + Character.valueOf((char) punc))
+                .input("(a,b)" + (char) punc)
                 .mustOutput(cycles, "(b-->(?1,a,/))", punc)
                 .mustOutput(cycles, "(a-->(?1,/,b))", punc)
         ;

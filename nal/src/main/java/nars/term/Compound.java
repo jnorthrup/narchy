@@ -42,6 +42,7 @@ import nars.term.util.transform.AbstractTermTransform;
 import nars.term.util.transform.MapSubst;
 import nars.term.util.transform.Retemporalize;
 import nars.term.util.transform.TermTransform;
+import nars.term.var.ellipsis.Ellipsislike;
 import nars.unify.Unify;
 import org.eclipse.collections.api.block.function.primitive.IntObjectToIntFunction;
 import org.eclipse.collections.api.block.predicate.primitive.LongObjectPredicate;
@@ -51,8 +52,7 @@ import java.io.IOException;
 import java.util.function.BiPredicate;
 import java.util.function.Predicate;
 
-import static nars.Op.CONJ;
-import static nars.Op.INH;
+import static nars.Op.*;
 import static nars.term.atom.Bool.Null;
 import static nars.time.Tense.*;
 
@@ -747,13 +747,13 @@ public interface Compound extends Term, IPair, Subterms {
             return x; //no change
 
 
-//        if (yOp.commutative) {
-//            if (yy.subs() == 1) {
-//                Term y0 = yy.sub(0);
-//                if (!(y0 instanceof Ellipsislike) && y0.op()!=FRAG)
-//                    return y0;
-//            }
-//        }
+        if (yOp.commutative) {
+            if (yy.subs() == 1) {
+                Term y0 = yy.sub(0);
+                if (!(y0 instanceof Ellipsislike) && y0.op()!=FRAG)
+                    return y0;
+            }
+        }
 
         if (yOp.temporal) {
 
