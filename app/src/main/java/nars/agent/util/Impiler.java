@@ -11,6 +11,7 @@ import jcog.pri.PLink;
 import jcog.pri.bag.Bag;
 import jcog.pri.bag.impl.PriReferenceArrayBag;
 import jcog.pri.op.PriMerge;
+import nars.NAL;
 import nars.NAR;
 import nars.Task;
 import nars.attention.What;
@@ -22,6 +23,7 @@ import nars.task.NALTask;
 import nars.term.Term;
 import nars.term.util.conj.ConjBuilder;
 import nars.term.util.conj.ConjTree;
+import nars.truth.PreciseTruth;
 import nars.truth.Stamp;
 import nars.truth.Truth;
 import nars.truth.func.NALTruth;
@@ -29,6 +31,7 @@ import org.eclipse.collections.api.tuple.primitive.BooleanObjectPair;
 
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.function.BooleanSupplier;
 
 import static nars.NAL.STAMP_CAPACITY;
 import static nars.Op.BELIEF;
@@ -77,11 +80,18 @@ public class Impiler {
      */
     public static class ImpilerDeduction extends TaskLeak {
 
+        private transient int dur;
         private final CauseChannel<Task> in;
 
         public ImpilerDeduction(int capacity, NAR n) {
             super(capacity, n);
             in = n.newChannel(this);
+        }
+
+        @Override
+        public void next(What w, BooleanSupplier kontinue) {
+            super.next(w, kontinue);
+            dur = w.dur();
         }
 
         @Override
@@ -149,8 +159,8 @@ public class Impiler {
 
         private class ImpilerDeductionSearch extends Search<Term, Task> {
 
-            final static int recursionMin = 3;
-            final static int recursionMax = 4;
+            final static int recursionMin = 2;
+            final static int recursionMax = 3;
             static final int volPadding = 2;
             private static final int STAMP_LIMIT = Integer.MAX_VALUE;
             final float confMin;
@@ -214,8 +224,29 @@ public class Impiler {
                     stamp.clear();
                 Truth tAccum = null;
 
+                final long start =
+                        pathTasks[0].start();
+
+                //final long now = nar.time();
+
+                long offset =
+                        //now
+                        start;
+
                 for (Task e : pathTasks) {
-                    Truth tt = e.truth();
+                    Truth ttt = e.truth();
+
+                    Term ee = e.term();
+                    Truth tt = e.isEternal() ? ttt : project(ttt, e.start(), offset);
+                    if (tt == null)
+                        return false; //too weak
+
+                    offset += ee.sub(0).eventRange();
+                    int edt = ee.dt(); if (edt == DTERNAL) edt = 0;
+                    offset += edt;
+
+
+
                     if (tAccum == null) {
                         tAccum = tt;
                     } else {
@@ -244,32 +275,27 @@ public class Impiler {
                 else
                     cc.clear();
 
-                cc.add(0, source);
 
-                Term Z = Null;
+                Term pred = Null;
                 int zDT = 0;
-                long start = TIMELESS;
                 long range = Long.MAX_VALUE;
-                long offset = 0;
+                offset = 0;
                 for (int i = 0, pathTasksLength = pathTasks.length; i < pathTasksLength; i++) {
                     Task e = pathTasks[i];
 
+                    Term ee = e.term();
+
+
                     long es = e.start();
-                    if (i == 0) {
-                        start = es;
-                        if (start == ETERNAL)
-                            start = nar.time();
-                    }
                     if (es != ETERNAL)
                         range = Math.min(range, e.end() - es);
 
-                    Term ee = e.term();
-                    Z = ee.sub(1).negIf(e.isNegative());
-                    int dt = ee.dt();
+                    pred = ee.sub(1).negIf(e.isNegative());
+                    int dt = ee.dt(); if (dt == DTERNAL) dt = 0; //HACK
                     if (dt == XTERNAL)
                         throw new UnsupportedOperationException();
 
-                    if (dt == DTERNAL) dt = 0; //HACK
+
 //                        switch (dt) {
 //                            case DTERNAL: {
 //                                if (i == 0) {
@@ -291,19 +317,26 @@ public class Impiler {
 //                            case XTERNAL:
 //                            default: {
 
+                    Term zubj = ee.sub(0);
+
                     zDT = dt;
+                    if (i == 0) {
+                        cc.add(0, zubj);
+                    }
+                    offset += zubj.eventRange();
                     offset += dt;
                     if (i != n - 1) {
-                        if (!cc.add(offset, Z))
+                        if (!cc.add(offset, pred))
                             return false;
                     }
+
 
 //                                break;
 //                            }
 //                        }
                 }
 
-                Term ee = IMPL.the(cc.term(), zDT, Z);
+                Term ee = IMPL.the(cc.term(), zDT, pred);
                 if (ee.volume() > volMax)
                     return false;
 
@@ -327,6 +360,14 @@ public class Impiler {
             }
 
 
+        }
+
+        private Truth project(Truth t, long start, long offset) {
+            long delta = Math.abs(start - offset);
+            if (delta == 0)
+                return t;
+            else
+                return PreciseTruth.byEvi(t.freq(), NAL.evi(t.evi(), delta, dur));
         }
     }
 

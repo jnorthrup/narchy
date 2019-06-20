@@ -179,8 +179,8 @@ public class RingBufferTaskSeries<T extends Task> extends AbstractTaskSeries<T> 
         }
 
         if (minT != ETERNAL && minT != TIMELESS) {
-            int head = q.head();
             long T = (minT+maxT)/2;
+            int head = q.head();
 
             int center = indexNear(head, T);
 

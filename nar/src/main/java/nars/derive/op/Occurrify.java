@@ -509,8 +509,8 @@ public class Occurrify extends TimeGraph {
         /** composition of non-events to a single outcome event.  a simplified version of Default */
         Compose() {
             final BeliefProjection PROJ =
-                    //BeliefProjection.Task;
-                    BeliefProjection.Belief; //<- experimental dilute union or concentrated intersection
+                    BeliefProjection.Task;
+                    //BeliefProjection.Belief; //<- experimental dilute union or concentrated intersection
             final OccIntersect combine = PROJ == BeliefProjection.Task ?
                     OccIntersect.Task :
                     OccIntersect.UnionDilute;

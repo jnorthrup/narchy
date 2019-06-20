@@ -247,33 +247,44 @@ public class VectorSensorView extends BitmapMatrixView implements BitmapMatrixVi
     @Override
     public int color(int x, int y) {
 
-        TaskConcept s = concept(x,y);
-        if (s == null)
-            return 0;
-
-        float R, G , B;
         float bf = 0;
+        TaskConcept s = concept(x,y);
+        float R, G, B;
 
         Answer a = this.answer;
-        if (beliefs.get()) {
-            Truth b = a!=null ? a.clear(tries).match(s.beliefs()).truth() : null;
-            bf = b != null ? b.freq() : noise();
+        if (s == null)
+            bf = noise();
+        else {
+            if (beliefs.getOpaque()) {
+                Truth b = a != null ? a.clear(tries).match(s.beliefs()).truth() : null;
+                if (b != null) bf = b.freq();
+                else
+                    bf = noise();
+            }
         }
 
         R = bf * 0.75f; G = bf * 0.75f; B = bf * 0.75f;
 
-        if (goals.get()) {
-            Truth d = a!=null ? a.clear(tries).match(s.goals()).truth() : null;
-            if (d != null) {
-                float f = d.expectation();
+        if (s!=null) {
+            if (goals.getOpaque()) {
+                Truth d = a!=null ? a.clear(tries).match(s.goals()).truth() : null;
+                if (d != null) {
+                    float f = d.expectation();
 
-                if (f > 0.5f) {
-                    G += 0.25f * (f - 0.5f) * 2f;
-                } else {
-                    R += 0.25f * (0.5f - f) * 2f;
+                    if (f > 0.5f) {
+                        G += 0.25f * (f - 0.5f) * 2f;
+                    } else {
+                        R += 0.25f * (0.5f - f) * 2f;
+                    }
                 }
             }
         }
+
+
+
+
+
+
 
 
 //        if (pris.get()) {

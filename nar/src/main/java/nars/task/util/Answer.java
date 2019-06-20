@@ -397,7 +397,7 @@ public final class Answer implements Timed, Predicate<Task> {
     public Truth truth() {
         TruthProjection tp = truthProjection();
         if (tp != null) {
-            assert (!ditherTruth); assert (eviMin() <= NAL.truth.EVI_MIN);
+            assert (!ditherTruth); //assert (eviMin() <= NAL.truth.EVI_MIN);
 
             return tp.truth(NAL.truth.EVI_MIN, false, false /* give the value at specified range, no matter how sparse */, nar);
         }

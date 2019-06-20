@@ -96,9 +96,9 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
      */
     public static final float ANSWER_COMPLETENESS =
             //0.25f;
-            0.5f;
+            //0.5f;
             //0.75f;
-            //1f;
+            1f;
             //2f;
 
     public static final boolean DEBUG_SIMILAR_DERIVATIONS= false;
@@ -250,11 +250,12 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
     /**
      * when merging dt's, ratio of the maximum difference in dt allowed
      * ratio of the dt difference compared to the smaller dt of the two being merged
-     * probably values less than 0.5 are safe
+     * probably values <= ~0.5 are safe as this limits stretching within 'octaves'
      */
     public final FloatRange intermpolationRangeLimit = new FloatRange(
             //0.5f
-            1f
+            0.618f
+            //1f
             //2f
             , 0, 4);
 
@@ -401,9 +402,9 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
         //inverse linear decay
         final double falloffDurs =
                 //0.5f;
-                //1;
+                1;
                 //1.618f; //phi
-                2; //nyquist / horizon
+                //2; //nyquist / horizon
                 //4;
                 //dur;
                 //8;
