@@ -293,7 +293,7 @@ public class NAL7Test extends NALTest {
 
 
         test
-
+                .termVolMax(3)
                 .believe("(x ==>+2 y)")
                 .believe("(y ==>+3 z)")
                 .mustBelieve(cycles, "(z ==>-5 x)", 1.00f, 0.45f);
@@ -305,6 +305,7 @@ public class NAL7Test extends NALTest {
     void testSum() {
 
         test
+                .termVolMax(3)
                 .believe("(x ==>+2 y)")
                 .believe("(y ==>+3 z)")
                 .mustBelieve(cycles, "(x ==>+5 z)", 1.00f, 0.81f);
@@ -315,6 +316,7 @@ public class NAL7Test extends NALTest {
 
 
         test
+                .termVolMax(3)
                 .believe("(x ==>+2 y)")
                 .believe("(z ==>+3 y)")
                 .mustBelieve(cycles, "(z ==>+1 x)", 1.00f, 0.45f)
@@ -339,6 +341,7 @@ public class NAL7Test extends NALTest {
 
 
         test
+                .termVolMax(3)
                 .believe("(y ==>+3 x)")
                 .believe("(y ==>+2 z)")
                 .mustBelieve(cycles, "(z ==>+1 x)", 1.00f, 0.45f)
@@ -518,6 +521,7 @@ public class NAL7Test extends NALTest {
     void induction_on_events_pos_neg() {
 
         test
+                .termVolMax(4)
                 .inputAt(1, "a. |")
                 .inputAt(2, "--b. |")
                 .mustBelieve(cycles, "(a &&+1 --b)", 1.00f, 0.81f, 1)
@@ -539,6 +543,7 @@ public class NAL7Test extends NALTest {
     void induction_on_events_neg_pos() {
 
         test
+                .termVolMax(3)
                 .inputAt(1, "--b. :|:")
                 .inputAt(2, "a. :|:")
                 .mustBelieve(cycles, "(--b &&+1 a)", 1.00f, 0.81f, 1)
@@ -551,6 +556,7 @@ public class NAL7Test extends NALTest {
     void induction_on_events_neg_neg() {
 
         test
+                .termVolMax(3)
                 .inputAt(1, "--a. :|:")
                 .inputAt(2, "--b. :|:")
                 .mustBelieve(cycles, "(--a &&+1 --b)", 1.00f, 0.81f, 1)
@@ -1081,8 +1087,8 @@ public class NAL7Test extends NALTest {
     void multiConditionSyllogismPrePre() {
         test
                 .termVolMax(14)
-                .input("((open(door)&|hold(key))=|>enter(room)). :|:")
-                .mustBelieve(cycles, "(open(door)=|>enter(room))", 1f, 0.73f, 0);
+                .input("((open(door)&&hold(key))==>enter(room)). |")
+                .mustBelieve(cycles, "(open(door)==>enter(room))", 1f, 0.73f, 0);
     }
 
     @Test
@@ -1093,11 +1099,11 @@ public class NAL7Test extends NALTest {
         test.nar.termVolMax.set(14);
         test
                 .input("hold(key). |")
-                .input("((hold(#x) &| open(door)) =|> enter(room)). |")
-                .mustBelieve(cycles, "(open(door) =|> enter(room))",
+                .input("((hold(#x) && open(door)) ==> enter(room)). |")
+                .mustBelieve(cycles, "(open(door) ==> enter(room))",
                         1.00f, 0.81f,
                         0)
-                .mustBelieve(cycles, "(hold(key) =|> enter(room))",
+                .mustBelieve(cycles, "(hold(key) ==> enter(room))",
                         1.00f, 0.73f,
                         0)
         ;

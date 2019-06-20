@@ -49,13 +49,13 @@ public class DynamicImplConjTruth {
 //        public Term reconstruct(Compound superterm, DynTaskify components, long start, long end) {
 //            return reconstruct(superterm, components, true, false
 //                    /* reconstruct as-is; union only applies to the truth calculation */);
-//        }
-//    };
+//        }//    };
     public static final AbstractDynamicTruth ImplPred = new DynamicStatementTruth.AbstractInhImplSectTruth(false, false) {
         @Override
         public boolean evalComponents(Compound superterm, long start, long end, ObjectLongLongPredicate<Term> each) {
-            Term common = DynamicStatementTruth.stmtCommon(subjOrPred, superterm);
-            Compound decomposed = (Compound) DynamicStatementTruth.stmtCommon(!subjOrPred, superterm);
+            Subterms supertermSubs = superterm.subterms();
+            Term common = DynamicStatementTruth.stmtCommon(subjOrPred, supertermSubs);
+            Compound decomposed = (Compound) DynamicStatementTruth.stmtCommon(!subjOrPred, supertermSubs);
             return decomposeImplConj(superterm, start, end, each, common, decomposed, false, false);
         }
     };
@@ -84,7 +84,7 @@ public class DynamicImplConjTruth {
                     :
                     IMPL.the(common, innerDT, what).negIf(negateConjComponents);
 
-            return i.op()==IMPL && each.accept(i, start, end);
+            return i instanceof Compound && i.unneg().op()==IMPL && each.accept(i, start, end);
         });
     }
 }

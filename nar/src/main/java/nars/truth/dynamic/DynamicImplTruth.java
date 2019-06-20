@@ -68,12 +68,13 @@ class DynamicImplTruth extends AbstractDynamicTruth {
         ///TODO ensure non-collapsing dt if collapse imminent
 
         if (start == end && start!=ETERNAL) {
-            int sdt = superterm.dt();
-            if (sdt != XTERNAL && sdt != DTERNAL && sdt != 0) {
+            int sdt = superterm.dt(); if (sdt == DTERNAL) sdt = 0;
+            if (sdt != XTERNAL) {
 
                 sdt += subj.eventRange();
+                sdt += pred.eventRange();
 
-                //stretch the range to the template's dt
+                //stretch the match range
                 if (sdt > 0)
                     end = start + sdt;
                 else {

@@ -322,10 +322,8 @@ public class Occurrify extends TimeGraph {
         solutions.clear();
     }
 
-    private Occurrify set(Term pattern, boolean taskOccurr, boolean beliefOccurr, boolean decomposeEvents, OccurrenceSolver time) {
+    private Occurrify know(Term pattern, boolean taskOccurr, boolean beliefOccurr, boolean decomposeEvents, OccurrenceSolver time) {
 
-        clear();
-        //clearSolutions(); //<- is this safe?  accumulates timegraph over multiple derived tasks within before being cleared on new premise
 
         long taskStart = taskOccurr ? d.taskStart : TIMELESS,
                 taskEnd = taskOccurr ? d.taskEnd : TIMELESS,
@@ -517,8 +515,12 @@ public class Occurrify extends TimeGraph {
 
             @Override
             @Nullable public Pair<Term, long[]> occurrence(Term x, Derivation d) {
-                long[] o = occurrence(d);
-                return o!=null ? pair(x, o) : null;
+                if (x.hasAny(XTERNAL)) {
+                    return solveDT(d, x, true);
+                } else {
+                    long[] o = occurrence(d);
+                    return o != null ? pair(x, o) : null;
+                }
             }
 
             @Override
@@ -549,7 +551,7 @@ public class Occurrify extends TimeGraph {
         TaskRelative() {
             @Override
             public Pair<Term, long[]> occurrence(Term x, Derivation d) {
-                return solveDT(d, x, false);
+                return solveDT(d, x, true);
             }
 
             @Override
@@ -570,7 +572,7 @@ public class Occurrify extends TimeGraph {
         BeliefRelative() {
             @Override
             public Pair<Term, long[]> occurrence(Term x, Derivation d) {
-                return solveDT(d, x, false);
+                return solveDT(d, x, true);
             }
 
             @Override
@@ -745,10 +747,16 @@ public class Occurrify extends TimeGraph {
 
         @Nullable Pair<Term, long[]> solveDT(Derivation d, Term x, boolean decomposeEvents) {
             long[] occ = occurrence(d);
-            assert (occ != null);
+            //assert (occ != null);
+
+            d.occ.clear();
+
+            if (occ[0]!=TIMELESS && occ[0]!=ETERNAL) {
+                d.occ.know(x, occ[0], occ[1]);
+            }
             return occ == null ? null : pair(
                     x.hasXternal() ?
-                            d.occ.solveDT(x, d.occ.set(x,  true,true,decomposeEvents,this).solutions(x))
+                            d.occ.solveDT(x, d.occ.know(x,  true,true,decomposeEvents,this).solutions(x))
                             :
                             x,
                     occ);
@@ -763,7 +771,8 @@ public class Occurrify extends TimeGraph {
             if (!beliefOccurr && taskOccurr && (d.taskStart == ETERNAL) && (d.beliefStart != ETERNAL && d.beliefStart != TIMELESS))
                 beliefOccurr = true; //allow belief occurrence
 
-            Occurrify o = d.occ.set(x, taskOccurr, beliefOccurr, true, this);
+            d.occ.clear();
+            Occurrify o = d.occ.know(x, taskOccurr, beliefOccurr, true, this);
             Event e = o.selectSolution(true, o.solutions(x));
             if (e == null) {
                 if (d.concPunc==QUESTION || d.concPunc==QUEST)

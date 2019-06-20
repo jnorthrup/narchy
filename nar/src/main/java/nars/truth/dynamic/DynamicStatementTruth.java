@@ -4,6 +4,7 @@ import jcog.Util;
 import jcog.util.ObjectLongLongPredicate;
 import nars.Op;
 import nars.Task;
+import nars.subterm.Subterms;
 import nars.task.util.TaskRegion;
 import nars.term.Compound;
 import nars.term.Neg;
@@ -31,7 +32,7 @@ public class DynamicStatementTruth {
     /**
      * statement common component
      */
-    static Term stmtCommon(boolean subjOrPred, Compound superterm) {
+    static Term stmtCommon(boolean subjOrPred, Subterms superterm) {
         return superterm.sub(subjOrPred ? 1 : 0);
     }
 
