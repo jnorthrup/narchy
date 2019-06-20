@@ -258,12 +258,13 @@ public interface Compound extends Term, IPair, Subterms {
 
         Term x = this;
 
-        Subterms xx = subterms(), yy = y.subterms();
+        Subterms xx = subterms();
 
         int xs = xx.subs();
         if (xs == 1)
-            return xx.sub(0).unify(yy.sub(0), u);
+            return xx.sub(0).unify(y.sub(0), u);
 
+        Subterms yy = y.subterms();
         if (!Subterms.possiblyUnifiable(xx, yy, u))
             return false;
 
@@ -761,8 +762,13 @@ public interface Compound extends Term, IPair, Subterms {
             if (yOp == CONJ) {
                 if (yy == Op.FalseSubterm)
                     return Bool.False;
-                if (yy.subs() == 0)
+                int yys = yy.subs();
+                if (yys == 0)
                     return Bool.True;
+                if (yys == 2) {
+                    if (yy.sub(0)==Bool.True) return yy.sub(1);
+                    if (yy.sub(1)==Bool.True) return yy.sub(0);
+                }
             }
 
             if (ydt != XTERNAL)

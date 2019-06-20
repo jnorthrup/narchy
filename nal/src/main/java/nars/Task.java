@@ -639,6 +639,11 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
 
         y.pri(Prioritizable.fund(p, priCopyOrMove, x));
 
+        ((NALTask)y).cause(CauseMerge.AppendUnique.merge(NAL.causeCapacity.intValue(), x));
+
+        if (Util.and(Task::isCyclic, x))
+            y.setCyclic(true);
+
         assert(!y.isDeleted());
     }
 

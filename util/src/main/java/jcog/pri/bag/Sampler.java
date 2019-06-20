@@ -74,6 +74,18 @@ public interface Sampler<X> {
         return this;
     }
 
+
+    /** implementations can provide a custom sampler meant for evaluating the items uniquely.
+     * in other words, it means to search mostly iteratively through a container,
+     * though psuedorandomness can factor into how this is done - so long as the
+     * sequence of returnd items contains minimal amounts of duplicates.
+     *
+     * the iteration will end early if the container has been exhaustively iterated, if this is possible to know.
+     */
+    default void sampleUnique(Random rng, Predicate<? super X> predicate) {
+        sample(rng, predicate);
+    }
+
     /**
      * action returned from bag sampling visitor indicating what to do with the current
      * item

@@ -23,6 +23,7 @@ import nars.task.NALTask;
 import nars.time.part.DurLoop;
 import org.eclipse.collections.api.block.function.primitive.ShortToObjectFunction;
 
+import java.io.PrintStream;
 import java.util.Arrays;
 
 /**
@@ -169,6 +170,13 @@ import java.util.Arrays;
             how.forEach(s -> s.valueRateNormalized = pFlat);
         }
 
+
+    }
+
+    public void printPerf(PrintStream out) {
+        for (How h : nar.how) {
+            h.printPerf(out);
+        }
     }
 
     private void prioritize() {

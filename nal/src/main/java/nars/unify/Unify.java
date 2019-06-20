@@ -114,7 +114,7 @@ public abstract class Unify extends Versioning<Term> {
         this.xy = new ConstrainedVersionMap( termMap);
     }
 
-    public void setVarBits(int varBits) {
+    protected void setVarBits(int varBits) {
         this.varBits = varBits;
     }
 
@@ -361,7 +361,7 @@ public abstract class Unify extends Versioning<Term> {
      * whether assignable variable terms
      */
     public final boolean var(Op var) {
-        return var.var && ((this.varBits & var.bit) != 0);
+        return /*var.var &&*/ ((this.varBits & var.bit) != 0);
     }
 
     /** whether is or contains assignable variable terms */

@@ -10,7 +10,6 @@ import jcog.pri.bag.impl.BufferedBag;
 import jcog.pri.bag.impl.PriReferenceArrayBag;
 import jcog.pri.op.PriMerge;
 import nars.NAR;
-import nars.Op;
 import nars.Task;
 import nars.attention.What;
 import nars.concept.Concept;
@@ -47,7 +46,7 @@ public abstract class TaskLeak extends How {
     transient protected int volMax;
 
     protected TaskLeak(@Nullable NAR n, byte... puncs) {
-        this(new TableSource(), n, puncs);
+        this(new TaskLinksSource(), n, puncs);
 
     }
     protected TaskLeak(int capacity, @Nullable NAR n, byte... puncs) {
@@ -197,7 +196,7 @@ public abstract class TaskLeak extends How {
      *     //tasklink bag of active concepts
      *  TODO configurable "burst" size per visited concept
      * */
-    public static class TableSource extends TaskSource {
+    public static class TaskLinksSource extends TaskSource {
 
         private Predicate<Term> termFilter;
         private Predicate<Task> taskFilter;
@@ -225,17 +224,17 @@ public abstract class TaskLeak extends How {
 
             when = focus(w.dur());
 
-            w.sample(rng, (Predicate<? super TaskLink>)(c)->{
-
-                if (c == null) return false; //TODO can this even happen
+            w.sampleUnique(rng, (Predicate<? super TaskLink>)(c)->{
 
                 Concept cc = nar.concept(c.from());
-                Term ct = cc.term();
+                if (cc!=null) {
+                    Term ct = cc.term();
 
-                if (ct.hasAny(Op.Temporal) || termFilter.test(cc.term())) { //TODO check for impl filters which assume the target is from a Task, ex: dt!=XTERNAL but would be perfectly normal for a concept's target
-                    Task x = sample(cc);
-                    if (x!=null)
-                        each.accept(x);
+                    if (termFilter.test(cc.term())) { //TODO check for impl filters which assume the target is from a Task, ex: dt!=XTERNAL but would be perfectly normal for a concept's target
+                        Task x = sample(cc);
+                        if (x != null)
+                            each.accept(x);
+                    }
                 }
 
                 return kontinue.getAsBoolean();
@@ -245,27 +244,22 @@ public abstract class TaskLeak extends How {
         /** TODO abstract */
         protected When focus(int dur) {
             long now = nar.time();
-            return new When(now - dur, now + dur, dur, nar);
+            return new When(now - dur/2, now + dur/2, dur, nar);
         }
 
         @Nullable private Task sample(Concept c) {
-
-
-            Term ct = c.term();
-            boolean hasTemporal = ct.hasAny(Op.Temporal);
+//            Term ct = c.term();
+//            boolean hasTemporal = ct.hasAny(Op.Temporal);
 
             byte[] p = this.puncs;
             for (int i = 0; i < p.length; i++) {
                 Task x = c.table(p[nextPunc]).match(when, null, (Task t) ->{
                     Term tt = t.term();
-                    if (!hasTemporal || termFilter.test(tt)) //test temporal containing target as this was not done when testing concept
+                    if (termFilter.test(tt)) //test temporal containing target as this was not done when testing concept
                         return false;
 
                     return taskFilter.test(t);
-                }, false).task();
-
-                if (++nextPunc == p.length)
-                    nextPunc = 0;
+                }, false);
 
                 if (x!=null)
                     return x;

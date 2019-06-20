@@ -1,11 +1,11 @@
 package nars.term.util.transform;
 
-import jcog.WTF;
 import jcog.data.list.FasterList;
 import nars.NAL;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.atom.Atomic;
+import nars.term.util.TermTransformException;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Iterator;
@@ -151,14 +151,13 @@ abstract public class MapSubst implements Subst {
 
     public static TermTransform replace(Term from, Term to) {
 
-        if (NAL.DEBUG && from == to)
-            throw new WTF("pointless substitution");
+        if (NAL.DEBUG && from.equals(to))
+            throw new TermTransformException("pointless substitution", from, to);
 
-        if (from instanceof Atomic) {
-            return new SubstAtomic((Atomic)from, to);
-        } else {
-            return new SubstCompound((Compound)from, to);
-        }
+        return from instanceof Atomic ?
+                new SubstAtomic((Atomic) from, to) :
+                new SubstCompound((Compound) from, to);
+
     }
 
     public MapSubst clear() {

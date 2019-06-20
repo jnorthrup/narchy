@@ -101,10 +101,7 @@ public class DynTaskify extends TaskList {
                 w, start, end,
                 stamp.get());
 
-        if (tasks.allSatisfy(Stamp::isCyclic))
-            y.setCyclic(true);
 
-        y.cause( tasks.why() );
 
 //        y.pri(
 //              tasks.reapply(TaskList::pri, NAL.DerivationPri)

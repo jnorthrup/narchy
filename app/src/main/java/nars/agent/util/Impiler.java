@@ -54,9 +54,16 @@ public class Impiler {
     static final String IMPILER_NODE = ImplGrapher.class.getSimpleName();
 
     public static void init(NAR n) {
-        ImplGrapher t = new ImplGrapher(32, 2, n);
+
 //        Impiler.ImpilerSolver s = new Impiler.ImpilerSolver(32, 2, n);
-        Impiler.ImpilerDeduction d = new Impiler.ImpilerDeduction(32, n);
+        Impiler.ImpilerDeduction d = new Impiler.ImpilerDeduction( n);
+
+        ImplGrapher t = new ImplGrapher(n) {
+            @Override
+            public float value() {
+                return d.value();
+            }
+        };
     }
 
     static ImplNode node(Concept sc, boolean createIfMissing) {
@@ -83,8 +90,8 @@ public class Impiler {
         private transient int dur;
         private final CauseChannel<Task> in;
 
-        public ImpilerDeduction(int capacity, NAR n) {
-            super(capacity, n);
+        public ImpilerDeduction( NAR n) {
+            super(n);
             in = n.newChannel(this);
         }
 
@@ -380,14 +387,14 @@ public class Impiler {
 
 //        final static long whenStart = ETERNAL, whenEnd = ETERNAL;
 
-        public ImplGrapher(int capacity, float ratePerDuration, NAR n) {
-            super(capacity, n);
+        public ImplGrapher(NAR n) {
+            super( n, BELIEF);
         }
 
-        @Override
-        protected boolean filter(Task next) {
-            return next.punc() == BELIEF;
-        }
+//        @Override
+//        protected boolean filter(Task next) {
+//            return next.punc() == BELIEF;
+//        }
 
         @Override
         protected boolean filter(Term term) {
@@ -396,9 +403,6 @@ public class Impiler {
 
         @Override
         protected float leak(Task t, What what) {
-            TaskConcept c = (TaskConcept) nar.concept(t.term());
-            if (c == null)
-                return 0;
 
             Term i = t.term(); //from the task not the concept
             //BeliefTable table = c.tableAnswering(beliefOrGoal ? BELIEF : GOAL);

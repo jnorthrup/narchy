@@ -13,7 +13,6 @@ import nars.Op;
 import nars.Task;
 import nars.attention.What;
 import nars.bag.BagClustering;
-import nars.control.CauseMerge;
 import nars.control.How;
 import nars.control.channel.CauseChannel;
 import nars.task.NALTask;
@@ -442,16 +441,11 @@ public class ConjClustering extends How {
             if (cp == null)
                 return null;
 
-
             long range = Util.min(LongInterval::range, x) - 1;
             long tEnd = start + range;
             NALTask y = new STMClusterTask(cp, t,
                     Tense.dither(start, ditherDT), Tense.dither(tEnd, ditherDT),
                     Stamp.sample(NAL.STAMP_CAPACITY, actualStamp, nar.random()), punc, now);
-            y.cause(CauseMerge.AppendUnique.merge(NAL.causeCapacity.intValue(), x));
-
-            if (Util.and(Task::isCyclic, x))
-                y.setCyclic(true);
 
             Task.fund(y, x, priCopyOrMove);
 

@@ -2,17 +2,23 @@ package nars.control;
 
 import com.google.common.flogger.FluentLogger;
 import jcog.Skill;
+import jcog.Texts;
+import jcog.Util;
 import jcog.pri.Prioritizable;
 import nars.NAR;
 import nars.attention.PriNode;
 import nars.attention.What;
 import nars.term.Term;
 import nars.time.event.WhenInternal;
+import org.HdrHistogram.AtomicHistogram;
 
+import java.io.PrintStream;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.LongAdder;
 import java.util.function.BooleanSupplier;
 
+import static jcog.Texts.n4;
 import static nars.time.Tense.TIMELESS;
 
 /**
@@ -58,7 +64,11 @@ abstract public class How extends NARPart implements Prioritizable {
      */
     public final AtomicBoolean busy;
     public final PriNode pri;
-    public final AtomicLong used = new AtomicLong(0);
+
+    final AtomicHistogram utilizationPct = new AtomicHistogram(1, 100000, 3);
+
+    public final LongAdder useActual = new LongAdder();
+    public final AtomicLong usedTotal = new AtomicLong(0);
 
     /**
      * cached: last calculated non-negative value rate
@@ -159,12 +169,28 @@ abstract public class How extends NARPart implements Prioritizable {
     public abstract float value();
 
 
-    private void use(long t) {
-        used.addAndGet(t);
+    private void use(long expected, long actual) {
+        useActual.add(actual);
+        double utilization = ((double)actual)/expected;
+        long utilPct = Math.round(utilization * 100);
+        if (utilPct > 100000)
+            System.err.println("warning: utilization exceeds measurement threshold: " + this + " " + n4(utilization) );
+        utilizationPct.recordValue(Util.clamp(utilPct, 1, 1000));
+    }
+
+    public void printPerf(PrintStream out) {
+        out.print(this);
+        out.print("\t");
+        out.print(Texts.timeStr(usedTotal.getOpaque()) + " total\t\t");
+        //histogramPrint(utilizationPct.copy(), out);
+        AtomicHistogram u = utilizationPct.copy();
+        out.println("n=" + u.getTotalCount() + "\t Utilization mean=" + Texts.n2(u.getMean()) + "%+-" + Texts.n2(u.getStdDeviation()));
     }
 
     public long used() {
-        return used.getAndSet(0);
+        long l = useActual.sumThenReset();
+        usedTotal.addAndGet(l);
+        return l;
     }
 
     @Override public final float pri() {
@@ -216,15 +242,18 @@ abstract public class How extends NARPart implements Prioritizable {
 
     public final void runFor(What w, long durationNS) {
         long start = System.nanoTime();
+
         long deadline = start + durationNS;
+
         try {
             next(w, () -> System.nanoTime() < deadline);
         } catch (Throwable t) {
             logger.atSevere().withCause(t).log(this.term().toString());
-        } finally {
-            long end = System.nanoTime();
-            use(end - start);
         }
+
+        long end = System.nanoTime();
+        use(durationNS, end - start);
+
     }
 
 }

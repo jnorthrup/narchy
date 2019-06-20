@@ -6,8 +6,6 @@ import nars.NARS;
 import nars.Narsese;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 class ImpilerTest {
 
     @Test
@@ -36,7 +34,7 @@ class ImpilerTest {
         NAR n = NARS.tmp(1);
 
         final int[] edges = {0};
-        Impiler.ImplGrapher t = new Impiler.ImplGrapher(8, 4, n) {
+        Impiler.ImplGrapher t = new Impiler.ImplGrapher(n) {
 //            @Override
 //            protected float leak(Task next) {
 //                //System.out.println(this + " leak " + next);
@@ -53,7 +51,7 @@ class ImpilerTest {
         };
 
 
-        Impiler.ImpilerDeduction d = new Impiler.ImpilerDeduction(8, n) {
+        Impiler.ImpilerDeduction d = new Impiler.ImpilerDeduction(n) {
 
         };
 

@@ -15,6 +15,7 @@ import jcog.pri.op.PriMerge;
 import jcog.pri.op.PriReturn;
 import jcog.signal.wave1d.ArrayHistogram;
 import jcog.sort.SortedArray;
+import org.apache.lucene.index.Term;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.jetbrains.annotations.Nullable;
 
@@ -24,6 +25,7 @@ import java.util.concurrent.locks.StampedLock;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 
@@ -363,6 +365,42 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
 
 
         //}
+
+    }
+
+    @Override
+    public void sampleUnique(Random rng, Predicate<? super Y> kontinue) {
+        int s = size();
+        if (s == 0)
+            return;
+
+        Object[] ll = items();
+
+        //starting point, sampled from bag histogram
+        int p = sampleHistogram(rng);
+        if (p >= ll.length) p = ll.length-1;
+
+        //scan radially around point, O(N)
+        for (int j = 0; j < s; j++) {
+
+            int done = 0;
+            int above = p - j;
+            if (above >= 0) {
+                Object a = ll[above];
+                if (a!=null && !kontinue.test((Y) a))
+                    return;
+            } else done++;
+
+            int below = p + j + 1;
+            if (below < s) {
+                Object b = ll[below];
+                if (b!=null && !kontinue.test((Y) b))
+                    return;
+            } else done++;
+
+            if (done == 2)
+                break;
+        }
 
     }
 
@@ -801,6 +839,7 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
     public final void clear(Consumer<? super Y> each) {
         clear(Integer.MAX_VALUE, each);
     }
+
 
 
     @Override

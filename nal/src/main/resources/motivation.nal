@@ -64,10 +64,6 @@
 //"what is the difference" between what co-occurrs with goal and non-goal
 //    (&&,G,X,A..*), (&&,H,Y,B..*), eqNeg(G,H), neq(X,Y), hasBelief()  |- ((polarizeRandom(X) && polarizeRandom(Y)) --> ?1), (Punctuation:Ask)
 
-//anti-specific deduction: "conjunction contraposition"
-    X, C, eventOf(C,X), --isVar(X)       |-   (--X && negateEvents(conjWithout(C,  X))), (Goal:DeductionWeakNP, Time:TaskEvent)
-    X, C, eventOfNeg(C,X), --isVar(X)    |-   (  X && negateEvents(conjWithout(C,--X))), (Goal:DeductionWeakPP, Time:TaskEvent)
-
 
 
 //inverted condition question/quest TODO: invertAll(C,X)..

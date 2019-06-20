@@ -16,7 +16,7 @@ import static java.lang.System.nanoTime;
 
 public class WorkerExec extends ThreadedExec {
 
-    private static final long subCycleMinNS = 10L * 1_000_000;
+
     double granularity = 4;
 
     /**
@@ -92,13 +92,17 @@ public class WorkerExec extends ThreadedExec {
 
         private void play(long playTime) {
 
+            subCycleMaxNS = (long) ((threadWorkTimePerCycle) / granularity);
+            if (subCycleMaxNS <= 0)
+                return;
+
             long start = nanoTime();
             long until = start + playTime, after = start /* assigned for safety */;
 
             int skip = 0;
             AntistaticBag<How> H = nar.how;
             AntistaticBag<What> W = nar.what;
-            subCycleMaxNS = Math.max(subCycleMinNS, (long) ((threadWorkTimePerCycle) / granularity));
+
 
             H.sample(rng, (How h)->{
                 if (h != null && h.isOn()) {

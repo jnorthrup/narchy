@@ -1,6 +1,7 @@
 package nars.exe.impl;
 
 import nars.NAR;
+import nars.attention.What;
 import nars.control.How;
 import nars.exe.Exec;
 
@@ -35,7 +36,7 @@ public class UniExec extends Exec {
         /*
         simplest possible implementation: flat 1 work unit per each what
         */
-        nar.what.forEach(w -> {
+        for (What w : nar.what) {
             if (w.isOn()) {
                 for (How h : nar.how) {
                     if (h.isOn()) {
@@ -43,7 +44,7 @@ public class UniExec extends Exec {
                     }
                 }
             }
-        });
+        }
     }
 
 }

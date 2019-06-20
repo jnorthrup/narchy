@@ -123,7 +123,7 @@ abstract public class MultiExec extends Exec {
                 workTargetNS = (long) Math.max(workTargetNS - lagMeanNS * lagAdjustmentFactor / concurrency(), 0);
 
             threadWorkTimePerCycle = workTargetNS;
-            threadIdleTimePerCycle = cycleIdealNS - workTargetNS;
+            threadIdleTimePerCycle = Math.max(0, cycleIdealNS - workTargetNS);
 
             if (nar.random().nextFloat() < queueLatencyMeasurementProbability) {
                 accept(new QueueLatencyMeasurement(nanoTime()));

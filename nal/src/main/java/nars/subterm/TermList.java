@@ -1,16 +1,11 @@
 package nars.subterm;
 
 import jcog.data.list.FasterList;
-import nars.NAL;
 import nars.Op;
 import nars.term.Term;
-import nars.term.util.TermException;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
-
-import static nars.Op.CONJ;
-import static nars.term.atom.Bool.True;
 
 /** mutable subterms, used in intermediate operations */
 public class TermList extends FasterList<Term> implements Subterms {
@@ -118,8 +113,7 @@ public class TermList extends FasterList<Term> implements Subterms {
 
 
     /** finalization step on constructing a Subterm */
-    @Nullable
-    public Subterms commit(Subterms src, Op superOp) {
+    @Nullable public Subterms commit(Subterms src, Op superOp) {
         int ys = size();
 
         //replace prefix nulls with the input's values
@@ -127,30 +121,16 @@ public class TermList extends FasterList<Term> implements Subterms {
 
         Term[] ii = items;
 
-        if (superOp == CONJ) {
-            for (int i = 0; i < ys;) {
-                Term j;
-                if ((j = ii[i]) == null)
-                    ii[i] = j = src.sub(i);
-
-                if (j == True) {
-                    removeFast(i);
-                    ys--;
-                } else
-                    i++;
-            }
-        } else {
-            for (int i = 0; i < ys; i++) {
-                if (ii[i] == null)
-                    ii[i] = src.sub(i);
-                else
-                    break; //finished at first non-null subterm
-            }
+        for (int i = 0; i < ys; i++) {
+            if (ii[i] == null)
+                ii[i] = src.sub(i);
+            else
+                break; //finished at first non-null subterm
         }
 
-        if (volume() > NAL.term.COMPOUND_VOLUME_MAX) {
-            throw new TermException("complexity overflow", this);
-        }
+//        if (volume() > NAL.term.COMPOUND_VOLUME_MAX) {
+//            throw new TermException("complexity overflow", this);
+//        }
 
         if (ys == 0)
             return Op.EmptySubterms;

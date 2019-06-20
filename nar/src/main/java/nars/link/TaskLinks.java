@@ -274,8 +274,8 @@ abstract public class TaskLinks implements Sampler<TaskLink> {
      */
     public static class DirectTangentTaskLinks extends TaskLinks {
 
-        static Term tryReverse(Object[] ll, Term term, TaskLink link, int i) {
-            TaskLink t = (TaskLink) ll[i];
+        static Term tryReverse(TaskLink t, Term term, TaskLink link) {
+
             if (t != null && t != link) {
 //                Term f = t.other(term);
 //                if (f!=null)
@@ -312,39 +312,17 @@ abstract public class TaskLinks implements Sampler<TaskLink> {
                 return null; //term itself
 
 
+            final Term[] T = {term};
+            links.bag.sampleUnique(d.random, (ll) ->{
+                Term t = tryReverse(ll, term, link);
+                if (t!=null) {
+                    T[0] = t;
+                    return false; //done
+                }
+                return true;
+            });
+            return T[0];
 
-            //TODO add ArrayBag method: sampleRadially(Predicate<X> continue) ...
-            ArrayBag<?, TaskLink> b = (ArrayBag<?, TaskLink>) (links.bag);
-            int s = b.size();
-            Object[] ll = b.items();
-
-            //starting point, sampled from bag histogram
-            int p = b.sampleHistogram(d.random);
-            if (p >= ll.length) p = ll.length-1;
-
-            //scan radially around point, O(N)
-            for (int j = 0; j < s; j++) {
-
-                int done = 0;
-                int above = p - j;
-                if (above >= 0) {
-                    Term t = tryReverse(ll, term, link, above);
-                    if (t != null)
-                        return t;
-                } else done++;
-
-                int below = p + j + 1;
-                if (below < s) {
-                    Term t = tryReverse(ll, term, link, below);
-                    if (t != null)
-                        return t;
-                } else done++;
-
-                if (done == 2)
-                    break;
-            }
-
-            return term;
         }
     }
 

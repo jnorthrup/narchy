@@ -9,6 +9,7 @@ import jcog.pri.op.PriMerge;
 import nars.term.Term;
 
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 /** useful for schedulers.  fast sampling access as tradeoff for expectation of rare updates that
@@ -24,6 +25,19 @@ import java.util.function.Consumer;
 
     public AntistaticBag(int capacity) {
         super(PriMerge.replace, capacity, PriMap.newMap(false));
+    }
+
+    public <Y> void forEachWith(BiConsumer<? super X, Y> action, Y param) {
+        if (invalid.compareAndSet(true,false))
+            commit();
+
+        int s = size();
+        Object[] a = items();
+        for (int i = 0; i < s; i++) {
+            Object aa = a[i];
+            if (aa!=null)
+                action.accept(((X) aa), param);
+        }
     }
 
     @Override

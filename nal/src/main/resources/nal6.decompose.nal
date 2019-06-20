@@ -83,6 +83,14 @@
     //desire for sub-sequence leading to goal,  truth function may be Desire or Deduction
     G, C, is(C,"&&"), neq(G,C)                  |-    conjBefore(C,   G),  (Goal:DeductionPP, Time:TaskEvent)
     G, C, is(C,"&&"), has(C,"--"), neq(G,C)     |-    conjBefore(C, --G),  (Goal:DeductionNP, Time:TaskEvent)
+        G, C, is(C,"&&"), neq(G,C)                  |-    --conjBefore(C, --G),  (Goal:DeductionWeakPN, Time:TaskEvent)
+        G, C, is(C,"&&"), has(C,"--"), neq(G,C)     |-    --conjBefore(C,   G),  (Goal:DeductionWeakNN, Time:TaskEvent)
+
+    //anti-specific deduction: "conjunction contraposition"
+    G, C, eventOf(C,G), --isVar(G)       |-   (--G && negateEvents(conjWithout(C,  G))), (Goal:DeductionWeakNP, Time:TaskEvent)
+    G, C, eventOfNeg(C,G), --isVar(G)    |-   (  G && negateEvents(conjWithout(C,--G))), (Goal:DeductionWeakPP, Time:TaskEvent)
+
+
 //     G, C, is(C,"&&"), has(C,"--")  |-   --conjBefore(C, --G), (Goal:DecomposePP, Time:TaskEvent)
 //     G, C, is(C,"&&")               |-   --conjBefore(C, G),   (Goal:DecomposeNP, Time:TaskEvent)
       //G, D, is(D,"&&"), has(D,"--"), neq(G,D)   |-    conjBefore(D, --G),  (Goal:DeductionWeakPN, Time:TaskEvent)

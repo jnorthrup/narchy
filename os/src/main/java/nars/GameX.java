@@ -455,6 +455,10 @@ abstract public class GameX extends Game {
 
 
         addGovernor(n);
+        Loop.of(()->{
+            n.control.printPerf(System.out);
+            System.out.println();
+        }).setFPS(0.25f);
 
 //        BatchDeriver bd = new BatchDeriver(Derivers.nal(n, 1, 8,
 //                "motivation.nal"

@@ -710,10 +710,14 @@ public interface Subterms extends Termlike, Iterable<Term> {
         } else {
             Term x1 = x.sub(1), y1 = y.sub(1);
             if (x1==y1)
-                return x.sub(0).unify(y.sub(0), u);
+                return x0.unify(y0, u);
 
             int v1 = (u.var(x1) ? 1 : 0) + (u.var(y1) ? 1 : 0);
-            boolean forward = v1 >= v0;
+            boolean forward;
+            if (v1 == v0)
+                forward = (x0.volume() + y0.volume() <= x1.volume() + y1.volume() );
+            else
+                forward = (v0 < v1);
             return forward ?
                     x0.unify(y0, u) && x1.unify(y1, u) :
                     x1.unify(y1, u) && x0.unify(y0, u);
@@ -777,7 +781,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
         if (m!=null) {
             //process remaining non-constant subterms
             //TODO process in an ideal order, maybe use a bitset of length 2*n for 2 phases
-            for (int i = n - 1; i >= 0; i--) {
+            for (int i = n - 1 - 1; i >= 0; i--) {
                 if (m.get(i)) {
                     if (!x.sub(i).unify(y.sub(i), u))
                         return false;
@@ -1308,17 +1312,25 @@ public interface Subterms extends Termlike, Iterable<Term> {
 
             Term yi = f.apply(xi);
 
-            if (yi == null || yi == Bool.Null)
-                return null;
+            //assert(yi!=null);
 
-            //these fail-fast cases must be consistent with the target construction process.
-            if (yi == Bool.False && superOp == CONJ)
-                return Op.FalseSubterm;
+            if (yi instanceof Bool) {
+                if (yi == Bool.Null)
+                    return null;
 
-            if (yi.op() == FRAG) {
+                //these fail-fast cases must be consistent with the target construction process.
+                if (superOp == CONJ) {
+                    if (yi == Bool.False)
+                        return Op.FalseSubterm;
+                    //keep True in case of temporal it will need to act as a placeholder
+
+                }
+            }
+
+            if (yi instanceof Compound && yi.op() == FRAG) {
 
                 Subterms ee = yi.subterms();
-                if (ee.subs()==0) {
+                if (ee==Op.EmptyProduct || ee.subs()==0) {
                     if (s == 1)
                         return EmptySubterms; //the empty ellipsis is the only subterm
                 }
@@ -1360,9 +1372,9 @@ public interface Subterms extends Termlike, Iterable<Term> {
 
         for (int j = 0; j < xes; j++) {
 
-            Term k = f.apply(e.sub(j));
+            Term k = f.apply(e.sub(j)); //assert(k!=null);
 
-            if (k == null || k == Bool.Null) {
+            if (k == Bool.Null) {
                 return null;
             } else if (k.op()==FRAG) {
                 if (NAL.DEBUG)
@@ -1370,6 +1382,10 @@ public interface Subterms extends Termlike, Iterable<Term> {
                 else
                     return null;
             } else {
+                if (out == null)
+                    out = new DisposableTermList(subsTotal - 1 + xes /*estimate */, i);
+                else
+                    out.ensureExtraCapacityExact(xes - 1);
                 out.addFast(k);
             }
         }
