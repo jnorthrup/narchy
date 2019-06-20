@@ -247,8 +247,8 @@ public class Factorize {
 
     public static class FactorIntroduction extends Introduction {
 
-        public FactorIntroduction( NAR nar, int capacity) {
-            super(nar, capacity);
+        public FactorIntroduction( NAR nar) {
+            super(nar);
         }
 
         @Override

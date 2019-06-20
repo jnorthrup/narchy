@@ -4,10 +4,7 @@ import jcog.Paper;
 import jcog.Skill;
 import nars.NAR;
 import nars.Task;
-import nars.attention.What;
 import nars.control.channel.CauseChannel;
-
-import java.util.function.BooleanSupplier;
 
 /** LeakBack generates new tasks through its CauseChannel -
  *  and its value directly adjusts the throttle rate of the
@@ -29,12 +26,12 @@ abstract public class TaskLeakTransform extends TaskLeak  {
     }
 
 
-    @Override
-    public void next(What w, BooleanSupplier kontinue) {
-        if (in == null) return; //HACK
-        super.next(w, kontinue);
-        //in.commit();
-    }
+//    @Override
+//    public void next(What w, BooleanSupplier kontinue) {
+//        if (in == null) return; //HACK
+//        super.next(w, kontinue);
+//        //in.commit();
+//    }
 
     @Override public float value() {
         return in.value();

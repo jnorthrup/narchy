@@ -686,8 +686,8 @@ public interface Subterms extends Termlike, Iterable<Term> {
     }
 
     static boolean unifyLinear(Subterms x, Subterms y, Unify u) {
-        int n;
-        switch(n = x.subs()) {
+        int n = x.subs();         assert(y.subs()==n);
+        switch(n) {
             case 0:
                 return true;
             case 1:
@@ -704,7 +704,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
         if (x0==y0)
             return x.sub(1).unify(y.sub(1), u);
 
-        int v0 = (u.var(x0) ? 1 : 0) + (u.var(y0) ? 1 : 0);
+        int v0 = u.vars(x0) + u.vars(y0);
         if (v0 == 0) {
             return x0.unify(y0, u) && x.sub(1).unify(y.sub(1), u);
         } else {
@@ -712,11 +712,11 @@ public interface Subterms extends Termlike, Iterable<Term> {
             if (x1==y1)
                 return x0.unify(y0, u);
 
-            int v1 = (u.var(x1) ? 1 : 0) + (u.var(y1) ? 1 : 0);
+            int v1 = u.vars(x1) + u.vars(y1);
             boolean forward;
-            if (v1 == v0)
-                forward = (x0.volume() + y0.volume() <= x1.volume() + y1.volume() );
-            else
+            if (v1 == v0) {
+                forward = (x0.volume() + y0.volume() <= x1.volume() + y1.volume());
+            } else
                 forward = (v0 < v1);
             return forward ?
                     x0.unify(y0, u) && x1.unify(y1, u) :
@@ -762,6 +762,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
     }
 
     static boolean unifyLinearN_TwoPhase(Subterms x, Subterms y, int n, Unify u) {
+        //TODO elide subsequent repeats
         MetalBitSet m = null;
         for (int i = 0; i < n; i++) {
             Term xi = x.sub(i), yi = y.sub(i);
@@ -769,7 +770,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
             if (xi == yi)
                 continue;
 
-            boolean now = (i==n-1) || (!u.var(xi) && !u.var(yi));
+            boolean now = (i==n-1 && m==null /* last one anyway so just do it */) || (!u.var(xi) && !u.var(yi));
             if (now) {
                 if (!xi.unify(yi, u))
                     return false;
@@ -780,12 +781,26 @@ public interface Subterms extends Termlike, Iterable<Term> {
         }
         if (m!=null) {
             //process remaining non-constant subterms
-            //TODO process in an ideal order, maybe use a bitset of length 2*n for 2 phases
-            for (int i = n - 1 - 1; i >= 0; i--) {
-                if (m.get(i)) {
-                    if (!x.sub(i).unify(y.sub(i), u))
+
+            int nonconst = m.cardinality();
+            if (nonconst ==1) {
+                int which = m.next(true,-1, n);
+                return x.sub(which).unify(y.sub(which), u);
+            } else {
+
+                int[] c = new int[nonconst];
+                int k = 0;
+                //sort based on heuristic of estimated complexity
+                for (int i = 0; i < n && k < nonconst; i++) {
+                    if (m.get(i))
+                        c[k++] = i;
+                }
+                ArrayUtil.sort(c,cc -> x.sub(cc).volume() + y.sub(cc).volume());
+                for (int cc : c) {
+                    if (!x.sub(cc).unify(y.sub(cc), u))
                         return false;
                 }
+                return true;
             }
         }
         return true;

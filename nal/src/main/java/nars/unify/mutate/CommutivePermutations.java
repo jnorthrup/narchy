@@ -28,17 +28,37 @@ public final class CommutivePermutations extends Termutator.AbstractTermutator {
 
         int xs = X.subs();
         assert(xs > 1 && xs == Y.subs());
-
     }
 
     @Override
     public int getEstimatedPermutations() {
         throw new UnsupportedOperationException();
-
     }
 
     @Override
     public void mutate(Termutator[] chain, int current, Unify u) {
+
+        Subterms xx = u.resolve(this.x);
+        Subterms yy = u.resolve(this.y);
+        Subterms x, y;
+        if (this.x!=xx || this.y!=yy) {
+            if (!Subterms.possiblyUnifiable(xx,yy,u))
+                return;
+            if (!u.var(xx) && !u.var(yy)) {
+                //constant
+                if (Subterms.unifyLinear(xx.commuted(), yy.commuted(), u)) {
+                    u.tryMutate(chain, current); //matched
+                }
+                return;
+            }
+
+
+            x = xx;
+            y = yy;
+        } else {
+            x = this.x; y = this.y;
+        }
+
         int start = u.size();
 
         ShuffledSubterms p = new ShuffledSubterms(x, u.random);

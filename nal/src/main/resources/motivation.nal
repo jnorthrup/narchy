@@ -65,6 +65,16 @@
 //    (&&,G,X,A..*), (&&,H,Y,B..*), eqNeg(G,H), neq(X,Y), hasBelief()  |- ((polarizeRandom(X) && polarizeRandom(Y)) --> ?1), (Punctuation:Ask)
 
 
+    //anti-specific deduction: "conjunction contraposition"
+    G, C, eventOf(C,G), --isVar(G)       |-   (--G && negateEvents(conjWithout(C,  G))), (Goal:DeductionWeakNP, Time:TaskEvent)
+    G, C, eventOfNeg(C,G), --isVar(G)    |-   (  G && negateEvents(conjWithout(C,--G))), (Goal:DeductionWeakPP, Time:TaskEvent)
+
+    //anti-desire for sub-sequence leading to anti-goal. truth function may be Desire or Deduction (option: __Weak, __WeakN)
+    G, C, is(C,"&&"), has(C,"--")       |-              --conjBefore(C, --G),  (Goal:DesireWeakPP)
+    G, C, is(C,"&&")                    |-              --conjBefore(C,   G),  (Goal:DesireWeakNP)
+      //G, C, is(C,"&&"), has(C,"--")     |-   negateEvents(conjBefore(C, --G)), (Goal:DesireWeak)
+      //G, C, is(C,"&&")                  |-   negateEvents(conjBefore(C,   G)), (Goal:DesireWeakN)
+
 
 //inverted condition question/quest TODO: invertAll(C,X)..
     //C, X, eventOfPN(C,X)   |- invertAll(C,X), (Punctuation:Ask)

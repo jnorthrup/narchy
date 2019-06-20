@@ -96,13 +96,12 @@ public class WorkerExec extends ThreadedExec {
             if (subCycleMaxNS <= 0)
                 return;
 
-            long start = nanoTime();
-            long until = start + playTime, after = start /* assigned for safety */;
 
-            int skip = 0;
             AntistaticBag<How> H = nar.how;
             AntistaticBag<What> W = nar.what;
 
+            long start = nanoTime();
+            long until = start + playTime, after = start /* assigned for safety */;
 
             H.sample(rng, (How h)->{
                 if (h != null && h.isOn()) {
@@ -112,13 +111,15 @@ public class WorkerExec extends ThreadedExec {
                     What w = W.sample(rng);
                     if (w.isOn()) {
 
+                        long before = nanoTime();
+
+                        long useNS = //Util.lerp(h.pri() * w.pri(), subCycleMinNS, subCycleMaxNS);
+                                subCycleMaxNS;
+                        if (before + useNS > until)
+                            return false; //not enough remaining time
+
                         boolean singleton = h.singleton();
                         if (!singleton || h.busy.compareAndSet(false, true)) {
-
-                            long before = nanoTime();
-
-                            long useNS = //Util.lerp(h.pri() * w.pri(), subCycleMinNS, subCycleMaxNS);
-                                    subCycleMaxNS;
                             try {
                                 h.runFor(w, useNS);
                             } finally {

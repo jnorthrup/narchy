@@ -58,6 +58,10 @@ public class Arithmeticize {
 
     public static class ArithmeticIntroduction extends Introduction {
 
+        public ArithmeticIntroduction(NAR n) {
+            super(n);
+        }
+
         public ArithmeticIntroduction(NAR n, int capacity) {
             super(n, capacity);
         }

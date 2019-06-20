@@ -508,7 +508,7 @@ abstract public class GameX extends Game {
 
 
         List<ConjClustering> conjClusters = List.of(
-                new ConjClustering(n, BELIEF, 32, 256)
+                new ConjClustering(n, BELIEF, 32, 512)
                 //,new ConjClustering(n, GOAL, 16, 64)
         );
         conjClusters.forEach(c -> n.start(c));
@@ -532,9 +532,9 @@ abstract public class GameX extends Game {
 //        ConjClustering conjClusterGany = new ConjClustering(n, GOAL, (t -> !(t instanceof CuriosityTask) ),
 //                8, 96);
 
-        Introduction arith = new Arithmeticize.ArithmeticIntroduction(n, 64);
+        Introduction arith = new Arithmeticize.ArithmeticIntroduction(n);
 
-        Introduction factorizer = new Factorize.FactorIntroduction(n, 16);
+        Introduction factorizer = new Factorize.FactorIntroduction(n);
 
 
         new Inperience2(n);

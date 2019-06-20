@@ -7,6 +7,8 @@ import jcog.data.set.ArrayHashSet;
 import jcog.version.*;
 import nars.NAL;
 import nars.Op;
+import nars.subterm.Subterms;
+import nars.term.Compound;
 import nars.term.Term;
 import nars.term.Termlike;
 import nars.term.Variable;
@@ -30,7 +32,6 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 import static nars.Op.NEG;
-import static nars.Op.VAR_PATTERN;
 import static nars.unify.Unification.Null;
 import static nars.unify.Unification.Self;
 
@@ -369,14 +370,45 @@ public abstract class Unify extends Versioning<Term> {
         return x.hasAny(varBits);
     }
 
-    /** allow common variable (tested for both types) */
-    public final boolean varCommon(Op var) {
-        return var!=VAR_PATTERN && var(var);
+    /** how many matchable variables are present */
+    public int vars(Term x) {
+        if (x instanceof Compound) {
+            if (x.hasAny(varBits)) {
+                int v = 0;
+                if (0 != (varBits & Op.VAR_PATTERN.bit)) v += x.varPattern();
+                if (0 != (varBits & Op.VAR_QUERY.bit)) v += x.varQuery();
+                if (0 != (varBits & Op.VAR_DEP.bit)) v += x.varDep();
+                if (0 != (varBits & Op.VAR_INDEP.bit)) v += x.varIndep();
+                return v;
+            }
+        } else if (x instanceof Variable) {
+            if ((varBits & x.opBit())!=0) return 1;
+        }
+        return 0;
     }
 
+
+
     /** can x be assigned to y (y <= x) */
-    public final boolean assigns(Op target, Op value) {
-        return (!value.var || ((target.id <= value.id) || !var(value))) && var(target);
+    public final boolean assigns(Op target, Termlike value) {
+        if (!var(target))
+            return false;
+        int exc;
+        switch (target) {
+            case VAR_DEP:
+                exc = Op.VAR_PATTERN.bit | Op.VAR_QUERY.bit | Op.VAR_INDEP.bit;
+                break;
+            case VAR_INDEP:
+                exc = Op.VAR_PATTERN.bit | Op.VAR_QUERY.bit;
+                break;
+            case VAR_QUERY:
+            case VAR_PATTERN:
+                exc = Op.VAR_PATTERN.bit;
+                break;
+            default:
+                return false;
+        }
+        return !value.hasAny(exc);
     }
 
 
@@ -442,6 +474,10 @@ public abstract class Unify extends Versioning<Term> {
         }
 
         return x; //no change
+    }
+
+    public Subterms resolve(Subterms x) {
+        return x.transformSubs(this::resolvePosNeg, null);
     }
 
 

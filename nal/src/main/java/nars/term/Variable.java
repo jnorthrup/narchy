@@ -10,6 +10,7 @@ import nars.term.var.ellipsis.Ellipsis;
 import nars.unify.Unify;
 
 import static nars.Op.FRAG;
+import static nars.Op.VAR_PATTERN;
 import static nars.term.atom.Bool.Null;
 
 /**
@@ -76,18 +77,21 @@ public interface Variable extends Atomic {
             boolean done = false;
             if (x instanceof Neg) {
                 Term xu = x.unneg();
-                if (xu instanceof Variable && (!(y instanceof Variable) || u.assigns(xu.op(), y.op())) && neggable(y)) {
-                    x = xu;
-                    y = y.neg();
-                    done = true;
+                if (xu instanceof Variable) {
+                    if (neggable(y) && u.assigns(xu.op(), y)) {
+                        x = xu;
+                        y = y.neg();
+                        done = true;
+                    }
                 }
             }
             if (!done && y instanceof Neg) {
                 Term yu = y.unneg();
-                if (yu instanceof Variable && (!(x instanceof Variable) || u.assigns(yu.op(), x.op())) && neggable(x)) {
-                    y = yu;
-                    x = x.neg();
-                    done = true;
+                if (yu instanceof Variable) {
+                    if (neggable(x) && u.assigns(yu.op(), x)) {
+                        y = yu;
+                        x = x.neg();
+                    }
                 }
             }
         }
@@ -115,27 +119,33 @@ public interface Variable extends Atomic {
     }
 
     private static boolean unifyVar(Unify u, Term x, Term y) {
-        Op xo = x.op(), yo = y.op();
-        if (xo == yo) {
-            if (u.commonVariables && !(x instanceof Ellipsis) && !(y instanceof Ellipsis))
-                return CommonVariable.unify((Variable)x, (Variable) y, u);
-            else {
-                if (x.compareTo(y) > 0) {
-                    //swap to natural ordering
-                    Term z = x;
-                    x = y;
-                    y = z;
-                    //continue below
+        if (x instanceof Variable && y instanceof Variable) {
+
+            Op xo = x.op();
+            if (xo!=VAR_PATTERN) {
+                Op yo = y.op();
+                if (xo == yo) {
+                    if (u.commonVariables && !(x instanceof Ellipsis) && !(y instanceof Ellipsis))
+                        return CommonVariable.unify((Variable) x, (Variable) y, u);
+                    else {
+                        if (x.compareTo(y) > 0) {
+                            //swap to natural ordering
+                            Term z = x;
+                            x = y;
+                            y = z;
+                            //continue below
+                        }
+                    }
                 }
             }
         }
 
-        if (x instanceof Variable && u.assigns(xo, yo)) {
+        if (x instanceof Variable && u.assigns(x.op(), y)) {
             if (u.putXY((Variable) x, y))
                 return true;
         }
 
-        if (y instanceof Variable && u.assigns(yo, xo)) {
+        if (y instanceof Variable && u.assigns(y.op(), x)) {
             return u.putXY((Variable) y, x);
         }
 
