@@ -4,41 +4,24 @@
 //      If after M, P usually happens, and M happens, it means P is expected to happen
 
 
-     B, (  X ==> C), --is(X,"--"), --is(C,"#"), --is(B,"==>") |- unisubst(C,X,B,"$"), (Belief:Pre, Goal:PreWeak, Time:TaskEvent)
-     B, (  X ==> C), --is(X,"--"), --is(C,"#"), --is(B,"==>") |- unisubst(C,X,B,"$",novel), (Belief:PreRecursive, Goal:PreWeak, Time:TaskEvent)
+     //B, (  X ==> C), --is(X,"--"), --is(C,"#"), --is(B,"==>") |- unisubst(C,X,B,"$"), (Belief:Pre, Goal:PreWeak, Time:TaskEvent)
+       //B, (--X ==> C), --is(C,"#"), --is(B,"==>") |- unisubst(C,X,B,"$"), (Belief:PreN, Goal:PreWeakN, Time:TaskEvent)
+     B, (  X ==> C), --is(X,"--"), --is(C,"#"), --is(B,"==>") |- unisubst(C,X,B,"$"), (Belief:DeductionRecursive, Goal:DeductionWeak, Time:TaskEvent)
+       B, (--X ==> C), --is(C,"#"), --is(B,"==>") |- unisubst(C,X,B,"$"), (Belief:DeductionRecursiveN, Goal:DeductionWeakN, Time:TaskEvent)
      //(  X ==> C), B, --is(X,"--"), --is(C,"#"), --is(B,"==>") |- unisubst(C,X,B,"$"), (Belief:PreX)
+          //B, (A ==> C), task("?@"), --is(A,{"--","#"}), --is(C,"#"), --is(B,"==>") |- unisubst(C,A,B,"$"), (Time:TaskEvent)
+          //B, (--A ==> C), task("?@"), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- unisubst(C,A,B,"$"), (Time:TaskEvent)
 
         //--is(X,"#"),
 //         B, (X ==> (&&,  C,A..+))       |- unisubst(  (&&,X,A..+),C,B), (Belief:Pre)
 //         B, (X ==> (&&,--C,A..+))       |- unisubst(  (&&,X,A..+),C,B), (Belief:PreN)
 
-        //antigoal:
-        //B, (A ==> C), --is(A,"--"),--is(A,"#"),--is(C,"#"), --is(B,"==>") |- --unisubst(C,A,B), (Goal:PreWeakN, Time:TaskPlusBeliefDT)
-
        //questions
           B, (A ==> C), task("?@"), --is(A,{"--","#"}), --is(C,"#"), --is(B,"==>") |- unisubst((A ==> C),A,B,"$",novel), (Punctuation:Question, Time:TaskEvent)
-          //B, (A ==> C), task("?@"), --is(A,{"--","#"}), --is(C,"#"), --is(B,"==>") |- unisubst(C,A,B,"$"), (Time:TaskEvent)
-
-
-       //conjunction goal induction from impl (shortcut)
-//        G, (A==>B), eventOf(B,G)    |- (A &&   conjWithout(B,G)), (Belief:PrePP, Goal:PreWeakPP)
-//        G, (A==>B), eventOf(B,G)    |- (A && --conjWithout(B,G)), (Belief:PrePN, Goal:PreWeakPN)
-//        G, (A==>B), eventOfNeg(B,G) |- (A &&   conjWithout(B,--G)), (Belief:PreNP, Goal:PreWeakNP)
-//        G, (A==>B), eventOfNeg(B,G) |- (A && --conjWithout(B,--G)), (Belief:PreNN, Goal:PreWeakNN)
-
-     B, (--X ==> C), --is(C,"#"), --is(B,"==>") |- unisubst(C,X,B,"$"), (Belief:PreN, Goal:PreWeakN, Time:TaskEvent)
-     //(--X ==> C), B, --is(C,"#"), --is(B,"==>") |- unisubst(C,X,B,"$"), (Belief:PreNX)
-
-
-
-            //,--is(X,"--")
-
-        //antigoal:
-        //B, (--A ==> C), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- --unisubst(C,A,B), (Goal:PreWeak, Time:TaskPlusBeliefDT)
-
-        //questions
           B, (--A ==> C), task("?@"), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- unisubst((--A ==> C),A,B,"$",novel), (Punctuation:Question, Time:TaskEvent)
-          //B, (--A ==> C), task("?@"), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- unisubst(C,A,B,"$"), (Time:TaskEvent)
+
+
+
 
     B, (C ==> A), --is(C,"#"), --is(B,"==>") |- unisubst(C,A,B,"$"), (Belief:PostWeak, Goal:Post, Time:TaskEvent)
 

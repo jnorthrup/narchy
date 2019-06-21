@@ -61,13 +61,18 @@ class ImpilerTest {
 //        n.run(16);
 
 
-        n.input("(a ==> b). "); n.run(1);
-        n.input("(b ==> c). "); n.run(1);
-        n.input("(c ==> d). "); n.run(1);
-        n.input("(d ==> e). "); n.run(1);
+        n.input("(a ==> b). ");
+        n.run(1);
+        n.input("(b ==> c). ");
+        n.run(1);
+        n.input("(c ==> d). ");
+        n.run(1);
+        n.input("(d ==> e). ");
+        n.run(1);
 
 
-        n.input("a@"); n.run(1);
+        n.input("a@");
+        n.run(1);
 
 //        assertTrue(4 <= edges[0]);
 
@@ -75,4 +80,8 @@ class ImpilerTest {
 
     }
 
+    @Test
+    public void testDeductionChainPositiveNegative() throws Narsese.NarseseException {
+
+    }
 }

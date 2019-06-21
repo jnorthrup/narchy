@@ -36,6 +36,12 @@ public enum NALTruth implements TruthFunc {
             return TruthFunctions.deduction(T, B, true, minConf);
         }
     },
+    @AllowOverlap DeductionRecursive() {
+        @Override
+        public Truth apply(Truth T, Truth B, float minConf, NAL n) {
+            return TruthFunctions.deduction(T, B, true, minConf);
+        }
+    },
     DeductionWeak() {
         @Override
         public Truth apply(Truth T, Truth B, float minConf, NAL n) {
