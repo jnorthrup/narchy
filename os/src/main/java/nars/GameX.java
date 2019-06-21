@@ -64,6 +64,7 @@ import static java.util.stream.Collectors.toList;
 import static java.util.stream.StreamSupport.stream;
 import static nars.$.$$;
 import static nars.Op.BELIEF;
+import static nars.Op.GOAL;
 import static spacegraph.space2d.container.grid.Gridding.grid;
 
 /**
@@ -508,8 +509,8 @@ abstract public class GameX extends Game {
 
 
         List<ConjClustering> conjClusters = List.of(
-                new ConjClustering(n, BELIEF, 32, 512)
-                //,new ConjClustering(n, GOAL, 16, 64)
+                new ConjClustering(n, BELIEF, 32, 512),
+                new ConjClustering(n, GOAL, 16, 64)
         );
         conjClusters.forEach(c -> n.start(c));
 

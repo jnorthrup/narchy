@@ -484,11 +484,11 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
     /**
      * leave n null to avoid dithering
      */
-    static Task eternalized(Task x, float eviFactor, double eviMin, @Nullable NAL n) {
+    static Task eternalized(Task x, float confFactor, double eviMin, @Nullable NAL n) {
         boolean isEternal = x.isEternal();
         boolean hasTruth = x.isBeliefOrGoal();
         if (isEternal) {
-            if (eviFactor != 1)
+            if (confFactor != 1)
                 throw new TODO();
             if (hasTruth) {
                 if (x.evi() < eviMin)
@@ -500,7 +500,7 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
         Truth tt;
 
         if (hasTruth) {
-            tt = x.truth().eternalized(eviFactor, eviMin, n);
+            tt = x.truth().eternalized(confFactor, eviMin, n);
             if (tt == null)
                 return null;
         } else {

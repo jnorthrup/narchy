@@ -16,7 +16,7 @@
 
        //questions
           B, (A ==> C), task("?@"), --is(A,{"--","#"}), --is(C,"#"), --is(B,"==>") |- unisubst((A ==> C),A,B,"$",novel), (Punctuation:Question, Time:TaskEvent)
-          B, (A ==> C), task("?@"), --is(A,{"--","#"}), --is(C,"#"), --is(B,"==>") |- unisubst(C,A,B,"$"), (Time:TaskEvent)
+          //B, (A ==> C), task("?@"), --is(A,{"--","#"}), --is(C,"#"), --is(B,"==>") |- unisubst(C,A,B,"$"), (Time:TaskEvent)
 
 
        //conjunction goal induction from impl (shortcut)
@@ -37,7 +37,7 @@
 
         //questions
           B, (--A ==> C), task("?@"), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- unisubst((--A ==> C),A,B,"$",novel), (Punctuation:Question, Time:TaskEvent)
-          B, (--A ==> C), task("?@"), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- unisubst(C,A,B,"$"), (Time:TaskEvent)
+          //B, (--A ==> C), task("?@"), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- unisubst(C,A,B,"$"), (Time:TaskEvent)
 
     B, (C ==> A), --is(C,"#"), --is(B,"==>") |- unisubst(C,A,B,"$"), (Belief:PostWeak, Goal:Post, Time:TaskEvent)
 
@@ -45,8 +45,8 @@
         //B, (C ==> A), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- --unisubst(C,A,B), (Goal:PostStrongPN, Time:TaskMinusBeliefDT)
 
         //questions
-          //B, (C ==> A), task("?@"), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- unisubst((C ==> A),A,B,"$",novel), (Punctuation:Question, Time:TaskEvent)
-          B, (C ==> A), task("?@"), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- unisubst(C,A,B,"$"), (Time:TaskEvent)
+          B, (C ==> A), task("?@"), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- unisubst((C ==> A),A,B,"$",novel), (Punctuation:Question, Time:TaskEvent)
+          //B, (C ==> A), task("?@"), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- unisubst(C,A,B,"$"), (Time:TaskEvent)
 
 
     (B ==> (&&,X,A..+)), Y, --isVar(X),--isVar(Y)  |- polarizeTask(unisubst((B ==> (&&,X,A..+)),X,polarizeBelief(Y)),novel), (Belief:DeductionDepolarized, Time:BeliefEvent)

@@ -1,5 +1,6 @@
 //image structural transform forward
 
+
 (I --> P), X, is(P,"*"), --subOf(P,/), --subOf(P,\), subsMin(P,2), subOf(P,X) |- imageInt((I-->P),X), (Belief:Identity, Goal:Identity)
 (I --> P), X, is(P,"*"), --subOf(P,/), --subOf(P,\), subsMin(P,2), subOf(P,--X) |- imageInt((I-->P),--X), (Belief:Identity, Goal:Identity)
 

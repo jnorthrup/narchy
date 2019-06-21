@@ -33,7 +33,7 @@ import java.io.DataOutput;
 import java.io.IOException;
 
 import static jcog.WTF.WTF;
-import static nars.truth.func.TruthFunctions.w2cSafeDouble;
+import static nars.truth.func.TruthFunctions.*;
 
 
 /**
@@ -354,12 +354,11 @@ public interface Truth extends Truthed {
     }
 
 
-    default /* final */Truth eternalized(float factor, @Nullable NAL n) {
-        return eternalized(factor, NAL.truth.EVI_MIN, n);
-    }
 
-    default Truth eternalized(float factor, double eviMin, @Nullable NAL n) {
-        double e = factor * eviEternalized();
+
+    default Truth eternalized(float confFactor, double eviMin, @Nullable NAL n) {
+        double c = confFactor * w2cSafe(eviEternalized());
+        double e = c2wSafe(c);
         if (e < eviMin)
             return null;
 

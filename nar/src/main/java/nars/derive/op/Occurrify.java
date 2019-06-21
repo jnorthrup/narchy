@@ -6,13 +6,11 @@ import nars.NAL;
 import nars.Op;
 import nars.Task;
 import nars.derive.model.Derivation;
-import nars.derive.model.DerivationFailure;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
 import nars.term.util.Image;
-import nars.term.util.transform.Retemporalize;
 import nars.time.Tense;
 import nars.time.TimeGraph;
 import nars.truth.Truth;
@@ -109,7 +107,7 @@ public class Occurrify extends TimeGraph {
     }
 
 
-    private static long[] rangeCombine(Derivation d, OccIntersect mode) {
+    private static long[] rangeCombine(Derivation d, OccMerge mode) {
         long beliefStart = d.beliefStart;
         if (d.concSingle || (d._belief == null || d.beliefStart == ETERNAL))
             return new long[] { d.taskStart, d.taskEnd };
@@ -427,18 +425,19 @@ public class Occurrify extends TimeGraph {
 
             @Override
             long[] occurrence(Derivation d) {
-                return rangeCombine(d, OccIntersect.Task);
+                return rangeCombine(d, OccMerge.Task);
             }
         },
 
         /** composition of non-events to a single outcome event.  a simplified version of Default */
         Compose() {
-            final BeliefProjection PROJ =
-                    BeliefProjection.Task;
-                    //BeliefProjection.Belief; //<- experimental dilute union or concentrated intersection
-            final OccIntersect combine = PROJ == BeliefProjection.Task ?
-                    OccIntersect.Task :
-                    OccIntersect.UnionDilute;
+            final BeliefProjection PROJ = BeliefProjection.Task;
+
+            final OccMerge combine =
+                    //OccIntersect.Task
+                    OccMerge.UnionDilute
+                    //OccIntersect.Intersect
+                    ;
 
             @Override
             @Nullable public Pair<Term, long[]> occurrence(Term x, Derivation d) {
@@ -454,7 +453,6 @@ public class Occurrify extends TimeGraph {
             long[] occurrence(Derivation d) {
                 return rangeCombine(d,
                         combine
-                                    //OccIntersect.Intersect
 
                 );
             }
@@ -483,7 +481,7 @@ public class Occurrify extends TimeGraph {
 
             @Override
             long[] occurrence(Derivation d) {
-                return rangeCombine(d, OccIntersect.Task);
+                return rangeCombine(d, OccMerge.Task);
             }
 
             @Override
@@ -504,7 +502,7 @@ public class Occurrify extends TimeGraph {
 
             @Override
             long[] occurrence(Derivation d) {
-                return rangeCombine(d, OccIntersect.Belief);
+                return rangeCombine(d, OccMerge.Belief);
             }
 
             @Override
@@ -523,7 +521,7 @@ public class Occurrify extends TimeGraph {
 
             @Override
             long[] occurrence(Derivation d) {
-                return rangeCombine(d, OccIntersect.Task);
+                return rangeCombine(d, OccMerge.Task);
             }
         },
         /** task modulates the truth but the occurrence time to be solved should center around the belief */
@@ -536,7 +534,7 @@ public class Occurrify extends TimeGraph {
 
             @Override
             long[] occurrence(Derivation d) {
-                return rangeCombine(d, OccIntersect.Belief);
+                return rangeCombine(d, OccMerge.Belief);
             }
         },
 
@@ -625,7 +623,7 @@ public class Occurrify extends TimeGraph {
 
             @Override
             long[] occurrence(Derivation d) {
-                return rangeCombine(d, OccIntersect.Task);
+                return rangeCombine(d, OccMerge.Task);
 
 //                long[] o = new long[2];
 //                /*if (d.occ.validEternal()) {
@@ -674,19 +672,20 @@ public class Occurrify extends TimeGraph {
 
         @Nullable Pair<Term, long[]> solveDT(Derivation d, Term x, boolean decomposeEvents) {
             long[] occ = occurrence(d);
-            //assert (occ != null);
+            if (occ == null)
+                return null;
 
-            d.occ.clear();
+            if (x.hasXternal()) {
+                d.occ.clear();
 
-            if (occ[0]!=TIMELESS && occ[0]!=ETERNAL) {
-                d.occ.know(x, occ[0], occ[1]);
+                if (occ != null && occ[0] != TIMELESS && occ[0] != ETERNAL)
+                    d.occ.know(x, occ[0], occ[1]);
+
+                return pair(d.occ.solveDT(x, d.occ.know(x,  true,true,decomposeEvents,this).solutions(x)), occ);
+            } else {
+                return pair(x, occ);
             }
-            return occ == null ? null : pair(
-                    x.hasXternal() ?
-                            d.occ.solveDT(x, d.occ.know(x,  true,true,decomposeEvents,this).solutions(x))
-                            :
-                            x,
-                    occ);
+
         }
 
         protected @Nullable Pair<Term, long[]> solve(Term x, Derivation d, boolean taskOccurr, boolean beliefOccurr) {
@@ -732,7 +731,7 @@ public class Occurrify extends TimeGraph {
                 }, null));
     }
 
-    private enum OccIntersect {
+    private enum OccMerge {
         Task, Belief, Earliest,
         Union, UnionDilute, Intersect
         //TODO Mid?

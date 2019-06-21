@@ -20,7 +20,7 @@ import static nars.Op.GOAL;
 public class Eternalizer extends LinkProcessor<Task> {
 
     private static final int cap = 16; //TODO IntRange
-    public final FloatRange eviFactor = new FloatRange(1f, 0, 1);
+    public final FloatRange confFactor = new FloatRange(1f, 0, 1);
     public final FloatRange priFactor = new FloatRange(0.5f, 0, 1);
     public final FloatRange noise = new FloatRange(0f, 0, 1);
     private final CauseChannel<Task> in;
@@ -97,7 +97,7 @@ public class Eternalizer extends LinkProcessor<Task> {
     protected void run(Task t, What w) {
         //best.forEach(t->{
 //            try {
-        Task u = Task.eternalized(t, eviFactor.floatValue(), nar.confMin.floatValue(), nar);
+        Task u = Task.eternalized(t, confFactor.floatValue(), nar.confMin.floatValue(), nar);
         if (u != null) {
             u.priMult(priFactor.floatValue());
             //System.out.println(u);
