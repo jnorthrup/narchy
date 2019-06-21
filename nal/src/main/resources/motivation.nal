@@ -1,6 +1,3 @@
-    //goal conjunction induction
-    //G, C, eventOf(C,G), task("!")    |- C, (Goal:DesireWeak, Time:Compose)
-    //G, C, eventOfNeg(C,G), task("!") |- C, (Goal:DesireWeakN, Time:Compose)
 
 
     //sustain goal
@@ -71,9 +68,13 @@
 //       G, C, is(C,"&&"), eventOfNeg(C,G), --eventOf(C,G), neq(G,C)  |- (  G && negateEvents(conjWithout(C,--G))), (Goal:DeductionWeakPP, Time:TaskEvent)
 //       G, C, is(C,"&&"), eventOf(C,G), --eventOfNeg(C,G), neq(G,C)  |- (--G && negateEvents(conjWithout(C,G))),   (Goal:DeductionWeakNP, Time:TaskEvent)
 
-    //anti-specific deduction: "conjunction contraposition"
-    G, C, eventOfNeg(C,G), --isVar(G)    |-   (  G && negateEvents(conjWithout(C,--G))), (Goal:DeductionWeakPP, Time:TaskEvent)
-    G, C, eventOf(C,G), --isVar(G)       |-   (--G && negateEvents(conjWithout(C,  G))), (Goal:DeductionWeakNP, Time:TaskEvent)
+    //conjunction goal induction
+    G, C, eventOf(C,G), --eventOfNeg(C,G), task("!") |- C, (Goal:DeductionWeak, Time:TaskEvent)
+    G, C, eventOfNeg(C,G), --eventOf(C,G), task("!") |- C, (Goal:DeductionWeakN, Time:TaskEvent)
+
+//    //anti-specific deduction: "conjunction contraposition"
+//    G, C, eventOfNeg(C,G), --isVar(G)    |-   (  G && negateEvents(conjWithout(C,--G))), (Goal:DeductionWeakPP, Time:TaskEvent)
+//    G, C, eventOf(C,G), --isVar(G)       |-   (--G && negateEvents(conjWithout(C,  G))), (Goal:DeductionWeakNP, Time:TaskEvent)
 
     //anti-desire for sub-sequence leading to anti-goal. truth function may be Desire or Deduction (option: __Weak, __WeakN)
 //    G, C, is(C,"&&"), has(C,"--")       |-              --conjBefore(C, --G),  (Goal:DesireWeakPP)

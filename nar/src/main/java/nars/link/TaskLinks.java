@@ -2,7 +2,6 @@ package nars.link;
 
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Multimaps;
-import jcog.Util;
 import jcog.data.NumberX;
 import jcog.data.list.FasterList;
 import jcog.data.list.table.Table;
@@ -260,12 +259,6 @@ abstract public class TaskLinks implements Sampler<TaskLink> {
 
         @Override
         protected Term reverse(Term target, TaskLink link, Task task, Derivation d) {
-            //ATOMS only
-//            if (!(term instanceof Atom)) return null;
-//            if (d.random.nextFloat() < 0.5f)
-//                return term; //atom itself
-
-
 
             //all atoms and compounds eligible, inversely proportional to their volume
             if (!target.op().conceptualizable) return null;
@@ -275,7 +268,9 @@ abstract public class TaskLinks implements Sampler<TaskLink> {
                     0.5f;
                     //0.33f;
             float probDirect =
-                    probBase * 1f / /*Util.sqr*/(Util.sqr(target.volume()));
+                    (float) (probBase / Math.pow(2, target.volume()-1));
+                    //probBase * (target.volume() <= 2 ? 1 : 0);
+                    //probBase * 1f / Util.sqr(Util.sqr(target.volume()));
                     //probBase * 1f / term.volume();
                     //probBase * 1f / Util.sqr(term.volume());
                     //probBase *  1f / (term.volume() * Math.max(1,(link.from().volume() - term.volume())));

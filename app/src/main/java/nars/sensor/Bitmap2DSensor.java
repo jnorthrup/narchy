@@ -277,7 +277,8 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends VectorSensor {
 
         @Override
         public @Nullable Term forward(Term target, TaskLink link, Task task, Derivation d) {
-            return task.term();
+            //return task.term();
+            return null;
         }
 
         Signal randomPixel(Random rng) {

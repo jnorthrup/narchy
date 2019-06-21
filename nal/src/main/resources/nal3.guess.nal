@@ -6,10 +6,13 @@
 
 
 //component invert to question
-     (    M -->   I), M, is(I,"&&")  |- (M -->   negateRandomSubterm(I)), (Punctuation:AskAll)
-//     (    M --> --%I), M, is(%I,"&&")  |- (M --> --negateRandomSubterm(%I)), (Punctuation:AskAll)
-     (    I -->   M), M, is(I,"&&")  |- (  negateRandomSubterm(I)-->M),   (Punctuation:AskAll)
-//     ( --%I -->   M), M, is(%I,"&&")  |- (  --negateRandomSubterm(%I)-->M),   (Punctuation:AskAll)
+//     (    M -->   I), M, is(I,"&&"), task("?")  |- (M -->   negateRandomSubterm(I)), (Punctuation:Question)
+//     (    M -->   I), M, is(I,"&&"), task("@")  |- (M -->   negateRandomSubterm(I)), (Punctuation:Quest)
+//     (    I -->   M), M, is(I,"&&"), task("?")  |- (  negateRandomSubterm(I)-->M),   (Punctuation:Question)
+//     (    I -->   M), M, is(I,"&&"), task("@")  |- (  negateRandomSubterm(I)-->M),   (Punctuation:Quest)
+
+     (    M -->   I), M, is(I,"&&")  |- (M -->   negateRandomSubterm(I)), (Punctuation:Ask)
+     (    I -->   M), M, is(I,"&&")  |- (  negateRandomSubterm(I)-->M),   (Punctuation:Ask)
 
 
 ////composition on both sides of a statement:

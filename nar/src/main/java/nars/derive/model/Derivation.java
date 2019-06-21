@@ -91,11 +91,7 @@ public class Derivation extends PreDerivation {
         }
     };
     public final Occurrify occ = new Occurrify(this);
-
-    private final TermBuffer termBuilder = new TermBuffer();
-    
-    private final TermBuffer directTermBuilder = new DirectTermBuffer();
-
+    public final long[] taskBelief_TimeIntersection = new long[2];
     final Functor polarizeTask = new AbstractInstantFunctor1("polarizeTask") {
         @Override
         protected Term apply1(Term arg) {
@@ -114,8 +110,9 @@ public class Derivation extends PreDerivation {
             return arg.negIf(b.isNegative());
         }
     };
-
-    /** cant be inline since the value will be cached and repeated */
+    /**
+     * cant be inline since the value will be cached and repeated
+     */
 //    final Functor polarizeRandom = Functor.f1("polarizeRandom", (arg)->random.nextBoolean() ? arg : arg.neg());
     final Functor polarizeRandom = new AbstractInlineFunctor1("polarizeRandom") {
         @Override
@@ -123,7 +120,6 @@ public class Derivation extends PreDerivation {
             return arg.negIf(random.nextBoolean());
         }
     };
-
     /**
      * populates retransform map
      */
@@ -145,9 +141,9 @@ public class Derivation extends PreDerivation {
             }
         }
     };
-    public final long[] taskBelief_TimeIntersection = new long[2];
-
-//    @Deprecated
+    private final TermBuffer termBuilder = new TermBuffer();
+    private final TermBuffer directTermBuilder = new DirectTermBuffer();
+    //    @Deprecated
 //    final Functor polarizeFunc = new AbstractInlineFunctor2("polarize") {
 //        @Override
 //        protected Term apply(Term subterm, Term whichTask) {
@@ -192,13 +188,13 @@ public class Derivation extends PreDerivation {
      */
     public transient long taskStart, taskEnd, beliefStart, beliefEnd; //TODO taskEnd, beliefEnd
     public transient boolean overlapDouble, overlapSingle;
-    private transient short[] parentCause;
     public transient boolean concSingle;
     public transient float parentVolumeSum;
     public transient Truth concTruth;
     public transient byte concPunc;
     public transient Task _task, _belief;
     public DerivationTransform transformDerived;
+    private transient short[] parentCause;
     private transient long[] evidenceDouble, evidenceSingle;
     private transient int taskUniques;
     /**
@@ -279,46 +275,37 @@ public class Derivation extends PreDerivation {
             } else {
 
                 this.beliefTruth_at_Belief = nextBelief.truth();
-                if (beliefTruth_at_Belief==null)
+                if (beliefTruth_at_Belief == null)
                     throw new WTF();
 
                 boolean taskEternal = taskStart == ETERNAL;
-//
-//                if (taskEternal) {
-//                    int dur = dur();
-//                    long now = time();
-//                    taskStart = now - dur / 2;
-//                    taskEnd = now + dur / 2;
-//                    taskEternal = false;
-//                }
 
                 this.beliefTruth_at_Task =
                         taskEternal ?
                                 beliefTruth_at_Belief :
                                 nextBelief.truth(taskStart, taskEnd, dur());
 
-                    if (NAL.ETERNALIZE_BELIEF_PROJECTED_IN_DERIVATION && beliefTruth_at_Belief != null && !nextBelief.equals(_task)) {
+                if (NAL.ETERNALIZE_BELIEF_PROJECTED_IN_DERIVATION && beliefTruth_at_Belief != null && beliefTruth_at_Task == null && !nextBelief.equals(_task)) {
 
-                        float eFactor = taskTruth!=null ? taskTruth.conf() : 1;
+                    float eFactor =
+                            //taskTruth!=null ? taskTruth.conf() : 1;
+                            taskTruth != null ? Math.min(1, beliefTruth_at_Belief.conf() / taskTruth.conf()) : 1;
 
-                        Truth beliefTruth_eternalized = beliefTruth_at_Belief.eternalized(eFactor, eviMin, null /* dont dither */);
-                        if (beliefTruth_eternalized != null) {
-                            double ee = beliefTruth_eternalized.evi();
-                            if (ee >= eviMin && (beliefTruth_at_Task == null || ee > beliefTruth_at_Task.evi())) {
+                    Truth beliefTruth_eternalized = beliefTruth_at_Belief.eternalized(eFactor, eviMin, null /* dont dither */);
+                    if (beliefTruth_eternalized != null) {
 
-                                assert (nextBelief != null);
+                        assert (nextBelief != null);
 
-                                if (NAL.ETERNALIZE_BELIEF_PROJECTED_IN_DERIVATION_AND_ETERNALIZE_BELIEF_TIME)
-                                    nextBeliefStart = nextBeliefEnd = ETERNAL;
-                                else
-                                    nextBeliefEnd = nextBelief.end();
+                        if (NAL.ETERNALIZE_BELIEF_PROJECTED_IN_DERIVATION_AND_ETERNALIZE_BELIEF_TIME)
+                            nextBeliefStart = nextBeliefEnd = ETERNAL;
+                        else
+                            nextBeliefEnd = nextBelief.end();
 
-                                nextBelief = new SpecialTruthAndOccurrenceTask(nextBelief, nextBeliefStart, nextBeliefEnd,
-                                        false,
-                                        this.beliefTruth_at_Task = beliefTruth_eternalized
-                                );
-                            }
-                        }
+                        nextBelief = new SpecialTruthAndOccurrenceTask(nextBelief, nextBeliefStart, nextBeliefEnd,
+                                false,
+                                this.beliefTruth_at_Task = beliefTruth_eternalized
+                        );
+                    }
 
                 }
             }
@@ -677,7 +664,7 @@ public class Derivation extends PreDerivation {
     }
 
     public short[] parentCause() {
-        if (parentCause==null) {
+        if (parentCause == null) {
 
 
             int causeCap = NAL.causeCapacity.intValue();
@@ -692,7 +679,8 @@ public class Derivation extends PreDerivation {
         return parentCause;
     }
 
-    @Override public short[] preDerive() {
+    @Override
+    public short[] preDerive() {
         if (!canCollector.isEmpty()) canCollector.clear();
         deriver.rules.what.test(this);
         return canCollector.isEmpty() ? ArrayUtil.EMPTY_SHORT_ARRAY : canCollector.toArray();
@@ -732,10 +720,10 @@ public class Derivation extends PreDerivation {
 
             Term b;
             if (a instanceof Variable) {
-                b = resolve((Variable)a);
+                b = resolve((Variable) a);
             } else if (a instanceof Atom) {
 
-                if (a==TaskTerm) //a.equals(TaskTerm))
+                if (a == TaskTerm) //a.equals(TaskTerm))
                     return taskTerm;
                 else if (a == BeliefTerm) // a.equals(BeliefTerm))
                     return beliefTerm;
@@ -744,7 +732,7 @@ public class Derivation extends PreDerivation {
             } else
                 return a;
 
-            return b!=null ? b : a;
+            return b != null ? b : a;
         }
 
         @Override
