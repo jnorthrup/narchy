@@ -2,6 +2,7 @@ package nars.sensor;
 
 import com.google.common.collect.Iterables;
 import jcog.func.IntIntToObjectFunction;
+import jcog.pri.op.PriMerge;
 import jcog.signal.wave2d.Bitmap2D;
 import nars.$;
 import nars.NAR;
@@ -13,8 +14,10 @@ import nars.concept.Concept;
 import nars.concept.TaskConcept;
 import nars.concept.sensor.Signal;
 import nars.concept.sensor.VectorSensor;
+import nars.derive.model.Derivation;
 import nars.link.AbstractTaskLink;
 import nars.link.AtomicTaskLink;
+import nars.link.TaskLink;
 import nars.subterm.Subterms;
 import nars.subterm.TermList;
 import nars.table.dynamic.SensorBeliefTables;
@@ -31,7 +34,8 @@ import java.util.Map;
 import java.util.Random;
 import java.util.function.Predicate;
 
-import static nars.Op.*;
+import static nars.Op.BELIEF;
+import static nars.Op.CONJ;
 
 /**
  * manages reading a camera to a pixel grid of SensorConcepts
@@ -214,8 +218,8 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends VectorSensor {
     }
 
     final AbstractTaskLink tl =
-            new PixelSelectorTaskLink();
-            //new ConjunctionSuperPixelTaskLink(2, 2);
+            //new PixelSelectorTaskLink();
+            new ConjunctionSuperPixelTaskLink(2, 2);
 
     @Override
     public void update(Game g) {
@@ -225,13 +229,12 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends VectorSensor {
     }
 
     public void link(Game g) {
-        float surprise = (float)(surprise())
-                // / concepts.area
-                ;
+        float surprise = (float)(surprise());
+        //System.out.println(tl + " <- " + surprise);
 
         //System.out.println(this + " " + surprise);
         if (surprise > Float.MIN_NORMAL) {
-            tl.priMax(BELIEF, surprise);
+            tl.priMerge(BELIEF, surprise, PriMerge.max /*NAL.tasklinkMerge*/);
 //            tl.priMax(QUEST, surprise);
 //            tl.priMax(GOAL, surprise*(1/4f));
             ((TaskLinkWhat) (g.what())).links.link(tl);
@@ -243,7 +246,7 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends VectorSensor {
     }
 
 
-    protected double surprise() {
+    public double surprise() {
         double s = 0;
         for (Signal c : concepts)
             s += ((SensorBeliefTables)c.beliefs()).surprise();
@@ -255,29 +258,71 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends VectorSensor {
         return concepts.iterator();
     }
 
-    private class PixelSelectorTaskLink extends AtomicTaskLink {
-        PixelSelectorTaskLink() {
+    private abstract class DynamicPixelTaskLink extends AtomicTaskLink {
+
+        public DynamicPixelTaskLink() {
             super(Bitmap2DSensor.this.term());
         }
 
         @Override
         public @Nullable Task get(byte punc, When<NAR> when, Predicate<Task> filter) {
-            return concepts.get(when.x.random()).beliefs().match(when, null, filter, false);
+            Concept t = src(when);
+            return t!=null ? t.beliefs().match(when, null, filter, false) : null;
+        }
+
+        protected abstract Concept src(When<NAR> when);
+
+        @Override
+        abstract public Term target(Task task, Derivation d);
+
+        @Override
+        public @Nullable Term forward(Term target, TaskLink link, Task task, Derivation d) {
+            return task.term();
+        }
+
+        Signal randomPixel(Random rng) {
+            return concepts.get(rng);
         }
     }
-    private class ConjunctionSuperPixelTaskLink extends AtomicTaskLink {
+
+    private class PixelSelectorTaskLink extends DynamicPixelTaskLink {
+        PixelSelectorTaskLink() {
+        }
+
+        @Override public Signal src(When<NAR> when) {
+            return randomPixel(when.x.random());
+        }
+
+
+        @Override
+        public Term target(Task task, Derivation d) {
+            //return task.term();
+            return randomPixel(d.random).term();
+        }
+    }
+
+    private class ConjunctionSuperPixelTaskLink extends DynamicPixelTaskLink {
 
         private final int batchX, batchY;
 
         ConjunctionSuperPixelTaskLink(int batchX, int batchY) {
-            super(Bitmap2DSensor.this.term());
+            super();
             this.batchX = batchX; this.batchY = batchY;
         }
 
         @Override
-        public @Nullable Task get(byte punc, When<NAR> when, Predicate<Task> filter) {
+        protected Concept src(When<NAR> when) {
+            Term t = superPixel(when.x.random());
+            return t!=null ? when.x.conceptualizeDynamic(t) : null;
+        }
 
-            Random random = when.x.random();
+        @Override
+        public Term target(Task task, Derivation d) {
+            return superPixel(d.random);
+        }
+
+        @Nullable
+        private Term superPixel(Random random) {
             int px = random.nextInt(concepts.width - batchX);
             int py = random.nextInt(concepts.height - batchY);
             TermList subterms = new TermList(batchX * batchY);
@@ -289,11 +334,14 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends VectorSensor {
                         subterms.add(ij.term().negIf(current.isNegative()));
                 }
             }
+            Term t;
             if (subterms.isEmpty())
-                return null;
-            return when.x.belief(CONJ.the(0, (Subterms)subterms), when.start, when.end);
-
+                t = null;
+            else
+                t = CONJ.the(0, (Subterms) subterms);
+            return t;
         }
+
     }
    /*private long nextStamp() {
         return stamp;

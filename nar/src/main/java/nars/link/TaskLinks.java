@@ -25,7 +25,6 @@ import nars.concept.Concept;
 import nars.derive.model.Derivation;
 import nars.term.Term;
 import nars.term.atom.Atom;
-import nars.term.atom.Atomic;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 import org.jetbrains.annotations.Nullable;
@@ -136,11 +135,15 @@ abstract public class TaskLinks implements Sampler<TaskLink> {
     @Nullable
     public Term term(TaskLink link, Task task, Derivation d) {
 
-        Term reverse = reverse(link, task, d);
-        if (reverse != null || reverse instanceof Atomic)
+        Term target = link.target(task, d);
+        if (target == null)
+            return null;
+
+        Term reverse = reverse(target, link, task, d);
+        if (reverse != null)
             return reverse;
 
-        Term forward = link.forward(d);
+        Term forward = link.forward(target, link, task, d);
         if (forward != null) {
 
 //                //TODO abstact activation parameter object
@@ -188,18 +191,20 @@ abstract public class TaskLinks implements Sampler<TaskLink> {
 ////
 //                }
 //            }
+
         }
 
-        return link.to();
+        return target;
     }
 
 
     /**
+     * @param target the final target of the tasklink (not necessarily link.to() in cases where it's dynamic)
      * resolves reverse termlink
      * return null to avoid reversal
      */
     @Nullable
-    protected abstract Term reverse(TaskLink link, Task task, Derivation d);
+    protected abstract Term reverse(Term target, TaskLink link, Task task, Derivation d);
 
     private void link(Term s, Term u, byte punc, float p) {
         link(new AtomicTaskLink(s, u).priSet(punc, p));
@@ -254,23 +259,23 @@ abstract public class TaskLinks implements Sampler<TaskLink> {
 
 
         @Override
-        protected Term reverse(TaskLink link, Task task, Derivation d) {
+        protected Term reverse(Term target, TaskLink link, Task task, Derivation d) {
             //ATOMS only
 //            if (!(term instanceof Atom)) return null;
 //            if (d.random.nextFloat() < 0.5f)
 //                return term; //atom itself
 
-            Term to = link.to();
+
 
             //all atoms and compounds eligible, inversely proportional to their volume
-            if (!to.op().conceptualizable) return null;
+            if (!target.op().conceptualizable) return null;
 
             //< 1 .. 1.0 isnt good
             float probBase =
                     0.5f;
                     //0.33f;
             float probDirect =
-                    probBase * 1f / Util.sqr(Util.sqr(link.to().volume()));
+                    probBase * 1f / /*Util.sqr*/(Util.sqr(target.volume()));
                     //probBase * 1f / term.volume();
                     //probBase * 1f / Util.sqr(term.volume());
                     //probBase *  1f / (term.volume() * Math.max(1,(link.from().volume() - term.volume())));
@@ -279,10 +284,10 @@ abstract public class TaskLinks implements Sampler<TaskLink> {
                 return null; //term itself
 
 
-            final Term[] T = {to};
+            final Term[] T = {target};
             links.bag.sampleUnique(d.random, (ll) ->{
                 if (ll != link) {
-                    Term t = ll.reverseMatch(to);
+                    Term t = ll.reverseMatch(target);
                     if (t != null) {
                         T[0] = t;
                         return false; //done
@@ -303,11 +308,9 @@ abstract public class TaskLinks implements Sampler<TaskLink> {
         int ATOM_TANGENT_REFRESH_DURS = 1;
 
         @Override
-        protected Term reverse(TaskLink link, Task task, Derivation d) {
+        protected Term reverse(Term target, TaskLink link, Task task, Derivation d) {
 
-            Term to = link.to();
-
-            if (!(to instanceof Atom)) return null;
+            if (!(target instanceof Atom)) return null;
 
             float probability =
                     0.5f;
@@ -320,7 +323,7 @@ abstract public class TaskLinks implements Sampler<TaskLink> {
             //1 - 1f / (1 + t.volume());
 
             if (d.random.nextFloat() <= probability) {
-                Concept T = d.nar.conceptualize(to);
+                Concept T = d.nar.conceptualize(target);
                 if (T != null) {
                     //sample active tasklinks for a tangent match to the atom
                     //Predicate<TaskLink> filter = x -> !link.equals(x);
@@ -343,7 +346,7 @@ abstract public class TaskLinks implements Sampler<TaskLink> {
 //                        }
             }
 
-            return to;
+            return target;
 
         }
 

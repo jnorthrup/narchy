@@ -61,8 +61,8 @@ abstract public class PremiseSource {
 //                    continue;
 
                     each.accept(new Premise(task, term));
+                    prevTerm = term;
                 }
-                prevTerm = term;
             }
         }
     }

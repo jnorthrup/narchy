@@ -272,18 +272,26 @@ public interface TaskLink extends UnitPrioritizable, FromTo<Term, TaskLink> {
         return null;
     }
 
-    @Nullable default Term forward(Derivation d) {
-        final Term to = to();
-        if (to.op().conceptualizable) {
-            TermLinker linker = d.deriver.linker(to); //TODO custom tasklink-provided termlink strategy
+    /** determines forward growth target. null to disable
+     *  override to provide a custom termlink supplier */
+    @Nullable default Term forward(Term target, TaskLink link, Task task, Derivation d) {
+        if (target.op().conceptualizable) {
+            TermLinker linker = d.deriver.linker(target); //TODO custom tasklink-provided termlink strategy
             if (linker != null) {
-                Term forward = linker.sample(to, d.random);
-                if (!forward.equals(to))
+                Term forward = linker.sample(target, d.random);
+                if (!forward.equals(target))
                     return forward;
             }
 
         }
         return null;
+    }
+
+    /** the termlink which is finally resolved by the tasklink.  defaults to to()
+     *  but can be overridden for dynamic / virtual termlinks.
+     */
+    default Term target(Task task, Derivation d) {
+        return to();
     }
 
 //    }
