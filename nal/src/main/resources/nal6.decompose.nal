@@ -93,27 +93,27 @@
             //--eventOfNeg(C,G) , --eventOf(C,G) <- optional additional renovelion of anti-goal not present anywhere in the sequence
 
 
-    //conjunction belief decomposition
-    //      DecomposePP, DecomposePN
-    //      DesirePP, DesireNN
-    //      DeductionPP, DeductionPN
-    //      DividePP, DividePN
-    C, X, is(C,"&&"), --isVar(X), neq(C,X)                   |-   conjAfter(C,  X),       (Belief:DeductionPP,Goal:DeductionPP, Time:BeliefEvent)
-    C, X, is(C,"&&"), has(C,"--"), --isVar(X), neq(C,X)      |-   conjAfter(C,--X),       (Belief:DeductionPN,Goal:DeductionPN, Time:BeliefEvent)
+//// propositional decomposition ////////////////////////////////////////////////////////////////////////////////////
+//If S is the case, and (&&,S,A..+) is not the case, it can't be that (&&,A..+) is the case
+
+     C, X, eventOf(C,X), --isVar(X)     |-     conjBefore(C,  X), (Belief:DeductionPP, Time:BeliefEvent)
+       C, X, eventOf(C,X), conjSequence(C), --isVar(X)     |-     conjAfter(C,  X), (Belief:DeductionPP, Time:BeliefEvent)
+     C, X, eventOfNeg(C,X), --isVar(X)  |-     conjBefore(C,--X), (Belief:DeductionPN, Time:BeliefEvent)
+       C, X, eventOfNeg(C,X), conjSequence(C), --isVar(X)  |-     conjAfter(C,--X), (Belief:DeductionPN, Time:BeliefEvent)
+     C, X, eventOf(C,X), --isVar(X)     |-   --conjBefore(C,  X), (Belief:DeductionNP, Time:BeliefEvent)
+       C, X, eventOf(C,X), conjSequence(C), --isVar(X)     |-   --conjAfter(C,  X), (Belief:DeductionNP, Time:BeliefEvent)
+     C, X, eventOfNeg(C,X), --isVar(X)  |-   --conjBefore(C,--X), (Belief:DeductionNN, Time:BeliefEvent)
+       C, X, eventOfNeg(C,X), conjSequence(C), --isVar(X)  |-   --conjAfter(C,--X), (Belief:DeductionNN, Time:BeliefEvent)
+
+    C, X, is(C,"&&"), --isVar(X), neq(C,X)                   |-   conjAfter(C,  X),       (Goal:DeductionPP, Time:BeliefEvent)
+    C, X, is(C,"&&"), has(C,"--"), --isVar(X), neq(C,X)      |-   conjAfter(C,--X),       (Goal:DeductionPN, Time:BeliefEvent)
 
 
-    D, X, is(D,"&&"), has(D,"--"), --isVar(X), neq(D,X)   |- --conjWithout(D,--X),       (Belief:DeductionNN,Goal:DeductionNN, Time:BeliefEvent)
-    D, X, is(D,"&&"),  --isVar(X), neq(D,X)               |- --conjWithout(D,  X),       (Belief:DeductionNP,Goal:DeductionNP, Time:BeliefEvent)
-
+    D, X, is(D,"&&"), has(D,"--"), --isVar(X), neq(D,X)   |- --conjWithout(D,--X),       (Goal:DeductionNN, Time:BeliefEvent)
+    D, X, is(D,"&&"),  --isVar(X), neq(D,X)               |- --conjWithout(D,  X),       (Goal:DeductionNP, Time:BeliefEvent)
+    
     D, X, is(D,"&&"), --isVar(X) |- --unisubst(D,chooseUnifiableSubEvent(D,X),X,"#",novel), (Belief:DeductionNP, Goal:DeductionNN, Time:BeliefEvent)
     D, X, is(D,"&&"), --isVar(X) |- --unisubst(D,chooseUnifiableSubEvent(D,--X),--X,"#",novel), (Belief:DeductionNN, Goal:DeductionNP, Time:BeliefEvent)
-
-      //D, X, is(D,"&&"), has(D,"--"), --isVar(X)    |- --conjAfter(D,--X), (Belief:DeductionWeakNP,Goal:DeductionWeakNP)
-       //D, X, is(D,"&&"), --isVar(X), neq(D,X)                 |- conjAfter(D,  X), (Belief:DeductionWeakPP,Goal:DeductionWeakPP, Time:BeliefEvent)
-      //D, X, is(D,"&&"), --isVar(X)                 |- --conjAfter(D,  X), (Belief:DeductionWeakNN,Goal:DeductionWeakNN)
-    //conditional goal disjunction decompose (alternate suppress by belief)
-    //D, X, sectOf(D,X), conjParallel(D)      |-   --unsect(D,  X), (Goal:DeductionWeakNP)
-    //D, X, sectOf(D,--X), conjParallel(D)   |-   --unsect(D,--X), (Goal:DeductionWeakNN)
 
 
 
@@ -143,19 +143,6 @@
 //    G, D, sectOf(D,G), conjParallel(D)      |- --unsect(D,  G), (Goal:DesireWeakPN)
 //    G, D, sectOf(D,--G), conjParallel(D)   |- --unsect(D,--G), (Goal:DesireWeakNN)
 
-//// propositional decomposition ////////////////////////////////////////////////////////////////////////////////////
-//If S is the case, and (&&,S,A..+) is not the case, it can't be that (&&,A..+) is the case
-// TODO these could be merged with NAL3 decompositions into a general decomposition rule
-
-     C, X, eventOf(C,X), --isVar(X)     |-     conjBefore(C,  X), (Belief:DecomposePP, Time:BeliefEvent)
-       C, X, eventOf(C,X), conjSequence(C), --isVar(X)     |-     conjAfter(C,  X), (Belief:DecomposePP, Time:BeliefEvent)
-     C, X, eventOfNeg(C,X), --isVar(X)  |-     conjBefore(C,--X), (Belief:DecomposePN, Time:BeliefEvent)
-       C, X, eventOfNeg(C,X), conjSequence(C), --isVar(X)  |-     conjAfter(C,--X), (Belief:DecomposePN, Time:BeliefEvent)
-     C, X, eventOf(C,X), --isVar(X)     |-   --conjBefore(C,  X), (Belief:DecomposeNP, Time:BeliefEvent)
-       C, X, eventOf(C,X), conjSequence(C), --isVar(X)     |-   --conjAfter(C,  X), (Belief:DecomposeNP, Time:BeliefEvent)
-     C, X, eventOfNeg(C,X), --isVar(X)  |-   --conjBefore(C,--X), (Belief:DecomposeNN, Time:BeliefEvent)
-       C, X, eventOfNeg(C,X), conjSequence(C), --isVar(X)  |-   --conjAfter(C,--X), (Belief:DecomposeNN, Time:BeliefEvent)
-
 
     //TODO test and write predicate version:
       //(C==>Y), X, is(C,"&&"), --isVar(X)           |-  polarizeTask((conjAfter(C,  polarizeBelief(X)) ==> Y)),       (Belief:DecomposeDepolarized,Goal:DecomposeDepolarized)
@@ -178,10 +165,10 @@
      ( C ==> M), (S ==> M), eventOfNeg(C,S)                |-    --(  conjWithout(C, --S) ==> M), (Belief:DecomposeNP, Time:Compose)
 
     //disj
-    (  --C ==> M), (S ==> M), eventOf(C,S)          |-   (  --conjWithout(C, S) ==> M), (Belief:DecomposePN, Time:BeliefEvent)
-       ( --C ==> M), (S ==> M), eventOf(C,S)        |- --(  --conjWithout(C, S) ==> M), (Belief:DecomposeNN, Time:BeliefEvent)
-    (  --C ==> M), (S ==> M), eventOfNeg(C,S)          |-   (  --conjWithout(C, --S) ==> M), (Belief:DecomposePP, Time:BeliefEvent)
-       ( --C ==> M), (S ==> M), eventOfNeg(C,S)        |- --(  --conjWithout(C, --S) ==> M), (Belief:DecomposeNP, Time:BeliefEvent)
+    (  --C ==> M), (S ==> M), eventOf(C,S)          |-   (  --conjWithout(C, S) ==> M), (Belief:DecomposePN, Time:Compose)
+       ( --C ==> M), (S ==> M), eventOf(C,S)        |- --(  --conjWithout(C, S) ==> M), (Belief:DecomposeNN, Time:Compose)
+    (  --C ==> M), (S ==> M), eventOfNeg(C,S)          |-   (  --conjWithout(C, --S) ==> M), (Belief:DecomposePP, Time:Compose)
+       ( --C ==> M), (S ==> M), eventOfNeg(C,S)        |- --(  --conjWithout(C, --S) ==> M), (Belief:DecomposeNP, Time:Compose)
 
 //conj pred
 

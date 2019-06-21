@@ -103,8 +103,9 @@ public class Choose1 extends Termutator.AbstractTermutator {
         Term x = u.resolvePosNeg(this.x);
 
         TermList yy = new TermList(this.yy);
-        Subterms yy2 = u.resolve(yy).commuted();
+        Subterms yy2 = u.resolve(yy);
         if (xEllipsis!=this.xEllipsis || x!=this.x || yy!=yy2) {
+            yy2 = yy2.commuted();
             int ys = yy2.subs();
             if (xEllipsis instanceof Ellipsis) {
                 //TODO check for arity constraint
