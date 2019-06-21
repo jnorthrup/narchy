@@ -41,8 +41,8 @@ public class TermList extends FasterList<Term> implements Subterms {
         return Subterms.hash(items, size);
     }
 
-    @Override
-    public final boolean these() {
+    /** dont intern */
+    @Override public final boolean these() {
         return false;
     }
 

@@ -48,7 +48,7 @@ public class AtomicTaskLink extends AbstractTaskLink {
 
     @Override
     public String toString() {
-        return toBudgetString() + ' ' + from() + (punc) + ':' + to();
+        return toBudgetString() + ':' + punc + ' ' + from() + ' ' + to();
     }
 
 

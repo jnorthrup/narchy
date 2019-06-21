@@ -136,29 +136,12 @@ abstract public class TaskLinks implements Sampler<TaskLink> {
     @Nullable
     public Term term(TaskLink link, Task task, Derivation d) {
 
-        final Term t = link.to();
+        Term reverse = reverse(link, task, d);
+        if (reverse != null || reverse instanceof Atomic)
+            return reverse;
 
-        Term r = reverse(t, link, task, d);
-        if (r != null || r instanceof Atomic)
-            return r;
-
-        if (t.op().conceptualizable) {
-
-            NAR nar = d.nar();
-
-            Concept T = nar.conceptualize(t);
-            if (T != null) {
-
-
-                Term tt = t.term();
-                TermLinker linker = d.deriver.linker(tt);
-                if (linker != null) {
-
-                    //grow-ahead: s -> t -> u
-                    Term u = linker.sample(tt, d.random);
-
-                    if (u != null && !t.equals(u)) {
-
+        Term forward = link.forward(d);
+        if (forward != null) {
 
 //                //TODO abstact activation parameter object
 //                float subRate =
@@ -171,48 +154,43 @@ abstract public class TaskLinks implements Sampler<TaskLink> {
 //                float want = p * subRate / 2;
 //                float p =
 //                        inflation < 1 ? Util.lerp(inflation, link.take(punc, want*inflation), want) : want;
-                        byte punc = task.punc();
+            byte punc = task.punc();
 
-                        float p =
-                                link.priPunc(punc);
-                        float pAmp = p * amp.floatValue();
-                        Term s = link.from();
+            float p =
+                    link.priPunc(punc);
+            float pAmp = p * amp.floatValue();
+            Term from = link.from();
 
-                        //CHAIN pattern
-                        link(s, u, punc, pAmp); //forward (hop)
-                        //link(u, s, punc, pAmp); //reverse (hop)
-                        //link(t, u, punc, pAmp); //forward (adjacent)
-                        //link(u, t, punc, pAmp); //reverse (adjacent)
+            //CHAIN pattern
+            link(from, forward, punc, pAmp); //forward (hop)
+            //link(u, s, punc, pAmp); //reverse (hop)
+            //link(t, u, punc, pAmp); //forward (adjacent)
+            //link(u, t, punc, pAmp); //reverse (adjacent)
 
-                        float sustain = this.sustain.floatValue();
+            float sustain = this.sustain.floatValue();
 
-                        if (sustain < 1) {
-                            link.take(punc, pAmp * (1 - sustain));
-                        }
+            if (sustain < 1) {
+                link.take(punc, pAmp * (1 - sustain));
+            }
 
 
-                        //link(s, t, punc, ); //redundant
-                        //link(t, s, punc, pp); //reverse echo
+            //link(s, t, punc, ); //redundant
+            //link(t, s, punc, pp); //reverse echo
 
 //                if (self)
 //                    t = u;
 
-                    } else {
-//                int n = 1;
-//                float pp = p * conductance / n;
-//
-//                link(t, s, punc, pp); //reverse echo
-
-                    }
-                }
-            }
+//                } else {
+//////                int n = 1;
+//////                float pp = p * conductance / n;
+//////
+//////                link(t, s, punc, pp); //reverse echo
+////
+//                }
+//            }
         }
-        //link.take(punc, pp*n);
 
-        //System.out.println(s + "\t" + t + "\t" + u);
-
-
-        return t;
+        return link.to();
     }
 
 
@@ -221,7 +199,7 @@ abstract public class TaskLinks implements Sampler<TaskLink> {
      * return null to avoid reversal
      */
     @Nullable
-    protected abstract Term reverse(Term t, TaskLink link, Task task, Derivation d);
+    protected abstract Term reverse(TaskLink link, Task task, Derivation d);
 
     private void link(Term s, Term u, byte punc, float p) {
         link(new AtomicTaskLink(s, u).priSet(punc, p));
@@ -274,36 +252,25 @@ abstract public class TaskLinks implements Sampler<TaskLink> {
      */
     public static class DirectTangentTaskLinks extends TaskLinks {
 
-        static Term tryReverse(TaskLink t, Term term, TaskLink link) {
-
-            if (t != null && t != link) {
-//                Term f = t.other(term);
-//                if (f!=null)
-//                    return f;
-                if (t.to().equals(term)){
-                    Term f = t.from();
-//                    if (!f.equals(term))
-                        return f;
-                }
-            }
-            return null;
-        }
 
         @Override
-        protected Term reverse(Term term, TaskLink link, Task task, Derivation d) {
+        protected Term reverse(TaskLink link, Task task, Derivation d) {
             //ATOMS only
 //            if (!(term instanceof Atom)) return null;
 //            if (d.random.nextFloat() < 0.5f)
 //                return term; //atom itself
 
+            Term to = link.to();
+
             //all atoms and compounds eligible, inversely proportional to their volume
-            if (!term.op().conceptualizable) return null;
+            if (!to.op().conceptualizable) return null;
+
+            //< 1 .. 1.0 isnt good
             float probBase =
-                    //1;
                     0.5f;
                     //0.33f;
             float probDirect =
-                    probBase * 1f / Util.sqr(Util.sqr(term.volume()));
+                    probBase * 1f / Util.sqr(Util.sqr(link.to().volume()));
                     //probBase * 1f / term.volume();
                     //probBase * 1f / Util.sqr(term.volume());
                     //probBase *  1f / (term.volume() * Math.max(1,(link.from().volume() - term.volume())));
@@ -312,12 +279,14 @@ abstract public class TaskLinks implements Sampler<TaskLink> {
                 return null; //term itself
 
 
-            final Term[] T = {term};
+            final Term[] T = {to};
             links.bag.sampleUnique(d.random, (ll) ->{
-                Term t = tryReverse(ll, term, link);
-                if (t!=null) {
-                    T[0] = t;
-                    return false; //done
+                if (ll != link) {
+                    Term t = ll.reverseMatch(to);
+                    if (t != null) {
+                        T[0] = t;
+                        return false; //done
+                    }
                 }
                 return true;
             });
@@ -334,8 +303,11 @@ abstract public class TaskLinks implements Sampler<TaskLink> {
         int ATOM_TANGENT_REFRESH_DURS = 1;
 
         @Override
-        protected Term reverse(Term term, TaskLink link, Task task, Derivation d) {
-            if (!(term instanceof Atom)) return null;
+        protected Term reverse(TaskLink link, Task task, Derivation d) {
+
+            Term to = link.to();
+
+            if (!(to instanceof Atom)) return null;
 
             float probability =
                     0.5f;
@@ -348,7 +320,7 @@ abstract public class TaskLinks implements Sampler<TaskLink> {
             //1 - 1f / (1 + t.volume());
 
             if (d.random.nextFloat() <= probability) {
-                Concept T = d.nar.conceptualize(term);
+                Concept T = d.nar.conceptualize(to);
                 if (T != null) {
                     //sample active tasklinks for a tangent match to the atom
                     //Predicate<TaskLink> filter = x -> !link.equals(x);
@@ -371,7 +343,7 @@ abstract public class TaskLinks implements Sampler<TaskLink> {
 //                        }
             }
 
-            return term;
+            return to;
 
         }
 

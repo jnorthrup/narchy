@@ -11,6 +11,7 @@ import nars.NAL;
 import nars.NAR;
 import nars.Task;
 import nars.concept.Concept;
+import nars.derive.model.Derivation;
 import nars.table.TaskTable;
 import nars.task.NALTask;
 import nars.term.Term;
@@ -261,6 +262,30 @@ public interface TaskLink extends UnitPrioritizable, FromTo<Term, TaskLink> {
 //            return t!=null ? new DirectTaskLink(t, pri) : null;
             throw new TODO();
         }
+
+    @Nullable default Term reverseMatch(Term term) {
+        if (!isSelf()) {
+            if (to().equals(term)){
+                return from();
+            }
+        }
+        return null;
+    }
+
+    @Nullable default Term forward(Derivation d) {
+        final Term to = to();
+        if (to.op().conceptualizable) {
+            TermLinker linker = d.deriver.linker(to); //TODO custom tasklink-provided termlink strategy
+            if (linker != null) {
+                Term forward = linker.sample(to, d.random);
+                if (!forward.equals(to))
+                    return forward;
+            }
+
+        }
+        return null;
+    }
+
 //    }
 
     //    public static class CompactTaskLink extends AtomicQuad16Vector implements TaskLink {

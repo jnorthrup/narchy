@@ -74,7 +74,9 @@ public abstract class AbstractTaskLink implements TaskLink {
 
         this.src = source;
         this.tgt = target;
-        this.hash = Util.hashCombine(src, tgt);
+        this.hash =
+                source==target ? source.hashCode() :
+                    Util.hashCombine(source, target); //TODO construct hash as 16bit+16bit so that the short hash can be compared from external iterations
     }
 
     @Override
@@ -90,6 +92,11 @@ public abstract class AbstractTaskLink implements TaskLink {
             return from().equals(t.from()) && to().equals(t.to());
         }
         return false;
+    }
+
+    @Override
+    public boolean isSelf() {
+        return src==tgt;
     }
 
     @Override
