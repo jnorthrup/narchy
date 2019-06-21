@@ -10,10 +10,7 @@ import nars.NAL;
 import nars.Op;
 import nars.subterm.Subterms;
 import nars.subterm.TermList;
-import nars.term.Compound;
-import nars.term.Term;
-import nars.term.Termlike;
-import nars.term.Variable;
+import nars.term.*;
 import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
 import nars.term.util.transform.AbstractTermTransform;
@@ -33,7 +30,6 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-import static nars.Op.NEG;
 import static nars.unify.Unification.Null;
 import static nars.unify.Unification.Self;
 
@@ -507,26 +503,34 @@ public abstract class Unify extends Versioning<Term> {
     }
 
     public final Term resolvePosNeg(Term x) {
-        Op o = x.op();
         Term xx;
-        boolean neg = o == NEG;
+        boolean neg = x instanceof Neg;
         if (neg) {
             xx = x.unneg();
-            o = xx.op();
-        } else
+        } else {
             xx = x;
-
-        if (var(o)) {
-            Term y = resolve((Variable) xx);
-            if (y != xx)
-                return y.negIf(neg);
         }
 
-        return x; //no change
+        Term yy = x;
+        if (xx instanceof Variable) {
+            Op o = xx.op();
+            if (var(o)) {
+                yy = resolve((Variable) xx);
+            }
+        } else if (xx instanceof Compound) {
+            yy = xx.transform(transform());
+        } else {
+            //..
+        }
+
+        if (yy != xx)
+            return yy.negIf(neg);
+        else
+            return x; //no change
     }
 
     public Subterms resolve(Subterms x) {
-        return x.transformSubs(this::resolvePosNeg, null);
+        return x.transformSubs(transform(), null);
     }
 
     @Nullable public TermList resolveListIfChanged(Subterms x) {

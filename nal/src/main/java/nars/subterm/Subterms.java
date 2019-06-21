@@ -945,27 +945,30 @@ public interface Subterms extends Termlike, Iterable<Term> {
      * assumes that equality, structure commonality, and equal subterm count have been tested
      */
     public static boolean unifyCommute(Subterms x, Subterms y, Unify u) {
-        TermList xx = u.resolve(x).toList(), yy = u.resolve(y).toList();
+        TermList xx = u.resolveListIfChanged(x), yy = u.resolveListIfChanged(y);
 
+        if (xx == null) xx = x.toList();
+        if (yy == null) yy = y.toList();
         int i = possiblyUnifiableWhileEliminatingEqualAndConstants(xx, yy, u);
         switch (i) {
             case -1:
                 return false;
             case +1:
                 return true;
-            default: {
-                if (xx.size() == 1) {
+        }
+
+
+        if (xx.subs() == 1) {
 //                    Term x0 = xx.getFirstFast();
 //                    if (x0.equals(yy))
 //                        return false; //this is a cyclical case that has been detected?
 //                    return x0.unify(yy.getFirstFast(), u);
-                    return xx.getFirstFast().unify(yy.getFirstFast(), u);
-                } else {
-                        u.termutes.add(new CommutivePermutations(x.equals(xx) ? x : xx, y.equals(yy) ? y : yy));
-                        return true;
-                }
-            }
+            return xx.getFirstFast().unify(yy.getFirstFast(), u);
+        } else {
+            u.termutes.add(new CommutivePermutations(x.equals(xx) ? x : xx, y.equals(yy) ? y : yy));
+            return true;
         }
+
 
     }
 
