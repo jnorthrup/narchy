@@ -32,7 +32,7 @@ public final class UnifyMatchFork extends EvalTermBuffer implements Predicate<De
 
         Term x = taskify.pattern(d);
 
-        Term y = x.transform(d.transform, this, workVolMax);
+        Term y = x.transform(d.transformDerived, this, workVolMax);
 
         if (y.unneg().op().taskable && tried.add(y)) {
 

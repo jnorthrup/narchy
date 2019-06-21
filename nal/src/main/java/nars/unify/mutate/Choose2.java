@@ -7,6 +7,7 @@ import nars.$;
 import nars.Op;
 import nars.subterm.ShuffledSubterms;
 import nars.subterm.Subterms;
+import nars.subterm.TermList;
 import nars.term.Term;
 import nars.term.Terms;
 import nars.term.atom.Atom;
@@ -67,10 +68,17 @@ public class Choose2 extends Termutator.AbstractTermutator {
         //return comb.getTotal()*2;
     }
 
+    /*
+    @Override public @Nullable Termutator preprocess(Unify u) {
+        //TODO
+        return this;
+    }
+    */
+
     @Override
     public void mutate(Termutator[] chain, int current, Unify u) {
 
-        Subterms yFree = sub(1).sub(2).subterms();
+        Subterms yFree = u.resolve(sub(1).sub(2).subterms());
 
 
         Combinations ccc = new Combinations(yFree.subs(), 2);
@@ -78,36 +86,27 @@ public class Choose2 extends Termutator.AbstractTermutator {
         boolean phase = true;
 
         int start = f.size();
-        ShuffledSubterms yy = new ShuffledSubterms(yFree, u.random  /*new ArrayTermVector(yFree)*/);
+        ShuffledSubterms yy = new ShuffledSubterms(yFree, u.random);
 
 
-        Ellipsis xEllipsis = this.xEllipsis;
+        Term xEllipsis = u.resolvePosNeg(this.xEllipsis);
         Unify f = this.f;
-        Term[] x = this.x;
+        Subterms x = u.resolve(new TermList(this.x));
 
         int[] c = null;
         while (ccc.hasNext() || !phase) {
 
             c = phase ? ccc.next() : c;
 
-            byte c0 = (byte) c[0];
+            int c0 = c[0], c1 = c[1];
 
-            Term y1 = yy.sub(c0);
-
-            if (x[0].unify(y1, f)) {
-
-                byte c1 = (byte) c[1];
-
-                Term y2 = yy.sub(c1);
-
-                if (x[1].unify(y2, f) &&
-                        xEllipsis.unify(Fragment.matchedExcept(yy, c0, c1), f)) {
-
+            if (Subterms.unifyLinear(x, new TermList(yy.sub(c0), yy.sub(c1)), u)) {
+                if (xEllipsis.unify(Fragment.matchedExcept(yy, (byte)c0, (byte)c1), f)) {
                     if (!f.tryMutate(chain, current))
                         break;
                 }
-
             }
+
 
             if (!f.revertLive(start))
                 break;

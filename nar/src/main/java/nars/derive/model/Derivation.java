@@ -92,9 +92,9 @@ public class Derivation extends PreDerivation {
     };
     public final Occurrify occ = new Occurrify(this);
 
-    final TermBuffer termBuilder = new TermBuffer();
+    private final TermBuffer termBuilder = new TermBuffer();
     
-    final TermBuffer directTermBuilder = new DirectTermBuffer();
+    private final TermBuffer directTermBuilder = new DirectTermBuffer();
 
     final Functor polarizeTask = new AbstractInstantFunctor1("polarizeTask") {
         @Override
@@ -175,7 +175,6 @@ public class Derivation extends PreDerivation {
     /**
      * current MatchTerm to receive matches at the end of the Termute chain; set prior to a complete match by the matchee
      */
-    @Deprecated
     public Predicate<Derivation> forEachMatch;
 
     public transient float confMin;
@@ -193,15 +192,13 @@ public class Derivation extends PreDerivation {
      */
     public transient long taskStart, taskEnd, beliefStart, beliefEnd; //TODO taskEnd, beliefEnd
     public transient boolean overlapDouble, overlapSingle;
-    public transient short[] parentCause;
+    private transient short[] parentCause;
     public transient boolean concSingle;
     public transient float parentVolumeSum;
-    @Deprecated
     public transient Truth concTruth;
     public transient byte concPunc;
     public transient Task _task, _belief;
-    public DerivationTransform transform;
-//    private transient Term _beliefTerm;
+    public DerivationTransform transformDerived;
     private transient long[] evidenceDouble, evidenceSingle;
     private transient int taskUniques;
     /**
@@ -510,7 +507,7 @@ public class Derivation extends PreDerivation {
             this.reset();
             this.nar = n;
             this.premiseUnify.random(this.random = n.random());
-            this.transform = new DerivationTransform();
+            this.transformDerived = new DerivationTransform();
         }
 
         this.deriver = d;
@@ -657,7 +654,7 @@ public class Derivation extends PreDerivation {
 
     @Override
     public final TermTransform transform() {
-        return this.transform;
+        return this.transformDerived;
     }
 
     /**

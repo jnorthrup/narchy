@@ -4,7 +4,6 @@ import jcog.TODO;
 import jcog.WTF;
 import nars.$;
 import nars.Op;
-import nars.subterm.BiSubterm;
 import nars.subterm.Subterms;
 import nars.subterm.TermList;
 import nars.term.Compound;
@@ -80,20 +79,20 @@ abstract public class PatternCompound extends CachedCompound.TemporalCachedCompo
     public static final class PatternCompoundEllipsisLinear extends PatternCompoundWithEllipsis {
 
         public static PatternCompoundEllipsisLinear the(Op op, int dt, Ellipsis ellipsis, Subterms subterms) {
-            if (op.statement) {
-                //HACK
-                Term x = subterms.sub(0);
-                Term y = subterms.sub(1);
-                if (x instanceof Ellipsislike) {
-                    //raw ellipsis, the conjunction got removed somewhere. HACK re-add it
-                    x = CONJ.the(x);
-                }
-                if (y instanceof Ellipsislike) {
-                    //raw ellipsis, the conjunction got removed somewhere. HACK re-add it
-                    y = CONJ.the(y);
-                }
-                subterms = new BiSubterm(x, y); //avoid interning
-            }
+//            if (op.statement) {
+//                //HACK
+//                Term x = subterms.sub(0);
+//                Term y = subterms.sub(1);
+//                if (x instanceof Ellipsislike) {
+//                    //raw ellipsis, the conjunction got removed somewhere. HACK re-add it
+//                    x = CONJ.the(x);
+//                }
+//                if (y instanceof Ellipsislike) {
+//                    //raw ellipsis, the conjunction got removed somewhere. HACK re-add it
+//                    y = CONJ.the(y);
+//                }
+//                subterms = new BiSubterm(x, y); //avoid interning
+//            }
             return new PatternCompoundEllipsisLinear(op, dt, ellipsis, subterms);
         }
 

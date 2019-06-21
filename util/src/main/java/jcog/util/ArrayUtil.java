@@ -1290,10 +1290,21 @@ public enum ArrayUtil {
      *
      * <p>This method does nothing for a {@code null} input array.
      *
-     * @param array the array to reverse, may be {@code null}
+     * @param a the array to reverse, may be {@code null}
      */
-    public static void reverse(final int[] array) {
-        reverse(array, 0, array.length);
+    public static void reverse(final int[] a) {
+        int l = a.length;
+        switch (l) {
+            case 0: break;
+            case 1: break;
+            case 2: {
+                int i = a[0];
+                a[0] = a[1];
+                a[1] = i;
+                break;
+            }
+            default: reverse(a, 0, l); break;
+        }
     }
 
     /**

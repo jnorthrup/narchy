@@ -98,10 +98,10 @@ public class UnifyTest {
         Unify sub = new Unify(type, new XorShift128PlusRandom(rngSeed), NAL.unify.UNIFICATION_STACK_CAPACITY) {
 
             @Override
-            protected void matches() {
+            protected boolean matches() {
                 if (!termutes.isEmpty())
                     termuted[0] = true;
-                super.matches();
+                return super.matches();
             }
 
             @Override

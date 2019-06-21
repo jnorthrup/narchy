@@ -1,5 +1,6 @@
 package nars.unify;
 
+import jcog.TODO;
 import jcog.Util;
 import jcog.WTF;
 import jcog.data.list.FasterList;
@@ -8,6 +9,7 @@ import jcog.version.*;
 import nars.NAL;
 import nars.Op;
 import nars.subterm.Subterms;
+import nars.subterm.TermList;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.Termlike;
@@ -138,6 +140,14 @@ public abstract class Unify extends Versioning<Term> {
         @Override protected Term resolve(Variable v) {
             return Unify.this.resolve(v);
         }
+
+        @Override
+        protected Term applyPosCompound(Compound x) {
+            if (!x.hasAny(varBits))
+                return x;
+
+            return super.applyPosCompound(x);
+        }
     };
 
     public TermTransform transform() {
@@ -255,9 +265,13 @@ public abstract class Unify extends Versioning<Term> {
         if (x.unify(y, this)) {
 
             if (finish)
-                matches();
-
-            return true;
+                return matches();
+//            else {
+//                if (!couldMatch())
+//                    return false;
+//                else
+                    return true;
+//            }
         }
         return false;
     }
@@ -266,7 +280,9 @@ public abstract class Unify extends Versioning<Term> {
     public Unification unification(boolean clear) {
         FasterList<Term> xyPairs = new FasterList(size * 2 /* estimate */);
 
-        Termutator[] termutes = commitTermutes();
+        Termutator[] termutes = commitTermutes(true);
+        if (termutes == Termutator.TerminateTermutator)
+            throw new TODO("this means fail");
 
         BiConsumer<Term, Term> eachXY = xyPairs::addAll;
         if (clear) {
@@ -305,29 +321,62 @@ public abstract class Unify extends Versioning<Term> {
             return unification(true);
         }
     }
-    protected void matches() {
-        Termutator[] t = commitTermutes();
-        if (t!=null) {
-            matches(t);
-        } else {
+
+    /** called after unifying 'start' mode to test if unification can proceed to 'finish' mode */
+    private boolean couldMatch() {
+        //just needs to detect if 'TerminateTermutator' is returned.  otherwise null or some other result is considered valid for proceeding
+        Termutator[] t = commitTermutes(false);
+        return t!=Termutator.TerminateTermutator;
+    }
+
+    protected boolean matches() {
+        Termutator[] t = commitTermutes(true);
+        if (t == null)
             match();
-        }
+        else if (t == Termutator.TerminateTermutator)
+            return false;
+        else
+            matches(t);
+        return true;
     }
 
     public void matches(Termutator[] t) {
-        if (NAL.SHUFFLE_TERMUTES && t.length > 1) {
-            Util.shuffle(t, random);
-        }
 
         tryMutate(t, -1);
     }
 
-    private Termutator[] commitTermutes() {
+    private Termutator[] commitTermutes(boolean finish) {
         int ts = termutes.size();
         if (ts > 0) {
-            Termutator[] t = termutes.toArray(new Termutator[ts]);
-            termutes.clear();
-            return t;
+            FasterList<Termutator> tl = termutes.list;
+            for (int i = 0; i < ts; i++) {
+                Termutator x = tl.get(i);
+                @Nullable Termutator y = x.preprocess(this);
+                if (y == null) {
+                    termutes.clear();
+                    return Termutator.TerminateTermutator;
+                } else if (y == Termutator.NullTermutator) {
+                    tl.remove(i);
+                    i--;
+                    ts--;
+                } else if (x!=y)
+                    tl.setFast(i, y);
+            }
+            if (ts==0)
+                return null;
+
+
+            if (finish) {
+                Termutator[] tt = tl.toArrayRecycled(Termutator[]::new);
+                termutes.clear();
+
+                if (NAL.SHUFFLE_TERMUTES && tt.length > 1) {
+                    Util.shuffle(tt, random);
+                }
+
+                return tt;
+            } else
+                return null;
         } else {
             return null;
         }
@@ -478,6 +527,18 @@ public abstract class Unify extends Versioning<Term> {
 
     public Subterms resolve(Subterms x) {
         return x.transformSubs(this::resolvePosNeg, null);
+    }
+
+    @Nullable public TermList resolveListIfChanged(Subterms x) {
+        //Subterms y = x.transformSubs(this::resolvePosNeg, null);
+        Subterms y = x.transformSubs(transform(), null);
+        if (y!=x) {
+            if (!(y instanceof TermList))
+                return y.toList();
+            else
+                return ((TermList) y);
+        } else
+            return null;
     }
 
 

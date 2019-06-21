@@ -556,7 +556,7 @@ public class NAL7Test extends NALTest {
     void induction_on_events_neg_neg() {
 
         test
-                .termVolMax(4)
+                .termVolMax(5)
                 .inputAt(1, "--a. :|:")
                 .inputAt(2, "--b. :|:")
                 .mustBelieve(cycles, "(--a &&+1 --b)", 1.00f, 0.81f, 1)

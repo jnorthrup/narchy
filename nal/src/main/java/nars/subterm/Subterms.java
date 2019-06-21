@@ -880,7 +880,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
      * TODO check for obvious constant target mismatch
      * @return 0: must unify, -1: impossible, +1: unified already
      */
-    private static int possiblyUnifiableWhileEliminatingEqualAndConstants(TermList xx, TermList yy, Unify u) {
+    public static int possiblyUnifiableWhileEliminatingEqualAndConstants(TermList xx, TermList yy, Unify u) {
 
         int n = xx.size(); assert(yy.size()==n);
 
@@ -888,7 +888,8 @@ public interface Subterms extends Termlike, Iterable<Term> {
 
 
         for (int i = 0; i < n; ) {
-            Term xi = u.resolvePosNeg(xx.get(i));
+//            Term xi = u.resolvePosNeg(xx.get(i));
+            Term xi = xx.get(i);
             if (yy.removeFirst(xi)) {
                 xx.removeFast(i);
                 n--;
@@ -902,7 +903,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
             return +1; //all eliminated
 
 
-        if (xxs == n || possiblyUnifiable(xx, yy, u.varBits)) {
+        if (possiblyUnifiable(xx, yy, u.varBits)) {
 //            if (xxs == 1)
 //                return 0; //one subterm remaining, direct match will be tested by callee
 //            Set<Term> xConst = null;
@@ -939,11 +940,12 @@ public interface Subterms extends Termlike, Iterable<Term> {
     }
 
 
+
     /**
      * assumes that equality, structure commonality, and equal subterm count have been tested
      */
-    static boolean unifyCommute(Subterms x, Subterms y, Unify u) {
-        TermList xx = x.toList(), yy = y.toList();
+    public static boolean unifyCommute(Subterms x, Subterms y, Unify u) {
+        TermList xx = u.resolve(x).toList(), yy = u.resolve(y).toList();
 
         int i = possiblyUnifiableWhileEliminatingEqualAndConstants(xx, yy, u);
         switch (i) {
@@ -953,14 +955,14 @@ public interface Subterms extends Termlike, Iterable<Term> {
                 return true;
             default: {
                 if (xx.size() == 1) {
+//                    Term x0 = xx.getFirstFast();
+//                    if (x0.equals(yy))
+//                        return false; //this is a cyclical case that has been detected?
+//                    return x0.unify(yy.getFirstFast(), u);
                     return xx.getFirstFast().unify(yy.getFirstFast(), u);
                 } else {
-                    if (xx==x || xx.subs()==x.subs()) {
-                        u.termutes.add(new CommutivePermutations(x, y)); //use the original subs since nothing was removed from either
-                    } else {
-                        u.termutes.add(new CommutivePermutations(xx, yy));
-                    }
-                    return true;
+                        u.termutes.add(new CommutivePermutations(x.equals(xx) ? x : xx, y.equals(yy) ? y : yy));
+                        return true;
                 }
             }
         }

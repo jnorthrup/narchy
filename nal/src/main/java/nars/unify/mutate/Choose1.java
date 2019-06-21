@@ -8,10 +8,13 @@ import nars.term.atom.Atom;
 import nars.term.var.ellipsis.Ellipsis;
 import nars.term.var.ellipsis.Fragment;
 import nars.unify.Unify;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.SortedSet;
+
+import static nars.Op.FRAG;
 
 /**
  * choose 1 at a time from a set of N, which means iterating up to N
@@ -81,12 +84,22 @@ public class Choose1 extends Termutator.AbstractTermutator {
     }
 
     @Override
-    public void mutate(Termutator[] chain, int current, Unify u) {
+    public @Nullable Termutator preprocess(Unify u) {
+        //resolve to constant if possible
+        Term xEllipsis = u.resolve(this.xEllipsis);
+        if (this.xEllipsis != xEllipsis) {
+            int es = xEllipsis.op() == FRAG ? xEllipsis.subs() : 1;
+            if (es != yy.length - 1)
+                return null; //size mismatch
 
-//        Ellipsis xEllipsis = this.xEllipsis;
-//        Term xMatched = u.xy(xEllipsis);
-//        if (xMatched !=null && !xMatched.hasAny(u.typeBits))
-//            return; //doesnt match, dont need to permute
+            //TODO reduce to Subterms.unifyCommutive test if constant enough
+        }
+
+        return this;
+    }
+
+    @Override
+    public void mutate(Termutator[] chain, int current, Unify u) {
 
 
 
@@ -95,7 +108,7 @@ public class Choose1 extends Termutator.AbstractTermutator {
 
         int start = u.size();
 
-        for (Term x = this.x; l >=0; l--) {
+        for (Term x = u.resolvePosNeg(this.x); l >=0; l--) {
 
             int iy = (shuffle + l) % yy.length;
             Term y = yy[iy];

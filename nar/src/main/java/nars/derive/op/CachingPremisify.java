@@ -87,11 +87,11 @@ public class CachingPremisify extends Premisify {
     public final void apply(DeterministicUnification xy, Derivation d) {
 //        assert(d.transform.xy == null);
 //            int start = d.size();
-        d.transform.xy = xy::xy;
+        d.transformDerived.xy = xy::xy;
         d.retransform.clear();
-        Term y = taskify.pattern(d).transform(d.transform);
+        Term y = taskify.pattern(d).transform(d.transformDerived);
 //      d.revert(start);
-        d.transform.xy = null;
+        d.transformDerived.xy = null;
         taskify.apply(y, d);
     }
 
