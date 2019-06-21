@@ -5,6 +5,7 @@
 
 
      B, (  X ==> C), --is(X,"--"), --is(C,"#"), --is(B,"==>") |- unisubst(C,X,B,"$"), (Belief:Pre, Goal:PreWeak, Time:TaskEvent)
+     B, (  X ==> C), --is(X,"--"), --is(C,"#"), --is(B,"==>") |- unisubst(C,X,B,"$",novel), (Belief:PreRecursive, Goal:PreWeak, Time:TaskEvent)
      //(  X ==> C), B, --is(X,"--"), --is(C,"#"), --is(B,"==>") |- unisubst(C,X,B,"$"), (Belief:PreX)
 
         //--is(X,"#"),

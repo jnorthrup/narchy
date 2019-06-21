@@ -13,6 +13,7 @@ import org.jetbrains.annotations.Nullable;
  */
 public interface Termutator {
 
+
     /**
      * match all termutations recursing to the next after each successful one
      */
@@ -45,4 +46,13 @@ public interface Termutator {
             u.tryMutate(chain, current);
         }
     };
+
+    /** constant result for return from preprocess() call */
+    public static Termutator result(boolean b) {
+        if (b)
+            return Termutator.NullTermutator; //success
+        else
+            return null; //fail
+    }
+
 }

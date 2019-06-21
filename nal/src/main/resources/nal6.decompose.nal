@@ -100,11 +100,21 @@
     //      DividePP, DividePN
     C, X, is(C,"&&"), --isVar(X), neq(C,X)                   |-   conjAfter(C,  X),       (Belief:DeductionPP,Goal:DeductionPP, Time:BeliefEvent)
     C, X, is(C,"&&"), has(C,"--"), --isVar(X), neq(C,X)      |-   conjAfter(C,--X),       (Belief:DeductionPN,Goal:DeductionPN, Time:BeliefEvent)
-//       D, X, is(D,"&&"), has(D,"--"), --isVar(X), neq(D,X)   |- --conjAfter(D,--X),       (Belief:DeductionWeakNP,Goal:DeductionWeakNP, Time:BeliefEvent)
-//       D, X, is(D,"&&"),  --isVar(X), neq(D,X)               |- --conjAfter(D,  X),       (Belief:DeductionWeakNN,Goal:DeductionWeakNN, Time:BeliefEvent)
+
+
+    D, X, is(D,"&&"), has(D,"--"), --isVar(X), neq(D,X)   |- --conjWithout(D,--X),       (Belief:DeductionNN,Goal:DeductionNN, Time:BeliefEvent)
+    D, X, is(D,"&&"),  --isVar(X), neq(D,X)               |- --conjWithout(D,  X),       (Belief:DeductionNP,Goal:DeductionNP, Time:BeliefEvent)
+
+    D, X, is(D,"&&"), --isVar(X) |- --unisubst(D,chooseUnifiableSubEvent(D,X),X,"#",novel), (Belief:DeductionNP, Goal:DeductionNN, Time:BeliefEvent)
+    D, X, is(D,"&&"), --isVar(X) |- --unisubst(D,chooseUnifiableSubEvent(D,--X),--X,"#",novel), (Belief:DeductionNN, Goal:DeductionNP, Time:BeliefEvent)
+
       //D, X, is(D,"&&"), has(D,"--"), --isVar(X)    |- --conjAfter(D,--X), (Belief:DeductionWeakNP,Goal:DeductionWeakNP)
        //D, X, is(D,"&&"), --isVar(X), neq(D,X)                 |- conjAfter(D,  X), (Belief:DeductionWeakPP,Goal:DeductionWeakPP, Time:BeliefEvent)
       //D, X, is(D,"&&"), --isVar(X)                 |- --conjAfter(D,  X), (Belief:DeductionWeakNN,Goal:DeductionWeakNN)
+    //conditional goal disjunction decompose (alternate suppress by belief)
+    //D, X, sectOf(D,X), conjParallel(D)      |-   --unsect(D,  X), (Goal:DeductionWeakNP)
+    //D, X, sectOf(D,--X), conjParallel(D)   |-   --unsect(D,--X), (Goal:DeductionWeakNN)
+
 
 
 //    //conjunction goal decomposition
@@ -146,19 +156,11 @@
      C, X, eventOfNeg(C,X), --isVar(X)  |-   --conjBefore(C,--X), (Belief:DecomposeNN, Time:BeliefEvent)
        C, X, eventOfNeg(C,X), conjSequence(C), --isVar(X)  |-   --conjAfter(C,--X), (Belief:DecomposeNN, Time:BeliefEvent)
 
-    //DISJ select
-    //D, X, is(D,"&&"), --isVar(X) |- --unisubst(D,chooseUnifiableSubEvent(D,X),X,"#",novel), (Belief:DecomposeNP, Goal:DecomposeNN, Time:BeliefEvent)
-    //D, X, is(D,"&&"), --isVar(X) |- --unisubst(D,chooseUnifiableSubEvent(D,--X),--X,"#",novel), (Belief:DecomposeNN, Goal:DecomposeNP, Time:BeliefEvent)
 
     //TODO test and write predicate version:
       //(C==>Y), X, is(C,"&&"), --isVar(X)           |-  polarizeTask((conjAfter(C,  polarizeBelief(X)) ==> Y)),       (Belief:DecomposeDepolarized,Goal:DecomposeDepolarized)
      // (--D==>Y), X, is(D,"&&"), --isVar(X) |- polarizeTask((--unisubst(D,chooseUnifiableSubEvent(D,polarizeBelief(X)),polarizeBelief(X),"#") ==> Y)), (Belief:DecomposeDepolarized, Goal:DecomposeDepolarized)
 
-
-    //this should be handled by the decompose above:
-    //conditional goal disjunction decompose (alternate suppress by belief)
-    //D, X, sectOf(D,X), conjParallel(D)      |-   --unsect(D,  X), (Goal:DeductionWeakNP)
-    //D, X, sectOf(D,--X), conjParallel(D)   |-   --unsect(D,--X), (Goal:DeductionWeakNN)
 
 
 //Conditional implication decomposition

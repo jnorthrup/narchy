@@ -2,7 +2,6 @@ package nars.derive.model;
 
 import jcog.Util;
 import jcog.WTF;
-import jcog.data.set.MetalLongSet;
 import jcog.math.Longerval;
 import jcog.pri.ScalarValue;
 import jcog.util.ArrayUtil;
@@ -127,42 +126,19 @@ public class Derivation extends PreDerivation {
 
         @Override
         public @Nullable Term apply(Evaluation e, Subterms xx) {
-            Term input = xx.sub(0);
-            Term replaced = xx.sub(1);
-            Term replacement = xx.sub(2);
-            if (replaced.equals(replacement))
-                return input;
-            else {
-                Term y = apply(xx, input, replaced, replacement);
-                if (y != null && !(y instanceof Bool)) {
-                    retransform.put(replaced, replacement);
-                }
-                return y;
-            }
+            Term input = xx.sub(0), replaced = xx.sub(1), replacement = xx.sub(2);
+
+            Term y = Replace.apply(xx, input, replaced, replacement);
+            if (y != null)
+                retransform.put(replaced, replacement);
+
+            return y;
         }
     };
     private final TermBuffer termBuilder = new TermBuffer();
     private final TermBuffer directTermBuilder = new DirectTermBuffer();
-    //    @Deprecated
-//    final Functor polarizeFunc = new AbstractInlineFunctor2("polarize") {
-//        @Override
-//        protected Term apply(Term subterm, Term whichTask) {
-//            if (subterm instanceof Bool)
-//                return subterm;
-//
-//            Truth compared;
-//            if (whichTask.equals(Task)) {
-//                compared = taskTruth;
-//            } else {
-//                //assert(whichTask.equals(Belief))
-//                compared = beliefTruthBelief;
-//            }
-//            if (compared == null)
-//                return Null;
-//            return compared.isPositive() ? subterm : subterm.neg();
-//        }
-//    };
-    private final transient MetalLongSet taskStamp = new MetalLongSet(NAL.STAMP_CAPACITY);
+
+
     /**
      * current context
      */
@@ -366,7 +342,7 @@ public class Derivation extends PreDerivation {
 
 
         if (!sameTask) {
-            this.taskStamp.clear(); //force (re-)compute in post-derivation stage
+
 
             this.taskPunc = nextTask.punc();
             if ((taskPunc == BELIEF || taskPunc == GOAL)) {
@@ -430,26 +406,11 @@ public class Derivation extends PreDerivation {
 
         this.overlapSingle = _task.isCyclic();
 
+
         if (_belief != null) {
-
-            /** to compute the time-discounted truth, find the minimum distance
-             *  of the tasks considering their dtRange
-             */
-
-
-            if (taskStamp.isEmpty()) {
-                taskStamp.addAll(_task.stamp());
-            }
-
-            this.overlapDouble =
-                    Stamp.overlaps(this._task, _belief)
-            //auto-filter double-premise, with same target and same time
-            //|| (taskStart == beliefStart && taskPunc == _belief.punc() && taskTerm.equals(beliefTerm))
-            ;
-
-
+            this.overlapDouble = Stamp.overlaps(this._task, _belief);
         } else {
-            this.overlapDouble = false;
+            this.overlapDouble = false; //N/A
         }
 
     }
@@ -527,14 +488,14 @@ public class Derivation extends PreDerivation {
             if (taskPunc == BELIEF || taskPunc == GOAL) {
 
                 te = taskTruth.evi();
-                be = beliefTruth_at_Belief != null ? beliefTruth_at_Belief.evi() : 0;
+                be = beliefTruth_at_Belief.evi(); //TODO use appropriate beliefTruth projection
                 tb = te / (te + be);
             } else {
 
                 te = _task.priElseZero();
                 be = _belief.priElseZero();
-                tb = te + be;
-                tb = tb < ScalarValue.EPSILON ? 0.5f : te / tb;
+                double tbe = te + be;
+                tb = tbe < ScalarValue.EPSILON ? 0.5f : te / tbe;
             }
             long[] e = Stamp.merge(_task.stamp(), _belief.stamp(), (float) tb, random);
             if (evidenceDouble == null || !Arrays.equals(e, evidenceDouble))

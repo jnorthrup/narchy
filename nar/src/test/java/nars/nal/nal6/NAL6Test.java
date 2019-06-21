@@ -1019,15 +1019,15 @@ public class NAL6Test extends NALTest {
     @Test
     void recursionSmall() {
 
-        test.termVolMax(13);
-        test.confMin(0.25f);
-        test.nar.freqResolution.set(0.05f);
+        test.termVolMax(8);
+        test.confMin(0.5f);
+        test.nar.freqResolution.set(0.25f);
         test
                 .believe("num:x", 1.0f, 0.9f)
                 .believe("( num:$1 ==> num($1) )", 1.0f, 0.9f)
                 .mustBelieve(cycles, "num(x)", 1.0f, 1.0f, 0.81f, 1.0f)
                 .mustBelieve(cycles, "num((x))", 0.99f, 1.0f, 0.50f, 1.0f)
-                .mustBelieve(cycles*2, "num(((x)))", 0.99f, 1.0f, 0.25f, 1.0f)
+                .mustBelieve(cycles, "num(((x)))", 0.99f, 1.0f, 0.25f, 1.0f)
 
 
         ;
@@ -1037,7 +1037,8 @@ public class NAL6Test extends NALTest {
     void recursionSmall1() {
 
 
-        test.nar.termVolMax.set(10);
+        test.termVolMax(10);
+        test.confMin(0.5f);
         test.nar.freqResolution.set(0.2f);
         test
                 .believe("num(x)", 1.0f, 0.9f)

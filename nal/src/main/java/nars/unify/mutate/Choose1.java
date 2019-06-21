@@ -3,6 +3,7 @@ package nars.unify.mutate;
 import nars.$;
 import nars.Op;
 import nars.subterm.Subterms;
+import nars.subterm.TermList;
 import nars.term.Term;
 import nars.term.atom.Atom;
 import nars.term.var.ellipsis.Ellipsis;
@@ -22,16 +23,16 @@ import static nars.Op.FRAG;
 public class Choose1 extends Termutator.AbstractTermutator {
 
     private final Term x;
-    private final Ellipsis xEllipsis;
+    private final Term /*Ellipsis*/ xEllipsis;
     private final Term[] yy;
 
     private final static Atom CHOOSE_1 = $.the(Choose1.class);
 
-    public Choose1(Ellipsis xEllipsis, Term x, SortedSet<Term> yFree) {
+    public Choose1(Term /*Ellipsis*/ xEllipsis, Term x, SortedSet<Term> yFree) {
         this(xEllipsis, x, yFree.toArray(Op.EmptyTermArray));
     }
 
-    private Choose1(Ellipsis xEllipsis, Term x, Term[] yFree /* sorted */) {
+    private Choose1(Term /*Ellipsis*/ xEllipsis, Term x, Term[] yFree /* sorted */) {
         super(CHOOSE_1, x, xEllipsis, $.sFast(false, yFree));
 
         assert(yFree.length >= 2): Arrays.toString(yFree) + " must offer choice";
@@ -43,8 +44,8 @@ public class Choose1 extends Termutator.AbstractTermutator {
         this.xEllipsis = xEllipsis;
         this.x = x;
 
-        int ml = yy.length - 1;
-        assert(ml >= xEllipsis.minArity);
+        //int ml = yy.length - 1;
+        //assert(ml >= xEllipsis.minArity);
 
 
     }
@@ -86,13 +87,40 @@ public class Choose1 extends Termutator.AbstractTermutator {
     @Override
     public @Nullable Termutator preprocess(Unify u) {
         //resolve to constant if possible
-        Term xEllipsis = u.resolve(this.xEllipsis);
+        Term xEllipsis = u.resolvePosNeg(this.xEllipsis);
         if (this.xEllipsis != xEllipsis) {
-            int es = xEllipsis.op() == FRAG ? xEllipsis.subs() : 1;
-            if (es != yy.length - 1)
-                return null; //size mismatch
+            if (this.xEllipsis instanceof Ellipsis) {
+                if (!(xEllipsis instanceof Ellipsis)) {
+                    //became non-ellipsis
+                    int es = xEllipsis.op() == FRAG ? xEllipsis.subs() : 1;
+                    if (((Ellipsis) this.xEllipsis).minArity > es) {
+                        return null; //assigned to less arity than required
+                    }
+                }
+            }
+        }
 
-            //TODO reduce to Subterms.unifyCommutive test if constant enough
+        Term x = u.resolvePosNeg(this.x);
+
+        TermList yy = new TermList(this.yy);
+        Subterms yy2 = u.resolve(yy).commuted();
+        if (xEllipsis!=this.xEllipsis || x!=this.x || yy!=yy2) {
+            int ys = yy2.subs();
+            if (xEllipsis instanceof Ellipsis) {
+                //TODO check for arity constraint
+                if (((Ellipsis)xEllipsis).minArity < ys - 1)
+                    return null; //impossible
+               if (ys == 1)
+                   return Termutator.result(u.unify(x, yy.sub(0)) && u.unify(xEllipsis, Fragment.empty));
+
+            } else {
+                //TODO reduce to Subterms.unifyCommutive test
+                if (ys == 1 && xEllipsis.op()==FRAG && xEllipsis.subs()==0) {
+                    return Termutator.result(x.unify(yy.sub(0), u));
+                }
+            }
+            //TODO test any other non-choice cases
+            return new Choose1(xEllipsis, x, yy2.arrayShared());
         }
 
         return this;
@@ -101,7 +129,7 @@ public class Choose1 extends Termutator.AbstractTermutator {
     @Override
     public void mutate(Termutator[] chain, int current, Unify u) {
 
-
+        Term xEllipsis = null;
 
         int l = yy.length-1;
         int shuffle = u.random.nextInt(yy.length); 
@@ -113,6 +141,10 @@ public class Choose1 extends Termutator.AbstractTermutator {
             int iy = (shuffle + l) % yy.length;
             Term y = yy[iy];
             if (x.unify(y, u)) {
+                if (xEllipsis == null) {
+                    //cache this resolved value since it will be used repeatedly in iterations
+                    xEllipsis = u.resolvePosNeg(this.xEllipsis); //technically, this should only helpful if not the first in the chain
+                }
                 if (xEllipsis.unify( Fragment.matchedExcept(yy, (byte) iy), u)) {
                     if (!u.tryMutate(chain, current))
                         break;

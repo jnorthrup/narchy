@@ -58,6 +58,13 @@ public enum NALTruth implements TruthFunc {
         }
     },
 
+    @AllowOverlap PreRecursive() {
+        @Override
+        public Truth apply(final Truth T, final Truth B, float minConf, NAL n) {
+            return Pre.apply(T, B, minConf, n);
+        }
+    },
+
     /*@AllowOverlap*/ PreWeak() {
         @Override
         public Truth apply(final Truth T, final Truth B, float minConf, NAL n) {

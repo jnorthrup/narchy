@@ -76,7 +76,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
 
 
 
-    public static final boolean OVERLAP_DOUBLE_SET_CYCLIC = configIs("OVERLAP_DOUBLE_SET_CYCLIC");
+//    public static final boolean OVERLAP_DOUBLE_SET_CYCLIC = configIs("OVERLAP_DOUBLE_SET_CYCLIC");
 
 
     /**
