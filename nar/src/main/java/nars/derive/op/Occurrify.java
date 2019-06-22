@@ -700,6 +700,17 @@ public class Occurrify extends TimeGraph {
             d.occ.clear();
             Occurrify o = d.occ.know(x, taskOccurr, beliefOccurr, true, this);
             Event e = o.selectSolution(true, o.solutions(x));
+
+            if (e == null && (d.taskTerm.hasAny(NEG) || d.beliefTerm.hasAny(NEG) || x.hasAny(NEG)) ) {
+                //HACK for deficiencies in TimeGraph, try again solving for the negative
+                d.occ.clear();
+                Occurrify o2 = d.occ.know(x.neg(), taskOccurr, beliefOccurr, true, this);
+                Event e2 = o2.selectSolution(true, o2.solutions(x.neg()));
+                if (e2!=null) {
+                    e = e2.neg();
+                }
+            }
+
             if (e == null) {
                 if (d.concPunc==QUESTION || d.concPunc==QUEST)
                     return pair(x, occurrence(d)); //fail-safe

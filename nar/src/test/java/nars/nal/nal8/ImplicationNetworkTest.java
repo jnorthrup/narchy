@@ -167,7 +167,7 @@ class ImplicationNetworkTest {
         assertEquals("%1.0;.81%" , bBelief.toString());
 
     }
-    int cycles = 2000;
+    int cycles = 1000;
     @Test
     void testEternal_A_NegBelief_NegToBC() {
 

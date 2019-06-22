@@ -6,8 +6,12 @@
 
      //B, (  X ==> C), --is(X,"--"), --is(C,"#"), --is(B,"==>") |- unisubst(C,X,B,"$"), (Belief:Pre, Goal:PreWeak, Time:TaskEvent)
        //B, (--X ==> C), --is(C,"#"), --is(B,"==>") |- unisubst(C,X,B,"$"), (Belief:PreN, Goal:PreWeakN, Time:TaskEvent)
-     B, (  X ==> C), --is(X,"--"), --is(C,"#"), --is(B,"==>") |- unisubst(C,X,B,"$"), (Belief:DeductionRecursive, Goal:DeductionWeak, Time:TaskEvent)
-       B, (--X ==> C), --is(C,"#"), --is(B,"==>") |- unisubst(C,X,B,"$"), (Belief:DeductionRecursiveN, Goal:DeductionWeakN, Time:TaskEvent)
+
+     B, (  X ==> C), --is(X,"--"), --is(C,"#"), --is(B,"==>") |-   unisubst(C,X,B,"$"), (Belief:DeductionRecursivePP, Goal:DeductionWeakPP, Time:TaskEvent)
+     B, (  X ==> C), --is(X,"--"), --is(C,"#"), --is(B,"==>") |- --unisubst(C,X,B,"$"), (Belief:DeductionRecursivePN, Goal:DeductionWeakPN, Time:TaskEvent)
+       B, (--X ==> C), --is(C,"#"), --is(B,"==>")             |-   unisubst(C,X,B,"$"), (Belief:DeductionRecursiveNP, Goal:DeductionWeakNP, Time:TaskEvent)
+       B, (--X ==> C), --is(C,"#"), --is(B,"==>")             |- --unisubst(C,X,B,"$"), (Belief:DeductionRecursiveNN, Goal:DeductionWeakNN, Time:TaskEvent)
+
      //(  X ==> C), B, --is(X,"--"), --is(C,"#"), --is(B,"==>") |- unisubst(C,X,B,"$"), (Belief:PreX)
           //B, (A ==> C), task("?@"), --is(A,{"--","#"}), --is(C,"#"), --is(B,"==>") |- unisubst(C,A,B,"$"), (Time:TaskEvent)
           //B, (--A ==> C), task("?@"), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- unisubst(C,A,B,"$"), (Time:TaskEvent)

@@ -138,10 +138,10 @@ public class NARS {
                 ((TaskLinkWhat) n.what()).links.linksMax.set(64);
                 ((TaskLinkWhat) n.what()).links.decay.set(0.5f);
 
-                n.beliefPriDefault.amp(0.25f);
-                n.goalPriDefault.amp(0.25f);
-                n.questionPriDefault.amp(0.05f);
-                n.questPriDefault.amp(0.05f);
+                n.beliefPriDefault.amp(0.1f);
+                n.goalPriDefault.amp(0.1f);
+                n.questionPriDefault.amp(0.025f);
+                n.questPriDefault.amp(0.025f);
 
             });
         }

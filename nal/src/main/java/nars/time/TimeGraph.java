@@ -696,6 +696,12 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
                                                 y -> link(event, 0, know(y))
                                 );
 
+//                                //HACK horizontal links:
+//                                int es = eventSubs.subs();
+//                                for (int i = 1; i < es; i++) {
+//                                    link(know(eventSubs.sub(i-1)), 0, know(eventSubs.sub(i)));
+//                                }
+
                             } else {
 
                                 if (absolute) {
@@ -1524,7 +1530,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 
         int solutionsBefore = solutions.size();
 
-        return  (bfsAdd(x, new OccSolver(true, true, false, each)))
+        return  bfsAdd(x, new OccSolver(true, true, false, each))
                 &&
                 solveSelfLoop(x, each)
                 &&
@@ -1908,12 +1914,12 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
             else {
                 @Deprecated Term nid = n.id().id;
                 Iterable<FromTo<Node<Event, TimeSpan>, TimeSpan>> tangent =
-                        this.tangent ? tangent(n, nid) : empty;
+                        this.tangent ? tangent(n, nid, false) : empty;
 
                 //TODO only tangentNeg if existing and tangent produced no results
                 Iterable<FromTo<Node<Event, TimeSpan>, TimeSpan>> tangentNeg = empty;
                 if (this.tangentNeg) {
-                    tangentNeg = tangent(n, nid.neg());
+                    tangentNeg = tangent(n, nid, true);
                 }
 
                 return Iterables.concat(existing, tangent, tangentNeg);
@@ -1927,21 +1933,31 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
             return sortEdges(n.edges(true, true, x -> log.hasNotVisited(x.other(n))));
         }
 
-        Iterable<FromTo<Node<Event, nars.time.TimeSpan>, TimeSpan>> tangent(Node<Event, TimeSpan> root, Term t) {
+        Iterable<FromTo<Node<Event, nars.time.TimeSpan>, TimeSpan>> tangent(Node<Event, TimeSpan> root, Term t, boolean negate) {
 
             return () -> {
+                //                if (negate) {
+//                    rr = node(root.id().neg());
+//                    if (rr==null)
+//                        return emptyIterator;
+//                } else
+//                    rr = root;
+
+
                 Iterable<Event> ee = events(t);
                 if (ee == null) {
                     return emptyIterator;
                 } else {
+                    if (negate) {
+                        ee = Iterables.transform(ee, Event::neg);
+                    }
 
 //                if (root.id().id.equals(t)) {
 //                    Event rootEvent = root.id();
 //                    ee = Iterables.filter(ee, x -> !x.equals(rootEvent));
 //                }
 
-                    Iterable<Event> eee =
-                            shuffleAndSort(ee);
+                    Iterable<Event> eee = shuffleAndSort(ee);
                     if (eee == null)
                         return emptyIterator;
 

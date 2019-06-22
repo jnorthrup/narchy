@@ -161,6 +161,7 @@ class TimeGraphTest {
         assertSolved("(a &&+- c)", cc1,
                 "(a &&+10 c)@1");
     }
+
     @Test
     void testImplSame() throws Narsese.NarseseException {
         TimeGraph c = newTimeGraph(1);
@@ -168,6 +169,18 @@ class TimeGraphTest {
         c.know($("x"), 0);
         assertSolved("x", c, "x@-1", "x@0", "x@1");
     }
+
+    @Test
+    void testConjNegComponent() throws Narsese.NarseseException {
+
+        TimeGraph g = newTimeGraph(1);
+        g.autoneg = true;
+        g.know($("(--x || y)"));
+        g.know($("x"), 0);
+        assertSolved("(--x || y)", g, "(--x || y)@0");
+        assertSolved("y", g, "y@0");
+    }
+
     @Test
     void testExact() throws Narsese.NarseseException {
 
