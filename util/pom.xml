@@ -3,6 +3,10 @@
          xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <modelVersion>4.0.0</modelVersion>
+    <properties>
+        <junit-platform-launcher.version>1.5.0-RC2</junit-platform-launcher.version>
+        <junit-jupiter-params.version>5.5.0-RC2</junit-jupiter-params.version>
+    </properties>
     <parent>
         <groupId>automenta</groupId>
         <artifactId>narchy</artifactId>
@@ -113,7 +117,7 @@
         <dependency>
             <groupId>org.roaringbitmap</groupId>
             <artifactId>RoaringBitmap</artifactId>
-            <version>0.8.6</version>
+            <version>0.8.9</version>
             <scope>compile</scope>
             <exclusions>
                 <exclusion>
@@ -147,25 +151,25 @@
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-engine</artifactId>
-            <version>5.5.0-RC1</version>
+            <version>${junit-jupiter-params.version}</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-params</artifactId>
-            <version>5.5.0-RC1</version>
+            <version>${junit-jupiter-params.version}</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.junit.platform</groupId>
             <artifactId>junit-platform-engine</artifactId>
-            <version>1.5.0-RC1</version>
+            <version>${junit-platform-launcher.version}</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.junit.platform</groupId>
             <artifactId>junit-platform-launcher</artifactId>
-            <version>1.5.0-RC1</version>
+            <version>${junit-platform-launcher.version}</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
@@ -238,7 +242,7 @@
             <plugin>
                 <groupId>org.pitest</groupId>
                 <artifactId>pitest-maven</artifactId>
-                <version>1.4.8</version>
+                <version>1.4.9</version>
                 <dependencies>
                     <dependency>
                         <groupId>org.pitest</groupId>

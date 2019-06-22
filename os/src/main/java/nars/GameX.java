@@ -572,8 +572,8 @@ abstract public class GameX extends Game {
      * TODO extract to class
      */
     private static void addGovernor(NAR n) {
-        int gHist = 16;
-        float momentum = 0.5f;
+        int gHist = 4;
+        float momentum = 0.75f;
         float explorationRate = 0.1f;
         n.onDur(new Consumer<>() {
 

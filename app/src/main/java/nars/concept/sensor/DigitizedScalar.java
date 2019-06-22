@@ -100,9 +100,9 @@ public class DigitizedScalar extends DemultiplexedScalarSensor {
      */
     public final static ScalarEncoder Needle = new ScalarEncoder() {
 
-        public final float defaultTruth() {
-            return 0;
-        }
+//        public final float defaultTruth() {
+//            return 0;
+//        }
 
         @Override
         public float truth(float v, int i, int indices) {

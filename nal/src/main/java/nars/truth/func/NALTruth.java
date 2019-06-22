@@ -117,6 +117,13 @@ public enum NALTruth implements TruthFunc {
         }
     },
 
+    BeliefStructuralIntersection() {
+        @Override
+        public Truth apply(final Truth Tignored, final Truth B, float minConf, NAL n) {
+            return Intersection.apply(B, $.t(1f, confDefault(n)), minConf, n);
+        }
+    },
+
 
 //
 //    @SinglePremise @AllowOverlap

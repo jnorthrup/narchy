@@ -218,8 +218,8 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends VectorSensor {
     }
 
     final AbstractTaskLink tl =
-            //new PixelSelectorTaskLink();
-            new ConjunctionSuperPixelTaskLink(2, 2);
+            new PixelSelectorTaskLink();
+            //new ConjunctionSuperPixelTaskLink(2, 2);
 
     @Override
     public void update(Game g) {

@@ -133,15 +133,15 @@ public class FZero extends GameX {
 //                //new CameraSensorView(c, this).withControls(),
 //                NARui.beliefCharts(actions, nar)), 400, 400);
 
-        //initUnipolarLinear(5f);
 
-        initPushButtonTank();
+        //initPushButtonTank();
         //initLeftRightPushButtonMutex();
         //initTankContinuous();
 
+        initUnipolarLinear(3f);
 
 //        BiPolarAction A =
-//            initBipolarRotateRelative(false, 0.15f);
+            initBipolarRotateRelative(true, 0.4f);
                 //initBipolarRotateRelative(true, 1f);
                 //initBipolarRotateAbsolute(true);
                 //initBipolarRotateDirect(false, 0.9f);
@@ -465,7 +465,7 @@ public class FZero extends GameX {
                 fz.vehicleMetrics[0][6] = thrust;
                 return a0;
             } else if (a < 0.5f - thresh) {
-                fz.vehicleMetrics[0][6] *= Util.unitize(Math.max(0.5f, (1f - (0.5f - a) * 2f)));
+                fz.vehicleMetrics[0][6] *= Util.unitize(Math.min(0.5f, (1f - (0.5f - a) * 2f)));
                 return a0;
             } else
                 return Float.NaN;

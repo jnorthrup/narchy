@@ -47,27 +47,19 @@ public enum Tense {
         symbol = string;
     }
 
-    static int order(float timeDiff, int durationCycles) {
-        float halfDuration = durationCycles / 2.0f;
-        if (timeDiff >= halfDuration) {
-            return +1;
-        } else if (timeDiff <= -halfDuration) {
-            return -1;
-        } else {
-            return 0;
-        }
-    }
 
     /**
      * if (relative) event B after (stationary) event A then order=forward;
      * event B before       then order=backward
      * occur at the same time, relative to duration: order = concurrent
      */
-    public static int order(long a, long b, int durationCycles) {
-        if ((a == ETERNAL) || (b == ETERNAL))
-            throw new RuntimeException("order() does not compare ETERNAL times");
-
-        return order(b - a, durationCycles);
+    public static boolean simultaneous(long a, long b, int tolerance) {
+        if (a == b)
+            return true;
+        else if (a == ETERNAL || b == ETERNAL || a == TIMELESS || b == TIMELESS)
+            return false;
+        else
+            return Math.abs(a-b) >= tolerance;
     }
 
 

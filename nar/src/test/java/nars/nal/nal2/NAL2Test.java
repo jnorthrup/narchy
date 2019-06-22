@@ -15,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class NAL2Test extends NALTest {
 
-    private static final int cycles = 2500;
+    private static final int cycles = 500;
 
 
     @Override
@@ -93,6 +93,7 @@ public class NAL2Test extends NALTest {
 
         TestNAR tester = test;
         tester.termVolMax(5);
+        tester.nar.confMin.set(0.9);
         tester.believe("<[bright] <-> [smart]>");
         tester.mustBelieve(cycles, "<bright <-> smart>", 1.0f, 0.9f);
         tester.mustBelieve(cycles, "<[bright] --> [smart]>", 1.0f, 0.9f);
@@ -149,6 +150,7 @@ public class NAL2Test extends NALTest {
     @Test
     void testUnion() {
 
+        test.nar.confMin.set(0.8);
         test
                 .termVolMax(5)
                 .believe("a:{x}.")
@@ -159,6 +161,7 @@ public class NAL2Test extends NALTest {
 
     @Test
     void testSetDecomposePositive() {
+        test.nar.confMin.set(0.8);
         test
                 .believe("({x,y}-->c)")
                 .mustBelieve(cycles, "({x}-->c)", 1f, 0.81f)
@@ -272,7 +275,8 @@ public class NAL2Test extends NALTest {
     void set_operationsSetInt_union1_1_2_3() {
 
         TestNAR tester = test;
-        tester.nar.termVolMax.set(6);
+        tester.termVolMax(6);
+        tester.nar.confMin.set(0.8);
         tester.believe("<planetX --> [marsy,venusy]>", 1.0f, 0.9f);
         tester.believe("<planetX --> [earthly]>", 0.1f, 0.9f);
         tester.mustBelieve(cycles, "<planetX --> [marsy,earthly,venusy]>", 0.1f, 0.81f);
@@ -284,6 +288,7 @@ public class NAL2Test extends NALTest {
         assertEquals("{Mars,Venus}", $.diff($.$("{Mars,Pluto,Venus}"), $.$("{Pluto,Saturn}")).toString());
 
         TestNAR tester = test;
+        tester.nar.confMin.set(0.8);
         tester.believe("(planetX --> {Mars,Pluto,Venus})", 0.9f, 0.9f);
         tester.believe("(planetX --> {Pluto,Saturn})", 0.1f, 0.9f);
         tester.mustBelieve(cycles, "(planetX --> {Mars,Venus})", 0.81f ,0.81f);
@@ -295,6 +300,7 @@ public class NAL2Test extends NALTest {
     void set_operations3_difference() {
 
         TestNAR tester = test;
+        tester.nar.confMin.set(0.8);
         tester.believe("<planetX --> [marsy,earthly,venusy]>", 1.0f, 0.9f);
         tester.believe("<planetX --> [earthly,saturny]>", 0.1f, 0.9f);
         tester.mustBelieve(cycles, "<planetX --> [marsy,earthly,saturny,venusy]>", 0.1f, 0.81f);
@@ -306,10 +312,11 @@ public class NAL2Test extends NALTest {
 
         TestNAR tester = test;
         tester.termVolMax(7);
+        tester.nar.confMin.set(0.8);
         tester.believe("([marsy,earthly,venusy] --> planetX)", 1.0f, 0.9f);
         tester.believe("([earthly,saturny] --> planetX)", 0.1f, 0.9f);
-        tester.mustBelieve(cycles, "<[marsy,earthly,saturny,venusy] --> planetX>", 1.0f, 0.81f);
-        tester.mustBelieve(cycles, "<[marsy,venusy] --> planetX>", 0.90f, 0.81f);
+        tester.mustBelieve(cycles*4, "<[marsy,earthly,saturny,venusy] --> planetX>", 1.0f, 0.81f);
+        tester.mustBelieve(cycles*4, "<[marsy,venusy] --> planetX>", 0.90f, 0.81f);
 
     }
 

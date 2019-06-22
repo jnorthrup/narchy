@@ -4,7 +4,6 @@ import nars.NAR;
 import nars.NARS;
 import nars.test.NALTest;
 import nars.test.TestNAR;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 public class NAL1Test extends NALTest {
@@ -124,12 +123,8 @@ public class NAL1Test extends NALTest {
     @Test
     void backwardInference2() {
 
-        /*
-        $.14 (1-->(?1,0,/))? {866: 1©}
-        $.27 (1-->(x,/,/)). %1.0;.90% {868: 2©}
-        */
-
         test
+                .confMin(0.9f)
                 .termVolMax(3)
                 .believe("(x --> y)")
                 .ask("(x --> z)")
@@ -139,14 +134,13 @@ public class NAL1Test extends NALTest {
     }
 
 
-    @Disabled
     @Test
     void structureTransformation_InhQuestion_SimBelief() {
 
         TestNAR tester = test;
         tester.believe("<bright <-> smart>", 0.9f, 0.9f);
         tester.ask("<bright --> smart>");
-        tester.mustBelieve(cycles, "<bright --> smart>", 0.9f, 0.9f);
+        tester.mustBelieve(cycles, "<bright --> smart>", 0.9f, 0.81f);
 
     }
 
@@ -159,7 +153,7 @@ public class NAL1Test extends NALTest {
         tester.believe("<robin <-> swan>", 0.1f, 0.6f);
     }
 
-    @Disabled @Test
+    @Test
     void comparison() {
 
         TestNAR tester = test;
@@ -169,7 +163,7 @@ public class NAL1Test extends NALTest {
 
     }
 
-    @Disabled @Test
+    @Test
     void comparison2() {
 
         TestNAR tester = test;
@@ -244,9 +238,10 @@ public class NAL1Test extends NALTest {
 
         TestNAR tester = test;
         tester.termVolMax(3);
+        tester.confMin(0.7f);
         tester.believe("<bird <-> swan>", 0.9f, 0.9f);
         tester.ask("<swan --> bird>");
-        tester.mustBelieve(cycles, "<swan --> bird>", 0.9f, 0.73f /*0.9f*/);
+        tester.mustBelieve(cycles, "<swan --> bird>", 0.9f, 0.81f);
 
     }
 

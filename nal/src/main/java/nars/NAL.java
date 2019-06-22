@@ -45,7 +45,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
     public static final boolean SHUFFLE_TERMUTES= configIs("SHUFFLE_TERMUTES");
     public static final boolean DT_DITHER_LOGARITHMICALLY= configIs("DT_DITHER_LOGARITHMICALLY");
 
-    public static final float DEFAULT_CURIOSITY_RATE = 0.05f;
+    public static final float DEFAULT_CURIOSITY_RATE = 0.03f;
 
     public static final int NEG_CACHE_VOL_THRESHOLD = 4;
 
@@ -215,6 +215,9 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
 
     /** various post-processing of contained variables prior to use in Task content */
     public static final boolean TASK_COMPOUND_POST_NORMALIZE = true;
+
+    /** controls the temporal range of Time:Compose conclusions */
+    public static final boolean OCCURRIFY_COMPOSE_UNION_DILUTE = true;
 
 
     protected static final boolean DYNAMIC_CONCEPT_TRANSIENT = false;

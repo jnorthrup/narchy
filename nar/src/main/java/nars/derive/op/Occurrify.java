@@ -441,15 +441,11 @@ public class Occurrify extends TimeGraph {
         Compose() {
             final BeliefProjection PROJ = BeliefProjection.Task;
 
-            final OccMerge combine =
-                    //OccIntersect.Task
-                    OccMerge.UnionDilute
-                    //OccIntersect.Intersect
-                    ;
+            final OccMerge combine = NAL.OCCURRIFY_COMPOSE_UNION_DILUTE ? OccMerge.UnionDilute : OccMerge.Task;
 
             @Override
             @Nullable public Pair<Term, long[]> occurrence(Term x, Derivation d) {
-                if (x.hasAny(XTERNAL)) {
+                if (x.hasXternal()) {
                     return solveDT(d, x, true);
                 } else {
                     long[] o = occurrence(d);
@@ -496,6 +492,10 @@ public class Occurrify extends TimeGraph {
             public BeliefProjection beliefProjection() {
                 return BeliefProjection.Belief;
             }
+            @Override
+            public @Nullable Predicate<Derivation> filter() {
+                return differentTermsOrTimes;
+            }
 
         },
         /**
@@ -516,6 +516,10 @@ public class Occurrify extends TimeGraph {
             @Override
             public BeliefProjection beliefProjection() {
                 return BeliefProjection.Belief;
+            }
+            @Override
+            public @Nullable Predicate<Derivation> filter() {
+                return differentTermsOrTimes;
             }
 
         },
@@ -554,6 +558,12 @@ public class Occurrify extends TimeGraph {
          * events are not decomposed as this could confuse the solver unnecessarily.  automatic autoneg?
          */
         Sequence() {
+
+            @Override
+            public @Nullable Predicate<Derivation> filter() {
+                return differentTermsOrTimes;
+            }
+
             @Override
             public Pair<Term, long[]> occurrence(Term x, Derivation d) {
 
@@ -570,7 +580,7 @@ public class Occurrify extends TimeGraph {
                 }
 
                 tt = tt.negIf(d.taskTruth.isNegative());
-                bb = bb.negIf(d._belief.isNegative());
+                bb = bb.negIf(d.beliefTruth_at_Task.isNegative());
 
                 long tTime = d.taskStart, bTime = d.beliefStart;
 
@@ -612,7 +622,6 @@ public class Occurrify extends TimeGraph {
 
             @Override
             long[] occurrence(Derivation d) {
-                //return rangeCombine(d, OccIntersect.Earliest);
                 throw new UnsupportedOperationException();
             }
 
@@ -664,11 +673,6 @@ public class Occurrify extends TimeGraph {
         abstract public Pair<Term, long[]> occurrence(Term x, Derivation d);
 
 
-
-        @Nullable
-        protected Pair<Term, long[]> solveLocal(Derivation d, Term x) {
-            return solveDT(d, x, true);
-        }
 
         /**
          * gets the optional premise pre-filter for this consequence.
@@ -792,6 +796,13 @@ public class Occurrify extends TimeGraph {
 //
 //        },
     }
+
+    private static final Predicate<Derivation> differentTermsOrTimes = (d) -> {
+        if ( d.taskTerm.equals(d.beliefTerm) && !Tense.simultaneous(d.taskStart, d.beliefStart, d.ditherDT))
+            return false;
+        return true;
+    };
+
 }
 
 

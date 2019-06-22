@@ -1,6 +1,5 @@
 //Similarity to Inheritance
-    (S --> P), (S <-> P),  task("?"),  hasBelief() |- (S --> P),   (Belief:BeliefStructuralDeduction, Punctuation:Belief)
-    (S --> P), (S <-> P),  task("@"),  hasBelief() |- (S --> P),   (Goal:BeliefStructuralDeduction, Punctuation:Goal)
+    (S --> P), (S <-> P),  task("?"),  hasBelief() |- (S --> P),   (Belief:BeliefStructuralIntersection, Punctuation:Belief)
       //(S --> P), (--S <-> P),   task("?") |- (--S --> P),   (Belief:BeliefStructuralDeduction, Punctuation:Belief)
       //(S --> P),   (S <-> --P), task("?") |- (S --> --P),   (Belief:BeliefStructuralDeduction, Punctuation:Belief)
 
