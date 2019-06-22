@@ -406,8 +406,8 @@ abstract public class GameX extends Game {
         n.questionPriDefault.amp(0.04f);
         n.questPriDefault.amp(0.05f);
 
-        n.beliefConfDefault.set(0.5f);
-        n.goalConfDefault.set(0.5f);
+        n.beliefConfDefault.set(0.75f);
+        n.goalConfDefault.set(0.75f);
 
         n.emotion.want(MetaGoal.Futile, -0.001f);
         n.emotion.want(MetaGoal.Perceive, -0.002f);
@@ -572,10 +572,10 @@ abstract public class GameX extends Game {
      * TODO extract to class
      */
     private static void addGovernor(NAR n) {
-        int gHist = 8;
-        float momentum = 0.25f;
+        int gHist = 16;
+        float momentum = 0.5f;
         float explorationRate = 0.1f;
-        n.onDur(new Consumer<NAR>() {
+        n.onDur(new Consumer<>() {
 
             final Consumer<FasterList<Why>> reval = new Consumer<FasterList<Why>>() {
 

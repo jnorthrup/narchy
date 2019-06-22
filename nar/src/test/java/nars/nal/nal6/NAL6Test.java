@@ -1022,12 +1022,13 @@ public class NAL6Test extends NALTest {
         test.termVolMax(8);
         test.confMin(0.5f);
         test.nar.freqResolution.set(0.25f);
+        test.nar.confResolution.set(0.05f);
         test
                 .believe("num:x", 1.0f, 0.9f)
                 .believe("( num:$1 ==> num($1) )", 1.0f, 0.9f)
                 .mustBelieve(cycles, "num(x)", 1.0f, 1.0f, 0.81f, 1.0f)
                 .mustBelieve(cycles, "num((x))", 0.99f, 1.0f, 0.50f, 1.0f)
-                .mustBelieve(cycles, "num(((x)))", 0.99f, 1.0f, 0.25f, 1.0f)
+                .mustBelieve(cycles*2, "num(((x)))", 0.99f, 1.0f, 0.25f, 1.0f)
 
 
         ;

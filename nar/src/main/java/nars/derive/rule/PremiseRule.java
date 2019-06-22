@@ -229,13 +229,14 @@ public class PremiseRule extends ProxyTerm {
                     break;
 
                 case "eqPN":
-                    constraints.add(new NotEqualConstraint.EqualPosOrNeg(XX, YY));
+                    constraints.add(new EqualPosOrNeg(XX, YY).negIf(negated));
+                    if (negated) negationApplied = true;
                     break;
 
                 case "eqNeg":
                     //TODO special predicate: either (but not both) is Neg
                     neq(XX, YY);
-                    constraints.add(new NotEqualConstraint.EqualNegConstraint(XX, YY));
+                    constraints.add(new EqualNegConstraint(XX, YY));
                     break;
 
 
@@ -1215,7 +1216,7 @@ public class PremiseRule extends ProxyTerm {
     private void neq(Variable x, Term y) {
 
         if (y instanceof Neg && y.unneg() instanceof Variable) {
-            constraints.add(new NotEqualConstraint.EqualNegConstraint(x, (Variable) (y.unneg())).neg());
+            constraints.add(new EqualNegConstraint(x, (Variable) (y.unneg())).neg());
         } else if (y instanceof Variable) {
             constraints.add(new NotEqualConstraint(x, (Variable) y));
         } else {
@@ -1228,7 +1229,7 @@ public class PremiseRule extends ProxyTerm {
     }
 
     private void bigger(Variable x, Variable y) {
-        constraints.add(new NotEqualConstraint.Bigger(x, y));
+        constraints.add(new Bigger(x, y));
     }
 
     static class UppercaseAtomsToPatternVariables extends AbstractTermTransform.NegObliviousTermTransform {

@@ -17,22 +17,24 @@ import static java.lang.System.nanoTime;
 public class WorkerExec extends ThreadedExec {
 
 
-    double granularity = 2;
+    double granularity = 16;
 
-    /**
-     * value of 1 means it shares 1/N of the current work. >1 means it will take on more proportionally more-than-fair share of work, which might reduce jitter at expense of responsive
-     */
-    float workResponsibility =
-            1f;
-            //1.5f;
-            //1.618f;
-            //2f;
 
     /**
      * process sub-timeslice divisor
      * TODO auto-calculate
      */
     private long subCycleMaxNS;
+
+    /**
+     * value of 1 means it shares 1/N of the current work. >1 means it will take on more proportionally more-than-fair share of work, which might reduce jitter at expense of responsive
+     */
+    float workResponsibility =
+            //1f;
+            //1.5f;
+            //1.618f;
+            2f;
+
 
     public WorkerExec(int threads) {
         super(threads);
@@ -41,6 +43,7 @@ public class WorkerExec extends ThreadedExec {
     public WorkerExec(int threads, boolean affinity) {
         super(threads, affinity);
 
+
         Exe.setExecutor(this);
     }
 
@@ -48,7 +51,11 @@ public class WorkerExec extends ThreadedExec {
     protected void update() {
         nar.how.commit(null);
         nar.what.commit(null);
+
         super.update();
+
+        subCycleMaxNS = Math.round(((((double)threadWorkTimePerCycle * concurrency())) / granularity));
+
     }
 
     @Override
@@ -91,11 +98,8 @@ public class WorkerExec extends ThreadedExec {
 
 
         private void play(long playTime) {
-
-            subCycleMaxNS = (long) ((threadWorkTimePerCycle) / granularity);
             if (subCycleMaxNS <= 0)
                 return;
-
 
             AntistaticBag<How> H = nar.how;
             AntistaticBag<What> W = nar.what;

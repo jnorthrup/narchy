@@ -350,7 +350,7 @@ public class Occurrify extends TimeGraph {
         this.pattern = pattern;
         this.patternVolumeMin =
                 (int) Math.floor(NAL.derive.TIMEGRAPH_IGNORE_DEGENERATE_SOLUTIONS_FACTOR * pattern.volume());
-        this.patternVolumeMax = d.termVolMax;
+        this.patternVolumeMax = d.termVolMax + 1; //+1 for possible negation/unnegation
 
         this.nodesMax = d.termVolMax * 2 + pattern.volume();  //should be plenty of event nodes
 
@@ -364,12 +364,20 @@ public class Occurrify extends TimeGraph {
         return Tense.dither(super.occToDT(x), d.ditherDT);
     }
 
-    private Term solveDT(Term pattern, ArrayHashSet<Event> solutions) {
+    private Term solveDT(Term x, Derivation d, boolean decomposeEvents,OccurrenceSolver occ) {
         Term p;
-        Event e = selectSolution(false, solutions);
-        if (e == null)
-            return pattern;
-        else
+        Event e = selectSolution(false, d.occ.know(x,  true,true,decomposeEvents,occ).solutions(x));
+        if (e == null) {
+            if ((e == null || (e.id.hasXternal())) && (d.taskTerm.hasAny(NEG) || d.beliefTerm.hasAny(NEG) || x.hasAny(NEG)) ) {
+
+                //HACK for deficiencies in TimeGraph, try again solving for the negative
+                Event e2 = selectSolution(false, solutions((e == null ? x : e.id /* some XTERNAL's may have been solved */).neg()));
+                if (e2!=null)
+                    return e2.id.neg();
+            }
+
+            return pattern; //last resort
+        } else
             return e.id;
     }
 
@@ -681,7 +689,7 @@ public class Occurrify extends TimeGraph {
                 if (occ != null && occ[0] != TIMELESS && occ[0] != ETERNAL)
                     d.occ.know(x, occ[0], occ[1]);
 
-                return pair(d.occ.solveDT(x, d.occ.know(x,  true,true,decomposeEvents,this).solutions(x)), occ);
+                return pair(d.occ.solveDT(x, d, decomposeEvents, this), occ);
             } else {
                 return pair(x, occ);
             }
@@ -703,19 +711,24 @@ public class Occurrify extends TimeGraph {
 
             if (e == null && (d.taskTerm.hasAny(NEG) || d.beliefTerm.hasAny(NEG) || x.hasAny(NEG)) ) {
                 //HACK for deficiencies in TimeGraph, try again solving for the negative
-                d.occ.clear();
-                Occurrify o2 = d.occ.know(x.neg(), taskOccurr, beliefOccurr, true, this);
-                Event e2 = o2.selectSolution(true, o2.solutions(x.neg()));
+//                Occurrify o2 = d.occ.know(x.neg(), taskOccurr, beliefOccurr, true, this);
+                Event e2 = o.selectSolution(true, o.solutions(x.neg()));
                 if (e2!=null) {
                     e = e2.neg();
                 }
             }
 
             if (e == null) {
-                if (d.concPunc==QUESTION || d.concPunc==QUEST)
-                    return pair(x, occurrence(d)); //fail-safe
-                else
-                    return NAL.OCCURRIFY_STRICT ? null : pair(x, occurrence(d)); //fail-safe
+//                if (d.concPunc==QUESTION || d.concPunc==QUEST)
+//                    return pair(x, occurrence(d)); //fail-safe
+//                else
+//                    return NAL.OCCURRIFY_STRICT ? null : pair(x, occurrence(d)); //fail-safe
+
+                if (NAL.OCCURRIFY_STRICT)
+                    return null;
+
+                return pair(x, occurrence(d)); //fail-safe
+
             } else {
                 long es = e.start();
                 return pair(e.id,

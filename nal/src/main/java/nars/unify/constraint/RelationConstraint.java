@@ -45,7 +45,12 @@ abstract public class RelationConstraint<U extends Unify> extends UnifyConstrain
         return new NegRelationConstraint(this);
     }
 
-//    @Override
+    @Override
+    public final RelationConstraint negIf(boolean negate) {
+        return negate ? neg() : this;
+    }
+
+    //    @Override
 //    public RelationConstraint negIf(boolean negate) {
 //        return negate ? neg() : this;
 //    }

@@ -1,28 +1,17 @@
 //image structural transform forward
 
 
-(I --> P), X, is(P,"*"), --subOf(P,/), --subOf(P,\), subsMin(P,2), subOf(P,X) |- imageInt((I-->P),X), (Belief:Identity)
-(I --> P), X, is(P,"*"), --subOf(P,/), --subOf(P,\), subsMin(P,2), subOf(P,--X) |- imageInt((I-->P),--X), (Belief:Identity)
+(I --> P), X, is(P,"*"), --subOf(P,/), --subOf(P,\), subsMin(P,2), subOf(P,X) |- imageInt((I-->P),X), (Belief:Identity, Goal:Identity)
+(I --> P), X, is(P,"*"), --subOf(P,/), --subOf(P,\), subsMin(P,2), subOf(P,--X) |- imageInt((I-->P),--X), (Belief:Identity, Goal:Identity)
 
-    (I --> P), X, is(P,"*"), --subOf(P,/), --subOf(P,\), subsMin(P,2), subOf(P,X), task("?") |- imageInt((I-->P),X), (Punctuation:Question)
-    (I --> P), X, is(P,"*"), --subOf(P,/), --subOf(P,\), subsMin(P,2), subOf(P,--X), task("?") |- imageInt((I-->P),--X), (Punctuation:Question)
+    (I --> P), X, is(P,"*"), --subOf(P,/), --subOf(P,\), subsMin(P,2), subOf(P,X), task("?@") |- imageInt((I-->P),X)
+    (I --> P), X, is(P,"*"), --subOf(P,/), --subOf(P,\), subsMin(P,2), subOf(P,--X), task("?@") |- imageInt((I-->P),--X)
 
-(P --> I), X, is(P,"*"), --subOf(P,/), --subOf(P,\), subsMin(P,2), subOf(P,X) |- imageExt((P-->I),X), (Belief:Identity)
-(P --> I), X, is(P,"*"), --subOf(P,/), --subOf(P,\), subsMin(P,2), subOf(P,--X) |- imageExt((P-->I),--X), (Belief:Identity)
+(P --> I), X, is(P,"*"), --subOf(P,/), --subOf(P,\), subsMin(P,2), subOf(P,X) |- imageExt((P-->I),X), (Belief:Identity, Goal:Identity)
+(P --> I), X, is(P,"*"), --subOf(P,/), --subOf(P,\), subsMin(P,2), subOf(P,--X) |- imageExt((P-->I),--X), (Belief:Identity, Goal:Identity)
 
-    (P --> I), X, is(P,"*"), --subOf(P,/), --subOf(P,\), subsMin(P,2), subOf(P,X), task("?") |- imageExt((P-->I),X), (Punctuation:Question)
-    (P --> I), X, is(P,"*"), --subOf(P,/), --subOf(P,\), subsMin(P,2), subOf(P,--X), task("?") |- imageExt((P-->I),--X), (Punctuation:Question)
-
-
-
-//image structural transform reverse
-// note: the beliefs should already be present in the host concept.  they may not be output because the belief table cant distinguish them so it will seem like a duplicate
-// so the belief/goal normalization effectively is redundant so i've commented it out.
-// questions may also benefit form this strategy
-//(X --> P), X,                is(P,"*"), subsMin(P,2), subOf(P,/) |- imageNormalize((X-->P)), (Belief:Identity, Goal:Identity)
-//    (X --> P), X, task("?@"), is(P,"*"), subsMin(P,2), subOf(P,/) |- imageNormalize((X-->P))
-//(P --> X), X,                is(P,"*"), subsMin(P,2), subOf(P,\) |- imageNormalize((P-->X)), (Belief:Identity, Goal:Identity)
-//    (P --> X), X, task("?@"), is(P,"*"), subsMin(P,2), subOf(P,\) |- imageNormalize((P-->X))
+    (P --> I), X, is(P,"*"), --subOf(P,/), --subOf(P,\), subsMin(P,2), subOf(P,X), task("?@") |- imageExt((P-->I),X)
+    (P --> I), X, is(P,"*"), --subOf(P,/), --subOf(P,\), subsMin(P,2), subOf(P,--X), task("?@") |- imageExt((P-->I),--X)
 
 
 //1-element product wrap
@@ -33,9 +22,10 @@
      (X<->Y), ((X)<->(Y)), task("?") |- polarizeBelief((X<->Y)), (Belief:BeliefStructuralReductionDepolarized, Punctuation:Belief)
 
 ////composition on both sides of a statement
-    //((X,P) --> Z), (X --> Y), is(Z,"?"), task("?") |- ((X,P) --> (Y,P)), (Belief:BeliefStructuralDeduction, Punctuation:Belief)
-    (A --> B), (X --> Y), subsMin(A,2), subsMin(B,2), subCountEqual(A,B), is(A,"*"), is(B,"*"), subOf(A,X), subOf(B,Y), task("?") |- polarizeBelief((A --> B)), (Belief:BeliefStructuralReductionDepolarized, Punctuation:Belief)
-    (A <-> B), (X <-> Y), subsMin(A,2), subsMin(B,2), subCountEqual(A,B), is(A,"*"), is(B,"*"), subOf(A,X), subOf(B,Y), task("?") |- polarizeBelief((A <-> B)), (Belief:BeliefStructuralReductionDepolarized, Punctuation:Belief)
+    ((X,P) --> Z), (X --> Y), is(Z,"?"), task("?") |- polarizeBelief(((X,P) --> (Y,P))), (Belief:BeliefStructuralReductionDepolarized, Punctuation:Belief)
+    (Z --> (X,P)), (Y --> X), is(Z,"?"), task("?") |- polarizeBelief(((Y,P) --> (X,P))), (Belief:BeliefStructuralReductionDepolarized, Punctuation:Belief)
+    (A --> B), (X --> Y), subOf(A,X), subOf(B,Y), subsMin(A,2), subsMin(B,2), subCountEqual(A,B), is(A,"*"), is(B,"*"), task("?") |- polarizeBelief((A --> B)), (Belief:BeliefStructuralReductionDepolarized, Punctuation:Belief)
+    (A <-> B), (X <-> Y), subOf(A,X), subOf(B,Y), subsMin(A,2), subsMin(B,2), subCountEqual(A,B), is(A,"*"), is(B,"*"), task("?") |- polarizeBelief((A <-> B)), (Belief:BeliefStructuralReductionDepolarized, Punctuation:Belief)
 
     //((P,X) --> (P,Y)) , (X --> Y), neq(X,\), neq(Y,\), neq(X,/), neq(Y,/), task("?") |- ((P,X) --> (P,Y)), (Belief:BeliefStructuralReduction, Punctuation:Belief)
 
