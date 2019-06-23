@@ -10,6 +10,7 @@ import jcog.util.FloatConsumer;
 import nars.$;
 import nars.NAR;
 import nars.Narsese;
+import nars.Op;
 import nars.attention.PriNode;
 import nars.concept.action.BiPolarAction;
 import nars.concept.sensor.DigitizedScalar;
@@ -292,11 +293,16 @@ public interface NSense {
         return actionBipolarFrequencyDifferential(s, fair, update);
     }
 
-    default BiPolarAction actionBipolarFrequencyDifferential(Term id, boolean fair, FloatToFloatFunction motor) {
-        return actionBipolarFrequencyDifferential(posOrNeg ->
-                //$.inh(posOrNeg ? PLUS : NEG, id)
-                $.inh(id, posOrNeg ? PLUS : NEG)
-                , fair, motor);
+    default BiPolarAction actionBipolarFrequencyDifferential(Term template, boolean fair, FloatToFloatFunction motor) {
+        if (!template.hasAny(Op.VAR_QUERY)) {
+            //throw new TermException("has no query variables", template);
+            template = $.inh($.varQuery(1), template);
+        }
+
+        Term t = template;
+        return actionBipolarFrequencyDifferential(
+                posOrNeg -> t.replace($.varQuery(1), posOrNeg ? PLUS : NEG),
+                fair, motor);
     }
     default BiPolarAction actionBipolarFrequencyDifferential(BooleanToObjectFunction<Term> s, boolean fair, FloatToFloatFunction motor) {
         BiPolarAction pn = new BiPolarAction(s,

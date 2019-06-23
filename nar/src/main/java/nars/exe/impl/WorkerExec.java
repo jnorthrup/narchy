@@ -17,7 +17,7 @@ import static java.lang.System.nanoTime;
 public class WorkerExec extends ThreadedExec {
 
 
-    double granularity = 16;
+    double granularity = 8;
 
 
     /**
@@ -96,6 +96,7 @@ public class WorkerExec extends ThreadedExec {
             } while (alive.get());
         }
 
+        static final float maxOverUtilization = 2;
 
         private void play(long playTime) {
             if (subCycleMaxNS <= 0)
@@ -107,41 +108,43 @@ public class WorkerExec extends ThreadedExec {
             long start = nanoTime();
             long until = start + playTime, after = start /* assigned for safety */;
 
-            H.sample(rng, (How h)->{
-                if (h != null && h.isOn()) {
+            int hPerW = (int)Util.clamp(granularity/2, 1, H.size());
 
-                    int Wn = W.size();
-                    if (Wn == 0) return false;
-                    What w = W.sample(rng);
-                    if (w.isOn()) {
-
-                        long before = nanoTime();
-
-                        long useNS = //Util.lerp(h.pri() * w.pri(), subCycleMinNS, subCycleMaxNS);
-                                Math.round(subCycleMaxNS / Math.max(1.0,h.utilization()));
-                        if (before + useNS > until)
-                            return false; //not enough remaining time
-
-                        boolean singleton = h.singleton();
-                        if (!singleton || h.busy.compareAndSet(false, true)) {
-                            try {
-                                h.runFor(w, useNS);
-                            } finally {
-                                if (singleton)
-                                    h.busy.set(false);
-                            }
-
+            What w = W.sample(rng);
+            if (w != null && w.isOn()) {
+                H.sample(rng, (How h)->{
+                    if (h.isOn()) {
+                        for (int wh = 0; wh < hPerW; wh++) {
+                            if (!play(h, w, until))
+                                return false;
                         }
                     }
+                    return until > nanoTime();
+                });
+            }
+
+        }
+
+        private boolean play(How h, What w, long until) {
+            boolean singleton = h.singleton();
+            if (!singleton || h.busy.compareAndSet(false, true)) {
+                long before = nanoTime();
+
+                float util = h.utilization();
+                if (!Float.isFinite(util)) util = 1;
+                long useNS = Math.round(subCycleMaxNS / ((double)Util.clamp(util, 1f, maxOverUtilization)));
+//                if (before + useNS > until)
+//                    return false;
+
+                try {
+                    h.runFor(w, useNS);
+                } finally {
+                    if (singleton)
+                        h.busy.set(false);
                 }
-                return (until > nanoTime());
-            });
 
-//                System.out.println(
-//                    this + "\tplaytime=" + Texts.timeStr(playTime) + " " +
-//                        Texts.n2((((double)(after - start))/playTime)*100) + "% used"
-//                );
-
+            }
+            return true;
         }
 
         void sleep() {

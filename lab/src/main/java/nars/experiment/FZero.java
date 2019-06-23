@@ -2,8 +2,6 @@ package nars.experiment;
 
 import jcog.Util;
 import jcog.learn.pid.MiniPID;
-import jcog.math.FloatAveragedWindow;
-import jcog.math.FloatSupplier;
 import jcog.signal.wave2d.ScaledBitmap2D;
 import nars.$;
 import nars.GameX;
@@ -31,7 +29,6 @@ import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 
-import static jcog.Util.compose;
 import static nars.$.$$;
 import static nars.Op.INH;
 import static nars.agent.GameTime.fps;
@@ -141,7 +138,7 @@ public class FZero extends GameX {
         initUnipolarLinear(3f);
 
 //        BiPolarAction A =
-            initBipolarRotateRelative(true, 0.4f);
+            initBipolarRotateRelative(true, 0.3f);
                 //initBipolarRotateRelative(true, 1f);
                 //initBipolarRotateAbsolute(true);
                 //initBipolarRotateDirect(false, 0.9f);
@@ -158,18 +155,17 @@ public class FZero extends GameX {
 //        senseNumberBi($.funcImg("vel", $$("y")), compose(() -> (float) fz.vehicleMetrics[0][8],
 //                new FloatAveragedWindow(8, 0.5f, false))).resolution(r);
 
-        senseNumberDifferenceBi($.inh($.the("delta"), $.the("vel")), () -> (float) fz.vehicleMetrics[0][6]).resolution(r);
+//        senseNumberDifferenceBi($.inh($.the("delta"), $.the("vel")), () -> (float) fz.vehicleMetrics[0][6]).resolution(r);
+//
+//        FloatSupplier playerAngle = compose(() -> (float) fz.playerAngle,
+//                new FloatAveragedWindow(8,0.5f));
+//        senseNumberDifferenceBi($.inh($.the("delta"), $.the("ang")), playerAngle).resolution(r);
 
-        FloatSupplier playerAngle = compose(() -> (float) fz.playerAngle,
-                new FloatAveragedWindow(8,0.5f));
-        senseNumberDifferenceBi($.inh($.the("delta"), $.the("ang")), playerAngle).resolution(r);
-
-        int angles = 8;
-        DigitizedScalar ang = senseAngle(()->(float)fz.playerAngle, angles, Atomic.the("ang"));
+        int angles = 4;
+        DigitizedScalar ang = senseAngle(()->(float)fz.playerAngle, angles, Atomic.the("ang"),
+                a->$.inh(id, $.p($.the("ang"), $.the(a))));
         ang.resolution(r);
-        SpaceGraph.window(
-                new VectorSensorView(ang, this).withControls()
-                /*NARui.beliefIcons(ang.sensors, nar))*/, 400, 400);
+        SpaceGraph.window(new VectorSensorView(ang,1, angles, this).withControls(), 400, 400);
 
 //        nar.goal($.sim($.func("ang", id, $.varDep(1)),$.func("ang", id, $.varDep(2)).neg()), Tense.ETERNAL);
 //        nar.onTask(t -> {
@@ -382,19 +378,19 @@ public class FZero extends GameX {
     }
 
     public BiPolarAction initBipolarRotateRelative(boolean fair, float rotFactor) {
-        float rotSpeed = 0.25f;
-        final float[] _r = {0};
+        float rotSpeed = 0.25f * rotFactor;
+//        final float[] _r = {0};
         //final MiniPID rotFilter = new MiniPID(0.35f, 0.3, 0.2f);
-        return actionBipolarFrequencyDifferential($.p(id,$.the("turn")), fair, (r0) -> {
+        return actionBipolarFrequencyDifferential((Term)$.inh(id, $.p("turn", $.varQuery(1))), fair, (r0) -> {
 
             //float r = _r[0] = (float) rotFilter.out(_r[0], r0);
-            float r = r0;
+//            float r = r0;
 
-            fz.playerAngle += r * rotSpeed * rotFactor;
+            fz.playerAngle += r0 * rotSpeed;
 //            fz.playerAngle = rotFilter.out(fz.playerAngle, fz.playerAngle + r0 * rotSpeed * rotFactor);
             //return r0;
-            return r;
-        });
+            return r0;
+        }).resolution(0.1f);
     }
 
     public BiPolarAction initBipolarRotateDirect(boolean fair, float rotFactor) {

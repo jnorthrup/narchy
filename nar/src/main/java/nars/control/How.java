@@ -177,8 +177,7 @@ abstract public class How extends NARPart implements Prioritizable {
         //if (utilPct > 100000)
             //System.err.println("warning: utilization exceeds measurement threshold: " + this + " " + n4(utilization) );
         //float u = Util.clamp(utilPct, 1, 1000);
-        float maxDynamicRange = 100;
-        this.utilization.next(Math.min(maxDynamicRange, (float) utilization));
+        this.utilization.next( (float) utilization);
         //utilizationPct.recordValue(u);
         this._utilization = (float) this.utilization.mean();
     }

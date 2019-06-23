@@ -88,6 +88,10 @@ public class VectorSensorView extends BitmapMatrixView implements BitmapMatrixVi
     public VectorSensorView(VectorSensor v, Game g) {
         this(v, g::dur, g.nar());
     }
+    public VectorSensorView(VectorSensor v, int w, int h, Game g) {
+        this(v, w, h, g::dur, g.nar());
+    }
+
 
     public VectorSensorView(VectorSensor v, FloatSupplier baseDur, NAR n) {
         this(v, (int)Math.ceil(idealStride(v)), (int)Math.ceil(v.size()/idealStride(v)), baseDur, n);

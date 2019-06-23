@@ -71,7 +71,7 @@ public class ArrayHistogram  /*AtomicDoubleArrayTensor*/  /* ArrayTensor */{
         float rangeDelta = this.rangeDelta;
 
         float mass = 0;
-        boolean flat = false;
+        boolean flat;
         if (rangeDelta < ScalarValue.EPSILON)
             flat = true;
         else {
@@ -88,7 +88,7 @@ public class ArrayHistogram  /*AtomicDoubleArrayTensor*/  /* ArrayTensor */{
 
         float f0 = rng.nextFloat();
         float f = f0 * mass;
-        boolean direction = (Float.floatToRawIntBits(f0) & 1) != 0; //one RNG call
+        boolean direction = (Integer.bitCount(Float.floatToRawIntBits(f0) ) & 1) != 0; //one RNG call
 
         //boolean direction = rng.nextBoolean();
 

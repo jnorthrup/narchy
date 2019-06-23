@@ -13,9 +13,12 @@ import jcog.pri.op.PriReturn;
 abstract public class PriHijackBag<K,V extends UnitPrioritizable> extends HijackBag<K, V> {
 
 
-    protected PriHijackBag(int cap, int reprobes) {
+    protected PriHijackBag(PriMerge merge, int cap, int reprobes) {
         super(cap, reprobes);
-        merge(PriMerge.plus);
+        merge(merge);
+    }
+    protected PriHijackBag(int cap, int reprobes) {
+        this(PriMerge.plus, cap, reprobes);
     }
 
     @Override

@@ -49,7 +49,7 @@ public class Pacman extends GameX {
 //            c.resolution(0.1f);
 //        }
         {
-            Bitmap2DSensor c = senseCamera((x,y)->$.inh($.p(x,y),id), camScale/*, 0*/);
+            Bitmap2DSensor c = senseCamera((x,y)->$.inh(id,$.p(x,y)), camScale/*, 0*/);
             VectorSensorView v = new VectorSensorView(c, this);
             gg.add(v/*.withControls()*/);
             c.resolution(0.02f);
@@ -63,7 +63,7 @@ public class Pacman extends GameX {
 //            g.keys[0] = true;
 //            g.keys[1] = false;
 //        });
-        actionTriState($.p($.the("x"),id) /*$.p(id, Atomic.the("x"))*/, (dh) -> {
+        actionTriState($.p(id,$.p($.the("x"), $.varQuery(1))), (dh) -> {
             switch (dh) {
                 case +1:
                     g.keys[1] = true;
@@ -79,7 +79,7 @@ public class Pacman extends GameX {
             }
         });
 
-        actionTriState($.p($.the("y"),id) /*$.p(id, Atomic.the("y"))*/, (dh) -> {
+        actionTriState($.p(id,$.p($.the("y"), $.varQuery(1))), (dh) -> {
             switch (dh) {
                 case +1:
                     g.keys[2] = true;

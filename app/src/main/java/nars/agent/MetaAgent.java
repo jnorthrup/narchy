@@ -238,8 +238,7 @@ public class MetaAgent extends Game {
         if (allowPause) {
             float playThresh = 0.25f;
             Term play =
-                    //$.inh(gid, MetaAgent.play);
-                    gid; //for efficiency
+                    $.inh(gid, MetaAgent.play);
 
             GoalActionConcept enableAction = actionPushButton(play, new BooleanProcedure() {
 

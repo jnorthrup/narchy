@@ -88,15 +88,19 @@ public class Gradius extends GameX {
             List<Bitmap2DSensor> cams = new FasterList();
             //AttNode camGroup = addGroup(cams)
 
+
+            Atomic big = Atomic.atom("C");
+            Atomic small = Atomic.atom("c");
             for (int i = 0; i < dx; i++)
                 for (int j = 0; j < dy; j++) {
                     int ii = i;
                     int jj = j;
+                    Term P = $.p(big, $.the(ii), $.the(jj));
                     //Term subSection = $.p(id, $.the(ii), $.the(jj));
                     Bitmap2DSensor c = senseCamera((x, y) ->
                                     $.inh(
-                                            $.p($.the(x), $.the(y)),
-                                            $.p(id, $.the("x" + ii), $.the("y" + jj))
+                                        id,
+                                        $.p(P, $.p(small, $.the(x), $.the(y)))
                                     ),
                             //$.p(
                             //$.inh(

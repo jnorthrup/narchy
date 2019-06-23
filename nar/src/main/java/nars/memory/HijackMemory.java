@@ -2,8 +2,7 @@ package nars.memory;
 
 import jcog.pri.PLink;
 import jcog.pri.PLinkHashCached;
-import jcog.pri.bag.impl.hijack.PriLinkHijackBag;
-import jcog.pri.op.PriMerge;
+import jcog.pri.bag.impl.hijack.PriHijackBag;
 import nars.NAR;
 import nars.concept.Concept;
 import nars.concept.PermanentConcept;
@@ -21,7 +20,7 @@ import java.util.stream.Stream;
  */
 public class HijackMemory extends Memory {
 
-    private final PriLinkHijackBag<Concept,PLink<Concept>> table;
+    private final PriHijackBag<Term,PLink<Concept>> table;
 
 
     private final int forgetPeriodDurs = 64;
@@ -51,16 +50,15 @@ public class HijackMemory extends Memory {
 
         getBoost = (float) (1f/Math.sqrt(capacity));
 
-        this.table = new PriLinkHijackBag<>(PriMerge.plus, capacity, reprobes) {
+        this.table = new PriHijackBag<Term,PLink<Concept>>(capacity, reprobes) {
 
             {
                 resize(capacity);
             }
 
-
             @Override
-            public Concept key(PLink<Concept> value) {
-                return value.get();
+            public Term key(PLink<Concept> value) {
+                return value.get().term();
             }
 
             @Override
@@ -173,7 +171,7 @@ public class HijackMemory extends Memory {
     @Override
     public void forEach(Consumer<? super Concept> c) {
 
-        table.forEachKey(c);
+        table.forEach(k->c.accept(k.get()));
 
     }
 

@@ -15,7 +15,6 @@ import jcog.pri.op.PriMerge;
 import jcog.pri.op.PriReturn;
 import jcog.signal.wave1d.ArrayHistogram;
 import jcog.sort.SortedArray;
-import org.apache.lucene.index.Term;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.jetbrains.annotations.Nullable;
 
@@ -62,22 +61,11 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
 
     private static int histogramBins(int s) {
         //TODO refine
-        if (s < 4)
-            return 2;
-        else if (s < 8)
-            return 4;
-        else if (s < 16)
-            return 6;
-        else if (s < 32)
-            return 8;
-        else if (s < 64)
-            return 10;
-        else if (s < 128)
-            return 12;
-        else if (s < 256)
-            return 14;
+        int thresh = 4;
+        if (s <= thresh)
+            return s;
         else
-            return 16;
+            return (int)(thresh + Math.sqrt((s-thresh)));
     }
 
     /**
@@ -235,7 +223,7 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
         int bins = histogramBins();
         if (bins > 0) {
             hist = this.hist;
-            hist.clear(0, s - 1, bins);
+            hist.clear(0, s, bins);
         } else {
             hist = null; //disabled
         }

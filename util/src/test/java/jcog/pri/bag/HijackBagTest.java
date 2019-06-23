@@ -48,6 +48,7 @@ class HijackBagTest {
         assertEquals(0, b.size());
 //        assertEquals(b.spaceMin(), b.space());
         assertEquals(cap, b.capacity());
+        assertEquals(b.spaceMin(), b.space());
 
         b.put(p("x",0.5f));
         assertEquals(1, b.size());
@@ -132,9 +133,9 @@ class HijackBagTest {
     @Test
     void testHijackSampling() {
         for (int cap : new int[] { 63, 37 }) {
-            int rep = 3;
+            int rep = 4;
             int batch = 4;
-            int extraSpace = Math.round(cap *0.2f);
+            int extraSpace = Math.round(cap *0.4f);
             DefaultHijackBag bag = new DefaultHijackBag(plus, cap * extraSpace, rep) {
 
                 @Override

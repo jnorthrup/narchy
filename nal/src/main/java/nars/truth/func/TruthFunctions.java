@@ -308,6 +308,7 @@ public final class TruthFunctions {
             );
             float c =
                     fxy * cxy;
+                    //cxy; //<= = intersection
 
             if (c >= minConf)
                 return t(z ? fxy : 1 - fxy, c);

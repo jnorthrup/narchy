@@ -45,7 +45,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
     public static final boolean SHUFFLE_TERMUTES= configIs("SHUFFLE_TERMUTES");
     public static final boolean DT_DITHER_LOGARITHMICALLY= configIs("DT_DITHER_LOGARITHMICALLY");
 
-    public static final float DEFAULT_CURIOSITY_RATE = 0.03f;
+    public static final float DEFAULT_CURIOSITY_RATE = 0.05f;
 
     public static final int NEG_CACHE_VOL_THRESHOLD = 4;
 
@@ -116,9 +116,9 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
      * priority calculation here currently depends on a commutive and associaive function
      */
     public static final FloatFloatToFloatFunction DerivationPri =
-            //(t, b) -> Util.and(t , b);
-            //(t, b) -> Util.or(t , b);
-            (t, b) -> Util.unitize(t + b); //plus, max=1
+        (t, b) -> Util.unitize(t + b); //plus, max=1
+        //Util::and;
+        //Util::or;
 
 //    /** durs surrounding a derived temporal goal with one eternal (of two) parent tasks */
 //    public static final float GOAL_PROJECT_TO_PRESENT_RADIUS_DURS = 1;
@@ -216,11 +216,15 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
     /** various post-processing of contained variables prior to use in Task content */
     public static final boolean TASK_COMPOUND_POST_NORMALIZE = true;
 
-    /** controls the temporal range of Time:Compose conclusions */
+    /** controls the temporal range of Time:Compose conclusions
+     *  TODO DiluteUnion will require reprojection of the task and the belief to their temporal midpoint
+     *  this requires changes to Derivation
+     * */
     public static final boolean OCCURRIFY_COMPOSE_UNION_DILUTE = true;
 
 
     protected static final boolean DYNAMIC_CONCEPT_TRANSIENT = false;
+    public static final boolean STRONG_DECOMPOSITION = true;
 
     public static boolean ETERNALIZE_BELIEF_PROJECTED_IN_DERIVATION = true;
     public static boolean ETERNALIZE_BELIEF_PROJECTED_IN_DERIVATION_AND_ETERNALIZE_BELIEF_TIME = true;
@@ -265,7 +269,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
     @Deprecated
     public final FloatRange questionForgetRate = new FloatRange(0.5f, 0, 1);
     public final IntRange premiseUnifyTTL = new IntRange(8, 1, 32);
-    public final IntRange deriveBranchTTL = new IntRange(3 * NAL.derive.TTL_MIN, NAL.derive.TTL_MIN, 64 * NAL.derive.TTL_MIN);
+    public final IntRange deriveBranchTTL = new IntRange(4 * NAL.derive.TTL_MIN, NAL.derive.TTL_MIN, 64 * NAL.derive.TTL_MIN);
     /**
      * how many cycles above which to dither dt and occurrence time
      * TODO move this to Time class and cache the cycle value rather than dynamically computing it
@@ -405,13 +409,13 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
         //inverse linear decay
         final double falloffDurs =
                 //0.5f;
-                1;
+                //1;
                 //1.618f; //phi
-                //2; //nyquist / horizon
+                2; //nyquist / horizon
                 //4;
                 //dur;
                 //8;
-                //64;
+
 
         final double decayTime = falloffDurs * dur;
         double e;
@@ -604,14 +608,15 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
              * <p>
              * TODO make this a per-sensor implementation cdecision
              */
-            public static final float SIGNAL_STRETCH_LIMIT_DURS = 8;
+            public static final float SIGNAL_STRETCH_LIMIT_DURS = 16;
             /**
              * maximum time between signal updates to stretch an equivalently-truthed data point across.
              * stretches perception across some amount of lag
              */
             public static final float SIGNAL_LATCH_LIMIT_DURS =/*0.5f;*/
-                    1f;
-                    //2f;
+                    2f;
+                    //1f;
+
             /** max tasked matched by series table, in case the answer limit is higher.  this reduces the number of redundant non-exact matches freeing evidential capacity for non-signal tasks from other tables of the concept */
             public static final float SERIES_MATCH_ADDITIONAL_RATE_PER_DUR = 1f/SIGNAL_STRETCH_LIMIT_DURS;
             public static final int SERIES_MATCH_MIN = 2;

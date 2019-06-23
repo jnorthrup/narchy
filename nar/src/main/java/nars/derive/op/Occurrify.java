@@ -461,10 +461,6 @@ public class Occurrify extends TimeGraph {
                 );
             }
 
-            @Override
-            public @Nullable Predicate<Derivation> filter() {
-                return (Derivation d) -> d.taskBelief_TimeIntersection[0] != TIMELESS;
-            }
 
             @Override
             public final BeliefProjection beliefProjection() {
@@ -797,11 +793,11 @@ public class Occurrify extends TimeGraph {
 //        },
     }
 
-    private static final Predicate<Derivation> differentTermsOrTimes = (d) -> {
-        if ( d.taskTerm.equals(d.beliefTerm) && !Tense.simultaneous(d.taskStart, d.beliefStart, d.ditherDT))
-            return false;
-        return true;
-    };
+    private static final Predicate<Derivation> intersection = d ->
+        d.taskBelief_TimeIntersection[0] != TIMELESS;
+
+    private static final Predicate<Derivation> differentTermsOrTimes = d ->
+        !d.taskTerm.equals(d.beliefTerm) || Tense.simultaneous(d.taskStart, d.beliefStart, d.ditherDT);
 
 }
 

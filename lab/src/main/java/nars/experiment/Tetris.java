@@ -85,7 +85,7 @@ public class Tetris extends GameX {
             }
         };
         Bitmap2DSensor<Bitmap2D> vision = addSensor(pixels = new Bitmap2DSensor<>(
-                (x, y) -> $.inh($.p(x, y), id),
+                (x, y) -> $.inh(id, $.p(x, y)),
                 //(x, y) -> $.p(GRID,$.the(x), $.the(y)),
                 grid, /*0,*/ n));
 

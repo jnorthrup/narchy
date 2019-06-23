@@ -355,7 +355,9 @@ public enum NALTruth implements TruthFunc {
     Decompose() {
         @Override
         public Truth apply(final Truth T, final Truth B, float minConf, NAL n) {
-            return TruthFunctions.decompose(T, B, true, true, true, minConf);
+            return NAL.STRONG_DECOMPOSITION ?
+                    Intersection.apply(T, B, minConf, n) :
+                    TruthFunctions.decompose(T, B, true, true, true, minConf);
         }
     },
 

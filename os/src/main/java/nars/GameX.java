@@ -27,7 +27,7 @@ import nars.derive.rule.PremiseRuleSet;
 import nars.derive.timing.ActionTiming;
 import nars.exe.impl.WorkerExec;
 import nars.gui.NARui;
-import nars.memory.CaffeineMemory;
+import nars.memory.HijackMemory;
 import nars.op.Arithmeticize;
 import nars.op.AutoencodedBitmap;
 import nars.op.Factorize;
@@ -63,7 +63,6 @@ import static java.util.stream.Collectors.toList;
 import static java.util.stream.StreamSupport.stream;
 import static nars.$.$$;
 import static nars.Op.BELIEF;
-import static spacegraph.space2d.container.grid.Gridding.grid;
 
 /**
  * Extensions to NAgent interface:
@@ -250,31 +249,25 @@ abstract public class GameX extends Game {
 
                         //new RadixTreeMemory(64*1024)
 //
-                        ramGB >= 0.5 ?
-                                new CaffeineMemory(
-                                        //8 * 1024
-                                        //16*1024
-                                        //32*1024
-                                        //64 * 1024
-                                        //128*1024
-                                        Math.round(ramGB * 128 * 1024)
-                                )
-                                :
-                                CaffeineMemory.soft()
+//                        ramGB >= 0.5 ?
+//                                new CaffeineMemory(
+//                                        //8 * 1024
+//                                        //16*1024
+//                                        //32*1024
+//                                        //64 * 1024
+//                                        //128*1024
+//                                        Math.round(ramGB * 128 * 1024)
+//                                )
+//                                :
+//                                CaffeineMemory.soft()
 //
 
                 //, c -> (int) Math.ceil(c.term().voluplexity()))
 
                         //suspect
-//                        new HijackMemory(
-//
-//                                //192 * 1024,
-//                                //128 * 1024,
-//                                64 * 1024,
-//                                //32 * 1024,
-//                                //16 * 1024,
-//                                //8 * 1024,
-//                                3)
+                        new HijackMemory(
+                                (int)Math.round(ramGB * 128 * 1024),
+                                4)
                 )
                 .get(GameX::config);
     }
@@ -312,7 +305,7 @@ abstract public class GameX extends Game {
     private static void initMeta(NAR n, Game a, boolean rl) {
 
         Gridding g = new Gridding();
-        MetaAgent meta = new MetaAgent(false, 8f, a);
+        MetaAgent meta = new MetaAgent(true, 8f, a);
         g.add(NARui.agent(meta));
         meta.what().pri(0.05f);
 
@@ -507,7 +500,7 @@ abstract public class GameX extends Game {
         );
         conjClusters.forEach(c -> n.start(c));
 
-        SpaceGraph.window(grid(conjClusters, c -> NARui.clusterView(c, n)), 700, 700);
+//        SpaceGraph.window(grid(conjClusters, c -> NARui.clusterView(c, n)), 700, 700);
 
 
 //        ConjClustering conjClusterBderived = new ConjClustering(n, BELIEF,
@@ -521,10 +514,6 @@ abstract public class GameX extends Game {
 //
 //        }
 
-        //ConjClustering conjClusterBany = new ConjClustering(n, BELIEF, (t -> true), 2, 32);
-
-//        ConjClustering conjClusterGany = new ConjClustering(n, GOAL, (t -> !(t instanceof CuriosityTask) ),
-//                8, 96);
 
         Introduction arith = new Arithmeticize.ArithmeticIntroduction(n);
 
@@ -532,10 +521,6 @@ abstract public class GameX extends Game {
 
 
         new Inperience2(n);
-        //new Inperience.Believe(8, n);
-        //new Inperience.Want(8, n);
-//        new Inperience.Wonder(8, n);
-//        new Inperience.Plan(8, n);
 
         //new Abbreviation("z", 2, 5, n);
 
@@ -554,10 +539,6 @@ abstract public class GameX extends Game {
 //        } catch (Exception e) {
 //            e.printStackTrace();
 //        }
-
-
-//        Impiler.ImpilerTracker t = new Impiler.ImpilerTracker(8, 16, n);
-//        Impiler.ImpilerDeduction d = new Impiler.ImpilerDeduction(8, 8, n);
 
 
     }
