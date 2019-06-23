@@ -206,7 +206,7 @@ abstract public class GameX extends Game {
         int threads = _threads <= 0 ? Util.concurrencyExcept(1) : _threads;
 
         double ramGB = Runtime.getRuntime().maxMemory() / (1024 * 1024 * 1024.0);
-        NAR n = new NARS()
+        return new NARS()
 
                 .what(
                         (w) -> new TaskLinkWhat(w,
@@ -249,7 +249,7 @@ abstract public class GameX extends Game {
                 .index(
 
                         //new RadixTreeMemory(64*1024)
-
+//
                         ramGB >= 0.5 ?
                                 new CaffeineMemory(
                                         //8 * 1024
@@ -261,11 +261,11 @@ abstract public class GameX extends Game {
                                 )
                                 :
                                 CaffeineMemory.soft()
-                )
+//
 
                 //, c -> (int) Math.ceil(c.term().voluplexity()))
 
-                //warning: not working right
+                        //suspect
 //                        new HijackMemory(
 //
 //                                //192 * 1024,
@@ -274,14 +274,9 @@ abstract public class GameX extends Game {
 //                                //32 * 1024,
 //                                //16 * 1024,
 //                                //8 * 1024,
-//                                4)
-
-                .get();
-
-
-        config(n);
-
-        return n;
+//                                3)
+                )
+                .get(GameX::config);
     }
 
     private static void initPlugins2(NAR n, Game a) {

@@ -228,7 +228,6 @@ public abstract class HijackBag<K, V> extends Bag<K, V> {
         if (c == 0)
             return null;
 
-        final int kHash = hash(k);
 
         float incomingPri;
         if (mode == PUT) {
@@ -242,16 +241,14 @@ public abstract class HijackBag<K, V> extends Bag<K, V> {
 
         V toAdd = null, toRemove = null, toReturn = null;
 
-        int start = (kHash % c);
-        if (start < 0)
-            start += c;
-
+        int kHash = hash(k);
+        final int start = index(kHash, c);
 
         boolean locking;
         int mutexTicket = -1;
         if (mode != GET && !allowDuplicates()) {
             locking = true;
-            mutexTicket = mutex.start(id, kHash);
+            mutexTicket = mutex.start(id, start);
         } else {
             locking = false;
         }
@@ -379,7 +376,7 @@ public abstract class HijackBag<K, V> extends Bag<K, V> {
         int dSize = (toAdd != null ? +1 : 0) + (toRemove != null ? -1 : 0);
         int size = dSize == 0 ? size() : SIZE.addAndGet(this, dSize);
 
-        if (toRemove != null)
+
 
         if (toAdd != null) {
             _onAdded(toAdd);
@@ -393,12 +390,12 @@ public abstract class HijackBag<K, V> extends Bag<K, V> {
             }
         }
 
-            if (toRemove != null) {
-                if (map == this.map) {
-                    depressurize(pri(toRemove));
-                    onRemove(toRemove);
-                }
+        if (toRemove != null) {
+            if (map == this.map) {
+                depressurize(pri(toRemove));
+                onRemove(toRemove);
             }
+        }
 
 
         return toReturn;
@@ -438,9 +435,26 @@ public abstract class HijackBag<K, V> extends Bag<K, V> {
         return key==k || k.equals(key);
     }
 
-
-    private int hash(Object x) {
+    /** default impl = x.hashCode() */
+    protected int hash(Object x) {
         return x.hashCode();
+    }
+
+    private int index(int h, int cap) {
+
+
+        //mix for additional mix
+        h ^= h >>> 20 ^ h >>> 12;
+        h ^= h >>> 7 ^ h >>> 4;
+
+
+
+        //modulo
+        h = h % cap;
+        if (h < 0)
+            h += cap;
+
+        return h;
     }
 
 

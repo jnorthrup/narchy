@@ -118,7 +118,7 @@ public class WorkerExec extends ThreadedExec {
                         long before = nanoTime();
 
                         long useNS = //Util.lerp(h.pri() * w.pri(), subCycleMinNS, subCycleMaxNS);
-                                subCycleMaxNS;
+                                Math.round(subCycleMaxNS / Math.max(1.0,h.utilization()));
                         if (before + useNS > until)
                             return false; //not enough remaining time
 

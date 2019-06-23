@@ -163,7 +163,7 @@ public class CaffeineMemory extends Memory implements CacheLoader<Term, Concept>
 
     @Override
     public Concept load(Term key) {
-        return nar.conceptBuilder.apply(key, null);
+        return nar.conceptBuilder.apply(key);
     }
 
     @Override

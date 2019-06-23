@@ -157,7 +157,7 @@ public abstract class Memory {
     }
 
     /** call this after each removal */
-    protected final void onRemove(Concept value) {
+    final void onRemove(Concept value) {
 //        if (value instanceof Concept) {
             if (value instanceof PermanentConcept) {
 

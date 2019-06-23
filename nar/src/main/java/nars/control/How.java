@@ -3,14 +3,13 @@ package nars.control;
 import com.google.common.flogger.FluentLogger;
 import jcog.Skill;
 import jcog.Texts;
-import jcog.Util;
+import jcog.math.FloatAveragedWindow;
 import jcog.pri.Prioritizable;
 import nars.NAR;
 import nars.attention.PriNode;
 import nars.attention.What;
 import nars.term.Term;
 import nars.time.event.WhenInternal;
-import org.HdrHistogram.AtomicHistogram;
 
 import java.io.PrintStream;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -18,7 +17,6 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.LongAdder;
 import java.util.function.BooleanSupplier;
 
-import static jcog.Texts.n4;
 import static nars.time.Tense.TIMELESS;
 
 /**
@@ -65,7 +63,10 @@ abstract public class How extends NARPart implements Prioritizable {
     public final AtomicBoolean busy;
     public final PriNode pri;
 
-    final AtomicHistogram utilizationPct = new AtomicHistogram(1, 100000, 3);
+    FloatAveragedWindow utilization = new FloatAveragedWindow(8, 0.5f).clear(1);
+//    final AtomicHistogram utilizationPct = new AtomicHistogram(1, 100000, 3);
+    /** cached factor */
+    transient float _utilization = 1;
 
     public final LongAdder useActual = new LongAdder();
     public final AtomicLong usedTotal = new AtomicLong(0);
@@ -172,10 +173,14 @@ abstract public class How extends NARPart implements Prioritizable {
     private void use(long expected, long actual) {
         useActual.add(actual);
         double utilization = ((double)actual)/expected;
-        long utilPct = Math.round(utilization * 100);
-        if (utilPct > 100000)
-            System.err.println("warning: utilization exceeds measurement threshold: " + this + " " + n4(utilization) );
-        utilizationPct.recordValue(Util.clamp(utilPct, 1, 1000));
+        //long utilPct = Math.round(utilization * 100);
+        //if (utilPct > 100000)
+            //System.err.println("warning: utilization exceeds measurement threshold: " + this + " " + n4(utilization) );
+        //float u = Util.clamp(utilPct, 1, 1000);
+        float maxDynamicRange = 100;
+        this.utilization.next(Math.min(maxDynamicRange, (float) utilization));
+        //utilizationPct.recordValue(u);
+        this._utilization = (float) this.utilization.mean();
     }
 
     public void printPerf(PrintStream out) {
@@ -183,8 +188,9 @@ abstract public class How extends NARPart implements Prioritizable {
         out.print("\t");
         out.print(Texts.timeStr(usedTotal.getOpaque()) + " total\t\t");
         //histogramPrint(utilizationPct.copy(), out);
-        AtomicHistogram u = utilizationPct.copy();
-        out.println("n=" + u.getTotalCount() + "\t Utilization mean=" + Texts.n2(u.getMean()) + "%+-" + Texts.n2(u.getStdDeviation()));
+//        AtomicHistogram u = utilizationPct.copy();
+        //out.println("n=" + u.getTotalCount() + "\t Utilization mean=" + Texts.n2(u.getMean()) + "%+-" + Texts.n2(u.getStdDeviation()));
+        out.println("\t util=" + Texts.n2(_utilization) /* + "%+-" + Texts.n2(u.getStdDeviation())*/);
     }
 
     public long used() {
@@ -209,6 +215,10 @@ abstract public class How extends NARPart implements Prioritizable {
     }
 
     private final WhenInternal myCause = new AtCause(id);
+
+    public float utilization() {
+        return _utilization;
+    }
 
 //    /**
 //     * 0..+1

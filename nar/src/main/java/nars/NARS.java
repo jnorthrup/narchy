@@ -39,6 +39,12 @@ import static jcog.Util.curve;
  */
 public class NARS {
 
+    public final NAR get(Consumer<NAR> init) {
+        NAR n = get();
+        init.accept(n);
+        return n;
+    }
+
     public final NAR get() {
         NAR n = new NAR(
             index.get(),
@@ -136,7 +142,7 @@ public class NARS {
                 n.termVolMax.set(22);
 
                 ((TaskLinkWhat) n.what()).links.linksMax.set(64);
-                ((TaskLinkWhat) n.what()).links.decay.set(0.5f);
+                ((TaskLinkWhat) n.what()).links.decay.set(0.1f);
 
                 n.beliefPriDefault.amp(0.1f);
                 n.goalPriDefault.amp(0.1f);
@@ -182,9 +188,9 @@ public class NARS {
                         ),
                         //beliefs tmp
                         curve(termVolume,
-                                1, 128,
-                                16, 64,
-                                32, 32
+                                1, 64,
+                                16, 32,
+                                32, 16
                         ),
                         //goals ete
                         curve(termVolume,
@@ -194,9 +200,9 @@ public class NARS {
                         ),
                         //goals tmp
                         curve(termVolume,
-                                1, 128,
-                                16, 64,
-                                32, 32
+                                1, 64,
+                                16, 32,
+                                32, 16
                         ),
                         //questions
                         curve(termVolume,

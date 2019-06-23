@@ -1217,25 +1217,13 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
      * activate/"turn-ON"/install a concept in the index and activates it, used for setup of custom concept implementations
      * implementations should apply active concept capacity policy
      */
-    public final <Permanent_Concept extends PermanentConcept> Permanent_Concept add(Permanent_Concept c) {
+    public final <P extends PermanentConcept> P add(P c) {
 
-        Termed existing = memory.remove(c.term());
-        if ((existing != null)) {
-            if (existing != c) {
-
-                if (!(c instanceof PermanentConcept)) {
-                    throw new RuntimeException("concept already indexed for target: " + c.term());
-                }
-            }
-        }
 
         memory.set(c);
 
         conceptBuilder.start(c);
 
-//        if (c instanceof Conceptor) {
-//            conceptBuilder.on((Conceptor) c);
-//        }
 
         return c;
     }

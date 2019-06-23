@@ -87,6 +87,11 @@ public class HijackMemory extends Memory {
             }
 
             @Override
+            public void onAdd(PLink<Concept> conceptPLink) {
+                super.onAdd(conceptPLink);
+            }
+
+            @Override
             public void onRemove(PLink<Concept> value) {
                 HijackMemory.this.onRemove(value.get());
             }
@@ -115,31 +120,26 @@ public class HijackMemory extends Memory {
 
     @Override
     public @Nullable Concept get(Term key, boolean createIfMissing) {
-        @Nullable PLink<Concept> x = table.get(key);
+        PLink<Concept> x = table.get(key);
         if (x != null) {
-
-
             boost(x, getBoost);
             return x.get();
-
+        } else {
+            return createIfMissing ? create(key) : null;
         }
+    }
 
-        if (createIfMissing) {
-            Concept kc = nar.conceptBuilder.apply(key, null);
-            if (kc != null) {
-                PLink<Concept> inserted = table.put(new PLinkHashCached<>(kc, priPut(key, kc)));
-                if (inserted != null) {
-                    return inserted.get();
-                } else {
-                    //could not insert
-                    return null;
-
-//                    ((Concept)kc).delete(nar);
-//                    return kc; //return the concept although it wont exist in the index
-                }
+    public @Nullable Concept create(Term key) {
+        Concept kc = nar.conceptBuilder.apply(key);
+        if (kc != null) {
+            PLink<Concept> inserted = table.put(new PLinkHashCached<>(kc, priPut(key, kc)));
+            if (inserted == null) {
+                return kc;
+            } else {
+                boost(inserted, getBoost);
+                return inserted.get();
             }
         }
-
         return null;
     }
 
@@ -157,9 +157,9 @@ public class HijackMemory extends Memory {
     public void set(Term key, Concept value) {
         PLink<Concept> existing = table.get(key);
         if (existing==null || (existing.get()!=value && !(existing.get() instanceof PermanentConcept))) {
-            remove(key);
+//            remove(key);
             PLink<Concept> inserted = table.put(new PLinkHashCached<>(value, initialTask));
-            if (inserted == null && value instanceof PermanentConcept) {
+            if (inserted == null && (inserted!=value && /* other */ value instanceof PermanentConcept)) {
                 throw new RuntimeException("unresolvable hash collision between PermanentConcepts: " + inserted + ' ' + value);
             }
         }
