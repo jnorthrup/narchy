@@ -5,7 +5,6 @@ import jcog.Util;
 import jcog.data.byt.DynBytes;
 import jcog.data.byt.util.IntCoding;
 import nars.Op;
-import nars.The;
 import nars.subterm.Subterms;
 import nars.term.Term;
 import nars.term.util.TermException;

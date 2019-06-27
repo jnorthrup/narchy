@@ -28,7 +28,6 @@ import nars.term.atom.Bool;
 import nars.term.util.builder.TermBuilder;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
 
 import java.util.List;
 

@@ -206,23 +206,23 @@ public class ConjClustering extends How {
         if (cc > 1)
             centroids.shuffleThis(w.nar.random());
 
-        CentroidConjoiner conjoiner = new CentroidConjoiner(tasksPerIterationPerCentroid, w.nar);
+        CentroidConjoiner conjoiner = new CentroidConjoiner(tasksPerIterationPerCentroid);
         do {
 
-            centroids.removeIf(i -> conjoiner.conjoinCentroid(i) == 0 || i.size() <= 1);
+            centroids.removeIf(i -> conjoiner.conjoinCentroid(i, w) == 0 || i.size() <= 1);
 
         } while (!centroids.isEmpty() && kontinue.getAsBoolean());
 
 
-        in.acceptAll(conjoiner.out, w);
+        //in.acceptAll(conjoiner.out, w);
 
     }
 
     @Override
     public boolean singleton() {
         //TODO make NeuralGasNet synchronization free then this will be good to set false
-        return true;
-        //return false;
+        //return true;
+        return false;
     }
 
     private void _update(long now) {
@@ -270,16 +270,14 @@ public class ConjClustering extends How {
         final MetalLongSet actualStamp = new MetalLongSet(NAL.STAMP_CAPACITY * 2);
 
         /** generated tasks */
-        final FasterList<Task> out = new FasterList();
+        //final FasterList<Task> out = new FasterList();
         private final int tasksGeneratedPerCentroidIterationMax;
-        private final NAR nar;
 
-        CentroidConjoiner(int tasksGeneratedPerCentroidIterationMax, NAR nar) {
+        CentroidConjoiner(int tasksGeneratedPerCentroidIterationMax) {
             this.tasksGeneratedPerCentroidIterationMax = tasksGeneratedPerCentroidIterationMax;
-            this.nar = nar;
         }
 
-        private int conjoinCentroid(FasterList<Task> in) {
+        private int conjoinCentroid(FasterList<Task> in, What w) {
             int s = in.size();
             if (s == 0)
                 return 0;
@@ -395,7 +393,7 @@ public class ConjClustering extends How {
                                             data.remove(aa);
                                     }
 
-                                    out.add(y);
+                                    ConjClustering.this.in.accept(y, w);
 
                                     if (++count >= tasksGeneratedPerCentroidIterationMax)
                                         break main;

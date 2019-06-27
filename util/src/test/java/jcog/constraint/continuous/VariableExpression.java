@@ -4,8 +4,6 @@ import jcog.constraint.continuous.exceptions.DuplicateConstraintException;
 import jcog.constraint.continuous.exceptions.UnsatisfiableConstraintException;
 import org.junit.jupiter.api.Test;
 
-import java.util.function.DoubleSupplier;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 /**

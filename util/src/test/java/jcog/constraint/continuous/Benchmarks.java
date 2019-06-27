@@ -5,7 +5,6 @@ import jcog.constraint.continuous.exceptions.NonlinearExpressionException;
 import jcog.constraint.continuous.exceptions.UnsatisfiableConstraintException;
 
 import java.util.HashMap;
-import java.util.function.DoubleSupplier;
 
 /**
  * Created by alex on 27/11/2014.

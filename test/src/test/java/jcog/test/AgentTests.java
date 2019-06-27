@@ -2,9 +2,9 @@ package jcog.test;
 
 import com.google.common.collect.Sets;
 import jcog.learn.Agent;
-import jcog.learn.ql.dqn3.DQN2;
 import jcog.learn.ql.HaiQ;
 import jcog.learn.ql.HaiQae;
+import jcog.learn.ql.dqn3.DQN2;
 import jcog.test.control.CliffWalking;
 import jcog.test.control.InputMatchesChoice;
 import jcog.test.control.OneObviousChoice;

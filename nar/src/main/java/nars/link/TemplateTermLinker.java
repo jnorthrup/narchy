@@ -6,8 +6,8 @@ import jcog.util.ArrayUtil;
 import nars.NAL;
 import nars.Op;
 import nars.term.Compound;
-import nars.term.Term;
 import nars.term.Img;
+import nars.term.Term;
 import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 
 import java.util.Collections;

@@ -1,5 +1,6 @@
 package nars.derive.op;
 
+import jcog.WTF;
 import jcog.data.set.ArrayHashSet;
 import jcog.math.LongInterval;
 import nars.NAL;
@@ -146,6 +147,8 @@ public class Occurrify extends TimeGraph {
                 }
                 case UnionDilute: {
                     long[] u = LongInterval.union(taskStart, d.taskEnd, beliefStart, d.beliefEnd).toArray();
+                    if (d.concTruth == null)
+                        throw new WTF(); //HACK
                     if (d.concPunc == BELIEF || d.concPunc == GOAL) {
                         long iRange = LongInterval.intersectLength(taskStart, d.taskEnd, beliefStart, d.beliefEnd);
                         long uRange = u[1] - u[0];

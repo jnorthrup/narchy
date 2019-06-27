@@ -11,7 +11,6 @@ import nars.$;
 import nars.GameX;
 import nars.NAR;
 import nars.agent.Reward;
-import nars.agent.util.Impiler;
 import nars.concept.action.BiPolarAction;
 import nars.concept.sensor.DigitizedScalar;
 import nars.gui.NARui;
@@ -112,7 +111,7 @@ public class PoleCart extends GameX {
             //200;
     public final FloatRange tau = new FloatRange(
             //0.007f, 0.001f, 0.02f
-                    0.02f, 0.001f, 0.02f
+                    0.015f, 0.001f, 0.02f
             );
     //0.01;
     //0.005;
@@ -300,7 +299,7 @@ public class PoleCart extends GameX {
 //                        angVel, angX, angY),
                 8,
                 8 * nar.dur(),
-                1,
+                3,
                 //new LivePredictor.LSTMPredictor(0.1f, 1),
                 new LivePredictor.MLPPredictor(0.01f),
                 what()

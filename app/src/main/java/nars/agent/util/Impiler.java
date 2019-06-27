@@ -16,7 +16,6 @@ import nars.NAR;
 import nars.Task;
 import nars.attention.What;
 import nars.concept.Concept;
-import nars.concept.TaskConcept;
 import nars.control.channel.CauseChannel;
 import nars.op.TaskLeak;
 import nars.task.NALTask;

@@ -13,7 +13,8 @@ import org.junit.jupiter.api.Test;
 
 import static jcog.data.byt.RecycledDynBytes.tmpKey;
 import static nars.$.$$;
-import static nars.Op.*;
+import static nars.Op.CONJ;
+import static nars.Op.PROD;
 import static nars.term.util.TermTest.assertEq;
 import static org.junit.jupiter.api.Assertions.*;
 

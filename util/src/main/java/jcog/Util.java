@@ -19,7 +19,6 @@ import jcog.math.FloatSupplier;
 import jcog.math.NumberException;
 import jcog.pri.ScalarValue;
 import jcog.util.ArrayUtil;
-
 import org.apache.commons.math3.fitting.PolynomialCurveFitter;
 import org.apache.commons.math3.fitting.WeightedObservedPoint;
 import org.apache.commons.math3.stat.Frequency;

@@ -60,8 +60,8 @@ public class Gradius extends GameX {
 
 //        int dx = 2, dy = 2;
 //        int px = 24, py = 24;
-        int dx = 4, dy = 4;
-        int px = 12, py = 12;
+        int dx = 2, dy = 2;
+        int px = 24, py = 24;
 
         assert px % dx == 0 && py % dy == 0;
 
@@ -95,12 +95,12 @@ public class Gradius extends GameX {
                 for (int j = 0; j < dy; j++) {
                     int ii = i;
                     int jj = j;
-                    Term P = $.p(big, $.the(ii), $.the(jj));
+                    Term Pbig = $.p(big, $.p($.the(ii), $.the(jj)));
                     //Term subSection = $.p(id, $.the(ii), $.the(jj));
                     Bitmap2DSensor c = senseCamera((x, y) ->
                                     $.inh(
                                         id,
-                                        $.p(P, $.p(small, $.the(x), $.the(y)))
+                                        $.p(Pbig, $.p(small, $.p($.the(x), $.the(y))))
                                     ),
                             //$.p(
                             //$.inh(

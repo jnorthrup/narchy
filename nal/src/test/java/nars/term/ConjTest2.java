@@ -18,7 +18,8 @@ import static nars.term.atom.Bool.True;
 import static nars.term.util.TermTest.assertEq;
 import static nars.time.Tense.DTERNAL;
 import static nars.time.Tense.ETERNAL;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 public class ConjTest2 {
     static final Term x = $.the("x");

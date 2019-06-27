@@ -1,8 +1,6 @@
 package nars.term.var;
 
-import nars.$;
 import nars.Op;
-import nars.term.Term;
 
 import static nars.Op.VAR_DEP;
 

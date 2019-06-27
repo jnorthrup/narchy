@@ -195,9 +195,7 @@ public class DigitizedScalar extends DemultiplexedScalarSensor {
             Signal sc = new Signal(s, in.id,
                 () -> {
                     float x = freqer.truth(asFloat(), ii, states.length);
-                    if (Util.equals(x, defaultFreq))
-                        return Float.NaN;
-                    return x;
+                    return Util.equals(x, defaultFreq) ? Float.NaN : x;
                 },
                 nar);
 

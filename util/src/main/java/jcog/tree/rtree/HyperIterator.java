@@ -4,7 +4,6 @@ import jcog.sort.RankedN;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 
 import java.util.function.Predicate;
-import java.util.function.Supplier;
 
 /**
  * BFS that descends through RTree visiting nodes and leaves in an order determined

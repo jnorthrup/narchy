@@ -1,15 +1,12 @@
 package nars.term;
 
 import nars.term.util.TermTest;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import static nars.$.$$;
 import static nars.Op.CONJ;
-import static nars.term.atom.Bool.False;
 import static nars.term.atom.Bool.Null;
 import static nars.term.util.TermTest.assertEq;
-import static nars.time.Tense.DTERNAL;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /** intersection / diff terms */

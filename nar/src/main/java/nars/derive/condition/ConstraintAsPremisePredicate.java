@@ -1,6 +1,5 @@
 package nars.derive.condition;
 
-import jcog.WTF;
 import jcog.data.list.FasterList;
 import nars.$;
 import nars.derive.model.Derivation;

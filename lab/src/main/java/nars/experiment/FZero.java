@@ -155,11 +155,8 @@ public class FZero extends GameX {
 //        senseNumberBi($.funcImg("vel", $$("y")), compose(() -> (float) fz.vehicleMetrics[0][8],
 //                new FloatAveragedWindow(8, 0.5f, false))).resolution(r);
 
-//        senseNumberDifferenceBi($.inh($.the("delta"), $.the("vel")), () -> (float) fz.vehicleMetrics[0][6]).resolution(r);
-//
-//        FloatSupplier playerAngle = compose(() -> (float) fz.playerAngle,
-//                new FloatAveragedWindow(8,0.5f));
-//        senseNumberDifferenceBi($.inh($.the("delta"), $.the("ang")), playerAngle).resolution(r);
+        senseNumberDifferenceBi($.inh($.the("delta"), $.the("vel")), () -> (float) fz.vehicleMetrics[0][6]).resolution(r);
+
 
         int angles = 4;
         DigitizedScalar ang = senseAngle(()->(float)fz.playerAngle, angles, Atomic.the("ang"),

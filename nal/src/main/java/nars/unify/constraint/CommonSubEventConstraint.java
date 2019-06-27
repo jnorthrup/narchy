@@ -6,8 +6,6 @@ import nars.term.util.conj.ConjUnify;
 import nars.unify.Unify;
 import org.jetbrains.annotations.Nullable;
 
-import static nars.Op.CONJ;
-
 public final class CommonSubEventConstraint extends RelationConstraint {
 
     public CommonSubEventConstraint(Variable x, Variable y) {

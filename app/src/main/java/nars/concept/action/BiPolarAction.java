@@ -205,7 +205,7 @@ public class BiPolarAction extends AbstractSensor {
         //final FloatAveraged fp = new FloatAveraged(0.99f, true);
         /** adjustable q- lowpass filters */
         //final FloatAveraged fn = new FloatAveraged(0.99f, true);
-        private final boolean normalize = false;
+//        private final boolean normalize = false;
 
         public DefaultPolarization(boolean fair) {
             this.fair = fair;
@@ -229,7 +229,7 @@ public class BiPolarAction extends AbstractSensor {
 
 
 
-            float x;
+            double x;
             //x = //(pg - ng);
 
 
@@ -246,19 +246,19 @@ public class BiPolarAction extends AbstractSensor {
             //System.out.println(pg + "|" + ng + "=" + x);
 
             if (fair) {
-                float pe = c(pos), ne = c(neg);
-                float eMax = Math.max(pe, ne);
+                double pe = c(pos), ne = c(neg);
+                double eMax = Math.max(pe, ne);
 
-                //TODO make as an adaptive AGC
-                if (normalize && eMax > MIN_NORMAL) {
-                    pe/=eMax;
-                    ne/=eMax;
-                }
+//                //TODO make as an adaptive AGC
+//                if (normalize && eMax > MIN_NORMAL) {
+//                    pe/=eMax;
+//                    ne/=eMax;
+//                }
 
-                float eMin = Math.min(pe, ne);
+                double eMin = Math.min(pe, ne);
 
                 //coherence: either they are equally confident, or they specify the same net x value
-                float coherence = Util.unitize(
+                double coherence = Util.unitize(
                         //Util.
                             //or
                             //and(
@@ -273,19 +273,10 @@ public class BiPolarAction extends AbstractSensor {
 
             }
 
-            if (Float.isFinite(x)) x = Util.clamp(motorization(x), -1, +1);
+            if (Double.isFinite(x)) x = Util.clamp(motorization((float)x), -1, +1);
             else x = Float.NaN;
 
-            lastX[0] = x;
-
-
-//            //filter negative result
-//            if (Math.abs(x) < 0.5f) {
-//                x = 0;
-//            }
-
-            return x;
-
+            return (lastX[0] = (float)x);
         }
 
         /** calculates the effective output motor value returned by the model.
@@ -298,8 +289,9 @@ public class BiPolarAction extends AbstractSensor {
         /** confidence/evidence strength.  could be truth conf or evidence, zero if null. used in determining coherence
          *  TODO return double
          * */
-        public float c(Truth t) {
-            return t != null ? (float) t.evi() : 0;
+        public double c(Truth t) {
+            //return t != null ? t.evi() : 0;
+            return t != null ? t.conf() : 0;
         }
 
         /** "Q" desire/value function. produces the scalar summary of the goal truth desire that will be

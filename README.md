@@ -1,6 +1,6 @@
 ![NARchy Logo](https://bytebucket.org/seh/narchy/raw/skynet2/doc/narchy_banner.jpg)
 
-Non-Axiomatic Reasoning System ([NARS](https://sites.google.com/site/narswang/home)) processes **Tasks** imposed by and perceived from its environment, which may include human or animal users, and other computer systems.
+Non-Axiomatic Reasoning System ([NARS](https://sites.google.com/site/narswang/home)) processes **Tasks** imposed by and perceived from its environment, which may include animal users, and other computer systems.
 
 **NARchy** is derived from the general-purpose reasoning system [OpenNARS](https://github.com/opennars).
 

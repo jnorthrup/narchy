@@ -14,7 +14,8 @@ import nars.term.var.VarPattern;
 
 import javax.annotation.Nullable;
 
-import static nars.Op.*;
+import static nars.Op.NEG;
+import static nars.Op.VAR_PATTERN;
 
 abstract public class TermMatcher {
 

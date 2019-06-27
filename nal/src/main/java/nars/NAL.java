@@ -227,7 +227,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
     public static final boolean STRONG_DECOMPOSITION = true;
 
     public static boolean ETERNALIZE_BELIEF_PROJECTED_IN_DERIVATION = true;
-    public static boolean ETERNALIZE_BELIEF_PROJECTED_IN_DERIVATION_AND_ETERNALIZE_BELIEF_TIME = true;
+    public static boolean ETERNALIZE_BELIEF_PROJECTED_IN_DERIVATION_AND_ETERNALIZE_BELIEF_TIME = false;
 
     public static boolean STRONG_COMPOSITION;
     /**
