@@ -156,6 +156,7 @@ public class DynTaskify extends TaskList {
             order[i] = i;
 
         Task[] yy = new Task[cn]; //HACK temporary buffer for sizing issue
+        ensureCapacityForAdditional(cn);
         ArrayUtil.sort(order, (int x) -> -components.get(x).term.volume());
         for (int i = 0; i < cn; i++) {
             int j = order[i];
@@ -301,18 +302,19 @@ public class DynTaskify extends TaskList {
         if (evi == null) {
             switch (size) {
                 case 1: //dont create set yet
-//                case 2:
+                    assert(evi==null);
                     break;
-                default: //more than 2:
+                case 2: //more than 2:
+                    assert(evi==null);
                     long[] a = get(0).stamp(), b = get(1).stamp();
                     evi = Stamp.toSet(a.length + b.length, a, b);
+                    break;
+                default:
+                    evi.addAll(x.stamp());
                     break;
             }
         }
 
-        if (evi!=null) {
-            evi.addAll(x.stamp());
-        }
 
         return true;
     }

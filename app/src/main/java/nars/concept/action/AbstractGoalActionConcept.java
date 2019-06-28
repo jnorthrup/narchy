@@ -22,7 +22,7 @@ import nars.task.util.signal.SignalTask;
 import nars.term.Term;
 import nars.time.Tense;
 import nars.truth.Truth;
-import nars.truth.proj.FocusingLinearTruthProjection;
+import nars.truth.proj.LinearTruthProjection;
 import nars.truth.proj.TruthProjection;
 import org.jetbrains.annotations.Nullable;
 
@@ -201,8 +201,8 @@ public class AbstractGoalActionConcept extends GameAction {
                 if (atl!=null) {
 
                     TruthProjection p =
-                            //new LinearTruthProjection(a.time.start, a.time.end, dur);
-                            new FocusingLinearTruthProjection(a.time.start, a.time.end, dur);
+                            new LinearTruthProjection(a.time.start, a.time.end, dur);
+                            //new FocusingLinearTruthProjection(a.time.start, a.time.end, dur);
                     p.add(atl);
 
                     //Truth next = nextP.truth(NAL.truth.EVI_MIN, false, true, n);

@@ -29,9 +29,9 @@ import java.util.ListIterator;
 import java.util.Set;
 import java.util.function.Function;
 
-import static nars.Op.CONJ;
-import static nars.Op.NEG;
+import static nars.Op.*;
 import static nars.term.atom.Bool.Null;
+import static nars.time.Tense.DTERNAL;
 import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
 
 /**
@@ -62,26 +62,40 @@ public class Factorize {
         if (xo == NEG) {
             Term xu = x.unneg();
             Term y = apply(xu, volMax-1);
-            if (y != xu)
-                return y.neg();
-            return x;
-        }
+            return y != xu ? y.neg() : x;
+        } else if (xo == IMPL) {
+            Term subj = x.sub(0), pred = x.sub(1);
+            int dt = x.dt(); if (dt == DTERNAL) dt = 0; //HACK
+            Term subjFactored = apply(subj, volMax - pred.volume() - 1);
+            Term predFactored = apply(pred, volMax - subj.volume() - 1);
+            if (subjFactored!=null && subjFactored!=subj && predFactored!=null && predFactored!=pred)
+                return IMPL.the(subjFactored, dt + (subjFactored.eventRange() - subj.eventRange()), predFactored);
+            if (subjFactored!=null && subjFactored!=subj)
+                return IMPL.the(subjFactored, dt + (subjFactored.eventRange() - subj.eventRange()), pred);
+            if (predFactored!=null && predFactored!=pred)
+                return IMPL.the(subj, dt, predFactored);
 
-        if (xo != CONJ || !Tense.dtSpecial(x.dt()))
             return x; //unchanged
+        } else if (xo == CONJ) {
 
-        Term[] y = factorize.apply(x.subterms().commuted());
-        if (y.length == 0)
-            return x; //unchanged
+            if (!Tense.dtSpecial(x.dt()))
+                return x; //unchanged
 
-        if (Util.sum(Term::volume, y) > volMax)
-            return x; //excessively complex result
+            Term[] y = factorize.apply(x.subterms().commuted());
+            if (y.length == 0)
+                return x; //unchanged
 
-        //        Term[] yy = Terms.sorted(y);
+            if (Util.sum(Term::volume, y) > volMax)
+                return x; //excessively complex result
+
+            //        Term[] yy = Terms.sorted(y);
 //        if (xx.equalTerms(yy))
 //            return x; //unchanged
 
-        return CONJ.the(x.dt(), y);
+            return CONJ.the(x.dt(), y);
+        } else {
+            return x;
+        }
     }
 
     static final Function<Subterms,Term[]> factorize = Memoizers.the.memoizeByte(
@@ -253,7 +267,8 @@ public class Factorize {
 
         @Override
         protected boolean filter(Term next) {
-            return next.op() == CONJ && Tense.dtSpecial(next.dt()) && next.count(x -> x instanceof Compound) > 1;
+            return /*next.isAny(CONJ.bit | IMPL.bit  ) && Tense.dtSpecial(next.dt()) &&*/
+                    next.count(x -> x instanceof Compound) > 1;
         }
 
 

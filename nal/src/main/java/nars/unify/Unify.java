@@ -535,7 +535,7 @@ public abstract class Unify extends Versioning<Term> {
     @Nullable public TermList resolveListIfChanged(Subterms x) {
         //Subterms y = x.transformSubs(this::resolvePosNeg, null);
         Subterms y = x.transformSubs(transform(), null);
-        if (y!=x) {
+        if (y!=x && y!=null) {
             if (!(y instanceof TermList))
                 return y.toList();
             else
