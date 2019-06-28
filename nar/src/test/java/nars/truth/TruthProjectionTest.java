@@ -3,8 +3,8 @@ package nars.truth;
 import nars.$;
 import nars.task.NALTask;
 import nars.term.Term;
-import nars.truth.polation.LinearTruthProjection;
-import nars.truth.polation.TruthIntegration;
+import nars.truth.proj.LinearTruthProjection;
+import nars.truth.proj.TruthIntegration;
 import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 

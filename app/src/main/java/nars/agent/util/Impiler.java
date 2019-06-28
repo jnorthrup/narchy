@@ -357,7 +357,7 @@ public class Impiler {
 
                     Task.fund(z, pathTasks, true);
 
-                    //System.out.println(z);
+                    System.out.println(z);
                     in.accept(z, what);
                 }
 

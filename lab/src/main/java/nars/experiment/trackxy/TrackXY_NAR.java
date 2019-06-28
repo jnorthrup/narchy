@@ -533,7 +533,7 @@ public class TrackXY_NAR extends GameX {
     private void actionPushButtonMutex() {
 
         if (track.grid.height() > 1) {
-            actionPushButtonMutex($.the("up"), $.the("down"), (b) -> {
+            actionPushButtonMutex($.inh(id, $.the("up")), $.inh(id, $.the("down")), (b) -> {
                 if (b) {
                     float pcy = track.cy;
                     track.cy = Util.clamp(track.cy + track.controlSpeed.floatValue(), 0, track.grid.height() - 1);
@@ -550,7 +550,7 @@ public class TrackXY_NAR extends GameX {
             });
         }
 
-        actionPushButtonMutex($.the("left"), $.the("right"), (b) -> {
+        actionPushButtonMutex($.inh(id,$.the("left")), $.inh(id,$.the("right")), (b) -> {
             if (b) {
                 float pcx = track.cx;
                 track.cx = Util.clamp(track.cx - track.controlSpeed.floatValue(), 0, track.grid.width() - 1);

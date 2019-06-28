@@ -1,4 +1,4 @@
-package nars.truth.polation;
+package nars.truth.proj;
 
 import nars.Task;
 

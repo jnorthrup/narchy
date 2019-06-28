@@ -25,7 +25,7 @@ import jcog.Util;
 import nars.NAL;
 import nars.Op;
 import nars.Task;
-import nars.truth.polation.TruthIntegration;
+import nars.truth.proj.TruthIntegration;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.DataInput;

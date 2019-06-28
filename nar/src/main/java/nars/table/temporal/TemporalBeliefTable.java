@@ -8,7 +8,7 @@ import nars.Task;
 import nars.control.CauseMerge;
 import nars.table.BeliefTable;
 import nars.task.NALTask;
-import nars.truth.polation.TruthProjection;
+import nars.truth.proj.TruthProjection;
 
 import java.util.function.Predicate;
 

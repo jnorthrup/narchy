@@ -17,7 +17,7 @@ import nars.task.util.TaskRegion;
 import nars.task.util.TimeRange;
 import nars.time.Tense;
 import nars.truth.Truth;
-import nars.truth.polation.TruthProjection;
+import nars.truth.proj.TruthProjection;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.eclipse.collections.api.tuple.Pair;
 import org.jetbrains.annotations.Nullable;

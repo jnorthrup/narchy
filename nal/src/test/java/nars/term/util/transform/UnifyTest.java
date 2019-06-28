@@ -19,12 +19,19 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static nars.$.$$;
+import static nars.term.util.TermTest.assertEq;
 import static org.junit.jupiter.api.Assertions.*;
 
 
 public class UnifyTest {
 
     private static final int INITIAL_TTL = 512;
+
+    @Test void testResolvePosNeg() {
+        Unify u = new UnifyAny(new XoRoShiRo128PlusRandom(1));
+        Term y = u.resolvePosNeg($$("--x"));
+        assertEq("(--,x)", y);
+    }
 
     @Test
     void testCommonStructureAllVariables() {

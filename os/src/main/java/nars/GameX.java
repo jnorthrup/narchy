@@ -119,7 +119,7 @@ abstract public class GameX extends Game {
 
         initPlugins(n);
         initPlugins2(n, g);
-        //initMeta(n, g, false);
+        //initMeta(n, g, true, false);
 
         //new Gridding(n.parts(Game.class).map(NARui::agent).collect(toList())),
         n.synch();
@@ -209,7 +209,7 @@ abstract public class GameX extends Game {
 
                 .what(
                         (w) -> new TaskLinkWhat(w,
-                                512,
+                                1024,
                                 new PriBuffer.BagTaskBuffer(1024, 0.25f))
                 )
 //                .attention(() -> new ActiveConcepts(1024))
@@ -300,10 +300,10 @@ abstract public class GameX extends Game {
         //Impiler.init(n);
     }
 
-    private static void initMeta(NAR n, Game a, boolean rl) {
+    private static void initMeta(NAR n, Game a, boolean rl, boolean allowPause) {
 
         Gridding g = new Gridding();
-        MetaAgent meta = new MetaAgent(true, 8f, a);
+        MetaAgent meta = new MetaAgent(allowPause, 8f, a);
         g.add(NARui.agent(meta));
         meta.what().pri(0.05f);
 

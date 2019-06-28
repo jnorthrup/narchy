@@ -1,4 +1,4 @@
-package nars.truth.polation;
+package nars.truth.proj;
 
 import com.google.common.collect.Iterables;
 import jcog.Paper;
@@ -470,28 +470,28 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
             return 1;
         }
 
+        this.term = first;
 
-        MetalBitSet matchingFirst = MetalBitSet.bits(thisSize);
-        matchingFirst.set(root);
+        MetalBitSet matchesFirst = MetalBitSet.bits(thisSize);
+        matchesFirst.set(root);
         for (int i = firstValidIndex()+1; i < thisSize; i++) {
             TaskComponent t = this.get(i);
-            if (t.valid()) {
-                Term ttt = t.task.term();
-                if (first.equals(ttt))
-                    matchingFirst.set(i);
-            }
+            if (t.valid() && first.equals(t.task.term()))
+                matchesFirst.set(i);
         }
-        if (matchingFirst.cardinality() > 1) {
-            this.term = first;
-            //exact matches are present.  remove those which are not
-            for (int i = firstValidIndex()+1; i < thisSize; i++)
-                if (!matchingFirst.get(i))
-                    set(i, null);
+        int mc = matchesFirst.cardinality();
+        if (mc > 1) {
+            if (mc < thisSize) {
+                //HACK this is too greedy
+                //exact matches are present.  remove those which are not
+                for (int i = firstValidIndex() + 1; i < thisSize; i++)
+                    if (!matchesFirst.get(i))
+                        setFast(i, null);
+            }
             removeNulls();
             return 1f;
         } else {
 
-            //use the first successful intermpolation, if possible
 
 
             for (int next = root+1; next < size; next++) {
@@ -502,7 +502,9 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
                     Term b = B.task.term();
                     final double e2Evi = B.evi;
 
-                    if ((Float.isFinite(dtDiff(a, b)))) {
+                    float dtDiff;
+                    //HACK this chooses the first available 2+-ary match, there may be better
+                    if ((Float.isFinite(dtDiff = dtDiff(a, b)))) {
 
                         final double e1Evi = rootComponent.evi;
 
@@ -524,8 +526,10 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
 
                             this.term = ab;
                             for (int i = 0; i < size; i++)
-                                if (i != root && i != tryB)
-                                    set(i, null);
+                                if (i != root && i != tryB) {
+                                    if (get(i)!=null && !get(i).task.term().equals(ab))
+                                        setFast(i, null);
+                                }
                             removeNulls();
                             //return 1 - dtDiff * 0.5f; //half discounted
                             //return 1 - dtDiff;
@@ -534,16 +538,32 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
 
 
                     }
-                    set(tryB, null); //eliminate and continue
+                }
+            }
+            removeNulls(); //HACK
+            if (size() == 2) {
+                //stronger
+                remove(1);
+                return 1;
+            } else {
+                assert(size() > 2);
+
+
+                if (eviSum(i->i > 0) >= get(0).evi) {
+                    // if value of remainder > value(0):
+                    remove(0);  //eliminate root and continue remaining
+                    return intermpolateAndCull(nar); //HACK recurse
+                } else {
+                    size = 1;
+                    return 1;
                 }
             }
 
-
-            //last option: remove all except the first
-            removeNulls();
-
-            this.term = first;
-            return 1;
+//            //last option: remove all except the first
+//            removeNulls();
+//
+//            this.term = first;
+//            return 1;
 
 
         }

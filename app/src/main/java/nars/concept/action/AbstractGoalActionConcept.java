@@ -22,8 +22,8 @@ import nars.task.util.signal.SignalTask;
 import nars.term.Term;
 import nars.time.Tense;
 import nars.truth.Truth;
-import nars.truth.polation.FocusingLinearTruthProjection;
-import nars.truth.polation.TruthProjection;
+import nars.truth.proj.FocusingLinearTruthProjection;
+import nars.truth.proj.TruthProjection;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Predicate;

@@ -298,7 +298,7 @@ public class PoleCart extends GameX {
 //                        x, xVel,
 //                        angVel, angX, angY),
                 8,
-                8 * nar.dur(),
+                4 * nar.dur(),
                 3,
                 //new LivePredictor.LSTMPredictor(0.1f, 1),
                 new LivePredictor.MLPPredictor(0.01f),

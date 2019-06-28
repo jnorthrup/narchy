@@ -14,7 +14,7 @@ import nars.truth.Truth;
 import nars.truth.Truthed;
 import nars.truth.dynamic.DynTaskify;
 import nars.truth.dynamic.DynamicConjTruth;
-import nars.truth.polation.TruthProjection;
+import nars.truth.proj.TruthProjection;
 import org.eclipse.collections.api.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
 

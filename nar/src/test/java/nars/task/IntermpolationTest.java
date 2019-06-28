@@ -224,9 +224,9 @@ public class IntermpolationTest {
         Compound b = $.$("(b &&+1 a))");
         Compound c = $.$("(b &&+2 a))");
         RevisionTest.permuteChoose(a, b, "[(a&&b), (b &&+1 a), (a &&+1 b)]");
-        RevisionTest.permuteChoose(a, b, "[(a&&b)]");
+//        RevisionTest.permuteChoose(a, b, "[(a&&b)]");
         RevisionTest.permuteChoose(a, c, "[(b &&+2 a), (a &&+1 b)]"); //not within dur
-        RevisionTest.permuteChoose(a, c, "[(a&&b)]");
+//        RevisionTest.permuteChoose(a, c, "[(a&&b)]");
 
     }
 

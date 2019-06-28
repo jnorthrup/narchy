@@ -255,7 +255,7 @@ public abstract class TaskLeak extends How {
             for (int i = 0; i < p.length; i++) {
                 Task x = c.table(p[nextPunc]).match(when, null, (Task t) ->{
                     Term tt = t.term();
-                    if (termFilter.test(tt)) //test temporal containing target as this was not done when testing concept
+                    if (!termFilter.test(tt)) //test temporal containing target as this was not done when testing concept
                         return false;
 
                     return taskFilter.test(t);

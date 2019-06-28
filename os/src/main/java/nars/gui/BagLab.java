@@ -6,7 +6,6 @@ import jcog.pri.PriReference;
 import jcog.pri.bag.Bag;
 import jcog.pri.bag.impl.PLinkArrayBag;
 import jcog.pri.op.PriMerge;
-import jcog.random.XoRoShiRo128PlusRandom;
 import nars.$;
 import spacegraph.SpaceGraph;
 import spacegraph.space2d.Surface;
@@ -18,6 +17,7 @@ import spacegraph.util.math.Color3f;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Consumer;
 
 import static spacegraph.space2d.container.grid.Gridding.column;
@@ -101,9 +101,10 @@ public class BagLab {
         int capacity = 512;
         BagLab bagLab;
         bagLab = new BagLab(
-                new PLinkArrayBag(PriMerge.avg, capacity
-                        //plus,
-                        //replace,
+                new PLinkArrayBag(
+                        //PriMerge.plus,
+                        PriMerge.or,
+                        capacity
                       )
 
                 //new DefaultHijackBag<>(avg,capacity,4)
@@ -147,7 +148,8 @@ public class BagLab {
         long seed = System.nanoTime();
 
         Random rng = //new XorShift128PlusRandom(seed);
-                new XoRoShiRo128PlusRandom(seed);
+                //new XoRoShiRo128PlusRandom(seed);
+                ThreadLocalRandom.current();
 
         List<PriReference<Integer>> sampled = $.newArrayList(1024);
         for (int i = 0; i < (int) sampleBatches; i++) {
@@ -169,7 +171,7 @@ public class BagLab {
     }
 
     private void forget() {
-        bag.commit(bag.forget(0.25f));
+        bag.commit(bag.forget(1));
     }
 
     private void inputFlat() {

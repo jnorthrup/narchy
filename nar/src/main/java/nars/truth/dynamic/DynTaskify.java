@@ -2,8 +2,10 @@ package nars.truth.dynamic;
 
 import jcog.Paper;
 import jcog.data.bit.MetalBitSet;
+import jcog.data.list.FasterList;
 import jcog.data.set.MetalLongSet;
 import jcog.math.LongInterval;
+import jcog.util.ArrayUtil;
 import nars.NAL;
 import nars.NAR;
 import nars.Op;
@@ -17,7 +19,6 @@ import nars.task.util.TaskList;
 import nars.term.Compound;
 import nars.term.Neg;
 import nars.term.Term;
-import nars.term.util.TermException;
 import nars.time.Tense;
 import nars.truth.Stamp;
 import nars.truth.Truth;
@@ -44,6 +45,34 @@ import static nars.truth.dynamic.DynamicStatementTruth.Impl;
  * additionally tracks evidential overlap while being constructed, and provide the summation of evidence after*/
 @Paper
 public class DynTaskify extends TaskList {
+
+    static class Component {
+        final Term term;
+        final TaskConcept _concept;
+        final long start, end;
+
+        Component(Term term, TaskConcept _c, DynTaskify d, int currentComponent, long start, long end) {
+            boolean negated = term.op() == Op.NEG;
+
+            if (negated) {
+                term = term.unneg();
+                d.componentPolarity.clear(currentComponent);
+            }
+
+            this.term = term;
+            this._concept = _c;
+            this.start = start;
+            this.end = end;
+
+
+        }
+
+        public Task task(DynTaskify d) {
+            return d.model.subTask(_concept, term, start, end, d.filter, d);
+        }
+    }
+
+    FasterList<Component> components = null;
 
     public final AbstractDynamicTruth model;
 
@@ -118,9 +147,28 @@ public class DynTaskify extends TaskList {
     }
 
     public Task taskify() {
+        if (components == null) {
+            return null;
+        }
+        int cn = components.size();
+        int[] order = new int[cn];
+        for (int i = 0; i < cn; i++)
+            order[i] = i;
+
+        Task[] yy = new Task[cn]; //HACK temporary buffer for sizing issue
+        ArrayUtil.sort(order, (int x) -> -components.get(x).term.volume());
+        for (int i = 0; i < cn; i++) {
+            int j = order[i];
+            Task tt = components.get(j).task(this);
+            if (tt == null)
+                return null;
+            add(tt); //HACK necessary for stamp detection
+            yy[j] = tt;
+        }
+        System.arraycopy(yy, 0, items, 0, yy.length); //HACK proper order
+
+
         long s, e;
-
-
         long earliest;
         long latest = maxValue(Stamp::end);
         if (latest == LongInterval.ETERNAL) {
@@ -227,48 +275,21 @@ public class DynTaskify extends TaskList {
     }
 
 
-//    @Override
-//    protected Truth truthDynamic(long start, long end, Term template, Predicate<Task> filter, NAR nar) {
-//
-//        DynStampTruth d = model.eval(template, beliefOrGoal, start, end, filter, true, nar);
-//
-//        return d != null ? truth(template, model, beliefOrGoal, nar) : null;
-//
-//    }
-
-
-
-    private boolean evalComponent(Term subTerm, long subStart, long subEnd) {
-        Op so = subTerm.op();
-
-        boolean negated = so == Op.NEG;
-        int currentComponent = size;
-        if (negated) {
-            subTerm = subTerm.unneg();
-            so = subTerm.op();
-            componentPolarity.clear(currentComponent);
-        }
-
-        if (!so.taskable)
-            throw new TermException("non-taskable component of supposed dynamic compound", subTerm);
-
-//        Term subTerm2 = subTerm.normalize();
-//        if (!subTerm2.equals(subTerm)) {
-//            //HACK TODO detect earlier
-//            if (NAL.DEBUG)
-//                throw new TermTransformException("unnormalized dynamic task component)", subTerm, subTerm2);
-//            return false;
-//        }
-
-
-        Concept subConcept = nar.conceptualizeDynamic(subTerm);
-        if (!(subConcept instanceof TaskConcept))
+    private boolean evalComponent(Term subTerm, long start, long end) {
+        Concept c = nar.conceptualizeDynamic(subTerm.unneg());
+        if (!(c instanceof TaskConcept))
             return false;
-
-        Task t = model.subTask((TaskConcept)subConcept, subTerm, subStart, subEnd, filter, this);
-
-        return t != null && add(t);
+        if (c.table((this.beliefOrGoal?BELIEF:GOAL)).isEmpty())
+            return false;
+        if (components == null)
+            components = new FasterList(4);
+        components.add(new Component(subTerm, (TaskConcept)c,
+                this, components.size(),
+                start, end));
+        return true;
     }
+
+
 
 
 

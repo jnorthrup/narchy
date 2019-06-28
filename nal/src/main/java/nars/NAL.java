@@ -17,8 +17,8 @@ import nars.term.util.builder.MemoizingTermBuilder;
 import nars.term.util.transform.Conceptualization;
 import nars.term.util.transform.Retemporalize;
 import nars.time.Time;
-import nars.truth.polation.LinearTruthProjection;
-import nars.truth.polation.TruthProjection;
+import nars.truth.proj.LinearTruthProjection;
+import nars.truth.proj.TruthProjection;
 import nars.truth.util.ConfRange;
 import nars.util.Timed;
 
@@ -96,6 +96,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
      */
     public static final float ANSWER_COMPLETENESS =
             //0.25f;
+            //0.333f;
             0.5f;
             //0.75f;
             //1f;
@@ -260,9 +261,9 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
      * probably values <= ~0.5 are safe as this limits stretching within 'octaves'
      */
     public final FloatRange intermpolationRangeLimit = new FloatRange(
-            0.5f
+            //0.5f
             //0.618f
-            //1f
+            1f
             //2f
             , 0, 4);
 

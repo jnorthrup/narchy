@@ -1,4 +1,4 @@
-package nars.truth.polation;
+package nars.truth.proj;
 
 import jcog.pri.ScalarValue;
 import nars.NAL;
@@ -6,6 +6,7 @@ import nars.truth.PreciseTruth;
 import nars.truth.Truth;
 import org.jetbrains.annotations.Nullable;
 
+import static jcog.Util.assertFinite;
 import static nars.time.Tense.ETERNAL;
 
 /**
@@ -38,7 +39,8 @@ public class LinearTruthProjection extends TruthProjection {
         double eviFactor = 1f;
         if (nar != null) {
 
-            eviFactor *= intermpolateAndCull(nar);
+            float c = intermpolateAndCull(nar); assertFinite(c);
+            eviFactor *= c;
             if (eviFactor < ScalarValue.EPSILON)
                 return null;
 

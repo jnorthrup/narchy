@@ -33,7 +33,7 @@ import nars.truth.PreciseTruth;
 import nars.truth.Stamp;
 import nars.truth.Truth;
 import nars.truth.Truthed;
-import nars.truth.polation.TruthIntegration;
+import nars.truth.proj.TruthIntegration;
 import nars.truth.util.EvidenceEvaluator;
 import org.eclipse.collections.api.tuple.primitive.ObjectBooleanPair;
 import org.jetbrains.annotations.Nullable;

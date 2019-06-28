@@ -30,8 +30,8 @@
 
 
 
-  Z, (X <-> Y), in(Z,X), neq(Z,Y), --isVar(X), --isVar(Y)   |- substitute(Z, X, Y, "$", novel), (Belief:DesireWeak, Goal:DesireWeak, Time:TaskEvent)
-   Z, (--X <-> Y), in(Z,X), neq(Z,Y), --isVar(X), --isVar(Y)   |- substitute(Z, X, Y, "$", novel), (Belief:DesireWeakN, Goal:DesireWeakN, Time:TaskEvent)
+  Z, (X <-> Y), in(Z,X), neq(Z,Y), --isVar(X), --isVar(Y)   |- substitute(Z, X, Y, "$", novel), (Belief:DesireWeak, Time:TaskEvent)
+   Z, (--X <-> Y), in(Z,X), neq(Z,Y), --isVar(X), --isVar(Y)   |- substitute(Z, X, Y, "$", novel), (Belief:DesireWeak, Time:TaskEvent)
 //  Z, (X <-> Y), neq(Z,X), neq(Z,Y), --isVar(X), --isVar(Y)    |- unisubst(Y, X, Z, "$", novel), (Belief:DesireWeak, Time:TaskEvent)
 //   Z, (--X <-> Y), neq(Z,X), neq(Z,Y), --isVar(X), --isVar(Y)  |- unisubst(Y, X, Z, "$", novel), (Belief:DesireWeakN, Time:TaskEvent)
       //Z, (X <-> Y), task("."), neq(Z,X), neq(Z,Y)    |- unisubst(Y, X, Z, novel), (Punctuation:Question)
@@ -40,8 +40,8 @@
     //    Z, (--X <-> Y), task("!"), neq(Z,X), neq(Z,Y)  |- unisubst(Y, X, Z, novel), (Punctuation:Quest)
 
 //chain:
-  (&&,(X<->Y),A..+), (X<->Y)         |- substitute((&&,A..+),X,Y,novel), (Belief:StructuralDeduction, Goal:StructuralDeduction)
-  (&&,(X<->Y),(Y<->Z),A..+), (X<->Y) |- substitute((&&,A..+),X,Z,novel), (Belief:StructuralDeduction, Goal:StructuralDeduction)
+  (&&,(X<->Y),A..+), (X<->Y)         |- substitute((&&,A..+),X,Y,novel), (Belief:StructuralReduction, Goal:StructuralReduction)
+  //(&&,(X<->Y),(Y<->Z),A..+), (X<->Y) |- substitute((&&,A..+),X,Z,novel), (Belief:StructuralReduction, Goal:StructuralReduction)
 
 
 

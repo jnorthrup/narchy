@@ -376,10 +376,10 @@ public class NAL8Test extends NALTest {
     void testInhibition() {
 
 
-        test.termVolMax(4).confMin(0.25f)
+        test.termVolMax(4).confMin(0.15f)
                 .goal("reward")
-                .believe("(good ==> reward)", 1, 0.9f)
-                .believe("(--bad ==> reward)", 1, 0.9f)
+                .believe("(  good ==> reward)", 1, 0.9f)
+                .believe("(--bad  ==> reward)", 1, 0.9f)
                 .mustGoal(cycles, "good", 1.0f, 0.81f)
                 .mustNotOutput(cycles, "good", GOAL, 0f, 0.9f, 0f, 1f, ETERNAL)
                 .mustGoal(cycles, "bad", 0.0f, 0.81f)

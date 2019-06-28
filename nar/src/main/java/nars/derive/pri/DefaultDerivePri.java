@@ -6,7 +6,7 @@ import jcog.pri.ScalarValue;
 import nars.Task;
 import nars.derive.model.Derivation;
 import nars.truth.Truth;
-import nars.truth.polation.TruthIntegration;
+import nars.truth.proj.TruthIntegration;
 
 import static nars.time.Tense.ETERNAL;
 import static nars.truth.func.TruthFunctions.w2cSafeDouble;

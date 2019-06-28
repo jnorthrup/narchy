@@ -511,10 +511,9 @@ public abstract class Unify extends Versioning<Term> {
             xx = x;
         }
 
-        Term yy = x;
+        Term yy = xx;
         if (xx instanceof Variable) {
-            Op o = xx.op();
-            if (var(o)) {
+            if (var(xx.op())) {
                 yy = resolve((Variable) xx);
             }
         } else if (xx instanceof Compound) {
