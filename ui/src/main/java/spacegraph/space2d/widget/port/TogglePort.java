@@ -12,7 +12,7 @@ import java.util.function.Consumer;
 /** TODO include and enforce debounce and latch duration parameters */
 public class TogglePort extends BoolPort {
 
-    private final CheckBox toggle;
+    protected final CheckBox toggle;
 
     public TogglePort() {
         this("");
@@ -35,6 +35,11 @@ public class TogglePort extends BoolPort {
         on((Consumer<Boolean>)toggle::on);
 
         set(new Scale(toggle.on(initially), 0.75f));
+    }
+
+    public final TogglePort set(boolean s) {
+        toggle.set(s);
+        return this;
     }
 
     @Override

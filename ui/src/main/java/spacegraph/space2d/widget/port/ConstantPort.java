@@ -11,6 +11,11 @@ public class ConstantPort<X> extends TypedPort<X> {
         set(value);
     }
 
+    public ConstantPort(Class<? super X> klass) {
+        super(klass);
+        set((X)null);
+    }
+
     public ConstantPort(X value) {
         this(value, (Class<? super X>) value.getClass());
     }
