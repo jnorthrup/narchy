@@ -368,27 +368,47 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
         int p = sampleHistogram(rng);
         if (p >= ll.length) p = ll.length-1;
 
-        //scan radially around point, O(N)
+        //scan up then down
         for (int j = 0; j < s; j++) {
-
-            int done = 0;
             int above = p - j;
             if (above >= 0) {
                 Object a = ll[above];
-                if (a!=null && !kontinue.test((Y) a))
+                if (a != null && !kontinue.test((Y) a))
                     return;
-            } else done++;
-
+            } else
+                break;
+        }
+        for (int j = 0; j < s; j++) {
             int below = p + j + 1;
             if (below < s) {
                 Object b = ll[below];
                 if (b!=null && !kontinue.test((Y) b))
                     return;
-            } else done++;
-
-            if (done == 2)
+            } else
                 break;
         }
+
+//        //scan radially around point, O(N)
+//        for (int j = 0; j < s; j++) {
+//
+//            int done = 0;
+//            int above = p - j;
+//            if (above >= 0) {
+//                Object a = ll[above];
+//                if (a!=null && !kontinue.test((Y) a))
+//                    return;
+//            } else done++;
+//
+//            int below = p + j + 1;
+//            if (below < s) {
+//                Object b = ll[below];
+//                if (b!=null && !kontinue.test((Y) b))
+//                    return;
+//            } else done++;
+//
+//            if (done == 2)
+//                break;
+//        }
 
     }
 
