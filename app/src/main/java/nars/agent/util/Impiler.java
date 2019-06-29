@@ -110,10 +110,11 @@ public class Impiler {
 
         @Override
         protected float leak(Task next, What what) {
-            return deduce(next.term(), what);
+            return deduce(next, what);
         }
 
-        public float deduce(Term root, What what) {
+        public float deduce(Task task, What what) {
+            Term root = task.term();
             if (root.op() == IMPL)
                 root = root.sub(0); //subj
 
@@ -121,12 +122,12 @@ public class Impiler {
             if (c == null)
                 return 0;
 
-
             ImplNode m = node(c, false);
             if (m != null) {
                 //TODO handle negations correctly
                 List<Node> targets = List.of(m);
-                new ImpilerDeductionSearch(root, what)
+                new ImpilerDeductionSearch(root, what,
+                    task.isEternal() ? what.time() : task.start())
                         //.dfs(targets);
                         .bfs(targets);
                 return 1;
@@ -143,8 +144,6 @@ public class Impiler {
             AdjGraph g = new AdjGraph(true);
 
             nar.concepts().forEach(c -> {
-
-
                 ImplNode m = c.meta(IMPILER_NODE);
                 if (m != null) {
                     g.addNode(c.term());
@@ -172,13 +171,15 @@ public class Impiler {
             final float confMin;
             private final Term source;
             private final What what;
+            private final long start;
             MetalLongSet stamp = null;
             ConjBuilder cc = null;
 
-            public ImpilerDeductionSearch(Term source, What what) {
+            public ImpilerDeductionSearch(Term source, What what, final long when) {
                 this.source = source.unneg();
                 this.what = what;
                 confMin = nar.confMin.floatValue();
+                this.start = when;
             }
 
             /**
@@ -230,8 +231,7 @@ public class Impiler {
                     stamp.clear();
                 Truth tAccum = null;
 
-                final long start =
-                        pathTasks[0].start();
+
 
                 //final long now = nar.time();
 
@@ -357,7 +357,7 @@ public class Impiler {
 
                     Task.fund(z, pathTasks, true);
 
-                    System.out.println(z);
+                    //System.out.println(z);
                     in.accept(z, what);
                 }
 

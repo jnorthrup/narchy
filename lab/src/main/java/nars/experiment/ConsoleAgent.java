@@ -19,8 +19,6 @@ import spacegraph.space2d.widget.console.VectorTextGrid;
 
 import java.util.Arrays;
 
-import static nars.$.$$;
-
 /**
  * executes a unix shell and perceives the output as a grid of symbols
  * which can be interactively tagged by human, and optionally edited by NARS
@@ -34,9 +32,9 @@ public class ConsoleAgent extends GameX {
             //new char[] { ' ', 'a', 'b' };
             new char[]{' ', 'x'};
 
-    final static int WIDTH = 4;
+    final static int WIDTH = 2;
     final static int HEIGHT = 2;
-    static final float fps = 8f;
+    static final float fps = 24f;
 
     final TestConsole R;
     final TestConsole W;
@@ -103,10 +101,11 @@ public class ConsoleAgent extends GameX {
 
             {
 
-                actionPushButtonMutex($$("left"), $$("right"), ()->Left(), ()->Right(), moveThresh::floatValue);
-                actionPushButtonMutex($$("up"), $$("down"), ()->Up(), ()->Down(), moveThresh::floatValue);
+                Term id = ConsoleAgent.this.id;
+                actionPushButtonMutex($.inh(id,$.$$("left")), $.inh(id,$.$$("right")), ()->Left(), ()->Right(), moveThresh::floatValue);
+                actionPushButtonMutex($.inh(id,$.$$("up")), $.inh(id,$.$$("down")), ()->Up(), ()->Down(), moveThresh::floatValue);
                 for (char c : alphabet) {
-                    actionPushButton($.func(WRITE, $.the(c)), writeThresh::floatValue, () -> write(c));
+                    actionPushButton($.inh(id, $.p(WRITE, $.the(c))), writeThresh::floatValue, () -> write(c));
                 }
 //                actionTriState($.func("go", Atomic.the("x")), (d) -> {
 //                    switch (d) {
