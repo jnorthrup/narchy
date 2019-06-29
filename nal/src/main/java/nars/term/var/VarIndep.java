@@ -28,6 +28,8 @@ public final class VarIndep extends NormalizedVariable {
     }
 
     public static boolean validIndep(Term x, boolean safe) {
+        x = x.unneg();
+
         /* A statement sentence is not allowed to have a independent variable as subj or pred"); */
         switch (x.varIndep()) {
             case 0:
@@ -35,21 +37,22 @@ public final class VarIndep extends NormalizedVariable {
             case 1:
                 return Task.fail(x, "singular independent variable", safe);
             default:
-                if (!x.hasAny(Op.StatementBits)) {
-                    return Task.fail(x, "InDep variables must be subterms of statements", safe);
+                Subterms xx = x.subterms();
+                if (x.op().statement && xx.AND(Termlike::hasVarIndep)) {
+                    return validIndepBalance(x, safe); //indep appearing in both, test for balance
                 } else {
-                    Subterms xx = x.subterms();
-                    if (x.op().statement && xx.AND(Termlike::hasVarIndep)) {
-                        return validIndepBalance(x, safe); //indep appearing in both, test for balance
+                    if (!xx.hasAny(Op.StatementBits)) {
+                        return Task.fail(xx, "InDep variables must be subterms of statements", safe);
                     } else {
                         return xx.AND(s -> validIndep(s, safe));
                     }
                 }
+
         }
 
     }
 
-    public static boolean validIndepBalance(Term t, boolean safe) {
+    private static boolean validIndepBalance(Term t, boolean safe) {
 
 
         FasterList</* length, */ ByteList> statements = new FasterList<>(4);

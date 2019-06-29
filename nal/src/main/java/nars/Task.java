@@ -21,10 +21,8 @@ import nars.task.proxy.SpecialTruthAndOccurrenceTask;
 import nars.task.util.TaskException;
 import nars.task.util.TaskRegion;
 import nars.task.util.TasksRegion;
-import nars.term.Compound;
-import nars.term.Neg;
-import nars.term.Term;
 import nars.term.Variable;
+import nars.term.*;
 import nars.term.atom.Bool;
 import nars.term.util.TermedDelegate;
 import nars.term.var.VarIndep;
@@ -273,7 +271,7 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
         return true;
     }
 
-    static boolean fail(@Nullable Term t, String reason, boolean safe) {
+    static boolean fail(@Nullable Termlike t, String reason, boolean safe) {
         if (safe)
             return false;
         else
