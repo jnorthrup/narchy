@@ -1,5 +1,6 @@
 package spacegraph.video;
 
+import jcog.event.Off;
 import jcog.signal.wave2d.RGBBufImgBitmap2D;
 
 import java.awt.image.BufferedImage;
@@ -7,10 +8,11 @@ import java.util.function.Function;
 
 abstract public class VideoTransform<T extends VideoSource> extends VideoSource {
     public final T src;
+    private Off off;
 
     public VideoTransform(T src) {
         this.src = src;
-        src.tensor.on(this::update);
+        off = src.tensor.on(this::update);
     }
 
     protected void update() {
@@ -27,7 +29,9 @@ abstract public class VideoTransform<T extends VideoSource> extends VideoSource 
 
     @Override
     public void close() throws Exception {
-        src.close();
+        off.close();
+        off = null;
+        //src.close();
     }
 
     public static VideoTransform<?> the(VideoSource src, Function<BufferedImage,BufferedImage> frameOp) {
@@ -38,4 +42,6 @@ abstract public class VideoTransform<T extends VideoSource> extends VideoSource 
             }
         };
     }
+
+
 }

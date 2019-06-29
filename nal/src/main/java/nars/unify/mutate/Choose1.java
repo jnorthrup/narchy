@@ -112,7 +112,7 @@ public class Choose1 extends Termutator.AbstractTermutator {
                 if (((Ellipsis)xEllipsis).minArity < ys - 1)
                     return null; //impossible
                if (ys == 1)
-                   return Termutator.result(u.unify(x, yy.sub(0)) && u.unify(xEllipsis, Fragment.empty));
+                   return Termutator.result(u.unify(xEllipsis, Fragment.empty) && u.unify(x, yy.sub(0)));
 
             } else {
                 //TODO reduce to Subterms.unifyCommutive test

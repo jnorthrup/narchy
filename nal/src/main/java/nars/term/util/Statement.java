@@ -33,7 +33,12 @@ public class Statement {
         if (subject == Null || predicate == Null)
             return Null;
 
-
+        if (op == IMPL) {
+            if (subject == True)
+                return predicate;
+            else if (subject == False)
+                return predicate.neg();
+        }
 
         if (op == IMPL && dt == DTERNAL)
             dt = 0; //temporarily use dt=0
@@ -98,14 +103,22 @@ public class Statement {
                         return Null;
 
                 case IMPL: {
-                    Term inner = predicate.sub(0);
-                    Term newSubj = B.conjAppend(subject, dt, inner);
-                    int newDT = predicate.dt();
-                    if (newDT == DTERNAL)
-                        newDT = 0; //temporary
-                    Term newPred = predicate.sub(1);
-                    if (dt!=newDT || !newSubj.equals(subject) || !newPred.equals(predicate))
-                        return statement(B, IMPL, newDT, newSubj, newPred, depth-1).negIf(negate); //recurse
+                    if ((predicate.dt()==XTERNAL) == (dt==XTERNAL)) { //matching XTERNAL states otherwise infinite recursion can occurr
+                        Term inner = predicate.sub(0);
+                        Term newSubj = B.conjAppend(subject, dt, inner);
+                        if (newSubj == Null)
+                            return Null;
+                        int newDT = predicate.dt();
+                        if (newDT == DTERNAL)
+                            newDT = 0; //temporary
+                        Term newPred = predicate.sub(1);
+                        if (newPred instanceof Neg) {
+                            newPred = newPred.unneg();
+                            negate = !negate;
+                        }
+                        if (dt != newDT || !newSubj.equals(subject) || !newPred.equals(predicate))
+                            return statement(B, IMPL, newDT, newSubj, newPred, depth - 1).negIf(negate); //recurse
+                    }
                     break;
                 }
 

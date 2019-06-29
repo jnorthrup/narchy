@@ -265,7 +265,7 @@ abstract public class GameX extends Game {
                 //, c -> (int) Math.ceil(c.term().voluplexity()))
 
 
-                        //new HijackMemory((int)Math.round(ramGB * 128 * 1024), 4)
+                       // new HijackMemory((int)Math.round(ramGB * 128 * 1024), 4)
                 )
                 .get(GameX::config);
     }
@@ -384,24 +384,26 @@ abstract public class GameX extends Game {
         );
 
         n.confMin.set(0.01f);
-        n.termVolMax.set(36);
+        n.termVolMax.set(30);
 
+//        n.freqResolution.set(0.1f);
+//        n.confResolution.set(0.02f);
 
         n.beliefPriDefault.amp(0.1f);
         n.goalPriDefault.amp(0.1f);
         n.questionPriDefault.amp(0.04f);
         n.questPriDefault.amp(0.05f);
 
-        n.beliefConfDefault.set(0.8f);
-        n.goalConfDefault.set(0.8f);
+        n.beliefConfDefault.set(0.75f);
+        n.goalConfDefault.set(0.75f);
 
         n.emotion.want(MetaGoal.Futile, -0.0001f);
-        n.emotion.want(MetaGoal.Perceive, -0.0002f);
+        n.emotion.want(MetaGoal.Perceive, -0.0001f);
 
         n.emotion.want(MetaGoal.Believe, 0.01f);
         n.emotion.want(MetaGoal.Desire, 0.01f);
 
-        n.emotion.want(MetaGoal.Action, +0.02f);
+        n.emotion.want(MetaGoal.Action, +0.1f);
 
 
 //

@@ -57,7 +57,7 @@ public class Arithmeticize {
             Cmp.cmp.term, Cmp.cmp
     )::get;
 
-    public static class ArithmeticIntroduction extends Introduction {
+    public static class ArithmeticIntroduction extends EventIntroduction {
 
         public ArithmeticIntroduction(NAR n) {
             super(n);
@@ -94,9 +94,8 @@ public class Arithmeticize {
         }
 
         @Override
-        @Nullable
-        protected Term newTerm(Task xx) {
-            return Arithmeticize.apply(xx.term(), null, nar.termVolMax.intValue(), nar.random());
+        protected Term apply(Term x, int volMax) {
+            return Arithmeticize.apply(x.term(), null, nar.termVolMax.intValue(), nar.random());
         }
     }
 

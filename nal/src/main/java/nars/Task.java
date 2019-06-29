@@ -469,7 +469,7 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
     static Task withContent(Task task, Term t) {
         if (task.term().equals(t)) return task;
 
-        boolean negated = t.op() == NEG;
+        boolean negated = t instanceof Neg;
         if (negated) {
             t = t.unneg();
             if (task.isBeliefOrGoal())

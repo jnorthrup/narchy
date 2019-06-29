@@ -1,20 +1,22 @@
 package nars.op;
 
+import nars.NARS;
 import nars.term.Term;
 import org.junit.jupiter.api.Test;
 
 import static nars.$.$$;
 import static nars.Op.CONJ;
-import static nars.op.Factorize.applyAndNormalize;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class FactorizeTest {
+
+    public static final Factorize.FactorIntroduction f = new Factorize.FactorIntroduction(NARS.shell());
 
     @Test
     void testDouble() {
         assertEquals(
                 $$("(f(#1) && member(#1,{a,b}))"),
-                applyAndNormalize($$("(f(a) && f(b))"))
+                f.applyAndNormalize($$("(f(a) && f(b))"))
         );
     }
 
@@ -22,14 +24,14 @@ public class FactorizeTest {
     void testTriple() {
         assertEquals(
                 $$("(f(#1) && member(#1,{a,b,c}))"),
-                applyAndNormalize($$("(&&, f(a), f(b), f(c))"))
+                f.applyAndNormalize($$("(&&, f(a), f(b), f(c))"))
         );
     }
     @Test
     void testWithSomeNonInvolved() {
         assertEquals(
                 $$("(&&, g, f(#1), member(#1,{a,b}))"),
-                applyAndNormalize($$("(&&, f(a), f(b), g)"))
+                f.applyAndNormalize($$("(&&, f(a), f(b), g)"))
         );
     }
 
@@ -37,7 +39,7 @@ public class FactorizeTest {
     void testDoubleCommutive() {
         assertEquals(
                 $$("(member(#1,{a,y})&&{x,#1})"),
-                applyAndNormalize($$("({a,x} && {x,y})"))
+                f.applyAndNormalize($$("({a,x} && {x,y})"))
         );
     }
 
@@ -45,7 +47,7 @@ public class FactorizeTest {
     void test2() {
         assertEquals(
                 $$("(f(x,#1) && member(#1,{a,b}))"),
-                applyAndNormalize($$("(f(x,a) && f(x,b))"))
+                f.applyAndNormalize($$("(f(x,a) && f(x,b))"))
         );
     }
 
@@ -54,7 +56,7 @@ public class FactorizeTest {
         Term t = $$(s);
         assertEquals(
                 t, //unchanged
-                applyAndNormalize(t)
+                f.applyAndNormalize(t)
         );
     }
 
@@ -62,7 +64,7 @@ public class FactorizeTest {
     void testInduction1() {
         assertEquals(
                 $$("(f(#1) && member(#1,{a,b,c}))"),
-                applyAndNormalize(CONJ.the((Term)$$("f(c)"), applyAndNormalize($$("(f(a) && f(b))"))))
+                f.applyAndNormalize(CONJ.the((Term)$$("f(c)"), f.applyAndNormalize($$("(f(a) && f(b))"))))
         );
     }
 }

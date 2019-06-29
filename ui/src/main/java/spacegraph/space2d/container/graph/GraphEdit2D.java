@@ -330,6 +330,9 @@ public class GraphEdit2D extends MutableMapContainer<Surface, ContainerSurface> 
 
     //protected Wire removeWire(Surface source, Surface target) {
     boolean removeWire(Wire wire) {
+
+        wire.preRemove();
+
         boolean removed = false;
         synchronized (links) {
             //Wire wire = new Wire(source, target);

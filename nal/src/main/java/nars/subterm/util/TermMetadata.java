@@ -69,14 +69,14 @@ abstract public class TermMetadata implements Termlike {
         if (Image.imageNormalizable(x))
             return false;
 
-        if (!x.hasVars())
-            return true;
+//        if (!x.hasVars())
+//            return true;
 
         //depth first traversal, determine if variables encountered are monotonically increasing
 
         final int[] minID = {0};
         final byte[] typeToMatch = {-1};
-        return x.recurseTermsOrdered(Termlike::hasVars, (v) -> {
+        return x.recurseTermsOrdered(Term::hasVars, (v) -> {
             if (v instanceof Variable) {
                 if (v instanceof NormalizedVariable) {
 

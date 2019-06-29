@@ -228,29 +228,25 @@ public abstract class HijackBag<K, V> extends Bag<K, V> {
         if (c == 0)
             return null;
 
+        int kHash = hash(k);
+        final int start = index(kHash, c);
 
         float incomingPri;
         if (mode == PUT) {
             if ((incomingPri = pri(incoming)) != incomingPri)
                 return null;
+            pressurize(incomingPri);
         } else {
             incomingPri = Float.POSITIVE_INFINITY; /* shouldnt be used */
         }
-        if (mode == PUT)
-            pressurize(incomingPri);
 
         V toAdd = null, toRemove = null, toReturn = null;
-
-        int kHash = hash(k);
-        final int start = index(kHash, c);
-
-        boolean locking;
         int mutexTicket = -1;
-        if (mode != GET && !allowDuplicates()) {
+
+        boolean locking = mode != GET && !allowDuplicates();
+        if (locking) {
             locking = true;
             mutexTicket = mutex.start(id, start);
-        } else {
-            locking = false;
         }
 
         try {
@@ -259,9 +255,9 @@ public abstract class HijackBag<K, V> extends Bag<K, V> {
                 case GET:
                     for (int i = start, j = reprobes; j > 0; j--) {
                         V v = map.getOpaque(i);
-                        if (v != null && keyEquals(k, kHash, v)) {
+                        if (v != null && keyEquals(k, kHash, v))
                             return v;
-                        }
+
                         if (++i == c)
                             i = 0;
                     }
@@ -429,10 +425,7 @@ public abstract class HijackBag<K, V> extends Bag<K, V> {
     }
 
     protected boolean keyEquals(Object k, int kHash, V p) {
-        if (k == p)
-            return true;
-        K key = key(p);
-        return key==k || k.equals(key);
+        return k == p || k.equals(key(p));
     }
 
     /** default impl = x.hashCode() */

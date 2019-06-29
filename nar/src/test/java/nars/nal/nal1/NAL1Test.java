@@ -4,6 +4,7 @@ import nars.NAR;
 import nars.NARS;
 import nars.test.NALTest;
 import nars.test.TestNAR;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 public class NAL1Test extends NALTest {
@@ -67,6 +68,7 @@ public class NAL1Test extends NALTest {
         ;
     }
 
+    @Disabled
     @Test
     void abduction2() {
         

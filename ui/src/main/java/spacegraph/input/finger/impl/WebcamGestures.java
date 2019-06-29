@@ -127,7 +127,7 @@ public class WebcamGestures extends Finger {
     }
 
     /** http://boofcv.org/index.php?title=Example_Background_Moving_Camera */
-    private static class VideoBackgroundRemoval extends VideoTransform {
+    public static class VideoBackgroundRemoval extends VideoTransform {
         // storage for segmented image.  Background = 0, Foreground = 1
         final GrayU8 segmented = new GrayU8(1, 1);
         // Grey scale image that's the input for motion estimation

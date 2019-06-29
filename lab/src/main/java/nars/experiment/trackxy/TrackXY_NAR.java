@@ -4,6 +4,7 @@ import com.jogamp.opengl.GL2;
 import jcog.Util;
 import jcog.math.FloatNormalized;
 import jcog.math.FloatSupplier;
+import jcog.table.DataTable;
 import jcog.test.control.TrackXY;
 import jcog.tree.rtree.rect.RectFloat;
 import nars.*;
@@ -13,7 +14,6 @@ import nars.control.MetaGoal;
 import nars.derive.BatchDeriver;
 import nars.derive.Deriver;
 import nars.derive.Derivers;
-import nars.derive.timing.ActionTiming;
 import nars.exe.impl.UniExec;
 import nars.gui.NARui;
 import nars.gui.sensor.VectorSensorView;
@@ -30,7 +30,11 @@ import spacegraph.space2d.container.Splitting;
 import spacegraph.space2d.container.graph.GraphEdit2D;
 import spacegraph.space2d.widget.meta.ObjectSurface;
 import spacegraph.video.Draw;
+import tech.tablesaw.api.DoubleColumn;
+import tech.tablesaw.api.Table;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -53,7 +57,7 @@ public class TrackXY_NAR extends GameX {
 //    static float fps = 16;
 //    static int durMS = Math.round(1000/(fps));
 
-    static int dur = 4;
+    static int dur = 16;
 
     static float camResolution = 0.1f;
     static int experimentTime = 3000000;
@@ -133,20 +137,20 @@ public class TrackXY_NAR extends GameX {
 //            });
 //        } else {
 
-        FloatSupplier nearness = () -> 1f - (track.dist() / track.distMax());
-        reward("near",nearness).resolution().set(0.1f);
+        FloatSupplier nearness = () -> Util.sqr(1f - (track.dist() / track.distMax()));
+        reward("near",nearness);
 
-        FloatSupplier notLeft  = () -> ( 1f - Util.max(0,track.tx - track.cx) / track.W );
-        FloatSupplier notRight = () -> ( 1f - Util.max(0,track.cx - track.tx) / track.W );
-        reward("notLeft", notLeft).resolution().set(0.1f);
-        reward("notRight", notRight).resolution().set(0.1f);
-
-        if (track.H > 1) {
-            FloatSupplier notBelow  = () -> ( 1f - Util.max(0,track.ty - track.cy) / track.H );
-            FloatSupplier notAbove = () -> ( 1f - Util.max(0,track.cy - track.ty) / track.H );
-            reward("notBelow", notBelow).resolution().set(0.1f);
-            reward("notAbove", notAbove).resolution().set(0.1f);
-        }
+//        FloatSupplier notLeft  = () -> ( 1f - Util.max(0,track.tx - track.cx) / track.W );
+//        FloatSupplier notRight = () -> ( 1f - Util.max(0,track.cx - track.tx) / track.W );
+//        reward("notLeft", notLeft).resolution().set(0.1f);
+//        reward("notRight", notRight).resolution().set(0.1f);
+//
+//        if (track.H > 1) {
+//            FloatSupplier notBelow  = () -> ( 1f - Util.max(0,track.ty - track.cy) / track.H );
+//            FloatSupplier notAbove = () -> ( 1f - Util.max(0,track.cy - track.ty) / track.H );
+//            reward("notBelow", notBelow).resolution().set(0.1f);
+//            reward("notAbove", notAbove).resolution().set(0.1f);
+//        }
 
 
         //rewardNormalized($.the("better"), -0.1f,  +0.1f, new FloatFirstOrderDifference(nar::time, nearness) );
@@ -203,7 +207,7 @@ public class TrackXY_NAR extends GameX {
 
 //        n.attn.links.capacity(1024);
 
-        n.goalPriDefault.amp(0.5f);
+        n.goalPriDefault.amp(0.1f);
         n.beliefPriDefault.amp(0.1f);
         n.questionPriDefault.amp(0.03f);
         n.questPriDefault.amp(0.05f);
@@ -231,7 +235,7 @@ public class TrackXY_NAR extends GameX {
 //                        return conclusion == GOAL ? 1 : 0.01f; //super.puncFactor(conclusion);
 //                    }
         };
-        d.timing = new ActionTiming();
+//        d.timing = new ActionTiming();
 
 
 //        ((BatchDeriver) d).premisesPerIteration.set(derivationStrength);
@@ -257,11 +261,28 @@ public class TrackXY_NAR extends GameX {
 //
 //            ), 400, 300);
 
-        //final int W = 6, H = 1;
-        final int W = 3, H = 3;
+        final int W = 3, H = 1;
+        //final int W = 3, H = 3;
 
         TrackXY_NAR a = new TrackXY_NAR(n, new TrackXY(W, H));
-        ((TaskLinkWhat)a.what()).links.linksMax.set(256);
+        ((TaskLinkWhat)a.what()).links.linksMax.set(512);
+
+        Table t = DataTable.create(DoubleColumn.create("tx"),DoubleColumn.create("cx"));
+        Runtime.getRuntime().addShutdownHook(new Thread(()->{
+            try {
+                File f = new File("/tmp/x.csv");
+                System.out.println("writing perf metrics: " + f);
+                t.write().csv(f);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }));
+        a.onFrame(f->{
+            synchronized (t) {
+                ((DoubleColumn) t.column(0)).append((double) a.track.tx);
+                ((DoubleColumn) t.column(1)).append((double) a.track.cx);
+            }
+        });
 
 //        //if (rl) {
 //        {

@@ -265,7 +265,8 @@ public class Derivation extends PreDerivation {
 
                     float eFactor =
                             //taskTruth!=null ? taskTruth.conf() : 1;
-                            taskTruth != null ? Math.min(1, beliefTruth_at_Belief.conf() / taskTruth.conf()) : 1;
+                            //taskTruth != null ? Math.min(1, beliefTruth_at_Belief.conf() / taskTruth.conf()) : 1;
+                            1;
 
                     Truth beliefTruth_eternalized = beliefTruth_at_Belief.eternalized(eFactor, eviMin, null /* dont dither */);
                     if (beliefTruth_eternalized != null) {
@@ -462,11 +463,11 @@ public class Derivation extends PreDerivation {
         this.what = w;
 
         ditherDT =
-                n.dtDither();
+                n.dtDither(); //FINE
                 //w.dur(); //COARSE
         this.dtTolerance = uniSubstFunctor.u.dtTolerance = premiseUnify.dtTolerance =
-                //n.dtDither();
-                w.dur(); //COARSE
+                n.dtDither(); //FINE
+                //w.dur(); //COARSE
 
         this.confMin = n.confMin.floatValue();
         this.eviMin = n.confMin.asEvi();

@@ -790,12 +790,12 @@ public interface Subterms extends Termlike, Iterable<Term> {
 
                 int[] c = new int[nonconst];
                 int k = 0;
-                //sort based on heuristic of estimated complexity
+                //sort based on heuristic of estimated simplicity
                 for (int i = 0; i < n && k < nonconst; i++) {
                     if (m.get(i))
                         c[k++] = i;
                 }
-                ArrayUtil.sort(c,cc -> x.sub(cc).volume() + y.sub(cc).volume());
+                ArrayUtil.sort(c,cc -> -(x.sub(cc).volume() + y.sub(cc).volume())); //sorts descending
                 for (int cc : c) {
                     if (!x.sub(cc).unify(y.sub(cc), u))
                         return false;

@@ -11,9 +11,7 @@ import nars.subterm.Subterms;
 import nars.subterm.TermList;
 import nars.term.*;
 import nars.term.atom.Bool;
-import nars.term.compound.Sequence;
 import nars.term.util.cache.Intermed;
-import nars.time.Tense;
 import org.eclipse.collections.api.RichIterable;
 import org.eclipse.collections.api.list.MutableList;
 import org.eclipse.collections.api.list.primitive.ByteList;
@@ -29,7 +27,8 @@ import java.util.ListIterator;
 import java.util.Set;
 import java.util.function.Function;
 
-import static nars.Op.*;
+import static nars.Op.CONJ;
+import static nars.Op.SETe;
 import static nars.term.atom.Bool.Null;
 import static nars.time.Tense.DTERNAL;
 import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
@@ -53,50 +52,6 @@ import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
  */
 @Paper
 public class Factorize {
-
-    public static Term apply(Term x, int volMax) {
-        if (x instanceof Sequence)
-            return x; //HACK incompatible with sequences for now
-
-        Op xo = x.op();
-        if (xo == NEG) {
-            Term xu = x.unneg();
-            Term y = apply(xu, volMax-1);
-            return y != xu ? y.neg() : x;
-        } else if (xo == IMPL) {
-            Term subj = x.sub(0), pred = x.sub(1);
-            int dt = x.dt(); if (dt == DTERNAL) dt = 0; //HACK
-            Term subjFactored = apply(subj, volMax - pred.volume() - 1);
-            Term predFactored = apply(pred, volMax - subj.volume() - 1);
-            if (subjFactored!=null && subjFactored!=subj && predFactored!=null && predFactored!=pred)
-                return IMPL.the(subjFactored, dt + (subjFactored.eventRange() - subj.eventRange()), predFactored);
-            if (subjFactored!=null && subjFactored!=subj)
-                return IMPL.the(subjFactored, dt + (subjFactored.eventRange() - subj.eventRange()), pred);
-            if (predFactored!=null && predFactored!=pred)
-                return IMPL.the(subj, dt, predFactored);
-
-            return x; //unchanged
-        } else if (xo == CONJ) {
-
-            if (!Tense.dtSpecial(x.dt()))
-                return x; //unchanged
-
-            Term[] y = factorize.apply(x.subterms().commuted());
-            if (y.length == 0)
-                return x; //unchanged
-
-            if (Util.sum(Term::volume, y) > volMax)
-                return x; //excessively complex result
-
-            //        Term[] yy = Terms.sorted(y);
-//        if (xx.equalTerms(yy))
-//            return x; //unchanged
-
-            return CONJ.the(x.dt(), y);
-        } else {
-            return x;
-        }
-    }
 
     static final Function<Subterms,Term[]> factorize = Memoizers.the.memoizeByte(
             Factorize.class.getSimpleName() + "_factorize",
@@ -235,9 +190,16 @@ public class Factorize {
         ByteSet masked = rr.getTwo().collectByte(ObjectBytePair::getTwo).toSet();
         Set<Term> t = new UnifiedSet<>();//n - masked.size() + 1);
         for (byte i = 0; i < n; i++)
-            if (!masked.contains(i))
+            if (!masked.contains(i)) {
                 t.add(x[i]);
-        Term m = $.func(Member.member, f, $.sete(rr.getTwo().collect(ObjectBytePair::getOne)));
+            }
+        Term m = $.func(Member.member, f, $.sete(rr.getTwo().collect((ob)->{
+            Term y = ob.getOne();
+            if (y.op()==CONJ && y.dt()==DTERNAL)//flatten
+                return SETe.the(y.subterms());
+            else
+                return y;
+        })));
         if (m == Null)
             return null;
 
@@ -250,33 +212,30 @@ public class Factorize {
         return Terms.commute(t);
     }
 
-    public static Term applyAndNormalize(Term x) {
-        return applyAndNormalize(x, Integer.MAX_VALUE);
-    }
 
-    public static Term applyAndNormalize(Term x, int volMax) {
-        Term y = apply(x, volMax);
-        return y != x ? y.normalize() : x;
-    }
 
-    public static class FactorIntroduction extends Introduction {
+    public static class FactorIntroduction extends EventIntroduction {
 
         public FactorIntroduction( NAR nar) {
             super(nar);
         }
 
         @Override
-        protected boolean filter(Term next) {
-            return /*next.isAny(CONJ.bit | IMPL.bit  ) && Tense.dtSpecial(next.dt()) &&*/
-                    next.count(x -> x instanceof Compound) > 1;
+        protected Term apply(Term x, int volMax) {
+
+            Term[] y = factorize.apply(x.subterms().commuted());
+            if (y.length == 0)
+                return x; //unchanged
+
+            if (Util.sum(Term::volume, y) > volMax)
+                return x; //excessively complex result
+
+            //        Term[] yy = Terms.sorted(y);
+//        if (xx.equalTerms(yy))
+//            return x; //unchanged
+
+            return CONJ.the(x.dt(), y);
         }
 
-
-        @Override
-        protected @Nullable Term newTerm(Task x) {
-            Term xx = x.term();
-            Term y = applyAndNormalize(xx, volMax-1);
-            return y != xx ? y : null;
-        }
     }
 }

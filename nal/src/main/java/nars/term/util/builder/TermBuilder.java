@@ -189,8 +189,7 @@ public abstract class TermBuilder implements TermConstructor {
     public Term concept(Compound x) {
         Term term = x.unneg().root().normalize();
 
-        Op op = term.op();
-        if (op==NEG || !op.conceptualizable)
+        if (term instanceof Neg || !x.op().conceptualizable)
             throw new TermException("not conceptualizable", x);
 
         return term;

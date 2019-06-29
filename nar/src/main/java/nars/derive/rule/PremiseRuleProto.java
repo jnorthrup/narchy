@@ -41,7 +41,7 @@ public class PremiseRuleProto extends PremiseRule {
         Taskify taskify = new Taskify(termify, cause);
         y[k++] =
             new DirectPremisify
-            //new CachingPremisify
+            //new CachingPremisify //<- not ready yet
                 (taskPattern, beliefPattern, isFwd(), taskify);
 
         this.rule = pair(PRE, new DeriveAction(cause, truthify, AND.the(y)));

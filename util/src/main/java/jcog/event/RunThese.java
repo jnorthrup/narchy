@@ -36,10 +36,12 @@ public class RunThese extends jcog.data.list.FastCoWList<Runnable> implements Ru
     }
 
     @Override public final void run() {
-        super.removeIf(o -> {
-            o.run();
-            return true;
-        });
+        super.forEach(Runnable::run);
+        super.clear();
+//        super.removeIf(o -> {
+//            o.run();
+//            return true;
+//        });
     }
 
     @Override

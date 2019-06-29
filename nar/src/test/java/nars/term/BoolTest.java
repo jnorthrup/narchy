@@ -119,14 +119,13 @@ public class BoolTest {
     void testImplicationTautologies() {
 
         assertEq(Null, IMPL.the(Null, x));
-
-
-        assertEq(Null, IMPL.the(True, x));
-        assertEq(Null, IMPL.the(False, x));
-
         assertEq(Null, IMPL.the(x, Null));
-        assertEq(Null /*x*/, IMPL.the(x, True));
-        assertEq(Null /*x.neg()*/, IMPL.the(x, False));
+
+        assertEq(x, IMPL.the(True, x));
+        assertEq(x.neg(), IMPL.the(False, x));
+
+        assertEq(Null, IMPL.the(x, True));
+        assertEq(Null, IMPL.the(x, False));
 
     }
 

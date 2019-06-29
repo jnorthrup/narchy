@@ -29,9 +29,9 @@ public interface Subst extends AbstractTermTransform {
     @Nullable
     default Term applyCompound(Compound x) {
         Term y = xy(x);
-        if (y!=null && y!=x)
-            return apply(y);
-        else
+        if (y!=null && y!=x) {
+            return y instanceof Compound && y.equals(x) ? y : apply(y);
+        } else
             return AbstractTermTransform.super.applyCompound(x);
 
 //        if (y == null || y == x) {

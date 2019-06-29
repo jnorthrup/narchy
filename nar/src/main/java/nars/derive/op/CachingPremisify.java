@@ -1,7 +1,6 @@
 package nars.derive.op;
 
 import jcog.WTF;
-import jcog.data.list.FasterList;
 import jcog.data.set.ArrayHashRing;
 import jcog.memoize.QuickMemoize;
 import jcog.util.HashCachedPair;
@@ -99,8 +98,8 @@ public class CachingPremisify extends Premisify {
         List<DeterministicUnification> ii = u.listClone();
         int s = ii.size();
         if (s > 0) {
-            if (s > 1)
-                ((FasterList) ii).shuffleThis(d.random);
+//            if (s > 1)
+//                ((FasterList) ii).shuffleThis(d.random);
 
             int fanOut = Math.min(s, Termify_Forks);
             for (int i = 0; i < fanOut; i++) {

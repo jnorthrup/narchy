@@ -3,6 +3,7 @@ package nars.agent;
 import jcog.Skill;
 import jcog.TODO;
 import jcog.Util;
+import jcog.data.atomic.AtomicFloat;
 import jcog.math.FloatRange;
 import jcog.math.FloatSupplier;
 import jcog.util.FloatConsumer;
@@ -346,11 +347,12 @@ import static nars.Op.BELIEF;
      * http://www.freepatentsonline.com/4990796.html
      * https://en.wikipedia.org/wiki/Three-state_logic
      */
-    default GoalActionConcept[] actionPushButtonMutex(Term l, Term r, BooleanPredicate L, BooleanPredicate R, FloatSupplier thresh, QFunction Q) {
+    default GoalActionConcept[] actionPushButtonMutex(Term tl, Term tr, BooleanPredicate L, BooleanPredicate R, FloatSupplier thresh, QFunction Q) {
 
-        assert(!l.equals(r));
+        assert(!tl.equals(tr));
 
-        float[] lr = new float[]{0f, 0f};
+        final AtomicFloat l = new AtomicFloat(0);
+        final AtomicFloat r = new AtomicFloat(0);
 
 //        float decay =
 //                //0.5f;
@@ -358,52 +360,48 @@ import static nars.Op.BELIEF;
 //                1f; //instant
 
         NAR n = nar();
-        GoalActionConcept LA = action(l, (b, g) -> {
-            float q = Q.q(b,g);
+        GoalActionConcept LA = action(tl, (b, g) -> {
+            float q = Q.q(b,g) - r.asFloat();
 
 
-            float t = thresh.asFloat();
-            boolean x = (q > t) && lr[1] <= t; //(ll - lr[1] > compareThresh);
+            boolean x = q >= thresh.asFloat(); //(ll - lr[1] > compareThresh);
             boolean y = L.accept(x);
-            lr[0] =
+            l.set(
                     //ll;
                     //x ? q : 0;
-                    (x && y) ? q : 0;
+                    (x && y) ? q : 0
                     //(x && y) ? ll : 0;
                     //y ? ll : 0;
+            );
 
 
             float feedback =
                     y ? 1 : 0;
-                    //y ? 1 : Math.min(thresh.asFloat(),(g!=null ? g.freq() : 0));
             float c =
                     n.confDefault(BELIEF);
-                    //Math.max(n.confMin.floatValue(), g!=null ? g.conf() : 0)
             return $.t(feedback, c);
 
         });
-        GoalActionConcept RA = action(r, (b, g) -> {
-            float q = Q.q(b,g);
+        GoalActionConcept RA = action(tr, (b, g) -> {
+            float q = Q.q(b,g) - l.asFloat();
 
-            float t = thresh.asFloat();
-            boolean x = (q > t) && lr[0] <= t;// (rr - lr[0] > compareThresh);
+            boolean x = q >= thresh.asFloat();
             boolean y = R.accept(x);
-            lr[1] = //rr;
+            r.set( //rr;
                     //x ? q : 0;
-                    (x && y) ? q : 0;
+                    (x && y) ? q : 0
                     //(x && y) ? rr : 0;
                     //y ? rr : 0;
+            );
 
             float feedback =
                     y ? 1 : 0;
-                    //y ? 1 : Math.min(thresh.asFloat(),(g!=null ? g.freq() : 0));
             float c =
                     n.confDefault(BELIEF);
-                    //Math.max(n.confMin.floatValue(), g!=null ? g.conf() : 0)
             return $.t(feedback, c);
         });
 
-        for (GoalActionConcept x : new GoalActionConcept[]{LA, RA}) {
+//        for (GoalActionConcept x : new GoalActionConcept[]{LA, RA}) {
 //            float freq = 0.5f;
 //            float conf = 0.05f; //less than curiosity
 //            x.goals().tables.addAt(new EternalTable(1));
@@ -416,13 +414,17 @@ import static nars.Op.BELIEF;
 //                            $.t(0, conf), n.time(), Tense.ETERNAL, Tense.ETERNAL, n.evidence()), n), n);
 
             //x.resolution(0.5f);
-        }
+//        }
 
         return new GoalActionConcept[]{LA, RA};
     }
 
     default GoalActionConcept actionPushButton(Term t, BooleanPredicate on) {
         return actionPushButton(t, on, midThresh());
+    }
+
+    default FloatSupplier midHighThresh() {
+        return () -> 0.5f + 0.25f;
     }
 
     default FloatSupplier midThresh() {

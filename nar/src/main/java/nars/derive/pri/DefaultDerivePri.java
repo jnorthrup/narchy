@@ -34,7 +34,7 @@ public class DefaultDerivePri implements DerivePri {
     public final FloatRange simplicityImportance = new FloatRange(1f, 0f, 8f);
 
 
-    public final FloatRange simplicityExponent = new FloatRange(1f, 0f, 4f);
+//    public final FloatRange simplicityExponent = new FloatRange(1f, 0f, 4f);
 
 
     /** importance of frequency polarity in result (distance from freq=0.5) */
@@ -44,8 +44,8 @@ public class DefaultDerivePri implements DerivePri {
     public float pri(Task t, Derivation d) {
         float factor = this.gain.floatValue();
 
-        //factor *= factorComplexityAbsolute(t, d);
-        factor *= factorComplexityRelative(t, d);
+        factor *= factorComplexityAbsolute(t, d);
+        //factor *= factorComplexityRelative(t, d);
         //factor *= factorComplexityRelative2(t, d);
 
         if (t.isBeliefOrGoal()) {
@@ -66,15 +66,15 @@ public class DefaultDerivePri implements DerivePri {
         return pri;
     }
 
-//    float factorComplexityAbsolute(Task t, Derivation d) {
-//        int max = d.termVolMax + 1;
-//
-//        float weight = Math.min(1, t.voluplexity() / max);
-//        //float parentWeight = Math.min(1, ((d.parentVoluplexitySum / 2)/*avg*/) / max);
-//        //float f = (1f - Util.lerp(parentWeight,weight,parentWeight * weight));
-//        //return Util.lerp(simplicityImportance.floatValue(), 1f, f);
-//        return Util.lerp(simplicityImportance.floatValue(), 1f, 1-weight);
-//    }
+    float factorComplexityAbsolute(Task t, Derivation d) {
+        int max = d.termVolMax + 1;
+
+        float weight = Math.min(1, t.voluplexity() / max);
+        //float parentWeight = Math.min(1, ((d.parentVoluplexitySum / 2)/*avg*/) / max);
+        //float f = (1f - Util.lerp(parentWeight,weight,parentWeight * weight));
+        //return Util.lerp(simplicityImportance.floatValue(), 1f, f);
+        return Util.lerp(simplicityImportance.floatValue(), 1f, 1-weight);
+    }
 //
 //    float factorComplexityRelative2(Task t, Derivation d) {
 //        float inc = (t.voluplexity() - d.parentVoluplexitySum /2 /* avg */);
@@ -83,22 +83,22 @@ public class DefaultDerivePri implements DerivePri {
 //        return Util.lerp(simplicityImportance.floatValue(), 1f, f);
 //    }
 
-    float factorComplexityRelative(Task t, Derivation d) {
-        float pComplSum = d.parentVolumeSum;
-        float pCompl = pComplSum / 2; //average
-        float dCompl = t.volume();
-        float f =
-                //pCompl / (pCompl + dCompl);
-                //1 - (dCompl - pCompl) / (pCompl+dCompl);
-                pCompl / (pCompl + dCompl);
-                //1f / (1f + Math.max(0, dCompl/(dCompl+pCompl)));
-                //1f / (1f + Math.max(0, (dCompl - pCompl)) / pCompl);
-                //1f-Util.unitize((dCompl - pCompl) / pCompl );
-
-        float ff = (float) Math.pow(f, simplicityExponent.floatValue());
-
-        return Util.lerp(simplicityImportance.floatValue(), 1f, ff);
-    }
+//    float factorComplexityRelative(Task t, Derivation d) {
+//        float pComplSum = d.parentVolumeSum;
+//        float pCompl = pComplSum / 2; //average
+//        float dCompl = t.volume();
+//        float f =
+//                //pCompl / (pCompl + dCompl);
+//                //1 - (dCompl - pCompl) / (pCompl+dCompl);
+//                pCompl / (pCompl + dCompl);
+//                //1f / (1f + Math.max(0, dCompl/(dCompl+pCompl)));
+//                //1f / (1f + Math.max(0, (dCompl - pCompl)) / pCompl);
+//                //1f-Util.unitize((dCompl - pCompl) / pCompl );
+//
+//        float ff = (float) Math.pow(f, simplicityExponent.floatValue());
+//
+//        return Util.lerp(simplicityImportance.floatValue(), 1f, ff);
+//    }
 
     float factorPolarity(float freq) {
         float polarity = Truth.polarity(freq);

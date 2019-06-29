@@ -128,7 +128,7 @@ public class Premise implements Comparable<Premise> {
         } else if (taskTerm.op() == beliefTerm.op()) {
 
 
-            if (beliefTerm.hasAny(var) || taskTerm.hasAny(var) || taskTerm.hasXternal() || beliefTerm.hasXternal()) {
+            if (beliefTerm.hasAny(var) || taskTerm.hasAny(var)) { // || taskTerm.hasXternal() || beliefTerm.hasXternal()) {
 
                 Term unifiedBeliefTerm = d.premiseUnify.unified(taskTerm, beliefTerm, matchTTL);
 

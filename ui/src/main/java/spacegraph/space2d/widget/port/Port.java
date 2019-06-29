@@ -143,6 +143,9 @@ public class Port<X> extends Widget implements Wiring.Wireable {
     void connected(Port a) {
 
     }
+    void disconnected(Port a) {
+
+    }
 
     @FunctionalInterface
     public interface In<T> {
@@ -295,6 +298,7 @@ public class Port<X> extends Widget implements Wiring.Wireable {
     /** returns true if sent */
     final boolean recv(Wire from, X s) {
         if (!enabled) {
+            in.accept(null, s);
             return false;
         } else {
             In<? super X> in = this.in;

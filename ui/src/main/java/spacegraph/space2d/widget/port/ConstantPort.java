@@ -27,8 +27,16 @@ public class ConstantPort<X> extends TypedPort<X> {
 
     @Override public void connected(Port other) {
         if (outOnConnect) {
-            other.in.accept(null, value);
+            In oi = other.in;
+            if (oi!=null)
+                oi.accept(null, value);
         }
+    }
+
+    @Override
+    void disconnected(Port a) {
+        //TODO if no other inputs
+        set((X)null);
     }
 
     public final void out() {

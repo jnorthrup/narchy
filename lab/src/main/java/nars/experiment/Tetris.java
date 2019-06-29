@@ -1,6 +1,5 @@
 package nars.experiment;
 
-import jcog.Util;
 import jcog.math.FloatRange;
 import jcog.signal.wave2d.AbstractBitmap2D;
 import jcog.signal.wave2d.Bitmap2D;
@@ -14,7 +13,6 @@ import nars.op.java.Opjects;
 import nars.sensor.Bitmap2DSensor;
 import nars.term.Term;
 import nars.term.atom.Atomic;
-import org.eclipse.collections.api.block.function.primitive.FloatToFloatFunction;
 
 import java.util.Arrays;
 import java.util.Random;
@@ -69,6 +67,7 @@ public class Tetris extends GameX {
                 GameTime.fps(FPS),
                 //FrameTrigger.durs(1),
                 n);
+
 
         state = opjects ?
                 actionsReflect() :
@@ -221,30 +220,31 @@ public class Tetris extends GameX {
         );
     }
     void actionPushButtonLR_proportional() {
-        actionBipolarFrequencyDifferential($.the("x"), true, new FloatToFloatFunction() {
-
-            float speed = 2f;
-            float tx = state.currentX;
-
-            @Override
-            public float valueOf(float v) {
-                tx  = Util.clamp(tx + v * speed, -1f, state.width-1 + 0.5f);
-
-                if (Util.equals(state.currentX, tx, 0.5f))
-                    return 0; //no motion
-                else {
-                    boolean moved;
-                    if (state.currentX > tx)
-                        moved = state.act(TetrisState.LEFT);
-                    else if (state.currentX < tx)
-                        moved = state.act(TetrisState.RIGHT);
-                    else
-                        moved = true;
-
-                    return moved ? v : 0;
-                }
-            }
-        });
+        //TODO
+//        actionDial($.inh(id, $.p($.the("x"), $.varQuery(1))), true, new FloatToFloatFunction() {
+//
+//            float speed = 2f;
+//            float tx = state.currentX;
+//
+//            @Override
+//            public float valueOf(float v) {
+//                tx  = Util.clamp(tx + v * speed, -1f, state.width-1 + 0.5f);
+//
+//                if (Util.equals(state.currentX, tx, 0.5f))
+//                    return 0; //no motion
+//                else {
+//                    boolean moved;
+//                    if (state.currentX > tx)
+//                        moved = state.act(TetrisState.LEFT);
+//                    else if (state.currentX < tx)
+//                        moved = state.act(TetrisState.RIGHT);
+//                    else
+//                        moved = true;
+//
+//                    return moved ? v : 0;
+//                }
+//            }
+//        });
     }
 
     void actionPushButtonRotateFall() {

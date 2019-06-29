@@ -1,6 +1,5 @@
 package nars.task.util;
 
-import jcog.Util;
 import jcog.data.set.MetalLongSet;
 import nars.NAL;
 import nars.NAR;
@@ -70,17 +69,22 @@ public enum Revision {;
                 return null;
 
             int dtDither = n.dtDither();
-            long sepThresh = Util.lerp(
-                    (Math.abs(a.freq()-b.freq())+Math.abs(a.conf()-b.conf()))/2,
-                    //low frequency difference: require large separation (relative to the task ranges)
-                    Math.max(dtDither, a.range() + b.range()),
-                    //high frequency difference: require only some separation
-                    dtDither);
-
-            if (a.minTimeTo(b.start(), b.end()) >= sepThresh) {
-                @Nullable Pair<Task, TruthProjection> c = conjoin(n, dither, minComponents, tasks);
-                if (c!=null)
-                    return c;
+            if (a.minTimeTo(b.start(), b.end()) > n.intermpolationRangeLimit.floatValue()*Math.min(a.range(), b.range())) {
+//            long sepThresh = Util.lerp(
+//                    (Math.abs(a.freq()-b.freq())+Math.abs(a.conf()-b.conf()))/2,
+//                    //low frequency difference: require large separation (relative to the task ranges)
+//                    ((double)LongInterval.intersectLength(a.start(), a.end(), b.start(), b.end())/
+//                            LongInterval.unionLength(a.start(), a.end(), b.start(), b.end()),
+//
+//                            Math.max(dtDither, a.range() + b.range()),
+//                    //high frequency difference: require only some separation
+//                    dtDither);
+//
+//            if (a.minTimeTo(b.start(), b.end()) >= sepThresh) {
+//                @Nullable Pair<Task, TruthProjection> c = conjoin(n, dither, minComponents, tasks);
+//                if (c!=null)
+//                    return c;
+                return null;
 
                 //else: try default revise strategy (below)
             }
@@ -89,7 +93,9 @@ public enum Revision {;
         return revise(n, dither, minComponents, tasks);
     }
 
-    /** temporal-induction conjunction merge strategy */
+    /** temporal-induction conjunction merge strategy
+     * TODO needs tested probably sequence term template constructed
+     * */
     @Nullable private static <T extends TaskRegion> Pair<Task, TruthProjection> conjoin(NAR nar, boolean dither, int minComponents, T[] x) {
         final int dur = 0;
 

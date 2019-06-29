@@ -90,7 +90,10 @@ class ArithmeticTest {
     @Test
     void test2() {
         assertArith("x(2,3)", "(x(#1,add(#1,1))&&equal(#1,2))", "(cmp(#1,#2,-1)&&x(#1,#2))");
-
+    }
+    @Test
+    void test2_impl_subj() {
+        assertArith("(x(2,3) ==> y)", "((x(#1,add(#1,1))&&equal(#1,2))==>y)", "((cmp(#1,#2,-1)&&x(#1,#2))==>y)");
     }
     @Test
     void testContradictionResultsInFalse() {

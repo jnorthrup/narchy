@@ -235,6 +235,11 @@ public class MetalConcurrentQueue<X> extends AtomicReferenceArray<X> implements 
         return i >= 0 ? peek(i) : null;
     }
 
+    public final X last(int beforeEnd) {
+        int i = size() - 1 - beforeEnd;
+        return i >= 0 ? peek(i) : null;
+    }
+
     @Override
     public int remove(final X[] x) {
         return remove(x, x.length);

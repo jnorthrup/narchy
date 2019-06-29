@@ -63,17 +63,22 @@ public class Wire {
     /** sends to target */
     public final boolean send(Surface sender, Port receiver, Object x) {
 
-        if (x == null)
-            throw new NullPointerException();
+        //System.out.println(sender + " " + x + " " + receiver);
 
         if (receiver.recv(this, x)) {
+
             long now = System.nanoTime();
 
-            Class<?> cl = x.getClass();
-            int th = cl.hashCode();
-            if (cl.isArray()) {
-                
-                th = Util.hashCombine(th, Array.getLength(x));
+            int th;
+            if (x == null) {
+                th = 0;
+            } else {
+                Class<?> cl = x.getClass();
+                th = cl.hashCode();
+                if (cl.isArray()) {
+
+                    th = Util.hashCombine(th, Array.getLength(x));
+                }
             }
 
             if (sender == a) {
@@ -126,16 +131,27 @@ public class Wire {
             return x;
     }
 
+    public final void preRemove() {
+
+        if (a instanceof Port) //HACK
+            ((Port) a).disconnected((Port) b);
+
+        if (b instanceof Port)
+            ((Port) b).disconnected((Port) a);
+    }
+
     public final void remove() {
         offs.close();
+
     }
 
     /** override in subclasses to implement behavior to be executed after wire connection has been established in the graph. */
     public void connected() {
-        if (a instanceof Port && b instanceof Port) { //HACK
+        if (a instanceof Port) //HACK
             ((Port) a).connected((Port) b);
+        if (b instanceof Port)
             ((Port) b).connected((Port) a);
-        }
+
         //start.root().debug(start, 1, wire);
     }
 }
