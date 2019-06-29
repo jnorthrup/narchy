@@ -28,6 +28,7 @@ import java.util.function.Function;
 
 import static nars.Op.CONJ;
 import static nars.Op.INT;
+import static nars.term.atom.Bool.False;
 import static nars.term.atom.Bool.Null;
 import static nars.time.Tense.DTERNAL;
 import static org.eclipse.collections.impl.tuple.Tuples.pair;
@@ -332,10 +333,10 @@ public class Arithmeticize {
             //TODO anon
             Term cmp = Equal.cmp(A, B, -1);
             if (cmp == Null) return null;
-            Int aaa = Int.the(a), bbb = Int.the(b);
-            Term xx = new MapSubst.MapSubstN(Map.of(aaa, A, bbb, B), INT.bit).apply(x);
-            if (xx == Null) return null; //HACK
-            return CONJ.the(cdt, xx, cmp);
+
+            Term xx = x.transform(new MapSubst.MapSubstN(Map.of(Int.the(a), A, Int.the(b), B), INT.bit));
+
+            return ((xx == Null) || (xx == False)) ? null : CONJ.the(cdt, xx, cmp);
         }
     }
 

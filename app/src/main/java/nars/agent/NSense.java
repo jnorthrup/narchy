@@ -263,7 +263,7 @@ public interface NSense {
                 //$.func("ang", id, $.the(angle)) /*SETe.the($.the(angle)))*/,
                 //$.funcImageLast("ang", id, $.the(angle)) /*SETe.the($.the(angle)))*/,
                 //$.inh( /*id,*/ $.the(angle),"ang") /*SETe.the($.the(angle)))*/,
-                ()->(float) (0.5 + 0.5 * MathUtils.normalizeAngle(angleInRadians.asFloat(), 0) / (Math.PI)),
+                ()->(float) (0.5 + 0.5 * MathUtils.normalizeAngle(angleInRadians.asFloat(), 0) / (2 * Math.PI)),
                 divisions,
                 //DigitizedScalar.Needle
                 DigitizedScalar.FuzzyNeedle
