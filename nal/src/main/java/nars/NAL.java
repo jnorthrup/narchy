@@ -225,12 +225,17 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
 
 
     protected static final boolean DYNAMIC_CONCEPT_TRANSIENT = false;
-    public static final boolean STRONG_DECOMPOSITION = true;
 
     public static boolean ETERNALIZE_BELIEF_PROJECTED_IN_DERIVATION = true;
     public static boolean ETERNALIZE_BELIEF_PROJECTED_IN_DERIVATION_AND_ETERNALIZE_BELIEF_TIME = false;
 
-    public static boolean STRONG_COMPOSITION;
+    /** TODO make these dynamic parameters of a NALTruth implementation */
+    public static class nal_truth {
+        public static final boolean STRONG_DECOMPOSE = false;
+
+        public static final boolean STRONG_COMPOSITION = false;
+    }
+
     /**
      * use this for advanced error checking, at the expense of lower performance.
      * it is enabled for unit tests automatically regardless of the value here.
@@ -269,8 +274,8 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
 
     @Deprecated
     public final FloatRange questionForgetRate = new FloatRange(0.5f, 0, 1);
-    public final IntRange premiseUnifyTTL = new IntRange(8, 1, 32);
-    public final IntRange deriveBranchTTL = new IntRange(4 * NAL.derive.TTL_MIN, NAL.derive.TTL_MIN, 64 * NAL.derive.TTL_MIN);
+    public final IntRange premiseUnifyTTL = new IntRange(4, 1, 32);
+    public final IntRange deriveBranchTTL = new IntRange(3 * NAL.derive.TTL_MIN, NAL.derive.TTL_MIN, 64 * NAL.derive.TTL_MIN);
     /**
      * how many cycles above which to dither dt and occurrence time
      * TODO move this to Time class and cache the cycle value rather than dynamically computing it

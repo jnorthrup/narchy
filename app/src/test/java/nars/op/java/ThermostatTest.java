@@ -7,7 +7,6 @@ import nars.Task;
 import nars.op.stm.ConjClustering;
 import nars.term.Term;
 import nars.time.Tense;
-import nars.truth.Truth;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Method;
@@ -164,12 +163,14 @@ public class ThermostatTest {
                 Term cold = $.$$("is(a_Thermostat,0)");
 
                 Term hot = $.$$("is(a_Thermostat,3)");
-                Truth goalTruth = $.t(1f, 0.9f);
+                //Truth goalTruth = $.t(1f, 0.9f);
 
-//                DurService xPos = n.wantWhile(cold, goalTruth, new TaskConceptLogger(n, (w) ->
+                n.want(cold, Tense.Present, 1, 0.9f);
+                n.want(hot, Tense.Present, 1-1, 0.9f);
+//                DurLoop xPos = n.wantWhile(cold, goalTruth, new TaskConceptLogger(n, (w) ->
 //                        /*(--maxTries[0] >= 0) && */(t.current != t.target)
 //                ));
-//                DurService xNeg = n.wantWhile(hot, goalTruth.neg(), new TaskConceptLogger(n, (w) ->
+//                DurLoop xNeg = n.wantWhile(hot, goalTruth.neg(), new TaskConceptLogger(n, (w) ->
 //                        t.current != t.target
 //                ));
 

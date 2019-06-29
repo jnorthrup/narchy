@@ -144,8 +144,8 @@ public class Gradius extends GameX {
 //        }
 
 
-        initToggle();
-        //initBipolar();
+        //initToggle();
+        initBipolar();
 
         Reward alive = rewardNormalized("alive",  -1, +1, ()->{
             if (g.paused) return Float.NaN;
@@ -157,7 +157,7 @@ public class Gradius extends GameX {
         });
         alive.setDefault($.t(1, nar.beliefConfDefault.floatValue()));
 
-        Reward destroy = rewardNormalized("destroy", 0, 1, ()->{
+        Reward destroy = rewardNormalized("destroy", 0.75f,0, 1, ()->{
 
             if (g.paused) return Float.NaN;
 
@@ -207,7 +207,7 @@ public class Gradius extends GameX {
     void initBipolar() {
 
         float thresh = 0.1f;
-        actionBipolar($$("y"), dy -> {
+        actionBipolar($.inh(id, $.p($$("y"), $.varQuery(1))), dy -> {
             if (dy < -thresh) {
                 g.keys[VK_UP] = false;
                 g.keys[VK_DOWN] = true;
@@ -223,7 +223,7 @@ public class Gradius extends GameX {
             }
 
         });
-        actionBipolar($$("x"), dx -> {
+        actionBipolar($.inh(id, $.p($$("x"), $.varQuery(1))), dx -> {
             if (dx < -thresh) {
                 g.keys[VK_LEFT] = false;
                 g.keys[VK_RIGHT] = true;

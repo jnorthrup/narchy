@@ -206,7 +206,7 @@ public final class TruthFunctions {
     }
 
     public static float confCompose(float cx, float cy) {
-        if (NAL.STRONG_COMPOSITION) {
+        if (NAL.nal_truth.STRONG_COMPOSITION) {
             //convinced
             return Math.min(cx, cy);
         } else {

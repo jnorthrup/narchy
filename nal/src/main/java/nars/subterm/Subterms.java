@@ -974,8 +974,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
 
 
     static boolean possiblyUnifiable(Termlike xx, Termlike yy, int varBits) {
-        int XS = xx.structure();
-        int YS = yy.structure();
+        int XS = xx.structure(), YS = yy.structure();
         int XSc = XS & (~varBits);
         if (XSc == 0)
             return true; //X contains only vars
@@ -987,11 +986,13 @@ public interface Subterms extends Termlike, Iterable<Term> {
             boolean noTemporal = (XS & Op.Temporal) == 0 && ((YS & Op.Temporal) == 0);
             if (noTemporal)
                 return xx.equals(yy);
+            else {
 
-            boolean noConjs = noTemporal || ((XS & CONJ.bit) == 0 && ((YS & CONJ.bit) == 0));
-            if (noConjs) {
-                if (XS!=YS || xx.volume() != yy.volume())
-                    return false;
+                boolean noConjs = noTemporal || ((XS & CONJ.bit) == 0 && ((YS & CONJ.bit) == 0));
+                if (noConjs) {
+                    if (XS != YS || xx.volume() != yy.volume())
+                        return false;
+                }
             }
 
         }

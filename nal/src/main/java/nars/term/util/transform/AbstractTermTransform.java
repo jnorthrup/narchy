@@ -1,5 +1,6 @@
 package nars.term.util.transform;
 
+import jcog.WTF;
 import nars.Op;
 import nars.subterm.Subterms;
 import nars.term.Compound;
@@ -84,17 +85,21 @@ public interface AbstractTermTransform extends TermTransform, nars.term.util.bui
 
             if (c instanceof Neg) {
                 Term xx = c.unneg();
-                Term yy = apply(xx);
-                return (yy == xx) ? c : yy.neg();
+                try {
+                    Term yy = apply(xx);
+                    return (yy == xx) ? c : yy.neg();
+                } catch (StackOverflowError e) {
+                    e.printStackTrace();
+                    System.err.println(this + " " + c);
+                    throw new WTF();
+                }
             } else {
                 return applyPosCompound(c);
             }
 
         }
 
-        /**
-         * default implementation
-         */
+
         protected Term applyPosCompound(Compound x) {
             return AbstractTermTransform.super.applyCompound(x);
         }

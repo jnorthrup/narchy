@@ -5,9 +5,9 @@
     //free structural Conjunction/Disjunction decomposition
 
     C, X,                    eventOfPN(C,X) |-   conjWithoutPN(C,X), (Belief:StructuralDeduction)
-      C, X, conjParallel(C), eventOfPN(C,X) |-   conjWithoutPN(C,X), (Goal:StructuralDeduction)
+      C, X, eventOfPN(C,X) |-   conjWithoutPN(C,X), (Goal:StructuralDeduction)
     C, X,                    eventOfPN(C,X), task("?")   |-   conjWithoutPN(C,X), (Punctuation:Question)
-      C, X, conjParallel(C), eventOfPN(C,X), task("@")   |-   conjWithoutPN(C,X), (Punctuation:Quest)
+      C, X, eventOfPN(C,X), task("@")   |-   conjWithoutPN(C,X), (Punctuation:Quest)
 
     //disjunction select
 //    D, X, eventOfNeg(D,X), conjParallel(D)            |-   X, (Goal:StructuralDeductionWeakN)

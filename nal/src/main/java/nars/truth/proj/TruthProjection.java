@@ -461,103 +461,102 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
     float intermpolateAndCull(NAL nar) {
 
         final int root = firstValidIndex();
-        int thisSize = size();
-        TaskComponent rootComponent = get(root);
-        Term first = rootComponent.task.term();
-        if (thisSize == 1 || !first.hasAny(Op.Temporal)) {
-            //assumes that all the terms are from the same concept.  so if the first target has no temporal components the rest should not either.
+        int thisSize;
+        main: while ((thisSize = size()) >= 1) {
+            TaskComponent rootComponent = get(root);
+            Term first = rootComponent.task.term();
             this.term = first;
-            return 1;
-        }
-
-        this.term = first;
-
-        MetalBitSet matchesFirst = MetalBitSet.bits(thisSize);
-        matchesFirst.set(root);
-        for (int i = firstValidIndex()+1; i < thisSize; i++) {
-            TaskComponent t = this.get(i);
-            if (t.valid() && first.equals(t.task.term()))
-                matchesFirst.set(i);
-        }
-        int mc = matchesFirst.cardinality();
-        if (mc > 1) {
-            if (mc < thisSize) {
-                //HACK this is too greedy
-                //exact matches are present.  remove those which are not
-                for (int i = firstValidIndex() + 1; i < thisSize; i++)
-                    if (!matchesFirst.get(i))
-                        setFast(i, null);
+            if (thisSize == 1 || !first.hasAny(Op.Temporal)) {
+                //assumes that all the terms are from the same concept.  so if the first target has no temporal components the rest should not either.
+                return 1;
             }
-            removeNulls();
-            return 1f;
-        } else {
 
 
+            MetalBitSet matchesFirst = MetalBitSet.bits(thisSize);
+            matchesFirst.set(root);
+            for (int i = firstValidIndex() + 1; i < thisSize; i++) {
+                TaskComponent t = this.get(i);
+                if (t.valid() && first.equals(t.task.term()))
+                    matchesFirst.set(i);
+            }
+            int mc = matchesFirst.cardinality();
+            if (mc > 1) {
+                if (mc < thisSize) {
+                    //HACK this is too greedy
+                    //exact matches are present.  remove those which are not
+                    for (int i = firstValidIndex() + 1; i < thisSize; i++)
+                        if (!matchesFirst.get(i))
+                            setFast(i, null);
+                }
+                removeNulls();
+                return 1f;
+            } else {
 
-            for (int next = root+1; next < size; next++) {
-                int tryB = firstValidIndex(next);
-                if (tryB!=-1) {
-                    TaskComponent B = get(tryB);
-                    Term a = first;
-                    Term b = B.task.term();
-                    final double e2Evi = B.evi;
 
-                    float dtDiff;
-                    //HACK this chooses the first available 2+-ary match, there may be better
-                    if ((Float.isFinite(dtDiff = dtDiff(a, b)))) {
+                for (int next = root + 1; next < size; next++) {
+                    int tryB = firstValidIndex(next);
+                    if (tryB != -1) {
+                        TaskComponent B = get(tryB);
+                        Term a = first;
+                        Term b = B.task.term();
+                        final double e2Evi = B.evi;
 
-                        final double e1Evi = rootComponent.evi;
+                        float dtDiff;
+                        //HACK this chooses the first available 2+-ary match, there may be better
+                        if ((Float.isFinite(dtDiff = dtDiff(a, b)))) {
 
-                        Term ab;
-                        try {
-                            //if there isnt more evidence for the primarily sought target, then just use those components
-                            ab = Intermpolate.intermpolate((Compound)a, (Compound)b, (float) (e1Evi / (e1Evi + e2Evi)), nar);
-                        } catch (TermTransformException e) {
-                            //HACK TODO avoid needing to throw exception
-                            if (NAL.DEBUG) {
-                                throw new RuntimeException(e);
-                            } else {
-                                //ignore.  it may be a contradictory combination of events.
-                                ab = Null;
-                            }
-                        }
+                            final double e1Evi = rootComponent.evi;
 
-                        if (Task.validTaskTerm(ab)) {
-
-                            this.term = ab;
-                            for (int i = 0; i < size; i++)
-                                if (i != root && i != tryB) {
-                                    if (get(i)!=null && !get(i).task.term().equals(ab))
-                                        setFast(i, null);
+                            Term ab;
+                            try {
+                                //if there isnt more evidence for the primarily sought target, then just use those components
+                                ab = Intermpolate.intermpolate((Compound) a, (Compound) b, (float) (e1Evi / (e1Evi + e2Evi)), nar);
+                            } catch (TermTransformException e) {
+                                //HACK TODO avoid needing to throw exception
+                                if (NAL.DEBUG) {
+                                    throw new RuntimeException(e);
+                                } else {
+                                    //ignore.  it may be a contradictory combination of events.
+                                    ab = Null;
                                 }
-                            removeNulls();
-                            //return 1 - dtDiff * 0.5f; //half discounted
-                            //return 1 - dtDiff;
-                            return 1; //no discount for difference
+                            }
+
+                            if (Task.validTaskTerm(ab)) {
+
+                                this.term = ab;
+                                for (int i = 0; i < size; i++)
+                                    if (i != root && i != tryB) {
+                                        if (get(i) != null && !get(i).task.term().equals(ab))
+                                            setFast(i, null);
+                                    }
+                                removeNulls();
+                                //return 1 - dtDiff * 0.5f; //half discounted
+                                //return 1 - dtDiff;
+                                return 1; //no discount for difference
+                            }
+
+
                         }
-
-
                     }
                 }
-            }
-            removeNulls(); //HACK
-            if (size() == 2) {
-                //stronger
-                remove(1);
-                return 1;
-            } else {
-                assert(size() > 2);
-
-
-                if (eviSum(i->i > 0) >= get(0).evi) {
-                    // if value of remainder > value(0):
-                    remove(0);  //eliminate root and continue remaining
-                    return intermpolateAndCull(nar); //HACK recurse
-                } else {
-                    size = 1;
+                removeNulls(); //HACK
+                if (size() == 2) {
+                    //stronger
+                    remove(1);
                     return 1;
+                } else {
+                    assert (size() > 2);
+
+
+                    if (eviSum(i -> i > 0) >= get(0).evi) {
+                        // if value of remainder > value(0):
+                        remove(0);  //abdicate current root and continue remaining
+                        continue main;
+                    } else {
+                        size = 1;
+                        return 1;
+                    }
                 }
-            }
 
 //            //last option: remove all except the first
 //            removeNulls();
@@ -566,9 +565,9 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
 //            return 1;
 
 
+            }
         }
-
-
+        return 1; //?
     }
 
 
@@ -611,9 +610,9 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
             final long u0, u1;
             if ((all ? size() : active()) > 1) {
                 long[] union = Tense.union(Iterables.transform(this,
-                        all ?
-                                ((TaskComponent x) -> x.task) :
-                                ((TaskComponent x) -> x.valid() ? x.task : null)));
+                    all ?
+                        ((TaskComponent x) -> x.task) :
+                        ((TaskComponent x) -> x.valid() ? x.task : null)));
                 u0 = union[0]; u1 = union[1];
             } else {
                 TruthProjection.TaskComponent only = all ? getFirst() : firstValid();
@@ -626,13 +625,16 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
                     //override eternal range with the entire calculated union
                     start = u0; this.end = u1; changed = true;
                 } else {
-                    if (start < u0 && u0 < this.end) {
-                        start = u0;
-                        changed = true;
-                    }
-                    if (this.end > u1 && u1 > start) {
-                        this.end = u1;
-                        changed = true;
+                    boolean stretch = false; //TODO param
+                    if (stretch) {
+                        if (start < u0 && u0 < this.end) {
+                            start = u0;
+                            changed = true;
+                        }
+                        if (this.end > u1 && u1 > start) {
+                            this.end = u1;
+                            changed = true;
+                        }
                     }
                 }
             } else {

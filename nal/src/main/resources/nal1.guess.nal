@@ -41,10 +41,10 @@
     //(Q --> X), (Z --> Y), task("?"), is(Q,"?"), neq(X,Y), neq(Q,Z) |- (X <-> Y),   (Punctuation:Question)
         //(Q --> X), (Z --> Y), task("?"), is(Q,"?"), neq(X,Y), neq(Q,Z) |- (Z --> X),   (Punctuation:Question)
 
-    //(X --> Y), X, task("."), --is(X,"?") |- (?1 --> Y),   (Punctuation:Question)
-        //(X --> Y), X, task("!"), --is(X,"?") |- (?1 --> Y),   (Punctuation:Quest)
-    //(Y --> X), X, task("."), --is(X,"?") |- (Y --> ?1),   (Punctuation:Question)
-        //(Y --> X), X, task("!"), --is(X,"?") |- (Y --> ?1),   (Punctuation:Quest)
+    (X --> Y), X, task("."), --is(X,"?") |- (?1 --> Y),   (Punctuation:Question)
+        (X --> Y), X, task("!"), --is(X,"?") |- (?1 --> Y),   (Punctuation:Quest)
+    (Y --> X), X, task("."), --is(X,"?") |- (Y --> ?1),   (Punctuation:Question)
+        (Y --> X), X, task("!"), --is(X,"?") |- (Y --> ?1),   (Punctuation:Quest)
 
 //NAL1-------------
 //Conversion

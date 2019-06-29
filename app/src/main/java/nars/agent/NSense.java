@@ -296,7 +296,7 @@ public interface NSense {
     default BiPolarAction actionBipolarFrequencyDifferential(Term template, boolean fair, FloatToFloatFunction motor) {
         if (!template.hasAny(Op.VAR_QUERY)) {
             //throw new TermException("has no query variables", template);
-            template = $.inh($.varQuery(1), template);
+            template = $.inh(template, $.varQuery(1));
         }
 
         Term t = template;

@@ -460,12 +460,13 @@ public class Derivation extends PreDerivation {
 
         this.deriver = d;
         this.what = w;
-        //if (this.what!=w) { .. }
 
-        int ditherDT = n.dtDither();
-        uniSubstFunctor.u.dtTolerance = premiseUnify.dtTolerance = this.dtTolerance =
-                //Math.round(Param.UNIFY_DT_TOLERANCE_DUR_FACTOR * dur);
-                ditherDT;
+        ditherDT =
+                n.dtDither();
+                //w.dur(); //COARSE
+        this.dtTolerance = uniSubstFunctor.u.dtTolerance = premiseUnify.dtTolerance =
+                //n.dtDither();
+                w.dur(); //COARSE
 
         this.confMin = n.confMin.floatValue();
         this.eviMin = n.confMin.asEvi();
