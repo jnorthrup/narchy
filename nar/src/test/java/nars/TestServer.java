@@ -2,9 +2,10 @@ package nars;
 
 import jcog.Texts;
 import jcog.data.list.FasterList;
-import jcog.lab.Optimize;
-import jcog.learn.decision.RealDecisionTree;
 import jcog.table.DataTable;
+import nars.term.Term;
+import nars.term.atom.Atom;
+import nars.term.atom.Atomic;
 import org.gridkit.nanocloud.Cloud;
 import org.gridkit.nanocloud.CloudFactory;
 import org.gridkit.nanocloud.RemoteNode;
@@ -19,7 +20,6 @@ import org.junit.platform.launcher.core.LauncherFactory;
 import tech.tablesaw.api.DateTimeColumn;
 import tech.tablesaw.api.LongColumn;
 import tech.tablesaw.api.StringColumn;
-import tech.tablesaw.api.TextColumn;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -68,7 +68,7 @@ public class TestServer {
     protected static String sid(TestIdentifier id) {
         String uid = id.getUniqueId();
         try {
-            return uid.substring(_jupiterPrefixToRemove).replace("]/[method:", "/").replace("]", "").replace("()","");
+            return "(" + uid.substring(_jupiterPrefixToRemove).replace("]/[method:", "/").replace("]", "").replace("()","").replace("/",",").replace(".",",") + ")";
         } catch (Exception e) {
             return uid;
         }
@@ -106,7 +106,7 @@ public class TestServer {
     protected static DataTable newTestTable() {
         DataTable d = new DataTable();
         d.addColumns(
-                TextColumn.create("test"),
+                StringColumn.create("test"),
                 DateTimeColumn.create("start"),
                 StringColumn.create("status"),
                 LongColumn.create("wallTimeNS")
@@ -170,11 +170,29 @@ public class TestServer {
 //        });
         d.write().csv(System.out);
 
-        RealDecisionTree tr = Optimize.tree(d, 2, 8);
-        System.out.println(tr);
-        tr.print();
-        tr.printExplanations();
+//        RealDecisionTree tr = Optimize.tree(d, 2, 8);
+//        System.out.println(tr);
+//        tr.print();
+//        tr.printExplanations();
 
+        NAR n = NARS.tmp();
+        n.log();
+        Atom SUCCESS = Atomic.atom("success");
+        d.forEach(r->{
+            String traw = r.getString(0);
+            //String t = traw.substring(1, traw.length()-1);
+            Term tt = $.$$(traw);
+            switch (r.getString(2)) {
+                case "Success":
+                    Task b = n.believe($.inh(tt, SUCCESS));
+                    System.out.println(b);
+                    break;
+                case "Fail":
+                    n.believe($.inh(tt, SUCCESS).neg());
+                    break;
+            }
+        });
+        n.run(1000);
     }
 
     public static class RemoteLauncher {

@@ -45,7 +45,7 @@ public final class TermMatch<X> extends AbstractTermMatchPred<X> {
         if (cc.isEmpty())
             throw new WTF();
         Atomic a = Atomic.the(cc);
-        Term r = $.the(resolve.toString());
+        Term r = $.$$(resolve.toString());
         r = exactOrSuper ? r : $.func(IN_ATOM, r);
         Term p = match.param();
         return p!=null ? $.func(a, r, p) : $.func(a, r);

@@ -198,16 +198,15 @@ public class Evaluation extends Termerator {
                     }
 
 
-                    if (substing || (z != null && z != a && z!=True)) {
+                    if (substing || (z != null && z != a )) {
                         tried++;
 
                         Term y0 = y;
                         if (z != null) {
                             y = y.replace(a, z); //TODO replace only the first?
 
-                            if (!(y instanceof Compound && y.op().conceptualizable))
+                            if (!y.op().conceptualizable)
                                 break main;
-
                         }
 
 
@@ -237,10 +236,7 @@ public class Evaluation extends Termerator {
                                  } else
                                      q = p;
 
-                                 if (o != q && !Functor.isFunc(q))
-                                     return Null;
-                                 else
-                                     return q;
+                                 return o != q && !Functor.isFunc(q) ? Null : q;
                              });
 
                              if (clauses.removeIf(xxx -> xxx == Null) && clauses.isEmpty())

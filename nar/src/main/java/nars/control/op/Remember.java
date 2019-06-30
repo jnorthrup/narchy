@@ -144,7 +144,7 @@ public class Remember extends AbstractTask {
 
         Term inputTerm = input.term();
         boolean the = (input == this.input);
-        boolean commitProxyOrigin = false;
+        @Deprecated boolean commitProxyOrigin = false;
         if (store) {
             Term imgNormal = Image.imageNormalize(inputTerm).normalize();
 
@@ -152,8 +152,8 @@ public class Remember extends AbstractTask {
                 //transparently normalize image tasks
                 c = (TaskConcept)
                         //n.conceptualizeDynamic(imgNormal);
-                        n.conceptualize(imgNormal);
-                        //n.concept(imgNormal);
+                        //n.conceptualize(imgNormal);
+                        n.concept(imgNormal);
                 if (c == null)
                     return;
 
@@ -175,27 +175,28 @@ public class Remember extends AbstractTask {
             }
         }
 
-        if (c == null) {
-            Concept cc = n.conceptualize(input);
-            if (!(cc instanceof TaskConcept)) {
-                //may be an atomic functor term, not sure
-                //if (NAL.DEBUG)
-                    //throw new WTF();
-                return;
-            }
-            c = (TaskConcept) cc;
-        }
+        if (!store || commitProxyOrigin)
+            link(rawInput, w);
 
         if (store) {
+            if (c == null) {
+                Concept cc = n.conceptualize(input);
+                if (!(cc instanceof TaskConcept)) {
+                    //may be an atomic functor term, not sure
+                    //if (NAL.DEBUG)
+                    //throw new WTF();
+                    return;
+                }
+                c = (TaskConcept) cc;
+            }
+
             insert(c, w);
         }
-        if (!store || commitProxyOrigin) {
-            link(rawInput, c, w);
-        }
+
     }
 
 
-    private void link(Task t, @Nullable TaskConcept c, What w) {
+    private void link(Task t, What w) {
 
         NAR n = w.nar;
 
@@ -241,7 +242,7 @@ public class Remember extends AbstractTask {
         if (remembered != null && !remembered.isEmpty()) {
             remembered.forEachWith((Task r, NAR nn) -> {
                 if (r.equals(this.input)) //HACK
-                    link(r, c, w); //root
+                    link(r, w); //root
                 else
                     commit(r, false, w); //sub
             }, n);

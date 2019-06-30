@@ -189,10 +189,10 @@ public class NAL8SequenceTest extends NALTest {
 
     @Test
     void testGoalDeduction_MidSequenceDTernalComponentWithUnification2() {
-
+        test.termVolMax(30);
         test
-                .input( "(a &&+1 ((b(#1)&|c) &&+1 ((&&,c(#1),d(x,#1)) &&+1 e(#1))))!")
-                .input( "(b&&c(x)).")
+                .input( "(a &&+1 ((b(#1)&&c) &&+1 ((&&,c(#1),d(x,#1)) &&+1 e(#1))))!")
+                .input( "(b(x) &&+1 c(x)).")
                 .mustGoal(cycles, "(d(x,x) &&+1 e(x))", 1, 0.81f) //81% for one step
         //.mustGoal(cycles, "(&|,a,b,d(x,x))", 1, 0.81f) //81% for one step
         ;

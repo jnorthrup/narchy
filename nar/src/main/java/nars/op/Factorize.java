@@ -226,7 +226,7 @@ public class Factorize {
             if (y.length == 0)
                 return x; //unchanged
 
-            if (Util.sum(Term::volume, y) > volMax - 6)
+            if (Util.sum(Term::volume, y) > volMax - 1)
                 return x; //excessively complex result
 
             //        Term[] yy = Terms.sorted(y);

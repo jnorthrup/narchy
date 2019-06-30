@@ -16,11 +16,11 @@ import static nars.time.Tense.XTERNAL;
 
 /** introduction applied to subevents and subconditions */
 public abstract class EventIntroduction extends Introduction {
-    public EventIntroduction(NAR nar, int capacity) {
+    EventIntroduction(NAR nar, int capacity) {
         super(nar, capacity);
     }
 
-    public EventIntroduction(NAR nar) {
+    EventIntroduction(NAR nar) {
         super(nar);
     }
 
@@ -28,21 +28,21 @@ public abstract class EventIntroduction extends Introduction {
     protected boolean filter(Term next) {
         return /*next.isAny(CONJ.bit | IMPL.bit  ) && Tense.dtSpecial(next.dt()) &&*/
                 //next.count(x -> x instanceof Compound) > 1;
-                next.hasAny(Op.Temporal) && next instanceof Compound;
+                next instanceof Compound && next.hasAny(Op.Temporal);
     }
 
     @Override
     protected final @Nullable Term newTerm(Task x) {
         Term xx = x.term();
-        Term y = applyAndNormalize(xx, volMax-1);
+        Term y = applyAndNormalize(xx, volMax-2);
         return y != xx ? y : null;
     }
 
-    public Term applyAndNormalize(Term x) {
+    Term applyAndNormalize(Term x) {
         return applyAndNormalize(x, Integer.MAX_VALUE);
     }
 
-    public final Term applyAndNormalize(Term x, int volMax) {
+    private Term applyAndNormalize(Term x, int volMax) {
         Term y = apply(x, this::apply, volMax);
         return y!=null && y != x && y.volume() <= volMax ? y.normalize() : x;
     }

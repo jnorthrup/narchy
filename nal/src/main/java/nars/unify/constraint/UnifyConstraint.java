@@ -42,12 +42,16 @@ public abstract class UnifyConstraint<U extends Unify> extends AbstractPred<U> {
     public final Variable x;
 
     UnifyConstraint(Term id, Variable x) {
-        super(id);
-        this.x = x;
+        this((Variable)x, (Term)id, null);
     }
 
     UnifyConstraint(Variable x, String func, @Nullable Term... args) {
-        this($.funcFast(UnifyIf, x, args!=null ? $.func(func, args) : $.the(func)), x);
+        this(x, Atomic.atom(func), args);
+    }
+
+    UnifyConstraint(Variable x, Term func, @Nullable Term... args) {
+        super($.funcFast(UnifyIf, x, args!=null ? $.inh($.p(args),func) : func));
+        this.x = x;
     }
 
 

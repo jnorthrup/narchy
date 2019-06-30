@@ -65,14 +65,9 @@ public class ArkaNAR extends GameX {
                 ArkaNAR b = new ArkaNAR($$("(noid,b)"), nn, cam, numeric);
                 b.ballSpeed.set( 0.33f * a.ballSpeed.floatValue() );
 
-
-
-//                n.start(new SpaceGraphPart(() -> NARui.agent(g), 500, 500));
-//                n.start(new SpaceGraphPart(() -> NARui.attentionUI(n), 600, 600));
-//                n.start(new SpaceGraphPart(() -> NARui.top(n), 700, 700));
                 window(new Gridding(
-                        new Gridding(NARui.agent(a), new VectorSensorView(a.cc, a).withControls()),
-                        new Gridding( NARui.agent(b), new VectorSensorView(b.cc, b).withControls())), 800, 800);
+                        new Gridding(NARui.game(a), new VectorSensorView(a.cc, a).withControls()),
+                        new Gridding( NARui.game(b), new VectorSensorView(b.cc, b).withControls())), 800, 800);
 
             }, 40);
 

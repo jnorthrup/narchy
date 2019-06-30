@@ -231,7 +231,7 @@ abstract public class TermMatcher {
         private final float cost;
 
         private IsHas(Op is, int structSubs, int volMin, int depth) {
-            assert(depth > 0 || is!=NEG): "taskTerm or beliefTerm will never be --";
+            assert(!is.atomic && depth > 0 || is!=NEG): "taskTerm or beliefTerm will never be --";
 
             this.is = is.id;
             this.struct = structSubs | is.bit;

@@ -17,7 +17,7 @@ public abstract class EvidenceEvaluator extends LongFloatTrapezoidalIntegrator  
         }
 
         @Override
-        public double y(long when) {
+        public double applyAsDouble(long when) {
             return evi;
         }
 
@@ -31,15 +31,15 @@ public abstract class EvidenceEvaluator extends LongFloatTrapezoidalIntegrator  
          */
         private final double evi;
 
+        /** //assert (w != LongInterval.ETERNAL); */
         TemporalPointEvidenceEvaluator(long w, double evi, int dur) {
             this.dur = dur;
             this.s = w;
-            assert (w != LongInterval.ETERNAL);
             this.evi = evi;
         }
 
         @Override
-        public double y(long when) {
+        public final double applyAsDouble(long when) {
             long dt = dt(when);
             return (dt == 0) ?
                     evi : ((dur > 0) ? NAL.evi(evi, dt, dur) : 0 /* none */);
@@ -67,6 +67,9 @@ public abstract class EvidenceEvaluator extends LongFloatTrapezoidalIntegrator  
 
     }
 
+    public static double of(long s, long e, double evi, int dur, long when) {
+        return of(s, e, evi, dur).applyAsDouble(when);
+    }
 
     public static EvidenceEvaluator of(long s, long e, double evi, int dur) {
         return s == e ?

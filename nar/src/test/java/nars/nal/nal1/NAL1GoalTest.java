@@ -48,7 +48,7 @@ public class NAL1GoalTest extends NALTest {
         ;
     }
 
-    @Test
+    @Disabled @Test
     void deductionNegativeGoalPositiveBeliefSwap() {
         //(B --> C), (A --> B), neqRCom(A,C)    |- (A --> C), (Belief:DeductionX)
         test

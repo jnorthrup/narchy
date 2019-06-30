@@ -306,7 +306,7 @@ public class TrackXY_NAR extends GameX {
             g.windoSizeMinRel(0.02f, 0.02f);
 
 
-            g.add(NARui.agent(a)).posRel(0.5f, 0.5f, 0.4f, 0.3f);
+            g.add(NARui.game(a)).posRel(0.5f, 0.5f, 0.4f, 0.3f);
             g.add(NARui.top(n)).posRel(0.5f, 0.5f, 0.2f, 0.1f);
             g.add(NARui.attentionUI(n)).sizeRel(0.25f, 0.25f);
 

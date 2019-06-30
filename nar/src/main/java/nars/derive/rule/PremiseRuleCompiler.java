@@ -85,15 +85,17 @@ public enum PremiseRuleCompiler {
         assert (!path.isEmpty());
 
 
-        return new DeriverRules(
+        DeriverRules rr = new DeriverRules(
                 PremiseRuleCompiler.compile(path),
                 rootBranches,
 //                mustAtomizableStructure,
 
-                //DeriverPlanner.DirectDeriverPlanner
-                new PreDeriver.CentralMemoizer()
+                PreDeriver.DIRECT_DERIVATION_RUNNER
+                //new PreDeriver.CentralMemoizer()
                 //DeriverPlanner.ConceptMetaMemoizer
         );
+//        print(rr, System.out, 2);
+        return rr;
     }
 
 

@@ -1477,17 +1477,6 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
         return control.newCause(idToChannel);
     }
 
-    public void conceptualize(Term term, Consumer<Concept> with) {
-
-
-        Concept x = conceptualize(term);
-        if (x != null) {
-            with.accept(x);
-        } else {
-
-        }
-
-    }
 
     /**
      * invokes any pending tasks without advancing the clock

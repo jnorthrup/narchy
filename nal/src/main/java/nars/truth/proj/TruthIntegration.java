@@ -38,10 +38,9 @@ public class TruthIntegration {
         assert(qStart != ETERNAL && qStart <= qEnd);
 
         if (qStart == qEnd) {
-            //point question
-            return t.evi(qStart, dur);
+            return t.evi(qStart, dur); //point
         } else {
-            //range question
+            //range
             long tStart = t.start();
             double evi = t.evi();
             if (tStart == ETERNAL) {
@@ -49,17 +48,14 @@ public class TruthIntegration {
                 long range = (qEnd - qStart + 1);
                 return evi * range;
             } else {
-                //temporal task
-                long tEnd = t.end();
-                return eviIntegrate(
-                        EvidenceEvaluator.of(tStart, tEnd, evi, dur),
-                        qStart, qEnd, tStart, tEnd);
+                return eviIntegrate(evi, dur, qStart, qEnd, tStart, t.end()); //temporal task
             }
         }
     }
 
-    private static double eviIntegrate(EvidenceEvaluator ee, long qStart, long qEnd, long tStart, long tEnd) {
+    private static double eviIntegrate(double evi, int dur, long qStart, long qEnd, long tStart, long tEnd) {
 
+        EvidenceEvaluator ee = EvidenceEvaluator.of(tStart, tEnd, evi, dur);
 
         if (tStart <= qStart && tEnd >= qEnd) {
 

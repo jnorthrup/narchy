@@ -3,6 +3,7 @@ package nars;
 import com.google.common.util.concurrent.AtomicDouble;
 import jcog.Util;
 import jcog.data.list.FasterList;
+import jcog.exe.Exe;
 import jcog.exe.Loop;
 import jcog.func.IntIntToObjectFunction;
 import jcog.learn.ql.HaiQae;
@@ -11,6 +12,7 @@ import jcog.math.FloatAveragedWindow;
 import jcog.signal.wave2d.Bitmap2D;
 import jcog.signal.wave2d.MonoBufImgBitmap2D;
 import jcog.signal.wave2d.ScaledBitmap2D;
+import jcog.thing.SubPart;
 import jcog.util.ArrayUtil;
 import nars.agent.Game;
 import nars.agent.GameTime;
@@ -43,10 +45,12 @@ import nars.video.WaveletBag;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.SpaceGraph;
 import spacegraph.space2d.Surface;
+import spacegraph.space2d.container.graph.GraphEdit2D;
 import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.widget.meta.ObjectSurface;
 import spacegraph.space2d.widget.meter.PaintUpdateMatrixView;
 import spacegraph.space2d.widget.meter.Plot2D;
+import spacegraph.space2d.widget.port.SupplierPort;
 import spacegraph.video.OrthoSurfaceGraph;
 
 import java.awt.*;
@@ -134,12 +138,26 @@ abstract public class GameX extends Game {
 
         //initMeta(n, g, false, false);
 
-        //new Gridding(n.parts(Game.class).map(NARui::agent).collect(toList())),
         n.synch();
 
 
-
         Loop loop = n.startFPS(narFPS);
+
+        Exe.invokeLater(()-> {
+            GraphEdit2D g = GraphEdit2D.window(1024, 800);
+            g.physics.invokeLater(()-> {
+            //Exe.invokeLater(() -> {
+                n.parts(Game.class).forEach((SubPart pp) -> {
+                    Game gg = (Game)pp;
+                    SupplierPort sg = new SupplierPort(gg.term().toString(), Surface.class, () -> NARui.game(gg));
+                    g.add(sg).posRel(0,0,0.25f,0.25f);
+                });
+
+                g.add(new SupplierPort<>("att", Surface.class, () -> NARui.attentionUI(n))).posRel(0, 0, 0.25f, 0.25f);
+                g.add(new SupplierPort<>("top", Surface.class, () -> NARui.top(n))).posRel(0, 0, 0.25f, 0.25f);
+            });
+        } );
+
 
         return n;
     }
@@ -308,7 +326,7 @@ abstract public class GameX extends Game {
 
         Gridding g = new Gridding();
         MetaAgent meta = new MetaAgent(allowPause, 8f, a);
-        g.add(NARui.agent(meta));
+        g.add(NARui.game(meta));
         meta.what().pri(0.05f);
 
         if (rl) {

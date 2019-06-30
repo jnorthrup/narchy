@@ -19,7 +19,7 @@ public final class TaskPunc extends AbstractPred<PreDerivation> {
 
     @Override
     public float cost() {
-        return 0.02f;
+        return 0.006f;
     }
 
     @Override

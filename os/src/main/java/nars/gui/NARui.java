@@ -424,7 +424,7 @@ public class NARui {
         SpaceGraph.window(new ConceptSurface(t, n), 500, 500);
     }
 
-    public static Surface agent(Game a) {
+    public static Surface game(Game a) {
 
         Iterable<? extends Concept> rewards = () -> a.rewards.stream().flatMap(r -> StreamSupport.stream(r.spliterator(), false)).iterator();
         Iterable<? extends Concept> actions = a.actions;
