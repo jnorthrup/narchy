@@ -50,6 +50,7 @@ public class Remember extends AbstractTask {
     public static Remember the(Task x, NAR n) {
         return the(x,
                 !(x instanceof DynamicTruthTask) || NAL.belief.DYNAMIC_TRUTH_TASK_STORE,
+                //true,true, n);
                 x instanceof DynamicTruthTask ? false : true, x instanceof DynamicTruthTask ? false : true, n);
     }
 

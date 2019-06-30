@@ -225,7 +225,7 @@ public enum ConjSeq { ;
                 if (a.op() != CONJ && b.op() != CONJ) {
                     long as = a.start(), bs = b.start();
                     assert(bs!=ETERNAL && as!=ETERNAL);
-                    return B.conjAppend(sequenceTerm(a), Tense.occToDT(bs - as), sequenceTerm(b));
+                    return B.conjAppend(sequenceTerm(a), Tense.occToDT(Tense.dither(bs - as, ditherDT)), sequenceTerm(b));
                 }
                 break;
             }

@@ -47,46 +47,12 @@ public class Taskify extends ProxyTerm {
     }
 
 
-
-
-//    /** applies variable introduction between Termify and Taskify step */
-//    public static class VarTaskify extends Taskify {
-//
-//        private static final IntroVars introVars = new IntroVars();
-//
-//        public VarTaskify(Termify termify, PremiseRuleProto.RuleCause channel) {
-//            super($.funcFast(TASKIFY, $.func(IntroVars.VarIntro, termify), $.the(channel.id)), termify, channel);
-//        }
-//
-//        public Term test(Term x, Derivation d) {
-//            Term y = termify.test(x, d);
-//            if (y!=null) {
-//                Term z = introVars.test(y, d);
-//                return (z != null) ? (taskify(z, d) ? z : null) : null; //HACK
-//            } else
-//                return null;
-//        }
-//
-//    }
-
     boolean spam(Derivation d, int cost) {
         d.use(cost);
 
         MetaGoal.Futile.learn(cost, d.nar.control.why, channel.id);
 
         return true;
-    }
-
-    public void apply(Term x, Derivation d) {
-        if (!x.unneg().op().taskable)
-            return;
-
-        if (Success == DerivationFailure.failure(x, (byte) 0 /* dont consider punc consequences until after temporalization */, d)) {
-            if (d.temporal)
-                temporalTask(x, termify.time, d);
-            else
-                eternalTask(x, d);
-        }
     }
 
     void eternalTask(Term x, Derivation d) {

@@ -4,6 +4,9 @@ import jcog.Util;
 import jcog.WTF;
 import jcog.math.Longerval;
 import jcog.pri.ScalarValue;
+import jcog.pri.bag.Bag;
+import jcog.pri.bag.impl.PriArrayBag;
+import jcog.pri.op.PriMerge;
 import jcog.util.ArrayUtil;
 import nars.NAL;
 import nars.NAR;
@@ -70,17 +73,11 @@ public class Derivation extends PreDerivation {
     public static final ThreadLocal<Derivation> derivation = ThreadLocal.withInitial(Derivation::new);
     public final PremiseUnify premiseUnify = new PremiseUnify();
 
-//    Bag<PostDerivation
-//    public static class PostDerivation {
-//        final long taskStart, taskEnd, beliefStart, beliefEnd;
-//        final Map<Term,Term> unanon;
-//
-//        public Task task() {
-//
-//        }
-//    }
+    public final Bag<PostDerivation,PostDerivation> post = new PriArrayBag<>(PriMerge.max, 32);
 
-    public final UnifyMatchFork termifier = new UnifyMatchFork();
+    public final UnifyMatchFork termifier =
+            new UnifyMatchFork();
+            //new UnifyMatchFork.DeferredUnifyMatchFork();
     /**
      * short-term premise buffer with novelty filter
      */
@@ -178,6 +175,7 @@ public class Derivation extends PreDerivation {
     public transient float parentVolumeSum;
     public transient Truth concTruth;
     public transient byte concPunc;
+
     public transient Task _task, _belief;
     public DerivationTransform transformDerived;
     private transient short[] parentCause;

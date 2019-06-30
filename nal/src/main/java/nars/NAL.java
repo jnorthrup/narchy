@@ -274,8 +274,8 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
 
     @Deprecated
     public final FloatRange questionForgetRate = new FloatRange(0.5f, 0, 1);
-    public final IntRange premiseUnifyTTL = new IntRange(4, 1, 32);
-    public final IntRange deriveBranchTTL = new IntRange(3 * NAL.derive.TTL_MIN, NAL.derive.TTL_MIN, 64 * NAL.derive.TTL_MIN);
+    public final IntRange premiseUnifyTTL = new IntRange(6, 1, 32);
+    public final IntRange deriveBranchTTL = new IntRange(6 * NAL.derive.TTL_MIN, NAL.derive.TTL_MIN, 64 * NAL.derive.TTL_MIN);
     /**
      * how many cycles above which to dither dt and occurrence time
      * TODO move this to Time class and cache the cycle value rather than dynamically computing it
@@ -702,10 +702,10 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
          * how precise unit test results must match expected values to pass
          */
         public static final float TRUTH_ERROR_TOLERANCE = NAL.truth.TRUTH_EPSILON * 2;
-        public static boolean DEBUG_EXTRA;
-        public static boolean DEBUG_ENSURE_DITHERED_TRUTH;
-        public static boolean DEBUG_ENSURE_DITHERED_OCCURRENCE;
-        public static boolean DEBUG_ENSURE_DITHERED_DT;
+        public static boolean DEBUG_EXTRA = false;
+        public static boolean DEBUG_ENSURE_DITHERED_TRUTH = DEBUG_EXTRA;
+        public static boolean DEBUG_ENSURE_DITHERED_OCCURRENCE= DEBUG_EXTRA;
+        public static boolean DEBUG_ENSURE_DITHERED_DT = DEBUG_EXTRA;
     }
 
     public enum derive {
