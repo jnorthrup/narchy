@@ -13,6 +13,8 @@ import nars.agent.Reward;
 import nars.concept.sensor.AbstractSensor;
 import nars.gui.sensor.VectorSensorView;
 import nars.sensor.Bitmap2DSensor;
+import nars.term.Term;
+import nars.term.atom.Atomic;
 import nars.video.SwingBitmap2D;
 import spacegraph.SpaceGraph;
 
@@ -24,6 +26,8 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import static nars.$.$$;
 
 /** NARkanoid */
 public class ArkaNAR extends GameX {
@@ -41,12 +45,30 @@ public class ArkaNAR extends GameX {
     //final int visW = 8, visH = 6;
 
 
-    static float paddleSpeed;
+    float paddleSpeed;
 
 
     final Arkanoid noid;
 
     private float prevScore;
+
+    public static class MultiArkaNAR {
+        public static void main(String[] args) {
+
+            NAR n = runRT((NAR nn) -> {
+
+                ArkaNAR a = new ArkaNAR($$("(noid,a)"), nn, cam, numeric);
+
+                ArkaNAR b = new ArkaNAR($$("(noid,b)"), nn, cam, numeric);
+                b.ballSpeed.set( 0.5f * a.ballSpeed.floatValue() );
+
+                return b;
+            }, 40);
+
+
+
+        }
+    }
 
     public static void main(String[] args) {
 
@@ -69,7 +91,11 @@ public class ArkaNAR extends GameX {
     }
 
     public ArkaNAR(NAR nar, boolean cam, boolean numeric) {
-        super("noid", GameTime.fps(fps), nar);
+        this(Atomic.atom("noid"),nar, cam, numeric);
+    }
+
+    public ArkaNAR(Term term, NAR nar, boolean cam, boolean numeric) {
+        super(term, GameTime.fps(fps), nar);
 
 
         noid = new Arkanoid();
@@ -88,7 +114,7 @@ public class ArkaNAR extends GameX {
 
         if (cam) {
 
-            Bitmap2DSensor<ScaledBitmap2D> cc = senseCamera((x,y)->$.inh(id, $.p(x,y)), new ScaledBitmap2D(
+            Bitmap2DSensor<ScaledBitmap2D> cc = senseCamera((x,y)->$.inh(term, $.p(x,y)), new ScaledBitmap2D(
                     new SwingBitmap2D(noid)
                     , visW, visH
             )/*.blur()*/);
@@ -101,10 +127,10 @@ public class ArkaNAR extends GameX {
 
 
         if (numeric) {
-            AbstractSensor px = senseNumberBi($.inh($.the("px"), id), (() -> noid.paddle.x / noid.getWidth())).resolution(resX);
-            AbstractSensor dx = senseNumberBi($.inh($.the("dx"), id), (() -> 0.5f + 0.5f * (noid.ball.x - noid.paddle.x) / noid.getWidth())).resolution(resX);
-            senseNumberBi($.inh($.p("b", "x"), id), (() -> (noid.ball.x / noid.getWidth()))).resolution(resX);
-            senseNumberBi($.inh($.p("b", "y"), id), (() -> 1f - (noid.ball.y / noid.getHeight()))).resolution(resY);
+            AbstractSensor px = senseNumberBi($.inh($.the("px"), term), (() -> noid.paddle.x / noid.getWidth())).resolution(resX);
+            AbstractSensor dx = senseNumberBi($.inh($.the("dx"), term), (() -> 0.5f + 0.5f * (noid.ball.x - noid.paddle.x) / noid.getWidth())).resolution(resX);
+            senseNumberBi($.inh($.p("b", "x"), term), (() -> (noid.ball.x / noid.getWidth()))).resolution(resX);
+            senseNumberBi($.inh($.p("b", "y"), term), (() -> 1f - (noid.ball.y / noid.getHeight()))).resolution(resY);
 
 //            window(NARui.beliefCharts(dx.components(), nar), 500, 500);
 
@@ -120,7 +146,6 @@ public class ArkaNAR extends GameX {
         onFrame(noid::next);
 
         Reward s = rewardNormalized("score", -1, +1, () -> {
-            noid.BALL_VELOCITY = ballSpeed.floatValue();
             float nextScore = noid.score;
             float dReward = Math.max(-1f, Math.min(1f, nextScore - prevScore));
             this.prevScore = nextScore;
@@ -128,7 +153,7 @@ public class ArkaNAR extends GameX {
             //return dReward;
             return dReward != 0 ? dReward : Float.NaN;
         });
-        s.setDefault($.t(0.5f, 0.75f));
+        s.setDefault($.t(0.5f, 0.9f));
 
         /*actionTriState*/
 
@@ -194,7 +219,7 @@ public class ArkaNAR extends GameX {
     /**
      * https:
      */
-    public static class Arkanoid extends Canvas implements KeyListener {
+    public class Arkanoid extends Canvas implements KeyListener {
 
         int score;
 
@@ -263,7 +288,7 @@ public class ArkaNAR extends GameX {
         public final Collection<Brick> bricks = Collections.newSetFromMap(new ConcurrentHashMap());
 
 
-        abstract static class GameObject {
+        abstract class GameObject {
             abstract float left();
 
             abstract float right();
@@ -273,7 +298,7 @@ public class ArkaNAR extends GameX {
             abstract float bottom();
         }
 
-        static class Rectangle extends GameObject {
+        class Rectangle extends GameObject {
 
             public float x, y;
             public float sizeX;
@@ -365,7 +390,7 @@ public class ArkaNAR extends GameX {
         }
 
 
-        static final AtomicInteger brickSerial = new AtomicInteger(0);
+        final AtomicInteger brickSerial = new AtomicInteger(0);
 
         class Brick extends Rectangle implements Comparable<Brick> {
 
@@ -528,6 +553,7 @@ public class ArkaNAR extends GameX {
 
 
         public float next() {
+            BALL_VELOCITY = ballSpeed.floatValue();
 
 
             ball.update(paddle);

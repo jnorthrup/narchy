@@ -98,7 +98,7 @@ public class Game extends NARPart implements NSense, NAct, Timed {
     }
 
     @Deprecated public Game(String id, GameTime time, NAR n) {
-        this(Atomic.atom(id), time, n);
+        this($.$$(id), time, n);
     }
 
     public Game(Term id, GameTime time, NAR nar) {

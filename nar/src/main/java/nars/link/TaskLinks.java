@@ -2,6 +2,7 @@ package nars.link;
 
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Multimaps;
+import jcog.Util;
 import jcog.data.NumberX;
 import jcog.data.list.FasterList;
 import jcog.data.list.table.Table;
@@ -48,7 +49,7 @@ abstract public class TaskLinks implements Sampler<TaskLink> {
     /**
      * (post-)Amp: tasklink propagation rate
      */
-    public final FloatRange amp = new FloatRange(0.5f, 0, 2f /* 2f */);
+    public final FloatRange amp = new FloatRange(1f, 0, 2f /* 2f */);
 
 //    /**
 //     * tasklink retention rate:
@@ -270,7 +271,8 @@ abstract public class TaskLinks implements Sampler<TaskLink> {
                     0.5f;
                     //0.33f;
             float probDirect =
-                    (float) (probBase / Math.pow(2, target.volume()-1));
+                    (float) (probBase / Util.sqr(Math.pow(2, target.volume()-1)));
+                    //(float) (probBase / Math.pow(2, target.volume()-1));
                     //probBase * (target.volume() <= 2 ? 1 : 0);
                     //probBase * 1f / Util.sqr(Util.sqr(target.volume()));
                     //probBase * 1f / term.volume();

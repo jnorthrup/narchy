@@ -1070,7 +1070,7 @@ public class NAL5Test extends NALTest {
     void conjPostconditionDecompositionToImpl_BackChaining_Question() {
         test
                 .ask("(z==>(x&&y))")
-                .mustQuestion(cycles, "(x&&y)")
+//                .mustQuestion(cycles, "(x&&y)")
                 .mustQuestion(cycles, "(z ==>+- x)")
                 .mustQuestion(cycles, "(z ==>+- y)")
         ;

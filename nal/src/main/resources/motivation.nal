@@ -33,8 +33,8 @@
     (X==>Y), (X==>Y), task("."), --isVar(X), --isVar(Y) |- (?1 ==> (  X && polarizeTask(Y))), (Punctuation:Question)
 
 
-//    //sequence possibility quest
-//    C, X, task("@"), eventOfPN(C,X) |-  (conjWithoutPN(C,X) && ?1), (Punctuation:Quest)
+    //sequence possibility quest
+    C, X, task("@"), eventOfPN(C,X) |-  (conjWithoutPN(C,X) && ?1), (Punctuation:Quest)
 
 
 
@@ -45,12 +45,12 @@
 
 
     //conj quest to impl question
-    (G && C), B, eqNeg(C,B), task("@"), hasBelief() |-  (polarizeBelief(B) ==> G), (Punctuation:Question, Time:Task)
+    (G && C), B, eqNeg(C,B), task("@") |-  (polarizeBelief(B) ==> G), (Punctuation:Question, Time:Task)
      //(G && B), B, task("@") |-  (G ==> B), (Punctuation:Question)
      //(G && B), B, task("@") |-  (--G ==> B), (Punctuation:Question)
 
 //quest to 'how' impl question
-   B, X, task("@"), --is(B,"==>"), neq(X,B), hasBelief() |- (polarizeBelief(X) ==> B), (Punctuation:Question, Time:Task)
+   B, X, task("@"), --is(B,"==>"), neq(X,B)|- (polarizeBelief(X) ==> B), (Punctuation:Question, Time:Task)
      //B, X, task("@"), --is(B,"==>"), hasBelief() |- (polarizeRandom(B) ==> X), (Punctuation:Question)
 
 //contrasting conjunction to implication

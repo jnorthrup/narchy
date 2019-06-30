@@ -87,20 +87,24 @@ public abstract class DynamicTermLinker implements TermLinker {
     public static final DynamicTermLinker Weighted = new DynamicTermLinker() {
         @Override
         protected int depth(Compound root, Random rng) {
-            /* https://academo.org/demos/3d-surface-plotter/?expression=(1%2F(1%2Bx%2F(1%2By)))&xRange=0%2C32&yRange=0%2C8&resolution=23 */
-            float fanoutRatio =
-                    //root.volume() / (1f + root.subs());
-                    //1 / (1 + ((float)root.volume())/(1+root.subs()));
-                    1 / (1 + (((float)(root.volume()-1))/(1+root.subs())));
-
-            float w =
-                    fanoutRatio;
-                    //(float)Math.sqrt(fanoutRatio);
-                    //(float)Math.pow(fanoutRatio, 0.75f);
-                    //(float)Math.pow(fanoutRatio, 1.5f);
-
-            return rng.nextFloat() < w ? 1 : 2;
+            return 1;
         }
+        //        @Override
+//        protected int depth(Compound root, Random rng) {
+//            /* https://academo.org/demos/3d-surface-plotter/?expression=(1%2F(1%2Bx%2F(1%2By)))&xRange=0%2C32&yRange=0%2C8&resolution=23 */
+//            float fanoutRatio =
+//                    //root.volume() / (1f + root.subs());
+//                    //1 / (1 + ((float)root.volume())/(1+root.subs()));
+//                    1 / (1 + (((float)(root.volume()-1))/(1+root.subs())));
+//
+//            float w =
+//                    fanoutRatio;
+//                    //(float)Math.sqrt(fanoutRatio);
+//                    //(float)Math.pow(fanoutRatio, 0.75f);
+//                    //(float)Math.pow(fanoutRatio, 1.5f);
+//
+//            return rng.nextFloat() < w ? 1 : 2;
+//        }
 
         @Override
         protected Term choose(Subterms _s, int n, Term parent, Random rng) {
