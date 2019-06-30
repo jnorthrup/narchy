@@ -70,6 +70,16 @@ public class Derivation extends PreDerivation {
     public static final ThreadLocal<Derivation> derivation = ThreadLocal.withInitial(Derivation::new);
     public final PremiseUnify premiseUnify = new PremiseUnify();
 
+//    Bag<PostDerivation
+//    public static class PostDerivation {
+//        final long taskStart, taskEnd, beliefStart, beliefEnd;
+//        final Map<Term,Term> unanon;
+//
+//        public Task task() {
+//
+//        }
+//    }
+
     public final UnifyMatchFork termifier = new UnifyMatchFork();
     /**
      * short-term premise buffer with novelty filter
@@ -547,11 +557,14 @@ public class Derivation extends PreDerivation {
     public Term retransform(Term x) {
         Term y = x;
 
-//        if (y.hasAny(VAR_DEP.bit | VAR_INDEP.bit | VAR_QUERY.bit))
-//            y = transform().apply(y);
-
-
-        y = y.replace(retransform); //substitution/unification derivation functors only
+        try {
+            y = y.replace(retransform); //substitution/unification derivation functors only
+        } catch (TermTransformException tte) {
+            if (NAL.DEBUG)
+                throw tte;
+            else
+                return x; //ignore
+        }
 
         if (y != x && !y.op().eventable)
             return x; //dont bother

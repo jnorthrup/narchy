@@ -66,10 +66,11 @@ class MetaFlowTest {
     @Disabled
     @Test
     void testbyteBuddy() throws IllegalAccessException, InstantiationException {
-
-        Class<?> m = new ByteBuddy(ClassFileVersion.JAVA_V11)
-                .subclass(MyClass.class)
-                //.rebase(NAR.class, ClassFileLocator.ForClassLoader.ofClassPath())
+        Class<?> m = new ByteBuddy(ClassFileVersion.JAVA_V13).redefine(MyClass.class)
+//
+//        Class<?> m = new ByteBuddy(ClassFileVersion.JAVA_V11)
+//                .subclass(MyClass.class)
+//                //.rebase(NAR.class, ClassFileLocator.ForClassLoader.ofClassPath())
                 //.annotateType(AnnotationDescription.Builder.ofType(Baz.class).build())
                 .method(ElementMatchers.isAnnotatedWith(MetaFlow.Value.class)).
 
@@ -89,13 +90,13 @@ class MetaFlowTest {
                 .load(MyClass.class.getClassLoader(), ClassLoadingStrategy.Default.CHILD_FIRST)
                 .getLoaded();
 
-        MyClass mm = (MyClass) m.newInstance();
+        Object mm = m.newInstance();
 
         System.out.println(m);
         System.out.println(mm);
         System.out.println(mm.getClass() + " extends " + mm.getClass().getSuperclass());
-        mm.test();
-        mm.test(2);
+//        mm.test();
+//        mm.test(2);
     }
     @Test
     void testMetaFlow1() {
@@ -125,17 +126,17 @@ class MetaFlowTest {
         }
     }
 
-    static class MyClass {
+    public static class MyClass {
 
-        MyClass() {
+        public MyClass() {
         }
 
         @MetaFlow.Value
-        float test() {
+        public float test() {
             return 1f;
         }
         @MetaFlow.Value
-        float test(float param) {
+        public float test(float param) {
             return param;
         }
     }

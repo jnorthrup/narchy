@@ -79,20 +79,7 @@ public class HyperIterator<X>  {
     }
 
 
-    private Object inline(Object x) {
-        //inline 1-arity branches for optimization
-        while (x instanceof Node && (((Node)x).size() == 1)) {
-            x = ((Node) x).get(0);
-        }
-
-//        //dont filter root node (traversed while plan is null)
-//        if ((x instanceof Node) && nodeFilter != null && !plan.isEmpty() && !nodeFilter.tryVisit((Node)x))
-//            return null;
-
-        return x;
-    }
-
-//    /**
+    //    /**
 //     * surveys the contents of the node, producing a new 'stack frame' for navigation
 //     */
 //    private void expand(Node<X> at) {
@@ -107,8 +94,19 @@ public class HyperIterator<X>  {
             if (z instanceof Node) {
                 Node nz = (Node) z;
                 int s = nz.size();
-                for (int i = 0; i < s; i++)
-                    plan.add(inline(nz.get(i)));
+                for (int i = 0; i < s; i++) {
+                    Object x = nz.get(i);
+                    //inline 1-arity branches for optimization
+                    while (x instanceof Node && (((Node)x).size() == 1)) {
+                        x = ((Node) x).get(0);
+                    }
+
+//        //dont filter root node (traversed while plan is null)
+//        if ((x instanceof Node) && nodeFilter != null && !plan.isEmpty() && !nodeFilter.tryVisit((Node)x))
+//            return null;
+
+                    plan.add(x);
+                }
             } else
                 break;
         }

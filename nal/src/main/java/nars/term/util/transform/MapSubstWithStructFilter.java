@@ -8,7 +8,9 @@ public abstract class MapSubstWithStructFilter extends MapSubst {
     protected final int structure;
 
     MapSubstWithStructFilter(int structure) {
+
         this.structure = structure;
+        assert(structure!=0);
     }
 
     @Override

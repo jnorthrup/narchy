@@ -221,7 +221,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
      *  TODO DiluteUnion will require reprojection of the task and the belief to their temporal midpoint
      *  this requires changes to Derivation
      * */
-    public static final boolean OCCURRIFY_COMPOSE_UNION_DILUTE = true;
+    public static final boolean OCCURRIFY_COMPOSE_UNION_DILUTE = false;
 
 
     protected static final boolean DYNAMIC_CONCEPT_TRANSIENT = false;
@@ -415,9 +415,9 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
         //inverse linear decay
         final double falloffDurs =
                 //0.5f;
-                //1;
+                1;
                 //1.618f; //phi
-                2; //nyquist / horizon
+                //2; //nyquist / horizon
                 //4;
                 //dur;
                 //8;
@@ -429,6 +429,10 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
         //quadratic decay: integral finite from to infinity, see: https://en.wikipedia.org/wiki/List_of_definite_integrals
         e = (evi / (1.0 + Util.sqr(dt / decayTime)));
             //e = (float)(evi / (1.0 + Util.sqr(((double)dt) / dur ) / falloffDurs));
+
+        //cartoon quadratic decay
+//        float edge = dur / 2;
+//        e = (evi / (1.0 + Util.sqr(Math.max(0, dt - edge) / decayTime)));
 
         //exponential decay: see https://en.wikipedia.org/wiki/Exponential_integral
         //TODO
@@ -736,7 +740,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
          */
         public static final int TermutatorSearchTTL = 4;
 
-        public static final int Termify_Forks = 1;
+
 
 
         public static final int TTL_UNISUBST_MAX = 8;

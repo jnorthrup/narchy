@@ -30,10 +30,10 @@ public class WorkerExec extends ThreadedExec {
      * value of 1 means it shares 1/N of the current work. >1 means it will take on more proportionally more-than-fair share of work, which might reduce jitter at expense of responsive
      */
     float workResponsibility =
-            //1f;
+            1f;
             //1.5f;
             //1.618f;
-            2f;
+            //2f;
 
 
     public WorkerExec(int threads) {

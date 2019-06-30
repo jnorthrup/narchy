@@ -8,8 +8,8 @@
     //(P --> M), (S <-> M), neqRCom(S,P) |- (P --> S), (Belief:Analogy, Goal:Desire, Time:Compose)
     (M <-> P), (S <-> M), neqRCom(S,P) |- (S <-> P), (Belief:Resemblance, Time:Compose)
 
-    (P --> M), (S --> M), neqRCom(S,P), --isVar(S), --isVar(P) |- (S <-> P), (Belief:Comparison, Time:Compose)
-    (M --> P), (M --> S), neqRCom(S,P), --isVar(S), --isVar(P) |- (S <-> P), (Belief:Comparison, Time:Compose)
+    //(P --> M), (S --> M), neqRCom(S,P), --isVar(S), --isVar(P) |- (S <-> P), (Belief:Comparison, Time:Compose)
+    //(M --> P), (M --> S), neqRCom(S,P), --isVar(S), --isVar(P) |- (S <-> P), (Belief:Comparison, Time:Compose)
 
 
     //(S --> P), (P --> S), --isVar(S), --isVar(P) |-   (S <-> P), (Belief:Comparison, Goal:DesireWeak, Time:Compose)

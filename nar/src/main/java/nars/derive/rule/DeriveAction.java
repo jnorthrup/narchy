@@ -2,15 +2,14 @@ package nars.derive.rule;
 
 import jcog.pri.ScalarValue;
 import nars.NAL;
-import nars.control.Why;
 import nars.derive.model.Derivation;
 import nars.derive.op.Truthify;
 import nars.term.control.PREDICATE;
 
 /** branch in the derivation fork.  first runs truth.test() before conclusion.test() */
-public final class DeriveAction  /*implements ThrottledAction<Derivation>*/ {
+public class DeriveAction  /*implements ThrottledAction<Derivation>*/ {
 
-    public final Why why;
+    public final PremiseRuleProto.RuleWhy why;
     private final Truthify truth;
     private final PREDICATE<Derivation> conclusion;
 
@@ -20,6 +19,15 @@ public final class DeriveAction  /*implements ThrottledAction<Derivation>*/ {
         this.truth = pre;
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        return this==obj || why.rule.equals(((DeriveAction)obj).why.rule);
+    }
+
+    @Override
+    public int hashCode() {
+        return why.rule.hashCode();
+    }
 
     /**
      * compute probabilistic throttle value, in consideration of the premise's task and the punctuation outcome
@@ -42,7 +50,12 @@ public final class DeriveAction  /*implements ThrottledAction<Derivation>*/ {
         return causeValue * puncFactor;
     }
 
-    public final boolean test(Derivation d) {
+    @Override
+    public String toString() {
+        return why.rule.toString();
+    }
+
+    public boolean test(Derivation d) {
         if (truth.test(d))
             conclusion.test(d);
 

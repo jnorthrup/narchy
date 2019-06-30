@@ -20,8 +20,8 @@ B, A, --is(A,"==>") |- varIntro(polarizeTask((polarizeBelief(A) ==> B))), (Belie
 //##################################
 
 //belief form:
-B, A, --is(B,"==>") |-          polarizeBelief((polarizeTask(B) ==> A)), (Belief:AbductionDepolarized, Time:TaskRelative)
-B, A, --is(B,"==>") |- varIntro(polarizeBelief((polarizeTask(B) ==> A))), (Belief:AbductionDepolarized, Time:TaskRelative)
+//B, A, --is(B,"==>") |-          polarizeBelief((polarizeTask(B) ==> A)), (Belief:AbductionDepolarized, Time:TaskRelative)
+//B, A, --is(B,"==>") |- varIntro(polarizeBelief((polarizeTask(B) ==> A))), (Belief:AbductionDepolarized, Time:TaskRelative)
 
 //question form:
 //B, A, task("."), --is(B,"==>"), hasBelief() |-          polarizeBelief((polarizeTask(B) ==> A)), (Punctuation:Question, Time:TaskRelative)

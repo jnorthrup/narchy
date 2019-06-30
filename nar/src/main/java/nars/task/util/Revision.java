@@ -25,7 +25,7 @@ import static org.eclipse.collections.impl.tuple.Tuples.pair;
  */
 public enum Revision {;
 
-    /** fundamental eternal revision */
+    /** classic eternal revision */
     @Nullable public static Truth revise(/*@NotNull*/ Truthed a, /*@NotNull*/ Truthed b, float factor, float minEvi) {
 
         double ae = a.evi();
@@ -43,7 +43,6 @@ public enum Revision {;
 
 
     public static Truth revise(/*@NotNull*/ Truthed a, /*@NotNull*/ Truthed b) {
-
         return revise(a, b, 1f, 0f);
     }
 

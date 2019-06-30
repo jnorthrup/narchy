@@ -1,6 +1,7 @@
 package nars.sensor;
 
 import com.google.common.collect.Iterables;
+import jcog.Util;
 import jcog.func.IntIntToObjectFunction;
 import jcog.pri.op.PriMerge;
 import jcog.signal.wave2d.Bitmap2D;
@@ -295,10 +296,40 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends VectorSensor {
         }
 
 
-        @Override
-        public Term target(Task task, Derivation d) {
+        /** saccade shape */
+        @Override public Term target(Task task, Derivation d) {
             //return task.term();
-            return randomPixel(d.random).term();
+            //return randomPixel(d.random).term();
+
+            //random adjacent cell
+            Bitmap2DConcepts.PixelSignal ps = (Bitmap2DConcepts.PixelSignal) d.nar.concept(task.term());
+            if (ps!=null) {
+                int xx = Util.clamp(ps.x + d.random.nextInt(3) - 1, 0, width-1),
+                        yy = Util.clamp(ps.y + d.random.nextInt(3) - 1, 0, height-1);
+                return concepts.get(xx, yy).term();
+            }
+            else
+                return null;
+//
+//        Term[] nn;
+//        Term center = pixelTerm.apply(xx, yy);
+//        if (linkNESW) {
+//            List<Term> neighbors = new FasterList(4);
+//            if (xx > 0)
+//                neighbors.add(pixelTerm.apply(xx - 1, yy));
+//            if (yy > 0)
+//                neighbors.add(pixelTerm.apply(xx, yy - 1));
+//            if (xx < width - 1)
+//                neighbors.add(pixelTerm.apply(xx + 1, yy));
+//            if (yy < height - 1)
+//                neighbors.add(pixelTerm.apply(xx, yy + 1));
+//
+//            nn = neighbors.toArray(EmptyTermArray);
+//        } else {
+//            nn = EmptyTermArray;
+//        }
+//        return TemplateTermLinker.of(center, nn);
+//    }
         }
     }
 

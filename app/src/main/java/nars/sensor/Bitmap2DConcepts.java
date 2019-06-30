@@ -33,10 +33,6 @@ public class Bitmap2DConcepts<P extends Bitmap2D> implements Iterable<Signal> {
     public final Array2DIterable<Signal> iter;
     private final IntIntToObjectFunction<nars.term.Term> pixelTerm;
 
-    /** TODO abstract pixel neighbor linking strategies */
-    @Deprecated private final boolean linkNESW = false;
-
-
     protected Bitmap2DConcepts(P src, @Nullable IntIntToObjectFunction<nars.term.Term> pixelTerm, FloatRange res, float defaultFreq, NAR n) {
 
         this.width = src.width();
@@ -80,12 +76,7 @@ public class Bitmap2DConcepts<P extends Bitmap2D> implements Iterable<Signal> {
                                 };
 
                 Term sid = pixelTerm.apply(x, y);
-                Signal sc = new Signal(sid, cause, f, n) {
-                    @Override
-                    protected boolean autoTaskLink() {
-                        return false;
-                    }
-                }.setResolution(res);
+                Signal sc = new PixelSignal(sid, x,y, cause, f, n).setResolution(res);
                 if (defaultFreq==defaultFreq) {
                     EternalDefaultTable.add(sc, defaultFreq, n);
                 }
@@ -97,28 +88,7 @@ public class Bitmap2DConcepts<P extends Bitmap2D> implements Iterable<Signal> {
         this.iter = new Array2DIterable<>(matrix);
     }
 
-//    private TermLinker pixelLinker(int xx, int yy) {
-//        //n.conceptBuilder.termlinker(target)
-//
-//        Term[] nn;
-//        Term center = pixelTerm.apply(xx, yy);
-//        if (linkNESW) {
-//            List<Term> neighbors = new FasterList(4);
-//            if (xx > 0)
-//                neighbors.add(pixelTerm.apply(xx - 1, yy));
-//            if (yy > 0)
-//                neighbors.add(pixelTerm.apply(xx, yy - 1));
-//            if (xx < width - 1)
-//                neighbors.add(pixelTerm.apply(xx + 1, yy));
-//            if (yy < height - 1)
-//                neighbors.add(pixelTerm.apply(xx, yy + 1));
-//
-//            nn = neighbors.toArray(EmptyTermArray);
-//        } else {
-//            nn = EmptyTermArray;
-//        }
-//        return TemplateTermLinker.of(center, nn);
-//    }
+
 
     /**
      * iterate columns (x) first, then rows (y)
@@ -197,6 +167,21 @@ public class Bitmap2DConcepts<P extends Bitmap2D> implements Iterable<Signal> {
     }
 
     public final int size() { return area; }
+
+    static class PixelSignal extends Signal {
+
+        public final int x, y;
+
+        public PixelSignal(Term sid, int x, int y, short cause, FloatSupplier f, NAR n) {
+            super(sid, cause, f, n);
+            this.x = x; this.y = y;
+        }
+
+        @Override
+        protected boolean autoTaskLink() {
+            return false;
+        }
+    }
 
 //    public Bitmap2DReader newReader(CauseChannel<ITask> in, FloatFloatToObjectFunction<Truth> mode, BooleanSupplier enable, NAR nar) {
 //        return new Bitmap2DReader(in, mode, nar) {

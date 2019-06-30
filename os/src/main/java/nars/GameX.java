@@ -119,7 +119,7 @@ abstract public class GameX extends Game {
 
         initPlugins(n);
         initPlugins2(n, g);
-        //initMeta(n, g, true, false);
+        //initMeta(n, g, false, false);
 
         //new Gridding(n.parts(Game.class).map(NARui::agent).collect(toList())),
         n.synch();
@@ -384,7 +384,7 @@ abstract public class GameX extends Game {
         );
 
         n.confMin.set(0.01f);
-        n.termVolMax.set(30);
+        n.termVolMax.set(40);
 
 //        n.freqResolution.set(0.1f);
 //        n.confResolution.set(0.02f);
@@ -549,8 +549,8 @@ abstract public class GameX extends Game {
      */
     private static void addGovernor(NAR n) {
         int gHist = 4;
-        float momentum = 0.75f;
-        float explorationRate = 0.1f;
+        float momentum = 0.5f;
+        float explorationRate = 0.05f;
         n.onDur(new Consumer<>() {
 
             final Consumer<FasterList<Why>> reval = new Consumer<FasterList<Why>>() {
@@ -811,8 +811,7 @@ abstract public class GameX extends Game {
         return c;
     }
 
-    protected <C extends Bitmap2D> Bitmap2DSensor<C> addCameraCoded(@Nullable Term
-                                                                            id, Supplier<BufferedImage> bc, int sx, int sy, int ox, int oy) {
+    protected <C extends Bitmap2D> Bitmap2DSensor<C> addCameraCoded(@Nullable Term id, Supplier<BufferedImage> bc, int sx, int sy, int ox, int oy) {
         Bitmap2DSensor c = new Bitmap2DSensor(id, new AutoencodedBitmap(new MonoBufImgBitmap2D(bc), sx, sy, ox, oy), nar());
         addSensor(c);
         return c;

@@ -1,15 +1,19 @@
 package nars.derive.rule;
 
+import jcog.time.UsageNS;
 import nars.$;
+import nars.NAL;
 import nars.NAR;
 import nars.control.Why;
 import nars.derive.model.Derivation;
 import nars.derive.op.DirectPremisify;
 import nars.derive.op.Taskify;
+import nars.derive.op.Truthify;
 import nars.term.Term;
 import nars.term.control.AND;
 import nars.term.control.PREDICATE;
 import nars.term.var.ellipsis.Ellipsislike;
+import org.HdrHistogram.AtomicHistogram;
 import org.eclipse.collections.api.tuple.Pair;
 
 import static org.eclipse.collections.impl.tuple.Tuples.pair;
@@ -44,7 +48,16 @@ public class PremiseRuleProto extends PremiseRule {
             //new CachingPremisify //<- not ready yet
                 (taskPattern, beliefPattern, isFwd(), taskify);
 
-        this.rule = pair(PRE, new DeriveAction(cause, truthify, AND.the(y)));
+        this.rule = pair(PRE, action(y, cause));
+    }
+
+    private DeriveAction action(PREDICATE<Derivation>[] y, RuleWhy cause) {
+        PREDICATE<Derivation> yy = AND.the(y);
+        if (NAL.DEBUG)
+            return new DeriveActionProfiled(cause, truthify, yy);
+        else
+            return new DeriveAction(cause, truthify, yy);
+
     }
 
     /** task,belief or belief,task ordering heuristic */
@@ -123,4 +136,23 @@ public class PremiseRuleProto extends PremiseRule {
     }
 
 
+    private static class DeriveActionProfiled  extends DeriveAction {
+
+        static final UsageNS<DeriveActionProfiled> usage = new UsageNS();
+        final AtomicHistogram meter;
+
+        public DeriveActionProfiled(RuleWhy cause, Truthify truthify, PREDICATE<Derivation> yy) {
+            super(cause, truthify, yy);
+            meter = usage.the(this);
+        }
+
+        @Override
+        public boolean test(Derivation d) {
+            long start = System.nanoTime();
+            boolean r = super.test(d);
+            long end = System.nanoTime();
+            meter.recordValue(end-start);
+            return r;
+        }
+    }
 }

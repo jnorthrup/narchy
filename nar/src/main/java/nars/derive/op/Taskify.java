@@ -78,7 +78,8 @@ public class Taskify extends ProxyTerm {
     }
 
     public void apply(Term x, Derivation d) {
-        d.nar.emotion.deriveTermify.increment();
+        if (!x.unneg().op().taskable)
+            return;
 
         if (Success == DerivationFailure.failure(x, (byte) 0 /* dont consider punc consequences until after temporalization */, d)) {
             if (d.temporal)
@@ -161,13 +162,7 @@ public class Taskify extends ProxyTerm {
         taskify(y.negIf(neg), occ[0], occ[1], d);
     }
 
-    /**
-     * use special eternal pattern if non-temporal belief or goal.  but questions always use the default temporal form (allowing, ex: (a ==>+- a)?
-     */
-    Term pattern(Derivation d) {
-        return (d.temporal || (d.concPunc == QUESTION || d.concPunc == QUEST)) ?
-                termify.pattern : termify.patternEternal;
-    }
+
 
     /**
      * note: the return value here shouldnt matter so just return true anyway

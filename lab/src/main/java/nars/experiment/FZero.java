@@ -108,7 +108,7 @@ public class FZero extends GameX {
         //        {
             int nx = 4;
             AutoclassifiedBitmap camAE = new AutoclassifiedBitmap(
-                    $.inh(id,$.the("cam")), vision, nx, nx, (subX, subY) -> {
+                    $.p(id,$.the("cam")), vision, nx, nx, (subX, subY) -> {
                 return new float[]{/*cc.X, cc.Y*/};
             }, 12, this);
             camAE.setResolution(0.1f);
@@ -132,13 +132,13 @@ public class FZero extends GameX {
 
 
         //initPushButtonTank();
-        //initLeftRightPushButtonMutex();
+        initLeftRightPushButtonMutex();
         //initTankContinuous();
 
         initUnipolarLinear(3f);
 
 //        BiPolarAction A =
-            initBipolarRotateRelative(true, 0.3f);
+        //    initBipolarRotateRelative(true, 0.3f);
                 //initBipolarRotateRelative(true, 1f);
                 //initBipolarRotateAbsolute(true);
                 //initBipolarRotateDirect(false, 0.9f);
@@ -445,8 +445,8 @@ public class FZero extends GameX {
 //        final MiniPID fwdFilter = new MiniPID(0.5f, 0.3, 0.2f);
         float fwdSpeed = 7;
 
-        return actionHemipolar($.inh(id,$$("fwd")) /* $.func("vel", id, $.the("move"))*/, (a0) -> {
-        //return actionUnipolar($.inh($$("fwd"),id) /* $.func("vel", id, $.the("move"))*/, true, (x) -> Float.NaN /*0.5f*/, (a0) -> {
+        //return actionHemipolar($.inh(id,$$("fwd")) /* $.func("vel", id, $.the("move"))*/, (a0) -> {
+        return actionUnipolar($.inh(id,$$("fwd")) /* $.func("vel", id, $.the("move"))*/, true, (x) -> Float.NaN /*0.5f*/, (a0) -> {
             float a =
                     //_a[0] = (float) fwdFilter.out(_a[0], a0);
                     a0;
@@ -458,7 +458,7 @@ public class FZero extends GameX {
                 fz.vehicleMetrics[0][6] = thrust;
                 return a0;
             } else if (a < 0.5f - thresh) {
-                fz.vehicleMetrics[0][6] *= Util.unitize(Math.min(0.5f, (1f - (0.5f - a) * 2f)));
+                //fz.vehicleMetrics[0][6] *= Util.unitize(Math.min(0.5f, (1f - (0.5f - a) * 2f)));
                 return a0;
             } else
                 return Float.NaN;

@@ -1,10 +1,12 @@
 package nars.term.util.transform;
 
 import jcog.data.list.FasterList;
+import nars.$;
 import nars.NAL;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.atom.Atomic;
+import nars.term.util.TermException;
 import nars.term.util.TermTransformException;
 import org.jetbrains.annotations.Nullable;
 
@@ -107,6 +109,8 @@ abstract public class MapSubst implements Subst {
             this.ay = ay;
             this.bx = bx;
             this.by = by;
+            if ((ay.equals(bx)) || (by.equals(ax)))
+                throw new TermException( MapSubst2.class.getSimpleName() + " interlock", $.p(ax, ay, bx, by));
         }
 
         /**

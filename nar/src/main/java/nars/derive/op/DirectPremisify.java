@@ -4,8 +4,6 @@ import nars.NAL;
 import nars.derive.model.Derivation;
 import nars.term.Term;
 
-import static nars.NAL.derive.Termify_Forks;
-
 /**
  * simple non-caching depth-first TTL-limited derivation search
  *
@@ -30,7 +28,7 @@ public class DirectPremisify extends Premisify {
             UnifyMatchFork mf = d.termifier;
             d.forEachMatch = mf;
 
-            mf.reset(taskify, Termify_Forks, (int)Math.ceil(NAL.derive.TERM_BUFFER_VOLMAX_SCRATCH_FACTOR * d.termVolMax));
+            mf.reset(taskify, (int)Math.ceil(NAL.derive.TERM_BUFFER_VOLMAX_SCRATCH_FACTOR * d.termVolMax));
 
             boolean unified = unify(d, !fwd, true);
 

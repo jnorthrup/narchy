@@ -48,13 +48,15 @@ abstract public class TaskLinks implements Sampler<TaskLink> {
     /**
      * (post-)Amp: tasklink propagation rate
      */
-    public final FloatRange amp = new FloatRange(1f, 0, 2f /* 2f */);
-    /**
-     * tasklink retention rate:
-     * 0 = deducts all propagated priority from source tasklink (full resistance)
-     * 1 = deducts no propagated priority (superconductive)
-     **/
-    public final FloatRange sustain = new FloatRange(1f, 0, 1f);
+    public final FloatRange amp = new FloatRange(0.5f, 0, 2f /* 2f */);
+
+//    /**
+//     * tasklink retention rate:
+//     * 0 = deducts all propagated priority from source tasklink (full resistance)
+//     * 1 = deducts no propagated priority (superconductive)
+//     **/
+//    public final FloatRange sustain = new FloatRange(1f, 0, 1f);
+
     private final PriMerge merge = NAL.tasklinkMerge;
 
     private Predicate<TaskLink> processor = (x) -> true;
@@ -169,11 +171,11 @@ abstract public class TaskLinks implements Sampler<TaskLink> {
             //link(t, u, punc, pAmp); //forward (adjacent)
             //link(u, t, punc, pAmp); //reverse (adjacent)
 
-            float sustain = this.sustain.floatValue();
-
-            if (sustain < 1) {
-                link.take(punc, pAmp * (1 - sustain));
-            }
+//            float sustain = this.sustain.floatValue();
+//
+//            if (sustain < 1) {
+//                link.take(punc, pAmp * (1 - sustain));
+//            }
 
 
             //link(s, t, punc, ); //redundant

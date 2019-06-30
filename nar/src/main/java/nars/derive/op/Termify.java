@@ -1,12 +1,16 @@
 package nars.derive.op;
 
 import nars.$;
+import nars.derive.model.Derivation;
 import nars.term.ProxyTerm;
 import nars.term.Term;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
 import nars.term.util.TermTransformException;
 import nars.term.util.transform.Retemporalize;
+
+import static nars.Op.QUEST;
+import static nars.Op.QUESTION;
 
 /**
  * Derivation target construction step of the derivation process that produces a derived task
@@ -48,4 +52,8 @@ public final class Termify extends ProxyTerm {
     }
 
 
+    public final Term pattern(Derivation d) {
+        return (d.temporal || (d.concPunc == QUESTION || d.concPunc == QUEST)) ?
+                pattern : patternEternal;
+    }
 }
