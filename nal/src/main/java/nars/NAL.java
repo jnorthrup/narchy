@@ -176,6 +176,8 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
     public static final boolean PROJECTION_EVIDENCE_INFLATION_DETECT = false;
 
     public static final int DYN_TASK_MATCH_MODE = 1;
+    /** tasklink belief/goal resolution strategy */
+    public static final boolean TASKLINK_MATCH_OR_SAMPLE = true;
 
     /**
      * if false, will use pri=ScalarValue.EPSILON
@@ -221,7 +223,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
      *  TODO DiluteUnion will require reprojection of the task and the belief to their temporal midpoint
      *  this requires changes to Derivation
      * */
-    public static final boolean OCCURRIFY_COMPOSE_UNION_DILUTE = false;
+    public static final boolean OCCURRIFY_COMPOSE_UNION_DILUTE = true;
 
 
     protected static final boolean DYNAMIC_CONCEPT_TRANSIENT = false;
@@ -583,6 +585,8 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
          */
         public static final boolean REVISION_MIN_EVI_FILTER= configIs("REVISION_MIN_EVI_FILTER");
         public static final boolean DYNAMIC_TRUTH_TASK_STORE= configIs("DYNAMIC_TRUTH_TASK_STORE");
+        public static final boolean DYNAMIC_TRUTH_TASK_LINK= false;
+        public static final boolean DYNAMIC_TRUTH_TASK_EMIT= false;
         /**
          * perceptible priority increase that warrants automatic reactivation.
          * used during Remember's merge repeat suppression filter
@@ -793,8 +797,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
 
         public static final float TERM_BUFFER_VOLMAX_SCRATCH_FACTOR = 8f;
 
-        /** tasklink belief/goal resolution strategy */
-        public static final boolean TASKLINK_MATCH_OR_SAMPLE = false;
+
 
     }
 

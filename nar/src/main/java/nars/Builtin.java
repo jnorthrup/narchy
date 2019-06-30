@@ -318,7 +318,7 @@ public class Builtin {
         nar.add(SetFunc.sort(nar));
 
         /** dynamic target builder - useful for NAR specific contexts like clock etc.. */
-        nar.add(Functor.f("target", (Subterms s) -> {
+        nar.add(Functor.f("termDynamic", (Subterms s) -> {
             Op o = Op.stringToOperator.get($.unquote(s.sub(0)));
             Term[] args = s.sub(1).subterms().arrayShared();
             if (args.length == 2) {

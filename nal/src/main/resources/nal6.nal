@@ -187,13 +187,9 @@
         //(--(&&,P,A..+) ==> X), (--(&&,S,A..+) ==> X), neq(P,S) |- (--(&&,(P || S),A..+) ==> X), (Belief:UnionSym)
 
 
-    //Contradiction Neutralize
-    (  (&&,Y,A..+) ==> X), (  (&&,Z,A..+) ==> X), eqNeg(Y,Z), --is(X,"#")     |- (  (&&,A..+) ==> X), (Belief:IntersectionPB, Time:Compose)
-    (--(&&,Y,A..+) ==> X), (--(&&,Z,A..+) ==> X), eqNeg(Y,Z), --is(X,"#")     |- (--(&&,A..+) ==> X), (Belief:IntersectionPB, Time:Compose)
-    (X ==> (&&,Y,A..+)), (X ==> (&&,Z,A..+)), eqNeg(Y,Z), --is(X,"#")     |- (X ==> (&&,A..+)), (Belief:IntersectionPB, Time:Compose)
-
-    //(Y ==> X), (Z ==> X), eqNeg(Y,Z), --is(X,"#")                       |- (#1 ==> X), (Belief:IntersectionPB, Time:Compose)
-
+        (C ==> X), B, neq(B,C), task(".") |- unisubst((C ==> X),C,B,"$",novel), (Punctuation:Question)
+          (C ==> X), B, neq(B,C), task(".") |- unisubst((--C ==> X),C,B,"$",novel), (Punctuation:Question)
+        (X ==> C), B, neq(B,C), task(".") |- unisubst((X ==> C),C,B,"$",novel), (Punctuation:Question)
 
 
 //            B, ((&&,C,A..+) ==> X), neq(B,C) |- unisubst(((&&,A..+) ==> X),C,B), (Belief:Deduction)
@@ -242,7 +238,17 @@
 
         //TODO disj
 
+    //Contradiction Neutralize
+    (  (&&,Y,A..+) ==> X), (  (&&,Z,A..+) ==> X), eqNeg(Y,Z), --is(X,"#")     |- (  (&&,A..+) ==> X), (Belief:IntersectionPB, Time:Compose)
+    (--(&&,Y,A..+) ==> X), (--(&&,Z,A..+) ==> X), eqNeg(Y,Z), --is(X,"#")     |- (--(&&,A..+) ==> X), (Belief:IntersectionPB, Time:Compose)
+    (X ==> (&&,Y,A..+)), (X ==> (&&,Z,A..+)), eqNeg(Y,Z), --is(X,"#")     |- (X ==> (&&,A..+)), (Belief:IntersectionPB, Time:Compose)
+
+    //(Y ==> X), (Z ==> X), eqNeg(Y,Z), --is(X,"#")                       |- (#1 ==> X), (Belief:IntersectionPB, Time:Compose)
+
     //Anti-conditional Abduction via Multi-conditional Syllogism
+    (C ==> X), (E ==> Y), neq(C,E)      |-    unisubst(--(C&&E), X, Y), (Belief:DecomposePN)
+    (C ==> X), (E ==> Y), neq(C,E)      |-    unisubst(--(C&&E), X, Y), (Belief:DecomposeNP)
+
     //(C ==> X), (E ==> Y), eventOf(C,E)      |-    unisubst(--conjWithout(C,E),X,Y), (Belief:AbductionXOR)
         //TODO disj
 

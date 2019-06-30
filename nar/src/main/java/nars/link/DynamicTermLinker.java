@@ -106,7 +106,7 @@ public abstract class DynamicTermLinker implements TermLinker {
         protected Term choose(Subterms _s, int n, Term parent, Random rng) {
             if (parent instanceof Sequence) {
 
-            } else if (parent.op()==CONJ && _s.hasAny(CONJ) && Conj.isSeq(parent) /*&& rng.nextBoolean()*/) {
+            } else if (parent.op()==CONJ && _s.hasAny(CONJ) && Conj.isSeq(parent) && rng.nextBoolean()) {
                 _s = ConjList.events(parent).asSubterms(false);
             }
             Subterms s = _s;
@@ -129,9 +129,9 @@ public abstract class DynamicTermLinker implements TermLinker {
                     //sub.complexity();
             return
                     //Util.sqrt(v);
-                    v;
+                    //v;
                     //Util.sqr((float)v);
-                    //1f/v; //inverse
+                    1f/v; //inverse
         }
     };
 }

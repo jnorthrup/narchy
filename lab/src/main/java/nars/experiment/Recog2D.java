@@ -1,7 +1,6 @@
 package nars.experiment;
 
 import com.jogamp.opengl.GL2;
-import jcog.Util;
 import jcog.math.FloatAveragedWindow;
 import jcog.signal.wave2d.ScaledBitmap2D;
 import nars.$;
@@ -60,7 +59,7 @@ public class Recog2D extends GameX {
 
 
     int image;
-    final int maxImages = 4;
+    final int maxImages = 6;
 
     int imagePeriod = 64;
     static final int FPS = 32;
@@ -70,7 +69,7 @@ public class Recog2D extends GameX {
 
 
         w = 12; h = 14;
-        int sw = 5, sh = 6;
+        int sw = 7, sh = 9;
 
         canvas = new BufferedImage(w, h, BufferedImage.TYPE_INT_BGR);
         g = ((Graphics2D) canvas.getGraphics());
@@ -81,7 +80,7 @@ public class Recog2D extends GameX {
 
 
         sp = senseCamera(
-                $.the("x")
+                $.p(id,$.the("x"))
 
 
                 ,
@@ -90,7 +89,7 @@ public class Recog2D extends GameX {
 
         outs = new BeliefVector(ii ->
                 //$.inst($.the( ii), $.the("x"))
-                $.p(ii)
+                $.inh(id,$.the(ii))
                 , maxImages, this);
 //        train = new Training(
 //                sp.src instanceof PixelBag ?
@@ -99,16 +98,18 @@ public class Recog2D extends GameX {
 //        train = null;
 
         Reward r = rewardNormalized("correct", -1, +1, compose(() -> {
-            float error = 0;
+            double error = 0;
+            double pcSum = 0;
             for (int i = 0; i < maxImages; i++) {
-
-                this.outs.neurons[i].update();
-                error += this.outs.neurons[i].error;
-
-
+                BeliefVector.Neuron ni = this.outs.neurons[i];
+                ni.update();
+                float pc = ni.predictedConf;
+                pcSum += pc;
+                error += ni.error * pc;
             }
 
-            return Util.clamp(2 * -(error / maxImages - 0.5f), -1, +1);
+            return (float)((1.0/(1+(error/pcSum)))-0.5)*2;
+            //return Util.clamp(2 * -(error / maxImages - 0.5f), -1, +1);
         }, new FloatAveragedWindow(16, 0.1f)));
 
 //        Param.DEBUG = true;
@@ -335,14 +336,14 @@ public class Recog2D extends GameX {
     /**
      * Created by me on 10/15/16.
      */
-    public static class BeliefVector {
+    public class BeliefVector {
 
 
-        static class Neuron {
+        class Neuron {
 
             public float predictedFreq = 0.5f, predictedConf = 0;
 
-            public float expectedFreq = 0.5f;
+            public float expectedFreq;
 
             public float error;
 
@@ -424,7 +425,8 @@ public class Recog2D extends GameX {
                             n.actual(predictedFreq, x != null ? x.conf() : 0);
 
 
-                            return x;
+                            //return x;
+                            return x!=null ? $.t(x.freq(), nar.beliefConfDefault.floatValue()) : null;
                         });
 
 

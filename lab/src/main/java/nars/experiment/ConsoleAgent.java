@@ -3,6 +3,7 @@ package nars.experiment;
 import com.googlecode.lanterna.TextCharacter;
 import com.jogamp.newt.event.KeyEvent;
 import com.jogamp.opengl.GL2;
+import jcog.exe.Loop;
 import jcog.math.FloatRange;
 import nars.$;
 import nars.GameX;
@@ -15,6 +16,7 @@ import spacegraph.SpaceGraph;
 import spacegraph.input.finger.Finger;
 import spacegraph.input.key.KeyPressed;
 import spacegraph.space2d.Surface;
+import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.widget.console.VectorTextGrid;
 
 import java.util.Arrays;
@@ -32,25 +34,30 @@ public class ConsoleAgent extends GameX {
             //new char[] { ' ', 'a', 'b' };
             new char[]{' ', 'x'};
 
-    final static int WIDTH = 2;
-    final static int HEIGHT = 2;
+    final int WIDTH;
+    final int HEIGHT;
     static final float fps = 24f;
 
     final TestConsole R;
     final TestConsole W;
     float prevSim;
 
+    /** whether to accept manual override input */
+    boolean manualOverride = true;
 
-    public ConsoleAgent(NAR nar) {
+    public final Loop noise;
+
+    public ConsoleAgent(int w, int h, NAR nar) {
         super("target", nar);
 
+        this.WIDTH = w; this.HEIGHT = h;
         R = new TestConsole(
-                Atomic.the("it"),
+                $.p(id,Atomic.the("should")),
                 WIDTH, HEIGHT, alphabet) {
 
             @Override
             public Surface finger(Finger finger) {
-                if (finger.pressedNow(0))
+                if (manualOverride && finger.pressedNow(0))
                     root().keyFocus(this);
                 return super.finger(finger);
             }
@@ -58,7 +65,7 @@ public class ConsoleAgent extends GameX {
             @Override
             public boolean key(KeyEvent e, boolean pressed) {
 
-                if (pressed) {
+                if (manualOverride && pressed) {
                     if (!e.isPrintableKey()) {
                         switch (e.getKeyCode()) {
                             case KeyEvent.VK_DOWN:
@@ -93,11 +100,11 @@ public class ConsoleAgent extends GameX {
 
 
         W = new TestConsole(
-                nar.self(),
+                $.p(id,Atomic.the("is")),
                 R.W(), R.H(), alphabet) {
 
-            final FloatRange moveThresh = new FloatRange(0.75f, 0, 1f);
-            final FloatRange writeThresh = new FloatRange(0.75f, 0, 1f);
+            final FloatRange moveThresh = new FloatRange(0.51f, 0, 1f);
+            final FloatRange writeThresh = new FloatRange(0.51f, 0, 1f);
 
             {
 
@@ -105,48 +112,33 @@ public class ConsoleAgent extends GameX {
                 actionPushButtonMutex($.inh(id,$.$$("left")), $.inh(id,$.$$("right")), ()->Left(), ()->Right(), moveThresh::floatValue);
                 actionPushButtonMutex($.inh(id,$.$$("up")), $.inh(id,$.$$("down")), ()->Up(), ()->Down(), moveThresh::floatValue);
                 for (char c : alphabet) {
-                    actionPushButton($.inh(id, $.p(WRITE, $.the(c))), writeThresh::floatValue, () -> write(c));
+                    actionPushButton($.inh(id, $.p(WRITE, $.the(c))),
+                            writeThresh::floatValue, () -> write(c));
                 }
-//                actionTriState($.func("go", Atomic.the("x")), (d) -> {
-//                    switch (d) {
-//                        case -1:
-//                            Left();
-//                            break;
-//
-//                        case +1:
-//                            Right();
-//                            break;
-//                    }
-//                });
-//                actionTriState($.func("go", Atomic.the("y")), (d) -> {
-//                    switch (d) {
-//                        case -1:
-//                            Up();
-//                            break;
-//                        case +1:
-//                            Down();
-//                            break;
-//                    }
-//                });
-
             }
 
         };
 
-        rewardNormalized("similar", -1, +1, () -> {
+        reward("similar", 1f, () -> {
 
             float s = similarity(R.chars, W.chars);
-            float d = s - prevSim;
-            prevSim = s;
-            if (d == 0)
-                return s == 0 ? +1 : Float.NaN;
-            if (d < 0)
-                return -1;
-            else
-                return +1;
+            return s;
+//            float d = s - prevSim;
+//            prevSim = s;
+//            if (d == 0)
+//                return s == 0 ? +1 : Float.NaN;
+//            if (d < 0)
+//                return -1;
+//            else
+//                return +1;
             //return d==0 ? Float.NaN : Util.tanhFast(d);
         });
 
+        noise = Loop.of(()->{
+            R.c[0] = random().nextInt(R.cols);
+            R.c[1] = random().nextInt(R.rows);
+            R.write(alphabet[random().nextInt(alphabet.length)]);
+        }).setFPS(0.05f);
 
     }
 
@@ -154,9 +146,8 @@ public class ConsoleAgent extends GameX {
 
 
         GameX.runRT((n) -> {
-            ConsoleAgent a = new ConsoleAgent(n);
-            SpaceGraph.window(a.R, WIDTH * 100, HEIGHT * 100);
-            SpaceGraph.window(a.W, WIDTH * 100, HEIGHT * 100);
+            ConsoleAgent a = new ConsoleAgent(3, 3, n);
+            SpaceGraph.window(new Gridding(a.R, a.W), 800, 400);
             return a;
         }, fps);
 
@@ -208,11 +199,14 @@ public class ConsoleAgent extends GameX {
 
                     for (int i = 0, alphabetLength = alphabet.length; i < alphabetLength; i++) {
                         char a = alphabet[i];
-                        Term xya = $.funcImg((Atomic)id, $.the(a), XY);
+                        Term xya =
+                                $.inh(id, $.p($.the(a), XY));
+                                //$.funcImg((Atomic)id, $.the(a), XY);
                         int xx = x;
                         int yy = y;
 
-                        nar().control.parent((charMatrix[x][y][i] = sense(xya, () -> chars[xx][yy] == a)).attn, new PriNode[]{xy});
+                        nar().control.parent((charMatrix[x][y][i] = sense(xya,
+                                () -> chars[xx][yy] == a)).attn, new PriNode[]{xy});
 
                     }
                 }
@@ -236,6 +230,7 @@ public class ConsoleAgent extends GameX {
 
         @Override
         protected boolean setBackgroundColor(GL2 gl, TextCharacter c, int col, int row) {
+            //nar.beliefTruth(charMatrix[col][row][], nar.time());
             float cc = 0.5f; //nar.concepts.pri(charMatrix[col][row].target, 0);
             if (cc == cc) {
                 gl.glColor4f(cc, cc, cc, 0.95f);

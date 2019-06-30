@@ -88,7 +88,7 @@ public class ArkaNAR extends GameX {
 
         if (cam) {
 
-            Bitmap2DSensor<ScaledBitmap2D> cc = senseCamera(id /*$.the("cam")*/, new ScaledBitmap2D(
+            Bitmap2DSensor<ScaledBitmap2D> cc = senseCamera((x,y)->$.inh(id, $.p(x,y)), new ScaledBitmap2D(
                     new SwingBitmap2D(noid)
                     , visW, visH
             )/*.blur()*/);

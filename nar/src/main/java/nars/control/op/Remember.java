@@ -51,11 +51,13 @@ public class Remember extends AbstractTask {
         return the(x,
                 !(x instanceof DynamicTruthTask) || NAL.belief.DYNAMIC_TRUTH_TASK_STORE,
                 //true,true, n);
-                x instanceof DynamicTruthTask ? false : true, x instanceof DynamicTruthTask ? false : true, n);
+                !(x instanceof DynamicTruthTask) || NAL.belief.DYNAMIC_TRUTH_TASK_LINK,
+                !(x instanceof DynamicTruthTask) || NAL.belief.DYNAMIC_TRUTH_TASK_LINK,
+            n);
     }
 
     @Nullable
-    public static Remember the(Task x, boolean store, boolean link, boolean notify, NAR n) {
+    public static Remember the(Task x, boolean store, boolean link, boolean emit, NAR n) {
 
         assert (!x.isCommand());
 
@@ -99,7 +101,7 @@ public class Remember extends AbstractTask {
             }
         }
 
-        return new Remember(x, store, link, notify, n);
+        return new Remember(x, store, link, emit, n);
     }
 
     public Remember(Task input, boolean store, boolean link, boolean notify, NAR n) {

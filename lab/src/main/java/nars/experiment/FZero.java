@@ -21,7 +21,6 @@ import nars.time.Tense;
 import nars.video.AutoclassifiedBitmap;
 import org.eclipse.collections.api.block.function.primitive.FloatToFloatFunction;
 import org.eclipse.collections.api.block.procedure.primitive.BooleanProcedure;
-import spacegraph.SpaceGraph;
 import spacegraph.space2d.widget.meter.BitmapMatrixView;
 
 import javax.swing.*;
@@ -32,6 +31,7 @@ import java.awt.image.BufferedImage;
 import static nars.$.$$;
 import static nars.Op.INH;
 import static nars.agent.GameTime.fps;
+import static spacegraph.SpaceGraph.window;
 import static spacegraph.space2d.container.grid.Gridding.grid;
 
 /**
@@ -120,9 +120,9 @@ public class FZero extends GameX {
 
         BitmapMatrixView visionView = new BitmapMatrixView(vision);
         onFrame(visionView::updateIfShowing);
-        SpaceGraph.window(grid(visionView,
+        window(grid(visionView,
                 camAE.newChart()
-                //new Bitmap2DConceptsView(c, this).withControls()
+                //new Signals(c, this).withControls()
         ), 500, 500);
 
 
@@ -132,10 +132,10 @@ public class FZero extends GameX {
 
 
         //initPushButtonTank();
-        initLeftRightPushButtonMutex();
-        //initTankContinuous();
+        //initLeftRightPushButtonMutex();
+        initTankContinuous();
 
-        initUnipolarLinear(3f);
+        //initUnipolarLinear(2f);
 
 //        BiPolarAction A =
         //    initBipolarRotateRelative(true, 0.3f);
@@ -145,8 +145,10 @@ public class FZero extends GameX {
                 //initBipolarRotateDirect(false, 0.2f);
 
 //        window(new Gridding(
-//                //new CameraSensorView(c, this).withControls(),
-//                NARui.beliefCharts(nar, F, A.pos, A.neg)), 400, 400);
+//                NARui.beliefCharts( sensors.stream()
+//                        .flatMap(x-> Streams.stream(x.components())).collect(toList()), nar)
+//                ),
+//                400, 400);
 
 
         float r = 0.1f;
@@ -155,14 +157,14 @@ public class FZero extends GameX {
 //        senseNumberBi($.funcImg("vel", $$("y")), compose(() -> (float) fz.vehicleMetrics[0][8],
 //                new FloatAveragedWindow(8, 0.5f, false))).resolution(r);
 
-        senseNumberDifferenceBi($.inh($.the("delta"), $.the("vel")), () -> (float) fz.vehicleMetrics[0][6]).resolution(r);
+        senseNumberDifferenceBi($.p(id,$.the("d"), $.the("vel")), () -> (float) fz.vehicleMetrics[0][6]).resolution(r);
 
 
         int angles = 4;
         DigitizedScalar ang = senseAngle(()->(float)fz.playerAngle, angles, Atomic.the("ang"),
                 a->$.inh(id, $.p($.the("ang"), $.the(a))));
         ang.resolution(r);
-        SpaceGraph.window(new VectorSensorView(ang,1, angles, this).withControls(), 400, 400);
+        window(new VectorSensorView(ang,1, angles, this).withControls(), 400, 400);
 
 //        nar.goal($.sim($.func("ang", id, $.varDep(1)),$.func("ang", id, $.varDep(2)).neg()), Tense.ETERNAL);
 //        nar.onTask(t -> {
@@ -313,7 +315,7 @@ public class FZero extends GameX {
 
     private void initForwardStopPushButtonMutex() {
         this.actionPushButtonMutex(
-                $.inh($$("fwd"), id), $.inh($$("stop"), id),
+                $.inh(id,$$("fwd")), $.inh(id,$$("stop")),
                 f -> fz.thrust = f,
                 b -> {
                     if (b) {
@@ -325,7 +327,7 @@ public class FZero extends GameX {
     private void initLeftRightPushButtonMutex() {
 
         this.actionPushButtonMutex(
-                $.inh($$("left"),id), $.inh($$("right"),id),
+                $.inh(id,$$("left")), $.inh(id,$$("right")),
                 ((BooleanProcedure) l -> fz.left = l), r -> fz.right = r
         );
     }
