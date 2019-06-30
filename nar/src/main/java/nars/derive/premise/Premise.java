@@ -6,10 +6,7 @@ package nars.derive.premise;
 
 import jcog.signal.meter.FastCounter;
 import nars.*;
-import nars.concept.Concept;
-import nars.concept.TaskConcept;
 import nars.derive.model.Derivation;
-import nars.op.mental.AliasConcept;
 import nars.table.BeliefTable;
 import nars.task.proxy.ImageTask;
 import nars.term.Compound;
@@ -22,6 +19,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.function.Predicate;
 
 import static nars.Op.BELIEF;
+import static nars.Op.VAR_QUERY;
 import static nars.term.atom.Bool.Null;
 import static nars.time.Tense.ETERNAL;
 
@@ -37,17 +35,15 @@ import static nars.time.Tense.ETERNAL;
  */
 public class Premise implements Comparable<Premise> {
 
+    public static final Premise[] EmptyArray = new Premise[0];
     /**
      * variable types unifiable in premise formation
      */
     final static int var =
             //Op.VAR_QUERY.bit | Op.VAR_DEP.bit
-            Op.VAR_QUERY.bit
+            VAR_QUERY.bit
             //Op.Variable //all
             ;
-
-    public static final Premise[] EmptyArray = new Premise[0];
-
     public final Task task;
     public final Term beliefTerm;
     public final long hash;
@@ -60,16 +56,16 @@ public class Premise implements Comparable<Premise> {
         //TODO check for non-ImageTask images
         if (task instanceof ImageTask &&
                 ((beliefTerm instanceof Compound && !beliefTerm.op().isAny(Op.INH.bit | Op.SIM.bit))
-                ||
-                (beliefTerm instanceof Atomic && task.term().containsRecursively(beliefTerm))
+                        ||
+                        (beliefTerm instanceof Atomic && task.term().containsRecursively(beliefTerm))
                 )
         ) {
-            task = ((ImageTask)task).task;
+            task = ((ImageTask) task).task;
         }
         if (beliefTerm instanceof Compound) {
             if (!task.term().op().isAny(Op.INH.bit | Op.SIM.bit)) {
                 Term ib = Image.imageNormalize(beliefTerm);
-                if (ib!=beliefTerm)
+                if (ib != beliefTerm)
                     beliefTerm = ib;
             }
         }
@@ -82,6 +78,7 @@ public class Premise implements Comparable<Premise> {
         this.hash = premiseHash(task, beliefTerm);
 
     }
+
 
     /**
      * specially constructed hash that is useful for sorting premises by:
@@ -126,19 +123,17 @@ public class Premise implements Comparable<Premise> {
         if (taskTerm.equals(beliefTerm)) {
             beliefConceptUnifiesTaskConcept = true;
         } else if (taskTerm.op() == beliefTerm.op()) {
-
-
-            if (beliefTerm.hasAny(var) || taskTerm.hasAny(var)) { // || taskTerm.hasXternal() || beliefTerm.hasXternal()) {
+            if (beliefTerm.hasAny(var) || taskTerm.hasAny(var) || taskTerm.hasXternal() || beliefTerm.hasXternal()) {
 
                 Term unifiedBeliefTerm = d.premiseUnify.unified(taskTerm, beliefTerm, matchTTL);
 
                 if (unifiedBeliefTerm != null) {
 
-                    unifiedBeliefTerm =
-                            d.random.nextBoolean() ?
-                                unifiedBeliefTerm
-                                :
-                                unifiedBeliefTerm.normalize();
+                    unifiedBeliefTerm = d.random.nextBoolean() ?
+                            unifiedBeliefTerm
+                            :
+                            unifiedBeliefTerm.normalize();
+
                     beliefTerm = unifiedBeliefTerm;
 
                     beliefConceptUnifiesTaskConcept = true;
@@ -147,16 +142,20 @@ public class Premise implements Comparable<Premise> {
                 }
 
             }
-
+//            if (beliefConceptUnifiesTaskConcept) {
+//                if (!taskTerm.hasVars() && beliefTerm.hasXternal() && !taskTerm.hasXternal()) {
+//                    //use more temporally-specific form of belief term (from Task)
+//                    beliefTerm = taskTerm;
+//                }
+//            }
         }
 
-//        Term solved = Evaluation.solveFirst(beliefTerm, d.nar);
-//        if (solved!=null && solved!=beliefTerm)
-//            System.out.println(beliefTerm + " -> " + solved);
+
+
 
         Task belief = match(d, beliefTerm, beliefConceptUnifiesTaskConcept);
 
-        if (task!=belief && task.stamp().length == 0) {
+        if (task != belief && task.stamp().length == 0) {
             //only allow unstamped tasks to apply with stamped beliefs.
             //otherwise stampless tasks could loop forever in single premise or in interaction with another stampless task
             if (belief == null || belief.stamp().length == 0)
@@ -170,118 +169,57 @@ public class Premise implements Comparable<Premise> {
         if (!d.budget(task, belief))
             return false;
 
-        Task task = this.task;
-//        if (belief!=null) {
-//            boolean te = task.isEternal(), be = belief.isEternal();
-//            if (te ^ be) {
-//                long now = d.time;
-//                if (te) {
-//
-//                    //proxy task to now
-//                    long[] nowOrBelief =
-//                            (task.isGoal() || task.isQuest()) ?
-//                                new long[] { now, now + belief.range() - 1 } //immediate
-//                                //new long[] { d.dur + now, d.dur + now + belief.range() - 1 } //next dur
-//                            :
-//                                //Longerval.unionArray(belief.start(), belief.end(), now, now + belief.range() - 1);
-//                                new long[] { belief.start(), belief.end() };
-//                    nowOrBelief[0] = Tense.dither(nowOrBelief[0], d.ditherTime);
-//                    nowOrBelief[1] = Tense.dither(nowOrBelief[1], d.ditherTime);
-//                    task = new SpecialOccurrenceTask(task, nowOrBelief);
-//
-//                } else {
-//                    //proxy belief to now
-//                    long[] nowOrTask =
-//                            new long[] { task.start(), task.end() };
-//                            //Longerval.unionArray(task.start(), task.end(), now, now + task.range() - 1);
-//                    nowOrTask[0] = Tense.dither(nowOrTask[0], d.ditherTime);
-//                    nowOrTask[1] = Tense.dither(nowOrTask[1], d.ditherTime);
-//
-//                    belief = new SpecialOccurrenceTask(belief, nowOrTask);
-//                }
-//            }
-//        }
+        d.reset(this.task, belief, nextBeliefTerm);
 
-
-        d.reset(task, belief, nextBeliefTerm);
-
-        return d.taskTerm!=Null;
+        return d.taskTerm != Null;
     }
+
 
     private @Nullable Task match(Derivation d, Term beliefTerm, boolean beliefConceptUnifiesTaskConcept) {
 
-        if (!(beliefTerm.op().taskable && beliefTerm.isNormalized()))
-            return null;
+        if (beliefTerm.op().taskable && beliefTerm.isNormalized() && !beliefTerm.hasAny(VAR_QUERY)) {
 
-        NAR n = d.nar();
+            NAR n = d.nar();
 
-        Concept beliefConcept = n.conceptualizeDynamic(beliefTerm);
-                //n.conceptualize(beliefTerm)
-                //n.concept(beliefTerm)
-
-        /** dereference */
-        if (beliefConcept instanceof AliasConcept)
-            beliefTerm = (beliefConcept = ((AliasConcept) beliefConcept).abbr).term(); //dereference alias
-
-        if (!(beliefConcept instanceof TaskConcept))
-            return null;
-
-        final BeliefTable beliefTable = beliefConcept.beliefs();
-
-        if (beliefConceptUnifiesTaskConcept && task.isQuestionOrQuest()) {
+            final BeliefTable beliefTable = n.tableDynamic(beliefTerm, true);
 
             boolean answerGoal = task.isQuest();
 
-            final BeliefTable answerTable =
-                    answerGoal ?
-                            beliefConcept.goals() :
-                            beliefTable;
+            if (beliefConceptUnifiesTaskConcept && task.isQuestionOrQuest()) {
 
-            if (answerTable.isEmpty()) {
-                if (!answerGoal)
-                    return null; //no belief
-            } else {
+                final BeliefTable answerTable = answerGoal ? n.tableDynamic(beliefTerm, false) : beliefTable;
 
-                if (beliefConceptUnifiesTaskConcept) {
-                    Term taskTerm = task.term();
-                    if (!taskTerm.hasVars() && beliefTerm.hasXternal() && !taskTerm.hasXternal()) {
-                        //use more temporally-specific form of belief term (from Task)
-                        beliefTerm = taskTerm;
+                if (answerTable != null && !answerTable.isEmpty()) {
+                    Task a = tryAnswer(beliefTerm, answerTable, d);
+                    if (a != null) {
+                        assert(((!answerGoal && a.isBelief()) || (answerGoal && a.isGoal())));
+
+                        if (answerGoal)
+                            d.what.accept(a); //input answered goal
                     }
+                    if (!answerGoal)
+                        return a;
                 }
 
-                Task answered = tryAnswer(beliefTerm, answerTable, d);
-                if (answered != null) {
-                    if (answered.evi() >= d.eviMin) {
-
-//                        if (answered instanceof DynamicTruthTask)
-//                            d.what.accept(answered);
-//                        else
-                        if (beliefConceptUnifiesTaskConcept && task.isQuestionOrQuest()) {
-                            d.what.accept(answered);
-                            //n.eventTask.emit(answered);
-                        }
-
-                    }
-
-                }
-                return answered;
             }
-        }
 
-        return (!beliefTable.isEmpty()) ?
-            tryMatch(beliefTerm, beliefTable, d) : null;
+            return beliefTable != null && !beliefTable.isEmpty() ?
+                    tryMatch(beliefTerm, beliefTable, beliefConceptUnifiesTaskConcept, d) : null;
+
+        } else
+            return null;
+    }
 
 //        if (unifiedBelief && belief != null && Param.LINK_VARIABLE_UNIFIED_PREMISE) {
 //            linkVariable(unifiedBelief, d.nar, beliefConcept);
 //        }
 
-    }
 
-    private Task tryMatch(Term beliefTerm, BeliefTable bb, Derivation d) {
+
+    private Task tryMatch(Term beliefTerm, BeliefTable bb, boolean beliefConceptUnifiesTaskConcept, Derivation d) {
 
         Predicate<Task> beliefFilter =
-                task.punc() == BELIEF && beliefTerm.equalsRoot(task.term()) ?
+                beliefConceptUnifiesTaskConcept && task.punc() == BELIEF ?
                         t -> !t.equals(task) :
                         null;
 
@@ -289,7 +227,7 @@ public class Premise implements Comparable<Premise> {
 
         boolean topOrSample =
                 true;
-                //false;
+        //false;
 
         return bb.matching(focus[0], focus[1], beliefTerm, beliefFilter, d.dur(), d.nar())
                 .task(topOrSample, false, false);
@@ -298,15 +236,15 @@ public class Premise implements Comparable<Premise> {
 
     private Task tryAnswer(Term beliefTerm, BeliefTable answerTable, Derivation d) {
 
-        long ts = task.start(), te;
-        if (ts == ETERNAL) {
+//        long ts = task.start(), te;
+//        if (ts == ETERNAL) {
             long[] f = timeFocus(beliefTerm, d);
-            ts = f[0];
-            te = f[1];
+            long ts = f[0];
+            long te = f[1];
             assert (ts != ETERNAL);
-        } else {
-            te = task.end();
-        }
+//        } else {
+//            te = task.end();
+//        }
         Task match = answerTable.matching(ts, te, beliefTerm,
                 null, d.dur(), d.nar())
                 .task(true, false, false);
@@ -420,7 +358,7 @@ public class Premise implements Comparable<Premise> {
         if (match(d, matchTTL)) {
 
             result = d.deriver.rules.run(d, deriveTTL) ?
-                e.premiseFire : e.premiseUnderivable;
+                    e.premiseFire : e.premiseUnderivable;
 
             d.nar.emotion.premiseTTL_used.recordValue(Math.max(0, deriveTTL - d.ttl)); //TODO handle negative amounts, if this occurrs.  limitation of HDR histogram
 

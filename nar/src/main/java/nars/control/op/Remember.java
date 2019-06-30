@@ -50,9 +50,8 @@ public class Remember extends AbstractTask {
     public static Remember the(Task x, NAR n) {
         return the(x,
                 !(x instanceof DynamicTruthTask) || NAL.belief.DYNAMIC_TRUTH_TASK_STORE,
-                //true,true, n);
                 !(x instanceof DynamicTruthTask) || NAL.belief.DYNAMIC_TRUTH_TASK_LINK,
-                !(x instanceof DynamicTruthTask) || NAL.belief.DYNAMIC_TRUTH_TASK_LINK,
+                !(x instanceof DynamicTruthTask) || NAL.belief.DYNAMIC_TRUTH_TASK_EMIT,
             n);
     }
 
@@ -61,12 +60,11 @@ public class Remember extends AbstractTask {
 
         assert (!x.isCommand());
 
-        assert (x.op().taskable);
 
-        boolean isInput = x.isInput();
         Term xTerm = x.term();
+        assert (xTerm.op().taskable);
 
-        if (NAL.VOLMAX_RESTRICTS || (NAL.VOLMAX_RESTRICTS_INPUT && isInput)) {
+        if (NAL.VOLMAX_RESTRICTS || (NAL.VOLMAX_RESTRICTS_INPUT && x.isInput())) {
             int termVol = xTerm.volume();
             int maxVol = n.termVolMax.intValue();
             if (termVol > maxVol)

@@ -49,3 +49,4 @@ dumps/
 
 dependency-reduced-pom.xml
 
+*.hprof*

@@ -4,10 +4,10 @@
 
     //free structural Conjunction/Disjunction decomposition
 
-    C, X,conjParallel(C),                    eventOfPN(C,X) |-   conjWithoutPN(C,X), (Belief:StructuralDeduction)
+    C, X,                     eventOfPN(C,X) |-   conjWithoutPN(C,X), (Belief:StructuralDeduction)
       C, X, conjParallel(C), eventOfPN(C,X) |-   conjWithoutPN(C,X), (Goal:StructuralDeduction)
-    C, X,                    eventOfPN(C,X), task("?")   |-   conjWithoutPN(C,X), (Punctuation:Question)
-      C, X,                  eventOfPN(C,X), task("@")   |-   conjWithoutPN(C,X), (Punctuation:Quest)
+    C, X,                     eventOfPN(C,X), task("?")   |-   conjWithoutPN(C,X), (Punctuation:Question)
+      C, X,                   eventOfPN(C,X), task("@")   |-   conjWithoutPN(C,X), (Punctuation:Quest)
 
     //disjunction select
 //    D, X, eventOfNeg(D,X), conjParallel(D)            |-   X, (Goal:StructuralDeductionWeakN)
@@ -60,8 +60,8 @@
 
 
 
-    (B ==> (&&,X,A..+)), Y, --isVar(X),--isVar(Y)  |- polarizeTask(unisubst((B ==> (&&,X,A..+)),X,polarizeBelief(Y)),novel), (Belief:DecomposeDepolarized, Time:BeliefEvent)
-    ((&&,X,A..+) ==> B), Y, --isVar(X),--isVar(Y)  |- polarizeTask(unisubst(((&&,X,A..+) ==> B),X,polarizeBelief(Y)),novel), (Belief:DecomposeDepolarized, Time:BeliefEvent)
+    (B ==> (&&,X,A..+)), Y, --isVar(X),--isVar(Y), hasBelief()  |- polarizeTask(unisubst((B ==> (&&,X,A..+)),X,polarizeBelief(Y)),novel), (Belief:DecomposeDepolarized, Time:BeliefEvent)
+    ((&&,X,A..+) ==> B), Y, --isVar(X),--isVar(Y), hasBelief()  |- polarizeTask(unisubst(((&&,X,A..+) ==> B),X,polarizeBelief(Y)),novel), (Belief:DecomposeDepolarized, Time:BeliefEvent)
       //(B ==> (&&,X,A..+)), Y, --isVar(X),--isVar(Y)  |- polarizeTask(unisubst((B ==> (&&,A..+)),X,polarizeBelief(Y))), (Belief:DecomposeDepolarized, Time:BeliefEvent)
       //((&&,X,A..+) ==> B), Y, --isVar(X),--isVar(Y)  |- polarizeTask(unisubst(((&&,A..+) ==> B),X,polarizeBelief(Y))), (Belief:DecomposeDepolarized, Time:BeliefEvent)
 
@@ -123,8 +123,11 @@
     D, X, is(D,"&&"), has(D,"--"), --isVar(X), neq(D,X)   |- --conjWithout(D,--X),       (Goal:DecomposeNN, Time:BeliefEvent)
     D, X, is(D,"&&"),  --isVar(X), neq(D,X)               |- --conjWithout(D,  X),       (Goal:DecomposeNP, Time:BeliefEvent)
 
-    D, X, is(D,"&&"), has(D,"--"), --isVar(X)             |- --unisubst(D,chooseUnifiableSubEvent(D,--X),--X,"#",novel), (Belief:DecomposeNN, Goal:DecomposeNN, Time:BeliefEvent)
-    D, X, is(D,"&&"), --isVar(X)                          |- --unisubst(D,chooseUnifiableSubEvent(D,  X),  X,"#",novel), (Belief:DecomposeNP, Goal:DecomposeNP, Time:BeliefEvent)
+//    C, X, is(C,"&&"), has(D,"--"), --isVar(X)             |-   unisubst(C,chooseUnifiableSubEvent(C,--X),--X,"#",novel), (Belief:DecomposePN, Goal:DecomposePN, Time:BeliefEvent)
+//    C, X, is(C,"&&"), --isVar(X)                          |-   unisubst(C,chooseUnifiableSubEvent(C,  X),  X,"#",novel), (Belief:DecomposePP, Goal:DecomposePP, Time:BeliefEvent)
+
+//    D, X, is(D,"&&"), has(D,"--"), --isVar(X)             |- --unisubst(D,chooseUnifiableSubEvent(D,--X),--X,"#",novel), (Belief:DecomposeNN, Goal:DecomposeNN, Time:BeliefEvent)
+//    D, X, is(D,"&&"), --isVar(X)                          |- --unisubst(D,chooseUnifiableSubEvent(D,  X),  X,"#",novel), (Belief:DecomposeNP, Goal:DecomposeNP, Time:BeliefEvent)
 
 
 
@@ -179,6 +182,16 @@
        ( --C ==> M), (S ==> M), eventOfNeg(C,S)        |- --(  --conjWithout(C, --S) ==> M), (Belief:DecomposeNP, Time:Compose)
 
 //conj pred
+
+//   //(M ==> C), (M ==> S), eventOf(C,S), --isVar(M)      |-   (M ==> conjWithout(C,   S)), (Belief:DecomposePP, Time:Compose)
+//   (M ==> C), (M ==> S), eventOfNeg(C,S), --isVar(M)   |- --(M ==> conjWithout(C, --S)), (Belief:DecomposePP, Time:Compose)
+//   //(M ==> C), (M ==> S), eventOfNeg(C,S), --isVar(M)   |-   (M ==> conjWithout(C, --S)), (Belief:DecomposePN, Time:Compose)
+//   (M ==> C), (M ==> S), eventOf(C,S), --isVar(M)      |- --(M ==> conjWithout(C,   S)), (Belief:DecomposePN, Time:Compose)
+//       //(M ==> C), (M ==> S), eventOf(C,S), --isVar(M)      |- --(M ==> conjWithout(C,   S)), (Belief:DecomposeNP, Time:Compose)
+//       (M ==> C), (M ==> S), eventOfNeg(C,S), --isVar(M)   |-   (M ==> conjWithout(C, --S)), (Belief:DecomposeNP, Time:Compose)
+//       //(M ==> C), (M ==> S), eventOfNeg(C,S), --isVar(M)   |- --(M ==> conjWithout(C, --S)), (Belief:DecomposeNN, Time:Compose)
+//       (M ==> C), (M ==> S), eventOf(C,S), --isVar(M)      |-   (M ==> conjWithout(C,   S)), (Belief:DecomposeNN, Time:Compose)
+
 
    (M ==> C), (M ==> S), eventOf(C,S)                 |-   (M ==> conjWithout(C,   S)), (Belief:DecomposePP, Time:Compose)
      //(M ==> S), (M ==> C), eventOf(C,S)                 |-   (M ==> conjWithout(C,   S)), (Belief:DecomposePP, Time:TaskEvent)

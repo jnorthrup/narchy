@@ -82,7 +82,7 @@ class ImplicationNetworkTest {
         n.want(a);
         n.run(cycles);
 
-        BeliefTable aGoals = n.concept(a).goals();
+        BeliefTable aGoals = n.tableDynamic(a, false);
         Truth aGoal = aGoals.truth(ETERNAL, n);
         
 
@@ -90,7 +90,7 @@ class ImplicationNetworkTest {
         
         //assertEquals(1, aGoals.size());
 
-        BeliefTable bGoals = n.concept(b).goals();
+        BeliefTable bGoals = n.tableDynamic(b, false);
         Truth bGoal = bGoals.truth(ETERNAL, n);
         n.concept(b).print();
         assertNotNull(bGoal);

@@ -445,8 +445,9 @@ public class TermReductionsTest extends NarseseTest {
     @Test
     void testImplXternalDternalPredicateImpl() {
 
-        assertEq("((x &&+- y) ==>+1 z)",
-                "(x ==>+- (y ==>+1 z))");
+        assertEq("((x &&+- y) ==>+1 z)", "(x ==>+- (y ==>+1 z))");
+        assertEq("((x &&+1 y) ==>+- z)", "(x ==>+1 (y ==>+- z))");
+        assertEq("((x &&+- y) ==>+- z)", "(x ==>+- (y ==>+- z))");
 
         assertEq("(((x &&+1 y) &&+- z) ==>+1 w)",
                 "((x &&+1 y) ==>+- (z ==>+1 w))");

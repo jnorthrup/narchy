@@ -17,7 +17,6 @@ import nars.agent.GameTime;
 import nars.agent.MetaAgent;
 import nars.agent.util.RLBooster;
 import nars.attention.TaskLinkWhat;
-import nars.concept.Concept;
 import nars.control.MetaGoal;
 import nars.control.NARPart;
 import nars.control.Why;
@@ -27,7 +26,7 @@ import nars.derive.rule.PremiseRuleSet;
 import nars.derive.timing.ActionTiming;
 import nars.exe.impl.WorkerExec;
 import nars.gui.NARui;
-import nars.memory.CaffeineMemory;
+import nars.memory.HijackMemory;
 import nars.op.Arithmeticize;
 import nars.op.AutoencodedBitmap;
 import nars.op.Factorize;
@@ -38,7 +37,6 @@ import nars.sensor.Bitmap2DSensor;
 import nars.sensor.PixelBag;
 import nars.task.util.PriBuffer;
 import nars.term.Term;
-import nars.term.Termed;
 import nars.time.clock.RealTime;
 import nars.video.SwingBitmap2D;
 import nars.video.WaveletBag;
@@ -59,8 +57,6 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.StreamSupport.stream;
 import static nars.$.$$;
 import static nars.Op.BELIEF;
 
@@ -98,16 +94,24 @@ abstract public class GameX extends Game {
         super(id, gameTime, nar);
     }
 
-    public static NAR runRT(Function<NAR, Game> init, float narFPS) {
+    @Deprecated public static NAR runRT(Function<NAR, Game> init, float narFPS) {
         return runRT(init, -1, narFPS);
     }
 
 
-    public static NAR runRT(Function<NAR, Game> init, int threads, float narFPS) {
+    public static NAR runRT(Consumer<NAR> init, float narFPS) {
+        return runRT(init, -1, narFPS);
+    }
+
+    @Deprecated public static NAR runRT(Function<NAR,Game> init, int threads, float narFPS) {
+        return runRT((Consumer<NAR>) init::apply, threads, narFPS);
+    }
+
+    public static NAR runRT(Consumer<NAR> init, int threads, float narFPS) {
 
         NAR n = baseNAR(narFPS / DURATIONs, threads);
 
-        Game g = init.apply(n);
+        init.accept(n);
 
         //n.runLater(() -> {
 
@@ -118,15 +122,21 @@ abstract public class GameX extends Game {
 
 
         initPlugins(n);
-        initPlugins2(n, g);
+
+
+        //initPlugins2(n, g);
+        PremiseRuleSet rules = Derivers.nal(n, 6, 8,
+                "motivation.nal"
+                //"nal6.to.nal3.nal"
+                //"induction.goal.nal"
+                //"nal3.nal",
+        );
+
         //initMeta(n, g, false, false);
 
         //new Gridding(n.parts(Game.class).map(NARui::agent).collect(toList())),
         n.synch();
 
-        n.start(new SpaceGraphPart(() -> NARui.agent(g), 500, 500));
-        n.start(new SpaceGraphPart(() -> NARui.attentionUI(n), 600, 600));
-        n.start(new SpaceGraphPart(() -> NARui.top(n), 700, 700));
 
 
         Loop loop = n.startFPS(narFPS);
@@ -249,23 +259,23 @@ abstract public class GameX extends Game {
 
                         //new RadixTreeMemory(64*1024)
 //
-                        ramGB >= 0.5 ?
-                                new CaffeineMemory(
-                                        //8 * 1024
-                                        //16*1024
-                                        //32*1024
-                                        //64 * 1024
-                                        //128*1024
-                                        Math.round(ramGB * 128 * 1024)
-                                )
-                                :
-                                CaffeineMemory.soft()
+//                        ramGB >= 0.5 ?
+//                                new CaffeineMemory(
+//                                        //8 * 1024
+//                                        //16*1024
+//                                        //32*1024
+//                                        //64 * 1024
+//                                        //128*1024
+//                                        Math.round(ramGB * 128 * 1024)
+//                                )
+//                                :
+//                                CaffeineMemory.soft()
 //
 
                 //, c -> (int) Math.ceil(c.term().voluplexity()))
 
 
-                       // new HijackMemory((int)Math.round(ramGB * 128 * 1024), 4)
+                        new HijackMemory((int)Math.round(ramGB * 128 * 1024), 4)
                 )
                 .get(GameX::config);
     }
@@ -273,16 +283,10 @@ abstract public class GameX extends Game {
     private static void initPlugins2(NAR n, Game a) {
 
 
-        PremiseRuleSet rules = Derivers.nal(n, 6, 8,
-                "motivation.nal"
-                //"nal6.to.nal3.nal"
-                //"induction.goal.nal"
-                //"nal3.nal",
-        );
 
-        List<Concept> rewardConcepts = a.rewards.stream().flatMap(x -> stream(x.spliterator(), false)).map(n::concept).collect(toList());
-        List<Termed> sensorConcepts = a.sensors.stream().flatMap(x -> stream(x.components().spliterator(), false)).collect(toList());
-        List<Concept> actionConcepts = a.actions.stream().flatMap(x -> stream(x.components().spliterator(), false)).map(n::concept).collect(toList());
+//        List<Concept> rewardConcepts = a.rewards.stream().flatMap(x -> stream(x.spliterator(), false)).map(n::concept).collect(toList());
+//        List<Termed> sensorConcepts = a.sensors.stream().flatMap(x -> stream(x.components().spliterator(), false)).collect(toList());
+//        List<Concept> actionConcepts = a.actions.stream().flatMap(x -> stream(x.components().spliterator(), false)).map(n::concept).collect(toList());
 
         // virtual tasklinks to sensors (sampler)
 //        BiFunction<Concept, Derivation, BeliefSource.LinkModel> sensorLinker = ListTermLinker(sensorConcepts);

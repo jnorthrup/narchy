@@ -24,7 +24,6 @@ import nars.attention.What;
 import nars.concept.Concept;
 import nars.concept.Operator;
 import nars.concept.PermanentConcept;
-import nars.concept.TaskConcept;
 import nars.concept.util.ConceptBuilder;
 import nars.control.Control;
 import nars.control.How;
@@ -40,14 +39,13 @@ import nars.io.IO;
 import nars.memory.Memory;
 import nars.subterm.Subterms;
 import nars.table.BeliefTable;
+import nars.table.BeliefTables;
+import nars.table.TaskTable;
 import nars.task.NALTask;
 import nars.task.proxy.SpecialOccurrenceTask;
 import nars.task.util.TaskException;
 import nars.task.util.TaskTopic;
-import nars.term.Compound;
-import nars.term.Functor;
-import nars.term.Term;
-import nars.term.Termed;
+import nars.term.*;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
 import nars.time.ScheduledTask;
@@ -62,6 +60,7 @@ import nars.truth.PreciseTruth;
 import nars.truth.Truth;
 import org.HdrHistogram.Histogram;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
+import org.eclipse.collections.api.block.function.primitive.ObjectBooleanToObjectFunction;
 import org.eclipse.collections.api.block.function.primitive.ShortToObjectFunction;
 import org.eclipse.collections.api.tuple.Pair;
 import org.eclipse.collections.api.tuple.Twin;
@@ -797,23 +796,18 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
         return truth(concept, punc, when, when);
     }
 
-    @Nullable
-    public final BeliefTable table(Termed concept, byte punc) {
-        assert (punc == BELIEF || punc == GOAL);
-        @Nullable Concept c = conceptualizeDynamic(concept);
-        return c != null ? (BeliefTable) c.table(punc) : null;
-    }
 
     /**
      * returns concept belief/goal truth evaluated at a given time
      */
     @Nullable
     public final Truth truth(Termed concept, byte punc, long start, long end) {
+
         boolean neg = concept.term().op()==NEG;
         if (neg)
             concept = concept.term().unneg();
 
-        @Nullable BeliefTable table = table(concept, punc);
+        @Nullable BeliefTable table = (BeliefTable) tableDynamic(concept, punc);
         return table != null ? Truth.negIf(table.truth(start, end, concept instanceof Term ? ((Term) concept) : null, null, this),neg) : null;
     }
 
@@ -1405,24 +1399,19 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
     public Task answer(Termed t, byte punc, long start, long end) {
         assert (punc == BELIEF || punc == GOAL);
 
-        boolean negate;
+
         Term tt = t.term();
-        if (tt.op() == NEG) {
-            negate = true;
+        boolean negate = tt instanceof Neg;
+        if (negate) {
             t = tt = tt.unneg();
-        } else {
-            negate = false;
         }
 
-        Concept concept = conceptualizeDynamic(t);
-        if (!(concept instanceof TaskConcept))
+        BeliefTable table = (BeliefTable) tableDynamic(!negate ? t : tt, punc);
+        if (table == null)
             return null;
 
-        Task answer = concept.table(punc).matchExact(start, end,
+        Task answer = table.matchExact(start, end,
                 tt, null, dur(), this);
-
-//        if (answer != null && !answer.isDeleted())
-//            input(answer);
 
         return Task.negIf(answer, negate);
     }
@@ -1516,41 +1505,7 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
         return this;
     }
 
-    /**
-     * conceptualize a target if dynamic truth is possible; otherwise return concept if exists
-     */
-    public final Concept conceptualizeDynamic(Termed concept) {
 
-        Concept x = concept(concept);
-        if (x != null)
-            return x;
-
-        Term ct = concept.term();
-        if (ct instanceof Compound) {
-            if (ct.volume() > termVolMax.intValue())
-                return null; //too complex to analyze for dynamic
-
-            if (ConceptBuilder.dynamicModel((Compound) ct) != null) { //HACK
-                //try conceptualizing the dynamic
-
-                if (NAL.DYNAMIC_CONCEPT_TRANSIENT) {
-
-                    //create temporary dynamic concept
-                    Concept c = conceptBuilder.construct(ct);
-                    if (c != null)
-                        c.delete(this); //flyweight start deleted and unallocated (in-capacit-ated) since it isnt actually in memory
-
-                    return c;
-                } else {
-                    //permanent dynamic concept
-                    return conceptualize(concept);
-                }
-
-            }
-        }
-
-        return null;
-    }
 
     public final Task answerBelief(Term x, long when) {
         return answerBelief(x, when, when);
@@ -1691,4 +1646,82 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
         }
     }
 
+    /**
+     * conceptualize a target if dynamic truth is possible; otherwise return concept if exists
+     * try to use beliefTableDynamic(Termed concept) to avoid unnecessary Concept construction
+     */
+    @Deprecated public final Concept conceptualizeDynamic(Termed concept) {
+
+        Concept x = concept(concept);
+        if (x != null)
+            return x;
+
+        Term ct = concept.term();
+        if (ct instanceof Compound) {
+            if (ct.volume() > termVolMax.intValue())
+                return null; //too complex to analyze for dynamic
+
+            if (ConceptBuilder.dynamicModel((Compound) ct) != null) { //HACK
+                //try conceptualizing the dynamic
+
+                if (NAL.DYNAMIC_CONCEPT_TRANSIENT) {
+
+                    //create temporary dynamic concept
+                    Concept c = conceptBuilder.construct(ct);
+                    if (c != null)
+                        c.delete(this); //flyweight start deleted and unallocated (in-capacit-ated) since it isnt actually in memory
+
+                    return c;
+                } else {
+                    //permanent dynamic concept
+                    return conceptualize(concept);
+                }
+
+            }
+        }
+
+        return null;
+    }
+
+    @Nullable public TaskTable tableDynamic(Termed concept, byte punc) {
+        if (punc == BELIEF)
+            return tableDynamic(concept, true);
+        else if (punc==GOAL)
+            return tableDynamic(concept, false);
+        else {
+            @Nullable Concept exist = concept(concept);
+            if (exist!=null)
+                return exist.table(punc);
+        }
+        return null;
+    }
+
+    @Nullable public BeliefTable tableDynamic(Termed concept, boolean beliefOrGoal) {
+        //heavyweight, concept construction involved
+//        Concept c = conceptualizeDynamic(su);
+//        if (!(c instanceof TaskConcept))
+//            return null;
+//        BeliefTable table = (BeliefTable) c.table((beliefOrGoal ? BELIEF : GOAL));
+//        return table;
+
+
+        Concept x = concept(concept);
+        if (x != null)
+            return (BeliefTable) x.table(beliefOrGoal ? BELIEF : GOAL); //concept exists, use its table
+
+        Term ct = concept.term();
+        if (ct instanceof Compound && ct.volume() < termVolMax.intValue()) {
+            @Nullable ObjectBooleanToObjectFunction<Term, BeliefTable[]> dmt = ConceptBuilder.dynamicModel((Compound) ct);
+            if (dmt != null) {
+                BeliefTable[] dmtb = dmt.valueOf(ct, beliefOrGoal);
+                switch (dmtb.length) {
+                    case 0: return null; //does this happen?
+                    case 1: return dmtb[0];
+                    default: return new BeliefTables(dmtb);
+                }
+            }
+        }
+
+        return null;
+    }
 }

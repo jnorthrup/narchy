@@ -2,9 +2,13 @@ package nars.derive.rule;
 
 import jcog.data.bit.MetalBitSet;
 import jcog.decide.MutableRoulette;
+import jcog.pri.Possibilities;
+import nars.NAL;
 import nars.control.Why;
 import nars.derive.model.Derivation;
 import nars.term.control.PREDICATE;
+import nars.truth.Truth;
+import nars.truth.func.TruthFunc;
 
 import java.io.PrintStream;
 import java.util.stream.Stream;
@@ -107,8 +111,19 @@ public class DeriverRules {
         if (can.length == 1) {
             branch[can[0]].test(d);
         } else {
-            //Util.normalizeMargin(1f / pri.length, 0, pri);
+
             MutableRoulette.run(pri, d.random, wi -> 0, i -> branch[can[i]].test(d));
+
+            //untested:
+//            Possibilities<Derivation,Void> pp = new Possibilities(d);
+//            for (int i = 0, canLength = can.length; i < canLength; i++) {
+//                short c = can[i];
+//                if (branch[c].truth.test(d))
+//                    pp.add(new TruthifyPossibility(d, branch[c].conclusion, c, pri[i]));
+//            }
+//            pp.commit(false, true);
+//            pp.execute(d::live, 0.5f);
+
         }
 
         return true;
@@ -143,6 +158,44 @@ public class DeriverRules {
     }
 
 
+    private static class TruthifyPossibility extends Possibilities.Possibility<Derivation, Void> {
 
+        private final Derivation d;
+        private final short c;
+        private final float value;
+        private final PREDICATE<Derivation> conclusion;
+        byte punc;
+        Truth t;
+        TruthFunc tf;
+        boolean single;
 
+        public TruthifyPossibility(Derivation d, PREDICATE<Derivation> cc, short c, float v) {
+            this.d = d;
+            this.c = c;
+            punc = d.concPunc;
+            t = d.concTruth;
+            tf = d.truthFunction;
+            single = d.concSingle;
+            this.conclusion = cc;
+            this.value = v + ( t != null ? t.conf() : 0 /* biased against questions */);
+        }
+
+        @Override
+        public Void apply(Derivation dd) {
+            dd.concTruth = t;
+            dd.concPunc = punc;
+            dd.concSingle = single;
+            dd.truthFunction = tf;
+
+            dd.use(NAL.derive.TTL_COST_BRANCH);
+
+            conclusion.test(dd);
+            return null;
+        }
+
+        @Override
+        public float value() {
+            return value;
+        }
+    }
 }

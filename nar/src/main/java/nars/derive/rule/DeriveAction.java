@@ -10,8 +10,8 @@ import nars.term.control.PREDICATE;
 public class DeriveAction  /*implements ThrottledAction<Derivation>*/ {
 
     public final PremiseRuleProto.RuleWhy why;
-    private final Truthify truth;
-    private final PREDICATE<Derivation> conclusion;
+    final Truthify truth;
+    final PREDICATE<Derivation> conclusion;
 
     DeriveAction(PremiseRuleProto.RuleWhy cause, Truthify pre, PREDICATE<Derivation> post) {
         this.why = cause;

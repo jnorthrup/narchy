@@ -21,7 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class NAL8Test extends NALTest {
 
-    public static final int cycles = 150;
+    public static final int cycles = 850;
 
     @BeforeEach
     void setTolerance() {
@@ -1062,8 +1062,8 @@ public class NAL8Test extends NALTest {
     void condition_goal_deduction_2_neg_event() {
         test
             .termVolMax(13)
-                .input("--on({t002},{t003}).")
-                .input("(--on({t002},#1) &&+0 at(SELF,#1))!")
+                .input("--on(x,{t003}).")
+                .input("(--on(x,#1) && at(SELF,#1))!")
                 .mustGoal(cycles, "at(SELF,{t003})", 1.0f, 0.81f, ETERNAL);
     }
     @Test

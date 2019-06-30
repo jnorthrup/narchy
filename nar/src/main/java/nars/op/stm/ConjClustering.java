@@ -154,7 +154,7 @@ public class ConjClustering extends How {
 
 
     protected float pri(Task t) {
-        return    (t.priElseZero())
+        return    (t.pri())
                 * (t.conf())
                 * (0.5f + 0.5f * t.polarity())
                 * (0.5f + 0.5f * t.originality())

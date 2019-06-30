@@ -195,12 +195,24 @@ public class DataTable extends Table implements Externalizable {
     }
 
     private float[] toFloatArray(Row rr) {
+
         int cols = rr.columnCount();
         float[] r = new float[cols];
         for (int i = 0; i < cols; i++) {
-            double v = rr.getDouble(i);
-            //r[i] = v!=null ? ((float)v) : Float.NaN;
-            r[i] = (float)v;
+            ColumnType it = column(i).type();
+            if (it == ColumnType.FLOAT) {
+                r[i] = rr.getFloat(i);
+            } else if (it == ColumnType.DOUBLE) {
+                r[i] = (float) rr.getDouble(i);
+            } else if (it == ColumnType.LONG) {
+                // || it == ColumnType.DOUBLE || it == ColumnType.INTEGER || it == ColumnType.LONG
+                r[i] = rr.getLong(i);
+            } else if (it == ColumnType.INTEGER) {
+                // || it == ColumnType.DOUBLE || it == ColumnType.INTEGER || it == ColumnType.LONG
+                r[i] = rr.getInt(i);
+            } else{
+                r[i] = Float.NaN; //TODO remove these
+            }
         }
         return r;
     }

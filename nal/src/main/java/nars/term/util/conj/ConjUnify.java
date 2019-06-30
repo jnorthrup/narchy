@@ -34,7 +34,12 @@ public class ConjUnify {
             if (xe.size()!=ye.size() && Ellipsis.firstEllipsis(xx)==null && Ellipsis.firstEllipsis(yy)==null)
                 return false; //differing # of events
 
-            return Subterms.unifyCommute($.vFast(xe), $.vFast(ye), u);
+            try {
+                return Subterms.unifyCommute($.vFast(xe), $.vFast(ye), u);
+            } catch (Throwable t) {
+                System.err.println("unify stack overflow?: " + xe + " " + ye);
+                throw t;
+            }
 
         } else {
             if (!var)

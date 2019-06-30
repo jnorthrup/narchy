@@ -2,6 +2,8 @@ package nars;
 
 import jcog.Texts;
 import jcog.data.list.FasterList;
+import jcog.lab.Optimize;
+import jcog.learn.decision.RealDecisionTree;
 import jcog.table.DataTable;
 import org.gridkit.nanocloud.Cloud;
 import org.gridkit.nanocloud.CloudFactory;
@@ -17,6 +19,7 @@ import org.junit.platform.launcher.core.LauncherFactory;
 import tech.tablesaw.api.DateTimeColumn;
 import tech.tablesaw.api.LongColumn;
 import tech.tablesaw.api.StringColumn;
+import tech.tablesaw.api.TextColumn;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -103,7 +106,7 @@ public class TestServer {
     protected static DataTable newTestTable() {
         DataTable d = new DataTable();
         d.addColumns(
-                StringColumn.create("test"),
+                TextColumn.create("test"),
                 DateTimeColumn.create("start"),
                 StringColumn.create("status"),
                 LongColumn.create("wallTimeNS")
@@ -159,7 +162,19 @@ public class TestServer {
                 "nars.nal.nal1"
         );
         DataTable d = s.test();
+//        ((TextColumn)d.column(0)).setPrintFormatter(new StringColumnFormatter() {
+//            @Override
+//            public String format(String value) {
+//                return "\"" + super.format(value) + "\"";
+//            }
+//        });
         d.write().csv(System.out);
+
+        RealDecisionTree tr = Optimize.tree(d, 2, 8);
+        System.out.println(tr);
+        tr.print();
+        tr.printExplanations();
+
     }
 
     public static class RemoteLauncher {

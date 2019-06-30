@@ -10,7 +10,6 @@ import jcog.pri.op.PriReturn;
 import nars.NAL;
 import nars.NAR;
 import nars.Task;
-import nars.concept.Concept;
 import nars.derive.model.Derivation;
 import nars.table.TaskTable;
 import nars.task.NALTask;
@@ -95,22 +94,25 @@ public interface TaskLink extends UnitPrioritizable, FromTo<Term, TaskLink> {
         NAR n = when.x;
 
         boolean beliefOrGoal = punc == BELIEF || punc == GOAL;
-        Concept c =
+        TaskTable table =
                 //n.concept(t);
-                n.conceptualizeDynamic(x);
-                //beliefOrGoal ? n.conceptualizeDynamic(x) : n.concept(x);
+                //n.conceptualizeDynamic(x);
+                //beliefOrGoal ? n.conceptualizeDynamic(x) : n.beliefDynamic(x);
+                n.tableDynamic(x, punc);
 
-        if (c == null)
-            delete();
-        else {
+        if (table == null || table.isEmpty()) {
 
-            TaskTable table = c.table(punc);
+            return null;
+        } else {
+
+
             Task y;
             if (beliefOrGoal) {
-                if (NAL.TASKLINK_MATCH_OR_SAMPLE)
-                    y = table.match(when, null, filter, false);
-                else
+
+                y = table.match(when, null, filter, false);
+                if (y == null)
                     y = table.sample(when, null, filter);
+
             } else {
                 y = table.sample(when, null, filter);
             }
@@ -183,9 +185,7 @@ public interface TaskLink extends UnitPrioritizable, FromTo<Term, TaskLink> {
 //            task.pri(link.priElseZero());
 
 //        }
-
-
-        return null;
+        //return null;
     }
 
     void delete(byte punc);

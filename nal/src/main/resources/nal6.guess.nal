@@ -1,6 +1,4 @@
-//conj/impl question decomposition
-    (A ==> B), B, task("?")             |- A, (Punctuation:Question)
-    (C ==> B), A, task("?"), eqPN(A,C)  |- B, (Punctuation:Question)
+
 
 
 ((&&,B,A..+) ==> X), (E ==> Y)          |-    unisubst((&&,A..+),(polarizeTask(X) && B),(polarizeBelief(Y) && E)), (Belief:AbductionDepolarized, Time:TaskEvent)

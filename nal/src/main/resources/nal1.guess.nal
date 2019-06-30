@@ -46,6 +46,7 @@
     (Y --> X), X, task("."), --is(X,"?") |- (Y --> ?1),   (Punctuation:Question)
         (Y --> X), X, task("!"), --is(X,"?") |- (Y --> ?1),   (Punctuation:Quest)
 
+
 //NAL1-------------
 //Conversion
     //(P --> S), (S --> P), task("?") |- (P --> S),   (Belief:Conversion, Punctuation:Belief)

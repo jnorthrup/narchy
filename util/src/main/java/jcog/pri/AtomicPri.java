@@ -38,10 +38,12 @@ public abstract class AtomicPri implements ScalarValue {
 
     public AtomicPri(float p) {
         if (p == p) {
+            if (p == 0f)
+                return; //HACK default is already zero
             pri(p);
         } else {
             //start deleted
-            PRI.INT.getAndSet(this, iNaN); //HACK
+            PRI.INT.lazySet(this, iNaN); //HACK
         }
     }
 
@@ -55,9 +57,12 @@ public abstract class AtomicPri implements ScalarValue {
     }
 
     @Override
-    public float priElse(float valueIfDeleted) {
-        int i = _pri();
-        return i == iNaN ? valueIfDeleted : intBitsToFloat(i);
+    public final float priElse(float valueIfDeleted) {
+        float f = pri();
+        if (f == f)
+            return f;
+        else
+            return valueIfDeleted;
     }
 
     @Override

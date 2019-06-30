@@ -27,7 +27,7 @@ public class Anon extends AbstractTermTransform.NegObliviousTermTransform {
     }
 
 
-    boolean putOrGet = true;
+    protected boolean putOrGet = true;
 
     public Anon() {
         this(1);
@@ -76,7 +76,6 @@ public class Anon extends AbstractTermTransform.NegObliviousTermTransform {
         } else if (intern(x)) {
             return putIntern(x);
         } else {
-            putOrGet = true;
             return putCompound((Compound) x);
         }
     }
@@ -114,6 +113,7 @@ public class Anon extends AbstractTermTransform.NegObliviousTermTransform {
     }
 
     protected Term getCompound(Compound x) {
+        assert(putOrGet == false);
         Term y0 = applyCompound(x);
         return y0;
 
@@ -125,9 +125,8 @@ public class Anon extends AbstractTermTransform.NegObliviousTermTransform {
     }
 
     protected Term putCompound(Compound x) {
-
-        Term x0 = applyCompound(x);
-        return x0;
+        putOrGet = true;
+        return applyCompound(x);
 
         //Term x1 = applyCompoundLazy(x);
 ////        if (!x0.equals(x1)) {

@@ -208,11 +208,13 @@ public class Derivation extends PreDerivation {
 
             @Override
             protected final Term putCompound(Compound x) {
-                return x.transform(this, directTermBuilder, NAL.term.COMPOUND_VOLUME_MAX);
+                putOrGet = true;
+                return x.transform(this, directTermBuilder /* termBuilder */, NAL.term.COMPOUND_VOLUME_MAX);
             }
 
             @Override
             protected final Term getCompound(Compound x) {
+                putOrGet = false;
                 return x.transform(this, termBuilder, NAL.term.COMPOUND_VOLUME_MAX);
             }
 

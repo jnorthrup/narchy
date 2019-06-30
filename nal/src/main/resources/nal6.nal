@@ -91,16 +91,16 @@
     //nature of such a rule."
 
     //If after S M happens, and after M then P happens, so S then P happens
-    (S ==> M),   (M ==> P)    |-   (S ==> P),   (Belief:DeductionPP)
+    (S ==> M),   (M ==> P)    |-   (S ==> P),   (Belief:DeductionPP, Time:Compose)
       //(M ==> P), (S ==> M)    |-   (S ==> P),   (Belief:DeductionPP, Time:Compose)
 
-    (S ==> M),   (M ==> P)    |-   (S ==> --P), (Belief:DeductionPN)
+    (S ==> M),   (M ==> P)    |-   --(S ==> P), (Belief:DeductionPN, Time:Compose)
       //(S ==> M),   (M ==> P)    |-   (S ==> --P), (Belief:DeductionNP, Time:Compose)
 
-    (S ==> M), (--M ==> P)    |-   (S ==> P),   (Belief:DeductionNP)
+    (S ==> M), (--M ==> P)    |-   (S ==> P),   (Belief:DeductionNP, Time:Compose)
       //(--M ==> P), (S ==> M)  |-   (S ==> P),     (Belief:DeductionPN, Time:Compose)
 
-    (S ==> M), (--M ==> P)    |-   (S ==> --P), (Belief:DeductionNN)
+    (S ==> M), (--M ==> P)    |-   --(S ==> P), (Belief:DeductionNN, Time:Compose)
       //(--M ==> P), (S ==> M)  |-   (S ==> --P),   (Belief:DeductionNN, Time:Compose)
 
 
@@ -117,23 +117,23 @@
 
     //TODO reversals for Abduction, Induction, Exemplification
 
-    (M ==> S), (M ==> P) |- (S ==> P), (Belief:Abduction)
-        (M ==> S), (M ==> P) |- (--S ==> --P), (Belief:AbductionNN)
-    (M ==> P), (M ==> S) |- (S ==> P), (Belief:Induction)
-        (M ==> P), (M ==> S) |- (--S ==> --P), (Belief:InductionNN)
+    (M ==> S), (M ==> P) |- (S ==> P), (Belief:Abduction, Time:Compose)
+        (M ==> S), (M ==> P) |- (--S ==> --P), (Belief:AbductionNN, Time:Compose)
+    (M ==> P), (M ==> S) |- (S ==> P), (Belief:Induction, Time:Compose)
+        (M ==> P), (M ==> S) |- (--S ==> --P), (Belief:InductionNN, Time:Compose)
 
                 //(X ==> S), (Y ==> P), eqPN(X,Y), task("?") |- (polarizeRandom(S) ==> P), (Punctuation:Question)
 
-    (S ==> M), (P ==> M) |- (S ==> P), (Belief:InductionPB)
-    (S ==> M), (P ==> M) |- (P ==> S), (Belief:AbductionPB)
+    (S ==> M), (P ==> M) |- (S ==> P), (Belief:InductionPB, Time:Compose)
+    (S ==> M), (P ==> M) |- (P ==> S), (Belief:AbductionPB, Time:Compose)
 
 
             //(S ==> X), (P ==> X), task("?") |- (S ==> P), (Punctuation:Question)
 
-    (  M ==> S), (P ==> M)       |- (  S ==> P), (Belief:ExemplificationPP)
-    (  M ==> S), (P ==> M)       |- (--S ==> P), (Belief:ExemplificationNP)
-    (--M ==> S), (P ==> M)       |- (  S ==> P), (Belief:ExemplificationPN)
-    (--M ==> S), (P ==> M)       |- (--S ==> P), (Belief:ExemplificationNN)
+    (  M ==> S), (P ==> M)       |- (  S ==> P), (Belief:ExemplificationPP, Time:Compose)
+    (  M ==> S), (P ==> M)       |- (--S ==> P), (Belief:ExemplificationNP, Time:Compose)
+    (--M ==> S), (P ==> M)       |- (  S ==> P), (Belief:ExemplificationPN, Time:Compose)
+    (--M ==> S), (P ==> M)       |- (--S ==> P), (Belief:ExemplificationNN, Time:Compose)
 
             //(X ==> S), (P ==> Y), task("?"), eqPN(X,Y) |- (polarizeRandom(S) ==> P), (Punctuation:Question)
 
@@ -188,9 +188,9 @@
         //(--(&&,P,A..+) ==> X), (--(&&,S,A..+) ==> X), neq(P,S) |- (--(&&,(P || S),A..+) ==> X), (Belief:UnionSym)
 
 
-        (C ==> X), B, neq(B,C), task(".") |- unisubst((C ==> X),C,B,"$",novel), (Punctuation:Question)
-          (C ==> X), B, neq(B,C), task(".") |- unisubst((--C ==> X),C,B,"$",novel), (Punctuation:Question)
-        (X ==> C), B, neq(B,C), task(".") |- unisubst((X ==> C),C,B,"$",novel), (Punctuation:Question)
+        (C ==> X), B, neq(B,C), task("."), --isVar(B) |- unisubst((C ==> X),C,B,"$",novel), (Punctuation:Question)
+          (C ==> X), B, neq(B,C), task("."), --isVar(B) |- unisubst((--C ==> X),C,B,"$",novel), (Punctuation:Question)
+        (X ==> C), B, neq(B,C), task("."), --isVar(B) |- unisubst((X ==> C),C,B,"$",novel), (Punctuation:Question)
 
 
 //            B, ((&&,C,A..+) ==> X), neq(B,C) |- unisubst(((&&,A..+) ==> X),C,B), (Belief:Deduction)
@@ -247,8 +247,8 @@
     //(Y ==> X), (Z ==> X), eqNeg(Y,Z), --is(X,"#")                       |- (#1 ==> X), (Belief:IntersectionPB, Time:Compose)
 
     //Anti-conditional Abduction via Multi-conditional Syllogism
-    (C ==> X), (E ==> Y), neq(C,E)      |-    unisubst(--(C&&E), X, Y), (Belief:DecomposePN)
-    (C ==> X), (E ==> Y), neq(C,E)      |-    unisubst(--(C&&E), X, Y), (Belief:DecomposeNP)
+    (C ==> X), (E ==> Y), neq(C,E)      |-    unisubst(--(C&&E), X, Y), (Belief:DeductionWeakPN, Time:Compose)
+    (C ==> X), (E ==> Y), neq(C,E)      |-    unisubst(--(C&&E), X, Y), (Belief:DeductionWeakNP, Time:Compose)
 
     //(C ==> X), (E ==> Y), eventOf(C,E)      |-    unisubst(--conjWithout(C,E),X,Y), (Belief:AbductionXOR)
         //TODO disj
@@ -440,3 +440,8 @@
 
 //    (X ==> Y), Z, notImpl(Z)     |- unisubst(X,Y,Z), (Belief:AbductionPB)
 
+//conj/impl question decomposition
+    (A ==> B), B, task("?")             |- A, (Punctuation:Question)
+    (C ==> B), A, task("?"), eqPN(A,C)  |- B, (Punctuation:Question)
+    B, (A ==> B), task("?")             |- A, (Punctuation:Question)
+    A, (C ==> B), task("?"), eqPN(A,C)  |- B, (Punctuation:Question)

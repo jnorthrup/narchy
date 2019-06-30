@@ -207,16 +207,17 @@ public interface Termlike {
 
 
     default boolean hasAll(int structuralVector) {
-        return Op.has(structure(), structuralVector, true);
+        return structuralVector==0 || Op.has(structure(), structuralVector, true);
     }
 
     default boolean hasAny(int structuralVector) {
-        return Op.has(structure(), structuralVector, false);
+        return structuralVector!=0 && Op.has(structure(), structuralVector, false);
     }
 
     default /* final */ boolean hasAny(/*@NotNull*/ Op op) {
         return hasAny(op.bit);
     }
+
     default /* final */ boolean hasAllAny(/*@NotNull*/ int all, int any) {
         int s = structure();
         return Op.has(s, all, true) && Op.has(s, any, false);

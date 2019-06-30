@@ -11,12 +11,13 @@ import nars.agent.GameTime;
 import nars.agent.NAct;
 import nars.agent.Reward;
 import nars.concept.sensor.AbstractSensor;
+import nars.gui.NARui;
 import nars.gui.sensor.VectorSensorView;
 import nars.sensor.Bitmap2DSensor;
 import nars.term.Term;
 import nars.term.atom.Atomic;
 import nars.video.SwingBitmap2D;
-import spacegraph.SpaceGraph;
+import spacegraph.space2d.container.grid.Gridding;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -28,6 +29,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static nars.$.$$;
+import static spacegraph.SpaceGraph.window;
 
 /** NARkanoid */
 public class ArkaNAR extends GameX {
@@ -42,6 +44,7 @@ public class ArkaNAR extends GameX {
     //final int visW = 48, visH = 32;
     //final int visW = 24, visH = 16;
     final int visW = 20, visH = 16;
+    private Bitmap2DSensor<ScaledBitmap2D> cc;
     //final int visW = 8, visH = 6;
 
 
@@ -60,9 +63,17 @@ public class ArkaNAR extends GameX {
                 ArkaNAR a = new ArkaNAR($$("(noid,a)"), nn, cam, numeric);
 
                 ArkaNAR b = new ArkaNAR($$("(noid,b)"), nn, cam, numeric);
-                b.ballSpeed.set( 0.5f * a.ballSpeed.floatValue() );
+                b.ballSpeed.set( 0.33f * a.ballSpeed.floatValue() );
 
-                return b;
+
+
+//                n.start(new SpaceGraphPart(() -> NARui.agent(g), 500, 500));
+//                n.start(new SpaceGraphPart(() -> NARui.attentionUI(n), 600, 600));
+//                n.start(new SpaceGraphPart(() -> NARui.top(n), 700, 700));
+                window(new Gridding(
+                        new Gridding(NARui.agent(a), new VectorSensorView(a.cc, a).withControls()),
+                        new Gridding( NARui.agent(b), new VectorSensorView(b.cc, b).withControls())), 800, 800);
+
             }, 40);
 
 
@@ -114,15 +125,11 @@ public class ArkaNAR extends GameX {
 
         if (cam) {
 
-            Bitmap2DSensor<ScaledBitmap2D> cc = senseCamera((x,y)->$.inh(term, $.p(x,y)), new ScaledBitmap2D(
+            cc = senseCamera((x, y) -> $.inh(term, $.p(x, y)), new ScaledBitmap2D(
                     new SwingBitmap2D(noid)
                     , visW, visH
             )/*.blur()*/);
             //cc.resolution(0.05f);
-
-
-            VectorSensorView vsv = new VectorSensorView(cc, this);
-            SpaceGraph.window(vsv.withControls(), 500, 500);
         }
 
 

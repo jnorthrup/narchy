@@ -37,7 +37,7 @@ abstract public class PremiseSource {
     }
 
     protected void hypothesize(TaskLink tasklink, Task task, int termlinksPerTaskLink, TaskLinks links, Derivation d, Consumer<Premise> each) {
-        Term prevTerm = null;
+
 
 //        Task task2 = Abbreviation.unabbreviate(task, d);
 //        if (task!=task2 && task2!=null) {
@@ -53,17 +53,8 @@ abstract public class PremiseSource {
 
         for (int i = 0; i < termlinksPerTaskLink; i++) {
             Term term = links.term(tasklink, task, d);
-            if (term != null) {
-                if (prevTerm == null || !term.equals(prevTerm)) {
-
-//                term = Abbreviation.unabbreviate(term, d.nar);
-//                if (term == null || term instanceof Bool)
-//                    continue;
-
-                    each.accept(new Premise(task, term));
-                    prevTerm = term;
-                }
-            }
+            if (term != null)
+                each.accept(new Premise(task, term));
         }
     }
 

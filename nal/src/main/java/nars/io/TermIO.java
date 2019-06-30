@@ -6,8 +6,6 @@ import nars.$;
 import nars.NAL;
 import nars.Narsese;
 import nars.Op;
-import nars.subterm.IntrinSubterms;
-import nars.subterm.RemappedSubterms;
 import nars.subterm.Subterms;
 import nars.term.Compound;
 import nars.term.Neg;
@@ -30,7 +28,6 @@ import java.io.UnsupportedEncodingException;
 import static nars.Op.NEG;
 import static nars.io.IO.SPECIAL_BYTE;
 import static nars.io.IO.subType;
-import static nars.term.anon.Intrin._term;
 import static nars.term.atom.Bool.Null;
 import static nars.time.Tense.DTERNAL;
 import static nars.time.Tense.XTERNAL;
@@ -157,22 +154,32 @@ public interface TermIO {
 
         @Override
         public void write(Term t, ByteArrayDataOutput out) {
+            if (t == Null)
+                throw new NullPointerException("null");
+
             if (t instanceof Neg) {
                 out.writeByte(NEG.id);
                 t = t.unneg();
             }
 
             if (t instanceof Atomic) {
-                if (t == Null)
-                    throw new NullPointerException("null");
+
                 out.write(((Atomic) t).bytes());
+
             } else {
+
+
                 Op o = t.op();
 
                 writeCompoundPrefix(o, o.temporal ? t.dt() : DTERNAL, out);
 
-                writeSubterms((t instanceof SeparateSubtermsCompound ? t.subterms() : ((Subterms) t)), out);
 
+                /*writeSubterms(s, out)*/
+                Subterms s = t instanceof SeparateSubtermsCompound ? t.subterms() : ((Subterms) t);
+                int ss = s.subs();
+                out.writeByte(ss);
+                for (int i = 0; i < ss; i++)
+                    write(s.sub(i), out);
 
             }
         }
@@ -200,44 +207,44 @@ public interface TermIO {
 
         @Override
         public void writeSubterms(Subterms tt, ByteArrayDataOutput out) {
-            /*if (tt instanceof RemappedSubterms.ArrayRemappedSubterms) {
-                RemappedSubterms.ArrayRemappedSubterms ttt = (RemappedSubterms.ArrayRemappedSubterms) tt;
-                byte[] xx = ttt.map;
-                out.writeByte(xx.length);
-                for (byte x : xx) {
-                    if (x < 0) {
-                        out.writeByte(Op.NEG.id);
-                        x = (byte) -x;
-                    }
-                    write(ttt.mapSub(x), out);
-                }
-            } else */if (tt instanceof RemappedSubterms) {
-                RemappedSubterms ttt = (RemappedSubterms) tt;
-                int s = ttt.subs();
-                out.writeByte(s);
-                for (int i = 0; i < s; i++) {
-                    int x = ttt.subMap(i);
-                    if (x < 0) {
-                        out.writeByte(NEG.id);
-                        x = (byte) -x;
-                    }
-                    write(ttt.mapTerm(x), out);
-                }
-            } else if (tt instanceof IntrinSubterms) {
-                IntrinSubterms ttt = (IntrinSubterms) tt;
-                short[] ss = ttt.subterms;
-                out.writeByte(ss.length);
-                for (short s : ss) {
-                    if (s < 0) {
-                        out.writeByte(NEG.id);
-                        s = (short) -s;
-                    }
-                    write(_term(s), out);
-                }
-            } else {
+//            /*if (tt instanceof RemappedSubterms.ArrayRemappedSubterms) {
+//                RemappedSubterms.ArrayRemappedSubterms ttt = (RemappedSubterms.ArrayRemappedSubterms) tt;
+//                byte[] xx = ttt.map;
+//                out.writeByte(xx.length);
+//                for (byte x : xx) {
+//                    if (x < 0) {
+//                        out.writeByte(Op.NEG.id);
+//                        x = (byte) -x;
+//                    }
+//                    write(ttt.mapSub(x), out);
+//                }
+//            } else */if (tt instanceof RemappedSubterms) {
+//                RemappedSubterms ttt = (RemappedSubterms) tt;
+//                int s = ttt.subs();
+//                out.writeByte(s);
+//                for (int i = 0; i < s; i++) {
+//                    int x = ttt.subMap(i);
+//                    if (x < 0) {
+//                        out.writeByte(NEG.id);
+//                        x = (byte) -x;
+//                    }
+//                    write(ttt.mapTerm(x), out);
+//                }
+//            } else if (tt instanceof IntrinSubterms) {
+//                IntrinSubterms ttt = (IntrinSubterms) tt;
+//                short[] ss = ttt.subterms;
+//                out.writeByte(ss.length);
+//                for (short s : ss) {
+//                    if (s < 0) {
+//                        out.writeByte(NEG.id);
+//                        s = (short) -s;
+//                    }
+//                    write(_term(s), out);
+//                }
+//            } else {
                 out.writeByte(tt.subs());
                 tt.forEachWith(this::write, out);
-            }
+//            }
         }
     }
 

@@ -1,7 +1,6 @@
 package nars.term.anon;
 
 import nars.Op;
-import nars.term.Compound;
 import nars.term.Term;
 import nars.term.var.NormalizedVariable;
 
@@ -102,13 +101,13 @@ public class AnonWithVarShift extends CachedAnon {
         return this;
     }
 
-    @Override
-    protected boolean cache(Compound x, boolean putOrGet) {
-        return (!hasShifted || !x.hasAny(mask));
-        //return true;
-        //return false;
-        //return !putOrGet || (!hasShifted || !x.hasAny(mask));
-    }
+//    @Override
+//    protected boolean cache(Compound x, boolean putOrGet) {
+//        return (!hasShifted || !x.hasAny(mask));
+//        //return true;
+//        //return false;
+//        //return !putOrGet || (!hasShifted || !x.hasAny(mask));
+//    }
 
     public Term putShift(Term x, Term base) {
         //TODO only shift if the variable bits overlap, but if disjoint not necessary

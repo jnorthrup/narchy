@@ -151,8 +151,8 @@ public class NARio extends GameX {
         });
 
 
-        initButton();
-        //initBipolar();
+        //initButton();
+        initBipolar();
 
 
         DigitizedScalar vx = senseNumberDifferenceTri($$("vx"), 8, () -> theMario != null ? theMario.x : 0).resolution(0.02f);
@@ -161,7 +161,7 @@ public class NARio extends GameX {
         //window(new Gridding(new VectorSensorView(vx, this), new VectorSensorView(vy, this)), 100, 50);
 
 
-        Reward right = reward("goRight", () -> {
+        Reward right = reward("right", () -> {
 
             float reward;
             float curX = theMario != null && theMario.deathTime <= 0 ? theMario.x : Float.NaN;
@@ -181,7 +181,7 @@ public class NARio extends GameX {
         });
         right.setDefault($.t(0, 0.75f));
 
-        Reward getCoins = rewardNormalized("getCoins", -1, +1, () -> {
+        Reward getCoins = rewardNormalized("money", -1, +1, () -> {
             int coins = Mario.coins;
             int deltaCoin = coins - lastCoins;
             if (deltaCoin <= 0)

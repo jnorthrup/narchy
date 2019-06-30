@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 
 public class NAL1Test extends NALTest {
 
-    protected int cycles = 850;
+    protected int cycles = 150;
 
     @Override
     protected NAR nar() {

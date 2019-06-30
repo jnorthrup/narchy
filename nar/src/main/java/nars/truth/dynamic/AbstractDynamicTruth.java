@@ -38,8 +38,11 @@ abstract public class AbstractDynamicTruth {
 
     /** default subconcept Task resolver */
     public Task subTask(TaskConcept subConcept, Term subTerm, long subStart, long subEnd, Predicate<Task> filter, DynTaskify d) {
-
         BeliefTable table = (BeliefTable) subConcept.table(d.beliefOrGoal ? BELIEF : GOAL);
+        return subTask(table, subTerm, subStart, subEnd, filter, d);
+    }
+
+    public Task subTask(BeliefTable table, Term subTerm, long subStart, long subEnd, Predicate<Task> filter, DynTaskify d) {
         NAR nar = d.nar;
         int dur = d.dur;
         Task bt;

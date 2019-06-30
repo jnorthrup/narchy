@@ -103,22 +103,28 @@ public class Statement {
                         return Null;
 
                 case IMPL: {
-                    if ((predicate.dt()==XTERNAL) == (dt==XTERNAL)) { //matching XTERNAL states otherwise infinite recursion can occurr
-                        Term inner = predicate.sub(0);
-                        Term newSubj = B.conjAppend(subject, dt, inner);
+                    boolean bothXternal = (dt == XTERNAL) && (predicate.dt() == XTERNAL);
+                    Term inner = predicate.sub(0);
+                    Term newPred = predicate.sub(1);
+                    Term newSubj;
+                    int newDT;
+                    if (bothXternal) {
+                        newSubj = CONJ.the(B, XTERNAL, subject, inner);
+                        newDT = XTERNAL;
+                    } else {
+                        newSubj = B.conjAppend(subject, dt, inner);
                         if (newSubj == Null)
                             return Null;
-                        int newDT = predicate.dt();
-                        if (newDT == DTERNAL)
-                            newDT = 0; //temporary
-                        Term newPred = predicate.sub(1);
-                        if (newPred instanceof Neg) {
-                            newPred = newPred.unneg();
-                            negate = !negate;
-                        }
-                        if (dt != newDT || !newSubj.equals(subject) || !newPred.equals(predicate))
-                            return statement(B, IMPL, newDT, newSubj, newPred, depth - 1).negIf(negate); //recurse
+                        newDT = predicate.dt();
+                        if (newDT == DTERNAL) newDT = 0; //HACK temporary
                     }
+
+                    if (newPred instanceof Neg) {
+                        newPred = newPred.unneg();
+                        negate = !negate;
+                    }
+                    if (dt != newDT || !newSubj.equals(subject) || !newPred.equals(predicate))
+                        return statement(B, IMPL, newDT, newSubj, newPred, depth - 1).negIf(negate); //recurse
                     break;
                 }
 

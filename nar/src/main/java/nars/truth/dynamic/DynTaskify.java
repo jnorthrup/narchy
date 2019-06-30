@@ -2,16 +2,15 @@ package nars.truth.dynamic;
 
 import jcog.Paper;
 import jcog.data.bit.MetalBitSet;
-import jcog.data.list.FasterList;
 import jcog.data.set.MetalLongSet;
 import jcog.math.LongInterval;
-import jcog.util.ArrayUtil;
+import jcog.pri.Possibilities;
+import jcog.pri.Possibilities.Possibility;
 import nars.NAL;
 import nars.NAR;
 import nars.Op;
 import nars.Task;
-import nars.concept.Concept;
-import nars.concept.TaskConcept;
+import nars.table.BeliefTable;
 import nars.task.DynamicTruthTask;
 import nars.task.NALTask;
 import nars.task.util.Answer;
@@ -46,12 +45,13 @@ import static nars.truth.dynamic.DynamicStatementTruth.Impl;
 @Paper
 public class DynTaskify extends TaskList {
 
-    static class Component {
+
+    static class Component extends Possibility<DynTaskify,Task> {
         final Term term;
-        final TaskConcept _concept;
+        final BeliefTable _concept;
         final long start, end;
 
-        Component(Term term, TaskConcept _c, DynTaskify d, int currentComponent, long start, long end) {
+        Component(Term term, BeliefTable _c, DynTaskify d, int currentComponent, long start, long end) {
             boolean negated = term.op() == Op.NEG;
 
             if (negated) {
@@ -63,16 +63,20 @@ public class DynTaskify extends TaskList {
             this._concept = _c;
             this.start = start;
             this.end = end;
-
-
         }
 
-        public Task task(DynTaskify d) {
+        @Override
+        public float value() {
+            return 1/(1+term.volume());
+        }
+
+        @Override
+        public Task apply(DynTaskify d) {
             return d.model.subTask(_concept, term, start, end, d.filter, d);
         }
     }
 
-    FasterList<Component> components = null;
+    Possibilities<DynTaskify,Task> components = null;
 
     public final AbstractDynamicTruth model;
 
@@ -146,28 +150,10 @@ public class DynTaskify extends TaskList {
         return model.evalComponents(template, start, end, this::evalComponent) ? taskify() : null;
     }
 
-    public Task taskify() {
-        if (components == null) {
+    @Nullable public Task taskify() {
+
+        if (!components())
             return null;
-        }
-        int cn = components.size();
-        int[] order = new int[cn];
-        for (int i = 0; i < cn; i++)
-            order[i] = i;
-
-        Task[] yy = new Task[cn]; //HACK temporary buffer for sizing issue
-        ensureCapacityForAdditional(cn);
-        ArrayUtil.sort(order, (int x) -> -components.get(x).term.volume());
-        for (int i = 0; i < cn; i++) {
-            int j = order[i];
-            Task tt = components.get(j).task(this);
-            if (tt == null)
-                return null;
-            add(tt); //HACK necessary for stamp detection
-            yy[j] = tt;
-        }
-        System.arraycopy(yy, 0, items, 0, yy.length); //HACK proper order
-
 
         long s, e;
         long earliest;
@@ -275,18 +261,48 @@ public class DynTaskify extends TaskList {
         return merge(this, y, t, stamp(nar.random()), beliefOrGoal, s, e, nar);
     }
 
+    public boolean components() {
+        if (components == null) {
+            return false;
+        }
+        int cn = components.size();
+        if (!components.commit(true, true))
+            return false;
+        int[] order = new int[cn];
+        for (int i = 0; i < cn; i++)
+            order[i] = i;
+
+        Task[] yy = new Task[cn]; //HACK temporary buffer for sizing issue
+        ensureCapacityForAdditional(cn);
+        //ArrayUtil.sort(order, (int x) -> -components.list.get(x).term.volume());
+
+        for (int i = 0; i < cn; i++) {
+            int j = order[i];
+            Task tt = components.list.get(j).apply(this);
+            if (tt == null)
+                return false;
+            add(tt); //HACK necessary for stamp detection
+            yy[j] = tt;
+        }
+        System.arraycopy(yy, 0, items, 0, yy.length); //HACK proper order
+        return true;
+    }
+
 
     private boolean evalComponent(Term subTerm, long start, long end) {
-        Concept c = nar.conceptualizeDynamic(subTerm.unneg());
-        if (!(c instanceof TaskConcept))
+        Term su = subTerm.unneg();
+
+        BeliefTable table = nar.tableDynamic(su, beliefOrGoal);
+        if (table==null || table.isEmpty())
             return false;
-        if (c.table((this.beliefOrGoal?BELIEF:GOAL)).isEmpty())
-            return false;
+
         if (components == null)
-            components = new FasterList(4);
-        components.add(new Component(subTerm, (TaskConcept)c,
+            components = new Possibilities(this);//new FasterList(4);
+
+        components.add(new Component(su, table,
                 this, components.size(),
                 start, end));
+
         return true;
     }
 

@@ -43,11 +43,6 @@ import static nars.Op.*;
 public interface Subterms extends Termlike, Iterable<Term> {
 
 
-    static boolean common(Subterms x, Subterms y) {
-        //if (x.volume() < y.volume()) ...
-        return x.OR(y::contains);
-    }
-
     @Override
     default boolean hasXternal() {
         return hasAny(Op.Temporal) && OR(Term::hasXternal);
@@ -318,13 +313,13 @@ public interface Subterms extends Termlike, Iterable<Term> {
 
 
     default /*@NotNull*/ SortedSet<Term> toSetSorted() {
-        TreeSet u = new TreeSet();
+        TreeSet<Term> u = new TreeSet();
         forEach(u::add);
         return u;
     }
 
     default /*@NotNull*/ SortedSet<Term> toSetSorted(Function<Term,Term> map) {
-        TreeSet u = new TreeSet();
+        TreeSet<Term> u = new TreeSet();
         forEach(z -> u.add(map.apply(z)));
         return u;
     }
@@ -379,7 +374,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
      */
     default /*@NotNull*/ MutableSet<Term> toSet() {
         int s = subs();
-        UnifiedSet u = new UnifiedSet(s, 0.99f);
+        UnifiedSet<Term> u = new UnifiedSet(s, 0.99f);
         if (s > 0) {
             forEach(u::add);
         }
@@ -880,7 +875,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
      * TODO check for obvious constant target mismatch
      * @return 0: must unify, -1: impossible, +1: unified already
      */
-    public static int possiblyUnifiableWhileEliminatingEqualAndConstants(TermList xx, TermList yy, Unify u) {
+    static int possiblyUnifiableWhileEliminatingEqualAndConstants(TermList xx, TermList yy, Unify u) {
 
         int n = xx.size(); assert(yy.size()==n);
 
@@ -944,7 +939,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
     /**
      * assumes that equality, structure commonality, and equal subterm count have been tested
      */
-    public static boolean unifyCommute(Subterms x, Subterms y, Unify u) {
+    static boolean unifyCommute(Subterms x, Subterms y, Unify u) {
         TermList xx = u.resolveListIfChanged(x), yy = u.resolveListIfChanged(y);
 
         if (xx == null) xx = x.toList();

@@ -59,8 +59,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
      * return <= 0 to disable
      */
     @Deprecated
-    public static final float TASKLINK_GENERATED_QUESTION_PRI_RATE =
-            0;
+    public static final float TASKLINK_GENERATED_QUESTION_PRI_RATE = 0;
     public static final boolean REVISION_ALLOW_OVERLAP_IF_DISJOINT_TIME= configIs("REVISION_ALLOW_OVERLAP_IF_DISJOINT_TIME");
 
 
@@ -176,8 +175,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
     public static final boolean PROJECTION_EVIDENCE_INFLATION_DETECT = false;
 
     public static final int DYN_TASK_MATCH_MODE = 1;
-    /** tasklink belief/goal resolution strategy */
-    public static final boolean TASKLINK_MATCH_OR_SAMPLE = true;
+
 
     /**
      * if false, will use pri=ScalarValue.EPSILON
@@ -223,13 +221,13 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
      *  TODO DiluteUnion will require reprojection of the task and the belief to their temporal midpoint
      *  this requires changes to Derivation
      * */
-    public static final boolean OCCURRIFY_COMPOSE_UNION_DILUTE = true;
+    public static final boolean OCCURRIFY_COMPOSE_UNION_DILUTE = false;
 
 
     protected static final boolean DYNAMIC_CONCEPT_TRANSIENT = false;
 
     public static boolean ETERNALIZE_BELIEF_PROJECTED_IN_DERIVATION = true;
-    public static boolean ETERNALIZE_BELIEF_PROJECTED_IN_DERIVATION_AND_ETERNALIZE_BELIEF_TIME = false;
+    public static boolean ETERNALIZE_BELIEF_PROJECTED_IN_DERIVATION_AND_ETERNALIZE_BELIEF_TIME = true;
 
     /** TODO make these dynamic parameters of a NALTruth implementation */
     public static class nal_truth {
@@ -276,8 +274,8 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
 
     @Deprecated
     public final FloatRange questionForgetRate = new FloatRange(0.5f, 0, 1);
-    public final IntRange premiseUnifyTTL = new IntRange(4, 1, 32);
-    public final IntRange deriveBranchTTL = new IntRange(3 * NAL.derive.TTL_MIN, NAL.derive.TTL_MIN, 64 * NAL.derive.TTL_MIN);
+    public final IntRange premiseUnifyTTL = new IntRange(6, 1, 32);
+    public final IntRange deriveBranchTTL = new IntRange(4 * NAL.derive.TTL_MIN, NAL.derive.TTL_MIN, 64 * NAL.derive.TTL_MIN);
     /**
      * how many cycles above which to dither dt and occurrence time
      * TODO move this to Time class and cache the cycle value rather than dynamically computing it
@@ -354,12 +352,14 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
         if (!NEW) {
 
             final boolean stretched = prev == next;
+            if (stretched)
+                return 0;
 
             final boolean latched = !stretched &&
                     Math.abs(next.start() - prev.end()) < NAL.belief.signal.SIGNAL_LATCH_LIMIT_DURS * dur;
 
             //decrease priority by similarity to previous truth
-            if (stretched || latched) {
+            if (latched) {
 
                 //TODO abstract this frequence response curve
                 final float deltaFreq = prev != next ? Math.abs(prev.freq() - next.freq()) : 0; //TODO use a moving average or other anomaly/surprise detection
@@ -368,7 +368,8 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
                     return perceived;
                 }
                 //p *= Util.lerp(deltaFreq, perceived, 1);
-            }
+            } else
+                return 1;
         }
 
         return 0;
@@ -417,9 +418,9 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
         //inverse linear decay
         final double falloffDurs =
                 //0.5f;
-                1;
+                //1;
                 //1.618f; //phi
-                //2; //nyquist / horizon
+                2; //nyquist / horizon
                 //4;
                 //dur;
                 //8;

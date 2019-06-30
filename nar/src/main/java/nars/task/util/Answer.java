@@ -340,7 +340,7 @@ public final class Answer implements Timed, Predicate<Task> {
                 switch (root.punc()) {
                     case BELIEF:
                     case GOAL:
-                        t = Truth.stronger(newTask(), tasks.first());
+                        t = Truth.stronger(newTask(forceProject, ditherTruth, ditherTime), tasks.first());
                         break;
 
                     case QUESTION:
@@ -373,16 +373,16 @@ public final class Answer implements Timed, Predicate<Task> {
 
     }
 
-    private Task newTask() {
-        int n = tasks.size();
-        assert (n > 0);
-
+    private Task newTask(boolean forceProject, boolean ditherTruth, boolean ditherTime) {
+        int n = tasks.size(); assert (n > 0);
         Task root = tasks.first();
-        if (n == 1) {
-            return root;
+        if (n == 1 && (!forceProject || (time.start == root.start() && time.end == root.end())) &&
+                !ditherTruth && !ditherTime) {
+            //TODO check if dithering time and truth would change anything, it might not
+            return root; //only valid if the time range matches
         } else {
             TruthProjection tp = truthProjection();
-            return tp!=null ? newTask(tp, root.isBeliefOrGoal()) : null;
+            return tp!=null ? newTask(tp, root.isBelief() ? true : false /* goal */) : null;
         }
     }
 

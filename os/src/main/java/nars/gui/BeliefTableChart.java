@@ -7,11 +7,11 @@ import jcog.Util;
 import jcog.math.FloatRange;
 import jcog.util.FloatFloatToFloatFunction;
 import nars.NAR;
-import nars.concept.Concept;
 import nars.table.BeliefTable;
 import nars.term.Term;
 import nars.term.Termed;
 import nars.truth.TruthWave;
+import org.jetbrains.annotations.Nullable;
 import spacegraph.space2d.Labeled;
 import spacegraph.space2d.MenuSupplier;
 import spacegraph.space2d.ReSurface;
@@ -23,9 +23,6 @@ import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.space2d.widget.meta.ObjectSurface;
 import spacegraph.space2d.widget.text.VectorLabel;
 import spacegraph.video.Draw;
-
-import static nars.Op.BELIEF;
-import static nars.Op.GOAL;
 
 
 public class BeliefTableChart extends DurSurface<Stacking> implements Labeled, MenuSupplier {
@@ -167,8 +164,9 @@ public class BeliefTableChart extends DurSurface<Stacking> implements Labeled, M
         }
 
 
-        void update(Concept c) {
-            BeliefTable table = (BeliefTable) c.table(beliefOrGoal ? BELIEF : GOAL); if (!table.isEmpty()) {
+        void update(BeliefTable table) {
+            //BeliefTable table = (BeliefTable) c.table(beliefOrGoal ? BELIEF : GOAL);
+            if (!table.isEmpty()) {
             int dither = Math.max(1,
                     (int) Math.round(((double) (end - start)) / (projections)));
             long projStart = Util.round(start-dither/2, dither);
@@ -271,8 +269,9 @@ public class BeliefTableChart extends DurSurface<Stacking> implements Labeled, M
     @Override
     public void update() {
 
-        Concept ccd = nar.conceptualizeDynamic(term/* lookup by target, not the termed which could be a dead instance */);
-        if (ccd == null)
+        @Nullable BeliefTable beliefs = nar.tableDynamic(term/* lookup by target, not the termed which could be a dead instance */, true);
+        @Nullable BeliefTable goals = nar.tableDynamic(term/* lookup by target, not the termed which could be a dead instance */, false);
+        if (beliefs == null && goals == null)
             return;
 
         long now = nar.time();
@@ -287,9 +286,8 @@ public class BeliefTableChart extends DurSurface<Stacking> implements Labeled, M
         this.end = end;
 
 
-        beliefGrid.update(ccd);
-
-        goalGrid.update(ccd);
+        beliefGrid.update(beliefs);
+        goalGrid.update(goals);
 
     }
 
