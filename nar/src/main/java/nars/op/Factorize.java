@@ -6,7 +6,6 @@ import jcog.memoize.Memoizers;
 import nars.$;
 import nars.NAR;
 import nars.Op;
-import nars.Task;
 import nars.subterm.Subterms;
 import nars.subterm.TermList;
 import nars.term.*;
@@ -227,7 +226,7 @@ public class Factorize {
             if (y.length == 0)
                 return x; //unchanged
 
-            if (Util.sum(Term::volume, y) > volMax)
+            if (Util.sum(Term::volume, y) > volMax - 6)
                 return x; //excessively complex result
 
             //        Term[] yy = Terms.sorted(y);

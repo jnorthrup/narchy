@@ -22,7 +22,7 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-import static nars.term.atom.Bool.Null;
+import static nars.term.atom.Bool.*;
 
 public class Evaluation extends Termerator {
 
@@ -31,8 +31,7 @@ public class Evaluation extends Termerator {
     private static void eval(Term x, boolean includeTrues, boolean includeFalses, Function<Atom, Functor> resolver, Predicate<Term> each) {
 
         if (canEval(x)) {
-            Evaluator y = new Evaluator(resolver);
-            y.eval(each, includeTrues, includeFalses, x);
+            new Evaluator(resolver).eval(each, includeTrues, includeFalses, x);
         } else {
             each.test(x); //didnt need evaluating, just input
         }
@@ -178,11 +177,15 @@ public class Evaluation extends Termerator {
 //                        }
 
                     z = func.apply(this, args);
-                    if (z == Null) {
+                    if (z == Null || z == False) {
                         ii.remove(); //CUT
-                        y = Null;
+                        y = z;
                         break main;
                     }
+                    if (z == True) {
+                        remove = true;
+                    }
+
                     substing = now() != vStart;
                     mutAdded = mutStart != termutators();
                     if ((z == null && (substing || mutAdded)) || (z != null && z != a)) { //(z instanceof Bool)) {
@@ -195,7 +198,7 @@ public class Evaluation extends Termerator {
                     }
 
 
-                    if (substing || (z != null && z != a)) {
+                    if (substing || (z != null && z != a && z!=True)) {
                         tried++;
 
                         Term y0 = y;
@@ -265,9 +268,9 @@ public class Evaluation extends Termerator {
     }
 
     protected Term bool(Term x, Bool b) {
-        if (b == Bool.True) {
+        if (b == True) {
             return boolTrue(x);
-        } else if (b == Bool.False) {
+        } else if (b == False) {
             return boolFalse(x);
         } else {
             return Null;

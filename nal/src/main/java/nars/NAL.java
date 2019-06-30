@@ -227,7 +227,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
     protected static final boolean DYNAMIC_CONCEPT_TRANSIENT = false;
 
     public static boolean ETERNALIZE_BELIEF_PROJECTED_IN_DERIVATION = true;
-    public static boolean ETERNALIZE_BELIEF_PROJECTED_IN_DERIVATION_AND_ETERNALIZE_BELIEF_TIME = true;
+    public static boolean ETERNALIZE_BELIEF_PROJECTED_IN_DERIVATION_AND_ETERNALIZE_BELIEF_TIME = false;
 
     /** TODO make these dynamic parameters of a NALTruth implementation */
     public static class nal_truth {

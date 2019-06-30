@@ -44,7 +44,7 @@ public abstract class EventIntroduction extends Introduction {
 
     public final Term applyAndNormalize(Term x, int volMax) {
         Term y = apply(x, this::apply, volMax);
-        return y!=null && y != x ? y.normalize() : x;
+        return y!=null && y != x && y.volume() <= volMax ? y.normalize() : x;
     }
 
     abstract protected Term apply(Term x, int volMax);
