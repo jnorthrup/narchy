@@ -88,11 +88,15 @@ public abstract class UnitCompound implements SameSubtermsCompound {
 
     @Override
     public final boolean ANDrecurse(Predicate<Term> p) {
-        return p.test(this) && sub().ANDrecurse(p);
+        if (!p.test(this)) return false;
+        Term s = sub();
+        return s instanceof Compound ? ((Compound) s).ANDrecurse(p) : p.test(s);
     }
     @Override
     public final boolean ORrecurse(Predicate<Term> p) {
-        return p.test(this) || sub().ORrecurse(p);
+        if (p.test(this)) return true;
+        Term s = sub();
+        return s instanceof Compound ? ((Compound) s).ORrecurse(p) : p.test(s);
     }
 
     /** elides creation of subterms intermediary instance */
@@ -249,11 +253,6 @@ public abstract class UnitCompound implements SameSubtermsCompound {
     @Override
     public boolean unifySubterms(Term y, Unify u) {
         return y.subs()==1 && sub().unify(y.sub(0), u);
-    }
-
-    @Override
-    public boolean isSorted() {
-        return true;
     }
 
     @Override

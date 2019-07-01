@@ -252,29 +252,8 @@ public interface Atomic extends Term {
         each.accept(this, null);
     }
 
-    /** convenience, do not override */
-    @Override default void recurseTerms(Consumer<Term> each) {
+    @Override default /* final */ void recurseTerms(Consumer<Term> each) {
         each.accept(this);
-    }
-
-    @Override
-    default boolean ANDrecurse(Predicate<Term> v) {
-        return v.test(this);
-    }
-
-    @Override
-    default boolean ORrecurse(Predicate<Term> v) {
-        return v.test(this);
-    }
-
-    @Override
-    default boolean OR(Predicate<Term> v) {
-        return v.test(this);
-    }
-
-    @Override
-    default boolean AND(Predicate<Term> v) {
-        return v.test(this);
     }
 
 

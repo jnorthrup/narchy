@@ -200,10 +200,6 @@ public interface Term extends Termlike, Termed, Comparable<Term> {
      */
     boolean recurseTerms(Predicate<Compound> aSuperCompoundMust, BiPredicate<Term, Compound> whileTrue, @Nullable Compound superterm);
 
-    boolean OR(Predicate<Term> p);
-    boolean AND(Predicate<Term> p);
-    boolean ANDrecurse(/*@NotNull*/ Predicate<Term> p);
-    boolean ORrecurse(/*@NotNull*/ Predicate<Term> p);
 
 
 

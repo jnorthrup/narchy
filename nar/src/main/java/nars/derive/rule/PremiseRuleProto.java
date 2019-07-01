@@ -1,6 +1,5 @@
 package nars.derive.rule;
 
-import jcog.time.UsageNS;
 import nars.$;
 import nars.NAL;
 import nars.NAR;
@@ -8,12 +7,10 @@ import nars.control.Why;
 import nars.derive.model.Derivation;
 import nars.derive.op.DirectPremisify;
 import nars.derive.op.Taskify;
-import nars.derive.op.Truthify;
 import nars.term.Term;
+import nars.term.Terms;
 import nars.term.control.AND;
 import nars.term.control.PREDICATE;
-import nars.term.var.ellipsis.Ellipsislike;
-import org.HdrHistogram.AtomicHistogram;
 import org.eclipse.collections.api.tuple.Pair;
 
 import static org.eclipse.collections.impl.tuple.Tuples.pair;
@@ -71,7 +68,7 @@ public class PremiseRuleProto extends PremiseRule {
 
         if (dir == 0) {
             //match ellipsis first. everything else will basically depend on this
-            boolean te = hasEllipsis(taskPattern), be = hasEllipsis(beliefPattern);
+            boolean te = Terms.hasEllipsisRecurse(taskPattern), be = Terms.hasEllipsisRecurse(beliefPattern);
             if (te || be) {
                 if (te && !be) dir = +1;
                 else if (be && !te) dir = -1;
@@ -99,10 +96,6 @@ public class PremiseRuleProto extends PremiseRule {
         }
 
         return dir >= 0; //0 or +1 = fwd (task first), else !fwd (belief first)
-    }
-
-    private static boolean hasEllipsis(Term x) {
-        return x.ORrecurse(t -> t instanceof Ellipsislike);
     }
 
 
@@ -136,23 +129,4 @@ public class PremiseRuleProto extends PremiseRule {
     }
 
 
-    private static class DeriveActionProfiled  extends DeriveAction {
-
-        static final UsageNS<DeriveActionProfiled> usage = new UsageNS();
-        final AtomicHistogram meter;
-
-        public DeriveActionProfiled(RuleWhy cause, Truthify truthify, PREDICATE<Derivation> yy) {
-            super(cause, truthify, yy);
-            meter = usage.the(this);
-        }
-
-        @Override
-        public boolean test(Derivation d) {
-            long start = System.nanoTime();
-            boolean r = super.test(d);
-            long end = System.nanoTime();
-            meter.recordValue(end-start);
-            return r;
-        }
-    }
 }

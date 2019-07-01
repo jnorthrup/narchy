@@ -26,11 +26,12 @@ abstract public class RelationConstraint<U extends Unify> extends UnifyConstrain
         this.yNeg = y instanceof Neg;
     }
 
-    @Deprecated RelationConstraint(String func, Variable x, Variable y, Term... args) {
+    @Deprecated
+    protected RelationConstraint(String func, Variable x, Variable y, Term... args) {
         this(Atomic.atom(func), x, y, args);
     }
 
-    RelationConstraint(Atom func, Variable x, Variable y, Term... args) {
+    protected RelationConstraint(Atom func, Variable x, Variable y, Term... args) {
         this($.func(func, x, args.length > 0 ? $.p(y, $.p(args)) : y), x, y);
     }
 
@@ -63,7 +64,7 @@ abstract public class RelationConstraint<U extends Unify> extends UnifyConstrain
         return yy != y && invalid(x, yNeg ? yy.neg() : yy, f);
     }
 
-    abstract public boolean invalid(Term xx, Term yy, U context);
+    abstract public boolean invalid(Term x, Term y, U context);
 
     /** override to implement subsumption elimination */
     public boolean remainInAndWith(RelationConstraint c) {
@@ -98,8 +99,8 @@ abstract public class RelationConstraint<U extends Unify> extends UnifyConstrain
         }
 
         @Override
-        public boolean invalid(Term xx, Term yy, Unify context) {
-            return !r.invalid(xx, yy, context);
+        public boolean invalid(Term x, Term y, Unify context) {
+            return !r.invalid(x, y, context);
         }
 
         @Override

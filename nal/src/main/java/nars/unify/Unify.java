@@ -30,6 +30,8 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+import static nars.time.Tense.DTERNAL;
+import static nars.time.Tense.XTERNAL;
 import static nars.unify.Unification.Null;
 import static nars.unify.Unification.Self;
 
@@ -496,8 +498,29 @@ public abstract class Unify extends Versioning<Term> {
     }
 
 
+
+    public final boolean unifyDT(Term x, Term y) {
+        int xdt = x.dt();
+
+        if ((xdt == XTERNAL))
+            return true;
+
+        int ydt = y.dt();
+        if (xdt == ydt || ydt == XTERNAL)
+            return true;
+
+        if (xdt == DTERNAL) xdt = 0; //HACK
+        if (ydt == DTERNAL) ydt = 0; //HACK
+        if (xdt != ydt) {
+            if (!unifyDT(xdt, ydt))
+                return false;
+        }
+
+        return true;
+    }
+
     /** xdt and ydt must both not equal either XTERNAL or DTERNAL */
-    public final boolean unifyDT(int xdt, int ydt) {
+    private final boolean unifyDT(int xdt, int ydt) {
         //assert(xdt!=DTERNAL && xdt!=XTERNAL && ydt!=DTERNAL && ydt!=XTERNAL);
         return Math.abs(xdt - ydt) < dtTolerance;
     }

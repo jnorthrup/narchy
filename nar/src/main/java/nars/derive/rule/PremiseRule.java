@@ -99,8 +99,8 @@ public class PremiseRule extends ProxyTerm {
      * conditions which can be tested before unification
      */
 
-    private final MutableSet<UnifyConstraint> constraints;
-    private final MutableSet<PREDICATE<? extends Unify>> pre;
+    public final MutableSet<UnifyConstraint> constraints;
+    public final MutableSet<PREDICATE<? extends Unify>> pre;
     private final BytePredicate taskPunc;
     /**
      * conclusion post-processing
@@ -115,13 +115,13 @@ public class PremiseRule extends ProxyTerm {
         }
 
         private Compound apply(Compound c, PremiseRule p, MutableSet<PREDICATE<? extends Unify>> pre) {
-            Term concFunc = Functor.func(c);
+            Term f = Functor.func(c);
 
-            if (concFunc.equals(UniSubst.unisubst)) {
+            if (f.equals(UniSubst.unisubst)) {
 
                 Subterms a = Functor.args(c);
 
-                Term x = a.sub(1);
+                Term x = /*unwrapPolarize...*/(a.sub(1));
 
                 if (Unifiable.hasNoFunctor(x)) {
 
@@ -131,16 +131,21 @@ public class PremiseRule extends ProxyTerm {
 
                         //both x and y are constant
 
-                        int varBits = (a.contains(UniSubst.DEP_VAR)) ? VAR_DEP.bit : (VAR_INDEP.bit | VAR_DEP.bit);
+                        int varBits;
+                        if (a.indexOf(UniSubst.DEP_VAR) > 2)
+                            varBits = VAR_DEP.bit;
+                        else if (a.indexOf(UniSubst.INDEP_VAR) > 2)
+                            varBits = VAR_INDEP.bit;
+                        else
+                            varBits = VAR_DEP.bit | VAR_INDEP.bit;
 
                         boolean strict = a.contains(UniSubst.NOVEL);
 
                         Unifiable.tryAdd(x, y,
                                 p.taskPattern, p.beliefPattern,
-                                varBits, strict, pre);
+                                varBits, strict, PremiseRule.this);
                     }
                 }
-
 
                 //TODO compile to 1-arg unisubst
             }
@@ -765,7 +770,9 @@ public class PremiseRule extends ProxyTerm {
         if (concPunc == null)
             throw new UnsupportedOperationException("no concPunc specified");
 
-        pre.add(new TaskPunc(taskPunc));
+        TaskPunc tp = TaskPunc.get(taskPunc);
+        if (tp!=null)
+            pre.add(tp);
 
         this.truthify = intern(Truthify.the(concPunc, beliefTruthOp, goalTruthOp, time));
         this.time = time;

@@ -1,4 +1,5 @@
 //conjunction/disjunction structural decomposition
+//   see: https://en.wikipedia.org/wiki/Imperative_logic#Ross.27_Paradox
 
 
 
@@ -79,15 +80,14 @@
     //X, C, eventOf(C,X)    |- --conjWithout(C,X), (Goal:DesireWeakN, Time:BeliefSubSequence)
 
 
-    //see: https://en.wikipedia.org/wiki/Imperative_logic#Ross.27_Paradox
 
 
     //X is the desired event suffix (outcome).
     //C is a sequence ending in it.  this forms a goal of the sequence prefix (minus the trailing)
 
     //desire for sub-sequence leading to goal,  truth function may be Desire or Deduction
-    G, C, conjSequence(C), is(C,"&&"), neq(G,C)                  |-    conjBefore(C,   G),  (Goal:DecomposePP, Time:TaskEvent)
-    G, C, conjSequence(C), is(C,"&&"), has(C,"--"), neq(G,C)     |-    conjBefore(C, --G),  (Goal:DecomposeNP, Time:TaskEvent)
+    G, C, is(C,"&&"), neq(G,C)                  |-    conjBefore(C,   G),  (Goal:DecomposePP)
+    G, C, is(C,"&&"), has(C,"--"), neq(G,C)     |-    conjBefore(C, --G),  (Goal:DecomposeNP)
 //      G, C, is(C,"&&"), neq(G,C)                  |-   --conjBefore(C,   G),  (Goal:DecomposeNN, Time:TaskEvent)
 //      G, C, is(C,"&&"), has(C,"--"), neq(G,C)     |-   --conjBefore(C, --G),  (Goal:DecomposePN, Time:TaskEvent)
 

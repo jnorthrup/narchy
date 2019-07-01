@@ -66,7 +66,7 @@ public class ConjTree implements ConjBuilder {
 
         if (p instanceof Compound && p.op() == CONJ) {
             if (p.dt() != XTERNAL && !Conj.isSeq(p))
-                return p.AND(this::addParallel); //decompose parallel conj
+                return ((Compound)p).AND(this::addParallel); //decompose parallel conj
             if (!validConj(p, false)) {
                 terminate(False);
                 return false;

@@ -17,6 +17,10 @@ public class ConjUnify {
 
     /** conjunction unfiication when # subterms differ */
     public static boolean unifyConj(Term x, Term y, Subterms xx, Subterms yy, Unify u) {
+
+        if (!Subterms.possiblyUnifiableAssumingNotEqual(xx, yy, u.varBits))
+            return false;
+
         int xdt = x.dt(), ydt = y.dt();
 
         boolean var = u.var(xx) || u.var(yy);
@@ -43,7 +47,7 @@ public class ConjUnify {
 
         } else {
             if (!var)
-                return false;
+                return false; //TODO allow slightly different constants
 
             boolean xSeq = Conj.isSeq(x);
             boolean ySeq = Conj.isSeq(y);

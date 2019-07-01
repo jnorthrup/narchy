@@ -11,11 +11,6 @@ import java.util.function.BiFunction;
  */
 public interface InlineFunctor<E> extends BiFunction<E /*Evaluation*/, Subterms, Term> {
 
-    /** dont override this one, override the Subterms arg version */
-    default /*final */ Term applyInline(Term args) {
-        return applyInline(args.subterms());
-    }
-
     default Term applyInline(Subterms args) {
         return apply(null, args);
     }

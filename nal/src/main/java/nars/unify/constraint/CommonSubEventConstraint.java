@@ -18,8 +18,8 @@ public final class CommonSubEventConstraint extends RelationConstraint {
     }
 
     @Override
-    public boolean invalid(Term xx, Term yy, Unify context) {
-        return !ConjUnify.eventsCommon(xx, yy);
+    public boolean invalid(Term x, Term y, Unify context) {
+        return !ConjUnify.eventsCommon(x, y);
     }
 
     //

@@ -969,6 +969,11 @@ public interface Subterms extends Termlike, Iterable<Term> {
 
 
     static boolean possiblyUnifiable(Termlike xx, Termlike yy, int varBits) {
+        return xx.equals(yy) || possiblyUnifiableAssumingNotEqual(xx, yy, varBits);
+    }
+
+    static boolean possiblyUnifiableAssumingNotEqual(Termlike xx, Termlike yy, int varBits) {
+
         int XS = xx.structure(), YS = yy.structure();
         int XSc = XS & (~varBits);
         if (XSc == 0)
@@ -1000,13 +1005,6 @@ public interface Subterms extends Termlike, Iterable<Term> {
 //        int ys = yy.structureConstant(varBits);
 //        return (xs & ys) != 0; //any constant subterm commonality
     }
-
-
-    static boolean possiblyUnifiable(Subterms xx, Subterms yy, Unify u) {
-        return possiblyUnifiable(xx, yy, u.varBits);
-    }
-
-
 
 
 //    default Term[] termsExcept(RoaringBitmap toRemove) {
@@ -1094,6 +1092,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
             }
         }
     }
+
 
     /**
      * returns true if evaluates true for any terms
@@ -1201,8 +1200,10 @@ public interface Subterms extends Termlike, Iterable<Term> {
         Term prev = null;
         for (int i = 0; i < s; i++) {
             Term next = sub(i);
-            if (prev!=next && !next.ANDrecurse(p))
-                return false;
+            if (prev != next) {
+                if (!p.test(next) || (next instanceof Compound && !((Compound)next).ANDrecurse(p)))
+                    return false;
+            }
             prev = next;
         }
         return true;
@@ -1214,8 +1215,10 @@ public interface Subterms extends Termlike, Iterable<Term> {
         Term prev = null;
         for (int i = 0; i < s; i++) {
             Term next = sub(i);
-            if (prev!=next && next.ORrecurse(p))
-                return true;
+            if (prev != next) {
+                if (p.test(next) || (next instanceof Compound && ((Compound)next).ORrecurse(p)))
+                    return true;
+            }
             prev = next;
         }
         return false;

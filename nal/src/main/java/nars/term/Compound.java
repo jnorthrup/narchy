@@ -210,10 +210,6 @@ public interface Compound extends Term, IPair, Subterms {
     }
 
 
-    @Override
-    default boolean ORrecurse(Predicate<Term> p) {
-        return p.test(this) || subterms().ORrecurse(p);
-    }
 
     @Override
     default Term sub(int i) {
@@ -223,6 +219,11 @@ public interface Compound extends Term, IPair, Subterms {
     @Override
     default int subs() {
         return 0;
+    }
+
+    @Override
+    default boolean ORrecurse(Predicate<Term> p) {
+        return p.test(this) || subterms().ORrecurse(p);
     }
 
     @Override
@@ -257,60 +258,44 @@ public interface Compound extends Term, IPair, Subterms {
     default boolean unifySubterms(Term y, Unify u) {
 
         Term x = this;
+        Subterms xx = x.subterms();
+        Subterms yy = y.subterms();
 
-        Subterms xx = subterms();
+        Op o = op();
+        if (o == CONJ)
+            return ConjUnify.unifyConj(x, y, xx, yy, u);
+
 
         int xs = xx.subs();
+        if (xs != yy.subs())
+            return false;
+
         if (xs == 1)
             return xx.sub(0).unify(y.sub(0), u);
 
-        Subterms yy = y.subterms();
-        if (!Subterms.possiblyUnifiable(xx, yy, u))
+        if (o.temporal) {
+            if (!u.unifyDT(x, y))
+                return false;
+
+            if (xx.equals(yy))
+                return true; //compound equality would have been true if non-temporal
+
+            /* else if (!xSpecific && !ySpecific) {
+                if (!u.var(xx) && !u.var(yy)) {
+                    //both constant
+                    if (!xx.hasAny(Op.CONJ.bit) && !yy.hasAny(Op.CONJ.bit))
+                        return false; //both constant (excl CONJ); no possibility of unify
+                }
+            } //else: ??? */
+        }
+
+        if (!Subterms.possiblyUnifiableAssumingNotEqual(xx, yy, u.varBits))
             return false;
 
-        Op o = op();
-
-        if (o == CONJ) {
-            return ConjUnify.unifyConj(x, y, xx, yy, u);
-        } else {
-            int ys = yy.subs();
-            if (xs != ys) {
-                return false;
-            }
-        }
-
-        if (o.temporal) {
-            int xdt = x.dt(), ydt = y.dt();
-            boolean xSpecific = (xdt != XTERNAL && xdt != DTERNAL);
-            boolean ySpecific = (ydt != XTERNAL && ydt != DTERNAL);
-
-            if (xSpecific && ySpecific) {
-                if (xdt != ydt && !u.unifyDT(xdt, ydt))
-                    return false;
-
-                if (o == CONJ)
-                    return (xdt >= 0) == (ydt >= 0) ? Subterms.unifyLinear(xx, yy, u) : Subterms.unifyLinear(xx, yy.reversed(), u);
-            }
-
-
-            //compound equality would have been true if non-temporal
-            if (xdt != ydt && xx.equals(yy))
-                return true;
-
-            if (!xSpecific && !ySpecific && !u.var(xx) && !u.var(yy)) {
-                //both constant
-                if (!xx.hasAny(Op.CONJ.bit) && !yy.hasAny(Op.CONJ.bit))
-                    return false; //both constant (excl CONJ); no possibility of unify
-            }
-        }
-
-        if (o.commutative /* subs>1 */) {
+        if (o.commutative /* subs>1 */)
             return Subterms.unifyCommute(xx, yy, u);
-        } else {
+        else
             return Subterms.unifyLinear(xx, yy, u);
-        }
-
-
     }
 
     @Override

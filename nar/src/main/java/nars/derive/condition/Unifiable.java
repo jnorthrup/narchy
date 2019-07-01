@@ -1,30 +1,25 @@
 package nars.derive.condition;
 
-import jcog.WTF;
 import nars.$;
-import nars.NAL;
+import nars.derive.model.Derivation;
 import nars.derive.model.PreDerivation;
 import nars.derive.rule.PremiseRule;
 import nars.op.UniSubst;
-import nars.term.Functor;
-import nars.term.Term;
-import nars.term.Terms;
-import nars.term.Variable;
+import nars.term.*;
+import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
-import nars.term.atom.Bool;
 import nars.term.control.AbstractPred;
-import nars.term.control.PREDICATE;
-import nars.unify.Unify;
-import org.eclipse.collections.api.set.MutableSet;
-
-import java.util.Arrays;
+import nars.unify.constraint.RelationConstraint;
 
 public class Unifiable extends AbstractPred<PreDerivation> {
 
-    private final byte[] xpInT, xpInB, ypInT, ypInB;
-    private final boolean isStrict;
+
 
     private static final Atomic UnifyPreFilter = Atomic.the("unifiable");
+    private static final float COST = 0.3f;
+
+    private final byte[] xpInT, xpInB, ypInT, ypInB;
+    private final boolean isStrict;
     private final int varBits;
 
 //    UnifyPreFilter(Variable x, Term y, int varBits, boolean isStrict) {
@@ -42,8 +37,7 @@ public class Unifiable extends AbstractPred<PreDerivation> {
         this.isStrict = isStrict;
     }
 
-    public static void tryAdd(Term x, Term y, Term taskPattern, Term beliefPattern, int varBits, boolean strict, MutableSet<PREDICATE<? extends Unify>> pre) {
-        //some structure exists that can be used to prefilter
+    public static void tryAdd(Term x, Term y, Term taskPattern, Term beliefPattern, int varBits, boolean isStrict, PremiseRule r) {
         byte[] xpInT = Terms.pathConstant(taskPattern, x);
         byte[] xpInB = Terms.pathConstant(beliefPattern, x); //try the belief
         if (xpInT != null || xpInB != null) {
@@ -63,43 +57,75 @@ public class Unifiable extends AbstractPred<PreDerivation> {
                         ypInB = null;
                 }
 
-                pre.add(new Unifiable(xpInT, xpInB, ypInT, ypInB, varBits, strict));
+                r.pre.add(new Unifiable(xpInT, xpInB, ypInT, ypInB, varBits, isStrict));
+                return;
             }
         }
+
+        if (x instanceof Variable && y instanceof Variable)
+            r.constraints.add(new UnifiableConstraint((Variable)x, (Variable)y, isStrict, varBits));
     }
 
     /** TODO test for the specific derivation functors, in case of non-functor Atom in conclusion */
     public static boolean hasNoFunctor(Term x) {
-        boolean f = x instanceof Variable || !x.ORrecurse(Functor::isFunc);
-
-        return f;
+        return !(x instanceof Compound) || !((Compound)x).ORrecurse(Functor::isFunc);
     }
 
 
     @Override
     public boolean test(PreDerivation d) {
-        Term x = xpInT != null ? d.taskTerm.subPath(xpInT) : d.beliefTerm.subPath(xpInB);
-        assert (x != Bool.Null);
+        Term x = xpInT != null ? d.taskTerm.subPath(xpInT) : d.beliefTerm.subPath(xpInB); //assert (x != Bool.Null);
         if (x == null)
             return false; //ex: seeking a negation but wasnt negated
+
         Term y = ypInT != null ? d.taskTerm.subPath(ypInT) : d.beliefTerm.subPath(ypInB);
-        if (NAL.DEBUG) {
-            if (y == Bool.Null) {
-                throw new WTF((ypInT != null ? d.taskTerm : d.beliefTerm) + " does not resolve "
-                        + Arrays.toString((ypInT != null ? ypInT : ypInB)) + " in " + d.taskTerm);
-            }
-        }
         if (y == null)
             return false; //ex: seeking a negation but wasnt negated
+
+//        if (NAL.DEBUG) {
+//            if (y == Bool.Null) {
+//                throw new WTF((ypInT != null ? d.taskTerm : d.beliefTerm) + " does not resolve "
+//                        + Arrays.toString((ypInT != null ? ypInT : ypInB)) + " in " + d.taskTerm);
+//            }
+//        }
+
+
 
         return Terms.possiblyUnifiable( x, y, isStrict, varBits);
     }
 
 
+
+
     @Override
     public float cost() {
-        return 0.3f;
+        return COST;
     }
 
 
+    static final class UnifiableConstraint extends RelationConstraint<Derivation> {
+        final boolean isStrict; final int varBits;
+
+        private static final Atom U = Atomic.atom(UnifiableConstraint.class.getSimpleName());
+
+        public UnifiableConstraint(Variable x, Variable y, boolean isStrict, int varBits) {
+            super(U, x, y, $.the(isStrict), $.the(varBits));
+            this.isStrict = isStrict; this.varBits = varBits;
+        }
+
+        @Override
+        protected RelationConstraint newMirror(Variable newX, Variable newY) {
+            return new UnifiableConstraint(newX, newY, isStrict, varBits);
+        }
+
+        @Override
+        public boolean invalid(Term x, Term y, Derivation context) {
+            return !Terms.possiblyUnifiable( x, y, isStrict, varBits);
+        }
+
+        @Override
+        public float cost() {
+            return COST;
+        }
+    }
 }

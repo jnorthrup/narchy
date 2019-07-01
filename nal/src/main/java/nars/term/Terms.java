@@ -10,6 +10,8 @@ import nars.subterm.Subterms;
 import nars.subterm.TermList;
 import nars.term.atom.Atom;
 import nars.term.compound.PatternCompound;
+import nars.term.util.conj.Conj;
+import nars.term.var.ellipsis.Ellipsislike;
 import nars.unify.constraint.NotEqualConstraint;
 import org.eclipse.collections.api.LazyIterable;
 import org.eclipse.collections.api.iterator.MutableIntIterator;
@@ -394,46 +396,51 @@ public enum Terms {
 
     public static boolean possiblyUnifiable(Term x, Term y, boolean strict, int var) {
 
-        boolean xEqY = x.equals(y);
-        if (xEqY)
+        if (x.equals(y))
             return !strict;
 
         Op xo = x.op(), yo = y.op();
+        if (xo!=yo) {
 
-        int konst = ~var;
-        if ((xo.bit & konst) == 0)
-            return true; //variable, allow
+            int nonVarBits = ~var;
+            if (x instanceof Variable && (xo.bit & nonVarBits) == 0) return true; //variable, allow
+            if (y instanceof Variable && (yo.bit & nonVarBits) == 0) return true; //variable, allow
 
-        if ((yo.bit & konst) == 0)
-            return true; //variable, allow
+            return false; //op mismatch
+        }
 
-        if (xo != yo)
-            return false;
+        if (!(x instanceof Compound))
+            return false; //atomic non-var
 
-        int xs = x.structure();
-        int ys = y.structure();
-        if (((xs & var) == 0) && ((ys & var) == 0)) //no variables
+        int varOrTemporal = var | Op.Temporal;
+        int xxs = x.structure(), yys = y.structure();
+        if (((xxs & varOrTemporal) == 0) && ((yys & varOrTemporal) == 0)) //no variables or temporals
             return false;
 
         //TODO Conj Xternal allow
 
         Subterms xx = x.subterms(), yy = y.subterms();
-        int xxs = xx.subs();
-        if (xxs != yy.subs())
+        int n = xx.subs();
+        if ((n!=yy.subs()) &&
+                (!Terms.hasEllipsis(x, xxs) && !Terms.hasEllipsis(y, yys)) &&
+                ((xo!=CONJ) || (!Conj.isSeq(x) && !Conj.isSeq(y)))
+            //  && (xxs & Op.Temporal)==0 && (yys & Op.Temporal)==0)
+        ) {
             return false;
+        }
 
         if (!Subterms.possiblyUnifiable(xx, yy, var))
             return false;
 
         if (!xo.commutative) {
-            for (int i = 0; i < xxs; i++) {
-                Term x0 = xx.sub(i), y0 = yy.sub(i);
-                if (!possiblyUnifiable(x0, y0, false, var))
+            for (int i = n - 1; i >= 0; i--)
+                if (!possiblyUnifiable(xx.sub(i), yy.sub(i), false, var))
                     return false;
-            }
         }
 
         return true;
+
+
     }
 
 
@@ -518,6 +525,14 @@ public enum Terms {
         }
 
 
+    }
+
+    public static boolean hasEllipsisRecurse(Term x) {
+        return x instanceof Compound && x.hasVarPattern() && ((Compound)x).ORrecurse(t -> t instanceof Ellipsislike);
+    }
+
+    public static boolean hasEllipsis(Term x, int xs) {
+        return x instanceof Compound && ((xs & Op.VAR_PATTERN.bit)!=0) && ((Compound)x).OR(t -> t instanceof Ellipsislike);
     }
 }
 

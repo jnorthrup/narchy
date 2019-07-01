@@ -55,12 +55,12 @@ public class SubOfConstraint extends RelationConstraint<Unify> {
         }
     }
 
-    public final boolean invalid(Term xx, Term yy, Unify context) {
+    public final boolean invalid(Term x, Term y, Unify context) {
         SubtermCondition c = this.containment;
 
-        Term container = forward ? xx : yy;
+        Term container = forward ? x : y;
 
-        Term content = forward ? yy : xx;
+        Term content = forward ? y : x;
         switch (polarityCompare) {
             case 1: return !c.test(container, content);
             case -1: return !c.test(container, content.neg());

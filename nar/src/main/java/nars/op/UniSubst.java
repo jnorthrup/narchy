@@ -12,12 +12,13 @@ import nars.term.Term;
 import nars.term.Variable;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
+import nars.term.util.TermException;
 import nars.term.util.transform.InlineFunctor;
 import org.jetbrains.annotations.Nullable;
 
 import static nars.Op.VAR_DEP;
+import static nars.Op.VAR_INDEP;
 import static nars.term.atom.Bool.Null;
-import static nars.term.util.Image.imageNormalize;
 
 /**
  * substituteIfUnifies....(target, varFrom, varTo)
@@ -91,74 +92,60 @@ public class UniSubst extends Functor implements InlineFunctor<Evaluation> {
     @Override
     public Term apply(Evaluation e, /*@NotNull*/ Subterms a) {
 
-        boolean strict = false;
-        int var = Op.VAR_DEP.bit | Op.VAR_INDEP.bit;
-
         int pp = a.subs();
         if (pp < 3)
-            return Null; //impossible
+            throw new TermException(UniSubst.class.getSimpleName() + " argument underflow", a);
 
+        //TODO cache these in compiled unisubst instances
+        boolean strict = false;
+        int var = Op.VAR_DEP.bit | VAR_INDEP.bit;
         for (int p = 3; p < pp; p++) {
-            Term ai = a.sub(p);
-            if (ai.equals(NOVEL))
-                strict = true;
-            else if (ai.equals(INDEP_VAR)) {
-                //HACK is this ignored?
-            } else if (ai.equals(DEP_VAR)) {
-                var = VAR_DEP.bit;
-            } else
-                throw new UnsupportedOperationException("unrecognized parameter: " + ai);
+            Term ap = a.sub(p);
+            if (ap instanceof Atom) {
+                if (ap.equals(NOVEL))
+                    strict = true;
+                else if (ap.equals(INDEP_VAR))
+                    var = VAR_INDEP.bit;
+                else if (ap.equals(DEP_VAR))
+                    var = VAR_DEP.bit;
+                else
+                    throw new UnsupportedOperationException("unrecognized parameter: " + ap);
+            }
         }
 
         /** target being transformed if x unifies with y */
-        Term c = a.sub(0);
 
-        Term x = a.sub(1);
-
-        Term y = a.sub(2);
-
-        return apply(c, x, y, var, strict);
-
+        return apply(a, var, strict);
     }
 
-    private Term apply(Term c, Term x, Term y, int var, boolean strict) {
+    private Term apply(Subterms a, int var, boolean strict) {
+        Term c = a.sub(0);
+        Term x = a.sub(1);
+        Term y = a.sub(2);
+
         if (x.equals(y))
             return strict ? Null : c;
 
-
-        Term ix = imageNormalize(x);
-        Term iy = imageNormalize(y);
-        if (ix!=x || iy!=y) {
-            if (ix.equals(iy))
-                return strict ? Null : c; //test for equality again
-            x = ix; y = iy;
-        }
-
         Term output;
 
-        boolean tryUnify = (x.hasAny(var) || y.hasAny(var));
+        boolean tryUnify = x.hasAny(var) || y.hasAny(var);
 
-        if (tryUnify) {
-
-            //prefilters:
-            boolean xv = x instanceof Variable, yv = y instanceof Variable;
-            Term cc;
-            if (xv && !yv) {
-                //result can be determined by substitution
-                cc = c.replace(x, y);
-            } else if (yv && !xv) {
-                //result can be determined by substitution
-                cc = c.replace(y, x);
-            } else if (!xv && !yv && x.op()!=y.op()) {
-                return Null; //impossible TODO check if this is always the case, and whether Terms.possiblyUnifiable(x, y) hel
-            } else {
-                cc = unify(c, x, y, var, strict);
-            }
-            return (cc == null || (strict && c.equals(cc))) ? Null : cc;
-
-        } else {
+        if (!tryUnify)
             return Null;
-        }
+
+        //prefilters:
+        boolean xv = x instanceof Variable, yv = y instanceof Variable;
+        Term cc;
+        if (xv && !yv)
+            cc = c.replace(x, y); //result can be determined by substitution
+        else if (yv && !xv)
+            cc = c.replace(y, x); //result can be determined by substitution
+        else if (!xv && !yv && x.op()!=y.op())
+            cc = null; //impossible TODO check if this is always the case, and whether Terms.possiblyUnifiable(x, y) hel
+        else
+            cc = unify(c, x, y, var, strict);
+
+        return (cc == null || (strict && c.equals(cc))) ? Null : cc;
     }
 
     private Term unify(Term c, Term x, Term y, int var, boolean strict) {

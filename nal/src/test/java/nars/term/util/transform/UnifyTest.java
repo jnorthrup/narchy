@@ -19,6 +19,7 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static nars.$.$$;
+import static nars.Op.SETe;
 import static nars.term.util.TermTest.assertEq;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -32,6 +33,13 @@ public class UnifyTest {
         Term y = u.resolvePosNeg($$("--x"));
         assertEq("(--,x)", y);
     }
+    @Test void testPossiblyUnifiable() {
+        Term x = $$("x"), y = $$("y"), z = $$("z");
+
+        assertTrue( Subterms.possiblyUnifiable(SETe.the(x.neg(), $.varDep(1)), SETe.the(x.neg(), z), Op.Variable) );
+        assertFalse( Subterms.possiblyUnifiable(SETe.the(x.neg(), y), SETe.the(x.neg(), z), Op.Variable) );
+        assertFalse( Subterms.possiblyUnifiable(SETe.the(x.neg(), y), SETe.the(x.neg(), z.neg()), Op.Variable) );
+    }
 
     @Test
     void testCommonStructureAllVariables() {
@@ -40,7 +48,7 @@ public class UnifyTest {
 //            Terms.commonStructureTest( $$("(#1,$2,?3)").subterms(), $$("(#3,$2,?1)").subterms(), u)
 //        );
         assertTrue(
-                Subterms.possiblyUnifiable($$("(#1,$2,?3)").subterms(), $$("(#3,$2,?1)").subterms(), u)
+                Subterms.possiblyUnifiable($$("(#1,$2,?3)").subterms(), $$("(#3,$2,?1)").subterms(), u.varBits)
         );
     }
 

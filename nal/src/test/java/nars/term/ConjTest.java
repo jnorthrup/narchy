@@ -341,7 +341,7 @@ class ConjTest {
     @Test
     void testConjOR() {
         Term c = $$("(((_1,_2)&|(_1,_3)) &&+2 ((_1,_2)&|(_1,_3)))");
-        assertFalse(c.OR(x -> x instanceof Ellipsis));
+        assertFalse(((Compound)c).OR(x -> x instanceof Ellipsis));
     }
     @Test
     void testBalancing() {

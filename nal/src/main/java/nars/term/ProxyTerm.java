@@ -191,15 +191,4 @@ public class ProxyTerm implements SameSubtermsCompound {
         return ref.varPattern();
     }
 
-
-    @Override
-    public boolean AND(Predicate<Term> p) {
-        return ref.AND(p);
-    }
-
-    @Override
-    public boolean OR(Predicate<Term> p) {
-        return ref.OR(p);
-    }
-
 }
