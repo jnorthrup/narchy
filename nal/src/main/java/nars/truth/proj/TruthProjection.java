@@ -45,7 +45,7 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
     private static final TaskComponent[] Empty_TaskComponent_Array = new TaskComponent[0];
 
     long start, end;
-    int dur;
+    float dur;
 
     /**
      * content target, either equal in all the tasks, or the result is
@@ -53,7 +53,7 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
      */
     public Term term = null;
 
-    TruthProjection(long start, long end, int dur) {
+    TruthProjection(long start, long end, float dur) {
         super(0, Empty_TaskComponent_Array);
         this.start = start;
         this.end = end;

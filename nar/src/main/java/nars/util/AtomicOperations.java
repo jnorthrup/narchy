@@ -72,15 +72,15 @@ public class AtomicOperations implements BiFunction<Task, NAR, Task> {
     public void update(NAR n) {
 
 
-        long now = n.time();
-        long end = now;
-        long start = now - n.dur();
 
-        float exeThresh = this.exeThresh.floatValue();
+
 
         int s = active.size();
         if (s > 0) {
-            List<Term> dispatch = new FasterList(s);
+            long now = n.time();
+            long end = now;
+            long start = Math.round(now - n.dur());            List<Term> dispatch = new FasterList(s);
+            float exeThresh = this.exeThresh.floatValue();
 
             active.forEach((PriReference<Term> x) -> {
                 Term xx = x.get();

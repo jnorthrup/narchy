@@ -38,7 +38,7 @@ public interface QuestionTable extends TaskTable {
         }
 
         @Override
-        public Task match(long start, long end, Term template, int dur, NAR nar) {
+        public Task match(long start, long end, Term template, float dur, NAR nar) {
             return null;
         }
 

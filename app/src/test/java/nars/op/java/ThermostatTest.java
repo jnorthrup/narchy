@@ -113,7 +113,7 @@ public class ThermostatTest {
 
                     }, isCold);
                     System.out.println("EPISODE END");
-                    n.run(thinkDurs * n.dur());
+                    n.run((int) Math.ceil(thinkDurs * n.dur()));
 
 
                 }
@@ -138,7 +138,7 @@ public class ThermostatTest {
                     }, isHot);
 
                     System.out.println("EPISODE END");
-                    n.run(thinkDurs * n.dur());
+                    n.run((int) Math.ceil(thinkDurs * n.dur()));
                 }
 
             }
@@ -158,7 +158,7 @@ public class ThermostatTest {
 
                 t.is(3);
                 t.should(0);
-                n.run(thinkDurs * n.dur());
+                n.run((int) Math.ceil(thinkDurs * n.dur()));
 
                 Term cold = $.$$("is(a_Thermostat,0)");
 

@@ -44,7 +44,7 @@ abstract public class AbstractDynamicTruth {
 
     public Task subTask(BeliefTable table, Term subTerm, long subStart, long subEnd, Predicate<Task> filter, DynTaskify d) {
         NAR nar = d.nar;
-        int dur = d.dur;
+        float dur = d.dur;
         Task bt;
         switch (NAL.DYN_TASK_MATCH_MODE) {
             case 0:

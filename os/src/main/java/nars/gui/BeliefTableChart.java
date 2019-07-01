@@ -277,7 +277,7 @@ public class BeliefTableChart extends DurSurface<Stacking> implements Labeled, M
         long now = nar.time();
 
         //TODO different time modes
-        int narDur = nar.dur();
+        float narDur = nar.dur();
         double visDurs = this.rangeDurs.doubleValue();
         long start = now - Math.round(visDurs * narDur);
         long end = now + Math.round(visDurs * narDur);

@@ -6,7 +6,7 @@ import java.util.Random;
  *  awareness of temporal determinism */
 public interface Timed {
 
-    int dur();
+    float dur();
 
     Random random();
 

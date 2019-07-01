@@ -13,7 +13,7 @@ public class TruthIntegration {
         return eviAvg(t, t.start(), t.end(), dur);
     }
 
-    public static double eviAvg(Task t, long start, long end, int dur) {
+    public static double eviAvg(Task t, long start, long end, float dur) {
         long range = start == ETERNAL ? 1 : 1 + (end - start);
         return evi(t, start, end, dur) / range;
     }
@@ -33,7 +33,7 @@ public class TruthIntegration {
      * interval is: [qStart, qEnd], ie: qStart: inclusive qEnd: inclusive
      * if qStart==qEnd then it is a point sample
      */
-    public static double evi(Task t, long qStart, long qEnd, int dur) {
+    public static double evi(Task t, long qStart, long qEnd, float dur) {
 
         assert(qStart != ETERNAL && qStart <= qEnd);
 
@@ -53,7 +53,7 @@ public class TruthIntegration {
         }
     }
 
-    private static double eviIntegrate(double evi, int dur, long qStart, long qEnd, long tStart, long tEnd) {
+    private static double eviIntegrate(double evi, float dur, long qStart, long qEnd, long tStart, long tEnd) {
 
         EvidenceEvaluator ee = EvidenceEvaluator.of(tStart, tEnd, evi, dur);
 

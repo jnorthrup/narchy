@@ -159,12 +159,12 @@ public abstract class AbstractTask implements Task {
     }
 
     @Override
-    public @Nullable Truth truth(long when, int dur) {
+    public @Nullable Truth truth(long when, float dur) {
         return null;
     }
 
     @Override
-    public @Nullable Truth truth(long targetStart, long targetEnd, int dur) {
+    public @Nullable Truth truth(long targetStart, long targetEnd, float dur) {
         return null;
     }
 

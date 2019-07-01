@@ -146,7 +146,8 @@ public class NARHear extends Loop {
 
         long now = nar.time();
         nar.input(
-                NALTask.the(term, BELIEF, $.t(1, (nar.confDefault(BELIEF) * confFactor)), now, now, now + nar.dur(), nar.evidence())
+                NALTask.the(term, BELIEF, $.t(1, (nar.confDefault(BELIEF) * confFactor)), now, now,
+                        Math.round(now + nar.dur()), nar.evidence())
 //            new TruthletTask(
 //                target,
 //                BELIEF,

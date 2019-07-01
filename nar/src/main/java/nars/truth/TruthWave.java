@@ -140,7 +140,7 @@ public class TruthWave {
     /**
      * fills the wave with evenly sampled points in a time range
      */
-    public void project(BeliefTable table, long minT, long maxT, int points, Term term, int dur, NAR nar) {
+    public void project(BeliefTable table, long minT, long maxT, int points, Term term, float dur, NAR nar) {
 
         clear();
         this.start = minT;

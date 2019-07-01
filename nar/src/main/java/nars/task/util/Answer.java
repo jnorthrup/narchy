@@ -58,7 +58,7 @@ public final class Answer implements Timed, Predicate<Task> {
     /**
      * truthpolation duration in result evidence projection
      */
-    public int dur = 0;
+    public float dur = 0;
 
 
     public Answer clear(int ttl) {
@@ -512,7 +512,7 @@ public final class Answer implements Timed, Predicate<Task> {
     }
 
     @Override
-    public final int dur() {
+    public final float dur() {
         return dur;
     }
 
@@ -543,7 +543,7 @@ public final class Answer implements Timed, Predicate<Task> {
         ));
     }
 
-    public Answer dur(int dur) {
+    public Answer dur(float dur) {
         if (this.dur != dur) {
             this.dur = dur;
             //time(time.start, time.end); //update the time filter

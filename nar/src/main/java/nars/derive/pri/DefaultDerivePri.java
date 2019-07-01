@@ -9,7 +9,6 @@ import nars.truth.Truth;
 import nars.truth.proj.TruthIntegration;
 
 import static nars.time.Tense.ETERNAL;
-import static nars.truth.func.TruthFunctions.w2cSafeDouble;
 
 /**
  * TODO parameterize, modularize, refactor etc
@@ -34,7 +33,7 @@ public class DefaultDerivePri implements DerivePri {
     public final FloatRange simplicityImportance = new FloatRange(1f, 0f, 8f);
 
 
-    public final FloatRange simplicityExponent = new FloatRange(2f, 0f, 4f);
+    public final FloatRange simplicityExponent = new FloatRange(1f, 0f, 4f);
 
 
     /** importance of frequency polarity in result (distance from freq=0.5) */
@@ -42,28 +41,26 @@ public class DefaultDerivePri implements DerivePri {
 
     @Override
     public float pri(Task t, Derivation d) {
-        float factor = this.gain.floatValue();
+        float factorCmpl =
+                    factorComplexityRelative(t, d, simplicityExponent.floatValue());
+                    //= factorComplexityAbsolute(t, d);
+                    //= factorComplexityRelative2(t, d);
 
-        factor *= factorComplexityRelative(t, d);
-//        factor *= factorComplexityAbsolute(t, d);
-        //factor *= factorComplexityRelative2(t, d);
-
+        float factor;
         if (t.isBeliefOrGoal()) {
-            //belief or goal:
-            factor *= factorEvi(t, d);
-            factor *= factorPolarity(t.freq());
+            //factor = factorCmpl * factorEviRelative(t, d) * factorPolarity(t.freq());
+            factor = factorCmpl * factorEviAbsolute(t, d) * factorPolarity(t.freq());
         } else {
-            factor *= factor; //re-apply for question case
+            factor = factorCmpl * factorCmpl;
         }
 
-        float parent = d.parentPri();
-        float y = postAmp(t, parent * factor);
-        return Util.clampSafe(y, ScalarValue.EPSILON, parent);
+        float y = this.gain.floatValue() * postAmp(t, d.parentPri(), factor);
+        return Util.clamp(y, ScalarValue.EPSILON, 1);
     }
 
     /** default impl: pass-thru */
-    protected float postAmp(Task t, float pri) {
-        return pri;
+    protected float postAmp(Task t, float derivePri, float factor) {
+        return derivePri * factor;
     }
 
     float factorComplexityAbsolute(Task t, Derivation d) {
@@ -83,29 +80,46 @@ public class DefaultDerivePri implements DerivePri {
 //        return Util.lerp(simplicityImportance.floatValue(), 1f, f);
 //    }
 
-    float factorComplexityRelative(Task t, Derivation d) {
-        float pComplSum = d.parentVolumeSum;
-        float pCompl = pComplSum / 2; //average
-        float dCompl = t.volume();
-        float f =
-                //pCompl / (pCompl + dCompl);
-                //1 - (dCompl - pCompl) / (pCompl+dCompl);
-                pCompl / (pCompl + dCompl);
-                //1f / (1f + Math.max(0, dCompl/(dCompl+pCompl)));
-                //1f / (1f + Math.max(0, (dCompl - pCompl)) / pCompl);
-                //1f-Util.unitize((dCompl - pCompl) / pCompl );
+    float factorComplexityRelative(Task t, Derivation d, float simplicityExponent) {
 
-        float ff = (float) Math.pow(f, simplicityExponent.floatValue());
+        float pCompl =
+                d.concSingle ?
+                    d.taskTerm.volume()
+                    :
+                    ((float) (d.taskTerm.volume() + d.beliefTerm.volume())) / 2; //average
 
-        return Util.lerp(simplicityImportance.floatValue(), 1f, ff);
+        int dCompl = t.volume();
+
+        float basePenalty = 0.5f; //if derivation is simpler, this is the maximum complexity increase seen
+        float f = 1 - (basePenalty + Math.max(0, dCompl - pCompl)) / (basePenalty + dCompl);
+        f = (float) Math.pow(f, simplicityExponent);
+
+//        float f =
+//                //pCompl / (pCompl + dCompl);
+//                //1 - (dCompl - pCompl) / (pCompl+dCompl);
+//                pCompl / (pCompl + dCompl);
+//                //1f / (1f + Math.max(0, dCompl/(dCompl+pCompl)));
+//                //1f / (1f + Math.max(0, (dCompl - pCompl)) / pCompl);
+//                //1f-Util.unitize((dCompl - pCompl) / pCompl );
+
+        return Util.lerp(simplicityImportance.floatValue(), 1f, f);
     }
 
     float factorPolarity(float freq) {
         float polarity = Truth.polarity(freq);
-        return Util.lerp(polarity, 1f - polarityImportance.floatValue(), 1f);
+        return Util.lerp(polarityImportance.floatValue(), 1f, polarity);
     }
 
-    float factorEvi(Task t, Derivation d) {
+    float factorEviAbsolute(Task t, Derivation d) {
+        float f;
+        if (t.isBeliefOrGoal())
+            f = t.conf();
+        else
+            f = 1;
+        return (float) Util.lerp(eviImportance.floatValue(), 1f, f);
+    }
+
+    float factorEviRelative(Task t, Derivation d) {
 
         double eParentTask, eParentBelief, eDerived;
         if (t.isEternal()) {
@@ -113,11 +127,10 @@ public class DefaultDerivePri implements DerivePri {
             assert(d.taskStart==ETERNAL);
             eParentTask = d._task.isBeliefOrGoal() ? d._task.evi() : 0;
 
-            if (!d.concSingle) {
-                assert(d.beliefStart==ETERNAL);
+            if (!d.concSingle)
                 eParentBelief = d._belief.evi();
-            } else
-                eParentBelief = Float.NaN;
+            else
+                eParentBelief = 0;
 
         } else {
 
@@ -130,17 +143,11 @@ public class DefaultDerivePri implements DerivePri {
 
             if (!d.concSingle)
                 eParentBelief =
-                    d._belief.isEternal() ? TruthIntegration.evi(d._belief, ts, te, 0) : TruthIntegration.evi(d._belief)
-                ;
+                    d._belief.isEternal() ? TruthIntegration.evi(d._belief, ts, te, 0) : TruthIntegration.evi(d._belief);
             else
-                eParentBelief = Float.NaN;
+                eParentBelief = 0;
 
         }
-
-        if (eParentBelief!=eParentBelief)
-            eParentBelief =
-                    eParentTask;
-                    //0;
 
         double eParent =
                 //Math.max(eParentTask, eParentBelief);
@@ -149,16 +156,14 @@ public class DefaultDerivePri implements DerivePri {
 //            throw new WTF("spontaneous belief inflation"); //not actually
             return 1;
         else {
-            double cDerived = w2cSafeDouble(eDerived);
-            double cParent = w2cSafeDouble(eParent);
-            double lossFactor = 1 - ((cParent - cDerived) / cParent);
+//            double cDerived = w2cSafeDouble(eDerived);
+//            double cParent = w2cSafeDouble(eParent);
+//            double lossFactor = 1 - ((cParent - cDerived) / cParent);
 
-            //float lossFactor = (float)(1 - ((eParent - eDerived) / eParent));
+            float f = (float)(1 - ((eParent - eDerived) / eParent));
 
-
-
-            Util.assertUnitized(lossFactor);
-            return (float) Util.lerp(eviImportance.floatValue(), 1f, lossFactor);
+            Util.assertUnitized(f);
+            return (float) Util.lerp(eviImportance.floatValue(), 1f, f);
 
         }
     }

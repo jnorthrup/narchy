@@ -53,6 +53,7 @@ import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
+import static java.lang.Math.round;
 import static jcog.data.map.CustomConcurrentHashMap.*;
 import static nars.Op.*;
 import static nars.truth.func.TruthFunctions.c2wSafe;
@@ -271,9 +272,9 @@ public class Opjects extends DefaultTermizer {
 
 
             long now = nar.time();
-            int dur = nar.dur();
-            long start = now - dur / 2;
-            long end = now + dur / 2;
+            float dur = nar.dur();
+            long start = round(now - dur / 2);
+            long end = round(now + dur / 2);
 
             float f = beliefFreq;
 

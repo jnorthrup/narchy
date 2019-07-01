@@ -66,8 +66,7 @@ public class DefaultPuncWeightedDerivePri extends DefaultDerivePri {
     }
 
     @Override
-    protected float postAmp(Task t, float pri) {
-        return preAmp(t.punc()) * pri;
-        //return pri;
+    protected float postAmp(Task t, float derivePri, float factor) {
+        return derivePri * preAmp(t.punc()) * factor;
     }
 }

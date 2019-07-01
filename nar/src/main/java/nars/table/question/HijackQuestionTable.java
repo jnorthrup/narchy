@@ -29,7 +29,7 @@ public class HijackQuestionTable extends PriHijackBag<Task, Task> implements Que
     }
 
     /** optimized for cases with zero and one stored tasks */
-    @Override public Task match(long start, long end, Term template, int dur, NAR nar) {
+    @Override public Task match(long start, long end, Term template, float dur, NAR nar) {
         switch (size()) {
             case 0: return null;
             case 1:

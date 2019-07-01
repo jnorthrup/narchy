@@ -415,11 +415,11 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
      * start!=ETERNAL
      */
     @Nullable
-    static Task project(Task t, long start, long end, double eviMin, boolean ditherTruth, int dtDither, int dur, NAL n) {
+    static Task project(Task t, long start, long end, double eviMin, boolean ditherTruth, int dtDither, float dur, NAL n) {
 
         if (dtDither > 1) {
-            start = Tense.dither(start, dtDither);
-            end = Tense.dither(end, dtDither);
+            start = Tense.dither(start, dtDither, -1);
+            end = Tense.dither(end, dtDither, +1);
         }
 
         long ts = t.start();
@@ -744,7 +744,7 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
      * @param minEvi used to fast fail if the result will not exceed the value
      * @return value >= 0 indicating the evidence
      */
-    default double evi(long when, final int dur) {
+    default double evi(long when, final float dur) {
         long s = start();
         double ee = evi();
         if (s == Tense.ETERNAL)
@@ -907,7 +907,7 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
     }
 
     @Nullable
-    default Truth truth(long targetStart, long targetEnd, int dur) {
+    default Truth truth(long targetStart, long targetEnd, float dur) {
 
         if (isEternal())
             return truth();
@@ -940,7 +940,7 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
 //    }
 
     @Nullable
-    default Truth truth(long when, int dur) {
+    default Truth truth(long when, float dur) {
         return truth(when, when, dur);
     }
 

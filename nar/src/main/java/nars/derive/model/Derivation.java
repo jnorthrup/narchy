@@ -172,7 +172,7 @@ public class Derivation extends PreDerivation {
     public transient long taskStart, taskEnd, beliefStart, beliefEnd; //TODO taskEnd, beliefEnd
     public transient boolean overlapDouble, overlapSingle;
     public transient boolean concSingle;
-    public transient float parentVolumeSum;
+
     public transient Truth concTruth;
     public transient byte concPunc;
 
@@ -252,7 +252,7 @@ public class Derivation extends PreDerivation {
 
     private Task resetBelief(Task nextBelief, final Term nextBeliefTerm) {
 
-        long nextBeliefEnd = TIMELESS;
+        long nextBeliefEnd;
 
         if (nextBelief != null) {
             long nextBeliefStart = nextBelief.start();
@@ -437,11 +437,6 @@ public class Derivation extends PreDerivation {
         this.truthFunction = null;
         this.evidenceDouble = evidenceSingle = null;
 
-        this.parentVolumeSum =
-                Util.sum(
-                        taskTerm.volume(), beliefTerm.volume()
-                );
-
         setTTL(ttl);
 
         what.derivePri.premise(this);
@@ -476,8 +471,8 @@ public class Derivation extends PreDerivation {
                 n.dtDither(); //FINE
                 //w.dur(); //COARSE
         this.dtTolerance = uniSubstFunctor.u.dtTolerance = premiseUnify.dtTolerance =
-                n.dtDither(); //FINE
-                //w.dur(); //COARSE
+                //n.dtDither(); //FINE
+                Math.round(w.dur() * n.intermpolationRangeLimit.floatValue()); //COARSE
 
         this.confMin = n.confMin.floatValue();
         this.eviMin = n.confMin.asEvi();
@@ -627,7 +622,7 @@ public class Derivation extends PreDerivation {
         return nar().time();
     }
 
-    public final int dur() {
+    public final float dur() {
         return what.dur();
     }
 

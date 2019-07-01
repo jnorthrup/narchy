@@ -184,7 +184,7 @@ public class Game extends NARPart implements NSense, NAct, Timed {
      * happiness metric applied to all reward concepts
      */
     @Paper
-    public final float happiness(int dur) {
+    public final float happiness(float dur) {
         return (float) rewards.meanBy(rr -> {
             float r = rr.happiness(dur);
             return r != r ? 0.5f : r;
@@ -404,7 +404,7 @@ public class Game extends NARPart implements NSense, NAct, Timed {
     }
 
     /** perceptual duration */
-    public final int dur() {
+    public final float dur() {
         return what().dur();
     }
 

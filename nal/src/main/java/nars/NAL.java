@@ -266,9 +266,9 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
      * probably values <= ~0.5 are safe as this limits stretching within 'octaves'
      */
     public final FloatRange intermpolationRangeLimit = new FloatRange(
-            //0.5f
+            0.5f
             //0.618f
-            1f
+            //1f
             //2f
             , 0, 4);
 
@@ -346,33 +346,33 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
     /**
      * priority of sensor task, with respect to how significantly it changed from a previous value
      */
-    public static float signalSurprise(final Task prev, final Task next, int dur) {
+    public static double signalSurprise(final Task prev, final Task next, int dur) {
 
         final boolean NEW = prev == null;
-        if (!NEW) {
+        if (NEW)
+            return 1;
 
-            final boolean stretched = prev == next;
-            if (stretched)
-                return 0;
+        final boolean stretched = prev == next;
+        if (stretched)
+            return 0;
 
-            final boolean latched = !stretched &&
-                    Math.abs(next.start() - prev.end()) < NAL.belief.signal.SIGNAL_LATCH_LIMIT_DURS * dur;
+        final long sepCycles  = stretched ? 0 : Math.abs(next.start() - prev.end());
 
-            //decrease priority by similarity to previous truth
-            if (latched) {
 
-                //TODO abstract this frequence response curve
-                final float deltaFreq = prev != next ? Math.abs(prev.freq() - next.freq()) : 0; //TODO use a moving average or other anomaly/surprise detection
-                if (deltaFreq > Float.MIN_NORMAL) {
-                    final float perceived = 0.01f + 0.99f * (float) Math.pow(deltaFreq, 1 / 2f /* etc*/);
-                    return perceived;
-                }
-                //p *= Util.lerp(deltaFreq, perceived, 1);
-            } else
-                return 1;
-        }
+        //decrease priority by similarity to previous truth
 
-        return 0;
+
+
+            //TODO abstract this frequence response curve
+            final float deltaFreq = prev != next ? Math.abs(prev.freq() - next.freq()) : 0; //TODO use a moving average or other anomaly/surprise detection
+            return Util.or(deltaFreq , (1-evi(1, sepCycles, dur)));
+
+//                if (deltaFreq > Float.MIN_NORMAL) {
+//                    final float perceived = 0.01f + 0.99f * (float) Math.pow(deltaFreq, 1 / 2f /* etc*/);
+//                    return perceived;
+//                }
+            //p *= Util.lerp(deltaFreq, perceived, 1);
+
     }
 
     static Atom randomSelf() {
@@ -409,7 +409,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
      *            <p>
      *            TODO integrate with EvidenceEvaluator
      */
-    public static double evi(final double evi, final long dt, final int dur) {
+    public static double evi(final double evi, final long dt, final float dur) {
 
         //assert(dur > 0);
         assert (dur > 0 && dt > 0);
@@ -478,7 +478,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
 
     }
 
-    public final TruthProjection projection(final long start, final long end, final int dur) {
+    public final TruthProjection projection(final long start, final long end, final float dur) {
         return new LinearTruthProjection(start, end, dur);
     }
 
@@ -492,9 +492,9 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
     /**
      * cycles per duration
      */
-    abstract public int dur();
+    @Override abstract public float dur();
 
-    abstract public long time();
+    @Override abstract public long time();
 
     public final float confDefault(final byte punctuation) {
 
@@ -584,10 +584,10 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
          * eventually raise to above-confMin).  generally, false should be more accurate with a tradeoff
          * for overhead due to increased belief table churn.
          */
-        public static final boolean REVISION_MIN_EVI_FILTER= configIs("REVISION_MIN_EVI_FILTER");
-        public static final boolean DYNAMIC_TRUTH_TASK_STORE= configIs("DYNAMIC_TRUTH_TASK_STORE");
-        public static final boolean DYNAMIC_TRUTH_TASK_LINK= false;
-        public static final boolean DYNAMIC_TRUTH_TASK_EMIT= false;
+        public static final boolean REVISION_MIN_EVI_FILTER = configIs("REVISION_MIN_EVI_FILTER");
+        public static final boolean DYNAMIC_TRUTH_TASK_STORE = configIs("DYNAMIC_TRUTH_TASK_STORE");
+        public static final boolean DYNAMIC_TRUTH_TASK_LINK = false;
+        public static final boolean DYNAMIC_TRUTH_TASK_EMIT = false;
         /**
          * perceptible priority increase that warrants automatic reactivation.
          * used during Remember's merge repeat suppression filter
@@ -623,7 +623,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
              * <p>
              * TODO make this a per-sensor implementation cdecision
              */
-            public static final float SIGNAL_STRETCH_LIMIT_DURS = 16;
+            public static final float SIGNAL_STRETCH_LIMIT_DURS = 8;
             /**
              * maximum time between signal updates to stretch an equivalently-truthed data point across.
              * stretches perception across some amount of lag

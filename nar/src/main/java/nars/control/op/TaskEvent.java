@@ -10,7 +10,7 @@ public final class TaskEvent extends AbstractTask {
 
     public final Task task;
 
-    public TaskEvent(Task t) {
+    TaskEvent(Task t) {
         this.task = t;
     }
 
@@ -21,7 +21,7 @@ public final class TaskEvent extends AbstractTask {
     }
 
     public static void emit(Task task, NAR n) {
-        n.eventTask.emit(task);
+        n.eventTask.emit(task, task.punc());
     }
 
 }

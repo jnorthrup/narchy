@@ -242,9 +242,9 @@ public abstract class TaskLeak extends How {
         }
 
         /** TODO abstract */
-        protected When focus(int dur) {
+        protected When focus(float dur) {
             long now = nar.time();
-            return new When(now - dur/2, now + dur/2, dur, nar);
+            return new When(Math.round(now - dur/2), Math.round(now + dur/2), dur, nar);
         }
 
         @Nullable private Task sample(Concept c) {

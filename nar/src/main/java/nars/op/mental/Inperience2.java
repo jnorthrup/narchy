@@ -43,7 +43,7 @@ public class Inperience2 extends How {
     public void next(What w, BooleanSupplier kontinue) {
         NAR n = w.nar;
         long now = w.time();
-        int dur = w.dur();
+        float dur = w.dur();
         double window = 2.0;
 
         //int dither = n.dtDither();

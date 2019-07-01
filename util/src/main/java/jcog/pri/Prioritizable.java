@@ -39,13 +39,12 @@ public interface Prioritizable extends Prioritized, ScalarValue {
 
     default float take(Prioritizable source, float p, boolean amountOrFraction, boolean copyOrMove) {
 
-        assert(this!=source);
-
-        float amount;
-
         if (p!=p || p < ScalarValue.EPSILON)
             return 0; //amount is insignificant
 
+        assert(this!=source);
+
+        float amount;
         if (amountOrFraction) {
             float s = source.pri();
             if (s!=s || s < ScalarValue.EPSILON)

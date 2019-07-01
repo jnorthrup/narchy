@@ -10,6 +10,7 @@ import jcog.Util;
 import jcog.WTF;
 import jcog.data.byt.DynBytes;
 import jcog.data.list.FasterList;
+import jcog.event.ByteTopic;
 import jcog.event.ListTopic;
 import jcog.event.Off;
 import jcog.event.Topic;
@@ -44,7 +45,6 @@ import nars.table.TaskTable;
 import nars.task.NALTask;
 import nars.task.proxy.SpecialOccurrenceTask;
 import nars.task.util.TaskException;
-import nars.task.util.TaskTopic;
 import nars.term.*;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
@@ -129,7 +129,7 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
 
     public final Topic<NAR> eventClear = new ListTopic<>();
     public final Topic<NAR> eventCycle = new ListTopic<>();
-    public final TaskTopic eventTask = new TaskTopic();
+    public final ByteTopic<Task> eventTask = new ByteTopic(Op.Punctuation);
     public final Control control;
 
 
@@ -786,7 +786,7 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
      * the default time constant of the system
      */
     @Override
-    public final int dur() {
+    public final float dur() {
         return time.dur();
     }
 

@@ -1,7 +1,7 @@
 package nars.attention;
 
 import jcog.TODO;
-import jcog.math.IntRange;
+import jcog.math.FloatRange;
 import nars.NAR;
 import nars.Task;
 import nars.concept.Concept;
@@ -31,7 +31,7 @@ public class TaskLinkWhat extends What {
      * present-moment perception duration, in global clock cycles,
      * specific to this What, and freely adjustable
      */
-    public final IntRange dur = new IntRange(1, 1, 1024);
+    public final FloatRange dur = new FloatRange(1, 1, 1024);
 
     public final TaskLinks links =
             new TaskLinks.DirectTangentTaskLinks();
@@ -52,17 +52,17 @@ public class TaskLinkWhat extends What {
     @Override
     protected void starting(NAR nar) {
 
-        int narDUR = nar.dur();
+        float narDUR = nar.dur();
 
-        lastUpdate = nar.time() - narDUR - 1;
+        lastUpdate = Math.round(nar.time() - narDUR - 1);
         this.dur.set(narDUR); //initializes value
 
         super.starting(nar);
     }
 
     @Override
-    public int dur() {
-        return dur.intValue();
+    public float dur() {
+        return dur.floatValue();
     }
 
     @Override

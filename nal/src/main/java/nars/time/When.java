@@ -17,10 +17,11 @@ import nars.task.util.TimeRange;
  * */
 public class When<X> extends TimeRange {
 
-    public final int dur;
+    public final float dur;
     public final X x;
 
-    public When(long start, long end, int dur, X x) {
+
+    public When(long start, long end, float dur, X x) {
         super(start, end);
 
         if (dur < 0)

@@ -76,9 +76,6 @@ public class AutoConceptualizer extends AbstractSensor {
         
         float err = ae.put(x, learningRate, noiseLevel, 0, true);
         
-
-        
-        
         int outputs = ae.outputs();
         float[] b = new float[outputs];
 
@@ -86,7 +83,8 @@ public class AutoConceptualizer extends AbstractSensor {
 
         What w = g.what();
 
-        int dur = w.dur();
+        float dur = w.dur();
+        long start = Math.round(now - dur / 2), end = Math.round(now + dur / 2);
         int[] order = new int[inputs];
         for (int i = 0; i < outputs; i++) {
             b[i] = 1; 
@@ -96,14 +94,16 @@ public class AutoConceptualizer extends AbstractSensor {
             Term feature = conj(order, a /* threshold, etc */, 3 /*a.length/2*/,
                     thresh);
             if (feature != null)
-                w.accept(onFeature(feature, now, dur, n.evidence()));
+                w.accept(onFeature(feature, now, start, end, n.evidence()));
 
             b[i] = 0; 
         }
     }
 
-    protected SignalTask onFeature(Term feature, long now, int dur, long[] evi) {
-        return new SignalTask(feature, BELIEF, $.t(1f, 0.9f), now, now - dur / 2, now + dur / 2, evi);
+    protected SignalTask onFeature(Term feature, long now, long start, long end, long[] evi) {
+        return new SignalTask(feature, BELIEF, $.t(1f, 0.9f),
+                now,
+                start,end, evi);
     }
 
     private Term conj(int[] order, float[] a, int maxArity, float threshold) {

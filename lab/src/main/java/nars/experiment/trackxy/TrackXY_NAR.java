@@ -165,7 +165,7 @@ public class TrackXY_NAR extends GameX {
 
             if (trainer.getOpaque()) {
                 long now = nar.time();
-                int durMS = dur();
+                int durMS = Math.round(dur());
                 if (track.ty < track.cy) {
                     nar().want(0.1f, $.the("down"), now, now + durMS, 1f, 0.02f);
                 } else if (track.ty > track.cy) {
@@ -378,9 +378,9 @@ public class TrackXY_NAR extends GameX {
 
                         //if (n.concept(tt) instanceof ActionConcept)
                         long window = 64;
-                        int dur = n.dur();
+                        float dur = n.dur();
                         long now = n.time();
-                        if (tt.intersects(now - window / 2 * dur, now + window / 2 * dur)) {
+                        if (tt.intersects(Math.round(now - window / 2 * dur), Math.round(now + window / 2 * dur))) {
 
                             float wantsDir = (l ? -1 : +1) * (tt.freq() < 0.5f ? -1 : +1);
                             float needsDir = a.track.tx - a.track.cx;
@@ -415,7 +415,7 @@ public class TrackXY_NAR extends GameX {
     }
 
     public static void printGoals(NAR n) {
-        int dur = n.dur();
+        float dur = n.dur();
         long now = n.time();
         List<Task> l = n.tasks(false, false, true, false)
                 .sorted(Comparators.byFloatFunction(tt -> (float) -tt.evi(now, dur)))
@@ -425,7 +425,7 @@ public class TrackXY_NAR extends GameX {
     }
 
     public static void printImpls(NAR n) {
-        int dur = n.dur();
+        float dur = n.dur();
         long now = n.time();
         List<Task> l = n.tasks(true, false, false, false)
                 .filter(x -> x.op() == IMPL)

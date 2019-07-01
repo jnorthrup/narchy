@@ -48,12 +48,12 @@ public class SeriesBeliefTable<T extends Task> extends DynamicTaskTable {
     public final void match(Answer t) {
         long s = t.time.start, e;
         Predicate<Task> each;
-        int dur = Math.max(1, t.dur);
+        float dur = Math.max(1, t.dur);
         if (t.time.start == ETERNAL) {
             //choose now as the default focus time
             long now = t.nar.time();
-            s = now - dur/2;
-            e = now + dur/2;
+            s = Math.round(now - dur/2);
+            e = Math.round(now + dur/2);
         } else {
             e = t.time.end;
         }

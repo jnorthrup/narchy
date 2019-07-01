@@ -35,10 +35,10 @@ public interface BeliefTable extends TaskTable {
     default Truth truth(long when, NAR nar) {
         return truth(when, when, null, null, nar);
     }
-    default Truth truth(long when, int dur, NAR nar) {
+    default Truth truth(long when, float dur, NAR nar) {
         return truth(when, when, dur, nar);
     }
-    default Truth truth(long start, long end, int dur, NAR nar) {
+    default Truth truth(long start, long end, float dur, NAR nar) {
         return truth(start,end, null, null, dur, nar);
     }
 
@@ -50,12 +50,12 @@ public interface BeliefTable extends TaskTable {
     default Truth truth(long start, long end, @Nullable Term template, Predicate<Task> filter, NAR n) {
         return truth(start, end, template, filter, n.dur(), n);
     }
-    default Truth truth(long start, long end, @Nullable Term template, Predicate<Task> filter, int dur, NAR n) {
+    default Truth truth(long start, long end, @Nullable Term template, Predicate<Task> filter, float dur, NAR n) {
         return truth(start, end, template, filter, Answer.BELIEF_MATCH_CAPACITY, dur, n);
     }
 
     /** precision = max # of tasks to include in the sample */
-    default Truth truth(long start, long end, @Nullable Term template, Predicate<Task> filter, int precision, int dur, NAR n) {
+    default Truth truth(long start, long end, @Nullable Term template, Predicate<Task> filter, int precision, float dur, NAR n) {
         assert(precision < NAL.STAMP_CAPACITY);
         if (isEmpty())
             return null;

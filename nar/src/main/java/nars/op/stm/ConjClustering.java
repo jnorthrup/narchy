@@ -168,10 +168,11 @@ public class ConjClustering extends How {
     @Override
     public /*synchronized*/ void next(What w, BooleanSupplier kontinue /* max tasks generated per centroid, >=1 */) {
 
-        int dur = w.dur();
+
 
 
         if (busy.compareAndSet(false, true)) {
+            float dur = w.dur();
             try {
                 long now1 = nar.time();
                 long lastNow = this.now;

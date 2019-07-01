@@ -25,14 +25,14 @@ public abstract class EvidenceEvaluator extends LongFloatTrapezoidalIntegrator  
 
     private static class TemporalPointEvidenceEvaluator extends EvidenceEvaluator {
         final long s;
-        final int dur;
+        final float dur;
         /**
          * max evidence during defined range
          */
         private final double evi;
 
         /** //assert (w != LongInterval.ETERNAL); */
-        TemporalPointEvidenceEvaluator(long w, double evi, int dur) {
+        TemporalPointEvidenceEvaluator(long w, double evi, float dur) {
             this.dur = dur;
             this.s = w;
             this.evi = evi;
@@ -54,7 +54,7 @@ public abstract class EvidenceEvaluator extends LongFloatTrapezoidalIntegrator  
     static final class TemporalSpanEvidenceEvaluator extends TemporalPointEvidenceEvaluator {
         final long e;
 
-        TemporalSpanEvidenceEvaluator(long s, long e, double evi, int dur) {
+        TemporalSpanEvidenceEvaluator(long s, long e, double evi, float dur) {
             super(s, evi, dur);
             this.e = e;
         }
@@ -67,11 +67,11 @@ public abstract class EvidenceEvaluator extends LongFloatTrapezoidalIntegrator  
 
     }
 
-    public static double of(long s, long e, double evi, int dur, long when) {
+    public static double of(long s, long e, double evi, float dur, long when) {
         return of(s, e, evi, dur).applyAsDouble(when);
     }
 
-    public static EvidenceEvaluator of(long s, long e, double evi, int dur) {
+    public static EvidenceEvaluator of(long s, long e, double evi, float dur) {
         return s == e ?
                 new TemporalPointEvidenceEvaluator(s, evi, dur) :
                 new TemporalSpanEvidenceEvaluator(s, e, evi, dur);

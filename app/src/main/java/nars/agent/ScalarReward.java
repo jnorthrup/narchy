@@ -40,7 +40,7 @@ abstract public class ScalarReward extends Reward {
     protected abstract float reward(Game a);
 
     @Override
-    public final float happiness(int dur) {
+    public final float happiness(float dur) {
         //     belief(reward) - goal(reward)
 
         float b = rewardFreq(true, dur);
@@ -52,7 +52,7 @@ abstract public class ScalarReward extends Reward {
     }
 
     @Override
-    protected float rewardFreq(boolean beliefOrGoal, int dur) {
+    protected float rewardFreq(boolean beliefOrGoal, float dur) {
         NAR n = nar();
         BeliefTable bt = beliefOrGoal ? concept.beliefs() : concept.goals();
         Truth t = bt.truth(n.time(), dur, n);

@@ -29,7 +29,7 @@ final class RandomPhasorCuriosity extends CuriosityMode {
             theta = (float) (random.nextFloat() * Math.PI*2); //TODO random
         }
 
-        public float update(long t, int dur, Random rng) {
+        public float update(long t, float dur, Random rng) {
             fMin = 1f/(dur*dur);
             theta +=  (1 + (rng.nextFloat()-0.5f)*2f * phaseShiftAmount);
             f += Util.clamp( (rng.nextFloat()-0.5f)*2f * freqChangeAmount , fMin, fMax);

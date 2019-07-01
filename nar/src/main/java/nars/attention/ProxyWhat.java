@@ -23,7 +23,7 @@ public class ProxyWhat extends What {
     }
 
     @Override
-    public int dur() {
+    public float dur() {
         return what.dur();
     }
 

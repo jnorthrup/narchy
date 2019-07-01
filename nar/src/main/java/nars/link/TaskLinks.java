@@ -45,19 +45,17 @@ abstract public class TaskLinks implements Sampler<TaskLink> {
     /**
      * tasklink forget rate
      */
-    public final FloatRange decay = new FloatRange(1f, 0, 1f /* 2f */);
+    public final FloatRange decay = new FloatRange(0.5f, 0, 1f /* 2f */);
     /**
      * (post-)Amp: tasklink propagation rate
      */
-    public final FloatRange amp = new FloatRange(1f, 0, 2f /* 2f */);
-
-//    /**
-//     * tasklink retention rate:
-//     * 0 = deducts all propagated priority from source tasklink (full resistance)
-//     * 1 = deducts no propagated priority (superconductive)
-//     **/
-//    public final FloatRange sustain = new FloatRange(1f, 0, 1f);
-
+    public final FloatRange amp = new FloatRange(0.5f, 0, 2f /* 2f */);
+    /**
+     * tasklink retention rate:
+     * 0 = deducts all propagated priority from source tasklink (full resistance)
+     * 1 = deducts no propagated priority (superconductive)
+     **/
+    public final FloatRange sustain = new FloatRange(1f, 0, 1f);
     private final PriMerge merge = NAL.tasklinkMerge;
 
     private Predicate<TaskLink> processor = (x) -> true;
@@ -163,20 +161,20 @@ abstract public class TaskLinks implements Sampler<TaskLink> {
 
             float p =
                     link.priPunc(punc);
-            float pAmp = p * amp.floatValue();
+            float pFwd = p * amp.floatValue();
             Term from = link.from();
 
             //CHAIN pattern
-            link(from, forward, punc, pAmp); //forward (hop)
+            link(from, forward, punc, pFwd); //forward (hop)
             //link(u, s, punc, pAmp); //reverse (hop)
             //link(t, u, punc, pAmp); //forward (adjacent)
             //link(u, t, punc, pAmp); //reverse (adjacent)
 
-//            float sustain = this.sustain.floatValue();
-//
-//            if (sustain < 1) {
-//                link.take(punc, pAmp * (1 - sustain));
-//            }
+            float toUnsustain = pFwd * (1 - this.sustain.floatValue());
+            if (toUnsustain>ScalarValue.EPSILON) {
+                float unsustained = link.take(punc, toUnsustain);
+                links.bag.depressurize(unsustained);
+            }
 
 
             //link(s, t, punc, ); //redundant
@@ -329,7 +327,7 @@ abstract public class TaskLinks implements Sampler<TaskLink> {
                     Predicate<TaskLink> filter = ((Predicate<TaskLink>) link::equals).negate();
 
                     Term z = atomTangent(T, task.punc(), filter, d.time(),
-                            d.dur() * ATOM_TANGENT_REFRESH_DURS, d.random);
+                            Math.round(d.dur() * ATOM_TANGENT_REFRESH_DURS), d.random);
                     return z;
                 }
 

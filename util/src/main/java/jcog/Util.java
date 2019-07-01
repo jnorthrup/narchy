@@ -2074,6 +2074,9 @@ public enum Util {
     public static float or(float a, float b) {
         return 1.0f - ((1.0f - a) * (1.0f - b));
     }
+    public static double or(double a, double b) {
+        return 1.0 - ((1.0 - a) * (1.0 - b));
+    }
 
 
     public static <X> int count(Predicate<X> p, X... xx) {

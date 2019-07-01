@@ -86,7 +86,7 @@ public class DynTaskify extends TaskList {
     /** whether the result is intended for internal or external usage; determines precision settings */
     final boolean ditherTruth;
     //, ditherTime;
-    final int dur;
+    final float dur;
     private MetalLongSet evi = null;
 
     final boolean beliefOrGoal;
@@ -97,7 +97,7 @@ public class DynTaskify extends TaskList {
         this(model, beliefOrGoal, ditherTruth, ditherTime, null, dur, null, nar);
     }
 
-    public DynTaskify(AbstractDynamicTruth model, boolean beliefOrGoal, boolean ditherTruth, boolean ditherTime, @Nullable Compound template, int dur, Predicate<Task> filter, NAR nar) {
+    public DynTaskify(AbstractDynamicTruth model, boolean beliefOrGoal, boolean ditherTruth, boolean ditherTime, @Nullable Compound template, float dur, Predicate<Task> filter, NAR nar) {
         super(8 /* estimate */);
         this.model = model;
         this.beliefOrGoal = beliefOrGoal;

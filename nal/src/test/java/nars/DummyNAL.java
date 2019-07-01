@@ -12,7 +12,7 @@ public class DummyNAL extends NAL {
     }
 
     @Override
-    public int dur() {
+    public float dur() {
         return 1;
     }
 

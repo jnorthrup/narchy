@@ -179,7 +179,7 @@ public class MetaAgent extends Game {
         float curiMin = 0.005f, curiMax = 0.05f;
         actionCtl($.inh(gid, CURIOSITY), g.curiosity.rate.subRange(curiMin, curiMax));
 
-        int initialDur = w.dur();
+        float initialDur = w.dur();
         FloatRange durRange = new FloatRange(initialDur, initialDur / 4, initialDur * 4) {
             @Override
             public float get() {
@@ -269,7 +269,7 @@ public class MetaAgent extends Game {
                         NAR n = nar();
 
                         int a = autoResumeID;
-                        autoResume = n.runAt(n.time() + autoResumePeriod * n.dur(), () -> {
+                        autoResume = n.runAt(Math.round(n.time() + autoResumePeriod * n.dur()), () -> {
                             if (autoResumeID == a)
                                 tryResume();
                             //else this one has been cancelled

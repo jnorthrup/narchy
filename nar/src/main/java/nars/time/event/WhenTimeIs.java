@@ -1,5 +1,6 @@
 package nars.time.event;
 
+import jcog.math.FloatSupplier;
 import nars.$;
 import nars.NAR;
 import nars.attention.What;
@@ -12,7 +13,6 @@ import nars.time.When;
 import nars.util.Timed;
 
 import java.util.function.Consumer;
-import java.util.function.IntSupplier;
 
 abstract public class WhenTimeIs extends ScheduledTask {
 
@@ -78,12 +78,12 @@ abstract public class WhenTimeIs extends ScheduledTask {
 
     /** generates a default 'now' moment: current X clock time with dur/2 radius.
      *  the equal-length past and future periods comprising the extent of the present moment. */
-    public static When<NAR> now(int dur, Timed nar) {
+    public static When<NAR> now(float dur, Timed nar) {
         long now = nar.time();
-        return new When(now - dur/2, now + dur/2, dur, nar);
+        return new When(Math.round(now - dur/2), Math.round(now + dur/2), dur, nar);
     }
-    private static When<NAR> now(IntSupplier dur, Timed nar) {
-        return now(dur.getAsInt(), nar);
+    private static When<NAR> now(FloatSupplier dur, Timed nar) {
+        return now(dur.asFloat(), nar);
     }
     public static When<NAR> now(Timed t) {
         return now(t.dur(), t);

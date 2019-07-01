@@ -4,8 +4,8 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <modelVersion>4.0.0</modelVersion>
     <properties>
-        <junit-platform-launcher.version>1.5.0-RC2</junit-platform-launcher.version>
-        <junit-jupiter-params.version>5.5.0-RC2</junit-jupiter-params.version>
+        <junit-platform-launcher.version>1.5.0</junit-platform-launcher.version>
+        <junit-jupiter-params.version>5.5.0</junit-jupiter-params.version>
     </properties>
     <parent>
         <groupId>automenta</groupId>

@@ -18,7 +18,7 @@ import static nars.time.Tense.ETERNAL;
  */
 public class LinearTruthProjection extends TruthProjection {
 
-    public LinearTruthProjection(long start, long end, int dur) {
+    public LinearTruthProjection(long start, long end, float dur) {
         super(start, end, dur);
     }
 

@@ -337,15 +337,15 @@ abstract public class Inperience extends TaskLeakTransform {
             long now = nar.time();
             if (start == ETERNAL) {
                 //start = end = ETERNAL;
-                int dur = what.dur();
-                start = now - dur/2;
-                end   = now + dur/2;
+                float  dur = what.dur();
+                start = Math.round(now - dur/2);
+                end   = Math.round(now + dur/2);
             } else {
                 end = x.end();
             }
             int dt = nar.dtDither();
-            start = Tense.dither(start, dt);
-            end = Tense.dither(end, dt);
+            start = Tense.dither(start, dt, -1);
+            end = Tense.dither(end, dt, +1);
             return new SignalTask(tt, punc,
                     tr,
                     now, start, end, x.stamp()

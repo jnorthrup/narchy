@@ -103,7 +103,7 @@ public final class Operator extends NodeConcept implements PermanentConcept, Ato
                 if (executeGoal(task)) {
                     long s = task.start();
                     long now = nar.time();
-                    int dur = nar.dur();
+                    float dur = nar.dur();
                     if (s >= now - dur / 2) {
                         if (s > now + dur / 2) {
                             //delayed

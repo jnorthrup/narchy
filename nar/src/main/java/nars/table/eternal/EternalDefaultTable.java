@@ -74,7 +74,7 @@ public class EternalDefaultTable extends DynamicTaskTable {
 //                return;
         } else {
             long now = a.nar.time();
-            int dur = a.dur;
+            float dur = a.dur;
             if (a.time.end >= now-dur/2 ) {
                 weak = true;
 

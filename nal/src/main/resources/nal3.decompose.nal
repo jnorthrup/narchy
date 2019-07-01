@@ -11,13 +11,13 @@
 //  if (S --> M) is the case, and ((|,S,A..+) --> M) is not the case, then ((|,A..+) --> M) is not the case, hence Belief:DecomposePositiveNegativeNegative
 
 //predicate (intensional, conj)
-(M --> C), (M --> X),  eventOf(C,X)     |-   --(M --> conjWithout( C,  X)), (Belief:DecomposePN, Goal:DecomposePN, Time:Compose)
-(M --> C), (M --> X),  eventOfNeg(C,X)  |-   --(M --> conjWithout( C,--X)), (Belief:DecomposePP, Goal:DecomposePP, Time:Compose)
-//(M --> C), (M --> X),  eventOf(C,X)     |-  --(M --> conjWithout( C,  X)), (Belief:DecomposeNP, Goal:DecomposeNP, Time:Compose)
-//(M --> C), (M --> X),  eventOfNeg(C,X)  |-  --(M --> conjWithout( C,--X)), (Belief:DecomposeNN, Goal:DecomposeNN, Time:Compose)
+(M --> C), (M --> X),  eventOf(C,X)     |-    (M --> conjWithout( C,  X)), (Belief:DecomposePP, Goal:DecomposePN, Time:Compose)
+(M --> C), (M --> X),  eventOfNeg(C,X)  |-    (M --> conjWithout( C,--X)), (Belief:DecomposePN, Goal:DecomposePP, Time:Compose)
+(M --> C), (M --> X),  eventOf(C,X)     |-  --(M --> conjWithout( C,  X)), (Belief:DecomposeNP, Goal:DecomposeNP, Time:Compose)
+(M --> C), (M --> X),  eventOfNeg(C,X)  |-  --(M --> conjWithout( C,--X)), (Belief:DecomposeNN, Goal:DecomposeNN, Time:Compose)
 
 //subject (extensional, disj)
-//(C --> M), (X --> M),  eventOfNeg(C,X)  |-  --(conjWithout( C,--X) --> M), (Belief:DecomposePP, Goal:DecomposePP, Time:Compose)
-//(C --> M), (X --> M),  eventOf(C,X)     |-  --(conjWithout( C,  X) --> M), (Belief:DecomposePN, Goal:DecomposePN, Time:Compose)
-(C --> M), (X --> M),  eventOfNeg(C,X)  |-    (conjWithout( C,--X) --> M), (Belief:DecomposeNN, Goal:DecomposeNN, Time:Compose)
-(C --> M), (X --> M),  eventOf(C,X)     |-    (conjWithout( C,  X) --> M), (Belief:DecomposeNP, Goal:DecomposeNP, Time:Compose)
+(C --> M), (X --> M),  eventOfNeg(C,X)  |-  --(conjWithout( C,--X) --> M), (Belief:DecomposePP, Goal:DecomposePP, Time:Compose)
+(C --> M), (X --> M),  eventOf(C,X)     |-  --(conjWithout( C,  X) --> M), (Belief:DecomposePN, Goal:DecomposePN, Time:Compose)
+(C --> M), (X --> M),  eventOfNeg(C,X)  |-    (conjWithout( C,--X) --> M), (Belief:DecomposeNP, Goal:DecomposeNN, Time:Compose)
+(C --> M), (X --> M),  eventOf(C,X)     |-    (conjWithout( C,  X) --> M), (Belief:DecomposeNN, Goal:DecomposeNP, Time:Compose)

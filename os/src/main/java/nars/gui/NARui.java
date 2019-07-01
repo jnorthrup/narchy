@@ -221,7 +221,7 @@ public class NARui {
                         //Histogram i = new Histogram(1<<20, 5);
                         Quantiler q = new Quantiler(128 * 1024);
                         long now = nar.time();
-                        int dur = nar.dur();
+                        float dur = nar.dur();
                         nar.tasks(true, false, false, false).forEach(t ->
                                 {
                                     try {

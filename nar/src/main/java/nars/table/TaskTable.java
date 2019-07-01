@@ -79,7 +79,7 @@ public interface TaskTable {
 
     void match(Answer m);
 
-    default Answer matching(long start, long end, @Nullable Term template, Predicate<Task> filter, int dur, NAR nar) {
+    default Answer matching(long start, long end, @Nullable Term template, Predicate<Task> filter, float dur, NAR nar) {
         boolean beliefOrQuestion = !(this instanceof QuestionTable);
         assert(beliefOrQuestion);
 
@@ -89,7 +89,7 @@ public interface TaskTable {
                 .match(this);
     }
 
-    @Nullable default Task match(long start, long end, boolean forceProject, @Nullable Term template, Predicate<Task> filter, int dur, NAR nar, boolean ditherTruth) {
+    @Nullable default Task match(long start, long end, boolean forceProject, @Nullable Term template, Predicate<Task> filter, float dur, NAR nar, boolean ditherTruth) {
         return !isEmpty() ? matching(start, end, template, filter, dur, nar)
                 .task(true, forceProject, ditherTruth) : null;
     }
@@ -97,13 +97,13 @@ public interface TaskTable {
     @Nullable default /* final */ Task match(When<NAR> w, @Nullable Term template, Predicate<Task> filter, boolean ditherTruth) {
         return match(w.start, w.end, false, template, filter, w.dur, w.x, ditherTruth); }
 
-    @Nullable default /* final */ Task match(long start, long end, Term template, int dur, NAR nar) {
+    @Nullable default /* final */ Task match(long start, long end, Term template, float dur, NAR nar) {
         return match(start, end, template, null, dur, nar); }
 
-    @Nullable default /* final */ Task match(long start, long end, @Nullable Term template, Predicate<Task> filter, int dur, NAR nar) {
+    @Nullable default /* final */ Task match(long start, long end, @Nullable Term template, Predicate<Task> filter, float dur, NAR nar) {
         return match(start, end, false, template, filter, dur,nar, false);
     }
-    @Nullable default /* final */ Task matchExact(long start, long end, Term template, Predicate<Task> filter, int dur, NAR n) {
+    @Nullable default /* final */ Task matchExact(long start, long end, Term template, Predicate<Task> filter, float dur, NAR n) {
         return match(start, end, true, template, filter, dur, n, false);
     }
 

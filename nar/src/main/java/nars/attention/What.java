@@ -146,7 +146,7 @@ abstract public class What extends NARPart implements Prioritizable, Sampler<Tas
     }
 
     /** cycles duration window */
-    public abstract int dur();
+    @Override public abstract float dur();
 
     /* TODO other temporal focus parameters */
 

@@ -86,7 +86,7 @@ public class Impiler {
      */
     public static class ImpilerDeduction extends TaskLeak {
 
-        private transient int dur;
+        private transient float dur;
         private final CauseChannel<Task> in;
 
         public ImpilerDeduction( NAR n) {

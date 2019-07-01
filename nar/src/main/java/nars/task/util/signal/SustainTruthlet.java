@@ -17,13 +17,13 @@ import static nars.time.Tense.ETERNAL;
 @Skill({"Sustain","Audio_feedback"})
 public class SustainTruthlet extends ProxyTruthlet<RangeTruthlet> {
 
-    int dur;
+    float dur;
 
     public SustainTruthlet(RangeTruthlet r, Timed timed) {
         this(r, timed.dur());
     }
 
-    public SustainTruthlet(RangeTruthlet r, int dur) {
+    public SustainTruthlet(RangeTruthlet r, float dur) {
         super(r);
         this.dur = dur;
     }
@@ -57,7 +57,7 @@ public class SustainTruthlet extends ProxyTruthlet<RangeTruthlet> {
 
     }
 
-    public final int dur() {
+    public final float dur() {
         return dur;
     }
 }
