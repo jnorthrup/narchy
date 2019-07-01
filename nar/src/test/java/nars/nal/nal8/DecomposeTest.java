@@ -37,8 +37,8 @@ abstract public class DecomposeTest extends NALTest {
         @Test
         void testConjBeliefWeak() {
             test
-                    .termVolMax(5)
-                    .input("(&&,a,b). %0.75;0.9%")
+                    .termVolMax(3)
+                    .input("(a && b). %0.75;0.9%")
                     .input("a. %0.80;0.9%")
                     .mustBelieve(cycles, "b", 0.60f, 0.49f)
                     .must(BELIEF, true, (t)->{
@@ -49,7 +49,21 @@ abstract public class DecomposeTest extends NALTest {
                         return true;
                     });
         }
-
+        @Test
+        void testConjBeliefWeakNeg() {
+            test
+                    .termVolMax(4)
+                    .input("(--a && b). %0.75;0.9%")
+                    .input("a. %0.20;0.9%")
+                    .mustBelieve(cycles, "b", 0.60f, 0.49f)
+                    .must(BELIEF, true, (t)->{
+                        if (t.term().toString().equals("b")) {
+                            float f = t.freq();
+                            return !Util.equals(f, 0.60f, 0.05f) || t.conf() < 0.2f;
+                        }
+                        return true;
+                    });
+        }
         @Test
         void testConjBeliefNeg() {
             test
