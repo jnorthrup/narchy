@@ -240,23 +240,14 @@ public class Statement {
 //            }
 
         if (NAL.term.INH_CLOSED_BOOLEAN_DUALITY_MOBIUS_PARADIGM) {
-            if (op == INH /*|| op == SIM*/) {
+            if (op == INH || op == SIM) {
                 boolean sn = subject instanceof Neg && !subject.unneg().op().isAny(mobiusExcept);
                 boolean pn = predicate instanceof Neg && !predicate.unneg().op().isAny(mobiusExcept);
-//                if (!sn && !pn) {
-//                    //normal
-//                } else if (sn && pn) {
-//                    //double-negative
-//
-////                    subject = subject.unneg();
-////                    predicate = predicate.unneg();
-//
-//                } else
-                    if (sn) {
-                        negate = !negate;
-                        subject = subject.unneg();
-                    }
-//                } else /* pn */ {
+
+                if (sn) {
+                    negate = !negate;
+                    subject = subject.unneg();
+                }
                 if (pn) {
                     //(a --> --b) |- --(a --> b)   but (--a --> b) != --(a --> b)
                     negate = !negate;

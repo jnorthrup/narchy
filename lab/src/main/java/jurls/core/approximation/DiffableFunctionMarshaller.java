@@ -98,7 +98,7 @@ public class DiffableFunctionMarshaller implements ParameterizedFunction {
 
             JaninoRestrictedClassLoader cl = new JaninoRestrictedClassLoader();
             UnitCompiler unitCompiler = new UnitCompiler(
-                    new Parser(scanner).parseCompilationUnit(),
+                    new Parser(scanner).parseAbstractCompilationUnit(),
                     new ClassLoaderIClassLoader(cl));
 
             ClassFile[] classFiles = unitCompiler.compileUnit(debug, debug, debug);
