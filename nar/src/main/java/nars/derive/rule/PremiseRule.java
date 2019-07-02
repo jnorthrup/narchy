@@ -784,6 +784,11 @@ public class PremiseRule extends ProxyTerm {
         return theInterned(UnifyConstraint.the(constraints)); //AFTER .. constraints can be added to in conclusion()
     }
 
+    PremiseRule(PremiseRuleBuilder b) {
+        super(b.term());
+        throw new TODO();
+    }
+
     PremiseRule(PremiseRule raw) {
         super((/*index.rule*/(raw.ref)));
 

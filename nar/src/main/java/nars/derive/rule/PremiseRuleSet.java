@@ -10,6 +10,7 @@ import java.io.InputStream;
 import java.util.Collection;
 import java.util.TreeSet;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -30,7 +31,7 @@ public class PremiseRuleSet extends TreeSet<PremiseRuleProto> {
         this(nar, PremiseRule.parse(rules));
     }
 
-    private PremiseRuleSet(NAR nar, Stream<PremiseRule> parsed) {
+    public PremiseRuleSet(NAR nar, Stream<PremiseRule> parsed) {
         this.nar = nar;
         parsed.distinct()
                 .map(x -> new PremiseRuleProto(x, nar))
@@ -53,10 +54,9 @@ public class PremiseRuleSet extends TreeSet<PremiseRuleProto> {
     }, 32, false);
 
 
-    public static PremiseRuleSet files(NAR nar, Collection<String> filename) {
-        return new PremiseRuleSet(
-                nar,
-                filename.stream().flatMap(n -> PremiseRuleSet.ruleCache.apply(n).stream()));
+
+    public static Supplier<Collection<PremiseRule>> file(String n) {
+        return ()->PremiseRuleSet.ruleCache.apply(n);
     }
 
     private static Stream<String> load(byte[] data) {

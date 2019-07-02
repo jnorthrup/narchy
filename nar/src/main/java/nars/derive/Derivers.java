@@ -1,9 +1,16 @@
 package nars.derive;
 
+import jcog.data.list.FasterList;
 import nars.NAR;
+import nars.derive.rule.PremiseRule;
 import nars.derive.rule.PremiseRuleSet;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.List;
+import java.util.function.Supplier;
+import java.util.stream.Stream;
+
+import static nars.derive.rule.PremiseRuleSet.file;
 
 /**
  * utility class for working witih Deriver's
@@ -11,39 +18,42 @@ import java.util.*;
 public enum Derivers { ;
 
     /** HACK range is inclusive */
-    private static Set<String> standard(int minLevel, int maxLevel, String... otherFiles) {
-        Set<String> f = new TreeSet();
+    private static Stream<Supplier<Collection<PremiseRule>>> standard(int minLevel, int maxLevel, String... otherFiles) {
+
+        List<Supplier<Collection<PremiseRule>>> f = new FasterList<>(16);
+
         for (int level = minLevel; level <= maxLevel; level++) {
             switch (level) {
                 case 1:
-                    f.add("nal1.nal");
-                    f.add("nal1.guess.nal");
-                    f.add("analogy.nal");
+                    f.add(file("nal1.nal"));
+                    f.add(file("nal1.guess.nal"));
+                    //f.add(new NAL1_Guess()::get);
+                    f.add(file("analogy.nal"));
                     break;
 
                 case 2:
-                    f.add("nal2.nal");
-                    f.add("nal2.guess.nal");
-                    f.add("nal2.member.nal");
+                    f.add(file("nal2.nal"));
+                    f.add(file("nal2.guess.nal"));
+                    f.add(file("nal2.member.nal"));
                     break;
 
                 case 3:
-                    f.add("nal3.nal");
-                    f.add("nal3.decompose.nal");
-                    f.add("nal3.guess.nal");
+                    f.add(file("nal3.nal"));
+                    f.add(file("nal3.decompose.nal"));
+                    f.add(file("nal3.guess.nal"));
                     //f.add("nal3.decompose.extra.nal");
                     //f.add("nal3.induction.nal");
                     break;
 
                 case 4:
-                    f.add("nal4.nal");
+                    f.add(file("nal4.nal"));
                     break;
 
                 case 6:
-                    f.add("induction.nal");
+                    f.add(file("induction.nal"));
 
-                    f.add("nal6.nal");
-                    f.add("nal6.decompose.nal");
+                    f.add(file("nal6.nal"));
+                    f.add(file("nal6.decompose.nal"));
 
                     //f.add("equivalence.nal");
 
@@ -62,24 +72,26 @@ public enum Derivers { ;
             }
         }
 
-        Collections.addAll(f, otherFiles);
+        for (String o : otherFiles)
+            f.add(file(o));
 
-        return f;
+        return f.stream().distinct();
     }
 
 
     /** standard ruleset */
     public static PremiseRuleSet nal(NAR nar, int minLevel, int maxLevel, String... extraFiles) {
-        return files(nar, standard(minLevel, maxLevel, extraFiles)        );
+        return rules(nar, standard(minLevel, maxLevel, extraFiles)        );
     }
 
     public static PremiseRuleSet files(NAR nar, String... filename) {
-        return files(nar, List.of(filename));
+        return rules(nar, Stream.of(filename).map(PremiseRuleSet::file));
     }
 
-    private static PremiseRuleSet files(NAR nar, Collection<String> filename) {
-        return PremiseRuleSet.files(nar, filename);
+    private static PremiseRuleSet rules(NAR nar, Stream<Supplier<Collection<PremiseRule>>> src) {
+        return new PremiseRuleSet(nar, src.flatMap(x->x.get().stream()));
     }
+
     public static PremiseRuleSet parse(NAR nar, String... rules) {
         return new PremiseRuleSet(nar, rules);
     }
