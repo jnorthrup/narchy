@@ -78,7 +78,7 @@ public class Choose2 extends Termutator.AbstractTermutator {
     @Override
     public void mutate(Termutator[] chain, int current, Unify u) {
 
-        Subterms yFree = u.resolve(sub(1).sub(2).subterms());
+        Subterms yFree = u.resolveSubs(sub(1).sub(2).subterms());
 
 
         Combinations ccc = new Combinations(yFree.subs(), 2);
@@ -89,9 +89,9 @@ public class Choose2 extends Termutator.AbstractTermutator {
         ShuffledSubterms yy = new ShuffledSubterms(yFree, u.random);
 
 
-        Term xEllipsis = u.resolvePosNeg(this.xEllipsis);
+        Term xEllipsis = u.resolve(this.xEllipsis);
         Unify f = this.f;
-        Subterms x = u.resolve(new TermList(this.x));
+        Subterms x = u.resolveSubs(new TermList(this.x));
 
         int[] c = null;
         while (ccc.hasNext() || !phase) {

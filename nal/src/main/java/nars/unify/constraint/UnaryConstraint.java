@@ -30,11 +30,11 @@ public final class UnaryConstraint<U extends Unify> extends UnifyConstraint<U> {
     }
 
     @Override
-    public boolean invalid(Term y, Unify f) {
-        return valid(y) != trueOrFalse;
+    public boolean invalid(Term x, Unify f) {
+        return valid(x) != trueOrFalse;
     }
 
-    public final boolean valid(Term y) {
-        return termMatcher.test(y);
+    public final boolean valid(Term x) {
+        return termMatcher.test(x);
     }
 }

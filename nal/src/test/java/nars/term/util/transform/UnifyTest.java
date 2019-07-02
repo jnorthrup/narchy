@@ -30,7 +30,7 @@ public class UnifyTest {
 
     @Test void testResolvePosNeg() {
         Unify u = new UnifyAny(new XoRoShiRo128PlusRandom(1));
-        Term y = u.resolvePosNeg($$("--x"));
+        Term y = u.resolve($$("--x"));
         assertEq("(--,x)", y);
     }
     @Test void testPossiblyUnifiable() {

@@ -2,7 +2,10 @@ package nars.op;
 
 import nars.NAR;
 import nars.NARS;
+import nars.derive.BatchDeriver;
+import nars.derive.Derivers;
 import nars.eval.Evaluation;
+import nars.test.TestNAR;
 import org.junit.jupiter.api.Test;
 
 import java.util.Set;
@@ -90,4 +93,15 @@ class SetFuncTest {
                 Evaluation.eval($$("(member(#x,{a,b}) && (#x))"), n));
 
     }
+
+    @Test void testMember_Combine_Rule() {
+        NAR n = NARS.shell();
+        new BatchDeriver(Derivers.files(n, "nal2.member.nal"));
+        TestNAR t = new TestNAR(n);
+        t.believe("(member(#1,{a,b}) && (x(#1), y(#1)))");
+        t.believe("(member(#1,{c,d}) && (x(#1), y(#1)))");
+        t.mustBelieve(500, "(member(#1,{a,b,c,d}) && (x(#1), y(#1)))", 1, 0.81f);
+        t.run(500);
+    }
+
 }

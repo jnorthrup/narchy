@@ -39,11 +39,22 @@ public enum Perceive { ;
         n.emotion.perceivedTaskStart.increment();
 
         Term x = t.term();
-        if (Evaluation.canEval(x)) {
-            return task(new TaskEvaluation(t, w).result);
-        } else {
-            return Perceive.perceive(t, x, w);
-        }
+        Task perceived = Perceive.perceived(t, w.nar);
+        if (perceived!=null) {
+
+            if (Evaluation.canEval(x)) {
+                FasterList<Task> rt = new TaskEvaluation(t, w).result;
+                if (rt!=null) {
+                    rt.removeInstance(t); //HACK
+                    rt.add(perceived);
+
+                    return task(rt);
+                }
+            }
+
+            return perceived;
+        } else
+            return null;
     }
 
     /** deduplicate and bundle to one task */
@@ -74,7 +85,7 @@ public enum Perceive { ;
     }
 
     /** returns true if the task is acceptable */
-    private static Task perceive(Task x, Term y, What w) {
+    @Nullable private static Task perceiveable(Task x, Term y, What w) {
 
 
         Task t;
@@ -118,7 +129,7 @@ public enum Perceive { ;
             t = x;
         }
 
-        return perceived(t, w.nar);
+        return t;
     }
 
     private static Task rememberTransformed(Task input, Term y, byte punc) {
@@ -155,6 +166,7 @@ public enum Perceive { ;
             this.what = w;
 
             evalTry((Compound)(t.term()), w.nar.evaluator.get());
+
         }
 
         @Override
@@ -164,7 +176,7 @@ public enum Perceive { ;
             if (y == Bool.Null)
                 return true; //continue TODO maybe limit these
 
-            Task next = Perceive.perceive(t, y, what);
+            Task next = Perceive.perceiveable(t, y, what);
             if (next != null) {
                 if (result==null)
                     result = new FasterList<>(1);

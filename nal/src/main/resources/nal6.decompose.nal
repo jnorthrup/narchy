@@ -86,10 +86,13 @@
     //C is a sequence ending in it.  this forms a goal of the sequence prefix (minus the trailing)
 
     //desire for sub-sequence leading to goal,  truth function may be Desire or Deduction
-    G, C, is(C,"&&"), neq(G,C)                  |-    conjBefore(C,   G),  (Goal:DecomposePP)
-    G, C, is(C,"&&"), has(C,"--"), neq(G,C)     |-    conjBefore(C, --G),  (Goal:DecomposeNP)
-//      G, C, is(C,"&&"), neq(G,C)                  |-   --conjBefore(C,   G),  (Goal:DecomposeNN, Time:TaskEvent)
-//      G, C, is(C,"&&"), has(C,"--"), neq(G,C)     |-   --conjBefore(C, --G),  (Goal:DecomposePN, Time:TaskEvent)
+    G, C, is(C,"&&")                  |-    conjBefore(C,   G),  (Goal:DecomposePP, Time:TaskEvent)
+    G, C, is(C,"&&"), has(C,"--")     |-  --conjBefore(C, --G),  (Goal:DecomposePP, Time:TaskEvent)
+    G, C, is(C,"&&")                  |-  --conjBefore(C,   G),  (Goal:DecomposeNP, Time:TaskEvent)
+    G, C, is(C,"&&"), has(C,"--")     |-    conjBefore(C, --G),  (Goal:DecomposeNP, Time:TaskEvent)
+
+      G, D, is(D,"&&")                |-    conjBefore(D,   G),  (Goal:DecomposePN, Time:TaskEvent)
+      G, D, is(D,"&&"), has(D,"--")   |-    conjBefore(D, --G),  (Goal:DecomposeNN, Time:TaskEvent)
 
 
       //G, D, is(D,"&&"), has(D,"--"), neq(G,D)   |-    conjBefore(D, --G),  (Goal:DecomposeWeakPN, Time:TaskEvent)
@@ -114,20 +117,24 @@
            C, X, eventOfNeg(C,X), conjSequence(C), --isVar(X)  |-   --conjAfter(C,--X), (Belief:DecomposePP, Time:BeliefEvent)
 
      D, X, eventOfNeg(D,X), --isVar(X)                     |-   --conjBefore(D, --X), (Belief:DecomposeNP, Time:BeliefEvent)
-       D, X, eventOfNeg(D,X), conjSequence(D), --isVar(X)  |-   --conjAfter(D, --X), (Belief:DecomposeNP, Time:BeliefEvent)
+       D, X, eventOfNeg(D,X), conjSequence(D), --isVar(X)  |-    --conjAfter(D, --X), (Belief:DecomposeNP, Time:BeliefEvent)
      D, X, eventOf(D,X), --isVar(X)                        |-   --conjBefore(D,X), (Belief:DecomposeNN, Time:BeliefEvent)
-       D, X, eventOf(D,X), conjSequence(D), --isVar(X)     |-   --conjAfter(D,X), (Belief:DecomposeNN, Time:BeliefEvent)
+       D, X, eventOf(D,X), conjSequence(D), --isVar(X)     |-    --conjAfter(D,X), (Belief:DecomposeNN, Time:BeliefEvent)
+      D, X, eventOf(D,X), --isVar(X)                        |-    conjBefore(D, X), (Belief:DecomposeNP, Time:BeliefEvent)
+        D, X, eventOf(D,X), conjSequence(D), --isVar(X)     |-     conjAfter(D, X), (Belief:DecomposeNP, Time:BeliefEvent)
+      D, X, eventOfNeg(D,X), --isVar(X)                     |-   conjBefore(D,--X), (Belief:DecomposeNN, Time:BeliefEvent)
+        D, X, eventOfNeg(D,X), conjSequence(D), --isVar(X)  |-   conjAfter(D,--X), (Belief:DecomposeNN, Time:BeliefEvent)
 
 
-    C, X, is(C,"&&"), --isVar(X), neq(C,X)                |-   conjAfter(C,  X),       (Goal:DecomposePP, Time:BeliefEvent)
-    C, X, is(C,"&&"), has(C,"--"), --isVar(X), neq(C,X)   |-   conjAfter(C,--X),       (Goal:DecomposePN, Time:BeliefEvent)
-    C, X, is(C,"&&"), --isVar(X), neq(C,X)                |-   --conjAfter(C,  X),       (Goal:DecomposePN, Time:BeliefEvent)
-    C, X, is(C,"&&"), has(C,"--"), --isVar(X), neq(C,X)   |-   --conjAfter(C,--X),       (Goal:DecomposePP, Time:BeliefEvent)
+    C, X, is(C,"&&"), --isVar(X)                |-     conjAfter(C,  X),       (Goal:DecomposePP, Time:BeliefEvent)
+    C, X, is(C,"&&"), has(C,"--"), --isVar(X)   |-     conjAfter(C,--X),       (Goal:DecomposePN, Time:BeliefEvent)
+    C, X, is(C,"&&"), --isVar(X)                |-   --conjAfter(C,  X),       (Goal:DecomposePN, Time:BeliefEvent)
+    C, X, is(C,"&&"), has(C,"--"), --isVar(X)   |-   --conjAfter(C,--X),       (Goal:DecomposePP, Time:BeliefEvent)
 
-    D, X, is(D,"&&"), --isVar(X), neq(D,X)                |-   conjAfter(D, X),     (Goal:DecomposeNN, Time:BeliefEvent)
-    D, X, is(D,"&&"), has(D,"--"),  --isVar(X), neq(D,X)  |-   conjAfter(D, --X),     (Goal:DecomposeNP, Time:BeliefEvent)
-    D, X, is(D,"&&"), --isVar(X), neq(D,X)                |-   --conjAfter(D, X),     (Goal:DecomposeNP, Time:BeliefEvent)
-    D, X, is(D,"&&"), has(D,"--"), --isVar(X), neq(D,X)   |-   --conjAfter(D, --X),     (Goal:DecomposeNN, Time:BeliefEvent)
+    D, X, is(D,"&&"), --isVar(X)                |-   --conjAfter(D,   X),     (Goal:DecomposeNP, Time:BeliefEvent)
+    D, X, is(D,"&&"), has(D,"--"), --isVar(X)   |-   --conjAfter(D, --X),     (Goal:DecomposeNN, Time:BeliefEvent)
+    D, X, is(D,"&&"), --isVar(X)                |-     conjAfter(D,   X),     (Goal:DecomposeNN, Time:BeliefEvent)
+    D, X, is(D,"&&"), has(D,"--"),  --isVar(X)  |-     conjAfter(D, --X),     (Goal:DecomposeNP, Time:BeliefEvent)
 
 //    C, X, is(C,"&&"), has(D,"--"), --isVar(X)             |-   unisubst(C,chooseUnifiableSubEvent(C,--X),--X,"#",novel), (Belief:DecomposePN, Goal:DecomposePN, Time:BeliefEvent)
 //    C, X, is(C,"&&"), --isVar(X)                          |-   unisubst(C,chooseUnifiableSubEvent(C,  X),  X,"#",novel), (Belief:DecomposePP, Goal:DecomposePP, Time:BeliefEvent)

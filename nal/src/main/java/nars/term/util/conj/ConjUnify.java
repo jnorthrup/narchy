@@ -23,7 +23,7 @@ public class ConjUnify {
 
         int xdt = x.dt(), ydt = y.dt();
 
-        boolean var = u.var(xx) || u.var(yy);
+        boolean var = u.varIn(xx) || u.varIn(yy);
 
         if ((xdt == XTERNAL || ydt == XTERNAL)) {
 
@@ -71,7 +71,7 @@ public class ConjUnify {
                     return false; //TODO allow time splicing/shifting
 
                 xl.removeIf((long when, Term z) -> {
-                    if (!u.var(z)) {
+                    if (!u.varIn(z)) {
                         yl.remove(when, z);
                         return true;
                     }

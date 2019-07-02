@@ -765,7 +765,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
             if (xi == yi)
                 continue;
 
-            boolean now = (i==n-1 && m==null /* last one anyway so just do it */) || (!u.var(xi) && !u.var(yi));
+            boolean now = (i==n-1 && m==null /* last one anyway so just do it */) || (!u.varIn(xi) && !u.varIn(yi));
             if (now) {
                 if (!xi.unify(yi, u))
                     return false;

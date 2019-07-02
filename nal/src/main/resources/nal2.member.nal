@@ -1,0 +1,2 @@
+//NAL2 member operations
+(member(V,A) && X), (member(V,B) && X), is(V,"#"), is(A,"{"), is(B,"{"), neq(A,B) |- (member(V,{A,B}) && X), (Belief:Intersection, Time:Compose)

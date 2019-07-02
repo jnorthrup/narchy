@@ -2,7 +2,6 @@ package nars.unify.constraint;
 
 import nars.$;
 import nars.Op;
-import nars.subterm.Subterms;
 import nars.term.Compound;
 import nars.term.Neg;
 import nars.term.Term;
@@ -127,7 +126,8 @@ abstract public class TermMatcher {
 
         @Override
         public boolean testSuper(Term sx) {
-            return sx.subterms().hasAny(struct);
+            //return sx.subterms().hasAny(struct);
+            return true;
         }
     }
 
@@ -156,7 +156,8 @@ abstract public class TermMatcher {
 
         @Override
         public boolean testSuper(Term sx) {
-            return sx.hasAny(struct | (requireNegation ? NEG.bit : 0));
+            //return sx.hasAny(struct | (requireNegation ? NEG.bit : 0));
+            return true;
         }
     }
 
@@ -207,13 +208,14 @@ abstract public class TermMatcher {
 
         @Override
         public boolean testSuper(Term superTerm) {
-
-//            if (volMin == 0 || superTerm.volume() >= 1 + volMin) {
-                Subterms subs = superTerm.subterms();
-                return (anyOrAll ? subs.hasAny(struct) : subs.hasAll(struct))
-                    && subs.OR(anyOrAll ? x -> x.hasAny(struct) : x-> x.hasAll(struct));
-//            }
-//            return false;
+//
+////            if (volMin == 0 || superTerm.volume() >= 1 + volMin) {
+//                Subterms subs = superTerm.subterms();
+//                return (anyOrAll ? subs.hasAny(struct) : subs.hasAll(struct))
+//                    && subs.OR(anyOrAll ? x -> x.hasAny(struct) : x-> x.hasAll(struct));
+////            }
+////            return false;
+            return true;
         }
     }
 
@@ -260,8 +262,9 @@ abstract public class TermMatcher {
 
         @Override
         public boolean testSuper(Term term) {
-            return term instanceof Compound &&
-                    testVol(term) && term.subterms().hasAll(struct);
+//            return term instanceof Compound &&
+//                    testVol(term) && term.subterms().hasAll(struct);
+            return true;
         }
 
         private boolean testVol(Term term) {
@@ -310,8 +313,9 @@ abstract public class TermMatcher {
 
         @Override
         public boolean testSuper(Term term) {
-            return term.hasAll(xStruct);
+            //return term.hasAll(xStruct);
                     //containsRecursively(this.x);
+            return true;
         }
     }
 
@@ -344,8 +348,13 @@ abstract public class TermMatcher {
 
         @Override
         public boolean testSuper(Term x) {
-            return x.containsRecursively(this.x);
+            return true;
         }
+
+        //        @Override
+//        public boolean testSuper(Term x) {
+//            return x.containsRecursively(this.x);
+//        }
     }
 
 //    /**
@@ -401,7 +410,8 @@ abstract public class TermMatcher {
 
         @Override
         public boolean testSuper(Term x) {
-            return (x.volume() >= subsMin + 1); //this is the minimum possible volume, if it was the target and if it was only atoms
+            //return (x.volume() >= subsMin + 1); //this is the minimum possible volume, if it was the target and if it was only atoms
+            return true;
         }
 
         @Override

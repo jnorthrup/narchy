@@ -114,16 +114,16 @@ public class Termutifcation extends ArrayHashSet<DeterministicUnification> imple
         }
 
         @Override
-        public Term resolve(Variable x) {
-            Term y = parent.resolve(x);
+        public Term resolveVar(Variable x) {
+            Term y = parent.resolveVar(x);
             if (y != null && y != x) {
-                if (size==0 || !(y instanceof Variable) || !var(y))
+                if (size==0 || !var(y))
                     return y; //constant
 
                 x = (Variable) y;   //recurse thru this resolver
             }
 
-            return size > 0 ? super.resolve(x) : x;
+            return size > 0 ? super.resolveVar(x) : x;
         }
 
 //        @Override

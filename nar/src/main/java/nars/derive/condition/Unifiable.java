@@ -6,6 +6,7 @@ import nars.derive.model.Derivation;
 import nars.derive.rule.PremiseRule;
 import nars.op.UniSubst;
 import nars.subterm.Subterms;
+import nars.term.Neg;
 import nars.term.Term;
 import nars.term.Terms;
 import nars.term.Variable;
@@ -55,43 +56,66 @@ public enum Unifiable { ;
         Term conj = a.sub(0);
         if (conj instanceof Variable) {
             Term x = a.sub(1);
-            if (x instanceof Variable) {
-                p.constraints.add(new EventUnifiability((Variable)conj, (Variable)x));
+            Term xu = x.unneg();
+            if (xu instanceof Variable) {
+                p.constraints.add(new EventUnifiability((Variable)conj, (Variable)xu, x instanceof Neg));
             }
         }
     }
 
     static class EventUnifiability extends RelationConstraint<Derivation> {
         private static final Atom U = Atomic.atom(EventUnifiability.class.getSimpleName());
-        private final boolean forward;
+        private final boolean forward, xNeg;
 
-        EventUnifiability(Variable conj, Variable x) {
-            this(conj, x , true);
+        EventUnifiability(Variable conj, Variable x, boolean xNeg) {
+            this(conj, x, xNeg, true);
         }
 
-        private EventUnifiability(Variable conj, Variable x, boolean forward) {
-            super(U, conj, x, $.the(forward));
+        private EventUnifiability(Variable conj, Variable x, boolean xNeg, boolean forward) {
+            super(U, conj, x, $.the(xNeg), $.the(forward));
+            this.xNeg = xNeg;
             this.forward = forward;
         }
 
         @Override
         protected RelationConstraint newMirror(Variable newX, Variable newY) {
-            return new EventUnifiability(newX, newY, false);
+            return new EventUnifiability(newX, newY, xNeg, false);
         }
 
         @Override
         public boolean invalid(Term a, Term b, Derivation d) {
-            Term conj, x;
+            Term conj, _x;
             if (forward) {
-                conj = a; x = b;
+                conj = a; _x = b;
             } else {
-                conj = b; x = a;
+                conj = b; _x = a;
             }
 
             assert(conj.op()==CONJ);
 
-            if (conj.volume() <= x.volume())
-                return true;
+            int conjV = conj.volume();
+
+            Term x;
+            if (xNeg) {
+                if (_x instanceof Neg) {
+                    x = _x.unneg();
+                    if (conjV <= x.volume())
+                        return true;
+                } else {
+                    if (conjV <= _x.volume()+1)
+                        return true;
+                    x = _x.neg();
+                }
+
+            } else {
+                x = _x;
+                if (conjV <= x.volume())
+                    return true;
+            }
+
+            int cs = conj.structure();
+            if (x instanceof Neg && !Op.hasAny(cs, NEG.bit))
+                return true; // simple test
 
             boolean cv = conj.hasVars();
             boolean xv = x.hasVars();
@@ -108,13 +132,12 @@ public enum Unifiable { ;
             }
 
 //                    conj.subterms().hasAll(x.structure() & ~(Op.Variables|CONJ.bit));
-//            return false; //undecidable
 
         }
 
         @Override
         public float cost() {
-            return 0.3f;
+            return 0.6f;
         }
     }
 
@@ -140,7 +163,7 @@ public enum Unifiable { ;
 
         @Override
         public float cost() {
-            return 0.3f;
+            return 0.4f;
         }
     }
 }

@@ -66,7 +66,7 @@ public abstract class UnifyConstraint<U extends Unify> extends AbstractPred<U> {
      * @param f              match context
      * @return true if match is INVALID, false if VALID (reversed)
      */
-    abstract public boolean invalid(Term y, U f);
+    abstract public boolean invalid(Term x, U f);
 
 
     /**

@@ -87,7 +87,7 @@ public class Choose1 extends Termutator.AbstractTermutator {
     @Override
     public @Nullable Termutator preprocess(Unify u) {
         //resolve to constant if possible
-        Term xEllipsis = u.resolvePosNeg(this.xEllipsis);
+        Term xEllipsis = u.resolve(this.xEllipsis);
         if (this.xEllipsis != xEllipsis) {
             if (this.xEllipsis instanceof Ellipsis) {
                 if (!(xEllipsis instanceof Ellipsis)) {
@@ -100,10 +100,10 @@ public class Choose1 extends Termutator.AbstractTermutator {
             }
         }
 
-        Term x = u.resolvePosNeg(this.x);
+        Term x = u.resolve(this.x);
 
         TermList yy = new TermList(this.yy);
-        Subterms yy2 = u.resolve(yy);
+        Subterms yy2 = u.resolveSubs(yy);
         if (xEllipsis!=this.xEllipsis || x!=this.x || yy!=yy2) {
             yy2 = yy2.commuted();
             int ys = yy2.subs();
@@ -137,14 +137,14 @@ public class Choose1 extends Termutator.AbstractTermutator {
 
         int start = u.size();
 
-        for (Term x = u.resolvePosNeg(this.x); l >=0; l--) {
+        for (Term x = u.resolve(this.x); l >=0; l--) {
 
             int iy = (shuffle + l) % yy.length;
             Term y = yy[iy];
             if (x.unify(y, u)) {
                 if (xEllipsis == null) {
                     //cache this resolved value since it will be used repeatedly in iterations
-                    xEllipsis = u.resolvePosNeg(this.xEllipsis); //technically, this should only helpful if not the first in the chain
+                    xEllipsis = u.resolve(this.xEllipsis); //technically, this should only helpful if not the first in the chain
                 }
                 if (xEllipsis.unify( Fragment.matchedExcept(yy, (byte) iy), u)) {
                     if (!u.tryMutate(chain, current))

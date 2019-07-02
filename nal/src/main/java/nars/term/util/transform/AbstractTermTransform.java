@@ -91,8 +91,8 @@ public interface AbstractTermTransform extends TermTransform, nars.term.util.bui
 
             if (c instanceof Neg) {
                 Term xx = c.unneg();
-                    Term yy = apply(xx);
-                    return (yy == xx) ? c : yy.neg();
+                Term yy = apply(xx);
+                return (yy == xx) ? c : yy.neg();
 
             } else {
                 return applyPosCompound(c);

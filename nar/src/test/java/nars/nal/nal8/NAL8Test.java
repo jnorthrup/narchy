@@ -763,6 +763,7 @@ public class NAL8Test extends NALTest {
     void conjDecomposeGoalAfterNeg() {
 
         test
+                .termVolMax(4)
                 .inputAt(1, "(a &&+3 --b).")
                 .inputAt(5, "b! |")
                 .mustGoal(cycles, "a", 0f, 0.3f, t -> t == 2)

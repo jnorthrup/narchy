@@ -50,7 +50,7 @@ abstract public class RelationConstraint<U extends Unify> extends UnifyConstrain
 
     @Override
     public final boolean invalid(Term x, U f) {
-        Term yy = f.resolve(y);
+        Term yy = f.resolveVar(y);
         return yy != y && invalid(x, yy, f);
     }
 

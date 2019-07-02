@@ -79,7 +79,7 @@ public class EllipsisTest {
                         
 
 
-                        Term a = resolve(ellipsisTerm);
+                        Term a = resolveVar(ellipsisTerm);
                         if (a instanceof Fragment) {
                             Fragment varArgs = (Fragment) a;
 
@@ -220,7 +220,7 @@ public class EllipsisTest {
         @Override
         public void testFurther(Set<Term> selectedFixed, @NotNull Unify f, @NotNull Set<Term> varArgTerms) {
             assertEquals(2, f.xy.size());
-            Term fixedTermValue = f.resolve(fixedTerm);
+            Term fixedTermValue = f.resolveVar(fixedTerm);
             assertNotNull(fixedTermValue, f.toString());
             assertTrue(fixedTermValue instanceof Atomic);
             assertFalse(varArgTerms.contains(fixedTermValue));

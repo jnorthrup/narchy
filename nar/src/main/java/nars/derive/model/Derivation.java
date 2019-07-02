@@ -207,6 +207,12 @@ public class Derivation extends PreDerivation {
 
         this.anon = new AnonWithVarShift(ANON_INITIAL_CAPACITY, Op.VAR_DEP.bit | Op.VAR_QUERY.bit) {
 
+//            @Override
+//            protected boolean intern(Term x) {
+//                return !(x instanceof Atom) ||
+//                        transformDerived.derivationFunctors.apply((Atom)x)==null; //TODO better matcher
+//            }
+
             @Override
             protected final Term putCompound(Compound x) {
                 putOrGet = true;
@@ -674,12 +680,12 @@ public class Derivation extends PreDerivation {
         public transient Function<Variable, Term> xy = null;
 
         @Override
-        protected Term resolve(nars.term.Variable x) {
+        protected Term resolveVar(nars.term.Variable x) {
             if (xy != null) {
                 Term y = xy.apply(x);
                 return y == null ? x : y;
             } else
-                return Derivation.this.resolve(x);
+                return Derivation.this.resolveVar(x);
         }
 
 
@@ -692,12 +698,17 @@ public class Derivation extends PreDerivation {
 
             Term b;
             if (a instanceof Variable) {
-                b = resolve((Variable) a);
+                b = resolveVar((Variable) a);
+
+//                if (b!=null && !(b instanceof Variable)) {
+//                    b = resolve(b); //recurse
+//                }
+
             } else if (a instanceof Atom) {
 
-                if (a == TaskTerm) //a.equals(TaskTerm))
+                if (a == TaskTerm)
                     return taskTerm;
-                else if (a == BeliefTerm) // a.equals(BeliefTerm))
+                else if (a == BeliefTerm)
                     return beliefTerm;
 
                 b = derivationFunctors.apply(a);

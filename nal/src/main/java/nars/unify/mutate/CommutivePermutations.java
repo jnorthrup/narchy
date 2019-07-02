@@ -60,7 +60,7 @@ public final class CommutivePermutations extends Termutator.AbstractTermutator {
                             return null; //impossible
                         break;
                     } else {
-                        if (!u.var(x) && !u.var(y)) {
+                        if (!u.varIn(x) && !u.varIn(y)) {
                             //constant
                             if (Subterms.unifyLinear(x.commuted(), y.commuted(), u)) {
                                 preUnified = true;

@@ -135,13 +135,13 @@ public abstract class Unify extends Versioning<Term> {
 
     /** default unify substitution */
     private final UnifyTransform transform = new UnifyTransform() {
-        @Override protected Term resolve(Variable v) {
-            return Unify.this.resolve(v);
+        @Override protected Term resolveVar(Variable v) {
+            return Unify.this.resolveVar(v);
         }
 
         @Override
         protected Term applyPosCompound(Compound x) {
-            if (!x.hasAny(varBits))
+            if (size==0 || !x.hasAny(varBits))
                 return x;
 
             return super.applyPosCompound(x);
@@ -191,29 +191,34 @@ public abstract class Unify extends Versioning<Term> {
     /**
      * completely dereferences a target (usually a variable)
      */
-    public Term resolve(final Variable x) {
-        if (size == 0)
+    public Term resolveVar(final Variable x) {
+        int s = this.size;
+        if (s == 0)
             return x;
 
         Term /*Variable*/ z = x, y;
 
-        int safety = NAL.unify.UNIFY_VAR_RECURSION_DEPTH_LIMIT;
+        int safety = Math.min(s, NAL.unify.UNIFY_VAR_RECURSION_DEPTH_LIMIT);
 
-        do {
+        while (var(z)) {
             y = xy.get(z);
+
             if (y==null)
-                break;
-            if (y==x)
-                return x; //cycle?
-            z = y;
+                return z; //done
+
+            if (y==x || !(y instanceof Variable))
+                return y; //cycle or early exit
 
             if (--safety == 0) {
                 if (NAL.DEBUG)
                     throw new WTF("var cycle detected");
-                return Bool.Null;
+                else
+                    return Bool.Null;
             }
 
-        } while (z instanceof Variable);
+            z = y;
+
+        }
         return z;
     }
 
@@ -409,12 +414,20 @@ public abstract class Unify extends Versioning<Term> {
      * whether assignable variable terms
      */
     public final boolean var(Op var) {
-        return /*var.var &&*/ ((this.varBits & var.bit) != 0);
+        return var(var.bit);
+    }
+
+    public final boolean var(int varBit) {
+        return (this.varBits & varBit) != 0;
     }
 
     /** whether is or contains assignable variable terms */
-    public final boolean var(Termlike x) {
+    public final boolean varIn(Termlike x) {
         return x.hasAny(varBits);
+    }
+
+    public final boolean var(Term x) {
+        return x instanceof Variable && var(x.opBit());
     }
 
     /** how many matchable variables are present */
@@ -520,38 +533,30 @@ public abstract class Unify extends Versioning<Term> {
     }
 
     /** xdt and ydt must both not equal either XTERNAL or DTERNAL */
-    private final boolean unifyDT(int xdt, int ydt) {
+    private boolean unifyDT(int xdt, int ydt) {
         //assert(xdt!=DTERNAL && xdt!=XTERNAL && ydt!=DTERNAL && ydt!=XTERNAL);
         return Math.abs(xdt - ydt) < dtTolerance;
     }
 
-    public final Term resolvePosNeg(Term x) {
-        Term xx;
+    /** full resolution of a term */
+    public final Term resolve(Term x) {
+
         boolean neg = x instanceof Neg;
-        if (neg) {
-            xx = x.unneg();
-        } else {
-            xx = x;
-        }
+        Term xx = neg ? x.unneg() : x;
 
-        Term yy = xx;
-        if (xx instanceof Variable) {
-            if (var(xx.op())) {
-                yy = resolve((Variable) xx);
-            }
-        } else if (xx instanceof Compound) {
-            yy = xx.transform(transform());
-        } else {
-            //..
-        }
+        Term yy = var(xx) ? resolveVar((Variable) xx) : xx;
 
-        if (yy != xx)
-            return yy.negIf(neg);
-        else
-            return x; //no change
+//        if (yy instanceof Compound) {
+//            Term zz = transform().applyCompound((Compound) yy); //recurse
+//            if (yy!=zz)
+//                Util.nop();
+//            yy = zz;
+//        }
+
+        return yy != xx ? yy.negIf(neg) : x;
     }
 
-    public Subterms resolve(Subterms x) {
+    public Subterms resolveSubs(Subterms x) {
         return x.transformSubs(transform(), null);
     }
 
@@ -648,12 +653,12 @@ public abstract class Unify extends Versioning<Term> {
 
     public abstract static class UnifyTransform extends AbstractTermTransform.NegObliviousTermTransform {
 
-        abstract protected Term resolve(Variable v);
+        abstract protected Term resolveVar(Variable v);
 
         @Override
         public Term applyAtomic(Atomic x) {
             if (x instanceof Variable) {
-                Term y = resolve((Variable) x);
+                Term y = resolveVar((Variable) x);
                 if (y != null)
                     return y;
             }
@@ -667,7 +672,7 @@ public abstract class Unify extends Versioning<Term> {
                 this.resolve = resolve;
             }
 
-            @Override protected Term resolve(Variable v) {
+            @Override protected Term resolveVar(Variable v) {
                 return resolve.apply(v);
             }
         }

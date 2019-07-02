@@ -69,14 +69,19 @@ public class Anon extends AbstractTermTransform.NegObliviousTermTransform {
     }
 
     public final Term put(Term x) {
-        if (x instanceof Intrin) {
-            return putAnon(x);
-        } else if (x instanceof UnnormalizedVariable || x instanceof Interval /* HACK */) {
-            return x; //HACK is this necessary?
-        } else if (intern(x)) {
-            return putIntern(x);
-        } else {
+        if (x instanceof Compound) {
             return putCompound((Compound) x);
+        } else {
+            if (x instanceof Intrin) {
+                return putAnon(x);
+            } else if (x instanceof UnnormalizedVariable || x instanceof Interval /* HACK */) {
+                return x; //HACK is this necessary?
+            }
+
+            if (intern((Atomic)x))
+                return putIntern(x);
+            else
+                return x; //uninterned
         }
     }
 
@@ -85,8 +90,8 @@ public class Anon extends AbstractTermTransform.NegObliviousTermTransform {
     }
 
     /** default implementation: anonymize atoms, but also could be a Compound -> Atom anonymize */
-    protected boolean intern(Term x) {
-        return x instanceof Atomic;
+    protected boolean intern(Atomic x) {
+        return true;
     }
 
     /** anon filter in which subclasses can implement variable shifting */
@@ -101,19 +106,18 @@ public class Anon extends AbstractTermTransform.NegObliviousTermTransform {
 //                    //optimized
 //                    return x.replace(Anom.the(1), map.interned((byte)1));
 //                default:
-            putOrGet = false;
             return getCompound((Compound) x);
 //            }
         } else {
-            if (x instanceof Anom) {
+            if (x instanceof Anom)
                 return map.interned(((Anom) x).id());
-            }
-            return x;
+            else
+                return x;
         }
     }
 
     protected Term getCompound(Compound x) {
-        assert(putOrGet == false);
+        putOrGet = false;
         Term y0 = applyCompound(x);
         return y0;
 

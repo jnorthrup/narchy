@@ -8,7 +8,6 @@ import nars.subterm.Subterms;
 import nars.subterm.TermList;
 import nars.term.Compound;
 import nars.term.Term;
-import nars.term.Variable;
 import nars.term.util.conj.Conj;
 import nars.term.var.ellipsis.Ellipsis;
 import nars.term.var.ellipsis.Ellipsislike;
@@ -125,7 +124,7 @@ abstract public class PatternCompound extends CachedCompound.TemporalCachedCompo
                 if (x instanceof Ellipsis) {
                     int available = ysize - yi;
 
-                    Term xResolved = u.resolvePosNeg(x);
+                    Term xResolved = u.resolve(x);
                     if (xResolved == x) {
 
 
@@ -216,7 +215,7 @@ abstract public class PatternCompound extends CachedCompound.TemporalCachedCompo
             if (seq) {
                 yFree = Y.eventSet();
             } else {
-                yFree = Y.subterms().toSetSorted(u::resolvePosNeg);
+                yFree = Y.subterms().toSetSorted(u::resolve);
             }
 
             Subterms xx = subterms();
@@ -227,7 +226,7 @@ abstract public class PatternCompound extends CachedCompound.TemporalCachedCompo
             for (int k = 0; k < s; k++) {
 
                 Term xk = xx.sub(k);
-                Term xxk = u.resolvePosNeg(xk);
+                Term xxk = u.resolve(xk);
 
                 if (xk.equals(ellipsis)) {
                     if (xxk.equals(xk))
@@ -281,7 +280,7 @@ abstract public class PatternCompound extends CachedCompound.TemporalCachedCompo
                 //test matches against the one constant target
                 for (Iterator<Term> xi = xMatch.iterator(); xi.hasNext(); ) {
                     Term ix = xi.next();
-                    if (ix instanceof Variable && u.var(ix)) continue;
+                    if (u.var(ix)) continue;
 
                     boolean canMatch = false;
                     Term onlyY = null;
@@ -338,7 +337,7 @@ abstract public class PatternCompound extends CachedCompound.TemporalCachedCompo
         }
 
         private static boolean include(Term x, List<Term> xMatch, SortedSet<Term> yFree, Unify u) {
-            if (!u.var(x)) {
+            if (!u.varIn(x)) {
                 boolean rem = yFree.remove(x);
                 if (rem)
                     return true;
@@ -346,7 +345,7 @@ abstract public class PatternCompound extends CachedCompound.TemporalCachedCompo
                 if (x.hasAny(Op.Temporal)) {
                     for (Iterator<Term> iterator = yFree.iterator(); iterator.hasNext(); ) {
                         Term y = iterator.next();
-                        if (!u.var(y)) {
+                        if (!u.varIn(y)) {
                             //at this point volume, structure, etc can be compared
                             if (x.unify(y, u)) {
                                 iterator.remove();

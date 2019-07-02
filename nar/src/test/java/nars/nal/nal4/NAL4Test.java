@@ -17,12 +17,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class NAL4Test extends NALTest {
 
 
-    private static final int cycles =450;
+    private static final int cycles = 750;
 
     @Override
     protected NAR nar() {
         NAR n = NARS.tmp(4);
-        n.termVolMax.set(11);
+        n.termVolMax.set(8);
         return n;
     }
 
@@ -211,6 +211,7 @@ public class NAL4Test extends NALTest {
         */
 
         test
+                .termVolMax(10)
                 .believe("happy(L)", 1f, 0.9f)
                 .believe("((L)-->(o-(i-happy)))", 1f, 0.9f)
                 .mustNotOutput(cycles, "((o-(i-happy))-->happy)", BELIEF, ETERNAL);

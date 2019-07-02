@@ -5,7 +5,6 @@ import nars.NAR;
 import nars.NARS;
 import nars.test.NALTest;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import static nars.Op.BELIEF;
@@ -128,14 +127,12 @@ abstract public class DecomposeTest extends NALTest {
             ;
         }
 
-        @Disabled
         @Test
         void testDisjOpposite() {
-//
-//        test.log();
+
             //produces output from structural deduction
             test
-                    .termVolMax(5)
+                    .termVolMax(4)
                     .input("(||,a,--b)!")
                     .input("a.")
                     .mustNotOutput(cycles, "b", GOAL, 0f, 1f, 0f, 1f, t -> true)
@@ -145,6 +142,7 @@ abstract public class DecomposeTest extends NALTest {
         @Test
         void testDisjNeg() {
             test
+                    .termVolMax(4)
                     .input("(||,a,--b)!")
                     .input("--a.")
                     .mustGoal(cycles, "b", 0f, 0.81f)
@@ -155,7 +153,7 @@ abstract public class DecomposeTest extends NALTest {
         @Test
         void testDisjNeg2() {
             test
-                    .termVolMax(7)
+                    .termVolMax(4)
                     .input("(||,--a, b)!")
                     .input("a.")
                     .mustGoal(cycles, "b", 1f, 0.81f);
@@ -164,7 +162,7 @@ abstract public class DecomposeTest extends NALTest {
         @Test
         void testDisjNeg3() {
             test
-                    .termVolMax(6)
+                    .termVolMax(5)
                     .input("(||,--a,--b)!")
                     .input("a.")
                     .mustGoal(cycles, "b", 0f, 0.81f);
@@ -216,9 +214,6 @@ abstract public class DecomposeTest extends NALTest {
 
     public static class DoublePremiseDecompose extends NALTest {
 
-        public static final int cycles = 1500;
-
-
         @Test
         void decompose_Conj_BeliefPosPos() {
             test
@@ -242,15 +237,6 @@ abstract public class DecomposeTest extends NALTest {
                     .input("(a && b). %0.1;0.9%")
                     .input("b. %0.9;0.9%")
                     .mustBelieve(cycles, "a", 0.19f, 0.66f);
-        }
-        @Test
-        void decompose_Conj_BeliefNegNeg() {
-            test
-                    .termVolMax(4)
-                    .input("(a && --b). %0.1;0.9%")
-                    .input("b. %0.1;0.9%")
-                    .mustBelieve(cycles, "a", 0.19f, 0.66f)
-            ;
         }
 
         @Test

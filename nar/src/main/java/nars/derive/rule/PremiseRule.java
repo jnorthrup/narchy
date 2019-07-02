@@ -393,6 +393,14 @@ public class PremiseRule extends ProxyTerm {
 //                    break;
 
 
+                case "equals": {
+                    //is(X, Y.opBit(), !negated);
+                    match(X, new TermMatcher.Equals(Y), !negated);
+                    if (negated) negationApplied = true;
+
+                    break;
+                }
+
                 case "is": {
                     int struct;
                     if (Y.op() == SETe) {
@@ -410,8 +418,7 @@ public class PremiseRule extends ProxyTerm {
                         struct = Op.the($.unquote(Y)).bit;
                     }
                     is(X, struct, negated);
-                    if (negated)
-                        negationApplied = true;
+                    if (negated) negationApplied = true;
                     break;
                 }
                 case "isVar": {

@@ -24,6 +24,7 @@ public enum Derivers { ;
                 case 2:
                     f.add("nal2.nal");
                     f.add("nal2.guess.nal");
+                    f.add("nal2.member.nal");
                     break;
 
                 case 3:
