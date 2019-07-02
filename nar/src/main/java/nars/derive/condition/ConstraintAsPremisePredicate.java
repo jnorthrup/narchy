@@ -27,18 +27,19 @@ abstract public class ConstraintAsPremisePredicate<U extends PreDerivation, C ex
      * TODO generify a version of this allowing: U extends Unify
      * @return
      */
-    public static ConstraintAsPredicate the(
-            UnifyConstraint m, byte[] xInTask, byte[] xInBelief, byte[] yInTask, byte[] yInBelief) {
+    public static ConstraintAsPredicate the(UnifyConstraint m, byte[] xInTask, byte[] xInBelief, byte[] yInTask, byte[] yInBelief) {
 
         int costPath = 0;
 
         final BiFunction<Term, Term, Term> extractX;
         Term extractXterm;
-        if (xInTask != null && (xInBelief == null || xInTask.length < xInBelief.length)) {
+        if (xInTask != null) { // && (xInBelief == null || xInTask.length < xInBelief.length)) {
+            assert(xInBelief==null);
             extractX = xInTask.length == 0 ? TASK : (t, b) -> t.subPath(xInTask);
             extractXterm = $.p($.p(xInTask), Derivation.Task);
             costPath += xInTask.length;
         } else {
+            assert(xInTask==null);
             extractX = xInBelief.length == 0 ? BELIEF : (t, b) -> b.subPath(xInBelief);
             extractXterm = $.p($.p(xInBelief), Derivation.Belief);
             costPath += xInBelief.length;
@@ -75,7 +76,10 @@ abstract public class ConstraintAsPremisePredicate<U extends PreDerivation, C ex
         @Override
         public boolean test(PreDerivation p) {
             Term x = extractX.apply(p.taskTerm, p.beliefTerm);
-            return x != null && constraint.valid(x);
+            if (x != null) {
+                return constraint.valid(x);
+            }
+            return true; //<- does this happen?
         }
     }
 
@@ -111,9 +115,10 @@ abstract public class ConstraintAsPremisePredicate<U extends PreDerivation, C ex
             Term x = extractX.apply(t, b);
             if (x != null) {
                 Term y = extractY.apply(t, b);
-                return y!=null && !constraint.invalid(x, y, preDerivation);
+                if (y!=null)
+                    return !constraint.invalid(x, y, preDerivation);
             }
-            return false;
+            return true; //<- does this happen?
         }
     }
 

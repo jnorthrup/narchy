@@ -109,7 +109,9 @@ public class PremiseRule extends ProxyTerm {
      */
     private final TermTransform ConcTransform = new AbstractTermTransform.NegObliviousTermTransform() {
         @Override
-        public Term applyPosCompound(Compound c) {
+        public Term applyPosCompound(Compound _c) {
+
+            Term c = super.applyPosCompound(_c);
 
             Term f = Functor.func(c);
             if (f!=Null) {
@@ -117,13 +119,16 @@ public class PremiseRule extends ProxyTerm {
                 if (f.equals(UniSubst.unisubst)) {
                     Unifiable.constrainUnifiable(a, PremiseRule.this);
                 } else if (f.equals(ConjMatch.BEFORE) || f.equals(ConjMatch.AFTER)) {
-                    Unifiable.constrainConjBeforeAfter(a, PremiseRule.this);
+                    Unifiable.constraintEvent(a, PremiseRule.this, true);
                 } else if (f.equals(Derivation.SUBSTITUTE)) {
                     Unifiable.constrainSubstitute(a, PremiseRule.this);
+                } else if (f.equals(Derivation.CONJ_WITHOUT)) {
+                    //not 100% working yet:
+                    //Unifiable.constraintEvent(a, PremiseRule.this, false);
                 }
             }
 
-            return super.applyPosCompound(c);
+            return c;
         }
 
     };
@@ -278,7 +283,7 @@ public class PremiseRule extends ProxyTerm {
                     if (Y instanceof Variable) {
 
                         SubOfConstraint c = new SubOfConstraint(XX, (nars.term.Variable) Y, mode, polarity);
-                        constraints.add((UnifyConstraint) (c.negIf(negated)));
+                        constraints.add(c.negIf(negated));
                     } else {
                         if (polarity == 0)
                             throw new TODO(); //TODO contains(Y) || contains(--Y)
@@ -316,7 +321,7 @@ public class PremiseRule extends ProxyTerm {
                         yNeg = !yNeg;
                     }
 
-                    constraints.add((UnifyConstraint) (new SubOfConstraint(XX, YY, Event, yNeg ? -1 : +1).negIf(negated)));
+                    constraints.add(new SubOfConstraint(XX, YY, Event, yNeg ? -1 : +1).negIf(negated));
 
                     if (!negated) {
                         bigger(XX, YY);
@@ -907,16 +912,12 @@ public class PremiseRule extends ProxyTerm {
                 byte[] yInB = Terms.pathConstant(beliefPattern, y);
                 if ((yInT != null || yInB != null)) {
                     if (xInT!=null && xInB!=null) {
-                        if (xInB.length < xInT.length)
-                            xInT = null;
-                        else
-                            xInB = null;
+                        if (xInB.length < xInT.length) xInT = null;
+                        else xInB = null;
                     }
                     if (yInT!=null && yInB!=null) {
-                        if (yInB.length < yInT.length)
-                            yInT = null;
-                        else
-                            yInB = null;
+                        if (yInB.length < yInT.length) yInT = null;
+                        else yInB = null;
                     }
                     return ConstraintAsPremisePredicate.the(cc, xInT, xInB, yInT, yInB);
                 }
@@ -924,10 +925,14 @@ public class PremiseRule extends ProxyTerm {
 
 
         } else if (cc instanceof UnaryConstraint) {
-            byte[] xInTask = Terms.pathConstant(taskPattern, x);
-            byte[] xInBelief = Terms.pathConstant(beliefPattern, x);
-            if (xInTask != null || xInBelief != null) {
-                return ConstraintAsPremisePredicate.the(cc, xInTask, xInBelief, null, null);
+            byte[] xInT = Terms.pathConstant(taskPattern, x);
+            byte[] xInB = Terms.pathConstant(beliefPattern, x);
+            if (xInT != null || xInB != null) {
+                if (xInT!=null && xInB!=null) {
+                    if (xInB.length < xInT.length) xInT = null;
+                    else xInB = null;
+                }
+                return ConstraintAsPremisePredicate.the(cc, xInT, xInB, null, null);
             }
 
         }
@@ -935,7 +940,7 @@ public class PremiseRule extends ProxyTerm {
         return null;
     }
 
-    private void is(Term x, Op o) {
+    public void is(Term x, Op o) {
         is(x, o.bit);
     }
 
@@ -946,13 +951,14 @@ public class PremiseRule extends ProxyTerm {
 
     private void is(Term x, int struct, boolean negated) {
         match(x, new TermMatcher.Is(struct), !negated);
+        //constraints.add(new TermMatcher.Is(struct).constraint((Variable)x, !negated));
     }
 
-    private void eventable(Variable YY) {
+    public void eventable(Variable YY) {
         constraints.add(TermMatcher.Eventable.the.constraint(YY, true));
     }
 
-    private void hasAny(Term x, Op o) {
+    public void hasAny(Term x, Op o) {
         hasAny(x, o, false);
     }
 
@@ -1224,7 +1230,7 @@ public class PremiseRule extends ProxyTerm {
         );
     }
 
-    private void neq(Variable x, Term y) {
+    public void neq(Variable x, Term y) {
 
         if (y instanceof Neg && y.unneg() instanceof Variable) {
             constraints.add(new EqualNegConstraint(x, (Variable) (y.unneg())).neg());
@@ -1235,11 +1241,11 @@ public class PremiseRule extends ProxyTerm {
         }
     }
 
-    private void neqRoot(Variable x, Variable y) {
+    public void neqRoot(Variable x, Variable y) {
         constraints.add(new NotEqualConstraint.NotEqualRootConstraint(x, y));
     }
 
-    private void bigger(Variable x, Variable y) {
+    public void bigger(Variable x, Variable y) {
         constraints.add(new Bigger(x, y));
     }
 

@@ -72,6 +72,8 @@ public class Derivation extends PreDerivation {
     private final static int ANON_INITIAL_CAPACITY = 16;
     public static final ThreadLocal<Derivation> derivation = ThreadLocal.withInitial(Derivation::new);
     public static final Atom SUBSTITUTE = Atomic.atom("substitute");
+    public static final Atom CONJ_WITHOUT = Atomic.atom("conjWithout");
+
     public final PremiseUnify premiseUnify = new PremiseUnify();
 
     public final Bag<PostDerivation,PostDerivation> post = new PriArrayBag<>(PriMerge.max, 32);

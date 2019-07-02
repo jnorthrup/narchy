@@ -14,8 +14,10 @@ import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
 import nars.term.util.conj.Conj;
 import nars.unify.constraint.RelationConstraint;
+import nars.unify.constraint.SubOfConstraint;
 
 import static nars.Op.*;
+import static nars.subterm.util.SubtermCondition.Event;
 import static nars.time.Tense.XTERNAL;
 
 public enum Unifiable { ;
@@ -52,13 +54,25 @@ public enum Unifiable { ;
         }
     }
 
-    public static void constrainConjBeforeAfter(Subterms a, PremiseRule p) {
+    public static void constraintEvent(Subterms a, PremiseRule p, boolean unifiable) {
         Term conj = a.sub(0);
         if (conj instanceof Variable) {
             Term x = a.sub(1);
             Term xu = x.unneg();
             if (xu instanceof Variable) {
-                p.constraints.add(new EventUnifiability((Variable)conj, (Variable)xu, x instanceof Neg));
+                p.is(conj, CONJ);
+                if (x instanceof Neg && (xu.equals(p.taskPattern) || xu.equals(p.beliefPattern))) {
+                    p.hasAny(conj, NEG);
+                }
+                p.neq((Variable)conj, xu);
+                p.bigger((Variable)conj, (Variable)xu /* x */); //TODO
+                p.eventable((Variable)xu);
+                if (unifiable) {
+                    p.constraints.add(new EventUnifiability((Variable) conj, (Variable) xu, x instanceof Neg));
+                } else {
+                    //containment
+                    p.constraints.add(new SubOfConstraint((Variable)conj, (Variable)xu, Event, x instanceof Neg ? -1 : +1));
+                }
             }
         }
     }
@@ -93,24 +107,24 @@ public enum Unifiable { ;
 
             assert(conj.op()==CONJ);
 
-            int conjV = conj.volume();
+//            int conjV = conj.volume();
 
             Term x;
             if (xNeg) {
                 if (_x instanceof Neg) {
                     x = _x.unneg();
-                    if (conjV <= x.volume())
-                        return true;
+//                    if (conjV <= x.volume())
+//                        return true;
                 } else {
-                    if (conjV <= _x.volume()+1)
-                        return true;
+//                    if (conjV <= _x.volume()+1)
+//                        return true;
                     x = _x.neg();
                 }
 
             } else {
                 x = _x;
-                if (conjV <= x.volume())
-                    return true;
+//                if (conjV <= x.volume())
+//                    return true;
             }
 
             int cs = conj.structure();
