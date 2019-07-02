@@ -3,12 +3,16 @@ package nars.term.functor;
 import nars.eval.Evaluation;
 import nars.subterm.Subterms;
 import nars.term.Term;
+import nars.term.atom.Atom;
 import nars.term.atom.Bool;
 
 import java.util.function.BiFunction;
 
 abstract public class AbstractInlineFunctor2 extends AbstractInlineFunctor {
 
+    protected AbstractInlineFunctor2(Atom atom) {
+        super(atom);
+    }
     protected AbstractInlineFunctor2(String atom) {
         super(atom);
     }

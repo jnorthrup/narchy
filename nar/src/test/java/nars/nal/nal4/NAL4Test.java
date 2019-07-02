@@ -326,7 +326,6 @@ public class NAL4Test extends NALTest {
     @Test
     void composition_on_both_sides_of_a_statement_2_neg() {
         test
-                .logDebug()
                 .termVolMax(12)
                 .believe("((x|y)-->animal)",1.0f,0.9f)
                 .ask("(((x|y),plant) --> (animal,plant))")

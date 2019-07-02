@@ -239,8 +239,9 @@ public interface Termlike {
 
 
     default boolean impossibleSubTerm(Termlike target) {
-        return impossibleSubStructure(target.structure()) || impossibleSubVolume(target.volume());
+        return impossibleSubVolume(target.volume()) || impossibleSubStructure(target.structure());
     }
+
 
     boolean impossibleSubStructure(int structure);
 

@@ -71,6 +71,7 @@ public class Derivation extends PreDerivation {
     protected final static Logger logger = LoggerFactory.getLogger(Derivation.class);
     private final static int ANON_INITIAL_CAPACITY = 16;
     public static final ThreadLocal<Derivation> derivation = ThreadLocal.withInitial(Derivation::new);
+    public static final Atom SUBSTITUTE = Atomic.atom("substitute");
     public final PremiseUnify premiseUnify = new PremiseUnify();
 
     public final Bag<PostDerivation,PostDerivation> post = new PriArrayBag<>(PriMerge.max, 32);
@@ -129,7 +130,7 @@ public class Derivation extends PreDerivation {
     /**
      * populates retransform map
      */
-    final Replace substituteFunctor = new Replace("substitute") {
+    final Replace substituteFunctor = new Replace(Derivation.SUBSTITUTE) {
 
         @Override
         public @Nullable Term apply(Evaluation e, Subterms xx) {

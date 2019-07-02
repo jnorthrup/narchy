@@ -2,7 +2,6 @@ package nars.unify.constraint;
 
 import jcog.WTF;
 import nars.$;
-import nars.term.Neg;
 import nars.term.Term;
 import nars.term.Variable;
 import nars.term.atom.Atom;
@@ -17,13 +16,11 @@ abstract public class RelationConstraint<U extends Unify> extends UnifyConstrain
 
 
     public final Variable y;
-    private final boolean yNeg;
 
-    public RelationConstraint(Term id, Variable x, Variable y) {
+    private RelationConstraint(Term id, Variable x, Variable y) {
         super(id, x);
         assert(!x.equals(y));
         this.y = y;
-        this.yNeg = y instanceof Neg;
     }
 
     @Deprecated
@@ -35,54 +32,47 @@ abstract public class RelationConstraint<U extends Unify> extends UnifyConstrain
         this($.func(func, x, args.length > 0 ? $.p(y, $.p(args)) : y), x, y);
     }
 
-    public final RelationConstraint mirror() {
+    public final RelationConstraint<U> mirror() {
         return newMirror(y, x);
     }
 
     /** provide the reversed (mirror) constraint */
-    abstract protected RelationConstraint newMirror(Variable newX, Variable newY);
+    abstract protected RelationConstraint<U> newMirror(Variable newX, Variable newY);
 
-    public RelationConstraint neg() {
+    public RelationConstraint<U> neg() {
         return new NegRelationConstraint(this);
     }
 
     @Override
-    public final RelationConstraint negIf(boolean negate) {
+    public final RelationConstraint<U> negIf(boolean negate) {
         return negate ? neg() : this;
     }
-
-    //    @Override
-//    public RelationConstraint negIf(boolean negate) {
-//        return negate ? neg() : this;
-//    }
-
-
 
     @Override
     public final boolean invalid(Term x, U f) {
         Term yy = f.resolve(y);
-        return yy != y && invalid(x, yNeg ? yy.neg() : yy, f);
+        return yy != y && invalid(x, yy, f);
     }
 
     abstract public boolean invalid(Term x, Term y, U context);
 
     /** override to implement subsumption elimination */
-    public boolean remainInAndWith(RelationConstraint c) {
+    public boolean remainInAndWith(RelationConstraint<U> c) {
         return true;
     }
 
-    public static final class NegRelationConstraint extends RelationConstraint {
+    public static final class NegRelationConstraint<U extends Unify> extends RelationConstraint<U> {
 
-        public final RelationConstraint r;
+        public final RelationConstraint<U> r;
 
-        private NegRelationConstraint(RelationConstraint r) {
+        private NegRelationConstraint(RelationConstraint<U> r) {
             super(r.ref.neg(), r.x, r.y);
             this.r = r;
             assert(!(r instanceof NegRelationConstraint) && (r.ref.op()!=NEG));
         }
 
         @Override
-        public boolean remainInAndWith(RelationConstraint c) {
+        public boolean remainInAndWith(RelationConstraint<U> c) {
             if (c.equals(r))
                 throw new WTF(this + " present in a rule with its opposite " + c);
             return true;
@@ -90,7 +80,8 @@ abstract public class RelationConstraint<U extends Unify> extends UnifyConstrain
 
         @Override
         protected @Nullable RelationConstraint newMirror(Variable newX, Variable newY) {
-            return new NegRelationConstraint(r.mirror());
+            return new NegRelationConstraint(this);
+            //return new NegRelationConstraint(r.mirror());
         }
 
         @Override
@@ -99,7 +90,7 @@ abstract public class RelationConstraint<U extends Unify> extends UnifyConstrain
         }
 
         @Override
-        public boolean invalid(Term x, Term y, Unify context) {
+        public boolean invalid(Term x, Term y, U context) {
             return !r.invalid(x, y, context);
         }
 

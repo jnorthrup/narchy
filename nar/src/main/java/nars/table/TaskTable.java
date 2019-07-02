@@ -83,10 +83,11 @@ public interface TaskTable {
         boolean beliefOrQuestion = !(this instanceof QuestionTable);
         assert(beliefOrQuestion);
 
-        return Answer.relevant(beliefOrQuestion,
+        Answer a = Answer.relevant(beliefOrQuestion,
                 Answer.BELIEF_MATCH_CAPACITY, start, end, template, filter, nar)
-                .dur(dur)
-                .match(this);
+                .dur(dur);
+        match(a);
+        return a;
     }
 
     @Nullable default Task match(long start, long end, boolean forceProject, @Nullable Term template, Predicate<Task> filter, float dur, NAR nar, boolean ditherTruth) {

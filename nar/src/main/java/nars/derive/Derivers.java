@@ -15,6 +15,28 @@ public enum Derivers { ;
         Set<String> f = new TreeSet();
         for (int level = minLevel; level <= maxLevel; level++) {
             switch (level) {
+                case 1:
+                    f.add("nal1.nal");
+                    f.add("nal1.guess.nal");
+                    f.add("analogy.nal");
+                    break;
+
+                case 2:
+                    f.add("nal2.nal");
+                    f.add("nal2.guess.nal");
+                    break;
+
+                case 3:
+                    f.add("nal3.nal");
+                    f.add("nal3.decompose.nal");
+                    f.add("nal3.guess.nal");
+                    //f.add("nal3.decompose.extra.nal");
+                    //f.add("nal3.induction.nal");
+                    break;
+
+                case 4:
+                    f.add("nal4.nal");
+                    break;
 
                 case 6:
                     f.add("induction.nal");
@@ -34,25 +56,8 @@ public enum Derivers { ;
 
 
                     break;
-                case 4:
-                    f.add("nal4.nal");
-                    break;
-                case 3:
-                    f.add("nal3.nal");
-                    f.add("nal3.decompose.nal");
-                    f.add("nal3.guess.nal");
-                    //f.add("nal3.decompose.extra.nal");
-                    //f.add("nal3.induction.nal");
-                    break;
-                case 2:
-                    f.add("nal2.nal");
-                    f.add("nal2.guess.nal");
-                    break;
-                case 1:
-                    f.add("analogy.nal");
-                    f.add("nal1.nal");
-                    f.add("nal1.guess.nal");
-                    break;
+
+
             }
         }
 

@@ -56,8 +56,14 @@ public class DeriveAction  /*implements ThrottledAction<Derivation>*/ {
     }
 
     public boolean test(Derivation d) {
-        if (truth.test(d))
+        if (truth.test(d)) {
+
+            d.clear();
+            d.retransform.clear();
+            d.forEachMatch = null;
+
             conclusion.test(d);
+        }
 
         return d.use(NAL.derive.TTL_COST_BRANCH);
     }

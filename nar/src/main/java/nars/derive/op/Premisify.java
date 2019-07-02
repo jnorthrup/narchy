@@ -29,12 +29,6 @@ abstract public class Premisify extends AbstractPred<Derivation> {
 
 
     protected final boolean unify(Derivation d, boolean dir, boolean finish) {
-        if (!finish) {
-            //restart
-            d.clear();
-            d.retransform.clear();
-            d.forEachMatch = null;
-        }
         return d.unify(dir ? taskPat : beliefPat, dir ? d.taskTerm : d.beliefTerm, finish);
     }
 

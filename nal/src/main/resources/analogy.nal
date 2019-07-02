@@ -23,8 +23,9 @@
 //      https://cogsci.indiana.edu/
 // the similarity beliefs here act as a sort of transistor switch in determining Desire result truth
 
-  X, (X <-> Y), --isVar(Y)                        |- Y, (Belief:DesireWeak, Goal:DesireWeak, Time:TaskEvent)
+  X, (X <-> Y), --isVar(Y)                      |- Y, (Belief:DesireWeakPP, Goal:DesireWeak, Time:TaskEvent)
     //X, (X <-> Y), task("?@"), --isVar(Y)            |- Y
+  X, (X <-> Y), --isVar(Y)                      |- Y, (Belief:DesireWeakNN, Goal:DesireWeakNN, Time:TaskEvent)
  //  X, (--X <-> Y), --isVar(Y)                      |- Y, (Belief:DesireWeakN, Goal:DesireWeakN, Time:TaskEvent)
     //X, (--X <-> Y), task("?@"), --isVar(Y)            |- Y
 

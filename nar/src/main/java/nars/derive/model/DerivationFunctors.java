@@ -67,7 +67,7 @@ public enum DerivationFunctors {
                 //(Functor) nar.concept("withoutPNRepolarized"),
 //                (Functor) nar.concept("unsect"),(Functor) nar.concept("unsectPN"),(Functor) nar.concept("unsectPNRepolarized"),
 
-                new AbstractInlineFunctor2("conjBefore") {
+                new AbstractInlineFunctor2(ConjMatch.BEFORE) {
                     @Override protected Term apply(Term conj, Term event) {
                         if (!(conj instanceof Compound))
                             return Null;
@@ -75,7 +75,7 @@ public enum DerivationFunctors {
                         return x == null ? Null : x;
                     }
                 },
-                new AbstractInlineFunctor2("conjAfter") {
+                new AbstractInlineFunctor2(ConjMatch.AFTER) {
                     @Override protected Term apply(Term conj, Term event) {
                         if (!(conj instanceof Compound))
                             return Null;

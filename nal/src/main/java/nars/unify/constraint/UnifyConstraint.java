@@ -3,6 +3,7 @@ package nars.unify.constraint;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.MultimapBuilder;
 import jcog.Util;
+import jcog.data.list.FasterList;
 import nars.$;
 import nars.NAL;
 import nars.term.Term;
@@ -15,7 +16,8 @@ import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
-import java.util.stream.Stream;
+import java.util.Collection;
+import java.util.stream.Collectors;
 
 
 /** must be stateless */
@@ -24,6 +26,8 @@ public abstract class UnifyConstraint<U extends Unify> extends AbstractPred<U> {
 //    public static boolean valid(Term x, @Nullable Versioned<MatchConstraint> c, Unify u) {
 //        return c == null || !c.anySatisfyWith((cc,X) -> cc.invalid(X, u), x);
 //    }
+
+
 
     @Override
     public final boolean test(U p) {
@@ -64,8 +68,37 @@ public abstract class UnifyConstraint<U extends Unify> extends AbstractPred<U> {
      */
     abstract public boolean invalid(Term y, U f);
 
+
+    /**
+     * groups the constraints into their respective targets
+     */
+    static final MultimapBuilder.ListMultimapBuilder matchConstraintMapBuilder = MultimapBuilder.hashKeys(4).arrayListValues(4);
+    public static FasterList<UnifyConstraint> the(Collection<UnifyConstraint> c) {
+        ListMultimap<Term, UnifyConstraint> m = matchConstraintMapBuilder.build();
+        c.forEach(x -> m.put(x.x, x));
+        return m.asMap().values().stream().map(cc -> {
+            int ccn = cc.size();
+
+            assert (ccn > 0);
+            if (ccn == 1) {
+                return cc.iterator().next();
+            } else {
+                UnifyConstraint<?>[] d = cc.toArray(new UnifyConstraint[ccn]);
+                Arrays.sort(d, PREDICATE.sortByCostIncreasing);
+
+                if (NAL.test.DEBUG_EXTRA) {
+                    final Term target = d[0].x;
+                    for (int i = 1; i < d.length; i++)
+                        assert (d[i].x.equals(target));
+                }
+
+                return new CompoundConstraint(d);
+            }
+        }).collect(Collectors.toCollection(FasterList::new));
+
+    }
+
     private static final class CompoundConstraint<U extends Unify> extends UnifyConstraint<U> {
-        static final MultimapBuilder.ListMultimapBuilder matchConstraintMapBuilder = MultimapBuilder.hashKeys(4).arrayListValues(4);
 
         private final UnifyConstraint<U>[] cache;
 
@@ -74,45 +107,17 @@ public abstract class UnifyConstraint<U extends Unify> extends AbstractPred<U> {
             this.cache = c;
         }
 
-        /**
-         * groups the constraints into their respective targets
-         */
-        private static Stream<UnifyConstraint> the(Stream<UnifyConstraint> c) {
-            ListMultimap<Term, UnifyConstraint> m = matchConstraintMapBuilder.build();
-            c.forEach(x -> m.put(x.x, x));
-            return m.asMap().values().stream().map(cc -> {
-                int ccn = cc.size();
-
-                assert (ccn > 0);
-                if (ccn == 1) {
-                    return cc.iterator().next();
-                } else {
-                    UnifyConstraint<?>[] d = cc.toArray(new UnifyConstraint[ccn]);
-                    Arrays.sort(d, PREDICATE.sortByCostIncreasing);
-
-                    if (NAL.test.DEBUG_EXTRA) {
-                        final Term target = d[0].x;
-                        for (int i = 1; i < d.length; i++)
-                            assert (d[i].x.equals(target));
-                    }
-
-                    return new CompoundConstraint(d);
-                }
-            });
-
-        }
-
         @Override
         public float cost() {
             return Util.sum((FloatFunction<AbstractPred<U>>) PREDICATE::cost, cache);
         }
 
         @Override
-        public boolean invalid(Term y, Unify f) {
-            for (UnifyConstraint c : cache) {
-                if (c.invalid(y, f))
+        public boolean invalid(Term x, Unify f) {
+            for (UnifyConstraint c : cache)
+                if (c.invalid(x, f))
                     return true;
-            }
+
             return false;
         }
 

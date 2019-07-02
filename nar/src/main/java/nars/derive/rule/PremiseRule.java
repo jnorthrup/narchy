@@ -26,10 +26,10 @@ import nars.term.Variable;
 import nars.term.*;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
-import nars.term.atom.Bool;
 import nars.term.control.PREDICATE;
 import nars.term.control.TermMatch;
 import nars.term.util.TermException;
+import nars.term.util.conj.ConjMatch;
 import nars.term.util.transform.AbstractTermTransform;
 import nars.term.util.transform.TermTransform;
 import nars.truth.func.NALTruth;
@@ -38,6 +38,7 @@ import nars.unify.Unify;
 import nars.unify.constraint.*;
 import org.eclipse.collections.api.block.function.primitive.ByteToByteFunction;
 import org.eclipse.collections.api.block.predicate.primitive.BytePredicate;
+import org.eclipse.collections.api.collection.MutableCollection;
 import org.eclipse.collections.api.set.ImmutableSet;
 import org.eclipse.collections.api.set.MutableSet;
 import org.eclipse.collections.impl.factory.Sets;
@@ -57,6 +58,7 @@ import java.util.stream.Stream;
 import static nars.Op.*;
 import static nars.derive.premise.PatternTermBuilder.patternify;
 import static nars.subterm.util.SubtermCondition.*;
+import static nars.term.atom.Bool.Null;
 import static nars.term.control.AbstractTermMatchPred.cost;
 import static nars.term.control.PREDICATE.sortByCostIncreasing;
 import static nars.time.Tense.DTERNAL;
@@ -105,54 +107,28 @@ public class PremiseRule extends ProxyTerm {
     /**
      * conclusion post-processing
      */
-    private final TermTransform ConcTransform = new AbstractTermTransform() {
+    private final TermTransform ConcTransform = new AbstractTermTransform.NegObliviousTermTransform() {
         @Override
-        public Term applyCompound(Compound c) {
+        public Term applyPosCompound(Compound c) {
 
-            c = apply(c, PremiseRule.this, pre);
-
-            return AbstractTermTransform.super.applyCompound(c);
-        }
-
-        private Compound apply(Compound c, PremiseRule p, MutableSet<PREDICATE<? extends Unify>> pre) {
             Term f = Functor.func(c);
-
-            if (f.equals(UniSubst.unisubst)) {
-
+            if (f!=Null) {
                 Subterms a = Functor.args(c);
-
-                Term x = /*unwrapPolarize...*/(a.sub(1));
-
-                if (Unifiable.hasNoFunctor(x)) {
-
-                    Term y = a.sub(2);
-
-                    if (Unifiable.hasNoFunctor(y)) {
-
-                        //both x and y are constant
-
-                        int varBits;
-                        if (a.indexOf(UniSubst.DEP_VAR) > 2)
-                            varBits = VAR_DEP.bit;
-                        else if (a.indexOf(UniSubst.INDEP_VAR) > 2)
-                            varBits = VAR_INDEP.bit;
-                        else
-                            varBits = VAR_DEP.bit | VAR_INDEP.bit;
-
-                        boolean strict = a.contains(UniSubst.NOVEL);
-
-                        Unifiable.tryAdd(x, y,
-                                p.taskPattern, p.beliefPattern,
-                                varBits, strict, PremiseRule.this);
-                    }
+                if (f.equals(UniSubst.unisubst)) {
+                    Unifiable.constrainUnifiable(a, PremiseRule.this);
+                } else if (f.equals(ConjMatch.BEFORE) || f.equals(ConjMatch.AFTER)) {
+                    Unifiable.constrainConjBeforeAfter(a, PremiseRule.this);
+                } else if (f.equals(Derivation.SUBSTITUTE)) {
+                    Unifiable.constrainSubstitute(a, PremiseRule.this);
                 }
-
-                //TODO compile to 1-arg unisubst
             }
-            return c;
+
+            return super.applyPosCompound(c);
         }
 
     };
+
+
 
     public PremiseRule(String ruleSrc) throws Narsese.NarseseException {
         super(
@@ -201,7 +177,7 @@ public class PremiseRule extends ProxyTerm {
                 p = p.unneg();
 
             Term name = Functor.func(p);
-            if (name == Bool.Null)
+            if (name == Null)
                 throw new RuntimeException("invalid precondition: " + p);
 
             String pred = name.toString();
@@ -743,6 +719,35 @@ public class PremiseRule extends ProxyTerm {
 //                pre.addAt(p);
 //            }
 //        });
+
+
+        if (taskPunc == null)
+            throw new UnsupportedOperationException("no taskPunc specified");
+
+        if (concPunc == null)
+            throw new UnsupportedOperationException("no concPunc specified");
+
+        TaskPunc tp = TaskPunc.get(taskPunc);
+        if (tp!=null)
+            pre.add(tp);
+
+        this.truthify = intern(Truthify.the(concPunc, beliefTruthOp, goalTruthOp, time));
+        this.time = time;
+
+        this.taskPunc = taskPunc;
+        this.beliefTruth = beliefTruth;
+        this.goalTruth = goalTruth;
+
+
+        this.termify = new Termify(conclusion(postcon[0]), truthify, time);
+
+        this.CONSTRAINTS = constraints(constraints);
+
+        this.PRE = preconditions();
+
+    }
+
+    private ImmutableSet<UnifyConstraint> constraints(MutableSet<UnifyConstraint> constraints) {
         List<RelationConstraint> mirrors = new FasterList(4);
         constraints.removeIf(cc -> {
 //            PREDICATE<Derivation> post = cc.postFilter();
@@ -764,31 +769,7 @@ public class PremiseRule extends ProxyTerm {
 
         constraints.addAll(mirrors);
 
-        if (taskPunc == null)
-            throw new UnsupportedOperationException("no taskPunc specified");
-
-        if (concPunc == null)
-            throw new UnsupportedOperationException("no concPunc specified");
-
-        TaskPunc tp = TaskPunc.get(taskPunc);
-        if (tp!=null)
-            pre.add(tp);
-
-        this.truthify = intern(Truthify.the(concPunc, beliefTruthOp, goalTruthOp, time));
-        this.time = time;
-
-        this.taskPunc = taskPunc;
-        this.beliefTruth = beliefTruth;
-        this.goalTruth = goalTruth;
-        this.CONSTRAINTS = theInterned(constraints);
-
-
-        this.termify = new Termify(conclusion(postcon[0]), truthify, time);
-
-
-        this.PRE = preconditions();
-//        this.constraintSet = CONSTRAINTS.toSet();
-
+        return theInterned(UnifyConstraint.the(constraints)); //AFTER .. constraints can be added to in conclusion()
     }
 
     PremiseRule(PremiseRule raw) {
@@ -830,7 +811,7 @@ public class PremiseRule extends ProxyTerm {
         return y != null ? y : x;
     }
 
-    private static ImmutableSet<UnifyConstraint> theInterned(MutableSet<UnifyConstraint> constraints) {
+    private static ImmutableSet<UnifyConstraint> theInterned(MutableCollection<UnifyConstraint> constraints) {
         if (constraints.isEmpty())
             return Sets.immutable.empty();
         else {
@@ -908,13 +889,25 @@ public class PremiseRule extends ProxyTerm {
         } else if (cc instanceof RelationConstraint) {
 
             Variable y = ((RelationConstraint) cc).y;
-            byte[] xInTask = Terms.pathConstant(taskPattern, x);
-            byte[] xInBelief = Terms.pathConstant(beliefPattern, x);
-            if (xInTask != null || xInBelief != null) {
-                byte[] yInTask = Terms.pathConstant(taskPattern, y);
-                byte[] yInBelief = Terms.pathConstant(beliefPattern, y);
-                if ((yInTask != null || yInBelief != null)) {
-                    return ConstraintAsPremisePredicate.the(cc, xInTask, xInBelief, yInTask, yInBelief);
+            byte[] xInT = Terms.pathConstant(taskPattern, x);
+            byte[] xInB = Terms.pathConstant(beliefPattern, x);
+            if (xInT != null || xInB != null) {
+                byte[] yInT = Terms.pathConstant(taskPattern, y);
+                byte[] yInB = Terms.pathConstant(beliefPattern, y);
+                if ((yInT != null || yInB != null)) {
+                    if (xInT!=null && xInB!=null) {
+                        if (xInB.length < xInT.length)
+                            xInT = null;
+                        else
+                            xInB = null;
+                    }
+                    if (yInT!=null && yInB!=null) {
+                        if (yInB.length < yInT.length)
+                            yInT = null;
+                        else
+                            yInB = null;
+                    }
+                    return ConstraintAsPremisePredicate.the(cc, xInT, xInB, yInT, yInB);
                 }
             }
 

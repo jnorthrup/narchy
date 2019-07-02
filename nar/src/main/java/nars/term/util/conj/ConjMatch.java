@@ -9,6 +9,8 @@ import nars.derive.model.Derivation;
 import nars.op.UniSubst;
 import nars.term.Compound;
 import nars.term.Term;
+import nars.term.atom.Atom;
+import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
 import org.eclipse.collections.api.set.ImmutableSet;
 import org.eclipse.collections.api.tuple.primitive.LongObjectPair;
@@ -26,6 +28,8 @@ import static nars.time.Tense.XTERNAL;
 public enum ConjMatch { ;
 
 
+    public static final Atom BEFORE = Atomic.atom("conjBefore");
+    public static final Atom AFTER = Atomic.atom("conjAfter");
 
     /**
      * returns the prefix or suffix sequence of a specific matched subevent

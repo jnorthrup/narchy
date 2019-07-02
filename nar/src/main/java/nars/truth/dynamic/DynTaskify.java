@@ -54,10 +54,7 @@ public class DynTaskify extends TaskList {
         Component(Term term, BeliefTable _c, DynTaskify d, int currentComponent, long start, long end) {
             boolean negated = term.op() == Op.NEG;
 
-            if (negated) {
-                term = term.unneg();
-                d.componentPolarity.clear(currentComponent);
-            }
+
 
             this.term = term;
             this._concept = _c;
@@ -290,16 +287,22 @@ public class DynTaskify extends TaskList {
 
 
     private boolean evalComponent(Term subTerm, long start, long end) {
-        Term su = subTerm.unneg();
+        boolean negated = subTerm instanceof Neg;
+        Term c;
+        if (negated) {
+            c = subTerm.unneg();
+            componentPolarity.clear(components==null ? 0 : components.size());
+        } else
+            c = subTerm;
 
-        BeliefTable table = nar.tableDynamic(su, beliefOrGoal);
+        BeliefTable table = nar.tableDynamic(c, beliefOrGoal);
         if (table==null || table.isEmpty())
             return false;
 
         if (components == null)
             components = new Possibilities(this);//new FasterList(4);
 
-        components.add(new Component(su, table,
+        components.add(new Component(c, table,
                 this, components.size(),
                 start, end));
 

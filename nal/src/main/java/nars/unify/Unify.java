@@ -217,30 +217,30 @@ public abstract class Unify extends Versioning<Term> {
         return z;
     }
 
-    /** UNTESTED */
-    @Nullable public Term resolve(final Variable x, boolean store, Function<Variable,Term> resolver) {
-        //if (size == 0)
-            //TODO fast insert
-
-        Variable /*Variable*/ z = x;
-
-
-        do {
-            Term y = xy.get(z);
-            if (y==null) {
-                Term r = resolver.apply(z);
-                if (store && r!=null) {
-                    if (!putXY(x, r))
-                        return null; //fail
-                }
-                return r;
-            } else if (y instanceof Variable) {
-                z = (Variable) y;
-            } else {
-                return y;
-            }
-        } while (true);
-    }
+//    /** UNTESTED */
+//    @Nullable public Term resolve(final Variable x, boolean store, Function<Variable,Term> resolver) {
+//        //if (size == 0)
+//            //TODO fast insert
+//
+//        Variable /*Variable*/ z = x;
+//
+//
+//        do {
+//            Term y = xy.get(z);
+//            if (y==null) {
+//                Term r = resolver.apply(z);
+//                if (store && r!=null) {
+//                    if (!putXY(x, r))
+//                        return null; //fail
+//                }
+//                return r;
+//            } else if (y instanceof Variable) {
+//                z = (Variable) y;
+//            } else {
+//                return y;
+//            }
+//        } while (true);
+//    }
     /**
      * default usage: invokes the match callback if successful
      */
@@ -390,11 +390,11 @@ public abstract class Unify extends Versioning<Term> {
 
         revert(0, each);
 
-        varDepth = 0;
-
         termutes.clear();
 
         constrained.clear(ConstrainedVersionedTerm::unconstrain);
+
+        varDepth = 0;
 
         return this;
     }
@@ -584,7 +584,7 @@ public abstract class Unify extends Versioning<Term> {
         /**
          * lazily constructed
          */
-        public UnifyConstraint constraint;
+        public UnifyConstraint<Unify> constraint;
 
         ConstrainedVersionedTerm(Term key) {
             super(key);
@@ -609,12 +609,14 @@ public abstract class Unify extends Versioning<Term> {
         }
 
         @Override protected boolean valid(Term x, Versioning<Term> context) {
-            UnifyConstraint c = this.constraint;
+            UnifyConstraint<Unify> c = this.constraint;
             return c == null || !c.invalid(x, (Unify)context);
         }
 
         void constrain(UnifyConstraint c) {
-            //if (NAL.DEBUG) { assert(value==null && constraint == null); }
+//            if (constraint!=null)
+//                throw new WTF("constraint replacement: " + constraint + " -> " + c);
+//            assert(constraint == null);
             constraint = c;
         }
 

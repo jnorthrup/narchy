@@ -51,11 +51,10 @@ public class UniVersioned<X> implements Versioned<X> {
     public final boolean set(X next, @Nullable Versioning<X> context) {
         X prev = value;
         if (prev!=null) {
-
             int m = match(prev, next);
             if (m >= 0) {
-                if (m == +1)
-                    value = next;
+                if (m == +1 && valid(next, context))
+                    value = next; //replace
                 return true;
             }
         } else {
