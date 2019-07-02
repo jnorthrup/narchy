@@ -64,7 +64,7 @@ class TemporalInductionTest {
      * rather than raw belief truth
      */
     private static void testInduction(String a, String b, int dt) {
-        int cycles = dt * 40;
+        int cycles = dt * 20;
         boolean bNeg = b.startsWith("--");
         TestNAR t = new TestNAR(NARS.tmp())
                 .input(a + ". |")
@@ -72,9 +72,10 @@ class TemporalInductionTest {
                 .mustBelieve(cycles, '(' + a + " &&+" + dt + ' ' + b + ')', 1.00f, 0.81f /*intersectionConf*/, 0)
                 .mustBelieve(cycles, '(' + a + " ==>+" + dt + ' ' + (bNeg ? b.substring(2) /* unneg */ : b) + ')',
                         bNeg ? 0 : 1.00f,
-                        0.45f /*abductionConf*/, 0);
-        if (!(a.contains("--") /*NEG*/ && a.equals(b)))
-            t.mustBelieve(cycles, '(' + b + " ==>-" + dt + ' ' + a + ')', 1.00f, 0.45f /*inductionConf*/, dt);
+                        0.45f /*abductionConf*/, 0)
+        ;
+//        if (!(a.contains("--") /*NEG*/ && a.equals(b)))
+//            t.mustBelieve(cycles, '(' + b + " ==>-" + dt + ' ' + a + ')', 1.00f, 0.45f /*inductionConf*/, dt);
 
         t.run(cycles);
     }

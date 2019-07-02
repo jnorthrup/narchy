@@ -8,7 +8,7 @@ import nars.Task;
 import nars.concept.Concept;
 import nars.control.NARPart;
 import nars.control.op.TaskEvent;
-import nars.derive.pri.DefaultDerivePri;
+import nars.derive.pri.DefaultPuncWeightedDerivePri;
 import nars.derive.pri.DerivePri;
 import nars.exe.Exec;
 import nars.link.TaskLink;
@@ -72,8 +72,8 @@ abstract public class What extends NARPart implements Prioritizable, Sampler<Tas
      * */
     public DerivePri derivePri =
             //new DirectDerivePri();
-            new DefaultDerivePri();
-            //new DefaultPuncWeightedDerivePri(); //<- extreme without disabling either pre or post amp
+            //new DefaultDerivePri();
+            new DefaultPuncWeightedDerivePri(); //<- extreme without disabling either pre or post amp
 
     final ConsumerX<Task> out = new ConsumerX<>() {
 

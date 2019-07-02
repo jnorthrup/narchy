@@ -538,20 +538,24 @@ public abstract class Unify extends Versioning<Term> {
         return Math.abs(xdt - ydt) < dtTolerance;
     }
 
-    /** full resolution of a term */
     public final Term resolve(Term x) {
+        return resolveTerm(x, true);
+    }
+
+    /** full resolution of a term */
+    public final Term resolveTerm(Term x, boolean recurse) {
 
         boolean neg = x instanceof Neg;
         Term xx = neg ? x.unneg() : x;
 
         Term yy = var(xx) ? resolveVar((Variable) xx) : xx;
 
-//        if (yy instanceof Compound) {
-//            Term zz = transform().applyCompound((Compound) yy); //recurse
+        if (recurse && yy instanceof Compound) {
+            Term zz = transform().applyCompound((Compound) yy); //recurse
 //            if (yy!=zz)
 //                Util.nop();
-//            yy = zz;
-//        }
+            yy = zz;
+        }
 
         return yy != xx ? yy.negIf(neg) : x;
     }

@@ -484,7 +484,7 @@ public class Occurrify extends TimeGraph {
 
             @Override
             long[] occurrence(Derivation d) {
-                return rangeCombine(d, OccMerge.Task);
+                return rangeCombine(d, d.beliefTerm.equals(d.taskTerm) ? OccMerge.Earliest : OccMerge.Task);
             }
 
             @Override
@@ -509,7 +509,7 @@ public class Occurrify extends TimeGraph {
 
             @Override
             long[] occurrence(Derivation d) {
-                return rangeCombine(d, OccMerge.Belief);
+                return rangeCombine(d, d.beliefTerm.equals(d.taskTerm) ? OccMerge.Earliest : OccMerge.Belief);
             }
 
             @Override

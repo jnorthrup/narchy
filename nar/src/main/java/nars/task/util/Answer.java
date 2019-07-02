@@ -237,12 +237,11 @@ public final class Answer implements Timed, Predicate<Task> {
                 /* probably safe to ignore caused by a Dynamic task result that doesnt quite match what is being sought
                    TODO record a misfire event. this will measure how much dynamic task generation is reducing efficiency
                  */
-//                if (NAL.DEBUG)
+                if (NAL.DEBUG)
                     throw new TermException("mismatch for Answer template: " + template, x);
-//                else {
-//
-//                    return Float.NaN;
-//                }
+                else {
+                    return Float.NaN;
+                }
             }
 
             float d = 1 / (1 + dtDiff);

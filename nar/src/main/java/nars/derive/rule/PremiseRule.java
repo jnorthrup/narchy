@@ -226,6 +226,10 @@ public class PremiseRule extends ProxyTerm {
                     constraints.add(new NotEqualConstraint.NotEqualAndNotRecursiveSubtermOf(XX, YY));
                     break;
 
+                case "setsIntersect":
+                    constraints.add(new NotEqualConstraint.SetsIntersect(XX, YY));
+                    break;
+
                 case "notSetsOrDifferentSets":
                     constraints.add(new NotEqualConstraint.NotSetsOrDifferentSets(XX, YY));
                     break;

@@ -89,7 +89,7 @@ public class Choose2 extends Termutator.AbstractTermutator {
         ShuffledSubterms yy = new ShuffledSubterms(yFree, u.random);
 
 
-        Term xEllipsis = u.resolve(this.xEllipsis);
+        Term xEllipsis = u.resolveTerm(this.xEllipsis, false);
         Unify f = this.f;
         Subterms x = u.resolveSubs(new TermList(this.x));
 

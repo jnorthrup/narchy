@@ -1,6 +1,7 @@
 package nars.unify.constraint;
 
 import nars.Op;
+import nars.subterm.Subterms;
 import nars.term.Term;
 import nars.term.Terms;
 import nars.term.Variable;
@@ -212,6 +213,39 @@ public final class NotEqualConstraint extends RelationConstraint {
         public boolean invalid(Term x, Term y, Unify context) {
             Op xo = x.op();
             return xo.set && (xo == y.op());
+        }
+    }
+
+    public static class SetsIntersect extends RelationConstraint {
+        public SetsIntersect(Variable x, Variable y) {
+            super("SetsIntersect", x, y);
+        }
+
+        @Override
+        protected @Nullable SetsIntersect newMirror(Variable newX, Variable newY) {
+            return new SetsIntersect(newX, newY);
+        }
+
+        @Override
+        public float cost() {
+            return 0.1f;
+        }
+
+        @Override
+        public boolean invalid(Term x, Term y, Unify context) {
+            if (x.equals(y))
+                return false;
+            Op xo = x.op();
+            if (xo.set && y.op()== xo) {
+                Subterms xx = x.subterms();
+                Subterms yy = y.subterms();
+                //TODO check heuristic direction
+                if (xx.volume() < yy.volume())
+                    return !xx.containsAny(yy);
+                else
+                    return !yy.containsAny(xx);
+            }
+            return false;
         }
     }
 }

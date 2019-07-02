@@ -124,7 +124,7 @@ abstract public class PatternCompound extends CachedCompound.TemporalCachedCompo
                 if (x instanceof Ellipsis) {
                     int available = ysize - yi;
 
-                    Term xResolved = u.resolve(x);
+                    Term xResolved = u.resolveTerm(x,false);
                     if (xResolved == x) {
 
 
@@ -215,7 +215,7 @@ abstract public class PatternCompound extends CachedCompound.TemporalCachedCompo
             if (seq) {
                 yFree = Y.eventSet();
             } else {
-                yFree = Y.subterms().toSetSorted(u::resolve);
+                yFree = Y.subterms().toSetSorted((Term zz) -> u.resolveTerm(zz,false));
             }
 
             Subterms xx = subterms();
@@ -226,7 +226,7 @@ abstract public class PatternCompound extends CachedCompound.TemporalCachedCompo
             for (int k = 0; k < s; k++) {
 
                 Term xk = xx.sub(k);
-                Term xxk = u.resolve(xk);
+                Term xxk = u.resolveTerm(xk,false);
 
                 if (xk.equals(ellipsis)) {
                     if (xxk.equals(xk))

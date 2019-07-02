@@ -1,2 +1,22 @@
 //NAL2 member operations
 (member(V,A) && X), (member(V,B) && X), is(V,"#"), is(A,"{"), is(B,"{"), neq(A,B) |- (member(V,{A,B}) && X), (Belief:Intersection, Time:Compose)
+(member(V,A) && X), (member(V,B) && X), is(V,"#"), is(A,"{"), is(B,"{"), neq(A,B), setsIntersect(A,B) |- (member(V,differ(A,B)) && X), (Belief:IntersectionPN, Time:Compose)
+(member(V,A) && X), (member(V,B) && X), is(V,"#"), is(A,"{"), is(B,"{"), neq(A,B), setsIntersect(A,B) |- (member(V,differ(B,A)) && X), (Belief:IntersectionNP, Time:Compose)
+  (Z==>(member(V,A) && X)), (Z==>(member(V,B) && X)), is(V,"#"), is(A,"{"), is(B,"{"), neq(A,B) |- (Z==>(member(V,{A,B}) && X)), (Belief:Intersection, Time:Compose)
+  (Z==>(member(V,A) && X)), (Z==>(member(V,B) && X)), is(V,"#"), is(A,"{"), is(B,"{"), neq(A,B), setsIntersect(A,B) |- (Z==>(member(V,differ(A,B)) && X)), (Belief:IntersectionPN, Time:Compose)
+  (Z==>(member(V,A) && X)), (Z==>(member(V,B) && X)), is(V,"#"), is(A,"{"), is(B,"{"), neq(A,B), setsIntersect(A,B) |- (Z==>(member(V,differ(B,A)) && X)), (Belief:IntersectionNP, Time:Compose)
+  //(Z==>(member(V,A) && X)), (Z==>(member(V,B) && X)), is(V,"#"), is(A,"{"), is(B,"{"), neq(A,B) |- (Z==>((--member(V,A) && --member(V,B)) && X)), (Belief:IntersectionNN, Time:Compose)
+
+//TODO requires Int to be Anon or have Derivation intern exception
+//(cmp(#A,#B,-1) && X), (cmp(#A,#B,1) && X), is(A,"#"), is(B,"#") |- X, (Belief:Intersection, Time:Compose)
+
+
+//TODO
+// set difference decomposition contradiction
+//
+// cmp to ==> rules
+// combine supporting cases of polarity inversion by a -1,+1 multiplier wrapping
+//   (mul(#x,-1) && a), (mul(#x,   |-  unisubst(mul(#x,p ,a, b)  ... polarize(..)
+//
+// add,mul,equal algebraic relations:
+//   ex: (add(#x,#a) && d), (add(#x,#c) && d), neq(#a,#c) |- (member(#y,{#a,#c}) && add(#x,#y) && d)

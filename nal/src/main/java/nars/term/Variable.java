@@ -2,15 +2,13 @@ package nars.term;
 
 import jcog.Paper;
 import jcog.Skill;
-import nars.NAL;
-import nars.Op;
 import nars.term.atom.Atomic;
 import nars.term.var.CommonVariable;
+import nars.term.var.VarPattern;
 import nars.term.var.ellipsis.Ellipsis;
 import nars.unify.Unify;
 
 import static nars.Op.FRAG;
-import static nars.Op.VAR_PATTERN;
 import static nars.term.atom.Bool.Null;
 
 /**
@@ -62,7 +60,7 @@ public interface Variable extends Atomic {
         if (x != this && x.equals(y0))
             return true;
 
-        Term y = y0 instanceof Variable ? u.resolveVar((Variable)y0) : y0;
+        Term y = u.resolveTerm(y0,false);
         //Term y = u.resolve(y0);
         if (y != y0 && x.equals(y))
             return true;
@@ -97,12 +95,10 @@ public interface Variable extends Atomic {
             }
         }
 
-
-        if ((x instanceof Variable || y instanceof Variable)) {
+        if (x instanceof Variable || y instanceof Variable)
             return unifyVar(u, x, y);
-        } else {
+        else
             return unifyConst(u, x, y);
-        }
     }
 
     private static boolean neggable(Term x) {
@@ -110,40 +106,39 @@ public interface Variable extends Atomic {
     }
 
     private static boolean unifyConst(Unify u, Term x, Term y) {
-        if (u.varDepth < NAL.unify.UNIFY_VAR_RECURSION_DEPTH_LIMIT) {
-            u.varDepth++;
+//        if (u.varDepth < NAL.unify.UNIFY_VAR_RECURSION_DEPTH_LIMIT) {
+//            u.varDepth++;
             boolean result = x.unify(y, u); //both constant-like
-            u.varDepth--;
+//            u.varDepth--;
             return result;
-        } else
-            return false; //recursion limit exceeded
+//        } else
+//            return false; //recursion limit exceeded
     }
 
     private static boolean unifyVar(Unify u, Term x, Term y) {
-        if (x instanceof Variable && y instanceof Variable) {
-
-            Op xo = x.op();
-            if (xo!=VAR_PATTERN) {
-                Op yo = y.op();
-                if (xo == yo) {
-                    if (u.commonVariables && !(x instanceof Ellipsis) && !(y instanceof Ellipsis))
-                        return CommonVariable.unify((Variable) x, (Variable) y, u);
-                    else {
-                        if (x.compareTo(y) > 0) {
-                            //swap to natural ordering
-                            Term z = x;
-                            x = y;
-                            y = z;
-                            //continue below
-                        }
-                    }
+        if (x instanceof Variable) {
+            if (y instanceof Variable && !(x instanceof VarPattern) && u.commonVariables && !(x instanceof Ellipsis) && !(y instanceof Ellipsis)) {
+                if (u.var(x) && u.var(y)) {
+                //if (x.op() == y.op()) {
+                    return CommonVariable.unify((Variable) x, (Variable) y, u);
+//                        else {
+//                            if (x.compareTo(y) > 0) {
+//                                //swap to natural ordering
+//                                Term z = x;
+//                                x = y;
+//                                y = z;
+//                                //continue below
+//                            }
+//                        }
                 }
+
             }
+
+
         }
 
         if (x instanceof Variable && u.assigns(x.op(), y)) {
-            if (u.putXY((Variable) x, y))
-                return true;
+            return u.putXY((Variable) x, y);
         }
 
         if (y instanceof Variable && u.assigns(y.op(), x)) {

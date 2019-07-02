@@ -100,8 +100,18 @@ class SetFuncTest {
         TestNAR t = new TestNAR(n);
         t.believe("(member(#1,{a,b}) && (x(#1), y(#1)))");
         t.believe("(member(#1,{c,d}) && (x(#1), y(#1)))");
-        t.mustBelieve(500, "(member(#1,{a,b,c,d}) && (x(#1), y(#1)))", 1, 0.81f);
-        t.run(500);
+        int cycles = 500;
+        t.mustBelieve(cycles, "(member(#1,{a,b,c,d}) && (x(#1), y(#1)))", 1, 0.81f);
+        t.run(cycles);
     }
-
+    @Test void testMember_Diff_Rule() {
+        NAR n = NARS.shell();
+        new BatchDeriver(Derivers.files(n, "nal2.member.nal"));
+        TestNAR t = new TestNAR(n);
+        t.believe("  (member(#1,{a,b,c}) && (x(#1), y(#1)))");
+        t.believe("--(member(#1,{b,d  }) && (x(#1), y(#1)))");
+        int cycles = 500;
+        t.mustBelieve(cycles, "(member(#1,{a,c}) && (x(#1), y(#1)))", 1, 0.81f);
+        t.run(cycles);
+    }
 }

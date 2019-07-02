@@ -207,11 +207,11 @@ public class Derivation extends PreDerivation {
 
         this.anon = new AnonWithVarShift(ANON_INITIAL_CAPACITY, Op.VAR_DEP.bit | Op.VAR_QUERY.bit) {
 
-//            @Override
-//            protected boolean intern(Term x) {
-//                return !(x instanceof Atom) ||
-//                        transformDerived.derivationFunctors.apply((Atom)x)==null; //TODO better matcher
-//            }
+            @Override
+            protected boolean intern(Atomic x) {
+                return !(x instanceof Atom) ||
+                        transformDerived.derivationFunctors.apply(x)==null; //TODO better matcher
+            }
 
             @Override
             protected final Term putCompound(Compound x) {
@@ -446,7 +446,6 @@ public class Derivation extends PreDerivation {
 
         setTTL(ttl);
 
-        what.derivePri.premise(this);
 
 
     }
@@ -473,6 +472,8 @@ public class Derivation extends PreDerivation {
 
         this.deriver = d;
         this.what = w;
+
+        what.derivePri.premise(this);
 
         ditherDT =
                 n.dtDither(); //FINE
@@ -700,9 +701,9 @@ public class Derivation extends PreDerivation {
             if (a instanceof Variable) {
                 b = resolveVar((Variable) a);
 
-//                if (b!=null && !(b instanceof Variable)) {
-//                    b = resolve(b); //recurse
-//                }
+                if (b!=null && !(b instanceof Variable)) {
+                    b = resolve(b); //recurse
+                }
 
             } else if (a instanceof Atom) {
 
