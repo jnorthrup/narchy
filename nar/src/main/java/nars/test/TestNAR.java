@@ -42,7 +42,6 @@ public class TestNAR {
      * holds mustNot (negative) conditions which are tested at the end
      */
     private final FasterList<NARCondition> failsIfAny = new FasterList();
-    public boolean quiet = false;
     public boolean requireConditions = true;
     
     /**
@@ -59,14 +58,16 @@ public class TestNAR {
      * TODO separate way to generate a test report containing
      * both successful and unsuccessful tests
      */
-    private final boolean collectTrace = false;
+    private final boolean trace = false;
     private final int temporalTolerance = 0;
     private final float freqTolerance = NAL.test.TRUTH_ERROR_TOLERANCE;
     private float confTolerance = NAL.test.TRUTH_ERROR_TOLERANCE;
     private final ByteTopic<Tasked>[] taskEvents;
     private boolean finished;
     private boolean exitOnAllSuccess = true;
-    private final boolean reportStats = true;
+
+    private final static int maxSimilars = 2;
+    private boolean reportStats = false;
 
     public TestNAR(NAR nar) {
         this.nar = nar;
@@ -131,7 +132,7 @@ public class TestNAR {
         score = Math.min(-1, finalCycle);
 
         StringWriter trace;
-        if (collectTrace)
+        if (this.trace)
             nar.trace(trace = new StringWriter());
         else
             trace = null;
@@ -153,71 +154,33 @@ public class TestNAR {
             error = true;
         }
 
-        boolean success = !error;
-        for (NARCondition t : succeedsIfAll) {
-            if (!t.isTrue()) {
-                success = false;
-                break;
-            }
-        }
-        for (NARCondition t : failsIfAny) {
-            if (t.isTrue()) {
-                success = false;
-                break;
-            }
-        }
-
-
         long endTime = nar.time();
         int runtime = Math.max(0, (int) (endTime - startTime));
 
         assert(runtime <= finalCycle);
 
+        boolean success =
+                succeedsIfAll.allSatisfy(NARCondition::isTrue)
+                &&
+                !failsIfAny.anySatisfy(NARCondition::isTrue);
+
         if (success)
             score = -runtime;
 
-//        this.score = success ?
-//
-////                1 + (+1f / (1f + ((1f + runtime) / (1f + Math.max(0,finalCycle - startTime)))))
-////                :
-////                0
-//
-//                ;
+        if (reportStats) {
+            logger.info("{}\n", id);
 
+            for (NARCondition t : succeedsIfAll)
+                t.log("must", t.isTrue(), logger);
+            for (NARCondition t : failsIfAny)
+                t.log("mustNot", t.isFalse(), logger);
 
-        if (!quiet) {
-            if (reportStats) {
-                logger.info("{}\n\t{}IN \ninputs", id, endTime);
-            }
-
-            for (NARCondition t : failsIfAny) {
-                if (t.isTrue()) {
-
-                    if (!quiet) {
-                        t.log("mustNot", false, logger);
-                    }
-
-                }
-            }
-
-            if (!quiet) {
-                succeedsIfAll.forEach(t -> {
-                    if (!t.isTrue())
-                        t.log("must", false, logger);
-                });
-
-
-                if (trace != null)
-                    logger.trace("{}", trace.getBuffer());
-            }
-
-            if (reportStats) {
-                nar.emotion.print(System.out);
-                nar.stats(System.out);
-            }
+            nar.emotion.print(System.out);
+            nar.stats(System.out);
         }
 
-
+        if (trace != null)
+            logger.trace("{}", trace.getBuffer());
 
         return success ? new TestNARResult(true, false) : new TestNARResult(false, error);
     }
@@ -311,6 +274,7 @@ public class TestNAR {
 
     public TestNAR log() {
         nar.log();
+        reportStats = true;
         return this;
     }
 
@@ -440,6 +404,9 @@ public class TestNAR {
     public TestNAR must(ByteTopic<Tasked>[] c, byte punc, boolean mustOrMustNot, TaskCondition tc) {
         for (ByteTopic<Tasked> cc: c)
             cc.on(tc, punc);
+
+        if (reportStats)
+            ((TaskCondition.DefaultTaskCondition)tc).similars(maxSimilars);
 
         finished = false;
 

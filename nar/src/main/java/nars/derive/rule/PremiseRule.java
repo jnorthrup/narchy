@@ -109,9 +109,7 @@ public class PremiseRule extends ProxyTerm {
      */
     private final TermTransform ConcTransform = new AbstractTermTransform.NegObliviousTermTransform() {
         @Override
-        public Term applyPosCompound(Compound _c) {
-
-            Term c = super.applyPosCompound(_c);
+        public Term applyPosCompound(Compound c) {
 
             Term f = Functor.func(c);
             if (f!=Null) {
@@ -123,12 +121,10 @@ public class PremiseRule extends ProxyTerm {
                 } else if (f.equals(Derivation.SUBSTITUTE)) {
                     Unifiable.constrainSubstitute(a, PremiseRule.this);
                 } else if (f.equals(Derivation.CONJ_WITHOUT)) {
-                    //not 100% working yet:
-                    //Unifiable.constraintEvent(a, PremiseRule.this, false);
+                    Unifiable.constraintEvent(a, PremiseRule.this, false);
                 }
             }
-
-            return c;
+            return super.applyPosCompound(c);
         }
 
     };

@@ -6,8 +6,8 @@
 //##################################
 
 //belief form:
-//B, A, --is(A,"==>") |-          polarizeTask((polarizeBelief(A) ==> B)), (Belief:InductionDepolarized, Time:BeliefRelative)
-//B, A, --is(A,"==>") |- varIntro(polarizeTask((polarizeBelief(A) ==> B))), (Belief:InductionDepolarized, Time:BeliefRelative)
+B, A, --is(A,"==>") |-          polarizeTask((polarizeBelief(A) ==> B)), (Belief:InductionDepolarized, Time:BeliefRelative)
+B, A, --is(A,"==>") |- varIntro(polarizeTask((polarizeBelief(A) ==> B))), (Belief:InductionDepolarized, Time:BeliefRelative)
 
 //question form:
 //B, A, task("."), --is(A,"==>"), hasBelief() |-          polarizeTask((polarizeBelief(A) ==> B)), (Punctuation:Question, Time:BeliefRelative)
@@ -38,7 +38,7 @@ B, A, --is(A,"==>"), --is(B,"==>")  |-          (polarizeTask(B) && polarizeBeli
 B, A, --is(A,"==>"), --is(B,"==>")  |- varIntro((polarizeTask(B) && polarizeBelief(A))), (Belief:IntersectionDepolarized, Time:Sequence)
 
 //question + quest form:
-B, A, neq(B,A), --is(A,"==>"), --is(B,"==>"), hasBelief()  |-          (polarizeTask(B) && polarizeBelief(A)), (Punctuation:Ask, Time:Sequence)
+//B, A, neq(B,A), --is(A,"==>"), --is(B,"==>"), hasBelief()  |-          (polarizeTask(B) && polarizeBelief(A)), (Punctuation:Ask, Time:Sequence)
 //B, A, --is(A,"==>"), --is(B,"==>"), hasBelief()  |- varIntro((polarizeTask(B) && polarizeBelief(A))), (Punctuation:Ask, Time:Sequence)
 
     //B, A, --is(A,"==>"), --is(B,"==>")  |- (polarizeTask(B) && polarizeBelief(A)), (Goal:IntersectionDepolarized, Time:Sequence)

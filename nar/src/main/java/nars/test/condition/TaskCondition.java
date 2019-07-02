@@ -3,6 +3,7 @@ package nars.test.condition;
 
 import jcog.Texts;
 import jcog.sort.RankedN;
+import nars.NAL;
 import nars.NAR;
 import nars.Op;
 import nars.Task;
@@ -13,11 +14,9 @@ import nars.term.Term;
 import nars.truth.Truth;
 import nars.truth.Truthed;
 import org.eclipse.collections.api.block.predicate.primitive.LongLongPredicate;
-import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
-import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
@@ -35,7 +34,6 @@ abstract public class TaskCondition implements NARCondition, Predicate<Task>, Co
      * whether to apply meta-feedback to drive the reasoner toward success conditions
      */
     public static final boolean feedback = false;
-    public final Set<Task> matches = new UnifiedSet(1);
     private boolean matched;
 
     private static String rangeStringN2(float min, float max) {
@@ -80,10 +78,9 @@ abstract public class TaskCondition implements NARCondition, Predicate<Task>, Co
     abstract public boolean matches(@Nullable Task task);
 
     @Override
-    public final boolean test(Task t) {
+    public boolean test(Task t) {
 
         if (!matched && matches(t)) {
-            matches.add(t);
             matched = true;
             return true;
         } else {
@@ -93,8 +90,7 @@ abstract public class TaskCondition implements NARCondition, Predicate<Task>, Co
 
     @Override
     public final void accept(Tasked tasked) {
-        if (!matched)
-            test(tasked.task());
+        test(tasked.task());
     }
 
     @Override
@@ -109,10 +105,11 @@ abstract public class TaskCondition implements NARCondition, Predicate<Task>, Co
 
 
     public static class DefaultTaskCondition extends TaskCondition {
-        private final static int maxSimilars = 2;
+
         public final float confMin;
-        @Deprecated
-        protected final RankedN<Task> similar;
+
+        protected Task firstMatch = null;
+        @Nullable protected RankedN<Task> similar = null;
         protected final NAR nar;
         private final byte punc;
         private final Term term;
@@ -147,8 +144,6 @@ abstract public class TaskCondition implements NARCondition, Predicate<Task>, Co
             this.confMin = Math.max(0.0f, confMin);
             this.punc = punc;
 
-            this.similar = new RankedN<>(new Task[maxSimilars], this::value);
-
             if (term instanceof Neg) {
                 term = term.unneg();
                 freqMax = 1f - freqMax;
@@ -167,19 +162,31 @@ abstract public class TaskCondition implements NARCondition, Predicate<Task>, Co
 
         }
 
+        public void similars(int maxSimilars) {
+            this.similar = new RankedN<>(new Task[maxSimilars], this::value);
+        }
+
         @Override
-        public void log(String label, boolean condition, Logger logger) {
-            super.log(label, condition, logger);
+        public void log(String label, boolean successCondition, Logger logger) {
 
-            if (!similar.isEmpty() && logger.isInfoEnabled()) {
-                StringBuilder sb = new StringBuilder(similar.size()*256);
-                similar.forEach(s -> {
-                    sb.append(s.proof()).append('\n').append(MetaGoal.proof(s, nar)).append('\n');
-                });
-                sb.trimToSize();
-                logger.info("Similar:\n{}\n", sb);
-            }
+            super.log(label, successCondition, logger);
 
+             if (logger.isInfoEnabled()) {
+                 StringBuilder sb = new StringBuilder((1 + (similar != null ? similar.size() : 0)) * 2048);
+                 if (firstMatch != null) {
+                     sb.append("Exact match:\n");
+                     log(firstMatch, sb);
+                 } else if (similar != null && !similar.isEmpty()) {
+                     sb.append("Similar matches:\n");
+                     for (Task s : similar)
+                         log(s, sb);
+                 }
+                 logger.info(sb.toString());
+             }
+        }
+
+        public void log(Task s, StringBuilder sb) {
+            sb.append(s.proof()).append('\n').append(MetaGoal.proof(s, nar)).append('\n');
         }
 
         @Override
@@ -191,12 +198,23 @@ abstract public class TaskCondition implements NARCondition, Predicate<Task>, Co
 
 
         @Override
+        public boolean test(Task t) {
+            boolean r = super.test(t);
+            if (r) {
+                if (firstMatch == null)
+                    firstMatch = t;
+            } else {
+                if (similar!=null)
+                    similar.add(t);
+            }
+            return r;
+        }
+
+        @Override
         public boolean matches(@Nullable Task task) {
 
-            similar.add(task);
-
             if (task == null)
-                return false;
+                throw new NullPointerException();
 
             if (task.punc() != punc)
                 return false;
@@ -206,8 +224,10 @@ abstract public class TaskCondition implements NARCondition, Predicate<Task>, Co
 
             Term tt = task.term();
             if (!tt.equals(this.term)) {
-                if (tt.op() == term.op() && tt.volume() == this.term.volume() && tt.structure() == this.term.structure() && this.term.toString().equals(tt.toString())) {
-                    throw new RuntimeException("target construction problem: " + this.term + " .toString() is equal to " + tt + " but inequal otherwise");
+                if (NAL.DEBUG) {
+                    if (tt.op() == term.op() && tt.volume() == this.term.volume() && tt.structure() == this.term.structure() && this.term.toString().equals(tt.toString())) {
+                        throw new RuntimeException("target construction problem: " + this.term + " .toString() is equal to " + tt + " but inequal otherwise");
+                    }
                 }
                 return false;
             }

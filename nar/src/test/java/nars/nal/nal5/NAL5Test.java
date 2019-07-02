@@ -412,7 +412,7 @@ public class NAL5Test extends NALTest {
 
     @Test
     void conditional_deduction_neg_simple() {
-        
+
         test.believe("((--x && y) ==> a)");
         test.believe("--x");
         test.mustBelieve(cycles, "(y && a)", 1.00f, 0.81f);

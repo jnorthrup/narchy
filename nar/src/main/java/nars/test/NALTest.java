@@ -55,7 +55,6 @@ public abstract class NALTest {
         }
 
         try {
-            t.test.quiet = true;
             t.test.test();
         } catch (AssertionFailedError ae) {
           //ignore

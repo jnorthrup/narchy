@@ -14,10 +14,8 @@ import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
 import nars.term.util.conj.Conj;
 import nars.unify.constraint.RelationConstraint;
-import nars.unify.constraint.SubOfConstraint;
 
 import static nars.Op.*;
-import static nars.subterm.util.SubtermCondition.Event;
 import static nars.time.Tense.XTERNAL;
 
 public enum Unifiable { ;
@@ -60,18 +58,21 @@ public enum Unifiable { ;
             Term x = a.sub(1);
             Term xu = x.unneg();
             if (xu instanceof Variable) {
+
                 p.is(conj, CONJ);
-                if (x instanceof Neg && (xu.equals(p.taskPattern) || xu.equals(p.beliefPattern))) {
-                    p.hasAny(conj, NEG);
-                }
-                p.neq((Variable)conj, xu);
-                p.bigger((Variable)conj, (Variable)xu /* x */); //TODO
                 p.eventable((Variable)xu);
+
+                p.neq((Variable)conj, xu);
+
+                if (x instanceof Neg && (xu.equals(p.taskPattern) || xu.equals(p.beliefPattern)))
+                    p.hasAny(conj, NEG);
+
+
                 if (unifiable) {
+                    p.bigger((Variable)conj, (Variable)xu /* x */); //TODO
                     p.constraints.add(new EventUnifiability((Variable) conj, (Variable) xu, x instanceof Neg));
                 } else {
-                    //containment
-                    p.constraints.add(new SubOfConstraint((Variable)conj, (Variable)xu, Event, x instanceof Neg ? -1 : +1));
+                    //p.constraints.add(new SubOfConstraint((Variable)conj, (Variable)xu, Event, x instanceof Neg ? -1 : +1));
                 }
             }
         }

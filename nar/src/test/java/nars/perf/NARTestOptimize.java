@@ -115,7 +115,6 @@ class NARTestOptimize {
             Lab<DeductiveMeshTest> l = new Lab<>(() ->
             {
                 DeductiveMeshTest d = new DeductiveMeshTest(NARS.tmp(), new int[]{4, 3}, 2000);
-                d.test.quiet = true;
                 return d;
             }).var("ttlMax", 6, 100, 20, (DeductiveMeshTest t, int i) -> {
                 t.test.nar.deriveBranchTTL.set(i);

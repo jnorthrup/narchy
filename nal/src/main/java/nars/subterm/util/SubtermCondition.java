@@ -75,10 +75,11 @@ public enum SubtermCondition implements BiPredicate<Term, Term> {
         @Override
         public final boolean test(Term container, Term x) {
             return Conj.eventOf(container, x);
+            //return Conj._eventOf(container, x, Tense.ETERNAL);
         }
 
         public float cost() {
-            return 1f;
+            return 0.9f;
         }
     },
 //    EventFirst() {

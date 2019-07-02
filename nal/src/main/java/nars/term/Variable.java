@@ -2,6 +2,7 @@ package nars.term;
 
 import jcog.Paper;
 import jcog.Skill;
+import nars.Op;
 import nars.term.atom.Atomic;
 import nars.term.var.CommonVariable;
 import nars.term.var.VarPattern;
@@ -77,7 +78,7 @@ public interface Variable extends Atomic {
             if (x instanceof Neg) {
                 Term xu = x.unneg();
                 if (xu instanceof Variable) {
-                    if (neggable(y) && u.assigns(xu.op(), y)) {
+                    if (neggable(y) && u.canPut(xu.op(), y)) {
                         x = xu;
                         y = y.neg();
                         done = true;
@@ -87,7 +88,7 @@ public interface Variable extends Atomic {
             if (!done && y instanceof Neg) {
                 Term yu = y.unneg();
                 if (yu instanceof Variable) {
-                    if (neggable(x) && u.assigns(yu.op(), x)) {
+                    if (neggable(x) && u.canPut(yu.op(), x)) {
                         y = yu;
                         x = x.neg();
                     }
@@ -117,9 +118,9 @@ public interface Variable extends Atomic {
 
     private static boolean unifyVar(Unify u, Term x, Term y) {
         if (x instanceof Variable) {
+            Op xop = x.op();
             if (y instanceof Variable && !(x instanceof VarPattern) && u.commonVariables && !(x instanceof Ellipsis) && !(y instanceof Ellipsis)) {
-                if (u.var(x) && u.var(y)) {
-                //if (x.op() == y.op()) {
+                if (xop == y.op() && u.var(xop) && u.var(y)) {
                     return CommonVariable.unify((Variable) x, (Variable) y, u);
 //                        else {
 //                            if (x.compareTo(y) > 0) {
@@ -130,18 +131,18 @@ public interface Variable extends Atomic {
 //                                //continue below
 //                            }
 //                        }
-                }
 
+                }
             }
 
 
         }
 
-        if (x instanceof Variable && u.assigns(x.op(), y)) {
+        if (x instanceof Variable && u.canPut(x.op(), y)) {
             return u.putXY((Variable) x, y);
         }
 
-        if (y instanceof Variable && u.assigns(y.op(), x)) {
+        if (y instanceof Variable && u.canPut(y.op(), x)) {
             return u.putXY((Variable) y, x);
         }
 

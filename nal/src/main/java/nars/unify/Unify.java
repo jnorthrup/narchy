@@ -450,7 +450,7 @@ public abstract class Unify extends Versioning<Term> {
 
 
     /** can x be assigned to y (y <= x) */
-    public final boolean assigns(Op target, Termlike value) {
+    public final boolean canPut(Op target, Termlike value) {
         if (!var(target))
             return false;
         int exc;

@@ -347,15 +347,13 @@
 //        if two different precondition conjunctions, with a common element lead to the same conclusion,
 //        it might be that these different preconditions in the specific conjunctions imply each other
 //        because the premises can be swapped for this rule and it is still valid
-    (A ==> X), (B ==> X), eventCommon(A,B), neq(A,B) |- (conjWithout(A,B) ==> conjWithout(B,A)), (Belief:InductionPB, Time:Compose)
-      //? (--A ==> X), (--B ==> X), eventCommon(A,B) |- (conjWithout(A,B) ==> conjWithout(B,A)), (Belief:InductionPB)
-    (A ==> X), (B ==> X), eventCommon(A,B), neq(A,B) |- (conjWithout(B,A) ==> conjWithout(A,B)), (Belief:InductionPB, Time:Compose)
-      //? (--A ==> X), (--B ==> X), eventCommon(A,B) |- (conjWithout(B,A) ==> conjWithout(A,B)), (Belief:InductionPB)
+    (A ==> X), (B ==> X), neq(A,B), neq(A,X), neq(B,X) |- (conjWithout(A,B) ==> conjWithout(B,A)), (Belief:InductionPB, Time:Compose)
+    //(A ==> X), (B ==> X), neq(A,B), neq(A,X), neq(B,X) |- (conjWithout(B,A) ==> conjWithout(A,B)), (Belief:InductionPB, Time:Compose)
 
         //((&&,X,A..+) ==> C), ((&&,Y,A..+) ==> C)   |- ((X ==> Y) && (Y ==> X)), (Bel4ief:InductionPB)
 
-    (X ==> A), (X ==> B), eventCommon(A,B), neq(A,B) |- (conjWithout(A,B) ==> conjWithout(B,A)), (Belief:AbductionPB, Time:Compose)
-    (X ==> A), (X ==> B), eventCommon(A,B), neq(A,B) |- (conjWithout(B,A) ==> conjWithout(A,B)), (Belief:AbductionPB, Time:Compose)
+    (X ==> A), (X ==> B), neq(A,B), neq(A,X), neq(B,X) |- (conjWithout(A,B) ==> conjWithout(B,A)), (Belief:AbductionPB, Time:Compose)
+    //(X ==> A), (X ==> B), neq(A,B), neq(A,X), neq(B,X) |- (conjWithout(B,A) ==> conjWithout(A,B)), (Belief:AbductionPB, Time:Compose)
 
 
 

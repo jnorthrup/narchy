@@ -131,7 +131,6 @@ public class Tetris extends GameX {
             state.next();
         });
 
-        window(new VectorSensorView(pixels, this).withControls(), 400, 900);
 
         //if a pixel is on, pixels above it should be off
 //        reward(new BeliefReward($$("(&&,tetris(#x,#yBelow),--tetris(#x,#yAbove),cmp(#yBelow,#yAbove,1))"), this));
@@ -170,7 +169,9 @@ public class Tetris extends GameX {
 //                    System.out.println(now + ": " + implConc.get(0));
 //            });
 
-            return new Tetris(n, Tetris.tetris_width, Tetris.tetris_height);
+            Tetris t = new Tetris(n, Tetris.tetris_width, Tetris.tetris_height);
+            window(new VectorSensorView(t.pixels, t).withControls(), 400, 900);
+
         },  FPS*2);
 
 //        int instances = 2;
