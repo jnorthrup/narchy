@@ -616,9 +616,13 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
         double volFactor =
                 Math.min(1, ((double)volSum) / y.volume() );
 
-        double yConf = y.conf();
-        double xConfMax = Util.max(Task::conf, x);
-        double confFactor = Math.min(1, (yConf / xConfMax));
+        double confFactor;
+        if (y.isBeliefOrGoal()) {
+            double yConf = y.conf();
+            double xConfMax = Util.max(Task::conf, x);
+            confFactor = Math.min(1, (yConf / xConfMax));
+        } else
+            confFactor = 1;
 
         double rangeFactor;
         if (y.isEternal())

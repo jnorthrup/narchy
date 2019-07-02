@@ -179,9 +179,7 @@ public enum ConjMatch { ;
         if (eVar || (conj.hasAny(varBits) /*&& x.anySatisfy(1, n, z -> z.getTwo().hasAny(varBits)))*/)) {
             //TODO use SubUnify correctly (ie. termutes via tryMatch )
             UniSubst.MySubUnify s = d.uniSubstFunctor.u;
-            ConjBuilder y =
-                    //new ConjTree();
-                    null;
+            ConjBuilder y = null;
             nextUnifiable: for (int matchUnify = 0; matchUnify < n; matchUnify++) {
                 Term xx = x.get(matchUnify);
                 if (eVar || xx.hasAny(varBits)) {
@@ -254,6 +252,7 @@ public enum ConjMatch { ;
     private static boolean removeAny(Term event, ConjList x, long[] matchedTime, Random random) {
 
 
+
         int s = x.size();
         int i = random.nextInt(s);
         for (int j = 0; j < s; j++) {
@@ -270,26 +269,4 @@ public enum ConjMatch { ;
         return false;
     }
 
-
-//        {
-//            Map<Term, Termed> n = new HashMap<>(Builtin.statik.length);
-//            for (Termed s : Builtin.statik) {
-//                if (s instanceof Functor.InlineFunctor)
-//                    n.put(s.target(), s);
-//            }
-//            this.staticFunctors = Maps.immutable.ofMap(n);
-//        }
-
-
-//    final static HashProvider<Atomic> fastAtomHash = new HashProvider<Atomic>() {
-//        @Override
-//        public int hash1(Atomic element) {
-//            return element.hashCode();
-//        }
-//
-//        @Override
-//        public int hash2(Atomic element) {
-//            return element.bytes().length;
-//        }
-//    };
 }

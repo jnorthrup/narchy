@@ -148,31 +148,11 @@ public class Tetris extends GameX {
 
 
         GameX.runRT(n -> {
-            //n.freqResolution.setAt(0.02f);
-
-
-            //new Abbreviation(n, ("z"), 4, 5,  8);
-
-//            PriArrayBag<NLink<Term>> implConc = new PriArrayBag<>(PriMerge.plus, 64);
-//            DurService.on(n, (nn) -> {
-//                long now = nn.time();
-//                implConc.commit();
-//                nn.concepts().filter(x -> x.op() == IMPL).forEach(x -> {
-//
-//                    Truth t = x.beliefs().truth(now, nn);
-//                    if (t != null) {
-//                        Term pred = x.target().sub(1);
-//                        implConc.put(new NLink(pred, t.evi()*0.001f));
-//                    }
-//                });
-//                if (!implConc.isEmpty())
-//                    System.out.println(now + ": " + implConc.get(0));
-//            });
 
             Tetris t = new Tetris(n, Tetris.tetris_width, Tetris.tetris_height);
             window(new VectorSensorView(t.pixels, t).withControls(), 400, 900);
 
-        },  FPS*2);
+        },  FPS * 2);
 
 //        int instances = 2;
 //        for (int i = 0; i < instances; i++)

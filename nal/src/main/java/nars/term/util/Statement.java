@@ -144,7 +144,7 @@ public class Statement {
                     //do not reduce
                 } else if (subject.unneg().op()!=CONJ && predicate.unneg().op()!=CONJ) {
                     //both simple terms
-                } else if (!Term.commonStructure(subject, predicate)) {
+                } else if (!Term.commonStructure(subject.structure() & (~CONJ.bit), predicate.structure() & (~CONJ.bit))) {
                     //no validity test necessary
 //                    } else if (subject instanceof Compound && !(predicate instanceof Compound) && !subject.containsRecursively(predicate)) {
 //                        //no validity test necessary
@@ -158,23 +158,16 @@ public class Statement {
                     long po = subjRange + dt; //predicate occurrence
 
                     //subtract any common subject components from predicate
-                    Term newPred;
                     ConjList newPredConj = ConjList.events(predicate, po);
-                    int removed =
-                        newPredConj.removeAll(subject.unneg(), 0, subject.op()!=NEG);
+                    int removed = newPredConj.removeAll(subject.unneg(), 0, !(subject instanceof Neg));
+                    Term newPred;
                     switch (removed) {
                         case -1: return False;
                         case +1: newPred = newPredConj.term(B); break;
                         default: newPred = null; break;
                     }
 
-//                    ConjBuilder newPredConj = ConjDiff.the(predicate, po, subject, 0);
-//                    Term newPred = newPredConj.term(B);
-
-
-                    boolean predChange = newPred!=null && !predicate.equals(newPred);
-
-                    if (predChange) {
+                    if (newPred!=null && !predicate.equals(newPred)) {
 
                         if (newPred instanceof Bool)
                             return newPred.negIf(negate); //collapse

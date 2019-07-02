@@ -131,7 +131,7 @@ public enum Conj {
             if (conj.eventRange() < x.eventRange())
                 return false;
 
-            return ConjList.events(conj).contains(ConjList.events(x, 0));
+            return ConjList.events(conj).contains(ConjList.events(x,0));
 
         } else {
 

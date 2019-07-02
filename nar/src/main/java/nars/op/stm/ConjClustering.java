@@ -35,7 +35,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.BooleanSupplier;
 import java.util.function.Predicate;
 
-import static nars.Op.CONJ;
+import static nars.Op.*;
 import static nars.truth.func.TruthFunctions.c2wSafe;
 import static nars.truth.func.TruthFunctions.confCompose;
 
@@ -44,15 +44,18 @@ public class ConjClustering extends How {
     public final BagClustering<Task> data;
     private final BagClustering.Dimensionalize<Task> model;
     private final CauseChannel<Task> in;
-    private final byte punc;
+    private final byte puncIn, puncOut;
 
     public final FloatRange termVolumeMaxPct = new FloatRange(0.75f, 0, 1f);
 
+    private int inputTermVolMax, stampLenMax;
+
     /** collect at most Neach results from each queue */
     int tasksPerIterationPerCentroid = 1;
+    final int learningIterations = 1;
+    final int minDurationsPerLearning = 1;
 
     private final Predicate<Task> filter;
-    private volatile long now;
 
     private float confMin;
     private int volMax;
@@ -61,25 +64,33 @@ public class ConjClustering extends How {
     static final boolean priCopyOrMove = true;
 
     private final AtomicBoolean busy = new AtomicBoolean(false);
-    private int inputTermVolMax, stampLenMax;
-
+    private volatile long now;
     private volatile long lastLearn;
 
-    private final int learningIterations = 1;
-    private final int minDurationsPerLearning = 1;
+
 
 
     public final FloatRange forgetRate = new FloatRange(1f, 0, 1);
 
+    /** default that configures with belief/goal -> question/quest output mode */
     public ConjClustering(NAR nar, byte punc, int centroids, int capacity) {
         this(nar, punc, (t) -> true, centroids, capacity);
     }
 
+    /** default that configures with belief/goal -> question/quest output mode */
     public ConjClustering(NAR nar, byte punc, Predicate<Task> filter, int centroids, int capacity) {
+        this(nar, punc, punc == BELIEF ? QUESTION : QUEST, filter, centroids, capacity);
+    }
+
+    public ConjClustering(NAR nar, byte puncIn, byte puncOut, Predicate<Task> filter, int centroids, int capacity) {
         super();
 
         this.in = nar.newChannel(this);
 
+        this.puncIn = puncIn;
+        this.puncOut = puncOut;
+
+        this.filter = filter;
         /** TODO make this a constructor parameter */
         this.model = new BagClustering.Dimensionalize<>(4) {
 
@@ -123,8 +134,6 @@ public class ConjClustering extends How {
 
         this.data = new BagClustering<>(model, centroids, capacity);
 
-        this.punc = punc;
-        this.filter = filter;
 
 
     }
@@ -146,7 +155,7 @@ public class ConjClustering extends How {
                 data.put(t, pri(t));
 
             }
-        }, punc));
+        }, puncIn));
 
         _update(nar.time());
 
@@ -257,7 +266,7 @@ public class ConjClustering extends How {
     public static class STMClusterTask extends TemporalTask implements UnevaluatedTask {
 
         STMClusterTask(@Nullable ObjectBooleanPair<Term> cp, Truth t, long start, long end, long[] evidence, byte punc, long now) throws TaskException {
-            super(cp.getOne(), punc, t.negIf(cp.getTwo()), now, start, end, evidence);
+            super(cp.getOne(), punc, t!=null ? t.negIf(cp.getTwo()) : null, now, start, end, evidence);
         }
 
     }
@@ -422,13 +431,19 @@ public class ConjClustering extends How {
 
         private Task conjoin(Task[] x, float freq, float conf, long start) {
 
-            double e = c2wSafe((double)conf);
-            if (e < NAL.truth.EVI_MIN)
-                return null;
 
-            final Truth t = Truth.theDithered(freq, e, nar);
-            if (t == null)
-                return null;
+            Truth t;
+            if (puncOut==BELIEF || puncOut == GOAL) {
+                double e = c2wSafe((double) conf);
+                if (e < NAL.truth.EVI_MIN)
+                    return null;
+
+                t = Truth.theDithered(freq, e, nar);
+                if (t == null)
+                    return null;
+            } else {
+                t = null;
+            }
 
 
             int ditherDT = nar.dtDither.intValue();
@@ -436,7 +451,7 @@ public class ConjClustering extends How {
             if (cj.op() != CONJ)
                 return null;
 
-            ObjectBooleanPair<Term> cp = Task.tryTaskTerm(cj, punc, true);
+            ObjectBooleanPair<Term> cp = Task.tryTaskTerm(cj, puncOut, true);
             if (cp == null)
                 return null;
 
@@ -444,7 +459,7 @@ public class ConjClustering extends How {
             long tEnd = start + range;
             NALTask y = new STMClusterTask(cp, t,
                     Tense.dither(start, ditherDT), Tense.dither(tEnd, ditherDT),
-                    Stamp.sample(NAL.STAMP_CAPACITY, actualStamp, nar.random()), punc, now);
+                    Stamp.sample(NAL.STAMP_CAPACITY, actualStamp, nar.random()), puncOut, now);
 
             Task.fund(y, x, priCopyOrMove);
 

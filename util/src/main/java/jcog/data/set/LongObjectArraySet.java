@@ -15,6 +15,7 @@ import org.eclipse.collections.impl.iterator.ImmutableEmptyLongIterator;
 
 import java.util.Arrays;
 import java.util.NoSuchElementException;
+import java.util.function.BiPredicate;
 import java.util.function.Predicate;
 
 import static jcog.math.LongInterval.TIMELESS;
@@ -45,27 +46,28 @@ public class LongObjectArraySet<X> extends FasterList<X> {
 
     @Override
     public LongObjectArraySet<X> sortThis() {
+        int size = this.size;
         if (size <= 1)
             return this;
 
         long[] when = this.when;
+        X[] ii = this.items;
 
         int left = 0, right = size - 1;
         for (int i = left, j = i; i < right; j = ++i) {
-            X xi = get(i + 1);
 
+            X xi = ii[i + 1];
             long li = when[i + 1];
+
             while (li < when[j]) {
-                setFast(j + 1, get(j));
+                ii[j+1] = ii[j];
                 when[j + 1] = when[j];
                 if (j-- == left)
                     break;
             }
 
-            setFast(j + 1, xi);
+            ii[j+1] = xi;
             when[j + 1] = li;
-
-
         }
 
         if (get(0) instanceof Comparable) {
@@ -75,9 +77,9 @@ public class LongObjectArraySet<X> extends FasterList<X> {
             for (int i = 1; i <= size; i++) {
                 long y = i<size ? when[i] : TIMELESS;
                 if (y != x) {
-                    if ((i - 1) - a > 0) {
-                        Arrays.sort(items, a, i);
-                    }
+                    if (i - a > 1)
+                        Arrays.sort(ii, a, i);
+
                     x = y;
                     a = i;
                 }
@@ -96,12 +98,29 @@ public class LongObjectArraySet<X> extends FasterList<X> {
     }
 
     public boolean contains(long w, X what) {
+        return contains(w, what, 0, size());
+    }
+
+    public final boolean contains(long w, X what, int startIndex, int finalIndexExc) {
         long[] longs = this.when;
-        for (int i = 0, n = size(); i < n; i++) {
-            if (longs[i] == w && get(i).equals(what))
+        X[] ii = this.items;
+        for (int i = startIndex; i < finalIndexExc; i++) {
+            if (longs[i] == w && ii[i].equals(what))
                 return true;
         }
         return false;
+    }
+    protected int indexOfIfSorted(long w, X what, int startIndex, int finalIndexExc, BiPredicate<X,X> equal) {
+        long[] longs = this.when;
+        X[] ii = this.items;
+        for (int i = startIndex; i < finalIndexExc; i++) {
+            long ll = longs[i];
+            if (ll == w && equal.test(ii[i],what))
+                return i;
+            if (ll > w)
+                break; //past the target
+        }
+        return -1;
     }
 
     @Override
@@ -142,7 +161,7 @@ public class LongObjectArraySet<X> extends FasterList<X> {
         return true;
     }
 
-    protected void addDirect(long w, X t) {
+    protected final void addDirect(long w, X t) {
         int s = addAndGetSize(t);
 
         //match long[] to the Object[] capacity
@@ -164,10 +183,13 @@ public class LongObjectArraySet<X> extends FasterList<X> {
     }
 
     public boolean removeFirst() {
-        if (isEmpty())
+        int s = size();
+        if (s == 0)
             return false;
-        removeThe(0);
-        return true;
+        else {
+            removeThe(0, s);
+            return true;
+        }
     }
 
     public boolean remove(long at, X t) {
@@ -178,9 +200,12 @@ public class LongObjectArraySet<X> extends FasterList<X> {
     /**
      * removes the ith tuple
      */
-    public void removeThe(int i) {
-        removeWhen(i, size());
+    public final void removeThe(int i) {
+        removeThe(i, size());
+    }
 
+    private void removeThe(int i, int s) {
+        removeWhen(i, s);
         super.removeFast(i);
     }
 

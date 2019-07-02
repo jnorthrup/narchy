@@ -28,7 +28,7 @@ import nars.derive.rule.PremiseRuleSet;
 import nars.derive.timing.ActionTiming;
 import nars.exe.impl.WorkerExec;
 import nars.gui.NARui;
-import nars.memory.HijackMemory;
+import nars.memory.CaffeineMemory;
 import nars.op.Arithmeticize;
 import nars.op.AutoencodedBitmap;
 import nars.op.Factorize;
@@ -63,6 +63,7 @@ import java.util.function.Supplier;
 
 import static nars.$.$$;
 import static nars.Op.BELIEF;
+import static nars.Op.GOAL;
 
 /**
  * Extensions to NAgent interface:
@@ -110,6 +111,7 @@ abstract public class GameX extends Game {
     @Deprecated public static NAR runRT(Function<NAR,Game> init, int threads, float narFPS) {
         return runRT((Consumer<NAR>) init::apply, threads, narFPS);
     }
+
 
     public static NAR runRT(Consumer<NAR> init, int threads, float narFPS) {
 
@@ -277,23 +279,23 @@ abstract public class GameX extends Game {
 
                         //new RadixTreeMemory(64*1024)
 //
-//                        ramGB >= 0.5 ?
-//                                new CaffeineMemory(
-//                                        //8 * 1024
-//                                        //16*1024
-//                                        //32*1024
-//                                        //64 * 1024
-//                                        //128*1024
-//                                        Math.round(ramGB * 128 * 1024)
-//                                )
-//                                :
-//                                CaffeineMemory.soft()
-//
+                        ramGB >= 0.5 ?
+                                new CaffeineMemory(
+                                        //8 * 1024
+                                        //16*1024
+                                        //32*1024
+                                        //64 * 1024
+                                        //128*1024
+                                        Math.round(ramGB * 128 * 1024)
+                                )
+                                :
+                                CaffeineMemory.soft()
+
 
                 //, c -> (int) Math.ceil(c.term().voluplexity()))
 
 
-                        new HijackMemory((int)Math.round(ramGB * 128 * 1024), 4)
+//                        new HijackMemory((int)Math.round(ramGB * 128 * 1024), 4)
                 )
                 .get(GameX::config);
     }
@@ -518,7 +520,7 @@ abstract public class GameX extends Game {
 
         List<ConjClustering> conjClusters = List.of(
                 new ConjClustering(n, BELIEF, 32, 512)
-                //, new ConjClustering(n, GOAL, 16, 64)
+                , new ConjClustering(n, GOAL, 16, 64)
         );
         conjClusters.forEach(c -> n.start(c));
 

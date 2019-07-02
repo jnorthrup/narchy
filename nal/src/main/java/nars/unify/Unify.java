@@ -550,7 +550,7 @@ public abstract class Unify extends Versioning<Term> {
 
         Term yy = var(xx) ? resolveVar((Variable) xx) : xx;
 
-        if (recurse && yy instanceof Compound) {
+        if (recurse && yy instanceof Compound && yy.hasAny(varBits)) {
             Term zz = transform().applyCompound((Compound) yy); //recurse
 //            if (yy!=zz)
 //                Util.nop();

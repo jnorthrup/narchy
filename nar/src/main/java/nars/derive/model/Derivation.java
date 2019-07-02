@@ -680,14 +680,14 @@ public class Derivation extends PreDerivation {
     public final class DerivationTransform extends UnifyTransform {
 
         private final Function<Atomic, Term> derivationFunctors = DerivationFunctors.get(Derivation.this);
-        public transient Function<Variable, Term> xy = null;
+//        public transient Function<Variable, Term> xy = null;
 
         @Override
         protected Term resolveVar(nars.term.Variable x) {
-            if (xy != null) {
-                Term y = xy.apply(x);
-                return y == null ? x : y;
-            } else
+//            if (xy != null) {
+//                Term y = xy.apply(x);
+//                return y == null ? x : y;
+//            } else
                 return Derivation.this.resolveVar(x);
         }
 
@@ -703,9 +703,8 @@ public class Derivation extends PreDerivation {
             if (a instanceof Variable) {
                 b = resolveVar((Variable) a);
 
-                if (b!=null && !(b instanceof Variable)) {
-                    b = resolve(b); //recurse
-                }
+                if (b instanceof Compound)
+                    b = resolveTerm(b, true); //recurse
 
             } else if (a instanceof Atom) {
 

@@ -2,7 +2,6 @@ package nars.term.util.conj;
 
 import jcog.Util;
 import jcog.data.set.LongObjectArraySet;
-import jcog.util.ArrayUtil;
 import nars.NAL;
 import nars.subterm.DisposableTermList;
 import nars.subterm.Subterms;
@@ -21,10 +20,10 @@ import org.roaringbitmap.RoaringBitmap;
 import java.util.Arrays;
 import java.util.function.BiPredicate;
 
+import static jcog.util.ArrayUtil.EMPTY_INT_ARRAY;
 import static nars.Op.CONJ;
 import static nars.term.atom.Bool.*;
-import static nars.time.Tense.ETERNAL;
-import static nars.time.Tense.TIMELESS;
+import static nars.time.Tense.*;
 
 /**
  * prepares construction of a conjunction target from components,
@@ -54,8 +53,7 @@ public class ConjList extends LongObjectArraySet<Term> implements ConjBuilder {
         occOffset = occAuto(conj, occOffset);
 
         ConjList l = new ConjList();
-        conj.eventsAND(l::add,
-                occOffset, true, false);
+        conj.eventsAND(l::add, occOffset, true, false);
         return l;
     }
 
@@ -65,13 +63,11 @@ public class ConjList extends LongObjectArraySet<Term> implements ConjBuilder {
     }
 
     public static ConjList subtract(ConjList from, Term conj, long occOffset) {
-        conj.eventsAND((when, what) -> {
-            if (when == ETERNAL)
-                from.removeAll(what);
-            else
-                from.remove(when, what);
-            return true;
-        }, occOffset, true, false);
+        conj.eventsAND(
+            occOffset == ETERNAL ?
+                (when,what)->{ from.removeAll(what); return true; } :
+                (when,what)->{ from.remove(when,what); return true; }
+        , occOffset, true, false);
         return from;
     }
 
@@ -96,29 +92,34 @@ public class ConjList extends LongObjectArraySet<Term> implements ConjBuilder {
 
         int s = size();
         int os = other.size();
-        if (os > s) return ArrayUtil.EMPTY_INT_ARRAY;
+        if (os > s) return EMPTY_INT_ARRAY;
+        if (s == 0 && os == 0) return new int[] { 0 };
 
+        other.sortThis();
         sortThis();
-        if (other._startIfSorted() < _startIfSorted() || other._endIfSorted() > _endIfSorted()) return ArrayUtil.EMPTY_INT_ARRAY;
+        if (other._startIfSorted() < _startIfSorted() || other._endIfSorted() > _endIfSorted())
+            return EMPTY_INT_ARRAY;
 
         Term otherFirst = other.get(0);
         IntArrayList locations = null;
         for (int i = 0; i <= s - os; i++) {
             if (equal.test(otherFirst, get(i))) {
-                if (containsRemainder(other, i, equal)) {
+                if (containsRemainder(other, i, s, equal)) {
                     if (locations == null)
                         locations = new IntArrayList(1);
                     locations.add(Tense.occToDT(when[i]));
                 }
             }
         }
-        return locations==null ? ArrayUtil.EMPTY_INT_ARRAY : locations.toArray();
+        return locations==null ? EMPTY_INT_ARRAY : locations.toArray();
     }
-    private boolean containsRemainder(ConjList other, int at, BiPredicate<Term,Term> equal) {
+    private boolean containsRemainder(ConjList other, int start, int end, BiPredicate<Term,Term> equal) {
         int os = other.size();
-        long shift = when(at);
+        long shift = when(start);
+        int next = start;
         for (int i = 1; i < os; i++) {
-            if (!contains(other.when(i)+shift, other.get(i)))
+            next = indexOfIfSorted(other.when(i)+shift, other.get(i), next+1, end, equal);
+            if (next == -1)
                 return false;
         }
         return true;
@@ -137,22 +138,28 @@ public class ConjList extends LongObjectArraySet<Term> implements ConjBuilder {
             return false;
         }
 
-
-        boolean result = true;
         //quick chest for absorb or conflict
         int n = size();
-        for (int i = 0; i < n; i++) {
-            long ww = when(i);
-            if (ww == ETERNAL || ww == when) {
-                Term ii = get(i);
-                if (ii.equals(t))
-                    return true; //exists
-
-                if (ii.equalsNeg(t)) {
-                    clear();
-                    return false; //conflict
+        if (n > 0) {
+            long[] W = this.when;
+            Term[] X = this.items;
+            boolean exists = false;
+            for (int i = 0; i < n; i++) {
+                long ww = W[i];
+                if (ww == ETERNAL || ww == when) {
+                    Term ii = X[i];
+                    if (ii.equals(t)) {
+                        exists = true;
+                    } else {
+                        if (ii.equalsNeg(t)) {
+                            clear();
+                            return false; //conflict
+                        }
+                    }
                 }
             }
+            if (exists)
+                return true;
         }
 
         addDirect(when, t);
@@ -302,14 +309,15 @@ public class ConjList extends LongObjectArraySet<Term> implements ConjBuilder {
 //        if (x.op() == CONJ && x.dt() != XTERNAL) {
             //remove components
             final boolean[] removed = {false};
-            if (!x.eventsAND((when, what) -> {
+            if (x.eventsOR((when, what) -> {
                 if (contains(when, what.negIf(polarity)))
-                    return false; //contradiction
+                    return true; //contradiction
 
                 removed[0] |= remove(when, what.negIf(!polarity));
-                return true;
-            }, offset, true, false))
+                return false;
+            }, offset, true, x.dt()==XTERNAL))
                 return -1;
+
             return removed[0] ? +1 : 0;
 //        } else {
 //            if (remove(offset, x.negIf(polarity)))
