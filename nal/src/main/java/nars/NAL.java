@@ -274,8 +274,8 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
 
     @Deprecated
     public final FloatRange questionForgetRate = new FloatRange(0.5f, 0, 1);
-    public final IntRange premiseUnifyTTL = new IntRange(8, 1, 32);
-    public final IntRange deriveBranchTTL = new IntRange(3 * NAL.derive.TTL_MIN, NAL.derive.TTL_MIN, 64 * NAL.derive.TTL_MIN);
+    public final IntRange premiseUnifyTTL = new IntRange(6, 1, 32);
+    public final IntRange deriveBranchTTL = new IntRange(2 * NAL.derive.TTL_MIN, NAL.derive.TTL_MIN, 64 * NAL.derive.TTL_MIN);
     /**
      * how many cycles above which to dither dt and occurrence time
      * TODO move this to Time class and cache the cycle value rather than dynamically computing it
@@ -809,7 +809,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
          * max variable unification recursion depth as a naive cyclic filter
          * includes indirections through common variables so should be at least 3.
          */
-        public static final int UNIFY_VAR_RECURSION_DEPTH_LIMIT = 4;
+        public static final int UNIFY_VAR_RECURSION_DEPTH_LIMIT = 6;
         public static final int UNIFY_COMMON_VAR_MAX = UNIFY_VAR_RECURSION_DEPTH_LIMIT;
         public static final int UNIFICATION_STACK_CAPACITY = 128;
     }

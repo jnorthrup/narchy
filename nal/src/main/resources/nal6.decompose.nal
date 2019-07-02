@@ -3,32 +3,20 @@
 
 
 
-    //free structural Conjunction/Disjunction decomposition
+//free structural Conjunction/Disjunction decomposition
+C, X,  conjParallel(C), eventOfPN(C,X), --hasBelief()   |-   conjWithoutPN(C,X), (Belief:StructuralDeduction)
+  C, X, conjParallel(C), eventOfPN(C,X), --hasBelief()  |-   conjWithoutPN(C,X), (Goal:StructuralDeduction)
 
-    C, X,                     eventOfPN(C,X) |-   conjWithoutPN(C,X), (Belief:StructuralDeduction)
-      C, X, conjParallel(C), eventOfPN(C,X) |-   conjWithoutPN(C,X), (Goal:StructuralDeduction)
-    C, X,                     eventOfPN(C,X), task("?")   |-   conjWithoutPN(C,X), (Punctuation:Question)
-      C, X,                   eventOfPN(C,X), task("@")   |-   conjWithoutPN(C,X), (Punctuation:Quest)
+C, X, eventOfPN(C,X), --hasBelief()       |-   conjWithoutPN(C,X), (Punctuation:AskAsk)
 
-    //disjunction select
-//    D, X, eventOfNeg(D,X), conjParallel(D)            |-   X, (Goal:StructuralDeductionWeakN)
-//    D, X, eventOf(D,X), conjParallel(D)               |- --X, (Goal:StructuralDeductionWeakN)
+  C, X, --isVar(X), hasBelief()                                     |- conjBefore(C,  polarizeBelief(X)), (Punctuation:AskAsk, Time:BeliefEvent)
+  C, X, --isVar(X), hasBelief(), --conjParallel(C), conjSequence(C) |- conjAfter(C,  polarizeBelief(X)), (Punctuation:AskAsk, Time:BeliefEvent)
 
-//    D, X, eventOfNeg(D,X), conjParallel(D)            |-   X, (Belief:StructuralDeductionN, Goal:StructuralDeductionN)
-//    D, X, eventOf(D,X), conjParallel(D)               |- --X, (Belief:StructuralDeductionN, Goal:StructuralDeductionN)
-        //D, X, eventOfPN(D,X)                            |- --conjWithoutPN(D,X), (Belief:StructuralDeductionWeakN, Goal:StructuralDeductionWeakN)
-        //D, X, eventOfPN(D,X)                            |- --conjWithoutPN(D,X), (Belief:StructuralDeductionN, Goal:StructuralDeductionN)
-        //D, X, eventOfPN(D,X)                            |-   conjWithoutPN(D,X), (Belief:StructuralDeductionWeak, Goal:StructuralDeductionWeak)
 
     //question short-circuit answer
     C, X, task("?"), eventOf(C,X)    |- --C,  (Belief:BeliefStructuralDeductionPN, Punctuation:Belief)
     C, X, task("?"), eventOfNeg(C,X) |-   C,  (Belief:BeliefStructuralDeductionPP, Punctuation:Belief)
         //TODO other short-circuits, involving ==> etc
-
-    //implication short-circuit doubt TODO
-//    (--C==>Y), X, eventOf(C,X)    |- --(Y && C), (Belief:IntersectionPN)
-//    (Y==>C), X, eventOf(C,X)    |- --(Y && C), (Belief:IntersectionPN)
-//    (Y==>C), X, eventOfNeg(C,X) |-   (Y==>C), (Belief:IntersectionPP)
 
 
     //impl conj/disj pred belief and question free structural implication decomposition
@@ -107,7 +95,8 @@
 //// propositional decomposition ////////////////////////////////////////////////////////////////////////////////////
 //If S is the case, and (&&,S,A..+) is not the case, it can't be that (&&,A..+) is the case
 
-     C, X, --isVar(X)                        |-   conjBefore(C,  X), (Belief:DecomposePP, Time:BeliefEvent)
+
+     C, X, --isVar(X)                            |-   conjBefore(C,  X), (Belief:DecomposePP, Time:BeliefEvent)
        C, X, conjSequence(C), --isVar(X)     |-   conjAfter(C,  X), (Belief:DecomposePP, Time:BeliefEvent)
          C, X, --isVar(X)                        |-   --conjBefore(C,  X), (Belief:DecomposePN, Time:BeliefEvent)
            C, X, conjSequence(C), --isVar(X)     |-   --conjAfter(C,  X), (Belief:DecomposePN, Time:BeliefEvent)
@@ -240,3 +229,18 @@
 //    //specific deduction
 //    C, X, eventOf(C,X)           |-   conjWithout(C,  X), (Belief:DecomposePP)
 //    C, X, eventOfNeg(C,X)        |-   conjWithout(C,--X), (Belief:DecomposePN)
+    //disjunction select
+//    D, X, eventOfNeg(D,X), conjParallel(D)            |-   X, (Goal:StructuralDeductionWeakN)
+//    D, X, eventOf(D,X), conjParallel(D)               |- --X, (Goal:StructuralDeductionWeakN)
+
+//    D, X, eventOfNeg(D,X), conjParallel(D)            |-   X, (Belief:StructuralDeductionN, Goal:StructuralDeductionN)
+//    D, X, eventOf(D,X), conjParallel(D)               |- --X, (Belief:StructuralDeductionN, Goal:StructuralDeductionN)
+        //D, X, eventOfPN(D,X)                            |- --conjWithoutPN(D,X), (Belief:StructuralDeductionWeakN, Goal:StructuralDeductionWeakN)
+        //D, X, eventOfPN(D,X)                            |- --conjWithoutPN(D,X), (Belief:StructuralDeductionN, Goal:StructuralDeductionN)
+        //D, X, eventOfPN(D,X)                            |-   conjWithoutPN(D,X), (Belief:StructuralDeductionWeak, Goal:StructuralDeductionWeak)
+
+    //implication short-circuit doubt TODO
+//    (--C==>Y), X, eventOf(C,X)    |- --(Y && C), (Belief:IntersectionPN)
+//    (Y==>C), X, eventOf(C,X)    |- --(Y && C), (Belief:IntersectionPN)
+//    (Y==>C), X, eventOfNeg(C,X) |-   (Y==>C), (Belief:IntersectionPP)
+

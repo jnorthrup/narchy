@@ -71,9 +71,9 @@ abstract public class What extends NARPart implements Prioritizable, Sampler<Tas
      *      however, each deriver instance can also be configured individually and dynamically.
      * */
     public DerivePri derivePri =
-            //new DirectDerivePri();
             new DefaultDerivePri();
             //new DefaultPuncWeightedDerivePri(); //<- extreme without disabling either pre or post amp
+            //new DirectDerivePri();
 
     final ConsumerX<Task> out = new ConsumerX<>() {
 

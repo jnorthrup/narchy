@@ -2,6 +2,7 @@ package nars.term;
 
 import jcog.Paper;
 import jcog.Skill;
+import nars.NAL;
 import nars.Op;
 import nars.term.atom.Atomic;
 import nars.term.var.CommonVariable;
@@ -107,13 +108,13 @@ public interface Variable extends Atomic {
     }
 
     private static boolean unifyConst(Unify u, Term x, Term y) {
-//        if (u.varDepth < NAL.unify.UNIFY_VAR_RECURSION_DEPTH_LIMIT) {
-//            u.varDepth++;
+        if (u.varDepth < NAL.unify.UNIFY_VAR_RECURSION_DEPTH_LIMIT) {
+            u.varDepth++;
             boolean result = x.unify(y, u); //both constant-like
-//            u.varDepth--;
+            u.varDepth--;
             return result;
-//        } else
-//            return false; //recursion limit exceeded
+        } else
+            return false; //recursion limit exceeded
     }
 
     private static boolean unifyVar(Unify u, Term x, Term y) {

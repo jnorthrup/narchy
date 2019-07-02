@@ -199,9 +199,7 @@ public class PremiseRule extends ProxyTerm {
                 case "neqRoot":
                     neqRoot(XX, YY);
                     break;
-//                case "eqRoot":
-//                    match(XX, new TermMatcher.EqualsRoot(YY));
-//                    break;
+
                 case "subCountEqual":
                     constraints.add(new NotEqualConstraint.SubCountEqual(XX, YY));
                     break;
@@ -297,13 +295,17 @@ public class PremiseRule extends ProxyTerm {
                     constraints.add(new SubOfConstraint(XX, ((Variable) Y.unneg()), Recursive, Y instanceof Neg ? -1 : +1));
                     break;
 
-                case "conjParallel":
-                    is(X, CONJ);
-                    match(X, TermMatcher.ConjParallel.the);
+                case "hasBelief":
+                    DoublePremiseRequired dpr = new DoublePremiseRequired(true, true, true);
+                    pre.add(negated ? dpr.neg() : dpr);
+                    if (negated) negationApplied = true;
                     break;
+
+                case "conjParallel":
                 case "conjSequence":
-                    is(X, CONJ);
-                    match(X, TermMatcher.ConjSequence.the);
+                    if (!negated) is(X, CONJ);
+                    match(X, pred.equals("conjSequence") ? TermMatcher.ConjSequence.the : TermMatcher.ConjParallel.the, !negated);
+                    if (negated) negationApplied = true;
                     break;
 
                 case "eventOf":
@@ -376,15 +378,15 @@ public class PremiseRule extends ProxyTerm {
 
                 //case "eventsOfNeg":
 
-                case "eventCommon":
-
-
-                    neq(XX, YY);
-                    is(X, CONJ);
-                    is(Y, CONJ);
-                    constraints.add(new CommonSubEventConstraint(XX, YY));
-
-                    break;
+//                case "eventCommon":
+//
+//
+//                    neq(XX, YY);
+//                    is(X, CONJ);
+//                    is(Y, CONJ);
+//                    constraints.add(new CommonSubEventConstraint(XX, YY));
+//
+//                    break;
 
 
                 case "subsMin":
@@ -392,17 +394,10 @@ public class PremiseRule extends ProxyTerm {
                     break;
 
 
-//                case "notSet":
-//                    /** deprecated soon */
-//                    matchNot(X, new TermMatch.Is(Op.Set));
-//                    break;
-
-
                 case "equals": {
                     //is(X, Y.opBit(), !negated);
                     match(X, new TermMatcher.Equals(Y), !negated);
                     if (negated) negationApplied = true;
-
                     break;
                 }
 
@@ -450,7 +445,7 @@ public class PremiseRule extends ProxyTerm {
 
                 case "has": {
                     //hasAny
-                    hasAny(X, Op.the($.unquote(Y)), negated);
+                    hasAny(X, Op.the($.unquote(Y)), !negated);
                     if (negated) negationApplied = true;
                     break;
                 }
@@ -482,13 +477,13 @@ public class PremiseRule extends ProxyTerm {
                         case "\"?@\"":
                             assert (taskPunc == null && concPunc == null);
                             taskPunc = t -> t == QUESTION || t == QUEST;
-                            concPunc = c -> c;  //default
+                            concPunc = c -> c;
                             break;
 
                         case "\".!\"":
                             assert (taskPunc == null && concPunc == null);
                             taskPunc = t -> t == BELIEF || t == GOAL;
-                            concPunc = c -> c; //default
+                            concPunc = c -> c;
                             break;
 //                        case "\"*\"":
 //                            pre.addAt(new TaskBeliefOp(PROD, true, false));
@@ -503,9 +498,7 @@ public class PremiseRule extends ProxyTerm {
                     }
                     break;
 
-                case "hasBelief":
-                    pre.add(new DoublePremiseRequired(true, true, true));
-                    break;
+
 
                 default:
                     throw new RuntimeException("unhandled postcondition: " + pred + " in " + this);
@@ -570,6 +563,22 @@ public class PremiseRule extends ProxyTerm {
                                     case BELIEF:
                                         return QUESTION;
                                     case GOAL:
+                                        return QUEST;
+                                    default:
+                                        return (byte) 0;
+                                }
+                            };
+                            break;
+
+                        /** re-ask a new question/quest in response to question/quest */
+                        case "AskAsk":
+                            assert (taskPunc == null && concPunc == null);
+                            taskPunc = p -> p == QUESTION || p == QUEST;
+                            concPunc = p -> {
+                                switch (p) {
+                                    case QUESTION:
+                                        return QUESTION;
+                                    case QUEST:
                                         return QUEST;
                                     default:
                                         return (byte) 0;
@@ -960,11 +969,11 @@ public class PremiseRule extends ProxyTerm {
     }
 
     public void hasAny(Term x, Op o) {
-        hasAny(x, o, false);
+        hasAny(x, o, true);
     }
 
-    private void hasAny(Term x, Op o, boolean negated) {
-        match(x, new TermMatcher.Has(o, true), !negated);
+    private void hasAny(Term x, Op o, boolean trueOrFalse) {
+        match(x, new TermMatcher.Has(o, true), trueOrFalse);
     }
 
     private PREDICATE[] preconditions() {
