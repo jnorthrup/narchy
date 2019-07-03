@@ -112,8 +112,10 @@ public enum Perceive { ;
                             answerPunc,
                             x.start(), x.end());
 
-                    if (t == null)
-                        throw new WTF();
+                    if (t == null) {
+                        //throw new WTF();
+                        return null;
+                    }
 
                 } else {
                     //throw new WTF();

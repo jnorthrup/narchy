@@ -580,6 +580,8 @@ public class Occurrify extends TimeGraph {
 
                 tt = tt.negIf(d.taskTruth.isNegative());
                 bb = bb.negIf(d.beliefTruth_at_Task.isNegative());
+//                tt = tt.negIf((d.taskTruth!=null) && d.taskTruth.isNegative());
+//                bb = bb.negIf((d.beliefTruth_at_Belief!=null) &&d.beliefTruth_at_Belief.isNegative());
 
                 long tTime = d.taskStart, bTime = d.beliefStart;
 
