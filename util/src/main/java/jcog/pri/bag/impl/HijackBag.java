@@ -1,5 +1,6 @@
 package jcog.pri.bag.impl;
 
+import it.unimi.dsi.fastutil.HashCommon;
 import jcog.Paper;
 import jcog.Skill;
 import jcog.Util;
@@ -437,9 +438,9 @@ public abstract class HijackBag<K, V> extends Bag<K, V> {
 
 
         //mix for additional mix
-        h ^= h >>> 20 ^ h >>> 12;
-        h ^= h >>> 7 ^ h >>> 4;
-
+//        h ^= h >>> 20 ^ h >>> 12;
+//        h ^= h >>> 7 ^ h >>> 4;
+        h = HashCommon.mix(h);
 
 
         //modulo

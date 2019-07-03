@@ -216,10 +216,11 @@ public class ConjClustering extends How {
         if (cc > 1)
             centroids.shuffleThis(w.nar.random());
 
-        CentroidConjoiner conjoiner = new CentroidConjoiner(tasksPerIterationPerCentroid);
+        CentroidConjoiner conjoiner = this.conjoiners.get();
         do {
 
-            centroids.removeIf(i -> conjoiner.conjoinCentroid(i, w) == 0 || i.size() <= 1);
+            centroids.removeIf(i ->
+                conjoiner.conjoinCentroid(tasksPerIterationPerCentroid, i, w) == 0 || i.size() <= 1);
 
         } while (!centroids.isEmpty() && kontinue.getAsBoolean());
 
@@ -271,27 +272,33 @@ public class ConjClustering extends How {
 
     }
 
+    private final ThreadLocal<CentroidConjoiner> conjoiners = ThreadLocal.withInitial(CentroidConjoiner::new);
+
     private final class CentroidConjoiner {
+
 
 //        private final Map<LongObjectPair<Term>, Task> vv = new UnifiedMap<>(16);
         final List<Task> trying = new FasterList(8);
         final FasterList<Task> tried = new FasterList(8);
 
-        final MetalLongSet actualStamp = new MetalLongSet(NAL.STAMP_CAPACITY * 2);
+        final MetalLongSet actualStamp = new MetalLongSet(NAL.STAMP_CAPACITY * 8);
 
         /** generated tasks */
         //final FasterList<Task> out = new FasterList();
-        private final int tasksGeneratedPerCentroidIterationMax;
+        private transient int tasksGeneratedPerCentroidIterationMax;
 
-        CentroidConjoiner(int tasksGeneratedPerCentroidIterationMax) {
-            this.tasksGeneratedPerCentroidIterationMax = tasksGeneratedPerCentroidIterationMax;
+        private CentroidConjoiner() {
+
         }
 
-        private int conjoinCentroid(FasterList<Task> in, What w) {
+        private int conjoinCentroid(int limit, FasterList<Task> in, What w) {
+
             int s = in.size();
             if (s == 0)
                 return 0;
 
+
+            this.tasksGeneratedPerCentroidIterationMax = limit;
 
             int count = 0;
             float confMinThresh = confMin + nar.confResolution.floatValue()/2f;

@@ -244,10 +244,10 @@ public interface Stamp {
             case 0: throw new NullPointerException();
             case 1: return toMutableSet(t.apply(0));
             default:
-                MetalLongSet e = new MetalLongSet(expectedCap);
+                MetalLongSet e = new MetalLongSet(n * expectedCap);
                 for (int i = 0; i < n; i++)
                     e.addAll(t.apply(i));
-                e.trim();
+                //e.trim();
                 return e;
         }
     }
@@ -256,7 +256,7 @@ public interface Stamp {
         MetalLongSet e = new MetalLongSet(expectedCap);
         for (long[] tt : t)
             e.addAll(tt);
-        e.trim();
+        //e.trim();
         return e;
     }
 

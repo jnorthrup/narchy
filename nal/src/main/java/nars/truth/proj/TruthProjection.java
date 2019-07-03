@@ -183,7 +183,7 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
             }
 
             if (e == null)
-                e = new MetalLongSet(NAL.STAMP_CAPACITY); //first iteration
+                e = new MetalLongSet(NAL.STAMP_CAPACITY * remain);
             else
                 e.clear(); //2nd iteration, or after
 
@@ -292,7 +292,7 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
         } else {
 
             double ee = 0;
-            MetalLongSet inc = new MetalLongSet(NAL.STAMP_CAPACITY);
+            MetalLongSet inc = new MetalLongSet(n * NAL.STAMP_CAPACITY);
             MetalBitSet exc = null; //first iteration
             for (int i = 0; i < size && n > 0; i++) {
                 if (x.get(i)) {
