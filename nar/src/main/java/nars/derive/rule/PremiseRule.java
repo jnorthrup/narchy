@@ -161,7 +161,7 @@ public class PremiseRule extends ProxyTerm {
         if (beliefPattern.op() == Op.ATOM)
             throw new TermException("belief target must contain no atoms", beliefPattern);
 
-
+        boolean questionSingle = true;
         ByteToByteFunction concPunc = null;
         boolean concBelief = false, concQuestion = false, concGoal = false, concQuest = false;
 
@@ -296,6 +296,7 @@ public class PremiseRule extends ProxyTerm {
                     break;
 
                 case "hasBelief":
+                    questionSingle = false;
                     DoublePremiseRequired dpr = new DoublePremiseRequired(true, true, true);
                     pre.add(negated ? dpr.neg() : dpr);
                     if (negated) negationApplied = true;
@@ -631,6 +632,7 @@ public class PremiseRule extends ProxyTerm {
         }
 
 
+
         TruthFunc beliefTruthOp = NALTruth.get(beliefTruth);
         if (beliefTruth != null && beliefTruthOp == null)
             throw new RuntimeException("unknown BeliefFunction: " + beliefTruth);
@@ -748,11 +750,11 @@ public class PremiseRule extends ProxyTerm {
         if (concPunc == null)
             throw new UnsupportedOperationException("no concPunc specified");
 
-        TaskPunc tp = TaskPunc.get(taskPunc);
-        if (tp!=null)
-            pre.add(tp);
+        PuncMap tp = PuncMap.get(taskPunc, concPunc);
+        if (!tp.all())
+            pre.add(tp); //add filter to allow only the mapped types
 
-        this.truthify = intern(Truthify.the(concPunc, beliefTruthOp, goalTruthOp, time));
+        this.truthify = intern(Truthify.the(tp, beliefTruthOp, goalTruthOp, questionSingle, time));
         this.time = time;
 
         this.taskPunc = taskPunc;

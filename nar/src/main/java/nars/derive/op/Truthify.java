@@ -4,6 +4,7 @@ import jcog.data.list.FasterList;
 import nars.$;
 import nars.NAL;
 import nars.Op;
+import nars.derive.condition.PuncMap;
 import nars.derive.model.Derivation;
 import nars.derive.op.Occurrify.BeliefProjection;
 import nars.term.Term;
@@ -11,7 +12,6 @@ import nars.term.atom.Atomic;
 import nars.term.control.AbstractPred;
 import nars.truth.Truth;
 import nars.truth.func.TruthFunc;
-import org.eclipse.collections.api.block.function.primitive.ByteToByteFunction;
 
 import java.util.function.Predicate;
 
@@ -32,7 +32,7 @@ public class Truthify extends AbstractPred<Derivation> {
      * 0 double premise
      * -1 disabled
      */
-    transient final byte beliefMode, goalMode;
+    transient final byte beliefMode, goalMode, questionMode;
     boolean beliefOverlap, goalOverlap;
 
     private final TruthFunc goal;
@@ -42,17 +42,18 @@ public class Truthify extends AbstractPred<Derivation> {
      * punctuation transfer function
      * maps input punctuation to output punctuation. a result of zero cancels
      */
-    private final ByteToByteFunction punc;
+    private final PuncMap punc;
 
     private final Predicate<Derivation> timeFilter;
 
 
-    public Truthify(Term id, ByteToByteFunction punc, TruthFunc belief, TruthFunc goal, Occurrify.OccurrenceSolver time) {
+    private Truthify(Term id, PuncMap punc, TruthFunc belief, TruthFunc goal, boolean questionSingle, Occurrify.OccurrenceSolver time) {
         super(id);
         this.punc = punc;
         this.timeFilter = time.filter();
         this.beliefProjection = time.beliefProjection();
         this.belief = belief;
+
         if (belief != null) {
             beliefMode = (byte) (belief.single() ? +1 : 0);
             beliefOverlap = NAL.OVERLAP_ALLOW_BELIEF || belief.allowOverlap();
@@ -60,6 +61,7 @@ public class Truthify extends AbstractPred<Derivation> {
             beliefMode = -1;
             beliefOverlap = false; //N/A
         }
+
         this.goal = goal;
         if (goal != null) {
             goalMode = (byte) (goal.single() ? +1 : 0);
@@ -68,19 +70,17 @@ public class Truthify extends AbstractPred<Derivation> {
             goalMode = -1;
             goalOverlap = false; //N/A
         }
+
+        this.questionMode = (byte) (questionSingle ? 1 : 0);
     }
 
     private static final Atomic TRUTH = Atomic.the("truth");
 
-    public static Truthify the(ByteToByteFunction punc, TruthFunc beliefTruthOp, TruthFunc goalTruthOp, Occurrify.OccurrenceSolver time) {
-        Term id;
+    public static Truthify the(PuncMap punc, TruthFunc beliefTruthOp, TruthFunc goalTruthOp, boolean questionSingle, Occurrify.OccurrenceSolver time) {
 
         FasterList<Term> args = new FasterList(4);
 
-        args.add(
-                //$.quote(punc.toString()) //HACK
-                $.func("punc", $.the(System.identityHashCode(punc)))
-        );
+        args.add(punc);
 
         String beliefLabel = beliefTruthOp != null ? beliefTruthOp.toString() : null;
         args.add(beliefLabel != null ? Atomic.the(beliefLabel) : Op.EmptyProduct);
@@ -88,15 +88,14 @@ public class Truthify extends AbstractPred<Derivation> {
         String goalLabel = goalTruthOp != null ? goalTruthOp.toString() : null;
         args.add(goalLabel != null ? Atomic.the(goalLabel) : Op.EmptyProduct);
 
-
         args.add(Atomic.the(time.name()));
 
-        id = $.func(TRUTH, args.toArrayRecycled(Term[]::new));
-
-
-        return new Truthify(id,
+        return new Truthify(
+                $.func(TRUTH, args.toArrayRecycled(Term[]::new)),
                 punc,
-                beliefTruthOp, goalTruthOp, time);
+                beliefTruthOp, goalTruthOp,
+                questionSingle,
+                time);
     }
 
     @Override
@@ -110,7 +109,7 @@ public class Truthify extends AbstractPred<Derivation> {
         boolean single;
         Truth t;
 
-        byte punc = this.punc.valueOf(d.taskPunc);
+        byte punc = this.punc.get(d.taskPunc);
         switch (punc) {
             case BELIEF:
             case GOAL:
@@ -138,15 +137,7 @@ public class Truthify extends AbstractPred<Derivation> {
 
             case QUEST:
             case QUESTION:
-//                if (questionDouble) {
-//                    if (d.overlapDouble)
-//                        return false
-//                } else {
-                    if (d.overlapSingle)
-                        return false;
-
-                    single = true;
-//                }
+                single = questionMode == 1;
                 t = null;
                 break;
 
@@ -173,32 +164,32 @@ public class Truthify extends AbstractPred<Derivation> {
      */
     public final byte preFilter(Derivation d) {
 
-        boolean single;
-        byte o = this.punc.valueOf(d.taskPunc);
+
+        byte o = this.punc.get(d.taskPunc);
+
+        int m = -1;
+        switch (o) {
+            case BELIEF: m = beliefMode; break;
+            case GOAL: m = goalMode; break;
+            case QUESTION: m = questionMode; break;
+            case QUEST: m = questionMode; break;
+        }
+        if(m == -1)
+            return 0;
+        boolean single = (m == 1);
+        boolean overlapping = (single ? d.overlapSingle : d.overlapDouble);
         switch (o) {
             case GOAL:
             case BELIEF: {
-                switch (o == BELIEF ? beliefMode : goalMode) {
-                    case -1:
-                        return 0;
-                    case 0: //double
-                        single = false; //if task is not single and premise is, fail
-                        break;
-                    default:
-                        single = true;
-                        break;
-                }
-                boolean overlapIf = (o == BELIEF) ? beliefOverlap : goalOverlap;
-                if (!overlapIf && ((single ? d.overlapSingle : d.overlapDouble)))
+                //allow overlap?
+                if (overlapping && !((o == BELIEF) ? beliefOverlap : goalOverlap))
                     return 0;
                 break;
             }
             case QUEST:
             case QUESTION:
-                if (d.overlapSingle)
+                if (overlapping)
                     return 0;
-
-                single = true;
 
                 break;
 

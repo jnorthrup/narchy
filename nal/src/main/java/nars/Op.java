@@ -14,6 +14,7 @@ import nars.term.Terms;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
+import nars.term.atom.Int;
 import nars.term.util.SetSectDiff;
 import nars.term.util.TermException;
 import nars.term.util.builder.HeapTermBuilder;
@@ -559,6 +560,21 @@ public enum Op {
 
     public static Op the(int id) {
         return ops[id];
+    }
+
+    public static final Atom BeliefAtom = Atomic.atom(".");
+    public static final Atom GoalAtom = Atomic.atom("!");
+    public static final Atom QuestionAtom = Atomic.atom("?");
+    public static final Atom QuestAtom = Atomic.atom("@");
+
+    public static Atomic puncAtom(byte b) {
+        switch (b) {
+            case BELIEF: return BeliefAtom;
+            case QUESTION: return QuestionAtom;
+            case GOAL: return GoalAtom;
+            case QUEST: return QuestAtom;
+        }
+        return Int.the(0);
     }
 
     public final Term the(Subterms s) {

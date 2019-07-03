@@ -196,6 +196,11 @@ class NarseseBaseTest extends NarseseTest {
         assertEquals("(a||b)", $.$("(a||b)").toString());
         assertEquals("(a||b)", $.$("(a || b)").toString());
     }
+    @Test
+    void testDisjunctionXternal() throws Narsese.NarseseException {
+        assertEquals("(a ||+- b)", $.$("--(--a &&+- --b)").toString());
+        assertEquals("(a ||+- b)", $.$("(a ||+- b)").toString());
+    }
 
 
     @Test

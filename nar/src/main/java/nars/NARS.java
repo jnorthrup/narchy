@@ -123,6 +123,11 @@ public class NARS {
 
 
         public DefaultNAR(int nal, boolean threadSafe) {
+            this(0, nal, threadSafe);
+        }
+        public DefaultNAR(int nalMin, int nalMax, boolean threadSafe) {
+
+            assert(nalMin <= nalMax);
 
             if (threadSafe)
                 index =
@@ -130,10 +135,11 @@ public class NARS {
                         () -> new SimpleMemory(4 * 1024, true)
             ;
 
-            if (nal > 0)
-                withNAL(1, nal);
 
-            if (nal >= 7) {
+            if (nalMax > 0)
+                withNAL(nalMin, nalMax);
+
+            if (nalMax >= 7) {
                 then((nn)->new STMLinkage(nn, 1));
             }
 
@@ -239,11 +245,11 @@ public class NARS {
      * @param nal adjustable NAL level. level >= 7 include STM (short-target-memory) Linkage plugin
      */
     public static NAR tmp(int nal) {
-        return new DefaultNAR(nal, false).get();
+        return tmp(0, nal);
     }
 
     public static NAR tmp(int nalStart, int nalEnd) {
-        return new NARS.DefaultNAR(0, false).withNAL(nalStart,nalEnd).get();
+        return new NARS.DefaultNAR(nalStart, nalEnd, false).get();
     }
 
     /**
