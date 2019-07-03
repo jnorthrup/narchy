@@ -47,7 +47,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
 
     public static final float DEFAULT_CURIOSITY_RATE = 0.05f;
 
-    public static final int NEG_CACHE_VOL_THRESHOLD = 4;
+    public static final int NEG_CACHE_VOL_THRESHOLD = 0;
 
     public static final boolean OCCURRIFY_STRICT = true;
 

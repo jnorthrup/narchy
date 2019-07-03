@@ -1,11 +1,8 @@
 package nars.term;
 
 import nars.$;
-import nars.NAR;
-import nars.NARS;
 import nars.Op;
 import nars.io.IO;
-import nars.op.Equal;
 import nars.truth.Truth;
 import nars.truth.func.NALTruth;
 import org.jetbrains.annotations.Nullable;
@@ -64,24 +61,7 @@ public class BoolTest {
         assertEquals(Null, Null.unneg());
     }
 
-    /**
-     * same tautological assumptions should hold in equal(x,y) results
-     */
-    @Test
-    void testEqualOperatorTautologies() {
-        //TODO finish
-        NAR n = NARS.shell();
-        assertEquals(True, Equal.the(True, True));
-        assertEquals(False, Equal.the(True, False));
-        assertEquals(Null, Equal.the(True, Null));
-        assertEquals(Null, Equal.the(False, Null));
-//        assertEq("(y-->x)", Equal.the($$("x:y"), True));
-//        assertEq("(--,(y-->x))", Equal.the($$("x:y"), False));
 
-//        assertEquals("[equal(true,true)]", Evaluation.eval($$("equal(true,true)"), n).toString());
-//        assertEquals("[equal(false,false)]", Evaluation.eval($$("equal(false,false)"), n).toString());
-        //assertEquals("[null]", Evaluation.eval($$("equal(null,null)"), n).toString());
-    }
 
     @Test
     void testStatementTautologies() {

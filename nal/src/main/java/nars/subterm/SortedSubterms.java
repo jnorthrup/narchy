@@ -54,7 +54,7 @@ public class SortedSubterms {
                 Arrays.sort(y);
         }
 
-        if (hadNegs || ArrayUtil.equalsIdentity(x,y)) {
+        if (!hadNegs && ArrayUtil.equalsIdentity(x,y)) {
             //already sorted and has no negatives
             return b.apply(x);
         } else {

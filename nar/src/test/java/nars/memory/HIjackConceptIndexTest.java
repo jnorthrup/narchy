@@ -1,4 +1,4 @@
-package nars.term.index;
+package nars.memory;
 
 public class HIjackConceptIndexTest {
 }

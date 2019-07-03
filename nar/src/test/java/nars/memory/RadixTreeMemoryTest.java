@@ -1,4 +1,4 @@
-package nars.term.index;
+package nars.memory;
 
 import jcog.data.byt.ArrayBytes;
 import nars.$;

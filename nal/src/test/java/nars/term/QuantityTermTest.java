@@ -1,5 +1,6 @@
-package nars.term.obj;
+package nars.term;
 
+import nars.term.obj.QuantityTerm;
 import org.junit.jupiter.api.Test;
 
 import javax.measure.Quantity;

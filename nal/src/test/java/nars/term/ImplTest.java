@@ -308,19 +308,5 @@ class ImplTest {
             assertEq("((x &&+1 y) ==>+1 z)", "(x ==>+1 (y ==>+1 z))"); //temporal
         }
 
-    @Test
-    void testCoNegatedImpl() {
-        TermTestMisc.assertValidTermValidConceptInvalidTaskContent(("(--x ==> x)."));
-//        TermTestMisc.assertValidTermValidConceptInvalidTaskContent(("(--x =|> x)."));
-    }
-
-    @Test
-    void testCoNegatedImplOK() throws Narsese.NarseseException {
-        TermTestMisc.assertValid($("((--,(a)) ==>+1 (a))"));
-        TermTestMisc.assertValid($("((--,a) ==>+1 a)"));
-    }
-
-
-
 
 }

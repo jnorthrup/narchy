@@ -148,8 +148,10 @@ public enum TruthFunctions2 {
                         bipolar ?
                             Util.lerpSafe(bF, 1-goal.freq(), goal.freq())
                             :
-                            //Util.lerpSafe(bF, 0.5f, goal.freq());
-                            goal.freq();
+                            //Util.lerpSafe(bF, 0.5f, goal.freq())
+                            //goal.freq() * bF
+                            goal.freq()
+                        ;
 
                 return $.t(f, cc);
 

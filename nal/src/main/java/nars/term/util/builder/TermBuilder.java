@@ -72,7 +72,7 @@ public abstract class TermBuilder implements TermConstructor {
     }
 
     public Compound newCompoundN(Op o, int dt, Term[] t, @Nullable DynBytes key) {
-        return newCompound(o, dt, subterms(o, t, dt, key));
+        return newCompound(o, dt, subterms(o, t, key));
     }
 
 
@@ -80,7 +80,7 @@ public abstract class TermBuilder implements TermConstructor {
        return new CachedUnitCompound(o, x);
     }
 
-    protected Subterms subterms(Op o, Term[] t, int dt, @Nullable DynBytes key) {
+    protected Subterms subterms(Op o, Term[] t, @Nullable DynBytes key) {
         return subterms(o, t);
     }
 

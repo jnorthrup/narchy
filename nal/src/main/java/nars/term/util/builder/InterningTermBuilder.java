@@ -83,7 +83,7 @@ public class InterningTermBuilder extends HeapTermBuilder {
         atoms = new HijackMemoize<>(super::atom, cacheSizePerOp, 3);
 
         subterms = newOpCache("subterms",
-                x -> TermConstructor.theSubterms(false, resolve(x.subs)), cacheSizePerOp * 2);
+                x -> super.subterms(null, resolve(x.subs)), cacheSizePerOp * 2);
         anonSubterms = newOpCache("intrinSubterms",
                 x -> new IntrinSubterms(x.subs), cacheSizePerOp);
 
@@ -154,11 +154,11 @@ public class InterningTermBuilder extends HeapTermBuilder {
 
     @Override
     public final Subterms subterms(@Nullable Op o, Term... t) {
-        return subterms(o, t, DTERNAL, null);
+        return subterms(o, t, null);
     }
 
     @Override
-    protected Subterms subterms(Op o, Term[] t, int dt, @Nullable DynBytes key) {
+    protected Subterms subterms(Op o, Term[] t, @Nullable DynBytes key) {
         Subterms subs;
         if (t.length == 0)
             subs = EmptySubterms;
@@ -168,9 +168,8 @@ public class InterningTermBuilder extends HeapTermBuilder {
             subs = super.subterms(o, t);
 
         if (key != null && cacheSubtermKeyBytes) {
-            if (dt == DTERNAL) //HACK TODO if temporal then the final bytes are for dt should be excluded from what the subterms gets.
-                if (subs instanceof Subterms.SubtermsBytesCached)
-                    ((Subterms.SubtermsBytesCached) subs).acceptBytes(key);
+            if (subs instanceof Subterms.SubtermsBytesCached)
+                ((Subterms.SubtermsBytesCached) subs).acceptBytes(key);
         }
 
         return subs;

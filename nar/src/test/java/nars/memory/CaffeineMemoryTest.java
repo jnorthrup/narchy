@@ -1,10 +1,9 @@
-package nars.memory.map;
+package nars.memory;
 
 import nars.NAR;
 import nars.NARS;
 import nars.Narsese;
 import nars.concept.Concept;
-import nars.memory.CaffeineMemory;
 import nars.term.Term;
 import org.junit.jupiter.api.Test;
 

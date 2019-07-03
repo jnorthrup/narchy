@@ -76,7 +76,7 @@ class TermutatorTest {
         }
         e0 = ee0;
     }
-    private static final @NotNull Ellipsis e1 = Ellipsis.EllipsisPrototype.make((byte) 1,1);
+    private static final Ellipsis e1 = Ellipsis.EllipsisPrototype.make((byte) 1,1);
 
 
     private static final Variable p2= v(Op.VAR_PATTERN, (byte) 2);
