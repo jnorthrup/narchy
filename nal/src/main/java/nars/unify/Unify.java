@@ -198,7 +198,7 @@ public abstract class Unify extends Versioning<Term> {
 
         Term /*Variable*/ z = x, y;
 
-        int safety = Math.min(s, NAL.unify.UNIFY_VAR_RECURSION_DEPTH_LIMIT);
+        int safety = Math.min(s+1, NAL.unify.UNIFY_VAR_RECURSION_DEPTH_LIMIT);
 
         while (var(z)) {
             y = xy.get(z);

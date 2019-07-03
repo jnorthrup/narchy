@@ -193,16 +193,16 @@ public class Premise implements Comparable<Premise> {
                 if (answerTable != null && !answerTable.isEmpty()) {
                     Task a = tryAnswer(beliefTerm, answerTable, d);
                     if (a != null) {
-                        if (a.conf() < d.confMin)
-                            a = null;
-                        else {
+//                        if (a.conf() < d.confMin)
+//                            a = null;
+//                        else {
                             assert (((!answerGoal && a.isBelief()) || (answerGoal && a.isGoal())));
 
                             if (answerGoal)
                                 d.what.accept(a);
                             else //if (task.isInput())
                                 d.what.emit(a);
-                        }
+//                        }
 
                     }
                     if (!answerGoal)

@@ -102,7 +102,6 @@ abstract public class NAL6DecomposeTest extends NALTest {
         @Test
         void testDecomposeConjNeg2() {
             test
-                    .logDebug()
                     .termVolMax(6)
                     .confMin(0.7f)
                     .believe("(&&, --y, --z)")
