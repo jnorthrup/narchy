@@ -12,6 +12,7 @@ import nars.term.buffer.TermBuffer;
 import nars.term.util.transform.Retemporalize;
 import nars.term.util.transform.TermTransform;
 import org.eclipse.collections.api.block.function.primitive.IntObjectToIntFunction;
+import org.eclipse.collections.api.list.primitive.ByteList;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
@@ -334,6 +335,20 @@ public interface Atomic extends Term {
     @Override
     default /* final */ Term sub(int i) {
         throw new ArrayIndexOutOfBoundsException();
+    }
+
+    @Override
+    @Nullable
+    default Term subPath(int start, int end, byte... path) {
+        if (start==0 && start==end) return this;
+        else return null;
+    }
+
+    @Override
+    @Nullable
+    default Term subPath(ByteList path, int start, int end) {
+        if (start==0 && start==end) return this;
+        else return null;
     }
 
     @Override

@@ -7,6 +7,7 @@ import java.util.function.LongToDoubleFunction;
 /** trapezoidally integrates a function where the x domain is long integers, and the y range is floats */
 abstract public class LongFloatTrapezoidalIntegrator implements LongToDoubleFunction { ;
 
+
     /** /** points must be ordered */
     public final double integrate(long... x) {
         switch (x.length) {
@@ -19,7 +20,7 @@ abstract public class LongFloatTrapezoidalIntegrator implements LongToDoubleFunc
         }
     }
 
-    private double integrate2(long a, long b) {
+    public double integrate2(long a, long b) {
         double aa = applyAsDouble(a);
         if (a == b)
             return aa;
@@ -30,7 +31,18 @@ abstract public class LongFloatTrapezoidalIntegrator implements LongToDoubleFunc
         }
     }
 
-    private double integrateN(long[] x) {
+    public double integrate3(long a, long b, long c) {
+        if (a == b)
+            return integrate2(a, c);
+        else if (b == c)
+            return integrate2(a, b);
+
+        double aa = applyAsDouble(a), bb = applyAsDouble(b), cc = applyAsDouble(c);
+        double ab = (aa+bb)/2.0, bc = (bb + cc)/2.0;
+        return (((b-a)+1) * ab) + (((c-b)+1) * bc);
+    }
+
+    public double integrateN(long... x) {
         double yPrev = Double.NaN;
         double sum = Double.NaN;
         long xPrev = Long.MIN_VALUE;

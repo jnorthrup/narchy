@@ -77,6 +77,7 @@ public class Premise implements Comparable<Premise> {
 
         this.hash = premiseHash(task, beliefTerm);
 
+
     }
 
 

@@ -4,8 +4,11 @@
 //      If after M, P usually happens, and M happens, it means P is expected to happen
 
 
-     B, (  X ==> C), --is(X,"--"), --is(C,"#"), --is(B,"==>") |- unisubst(C,X,B,"$"), (Belief:PreRecursive, Goal:PreWeak, Time:TaskEvent)
-       B, (--X ==> C), --is(C,"#"), --is(B,"==>") |- unisubst(C,X,B,"$"), (Belief:PreRecursiveN, Goal:PreWeakN, Time:TaskEvent)
+     B, (  X ==> C), --is(X,"--"), --is(C,"#"), --is(B,"==>") |- unisubst(C,X,B,"$"), (Belief:Pre, Goal:PreWeak, Time:TaskEvent)
+       B, (--X ==> C), --is(C,"#"), --is(B,"==>") |- unisubst(C,X,B,"$"), (Belief:PreN, Goal:PreWeakN, Time:TaskEvent)
+     //if novel, allow recursive
+     B, (  X ==> C), --is(X,"--"), --is(C,"#"), --is(B,"==>") |- unisubst(C,X,B,"$",novel), (Belief:PreRecursive, Time:TaskEvent)
+       B, (--X ==> C), --is(C,"#"), --is(B,"==>") |- unisubst(C,X,B,"$",novel), (Belief:PreRecursiveN, Time:TaskEvent)
 
 //     B, (  X ==> C), --is(X,"--"), --is(C,"#"), --is(B,"==>") |-   unisubst(C,X,B,"$"), (Belief:DeductionRecursivePP, Goal:DeductionWeakPP, Time:TaskEvent)
 //     B, (  X ==> C), --is(X,"--"), --is(C,"#"), --is(B,"==>") |- --unisubst(C,X,B,"$"), (Belief:DeductionRecursivePN, Goal:DeductionWeakPN, Time:TaskEvent)

@@ -4,8 +4,8 @@
 
 
 //free structural Conjunction/Disjunction decomposition
-C, X,  conjParallel(C), eventOfPN(C,X), --hasBelief()   |-   conjWithoutPN(C,X), (Belief:StructuralDeduction)
-  C, X, conjParallel(C), eventOfPN(C,X), --hasBelief()  |-   conjWithoutPN(C,X), (Goal:StructuralDeduction)
+C, X,  conjParallel(C), eventOfPN(C,X)   |-   conjWithoutPN(C,X), (Belief:StructuralDeduction)
+  C, X, conjParallel(C), eventOfPN(C,X)  |-   conjWithoutPN(C,X), (Goal:StructuralDeduction)
 
 C, X, eventOfPN(C,X), --hasBelief()       |-   conjWithoutPN(C,X), (Punctuation:AskAsk)
 
@@ -105,14 +105,14 @@ C, X, eventOfPN(C,X), --hasBelief()       |-   conjWithoutPN(C,X), (Punctuation:
          C, X, --isVar(X)                     |-   --conjBefore(C,--X), (Belief:DecomposePP, Time:BeliefEvent)
            C, X, conjSequence(C), --isVar(X)  |-   --conjAfter(C,--X), (Belief:DecomposePP, Time:BeliefEvent)
 
-     D, X, --isVar(X)                     |-   --conjBefore(D, --X), (Belief:DecomposeNP, Time:BeliefEvent)
-       D, X, conjSequence(D), --isVar(X)  |-    --conjAfter(D, --X), (Belief:DecomposeNP, Time:BeliefEvent)
-     D, X, --isVar(X)                        |-   --conjBefore(D,X), (Belief:DecomposeNN, Time:BeliefEvent)
-       D, X, conjSequence(D), --isVar(X)     |-    --conjAfter(D,X), (Belief:DecomposeNN, Time:BeliefEvent)
-      D, X, --isVar(X)                        |-    conjBefore(D, X), (Belief:DecomposeNP, Time:BeliefEvent)
-        D, X, conjSequence(D), --isVar(X)     |-     conjAfter(D, X), (Belief:DecomposeNP, Time:BeliefEvent)
-      D, X, --isVar(X)                     |-   conjBefore(D,--X), (Belief:DecomposeNN, Time:BeliefEvent)
-        D, X, conjSequence(D), --isVar(X)  |-   conjAfter(D,--X), (Belief:DecomposeNN, Time:BeliefEvent)
+     D, X, --isVar(X)                     |-   conjBefore(D, --X), (Belief:DecomposeNP, Time:BeliefEvent)
+       D, X, conjSequence(D), --isVar(X)  |-    conjAfter(D, --X), (Belief:DecomposeNP, Time:BeliefEvent)
+     D, X, --isVar(X)                        |-     conjBefore(D,X), (Belief:DecomposeNN, Time:BeliefEvent)
+       D, X, conjSequence(D), --isVar(X)     |-      conjAfter(D,X), (Belief:DecomposeNN, Time:BeliefEvent)
+      D, X, --isVar(X)                        |-  --conjBefore(D, X), (Belief:DecomposeNP, Time:BeliefEvent)
+        D, X, conjSequence(D), --isVar(X)     |-   --conjAfter(D, X), (Belief:DecomposeNP, Time:BeliefEvent)
+      D, X, --isVar(X)                     |-   --conjBefore(D,--X), (Belief:DecomposeNN, Time:BeliefEvent)
+        D, X, conjSequence(D), --isVar(X)  |-   --conjAfter(D,--X), (Belief:DecomposeNN, Time:BeliefEvent)
 
 
     C, X, --isVar(X)   |-     conjAfter(C,  X),       (Goal:DecomposePP, Time:BeliefEvent)

@@ -42,7 +42,7 @@ public final class PuncMap extends AbstractPred<PreDerivation> {
 
     @Override
     public float cost() {
-        return 0.006f;
+        return 0.003f;
     }
 
     @Override

@@ -330,6 +330,8 @@ public final class Answer implements Timed, Predicate<Task> {
 
         Task root = tasks.first();
 
+        long ss = time.start, ee = time.end;
+
         Task t;
         if (s == 1)
             t = root;
@@ -338,9 +340,10 @@ public final class Answer implements Timed, Predicate<Task> {
                 //compare alternate roots, as they might match better with tasks below
                 switch (root.punc()) {
                     case BELIEF:
-                    case GOAL:
-                        t = Truth.stronger(newTask(forceProject, ditherTruth, ditherTime), tasks.first());
+                    case GOAL: {
+                        t = Truth.stronger(newTask(forceProject, ditherTruth, ditherTime), tasks.first(), ss, ee);
                         break;
+                    }
 
                     case QUESTION:
                     case QUEST:
@@ -358,9 +361,9 @@ public final class Answer implements Timed, Predicate<Task> {
             return null;
 
         if (forceProject) { //dont bother sub-projecting eternal here.
-            long ss = time.start;
+
             if (ss != ETERNAL) { //dont eternalize here
-                long ee = time.end;
+
                 @Nullable Task t2 = Task.project(t, ss, ee, eviMin, ditherTruth, ditherTime ? nar.dtDither() : 1, dur, nar);
                 if (t2 == null)
                     return null;

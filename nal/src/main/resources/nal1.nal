@@ -58,6 +58,9 @@
 
     (A --> B), (B --> C), neqRCom(A,C)      |-   (C --> A), (Belief:Exemplification, Goal:DesireWeak, Time:Compose)
     //(A --> B), (B --> C), neqRCom(A,C)      |- --(C --> A), (                        Goal:DeductionWeakNP, Time:Compose)
+//    (C --> B), (A --> C), neqRCom(A,C)      |- (A --> C), (Belief:Exemplification, Goal:DesireWeak, Time:Compose)
+                                                                                //, Goal:DesireWeak)
+    //(C --> B), (A --> C), neqRCom(A,C)      |- (A --> C), (Belief:Exemplification, Goal:DesireWeak)
 
         //(A --> B), (B --> C), task("!"), neqRCom(A,C)      |- (C --> A), (Punctuation:Quest)
 

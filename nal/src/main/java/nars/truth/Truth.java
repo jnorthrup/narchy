@@ -33,6 +33,7 @@ import java.io.DataOutput;
 import java.io.IOException;
 
 import static jcog.WTF.WTF;
+import static nars.time.Tense.ETERNAL;
 import static nars.truth.func.TruthFunctions.*;
 
 
@@ -181,7 +182,7 @@ public interface Truth extends Truthed {
     }
 
     /** TODO make int compare(a,b) */
-    @Nullable static Task stronger(@Nullable Task a, @Nullable Task b) {
+    @Nullable static Task stronger(@Nullable Task a, @Nullable Task b, long s, long e) {
         if (a == null)
             return b;
         else if (b == null || a.equals(b))
@@ -190,15 +191,18 @@ public interface Truth extends Truthed {
             boolean ae = a.isEternal(), be = b.isEternal();
             if (ae && be) {
                 return a.evi() >= b.evi() ? a : b;
-            } else if (ae || be) {
+            } else if ((ae || be) && s != ETERNAL) {
                 if (be) {
                     @Nullable Task x = a;
                     a = b;
                     b = x; //swap so that 'b' is temporal
                 }
-                return TruthIntegration.evi(a, b.start(), b.end(), 0) >= TruthIntegration.evi(b) ? a : b;
+                return TruthIntegration.evi(a, s, e, 0) >= TruthIntegration.evi(b) ? a : b;
             } else {
-                return TruthIntegration.evi(a) >= TruthIntegration.evi(b) ? a : b;
+                if (s == ETERNAL)
+                    return TruthIntegration.evi(a) >= TruthIntegration.evi(b) ? a : b;
+                else
+                    return TruthIntegration.evi(a, s, e, 0) >= TruthIntegration.evi(b, s, e, 0) ? a : b;
             }
         }
     }

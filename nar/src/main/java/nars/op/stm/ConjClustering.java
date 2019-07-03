@@ -198,8 +198,11 @@ public class ConjClustering extends How {
             }
         }
 
+        CentroidConjoiner conjoiner = this.conjoiners.get();
+
         //round-robin visit each centroid one task at a time.  dont finish a centroid completely and then test kontinue, it is unfair
-        FasterList<TaskList> centroids = new FasterList<>(this.data.net.centroidCount());
+        FasterList<TaskList> centroids = conjoiner.centroids;
+        centroids.clear();
         data.forEachCentroid(TaskList::new, tt ->{
             int tts = tt.size();
             if (tts > 1) {
@@ -216,7 +219,6 @@ public class ConjClustering extends How {
         if (cc > 1)
             centroids.shuffleThis(w.nar.random());
 
-        CentroidConjoiner conjoiner = this.conjoiners.get();
         do {
 
             centroids.removeIf(i ->
@@ -278,10 +280,11 @@ public class ConjClustering extends How {
 
 
 //        private final Map<LongObjectPair<Term>, Task> vv = new UnifiedMap<>(16);
-        final List<Task> trying = new FasterList(8);
-        final FasterList<Task> tried = new FasterList(8);
+        final List<Task> trying = new FasterList();
+        final FasterList<Task> tried = new FasterList();
 
-        final MetalLongSet actualStamp = new MetalLongSet(NAL.STAMP_CAPACITY * 8);
+        final MetalLongSet stamp = new MetalLongSet(NAL.STAMP_CAPACITY * 8);
+        public FasterList<TaskList> centroids = new FasterList();
 
         /** generated tasks */
         //final FasterList<Task> out = new FasterList();
@@ -307,7 +310,7 @@ public class ConjClustering extends How {
 
             tried.clear();
             trying.clear();
-            actualStamp.clear();
+            stamp.clear();
 
 //            System.out.println(items.size());
 
@@ -344,7 +347,7 @@ public class ConjClustering extends How {
                     start = Long.MAX_VALUE;
                     volEstimate = 1;
 
-                    actualStamp.clear();
+                    stamp.clear();
                     trying.clear();
                 }
 
@@ -367,7 +370,7 @@ public class ConjClustering extends How {
                 if (volEstimate + xtv <= volMax) {
                     long[] tStamp = t.stamp();
 
-                    if (!Stamp.overlapsAny(actualStamp, tStamp)) {
+                    if (!Stamp.overlapsAny(stamp, tStamp)) {
 
                         long tStart = t.start();
                         //                        if (vv.isEmpty() || !vv.containsKey(pair(tStart, term.neg()))) {
@@ -377,7 +380,7 @@ public class ConjClustering extends How {
 
                         volEstimate += xtv;
 
-                        actualStamp.addAll(tStamp);
+                        stamp.addAll(tStamp);
 
                         if (start > tStart) start = tStart;
 
@@ -466,7 +469,7 @@ public class ConjClustering extends How {
             long tEnd = start + range;
             NALTask y = new STMClusterTask(cp, t,
                     Tense.dither(start, ditherDT), Tense.dither(tEnd, ditherDT),
-                    Stamp.sample(NAL.STAMP_CAPACITY, actualStamp, nar.random()), puncOut, now);
+                    Stamp.sample(NAL.STAMP_CAPACITY, stamp, nar.random()), puncOut, now);
 
             Task.fund(y, x, priCopyOrMove);
 

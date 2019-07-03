@@ -8,9 +8,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static nars.Op.BELIEF;
+import static nars.Op.QUESTION;
 
 abstract public class NAL6DecomposeTest extends NALTest {
-    private static final int cycles = 750;
+    private static final int cycles = 200;
 
     @BeforeEach
     void setup() {
@@ -26,46 +27,146 @@ abstract public class NAL6DecomposeTest extends NALTest {
     }
 
     static class Unsorted extends NAL6DecomposeTest {
-//        private void assertDecomposeSubjConjAandB(float fAB, float fA, float fB, float cB) {
+        //        private void assertDecomposeSubjConjAandB(float fAB, float fA, float fB, float cB) {
 //            assertDecomposeSubjAB(fAB, fA, 0.9f, fB, cB, true);
 //        }
 //
 //        private void assertDecomposeSubjDisjAandB(float fAB, float fA, float fB, float cB) {
 //            assertDecomposeSubjAB(fAB, fA, 0.9f, fB, cB, false);
 //        }
-
-        private void assertDecomposeSubjAB(float fAB, float fA, float c, float fB, float cB, boolean conjOrDisj) {
-
-//            if (conjOrDisj) {
-//                PreciseTruth tA = $.t(fA, c);
-//                PreciseTruth tAB = $.t(fAB, c);
-//                Truth tAB_decompose_tA = TruthFunctions.decompose(tA, tAB, true, true, true, 0);
-//                assertNotNull(tAB_decompose_tA);
-//                System.out.println(tAB + " <= " + tA + " * " + tAB_decompose_tA);
-//
-//                assertEquals(fB, tAB_decompose_tA.freq(), 0.01f);
-//
-//                //reverse, to check:
-//                @Nullable Truth tAB_check = TruthFunctions.intersection(tA, tAB_decompose_tA, 0);
-//                assertEquals(tAB.freq(), tAB_check.freq(), 0.01f);
-//            }
-
-            //tests:
-            // (S ==> M), (C ==> M), eventOf(C,S) |- (conjWithout(C,S) ==> M), ...
-            String AB = conjOrDisj ? "(A && B)" : "(A || B)";
+        @Test
+        void testPropositionalDecompositionConjPos() {
             test
-                    .termVolMax(conjOrDisj ? 5 : 8)
-                    .believe('(' + AB + " ==> X)", fAB, c)
-                    .believe("(A ==> X)", fA, c)
-                    .mustBelieve(cycles, "(B ==> X)", fB, cB);
-
-            float df = 0.02f;
-            if (fB < 1f-df)
-                    test.mustNotOutput(cycles, "(B ==> X)", BELIEF, fB + df, 1, 0, 1, (t)->true);
-            if (fB > df)
-                    test.mustNotOutput(cycles, "(B ==> X)", BELIEF, 0, fB - df, 0, 1, (t)->true);
-
+                    .termVolMax(5)
+                    .believe("--(&&,x,y,z)") //== (||,--x,--y,--z)
+                    .believe("x")
+                    .mustBelieve(cycles, "(y&&z)", 0f, 0.81f)
+            ;
         }
+
+        @Test
+        void testPropositionalDecompositionConjNeg() {
+            ////If S is the case, and (&&,S,A_1..n) is not the case, it can't be that (&&,A_1..n) is the case
+            test
+                    .termVolMax(5)
+                    .believe("--(&&,--x,y,z)")
+                    .believe("--x")
+                    .mustBelieve(cycles, "(y&&z)", 0f, 0.81f)
+            ;
+        }
+
+        @Test
+        void testPropositionalDecompositionDisjPos() {
+            ////If S is the case, and (&&,S,A_1..n) is not the case, it can't be that (&&,A_1..n) is the case
+            test
+                    .termVolMax(9)
+                    .believe("--(||,x,y,z)")
+                    .believe("--x")
+                    .mustBelieve(cycles, "(y||z)", 0f, 0.81f)
+            ;
+        }
+
+        @Test
+        void testPropositionalDecompositionDisjNeg() {
+            ////If S is the case, and (&&,S,A_1..n) is not the case, it can't be that (&&,A_1..n) is the case
+            test
+                    .termVolMax(9)
+                    .believe("--(||,--x,y,z)")
+                    .believe("x")
+                    .mustBelieve(cycles, "(y||z)", 0f, 0.81f)
+            ;
+        }
+
+        @Test
+        void testDecomposeDisj() {
+            test
+                    .termVolMax(7)
+                    .believe("(||, x, z)")
+                    .believe("--x")
+                    .mustBelieve(cycles, "z", 1f, 0.81f)
+            ;
+        }
+
+
+        @Test
+        void testDecomposeDisjNeg2() {
+            test
+                    .termVolMax(5)
+                    .believe("(||, x, --z)")
+                    .believe("--x")
+                    .mustBelieve(cycles, "z", 0f, 0.81f)
+            ;
+        }
+
+
+        @Test
+        void testDecomposeConjNeg2() {
+            test
+                    .logDebug()
+                    .termVolMax(6)
+                    .confMin(0.7f)
+                    .believe("(&&, --y, --z)")
+                    .mustBelieve(cycles, "y", 0f, 0.81f)
+                    .mustBelieve(cycles, "z", 0f, 0.81f)
+            ;
+        }
+
+        @Test
+        void testDecomposeConjNeg3() {
+            test
+                    .believe("(&&, --y, --z, --w)")
+                    .mustBelieve(cycles, "y", 0f, 0.73f)
+                    .mustBelieve(cycles, "z", 0f, 0.73f)
+                    .mustBelieve(cycles, "w", 0f, 0.73f)
+            ;
+        }
+
+
+        @Test
+        void disjunction_decompose_two_premises3() {
+            TestNAR tester = test;
+            tester.termVolMax(13);
+            tester.believe("((robin --> [flying]) || (robin --> swimmer))");
+            tester.believe("(robin --> swimmer)", 0.0f, 0.9f);
+            tester.mustBelieve(cycles, "(robin --> [flying])", 1.00f, 0.81f);
+        }
+
+
+    }
+
+    static class Unsorted_ImplSubjPred extends NAL6DecomposeTest {
+//        private void assertDecomposeSubjAB(float fAB, float fA, float c, float fB, float cB, boolean conjOrDisj) {
+//
+////            if (conjOrDisj) {
+////                PreciseTruth tA = $.t(fA, c);
+////                PreciseTruth tAB = $.t(fAB, c);
+////                Truth tAB_decompose_tA = TruthFunctions.decompose(tA, tAB, true, true, true, 0);
+////                assertNotNull(tAB_decompose_tA);
+////                System.out.println(tAB + " <= " + tA + " * " + tAB_decompose_tA);
+////
+////                assertEquals(fB, tAB_decompose_tA.freq(), 0.01f);
+////
+////                //reverse, to check:
+////                @Nullable Truth tAB_check = TruthFunctions.intersection(tA, tAB_decompose_tA, 0);
+////                assertEquals(tAB.freq(), tAB_check.freq(), 0.01f);
+////            }
+//
+//            //tests:
+//            // (S ==> M), (C ==> M), eventOf(C,S) |- (conjWithout(C,S) ==> M), ...
+//            String AB = conjOrDisj ? "(A && B)" : "(A || B)";
+//            test
+//                    .termVolMax(conjOrDisj ? 5 : 8)
+//                    .believe('(' + AB + " ==> X)", fAB, c)
+//                    .believe("(A ==> X)", fA, c)
+//                    .mustBelieve(cycles, "(B ==> X)", fB, cB);
+//
+//            float df = 0.02f;
+//            if (fB < 1f-df)
+//                    test.mustNotOutput(cycles, "(B ==> X)", BELIEF, fB + df, 1, 0, 1, (t)->true);
+//            if (fB > df)
+//                    test.mustNotOutput(cycles, "(B ==> X)", BELIEF, 0, fB - df, 0, 1, (t)->true);
+//
+//        }
 
 //        @Test
 //        void testDecomposeSubjConjPosPos() {
@@ -118,6 +219,7 @@ abstract public class NAL6DecomposeTest extends NALTest {
 //        }
 //
 
+
         @Test
         void impl_conjunction_subj_conj_decompose_conditional_neg() {
             test
@@ -139,6 +241,42 @@ abstract public class NAL6DecomposeTest extends NALTest {
 //                    })
             ;
         }
+
+        @Test
+        void disjunction_impl_decompose_two_premises3() {
+            TestNAR tester = test;
+            tester.termVolMax(13);
+            tester.believe("(((robin --> [flying]) || (robin --> swimmer)) ==> x)");
+            tester.believe("((robin --> swimmer) ==> x)", 0.0f, 0.9f);
+            tester.mustBelieve(cycles, "((robin --> [flying]) ==> x)", 1.00f, 0.81f);
+        }
+
+        @Test
+        void disjunction_impl_decompose_two_premises_neg() {
+            TestNAR tester = test;
+            tester.termVolMax(13);
+            tester.believe("(((robin --> [flying]) || (robin --> swimmer)) ==> --x)");
+            tester.believe("((robin --> swimmer) ==> --x)", 0.0f, 0.9f);
+            tester.mustBelieve(cycles, "((robin --> [flying]) ==> --x)", 1.00f, 0.81f);
+        }
+
+//    @Test
+//    void compound_decomposition_subj_posneg() {
+//        test.nar.termVolumeMax.setAt(9);
+//        test.believe("((b && --c)==>a)", 1.0f, 0.9f)
+//                .mustBelieve(cycles, "(b==>a)", 1.00f, 0.81f)
+//                .mustBelieve(cycles, "(--c==>a)", 1.00f, 0.81f);
+//    }
+//
+//    @Test
+//    void compound_decomposition_pred_posneg() {
+//        test.nar.termVolumeMax.setAt(9);
+//        test.believe("(a==>(b && --c))", 1.0f, 0.9f)
+//                .mustBelieve(cycles, "(a==>b)", 1.00f, 0.81f)
+//                .mustBelieve(cycles, "(a==>c)", 0.00f, 0.81f);
+//    }
+
+
         @Test
         void impl_conjunction_subj_intersection_decompose_conditional_neg() {
             test
@@ -147,6 +285,7 @@ abstract public class NAL6DecomposeTest extends NALTest {
                     .mustBelieve(cycles, "(a ==> x)", 0f, 0.81f) //via decompose
             ;
         }
+
         @Test
         void impl_conjunction_subj_decompose_conditional2b() {
             test
@@ -183,8 +322,8 @@ abstract public class NAL6DecomposeTest extends NALTest {
                     .believe("((a || b) ==> x)")
                     .input("(b ==> x). %0.1;0.9%")
                     .mustBelieve(cycles, "(a ==> x)", 0.9f, 0.73f) //via decompose
-                    .mustNotOutput(cycles,"(b ==> x)", BELIEF, 0.15f, 1f, 0, 1f)
-                    .mustNotOutput(cycles,"(a ==> x)", BELIEF, 0f, 0.7f, 0, 1f)
+                    .mustNotOutput(cycles, "(b ==> x)", BELIEF, 0.15f, 1f, 0, 1f)
+                    .mustNotOutput(cycles, "(a ==> x)", BELIEF, 0f, 0.7f, 0, 1f)
             ;
         }
 
@@ -230,47 +369,22 @@ abstract public class NAL6DecomposeTest extends NALTest {
         }
 
         @Test
-        void disjunction_decompose_two_premises3() {
-            TestNAR tester = test;
-            tester.termVolMax(13);
-            tester.believe("((robin --> [flying]) || (robin --> swimmer))");
-            tester.believe("(robin --> swimmer)", 0.0f, 0.9f);
-            tester.mustBelieve(cycles, "(robin --> [flying])", 1.00f, 0.81f);
+        void testDecomposeImplSubjConjQuestion() {
+            test
+                    .ask("( (&&, y, z) ==> x )")
+                    .mustOutput(cycles, "( y ==>+- x )", QUESTION)
+                    .mustOutput(cycles, "( z ==>+- x )", QUESTION)
+            ;
         }
 
         @Test
-        void disjunction_impl_decompose_two_premises3() {
-            TestNAR tester = test;
-            tester.termVolMax(13);
-            tester.believe("(((robin --> [flying]) || (robin --> swimmer)) ==> x)");
-            tester.believe("((robin --> swimmer) ==> x)", 0.0f, 0.9f);
-            tester.mustBelieve(cycles, "((robin --> [flying]) ==> x)", 1.00f, 0.81f);
+        void testDecomposeImplSubjDisjQuestion() {
+            test
+                    .ask("( (||, y, z) ==> x )")
+                    .mustOutput(cycles, "( y ==>+- x )", QUESTION)
+                    .mustOutput(cycles, "( z ==>+- x )", QUESTION)
+            ;
         }
-
-        @Test
-        void disjunction_impl_decompose_two_premises_neg() {
-            TestNAR tester = test;
-            tester.termVolMax(13);
-            tester.believe("(((robin --> [flying]) || (robin --> swimmer)) ==> --x)");
-            tester.believe("((robin --> swimmer) ==> --x)", 0.0f, 0.9f);
-            tester.mustBelieve(cycles, "((robin --> [flying]) ==> --x)", 1.00f, 0.81f);
-        }
-
-//    @Test
-//    void compound_decomposition_subj_posneg() {
-//        test.nar.termVolumeMax.setAt(9);
-//        test.believe("((b && --c)==>a)", 1.0f, 0.9f)
-//                .mustBelieve(cycles, "(b==>a)", 1.00f, 0.81f)
-//                .mustBelieve(cycles, "(--c==>a)", 1.00f, 0.81f);
-//    }
-//
-//    @Test
-//    void compound_decomposition_pred_posneg() {
-//        test.nar.termVolumeMax.setAt(9);
-//        test.believe("(a==>(b && --c))", 1.0f, 0.9f)
-//                .mustBelieve(cycles, "(a==>b)", 1.00f, 0.81f)
-//                .mustBelieve(cycles, "(a==>c)", 0.00f, 0.81f);
-//    }
 
     }
 
@@ -318,7 +432,7 @@ abstract public class NAL6DecomposeTest extends NALTest {
         }
     }
 
-    static class SinglePremise extends NAL6DecomposeTest {
+    static class Impl_SinglePremise extends NAL6DecomposeTest {
         @Test
         void testDecomposeImplSubj1Conj() {
             test
@@ -338,6 +452,7 @@ abstract public class NAL6DecomposeTest extends NALTest {
                     .mustBelieve(cycles, "( z ==> x )", 1f, 0.81f)
             ;
         }
+
         @Test
         void testDecomposeImplSubj1Disj_neg_pos() {
             test
@@ -347,6 +462,7 @@ abstract public class NAL6DecomposeTest extends NALTest {
                     .mustBelieve(cycles, "( z ==> x )", 1f, 0.81f)
             ;
         }
+
         @Test
         void testDecomposeImplPredDisjBelief_pos_pos() {
             test
@@ -356,7 +472,6 @@ abstract public class NAL6DecomposeTest extends NALTest {
                     .mustBelieve(cycles, "( x ==> z )", 1f, 0.45f)
             ;
         }
-
 
 
 //    @Test
@@ -388,11 +503,6 @@ abstract public class NAL6DecomposeTest extends NALTest {
                     .mustBelieve(cycles, "( --z ==> x )", 1f, 0.45f)
             ;
         }
-
-
-
-
-
 
 
     }

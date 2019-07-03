@@ -15,7 +15,7 @@ import static nars.time.Tense.ETERNAL;
 
 public class NAL6Test extends NALTest {
 
-    private static final int cycles = 200;
+    private static final int cycles = 400;
 
     @BeforeEach
     void setup() {
@@ -263,6 +263,7 @@ public class NAL6Test extends NALTest {
     void variable_elimination6() {
         test
             .termVolMax(17)
+            .confMin(0.6f)
             .believe("flyer:Tweety")
             .believe("((&&, flyer:$x, ($x-->[chirping]), food($x, worms)) ==> bird:$x)")
             .mustBelieve(cycles, "(((Tweety-->[chirping]) && food(Tweety,worms)) ==> bird:Tweety)",
@@ -272,12 +273,13 @@ public class NAL6Test extends NALTest {
 
     @Test
     void variable_elimination5_neg() {
-        test.nar.termVolMax.set(16);
 
-        TestNAR tester = test;
-        tester.believe("({Tweety} --> [withWings])");
-        tester.believe("((($x --> [chirping]) && ($x --> [withWings])) ==> --($x --> nonBird))");
-        tester.mustBelieve(cycles,
+
+        test.confMin(0.6f);
+        test.termVolMax(16);
+        test.believe("({Tweety} --> [withWings])");
+        test.believe("((($x --> [chirping]) && ($x --> [withWings])) ==> --($x --> nonBird))");
+        test.mustBelieve(cycles,
                 //"((({Tweety}-->[chirping])&&({Tweety}-->[withWings]))==>({Tweety}-->nonBird))",
                 "(({Tweety}-->[chirping])==>({Tweety}-->nonBird))",
                 0.00f,
@@ -290,13 +292,14 @@ public class NAL6Test extends NALTest {
     @Test
     void variable_elimination6_easier() {
 
-        test.nar.termVolMax.set(14);
 
-        TestNAR tester = test;
 
-        tester.believe("((&&, flyer:$x, chirping:$x, eatsWorms:$x) ==> bird:$x)");
-        tester.believe("flyer:Tweety");
-        tester.mustBelieve(cycles * 3,
+        test.confMin(0.6f);
+        test.termVolMax(14);
+
+        test.believe("((&&, flyer:$x, chirping:$x, eatsWorms:$x) ==> bird:$x)");
+        test.believe("flyer:Tweety");
+        test.mustBelieve(cycles * 3,
                 "((chirping:Tweety && eatsWorms:Tweety) ==> bird:Tweety)",
                 1.0f, 0.73f);
 
@@ -305,8 +308,8 @@ public class NAL6Test extends NALTest {
     @Test
     void variable_elimination6simpler() {
 
-        test.nar.termVolMax.set(14);
-        test.nar.confMin.set(0.5f);
+        test.termVolMax(14);
+        test.confMin(0.6f);
         test
                 .believe("((&&, flyer:$x, chirping:$x, food:worms) ==> bird:$x)")
                 .believe("flyer:Tweety")
@@ -526,12 +529,12 @@ public class NAL6Test extends NALTest {
 
     @Test
     void second_level_variable_unificationNoImgAndAsPreconditionAllIndep() {
-        test.nar.termVolMax.set(15);
 
-        TestNAR tester = test;
-        tester.believe("((($1 --> lock)&&($2 --> key)) ==> open($1,$2))", 1.00f, 0.90f);
-        tester.believe("({key1} --> key)", 1.00f, 0.90f);
-        tester.mustBelieve(cycles * 2, "(($1-->lock)==>open($1,{key1}))", 1.00f,
+        test.confMin(0.7f);
+        test.termVolMax(15);
+        test.believe("((($1 --> lock)&&($2 --> key)) ==> open($1,$2))", 1.00f, 0.90f);
+        test.believe("({key1} --> key)", 1.00f, 0.90f);
+        test.mustBelieve(cycles * 2, "(($1-->lock)==>open($1,{key1}))", 1.00f,
                 0.73f
                 /*0.81f*/);
     }
@@ -740,6 +743,7 @@ public class NAL6Test extends NALTest {
 
         test
                 .termVolMax(13)
+                .confMin(0.4f)
                 .believe("(open(x,lock1) ==> (x --> key))", 1.00f, 0.90f)
                 .believe("(((lock1 --> lock) && open(x,lock1)) ==> (x --> key))", 1.00f, 0.90f)
                 .mustBelieve(cycles, "lock:lock1", 1.00f, 0.45f)
@@ -884,98 +888,6 @@ public class NAL6Test extends NALTest {
     }
 
 
-    @Test
-    void testPropositionalDecompositionConjPos() {
-        ////If S is the case, and (&&,S,A_1..n) is not the case, it can't be that (&&,A_1..n) is the case
-        test
-                .termVolMax(5)
-                .believe("--(&&,x,y,z)")
-                .believe("x")
-                .mustBelieve(cycles, "(y&&z)", 0f, 0.81f)
-        ;
-    }
-
-    @Test
-    void testPropositionalDecompositionConjNeg() {
-        ////If S is the case, and (&&,S,A_1..n) is not the case, it can't be that (&&,A_1..n) is the case
-        test
-                .termVolMax(5)
-                .believe("--(&&,--x,y,z)")
-                .believe("--x")
-                .mustBelieve(cycles, "(y&&z)", 0f, 0.81f)
-        ;
-    }
-
-    @Test
-    void testPropositionalDecompositionDisjPos() {
-        ////If S is the case, and (&&,S,A_1..n) is not the case, it can't be that (&&,A_1..n) is the case
-        test
-                .termVolMax(9)
-                .believe("--(||,x,y,z)")
-                .believe("--x")
-                .mustBelieve(cycles, "(y||z)", 0f, 0.81f)
-        ;
-    }
-
-    @Test
-    void testPropositionalDecompositionDisjNeg() {
-        ////If S is the case, and (&&,S,A_1..n) is not the case, it can't be that (&&,A_1..n) is the case
-        test
-                .termVolMax(9)
-                .believe("--(||,--x,y,z)")
-                .believe("x")
-                .mustBelieve(cycles, "(y||z)", 0f, 0.81f)
-        ;
-    }
-
-    @Test
-    void testDecomposeDisj() {
-        test
-                .termVolMax(7)
-                .believe("(||, x, z)")
-                .believe("--x")
-                .mustBelieve(cycles, "z", 1f, 0.81f)
-        ;
-    }
-
-    @Test
-    void testDecomposeDisjNeg() {
-        test
-                .termVolMax(5)
-                .believe("(||, --x, z)")
-                .believe("x")
-                .mustBelieve(cycles, "z", 1f, 0.81f)
-        ;
-    }
-
-    @Test
-    void testDecomposeDisjNeg2() {
-        test
-                .termVolMax(5)
-                .believe("(||, x, --z)")
-                .believe("--x")
-                .mustBelieve(cycles, "z", 0f, 0.81f)
-        ;
-    }
-
-    @Test
-    void testDecomposeImplSubjConjQuestion() {
-        test
-                .ask("( (&&, y, z) ==> x )")
-                .mustOutput(cycles, "( y ==>+- x )", QUESTION)
-                .mustOutput(cycles, "( z ==>+- x )", QUESTION)
-        ;
-    }
-
-    @Test
-    void testDecomposeImplSubjDisjQuestion() {
-        test
-                .ask("( (||, y, z) ==> x )")
-                .mustOutput(cycles, "( y ==>+- x )", QUESTION)
-                .mustOutput(cycles, "( z ==>+- x )", QUESTION)
-        ;
-    }
-
 
     @Test
     void testDecomposeImplPredConjQuestion() {
@@ -994,27 +906,6 @@ public class NAL6Test extends NALTest {
                 .mustOutput(cycles, "( x ==>+- z )", QUESTION)
         ;
     }
-
-
-    @Test
-    void testDecomposeConjNeg2() {
-        test
-                .believe("(&&, --y, --z)")
-                .mustBelieve(cycles, "y", 0f, 0.81f)
-                .mustBelieve(cycles, "z", 0f, 0.81f)
-        ;
-    }
-
-    @Test
-    void testDecomposeConjNeg3() {
-        test
-                .believe("(&&, --y, --z, --w)")
-                .mustBelieve(cycles, "y", 0f, 0.73f)
-                .mustBelieve(cycles, "z", 0f, 0.73f)
-                .mustBelieve(cycles, "w", 0f, 0.73f)
-        ;
-    }
-
 
     @Test
     void recursionSmall() {
@@ -1161,6 +1052,7 @@ public class NAL6Test extends NALTest {
     void testMutexConjBeliefInduction() {
         test
                 .termVolMax(8)
+                .confMin(0.4f)
                 .believe("(x && --y)")
                 .believe("(--x && y)")
                 .mustBelieve(cycles, "(x && y)", 0f, 0.81f)
@@ -1200,6 +1092,7 @@ public class NAL6Test extends NALTest {
     @Test
     void testMutexDissociation() {
         test
+                .confMin(0.4f)
                 .believe("(&&, x, --y, a)")
                 .believe("(&&, --x, y, b)")
                 .mustBelieve(cycles, "(a && b)", 0f, 0.45f)

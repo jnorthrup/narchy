@@ -61,6 +61,7 @@ public class ArkaNAR extends GameX {
             NAR n = runRT((NAR nn) -> {
 
                 ArkaNAR a = new ArkaNAR($$("(noid,a)"), nn, cam, numeric);
+                a.ballSpeed.set( 0.7f * a.ballSpeed.floatValue() );
 
                 ArkaNAR b = new ArkaNAR($$("(noid,b)"), nn, cam, numeric);
                 b.ballSpeed.set( 0.33f * a.ballSpeed.floatValue() );

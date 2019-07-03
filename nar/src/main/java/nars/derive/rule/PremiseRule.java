@@ -360,9 +360,9 @@ public class PremiseRule extends ProxyTerm {
 //                }
 
                 case "eventOfPN":
+                    is(X, CONJ);
                     neq(XX, YY);
                     bigger(XX, YY);
-                    is(X, CONJ);
 
                     eventable(YY);
 
