@@ -467,7 +467,7 @@ public interface Stamp {
             b = ab;
         }
 
-        int common = overlaps(LongSets.immutable.of(a), b);
+        int common = overlap(LongSets.immutable.of(a), b);
         if (common == 0)
             return 0f;
 
@@ -484,13 +484,13 @@ public interface Stamp {
         return false;
     }
 
-    static boolean overlaps(Task x, Task y) {
+    static boolean overlap(Task x, Task y) {
         return (!NAL.REVISION_ALLOW_OVERLAP_IF_DISJOINT_TIME || x.intersects(y.start(), y.end()))
                    &&
                Stamp.overlapsAny(x, y);
     }
 
-    static int overlaps(/*@NotNull*/ LongSet aa,  /*@NotNull*/ long[] b) {
+    static int overlap(/*@NotNull*/ LongSet aa,  /*@NotNull*/ long[] b) {
         int common = 0;
         for (long x : b) {
             if (aa.contains(x))

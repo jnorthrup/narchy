@@ -2,7 +2,6 @@ package jcog.pri;
 
 import jcog.Util;
 import jcog.data.atomic.AtomicFloatFieldUpdater;
-import jcog.math.FloatSupplier;
 import jcog.util.FloatFloatToFloatFunction;
 import org.eclipse.collections.api.block.function.primitive.FloatToFloatFunction;
 
@@ -126,44 +125,44 @@ public abstract class AtomicPri implements ScalarValue {
 
 
     /** set */
-    @Override public float pri(float p) {
+    @Override public final float pri(float p) {
         PRI.INT.set(this, floatToIntBits(post().valueOf(p)));
         //INT.setAt(this, floatToIntBits(v(p)));
         return p;
     }
 
-    /** update */
-    @Override public final float pri(FloatSupplier update) {
-        return PRI.updateAndGet(this, update);
-    }
+//    /** update */
+//    @Override public final float pri(FloatSupplier update) {
+//        return PRI.updateAndGet(this, update);
+//    }
+
+//    /** update */
+//    @Override public final float pri(FloatToFloatFunction update) {
+//        return PRI.updateAndGet(this, update, post());
+//    }
 
     /** update */
-    @Override public final float pri(FloatToFloatFunction update) {
-        return PRI.updateAndGet(this, update, post());
-    }
-
-    /** update */
-    @Override public float pri(FloatFloatToFloatFunction update, float x) {
+    @Override public final float pri(FloatFloatToFloatFunction update, float x) {
         return PRI.updateAndGet(this, x, update, post());
     }
 
     @Override
-    public float priMult(float a) {
+    public final float priMult(float a) {
         return PRI.updateAndGet(this, unit() ? priMulUpdateFunctionUnit : priMulUpdateFunctionNonZero, a);
     }
 
     @Override
-    public void priAdd(float a) {
+    public final void priAdd(float a) {
         PRI.update(this, unit() ? priAddUpdateFunctionUnit : priAddUpdateFunctionNonZero, a);
     }
 
-    public final float priUpdateAndGet(FloatToFloatFunction update) {
-        return PRI.updateAndGet(this, update, post());
-    }
+//    public final float priUpdateAndGet(FloatToFloatFunction update) {
+//        return PRI.updateAndGet(this, update, post());
+//    }
 
-    public final float priUpdateAndGet(FloatFloatToFloatFunction update, float x) {
-        return PRI.updateAndGet(this, x, update, post());
-    }
+//    public final float priUpdateAndGet(FloatFloatToFloatFunction update, float x) {
+//        return PRI.updateAndGet(this, x, update, post());
+//    }
 
     @Override
     public final void priUpdate(FloatFloatToFloatFunction update, float x) {

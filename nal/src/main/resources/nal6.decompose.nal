@@ -74,13 +74,11 @@ C, X, eventOfPN(C,X)      |-   conjWithoutPN(C,X), (Punctuation:AskAsk)
     //C is a sequence ending in it.  this forms a goal of the sequence prefix (minus the trailing)
 
     //desire for sub-sequence leading to goal,  truth function may be Desire or Deduction
-    G, C     |-    conjBefore(C,   G),  (Goal:DecomposePP, Time:TaskEvent)
-    G, C     |-  --conjBefore(C, --G),  (Goal:DecomposePP, Time:TaskEvent)
-    G, C     |-  --conjBefore(C,   G),  (Goal:DecomposeNP, Time:TaskEvent)
-    G, C     |-    conjBefore(C, --G),  (Goal:DecomposeNP, Time:TaskEvent)
-
-      G, D   |-    conjBefore(D,   G),  (Goal:DecomposePN, Time:TaskEvent)
-      G, D   |-    conjBefore(D, --G),  (Goal:DecomposeNN, Time:TaskEvent)
+    G, C     |-    conjBefore(C,   G),  (Goal:DesirePP, Time:TaskEvent)
+    G, C     |-    conjBefore(C, --G),  (Goal:DesireNP, Time:TaskEvent)
+      //TODO check:
+//      G, D   |-    conjBefore(D,   G),  (Goal:DesirePN, Time:TaskEvent)
+//      G, D   |-    conjBefore(D, --G),  (Goal:DesireNN, Time:TaskEvent)
 
 
       //G, D, neq(G,D)   |-    conjBefore(D, --G),  (Goal:DecomposeWeakPN, Time:TaskEvent)
@@ -171,17 +169,17 @@ C, X, eventOfPN(C,X)      |-   conjWithoutPN(C,X), (Punctuation:AskAsk)
 //    (M ==> S), (M ==> (||,S,A_1..n)) |- (M ==> (||,A_1..n)), (Truth:DecomposeNegativePositivePositive, Order:ForAllSame)
 
 
-    //conj
-    ( C ==> M), (S ==> M), eventOf(C,S)                |-     (  conjWithout(C, S) ==> M), (Belief:DecomposePN, Time:Compose)
-     ( C ==> M), (S ==> M), eventOfNeg(C,S)                |-     (  conjWithout(C, --S) ==> M), (Belief:DecomposePP, Time:Compose)
-    ( C ==> M), (S ==> M), eventOf(C,S)                |-    --(  conjWithout(C, S) ==> M), (Belief:DecomposeNN, Time:Compose)
-     ( C ==> M), (S ==> M), eventOfNeg(C,S)                |-    --(  conjWithout(C, --S) ==> M), (Belief:DecomposeNP, Time:Compose)
-
-    //disj
-    (  --C ==> M), (S ==> M), eventOf(C,S)          |-   (  --conjWithout(C, S) ==> M), (Belief:DecomposePN, Time:Compose)
-       ( --C ==> M), (S ==> M), eventOf(C,S)        |- --(  --conjWithout(C, S) ==> M), (Belief:DecomposeNN, Time:Compose)
-    (  --C ==> M), (S ==> M), eventOfNeg(C,S)          |-   (  --conjWithout(C, --S) ==> M), (Belief:DecomposePP, Time:Compose)
-       ( --C ==> M), (S ==> M), eventOfNeg(C,S)        |- --(  --conjWithout(C, --S) ==> M), (Belief:DecomposeNP, Time:Compose)
+//    //conj
+//    ( C ==> M), (S ==> M), eventOf(C,S)                |-     (  conjWithout(C, S) ==> M), (Belief:DecomposePN, Time:Compose)
+//     ( C ==> M), (S ==> M), eventOfNeg(C,S)                |-     (  conjWithout(C, --S) ==> M), (Belief:DecomposePP, Time:Compose)
+//    ( C ==> M), (S ==> M), eventOf(C,S)                |-    --(  conjWithout(C, S) ==> M), (Belief:DecomposeNN, Time:Compose)
+//     ( C ==> M), (S ==> M), eventOfNeg(C,S)                |-    --(  conjWithout(C, --S) ==> M), (Belief:DecomposeNP, Time:Compose)
+//
+//    //disj
+//    (  --C ==> M), (S ==> M), eventOf(C,S)          |-   (  --conjWithout(C, S) ==> M), (Belief:DecomposePN, Time:Compose)
+//       ( --C ==> M), (S ==> M), eventOf(C,S)        |- --(  --conjWithout(C, S) ==> M), (Belief:DecomposeNN, Time:Compose)
+//    (  --C ==> M), (S ==> M), eventOfNeg(C,S)          |-   (  --conjWithout(C, --S) ==> M), (Belief:DecomposePP, Time:Compose)
+//       ( --C ==> M), (S ==> M), eventOfNeg(C,S)        |- --(  --conjWithout(C, --S) ==> M), (Belief:DecomposeNP, Time:Compose)
 
 //conj pred
 
@@ -195,15 +193,15 @@ C, X, eventOfPN(C,X)      |-   conjWithoutPN(C,X), (Punctuation:AskAsk)
 //       (M ==> C), (M ==> S), eventOf(C,S), --isVar(M)      |-   (M ==> conjWithout(C,   S)), (Belief:DecomposeNN, Time:Compose)
 
 
-   (M ==> C), (M ==> S), eventOf(C,S)                 |-   (M ==> conjWithout(C,   S)), (Belief:DecomposePP, Time:Compose)
-     //(M ==> S), (M ==> C), eventOf(C,S)                 |-   (M ==> conjWithout(C,   S)), (Belief:DecomposePP, Time:TaskEvent)
-   (M ==> C), (M ==> S), eventOfNeg(C,S)              |-   (M ==> conjWithout(C, --S)), (Belief:DecomposePN, Time:Compose)
-     //(M ==> S), (M ==> C), eventOfNeg(C,S)              |-   (M ==> conjWithout(C, --S)), (Belief:DecomposeNP, Time:TaskEvent)
-
-   (M ==> D), (M ==> S), eventOfNeg(D,S)               |- --(M ==> conjWithout(D, --S)), (Belief:DecomposeNN, Time:Compose)
-    //(M ==> S), (M ==> D), eventOfNeg(D,S)               |- --(M ==> conjWithout(D, --S)), (Belief:DecomposeNN, Time:TaskEvent)
-   (M ==> D), (M ==> S), eventOf(D,S)                  |- --(M ==> conjWithout(D,   S)), (Belief:DecomposeNP, Time:Compose)
-    //(M ==> S), (M ==> D), eventOf(D,S)                  |- --(M ==> conjWithout(D,   S)), (Belief:DecomposePN, Time:TaskEvent)
+//   (M ==> C), (M ==> S), eventOf(C,S)                 |-   (M ==> conjWithout(C,   S)), (Belief:DecomposePP, Time:Compose)
+//     //(M ==> S), (M ==> C), eventOf(C,S)                 |-   (M ==> conjWithout(C,   S)), (Belief:DecomposePP, Time:TaskEvent)
+//   (M ==> C), (M ==> S), eventOfNeg(C,S)              |-   (M ==> conjWithout(C, --S)), (Belief:DecomposePN, Time:Compose)
+//     //(M ==> S), (M ==> C), eventOfNeg(C,S)              |-   (M ==> conjWithout(C, --S)), (Belief:DecomposeNP, Time:TaskEvent)
+//
+//   (M ==> D), (M ==> S), eventOfNeg(D,S)               |- --(M ==> conjWithout(D, --S)), (Belief:DecomposeNN, Time:Compose)
+//    //(M ==> S), (M ==> D), eventOfNeg(D,S)               |- --(M ==> conjWithout(D, --S)), (Belief:DecomposeNN, Time:TaskEvent)
+//   (M ==> D), (M ==> S), eventOf(D,S)                  |- --(M ==> conjWithout(D,   S)), (Belief:DecomposeNP, Time:Compose)
+//    //(M ==> S), (M ==> D), eventOf(D,S)                  |- --(M ==> conjWithout(D,   S)), (Belief:DecomposePN, Time:TaskEvent)
 
 
 

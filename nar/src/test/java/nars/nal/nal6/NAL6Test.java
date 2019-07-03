@@ -1130,7 +1130,7 @@ public class NAL6Test extends NALTest {
     @Test
     void testImplPredQuestionUnify() {
         test
-                .termVolMax(10)
+                .termVolMax(8)
                 .confMin(0.9f)
                 .believe("((x && $1)==>z($1))")
                 .ask("z(y)")

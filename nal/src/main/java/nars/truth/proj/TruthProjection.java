@@ -169,7 +169,7 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
             //optimized special case
             //TODO generalize; prevent unnecessary MetalLongSet creation
             if (!needStamp && remain == 2) {
-                if (!Stamp.overlaps(get(0).task, get(1).task))
+                if (!Stamp.overlap(get(0).task, get(1).task))
                     break;
                 else {
                     if (minComponents < 2) {

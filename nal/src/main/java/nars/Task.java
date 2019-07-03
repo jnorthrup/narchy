@@ -621,8 +621,12 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
             double yConf = y.conf();
             double xConfMax = Util.max(Task::conf, x);
             confFactor = Math.min(1, (yConf / xConfMax));
-        } else
-            confFactor = 1;
+        } else {
+            double xConfAvg = Util.sum(Task::conf, x)/x.length;
+            confFactor = Math.pow(1 - xConfAvg, 2);
+            //confFactor = Math.pow(1 - xConfAvg, x.length);
+            //confFactor = 1;
+        }
 
         double rangeFactor;
         if (y.isEternal())
@@ -636,8 +640,8 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
         //int Xn = x.length;
         //double priSum = Util.sumDouble(Task::priElseZero, x);
         //double priAvg = priSum / Xn;
-        double priMax = Util.max(Task::priElseZero, x);
-        float p = (float)(priMax * volFactor * confFactor * rangeFactor);
+        double priMean = Util.sum(Task::priElseZero, x)/x.length;
+        float p = (float)(priMean * volFactor * confFactor * rangeFactor);
 
         y.pri(Prioritizable.fund(p, priCopyOrMove, x));
 
@@ -811,7 +815,9 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
 
         Task question = this;
 
-        answer.take(question, answer.priElseZero() * question.priElseZero(), true, false);
+        if (!Stamp.overlap(question, answer)) {
+            answer.take(question, answer.priElseZero() * question.priElseZero(), true, false);
+        }
 
 //        n.emotion.onAnswer(this, answer);
 

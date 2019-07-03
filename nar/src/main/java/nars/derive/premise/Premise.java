@@ -170,6 +170,8 @@ public class Premise implements Comparable<Premise> {
         if (!d.budget(task, belief))
             return false;
 
+//        System.out.println(task + "\t" + belief + "\t" + nextBeliefTerm);
+
         d.reset(this.task, belief, nextBeliefTerm);
 
         return d.taskTerm != Null;

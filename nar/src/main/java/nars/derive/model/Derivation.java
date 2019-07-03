@@ -430,7 +430,7 @@ public class Derivation extends PreDerivation {
 
 
         if (_belief != null) {
-            this.overlapDouble = Stamp.overlaps(this._task, _belief);
+            this.overlapDouble = Stamp.overlap(this._task, _belief);
         } else {
             this.overlapDouble = false; //N/A
         }

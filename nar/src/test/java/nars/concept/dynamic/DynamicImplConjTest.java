@@ -324,8 +324,10 @@ class DynamicImplConjTest extends AbstractDynamicTaskTest {
     @ParameterizedTest
     @ValueSource(strings = {
             "((a || b) ==>+- x)",
-            "((a ||+- b) ==> x)",
-            "((a ||+- b) ==>+- x)"
+            "(--(--a &&+- --b) ==> x)", //HACK
+            "(--(--a &&+- --b) ==>+- x)" //HACK
+//            "((a ||+- b) ==> x)",
+//            "((a ||+- b) ==>+- x)"
     })
     void testXternalSubj(String s) throws Narsese.NarseseException {
 

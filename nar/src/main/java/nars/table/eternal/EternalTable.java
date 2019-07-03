@@ -354,11 +354,6 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
                 revised.pri(Prioritizable.fund(Math.max(finalOldBelief.priElseZero(), input.priElseZero()), false, finalOldBelief, input));
                 revised.cause(CauseMerge.AppendUnique.merge(NAL.causeCapacity.intValue(), input, finalOldBelief));
 
-
-                if (NAL.DEBUG) {
-                }
-
-
             }
         } else {
             revised = null;

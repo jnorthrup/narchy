@@ -7,7 +7,7 @@ import nars.test.NALTest;
 
 abstract public class NAL3Test extends NALTest {
 
-    static final int cycles = 550;
+    static final int cycles = 850;
 
     @Override
     protected NAR nar() {

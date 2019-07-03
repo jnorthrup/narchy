@@ -1446,6 +1446,12 @@ public enum Util {
             y = Math.max(y, value.floatValueOf(x));
         return y;
     }
+    public static <X> float min(FloatFunction<X> value, X... xx) {
+        float y = Float.POSITIVE_INFINITY;
+        for (X x : xx)
+            y = Math.min(y, value.floatValueOf(x));
+        return y;
+    }
 
     public static int sum(int... x) {
         int y = 0;
