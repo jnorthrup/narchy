@@ -10,8 +10,8 @@ import nars.term.control.PREDICATE;
 public class DeriveAction  /*implements ThrottledAction<Derivation>*/ {
 
     public final PremiseRuleProto.RuleWhy why;
-    final Truthify truth;
-    final PREDICATE<Derivation> conclusion;
+    public final Truthify truth;
+    public final PREDICATE<Derivation> conclusion;
 
     DeriveAction(PremiseRuleProto.RuleWhy cause, Truthify pre, PREDICATE<Derivation> post) {
         this.why = cause;
@@ -55,7 +55,7 @@ public class DeriveAction  /*implements ThrottledAction<Derivation>*/ {
         return why.rule.toString();
     }
 
-    public boolean test(Derivation d) {
+    @Deprecated public boolean test(Derivation d) {
         if (truth.test(d)) {
 
             d.clear();
@@ -64,6 +64,19 @@ public class DeriveAction  /*implements ThrottledAction<Derivation>*/ {
 
             conclusion.test(d);
         }
+
+        return d.use(NAL.derive.TTL_COST_BRANCH);
+    }
+
+    public boolean test(PostDerivable p) {
+
+        Derivation d = (Derivation) p.d;
+        d.clear();
+        d.retransform.clear();
+        d.forEachMatch = null;
+
+        p.apply(d);
+        conclusion.test(d);
 
         return d.use(NAL.derive.TTL_COST_BRANCH);
     }

@@ -2,7 +2,6 @@ package nars.derive.op;
 
 import nars.derive.model.Derivation;
 import nars.derive.model.DerivationFailure;
-import nars.derive.model.PostDerivation;
 import nars.term.Term;
 import nars.term.buffer.EvalTermBuffer;
 
@@ -44,14 +43,14 @@ public class UnifyMatchFork extends EvalTermBuffer implements Predicate<Derivati
         return true; //tried.size() < forkLimit;
     }
 
-    public static class DeferredUnifyMatchFork extends UnifyMatchFork {
-
-        @Override
-        public boolean test(Derivation d) {
-            d.post.put(new PostDerivation(d, DeferredUnifyMatchFork.super::test));
-            return true;
-        }
-    }
+//    public static class DeferredUnifyMatchFork extends UnifyMatchFork {
+//
+//        @Override
+//        public boolean test(Derivation d) {
+//            d.post.put(new PostDerivation(d, DeferredUnifyMatchFork.super::test));
+//            return true;
+//        }
+//    }
 
 
 }

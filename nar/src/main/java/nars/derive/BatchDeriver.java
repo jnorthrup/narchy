@@ -4,7 +4,6 @@ import jcog.math.IntRange;
 import nars.NAR;
 import nars.attention.TaskLinkWhat;
 import nars.derive.model.Derivation;
-import nars.derive.model.PostDerivation;
 import nars.derive.premise.PremiseSource;
 import nars.derive.rule.PremiseRuleSet;
 import nars.link.TaskLinks;
@@ -47,15 +46,15 @@ public class BatchDeriver extends Deriver {
                     matchTTL, deriveTTL,
                     links, d);
 
-            try {
-                for (PostDerivation pd : d.post) {
-                    pd.accept(d);
-                    if (!kontinue.getAsBoolean())
-                        return;
-                }
-            } finally {
-                d.post.clear();
-            }
+//            try {
+//                for (PostDerivation pd : d.post) {
+//                    pd.accept(d);
+//                    if (!kontinue.getAsBoolean())
+//                        return;
+//                }
+//            } finally {
+//                d.post.clear();
+//            }
         } while (kontinue.getAsBoolean());
 
     }

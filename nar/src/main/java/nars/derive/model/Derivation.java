@@ -4,9 +4,6 @@ import jcog.Util;
 import jcog.WTF;
 import jcog.math.Longerval;
 import jcog.pri.ScalarValue;
-import jcog.pri.bag.Bag;
-import jcog.pri.bag.impl.PriArrayBag;
-import jcog.pri.op.PriMerge;
 import jcog.util.ArrayUtil;
 import nars.NAL;
 import nars.NAR;
@@ -76,7 +73,7 @@ public class Derivation extends PreDerivation {
 
     public final PremiseUnify premiseUnify = new PremiseUnify();
 
-    public final Bag<PostDerivation,PostDerivation> post = new PriArrayBag<>(PriMerge.max, 32);
+//    public final Bag<PostDerivation,PostDerivation> post = new PriArrayBag<>(PriMerge.max, 32);
 
     public final UnifyMatchFork termifier =
             new UnifyMatchFork();

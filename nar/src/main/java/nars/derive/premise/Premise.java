@@ -7,6 +7,7 @@ package nars.derive.premise;
 import jcog.signal.meter.FastCounter;
 import nars.*;
 import nars.derive.model.Derivation;
+import nars.derive.model.PreDerivation;
 import nars.table.BeliefTable;
 import nars.task.proxy.ImageTask;
 import nars.term.Compound;
@@ -124,7 +125,7 @@ public class Premise implements Comparable<Premise> {
         if (taskTerm.equals(beliefTerm)) {
             beliefConceptUnifiesTaskConcept = true;
         } else if (taskTerm.op() == beliefTerm.op()) {
-            if (beliefTerm.hasAny(var) || taskTerm.hasAny(var) || taskTerm.hasXternal() || beliefTerm.hasXternal()) {
+            if (beliefTerm.hasAny(var) || taskTerm.hasAny(var)) { // || taskTerm.hasXternal() || beliefTerm.hasXternal()) {
 
                 Term unifiedBeliefTerm = d.premiseUnify.unified(taskTerm, beliefTerm, matchTTL);
 
@@ -363,19 +364,22 @@ public class Premise implements Comparable<Premise> {
     public void derive(Derivation d, int matchTTL, int deriveTTL) {
         FastCounter result;
 
-        Emotion e = d.nar().emotion;
+        Emotion e = d.nar.emotion;
+
+        int ttlUsed;
 
         if (match(d, matchTTL)) {
 
-            result = d.deriver.rules.run(d, deriveTTL) ?
-                    e.premiseFire : e.premiseUnderivable;
+            result = PreDerivation.run(d, deriveTTL) ? e.premiseFire : e.premiseUnderivable;
 
-            d.nar.emotion.premiseTTL_used.recordValue(Math.max(0, deriveTTL - d.ttl)); //TODO handle negative amounts, if this occurrs.  limitation of HDR histogram
+            ttlUsed = Math.max(0, deriveTTL - d.ttl);
 
         } else {
             result = e.premiseUnbudgetable;
+            ttlUsed = 0;
         }
 
+        e.premiseTTL_used.recordValue(ttlUsed); //TODO handle negative amounts, if this occurrs.  limitation of HDR histogram
         result.increment();
 
     }
