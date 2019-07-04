@@ -545,9 +545,6 @@ public abstract class Unify extends Versioning<Term> {
         return Math.abs(xdt - ydt) < dtTolerance;
     }
 
-    public final Term resolve(Term x) {
-        return resolveTerm(x, true);
-    }
 
     /** full resolution of a term */
     public final Term resolveTerm(Term x, boolean recurse) {
@@ -607,7 +604,7 @@ public abstract class Unify extends Versioning<Term> {
         }
 
         @Override
-        protected int match(Term prevValue, Term nextValue) {
+        protected int merge(Term prevValue, Term nextValue) {
             if (prevValue.equals(nextValue))
                 return 0;
 

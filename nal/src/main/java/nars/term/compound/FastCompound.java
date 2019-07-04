@@ -17,7 +17,6 @@ import org.jetbrains.annotations.Nullable;
 import java.util.AbstractList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.function.Predicate;
 
 import static nars.Op.EmptyTermArray;
 import static nars.time.Tense.DTERNAL;
@@ -155,14 +154,15 @@ abstract public class FastCompound implements SameSubtermsCompound /* The */ {
         System.out.println();
     }
 
-    @Override
-    public boolean containsRecursively(Term t, boolean root, Predicate<Term> inSubtermsOf) {
-        if (t instanceof Atomic) {
-            return containsAtomic((Atomic) t);
-        } else {
-            return SameSubtermsCompound.super.containsRecursively(t, root, inSubtermsOf);
-        }
-    }
+    //TODO verify with other impl's there may be something missing here
+//    @Override
+//    public boolean containsRecursively(Term t, boolean root, Predicate<Term> inSubtermsOf) {
+//        if (t instanceof Atomic) {
+//            return containsAtomic((Atomic) t);
+//        } else {
+//            return SameSubtermsCompound.super.containsRecursively(t, root, inSubtermsOf);
+//        }
+//    }
 
     @Override
     public Term sub(int i) {

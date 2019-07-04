@@ -135,10 +135,12 @@ import static nars.Op.ImgInt;
 //            if (!Int.isAnon(i))
 //                return 0;
 //        }
-        if (t instanceof Neg.NegIntrin) {
-            return (short) -((Neg.NegIntrin)t).sub;
-        }
+
         if (t instanceof Neg) {
+            if (t instanceof Neg.NegIntrin) {
+                return (short) -((Neg.NegIntrin)t).sub;
+            }
+
             t = t.unneg();
             if (t instanceof Intrin)
                 return (short) -((Intrin)t).i;

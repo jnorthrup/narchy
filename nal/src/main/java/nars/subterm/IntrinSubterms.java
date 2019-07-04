@@ -316,11 +316,7 @@ public class IntrinSubterms extends TermVector /*implements Subterms.SubtermsByt
                         hasNegX = true; //found negative, but keep searching for a positive first
                 }
                 if (hasNegX)
-                    return (inSubtermsOf.test(x.neg()));
-
-//                return (indexOf((AnonID) x) != -1)
-//                        ||
-//                        (anyNeg() && indexOf((AnonID) x, true) != -1 && inSubtermsOf.test(x.neg()));
+                    return (inSubtermsOf==null || inSubtermsOf.test(x.neg()));
             }
 
         }

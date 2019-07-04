@@ -180,10 +180,10 @@ public interface Compound extends Term, IPair, Subterms {
      * very fragile be careful here
      */
     @Override
-    default /* final */ boolean containsRecursively(Term x, boolean root, Predicate<Term> inSubtermsOf) {
-        //return !impossibleSubTerm(x) && inSubtermsOf.test(this) &&
-        return inSubtermsOf.test(this) && !impossibleSubTerm(x) &&
-                subtermsContainsRecursively(x, root, inSubtermsOf);
+    default /* final */ boolean containsRecursively(Term x, boolean root, @Nullable Predicate<Term> inSubtermsOf) {
+        return (inSubtermsOf == null || inSubtermsOf.test(this)) &&
+               !impossibleSubTerm(x) &&
+               subtermsContainsRecursively(x, root, inSubtermsOf);
     }
 
     boolean subtermsContainsRecursively(Term x, boolean root, Predicate<Term> inSubtermsOf);

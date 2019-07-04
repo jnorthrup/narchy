@@ -13,6 +13,7 @@ import nars.Op;
 import nars.subterm.util.TermMetadata;
 import nars.term.Variable;
 import nars.term.*;
+import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
 import nars.term.util.transform.MapSubst;
 import nars.unify.Unify;
@@ -23,7 +24,6 @@ import org.eclipse.collections.api.block.predicate.primitive.ObjectIntPredicate;
 import org.eclipse.collections.api.block.procedure.primitive.ObjectIntProcedure;
 import org.eclipse.collections.api.set.MutableSet;
 import org.eclipse.collections.impl.factory.Sets;
-import org.eclipse.collections.impl.list.mutable.primitive.IntArrayList;
 import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 import org.jetbrains.annotations.Nullable;
 
@@ -489,10 +489,13 @@ public interface Subterms extends Termlike, Iterable<Term> {
 
         if (!impossibleSubTerm(x)) {
             int s = subs();
+            Term prev = null;
             for (int i = 0; i < s; i++) {
                 Term ii = sub(i);
-                if (ii == x || (root ? ii.equalsRoot(x) : ii.equals(x)) || ii.containsRecursively(x, root, subTermOf))
+                if (ii == x ||
+                    (different(prev, ii) && (root ? ii.equalsRoot(x) : ii.equals(x)) || ii.containsRecursively(x, root, subTermOf)))
                     return true;
+                prev = ii;
             }
         }
         return false;
@@ -561,17 +564,17 @@ public interface Subterms extends Termlike, Iterable<Term> {
 
     /*@NotNull*/
     default Term[] terms(/*@NotNull*/ IntObjectPredicate<Term> filter) {
-        TermList l = new TermList(subs());
+        TermList l = null;
         int s = subs();
-        int added = 0;
         for (int i = 0; i < s; i++) {
             Term t = sub(i);
             if (filter.accept(i, t)) {
+                if (l == null)
+                    l = new TermList(subs()-i);
                 l.add(t);
-                added++;
             }
         }
-        return added == 0 ? Op.EmptyTermArray : l.arrayKeep();
+        return l==null ? Op.EmptyTermArray : l.arrayKeep();
     }
 
 
@@ -609,9 +612,21 @@ public interface Subterms extends Termlike, Iterable<Term> {
 
         return -1;
     }
-    default boolean impossibleSubTerm(Termlike target) {
-        return impossibleSubTerm(target.structure(), target.volume());
+
+    default /* final */boolean containsRecursively(Term t, Predicate<Term> inSubtermsOf) {
+        return containsRecursively(t, false, inSubtermsOf);
     }
+
+    @Override default boolean impossibleSubTerm(Termlike target) {
+
+        if (target instanceof Atomic)
+            return impossibleSubStructure(((Atomic) target).opBit()) || impossibleSubVolume(1);
+        else {
+            if (this == target) return false;
+            return impossibleSubVolume(target.volume()) || impossibleSubStructure(target.structure());
+        }
+    }
+
     default boolean impossibleSubTerm(int structure, int volume) {
         return impossibleSubStructure(structure) || impossibleSubVolume(volume);
     }
@@ -650,28 +665,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
         }
     }
 
-    /**
-     * of all the matches to the predicate, chooses one at random and returns its index
-     */
-    default int indexOf(Predicate<Term> t, Random r) {
-        int[] a = indicesOf(t);
-        int l = a.length;
-        return (l == 0) ? -1 :
-                a[l == 1 ? 0 : r.nextInt(l)];
 
-    }
-
-    @Nullable
-    default int[] indicesOf(Predicate<Term> t) {
-        IntArrayList a = new IntArrayList(1);
-        int s = subs();
-        for (int i = 0; i < s; i++) {
-            if (t.test(sub(i))) {
-                a.add(i);
-            }
-        }
-        return a.isEmpty() ? ArrayUtil.EMPTY_INT_ARRAY : a.toArray();
-    }
 
     /**
      * allows the subterms to hold a different hashcode than hashCode when comparing subterms
@@ -687,12 +681,16 @@ public interface Subterms extends Termlike, Iterable<Term> {
                 return true;
             case 1:
                 return x.sub(0).unify(y.sub(0), u);
-            case 2:
-                return unifyLinear2_complexityHeuristic(x, y, u);
             default:
-                return unifyLinearN_TwoPhase(x, y, n, u);
+                if (u.random.nextFloat() < NAL.SUBTERM_UNIFY_RANDOM_PROBABILITY)
+                    return unifyRandom(x, y, n, u);
+                if (n == 2)
+                    return unifyLinear2_complexityHeuristic(x, y, u);
+                else
+                    return unifyLinearN_TwoPhase(x, y, n, u);
         }
     }
+
 
     static boolean unifyLinear2_complexityHeuristic(Subterms x, Subterms y, Unify u) {
         Term x0 = x.sub(0), y0 = y.sub(0);
@@ -719,40 +717,28 @@ public interface Subterms extends Termlike, Iterable<Term> {
         }
     }
 
-//    @Deprecated static boolean unifyLinear2_complexityHeuristic0(Subterms x, Subterms y, Unify u) {
-//        Term x0 = x.sub(0), x1 = x.sub(1);
-//        Term y0 = y.sub(0), y1 = y.sub(1);
-//        boolean xv = u.var(x0), yv = u.var(x1);
-//        boolean forward;
-//        if (xv == yv) {
-//            if (!xv) {
-//                boolean dx = !u.var(y0), dy = !u.var(y1);
-//                if (dx && dy)
-//                    forward = choose(1f/y0.volume(), 1f/y1.volume(), u);
-//                else
-//                    forward = dx;
-//            } else {
-//                forward = choose(
-//                        1f/(x0.voluplexity() + y0.voluplexity()),
-//                        1f/(x1.voluplexity() + y1.voluplexity()),
-//                        u);
-//            }
-//        } else {
-//            forward = xv;
-//        }
-//
-//        return forward ?
-//                x0.unify(y0, u) && x1.unify(y1, u) :
-//                x1.unify(y1, u) && x0.unify(y0, u);
-//    }
+    static boolean unifyRandom(Subterms x, Subterms y, int n, Unify u) {
+        if (n == 2) {
+            int s = u.random.nextBoolean() ? 0 : 1;
+            return x.sub(s).unify(y.sub(s), u) && x.sub(1 - s).unify(y.sub(1 - s), u);
+        } else {
+            byte[] order = new byte[n];
+            for (int i = 0; i < n; i++)
+                order[i] = (byte)i;
+            ArrayUtil.shuffle(order, u.random);
+            for (byte b : order) {
+                if (!x.sub(b).unify(y.sub(b), u))
+                    return false;
+            }
+            return true;
+        }
+    }
 
-
-    static boolean unifyLinearN_Simple(Subterms x, Subterms y, /*@NotNull*/ Unify u) {
+    static boolean unifyLinearN_Forward(Subterms x, Subterms y, /*@NotNull*/ Unify u) {
         int s = x.subs();
-        for (int i = 0; i < s; i++) {
+        for (int i = 0; i < s; i++)
             if (!x.sub(i).unify(y.sub(i), u))
                 return false;
-        }
         return true;
     }
 

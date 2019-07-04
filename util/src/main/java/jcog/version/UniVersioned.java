@@ -1,17 +1,15 @@
 package jcog.version;
 
-import org.jetbrains.annotations.Nullable;
-
 /** supports only one state and refuses change if a value is held */
 public class UniVersioned<X> implements Versioned<X> {
 
     protected X value;
 
-    public UniVersioned() {
+    UniVersioned() {
     }
 
     @Override
-    public X get() {
+    public final X get() {
         return value;
     }
 
@@ -37,7 +35,7 @@ public class UniVersioned<X> implements Versioned<X> {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public final boolean equals(Object obj) {
         return this==obj;
     }
 
@@ -48,18 +46,20 @@ public class UniVersioned<X> implements Versioned<X> {
     }
 
     @Override
-    public final boolean set(X next, @Nullable Versioning<X> context) {
+    public final boolean set(X next, /*@Nullable */Versioning<X> context) {
         X prev = value;
-        if (prev!=null) {
-            int m = match(prev, next);
-            if (m >= 0) {
-                if (m == +1 && valid(next, context))
-                    value = next; //replace
+        if (prev == null) {
+            if (valid(next, context) && (/*context==null || */context.add(this))) {
+                value = next;
                 return true;
             }
         } else {
-            if (valid(next, context) && (context==null || context.add(this))) {
-                value = next;
+            int m = merge(prev, next);
+            if (m == 0)
+                return true;
+            else if (m > 0) {
+                if (m == +1 && valid(next, context))
+                    value = next; //replace
                 return true;
             }
         }
@@ -73,7 +73,7 @@ public class UniVersioned<X> implements Versioned<X> {
      *      -1  refuse
      *
      */
-    protected int match(X prevValue, X nextValue) {
+    protected int merge(X prevValue, X nextValue) {
         return prevValue.equals(nextValue) ? 0 : -1;
     }
 

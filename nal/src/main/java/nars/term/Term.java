@@ -492,6 +492,7 @@ public interface Term extends Termlike, Termed, Comparable<Term> {
         return 0;
     }
 
+
     default boolean pathsTo(Term target, BiPredicate<ByteList, Term> receiver) {
         return pathsTo(
                 target::equals,

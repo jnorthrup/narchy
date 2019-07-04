@@ -8273,16 +8273,6 @@ public enum ArrayUtil {
         }
     }
 
-    /**
-     * Randomly permutes the elements of the specified array using the Fisher-Yates algorithm.
-     *
-     * @param array the array to shuffle
-     * @see <a href="https:
-     * @since 3.6
-     */
-    public static void shuffle(byte[] array) {
-        shuffle(array, new Random());
-    }
 
     /**
      * Randomly permutes the elements of the specified array using the Fisher-Yates algorithm.
@@ -8298,16 +8288,6 @@ public enum ArrayUtil {
         }
     }
 
-    /**
-     * Randomly permutes the elements of the specified array using the Fisher-Yates algorithm.
-     *
-     * @param array the array to shuffle
-     * @see <a href="https:
-     * @since 3.6
-     */
-    public static void shuffle(char[] array) {
-        shuffle(array, new Random());
-    }
 
     /**
      * Randomly permutes the elements of the specified array using the Fisher-Yates algorithm.

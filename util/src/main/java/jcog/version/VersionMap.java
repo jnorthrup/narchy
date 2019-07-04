@@ -10,7 +10,6 @@ import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.BiPredicate;
-import java.util.function.Function;
 
 
 public class VersionMap<X, Y> extends AbstractMap<X, Y> {
@@ -170,13 +169,8 @@ public class VersionMap<X, Y> extends AbstractMap<X, Y> {
     }
 
     public final boolean set(X key, Y value) {
-        return context.set(getOrCreateIfAbsent(key), value);
+        return getOrCreateIfAbsent(key).set(value, context);
     }
-
-
-//    public boolean tryPut(X key, Supplier<Y> value) {
-//        return getOrCreateIfAbsent(key).setOnly(value) != null;
-//    }
 
     public final Versioned<Y> getOrCreateIfAbsent(X key) {
         return map.computeIfAbsent(key, this::newEntry);
@@ -227,24 +221,24 @@ public class VersionMap<X, Y> extends AbstractMap<X, Y> {
         return v != null ? v.get() : null;
     }
 
-    /** TODO test */
-    public boolean compute(/*X*/X key, Function<Y,Y> f) {
-        final boolean[] result = {false};
-        map.compute(key, (k, v)->{
-
-            Y prev, next;
-
-            prev = v != null ? v.get() : null;
-
-            next = f.apply(prev);
-
-            result[0] = (next != null) &&
-                    context.set((v != null ? v : (v = newEntry(k))), next);
-
-            return v;
-        });
-        return result[0];
-    }
+//    /** TODO test */
+//    public boolean compute(/*X*/X key, Function<Y,Y> f) {
+//        final boolean[] result = {false};
+//        map.compute(key, (k, v)->{
+//
+//            Y prev, next;
+//
+//            prev = v != null ? v.get() : null;
+//
+//            next = f.apply(prev);
+//
+//            result[0] = (next != null) &&
+//                    context.set((v != null ? v : (v = newEntry(k))), next);
+//
+//            return v;
+//        });
+//        return result[0];
+//    }
 
 
 

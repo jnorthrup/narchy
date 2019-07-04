@@ -36,6 +36,15 @@ public interface TermedDelegate extends Termlike, Termed {
         return term().hasAny(structuralVector);
     }
 
+    @Override
+    default boolean containsRecursively(Term t, Predicate<Term> inSubtermsOf) {
+        return term().containsRecursively(t, inSubtermsOf);
+    }
+
+    @Override
+    default boolean impossibleSubTerm(Termlike target) {
+        return term().impossibleSubTerm(target);
+    }
 
     @Override
     default int structureSurface() {

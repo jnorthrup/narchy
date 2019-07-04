@@ -41,8 +41,7 @@ public interface Atomic extends Term {
     default boolean containsRecursively(Term t, Predicate<Term> inSubtermsOf) {
         return false;
     }
-
-
+    
     @Override
     default boolean containsRecursively(Term t, boolean root, Predicate<Term> inSubtermsOf) {
         return false;

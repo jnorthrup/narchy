@@ -465,24 +465,6 @@ public enum Terms {
     }
 
 
-    @Nullable
-    public static Term[] withoutOne(Subterms cs, Predicate<Term> filter, Random rand) {
-
-        int i = cs.indexOf(filter, rand);
-        if (i == -1)
-            return null;
-
-        switch (cs.subs()) {
-            case 1:
-                return null;
-            case 2:
-                Term remain = cs.sub(1 - i);
-                return new Term[]{remain};
-            default:
-                return cs.removing(i);
-        }
-    }
-
     private static boolean rCom(Term a, Term b, boolean recurse) {
 
         return recurse ?

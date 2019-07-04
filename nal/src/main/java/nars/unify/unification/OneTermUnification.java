@@ -25,13 +25,11 @@ public class OneTermUnification extends DeterministicUnification {
 
     @Override
     public Term xy(Term t) {
-        if (tx.equals(t)) return ty;
-        else return null;
+        return tx.equals(t) ? ty : null;
     }
 
     @Override
     public boolean apply(Unify u) {
-        boolean applied = u.putXY((Variable/*HACK*/) tx, ty);
-        return applied;
+        return u.putXY((Variable/*HACK*/) tx, ty);
     }
 }

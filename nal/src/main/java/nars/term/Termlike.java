@@ -186,12 +186,10 @@ public interface Termlike {
     boolean hasXternal();
 
     default /* final */boolean containsRecursively(Term t) {
-        return containsRecursively(t, (x) -> true);
+        return containsRecursively(t, null);
     }
-
-    default /* final */boolean containsRecursively(Term t, Predicate<Term> inSubtermsOf) {
-        return !impossibleSubTerm(t) && containsRecursively(t, false, inSubtermsOf);
-    }
+    boolean impossibleSubTerm(Termlike target);
+    boolean containsRecursively(Term t, @Nullable Predicate<Term> inSubtermsOf);
 
     default boolean containsPosOrNeg(Term x) {
         return false;
@@ -201,7 +199,7 @@ public interface Termlike {
     /**
      * if root is true, the root()'s of the terms will be compared
      */
-    boolean containsRecursively(Term t, boolean root, Predicate<Term> inSubtermsOf);
+    boolean containsRecursively(Term t, boolean root, @Nullable Predicate<Term> inSubtermsOf);
 
 
 
@@ -237,10 +235,6 @@ public interface Termlike {
         return hasAny(Op.VAR_PATTERN.bit);
     }
 
-
-    default boolean impossibleSubTerm(Termlike target) {
-        return impossibleSubVolume(target.volume()) || impossibleSubStructure(target.structure());
-    }
 
 
     boolean impossibleSubStructure(int structure);

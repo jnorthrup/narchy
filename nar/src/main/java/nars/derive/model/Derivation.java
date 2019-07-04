@@ -683,7 +683,7 @@ public class Derivation extends PreDerivation {
 //        public transient Function<Variable, Term> xy = null;
 
         @Override
-        protected Term resolveVar(nars.term.Variable x) {
+        protected final Term resolveVar(nars.term.Variable x) {
 //            if (xy != null) {
 //                Term y = xy.apply(x);
 //                return y == null ? x : y;
@@ -701,10 +701,8 @@ public class Derivation extends PreDerivation {
 
             Term b;
             if (a instanceof Variable) {
-                b = resolveVar((Variable) a);
 
-                if (b instanceof Compound)
-                    b = resolveTerm(b, true); //recurse
+                b = Derivation.this.resolveTerm((Variable) a, true);
 
             } else if (a instanceof Atom) {
 
