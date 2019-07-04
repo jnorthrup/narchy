@@ -1,5 +1,6 @@
-package jcog.math;
+package jcog.pri;
 
+import jcog.math.CachedFloatFunction;
 import jcog.sort.FloatRank;
 
 public class CachedFloatRank<X> extends CachedFloatFunction<X> implements FloatRank<X> {

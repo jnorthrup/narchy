@@ -4,7 +4,6 @@ import jcog.data.byt.ArrayBytes;
 import nars.$;
 import nars.NARS;
 import nars.Narsese;
-import nars.memory.RadixTreeMemory;
 import nars.term.Term;
 import nars.term.util.map.TermRadixTree;
 import org.junit.jupiter.api.Test;

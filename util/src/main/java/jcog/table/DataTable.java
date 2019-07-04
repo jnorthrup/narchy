@@ -169,11 +169,15 @@ public class DataTable extends Table implements Externalizable {
             //TODO use type cast graph
             //come on tablesaw
             if (p instanceof Number) {
+                Number n = (Number) p;
                 if (c instanceof LongColumn) {
-                    p = ((Number) p).longValue();
-                } else {
-                    p = ((Number) p).doubleValue();
-                }
+                    p = n.longValue();
+                } else if (c instanceof DoubleColumn) {
+                    p = n.doubleValue();
+                } else if (c instanceof FloatColumn) {
+                    p = n.floatValue();
+                } else
+                    throw new TODO();
             }
             c.appendObj(p);
         }

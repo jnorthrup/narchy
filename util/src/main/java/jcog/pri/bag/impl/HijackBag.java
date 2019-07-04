@@ -78,11 +78,8 @@ public abstract class HijackBag<K, V> extends Bag<K, V> {
      * when size() reaches this proportion of space(), and space() < capacity(), grows
      */
     private static final float loadFactor = 0.75f;
+    private static final float growthRate = 1.5f;
 
-    /**
-     * how quickly the current space grows towards the full capacity, using LERP
-     */
-    private static final float growthLerpRate = 0.5f;
 
 
     private static final AtomicReferenceArray EMPTY_ARRAY = new AtomicReferenceArray(0);
@@ -115,19 +112,22 @@ public abstract class HijackBag<K, V> extends Bag<K, V> {
     @Override
     protected void onCapacityChange(int oldCap, int newCap) {
 
-//        int s = size();
-//            if (((oldCap < newCap && (s >= oldCap   /* should grow */)
-//                    ||
-//                    (newCap < space() /* must shrink */)))) {
-                resize(newCap);
-//            }
+        int s = Math.max(reprobes, size());
+
+        newCap = Math.min(s, newCap);
+
+        if (((oldCap < newCap && (s >= oldCap   /* should grow */)
+                ||
+                (newCap < space() /* must shrink */)))) {
+            resize(newCap);
+        }
 
     }
 
     /**
      * minimum allocation
      */
-    public int spaceMin() {
+    protected int spaceMin() {
         return reprobes;
     }
 
@@ -856,14 +856,12 @@ public abstract class HijackBag<K, V> extends Bag<K, V> {
 
     protected boolean regrowForSize(int s, int sp) {
 
+
         if (s >= (loadFactor * sp)) {
             int cp = capacity();
             if (sp < cp) {
-
-                int ns = Util.lerp(growthLerpRate, sp, cp);
-                if ((cp - ns) / ((float) cp) >= loadFactor)
-                    ns = cp;
-
+                int ns =
+                    Math.min(cp, Math.round(sp * growthRate));
                 if (ns != sp) {
                     resize(ns);
                     return true;

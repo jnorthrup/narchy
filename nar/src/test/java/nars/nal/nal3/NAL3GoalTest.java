@@ -73,7 +73,7 @@ class NAL3GoalTest {
         String expectedTask = YY + '!';
         if (f < 0.5f) expectedTask = "(--," + expectedTask + ')';
 
-        System.out.println(goalTask + '\t' + beliefTask + "\t=>\t" + expectedTask);
+        //System.out.println(goalTask + '\t' + beliefTask + "\t=>\t" + expectedTask);
 
 
         new TestNAR(NARS.tmp(3,3))

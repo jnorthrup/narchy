@@ -1,18 +1,21 @@
 package nars.task.util;
 
 import jcog.Util;
+import jcog.event.Off;
 import nars.NAR;
 import nars.Task;
 import nars.concept.Concept;
+import nars.control.NARPart;
 import org.apache.commons.math3.stat.Frequency;
 
 import java.io.PrintStream;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Consumer;
 
 /**
  * Created by me on 10/31/16.
  */
-public class TaskStatistics {
+public class TaskStatistics extends NARPart implements Consumer<Task> {
     private final AtomicInteger i = new AtomicInteger(0);
 
     private final Frequency clazz = new Frequency();
@@ -25,22 +28,43 @@ public class TaskStatistics {
     private final Frequency conf = new Frequency();
     private final Frequency pri = new Frequency();
 
-    public TaskStatistics add(NAR nar) {
-        nar.tasks().forEach(this::add);
+    private Off on;
+
+    public TaskStatistics() {
+
+    }
+
+    public TaskStatistics(NAR n) {
+        super(n);
+    }
+
+    @Override
+    protected void starting(NAR nar) {
+        on = nar.onTask(this);
+    }
+
+    @Override
+    protected void stopping(NAR nar) {
+        on.close();
+        on = null;
+    }
+
+    public TaskStatistics addAll(NAR nar) {
+        nar.tasks().forEach(this);
         return this;
     }
 
-    public TaskStatistics add(Concept c) {
-        c.tasks(true, true, true, true).forEach(this::add);
+    public TaskStatistics addAll(Concept c) {
+        c.tasks(true, true, true, true).forEach(this);
         return this;
     }
 
-    public TaskStatistics add(Iterable<Task> c) {
-        c.forEach(this::add);
+    public TaskStatistics addAll(Iterable<Task> c) {
+        c.forEach(this);
         return this;
     }
 
-    private void add(Task t) {
+    @Override public void accept(Task t) {
 
         if (t.isDeleted())
             return;

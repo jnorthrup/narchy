@@ -1144,7 +1144,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
     }
 
 
-    /** supplies the i'th index as 2nd lambda argument. all subterms traversed, even repeats */
+    /** supplies the i'th index as 2nd lambda argument. all subterms traversed, incl repeats */
     default boolean ANDi(/*@NotNull*/ ObjectIntPredicate<Term> p) {
         int s = subs();
         for (int i = 0; i < s; i++)
@@ -1153,7 +1153,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
         return true;
     }
 
-    /** supplies the i'th index as 2nd lambda argument. all subterms traversed, even repeats */
+    /** supplies the i'th index as 2nd lambda argument. all subterms traversed, incl repeats */
     default boolean ORi(/*@NotNull*/ ObjectIntPredicate<Term> p) {
         int s = subs();
         for (int i = 0; i < s; i++)
@@ -1186,7 +1186,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
         }
         return true;
     }
-    /** visits each, does not deduplciate or elide in case of repeat */
+    /** visits each, incl repeats */
     default <X> boolean ANDwithOrdered(/*@NotNull*/ BiPredicate<Term,X> p, X param) {
         int s = subs();
         for (int i = 0; i < s; i++) {
@@ -1196,7 +1196,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
         return true;
     }
 
-    /** implementations are allowed to skip repeating subterms and visit out of order */
+    /** warning: elides test for repeated subterm */
     default boolean ANDrecurse(Predicate<Term> p) {
         int s = subs();
         Term prev = null;
@@ -1211,7 +1211,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
         return true;
     }
 
-    /** implementations are allowed to skip repeating subterms and visit out of order */
+    /** warning: elides test for repeated subterm */
     default boolean ORrecurse(Predicate<Term> p) {
         int s = subs();
         Term prev = null;
@@ -1228,8 +1228,8 @@ public interface Subterms extends Termlike, Iterable<Term> {
 
     /** test for eliding repeats in visitors */
     private static boolean different(Term prev, Term next) {
-        return prev==null||!prev.equals(next);
-        //return prev!=next;
+        //return prev==null||!prev.equals(next);
+        return prev!=next;
     }
 
 
@@ -1247,6 +1247,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
         return AND(s -> s.recurseTerms(aSuperCompoundMust, whileTrue, parent));
     }
 
+    /** incl repeats */
     default boolean recurseTermsOrdered(Predicate<Term> inSuperCompound, Predicate<Term> whileTrue, Compound parent) {
         int s = subs();
         for (int i = 0; i < s; i++)

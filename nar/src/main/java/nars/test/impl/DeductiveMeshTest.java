@@ -72,8 +72,10 @@ public class DeductiveMeshTest {
         this.test = n;
     }
 
-    public void ask(@NotNull TestNAR n, Term term) {
-        n.nar.question(term, ETERNAL, (q, a) -> System.out.println(a.proof()));
+    public void ask(TestNAR n, Term term) {
+        n.nar.question(term, ETERNAL, (q, a) -> {
+            //System.out.println(a.proof())
+        });
     }
 
     @Nullable

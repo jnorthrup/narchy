@@ -19,7 +19,7 @@ class ConjClusteringTest {
 
         NAR n = NARS.shell();
         int ccap = 4;
-        ConjClustering c = new ConjClustering(n, BELIEF, Task::isInput, 4, ccap);
+        ConjClustering c = new ConjClustering(n, BELIEF, BELIEF, Task::isInput, 4, ccap);
         n.start(c);
 
 
@@ -38,7 +38,7 @@ class ConjClusteringTest {
 
         NAR n = NARS.shell();
         int ccap = 4;
-        ConjClustering c = new ConjClustering(n, BELIEF, Task::isInput, 4, ccap);
+        ConjClustering c = new ConjClustering(n, BELIEF, BELIEF, Task::isInput, 4, ccap);
         n.start(c);
 
         for (int i = 0; i < ccap; i++)

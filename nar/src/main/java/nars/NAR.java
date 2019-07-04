@@ -354,7 +354,7 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
      */
     public void delete() {
         synchronized (exe) {
-            logger.info("delete");
+            logger.debug("delete {}", self());
 
             stop();
 
@@ -1621,7 +1621,10 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
                 prev.pri(prevPriNext);
             }
         }
-        logger.info("fork {} {} <- {}" /* (+{})"*/, Thread.currentThread(), next, prev/*, delta*/);
+
+        if (logger.isDebugEnabled())
+            logger.debug("fork {} {} <- {}" /* (+{})"*/, Thread.currentThread(), next, prev/*, delta*/);
+
         active.set(next);
         return next;
     }

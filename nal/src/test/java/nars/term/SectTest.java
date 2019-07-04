@@ -1,6 +1,7 @@
 package nars.term;
 
 import nars.term.util.TermTest;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import static nars.$.$$;
@@ -81,6 +82,7 @@ public class SectTest {
 
     }
 
+    @Disabled
     @Test void testInvalidTemporal1() {
         String a = "(x &&+1 y)";
         String b = "(x &&+2 y)";

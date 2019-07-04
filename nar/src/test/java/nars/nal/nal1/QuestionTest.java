@@ -1,7 +1,6 @@
 package nars.nal.nal1;
 
 import nars.*;
-import nars.task.util.TaskStatistics;
 import nars.term.Term;
 import nars.term.atom.Bool;
 import nars.test.TestNAR;
@@ -85,16 +84,16 @@ class QuestionTest {
         final int[] dims = {3, 2};
         final int timelimit = 2400;
 
-        TaskStatistics withTasks = new TaskStatistics();
-        TaskStatistics withoutTasks = new TaskStatistics();
+//        TaskStatistics withTasks = new TaskStatistics();
+//        TaskStatistics withoutTasks = new TaskStatistics();
         DoubleSummaryStatistics withTime = new DoubleSummaryStatistics();
         DoubleSummaryStatistics withOutTime = new DoubleSummaryStatistics();
 
         IntFunction<NAR> narProvider = (seed) -> {
             NAR d = NARS.tmp(1);
             //d.random().setSeed(seed);
-            d.termVolMax.set(8);
-            d.freqResolution.set(0.1f);
+            d.termVolMax.set(7);
+            d.freqResolution.set(0.25f);
             return d;
         };
 
@@ -123,20 +122,20 @@ class QuestionTest {
             TestNAR withQuestion = testProvider.apply(seed, 0);
             withQuestion.test();
             withTime.accept(withQuestion.time());
-            withTasks.add(withQuestion.nar);
+//            withTasks.addAll(withQuestion.nar);
 
             TestNAR withoutQuestion = testProvider.apply(seed, 1);
             withoutQuestion.test();
             withOutTime.accept(withoutQuestion.time());
-            withoutTasks.add(withoutQuestion.nar);
+//            withoutTasks.addAll(withoutQuestion.nar);
         }
 
-        withTasks.print();
-        withoutTasks.print();
+//        withTasks.print();
+//        withoutTasks.print();
 
         assertNotEquals(withTime, withOutTime);
-        System.out.println("with: " + withTime);
-        System.out.println("withOut: " + withOutTime);
+//        System.out.println("with: " + withTime);
+//        System.out.println("withOut: " + withOutTime);
 
 
     }

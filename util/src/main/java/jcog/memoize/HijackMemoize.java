@@ -206,6 +206,7 @@ public class HijackMemoize<X, Y> extends AbstractMemoize<X,Y> {
 
         @Override
         protected void onCapacityChange(int oldCap, int c) {
+
 //
 //            float boost = i > 0 ?
 //                    (float) (1f / Math.sqrt(capacity()))

@@ -1,66 +1,74 @@
 package nars;
 
+import jcog.TODO;
 import jcog.Texts;
 import jcog.data.list.FasterList;
 import jcog.table.DataTable;
-import nars.term.Term;
-import nars.term.atom.Atom;
-import nars.term.atom.Atomic;
 import org.gridkit.nanocloud.Cloud;
 import org.gridkit.nanocloud.CloudFactory;
 import org.gridkit.nanocloud.RemoteNode;
 import org.junit.jupiter.engine.JupiterTestEngine;
 import org.junit.platform.engine.TestExecutionResult;
+import org.junit.platform.engine.reporting.ReportEntry;
 import org.junit.platform.launcher.TestExecutionListener;
 import org.junit.platform.launcher.TestIdentifier;
 import org.junit.platform.launcher.TestPlan;
 import org.junit.platform.launcher.core.LauncherConfig;
 import org.junit.platform.launcher.core.LauncherDiscoveryRequestBuilder;
 import org.junit.platform.launcher.core.LauncherFactory;
-import tech.tablesaw.api.DateTimeColumn;
-import tech.tablesaw.api.LongColumn;
-import tech.tablesaw.api.StringColumn;
+import tech.tablesaw.api.*;
+import tech.tablesaw.columns.numbers.NumberColumnFormatter;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.Callable;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 import static org.junit.platform.engine.discovery.DiscoverySelectors.selectPackage;
+import static tech.tablesaw.aggregate.AggregateFunctions.*;
 
 /** periodically, or event-triggered: runs unit tests and broadcasts results */
 public class TestServer {
 
-    public List<String> packages = new FasterList();
+    //TODO make this a Bag
+    final List<Supplier<DataTable>> experiments = new FasterList();
 
-    public TestServer(String... packages) {
-        for (String p : packages) this.packages.add(p);
+    public TestServer() {
 
     }
 
-    protected DataTable test() {
+    private final JupiterTestEngine engine = new JupiterTestEngine();
 
-        DataTable results = newTestTable();
+    public void unitTestsByPackage(String... packages) {
+        experiments.add(unitTests((b)->{
+            for (String pkg : packages)
+                b.selectors(selectPackage(pkg));
+        }));
+    }
 
-        //https://junit.org/junit5/docs/current/user-guide/#launcher-api-listeners-reporting
-        LauncherConfig launcherConfig = LauncherConfig.builder()
-                .enableTestEngineAutoRegistration(false)
-                .enableTestExecutionListenerAutoRegistration(false)
-                //.addTestEngines(new CustomTestEngine())
-                .addTestEngines(new JupiterTestEngine())
-                .addTestExecutionListeners(new MyTestExecutionListener(results))
-                //new LegacyXmlReportGeneratingListener(reportsDir, out)
-                .build();
+    public Supplier<DataTable> unitTests(Consumer<LauncherDiscoveryRequestBuilder> selector) {
+        return ()->{
+            DataTable results = newTable();
 
+            //https://junit.org/junit5/docs/current/user-guide/#launcher-api-listeners-reporting
+            LauncherConfig launcherConfig = LauncherConfig.builder()
+                    .enableTestEngineAutoRegistration(false)
+                    .enableTestExecutionListenerAutoRegistration(false)
+                    //.addTestEngines(new CustomTestEngine())
+                    .addTestEngines(engine)
+                    .addTestExecutionListeners(new MyTestExecutionListener(results))
+                    //new LegacyXmlReportGeneratingListener(reportsDir, out)
+                    .build();
 
+            LauncherDiscoveryRequestBuilder b = LauncherDiscoveryRequestBuilder.request();
+            selector.accept(b);
 
-        LauncherDiscoveryRequestBuilder b = LauncherDiscoveryRequestBuilder.request();
-        for (String pkg : this.packages)
-            b.selectors(selectPackage(pkg));
+            LauncherFactory.create(launcherConfig).execute(b.build());
 
-        LauncherFactory.create(launcherConfig).execute(b.build());
-
-        return results;
+            return results;
+        };
     }
 
     static private int _jupiterPrefixToRemove = "[engine:junit-jupiter]/[class:".length();
@@ -68,7 +76,8 @@ public class TestServer {
     protected static String sid(TestIdentifier id) {
         String uid = id.getUniqueId();
         try {
-            return "(" + uid.substring(_jupiterPrefixToRemove).replace("]/[method:", "/").replace("]", "").replace("()","").replace("/",",").replace(".",",") + ")";
+            return "(" + uid.substring(_jupiterPrefixToRemove).replace("]/[method:", "/").replace("]", "").replace("()","")
+                    .replace("/",",").replace(".",",") + ")";
         } catch (Exception e) {
             return uid;
         }
@@ -77,38 +86,37 @@ public class TestServer {
 
 
     public static class TestMetrics implements Serializable {
-        public final LocalDateTime when;
+
+        /** unixtime */
+        public final long when;
+
         public final String id;
         public long wallTimeNS;
 
-        public enum Status {
-            Success, Fail, Error
-        }
-        public Status status;
+        public boolean success, error;
 
         public TestMetrics(TestIdentifier testIdentifier) {
-            this.when = LocalDateTime.now();
+            this.when = System.currentTimeMillis();
             this.id = sid(testIdentifier);
         }
 
         @Override
         public String toString() {
-            return "test(" +
-                    "id='" + id + '\'' +
-                    ' ' + status +
-                    " @ " + when +
-                    " wallTimeNS=" + Texts.timeStr(wallTimeNS) +
-                    '}';
+            return id +
+                    (success ? " sccs " : " fail ") + (error ? " err " : " ") +
+                    " @ " + new Date(when) + " .. " +
+                    Texts.timeStr(wallTimeNS);
         }
     }
 
 
-    protected static DataTable newTestTable() {
+    protected static DataTable newTable() {
         DataTable d = new DataTable();
         d.addColumns(
                 StringColumn.create("test"),
-                DateTimeColumn.create("start"),
-                StringColumn.create("status"),
+                LongColumn.create("start"),
+                BooleanColumn.create("success"),
+                BooleanColumn.create("error"),
                 LongColumn.create("wallTimeNS")
         );
         return d;
@@ -135,65 +143,122 @@ public class TestServer {
         }
 
         @Override
+        public void reportingEntryPublished(TestIdentifier testIdentifier, ReportEntry entry) {
+            System.out.println(testIdentifier +  " " + entry);
+        }
+
+        @Override
         public void executionFinished(TestIdentifier id, TestExecutionResult result) {
+
+            boolean success = false, error = false;
             this.endNS = System.nanoTime();
             m.wallTimeNS = (endNS - startNS);
             switch (result.getStatus()) {
                 case SUCCESSFUL:
-                    m.status = TestMetrics.Status.Success;
+                    success = true;
+                    error = false;
                     break;
                 case FAILED:
-                    m.status = TestMetrics.Status.Fail;
+                    success = false;
+                    error = false;
                     break;
                 case ABORTED:
-                    m.status = TestMetrics.Status.Error;
+                    success = false;
+                    error = true;
                     break;
 
             }
 
-            out.add(m.id, m.when, m.status.name(), m.wallTimeNS);
+            out.add(m.id, m.when, success, error, m.wallTimeNS);
         }
     }
 
 
     /** local launcher */
     public static void main(String[] args) {
-        TestServer s = new TestServer(
-                "nars.nal.nal1"
-        );
-        DataTable d = s.test();
+        TestServer s = new TestServer();
+        s.unitTestsByPackage("nars.nal.nal1");
+        s.unitTestsByPackage("nars.nal.nal2");
+        s.unitTestsByPackage("nars.nal.nal3");
 //        ((TextColumn)d.column(0)).setPrintFormatter(new StringColumnFormatter() {
 //            @Override
 //            public String format(String value) {
 //                return "\"" + super.format(value) + "\"";
 //            }
 //        });
-        d.write().csv(System.out);
+
+        s.run();
+
 
 //        RealDecisionTree tr = Optimize.tree(d, 2, 8);
 //        System.out.println(tr);
 //        tr.print();
 //        tr.printExplanations();
 
-        NAR n = NARS.tmp();
-        n.log();
-        Atom SUCCESS = Atomic.atom("success");
-        d.forEach(r->{
-            String traw = r.getString(0);
-            //String t = traw.substring(1, traw.length()-1);
-            Term tt = $.$$(traw);
-            switch (r.getString(2)) {
-                case "Success":
-                    Task b = n.believe($.inh(tt, SUCCESS));
-                    System.out.println(b);
-                    break;
-                case "Fail":
-                    n.believe($.inh(tt, SUCCESS).neg());
-                    break;
-            }
-        });
-        n.run(1000);
+//        NAR n = NARS.tmp();
+//        n.log();
+//        Atom SUCCESS = Atomic.atom("success");
+//        d.forEach(r->{
+//            String traw = r.getString(0);
+//            //String t = traw.substring(1, traw.length()-1);
+//            Term tt = $.$$(traw);
+//            switch (r.getString(2)) {
+//                case "Success":
+//                    Task b = n.believe($.inh(tt, SUCCESS));
+//                    System.out.println(b);
+//                    break;
+//                case "Fail":
+//                    n.believe($.inh(tt, SUCCESS).neg());
+//                    break;
+//            }
+//        });
+//        n.run(1000);
     }
+
+
+    final static int maxRows = 128*1024;
+
+    void run() {
+
+        final DataTable all = newTable();
+
+        while (true) {
+            for (Supplier<DataTable> experiment : experiments) {
+                DataTable d = experiment.get();
+                //d.write().csv(System.out);
+                d.doWithRows((Consumer<Row>) all::addRow);
+            }
+
+            report(all);
+
+            if (all.rowCount() >= maxRows)
+                break; //TODO
+        }
+    }
+
+    private void report(DataTable all) {
+        //https://jtablesaw.github.io/tablesaw/userguide/reducing
+        {
+            Table walltimes = all.summarize("wallTimeNS", mean/*, stdDev*/).by("test")
+                    .sortDescendingOn("Mean [wallTimeNS]")
+                    ;
+
+            ((NumberColumn)walltimes.column(1)).setPrintFormatter(new NSTimeFormatter());
+
+            System.out.println(walltimes.printAll());
+        }
+
+        {
+            Table ff = all.summarize("success", countTrue).by("test");
+
+            ff = ff.where(((NumberColumn)ff.column(1)).isGreaterThan(0));
+
+            Table fails = ff.sortDescendingOn(ff.column(1).name());
+
+            System.out.println(fails.printAll());
+        }
+    }
+
 
     public static class RemoteLauncher {
         public static void main(String[] args) {
@@ -209,7 +274,9 @@ public class TestServer {
             DataTable s = cloud.node(/*"**"*/ "eus").exec(new Callable<>() {
                 @Override
                 public DataTable call() {
-                    return new TestServer("nars.nal.nal1").test();
+
+                    //return new TestServer("nars.nal.nal1").unitTestsByPackage();
+                    throw new TODO();
                 }
             });
 
@@ -220,4 +287,9 @@ public class TestServer {
         }
     }
 
+    private static class NSTimeFormatter extends NumberColumnFormatter {
+        public String format(double value) {
+            return Texts.timeStr(Math.round(value));
+        }
+    }
 }
