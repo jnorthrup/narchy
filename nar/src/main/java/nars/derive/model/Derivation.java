@@ -165,7 +165,6 @@ public class Derivation extends PreDerivation {
      * whether either the task or belief are events and thus need to be considered with respect to time
      */
     public transient boolean temporal;
-    public transient TruthFunc truthFunction;
     public transient int ditherDT;
     public Deriver deriver;
     /**
@@ -173,16 +172,18 @@ public class Derivation extends PreDerivation {
      */
     public transient long taskStart, taskEnd, beliefStart, beliefEnd; //TODO taskEnd, beliefEnd
     public transient boolean overlapDouble, overlapSingle;
-    public transient boolean concSingle;
 
-    public transient Truth concTruth;
-    public transient byte concPunc;
+    @Deprecated public transient boolean concSingle;
+    @Deprecated public transient Truth concTruth;
+    @Deprecated public transient byte concPunc;
+    @Deprecated public transient TruthFunc truthFunction;
 
     public transient Task _task, _belief;
     public DerivationTransform transformDerived;
     private transient short[] parentCause;
     private transient long[] evidenceDouble, evidenceSingle;
-    private transient int taskUniques;
+    private transient int taskUniqueAnonTerms;
+
     /**
      * these represent the maximum possible priority of the derivation.
      * the maximum constraint is a contract ensuring the range of priority
@@ -346,7 +347,7 @@ public class Derivation extends PreDerivation {
         if (sameTerm) {
 
             //roll back only as far as the unique task terms. we can re-use them as-is
-            anon.rollback(taskUniques);
+            anon.rollback(taskUniqueAnonTerms);
 
         } else {
             //have to re-anon completely
@@ -356,7 +357,7 @@ public class Derivation extends PreDerivation {
 
             assertAnon(nextTaskTerm, this.taskTerm, nextTask);
 
-            this.taskUniques = anon.uniques();
+            this.taskUniqueAnonTerms = anon.uniques();
         }
 
 
@@ -540,7 +541,7 @@ public class Derivation extends PreDerivation {
         taskTruth = beliefTruth_at_Task = beliefTruth_at_Belief = null;
 
         ttl = 0;
-        taskUniques = 0;
+        taskUniqueAnonTerms = 0;
         temporal = false;
         taskBelief_TimeIntersection[0] = taskBelief_TimeIntersection[1] = TIMELESS;
         nar = null;

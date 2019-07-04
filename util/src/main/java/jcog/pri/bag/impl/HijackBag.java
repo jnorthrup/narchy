@@ -71,7 +71,7 @@ public abstract class HijackBag<K, V> extends Bag<K, V> {
     /**
      * TODO make non-public
      */
-    volatile AtomicReferenceArray<V> map;
+    volatile AtomicReferenceArray<V> map = EMPTY_ARRAY;
 
 
     /**
@@ -96,9 +96,8 @@ public abstract class HijackBag<K, V> extends Bag<K, V> {
     protected HijackBag(int initialCapacity, int reprobes) {
         this.id = serial.getAndIncrement();
 
-        assert (reprobes < Byte.MAX_VALUE - 1);
-        this.reprobes = reprobes;
-        MAP.set(this, EMPTY_ARRAY);
+        this.reprobes = reprobes; assert (reprobes < Byte.MAX_VALUE - 1);
+
         setCapacity(initialCapacity);
     }
 
@@ -106,9 +105,10 @@ public abstract class HijackBag<K, V> extends Bag<K, V> {
         return weakestPri <= newPri;
     }
 
-    private static <Y> void updateEach(AtomicReferenceArray<Y> map, Function<Y, Y> update) {
+    private static void updateEach(AtomicReferenceArray map, Function update) {
         for (int c = map.length(), j = 0; j < c; j++) {
-            map.updateAndGet(j, (vv) -> vv != null ? update.apply(vv) : null);
+            //map.updateAndGet(j, (vv) -> vv != null ? update.apply(vv) : null);
+            map.accumulateAndGet(j, update, (vv, u) -> vv!=null ? ((Function)u).apply(vv) : null);
         }
     }
 
@@ -244,8 +244,20 @@ public abstract class HijackBag<K, V> extends Bag<K, V> {
         V toAdd = null, toRemove = null, toReturn = null;
         int mutexTicket = -1;
 
-        boolean locking = mode != GET && !allowDuplicates();
+        boolean locking = (mode != GET) && !allowDuplicates();
         if (locking) {
+            if (mode == PUT && optimisticPut()) {
+                Object exist = _get(k, kHash, start, c, map);
+                if (exist!=null && exist.equals(incoming) /*exist==incoming*/)
+                    return incoming; //no change
+            }
+
+            if (mode == REMOVE && optimisticRemove()) {
+                Object exist = _get(k, kHash, start, c, map);
+                if (exist==null)
+                    return null; //no change
+            }
+
             locking = true;
             mutexTicket = mutex.start(id, start);
         }
@@ -254,15 +266,7 @@ public abstract class HijackBag<K, V> extends Bag<K, V> {
 
             switch (mode) {
                 case GET:
-                    for (int i = start, j = reprobes; j > 0; j--) {
-                        V v = map.getOpaque(i);
-                        if (v != null && keyEquals(k, kHash, v))
-                            return v;
-
-                        if (++i == c)
-                            i = 0;
-                    }
-                    return null; //not found
+                    return _get(k, kHash, start, c, map);
                 case REMOVE:
                     for (int i = start, j = reprobes; j > 0; j--) {
                         V v = map.getAcquire(i);
@@ -369,33 +373,53 @@ public abstract class HijackBag<K, V> extends Bag<K, V> {
                 mutex.end(mutexTicket);
         }
 
+        if (toAdd!=null || toRemove!=null) {
+            int size = -1; //only used if toAdd!=null
+            int dSize = (toAdd != null ? +1 : 0) + (toRemove != null ? -1 : 0);
+            size = SIZE.addAndGet(this, dSize);
 
-        int dSize = (toAdd != null ? +1 : 0) + (toRemove != null ? -1 : 0);
-        int size = dSize == 0 ? size() : SIZE.addAndGet(this, dSize);
+            if (toAdd != null) {
+                _onAdded(toAdd);
 
+                if (regrowForSize(toRemove != null ? (size + 1) /* hypothetical size if we can also include the displaced */ :
+                        size /* size which has been increased by the insertion */, space())) {
 
-
-        if (toAdd != null) {
-            _onAdded(toAdd);
-
-            if (regrowForSize(toRemove != null ? (size + 1) /* hypothetical size if we can also include the displaced */ : size /* size which has been increased by the insertion */, space())) {
-
-                if (toRemove != null) {
-                    update(key(toRemove), toRemove, PUT, overflowing);
-                    toRemove = null;
+                    if (toRemove != null) {
+                        update(key(toRemove), toRemove, PUT, overflowing);
+                        toRemove = null;
+                    }
                 }
             }
-        }
 
-        if (toRemove != null) {
-            if (map == this.map) {
-                depressurize(pri(toRemove));
-                onRemove(toRemove);
+            if (toRemove != null) {
+                if (map == this.map) {
+                    depressurize(pri(toRemove));
+                    onRemove(toRemove);
+                }
             }
         }
 
 
         return toReturn;
+    }
+
+    private V _get(Object k, int kHash, int start, int c, AtomicReferenceArray<V> map) {
+        for (int i = start, j = reprobes; j > 0; j--) {
+            V v = map.getOpaque(i);
+            if (v != null && keyEquals(k, kHash, v))
+                return v;
+
+            if (++i == c)
+                i = 0;
+        }
+        return null; //not found
+    }
+
+    protected boolean optimisticPut() {
+        return false;
+    }
+    protected boolean optimisticRemove() {
+        return false;
     }
 
     /** allow duplicates and other unexpected phenomena resulting from disabling locking write access */
@@ -549,7 +573,6 @@ public abstract class HijackBag<K, V> extends Bag<K, V> {
         K k = key(potentialVictimPri);
         if (k == null)
             return null;
-
 
         V x = update(k, potentialVictimPri, PUT, overflowing);
 

@@ -25,6 +25,8 @@ import java.util.function.Function;
  */
 public class HijackMemoize<X, Y> extends AbstractMemoize<X,Y> {
 
+    static final boolean ALLOW_DUPLICATES = true;
+
     protected final MemoizeHijackBag bag;
     private final Function<X, Y> func;
     private final boolean soft;
@@ -97,10 +99,7 @@ public class HijackMemoize<X, Y> extends AbstractMemoize<X,Y> {
     @Nullable
     public Y removeIfPresent(X x) {
         @Nullable PriProxy<X, Y> exists = bag.remove(x);
-        if (exists != null) {
-            return exists.get();
-        }
-        return null;
+        return exists != null ? exists.get() : null;
     }
 
     protected PriProxy<X, Y> put(X x, Y y) {
@@ -133,6 +132,7 @@ public class HijackMemoize<X, Y> extends AbstractMemoize<X,Y> {
         }
         return y;
     }
+
 
     /**
      * can be overridden in implementations to compact or otherwise react to the interning of an input key
@@ -180,10 +180,14 @@ public class HijackMemoize<X, Y> extends AbstractMemoize<X,Y> {
         }
 
 //        @Override
-//        protected boolean allowDuplicates() {
-//            /* experimental */
+//        protected boolean optimisticPut() {
 //            return true;
 //        }
+
+        @Override
+        protected boolean allowDuplicates() {
+            return ALLOW_DUPLICATES;
+        }
 
         @Override
         protected PriProxy<X, Y> merge(PriProxy<X, Y> existing, PriProxy<X, Y> incoming, NumberX overflowing) {

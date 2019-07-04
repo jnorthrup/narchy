@@ -12,6 +12,7 @@ public class PostDerivable {
     public final PreDerivation d;
 
     public PREDICATE<Derivation> conclusion;
+
     public byte concPunc;
     public Truth concTruth;
     public TruthFunc truthFunction;
