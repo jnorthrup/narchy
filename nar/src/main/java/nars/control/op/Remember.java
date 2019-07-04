@@ -14,7 +14,6 @@ import nars.op.stm.ConjClustering;
 import nars.task.AbstractTask;
 import nars.task.DynamicTruthTask;
 import nars.task.NALTask;
-import nars.task.ProxyTask;
 import nars.task.proxy.ImageTask;
 import nars.task.proxy.SpecialTermTask;
 import nars.task.util.TaskException;
@@ -72,14 +71,14 @@ public class Remember extends AbstractTask {
         }
 
         if (x.isBeliefOrGoal()) {
-            if (x.conf() < n.confMin.floatValue()) {
-                if (!(x instanceof ProxyTask)) {
-                    if (NAL.DEBUG)
-                        throw new TaskException(x, "insufficient evidence for non-input Task");
-                    else
-                        return null;
-                }
-            }
+//            if (x.conf() < n.confMin.floatValue()) {
+//                if (!(x instanceof ProxyTask)) {
+//                    if (NAL.DEBUG)
+//                        throw new TaskException(x, "insufficient evidence for non-input Task");
+//                    else
+//                        return null;
+//                }
+//            }
 
             if (NAL.test.DEBUG_ENSURE_DITHERED_TRUTH) {
                 Truth.assertDithered(x.truth(), n);

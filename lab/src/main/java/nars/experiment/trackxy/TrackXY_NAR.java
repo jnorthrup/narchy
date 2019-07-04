@@ -196,11 +196,6 @@ public class TrackXY_NAR extends GameX {
 
 //        Param.DEBUG = true;
 //        n.run(10); //skip:
-//        n.onTask((t)->{
-//            if (!t.isEternal() && t.range() > n.time()) {
-//                System.err.println("long-range:\n" + t.proof());
-//            }
-//        });
 
 //        n.beliefConfDefault.set(0.5f);
 //        n.goalConfDefault.set(0.5f);

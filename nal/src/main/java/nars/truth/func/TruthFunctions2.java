@@ -135,22 +135,23 @@ public enum TruthFunctions2 {
             if (!bipolar)
                 cc = Util.and(bF, cc); //in unipolar mode, attenuate confidence to zero as the low belief frequency pulls the output frequency to 0.5
 
-            if (!strong) {
+            if (!strong)
                 cc = weak(cc);
-                if (cc < minConf)
-                    return null;
-            }
+
+            if (cc < minConf)
+                return null;
 
             /*if (c >= minConf)*/ {
 
                 //float f =
+                float gF = goal.freq();
                 float f =
                         bipolar ?
-                            Util.lerpSafe(bF, 1-goal.freq(), goal.freq())
+                            Util.lerpSafe(bF, 1- gF, gF)
                             :
                             //Util.lerpSafe(bF, 0.5f, goal.freq())
-                            //goal.freq() * bF
-                            goal.freq()
+                            gF * bF
+                            //goal.freq()
                         ;
 
                 return $.t(f, cc);

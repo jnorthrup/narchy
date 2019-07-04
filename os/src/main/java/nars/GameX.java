@@ -37,6 +37,7 @@ import nars.op.mental.Inperience2;
 import nars.op.stm.ConjClustering;
 import nars.sensor.Bitmap2DSensor;
 import nars.sensor.PixelBag;
+import nars.task.DerivedTask;
 import nars.task.util.PriBuffer;
 import nars.term.Term;
 import nars.time.clock.RealTime;
@@ -519,7 +520,7 @@ abstract public class GameX extends Game {
 
 
         List<ConjClustering> conjClusters = List.of(
-                new ConjClustering(n, BELIEF, 32, 512)
+                new ConjClustering(n, BELIEF, 32, 256)
                 , new ConjClustering(n, GOAL, 16, 64)
         );
         conjClusters.forEach(c -> n.start(c));
@@ -537,6 +538,12 @@ abstract public class GameX extends Game {
 //                    500, 500);
 //
 //        }
+
+        n.onTask((t)->{
+            if (t instanceof DerivedTask && t.isEternal() && t.isBeliefOrGoal()) {
+                System.err.println(t + "\n" + MetaGoal.proof(t, n) + "\n");
+            }
+        });
 
 
         Introduction arith = new Arithmeticize.ArithmeticIntroduction(n);

@@ -50,7 +50,7 @@ class AIMATests {
         n.question($$("Q"));
 
         try {
-            assertBelief(n, true, "Q", (int) (NAL.test.TIME_MULTIPLIER * 1500));
+            assertBelief(n, true, "Q", (int) (NAL.test.TIME_MULTIPLIER * 2500));
         } finally {
             terms.keyValuesView().toSortedListBy(x -> -x.getTwo()).forEach(t -> {
                 System.out.println(t);
@@ -68,8 +68,8 @@ class AIMATests {
 //        n.confResolution.set(0.1f);
 //        n.confMin.set(0.1f);
 
-        n.beliefPriDefault.amp(0.25f);
-        n.questionPriDefault.amp(0.5f);
+//        n.beliefPriDefault.amp(0.25f);
+//        n.questionPriDefault.amp(0.5f);
 
         assertEquals(20, $$("((&&,Weapon(#y),Sells($x,#y,#z),Hostile(#z)) ==> Criminal($x))").volume());
 

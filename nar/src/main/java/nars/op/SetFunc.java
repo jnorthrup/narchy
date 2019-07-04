@@ -38,16 +38,16 @@ public class SetFunc {
 
     };
 
-    public static final Functor unionSect = new AbstractBinarySetFunctor("unionSect") {
-        @Nullable @Override public Term apply(Term a, Term b, Subterms s) {
-            return SetSectDiff.sect(a, b, true, s);
-        }
-    };
-    public static final Functor interSect = new AbstractBinarySetFunctor("interSect") {
-        @Nullable @Override public Term apply(Term a, Term b, Subterms s) {
-            return SetSectDiff.sect(a, b, false, s);
-        }
-    };
+//    public static final Functor unionSect = new AbstractBinarySetFunctor("unionSect") {
+//        @Nullable @Override public Term apply(Term a, Term b, Subterms s) {
+//            return SetSectDiff.sect(a, b, true, s);
+//        }
+//    };
+//    public static final Functor interSect = new AbstractBinarySetFunctor("interSect") {
+//        @Nullable @Override public Term apply(Term a, Term b, Subterms s) {
+//            return SetSectDiff.sect(a, b, false, s);
+//        }
+//    };
     /**
      * all X which are in the first target AND not in the second target
      */

@@ -343,9 +343,8 @@ public final class TruthFunctions {
         final float f1 = a.freq();
         final float f2 = b.freq();
         final float f = and(f1, f2);
-        final float c1 = a.conf();
-        final float c2 = b.conf();
-        final float c = and(c1, c2, f2) * (strong ? 1 : w2c(1));
+        final float c12 = confCompose(a, b);
+        final float c = and(c12, f2) * (strong ? 1 : w2c(1));
         return c > minConf ? t(f, c) : null;
     }
 

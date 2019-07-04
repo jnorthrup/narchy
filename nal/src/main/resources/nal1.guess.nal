@@ -1,3 +1,7 @@
+//    (X --> Y), X, --is(X,"?") |- (?1 --> Y),   (Punctuation:Ask)
+//    (Y --> X), X, --is(X,"?") |- (Y --> ?1),   (Punctuation:Ask)
+
+
 //Similarity to Inheritance
     (S --> P), (S <-> P),  task("?"),  hasBelief() |- (S --> P),   (Belief:BeliefStructuralIntersection, Punctuation:Belief)
       //(S --> P), (--S <-> P),   task("?") |- (--S --> P),   (Belief:BeliefStructuralDeduction, Punctuation:Belief)
@@ -41,10 +45,6 @@
     //(Q --> X), (Z --> Y), task("?"), is(Q,"?"), neq(X,Y), neq(Q,Z) |- (X <-> Y),   (Punctuation:Question)
         //(Q --> X), (Z --> Y), task("?"), is(Q,"?"), neq(X,Y), neq(Q,Z) |- (Z --> X),   (Punctuation:Question)
 
-    (X --> Y), X, task("."), --is(X,"?") |- (?1 --> Y),   (Punctuation:Question)
-        (X --> Y), X, task("!"), --is(X,"?") |- (?1 --> Y),   (Punctuation:Quest)
-    (Y --> X), X, task("."), --is(X,"?") |- (Y --> ?1),   (Punctuation:Question)
-        (Y --> X), X, task("!"), --is(X,"?") |- (Y --> ?1),   (Punctuation:Quest)
 
 
 //NAL1-------------

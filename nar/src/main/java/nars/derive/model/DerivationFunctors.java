@@ -50,8 +50,8 @@ public enum DerivationFunctors {
                 d.polarizeRandom,
 
                 SetFunc.union,
-                SetFunc.interSect,
-                SetFunc.unionSect,
+//                SetFunc.interSect,
+//                SetFunc.unionSect,
                 SetFunc.differ,
                 SetFunc.intersect,
                 Equal.equal, Cmp.cmp,

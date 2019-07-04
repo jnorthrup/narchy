@@ -13,7 +13,6 @@ import nars.term.util.builder.TermBuilder;
 import org.eclipse.collections.api.block.predicate.Predicate2;
 import org.eclipse.collections.impl.map.mutable.primitive.ObjectByteHashMap;
 import org.eclipse.collections.impl.set.mutable.UnifiedSet;
-import org.jetbrains.annotations.Nullable;
 
 import static nars.Op.*;
 import static nars.term.atom.Bool.Null;
@@ -24,27 +23,27 @@ import static nars.term.atom.Bool.True;
  */
 public class SetSectDiff {
 
-    /** high-level intersection/union build procedure.  handles:
-     *      decoding op type
-     *      whether a or b is negated
-     *      whether a or b is set, sect, or product
-     *
-     *      Subterm params:
-     *          1:              intersection
-     *          2 (optional):   "*" enabling product splice
-     */
-    public static @Nullable Term sect(Term a, Term b, boolean union, Subterms s) {
-        Op op = //s.sub(2).equals(Op.SECTe.strAtom) ? Op.SECTe : Op.SECTi;
-            CONJ;
-
-        boolean productSplice = s.subs() > 2 && s.sub(2).equals(Op.PROD.strAtom);
-
-        if (productSplice && a.unneg().op()==PROD && b.unneg().op()==PROD && a.unneg().subs()==b.unneg().subs() /* && rng? */) {
-            return SetSectDiff.intersectProd(op, union, a, b);
-        } else {
-            return SetSectDiff.intersect(op, union, a, b);
-        }
-    }
+//    /** high-level intersection/union build procedure.  handles:
+//     *      decoding op type
+//     *      whether a or b is negated
+//     *      whether a or b is set, sect, or product
+//     *
+//     *      Subterm params:
+//     *          1:              intersection
+//     *          2 (optional):   "*" enabling product splice
+//     */
+//    public static @Nullable Term sect(Term a, Term b, boolean union, Subterms s) {
+//        Op op = //s.sub(2).equals(Op.SECTe.strAtom) ? Op.SECTe : Op.SECTi;
+//            CONJ;
+//
+//        boolean productSplice = s.subs() > 2 && s.sub(2).equals(Op.PROD.strAtom);
+//
+//        if (productSplice && a.unneg().op()==PROD && b.unneg().op()==PROD && a.unneg().subs()==b.unneg().subs() /* && rng? */) {
+//            return SetSectDiff.intersectProd(op, union, a, b);
+//        } else {
+//            return SetSectDiff.intersect(op, union, a, b);
+//        }
+//    }
 
     public static Term intersectSet(TermBuilder b, Op o, Term... t) {
         //assert(o == SETe || o == SETi);
