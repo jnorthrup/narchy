@@ -10,9 +10,8 @@ import nars.term.Neg;
 import nars.term.Term;
 import nars.term.atom.Bool;
 import nars.term.util.builder.TermBuilder;
-import org.eclipse.collections.api.block.predicate.Predicate2;
 import org.eclipse.collections.impl.map.mutable.primitive.ObjectByteHashMap;
-import org.eclipse.collections.impl.set.mutable.UnifiedSet;
+import org.jetbrains.annotations.Nullable;
 
 import static nars.Op.*;
 import static nars.term.atom.Bool.Null;
@@ -23,27 +22,27 @@ import static nars.term.atom.Bool.True;
  */
 public class SetSectDiff {
 
-//    /** high-level intersection/union build procedure.  handles:
-//     *      decoding op type
-//     *      whether a or b is negated
-//     *      whether a or b is set, sect, or product
-//     *
-//     *      Subterm params:
-//     *          1:              intersection
-//     *          2 (optional):   "*" enabling product splice
-//     */
-//    public static @Nullable Term sect(Term a, Term b, boolean union, Subterms s) {
-//        Op op = //s.sub(2).equals(Op.SECTe.strAtom) ? Op.SECTe : Op.SECTi;
-//            CONJ;
-//
-//        boolean productSplice = s.subs() > 2 && s.sub(2).equals(Op.PROD.strAtom);
-//
-//        if (productSplice && a.unneg().op()==PROD && b.unneg().op()==PROD && a.unneg().subs()==b.unneg().subs() /* && rng? */) {
-//            return SetSectDiff.intersectProd(op, union, a, b);
-//        } else {
-//            return SetSectDiff.intersect(op, union, a, b);
-//        }
-//    }
+    /** high-level intersection/union build procedure.  handles:
+     *      decoding op type
+     *      whether a or b is negated
+     *      whether a or b is set, sect, or product
+     *
+     *      Subterm params:
+     *          1:              intersection
+     *          2 (optional):   "*" enabling product splice
+     */
+    public static @Nullable Term sect(Term a, Term b, boolean union, Subterms s) {
+        Op op = //s.sub(2).equals(Op.SECTe.strAtom) ? Op.SECTe : Op.SECTi;
+            CONJ;
+
+        boolean productSplice = s.subs() > 2 && s.sub(2).equals(Op.PROD.strAtom);
+
+        if (productSplice && a.unneg().op()==PROD && b.unneg().op()==PROD && a.unneg().subs()==b.unneg().subs() /* && rng? */) {
+            return SetSectDiff.intersectProd(op, union, a, b);
+        } else {
+            return SetSectDiff.intersect(op, union, a, b);
+        }
+    }
 
     public static Term intersectSet(TermBuilder b, Op o, Term... t) {
         //assert(o == SETe || o == SETi);
@@ -62,14 +61,15 @@ public class SetSectDiff {
             case 1:
                 return single(t[0], o, B);
             case 2:
-                Op o0 = t[0].op(), o1 = t[1].op();
-                if (o0 == o1 && t[0].equals(t[1]))
+
+                if (t[0].equals(t[1]))
                     return single(t[0], o, B);
 
                 //fast eliminate contradiction
 
-                if (o0 == NEG ^ o1 == NEG) {
-                    if (o0 == NEG && t[0].unneg().equals(t[1])) {
+                boolean o0Neg = t[0] instanceof Neg, o1Neg = t[1] instanceof Neg;
+                if (o0Neg ^ o1Neg) {
+                    if (o0Neg && t[0].unneg().equals(t[1])) {
                         return union ? t[1] : Null;
                     } else if (/*o1 == NEG && */t[1].unneg().equals(t[0])) {
                         return union ? t[0] : Null;
@@ -112,18 +112,18 @@ public class SetSectDiff {
             TermList yyy = new TermList(s);
             y.keyValuesView().forEachWith((e,YYY) -> YYY.addFast(e.getOne().negIf(e.getTwo() == -1)), yyy);
 
-            //Filter temporal terms that resolve to the same roots
-            if (yyy.hasAny(Temporal)) {
-                if (s == 2) {
-                    //simple test
-                    if (yyy.get(0).unneg().equalsRoot(yyy.get(1).unneg()))
-                        return Null;
-                } else {
-                    java.util.Set<Term> roots = new UnifiedSet(s, 1f);
-                    if (!yyy.allSatisfyWith((Predicate2<Term, java.util.Set<Term>>)(x, r)->roots.add(x.unneg().root()), roots))
-                        return Null; //duplicate caught
-                }
-            }
+//            //Filter temporal terms that resolve to the same roots
+//            if (yyy.hasAny(Temporal)) {
+//                if (s == 2) {
+//                    //simple test
+//                    if (yyy.get(0).unneg().equalsRoot(yyy.get(1).unneg()))
+//                        return Null;
+//                } else {
+//                    java.util.Set<Term> roots = new UnifiedSet(s, 1f);
+//                    if (!yyy.allSatisfyWith((Predicate2<Term, java.util.Set<Term>>)(x, r)->roots.add(x.unneg().root()), roots))
+//                        return Null; //duplicate caught
+//                }
+//            }
 
             Term[] yyyy = yyy.arrayKeep();
             if (o == SETe || o == SETi || !union) {

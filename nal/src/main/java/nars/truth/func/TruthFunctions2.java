@@ -138,10 +138,7 @@ public enum TruthFunctions2 {
             if (!strong)
                 cc = weak(cc);
 
-            if (cc < minConf)
-                return null;
-
-            /*if (c >= minConf)*/ {
+            if (cc >= minConf) {
 
                 //float f =
                 float gF = goal.freq();
@@ -149,9 +146,9 @@ public enum TruthFunctions2 {
                         bipolar ?
                             Util.lerpSafe(bF, 1- gF, gF)
                             :
-                            //Util.lerpSafe(bF, 0.5f, goal.freq())
                             gF * bF
-                            //goal.freq()
+                            //gF
+                            //Util.lerpSafe(bF, 0.5f, goal.freq())
                         ;
 
                 return $.t(f, cc);
