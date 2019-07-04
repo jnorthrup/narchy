@@ -34,7 +34,6 @@ import nars.term.buffer.TermBuffer;
 import nars.term.functor.AbstractInlineFunctor1;
 import nars.term.util.TermTransformException;
 import nars.term.util.transform.InstantFunctor;
-import nars.term.util.transform.TermTransform;
 import nars.truth.PreciseTruth;
 import nars.truth.Stamp;
 import nars.truth.Truth;
@@ -621,7 +620,7 @@ public class Derivation extends PreDerivation {
 //    }
 
     @Override
-    public final TermTransform transform() {
+    public final DerivationTransform transform() {
         return this.transformDerived;
     }
 
@@ -702,7 +701,7 @@ public class Derivation extends PreDerivation {
             Term b;
             if (a instanceof Variable) {
 
-                b = Derivation.this.resolveTerm((Variable) a, true);
+                b = Derivation.this.resolveTerm(a, true);
 
             } else if (a instanceof Atom) {
 

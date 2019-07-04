@@ -14,7 +14,6 @@ import nars.term.*;
 import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
 import nars.term.util.transform.AbstractTermTransform;
-import nars.term.util.transform.TermTransform;
 import nars.unify.constraint.UnifyConstraint;
 import nars.unify.mutate.Termutator;
 import nars.unify.unification.DeterministicUnification;
@@ -148,7 +147,7 @@ public abstract class Unify extends Versioning<Term> {
         }
     };
 
-    public TermTransform transform() {
+    public UnifyTransform transform() {
         return transform;
     }
 
@@ -499,12 +498,12 @@ public abstract class Unify extends Versioning<Term> {
      * args should be non-null. the annotations are removed for perf reasons
      */
     public final boolean putXY(final Variable x, Term y) {
-        //TODO HACK TEMPORARY ?
-        if (y instanceof Compound && y.containsRecursively(x)) {
-            //throw new WTF("recursive unification");
-            //Util.nop();
-            return false;
-        }
+//        //TODO HACK TEMPORARY ?
+//        if (y instanceof Compound && y.containsRecursively(x)) {
+//            //throw new WTF("recursive unification");
+//            //Util.nop();
+//            return false;
+//        }
 
         return xy.set(x, y);
     }
@@ -548,6 +547,8 @@ public abstract class Unify extends Versioning<Term> {
 
     /** full resolution of a term */
     public final Term resolveTerm(Term x, boolean recurse) {
+        if (this.size == 0)
+            return x;
 
         boolean neg = x instanceof Neg;
         Term xx = neg ? x.unneg() : x;
@@ -555,7 +556,7 @@ public abstract class Unify extends Versioning<Term> {
         Term yy = var(xx) ? resolveVar((Variable) xx) : xx;
 
         if (recurse && yy instanceof Compound && yy.hasAny(varBits)) {
-            Term zz = transform().applyCompound((Compound) yy); //recurse
+            Term zz = transform().applyPosCompoundDirect((Compound) yy); //recurse
 //            if (yy!=zz)
 //                Util.nop();
             yy = zz;
@@ -671,6 +672,10 @@ public abstract class Unify extends Versioning<Term> {
                     return y;
             }
             return x;
+        }
+
+        public Term applyPosCompoundDirect(Compound x) {
+            return super.applyPosCompound(x);
         }
 
         public static class LambdaUnifyTransform extends UnifyTransform {

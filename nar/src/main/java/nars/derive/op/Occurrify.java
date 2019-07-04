@@ -567,8 +567,8 @@ public class Occurrify extends TimeGraph {
             public Pair<Term, long[]> occurrence(Term x, Derivation d) {
 
 
-                Term tt = Image.imageNormalize(d.taskTerm);
-                Term bb = Image.imageNormalize(d.beliefTerm);
+                Term tt = d.taskTerm;
+                Term bb = d.beliefTerm;
 
                 if (!d.retransform.isEmpty()) {
                     //HACK re-apply variable introduction
@@ -579,9 +579,7 @@ public class Occurrify extends TimeGraph {
                 }
 
                 tt = tt.negIf(d.taskTruth.isNegative());
-                bb = bb.negIf(d.beliefTruth_at_Task.isNegative());
-//                tt = tt.negIf((d.taskTruth!=null) && d.taskTruth.isNegative());
-//                bb = bb.negIf((d.beliefTruth_at_Belief!=null) &&d.beliefTruth_at_Belief.isNegative());
+                bb = bb.negIf(d.beliefTruth_at_Belief.isNegative());
 
                 long tTime = d.taskStart, bTime = d.beliefStart;
 

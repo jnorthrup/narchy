@@ -103,7 +103,7 @@ public class PremiseRule extends ProxyTerm {
 
     public final MutableSet<UnifyConstraint> constraints;
     public final MutableSet<PREDICATE<? extends Unify>> pre;
-    private final BytePredicate taskPunc;
+
     /**
      * conclusion post-processing
      */
@@ -757,7 +757,6 @@ public class PremiseRule extends ProxyTerm {
         this.truthify = intern(Truthify.the(tp, beliefTruthOp, goalTruthOp, questionSingle, time));
         this.time = time;
 
-        this.taskPunc = taskPunc;
         this.beliefTruth = beliefTruth;
         this.goalTruth = goalTruth;
 
@@ -811,23 +810,19 @@ public class PremiseRule extends ProxyTerm {
         this.constraints = raw.constraints;
         this.pre = raw.pre;
         this.time = raw.time;
-        this.taskPunc = raw.taskPunc;
         this.beliefTruth = raw.beliefTruth;
         this.goalTruth = raw.goalTruth;
         this.taskPattern = raw.taskPattern;
         this.beliefPattern = raw.beliefPattern;
-//        this.constraintSet = raw.constraintSet;
 
     }
 
     private static Term rule(String ruleSrc) throws Narsese.NarseseException {
         return new MyPremiseRuleNormalization().apply(
-                new UppercaseAtomsToPatternVariables().apply(
-                        $.pFast(
-                                parseRuleComponents(ruleSrc)
-                        )
-                )
-        );
+                    new UppercaseAtomsToPatternVariables().apply(
+                        $.pFast(parseRuleComponents(ruleSrc))
+                    )
+            );
     }
 
     private static <X extends Unify> UnifyConstraint<X> intern(UnifyConstraint<X> x) {
@@ -840,11 +835,9 @@ public class PremiseRule extends ProxyTerm {
     }
 
     private static ImmutableSet<UnifyConstraint> theInterned(MutableCollection<UnifyConstraint> constraints) {
-        if (constraints.isEmpty())
-            return Sets.immutable.empty();
-        else {
-            return Sets.immutable.ofAll(Iterables.transform(constraints, PremiseRule::intern));
-        }
+        return constraints.isEmpty() ?
+                Sets.immutable.empty() :
+                Sets.immutable.ofAll(Iterables.transform(constraints, PremiseRule::intern));
     }
 
     public static Stream<PremiseRule> parse(String src) {

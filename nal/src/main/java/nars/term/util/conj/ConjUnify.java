@@ -3,7 +3,6 @@ package nars.term.util.conj;
 import nars.$;
 import nars.subterm.Subterms;
 import nars.term.Term;
-import nars.term.var.ellipsis.Ellipsis;
 import nars.unify.Unify;
 
 import java.util.Arrays;
@@ -34,9 +33,11 @@ public class ConjUnify {
 
             if (!var)
                 return false;
+            if (xe.size()!=ye.size())
+                return false;
 
-            if (xe.size()!=ye.size() && Ellipsis.firstEllipsis(xx)==null && Ellipsis.firstEllipsis(yy)==null)
-                return false; //differing # of events
+//            if (xe.size()!=ye.size() && Ellipsis.firstEllipsis(xx)==null && Ellipsis.firstEllipsis(yy)==null)
+//                return false; //differing # of events
 
             try {
                 return Subterms.unifyCommute($.vFast(xe), $.vFast(ye), u);

@@ -863,8 +863,11 @@ public interface Subterms extends Termlike, Iterable<Term> {
      */
     static int possiblyUnifiableWhileEliminatingEqualAndConstants(TermList xx, TermList yy, Unify u) {
 
-        int n = xx.size(); assert(yy.size()==n);
+        int n = xx.size();
 
+        assert(yy.size()==n);
+        if (yy.size()!=n)
+            return -1;
 
 
 
@@ -930,6 +933,8 @@ public interface Subterms extends Termlike, Iterable<Term> {
 
         if (xx == null) xx = x.toList();
         if (yy == null) yy = y.toList();
+
+
         int i = possiblyUnifiableWhileEliminatingEqualAndConstants(xx, yy, u);
         switch (i) {
             case -1:
@@ -1214,7 +1219,6 @@ public interface Subterms extends Termlike, Iterable<Term> {
 
     /** test for eliding repeats in visitors */
     private static boolean different(Term prev, Term next) {
-        //return prev==null||!prev.equals(next);
         return prev!=next;
     }
 
@@ -1359,14 +1363,12 @@ public interface Subterms extends Termlike, Iterable<Term> {
 
             } else {
 
-                if (xi != yi) {
-                    if (y == null)
-                        y = new DisposableTermList(s, i);
+                /**/if (y == null && xi!=yi) {
+                    y = new DisposableTermList(s, i);
                 }
 
                 if (y != null)
                     y.addFast(yi);
-
             }
         }
 
@@ -1417,7 +1419,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
         if (x instanceof Neg)
             return contains(x.unneg());
         else {
-            return hasAny(NEG) && !impossibleSubTerm(x)
+            return hasAny(NEG) && !impossibleSubTerm(x.structure()|NEG.bit, x.volume()+1)
                     &&
                     ORwith((z,xx) -> z instanceof Neg && xx.equals(z.unneg()), x);
         }
