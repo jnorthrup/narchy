@@ -1,9 +1,9 @@
 package jcog.decide;
 
+import jcog.TODO;
 import jcog.Util;
 import org.eclipse.collections.api.block.function.primitive.FloatToFloatFunction;
 import org.eclipse.collections.api.block.function.primitive.IntToFloatFunction;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
 import java.util.Random;
@@ -28,7 +28,7 @@ public class MutableRoulette {
     /**
      * weights of each choice
      */
-    private final float[] w;
+    private float[] w;
     private final Random rng;
     /**
      * weight update function applied between selections to the last selected index's weight
@@ -55,30 +55,47 @@ public class MutableRoulette {
         this(count, initialWeights, (x -> x), rng);
     }
 
-    public MutableRoulette(float[] w, FloatToFloatFunction weightUpdate, Random rng) {
+    private MutableRoulette(int count, IntToFloatFunction initialWeights, FloatToFloatFunction weightUpdate, Random rng) {
+        this(Util.map(count, initialWeights), weightUpdate, rng);
+    }
+
+    private MutableRoulette(float[] w, FloatToFloatFunction weightUpdate, Random rng) {
+        this.rng = rng;
+
+        this.weightUpdate = weightUpdate;
+        reset(w);
+    }
+
+    public void reset(float[] w) {
         this.w = w;
-        this.weightUpdate = weightUpdate;
-        this.rng = rng;
-
-        reweigh(null);
+        reweigh();
     }
 
-    public MutableRoulette(int count, IntToFloatFunction initialWeights, FloatToFloatFunction weightUpdate, Random rng) {
-        this.w = new float[count];
-        this.weightUpdate = weightUpdate;
-        this.rng = rng;
-
-        reweigh(initialWeights);
+    private void realloc(int newSize) {
+        throw new TODO();
     }
 
-    public MutableRoulette reweigh(@Nullable IntToFloatFunction initialWeights) {
+    public MutableRoulette reweigh(IntToFloatFunction initializer) {
+        return reweigh(w.length, initializer);
+    }
+
+    public MutableRoulette reweigh(int n, IntToFloatFunction initializer) {
+        assert(n>0);
+        if (w.length!=n)
+            realloc(n);
+
+        for (int i = 0; i < n; i++)
+            w[i] = initializer.valueOf(i);
+
+        return reweigh();
+    }
+
+    public MutableRoulette reweigh() {
         int n = w.length;
         float s = 0;
 
         final int nn = n;
         for (int i = 0; i < nn; i++) {
-            if (initialWeights!=null)
-                w[i] = initialWeights.valueOf(i);
             float wi = w[i];
             if (wi < 0 || !Float.isFinite(wi))
                 throw new RuntimeException("invalid weight: " + wi);
@@ -147,64 +164,67 @@ public class MutableRoulette {
         return n >= 0 && select.test(n) && remaining > 0;
     }
 
-    public int next() {
+    public final int next() {
 
-        //assert (remaining > 0);
-        if (remaining == 0)
-            return -1;
-
-        float[] w = this.w;
-
-        int count = w.length;
-
-        if (remaining == 1) {
-
-            for (int x = 0; x < count; x++) {
-                float wx = w[x];
-                if (wx >= EPSILON) {
-                    float wy = weightUpdate.valueOf(wx);
-                    if (wx!=wy) {
-                        if ((w[x] = wy) < EPSILON) {
-                            w[x] = 0;
-                            remaining = 0;
-                        }
-                    }
-                    return x;
-                }
-            }
-
-            throw new RuntimeException();
-        } else {
-
-            float distance = EPSILON + rng.nextFloat() * weightSum;
-
-            int i = this.i;
-//            int idle = 0;
-            float wi;
-
-            do {
-                wi = w[i = Util.next(i, direction, count)];
-                distance -= wi;
-//                    if (idle++ == count + 1)
-//                        return -1; //emergency bailout: WTF
-            } while (distance > 0);
-
-
-            float nextWeight = weightUpdate.valueOf(wi);
-            if (nextWeight < EPSILON) {
-                w[i] = 0;
-                weightSum -= wi;
-                remaining--;
-            } else if (nextWeight != wi) {
-                w[i] = nextWeight;
-                weightSum += nextWeight - wi;
-            }
-
-            return this.i = i;
-
-
+        switch (remaining) {
+            case 0:
+                return -1;
+            case 1:
+                return next1();
+            default:
+                return nextN();
         }
 
+    }
+
+    private int nextN() {
+        float distance = EPSILON + rng.nextFloat() * weightSum;
+
+        float[] w = this.w;
+        int i = this.i;
+//            int idle = 0;
+        float wi;
+        int count = w.length;
+
+        do {
+            wi = w[i = Util.next(i, direction, count)];
+            distance -= wi;
+//                    if (idle++ == count + 1)
+//                        return -1; //emergency bailout: WTF
+        } while (distance > 0);
+
+
+        float nextWeight = weightUpdate.valueOf(wi);
+        if (nextWeight < EPSILON) {
+            w[i] = 0;
+            weightSum -= wi;
+            remaining--;
+        } else if (nextWeight != wi) {
+            w[i] = nextWeight;
+            weightSum += nextWeight - wi;
+        }
+
+        return this.i = i;
+    }
+
+    private int next1() {
+        float[] w = this.w;
+        int count = w.length;
+        for (int x = 0; x < count; x++) {
+            float wx = w[x];
+            if (wx >= EPSILON) {
+                float wy = weightUpdate.valueOf(wx);
+                if (wx!=wy) {
+                    if ((w[x] = wy) < EPSILON) {
+                        w[x] = 0;
+                        remaining = 0;
+                    }
+                }
+                return x;
+            }
+        }
+
+        throw new RuntimeException();
     }
 
     /** weight sum */

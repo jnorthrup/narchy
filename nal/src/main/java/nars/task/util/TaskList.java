@@ -19,7 +19,7 @@ public class TaskList extends FasterList<Task> implements TaskRegion {
 
 
     public TaskList(int initialCap) {
-        super(0, new Task[initialCap]);
+        super(0, initialCap > 0 ? new Task[initialCap] : Task.EmptyArray);
     }
 
     public TaskList(Task[] t, int n) {

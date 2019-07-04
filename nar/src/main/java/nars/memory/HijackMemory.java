@@ -83,11 +83,11 @@ public class HijackMemory extends Memory {
                 else
                     return super.replace(incoming, existing, existingPri);
             }
-
-            @Override
-            public void onAdd(PLink<Concept> conceptPLink) {
-                super.onAdd(conceptPLink);
-            }
+//
+//            @Override
+//            public void onAdd(PLink<Concept> conceptPLink) {
+//                super.onAdd(conceptPLink);
+//            }
 
             @Override
             public void onRemove(PLink<Concept> value) {

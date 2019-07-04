@@ -2,7 +2,6 @@ package nars.derive.rule;
 
 import jcog.data.bit.MetalBitSet;
 import jcog.decide.MutableRoulette;
-import jcog.pri.Possibilities;
 import nars.NAL;
 import nars.control.Why;
 import nars.derive.model.Derivation;
@@ -158,7 +157,7 @@ public class DeriverRules {
     }
 
 
-    private static class TruthifyPossibility extends Possibilities.Possibility<Derivation, Void> {
+    private static class TruthifyPossibility {
 
         private final Derivation d;
         private final short c;
@@ -180,8 +179,7 @@ public class DeriverRules {
             this.value = v + ( t != null ? t.conf() : 0 /* biased against questions */);
         }
 
-        @Override
-        public Void apply(Derivation dd) {
+        public void apply(Derivation dd) {
             dd.concTruth = t;
             dd.concPunc = punc;
             dd.concSingle = single;
@@ -190,10 +188,8 @@ public class DeriverRules {
             dd.use(NAL.derive.TTL_COST_BRANCH);
 
             conclusion.test(dd);
-            return null;
         }
 
-        @Override
         public float value() {
             return value;
         }

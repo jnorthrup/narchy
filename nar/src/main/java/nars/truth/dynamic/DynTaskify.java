@@ -2,10 +2,10 @@ package nars.truth.dynamic;
 
 import jcog.Paper;
 import jcog.data.bit.MetalBitSet;
+import jcog.data.list.FasterList;
 import jcog.data.set.MetalLongSet;
 import jcog.math.LongInterval;
-import jcog.pri.Possibilities;
-import jcog.pri.Possibilities.Possibility;
+import jcog.util.ArrayUtil;
 import nars.NAL;
 import nars.NAR;
 import nars.Op;
@@ -26,9 +26,11 @@ import org.eclipse.collections.api.tuple.primitive.ObjectBooleanPair;
 
 import javax.annotation.Nullable;
 import java.util.Random;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
+import static nars.NAL.STAMP_CAPACITY;
 import static nars.Op.*;
 import static nars.truth.dynamic.DynamicConjTruth.ConjIntersection;
 import static nars.truth.dynamic.DynamicStatementTruth.Impl;
@@ -46,34 +48,28 @@ import static nars.truth.dynamic.DynamicStatementTruth.Impl;
 public class DynTaskify extends TaskList {
 
 
-    static class Component extends Possibility<DynTaskify,Task> {
+    private static class Component implements Function<DynTaskify,Task> {
         final Term term;
         final BeliefTable _concept;
         final long start, end;
+        public int termVolume;
 
         Component(Term term, BeliefTable _c, DynTaskify d, int currentComponent, long start, long end) {
             boolean negated = term.op() == Op.NEG;
 
-
-
             this.term = term;
+            this.termVolume = term.volume();
             this._concept = _c;
             this.start = start;
             this.end = end;
         }
 
-        @Override
-        public float value() {
-            return 1/(1+term.volume());
-        }
-
-        @Override
-        public Task apply(DynTaskify d) {
+        @Override public Task apply(DynTaskify d) {
             return d.model.subTask(_concept, term, start, end, d.filter, d);
         }
     }
 
-    Possibilities<DynTaskify,Task> components = null;
+    private FasterList<Component> components = null;
 
     public final AbstractDynamicTruth model;
 
@@ -95,7 +91,7 @@ public class DynTaskify extends TaskList {
     }
 
     public DynTaskify(AbstractDynamicTruth model, boolean beliefOrGoal, boolean ditherTruth, boolean ditherTime, @Nullable Compound template, float dur, Predicate<Task> filter, NAR nar) {
-        super(8 /* estimate */);
+        super(0);
         this.model = model;
         this.beliefOrGoal = beliefOrGoal;
         this.ditherTruth = ditherTruth;
@@ -259,29 +255,32 @@ public class DynTaskify extends TaskList {
     }
 
     public boolean components() {
-        if (components == null) {
+        if (components == null )
             return false;
-        }
+
         int cn = components.size();
-        if (!components.commit(true, true))
-            return false;
-        int[] order = new int[cn];
-        for (int i = 0; i < cn; i++)
-            order[i] = i;
+        if (cn > 1) {
 
-        Task[] yy = new Task[cn]; //HACK temporary buffer for sizing issue
-        ensureCapacityForAdditional(cn);
-        //ArrayUtil.sort(order, (int x) -> -components.list.get(x).term.volume());
+            int[] order = new int[cn];
+            for (int i = 0; i < cn; i++)
+                order[i] = i;
+            Object[] cc = components.array();
 
-        for (int i = 0; i < cn; i++) {
-            int j = order[i];
-            Task tt = components.list.get(j).apply(this);
-            if (tt == null)
-                return false;
-            add(tt); //HACK necessary for stamp detection
-            yy[j] = tt;
+            ArrayUtil.sort(order, (int j) -> -((Component) cc[j]).termVolume);
+
+            ensureCapacityForAdditional(cn);
+
+            for (int i = 0; i < cn; i++) {
+                int j = order[i];
+                Task tt = ((Component) cc[j]).apply(this);
+                if (tt == null)
+                    return false;
+                setTask(j, tt); //HACK necessary for stamp detection
+            }
+        } else {
+            ensureCapacityForAdditional(1);
+            setTask(0, components.get(0).apply(this));
         }
-        System.arraycopy(yy, 0, items, 0, yy.length); //HACK proper order
         return true;
     }
 
@@ -300,7 +299,7 @@ public class DynTaskify extends TaskList {
             return false;
 
         if (components == null)
-            components = new Possibilities(this);//new FasterList(4);
+            components = new FasterList(8);
 
         components.add(new Component(c, table,
                 this, components.size(),
@@ -315,27 +314,20 @@ public class DynTaskify extends TaskList {
 
     @Override
     public boolean add(Task x) {
+        throw new UnsupportedOperationException();
+    }
 
-        super.add(x);
+    private void setTask(int i, Task x) {
 
-        if (evi == null) {
-            switch (size) {
-                case 1: //dont create set yet
-                    assert(evi==null);
-                    break;
-                case 2: //more than 2:
-                    assert(evi==null);
-                    long[] a = get(0).stamp(), b = get(1).stamp();
-                    evi = Stamp.toSet(a.length + b.length, a, b);
-                    break;
-                default:
-                    evi.addAll(x.stamp());
-                    break;
-            }
-        }
+        setFast(i, x);
+        int size = ++this.size;
 
+        long[] xs = x.stamp();
 
-        return true;
+        if (evi==null)
+            evi =new MetalLongSet((components.size()-1) * STAMP_CAPACITY + xs.length );
+
+        evi.addAll(xs);
     }
 
     private boolean doesntOverlap(Task t) {
@@ -350,10 +342,6 @@ public class DynTaskify extends TaskList {
                 if (e.contains(x))
                     return false;
             }
-        } else if (size > 0) {
-            //delay creation of evi set one more item
-            assert(size == 1);
-            return !Stamp.overlapsAny(get(0).stamp(), stamp);
         }
 
         return true;
@@ -397,14 +385,14 @@ public class DynTaskify extends TaskList {
                 case 2:
                     return ()-> {
                         long[] a = get(0).stamp(), b = get(1).stamp();
-                        return Stamp.sample(NAL.STAMP_CAPACITY, Stamp.toSet(a.length + b.length, a, b), rng);
+                        return Stamp.sample(STAMP_CAPACITY, Stamp.toSet(a.length + b.length, a, b), rng);
                     };
                 case 0:
                 default:
                     throw new UnsupportedOperationException();
             }
         } else {
-            return ()->Stamp.sample(NAL.STAMP_CAPACITY, this.evi, rng);
+            return ()->Stamp.sample(STAMP_CAPACITY, this.evi, rng);
         }
     }
 

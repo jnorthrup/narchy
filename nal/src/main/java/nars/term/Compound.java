@@ -126,15 +126,15 @@ public interface Compound extends Term, IPair, Subterms {
                 subs;
     }
 
-    @Override
-    default boolean AND(Predicate<Term> p) {
-        return Subterms.super.AND(p);
-    }
-
-    @Override
-    default boolean OR(Predicate<Term> p) {
-        return Subterms.super.OR(p);
-    }
+//    @Override
+//    default boolean AND(Predicate<Term> p) {
+//        return Subterms.super.AND(p);
+//    }
+//
+//    @Override
+//    default boolean OR(Predicate<Term> p) {
+//        return Subterms.super.OR(p);
+//    }
 
 //    @Override
 //    default Op op() {

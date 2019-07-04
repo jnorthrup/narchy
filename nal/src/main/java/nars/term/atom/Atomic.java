@@ -42,10 +42,6 @@ public interface Atomic extends Term {
         return false;
     }
 
-    @Override
-    default boolean containsNeg(Term x) {
-        return false;
-    }
 
     @Override
     default boolean containsRecursively(Term t, boolean root, Predicate<Term> inSubtermsOf) {

@@ -154,11 +154,10 @@ abstract public class TermMatcher {
             return (!requireNegation || x instanceof Neg) && super.test(x.unneg());
         }
 
-        @Override
-        public boolean testSuper(Term sx) {
-            //return sx.hasAny(struct | (requireNegation ? NEG.bit : 0));
-            return true;
-        }
+//        @Override
+//        public boolean testSuper(Term sx) {
+//            return sx.hasAny(struct | (requireNegation ? NEG.bit : 0));
+//        }
     }
 
     /**
