@@ -140,4 +140,9 @@ class DynamicImplTruth extends AbstractDynamicTruth {
         return IMPL.the(dt,
                 subj.term().negIf(!d.componentPolarity.get(0)), pred.term());
     }
+
+    @Override
+    public int componentsEstimate() {
+        return 2;
+    }
 }

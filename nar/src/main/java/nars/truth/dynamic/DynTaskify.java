@@ -22,6 +22,7 @@ import nars.time.Tense;
 import nars.truth.Stamp;
 import nars.truth.Truth;
 import nars.util.Timed;
+import org.eclipse.collections.api.block.function.primitive.IntToFloatFunction;
 import org.eclipse.collections.api.tuple.primitive.ObjectBooleanPair;
 
 import javax.annotation.Nullable;
@@ -102,7 +103,7 @@ public class DynTaskify extends TaskList {
         this.dur = dur;
         this.nar = nar;
         this.filter = NAL.DYNAMIC_TRUTH_STAMP_OVERLAP_FILTER ?
-                Answer.filter(filter, this::doesntOverlap) : filter;
+                Answer.filter(filter, this::noOverlap) : filter;
         this.componentPolarity = MetalBitSet.bits(32).negate(); //all positive by default
     }
 
@@ -254,32 +255,42 @@ public class DynTaskify extends TaskList {
         return merge(this, y, t, stamp(nar.random()), beliefOrGoal, s, e, nar);
     }
 
-    public boolean components() {
-        if (components == null )
+    private boolean components() {
+
+        FasterList<Component> c = this.components;
+
+        if (c == null )
             return false;
 
-        int cn = components.size();
+        int cn = c.size();
         if (cn > 1) {
 
             int[] order = new int[cn];
             for (int i = 0; i < cn; i++)
                 order[i] = i;
-            Object[] cc = components.array();
+            Object[] cc = c.array();
 
-            ArrayUtil.sort(order, (int j) -> -((Component) cc[j]).termVolume);
-
-            ensureCapacityForAdditional(cn);
+            IntToFloatFunction smallestFirst = (int j) -> -((Component) cc[j]).termVolume;
+            //IntToFloatFunction biggestFirst = (int j) -> ((Component) cc[j]).termVolume;
+            ArrayUtil.sort(order,
+                    smallestFirst
+                    //biggestFirst
+            );
 
             for (int i = 0; i < cn; i++) {
                 int j = order[i];
                 Task tt = ((Component) cc[j]).apply(this);
                 if (tt == null)
                     return false;
+
+                if (i == 0)
+                    ensureCapacityForAdditional(cn);
+
                 setTask(j, tt); //HACK necessary for stamp detection
             }
         } else {
             ensureCapacityForAdditional(1);
-            setTask(0, components.get(0).apply(this));
+            setTask(0, c.get(0).apply(this));
         }
         return true;
     }
@@ -299,7 +310,7 @@ public class DynTaskify extends TaskList {
             return false;
 
         if (components == null)
-            components = new FasterList(8);
+            components = new FasterList(model.componentsEstimate());
 
         components.add(new Component(c, table,
                 this, components.size(),
@@ -330,11 +341,11 @@ public class DynTaskify extends TaskList {
         evi.addAll(xs);
     }
 
-    private boolean doesntOverlap(Task t) {
-        return size == 0 /*size < capacity()*/ || doesntOverlap(t.stamp());
+    private boolean noOverlap(Task t) {
+        return size == 0 || noOverlap(t.stamp());
     }
 
-    private boolean doesntOverlap(long[] stamp) {
+    private boolean noOverlap(long[] stamp) {
         MetalLongSet e = this.evi;
         if (e != null) {
             long[] s = stamp;

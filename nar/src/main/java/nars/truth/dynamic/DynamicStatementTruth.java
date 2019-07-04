@@ -19,7 +19,7 @@ import static nars.term.atom.Bool.Null;
 import static nars.term.atom.Bool.True;
 import static nars.time.Tense.*;
 
-public class DynamicStatementTruth {
+public enum DynamicStatementTruth { ;
 
     public static final AbstractDynamicTruth Impl = new DynamicImplTruth();
 

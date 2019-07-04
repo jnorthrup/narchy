@@ -25,5 +25,9 @@ public class DynamicImageTruth {
             throw new UnsupportedOperationException();
         }
 
+        @Override
+        public int componentsEstimate() {
+            return 1;
+        }
     };
 }

@@ -69,4 +69,6 @@ abstract public class AbstractDynamicTruth {
     }
 
 
+    /** estimates number of components, for allocation purposes */
+    abstract public int componentsEstimate();
 }
