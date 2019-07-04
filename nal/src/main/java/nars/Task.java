@@ -622,10 +622,13 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
             double xConfMax = Util.max(Task::conf, x);
             confFactor = Math.min(1, (yConf / xConfMax));
         } else {
-            double xConfAvg = Util.sum(Task::conf, x)/x.length;
-            confFactor = Math.pow(1 - xConfAvg, 2);
-            //confFactor = Math.pow(1 - xConfAvg, x.length);
-            //confFactor = 1;
+            if (x[0].isBeliefOrGoal()) {
+                double xConfAvg = Util.sum(Task::conf, x) / x.length;
+                confFactor = Math.pow(1 - xConfAvg, 2);
+                //confFactor = Math.pow(1 - xConfAvg, x.length);
+            } else {
+                confFactor = 1;
+            }
         }
 
         double rangeFactor;
@@ -643,7 +646,13 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
         double priMean = Util.sum(Task::priElseZero, x)/x.length;
         float p = (float)(priMean * volFactor * confFactor * rangeFactor);
 
-        y.pri(Prioritizable.fund(p, priCopyOrMove, x));
+        float yp = Prioritizable.fund(p, priCopyOrMove, x);
+
+        merge(y, x, yp);
+    }
+
+    static void merge(Task y, Task[] x, float yp) {
+        y.pri(yp);
 
         ((NALTask)y).cause(CauseMerge.AppendUnique.merge(NAL.causeCapacity.intValue(), x));
 

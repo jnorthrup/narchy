@@ -1094,30 +1094,13 @@ public interface Subterms extends Termlike, Iterable<Term> {
     }
 
 
-    /**
-     * returns true if evaluates true for any terms
-     * implementations are allowed to skip repeating subterms and visit out-of-order
-     *
-     * @param p
-     */
-    default boolean OR(/*@NotNull*/ Predicate<Term> p) {
-        int s = subs();
-        Term prev = null;
-        for (int i = 0; i < s; i++) {
-            Term next = sub(i);
-            if (prev!=next && p.test(next))
-                return true;
-            prev = next;
-        }
-        return false;
-    }
 
     default int first(/*@NotNull*/ Predicate<Term> p) {
         int s = subs();
         Term prev = null;
         for (int i = 0; i < s; i++) {
             Term next = sub(i);
-            if (prev!=next && p.test(next))
+            if ((different(prev, next)) && p.test(next))
                 return i;
             prev = next;
         }
@@ -1135,15 +1118,34 @@ public interface Subterms extends Termlike, Iterable<Term> {
         Term prev = null;
         for (int i = 0; i < s; i++) {
             Term next = sub(i);
-            if (prev!=next && !p.test(next))
+            if ((different(prev, next))  && !p.test(next))
                 return false;
             prev = next;
         }
         return true;
     }
 
+    /**
+     * returns true if evaluates true for any terms
+     * implementations are allowed to skip repeating subterms and visit out-of-order
+     *
+     * @param p
+     */
+    default boolean OR(/*@NotNull*/ Predicate<Term> p) {
+        int s = subs();
+        Term prev = null;
+        for (int i = 0; i < s; i++) {
+            Term next = sub(i);
+            if ((different(prev, next))  && p.test(next))
+                return true;
+            prev = next;
+        }
+        return false;
+    }
+
+
     /** supplies the i'th index as 2nd lambda argument. all subterms traversed, even repeats */
-    default boolean ANDith(/*@NotNull*/ ObjectIntPredicate<Term> p) {
+    default boolean ANDi(/*@NotNull*/ ObjectIntPredicate<Term> p) {
         int s = subs();
         for (int i = 0; i < s; i++)
             if (!p.accept(sub(i), i))
@@ -1152,7 +1154,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
     }
 
     /** supplies the i'th index as 2nd lambda argument. all subterms traversed, even repeats */
-    default boolean ORith(/*@NotNull*/ ObjectIntPredicate<Term> p) {
+    default boolean ORi(/*@NotNull*/ ObjectIntPredicate<Term> p) {
         int s = subs();
         for (int i = 0; i < s; i++)
             if (p.accept(sub(i), i))
@@ -1166,7 +1168,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
         Term prev = null;
         for (int i = 0; i < s; i++) {
             Term next = sub(i);
-            if (prev!=next && p.test(next, param))
+            if (different(prev,next)  && p.test(next, param))
                 return true;
             prev = next;
         }
@@ -1178,7 +1180,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
         Term prev = null;
         for (int i = 0; i < s; i++) {
             Term next = sub(i);
-            if (prev!=next && !p.test(next, param))
+            if (different(prev, next) &&  !p.test(next, param))
                 return false;
             prev = next;
         }
@@ -1200,7 +1202,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
         Term prev = null;
         for (int i = 0; i < s; i++) {
             Term next = sub(i);
-            if (prev != next) {
+            if (different(prev, next)) {
                 if (!p.test(next) || (next instanceof Compound && !((Compound)next).ANDrecurse(p)))
                     return false;
             }
@@ -1215,7 +1217,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
         Term prev = null;
         for (int i = 0; i < s; i++) {
             Term next = sub(i);
-            if (prev != next) {
+            if (different(prev, next)) {
                 if (p.test(next) || (next instanceof Compound && ((Compound)next).ORrecurse(p)))
                     return true;
             }
@@ -1224,7 +1226,11 @@ public interface Subterms extends Termlike, Iterable<Term> {
         return false;
     }
 
-
+    /** test for eliding repeats in visitors */
+    private static boolean different(Term prev, Term next) {
+        return prev==null||!prev.equals(next);
+        //return prev!=next;
+    }
 
 
     /**

@@ -57,12 +57,12 @@ abstract class AbstractUnitSubterm implements Subterms {
     }
 
     @Override
-    public final boolean ORith(ObjectIntPredicate<Term> p) {
-        return ANDith(p);
+    public final boolean ORi(ObjectIntPredicate<Term> p) {
+        return ANDi(p);
     }
 
     @Override
-    public final boolean ANDith(ObjectIntPredicate<Term> p) {
+    public final boolean ANDi(ObjectIntPredicate<Term> p) {
         return p.accept(sub(), 0);
     }
 

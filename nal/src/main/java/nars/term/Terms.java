@@ -264,8 +264,7 @@ public enum Terms {
         }
 
 
-        Term[] x = oi.keysView().toArray(Op.EmptyTermArray);
-        return x;
+        return ok.toArray(Op.EmptyTermArray);
     }
 
 
@@ -274,16 +273,21 @@ public enum Terms {
      */
     @Nullable
     public static ObjectIntHashMap<Term> subtermScore(Subterms c, ToIntFunction<Term> score, int minTotalScore) {
-        ObjectIntHashMap<Term> uniques = new ObjectIntHashMap(0); //c.volume());
+        ObjectIntHashMap<Term> uniques = new ObjectIntHashMap(8); //c.volume());
 
-        c.forEach(cc ->
-                cc.recurseTermsOrdered(z -> true, (subterm) -> {
-                    int s = score.applyAsInt(subterm);
-                    if (s > 0)
-                        uniques.addToValue(subterm, s);
-                    return true;
-                }, null)
-        );
+
+        c.recurseTermsOrdered(z->true, subterm-> {
+
+
+            //c.forEach(cc ->
+            //cc.recurseTermsOrdered(z -> true, (subterm) -> {
+            int s = score.applyAsInt(subterm);
+            if (s > 0)
+                uniques.addToValue(subterm, s);
+            return true;
+            //}, null);
+            //});
+        }, null);
 
         int total = uniques.size();
         if (total == 0) return null;

@@ -302,11 +302,11 @@ public abstract class SeparateSubtermsCompound implements Compound {
 
 
     @Override
-    public boolean ANDith(ObjectIntPredicate<Term> p) {
-        return subterms().ANDith(p);
+    public boolean ANDi(ObjectIntPredicate<Term> p) {
+        return subterms().ANDi(p);
     }
     @Override
-    public boolean ORith(ObjectIntPredicate<Term> p) {
-        return subterms().ORith(p);
+    public boolean ORi(ObjectIntPredicate<Term> p) {
+        return subterms().ORi(p);
     }
 }

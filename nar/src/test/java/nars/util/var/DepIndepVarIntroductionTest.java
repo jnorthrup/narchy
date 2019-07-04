@@ -23,7 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
  */
 class DepIndepVarIntroductionTest {
 
-    private final NAR n = NARS.shell();
+
 
     @Test
     void testIntroduceIndepVar() {
@@ -63,7 +63,7 @@ class DepIndepVarIntroductionTest {
 
     @Test
     void testSubtermScore() {
-        assertEquals("{x=4, y=3}",
+        assertEquals("{y=3, x=4}",
                 Terms.subtermScore($$("((x,x,x,x),(y,y,y))"), (t1) -> 1, 2).toString());
     }
 
@@ -93,6 +93,8 @@ class DepIndepVarIntroductionTest {
                 introduce("(&&,(x-->a),(x-->b),(c-->(a,b,x)))", 32).toString());
 
     }
+
+    private final NAR n = NARS.shell();
 
     private TreeSet<Term> introduce(String term, int iterations) {
         TreeSet<Term> s = new TreeSet();

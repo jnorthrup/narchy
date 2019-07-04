@@ -127,7 +127,7 @@ public interface Prioritizable extends Prioritized, ScalarValue {
 //        return this;
 //    }
 
-    static Prioritized fund(float maxPri, boolean copyOrTransfer, Prioritizable... src) {
+    static float fund(float maxPri, boolean copyOrTransfer, Prioritizable... src) {
         return fund(maxPri, copyOrTransfer, (x -> x), src);
     }
 
@@ -135,7 +135,7 @@ public interface Prioritizable extends Prioritized, ScalarValue {
      * X[] may contain nulls
      */
     @SafeVarargs
-    static <X> UnitPri fund(float maxPri, boolean copyOrTransfer, Function<X, @Nullable Prioritizable> getPri, X... src) {
+    static <X> float fund(float maxPri, boolean copyOrTransfer, Function<X, @Nullable Prioritizable> getPri, X... src) {
 
         assert (src.length > 0);
 
@@ -158,7 +158,7 @@ public interface Prioritizable extends Prioritized, ScalarValue {
             }
         }
         //assert (u.priElseZero() <= maxPri + ScalarValue.EPSILON): "not: " + u.priElseZero() + " <= " + maxPri + EPSILON;
-        return u;
+        return u.pri();
     }
 
 //    default FloatRange priAsFloatRange() {
