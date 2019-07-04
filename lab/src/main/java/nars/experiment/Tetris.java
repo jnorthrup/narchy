@@ -13,6 +13,8 @@ import nars.op.java.Opjects;
 import nars.sensor.Bitmap2DSensor;
 import nars.term.Term;
 import nars.term.atom.Atomic;
+import spacegraph.space2d.container.Splitting;
+import spacegraph.space2d.widget.meta.ObjectSurface;
 
 import java.util.Arrays;
 import java.util.Random;
@@ -150,7 +152,9 @@ public class Tetris extends GameX {
         GameX.runRT(n -> {
 
             Tetris t = new Tetris(n, Tetris.tetris_width, Tetris.tetris_height);
-            window(new VectorSensorView(t.pixels, t).withControls(), 400, 900);
+            window(Splitting.column(new ObjectSurface(t), 0.9f,
+                    new VectorSensorView(t.pixels, t).withControls())
+                    , 400, 900);
 
         },  FPS * 2);
 

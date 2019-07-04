@@ -275,7 +275,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
     @Deprecated
     public final FloatRange questionForgetRate = new FloatRange(0.5f, 0, 1);
     public final IntRange premiseUnifyTTL = new IntRange(8, 1, 32);
-    public final IntRange deriveBranchTTL = new IntRange(4 * NAL.derive.TTL_MIN, NAL.derive.TTL_MIN, 64 * NAL.derive.TTL_MIN);
+    public final IntRange deriveBranchTTL = new IntRange(8 * NAL.derive.TTL_MIN, NAL.derive.TTL_MIN, 64 * NAL.derive.TTL_MIN);
     /**
      * how many cycles above which to dither dt and occurrence time
      * TODO move this to Time class and cache the cycle value rather than dynamically computing it
@@ -430,7 +430,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
         double e;
 
         //quadratic decay: integral finite from to infinity, see: https://en.wikipedia.org/wiki/List_of_definite_integrals
-        e = (evi / (1.0 + Util.sqr(dt / decayTime)));
+//        e = (evi / (1.0 + Util.sqr(dt / decayTime)));
             //e = (float)(evi / (1.0 + Util.sqr(((double)dt) / dur ) / falloffDurs));
 
         //cartoon quadratic decay
@@ -441,7 +441,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
         //TODO
 
         //constant duration linear decay ("trapezoidal")
-        //e = (float) (evi * Math.max(0, (1.0 - dt / decayTime)));
+        e = (float) (evi * Math.max(0, (1.0 - dt / decayTime)));
 
         //constant duration quadratic decay (sharp falloff)
         //e = evi * Math.max(0, (float) (1.0 - Math.sqrt(dt / decayTime)));

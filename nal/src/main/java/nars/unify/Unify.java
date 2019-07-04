@@ -499,6 +499,13 @@ public abstract class Unify extends Versioning<Term> {
      * args should be non-null. the annotations are removed for perf reasons
      */
     public final boolean putXY(final Variable x, Term y) {
+        //TODO HACK TEMPORARY ?
+        if (y instanceof Compound && y.containsRecursively(x)) {
+            //throw new WTF("recursive unification");
+            //Util.nop();
+            return false;
+        }
+
         return xy.set(x, y);
     }
 

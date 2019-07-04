@@ -1,6 +1,5 @@
 package nars.term.util.transform;
 
-import jcog.WTF;
 import nars.Op;
 import nars.subterm.Subterms;
 import nars.term.Compound;
@@ -33,14 +32,14 @@ public interface AbstractTermTransform extends TermTransform, nars.term.util.bui
      * transform pathway for compounds
      */
     default Term applyCompound(Compound c) {
-        try {
+//        try {
             return c.transform(this, (Op) null, XTERNAL);
-        } catch (StackOverflowError e) {
-            //TEMPORARY
-//            e.printStackTrace();
-            System.err.println("stack overflow in AbstractTermTransform: " + this.getClass() + " " + c);
-            throw new WTF();
-        }
+//        } catch (StackOverflowError e) {
+//            //TEMPORARY
+////            e.printStackTrace();
+//            System.err.println("stack overflow in AbstractTermTransform: " + this.getClass() + " " + c);
+//            throw new WTF();
+//        }
     }
 
     static int realign(int ydt, Subterms xx, Subterms yy) {
