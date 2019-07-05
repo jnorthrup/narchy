@@ -125,7 +125,12 @@ public class Premise implements Comparable<Premise> {
         if (taskTerm.equals(beliefTerm)) {
             beliefConceptUnifiesTaskConcept = true;
         } else if (taskTerm.op() == beliefTerm.op()) {
-            if (beliefTerm.hasAny(var) || taskTerm.hasAny(var)) { // || taskTerm.hasXternal() || beliefTerm.hasXternal()) {
+
+            if (taskTerm.equalsRoot(beliefTerm)) {
+                //difference involving XTERNAL etc
+                beliefConceptUnifiesTaskConcept = true;
+
+            } else if (beliefTerm.hasAny(var) || taskTerm.hasAny(var)) {
 
                 Term unifiedBeliefTerm = d.premiseUnify.unified(taskTerm, beliefTerm, matchTTL);
 
@@ -144,15 +149,8 @@ public class Premise implements Comparable<Premise> {
                 }
 
             }
-//            if (beliefConceptUnifiesTaskConcept) {
-//                if (!taskTerm.hasVars() && beliefTerm.hasXternal() && !taskTerm.hasXternal()) {
-//                    //use more temporally-specific form of belief term (from Task)
-//                    beliefTerm = taskTerm;
-//                }
-//            }
+
         }
-
-
 
 
         Task belief = match(d, beliefTerm, beliefConceptUnifiesTaskConcept);

@@ -29,24 +29,6 @@ public class DataTable extends Table implements Externalizable {
 
     private final Map<String, String[]> nominalCats;
 
-    @Override
-    public void writeExternal(ObjectOutput objectOutput) throws IOException {
-        //HACK
-        ByteArrayOutputStream o = new ByteArrayOutputStream();
-        write().csv(new GZIPOutputStream(o));
-        objectOutput.writeInt(o.size());
-        objectOutput.write(o.toByteArray());
-    }
-
-    @Override public void readExternal(ObjectInput i) throws IOException {
-        //HACK
-        int size = i.readInt();
-        byte[] b = new byte[size];
-        i.readFully(b);
-        Table csv = read().csv(new GZIPInputStream(new ByteArrayInputStream(b)));
-        addColumns(csv.columnArray());
-    }
-
     public DataTable() {
         super("");
 //        this.attribute_names = new FasterList<>();
@@ -54,7 +36,9 @@ public class DataTable extends Table implements Externalizable {
         this.nominalCats = new HashMap<>();
     }
 
-    /** see: Table.copy() */
+    /**
+     * see: Table.copy()
+     */
     public DataTable(Table copy) {
         super(copy.name());
 
@@ -79,7 +63,24 @@ public class DataTable extends Table implements Externalizable {
         this.nominalCats = copyMetadataFrom.nominalCats;
     }
 
+    @Override
+    public void writeExternal(ObjectOutput objectOutput) throws IOException {
+        //HACK
+        ByteArrayOutputStream o = new ByteArrayOutputStream();
+        write().csv(new GZIPOutputStream(o));
+        objectOutput.writeInt(o.size());
+        objectOutput.write(o.toByteArray());
+    }
 
+    @Override
+    public void readExternal(ObjectInput i) throws IOException {
+        //HACK
+        int size = i.readInt();
+        byte[] b = new byte[size];
+        i.readFully(b);
+        Table csv = read().csv(new GZIPInputStream(new ByteArrayInputStream(b)));
+        addColumns(csv.columnArray());
+    }
 
     boolean equalSchema(DataTable other) {
 
@@ -99,7 +100,6 @@ public class DataTable extends Table implements Externalizable {
     public String attrName(int idx) {
         return column(idx).name();
     }
-
 
 
 //    /**
@@ -168,7 +168,11 @@ public class DataTable extends Table implements Externalizable {
             Object p = point[i];
             //TODO use type cast graph
             //come on tablesaw
-            if (p instanceof Number) {
+            if (p instanceof String) {
+                //ok
+            } else if (p instanceof Boolean) {
+                //ok
+            } else if (p instanceof Number) {
                 Number n = (Number) p;
                 if (c instanceof LongColumn) {
                     p = n.longValue();
@@ -178,7 +182,9 @@ public class DataTable extends Table implements Externalizable {
                     p = n.floatValue();
                 } else
                     throw new TODO();
-            }
+            } else
+                throw new TODO();
+
             c.appendObj(p);
         }
 
@@ -186,12 +192,13 @@ public class DataTable extends Table implements Externalizable {
     }
 
     public boolean isEmpty() {
-        return size()==0;
+        return size() == 0;
     }
 
-    @Deprecated public FloatTable<String> toFloatTable() {
+    @Deprecated
+    public FloatTable<String> toFloatTable() {
 
-        FloatTable<String> data = new FloatTable<>(columnNames().toArray(ArrayUtil.EMPTY_STRING_ARRAY) );
+        FloatTable<String> data = new FloatTable<>(columnNames().toArray(ArrayUtil.EMPTY_STRING_ARRAY));
 
         doWithRows(rr -> data.add(toFloatArray(rr)));
 
@@ -214,7 +221,7 @@ public class DataTable extends Table implements Externalizable {
             } else if (it == ColumnType.INTEGER) {
                 // || it == ColumnType.DOUBLE || it == ColumnType.INTEGER || it == ColumnType.LONG
                 r[i] = rr.getInt(i);
-            } else{
+            } else {
                 r[i] = Float.NaN; //TODO remove these
             }
         }
@@ -233,7 +240,7 @@ public class DataTable extends Table implements Externalizable {
     public void printCSV() {
         printCSV(new FilterOutputStream(System.out) {
             @Override
-            public void close()  {
+            public void close() {
                 //HACKK dont close it - can cause VM shutdown
             }
         });
@@ -251,7 +258,7 @@ public class DataTable extends Table implements Externalizable {
     public Row maxBy(int column) {
         final double[] bestScore = {Double.NEGATIVE_INFINITY};
         final Row[] best = {null};
-        doWithRows( e->{
+        doWithRows(e -> {
             double s = e.getDouble(column);
             if (s > bestScore[0]) {
                 best[0] = e;
@@ -312,7 +319,8 @@ public class DataTable extends Table implements Externalizable {
         return this;
     }
 
-    @Deprecated private Instance instance(Row x) {
+    @Deprecated
+    private Instance instance(Row x) {
 
         ColumnType[] ct = columnTypes();
         List<Double> d = new FasterList<>(ct.length);
@@ -321,19 +329,19 @@ public class DataTable extends Table implements Externalizable {
 //            if (t instanceof FloatColumnType)
 //                d.add((double)x.getFloat(i1));
 //            else if (t == DoubleColumnType)
-                d.add(x.getDouble(i1));
+            d.add(x.getDouble(i1));
         }
         return new Instance(ImmutableList.copyOf(d));
     }
 
-    @Deprecated public class Instance {
+    @Deprecated
+    public class Instance {
         public final ImmutableList data;
 
         public Instance(ImmutableList data) {
 
             this.data = data;
         }
-
 
 
         @Override
@@ -346,11 +354,11 @@ public class DataTable extends Table implements Externalizable {
             return data.hashCode();
         }
 
-//        public double[] toDoubleArray() {
+        //        public double[] toDoubleArray() {
 //            return toDoubleArray(0, data.size());
 //        }
         public double[] toDoubleArray(int from, int to) {
-            double[] x = new double[to-from];
+            double[] x = new double[to - from];
             int j = 0;
             for (int i = from; i < to; i++) {
                 Object o = data.get(i);
@@ -365,7 +373,9 @@ public class DataTable extends Table implements Externalizable {
             return x;
         }
 
-        protected DataTable table() { return DataTable.this; }
+        protected DataTable table() {
+            return DataTable.this;
+        }
 
         @Override
         public boolean equals(Object obj) {

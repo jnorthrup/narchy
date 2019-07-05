@@ -5,9 +5,10 @@ import nars.term.Term;
 import nars.term.atom.Bool;
 import nars.test.TestNAR;
 import nars.test.impl.DeductiveMeshTest;
-import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.DoubleSummaryStatistics;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -15,6 +16,7 @@ import java.util.function.BiFunction;
 import java.util.function.IntFunction;
 
 import static nars.$.$$$;
+import static nars.Op.BELIEF;
 import static nars.term.Functor.f;
 import static nars.term.util.TermTest.assertEq;
 import static nars.time.Tense.ETERNAL;
@@ -49,7 +51,7 @@ class QuestionTest {
     /**
      * question to answer matching
      */
-    private void testQuestionAnswer(int cycles, @NotNull String belief, @NotNull String question, @NotNull String expectedSolution) throws Narsese.NarseseException {
+    private void testQuestionAnswer(int cycles, String belief, String question, String expectedSolution) throws Narsese.NarseseException {
         AtomicInteger ok = new AtomicInteger(0);
 
 
@@ -57,11 +59,11 @@ class QuestionTest {
 
         NAR nar = NARS.tmp(1);
 
-
         nar
+
                 .believe(belief, 1.0f, 0.9f)
                 .question(question, ETERNAL, (q, a) -> {
-                    if (a.punc() == '.' && a.term().equals(expectedSolutionTerm))
+                    if (a.punc() == BELIEF && a.term().equals(expectedSolutionTerm))
                         ok.incrementAndGet();
                 });
 
@@ -107,7 +109,7 @@ class QuestionTest {
                 case 1:
                     new DeductiveMeshTest(t, dims, timelimit) {
                         @Override
-                        public void ask(@NotNull TestNAR n, Term term) {
+                        public void ask(TestNAR n, Term term) {
 
                         }
                     };
@@ -217,32 +219,26 @@ class QuestionTest {
                 .test();
     }
 
-    @Test
-    void testDepVarInIndepImpl() {
+    @ParameterizedTest
+    @ValueSource(strings={"",",y",",y,z",",y,z,w",",y,z,w,q"})
+    void testDepVarInIndepImpl(String args) {
         new TestNAR(NARS.tmp(6))
-                .input("f(#x).")
-                .input("(f($x) ==> g($x)).")
-                .mustBelieve(64, "g(#1)", 1f, 0.81f)
+                .termVolMax(10 + args.length())
+                .confMin(0.75f)
+                .input("f(#x" + args + ").")
+                .input("(f($x"+ args + ") ==> g($x" + args + ")).")
+                .mustBelieve(128, "g(#1" + args + ")", 1f, 0.81f)
                 .test();
     }
-    @Test
-    void testDepVarInIndepImpl2() {
-        new TestNAR(NARS.tmp(6))
-                .input("f(#x,y).")
-                .input("(f($x,y) ==> g($x,y)).")
-                .mustBelieve(64, "g(#1,y)", 1f, 0.81f)
-                .test();
-    }
+
     @Test
     void testDepVarInIndepImpl3() {
         assertTrue(!$$$("f(#2,#1)").isNormalized());
         assertEq("f(#1,#2)", $$$("f(#2,#1)").normalize());
-        NAR n = NARS.tmp(6);
-//        n.onTask(t->{
-//            if (t.term().toString().equals("f(#2,#1)"))
-//                throw new WTF();
-//        });
-        new TestNAR(n)
+
+        new TestNAR(NARS.tmp(6))
+                .confMin(0.75f)
+                .termVolMax(11)
                 .input("f(#x,#y).")
                 .input("(f($x,#y) ==> g($x,#y)).")
                 .mustBelieve(64, "g(#1,#2)", 1f, 0.81f)

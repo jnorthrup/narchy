@@ -23,15 +23,13 @@ import org.pitest.classinfo.ClassName;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tech.tablesaw.api.*;
+import tech.tablesaw.columns.Column;
 import tech.tablesaw.columns.numbers.NumberColumnFormatter;
 
 import java.io.BufferedOutputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.concurrent.Callable;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.*;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.zip.GZIPOutputStream;
@@ -47,13 +45,13 @@ public class TestServer {
     public static void main(String[] args) {
         TestServer s = new TestServer();
         s.unitTestsByPackage("nars.nal.nal1");
-        s.unitTestsByPackage("nars.nal.nal2");
-        s.unitTestsByPackage("nars.nal.nal3");
-        s.unitTestsByPackage("nars.nal.nal4");
-        s.unitTestsByPackage("nars.nal.nal5");
-        s.unitTestsByPackage("nars.nal.nal6");
-        s.unitTestsByPackage("nars.nal.nal7");
-        s.unitTestsByPackage("nars.nal.nal8");
+//        s.unitTestsByPackage("nars.nal.nal2");
+//        s.unitTestsByPackage("nars.nal.nal3");
+//        s.unitTestsByPackage("nars.nal.nal4");
+//        s.unitTestsByPackage("nars.nal.nal5");
+//        s.unitTestsByPackage("nars.nal.nal6");
+//        s.unitTestsByPackage("nars.nal.nal7");
+//        s.unitTestsByPackage("nars.nal.nal8");
         s.run(32);
     }
 
@@ -83,38 +81,38 @@ public class TestServer {
     }
 
     public Supplier<DataTable> unitTests(Consumer<LauncherDiscoveryRequestBuilder> selector) {
+
+
         LauncherDiscoveryRequestBuilder b = LauncherDiscoveryRequestBuilder.request();
         selector.accept(b);
 
-        Launcher lf = LauncherFactory.create(launcherConfig);
-
-        MyTestExecutionListener exe;
-        lf.registerTestExecutionListeners(exe = new MyTestExecutionListener());
-
         return ()->{
+            Launcher lf = LauncherFactory.create(launcherConfig);
 
+
+            MyTestExecutionListener exe = new MyTestExecutionListener();
             DataTable results = newTable();
-
             exe.setTable(results);
 
+            lf.registerTestExecutionListeners(exe);
             lf.execute(b.build());
 
             return results;
         };
     }
 
-    static private int _jupiterPrefixToRemove = "[engine:junit-jupiter]/[class:".length();
-
-    protected static String sid(TestIdentifier id) {
-        String uid = id.getUniqueId();
-        try {
-            return "(" + uid.substring(_jupiterPrefixToRemove).replace("]/[method:", "/").replace("]", "").replace("()","")
-                    .replace("/",",").replace(".",",") + ")";
-        } catch (Exception e) {
-            return uid;
-        }
-
-    }
+//    static private int _jupiterPrefixToRemove = "[engine:junit-jupiter]/[class:".length();
+//
+//    protected static String sid(TestIdentifier id) {
+//        String uid = id.getUniqueId();
+//        try {
+//            return "(" + uid.substring(_jupiterPrefixToRemove).replace("]/[method:", "/").replace("]", "").replace("()","")
+//                    .replace("/",",").replace(".",",") + ")";
+//        } catch (Exception e) {
+//            return uid;
+//        }
+//
+//    }
 
 
 //    public static class TestMetrics implements Serializable {
@@ -149,7 +147,6 @@ public class TestServer {
                 StringColumn.create("package"),
                 StringColumn.create("class"),
                 StringColumn.create("method"),
-                StringColumn.create("param"),
                 LongColumn.create("start"),
                 BooleanColumn.create("success"),
                 BooleanColumn.create("error"),
@@ -168,6 +165,11 @@ public class TestServer {
         public MyTestExecutionListener() {
         }
 
+        public MyTestExecutionListener(DataTable results) {
+            this();
+            setTable(results);
+        }
+
         public void setTable(DataTable out) {
             this.out = out;
         }
@@ -178,9 +180,9 @@ public class TestServer {
 
         @Override
         public void executionStarted(TestIdentifier testIdentifier) {
-//            this.m = new TestMetrics(testIdentifier);
-            this.startNS = System.nanoTime();
+
             this.startUnixTime = System.currentTimeMillis();
+            this.startNS = System.nanoTime();
         }
 
         @Override
@@ -217,13 +219,16 @@ public class TestServer {
                 return;
 
             if (src instanceof MethodSource) {
-                String pk, cl, me, pa;
+                String pk, cl, me;
                 MethodSource m = (MethodSource)src;
                 cl = ClassName.fromString(m.getClassName()).getNameWithoutPackage().toString();
+                assert(!cl.isEmpty());
                 pk = Reflection.getPackageName(m.getClassName());
-                me = m.getMethodName();
-                pa = !m.getMethodParameterTypes().isEmpty() ?  id.getDisplayName() : "";
-                out.add(cl, pk, me, pa, startUnixTime, success, error, wallTimeNS);
+                assert(!pk.isEmpty());
+                me = m.getMethodName() +
+                        (!m.getMethodParameterTypes().isEmpty() ? ('(' + id.getDisplayName() + ')') : "");
+                assert(!me.isEmpty());
+                out.add(pk, cl, me, startUnixTime, success, error, wallTimeNS);
             } else {
                 //TODO / ignore
             }
@@ -262,16 +267,26 @@ public class TestServer {
                 exe.execute(() -> {
                     DataTable d = experiment.get();
 
-                    System.out.println(Thread.currentThread());
+                    //System.out.println(Thread.currentThread());
                     synchronized (all) {
-                        d.doWithRows((Consumer<Row>) all::addRow);
+                        int cc = 0;
+                        for (Column c : d.columns()) {
+                            all.column(cc++).append(c);
+                        }
+                        //d.doWithRows((Consumer<Row>) all::addRow);
                     }
                     d.clear();
                 });
             }
         });
 
-        exe.shutdown();
+        try {
+            exe.shutdown();
+            exe.awaitTermination(3600, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
 
     }
 
@@ -294,7 +309,7 @@ public class TestServer {
 
     private void report(DataTable all) {
 
-        String[] testID = all.columns(0, 1, 2, 3).stream().map(x -> x.name()).toArray(String[]::new);
+        String[] testID = all.columns(0, 1, 2).stream().map(x -> x.name()).toArray(String[]::new);
 
         //https://jtablesaw.github.io/tablesaw/userguide/reducing
         {
@@ -303,7 +318,7 @@ public class TestServer {
                     .sortDescendingOn("Mean [wallTimeNS]")
                     ;
 
-            ((NumberColumn)walltimes.column(4)).setPrintFormatter(new NSTimeFormatter());
+            ((NumberColumn)walltimes.column(3)).setPrintFormatter(new NSTimeFormatter());
 
             System.out.println(walltimes.printAll());
         }
@@ -311,9 +326,9 @@ public class TestServer {
         {
             Table ff = all.summarize("success", countFalse).by(testID);
 
-            ff = ff.where(((NumberColumn)ff.column(4)).isGreaterThan(0));
+            ff = ff.where(((NumberColumn)ff.column(3)).isGreaterThan(0));
 
-            Table fails = ff.sortDescendingOn(ff.column(4).name());
+            Table fails = ff.sortDescendingOn(ff.column(3).name());
 
             System.out.println(fails.printAll());
         }
