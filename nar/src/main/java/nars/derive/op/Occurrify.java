@@ -569,6 +569,8 @@ public class Occurrify extends TimeGraph {
 
                 Term tt = d.taskTerm;
                 Term bb = d.beliefTerm;
+//                Term tt = Image.imageNormalize(d.taskTerm);
+//                Term bb = Image.imageNormalize(d.beliefTerm);
 
                 if (!d.retransform.isEmpty()) {
                     //HACK re-apply variable introduction

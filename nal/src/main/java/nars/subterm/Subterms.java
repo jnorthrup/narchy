@@ -865,7 +865,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
 
         int n = xx.size();
 
-        assert(yy.size()==n);
+        //assert(yy.size()==n);
         if (yy.size()!=n)
             return -1;
 

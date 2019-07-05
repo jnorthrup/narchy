@@ -133,21 +133,9 @@ public abstract class Unify extends Versioning<Term> {
     }
 
     /** default unify substitution */
-    private final UnifyTransform transform = new UnifyTransform() {
-        @Override protected Term resolveVar(Variable v) {
-            return Unify.this.resolveVar(v);
-        }
+    private final MyUnifyTransform transform = new MyUnifyTransform();
 
-        @Override
-        protected Term applyPosCompound(Compound x) {
-            if (size==0 || !x.hasAny(varBits))
-                return x;
-
-            return super.applyPosCompound(x);
-        }
-    };
-
-    public UnifyTransform transform() {
+    public MyUnifyTransform transform() {
         return transform;
     }
 
@@ -192,8 +180,9 @@ public abstract class Unify extends Versioning<Term> {
      */
     public Term resolveVar(final Variable x) {
         int s = this.size;
-        if (s == 0)
-            return x;
+
+        if (s == 0) return x;
+
 
         Term /*Variable*/ z = x, y;
 
@@ -426,7 +415,10 @@ public abstract class Unify extends Versioning<Term> {
     }
 
     public final boolean var(Term x) {
-        return x instanceof Variable && var(x.opBit());
+        return x instanceof Variable && var((Variable)x);
+    }
+    public final boolean var(Variable x) {
+        return var(x.opBit());
     }
 
     /** how many matchable variables are present */
@@ -441,7 +433,7 @@ public abstract class Unify extends Versioning<Term> {
                 return v;
             }
         } else if (x instanceof Variable) {
-            if ((varBits & x.opBit())!=0) return 1;
+            if (0!=(varBits & x.opBit())) return 1;
         }
         return 0;
     }
@@ -498,14 +490,20 @@ public abstract class Unify extends Versioning<Term> {
      * args should be non-null. the annotations are removed for perf reasons
      */
     public final boolean putXY(final Variable x, Term y) {
-//        //TODO HACK TEMPORARY ?
-//        if (y instanceof Compound && y.containsRecursively(x)) {
-//            //throw new WTF("recursive unification");
-//            //Util.nop();
-//            return false;
-//        }
-
+        //TODO HACK TEMPORARY ?
+        if (y instanceof Compound && y.containsRecursively(x)) {
+            //throw new WTF("recursive unification");
+            //Util.nop();
+            return false;
+        }
         return xy.set(x, y);
+
+////        Term Y = y;
+//        Term Y = resolveTerm(y, true);
+//        if (Y == Null)
+//            return false;
+//        else
+//            return xy.set(x, Y);
     }
 
 
@@ -546,23 +544,35 @@ public abstract class Unify extends Versioning<Term> {
 
 
     /** full resolution of a term */
-    public final Term resolveTerm(Term x, boolean recurse) {
+    public final Term resolveTerm(Term _x, boolean recurse) {
         if (this.size == 0)
-            return x;
+            return _x;
 
-        boolean neg = x instanceof Neg;
-        Term xx = neg ? x.unneg() : x;
+        boolean neg = _x instanceof Neg;
+        Term x = neg ? _x.unneg() : _x;
 
-        Term yy = var(xx) ? resolveVar((Variable) xx) : xx;
+        boolean vx = var(x);
+        Term y = vx ? resolveVar((Variable) x) : x;
 
-        if (recurse && yy instanceof Compound && yy.hasAny(varBits)) {
-            Term zz = transform().applyPosCompoundDirect((Compound) yy); //recurse
-//            if (yy!=zz)
-//                Util.nop();
-            yy = zz;
+        if (recurse && y instanceof Compound && y.hasAny(varBits)) {
+//            Term z = transform().applyPosCompound((Compound) y); //recurse
+            Term z = transform().applyCompound((Compound) y); //recurse
+
+            /*
+            if (y!=z)
+                Util.nop();
+            */
+//            if (vx) {
+//                if (!y.equals(z)) {
+//                    //update to new re-resolved value
+//                    xy.force((Variable)x, z);
+//                }
+//            }
+
+            y = z;
         }
 
-        return yy != xx ? yy.negIf(neg) : x;
+        return y != x ? y.negIf(neg) : _x;
     }
 
     public Subterms resolveSubs(Subterms x) {
@@ -573,6 +583,7 @@ public abstract class Unify extends Versioning<Term> {
         //Subterms y = x.transformSubs(this::resolvePosNeg, null);
         Subterms y = x.transformSubs(transform(), null);
         if (y!=x && y!=null) {
+//        if (y!=null && !x.equals(y) /*y!=x*/) {
             if (!(y instanceof TermList))
                 return y.toList();
             else
@@ -674,10 +685,6 @@ public abstract class Unify extends Versioning<Term> {
             return x;
         }
 
-        public Term applyPosCompoundDirect(Compound x) {
-            return super.applyPosCompound(x);
-        }
-
         public static class LambdaUnifyTransform extends UnifyTransform {
             private final Function<Variable, Term> resolve;
 
@@ -690,6 +697,21 @@ public abstract class Unify extends Versioning<Term> {
             }
         }
     }
+
+    protected class MyUnifyTransform extends UnifyTransform {
+        @Override protected Term resolveVar(Variable v) {
+            return Unify.this.resolveVar(v);
+        }
+
+        @Override
+        public Term applyPosCompound(Compound x) {
+            if (size==0 || !x.hasAny(varBits))
+                return x;
+
+            return super.applyPosCompound(x);
+        }
+    }
+
 }
 
 

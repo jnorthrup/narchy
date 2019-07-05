@@ -101,9 +101,6 @@ abstract public class JoglDisplay extends SpaceGraph {
 
     }
 
-
-
-
     protected void renderOrthos(float dtS) {
 
     }
@@ -134,11 +131,8 @@ abstract public class JoglDisplay extends SpaceGraph {
     }
 
 
-    protected void updateCamera(float dtS, GL2 gl) {
-        perspective(gl);
-    }
 
-    private void perspective(GL2 gl) {
+    protected void perspective(GL2 gl) {
 
 
         gl.glMatrixMode(GL_PROJECTION);
@@ -273,8 +267,6 @@ abstract public class JoglDisplay extends SpaceGraph {
 
     public void render(float dtS, GL2 gl) {
         clear(gl);
-
-        updateCamera(dtS, gl);
 
         renderVolume(dtS, gl);
 

@@ -48,7 +48,7 @@ public class Windo extends MutableUnitContainer {
     public Surface finger(Finger finger) {
 
 
-        boolean unDrag = false, canDrag = finger.pressed(DRAG_BUTTON);
+        boolean unDrag, canDrag = finger.pressed(DRAG_BUTTON);
 
         Dragging current = this.dragMode;
         unDrag = (current != null && !current.active());
@@ -116,7 +116,7 @@ public class Windo extends MutableUnitContainer {
         return d != null; //HACK
     }
 
-    protected void postpaint(GL2 gl) {
+    private void postpaint(GL2 gl) {
 
         DragEdit p = potentialDragMode;
         if (p != null && _posGlobal != null) {

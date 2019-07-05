@@ -15,7 +15,7 @@ import spacegraph.space2d.container.EmptySurface;
 import spacegraph.space2d.container.unit.MutableUnitContainer;
 import spacegraph.space2d.hud.Hover;
 import spacegraph.space2d.hud.HoverModel;
-import spacegraph.space2d.widget.text.BitmapLabel;
+import spacegraph.space2d.widget.text.VectorLabel;
 import spacegraph.util.math.Color4f;
 import spacegraph.video.Draw;
 
@@ -123,8 +123,9 @@ public class Widget extends MutableUnitContainer<Surface> implements KeyPressed 
         if (s == null || s.isEmpty())
             this.hover = null;
         else {
-            BitmapLabel hoverLabel = new BitmapLabel(s);
-            hoverLabel.backgroundColor(0.9f, 0.5f, 0f, 0.5f);
+            //BitmapLabel hoverLabel = new BitmapLabel(s);
+            //hoverLabel.backgroundColor(0.9f, 0.5f, 0f, 0.5f);
+            VectorLabel hoverLabel = new VectorLabel(s);
             this.hover = new MyHover(hoverLabel);
         }
         return this;
@@ -214,9 +215,9 @@ public class Widget extends MutableUnitContainer<Surface> implements KeyPressed 
 
     /** temporary */
     private class MyHover extends Hover {
-        private final BitmapLabel hoverLabel;
+        private final Surface hoverLabel;
 
-        public MyHover(BitmapLabel hoverLabel) {
+        public MyHover(Surface hoverLabel) {
             super(Widget.this, b -> hoverLabel, new MyCursorModel());
             this.hoverLabel = hoverLabel;
         }
@@ -225,7 +226,7 @@ public class Widget extends MutableUnitContainer<Surface> implements KeyPressed 
         public boolean update(Finger f) {
             float s = model.hoverTimeS;
             float f1 = 0.1f + (s < 4 ? (float) Math.exp(s) : 1) * 0.2f;
-            hoverLabel.alpha(Util.clamp(f1, 0.1f, 0.5f));
+            //hoverLabel.alpha(Util.clamp(f1, 0.1f, 0.5f));
             return super.update(f);
         }
     }

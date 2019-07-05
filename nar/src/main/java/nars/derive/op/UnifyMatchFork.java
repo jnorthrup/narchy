@@ -12,14 +12,12 @@ import static nars.derive.model.DerivationFailure.Success;
 public class UnifyMatchFork extends EvalTermBuffer implements Predicate<Derivation> {
 
     protected Taskify taskify;
-    private int workVolMax;
 
     public UnifyMatchFork() {
     }
 
-    public void reset(Taskify taskify, int workVolMax) {
+    public void reset(Taskify taskify) {
         this.taskify = taskify;
-        this.workVolMax = workVolMax;
     }
 
     @Override
@@ -29,7 +27,7 @@ public class UnifyMatchFork extends EvalTermBuffer implements Predicate<Derivati
 
         Term x = taskify.termify.pattern(d);
 
-        Term y = x.transform(d.transformDerived, this, workVolMax);
+        Term y = d.transformDerived.apply(x); //x.transform(d.transformDerived, this, workVolMax);
 
         if (y.unneg().op().taskable) {
             if (Success == DerivationFailure.failure(y, (byte) 0 /* dont consider punc consequences until after temporalization */, d)) {

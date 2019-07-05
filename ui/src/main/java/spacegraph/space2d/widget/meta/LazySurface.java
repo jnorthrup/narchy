@@ -48,7 +48,7 @@ public class LazySurface extends MutableUnitContainer<Surface> {
     }
 
     private void build() {
-        Exe.invokeLater(()->{
+        Exe.invoke/*Later*/(()->{
             //TODO profile option
             Surface next = SafeSurface.safe(async);
             //RectFloat b = the().bounds;

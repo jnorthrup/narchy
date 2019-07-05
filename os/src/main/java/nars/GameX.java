@@ -44,9 +44,7 @@ import nars.time.clock.RealTime;
 import nars.video.SwingBitmap2D;
 import nars.video.WaveletBag;
 import org.jetbrains.annotations.Nullable;
-import spacegraph.SpaceGraph;
 import spacegraph.space2d.Surface;
-import spacegraph.space2d.container.graph.GraphEdit2D;
 import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.widget.meta.ObjectSurface;
 import spacegraph.space2d.widget.meter.PaintUpdateMatrixView;
@@ -62,9 +60,11 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+import static java.util.stream.Collectors.toList;
 import static nars.$.$$;
 import static nars.Op.BELIEF;
 import static nars.Op.GOAL;
+import static spacegraph.SpaceGraph.window;
 
 /**
  * Extensions to NAgent interface:
@@ -143,23 +143,34 @@ abstract public class GameX extends Game {
 
         n.synch();
 
+        Exe.invokeLater(()->{
+            window(
+                new Gridding(
+                new Gridding(n.parts(Game.class).map((SubPart pp) -> {
+                    Game gg = (Game) pp;
+                    return new SupplierPort(gg.term().toString(), Surface.class, () -> NARui.game(gg));
+                }).collect(toList())),
+                new SupplierPort<>("att", Surface.class, () -> NARui.attentionUI(n)),
+                new SupplierPort<>("top", Surface.class, () -> NARui.top(n))
+            ), 1024, 800);
+        });
 
         Loop loop = n.startFPS(narFPS);
 
-        Exe.invokeLater(()-> {
-            GraphEdit2D g = GraphEdit2D.window(1024, 800);
-            g.physics.invokeLater(()-> {
-            //Exe.invokeLater(() -> {
-                n.parts(Game.class).forEach((SubPart pp) -> {
-                    Game gg = (Game)pp;
-                    SupplierPort sg = new SupplierPort(gg.term().toString(), Surface.class, () -> NARui.game(gg));
-                    g.add(sg).posRel(0,0,0.25f,0.25f);
-                });
-
-                g.add(new SupplierPort<>("att", Surface.class, () -> NARui.attentionUI(n))).posRel(0, 0, 0.25f, 0.25f);
-                g.add(new SupplierPort<>("top", Surface.class, () -> NARui.top(n))).posRel(0, 0, 0.25f, 0.25f);
-            });
-        } );
+//
+//        Exe.invokeLater(()-> {
+//            GraphEdit2D g = GraphEdit2D.window(1024, 800);
+//            g.physics.invokeLater(()-> {
+//            //Exe.invokeLater(() -> {
+//                n.parts(Game.class).forEach((SubPart pp) -> {
+//                    Game gg = (Game)pp;
+//                    SupplierPort sg = new SupplierPort(gg.term().toString(), Surface.class, () -> NARui.game(gg));
+//                    g.add(sg).posRel(0,0,0.25f,0.25f);
+//                });
+//                g.add(new SupplierPort<>("att", Surface.class, () -> NARui.attentionUI(n))).posRel(0, 0, 0.25f, 0.25f);
+//                g.add(new SupplierPort<>("top", Surface.class, () -> NARui.top(n))).posRel(0, 0, 0.25f, 0.25f);
+//            });
+//        } );
 
 
         return n;
@@ -241,7 +252,7 @@ abstract public class GameX extends Game {
                 .what(
                         (w) -> new TaskLinkWhat(w,
                                 512,
-                                new PriBuffer.BagTaskBuffer(1024, 0.1f))
+                                new PriBuffer.BagTaskBuffer(256, 0.5f))
                 )
 //                .attention(() -> new ActiveConcepts(1024))
                 .exe(
@@ -928,7 +939,7 @@ abstract public class GameX extends Game {
 
         @Override
         protected void starting(NAR nar) {
-            win = SpaceGraph.window(surface.get(), w, h);
+            win = window(surface.get(), w, h);
         }
 
         @Override

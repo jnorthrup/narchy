@@ -224,7 +224,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
     public static final boolean OCCURRIFY_COMPOSE_UNION_DILUTE = false;
 
     /** probability of unifying subterms randomly (not using deterministic complexity heuristic ordering) */
-    public static final float SUBTERM_UNIFY_RANDOM_PROBABILITY = 0.1f;
+    public static final float SUBTERM_UNIFY_RANDOM_PROBABILITY = 0.01f;
 
 
     protected static final boolean DYNAMIC_CONCEPT_TRANSIENT = false;
@@ -414,8 +414,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
      */
     public static double evi(final double evi, final long dt, final float dur) {
 
-        //assert(dur > 0);
-        assert (dur > 0 && dt > 0);
+        //assert (dur > 0 && dt > 0);
 
 
         //inverse linear decay
@@ -432,9 +431,17 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
         final double decayTime = falloffDurs * dur;
         double e;
 
+        //cubic decay:
+        //http://fooplot.com/#W3sidHlwZSI6MCwiZXEiOiIxLTEvKDErZV4oLXgpKSIsImNvbG9yIjoiIzAwNzdGRiJ9LHsidHlwZSI6MCwiZXEiOiIxLygxK3gqeCkiLCJjb2xvciI6IiNENDFBMUEifSx7InR5cGUiOjAsImVxIjoiMS8oMSt4KngqeCkiLCJjb2xvciI6IiM4OUFEMDkifSx7InR5cGUiOjEwMDAsIndpbmRvdyI6WyIwIiwiMTgiLCIwIiwiMSJdfV0-
+//        e = (evi / (1.0 + Util.cube(dt / (falloffDurs * dur)))));
+//        e = (evi / (1.0 + Util.cube(dt/dur) / falloffDurs));
+
         //quadratic decay: integral finite from to infinity, see: https://en.wikipedia.org/wiki/List_of_definite_integrals
-//        e = (evi / (1.0 + Util.sqr(dt / decayTime)));
+        e = (evi / (1.0 + Util.sqr(dt / decayTime)));
             //e = (float)(evi / (1.0 + Util.sqr(((double)dt) / dur ) / falloffDurs));
+
+        //constant duration linear decay ("trapezoidal")
+//        e = (float) (evi * Math.max(0, (1.0 - dt / decayTime)));
 
         //cartoon quadratic decay
 //        float edge = dur / 2;
@@ -443,8 +450,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
         //exponential decay: see https://en.wikipedia.org/wiki/Exponential_integral
         //TODO
 
-        //constant duration linear decay ("trapezoidal")
-        e = (float) (evi * Math.max(0, (1.0 - dt / decayTime)));
+
 
         //constant duration quadratic decay (sharp falloff)
         //e = evi * Math.max(0, (float) (1.0 - Math.sqrt(dt / decayTime)));
@@ -632,12 +638,13 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
              * stretches perception across some amount of lag
              */
             public static final float SIGNAL_LATCH_LIMIT_DURS =/*0.5f;*/
-                    2f;
+                    //2f;
+                    1.5f;
                     //1f;
 
             /** max tasked matched by series table, in case the answer limit is higher.  this reduces the number of redundant non-exact matches freeing evidential capacity for non-signal tasks from other tables of the concept */
             public static final float SERIES_MATCH_ADDITIONAL_RATE_PER_DUR = 1f/SIGNAL_STRETCH_LIMIT_DURS;
-            public static final int SERIES_MATCH_MIN = 2;
+            public static final int SERIES_MATCH_MIN = 3;
 
             //public static final boolean SIGNAL_TASK_OCC_DITHER = true;
         }
@@ -799,7 +806,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
         public static final boolean DERIVE_QUESTION_FROM_AMBIGUOUS_BELIEF_OR_GOAL = configIs("DERIVE_QUESTION_FROM_AMBIGUOUS_BELIEF_OR_GOAL");
 
 
-        public static final float TERM_BUFFER_VOLMAX_SCRATCH_FACTOR = 8f;
+        //public static final float TERM_BUFFER_VOLMAX_SCRATCH_FACTOR = 8f;
 
 
 

@@ -1,6 +1,5 @@
 package spacegraph.space2d.widget.button;
 
-import jcog.exe.Exe;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.Splitting;
@@ -66,9 +65,9 @@ public class PushButton extends AbstractButton  {
     protected void onClick() {
         Consumer<PushButton> c = this.onClick;
         if (c !=null) {
-            Exe.invoke(
-                ()->c.accept(this)
-            );
+            //Exe.invoke(()->
+            c.accept(this);
+            //);
         }
     }
 

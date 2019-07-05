@@ -18,6 +18,10 @@ public class ReSurface extends SurfaceCamera {
 
     private final FasterList<BiConsumer<GL2, ReSurface>> main = new FasterList<>();
 
+    static final float minVisibilityPixelPct =
+            //0.5f;
+            1f;
+
 
     /** time since last frame (seconds) */
     private float frameDT;
@@ -31,8 +35,8 @@ public class ReSurface extends SurfaceCamera {
     public FloatAveragedWindow load = new FloatAveragedWindow(3, 0.5f);
 
 
-    public long restartNS;
-
+    public long frameNS;
+    @Deprecated public long frameUnixTime;
 
 
     public final void on(Consumer<GL2> renderable) {
@@ -66,17 +70,18 @@ public class ReSurface extends SurfaceCamera {
         //gl.glTranslatef((w()/2)/scale.x - cam.x, (h()/2)/scale.y - cam.y, 0);
         main.forEachWith((rr,ggl) -> rr.accept(ggl, this), gl);
     }
-        /** ortho restart */
-    public ReSurface restart(float pw, float ph) {
+    /** ortho restart */
+    public ReSurface resolution(float pw, float ph) {
         this.pw = pw;
         this.ph = ph;
-        this.restartNS = System.nanoTime();
         set(pw/2, ph/2, 1, 1);
         return this;
     }
 
-    public ReSurface restart(float pw, float ph, float dtS, float fps) {
+    public ReSurface retime(float dtS, float fps) {
         this.frameDT = dtS;
+        this.frameNS = System.nanoTime();
+        this.frameUnixTime = System.currentTimeMillis();
         //this.frameDTms = Math.max(1, Math.round(1000 * frameDT));
         this.frameDTideal = (float) (1.0/Math.max(1.0E-9,fps));
         this.load.next( Math.max(0, dtS - frameDTideal) / frameDTideal );
@@ -120,7 +125,6 @@ public class ReSurface extends SurfaceCamera {
         return v;
     }
     public final boolean visibleByPixels(RectFloat r) {
-        float minVisibilityPixelPct = 0.5f;
         boolean v = visP(r, minVisibilityPixelPct) > 0;
         return v;
     }
@@ -129,10 +133,10 @@ public class ReSurface extends SurfaceCamera {
         //return (bounds.w * scaleX >= minPixelsToBeVisible) && (bounds.h * scaleY >= minPixelsToBeVisible);
 
 //        System.out.println(scaleX + " " + w + " " + pw);
-        float p = bounds.w * scaleX;
+        float p = (bounds.w / this.w) * pw * scaleX;
         if (p < minPixelsToBeVisible)
             return 0;
-        float q = bounds.h * scaleY;
+        float q = (bounds.h / this.h) * ph * scaleY;
         if (q < minPixelsToBeVisible)
             return 0;
 

@@ -167,10 +167,6 @@ public class OrthoSurfaceGraph extends JoglDisplay implements SurfaceGraph {
             layers.add(cursor);
     }
 
-    @Override
-    protected void updateCamera(float dtS, GL2 gl) {
-        //null
-    }
 
     @Override
     protected void renderOrthos(float dtS) {
@@ -182,14 +178,15 @@ public class OrthoSurfaceGraph extends JoglDisplay implements SurfaceGraph {
         GL2 g = video.gl;
 
         int w = video.getWidth(), h = video.getHeight();
-        rendering.restart(w, h, dtS, video.renderFPS);
-
         g.glViewport(0, 0, w, h);
         g.glMatrixMode(GL_PROJECTION);
         g.glLoadIdentity();
 
         g.glOrtho(0, w, 0, h, -1.5, 1.5);
         g.glMatrixMode(GLMatrixFunc.GL_MODELVIEW);
+
+        rendering.retime(dtS, video.renderFPS);
+        rendering.resolution(w, h);
 
         rendering.render(g);
         rendering.clear();
@@ -200,11 +197,8 @@ public class OrthoSurfaceGraph extends JoglDisplay implements SurfaceGraph {
 
     @Override
     protected void update() {
-        rendering.restart(video.getWidth(), video.getHeight());
         layers.tryRender(rendering);
     }
-
-
 
     public Off animate(Animated c) {
         return onUpdate(c);

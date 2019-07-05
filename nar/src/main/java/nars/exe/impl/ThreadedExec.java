@@ -125,10 +125,10 @@ abstract public class ThreadedExec extends MultiExec {
 
                 int batchSize = //Util.lerp(throttle,
                         //available, /* all of it if low throttle. this allows most threads to remains asleep while one awake thread takes care of it all */
-                        Math.max(1, (int) Math.floor(((responsibility * available) / workGranularity)));
+                        Math.max(1, (int) Math.ceil(((responsibility * available) / workGranularity)));
 
 
-                int got = in.remove(buffer, batchSize);
+                int got = in.remove(buffer, batchSize, 0);
                 if (got > 0) {
                     execute(buffer, 1, execNow);
                 } else

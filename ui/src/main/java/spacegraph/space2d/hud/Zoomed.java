@@ -124,12 +124,6 @@ public class Zoomed<S extends Surface> extends MutableUnitContainer<S> implement
         this.keyboard = keyboard;
 
         this.cam = new Camera();
-//            @Override
-//            protected void onMotion() {
-//                super.onMotion();
-//                layout();
-//            }
-//        };
     }
 
     @Override
@@ -345,10 +339,12 @@ public class Zoomed<S extends Surface> extends MutableUnitContainer<S> implement
 
     public class Camera extends AnimVector3f implements SurfaceTransform {
 
+        private static final float CHANGE_EPSILON = 0.001f;
         /**
          * TODO atomic
          */
         private final float CAM_RATE = 3f;
+        protected boolean change = true;
 
         {
             setDirect(0, 0, 1); //(camZmin + camZmax) / 2);
@@ -365,7 +361,10 @@ public class Zoomed<S extends Surface> extends MutableUnitContainer<S> implement
         @Override
         public boolean animate(float dt) {
             //System.out.println(this);
+            v3 before = clone();
             if (super.animate(dt)) {
+                v3 after = clone();
+                change = !before.equals(after, CHANGE_EPSILON);
                 update();
                 return true;
             }

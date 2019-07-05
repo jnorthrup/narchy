@@ -53,8 +53,8 @@ public class Box2DGraphEditPhysics extends GraphEditPhysics {
     private final ConcurrentFastIteratingHashMap<Surface, PhySurface> w =
             new ConcurrentFastIteratingHashMap<>(new PhySurface[0]);
 
-    private final int velIter = 4;
-    private final int posIter = 4;
+    private final int velIter = 2;
+    private final int posIter = 2;
     private final float timeScale = 1f;
     private static final float minDimension = 0.5f;
     private static final float scaling = 10f;
@@ -980,8 +980,7 @@ public class Box2DGraphEditPhysics extends GraphEditPhysics {
             Dynamics2D w = physics;
 
             if (drawJoints) {
-                long now = System.currentTimeMillis();
-                w.joints(j -> drawJoint(j, gl, now));
+                w.joints(j -> drawJoint(j, gl, reSurface.frameUnixTime));
             }
 
             if (drawBodies) {

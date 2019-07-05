@@ -183,7 +183,13 @@ public class SpaceDisplayGraph3D<X> extends JoglDisplay implements Iterable<Spat
 
     }
 
+    protected void updateCamera(float dtS, GL2 gl) {
+        perspective(gl);
+    }
+
     protected void renderVolume(float dtS, GL2 gl) {
+
+        updateCamera(dtS, gl);
 
         int dtMS = Math.max(1, Math.round(1000 * dtS));
 

@@ -165,7 +165,7 @@ public class VerletGraphEditPhysics extends GraphEditPhysics {
 
             @Override protected void paintLink(GL2 gl, ReSurface reSurface) {
                 int window = 100 * 1000 * 1000;
-                long renderStart = reSurface.restartNS;
+                long renderStart = reSurface.frameNS;
 
                 Wire id = VerletVisibleLink.this.id;
                 float aa = id.activity(true, renderStart, window);

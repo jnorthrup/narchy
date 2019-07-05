@@ -252,7 +252,7 @@ abstract public class Surface implements Surfacelike {
     public final boolean visible(ReSurface r) {
         RectFloat b = this.bounds;
         return visible() &&
-               b.w > Float.MIN_NORMAL && b.h > Float.MIN_NORMAL &&
+               (b.w > Float.MIN_NORMAL && b.h > Float.MIN_NORMAL) &&
                (!clipBounds || r.visibleByCamera(b)) &&
                r.visibleByPixels(b);
     }

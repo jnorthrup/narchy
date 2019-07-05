@@ -1,6 +1,5 @@
 package nars.derive.op;
 
-import nars.NAL;
 import nars.derive.model.Derivation;
 import nars.term.Term;
 
@@ -28,7 +27,7 @@ public class DirectPremisify extends Premisify {
             UnifyMatchFork mf = d.termifier;
             d.forEachMatch = mf;
 
-            mf.reset(taskify, (int)Math.ceil(NAL.derive.TERM_BUFFER_VOLMAX_SCRATCH_FACTOR * d.termVolMax));
+            mf.reset(taskify);
 
             boolean unified = unify(d, !fwd, true);
 

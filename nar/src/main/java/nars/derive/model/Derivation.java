@@ -676,7 +676,7 @@ public class Derivation extends PreDerivation {
     /**
      * should be created whenever a different NAR owns this Derivation instance, if ever
      */
-    public final class DerivationTransform extends UnifyTransform {
+    public final class DerivationTransform extends MyUnifyTransform {
 
         private final Function<Atomic, Term> derivationFunctors = DerivationFunctors.get(Derivation.this);
 //        public transient Function<Variable, Term> xy = null;
@@ -702,6 +702,7 @@ public class Derivation extends PreDerivation {
             if (a instanceof Variable) {
 
                 b = Derivation.this.resolveTerm(a, true);
+                //b = resolveVar((Variable)a);
 
             } else if (a instanceof Atom) {
 

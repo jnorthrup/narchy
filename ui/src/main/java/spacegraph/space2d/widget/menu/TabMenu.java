@@ -1,6 +1,5 @@
 package spacegraph.space2d.widget.menu;
 
-import jcog.exe.Exe;
 import org.eclipse.collections.api.block.procedure.primitive.ObjectBooleanProcedure;
 import spacegraph.SpaceGraph;
 import spacegraph.space2d.Surface;
@@ -59,14 +58,6 @@ public class TabMenu extends Menu {
     }
 
     void toggle(ToggleButton button, Supplier<Surface> creator, boolean onOrOff, Surface[] created, boolean inside) {
-        Surface cx;
-        if (onOrOff) {
-            cx = new LazySurface(creator);
-            cx = wrapper.apply(cx);
-            assert(cx!=null);
-        } else {
-            cx = null;
-        }
 
         //wrap/decorate
 
@@ -75,9 +66,9 @@ public class TabMenu extends Menu {
 //        if (label!=null)
 //            cx = LabeledPane.the(button.term() /*buttonBuilder.apply(label.text())*/, cx);
 
-        synchronized(TabMenu.this) {
-
             if (onOrOff) {
+                Surface cx = new LazySurface(creator);
+                cx = wrapper.apply(cx); assert(cx!=null);
 
                 if (inside) {
                     content.active(created[0] = cx);
@@ -85,8 +76,6 @@ public class TabMenu extends Menu {
                 } else {
                     SpaceGraph.window(created[0] = cx, 800, 800);
                 }
-
-
 
             } else {
 
@@ -101,7 +90,6 @@ public class TabMenu extends Menu {
 
             }
 
-        }
     }
 
 
@@ -112,15 +100,15 @@ public class TabMenu extends Menu {
     public Surface toggle(Function<String, ToggleButton> buttonBuilder, String label, Supplier<Surface> creator) {
         final Surface[] created = {null};
         ObjectBooleanProcedure<ToggleButton> toggleInside = (button, onOrOff) -> {
-            Exe.invokeLater(()->{
+//            Exe.invoke(()->{
                 toggle(button, creator, onOrOff, created, true);
-            });
+//            });
         };
 
         Runnable spawnOutside = () -> {
-            Exe.invokeLater(()->{
+//            Exe.invoke(()->{
                 toggle(null, creator, true, created, false);
-            });
+//            });
         };
 
         ToggleButton bb = buttonBuilder.apply(label).on(toggleInside);

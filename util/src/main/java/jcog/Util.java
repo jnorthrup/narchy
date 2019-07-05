@@ -1809,12 +1809,12 @@ public enum Util {
     /**
      * adaptive spinlock behavior
      * see: https:
+     * TODO tune
      */
     public static void pauseSpin(int previousContiguousPauses) {
-//        if (previousContiguousPauses < 256) {
-//            return;
-        //} else
-        if (previousContiguousPauses < 512) {
+        if (previousContiguousPauses < 2) {
+            return;
+        } else if (previousContiguousPauses < 512) {
             onSpinWait();
         } else if (previousContiguousPauses < 1024) {
 
@@ -1829,7 +1829,7 @@ public enum Util {
             }
         } else if (previousContiguousPauses < 2048) {
 
-            if ((previousContiguousPauses & 15) == 0) {
+            if ((previousContiguousPauses & 7) == 0) {
                 Thread.yield();
             } else {
                 onSpinWait();
@@ -1839,6 +1839,7 @@ public enum Util {
             Thread.yield();
         }
     }
+
     /*
         static final long PARK_TIMEOUT = 50L;
     static final int MAX_PROG_YIELD = 2000;

@@ -16,7 +16,6 @@ import spacegraph.input.finger.Finger;
 import spacegraph.input.finger.state.DoubleClicking;
 import spacegraph.space2d.ReSurface;
 import spacegraph.space2d.Surface;
-import spacegraph.space2d.SurfaceConstraints;
 import spacegraph.space2d.Surfacelike;
 import spacegraph.space2d.container.ContainerSurface;
 import spacegraph.space2d.container.PaintSurface;
@@ -74,7 +73,7 @@ public class GraphEdit2D extends MutableMapContainer<Surface, ContainerSurface> 
     private final DoubleClicking doubleClicking = new DoubleClicking(0, this::doubleClick, this);
     private Off loop;
 
-    public final SurfaceConstraints constraints = new SurfaceConstraints();
+    //public final SurfaceConstraints constraints = new SurfaceConstraints();
 
     public GraphEdit2D() {
         super();
@@ -83,7 +82,8 @@ public class GraphEdit2D extends MutableMapContainer<Surface, ContainerSurface> 
 
     public static <X extends Surface> GraphEdit2D window(int w, int h) {
         GraphEdit2D g = new GraphEdit2D();
-        SpaceGraph.window(g, w, h).dev();
+        SpaceGraph.window(g, w, h);
+        //.dev();
         return g;
     }
 
@@ -93,7 +93,7 @@ public class GraphEdit2D extends MutableMapContainer<Surface, ContainerSurface> 
         physics.start(this);
 
         loop = root().animate(((float dt) -> {
-            constraints.update();
+            //constraints.update();
             this.physics.update(GraphEdit2D.this, dt);
             return true;
         }));
