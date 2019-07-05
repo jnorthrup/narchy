@@ -1322,6 +1322,8 @@ public interface Subterms extends Termlike, Iterable<Term> {
 
         int s = subs();
 
+        boolean conjFalse = false;
+
         for (int i = 0; i < s; i++) {
 
             Term xi = sub(i);
@@ -1337,8 +1339,9 @@ public interface Subterms extends Termlike, Iterable<Term> {
                 //these fail-fast cases must be consistent with the target construction process.
                 if (superOp == CONJ) {
                     if (yi == Bool.False)
-                        return Op.FalseSubterm;
+                        conjFalse = true;
                     //keep True in case of temporal it will need to act as a placeholder
+                    //continue in case Null is encountered further
 
                 }
             }
@@ -1363,8 +1366,11 @@ public interface Subterms extends Termlike, Iterable<Term> {
 
             } else {
 
-                /**/if (y == null && xi!=yi) {
-                    y = new DisposableTermList(s, i);
+                if (y == null && xi!=yi) {
+                    if (differentlyTransformed(xi, yi) /* special */)
+                        y = new DisposableTermList(s, i);
+//                    else
+//                        Util.nop(); ///why
                 }
 
                 if (y != null)
@@ -1372,10 +1378,20 @@ public interface Subterms extends Termlike, Iterable<Term> {
             }
         }
 
+        if (conjFalse)
+            return Op.FalseSubterm;
+
         return y != null ? y.commit(this, superOp) : this;
     }
 
-    static TermList transformSubInline(Subterms e, Function<Term,Term> f, TermList out, int subsTotal, int i) {
+    /**
+     * determines if the two non-identical terms are actually equivalent or if y must be part of the output for some reason (special term, etc)
+     * TODO refine */
+    private static boolean differentlyTransformed(Term xi, Term yi) {
+        return !xi.equals(yi) || (xi.unneg().getClass()!=yi.unneg().getClass()) || !yi.the();
+    }
+
+    @Nullable static TermList transformSubInline(Subterms e, Function<Term,Term> f, TermList out, int subsTotal, int i) {
         int xes = e.subs();
 
 

@@ -496,14 +496,14 @@ public abstract class Unify extends Versioning<Term> {
             //Util.nop();
             return false;
         }
-        return xy.set(x, y);
+//        return xy.set(x, y);
 
-////        Term Y = y;
-//        Term Y = resolveTerm(y, true);
-//        if (Y == Null)
-//            return false;
-//        else
-//            return xy.set(x, Y);
+//        Term Y = y;
+        Term Y = resolveTerm(y, true);
+        if (Y == Null)
+            return false;
+        else
+            return xy.set(x, Y);
     }
 
 
@@ -572,7 +572,7 @@ public abstract class Unify extends Versioning<Term> {
             y = z;
         }
 
-        return y != x ? y.negIf(neg) : _x;
+        return x!=y ? y.negIf(neg) : _x;
     }
 
     public Subterms resolveSubs(Subterms x) {
@@ -582,12 +582,11 @@ public abstract class Unify extends Versioning<Term> {
     @Nullable public TermList resolveListIfChanged(Subterms x) {
         //Subterms y = x.transformSubs(this::resolvePosNeg, null);
         Subterms y = x.transformSubs(transform(), null);
-        if (y!=x && y!=null) {
-//        if (y!=null && !x.equals(y) /*y!=x*/) {
-            if (!(y instanceof TermList))
-                return y.toList();
-            else
-                return ((TermList) y);
+        if (y == null)
+            return new TermList(Bool.Null); //HACK
+//        if (y!=x && y!=null) {
+        if (y!=null && y!=x) {
+            return y instanceof TermList ? (TermList) y : y.toList();
         } else
             return null;
     }

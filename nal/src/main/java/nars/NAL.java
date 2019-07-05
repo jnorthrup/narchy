@@ -224,7 +224,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
     public static final boolean OCCURRIFY_COMPOSE_UNION_DILUTE = false;
 
     /** probability of unifying subterms randomly (not using deterministic complexity heuristic ordering) */
-    public static final float SUBTERM_UNIFY_RANDOM_PROBABILITY = 0.01f;
+    public static final float SUBTERM_UNIFY_RANDOM_PROBABILITY = 0.1f;
 
 
     protected static final boolean DYNAMIC_CONCEPT_TRANSIENT = false;
@@ -420,9 +420,9 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
         //inverse linear decay
         final double falloffDurs =
                 //0.5f;
-                //1;
+                1;
                 //1.618f; //phi
-                2; //nyquist / horizon
+                //2; //nyquist / horizon
                 //4;
                 //dur;
                 //8;
@@ -819,7 +819,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
          * max variable unification recursion depth as a naive cyclic filter
          * includes indirections through common variables so should be at least 3.
          */
-        public static final int UNIFY_VAR_RECURSION_DEPTH_LIMIT = 4;
+        public static final int UNIFY_VAR_RECURSION_DEPTH_LIMIT = 6;
         public static final int UNIFY_COMMON_VAR_MAX = UNIFY_VAR_RECURSION_DEPTH_LIMIT;
         public static final int UNIFICATION_STACK_CAPACITY = 128;
     }
