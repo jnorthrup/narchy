@@ -35,25 +35,25 @@ public interface Variable extends Atomic {
     }
 
     private static boolean unifyVar(Unify u, Term x, Term y) {
-        if (x instanceof Variable && y instanceof Variable && !(x instanceof Ellipsis) && !(y instanceof Ellipsis)) {
-            if (u.commonVariables) {
-                Op xop = x.op();
-                if (u.var(xop)) {
+        if (x instanceof Variable) {
+            Op xop = x.op();
+            if (y instanceof Variable && !(x instanceof Ellipsis) && !(y instanceof Ellipsis)) {
+                if (u.commonVariables && u.var(xop)) {
                     Op yop = y.op();
-                    if (xop == yop) {
+                    if (xop == yop)
                         return CommonVariable.unify((Variable) x, (Variable) y, u);
-                    }
                 }
+            }
+
+            if (u.canPut(xop, y)) {
+                if( u.putXY((Variable) x, y))
+                    return true;
             }
         }
 
-
-        if (x instanceof Variable && u.canPut(x.op(), y)) {
-            return u.putXY((Variable) x, y);
-        }
-
         if (y instanceof Variable && u.canPut(y.op(), x)) {
-            return u.putXY((Variable) y, x);
+            if (u.putXY((Variable) y, x))
+                return true;
         }
 
         return false;
@@ -132,10 +132,11 @@ public interface Variable extends Atomic {
             }
         }
 
-        if (x instanceof Variable || y instanceof Variable)
-            return unifyVar(u, x, y);
-        else
-            return unifyConst(u, x, y);
+        return x instanceof Variable || y instanceof Variable ?
+                unifyVar(u, x, y)
+                :
+                x.unify(y, u);
+                //unifyConstSafe(u, x, y);
     }
 
     @Override

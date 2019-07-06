@@ -333,7 +333,8 @@ public class NAL8Test extends NALTest {
 
 
         test
-                .goal("(x &| y)", Tense.Present, 1f, 0.9f)
+                .termVolMax(3)
+                .goal("(x && y)", Tense.Present, 1f, 0.9f)
                 .believe("x", Tense.Present, 1f, 0.9f)
                 .mustGoal(cycles, "y", 1f, 0.81f, 0)
                 .mustNotOutput(cycles, "y", GOAL, t -> t != 0);
@@ -344,6 +345,7 @@ public class NAL8Test extends NALTest {
 
 
         test
+                .termVolMax(4)
                 .goal("(--x &&+3 y)", Tense.Present, 1f, 0.9f)
                 .believe("x", Tense.Present, 0f, 0.9f)
                 .mustGoal(cycles, "y", 1f, 0.81f, 3)
@@ -667,11 +669,12 @@ public class NAL8Test extends NALTest {
     void testPredictiveEquivalenceTemporalTemporalNeg() {
 
         test
-                .inputAt(0, "(--(out) ==>-3 (happy)). |")
-                .inputAt(0, "((happy) ==>+3 --(out)). |")
-                .inputAt(5, "(happy)! |")
-                .mustGoal(cycles, "(out)", 0f, 0.45f, 8)
-                .mustNotOutput(cycles, "(out)", GOAL, 3);
+                .termVolMax(3)
+                .inputAt(0, "(--out ==>-3 happy). |")
+                .inputAt(0, "(happy ==>+3 --out). |")
+                .inputAt(5, "happy! |")
+                .mustGoal(cycles, "out", 0f, 0.45f, 8)
+                .mustNotOutput(cycles, "out", GOAL, 3);
     }
 
 
