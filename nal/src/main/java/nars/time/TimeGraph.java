@@ -2,6 +2,7 @@ package nars.time;
 
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Iterators;
+import jcog.TODO;
 import jcog.Util;
 import jcog.WTF;
 import jcog.data.graph.MapNodeGraph;
@@ -1052,9 +1053,18 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 
 
                 if (aes > 1) {
+                    boolean bidi;
+                    if (x.op()==IMPL)
+                        bidi = true; //IMPL must be tried both directions since it isnt commutive
+                    else if (x.op()==CONJ)
+                        bidi = false;
+                    else
+                        throw new TODO(); //??
+
                     for (int i = 0; i < aa.length; i++) {
                         Event ii = aa[i];
-                        for (int j = i + 1; j < aa.length; j++) {
+                        for (int j = bidi ? 0 : i + 1; j < aa.length; j++) {
+                            if (i == j) continue;
                             if (!solveDTAbsolutePair(x, ii, aa[j], each))
                                 return false;
                         }
@@ -1063,8 +1073,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 
 
             } else {
-                if (!aEqB)
-                    ae.clear(); //don't need the previously accumulated
+                ae.clear();
 
                 solveOccurrence(shadow(b), false, bx -> {
                     if ((bx instanceof Absolute) && ae.add(bx)) {
@@ -1124,8 +1133,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
         long dur = durMerge(a, b);
 
         if (o == CONJ) {
-            Term c = terms.conjMerge(a.id, dt, b.id);
-            return solveOccurrence(c, aWhen, dur, each);
+            return solveOccurrence(terms.conjMerge(a.id, dt, b.id), aWhen, dur, each);
         } else {
             //for impl and other types cant assume occurrence corresponds with subject
 

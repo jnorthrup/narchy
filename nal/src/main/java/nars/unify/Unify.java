@@ -101,7 +101,7 @@ public abstract class Unify extends Versioning<Term> {
         this(varBits, random, stackMax,
                 //new TermHashMap<>()
                 //new UnifiedMap(32, 0.99f)
-                new HashMap(16, 0.99f)
+                new HashMap(16, 0.5f)
         );
     }
 
@@ -441,18 +441,20 @@ public abstract class Unify extends Versioning<Term> {
 
 
     /** can x be assigned to y (y <= x) */
-    public final boolean canPut(Op target, Termlike value) {
+    public final boolean canPut(Op target, Term value) {
         if (!var(target))
             return false;
         int exc;
         switch (target) {
             case VAR_DEP:
-                exc = Op.VAR_PATTERN.bit | Op.VAR_QUERY.bit | Op.VAR_INDEP.bit;
+                exc = Op.VAR_PATTERN.bit | Op.VAR_QUERY.bit | Op.VAR_INDEP.bit | Op.VAR_DEP.bit;
                 break;
             case VAR_INDEP:
-                exc = Op.VAR_PATTERN.bit | Op.VAR_QUERY.bit;
+                exc = Op.VAR_PATTERN.bit | Op.VAR_QUERY.bit | Op.VAR_INDEP.bit;
                 break;
             case VAR_QUERY:
+                exc = Op.VAR_PATTERN.bit | Op.VAR_QUERY.bit;
+                break;
             case VAR_PATTERN:
                 exc = Op.VAR_PATTERN.bit;
                 break;
@@ -490,20 +492,14 @@ public abstract class Unify extends Versioning<Term> {
      * args should be non-null. the annotations are removed for perf reasons
      */
     public final boolean putXY(final Variable x, Term y) {
-        //TODO HACK TEMPORARY ?
-        if (y instanceof Compound && y.containsRecursively(x)) {
-            //throw new WTF("recursive unification");
-            //Util.nop();
-            return false;
-        }
-//        return xy.set(x, y);
 
-//        Term Y = y;
-        Term Y = resolveTerm(y, true);
-        if (Y == Null)
-            return false;
-        else
-            return xy.set(x, Y);
+
+        Term Y = y;
+//        Term Y = resolveTerm(y, true);
+//        if (Y == Null)
+//            return false;
+//        else
+        return xy.set(x, Y);
     }
 
 

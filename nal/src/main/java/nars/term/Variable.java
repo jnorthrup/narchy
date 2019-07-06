@@ -97,12 +97,12 @@ public interface Variable extends Atomic {
             return true;
 
         Term x = u.resolveVar(this);
-        //Term x = u.resolveTerm(this, true);
+        //Term x = u.resolveTerm(this, false);
         if (x != this && x.equals(y0))
             return true;
 
         Term y = u.resolveTerm(y0, false);
-        //Term y = u.resolveTerm(y0,true);
+        //Term y = u.resolveTerm(y0, true);
         if (y != y0 && x.equals(y))
             return true;
 
@@ -115,23 +115,19 @@ public interface Variable extends Atomic {
 
             //mobius pos/neg unification resolution
             boolean done = false;
-            if (x instanceof Neg) {
+            if (x instanceof Neg && neggable(y)) {
                 Term xu = x.unneg();
-                if (xu instanceof Variable) {
-                    if (neggable(y) && u.canPut(xu.op(), y)) {
-                        x = xu;
-                        y = y.neg();
-                        done = true;
-                    }
+                if (xu instanceof Variable && u.canPut(xu.op(), y)) {
+                    x = xu;
+                    y = y.neg();
+                    done = true;
                 }
             }
-            if (!done && y instanceof Neg) {
+            if (!done && y instanceof Neg && neggable(x)) {
                 Term yu = y.unneg();
-                if (yu instanceof Variable) {
-                    if (neggable(x) && u.canPut(yu.op(), x)) {
-                        y = yu;
-                        x = x.neg();
-                    }
+                if (yu instanceof Variable && u.canPut(yu.op(), x)) {
+                    y = yu;
+                    x = x.neg();
                 }
             }
         }

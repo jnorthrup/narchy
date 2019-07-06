@@ -286,10 +286,7 @@ public class IntrinSubterms extends TermVector /*implements Subterms.SubtermsByt
         }
     }
 
-    @Override
-    public boolean contains(Term x) {
-        return indexOf(x) != -1;
-    }
+
 
     @Override
     public boolean containsNeg(Term x) {

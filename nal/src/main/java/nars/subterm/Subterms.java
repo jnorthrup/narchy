@@ -18,7 +18,6 @@ import nars.term.atom.Bool;
 import nars.term.util.transform.MapSubst;
 import nars.unify.Unify;
 import nars.unify.mutate.CommutivePermutations;
-import org.eclipse.collections.api.block.function.primitive.IntObjectToIntFunction;
 import org.eclipse.collections.api.block.predicate.primitive.IntObjectPredicate;
 import org.eclipse.collections.api.block.predicate.primitive.ObjectIntPredicate;
 import org.eclipse.collections.api.block.procedure.primitive.ObjectIntProcedure;
@@ -56,9 +55,11 @@ public interface Subterms extends Termlike, Iterable<Term> {
         }
     }
 
-    default boolean contains(Term t) {
-        return ORwith(Term::equals, t);
+    @Override
+    default boolean contains(Term x) {
+        return indexOf(x) != -1;
     }
+
     default boolean containsInstance(Term t) {
         return ORwith((u, tt) -> tt == u, t);
     }
@@ -86,11 +87,11 @@ public interface Subterms extends Termlike, Iterable<Term> {
     }
 
     default boolean containsAll(Subterms ofThese) {
-        return this.equals(ofThese) || (subs() >= ofThese.subs() && volume() >= ofThese.volume() && ofThese.AND(this::contains));
+        return this.equals(ofThese) || ofThese.AND(this::contains);
     }
 
     default boolean containsAny(Subterms ofThese) {
-        return this.equals(ofThese) || (ofThese.OR(this::contains));
+        return this.equals(ofThese) || ofThese.OR(this::contains);
     }
 
     default <X> X[] array(Function<Term,X> map, IntFunction<X[]> arrayizer) {
@@ -112,12 +113,6 @@ public interface Subterms extends Termlike, Iterable<Term> {
     }
 
 
-
-
-    //    default boolean equalsRoot(Subterms y) {
-//        return equals(y) ||
-//                (y.hasAny(Op.Temporal) && y.subs() == subs() && y.structure()==structure() && ANDith((x, i)-> x.equalsRoot(y.sub(i))));
-//    }
 
     /** allows a Subterms implementation to accept the byte[] key that was used in constructing it,
      *  allowing it to cache it for fast serialization.  typically it will want to keep:
@@ -172,11 +167,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
         for (int i = 0; i < s; i++)
             t.accept(sub(i), argConst);
     }
-    default void forEachWith(IntObjectToIntFunction<Term> t, int x) {
-        int s = subs();
-        for (int i = 0; i < s; i++)
-            x = t.intValueOf(x, sub(i));
-    }
+
 
 //    /**
 //     * recursively

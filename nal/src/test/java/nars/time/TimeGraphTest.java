@@ -292,7 +292,7 @@ class TimeGraphTest {
         TimeGraph C = newTimeGraph(1);
         C.know($("a"), 0);
         C.know($("a"), 2);
-        assertSolved("(a ==>+- a)", C, "(a ==>+2 a)"); //1 solution
+        assertSolved("(a ==>+- a)", C, "(a ==>+2 a)", "(a ==>-2 a)"); //1 solution
         assertSolvedIncludes("(a &&+- a)", C, "a@0", "a@2", "(a &&+2 a)@0" ); //2+ solutions
     }
 

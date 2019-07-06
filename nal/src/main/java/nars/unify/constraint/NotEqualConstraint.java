@@ -237,8 +237,7 @@ public final class NotEqualConstraint extends RelationConstraint {
                 return false;
             Op xo = x.op();
             if (xo.set && y.op()== xo) {
-                Subterms xx = x.subterms();
-                Subterms yy = y.subterms();
+                Subterms xx = x.subterms(), yy = y.subterms();
                 //TODO check heuristic direction
                 if (xx.volume() < yy.volume())
                     return !xx.containsAny(yy);

@@ -22,12 +22,12 @@ import static nars.time.Tense.ETERNAL;
 class NAL8EternalMixTest extends NALTest {
 
     private static final LongPredicate ZERO = t -> t >= 0;
-    private final int cycles = 500;
+    private final int cycles = 100;
 
     @BeforeEach
     void setTolerance() {
         test.confTolerance(NAL7Test.CONF_TOLERANCE_FOR_PROJECTIONS);
-        test.nar.termVolMax.set(31);
+        test.nar.termVolMax.set(15);
     }
 
     @Test
@@ -48,6 +48,8 @@ class NAL8EternalMixTest extends NALTest {
         String x3 = "((hold({t002}) &&+5 at({t001})) &&+5 open({t001}))";
 
         test
+            .termVolMax(22)
+            .confMin(0.35f)
             .input("opened:{t001}. |")
             .input("(((hold({t002}) &&+5 at({t001})) &&+5 open({t001})) &&+5 opened:{t001}).")
             .mustBelieve(cycles, x2, 1.0f, 0.40f, -15)
