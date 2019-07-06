@@ -195,14 +195,6 @@ import static nars.Op.BELIEF;
     }
 
 
-    default void actionToggle(Term s, Runnable r) {
-        actionToggle(s, (b) -> {
-            if (b) {
-                r.run();
-            }
-        });
-    }
-
     default void actionPushButton(Term s, Runnable r) {
         actionPushButton(s, midThresh(), r);
     }
@@ -214,14 +206,7 @@ import static nars.Op.BELIEF;
         }, thresh);
     }
 
-    default GoalActionConcept actionToggle(Term s, BooleanProcedure onChange) {
-
-
-        return actionPushButton(s, onChange);
-
-    }
-
-//    default GoalActionConcept actionPushReleaseButton(Term t, BooleanProcedure on) {
+    //    default GoalActionConcept actionPushReleaseButton(Term t, BooleanProcedure on) {
 //
 //        float thresh = 0.1f;
 //        return action(t, (b, g) -> {

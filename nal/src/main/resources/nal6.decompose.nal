@@ -22,8 +22,8 @@ C, X, eventOfPN(C,X)      |-   conjWithoutPN(C,X), (Punctuation:AskAsk)
     //impl conj/disj pred belief and question free structural implication decomposition
     (A ==> C), X, eventOfPN(C,X), --isVar(X)   |-   (A ==> conjWithoutPN(C,  X)), (Belief:StructuralDeduction)
 
-      //(A ==> D), X, conjParallel(D), eventOf(D,X), --isVar(X)      |-   (A ==>   X), (Belief:StructuralDeductionN)
-      //(A ==> D), X, conjParallel(D), eventOfNeg(D,X), --isVar(X)   |-   (A ==> --X), (Belief:StructuralDeductionN)
+      (A ==> D), X, conjParallel(D), eventOf(D,X), --isVar(X)      |-   (A ==>   X), (Belief:StructuralDeductionN)
+      (A ==> D), X, conjParallel(D), eventOfNeg(D,X), --isVar(X)   |-   (A ==> --X), (Belief:StructuralDeductionN)
 
 
         //(A ==> C), X, eventOfPN(C,X)   |-   (A ==> conjWithoutPN(C,  X)), (Belief:StructuralDeduction)
@@ -55,35 +55,14 @@ C, X, eventOfPN(C,X)      |-   conjWithoutPN(C,X), (Punctuation:AskAsk)
       //((&&,X,A..+) ==> B), Y, --isVar(X),--isVar(Y)  |- polarizeTask(unisubst(((&&,A..+) ==> B),X,polarizeBelief(Y))), (Belief:DecomposeDepolarized, Time:BeliefEvent)
 
 
-
-
-
-//    //goal/antigoal in sequence
-//    X, C, eventOf(C,X), --eventOfNeg(C,X)   |- C, (Goal:DesireWeak, Time:BeliefAtTask)
-//      //X, C, eventOfNeg(C,X), --eventOf(C,X)   |- --C, (Goal:Decompose, Time:BeliefAtTask)
-//    X, C, eventOfNeg(C,X), --eventOf(C,X)   |- C, (Goal:DesireWeakN, Time:BeliefAtTask)
-//      //X, C, eventOf(C,X), --eventOfNeg(C,X)   |- --C, (Goal:DecomposeN, Time:BeliefAtTask)
-
-    //X, C, eventOfNeg(C,X) |- --conjWithout(C,--X), (Goal:DesireWeak, Time:BeliefSubSequence)
-    //X, C, eventOf(C,X)    |- --conjWithout(C,X), (Goal:DesireWeakN, Time:BeliefSubSequence)
-
-
-
-
     //X is the desired event suffix (outcome).
     //C is a sequence ending in it.  this forms a goal of the sequence prefix (minus the trailing)
 
     //desire for sub-sequence leading to goal,  truth function may be Desire or Deduction
     G, C     |-    conjBefore(C,   G),  (Goal:DecomposePP, Time:TaskEvent)
     G, C     |-    conjBefore(C, --G),  (Goal:DecomposeNP, Time:TaskEvent)
-//      G, D   |-  --conjBefore(D, --G),  (Goal:DecomposeWeakNN, Time:TaskEvent)
-//      G, D   |-  --conjBefore(D,   G),  (Goal:DecomposeWeakPN, Time:TaskEvent)
-
-//    //conditional goal disjunction decompose (alternate suppress by goal)
-//    G, D, sectOf(D,G), conjParallel(D)      |- --unsect(D,  G), (Goal:DesireWeakPN)
-//    G, D, sectOf(D,--G), conjParallel(D)   |- --unsect(D,--G), (Goal:DesireWeakNN)
-            //--eventOfNeg(C,G) , --eventOf(C,G) <- optional additional renovelion of anti-goal not present anywhere in the sequence
-
+      G, D   |-  --conjBefore(D,   G),  (Goal:DecomposePN, Time:TaskEvent)
+      G, D   |-  --conjBefore(D, --G),  (Goal:DecomposeNN, Time:TaskEvent)
 
 //// propositional decomposition ////////////////////////////////////////////////////////////////////////////////////
 //If S is the case, and (&&,S,A..+) is not the case, it can't be that (&&,A..+) is the case
@@ -151,7 +130,7 @@ C, X, eventOfPN(C,X)      |-   conjWithoutPN(C,X), (Punctuation:AskAsk)
 
 
     //TODO test and write predicate version:
-      //(C==>Y), X, --isVar(X)           |-  polarizeTask((conjAfter(C,  polarizeBelief(X)) ==> Y)),       (Belief:DecomposeDepolarized,Goal:DecomposeDepolarized)
+      (C==>Y), X, --isVar(X)           |-  polarizeTask((conjAfter(C,  polarizeBelief(X)) ==> Y)),       (Belief:DecomposeDepolarized)
      // (--D==>Y), X, --isVar(X) |- polarizeTask((--unisubst(D,chooseUnifiableSubEvent(D,polarizeBelief(X)),polarizeBelief(X),"#") ==> Y)), (Belief:DecomposeDepolarized, Goal:DecomposeDepolarized)
 
 
@@ -164,17 +143,17 @@ C, X, eventOfPN(C,X)      |-   conjWithoutPN(C,X), (Punctuation:AskAsk)
 //    (M ==> S), (M ==> (||,S,A_1..n)) |- (M ==> (||,A_1..n)), (Truth:DecomposeNegativePositivePositive, Order:ForAllSame)
 
 
-    //conj
-    ( C ==> M), (S ==> M), eventOf(C,S)                |-     (  conjWithout(C, S) ==> M), (Belief:DecomposePN, Time:Compose)
-     ( C ==> M), (S ==> M), eventOfNeg(C,S)                |-     (  conjWithout(C, --S) ==> M), (Belief:DecomposePP, Time:Compose)
-    ( C ==> M), (S ==> M), eventOf(C,S)                |-    --(  conjWithout(C, S) ==> M), (Belief:DecomposeNN, Time:Compose)
-     ( C ==> M), (S ==> M), eventOfNeg(C,S)                |-    --(  conjWithout(C, --S) ==> M), (Belief:DecomposeNP, Time:Compose)
-
-    //disj
-    (  --C ==> M), (S ==> M), eventOf(C,S)          |-   (  --conjWithout(C, S) ==> M), (Belief:DecomposePN, Time:Compose)
-       ( --C ==> M), (S ==> M), eventOf(C,S)        |- --(  --conjWithout(C, S) ==> M), (Belief:DecomposeNN, Time:Compose)
-    (  --C ==> M), (S ==> M), eventOfNeg(C,S)          |-   (  --conjWithout(C, --S) ==> M), (Belief:DecomposePP, Time:Compose)
-       ( --C ==> M), (S ==> M), eventOfNeg(C,S)        |- --(  --conjWithout(C, --S) ==> M), (Belief:DecomposeNP, Time:Compose)
+//    //conj
+//    ( C ==> M), (S ==> M), eventOf(C,S)                |-     (  conjWithout(C, S) ==> M), (Belief:DecomposePN, Time:Compose)
+//     ( C ==> M), (S ==> M), eventOfNeg(C,S)                |-     (  conjWithout(C, --S) ==> M), (Belief:DecomposePP, Time:Compose)
+//    ( C ==> M), (S ==> M), eventOf(C,S)                |-    --(  conjWithout(C, S) ==> M), (Belief:DecomposeNN, Time:Compose)
+//     ( C ==> M), (S ==> M), eventOfNeg(C,S)                |-    --(  conjWithout(C, --S) ==> M), (Belief:DecomposeNP, Time:Compose)
+//
+//    //disj
+//    (  --C ==> M), (S ==> M), eventOf(C,S)          |-   (  --conjWithout(C, S) ==> M), (Belief:DecomposePN, Time:Compose)
+//       ( --C ==> M), (S ==> M), eventOf(C,S)        |- --(  --conjWithout(C, S) ==> M), (Belief:DecomposeNN, Time:Compose)
+//    (  --C ==> M), (S ==> M), eventOfNeg(C,S)          |-   (  --conjWithout(C, --S) ==> M), (Belief:DecomposePP, Time:Compose)
+//       ( --C ==> M), (S ==> M), eventOfNeg(C,S)        |- --(  --conjWithout(C, --S) ==> M), (Belief:DecomposeNP, Time:Compose)
 
 //conj pred
 

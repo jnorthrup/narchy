@@ -1596,7 +1596,7 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
     public final What what() {
         What w = active.get();
         if (w == null) {
-            Term id = $.identity($.uuid());
+            Term id = $.uuid();
             fork(w = the(id, true), null);
         }
         return w;
@@ -1656,16 +1656,15 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
             if (ConceptBuilder.dynamicModel((Compound) ct) != null) { //HACK
                 //try conceptualizing the dynamic
 
-                if (NAL.DYNAMIC_CONCEPT_TRANSIENT) {
+                if (NAL.CONCEPTUALIZE_DYNAMIC_TRANSIENT) {
 
                     //create temporary dynamic concept
                     Concept c = conceptBuilder.construct(ct);
-                    if (c != null)
-                        c.delete(this); //flyweight start deleted and unallocated (in-capacit-ated) since it isnt actually in memory
+//                    if (c != null)
+//                        c.delete(this); //flyweight start deleted and unallocated (in-capacit-ated) since it isnt actually in memory
 
                     return c;
                 } else {
-                    //permanent dynamic concept
                     return conceptualize(concept);
                 }
 
@@ -1681,11 +1680,9 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
         else if (punc==GOAL)
             return tableDynamic(concept, false);
         else {
-            @Nullable Concept exist = concept(concept);
-            if (exist!=null)
-                return exist.table(punc);
+            Concept exist = concept(concept);
+            return (exist!=null) ? exist.table(punc) : null;
         }
-        return null;
     }
 
     @Nullable public BeliefTable tableDynamic(Termed concept, boolean beliefOrGoal) {
@@ -1697,9 +1694,9 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
 //        return table;
 
 
-        Concept x = concept(concept);
-        if (x != null)
-            return (BeliefTable) x.table(beliefOrGoal ? BELIEF : GOAL); //concept exists, use its table
+        Concept c = concept(concept);
+        if (c != null)
+            return (BeliefTable) c.table(beliefOrGoal ? BELIEF : GOAL); //concept exists, use its table
 
         Term ct = concept.term();
         if (ct instanceof Compound && ct.volume() < termVolMax.intValue()) {

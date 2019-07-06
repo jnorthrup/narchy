@@ -10,6 +10,7 @@ import nars.agent.NAct;
 import nars.agent.Reward;
 import nars.concept.action.BiPolarAction;
 import nars.concept.action.GameAction;
+import nars.concept.action.GoalActionConcept;
 import nars.concept.action.SwitchAction;
 import nars.concept.sensor.DigitizedScalar;
 import nars.gui.sensor.VectorSensorView;
@@ -18,6 +19,7 @@ import nars.term.Term;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
 import nars.time.Tense;
+import nars.truth.PreciseTruth;
 import nars.video.AutoclassifiedBitmap;
 import org.eclipse.collections.api.block.function.primitive.FloatToFloatFunction;
 import org.eclipse.collections.api.block.procedure.primitive.BooleanProcedure;
@@ -356,23 +358,30 @@ public class FZero extends GameX {
         float fwdSpeed = 75;
 
         final Atom TANK = Atomic.atom("tank");
-        actionUnipolar($.inh(id,$.p(TANK, NAct.NEG)), (x) -> {
+        GoalActionConcept l = actionUnipolar($.inh(id, $.p(TANK, NAct.NEG)), (x) -> {
             if (x <= 0.5f) return 0;
-            float power = 2*(x-0.5f) * powerScale;
+            float power = 2 * (x - 0.5f) * powerScale;
             left[0] = power;
             fz.playerAngle += power * rotSpeed;
             fz.vehicleMetrics[0][6] += (left[0] + right[0]) * fwdSpeed;
             return x;
-        }).resolution(res);
+        });
 
-        actionUnipolar($.inh(id,$.p(TANK, NAct.PLUS)), (x) -> {
+        GoalActionConcept r = actionUnipolar($.inh(id, $.p(TANK, NAct.PLUS)), (x) -> {
             if (x <= 0.5f) return 0;
-            float power = 2*(x-0.5f) * powerScale;
+            float power = 2 * (x - 0.5f) * powerScale;
             right[0] = power;
             fz.playerAngle += -power * rotSpeed;
             fz.vehicleMetrics[0][6] += (left[0] + right[0]) * fwdSpeed;
             return x;
-        }).resolution(res);
+        });
+
+        PreciseTruth bias = $.t(0, 0.001f);
+
+        for (GoalActionConcept x : new GoalActionConcept[] { l, r } ) {
+            x.goalDefault(bias, nar);
+            x.resolution(res);
+        }
 
     }
 

@@ -14,6 +14,7 @@ import nars.NAR;
 import nars.agent.Reward;
 import nars.agent.util.RLBooster;
 import nars.concept.action.BiPolarAction;
+import nars.concept.action.GoalActionConcept;
 import nars.concept.sensor.DigitizedScalar;
 import nars.gui.NARui;
 import nars.op.BeliefPredict;
@@ -319,9 +320,9 @@ public class PoleCart extends GameX {
         window(NARui.rlbooster(bb), 500, 500);
 
         Exe.invokeLater(()->
-            window(NARui.beliefCharts(this.sensors.stream()
+            window(NARui.beliefCharts(nar, this.sensors.stream()
                     .flatMap(s-> Streams.stream(s.components()))
-                    .collect(toList()), nar), 900, 900)
+                    .collect(toList())), 900, 900)
         );
     }
 
@@ -342,15 +343,15 @@ public class PoleCart extends GameX {
     }
 
     public void initUnipolar() {
-        actionUnipolar(
-            //$.funcImg("mx", id, $.the(-1))
-            $.inh(id,"L"), (a) -> {
-            if (!manualOverride) {
-                actionLeft = power(a); //Util.clampBi((float) (action + a));
-                //action = Util.clampBi((float) (action + a * a));
-            }
-        });
-        actionUnipolar(
+        GoalActionConcept L = actionUnipolar(
+                //$.funcImg("mx", id, $.the(-1))
+                $.inh(id, "L"), (a) -> {
+                    if (!manualOverride) {
+                        actionLeft = power(a); //Util.clampBi((float) (action + a));
+                        //action = Util.clampBi((float) (action + a * a));
+                    }
+                });
+        GoalActionConcept R = actionUnipolar(
             //$.funcImg("mx", id, $.the(+1))
             $.inh(id,"R"), (a) -> {
             if (!manualOverride) {
@@ -358,6 +359,7 @@ public class PoleCart extends GameX {
                 //action = Util.clampBi((float) (action - a * a));
             }
         });
+
     }
 
 

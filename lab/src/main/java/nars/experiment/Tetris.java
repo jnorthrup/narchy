@@ -8,6 +8,7 @@ import nars.GameX;
 import nars.NAR;
 import nars.NARS;
 import nars.agent.GameTime;
+import nars.concept.action.GoalActionConcept;
 import nars.gui.sensor.VectorSensorView;
 import nars.op.java.Opjects;
 import nars.sensor.Bitmap2DSensor;
@@ -199,11 +200,14 @@ public class Tetris extends GameX {
             $.inh(id,"fall");
 
     void actionPushButtonLR() {
-        actionPushButtonMutex(LEFT, RIGHT,
+        GoalActionConcept[] lr = actionPushButtonMutex(LEFT, RIGHT,
                 b -> b && state.act(TetrisState.LEFT),
                 b -> b && state.act(TetrisState.RIGHT)
         );
+        for (GoalActionConcept x : lr)
+            x.goalDefault($.t(0, 0.001f), nar); //bias
     }
+
     void actionPushButtonLR_proportional() {
         //TODO
 //        actionDial($.inh(id, $.p($.the("x"), $.varQuery(1))), true, new FloatToFloatFunction() {

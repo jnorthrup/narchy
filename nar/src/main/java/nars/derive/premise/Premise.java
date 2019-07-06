@@ -201,8 +201,11 @@ public class Premise implements Comparable<Premise> {
 
                             if (answerGoal)
                                 d.what.accept(a);
-                            else //if (task.isInput())
+                            else {
+                                //if (task.isInput()) { }
                                 d.what.emit(a);
+                                //d.what.accept(a);
+                            }
 //                        }
 
                     }

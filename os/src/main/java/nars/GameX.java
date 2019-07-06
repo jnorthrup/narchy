@@ -430,8 +430,8 @@ abstract public class GameX extends Game {
         n.questionPriDefault.amp(0.04f);
         n.questPriDefault.amp(0.05f);
 
-        n.beliefConfDefault.set(0.75f);
-        n.goalConfDefault.set(0.75f);
+        n.beliefConfDefault.set(0.8f);
+        n.goalConfDefault.set(0.8f);
 
         n.emotion.want(MetaGoal.Futile, -0.0001f);
         n.emotion.want(MetaGoal.Perceive, -0.0001f);
@@ -439,7 +439,7 @@ abstract public class GameX extends Game {
         n.emotion.want(MetaGoal.Believe, 0.01f);
         n.emotion.want(MetaGoal.Desire, 0.01f);
 
-        n.emotion.want(MetaGoal.Action, +0.1f);
+        n.emotion.want(MetaGoal.Action, +0.2f);
 
 
 //

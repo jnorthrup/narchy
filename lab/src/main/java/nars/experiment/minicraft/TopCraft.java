@@ -65,7 +65,7 @@ public class TopCraft extends GameX {
                 input.down.pressIfUnpressed();
             }
         });
-        actionToggle($.func("menu", id), input.menu::pressIfUnpressed);
+        actionPushButton($.func("menu", id), ()->0.9f, input.menu::pressIfUnpressed);
 
         rewardNormalized("score", -1, +1, () -> {
             float nextScore = craft.frameImmediate();

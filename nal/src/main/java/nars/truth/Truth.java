@@ -218,6 +218,10 @@ public interface Truth extends Truthed {
     static float freq(float f, float epsilon) {
         if (!Float.isFinite(f))
             throw new TruthException("non-finite freq", f);
+        return freqSafe(f, epsilon);
+    }
+
+    static float freqSafe(float f, float epsilon) {
         return Util.unitizeSafe(Util.round(f, epsilon));
     }
 
@@ -326,17 +330,17 @@ public interface Truth extends Truthed {
 
 
     default Truth dither(float freqRes, float confRes) {
-        if (freqRes < NAL.truth.TRUTH_EPSILON && confRes < NAL.truth.TRUTH_EPSILON)
+        if (freqRes <= NAL.truth.TRUTH_EPSILON && confRes <= NAL.truth.TRUTH_EPSILON)
             return this;
 
         float f = freq();
-        float ff = freq(f, freqRes);
+        float ff = freqSafe(f, freqRes);
         float c = conf();
         double cc = confSafe(c, confRes);
-        if (Util.equals(f,ff) && Util.equals(c,cc))
+        if (Util.equals(f,ff,NAL.truth.TRUTH_EPSILON) && Util.equals(c,cc,NAL.truth.TRUTH_EPSILON))
             return this;
         else
-            return PreciseTruth.byConfEvi(ff, cc, evi() /* extra precision */);
+            return PreciseTruth.byConf(ff, cc);
     }
 
     @Nullable default Truth dither(float freqRes, float confRes, double eviMin, boolean negate) {

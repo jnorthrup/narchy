@@ -63,18 +63,23 @@ public class Line1DSimplest extends Game {
     }
 
     private void initDualToggle() {
-        actionToggle($.$$("y:up"), (b) -> {
-            if (b) {
+
+
+        actionPushButton($.$$("y:up"), (b1) -> {
+            if (b1) {
                 o.set(Util.unitize(o.floatValue() + speed.floatValue()));
                 System.out.println(o);
             }
         });
-        actionToggle($.$$("y:down"), (b) -> {
+
+
+        actionPushButton($.$$("y:down"), (b) -> {
             if (b) {
                 o.set(Util.unitize(o.floatValue() - speed.floatValue()));
                 System.out.println(o);
             }
         });
+
     }
 
 

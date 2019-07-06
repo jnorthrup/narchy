@@ -1,6 +1,5 @@
 package nars.table.eternal;
 
-import jcog.Util;
 import jcog.math.LongInterval;
 import nars.$;
 import nars.NAR;
@@ -11,6 +10,7 @@ import nars.table.dynamic.DynamicTaskTable;
 import nars.table.dynamic.SeriesBeliefTable;
 import nars.task.EternalTask;
 import nars.task.util.Answer;
+import nars.truth.PreciseTruth;
 import nars.truth.Truth;
 
 import static nars.Op.BELIEF;
@@ -39,7 +39,7 @@ public class EternalDefaultTable extends DynamicTaskTable {
 
         {
             Truth tWeak = //t.eternalized(1, n);
-                    $.t(t.freq(), Util.lerp(0.1f, n.confMin.floatValue(), t.conf()));
+                PreciseTruth.byEvi(t.freq(), t.evi()/2);
             Task tt = new EternalTask(c.term(), BELIEF, tWeak, creation, stamp);
             tt.pri(n.priDefault(BELIEF));
             this.weak = tt;
@@ -55,9 +55,13 @@ public class EternalDefaultTable extends DynamicTaskTable {
     }
 
     public static EternalDefaultTable add(Concept c, Truth t, NAR n) {
+        return add(c, t, BELIEF, n);
+    }
+
+    public static EternalDefaultTable add(Concept c, Truth t, byte punc, NAR n) {
         EternalDefaultTable tb = new EternalDefaultTable(c, t, n);
 
-        BeliefTables tables = (BeliefTables) c.beliefs();
+        BeliefTables tables = (BeliefTables) c.table(punc);
         assert(!tables.isEmpty()): "other tables should precede this in BeliefTables chain";
 
         tables.add(tb);

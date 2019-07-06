@@ -100,10 +100,10 @@ public class NARui {
         return new Widget(new MetaFrame(new BeliefTableChart(x, nar)));
      }
     public static Surface beliefCharts(NAR nar, Termed... x) {
-        return beliefCharts(ArrayIterator.iterable(x), nar);
+        return beliefCharts(nar, ArrayIterator.iterable(x));
     }
 
-    public static Surface beliefCharts(Iterable<? extends Termed> ii, NAR nar) {
+    public static Surface beliefCharts(NAR nar, Iterable<? extends Termed> ii) {
         return new Gridding(Lists.newArrayList(Iterables.transform(ii, i -> {
             return beliefChart(i, nar);
         })));
@@ -449,8 +449,8 @@ public class NARui {
 
 //                        .addAt("Dex+2", () -> a.dexterity(a.now() + 2 * a.nar().dur()))
 //                        .addAt("Dex+4", () -> a.dexterity(a.now() + 4 * a.nar().dur())), a),
-                "reward", () -> NARui.beliefCharts(rewards, a.nar()),
-                "actions", () -> NARui.beliefCharts(actions, a.nar())
+                "reward", () -> NARui.beliefCharts(a.nar(), rewards),
+                "actions", () -> NARui.beliefCharts(a.nar(), actions)
         ));
         return LabeledPane.the(a.id.toString(), aa);
 //            .on(Bitmap2DSensor.class, (Bitmap2DSensor b) ->

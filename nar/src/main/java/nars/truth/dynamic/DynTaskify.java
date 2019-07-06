@@ -293,7 +293,10 @@ public class DynTaskify extends TaskList {
             }
         } else {
             ensureCapacityForAdditional(1);
-            setTask(0, c.get(0).apply(this));
+            Task only = c.get(0).apply(this);
+            if (only == null)
+                return false;
+            setTask(0, only);
         }
         return true;
     }

@@ -7,6 +7,7 @@ import nars.GameX;
 import nars.NAR;
 import nars.agent.Reward;
 import nars.attention.PriNode;
+import nars.concept.action.AbstractGoalActionConcept;
 import nars.concept.action.BiPolarAction;
 import nars.concept.action.GoalActionConcept;
 import nars.concept.sensor.DigitizedScalar;
@@ -19,14 +20,16 @@ import nars.experiment.mario.sprites.Mario;
 import nars.gui.NARui;
 import nars.sensor.PixelBag;
 import nars.video.AutoclassifiedBitmap;
-import spacegraph.SpaceGraph;
 
 import javax.swing.*;
 import java.util.List;
+import java.util.stream.Stream;
 
+import static java.util.stream.Collectors.toList;
 import static nars.$.$$;
 import static nars.agent.GameTime.fps;
 import static nars.experiment.mario.level.Level.*;
+import static spacegraph.SpaceGraph.window;
 
 public class NARio extends GameX {
 
@@ -115,7 +118,6 @@ public class NARio extends GameX {
         );
 
         PriNode tileAttnGroup = new PriNode(tileSensors);
-        //HACK
 
         nar().control.parent(tileAttnGroup, new PriNode[]{attnSensor});
 
@@ -123,7 +125,7 @@ public class NARio extends GameX {
             nar().control.parent(s.attn, new PriNode[]{tileAttnGroup});
 
 
-        SpaceGraph.window(camAE.newChart(), 500, 500);
+        window(camAE.newChart(), 500, 500);
 
 //        SpaceGraph.window(new LabeledPane("Tile types",
 //                new Gridding(tileSensors.stream().map(z -> new VectorSensorView(z, nar).withControls()).collect(toList()))), 100, 100);
@@ -151,14 +153,16 @@ public class NARio extends GameX {
         });
 
 
-        //initButton();
-        initBipolar();
+        initButton();
+        //initBipolar();
 
 
-        DigitizedScalar vx = senseNumberDifferenceTri($$("vx"), 8, () -> theMario != null ? theMario.x : 0).resolution(0.02f);
-        DigitizedScalar vy = senseNumberDifferenceTri($$("vy"), 8, () -> theMario != null ? theMario.y : 0).resolution(0.02f);
+        DigitizedScalar vx = senseNumberDifferenceBi($$("vx"), 8, () -> theMario != null ? theMario.x : 0)
+                .resolution(0.25f);
+        DigitizedScalar vy = senseNumberDifferenceBi($$("vy"), 8, () -> theMario != null ? theMario.y : 0)
+                .resolution(0.25f);
 
-        //window(new Gridding(new VectorSensorView(vx, this), new VectorSensorView(vy, this)), 100, 50);
+        window(NARui.beliefCharts(this.nar, Stream.of(vx, vy).flatMap(x->x.sensors.stream()).collect(toList())), 400, 300);
 
 
         Reward right = reward("right", () -> {
@@ -312,21 +316,27 @@ public class NARio extends GameX {
                         s.key(Mario.KEY_JUMP, n);
                     return n;
                 });
+
         //j.actionDur(1);
+
+
 
 
 //        actionPushButton($$("down"),
 //                n -> { game.scene.key(Mario.KEY_DOWN, n); return n; } );
 
-        actionPushButton($$("speed"),
+        AbstractGoalActionConcept ss = actionPushButton($$("speed"),
                 n -> {
                     Scene s = game.scene;
-                    if (s!=null)
+                    if (s != null)
                         s.key(Mario.KEY_SPEED, n);
                     return n;
                 });
         //s.actionDur(1);
 
+        //bias
+//        j.goalDefault($.t(0, 0.01f), nar);
+//        ss.goalDefault($.t(0, 0.01f), nar);
     }
 
     void initTriState() {
@@ -431,7 +441,7 @@ public class NARio extends GameX {
             g.resolution(0.1f);
         });*/
 
-        SpaceGraph.window(NARui.beliefCharts(List.of(X.pos, X.neg, Y.pos, Y.neg), nar), 700, 700);
+        window(NARui.beliefCharts(nar, List.of(X.pos, X.neg, Y.pos, Y.neg)), 700, 700);
     }
 
     int lastCoins;

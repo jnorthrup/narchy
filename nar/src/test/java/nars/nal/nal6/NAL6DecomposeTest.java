@@ -114,9 +114,9 @@ abstract public class NAL6DecomposeTest extends NALTest {
         void testDecomposeConjNeg3() {
             test
                     .believe("(&&, --y, --z, --w)")
-                    .mustBelieve(cycles, "y", 0f, 0.73f)
-                    .mustBelieve(cycles, "z", 0f, 0.73f)
-                    .mustBelieve(cycles, "w", 0f, 0.73f)
+                    .mustBelieve(cycles, "y", 0f, 0.81f)
+                    .mustBelieve(cycles, "z", 0f, 0.81f)
+                    .mustBelieve(cycles, "w", 0f, 0.81f)
             ;
         }
 
@@ -467,8 +467,8 @@ abstract public class NAL6DecomposeTest extends NALTest {
             test
                     .termVolMax(7)
                     .believe("( x ==> (y || z))")
-                    .mustBelieve(cycles, "( x ==> y )", 1f, 0.45f)
-                    .mustBelieve(cycles, "( x ==> z )", 1f, 0.45f)
+                    .mustBelieve(cycles, "( x ==> y )", 1f, 0.81f)
+                    .mustBelieve(cycles, "( x ==> z )", 1f, 0.81f)
             ;
         }
 

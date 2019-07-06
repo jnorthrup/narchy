@@ -11,6 +11,7 @@ import nars.experiment.minicraft.side.awtgraphics.AwtGraphicsHandler;
 import nars.sensor.Bitmap2DSensor;
 import nars.sensor.PixelBag;
 import nars.video.AutoclassifiedBitmap;
+import org.eclipse.collections.api.block.procedure.primitive.BooleanProcedure;
 import spacegraph.SpaceGraph;
 
 import java.awt.image.BufferedImage;
@@ -57,20 +58,34 @@ public class SideCraft extends GameX {
         pixels = senseCamera("cra", cam);
 
 
-        actionToggle($("cra(key,left)"), (b) -> {
-            if (b) craft.player.startLeft(false /* slow */);
+        /* slow */
+
+
+        actionPushButton($("cra(key,left)"), (b4) -> {
+            if (b4) craft.player.startLeft(false /* slow */);
             else craft.player.stopLeft();
         });
-        actionToggle($("cra(key,right)"), (b) -> {
-            if (b) craft.player.startRight(false /* slow */);
+
+        /* slow */
+
+
+        actionPushButton($("cra(key,right)"), (b3) -> {
+            if (b3) craft.player.startRight(false /* slow */);
             else craft.player.stopRight();
         });
-        actionToggle($("cra(key,up)"), (b) -> {
-            if (b) craft.player.startClimb();
+
+
+        actionPushButton($("cra(key,up)"), (b2) -> {
+            if (b2) craft.player.startClimb();
             else craft.player.stopClimb();
         });
-        actionToggle($("cra(key,mouseL)"), (b) -> craft.leftClick = b);
-        actionToggle($("cra(key,mouseR)"), (b) -> craft.rightClick = b);
+
+
+        actionPushButton($("cra(key,mouseL)"), (BooleanProcedure) (b1) -> craft.leftClick = b1);
+
+
+        actionPushButton($("cra(key,mouseR)"), (BooleanProcedure) (b) -> craft.rightClick = b);
+
         float mSpeed = 45f;
         actionBipolar($("cra(mouse,X)"), (v) -> {
             int x = craft.screenMousePos.x;

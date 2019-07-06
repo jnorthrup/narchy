@@ -1,6 +1,5 @@
 package nars.task.util;
 
-import nars.Task;
 import nars.term.Termlike;
 import nars.util.SoftException;
 
@@ -15,8 +14,8 @@ public final class TaskException extends SoftException {
     public TaskException(Termlike t, String message) {
         super(message);
         this.task = t;
-        if (t instanceof Task)
-            ((Task) t).delete();
+//        if (t instanceof Task)
+//            ((Task) t).delete();
     }
 
     

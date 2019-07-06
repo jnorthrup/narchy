@@ -101,6 +101,7 @@ abstract public class VectorSensor extends AbstractSensor implements Iterable<Si
         //float quality = Util.sqrt(attn.amp.floatValue());
         //Random rng = g.random();
         for (Signal s : this) {
+            s.resolution().set(res);
             //if (quality >= 1 || rng.nextFloat() < quality )
                 s.update(truther, aPri, causeArray, g);
         }

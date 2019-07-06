@@ -53,11 +53,9 @@ public class Remember extends AbstractTask {
 
     public static Remember the(Task x, boolean store, boolean link, boolean emit, NAR n) {
 
-        assert (!x.isCommand());
-
-
         Term xTerm = x.term();
-        assert (xTerm.op().taskable);
+//        assert (!x.isCommand());
+//        assert (xTerm.op().taskable);
 
         if (NAL.VOLMAX_RESTRICTS || (NAL.VOLMAX_RESTRICTS_INPUT && x.isInput())) {
             int termVol = xTerm.volume();
@@ -66,7 +64,8 @@ public class Remember extends AbstractTask {
                 throw new TaskException(x, "target exceeds volume maximum: " + termVol + " > " + maxVol);
         }
 
-        if (x.isBeliefOrGoal()) {
+
+        if (NAL.test.DEBUG_ENSURE_DITHERED_TRUTH && x.isBeliefOrGoal()) {
 //            if (x.conf() < n.confMin.floatValue()) {
 //                if (!(x instanceof ProxyTask)) {
 //                    if (NAL.DEBUG)
@@ -76,9 +75,7 @@ public class Remember extends AbstractTask {
 //                }
 //            }
 
-            if (NAL.test.DEBUG_ENSURE_DITHERED_TRUTH) {
-                Truth.assertDithered(x.truth(), n);
-            }
+            Truth.assertDithered(x.truth(), n);
         }
 
 
@@ -87,10 +84,8 @@ public class Remember extends AbstractTask {
             if (d > 1) {
                 if (NAL.test.DEBUG_ENSURE_DITHERED_DT)
                     Tense.assertDithered(xTerm, d);
-
                 if (NAL.test.DEBUG_ENSURE_DITHERED_OCCURRENCE)
                     Tense.assertDithered(x, d);
-
             }
         }
 

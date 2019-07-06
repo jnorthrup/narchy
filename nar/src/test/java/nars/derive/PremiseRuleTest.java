@@ -148,9 +148,10 @@ class PremiseRuleTest {
 
     @Test void testNoXternalInSect() throws Narsese.NarseseException {
         assertConcPattern("(X,Y), Z |- (Z-->(X&&Y)), (Belief:Intersection)", "(%3-->(%1&&%2))");
-        assertConcPattern("(X,Y), Z |- (Z-->(X||Y)), (Belief:Intersection)", "(%3-->(%1||%2))");
+        assertConcPattern("(X,Y), Z |- (Z-->(X||Y)), (Belief:Intersection)", "(--,(%3-->((--,%1)&&(--,%2))))");
 
         assertConcPattern("(X,Y), Z |- (((X&&Y)-->Z),X,Y), (Belief:Intersection)", "(((%1&&%2)-->%3),%1,%2)");
+        assertConcPattern("(X,Y), Z |- (((X||Y)-->Z),X,Y), (Belief:Intersection)", "(--,(((--,%1)&&(--,%2)))-->%3),%1,%2))");
 
     }
 
@@ -206,7 +207,7 @@ class PremiseRuleTest {
         ));
         d.printRecursive();
 //        assertEquals("((\"?\"-->task),can({0}))", d.what.toString());
-        assertTrue(d.what.toString().contains("TaskPunc("));
+        assertTrue(d.what.toString().contains("PuncMap((0,0,\"?\",0))"));
     }
 
     @Test
@@ -217,7 +218,7 @@ class PremiseRuleTest {
 
         d.printRecursive();
         String s = d.what.toString();
-        assertTrue(s.contains("unifiable("), () -> s); //TODO this and other cases
+        assertTrue(s.contains("Unifiability("), () -> s); //TODO this and other cases
     }
 
     @Test

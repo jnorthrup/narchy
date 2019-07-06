@@ -14,6 +14,7 @@ import nars.table.BeliefTable;
 import nars.table.BeliefTables;
 import nars.table.dynamic.SensorBeliefTables;
 import nars.table.dynamic.SeriesBeliefTable;
+import nars.table.eternal.EternalDefaultTable;
 import nars.table.temporal.RTreeBeliefTable;
 import nars.task.util.Answer;
 import nars.task.util.TaskList;
@@ -28,6 +29,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Predicate;
 
+import static nars.Op.GOAL;
 import static nars.time.Tense.TIMELESS;
 import static nars.truth.func.TruthFunctions.w2cSafeDouble;
 
@@ -86,6 +88,10 @@ public class AbstractGoalActionConcept extends GameAction {
         GOALS.add(curiosityTable =
                 new CuriosityBeliefTable(term));
         GOALS.add(mutableGoals);
+    }
+
+    public void goalDefault(Truth t, NAR n) {
+        EternalDefaultTable.add(this, t, GOAL, n);
     }
 
     protected CauseChannel<Task> channel(NAR n) {

@@ -14,6 +14,7 @@ import nars.sensor.Bitmap2DSensor;
 import nars.term.Term;
 import nars.term.atom.Atomic;
 import org.eclipse.collections.api.block.predicate.primitive.BooleanPredicate;
+import org.eclipse.collections.api.block.procedure.primitive.BooleanProcedure;
 import spacegraph.SpaceGraph;
 import spacegraph.space2d.container.grid.Gridding;
 
@@ -136,9 +137,14 @@ public class Gradius extends GameX {
         ).resolution(gpsRes);
 
 
-        actionToggle($.inh(id,$$("fire")), b -> g.keys[VK_SHOOT] = b);
+        actionUnipolar($.inh(id,$$("speed")), (s)->{
+           g.SPEED = s * 3;
+        });
 
-//        if (canPause) {
+
+        actionPushButton($.inh(id,$$("fire")), (BooleanProcedure) b -> g.keys[VK_SHOOT] = b);
+
+        //        if (canPause) {
 //            actionToggle($$("pause"),
 //                    b -> g.paused = b);
 //        }

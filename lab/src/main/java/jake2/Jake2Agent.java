@@ -198,8 +198,11 @@ public class Jake2Agent extends GameX implements Runnable {
                 ()->cl.viewangles[Defines.YAW] -= yawSpeed
         );
 
-        actionToggle($("jump"), x -> CL_input.in_up.state = x ? 1 : 0);
-        actionToggle($("fire"), x -> CL_input.in_attack.state = x ? 1 : 0);
+
+        actionPushButton($("jump"), (BooleanProcedure) x1 -> CL_input.in_up.state = x1 ? 1 : 0);
+
+
+        actionPushButton($("fire"), (BooleanProcedure) x -> CL_input.in_attack.state = x ? 1 : 0);
 
         if (lookPitch) {
             actionPushButtonMutex(

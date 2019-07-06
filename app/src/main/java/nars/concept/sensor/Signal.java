@@ -133,7 +133,8 @@ public class Signal extends TaskConcept implements GameLoop, FloatFunction<Term>
 //        return this;
 //    }
     public Signal setResolution(FloatRange r) {
-        ((SensorBeliefTables) beliefs()).resolution(r);
+        //((SensorBeliefTables) beliefs()).resolution(r);
+        resolution().set(r);
         return this;
     }
 
