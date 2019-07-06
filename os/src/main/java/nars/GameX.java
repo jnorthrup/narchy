@@ -430,8 +430,8 @@ abstract public class GameX extends Game {
         n.questionPriDefault.amp(0.04f);
         n.questPriDefault.amp(0.05f);
 
-        n.beliefConfDefault.set(0.5f);
-        n.goalConfDefault.set(0.5f);
+        n.beliefConfDefault.set(0.75f);
+        n.goalConfDefault.set(0.75f);
 
         n.emotion.want(MetaGoal.Futile, -0.0001f);
         n.emotion.want(MetaGoal.Perceive, -0.0001f);
@@ -550,11 +550,13 @@ abstract public class GameX extends Game {
 //
 //        }
 
-        n.onTask((t)->{
-            if (t instanceof DerivedTask && t.isEternal() && t.isBeliefOrGoal()) {
-                System.err.println(t + "\n" + MetaGoal.proof(t, n) + "\n");
-            }
-        });
+        if (NAL.DEBUG) {
+            n.onTask((t) -> {
+                if (t instanceof DerivedTask && t.isEternal() && t.isBeliefOrGoal()) {
+                    System.err.println(t + "\n" + MetaGoal.proof(t, n) + "\n");
+                }
+            });
+        }
 
 
         Introduction arith = new Arithmeticize.ArithmeticIntroduction(n);

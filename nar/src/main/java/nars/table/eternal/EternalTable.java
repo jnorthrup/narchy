@@ -4,10 +4,7 @@ import jcog.Util;
 import jcog.data.list.FasterList;
 import jcog.pri.Prioritizable;
 import jcog.sort.SortedArray;
-import nars.$;
-import nars.NAL;
-import nars.NAR;
-import nars.Task;
+import nars.*;
 import nars.control.CauseMerge;
 import nars.control.op.Remember;
 import nars.table.BeliefTable;
@@ -150,19 +147,20 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
     //    @Override
     public void clear() {
 
-        long l = lock.readLock();
+        int sizeEstimate = size();
+        long l = sizeEstimate == 0 ? lock.readLock() /* may not need to acquire write lock */: lock.writeLock();
         try {
             if (size() > 0) {
-                l = Util.readToWrite(l, lock);
-                if (size() > 0) {
-                    //        forEach(ScalarValue::delete);
-                    super.clear();
-                }
+
+                if (StampedLock.isReadLockStamp(l))
+                    l = Util.readToWrite(l, lock);
+
+                //forEach(ScalarValue::delete);
+                super.delete();
             }
         } finally {
             lock.unlock(l);
         }
-
 
     }
 

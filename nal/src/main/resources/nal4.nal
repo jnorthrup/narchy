@@ -1,16 +1,21 @@
 //image structural transform forward
 
 
-(I --> P), X, is(P,"*"), --subOf(P,/), --subOf(P,\), subsMin(P,2), subOf(P,X) |- imageInt((I-->P),polarizeTask(X)), (Belief:IdentityDepolarized, Goal:IdentityDepolarized)
+(I --> P), X, is(P,"*"), --subOf(P,/), --subOf(P,\), subsMin(P,2), subOf(P,X) |- imageInt((I-->P),X), (Belief:Identity, Goal:Identity)
+(I --> P), X, is(P,"*"), --subOf(P,/), --subOf(P,\), subsMin(P,2), subOf(P,--X) |- imageInt((I-->P),--X), (Belief:Identity, Goal:Identity)
 
+    //(I --> P), X, is(P,"*"), --subOf(P,/), --subOf(P,\), subsMin(P,2), subOf(P,X), task("?@") |- imageInt((I-->P),X)
+    //(I --> P), X, is(P,"*"), --subOf(P,/), --subOf(P,\), subsMin(P,2), subOf(P,--X), task("?@") |- imageInt((I-->P),--X)
 
-    (I --> P), X, is(P,"*"), --subOf(P,/), --subOf(P,\), subsMin(P,2), subOf(P,X), task("?@") |- imageInt((I-->P),X)
-    (I --> P), X, is(P,"*"), --subOf(P,/), --subOf(P,\), subsMin(P,2), subOf(P,--X), task("?@") |- imageInt((I-->P),--X)
+(P --> I), X, is(P,"*"), --subOf(P,/), --subOf(P,\), subsMin(P,2), subOf(P,X) |- imageExt((P-->I),X), (Belief:Identity, Goal:Identity)
+(P --> I), X, is(P,"*"), --subOf(P,/), --subOf(P,\), subsMin(P,2), subOf(P,--X) |- imageExt((P-->I),--X), (Belief:Identity, Goal:Identity)
 
-(P --> I), X, is(P,"*"), --subOf(P,/), --subOf(P,\), subsMin(P,2), subOf(P,X) |- imageExt((P-->I),polarizeTask(X)), (Belief:IdentityDepolarized, Goal:IdentityDepolarized)
+    //(P --> I), X, is(P,"*"), --subOf(P,/), --subOf(P,\), subsMin(P,2), subOf(P,X), task("?@") |- imageExt((P-->I),X)
+    //(P --> I), X, is(P,"*"), --subOf(P,/), --subOf(P,\), subsMin(P,2), subOf(P,--X), task("?@") |- imageExt((P-->I),--X)
 
-    (P --> I), X, is(P,"*"), --subOf(P,/), --subOf(P,\), subsMin(P,2), subOf(P,X), task("?@") |- imageExt((P-->I),X)
-    (P --> I), X, is(P,"*"), --subOf(P,/), --subOf(P,\), subsMin(P,2), subOf(P,--X), task("?@") |- imageExt((P-->I),--X)
+//TODO and these arent right yet
+//(I --> P), X, is(P,"*"), --subOf(P,/), --subOf(P,\), subsMin(P,2), subOf(P,X) |- imageInt((I-->substitute(P,X,--X)),--X), (Belief:IdentityN, Goal:IdentityN)
+//(P --> I), X, is(P,"*"), --subOf(P,/), --subOf(P,\), subsMin(P,2), subOf(P,X) |- imageExt((substitute(P,X,--X)-->I),--X), (Belief:IdentityN, Goal:IdentityN)
 
 
 //image structural transform reverse

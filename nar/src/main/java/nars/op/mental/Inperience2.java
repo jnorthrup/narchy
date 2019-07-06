@@ -68,20 +68,20 @@ public class Inperience2 extends How {
                     Task u = null;
                     if (t.isBeliefOrGoal()) {
                         Term r = Inperience.reifyBeliefOrGoal(t, n);
-                        r = r.normalize();
-                        if (validReification(r, volMax)) {
-                            boolean neg = t.isNegative();
-                            u = new InperienceTask(r, $.t(1, beliefConf * t.truth().negIf(neg).expectation()), t);
+
+                        if ((r = validReification(r, volMax))!=null) {
+                            u = new InperienceTask(r, $.t(1,
+                                    beliefConf * (t.isNegative()?
+                                            t.truth().expectationNeg() : t.truth().expectation())), t);
                         }
                     } else {
                         Term r = Inperience.reifyQuestion(t.term(), t.punc(), n);
-                        r = r.normalize();
-                        if (validReification(r, volMax))
+                        if ((r = validReification(r, volMax))!=null)
                             u = new InperienceTask(r, $.t(1, beliefConf * 0.5f), t);
                     }
 
                     if (u != null) {
-                        Task.deductComplexification(t, u, priFactor.floatValue(), true);
+                        Task.fund(u, t, priFactor.floatValue(), true);
                         w.accept(u);
                     }
                 }
@@ -100,14 +100,19 @@ public class Inperience2 extends How {
         if (tt.volume() > volMax)
             return false;
 
-        if (tt.hasAny(Op.CONJ))
-            return false; //HACK temporary
+//        if (tt.hasAny(Op.CONJ))
+//            return false; //HACK temporary
 
         return true;
     }
 
-    private boolean validReification(Term r, int volMax) {
-        return r.op().taskable && r.volume() <= volMax && Task.validTaskTerm(r, BELIEF, true);
+    @Nullable private Term validReification(Term r, int volMax) {
+        if (r.op().taskable && r.volume() <= volMax) {
+             r = r.normalize();
+             if (Task.validTaskTerm(r, BELIEF, true))
+                return r;
+        }
+        return null;
     }
 
     @Override

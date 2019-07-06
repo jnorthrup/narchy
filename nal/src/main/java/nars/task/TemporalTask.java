@@ -21,8 +21,8 @@ public class TemporalTask extends ActualNALTask {
         this.end = end;
     }
 
-    public TemporalTask(Term c, Task parent, Truth t) throws TaskException {
-        this(c, parent.punc(), t, parent.creation(), parent.start(), parent.end(), parent.stamp());
+    public TemporalTask(Term c, Task parent, Truth t, long creation) throws TaskException {
+        this(c, parent.punc(), t, creation, parent.start(), parent.end(), parent.stamp());
         assert(!c.equals(parent.term()) || !Objects.equals(t, parent.truth())):
                 "same parent term (" + c + " =?= " + parent.term() + ") and same truth (" + t + " =?= " + parent.truth();
     }
@@ -44,8 +44,9 @@ public class TemporalTask extends ActualNALTask {
             super(term, punc, truth, creation, start, end, stamp);
         }
 
-        public Unevaluated(Term c, Task xx, Truth t) {
-            super(c, xx, t);
+
+        public Unevaluated(Term c, Task xx, Truth t, long creation) {
+            super(c, xx, t, creation);
         }
     }
 }

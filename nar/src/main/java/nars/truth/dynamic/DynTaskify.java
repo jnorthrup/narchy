@@ -263,6 +263,9 @@ public class DynTaskify extends TaskList {
             return false;
 
         int cn = c.size();
+        if (cn == 0)
+            return false;
+
         if (cn > 1) {
 
             int[] order = new int[cn];

@@ -105,13 +105,16 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
         return a.term().equals(b.term());
     }
 
-    static void deductComplexification(Task xx, Task yy, float factor, boolean copyOrMove) {
-        //discount pri by increase in target complexity
-        float xc = xx.voluplexity(), yc = yy.voluplexity();
-        float priSharePct =
-                1f - (yc / (xc + yc));
-        yy.pri(0);
-        yy.take(xx, priSharePct * factor, false, copyOrMove);
+    static void fund(Task y, Task x, float factor, boolean copyOrMove) {
+        Task.fund(y, new Task[] { x }, copyOrMove);
+        y.priMult(factor);
+
+//        //discount pri by increase in target complexity
+//        float xc = xx.voluplexity(), yc = yy.voluplexity();
+//        float priSharePct =
+//                1f - (yc / (xc + yc));
+//        yy.pri(0);
+//        yy.take(xx, priSharePct * factor, false, copyOrMove);
     }
 
     static Task negIf(Task answer, boolean negate) {
@@ -617,12 +620,13 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
                 Math.min(1, ((double)volSum) / y.volume() );
 
         double confFactor;
-        if (y.isBeliefOrGoal()) {
+        if (y.isBeliefOrGoal() && x[0].isBeliefOrGoal()) {
             double yConf = y.conf();
             double xConfMax = Util.max(Task::conf, x);
             confFactor = Math.min(1, (yConf / xConfMax));
         } else {
             if (x[0].isBeliefOrGoal()) {
+                //question formation
                 double xConfAvg = Util.sum(Task::conf, x) / x.length;
                 confFactor = Math.pow(1 - xConfAvg, 2);
                 //confFactor = Math.pow(1 - xConfAvg, x.length);
@@ -654,7 +658,8 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
     static void merge(Task y, Task[] x, float yp) {
         y.pri(yp);
 
-        ((NALTask)y).cause(CauseMerge.AppendUnique.merge(NAL.causeCapacity.intValue(), x));
+        if (y instanceof NALTask)
+            ((NALTask)y).cause(CauseMerge.AppendUnique.merge(NAL.causeCapacity.intValue(), x));
 
         if (Util.and(Task::isCyclic, x))
             y.setCyclic(true);

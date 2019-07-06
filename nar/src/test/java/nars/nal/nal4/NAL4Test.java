@@ -130,9 +130,9 @@ public class NAL4Test extends NALTest {
 
     @Test
     void structural_transformation_DepVar2() {
-        test.believe("reaction(acid,#1)", 1.0f, 0.9f);
-        test.mustBelieve(cycles, "(acid --> (reaction,/,#1))", 1.0f, 0.9f);
-        test.mustBelieve(cycles, "(#1 --> (reaction,acid,/))", 1.0f, 0.9f);
+        test.mustBelieve(cycles, "(acid --> (reaction,/,#1))", 1.0f, 0.9f).
+             mustBelieve(cycles, "(#1 --> (reaction,acid,/))", 1.0f, 0.9f).
+             believe("reaction(acid,#1)", 1.0f, 0.9f);
     }
 
     @Test
@@ -163,25 +163,29 @@ public class NAL4Test extends NALTest {
     @Test
     void structural_transformationInt() {
         test
-                .believe("(neutralization --> (acid,base))")
                 .mustBelieve(cycles, "((neutralization,\\,base) --> acid)", 1.0f, 0.9f)
                 .mustBelieve(cycles, "((neutralization,acid,\\) --> base)", 1.0f, 0.9f)
+                .believe("(neutralization --> (acid,base))")
         ;
     }
-    @Disabled @Test
+
+    @Test
     void structural_transformationInt_neg() {
         test
-                .believe("(--(x && y) --> (acid,base))")
-                .mustBelieve(cycles, "((--(x && y),\\,base) --> acid)", 1.0f, 0.9f)
-                .mustBelieve(cycles, "((--(x && y),acid,\\) --> base)", 1.0f, 0.9f)
+                .termVolMax(9)
+                .confMin(0.89f)
+                .mustBelieve(cycles, "((--x,\\,base) --> acid)", 1.0f, 0.9f)
+                .mustBelieve(cycles, "((--x,acid,\\) --> base)", 1.0f, 0.9f)
+                .believe("(--x --> (acid,base))")
         ;
     }
+
     @Test
     void structural_transformationInt_neg_focus() {
         test
-                .believe("(nothing --> (--acid,--base))")
                 .mustBelieve(cycles, "((nothing,\\,--base) --> acid)", 0.0f, 0.9f)
                 .mustBelieve(cycles, "((nothing,--acid,\\) --> base)", 0.0f, 0.9f)
+                .believe("(nothing --> (--acid,--base))")
         ;
     }
 
@@ -190,10 +194,10 @@ public class NAL4Test extends NALTest {
         test
                 .termVolMax(12)
 //                .confMin(0.6f)
-                .believe("(neutralization --> (acid,base))")
-                .believe("((acid,base) --> reaction)")
                 .mustBelieve(cycles, "((neutralization,\\,base) --> (reaction,/,base))", 1.0f, 0.81f)
                 .mustBelieve(cycles, "((neutralization,acid,\\) --> (reaction,acid,/))", 1.0f, 0.81f)
+                .believe("(neutralization --> (acid,base))")
+                .believe("((acid,base) --> reaction)")
         ;
     }
 
@@ -235,6 +239,7 @@ public class NAL4Test extends NALTest {
     }
 
 
+    @Disabled
     @ValueSource(bytes = {QUESTION, QUEST})
     @ParameterizedTest
     void testTransformQuestionSubj(byte punc) {
@@ -246,6 +251,7 @@ public class NAL4Test extends NALTest {
         ;
     }
 
+    @Disabled
     @ValueSource(bytes = {QUESTION, QUEST})
     @ParameterizedTest
     void testTransformQuestionPred(byte punc) {

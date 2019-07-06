@@ -41,14 +41,15 @@ public abstract class Introduction extends TaskLeakTransform {
                                 if (c.equals(x)) //HACK normalization might cause this to become true although it is seemingly checked before Task.clone()
                                     return null;
 
+                                long now = what.time();
                                 return tasksUnevaluated() ?
-                                        new TemporalTask.Unevaluated(c, xx, t) :
-                                        new TemporalTask(c, xx, t);
+                                        new TemporalTask.Unevaluated(c, xx, t, now) :
+                                        new TemporalTask(c, xx, t, now);
                             });
 
                     if (yy != null) {
-                        Task.deductComplexification(xx, yy, priFactor.floatValue(), true);
-
+                        yy.pri(0); //HACK
+                        Task.fund(yy, xx, priFactor.floatValue(), true);
                         in.accept(yy, what);
                         return 1;
                     }

@@ -159,7 +159,8 @@ abstract public class Inperience extends TaskLeakTransform {
         } else {
             verb = want;
         }
-        return $.funcImg(verb, self, y.negIf(t.isNegative()));
+        //return $.funcImg(verb, self, y.negIf(t.isNegative()));
+        return $.func(verb, self, y.negIf(t.isNegative()));
     }
 
 

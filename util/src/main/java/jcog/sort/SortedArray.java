@@ -429,6 +429,12 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
         return i != -1 && remove(i) != null;
     }
 
+    public void delete() {
+        SIZE.getAndSet(this, 0);
+        items = (X[])ArrayUtil.EMPTY_OBJECT_ARRAY;
+    }
+
+
     public void clear() {
         int s = SIZE.getAndSet(this, 0);
         if (s > 0)
