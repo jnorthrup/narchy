@@ -187,7 +187,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
     }
 
     private static boolean termsEvent(Term e) {
-        return e.op().eventable;
+        return e!=null && e.op().eventable;
     }
 
     /**
@@ -782,25 +782,37 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 
         //assert(!xx.hasXternal()): "dont solveDTTrace if subterms have XTERNAL";
 
-        if (x.op() == IMPL) { //x.op() == IMPL || (s == 2 && xx.sub(0).unneg().equals(xx.sub(1).unneg()))) { //s == 2) {
+        Op xop = x.op();
+        if (xop == IMPL) { //x.op() == IMPL || (s == 2 && xx.sub(0).unneg().equals(xx.sub(1).unneg()))) { //s == 2) {
 
             return solveDT2(x, xx, each);
 
         } else {
-            assert (x.op() == CONJ);
+            assert (xop == CONJ);
 
             int s0 = xx.subs();
-            xx = x.subterms().commuted();
+            xx = xx.commuted();
             int s = xx.subs();
 
             List<Event>[] subEvents = new FasterList[s];
             int abs = solveAbsolutes(xx, subEvents);
             if (abs > 0) {
-                if (!solveAbsolutePermutations(xx, subEvents, abs, each))
-                    return false;
+                if (s == 1) {
+                    //(x &&+- x) so collapse to x
+                    //assert(subEvents.length == 1);
+                    for (Event e : subEvents[0]) {
+                        if (!each.test(e))
+                            return false;
+                    }
+                } else {
 
-                if (abs == s0)
-                    return true; //done
+                    if (!solveAbsolutePermutations(xx, subEvents, abs, each))
+                        return false;
+
+                    if (abs == s0)
+                        return true; //done
+                }
+
             }
 
             if (s == 2) {
@@ -1346,14 +1358,14 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 
     private boolean solveDTAndOccRecursive(Term x, Predicate<Event> each) {
 
-        Map<Compound, Set<Compound>> subSolved = new UnifiedMap(4);
+        Map<Compound, Set<Term>> subSolved = new UnifiedMap(4);
 
         x.recurseTerms(Term::hasXternal, y -> {
             if (y instanceof Compound && y.dt() == XTERNAL && !y.subterms().hasXternal()) {
 
                 subSolved.computeIfAbsent((Compound) y, (yy) -> {
 
-                    Set<Compound> s = new UnifiedSet(2);
+                    Set<Term> s = new UnifiedSet(2);
 
 //                    int yv = yy.volume();
                     Op yyo = yy.op();
@@ -1363,11 +1375,11 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 
                         //TODO there could be multiple solutions for dt
                         Term zz = z.id;
-                        if (!(zz instanceof Compound) || zz.op() != yyo)
+                        if (!termsEvent(zz))
                             return true; //skip non-compound result (degenerate?)
 
                         //assert (zz.dt() != XTERNAL);
-                        s.add((Compound) zz);
+                        s.add(zz);
                         return true;
                     });
                     return s.isEmpty() ? java.util.Set.of() : s;
@@ -1385,12 +1397,12 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
                 break;
             case 1:
                 //randomize the entries
-                Map.Entry<Compound, Set<Compound>> xy = subSolved.entrySet().iterator().next();
+                Map.Entry<Compound, Set<Term>> xy = subSolved.entrySet().iterator().next();
 
-                Set<Compound> sy = xy.getValue();
+                Set<Term> sy = xy.getValue();
                 if (!sy.isEmpty()) {
                     Term xyx = xy.getKey();
-                    Compound[] two = sy.toArray(Op.EmptyCompoundArray);
+                    Term[] two = sy.toArray(Op.EmptyTermArray);
                     if (two.length > 1) ArrayUtil.shuffle(two, random());
 
 //                    int xv = x.volume();
@@ -1405,10 +1417,10 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
                 }
                 break;
             default:
-                List<Pair<Compound, Compound[]>> substs = new FasterList();
+                List<Pair<Compound, Term[]>> substs = new FasterList();
                 final int[] permutations = {1};
                 subSolved.forEach((h, w) -> {
-                    Compound[] ww = w.toArray(EmptyCompoundArray);
+                    Term[] ww = w.toArray(EmptyTermArray);
                     assert (ww.length > 0);
                     permutations[0] *= ww.length;
                     substs.add(pair(h, ww));
@@ -1420,10 +1432,9 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 
                 Map<Term, Term> m = new UnifiedMap(ns);
                 while (permutations[0]-- > 0) {
-                    for (Pair<Compound, Compound[]> si : substs) {
-                        Compound[] ssi = si.getTwo();
-                        Term sssi = ssi[ssi.length > 1 ? rng.nextInt(ssi.length) : 0];
-                        m.put(si.getOne(), sssi);
+                    for (Pair<Compound, Term[]> si : substs) {
+                        Term[] ssi = si.getTwo();
+                        m.put(si.getOne(), ssi[ssi.length > 1 ? rng.nextInt(ssi.length) : 0]);
                     }
                     Term z = x.replace(m);
 
@@ -1488,7 +1499,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 //    }
 
     private boolean solveDtAndOccIfConceptualizable(Term x, Term y, Predicate<Event> each) {
-        if (y == null || !termsEvent(y) || y.equals(x))
+        if (!termsEvent(y) || y.equals(x))
             return true;
 
         return y.hasXternal() ? solveAll(y, each) : solveDtAndOccTop(y, each);

@@ -277,7 +277,18 @@ class TimeGraphTest {
         C.know($("a"), 0);
         C.know($("b"), 2);
         C.know($("c"), 3);
-        assertSolved("(&&+-, (a &&+- a),b,c)", C, "(((a &&+1 a) &&+1 b) &&+1 c)@0");
+        assertSolved("(&&+-, (a &&+- a),b,c)", C,
+                "(((a &&+1 a) &&+1 b) &&+1 c)@0",
+                        "((a &&+2 b) &&+1 c)@0"
+        );
+    }
+    @Test
+    void repeatCollapse() throws Narsese.NarseseException {
+        TimeGraph C = newTimeGraph(1);
+        C.know($("a"), 0);
+        C.know($("b"), 2);
+        assertSolved("(a &&+- a)", C, "a@0");
+        assertSolved("((a &&+- a) ==>+- b)", C, "(a ==>+2 b)");
     }
 
     @Test

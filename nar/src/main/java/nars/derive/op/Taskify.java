@@ -12,7 +12,6 @@ import nars.derive.model.DerivationFailure;
 import nars.derive.rule.PremiseRuleProto;
 import nars.task.DebugDerivedTask;
 import nars.task.DerivedTask;
-import nars.term.Neg;
 import nars.term.ProxyTerm;
 import nars.term.Term;
 import nars.time.Tense;
@@ -75,13 +74,13 @@ public class Taskify extends ProxyTerm {
 
     void temporalTask(Term x, Occurrify.OccurrenceSolver time, Derivation d) {
 
-        boolean neg = false;
-
-        if (x instanceof Neg && (!d.taskTerm.hasAny(NEG) && !d.beliefTerm.hasAny(NEG))) {
-            //HACK semi-auto-unneg to help occurrify
-            x = x.unneg();
-            neg = true;
-        }
+//        boolean neg = false;
+//        if (x instanceof Neg && (!d.taskTerm.hasAny(NEG) && !d.beliefTerm.hasAny(NEG))) {
+//            //HACK semi-auto-unneg to help occurrify
+//            x = x.unneg();
+//            neg = true;
+//        }
+//.negIf(neg)
 
         Pair<Term, long[]> timing = time.occurrence(x, d);
         if (timing == null) {
@@ -89,12 +88,16 @@ public class Taskify extends ProxyTerm {
             return;
         }
 
-
         long[] occ = timing.getTwo();
         assertOccValid(d, occ);
 
 
         Term y = timing.getOne();
+        if (!Task.validTaskTerm(y, d.concPunc, true)) {
+            d.nar.emotion.deriveFailTemporal.increment();
+            return;
+        }
+
 
         if (NAL.derive.DERIVE_QUESTION_FROM_AMBIGUOUS_BELIEF_OR_GOAL && (d.concPunc == BELIEF || d.concPunc == GOAL)) {
             if (DerivationFailure.failure(y, d.concPunc)) {
@@ -121,7 +124,7 @@ public class Taskify extends ProxyTerm {
         if (NAL.test.DEBUG_ENSURE_DITHERED_DT)
             assertDithered(y, d.ditherDT);
 
-        taskify(y.negIf(neg), occ[0], occ[1], d);
+        taskify(y, occ[0], occ[1], d);
     }
 
     private void assertOccValid(Derivation d, long[] occ) {
@@ -157,10 +160,6 @@ public class Taskify extends ProxyTerm {
         Term x = xn.getOne();
 
 //        Op xo = x.op();
-
-
-
-
 
 
 //        if (punc == GOAL && d.taskPunc == GOAL) {
@@ -209,13 +208,13 @@ public class Taskify extends ProxyTerm {
                 S = Tense.dither(start, dither, -1);
                 E = Tense.dither(end, dither, +1);
             } else {
-                S = start; E = end;
+                S = start;
+                E = end;
             }
 
         } else {
             S = E = ETERNAL;
         }
-
 
 
         /** compares taskTerm un-anon */
@@ -236,12 +235,10 @@ public class Taskify extends ProxyTerm {
         DerivedTask t = //Task.tryTask(x, punc, tru, (C, tr) -> {
                 //return
                 NAL.DEBUG ?
-                            new DebugDerivedTask(x, punc, tru, S, E, d) :
-                            new DerivedTask(x, punc, tru, d.time(), S, E, d.evidence());
-                //};
+                        new DebugDerivedTask(x, punc, tru, S, E, d) :
+                        new DerivedTask(x, punc, tru, d.time(), S, E, d.evidence());
+        //};
         //);
-
-
 
 
         float priority = d.what.derivePri.pri(t, d);
