@@ -340,7 +340,8 @@ public interface Truth extends Truthed {
         if (Util.equals(f,ff,NAL.truth.TRUTH_EPSILON) && Util.equals(c,cc,NAL.truth.TRUTH_EPSILON))
             return this;
         else
-            return PreciseTruth.byConf(ff, cc);
+            //return PreciseTruth.byConf(ff, cc);
+            return PreciseTruth.byConfEvi(ff, cc, evi() /* include extra precision */);
     }
 
     @Nullable default Truth dither(float freqRes, float confRes, double eviMin, boolean negate) {

@@ -59,10 +59,10 @@ C, X, eventOfPN(C,X)      |-   conjWithoutPN(C,X), (Punctuation:AskAsk)
     //C is a sequence ending in it.  this forms a goal of the sequence prefix (minus the trailing)
 
     //desire for sub-sequence leading to goal,  truth function may be Desire or Deduction
-    G, C     |-    conjBefore(C,   G),  (Goal:DecomposePP, Time:TaskEvent)
-    G, C     |-    conjBefore(C, --G),  (Goal:DecomposeNP, Time:TaskEvent)
-      G, D   |-  --conjBefore(D,   G),  (Goal:DecomposePN, Time:TaskEvent)
-      G, D   |-  --conjBefore(D, --G),  (Goal:DecomposeNN, Time:TaskEvent)
+    G, C     |-    conjBefore(C,   G),  (Goal:DesirePP, Time:TaskEvent)
+    G, C     |-    conjBefore(C, --G),  (Goal:DesireNP, Time:TaskEvent)
+    G, C     |-  --conjBefore(C,   G),  (Goal:DesireNN, Time:TaskEvent)
+    G, C     |-  --conjBefore(C, --G),  (Goal:DesirePN, Time:TaskEvent)
 
 //// propositional decomposition ////////////////////////////////////////////////////////////////////////////////////
 //If S is the case, and (&&,S,A..+) is not the case, it can't be that (&&,A..+) is the case

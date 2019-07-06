@@ -51,11 +51,6 @@ public class ImageBeliefTable extends DynamicTaskTable {
         else {
             input = Task.withContent(original, normal);
             input.take(original, 0.5f, false, false); //share 50% priority with the normalized version
-
-
-            boolean cyclic = original.isCyclic();
-            if (cyclic)
-                input.setCyclic(true); //inherit cyclic
         }
 
         r.input = input;

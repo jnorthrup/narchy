@@ -350,7 +350,7 @@ public class FZero extends GameX {
     /** TODO correct ackerman/tank drive vehicle dynamics */
     private void initTankContinuous() {
 
-        float res = 0.05f;
+        float res = 0.1f;
         float powerScale = 0.1f;
         float rotSpeed = 0.75f;
         final float[] left = new float[1];
@@ -379,7 +379,7 @@ public class FZero extends GameX {
         PreciseTruth bias = $.t(0, 0.001f);
 
         for (GoalActionConcept x : new GoalActionConcept[] { l, r } ) {
-            x.goalDefault(bias, nar);
+            //x.goalDefault(bias, nar);
             x.resolution(res);
         }
 

@@ -44,7 +44,7 @@ public class SubUnify extends Unify {
 
         if (transformed != null) {
             Term result = apply(transformed);
-            assert(result!=null); //HACK TEMPORARY
+//            assert(result!=null); //HACK TEMPORARY
             if (result != Null && tryMatch(result)) {
 
                 use(1);

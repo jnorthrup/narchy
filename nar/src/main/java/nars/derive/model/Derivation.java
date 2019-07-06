@@ -49,7 +49,8 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-import static nars.Op.*;
+import static nars.Op.BELIEF;
+import static nars.Op.GOAL;
 import static nars.time.Tense.ETERNAL;
 import static nars.time.Tense.TIMELESS;
 
@@ -110,10 +111,10 @@ public class Derivation extends PreDerivation {
         @Override
         protected Term apply1(Term arg) {
             Truth b = Derivation.this.beliefTruth_at_Belief;
-//            return arg.negIf(b!=null ? b.isNegative() : random.nextBoolean());
-            if (b == null)
-                throw new NullPointerException();
-            return arg.negIf(b.isNegative());
+            return arg.negIf(b!=null ? b.isNegative() : random.nextBoolean());
+//            if (b == null)
+//                throw new NullPointerException();
+//            return arg.negIf(b.isNegative());
         }
     };
     /**
@@ -272,13 +273,22 @@ public class Derivation extends PreDerivation {
                     throw new WTF();
 
                 boolean taskEternal = taskStart == ETERNAL;
+                if (taskEternal) {
+
+//                    if (!nextBelief.isEternal() && nextBelief.start() < time()) {
+//                        long now = time();
+//                        float d = dur();
+//                        long presentStart = Math.round(now - d / 2);
+//                        long presentEnd = Math.round(now + d / 2);
+//                        _task = new SpecialOccurrenceTask(_task, taskStart = presentStart, taskEnd = presentEnd);
+//                        this.beliefTruth_at_Task = beliefAtTask(nextBelief);
+//                    } else
+                        this.beliefTruth_at_Task = beliefTruth_at_Belief;
 
 
-                this.beliefTruth_at_Task =
-                        taskEternal ?
-                                beliefTruth_at_Belief :
-                                //nextBelief.truth(taskStart, taskEnd, dur());
-                                nextBelief.truth(time(), _task);
+                } else {
+                    this.beliefTruth_at_Task = beliefAtTask(nextBelief);
+                }
 
                 if (NAL.ETERNALIZE_BELIEF_PROJECTED_IN_DERIVATION && beliefTruth_at_Belief != null && !nextBelief.equals(_task)) {
 
@@ -337,6 +347,15 @@ public class Derivation extends PreDerivation {
         return nextBelief;
     }
 
+    @Nullable
+    private Truth beliefAtTask(Task nextBelief) {
+        //integration-calculated
+        //return nextBelief.truth(taskStart, taskEnd, dur());
+
+        //classic opennars projection
+        return nextBelief.truth(time(), _task);
+    }
+
     private Task resetTask(final Task nextTask, Task currentTask) {
 
         Term nextTaskTerm = nextTask.term();
@@ -348,6 +367,7 @@ public class Derivation extends PreDerivation {
 
             //roll back only as far as the unique task terms. we can re-use them as-is
             anon.rollback(taskUniqueAnonTerms);
+
 
         } else {
             //have to re-anon completely
@@ -373,9 +393,10 @@ public class Derivation extends PreDerivation {
                 this.taskTruth = null;
             }
 
-            this.taskStart = nextTask.start();
-            this.taskEnd = nextTask.end();
         }
+
+        this.taskStart = nextTask.start();
+        this.taskEnd = nextTask.end();
 
         return nextTask;
     }

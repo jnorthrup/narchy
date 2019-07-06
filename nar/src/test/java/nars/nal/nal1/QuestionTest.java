@@ -241,7 +241,7 @@ class QuestionTest {
                 .termVolMax(11)
                 .input("f(#x,#y).")
                 .input("(f($x,#y) ==> g($x,#y)).")
-                .mustBelieve(64, "g(#1,#2)", 1f, 0.81f)
+                .mustBelieve(256, "g(#1,#2)", 1f, 0.81f)
                 .test();
     }
 

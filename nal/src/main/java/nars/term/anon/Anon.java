@@ -18,7 +18,7 @@ import org.jetbrains.annotations.Nullable;
  */
 public class Anon extends AbstractTermTransform.NegObliviousTermTransform {
 
-    private final ByteAnonMap map;
+    public final ByteAnonMap map;
 
 
     @Override

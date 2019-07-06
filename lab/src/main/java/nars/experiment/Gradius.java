@@ -4,10 +4,12 @@ import java4k.gradius4k.Gradius4K;
 import jcog.Util;
 import jcog.data.list.FasterList;
 import jcog.signal.wave2d.ScaledBitmap2D;
+import jcog.util.ArrayUtil;
 import nars.$;
 import nars.GameX;
 import nars.NAR;
 import nars.agent.Reward;
+import nars.concept.action.GoalActionConcept;
 import nars.concept.sensor.DigitizedScalar;
 import nars.gui.sensor.VectorSensorView;
 import nars.sensor.Bitmap2DSensor;
@@ -138,7 +140,7 @@ public class Gradius extends GameX {
 
 
         actionUnipolar($.inh(id,$$("speed")), (s)->{
-           g.SPEED = s * 3;
+           g.SPEED = Util.lerp(s, 0.1f, 4);
         });
 
 
@@ -150,8 +152,8 @@ public class Gradius extends GameX {
 //        }
 
 
-        //initToggle();
-        initBipolar();
+        initToggle();
+        //initBipolar();
 
         Reward alive = rewardNormalized("alive",  -1, +1, ()->{
             if (g.paused) return Float.NaN;
@@ -202,12 +204,15 @@ public class Gradius extends GameX {
         Term right = $.func(X, id, $.the(+1));
         Term up =    $.func(Y, id, $.the(+1));
         Term down =  $.func(Y, id, $.the(-1));
-        actionPushButtonMutex(left, right,
+        GoalActionConcept[] lr = actionPushButtonMutex(left, right,
                 (BooleanPredicate) b -> g.keys[VK_LEFT] = b,
                 (BooleanPredicate) b -> g.keys[VK_RIGHT] = b);
-        actionPushButtonMutex(down, up,
+        GoalActionConcept[] ud = actionPushButtonMutex(down, up,
                 (BooleanPredicate) b -> g.keys[VK_DOWN] = b,
                 (BooleanPredicate) b -> g.keys[VK_UP] = b);
+
+        for (GoalActionConcept x : ArrayUtil.addAll(lr, ud))
+            x.goalDefault($.t(0, 0.001f), nar); //bias
     }
 
     void initBipolar() {

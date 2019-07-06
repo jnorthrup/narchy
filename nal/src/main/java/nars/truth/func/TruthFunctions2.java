@@ -146,8 +146,7 @@ public enum TruthFunctions2 {
                         bipolar ?
                             Util.lerpSafe(bF, 1- gF, gF)
                             :
-                            gF * bF
-                            //gF
+                            gF
                             //Util.lerpSafe(bF, 0.5f, goal.freq())
                         ;
 

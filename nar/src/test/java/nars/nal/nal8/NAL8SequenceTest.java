@@ -74,7 +74,7 @@ public class NAL8SequenceTest extends NALTest {
         
         test
                 .input( "b!")
-                .input( "((a&|b) &&+1 c).")
+                .input( "((a&&b) &&+1 c).")
                 .mustGoal(cycles, "a", 1, 0.81f) //81% for one step
         ;
     }
@@ -83,7 +83,7 @@ public class NAL8SequenceTest extends NALTest {
         
         test
                 .input( "c!")
-                .input( "(a &&+1 (b &&+1 ((c&|f) &&+1 (d &&+1 e)))).")
+                .input( "(a &&+1 (b &&+1 ((c&&f) &&+1 (d &&+1 e)))).")
                 .mustGoal(cycles, "(a &&+1 (b &&+1 f))", 1, 0.81f) //81% for one step
         ;
     }
@@ -93,8 +93,8 @@ public class NAL8SequenceTest extends NALTest {
         
         test
                 .input( "c(x)!")
-                .input( "(a &&+1 (b(#1) &&+1 ((&|,a,b,c(#1),d(x,y)) &&+1 (d &&+1 e)))).")
-                .mustGoal(cycles, "(a &&+1 (b(x) &&+1 (&|,a,b,d(x,y))))", 1, 0.81f) //81% for one step
+                .input( "(a &&+1 (b(#1) &&+1 ((&&,a,b,c(#1),d(x,y)) &&+1 (d &&+1 e)))).")
+                .mustGoal(cycles, "(a &&+1 (b(x) &&+1 (&&,a,b,d(x,y))))", 1, 0.81f) //81% for one step
         ;
     }
     @Test
@@ -102,7 +102,7 @@ public class NAL8SequenceTest extends NALTest {
         
         test
                 .input( "f!")
-                .input( "(a &&+1 (b &&+1 ((c&|f) &&+1 (d &&+1 e)))).")
+                .input( "(a &&+1 (b &&+1 ((c&&f) &&+1 (d &&+1 e)))).")
                 .mustGoal(cycles, "(a &&+1 (b &&+1 c))", 1, 0.81f) //81% for one step
         ;
     }
@@ -161,7 +161,7 @@ public class NAL8SequenceTest extends NALTest {
         test
                 .input( "(a &&+1 ((b(x)&&c) &&+1 ((c(#1) && d(x,#1)) &&+1 (d &&+1 e(#1)))))!")
                 .input( "(b(x)&&c).")
-                //.mustGoal(cycles, "((&|,d(x,x)) &&+1 (d &&+1 e(x)))", 1, 0.81f) //81% for one step
+                //.mustGoal(cycles, "((&&,d(x,x)) &&+1 (d &&+1 e(x)))", 1, 0.81f) //81% for one step
                 .mustGoal(cycles, "(((d(x,#1)&&c(#1)) &&+1 d) &&+1 e(#1))", 1, 0.81f) //81% for one step
         ;
     }
@@ -194,7 +194,7 @@ public class NAL8SequenceTest extends NALTest {
                 .input( "(a &&+1 ((b(#1)&&c) &&+1 ((&&,c(#1),d(x,#1)) &&+1 e(#1))))!")
                 .input( "(b(x) &&+1 c(x)).")
                 .mustGoal(cycles, "(d(x,x) &&+1 e(x))", 1, 0.81f) //81% for one step
-        //.mustGoal(cycles, "(&|,a,b,d(x,x))", 1, 0.81f) //81% for one step
+        //.mustGoal(cycles, "(&&,a,b,d(x,x))", 1, 0.81f) //81% for one step
         ;
     }
 

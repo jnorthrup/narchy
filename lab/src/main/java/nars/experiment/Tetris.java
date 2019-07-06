@@ -204,8 +204,8 @@ public class Tetris extends GameX {
                 b -> b && state.act(TetrisState.LEFT),
                 b -> b && state.act(TetrisState.RIGHT)
         );
-        for (GoalActionConcept x : lr)
-            x.goalDefault($.t(0, 0.001f), nar); //bias
+//        for (GoalActionConcept x : lr)
+//            x.goalDefault($.t(0, 0.001f), nar); //bias
     }
 
     void actionPushButtonLR_proportional() {

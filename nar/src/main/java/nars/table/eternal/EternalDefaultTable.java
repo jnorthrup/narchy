@@ -25,23 +25,23 @@ public class EternalDefaultTable extends DynamicTaskTable {
 //    boolean applyPast = true;
 //    boolean applyFuture = true;
 
-    private EternalDefaultTable(Concept c, Truth t, NAR n) {
+    private EternalDefaultTable(Concept c, Truth t, byte punc, NAR n) {
         super(c.term(), true);
 
         long[] stamp = n.evidence();
         long creation = n.time();
 
         {
-            Task tt = new EternalTask(c.term(), BELIEF, t, creation, stamp);
-            tt.pri(n.priDefault(BELIEF));
+            Task tt = new EternalTask(c.term(), punc, t, creation, stamp);
+            tt.pri(n.priDefault(punc));
             this.strong = tt;
         }
 
         {
             Truth tWeak = //t.eternalized(1, n);
                 PreciseTruth.byEvi(t.freq(), t.evi()/2);
-            Task tt = new EternalTask(c.term(), BELIEF, tWeak, creation, stamp);
-            tt.pri(n.priDefault(BELIEF));
+            Task tt = new EternalTask(c.term(), punc, tWeak, creation, stamp);
+            tt.pri(n.priDefault(punc));
             this.weak = tt;
         }
         //n.input(belief);
@@ -59,7 +59,7 @@ public class EternalDefaultTable extends DynamicTaskTable {
     }
 
     public static EternalDefaultTable add(Concept c, Truth t, byte punc, NAR n) {
-        EternalDefaultTable tb = new EternalDefaultTable(c, t, n);
+        EternalDefaultTable tb = new EternalDefaultTable(c, t, punc, n);
 
         BeliefTables tables = (BeliefTables) c.table(punc);
         assert(!tables.isEmpty()): "other tables should precede this in BeliefTables chain";

@@ -3,7 +3,9 @@ package nars.test;
 import jcog.data.list.FasterList;
 import nars.NAR;
 import org.eclipse.collections.api.block.function.primitive.DoubleFunction;
+import org.junit.jupiter.api.Test;
 
+import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.function.Function;
@@ -12,18 +14,26 @@ import java.util.stream.Collectors;
 import java.util.stream.DoubleStream;
 import java.util.stream.Stream;
 
-public class TestNARSuite extends FasterList<TestNARSuite.MyTestNAR> {
+@Deprecated public class TestNARSuite extends FasterList<TestNARSuite.MyTestNAR> {
 
     private final Supplier<NAR> narBuilder;
     private final Stream<Method> testMethods;
 
     public TestNARSuite(Supplier<NAR> narBuilder, Class<? extends NALTest>... testClasses) {
-        this(narBuilder, NALTest.tests(testClasses));
+        this(narBuilder, tests(testClasses));
     }
 
     public TestNARSuite(Supplier<NAR> narBuilder, Stream<Method> testMethods) {
         this.narBuilder = narBuilder;
         this.testMethods = testMethods;
+    }
+
+    public static Stream<Method> tests(Class<? extends NALTest>... c) {
+        return Stream.of(c)
+                .flatMap(cc -> Stream.of(cc.getDeclaredMethods())
+                        .filter(x -> x.getAnnotation(Test.class) != null))
+                        .peek(AccessibleObject::trySetAccessible)
+                        .collect(Collectors.toList()).stream();
     }
 
     public void run(boolean parallel) {

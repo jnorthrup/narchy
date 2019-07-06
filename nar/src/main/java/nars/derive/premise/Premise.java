@@ -4,6 +4,7 @@
  */
 package nars.derive.premise;
 
+import jcog.WTF;
 import jcog.signal.meter.FastCounter;
 import nars.*;
 import nars.derive.model.Derivation;
@@ -197,7 +198,8 @@ public class Premise implements Comparable<Premise> {
 //                        if (a.conf() < d.confMin)
 //                            a = null;
 //                        else {
-                            assert (((!answerGoal && a.isBelief()) || (answerGoal && a.isGoal())));
+                            if (!(((!answerGoal && a.isBelief()) || (answerGoal && a.isGoal()))))
+                                throw new WTF();
 
                             if (answerGoal)
                                 d.what.accept(a);
