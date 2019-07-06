@@ -4,7 +4,6 @@ import jcog.sort.RankedN;
 import nars.NAR;
 import nars.Task;
 import nars.control.op.Remember;
-import nars.table.eternal.EternalTable;
 import nars.table.question.QuestionTable;
 import nars.task.util.Answer;
 import nars.term.Term;
@@ -49,7 +48,7 @@ public interface TaskTable {
      * TODO add 'intersects or contains' option
      */
     default void forEachTask(long minT, long maxT, Consumer<? super Task> x) {
-        if (minT == ETERNAL || (this instanceof EternalTable)) {
+        if (minT == ETERNAL) {
             forEachTask(x);
         } else {
             assert(minT!=TIMELESS);

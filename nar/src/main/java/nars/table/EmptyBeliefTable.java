@@ -1,5 +1,6 @@
 package nars.table;
 
+import nars.Op;
 import nars.Task;
 import nars.control.op.Remember;
 import nars.task.util.Answer;
@@ -20,6 +21,10 @@ public class EmptyBeliefTable implements BeliefTable {
         //nothing
     }
 
+    @Override
+    public Task[] taskArray() {
+        return Op.EmptyTaskArray;
+    }
 
     @Override
     public void forEachTask(Consumer<? super Task> x) {

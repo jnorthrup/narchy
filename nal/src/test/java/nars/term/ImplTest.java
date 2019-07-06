@@ -66,6 +66,11 @@ class ImplTest {
 
     }
 
+    @Test void testTemporalRepeatNormalization() {
+      assertEq("(x ==>+2 x)", "(x ==>-2 x)");
+        assertEq("(x ==>+2 x)", "(x ==>+2 x)");
+    }
+
     @Test
     void testReducibleImpl() {
 

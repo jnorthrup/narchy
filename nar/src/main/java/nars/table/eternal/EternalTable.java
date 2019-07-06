@@ -46,6 +46,11 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
     }
 
     @Override
+    public final void forEachTask(long minT, long maxT, Consumer<? super Task> x) {
+        this.forEach(x);
+    }
+
+    @Override
     public final void forEachTask(Consumer<? super Task> x) {
 //        long r = lock.readLock();
 //        try {

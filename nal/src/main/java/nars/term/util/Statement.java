@@ -274,8 +274,14 @@ public class Statement {
         }
 
 
-        if (op == IMPL && dt == 0)
-            dt = DTERNAL; //generalize to DTERNAL ==>
+        if (op == IMPL) {
+            if (dt == 0)
+                dt = DTERNAL; //generalize to DTERNAL ==>
+            else {
+                if (dt < 0 && subject.equals(predicate))
+                    dt = -dt; //normalize to positive dt
+            }
+        }
 
         Term t = B.newCompound(op, dt, subject, predicate);
 

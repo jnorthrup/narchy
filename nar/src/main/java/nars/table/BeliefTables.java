@@ -6,6 +6,7 @@ import nars.control.op.Remember;
 import nars.task.util.Answer;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Arrays;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
@@ -101,9 +102,9 @@ public class BeliefTables extends FasterList<BeliefTable> implements BeliefTable
     }
 
     public final void delete() {
-        forEach(TaskTable::delete);
-        super.delete();
         size = 0;
+        forEach(TaskTable::delete);
+        Arrays.fill(items, 0, size, null);
         items = null;
     }
 

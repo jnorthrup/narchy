@@ -21,7 +21,7 @@ public class ImageBeliefTable extends DynamicTaskTable {
     /**
      * the target of the concept which this relies on for storage of beliefs, and thus remains consistent with
      */
-    public final Term normal;
+    @Deprecated public final Term normal;
 
 
     public ImageBeliefTable(Term image, boolean beliefOrGoal) {
@@ -37,14 +37,14 @@ public class ImageBeliefTable extends DynamicTaskTable {
     @Override
     public void remember(Remember r) {
 
-        TaskConcept c = (TaskConcept)
-                //n.conceptualizeDynamic(imgNormal);
-                //n.conceptualize(imgNormal);
-                r.nar.conceptualize(normal);
+        Task original = r.input;
+        Term normal = Image.imageNormalize(original.term());
+
+        TaskConcept c = (TaskConcept) r.nar.conceptualize(normal);
         if (c == null)
             return;
 
-        Task original = r.input;
+
         Task input;
         if (original instanceof ImageTask)
             input = ((ImageTask) original).task; //unwrap existing
@@ -70,8 +70,13 @@ public class ImageBeliefTable extends DynamicTaskTable {
     @Override
     public @Nullable Task match(long start, long end, boolean forceProject, @Nullable Term template, Predicate<Task> filter, float dur, NAR nar, boolean ditherTruth) {
         Task t = super.match(start, end, forceProject, template, filter, dur, nar, ditherTruth);
-        return t != null ? new ImageTask(this.term, t) : null;
+        return t != null ? new ImageTask(transformFromTemplate(t), t) : null;
     }
+
+    private Term transformFromTemplate(Task t) {
+        return Image.transformFromTemplate(t.term(), this.term, this.normal);
+    }
+
 
     /**
      * wraps resulting task as an Image proxy
@@ -79,13 +84,16 @@ public class ImageBeliefTable extends DynamicTaskTable {
     @Override
     public Task sample(When<NAR> when, @Nullable Term template, @Nullable Predicate<Task> filter) {
         Task t = super.sample(when, template, filter);
-        return t != null ? new ImageTask(this.term, t) : null;
+        return t != null ? new ImageTask(transformFromTemplate(t), t) : null;
     }
 
     @Override
     public void match(Answer t) {
+//        if (t.term()==null)
+//            throw new WTF();
+
         //forward to the host concept's appropriate table
-        Concept h = host(t.nar, false);
+        Concept h = t.nar.conceptualizeDynamic(normal);
         if (h == null)
             return;
         if (!(h instanceof TaskConcept))
@@ -103,10 +111,5 @@ public class ImageBeliefTable extends DynamicTaskTable {
 //            else
 //                return beliefOrGoal ? h.beliefs() : h.goals();
 //        }
-
-    @Nullable
-    private Concept host(NAR n, boolean conceptualize) {
-        return n.concept(normal, conceptualize);
-    }
 
 }

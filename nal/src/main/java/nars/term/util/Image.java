@@ -202,4 +202,29 @@ public enum Image {
         } else
             return task.term();
     }
+
+    /** infers the corresponding image transformation of a term suggested by a template
+     * @param x will be the image normalized form
+     * @return the image transformed to match the template which represents a transformed image
+     * */
+    public static Term transformFromTemplate(Term x, Term template, Term normal) {
+        if (x.equals(normal))
+            return template;
+
+        assert(template.op()==INH && x.op()==INH);
+
+        if (!x.hasAny(Op.Temporal))
+            return template; //template should equal the expected result
+
+        Subterms tt = template.subterms();
+        Term subj = tt.sub(0), pred = tt.sub(1);
+        if (subj.contains(Op.ImgInt)) {
+            Term y = x.sub(1).sub(normal.sub(1).subIndexFirst(z -> z.equals(pred)));
+            return Image.imageInt(x, y);
+        } else if (pred.contains(Op.ImgExt)) {
+            Term y = x.sub(0).sub(normal.sub(0).subIndexFirst(z -> z.equals(subj)));
+            return Image.imageExt(x, y);
+        } else
+            throw new TermTransformException("could not infer Image transform from template", x, template);
+    }
 }

@@ -702,20 +702,15 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
          * whether to dither events as they are represented internally.  output events are dithered for the NAR regardless.
          */
         public static final boolean TIMEGRAPH_DITHER_EVENTS_INTERNALLY= configIs("TIMEGRAPH_DITHER_EVENTS_INTERNALLY");
+
+
+        public static final int TTL_UNISUBST_MAX = 8;
+
         public static final int TTL_CONJ_BEFORE_AFTER = NAL.derive.TTL_UNISUBST_MAX;
 
 
         @Range(min = 1, max = 32)
         public static final int TIMEGRAPH_ITERATIONS = 2;
-        /**
-         * TTL = 'time to live'
-         */
-        public static final int TermutatorSearchTTL = 4;
-
-
-
-
-        public static final int TTL_UNISUBST_MAX = 8;
 
 
         @Range(min = 0, max = 64)

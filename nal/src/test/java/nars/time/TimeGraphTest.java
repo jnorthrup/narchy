@@ -10,10 +10,7 @@ import org.eclipse.collections.impl.set.mutable.primitive.IntHashSet;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Random;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
@@ -290,6 +287,14 @@ class TimeGraphTest {
         assertSolved("(a &&+- a)", C, "a@0");
         assertSolved("((a &&+- a) ==>+- b)", C, "(a ==>+2 b)");
     }
+    @Test
+    void repeatCollapse2() throws Narsese.NarseseException {
+        TimeGraph C = newTimeGraph(1);
+        C.know($("a"), 0);
+        C.know($("a"), 2);
+        assertSolved("(a ==>+- a)", C, "(a ==>+2 a)"); //1 solution
+        assertSolvedIncludes("(a &&+- a)", C, "a@0", "a@2", "(a &&+2 a)@0" ); //2+ solutions
+    }
 
     @Test
     void testConj3_partial() throws Narsese.NarseseException {
@@ -447,18 +452,16 @@ class TimeGraphTest {
         afterEach.forEach(Runnable::run);
     }
 
-    private ExpectSolutions assertSolved(String inputTerm, TimeGraph t, String... solutions) {
-
-
-        System.out.println("solve: " + inputTerm);
-        ExpectSolutions ee = new ExpectSolutions(t, solutions);
-        ee.solve(inputTerm);
-        ee.print();
-        System.out.println();
-        return ee;
-
-
+    private ExpectSolutions assertSolved(String inputTerm, TimeGraph t, boolean equalsOrContains, String... solutions) {
+        return new ExpectSolutions(t, equalsOrContains, solutions).solve(inputTerm);
     }
+    private ExpectSolutions assertSolved(String inputTerm, TimeGraph t, String... solutions) {
+        return assertSolved(inputTerm, t, true, solutions);
+    }
+    private ExpectSolutions assertSolvedIncludes(String inputTerm, TimeGraph t, String... solutions) {
+        return assertSolved(inputTerm, t, false, solutions);
+    }
+
     @Test
     void testConjPartiallyEternal() {
         TimeGraph C = newTimeGraph(1);
@@ -547,16 +550,19 @@ class TimeGraphTest {
             }
         };
 
-        ExpectSolutions(TimeGraph time, String... solutions) {
+        ExpectSolutions(TimeGraph time, boolean equalsOrContains, String... solutions) {
             this.time = time;
             this.solutions = solutions;
             errorMsg = () ->
                     "expect: " + Arrays.toString(solutions) + "\n   got: " + this;
 
-            afterEach.add(() -> {
-                assertEquals(Sets.newTreeSet(List.of(solutions)), this, errorMsg);
-                System.out.print(errorMsg.get());
+            TreeSet<String> solutionSet = Sets.newTreeSet(List.of(solutions));
 
+            afterEach.add(() -> {
+                if (equalsOrContains)
+                    assertEquals(solutionSet, this, errorMsg);
+                else
+                    assertTrue(containsAll(solutionSet), errorMsg);
             });
         }
 
@@ -566,8 +572,9 @@ class TimeGraphTest {
             return true;
         }
 
-        void solve(String x) {
+        final ExpectSolutions solve(String x) {
             solve($$(x));
+            return this;
         }
 
         void solve(Term x) {

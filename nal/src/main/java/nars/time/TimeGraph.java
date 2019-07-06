@@ -815,12 +815,12 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 
             }
 
-            if (s == 2) {
+            if (s0 == 2) {
                 if (!solveDT2(x, xx, each))
                     return false;
             }
 
-            if (s == 3) {
+            if (s0 == 3) {
 
                 Term a = xx.sub(0), b = xx.sub(1), c = xx.sub(2);
 
@@ -828,7 +828,9 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
                         bc -> solveDT((Compound) CONJ.the(XTERNAL, bc.id, a), each
                         ));
 
-            } else if (s == 4) {
+            }
+
+            if (s0 == 4) {
 
                 Term a = xx.sub(0), b = xx.sub(1), c = xx.sub(2), d = xx.sub(3);
 
@@ -841,6 +843,8 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 
             }
 
+            //TODO
+
 
             return true;
         }
@@ -849,7 +853,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
     }
 
     private boolean solveDT2(Compound x, Subterms xx, Predicate<Event> each) {
-        Term a = xx.sub(0), b = xx.sub(1);
+        Term a = xx.sub(0), b = (xx.subs() > 1 ? xx.sub(1) : a /* repeat */);
 
         return solveDTAbsolutePair(x, each, a, b) && solveDTpair(x, each, a, b);
     }

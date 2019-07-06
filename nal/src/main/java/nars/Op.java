@@ -272,6 +272,7 @@ public enum Op {
     public static final Atom Quest = new Atom(String.valueOf((char) QUEST));
     public static final Atom Que = new Atom(String.valueOf((char) QUESTION) + (char) QUEST);
     public static final Term[] EmptyTermArray = new Term[0];
+    public static final Task[] EmptyTaskArray = new Task[0];
     public static final Subterms EmptySubterms = new ArrayTermVector(EmptyTermArray);
     public static final Compound EmptyProduct = TermBuilder.newCompound(Op.PROD, EmptySubterms);
     public static final ImmutableMap<String, Op> stringToOperator;
@@ -302,6 +303,7 @@ public enum Op {
      * re-initialized in NAL
      */
     public static TermBuilder terms = HeapTermBuilder.the;
+
 
     static {
         for (Op o : Op.values()) {
