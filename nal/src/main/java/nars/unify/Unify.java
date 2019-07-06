@@ -540,32 +540,29 @@ public abstract class Unify extends Versioning<Term> {
         return Math.abs(xdt - ydt) < dtTolerance;
     }
 
+    public final Term resolveTerm(Term x) {
+        return resolveTerm(x, false);
+    }
 
     /** full resolution of a term */
     public final Term resolveTerm(Term _x, boolean recurse) {
-        if (this.size == 0)
+        if (this.size == 0 && !recurse)
             return _x;
 
         boolean neg = _x instanceof Neg;
         Term x = neg ? _x.unneg() : _x;
 
-        boolean vx = var(x);
-        Term y = vx ? resolveVar((Variable) x) : x;
+        Term y;
+        if (this.size > 0) {
+            boolean vx = var(x);
+            y = vx ? resolveVar((Variable) x) : x;
+        } else
+            y = x;
 
         if (recurse && y instanceof Compound && y.hasAny(varBits)) {
-//            Term z = transform().applyPosCompound((Compound) y); //recurse
-            Term z = transform().applyCompound((Compound) y); //recurse
-
-            /*
-            if (y!=z)
-                Util.nop();
-            */
-//            if (vx) {
-//                if (!y.equals(z)) {
-//                    //update to new re-resolved value
-//                    xy.force((Variable)x, z);
-//                }
-//            }
+            Term z = transform().applyPosCompound((Compound) y); //recurse
+            //Term z = transform().applyCompound((Compound) y); //recurse
+            //Term z = y.replace(xy); //recurse
 
             y = z;
         }
@@ -573,13 +570,14 @@ public abstract class Unify extends Versioning<Term> {
         return x!=y ? y.negIf(neg) : _x;
     }
 
-    public Subterms resolveSubs(Subterms x) {
-        return x.transformSubs(transform(), null);
+    public final Subterms resolveSubs(Subterms x) {
+        return x.transformSubs(this::resolveTerm, null);
+        //return x.transformSubs(transform(), null);
     }
 
-    @Nullable public TermList resolveListIfChanged(Subterms x) {
-        //Subterms y = x.transformSubs(this::resolvePosNeg, null);
-        Subterms y = x.transformSubs(transform(), null);
+    @Nullable public final TermList resolveListIfChanged(Subterms x) {
+        Subterms y = resolveSubs(x);
+        //Subterms y = x.transformSubs(transform(), null);
         if (y == null)
             return new TermList(Bool.Null); //HACK
 //        if (y!=x && y!=null) {
@@ -676,7 +674,7 @@ public abstract class Unify extends Versioning<Term> {
         public Term applyAtomic(Atomic x) {
             if (x instanceof Variable) {
                 Term y = resolveVar((Variable) x);
-                if (y != null)
+//                if (y != null)
                     return y;
             }
             return x;
@@ -702,8 +700,11 @@ public abstract class Unify extends Versioning<Term> {
 
         @Override
         public Term applyPosCompound(Compound x) {
-            if (size==0 || !x.hasAny(varBits))
+            boolean recurse = evalInline();
+
+            if (!recurse && (size==0 || !x.hasAny(varBits))) {
                 return x;
+            }
 
             return super.applyPosCompound(x);
         }

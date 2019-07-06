@@ -935,7 +935,7 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
      *  based on OpenNARS projection formula:
      *   return 1.0f - abs(sourceTime - targetTime) / (abs(sourceTime - currentTime) + abs(targetTime - currentTime) );
      * */
-    @Nullable default Truth truth(long now, LongInterval tgt, float dur) {
+    @Nullable default Truth truth(long now, LongInterval tgt) {
 
         Task src = this;
 

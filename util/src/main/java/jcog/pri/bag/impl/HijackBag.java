@@ -244,7 +244,7 @@ public abstract class HijackBag<K, V> extends Bag<K, V> {
         V toAdd = null, toRemove = null, toReturn = null;
         int mutexTicket = -1;
 
-        boolean locking = (mode != GET) && !allowDuplicates();
+        boolean locking = (mode != GET) && !unsafe();
         if (locking) {
             if (mode == PUT && optimisticPut()) {
                 Object exist = _get(k, kHash, start, c, map);
@@ -423,7 +423,7 @@ public abstract class HijackBag<K, V> extends Bag<K, V> {
     }
 
     /** allow duplicates and other unexpected phenomena resulting from disabling locking write access */
-    protected boolean allowDuplicates() {
+    protected boolean unsafe() {
         return false;
     }
 

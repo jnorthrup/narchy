@@ -149,14 +149,18 @@ public enum DynamicStatementTruth { ;
                 int n = d.size();
                 if (d.anySatisfy(1, n,
                     i -> !common.equals(i.term().unneg().sub(subjOrPred ? 1 : 0))
-                ))
-                    throw new TermException("can not dynamically reconstruct", d.get(0)); //return null; //differing passive component; TODO this can be detected earlier, before truth evaluation starts?
+                )) {
+                    //HACK
+                    //this seems to happen with Images and conjunction subterms that collapse
+                    //ex: $.07 wonder("-DéøËìáÁØÕ",((tetris-->left) &&+130 (--,(tetris-->left)))). 131970⋈132110 %1.0;.27%
+                    //    $0.0 ((tetris-->left)-->(wonder,"-DéøËìáÁØÕ",/)). 234800⋈234830 %1.0;.01%
+                    return Null;
+                    //throw new TermException("can not dynamically reconstruct", d.get(0)); //return null; //differing passive component; TODO this can be detected earlier, before truth evaluation starts?
+                }
 
-                Term[] subs = Util.map(0, n, Term[]::new, i ->
-                    subSubjPredWithNegRewrap(!subjOrPred, d.get(i), d.componentPolarity.get(i))
-                );
-
-                sect = superSect.op().the(subs);
+                sect = superSect.op().the(Util.map(0, n, Term[]::new, i ->
+                        subSubjPredWithNegRewrap(!subjOrPred, d.get(i), d.componentPolarity.get(i))
+                ));
                 outerDT = DTERNAL;
             }
 

@@ -49,8 +49,7 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-import static nars.Op.BELIEF;
-import static nars.Op.GOAL;
+import static nars.Op.*;
 import static nars.time.Tense.ETERNAL;
 import static nars.time.Tense.TIMELESS;
 
@@ -279,9 +278,9 @@ public class Derivation extends PreDerivation {
                         taskEternal ?
                                 beliefTruth_at_Belief :
                                 //nextBelief.truth(taskStart, taskEnd, dur());
-                                nextBelief.truth(time(), _task, dur());
+                                nextBelief.truth(time(), _task);
 
-                if (NAL.ETERNALIZE_BELIEF_PROJECTED_IN_DERIVATION && beliefTruth_at_Belief != null && beliefTruth_at_Task == null && !nextBelief.equals(_task)) {
+                if (NAL.ETERNALIZE_BELIEF_PROJECTED_IN_DERIVATION && beliefTruth_at_Belief != null && !nextBelief.equals(_task)) {
 
                     float eFactor =
                             //taskTruth!=null ? taskTruth.conf() : 1;
@@ -685,13 +684,8 @@ public class Derivation extends PreDerivation {
 
         @Override
         protected final Term resolveVar(nars.term.Variable x) {
-//            if (xy != null) {
-//                Term y = xy.apply(x);
-//                return y == null ? x : y;
-//            } else
-                return Derivation.this.resolveVar(x);
+            throw new UnsupportedOperationException(/* not used */);
         }
-
 
         /**
          * only returns derivation-specific functors.  other functors must be evaluated at task execution time
@@ -708,12 +702,13 @@ public class Derivation extends PreDerivation {
 
             } else if (a instanceof Atom) {
 
-                if (a == TaskTerm)
+                b = derivationFunctors.apply(a);
+
+                if (b == TaskTerm)
                     return taskTerm;
-                else if (a == BeliefTerm)
+                else if (b == BeliefTerm)
                     return beliefTerm;
 
-                b = derivationFunctors.apply(a);
             } else
                 return a;
 

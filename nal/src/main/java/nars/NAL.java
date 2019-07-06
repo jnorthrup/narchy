@@ -224,7 +224,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
     public static final boolean OCCURRIFY_COMPOSE_UNION_DILUTE = false;
 
     /** probability of unifying subterms randomly (not using deterministic complexity heuristic ordering) */
-    public static final float SUBTERM_UNIFY_RANDOM_PROBABILITY = 0.1f;
+    public static final float SUBTERM_UNIFY_RANDOM_PROBABILITY = 0.05f;
 
 
 

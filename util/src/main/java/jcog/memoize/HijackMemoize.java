@@ -25,7 +25,7 @@ import java.util.function.Function;
  */
 public class HijackMemoize<X, Y> extends AbstractMemoize<X,Y> {
 
-    static final boolean ALLOW_DUPLICATES = true;
+    static final boolean unsafe = false;
 
     protected final MemoizeHijackBag bag;
     private final Function<X, Y> func;
@@ -185,8 +185,8 @@ public class HijackMemoize<X, Y> extends AbstractMemoize<X,Y> {
 //        }
 
         @Override
-        protected boolean allowDuplicates() {
-            return ALLOW_DUPLICATES;
+        protected boolean unsafe() {
+            return unsafe;
         }
 
         @Override

@@ -123,6 +123,8 @@ public enum DerivationFunctors {
         for (Term x : derivationFunctors) //override any statik's
             add(m, x);
 
+        m.put(Derivation.TaskTerm, Derivation.TaskTerm); //to be dynamically resolved
+        m.put(Derivation.BeliefTerm, Derivation.BeliefTerm); //to be dynamically resolved
 
 //        MetalBloomFilter<Atomic> pre = new MetalBloomFilter<>(fastAtomHash, m.size()*2, 2);
 //        for (Atomic x : m.keySet()) {

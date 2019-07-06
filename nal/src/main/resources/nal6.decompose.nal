@@ -74,10 +74,10 @@ C, X, eventOfPN(C,X)      |-   conjWithoutPN(C,X), (Punctuation:AskAsk)
     //C is a sequence ending in it.  this forms a goal of the sequence prefix (minus the trailing)
 
     //desire for sub-sequence leading to goal,  truth function may be Desire or Deduction
-    G, C     |-    conjBefore(C,   G),  (Goal:DesirePP, Time:TaskEvent)
-    G, C     |-    conjBefore(C, --G),  (Goal:DesireNP, Time:TaskEvent)
-//      G, D   |-  --conjBefore(D, --G),  (Goal:DesireWeakNN, Time:TaskEvent)
-//      G, D   |-  --conjBefore(D,   G),  (Goal:DesireWeakPN, Time:TaskEvent)
+    G, C     |-    conjBefore(C,   G),  (Goal:DecomposePP, Time:TaskEvent)
+    G, C     |-    conjBefore(C, --G),  (Goal:DecomposeNP, Time:TaskEvent)
+//      G, D   |-  --conjBefore(D, --G),  (Goal:DecomposeWeakNN, Time:TaskEvent)
+//      G, D   |-  --conjBefore(D,   G),  (Goal:DecomposeWeakPN, Time:TaskEvent)
 
 //    //conditional goal disjunction decompose (alternate suppress by goal)
 //    G, D, sectOf(D,G), conjParallel(D)      |- --unsect(D,  G), (Goal:DesireWeakPN)

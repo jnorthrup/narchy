@@ -669,7 +669,7 @@ public class NAL8Test extends NALTest {
     void testPredictiveEquivalenceTemporalTemporalNeg() {
 
         test
-                .termVolMax(3)
+                .termVolMax(4)
                 .inputAt(0, "(--out ==>-3 happy). |")
                 .inputAt(0, "(happy ==>+3 --out). |")
                 .inputAt(5, "happy! |")

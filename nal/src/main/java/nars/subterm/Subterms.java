@@ -1321,7 +1321,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
 
             Term yi = f.apply(xi);
 
-            //assert(yi!=null);
+
 
             if (yi instanceof Bool) {
                 if (yi == Bool.Null)
