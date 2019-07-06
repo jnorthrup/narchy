@@ -400,7 +400,8 @@ public enum Terms {
 
     public static boolean possiblyUnifiable(Term x, Term y, boolean strict, int var) {
 
-        if (x.equals(y))
+        //if (x.equals(y))
+        if (x.equalsRoot(y))
             return !strict;
 
         Op xo = x.op(), yo = y.op();

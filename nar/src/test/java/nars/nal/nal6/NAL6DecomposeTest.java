@@ -360,10 +360,12 @@ abstract public class NAL6DecomposeTest extends NALTest {
         @Test
         void compound_decomposition_two_premises1_simpler() {
 
-            TestNAR tester = test;
-            tester.believe("(b ==> --(a && r))", 1.0f, 0.9f);
-            tester.believe("          (b ==> r)");
-            tester.mustBelieve(cycles, "(b ==> a)", 0.00f, 0.81f);
+            test
+                    .termVolMax(6)
+                    .confMin(0.75f)
+                    .believe("(b ==> --(a && r))", 1.0f, 0.9f)
+                    .believe("          (b ==> r)")
+                    .mustBelieve(cycles, "(b ==> a)", 0.00f, 0.81f);
 
         }
 

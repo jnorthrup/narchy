@@ -40,7 +40,8 @@ public final class AliasConcept extends TaskConcept {
     }
 
     @Override
-    public void add(Remember t, NAR n) {
+    public void add(Remember t) {
+        NAR n = t.nar;
         Task x = t.input;
         if (!abbr.isDeleted()) {
             Remember r;
@@ -52,7 +53,7 @@ public final class AliasConcept extends TaskConcept {
             } else {
                 r = t;
             }
-            ((TaskConcept) abbr).add(r, n);
+            ((TaskConcept) abbr).add(r);
         }
 
 

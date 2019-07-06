@@ -1,6 +1,6 @@
 package nars.nal.nal6;
 
-import nars.derive.BatchDeriver;
+import nars.derive.BasicDeriver;
 import nars.derive.Derivers;
 import nars.test.NALTest;
 import org.junit.jupiter.api.BeforeEach;
@@ -15,7 +15,7 @@ class NAL6ToNAL3BridgeTest extends NALTest {
         @BeforeEach
         void setup() {
             test.confTolerance(0.2f);
-        new BatchDeriver(Derivers.files(test.nar, "nal6.to.nal3.nal"));
+        new BasicDeriver(Derivers.files(test.nar, "nal6.to.nal3.nal"));
         }
 
     @Disabled @Test

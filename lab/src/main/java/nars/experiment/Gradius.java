@@ -4,7 +4,6 @@ import java4k.gradius4k.Gradius4K;
 import jcog.Util;
 import jcog.data.list.FasterList;
 import jcog.signal.wave2d.ScaledBitmap2D;
-import jcog.util.ArrayUtil;
 import nars.$;
 import nars.GameX;
 import nars.NAR;
@@ -200,10 +199,10 @@ public class Gradius extends GameX {
         //TODO boundary feedback
         Atomic X = $.the("x");
         Atomic Y = $.the("y");
-        Term left =  $.func(X, id, $.the(-1));
-        Term right = $.func(X, id, $.the(+1));
-        Term up =    $.func(Y, id, $.the(+1));
-        Term down =  $.func(Y, id, $.the(-1));
+        Term left =  $.inh(id, $.p(X, NEG));
+        Term right =  $.inh(id, $.p(X, POS));
+        Term down =  $.inh(id, $.p(Y, NEG));
+        Term up =  $.inh(id, $.p(Y, POS));
         GoalActionConcept[] lr = actionPushButtonMutex(left, right,
                 (BooleanPredicate) b -> g.keys[VK_LEFT] = b,
                 (BooleanPredicate) b -> g.keys[VK_RIGHT] = b);
@@ -211,8 +210,8 @@ public class Gradius extends GameX {
                 (BooleanPredicate) b -> g.keys[VK_DOWN] = b,
                 (BooleanPredicate) b -> g.keys[VK_UP] = b);
 
-        for (GoalActionConcept x : ArrayUtil.addAll(lr, ud))
-            x.goalDefault($.t(0, 0.001f), nar); //bias
+//        for (GoalActionConcept x : ArrayUtil.addAll(lr, ud))
+//            x.goalDefault($.t(0, 0.001f), nar); //bias
     }
 
     void initBipolar() {

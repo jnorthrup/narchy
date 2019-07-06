@@ -8,6 +8,7 @@ import nars.control.op.Remember;
 import nars.task.proxy.ImageTask;
 import nars.task.util.Answer;
 import nars.term.Term;
+import nars.term.Termed;
 import nars.term.util.Image;
 import nars.time.When;
 import org.jetbrains.annotations.Nullable;
@@ -37,26 +38,30 @@ public class ImageBeliefTable extends DynamicTaskTable {
     @Override
     public void remember(Remember r) {
 
-        Task original = r.input;
-        Term normal = Image.imageNormalize(original.term());
+        Task imaged = r.input;
+        Term normal = Image.imageNormalize(imaged.term());
 
         TaskConcept c = (TaskConcept) r.nar.conceptualize(normal);
         if (c == null)
             return;
 
 
-        Task input;
-        if (original instanceof ImageTask)
-            input = ((ImageTask) original).task; //unwrap existing
+        Task normalized;
+        if (imaged instanceof ImageTask)
+            normalized = ((ImageTask) imaged).task; //unwrap existing
         else {
-            input = Task.withContent(original, normal);
-            input.take(original, 0.5f, false, false); //share 50% priority with the normalized version
+            normalized = Task.withContent(imaged, normal);
         }
 
-        r.input = input;
+        if (r.store) {
+            r.link = r.notify = false; //proxy store
+            r.input = normalized;
+            c.table(normalized.punc()).remember(r);
+        }
 
-        c.table(input.punc()).remember(r);
-
+        r.remember(imaged);
+        r.store = false;
+        r.link = r.notify = true;
     }
 
     /**
@@ -68,7 +73,7 @@ public class ImageBeliefTable extends DynamicTaskTable {
         return t != null ? new ImageTask(transformFromTemplate(t), t) : null;
     }
 
-    private Term transformFromTemplate(Task t) {
+    Term transformFromTemplate(Termed t) {
         return Image.transformFromTemplate(t.term(), this.term, this.normal);
     }
 

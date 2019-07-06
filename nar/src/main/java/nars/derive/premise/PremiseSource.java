@@ -10,10 +10,15 @@ import nars.time.When;
 import java.util.function.Consumer;
 
 abstract public class PremiseSource {
+
+    public abstract void premises(When when, int premisesPerIteration, int termlinksPerTaskLink, TaskLinks links, Derivation d, Consumer<Premise> p);
+
     /**
      * samples premises
      */
-    public abstract void derive(When when, int premisesPerIteration, int termlinksPerTaskLink, int matchTTL, int deriveTTL, TaskLinks links, Derivation d);
+    @Deprecated public final void derive(When when, int premisesPerIteration, int termlinksPerTaskLink, int matchTTL, int deriveTTL, TaskLinks links, Derivation d) {
+        premises(when, premisesPerIteration, termlinksPerTaskLink, links, d, premise-> premise.derive(d, matchTTL, deriveTTL));
+    }
 
     public void commit() {
         /* default: nothing */
@@ -23,17 +28,16 @@ abstract public class PremiseSource {
     /** unbuffered */
     public static class DefaultPremiseSource extends PremiseSource {
 
-        @Override
-        public void derive(When when, int premisesPerIteration, int termlinksPerTaskLink, int matchTTL, int deriveTTL, TaskLinks links, Derivation d) {
+        @Override public void premises(When when, int premisesPerIteration, int termlinksPerTaskLink, TaskLinks links, Derivation d, Consumer<Premise> p) {
             d.what.sample(d.random, (int) Math.max(1, Math.ceil(((float)premisesPerIteration) / termlinksPerTaskLink)), tasklink -> {
                 Task task = tasklink.get(when);
                 if (task != null && !task.isDeleted()) {
-                    hypothesize(tasklink, task, termlinksPerTaskLink, links, d, premise ->
-                        premise.derive(d, matchTTL, deriveTTL)
-                    );
+                    hypothesize(tasklink, task, termlinksPerTaskLink, links, d, p);
                 }
             });
+
         }
+
     }
 
     protected void hypothesize(TaskLink tasklink, Task task, int termlinksPerTaskLink, TaskLinks links, Derivation d, Consumer<Premise> each) {

@@ -66,6 +66,8 @@ public class NAL3DecomposeGoalTest extends NAL3Test {
     @Test
     void testUnionSinglePremiseDecomposeGoal1Pos() {
         test
+                .termVolMax(6)
+                .confMin(0.75f)
                 .input("((a||b)-->g)!")
                 .mustGoal(cycles, "(a-->g)", 1f, 0.81f)
                 .mustGoal(cycles, "(b-->g)", 1f, 0.81f);
@@ -74,6 +76,8 @@ public class NAL3DecomposeGoalTest extends NAL3Test {
     @Test
     void testIntersectionSinglePremiseDecomposeGoal1Pos() {
         test
+                .termVolMax(6)
+                .confMin(0.75f)
                 .input("((a&&b)-->g)!")
                 .mustGoal(cycles, "(a-->g)", 1f, 0.81f)
                 .mustGoal(cycles, "(b-->g)", 1f, 0.81f);
@@ -82,6 +86,8 @@ public class NAL3DecomposeGoalTest extends NAL3Test {
     @Test
     void testIntersectionConditionalDecomposeGoalPos() {
         test
+                .termVolMax(6)
+                .confMin(0.75f)
                 .input("((a&&b)-->g)!")
                 .input("(a-->g). %0.8%")
                 .mustGoal(cycles, "(b-->g)", 1f, 0.81f);
@@ -89,6 +95,8 @@ public class NAL3DecomposeGoalTest extends NAL3Test {
     @Test
     void testIntersectionConditionalDecomposeGoalPosNeg() {
         test
+                .termVolMax(6)
+                .confMin(0.75f)
                 .input("((b && --a)-->g)!")
                 .input("--(a-->g).")
                 .mustGoal(cycles, "(b-->g)", 1f, 0.81f);
@@ -96,6 +104,8 @@ public class NAL3DecomposeGoalTest extends NAL3Test {
     @Test
     void testSubjUnionConditionalDecomposeGoalPosNeg() {
         test
+                .termVolMax(7)
+                .confMin(0.75f)
                 .input("((a||b)-->g)!")
                 .input("--(a-->g).")
                 .mustGoal(cycles, "(b-->g)", 1f, 0.81f);

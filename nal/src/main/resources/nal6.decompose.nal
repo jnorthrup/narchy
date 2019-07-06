@@ -130,7 +130,8 @@ C, X, eventOfPN(C,X)      |-   conjWithoutPN(C,X), (Punctuation:AskAsk)
 
 
     //TODO test and write predicate version:
-      (C==>Y), X, --isVar(X)           |-  polarizeTask((conjAfter(C,  polarizeBelief(X)) ==> Y)),       (Belief:DecomposeDepolarized)
+      (C==>Y), X, --isVar(X)         |-  polarizeTask((conjAfter(C,  polarizeBelief(X)) ==> Y)),       (Belief:DecomposeDepolarized)
+      (--C==>Y), X, --isVar(X)       |-  polarizeTask(--(conjAfter(C,  --polarizeBelief(X)) ==> Y)),       (Belief:DecomposeDepolarized)
      // (--D==>Y), X, --isVar(X) |- polarizeTask((--unisubst(D,chooseUnifiableSubEvent(D,polarizeBelief(X)),polarizeBelief(X),"#") ==> Y)), (Belief:DecomposeDepolarized, Goal:DecomposeDepolarized)
 
 

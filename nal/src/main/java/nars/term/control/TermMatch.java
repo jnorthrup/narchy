@@ -22,31 +22,27 @@ public final class TermMatch<X> extends AbstractTermMatchPred<X> {
 
     public final TermMatcher match;
     private final boolean trueOrFalse;
-    private final boolean exactOrSuper;
+
 
     @Deprecated public TermMatch(TermMatcher match, Function<X, Term> resolve, int pathLen) {
-        this(match, true, true, resolve, cost(pathLen));
+        this(match, true, resolve, cost(pathLen));
     }
 
 
-    public TermMatch(TermMatcher match, boolean trueOrFalse, boolean exactOrSuper, Function/*<X, Term>*/ resolve, float resolveCost) {
-        super(name(match, resolve, exactOrSuper).negIf(!trueOrFalse), resolve, resolveCost);
+    public TermMatch(TermMatcher match, boolean trueOrFalse, Function/*<X, Term>*/ resolve, float resolveCost) {
+        super(name(match, resolve).negIf(!trueOrFalse), resolve, resolveCost);
 
         this.match = match;
         this.trueOrFalse = trueOrFalse;
-        this.exactOrSuper = exactOrSuper;
-        if (!trueOrFalse && !exactOrSuper)
-            throw new WTF();
     }
 
-    private static Term name(TermMatcher match, @Deprecated Function resolve, boolean exactOrSuper) {
+    private static Term name(TermMatcher match, @Deprecated Function resolve) {
         Class<? extends TermMatcher> mc = match.getClass();
         String cc = mc.isAnonymousClass() ? match.toString() : mc.getSimpleName();
         if (cc.isEmpty())
             throw new WTF();
         Atomic a = Atomic.the(cc);
         Term r = $.$$(resolve.toString());
-        r = exactOrSuper ? r : $.func(IN_ATOM, r);
         Term p = match.param();
         return p!=null ? $.func(a, r, p) : $.func(a, r);
     }
@@ -96,8 +92,8 @@ public final class TermMatch<X> extends AbstractTermMatchPred<X> {
         return resolveCost + match.cost();
     }
 
-    @Override protected boolean match(Term y) {
-        return (exactOrSuper ? match.test(y) : match.testSuper(y)) == trueOrFalse;
+    @Override protected final boolean match(Term y) {
+        return match.test(y) == trueOrFalse;
     }
 
     private final class Merge2TermMatch extends AbstractTermMatchPred<X> {

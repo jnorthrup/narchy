@@ -878,10 +878,12 @@ public class NAL8Test extends NALTest {
     @Test
     void testConjResultGoal() {
         test.termVolMax(13);
-        test.input("done!")
+        test
+                .input("done!")
                 .input("((happy &&+20 y) &&+2 ((--,y) &&+1 done)). |")
-                .mustGoal(cycles, "((happy &&+20 y) &&+2 (--,y))", 1f, 0.4f, (t) -> t >= 0)
-                .mustGoal(cycles, "(y &&+2 (--,y))", 1f, 0.5f, (t) -> t >= 0);
+                .mustGoal(cycles, "((happy &&+20 y) &&+2 (--,y))", 1f, 0.43f, (t) -> t == 0)
+                .mustGoal(cycles, "((happy &&+20 y) &&+2 (--,y))", 1f, 0.43f, (t) -> t == -23)
+        ;
     }
 
     @Test

@@ -11,6 +11,8 @@ import nars.derive.model.Derivation;
 import nars.link.TaskLinks;
 import nars.time.When;
 
+import java.util.function.Consumer;
+
 /** premise buffer with novelty filter
  *  thread-safe; for cooperative use by multiple threads
  *  UNTESTED
@@ -43,7 +45,8 @@ public class PremiseBuffer extends PremiseSource {
                 new PriLinkHijackBag<>(PriMerge.max, premiseBufferCapacity, 2);
     }
 
-    @Override public void derive(When when, int premisesPerIteration, int termlinksPerTaskLink, int matchTTL, int deriveTTL, TaskLinks links, Derivation d) {
+    @Override
+    public void premises(When when, int premisesPerIteration, int termlinksPerTaskLink, TaskLinks links, Derivation d, Consumer<Premise> each) {
 
         d.what.sample(d.random, (int) Math.max(1, Math.ceil((fillRate * premisesPerIteration) / termlinksPerTaskLink)), tasklink -> {
 
@@ -60,18 +63,18 @@ public class PremiseBuffer extends PremiseSource {
         });
 
         premise.sample(d.random, premisesPerIteration, pp->{
-            fire(pp, matchTTL, deriveTTL, d);
+            fire(pp, d, each);
         });
 
     }
 
-    public void fire(PriReference<Premise> pp, int matchTTL, int deriveTTL, Derivation d) {
+    public void fire(PriReference<Premise> pp, Derivation d, Consumer<Premise> each) {
         Premise P = pp.get();
         PriReference<Premise> existing = premiseTried.put(pp);
         if (existing!=null && existing!=pp)
             pp.priSub(existing.pri() * notNovelCost);
 
-        P.derive(d, matchTTL, deriveTTL);
+        each.accept(P);
     }
 
 

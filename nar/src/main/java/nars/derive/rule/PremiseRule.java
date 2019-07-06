@@ -5,7 +5,6 @@ import it.unimi.dsi.fastutil.bytes.ByteArrayList;
 import jcog.TODO;
 import jcog.data.list.FasterList;
 import jcog.data.set.ArrayHashSet;
-import jcog.util.ArrayUtil;
 import nars.$;
 import nars.Builtin;
 import nars.Narsese;
@@ -643,8 +642,8 @@ public class PremiseRule extends ProxyTerm {
         }
 
 
-        structureAndVolumeGuards(TaskTerm, taskPattern);
-        structureAndVolumeGuards(BeliefTerm, beliefPattern);
+        guardOpVolStruct(TaskTerm, taskPattern);
+        guardOpVolStruct(BeliefTerm, beliefPattern);
 
 
         /** infer missing conclusion punctuation */
@@ -1125,14 +1124,14 @@ public class PremiseRule extends ProxyTerm {
     /**
      * untested
      */
-    private void structureAndVolumeGuards(PremiseTermAccessor r, Term root) {
-        structureAndVolumeGuards(r, root, new ByteArrayList(6));
+    private void guardOpVolStruct(PremiseTermAccessor r, Term root) {
+        guardOpVolStruct(r, root, new ByteArrayList(6));
     }
 
     /**
      * untested
      */
-    private void structureAndVolumeGuards(PremiseTermAccessor r, Term root, ByteArrayList p) {
+    private void guardOpVolStruct(PremiseTermAccessor r, Term root, ByteArrayList p) {
         if (root.op() == VAR_PATTERN)
             return;
 
@@ -1140,35 +1139,35 @@ public class PremiseRule extends ProxyTerm {
         int depth = pp.length;
         Term t = p.isEmpty() ? root : root.subPath(pp);
 
-        Op to = t.op();
-        if (to == Op.VAR_PATTERN)
+        Op o = t.op();
+        if (o == Op.VAR_PATTERN)
             return;
 
         Function<PreDerivation, Term> rr = depth == 0 ? r : r.path(pp);
 //        int ts = t.structure() & (~Op.VAR_PATTERN.bit);
 //        pre.addAt(new TermMatchPred<>(new TermMatch.Is(to),  rr));
 //        pre.addAt(new TermMatchPred<>(new TermMatch.Has(ts, false /* all */, t.complexity()), rr));
-        pre.add(new TermMatch<>(TermMatcher.get(t, depth), rr, depth));
+        pre.add(new TermMatch<>(TermMatcher.matchTerm(t, depth), rr, depth));
 
         int n = t.subs();
-        if (!to.commutative || n == 1) {
+        if (!o.commutative || (n == 1 && o!=CONJ)) {
             for (byte i = 0; i < n; i++) {
                 p.add(i);
                 {
-                    structureAndVolumeGuards(r, root, p);
+                    guardOpVolStruct(r, root, p);
                 }
                 p.popByte();
             }
         }
     }
 
-    private void matchSuper(boolean taskOrBelief, TermMatcher m, boolean trueOrFalse) {
-        byte[] path = ArrayUtil.EMPTY_BYTE_ARRAY;
-        pre.add(new TermMatch(m, trueOrFalse, false, TaskOrBelief(taskOrBelief).path(path), cost(path.length)));
-    }
+//    private void matchSuper(boolean taskOrBelief, TermMatcher m, boolean trueOrFalse) {
+//        byte[] path = ArrayUtil.EMPTY_BYTE_ARRAY;
+//        pre.add(new TermMatch(m, trueOrFalse, false, TaskOrBelief(taskOrBelief).path(path), cost(path.length)));
+//    }
 
     private void match(boolean taskOrBelief, byte[] path, TermMatcher m, boolean trueOrFalse) {
-        pre.add(new TermMatch(m, trueOrFalse, true, TaskOrBelief(taskOrBelief).path(path), cost(path.length)));
+        pre.add(new TermMatch(m, trueOrFalse, TaskOrBelief(taskOrBelief).path(path), cost(path.length)));
     }
 
     private void match(Term x,
@@ -1226,12 +1225,12 @@ public class PremiseRule extends ProxyTerm {
 
                 }, (inTask, inBelief) -> {
 
-                    if (trueOrFalse /*|| m instanceof TermMatch.TermMatchEliminatesFalseSuper*/) { //positive only (absence of evidence / evidence of absence)
-                        if (inTask)
-                            matchSuper(true, m, trueOrFalse);
-                        if (inBelief)
-                            matchSuper(false, m, trueOrFalse);
-                    }
+//                    if (trueOrFalse /*|| m instanceof TermMatch.TermMatchEliminatesFalseSuper*/) { //positive only (absence of evidence / evidence of absence)
+//                        if (inTask)
+//                            matchSuper(true, m, trueOrFalse);
+//                        if (inBelief)
+//                            matchSuper(false, m, trueOrFalse);
+//                    }
 
                     constraints.add(m.constraint((Variable) x, trueOrFalse));
                 }
@@ -1249,7 +1248,7 @@ public class PremiseRule extends ProxyTerm {
         }
     }
 
-    public void neqRoot(Variable x, Variable y) {
+    private void neqRoot(Variable x, Variable y) {
         constraints.add(new NotEqualConstraint.NotEqualRootConstraint(x, y));
     }
 

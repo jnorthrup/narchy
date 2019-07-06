@@ -36,9 +36,11 @@ public class Remember extends AbstractTask {
      */
     @Deprecated public Task input;
 
-    private FasterList<Task> remembered = null;
+    public FasterList<Task> remembered = null;
 
-    private final boolean store, link, notify;
+    public boolean store;
+    public boolean link;
+    public boolean notify;
     public boolean done = false;
 
     public final NAR nar;
@@ -149,6 +151,10 @@ public class Remember extends AbstractTask {
 
 
     private void link(Task t, What w) {
+        link(t, w, link, notify);
+    }
+
+    static void link(Task t, What w, boolean link, boolean notify) {
 
         NAR n = w.nar;
 
@@ -189,7 +195,7 @@ public class Remember extends AbstractTask {
 
         NAR n = w.nar;
 
-        c.add(this, n);
+        c.add(this);
 
         if (remembered != null && !remembered.isEmpty()) {
             remembered.forEachWith((Task r, NAR nn) -> {

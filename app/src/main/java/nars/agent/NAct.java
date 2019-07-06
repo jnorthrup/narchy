@@ -33,7 +33,7 @@ import static nars.Op.BELIEF;
  */
 @Skill({"Actuator", "Muscle", "Switch"}) public interface NAct {
 
-    Term PLUS = Int.the(+1); ////$.the("\"+\"");
+    Term POS = Int.the(+1); ////$.the("\"+\"");
     Term NEG = Int.the(-1); //$.the("\"-\"");
 
 

@@ -200,7 +200,7 @@ public class ArkaNAR extends GameX {
     }
 
     private void initPushButton() {
-        actionPushButtonMutex($.inh(id,NAct.NEG), $.inh(id,NAct.PLUS),
+        actionPushButtonMutex($.inh(id,NAct.NEG), $.inh(id,NAct.POS),
                 (b) -> b && noid.paddle.move(-paddleSpeed),
                 (b) -> b && noid.paddle.move(+paddleSpeed)
         );
@@ -212,7 +212,7 @@ public class ArkaNAR extends GameX {
         actionUnipolar($.inh(id,NAct.NEG), true, (prev)->0,
                 //u -> u > 0.5f && noid.paddle.move(-paddleSpeed * 2 * Util.sqr(2 * (u - 0.5f))) ? u : 0);
                 u -> noid.paddle.move(-paddleSpeed * u) ? u : 0);
-        actionUnipolar($.inh(id,NAct.PLUS), true, (prev)->0,
+        actionUnipolar($.inh(id,NAct.POS), true, (prev)->0,
                 //u -> u > 0.5f && noid.paddle.move(+paddleSpeed * 2 * Util.sqr(2 * (u - 0.5f))) ? u : 0);
                 u -> noid.paddle.move(+paddleSpeed * u) ? u : 0);
     }

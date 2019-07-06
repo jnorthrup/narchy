@@ -2,7 +2,7 @@ package nars.op;
 
 import nars.NAR;
 import nars.NARS;
-import nars.derive.BatchDeriver;
+import nars.derive.BasicDeriver;
 import nars.derive.Derivers;
 import nars.eval.Evaluation;
 import nars.test.TestNAR;
@@ -96,7 +96,7 @@ class SetFuncTest {
 
     @Test void testMember_Combine_Rule() {
         NAR n = NARS.shell();
-        new BatchDeriver(Derivers.files(n, "nal2.member.nal"));
+        new BasicDeriver(Derivers.files(n, "nal2.member.nal"));
         TestNAR t = new TestNAR(n);
         t.believe("(member(#1,{a,b}) && (x(#1), y(#1)))");
         t.believe("(member(#1,{c,d}) && (x(#1), y(#1)))");
@@ -106,7 +106,7 @@ class SetFuncTest {
     }
     @Test void testMember_Diff_Rule() {
         NAR n = NARS.shell();
-        new BatchDeriver(Derivers.files(n, "nal2.member.nal"));
+        new BasicDeriver(Derivers.files(n, "nal2.member.nal"));
         TestNAR t = new TestNAR(n);
         t.believe("  (member(#1,{a,b,c}) && (x(#1), y(#1)))");
         t.believe("--(member(#1,{b,d  }) && (x(#1), y(#1)))");

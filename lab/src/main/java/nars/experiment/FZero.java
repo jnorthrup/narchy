@@ -367,7 +367,7 @@ public class FZero extends GameX {
             return x;
         });
 
-        GoalActionConcept r = actionUnipolar($.inh(id, $.p(TANK, NAct.PLUS)), (x) -> {
+        GoalActionConcept r = actionUnipolar($.inh(id, $.p(TANK, NAct.POS)), (x) -> {
             if (x <= 0.5f) return 0;
             float power = 2 * (x - 0.5f) * powerScale;
             right[0] = power;

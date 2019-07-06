@@ -870,12 +870,12 @@ public class NAL6Test extends NALTest {
 
     @Test
     void strong_elimination() {
+
         test.termVolMax(18);
-        test.nar.confMin.set(0.5f);
+        test.confMin(0.6f);
         test.believe("((test($a,is,cat) && sentence($a,is,$b)) ==> ($a --> $b))");
         test.believe("test(tim,is,cat)");
-        test.mustBelieve(cycles, "(sentence(tim,is,$1) ==> (tim --> $1))",
-                1.00f, 0.73f);
+        test.mustBelieve(cycles, "(sentence(tim,is,$1) ==> (tim --> $1))", 1.00f, 0.73f);
 
     }
 

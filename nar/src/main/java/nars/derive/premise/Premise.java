@@ -22,7 +22,6 @@ import java.util.function.Predicate;
 
 import static nars.Op.BELIEF;
 import static nars.Op.VAR_QUERY;
-import static nars.term.atom.Bool.Null;
 import static nars.time.Tense.ETERNAL;
 
 /**
@@ -117,7 +116,7 @@ public class Premise implements Comparable<Premise> {
      *
      * @param matchTime - temporal focus control: determines when a matching belief or answer should be projected to
      */
-    public boolean match(Derivation d, int matchTTL) {
+    @Nullable public MatchedPremise match(Derivation d, int matchTTL) {
 
         boolean beliefConceptUnifiesTaskConcept = false;
 
@@ -130,6 +129,8 @@ public class Premise implements Comparable<Premise> {
             if (taskTerm.equalsRoot(beliefTerm)) {
                 //difference involving XTERNAL etc
                 beliefConceptUnifiesTaskConcept = true;
+//                if (beliefTerm.hasXternal() && !taskTerm.hasXternal())
+//                    beliefTerm = taskTerm;
 
             } else if (beliefTerm.hasAny(var) || taskTerm.hasAny(var)) {
 
@@ -160,21 +161,19 @@ public class Premise implements Comparable<Premise> {
             //only allow unstamped tasks to apply with stamped beliefs.
             //otherwise stampless tasks could loop forever in single premise or in interaction with another stampless task
             if (belief == null || belief.stamp().length == 0)
-                return false;
+                return null;
         }
 
         Term nextBeliefTerm = belief != null ? belief.term() : beliefTerm;//.unneg();
         if (nextBeliefTerm.volume() > d.termVolMax)
-            return false; //WTF
+            return null; //WTF
 
         if (!d.budget(task, belief))
-            return false;
+            return null;
 
 //        System.out.println(task + "\t" + belief + "\t" + nextBeliefTerm);
+        return new MatchedPremise(task, belief, nextBeliefTerm);
 
-        d.reset(this.task, belief, nextBeliefTerm);
-
-        return d.taskTerm != Null;
     }
 
 
@@ -371,7 +370,8 @@ public class Premise implements Comparable<Premise> {
 
         int ttlUsed;
 
-        if (match(d, matchTTL)) {
+        @Nullable MatchedPremise m = match(d, matchTTL);
+        if (m!=null && m.reset(d)) {
 
             result = PreDerivation.run(d, deriveTTL) ? e.premiseFire : e.premiseUnderivable;
 

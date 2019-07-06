@@ -22,7 +22,7 @@ import nars.attention.TaskLinkWhat;
 import nars.control.MetaGoal;
 import nars.control.NARPart;
 import nars.control.Why;
-import nars.derive.BatchDeriver;
+import nars.derive.BasicDeriver;
 import nars.derive.Derivers;
 import nars.derive.rule.PremiseRuleSet;
 import nars.derive.timing.ActionTiming;
@@ -493,15 +493,15 @@ abstract public class GameX extends Game {
 //        bd.tasklinksPerIteration.set(8);
 
 
-        BatchDeriver bd1 = new BatchDeriver(Derivers.nal(n, 1, 1)
+        BasicDeriver bd1 = new BasicDeriver(Derivers.nal(n, 1, 1)
         );
-        BatchDeriver bd2_4 = new BatchDeriver(Derivers.nal(n, 2, 4)
+        BasicDeriver bd2_4 = new BasicDeriver(Derivers.nal(n, 2, 4)
         );
 
-        BatchDeriver bd6 = new BatchDeriver(Derivers.nal(n, 6, 8,
+        BasicDeriver bd6 = new BasicDeriver(Derivers.nal(n, 6, 8,
                 "motivation.nal"));
 
-        BatchDeriver bd6_act = new BatchDeriver(Derivers.nal(n, 6, 8,
+        BasicDeriver bd6_act = new BasicDeriver(Derivers.nal(n, 6, 8,
                 "motivation.nal"));
         bd6_act.timing = new ActionTiming();
 

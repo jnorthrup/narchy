@@ -109,14 +109,7 @@ public abstract class PreDerivation extends Unify {
 
         d.ready(maybe, deriveTTL);
 
-        if (can.length == 1) {
-            branch[can[0]].test(d);
-        } else {
-
-            //runRoulette(d, branch, pri, can);
-            d.runPostDerivable(d, branch, pri, can);
-
-        }
+        d.runPostDerivable(d, branch, pri, can);
 
         return true;
     }
@@ -124,7 +117,13 @@ public abstract class PreDerivation extends Unify {
     static void runRoulette(Derivation d, DeriveAction[] branch, float[] pri, short[] can) {
         MutableRoulette.run(pri, d.random, wi -> 0, i -> branch[can[i]].test(d));
     }
+
     void runPostDerivable(Derivation d, DeriveAction[] branch, float[] pri, short[] can) {
+        if (can.length == 1) {
+            branch[can[0]].test(d);
+            return;
+        }
+
         int n = can.length;
         int valid = 0, lastValid = -1;
         for (int i = 0; i < can.length; i++) {

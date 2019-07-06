@@ -6,7 +6,7 @@ import nars.NAR;
 import nars.NARS;
 import nars.Task;
 import nars.attention.What;
-import nars.derive.BatchDeriver;
+import nars.derive.BasicDeriver;
 import nars.derive.Derivers;
 import nars.exe.impl.UniExec;
 import nars.op.TaskLeak;
@@ -195,7 +195,7 @@ public class IRCNLP extends IRC {
 
         n.termVolMax.set(32);
 
-        BatchDeriver d = new BatchDeriver(Derivers.nal(n, 1, 8));
+        BasicDeriver d = new BasicDeriver(Derivers.nal(n, 1, 8));
 //        d.timing = new ActionTiming(n);
 
         ConjClustering conjClusterBinput = new ConjClustering(n, BELIEF,

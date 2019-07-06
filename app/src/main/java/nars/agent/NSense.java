@@ -29,7 +29,7 @@ import java.util.function.*;
 
 import static nars.$.*;
 import static nars.agent.NAct.NEG;
-import static nars.agent.NAct.PLUS;
+import static nars.agent.NAct.POS;
 
 /**
  * agent sensor builder
@@ -301,7 +301,7 @@ public interface NSense {
 
         Term t = template;
         return actionBipolarFrequencyDifferential(
-                posOrNeg -> t.replace($.varQuery(1), posOrNeg ? PLUS : NEG),
+                posOrNeg -> t.replace($.varQuery(1), posOrNeg ? POS : NEG),
                 fair, motor);
     }
     default BiPolarAction actionBipolarFrequencyDifferential(BooleanToObjectFunction<Term> s, boolean fair, FloatToFloatFunction motor) {

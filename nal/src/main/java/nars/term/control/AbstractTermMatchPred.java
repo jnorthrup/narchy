@@ -6,9 +6,9 @@ import java.util.function.Function;
 
 public abstract class AbstractTermMatchPred<X> extends AbstractPred<X> {
     public final Function<X, Term> resolve;
-    protected final float resolveCost;
+    final float resolveCost;
 
-    public AbstractTermMatchPred(Term term, Function/*<X, Term>*/ resolve, float resolveCost) {
+    AbstractTermMatchPred(Term term, Function/*<X, Term>*/ resolve, float resolveCost) {
         super(term);
         this.resolve = resolve;
         this.resolveCost = resolveCost;

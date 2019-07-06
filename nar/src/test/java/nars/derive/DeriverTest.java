@@ -155,7 +155,7 @@ class DeriverTest {
 
     private TestNAR test(String... rules) {
         NAR n = new NARS().get();
-        new BatchDeriver(new PremiseRuleSet(n, rules));
+        new BasicDeriver(new PremiseRuleSet(n, rules));
         n.synch();
         TestNAR t = new TestNAR(n);
         tests.add(t);

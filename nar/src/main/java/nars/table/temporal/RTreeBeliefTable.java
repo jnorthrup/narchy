@@ -247,10 +247,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
     @Override
     public void remember(Remember r) {
 
-        if (r.input.isEternal())
-            return;
-
-        if (capacity == 0)
+        if (capacity == 0 || r.input.isEternal())
             return;
 
         /** buffer removal handling until outside of the locked section */

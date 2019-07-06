@@ -5,7 +5,7 @@ import nars.NAR;
 import nars.NARS;
 import nars.Narsese;
 import nars.concept.Concept;
-import nars.derive.BatchDeriver;
+import nars.derive.BasicDeriver;
 import nars.derive.Derivers;
 import nars.gui.graph.DynamicConceptSpace;
 import spacegraph.space3d.SpaceDisplayGraph3D;
@@ -95,7 +95,7 @@ public class Concepts3D extends DynamicConceptSpace {
 
 
         NAR n = NARS.threadSafe();
-        new BatchDeriver(Derivers.nal(n, 1, 8));
+        new BasicDeriver(Derivers.nal(n, 1, 8));
 
 
 

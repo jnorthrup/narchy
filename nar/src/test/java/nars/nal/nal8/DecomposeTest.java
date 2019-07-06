@@ -112,6 +112,7 @@ abstract public class DecomposeTest extends NALTest {
 
             test
                     .termVolMax(6)
+                    .confMin(0.5f)
                     .input("(||,--a,b).  %0.9;0.9%")
                     .input("a.  %0.9;0.9%")
                     .mustBelieve(cycles, "b", 0.81f, 0.59f);

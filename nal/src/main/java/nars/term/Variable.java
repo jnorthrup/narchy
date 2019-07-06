@@ -10,6 +10,7 @@ import nars.term.var.ellipsis.Ellipsis;
 import nars.unify.Unify;
 
 import static nars.Op.FRAG;
+import static nars.Op.VAR_PATTERN;
 import static nars.term.atom.Bool.Null;
 
 /**
@@ -37,11 +38,13 @@ public interface Variable extends Atomic {
     private static boolean unifyVar(Unify u, Term x, Term y) {
         if (x instanceof Variable) {
             Op xop = x.op();
-            if (y instanceof Variable && !(x instanceof Ellipsis) && !(y instanceof Ellipsis)) {
-                if (u.commonVariables && u.var(xop)) {
-                    Op yop = y.op();
-                    if (xop == yop)
-                        return CommonVariable.unify((Variable) x, (Variable) y, u);
+            if (xop!=VAR_PATTERN) {
+                if (y instanceof Variable && !(x instanceof Ellipsis) && !(y instanceof Ellipsis)) {
+                    if (u.commonVariables && u.var(xop)) {
+                        Op yop = y.op();
+                        if (xop == yop)
+                            return CommonVariable.unify((Variable) x, (Variable) y, u);
+                    }
                 }
             }
 

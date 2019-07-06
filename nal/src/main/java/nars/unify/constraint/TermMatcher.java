@@ -18,7 +18,7 @@ import static nars.Op.VAR_PATTERN;
 
 abstract public class TermMatcher {
 
-    public static TermMatcher get(Term x, int depth) {
+    public static TermMatcher matchTerm(Term x, int depth) {
         Op o = x.op();
         assert (o != VAR_PATTERN);
 
@@ -28,8 +28,10 @@ abstract public class TermMatcher {
         return (xs != 0 || v > 1) ? new IsHas(o, xs, v, depth) : new Is(o);
     }
 
+    private static final Atom VOL_MIN = Atomic.atom("volMin");
+
     static Term volMin(int volMin) {
-        return $.func("volMin", $.the(volMin));
+        return $.func(VOL_MIN, $.the(volMin));
     }
 
     /**
@@ -47,11 +49,11 @@ abstract public class TermMatcher {
 //        abstract public boolean testSuperCant(Term x);
 //    }
 
-    /**
-     * test what can be inferred from the superterm if the direct locator was not possible
-     * this is not the direct superterm but the root of the target in which the path may be longer than length 1 so several layers may separate them
-     */
-    abstract public boolean testSuper(Term x);
+//    /**
+//     * test what can be inferred from the superterm if the direct locator was not possible
+//     * this is not the direct superterm but the root of the target in which the path may be longer than length 1 so several layers may separate them
+//     */
+//    abstract public boolean testSuper(Term x);
 
     /**
      * target representing any unique parameters beyond the the class name which is automatically incorporated into the predicate it forms
@@ -124,11 +126,11 @@ abstract public class TermMatcher {
             return x.isAny(struct);
         }
 
-        @Override
-        public boolean testSuper(Term sx) {
-            //return sx.subterms().hasAny(struct);
-            return true;
-        }
+//        @Override
+//        public boolean testSuper(Term sx) {
+//            //return sx.subterms().hasAny(struct);
+//            return true;
+//        }
     }
 
     public static class IsUnneg extends Is {
@@ -205,17 +207,17 @@ abstract public class TermMatcher {
             return (anyOrAll ? term.hasAny(struct) : term.hasAll(struct)) && (volMin == 0 || term.volume() >= volMin);
         }
 
-        @Override
-        public boolean testSuper(Term superTerm) {
-//
-////            if (volMin == 0 || superTerm.volume() >= 1 + volMin) {
-//                Subterms subs = superTerm.subterms();
-//                return (anyOrAll ? subs.hasAny(struct) : subs.hasAll(struct))
-//                    && subs.OR(anyOrAll ? x -> x.hasAny(struct) : x-> x.hasAll(struct));
-////            }
-////            return false;
-            return true;
-        }
+//        @Override
+//        public boolean testSuper(Term superTerm) {
+////
+//////            if (volMin == 0 || superTerm.volume() >= 1 + volMin) {
+////                Subterms subs = superTerm.subterms();
+////                return (anyOrAll ? subs.hasAny(struct) : subs.hasAll(struct))
+////                    && subs.OR(anyOrAll ? x -> x.hasAny(struct) : x-> x.hasAll(struct));
+//////            }
+//////            return false;
+//            return true;
+//        }
     }
 
     /**
@@ -256,19 +258,17 @@ abstract public class TermMatcher {
         @Override
         public boolean test(Term term) {
             return term instanceof Compound &&
-                    term.op().id == is && testVol(term) && (structSubs == 0 || term.subterms().hasAll(structSubs));
+                    term.op().id == is &&
+                    term.volume() >= volMin &&
+                    (structSubs==0 || Op.hasAll(term.subStructure(), structSubs));
         }
-
-        @Override
-        public boolean testSuper(Term term) {
-//            return term instanceof Compound &&
-//                    testVol(term) && term.subterms().hasAll(struct);
-            return true;
-        }
-
-        private boolean testVol(Term term) {
-            return term instanceof Variable /*volMin <= 1*/ || term.volume() >= volMin;
-        }
+//
+//        @Override
+//        public boolean testSuper(Term term) {
+////            return term instanceof Compound &&
+////                    testVol(term) && term.subterms().hasAll(struct);
+//            return true;
+//        }
 
         @Override
         public Term param() {
@@ -310,12 +310,12 @@ abstract public class TermMatcher {
             return term instanceof Compound && term.contains(x);
         }
 
-        @Override
-        public boolean testSuper(Term term) {
-            //return term.hasAll(xStruct);
-                    //containsRecursively(this.x);
-            return true;
-        }
+//        @Override
+//        public boolean testSuper(Term term) {
+//            //return term.hasAll(xStruct);
+//                    //containsRecursively(this.x);
+//            return true;
+//        }
     }
 
     /**
@@ -344,11 +344,11 @@ abstract public class TermMatcher {
         public boolean test(Term term) {
             return term.equals(x);
         }
-
-        @Override
-        public boolean testSuper(Term x) {
-            return true;
-        }
+//
+//        @Override
+//        public boolean testSuper(Term x) {
+//            return true;
+//        }
 
         //        @Override
 //        public boolean testSuper(Term x) {
@@ -406,12 +406,12 @@ abstract public class TermMatcher {
         public boolean test(Term term) {
             return term.subs() >= subsMin;
         }
-
-        @Override
-        public boolean testSuper(Term x) {
-            //return (x.volume() >= subsMin + 1); //this is the minimum possible volume, if it was the target and if it was only atoms
-            return true;
-        }
+//
+//        @Override
+//        public boolean testSuper(Term x) {
+//            //return (x.volume() >= subsMin + 1); //this is the minimum possible volume, if it was the target and if it was only atoms
+//            return true;
+//        }
 
         @Override
         public float cost() {
@@ -433,11 +433,11 @@ abstract public class TermMatcher {
             return Conj.isSeq(t);
         }
 
-        @Override
-        public boolean testSuper(Term x) {
-            return true;
-            //return x.hasAny(CONJ);
-        }
+//        @Override
+//        public boolean testSuper(Term x) {
+//            return true;
+//            //return x.hasAny(CONJ);
+//        }
 
         @Nullable
         @Override
@@ -463,11 +463,11 @@ abstract public class TermMatcher {
             return !Conj.isSeq(t);
         }
 
-        @Override
-        public boolean testSuper(Term x) {
-            //return x.hasAny(CONJ);
-            return true;
-        }
+//        @Override
+//        public boolean testSuper(Term x) {
+//            //return x.hasAny(CONJ);
+//            return true;
+//        }
 
         @Nullable
         @Override
@@ -505,11 +505,11 @@ abstract public class TermMatcher {
             return term.unneg().op().eventable;
         }
 
-        @Override
-        public boolean testSuper(Term x) {
-            //TODO: Op.Eventables
-            return true;
-        }
+//        @Override
+//        public boolean testSuper(Term x) {
+//            //TODO: Op.Eventables
+//            return true;
+//        }
 
         @Override
         public float cost() {

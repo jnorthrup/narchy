@@ -17,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class NAL4Test extends NALTest {
 
 
-    private static final int cycles = 750;
+    private static final int cycles = 50;
 
     @Override
     protected NAR nar() {
@@ -31,25 +31,26 @@ public class NAL4Test extends NALTest {
     void structural_transformation_dont() {
 
         test
-                .believe( "(acid --> (reaction,/,base))")
                 .mustNotOutput(cycles, "(reaction --> (acid,base))", BELIEF, ETERNAL)
+                .believe( "(acid --> (reaction,/,base))")
         ;
     }
 
     @Test
     void structural_transformationExt_forward_repeats2() {
         test
-                .believe("((a,b,a) --> bitmap)", 1.0f, 0.9f)
                 .mustBelieve(cycles, "(b --> (bitmap,a,/,a))", 1.0f, 0.9f)
-                .mustBelieve(cycles, "(a --> (bitmap,/,b,/))", 1.0f, 0.9f);
+                .mustBelieve(cycles, "(a --> (bitmap,/,b,/))", 1.0f, 0.9f)
+                .believe("((a,b,a) --> bitmap)", 1.0f, 0.9f);
+
     }
 
     @Test
     void structural_transformationExt_only_first_layer() {
 
         test
-                .believe("acid(reaction,/,base)", 1.0f, 0.9f)
                 .mustNotOutputAnything()
+                .believe("acid(reaction,/,base)", 1.0f, 0.9f)
 //                .mustBelieve(CYCLES, "((reaction,\\,/,base) --> acid)", 1.0f, 0.9f)
 //                .mustBelieve(CYCLES, "((reaction,acid,\\,/) --> base)", 1.0f, 0.9f)
 //                .mustNotOutput(CYCLES, "((acid,/,base) --> reaction)", BELIEF, ETERNAL)
@@ -59,19 +60,19 @@ public class NAL4Test extends NALTest {
     @Test
     void structural_transformationExt_forward_repeats2numeric() {
         test
-                .believe("((0,1,0) --> bitmap)", 1.0f, 0.9f)
                 .mustBelieve(cycles, "(1 --> (bitmap,0,/,0))", 1.0f, 0.9f)
                 .mustBelieve(cycles, "(0 --> (bitmap,/,1,/))", 1.0f, 0.9f)
                 .mustNotOutput(cycles, "(bitmap --> (0,1,0))", BELIEF, 1f, 1f, 0.9f, 0.9f, ETERNAL)
+                .believe("((0,1,0) --> bitmap)", 1.0f, 0.9f)
         ;
     }
     @Test
     void structural_transformationExt_forward_repeats2numeric_temporal() {
         test
-                .input("((0,1,0) --> bitmap). |")
                 .mustBelieve(cycles, "(1 --> (bitmap,0,/,0))", 1.0f, 0.9f, 0)
                 .mustBelieve(cycles, "(0 --> (bitmap,/,1,/))", 1.0f, 0.9f, 0)
                 .mustNotOutput(cycles, "(bitmap --> (0,1,0))", BELIEF, 1f, 1f, 0.9f, 0.9f, t->true)
+                .input("((0,1,0) --> bitmap). |")
         ;
     }
 
@@ -93,20 +94,20 @@ public class NAL4Test extends NALTest {
     void structural_transformationExt() {
 
         test
-                .believe("((acid,base) --> reaction)", 1.0f, 0.9f)
                 .mustBelieve(cycles, "(acid --> (reaction,/,base))", 1.0f, 0.9f)
                 .mustBelieve(cycles, "(base --> (reaction,acid,/))", 1.0f, 0.9f)
                 .mustNotOutput(cycles, "(reaction --> (acid,base))", BELIEF, ETERNAL)
+                .believe("((acid,base) --> reaction)", 1.0f, 0.9f)
         ;
     }
 
     @Test
     void structural_transformationInt_0() {
         test
-                .believe("(reaction --> (acid,base))", 1.0f, 0.9f)
                 .mustBelieve(cycles, "((reaction,\\,base) --> acid)", 1.0f, 0.9f)
                 .mustBelieve(cycles, "((reaction,acid,\\) --> base)", 1.0f, 0.9f)
                 .mustNotOutput(cycles, "((acid,base) --> reaction)", BELIEF, ETERNAL)
+                .believe("(reaction --> (acid,base))", 1.0f, 0.9f)
         ;
     }
 
@@ -123,9 +124,10 @@ public class NAL4Test extends NALTest {
 
     @Test
     void structural_transformation_DepVar1() {
-        test.believe("reaction(#1,base)", 1.0f, 0.9f);
-        test.mustBelieve(cycles, "(base --> (reaction,#1,/))", 1.0f, 0.9f);
-        test.mustBelieve(cycles, "(#1 --> (reaction,/,base))", 1.0f, 0.9f);
+        test
+            .mustBelieve(cycles, "(base --> (reaction,#1,/))", 1.0f, 0.9f)
+            .mustBelieve(cycles, "(#1 --> (reaction,/,base))", 1.0f, 0.9f)
+            .believe("reaction(#1,base)", 1.0f, 0.9f);
     }
 
     @Test
@@ -137,15 +139,14 @@ public class NAL4Test extends NALTest {
 
     @Test
     void structural_transformation_one_arg() {
-        test.believe("reaction(acid)", 1.0f, 0.9f);
         //test.mustBelieve(CYCLES, "(acid --> (reaction,/))", 1.0f, 0.9f);
         test.mustNotOutput(cycles, "(acid --> (reaction,/))", BELIEF, 0, 1, 0, 1, t->true);
+        test.believe("reaction(acid)", 1.0f, 0.9f);
     }
 
     @Test
     void structural_transformation6() {
         test
-
                 .mustBelieve(cycles, "(neutralization --> (acid,base))", 1.0f, 0.9f) //en("Something that can be neutralized by an acid is a base.");
                 .mustNotOutput(cycles, "((acid,base) --> neutralization)", BELIEF, 1f, 1.0f, 0.9f, 0.9f, ETERNAL)
                 .believe("((neutralization,acid,\\) --> base)", 1.0f, 0.9f) //en("Something that can neutralize a base is an acid.");
@@ -205,9 +206,9 @@ public class NAL4Test extends NALTest {
     @Test
     void testCompositionFromProductInh() {
         test
+                .mustBelieve(cycles, "((drink,soda) --> (drink,acid))", 1.0f, 0.81f)
                 .believe("(soda --> acid)", 1.0f, 0.9f)
-                .ask("((drink,soda) --> ?death)")
-                .mustBelieve(cycles, "((drink,soda) --> (drink,acid))", 1.0f, 0.81f);
+                .ask("((drink,soda) --> ?death)");
     }
 
     @Disabled
@@ -215,9 +216,10 @@ public class NAL4Test extends NALTest {
     void testCompositionFromProductSim() {
 
         test
+                .mustBelieve(cycles, "((soda,food) <-> (deadly,food))", 1.0f, 0.81f)
                 .believe("(soda <-> deadly)", 1.0f, 0.9f)
                 .ask("((soda,food) <-> #x)")
-                .mustBelieve(cycles, "((soda,food) <-> (deadly,food))", 1.0f, 0.81f);
+                ;
     }
 
 
@@ -233,9 +235,10 @@ public class NAL4Test extends NALTest {
 
         test
                 .termVolMax(10)
+                .mustNotOutput(cycles, "((o-(i-happy))-->happy)", BELIEF, ETERNAL)
                 .believe("happy(L)", 1f, 0.9f)
                 .believe("((L)-->(o-(i-happy)))", 1f, 0.9f)
-                .mustNotOutput(cycles, "((o-(i-happy))-->happy)", BELIEF, ETERNAL);
+                ;
     }
 
 
@@ -265,9 +268,10 @@ public class NAL4Test extends NALTest {
 
     @Test
     void testNormalize0() {
-        test.believe("likes(cat,[blue])")
+        test
                 .mustBelieve(cycles, "(cat-->(likes,/,[blue]))", 1f, 0.9f)
                 .mustNotOutput(cycles, "(likes-->(cat,[blue]))", BELIEF, 1f, 1f, 0.9f, 0.9f, ETERNAL)
+                .believe("likes(cat,[blue])")
         ;
     }
 
@@ -286,9 +290,9 @@ public class NAL4Test extends NALTest {
     void testNormalize1a() {
 
         test
-                .believe("([blue] --> (likes,cat,/))")
                 //.mustBelieve(CYCLES, "((cat,[blue])-->likes)", 1f, 0.9f)
                 .mustNotOutput(cycles, "(likes-->(cat,[blue]))", BELIEF, 1f, 1f, 0.9f, 0.9f, ETERNAL)
+                .believe("([blue] --> (likes,cat,/))")
         ;
     }
 
@@ -296,16 +300,18 @@ public class NAL4Test extends NALTest {
     void testNormalize1aQ() {
 
         test
-                .ask("([blue] --> (likes,cat,/))")
                 .mustQuestion(cycles, "((cat,[blue])-->likes)")
                 .mustNotOutput(cycles, "(likes-->(cat,[blue]))", QUESTION, 1f, 1f, 0.9f, 0.9f, ETERNAL)
+                .ask("([blue] --> (likes,cat,/))")
         ;
     }
 
     @Test
     void testNormalize1b() {
-        test.believe("((likes,cat,/)-->[blue])")
+        test
                 .mustNotOutputAnything()
+                .believe("((likes,cat,/)-->[blue])")
+
         ;
     }
 
@@ -322,9 +328,9 @@ public class NAL4Test extends NALTest {
     @Test
     void testQuestionAnswering() {
         test
+                .mustOutput(cycles, "((0,1)-->(1,1))", QUESTION)
                 .input("((0,1)-->?1)?")
-                .input("((1,1)-->x).")
-                .mustOutput(cycles, "((0,1)-->(1,1))", QUESTION);
+                .input("((1,1)-->x).");
     }
 
     @ValueSource(bytes = {QUESTION, QUEST})
@@ -332,9 +338,9 @@ public class NAL4Test extends NALTest {
     @Disabled
     void testTransformRawQuestionSubj(byte punc) {
         test
-                .input("(a,b)" + (char) punc)
                 .mustOutput(cycles, "(b-->(?1,a,/))", punc)
                 .mustOutput(cycles, "(a-->(?1,/,b))", punc)
+                .input("(a,b)" + (char) punc)
         ;
     }
 
@@ -342,18 +348,18 @@ public class NAL4Test extends NALTest {
     void composition_on_both_sides_of_a_statement_2(String op) {
         test
             .termVolMax(9)
+            .mustBelieve(cycles, "((bird,plant)"+op+"(animal,plant))", 1.0f, 0.81f) //en(" The relation between bird and plant is a type of relation between animal and plant.")
             .believe("(bird"+op+"animal)",1.0f,0.9f) //en("Bird is a type of animal.");
             .ask("((bird,plant)"+op+"(animal,plant))")
-            .mustBelieve(cycles, "((bird,plant)"+op+"(animal,plant))", 1.0f, 0.81f) //en(" The relation between bird and plant is a type of relation between animal and plant.");
         ;
     }
     @Test
     void composition_on_both_sides_of_a_statement_2_neg() {
         test
                 .termVolMax(12)
+                .mustBelieve(cycles, "(((x|y),plant) --> (animal,plant))", 1.0f, 0.81f)
                 .believe("((x|y)-->animal)",1.0f,0.9f)
                 .ask("(((x|y),plant) --> (animal,plant))")
-                .mustBelieve(cycles, "(((x|y),plant) --> (animal,plant))", 1.0f, 0.81f)
         ;
     }
 

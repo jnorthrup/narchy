@@ -82,7 +82,7 @@ public class TaskConcept extends NodeConcept  {
      * Directly process a new task, if belief tables agree to store it.
      * Called exactly once on each task.
      */
-    public void add(Remember t, NAR n) {
+    public void add(Remember t) {
         Task ti = t.input;
         //if (ti!=null) {
             assert !NAL.test.DEBUG_EXTRA || (ti.term().concept().equals(term));

@@ -8,7 +8,7 @@ import nars.NAR;
 import nars.NARchy;
 import nars.Narsese;
 import nars.concept.Concept;
-import nars.derive.BatchDeriver;
+import nars.derive.BasicDeriver;
 import nars.derive.Deriver;
 import nars.gui.NARui;
 import nars.op.java.Opjects;
@@ -42,7 +42,7 @@ public class C4 {
 //            n.goalPriDefault.set(0.75f);
             this.n = n;
 
-            Deriver.derivers(n).forEach(d -> ((BatchDeriver) d).premisesPerIteration.set(4));
+            Deriver.derivers(n).forEach(d -> ((BasicDeriver) d).premisesPerIteration.set(4));
 
 
             Opjects o = new Opjects(n);

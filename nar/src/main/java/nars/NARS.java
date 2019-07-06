@@ -8,7 +8,7 @@ import nars.concept.Concept;
 import nars.concept.util.ConceptAllocator;
 import nars.concept.util.ConceptBuilder;
 import nars.concept.util.DefaultConceptBuilder;
-import nars.derive.BatchDeriver;
+import nars.derive.BasicDeriver;
 import nars.derive.Derivers;
 import nars.exe.Exec;
 import nars.exe.impl.UniExec;
@@ -106,7 +106,7 @@ public class NARS {
      */
     @Deprecated public NARS withNAL(int minLevel, int maxLevel) {
         return then((n)->
-                new BatchDeriver(Derivers.nal(n, minLevel, maxLevel))
+                new BasicDeriver(Derivers.nal(n, minLevel, maxLevel))
             );
     }
 
