@@ -218,40 +218,10 @@ public interface LongInterval {
         }
     }
 
-//    default long maxTimeTo(long a, long b) {
-//        assert (b >= a): a + " > " + b;
-//
-//        if (a == ETERNAL) {
-//            return 0;
-//        }
-//
-//        long s = start();
-//        if (s == ETERNAL)
-//            return 0;
-//
-//        long e = end();
-//        if (intersects(a, b)) {
-//            return 0;
-//        } else {
-//            long sa = Math.abs(s - a);
-//            if (a == b) {
-//                if (s == e) {
-//                    return sa;
-//                } else {
-//                    return Math.max(sa, Math.abs(e - b));
-//                }
-//            } else {
-//                long sab = Math.max(sa, Math.abs(s - b));
-//                if (s == e) {
-//                    return sab;
-//                } else {
-//                    return Math.max(sab, Math.max(Math.abs(e - a), Math.abs(e - b)));
-//                }
-//            }
-//        }
-//    }
 
-
+    default long minTimeTo(LongInterval i) {
+        return i == this ? 0 : minTimeTo(i.start(), i.end());
+    }
 
     /** if the task intersects (ex: occurrs during) the specified interval,
      *  returned time distance is zero, regardless of how far it may extend before or after it */
@@ -309,6 +279,16 @@ public interface LongInterval {
 
             }
         }
+    }
+
+    default long meanTimeTo(LongInterval i) {
+        if (i == this) return 0;
+        return meanTimeTo(i.start(), i.end());
+    }
+
+    default long meanTimeTo(long is, long ie) {
+        if (is == ie) return meanTimeTo(is);
+        else return (meanTimeTo(is) + meanTimeTo(ie))/2;
     }
 
     default long meanTimeTo(long x) {

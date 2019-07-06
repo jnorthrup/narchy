@@ -12,7 +12,7 @@ public class CycleTime extends Time {
     long t;
     final int dt;
 
-    int dur;
+    float dur;
 
 
     CycleTime(int dt, int dur) {
@@ -26,12 +26,12 @@ public class CycleTime extends Time {
     }
 
     @Override
-    public int dur() {
+    public float dur() {
         return dur;
     }
 
     @Override
-    public CycleTime dur(int d) {
+    public CycleTime dur(float d) {
         this.dur = d;
         return this;
     }

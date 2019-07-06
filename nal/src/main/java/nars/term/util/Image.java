@@ -23,7 +23,7 @@ import static nars.term.atom.Bool.True;
 public enum Image {
     ;
 
-    public static final int ImageBits = PROD.bit | Op.IMG.bit | INH.bit;
+    public static final int ImageBits = PROD.bit | IMG.bit | INH.bit;
 
 
     public static Term imageInt(Term t, Term x) {
@@ -87,7 +87,7 @@ public enum Image {
             return _x;
 
         if (x.op() == INH) {
-            Term y = _imgNormalize((Compound) x);//.normalize();
+            Term y = _imgNormalize((Compound) x);
             if (x!=y)
                 return y.negIf(neg);
         }

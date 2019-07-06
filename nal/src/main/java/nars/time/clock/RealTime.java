@@ -7,7 +7,6 @@ import tec.uom.se.quantity.time.TimeQuantities;
 import javax.measure.Quantity;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.concurrent.atomic.AtomicLongFieldUpdater;
 
 /**
  * Created by me on 7/2/15.
@@ -22,15 +21,14 @@ public abstract class RealTime extends Time {
     public final boolean relativeToStart;
     long start;
 
-    private final static AtomicLongFieldUpdater<RealTime> T = AtomicLongFieldUpdater.newUpdater(RealTime.class, "t");
-    private volatile long t;
+    private final AtomicLong t = new AtomicLong();
 
 
     private final long seed = Math.abs(UUID.randomUUID().getLeastSignificantBits() ) & 0xffff0000;
 
     private final AtomicLong nextStamp = new AtomicLong(seed);
 
-    private int dur = 1, nextDur = 1;
+    private float dur = 1, nextDur = 1;
     private long last;
 
 
@@ -61,19 +59,19 @@ public abstract class RealTime extends Time {
         this.startNS = System.nanoTime();
         this.start = relativeToStart ? Math.round((startMS/1000.0) * unitsPerSecond) : 0L;
         this.dur = nextDur;
-        T.set(this, this.last = realtime());
+        t.set(this.last = realtime());
     }
 
     @Override
     public final void next() {
         this.dur = nextDur;
-        this.last = T.getAndSet(this, realtime());
+        this.last = t.getAndSet(realtime());
     }
 
     @Override
     public final long now() {
         //return t.getOpaque();
-        return T.get(this);
+        return t.getOpaque();
     }
 
 
@@ -83,8 +81,8 @@ public abstract class RealTime extends Time {
 //        return unitsToSeconds(now() - start);
 //    }
 
-    private double unitsToSeconds(long l) {
-        return l / ((double) unitsPerSecond);
+    private double unitsToSeconds(double l) {
+        return l / unitsPerSecond;
     }
 
     @Override
@@ -98,9 +96,9 @@ public abstract class RealTime extends Time {
     }
 
     @Override
-    public Time dur(int cycles) {
-        assert(cycles > 0);
-        this.nextDur = cycles;
+    public Time dur(float d) {
+        assert(d > 0);
+        this.nextDur = d;
         return this;
     }
 
@@ -109,7 +107,7 @@ public abstract class RealTime extends Time {
     }
 
     @Override
-    public int dur() {
+    public float dur() {
         return dur;
     }
 

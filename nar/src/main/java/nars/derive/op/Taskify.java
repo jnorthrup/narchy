@@ -75,10 +75,8 @@ public class Taskify extends ProxyTerm {
 
     void temporalTask(Term x, Occurrify.OccurrenceSolver time, Derivation d) {
 
-
-
         boolean neg = false;
-        Term xx = x;
+
         if (x instanceof Neg && (!d.taskTerm.hasAny(NEG) && !d.beliefTerm.hasAny(NEG))) {
             //HACK semi-auto-unneg to help occurrify
             x = x.unneg();
@@ -91,14 +89,12 @@ public class Taskify extends ProxyTerm {
             return;
         }
 
-        Term y = timing.getOne();
 
         long[] occ = timing.getTwo();
+        assertOccValid(d, occ);
 
-        if (!((occ[0] != TIMELESS) && (occ[1] != TIMELESS) &&
-                (occ[0] == ETERNAL) == (occ[1] == ETERNAL) &&
-                (occ[1] >= occ[0])) || (occ[0] == ETERNAL && !d.occ.validEternal()))
-            throw new RuntimeException("bad occurrence result: " + Arrays.toString(occ));
+
+        Term y = timing.getOne();
 
         if (NAL.derive.DERIVE_QUESTION_FROM_AMBIGUOUS_BELIEF_OR_GOAL && (d.concPunc == BELIEF || d.concPunc == GOAL)) {
             if (DerivationFailure.failure(y, d.concPunc)) {
@@ -128,6 +124,12 @@ public class Taskify extends ProxyTerm {
         taskify(y.negIf(neg), occ[0], occ[1], d);
     }
 
+    private void assertOccValid(Derivation d, long[] occ) {
+        if (!((occ[0] != TIMELESS) && (occ[1] != TIMELESS) &&
+                (occ[0] == ETERNAL) == (occ[1] == ETERNAL) &&
+                (occ[1] >= occ[0])) || (occ[0] == ETERNAL && !d.occ.validEternal()))
+            throw new RuntimeException("bad occurrence result: " + Arrays.toString(occ));
+    }
 
 
     /**

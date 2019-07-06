@@ -162,7 +162,7 @@ public class TruthWave {
         int halfDT = (int) Math.round(dt/2);
         float[] data = this.truth;
         int j = 0;
-        Answer a = Answer.relevant(true, precision, start, end, term, null, nar)
+        Answer a = Answer.relevance(true, precision, start, end, term, null, nar)
                 .dur(dur);
         int tries = (int) Math.ceil(precision* NAL.ANSWER_COMPLETENESS);
 

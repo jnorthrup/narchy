@@ -10,7 +10,6 @@ import nars.attention.What;
 import nars.concept.Concept;
 import nars.concept.Operator;
 import nars.eval.Evaluation;
-import nars.task.AbstractTask;
 import nars.term.Compound;
 import nars.term.Functor;
 import nars.term.Term;
@@ -18,14 +17,15 @@ import nars.term.atom.Bool;
 import nars.term.util.transform.Retemporalize;
 import org.eclipse.collections.api.tuple.primitive.ObjectBooleanPair;
 import org.eclipse.collections.impl.list.mutable.FastList;
+import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.HashSet;
 import java.util.function.Predicate;
 
 import static nars.Op.*;
+import static nars.task.AbstractTask.multiTask;
 import static nars.term.atom.Bool.True;
 
 /** transforms an input task into any smaller sub-tasks that constitute the perception process */
@@ -38,23 +38,34 @@ public enum Perceive { ;
         NAR n = w.nar;
         n.emotion.perceivedTaskStart.increment();
 
-        Term x = t.term();
-        Task perceived = Perceive.perceived(t, w.nar);
-        if (perceived!=null) {
 
-            if (Evaluation.canEval(x)) {
-                FasterList<Task> rt = new TaskEvaluation(t, w).result;
-                if (rt!=null) {
-                    rt.removeInstance(t); //HACK
-                    rt.add(perceived);
+        byte punc = t.punc();
+        boolean cmd = punc == COMMAND;
 
-                    return task(rt);
-                }
+        Task e = (cmd || (t instanceof Task && (punc == GOAL && !t.isEternal()))) ?
+            execute(t, n, cmd) : null;
+
+        Task r = (!cmd) ? Remember.the(t, n) : null;
+
+        Task perceived;
+        if (e != null && r != null)
+            perceived = task(new FasterList<Task>(2).with(e, r));
+        else if (e!=null)
+            perceived = e;
+        else
+            perceived = r;
+
+        if (Evaluation.canEval(t.term())) {
+            FasterList<Task> rt = new TaskEvaluation(t, w).result;
+            if (rt!=null) {
+                rt.removeInstance(t); //HACK
+                rt.add(perceived);
+
+                return task(rt);
             }
+        }
 
-            return perceived;
-        } else
-            return null;
+        return perceived;
     }
 
     /** deduplicate and bundle to one task */
@@ -71,17 +82,20 @@ public enum Perceive { ;
             case 2:
                 if (yy.get(0).equals(yy.get(1)))
                     return yy.get(0);
-                break;
+                else
+                    return multiTask(yy);
+            default:
+                //test for deduplication
+                java.util.Set<Task> yyDedup = new UnifiedSet(yys);
+                yyDedup.addAll(yy);
+                int yyDedupSize = yyDedup.size();
+                if (yyDedupSize==1)
+                    return yy.get(0);
+                else
+                    return multiTask(yyDedupSize == yys ?
+                            /*the original list */ yy : /* the deduplicated set */ yyDedup);
         }
 
-        //test for deduplication
-        java.util.Set<Task> yyy = new HashSet(yys);
-        yyy.addAll(yy);
-        int yyys = yyy.size();
-        if (yyys==1)
-            return yy.get(0);
-        else
-            return AbstractTask.of(yyys ==yys ? /*the original list */ yy : /* the deduplicated set */ yyy);
     }
 
     /** returns true if the task is acceptable */
@@ -167,7 +181,7 @@ public enum Perceive { ;
             this.t = t;
             this.what = w;
 
-            evalTry((Compound)(t.term()), w.nar.evaluator.get());
+            evalTry((Compound)(t.term()), w.nar.evaluator.get(), false);
 
         }
 
@@ -203,27 +217,6 @@ public enum Perceive { ;
 //                    else
 //                        return Bool.Null; //TODO
         }
-    }
-
-    private static Task perceived(Task t, NAR n) {
-
-        byte punc = t.punc();
-        boolean cmd = punc == COMMAND;
-
-        Task e = null, r = null;
-        if (cmd || (t instanceof Task && (punc == GOAL && !t.isEternal()))) {
-            e = execute(t, n, cmd);
-        }
-
-        if (!cmd) {
-            r = Remember.the(t, n);
-        }
-
-        if (e != null && r != null)
-            return task(new FasterList<Task>(2).with(e, r));
-        else if (e!=null)
-            return e;
-        else return r;
     }
 
     private static Task execute(Task t, NAR n, boolean cmd) {

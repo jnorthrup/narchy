@@ -25,7 +25,7 @@ public abstract class AbstractTask implements Task {
 
     public static final Logger logger = Log.logger(AbstractTask.class);
 
-    public static Task of(@Nullable Collection<Task> next) {
+    public static Task multiTask(@Nullable Collection<Task> next) {
         if (next == null) return null;
         switch (next.size()) {
             case 0:

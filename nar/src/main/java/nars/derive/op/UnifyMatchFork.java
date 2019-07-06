@@ -29,14 +29,14 @@ public class UnifyMatchFork extends EvalTermBuffer implements Predicate<Derivati
 
         Term y = d.transformDerived.apply(x); //x.transform(d.transformDerived, this, workVolMax);
 
-        if (y.unneg().op().taskable) {
-            if (Success == DerivationFailure.failure(y, (byte) 0 /* dont consider punc consequences until after temporalization */, d)) {
-                if (d.temporal)
-                    taskify.temporalTask(y, taskify.termify.time, d);
-                else
-                    taskify.eternalTask(y, d);
-            }
+
+        if (Success == DerivationFailure.failure(y, (byte) 0 /* dont consider punc consequences until after temporalization */, d)) {
+            if (d.temporal)
+                taskify.temporalTask(y, taskify.termify.time, d);
+            else
+                taskify.eternalTask(y, d);
         }
+
 
         return true; //tried.size() < forkLimit;
     }

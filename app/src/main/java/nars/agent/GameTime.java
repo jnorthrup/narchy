@@ -17,7 +17,7 @@ abstract public class GameTime {
 
 
     /** estimated cycles per frame. not necessarily equal to the NAR's dur() */
-    public abstract int dur();
+    public abstract float dur();
 
     /** estimate the time of the next cycle */
     abstract public long next(long now);
@@ -35,7 +35,7 @@ abstract public class GameTime {
 
         public final Loop loop;
         private Game g = null;
-        private int dur = 1;
+        private float dur = 1;
 
         public FPS(float fps) {
             this.initialFPS = fps;
@@ -48,7 +48,7 @@ abstract public class GameTime {
         }
 
         @Override
-        public final int dur() {
+        public final float dur() {
             return dur;
         }
 
@@ -91,7 +91,7 @@ abstract public class GameTime {
         private transient final float durPeriod;
 
         public DurLoop loop = null;
-        private int dur = 1;
+        private float dur = 1;
 
         Durs(float durPeriod) {
             this.durPeriod = durPeriod;
@@ -104,7 +104,7 @@ abstract public class GameTime {
         }
 
         @Override
-        public final int dur() {
+        public final float dur() {
             return dur;
         }
 
@@ -135,7 +135,7 @@ abstract public class GameTime {
 //        }
 //
 //        @Override
-//        public int dur() {
+//        public float dur() {
 //            throw new TODO();
 //        }
 //

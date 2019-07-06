@@ -227,10 +227,44 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
     public static final float SUBTERM_UNIFY_RANDOM_PROBABILITY = 0.1f;
 
 
+
+
+
     protected static final boolean DYNAMIC_CONCEPT_TRANSIENT = false;
 
     public static boolean ETERNALIZE_BELIEF_PROJECTED_IN_DERIVATION = true;
     public static boolean ETERNALIZE_BELIEF_PROJECTED_IN_DERIVATION_AND_ETERNALIZE_BELIEF_TIME = false;
+
+    /**
+     * SignalTask's
+     */
+    public enum signal {
+        ;
+
+        public static final boolean SIGNAL_TABLE_FILTER_NON_SIGNAL_TEMPORAL_TASKS= configIs("SIGNAL_TABLE_FILTER_NON_SIGNAL_TEMPORAL_TASKS");
+        public static final int SIGNAL_BELIEF_TABLE_SERIES_SIZE = 512;
+        /**
+         * maximum time (in durations) that a signal task can stretch the same value
+         * until a new task (with new evidence) is created (seamlessly continuing it afterward)
+         * <p>
+         * TODO make this a per-sensor implementation decision
+         */
+        public static final float SIGNAL_STRETCH_LIMIT_DURS = 4;
+        /**
+         * maximum time between signal updates to stretch an equivalently-truthed data point across.
+         * stretches perception across some amount of lag
+         */
+        public static final float SIGNAL_LATCH_LIMIT_DURS =/*0.5f;*/
+                //2f;
+                1.5f;
+                //1f;
+
+        /** max tasked matched by series table, in case the answer limit is higher.  this reduces the number of redundant non-exact matches freeing evidential capacity for non-signal tasks from other tables of the concept */
+        public static final float SERIES_MATCH_ADDITIONAL_RATE_PER_DUR = 1f/SIGNAL_STRETCH_LIMIT_DURS;
+        public static final int SERIES_MATCH_MIN = 2;
+
+        public static final float SENSOR_MIN_SURPRISE_DEFAULT = 0.5f;
+    }
 
     /** TODO make these dynamic parameters of a NALTruth implementation */
     public static class nal_truth {
@@ -278,7 +312,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
     @Deprecated
     public final FloatRange questionForgetRate = new FloatRange(0.5f, 0, 1);
     public final IntRange premiseUnifyTTL = new IntRange(8, 1, 32);
-    public final IntRange deriveBranchTTL = new IntRange(8 * NAL.derive.TTL_MIN, NAL.derive.TTL_MIN, 64 * NAL.derive.TTL_MIN);
+    public final IntRange deriveBranchTTL = new IntRange(4 * NAL.derive.TTL_MIN, NAL.derive.TTL_MIN, 64 * NAL.derive.TTL_MIN);
     /**
      * how many cycles above which to dither dt and occurrence time
      * TODO move this to Time class and cache the cycle value rather than dynamically computing it
@@ -346,37 +380,8 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
     public final long[] evidence() {
         return new long[]{time.nextStamp()};
     }
-    /**
-     * priority of sensor task, with respect to how significantly it changed from a previous value
-     */
-    public static double signalSurprise(final Task prev, final Task next, int dur) {
-
-        final boolean NEW = prev == null;
-        if (NEW)
-            return 1;
-
-        final boolean stretched = prev == next;
-        if (stretched)
-            return 0;
-
-        final long sepCycles  = stretched ? 0 : Math.abs(next.start() - prev.end());
 
 
-        //decrease priority by similarity to previous truth
-
-
-
-            //TODO abstract this frequence response curve
-            final float deltaFreq = prev != next ? Math.abs(prev.freq() - next.freq()) : 0; //TODO use a moving average or other anomaly/surprise detection
-            return Util.or(deltaFreq , (1-evi(1, sepCycles, dur)));
-
-//                if (deltaFreq > Float.MIN_NORMAL) {
-//                    final float perceived = 0.01f + 0.99f * (float) Math.pow(deltaFreq, 1 / 2f /* etc*/);
-//                    return perceived;
-//                }
-            //p *= Util.lerp(deltaFreq, perceived, 1);
-
-    }
 
     static Atom randomSelf() {
         return $.uuid(/*"I_"*/);
@@ -416,50 +421,32 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
 
         //assert (dur > 0 && dt > 0);
 
-
-        //inverse linear decay
-        final double falloffDurs =
-                //0.5f;
-                1;
-                //1.618f; //phi
-                //2; //nyquist / horizon
-                //4;
-                //dur;
-                //8;
-
-
-        final double decayTime = falloffDurs * dur;
         double e;
+
+        //quadratic decay: integral finite from to infinity, see: https://en.wikipedia.org/wiki/List_of_definite_integrals
+        e = (evi / (1.0 + Util.sqr(((double)dt) / dur)));
 
         //cubic decay:
         //http://fooplot.com/#W3sidHlwZSI6MCwiZXEiOiIxLTEvKDErZV4oLXgpKSIsImNvbG9yIjoiIzAwNzdGRiJ9LHsidHlwZSI6MCwiZXEiOiIxLygxK3gqeCkiLCJjb2xvciI6IiNENDFBMUEifSx7InR5cGUiOjAsImVxIjoiMS8oMSt4KngqeCkiLCJjb2xvciI6IiM4OUFEMDkifSx7InR5cGUiOjEwMDAsIndpbmRvdyI6WyIwIiwiMTgiLCIwIiwiMSJdfV0-
-//        e = (evi / (1.0 + Util.cube(dt / (falloffDurs * dur)))));
-//        e = (evi / (1.0 + Util.cube(dt/dur) / falloffDurs));
+        //e = (evi / (1.0 + Util.cube(((double)dt) / dur)));
 
-        //quadratic decay: integral finite from to infinity, see: https://en.wikipedia.org/wiki/List_of_definite_integrals
-        e = (evi / (1.0 + Util.sqr(dt / decayTime)));
-            //e = (float)(evi / (1.0 + Util.sqr(((double)dt) / dur ) / falloffDurs));
+        //linear decay WARNING - not finite integral
+        //e = (float) (evi / (1.0 + ((double)dt) / dur));
 
         //constant duration linear decay ("trapezoidal")
-//        e = (float) (evi * Math.max(0, (1.0 - dt / decayTime)));
+        //e = (float) (evi * Math.max(0, (1.0 - dt / dur)));
 
-        //cartoon quadratic decay
-//        float edge = dur / 2;
-//        e = (evi / (1.0 + Util.sqr(Math.max(0, dt - edge) / decayTime)));
+        //max(constant duration, cubic floor)
+        //e = (float) (evi * Math.max((1.0 - dt / dur), 1.0/(1.0 + Util.cube(((double)dt) / dur))));
 
         //exponential decay: see https://en.wikipedia.org/wiki/Exponential_integral
         //TODO
-
-
 
         //constant duration quadratic decay (sharp falloff)
         //e = evi * Math.max(0, (float) (1.0 - Math.sqrt(dt / decayTime)));
 
         //constant duration quadratic discharge (slow falloff)
         //e = evi * Math.max(0, 1.0 - Util.sqr(dt / decayTime));
-
-        //linear decay WARNING - not finite integral
-        //e = (float) (evi / (1.0 + dt / decayTime));
 
         //---------
 
@@ -618,36 +605,6 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
         public static long TASK_RANGE_LIMIT = (1L << 61) /* estimate */;
 
 
-        /**
-         * SignalTask's
-         */
-        public enum signal {
-            ;
-
-            public static final boolean SIGNAL_TABLE_FILTER_NON_SIGNAL_TEMPORAL_TASKS= configIs("SIGNAL_TABLE_FILTER_NON_SIGNAL_TEMPORAL_TASKS");
-            public static final int SIGNAL_BELIEF_TABLE_SERIES_SIZE = 512;
-            /**
-             * maximum time (in durations) that a signal task can stretch the same value
-             * until a new task (with new evidence) is created (seamlessly continuing it afterward)
-             * <p>
-             * TODO make this a per-sensor implementation cdecision
-             */
-            public static final float SIGNAL_STRETCH_LIMIT_DURS = 8;
-            /**
-             * maximum time between signal updates to stretch an equivalently-truthed data point across.
-             * stretches perception across some amount of lag
-             */
-            public static final float SIGNAL_LATCH_LIMIT_DURS =/*0.5f;*/
-                    //2f;
-                    1.5f;
-                    //1f;
-
-            /** max tasked matched by series table, in case the answer limit is higher.  this reduces the number of redundant non-exact matches freeing evidential capacity for non-signal tasks from other tables of the concept */
-            public static final float SERIES_MATCH_ADDITIONAL_RATE_PER_DUR = 1f/SIGNAL_STRETCH_LIMIT_DURS;
-            public static final int SERIES_MATCH_MIN = 3;
-
-            //public static final boolean SIGNAL_TASK_OCC_DITHER = true;
-        }
     }
 
 

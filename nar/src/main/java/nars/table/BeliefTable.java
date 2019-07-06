@@ -59,7 +59,7 @@ public interface BeliefTable extends TaskTable {
         assert(precision < NAL.STAMP_CAPACITY);
         if (isEmpty())
             return null;
-        return Answer.relevant(true, precision, start, end, template, filter, n)
+        return Answer.relevance(true, precision, start, end, template, filter, n)
                 .dur(dur)
                 .match(this).truth();
     }

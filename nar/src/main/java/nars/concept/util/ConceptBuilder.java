@@ -179,17 +179,17 @@ public abstract class ConceptBuilder implements BiFunction<Term, Concept, Concep
         @Nullable AbstractDynamicTruth m = dynamicInhSect(ii);
         @Nullable ObjectBooleanToObjectFunction<Term, BeliefTable[]> s = m != null ? table(m) : null;
 
-        if (!ii.hasAny(Temporal | VAR_INDEP.bit)) {
+        if (!ii.hasAny(VAR_INDEP.bit)) {
             //HACK the temporal restriction is until ImageDynamicTruthModel can support dynamic transformation and untransformation of temporal-containing INH, like:
             //  ((believe("-ÈÛWédxÚñB",(y-->$1)) ==>+- (y-->$1))-->(believe,"-ÈÛWédxÚñB",/))
-            Term it = Image.imageNormalize(i);
-            if (!(it instanceof Bool) && !i.equals(it)) {
+            Term n = Image.imageNormalize(i);
+            if (!i.equals(n) && !(n instanceof Bool)) {
                 if (s == null)
-                    return (term, bOrG) -> new BeliefTable[]{new ImageBeliefTable(term, bOrG)};
+                    return (t, bOrG) -> new BeliefTable[]{new ImageBeliefTable(t, bOrG)};
                 else
-                    return (term, bOrG) -> {
-                        return ArrayUtil.add(s.valueOf(term, bOrG),
-                                             new ImageBeliefTable(term, bOrG));
+                    return (t, bOrG) -> {
+                        return ArrayUtil.add(s.valueOf(t, bOrG),
+                                             new ImageBeliefTable(t, bOrG));
                     };
             }
         }

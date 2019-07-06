@@ -58,7 +58,7 @@ public class SeriesBeliefTable<T extends Task> extends DynamicTaskTable {
             e = t.time.end;
         }
 
-        int seriesTTL = (int) (NAL.belief.signal.SERIES_MATCH_MIN + Math.ceil(NAL.belief.signal.SERIES_MATCH_ADDITIONAL_RATE_PER_DUR / dur * (e-s)));
+        int seriesTTL = (int) (NAL.signal.SERIES_MATCH_MIN + Math.ceil(NAL.signal.SERIES_MATCH_ADDITIONAL_RATE_PER_DUR / dur * (e-s)));
         if (seriesTTL < t.ttl)
             each = Util.limit(t::test, seriesTTL);
         else
@@ -89,7 +89,7 @@ public class SeriesBeliefTable<T extends Task> extends DynamicTaskTable {
     }
 
     void clean(List<BeliefTable> tables, NAR n) {
-        if (!NAL.belief.signal.SIGNAL_TABLE_FILTER_NON_SIGNAL_TEMPORAL_TASKS)
+        if (!NAL.signal.SIGNAL_TABLE_FILTER_NON_SIGNAL_TEMPORAL_TASKS)
             return;
 
         long sStart = series.start(), sEnd;

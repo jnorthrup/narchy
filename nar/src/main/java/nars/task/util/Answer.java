@@ -164,9 +164,9 @@ public final class Answer implements Timed, Predicate<Task> {
     /**
      * for belief or goals (not questions / quests
      */
-    public static Answer relevant(boolean beliefOrQuestion, int capacity, long start, long end, @Nullable Term template, @Nullable Predicate<Task> filter, NAR nar) {
+    public static Answer relevance(boolean beliefOrQuestion, int capacity, long start, long end, @Nullable Term template, @Nullable Predicate<Task> filter, NAR nar) {
 
-        FloatRank<Task> r = relevant(beliefOrQuestion, start, end, template);
+        FloatRank<Task> r = relevance(beliefOrQuestion, start, end, template);
 
         return new Answer(r, filter, capacity, nar)
                 .time(start, end)
@@ -175,19 +175,17 @@ public final class Answer implements Timed, Predicate<Task> {
     }
 
 
-    static FloatRank<Task> relevant(boolean beliefOrQuestion, long start, long end, @Nullable Term template) {
+    static FloatRank<Task> relevance(boolean beliefOrQuestion, long start, long end, @Nullable Term template) {
 
         FloatRank<Task> strength =
                 beliefOrQuestion ?
                         beliefStrength(start, end) : questionStrength(start, end);
 
-        FloatRank<Task> r;
-        if (template == null || !template.hasAny(Temporal) || template.equals(template.concept()) /* <- means it will match anything */) {
-            r = strength;
-        } else {
-            r = complexTaskStrength(strength, template);
-        }
-        return r;
+
+        return (template == null || !template.hasAny(Temporal) || template.equals(template.concept())) ? /* <- means it will match anything */
+            strength
+            :
+            complexTaskStrength(strength, template);
     }
 
     public Answer template(@Nullable Term template) {

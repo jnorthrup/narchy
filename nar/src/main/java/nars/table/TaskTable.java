@@ -83,7 +83,7 @@ public interface TaskTable {
         boolean beliefOrQuestion = !(this instanceof QuestionTable);
         assert(beliefOrQuestion);
 
-        Answer a = Answer.relevant(beliefOrQuestion,
+        Answer a = Answer.relevance(beliefOrQuestion,
                 Answer.BELIEF_MATCH_CAPACITY, start, end, template, filter, nar)
                 .dur(dur);
         match(a);
@@ -115,7 +115,7 @@ public interface TaskTable {
 
         boolean isBeliefOrGoal = !(this instanceof QuestionTable);
 
-        Answer answer = Answer.relevant(isBeliefOrGoal,
+        Answer answer = Answer.relevance(isBeliefOrGoal,
                 isBeliefOrGoal ? Answer.BELIEF_SAMPLE_CAPACITY : Answer.QUESTION_SAMPLE_CAPACITY,
                 when.start, when.end, template, filter, when.x);
 

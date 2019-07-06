@@ -114,7 +114,7 @@ public class Evaluator extends HeapTermTransform {
         //iterating at the top level is effectively DFS; a BFS solution is also possible
         for (Term x : queries) {
             if (x instanceof Compound) //HACK
-                e.evalTry((Compound)x, this);
+                e.evalTry((Compound)x, this, true);
         }
 
     }

@@ -287,12 +287,12 @@ abstract public class TermMatcher {
     public final static class Contains extends TermMatcher {
 
         public final Term x;
-        private final int xStruct;
+//        private final int xStruct;
 
         public Contains(Term x) {
             assert(!(x instanceof VarPattern)); //HACK
             this.x = x;
-            this.xStruct = x.structure();
+//            this.xStruct = x.structure();
         }
 
         @Override
@@ -307,7 +307,7 @@ abstract public class TermMatcher {
 
         @Override
         public boolean test(Term term) {
-            return term.contains(x);
+            return term instanceof Compound && term.contains(x);
         }
 
         @Override

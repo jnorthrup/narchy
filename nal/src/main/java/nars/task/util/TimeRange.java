@@ -60,9 +60,4 @@ public class TimeRange extends Longerval implements HyperRegion {
     }
 
 
-    public final long minTimeTo(LongInterval b) {
-        return minTimeTo(b.start(), b.end());
-    }
-
-
 }

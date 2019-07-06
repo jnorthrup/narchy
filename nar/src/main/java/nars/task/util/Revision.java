@@ -68,7 +68,7 @@ public enum Revision {;
                 return null;
 
             int dtDither = n.dtDither();
-            if (a.minTimeTo(b.start(), b.end()) > n.intermpolationRangeLimit.floatValue()*Math.min(a.range(), b.range())) {
+            if (a.minTimeTo(b) > n.intermpolationRangeLimit.floatValue()*Math.min(a.range(), b.range())) {
 //            long sepThresh = Util.lerp(
 //                    (Math.abs(a.freq()-b.freq())+Math.abs(a.conf()-b.conf()))/2,
 //                    //low frequency difference: require large separation (relative to the task ranges)

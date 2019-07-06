@@ -925,6 +925,32 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
         return term().dt();
     }
 
+
+    /** relative to an observation time point
+     *  based on OpenNARS projection formula:
+     *   return 1.0f - abs(sourceTime - targetTime) / (abs(sourceTime - currentTime) + abs(targetTime - currentTime) );
+     * */
+    @Nullable default Truth truth(long now, LongInterval tgt, float dur) {
+
+        Task src = this;
+
+        Truth truth = src.truth();
+        if (isEternal() || tgt.start()==ETERNAL)
+            return truth;
+
+        double range = (src.meanTimeTo(now) + tgt.meanTimeTo(now));
+        if (range < 0.5f)
+            return truth;
+
+        long sep = src.meanTimeTo(tgt);
+        double factor = 1.0 - sep / range;
+        double e = factor * truth.evi();
+        if (e < NAL.truth.EVI_MIN)
+            return null;
+        else
+            return PreciseTruth.byEvi(truth.freq(), e);
+    }
+
     @Nullable
     default Truth truth(long targetStart, long targetEnd, float dur) {
 
@@ -932,15 +958,15 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
             return truth();
         else {
 
-            double eve = TruthIntegration.eviAvg(this, targetStart, targetEnd, dur);
+            double e = TruthIntegration.eviAvg(this, targetStart, targetEnd, dur);
 
-            if (eve > NAL.truth.EVI_MIN) {
+            if (e < NAL.truth.EVI_MIN)
+                return null;
+            else
                 return PreciseTruth.byEvi(
                         freq() /* TODO interpolate frequency wave */,
-                        eve);
+                        e);
 
-            }
-            return null;
         }
     }
 

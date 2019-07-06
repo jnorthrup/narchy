@@ -73,8 +73,10 @@ public class AbstractGoalActionConcept extends GameAction {
     }
 
     protected AbstractGoalActionConcept(Term term, BeliefTable mutableGoals, NAR n) {
-        super(term, new SensorBeliefTables(term, true),
-                new BeliefTables(),
+        super(term,
+                new SensorBeliefTables(term, true)
+                        .minSurprise(1) //action concept pay constant attention attention even to boring feedback
+                ,new BeliefTables(),
                 n);
 
         causeArray = new short[] { n.newCause(term).id };
@@ -127,7 +129,7 @@ public class AbstractGoalActionConcept extends GameAction {
 //        return truth(beliefsOrGoals, componentsMax, prev, now, n.dur(), n);
 //    }
 
-    @Nullable public TruthProjection truth(boolean beliefsOrGoals, int componentsMax, long now, int dur, NAR n) {
+    @Nullable public TruthProjection truth(boolean beliefsOrGoals, int componentsMax, long now, float dur, NAR n) {
         BeliefTable tables = (beliefsOrGoals ? beliefs() : goals());
 
 
@@ -143,7 +145,7 @@ public class AbstractGoalActionConcept extends GameAction {
 
 
 
-            Answer a = Answer.relevant(true, limit, s, e, term,
+            Answer a = Answer.relevance(true, limit, s, e, term,
                     withoutCuriosity
                     //null
                     , n).dur(dur);
@@ -234,7 +236,7 @@ public class AbstractGoalActionConcept extends GameAction {
         updateCuriosity(g.curiosity);
 
         NAR n = g.nar();
-        int gameDur =
+        float gameDur =
                 //0;
                 //g.dur();
                 g.durPhysical();
@@ -253,7 +255,7 @@ public class AbstractGoalActionConcept extends GameAction {
         return t!=null ? t.truth(0, false, false, null) : null;
     }
 
-    private Truth actionTruth(int limit, long now, int gameDur, What w) {
+    private Truth actionTruth(int limit, long now, float gameDur, What w) {
 
 
         NAR n = w.nar;
@@ -267,7 +269,7 @@ public class AbstractGoalActionConcept extends GameAction {
             lastNonNullActionDex = actionDex;
 
 
-        long s = now - gameDur, e = now;
+        long s = Math.round(now - gameDur), e = now;
 
         Truth actionCuri = curiosity.curiosity(this);
 
@@ -293,7 +295,7 @@ public class AbstractGoalActionConcept extends GameAction {
                 if (curiosity.goal.getOpaque()) {
                     long lastCuriosity = curiosityTable.series.end();
                     long curiStart = lastCuriosity != TIMELESS ? Math.max(s, lastCuriosity + 1) : s;
-                    long curiEnd = curiStart + gameDur * NAL.CURIOSITY_TASK_RANGE_DURS; //(1 + (curiosity.Math.max(curiStart, e);
+                    long curiEnd = Math.round(curiStart + gameDur * NAL.CURIOSITY_TASK_RANGE_DURS); //(1 + (curiosity.Math.max(curiStart, e);
 
                     int dither = n.dtDither();
                     curiStart = Tense.dither(curiStart, dither);
@@ -311,7 +313,7 @@ public class AbstractGoalActionConcept extends GameAction {
 
             //use existing curiosity
             Answer a = Answer.
-                    relevant(true, 2, s, e, term, null, n)
+                    relevance(true, 2, s, e, term, null, n)
                     .dur(gameDur)
                     .match(curiosityTable);
             actionCuri = a.truth();

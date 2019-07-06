@@ -3,7 +3,6 @@ package nars.derive.model;
 import nars.NAR;
 import nars.Op;
 import nars.term.Term;
-import nars.term.atom.Bool;
 import nars.term.util.TermException;
 
 import static nars.Op.BELIEF;
@@ -18,8 +17,6 @@ public enum DerivationFailure {
         }
     },
 
-    /** boolean result */
-    Null,
 
     VolMax {
         @Override
@@ -37,11 +34,6 @@ public enum DerivationFailure {
 
 
     public static DerivationFailure failure(Term x, byte punc, int volMax) {
-        if (x == null)
-            throw new NullPointerException();
-
-        if (x instanceof Bool)
-            return Null;
 
         x = x.unneg();
 

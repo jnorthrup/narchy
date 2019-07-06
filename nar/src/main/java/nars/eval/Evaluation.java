@@ -102,12 +102,15 @@ public class Evaluation extends Termerator {
     /**
      * fails fast if no known functors apply
      */
-    protected boolean evalTry(Compound x, Evaluator e) {
+    protected boolean evalTry(Compound x, Evaluator e, boolean includeOriginal) {
         ArrayHashSet<Term> c = e.clauses(x, this);
+
         if ((c == null || c.isEmpty()) && (termutes == null || termutes.isEmpty())) {
-            each.test(x);
-            return true; //early exit
+            if (includeOriginal)
+                each.test(x);
+            return true;
         }
+
         return eval(e, x, c != null ? c.list : null);
     }
 

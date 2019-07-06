@@ -89,21 +89,18 @@ public class PremiseRule extends ProxyTerm {
     };
     public final String source;
     public final Term taskPattern, beliefPattern;
-    protected final Occurrify.OccurrenceSolver time;
-
-
-    protected final Term beliefTruth, goalTruth;
-    final Truthify truthify;
-    final ImmutableSet<UnifyConstraint> CONSTRAINTS;
-    final PREDICATE[] PRE;
-    final Termify termify;
     /**
      * conditions which can be tested before unification
      */
 
     public final MutableSet<UnifyConstraint> constraints;
     public final MutableSet<PREDICATE<? extends Unify>> pre;
-
+    protected final Occurrify.OccurrenceSolver time;
+    protected final Term beliefTruth, goalTruth;
+    final Truthify truthify;
+    final ImmutableSet<UnifyConstraint> CONSTRAINTS;
+    final PREDICATE[] PRE;
+    final Termify termify;
     /**
      * conclusion post-processing
      */
@@ -112,7 +109,7 @@ public class PremiseRule extends ProxyTerm {
         public Term applyPosCompound(Compound c) {
 
             Term f = Functor.func(c);
-            if (f!=Null) {
+            if (f != Null) {
                 Subterms a = Functor.args(c);
                 if (f.equals(UniSubst.unisubst)) {
                     Unifiable.constrainUnifiable(a, PremiseRule.this);
@@ -128,7 +125,6 @@ public class PremiseRule extends ProxyTerm {
         }
 
     };
-
 
 
     public PremiseRule(String ruleSrc) throws Narsese.NarseseException {
@@ -233,17 +229,18 @@ public class PremiseRule extends ProxyTerm {
                     constraints.add(new NotEqualConstraint.NotSetsOrDifferentSets(XX, YY));
                     break;
 
-                case "subOf": case "subOfPN": {
+                case "subOf":
+                case "subOfPN": {
 
                     SubtermCondition mode = null;
 
 //                    if (pred.startsWith("sub"))
 
-                        if (Y instanceof Neg) {
-                            YY = (Variable) (Y = Y.unneg());
-                            mode = SubtermNeg;
-                        } else
-                            mode = Subterm;
+                    if (Y instanceof Neg) {
+                        YY = (Variable) (Y = Y.unneg());
+                        mode = SubtermNeg;
+                    } else
+                        mode = Subterm;
 //                    else {
 //
 //                        if (Y instanceof Neg) {
@@ -316,7 +313,7 @@ public class PremiseRule extends ProxyTerm {
 
                     if (Y instanceof Neg) {
                         Y = Y.unneg();
-                        YY = (Variable)Y;
+                        YY = (Variable) Y;
                         yNeg = !yNeg;
                     }
 
@@ -500,7 +497,6 @@ public class PremiseRule extends ProxyTerm {
                     break;
 
 
-
                 default:
                     throw new RuntimeException("unhandled postcondition: " + pred + " in " + this);
 
@@ -511,7 +507,7 @@ public class PremiseRule extends ProxyTerm {
         }
 
         Term beliefTruth = null, goalTruth = null;
-        Occurrify.OccurrenceSolver time = Occurrify.mergeDefault;
+        Occurrify.OccurrenceSolver time = null;
 
         Term[] modifiers = postcon != null && postcon.length > 1 ? postcon[1].arrayShared() : Op.EmptyTermArray;
 
@@ -542,7 +538,7 @@ public class PremiseRule extends ProxyTerm {
                         /** belief -> question, goal -> quest */
                         case "Answer":
                             assert (taskPunc == null && concPunc == null);
-                            assert(beliefTruth != null && goalTruth != null);
+                            assert (beliefTruth != null && goalTruth != null);
                             taskPunc = p -> p == QUESTION || p == QUEST;
                             concPunc = p -> {
                                 switch (p) {
@@ -610,7 +606,7 @@ public class PremiseRule extends ProxyTerm {
                     break;
 
                 case "Time":
-                    time = Occurrify.merge.get(which);
+                    time = Occurrify.solvers.get(which);
                     if (time == null)
                         throw new RuntimeException("unknown Time modifier:" + which);
                     break;
@@ -632,7 +628,6 @@ public class PremiseRule extends ProxyTerm {
         }
 
 
-
         TruthFunc beliefTruthOp = NALTruth.get(beliefTruth);
         if (beliefTruth != null && beliefTruthOp == null)
             throw new RuntimeException("unknown BeliefFunction: " + beliefTruth);
@@ -640,7 +635,6 @@ public class PremiseRule extends ProxyTerm {
         TruthFunc goalTruthOp = NALTruth.get(goalTruth);
         if (goalTruth != null && goalTruthOp == null)
             throw new RuntimeException("unknown GoalFunction: " + goalTruth);
-
 
 
         {
@@ -709,26 +703,27 @@ public class PremiseRule extends ProxyTerm {
         }
 
         /** infer necessary double premise for derived belief  */
-        {
-            boolean doublePremiseMaybe = false;
-            if (beliefTruthOp != null) {
-                assert (concPunc.valueOf(BELIEF) == BELIEF || concPunc.valueOf(GOAL) == BELIEF || concPunc.valueOf(QUESTION) == BELIEF || concPunc.valueOf(QUEST) == BELIEF);
-                if (!beliefTruthOp.single()) {
-                    pre.add(new DoublePremiseRequired(true, false, false));
-                    doublePremiseMaybe = true;
-                }
-            }
-            /** infer necessary double premise for derived goal  */
-            if (goalTruthOp != null) {
-                assert (concPunc.valueOf(BELIEF) == GOAL || concPunc.valueOf(GOAL) == GOAL || concPunc.valueOf(QUESTION) == GOAL || concPunc.valueOf(QUEST) == GOAL);
-                if (!goalTruthOp.single()) {
-                    pre.add(new DoublePremiseRequired(false, true, false));
-                    doublePremiseMaybe = true;
-                }
-            }
 
-            if (doublePremiseMaybe && (beliefPattern.op() != VAR_PATTERN && !beliefPattern.op().taskable))
+        boolean doubleBelief = false, doubleGoal = false;
+        if (beliefTruthOp != null) {
+            assert (concPunc.valueOf(BELIEF) == BELIEF || concPunc.valueOf(GOAL) == BELIEF || concPunc.valueOf(QUESTION) == BELIEF || concPunc.valueOf(QUEST) == BELIEF);
+            if (!beliefTruthOp.single()) {
+                doubleBelief = true;
+            }
+        }
+        /** infer necessary double premise for derived goal  */
+        if (goalTruthOp != null) {
+            assert (concPunc.valueOf(BELIEF) == GOAL || concPunc.valueOf(GOAL) == GOAL || concPunc.valueOf(QUESTION) == GOAL || concPunc.valueOf(QUEST) == GOAL);
+            if (!goalTruthOp.single()) {
+                doubleGoal = true;
+            }
+        }
+
+        if (doubleBelief || doubleGoal) {
+            if (beliefPattern.op() != VAR_PATTERN && !beliefPattern.op().taskable)
                 throw new TermException("double premise may be required and belief pattern is not taskable", beliefPattern);
+
+            pre.add(new DoublePremiseRequired(doubleBelief, doubleGoal, false));
         }
 
         /*System.out.println( Long.toBinaryString(
@@ -754,6 +749,13 @@ public class PremiseRule extends ProxyTerm {
         if (!tp.all())
             pre.add(tp); //add filter to allow only the mapped types
 
+        if (time == null) {
+            if (!doubleBelief && !doubleGoal)
+                time = Occurrify.solverDefaultSingle;
+            else
+                time = Occurrify.solverDefaultDouble;
+        }
+
         this.truthify = intern(Truthify.the(tp, beliefTruthOp, goalTruthOp, questionSingle, time));
         this.time = time;
 
@@ -767,31 +769,6 @@ public class PremiseRule extends ProxyTerm {
 
         this.PRE = preconditions();
 
-    }
-
-    private ImmutableSet<UnifyConstraint> constraints(MutableSet<UnifyConstraint> constraints) {
-        List<RelationConstraint> mirrors = new FasterList(4);
-        constraints.removeIf(cc -> {
-//            PREDICATE<Derivation> post = cc.postFilter();
-//            if (post!=null) {
-//            }
-
-            PREDICATE<Unify> p = preFilter(cc, taskPattern, beliefPattern);
-            if (p != null) {
-                pre.add(p);
-                return true;
-            }
-            if (cc instanceof RelationConstraint) {
-                RelationConstraint m = ((RelationConstraint) cc).mirror();
-                if (m != null)
-                    mirrors.add(m);
-            }
-            return false;
-        });
-
-        constraints.addAll(mirrors);
-
-        return theInterned(UnifyConstraint.the(constraints)); //AFTER .. constraints can be added to in conclusion()
     }
 
     PremiseRule(PremiseRuleBuilder b) {
@@ -819,16 +796,17 @@ public class PremiseRule extends ProxyTerm {
 
     private static Term rule(String ruleSrc) throws Narsese.NarseseException {
         return new MyPremiseRuleNormalization().apply(
-                    new UppercaseAtomsToPatternVariables().apply(
+                new UppercaseAtomsToPatternVariables().apply(
                         $.pFast(parseRuleComponents(ruleSrc))
-                    )
-            );
+                )
+        );
     }
 
     private static <X extends Unify> UnifyConstraint<X> intern(UnifyConstraint<X> x) {
         UnifyConstraint<X> y = constra.putIfAbsent(x.term(), x);
         return y != null ? y : x;
     }
+
     private static Truthify intern(Truthify x) {
         Truthify y = truthifies.putIfAbsent(x.term(), x);
         return y != null ? y : x;
@@ -849,7 +827,7 @@ public class PremiseRule extends ProxyTerm {
 //                PremiseRule b = new PremiseRule(src, true);
 //                return a.equals(b) ? Stream.of(a) : Stream.of(a, b);
 //            } else {
-                return Stream.of(new PremiseRule(src));
+            return Stream.of(new PremiseRule(src));
 //            }
         } catch (Exception e) {
             throw new RuntimeException("rule parse:\n\t" + src + "\n\t" + e.getMessage(), e);
@@ -892,6 +870,31 @@ public class PremiseRule extends ProxyTerm {
         return path == null ? $.the(-1) /* null */ : $.p(path);
     }
 
+    private ImmutableSet<UnifyConstraint> constraints(MutableSet<UnifyConstraint> constraints) {
+        List<RelationConstraint> mirrors = new FasterList(4);
+        constraints.removeIf(cc -> {
+//            PREDICATE<Derivation> post = cc.postFilter();
+//            if (post!=null) {
+//            }
+
+            PREDICATE<Unify> p = preFilter(cc, taskPattern, beliefPattern);
+            if (p != null) {
+                pre.add(p);
+                return true;
+            }
+            if (cc instanceof RelationConstraint) {
+                RelationConstraint m = ((RelationConstraint) cc).mirror();
+                if (m != null)
+                    mirrors.add(m);
+            }
+            return false;
+        });
+
+        constraints.addAll(mirrors);
+
+        return theInterned(UnifyConstraint.the(constraints)); //AFTER .. constraints can be added to in conclusion()
+    }
+
     public final Term conclusion() {
         return termify.pattern;
     }
@@ -916,11 +919,11 @@ public class PremiseRule extends ProxyTerm {
                 byte[] yInT = Terms.pathConstant(taskPattern, y);
                 byte[] yInB = Terms.pathConstant(beliefPattern, y);
                 if ((yInT != null || yInB != null)) {
-                    if (xInT!=null && xInB!=null) {
+                    if (xInT != null && xInB != null) {
                         if (xInB.length < xInT.length) xInT = null;
                         else xInB = null;
                     }
-                    if (yInT!=null && yInB!=null) {
+                    if (yInT != null && yInB != null) {
                         if (yInB.length < yInT.length) yInT = null;
                         else yInB = null;
                     }
@@ -933,7 +936,7 @@ public class PremiseRule extends ProxyTerm {
             byte[] xInT = Terms.pathConstant(taskPattern, x);
             byte[] xInB = Terms.pathConstant(beliefPattern, x);
             if (xInT != null || xInB != null) {
-                if (xInT!=null && xInB!=null) {
+                if (xInT != null && xInB != null) {
                     if (xInB.length < xInT.length) xInT = null;
                     else xInB = null;
                 }

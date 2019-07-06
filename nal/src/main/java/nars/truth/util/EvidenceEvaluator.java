@@ -23,38 +23,76 @@ public abstract class EvidenceEvaluator extends LongFloatTrapezoidalIntegrator  
 
     }
 
-    private static class TemporalPointEvidenceEvaluator extends EvidenceEvaluator {
+    abstract private static class TemporalPointEvidenceEvaluator extends EvidenceEvaluator {
         final long s;
-        final float dur;
         /**
          * max evidence during defined range
          */
-        private final double evi;
+        public final double evi;
 
-        /** //assert (w != LongInterval.ETERNAL); */
-        TemporalPointEvidenceEvaluator(long w, double evi, float dur) {
-            this.dur = dur;
-            this.s = w;
+        public TemporalPointEvidenceEvaluator(long s, double evi) {
+
+            this.s = s;
             this.evi = evi;
         }
-
-        @Override
-        public final double applyAsDouble(long when) {
-            long dt = dt(when);
-            return (dt == 0) ?
-                    evi : ((dur > 0) ? NAL.evi(evi, dt, dur) : 0 /* none */);
-        }
-
         long dt(long when) {
             return Math.abs(when - s);
         }
 
     }
 
-    static final class TemporalSpanEvidenceEvaluator extends TemporalPointEvidenceEvaluator {
+    /** dur=0 */
+    private static class TemporalRawPointEvidenceEvaluator extends TemporalPointEvidenceEvaluator {
+
+        TemporalRawPointEvidenceEvaluator(long w, double evi) {
+            super(w, evi);
+        }
+
+        @Override
+        public final double applyAsDouble(long when) {
+            long dt = dt(when);
+            return (dt == 0) ? evi : 0;
+        }
+
+    }
+
+    private static class TemporalDurPointEvidenceEvaluator extends TemporalPointEvidenceEvaluator {
+        final float dur;
+
+        /** //assert (w != LongInterval.ETERNAL); */
+        TemporalDurPointEvidenceEvaluator(long w, double evi, float dur) {
+            super(w, evi);
+            this.dur = dur;
+        }
+
+        @Override
+        public final double applyAsDouble(long when) {
+            long dt = dt(when);
+            return (dt == 0) ?
+                    evi : NAL.evi(evi, dt, dur);
+        }
+
+    }
+
+    static final class TemporalRawSpanEvidenceEvaluator extends TemporalRawPointEvidenceEvaluator {
         final long e;
 
-        TemporalSpanEvidenceEvaluator(long s, long e, double evi, float dur) {
+        TemporalRawSpanEvidenceEvaluator(long s, long e, double evi) {
+            super(s, evi);
+            this.e = e;
+        }
+
+        @Override
+        protected long dt(long when) {
+            return LongInterval.minTimeTo(when, s, e);
+        }
+
+
+    }
+    static final class TemporalDurSpanEvidenceEvaluator extends TemporalDurPointEvidenceEvaluator {
+        final long e;
+
+        TemporalDurSpanEvidenceEvaluator(long s, long e, double evi, float dur) {
             super(s, evi, dur);
             this.e = e;
         }
@@ -72,9 +110,15 @@ public abstract class EvidenceEvaluator extends LongFloatTrapezoidalIntegrator  
     }
 
     public static EvidenceEvaluator of(long s, long e, double evi, float dur) {
-        return s == e ?
-                new TemporalPointEvidenceEvaluator(s, evi, dur) :
-                new TemporalSpanEvidenceEvaluator(s, e, evi, dur);
+        if (dur < Float.MIN_NORMAL) {
+            return s == e ?
+                    new TemporalRawPointEvidenceEvaluator(s, evi) :
+                    new TemporalRawSpanEvidenceEvaluator(s, e, evi);
+        } else {
+            return s == e ?
+                    new TemporalDurPointEvidenceEvaluator(s, evi, dur) :
+                    new TemporalDurSpanEvidenceEvaluator(s, e, evi, dur);
+        }
     }
 
 

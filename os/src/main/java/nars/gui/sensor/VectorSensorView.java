@@ -231,7 +231,7 @@ public class VectorSensorView extends BitmapMatrixView implements BitmapMatrixVi
 
             if (answer == null) {
                 this.answer = Answer
-                        .relevant(true, tries, start, end, null, null, nar);
+                        .relevance(true, tries, start, end, null, null, nar);
             }
 
             this.answer.time(start, end).dur(Math.round(baseDur * truthDur.floatValue()));

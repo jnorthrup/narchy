@@ -14,6 +14,7 @@ import nars.control.op.Remember;
 import nars.control.op.TaskEvent;
 import nars.link.AbstractTaskLink;
 import nars.link.AtomicTaskLink;
+import nars.table.BeliefTable;
 import nars.table.BeliefTables;
 import nars.table.dynamic.SeriesBeliefTable.SeriesTask;
 import nars.table.temporal.RTreeBeliefTable;
@@ -23,6 +24,7 @@ import nars.term.Term;
 import nars.truth.Truth;
 import org.jetbrains.annotations.Nullable;
 
+import static jcog.Util.lerp;
 import static nars.Op.BELIEF;
 import static nars.time.Tense.TIMELESS;
 
@@ -39,19 +41,19 @@ public class SensorBeliefTables extends BeliefTables {
     @Deprecated public FloatRange res;
     private Task current = null;
 
-//    /**
-//     * permanent tasklink "generator" anchored in eternity when inseted to the concept on new tasks, but clones currently-timed tasklinks for propagation
-//     */
-//    public final AtomicTaskLink tasklink;
+
+    /** priority factor for new tasks which are fully unsurprising */
+    private float minSurprise = NAL.signal.SENSOR_MIN_SURPRISE_DEFAULT;
+
 
     public SensorBeliefTables(Term c, boolean beliefOrGoal) {
-        this(c, beliefOrGoal, NAL.belief.signal.SIGNAL_BELIEF_TABLE_SERIES_SIZE);
+        this(c, beliefOrGoal, NAL.signal.SIGNAL_BELIEF_TABLE_SERIES_SIZE);
     }
 
     public SensorBeliefTables(Term c, boolean beliefOrGoal, int capacity) {
         this(c, beliefOrGoal,
                 //TODO impl time series with concurrent ring buffer from gluegen
-                //new ConcurrentSkiplistTaskSeries<>(Param.SIGNAL_BELIEF_TABLE_SERIES_SIZE)
+                //new ConcurrentSkiplistTaskSeries<>(capacity)
                 new RingBufferTaskSeries<>(  capacity ));
     }
 
@@ -67,7 +69,7 @@ public class SensorBeliefTables extends BeliefTables {
     @Override
     public final void remember(Remember r) {
 
-        if (NAL.belief.signal.SIGNAL_TABLE_FILTER_NON_SIGNAL_TEMPORAL_TASKS) {
+        if (NAL.signal.SIGNAL_TABLE_FILTER_NON_SIGNAL_TEMPORAL_TASKS) {
             Task x = r.input;
             if (!(x instanceof SeriesTask)) { //shouldnt happen anyway
                 if (!x.isEternal() && !x.isInput() /* explicit overrides from user */) {
@@ -88,7 +90,7 @@ public class SensorBeliefTables extends BeliefTables {
 
 
 
-    public SeriesTask update(Truth value, long now, short[] cause, int dur, What w) {
+    public SeriesTask update(Truth value, long now, short[] cause, float dur, What w) {
         NAR n = w.nar;
 
         if (value!=null) {
@@ -115,7 +117,7 @@ public class SensorBeliefTables extends BeliefTables {
         return x;
     }
 
-    public void input(Truth value, long now, FloatSupplier pri, short[] cause, int dur, What w, @Deprecated boolean link) {
+    public void input(Truth value, long now, FloatSupplier pri, short[] cause, float dur, What w, @Deprecated boolean link) {
         SeriesTask x = update(value, now, cause, dur, w);
         if(x!=null)
             remember(x, w, pri, link, dur);
@@ -125,13 +127,13 @@ public class SensorBeliefTables extends BeliefTables {
 
     /** @param dur can be either a perceptual duration which changes, or a 'physical duration' determined by
      *             the interface itself (ex: clock rate) */
-    private SeriesTask add(@Nullable Truth next, long now, Term term, byte punc, int dur, NAL nar) {
+    private SeriesTask add(@Nullable Truth next, long now, Term term, byte punc, float dur, NAL nar) {
 
 
         SeriesTask nextT = null, last = series.series.last();
         long lastEnd = last!=null ? last.end() : Long.MIN_VALUE;
-        long nextStart = Math.max(lastEnd+1, now - dur/2);
-        long nextEnd = Math.max(nextStart+1, now + dur/2);
+        long nextStart = Math.max(lastEnd+1, Math.round(now - dur/2));
+        long nextEnd = Math.max(nextStart+1, Math.round( now + dur/2));
         if (last != null) {
             long lastStart = last.start();
             if (lastEnd > now)
@@ -230,14 +232,16 @@ public class SensorBeliefTables extends BeliefTables {
 
 
     /** link and emit */
-    private void remember(Task next, What w, FloatSupplier pri, boolean link, int dur) {
+    private void remember(Task next, What w, FloatSupplier pri, boolean link, float dur) {
 
         Task prev = this.current;
         this.current = next;
 
         float p;
         if (prev!=next) {
-            float nextPri = (float)(pri.getAsDouble() * Util.lerp(NAL.signalSurprise(prev, next, dur), 0.01f, 1f));
+            float nextPri = pri.asFloat() *
+                    lerp((float) SensorBeliefTables.surprise(prev, next, dur),
+                            minSurprise, 1);
 
             next.priSet(nextPri);
 
@@ -256,6 +260,30 @@ public class SensorBeliefTables extends BeliefTables {
 
     }
 
+    /**
+     * used to determine the priority factor of new signal tasks,
+     * with respect to how significantly it changed from a previous value,
+     * OR the time duration since last received signal
+     */
+    static double surprise(final Task prev, final Task next, float dur) {
+
+        final boolean NEW = prev == null;
+        if (NEW)
+            return 1;
+
+        final boolean stretched = prev == next;
+        if (stretched)
+            return 0;
+
+        float deltaFreq = prev != next ? Math.abs(prev.freq() - next.freq()) : 0; //TODO use a moving average or other anomaly/surprise detection
+
+        long sepCycles  = stretched ? 0 : Math.abs(next.start() - prev.end());
+        double deltaTime = 1 - NAL.evi(1, sepCycles, dur);
+
+        return Util.or(deltaFreq , deltaTime);
+    }
+
+
     public float surprise() {
         Task n = current;
         return (n!=null) ? n.priElseZero() : 0;
@@ -263,6 +291,11 @@ public class SensorBeliefTables extends BeliefTables {
 
     public final Task current() {
         return current;
+    }
+
+    public BeliefTable minSurprise(float s) {
+        this.minSurprise = s;
+        return this;
     }
 
     /**

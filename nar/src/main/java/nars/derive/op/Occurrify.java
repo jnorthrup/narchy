@@ -52,16 +52,17 @@ import static org.eclipse.collections.impl.tuple.Tuples.pair;
  */
 public class Occurrify extends TimeGraph {
 
-    public static final OccurrenceSolver mergeDefault =
-            OccurrenceSolver.Default;
-    public static final ImmutableMap<Term, OccurrenceSolver> merge;
+    public static final OccurrenceSolver solverDefaultSingle = OccurrenceSolver.Task;
+    public static final OccurrenceSolver solverDefaultDouble = OccurrenceSolver.Default;
+
+    public static final ImmutableMap<Term, OccurrenceSolver> solvers;
 
     static {
         MutableMap<Term, OccurrenceSolver> tm = new UnifiedMap<>(8);
         for (OccurrenceSolver m : OccurrenceSolver.values()) {
             tm.put(Atomic.the(m.name()), m);
         }
-        merge = tm.toImmutable();
+        solvers = tm.toImmutable();
     }
 
     private final Derivation d;
@@ -566,11 +567,8 @@ public class Occurrify extends TimeGraph {
             @Override
             public Pair<Term, long[]> occurrence(Term x, Derivation d) {
 
-
                 Term tt = d.taskTerm;
                 Term bb = d.beliefTerm;
-//                Term tt = Image.imageNormalize(d.taskTerm);
-//                Term bb = Image.imageNormalize(d.beliefTerm);
 
                 if (!d.retransform.isEmpty()) {
                     //HACK re-apply variable introduction
@@ -642,18 +640,6 @@ public class Occurrify extends TimeGraph {
             @Override
             long[] occurrence(Derivation d) {
                 return rangeCombine(d, OccMerge.Task);
-
-//                long[] o = new long[2];
-//                /*if (d.occ.validEternal()) {
-//                    o[0] = o[1] = ETERNAL;
-//                } else */if (d.taskStart != ETERNAL) {
-//                    o[0] = d.taskStart;
-//                    o[1] = d.taskEnd;
-//                } else {
-//                    o[0] = d.beliefStart;
-//                    o[1] = d.beliefEnd;
-//                }
-//                return o;
             }
 
         },
@@ -688,15 +674,15 @@ public class Occurrify extends TimeGraph {
             if (occ == null)
                 return null;
 
-            if (x.hasXternal()) {
+            if (!x.hasXternal()) {
+                return pair(x, occ);
+            } else {
                 d.occ.clear();
 
                 if (occ != null && occ[0] != TIMELESS && occ[0] != ETERNAL)
                     d.occ.know(x, occ[0], occ[1]);
 
                 return pair(d.occ.solveDT(x, d, decomposeEvents, this), occ);
-            } else {
-                return pair(x, occ);
             }
 
         }

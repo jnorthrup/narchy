@@ -40,7 +40,7 @@ public class Tetris extends GameX {
 
     private final boolean canFall = false;
 
-    public final FloatRange timePerFall = new FloatRange(1f, 1f, 32f);
+    public final FloatRange timePerFall = new FloatRange(1f, 1f, 8f);
     public final AtomicBoolean easy;
 
     public final Bitmap2DSensor<Bitmap2D> pixels;

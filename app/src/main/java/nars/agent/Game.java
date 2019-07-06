@@ -409,7 +409,7 @@ public class Game extends NARPart implements NSense, NAct, Timed {
     }
 
     /** physical/sensory duration */
-    public final int durPhysical() {
+    public final float durPhysical() {
         return time.dur();
     }
 

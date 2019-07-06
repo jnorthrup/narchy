@@ -65,6 +65,15 @@ public class NAL4Test extends NALTest {
                 .mustNotOutput(cycles, "(bitmap --> (0,1,0))", BELIEF, 1f, 1f, 0.9f, 0.9f, ETERNAL)
         ;
     }
+    @Test
+    void structural_transformationExt_forward_repeats2numeric_temporal() {
+        test
+                .input("((0,1,0) --> bitmap). |")
+                .mustBelieve(cycles, "(1 --> (bitmap,0,/,0))", 1.0f, 0.9f, 0)
+                .mustBelieve(cycles, "(0 --> (bitmap,/,1,/))", 1.0f, 0.9f, 0)
+                .mustNotOutput(cycles, "(bitmap --> (0,1,0))", BELIEF, 1f, 1f, 0.9f, 0.9f, t->true)
+        ;
+    }
 
     @Test
     void structural_transformationExt_forward_repeats3() {
@@ -140,6 +149,14 @@ public class NAL4Test extends NALTest {
                 .mustBelieve(cycles, "(neutralization --> (acid,base))", 1.0f, 0.9f) //en("Something that can be neutralized by an acid is a base.");
                 .mustNotOutput(cycles, "((acid,base) --> neutralization)", BELIEF, 1f, 1.0f, 0.9f, 0.9f, ETERNAL)
                 .believe("((neutralization,acid,\\) --> base)", 1.0f, 0.9f) //en("Something that can neutralize a base is an acid.");
+        ;
+    }
+    @Test
+    void structural_transformation6_temporal() {
+        test
+                .mustNotOutput(cycles, "((acid,base) --> neutralization)", BELIEF, 1f, 1.0f, 0.9f, 0.9f, t->true)
+                .mustBelieve(cycles, "(neutralization --> (acid,base))", 1.0f, 0.9f, 0) //en("Something that can be neutralized by an acid is a base.");
+                .input("((neutralization,acid,\\) --> base). |") //en("Something that can neutralize a base is an acid.");
         ;
     }
 

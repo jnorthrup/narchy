@@ -14,11 +14,9 @@ import nars.op.stm.ConjClustering;
 import nars.task.AbstractTask;
 import nars.task.DynamicTruthTask;
 import nars.task.NALTask;
-import nars.task.proxy.ImageTask;
 import nars.task.proxy.SpecialTermTask;
 import nars.task.util.TaskException;
 import nars.term.Term;
-import nars.term.util.Image;
 import nars.time.Tense;
 import nars.truth.Truth;
 import org.jetbrains.annotations.Nullable;
@@ -45,7 +43,6 @@ public class Remember extends AbstractTask {
 
     public final NAR nar;
 
-    @Nullable
     public static Remember the(Task x, NAR n) {
         return the(x,
                 !(x instanceof DynamicTruthTask) || NAL.belief.DYNAMIC_TRUTH_TASK_STORE,
@@ -54,7 +51,6 @@ public class Remember extends AbstractTask {
             n);
     }
 
-    @Nullable
     public static Remember the(Task x, boolean store, boolean link, boolean emit, NAR n) {
 
         assert (!x.isCommand());
@@ -89,12 +85,12 @@ public class Remember extends AbstractTask {
         if (NAL.test.DEBUG_ENSURE_DITHERED_DT || NAL.test.DEBUG_ENSURE_DITHERED_OCCURRENCE) {
             int d = n.dtDither();
             if (d > 1) {
-                if (NAL.test.DEBUG_ENSURE_DITHERED_DT) {
+                if (NAL.test.DEBUG_ENSURE_DITHERED_DT)
                     Tense.assertDithered(xTerm, d);
-                }
-                if (NAL.test.DEBUG_ENSURE_DITHERED_OCCURRENCE) {
+
+                if (NAL.test.DEBUG_ENSURE_DITHERED_OCCURRENCE)
                     Tense.assertDithered(x, d);
-                }
+
             }
         }
 
@@ -106,19 +102,9 @@ public class Remember extends AbstractTask {
         this.link = link;
         this.notify = notify;
         this.nar = n;
-        setInput(input);
+        this.input = input;
     }
 
-
-    /**
-     * concept must correspond to the input task
-     */
-    public void setInput(Task input) {
-        if (this.input != input) {
-            this.input = input;
-            this.done = false;
-        }
-    }
 
     @Override
     public String toString() {
@@ -144,35 +130,7 @@ public class Remember extends AbstractTask {
         Term inputTerm = input.term();
         boolean the = (input == this.input);
         @Deprecated boolean commitProxyOrigin = false;
-        if (store) {
-            Term imgNormal = Image.imageNormalize(inputTerm).normalize();
 
-            if (!inputTerm.equals(imgNormal)) {
-                //transparently normalize image tasks
-                c = (TaskConcept)
-                        //n.conceptualizeDynamic(imgNormal);
-                        //n.conceptualize(imgNormal);
-                        n.concept(imgNormal);
-                if (c == null)
-                    return;
-
-                if (input instanceof ImageTask)
-                    input = ((ImageTask)input).task; //unwrap existing
-                else {
-                    input = Task.withContent(input, imgNormal);
-                    input.pri(0); //prevent the product task from being activated significantly, because the image task will be emitted at its priority also.
-
-                    boolean cyclic = input.isCyclic();
-                    if (cyclic)
-                        input.setCyclic(true); //inherit cyclic
-                }
-
-                if (the) {
-                    this.input = input;
-                    commitProxyOrigin = true;
-                }
-            }
-        }
 
         if (!store || commitProxyOrigin)
             link(rawInput, w);

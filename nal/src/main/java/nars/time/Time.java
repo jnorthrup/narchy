@@ -3,6 +3,7 @@ package nars.time;
 import javax.measure.Quantity;
 import java.io.Serializable;
 
+import static java.lang.Math.round;
 import static nars.time.Tense.ETERNAL;
 
 /**
@@ -27,7 +28,7 @@ public abstract class Time implements Serializable {
      * the default duration applied to input tasks that do not specify one
      * >0
      */
-    public abstract int dur();
+    public abstract float dur();
 
 
     /** update to the next time */
@@ -41,7 +42,7 @@ public abstract class Time implements Serializable {
      *
      * @param d, d>0
      */
-    public abstract Time dur(int d);
+    public abstract Time dur(float d);
 
 
 
@@ -69,9 +70,9 @@ public abstract class Time implements Serializable {
             case Present:
                 return now();
             case Past:
-                return now() - dur();
+                return round(now() - dur());
             case Future:
-                return now() + dur();
+                return round(now() + dur());
             default:
                 return ETERNAL;
         }

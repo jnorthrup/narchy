@@ -274,10 +274,12 @@ public class Derivation extends PreDerivation {
 
                 boolean taskEternal = taskStart == ETERNAL;
 
+
                 this.beliefTruth_at_Task =
                         taskEternal ?
                                 beliefTruth_at_Belief :
-                                nextBelief.truth(taskStart, taskEnd, dur());
+                                //nextBelief.truth(taskStart, taskEnd, dur());
+                                nextBelief.truth(time(), _task, dur());
 
                 if (NAL.ETERNALIZE_BELIEF_PROJECTED_IN_DERIVATION && beliefTruth_at_Belief != null && beliefTruth_at_Task == null && !nextBelief.equals(_task)) {
 
