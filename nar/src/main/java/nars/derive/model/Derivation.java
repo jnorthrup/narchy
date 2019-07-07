@@ -289,7 +289,6 @@ public class Derivation extends PreDerivation {
 
                 } else {
                     this.beliefTruth_at_Task = beliefAtTask(nextBelief);
-//                    if (beliefTruth_at_Task.evi() > eviMin)
                 }
 
                 if (NAL.ETERNALIZE_BELIEF_PROJECTED_IN_DERIVATION && !nextBelief.equals(_task)) {
@@ -308,9 +307,12 @@ public class Derivation extends PreDerivation {
                         );
                     }
 
-                } else if (beliefTruth_at_Task!=null && beliefTruth_at_Task.evi() < eviMin)
-                    beliefTruth_at_Task = null;
+                }
+
             }
+
+            if (beliefTruth_at_Task!=null && beliefTruth_at_Task.evi() < eviMin)
+                beliefTruth_at_Task = null;
 
             if (beliefTruth_at_Task == null && beliefTruth_at_Belief == null)
                 nextBelief = null;
@@ -502,7 +504,7 @@ public class Derivation extends PreDerivation {
                 Math.round(w.dur() * n.intermpolationRangeLimit.floatValue()); //COARSE
 
         this.confMin = n.confMin.floatValue();
-        this.eviMin = n.confMin.asEvi();
+        this.eviMin = n.confMin.evi();
         this.termVolMax = n.termVolMax.intValue();
         return this;
     }

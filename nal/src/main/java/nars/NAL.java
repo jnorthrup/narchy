@@ -335,13 +335,13 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
     /**
      * global truth confidence resolution by which reasoning is dithered
      */
-    public final FloatRange confResolution = new FloatRangeRounded(NAL.truth.TRUTH_EPSILON, NAL.truth.TRUTH_EPSILON, 1f, NAL.truth.TRUTH_EPSILON) {
+    public final FloatRange confResolution = new FloatRangeRounded(NAL.truth.TRUTH_EPSILON, NAL.truth.TRUTH_EPSILON, 0.5f, NAL.truth.TRUTH_EPSILON) {
         @Override
         public void set(float value) {
             super.set(value);
-            value = this.get();
-            if (NAL.this.confMin.floatValue() < value)
-                NAL.this.confMin.set(value);
+//            value = this.get();
+//            if (NAL.this.confMin.floatValue() < value)
+//                NAL.this.confMin.set(value);
         }
     };
     /**
@@ -424,14 +424,14 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
         double e;
 
         //quadratic decay: integral finite from to infinity, see: https://en.wikipedia.org/wiki/List_of_definite_integrals
-        e = (evi / (1.0 + Util.sqr(((double)dt) / dur)));
+        //e = (evi / (1.0 + Util.sqr(((double)dt) / dur)));
 
         //cubic decay:
         //http://fooplot.com/#W3sidHlwZSI6MCwiZXEiOiIxLTEvKDErZV4oLXgpKSIsImNvbG9yIjoiIzAwNzdGRiJ9LHsidHlwZSI6MCwiZXEiOiIxLygxK3gqeCkiLCJjb2xvciI6IiNENDFBMUEifSx7InR5cGUiOjAsImVxIjoiMS8oMSt4KngqeCkiLCJjb2xvciI6IiM4OUFEMDkifSx7InR5cGUiOjEwMDAsIndpbmRvdyI6WyIwIiwiMTgiLCIwIiwiMSJdfV0-
         //e = (evi / (1.0 + Util.cube(((double)dt) / dur)));
 
         //linear decay WARNING - not finite integral
-        //e = (float) (evi / (1.0 + ((double)dt) / dur));
+        e = (float) (evi / (1.0 + ((double)dt) / dur));
 
         //constant duration linear decay ("trapezoidal")
         //e = (float) (evi * Math.max(0, (1.0 - dt / dur)));
@@ -530,8 +530,10 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
 
         /**
          * internal granularity which truth components are rounded to
+         * minimum resolution for freq and conf components
          */
         public static final float TRUTH_EPSILON = 0.01f;
+
         public static final float CONF_MAX = 1f - NAL.truth.TRUTH_EPSILON;
         public static final float EVI_MAX = c2wSafe(NAL.truth.CONF_MAX);
         public static final double EVI_MIN =

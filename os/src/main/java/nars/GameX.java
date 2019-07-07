@@ -60,8 +60,7 @@ import java.util.function.Supplier;
 
 import static java.util.stream.Collectors.toList;
 import static nars.$.$$;
-import static nars.Op.BELIEF;
-import static nars.Op.GOAL;
+import static nars.Op.*;
 import static spacegraph.SpaceGraph.window;
 
 /**
@@ -422,7 +421,6 @@ abstract public class GameX extends Game {
                 //40
         );
 
-        n.confMin.set(0.01f);
         n.termVolMax.set(32);
 
 //        n.freqResolution.set(0.1f);
@@ -523,14 +521,14 @@ abstract public class GameX extends Game {
 
 
         //new StatementLinker(n);
-        new PuncNoise(n);
+        //new PuncNoise(n);
         //n.start(new Eternalizer(n));
 
 //        new STMLinkage(n, 1);
 
         List<ConjClustering> conjClusters = List.of(
                 new ConjClustering(n, BELIEF, /* QUESTION */ BELIEF, 32, 256)
-                , new ConjClustering(n, GOAL, /* QUEST */ GOAL, 16, 64)
+                , new ConjClustering(n, GOAL,  QUEST /* GOAL*/, 16, 64)
         );
         conjClusters.forEach(c -> n.start(c));
 

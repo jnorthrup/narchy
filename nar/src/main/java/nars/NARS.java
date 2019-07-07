@@ -145,6 +145,8 @@ public class NARS {
 
             then((n)->{
 
+                n.confMin.set(0.01f);
+
                 n.termVolMax.set(22);
 
                 ((TaskLinkWhat) n.what()).links.linksMax.set(64);

@@ -368,11 +368,6 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
         return window.getScreen().getHeight();
     }
 
-
-    protected void update() {
-
-    }
-
     /** min dimension */
     public float getWidthHeightMin() {
         return Math.min(getWidth(),getHeight());
@@ -469,7 +464,6 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
 
                     onUpdate.emit(JoglWindow.this);
 
-                    update();
 
                     updateWindow(w);
 

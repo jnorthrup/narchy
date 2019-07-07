@@ -5,14 +5,12 @@ import com.google.common.collect.Streams;
 import jcog.Util;
 import jcog.exe.Exe;
 import jcog.learn.LivePredictor;
-import jcog.learn.ql.dqn3.DQN3;
 import jcog.math.FloatNormalized;
 import jcog.math.FloatRange;
 import nars.$;
 import nars.GameX;
 import nars.NAR;
 import nars.agent.Reward;
-import nars.agent.util.RLBooster;
 import nars.concept.action.BiPolarAction;
 import nars.concept.action.GoalActionConcept;
 import nars.concept.sensor.DigitizedScalar;
@@ -26,7 +24,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static java.util.stream.Collectors.toList;
@@ -304,20 +301,22 @@ public class PoleCart extends GameX {
                 8,
                 Math.round(4 * nar.dur()),
                 3,
-                //new LivePredictor.LSTMPredictor(0.1f, 1),
-                new LivePredictor.MLPPredictor(0.01f),
+                new LivePredictor.LSTMPredictor(0.1f, 1),
+                //new LivePredictor.MLPPredictor(0.01f),
                 what()
         );
 //        window(NARui.beliefCharts(predicting, nar)/*x, xVel, angVel, angX, angY)*/, 700, 700);
 
-        RLBooster bb = new RLBooster(this, (i, o) ->
-                //new HaiQae(i, 12, o).alpha(0.01f).gamma(0.9f).lambda(0.9f),
-                new DQN3(i, o, Map.of(
-
-                )),
-                2, 3, false);
-        bb.conf.set(0.01f);
-        window(NARui.rlbooster(bb), 500, 500);
+        {
+//        RLBooster bb = new RLBooster(this, (i, o) ->
+//                //new HaiQae(i, 12, o).alpha(0.01f).gamma(0.9f).lambda(0.9f),
+//                new DQN3(i, o, Map.of(
+//
+//                )),
+//                2, 3, false);
+//        bb.conf.set(0.01f);
+//        window(NARui.rlbooster(bb), 500, 500);
+        }
 
         Exe.invokeLater(()->
             window(NARui.beliefCharts(nar, this.sensors.stream()

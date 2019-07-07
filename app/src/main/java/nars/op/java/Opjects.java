@@ -224,7 +224,7 @@ public class Opjects extends DefaultTermizer {
      * called every duration to update all the operators in one batch, so they dont register events individually
      */
     protected void update(NAR nar) {
-        float cMin = (float) c2wSafe(nar.confMin.asEvi());
+        float cMin = (float) c2wSafe(nar.confMin.evi());
         float cMax = c2wSafe(nar.confDefault(BELIEF));
         beliefEvi = Util.lerp(beliefEviFactor, cMin, cMax);
         doubtEvi = Util.lerp(doubtEviFactor, cMin, cMax);

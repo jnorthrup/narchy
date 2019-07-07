@@ -187,7 +187,7 @@ public class Taskify extends ProxyTerm {
         if (punc == BELIEF || punc == GOAL) {
 
             //dither truth
-            tru = d.concTruth.dither(nar.freqResolution.floatValue(), nar.confResolution.floatValue(), d.eviMin, neg);
+            tru = d.concTruth.dither(d.eviMin, neg, nar);
             if (tru == null) {
                 nar.emotion.deriveFailTaskifyTruthUnderflow.increment();
                 spam(d, NAL.derive.TTL_COST_DERIVE_TASK_UNPRIORITIZABLE);

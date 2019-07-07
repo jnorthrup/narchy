@@ -207,12 +207,6 @@ abstract public class JoglDisplay extends SpaceGraph {
             JoglDisplay.this.render(dtS, gl);
         }
 
-        @Override
-        protected void update() {
-
-            JoglDisplay.this.update();
-
-        }
 
         @Override
         public final void reshape(GLAutoDrawable drawable,
@@ -273,10 +267,6 @@ abstract public class JoglDisplay extends SpaceGraph {
         renderOrthos(dtS);
     }
 
-    protected void update() {
-
-
-    }
 
 
     /** for misc init tasks */

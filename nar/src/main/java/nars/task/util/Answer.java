@@ -387,7 +387,7 @@ public final class Answer implements Timed, Predicate<Task> {
     }
 
     public double eviMin() {
-        return ditherTruth ? nar.confMin.asEvi() : NAL.truth.EVI_MIN;
+        return ditherTruth ? nar.confMin.evi() : NAL.truth.EVI_MIN;
     }
 
     /**

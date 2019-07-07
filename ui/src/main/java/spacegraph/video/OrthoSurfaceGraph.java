@@ -196,10 +196,6 @@ public class OrthoSurfaceGraph extends JoglDisplay implements SurfaceGraph {
 //        g.glEnable(GL.GL_DEPTH_TEST);
     }
 
-    @Override
-    protected void update() {
-    }
-
     public Off animate(Animated c) {
         return onUpdate(c);
     }
