@@ -4,12 +4,12 @@ import nars.$;
 import nars.NAR;
 import nars.NARS;
 import nars.concept.action.GameAction;
-import nars.concept.sensor.Signal;
 import nars.term.atom.Atomic;
 
 import java.util.Arrays;
 
 import static java.lang.System.out;
+import static nars.term.atom.Atomic.atom;
 
 
 /**
@@ -45,18 +45,8 @@ public class Line1DContinuous extends Game {
 
         for (int i = 0; i < size; i++) {
             int ii = i;
-
-            addSensor(new Signal(
-                    $.func("h", Atomic.the("x"), $.the(i)),
-
-                    () -> ins[ii], n));
-
-
-            addSensor(new Signal(
-                    $.func("e", Atomic.the("x"), $.the(i)),
-
-
-                    () -> ins[size + ii], n));
+            sense($.func("h", atom("x"), $.the(i)), () -> ins[ii]);
+            sense($.func("e", atom("x"), $.the(i)), () -> ins[size + ii]);
         }
 
         GameAction a;

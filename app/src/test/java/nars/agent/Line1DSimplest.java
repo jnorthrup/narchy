@@ -34,12 +34,12 @@ public class Line1DSimplest extends Game {
     public Line1DSimplest(NAR n) {
         super("", durs(1), n);
 
-        in = senseNumber(
+        in = sense(
                 $.the("x"),
 
                 this.i
         );
-        senseNumber(
+        sense(
                 $.the("y"),
 
                 this.o

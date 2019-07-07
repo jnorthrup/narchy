@@ -22,6 +22,7 @@ import nars.concept.action.GameAction;
 import nars.concept.action.curiosity.Curiosity;
 import nars.concept.action.curiosity.DefaultCuriosity;
 import nars.concept.sensor.GameLoop;
+import nars.concept.sensor.ScalarSignal;
 import nars.concept.sensor.Signal;
 import nars.concept.sensor.VectorSensor;
 import nars.control.NARPart;
@@ -244,7 +245,11 @@ public class Game extends NARPart implements NSense, NAct, Timed {
             nar.control.parent(((VectorSensor) s).attn, target);
         } else if (s instanceof Signal) {
 
-            nar.control.parent(((Signal) s).attn, target);
+            if (s instanceof ScalarSignal)
+                nar.control.parent(((ScalarSignal) s).attn, target);
+            else
+                throw new TODO();
+
         } else if (s instanceof Reward) {
 
             nar.control.parent(((Reward) s).attn, target);

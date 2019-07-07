@@ -6,6 +6,7 @@ import nars.NAR;
 import nars.NARS;
 import nars.Task;
 import nars.agent.Game;
+import nars.concept.sensor.ScalarSignal;
 import nars.concept.sensor.Signal;
 import nars.table.dynamic.SensorBeliefTables;
 import nars.task.util.series.RingBufferTaskSeries;
@@ -28,7 +29,7 @@ class SensorBeliefTablesTest {
 
         AtomicFloat xx = new AtomicFloat(0);
 
-        Signal x = new Signal($.the("x"), xx, n);
+        Signal x = new ScalarSignal($.the("x"), xx, n);
         a.addSensor(x);
 
         SensorBeliefTables xb = (SensorBeliefTables) x.beliefs();

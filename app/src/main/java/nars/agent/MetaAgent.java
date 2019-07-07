@@ -95,11 +95,11 @@ public class MetaAgent extends Game {
 
         Term SELF = n.self();
 
-        senseNumber($.inh(SELF, $$("busy")),
+        sense($.inh(SELF, $$("busy")),
                 new FloatNormalized(FloatAveragedWindow.get(8, 0.5f, n.emotion.busyVol::asFloat), 0, 1));
-        senseNumber($.inh(SELF, $$("deriveTask")),
+        sense($.inh(SELF, $$("deriveTask")),
                 new FloatNormalized(FloatAveragedWindow.get(8, 0.5f, difference(n.emotion.deriveTask::floatValue)), 0, 1));
-        senseNumber($.inh(SELF, $$("lag")),
+        sense($.inh(SELF, $$("lag")),
                 new FloatNormalized(FloatAveragedWindow.get(8, 0.5f, difference(n.emotion.durLoopLag::floatValue)), 0, 1));
 
 

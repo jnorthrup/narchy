@@ -69,7 +69,7 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends VectorSensor {
         ), n);
         this.width = src.width();
         this.height = src.height();
-        this.concepts = new Bitmap2DConcepts<>(src, pixelTerm, res, defaultFreq, n);
+        this.concepts = new Bitmap2DConcepts<>(src, pixelTerm, res, attn, defaultFreq, n);
         this.src = concepts.src;
 
 

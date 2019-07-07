@@ -9,6 +9,7 @@ import nars.$;
 import nars.GameX;
 import nars.NAR;
 import nars.attention.PriNode;
+import nars.concept.sensor.ScalarSignal;
 import nars.concept.sensor.Signal;
 import nars.term.Term;
 import nars.term.atom.Atomic;
@@ -188,14 +189,14 @@ public class ConsoleAgent extends GameX {
 
             PriNode charAttn = new PriNode(id);
 
-            nar().control.parent(charAttn, new PriNode[]{attnSensor});
+            nar().control.parent(charAttn, attnSensor);
 
             for (int x = 0; x < w; x++) {
                 for (int y = 0; y < h; y++) {
                     Term XY = $.p($.the(x), $.the(y));
                     PriNode xy = new PriNode(XY);
 
-                    nar().control.parent(xy, new PriNode[]{charAttn});
+                    nar().control.parent(xy, charAttn);
 
                     for (int i = 0, alphabetLength = alphabet.length; i < alphabetLength; i++) {
                         char a = alphabet[i];
@@ -205,8 +206,12 @@ public class ConsoleAgent extends GameX {
                         int xx = x;
                         int yy = y;
 
-                        nar().control.parent((charMatrix[x][y][i] = sense(xya,
-                                () -> chars[xx][yy] == a)).attn, new PriNode[]{xy});
+                        //HACK
+                        nar().control.parent(
+                                (((ScalarSignal)(charMatrix[x][y][i] = sense(
+                                    xya,
+                                    () -> chars[xx][yy] == a))).attn),
+                                xy);
 
                     }
                 }

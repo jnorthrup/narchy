@@ -3,7 +3,6 @@ package nars.agent;
 import com.google.common.collect.Iterables;
 import jcog.Util;
 import jcog.data.graph.MapNodeGraph;
-import jcog.math.FloatRange;
 import nars.$;
 import nars.NAR;
 import nars.Task;
@@ -36,8 +35,9 @@ public abstract class Reward implements GameLoop, TermedDelegate, Iterable<Conce
 
     protected final Game game;
 
-
     protected final CauseChannel<Task> in;
+
+    protected final short[] cause;
 
     final static boolean goalUnstamped = false;
 
@@ -54,6 +54,7 @@ public abstract class Reward implements GameLoop, TermedDelegate, Iterable<Conce
 
         in = g.nar().newChannel(id);
 
+        cause = new short[] {  in.id };
     }
 
 

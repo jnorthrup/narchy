@@ -13,10 +13,7 @@ import nars.Narsese;
 import nars.Op;
 import nars.attention.PriNode;
 import nars.concept.action.BiPolarAction;
-import nars.concept.sensor.DigitizedScalar;
-import nars.concept.sensor.GameLoop;
-import nars.concept.sensor.SelectorSensor;
-import nars.concept.sensor.Signal;
+import nars.concept.sensor.*;
 import nars.term.Term;
 import nars.term.atom.Atomic;
 import nars.term.atom.Int;
@@ -63,11 +60,7 @@ public interface NSense {
 
 
 
-    default Signal sense(Term term, FloatSupplier value) {
-        Signal s = new Signal(term, value, nar());
-        addSensor(s);
-        return s;
-    }
+
 
 
 
@@ -185,7 +178,7 @@ public interface NSense {
 
     /** normalized */
     default Signal senseNumberDifference(Term id, FloatSupplier v) {
-        return senseNumber(id,difference(v));
+        return sense(id,difference(v));
     }
 
     default DigitizedScalar senseNumberDifferenceBi(Term id, FloatSupplier v) {
@@ -218,13 +211,11 @@ public interface NSense {
         return new FloatNormalized(delta, -1, +1);
     }
 
-    default Signal senseNumber(Term id, FloatSupplier v) {
-        Signal c = new Signal(id, v, nar());
+    default Signal sense(Term id, FloatSupplier v) {
+        Signal c = new ScalarSignal(id, v, nar());
         addSensor(c);
         return c;
     }
-
-
 
     default DigitizedScalar senseNumber(FloatSupplier v, DigitizedScalar.ScalarEncoder model, Term... states) {
 
@@ -272,7 +263,7 @@ public interface NSense {
     }
 
     default Signal senseNumber(String id, FloatSupplier v) {
-        return senseNumber($$(id), v);
+        return sense($$(id), v);
     }
 
     default DigitizedScalar senseNumberBi(Term id, FloatSupplier v) {

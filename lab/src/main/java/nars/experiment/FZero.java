@@ -113,7 +113,6 @@ public class FZero extends GameX {
                     $.p(id,$.the("cam")), vision, nx, nx, (subX, subY) -> {
                 return new float[]{/*cc.X, cc.Y*/};
             }, 12, this);
-            camAE.setResolution(0.1f);
             camAE.alpha(0.01f);
             camAE.noise.set(0.0f);
 

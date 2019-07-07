@@ -3,6 +3,7 @@ package nars.agent;
 import jcog.math.FloatRange;
 import jcog.math.FloatSupplier;
 import nars.attention.AttnBranch;
+import nars.concept.sensor.ScalarSignal;
 import nars.concept.sensor.Signal;
 import nars.term.Term;
 
@@ -60,7 +61,7 @@ public class SimpleReward extends ScalarReward {
 
 
     @Override protected Signal newConcept() {
-        Signal concept = new Signal(id, in.id, () -> reward, /*linker, */nar()) {
+        ScalarSignal concept = new ScalarSignal(id, cause, () -> reward, /*linker, */nar()) {
             @Override
             protected AttnBranch newAttn(Term term) {
                 return new AttnBranch(term, this.components());

@@ -4,10 +4,10 @@ import jcog.Util;
 import jcog.data.iterator.Array2DIterable;
 import jcog.func.IntIntToObjectFunction;
 import jcog.math.FloatRange;
-import jcog.math.FloatSupplier;
 import jcog.signal.wave2d.Bitmap2D;
 import nars.NAL;
 import nars.NAR;
+import nars.attention.AttnBranch;
 import nars.concept.Concept;
 import nars.concept.sensor.Signal;
 import nars.table.eternal.EternalDefaultTable;
@@ -32,51 +32,37 @@ public class Bitmap2DConcepts<P extends Bitmap2D> implements Iterable<Signal> {
 
     public final Array2DIterable<Signal> iter;
     private final IntIntToObjectFunction<nars.term.Term> pixelTerm;
+    private final float defaultFreq;
+    private final short[] cause;
+    private final FloatRange res;
+    private final AttnBranch attn
+            ;
 
-    protected Bitmap2DConcepts(P src, @Nullable IntIntToObjectFunction<nars.term.Term> pixelTerm, FloatRange res, float defaultFreq, NAR n) {
+    protected Bitmap2DConcepts(P src, @Nullable IntIntToObjectFunction<nars.term.Term> pixelTerm, FloatRange res, AttnBranch attn, float defaultFreq, NAR n) {
 
         this.width = src.width();
         this.height = src.height();
         this.area = width * height;
         assert (area > 0);
 
+        this.res = res;
+        this.attn = attn;
         this.src = src;
 
         this.matrix = new Signal[width][height];
 
         this.pixelTerm = pixelTerm;
 
-        short cause = n.newCause(this).id;
+        cause = new short[] { n.newCause(this).id };
 
+        this.defaultFreq = defaultFreq;
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
 
                 int xx = x, yy = y;
 
-                FloatSupplier f =
-                        defaultFreq != defaultFreq ?
-                            () -> src.brightness(xx, yy)
-                                :
-                                new FloatSupplier() {
-
-//                                    float prev = Float.NaN;
-
-                                    @Override
-                                    public float asFloat() {
-
-                                        float ff = src.brightness(xx, yy);
-//                                        float prev = this.prev;
-//                                        this.prev = ff;
-//                                        if (Util.equals(ff, prev) && Util.equals(prev, defaultFreq))
-//                                            return Float.NaN;
-//                                        return ff;
-                                        return Util.equals(ff, defaultFreq, NAL.truth.TRUTH_EPSILON)
-                                                ? Float.NaN : ff;
-                                    }
-                                };
-
                 Term sid = pixelTerm.apply(x, y);
-                Signal sc = new PixelSignal(sid, x,y, cause, f, n).setResolution(res);
+                Signal sc = new PixelSignal(sid, x,y, n);
                 if (defaultFreq==defaultFreq) {
                     EternalDefaultTable.add(sc, defaultFreq, n);
                 }
@@ -88,6 +74,17 @@ public class Bitmap2DConcepts<P extends Bitmap2D> implements Iterable<Signal> {
         this.iter = new Array2DIterable<>(matrix);
     }
 
+    protected float nextValue(int x, int y) {
+
+        float ff = src.brightness(x, y);
+//                                        float prev = this.prev;
+//                                        this.prev = ff;
+//                                        if (Util.equals(ff, prev) && Util.equals(prev, defaultFreq))
+//                                            return Float.NaN;
+//                                        return ff;
+        return Util.equals(ff, defaultFreq, NAL.truth.TRUTH_EPSILON)
+                ? Float.NaN : ff;
+    }
 
 
     /**
@@ -117,29 +114,6 @@ public class Bitmap2DConcepts<P extends Bitmap2D> implements Iterable<Signal> {
     }
 
 
-//    /**
-//     * streams (potentially) all pixels
-//     */
-//    public final Stream<ITask> stream(FloatFloatToObjectFunction<Truth> truther, NAR nar) {
-//        return stream(truther, 0, area, nar);
-//    }
-
-//    private long last;
-
-//    /**
-//     * stream of tasks containing changes in all updated pixels
-//     */
-//    public Stream<ITask> stream(FloatFloatToObjectFunction<Truth> truther, int pixelStart, int pixelEnd, NAR nar) {
-//
-//        long now = nar.time();
-//
-//        long tStart = last; //now - dur / 2;
-//        long tEnd = now;// + Math.max(0, dur / 2 - 1);
-//        last = now;
-//        float dur = nar.dur() * area;
-//        return pixels(pixelStart, pixelEnd).map(p -> p.update(tStart, tEnd, truther, dur, nar));
-//    }
-
     /**
      * range of pixels, selected by the sequential 1-d ID
      */
@@ -168,164 +142,40 @@ public class Bitmap2DConcepts<P extends Bitmap2D> implements Iterable<Signal> {
 
     public final int size() { return area; }
 
-    static class PixelSignal extends Signal {
+    class PixelSignal extends Signal {
 
         public final int x, y;
 
-        public PixelSignal(Term sid, int x, int y, short cause, FloatSupplier f, NAR n) {
-            super(sid, cause, f, n);
+        PixelSignal(Term sid, int x, int y, NAR n) {
+            super(sid, n);
             this.x = x; this.y = y;
+        }
+
+        @Override
+        public float nextValue() {
+            return Bitmap2DConcepts.this.nextValue(x, y);
         }
 
         @Override
         protected boolean autoTaskLink() {
             return false;
         }
+
+        @Override
+        public short[] cause() {
+            return cause;
+        }
+
+        @Override
+        public float pri() {
+            return attn.pri();
+        }
+
+        @Override
+        public FloatRange resolution() {
+            return res;
+        }
     }
-
-//    public Bitmap2DReader newReader(CauseChannel<ITask> in, FloatFloatToObjectFunction<Truth> mode, BooleanSupplier enable, NAR nar) {
-//        return new Bitmap2DReader(in, mode, nar) {
-//            @Override
-//            protected void next(NAR nar, BooleanSupplier kontinue) {
-//                if (!enable.getAsBoolean()) {
-//                    sleeping(nar);
-//                    return;
-//                }
-//                super.next(nar, kontinue);
-//            }
-//        };
-//    }
-//
-//    public Bitmap2DReader newReader(CauseChannel<ITask> in, FloatFloatToObjectFunction<Truth> mode, NAR nar) {
-//        return new Bitmap2DReader(in, mode, nar);
-//    }
-//    /**
-//     * service for progressively (AIKR) reading this sensor
-//     */
-//    protected class Bitmap2DReader extends Causable {
-//
-//        private int lastPixel;
-//        private long lastFrameStart;
-//
-//
-//        final BufferedCauseChannel<ITask> in;
-//
-//
-//        float conf = Float.NaN;
-//
-//        FloatFloatToObjectFunction<Truth> mode;
-//        private volatile int pixelsSinceLastStart = 0;
-//
-//        public Bitmap2DReader(CauseChannel<ITask> in, FloatFloatToObjectFunction<Truth> mode, NAR nar) {
-//            super();
-//            lastFrameStart = nar.time();
-//
-//
-//            int maxPendingHistory = 8;
-//            this.in = in.buffered(maxPendingHistory * width * height /* plus extra? */);
-//
-//
-//            this.mode = mode;
-//            //(p, v) -> mode.apply(() -> conf).value(p, v);
-//
-//            nar.on(this);
-//        }
-//
-//        @Override
-//        public float value() {
-//            return in.value();
-//        }
-//
-//        @Override
-//        protected void next(NAR nar, BooleanSupplier kontinue) {
-//
-//
-//
-//
-//            int totalPixels = area;
-//
-//
-//            //conf = Math.max(nar.confMin.floatValue(), w2cSafe(c2wSafe(nar.confDefault(BELIEF)) / totalPixels)); //evidence divided equally among pixels
-//            conf = nar.confDefault(BELIEF);
-//
-//            long now = nar.time();
-//            Bitmap2DConcepts.this.update();
-//
-//            long sinceLastFrameStart = now - lastFrameStart;
-//
-//            //priPixel.setAt(priPixel(pri.floatValue()));
-//
-////            int pixelsToProcess = Math.min(pixelsRemainPerUpdate, workToPixels(work));
-////
-////
-////            if (pixelsToProcess <= 0) //0 or -1
-////                return;
-//
-////            pixelsRemainPerUpdate -= pixelsToProcess;
-//
-//
-//
-//
-//            int firstPixel = this.lastPixel;
-//            int lastPixel = (firstPixel + totalPixels);
-//            Stream<ITask> s;
-//            int dur = nar.dur();
-//
-//            if (lastPixel > totalPixels) {
-//                s = Stream.concat(
-//                        stream(mode, firstPixel, totalPixels, nar),
-//                        stream(mode, 0, lastPixel - totalPixels, nar)
-//                );
-//            } else {
-//                s = Bitmap2DConcepts.this.stream(mode, firstPixel, lastPixel, nar);
-//            }
-//
-//            //TODO stop using Stream<> its not necessary here
-////            int beforeStart = in.size();
-////            int pixelsRead =
-////                    //(int) in.input(s.takeWhile((z) -> beforeStart == in.size() || kontinue.getAsBoolean() ) );
-//            final int[] pixelsRead = {0};
-//            s.forEach(z -> {
-//                if (z != null) {
-//                    ITask.run(z, nar); //inline
-//                }
-//                pixelsRead[0]++;
-//            });
-//
-//            if (sinceLastFrameStart > dur) {
-//                pixelsSinceLastStart = 0;
-//                lastFrameStart = now;
-//            } else {
-//                pixelsSinceLastStart += pixelsRead[0];
-//                if (pixelsSinceLastStart >= area) {
-//                    long untilNext = Math.max(1, dur - 1) + lastFrameStart;
-//                    if (untilNext > now)
-//                        sleepUntil(untilNext);
-//                }
-//            }
-//
-//            if (pixelsRead[0] > 0) {
-//                this.lastPixel = (pixelsRead[0] + this.lastPixel ) % totalPixels;
-//                in.commit();
-//            }
-//        }
-//
-////        /**
-////         * how many pixels to process for the given work amount
-////         * can be 1:1 or some other amount
-////         */
-////        protected int workToPixels(int work) {
-////            return work;
-////        }
-//
-//
-//    }
-
-//    private float priPixel(float pri) {
-//        return pri;
-//        //return pri/area;
-//        //return (float) (pri / Math.sqrt(area));
-//    }
 
 
 }

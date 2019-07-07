@@ -12,6 +12,7 @@ import nars.$;
 import nars.NAR;
 import nars.agent.Game;
 import nars.concept.Concept;
+import nars.concept.sensor.ScalarSignal;
 import nars.concept.sensor.Signal;
 import nars.concept.sensor.VectorSensor;
 import nars.gui.sensor.VectorSensorView;
@@ -108,9 +109,6 @@ public class AutoclassifiedBitmap extends VectorSensor {
         return this;
     }
 
-    public AutoclassifiedBitmap setResolution(float res) {
-        return setResolution(new FloatRange(res, 0, 1));
-    }
 
 
     public interface MetaBits {
@@ -191,14 +189,14 @@ public class AutoclassifiedBitmap extends VectorSensor {
 
         Term r = root;
 
-        short cause = nar.newCause(id).id;
+        short[] cause = new short[] { nar.newCause(id).id } ;
 
         for (int i = 0; i < nw; i++) {
             for (int j = 0; j < nh; j++) {
                 for (int f = 0; f < features; f++) {
                     Term term = coord(r, i, j, f);
                     int x = i, y = j, ff = f;
-                    signals.add( new Signal(term, cause, () -> encoded[x][y][ff], nar) );
+                    signals.add( new ScalarSignal(term, cause, () -> encoded[x][y][ff], nar) );
                 }
             }
         }
@@ -209,10 +207,6 @@ public class AutoclassifiedBitmap extends VectorSensor {
         nar.start(this);
     }
 
-    public AutoclassifiedBitmap setResolution(FloatRange res) {
-        signals.forEach(s->s.setResolution(res));
-        return this;
-    }
 
     @Override
     public final void update(Game g) {
