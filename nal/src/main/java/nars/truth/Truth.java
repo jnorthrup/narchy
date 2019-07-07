@@ -222,7 +222,7 @@ public interface Truth extends Truthed {
     }
 
     static float freqSafe(float f, float epsilon) {
-        return Util.unitizeSafe(Util.round(f, epsilon));
+        return Util.unitizeSafe(Util.roundSafe(f, epsilon));
     }
 
     static double conf(double c, float epsilon) {

@@ -16,8 +16,7 @@ import java.util.List;
 
 import static java.util.stream.Collectors.toList;
 import static nars.Op.BELIEF;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 class SensorBeliefTablesTest {
 
@@ -47,11 +46,11 @@ class SensorBeliefTablesTest {
         {
             List<Task> tt = xb.taskStream().collect(toList());
             assertEquals(2, tt.size());
-            assertEquals(3, tt.get(0).range());
-            assertEquals(3, tt.get(1).range());
+            assertEquals(2, tt.get(0).range());
+            assertEquals(2, tt.get(1).range());
 
-            assertEquals(1, tt.get(0).stamp()[0]);
-            assertEquals(2, tt.get(1).stamp()[0]);
+            assertArrayEquals(new long[] { 1 }, tt.get(0).stamp());
+            assertArrayEquals(new long[] { 2 }, tt.get(1).stamp());
             //assertTrue(!Arrays.equals(tt.get(0).stamp(), tt.get(1).stamp()));
         }
 

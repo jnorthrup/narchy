@@ -1,7 +1,6 @@
 package nars.table.dynamic;
 
 import jcog.Util;
-import jcog.math.FloatRange;
 import jcog.math.FloatSupplier;
 import jcog.math.LongInterval;
 import jcog.sort.FloatRank;
@@ -101,16 +100,17 @@ public class SensorBeliefTables extends BeliefTables {
         if (x!=null) {
             series.clean(this, n);
             x.cause(cause);
-        } else {
-            this.current = null;
         }
         return x;
     }
 
     public void input(Truth value, long now, FloatSupplier pri, short[] cause, float dur, What w, @Deprecated boolean link) {
         SeriesTask x = update(value, now, cause, dur, w);
+
         if(x!=null)
             remember(x, w, pri, link, dur);
+
+        this.current = x;
     }
 
 //    long[] eviShared = null;
@@ -123,7 +123,7 @@ public class SensorBeliefTables extends BeliefTables {
         SeriesTask nextT = null, last = series.series.last();
         long lastEnd = last!=null ? last.end() : Long.MIN_VALUE;
         long nextStart = Math.max(lastEnd+1, Math.round(now - dur/2));
-        long nextEnd = Math.max(nextStart+1, Math.round( now + dur/2));
+        long nextEnd = Math.max(now, nextStart); //Math.max(nextStart+1, Math.round( now + dur/2));
         if (last != null) {
             long lastStart = last.start();
             if (lastEnd > now)
@@ -212,7 +212,6 @@ public class SensorBeliefTables extends BeliefTables {
     private void remember(Task next, What w, FloatSupplier pri, boolean link, float dur) {
 
         Task prev = this.current;
-        this.current = next;
 
         float p;
         if (prev!=next) {

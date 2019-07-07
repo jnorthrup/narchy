@@ -100,6 +100,7 @@ public class OpjectsTest {
     @Test
     public void testBoolMethod() {
         final NAR n = NARS.tmp();
+        n.log();
 
 
         final Opjects objs = new Opjects(n);
@@ -113,11 +114,11 @@ public class OpjectsTest {
         //n.input("hashCode(x,#h)! :|:");
         //n.run(1);
         n.run(1);
-        assertTrue(sb.toString().contains("bool(x). 0 %1.0;.90%"));
+        assertTrue(sb.toString().contains("bool(x). 0⋈1 %1.0;.90%"));
 
         x.boolFalse();
         n.run(1);
-        assertTrue(sb.toString().contains("boolFalse(x). 1 %0.0;.90%"));
+        assertTrue(sb.toString().contains("boolFalse(x). 1⋈2 %0.0;.90%"));
     }
 
     /**

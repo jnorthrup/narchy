@@ -13,6 +13,7 @@ import nars.concept.sensor.AbstractSensor;
 import nars.control.channel.CauseChannel;
 import nars.table.BeliefTable;
 import nars.task.util.signal.SignalTask;
+import nars.term.Neg;
 import nars.term.Term;
 import nars.term.Termed;
 import nars.truth.Truth;
@@ -86,6 +87,7 @@ public class AutoConceptualizer extends AbstractSensor {
         float dur = w.dur();
         long start = Math.round(now - dur / 2), end = Math.round(now + dur / 2);
         int[] order = new int[inputs];
+        Truth truth = $.t(1f, 0.9f);
         for (int i = 0; i < outputs; i++) {
             b[i] = 1; 
 
@@ -94,14 +96,18 @@ public class AutoConceptualizer extends AbstractSensor {
             Term feature = conj(order, a /* threshold, etc */, 3 /*a.length/2*/,
                     thresh);
             if (feature != null)
-                w.accept(onFeature(feature, now, start, end, n.evidence()));
+                w.accept(onFeature(feature, truth, now, start, end, n.evidence()));
 
             b[i] = 0; 
         }
     }
 
-    protected SignalTask onFeature(Term feature, long now, long start, long end, long[] evi) {
-        return new SignalTask(feature, BELIEF, $.t(1f, 0.9f),
+    protected SignalTask onFeature(Term feature, Truth truth, long now, long start, long end, long[] evi) {
+        if (feature instanceof Neg) {
+            feature = feature.unneg();
+            truth = truth.neg();
+        }
+        return new SignalTask(feature, BELIEF, truth,
                 now,
                 start,end, evi);
     }

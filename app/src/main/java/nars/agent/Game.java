@@ -424,8 +424,8 @@ public class Game extends NARPart implements NSense, NAct, Timed {
     public Truth dither(@Nullable Truth f, GameLoop g) {
         if (f!=null) {
             f = f.dither(
-                Math.max(_freqRes, g.resolution().asFloat()),
-                _confRes
+                    Math.max(_freqRes, g.resolution().asFloat()),
+                    _confRes
             );
         }
         return f;

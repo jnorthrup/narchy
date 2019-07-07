@@ -762,11 +762,12 @@ public enum Util {
     public static float round(float value, float epsilon) {
         assertFinite(epsilon);
         assertFinite(value);
+        return roundSafe(value, epsilon);
+    }
 
+    public static float roundSafe(float value, float epsilon) {
         if (epsilon <= Float.MIN_NORMAL) return value;
         else return Math.round(value / epsilon) * epsilon;
-
-        //return (float)round((double)value, (double)epsilon);
     }
 
     public static double round(double value, double epsilon) {

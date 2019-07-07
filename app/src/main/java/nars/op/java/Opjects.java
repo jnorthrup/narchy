@@ -345,8 +345,6 @@ public class Opjects extends DefaultTermizer {
 //                    nar);
                     NALTask.the(nt, BELIEF, PreciseTruth.byEvi(freq, beliefEvi), start, start, end, nar.evidence());
 
-            if (NAL.DEBUG) {
-            }
 
             value.priMax(beliefPri);
             return value;

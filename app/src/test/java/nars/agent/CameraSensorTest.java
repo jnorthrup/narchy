@@ -87,8 +87,9 @@ public class CameraSensorTest {
         if (tmp==null)
              tmp = new MyGame(n);
 
-        tmp.prev(n.time()-1);
-        tmp.now(n.time() );
+        //tmp.prev(n.time() - 2);
+        tmp.now(n.time() - 1 );
+        tmp.next(); //update
         c.update(tmp);
     }
 
