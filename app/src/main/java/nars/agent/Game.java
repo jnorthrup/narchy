@@ -28,7 +28,9 @@ import nars.control.NARPart;
 import nars.term.Term;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
+import nars.truth.Truth;
 import nars.util.Timed;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
 import java.util.Random;
@@ -413,6 +415,18 @@ public class Game extends NARPart implements NSense, NAct, Timed {
         return time.dur();
     }
 
+    @Nullable
+    public Truth dither(@Nullable Truth f, GameLoop g) {
+        if (f!=null) {
+            f = f.dither(
+                Math.max(_freqRes, g.resolution().asFloat()),
+                _confRes
+            );
+        }
+        return f;
+
+    }
+
     public interface NAgentCycle {
         /**
          * in each iteration,
@@ -535,7 +549,12 @@ public class Game extends NARPart implements NSense, NAct, Timed {
     }
 
 
+    private transient float _freqRes = Float.NaN, _confRes = Float.NaN;
+
     protected void sense() {
+        _freqRes = nar.freqResolution.floatValue();
+        _confRes = nar.confResolution.floatValue();
+
         //TODO fork here
         sensors.forEach(this::update);
         rewards.forEach(this::update);

@@ -21,6 +21,7 @@ import java.util.function.BiFunction;
 public abstract class GameAction extends TaskConcept implements GameLoop, PermanentConcept {
 
     public final AttnBranch attn;
+    private final FloatRange res;
 
     protected GameAction(Term term, NAR n) {
         this(term,
@@ -33,7 +34,7 @@ public abstract class GameAction extends TaskConcept implements GameLoop, Perman
         super(term, beliefs, goals, n.conceptBuilder);
 
         this.attn = new AttnBranch(term, List.of(term));
-        ((SensorBeliefTables) beliefs()).resolution(FloatRange.unit(n.freqResolution));
+        res = FloatRange.unit(n.freqResolution);
     }
 
 
@@ -50,12 +51,12 @@ public abstract class GameAction extends TaskConcept implements GameLoop, Perman
 
     @Override
     public FloatRange resolution() {
-        return ((SensorBeliefTables) beliefs()).resolution();
+        return res;
     }
 
 
     public GameAction resolution(float v) {
-        resolution().set(v);
+        res.set(v);
         return this;
     }
 

@@ -38,9 +38,7 @@ public class SensorBeliefTables extends BeliefTables {
 
     public final SeriesBeliefTable<SeriesTask> series;
 
-    @Deprecated public FloatRange res;
     private Task current = null;
-
 
     /** priority factor for new tasks which are fully unsurprising */
     private float minSurprise = NAL.signal.SENSOR_MIN_SURPRISE_DEFAULT;
@@ -92,14 +90,6 @@ public class SensorBeliefTables extends BeliefTables {
 
     public SeriesTask update(Truth value, long now, short[] cause, float dur, What w) {
         NAR n = w.nar;
-
-        if (value!=null) {
-            value = value.dither(
-                Math.max(w.nar.freqResolution.floatValue(), this.res.asFloat()),
-                n.confResolution.floatValue()
-            );
-        }
-
 
         SeriesTask x =
             add(value,
@@ -217,19 +207,6 @@ public class SensorBeliefTables extends BeliefTables {
 //            super.match(a);
 //        }
 //    }
-
-
-    public FloatRange resolution() {
-        return res;
-    }
-
-    public void resolution(FloatRange res) {
-        this.res = res;
-    }
-
-
-
-
 
     /** link and emit */
     private void remember(Task next, What w, FloatSupplier pri, boolean link, float dur) {

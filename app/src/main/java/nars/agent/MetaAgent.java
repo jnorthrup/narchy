@@ -5,6 +5,8 @@ import jcog.TODO;
 import jcog.Util;
 import jcog.data.graph.MapNodeGraph;
 import jcog.data.graph.Node;
+import jcog.math.FloatAveragedWindow;
+import jcog.math.FloatNormalized;
 import jcog.math.FloatRange;
 import jcog.pri.ScalarValue;
 import nars.$;
@@ -92,29 +94,35 @@ public class MetaAgent extends Game {
         NAR n = this.nar = w[0].nar;
 
         Term SELF = n.self();
-        senseNumberDifference($.inh(SELF, $$("busy")), n.emotion.busyVol::asFloat);
-        senseNumberDifference($.inh(SELF, $$("deriveTask")), n.emotion.deriveTask::longValue);
+
+        senseNumber($.inh(SELF, $$("busy")),
+                new FloatNormalized(FloatAveragedWindow.get(8, 0.5f, n.emotion.busyVol::asFloat), 0, 1));
+        senseNumber($.inh(SELF, $$("deriveTask")),
+                new FloatNormalized(FloatAveragedWindow.get(8, 0.5f, difference(n.emotion.deriveTask::floatValue)), 0, 1));
+        senseNumber($.inh(SELF, $$("lag")),
+                new FloatNormalized(FloatAveragedWindow.get(8, 0.5f, difference(n.emotion.durLoopLag::floatValue)), 0, 1));
+
 
 //        float maxPri = Math.max(n.beliefPriDefault.amp.floatValue(), n.goalPriDefault.amp.floatValue());
 //        float dynamic = 10; //ratio max to min pri
 //        actionCtl($.inh(SELF, beliefPri), n.beliefPriDefault.amp.subRange(maxPri/dynamic, maxPri));
 //        actionCtl($.inh(SELF, goalPri), n.goalPriDefault.amp.subRange(maxPri/dynamic, maxPri));
 
-//        actionCtl($.inh(SELF, exact), new FloatRange(0.5f, 0, 1) {
-//            @Override
-//            public void set(float value) {
-//                switch (Math.round(value * 6)) {
-//                    case 0: value = 0.25f; break;
-//                    case 1: value = 0.2f; break;
-//                    case 2: value = 0.1f; break;
-//                    case 3: value = 0.05f; break;
-//                    case 4: value = 0.025f; break;
-//                    case 5: value = 0.01f; break;
-//                }
-//                nar.freqResolution.set(value);
-//                super.set(value);
-//            }
-//        });
+        actionCtl($.inh(SELF, exact), new FloatRange(1f, 0, 1) {
+            @Override
+            public void set(float value) {
+                switch (Util.clamp((int) Math.floor(value * 6),0,5)) {
+                    case 0: value = 0.5f; break; //binary emulation
+                    case 1: value = 0.25f; break;
+                    case 2: value = 0.1f; break;
+                    case 3: value = 0.05f; break;
+                    case 4: value = 0.025f; break;
+                    case 5: value = 0.01f; break;
+                }
+                nar.freqResolution.set(value);
+                super.set(value);
+            }
+        });
 
 //        ThreadCPUTimeTracker.getCPUTime()
 //        reward("lazy", 1, ()->{
@@ -191,7 +199,7 @@ public class MetaAgent extends Game {
             public void set(float value) {
                 super.set(value);
                 value = super.get();
-                int nextDur = Math.max(1, Math.round(value));
+                float nextDur = Math.max(1, value);
                 //logger.info("{} dur={}" , w.id, nextDur);
                 ((TaskLinkWhat) w).dur.set(nextDur);
                 //assert(nar.dur()==nextDur);
@@ -327,8 +335,8 @@ public class MetaAgent extends Game {
 //        return priAction;
 //    }
 
-    private int dur(int initialDur, float d) {
-        return Math.max(1, Math.round((d + 0.5f) * 2 * initialDur));
+    private float dur(int initialDur, float d) {
+        return Math.max(1, ((d + 0.5f) * 2 * initialDur));
     }
 
 //    private static NAgent metavisor(NAgent a) {

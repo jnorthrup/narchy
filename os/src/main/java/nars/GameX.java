@@ -1,5 +1,6 @@
 package nars;
 
+import com.google.common.collect.Streams;
 import com.google.common.util.concurrent.AtomicDouble;
 import jcog.Util;
 import jcog.data.list.FasterList;
@@ -139,9 +140,12 @@ abstract public class GameX extends Game {
                 //"nal3.nal",
         );
 
-        //initMeta(n, g, false, false);
 
         n.synch();
+
+        Exe.invokeLater(()->{
+            initMeta(n,  false, false);
+        });
 
         Exe.invokeLater(()->{
             window(
@@ -336,10 +340,10 @@ abstract public class GameX extends Game {
         //Impiler.init(n);
     }
 
-    private static void initMeta(NAR n, Game a, boolean rl, boolean allowPause) {
+    private static void initMeta(NAR n, boolean rl, boolean allowPause) {
 
         Gridding g = new Gridding();
-        MetaAgent meta = new MetaAgent(allowPause, 8f, a);
+        MetaAgent meta = new MetaAgent(allowPause, 8f, n.parts(Game.class).toArray(Game[]::new));
         g.add(NARui.game(meta));
         meta.what().pri(0.05f);
 
@@ -355,8 +359,10 @@ abstract public class GameX extends Game {
             g.add(NARui.rlbooster(metaBoost));
         }
 
-        n.start(new SpaceGraphPart(() -> g, 500, 500));
 
+        //n.start(new SpaceGraphPart(() -> g, 500, 500));
+
+        window(NARui.beliefCharts(n, meta.sensors.stream().flatMap(x -> Streams.stream(x.components())).collect(toList())), 400, 300);
 
 //        window(AttentionUI.attentionGraph(n), 600, 600);
 

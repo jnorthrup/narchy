@@ -1,5 +1,6 @@
 package nars.agent;
 
+import jcog.math.FloatRange;
 import jcog.math.FloatSupplier;
 import nars.attention.AttnBranch;
 import nars.concept.sensor.Signal;
@@ -9,7 +10,6 @@ public class SimpleReward extends ScalarReward {
 
 //    private static final Logger logger = LoggerFactory.getLogger(SimpleReward.class);
     private final FloatSupplier rewardFunc;
-
 
     public SimpleReward(Term id, float freq, FloatSupplier r, Game a) {
         super(id, freq, a);
@@ -68,8 +68,12 @@ public class SimpleReward extends ScalarReward {
         };
         if (!concept.attn.equals(attn))
             nar().control.parent(concept.attn, attn);
-        concept.setResolution(resolution);
         return concept;
+    }
+
+    @Override
+    public FloatRange resolution() {
+        return concept.resolution();
     }
 
     @Override

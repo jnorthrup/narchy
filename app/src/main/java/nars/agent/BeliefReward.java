@@ -1,5 +1,8 @@
 package nars.agent;
 
+import jcog.TODO;
+import jcog.math.FloatRange;
+import nars.concept.sensor.Signal;
 import nars.term.Term;
 
 public class BeliefReward extends ScalarReward {
@@ -13,4 +16,13 @@ public class BeliefReward extends ScalarReward {
         return rewardFreq(true, a.dur());
     }
 
+    @Override
+    protected Signal newConcept() {
+        throw new TODO();
+    }
+
+    @Override
+    public FloatRange resolution() {
+        throw new TODO();
+    }
 }

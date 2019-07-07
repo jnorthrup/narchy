@@ -15,7 +15,7 @@ import static nars.Op.NEG;
 /** base class for reward which represents current belief truth as the reward value  */
 abstract public class ScalarReward extends Reward {
 
-    public final Concept concept;
+    public final Signal concept;
     protected final Term id;
     boolean negate;
     protected transient volatile float reward = Float.NaN;
@@ -63,9 +63,10 @@ abstract public class ScalarReward extends Reward {
             return Float.NaN;
     }
 
-    protected Concept newConcept() {
-        return nar().conceptBuilder.construct(id.unneg());
-    }
+    abstract protected Signal newConcept();
+//    {
+//        return nar().conceptBuilder.construct(id.unneg());
+//    }
 
 
     @Override

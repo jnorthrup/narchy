@@ -5,7 +5,6 @@ import nars.NAL;
 import nars.NAR;
 import nars.Task;
 import nars.agent.Game;
-import nars.attention.What;
 import nars.concept.action.curiosity.Curiosity;
 import nars.concept.action.curiosity.CuriosityTask;
 import nars.control.channel.CauseChannel;
@@ -253,7 +252,7 @@ public class AbstractGoalActionConcept extends GameAction {
         TruthProjection bt = truth(true, limitBelief, now, gameDur, n);
         this.beliefTruth = truth(bt);
 
-        this.actionTruth = actionTruth(limitGoal, now, gameDur, g.what());
+        this.actionTruth = actionTruth(limitGoal, now, gameDur, g);
 
     }
 
@@ -261,10 +260,10 @@ public class AbstractGoalActionConcept extends GameAction {
         return t!=null ? t.truth(0, false, false, null) : null;
     }
 
-    private Truth actionTruth(int limit, long now, float gameDur, What w) {
+    private Truth actionTruth(int limit, long now, float gameDur, Game g) {
 
 
-        NAR n = w.nar;
+        NAR n = g.nar;
         Truth actionTruth;
         TruthProjection gt = truth(false, limit, now, gameDur, n);
 
@@ -289,10 +288,7 @@ public class AbstractGoalActionConcept extends GameAction {
                 actionCuri = $.t(actionCuri.freq(), confMin);
             }
 
-            Truth curiDithered = actionCuri.dither(
-                    Math.max(n.freqResolution.floatValue(), resolution().floatValue()),
-                    n.confResolution.floatValue()
-            );
+            Truth curiDithered = g.dither(actionCuri, this);
             if (curiDithered != null) {
 
                 actionCuri = curiDithered;
@@ -307,7 +303,7 @@ public class AbstractGoalActionConcept extends GameAction {
                     curiStart = Tense.dither(curiStart, dither);
                     curiEnd = Tense.dither(curiEnd, dither);
 
-                    w.accept(
+                    g.what().accept(
                             curiosity(actionCuri /*goal*/, curiStart, curiEnd, n)
                     );
                 }
@@ -347,8 +343,11 @@ public class AbstractGoalActionConcept extends GameAction {
 
     protected void feedback(@Nullable Truth f, short[] cause, Game g) {
 
+        f = g.dither(f, this);
+
         ((SensorBeliefTables) beliefs()).input(f, g.now, attn::pri, cause, g.durPhysical(), g.what(), true);
     }
+
 
 
     public Truth actionTruth() {

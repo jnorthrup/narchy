@@ -24,6 +24,16 @@ public class FloatAveragedWindow implements FloatSupplier, FloatToFloatFunction 
     final TensorRing window;
     final AtomicDouble current = new AtomicDouble(Double.NaN);
 
+    public static FloatAveragedWindow get(int window, float alpha, FloatSupplier src) {
+        return new FloatAveragedWindow(window, alpha) {
+            @Override
+            public float asFloat() {
+                next(src.asFloat());
+                return super.asFloat();
+            }
+        };
+    }
+
     @Override
     public String toString() {
         return window.toString();

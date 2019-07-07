@@ -157,9 +157,9 @@ public class NARio extends GameX {
         //initBipolar();
 
 
-        DigitizedScalar vx = senseNumberDifferenceBi($$("vx"), 8, () -> theMario != null ? theMario.x : 0)
+        DigitizedScalar vx = senseNumberDifferenceBi($.p("v", "x"), 8, () -> theMario != null ? theMario.x : 0)
                 .resolution(0.25f);
-        DigitizedScalar vy = senseNumberDifferenceBi($$("vy"), 8, () -> theMario != null ? theMario.y : 0)
+        DigitizedScalar vy = senseNumberDifferenceBi($.p("v", "y"), 8, () -> theMario != null ? theMario.y : 0)
                 .resolution(0.25f);
 
         window(NARui.beliefCharts(this.nar, Stream.of(vx, vy).flatMap(x->x.sensors.stream()).collect(toList())), 400, 300);

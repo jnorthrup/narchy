@@ -49,6 +49,7 @@ public class Signal extends TaskConcept implements GameLoop, FloatFunction<Term>
             ((prev, next) -> (next == next) ? ((prev == prev) ? $.t((next - prev) / 2f + 0.5f, conf.asFloat()) : $.t(0.5f, conf.asFloat())) : $.t(0.5f, conf.asFloat()));
 
     public final FloatSupplier source;
+    private final FloatRange res;
 
     private volatile float currentValue = Float.NaN;
 
@@ -76,7 +77,7 @@ public class Signal extends TaskConcept implements GameLoop, FloatFunction<Term>
 
         this.attn = newAttn(term);
 
-        ((SensorBeliefTables) beliefs()).resolution(FloatRange.unit(n.freqResolution));
+        res = FloatRange.unit(n.freqResolution);
 
         n.add(this);
     }
@@ -93,7 +94,7 @@ public class Signal extends TaskConcept implements GameLoop, FloatFunction<Term>
 
     @Override
     public final FloatRange resolution() {
-        return ((SensorBeliefTables) beliefs()).resolution();
+        return res;
     }
 
     @Override
@@ -116,7 +117,7 @@ public class Signal extends TaskConcept implements GameLoop, FloatFunction<Term>
         Truth nextTruth = nextValue == nextValue ? truther.value(prevValue, nextValue) : null;
 
         ((SensorBeliefTables) beliefs()).input(
-                nextTruth,
+                g.dither(nextTruth, this),
                 g.now,
                 pri, cause,
                 g.durPhysical(),
@@ -134,7 +135,7 @@ public class Signal extends TaskConcept implements GameLoop, FloatFunction<Term>
 //    }
     public Signal setResolution(FloatRange r) {
         //((SensorBeliefTables) beliefs()).resolution(r);
-        resolution().set(r);
+        res.set(r);
         return this;
     }
 
