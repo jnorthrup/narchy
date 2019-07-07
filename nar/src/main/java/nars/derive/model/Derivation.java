@@ -1,7 +1,6 @@
 package nars.derive.model;
 
 import jcog.Util;
-import jcog.WTF;
 import jcog.math.Longerval;
 import jcog.pri.ScalarValue;
 import jcog.util.ArrayUtil;
@@ -260,6 +259,8 @@ public class Derivation extends PreDerivation {
 
     private Task resetBelief(Task nextBelief, final Term nextBeliefTerm) {
 
+        beliefTruth_at_Task = beliefTruth_at_Belief = null;
+
         long nextBeliefEnd;
 
         if (nextBelief != null) {
@@ -270,7 +271,7 @@ public class Derivation extends PreDerivation {
 
                 this.beliefTruth_at_Belief = nextBelief.truth();
                 if (beliefTruth_at_Belief == null)
-                    throw new WTF();
+                    throw new NullPointerException("null belief truth");
 
                 boolean taskEternal = taskStart == ETERNAL;
                 if (taskEternal) {
@@ -288,19 +289,13 @@ public class Derivation extends PreDerivation {
 
                 } else {
                     this.beliefTruth_at_Task = beliefAtTask(nextBelief);
+//                    if (beliefTruth_at_Task.evi() > eviMin)
                 }
 
-                if (NAL.ETERNALIZE_BELIEF_PROJECTED_IN_DERIVATION && beliefTruth_at_Belief != null && !nextBelief.equals(_task)) {
+                if (NAL.ETERNALIZE_BELIEF_PROJECTED_IN_DERIVATION && !nextBelief.equals(_task)) {
 
-                    float eFactor =
-                            //taskTruth!=null ? taskTruth.conf() : 1;
-                            //taskTruth != null ? Math.min(1, beliefTruth_at_Belief.conf() / taskTruth.conf()) : 1;
-                            1;
-
-                    Truth beliefTruth_eternalized = beliefTruth_at_Belief.eternalized(eFactor, eviMin, null /* dont dither */);
-                    if (beliefTruth_eternalized != null) {
-
-                        assert (nextBelief != null);
+                    Truth beliefTruth_eternalized = beliefTruth_at_Belief.eternalized(1, eviMin, null /* dont dither */);
+                    if (Truth.stronger(beliefTruth_eternalized, beliefTruth_at_Task)==beliefTruth_eternalized) {
 
                         if (NAL.ETERNALIZE_BELIEF_PROJECTED_IN_DERIVATION_AND_ETERNALIZE_BELIEF_TIME)
                             nextBeliefStart = nextBeliefEnd = ETERNAL;
@@ -313,7 +308,8 @@ public class Derivation extends PreDerivation {
                         );
                     }
 
-                }
+                } else if (beliefTruth_at_Task!=null && beliefTruth_at_Task.evi() < eviMin)
+                    beliefTruth_at_Task = null;
             }
 
             if (beliefTruth_at_Task == null && beliefTruth_at_Belief == null)

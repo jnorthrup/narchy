@@ -66,7 +66,7 @@ public class NAL3DecomposeGoalTest extends NAL3Test {
     @Test
     void testUnionSinglePremiseDecomposeGoal1Pos() {
         test
-                .termVolMax(6)
+                .termVolMax(7)
                 .confMin(0.75f)
                 .input("((a||b)-->g)!")
                 .mustGoal(cycles, "(a-->g)", 1f, 0.81f)

@@ -32,7 +32,7 @@ public class NAL3ComposeTest extends NAL3Test {
         test
                 .believe("(swan --> bird)")
                 .believe("(swimmer--> bird)")
-                .mustBelieve(cycles, "((swan&swimmer) --> bird)", 1f, 0.81f);
+                .mustBelieve(cycles, "((swan|swimmer) --> bird)", 1f, 0.81f);
     }
 
     @Test

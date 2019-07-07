@@ -48,9 +48,11 @@ abstract public class AbstractDynamicTruth {
         Task bt;
         switch (NAL.DYN_TASK_MATCH_MODE) {
             case 0:
+                //may be too aggressive in evidence collection, and prevent other components from succeeding
                 bt = table.matchExact(subStart, subEnd, subTerm, filter, dur, nar);
                 break;
             case 1:
+                //may be too aggressive in evidence collection, and prevent other components from succeeding
                 bt = table.match(subStart, subEnd, subTerm, filter, dur, nar);
                 break;
             case 2:

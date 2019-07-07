@@ -133,7 +133,7 @@ public class DynamicConjTruth {
                         //HACK randomly assign each component to a partitioned sub-ranges
 
                         //TODO refine
-                        int subRange = Tense.occToDT( (long)Math.ceil((end - start) / ((float)(sss))) );
+                        int subRange = Tense.occToDT( (long)Math.ceil((end - start) / ((double)sss)) );
 
                         ThreadLocalRandom rng = ThreadLocalRandom.current();
                         int[] order = new int[sss];
