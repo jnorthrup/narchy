@@ -4,8 +4,7 @@ import nars.NAR;
 import nars.time.part.DurLoop;
 import spacegraph.space2d.ReSurface;
 import spacegraph.space2d.Surface;
-import spacegraph.space2d.container.ContainerSurface;
-import spacegraph.space2d.widget.meta.AbstractCachedSurface;
+import spacegraph.space2d.container.unit.UnitContainer;
 import spacegraph.space2d.widget.meter.BitmapMatrixView;
 
 import java.util.function.Consumer;
@@ -15,7 +14,7 @@ import java.util.function.Consumer;
  * automatically attaches update handler on start (ex: added to graph) and
  * removes on stop (ex: removal from graph)
  */
-abstract public class DurSurface<S extends Surface> extends AbstractCachedSurface<S> {
+abstract public class DurSurface<S extends Surface> extends UnitContainer<S> {
 
     public static final double minUpdateTimeSeconds = 1 / 30.0; /* 30fps */
 
@@ -74,15 +73,22 @@ abstract public class DurSurface<S extends Surface> extends AbstractCachedSurfac
             lastUpdate = now; //TODO throttle duration to match expected update speed if significantly different
 
             S x = the();
-            if (x instanceof ContainerSurface && (((ContainerSurface) x).layoutPending())) {
-                invalidate();
-            }
+//            if (x instanceof ContainerSurface && (((ContainerSurface) x).layoutPending())) {
+//                invalidate();
+//            }
 
             update();
         }
 
         super.renderContent(r);
     }
+
+    protected final void updateIfShowing() {
+        if (showing())
+            update();
+    }
+
+    abstract protected void update();
 
     public static DurSurface get(Surface x, NAR n, Consumer<NAR> eachDur) {
         return new DurSurface(x, n) {
@@ -135,7 +141,7 @@ abstract public class DurSurface<S extends Surface> extends AbstractCachedSurfac
     @Override
     protected boolean preRender(ReSurface r) {
         if (super.preRender(r)) {
-            if (autolayout && cache)
+            if (autolayout)
                 layout();
             return true;
         }

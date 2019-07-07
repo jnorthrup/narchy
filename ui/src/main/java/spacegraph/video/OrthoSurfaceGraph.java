@@ -186,10 +186,11 @@ public class OrthoSurfaceGraph extends JoglDisplay implements SurfaceGraph {
         g.glMatrixMode(GLMatrixFunc.GL_MODELVIEW);
 
         rendering.retime(dtS, video.renderFPS);
-        rendering.resolution(w, h);
+        rendering.resolution(g, w, h);
 
-        rendering.render(g);
-        rendering.clear();
+        layers.tryRender(rendering);
+        rendering.end();
+
 //        g.glDisable(GL.GL_DEPTH_TEST);
 //
 //        g.glEnable(GL.GL_DEPTH_TEST);
@@ -197,7 +198,6 @@ public class OrthoSurfaceGraph extends JoglDisplay implements SurfaceGraph {
 
     @Override
     protected void update() {
-        layers.tryRender(rendering);
     }
 
     public Off animate(Animated c) {

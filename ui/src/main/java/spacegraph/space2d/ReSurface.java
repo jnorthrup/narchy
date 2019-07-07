@@ -8,20 +8,15 @@ import jcog.math.v2;
 import jcog.tree.rtree.rect.RectFloat;
 import spacegraph.space2d.hud.Zoomed;
 
-import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 /** surface rendering context */
 public class ReSurface extends SurfaceCamera {
 
-
-    private final FasterList<BiConsumer<GL2, ReSurface>> main = new FasterList<>();
-
     static final float minVisibilityPixelPct =
             //0.5f;
             1f;
-
 
     /** time since last frame (seconds) */
     private float frameDT;
@@ -38,40 +33,22 @@ public class ReSurface extends SurfaceCamera {
     public long frameNS;
     @Deprecated public long frameUnixTime;
 
+    private transient GL2 gl;
 
-    public final void on(Consumer<GL2> renderable) {
-        on((gl, rr)->renderable.accept(gl));
+
+    @Deprecated public final void on(Consumer<GL2> renderable) {
+        on((gl, rr)->renderable.accept(this.gl));
     }
 
-    /** encodes the rendering sequence */
-    public final void on(BiConsumer<GL2, ReSurface> renderable) {
-        main.add(renderable);
+    @Deprecated public final void on(BiConsumer<GL2, ReSurface> renderable) {
+        renderable.accept(gl, this);
     }
 
-    public void clear() {
-        main.clear();
-    }
 
-    //public static class CachedSurfaceRender extends SurfaceRender {}
-    public void record(Surface compiled, List<BiConsumer<GL2, ReSurface>> buffer) {
 
-        int before = main.size();
-        compiled.tryRender(this);
-        int after = main.size();
-
-        buffer.clear();
-        for (int i = before; i < after; i++)
-            buffer.add(main.get(i));
-    }
-
-    public final void render(GL2 gl) {
-//        float ss = (float) Math.pow(2, Math.random() + 1);
-//        gl.glScalef(ss, ss, 1);
-        //gl.glTranslatef((w()/2)/scale.x - cam.x, (h()/2)/scale.y - cam.y, 0);
-        main.forEachWith((rr,ggl) -> rr.accept(ggl, this), gl);
-    }
     /** ortho restart */
-    public ReSurface resolution(float pw, float ph) {
+    public ReSurface resolution(GL2 gl, float pw, float ph) {
+        this.gl = gl;
         this.pw = pw;
         this.ph = ph;
         set(pw/2, ph/2, 1, 1);
@@ -143,16 +120,6 @@ public class ReSurface extends SurfaceCamera {
         return Math.min(p, q);
     }
 
-    @Override
-    public String toString() {
-        return scaleX + "x" + scaleY + ' ' + main.size() + " renderables";
-    }
-
-    public final void play(FasterList<BiConsumer<GL2, ReSurface>> render) {
-        main.addAllFaster(render);
-    }
-
-
 
     /** seconds since last update */
     public float dtS() {
@@ -174,6 +141,10 @@ public class ReSurface extends SurfaceCamera {
 
     public void pop() {
         set(stack.removeLast());
+    }
+
+    public void end() {
+        gl = null;
     }
 
 
