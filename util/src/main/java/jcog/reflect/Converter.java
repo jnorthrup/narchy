@@ -39,7 +39,7 @@ import java.util.function.Function;
  */
 public class Converter<X,Y> extends MutableWeightedCaster<X,Y> implements PrioritizedDouble {
     
-    protected final double defaultItemWeight = 1;
+    protected static final double defaultItemWeight = 1;
     
     private final WeightChangeListener listener = event -> {
         Double oldw = Converter.this.weight;
@@ -74,9 +74,9 @@ public class Converter<X,Y> extends MutableWeightedCaster<X,Y> implements Priori
                 this.functionsArray = ff;
                 this.F = (x) -> {
                     Object y = x;
-                    for (Function f : ff) {
+                    for (Function f : ff)
                         y = f.apply(y);
-                    }
+
                     return y;
                 };
             }

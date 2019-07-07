@@ -33,7 +33,7 @@ package jcog.reflect;
 public class WeightChangeEvent {
     protected final Double oldWeight;
     protected final Double newWeight;
-    protected Object source;
+    protected final Object source;
 
     public WeightChangeEvent(Object source, Double oldWeight, Double newWeight) {
         this.source = source;

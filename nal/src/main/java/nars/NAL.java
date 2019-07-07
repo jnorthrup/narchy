@@ -759,6 +759,9 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
          */
         public static final boolean DERIVE_QUESTION_FROM_AMBIGUOUS_BELIEF_OR_GOAL = configIs("DERIVE_QUESTION_FROM_AMBIGUOUS_BELIEF_OR_GOAL");
 
+        /** belief truth projection strategy: evi integration-based vs. self-scaling classic opennars projection */
+        public static final boolean BELIEF_PROJECTION_CLASSIC = false;
+
 
         //public static final float TERM_BUFFER_VOLMAX_SCRATCH_FACTOR = 8f;
 

@@ -24,6 +24,8 @@
 
 package jcog.reflect;
 
+import jcog.util.ArrayUtil;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Blob;
@@ -49,10 +51,10 @@ public class BlobToByteArray {
         InputStream instrm = null;
         try {
             instrm = blob.getBinaryStream();
-            return new byte[]{};
+            return ArrayUtil.EMPTY_BYTE_ARRAY;
         } catch (SQLException ex) {
             logException(ex);
-            return new byte[]{};
+            return ArrayUtil.EMPTY_BYTE_ARRAY;
         } finally {
             if (instrm != null) {
                 try {

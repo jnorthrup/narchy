@@ -74,7 +74,7 @@ import java.util.function.Function;
  * @author gocha
  */
 public class DefaultTypesConvertors extends TypesConverters {
-    private static DefaultTypesConvertors inst = null;
+
 
     protected DefaultTypesConvertors() {
         NumberConvertor numConv = new NumberConvertor(NumberType.LONG);
@@ -216,15 +216,5 @@ public class DefaultTypesConvertors extends TypesConverters {
 //        toValueConvertors().put(ByteSize.class, bsConv);
     }
 
-    /**
-     * Возвращает экземляр
-     *
-     * @return экземпляр
-     */
-    public static DefaultTypesConvertors instance() {
-        if (inst == null) {
-            inst = new DefaultTypesConvertors();
-        }
-        return inst;
-    }
+
 }

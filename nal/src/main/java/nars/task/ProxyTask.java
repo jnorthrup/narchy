@@ -19,7 +19,7 @@ public class ProxyTask extends UnitPri implements Task {
 
     private int hash = 0;
 
-    volatile long creation;
+    /*volatile*/ long creation;
     private volatile boolean cyclic = false;
 
     public ProxyTask(Task task) {
@@ -61,8 +61,15 @@ public class ProxyTask extends UnitPri implements Task {
     }
 
     @Override
-    public final void setCyclic(boolean b) {
-        this.cyclic = b;
+    public final void setCyclic(boolean c) {
+        this.cyclic = c;
+    }
+
+    /** fluent wrapper */
+    public final ProxyTask cyclicIf(boolean c) {
+        if (c)
+            setCyclic(true);
+        return this;
     }
 
     /** produce a concrete, non-proxy clone */
@@ -74,8 +81,6 @@ public class ProxyTask extends UnitPri implements Task {
     public final boolean isCyclic() {
         return cyclic;
     }
-
-
 
     @Override
     public Term term() {

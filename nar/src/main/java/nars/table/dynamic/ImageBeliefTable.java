@@ -5,7 +5,7 @@ import nars.Task;
 import nars.concept.Concept;
 import nars.concept.TaskConcept;
 import nars.control.op.Remember;
-import nars.task.proxy.ImageTask;
+import nars.task.proxy.SpecialTermTask;
 import nars.task.util.Answer;
 import nars.term.Term;
 import nars.term.Termed;
@@ -45,13 +45,7 @@ public class ImageBeliefTable extends DynamicTaskTable {
         if (c == null)
             return;
 
-
-        Task normalized;
-        if (imaged instanceof ImageTask)
-            normalized = ((ImageTask) imaged).task; //unwrap existing
-        else {
-            normalized = Task.withContent(imaged, normal);
-        }
+        Task normalized = SpecialTermTask.the(imaged, normal, true);
 
         if (r.store) {
             r.link = r.notify = false; //proxy store
@@ -70,13 +64,8 @@ public class ImageBeliefTable extends DynamicTaskTable {
     @Override
     public @Nullable Task match(long start, long end, boolean forceProject, @Nullable Term template, Predicate<Task> filter, float dur, NAR nar, boolean ditherTruth) {
         Task t = super.match(start, end, forceProject, template, filter, dur, nar, ditherTruth);
-        return t != null ? new ImageTask(transformFromTemplate(t), t) : null;
+        return transformFromTemplate(t);
     }
-
-    Term transformFromTemplate(Termed t) {
-        return Image.transformFromTemplate(t.term(), this.term, this.normal);
-    }
-
 
     /**
      * wraps resulting task as an Image proxy
@@ -84,7 +73,15 @@ public class ImageBeliefTable extends DynamicTaskTable {
     @Override
     public Task sample(When<NAR> when, @Nullable Term template, @Nullable Predicate<Task> filter) {
         Task t = super.sample(when, template, filter);
-        return t != null ? new ImageTask(transformFromTemplate(t), t) : null;
+        return transformFromTemplate(t);
+    }
+
+    @Nullable private Task transformFromTemplate(Task t) {
+        return t != null ? SpecialTermTask.the(t, transformTermFromTemplate(t), true) : null;
+    }
+
+    private Term transformTermFromTemplate(Termed t) {
+        return Image.transformFromTemplate(t.term(), this.term, this.normal);
     }
 
     @Override

@@ -271,10 +271,10 @@ public class DynTaskify extends TaskList {
             int[] order = new int[cn];
             for (int i = 0; i < cn; i++)
                 order[i] = i;
-            Object[] cc = c.array();
+            Component[] cc = c.array();
 
-            IntToFloatFunction smallestFirst = (int j) -> -((Component) cc[j]).termVolume;
-            //IntToFloatFunction biggestFirst = (int j) -> ((Component) cc[j]).termVolume;
+            IntToFloatFunction smallestFirst = (int j) -> -(cc[j]).termVolume;
+            //IntToFloatFunction biggestFirst = (int j) -> (cc[j]).termVolume;
             ArrayUtil.sort(order,
                     smallestFirst
                     //biggestFirst
@@ -282,7 +282,7 @@ public class DynTaskify extends TaskList {
 
             for (int i = 0; i < cn; i++) {
                 int j = order[i];
-                Task tt = ((Component) cc[j]).apply(this);
+                Task tt = cc[j].apply(this);
                 if (tt == null)
                     return false;
 
@@ -316,7 +316,7 @@ public class DynTaskify extends TaskList {
             return false;
 
         if (components == null)
-            components = new FasterList(model.componentsEstimate());
+            components = new FasterList(0, new Component[model.componentsEstimate()]);
 
         components.add(new Component(c, table,
                 this, components.size(),

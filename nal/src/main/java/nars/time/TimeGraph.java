@@ -1947,7 +1947,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 
             //return n.edges(true, true, x -> log.hasNotVisited(x.other(n)));
 
-            return sortEdges(n.edges(true, true, x -> log.hasNotVisited(x.other(n))));
+            return sortEdges(n.edges(true, true, x -> !log.hasVisited(x.other(n))));
         }
 
         Iterable<FromTo<Node<Event, nars.time.TimeSpan>, TimeSpan>> tangent(Node<Event, TimeSpan> root, Term t) {
@@ -1970,7 +1970,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
                     return Iterators.transform(
                             Iterators.filter(
                                     Iterators.transform(eee.iterator(), TimeGraph.this::node),
-                                    n -> n != null && n != root && log.hasNotVisited(n)
+                                    n -> n != null && n != root && !log.hasVisited(n)
                             ),
                             n -> {
                                 //assert(root.id().start()root.id() instanceof Absolute != n.id() instanceof Absolute)

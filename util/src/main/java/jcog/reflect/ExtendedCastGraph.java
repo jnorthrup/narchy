@@ -13,6 +13,7 @@ import jcog.math.v3;
 import jcog.reflect.spi.GetTypeConvertor;
 import jcog.signal.Tensor;
 import jcog.signal.tensor.ArrayTensor;
+import jcog.util.ArrayUtil;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -411,7 +412,7 @@ public class ExtendedCastGraph extends CastGraph {
     public static final Function BigDecimal2Number = new MutableWeightedCaster() {
         @Override
         public Object apply(Object from) {
-            return (((BigDecimal) from)).doubleValue();
+            return (((Number) from)).doubleValue();
         }
 
         @Override
@@ -1294,10 +1295,10 @@ public class ExtendedCastGraph extends CastGraph {
 
         addEdge(String.class, String2BigDecimal, BigDecimal.class);
 
-        byte[] ba = new byte[]{};
-        Byte[] Ba = new Byte[]{};
-        char[] ca = new char[]{};
-        Character[] Ca = new Character[]{};
+        byte[] ba = ArrayUtil.EMPTY_BYTE_ARRAY;
+        Byte[] Ba = ArrayUtil.EMPTY_BYTE_OBJECT_ARRAY;
+        char[] ca = ArrayUtil.EMPTY_CHAR_ARRAY;
+        Character[] Ca = ArrayUtil.EMPTY_CHARACTER_OBJECT_ARRAY;
 
         // TODO use proj text
         addEdge(String.class, String2byteArr, ba.getClass());

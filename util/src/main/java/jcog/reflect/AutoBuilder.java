@@ -16,7 +16,6 @@ import org.jetbrains.annotations.Nullable;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -30,71 +29,22 @@ import static org.eclipse.collections.impl.tuple.Tuples.pair;
  */
 public class AutoBuilder<X, Y> {
 
+    public final Map<Class, TriFunction/*<Field, Object, Object, Object>*/> annotation;
+    public final Map<Class, BiFunction<? super X, Object /* relation */, Y>> onClass;
+    public final Map<Predicate, Function<X, Y>> onCondition;
 
-
-    /** essentially a decomposition of a subject into its components,
-     *  include a descriptive relations to each */
-    public interface Deduce<R,X> extends Iterable<Pair<R,X>> {
-
-    }
-
-    public static class DeduceFields<X,R,Y> implements Deduce<R,Y> {
-
-        private final X source;
-
-        public DeduceFields(X source) {
-            this.source = source;
-        }
-
-        @Override
-        public Iterator<Pair<R, Y>> iterator() {
-            throw new TODO();
-        }
-    }
-
-    /** for Iterable's incl. Collections */
-    public static class DeduceIterable<X> implements Deduce<MutableInteger,X> {
-
-        private final Iterable<X> i;
-
-        public DeduceIterable(Iterable<X> i) {
-            this.i = i;
-        }
-        @Override
-        public Iterator<Pair<MutableInteger, X>> iterator() {
-            throw new TODO();
-        }
-    }
-
-    public static class DeduceMap<X,Y> implements Deduce<X,Y> {
-
-        private final Map<X, Y> m;
-
-        public DeduceMap(Map<X,Y> m) {
-            this.m = m;
-        }
-
-        @Override
-        public Iterator<Pair<X, Y>> iterator() {
-            return Iterators.transform(m.entrySet().iterator(), (x) -> pair(x.getKey(), x.getValue()));
-        }
-    }
-
-    /** inverse of deduce, somehow */
-    public interface Induce {
-        //TODO
-    }
-
-    public final Map<Class, TriFunction/*<Field, Object, Object, Object>*/> annotation = new ConcurrentHashMap();
-    public final Map<Class, BiFunction<? super X, Object /* relation */, Y>> onClass = new ConcurrentHashMap<>();
-    public final Map<Predicate, Function<X, Y>> onCondition = new ConcurrentHashMap<>();
     final AutoBuilding<X, Y> building;
     private final int maxDepth;
+
     private final Set<Object> seen = Sets.newSetFromMap(new IdentityHashMap());
 
-    public AutoBuilder(int maxDepth, AutoBuilding<X, Y> building) {
+
+    public AutoBuilder(int maxDepth, AutoBuilding<X, Y> building, Map<Class, BiFunction<? super X, Object, Y>> onClass) {
         this.building = building;
         this.maxDepth = maxDepth;
+        this.annotation = new HashMap();
+        this.onClass = onClass;
+        this.onCondition = new HashMap<>();
     }
 
     /**
@@ -266,10 +216,10 @@ public class AutoBuilder<X, Y> {
         //..
     }
 
-    public <C extends X> AutoBuilder<X, Y> on(Class<C> c, BiFunction<C, /*RelationType*/Object, Y> each) {
-        onClass.put(c, (BiFunction<? super X, Object, Y>) each);
-        return this;
-    }
+//    public <C extends X> AutoBuilder<X, Y> on(Class<C> c, BiFunction<C, /*RelationType*/Object, Y> each) {
+//        onClass.put(c, (BiFunction<? super X, Object, Y>) each);
+//        return this;
+//    }
 
     public AutoBuilder<X, Y> on(Predicate test, Function<X, Y> each) {
         onCondition.put(test, each);
@@ -358,6 +308,59 @@ public class AutoBuilder<X, Y> {
             int c = this.which;
             return c >=0 ? way[c].get() : null;
         }
+    }
+
+    /** essentially a decomposition of a subject into its components,
+     *  include a descriptive relations to each */
+    public interface Deduce<R,X> extends Iterable<Pair<R,X>> {
+
+    }
+
+    public static class DeduceFields<X,R,Y> implements Deduce<R,Y> {
+
+        private final X source;
+
+        public DeduceFields(X source) {
+            this.source = source;
+        }
+
+        @Override
+        public Iterator<Pair<R, Y>> iterator() {
+            throw new TODO();
+        }
+    }
+
+    /** for Iterable's incl. Collections */
+    public static class DeduceIterable<X> implements Deduce<MutableInteger,X> {
+
+        private final Iterable<X> i;
+
+        public DeduceIterable(Iterable<X> i) {
+            this.i = i;
+        }
+        @Override
+        public Iterator<Pair<MutableInteger, X>> iterator() {
+            throw new TODO();
+        }
+    }
+
+    public static class DeduceMap<X,Y> implements Deduce<X,Y> {
+
+        private final Map<X, Y> m;
+
+        public DeduceMap(Map<X,Y> m) {
+            this.m = m;
+        }
+
+        @Override
+        public Iterator<Pair<X, Y>> iterator() {
+            return Iterators.transform(m.entrySet().iterator(), (x) -> pair(x.getKey(), x.getValue()));
+        }
+    }
+
+    /** inverse of deduce, somehow */
+    public interface Induce {
+        //TODO
     }
 
 }

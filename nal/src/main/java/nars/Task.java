@@ -469,19 +469,6 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
             return new SpecialNegatedTask(t);
     }
 
-    static Task withContent(Task task, Term t) {
-        if (task.term().equals(t)) return task;
-
-        boolean negated = t instanceof Neg;
-        if (negated) {
-            t = t.unneg();
-            if (task.isBeliefOrGoal())
-                return new SpecialPuncTermAndTruthTask(t, task.punc(), task.truth().neg(), task);
-        }
-
-        return new SpecialTermTask(t, task);
-    }
-
     /**
      * leave n null to avoid dithering
      */

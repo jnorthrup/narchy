@@ -12,7 +12,6 @@ import org.eclipse.collections.impl.tuple.Tuples;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayDeque;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Queue;
 
@@ -35,7 +34,7 @@ abstract public class Search<N, E> {
 
 
     protected Search() {
-        this(new TraveLog.IntHashTraveLog());
+        this(new TraveLog.IntHashTraveLog(32));
     }
 
     private Search(TraveLog log) {
@@ -143,10 +142,8 @@ abstract public class Search<N, E> {
             return true;
 
         Node<N, E> at;
-        Iterator<FromTo<Node<N, E>, E>> ii = find(at = n, path).iterator(); //Iterable?
 
-        while (ii.hasNext()) {
-            FromTo<Node<N, E>, E> e = ii.next();
+        for (FromTo<Node<N, E>, E> e : find(at = n, path)) {
 
             Node<N, E> next = next(e, at, path);
 

@@ -347,11 +347,11 @@ public class Derivation extends PreDerivation {
 
     @Nullable
     private Truth beliefAtTask(Task nextBelief) {
-        //integration-calculated
-        return nextBelief.truth(taskStart, taskEnd, dur());
-
-        //classic opennars projection
-        //return nextBelief.truth(time(), _task);
+        return !NAL.derive.BELIEF_PROJECTION_CLASSIC ?
+            nextBelief.truth(taskStart, taskEnd, dur()) //integration-calculated
+            :
+            nextBelief.truth(time(), _task) //classic opennars projection
+        ;
     }
 
     private Task resetTask(final Task nextTask, Task currentTask) {

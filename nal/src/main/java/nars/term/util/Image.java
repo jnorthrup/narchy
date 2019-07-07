@@ -2,9 +2,7 @@ package nars.term.util;
 
 import jcog.Util;
 import nars.Op;
-import nars.Task;
 import nars.subterm.Subterms;
-import nars.task.proxy.ImageTask;
 import nars.term.Compound;
 import nars.term.Img;
 import nars.term.Neg;
@@ -189,19 +187,7 @@ public enum Image {
         true, true, B);
     }
 
-    public static Task imageNormalizeTask(Task task) {
-        if (task instanceof ImageTask)
-            return ((ImageTask)task).task;
-        else
-            return task;
-    }
 
-    public static Term imageNormalizeTerm(Task task) {
-        if (task instanceof ImageTask) {
-            return ((ImageTask)task).task.term();
-        } else
-            return task.term();
-    }
 
     /** infers the corresponding image transformation of a term suggested by a template
      * @param x will be the image normalized form

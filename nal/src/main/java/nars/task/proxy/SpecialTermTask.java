@@ -1,8 +1,10 @@
 package nars.task.proxy;
 
+import nars.NAL;
 import nars.Task;
 import nars.task.ProxyTask;
 import nars.task.util.TaskException;
+import nars.term.Neg;
 import nars.term.Term;
 import org.eclipse.collections.api.tuple.primitive.ObjectBooleanPair;
 import org.jetbrains.annotations.Nullable;
@@ -16,27 +18,48 @@ public class SpecialTermTask extends ProxyTask {
     private final Term term;
 
     public SpecialTermTask(Term term, Task task) {
-        super(task.getClass() == SpecialTermTask.class ? //but not subclasses!
+        super(/*task.getClass() == SpecialTermTask.class ? //but not subclasses!
                 ((SpecialTermTask) task).task  //unwrap to core
-                :
+                :*/
                 task);
 
-
-
-        @Nullable ObjectBooleanPair<Term> z = Task.tryTaskTerm(term, task.punc(), false);
-        if (z.getTwo())
-            throw new TaskException(term, "SpecialTermTask does not support NEG target"); //use Task.withContent it will unwrap neg
-        this.term = z.getOne();
+        if (NAL.DEBUG) {
+            @Nullable ObjectBooleanPair<Term> z = Task.tryTaskTerm(term, task.punc(), false);
+            if (z.getTwo())
+                throw new TaskException(term, "SpecialTermTask does not support NEG target"); //use Task.withContent it will unwrap neg
+            this.term = z.getOne();
+        } else {
+            assert(!(term instanceof Neg));
+            this.term = term;
+        }
 
     }
 
-    @Override
-    protected boolean inheritCyclic() {
-        return false;
+
+    public static Task the(Task task, Term t, boolean setCyclic) {
+        if (task.term().equals(t)) return task;
+
+        if (task.getClass() == SpecialTermTask.class /* but not subclasses! */) {
+            SpecialTermTask et = (SpecialTermTask) t;
+            Term ett = et.term();
+            if (ett.equals(t))
+                return et;
+            else
+                task = et.task;
+        }
+
+        boolean negated = t instanceof Neg;
+        if (negated) {
+            t = t.unneg();
+            if (task.isBeliefOrGoal())
+                return new SpecialPuncTermAndTruthTask(t, task.punc(), task.truth().neg(), task).cyclicIf(setCyclic);
+        }
+
+        return new SpecialTermTask(t, task).cyclicIf(setCyclic);
     }
 
     @Override
-    public Term term() {
+    public final Term term() {
         return term;
     }
 

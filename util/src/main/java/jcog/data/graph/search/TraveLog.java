@@ -11,32 +11,33 @@ public interface TraveLog {
     /** returns false if it was already added */
     boolean visit(Node n);
 
-
     void unvisit(Node n);
 
     boolean hasVisited(Node n);
 
-    default boolean hasNotVisited(Node n) {
-        return !hasVisited(n);
+    static int serial(Node n) {
+        return ((NodeGraph.AbstractNode)n).serial;
     }
-
 
     final class IntHashTraveLog extends IntHashSet implements TraveLog {
 
+        public IntHashTraveLog(int cap) {
+            super(cap);
+        }
 
         @Override
         public boolean visit(Node n) {
-            return add(((NodeGraph.AbstractNode)n).serial);
+            return add(serial(n));
         }
 
         @Override
         public void unvisit(Node n) {
-            remove(((NodeGraph.AbstractNode)n).serial);
+            remove(serial(n));
         }
 
         @Override
         public boolean hasVisited(Node n) {
-            return contains(((NodeGraph.AbstractNode)n).serial);
+            return contains(serial(n));
         }
 
     }

@@ -18,7 +18,6 @@ import nars.control.channel.CauseChannel;
 import nars.task.NALTask;
 import nars.task.TemporalTask;
 import nars.task.UnevaluatedTask;
-import nars.task.proxy.ImageTask;
 import nars.task.util.TaskException;
 import nars.task.util.TaskList;
 import nars.term.Term;
@@ -148,14 +147,14 @@ public class ConjClustering extends How {
 
 
         whenDeleted(nar.onTask(t -> {
-            if (!(t instanceof ImageTask)
-                    && !t.isEternal()
-                    && !t.hasVars() //<-- TODO requires multi-normalization (shifting offsets)
-                    && (stampLenMax == Integer.MAX_VALUE || (t.stamp().length <= stampLenMax))
-                    && t.volume() <= inputTermVolMax
-                    && filter.test(t)) {
+            if (
+                   !t.isEternal()
+                && !t.hasVars() //<-- TODO requires multi-normalization (shifting offsets)
+                && (stampLenMax == Integer.MAX_VALUE || (t.stamp().length <= stampLenMax))
+                && t.volume() <= inputTermVolMax
+                && filter.test(t)) {
 
-                data.put(t, pri(t));
+                    data.put(t, pri(t));
 
             }
         }, puncIn));

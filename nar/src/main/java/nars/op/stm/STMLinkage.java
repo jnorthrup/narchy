@@ -8,8 +8,6 @@ import nars.attention.TaskLinkWhat;
 import nars.concept.Concept;
 import nars.control.NARPart;
 import nars.link.AtomicTaskLink;
-import nars.task.proxy.ImageTask;
-import nars.term.util.Image;
 import org.eclipse.collections.api.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
 
@@ -96,15 +94,15 @@ public class STMLinkage extends NARPart {
     }
 
     public boolean filter(Task x) {
-        return x.isInput() && !(x instanceof ImageTask);
+        return x.isInput();
     }
 
 
-    public final void accept(Task _y) {
+    public final void accept(Task y) {
 
 
-        if (filter(_y)) {
-            Task y = Image.imageNormalizeTask(_y);
+        if (filter(y)) {
+
 
             @Nullable Concept yc;
             yc = nar.concept(y);

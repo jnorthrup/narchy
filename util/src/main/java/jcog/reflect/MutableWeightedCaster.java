@@ -109,7 +109,7 @@ public abstract class MutableWeightedCaster<X,Y> extends WeightedCaster<X,Y> imp
     }
 
     @Override
-    public CloseHandler addWeightChangeListener(WeightChangeListener listener) {
+    @Deprecated public CloseHandler addWeightChangeListener(WeightChangeListener listener) {
         if (listener == null) return new CloseHandler() {
         };
         final WeightChangeListener fl = listener;

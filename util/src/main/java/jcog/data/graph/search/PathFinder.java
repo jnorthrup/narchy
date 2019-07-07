@@ -31,11 +31,11 @@ import jcog.data.graph.path.Path;
 import jcog.sort.FloatRank;
 import jcog.sort.RankedN;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Iterator;
 import java.util.function.Function;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 
 /**
@@ -51,7 +51,7 @@ import java.util.logging.Logger;
  */
 public class PathFinder<N, E> extends RankedN<Path<N,E>> {
 
-    private static final Logger logger = Logger.getLogger(PathFinder.class.getName());
+    private static final Logger logger = LoggerFactory.getLogger(PathFinder.class);
     /**
      * Граф в котором производится поиск
      */
@@ -139,10 +139,6 @@ public class PathFinder<N, E> extends RankedN<Path<N,E>> {
             bp = bp.append(e.id(), Path.secondNode(e, direction));
             add(bp);
         }
-    }
-
-    private static void logFiner(String message, Object... args) {
-        logger.log(Level.FINER, message, args);
     }
 
     //</editor-fold>
@@ -249,7 +245,7 @@ public class PathFinder<N, E> extends RankedN<Path<N,E>> {
                 }
 
             } else {
-                logFiner("cycle detected");
+                logger.error("cycle detected {}", this);
             }
         }
 

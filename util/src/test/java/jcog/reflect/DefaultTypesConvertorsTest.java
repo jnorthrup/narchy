@@ -16,7 +16,7 @@ public class DefaultTypesConvertorsTest {
 
     @Test
     public void showTypes(){
-        DefaultTypesConvertors conv = DefaultTypesConvertors.instance();
+        DefaultTypesConvertors conv = new DefaultTypesConvertors();
         
         System.out.println("default types convertors, to string:");
         for( Class cls : conv.toString.keySet() ){

@@ -201,7 +201,7 @@ public class ClassSet extends HashSet<Class> {
         /**
          * true - в порядке от дочернего к родит; false - от родител. к дочернему
          */
-        public boolean inverse;
+        public final boolean inverse;
 
         /**
          * Конструктор

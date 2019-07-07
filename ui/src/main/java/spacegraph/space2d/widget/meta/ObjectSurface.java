@@ -16,14 +16,14 @@ import spacegraph.space2d.widget.button.EnumSwitch;
 import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.space2d.widget.port.FloatRangePort;
 import spacegraph.space2d.widget.slider.IntSlider;
-import spacegraph.space2d.widget.text.LabeledPane;
 import spacegraph.space2d.widget.text.VectorLabel;
 
 import java.lang.reflect.Field;
-import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.BiFunction;
 
 /**
  * constructs a representative surface for an object by reflection analysis
@@ -69,7 +69,6 @@ public class ObjectSurface<X> extends MutableUnitContainer {
 
     final AutoBuilder<Object, Surface> builder;
 
-
     /**
      * root
      */
@@ -94,75 +93,16 @@ public class ObjectSurface<X> extends MutableUnitContainer {
         this(x, DefaultObjectSurfaceBuilder, depth);
     }
 
-    public ObjectSurface(X x, AutoBuilder.AutoBuilding<Object, Surface> builder, int maxDepth) {
-        this(x, new AutoBuilder<>(maxDepth, builder));
+    public ObjectSurface(X x, AutoBuilder.AutoBuilding<?, Surface> builder, int maxDepth) {
+        this(x, new AutoBuilder(maxDepth, builder, classer));
     }
 
     public ObjectSurface(X x, AutoBuilder<Object, Surface> builder) {
         super();
-
         this.obj = x;
         this.builder = builder;
-
-
-        initDefaults();
     }
 
-    private void initDefaults() {
-//        builder.annotation(Essence.class, (x, xv, e) -> {
-//           return xv; //forward  //TODO
-//        });
-
-        builder.on(Map.Entry.class, (Map.Entry x, Object relation) ->
-                new VectorLabel(x.toString())
-        );
-        builder.on(FloatRange.class, (FloatRange x, Object relation) -> {
-            FloatRangePort f = new FloatRangePort(x);
-            f.slider.text(objLabel(x, relation));
-            return f;
-        });
-
-        builder.on(IntRange.class, (x, relation) -> !(x instanceof MutableEnum) ? new MyIntSlider(x, relationLabel(relation)) : null);
-
-        builder.on(Runnable.class, (x, relation) -> new PushButton(objLabel(x, relation), x));
-        builder.on(AtomicBoolean.class, (x, relation) -> new MyAtomicBooleanCheckBox(objLabel(x, relation), x));
-
-        builder.on(MutableEnum.class, (x, relation) -> EnumSwitch.the(x, relationLabel(relation)));
-
-        builder.on(String.class, (x, relation) -> new VectorLabel(x)); //TODO support multi-line word wrap etc
-
-        builder.on(Collection.class, (x, relation) -> {
-            Collection cx = x;
-            if (cx.isEmpty())
-                return null;
-
-            List<Surface> yy = new FasterList(cx.size());
-
-            for (Object cxx : cx) {
-                if (cxx == null)
-                    continue;
-
-                Surface yyy = builder.build(cxx);
-                if (yyy != null)
-                    yy.add(yyy); //TODO depth, parent, ..
-            }
-            if (yy.isEmpty())
-                return null;
-
-            Surface xx = yy.size() > 1 ? new Gridding(yy) : yy.get(0);
-
-            String l = relationLabel(relation);
-
-            if (!l.isEmpty())
-                return LabeledPane.the(l, xx);
-            else
-                return xx;
-        });
-
-//        builder.on(Pair.class, (p, rel)->{
-//           return new Splitting(build(p.getOne()), 0.5f, build(p.getTwo())).resizeable();
-//        });
-    }
 
     public Surface build(Object x) {
         return builder.build(x);
@@ -193,6 +133,62 @@ public class ObjectSurface<X> extends MutableUnitContainer {
 
     protected String label(X obj) {
         return obj.toString();
+    }
+
+    static final Map<Class, BiFunction<?,?,Surface>> classer = new HashMap();
+    {
+//        builder.annotation(Essence.class, (x, xv, e) -> {
+//           return xv; //forward  //TODO
+//        });
+
+        classer.put(Map.Entry.class, (Map.Entry x, Object relation) ->
+                new VectorLabel(x.toString())
+        );
+        classer.put(FloatRange.class, (FloatRange x, Object relation) -> {
+            FloatRangePort f = new FloatRangePort(x);
+            f.slider.text(objLabel(x, relation));
+            return f;
+        });
+
+        classer.put(IntRange.class, (IntRange x, Object relation) -> !(x instanceof MutableEnum) ? new MyIntSlider(x, relationLabel(relation)) : null);
+
+        classer.put(Runnable.class, (Runnable x, Object relation) -> new PushButton(objLabel(x, relation), x));
+        classer.put(AtomicBoolean.class, (AtomicBoolean x, Object relation) -> new MyAtomicBooleanCheckBox(objLabel(x, relation), x));
+
+        classer.put(MutableEnum.class, (MutableEnum x, Object relation) -> EnumSwitch.the(x, relationLabel(relation)));
+
+        classer.put(String.class, (String x, Object relation) -> new VectorLabel(x)); //TODO support multi-line word wrap etc
+
+//        classer.put(Collection.class, (Collection cx, Object relation) -> {
+//            if (cx.isEmpty())
+//                return null;
+//
+//            List<Surface> yy = new FasterList(cx.size());
+//
+//            for (Object cxx : cx) {
+//                if (cxx == null)
+//                    continue;
+//
+//                Surface yyy = builder.build(cxx);
+//                if (yyy != null)
+//                    yy.add(yyy); //TODO depth, parent, ..
+//            }
+//            if (yy.isEmpty())
+//                return null;
+//
+//            Surface xx = yy.size() > 1 ? new Gridding(yy) : yy.get(0);
+//
+//            String l = relationLabel(relation);
+//
+//            if (!l.isEmpty())
+//                return LabeledPane.the(l, xx);
+//            else
+//                return xx;
+//        });
+
+//        classer.put(Pair.class, (p, rel)->{
+//           return new Splitting(build(p.getOne()), 0.5f, build(p.getTwo())).resizeable();
+//        });
     }
 
 //        if (yLabel == null)
@@ -273,35 +269,6 @@ public class ObjectSurface<X> extends MutableUnitContainer {
 //    }
 
 
-    private static class MyIntSlider extends IntSlider {
-        private final String k;
-
-        MyIntSlider(IntRange p, String k) {
-            super(p);
-            tooltip(k); //HACK
-            this.k = k;
-        }
-
-        @Override
-        public String text() {
-            return k + '=' + super.text();
-        }
-    }
-
-    private static class MyAtomicBooleanCheckBox extends CheckBox {
-        final AtomicBoolean a;
-
-        public MyAtomicBooleanCheckBox(String yLabel, AtomicBoolean x) {
-            super(yLabel, x);
-            this.a = x;
-        }
-
-        @Override
-        public boolean preRender(ReSurface r) {
-            on((a.getOpaque())); //load
-            return super.preRender(r);
-        }
-    }
 
     //    private class AutoServices extends Widget {
 //        AutoServices(Services<?, ?> x) {
@@ -336,4 +303,33 @@ public class ObjectSurface<X> extends MutableUnitContainer {
         return addAt(x);
     }*/
 
+    private static class MyIntSlider extends IntSlider {
+        private final String k;
+
+        MyIntSlider(IntRange p, String k) {
+            super(p);
+            tooltip(k); //HACK
+            this.k = k;
+        }
+
+        @Override
+        public String text() {
+            return k + '=' + super.text();
+        }
+    }
+
+    private static class MyAtomicBooleanCheckBox extends CheckBox {
+        final AtomicBoolean a;
+
+        public MyAtomicBooleanCheckBox(String yLabel, AtomicBoolean x) {
+            super(yLabel, x);
+            this.a = x;
+        }
+
+        @Override
+        public boolean preRender(ReSurface r) {
+            on((a.getOpaque())); //load
+            return super.preRender(r);
+        }
+    }
 }
