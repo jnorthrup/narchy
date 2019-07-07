@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Test;
 import java.util.Set;
 
 import static nars.$.$$;
+import static nars.Op.BELIEF;
 import static nars.time.Tense.ETERNAL;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -30,7 +31,7 @@ class FunctorTest {
             assertFalse(s.contains("union"));
             if (s.contains("[a,b]"))
                 got[0] = true;
-        });
+        }, BELIEF);
         n.input("union([a],[b]).");
 
         n.run(1);

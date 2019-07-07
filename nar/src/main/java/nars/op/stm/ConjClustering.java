@@ -76,6 +76,9 @@ public class ConjClustering extends How {
     public ConjClustering(NAR nar, byte punc, int centroids, int capacity) {
         this(nar, punc, (t) -> true, centroids, capacity);
     }
+    public ConjClustering(NAR nar, byte puncIn, byte puncOut, int centroids, int capacity) {
+        this(nar, puncIn, puncOut, (t) -> true, centroids, capacity);
+    }
 
     /** default that configures with belief/goal -> question/quest output mode */
     public ConjClustering(NAR nar, byte punc, Predicate<Task> filter, int centroids, int capacity) {

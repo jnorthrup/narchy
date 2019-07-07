@@ -30,10 +30,7 @@ import nars.derive.timing.ActionTiming;
 import nars.exe.impl.WorkerExec;
 import nars.gui.NARui;
 import nars.memory.CaffeineMemory;
-import nars.op.Arithmeticize;
-import nars.op.AutoencodedBitmap;
-import nars.op.Factorize;
-import nars.op.Introduction;
+import nars.op.*;
 import nars.op.mental.Inperience2;
 import nars.op.stm.ConjClustering;
 import nars.sensor.Bitmap2DSensor;
@@ -143,9 +140,9 @@ abstract public class GameX extends Game {
 
         n.synch();
 
-        Exe.invokeLater(()->{
-            initMeta(n,  false, false);
-        });
+//        Exe.invokeLater(()->{
+//            initMeta(n,  false, false);
+//        });
 
         Exe.invokeLater(()->{
             window(
@@ -526,19 +523,14 @@ abstract public class GameX extends Game {
 
 
         //new StatementLinker(n);
-        //new PuncNoise(n);
+        new PuncNoise(n);
         //n.start(new Eternalizer(n));
 
 //        new STMLinkage(n, 1);
 
-//        ConjClustering conjClusterBinput = new ConjClustering(n, BELIEF,
-//                t->t.isInput(),
-//                32, 128);
-
-
         List<ConjClustering> conjClusters = List.of(
-                new ConjClustering(n, BELIEF, 32, 256)
-                , new ConjClustering(n, GOAL, 16, 64)
+                new ConjClustering(n, BELIEF, /* QUESTION */ BELIEF, 32, 256)
+                , new ConjClustering(n, GOAL, /* QUEST */ GOAL, 16, 64)
         );
         conjClusters.forEach(c -> n.start(c));
 

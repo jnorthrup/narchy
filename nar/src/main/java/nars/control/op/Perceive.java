@@ -33,19 +33,19 @@ public enum Perceive { ;
 
     static final Logger logger = LoggerFactory.getLogger(Perceive.class);
 
-    public static Task perceive(Task t, What w) {
+    public static Task perceive(Task x, What w) {
 
         NAR n = w.nar;
         n.emotion.perceivedTaskStart.increment();
 
 
-        byte punc = t.punc();
+        byte punc = x.punc();
         boolean cmd = punc == COMMAND;
 
-        Task e = (cmd || (t instanceof Task && (punc == GOAL && !t.isEternal()))) ?
-            execute(t, n, cmd) : null;
+        Task e = (cmd || (x instanceof Task && (punc == GOAL && !x.isEternal()))) ?
+            execute(x, n, cmd) : null;
 
-        Task r = (!cmd) ? Remember.the(t, n) : null;
+        Task r = (!cmd) ? Remember.the(x, n) : null;
 
         Task perceived;
         if (e != null && r != null)
@@ -55,11 +55,11 @@ public enum Perceive { ;
         else
             perceived = r;
 
-        if (Evaluation.canEval(t.term())) {
-            FasterList<Task> rt = new TaskEvaluation(t, w).result;
+        if (Evaluation.canEval(x.term())) {
+            FasterList<Task> rt = new TaskEvaluation(x, w).result;
             if (rt!=null) {
-                rt.removeInstance(t); //HACK
-                rt.add(perceived);
+                rt.removeInstance(x); //HACK
+//                rt.add(perceived); //echo
 
                 return task(rt);
             }

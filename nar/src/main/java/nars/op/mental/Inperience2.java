@@ -81,6 +81,7 @@ public class Inperience2 extends How {
                     }
 
                     if (u != null) {
+                        u.pri(0); //HACK
                         Task.fund(u, t, priFactor.floatValue(), true);
                         w.accept(u);
                     }

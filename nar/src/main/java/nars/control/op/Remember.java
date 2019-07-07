@@ -193,17 +193,16 @@ public class Remember extends AbstractTask {
      */
     private void insert(TaskConcept c, What w) {
 
-        NAR n = w.nar;
 
         c.add(this);
 
         if (remembered != null && !remembered.isEmpty()) {
-            remembered.forEachWith((Task r, NAR nn) -> {
+            remembered.forEachWith((Task r, What ww) -> {
                 if (r.equals(this.input)) //HACK
-                    link(r, w); //root
+                    link(r, ww); //root
                 else
-                    commit(r, false, w); //sub
-            }, n);
+                    commit(r, false, ww); //sub
+            }, w);
             remembered = null;
         }
     }
