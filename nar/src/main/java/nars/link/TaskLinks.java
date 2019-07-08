@@ -128,6 +128,11 @@ abstract public class TaskLinks implements Sampler<TaskLink> {
         links.sample(rng, each);
     }
 
+    @Override
+    public void sampleUnique(Random rng, Predicate<? super TaskLink> predicate) {
+        links.sampleUnique(rng, predicate);
+    }
+
     /**
      * resolves and possibly sub-links a link target
      * TODO abstract this as one possible strategy
@@ -282,7 +287,7 @@ abstract public class TaskLinks implements Sampler<TaskLink> {
 
 
             final Term[] T = {target};
-            links.bag.sampleUnique(d.random, (ll) ->{
+            sampleUnique(d.random, (ll) ->{
                 if (ll != link) {
                     Term t = ll.reverseMatch(target);
                     if (t != null) {

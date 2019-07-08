@@ -1347,6 +1347,13 @@ public enum Util {
         return y;
     }
 
+    public static <X> int sum(ToIntFunction<X> value, Iterable<X> xx) {
+        int y = 0;
+        for (X x : xx)
+            y += value.applyAsInt(x);
+        return y;
+    }
+
     public static <X> int sum(ToIntFunction<X> value, X... xx) {
         return sum(value, 0, xx.length, xx);
     }

@@ -40,7 +40,7 @@ public class SensorBeliefTables extends BeliefTables {
     private Task current = null;
 
     /** priority factor for new tasks which are fully unsurprising */
-    private float minSurprise = NAL.signal.SENSOR_MIN_SURPRISE_DEFAULT;
+    private float minSurprise = NAL.signal.SENSOR_SURPRISE_MIN_DEFAULT;
 
 
     public SensorBeliefTables(Term c, boolean beliefOrGoal) {

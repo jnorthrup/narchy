@@ -105,6 +105,7 @@ abstract public class BufferedBag<X, B, Y extends Prioritizable> extends ProxyBa
         bag.merge(nextMerge);
     }
 
+
     public static class SimpleBufferedBag<X, Y extends Prioritizable> extends BufferedBag<X, Y, Y> {
 
         public SimpleBufferedBag(Bag<X, Y> activates, PriMap<Y> conceptPriMap) {

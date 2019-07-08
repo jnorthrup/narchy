@@ -34,7 +34,7 @@ import nars.op.Arithmeticize;
 import nars.op.AutoencodedBitmap;
 import nars.op.Factorize;
 import nars.op.Introduction;
-import nars.op.mental.Inperience2;
+import nars.op.mental.Inperience;
 import nars.op.stm.ConjClustering;
 import nars.sensor.Bitmap2DSensor;
 import nars.sensor.PixelBag;
@@ -189,7 +189,7 @@ abstract public class GameX extends Game {
 
             Game aa = a.apply(n);
 
-            new InterNAR(n).fps(netFPS);
+//            new InterNAR(n).fps(netFPS);
 
             return aa;
 
@@ -531,7 +531,7 @@ abstract public class GameX extends Game {
 
         List<ConjClustering> conjClusters = List.of(
                 new ConjClustering(n, BELIEF, /* QUESTION */ BELIEF, 32, 256)
-                , new ConjClustering(n, GOAL,  QUEST /* GOAL*/, 16, 64)
+                //, new ConjClustering(n, GOAL,  QUEST /* GOAL*/, 16, 64)
         );
         conjClusters.forEach(c -> n.start(c));
 
@@ -563,7 +563,7 @@ abstract public class GameX extends Game {
         Introduction factorizer = new Factorize.FactorIntroduction(n);
 
 
-        new Inperience2(n);
+        new Inperience(n);
 
         //new Abbreviation("z", 2, 5, n);
 
@@ -593,7 +593,7 @@ abstract public class GameX extends Game {
     private static void addGovernor(NAR n) {
         int gHist = 8;
         float momentum = 0.9f;
-        float explorationRate = 0.1f;
+        float explorationRate = 0.25f;
         n.onDur(new Consumer<>() {
 
             final Consumer<FasterList<Why>> reval = new Consumer<FasterList<Why>>() {

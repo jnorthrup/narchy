@@ -10,6 +10,7 @@ import nars.*;
 import nars.eval.Evaluation;
 import nars.term.Functor;
 import nars.term.Term;
+import nars.term.Termlike;
 import nars.term.Variable;
 import nars.term.anon.Anom;
 import nars.term.anon.Anon;
@@ -20,6 +21,7 @@ import org.eclipse.collections.api.tuple.Pair;
 import org.eclipse.collections.impl.map.mutable.primitive.IntObjectHashMap;
 import org.eclipse.collections.impl.set.mutable.primitive.IntHashSet;
 import org.jetbrains.annotations.Nullable;
+import org.roaringbitmap.RoaringBitmap;
 
 import java.util.Map;
 import java.util.Random;
@@ -30,7 +32,6 @@ import static nars.Op.CONJ;
 import static nars.Op.INT;
 import static nars.term.atom.Bool.False;
 import static nars.term.atom.Bool.Null;
-import static nars.time.Tense.DTERNAL;
 import static org.eclipse.collections.impl.tuple.Tuples.pair;
 
 /**
@@ -48,6 +49,12 @@ public class Arithmeticize {
 
     private static final int minInts = 2;
 
+    private static final Function<IntArrayListCached, ArithmeticOp[]> cached;
+
+    static {
+        cached = Memoizers.the.memoize(Arithmeticize.class.getSimpleName() + "_mods", 16 * 1024, Arithmeticize::_mods);
+    }
+
     private final static Variable A = $.varDep("A_"), B = $.varDep("B_");
 
     private static final Function<Atom, Functor> ArithFunctors = Map.of(
@@ -58,6 +65,11 @@ public class Arithmeticize {
     )::get;
 
     public static class ArithmeticIntroduction extends EventIntroduction {
+
+        /** rate at which input is pre-evaluated.  TODO make FloatRange etc */
+        private float preEvalRate = 0.5f;
+
+        static final int VOLUME_MARGIN = 6;
 
         public ArithmeticIntroduction(NAR n) {
             super(n);
@@ -72,7 +84,7 @@ public class Arithmeticize {
             return
                     x.hasAny(Op.INT) &&
                             x.complexity() >= 3 &&
-                            nar.termVolMax.intValue() >= x.volume() + 6 /* for && equals(x,y)) */;
+                            volMax >= x.volume() + VOLUME_MARGIN /* for && equals(x,y)) */;
         }
 
         @Override
@@ -95,42 +107,46 @@ public class Arithmeticize {
 
         @Override
         protected Term apply(Term x, int volMax) {
-            return Arithmeticize.apply(x.term(), null, volMax, nar.random());
+            Random random = nar.random();
+            return Arithmeticize.apply(x, null, volMax, random.nextFloat() < preEvalRate, random);
         }
     }
 
     @Deprecated
     public static Term apply(Term x, Random random) {
-        return apply(x, null, NAL.term.COMPOUND_VOLUME_MAX, random);
+        return apply(x, null, NAL.term.COMPOUND_VOLUME_MAX, true, random);
     }
 
 
-    public static Term apply(Term x, @Nullable Anon anon, int volMax, Random random) {
+    public static Term apply(Term x, @Nullable Anon anon, int volMax, boolean preEval, Random random) {
         if (anon == null && !x.hasAny(INT))
             return null;
 
-        int cdt = DTERNAL; //eternal ? DTERNAL : 0;
+
 
         //pre-evaluate using the arith operators; ignore other operators (unless they are already present, ex: member)
         //Term xx = Evaluation.solveFirst(x, ArithFunctors);
-        Set<Term> xx = Evaluation.eval(x, true, false, ArithFunctors);
-        int xxs = xx.size();
+        if (preEval) {
+            Set<Term> xx = Evaluation.eval(x, true, false, ArithFunctors);
+            if (!xx.isEmpty()) {
+                xx.removeIf(z -> !z.hasAny(INT));
 
-        if (xxs == 1) {
-            Term xxx = xx.iterator().next();
-            if (!xxx.hasAny(INT))
-                return null;
-            else
-                x = xxx;
-        } else if (xxs > 1) {
-            Term xxx = CONJ.the(cdt, xx);
-            if (!xxx.hasAny(INT))
-                return null;
-            else
-                x = xxx;
+                int xxs = xx.size();
+                if (xxs == 1) {
+                    Term xxx = xx.iterator().next();
+                    if (xxx.hasAny(INT))
+                        x = xxx;
+                } else if (xxs > 1) {
+                    if (Util.sum(Termlike::volume, xx) < volMax - 1) {
+                        Term xxx = CONJ.the(xx);
+                        if (xxx.hasAny(INT))
+                            x = xxx;
+                    }
+                }
+            }
         }
 
-        IntHashSet ints = new IntHashSet(4);
+        IntHashSet ints = new IntHashSet(0);
         x.recurseTerms(t -> t.hasAny(Op.INT), t -> {
             if (anon != null && t instanceof Anom) {
                 t = anon.get(t);
@@ -145,9 +161,10 @@ public class Arithmeticize {
         if (ui < minInts)
             return null;
 
-        Term y = mods(ints)[
-                Roulette.selectRoulette(mods(ints).length, c -> mods(ints)[c].score, random)
-                ].apply(x, cdt, anon);
+        ArithmeticOp[] mm = mods(ints);
+        Term y = mm[
+                    Roulette.selectRoulette(mm.length, c -> mm[c].score, random)
+                ].apply(x, anon);
 
         if (y == null || y.volume() > volMax) return null;
 
@@ -186,15 +203,11 @@ public class Arithmeticize {
         }
     }
 
-    private static final Function<IntArrayListCached, ArithmeticOp[]> cached;
-
-    static {
-        cached = Memoizers.the.memoize(Arithmeticize.class.getSimpleName() + "_mods", 8 * 1092, Arithmeticize::_mods);
-    }
 
     private static ArithmeticOp[] mods(IntHashSet ii) {
         return cached.apply(new IntArrayListCached(ii.toSortedArray()));
     }
+
 
     private static ArithmeticOp[] _mods(IntArrayListCached iii) {
 
@@ -272,7 +285,7 @@ public class Arithmeticize {
             this.score = score;
         }
 
-        abstract Term apply(Term x, int cdt, @Nullable Anon anon);
+        abstract Term apply(Term x, @Nullable Anon anon);
     }
 
     static class BaseEqualExpressionArithmeticOp extends ArithmeticOp {
@@ -286,7 +299,7 @@ public class Arithmeticize {
         }
 
         @Override
-        public Term apply(Term x, int cdt, @Nullable Anon anon) {
+        public Term apply(Term x, @Nullable Anon anon) {
 
             Term var = x.hasAny(A.op()) ? A : $.v(A.op(), (byte) 1); //safe to use normalized var?
 
@@ -311,7 +324,7 @@ public class Arithmeticize {
                     //SIM.the(baseTerm, V);
                     Equal.the(baseTerm, var);
 
-            Term y = CONJ.the(equality, cdt, yy);
+            Term y = CONJ.the(equality, yy);
 
             return y.op() != CONJ ? null : y;
         }
@@ -328,14 +341,14 @@ public class Arithmeticize {
         }
 
         @Override
-        Term apply(Term x, int cdt, @Nullable Anon anon) {
+        Term apply(Term x, @Nullable Anon anon) {
             //TODO anon
             Term cmp = Equal.cmp(A, B, -1);
             if (cmp == Null) return null;
 
             Term xx = x.transform(new MapSubst.MapSubstN(Map.of(Int.the(a), A, Int.the(b), B), INT.bit));
 
-            return ((xx == Null) || (xx == False)) ? null : CONJ.the(cdt, xx, cmp);
+            return ((xx == Null) || (xx == False)) ? null : CONJ.the(xx, cmp);
         }
     }
 

@@ -16,7 +16,8 @@ import java.util.TreeSet;
 import static jcog.pri.bag.BagTest.*;
 import static jcog.pri.op.PriMerge.max;
 import static jcog.pri.op.PriMerge.plus;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * TODO test packing efficiency (lack of sparsity)

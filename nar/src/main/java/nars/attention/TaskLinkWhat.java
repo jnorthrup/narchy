@@ -16,6 +16,7 @@ import java.util.Iterator;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 /**
@@ -102,6 +103,11 @@ public class TaskLinkWhat extends What {
     @Override
     public final void sample(Random rng, Function<? super TaskLink, SampleReaction> each) {
         links.sample(rng, each);
+    }
+
+    @Override
+    public void sampleUnique(Random rng, Predicate<? super TaskLink> each) {
+        links.sampleUnique(rng, each);
     }
 
     @Override

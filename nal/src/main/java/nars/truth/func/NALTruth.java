@@ -78,7 +78,7 @@ public enum NALTruth implements TruthFunc {
         }
     },
 
-    Post() {
+    /*@AllowOverlap*/ Post/*Recursive*/() {
         @Override
         public Truth apply(final Truth T, final Truth B, float minConf, NAL n) {
             return TruthFunctions2.post(T, B, true, minConf);

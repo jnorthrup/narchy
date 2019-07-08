@@ -1,11 +1,8 @@
 package nars.table.dynamic;
 
 import nars.Op;
-import nars.Task;
 import nars.table.EmptyBeliefTable;
 import nars.term.Term;
-
-import java.util.function.Consumer;
 
 /** does not store tasks but only generates them on query */
 public abstract class DynamicTaskTable extends EmptyBeliefTable {

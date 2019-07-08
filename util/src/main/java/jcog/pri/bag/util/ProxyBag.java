@@ -9,6 +9,7 @@ import java.util.Random;
 import java.util.Spliterator;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 /**
@@ -97,8 +98,13 @@ public class ProxyBag<X,Y> extends Bag<X,Y> {
     }
 
     @Override
-    public void sample(Random rng, Function<? super Y, SampleReaction> each) {
+    public final void sample(Random rng, Function<? super Y, SampleReaction> each) {
         bag.sample(rng, each);
+    }
+
+    @Override
+    public final void sampleUnique(Random rng, Predicate<? super Y> each) {
+        bag.sampleUnique(rng, each);
     }
 
     @Override

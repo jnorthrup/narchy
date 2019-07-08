@@ -153,8 +153,8 @@ public class NARio extends GameX {
         });
 
 
-        initButton();
-        //initBipolar();
+        //initButton();
+        initBipolar();
 
 
         DigitizedScalar vx = senseNumberDifferenceBi($.p("v", "x"), 8, () -> theMario != null ? theMario.x : 0)
@@ -267,8 +267,8 @@ public class NARio extends GameX {
     private void initButton() {
 
         for (GoalActionConcept c : actionPushButtonMutex(
-                $$("L"),
-                $$("R"),
+                $.inh(id,$$("L")),
+                $.inh(id,$$("R")),
                 (boolean n) -> {
                     Scene s = game.scene;
                     boolean was = s!=null && s.key(Mario.KEY_LEFT, n);
@@ -283,7 +283,7 @@ public class NARio extends GameX {
             //c.actionDur(1);
         }
 
-        GoalActionConcept j = actionPushButton($$("jump"),
+        GoalActionConcept j = actionPushButton($.inh(id, $$("jump")),
                 n -> {
 
 //                    Scene s = game.scene;
@@ -325,7 +325,7 @@ public class NARio extends GameX {
 //        actionPushButton($$("down"),
 //                n -> { game.scene.key(Mario.KEY_DOWN, n); return n; } );
 
-        AbstractGoalActionConcept ss = actionPushButton($$("speed"),
+        AbstractGoalActionConcept ss = actionPushButton($.inh(id, $$("speed")),
                 n -> {
                     Scene s = game.scene;
                     if (s != null)

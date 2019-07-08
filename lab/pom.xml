@@ -63,7 +63,7 @@
     <dependency>
       <groupId>org.boofcv</groupId>
       <artifactId>boofcv-swing</artifactId>
-      <version>0.33.1</version>
+      <version>0.34</version>
       <scope>compile</scope>
     </dependency>
     <dependency>

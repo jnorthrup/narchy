@@ -323,29 +323,19 @@ public class Evaluation extends Termerator {
         return eval(x, includeTrues, includeFalses, n::axioms);
     }
 
-    private static final class MyEvaluated extends UnifiedSet<Term> implements Predicate<Term> {
-        protected MyEvaluated() {
-            super(1, 0.99f);
-        }
-
-        @Override
-        public boolean test(Term y) {
-            if (y != Null)
-                add(y);
-            return true;
-        }
-    }
-
     /**
      * gathers results from one truth setAt, ex: +1 (true)
      * TODO add limit
      */
     public static Set<Term> eval(Term x, boolean includeTrues, boolean includeFalses, Function<Atom, Functor> resolver) {
 
+        UnifiedSet ee = new UnifiedSet(0, 0.5f);
 
-        MyEvaluated ee = new MyEvaluated();
-
-        Evaluation.eval(x, includeTrues, includeFalses, resolver, ee);
+        Evaluation.eval(x, includeTrues, includeFalses, resolver, t -> {
+            if (t != Null)
+                ee.add(t);
+            return true;
+        });
 
         if (ee.isEmpty()) {
             //java.util.Set.of($.func(Inperience.wonder, x))

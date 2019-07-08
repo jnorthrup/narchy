@@ -10,6 +10,7 @@ import jcog.pri.bag.impl.BufferedBag;
 import jcog.pri.bag.impl.PriReferenceArrayBag;
 import jcog.pri.op.PriMerge;
 import nars.NAR;
+import nars.Op;
 import nars.Task;
 import nars.attention.What;
 import nars.concept.Concept;
@@ -74,11 +75,6 @@ public abstract class TaskLeak extends How {
         if (n!=null)
             n.start(this);
     }
-
-//    @Override
-//    public boolean singleton() {
-//        return false;
-//    }
 
     /**
      * an adjusted priority of the task for its insertion to the leak bag
@@ -226,11 +222,10 @@ public abstract class TaskLeak extends How {
 
             w.sampleUnique(rng, (Predicate<? super TaskLink>)(c)->{
 
-                Concept cc = nar.concept(c.from());
-                if (cc!=null) {
-                    Term ct = cc.term();
-
-                    if (termFilter.test(cc.term())) { //TODO check for impl filters which assume the target is from a Task, ex: dt!=XTERNAL but would be perfectly normal for a concept's target
+                Term xt = c.from();
+                if (termFilter.test(xt)) { //TODO check for impl filters which assume the target is from a Task, ex: dt!=XTERNAL but would be perfectly normal for a concept's target
+                    Concept cc = nar.conceptualizeDynamic(xt);
+                    if (cc!=null) {
                         Task x = sample(cc);
                         if (x != null)
                             each.accept(x);
@@ -248,14 +243,14 @@ public abstract class TaskLeak extends How {
         }
 
         @Nullable private Task sample(Concept c) {
-//            Term ct = c.term();
-//            boolean hasTemporal = ct.hasAny(Op.Temporal);
+            Term ct = c.term();
+            boolean hasTemporal = ct.hasAny(Op.Temporal);
 
             byte[] p = this.puncs;
             for (int i = 0; i < p.length; i++) {
                 Task x = c.table(p[nextPunc]).match(when, null, (Task t) ->{
                     Term tt = t.term();
-                    if (!termFilter.test(tt)) //test temporal containing target as this was not done when testing concept
+                    if (hasTemporal && !ct.equals(tt) && !termFilter.test(tt)) //test again for temporal containing target as this was not done when testing concept
                         return false;
 
                     return taskFilter.test(t);

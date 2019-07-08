@@ -207,22 +207,22 @@ public class WebcamStereoTest {
         bundleScale.undoScale(structure,observations);
 
         System.out.println("\nCamera");
-        for (int i = 0; i < structure.cameras.length; i++) {
-            System.out.println(structure.cameras[i].getModel());
+        for (int i = 0; i < structure.cameras.size(); i++) {
+            System.out.println(structure.cameras.get(i).getModel());
         }
         System.out.println("\n\nworldToView");
-        for (int i = 0; i < structure.views.length; i++) {
-            System.out.println(structure.views[i].worldToView);
+        for (int i = 0; i < structure.views.size(); i++) {
+            System.out.println(structure.views.get(i).worldToView);
         }
 
         // display the inlier matches found using the robust estimator
         System.out.println("\n\nComputing Stereo Disparity");
-        BundlePinholeSimplified cp = structure.getCameras()[0].getModel();
+        BundlePinholeSimplified cp = structure.getCameras().get(0).getModel();
         CameraPinholeBrown intrinsic = new CameraPinholeBrown();
         intrinsic.fsetK(cp.f,cp.f,0,cx,cy,width,height);
         intrinsic.fsetRadial(cp.k1,cp.k2);
 
-        Se3_F64 leftToRight = structure.views[1].worldToView;
+        Se3_F64 leftToRight = structure.views.get(1).worldToView;
 
         computeStereoCloud(image01,image02,color01,color02,intrinsic,intrinsic,leftToRight,0,250);
     }

@@ -1,5 +1,6 @@
 package nars.attention;
 
+import jcog.Paper;
 import jcog.pri.Prioritizable;
 import jcog.pri.bag.Sampler;
 import jcog.util.ConsumerX;
@@ -60,6 +61,7 @@ import java.util.stream.Stream;
  *  through a minimal API.  thus Attention's are referred to by a Term so that operations upon them may
  *  be conceptualized and self-executed.
   */
+@Paper
 abstract public class What extends NARPart implements Prioritizable, Sampler<TaskLink>, Iterable<TaskLink>, Externalizable, ConsumerX<Task>, Timed {
 
     public final PriNode pri;

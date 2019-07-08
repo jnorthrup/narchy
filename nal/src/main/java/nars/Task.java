@@ -15,8 +15,6 @@ import nars.task.EternalTask;
 import nars.task.NALTask;
 import nars.task.UnevaluatedTask;
 import nars.task.proxy.SpecialNegatedTask;
-import nars.task.proxy.SpecialPuncTermAndTruthTask;
-import nars.task.proxy.SpecialTermTask;
 import nars.task.proxy.SpecialTruthAndOccurrenceTask;
 import nars.task.util.TaskException;
 import nars.task.util.TaskRegion;

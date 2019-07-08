@@ -468,10 +468,10 @@ public class SLAMTest extends JPanel {
             int n = structureEstimator.ransac.getMatchSet().size();
             double score = structureEstimator.bundleAdjustment.getFitScore();
             int numObs = structureEstimator.observations.getObservationCount();
-            int numPoints = structureEstimator.structure.points.length;
+            int numPoints = structureEstimator.structure.points.size();
             controls.addText(String.format("Tri Feats %d\n", n));
             for (int i = 0; i < 3; i++) {
-                BundlePinholeSimplified c = structureEstimator.structure.cameras[i].getModel();
+                BundlePinholeSimplified c = structureEstimator.structure.cameras.get(i).getModel();
                 controls.addText(String.format("cam[%d] f=%.1f\n", i, c.f));
                 controls.addText(String.format("   k1=%.2f k2=%.2f\n", c.k1, c.k2));
             }
@@ -492,18 +492,18 @@ public class SLAMTest extends JPanel {
         System.out.println("Computing rectification: views " + view0 + " " + view1);
         SceneStructureMetric structure = structureEstimator.getStructure();
 
-        BundlePinholeSimplified cp = structure.getCameras()[view0].getModel();
+        BundlePinholeSimplified cp = structure.getCameras().get(view0).getModel();
         intrinsic01 = new CameraPinholeBrown();
         intrinsic01.fsetK(cp.f, cp.f, 0, cx, cy, dimensions[view0].width, dimensions[view0].height);
         intrinsic01.fsetRadial(cp.k1, cp.k2);
 
-        cp = structure.getCameras()[view1].getModel();
+        cp = structure.getCameras().get(view1).getModel();
         intrinsic02 = new CameraPinholeBrown();
         intrinsic02.fsetK(cp.f, cp.f, 0, cx, cy, dimensions[view1].width, dimensions[view1].height);
         intrinsic02.fsetRadial(cp.k1, cp.k2);
 
-        Se3_F64 w_to_0 = structure.views[view0].worldToView;
-        Se3_F64 w_to_1 = structure.views[view1].worldToView;
+        Se3_F64 w_to_0 = structure.views.get(view0).worldToView;
+        Se3_F64 w_to_1 = structure.views.get(view1).worldToView;
 
         leftToRight = w_to_0.invert(null).concat(w_to_1, null);
 
@@ -561,9 +561,9 @@ public class SLAMTest extends JPanel {
      * z-axis
      */
     private int[] selectBestPair(SceneStructureMetric structure) {
-        SceneStructureMetric.View w0 = structure.views[0];
-        SceneStructureMetric.View w1 = structure.views.length > 1 ? structure.views[1] : null;
-        SceneStructureMetric.View w2 = structure.views.length > 2 ? structure.views[2] : null;
+        SceneStructureMetric.View w0 = structure.views.get(0);
+        SceneStructureMetric.View w1 = structure.views.size() > 1 ? structure.views.get(1) : null;
+        SceneStructureMetric.View w2 = structure.views.size() > 2 ? structure.views.get(2) : null;
         if (w0 == null)
             w0 = ThreadLocalRandom.current().nextBoolean() ? w1 : w2;
         if (w1 == null)

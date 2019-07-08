@@ -140,10 +140,10 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
      * TODO make this NAR-specific
      */
     public static final int CAUSE_MAX = 32;
-    public static final IntRange causeCapacity = new IntRange(CAUSE_MAX/2, 1, CAUSE_MAX);
+    public static final IntRange causeCapacity = new IntRange(8, 1, CAUSE_MAX);
 
 
-    public static final int CURIOSITY_CAPACITY = 2; //NAL.STAMP_CAPACITY / 2;
+    public static final int CURIOSITY_CAPACITY = 1; //NAL.STAMP_CAPACITY / 2;
     public static final long CURIOSITY_TASK_RANGE_DURS = 3;
     public static final boolean DEBUG_TASK_LOG= configIs("DEBUG_TASK_LOG");
 
@@ -232,7 +232,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
          * <p>
          * TODO make this a per-sensor implementation decision
          */
-        public static final float SIGNAL_STRETCH_LIMIT_DURS = 16;
+        public static final float SIGNAL_STRETCH_LIMIT_DURS = 32;
         /**
          * maximum time between signal updates to stretch an equivalently-truthed data point across.
          * stretches perception across some amount of lag
@@ -251,8 +251,8 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
 
         public static final int SERIES_MATCH_MIN = 2;
 
-        public static final float SENSOR_MIN_SURPRISE_DEFAULT = 0.1f;
-        public static final float SENSOR_MIN_SURPRISE_DEFAULT_MOTOR = 0.5f;
+        public static final float SENSOR_SURPRISE_MIN_DEFAULT = 0.1f;
+        public static final float SENSOR_SURPRISE_MIN_DEFAULT_MOTOR = 0.5f;
     }
 
     /** TODO make these dynamic parameters of a NALTruth implementation */

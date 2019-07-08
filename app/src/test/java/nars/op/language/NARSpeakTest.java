@@ -5,6 +5,7 @@ import nars.$;
 import nars.NAR;
 import nars.NARS;
 import nars.Narsese;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -35,7 +36,7 @@ public class NARSpeakTest {
 
     }
 
-    @Test
+    @Test @Disabled
     public void testHearGoal() throws Narsese.NarseseException {
         NAR n = NARS.threadSafe();
         n.termVolMax.set(16);

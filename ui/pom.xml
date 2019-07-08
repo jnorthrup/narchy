@@ -4,7 +4,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <properties>
-    <boofcv>0.33.1</boofcv>
+    <boofcv>0.34</boofcv>
     <jogamp>2.3.2</jogamp>
   </properties>
 

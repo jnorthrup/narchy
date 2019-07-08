@@ -10,6 +10,7 @@ import java.io.ObjectOutput;
 import java.util.Iterator;
 import java.util.Random;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 /** proxies to another What */
@@ -62,4 +63,8 @@ public class ProxyWhat extends What {
         what.sample(rng, each);
     }
 
+    @Override
+    public void sampleUnique(Random rng, Predicate<? super TaskLink> predicate) {
+        what.sampleUnique(rng, predicate);
+    }
 }
