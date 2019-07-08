@@ -23,8 +23,12 @@ class ImplicationNetworkTest {
     private static final Term a = $.the("a");
     private static final Term b = $.the("b");
     private static final Term c = $.the("c");
-    NAR n = NARS.tmp();
+
+    int cycles = 400;
+
+    NAR n = NARS.tmp(6);
     {
+        n.termVolMax.set(5);
         new BeliefContradictionDetector(n);
     }
 
@@ -92,7 +96,7 @@ class ImplicationNetworkTest {
 
         BeliefTable bGoals = n.tableDynamic(b, false);
         Truth bGoal = bGoals.truth(ETERNAL, n);
-        n.concept(b).print();
+        //n.concept(b).print();
         assertNotNull(bGoal);
         assertEquals(1, bGoals.taskCount());
 
@@ -101,12 +105,12 @@ class ImplicationNetworkTest {
 
         BeliefTable cGoals = n.concept(c).goals();
         Truth cGoal = cGoals.truth(ETERNAL, n);
-        n.concept(c).print();
+        //n.concept(c).print();
         
 
-        System.out.println("a: " + aGoal);
-        System.out.println("b: " + bGoal);
-        System.out.println("c: " + cGoal);
+//        System.out.println("a: " + aGoal);
+//        System.out.println("b: " + bGoal);
+//        System.out.println("c: " + cGoal);
 
         assertEquals(aGoal.freq(), bGoal.freq(), n.freqResolution.floatValue());
         assertEquals(bGoal.freq(), cGoal.freq(), n.freqResolution.floatValue());
@@ -167,7 +171,7 @@ class ImplicationNetworkTest {
         assertEquals("%1.0;.81%" , bBelief.toString());
 
     }
-    int cycles = 2000;
+
     @Test
     void testEternal_A_NegBelief_NegToBC() {
 

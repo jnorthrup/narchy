@@ -50,6 +50,7 @@ class BooleanTest {
 
         NAR d = NARS.tmp(6);
         d.freqResolution.set(0.05f);
+        d.confResolution.set(0.05f);
         d.termVolMax.set(7);
 
 
@@ -72,9 +73,9 @@ class BooleanTest {
         d.believe(CONJ.the(I, J));
 
 
-        d.run(1024);
+        d.run(256);
 
-        System.out.println(i + " " + j + ' ');
+        //System.out.println(i + " " + j + ' ');
         for (int k = 0, outcomesLength = outcomes.length; k < outcomesLength; k++) {
             String s = outcomes[k];
             Concept dc = d.conceptualize(s);
@@ -82,7 +83,7 @@ class BooleanTest {
             @Nullable Task t = d.belief(dc, d.time());
             Truth b = t != null ? t.truth() : null;
 
-            System.out.println("\t" + dc.term() + '\t' + s + '\t' + b + '\t' + outcomes[k]);
+            //System.out.println("\t" + dc.term() + '\t' + s + '\t' + b + '\t' + outcomes[k]);
 
 
             int ex = -1, ey = -1;
@@ -136,7 +137,7 @@ class BooleanTest {
 //        n.run(200);
 //    }
 
-    @Test
+    @Disabled @Test
     void testConditionalImplication() {
         boolean[] booleans = {true, false};
         Term x = $.the("x");
@@ -174,7 +175,7 @@ class BooleanTest {
     }
 
 
-    @Test
+    @Disabled @Test
     void testXOREternal() throws Narsese.NarseseException {
         //classic XOR example
 
@@ -282,7 +283,7 @@ class BooleanTest {
             }
         }
         for (int i = 0; i < s; i++) {
-            System.out.println(t[i] + " " + b[i] + ' ' + r[i]);
+//            System.out.println(t[i] + " " + b[i] + ' ' + r[i]);
             int ii = i;
             n.concept(t[i])
                 .tasks()

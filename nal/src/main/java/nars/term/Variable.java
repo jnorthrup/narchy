@@ -6,6 +6,7 @@ import nars.Op;
 import nars.term.atom.Atomic;
 import nars.term.var.CommonVariable;
 import nars.term.var.ellipsis.Ellipsis;
+import nars.term.var.ellipsis.Ellipsislike;
 import nars.unify.Unify;
 
 import static nars.Op.FRAG;
@@ -20,8 +21,8 @@ import static nars.term.atom.Bool.Null;
  **/
 public interface Variable extends Atomic {
 
-    private static boolean neggable(Term x) {
-        return (x.op() != FRAG) || (x.subs() == 1); //allow 1-element fragments, since they can be neg safely
+    private static boolean neggable(Term t) {
+        return !(t instanceof Ellipsislike) && (t.op() != FRAG);
     }
 
 //    private static boolean unifyConst(Unify u, Term x, Term y) {
@@ -54,7 +55,7 @@ public interface Variable extends Atomic {
             }
         }
 
-        if (y instanceof Variable && u.canPut(y.op(), x)) {
+        if (u.canPut(y, x)) {
             if (u.putXY((Variable) y, x))
                 return true;
         }
@@ -120,7 +121,7 @@ public interface Variable extends Atomic {
             boolean done = false;
             if (x instanceof Neg && neggable(y)) {
                 Term xu = x.unneg();
-                if (xu instanceof Variable && u.canPut(xu.op(), y)) {
+                if (u.canPut(xu, y)) {
                     x = xu;
                     y = y.neg();
                     done = true;
@@ -128,7 +129,7 @@ public interface Variable extends Atomic {
             }
             if (!done && y instanceof Neg && neggable(x)) {
                 Term yu = y.unneg();
-                if (yu instanceof Variable && u.canPut(yu.op(), x)) {
+                if (u.canPut(yu, x)) {
                     y = yu;
                     x = x.neg();
                 }

@@ -441,7 +441,9 @@ public abstract class Unify extends Versioning<Term> {
         return 0;
     }
 
-
+    public final boolean canPut(Term target, Term value) {
+        return target instanceof Variable && canPut(target.op(), value);
+    }
 
     /** can x be assigned to y (y <= x) */
     public final boolean canPut(Op target, Term value) {
@@ -496,8 +498,8 @@ public abstract class Unify extends Versioning<Term> {
     public final boolean putXY(final Variable x, Term y) {
 
 
-        //Term Y = y;
-        Term Y = resolveTerm(y, false);
+        Term Y = y;
+        //Term Y = resolveTerm(y, false);
         //Term Y = resolveTerm(y, true);
         if (Y == Null)
             return false;

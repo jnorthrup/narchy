@@ -5,6 +5,7 @@ import nars.NAR;
 import nars.NARS;
 import nars.test.NALTest;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import static nars.Op.BELIEF;
@@ -15,7 +16,7 @@ import static nars.Op.GOAL;
  */
 abstract public class DecomposeTest extends NALTest {
 
-    public static final int cycles = 1500;
+    public static final int cycles = 100;
 
 
     @Override
@@ -34,6 +35,18 @@ abstract public class DecomposeTest extends NALTest {
     static class ConjBelief extends DecomposeTest {
 
         @Test
+        void testConjBeliefNeg() {
+            test
+                    .termVolMax(5)
+                    .input("(&&,--a,b).")
+                    .input("--a.")
+                    .mustBelieve(cycles, "b", 1f, 0.81f);
+        }
+
+
+
+        @Disabled
+        @Test
         void testConjBeliefWeak() {
             test
                     .termVolMax(3)
@@ -48,6 +61,8 @@ abstract public class DecomposeTest extends NALTest {
                         return true;
                     });
         }
+
+        @Disabled
         @Test
         void testConjBeliefWeakNeg() {
             test
@@ -62,14 +77,6 @@ abstract public class DecomposeTest extends NALTest {
                         }
                         return true;
                     });
-        }
-        @Test
-        void testConjBeliefNeg() {
-            test
-                    .termVolMax(5)
-                    .input("(&&,--a,b).")
-                    .input("--a.")
-                    .mustBelieve(cycles, "b", 1f, 0.81f);
         }
     }
 
@@ -215,7 +222,7 @@ abstract public class DecomposeTest extends NALTest {
 
 
 
-    public static class DoublePremiseDecompose extends NALTest {
+    public static class DoublePremiseDecompose extends DecomposeTest {
 
         @Test
         void decompose_Conj_BeliefPosPos() {
@@ -231,7 +238,9 @@ abstract public class DecomposeTest extends NALTest {
                     .termVolMax(4)
                     .input("(a && --b). %0.9;0.9%")
                     .input("b. %0.1;0.9%")
-                    .mustBelieve(cycles, "a", 0.81f, 0.66f);
+                    .mustBelieve(cycles, "a", 0.81f, 0.66f)
+                    .mustNotBelieve(cycles, "a", 0.91f, 0.07f, (s,e)->true);
+
         }
         @Test
         void decompose_Conj_BeliefNegPos() {
@@ -255,20 +264,21 @@ abstract public class DecomposeTest extends NALTest {
         @Test
         void decompose_Conj_Goal_pos_decompose_neg() {
             //adapted form nal3 test
-            test.termVolMax(6);
+
+            test.termVolMax(4);
             test.input("(a && --b)! %0.9;0.9%");
             test.input("b. %0.1;0.9%");
-            test.mustGoal(cycles, "a", 0.81f, 0.66f);
+            test.mustGoal(cycles, "a", 0.9f, 0.73f);
         }
 
 
         @Test
         void decompose_Conj_Goal_neg_decompose_pos() {
             //adapted form nal3 test
-            test.termVolMax(6);
+            test.termVolMax(3);
             test.input("(a && b)! %0.1;0.9%");
             test.input("b. %0.9;0.9%");
-            test.mustGoal(cycles, "a", 0.19f, 0.66f);
+            test.mustGoal(cycles, "a", 0.1f, 0.73f);
         }
 
         @Test

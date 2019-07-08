@@ -237,11 +237,11 @@ class QuestionTest {
         assertEq("f(#1,#2)", $$$("f(#2,#1)").normalize());
 
         new TestNAR(NARS.tmp(6))
-                .confMin(0.75f)
+                .confMin(0.6f)
                 .termVolMax(11)
                 .input("f(#x,#y).")
                 .input("(f($x,#y) ==> g($x,#y)).")
-                .mustBelieve(256, "g(#1,#2)", 1f, 0.81f)
+                .mustBelieve(512, "g(#1,#2)", 1f, 0.81f)
                 .test();
     }
 

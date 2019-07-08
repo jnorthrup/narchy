@@ -64,6 +64,14 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends VectorSensor {
         ), n);
         this.width = src.width();
         this.height = src.height();
+
+
+        //HACK
+        this.tl = this.width > 2 && this.height > 2 ?
+                new ConjunctionSuperPixelTaskLink(2, 2) :
+                new PixelSelectorTaskLink();
+
+
         this.concepts = new Bitmap2DConcepts<>(src, pixelTerm, res, attn, defaultFreq, n);
         this.src = concepts.src;
 
@@ -184,9 +192,7 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends VectorSensor {
         return this;
     }
 
-    final AbstractTaskLink tl =
-            //new PixelSelectorTaskLink();
-            new ConjunctionSuperPixelTaskLink(2, 2);
+    final AbstractTaskLink tl;;
 
     @Override
     public void update(Game g) {
