@@ -41,7 +41,7 @@ abstract public class MultiExec extends Exec {
     //1.5;
     volatile long threadWorkTimePerCycle, threadIdleTimePerCycle;
     volatile long cycleIdealNS;
-    volatile long lastCycle = System.nanoTime();
+    volatile long lastDur = System.nanoTime();
 
 
     MultiExec(int concurrencyMax  /* TODO adjustable dynamically */) {
@@ -118,12 +118,12 @@ abstract public class MultiExec extends Exec {
 
     protected void update() {
         long now = System.nanoTime();
-        long last = this.lastCycle;
-        this.lastCycle = now;
+        long last = this.lastDur;
+        this.lastDur = now;
         updateTiming(now - last);
     }
 
-    private void updateTiming(long _cycleDeltaNS) {
+    private void updateTiming(long durDeltaNS) {
 
         cycleIdealNS = nar.loop.periodNS();
         if (cycleIdealNS < 0) {
@@ -135,7 +135,7 @@ abstract public class MultiExec extends Exec {
 
             //TODO better idle calculation in each thread / worker
             long workTargetNS = (long) (Util.lerp(throttle, 0, cycleIdealNS));
-            long cycleActualNS = (long) (1_000_000.0 * CYCLE_DELTA_MS.valueOf((float) (_cycleDeltaNS / 1.0E6)));
+            long cycleActualNS = (long) (1_000_000.0 * CYCLE_DELTA_MS.valueOf((float) (durDeltaNS / 1.0E6)/(UPDATE_DURS * nar.dur())));
             long lagMeanNS = cycleActualNS - cycleIdealNS;
 
             long threadWorkTimePerCycle = workTargetNS;
