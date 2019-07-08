@@ -58,8 +58,10 @@ C, X, eventOfPN(C,X)      |-   conjWithoutPN(C,X), (Punctuation:AskAsk)
 
     //sub-sequence following belief or goal
     //(&/,B,A_1..n), B, task("!") |- (&/,A_1..n), (Truth:Deduction, Desire:Strong, SequenceIntervals:FromPremises)
-    C, X, --isVar(X)   |-     conjAfter(C,  X),      (Belief:DecomposePP, Goal:DesirePP, Time:BeliefEvent)
-    C, X, --isVar(X)   |-     conjAfter(C,--X),      (Belief:DecomposePN, Goal:DesirePN, Time:BeliefEvent)
+    C, X, --isVar(X)                    |-     conjAfter(C,  X),      (Belief:DecomposePP, Time:BeliefEvent)
+      C, X, --isVar(X)                  |-     conjAfter(C,  X),      (Goal:DesirePP, Time:TaskEvent)
+    C, X, --isVar(X)                    |-     conjAfter(C,--X),      (Belief:DecomposePN, Time:BeliefEvent)
+      C, X, --isVar(X)                  |-     conjAfter(C,--X),      (Goal:DesirePN, Time:TaskEvent)
 
     D, X, --isVar(X)   |-   --conjAfter(D,   X),     (Belief:DecomposeNP, Goal:DesireNP, Time:BeliefEvent)
     D, X, --isVar(X)   |-   --conjAfter(D, --X),     (Belief:DecomposeNN, Goal:DesireNN, Time:BeliefEvent)

@@ -1,5 +1,6 @@
 package nars.op;
 
+import jcog.bloom.StableBloomFilter;
 import jcog.event.Off;
 import jcog.pri.PLink;
 import jcog.pri.PriMap;
@@ -12,11 +13,13 @@ import jcog.pri.op.PriMerge;
 import nars.NAR;
 import nars.Op;
 import nars.Task;
+import nars.attention.TaskLinkWhat;
 import nars.attention.What;
 import nars.concept.Concept;
 import nars.control.How;
 import nars.link.TaskLink;
 import nars.term.Term;
+import nars.term.Terms;
 import nars.time.When;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.jetbrains.annotations.Nullable;
@@ -220,6 +223,8 @@ public abstract class TaskLeak extends How {
 
             when = focus(w.dur());
 
+            StableBloomFilter<Task> filter = Terms.newTaskBloomFilter(rng, ((TaskLinkWhat) w).links.links.size());
+
             w.sampleUnique(rng, (Predicate<? super TaskLink>)(c)->{
 
                 Term xt = c.from();
@@ -227,7 +232,7 @@ public abstract class TaskLeak extends How {
                     Concept cc = nar.conceptualizeDynamic(xt);
                     if (cc!=null) {
                         Task x = sample(cc);
-                        if (x != null)
+                        if (x != null && filter.addIfMissing(x))
                             each.accept(x);
                     }
                 }
@@ -242,7 +247,8 @@ public abstract class TaskLeak extends How {
             return new When(Math.round(now - dur/2), Math.round(now + dur/2), dur, nar);
         }
 
-        @Nullable private Task sample(Concept c) {
+        /** TODO use TaskLink as the Task resolver not this custom impl */
+        @Deprecated @Nullable private Task sample(Concept c) {
             Term ct = c.term();
             boolean hasTemporal = ct.hasAny(Op.Temporal);
 

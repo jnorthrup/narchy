@@ -5,6 +5,7 @@ import jcog.bloom.hash.BytesHashProvider;
 import jcog.data.bit.MetalBitSet;
 import jcog.util.ArrayUtil;
 import nars.Op;
+import nars.Task;
 import nars.io.IO;
 import nars.subterm.Subterms;
 import nars.subterm.TermList;
@@ -324,25 +325,29 @@ public enum Terms {
 //    }
 
 
-    public static Term[] dropRandom(Random random, Subterms t) {
-        int size = t.subs();
-        assert (size > 1);
-        Term[] y = new Term[size - 1];
-        int except = random.nextInt(size);
-        for (int i = 0, j = 0; i < size; i++) {
-            if (i != except) {
-                y[j++] = t.sub(i);
-            }
-        }
-        return y;
-    }
+//    public static Term[] dropRandom(Random random, Subterms t) {
+//        int size = t.subs();
+//        assert (size > 1);
+//        Term[] y = new Term[size - 1];
+//        int except = random.nextInt(size);
+//        for (int i = 0, j = 0; i < size; i++) {
+//            if (i != except) {
+//                y[j++] = t.sub(i);
+//            }
+//        }
+//        return y;
+//    }
 
     public static StableBloomFilter<Term> newTermBloomFilter(Random rng, int cells) {
         return new StableBloomFilter<>(
                 cells, 2, 1f / cells, rng,
                 new BytesHashProvider<>(IO::termToBytes));
     }
-
+    public static StableBloomFilter<Task> newTaskBloomFilter(Random rng, int cells) {
+        return new StableBloomFilter<>(
+                cells, 2, 1f / cells, rng,
+                new BytesHashProvider<>(IO::taskToBytes));
+    }
 
     /**
      * non-symmetric use only

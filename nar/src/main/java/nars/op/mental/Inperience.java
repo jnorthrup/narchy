@@ -1,10 +1,12 @@
 package nars.op.mental;
 
+import jcog.bloom.StableBloomFilter;
 import jcog.math.FloatRange;
 import nars.$;
 import nars.NAR;
 import nars.Op;
 import nars.Task;
+import nars.attention.TaskLinkWhat;
 import nars.attention.What;
 import nars.control.How;
 import nars.control.channel.CauseChannel;
@@ -13,6 +15,7 @@ import nars.link.TaskLink;
 import nars.table.dynamic.SeriesBeliefTable;
 import nars.task.proxy.SpecialPuncTermAndTruthTask;
 import nars.term.Term;
+import nars.term.Terms;
 import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
 import nars.term.util.Image;
@@ -106,10 +109,12 @@ public class Inperience extends How {
 
         Predicate<Task> taskFilter = t -> accept(volMaxPre, t);
 
+        StableBloomFilter<Task> filter = Terms.newTaskBloomFilter(rng, ((TaskLinkWhat) w).links.links.size());
+
         w.sampleUnique(rng, (TaskLink tl) -> {
 
             Task t = tl.get(when, taskFilter);
-            if (t != null) {
+            if (t != null && filter.addIfMissing(t)) {
 
                 Task u = null;
                 if (t.isBeliefOrGoal()) {

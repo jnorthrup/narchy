@@ -43,7 +43,7 @@ abstract public class Truthlet implements Truth {
 
 
     @Deprecated @Override public final float conf() {
-        return w2cSafe(evi());
+        return (float) w2cSafe(evi());
     }
 
     @Deprecated @Override public final double evi() {

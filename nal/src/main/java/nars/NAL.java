@@ -177,7 +177,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
     public static final int HOWS_CAPACITY = 128;
 
     /** divisor for dividing the table's range of held beliefs in determining a 'table duration' for comparison of relative task strength */
-    public static final long TEMPORAL_BELIEF_TABLE_DUR_DIVISOR =
+    public static final double TEMPORAL_BELIEF_TABLE_DUR_DIVISOR =
             2;
 
     /**
@@ -295,12 +295,12 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
             //0.5f
             //0.618f
             //0.75f
-            1f
-            //2f
+            //1f
+            2f
             , 0, 4);
 
     /** max tolerance time (in durations) for unification of temporal terms */
-    public final FloatRange unificationTimeToleranceDurs = new FloatRange(1f, 0, 2 );
+    public final FloatRange unificationTimeToleranceDurs = new FloatRange(0.5f, 0, 2 );
 
     @Deprecated
     public final FloatRange questionForgetRate = new FloatRange(0.5f, 0, 1);

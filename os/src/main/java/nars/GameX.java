@@ -591,9 +591,9 @@ abstract public class GameX extends Game {
      * TODO extract to class
      */
     private static void addGovernor(NAR n) {
-        int gHist = 8;
+        int gHist = 16;
         float momentum = 0.9f;
-        float explorationRate = 0.1f;
+        float explorationRate = 0.05f;
         n.onDur(new Consumer<>() {
 
             final Consumer<FasterList<Why>> reval = new Consumer<FasterList<Why>>() {
@@ -648,7 +648,8 @@ abstract public class GameX extends Game {
                     if (v != v) v = 0;
 
                     float vSmooth = g.valueOf(v);
-                    float vE = Util.lerp(vSmooth, explorationRate/numHow, 1);
+                    float ee = explorationRate;
+                    float vE = Util.lerp(vSmooth, ee/2, 1-ee/2);
                     h.pri(vE);
                 });
 //                nn.how.forEach(h -> System.out.println(n4(h.pri()) + " " + n4(h.valueRateNormalized) + "\t" + h));

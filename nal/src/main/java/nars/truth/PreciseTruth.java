@@ -89,7 +89,7 @@ public final class PreciseTruth extends DiscreteTruth {
 
     @Override
     public final float conf() {
-        return w2cSafe(e);
+        return (float) w2cSafe(e);
     }
 
     /** create a DiscreteTruth instance, shedding the freq,evi floats stored here */

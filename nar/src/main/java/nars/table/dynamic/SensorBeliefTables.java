@@ -280,17 +280,17 @@ public class SensorBeliefTables extends BeliefTables {
      */
     private final class MyRTreeBeliefTable extends RTreeBeliefTable {
 
-        @Override protected FloatRank<Task> taskStrength(boolean beliefOrGoal, long now, int narDur, int tableDur) {
+        @Override protected FloatRank<Task> taskStrength(boolean beliefOrGoal, long now, float narDur, int tableDur) {
             FloatRank<Task> base = super.taskStrength(beliefOrGoal, now, narDur, tableDur);
 
-            int margin = narDur;
 
             long _ss = series.start();
             if (_ss != TIMELESS) {
                 long _se = series.end();
                 if (_se!=TIMELESS) {
-                    long ss = _ss + margin;
-                    long se = _se - margin;
+                    float margin = narDur;
+                    long ss = Math.round(_ss + margin);
+                    long se = Math.round(_se - margin);
                     return (t, min) -> {
                         float v = base.rank(t, min);
                         if (v == v && v > min) {

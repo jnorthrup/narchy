@@ -408,7 +408,7 @@ public final class TruthFunctions {
             throw new Truth.TruthException("non-finite evidence", w);
         return w2cSafe(w);
     }
-    public static float w2c(double w) {
+    public static double w2c(double w) {
         if (w < NAL.truth.EVI_MIN)
             throw new Truth.TruthException("insufficient evidence", w);
         if (!Double.isFinite(w))
@@ -420,8 +420,8 @@ public final class TruthFunctions {
         return w2cSafe(w, NAL.HORIZON);
     }
 
-    public static float w2cSafe(double w) {
-        return (float) w2cSafeDouble(w);
+    public static double w2cSafe(double w) {
+        return w2cSafeDouble(w);
     }
     /** high precision */
     public static double w2cSafeDouble(double w) {

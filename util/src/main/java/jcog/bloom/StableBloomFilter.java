@@ -6,7 +6,8 @@ import java.util.Random;
 
 /**
  * Stable Bloom Filters continuously "reset" random fields in the filter.
- * Deng and Rafiei have shown that by doing this, the FPR can be stabilised [1]. The disadvantage of this approach is that it introduces false negatives.
+ * Deng and Rafiei have shown that by doing this, the FPR can be stabilised [1].
+ * The disadvantage of this approach is that it introduces false negatives.
  * <p>
  * Created by jeff on 14/05/16.
  */

@@ -303,6 +303,7 @@ public final class Answer implements Timed, Predicate<Task> {
      * TODO use FloatRank min
      */
     public static FloatRank<Task> temporalTaskStrength(long start, long end, int dur) {
+        //HACK needs double precision
         return (x, min) -> (float) TruthIntegration.evi(x, start, end, dur)
                 //* x.originality()
                 ;
