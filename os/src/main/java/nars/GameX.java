@@ -30,7 +30,10 @@ import nars.derive.timing.ActionTiming;
 import nars.exe.impl.WorkerExec;
 import nars.gui.NARui;
 import nars.memory.CaffeineMemory;
-import nars.op.*;
+import nars.op.Arithmeticize;
+import nars.op.AutoencodedBitmap;
+import nars.op.Factorize;
+import nars.op.Introduction;
 import nars.op.mental.Inperience2;
 import nars.op.stm.ConjClustering;
 import nars.sensor.Bitmap2DSensor;
@@ -251,8 +254,8 @@ abstract public class GameX extends Game {
 
                 .what(
                         (w) -> new TaskLinkWhat(w,
-                                512,
-                                new PriBuffer.BagTaskBuffer(512, 0.5f))
+                                1024,
+                                new PriBuffer.BagTaskBuffer(512, 0.33f))
                 )
 //                .attention(() -> new ActiveConcepts(1024))
                 .exe(
@@ -588,9 +591,9 @@ abstract public class GameX extends Game {
      * TODO extract to class
      */
     private static void addGovernor(NAR n) {
-        int gHist = 4;
-        float momentum = 0.5f;
-        float explorationRate = 0.05f;
+        int gHist = 8;
+        float momentum = 0.9f;
+        float explorationRate = 0.1f;
         n.onDur(new Consumer<>() {
 
             final Consumer<FasterList<Why>> reval = new Consumer<FasterList<Why>>() {
@@ -631,9 +634,6 @@ abstract public class GameX extends Game {
                 int numHow = nn.how.size();
                 nn.how.forEach(h -> {
 
-                    float v = h.valueRateNormalized;
-                    if (v != v) v = 0;
-
 
 
 
@@ -644,10 +644,12 @@ abstract public class GameX extends Game {
                                 //FloatAveragedWindow.Mode.Mean
                         );
 
+                    float v = h.valueRateNormalized;
+                    if (v != v) v = 0;
 
-                    float pp = g.valueOf(v);
-                    //float pp = v;
-                    h.pri(Util.lerp(pp, explorationRate, 1));
+                    float vSmooth = g.valueOf(v);
+                    float vE = Util.lerp(vSmooth, explorationRate/numHow, 1);
+                    h.pri(vE);
                 });
 //                nn.how.forEach(h -> System.out.println(n4(h.pri()) + " " + n4(h.valueRateNormalized) + "\t" + h));
 //                System.out.println();

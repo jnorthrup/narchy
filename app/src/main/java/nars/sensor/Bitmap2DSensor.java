@@ -282,13 +282,15 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends VectorSensor {
 
         @Override
         protected Concept src(When<NAR> when) {
-            Term t = superPixel(when.x.random());
-            return t!=null ? when.x.conceptualizeDynamic(t) : null;
+            NAR n = when.x;
+            Term t = superPixel(n.random());
+            return t!=null ? n.conceptualizeDynamic(t) : null;
         }
 
         @Override
         public Term target(Task task, Derivation d) {
-            return superPixel(d.random);
+            //return superPixel(d.random);
+            return task.term();
         }
 
         @Nullable
@@ -304,12 +306,7 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends VectorSensor {
                         subterms.add(ij.term().negIf(current.isNegative()));
                 }
             }
-            Term t;
-            if (subterms.isEmpty())
-                t = null;
-            else
-                t = CONJ.the(0, (Subterms) subterms);
-            return t;
+            return subterms.isEmpty() ? null : CONJ.the(0, (Subterms) subterms);
         }
 
     }

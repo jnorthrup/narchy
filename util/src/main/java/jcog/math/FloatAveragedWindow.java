@@ -216,13 +216,12 @@ public class FloatAveragedWindow implements FloatSupplier, FloatToFloatFunction 
         double c = asCached();
         if (c != c) {
             double calculated = calculate();
-            current.compareAndSet(c, calculated);
-            c = calculated;
+            current.set(c = calculated);
         }
         return c;
     }
 
-    public double asCached() {
+    private double asCached() {
         return current.get();
     }
 

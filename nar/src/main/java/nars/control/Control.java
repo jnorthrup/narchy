@@ -119,6 +119,7 @@ import java.util.Arrays;
         long now = nar.time();
 
 
+        final double[] valueRateSumPos = {0}, valueRateSumNeg = {0};
         how.forEach(c -> {
 
             boolean sleeping = c.inactive(now);
@@ -141,7 +142,10 @@ import java.util.Arrays;
             }
 
             c.valueRate = vr;
-
+            if (vr >= 0)
+                valueRateSumPos[0] += vr;
+            else
+                valueRateSumNeg[0] += vr;
             if (vr > valMax[0]) valMax[0] = vr;
             if (vr < valMin[0]) valMin[0] = vr;
 
@@ -160,7 +164,7 @@ import java.util.Arrays;
 //                if (c.inactive()) {
 //                    c.pri(0);
 //                } else {
-                    float vNorm = Util.normalize(c.valueRate, valMin[0] /*- exploreMargin*/, valMax[0]);
+                    float vNorm = (float) Util.normalize(c.valueRate, valueRateSumNeg[0], +valueRateSumPos[0]);
                     c.valueRateNormalized = vNorm;
 //                }
             });

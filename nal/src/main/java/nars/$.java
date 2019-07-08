@@ -582,8 +582,7 @@ public enum $ {
     }
 
     public static Term pRadix(int x, int radix, int maxX) {
-        Term[] tt = radixArray(x, radix, maxX);
-        return $.p(tt);
+        return $.p(radixArray(x, radix, maxX));
     }
 
 

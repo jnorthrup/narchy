@@ -1596,7 +1596,7 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
     public final What what() {
         What w = active.get();
         if (w == null) {
-            Term id = $.uuid();
+            Term id = $.identity(Thread.currentThread());
             fork(w = the(id, true), null);
         }
         return w;

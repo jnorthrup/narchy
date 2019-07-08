@@ -93,7 +93,7 @@ public class NARio extends GameX {
 
 
         int nx = 4;
-        AutoclassifiedBitmap camAE = new AutoclassifiedBitmap(null /*id*//*$.inh("cae", id)*/, cc, nx, nx, (subX, subY) -> {
+        AutoclassifiedBitmap camAE = new AutoclassifiedBitmap($.p(id, $.the("see")) /*id*//*$.inh("cae", id)*/, cc, nx, nx, (subX, subY) -> {
             return new float[]{/*cc.X, cc.Y, */cc.Z};
         }, 12, this);
         camAE.confResolution.set(0.1f);

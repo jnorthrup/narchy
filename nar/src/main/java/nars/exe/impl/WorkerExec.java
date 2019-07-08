@@ -17,7 +17,7 @@ import static java.lang.System.nanoTime;
 public class WorkerExec extends ThreadedExec {
 
 
-    double granularity = 16;
+    double granularity = 8;
 
 
     /**
@@ -108,27 +108,23 @@ public class WorkerExec extends ThreadedExec {
             long start = nanoTime();
             long until = start + playTime, after = start /* assigned for safety */;
 
-            int hPerW = (int)Util.clamp(granularity/2, 1, H.size());
+            //int hPerW = 1; //(int)Util.clamp(granularity/concurrency(), 1, H.size());
 
-            What w = W.sample(rng);
-            if (w != null && w.isOn()) {
-                H.sample(rng, (How h)->{
-                    if (h.isOn()) {
-                        for (int wh = 0; wh < hPerW; wh++) {
-                            if (!play(h, w, until))
-                                return false;
-                        }
-                    }
-                    return until > nanoTime();
-                });
-            }
+            do {
+                What w = W.sample(rng);
+                if (w != null && w.isOn()) {
+                    How h = H.sample(rng);
+                    if (h.isOn())
+                        play(w, h);
+                }
+            } while (until > nanoTime());
 
         }
 
-        private boolean play(How h, What w, long until) {
+        private void play(What w, How h) {
             boolean singleton = h.singleton();
             if (!singleton || h.busy.compareAndSet(false, true)) {
-                long before = nanoTime();
+//                long before = nanoTime();
 
                 float util = h.utilization();
                 if (!Float.isFinite(util)) util = 1;
@@ -144,7 +140,6 @@ public class WorkerExec extends ThreadedExec {
                 }
 
             }
-            return true;
         }
 
         void sleep() {

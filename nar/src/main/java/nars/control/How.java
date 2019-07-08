@@ -203,7 +203,8 @@ abstract public class How extends NARPart implements Prioritizable {
     }
 
     public final float pri(float p) {
-        pri.pri(p); return p;
+        //pri.pri(p); return p;
+        pri.amp(p); return p;
     }
 
 

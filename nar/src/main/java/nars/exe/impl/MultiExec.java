@@ -20,33 +20,29 @@ import static java.lang.System.nanoTime;
 
 abstract public class MultiExec extends Exec {
 
-    /** 0..1.0: determines acceptable reaction latency.
-     * lower value allows queue to grow larger before it's processed,
-     * higher value demands faster response at (a likely) throughput cost */
-    public final FloatRange alertness = new FloatRange(1f, 0, 1f);
-
-
-    private static final float UPDATE_DURS =
-            1;
-
-    protected final DurLoop.DurRunnable updater;
-    //2; //<- untested
-
-    long threadWorkTimePerCycle, threadIdleTimePerCycle;
-
     /**
      * global sleep nap period
      */
     protected static final long NapTimeNS = 500 * 1000; //on the order of 0.5ms
-
-    static private final float queueLatencyMeasurementProbability = 0.01f;
-
-    static final double lagAdjustmentFactor  =
+    static final double lagAdjustmentFactor =
             1.0;
-            //1.5;
-
+    private static final float UPDATE_DURS =
+            1;
+    //2; //<- untested
+    static private final float queueLatencyMeasurementProbability = 0.01f;
+    /**
+     * 0..1.0: determines acceptable reaction latency.
+     * lower value allows queue to grow larger before it's processed,
+     * higher value demands faster response at (a likely) throughput cost
+     */
+    public final FloatRange alertness = new FloatRange(1f, 0, 1f);
+    protected final DurLoop.DurRunnable updater;
+    final FloatAveragedWindow CYCLE_DELTA_MS = new FloatAveragedWindow(3, 0.5f);
+    //1.5;
+    volatile long threadWorkTimePerCycle, threadIdleTimePerCycle;
     volatile long cycleIdealNS;
     volatile long lastCycle = System.nanoTime();
+
 
     MultiExec(int concurrencyMax  /* TODO adjustable dynamically */) {
         super(concurrencyMax);
@@ -55,87 +51,6 @@ abstract public class MultiExec extends Exec {
         updater.durs(UPDATE_DURS);
         add(updater);
     }
-
-
-    @Override
-    public void starting(NAR n) {
-
-        if (!(n.time instanceof RealTime))
-            throw new UnsupportedOperationException("non-realtime clock not supported");
-
-        super.starting(n);
-    }
-
-    @Deprecated @Override
-    public void print(Appendable out) {
-        try {
-            Joiner.on('\n').appendTo(out, nar.how);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-
-    @Override protected final void next(NAR nar) {
-        nar.exe.schedule(this::execute);
-    }
-
-    @Override
-    public final void input(Consumer<NAR> r) {
-        execute(r);
-    }
-
-    /** execute later */
-    abstract protected void execute(Object r);
-
-    @Override
-    public final void execute(Runnable async) {
-        execute((Object)async);
-    }
-
-
-    protected void update() {
-        long now = System.nanoTime();
-        long last = this.lastCycle;
-        this.lastCycle = now;
-        updateTiming(now - last);
-    }
-
-
-    final FloatAveragedWindow CYCLE_DELTA_MS = new FloatAveragedWindow(8, 0.5f);
-
-    private void updateTiming(long _cycleDeltaNS) {
-
-        cycleIdealNS = nar.loop.periodNS();
-        if (cycleIdealNS < 0) {
-            //paused
-            threadIdleTimePerCycle = NapTimeNS;
-        } else {
-            double throttle = nar.loop.throttle.floatValue();
-
-            //TODO better idle calculation in each thread / worker
-            long workTargetNS = (long)(Util.lerp(throttle, 0, cycleIdealNS));
-            long cycleActualNS = (long)(1_000_000.0 * CYCLE_DELTA_MS.valueOf((float)(_cycleDeltaNS/1.0E6)));
-            long lagMeanNS = cycleActualNS - cycleIdealNS;
-
-                    //0.5;
-            if (lagMeanNS > 0)
-                workTargetNS = (long) Math.max(workTargetNS - lagMeanNS * lagAdjustmentFactor / concurrency(), 0);
-
-            threadWorkTimePerCycle = workTargetNS;
-            threadIdleTimePerCycle = Math.max(0, cycleIdealNS - workTargetNS);
-
-            if (nar.random().nextFloat() < queueLatencyMeasurementProbability) {
-                accept(new QueueLatencyMeasurement(nanoTime()));
-            }
-        }
-
-    }
-
-
-
-
-
 
     static boolean execute(FasterList b, int concurrency, Consumer each) {
         //TODO sort, distribute etc
@@ -162,19 +77,100 @@ abstract public class MultiExec extends Exec {
         return true;
     }
 
+    @Override
+    public void starting(NAR n) {
+
+        if (!(n.time instanceof RealTime))
+            throw new UnsupportedOperationException("non-realtime clock not supported");
+
+        super.starting(n);
+    }
+
+    @Deprecated
+    @Override
+    public void print(Appendable out) {
+        try {
+            Joiner.on('\n').appendTo(out, nar.how);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    protected final void next(NAR nar) {
+        nar.exe.schedule(this::execute);
+    }
+
+    @Override
+    public final void input(Consumer<NAR> r) {
+        execute(r);
+    }
+
+    /**
+     * execute later
+     */
+    abstract protected void execute(Object r);
+
+    @Override
+    public final void execute(Runnable async) {
+        execute((Object) async);
+    }
+
+    protected void update() {
+        long now = System.nanoTime();
+        long last = this.lastCycle;
+        this.lastCycle = now;
+        updateTiming(now - last);
+    }
+
+    private void updateTiming(long _cycleDeltaNS) {
+
+        cycleIdealNS = nar.loop.periodNS();
+        if (cycleIdealNS < 0) {
+            //paused
+            threadWorkTimePerCycle = 0;
+            threadIdleTimePerCycle = NapTimeNS;
+        } else {
+            double throttle = nar.loop.throttle.floatValue();
+
+            //TODO better idle calculation in each thread / worker
+            long workTargetNS = (long) (Util.lerp(throttle, 0, cycleIdealNS));
+            long cycleActualNS = (long) (1_000_000.0 * CYCLE_DELTA_MS.valueOf((float) (_cycleDeltaNS / 1.0E6)));
+            long lagMeanNS = cycleActualNS - cycleIdealNS;
+
+            long threadWorkTimePerCycle = workTargetNS;
+            long threadIdleTimePerCycle = Math.max(0, cycleIdealNS - workTargetNS);
+
+            long lagNS = Math.round(lagMeanNS * lagAdjustmentFactor);
+            if (lagNS > 0) {
+                if (threadIdleTimePerCycle >= lagNS) {
+                    //use some idle time to compensate for lag overtime
+                    threadIdleTimePerCycle -= lagNS;
+                } else {
+                    long idleConsumed = threadIdleTimePerCycle;
+                    //need all idle time
+                    threadIdleTimePerCycle = 0;
+                    //decrease work time for remainder
+                    threadWorkTimePerCycle = Math.max(0, threadWorkTimePerCycle - (lagNS - idleConsumed));
+                }
+            }
+
+
+            if (nar.random().nextFloat() < queueLatencyMeasurementProbability)
+                accept(new QueueLatencyMeasurement(nanoTime()));
+
+            this.threadWorkTimePerCycle = threadWorkTimePerCycle;
+            this.threadIdleTimePerCycle = threadIdleTimePerCycle;
+        }
+
+    }
+
     static private class QueueLatencyMeasurement extends AbstractTask {
 
         private final long start;
 
         QueueLatencyMeasurement(long start) {
             this.start = start;
-        }
-
-        @Override
-        public Task next(Object n) {
-            long end = nanoTime();
-            queueLatency(start, end, (NAR)n);
-            return null;
         }
 
         /**
@@ -186,6 +182,13 @@ abstract public class MultiExec extends Exec {
             if (cycles > 0.5) {
                 Exec.logger.atInfo().log("queue latency {} ({} cycles)", Texts.timeStr(latencyNS), Texts.n4(cycles));
             }
+        }
+
+        @Override
+        public Task next(Object n) {
+            long end = nanoTime();
+            queueLatency(start, end, (NAR) n);
+            return null;
         }
     }
 
